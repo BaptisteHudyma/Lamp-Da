@@ -153,8 +153,7 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
     strip.show();
   }
 
-  // fade in finished when we reach 255
-  return lastFadeLevel == 0;
+  return false;
 }
 
 

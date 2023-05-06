@@ -19,6 +19,10 @@ bool dotWipeDown(const uint32_t color, const uint32_t duration, const bool resta
     return false;
   }
 
+  // finished if the target index is over the led limit
+  if (targetIndex >= numberOfLedSegments)
+    return true;
+
   // convert duration in delay for each segment
   const uint16_t delay = duration / (float)numberOfLedSegments;
 
@@ -31,8 +35,7 @@ bool dotWipeDown(const uint32_t color, const uint32_t duration, const bool resta
     strip.show();  //  Update strip to match
   }
 
-  // finished if the target index is over the led limit
-  return targetIndex >= numberOfLedSegments;
+  return false;
 }
 
 bool dotWipeUp(const uint32_t color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
@@ -49,6 +52,10 @@ bool dotWipeUp(const uint32_t color, const uint32_t duration, const bool restart
     return false;
   }
 
+  // finished if the target index is over the led limit
+  if (targetIndex >= numberOfLedSegments)
+    return true;
+
   // convert duration in delay for each segment
   const uint16_t delay = duration / (float)numberOfLedSegments;
 
@@ -61,8 +68,7 @@ bool dotWipeUp(const uint32_t color, const uint32_t duration, const bool restart
     strip.show();  //  Update strip to match
   }
 
-  // finished if the target index is over the led limit
-  return targetIndex >= numberOfLedSegments;
+  return false;
 }
 
 bool dotWipeDownRainbow(const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
@@ -78,6 +84,10 @@ bool dotWipeDownRainbow(const uint32_t duration, const bool restart, Adafruit_Ne
     previousMillis = 0;
     return false;
   }
+
+  // finished if the target index is over the led limit
+  if (targetIndex >= numberOfLedSegments)
+    return true;
 
   // convert duration in delay for each segment
   const uint16_t delay = duration / (float)numberOfLedSegments;
@@ -95,8 +105,7 @@ bool dotWipeDownRainbow(const uint32_t duration, const bool restart, Adafruit_Ne
     strip.show();  //  Update strip to match
   }
 
-  // finished if the target index is over the led limit
-  return targetIndex >= numberOfLedSegments;
+  return false;
 }
 
 bool colorWipeDown(const uint32_t color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip) {
@@ -112,11 +121,15 @@ bool colorWipeDown(const uint32_t color, const uint32_t duration, const bool res
     return false;
   }
 
+  // finished if the target index is over the led limit
+  if (targetIndex >= numberOfLedSegments)
+    return true;
+
   // convert duration in delay for each segment
   const uint16_t delay = duration / (float)numberOfLedSegments;
 
   unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= delay and targetIndex < numberOfLedSegments) {
+  if (currentMillis - previousMillis >= delay) {
     previousMillis = currentMillis;
 
     strip.setPixelColor(targetIndex++, color);
@@ -124,8 +137,7 @@ bool colorWipeDown(const uint32_t color, const uint32_t duration, const bool res
     strip.show();  //  Update strip to match
   }
 
-  // finished if the target index is over the led limit
-  return targetIndex >= numberOfLedSegments;
+  return false;
 }
 
 
@@ -142,11 +154,15 @@ bool colorWipeUp(const uint32_t color, const uint32_t duration, const bool resta
     return false;
   }
 
+  // finished if the target index is over the led limit
+  if (targetIndex >= numberOfLedSegments)
+    return true;
+
   // convert duration in delay for each segment
   const uint16_t delay = duration / (float)numberOfLedSegments;
 
   unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= delay and targetIndex >= 0) {
+  if (currentMillis - previousMillis >= delay) {
     previousMillis = currentMillis;
 
     strip.setPixelColor(targetIndex--, color);
@@ -154,8 +170,7 @@ bool colorWipeUp(const uint32_t color, const uint32_t duration, const bool resta
     strip.show();  //  Update strip to match
   }
 
-  // finished if the target index is over the led limit
-  return targetIndex >= numberOfLedSegments;
+  return false;
 }
 
 };
