@@ -12,8 +12,10 @@ namespace animations
  * \param[in] colorStart The color thta we start with
  * \param[in] colorEnd The color that we end with
  * \param[in, out] strip The led strip to control
+ * \param[in] fillup between 0 and 1, how much this gradient will fill the display
+ * \param[in] cutOff between 0 and 1, how much this gradient will fill the display before suddently cutting of
  */
-void fill_gradient(const uint32_t colorStart, const uint32_t colorEnd, Adafruit_NeoPixel& strip);
+void fill_gradient(const uint32_t colorStart, const uint32_t colorEnd, Adafruit_NeoPixel& strip, const float fillup=1, const float cutOff=1);
 
 
 /**

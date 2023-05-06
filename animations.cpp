@@ -10,12 +10,17 @@
 namespace animations
 {
 
-void fill_gradient(const uint32_t colorStart, const uint32_t colorEnd, Adafruit_NeoPixel& strip)
+void fill_gradient(const uint32_t colorStart, const uint32_t colorEnd, Adafruit_NeoPixel& strip, const float fillup, const float cutOff)
 {
   const uint16_t numberOfLedSegments = strip.numPixels();
-  for(uint16_t i = 0; i < numberOfLedSegments; ++i)
+  const uint16_t maxIndex = min(max(fillup * numberOfLedSegments, 1), numberOfLedSegments);
+  const uint16_t maxCutOff = min(max(cutOff * numberOfLedSegments, 1), numberOfLedSegments);
+  for(uint16_t i = 0; i < maxIndex; ++i)
   {
-    const float progress = i / (float)numberOfLedSegments;
+    if (i >= maxCutOff)
+      break;
+    
+    const float progress = i / (float)maxIndex;
     
     const uint8_t colorStartRed = (colorStart >> 16) & 255;
     const uint8_t colorStartGreen = (colorStart >> 8) & 255;
