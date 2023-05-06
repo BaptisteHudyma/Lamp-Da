@@ -21,20 +21,7 @@ void fill_gradient(const uint32_t colorStart, const uint32_t colorEnd, Adafruit_
       break;
     
     const float progress = i / (float)maxIndex;
-    
-    const uint8_t colorStartRed = (colorStart >> 16) & 255;
-    const uint8_t colorStartGreen = (colorStart >> 8) & 255;
-    const uint8_t colorStartBlue = (colorStart >> 0) & 255;
-
-    const uint8_t colorEndRed = (colorEnd >> 16) & 255;
-    const uint8_t colorEndGreen = (colorEnd >> 8) & 255;
-    const uint8_t colorEndBlue = (colorEnd >> 0) & 255;
-
-    strip.setPixelColor(i, Adafruit_NeoPixel::Color(
-      colorStartRed + progress * (colorEndRed - colorStartRed),
-      colorStartGreen + progress * (colorEndGreen - colorStartGreen),
-      colorStartBlue + progress * (colorEndBlue - colorStartBlue)
-    ));
+    strip.setPixelColor(i, get_gradient(colorStart, colorEnd, progress));
   }
   strip.show();
 }

@@ -34,6 +34,25 @@ uint32_t get_random_complementary_color(const uint32_t color, const float tolera
     return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue + MAX_UINT16_T/2 + (rand()%MAX_UINT16_T) * tolerance, 255, 255));
 }
 
+
+uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const float level)
+{
+    const uint8_t colorStartRed = (colorStart >> 16) & 255;
+    const uint8_t colorStartGreen = (colorStart >> 8) & 255;
+    const uint8_t colorStartBlue = (colorStart >> 0) & 255;
+
+    const uint8_t colorEndRed = (colorEnd >> 16) & 255;
+    const uint8_t colorEndGreen = (colorEnd >> 8) & 255;
+    const uint8_t colorEndBlue = (colorEnd >> 0) & 255;
+
+    return Adafruit_NeoPixel::Color(
+      colorStartRed + level * (colorEndRed - colorStartRed),
+      colorStartGreen + level * (colorEndGreen - colorStartGreen),
+      colorStartBlue + level * (colorEndBlue - colorStartBlue)
+    );
+}
+
+
 uint16_t rgb2hue(const uint32_t color)
 {
     const float r = ((color >> 16) & 255)/255.0;

@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include "constants.h"
+#include <cstdint>
 
 /**
  * \brief Compute a random color
@@ -22,6 +23,14 @@ uint32_t get_complementary_color(const uint32_t color);
  * \return the random complementary color
  */
 uint32_t get_random_complementary_color(const uint32_t color, const float tolerance);
+
+/**
+ * \brief Return the color gradient between colorStart to colorEnd
+ * \param[in] colorStart
+ * \param[in] colorEnd
+ * \param[in] level between 0 and 1, the gradient between the two colors
+ */
+uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const float level);
 
 /**
  * \brief Compute the hue value of RGB to HSV
