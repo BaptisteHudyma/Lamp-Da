@@ -19,7 +19,7 @@ uint32_t get_complementary_color(const uint32_t color)
     const uint32_t hue = rgb2hue(red, green, blue);
 
     // add a cardan shift to the hue, to opbtain the symetrical color
-    return Adafruit_NeoPixel::ColorHSV(hue + MAX_UINT16_T/2, 255, 255);
+    return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue + MAX_UINT16_T/2, 255, 255));
 }
 
 uint32_t get_random_complementary_color(const uint32_t color, const float tolerance)
@@ -31,7 +31,16 @@ uint32_t get_random_complementary_color(const uint32_t color, const float tolera
     const uint32_t hue = rgb2hue(red, green, blue);
 
     // add random offset
-    return Adafruit_NeoPixel::ColorHSV(hue + MAX_UINT16_T/2 + (rand()%MAX_UINT16_T) * tolerance, 255, 255);
+    return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue + MAX_UINT16_T/2 + (rand()%MAX_UINT16_T) * tolerance, 255, 255));
+}
+
+uint16_t rgb2hue(const uint32_t color)
+{
+    const float r = ((color >> 16) & 255)/255.0;
+    const float g = ((color >> 8) & 255)/255.0;
+    const float b = ((color >> 0) & 255)/255.0;
+
+    return rgb2hue(r, g, b);
 }
 
 uint16_t rgb2hue(const float r, const float g, const float b)

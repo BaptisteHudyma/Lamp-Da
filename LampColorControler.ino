@@ -54,19 +54,22 @@ void loop() {
 
   static bool isFadeFinished = false;
   static uint32_t color = strip.Color(255, 0, 0);
-  static uint8_t state = 0;
   static bool Switch = false;
 
-  isFinished = Switch ? colorWipeUp(color, 1000, isFinished, strip) : colorWipeDown(color, 1000, isFinished, strip);
+  /*isFinished = Switch ? colorWipeUp(color, 1000, isFinished, strip) : colorWipeDown(color, 1000, isFinished, strip);
   //isFadeFinished = fadeOut(333, isFadeFinished, strip);
-
   if (isFinished)
   {
     Switch = !Switch;
-    state = (state+1)%3;
-    
     color = get_random_complementary_color(color, 0.3);
-  }
+  }*/
+
+  fill_gradient(strip.Color(255, 0, 0), strip.Color(250, 0, 255), strip);
+  delay(1000);
+  fill_gradient(strip.Color(255, 0, 0), strip.Color(0, 255, 0), strip);
+  delay(1000);
+  fill_gradient(strip.Color(0, 255, 0), strip.Color(0, 0, 255), strip);
+  delay(1000);
 
   //police(1000, false, strip);
 

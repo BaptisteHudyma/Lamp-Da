@@ -4,8 +4,36 @@
 #include "wipes.h"
 #include "utils.h"
 
+#include <stdlib.h>
+#include <math.h>
+
 namespace animations
 {
+
+void fill_gradient(const uint32_t colorStart, const uint32_t colorEnd, Adafruit_NeoPixel& strip)
+{
+  const uint16_t numberOfLedSegments = strip.numPixels();
+  for(uint16_t i = 0; i < numberOfLedSegments; ++i)
+  {
+    const float progress = i / (float)numberOfLedSegments;
+    
+    const uint8_t colorStartRed = (colorStart >> 16) & 255;
+    const uint8_t colorStartGreen = (colorStart >> 8) & 255;
+    const uint8_t colorStartBlue = (colorStart >> 0) & 255;
+
+    const uint8_t colorEndRed = (colorEnd >> 16) & 255;
+    const uint8_t colorEndGreen = (colorEnd >> 8) & 255;
+    const uint8_t colorEndBlue = (colorEnd >> 0) & 255;
+
+    strip.setPixelColor(i, Adafruit_NeoPixel::Color(
+      colorStartRed + progress * (colorEndRed - colorStartRed),
+      colorStartGreen + progress * (colorEndGreen - colorStartGreen),
+      colorStartBlue + progress * (colorEndBlue - colorStartBlue)
+    ));
+  }
+  strip.show();
+}
+
 
 bool dotPingPong(const uint32_t color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
 {
@@ -114,7 +142,7 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
 
       const uint16_t hue = rgb2hue(red, green, blue);
       // diminish fade
-      strip.setPixelColor(i, Adafruit_NeoPixel::ColorHSV(hue, 255, lastFadeLevel));
+      strip.setPixelColor(i, Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue, 255, lastFadeLevel)));
     }
 
     strip.show();
@@ -145,7 +173,7 @@ void rainbowFade2White(int wait, int rainbowLoops, Adafruit_NeoPixel& strip) {
       // optionally add saturation and value (brightness) (each 0 to 255).
       // Here we're using just the three-argument variant, though the
       // second value (saturation) is a constant 255.
-      strip.setPixelColor(i, strip.gamma32(Adafruit_NeoPixel::ColorHSV(
+      strip.setPixelColor(i, Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(
                                  pixelHue, 255, 255 * fadeVal / fadeMax)));
     }
 

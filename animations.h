@@ -6,6 +6,16 @@
 namespace animations
 {
 
+
+/**
+ * \brief Fill the display with a gradient from colorStart to colorEnd
+ * \param[in] colorStart The color thta we start with
+ * \param[in] colorEnd The color that we end with
+ * \param[in, out] strip The led strip to control
+ */
+void fill_gradient(const uint32_t colorStart, const uint32_t colorEnd, Adafruit_NeoPixel& strip);
+
+
 /**
  * \brief Do a wipe down followed by a wipe up animation
  * \param[in] color The color to display

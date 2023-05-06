@@ -31,6 +31,7 @@ uint32_t get_random_complementary_color(const uint32_t color, const float tolera
  * \return The value of the hue corresponding to this color
  */
 uint16_t rgb2hue(const float r, const float g, const float b);
+uint16_t rgb2hue(const uint32_t color);
 
 
 #endif
