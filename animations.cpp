@@ -2,6 +2,7 @@
 
 #include "constants.h"
 #include "wipes.h"
+#include "utils.h"
 
 namespace animations
 {
@@ -59,13 +60,13 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
       strip.clear();
 
       // blue lights
-      strip.fill(strip.Color(0, 0, 255), 0, numberOfLedSegments / 2+1);  // Set blue
+      strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), 0, numberOfLedSegments / 2+1);  // Set blue
       strip.show();  // Update strip with new contents
       isBluePhase = false;
     }
     else {
       strip.clear();
-      strip.fill(strip.Color(255, 0, 0), numberOfLedSegments / 2, numberOfLedSegments);  // Set red
+      strip.fill(Adafruit_NeoPixel::Color(255, 0, 0), numberOfLedSegments / 2, numberOfLedSegments);  // Set red
       strip.show();  // Update strip with new contents
 
       isBluePhase = true;
@@ -75,31 +76,6 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
 
   // never ends
   return false;
-}
-
-/**
- * \brief Compute the hue value of RGB to HSV
- */
-uint16_t rgb2hue(const float r, const float g, const float b)
-{
-    const float cmax = max(r, max(g, b)); // maximum of r, g, b
-    const float cmin = min(r, min(g, b)); // minimum of r, g, b
-    const float diff = cmax - cmin; // diff of cmax and cmin.
-  
-    // if cmax and cmax are equal then h = 0
-    if (cmax == cmin)
-        return 0;
-    // if cmax equal r then compute h
-    else if (cmax == r)
-        return fmod(60.0 * ((g - b) / diff) + 360, 360.0) / 360.0 * MAX_UINT16_T;
-    // if cmax equal g then compute h
-    else if (cmax == g)
-        return fmod(60.0 * ((b - r) / diff) + 120, 360.0) / 360.0 * MAX_UINT16_T;
-    // if cmax equal b then compute h
-    else if (cmax == b)
-        return fmod(60.0 * ((r - g) / diff) + 240, 360.0) / 360.0 * MAX_UINT16_T;
-
-  return 0;
 }
 
 
@@ -138,7 +114,7 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
 
       const uint16_t hue = rgb2hue(red, green, blue);
       // diminish fade
-      strip.setPixelColor(i, strip.ColorHSV(hue, 255, lastFadeLevel));
+      strip.setPixelColor(i, Adafruit_NeoPixel::ColorHSV(hue, 255, lastFadeLevel));
     }
 
     strip.show();
@@ -169,7 +145,7 @@ void rainbowFade2White(int wait, int rainbowLoops, Adafruit_NeoPixel& strip) {
       // optionally add saturation and value (brightness) (each 0 to 255).
       // Here we're using just the three-argument variant, though the
       // second value (saturation) is a constant 255.
-      strip.setPixelColor(i, strip.gamma32(strip.ColorHSV(
+      strip.setPixelColor(i, strip.gamma32(Adafruit_NeoPixel::ColorHSV(
                                  pixelHue, 255, 255 * fadeVal / fadeMax)));
     }
 

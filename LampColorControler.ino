@@ -8,6 +8,7 @@
 
 #include "animations.h"
 #include "wipes.h"
+#include "utils.h"
 
 // Which pin on the Arduino is connected to the NeoPixels?
 // On a Trinket or Gemma we suggest changing this to 1:
@@ -63,13 +64,8 @@ void loop() {
   {
     Switch = !Switch;
     state = (state+1)%3;
-
-    if(state == 0)
-      color = strip.Color(255, 0, 0);
-    else if(state == 1)
-      color = strip.Color(0, 255, 0);
-    else if(state == 2)
-      color = strip.Color(0, 0, 255);
+    
+    color = get_random_complementary_color(color, 0.3);
   }
 
   //police(1000, false, strip);

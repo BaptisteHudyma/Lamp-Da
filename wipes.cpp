@@ -90,7 +90,7 @@ bool dotWipeDownRainbow(const uint32_t duration, const bool restart, Adafruit_Ne
 
     // get and set corresponding hue color
     const uint16_t hue = map(targetIndex, 0, strip.numPixels(), 0, MAX_UINT16_T);
-    strip.setPixelColor(targetIndex++, strip.gamma32(strip.ColorHSV(hue)));  //  Set pixel's color (in RAM)
+    strip.setPixelColor(targetIndex++, Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue)));  //  Set pixel's color (in RAM)
 
     strip.show();  //  Update strip to match
   }
