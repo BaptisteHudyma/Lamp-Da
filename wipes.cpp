@@ -147,6 +147,7 @@ bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart
     return false;
   }
 
+  const unsigned long currentMillis = millis();
   // finished if the target index is over the led limit
   if (targetIndex == MAX_UINT16_T or targetIndex < floor((1.0 - cutOff) * LED_COUNT))
     return true;
@@ -155,7 +156,6 @@ bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart
   const unsigned long delay = duration / (float)LED_COUNT;
   const uint32_t c = color.get_color(targetIndex, LED_COUNT);
 
-  const unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= delay) {
     previousMillis = currentMillis;
     fadeLevel = 0;

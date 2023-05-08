@@ -56,9 +56,6 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
  */
 bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip);
 
-
-void rainbowFade2White(int wait, int rainbowLoops, Adafruit_NeoPixel& strip);
-
 };
 
 #endif
