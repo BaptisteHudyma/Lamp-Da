@@ -74,4 +74,10 @@ void loop() {
 
   // ping pong a color for infinity
   // isFinished = dotPingPong(rainbowColor, duration, isFinished, strip);
+
+  isFinished = Switch ? fadeOut(1000, isFinished, strip) : fadeIn(rainbowColor, 1000, isFinished, strip);
+  if (isFinished)
+  {
+    Switch = !Switch;
+  }
 }

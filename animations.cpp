@@ -107,36 +107,63 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
     startMillis = millis();
     return false;
   }
-
-  const unsigned long currentMillis = millis();
+  // out condition: faded to zero
   if(fadeLevel == 0)
     return true;
   
   // get a fade level between 0 and 255
-  fadeLevel = 255 - fmin(1.0, (currentMillis - startMillis) / (float)duration) * 255;
-
-  // update all values of rgb
-  const uint16_t numPixels = strip.numPixels();  
-  for(uint16_t i = 0; i < numPixels; ++i)
+  const uint8_t newFadeLevel = 255 - fmax(0.0, fmin(1.0, (millis() - startMillis) / (float)duration)) * 255;
+  if (newFadeLevel != fadeLevel)
   {
-    const uint32_t pixelColor = strip.getPixelColor(i);
-    if (pixelColor == 0)
-      continue;
-    
-    // get RGB between 0 and 1
-    const float red = ((pixelColor >> 16) & 255)/255.0;
-    const float green = ((pixelColor >> 8) & 255)/255.0;
-    const float blue = ((pixelColor >> 0) & 255)/255.0;
-
-    const uint16_t hue = utils::rgb2hue(red, green, blue);
-    // diminish fade
-    strip.setPixelColor(i, Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue, 255, fadeLevel)));
+    fadeLevel = newFadeLevel;
+  
+    // update all values of rgb
+    const uint16_t numPixels = strip.numPixels();  
+    for(uint16_t i = 0; i < numPixels; ++i)
+    {
+      const uint16_t hue = utils::rgb2hue(strip.getPixelColor(i));
+      // diminish fade
+      strip.setPixelColor(i, Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue, 255, fadeLevel)));
+    }
+    strip.show();
   }
-  strip.show();
 
   return false;
 }
 
+bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
+{
+  static unsigned long startMillis = 0;
+  static uint8_t fadeLevel = 0;
+  if (restart)
+  {
+    fadeLevel = 0;
+    startMillis = millis();
+    return false;
+  }
+  // out condition: faded to maximum
+  if(fadeLevel == 255)
+    return true;
+  
+  // get a fade level between 0 and 255
+  const uint8_t newFadeLevel = fmax(0.0, fmin(1.0, (millis() - startMillis) / (float)duration)) * 255;
+  if (newFadeLevel != fadeLevel)
+  {
+    fadeLevel = newFadeLevel;
+
+    // update all values of rgb
+    const uint16_t numPixels = strip.numPixels();  
+    for(uint16_t i = 0; i < numPixels; ++i)
+    {
+      const uint16_t hue = utils::rgb2hue(color.get_color(i, numPixels));
+      // fade in
+      strip.setPixelColor(i, Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue, 255, fadeLevel)));
+    }
+    strip.show();
+  }
+
+  return false;
+}
 
 void rainbowFade2White(int wait, int rainbowLoops, Adafruit_NeoPixel& strip) {
   int fadeVal = 0, fadeMax = 100;
