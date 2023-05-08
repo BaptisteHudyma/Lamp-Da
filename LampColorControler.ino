@@ -14,9 +14,6 @@
 // On a Trinket or Gemma we suggest changing this to 1:
 #define LED_PIN D0
 
-// How many NeoPixels are attached to the Arduino?
-#define LED_COUNT 29
-
 // NeoPixel brightness, 0 (min) to 255 (max)
 #define BRIGHTNESS 50  // max: 255
 
@@ -49,21 +46,16 @@ void loop() {
 
   static GenerateRainbowColor rainbowColor = GenerateRainbowColor();  // will output a rainbow from start to bottom of the display
   static GenerateGradientColor gradientColor = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
+  static GenerateSolidColor color = GenerateSolidColor(utils::get_random_color());
 
   static bool isFinished = false;
-
-  static bool isFadeFinished = false;
-  static GenerateSolidColor color = GenerateSolidColor(utils::get_random_color());
-  static bool Switch = false;
   const uint duration = 1000;
 
-  /*isFinished = Switch ? colorWipeUp(color, duration, isFinished, strip) : colorWipeDown(color, duration, isFinished, strip);
-  //isFadeFinished = fadeOut(duration, isFinished, strip);
+  isFinished = fadeIn(color, duration, isFinished, strip);
   if (isFinished)
   {
-    Switch = !Switch;
     color = GenerateSolidColor(utils::get_random_complementary_color(color.get_color(), 0.3));
-  }*/
+  }
 
   // fill the display with a rainbow color
   // fill(rainbowColor, strip, 1.0);
@@ -75,9 +67,9 @@ void loop() {
   // ping pong a color for infinity
   // isFinished = dotPingPong(rainbowColor, duration, isFinished, strip);
 
-  isFinished = Switch ? fadeOut(1000, isFinished, strip) : fadeIn(rainbowColor, 1000, isFinished, strip);
+  /*isFinished = Switch ? fadeOut(1000, isFinished, strip) : fadeIn(rainbowColor, 1000, isFinished, strip);
   if (isFinished)
   {
     Switch = !Switch;
-  }
+  }*/
 }

@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <vector>
 
 namespace animations
 {
@@ -35,7 +36,6 @@ bool dotPingPong(const Color& color, const uint32_t duration, const bool restart
     isPongMode = false;
     dotWipeUp(color, duration/2, restart, strip);
     dotWipeDown(color, duration/2, restart, strip);
-    return false;
   }
 
   if (isPongMode)
@@ -61,7 +61,6 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
   {
     previousMillis = 0;
     isBluePhase = false;
-    return false;
   }
 
   // convert duration in delay
@@ -100,19 +99,25 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
 bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
 {
   static unsigned long startMillis = 0;
-  static uint8_t fadeLevel = 255;
+  static uint8_t fadeLevel = 0;
+  static uint32_t ledStates[LED_COUNT];
+
   if (restart)
   {
-    fadeLevel = 255;
+    fadeLevel = 0;
     startMillis = millis();
-    return false;
+
+    // save initial state
+    const uint16_t numPixels = strip.numPixels();
+    for(uint16_t i = 0; i < numPixels; ++i)
+      ledStates[i] = strip.getPixelColor(i);
   }
   // out condition: faded to zero
-  if(fadeLevel == 0)
+  if(fadeLevel == 255)
     return true;
   
   // get a fade level between 0 and 255
-  const uint8_t newFadeLevel = 255 - fmax(0.0, fmin(1.0, (millis() - startMillis) / (float)duration)) * 255;
+  const uint8_t newFadeLevel = fmax(0.0, fmin(1.0, (millis() - startMillis) / (float)duration)) * 255;
   if (newFadeLevel != fadeLevel)
   {
     fadeLevel = newFadeLevel;
@@ -121,11 +126,14 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
     const uint16_t numPixels = strip.numPixels();  
     for(uint16_t i = 0; i < numPixels; ++i)
     {
-      const uint16_t hue = utils::rgb2hue(strip.getPixelColor(i));
+      const uint32_t startColor = ledStates[i];
       // diminish fade
-      strip.setPixelColor(i, Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue, 255, fadeLevel)));
+      strip.setPixelColor(i, utils::get_gradient(startColor, 0, fadeLevel/255.0));
     }
     strip.show();
+
+    if(fadeLevel == 255)
+      return true;
   }
 
   return false;
@@ -135,11 +143,17 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Ada
 {
   static unsigned long startMillis = 0;
   static uint8_t fadeLevel = 0;
+  static uint32_t ledStates[LED_COUNT];
+
   if (restart)
   {
     fadeLevel = 0;
     startMillis = millis();
-    return false;
+
+    // save initial state
+    const uint16_t numPixels = strip.numPixels();
+    for(uint16_t i = 0; i < numPixels; ++i)
+      ledStates[i] = strip.getPixelColor(i);
   }
   // out condition: faded to maximum
   if(fadeLevel == 255)
@@ -152,14 +166,17 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Ada
     fadeLevel = newFadeLevel;
 
     // update all values of rgb
-    const uint16_t numPixels = strip.numPixels();  
+    const uint16_t numPixels = strip.numPixels();
     for(uint16_t i = 0; i < numPixels; ++i)
     {
-      const uint16_t hue = utils::rgb2hue(color.get_color(i, numPixels));
+      const uint32_t pixelColor = ledStates[i];
       // fade in
-      strip.setPixelColor(i, Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue, 255, fadeLevel)));
+      strip.setPixelColor(i, utils::get_gradient(pixelColor, color.get_color(i, numPixels), fadeLevel/255.0));
     }
     strip.show();
+
+    if(fadeLevel == 255)
+      return true;
   }
 
   return false;
