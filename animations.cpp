@@ -99,44 +99,40 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
 
 bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
 {
-  static unsigned long startTimeMillis = 0;
-  static uint8_t lastFadeLevel = 255;
-
+  static unsigned long startMillis = 0;
+  static uint8_t fadeLevel = 255;
   if (restart)
   {
-    startTimeMillis = millis();
-    lastFadeLevel = 255;
+    fadeLevel = 255;
+    startMillis = millis();
     return false;
   }
-  if (lastFadeLevel == 0)
+
+  const unsigned long currentMillis = millis();
+  if(fadeLevel == 0)
     return true;
-
+  
   // get a fade level between 0 and 255
-  const uint8_t fadeLevel = map(millis() - startTimeMillis, 0, duration, 255, 0);
-  if (lastFadeLevel != fadeLevel)
+  fadeLevel = 255 - fmin(1.0, (currentMillis - startMillis) / (float)duration) * 255;
+
+  // update all values of rgb
+  const uint16_t numPixels = strip.numPixels();  
+  for(uint16_t i = 0; i < numPixels; ++i)
   {
-    lastFadeLevel = fadeLevel;
+    const uint32_t pixelColor = strip.getPixelColor(i);
+    if (pixelColor == 0)
+      continue;
+    
+    // get RGB between 0 and 1
+    const float red = ((pixelColor >> 16) & 255)/255.0;
+    const float green = ((pixelColor >> 8) & 255)/255.0;
+    const float blue = ((pixelColor >> 0) & 255)/255.0;
 
-    // update all values of rgb
-    const uint16_t numPixels = strip.numPixels();  
-    for(uint16_t i = 0; i < numPixels; ++i)
-    {
-      const uint32_t pixelColor = strip.getPixelColor(i);
-      if (pixelColor == 0)
-        continue;
-      
-      // get RGB between 0 and 1
-      const float red = ((pixelColor >> 16) & 255)/255.0;
-      const float green = ((pixelColor >> 8) & 255)/255.0;
-      const float blue = ((pixelColor >> 0) & 255)/255.0;
-
-      const uint16_t hue = utils::rgb2hue(red, green, blue);
-      // diminish fade
-      strip.setPixelColor(i, Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue, 255, lastFadeLevel)));
-    }
-
-    strip.show();
+    const uint16_t hue = utils::rgb2hue(red, green, blue);
+    // diminish fade
+    strip.setPixelColor(i, Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue, 255, fadeLevel)));
   }
+  strip.show();
 
   return false;
 }

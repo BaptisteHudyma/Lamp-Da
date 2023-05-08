@@ -47,17 +47,17 @@ void setup() {
 void loop() {
   using namespace animations;
 
-  static GenerateRainbowColor rainbowColor = GenerateRainbowColor();
-  static GenerateGradientColor gradientColor = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0));
+  static GenerateRainbowColor rainbowColor = GenerateRainbowColor();  // will output a rainbow from start to bottom of the display
+  static GenerateGradientColor gradientColor = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
 
-  /*static bool isFinished = false;
+  static bool isFinished = false;
 
   static bool isFadeFinished = false;
   static GenerateSolidColor color = GenerateSolidColor(utils::get_random_color());
   static bool Switch = false;
   const uint duration = 1000;
 
-  isFinished = Switch ? colorWipeUp(color, duration, isFinished, strip) : colorWipeDown(color, dudurationr, isFinished, strip);
+  /*isFinished = Switch ? colorWipeUp(color, duration, isFinished, strip) : colorWipeDown(color, duration, isFinished, strip);
   //isFadeFinished = fadeOut(duration, isFinished, strip);
   if (isFinished)
   {
@@ -65,9 +65,13 @@ void loop() {
     color = GenerateSolidColor(utils::get_random_complementary_color(color.get_color(), 0.3));
   }*/
 
-  // fill(gradientColor, strip, 0.5);
+  // fill the display with a rainbow color
+  // fill(rainbowColor, strip, 1.0);
 
   // police(1000, false, strip);
 
   // rainbowFade2White(10, 2, strip);
+
+  // ping pong a color for infinity
+  // isFinished = dotPingPong(rainbowColor, duration, isFinished, strip);
 }

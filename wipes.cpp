@@ -28,7 +28,7 @@ bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart
   // convert duration in delay for each segment
   const uint16_t delay = duration / (float)numberOfLedSegments;
 
-  unsigned long currentMillis = millis();
+  const unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= delay and targetIndex < numberOfLedSegments) {
     previousMillis = currentMillis;
 
@@ -62,7 +62,7 @@ bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, 
   // convert duration in delay for each segment
   const unsigned long delay = duration / (float)numberOfLedSegments;
 
-  unsigned long currentMillis = millis();
+  const unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= delay and targetIndex >= 0) {
     previousMillis = currentMillis;
 
@@ -98,7 +98,7 @@ bool colorWipeDown(const Color& color, const uint32_t duration, const bool resta
   const unsigned long delay = duration / (float)numberOfLedSegments;
   const uint32_t c = color.get_color(targetIndex, numberOfLedSegments);
 
-  unsigned long currentMillis = millis();
+  const unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= delay) {
     previousMillis = currentMillis;
 
@@ -140,7 +140,7 @@ bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart
   const unsigned long delay = duration / (float)numberOfLedSegments;
   const uint32_t c = color.get_color(targetIndex, numberOfLedSegments);
 
-  unsigned long currentMillis = millis();
+  const unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= delay) {
     previousMillis = currentMillis;
 
