@@ -25,7 +25,7 @@ void fill(const Color& color, Adafruit_NeoPixel& strip, const float cutOff)
 }
 
 
-bool dotPingPong(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
+bool dotPingPong(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
 {
   static bool isPongMode = false; // true: animation is climbing back the display
 
@@ -33,17 +33,18 @@ bool dotPingPong(const Color& color, const uint32_t duration, const bool restart
   if (restart)
   {
     isPongMode = false;
-    dotWipeUp(color, duration/2, restart, strip);
-    dotWipeDown(color, duration/2, restart, strip);
+    dotWipeUp(color, duration/2, true, strip);
+    dotWipeDown(color, duration/2, true, strip);
+    return false;
   }
 
   if (isPongMode)
   {
-    return dotWipeUp(color, duration/2, false, strip);
+    return dotWipeUp(color, duration/2, false, strip, cutOff);
   }
   else {
     // set pong mode to true when first animation is finished
-    isPongMode = dotWipeDown(color, duration/2, false, strip);
+    isPongMode = dotWipeDown(color, duration/2, false, strip, cutOff);
   }
 
   // finished if the target index is over the led limit
@@ -60,6 +61,7 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
   {
     previousMillis = 0;
     isBluePhase = false;
+    return false;
   }
 
   // convert duration in delay
@@ -107,6 +109,8 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
     // save initial state
     for(uint16_t i = 0; i < LED_COUNT; ++i)
       ledStates[i] = strip.getPixelColor(i);
+    
+    return false;
   }
   // out condition: faded to zero
   if(fadeLevel == 255)
@@ -148,6 +152,8 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Ada
     // save initial state
     for(uint16_t i = 0; i < LED_COUNT; ++i)
       ledStates[i] = strip.getPixelColor(i);
+
+    return false;
   }
   // out condition: faded to maximum
   if(fadeLevel == 255)
