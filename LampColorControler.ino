@@ -53,16 +53,16 @@ void loop() {
 
 
   static bool isFadeFinished = false;
-  static uint32_t color = strip.Color(255, 0, 0);
+  static GenerateSolidColor color = GenerateSolidColor(get_random_color());
   static bool Switch = false;
   const uint dur = 1000;
 
   isFinished = Switch ? colorWipeUp(color, dur, isFinished, strip) : colorWipeDown(color, dur, isFinished, strip);
-  //isFadeFinished = fadeOut(333, isFadeFinished, strip);
+  //isFadeFinished = fadeOut(dur, isFinished, strip);
   if (isFinished)
   {
     Switch = !Switch;
-    color = get_random_complementary_color(color, 0.3);
+    color = GenerateSolidColor(get_random_complementary_color(color.get_color(), 0.3));
   }
 
   //fill_gradient(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0), strip);

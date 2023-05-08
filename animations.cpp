@@ -27,7 +27,7 @@ void fill_gradient(const uint32_t colorStart, const uint32_t colorEnd, Adafruit_
 }
 
 
-bool dotPingPong(const uint32_t color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
+bool dotPingPong(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
 {
   static bool isPongMode = false; // true: animation is climbing back the display
 

@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include "constants.h"
+#include "colors.h"
 #include <cstdint>
 
 /**
