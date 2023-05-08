@@ -46,8 +46,11 @@ void loop() {
 
   static GenerateRainbowColor rainbowColor = GenerateRainbowColor();  // will output a rainbow from start to bottom of the display
   static GenerateGradientColor gradientColor = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
-  static GenerateSolidColor color = GenerateSolidColor(utils::get_random_color());
-  static GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);
+  static GenerateSolidColor blackColor = GenerateSolidColor(0);
+  static GenerateSolidColor color = GenerateSolidColor(utils::get_random_color());  // random solid color
+  static GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);            // swirl animation
+  static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(15);              // pulse around a rainbow, with a certain color division
+  
 
   static bool isFinished = true;
   static bool switchMode = true;
@@ -84,7 +87,12 @@ void loop() {
   }*/
 
   // rainbow swirl animation
-  if (rainbowSwirl.update())
-    fill(rainbowSwirl, strip);
+  // if (rainbowSwirl.update()) (rainbowSwirl, strip);
 
+  isFinished = switchMode ? colorWipeUp(rainbowPulse, 1000/5, isFinished, strip) : colorWipeDown(blackColor, 50, isFinished, strip, 0.7);
+  if (isFinished)
+  {
+    rainbowPulse.update();
+    switchMode = !switchMode;
+  }
 }

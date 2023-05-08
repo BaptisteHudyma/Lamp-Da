@@ -95,7 +95,7 @@ class GenerateRainbowSwirl : public DynamicColor
 {
 public:
     GenerateRainbowSwirl(const uint32_t period)
-    : _increment(MAX_UINT16_T / (period / updatePeriod)), _firstPixelHue(0)
+    : _increment(UINT16_MAX / (period / updatePeriod)), _firstPixelHue(0)
     {}
 
     uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override;
@@ -112,6 +112,34 @@ private:
 
     uint32_t _increment;
     uint16_t _firstPixelHue;
+};
+
+
+/**
+ * \brief Generate a rainbow color that loop around the display
+ * \param[in] period The period of the animation
+ */
+class GenerateRainbowPulse : public DynamicColor
+{
+public:
+    GenerateRainbowPulse(const uint8_t colorDivisions)
+    : _increment(UINT16_MAX / colorDivisions), _currentPixelHue(0)
+    {}
+
+    uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override;
+    
+    void reset() override { _currentPixelHue = 0; };
+
+private:
+    /**
+     * \brief Call when you want the animation to progress
+     */
+    void internal_update(const uint32_t deltaTimeMilli) override {
+        _currentPixelHue += _increment;
+    };
+
+    uint32_t _increment;
+    uint16_t _currentPixelHue;
 };
 
 #endif

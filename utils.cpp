@@ -21,7 +21,7 @@ uint32_t get_complementary_color(const uint32_t color)
     const uint32_t hue = rgb2hue(red, green, blue);
 
     // add a cardan shift to the hue, to opbtain the symetrical color
-    return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue + MAX_UINT16_T/2, 255, 255));
+    return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue + UINT16_MAX/2, 255, 255));
 }
 
 uint32_t get_random_complementary_color(const uint32_t color, const float tolerance)
@@ -33,7 +33,7 @@ uint32_t get_random_complementary_color(const uint32_t color, const float tolera
     const uint32_t hue = rgb2hue(red, green, blue);
 
     // add random offset
-    return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue + MAX_UINT16_T/2 + (rand()%MAX_UINT16_T) * tolerance, 255, 255));
+    return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue + UINT16_MAX/2 + (rand()%UINT16_MAX) * tolerance, 255, 255));
 }
 
 
@@ -75,13 +75,13 @@ uint16_t rgb2hue(const float r, const float g, const float b)
         return 0;
     // if cmax equal r then compute h
     else if (cmax == r)
-        return fmod(60.0 * ((g - b) / diff) + 360, 360.0) / 360.0 * MAX_UINT16_T;
+        return fmod(60.0 * ((g - b) / diff) + 360, 360.0) / 360.0 * UINT16_MAX;
     // if cmax equal g then compute h
     else if (cmax == g)
-        return fmod(60.0 * ((b - r) / diff) + 120, 360.0) / 360.0 * MAX_UINT16_T;
+        return fmod(60.0 * ((b - r) / diff) + 120, 360.0) / 360.0 * UINT16_MAX;
     // if cmax equal b then compute h
     else if (cmax == b)
-        return fmod(60.0 * ((r - g) / diff) + 240, 360.0) / 360.0 * MAX_UINT16_T;
+        return fmod(60.0 * ((r - g) / diff) + 240, 360.0) / 360.0 * UINT16_MAX;
 
   return 0;
 }

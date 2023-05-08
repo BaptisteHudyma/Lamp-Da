@@ -12,7 +12,7 @@ uint32_t GenerateSolidColor::get_color(const uint16_t index, const uint16_t maxI
 
 uint32_t GenerateRainbowColor::get_color(const uint16_t index, const uint16_t maxIndex) const
 {
-    const uint16_t hue = map(index, 0, maxIndex, 0, MAX_UINT16_T);
+    const uint16_t hue = map(index, 0, maxIndex, 0, UINT16_MAX);
     return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue));
 }
 
@@ -23,8 +23,11 @@ uint32_t GenerateGradientColor::get_color(const uint16_t index, const uint16_t m
 
 uint32_t GenerateRainbowSwirl::get_color(const uint16_t index, const uint16_t maxIndex) const
 {
-    uint32_t pixelHue = _firstPixelHue + (index * MAX_UINT16_T / maxIndex);
+    uint32_t pixelHue = _firstPixelHue + (index * UINT16_MAX / maxIndex);
     return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(pixelHue));
 }
 
-
+uint32_t GenerateRainbowPulse::get_color(const uint16_t index, const uint16_t maxIndex) const
+{
+    return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(_currentPixelHue));
+}

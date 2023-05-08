@@ -9,7 +9,7 @@ namespace animations
 
 bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
 {
-  static uint16_t targetIndex = MAX_UINT16_T;
+  static uint16_t targetIndex = UINT16_MAX;
   static unsigned long previousMillis = 0;
 
   // reset condition
@@ -42,7 +42,7 @@ bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart
 
 bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
 {
-  static uint16_t targetIndex = MAX_UINT16_T;
+  static uint16_t targetIndex = UINT16_MAX;
   static unsigned long previousMillis = 0;
 
   // reset condition
@@ -54,7 +54,7 @@ bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, 
   }
 
   // finished if the target index is over the led limit
-  if (targetIndex == MAX_UINT16_T or targetIndex < floor((1.0 - cutOff) * LED_COUNT))
+  if (targetIndex == UINT16_MAX or targetIndex < floor((1.0 - cutOff) * LED_COUNT))
     return true;
 
   // convert duration in delay for each segment
@@ -70,12 +70,12 @@ bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, 
     strip.show();  //  Update strip to match
   }
 
-  return targetIndex == MAX_UINT16_T or targetIndex < floor((1.0 - cutOff) * LED_COUNT);
+  return targetIndex == UINT16_MAX or targetIndex < floor((1.0 - cutOff) * LED_COUNT);
 }
 
 bool colorWipeDown(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
 {
-  static uint16_t targetIndex = MAX_UINT16_T;
+  static uint16_t targetIndex = UINT16_MAX;
   static unsigned long previousMillis = 0;
   static uint32_t ledStates[LED_COUNT];
   static uint8_t fadeLevel = 0;
@@ -129,7 +129,7 @@ bool colorWipeDown(const Color& color, const uint32_t duration, const bool resta
 bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
 {
   static uint32_t ledStates[LED_COUNT];
-  static uint16_t targetIndex = MAX_UINT16_T;
+  static uint16_t targetIndex = UINT16_MAX;
   static unsigned long previousMillis = 0;
   static uint8_t fadeLevel = 0;
 
@@ -149,7 +149,7 @@ bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart
 
   const unsigned long currentMillis = millis();
   // finished if the target index is over the led limit
-  if (targetIndex == MAX_UINT16_T or targetIndex < floor((1.0 - cutOff) * LED_COUNT))
+  if (targetIndex == UINT16_MAX or targetIndex < floor((1.0 - cutOff) * LED_COUNT))
     return true;
 
   // convert duration in delay for each segment
@@ -176,7 +176,7 @@ bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart
     }
   }
 
-  return targetIndex == MAX_UINT16_T or targetIndex < floor((1.0 - cutOff) * LED_COUNT);
+  return targetIndex == UINT16_MAX or targetIndex < floor((1.0 - cutOff) * LED_COUNT);
 }
 
 };
