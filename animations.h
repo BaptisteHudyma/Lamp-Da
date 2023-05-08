@@ -9,14 +9,12 @@ namespace animations
 
 
 /**
- * \brief Fill the display with a gradient from colorStart to colorEnd
- * \param[in] colorStart The color thta we start with
- * \param[in] colorEnd The color that we end with
+ * \brief Fill the display with a color, with an optional cutoff value
+ * \param[in] color class that returns a color to display
  * \param[in, out] strip The led strip to control
- * \param[in] fillup between 0 and 1, how much this gradient will fill the display
  * \param[in] cutOff between 0 and 1, how much this gradient will fill the display before suddently cutting of
  */
-void fill_gradient(const uint32_t colorStart, const uint32_t colorEnd, Adafruit_NeoPixel& strip, const float fillup=1, const float cutOff=1);
+void fill(const Color& color, Adafruit_NeoPixel& strip, const float cutOff=1);
 
 
 /**

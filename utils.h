@@ -5,6 +5,8 @@
 #include "colors.h"
 #include <cstdint>
 
+namespace utils {
+
 /**
  * \brief Compute a random color
  */
@@ -27,8 +29,8 @@ uint32_t get_random_complementary_color(const uint32_t color, const float tolera
 
 /**
  * \brief Return the color gradient between colorStart to colorEnd
- * \param[in] colorStart
- * \param[in] colorEnd
+ * \param[in] colorStart Start color of the gradient
+ * \param[in] colorEnd End color of the gradient
  * \param[in] level between 0 and 1, the gradient between the two colors
  */
 uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const float level);
@@ -43,5 +45,6 @@ uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const 
 uint16_t rgb2hue(const float r, const float g, const float b);
 uint16_t rgb2hue(const uint32_t color);
 
+};
 
 #endif

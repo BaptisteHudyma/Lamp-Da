@@ -10,18 +10,16 @@
 namespace animations
 {
 
-void fill_gradient(const uint32_t colorStart, const uint32_t colorEnd, Adafruit_NeoPixel& strip, const float fillup, const float cutOff)
+void fill(const Color& color, Adafruit_NeoPixel& strip, const float cutOff)
 {
   const uint16_t numberOfLedSegments = strip.numPixels();
-  const uint16_t maxIndex = min(max(fillup * numberOfLedSegments, 1), numberOfLedSegments);
   const uint16_t maxCutOff = min(max(cutOff * numberOfLedSegments, 1), numberOfLedSegments);
-  for(uint16_t i = 0; i < maxIndex; ++i)
+  for(uint16_t i = 0; i < numberOfLedSegments; ++i)
   {
     if (i >= maxCutOff)
       break;
     
-    const float progress = i / (float)maxIndex;
-    strip.setPixelColor(i, get_gradient(colorStart, colorEnd, progress));
+    strip.setPixelColor(i, color.get_color(i, numberOfLedSegments));
   }
   strip.show();
 }
@@ -132,7 +130,7 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
       const float green = ((pixelColor >> 8) & 255)/255.0;
       const float blue = ((pixelColor >> 0) & 255)/255.0;
 
-      const uint16_t hue = rgb2hue(red, green, blue);
+      const uint16_t hue = utils::rgb2hue(red, green, blue);
       // diminish fade
       strip.setPixelColor(i, Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue, 255, lastFadeLevel)));
     }

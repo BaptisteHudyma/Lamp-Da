@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+namespace utils {
+
 uint32_t get_random_color()
 {
     return (rand()%255) << 16 | (rand()%255) << 8 | (rand()%255);
@@ -83,3 +85,5 @@ uint16_t rgb2hue(const float r, const float g, const float b)
 
   return 0;
 }
+
+};

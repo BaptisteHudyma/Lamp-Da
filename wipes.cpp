@@ -33,7 +33,7 @@ bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart
     previousMillis = currentMillis;
 
     strip.clear();
-    strip.setPixelColor(targetIndex, color.get_color(targetIndex, numberOfLedSegments, 0));  //  Set pixel's color (in RAM)
+    strip.setPixelColor(targetIndex, color.get_color(targetIndex, numberOfLedSegments));  //  Set pixel's color (in RAM)
     targetIndex += 1;
     strip.show();  //  Update strip to match
   }
@@ -67,14 +67,15 @@ bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, 
     previousMillis = currentMillis;
 
     strip.clear();
-    strip.setPixelColor(targetIndex--, color.get_color(targetIndex, numberOfLedSegments, 0));  //  Set pixel's color (in RAM)
+    strip.setPixelColor(targetIndex--, color.get_color(targetIndex, numberOfLedSegments));  //  Set pixel's color (in RAM)
     strip.show();  //  Update strip to match
   }
 
   return false;
 }
 
-bool colorWipeDown(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip) {
+bool colorWipeDown(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
+{
   static uint16_t targetIndex = 0;
   static unsigned long previousMillis = 0;
   static uint32_t nextColor = 0; 
@@ -95,7 +96,7 @@ bool colorWipeDown(const Color& color, const uint32_t duration, const bool resta
 
   // convert duration in delay for each segment
   const unsigned long delay = duration / (float)numberOfLedSegments;
-  const uint32_t c = color.get_color(targetIndex, numberOfLedSegments, 0);
+  const uint32_t c = color.get_color(targetIndex, numberOfLedSegments);
 
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= delay) {
@@ -108,14 +109,15 @@ bool colorWipeDown(const Color& color, const uint32_t duration, const bool resta
   {
     // update the value of the last segement with a gradient
     const float coeff = (currentMillis - previousMillis) / (float)delay;
-    strip.setPixelColor(targetIndex, get_gradient(nextColor, c, coeff));
+    strip.setPixelColor(targetIndex, utils::get_gradient(nextColor, c, coeff));
   }
 
   strip.show();  //  Update strip to match
   return false;
 }
 
-bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip) {
+bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
+{
   const uint16_t numberOfLedSegments = strip.numPixels();
   static uint16_t targetIndex = numberOfLedSegments - 1;
   static unsigned long previousMillis = 0;
@@ -136,7 +138,7 @@ bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart
 
   // convert duration in delay for each segment
   const unsigned long delay = duration / (float)numberOfLedSegments;
-  const uint32_t c = color.get_color(targetIndex, numberOfLedSegments, 0);
+  const uint32_t c = color.get_color(targetIndex, numberOfLedSegments);
 
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= delay) {
@@ -149,7 +151,7 @@ bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart
   {
     // update the value of the last segement with a gradient
     const float coeff = (currentMillis - previousMillis) / (float)delay;
-    strip.setPixelColor(targetIndex, get_gradient(nextColor, c, coeff));
+    strip.setPixelColor(targetIndex, utils::get_gradient(nextColor, c, coeff));
   }
 
   strip.show();  //  Update strip to match

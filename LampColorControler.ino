@@ -47,27 +47,27 @@ void setup() {
 void loop() {
   using namespace animations;
 
-  static bool isFinished = false;
-    
-  //isFinished = dotWipeDownRainbow(1000, isFinished, strip);
+  static GenerateRainbowColor rainbowColor = GenerateRainbowColor();
+  static GenerateGradientColor gradientColor = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0));
 
+  /*static bool isFinished = false;
 
   static bool isFadeFinished = false;
-  static GenerateSolidColor color = GenerateSolidColor(get_random_color());
+  static GenerateSolidColor color = GenerateSolidColor(utils::get_random_color());
   static bool Switch = false;
-  const uint dur = 1000;
+  const uint duration = 1000;
 
-  isFinished = Switch ? colorWipeUp(color, dur, isFinished, strip) : colorWipeDown(color, dur, isFinished, strip);
-  //isFadeFinished = fadeOut(dur, isFinished, strip);
+  isFinished = Switch ? colorWipeUp(color, duration, isFinished, strip) : colorWipeDown(color, dudurationr, isFinished, strip);
+  //isFadeFinished = fadeOut(duration, isFinished, strip);
   if (isFinished)
   {
     Switch = !Switch;
-    color = GenerateSolidColor(get_random_complementary_color(color.get_color(), 0.3));
-  }
+    color = GenerateSolidColor(utils::get_random_complementary_color(color.get_color(), 0.3));
+  }*/
 
-  //fill_gradient(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0), strip);
+  // fill(gradientColor, strip, 0.5);
 
-  //police(1000, false, strip);
+  // police(1000, false, strip);
 
-  //rainbowFade2White(10, 2, strip);
+  // rainbowFade2White(10, 2, strip);
 }
