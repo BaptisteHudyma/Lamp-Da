@@ -51,7 +51,8 @@ void loop() {
   static bool isFinished = false;
   const uint duration = 1000;
 
-  isFinished = fadeIn(color, duration, isFinished, strip);
+  colorWipeDown(color, duration, isFinished, strip, 0.5);
+  isFinished = colorWipeUp(color, duration, isFinished, strip, 0.5);
   if (isFinished)
   {
     color = GenerateSolidColor(utils::get_random_complementary_color(color.get_color(), 0.3));

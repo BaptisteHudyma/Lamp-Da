@@ -33,9 +33,10 @@ bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, 
  * \param[in] duration The duration of the animation, in milliseconds
  * \param[in] restart If true, the animation will restart
  * \param[in, out] strip The led strip to control
+ * \param[in] cutOff between 0 and 1, how much this gradient will fill the display before suddently cutting of
  * \return True if the animation is finished
  */
-bool colorWipeDown(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip);
+bool colorWipeDown(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff=1);
 
 /**
  * \brief Progressivly fill the display with a color, during a certain duration. From bottom to top
@@ -43,9 +44,10 @@ bool colorWipeDown(const Color& color, const uint32_t duration, const bool resta
  * \param[in] duration The duration of the animation, in milliseconds
  * \param[in] restart If true, the animation will restart
  * \param[in, out] strip The led strip to control
+ * \param[in] cutOff between 0 and 1, how much this gradient will fill the display before suddently cutting of
  * \return True if the animation is finished
  */
-bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip);
+bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff=1);
 
 };
 

@@ -13,14 +13,13 @@ namespace animations
 
 void fill(const Color& color, Adafruit_NeoPixel& strip, const float cutOff)
 {
-  const uint16_t numberOfLedSegments = strip.numPixels();
-  const uint16_t maxCutOff = min(max(cutOff * numberOfLedSegments, 1), numberOfLedSegments);
-  for(uint16_t i = 0; i < numberOfLedSegments; ++i)
+  const uint16_t maxCutOff = min(max(cutOff * LED_COUNT, 1), LED_COUNT);
+  for(uint16_t i = 0; i < LED_COUNT; ++i)
   {
     if (i >= maxCutOff)
       break;
     
-    strip.setPixelColor(i, color.get_color(i, numberOfLedSegments));
+    strip.setPixelColor(i, color.get_color(i, LED_COUNT));
   }
   strip.show();
 }
@@ -69,21 +68,19 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= delay) {
     previousMillis = currentMillis;
-
-    const uint16_t numberOfLedSegments = strip.numPixels();
   
     if (isBluePhase)
     {
       strip.clear();
 
       // blue lights
-      strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), 0, numberOfLedSegments / 2+1);  // Set blue
+      strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), 0, LED_COUNT / 2+1);  // Set blue
       strip.show();  // Update strip with new contents
       isBluePhase = false;
     }
     else {
       strip.clear();
-      strip.fill(Adafruit_NeoPixel::Color(255, 0, 0), numberOfLedSegments / 2, numberOfLedSegments);  // Set red
+      strip.fill(Adafruit_NeoPixel::Color(255, 0, 0), LED_COUNT / 2, LED_COUNT);  // Set red
       strip.show();  // Update strip with new contents
 
       isBluePhase = true;
@@ -108,8 +105,7 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
     startMillis = millis();
 
     // save initial state
-    const uint16_t numPixels = strip.numPixels();
-    for(uint16_t i = 0; i < numPixels; ++i)
+    for(uint16_t i = 0; i < LED_COUNT; ++i)
       ledStates[i] = strip.getPixelColor(i);
   }
   // out condition: faded to zero
@@ -123,8 +119,7 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
     fadeLevel = newFadeLevel;
   
     // update all values of rgb
-    const uint16_t numPixels = strip.numPixels();  
-    for(uint16_t i = 0; i < numPixels; ++i)
+    for(uint16_t i = 0; i < LED_COUNT; ++i)
     {
       const uint32_t startColor = ledStates[i];
       // diminish fade
@@ -151,8 +146,7 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Ada
     startMillis = millis();
 
     // save initial state
-    const uint16_t numPixels = strip.numPixels();
-    for(uint16_t i = 0; i < numPixels; ++i)
+    for(uint16_t i = 0; i < LED_COUNT; ++i)
       ledStates[i] = strip.getPixelColor(i);
   }
   // out condition: faded to maximum
@@ -166,12 +160,11 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Ada
     fadeLevel = newFadeLevel;
 
     // update all values of rgb
-    const uint16_t numPixels = strip.numPixels();
-    for(uint16_t i = 0; i < numPixels; ++i)
+    for(uint16_t i = 0; i < LED_COUNT; ++i)
     {
       const uint32_t pixelColor = ledStates[i];
       // fade in
-      strip.setPixelColor(i, utils::get_gradient(pixelColor, color.get_color(i, numPixels), fadeLevel/255.0));
+      strip.setPixelColor(i, utils::get_gradient(pixelColor, color.get_color(i, LED_COUNT), fadeLevel/255.0));
     }
     strip.show();
 

@@ -11,7 +11,6 @@ bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart
 {
   static uint16_t targetIndex = 0;
   static unsigned long previousMillis = 0;
-  const uint16_t numberOfLedSegments = strip.numPixels();
 
   // reset condition
   if (restart)
@@ -21,62 +20,60 @@ bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart
   }
 
   // finished if the target index is over the led limit
-  if (targetIndex >= numberOfLedSegments)
+  if (targetIndex >= LED_COUNT)
     return true;
 
   // convert duration in delay for each segment
-  const uint16_t delay = duration / (float)numberOfLedSegments;
+  const uint16_t delay = duration / (float)LED_COUNT;
 
   const unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= delay and targetIndex < numberOfLedSegments) {
+  if (currentMillis - previousMillis >= delay and targetIndex < LED_COUNT) {
     previousMillis = currentMillis;
 
     strip.clear();
-    strip.setPixelColor(targetIndex, color.get_color(targetIndex, numberOfLedSegments));  //  Set pixel's color (in RAM)
+    strip.setPixelColor(targetIndex, color.get_color(targetIndex, LED_COUNT));  //  Set pixel's color (in RAM)
     targetIndex += 1;
     strip.show();  //  Update strip to match
   }
 
-  return targetIndex >= numberOfLedSegments;
+  return targetIndex >= LED_COUNT;
 }
 
 bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
 {
-  const uint16_t numberOfLedSegments = strip.numPixels();
-  static uint16_t targetIndex = numberOfLedSegments - 1;
+  static uint16_t targetIndex = LED_COUNT - 1;
   static unsigned long previousMillis = 0;
 
   // reset condition
   if (restart)
   {
-    targetIndex = numberOfLedSegments - 1;
+    targetIndex = LED_COUNT - 1;
     previousMillis = 0;
   }
 
   // finished if the target index is over the led limit
-  if (targetIndex >= numberOfLedSegments)
+  if (targetIndex == MAX_UINT16_T)
     return true;
 
   // convert duration in delay for each segment
-  const unsigned long delay = duration / (float)numberOfLedSegments;
+  const unsigned long delay = duration / (float)LED_COUNT;
 
   const unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= delay and targetIndex >= 0) {
     previousMillis = currentMillis;
 
     strip.clear();
-    strip.setPixelColor(targetIndex--, color.get_color(targetIndex, numberOfLedSegments));  //  Set pixel's color (in RAM)
+    strip.setPixelColor(targetIndex--, color.get_color(targetIndex, LED_COUNT));  //  Set pixel's color (in RAM)
     strip.show();  //  Update strip to match
   }
 
-  return targetIndex >= numberOfLedSegments;
+  return targetIndex == MAX_UINT16_T;
 }
 
-bool colorWipeDown(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
+bool colorWipeDown(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
 {
   static uint16_t targetIndex = 0;
   static unsigned long previousMillis = 0;
-  const uint16_t numberOfLedSegments = strip.numPixels();
   static uint32_t ledStates[LED_COUNT];
   static uint8_t fadeLevel = 0;
 
@@ -88,17 +85,17 @@ bool colorWipeDown(const Color& color, const uint32_t duration, const bool resta
     fadeLevel = 0;
 
     // save initial state
-    for(uint16_t i = 0; i < numberOfLedSegments; ++i)
+    for(uint16_t i = 0; i < LED_COUNT; ++i)
       ledStates[i] = strip.getPixelColor(i);
   }
 
   // finished if the target index is over the led limit
-  if (targetIndex >= numberOfLedSegments)
+  if (targetIndex >= ceil(LED_COUNT * cutOff))
     return true;
 
   // convert duration in delay for each segment
-  const unsigned long delay = duration / (float)numberOfLedSegments;
-  const uint32_t c = color.get_color(targetIndex, numberOfLedSegments);
+  const unsigned long delay = duration / (float)LED_COUNT;
+  const uint32_t c = color.get_color(targetIndex, LED_COUNT);
 
   const unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= delay) {
@@ -121,37 +118,35 @@ bool colorWipeDown(const Color& color, const uint32_t duration, const bool resta
     }
   }
 
-  return targetIndex >= numberOfLedSegments;
+  return targetIndex >= ceil(LED_COUNT * cutOff);
 }
 
-bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
+bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
 {
-  const uint16_t numberOfLedSegments = strip.numPixels();
-  static uint16_t targetIndex = numberOfLedSegments - 1;
-  static unsigned long previousMillis = 0;
   static uint32_t ledStates[LED_COUNT];
+  static uint16_t targetIndex = LED_COUNT - 1;
+  static unsigned long previousMillis = 0;
   static uint8_t fadeLevel = 0;
 
   // reset condition
   if (restart)
   {
-    targetIndex = numberOfLedSegments - 1;
+    targetIndex = LED_COUNT - 1;
     previousMillis = 0;
     fadeLevel = 0;
 
     // save initial state
-    for(uint16_t i = 0; i < numberOfLedSegments; ++i)
+    for(uint16_t i = 0; i < LED_COUNT; ++i)
       ledStates[i] = strip.getPixelColor(i);
   }
 
   // finished if the target index is over the led limit
-  if (targetIndex >= numberOfLedSegments)
+  if (targetIndex == MAX_UINT16_T or targetIndex < floor(cutOff * LED_COUNT))
     return true;
 
   // convert duration in delay for each segment
-  // convert duration in delay for each segment
-  const unsigned long delay = duration / (float)numberOfLedSegments;
-  const uint32_t c = color.get_color(targetIndex, numberOfLedSegments);
+  const unsigned long delay = duration / (float)LED_COUNT;
+  const uint32_t c = color.get_color(targetIndex, LED_COUNT);
 
   const unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= delay) {
@@ -174,7 +169,7 @@ bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart
     }
   }
 
-  return targetIndex >= numberOfLedSegments;
+  return targetIndex == MAX_UINT16_T or targetIndex < floor(cutOff * LED_COUNT);
 }
 
 };
