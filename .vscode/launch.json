@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/baptisteh/Arduino/LampColorControler",
-      "program": "/home/baptisteh/Arduino/LampColorControler/build/Debug/outDebug",
+      "cwd": "/home/baptisteh/.arduino/LampColorControler",
+      "program": "/home/baptisteh/.arduino/LampColorControler/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

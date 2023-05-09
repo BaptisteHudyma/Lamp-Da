@@ -1,14 +1,14 @@
-// NeoPixel test program showing use of the WHITE channel for RGBW
-// pixels only (won't look correct on regular RGB NeoPixel strips).
-
 #include <Adafruit_NeoPixel.h>
-#ifdef __AVR__
-#include <avr/power.h>  // Required for 16 MHz Adafruit Trinket
-#endif
+#include "MicroPhone.h"
 
 #include "animations.h"
 #include "wipes.h"
 #include "utils.h"
+
+
+#ifdef __AVR__
+#include <avr/power.h>  // Required for 16 MHz Adafruit Trinket
+#endif
 
 // Which pin on the Arduino is connected to the NeoPixels?
 // On a Trinket or Gemma we suggest changing this to 1:
@@ -17,18 +17,15 @@
 // NeoPixel brightness, 0 (min) to 255 (max)
 #define BRIGHTNESS 50  // max: 255
 
+using namespace animations;
+
 // Declare our NeoPixel strip object:
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_RGB);
-// Argument 1 = Number of pixels in NeoPixel strip
-// Argument 2 = Arduino pin number (most are valid)
-// Argument 3 = Pixel type flags, add together as needed:
-//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
-//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
-//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
-//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
-//   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 
-void setup() {
+void setup()
+{
+  Serial.begin(9600);
+
   // These lines are specifically to support the Adafruit Trinket 5V 16 MHz.
   // Any other board, you can remove this part (but no harm leaving it):
 #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
@@ -39,23 +36,50 @@ void setup() {
   strip.begin();  // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();   // Turn OFF all pixels ASAP
   strip.setBrightness(BRIGHTNESS);
+
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  init_microphone(16000);
 }
 
-void loop() {
-  using namespace animations;
 
+void rainbow_pulse_beat()
+{
+  static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(8);  // pulse around a rainbow, with a certain color division
+  static bool isAnimationFinished = true;
+
+  // reset the pulse for each beat
+  const bool beatDetected = get_beat_probability() > 0.5;
+  
+  // animation is finished and a beat is detected
+  if(beatDetected)
+  {
+    fill(rainbowPulse, strip);
+    rainbowPulse.update();
+
+    // restart animation
+    /*strip.clear();
+    strip.show();
+
+    // animation is finished, update the color 
+    rainbowPulse.update();
+    isAnimationFinished = colorWipeUp(rainbowPulse, 1000/5, true, strip);*/
+  }
+
+  //isAnimationFinished = colorWipeUp(rainbowPulse, 1000/5, false, strip);
+}
+
+
+void loop() {
   static GenerateRainbowColor rainbowColor = GenerateRainbowColor();  // will output a rainbow from start to bottom of the display
   static GenerateGradientColor gradientColor = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
   static GenerateSolidColor blackColor = GenerateSolidColor(0);
   static GenerateSolidColor color = GenerateSolidColor(utils::get_random_color());  // random solid color
-  static GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);            // swirl animation
-  static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(15);              // pulse around a rainbow, with a certain color division
-  
+  static GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);            // swirl animation  
 
   static bool isFinished = true;
   static bool switchMode = true;
   const uint duration = 1000;
-  
   
   /*colorWipeDown(color, duration, isFinished, strip, 0.5);
   isFinished = colorWipeUp(color, duration, isFinished, strip, 0.5);
@@ -89,10 +113,5 @@ void loop() {
   // rainbow swirl animation
   // if (rainbowSwirl.update()) (rainbowSwirl, strip);
 
-  isFinished = switchMode ? colorWipeUp(rainbowPulse, 1000/5, isFinished, strip) : colorWipeDown(blackColor, 50, isFinished, strip, 0.7);
-  if (isFinished)
-  {
-    rainbowPulse.update();
-    switchMode = !switchMode;
-  }
+  rainbow_pulse_beat();
 }
