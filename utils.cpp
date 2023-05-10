@@ -33,7 +33,10 @@ uint32_t get_random_complementary_color(const uint32_t color, const float tolera
     const uint32_t hue = rgb2hue(red, green, blue);
 
     // add random offset
-    return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(hue + UINT16_MAX/2 + (rand()%UINT16_MAX) * tolerance, 255, 255));
+    const uint16_t complementaryHue = hue + UINT16_MAX/2.0;
+    const float comp = (float)rand()/(float)(RAND_MAX/2) - 1.0; // -1 to 1
+    const float offset = comp * INT16_MAX * tolerance;
+    return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(complementaryHue + offset, 255, 255));
 }
 
 

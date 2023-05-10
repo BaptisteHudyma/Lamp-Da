@@ -66,20 +66,17 @@ bool pulse_beat_wipe(const Color& color)
 }
 
 /**
- * \brief Vue meter: should be reactive
+ * \brief Vu meter: should be reactive
  */
-void vue_meter(const Color& vueColor, const float baseLevel = 0.0)
+void vu_meter(const Color& vuColor)
 {
-  // reset the pulse for each beat
-  static const float weight = 0.99;
-  static float weightedVueLevel = 0.0;
-  const float vueLevel = fmin(1.0, fmax(0.0, get_vu_meter_level() + baseLevel));
+  const float decibels = get_sound_level_Db();
+  // convert to 0 - 1
+  const float vuLevel = (decibels + abs(silenceLevelDb)) / highLevelDb;
 
-  weightedVueLevel = weight * weightedVueLevel + (1.0 - weight) * vueLevel;
-
-  // display the gradient 
+  // display the gradient
   strip.clear();
-  fill(vueColor, strip, fmax(weightedVueLevel, vueLevel));
+  fill(vuColor, strip, vuLevel);
 }
 
 void loop() {
@@ -121,9 +118,9 @@ void loop() {
   // if (rainbowSwirl.update()) fill(rainbowSwirl, strip);
 
   // wipe a color pulse around the tube at each beat
-  // if (pulse_beat_wipe(rainbowPulse)) rainbowPulse.update();
+  // if (pulse_beat_wipe(complColor)) complColor.update();
 
-  vue_meter(gradientColor, 0.2);
+  vu_meter(gradientColor);
 
   // isFinished = colorPulse(rainbowColor, 100, 500, isFinished, strip, 0.5);
 }

@@ -155,19 +155,21 @@ float get_beat_probability()
     return isBeatDetected;
 }
 
-float get_vu_meter_level()
+float get_sound_level_Db()
 {
     static float lastValue = 0;
 
     if(!samplesRead)
         return lastValue;
 
-    float average = 0.0;
+    float sumOfAll = 0.0;
     for (int i = 0; i < samplesRead; i++)
     {
-        average += abs(_sampleBuffer[i]) / (float)2048;
+        sumOfAll += powf(_sampleBuffer[i] / (float)1024.0, 2.0);
     }
+    const float average = sumOfAll / (float)samplesRead;
 
-    lastValue = average / (float)samplesRead;
-    return fmax(0.0, fmin(1.0, lastValue));
+    lastValue = 20.0 * log10f(sqrtf(average));
+    // convert to decibels
+    return lastValue;
 }
