@@ -29,6 +29,18 @@ void fill(const Color& color, Adafruit_NeoPixel& strip, const float cutOff=1);
 bool dotPingPong(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff=1);
 
 /**
+ * \brief Do color pulse
+ * \param[in] color class that returns a color to display
+ * \param[in] durationPulseUp The duration of the color fill up animation, in milliseconds
+ * \param[in] durationPulseDown The duration of the pong animation, in milliseconds
+ * \param[in] restart If true, the animation will restart
+ * \param[in, out] strip The led strip to control
+ * \param[in] cutOff between 0 and 1, how much this gradient will fill the display before suddently cutting of
+ * \return True if the animation is finished
+ */
+bool colorPulse(const Color& color, const uint32_t durationPulseUp, const uint32_t durationPulseDown, const bool restart, Adafruit_NeoPixel& strip, const float cutOff=1);
+
+/**
  * \brief Do police light animation
  * \param[in] duration The duration of the animation, in milliseconds
  * \param[in] restart If true, the animation will restart

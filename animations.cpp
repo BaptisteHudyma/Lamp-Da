@@ -13,7 +13,7 @@ namespace animations
 
 void fill(const Color& color, Adafruit_NeoPixel& strip, const float cutOff)
 {
-  const uint16_t maxCutOff = min(max(cutOff * LED_COUNT, 1), LED_COUNT);
+  const uint16_t maxCutOff = fmin(fmax(cutOff * LED_COUNT, 1.0), LED_COUNT);
   for(uint16_t i = 0; i < LED_COUNT; ++i)
   {
     if (i >= maxCutOff)
@@ -45,6 +45,34 @@ bool dotPingPong(const Color& color, const uint32_t duration, const bool restart
   else {
     // set pong mode to true when first animation is finished
     isPongMode = dotWipeDown(color, duration/2, false, strip, cutOff);
+  }
+
+  // finished if the target index is over the led limit
+  return false;
+}
+
+bool colorPulse(const Color& color, const uint32_t durationPulseUp, const uint32_t durationPulseDown, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
+{
+  static GenerateSolidColor blackColor = GenerateSolidColor(0);
+  static bool isPongMode = false; // true: animation is climbing back the display
+
+  // reset condition
+  if (restart)
+  {
+    isPongMode = false;
+    colorWipeUp(color, durationPulseUp, true, strip);
+    colorWipeDown(color, durationPulseDown, true, strip);
+    return false;
+  }
+
+  if (isPongMode)
+  {
+    return colorWipeUp(color, durationPulseUp, false, strip, cutOff);
+  }
+  else
+  {
+    // set pong mode to true when first animation is finished
+    isPongMode = colorWipeDown(blackColor, durationPulseDown * cutOff, false, strip, 1.0);
   }
 
   // finished if the target index is over the led limit

@@ -53,28 +53,33 @@ float beatFilter(float sample) {
  */
 bool beat_judge(float val){
     static float history[10];
-  int i = 0;
-  float avg =0;
+    int i = 0;
+    float avg =0;
 
-  //compute average of last 9 samples (hopefully)
-  for(i = 9; i >= 0; i--){
-    avg += history[i];
-  }
-  avg = avg/9;
+    //compute average of last 9 samples (hopefully)
+    for(i = 9; i >= 0; i--){
+        avg += history[i];
+    }
+    avg = avg/9;
 
 
-  //write history (heh, see what I did there? no? nevermind. Just pushing newest value on FIFO)
-  for(i = 0; i< 8; i++){
-    history[i] = history[i+1];
-  }
-  history[9] = val;
+    //write history (heh, see what I did there? no? nevermind. Just pushing newest value on FIFO)
+    for(i = 0; i< 8; i++){
+        history[i] = history[i+1];
+    }
+    history[9] = val;
     //basically we got fast rise in low freq volume
     //"magic" (adapt this garbage to something that works better, if possible)
     return (avg * 145) < (val - 45);
 }
 
+uint32_t lastMeasurmentMicros;
+uint32_t lastMeasurmentDurationMicros;
 void on_PDM_data()
 {
+    const uint32_t newTime = micros();
+    lastMeasurmentDurationMicros = newTime - lastMeasurmentMicros;
+    lastMeasurmentMicros = newTime;
     // query the number of bytes available
     const int bytesAvailable = PDM.available();
 
@@ -108,39 +113,62 @@ void init_microphone(const uint32_t sampleRate)
   }
 }
 
-uint32_t lastReadMicros;
+uint32_t lastUpdateMicros;
 float get_beat_probability()
 {
-    const uint32_t newReadMicros = micros();
-    if (newReadMicros - lastReadMicros < 200 or !samplesRead)
-        return 0.0; // update at least every 200 micro seconds
-    lastReadMicros = newReadMicros;
+    static const uint32_t updatePeriod = 4000;//1.0/25.0 * 1e6; // 25Hz in micro seconds
+    if(!samplesRead)
+        return 0.0;
 
     bool isBeatDetected = false;
 
-    static uint32_t sampleCounter = 0;
+    const uint32_t newUpdateMicros = micros();
+    // average: 64 uS by sample
+    const uint32_t measurmentDurationMicros = lastMeasurmentDurationMicros / (float)samplesRead; 
+
     for (int i = 0; i < samplesRead; i++) {
-        sampleCounter++;
-        const float sample = _sampleBuffer[i] / 2048.0 * 312.0;
+        const float sample = _sampleBuffer[i] / 2048.0 * 512.0;
 
         // Filter only bass component
         const float value = abs(bassFilter(sample));
-    
+
+        static float passHaut = 0;
         // Take signal amplitude and filter (basically get the envelope of the low freq signals)
-        const float envelope = envelopeFilter(value);
+        const float envelope = passHaut * 0.99 + (1.0 - 0.99) * envelopeFilter(value);
+        passHaut = envelope;
     
-        // Every 200 samples (25hz) filter the envelope 
-        if(sampleCounter >= 200) {
+        // Every 25hz filter the envelope
+        const uint32_t projectedMeasurmentTime = lastMeasurmentMicros + i * measurmentDurationMicros;
+        if(projectedMeasurmentTime - lastUpdateMicros >= updatePeriod) {
+            lastUpdateMicros = projectedMeasurmentTime;
             // Filter out repeating bass sounds 100 - 180bpm
             const float beat = beatFilter(envelope);
+            
+            Serial.print(envelope);
+            Serial.print(",");
+            Serial.println(beat);
             isBeatDetected = isBeatDetected | beat_judge(beat);
-
-            //Reset sample counter
-            sampleCounter = 0;
         }
     }
+
     samplesRead = 0;
     return isBeatDetected;
+}
 
-    return 0.0;
+float get_vu_meter_level()
+{
+    static const float weight = 0.9;
+    static float weightedAverage = 0;
+
+    if(!samplesRead)
+        return weightedAverage;
+
+    float average = 0.0;
+    for (int i = 0; i < samplesRead; i++)
+    {
+        average += abs(_sampleBuffer[i]) / (float)2048;
+    }
+
+    weightedAverage = weightedAverage * weight + fmax(0.0, fmin(1.0, average / (float)samplesRead)) * (1.0 - weight);
+    return fmax(0.0, fmin(1.0, weightedAverage));
 }

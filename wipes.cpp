@@ -21,7 +21,8 @@ bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart
   }
 
   // finished if the target index is over the led limit
-  if (targetIndex >= ceil(LED_COUNT * cutOff))
+  const uint16_t endIndex = ceil(LED_COUNT * cutOff);
+  if (targetIndex >= endIndex)
     return true;
 
   // convert duration in delay for each segment
@@ -37,7 +38,7 @@ bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart
     strip.show();  //  Update strip to match
   }
 
-  return targetIndex >= ceil(LED_COUNT * cutOff);
+  return targetIndex >= endIndex;
 }
 
 bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
@@ -54,7 +55,8 @@ bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, 
   }
 
   // finished if the target index is over the led limit
-  if (targetIndex == UINT16_MAX or targetIndex < floor((1.0 - cutOff) * LED_COUNT))
+  const uint16_t endIndex = floor((1.0 - cutOff) * LED_COUNT);
+  if (targetIndex == UINT16_MAX or targetIndex < endIndex)
     return true;
 
   // convert duration in delay for each segment
@@ -70,7 +72,7 @@ bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, 
     strip.show();  //  Update strip to match
   }
 
-  return targetIndex == UINT16_MAX or targetIndex < floor((1.0 - cutOff) * LED_COUNT);
+  return targetIndex == UINT16_MAX or targetIndex < endIndex;
 }
 
 bool colorWipeDown(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
@@ -95,7 +97,8 @@ bool colorWipeDown(const Color& color, const uint32_t duration, const bool resta
   }
 
   // finished if the target index is over the led limit
-  if (targetIndex >= ceil(LED_COUNT * cutOff))
+  const uint16_t endIndex = ceil(LED_COUNT * cutOff);
+  if (targetIndex >= endIndex)
     return true;
 
   // convert duration in delay for each segment
@@ -123,7 +126,7 @@ bool colorWipeDown(const Color& color, const uint32_t duration, const bool resta
     }
   }
 
-  return targetIndex >= ceil(LED_COUNT * cutOff);
+  return targetIndex >= endIndex;
 }
 
 bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
@@ -147,15 +150,16 @@ bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart
     return false;
   }
 
-  const unsigned long currentMillis = millis();
   // finished if the target index is over the led limit
-  if (targetIndex == UINT16_MAX or targetIndex < floor((1.0 - cutOff) * LED_COUNT))
+  const uint16_t endIndex = floor((1.0 - cutOff) * LED_COUNT);
+  if (targetIndex == UINT16_MAX or targetIndex < endIndex)
     return true;
 
   // convert duration in delay for each segment
   const unsigned long delay = duration / (float)LED_COUNT;
   const uint32_t c = color.get_color(targetIndex, LED_COUNT);
 
+  const unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= delay) {
     previousMillis = currentMillis;
     fadeLevel = 0;
@@ -176,7 +180,7 @@ bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart
     }
   }
 
-  return targetIndex == UINT16_MAX or targetIndex < floor((1.0 - cutOff) * LED_COUNT);
+  return targetIndex == UINT16_MAX or targetIndex < endIndex;
 }
 
 };

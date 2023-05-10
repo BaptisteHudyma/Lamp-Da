@@ -47,6 +47,7 @@ void rainbow_pulse_beat()
 {
   static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(8);  // pulse around a rainbow, with a certain color division
   static bool isAnimationFinished = true;
+  static uint32_t durationMillis = 200;
 
   // reset the pulse for each beat
   const bool beatDetected = get_beat_probability() > 0.5;
@@ -54,21 +55,29 @@ void rainbow_pulse_beat()
   // animation is finished and a beat is detected
   if(beatDetected)
   {
-    fill(rainbowPulse, strip);
-    rainbowPulse.update();
-
-    // restart animation
-    /*strip.clear();
-    strip.show();
-
     // animation is finished, update the color 
     rainbowPulse.update();
-    isAnimationFinished = colorWipeUp(rainbowPulse, 1000/5, true, strip);*/
+    //fill(rainbowPulse, strip);
+    colorWipeUp(rainbowPulse, 1000/5, true, strip);
+    isAnimationFinished = colorWipeDown(rainbowPulse, 1000/5, true, strip);
   }
 
   //isAnimationFinished = colorWipeUp(rainbowPulse, 1000/5, false, strip);
+  colorWipeDown(rainbowPulse, durationMillis, false, strip, 0.5);
+  isAnimationFinished = colorWipeUp(rainbowPulse, durationMillis, false, strip, 0.5);
 }
 
+void vue_meter()
+{
+  static GenerateGradientColor gradientVue = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0));
+
+  // reset the pulse for each beat
+  const float vueLevel = get_vu_meter_level() + 0.2;
+
+  // display the gradient  
+  strip.clear();
+  fill(gradientVue, strip, vueLevel);
+}
 
 void loop() {
   static GenerateRainbowColor rainbowColor = GenerateRainbowColor();  // will output a rainbow from start to bottom of the display
@@ -113,5 +122,8 @@ void loop() {
   // rainbow swirl animation
   // if (rainbowSwirl.update()) (rainbowSwirl, strip);
 
-  rainbow_pulse_beat();
+  //rainbow_pulse_beat();
+  vue_meter();
+
+  // isFinished = colorPulse(rainbowColor, 100, 500, isFinished, strip, 0.5);
 }
