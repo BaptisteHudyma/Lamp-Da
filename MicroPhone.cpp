@@ -52,25 +52,22 @@ float beatFilter(float sample) {
  * \brief Return true if a beat is detected
  */
 bool beat_judge(float val){
-    static float history[10];
-    int i = 0;
-    float avg =0;
+    static const uint8_t historySize = 32;
+    static float history[historySize];
 
-    //compute average of last 9 samples (hopefully)
-    for(i = 9; i >= 0; i--){
+    //compute average of last samples
+    float avg = 0;
+    for(int i = 0; i < historySize; i++)
         avg += history[i];
-    }
-    avg = avg/9;
+    avg /= (float)historySize;
 
-
-    //write history (heh, see what I did there? no? nevermind. Just pushing newest value on FIFO)
-    for(i = 0; i< 8; i++){
+    // FIFO : shift the values
+    for(int i = 0; i < historySize - 1; i++)
         history[i] = history[i+1];
-    }
-    history[9] = val;
-    //basically we got fast rise in low freq volume
-    //"magic" (adapt this garbage to something that works better, if possible)
-    return (avg * 145) < (val - 45);
+    history[historySize - 1] = val;
+
+    // check that this value is greater than the medium
+    return val > avg + 5;
 }
 
 uint32_t lastMeasurmentMicros;
@@ -116,18 +113,17 @@ void init_microphone(const uint32_t sampleRate)
 uint32_t lastUpdateMicros;
 float get_beat_probability()
 {
-    static const uint32_t updatePeriod = 4000;//1.0/25.0 * 1e6; // 25Hz in micro seconds
+    static const uint32_t updatePeriod = 1.0/250 * 1e6; // 250Hz in micro seconds
     if(!samplesRead)
         return 0.0;
 
     bool isBeatDetected = false;
 
-    const uint32_t newUpdateMicros = micros();
     // average: 64 uS by sample
     const uint32_t measurmentDurationMicros = lastMeasurmentDurationMicros / (float)samplesRead; 
 
     for (int i = 0; i < samplesRead; i++) {
-        const float sample = _sampleBuffer[i] / 2048.0 * 512.0;
+        const float sample = _sampleBuffer[i] / 1024.0 * 512.0;
 
         // Filter only bass component
         const float value = abs(bassFilter(sample));
@@ -143,11 +139,7 @@ float get_beat_probability()
             lastUpdateMicros = projectedMeasurmentTime;
             // Filter out repeating bass sounds 100 - 180bpm
             const float beat = beatFilter(envelope);
-            
-            Serial.print(envelope);
-            Serial.print(",");
-            Serial.println(beat);
-            isBeatDetected = isBeatDetected | beat_judge(beat);
+            isBeatDetected = beat_judge(beat) | isBeatDetected;
         }
     }
 

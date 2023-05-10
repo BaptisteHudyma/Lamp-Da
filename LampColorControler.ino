@@ -50,8 +50,8 @@ void setup()
 bool pulse_beat_wipe(const Color& color)
 {
   // reset the pulse for each beat
-  static uint32_t durationMillis = 200;
-  const bool beatDetected = get_beat_probability() > 0.5;
+  static uint32_t durationMillis = 1000 / 6.0;  // max beat period
+  const bool beatDetected = get_beat_probability() > 0.9;
   
   // animation is finished and a beat is detected
   if(beatDetected)
@@ -118,9 +118,9 @@ void loop() {
   // if (rainbowSwirl.update()) fill(rainbowSwirl, strip);
 
   // wipe a color pulse around the tube at each beat
-  // if (pulse_beat_wipe(complColor)) complColor.update();
+  if (pulse_beat_wipe(complColor)) complColor.update();
 
-  vu_meter(gradientColor);
+  //vu_meter(gradientColor);
 
   // isFinished = colorPulse(rainbowColor, 100, 500, isFinished, strip, 0.5);
 }
