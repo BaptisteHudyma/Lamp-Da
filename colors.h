@@ -93,7 +93,7 @@ class GenerateGradientColor : public Color
  */
 class GenerateRainbowSwirl : public DynamicColor
 {
-public:
+    public:
     GenerateRainbowSwirl(const uint32_t period)
     : _increment(UINT16_MAX / (period / updatePeriod)), _firstPixelHue(0)
     {}
@@ -102,7 +102,7 @@ public:
     
     void reset() override { _firstPixelHue = 0; };
 
-private:
+    private:
     /**
      * \brief Call when you want the animation to progress
      */
@@ -121,7 +121,7 @@ private:
  */
 class GenerateRainbowPulse : public DynamicColor
 {
-public:
+    public:
     GenerateRainbowPulse(const uint8_t colorDivisions)
     : _increment(UINT16_MAX / colorDivisions), _currentPixelHue(0)
     {}
@@ -130,7 +130,7 @@ public:
     
     void reset() override { _currentPixelHue = 0; };
 
-private:
+    private:
     /**
      * \brief Call when you want the animation to progress
      */
@@ -141,5 +141,51 @@ private:
     uint32_t _increment;
     uint16_t _currentPixelHue;
 };
+
+/**
+ * \brief Get a random color. Color changes at each update() call
+ */
+class GenerateRandomColor : public DynamicColor
+{
+    public:
+    GenerateRandomColor();
+
+    uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override { return _color; }
+    
+    void reset() override {};
+
+    private:
+    /**
+     * \brief Call when you want the animation to progress
+     */
+    void internal_update(const uint32_t deltaTimeMilli) override;
+
+    uint32_t _color;
+};
+
+/**
+ * \brief Get a color. Color changes to it's complement at each update() call
+ */
+class GenerateComplementaryColor : public DynamicColor
+{
+public:
+    GenerateComplementaryColor(const float randomVariation)
+    : _color(0), _randomVariation(randomVariation)
+    {}
+
+    uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override { return _color; }
+    
+    void reset() override {};
+
+private:
+    /**
+     * \brief Call when you want the animation to progress
+     */
+    void internal_update(const uint32_t deltaTimeMilli) override;
+
+    uint32_t _color;
+    float _randomVariation;
+};
+
 
 #endif

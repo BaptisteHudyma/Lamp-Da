@@ -43,66 +43,66 @@ void setup()
 }
 
 
-void rainbow_pulse_beat()
+/**
+ * \brief beat the color to the music pulse
+ * \return true when a beat is detected
+ */
+bool pulse_beat_wipe(const Color& color)
 {
-  static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(8);  // pulse around a rainbow, with a certain color division
-  static bool isAnimationFinished = true;
-  static uint32_t durationMillis = 200;
-
   // reset the pulse for each beat
+  static uint32_t durationMillis = 200;
   const bool beatDetected = get_beat_probability() > 0.5;
   
   // animation is finished and a beat is detected
   if(beatDetected)
   {
-    // animation is finished, update the color 
-    rainbowPulse.update();
-    //fill(rainbowPulse, strip);
-    colorWipeUp(rainbowPulse, 1000/5, true, strip);
-    isAnimationFinished = colorWipeDown(rainbowPulse, 1000/5, true, strip);
+    // reset pulse
+    doubleSideFillUp(color, durationMillis, true, strip);
+    return true;
   }
 
-  //isAnimationFinished = colorWipeUp(rainbowPulse, 1000/5, false, strip);
-  colorWipeDown(rainbowPulse, durationMillis, false, strip, 0.5);
-  isAnimationFinished = colorWipeUp(rainbowPulse, durationMillis, false, strip, 0.5);
+  doubleSideFillUp(color, durationMillis, false, strip);
+  return false;
 }
 
-void vue_meter()
+/**
+ * \brief Vue meter: should be reactive
+ */
+void vue_meter(const Color& vueColor, const float baseLevel = 0.0)
 {
-  static GenerateGradientColor gradientVue = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0));
-
   // reset the pulse for each beat
-  const float vueLevel = get_vu_meter_level() + 0.2;
+  static const float weight = 0.99;
+  static float weightedVueLevel = 0.0;
+  const float vueLevel = fmin(1.0, fmax(0.0, get_vu_meter_level() + baseLevel));
 
-  // display the gradient  
+  weightedVueLevel = weight * weightedVueLevel + (1.0 - weight) * vueLevel;
+
+  // display the gradient 
   strip.clear();
-  fill(gradientVue, strip, vueLevel);
+  fill(vueColor, strip, fmax(weightedVueLevel, vueLevel));
 }
 
 void loop() {
-  static GenerateRainbowColor rainbowColor = GenerateRainbowColor();  // will output a rainbow from start to bottom of the display
   static GenerateGradientColor gradientColor = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
+  static GenerateComplementaryColor complColor = GenerateComplementaryColor(0.3);
+  static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(8);     // pulse around a rainbow, with a certain color division
+  static GenerateRainbowColor rainbowColor = GenerateRainbowColor();      // will output a rainbow from start to bottom of the display
+  static GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);  // swirl animation  
+  static GenerateRandomColor randomColor = GenerateRandomColor();         // random solid color
   static GenerateSolidColor blackColor = GenerateSolidColor(0);
-  static GenerateSolidColor color = GenerateSolidColor(utils::get_random_color());  // random solid color
-  static GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);            // swirl animation  
 
   static bool isFinished = true;
   static bool switchMode = true;
   const uint duration = 1000;
   
-  /*colorWipeDown(color, duration, isFinished, strip, 0.5);
-  isFinished = colorWipeUp(color, duration, isFinished, strip, 0.5);
-  if (isFinished)
-  {
-    color = GenerateSolidColor(utils::get_random_complementary_color(color.get_color(), 0.3));
-  }*/
+  //isFinished = colorWipeDown(complColor, duration, isFinished, strip, 0.5) or colorWipeUp(complColor, duration, isFinished, strip, 0.5);
+  //if (isFinished) complColor.update();  // update color
 
-  /*
-  isFinished = switchMode ? colorWipeUp(color, duration, isFinished, strip) : colorWipeDown(color, duration, isFinished, strip);
+  /*isFinished = switchMode ? colorWipeUp(complColor, duration, isFinished, strip) : colorWipeDown(complColor, duration, isFinished, strip);
   if (isFinished)
   {
     switchMode = !switchMode;
-    color = GenerateSolidColor(utils::get_random_complementary_color(color.get_color(), 0.3));
+    complColor.update();  // update color
   }*/
 
   // fill the display with a rainbow color
@@ -111,19 +111,19 @@ void loop() {
   // police(1000, false, strip);
 
   // ping pong a color for infinity
-  // isFinished = dotPingPong(rainbowColor, duration, isFinished, strip);
+  //isFinished = dotPingPong(complColor, duration, isFinished, strip);
+  //if (isFinished) complColor.update();  // update color
 
-  /*isFinished = switchMode ? fadeOut(300, isFinished, strip) : fadeIn(rainbowColor, 1000, isFinished, strip);
-  if (isFinished)
-  {
-    switchMode = !switchMode;
-  }*/
+  // isFinished = switchMode ? fadeOut(300, isFinished, strip) : fadeIn(rainbowColor, 1000, isFinished, strip);
+  // if (isFinished) switchMode = !switchMode;
 
   // rainbow swirl animation
-  // if (rainbowSwirl.update()) (rainbowSwirl, strip);
+  // if (rainbowSwirl.update()) fill(rainbowSwirl, strip);
 
-  //rainbow_pulse_beat();
-  vue_meter();
+  // wipe a color pulse around the tube at each beat
+  // if (pulse_beat_wipe(rainbowPulse)) rainbowPulse.update();
+
+  vue_meter(gradientColor, 0.2);
 
   // isFinished = colorPulse(rainbowColor, 100, 500, isFinished, strip, 0.5);
 }

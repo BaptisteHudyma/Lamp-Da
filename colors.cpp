@@ -31,3 +31,19 @@ uint32_t GenerateRainbowPulse::get_color(const uint16_t index, const uint16_t ma
 {
     return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(_currentPixelHue));
 }
+
+GenerateRandomColor::GenerateRandomColor()
+: _color(utils::get_random_color())
+{
+}
+
+void GenerateRandomColor::internal_update(const uint32_t deltaTimeMilli) 
+{
+    _color = utils::get_random_color();
+}
+
+
+void GenerateComplementaryColor::internal_update(const uint32_t deltaTimeMilli)
+{
+    _color = utils::get_random_complementary_color(_color, _randomVariation);
+};

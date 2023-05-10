@@ -157,11 +157,10 @@ float get_beat_probability()
 
 float get_vu_meter_level()
 {
-    static const float weight = 0.9;
-    static float weightedAverage = 0;
+    static float lastValue = 0;
 
     if(!samplesRead)
-        return weightedAverage;
+        return lastValue;
 
     float average = 0.0;
     for (int i = 0; i < samplesRead; i++)
@@ -169,6 +168,6 @@ float get_vu_meter_level()
         average += abs(_sampleBuffer[i]) / (float)2048;
     }
 
-    weightedAverage = weightedAverage * weight + fmax(0.0, fmin(1.0, average / (float)samplesRead)) * (1.0 - weight);
-    return fmax(0.0, fmin(1.0, weightedAverage));
+    lastValue = average / (float)samplesRead;
+    return fmax(0.0, fmin(1.0, lastValue));
 }

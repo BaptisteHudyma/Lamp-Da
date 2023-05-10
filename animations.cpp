@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <cmath>
 #include <vector>
 
 namespace animations
@@ -13,13 +14,23 @@ namespace animations
 
 void fill(const Color& color, Adafruit_NeoPixel& strip, const float cutOff)
 {
-  const uint16_t maxCutOff = fmin(fmax(cutOff * LED_COUNT, 1.0), LED_COUNT);
+  const float adaptedCutoff = fmin(fmax(cutOff, 0.0), 1.0);
+  const uint16_t maxCutOff = fmin(fmax(adaptedCutoff * LED_COUNT, 1.0), LED_COUNT);
   for(uint16_t i = 0; i < LED_COUNT; ++i)
   {
+      const uint32_t c = color.get_color(i, LED_COUNT);
     if (i >= maxCutOff)
+    {
+      // set a color gradient
+      float intPart, fracPart;
+      fracPart = modf(adaptedCutoff * LED_COUNT, &intPart);
+      // adapt the color to have a nice gradient
+      const uint16_t hue = utils::rgb2hue(c);
+      strip.setPixelColor(i, Adafruit_NeoPixel::ColorHSV(hue, 255, fracPart * 255));
       break;
+    }
     
-    strip.setPixelColor(i, color.get_color(i, LED_COUNT));
+    strip.setPixelColor(i, c);
   }
   strip.show();
 }
@@ -77,6 +88,19 @@ bool colorPulse(const Color& color, const uint32_t durationPulseUp, const uint32
 
   // finished if the target index is over the led limit
   return false;
+}
+
+
+bool doubleSideFillUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
+{
+  if(restart)
+  {
+    colorWipeUp(color, duration, true, strip, 0.5);
+    colorWipeDown(color, duration, true, strip, 0.5);
+    return false;
+  }
+
+  return colorWipeDown(color, duration, false, strip, 0.5) or colorWipeUp(color, duration, false, strip, 0.5);
 }
 
 
