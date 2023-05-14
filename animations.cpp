@@ -35,7 +35,6 @@ void fill(const Color& color, Adafruit_NeoPixel& strip, const float cutOff)
   strip.show();
 }
 
-
 bool dotPingPong(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
 {
   static bool isPongMode = false; // true: animation is climbing back the display
@@ -78,18 +77,18 @@ bool colorPulse(const Color& color, const uint32_t durationPulseUp, const uint32
 
   if (isPongMode)
   {
-    return colorWipeUp(color, durationPulseUp, false, strip, cutOff);
+    // clear the displayed color with a black (turned of) color, from top to bottom, with a duration proportional to the pulse duration
+    return colorWipeDown(blackColor, durationPulseDown * cutOff, false, strip, 1.0);
   }
   else
   {
     // set pong mode to true when first animation is finished
-    isPongMode = colorWipeDown(blackColor, durationPulseDown * cutOff, false, strip, 1.0);
+    isPongMode = colorWipeUp(color, durationPulseUp, false, strip, cutOff);
   }
 
   // finished if the target index is over the led limit
   return false;
 }
-
 
 bool doubleSideFillUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
 {
@@ -103,49 +102,65 @@ bool doubleSideFillUp(const Color& color, const uint32_t duration, const bool re
   return colorWipeDown(color, duration, false, strip, 0.5) or colorWipeUp(color, duration, false, strip, 0.5);
 }
 
-
 bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
 {
   static unsigned long previousMillis = 0;
-  static bool isBluePhase = false;
+  static uint8_t state = 0;
 
   if (restart)
   {
     previousMillis = 0;
-    isBluePhase = false;
+    state = 0;
     return false;
   }
 
   // convert duration in delay
-  const uint16_t delay = duration / 2;
+  const uint16_t delay = duration / 3;
 
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= delay) {
     previousMillis = currentMillis;
   
-    if (isBluePhase)
+    switch(state)
     {
-      strip.clear();
+      case 0:
+      {
+        strip.clear();
 
-      // blue lights
-      strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), 0, LED_COUNT / 2+1);  // Set blue
-      strip.show();  // Update strip with new contents
-      isBluePhase = false;
+        // blue lights
+        strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), 0, LED_COUNT / 2+1);  // Set blue
+        strip.show();  // Update strip with new contents
+        
+        // set next state
+        state = 1;
+        break;
+      }
+      case 1:
+      {
+        strip.clear();
+        strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), LED_COUNT / 2, LED_COUNT);  // Set red
+        strip.show();  // Update strip with new contents
+
+        // set next state
+        state = 2;
+        break;
+      }
+      case 2:
+      default:
+      {
+        strip.clear();
+        strip.show();
+
+        // reset state
+        state = 0;
+        return true;
+      }
     }
-    else {
-      strip.clear();
-      strip.fill(Adafruit_NeoPixel::Color(255, 0, 0), LED_COUNT / 2, LED_COUNT);  // Set red
-      strip.show();  // Update strip with new contents
-
-      isBluePhase = true;
-    }
-
   }
 
   // never ends
   return false;
 }
-
 
 bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
 {
@@ -190,10 +205,11 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
   return false;
 }
 
-bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
+bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float firstCutOff, const float secondCutOff)
 {
   static unsigned long startMillis = 0;
-  static uint8_t fadeLevel = 0;
+  static const uint16_t maxFadeLevel = 512;
+  static uint16_t fadeLevel = 0;
   static uint32_t ledStates[LED_COUNT];
 
   if (restart)
@@ -208,25 +224,27 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Ada
     return false;
   }
   // out condition: faded to maximum
-  if(fadeLevel == 255)
+  if(fadeLevel >= maxFadeLevel)
     return true;
   
-  // get a fade level between 0 and 255
-  const uint8_t newFadeLevel = fmax(0.0, fmin(1.0, (millis() - startMillis) / (float)duration)) * 255;
+  // get a fade level between 0 and maxFadeLevel
+  const uint16_t newFadeLevel = fmax(0.0, fmin(1.0, (millis() - startMillis) / (float)duration)) * maxFadeLevel;
   if (newFadeLevel != fadeLevel)
   {
     fadeLevel = newFadeLevel;
 
+    const uint16_t minIndex = firstCutOff * LED_COUNT;
+    const uint16_t maxIndex = secondCutOff * LED_COUNT;
     // update all values of rgb
-    for(uint16_t i = 0; i < LED_COUNT; ++i)
+    for(uint16_t i = minIndex; i < maxIndex; ++i)
     {
       const uint32_t pixelColor = ledStates[i];
       // fade in
-      strip.setPixelColor(i, utils::get_gradient(pixelColor, color.get_color(i, LED_COUNT), fadeLevel/255.0));
+      strip.setPixelColor(i, utils::get_gradient(pixelColor, color.get_color(i, LED_COUNT), fadeLevel/(float)maxFadeLevel));
     }
     strip.show();
 
-    if(fadeLevel == 255)
+    if(fadeLevel >= maxFadeLevel)
       return true;
   }
 

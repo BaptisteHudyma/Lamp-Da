@@ -45,6 +45,27 @@ uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const 
 uint16_t rgb2hue(const float r, const float g, const float b);
 uint16_t rgb2hue(const uint32_t color);
 
+/**
+ * \brief Return an rgb value based on a given hue
+ * \param[in] angle between 0 - 360
+ * \return rgb color
+ */
+uint32_t hue2rgb(const uint16_t angle);
+
+/**
+ * \brief Return an rgb value based on power laws
+ * \param[in] angle between 0 - 360
+ * \return rgb color
+ */
+uint32_t hue2rgbPower(const uint16_t angle);
+
+/**
+ * \brief Return an rgb value based on mixture of sinuses
+ * \param[in] angle between 0 - 360
+ * \return rgb color
+ */
+uint32_t hue2rgbSinus(const uint16_t angle);
+
 };
 
 #endif

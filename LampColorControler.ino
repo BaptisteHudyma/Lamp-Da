@@ -1,4 +1,5 @@
 #include <Adafruit_NeoPixel.h>
+#include <cstdlib>
 #include "MicroPhone.h"
 
 #include "animations.h"
@@ -92,8 +93,8 @@ void loop() {
   static bool switchMode = true;
   const uint duration = 1000;
   
-  //isFinished = colorWipeDown(complColor, duration, isFinished, strip, 0.5) or colorWipeUp(complColor, duration, isFinished, strip, 0.5);
-  //if (isFinished) complColor.update();  // update color
+  //isFinished = doubleSideFillUp(randomColor, duration, isFinished, strip);
+  //if (isFinished) randomColor.update();  // update color
 
   /*isFinished = switchMode ? colorWipeUp(complColor, duration, isFinished, strip) : colorWipeDown(complColor, duration, isFinished, strip);
   if (isFinished)
@@ -105,7 +106,7 @@ void loop() {
   // fill the display with a rainbow color
   // fill(rainbowColor, strip, 1.0);
 
-  // police(1000, false, strip);
+  // police(400, false, strip);
 
   // ping pong a color for infinity
   //isFinished = dotPingPong(complColor, duration, isFinished, strip);
@@ -114,13 +115,23 @@ void loop() {
   // isFinished = switchMode ? fadeOut(300, isFinished, strip) : fadeIn(rainbowColor, 1000, isFinished, strip);
   // if (isFinished) switchMode = !switchMode;
 
+  static uint32_t timing = 2000;
+  isFinished = fadeIn(complColor, timing, isFinished, strip);
+  if (isFinished)
+  {
+    complColor.update();  // update color
+    timing = 3000 + rand()/(float)RAND_MAX * 2000;
+  }
+
   // rainbow swirl animation
-  // if (rainbowSwirl.update()) fill(rainbowSwirl, strip);
+  //if (rainbowSwirl.update()) fill(rainbowSwirl, strip);
 
   // wipe a color pulse around the tube at each beat
-  if (pulse_beat_wipe(complColor)) complColor.update();
+  //if (pulse_beat_wipe(complColor)) complColor.update();
 
   //vu_meter(gradientColor);
 
-  // isFinished = colorPulse(rainbowColor, 100, 500, isFinished, strip, 0.5);
+  /*isFinished = colorPulse(rainbowColor, 100, 300, isFinished, strip, 1.0);
+  if (isFinished)
+    delay(500);*/
 }
