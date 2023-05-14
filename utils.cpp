@@ -8,6 +8,18 @@
 
 namespace utils {
 
+/**
+ * \brief Use this to convert color to bytes
+ */
+union COLOR
+{
+    uint32_t color;
+    // w r g b
+    // 3 2 1 0
+    uint8_t bytes[4];
+};
+
+
 uint32_t get_random_color()
 {
     static uint8_t count;
@@ -39,26 +51,28 @@ uint32_t get_random_complementary_color(const uint32_t color, const float tolera
 
     // add random offset
     const float comp = 0.1 + (float)rand()/(float)RAND_MAX;   // 0.1 to 1.1
-    const uint16_t finalHue = fmod(hue + UINT16_MAX / 2 + comp * tolerance * UINT16_MAX, 360.0);   // add offset to the hue
+    const uint16_t finalHue = fmod(hue + UINT16_MAX / 2 + comp * tolerance * UINT16_MAX, 360.0f);   // add offset to the hue
     return utils::hue2rgbSinus(finalHue);
 }
 
 uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const float level)
 {
-    const uint8_t *colorStartArray = (uint8_t *)&colorStart;
-    const uint8_t *colorEndArray = (uint8_t *)&colorEnd;
+    union COLOR colorStartArray, colorEndArray;
+    colorStartArray.color= colorStart;
+    colorEndArray.color = colorEnd;
     
     return Adafruit_NeoPixel::Color(
-      colorStartArray[0] + level * (colorEndArray[0] - colorStartArray[0]),
-      colorStartArray[1] + level * (colorEndArray[1] - colorStartArray[1]),
-      colorStartArray[2] + level * (colorEndArray[2] - colorStartArray[2])
+      colorStartArray.bytes[2] + level * (colorEndArray.bytes[2] - colorStartArray.bytes[2]),
+      colorStartArray.bytes[1] + level * (colorEndArray.bytes[1] - colorStartArray.bytes[1]),
+      colorStartArray.bytes[0] + level * (colorEndArray.bytes[0] - colorStartArray.bytes[0])
     );
 }
 
 uint16_t rgb2hue(const uint32_t color)
 {
-    const uint8_t *colorArray = (uint8_t *)&color;
-    return rgb2hue(colorArray[0]/255.0, colorArray[1]/255.0, colorArray[2]/255.0);
+    union COLOR colorArray;
+    colorArray.color = color;
+    return rgb2hue(colorArray.bytes[2]/255.0, colorArray.bytes[1]/255.0, colorArray.bytes[0]/255.0);
 }
 
 uint16_t rgb2hue(const float r, const float g, const float b)
