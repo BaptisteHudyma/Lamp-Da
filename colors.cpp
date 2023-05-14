@@ -3,6 +3,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <cstdint>
 #include "constants.h"
+#include "palettes.h"
 #include "utils.h"
 
 
@@ -26,6 +27,11 @@ uint32_t GenerateRainbowSwirl::get_color(const uint16_t index, const uint16_t ma
 {
     const uint16_t pixelHue = _firstPixelHue + (index * UINT16_MAX / maxIndex);
     return utils::hue2rgbSinus(map(pixelHue, 0, UINT16_MAX, 0, 360));
+}
+
+uint32_t GeneratePaletteStep::get_color(const uint16_t index, const uint16_t maxIndex) const
+{
+    return Adafruit_NeoPixel::gamma32(get_color_from_palette(_index, *_paletteRef));
 }
 
 uint32_t GenerateRainbowPulse::get_color(const uint16_t index, const uint16_t maxIndex) const

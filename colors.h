@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <cstdint>
 #include "constants.h"
+#include "palettes.h"
 
 /**
  * \brief Basic color generation class
@@ -114,6 +115,32 @@ class GenerateRainbowSwirl : public DynamicColor
     uint16_t _firstPixelHue;
 };
 
+
+/**
+ * \brief Step through a palette
+ * \param[in] palette The palette to use
+ */
+class GeneratePaletteStep : public DynamicColor
+{
+    public:
+    GeneratePaletteStep(const palette_t& palette) : _paletteRef(&palette), _index(0)
+    {}
+
+    uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override;
+    
+    void reset() override { _index = 0; };
+
+    private:
+    /**
+     * \brief Call when you want the animation to progress
+     */
+    void internal_update(const uint32_t deltaTimeMilli) override {
+        _index += 1;
+    };
+
+    uint8_t _index;
+    const palette_t* _paletteRef;
+};
 
 /**
  * \brief Generate a rainbow color that loop around the display

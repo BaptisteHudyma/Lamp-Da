@@ -8,6 +8,22 @@
 namespace utils {
 
 /**
+ * \brief Use this to convert color to bytes
+ */
+union COLOR
+{
+    uint32_t color;
+    
+    struct
+    {
+        uint8_t blue;
+        uint8_t green;
+        uint8_t red;
+        uint8_t white;
+    };
+};
+
+/**
  * \brief Compute a random color
  */
 uint32_t get_random_color();

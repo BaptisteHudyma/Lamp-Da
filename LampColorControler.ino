@@ -85,13 +85,14 @@ void loop() {
   static GenerateComplementaryColor complColor = GenerateComplementaryColor(0.3);
   static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(8);     // pulse around a rainbow, with a certain color division
   static GenerateRainbowColor rainbowColor = GenerateRainbowColor();      // will output a rainbow from start to bottom of the display
-  static GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);  // swirl animation  
+  static GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);  // swirl animation
+  static GeneratePaletteStep paletteColor = GeneratePaletteStep(PaletteForestColors);
   static GenerateRandomColor randomColor = GenerateRandomColor();         // random solid color
   static GenerateSolidColor blackColor = GenerateSolidColor(0);
 
   static bool isFinished = true;
   static bool switchMode = true;
-  const uint duration = 1000;
+  const uint duration = 100;
   
   //isFinished = doubleSideFillUp(randomColor, duration, isFinished, strip);
   //if (isFinished) randomColor.update();  // update color
@@ -115,16 +116,16 @@ void loop() {
   // isFinished = switchMode ? fadeOut(300, isFinished, strip) : fadeIn(rainbowColor, 1000, isFinished, strip);
   // if (isFinished) switchMode = !switchMode;
 
-  static uint32_t timing = 2000;
-  isFinished = fadeIn(complColor, timing, isFinished, strip);
+  /*static uint32_t timing = 10;
+  isFinished = fadeIn(paletteColor, timing, isFinished, strip);
   if (isFinished)
   {
-    complColor.update();  // update color
-    timing = 3000 + rand()/(float)RAND_MAX * 2000;
-  }
+    paletteColor.update();  // update color
+    timing = 50 + rand()/(float)RAND_MAX * 100;
+  }*/
 
   // rainbow swirl animation
-  //if (rainbowSwirl.update()) fill(rainbowSwirl, strip);
+  if (paletteColor.update()) fill(paletteColor, strip);
 
   // wipe a color pulse around the tube at each beat
   //if (pulse_beat_wipe(complColor)) complColor.update();

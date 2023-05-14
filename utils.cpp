@@ -8,18 +8,6 @@
 
 namespace utils {
 
-/**
- * \brief Use this to convert color to bytes
- */
-union COLOR
-{
-    uint32_t color;
-    // w r g b
-    // 3 2 1 0
-    uint8_t bytes[4];
-};
-
-
 uint32_t get_random_color()
 {
     static uint8_t count;
@@ -62,9 +50,9 @@ uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const 
     colorEndArray.color = colorEnd;
     
     return Adafruit_NeoPixel::Color(
-      colorStartArray.bytes[2] + level * (colorEndArray.bytes[2] - colorStartArray.bytes[2]),
-      colorStartArray.bytes[1] + level * (colorEndArray.bytes[1] - colorStartArray.bytes[1]),
-      colorStartArray.bytes[0] + level * (colorEndArray.bytes[0] - colorStartArray.bytes[0])
+      colorStartArray.red + level * (colorEndArray.red - colorStartArray.red),
+      colorStartArray.green + level * (colorEndArray.green - colorStartArray.green),
+      colorStartArray.blue + level * (colorEndArray.blue - colorStartArray.blue)
     );
 }
 
@@ -72,7 +60,7 @@ uint16_t rgb2hue(const uint32_t color)
 {
     union COLOR colorArray;
     colorArray.color = color;
-    return rgb2hue(colorArray.bytes[2]/255.0, colorArray.bytes[1]/255.0, colorArray.bytes[0]/255.0);
+    return rgb2hue(colorArray.red/255.0, colorArray.green/255.0, colorArray.blue/255.0);
 }
 
 uint16_t rgb2hue(const float r, const float g, const float b)
