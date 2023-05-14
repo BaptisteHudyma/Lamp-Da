@@ -116,16 +116,16 @@ void loop() {
   // isFinished = switchMode ? fadeOut(300, isFinished, strip) : fadeIn(rainbowColor, 1000, isFinished, strip);
   // if (isFinished) switchMode = !switchMode;
 
-  /*static uint32_t timing = 10;
+  static uint32_t timing = 10;
   isFinished = fadeIn(paletteColor, timing, isFinished, strip);
   if (isFinished)
   {
     paletteColor.update();  // update color
     timing = 50 + rand()/(float)RAND_MAX * 100;
-  }*/
+  }
 
   // rainbow swirl animation
-  if (paletteColor.update()) fill(paletteColor, strip);
+  //if (paletteColor.update()) fill(paletteColor, strip);
 
   // wipe a color pulse around the tube at each beat
   //if (pulse_beat_wipe(complColor)) complColor.update();

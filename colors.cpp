@@ -31,7 +31,7 @@ uint32_t GenerateRainbowSwirl::get_color(const uint16_t index, const uint16_t ma
 
 uint32_t GeneratePaletteStep::get_color(const uint16_t index, const uint16_t maxIndex) const
 {
-    return Adafruit_NeoPixel::gamma32(get_color_from_palette(_index, *_paletteRef));
+    return get_color_from_palette(_index, *_paletteRef);
 }
 
 uint32_t GenerateRainbowPulse::get_color(const uint16_t index, const uint16_t maxIndex) const

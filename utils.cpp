@@ -22,7 +22,11 @@ uint32_t get_random_color()
     count += random(15); // to avoid repeating patterns
     count %= 3;
 
-    return color[0] << 16 | color[1] << 8 | color[2];
+    union COLOR colorArray;
+    colorArray.red = color[0];
+    colorArray.green = color[1];
+    colorArray.blue = color[2];
+    return colorArray.color;
 }
 
 uint32_t get_complementary_color(const uint32_t color)
@@ -102,7 +106,11 @@ uint32_t hue2rgb(const uint16_t angle)
     else if (angle<300) {red = HSVlights[angle-240], green = 0; blue = 255;}
     else {red = 255, green = 0; blue = HSVlights[360-angle];} 
     
-    return red << 16 | green << 8 | blue;
+    union COLOR colorArray;
+    colorArray.red = red;
+    colorArray.green = green;
+    colorArray.blue = blue;
+    return colorArray.color;
 }
 
 uint32_t hue2rgbPower(const uint16_t angle)
@@ -123,7 +131,11 @@ uint32_t hue2rgbPower(const uint16_t angle)
     else if (angle<240) {red = 0;  green = HSVpower[240-angle]; blue = HSVpower[angle-120];}
     else {red = HSVpower[angle-240]; green = 0; blue = HSVpower[360-angle];}
 
-    return red << 16 | green << 8 | blue;
+    union COLOR colorArray;
+    colorArray.red = red;
+    colorArray.green = green;
+    colorArray.blue = blue;
+    return colorArray.color;
 }
 
 uint32_t hue2rgbSinus(const uint16_t angle)
@@ -176,7 +188,11 @@ uint32_t hue2rgbSinus(const uint16_t angle)
     0,   0,   0,   0,   0,   0,   0,   0
     };
 
-    return (lights[(angle + 120) % 360] << 16) | (lights[angle]) << 8 | (lights[(angle + 240) % 360]);
+    union COLOR colorArray;
+    colorArray.red = lights[(angle + 120) % 360];
+    colorArray.green = lights[angle];
+    colorArray.blue = lights[(angle + 240) % 360];
+    return colorArray.color;
 }
 
 };
