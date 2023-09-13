@@ -83,20 +83,21 @@ void vu_meter(const Color& vuColor)
 void loop() {
   static GenerateGradientColor gradientColor = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
   static GenerateComplementaryColor complColor = GenerateComplementaryColor(0.3);
-  static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(8);     // pulse around a rainbow, with a certain color division
+  static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(10);     // pulse around a rainbow, with a certain color division
   static GenerateRainbowColor rainbowColor = GenerateRainbowColor();      // will output a rainbow from start to bottom of the display
   static GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);  // swirl animation
-  static GeneratePaletteStep paletteColor = GeneratePaletteStep(PaletteForestColors);
+  static GeneratePaletteStep paletteColor = GeneratePaletteStep(PaletteLavaColors);
   static GenerateRandomColor randomColor = GenerateRandomColor();         // random solid color
   static GenerateSolidColor blackColor = GenerateSolidColor(0);
+  static GenerateRoundColor rdColor = GenerateRoundColor();
 
   static bool isFinished = true;
   static bool switchMode = true;
-  const uint duration = 100;
+  const uint duration = 1000;
   
   //isFinished = doubleSideFillUp(randomColor, duration, isFinished, strip);
   //if (isFinished) randomColor.update();  // update color
-
+ 
   /*isFinished = switchMode ? colorWipeUp(complColor, duration, isFinished, strip) : colorWipeDown(complColor, duration, isFinished, strip);
   if (isFinished)
   {
@@ -104,10 +105,20 @@ void loop() {
     complColor.update();  // update color
   }*/
 
+  // display a color animation
+  fill(rainbowSwirl, strip);
+  rainbowSwirl.update();  // update color
+  
   // fill the display with a rainbow color
   // fill(rainbowColor, strip, 1.0);
 
   // police(400, false, strip);
+
+  /*isFinished = fadeIn(rainbowPulse, 5000, isFinished, strip);
+  if (isFinished)
+  {
+    rainbowPulse.update();
+  }*/
 
   // ping pong a color for infinity
   //isFinished = dotPingPong(complColor, duration, isFinished, strip);
@@ -116,16 +127,18 @@ void loop() {
   // isFinished = switchMode ? fadeOut(300, isFinished, strip) : fadeIn(rainbowColor, 1000, isFinished, strip);
   // if (isFinished) switchMode = !switchMode;
 
-  static uint32_t timing = 10;
+  /*static uint32_t timing = 50;
   isFinished = fadeIn(paletteColor, timing, isFinished, strip);
   if (isFinished)
   {
     paletteColor.update();  // update color
-    timing = 50 + rand()/(float)RAND_MAX * 100;
-  }
+    timing = 50 + rand()/(float)RAND_MAX * 50;
+  }*/
 
-  // rainbow swirl animation
+  // basic animation
   //if (paletteColor.update()) fill(paletteColor, strip);
+
+  //fill(rdColor, strip);
 
   // wipe a color pulse around the tube at each beat
   //if (pulse_beat_wipe(complColor)) complColor.update();

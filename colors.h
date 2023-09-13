@@ -18,7 +18,7 @@ class Color
 /**
  * \brief Basic dynamic color generation class
  */
-const uint8_t updatePeriod = 30;   // milliseconds
+const uint8_t updatePeriod = 10;   // milliseconds
 class DynamicColor : public Color
 {
     public:
@@ -29,7 +29,7 @@ class DynamicColor : public Color
     virtual bool update()
     {
         const long unsigned currentMillis = millis();
-        if (currentMillis - _lastUpdate > 30)   // 30 ms update period
+        if (currentMillis - _lastUpdate > updatePeriod)   // 30 ms update period
         {
             internal_update(currentMillis - _lastUpdate);
             _lastUpdate = currentMillis;
@@ -89,6 +89,17 @@ class GenerateGradientColor : public Color
 };
 
 /**
+ * \brief Generate a gradient color from top to bottom
+ */
+class GenerateRoundColor : public Color
+{
+    public:
+    GenerateRoundColor() {};
+
+    uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override;
+};
+
+/**
  * \brief Generate a rainbow color that loop around the display
  * \param[in] period The period of the animation
  */
@@ -123,7 +134,7 @@ class GenerateRainbowSwirl : public DynamicColor
 class GeneratePaletteStep : public DynamicColor
 {
     public:
-    GeneratePaletteStep(const palette_t& palette) : _paletteRef(&palette), _index(0)
+    GeneratePaletteStep(const palette_t& palette) : _index(0), _paletteRef(&palette)
     {}
 
     uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override;

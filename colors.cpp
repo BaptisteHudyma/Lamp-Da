@@ -1,6 +1,7 @@
 #include "colors.h"
 
 #include <Adafruit_NeoPixel.h>
+#include <cmath>
 #include <cstdint>
 #include "constants.h"
 #include "palettes.h"
@@ -21,6 +22,13 @@ uint32_t GenerateRainbowColor::get_color(const uint16_t index, const uint16_t ma
 uint32_t GenerateGradientColor::get_color(const uint16_t index, const uint16_t maxIndex) const
 {
     return utils::get_gradient(_colorStart, _colorEnd, index / (float)maxIndex);
+}
+
+uint32_t GenerateRoundColor::get_color(const uint16_t index, const uint16_t maxIndex) const
+{
+    const double segmentsPerTurns = 3.1;
+    const double modulo = std::fmod(index, segmentsPerTurns) / segmentsPerTurns;
+    return utils::hue2rgbSinus(modulo * 360.0);
 }
 
 uint32_t GenerateRainbowSwirl::get_color(const uint16_t index, const uint16_t maxIndex) const

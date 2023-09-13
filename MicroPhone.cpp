@@ -104,7 +104,7 @@ void init_microphone(const uint32_t sampleRate)
     while (1)
     {
         // slow blink if failed
-        digitalToggle(LED_BUILTIN);
+        digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
         delay(1000);
     }
   }
