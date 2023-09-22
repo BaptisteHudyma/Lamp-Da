@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include "MicroPhone.h"
 
+#include "button.h"
 #include "animations.h"
 #include "wipes.h"
 #include "utils.h"
@@ -14,7 +15,6 @@
 // Which pin on the Arduino is connected to the NeoPixels?
 // On a Trinket or Gemma we suggest changing this to 1:
 #define LED_PIN D0
-#define BUTTON_PIN D2
 
 // NeoPixel brightness, 0 (min) to 255 (max)
 #define BRIGHTNESS 50  // max: 255
@@ -82,26 +82,107 @@ void vu_meter(const Color& vuColor)
   fill(vuColor, strip, vuLevel);
 }
 
-bool check_button_state()
+uint8_t colorState = 0;
+uint8_t maxColorInRotation = 9;
+bool isFinished = true;
+bool switchMode = true;
+void incrementColorWheel()
 {
-  //empty capacitor
-  pinMode(BUTTON_PIN, OUTPUT);
-  digitalWrite(BUTTON_PIN, LOW);
-  delayMicroseconds(1000);
+  colorState += 1;
+  if (colorState > maxColorInRotation)
+    colorState = 0;
+ 
+  isFinished = true;
+  switchMode = true;
+}
 
-  pinMode(BUTTON_PIN, INPUT);
-  uint8_t cycles;
-  for(cycles = 0; cycles < 255; cycles++) {
-      if(digitalRead(BUTTON_PIN) == HIGH)
-          break;
+void decrement_color_wheel()
+{
+  colorState -= 1;
+  if (colorState > maxColorInRotation)
+    colorState = maxColorInRotation;
+
+  isFinished = true;
+  switchMode = true;
+}
+
+void colorDisplay()
+{
+  switch(colorState)
+  {
+    case 0:
+      // display a color animation
+      static GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);  // swirl animation (5 seconds)
+      fill(rainbowSwirl, strip);
+      rainbowSwirl.update();  // update 
+    break;
+
+    case 1:
+      // random solid color
+      static GenerateRandomColor randomColor = GenerateRandomColor();
+      isFinished = doubleSideFillUp(randomColor, 1000, isFinished, strip);
+      if (isFinished) randomColor.update();  // update color
+    break;
+
+    case 2:
+      static GenerateComplementaryColor complColor = GenerateComplementaryColor(0.3);
+      isFinished = switchMode ? colorWipeUp(complColor, 1000, isFinished, strip) : colorWipeDown(complColor, 1000, isFinished, strip);
+      if (isFinished)
+      {
+        switchMode = !switchMode;
+        complColor.update();  // update color
+      }
+    break;
+
+    case 3:
+      static GenerateGradientColor gradientColor = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
+      vu_meter(gradientColor);
+    break;
+
+    case 4:
+      static GenerateRainbowColor rainbowColor = GenerateRainbowColor();      // will output a rainbow from start to bottom of the display
+      isFinished = switchMode ? fadeOut(300, isFinished, strip) : fadeIn(rainbowColor, 1000, isFinished, strip);
+      if (isFinished) switchMode = !switchMode;
+    break;
+
+    case 5:
+      police(400, false, strip);
+    break;
+
+    case 6:
+      static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(10);     // pulse around a rainbow, with a certain color division
+      isFinished = fadeIn(rainbowPulse, 5000, isFinished, strip);
+      if (isFinished)
+      {
+        rainbowPulse.update();
+      }
+    break;
+
+    case 7:
+      // ping pong a color for infinity
+      isFinished = dotPingPong(complColor, 1000.0, isFinished, strip);
+      if (isFinished) complColor.update();  // update color
+    break;
+
+    case 8:
+    static GeneratePaletteStep paletteColor = GeneratePaletteStep(PaletteLavaColors);
+    if (paletteColor.update()) fill(paletteColor, strip);
+    break;
+
+    case 9:
+    // wipe a color pulse around the tube at each beat
+    if (pulse_beat_wipe(complColor)) complColor.update();
+    break;
+
+    default:
+    break;
   }
-  // 150/255 is a good threshold for noise
-  return cycles > 150;
 }
 
 
+bool isActivated = false;
 // call when the button is finally release
-void handle_button_events(const uint8_t consecutiveButtonCheck, const uint32_t lastButtonHoldDuration)
+void buttonCallback(uint8_t consecutiveButtonCheck, uint32_t lastButtonHoldDuration)
 {
   if (consecutiveButtonCheck == 0)
     return;
@@ -112,8 +193,19 @@ void handle_button_events(const uint8_t consecutiveButtonCheck, const uint32_t l
     case 0:
       // error
       break;
+    
     case 1:
     // 1 press
+      if (wasLongPress)
+        isActivated = !isActivated;
+
+      if (isActivated)
+        incrementColorWheel();
+      break;
+
+    case 2:
+      if (isActivated)
+        decrement_color_wheel();
       break;
     
     default:
@@ -127,94 +219,20 @@ void handle_button_events(const uint8_t consecutiveButtonCheck, const uint32_t l
     Serial.println("Pressed the button " + String(consecutiveButtonCheck) +  " times, with a long press of " + String(lastButtonHoldDuration) + "ms");
 }
 
-
-void treat_button_pressed(const bool isButtonPressDetected)
-{
-  static uint8_t clickedEvents = 0;    // multiple clicks
-  static uint32_t buttonHoldStart= 0;  // start of the hold event in millis, valid if clicked event is > 0
-
-  static uint32_t lastButtonPressedTime = 0;  // last time the pressed event was detected
-  static bool isButtonPressed = false;
-  
-  const uint32_t currentMillis = millis();
-  const uint32_t sinceLastCall = currentMillis - lastButtonPressedTime;
-  // remove button clicked if last call was too long ago
-  if(sinceLastCall > 250)
-  {
-    // end of button press, change event
-    handle_button_events(clickedEvents, currentMillis - buttonHoldStart);
-
-    // reset
-    clickedEvents = 0;
-    isButtonPressed = false;
-    buttonHoldStart = 0;
-  }
-
-  // set button high
-  if (isButtonPressDetected)
-  {
-    // small delay since button press
-    if (sinceLastCall > 50)
-    {
-        clickedEvents += 1;
-        buttonHoldStart = currentMillis;
-    }
-    
-    lastButtonPressedTime = currentMillis;
-    isButtonPressed = true;
-  }
-}
-
 void loop() {
-  // check the button pressed status
-  const bool isButtonPressed = check_button_state();
-  treat_button_pressed(isButtonPressed);
+  handle_button_events(buttonCallback);
+
+  if (!isActivated)
+  {
+    strip.clear();
+    strip.show();  //  Update strip to match
+  }
+  else
+    colorDisplay();
+
   
-  static GenerateGradientColor gradientColor = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
-  static GenerateComplementaryColor complColor = GenerateComplementaryColor(0.3);
-  static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(10);     // pulse around a rainbow, with a certain color division
-  static GenerateRainbowColor rainbowColor = GenerateRainbowColor();      // will output a rainbow from start to bottom of the display
-  static GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);  // swirl animation
-  static GeneratePaletteStep paletteColor = GeneratePaletteStep(PaletteLavaColors);
-  static GenerateRandomColor randomColor = GenerateRandomColor();         // random solid color
   static GenerateSolidColor blackColor = GenerateSolidColor(0);
   static GenerateRoundColor rdColor = GenerateRoundColor();
-
-  static bool isFinished = true;
-  static bool switchMode = true;
-  const uint duration = 1000;
-  
-  //isFinished = doubleSideFillUp(randomColor, duration, isFinished, strip);
-  //if (isFinished) randomColor.update();  // update color
- 
-  /*isFinished = switchMode ? colorWipeUp(complColor, duration, isFinished, strip) : colorWipeDown(complColor, duration, isFinished, strip);
-  if (isFinished)
-  {
-    switchMode = !switchMode;
-    complColor.update();  // update color
-  }*/
-  
-  // display a color animation
-  fill(rainbowSwirl, strip);
-  rainbowSwirl.update();  // update color
-  
-  // fill the display with a rainbow color
-  // fill(rainbowColor, strip, 1.0);
-
-  // police(400, false, strip);
-
-  /*isFinished = fadeIn(rainbowPulse, 5000, isFinished, strip);
-  if (isFinished)
-  {
-    rainbowPulse.update();
-  }*/
-
-  // ping pong a color for infinity
-  //isFinished = dotPingPong(complColor, duration, isFinished, strip);
-  //if (isFinished) complColor.update();  // update color
-
-  // isFinished = switchMode ? fadeOut(300, isFinished, strip) : fadeIn(rainbowColor, 1000, isFinished, strip);
-  // if (isFinished) switchMode = !switchMode;
 
   /*static uint32_t timing = 50;
   isFinished = fadeIn(paletteColor, timing, isFinished, strip);
@@ -224,15 +242,7 @@ void loop() {
     timing = 50 + rand()/(float)RAND_MAX * 50;
   }*/
 
-  // basic animation
-  //if (paletteColor.update()) fill(paletteColor, strip);
-
   //fill(rdColor, strip);
-
-  // wipe a color pulse around the tube at each beat
-  //if (pulse_beat_wipe(complColor)) complColor.update();
-
-  //vu_meter(gradientColor);
 
   /*isFinished = colorPulse(rainbowColor, 100, 300, isFinished, strip, 1.0);
   if (isFinished)
