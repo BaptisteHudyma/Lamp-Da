@@ -14,6 +14,7 @@
 // Which pin on the Arduino is connected to the NeoPixels?
 // On a Trinket or Gemma we suggest changing this to 1:
 #define LED_PIN D0
+#define BUTTON_PIN D2
 
 // NeoPixel brightness, 0 (min) to 255 (max)
 #define BRIGHTNESS 50  // max: 255
@@ -25,7 +26,7 @@ Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_RGB);
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // These lines are specifically to support the Adafruit Trinket 5V 16 MHz.
   // Any other board, you can remove this part (but no harm leaving it):
@@ -39,6 +40,7 @@ void setup()
   strip.setBrightness(BRIGHTNESS);
 
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT);
 
   init_microphone(16000);
 }
@@ -80,7 +82,94 @@ void vu_meter(const Color& vuColor)
   fill(vuColor, strip, vuLevel);
 }
 
+bool check_button_state()
+{
+  //empty capacitor
+  pinMode(BUTTON_PIN, OUTPUT);
+  digitalWrite(BUTTON_PIN, LOW);
+  delayMicroseconds(1000);
+
+  pinMode(BUTTON_PIN, INPUT);
+  uint8_t cycles;
+  for(cycles = 0; cycles < 255; cycles++) {
+      if(digitalRead(BUTTON_PIN) == HIGH)
+          break;
+  }
+  // 150/255 is a good threshold for noise
+  return cycles > 150;
+}
+
+
+// call when the button is finally release
+void handle_button_events(const uint8_t consecutiveButtonCheck, const uint32_t lastButtonHoldDuration)
+{
+  if (consecutiveButtonCheck == 0)
+    return;
+
+  const bool wasLongPress = lastButtonHoldDuration > 500;
+  switch(consecutiveButtonCheck)
+  {
+    case 0:
+      // error
+      break;
+    case 1:
+    // 1 press
+      break;
+    
+    default:
+    // error
+      break;
+  }
+
+  if (! wasLongPress)
+    Serial.println("Pressed the button " + String(consecutiveButtonCheck) + " times");
+  else
+    Serial.println("Pressed the button " + String(consecutiveButtonCheck) +  " times, with a long press of " + String(lastButtonHoldDuration) + "ms");
+}
+
+
+void treat_button_pressed(const bool isButtonPressDetected)
+{
+  static uint8_t clickedEvents = 0;    // multiple clicks
+  static uint32_t buttonHoldStart= 0;  // start of the hold event in millis, valid if clicked event is > 0
+
+  static uint32_t lastButtonPressedTime = 0;  // last time the pressed event was detected
+  static bool isButtonPressed = false;
+  
+  const uint32_t currentMillis = millis();
+  const uint32_t sinceLastCall = currentMillis - lastButtonPressedTime;
+  // remove button clicked if last call was too long ago
+  if(sinceLastCall > 250)
+  {
+    // end of button press, change event
+    handle_button_events(clickedEvents, currentMillis - buttonHoldStart);
+
+    // reset
+    clickedEvents = 0;
+    isButtonPressed = false;
+    buttonHoldStart = 0;
+  }
+
+  // set button high
+  if (isButtonPressDetected)
+  {
+    // small delay since button press
+    if (sinceLastCall > 50)
+    {
+        clickedEvents += 1;
+        buttonHoldStart = currentMillis;
+    }
+    
+    lastButtonPressedTime = currentMillis;
+    isButtonPressed = true;
+  }
+}
+
 void loop() {
+  // check the button pressed status
+  const bool isButtonPressed = check_button_state();
+  treat_button_pressed(isButtonPressed);
+  
   static GenerateGradientColor gradientColor = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
   static GenerateComplementaryColor complColor = GenerateComplementaryColor(0.3);
   static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(10);     // pulse around a rainbow, with a certain color division
@@ -104,7 +193,7 @@ void loop() {
     switchMode = !switchMode;
     complColor.update();  // update color
   }*/
-
+  
   // display a color animation
   fill(rainbowSwirl, strip);
   rainbowSwirl.update();  // update color
