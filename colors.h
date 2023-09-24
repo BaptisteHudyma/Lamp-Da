@@ -48,6 +48,13 @@ class DynamicColor : public Color
     long unsigned _lastUpdate;  // time of the last update, in ms
 };
 
+
+class IndexedColor : public Color
+{
+    public:
+    virtual void update(const uint8_t index) = 0;
+};
+
 /**
  * \brief Generate a solid color
  */
@@ -153,6 +160,24 @@ class GeneratePaletteStep : public DynamicColor
     const palette_t* _paletteRef;
 };
 
+class GeneratePaletteIndexed : public IndexedColor
+{
+    public:
+    GeneratePaletteIndexed(const palette_t& palette) : _index(0), _paletteRef(&palette)
+    {}
+
+    uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override;
+    
+    void update(const uint8_t index) override
+    {
+        _index = index;
+    }
+
+    private:
+    uint8_t _index;
+    const palette_t* _paletteRef;
+};
+
 /**
  * \brief Generate a rainbow color that loop around the display
  * \param[in] period The period of the animation
@@ -176,6 +201,25 @@ class GenerateRainbowPulse : public DynamicColor
         _currentPixelHue += _increment;
     };
 
+    uint32_t _increment;
+    uint16_t _currentPixelHue;
+};
+
+class GenerateRainbowIndex : public IndexedColor
+{
+    public:
+    GenerateRainbowIndex(const uint8_t colorDivisions)
+    : _increment(UINT16_MAX / colorDivisions), _currentPixelHue(0)
+    {}
+
+    uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override;
+
+    void update(const uint8_t index) override
+    {
+        _currentPixelHue = index * _increment;
+    }
+
+    private:
     uint32_t _increment;
     uint16_t _currentPixelHue;
 };

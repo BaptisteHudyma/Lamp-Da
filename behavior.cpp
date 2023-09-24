@@ -12,7 +12,7 @@
 // extern declarations
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_RGB);
 
-uint8_t BRIGHTNESS;
+uint8_t BRIGHTNESS = 50;
 
 bool isActivated = false;
 
@@ -91,23 +91,23 @@ void kelvin_mode_update()
   {
     case 0: // kelvin mode
       static auto lastColorStep = colorCodeIndex;
-      static GeneratePaletteStep paletteHeatColor = GeneratePaletteStep(PaletteHeatColors);
+      static auto paletteHeatColor = GeneratePaletteIndexed(PaletteHeatColors);
       if(colorCodeIndex != lastColorStep)
       {
         lastColorStep = colorCodeIndex;
-        paletteHeatColor.update();
+        paletteHeatColor.update(colorCodeIndex);
       }
       animations::fill(paletteHeatColor, strip);
       break;
 
     case 1: // rainbow mode
-      static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(UINT8_MAX);     // pulse around a rainbow, with a certain color division
+      static auto rainbowIndex = GenerateRainbowIndex(UINT8_MAX);     // pulse around a rainbow, with a certain color division
       if(colorCodeIndex != lastColorStep)
       {
         lastColorStep = colorCodeIndex;
-        rainbowPulse.update();
+        rainbowIndex.update(colorCodeIndex);
       }
-      animations::fill(rainbowPulse, strip);
+      animations::fill(rainbowIndex, strip);
       break;
 
     default:  // error
@@ -313,6 +313,9 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
   }
   const bool isEndOfHoldEvent = buttonHoldDuration <= 1;
 
+  // hold the current level of brightness out of the animation
+  static uint8_t currentBrightness = BRIGHTNESS;
+
   switch(consecutiveButtonCheck)
   {
     case 1: // just hold the click
@@ -331,7 +334,7 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
       {
         if (!isEndOfHoldEvent)
         {
-          const auto newBrightness = max(BRIGHTNESS, map(min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS), HOLD_BUTTON_MIN_MS, BRIGHTNESS_RAMP_DURATION_MS, MIN_BRIGHTNESS, MAX_BRIGHTNESS) );
+          const auto newBrightness = max(BRIGHTNESS, map(min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS), HOLD_BUTTON_MIN_MS, BRIGHTNESS_RAMP_DURATION_MS, currentBrightness, MAX_BRIGHTNESS) );
           if (BRIGHTNESS != newBrightness)
           {
             BRIGHTNESS = newBrightness;
@@ -339,15 +342,18 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
           }
         }
         else
+        {
           // switch brigtness
           isAugmentBrightness = false;
+          currentBrightness = BRIGHTNESS;
+        }
       }
       else
       {
          // lower luminositity
         if (!isEndOfHoldEvent)
         {
-          const auto newBrightness = min(BRIGHTNESS, map(min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS), HOLD_BUTTON_MIN_MS, BRIGHTNESS_RAMP_DURATION_MS, MAX_BRIGHTNESS, MIN_BRIGHTNESS) );
+          const auto newBrightness = map(min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS), HOLD_BUTTON_MIN_MS, BRIGHTNESS_RAMP_DURATION_MS, currentBrightness, MIN_BRIGHTNESS);
           if (BRIGHTNESS != newBrightness)
           {
             BRIGHTNESS = newBrightness;
@@ -355,8 +361,11 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
           }
         }
         else
+        {
           // switch brigtness
           isAugmentBrightness = true;
+          currentBrightness = BRIGHTNESS;
+        }
       }
       break;
 
@@ -366,6 +375,15 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
         constexpr uint32_t colorStepDuration_ms = 10000;
         const uint32_t colorStep  = (buttonHoldDuration - HOLD_BUTTON_MIN_MS) % colorStepDuration_ms;
         colorCodeIndex = map(colorStep, 0, colorStepDuration_ms, 0, UINT8_MAX);
+      }
+      break;
+
+    case 4: // 4 clicks and hold
+      if (!isEndOfHoldEvent)
+      {
+        constexpr uint32_t colorStepDuration_ms = 10000;
+        const uint32_t colorStep  = (buttonHoldDuration - HOLD_BUTTON_MIN_MS) % colorStepDuration_ms;
+        colorCodeIndex = map(colorStep, 0, colorStepDuration_ms, UINT8_MAX, 0);
       }
       break;
     

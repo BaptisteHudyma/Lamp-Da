@@ -42,7 +42,18 @@ uint32_t GeneratePaletteStep::get_color(const uint16_t index, const uint16_t max
     return get_color_from_palette(_index, *_paletteRef);
 }
 
+uint32_t GeneratePaletteIndexed::get_color(const uint16_t index, const uint16_t maxIndex) const
+{
+    return get_color_from_palette(_index, *_paletteRef);
+}
+
 uint32_t GenerateRainbowPulse::get_color(const uint16_t index, const uint16_t maxIndex) const
+{
+    return Adafruit_NeoPixel::ColorHSV(_currentPixelHue);
+}
+
+
+uint32_t GenerateRainbowIndex::get_color(const uint16_t index, const uint16_t maxIndex) const
 {
     return Adafruit_NeoPixel::ColorHSV(_currentPixelHue);
 }
