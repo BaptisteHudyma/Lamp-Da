@@ -312,9 +312,11 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
     return;
   }
   const bool isEndOfHoldEvent = buttonHoldDuration <= 1;
+  buttonHoldDuration -= HOLD_BUTTON_MIN_MS;
 
   // hold the current level of brightness out of the animation
   static uint8_t currentBrightness = BRIGHTNESS;
+  static uint8_t lastColorCodeIndex = colorCodeIndex;
 
   switch(consecutiveButtonCheck)
   {
@@ -334,7 +336,7 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
       {
         if (!isEndOfHoldEvent)
         {
-          const auto newBrightness = max(BRIGHTNESS, map(min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS), HOLD_BUTTON_MIN_MS, BRIGHTNESS_RAMP_DURATION_MS, currentBrightness, MAX_BRIGHTNESS) );
+          const auto newBrightness = map(min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS), 0, BRIGHTNESS_RAMP_DURATION_MS, currentBrightness, MAX_BRIGHTNESS);
           if (BRIGHTNESS != newBrightness)
           {
             BRIGHTNESS = newBrightness;
@@ -353,7 +355,7 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
          // lower luminositity
         if (!isEndOfHoldEvent)
         {
-          const auto newBrightness = map(min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS), HOLD_BUTTON_MIN_MS, BRIGHTNESS_RAMP_DURATION_MS, currentBrightness, MIN_BRIGHTNESS);
+          const auto newBrightness = map(min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS), 0, BRIGHTNESS_RAMP_DURATION_MS, currentBrightness, MIN_BRIGHTNESS);
           if (BRIGHTNESS != newBrightness)
           {
             BRIGHTNESS = newBrightness;
@@ -373,8 +375,12 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
       if (!isEndOfHoldEvent)
       {
         constexpr uint32_t colorStepDuration_ms = 10000;
-        const uint32_t colorStep  = (buttonHoldDuration - HOLD_BUTTON_MIN_MS) % colorStepDuration_ms;
+        const uint32_t timeShift = (colorStepDuration_ms * lastColorCodeIndex)/255;
+        const uint32_t colorStep  = (buttonHoldDuration + timeShift) % colorStepDuration_ms;
         colorCodeIndex = map(colorStep, 0, colorStepDuration_ms, 0, UINT8_MAX);
+      }
+      else {
+        lastColorCodeIndex = colorCodeIndex;
       }
       break;
 
@@ -382,8 +388,19 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
       if (!isEndOfHoldEvent)
       {
         constexpr uint32_t colorStepDuration_ms = 10000;
-        const uint32_t colorStep  = (buttonHoldDuration - HOLD_BUTTON_MIN_MS) % colorStepDuration_ms;
+        const uint32_t timeShift = (colorStepDuration_ms * lastColorCodeIndex)/255;
+        if (buttonHoldDuration < timeShift)
+        {
+          buttonHoldDuration = colorStepDuration_ms - (timeShift - buttonHoldDuration);
+        }
+        else {
+          buttonHoldDuration -= timeShift;
+        }
+        const uint32_t colorStep  = buttonHoldDuration % colorStepDuration_ms;
         colorCodeIndex = map(colorStep, 0, colorStepDuration_ms, UINT8_MAX, 0);
+      }
+      else {
+        lastColorCodeIndex = colorCodeIndex;
       }
       break;
     

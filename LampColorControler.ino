@@ -20,6 +20,8 @@ void setup()
 
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(BUTTON_PIN, INPUT);
+  pinMode(LED_POWER_PIN, OUTPUT);
+  pinMode(BATTERY_CHARGE_PIN, INPUT);
 
   sound::init_microphone(16000);
 }
@@ -33,7 +35,15 @@ void loop() {
     strip.show();  //  Update strip to match
 
     // deactivate strip power
+    digitalWrite(LED_POWER_PIN, LOW);
   }
   else
+  {
+    digitalWrite(LED_POWER_PIN, HIGH);
+    
+    const float batteryLevel = analogRead(BATTERY_CHARGE_PIN) /3.0 * 100.0;
+    Serial.println(batteryLevel);
+
     color_mode_update();
+  }
 }
