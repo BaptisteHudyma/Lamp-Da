@@ -1,5 +1,7 @@
 #include "button.h"
 
+#include "constants.h"
+
 #define releaseTiming 250
 
 bool check_button_state()

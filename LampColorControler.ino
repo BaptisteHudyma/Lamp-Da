@@ -1,4 +1,6 @@
 #include "behavior.h"
+#include "MicroPhone.h"
+#include "button.h"
 
 
 void setup()
@@ -14,7 +16,7 @@ void setup()
 
   strip.begin();  // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();   // Turn OFF all pixels ASAP
-  strip.setBrightness(BRIGHTNESS);
+  strip.setBrightness(50);
 
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(BUTTON_PIN, INPUT);

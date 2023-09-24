@@ -4,8 +4,6 @@
 #include <Adafruit_NeoPixel.h>
 #include <functional>
 
-#define BUTTON_PIN D2
-
 #define HOLD_BUTTON_MIN_MS 500  // press and hold delay (ms)
 
 /**
