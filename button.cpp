@@ -1,5 +1,7 @@
 #include "button.h"
 
+#define releaseTiming 250
+
 bool check_button_state()
 {
   //empty capacitor
@@ -17,7 +19,7 @@ bool check_button_state()
   return cycles > 150;
 }
 
-void treat_button_pressed(const bool isButtonPressDetected, std::function<void(uint8_t, uint32_t)> callback)
+void treat_button_pressed(const bool isButtonPressDetected, std::function<void(uint8_t)> clickSerieCallback, std::function<void(uint8_t, uint32_t)> clickHoldSerieCallback)
 {
   static uint8_t clickedEvents = 0;    // multiple clicks
   static uint32_t buttonHoldStart= 0;  // start of the hold event in millis, valid if clicked event is > 0
@@ -27,16 +29,21 @@ void treat_button_pressed(const bool isButtonPressDetected, std::function<void(u
   
   const uint32_t currentMillis = millis();
   const uint32_t sinceLastCall = currentMillis - lastButtonPressedTime;
+  const uint32_t buttonPressedDuration = currentMillis - buttonHoldStart;
   // remove button clicked if last call was too long ago
-  if(sinceLastCall > 250)
+  if(sinceLastCall > releaseTiming)
   {
     // end of button press, change event
-    callback(clickedEvents, currentMillis - buttonHoldStart);
+    if (buttonPressedDuration < HOLD_BUTTON_MIN_MS)
+      clickSerieCallback(clickedEvents);
+    else
+      // signal end of click and hold
+      clickHoldSerieCallback(clickedEvents, 0);
 
     // reset
     clickedEvents = 0;
     isButtonPressed = false;
-    buttonHoldStart = 0;
+    buttonHoldStart = currentMillis;
   }
 
   // set button high
@@ -52,11 +59,17 @@ void treat_button_pressed(const bool isButtonPressDetected, std::function<void(u
     lastButtonPressedTime = currentMillis;
     isButtonPressed = true;
   }
+
+  
+  if(isButtonPressed and buttonPressedDuration > HOLD_BUTTON_MIN_MS)
+  {
+    clickHoldSerieCallback(clickedEvents, buttonPressedDuration);
+  }
 }
 
-void handle_button_events(std::function<void(uint8_t, uint32_t)> callback)
+void handle_button_events(std::function<void(uint8_t)> clickSerieCallback, std::function<void(uint8_t, uint32_t)> clickHoldSerieCallback)
 {
   // check the button pressed status
   const bool isButtonPressed = check_button_state();
-  treat_button_pressed(isButtonPressed, callback);
+  treat_button_pressed(isButtonPressed, clickSerieCallback, clickHoldSerieCallback);
 }

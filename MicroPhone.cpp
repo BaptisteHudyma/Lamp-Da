@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <PDM.h>
 
+namespace sound {
+
 // buffer to read samples into, each sample is 16-bits
 int16_t _sampleBuffer[256];
 volatile int samplesRead;
@@ -164,4 +166,36 @@ float get_sound_level_Db()
     lastValue = 20.0 * log10f(sqrtf(average));
     // convert to decibels
     return lastValue;
+}
+
+void vu_meter(const Color& vuColor, Adafruit_NeoPixel& strip)
+{
+  const float decibels = get_sound_level_Db();
+  // convert to 0 - 1
+  const float vuLevel = (decibels + abs(silenceLevelDb)) / highLevelDb;
+
+  // display the gradient
+  strip.clear();
+  animations::fill(vuColor, strip, vuLevel);
+}
+
+
+bool pulse_beat_wipe(const Color& color, Adafruit_NeoPixel& strip)
+{
+  // reset the pulse for each beat
+  static uint32_t durationMillis = 1000 / 6.0;  // max beat period
+  const bool beatDetected = get_beat_probability() > 0.9;
+  
+  // animation is finished and a beat is detected
+  if(beatDetected)
+  {
+    // reset pulse
+    animations::doubleSideFillUp(color, durationMillis, true, strip);
+    return true;
+  }
+
+  animations::doubleSideFillUp(color, durationMillis, false, strip);
+  return false;
+}
+
 }
