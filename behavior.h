@@ -17,20 +17,19 @@ extern uint8_t BRIGHTNESS;
 // if false, the led strip should be deactivated
 extern bool isActivated;
 
-
 /**
- * \brief update displayed color
+ * \brief main update loop
  */
-void colorDisplay();
+void color_mode_update();
 
 /**
  * \brief callback of the button clicked sequence event 
  */
-void buttonClickedCallback(uint8_t consecutiveButtonCheck);
+void button_clicked_callback(uint8_t consecutiveButtonCheck);
 
 /**
  * \brief callback of the button clicked sequence event with a final hold
  */
-void buttonHoldCallback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDuration);
+void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDuration);
 
 #endif

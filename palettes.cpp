@@ -60,10 +60,10 @@ const palette_t PalettePartyColors =
 // Black body radiation
 const palette_t PaletteHeatColors =
 {
-    0x000000, 0x330000, 0x660000, 0x990000,
-    0xCC0000, 0xFF0000, 0xFF3300, 0xFF6600,
-    0xFF9900, 0xFFCC00, 0xFFFF00,0xFFFF33,
-    0xFFFF66, 0xFFFF99, 0xFFFFCC, 0xFFFFFF
+    Candle, Candle, Tungsten40W, Tungsten40W,
+    Tungsten100W, Tungsten100W, Halogen, Halogen,
+    CarbonArc, CarbonArc, HighNoonSun, HighNoonSun,
+    DirectSunlight, DirectSunlight, OvercastSky, ClearBlueSky
 };
 
 

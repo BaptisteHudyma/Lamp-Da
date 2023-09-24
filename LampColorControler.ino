@@ -25,7 +25,7 @@ void setup()
 }
 
 void loop() {
-  handle_button_events(buttonClickedCallback, buttonHoldCallback);
+  handle_button_events(button_clicked_callback, button_hold_callback);
 
   if (!isActivated)
   {
@@ -35,5 +35,5 @@ void loop() {
     // deactivate strip power
   }
   else
-    colorDisplay();
+    color_mode_update();
 }

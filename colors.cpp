@@ -44,7 +44,7 @@ uint32_t GeneratePaletteStep::get_color(const uint16_t index, const uint16_t max
 
 uint32_t GenerateRainbowPulse::get_color(const uint16_t index, const uint16_t maxIndex) const
 {
-    return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(_currentPixelHue));
+    return Adafruit_NeoPixel::ColorHSV(_currentPixelHue);
 }
 
 GenerateRandomColor::GenerateRandomColor()
