@@ -18,7 +18,7 @@ bool check_button_state()
           break;
   }
   // 150/255 is a good threshold for noise
-  return cycles > 150;
+  return cycles > 50;
 }
 
 void treat_button_pressed(const bool isButtonPressDetected, std::function<void(uint8_t)> clickSerieCallback, std::function<void(uint8_t, uint32_t)> clickHoldSerieCallback)
@@ -74,4 +74,21 @@ void handle_button_events(std::function<void(uint8_t)> clickSerieCallback, std::
   // check the button pressed status
   const bool isButtonPressed = check_button_state();
   treat_button_pressed(isButtonPressed, clickSerieCallback, clickHoldSerieCallback);
+}
+
+
+float get_battery_level()
+{
+   constexpr float maxVoltage = 16.5;
+   constexpr float lowVoltage = 13.0;
+
+   static float lastValue = 0;
+
+   // map the input ADC out to voltage reading.
+   constexpr float maxInValue = 870;
+   const float pinMeasureVoltage = analogRead(BATTERY_CHARGE_PIN) / maxInValue * maxVoltage;
+   const float batteryVoltage = (1.0 - (maxVoltage - pinMeasureVoltage) / (maxVoltage - lowVoltage)) * 100.0;
+
+   lastValue = batteryVoltage * 0.01 + lastValue * 0.99;
+   return batteryVoltage;
 }

@@ -23,7 +23,12 @@ constexpr uint8_t MAX_BRIGHTNESS = 255;
 
 uint8_t colorMode = 0;    // color mode: main wheel of the color mode
 uint8_t colorState = 0;   // color state: subwheel of the current color mode
+
 uint8_t colorCodeIndex = 0; // color code index, used for color indexion
+uint8_t lastColorCodeIndex = colorCodeIndex;
+
+bool displayBattery = false;
+uint32_t displayBatteryTime = 0;
 
 bool isFinished = true;
 bool switchMode = true;
@@ -34,6 +39,7 @@ void increment_color_mode()
 
   colorState = 0;
   colorCodeIndex = 0;
+  lastColorCodeIndex = 0;
   isFinished = true;
   switchMode = false;
 
@@ -47,6 +53,7 @@ void decrement_color_mode()
 
   colorState = 0;
   colorCodeIndex = 0;
+  lastColorCodeIndex = 0;
   isFinished = true;
   switchMode = false;
 
@@ -61,6 +68,7 @@ void increment_color_state()
   isFinished = true;
   switchMode = false;
   colorCodeIndex = 0;
+  lastColorCodeIndex = 0;
 
   strip.clear();
   strip.show();  //  Update strip to match
@@ -73,6 +81,7 @@ void decrement_color_state()
   isFinished = true;
   switchMode = false;
   colorCodeIndex = 0;
+  lastColorCodeIndex = 0;
 
   strip.clear();
   strip.show();  //  Update strip to match
@@ -229,7 +238,26 @@ void gyro_mode_update()
 
 void color_mode_update()
 {
-  constexpr uint8_t maxColorMode = 5; 
+  constexpr uint8_t maxColorMode = 5;
+
+  if(displayBattery)
+  {
+    static GenerateGradientColor redToGreenGradient = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
+    strip.clear();
+    animations::fill(redToGreenGradient, strip, get_battery_level() / 100.0);
+
+    // animation last for 5 seconds max
+    if (millis() - displayBatteryTime > 5000.0)
+    {
+      strip.clear();
+      strip.show();
+      displayBattery = false;
+    }
+
+    // display battery voltage
+    return;
+  }
+
   switch(colorMode % maxColorMode)
   {
     case 0: // kelvin mode
@@ -265,6 +293,8 @@ void button_clicked_callback(uint8_t consecutiveButtonCheck)
   if (consecutiveButtonCheck == 0)
     return;
 
+  displayBattery = false;
+
   isAugmentBrightness = true;
   switch(consecutiveButtonCheck)
   {
@@ -293,6 +323,8 @@ void button_clicked_callback(uint8_t consecutiveButtonCheck)
 
     case 5:
       // TODO: bluetooth
+      displayBattery = true;
+      displayBatteryTime = millis();
       break;
 
     default:
@@ -308,15 +340,15 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
 {
   // no click event
   if (consecutiveButtonCheck == 0)
-  {
     return;
-  }
+
+  displayBattery = false;
+
   const bool isEndOfHoldEvent = buttonHoldDuration <= 1;
   buttonHoldDuration -= HOLD_BUTTON_MIN_MS;
 
   // hold the current level of brightness out of the animation
   static uint8_t currentBrightness = BRIGHTNESS;
-  static uint8_t lastColorCodeIndex = colorCodeIndex;
 
   switch(consecutiveButtonCheck)
   {

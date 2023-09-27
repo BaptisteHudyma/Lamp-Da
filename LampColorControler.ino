@@ -6,7 +6,7 @@
 void setup()
 {
   Serial.begin(115200);
-
+ 
   // These lines are specifically to support the Adafruit Trinket 5V 16 MHz.
   // Any other board, you can remove this part (but no harm leaving it):
 #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
@@ -23,11 +23,23 @@ void setup()
   pinMode(LED_POWER_PIN, OUTPUT);
   pinMode(BATTERY_CHARGE_PIN, INPUT);
 
+  pinMode(LED_BUILTIN, OUTPUT);
+
   sound::init_microphone(16000);
 }
 
 void loop() {
   handle_button_events(button_clicked_callback, button_hold_callback);
+
+
+  static uint32_t lastCall = 0;
+
+  if(millis() - lastCall > 1000)
+  {
+    digitalToggle(LED_BUILTIN);
+    lastCall = millis();
+  }
+
 
   if (!isActivated)
   {
@@ -40,9 +52,6 @@ void loop() {
   else
   {
     digitalWrite(LED_POWER_PIN, HIGH);
-    
-    const float batteryLevel = analogRead(BATTERY_CHARGE_PIN) /3.0 * 100.0;
-    Serial.println(batteryLevel);
 
     color_mode_update();
   }

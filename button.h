@@ -13,4 +13,7 @@
  */
 void handle_button_events(std::function<void(uint8_t)> clickSerieCallback, std::function<void(uint8_t, uint32_t)> clickHoldSerieCallback);
 
+// return a number between 0 and 100
+float get_battery_level();
+
 #endif
