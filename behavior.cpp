@@ -21,6 +21,10 @@ bool isActivated = false;
 constexpr uint8_t MIN_BRIGHTNESS = 15;
 constexpr uint8_t MAX_BRIGHTNESS = 255;
 
+
+bool modeChange = true;     // signal a color mode change
+bool categoryChange = true; // signal a color category change
+
 uint8_t colorMode = 0;    // color mode: main wheel of the color mode
 uint8_t colorState = 0;   // color state: subwheel of the current color mode
 
@@ -33,15 +37,23 @@ uint32_t displayBatteryTime = 0;
 bool isFinished = true;
 bool switchMode = true;
 
+void reset_globals()
+{
+  isFinished = true;
+  switchMode = false;
+  colorCodeIndex = 0;
+  lastColorCodeIndex = 0;
+}
+
 void increment_color_mode()
 {
   colorMode += 1;
+  modeChange = true;
 
+  // reset color state
   colorState = 0;
-  colorCodeIndex = 0;
-  lastColorCodeIndex = 0;
-  isFinished = true;
-  switchMode = false;
+  
+  reset_globals();
 
   strip.clear();
   strip.show();  //  Update strip to match
@@ -50,12 +62,12 @@ void increment_color_mode()
 void decrement_color_mode()
 {
   colorMode -= 1;
+  modeChange = true;
 
+  // reset color state
   colorState = 0;
-  colorCodeIndex = 0;
-  lastColorCodeIndex = 0;
-  isFinished = true;
-  switchMode = false;
+  
+  reset_globals();
 
   strip.clear();
   strip.show();  //  Update strip to match
@@ -65,10 +77,10 @@ void increment_color_state()
 {
   colorState += 1;
 
-  isFinished = true;
-  switchMode = false;
-  colorCodeIndex = 0;
-  lastColorCodeIndex = 0;
+  // signal a change of category
+  categoryChange = true;
+
+  reset_globals();
 
   strip.clear();
   strip.show();  //  Update strip to match
@@ -78,10 +90,10 @@ void decrement_color_state()
 {
   colorState -= 1;
 
-  isFinished = true;
-  switchMode = false;
-  colorCodeIndex = 0;
-  lastColorCodeIndex = 0;
+  // signal a change of category
+  categoryChange = true;
+
+  reset_globals();
 
   strip.clear();
   strip.show();  //  Update strip to match
@@ -101,6 +113,8 @@ void kelvin_mode_update()
     case 0: // kelvin mode
       static auto lastColorStep = colorCodeIndex;
       static auto paletteHeatColor = GeneratePaletteIndexed(PaletteHeatColors);
+      if (categoryChange) paletteHeatColor.reset();
+
       if(colorCodeIndex != lastColorStep)
       {
         lastColorStep = colorCodeIndex;
@@ -111,6 +125,8 @@ void kelvin_mode_update()
 
     case 1: // rainbow mode
       static auto rainbowIndex = GenerateRainbowIndex(UINT8_MAX);     // pulse around a rainbow, with a certain color division
+      if (categoryChange) rainbowIndex.reset();
+      
       if(colorCodeIndex != lastColorStep)
       {
         lastColorStep = colorCodeIndex;
@@ -124,6 +140,9 @@ void kelvin_mode_update()
       strip.show(); // clear strip
     break;
   }
+
+  // reset category change
+  categoryChange = false;
 }
 
 void calm_mode_update()
@@ -134,12 +153,16 @@ void calm_mode_update()
     case 0: // rainbow swirl animation
       // display a color animation
       static GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);  // swirl animation (5 seconds)
+      if (categoryChange) rainbowSwirl.reset();
+
       animations::fill(rainbowSwirl, strip);
       rainbowSwirl.update();  // update 
     break;
 
     case 1:
       static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(10);     // pulse around a rainbow, with a certain color division
+      if (categoryChange) rainbowPulse.reset();
+
       isFinished = animations::fadeIn(rainbowPulse, 5000, isFinished, strip);
       if (isFinished)
       {
@@ -149,6 +172,8 @@ void calm_mode_update()
 
     case 2: // slow color change
       static GenerateRainbowColor rainbowColor = GenerateRainbowColor();      // will output a rainbow from start to bottom of the display
+      if (categoryChange) rainbowColor.reset();
+
       isFinished = switchMode ? animations::fadeOut(300, isFinished, strip) : animations::fadeIn(rainbowColor, 1000, isFinished, strip);
       if (isFinished) switchMode = !switchMode;
     break;
@@ -158,6 +183,9 @@ void calm_mode_update()
       strip.show(); // clear strip
     break;
   }
+
+  // reset category change
+  categoryChange = false;
 }
 
 void party_mode_update()
@@ -167,6 +195,8 @@ void party_mode_update()
   {
     case 0:
       static GenerateComplementaryColor complementaryColor = GenerateComplementaryColor(0.3);
+      if (categoryChange) complementaryColor.reset();
+
       isFinished = switchMode ? animations::colorWipeUp(complementaryColor, 500, isFinished, strip) : animations::colorWipeDown(complementaryColor, 500, isFinished, strip);
       if (isFinished)
       {
@@ -178,12 +208,16 @@ void party_mode_update()
     case 1:
       // random solid color
       static GenerateRandomColor randomColor = GenerateRandomColor();
+      if (categoryChange) randomColor.reset();
+
       isFinished = animations::doubleSideFillUp(randomColor, 500, isFinished, strip);
       if (isFinished) randomColor.update();  // update color
     break;
 
     case 2:
       static GenerateComplementaryColor complementaryPingPongColor = GenerateComplementaryColor(0.3);
+      if (categoryChange) complementaryPingPongColor.reset();
+
       // ping pong a color for infinity
       isFinished = animations::dotPingPong(complementaryPingPongColor, 500.0, isFinished, strip);
       if (isFinished) complementaryPingPongColor.update();  // update color
@@ -194,6 +228,9 @@ void party_mode_update()
       strip.show(); // clear strip
     break;
   }
+
+  // reset category change
+  categoryChange = false;
 }
 
 void sound_mode_update()
@@ -203,12 +240,16 @@ void sound_mode_update()
   {
     case 0: // vue meter
       static GenerateGradientColor redToGreenGradient = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
+      if (categoryChange) redToGreenGradient.reset();
+
       sound::vu_meter(redToGreenGradient, strip);
     break;
 
     case 1: // pulse soud
       // wipe a color pulse around the tube at each beat
       static GenerateComplementaryColor complementaryColor = GenerateComplementaryColor(0.3);
+      if (categoryChange) redToGreenGradient.reset();
+
       if (sound::pulse_beat_wipe(complementaryColor, strip))
         complementaryColor.update();
     break;
@@ -218,6 +259,9 @@ void sound_mode_update()
       strip.show(); // clear strip
     break;
   }
+
+  // reset category change
+  categoryChange = false;
 }
 
 void gyro_mode_update()
@@ -234,6 +278,9 @@ void gyro_mode_update()
       strip.show(); // clear strip
     break;
   }
+
+  // reset category change
+  categoryChange = false;
 }
 
 void color_mode_update()
@@ -243,6 +290,8 @@ void color_mode_update()
   if(displayBattery)
   {
     static GenerateGradientColor redToGreenGradient = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
+    if (categoryChange) redToGreenGradient.reset();
+
     strip.clear();
     animations::fill(redToGreenGradient, strip, get_battery_level() / 100.0);
 
@@ -283,6 +332,9 @@ void color_mode_update()
     default:
     break;
   }
+
+  // reset mode change
+  modeChange = false;
 }
 
 

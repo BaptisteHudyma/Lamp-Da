@@ -13,6 +13,11 @@ class Color
 {
     public:
     virtual uint32_t get_color(const uint16_t index = 0, const uint16_t maxIndex = 0) const = 0;
+
+    /**
+     * \brief reset the color
+     */
+    virtual void reset() = 0;
 };
 
 /**
@@ -38,11 +43,6 @@ class DynamicColor : public Color
         return false;
     }
 
-    /**
-     * \brief reset the animation
-     */
-    virtual void reset() = 0;
-
     protected:
     virtual void internal_update(const uint32_t deltaTimeMilli) = 0;
     long unsigned _lastUpdate;  // time of the last update, in ms
@@ -65,6 +65,8 @@ class GenerateSolidColor : public Color
 
     uint32_t get_color(const uint16_t index = 0, const uint16_t maxIndex = 0) const override;
 
+    void reset() override {};
+
     private:
     uint32_t _color;
 };
@@ -78,6 +80,8 @@ class GenerateRainbowColor : public Color
     GenerateRainbowColor() {};
 
     uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override;
+
+    void reset() override {};
 };
 
 /**
@@ -89,6 +93,8 @@ class GenerateGradientColor : public Color
     GenerateGradientColor(const uint32_t colorStart, const uint32_t colorEnd) : _colorStart(colorStart), _colorEnd(colorEnd) {};
 
     uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override;
+
+    void reset() override {};
 
     private:
     uint32_t _colorStart;
@@ -104,6 +110,8 @@ class GenerateRoundColor : public Color
     GenerateRoundColor() {};
 
     uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override;
+
+    void reset() override {};
 };
 
 /**
@@ -173,6 +181,8 @@ class GeneratePaletteIndexed : public IndexedColor
         _index = index;
     }
 
+    void reset() override { _index = 0; };
+
     private:
     uint8_t _index;
     const palette_t* _paletteRef;
@@ -219,6 +229,8 @@ class GenerateRainbowIndex : public IndexedColor
         _currentPixelHue = index * _increment;
     }
 
+    void reset() override { _currentPixelHue = 0; };
+
     private:
     uint32_t _increment;
     uint16_t _currentPixelHue;
@@ -257,7 +269,7 @@ public:
 
     uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override { return _color; }
     
-    void reset() override {};
+    void reset() override { _color = 0; };
 
 private:
     /**
