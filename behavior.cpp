@@ -187,12 +187,8 @@ void calm_mode_update()
       }
     break;
 
-    case 2: // slow color change
-      static GenerateRainbowColor rainbowColor = GenerateRainbowColor();      // will output a rainbow from start to bottom of the display
-      if (categoryChange) rainbowColor.reset();
-
-      isFinished = switchMode ? animations::fadeOut(300, isFinished, strip) : animations::fadeIn(rainbowColor, 1000, isFinished, strip);
-      if (isFinished) switchMode = !switchMode;
+    case 2: // fire animation
+      animations::fire(strip);
     break;
 
     default:  // error
@@ -287,7 +283,7 @@ void gyro_mode_update()
   switch(clamp_state_values(colorState, maxGyroState))
   {
     case 0:
-      animations::police(600, false, strip);
+      animations::police(500, false, strip);
     break;
 
     default:  // error

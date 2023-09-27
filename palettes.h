@@ -238,6 +238,7 @@ extern const palette_t PaletteOceanColors;
 extern const palette_t PaletteForestColors;
 extern const palette_t PaletteRainbowColors;
 extern const palette_t PalettePartyColors;
+extern const palette_t PaletteBlackBodyColors;
 extern const palette_t PaletteHeatColors;
 
 /**

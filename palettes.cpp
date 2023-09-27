@@ -57,13 +57,21 @@ const palette_t PalettePartyColors =
     0x8F0071, 0x5F00A1, 0x2F00D0, 0x0007F9
 };
 
+const palette_t PaletteBlackBodyColors =
+{
+    0x000000, 0x330000, 0x660000, 0x990000,
+    0xCC0000, 0xFF0000, 0xFF3300, 0xFF6600,
+    0xFF9900, 0xFFCC00, 0xFFFF00,0xFFFF33,
+    0xFFFF66, 0xFFFF99, 0xFFFFCC, 0xFFFFFF
+};
+
 // Black body radiation
 const palette_t PaletteHeatColors =
 {
-    Candle, Candle, Tungsten40W, Tungsten40W,
-    Tungsten100W, Tungsten100W, Halogen, Halogen,
-    CarbonArc, CarbonArc, HighNoonSun, HighNoonSun,
-    DirectSunlight, DirectSunlight, OvercastSky, ClearBlueSky
+    0xca200c, 0xd53513, 0xdd4819, 0xe3521e,
+    0xe95e22, 0xef6a26, 0xf6782b, 0xfc842f,
+    0xfe982e, 0xfcb326, 0xfbcd1e, 0xf9e715,
+    0xf8f135, 0xf8f263, 0xf8f492, 0xf9f6b8
 };
 
 

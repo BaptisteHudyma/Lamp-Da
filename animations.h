@@ -80,6 +80,12 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
  */
 bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float firstCutOff=0.0, const float secondCutOff=1.0);
 
+
+/**
+ * Fire animation
+ */
+bool fire(Adafruit_NeoPixel& strip);
+
 };
 
 #endif

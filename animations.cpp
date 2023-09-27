@@ -1,6 +1,7 @@
 #include "animations.h"
 
 #include "constants.h"
+#include "palettes.h"
 #include "wipes.h"
 #include "utils.h"
 
@@ -8,6 +9,9 @@
 #include <math.h>
 #include <cmath>
 #include <vector>
+
+#include "math8.h"
+#include "random8.h"
 
 namespace animations
 {
@@ -123,8 +127,7 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
   const unsigned long currentMillis = millis();
    
 
-  constexpr uint8_t maxStates = 7;
-  switch(state % maxStates)
+  switch(state)
   {
     // first left blue flash
     case 0:
@@ -319,6 +322,63 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Ada
   }
 
   return false;
+}
+
+
+bool fire(Adafruit_NeoPixel& strip)
+{
+  constexpr bool gReverseDirection = true;
+  constexpr uint32_t FPS = 1000.0 / 30.0;
+  static uint32_t lastUpdate = 0;
+  if (millis() - lastUpdate < FPS)
+    return true;
+  lastUpdate = millis();
+  random16_add_entropy( random());
+
+  // COOLING: How much does the air cool as it rises?
+  // Less cooling = taller flames.  More cooling = shorter flames.
+  // Default 50, suggested range 20-100 
+  constexpr uint8_t COOLING = 100;
+
+  // SPARKING: What chance (out of 255) is there that a new spark will be lit?
+  // Higher chance = more roaring fire.  Lower chance = more flickery fire.
+  // Default 120, suggested range 50-200.
+  constexpr uint8_t SPARKING = 200;
+
+  // Array of temperature readings at each simulation cell
+  static uint8_t heat[LED_COUNT];
+
+  // Step 1.  Cool down every cell a little
+  for( int i = 0; i < LED_COUNT; i++) {
+    heat[i] = qsub8( heat[i],  random8(0, ((COOLING * 10) / LED_COUNT) + 2));
+  }
+
+  // Step 2.  Heat from each cell drifts 'up' and diffuses a little
+  for( int k= LED_COUNT - 1; k >= 2; k--) {
+    heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2] ) / 3;
+  }
+  
+  // Step 3.  Randomly ignite new 'sparks' of heat near the bottom
+  if( random8() < SPARKING ) {
+    int y = random8(7);
+    heat[y] = qadd8( heat[y], random8(160,255) );
+  }
+
+  // Step 4.  Map from heat cells to LED colors
+  for(int j = 0; j < LED_COUNT; j++) {
+    int pixelnumber;
+    if( gReverseDirection ) {
+      pixelnumber = (LED_COUNT-1) - j;
+    } else {
+      pixelnumber = j;
+    }
+
+    uint8_t colorindex = scale8( heat[j], 240);
+    strip.setPixelColor(pixelnumber, get_color_from_palette(colorindex, PaletteBlackBodyColors));
+  }
+  strip.show();
+
+  return true;
 }
 
 }
