@@ -103,14 +103,29 @@ void decrement_color_state()
 
 
 
-
-
-
-
-void kelvin_mode_update()
+uint8_t clamp_state_values(uint8_t& state, const uint8_t maxValue)
 {
-  constexpr uint8_t maxKelvinColorState = 2;
-  switch(colorState % maxKelvinColorState)
+  // incrmeent one too much, loop around
+  if (state == maxValue + 1)
+    state = 0;
+
+  // default return value
+  else if (state <= maxValue)
+    return state;
+
+  // got below 0, set to max value
+  else if (state > maxValue)
+    state = maxValue;
+
+  return state;
+}
+
+
+
+void gradient_mode_update()
+{
+  constexpr uint8_t maxGradientColorState = 1;
+  switch(clamp_state_values(colorState, maxGradientColorState))
   {
     case 0: // kelvin mode
       static auto lastColorStep = colorCodeIndex;
@@ -149,8 +164,8 @@ void kelvin_mode_update()
 
 void calm_mode_update()
 {
-  constexpr uint8_t maxCalmColorState = 3;
-  switch(colorState % maxCalmColorState)
+  constexpr uint8_t maxCalmColorState = 2;
+  switch(clamp_state_values(colorState, maxCalmColorState))
   {
     case 0: // rainbow swirl animation
       // display a color animation
@@ -192,8 +207,8 @@ void calm_mode_update()
 
 void party_mode_update()
 {
-  constexpr uint8_t maxPartyState = 3;
-  switch(colorState % maxPartyState)
+  constexpr uint8_t maxPartyState = 2;
+  switch(clamp_state_values(colorState, maxPartyState))
   {
     case 0:
       static GenerateComplementaryColor complementaryColor = GenerateComplementaryColor(0.3);
@@ -237,8 +252,8 @@ void party_mode_update()
 
 void sound_mode_update()
 {
-  constexpr uint8_t maxSoundState = 2;
-  switch(colorState % maxSoundState)
+  constexpr uint8_t maxSoundState = 1;
+  switch(clamp_state_values(colorState, maxSoundState))
   {
     case 0: // vue meter
       static GenerateGradientColor redToGreenGradient = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
@@ -268,11 +283,11 @@ void sound_mode_update()
 
 void gyro_mode_update()
 {
-  constexpr uint8_t maxGyroState = 1;
-  switch(colorState % maxGyroState)
+  constexpr uint8_t maxGyroState = 0;
+  switch(clamp_state_values(colorState, maxGyroState))
   {
     case 0:
-      animations::police(400, false, strip);
+      animations::police(600, false, strip);
     break;
 
     default:  // error
@@ -304,7 +319,6 @@ void display_battery_level()
 
 void color_mode_update()
 {
-  constexpr uint8_t maxColorMode = 5;
 
   if(displayBattery)
   {
@@ -313,10 +327,11 @@ void color_mode_update()
     return;
   }
 
-  switch(colorMode % maxColorMode)
+  constexpr uint8_t maxColorMode = 4;
+  switch(clamp_state_values(colorMode, maxColorMode))
   {
-    case 0: // kelvin mode
-      kelvin_mode_update();
+    case 0: // gradient mode
+      gradient_mode_update();
     break;
 
     case 1: // calm mode

@@ -115,46 +115,116 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
   }
 
   // convert duration in delay
-  const uint16_t delay = duration / 3;
+  const uint16_t partDelay = duration / 3;
 
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= delay) {
-    previousMillis = currentMillis;
-  
-    switch(state)
+  const uint32_t bluePartLenght = 3.0/5.0 * partDelay;
+  const uint32_t clearPartLenght = 2.0/5.0 * bluePartLenght;
+
+  const unsigned long currentMillis = millis();
+   
+
+  constexpr uint8_t maxStates = 7;
+  switch(state % maxStates)
+  {
+    // first left blue flash
+    case 0:
     {
-      case 0:
-      {
-        strip.clear();
+      strip.clear();
 
-        // blue lights
-        strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), 0, LED_COUNT / 2+1);  // Set blue
+      // blue lights
+      strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), 0, LED_COUNT / 2+1);  // Set on the first part
+      strip.show();  // Update strip with new contents
+      
+      // set next state
+      state++;
+      break;
+    }
+    // first short clear
+    case 1:
+    {
+      if (currentMillis - previousMillis >= bluePartLenght) {
+        previousMillis = currentMillis;
+
+        strip.clear();
         strip.show();  // Update strip with new contents
         
         // set next state
-        state = 1;
-        break;
+        state++;
       }
-      case 1:
-      {
+      break;
+    }
+    // second left blue flash
+    case 2:
+    {
+      if (currentMillis - previousMillis >= bluePartLenght) {
+        previousMillis = currentMillis;
+
         strip.clear();
-        strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), LED_COUNT / 2, LED_COUNT);  // Set red
+
+        // blue lights
+        strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), 0, LED_COUNT / 2+1);  // Set on the first part
+        strip.show();  // Update strip with new contents
+        
+        // set next state
+        state++;
+      }
+      break;
+    }
+
+    // first right blue flash
+    case 3:
+    {
+      if (currentMillis - previousMillis >= clearPartLenght) {
+        previousMillis = currentMillis;
+
+        strip.clear();
+        strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), LED_COUNT / 2, LED_COUNT);  // Set on the second part
         strip.show();  // Update strip with new contents
 
         // set next state
-        state = 2;
-        break;
+        state++;
       }
-      case 2:
-      default:
-      {
-        strip.clear();
-        strip.show();
+      break;
+    }
+    // first short pause
+    case 4:
+    {
+      if (currentMillis - previousMillis >= bluePartLenght) {
+        previousMillis = currentMillis;
 
-        // reset state
+        strip.clear();
+        strip.show();  // Update strip with new contents
+        
+        // set next state
+        state++;
+      }
+      break;
+    }
+    case 5:
+    {
+      if (currentMillis - previousMillis >= bluePartLenght) {
+        previousMillis = currentMillis;
+
+        strip.clear();
+        strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), LED_COUNT / 2, LED_COUNT);  // Set on the second part
+        strip.show();  // Update strip with new contents
+
+        // set next state
+        state++;
+      }
+      break;
+    }
+    case 6:
+    {
+      if (currentMillis - previousMillis >= bluePartLenght) {
+        previousMillis = currentMillis;
+
+        strip.clear();
+        strip.show();  // Update strip with new contents
         state = 0;
         return true;
       }
+      break;
     }
   }
 
