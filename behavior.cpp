@@ -52,6 +52,7 @@ void increment_color_mode()
 
   // reset color state
   colorState = 0;
+  categoryChange = true;
   
   reset_globals();
 
@@ -66,6 +67,7 @@ void decrement_color_mode()
 
   // reset color state
   colorState = 0;
+  categoryChange = true;
   
   reset_globals();
 
@@ -283,27 +285,31 @@ void gyro_mode_update()
   categoryChange = false;
 }
 
+void display_battery_level()
+{
+  static GenerateGradientColor redToGreenGradient = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
+  if (categoryChange) redToGreenGradient.reset();
+
+  strip.clear();
+  animations::fill(redToGreenGradient, strip, get_battery_level() / 100.0);
+
+  // animation last for 5 seconds max
+  if (millis() - displayBatteryTime > 5000.0)
+  {
+    strip.clear();
+    strip.show();
+    displayBattery = false;
+  }
+}
+
 void color_mode_update()
 {
   constexpr uint8_t maxColorMode = 5;
 
   if(displayBattery)
   {
-    static GenerateGradientColor redToGreenGradient = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
-    if (categoryChange) redToGreenGradient.reset();
-
-    strip.clear();
-    animations::fill(redToGreenGradient, strip, get_battery_level() / 100.0);
-
-    // animation last for 5 seconds max
-    if (millis() - displayBatteryTime > 5000.0)
-    {
-      strip.clear();
-      strip.show();
-      displayBattery = false;
-    }
-
     // display battery voltage
+    display_battery_level();
     return;
   }
 
@@ -420,7 +426,12 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
       {
         if (!isEndOfHoldEvent)
         {
-          const auto newBrightness = map(min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS), 0, BRIGHTNESS_RAMP_DURATION_MS, currentBrightness, MAX_BRIGHTNESS);
+          const float percentOfTimeToGoUp = float(MAX_BRIGHTNESS - currentBrightness) / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
+
+          const auto newBrightness = map(
+            min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp), 0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
+            currentBrightness, MAX_BRIGHTNESS
+          );
           if (BRIGHTNESS != newBrightness)
           {
             BRIGHTNESS = newBrightness;
@@ -439,7 +450,12 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
          // lower luminositity
         if (!isEndOfHoldEvent)
         {
-          const auto newBrightness = map(min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS), 0, BRIGHTNESS_RAMP_DURATION_MS, currentBrightness, MIN_BRIGHTNESS);
+          const double percentOfTimeToGoDown = float(currentBrightness - MIN_BRIGHTNESS) / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
+
+          const auto newBrightness = map(
+            min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown), 0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
+            currentBrightness, MIN_BRIGHTNESS
+          );
           if (BRIGHTNESS != newBrightness)
           {
             BRIGHTNESS = newBrightness;
