@@ -153,6 +153,7 @@ void gradient_mode_update()
       break;
 
     default:  // error
+      colorState = 0;
       strip.clear();
       strip.show(); // clear strip
     break;
@@ -164,7 +165,7 @@ void gradient_mode_update()
 
 void calm_mode_update()
 {
-  constexpr uint8_t maxCalmColorState = 2;
+  constexpr uint8_t maxCalmColorState = 1;
   switch(clamp_state_values(colorState, maxCalmColorState))
   {
     case 0: // rainbow swirl animation
@@ -187,11 +188,8 @@ void calm_mode_update()
       }
     break;
 
-    case 2: // fire animation
-      animations::fire(strip);
-    break;
-
     default:  // error
+      colorState = 0;
       strip.clear();
       strip.show(); // clear strip
     break;
@@ -237,6 +235,7 @@ void party_mode_update()
     break;
 
     default:  // error
+    colorState = 0;
       strip.clear();
       strip.show(); // clear strip
     break;
@@ -268,6 +267,7 @@ void sound_mode_update()
     break;
 
     default:  // error
+      colorState = 0;
       strip.clear();
       strip.show(); // clear strip
     break;
@@ -287,6 +287,7 @@ void gyro_mode_update()
     break;
 
     default:  // error
+      colorState = 0;
       strip.clear();
       strip.show(); // clear strip
     break;
@@ -347,6 +348,7 @@ void color_mode_update()
     break;
 
     default:
+      colorMode = 0;
     break;
   }
 
