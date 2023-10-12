@@ -4,6 +4,7 @@
 
 #include "button.h"
 #include "animations.h"
+#include "palettes.h"
 #include "wipes.h"
 #include "utils.h"
 #include <cstdint>
@@ -165,7 +166,7 @@ void gradient_mode_update()
 
 void calm_mode_update()
 {
-  constexpr uint8_t maxCalmColorState = 3;
+  constexpr uint8_t maxCalmColorState = 5;
   switch(clamp_state_values(colorState, maxCalmColorState))
   {
     case 0: // rainbow swirl animation
@@ -196,10 +197,18 @@ void calm_mode_update()
       break;
 
     case 2:
-      animations::random_noise(PalettePartyColors, strip, true, 20);
+      animations::random_noise(PaletteLavaColors, strip, true, 20);
     break;
 
-    case 3: // pastel wheel
+    case 3:
+      animations::random_noise(PaletteForestColors, strip, true, 20);
+    break;
+
+    case 4:
+      animations::random_noise(PaletteOceanColors, strip, true, 20);
+    break;
+
+    case 5: // pastel wheel
       static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(25);     // pulse around a rainbow, with a certain color division
       if (categoryChange) rainbowPulse.reset();
 

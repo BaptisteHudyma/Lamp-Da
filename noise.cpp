@@ -170,7 +170,7 @@ uint8_t inoise8_octaves(uint16_t x, uint8_t octaves, int scale, uint16_t time) {
     uint32_t _xx = x;
     uint32_t scx = scale;
     for(int o = 0; o < octaves; ++o) {
-        noise = qadd8(noise,inoise8(_xx, time)>>o);
+        noise = qadd8(noise,inoise8(_xx + scx, time)>>o);
 
         _xx <<= 1;
         scx <<= 1;

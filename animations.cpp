@@ -401,6 +401,9 @@ void random_noise(const palette_t& palette, Adafruit_NeoPixel& strip, const bool
   if(millis() - lastcall > 30)
   {
     lastcall = millis();
+
+    // how much the new value influences the last one
+    float dataSmoothing = 0.3;
     for(int i = 0; i < LED_COUNT; i++) {
       int ioffset = scale * i;
       uint8_t data = noise::inoise8(x + ioffset);
@@ -410,6 +413,10 @@ void random_noise(const palette_t& palette, Adafruit_NeoPixel& strip, const bool
       // You can comment them out if you want the raw noise data.
       data = qsub8(data,16);
       data = qadd8(data,scale8(data,39));
+
+      // smooth over time to prevent suddent jumps
+      uint8_t newdata = noise[i] * dataSmoothing +  data * (1.0 - dataSmoothing);
+      data = newdata;
       
       noise[i] = data;
     }
