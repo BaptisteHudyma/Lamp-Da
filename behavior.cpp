@@ -165,7 +165,7 @@ void gradient_mode_update()
 
 void calm_mode_update()
 {
-  constexpr uint8_t maxCalmColorState = 2;
+  constexpr uint8_t maxCalmColorState = 3;
   switch(clamp_state_values(colorState, maxCalmColorState))
   {
     case 0: // rainbow swirl animation
@@ -195,7 +195,11 @@ void calm_mode_update()
       }
       break;
 
-    case 2: // pastel wheel
+    case 2:
+      animations::random_noise(PalettePartyColors, strip, true, 20);
+    break;
+
+    case 3: // pastel wheel
       static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(25);     // pulse around a rainbow, with a certain color division
       if (categoryChange) rainbowPulse.reset();
 

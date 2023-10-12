@@ -5,7 +5,6 @@
 #include "colors.h"
 #include <cstdint>
 
-namespace utils {
 
 #define SQR(x) ((x)*(x))
 #define POW2(x) SQR(x)
@@ -13,6 +12,9 @@ namespace utils {
 #define POW4(x) (POW2(x)*POW2(x))
 #define POW7(x) (POW3(x)*POW3(x)*(x))
 #define DegToRad(x) ((x)*M_PI/180)
+#define FADE(x) scale16(x,x)
+
+namespace utils {
 
 /**
  * \brief Use this to convert color to bytes

@@ -86,6 +86,8 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Ada
  */
 bool fire(Adafruit_NeoPixel& strip);
 
+void random_noise(const palette_t& palette, Adafruit_NeoPixel& strip, const bool isColorLoop, const uint16_t scale);
+
 };
 
 #endif

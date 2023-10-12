@@ -12,6 +12,7 @@
 
 #include "math8.h"
 #include "random8.h"
+#include "noise.h"
 
 namespace animations
 {
@@ -382,5 +383,66 @@ bool fire(Adafruit_NeoPixel& strip)
 
   return true;
 }
+
+
+void random_noise(const palette_t& palette, Adafruit_NeoPixel& strip, const bool isColorLoop, const uint16_t scale)
+{
+  // We're using the x/y dimensions to map to the x/y pixels on the matrix.  We'll
+  // use the z-axis for "time".  speed determines how fast time moves forward.  Try
+  // 1 for a very slow moving effect, or 60 for something that ends up looking like
+  // water.
+  static const float speed = 0.1; // speed is set dynamically once we've started up
+
+  static uint8_t noise[LED_COUNT] = {0};
+  // noise coordinates
+  static float x = 0;
+
+  static uint32_t lastcall = 0;
+  if(millis() - lastcall > 30)
+  {
+    lastcall = millis();
+    for(int i = 0; i < LED_COUNT; i++) {
+      int ioffset = scale * i;
+      uint8_t data = noise::inoise8(x + ioffset);
+
+      // The range of the inoise8 function is roughly 16-238.
+      // These two operations expand those values out to roughly 0..255
+      // You can comment them out if you want the raw noise data.
+      data = qsub8(data,16);
+      data = qadd8(data,scale8(data,39));
+      
+      noise[i] = data;
+    }
+
+    x += speed;
+
+    static uint8_t ihue=0;
+    
+    for(int i = 0; i < LED_COUNT; i++) {
+      uint8_t index = noise[i];
+      uint8_t bri =   noise[LED_COUNT - 1 - i];
+
+      // if this palette is a 'loop', add a slowly-changing base value
+      if(isColorLoop) { 
+        index += ihue;
+      }
+
+      // brighten up, as the color palette itself often contains the 
+      // light/dark dynamic range desired
+      if( bri > 127 ) {
+        bri = 255;
+      } else {
+        bri = dim8_raw( bri * 2);
+      }
+
+      strip.setPixelColor(i, get_color_from_palette(index, palette, bri));
+    }
+    
+    ihue+=1;
+
+    strip.show();
+  }
+}
+
 
 }
