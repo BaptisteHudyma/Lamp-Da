@@ -165,7 +165,7 @@ void gradient_mode_update()
 
 void calm_mode_update()
 {
-  constexpr uint8_t maxCalmColorState = 1;
+  constexpr uint8_t maxCalmColorState = 2;
   switch(clamp_state_values(colorState, maxCalmColorState))
   {
     case 0: // rainbow swirl animation
@@ -177,7 +177,19 @@ void calm_mode_update()
       rainbowSwirl.update();  // update 
     break;
 
-    case 1:
+    case 1: // party wheel
+      static auto lastColorStep = colorCodeIndex;
+      static auto palettePartyColor = GeneratePaletteStep(PalettePartyColors);
+      if (categoryChange) palettePartyColor.reset();
+
+      isFinished = animations::fadeIn(palettePartyColor, 100, isFinished, strip);
+      if (isFinished)
+      {
+        palettePartyColor.update();
+      }
+      break;
+
+    case 2: // pastel wheel
       static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(25);     // pulse around a rainbow, with a certain color division
       if (categoryChange) rainbowPulse.reset();
 
@@ -357,7 +369,6 @@ void color_mode_update()
 }
 
 
-bool isAugmentBrightness = true;
 // call when the button is finally release
 void button_clicked_callback(uint8_t consecutiveButtonCheck)
 {
@@ -366,20 +377,15 @@ void button_clicked_callback(uint8_t consecutiveButtonCheck)
 
   displayBattery = false;
 
-  isAugmentBrightness = true;
   switch(consecutiveButtonCheck)
   {
-    case 1: // 1 click: activate lamp, or increment mode
-      if (isActivated)
-        increment_color_state();
-      else
-        // activate with one click
-        isActivated = true;
+    case 1: // 1 click: toggle lamp
+      isActivated = !isActivated;
       break;
 
-    case 2: // 2 clicks: decrement color state
+    case 2: // 2 clicks: increment color state
       if (isActivated)
-        decrement_color_state();
+        increment_color_state();
       break;
     
     case 3: // 3 clicks: increment color mode
@@ -412,6 +418,9 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
   // no click event
   if (consecutiveButtonCheck == 0)
     return;
+  // ignore buttons events when lamp is off
+  if (!isActivated)
+    return;
 
   displayBattery = false;
 
@@ -424,63 +433,47 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
   switch(consecutiveButtonCheck)
   {
     case 1: // just hold the click
-    // deactivate on 1 second
-      if (isActivated and buttonHoldDuration > 1000)
+      if (!isEndOfHoldEvent)
       {
-        isActivated = false;
-        isFinished = true;
-        switchMode = false;
-      }
-      break;
+        const float percentOfTimeToGoUp = float(MAX_BRIGHTNESS - currentBrightness) / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
 
-    case 2: // 2 click and hold
-      // augment luminositity
-      if (isAugmentBrightness)
-      {
-        if (!isEndOfHoldEvent)
+        const auto newBrightness = map(
+          min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp), 0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
+          currentBrightness, MAX_BRIGHTNESS
+        );
+        if (BRIGHTNESS != newBrightness)
         {
-          const float percentOfTimeToGoUp = float(MAX_BRIGHTNESS - currentBrightness) / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
-
-          const auto newBrightness = map(
-            min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp), 0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
-            currentBrightness, MAX_BRIGHTNESS
-          );
-          if (BRIGHTNESS != newBrightness)
-          {
-            BRIGHTNESS = newBrightness;
-            strip.setBrightness(BRIGHTNESS);
-          }
-        }
-        else
-        {
-          // switch brigtness
-          isAugmentBrightness = false;
-          currentBrightness = BRIGHTNESS;
+          BRIGHTNESS = newBrightness;
+          strip.setBrightness(BRIGHTNESS);
         }
       }
       else
       {
-         // lower luminositity
-        if (!isEndOfHoldEvent)
-        {
-          const double percentOfTimeToGoDown = float(currentBrightness - MIN_BRIGHTNESS) / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
+        // switch brigtness
+        currentBrightness = BRIGHTNESS;
+      }
+      break;
 
-          const auto newBrightness = map(
-            min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown), 0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
-            currentBrightness, MIN_BRIGHTNESS
-          );
-          if (BRIGHTNESS != newBrightness)
-          {
-            BRIGHTNESS = newBrightness;
-            strip.setBrightness(BRIGHTNESS);
-          }
-        }
-        else
+    case 2: // 2 click and hold
+        // lower luminositity
+      if (!isEndOfHoldEvent)
+      {
+        const double percentOfTimeToGoDown = float(currentBrightness - MIN_BRIGHTNESS) / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
+
+        const auto newBrightness = map(
+          min(buttonHoldDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown), 0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
+          currentBrightness, MIN_BRIGHTNESS
+        );
+        if (BRIGHTNESS != newBrightness)
         {
-          // switch brigtness
-          isAugmentBrightness = true;
-          currentBrightness = BRIGHTNESS;
+          BRIGHTNESS = newBrightness;
+          strip.setBrightness(BRIGHTNESS);
         }
+      }
+      else
+      {
+        // switch brigtness
+        currentBrightness = BRIGHTNESS;
       }
       break;
 

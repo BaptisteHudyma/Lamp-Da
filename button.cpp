@@ -2,7 +2,7 @@
 
 #include "constants.h"
 
-#define releaseTiming 250
+#define RELEASE_TIMING_MS 200
 
 bool check_button_state()
 {
@@ -32,15 +32,19 @@ void treat_button_pressed(const bool isButtonPressDetected, std::function<void(u
   const uint32_t currentMillis = millis();
   const uint32_t sinceLastCall = currentMillis - lastButtonPressedTime;
   const uint32_t buttonPressedDuration = currentMillis - buttonHoldStart;
+
+  // currently in long press status
+  const bool isInLongPress = isButtonPressed and buttonPressedDuration > HOLD_BUTTON_MIN_MS;
+
   // remove button clicked if last call was too long ago
-  if(sinceLastCall > releaseTiming)
+  if(sinceLastCall > RELEASE_TIMING_MS or (isInLongPress && sinceLastCall > RELEASE_TIMING_MS/2))
   {
     // end of button press, change event
-    if (buttonPressedDuration < HOLD_BUTTON_MIN_MS)
-      clickSerieCallback(clickedEvents);
-    else
+    if (isInLongPress)
       // signal end of click and hold
       clickHoldSerieCallback(clickedEvents, 0);
+    else
+      clickSerieCallback(clickedEvents);
 
     // reset
     clickedEvents = 0;
@@ -54,8 +58,11 @@ void treat_button_pressed(const bool isButtonPressDetected, std::function<void(u
     // small delay since button press
     if (sinceLastCall > 50)
     {
+      if (!isInLongPress)
+      {
         clickedEvents += 1;
         buttonHoldStart = currentMillis;
+      }
     }
     
     lastButtonPressedTime = currentMillis;
@@ -63,7 +70,7 @@ void treat_button_pressed(const bool isButtonPressDetected, std::function<void(u
   }
 
   
-  if(isButtonPressed and buttonPressedDuration > HOLD_BUTTON_MIN_MS)
+  if(isInLongPress)
   {
     clickHoldSerieCallback(clickedEvents, buttonPressedDuration);
   }
