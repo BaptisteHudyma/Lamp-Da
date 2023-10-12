@@ -29,7 +29,9 @@ void fill(const Color& color, Adafruit_NeoPixel& strip, const float cutOff)
       float intPart, fracPart;
       fracPart = modf(adaptedCutoff * LED_COUNT, &intPart);
       // adapt the color to have a nice gradient
-      const uint16_t hue = utils::rgb2hue(c);
+      utils::COLOR newC;
+      newC.color = c;
+      const uint16_t hue = utils::ColorSpace::HSV(newC).get_scaled_hue();
       strip.setPixelColor(i, Adafruit_NeoPixel::ColorHSV(hue, 255, fracPart * 255));
       break;
     }

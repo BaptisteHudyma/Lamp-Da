@@ -129,7 +129,7 @@ void gradient_mode_update()
   {
     case 0: // kelvin mode
       static auto lastColorStep = colorCodeIndex;
-      static auto paletteHeatColor = GeneratePaletteIndexed(PaletteHeatColors);
+      static auto paletteHeatColor = GeneratePaletteIndexed(PaletteBlackBodyColors);
       if (categoryChange) paletteHeatColor.reset();
 
       if(colorCodeIndex != lastColorStep)

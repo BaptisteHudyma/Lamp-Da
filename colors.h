@@ -219,20 +219,20 @@ class GenerateRainbowIndex : public IndexedColor
 {
     public:
     GenerateRainbowIndex(const uint8_t colorDivisions)
-    : _increment(UINT16_MAX / colorDivisions), _currentPixelHue(0)
+    : _increment(UINT16_MAX / float(colorDivisions)), _currentPixelHue(0)
     {}
 
     uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override;
 
     void update(const uint8_t index) override
     {
-        _currentPixelHue = index * _increment;
+        _currentPixelHue = float(index) * _increment;
     }
 
     void reset() override { _currentPixelHue = 0; };
 
     private:
-    uint32_t _increment;
+    float _increment;
     uint16_t _currentPixelHue;
 };
 
