@@ -178,10 +178,10 @@ void calm_mode_update()
     break;
 
     case 1:
-      static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(10);     // pulse around a rainbow, with a certain color division
+      static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(25);     // pulse around a rainbow, with a certain color division
       if (categoryChange) rainbowPulse.reset();
 
-      isFinished = animations::fadeIn(rainbowPulse, 5000, isFinished, strip);
+      isFinished = animations::fadeIn(rainbowPulse, 300, isFinished, strip);
       if (isFinished)
       {
         rainbowPulse.update();

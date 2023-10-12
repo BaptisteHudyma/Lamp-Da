@@ -23,7 +23,7 @@ class Color
 /**
  * \brief Basic dynamic color generation class
  */
-const uint8_t updatePeriod = 10;   // milliseconds
+const uint32_t MIN_UPDATE_PERIOD = 10;   // milliseconds
 class DynamicColor : public Color
 {
     public:
@@ -34,7 +34,7 @@ class DynamicColor : public Color
     virtual bool update()
     {
         const long unsigned currentMillis = millis();
-        if (currentMillis - _lastUpdate > updatePeriod)   // 30 ms update period
+        if (currentMillis - _lastUpdate > MIN_UPDATE_PERIOD)   // ms update period
         {
             internal_update(currentMillis - _lastUpdate);
             _lastUpdate = currentMillis;
@@ -122,7 +122,7 @@ class GenerateRainbowSwirl : public DynamicColor
 {
     public:
     GenerateRainbowSwirl(const uint32_t period)
-    : _increment(UINT16_MAX / (period / updatePeriod)), _firstPixelHue(0)
+    : _increment(UINT16_MAX / (period / MIN_UPDATE_PERIOD)), _firstPixelHue(0)
     {}
 
     uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override;
@@ -196,8 +196,10 @@ class GenerateRainbowPulse : public DynamicColor
 {
     public:
     GenerateRainbowPulse(const uint8_t colorDivisions)
-    : _increment(UINT16_MAX / colorDivisions), _currentPixelHue(0)
-    {}
+    : _currentPixelHue(0)
+    {
+        _increment = fmax(float(UINT16_MAX) / float(colorDivisions), 1);
+    }
 
     uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override;
     
@@ -211,7 +213,7 @@ class GenerateRainbowPulse : public DynamicColor
         _currentPixelHue += _increment;
     };
 
-    uint32_t _increment;
+    uint16_t _increment;
     uint16_t _currentPixelHue;
 };
 

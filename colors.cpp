@@ -49,7 +49,10 @@ uint32_t GeneratePaletteIndexed::get_color(const uint16_t index, const uint16_t 
 
 uint32_t GenerateRainbowPulse::get_color(const uint16_t index, const uint16_t maxIndex) const
 {
-    return Adafruit_NeoPixel::ColorHSV(_currentPixelHue);
+    const double hue = double(_currentPixelHue) / double(UINT16_MAX) * 360.0;
+
+    auto res = utils::ColorSpace::OKLCH(0.752, 0.126, hue);
+    return res.get_rgb().color;
 }
 
 

@@ -240,12 +240,14 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
 bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
 {
   static unsigned long startMillis = 0;
-  static uint8_t fadeLevel = 0;
+  static uint32_t maxFadeLevel = 0;
+  static uint32_t fadeLevel = 0;
   static uint32_t ledStates[LED_COUNT];
 
   if (restart)
   {
     fadeLevel = 0;
+    maxFadeLevel = duration / MIN_UPDATE_PERIOD;
     startMillis = millis();
 
     // save initial state
@@ -255,11 +257,11 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
     return false;
   }
   // out condition: faded to zero
-  if(fadeLevel == 255)
+  if(fadeLevel >= maxFadeLevel)
     return true;
   
   // get a fade level between 0 and 255
-  const uint8_t newFadeLevel = fmax(0.0, fmin(1.0, (millis() - startMillis) / (float)duration)) * 255;
+  const uint8_t newFadeLevel = fmax(0.0, fmin(1.0, (millis() - startMillis) / (float)duration)) * maxFadeLevel;
   if (newFadeLevel != fadeLevel)
   {
     fadeLevel = newFadeLevel;
@@ -273,7 +275,7 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
     }
     strip.show();
 
-    if(fadeLevel == 255)
+    if(fadeLevel >= maxFadeLevel)
       return true;
   }
 
@@ -283,13 +285,14 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
 bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float firstCutOff, const float secondCutOff)
 {
   static unsigned long startMillis = 0;
-  static const uint16_t maxFadeLevel = 512;
-  static uint16_t fadeLevel = 0;
+  static uint32_t maxFadeLevel = 0;
+  static uint32_t fadeLevel = 0;
   static uint32_t ledStates[LED_COUNT];
 
   if (restart)
   {
     fadeLevel = 0;
+    maxFadeLevel = duration / MIN_UPDATE_PERIOD;
     startMillis = millis();
 
     // save initial state
