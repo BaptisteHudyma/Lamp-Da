@@ -179,13 +179,19 @@ void calm_mode_update()
 
     case 1: // party wheel
       static auto lastColorStep = colorCodeIndex;
-      static auto palettePartyColor = GeneratePaletteStep(PalettePartyColors);
-      if (categoryChange) palettePartyColor.reset();
+      static auto palettePartyColor = GeneratePaletteIndexed(PalettePartyColors);
+      static uint8_t currentIndex = 0;
+      if (categoryChange)
+      {
+        currentIndex = 0;
+        palettePartyColor.reset();
+      }
 
       isFinished = animations::fadeIn(palettePartyColor, 100, isFinished, strip);
       if (isFinished)
       {
-        palettePartyColor.update();
+        currentIndex++;
+        palettePartyColor.update(currentIndex);
       }
       break;
 
@@ -381,6 +387,7 @@ void button_clicked_callback(uint8_t consecutiveButtonCheck)
   {
     case 1: // 1 click: toggle lamp
       isActivated = !isActivated;
+      reset_globals();
       break;
 
     case 2: // 2 clicks: increment color state

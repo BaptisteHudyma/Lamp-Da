@@ -256,9 +256,6 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
     
     return false;
   }
-  // out condition: faded to zero
-  if(fadeLevel >= maxFadeLevel)
-    return true;
   
   // get a fade level between 0 and 255
   const uint8_t newFadeLevel = fmax(0.0, fmin(1.0, (millis() - startMillis) / (float)duration)) * maxFadeLevel;
@@ -271,13 +268,13 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
     {
       const uint32_t startColor = ledStates[i];
       // diminish fade
-      strip.setPixelColor(i, utils::get_gradient(startColor, 0, fadeLevel/255.0));
+      strip.setPixelColor(i, utils::get_gradient(startColor, 0, fadeLevel/float(maxFadeLevel)));
     }
     strip.show();
-
-    if(fadeLevel >= maxFadeLevel)
-      return true;
   }
+
+  if(fadeLevel >= maxFadeLevel)
+      return true;
 
   return false;
 }
@@ -288,6 +285,7 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Ada
   static uint32_t maxFadeLevel = 0;
   static uint32_t fadeLevel = 0;
   static uint32_t ledStates[LED_COUNT];
+  static uint32_t targetStates[LED_COUNT];
 
   if (restart)
   {
@@ -297,16 +295,16 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Ada
 
     // save initial state
     for(uint16_t i = 0; i < LED_COUNT; ++i)
+    {
       ledStates[i] = strip.getPixelColor(i);
+      targetStates[i] = color.get_color(i, LED_COUNT);
+    }
 
     return false;
   }
-  // out condition: faded to maximum
-  if(fadeLevel >= maxFadeLevel)
-    return true;
   
   // get a fade level between 0 and maxFadeLevel
-  const uint16_t newFadeLevel = fmax(0.0, fmin(1.0, (millis() - startMillis) / (float)duration)) * maxFadeLevel;
+  const uint32_t newFadeLevel = fmax(0.0, fmin(1.0, (millis() - startMillis) / (float)duration)) * maxFadeLevel;
   if (newFadeLevel != fadeLevel)
   {
     fadeLevel = newFadeLevel;
@@ -316,15 +314,14 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Ada
     // update all values of rgb
     for(uint16_t i = minIndex; i < maxIndex; ++i)
     {
-      const uint32_t pixelColor = ledStates[i];
       // fade in
-      strip.setPixelColor(i, utils::get_gradient(pixelColor, color.get_color(i, LED_COUNT), fadeLevel/(float)maxFadeLevel));
+      strip.setPixelColor(i, utils::get_gradient(ledStates[i], targetStates[i], fadeLevel/(float)maxFadeLevel));
     }
     strip.show();
 
-    if(fadeLevel >= maxFadeLevel)
-      return true;
   }
+  if(fadeLevel >= maxFadeLevel)
+    return true;
 
   return false;
 }

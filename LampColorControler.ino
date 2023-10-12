@@ -43,11 +43,14 @@ void loop() {
 
   if (!isActivated)
   {
-    strip.clear();
-    strip.show();  //  Update strip to match
+    if(digitalRead(LED_POWER_PIN) != LOW)
+    {
+      strip.clear();
+      strip.show();  //  Update strip to match
 
-    // deactivate strip power
-    digitalWrite(LED_POWER_PIN, LOW);
+      // deactivate strip power
+      digitalWrite(LED_POWER_PIN, LOW);
+    }
   }
   else
   {
