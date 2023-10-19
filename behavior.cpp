@@ -282,7 +282,7 @@ void sound_mode_update()
   switch(clamp_state_values(colorState, maxSoundState))
   {
     case 0: // vue meter
-      static GenerateGradientColor redToGreenGradient = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
+      static GenerateGradientColor redToGreenGradient = GenerateGradientColor(Adafruit_NeoPixel::Color(0, 255, 0), Adafruit_NeoPixel::Color(255, 0, 0)); // gradient from red to green
       if (categoryChange) redToGreenGradient.reset();
 
       sound::vu_meter(redToGreenGradient, strip);
