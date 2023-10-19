@@ -1,6 +1,9 @@
 #include "behavior.h"
 #include "MicroPhone.h"
 #include "button.h"
+#include "bluetooth.h"
+
+//#define USE_BLUETOOTH
 
 void setup()
 {
@@ -23,6 +26,10 @@ void setup()
   pinMode(BATTERY_CHARGE_PIN, INPUT);
 
   pinMode(LED_BUILTIN, OUTPUT);
+
+#ifdef USE_BLUETOOTH
+  bluetooth::startup_sequence();
+#endif
 }
 
 
@@ -37,8 +44,11 @@ void handlePowerToggle()
     {
       digitalWrite(LED_POWER_PIN, HIGH);
 
-      // deactivate microphone readings
+      // activate microphone readings
       sound::enable_microphone(16000);
+#ifdef USE_BLUETOOTH
+      bluetooth::enable_bluetooth();
+#endif
     }
     // powered off !
     else
@@ -50,7 +60,11 @@ void handlePowerToggle()
       // deactivate strip power
       digitalWrite(LED_POWER_PIN, LOW);
 
+      // disable bluetooth and microphone
       sound::disable_microphone();
+#ifdef USE_BLUETOOTH
+      bluetooth::disable_bluetooth();
+#endif
     }
 
     lastIsActivatedValue = isActivated;
@@ -73,6 +87,9 @@ void loop() {
 
   if (isActivated)
   {
+#ifdef USE_BLUETOOTH
+    bluetooth::parse_messages();
+#endif
     color_mode_update();
   }
 }
