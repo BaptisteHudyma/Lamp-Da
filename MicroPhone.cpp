@@ -90,8 +90,14 @@ void on_PDM_data()
 }
 
 
-void init_microphone(const uint32_t sampleRate)
+bool isStarted = false;
+void enable_microphone(const uint32_t sampleRate)
 {
+    if (isStarted)
+    {
+        return;
+    }
+
     PDM.onReceive(on_PDM_data);
 
   // optionally set the gain, defaults to 20
@@ -110,6 +116,19 @@ void init_microphone(const uint32_t sampleRate)
         delay(1000);
     }
   }
+
+  isStarted = true;
+}
+
+void disable_microphone()
+{
+    if (!isStarted)
+    {
+        return;
+    }
+
+    PDM.end();
+    isStarted = false;
 }
 
 uint32_t lastUpdateMicros;

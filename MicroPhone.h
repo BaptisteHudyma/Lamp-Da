@@ -10,9 +10,10 @@ namespace sound {
 const float silenceLevelDb = -57.0;
 const float highLevelDb = 80.0; // microphone is not good enough at after this
 
-void init_microphone(const uint32_t sampleRate);
-
-float get_beat_probability();
+// start the microphone readings
+void enable_microphone(const uint32_t sampleRate);
+// close the microphone readings
+void disable_microphone();
 
 
 /**

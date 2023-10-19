@@ -2,7 +2,6 @@
 #include "MicroPhone.h"
 #include "button.h"
 
-
 void setup()
 {
   Serial.begin(115200);
@@ -24,8 +23,38 @@ void setup()
   pinMode(BATTERY_CHARGE_PIN, INPUT);
 
   pinMode(LED_BUILTIN, OUTPUT);
+}
 
-  sound::init_microphone(16000);
+
+void handlePowerToggle()
+{
+  // used to detected power on/off events
+  static bool lastIsActivatedValue = isActivated;
+  if (isActivated != lastIsActivatedValue)
+  {
+    // powered on !
+    if (isActivated)
+    {
+      digitalWrite(LED_POWER_PIN, HIGH);
+
+      // deactivate microphone readings
+      sound::enable_microphone(16000);
+    }
+    // powered off !
+    else
+    {
+      // remove all colors from strip
+      strip.clear();
+      strip.show();  //  Update strip to match
+
+      // deactivate strip power
+      digitalWrite(LED_POWER_PIN, LOW);
+
+      sound::disable_microphone();
+    }
+
+    lastIsActivatedValue = isActivated;
+  }
 }
 
 void loop() {
@@ -40,22 +69,10 @@ void loop() {
     lastCall = millis();
   }
 
+  handlePowerToggle();
 
-  if (!isActivated)
+  if (isActivated)
   {
-    if(digitalRead(LED_POWER_PIN) != LOW)
-    {
-      strip.clear();
-      strip.show();  //  Update strip to match
-
-      // deactivate strip power
-      digitalWrite(LED_POWER_PIN, LOW);
-    }
-  }
-  else
-  {
-    digitalWrite(LED_POWER_PIN, HIGH);
-
     color_mode_update();
   }
 }

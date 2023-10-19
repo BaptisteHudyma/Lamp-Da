@@ -287,7 +287,7 @@ void sound_mode_update()
 
       sound::vu_meter(redToGreenGradient, strip);
     break;
-
+ 
     case 1: // pulse soud
       // wipe a color pulse around the tube at each beat
       static GenerateComplementaryColor complementaryColor = GenerateComplementaryColor(0.3);
