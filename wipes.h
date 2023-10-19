@@ -2,7 +2,7 @@
 #define ANIMATIONS_WIPES_H
 
 #include "utils.h"
-#include <Adafruit_NeoPixel.h>
+#include "strip.h"
 
 namespace animations
 {
@@ -16,7 +16,7 @@ namespace animations
  * \param[in] cutOff between 0 and 1, how much this gradient will fill the display before suddently cutting of
  * \return True if the animation is finished
  */
-bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff=1);
+bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff=1);
 
 /**
  * \brief Pass a color dot around the display, with a color, during a certain duration. From bottom to top
@@ -27,7 +27,7 @@ bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart
  * \param[in] cutOff between 0 and 1, how much this gradient will fill the display before suddently cutting of
  * \return True if the animation is finished
  */
-bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff=1);
+bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff=1);
 
 /**
  * \brief Progressivly fill the display with a color, during a certain duration. From top to bottom
@@ -38,7 +38,7 @@ bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, 
  * \param[in] cutOff between 0 and 1, how much this gradient will fill the display before suddently cutting of
  * \return True if the animation is finished
  */
-bool colorWipeDown(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff=1);
+bool colorWipeDown(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff=1);
 
 /**
  * \brief Progressivly fill the display with a color, during a certain duration. From bottom to top
@@ -49,7 +49,7 @@ bool colorWipeDown(const Color& color, const uint32_t duration, const bool resta
  * \param[in] cutOff between 0 and 1, how much this gradient will fill the display before suddently cutting of
  * \return True if the animation is finished
  */
-bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff=1);
+bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff=1);
 
 };
 

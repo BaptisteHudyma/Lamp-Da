@@ -1,8 +1,8 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#include <Adafruit_NeoPixel.h>
 #include <functional>
+#include <cstdint>
 
 #define HOLD_BUTTON_MIN_MS 500  // press and hold delay (ms)
 

@@ -83,7 +83,7 @@ uint32_t get_color_from_palette(const uint8_t index, const palette_t& palette, c
     const uint32_t entry = palette[renormIndex];
 
     // convert to rgb
-    union utils::COLOR color;
+    union COLOR color;
     color.color = entry;
     
     uint8_t red1   = color.red;
@@ -93,7 +93,7 @@ uint32_t get_color_from_palette(const uint8_t index, const palette_t& palette, c
     // need to blenc the palette
     if (blendIndex != 0)
     {
-        union utils::COLOR nextColor;
+        union COLOR nextColor;
         if( renormIndex == 15 ) {
             nextColor.color = palette[0];
         } else {

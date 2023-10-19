@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "strip.h"
 #include "constants.h"
 #include "colors.h"
 #include <cstdint>
@@ -15,22 +16,6 @@
 #define FADE(x) scale16(x,x)
 
 namespace utils {
-
-/**
- * \brief Use this to convert color to bytes
- */
-union COLOR
-{
-    uint32_t color;
-    
-    struct
-    {
-        uint8_t blue;
-        uint8_t green;
-        uint8_t red;
-        uint8_t white;
-    };
-};
 
 namespace ColorSpace {
 

@@ -17,7 +17,7 @@
 namespace animations
 {
 
-void fill(const Color& color, Adafruit_NeoPixel& strip, const float cutOff)
+void fill(const Color& color, LedStrip& strip, const float cutOff)
 {
   const float adaptedCutoff = fmin(fmax(cutOff, 0.0), 1.0);
   const uint16_t maxCutOff = fmin(fmax(adaptedCutoff * LED_COUNT, 1.0), LED_COUNT);
@@ -30,10 +30,10 @@ void fill(const Color& color, Adafruit_NeoPixel& strip, const float cutOff)
       float intPart, fracPart;
       fracPart = modf(adaptedCutoff * LED_COUNT, &intPart);
       // adapt the color to have a nice gradient
-      utils::COLOR newC;
+      COLOR newC;
       newC.color = c;
       const uint16_t hue = utils::ColorSpace::HSV(newC).get_scaled_hue();
-      strip.setPixelColor(i, Adafruit_NeoPixel::ColorHSV(hue, 255, fracPart * 255));
+      strip.setPixelColor(i, LedStrip::ColorHSV(hue, 255, fracPart * 255));
       break;
     }
     
@@ -42,7 +42,7 @@ void fill(const Color& color, Adafruit_NeoPixel& strip, const float cutOff)
   strip.show();
 }
 
-bool dotPingPong(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
+bool dotPingPong(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
 {
   static bool isPongMode = false; // true: animation is climbing back the display
 
@@ -68,7 +68,7 @@ bool dotPingPong(const Color& color, const uint32_t duration, const bool restart
   return false;
 }
 
-bool colorPulse(const Color& color, const uint32_t durationPulseUp, const uint32_t durationPulseDown, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
+bool colorPulse(const Color& color, const uint32_t durationPulseUp, const uint32_t durationPulseDown, const bool restart, LedStrip& strip, const float cutOff)
 {
   static GenerateSolidColor blackColor = GenerateSolidColor(0);
   static bool isPongMode = false; // true: animation is climbing back the display
@@ -97,7 +97,7 @@ bool colorPulse(const Color& color, const uint32_t durationPulseUp, const uint32
   return false;
 }
 
-bool doubleSideFillUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
+bool doubleSideFillUp(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip)
 {
   if(restart)
   {
@@ -109,7 +109,7 @@ bool doubleSideFillUp(const Color& color, const uint32_t duration, const bool re
   return colorWipeDown(color, duration, false, strip, 0.5) or colorWipeUp(color, duration, false, strip, 0.5);
 }
 
-bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
+bool police(const uint32_t duration, const bool restart, LedStrip& strip)
 {
   static unsigned long previousMillis = 0;
   static uint8_t state = 0;
@@ -138,7 +138,7 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
       strip.clear();
 
       // blue lights
-      strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), 0, LED_COUNT / 2+1);  // Set on the first part
+      strip.fill(LedStrip::Color(0, 0, 255), 0, LED_COUNT / 2+1);  // Set on the first part
       strip.show();  // Update strip with new contents
       
       // set next state
@@ -168,7 +168,7 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
         strip.clear();
 
         // blue lights
-        strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), 0, LED_COUNT / 2+1);  // Set on the first part
+        strip.fill(LedStrip::Color(0, 0, 255), 0, LED_COUNT / 2+1);  // Set on the first part
         strip.show();  // Update strip with new contents
         
         // set next state
@@ -184,7 +184,7 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
         previousMillis = currentMillis;
 
         strip.clear();
-        strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), LED_COUNT / 2, LED_COUNT);  // Set on the second part
+        strip.fill(LedStrip::Color(0, 0, 255), LED_COUNT / 2, LED_COUNT);  // Set on the second part
         strip.show();  // Update strip with new contents
 
         // set next state
@@ -212,7 +212,7 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
         previousMillis = currentMillis;
 
         strip.clear();
-        strip.fill(Adafruit_NeoPixel::Color(0, 0, 255), LED_COUNT / 2, LED_COUNT);  // Set on the second part
+        strip.fill(LedStrip::Color(0, 0, 255), LED_COUNT / 2, LED_COUNT);  // Set on the second part
         strip.show();  // Update strip with new contents
 
         // set next state
@@ -238,7 +238,7 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
   return false;
 }
 
-bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip)
+bool fadeOut(const uint32_t duration, const bool restart, LedStrip& strip)
 {
   static unsigned long startMillis = 0;
   static uint32_t maxFadeLevel = 0;
@@ -248,7 +248,7 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
   if (restart)
   {
     fadeLevel = 0;
-    maxFadeLevel = duration / MIN_UPDATE_PERIOD;
+    maxFadeLevel = duration / LOOP_UPDATE_PERIOD;
     startMillis = millis();
 
     // save initial state
@@ -258,7 +258,7 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
     return false;
   }
   
-  // get a fade level between 0 and 255
+  // get a fade level between 0 and max level
   const uint8_t newFadeLevel = fmax(0.0, fmin(1.0, (millis() - startMillis) / (float)duration)) * maxFadeLevel;
   if (newFadeLevel != fadeLevel)
   {
@@ -280,7 +280,7 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
   return false;
 }
 
-bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float firstCutOff, const float secondCutOff)
+bool fadeIn(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float firstCutOff, const float secondCutOff)
 {
   static unsigned long startMillis = 0;
   static uint32_t maxFadeLevel = 0;
@@ -291,7 +291,7 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Ada
   if (restart)
   {
     fadeLevel = 0;
-    maxFadeLevel = duration / MIN_UPDATE_PERIOD;
+    maxFadeLevel = duration / LOOP_UPDATE_PERIOD;
     startMillis = millis();
 
     // save initial state
@@ -319,7 +319,6 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Ada
       strip.setPixelColor(i, utils::get_gradient(ledStates[i], targetStates[i], fadeLevel/(float)maxFadeLevel));
     }
     strip.show();
-
   }
   if(fadeLevel >= maxFadeLevel)
     return true;
@@ -328,7 +327,7 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Ada
 }
 
 
-bool fire(Adafruit_NeoPixel& strip)
+bool fire(LedStrip& strip)
 {
   constexpr bool gReverseDirection = true;
   constexpr uint32_t FPS = 1000.0 / 30.0;
@@ -385,7 +384,7 @@ bool fire(Adafruit_NeoPixel& strip)
 }
 
 
-void random_noise(const palette_t& palette, Adafruit_NeoPixel& strip, const bool isColorLoop, const uint16_t scale)
+void random_noise(const palette_t& palette, LedStrip& strip, const bool isColorLoop, const uint16_t scale)
 {
   // We're using the x/y dimensions to map to the x/y pixels on the matrix.  We'll
   // use the z-axis for "time".  speed determines how fast time moves forward.  Try

@@ -1,7 +1,7 @@
 #ifndef BEHAVIOR_HPP
 #define BEHAVIOR_HPP
 
-#include <Adafruit_NeoPixel.h>
+#include "strip.h"
 #include "constants.h"
 
 #ifdef __AVR__
@@ -9,7 +9,7 @@
 #endif
 
 // Declare our NeoPixel strip object:
-extern Adafruit_NeoPixel strip;
+extern LedStrip strip;
 
 // NeoPixel brightness, 0 (min) to 255 (max)
 extern uint8_t BRIGHTNESS;

@@ -7,7 +7,7 @@
 namespace animations
 {
 
-bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
+bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
 {
   static uint16_t targetIndex = UINT16_MAX;
   static unsigned long previousMillis = 0;
@@ -41,7 +41,7 @@ bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart
   return targetIndex >= endIndex;
 }
 
-bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
+bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
 {
   static uint16_t targetIndex = UINT16_MAX;
   static unsigned long previousMillis = 0;
@@ -75,7 +75,7 @@ bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, 
   return targetIndex == UINT16_MAX or targetIndex < endIndex;
 }
 
-bool colorWipeDown(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
+bool colorWipeDown(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
 {
   static uint16_t targetIndex = UINT16_MAX;
   static unsigned long previousMillis = 0;
@@ -120,7 +120,7 @@ bool colorWipeDown(const Color& color, const uint32_t duration, const bool resta
     if (newFadelevel != fadeLevel)
     {
       fadeLevel = newFadelevel;
-      // update the value of the last segement with a gradient
+      // update the value of the last segment with a gradient
       strip.setPixelColor(targetIndex, utils::get_gradient(ledStates[targetIndex], c, coeff));
       strip.show();  //  Update strip to match
     }
@@ -129,7 +129,7 @@ bool colorWipeDown(const Color& color, const uint32_t duration, const bool resta
   return targetIndex >= endIndex;
 }
 
-bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff)
+bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
 {
   static uint32_t ledStates[LED_COUNT];
   static uint16_t targetIndex = UINT16_MAX;

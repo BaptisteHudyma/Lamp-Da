@@ -11,7 +11,7 @@
 
 
 // extern declarations
-Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_RGB);
+LedStrip strip(LED_PIN, NEO_RGB);
 
 uint8_t BRIGHTNESS = 50;
 
@@ -282,7 +282,7 @@ void sound_mode_update()
   switch(clamp_state_values(colorState, maxSoundState))
   {
     case 0: // vue meter
-      static GenerateGradientColor redToGreenGradient = GenerateGradientColor(Adafruit_NeoPixel::Color(0, 255, 0), Adafruit_NeoPixel::Color(255, 0, 0)); // gradient from red to green
+      static GenerateGradientColor redToGreenGradient = GenerateGradientColor(LedStrip::Color(0, 255, 0), LedStrip::Color(255, 0, 0)); // gradient from red to green
       if (categoryChange) redToGreenGradient.reset();
 
       sound::vu_meter(redToGreenGradient, strip);
@@ -330,7 +330,7 @@ void gyro_mode_update()
 
 void display_battery_level()
 {
-  static GenerateGradientColor redToGreenGradient = GenerateGradientColor(Adafruit_NeoPixel::Color(255, 0, 0), Adafruit_NeoPixel::Color(0, 255, 0)); // gradient from red to green
+  static GenerateGradientColor redToGreenGradient = GenerateGradientColor(LedStrip::Color(255, 0, 0), LedStrip::Color(0, 255, 0)); // gradient from red to green
   if (categoryChange) redToGreenGradient.reset();
 
   strip.clear();

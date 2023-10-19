@@ -1,7 +1,7 @@
 #ifndef ANIMATIONS_ANIMATIONS_H
 #define ANIMATIONS_ANIMATIONS_H
 
-#include <Adafruit_NeoPixel.h>
+#include "strip.h"
 #include "colors.h"
 
 namespace animations
@@ -14,7 +14,7 @@ namespace animations
  * \param[in, out] strip The led strip to control
  * \param[in] cutOff between 0 and 1, how much this gradient will fill the display before suddently cutting of
  */
-void fill(const Color& color, Adafruit_NeoPixel& strip, const float cutOff=1);
+void fill(const Color& color, LedStrip& strip, const float cutOff=1);
 
 
 /**
@@ -26,7 +26,7 @@ void fill(const Color& color, Adafruit_NeoPixel& strip, const float cutOff=1);
  * \param[in] cutOff between 0 and 1, how much this gradient will fill the display before suddently cutting of
  * \return True if the animation is finished
  */
-bool dotPingPong(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float cutOff=1);
+bool dotPingPong(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff=1);
 
 /**
  * \brief Do color pulse
@@ -38,7 +38,7 @@ bool dotPingPong(const Color& color, const uint32_t duration, const bool restart
  * \param[in] cutOff between 0 and 1, how much this color will fill the display before suddently cutting of
  * \return True if the animation is finished
  */
-bool colorPulse(const Color& color, const uint32_t durationPulseUp, const uint32_t durationPulseDown, const bool restart, Adafruit_NeoPixel& strip, const float cutOff=1);
+bool colorPulse(const Color& color, const uint32_t durationPulseUp, const uint32_t durationPulseDown, const bool restart, LedStrip& strip, const float cutOff=1);
 
 /**
  * \brief Fill the display from both side simultaneously
@@ -48,7 +48,7 @@ bool colorPulse(const Color& color, const uint32_t durationPulseUp, const uint32
  * \param[in, out] strip The led strip to control
  * \return True if the animation is finished
  */
-bool doubleSideFillUp(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip);
+bool doubleSideFillUp(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip);
 
 /**
  * \brief Do police light animation
@@ -57,7 +57,7 @@ bool doubleSideFillUp(const Color& color, const uint32_t duration, const bool re
  * \param[in, out] strip The led strip to control
  * \return True if the animation is finished
  */
-bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip);
+bool police(const uint32_t duration, const bool restart, LedStrip& strip);
 
 /**
  * \brief Do a fade out of the colors currently displayed
@@ -66,7 +66,7 @@ bool police(const uint32_t duration, const bool restart, Adafruit_NeoPixel& stri
  * \param[in, out] strip The led strip to control
  * \return True if the animation is finished
  */
-bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip);
+bool fadeOut(const uint32_t duration, const bool restart, LedStrip& strip);
 
 /**
  * \brief Do a fade in of a color
@@ -78,15 +78,15 @@ bool fadeOut(const uint32_t duration, const bool restart, Adafruit_NeoPixel& str
  * \param[in] secondCutOff between 0 and 1, how much this color will fill the display before suddently cutting of
  * \return True if the animation is finished
  */
-bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Adafruit_NeoPixel& strip, const float firstCutOff=0.0, const float secondCutOff=1.0);
+bool fadeIn(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float firstCutOff=0.0, const float secondCutOff=1.0);
 
 
 /**
  * Fire animation
  */
-bool fire(Adafruit_NeoPixel& strip);
+bool fire(LedStrip& strip);
 
-void random_noise(const palette_t& palette, Adafruit_NeoPixel& strip, const bool isColorLoop, const uint16_t scale);
+void random_noise(const palette_t& palette, LedStrip& strip, const bool isColorLoop, const uint16_t scale);
 
 };
 

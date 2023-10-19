@@ -24,13 +24,13 @@ float get_sound_level_Db();
 /**
  * \brief Vu meter: should be reactive
  */
-void vu_meter(const Color& vuColor, Adafruit_NeoPixel& strip);
+void vu_meter(const Color& vuColor, LedStrip& strip);
 
 /**
  * \brief beat the color to the music pulse
  * \return true when a beat is detected
  */
-bool pulse_beat_wipe(const Color& color, Adafruit_NeoPixel& strip);
+bool pulse_beat_wipe(const Color& color, LedStrip& strip);
 
 }
 

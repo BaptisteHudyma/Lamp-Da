@@ -187,7 +187,7 @@ float get_sound_level_Db()
     return lastValue;
 }
 
-void vu_meter(const Color& vuColor, Adafruit_NeoPixel& strip)
+void vu_meter(const Color& vuColor, LedStrip& strip)
 {
   const float decibels = get_sound_level_Db();
   // convert to 0 - 1
@@ -199,7 +199,7 @@ void vu_meter(const Color& vuColor, Adafruit_NeoPixel& strip)
 }
 
 
-bool pulse_beat_wipe(const Color& color, Adafruit_NeoPixel& strip)
+bool pulse_beat_wipe(const Color& color, LedStrip& strip)
 {
   // reset the pulse for each beat
   static uint32_t durationMillis = 1000 / 6.0;  // max beat period
