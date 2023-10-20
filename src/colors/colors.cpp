@@ -1,6 +1,5 @@
 #include "colors.h"
 
-#include <Adafruit_NeoPixel.h>
 #include <cmath>
 #include <cstdint>
 #include "palettes.h"
@@ -58,7 +57,7 @@ uint32_t GenerateRainbowPulse::get_color(const uint16_t index, const uint16_t ma
 
 uint32_t GenerateRainbowIndex::get_color(const uint16_t index, const uint16_t maxIndex) const
 {
-    return Adafruit_NeoPixel::ColorHSV(_currentPixelHue);
+    return LedStrip::ColorHSV(_currentPixelHue);
 }
 
 GenerateRandomColor::GenerateRandomColor()

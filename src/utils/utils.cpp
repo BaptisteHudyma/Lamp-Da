@@ -1,6 +1,5 @@
 #include "utils.h"
 
-#include <Adafruit_NeoPixel.h>
 #include "colorspace.h"
 
 #include <cstdint>
@@ -59,7 +58,7 @@ uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const 
     colorStartArray.color= colorStart;
     colorEndArray.color = colorEnd;
     
-    return Adafruit_NeoPixel::Color(
+    return LedStrip::Color(
       colorStartArray.red + level * (colorEndArray.red - colorStartArray.red),
       colorStartArray.green + level * (colorEndArray.green - colorStartArray.green),
       colorStartArray.blue + level * (colorEndArray.blue - colorStartArray.blue)
