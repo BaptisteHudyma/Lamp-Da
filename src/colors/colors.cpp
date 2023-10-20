@@ -3,9 +3,9 @@
 #include <Adafruit_NeoPixel.h>
 #include <cmath>
 #include <cstdint>
-#include "constants.h"
 #include "palettes.h"
-#include "utils.h"
+#include "../utils/constants.h"
+#include "../utils/utils.h"
 
 
 uint32_t GenerateSolidColor::get_color(const uint16_t index, const uint16_t maxIndex) const

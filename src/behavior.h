@@ -1,8 +1,8 @@
 #ifndef BEHAVIOR_HPP
 #define BEHAVIOR_HPP
 
-#include "strip.h"
-#include "constants.h"
+#include "utils/strip.h"
+#include "utils/constants.h"
 
 #ifdef __AVR__
 #include <avr/power.h>  // Required for 16 MHz Adafruit Trinket

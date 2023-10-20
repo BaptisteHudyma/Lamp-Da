@@ -1,12 +1,14 @@
 #include "behavior.h"
 
-#include "MicroPhone.h"
+#include "physical/MicroPhone.h"
+#include "physical/button.h"
 
-#include "button.h"
-#include "animations.h"
-#include "palettes.h"
-#include "wipes.h"
-#include "utils.h"
+#include "colors/animations.h"
+#include "colors/palettes.h"
+#include "colors/wipes.h"
+
+#include "utils/utils.h"
+
 #include <cstdint>
 
 

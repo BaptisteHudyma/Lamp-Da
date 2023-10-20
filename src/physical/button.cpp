@@ -1,6 +1,6 @@
 #include "button.h"
 
-#include "constants.h"
+#include "../utils/constants.h"
 
 #define RELEASE_TIMING_MS 200
 

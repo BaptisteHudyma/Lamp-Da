@@ -1,7 +1,7 @@
-#include "behavior.h"
-#include "MicroPhone.h"
-#include "button.h"
-#include "bluetooth.h"
+#include "src/behavior.h"
+#include "src/physical/MicroPhone.h"
+#include "src/physical/button.h"
+#include "src/physical/bluetooth.h"
 
 //#define USE_BLUETOOTH
 

@@ -1,8 +1,7 @@
 #include "wipes.h"
 
-#include "colors.h"
-#include "constants.h"
-#include "utils.h"
+#include "../utils/constants.h"
+#include "../utils/utils.h"
 
 namespace animations
 {

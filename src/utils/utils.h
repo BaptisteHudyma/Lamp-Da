@@ -3,7 +3,6 @@
 
 #include "strip.h"
 #include "constants.h"
-#include "colors.h"
 #include <cstdint>
 
 

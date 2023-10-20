@@ -1,18 +1,19 @@
 #include "animations.h"
 
-#include "constants.h"
+#include "../utils/constants.h"
+#include "../utils/utils.h"
+
 #include "palettes.h"
 #include "wipes.h"
-#include "utils.h"
 
 #include <stdlib.h>
 #include <math.h>
 #include <cmath>
 #include <vector>
 
-#include "math8.h"
-#include "random8.h"
-#include "noise.h"
+#include "../ext/math8.h"
+#include "../ext/random8.h"
+#include "../ext/noise.h"
 
 namespace animations
 {

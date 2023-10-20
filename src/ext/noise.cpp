@@ -1,7 +1,7 @@
 #include "noise.h"
 
-#include "utils.h"
 #include "math8.h"
+#include "../utils/utils.h"
 
 namespace noise {
 

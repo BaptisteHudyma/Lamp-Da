@@ -1,8 +1,9 @@
 #ifndef ANIMATIONS_WIPES_H
 #define ANIMATIONS_WIPES_H
 
-#include "utils.h"
-#include "strip.h"
+#include "colors.h"
+
+#include "../utils/strip.h"
 
 namespace animations
 {

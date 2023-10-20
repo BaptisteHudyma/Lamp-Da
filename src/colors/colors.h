@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include <cstdint>
-#include "constants.h"
+#include "../utils/constants.h"
 #include "palettes.h"
 
 // min color update frequency

@@ -2,7 +2,7 @@
 #define MICRO_PHONE_H
 
 #include <stdint.h>
-#include "animations.h"
+#include "../colors/animations.h"
 
 namespace sound {
 

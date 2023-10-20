@@ -1,5 +1,5 @@
 #include "palettes.h"
-#include "utils.h"
+#include "../utils/utils.h"
 
 
 /// Cloudy color palette/ blue to blue-white

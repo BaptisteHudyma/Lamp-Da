@@ -1,7 +1,7 @@
 #ifndef ANIMATIONS_ANIMATIONS_H
 #define ANIMATIONS_ANIMATIONS_H
 
-#include "strip.h"
+#include "../utils/strip.h"
 #include "colors.h"
 
 namespace animations
