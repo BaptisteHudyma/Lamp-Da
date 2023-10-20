@@ -1,8 +1,10 @@
 #ifndef ANIMATIONS_ANIMATIONS_H
 #define ANIMATIONS_ANIMATIONS_H
 
-#include "../utils/strip.h"
 #include "colors.h"
+
+#include "../utils/strip.h"
+#include "../utils/colorspace.h"
 
 namespace animations
 {

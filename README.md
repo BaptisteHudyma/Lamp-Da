@@ -23,9 +23,10 @@ depends:
         - button.h: control the button. Takes callbacks for actions on multiple button pushes. The implementation is intented to work with a tactile button (can be anything metallic really...)
         - Microphone.h: control the microphone behavior. Make available some functions to get the sound level and beat. Gives some animations as well
     - utils: General functions and constants that everybody needs
+        - colorspace.h: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !
         - contants.h: global constants used all around the program
         - strip.h: overload of the Adafruit_Strip class, to get cleaner color with getPixelColor
-        - utils.h: useful functions to control colors, color spaces and more !
+        - utils.h: useful functions to make colors
 
 ## Physical build and architecture :
 
