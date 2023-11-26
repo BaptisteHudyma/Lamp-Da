@@ -48,17 +48,23 @@ uint32_t GeneratePaletteIndexed::get_color(const uint16_t index, const uint16_t 
 
 uint32_t GenerateRainbowPulse::get_color(const uint16_t index, const uint16_t maxIndex) const
 {
-    const double hue = double(_currentPixelHue) / double(UINT16_MAX) * 360.0;
-
-    auto res = utils::ColorSpace::OKLCH(0.752, 0.126, hue);
-    return res.get_rgb().color;
+    return LedStrip::ColorHSV(_currentPixelHue);
 }
-
 
 uint32_t GenerateRainbowIndex::get_color(const uint16_t index, const uint16_t maxIndex) const
 {
     return LedStrip::ColorHSV(_currentPixelHue);
 }
+
+uint32_t GeneratePastelPulse::get_color(const uint16_t index, const uint16_t maxIndex) const
+{
+    const double hue = double(_currentPixelHue) / double(UINT16_MAX) * 360.0;
+
+    // using OKLCH will create softer colors
+    auto res = utils::ColorSpace::OKLCH(0.752, 0.126, hue);
+    return res.get_rgb().color;
+}
+
 
 GenerateRandomColor::GenerateRandomColor()
 : _color(utils::get_random_color())

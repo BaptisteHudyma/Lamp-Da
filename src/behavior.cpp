@@ -211,13 +211,13 @@ void calm_mode_update()
     break;
 
     case 5: // pastel wheel
-      static GenerateRainbowPulse rainbowPulse = GenerateRainbowPulse(25);     // pulse around a rainbow, with a certain color division
-      if (categoryChange) rainbowPulse.reset();
+      static GeneratePastelPulse pastelPulse = GeneratePastelPulse(25);     // pulse around a rainbow, with a certain color division
+      if (categoryChange) pastelPulse.reset();
 
-      isFinished = animations::fadeIn(rainbowPulse, 300, isFinished, strip);
+      isFinished = animations::fadeIn(pastelPulse, 300, isFinished, strip);
       if (isFinished)
       {
-        rainbowPulse.update();
+        pastelPulse.update();
       }
     break;
 

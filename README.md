@@ -1,10 +1,28 @@
 # LampColorControler
-An embedded program to control an indexable color strip wrapped around a cylinder. Based on Seed nRF52840 Sense module
+An embedded program to control an indexable color strip wrapped around a cylinder. Based on Seed nRF52840 Sense module.
 
 The code is not designed to be the most readable but to be robust, so it can be quite tricky to understand, sorry !
 
+## Behavior
+There are 5 modes :
+- Constant: constant colors, that can be set by triple clicks than hold.
+- Calm: slowly varying color schemes
+- Party: Fast varying color schemes
+- Sound: Animations using the microphone (vu meter, music react, ..)
+- Flicking: For now, only the Police light mode.
 
-depends:
+
+The lamp starts with one click, by default in constant mode.
+Use double click to switch between states inside modes, and triple click to go to the next mode.
+You can also use four clicks to go back to the previous mode.
+
+
+The luminosity can be raised by clicking than holding, and diminished by double-clicking than holding.
+The battery level can be accessed by pressing 5 time the button.
+
+
+
+Depends:
 - python-nrfutil
 
 
@@ -19,7 +37,7 @@ depends:
         - wipes.h: wipe animations, dot chase etc. Could be merged with animations.h in the future
     - ext: external libraries
     - physical: stuf related to the physical components: button, bluetooth, IMU, ...
-        - bluetooth.h: Control the bluetooth associated behavior
+        - bluetooth.h: Control the bluetooth associated behavior (foe now, causes segfaults, so not used)
         - button.h: control the button. Takes callbacks for actions on multiple button pushes. The implementation is intented to work with a tactile button (can be anything metallic really...)
         - Microphone.h: control the microphone behavior. Make available some functions to get the sound level and beat. Gives some animations as well
     - utils: General functions and constants that everybody needs

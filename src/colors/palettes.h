@@ -234,6 +234,7 @@ typedef enum {
 
 extern const palette_t PaletteCloudColors;
 extern const palette_t PaletteLavaColors;
+extern const palette_t PaletteFlameColors;
 extern const palette_t PaletteOceanColors;
 extern const palette_t PaletteForestColors;
 extern const palette_t PaletteRainbowColors;

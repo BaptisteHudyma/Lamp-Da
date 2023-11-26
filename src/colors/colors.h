@@ -240,6 +240,32 @@ class GenerateRainbowIndex : public IndexedColor
     uint16_t _currentPixelHue;
 };
 
+// generate a rainbow with pastel colors
+class GeneratePastelPulse : public DynamicColor
+{
+    public:
+    GeneratePastelPulse(const uint8_t colorDivisions)
+    : _currentPixelHue(0)
+    {
+        _increment = fmax(float(UINT16_MAX) / float(colorDivisions), 1);
+    }
+
+    uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override;
+    
+    void reset() override { _currentPixelHue = 0; };
+
+    private:
+    /**
+     * \brief Call when you want the animation to progress
+     */
+    void internal_update(const uint32_t deltaTimeMilli) override {
+        _currentPixelHue += _increment;
+    };
+
+    uint16_t _increment;
+    uint16_t _currentPixelHue;
+};
+
 /**
  * \brief Get a random color. Color changes at each update() call
  */

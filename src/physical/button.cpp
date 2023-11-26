@@ -17,8 +17,9 @@ bool check_button_state()
       if(digitalRead(BUTTON_PIN) == HIGH)
           break;
   }
-  // 150/255 is a good threshold for noise
-  return cycles > 50;
+  // above 40 makes a strange behavior where the button press are not registered.
+  // below that, clicks are always detected.
+  return cycles > 40;
 }
 
 void treat_button_pressed(const bool isButtonPressDetected, std::function<void(uint8_t)> clickSerieCallback, std::function<void(uint8_t, uint32_t)> clickHoldSerieCallback)

@@ -90,6 +90,9 @@ bool fire(LedStrip& strip);
 
 void random_noise(const palette_t& palette, LedStrip& strip, const bool isColorLoop, const uint16_t scale);
 
+
+void candle(const palette_t& palette, LedStrip& strip);
+
 };
 
 #endif

@@ -20,6 +20,15 @@ const palette_t PaletteLavaColors =
     Orange,Red,DarkRed, Black
 };
 
+/// Fire color palette
+const palette_t PaletteFlameColors =
+{
+    Orange,Orange,Orange,Orange,
+    Orange,Orange,Orange,Orange,
+    Orange,Orange,Orange, Orange,
+    Candle, Orange,Orange, Gold
+};
+
 
 /// Ocean colors, blues and whites
 const palette_t PaletteOceanColors =

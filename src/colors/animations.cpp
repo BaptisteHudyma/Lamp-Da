@@ -451,5 +451,78 @@ void random_noise(const palette_t& palette, LedStrip& strip, const bool isColorL
   }
 }
 
+void candle(const palette_t& palette, LedStrip& strip)
+{
+  constexpr uint32_t minPhaseDuration = 1000; 
+  constexpr uint32_t maxPhaseDuration = 5000;
+
+  constexpr uint32_t sequenceDividerPeriod = 10;  // milliseconds for each sequence phase
+
+  constexpr uint8_t flickeringMin = 0;
+  constexpr uint8_t flickeringMax = 100;
+
+  static uint32_t phaseDuration = minPhaseDuration;
+  static uint32_t phaseStartTime = 0;
+  static uint32_t targetPhaseAmplitude = 0;
+  static uint32_t targetPhaseStrength = 0;
+
+  static float noisePosition = 0.0; 
+  constexpr float noiseSpeed = 5; 
+  constexpr float noiseScale = 10;
+
+  static uint32_t sequenceTime = 0;
+  static uint32_t sequenceIndex = 0;
+  static uint32_t sequencePerPhase = 0;
+  static uint8_t lastStrenght = 100;
+  static uint8_t currentStrenght = 100;
+
+  // phase is a flicker phase: last a few seconds during witch a flickering sequence will happen
+  const uint32_t currentMillis = millis();
+  if (currentMillis - phaseStartTime > phaseDuration || sequenceIndex > sequencePerPhase)
+  {
+    // declare a new phase
+    phaseStartTime = millis();
+    // set flame parameters
+    targetPhaseAmplitude = random(flickeringMin, flickeringMax) + 1;
+    targetPhaseStrength = random(targetPhaseAmplitude / 4, 255);
+    phaseDuration = random(minPhaseDuration, maxPhaseDuration);
+    lastStrenght = currentStrenght;
+
+    sequencePerPhase = phaseDuration / sequenceDividerPeriod;
+    sequenceTime = 0; // start a new sequence
+    sequenceIndex = 0;
+  }
+
+  if (currentMillis - sequenceTime > sequenceDividerPeriod)
+  {
+    // sequence update
+    sequenceTime = currentMillis;
+
+    const float endStrengthRatio = (double)sequenceIndex/(double)sequencePerPhase;
+    const float oldStrengthRatio = 1.0 - endStrengthRatio;
+
+    currentStrenght = (lastStrenght * oldStrengthRatio) + (targetPhaseStrength * endStrengthRatio);
+
+    const uint8_t minBrighness = currentStrenght - min(currentStrenght, targetPhaseAmplitude / 2);
+    const uint8_t maxBrighness = currentStrenght + min(255 - currentStrenght, targetPhaseAmplitude / 2);
+
+    uint8_t brightness = random(minBrighness, maxBrighness);
+    for(uint16_t i = 0; i < LED_COUNT; ++i)
+    {
+      // vary flicker wiht bigger amplitude
+      if (i % 4 == 0)
+        brightness = random(minBrighness, maxBrighness);
+      strip.setPixelColor(i, get_color_from_palette(noise::inoise8(noisePosition + noiseScale * i), palette, brightness));
+    }
+
+    // faster speed when change is fast
+    noisePosition += noiseSpeed;
+
+    // ready for new sequence
+    sequenceIndex += 1;
+
+    strip.show();
+  }
+}
 
 }

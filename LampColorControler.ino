@@ -71,15 +71,23 @@ void handlePowerToggle()
   }
 }
 
+bool ledState = false;
 void loop() {
   handle_button_events(button_clicked_callback, button_hold_callback);
 
 
   static uint32_t lastCall = 0;
 
-  if(millis() - lastCall > 1000)
+  if(not ledState and millis() - lastCall > 100)
   {
-    digitalToggle(LED_BUILTIN);
+    ledState = true;
+    digitalWrite(LED_BUILTIN,HIGH);
+    lastCall = millis();
+  }
+  if(ledState and millis() - lastCall > 2000)
+  {
+    ledState = false;
+    digitalWrite(LED_BUILTIN, LOW);
     lastCall = millis();
   }
 
