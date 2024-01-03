@@ -36,10 +36,10 @@
 #define LED_POWER_PIN D1
 
 // where is the button
-#define BUTTON_PIN D2
+#define BUTTON_PIN D4
 
 // battery charge pin: max voltage should be 3V
-#define BATTERY_CHARGE_PIN D3
+#define BATTERY_CHARGE_PIN A5 // (A5 is same as D5)
 
 
 

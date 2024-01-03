@@ -127,13 +127,19 @@ uint8_t clamp_state_values(uint8_t& state, const uint8_t maxValue)
 
 void gradient_mode_update()
 {
+  static auto lastColorStep = colorCodeIndex;
+
   constexpr uint8_t maxGradientColorState = 1;
   switch(clamp_state_values(colorState, maxGradientColorState))
   {
     case 0: // kelvin mode
-      static auto lastColorStep = colorCodeIndex;
       static auto paletteHeatColor = GeneratePaletteIndexed(PaletteBlackBodyColors);
-      if (categoryChange) paletteHeatColor.reset();
+      if (categoryChange)
+      {
+        lastColorStep = 1;
+        colorCodeIndex = 0;
+        paletteHeatColor.reset();
+      }
 
       if(colorCodeIndex != lastColorStep)
       {
@@ -145,7 +151,12 @@ void gradient_mode_update()
 
     case 1: // rainbow mode
       static auto rainbowIndex = GenerateRainbowIndex(UINT8_MAX);     // pulse around a rainbow, with a certain color division
-      if (categoryChange) rainbowIndex.reset();
+      if (categoryChange)
+      {
+        lastColorStep = 1;
+        colorCodeIndex = 0;
+        rainbowIndex.reset();
+      }
       
       if(colorCodeIndex != lastColorStep)
       {
@@ -157,6 +168,7 @@ void gradient_mode_update()
 
     default:  // error
       colorState = 0;
+      colorCodeIndex = 0;
       strip.clear();
       strip.show(); // clear strip
     break;

@@ -65,31 +65,44 @@ void handlePowerToggle()
 #ifdef USE_BLUETOOTH
       bluetooth::disable_bluetooth();
 #endif
+
+      // sleep mode, wake up on tactile interrupt
+      /*
+      nrf_gpio_cfg_sense_input(digitalPinToInterrupt(BUTTON_PIN), NRF_GPIO_PIN_PULLDOWN, NRF_GPIO_PIN_SENSE_HIGH);
+      delay(2000);
+      NRF_POWER->SYSTEMOFF = 1;
+      */
     }
 
     lastIsActivatedValue = isActivated;
   }
 }
 
-bool ledState = false;
-void loop() {
-  handle_button_events(button_clicked_callback, button_hold_callback);
 
-
+void blink_led(const uint toggleFreq)
+{
   static uint32_t lastCall = 0;
+  static bool ledState = false;
 
+  // led is off, and last call was 100ms before
   if(not ledState and millis() - lastCall > 100)
   {
     ledState = true;
-    digitalWrite(LED_BUILTIN,HIGH);
+    digitalWrite(LED_BUILTIN, HIGH);
     lastCall = millis();
   }
-  if(ledState and millis() - lastCall > 2000)
+
+  // led is on, and last call was long ago 
+  if(ledState and millis() - lastCall > toggleFreq)
   {
     ledState = false;
     digitalWrite(LED_BUILTIN, LOW);
     lastCall = millis();
   }
+}
+
+void loop() {
+  handle_button_events(button_clicked_callback, button_hold_callback);
 
   handlePowerToggle();
 
@@ -99,5 +112,13 @@ void loop() {
     bluetooth::parse_messages();
 #endif
     color_mode_update();
+
+    // fast link
+    blink_led(2000);
+  }
+  else
+  {
+    // blink slowwwwwly
+    blink_led(10000);
   }
 }

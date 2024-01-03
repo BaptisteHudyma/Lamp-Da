@@ -91,12 +91,21 @@ float get_battery_level()
    constexpr float lowVoltage = 13.0;
 
    static float lastValue = 0;
+   static uint32_t lastCallTime = 0;
 
    // map the input ADC out to voltage reading.
    constexpr float maxInValue = 870;
    const float pinMeasureVoltage = analogRead(BATTERY_CHARGE_PIN) / maxInValue * maxVoltage;
    const float batteryVoltage = (1.0 - (maxVoltage - pinMeasureVoltage) / (maxVoltage - lowVoltage)) * 100.0;
 
+   // init or reset (every 10 seconds)
+   const uint32_t mill = millis();
+   if(lastValue == 0 or mill - lastCallTime > 10000)
+   {
+     lastValue = batteryVoltage;
+     lastCallTime = mill;
+   }
+
    lastValue = batteryVoltage * 0.01 + lastValue * 0.99;
-   return batteryVoltage;
+   return lastValue;
 }
