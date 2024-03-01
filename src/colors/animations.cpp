@@ -40,7 +40,6 @@ void fill(const Color& color, LedStrip& strip, const float cutOff)
     
     strip.setPixelColor(i, c);
   }
-  strip.show();
 }
 
 bool dotPingPong(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
@@ -140,7 +139,6 @@ bool police(const uint32_t duration, const bool restart, LedStrip& strip)
 
       // blue lights
       strip.fill(LedStrip::Color(0, 0, 255), 0, LED_COUNT / 2+1);  // Set on the first part
-      strip.show();  // Update strip with new contents
       
       // set next state
       state++;
@@ -153,7 +151,6 @@ bool police(const uint32_t duration, const bool restart, LedStrip& strip)
         previousMillis = currentMillis;
 
         strip.clear();
-        strip.show();  // Update strip with new contents
         
         // set next state
         state++;
@@ -170,7 +167,6 @@ bool police(const uint32_t duration, const bool restart, LedStrip& strip)
 
         // blue lights
         strip.fill(LedStrip::Color(0, 0, 255), 0, LED_COUNT / 2+1);  // Set on the first part
-        strip.show();  // Update strip with new contents
         
         // set next state
         state++;
@@ -186,7 +182,6 @@ bool police(const uint32_t duration, const bool restart, LedStrip& strip)
 
         strip.clear();
         strip.fill(LedStrip::Color(0, 0, 255), LED_COUNT / 2, LED_COUNT);  // Set on the second part
-        strip.show();  // Update strip with new contents
 
         // set next state
         state++;
@@ -200,7 +195,6 @@ bool police(const uint32_t duration, const bool restart, LedStrip& strip)
         previousMillis = currentMillis;
 
         strip.clear();
-        strip.show();  // Update strip with new contents
         
         // set next state
         state++;
@@ -214,7 +208,6 @@ bool police(const uint32_t duration, const bool restart, LedStrip& strip)
 
         strip.clear();
         strip.fill(LedStrip::Color(0, 0, 255), LED_COUNT / 2, LED_COUNT);  // Set on the second part
-        strip.show();  // Update strip with new contents
 
         // set next state
         state++;
@@ -227,7 +220,6 @@ bool police(const uint32_t duration, const bool restart, LedStrip& strip)
         previousMillis = currentMillis;
 
         strip.clear();
-        strip.show();  // Update strip with new contents
         state = 0;
         return true;
       }
@@ -272,7 +264,6 @@ bool fadeOut(const uint32_t duration, const bool restart, LedStrip& strip)
       // diminish fade
       strip.setPixelColor(i, utils::get_gradient(startColor, 0, fadeLevel/float(maxFadeLevel)));
     }
-    strip.show();
   }
 
   if(fadeLevel >= maxFadeLevel)
@@ -319,7 +310,6 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Led
       // fade in
       strip.setPixelColor(i, utils::get_gradient(ledStates[i], targetStates[i], fadeLevel/(float)maxFadeLevel));
     }
-    strip.show();
   }
   if(fadeLevel >= maxFadeLevel)
     return true;
@@ -379,7 +369,6 @@ bool fire(LedStrip& strip)
     uint8_t colorindex = scale8( heat[j], 240);
     strip.setPixelColor(pixelnumber, get_color_from_palette(colorindex, PaletteBlackBodyColors));
   }
-  strip.show();
 
   return true;
 }
@@ -446,8 +435,6 @@ void random_noise(const palette_t& palette, LedStrip& strip, const bool isColorL
     }
     
     ihue+=1;
-
-    strip.show();
   }
 }
 
@@ -520,8 +507,6 @@ void candle(const palette_t& palette, LedStrip& strip)
 
     // ready for new sequence
     sequenceIndex += 1;
-
-    strip.show();
   }
 }
 

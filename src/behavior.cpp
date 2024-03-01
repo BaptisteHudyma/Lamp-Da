@@ -7,6 +7,7 @@
 #include "colors/palettes.h"
 #include "colors/wipes.h"
 
+#include "utils/constants.h"
 #include "utils/utils.h"
 
 #include <cstdint>
@@ -16,9 +17,6 @@
 LedStrip strip(LED_PIN, NEO_RGB);
 
 uint8_t BRIGHTNESS = 50;
-
-bool isActivated = false;
-
 
 // constantes
 constexpr uint8_t MIN_BRIGHTNESS = 15;
@@ -33,9 +31,6 @@ uint8_t colorState = 0;   // color state: subwheel of the current color mode
 
 uint8_t colorCodeIndex = 0; // color code index, used for color indexion
 uint8_t lastColorCodeIndex = colorCodeIndex;
-
-bool displayBattery = false;
-uint32_t displayBatteryTime = 0;
 
 bool isFinished = true;
 bool switchMode = true;
@@ -60,7 +55,6 @@ void increment_color_mode()
   reset_globals();
 
   strip.clear();
-  strip.show();  //  Update strip to match
 }
 
 void decrement_color_mode()
@@ -75,7 +69,6 @@ void decrement_color_mode()
   reset_globals();
 
   strip.clear();
-  strip.show();  //  Update strip to match
 }
 
 void increment_color_state()
@@ -88,7 +81,6 @@ void increment_color_state()
   reset_globals();
 
   strip.clear();
-  strip.show();  //  Update strip to match
 }
 
 void decrement_color_state()
@@ -101,9 +93,38 @@ void decrement_color_state()
   reset_globals();
 
   strip.clear();
-  strip.show();  //  Update strip to match
 }
 
+void shutdown()
+{
+  // remove all colors from strip
+  strip.clear();
+  strip.show();  //  Update strip to match
+
+  // deactivate strip power
+  digitalWrite(LED_POWER_PIN, LOW);
+
+  // disable bluetooth and microphone
+  sound::disable_microphone();
+#ifdef USE_BLUETOOTH
+  bluetooth::disable_bluetooth();
+#endif
+
+  // deactivate indicators
+  digitalWrite(LED_BUILTIN, HIGH);
+  set_button_color(utils::ColorSpace::RGB(0,0,0));
+
+  // setup your wake-up pins.
+  pinMode(BUTTON_PIN,  INPUT_PULLUP_SENSE);// this pin is pulled up and wakes up the board when externally connected to ground.
+  
+  // write delay
+  delay(100);
+  
+  // power down nrf52.
+  // If no sense pins are setup (or other hardware interrupts), the nrf52 will not wake up.
+  sd_power_system_off();                    // this function puts the whole nRF52 to deep sleep.
+  // on wake up, it'll start back from the setup phase
+}
 
 
 uint8_t clamp_state_values(uint8_t& state, const uint8_t maxValue)
@@ -170,7 +191,6 @@ void gradient_mode_update()
       colorState = 0;
       colorCodeIndex = 0;
       strip.clear();
-      strip.show(); // clear strip
     break;
   }
 
@@ -180,7 +200,7 @@ void gradient_mode_update()
 
 void calm_mode_update()
 {
-  constexpr uint8_t maxCalmColorState = 5;
+  constexpr uint8_t maxCalmColorState = 4;
   switch(clamp_state_values(colorState, maxCalmColorState))
   {
     case 0: // rainbow swirl animation
@@ -222,21 +242,9 @@ void calm_mode_update()
       animations::random_noise(PaletteOceanColors, strip, true, 20);
     break;
 
-    case 5: // pastel wheel
-      static GeneratePastelPulse pastelPulse = GeneratePastelPulse(25);     // pulse around a rainbow, with a certain color division
-      if (categoryChange) pastelPulse.reset();
-
-      isFinished = animations::fadeIn(pastelPulse, 300, isFinished, strip);
-      if (isFinished)
-      {
-        pastelPulse.update();
-      }
-    break;
-
     default:  // error
       colorState = 0;
       strip.clear();
-      strip.show(); // clear strip
     break;
   }
 
@@ -275,14 +283,13 @@ void party_mode_update()
       if (categoryChange) complementaryPingPongColor.reset();
 
       // ping pong a color for infinity
-      isFinished = animations::dotPingPong(complementaryPingPongColor, 500.0, isFinished, strip);
+      isFinished = animations::dotPingPong(complementaryPingPongColor, 1000.0, isFinished, strip);
       if (isFinished) complementaryPingPongColor.update();  // update color
     break;
 
     default:  // error
     colorState = 0;
       strip.clear();
-      strip.show(); // clear strip
     break;
   }
 
@@ -314,7 +321,6 @@ void sound_mode_update()
     default:  // error
       colorState = 0;
       strip.clear();
-      strip.show(); // clear strip
     break;
   }
 
@@ -334,7 +340,6 @@ void gyro_mode_update()
     default:  // error
       colorState = 0;
       strip.clear();
-      strip.show(); // clear strip
     break;
   }
 
@@ -342,33 +347,9 @@ void gyro_mode_update()
   categoryChange = false;
 }
 
-void display_battery_level()
-{
-  static GenerateGradientColor redToGreenGradient = GenerateGradientColor(LedStrip::Color(255, 0, 0), LedStrip::Color(0, 255, 0)); // gradient from red to green
-  if (categoryChange) redToGreenGradient.reset();
-
-  strip.clear();
-  animations::fill(redToGreenGradient, strip, get_battery_level() / 100.0);
-
-  // animation last for 5 seconds max
-  if (millis() - displayBatteryTime > 5000.0)
-  {
-    strip.clear();
-    strip.show();
-    displayBattery = false;
-  }
-}
 
 void color_mode_update()
 {
-
-  if(displayBattery)
-  {
-    // display battery voltage
-    display_battery_level();
-    return;
-  }
-
   constexpr uint8_t maxColorMode = 4;
   switch(clamp_state_values(colorMode, maxColorMode))
   {
@@ -408,34 +389,22 @@ void button_clicked_callback(uint8_t consecutiveButtonCheck)
   if (consecutiveButtonCheck == 0)
     return;
 
-  displayBattery = false;
-
   switch(consecutiveButtonCheck)
   {
-    case 1: // 1 click: toggle lamp
-      isActivated = !isActivated;
-      reset_globals();
+    case 1: // 1 click: shutdown
+      shutdown();
       break;
 
     case 2: // 2 clicks: increment color state
-      if (isActivated)
-        increment_color_state();
+      increment_color_state();
       break;
     
     case 3: // 3 clicks: increment color mode
-      if (isActivated)
-        increment_color_mode();
+      increment_color_mode();
       break;
 
     case 4: // 4 clicks: decrement color mode
-      if (isActivated)
-        decrement_color_mode();
-      break;
-
-    case 5:
-      // TODO: bluetooth
-      displayBattery = true;
-      displayBatteryTime = millis();
+      decrement_color_mode();
       break;
 
     default:
@@ -452,11 +421,6 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
   // no click event
   if (consecutiveButtonCheck == 0)
     return;
-  // ignore buttons events when lamp is off
-  if (!isActivated)
-    return;
-
-  displayBattery = false;
 
   const bool isEndOfHoldEvent = buttonHoldDuration <= 1;
   buttonHoldDuration -= HOLD_BUTTON_MIN_MS;

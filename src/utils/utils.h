@@ -46,6 +46,8 @@ uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const 
 
 uint32_t hue2rgbSinus(const uint16_t angle);
 
+float mapfloat(float x, float in_min, float in_max, float out_min, float out_max);
+
 };
 
 #endif

@@ -1,25 +1,23 @@
 #include "button.h"
 
 #include "../utils/constants.h"
+#include "../utils/utils.h"
 
 #define RELEASE_TIMING_MS 200
 
-bool check_button_state()
+static volatile bool wasButtonPressedDetected = false;
+void button_state_interrupt()
 {
-  //empty capacitor
-  pinMode(BUTTON_PIN, OUTPUT);
-  digitalWrite(BUTTON_PIN, LOW);
-  delayMicroseconds(1000);
+    wasButtonPressedDetected = true;
+}
 
-  pinMode(BUTTON_PIN, INPUT);
-  uint8_t cycles;
-  for(cycles = 0; cycles < 255; cycles++) {
-      if(digitalRead(BUTTON_PIN) == HIGH)
-          break;
+static volatile bool buttonPressListener = false;
+void read_while_pressed()
+{
+  if(wasButtonPressedDetected and digitalRead(BUTTON_PIN) == HIGH)
+  {
+    wasButtonPressedDetected = false;
   }
-  // above 40 makes a strange behavior where the button press are not registered.
-  // below that, clicks are always detected.
-  return cycles > 40;
 }
 
 void treat_button_pressed(const bool isButtonPressDetected, std::function<void(uint8_t)> clickSerieCallback, std::function<void(uint8_t, uint32_t)> clickHoldSerieCallback)
@@ -77,33 +75,41 @@ void treat_button_pressed(const bool isButtonPressDetected, std::function<void(u
   }
 }
 
+
 void handle_button_events(std::function<void(uint8_t)> clickSerieCallback, std::function<void(uint8_t, uint32_t)> clickHoldSerieCallback)
 {
+  // keep reading the button value until unpressed
+  read_while_pressed();
+
   // check the button pressed status
-  const bool isButtonPressed = check_button_state();
-  treat_button_pressed(isButtonPressed, clickSerieCallback, clickHoldSerieCallback);
+  treat_button_pressed(wasButtonPressedDetected, clickSerieCallback, clickHoldSerieCallback);
 }
 
+void set_button_color(utils::ColorSpace::RGB color)
+{
+    const COLOR& col = color.get_rgb();
+    analogWrite(BUTTON_RED, col.red);
+    analogWrite(BUTTON_GREEN, col.green);
+    analogWrite(BUTTON_BLUE, col.blue);
+}
 
-float get_battery_level()
+float get_battery_level(const bool resetRead)
 {
    constexpr float maxVoltage = 16.5;
    constexpr float lowVoltage = 13.0;
 
    static float lastValue = 0;
-   static uint32_t lastCallTime = 0;
 
    // map the input ADC out to voltage reading.
-   constexpr float maxInValue = 870;
-   const float pinMeasureVoltage = analogRead(BATTERY_CHARGE_PIN) / maxInValue * maxVoltage;
+   constexpr float maxInValue = 900.0;
+   const float pinMeasureVoltage = utils::mapfloat(analogRead(BATTERY_CHARGE_PIN) / maxInValue, 0.0, 1.0, lowVoltage, maxVoltage);
+
    const float batteryVoltage = (1.0 - (maxVoltage - pinMeasureVoltage) / (maxVoltage - lowVoltage)) * 100.0;
 
-   // init or reset (every 10 seconds)
-   const uint32_t mill = millis();
-   if(lastValue == 0 or mill - lastCallTime > 10000)
+   // init or reset
+   if(lastValue == 0 or resetRead)
    {
      lastValue = batteryVoltage;
-     lastCallTime = mill;
    }
 
    lastValue = batteryVoltage * 0.01 + lastValue * 0.99;

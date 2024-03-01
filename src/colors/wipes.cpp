@@ -1,40 +1,37 @@
 #include "wipes.h"
 
 #include "../utils/constants.h"
-#include "../utils/utils.h"
-
 namespace animations
 {
 
 bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
 {
   static uint16_t targetIndex = UINT16_MAX;
-  static unsigned long previousMillis = 0;
 
   // reset condition
   if (restart)
   {
     targetIndex = 0;
-    previousMillis = 0;
     return false;
   }
 
   // finished if the target index is over the led limit
   const uint16_t endIndex = ceil(LED_COUNT * cutOff);
-  if (targetIndex >= endIndex)
-    return true;
 
   // convert duration in delay for each segment
-  const uint16_t delay = duration / (float)LED_COUNT;
+  const unsigned long delay = max(LOOP_UPDATE_PERIOD, duration / (float)LED_COUNT) + 2;
 
-  const unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= delay and targetIndex < LED_COUNT) {
-    previousMillis = currentMillis;
+  if (targetIndex < LED_COUNT) {
 
     strip.clear();
-    strip.setPixelColor(targetIndex, color.get_color(targetIndex, LED_COUNT));  //  Set pixel's color (in RAM)
-    targetIndex += 1;
-    strip.show();  //  Update strip to match
+    // increment
+    for(uint32_t increment = LED_COUNT / ceil(duration / delay); increment > 0; increment--)
+    {
+      strip.setPixelColor(targetIndex, color.get_color(targetIndex, LED_COUNT));  //  Set pixel's color (in RAM)
+      targetIndex += 1;
+      if (targetIndex >= endIndex)
+        break;
+    }
   }
 
   return targetIndex >= endIndex;
@@ -43,32 +40,31 @@ bool dotWipeDown(const Color& color, const uint32_t duration, const bool restart
 bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
 {
   static uint16_t targetIndex = UINT16_MAX;
-  static unsigned long previousMillis = 0;
 
   // reset condition
   if (restart)
   {
     targetIndex = LED_COUNT - 1;
-    previousMillis = 0;
     return false;
   }
 
   // finished if the target index is over the led limit
-  const uint16_t endIndex = floor((1.0 - cutOff) * LED_COUNT);
-  if (targetIndex == UINT16_MAX or targetIndex < endIndex)
-    return true;
+  const uint16_t endIndex = floor((1.0 - cutOff) * LED_COUNT) - 2;
 
   // convert duration in delay for each segment
-  const unsigned long delay = duration / (float)LED_COUNT;
+  const unsigned long delay = max(LOOP_UPDATE_PERIOD, duration / (float)LED_COUNT);
 
-  const unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= delay and targetIndex >= 0) {
-    previousMillis = currentMillis;
+  if (targetIndex >= 0) {
 
     strip.clear();
-    strip.setPixelColor(targetIndex, color.get_color(targetIndex, LED_COUNT));  //  Set pixel's color (in RAM)
-    targetIndex -= 1;
-    strip.show();  //  Update strip to match
+    // increment 
+    for(uint32_t increment = LED_COUNT / ceil(duration / delay); increment > 0; increment--)
+    {
+      strip.setPixelColor(targetIndex, color.get_color(targetIndex, LED_COUNT));  //  Set pixel's color (in RAM)
+      targetIndex -= 1;
+      if (targetIndex == UINT16_MAX or targetIndex < endIndex)
+        return true;
+    }
   }
 
   return targetIndex == UINT16_MAX or targetIndex < endIndex;
@@ -77,106 +73,56 @@ bool dotWipeUp(const Color& color, const uint32_t duration, const bool restart, 
 bool colorWipeDown(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
 {
   static uint16_t targetIndex = UINT16_MAX;
-  static unsigned long previousMillis = 0;
-  static uint32_t ledStates[LED_COUNT];
-  static uint8_t fadeLevel = 0;
 
   // reset condition
   if (restart)
   {
     targetIndex = 0;
-    previousMillis = 0;
-    fadeLevel = 0;
-
-    // save initial state
-    for(uint16_t i = 0; i < LED_COUNT; ++i)
-      ledStates[i] = strip.getPixelColor(i);
-    
     return false;
   }
 
   // finished if the target index is over the led limit
-  const uint16_t endIndex = ceil(LED_COUNT * cutOff);
-  if (targetIndex >= endIndex)
-    return true;
+  const uint16_t endIndex = ceil(LED_COUNT * cutOff) + 2;
 
   // convert duration in delay for each segment
-  const unsigned long delay = duration / (float)LED_COUNT;
+  const unsigned long delay = max(LOOP_UPDATE_PERIOD, duration / (float)LED_COUNT);
   const uint32_t c = color.get_color(targetIndex, LED_COUNT);
 
-  const unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= delay) {
-    previousMillis = currentMillis;
-    fadeLevel = 0;
-
-    strip.setPixelColor(targetIndex++, c);
-    strip.show();  //  Update strip to match
-  }
-  else
+  // increment 
+  for(uint32_t increment = LED_COUNT / ceil(duration / delay); increment > 0; increment--)
   {
-    const float coeff = (currentMillis - previousMillis) / (float)delay;
-    const uint8_t newFadelevel = coeff * 255;
-    if (newFadelevel != fadeLevel)
-    {
-      fadeLevel = newFadelevel;
-      // update the value of the last segment with a gradient
-      strip.setPixelColor(targetIndex, utils::get_gradient(ledStates[targetIndex], c, coeff));
-      strip.show();  //  Update strip to match
-    }
+    strip.setPixelColor(targetIndex++, c);
+    if (targetIndex > endIndex)
+      break;
   }
 
-  return targetIndex >= endIndex;
+  return targetIndex > endIndex;
 }
 
 bool colorWipeUp(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
 {
-  static uint32_t ledStates[LED_COUNT];
   static uint16_t targetIndex = UINT16_MAX;
-  static unsigned long previousMillis = 0;
-  static uint8_t fadeLevel = 0;
 
   // reset condition
   if (restart)
   {
     targetIndex = LED_COUNT - 1;
-    previousMillis = 0;
-    fadeLevel = 0;
-
-    // save initial state
-    for(uint16_t i = 0; i < LED_COUNT; ++i)
-      ledStates[i] = strip.getPixelColor(i);
-    
     return false;
   }
 
   // finished if the target index is over the led limit
-  const uint16_t endIndex = floor((1.0 - cutOff) * LED_COUNT);
-  if (targetIndex == UINT16_MAX or targetIndex < endIndex)
-    return true;
+  const uint16_t endIndex = floor((1.0 - cutOff) * LED_COUNT) - 2;
 
   // convert duration in delay for each segment
-  const unsigned long delay = duration / (float)LED_COUNT;
+  const unsigned long delay = max(LOOP_UPDATE_PERIOD, duration / (float)LED_COUNT);
   const uint32_t c = color.get_color(targetIndex, LED_COUNT);
 
-  const unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= delay) {
-    previousMillis = currentMillis;
-    fadeLevel = 0;
-
-    strip.setPixelColor(targetIndex--, c);
-    strip.show();  //  Update strip to match
-  }
-  else
+  // increment 
+  for(uint32_t increment = LED_COUNT / ceil(duration / delay); increment > 0; increment--)
   {
-    const float coeff = (currentMillis - previousMillis) / (float)delay;
-    const uint8_t newFadelevel = coeff * 255;
-    if (newFadelevel != fadeLevel)
-    {
-      fadeLevel = newFadelevel;
-      // update the value of the last segement with a gradient
-      strip.setPixelColor(targetIndex, utils::get_gradient(ledStates[targetIndex], c, coeff));
-      strip.show();  //  Update strip to match
-    }
+    strip.setPixelColor(targetIndex--, c);
+    if(targetIndex == UINT16_MAX or targetIndex < endIndex)
+      break;
   }
 
   return targetIndex == UINT16_MAX or targetIndex < endIndex;

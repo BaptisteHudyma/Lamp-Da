@@ -14,9 +14,6 @@ extern LedStrip strip;
 // NeoPixel brightness, 0 (min) to 255 (max)
 extern uint8_t BRIGHTNESS;
 
-// if false, the led strip should be deactivated
-extern bool isActivated;
-
 /**
  * \brief main update loop
  */

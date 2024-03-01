@@ -295,11 +295,13 @@ class GenerateComplementaryColor : public DynamicColor
 public:
     GenerateComplementaryColor(const float randomVariation)
     : _color(0), _randomVariation(randomVariation)
-    {}
+    {
+        reset();
+    }
 
     uint32_t get_color(const uint16_t index, const uint16_t maxIndex) const override { return _color; }
     
-    void reset() override { _color = 0; };
+    void reset() override { internal_update(0); };
 
 private:
     /**

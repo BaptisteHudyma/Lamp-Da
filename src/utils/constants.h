@@ -28,24 +28,28 @@
 
 #include <stdint.h>
 
-// Which pin on the Arduino is connected to the NeoPixels?
-// On a Trinket or Gemma we suggest changing this to 1:
-#define LED_PIN D0
+// Which pin on the Arduino is connected to the LED command pin
+#define LED_PIN D2
 
-// if high, the led power will be on, does not turn on the leds
-#define LED_POWER_PIN D1
+// The pin that triggers the power delivery to the LEDS.
+#define LED_POWER_PIN D7
 
-// where is the button
-#define BUTTON_PIN D4
+
+// The button pin (one button pin to GND, the other to this pin)
+#define BUTTON_PIN D0
+// Pins for the led on the button
+#define BUTTON_RED D3
+#define BUTTON_GREEN D4
+#define BUTTON_BLUE D5
 
 // battery charge pin: max voltage should be 3V
-#define BATTERY_CHARGE_PIN A5 // (A5 is same as D5)
+#define BATTERY_CHARGE_PIN A1
 
 
 
 // How many leds are attached to the Arduino?
-const uint16_t LED_COUNT = 29;
+const uint16_t LED_COUNT = 619;
 
-const uint32_t LOOP_UPDATE_PERIOD = 3;   // milliseconds (real values are more around 2 but that is ok)
+const uint32_t LOOP_UPDATE_PERIOD = 40;   // milliseconds (average): depends of the number of leds
 
 #endif

@@ -3,7 +3,6 @@
 
 namespace bluetooth {
 
-#define MAX_CONNECTIONS 1
 #define ADV_TIMEOUT   30 // seconds. Set this higher to automatically stop advertising after a time
 // The following code is for setting a name based on the actual device MAC address
 // Where to go looking in memory for the MAC
@@ -56,9 +55,7 @@ void adv_stop_callback(void)
 }
 
 void startup_sequence()
-{
-    Bluefruit.begin(MAX_CONNECTIONS);
-    
+{    
     Bluefruit.autoConnLed(false);
     Bluefruit.setTxPower(4);    // Check bluefruit.h for supported values
 
