@@ -15,6 +15,12 @@ extern LedStrip strip;
 extern uint8_t BRIGHTNESS;
 
 /**
+ * \brief Load the parameters from the filesystem 
+ */
+void read_parameters();
+void write_parameters();
+
+/**
  * \brief main update loop
  */
 void color_mode_update();

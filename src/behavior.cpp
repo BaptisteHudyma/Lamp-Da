@@ -2,6 +2,7 @@
 
 #include "physical/MicroPhone.h"
 #include "physical/button.h"
+#include "physical/fileSystem.h"
 
 #include "colors/animations.h"
 #include "colors/palettes.h"
@@ -17,6 +18,7 @@
 LedStrip strip(LED_PIN, NEO_RGB);
 
 uint8_t BRIGHTNESS = 50;
+const char* brightnessKey = "brightness";
 
 // constantes
 constexpr uint8_t MIN_BRIGHTNESS = 15;
@@ -27,7 +29,10 @@ bool modeChange = true;     // signal a color mode change
 bool categoryChange = true; // signal a color category change
 
 uint8_t colorMode = 0;    // color mode: main wheel of the color mode
+const char* colorModeKey = "colorMode";
+
 uint8_t colorState = 0;   // color state: subwheel of the current color mode
+const char* colorStateKey = "colorState";
 
 uint8_t colorCodeIndex = 0; // color code index, used for color indexion
 uint8_t lastColorCodeIndex = colorCodeIndex;
@@ -95,6 +100,41 @@ void decrement_color_state()
   strip.clear();
 }
 
+void read_parameters()
+{
+  fileSystem::load_initial_values();
+
+  uint32_t brightness = 0;
+  if (fileSystem::get_value(std::string(brightnessKey), brightness))
+  {
+    // update it directly (bad design)
+    BRIGHTNESS = brightness;
+    strip.setBrightness(BRIGHTNESS);
+  }
+
+  uint32_t mode = 0;
+  if (fileSystem::get_value(std::string(colorModeKey), mode))
+  {
+    colorMode = mode;
+  }
+
+  uint32_t state = 0;
+  if (fileSystem::get_value(std::string(colorStateKey), state))
+  {
+    colorState = state;
+  }
+}
+
+void write_parameters()
+{
+    fileSystem::clear();
+    fileSystem::set_value(std::string(brightnessKey), BRIGHTNESS);
+    fileSystem::set_value(std::string(colorModeKey), colorMode);
+    fileSystem::set_value(std::string(colorStateKey), colorState);
+
+    fileSystem::write_state();
+}
+
 void shutdown()
 {
   // remove all colors from strip
@@ -109,6 +149,9 @@ void shutdown()
 #ifdef USE_BLUETOOTH
   bluetooth::disable_bluetooth();
 #endif
+
+  // save the current config to a file (akes some time so call it when the lamp appear to be shutdown already)
+  write_parameters();
 
   // deactivate indicators
   digitalWrite(LED_BUILTIN, HIGH);
@@ -125,7 +168,6 @@ void shutdown()
   sd_power_system_off();                    // this function puts the whole nRF52 to deep sleep.
   // on wake up, it'll start back from the setup phase
 }
-
 
 uint8_t clamp_state_values(uint8_t& state, const uint8_t maxValue)
 {

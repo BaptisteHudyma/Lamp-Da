@@ -2,6 +2,7 @@
 #include "src/physical/MicroPhone.h"
 #include "src/physical/button.h"
 #include "src/physical/bluetooth.h"
+#include "src/physical/fileSystem.h"
 #include "src/utils/utils.h"
 
 #include <bluefruit.h>
@@ -51,8 +52,14 @@ void setup()
   bluetooth::startup_sequence();
 #endif
 
+  // start the file system
+  fileSystem::setup();
+
   // initialize the battery level
   get_battery_level(true);
+
+  // read from the stored config
+  read_parameters();
 }
 
 
@@ -109,10 +116,10 @@ void loop() {
   // fast link
   blink_led(500);
 
-  strip.show();   // Turn OFF all pixels ASAP
+  strip.show(); // show at the end of the loop
 
+  // wait for a delay if we are faster than the set refresh rate
   uint32_t stop = millis();
-  
   const uint32_t loopDuration = (stop - start);
   if(loopDuration < LOOP_UPDATE_PERIOD)
   {
@@ -120,5 +127,6 @@ void loop() {
   }
 
   stop = millis();
-  Serial.println(stop - start);
+  // debug the loop update period
+  //Serial.println(stop - start);
 }
