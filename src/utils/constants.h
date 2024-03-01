@@ -45,11 +45,10 @@
 // battery charge pin: max voltage should be 3V
 #define BATTERY_CHARGE_PIN A1
 
-
-
-// How many leds are attached to the Arduino?
+// How many leds are attached to the controler
 const uint16_t LED_COUNT = 619;
 
-const uint32_t LOOP_UPDATE_PERIOD = 40;   // milliseconds (average): depends of the number of leds
+// compute the expected average loop runtime, scaled with the number of led +25% for computations
+const uint32_t LOOP_UPDATE_PERIOD = ceil(1.25 * (0.0483333 * LED_COUNT + 1.5983333));   // milliseconds (average): depends of the number of leds
 
 #endif

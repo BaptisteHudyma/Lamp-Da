@@ -3,6 +3,7 @@
 
 #include <Adafruit_NeoPixel.h>
 #include <cstdint>
+#include <cstring>
 #include "constants.h"
 
 /**
@@ -74,8 +75,27 @@ class LedStrip : public Adafruit_NeoPixel
         return _colors[n].color;
     }
 
+    uint32_t* get_buffer_ptr(const uint8_t index)
+    {
+        return _buffers[index];
+    }
+
+    void buffer_current_colors(const uint8_t index)
+    {
+        memcpy(_buffers[index], _colors, sizeof(_colors));
+    }
+
+    void fill_buffer(const uint8_t index, const uint32_t value)
+    {
+        memset(_buffers[index], value, sizeof(_buffers[index]));
+    }
+
+    uint8_t _buffer8b[LED_COUNT];
+    
     private:
     COLOR _colors[LED_COUNT];
+    // buffers for computations
+    uint32_t _buffers[2][LED_COUNT];
 };
 
 #endif

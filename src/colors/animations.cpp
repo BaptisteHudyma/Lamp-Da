@@ -6,10 +6,8 @@
 #include "palettes.h"
 #include "wipes.h"
 
-#include <stdlib.h>
 #include <math.h>
 #include <cmath>
-#include <vector>
 
 #include "../ext/math8.h"
 #include "../ext/random8.h"
@@ -236,7 +234,9 @@ bool fadeOut(const uint32_t duration, const bool restart, LedStrip& strip)
   static unsigned long startMillis = 0;
   static uint32_t maxFadeLevel = 0;
   static uint32_t fadeLevel = 0;
-  static uint32_t ledStates[LED_COUNT];
+
+  // shared buffer
+  static uint32_t* ledStates = strip.get_buffer_ptr(0);
 
   if (restart)
   {
@@ -244,9 +244,8 @@ bool fadeOut(const uint32_t duration, const bool restart, LedStrip& strip)
     maxFadeLevel = duration / LOOP_UPDATE_PERIOD;
     startMillis = millis();
 
-    // save initial state
-    for(uint16_t i = 0; i < LED_COUNT; ++i)
-      ledStates[i] = strip.getPixelColor(i);
+    // buffer the start values
+    strip.buffer_current_colors(0);
     
     return false;
   }
@@ -277,8 +276,8 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Led
   static unsigned long startMillis = 0;
   static uint32_t maxFadeLevel = 0;
   static uint32_t fadeLevel = 0;
-  static uint32_t ledStates[LED_COUNT];
-  static uint32_t targetStates[LED_COUNT];
+  static uint32_t* ledStates = strip.get_buffer_ptr(0);
+  static uint32_t* targetStates = strip.get_buffer_ptr(1);
 
   if (restart)
   {
@@ -286,10 +285,12 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Led
     maxFadeLevel = duration / LOOP_UPDATE_PERIOD;
     startMillis = millis();
 
+    // buffer the start values
+    strip.buffer_current_colors(0);
+
     // save initial state
     for(uint16_t i = 0; i < LED_COUNT; ++i)
     {
-      ledStates[i] = strip.getPixelColor(i);
       targetStates[i] = color.get_color(i, LED_COUNT);
     }
 
@@ -318,28 +319,30 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Led
 }
 
 
-bool fire(LedStrip& strip)
+bool fire(const bool isFirstCall, LedStrip& strip)
 {
   constexpr bool gReverseDirection = true;
-  constexpr uint32_t FPS = 1000.0 / 30.0;
-  static uint32_t lastUpdate = 0;
-  if (millis() - lastUpdate < FPS)
-    return true;
-  lastUpdate = millis();
+  
   random16_add_entropy( random());
 
   // COOLING: How much does the air cool as it rises?
   // Less cooling = taller flames.  More cooling = shorter flames.
   // Default 50, suggested range 20-100 
-  constexpr uint8_t COOLING = 100;
+  constexpr uint8_t COOLING = 55;
 
   // SPARKING: What chance (out of 255) is there that a new spark will be lit?
   // Higher chance = more roaring fire.  Lower chance = more flickery fire.
   // Default 120, suggested range 50-200.
-  constexpr uint8_t SPARKING = 200;
+  constexpr uint8_t SPARKING = 120;
 
   // Array of temperature readings at each simulation cell
-  static uint8_t heat[LED_COUNT];
+  static uint8_t* heat = strip._buffer8b;
+
+  if(isFirstCall)
+  {
+    // reset the values of the buffer
+    memset(strip._buffer8b, 0, sizeof(strip._buffer8b));
+  }
 
   // Step 1.  Cool down every cell a little
   for( int i = 0; i < LED_COUNT; i++) {
@@ -382,7 +385,7 @@ void random_noise(const palette_t& palette, LedStrip& strip, const bool isColorL
   // water.
   static const float speed = 0.1; // speed is set dynamically once we've started up
 
-  static uint8_t noise[LED_COUNT] = {0};
+  static uint8_t* noise = strip._buffer8b;
   // noise coordinates
   static float x = 0;
 
