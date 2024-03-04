@@ -28,7 +28,7 @@ void fill(const Color& color, LedStrip& strip, const float cutOff=1);
  * \param[in] cutOff between 0 and 1, how much this gradient will fill the display before suddently cutting of
  * \return True if the animation is finished
  */
-bool dotPingPong(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff=1);
+bool dot_ping_pong(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff=1);
 
 /**
  * \brief Do color pulse
@@ -40,7 +40,7 @@ bool dotPingPong(const Color& color, const uint32_t duration, const bool restart
  * \param[in] cutOff between 0 and 1, how much this color will fill the display before suddently cutting of
  * \return True if the animation is finished
  */
-bool colorPulse(const Color& color, const uint32_t durationPulseUp, const uint32_t durationPulseDown, const bool restart, LedStrip& strip, const float cutOff=1);
+bool color_pulse(const Color& color, const uint32_t durationPulseUp, const uint32_t durationPulseDown, const bool restart, LedStrip& strip, const float cutOff=1);
 
 /**
  * \brief Fill the display from both side simultaneously
@@ -50,7 +50,7 @@ bool colorPulse(const Color& color, const uint32_t durationPulseUp, const uint32
  * \param[in, out] strip The led strip to control
  * \return True if the animation is finished
  */
-bool doubleSideFillUp(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip);
+bool double_side_fill(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip);
 
 /**
  * \brief Do police light animation
@@ -68,7 +68,7 @@ bool police(const uint32_t duration, const bool restart, LedStrip& strip);
  * \param[in, out] strip The led strip to control
  * \return True if the animation is finished
  */
-bool fadeOut(const uint32_t duration, const bool restart, LedStrip& strip);
+bool fade_out(const uint32_t duration, const bool restart, LedStrip& strip);
 
 /**
  * \brief Do a fade in of a color
@@ -80,7 +80,7 @@ bool fadeOut(const uint32_t duration, const bool restart, LedStrip& strip);
  * \param[in] secondCutOff between 0 and 1, how much this color will fill the display before suddently cutting of
  * \return True if the animation is finished
  */
-bool fadeIn(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float firstCutOff=0.0, const float secondCutOff=1.0);
+bool fade_in(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float firstCutOff=0.0, const float secondCutOff=1.0);
 
 
 /**
@@ -88,7 +88,7 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Led
  */
 bool fire(const bool isFirstCall, LedStrip& strip);
 
-void random_noise(const palette_t& palette, LedStrip& strip, const bool isColorLoop, const uint16_t scale);
+void random_noise(const palette_t& palette, LedStrip& strip, const bool restart, const bool isColorLoop, const uint16_t scale);
 
 
 void candle(const palette_t& palette, LedStrip& strip);

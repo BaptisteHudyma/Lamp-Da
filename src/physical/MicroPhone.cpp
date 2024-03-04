@@ -209,11 +209,11 @@ bool pulse_beat_wipe(const Color& color, LedStrip& strip)
   if(beatDetected)
   {
     // reset pulse
-    animations::doubleSideFillUp(color, durationMillis, true, strip);
+    animations::double_side_fill(color, durationMillis, true, strip);
     return true;
   }
 
-  animations::doubleSideFillUp(color, durationMillis, false, strip);
+  animations::double_side_fill(color, durationMillis, false, strip);
   return false;
 }
 

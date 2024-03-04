@@ -1,7 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
- #ifdef ARDUINO
+ #include <cstdint>
+#ifdef ARDUINO
  #if (ARDUINO >= 100)
  #include <Arduino.h>
  #else
@@ -45,10 +46,28 @@
 // battery charge pin: max voltage should be 3V
 #define BATTERY_CHARGE_PIN A1
 
-// How many leds are attached to the controler
-const uint16_t LED_COUNT = 619;
+
+// parameters of the led strip used
+constexpr uint16_t ledByMeter = 160.0;      // the indexable led by meters
+constexpr float ledStripWidth_mm = 5.2;     // width of the led strip
+
+// parameters of the lamp body
+constexpr uint16_t LED_COUNT = 618;         // How many indexable leds are attached to the controler
+constexpr float lampBodyRadius_mm = 25;   // external radius of the lamp body 
+
+
+// physical parameters computations
+constexpr float ledSize_mm = 1.0 / ledByMeter * 1000.0;  // size of the individual led
+constexpr float lampBodyCircumpherence_mm = 2.0 * 3.14159265 * lampBodyRadius_mm;
+constexpr float ledStripLenght_mm = LED_COUNT * ledSize_mm;
+
+constexpr float stripXCoordinates = lampBodyCircumpherence_mm / ledSize_mm + 0.35;
+constexpr float stripYCoordinates = ledStripLenght_mm / lampBodyCircumpherence_mm;
+
+constexpr float lampBodyHeight_mm = stripYCoordinates  * ledStripWidth_mm;
+
 
 // compute the expected average loop runtime, scaled with the number of led +25% for computations
-const uint32_t LOOP_UPDATE_PERIOD = ceil(1.25 * (0.0483333 * LED_COUNT + 1.5983333));   // milliseconds (average): depends of the number of leds
+constexpr uint32_t LOOP_UPDATE_PERIOD = ceil(1.25 * (0.0483333 * LED_COUNT + 1.5983333));   // milliseconds (average): depends of the number of leds
 
 #endif

@@ -91,6 +91,7 @@ class LedStrip : public Adafruit_NeoPixel
     }
 
     uint8_t _buffer8b[LED_COUNT];
+    uint16_t _buffer16b[LED_COUNT];
     
     private:
     COLOR _colors[LED_COUNT];

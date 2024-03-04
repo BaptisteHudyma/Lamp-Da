@@ -2,10 +2,12 @@
 
 #include "../utils/constants.h"
 #include "../utils/utils.h"
+#include "../utils/coordinates.h"
 
 #include "palettes.h"
 #include "wipes.h"
 
+#include <cstdint>
 #include <math.h>
 #include <cmath>
 
@@ -40,7 +42,7 @@ void fill(const Color& color, LedStrip& strip, const float cutOff)
   }
 }
 
-bool dotPingPong(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
+bool dot_ping_pong(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
 {
   static bool isPongMode = false; // true: animation is climbing back the display
 
@@ -48,25 +50,25 @@ bool dotPingPong(const Color& color, const uint32_t duration, const bool restart
   if (restart)
   {
     isPongMode = false;
-    dotWipeUp(color, duration/2, true, strip);
-    dotWipeDown(color, duration/2, true, strip);
+    dot_wipe_up(color, duration/2, true, strip);
+    dot_wipe_down(color, duration/2, true, strip);
     return false;
   }
 
   if (isPongMode)
   {
-    return dotWipeUp(color, duration/2, false, strip, cutOff);
+    return dot_wipe_up(color, duration/2, false, strip, cutOff);
   }
   else {
     // set pong mode to true when first animation is finished
-    isPongMode = dotWipeDown(color, duration/2, false, strip, cutOff);
+    isPongMode = dot_wipe_down(color, duration/2, false, strip, cutOff);
   }
 
   // finished if the target index is over the led limit
   return false;
 }
 
-bool colorPulse(const Color& color, const uint32_t durationPulseUp, const uint32_t durationPulseDown, const bool restart, LedStrip& strip, const float cutOff)
+bool color_pulse(const Color& color, const uint32_t durationPulseUp, const uint32_t durationPulseDown, const bool restart, LedStrip& strip, const float cutOff)
 {
   static GenerateSolidColor blackColor = GenerateSolidColor(0);
   static bool isPongMode = false; // true: animation is climbing back the display
@@ -75,36 +77,36 @@ bool colorPulse(const Color& color, const uint32_t durationPulseUp, const uint32
   if (restart)
   {
     isPongMode = false;
-    colorWipeUp(color, durationPulseUp, true, strip);
-    colorWipeDown(color, durationPulseDown, true, strip);
+    color_wipe_up(color, durationPulseUp, true, strip);
+    color_wipe_down(color, durationPulseDown, true, strip);
     return false;
   }
 
   if (isPongMode)
   {
     // clear the displayed color with a black (turned of) color, from top to bottom, with a duration proportional to the pulse duration
-    return colorWipeDown(blackColor, durationPulseDown * cutOff, false, strip, 1.0);
+    return color_wipe_down(blackColor, durationPulseDown * cutOff, false, strip, 1.0);
   }
   else
   {
     // set pong mode to true when first animation is finished
-    isPongMode = colorWipeUp(color, durationPulseUp, false, strip, cutOff);
+    isPongMode = color_wipe_up(color, durationPulseUp, false, strip, cutOff);
   }
 
   // finished if the target index is over the led limit
   return false;
 }
 
-bool doubleSideFillUp(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip)
+bool double_side_fill(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip)
 {
   if(restart)
   {
-    colorWipeUp(color, duration, true, strip, 0.5);
-    colorWipeDown(color, duration, true, strip, 0.5);
+    color_wipe_up(color, duration, true, strip, 0.5);
+    color_wipe_down(color, duration, true, strip, 0.5);
     return false;
   }
 
-  return colorWipeDown(color, duration, false, strip, 0.5) or colorWipeUp(color, duration, false, strip, 0.5);
+  return color_wipe_down(color, duration, false, strip, 0.5) or color_wipe_up(color, duration, false, strip, 0.5);
 }
 
 bool police(const uint32_t duration, const bool restart, LedStrip& strip)
@@ -229,7 +231,7 @@ bool police(const uint32_t duration, const bool restart, LedStrip& strip)
   return false;
 }
 
-bool fadeOut(const uint32_t duration, const bool restart, LedStrip& strip)
+bool fade_out(const uint32_t duration, const bool restart, LedStrip& strip)
 {
   static unsigned long startMillis = 0;
   static uint32_t maxFadeLevel = 0;
@@ -271,7 +273,7 @@ bool fadeOut(const uint32_t duration, const bool restart, LedStrip& strip)
   return false;
 }
 
-bool fadeIn(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float firstCutOff, const float secondCutOff)
+bool fade_in(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float firstCutOff, const float secondCutOff)
 {
   static unsigned long startMillis = 0;
   static uint32_t maxFadeLevel = 0;
@@ -377,17 +379,23 @@ bool fire(const bool isFirstCall, LedStrip& strip)
 }
 
 
-void random_noise(const palette_t& palette, LedStrip& strip, const bool isColorLoop, const uint16_t scale)
+void random_noise(const palette_t& palette, LedStrip& strip, const bool restart, const bool isColorLoop, const uint16_t scale)
 {
-  // We're using the x/y dimensions to map to the x/y pixels on the matrix.  We'll
-  // use the z-axis for "time".  speed determines how fast time moves forward.  Try
-  // 1 for a very slow moving effect, or 60 for something that ends up looking like
-  // water.
-  static const float speed = 0.1; // speed is set dynamically once we've started up
+  static const float speed = 300;
 
-  static uint8_t* noise = strip._buffer8b;
+  static uint16_t* noise = strip._buffer16b;
   // noise coordinates
-  static float x = 0;
+  static float x = random16();
+  static float y = random16();
+  static float z = random16();
+
+  if(restart)
+  {
+    x = random16();
+    y = random16();
+    z = random16();
+    memset(strip._buffer16b, 0, sizeof(strip._buffer16b));
+  }
 
   static uint32_t lastcall = 0;
   if(millis() - lastcall > 30)
@@ -395,31 +403,27 @@ void random_noise(const palette_t& palette, LedStrip& strip, const bool isColorL
     lastcall = millis();
 
     // how much the new value influences the last one
-    float dataSmoothing = 0.3;
+    float dataSmoothing = 0.01;
     for(int i = 0; i < LED_COUNT; i++) {
-      int ioffset = scale * i;
-      uint8_t data = noise::inoise8(x + ioffset);
-
-      // The range of the inoise8 function is roughly 16-238.
-      // These two operations expand those values out to roughly 0..255
-      // You can comment them out if you want the raw noise data.
-      data = qsub8(data,16);
-      data = qadd8(data,scale8(data,39));
+      const auto xl = to_screen_x(i);
+      const auto yl = to_screen_y(i);
+      const auto zl = to_screen_z(i);
+      uint16_t data = noise16::inoise(x + scale * xl, y + scale * yl, z + scale * zl);
 
       // smooth over time to prevent suddent jumps
-      uint8_t newdata = noise[i] * dataSmoothing +  data * (1.0 - dataSmoothing);
-      data = newdata;
-      
-      noise[i] = data;
+      noise[i] = noise[i] * dataSmoothing +  data * (1.0 - dataSmoothing);
     }
 
-    x += speed;
+    z += speed;
+    // apply slow drift to X and Y, just for visual variation.
+    x += speed / 8;
+    y -= speed / 16;
 
     static uint8_t ihue=0;
     
     for(int i = 0; i < LED_COUNT; i++) {
-      uint8_t index = noise[i];
-      uint8_t bri =   noise[LED_COUNT - 1 - i];
+      uint16_t index = noise[i];
+      uint8_t bri = noise[LED_COUNT - 1 - i] >> 8;
 
       // if this palette is a 'loop', add a slowly-changing base value
       if(isColorLoop) { 
@@ -502,7 +506,7 @@ void candle(const palette_t& palette, LedStrip& strip)
       // vary flicker wiht bigger amplitude
       if (i % 4 == 0)
         brightness = random(minBrighness, maxBrighness);
-      strip.setPixelColor(i, get_color_from_palette(noise::inoise8(noisePosition + noiseScale * i), palette, brightness));
+      strip.setPixelColor(i, get_color_from_palette(noise8::inoise(noisePosition + noiseScale * i), palette, brightness));
     }
 
     // faster speed when change is fast

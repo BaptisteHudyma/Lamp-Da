@@ -264,7 +264,7 @@ void calm_mode_update()
         palettePartyColor.reset();
       }
 
-      isFinished = animations::fadeIn(palettePartyColor, 100, isFinished, strip);
+      isFinished = animations::fade_in(palettePartyColor, 100, isFinished, strip);
       if (isFinished)
       {
         currentIndex++;
@@ -273,15 +273,15 @@ void calm_mode_update()
       break;
 
     case 2:
-      animations::random_noise(PaletteLavaColors, strip, true, 5);
+      animations::random_noise(PaletteLavaColors, strip, categoryChange, true, 6000);
     break;
 
     case 3:
-      animations::random_noise(PaletteForestColors, strip, true, 5);
+      animations::random_noise(PaletteForestColors, strip, categoryChange, false, 6000);
     break;
 
     case 4:
-      animations::random_noise(PaletteOceanColors, strip, true, 5);
+      animations::random_noise(PaletteOceanColors, strip, categoryChange, true, 6000);
     break;
 
     default:  // error
@@ -303,7 +303,7 @@ void party_mode_update()
       static GenerateComplementaryColor complementaryColor = GenerateComplementaryColor(0.3);
       if (categoryChange) complementaryColor.reset();
 
-      isFinished = switchMode ? animations::colorWipeUp(complementaryColor, 500, isFinished, strip) : animations::colorWipeDown(complementaryColor, 500, isFinished, strip);
+      isFinished = switchMode ? animations::color_wipe_up(complementaryColor, 500, isFinished, strip) : animations::color_wipe_down(complementaryColor, 500, isFinished, strip);
       if (isFinished)
       {
         switchMode = !switchMode;
@@ -316,7 +316,7 @@ void party_mode_update()
       static GenerateRandomColor randomColor = GenerateRandomColor();
       if (categoryChange) randomColor.reset();
 
-      isFinished = animations::doubleSideFillUp(randomColor, 500, isFinished, strip);
+      isFinished = animations::double_side_fill(randomColor, 500, isFinished, strip);
       if (isFinished) randomColor.update();  // update color
     break;
 
@@ -325,7 +325,7 @@ void party_mode_update()
       if (categoryChange) complementaryPingPongColor.reset();
 
       // ping pong a color for infinity
-      isFinished = animations::dotPingPong(complementaryPingPongColor, 1000.0, isFinished, strip);
+      isFinished = animations::dot_ping_pong(complementaryPingPongColor, 1000.0, isFinished, strip);
       if (isFinished) complementaryPingPongColor.update();  // update color
     break;
 

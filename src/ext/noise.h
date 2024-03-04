@@ -3,15 +3,33 @@
 
 #include <cstdint>
 
-namespace noise {
+namespace noise8 {
 
-uint8_t inoise8(uint16_t x);
+// 1D perlin noise
+extern uint8_t inoise(uint16_t x);
 
-uint8_t inoise8(uint16_t x, uint16_t y);
+// 2D perlin noise
+extern uint8_t inoise(uint16_t x, uint16_t y);
 
-uint8_t inoise8_octaves(uint16_t x, uint8_t octaves, int scale, uint16_t time);
+// 3D perlin noise
+extern uint8_t inoise(uint16_t x, uint16_t y, uint16_t z);
+
+// 1d perlin noise with octaves
+extern uint8_t inoise_octaves(uint16_t x, uint8_t octaves, int scale, uint16_t time);
 
 }
 
+namespace noise16 {
+
+// 1D perlin noise
+extern uint16_t inoise(uint32_t x);
+
+// 2D perlin noise
+extern uint16_t inoise(uint32_t x, uint32_t y);
+
+// 3D perlin noise
+extern uint16_t inoise(uint32_t x, uint32_t y, uint32_t z);
+
+}
 
 #endif

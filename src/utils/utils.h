@@ -12,7 +12,8 @@
 #define POW4(x) (POW2(x)*POW2(x))
 #define POW7(x) (POW3(x)*POW3(x)*(x))
 #define DegToRad(x) ((x)*M_PI/180)
-#define FADE(x) scale16(x,x)
+#define FADE16(x) scale16(x,x)
+#define FADE8(x) scale8(x,x)
 
 namespace utils {
 
@@ -44,9 +45,9 @@ uint32_t get_random_complementary_color(const uint32_t color, const float tolera
  */
 uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const float level);
 
-uint32_t hue2rgbSinus(const uint16_t angle);
+uint32_t hue_to_rgb_sinus(const uint16_t angle);
 
-float mapfloat(float x, float in_min, float in_max, float out_min, float out_max);
+float map(float x, float in_min, float in_max, float out_min, float out_max);
 
 };
 

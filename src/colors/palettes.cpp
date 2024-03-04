@@ -1,5 +1,6 @@
 #include "palettes.h"
 #include "../utils/utils.h"
+#include <cstdint>
 
 
 /// Cloudy color palette/ blue to blue-white
@@ -159,3 +160,79 @@ uint32_t get_color_from_palette(const uint8_t index, const palette_t& palette, c
     return color.color;
 }
 
+uint32_t get_color_from_palette(const uint16_t index, const palette_t& palette, const uint8_t brightness)
+{
+    const float ramp = (index / (float)UINT16_MAX) * 16;
+    
+    const uint8_t renormIndex = floor(ramp); // convert to [0; 15] (divide by 16)
+    const float blendIndex = ramp - renormIndex;    // get the fractional part
+
+    const uint32_t entry = palette[renormIndex];
+
+    // convert to rgb
+    union COLOR color;
+    color.color = entry;
+    
+    uint8_t red1   = color.red;
+    uint8_t green1 = color.green;
+    uint8_t blue1  = color.blue;
+
+    // need to blenc the palette
+    if (blendIndex > 0)
+    {
+        union COLOR nextColor;
+        if( renormIndex == 15 ) {
+            nextColor.color = palette[0];
+        } else {
+            nextColor.color = palette[1 + renormIndex];
+        }
+
+        const float f1 = blendIndex;
+        const float f2 = 1.0 - blendIndex;
+
+        const uint8_t red2   = nextColor.red;
+        red1 = red1 * f1;
+        red1 += red2 * f2;
+
+        const uint8_t green2 = nextColor.green;
+        green1 = green1 * f1;
+        green1 += green2 * f2;
+
+        const uint8_t blue2  = nextColor.blue;
+        blue1 = blue1 * f1;
+        blue1 += blue2 * f2;
+    }
+
+    if (brightness != 255)
+    {
+        if (brightness != 0)
+        {
+            const float adjustedBirghtness = (brightness + 1) / 256.0; // adjust for rounding
+            // Now, since brightness is nonzero, we don't need the full scale8_video logic;
+            // we can just to scale8 and then add one (unless scale8 fixed) to all nonzero inputs.
+            if(red1) {
+                red1 = red1 * adjustedBirghtness;
+                ++red1;
+            }
+            if(green1) {
+                green1 = green1 * adjustedBirghtness;
+                ++green1;
+            }
+            if(blue1) {
+                blue1 = blue1 * adjustedBirghtness;
+                ++blue1;
+            }
+        } else {
+            red1 = 0;
+            green1 = 0;
+            blue1 = 0;
+        }
+    }
+
+    // convert back to color
+    color.red   = red1;
+    color.green = green1;
+    color.blue  = blue1;
+    // return color code
+    return color.color;
+}

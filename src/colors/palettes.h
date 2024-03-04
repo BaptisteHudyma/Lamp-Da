@@ -250,6 +250,7 @@ extern const palette_t PaletteHeatColors;
  * \return The desired color
  */
 uint32_t get_color_from_palette(const uint8_t index, const palette_t& palette, const uint8_t brightness = 255);
+uint32_t get_color_from_palette(const uint16_t index, const palette_t& palette, const uint8_t brightness = 255);
 
 
 

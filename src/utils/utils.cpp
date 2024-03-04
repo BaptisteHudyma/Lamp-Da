@@ -37,7 +37,7 @@ uint32_t get_complementary_color(const uint32_t color)
 
     const uint16_t finalHue = (uint32_t)(hue + UINT16_MAX/2.0) % UINT16_MAX;
     // add a cardan shift to the hue, to opbtain the symetrical color
-    return utils::hue2rgbSinus(map(finalHue, 0, UINT16_MAX, 0, 360));
+    return utils::hue_to_rgb_sinus(map(finalHue, 0, UINT16_MAX, 0, 360));
 }
 
 uint32_t get_random_complementary_color(const uint32_t color, const float tolerance)
@@ -49,7 +49,7 @@ uint32_t get_random_complementary_color(const uint32_t color, const float tolera
     // add random offset
     const float comp = 0.1 + (float)rand()/(float)RAND_MAX;   // 0.1 to 1.1
     const uint16_t finalHue = fmod(hue + UINT16_MAX / 2 + comp * tolerance * UINT16_MAX, 360.0f);   // add offset to the hue
-    return utils::hue2rgbSinus(finalHue);
+    return utils::hue_to_rgb_sinus(finalHue);
 }
 
 uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const float level)
@@ -65,7 +65,7 @@ uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const 
     );
 }
 
-uint32_t hue2rgbSinus(const uint16_t angle)
+uint32_t hue_to_rgb_sinus(const uint16_t angle)
 {
     static const uint8_t lights[360] = {
     0,   0,   0,   0,   0,   1,   1,   2, 
@@ -122,7 +122,7 @@ uint32_t hue2rgbSinus(const uint16_t angle)
     return colorArray.color;
 }
 
-float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
+float map(float x, float in_min, float in_max, float out_min, float out_max)
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
