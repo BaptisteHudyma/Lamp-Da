@@ -21,8 +21,9 @@ uint8_t BRIGHTNESS = 50;
 const char* brightnessKey = "brightness";
 
 // constantes
-constexpr uint8_t MIN_BRIGHTNESS = 2;
-constexpr uint8_t MAX_BRIGHTNESS = 255;
+static constexpr uint8_t MIN_BRIGHTNESS = 2;
+// max brightness depends on max power consumption
+static const uint8_t MAX_BRIGHTNESS = min(1.0, maxPowerConsumption_A / maxStripConsumption_A) * 255;
 
 
 bool modeChange = true;     // signal a color mode change
