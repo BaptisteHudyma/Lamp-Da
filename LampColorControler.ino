@@ -94,17 +94,17 @@ void display_battery_level()
   if(newCall - lastCall > refreshRate_ms or lastCall == 0)
   {
     lastCall = newCall;
-    const double percent = get_battery_level(false);
+    const double percent = get_battery_level(false) / 100.0;
     // red to green
     // force green to be kind of low because red is not as powerfull
-    set_button_color(utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RGB(255, 0, 0).get_rgb().color, utils::ColorSpace::RGB(0,30,0).get_rgb().color, percent/100.0)));
+    set_button_color(utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RGB(255, 0, 0).get_rgb().color, utils::ColorSpace::RGB(0,30,0).get_rgb().color, percent)));
   }
 }
 
 void loop() {
   uint32_t start = millis();
   display_battery_level();
-  
+
   // loop is not ran in shutdown mode
   handle_button_events(button_clicked_callback, button_hold_callback);
 

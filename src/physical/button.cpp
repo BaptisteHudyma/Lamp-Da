@@ -95,16 +95,15 @@ void set_button_color(utils::ColorSpace::RGB color)
 
 float get_battery_level(const bool resetRead)
 {
-   constexpr float maxVoltage = 16.5;
+   constexpr float maxVoltage = 16.6;
    constexpr float lowVoltage = 13.0;
 
    static float lastValue = 0;
 
    // map the input ADC out to voltage reading.
-   constexpr float maxInValue = 900.0;
-   const float pinMeasureVoltage = utils::mapfloat(analogRead(BATTERY_CHARGE_PIN) / maxInValue, 0.0, 1.0, lowVoltage, maxVoltage);
-
-   const float batteryVoltage = (1.0 - (maxVoltage - pinMeasureVoltage) / (maxVoltage - lowVoltage)) * 100.0;
+   constexpr float minInValue = 472.0;
+   constexpr float maxInValue = 600.0;
+   const float batteryVoltage = utils::mapfloat(analogRead(BATTERY_CHARGE_PIN), minInValue, maxInValue, lowVoltage, maxVoltage);
 
    // init or reset
    if(lastValue == 0 or resetRead)
@@ -113,5 +112,5 @@ float get_battery_level(const bool resetRead)
    }
 
    lastValue = batteryVoltage * 0.01 + lastValue * 0.99;
-   return lastValue;
+   return map(lastValue, lowVoltage, maxVoltage, 0, 100);
 }

@@ -10,7 +10,7 @@
 
 namespace fileSystem {
 
-constexpr auto FILENAME = "/lampda.par";
+constexpr auto FILENAME = "/.lampda.par";
 
 using namespace Adafruit_LittleFS_Namespace;
 
@@ -85,14 +85,6 @@ void load_initial_values()
         {
             _valueMap[key] = atoi(value.c_str());
         }
-
-        for(const auto v : _valueMap)
-        {
-            Serial.println(v.first.c_str());
-            Serial.println(v.second);
-        }
-        Serial.println();
-
         file.close();
     }
     // nothing to do

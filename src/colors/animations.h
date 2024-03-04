@@ -86,7 +86,7 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Led
 /**
  * Fire animation
  */
-bool fire(LedStrip& strip);
+bool fire(const bool isFirstCall, LedStrip& strip);
 
 void random_noise(const palette_t& palette, LedStrip& strip, const bool isColorLoop, const uint16_t scale);
 

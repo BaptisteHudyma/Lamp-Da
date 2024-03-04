@@ -21,7 +21,7 @@ uint8_t BRIGHTNESS = 50;
 const char* brightnessKey = "brightness";
 
 // constantes
-constexpr uint8_t MIN_BRIGHTNESS = 15;
+constexpr uint8_t MIN_BRIGHTNESS = 2;
 constexpr uint8_t MAX_BRIGHTNESS = 255;
 
 
@@ -273,15 +273,15 @@ void calm_mode_update()
       break;
 
     case 2:
-      animations::random_noise(PaletteLavaColors, strip, true, 20);
+      animations::random_noise(PaletteLavaColors, strip, true, 5);
     break;
 
     case 3:
-      animations::random_noise(PaletteForestColors, strip, true, 20);
+      animations::random_noise(PaletteForestColors, strip, true, 5);
     break;
 
     case 4:
-      animations::random_noise(PaletteOceanColors, strip, true, 20);
+      animations::random_noise(PaletteOceanColors, strip, true, 5);
     break;
 
     default:  // error

@@ -318,7 +318,6 @@ bool fadeIn(const Color& color, const uint32_t duration, const bool restart, Led
   return false;
 }
 
-
 bool fire(const bool isFirstCall, LedStrip& strip)
 {
   constexpr bool gReverseDirection = true;
@@ -328,12 +327,12 @@ bool fire(const bool isFirstCall, LedStrip& strip)
   // COOLING: How much does the air cool as it rises?
   // Less cooling = taller flames.  More cooling = shorter flames.
   // Default 50, suggested range 20-100 
-  constexpr uint8_t COOLING = 55;
+  constexpr uint8_t COOLING = 70;
 
   // SPARKING: What chance (out of 255) is there that a new spark will be lit?
   // Higher chance = more roaring fire.  Lower chance = more flickery fire.
   // Default 120, suggested range 50-200.
-  constexpr uint8_t SPARKING = 120;
+  constexpr uint8_t SPARKING = 200;
 
   // Array of temperature readings at each simulation cell
   static uint8_t* heat = strip._buffer8b;
@@ -342,6 +341,7 @@ bool fire(const bool isFirstCall, LedStrip& strip)
   {
     // reset the values of the buffer
     memset(strip._buffer8b, 0, sizeof(strip._buffer8b));
+    strip.clear();
   }
 
   // Step 1.  Cool down every cell a little
@@ -370,7 +370,7 @@ bool fire(const bool isFirstCall, LedStrip& strip)
     }
 
     uint8_t colorindex = scale8( heat[j], 240);
-    strip.setPixelColor(pixelnumber, get_color_from_palette(colorindex, PaletteBlackBodyColors));
+    strip.setPixelColor(pixelnumber, get_color_from_palette(colorindex, PaletteHeatColors));
   }
 
   return true;
