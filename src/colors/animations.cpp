@@ -381,7 +381,7 @@ bool fire(const bool isFirstCall, LedStrip& strip)
 
 void random_noise(const palette_t& palette, LedStrip& strip, const bool restart, const bool isColorLoop, const uint16_t scale)
 {
-  static const float speed = 300;
+  static const float speed = 3000;
 
   static uint16_t* noise = strip._buffer16b;
   // noise coordinates
@@ -405,22 +405,18 @@ void random_noise(const palette_t& palette, LedStrip& strip, const bool restart,
     // how much the new value influences the last one
     float dataSmoothing = 0.01;
     for(int i = 0; i < LED_COUNT; i++) {
-      const auto xl = to_screen_x(i);
-      const auto yl = to_screen_y(i);
-      const auto zl = to_screen_z(i);
-      uint16_t data = noise16::inoise(x + scale * xl, y + scale * yl, z + scale * zl);
+      const auto res = to_lamp(i);
+      uint16_t data = noise16::inoise(x + scale * res.x, y + scale * res.y, z + scale * res.z);
 
       // smooth over time to prevent suddent jumps
       noise[i] = noise[i] * dataSmoothing +  data * (1.0 - dataSmoothing);
     }
 
-    z += speed;
     // apply slow drift to X and Y, just for visual variation.
     x += speed / 8;
     y -= speed / 16;
 
-    static uint8_t ihue=0;
-    
+    static uint16_t ihue = 0;
     for(int i = 0; i < LED_COUNT; i++) {
       uint16_t index = noise[i];
       uint8_t bri = noise[LED_COUNT - 1 - i] >> 8;

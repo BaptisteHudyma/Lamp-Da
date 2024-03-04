@@ -3,26 +3,41 @@
 
 #include <cstdint>
 
+struct Cartesian
+{
+    int16_t x;
+    int16_t y;
+    int16_t z;
+
+    Cartesian(const int16_t x, const int16_t y, const int16_t z):
+        x(x), y(y), z(z)
+    {};
+};
+
+
 /**
- * X if the vertical axis, starting at zero and ending at stripXCoordinates
+ * X is the vertical axis, starting at zero and ending at stripXCoordinates
  */
 uint16_t to_screen_x(const uint16_t ledIndex);
 
 /**
- * Y if the horizontal axis, starting at zero and ending at stripYCoordinates
+ * Y is the horizontal axis, starting at zero and ending at stripYCoordinates
  */
 uint16_t to_screen_y(const uint16_t ledIndex);
 
 /**
- * Z if the depth axis, zero is the center of the lamp, the value returned by z indicates the surface of the lamp
+ * Z is the depth axis, fixed to one (screen space)
  */
 uint16_t to_screen_z(const uint16_t ledIndex);
 
 /**
  * Given the x and y, return the led index
  */
-uint16_t to_strip(const uint16_t x, const uint16_t y);
- 
+uint16_t to_strip(const uint16_t screenX, const uint16_t screenY);
 
+/**
+ * project to lamp space (3D space centered on the lamp axis)
+ */
+Cartesian to_lamp(const uint16_t ledIndex);
 
 #endif

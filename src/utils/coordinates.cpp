@@ -1,6 +1,7 @@
 #include "coordinates.h"
 
 #include "constants.h"
+#include "../ext/math8.h"
 #include <cstdint>
 #include <cmath>
 
@@ -16,8 +17,8 @@ uint16_t to_screen_y(const uint16_t ledIndex)
 {
     if(ledIndex > LED_COUNT)
         return 0;
-
-    return floor(ledIndex / stripXCoordinates);
+    static float divider = 1.0 / stripXCoordinates;
+    return floor(ledIndex * divider);
 }
 
 uint16_t to_screen_z(const uint16_t ledIndex)
@@ -25,7 +26,22 @@ uint16_t to_screen_z(const uint16_t ledIndex)
     return 1;
 }
  
-uint16_t to_strip(const uint16_t x, const uint16_t y)
+uint16_t to_strip(const uint16_t screenX, const uint16_t screenY)
 {
-    return min(LED_COUNT -1, x + y * stripXCoordinates);
+    return min(LED_COUNT -1, screenX + screenY * stripXCoordinates);
+}
+
+Cartesian to_lamp(const uint16_t ledIndex)
+{
+    // save some processing power
+    static constexpr float calc = 1.0 / stripXCoordinates * UINT16_MAX;
+    const uint16_t traj = to_screen_x(ledIndex) * calc;
+
+    const int16_t x = cos16(traj); 
+    const int16_t y = sin16(traj); 
+
+    static constexpr float calc2 = (1.0 / stripYCoordinates) * INT16_MAX * 2.0;
+    const int16_t z = to_screen_y(ledIndex) * calc2;
+
+    return Cartesian(x, y, z);
 }

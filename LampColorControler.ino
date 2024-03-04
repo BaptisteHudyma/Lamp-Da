@@ -128,5 +128,5 @@ void loop() {
 
   stop = millis();
   // debug the loop update period
-  //Serial.println(stop - start);
+  Serial.println(stop - start);
 }
