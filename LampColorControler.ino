@@ -95,6 +95,7 @@ void display_battery_level()
   {
     lastCall = newCall;
     const double percent = get_battery_level(false) / 100.0;
+    //Serial.println(percent);
     // red to green
     // force green to be kind of low because red is not as powerfull
     set_button_color(utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RGB(255, 0, 0).get_rgb().color, utils::ColorSpace::RGB(0,30,0).get_rgb().color, percent)));
@@ -128,5 +129,5 @@ void loop() {
 
   stop = millis();
   // debug the loop update period
-  Serial.println(stop - start);
+  //Serial.println(stop - start);
 }

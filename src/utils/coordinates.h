@@ -12,6 +12,10 @@ struct Cartesian
     Cartesian(const int16_t x, const int16_t y, const int16_t z):
         x(x), y(y), z(z)
     {};
+
+    Cartesian():
+    x(0), y(0), z(0)
+    {}
 };
 
 

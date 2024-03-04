@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstring>
 #include "constants.h"
+#include "coordinates.h"
 
 /**
  * \brief Use this to convert color to bytes
@@ -32,7 +33,11 @@ class LedStrip : public Adafruit_NeoPixel
         COLOR c;
         c.color = 0;
         for(uint16_t i = 0; i < LED_COUNT; ++i)
+        {
             _colors[i] = c;
+        
+            lampCoordinates[i] = to_lamp(i);
+        }
     }
 
     void setPixelColor(uint16_t n, COLOR c)
@@ -75,6 +80,11 @@ class LedStrip : public Adafruit_NeoPixel
         return _colors[n].color;
     }
 
+    inline Cartesian get_lamp_coordinates(uint16_t n) const
+    {
+        return lampCoordinates[n];
+    }
+
     uint32_t* get_buffer_ptr(const uint8_t index)
     {
         return _buffers[index];
@@ -97,6 +107,9 @@ class LedStrip : public Adafruit_NeoPixel
     COLOR _colors[LED_COUNT];
     // buffers for computations
     uint32_t _buffers[2][LED_COUNT];
+
+    // save the expensive computation on world coordinates
+    Cartesian lampCoordinates[LED_COUNT];
 };
 
 #endif

@@ -405,7 +405,7 @@ void random_noise(const palette_t& palette, LedStrip& strip, const bool restart,
     // how much the new value influences the last one
     float dataSmoothing = 0.01;
     for(int i = 0; i < LED_COUNT; i++) {
-      const auto res = to_lamp(i);
+      const auto res = strip.get_lamp_coordinates(i);
       uint16_t data = noise16::inoise(x + scale * res.x, y + scale * res.y, z + scale * res.z);
 
       // smooth over time to prevent suddent jumps
@@ -512,5 +512,6 @@ void candle(const palette_t& palette, LedStrip& strip)
     sequenceIndex += 1;
   }
 }
+
 
 }

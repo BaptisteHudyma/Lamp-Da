@@ -17,7 +17,7 @@ uint16_t to_screen_y(const uint16_t ledIndex)
 {
     if(ledIndex > LED_COUNT)
         return 0;
-    static float divider = 1.0 / stripXCoordinates;
+    static constexpr float divider = 1.0 / stripXCoordinates;
     return floor(ledIndex * divider);
 }
 
@@ -28,7 +28,7 @@ uint16_t to_screen_z(const uint16_t ledIndex)
  
 uint16_t to_strip(const uint16_t screenX, const uint16_t screenY)
 {
-    return min(LED_COUNT -1, screenX + screenY * stripXCoordinates);
+    return min(LED_COUNT -1, fmod(screenX, stripXCoordinates) + fmod(screenY, stripYCoordinates) * stripXCoordinates);
 }
 
 Cartesian to_lamp(const uint16_t ledIndex)

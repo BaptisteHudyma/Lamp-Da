@@ -9,6 +9,7 @@
 #include "colors/wipes.h"
 
 #include "utils/constants.h"
+#include "utils/text.h"
 #include "utils/utils.h"
 
 #include <cstdint>
@@ -243,7 +244,7 @@ void gradient_mode_update()
 
 void calm_mode_update()
 {
-  constexpr uint8_t maxCalmColorState = 4;
+  constexpr uint8_t maxCalmColorState = 5;
   switch(clamp_state_values(colorState, maxCalmColorState))
   {
     case 0: // rainbow swirl animation
@@ -284,6 +285,15 @@ void calm_mode_update()
     case 4:
       animations::random_noise(PaletteOceanColors, strip, categoryChange, true, 3);
     break;
+
+    case 5:
+      static GenerateRainbowSwirl rainbowSwirl2 = GenerateRainbowSwirl(5000);  // swirl animation (5 seconds)
+      if (categoryChange) rainbowSwirl2.reset(); 
+
+      text::display_text(rainbowSwirl2, "Test", 5, 5, strip);
+
+      rainbowSwirl2.update();  // update 
+      break;
 
     default:  // error
       colorState = 0;
