@@ -20,8 +20,6 @@ void handle_button_events(std::function<void(uint8_t)> clickSerieCallback, std::
  * Display a color on the button
  */
 void set_button_color(utils::ColorSpace::RGB color);
-
-// return a number between 0 and 100
-float get_battery_level(const bool resetRead);
+void button_blink(const uint offFreq, const uint onFreq, utils::ColorSpace::RGB color);
 
 #endif

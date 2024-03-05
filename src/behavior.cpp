@@ -3,14 +3,18 @@
 #include "physical/MicroPhone.h"
 #include "physical/button.h"
 #include "physical/fileSystem.h"
+#include "physical/battery.h"
 
 #include "colors/animations.h"
 #include "colors/palettes.h"
 #include "colors/wipes.h"
 
+#include "utils/colorspace.h"
 #include "utils/constants.h"
 #include "utils/text.h"
 #include "utils/utils.h"
+
+#include "alerts.h"
 
 #include <cstdint>
 
@@ -232,6 +236,7 @@ void gradient_mode_update()
       break;
 
     default:  // error
+      currentAlert = Alerts::UNKNOWN_COLOR_STATE;
       colorState = 0;
       colorCodeIndex = 0;
       strip.clear();
@@ -297,6 +302,7 @@ void calm_mode_update()
       break;
 
     default:  // error
+      currentAlert = Alerts::UNKNOWN_COLOR_STATE;
       colorState = 0;
       strip.clear();
     break;
@@ -342,7 +348,8 @@ void party_mode_update()
     break;
 
     default:  // error
-    colorState = 0;
+      currentAlert = Alerts::UNKNOWN_COLOR_STATE;
+      colorState = 0;
       strip.clear();
     break;
   }
@@ -373,6 +380,7 @@ void sound_mode_update()
     break;
 
     default:  // error
+      currentAlert = Alerts::UNKNOWN_COLOR_STATE;
       colorState = 0;
       strip.clear();
     break;
@@ -392,6 +400,7 @@ void gyro_mode_update()
     break;
 
     default:  // error
+      currentAlert = Alerts::UNKNOWN_COLOR_STATE;
       colorState = 0;
       strip.clear();
     break;
@@ -401,9 +410,46 @@ void gyro_mode_update()
   categoryChange = false;
 }
 
+// Display a color on the button
+void display_battery_level()
+{
+  static constexpr uint32_t refreshRate_ms = 2000;
+  static uint32_t lastCall = 0;
+
+  const uint32_t newCall = millis();
+  if(newCall - lastCall > refreshRate_ms or lastCall == 0)
+  {
+    lastCall = newCall;
+    const double percent = get_battery_level(false) / 100.0;
+
+    // 10% battery is critical
+    if(percent < 0.1)
+    {
+      currentAlert = Alerts::BATTERY_CRITICAL;
+    }
+    // normal mode
+    else if(currentAlert == NONE or currentAlert == Alerts::BATTERY_CRITICAL)
+    {
+      // can stop the alert if battery became good again
+      if(percent > 0.15)
+      {
+        // reset alert if battery is no longer critical
+        currentAlert = Alerts::NONE;
+      }
+
+      //Serial.println(percent);
+      // red to green
+      // force green to be kind of low because red is not as powerfull
+      set_button_color(utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RGB(255, 0, 0).get_rgb().color, utils::ColorSpace::RGB(0,30,0).get_rgb().color, percent)));
+    }
+  }
+}
 
 void color_mode_update()
 {
+  // start by displaying the battery level
+  display_battery_level();
+
   constexpr uint8_t maxColorMode = 4;
   switch(clamp_state_values(colorMode, maxColorMode))
   {
@@ -429,6 +475,7 @@ void color_mode_update()
 
     default:
       colorMode = 0;
+      currentAlert = Alerts::UNKNOWN_COLOR_MODE;
     break;
   }
 
@@ -462,7 +509,7 @@ void button_clicked_callback(uint8_t consecutiveButtonCheck)
       break;
 
     default:
-    // error
+    // unhandled
       break;
   }
 }
@@ -563,7 +610,34 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
       break;
     
     default:
-    // error
+    // unhandled
       break;
+  }
+}
+
+void handle_alerts()
+{
+  switch(currentAlert)
+  {
+    case Alerts::NONE:
+    {
+      break;
+    }
+    case Alerts::BATTERY_CRITICAL:
+    {
+      // fast blink red
+      button_blink(300, 300, utils::ColorSpace::RED);
+    }
+    case Alerts::LONG_LOOP_UPDATE:
+    {
+      // fast blink red
+      button_blink(400, 400, utils::ColorSpace::FUSHIA);
+    }
+    default:
+    {
+      // unhandled case
+      button_blink(300, 300, utils::ColorSpace::ORANGE);
+      break;
+    }
   }
 }

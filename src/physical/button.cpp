@@ -93,24 +93,47 @@ void set_button_color(utils::ColorSpace::RGB color)
     analogWrite(BUTTON_BLUE, col.blue);
 }
 
-float get_battery_level(const bool resetRead)
+void button_blink(const uint offFreq, const uint onFreq, utils::ColorSpace::RGB color)
 {
-   constexpr float maxVoltage = 16.6;
-   constexpr float lowVoltage = 13.0;
+  static uint32_t lastCall = 0;
+  static bool ledState = false;
 
-   static float lastValue = 0;
+  // led is off, and last call was 100ms before
+  if(not ledState and millis() - lastCall > onFreq)
+  {
+    ledState = true;
+    set_button_color(color);
+    lastCall = millis();
+  }
 
-   // map the input ADC out to voltage reading.
-   constexpr float minInValue = 472.0;
-   constexpr float maxInValue = 600.0;
-   const float batteryVoltage = utils::map(analogRead(BATTERY_CHARGE_PIN), minInValue, maxInValue, lowVoltage, maxVoltage);
+  // led is on, and last call was long ago 
+  if(ledState and millis() - lastCall > offFreq)
+  {
+    ledState = false;
+    // set black
+    set_button_color(utils::ColorSpace::RGB(0));
+    lastCall = millis();
+  }
+}
 
-   // init or reset
-   if(lastValue == 0 or resetRead)
-   {
-     lastValue = batteryVoltage;
-   }
+void blink_led(const uint toggleFreq)
+{
+  static uint32_t lastCall = 0;
+  static bool ledState = false;
 
-   lastValue = batteryVoltage * 0.01 + lastValue * 0.99;
-   return map(lastValue, lowVoltage, maxVoltage, 0, 100);
+  // led is off, and last call was 100ms before
+  if(not ledState and millis() - lastCall > 100)
+  {
+    ledState = true;
+    digitalWrite(LED_BUILTIN, HIGH);
+    lastCall = millis();
+  }
+
+  // led is on, and last call was long ago 
+  if(ledState and millis() - lastCall > toggleFreq)
+  {
+    ledState = false;
+    digitalWrite(LED_BUILTIN, LOW);
+    lastCall = millis();
+  }
 }

@@ -35,4 +35,7 @@ void button_clicked_callback(uint8_t consecutiveButtonCheck);
  */
 void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDuration);
 
+// If any alert is set, will handle it
+void handle_alerts();
+
 #endif

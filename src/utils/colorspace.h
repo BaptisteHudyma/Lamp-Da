@@ -59,6 +59,20 @@ class RGB : public Base {
     COLOR _color;
 };
 
+// define some colors
+static const RGB RED(255, 0, 0);
+static const RGB GREEN(0, 255, 0);
+static const RGB BLUE(0, 0, 255);
+static const RGB WHITE(255, 255, 255);
+
+static const RGB BLACK(0, 0, 0);
+static const RGB FUSHIA(255, 0, 255);
+static const RGB TEAL(0, 255, 255);
+static const RGB PINK(255, 20, 147);
+static const RGB TOMATO(255, 99, 71);
+static const RGB ORANGE(255, 140, 0);
+static const RGB PURPLE(128, 0, 128);
+
 class HSV : public Base {
     public:
     HSV(const COLOR& c)

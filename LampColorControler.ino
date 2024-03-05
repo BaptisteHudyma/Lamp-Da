@@ -3,7 +3,9 @@
 #include "src/physical/button.h"
 #include "src/physical/bluetooth.h"
 #include "src/physical/fileSystem.h"
+#include "src/physical/battery.h"
 #include "src/utils/utils.h"
+#include "src/alerts.h"
 
 #include <bluefruit.h>
 
@@ -62,49 +64,8 @@ void setup()
   read_parameters();
 }
 
-
-void blink_led(const uint toggleFreq)
-{
-  static uint32_t lastCall = 0;
-  static bool ledState = false;
-
-  // led is off, and last call was 100ms before
-  if(not ledState and millis() - lastCall > 100)
-  {
-    ledState = true;
-    digitalWrite(LED_BUILTIN, HIGH);
-    lastCall = millis();
-  }
-
-  // led is on, and last call was long ago 
-  if(ledState and millis() - lastCall > toggleFreq)
-  {
-    ledState = false;
-    digitalWrite(LED_BUILTIN, LOW);
-    lastCall = millis();
-  }
-}
-
-void display_battery_level()
-{
-  static constexpr uint32_t refreshRate_ms = 2000;
-  static uint32_t lastCall = 0;
-
-  const uint32_t newCall = millis();
-  if(newCall - lastCall > refreshRate_ms or lastCall == 0)
-  {
-    lastCall = newCall;
-    const double percent = get_battery_level(false) / 100.0;
-    //Serial.println(percent);
-    // red to green
-    // force green to be kind of low because red is not as powerfull
-    set_button_color(utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RGB(255, 0, 0).get_rgb().color, utils::ColorSpace::RGB(0,30,0).get_rgb().color, percent)));
-  }
-}
-
 void loop() {
   uint32_t start = millis();
-  display_battery_level();
 
   // loop is not ran in shutdown mode
   handle_button_events(button_clicked_callback, button_hold_callback);
@@ -114,8 +75,9 @@ void loop() {
 #endif
   color_mode_update();
 
-  // fast link
-  blink_led(500);
+  // display alerts if needed
+  handle_alerts();
+
 
   strip.show(); // show at the end of the loop
 
@@ -128,6 +90,25 @@ void loop() {
   }
 
   stop = millis();
+
+  // check the loop duration
+  static uint8_t isOnSlowLoopCount = 0;
+  if(stop - start > LOOP_UPDATE_PERIOD + 1)
+  {
+    isOnSlowLoopCount++;
+  }
+  else if(isOnSlowLoopCount > 0)
+  {
+    isOnSlowLoopCount--;
+  }
+  if(isOnSlowLoopCount > 5)
+  {
+    currentAlert = Alerts::LONG_LOOP_UPDATE;
+  }
+  else if(currentAlert == currentAlert and isOnSlowLoopCount <= 1)
+  {
+    currentAlert = Alerts::NONE;
+  }
   // debug the loop update period
   //Serial.println(stop - start);
 }
