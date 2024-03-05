@@ -378,7 +378,6 @@ bool fire(const bool isFirstCall, LedStrip& strip)
   return true;
 }
 
-
 void random_noise(const palette_t& palette, LedStrip& strip, const bool restart, const bool isColorLoop, const uint16_t scale)
 {
   static const float speed = 3000;

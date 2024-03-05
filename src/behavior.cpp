@@ -287,12 +287,13 @@ void calm_mode_update()
     break;
 
     case 5:
-      static GenerateRainbowSwirl rainbowSwirl2 = GenerateRainbowSwirl(5000);  // swirl animation (5 seconds)
-      if (categoryChange) rainbowSwirl2.reset(); 
+      static GenerateRainbowSwirl rainbowSwirl2 = GenerateRainbowSwirl(500);
+      if (categoryChange) rainbowSwirl2.reset();
 
-      text::display_text(rainbowSwirl2, "Test", 5, 5, strip);
+      strip.clear();
+      isFinished = text::display_scrolling_text(rainbowSwirl2, "Salut les cataphiles", 1, 1.0, 8000, isFinished, true, strip);
 
-      rainbowSwirl2.update();  // update 
+      rainbowSwirl2.update();  // update
       break;
 
     default:  // error
