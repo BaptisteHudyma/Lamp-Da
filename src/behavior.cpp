@@ -43,6 +43,12 @@ const char* colorStateKey = "colorState";
 uint8_t colorCodeIndex = 0; // color code index, used for color indexion
 uint8_t lastColorCodeIndex = colorCodeIndex;
 
+uint8_t colorCodeIndexForWarmLight = 0; // color code index, used for color indexion of warm to white
+const char* colorCodeIndexForWarmLightKey = "warmLight";
+
+uint8_t colorCodeIndexForColoredLight = 0; // color code index, used for color indexion of RGB
+const char* colorCodeIndexForColoredLightKey = "colorLight";
+
 bool isFinished = true;
 bool switchMode = true;
 
@@ -129,6 +135,18 @@ void read_parameters()
   {
     colorState = state;
   }
+
+  uint32_t warmLight = 0;
+  if (fileSystem::get_value(std::string(colorCodeIndexForWarmLightKey), warmLight))
+  {
+    colorCodeIndexForWarmLight = warmLight;
+  }
+
+  uint32_t coloredLight = 0;
+  if (fileSystem::get_value(std::string(colorCodeIndexForColoredLightKey), coloredLight))
+  {
+    colorCodeIndexForColoredLight = coloredLight;
+  }
 }
 
 void write_parameters()
@@ -137,6 +155,8 @@ void write_parameters()
     fileSystem::set_value(std::string(brightnessKey), BRIGHTNESS);
     fileSystem::set_value(std::string(colorModeKey), colorMode);
     fileSystem::set_value(std::string(colorStateKey), colorState);
+    fileSystem::set_value(std::string(colorCodeIndexForWarmLightKey), colorCodeIndexForWarmLight);
+    fileSystem::set_value(std::string(colorCodeIndexForColoredLightKey), colorCodeIndexForColoredLight);
 
     fileSystem::write_state();
 }
@@ -206,13 +226,15 @@ void gradient_mode_update()
       if (categoryChange)
       {
         lastColorStep = 1;
-        colorCodeIndex = 0;
+        colorCodeIndex = colorCodeIndexForWarmLight;
+        lastColorCodeIndex = colorCodeIndexForWarmLight;
         paletteHeatColor.reset();
       }
 
       if(colorCodeIndex != lastColorStep)
       {
         lastColorStep = colorCodeIndex;
+        colorCodeIndexForWarmLight = colorCodeIndex;
         paletteHeatColor.update(colorCodeIndex);
       }
       animations::fill(paletteHeatColor, strip);
@@ -223,13 +245,15 @@ void gradient_mode_update()
       if (categoryChange)
       {
         lastColorStep = 1;
-        colorCodeIndex = 0;
+        colorCodeIndex = colorCodeIndexForColoredLight;
+        lastColorCodeIndex = colorCodeIndexForColoredLight;
         rainbowIndex.reset();
       }
       
       if(colorCodeIndex != lastColorStep)
       {
         lastColorStep = colorCodeIndex;
+        colorCodeIndexForColoredLight = colorCodeIndex;
         rainbowIndex.update(colorCodeIndex);
       }
       animations::fill(rainbowIndex, strip);
@@ -579,7 +603,7 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
     case 3: // 3 clicks and hold
       if (!isEndOfHoldEvent)
       {
-        constexpr uint32_t colorStepDuration_ms = 10000;
+        constexpr uint32_t colorStepDuration_ms = 6000;
         const uint32_t timeShift = (colorStepDuration_ms * lastColorCodeIndex)/255;
         const uint32_t colorStep  = (buttonHoldDuration + timeShift) % colorStepDuration_ms;
         colorCodeIndex = map(colorStep, 0, colorStepDuration_ms, 0, UINT8_MAX);
@@ -592,7 +616,7 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
     case 4: // 4 clicks and hold
       if (!isEndOfHoldEvent)
       {
-        constexpr uint32_t colorStepDuration_ms = 10000;
+        constexpr uint32_t colorStepDuration_ms = 6000;
         const uint32_t timeShift = (colorStepDuration_ms * lastColorCodeIndex)/255;
         if (buttonHoldDuration < timeShift)
         {
