@@ -434,6 +434,9 @@ void gyro_mode_update()
   categoryChange = false;
 }
 
+
+static uint32_t criticalbatteryRaisedTime = 0;
+
 // Display a color on the button
 void display_battery_level()
 {
@@ -446,21 +449,31 @@ void display_battery_level()
     lastCall = newCall;
     const double percent = get_battery_level(false) / 100.0;
 
-    // 10% battery is critical
-    if(percent < 0.1)
+    // 5% battery is critical
+    if(percent < 0.05)
     {
+      if (criticalbatteryRaisedTime == 0)
+      {
+        criticalbatteryRaisedTime = millis();
+      }
       currentAlert = Alerts::BATTERY_CRITICAL;
     }
-    // normal mode
-    else if(currentAlert == NONE or currentAlert == Alerts::BATTERY_CRITICAL)
-    {
-      // can stop the alert if battery became good again
-      if(percent > 0.15)
+    else {
+      criticalbatteryRaisedTime = 0;
+      // 10% battery is low, start alerting
+      if(percent < 0.10)
       {
+        currentAlert = Alerts::BATTERY_LOW;
+      }
+      else {
         // reset alert if battery is no longer critical
         currentAlert = Alerts::NONE;
       }
-
+    }
+ 
+    // normal mode
+    if(currentAlert == NONE)
+    {
       //Serial.println(percent);
       // red to green
       // force green to be kind of low because red is not as powerfull
@@ -649,17 +662,32 @@ void handle_alerts()
     }
     case Alerts::BATTERY_CRITICAL:
     {
+      // critical battery alert: shutdown after 5 seconds
+      if(millis() - criticalbatteryRaisedTime > 5000)
+      {
+        // shutdown when battery is critical
+        shutdown();
+      }
+      // blink if no shutdown
+      button_blink(100, 100, utils::ColorSpace::RED);
+      break;
+    }
+    case Alerts::BATTERY_LOW:
+    {
       // fast blink red
       button_blink(300, 300, utils::ColorSpace::RED);
+      break;
     }
     case Alerts::LONG_LOOP_UPDATE:
     {
       // fast blink red
       button_blink(400, 400, utils::ColorSpace::FUSHIA);
+      break;
     }
     default:
     {
       // unhandled case
+      criticalbatteryRaisedTime = 0;
       button_blink(300, 300, utils::ColorSpace::ORANGE);
       break;
     }

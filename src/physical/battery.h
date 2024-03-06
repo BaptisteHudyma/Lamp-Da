@@ -23,7 +23,7 @@ inline uint8_t get_battery_level(const bool resetRead)
      lastValue = batteryVoltage;
    }
 
-   lastValue = batteryVoltage * 0.01 + lastValue * 0.99;
+   lastValue = batteryVoltage * 0.1 + lastValue * 0.9;
    return utils::map(lastValue, lowVoltage, maxVoltage, 0, 100);
 }
 

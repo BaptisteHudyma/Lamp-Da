@@ -7,7 +7,8 @@ enum Alerts {
     MAIN_LOOP_FREEZE,       // main loop does not respond
     UNKNOWN_COLOR_MODE,     // An incorrect color mode was reached 
     UNKNOWN_COLOR_STATE,    // An incorrect color state was reached
-    BATTERY_CRITICAL,       // battery is dangerously low
+    BATTERY_LOW,            // battery is dangerously low
+    BATTERY_CRITICAL,       // battery is too low, shutdown immediatly
     LONG_LOOP_UPDATE,       // the main loop is taking too long to execute (bugs when reading button inputs)
 };
 

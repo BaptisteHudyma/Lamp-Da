@@ -59,6 +59,10 @@ void setup()
 
   // initialize the battery level
   get_battery_level(true);
+  for(uint i = 0; i < 100; ++i)
+  {
+    get_battery_level(false);
+  }
 
   // read from the stored config
   read_parameters();
