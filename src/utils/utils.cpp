@@ -1,6 +1,7 @@
 #include "utils.h"
 
 #include "colorspace.h"
+#include "strip.h"
 
 #include <cstdint>
 #include <stdlib.h>
@@ -51,6 +52,22 @@ uint32_t get_random_complementary_color(const uint32_t color, const float tolera
     const uint16_t finalHue = fmod(hue + UINT16_MAX / 2 + comp * tolerance * UINT16_MAX, 360.0f);   // add offset to the hue
     return utils::hue_to_rgb_sinus(finalHue);
 }
+
+COLOR color_blend(COLOR color1, COLOR color2, uint16_t blend, bool b16) {
+  if(blend == 0)   return color1;
+  uint16_t blendmax = b16 ? 0xFFFF : 0xFF;
+  if(blend == blendmax) return color2;
+  uint8_t shift = b16 ? 16 : 8;
+
+  COLOR res;
+  res.white = ((color2.white * blend) + (color1.white * (blendmax - blend))) >> shift;
+  res.red = ((color2.red * blend) + (color1.red * (blendmax - blend))) >> shift;
+  res.green = ((color2.green * blend) + (color1.green * (blendmax - blend))) >> shift;
+  res.blue = ((color2.blue * blend) + (color1.blue * (blendmax - blend))) >> shift;
+
+  return res;
+}
+
 
 uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const float level)
 {

@@ -83,6 +83,14 @@ const palette_t PaletteHeatColors =
     0xFFFF00, 0xFFFF33, 0xFFFF66, 0xFFFF99, 0xFFFFCC
 };
 
+const palette_t PaletteAuroraColors =
+ {
+    0x000000, 0x003300, 0x006600, 0x009900,
+    0x00cc00, 0x00ff00, 0x33ff00, 0x66ff00,
+    0x99ff00, 0xccff00, 0xffff00, 0xffcc00,
+    0xff9900, 0xff6600, 0xff3300, 0xff0000
+};
+
 
 uint32_t get_color_from_palette(const uint8_t index, const palette_t& palette, const uint8_t brightness)
 {

@@ -14,6 +14,9 @@
 #include "utils/text.h"
 #include "utils/utils.h"
 
+#include "ext/math8.h"
+#include "ext/noise.h"
+
 #include "alerts.h"
 
 #include <cstdint>
@@ -273,7 +276,7 @@ void gradient_mode_update()
 
 void calm_mode_update()
 {
-  constexpr uint8_t maxCalmColorState = 5;
+  constexpr uint8_t maxCalmColorState = 6;
   switch(clamp_state_values(colorState, maxCalmColorState))
   {
     case 0: // rainbow swirl animation
@@ -282,7 +285,7 @@ void calm_mode_update()
       if (categoryChange) rainbowSwirl.reset();
 
       animations::fill(rainbowSwirl, strip);
-      rainbowSwirl.update();  // update 
+      rainbowSwirl.update();  // update
     break;
 
     case 1: // party wheel
@@ -316,13 +319,12 @@ void calm_mode_update()
     break;
 
     case 5:
-      static GenerateRainbowSwirl rainbowSwirl2 = GenerateRainbowSwirl(500);
-      if (categoryChange) rainbowSwirl2.reset();
-
-      strip.clear();
-      isFinished = text::display_scrolling_text(rainbowSwirl2, "Salut les cataphiles", 1, 1.0, 8000, isFinished, true, strip);
-
-      rainbowSwirl2.update();  // update
+      animations::random_noise(PalettePartyColors, strip, categoryChange, true, 3);
+    break;
+    
+    case 6:
+      // polar light
+      animations::mode_2DPolarLights(255, 128, PaletteAuroraColors, categoryChange, strip);
       break;
 
     default:  // error

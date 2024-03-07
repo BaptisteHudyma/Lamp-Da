@@ -512,5 +512,79 @@ void candle(const palette_t& palette, LedStrip& strip)
   }
 }
 
+void phases(const bool moder, const uint8_t speed, const palette_t& palette, LedStrip& strip) {                  // We're making sine waves here. By Andrew Tuline.
+  static uint32_t step = 0;
+
+  uint8_t allfreq = 16;                                          // Base frequency.
+  float *phase = reinterpret_cast<float*>(&step);         // Phase change value gets calculated (float fits into unsigned long).
+  uint8_t cutOff = (255 - 128);                      // You can change the number of pixels.  AKA INTENSITY (was 192).
+  uint8_t modVal = 5;//SEGMENT.fft1/8+1;                         // You can change the modulus. AKA FFT1 (was 5).
+
+  uint8_t index = millis() / 64;                                  // Set color rotation speed
+  *phase += speed / 32.0;                                  // You can change the speed of the wave. AKA SPEED (was .4)
+
+  for (int i = 0; i < LED_COUNT; i++) {
+    if (moder) modVal = (noise8::inoise(i*10 + i*10) /16);         // Let's randomize our mod length with some Perlin noise.
+    uint16_t val = (i+1) * allfreq;                              // This sets the frequency of the waves. The +1 makes sure that led 0 is used.
+    if (modVal == 0) modVal = 1;
+    val += *phase * (i % modVal +1) /2;                          // This sets the varying phase change of the waves. By Andrew Tuline.
+    uint8_t b = cubicwave8(val);                                 // Now we make an 8 bit sinewave.
+    b = (b > cutOff) ? (b - cutOff) : 0;                         // A ternary operator to cutoff the light.
+    
+    COLOR c;
+    c.color = get_color_from_palette(index, palette);
+    
+    COLOR cFond;
+    cFond.color = strip.getPixelColor(i);
+    strip.setPixelColor(i, utils::color_blend(cFond, c, b));
+    index += 256 / LED_COUNT;
+    if (LED_COUNT > 256) index ++;                                  // Correction for segments longer than 256 LEDs
+  }
+}
+
+
+void mode_2DPolarLights(const uint8_t scale, const uint8_t speed, const palette_t& palette, const bool reset, LedStrip& strip) {        // By: Kostyantyn Matviyevskyy  https://editor.soulmatelights.com/gallery/762-polar-lights , Modified by: Andrew Tuline
+  const uint16_t cols = stripXCoordinates;
+  const uint16_t rows = stripYCoordinates;
+  static uint32_t step  =0;
+
+  if (reset) {
+    strip.clear();
+    step = 0;
+  }
+
+  float adjustHeight = (float)map(rows, 8, 32, 28, 12); // maybe use mapf() ???
+  uint16_t adjScale = map(cols, 8, 64, 310, 63);
+/*
+  if (SEGENV.aux1 != SEGMENT.custom1/12) {   // Hacky palette rotation. We need that black.
+    SEGENV.aux1 = SEGMENT.custom1/12;
+    for (int i = 0; i < 16; i++) {
+      long ilk;
+      ilk = (long)currentPalette[i].r << 16;
+      ilk += (long)currentPalette[i].g << 8;
+      ilk += (long)currentPalette[i].b;
+      ilk = (ilk << SEGENV.aux1) | (ilk >> (24 - SEGENV.aux1));
+      currentPalette[i].r = ilk >> 16;
+      currentPalette[i].g = ilk >> 8;
+      currentPalette[i].b = ilk;
+    }
+  }
+*/
+  uint16_t _scale = map(scale, 0, 255, 30, adjScale);
+  byte _speed = map(speed, 0, 255, 128, 16);
+
+  for (int x = 0; x <= cols; x++) {
+    for (int y = 0; y < rows; y++) {
+      step++;
+
+      COLOR c;
+      c.color = get_color_from_palette(qsub8(noise8::inoise((step%2) + x * _scale, y * 16 + step % 16, step / _speed),
+                                             fabsf((float)rows / 2.0f - (float)y) * adjustHeight
+                                            ), palette);
+
+      strip.setPixelColorXY(x, y, c);
+    }
+  }
+}
 
 }

@@ -93,6 +93,13 @@ void random_noise(const palette_t& palette, LedStrip& strip, const bool restart,
 
 void candle(const palette_t& palette, LedStrip& strip);
 
+/**
+ * \brief Display some sinewave of colors, going back and forth
+ * \param[in] moder: add some random noise
+ */
+void phases(const bool moder, const uint8_t speed, const palette_t& palette, LedStrip& strip);
+void mode_2DPolarLights(const uint8_t scale, const uint8_t speed, const palette_t& palette, const bool reset, LedStrip& strip);
+
 };
 
 #endif

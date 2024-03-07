@@ -241,6 +241,7 @@ extern const palette_t PaletteRainbowColors;
 extern const palette_t PalettePartyColors;
 extern const palette_t PaletteBlackBodyColors;
 extern const palette_t PaletteHeatColors;
+extern const palette_t PaletteAuroraColors;
 
 /**
  * \brief Return a color from a palette

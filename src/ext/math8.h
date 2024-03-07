@@ -777,4 +777,81 @@ LIB8STATIC uint8_t cos8( uint8_t theta)
     return sin8( theta + 64);
 }
 
+LIB8STATIC_ALWAYS_INLINE uint8_t ease8InOutQuad( uint8_t i)
+{
+    uint8_t j = i;
+    if( j & 0x80 ) {
+        j = 255 - j;
+    }
+    uint8_t jj  = scale8(  j, j);
+    uint8_t jj2 = jj << 1;
+    if( i & 0x80 ) {
+        jj2 = 255 - jj2;
+    }
+    return jj2;
+}
+
+LIB8STATIC_ALWAYS_INLINE fract8 ease8InOutCubic( fract8 i)
+{
+    uint8_t ii  = scale8_LEAVING_R1_DIRTY(  i, i);
+    uint8_t iii = scale8_LEAVING_R1_DIRTY( ii, i);
+
+    uint16_t r1 = (3 * (uint16_t)(ii)) - ( 2 * (uint16_t)(iii));
+
+    /* the code generated for the above *'s automatically
+       cleans up R1, so there's no need to explicitily call
+       cleanup_R1(); */
+
+    uint8_t result = r1;
+
+    // if we got "256", return 255:
+    if( r1 & 0x100 ) {
+        result = 255;
+    }
+    return result;
+}
+
+/// Triangle wave generator. 
+/// Useful for turning a one-byte ever-increasing value into a
+/// one-byte value that oscillates up and down.
+///   @code
+///           input         output
+///           0..127        0..254 (positive slope)
+///           128..255      254..0 (negative slope)
+///   @endcode
+///
+/// On AVR this function takes just three cycles.
+///
+LIB8STATIC_ALWAYS_INLINE uint8_t triwave8(uint8_t in)
+{
+    if( in & 0x80) {
+        in = 255 - in;
+    }
+    uint8_t out = in << 1;
+    return out;
+}
+
+/// Quadratic waveform generator. Spends just a little
+/// more time at the limits than "sine" does. 
+///
+/// S-shaped wave generator (like "sine"). Useful 
+/// for turning a one-byte "counter" value into a
+/// one-byte oscillating value that moves smoothly up and down,
+/// with an "acceleration" and "deceleration" curve.
+///
+/// This is even faster than "sin8()", and has
+/// a slightly different curve shape.
+LIB8STATIC_ALWAYS_INLINE uint8_t quadwave8(uint8_t in)
+{
+    return ease8InOutQuad( triwave8( in));
+}
+
+/// Cubic waveform generator. Spends visibly more time
+/// at the limits than "sine" does. 
+/// @copydetails quadwave8()
+LIB8STATIC_ALWAYS_INLINE uint8_t cubicwave8(uint8_t in)
+{
+    return ease8InOutCubic( triwave8( in));
+}
+
 #endif

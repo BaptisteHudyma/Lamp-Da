@@ -75,9 +75,30 @@ class LedStrip : public Adafruit_NeoPixel
         setPixelColor(n, co);
     }
 
+    void setPixelColorXY(int16_t x, int16_t y, COLOR c)
+    {
+        setPixelColor(to_strip(x, y), c);
+    }
+
     uint32_t getPixelColor(uint16_t n) const
     {
         return _colors[n].color;
+    }
+
+    uint32_t getRawPixelColor(uint16_t n) const
+    {
+        return Adafruit_NeoPixel::getPixelColor(n);
+    }
+
+    void clear()
+    {
+        COLOR c;
+        c.color = 0;
+        for(uint16_t i = 0; i < LED_COUNT; ++i)
+        {
+            _colors[i] = c;
+        };
+        Adafruit_NeoPixel::clear();
     }
 
     inline Cartesian get_lamp_coordinates(uint16_t n) const
