@@ -7,21 +7,7 @@
 #include "constants.h"
 #include "coordinates.h"
 
-/**
- * \brief Use this to convert color to bytes
- */
-union COLOR
-{
-    uint32_t color;
-    
-    struct
-    {
-        uint8_t blue;
-        uint8_t green;
-        uint8_t red;
-        uint8_t white;
-    };
-};
+#include "utils.h"
 
 class LedStrip : public Adafruit_NeoPixel
 {
@@ -75,10 +61,45 @@ class LedStrip : public Adafruit_NeoPixel
         setPixelColor(n, co);
     }
 
-    void setPixelColorXY(int16_t x, int16_t y, COLOR c)
+    void setPixelColorXY(uint16_t x, uint16_t y, COLOR c)
     {
         setPixelColor(to_strip(x, y), c);
     }
+
+    void fadeToBlackBy(const uint8_t fadeBy)
+    {
+        if (fadeBy == 0) return;   // optimization - no scaling to apply
+
+        for(uint16_t i = 0; i < LED_COUNT; ++i)
+        {
+            COLOR c;
+            c.color = getPixelColor(i);
+            setPixelColor(i, utils::color_fade(c, 255-fadeBy));
+        }
+    }
+
+    void blur(uint8_t blur_amount)
+    {
+        if (blur_amount == 0) return; // optimization: 0 means "don't blur"
+        uint8_t keep = 255 - blur_amount;
+        uint8_t seep = blur_amount >> 1;
+        COLOR carryover;
+        carryover.color = 0;
+        for (unsigned i = 0; i < LED_COUNT; i++) {
+            COLOR cur;
+            cur.color = getPixelColor(i);
+            COLOR c = cur;
+            COLOR part = utils::color_fade(c, seep);
+            cur = utils::color_add(utils::color_fade(c, keep), carryover, true);
+            if (i > 0) {
+                c.color = getPixelColor(i-1);
+                setPixelColor(i-1, utils::color_add(c, part, true));
+            }
+            setPixelColor(i, cur);
+            carryover = part;
+        }
+}
+
 
     uint32_t getPixelColor(uint16_t n) const
     {

@@ -4,6 +4,14 @@
 
 #include "scale8.h"
 
+#include <Arduino.h> //PI constant
+
+#ifndef MIN
+#define MIN(a,b) ((a)<(b)?(a):(b))
+#endif
+#ifndef MAX
+#define MAX(a,b) ((a)>(b)?(a):(b))
+#endif
 
 /// @file math8.h
 /// Fast, efficient 8-bit math functions specifically
@@ -853,5 +861,182 @@ LIB8STATIC_ALWAYS_INLINE uint8_t cubicwave8(uint8_t in)
 {
     return ease8InOutCubic( triwave8( in));
 }
+
+
+#define modd(x, y) ((x) - (int)((x) / (y)) * (y))
+
+LIB8STATIC_ALWAYS_INLINE float cos_t(float phi)
+{
+  float x = modd(phi, TWO_PI);
+  if (x < 0) x = -1 * x;
+  int8_t sign = 1;
+  if (x > PI)
+  {
+      x -= PI;
+      sign = -1;
+  }
+  float xx = x * x;
+
+  float res = sign * (1 - ((xx) / (2)) + ((xx * xx) / (24)) - ((xx * xx * xx) / (720)) + ((xx * xx * xx * xx) / (40320)) - ((xx * xx * xx * xx * xx) / (3628800)) + ((xx * xx * xx * xx * xx * xx) / (479001600)));
+  #ifdef WLED_DEBUG_MATH
+  Serial.printf("cos: %f,%f,%f,(%f)\n",phi,res,cos(x),res-cos(x));
+  #endif
+  return res;
+}
+
+LIB8STATIC_ALWAYS_INLINE float sin_t(float x) {
+  float res =  cos_t(HALF_PI - x);
+  #ifdef WLED_DEBUG_MATH
+  Serial.printf("sin: %f,%f,%f,(%f)\n",x,res,sin(x),res-sin(x));
+  #endif
+  return res;
+}
+
+LIB8STATIC_ALWAYS_INLINE float tan_t(float x) {
+  float c = cos_t(x);
+  if (c==0.0f) return 0;
+  float res = sin_t(x) / c;
+  #ifdef WLED_DEBUG_MATH
+  Serial.printf("tan: %f,%f,%f,(%f)\n",x,res,tan(x),res-tan(x));
+  #endif
+  return res;
+}
+///////////////////////////////////////////////////////////////////////
+///
+/// @defgroup BeatGenerators Waveform Beat Generators
+/// Waveform generators that reset at a given number
+/// of "beats per minute" (BPM).
+///
+/// The standard "beat" functions generate "sawtooth" waves which rise from
+/// 0 up to a max value and then reset, continuously repeating that cycle at
+/// the specified frequency (BPM).
+///
+/// The "sin" versions function similarly, but create an oscillating sine wave
+/// at the specified frequency.
+///
+/// BPM can be supplied two ways. The simpler way of specifying BPM is as
+/// a simple 8-bit integer from 1-255, (e.g., "120").
+/// The more sophisticated way of specifying BPM allows for fractional
+/// "Q8.8" fixed point number (an ::accum88) with an 8-bit integer part and
+/// an 8-bit fractional part.  The easiest way to construct this is to multiply
+/// a floating point BPM value (e.g. 120.3) by 256, (e.g. resulting in 30796
+/// in this case), and pass that as the 16-bit BPM argument.
+///
+/// Originally these functions were designed to make an entire animation project pulse.
+/// with brightness. For that effect, add this line just above your existing call to
+/// "FastLED.show()":
+///   @code
+///   uint8_t bright = beatsin8( 60 /*BPM*/, 192 /*dimmest*/, 255 /*brightest*/ ));
+///   FastLED.setBrightness( bright );
+///   FastLED.show();
+///   @endcode
+///
+/// The entire animation will now pulse between brightness 192 and 255 once per second.
+///
+/// @warning Any "BPM88" parameter **MUST** always be provided in Q8.8 format!
+/// @note The beat generators need access to a millisecond counter
+/// to track elapsed time. See ::GET_MILLIS for reference. When using the Arduino
+/// `millis()` function, accuracy is a bit better than one part in a thousand.
+///
+/// @{
+
+
+/// Generates a 16-bit "sawtooth" wave at a given BPM, with BPM
+/// specified in Q8.8 fixed-point format.
+/// @param beats_per_minute_88 the frequency of the wave, in Q8.8 format
+/// @param timebase the time offset of the wave from the millis() timer
+/// @warning The BPM parameter **MUST** be provided in Q8.8 format! E.g.
+/// for 120 BPM it would be 120*256 = 30720. If you just want to specify
+/// "120", use beat16() or beat8().
+LIB8STATIC uint16_t beat88( accum88 beats_per_minute_88, uint32_t timebase = 0)
+{
+    // BPM is 'beats per minute', or 'beats per 60000ms'.
+    // To avoid using the (slower) division operator, we
+    // want to convert 'beats per 60000ms' to 'beats per 65536ms',
+    // and then use a simple, fast bit-shift to divide by 65536.
+    //
+    // The ratio 65536:60000 is 279.620266667:256; we'll call it 280:256.
+    // The conversion is accurate to about 0.05%, more or less,
+    // e.g. if you ask for "120 BPM", you'll get about "119.93".
+    return (((millis()) - timebase) * beats_per_minute_88 * 280) >> 16;
+}
+
+/// Generates a 16-bit "sawtooth" wave at a given BPM
+/// @param beats_per_minute the frequency of the wave, in decimal
+/// @param timebase the time offset of the wave from the millis() timer
+LIB8STATIC uint16_t beat16( accum88 beats_per_minute, uint32_t timebase = 0)
+{
+    // Convert simple 8-bit BPM's to full Q8.8 accum88's if needed
+    if( beats_per_minute < 256) beats_per_minute <<= 8;
+    return beat88(beats_per_minute, timebase);
+}
+
+/// Generates an 8-bit "sawtooth" wave at a given BPM
+/// @param beats_per_minute the frequency of the wave, in decimal
+/// @param timebase the time offset of the wave from the millis() timer
+LIB8STATIC uint8_t beat8( accum88 beats_per_minute, uint32_t timebase = 0)
+{
+    return beat16( beats_per_minute, timebase) >> 8;
+}
+
+
+/// Generates a 16-bit sine wave at a given BPM that oscillates within
+/// a given range.
+/// @param beats_per_minute_88 the frequency of the wave, in Q8.8 format
+/// @param lowest the lowest output value of the sine wave
+/// @param highest the highest output value of the sine wave
+/// @param timebase the time offset of the wave from the millis() timer
+/// @param phase_offset phase offset of the wave from the current position
+/// @warning The BPM parameter **MUST** be provided in Q8.8 format! E.g.
+/// for 120 BPM it would be 120*256 = 30720. If you just want to specify
+/// "120", use beatsin16() or beatsin8().
+LIB8STATIC uint16_t beatsin88( accum88 beats_per_minute_88, uint16_t lowest = 0, uint16_t highest = 65535,
+                              uint32_t timebase = 0, uint16_t phase_offset = 0)
+{
+    uint16_t beat = beat88( beats_per_minute_88, timebase);
+    uint16_t beatsin = (sin16( beat + phase_offset) + 32768);
+    uint16_t rangewidth = highest - lowest;
+    uint16_t scaledbeat = scale16( beatsin, rangewidth);
+    uint16_t result = lowest + scaledbeat;
+    return result;
+}
+
+/// Generates a 16-bit sine wave at a given BPM that oscillates within
+/// a given range.
+/// @param beats_per_minute the frequency of the wave, in decimal
+/// @param lowest the lowest output value of the sine wave
+/// @param highest the highest output value of the sine wave
+/// @param timebase the time offset of the wave from the millis() timer
+/// @param phase_offset phase offset of the wave from the current position
+LIB8STATIC uint16_t beatsin16( accum88 beats_per_minute, uint16_t lowest = 0, uint16_t highest = 65535,
+                               uint32_t timebase = 0, uint16_t phase_offset = 0)
+{
+    uint16_t beat = beat16( beats_per_minute, timebase);
+    uint16_t beatsin = (sin16( beat + phase_offset) + 32768);
+    uint16_t rangewidth = highest - lowest;
+    uint16_t scaledbeat = scale16( beatsin, rangewidth);
+    uint16_t result = lowest + scaledbeat;
+    return result;
+}
+
+/// Generates an 8-bit sine wave at a given BPM that oscillates within
+/// a given range.
+/// @param beats_per_minute the frequency of the wave, in decimal
+/// @param lowest the lowest output value of the sine wave
+/// @param highest the highest output value of the sine wave
+/// @param timebase the time offset of the wave from the millis() timer
+/// @param phase_offset phase offset of the wave from the current position
+LIB8STATIC uint8_t beatsin8( accum88 beats_per_minute, uint8_t lowest = 0, uint8_t highest = 255,
+                            uint32_t timebase = 0, uint8_t phase_offset = 0)
+{
+    uint8_t beat = beat8( beats_per_minute, timebase);
+    uint8_t beatsin = sin8( beat + phase_offset);
+    uint8_t rangewidth = highest - lowest;
+    uint8_t scaledbeat = scale8( beatsin, rangewidth);
+    uint8_t result = lowest + scaledbeat;
+    return result;
+}
+
+/// @} BeatGenerators
 
 #endif

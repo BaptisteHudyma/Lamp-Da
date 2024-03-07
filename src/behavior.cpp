@@ -276,7 +276,7 @@ void gradient_mode_update()
 
 void calm_mode_update()
 {
-  constexpr uint8_t maxCalmColorState = 6;
+  constexpr uint8_t maxCalmColorState = 8;
   switch(clamp_state_values(colorState, maxCalmColorState))
   {
     case 0: // rainbow swirl animation
@@ -326,6 +326,14 @@ void calm_mode_update()
       // polar light
       animations::mode_2DPolarLights(255, 128, PaletteAuroraColors, categoryChange, strip);
       break;
+    
+    case 7:
+      animations::fire(60, 60, 128, PaletteHeatColors, strip);
+    break;
+
+    case 8:
+      animations::mode_2Ddistortionwaves(128, 128, strip);
+    break;
 
     default:  // error
       currentAlert = Alerts::UNKNOWN_COLOR_STATE;
@@ -538,12 +546,16 @@ void button_clicked_callback(uint8_t consecutiveButtonCheck)
     case 2: // 2 clicks: increment color state
       increment_color_state();
       break;
+
+    case 3: // 2 clicks: decrement color state
+      decrement_color_state();
+      break;
     
-    case 3: // 3 clicks: increment color mode
+    case 4: // 4 clicks: increment color mode
       increment_color_mode();
       break;
 
-    case 4: // 4 clicks: decrement color mode
+    case 5: // 5 clicks: decrement color mode
       decrement_color_mode();
       break;
 
@@ -685,6 +697,12 @@ void handle_alerts()
       // fast blink red
       button_blink(400, 400, utils::ColorSpace::FUSHIA);
       break;
+    }
+    case Alerts::BATTERY_READINGS_INCOHERENT:
+    {
+      // incohrent battery readings
+      criticalbatteryRaisedTime = 0;
+      button_blink(100, 100, utils::ColorSpace::GREEN);
     }
     default:
     {

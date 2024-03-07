@@ -1,5 +1,8 @@
 #include "utils.h"
 
+#include "../ext/scale8.h"
+#include "../ext/math8.h"
+
 #include "colorspace.h"
 #include "strip.h"
 
@@ -68,7 +71,6 @@ COLOR color_blend(COLOR color1, COLOR color2, uint16_t blend, bool b16) {
   return res;
 }
 
-
 uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const float level)
 {
     union COLOR colorStartArray, colorEndArray;
@@ -80,6 +82,62 @@ uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const 
       colorStartArray.green + level * (colorEndArray.green - colorStartArray.green),
       colorStartArray.blue + level * (colorEndArray.blue - colorStartArray.blue)
     );
+}
+
+/*
+ * fades color toward black
+ * if using "video" method the resulting color will never become black unless it is already black
+ */
+COLOR color_fade(COLOR c1, uint8_t amount, bool video)
+{
+  if (video) {
+    c1.red = scale8_video(c1.red, amount);
+    c1.green = scale8_video(c1.green, amount);
+    c1.blue = scale8_video(c1.blue, amount);
+    c1.white = scale8_video(c1.white, amount);
+  } else {
+    c1.red = scale8(c1.red, amount);
+    c1.green = scale8(c1.green, amount);
+    c1.blue = scale8(c1.blue, amount);
+    c1.white = scale8(c1.white, amount);
+  }
+  return c1;
+}
+
+COLOR color_add(COLOR c1, COLOR c2, bool fast)
+{
+  if (fast) {
+    c1.red = qadd8(c1.red, c2.red);
+    c1.green = qadd8(c1.green, c2.green);
+    c1.blue = qadd8(c1.blue, c2.blue);
+    c1.white = qadd8(c1.white, c2.white);
+    return c1;
+  } else {
+    uint32_t r = c1.red + c2.red;
+    uint32_t g = c1.green + c2.green;
+    uint32_t b = c1.blue + c2.blue;
+    uint32_t w = c1.white + c2.white;
+    uint16_t max = r;
+    if (g > max) max = g;
+    if (b > max) max = b;
+    if (w > max) max = w;
+    if (max < 256)
+    {
+      c1.red = r;
+      c1.green = g;
+      c1.blue = b;
+      c1.white = w;
+      return c1;
+    }
+    else
+    {
+      c1.red = r * 255 / max;
+      c1.green = g * 255 / max;
+      c1.blue = b * 255 / max;
+      c1.white = w * 255 / max;
+      return c1;
+    }
+  }
 }
 
 uint32_t hue_to_rgb_sinus(const uint16_t angle)
@@ -143,5 +201,49 @@ float map(float x, float in_min, float in_max, float out_min, float out_max)
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
+
+
+//gamma 2.8 lookup table used for color correction
+static uint8_t gammaT[256] = {
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,
+    1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,  2,  2,
+    2,  3,  3,  3,  3,  3,  3,  3,  4,  4,  4,  4,  4,  5,  5,  5,
+    5,  6,  6,  6,  6,  7,  7,  7,  7,  8,  8,  8,  9,  9,  9, 10,
+   10, 10, 11, 11, 11, 12, 12, 13, 13, 13, 14, 14, 15, 15, 16, 16,
+   17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 24, 24, 25,
+   25, 26, 27, 27, 28, 29, 29, 30, 31, 32, 32, 33, 34, 35, 35, 36,
+   37, 38, 39, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 50,
+   51, 52, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 66, 67, 68,
+   69, 70, 72, 73, 74, 75, 77, 78, 79, 81, 82, 83, 85, 86, 87, 89,
+   90, 92, 93, 95, 96, 98, 99,101,102,104,105,107,109,110,112,114,
+  115,117,119,120,122,124,126,127,129,131,133,135,137,138,140,142,
+  144,146,148,150,152,154,156,158,160,162,164,167,169,171,173,175,
+  177,180,182,184,186,189,191,193,196,198,200,203,205,208,210,213,
+  215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
+
+// re-calculates & fills gamma table
+void calcGammaTable(float gamma)
+{
+  for (size_t i = 0; i < 256; i++) {
+    gammaT[i] = (int)(powf((float)i / 255.0f, gamma) * 255.0f + 0.5f);
+  }
+}
+
+uint8_t gamma8(uint8_t value)
+{
+  return gammaT[value];
+}
+
+// used for color gamma correction
+COLOR gamma32(COLOR color)
+{
+  color.white = gammaT[color.white];
+  color.red = gammaT[color.red];
+  color.green = gammaT[color.green];
+  color.blue = gammaT[color.blue];
+  return color;
+}
+
 
 };

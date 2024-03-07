@@ -320,62 +320,16 @@ bool fade_in(const Color& color, const uint32_t duration, const bool restart, Le
   return false;
 }
 
-bool fire(const bool isFirstCall, LedStrip& strip)
+void fire(const uint8_t scalex, const uint8_t scaley, const uint8_t speed, const palette_t& palette, LedStrip& strip)
 {
-  constexpr bool gReverseDirection = true;
-  
-  random16_add_entropy( random());
-
-  // COOLING: How much does the air cool as it rises?
-  // Less cooling = taller flames.  More cooling = shorter flames.
-  // Default 50, suggested range 20-100 
-  constexpr uint8_t COOLING = 70;
-
-  // SPARKING: What chance (out of 255) is there that a new spark will be lit?
-  // Higher chance = more roaring fire.  Lower chance = more flickery fire.
-  // Default 120, suggested range 50-200.
-  constexpr uint8_t SPARKING = 200;
-
-  // Array of temperature readings at each simulation cell
-  static uint8_t* heat = strip._buffer8b;
-
-  if(isFirstCall)
-  {
-    // reset the values of the buffer
-    memset(strip._buffer8b, 0, sizeof(strip._buffer8b));
-    strip.clear();
-  }
-
-  // Step 1.  Cool down every cell a little
-  for( int i = 0; i < LED_COUNT; i++) {
-    heat[i] = qsub8( heat[i],  random8(0, ((COOLING * 10) / LED_COUNT) + 2));
-  }
-
-  // Step 2.  Heat from each cell drifts 'up' and diffuses a little
-  for( int k= LED_COUNT - 1; k >= 2; k--) {
-    heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2] ) / 3;
-  }
-  
-  // Step 3.  Randomly ignite new 'sparks' of heat near the bottom
-  if( random8() < SPARKING ) {
-    int y = random8(7);
-    heat[y] = qadd8( heat[y], random8(160,255) );
-  }
-
-  // Step 4.  Map from heat cells to LED colors
-  for(int j = 0; j < LED_COUNT; j++) {
-    int pixelnumber;
-    if( gReverseDirection ) {
-      pixelnumber = (LED_COUNT-1) - j;
-    } else {
-      pixelnumber = j;
+  uint16_t a = millis();
+  for (int i = 0; i < ceil(stripXCoordinates); i++) {
+    for (int j = 0; j < ceil(stripYCoordinates); j++) {
+      COLOR c;
+      c.color = get_color_from_palette(qsub8(noise8::inoise(i * scalex, j * scaley + a, a / speed), abs8(j - (stripXCoordinates - 1)) * 255 / (stripXCoordinates - 1)), palette);
+      strip.setPixelColorXY((stripXCoordinates - 1) - i, j, c);
     }
-
-    uint8_t colorindex = scale8( heat[j], 240);
-    strip.setPixelColor(pixelnumber, get_color_from_palette(colorindex, PaletteHeatColors));
   }
-
-  return true;
 }
 
 void random_noise(const palette_t& palette, LedStrip& strip, const bool restart, const bool isColorLoop, const uint16_t scale)
@@ -586,5 +540,117 @@ void mode_2DPolarLights(const uint8_t scale, const uint8_t speed, const palette_
     }
   }
 }
+
+void mode_2DDrift(const uint8_t intensity, const uint8_t speed, const palette_t& palette, LedStrip& strip) {  // By: Stepko   https://editor.soulmatelights.com/gallery/884-drift , Modified by: Andrew Tuline
+  const uint16_t cols = ceil(stripXCoordinates);
+  const uint16_t rows = ceil(stripYCoordinates);
+
+  const uint16_t centerX = cols >> 1;
+  const uint16_t centerY = rows >> 1;
+
+  strip.fadeToBlackBy(128);
+  const uint16_t maxDim = MAX(cols, rows)/2;
+  unsigned long t = millis() / (32 - (speed>>3));
+  unsigned long t_20 = t/20; // softhack007: pre-calculating this gives about 10% speedup
+  for (float i = 1; i < maxDim; i += 0.25) {
+    float angle = radians(t * (maxDim - i));
+    uint16_t myX = centerX + (uint16_t)(sin_t(angle) * i) + (cols%2);
+    uint16_t myY = centerY + (uint16_t)(cos_t(angle) * i) + (rows%2);
+
+    COLOR c;
+    c.color = get_color_from_palette((uint8_t)((i * 20) + t_20), palette);
+    strip.setPixelColorXY(myX, myY, c);
+  }
+  strip.blur(intensity>>3);
+} // mode_2DDrift()
+
+
+
+static const uint8_t exp_gamma[256] = {
+0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,   1,   1,
+1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
+1,   2,   2,   2,   2,   2,   2,   2,   2,   2,   3,   3,   3,   3,   3,
+4,   4,   4,   4,   4,   5,   5,   5,   5,   5,   6,   6,   6,   7,   7,
+7,   7,   8,   8,   8,   9,   9,   9,   10,  10,  10,  11,  11,  12,  12,
+12,  13,  13,  14,  14,  14,  15,  15,  16,  16,  17,  17,  18,  18,  19,
+19,  20,  20,  21,  21,  22,  23,  23,  24,  24,  25,  26,  26,  27,  28,
+28,  29,  30,  30,  31,  32,  32,  33,  34,  35,  35,  36,  37,  38,  39,
+39,  40,  41,  42,  43,  44,  44,  45,  46,  47,  48,  49,  50,  51,  52,
+53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,  65,  66,  67,
+68,  70,  71,  72,  73,  74,  75,  77,  78,  79,  80,  82,  83,  84,  85,
+87,  89,  91,  92,  93,  95,  96,  98,  99,  100, 101, 102, 105, 106, 108,
+109, 111, 112, 114, 115, 117, 118, 120, 121, 123, 125, 126, 128, 130, 131,
+133, 135, 136, 138, 140, 142, 143, 145, 147, 149, 151, 152, 154, 156, 158,
+160, 162, 164, 165, 167, 169, 171, 173, 175, 177, 179, 181, 183, 185, 187,
+190, 192, 194, 196, 198, 200, 202, 204, 207, 209, 211, 213, 216, 218, 220,
+222, 225, 227, 229, 232, 234, 236, 239, 241, 244, 246, 249, 251, 253, 254,
+255};
+
+void hiphotic(const uint8_t speed, LedStrip& strip) {
+ int a = millis() / (32 - (speed>>3));
+ for (int x = 0; x < ceil(stripXCoordinates); x++) {
+   for (int y = 0; y < ceil(stripYCoordinates); y++) {
+     COLOR c;
+     c.blue = exp_gamma[sin8((x-8)*cos8((y+20)*4)/4+a)];
+     c.green = exp_gamma[(sin8(x*16+a/3)+cos8(y*8+a/2))/2];
+     c.red =exp_gamma[sin8(cos8(x*8+a/3)+sin8(y*8+a/4)+a)];
+
+     strip.setPixelColorXY(x, y, c);
+    }
+  }
+}
+
+// Distortion waves - ldirko
+// https://editor.soulmatelights.com/gallery/1089-distorsion-waves
+// adapted for WLED by @blazoncek
+void mode_2Ddistortionwaves(const uint8_t scale, const uint8_t speed, LedStrip& strip) {
+  const uint16_t cols = ceil(stripXCoordinates);
+  const uint16_t rows = ceil(stripYCoordinates);
+
+  uint8_t _speed = speed/32;
+  uint8_t _scale = scale/32;
+
+  uint8_t  w = 2;
+
+  uint16_t a  = millis()/32;
+  uint16_t a2 = a/2;
+  uint16_t a3 = a/3;
+
+  uint16_t cx =  beatsin8(10-_speed,0,cols-1) * _scale;
+  uint16_t cy =  beatsin8(12-_speed,0,rows-1) * _scale;
+  uint16_t cx1 = beatsin8(13-_speed,0,cols-1) * _scale;
+  uint16_t cy1 = beatsin8(15-_speed,0,rows-1) * _scale;
+  uint16_t cx2 = beatsin8(17-_speed,0,cols-1) * _scale;
+  uint16_t cy2 = beatsin8(14-_speed,0,rows-1) * _scale;
+  
+  uint16_t xoffs = 0;
+  for (int x = 0; x < cols; x++) {
+    xoffs += _scale;
+    uint16_t yoffs = 0;
+
+    for (int y = 0; y < rows; y++) {
+       yoffs += _scale;
+
+      byte rdistort = cos8((cos8(((x<<3)+a )&255)+cos8(((y<<3)-a2)&255)+a3   )&255)>>1; 
+      byte gdistort = cos8((cos8(((x<<3)-a2)&255)+cos8(((y<<3)+a3)&255)+a+32 )&255)>>1; 
+      byte bdistort = cos8((cos8(((x<<3)+a3)&255)+cos8(((y<<3)-a) &255)+a2+64)&255)>>1; 
+
+      byte valueR = rdistort+ w*  (a- ( ((xoffs - cx)  * (xoffs - cx)  + (yoffs - cy)  * (yoffs - cy))>>7  ));
+      byte valueG = gdistort+ w*  (a2-( ((xoffs - cx1) * (xoffs - cx1) + (yoffs - cy1) * (yoffs - cy1))>>7 ));
+      byte valueB = bdistort+ w*  (a3-( ((xoffs - cx2) * (xoffs - cx2) + (yoffs - cy2) * (yoffs - cy2))>>7 ));
+
+      valueR = utils::gamma8(cos8(valueR));
+      valueG = utils::gamma8(cos8(valueG));
+      valueB = utils::gamma8(cos8(valueB));
+
+      COLOR c;
+      c.red = valueR;
+      c.green = valueG,
+      c.blue = valueB;
+      strip.setPixelColorXY(x, y, c); 
+    }
+  }
+}
+
 
 }

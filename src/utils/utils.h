@@ -1,7 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "strip.h"
 #include "constants.h"
 #include <cstdint>
 
@@ -14,6 +13,22 @@
 #define DegToRad(x) ((x)*M_PI/180)
 #define FADE16(x) scale16(x,x)
 #define FADE8(x) scale8(x,x)
+
+/**
+ * \brief Use this to convert color to bytes
+ */
+union COLOR
+{
+    uint32_t color;
+    
+    struct
+    {
+        uint8_t blue;
+        uint8_t green;
+        uint8_t red;
+        uint8_t white;
+    };
+};
 
 namespace utils {
 
@@ -46,9 +61,16 @@ uint32_t get_random_complementary_color(const uint32_t color, const float tolera
 uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const float level);
 COLOR color_blend(COLOR color1, COLOR color2, uint16_t blend, bool b16 = false);
 
+COLOR color_fade(COLOR c1, uint8_t amount, bool video=false);
+COLOR color_add(COLOR c1, COLOR c2, bool fast=false);
+
 uint32_t hue_to_rgb_sinus(const uint16_t angle);
 
 float map(float x, float in_min, float in_max, float out_min, float out_max);
+
+void calcGammaTable(float gamma);
+COLOR gamma32(COLOR color);
+uint8_t gamma8(uint8_t value);
 
 };
 
