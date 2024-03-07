@@ -13,8 +13,8 @@ inline uint8_t get_battery_level(const bool resetRead)
    static float lastValue = 0;
 
    // map the input ADC out to voltage reading.
-   constexpr float minInValue = 472.0;
-   constexpr float maxInValue = 600.0;
+   constexpr float minInValue = 506.0;
+   constexpr float maxInValue = 700.0;
    const float batteryVoltage = utils::map(analogRead(BATTERY_CHARGE_PIN), minInValue, maxInValue, lowVoltage, maxVoltage);
 
    // init or reset

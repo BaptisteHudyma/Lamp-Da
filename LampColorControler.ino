@@ -14,6 +14,7 @@
 void setup()
 {
   Serial.begin(115200);
+  analogReference(AR_DEFAULT);
   
   // Necessary for sleep mode for some reason ??
   Bluefruit.begin(1);
