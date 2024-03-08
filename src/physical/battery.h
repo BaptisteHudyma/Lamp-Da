@@ -5,6 +5,8 @@
 #include "../utils/utils.h"
 #include "../alerts.h"
 
+static volatile uint8_t batteryLevel = 0.0;
+
 // return a number between 0 and 100
 inline uint8_t get_battery_level(const bool resetRead)
 {
@@ -19,7 +21,7 @@ inline uint8_t get_battery_level(const bool resetRead)
    const uint32_t pinRead = analogRead(BATTERY_CHARGE_PIN);
    if(pinRead < minInValue or pinRead > maxInValue)
    {
-      currentAlert = Alerts::BATTERY_READINGS_INCOHERENT;
+      AlertManager.raise_alert(Alerts::BATTERY_READINGS_INCOHERENT);
    }
    const float batteryVoltage = utils::map(pinRead, minInValue, maxInValue, lowVoltage, maxVoltage);
 
@@ -30,7 +32,8 @@ inline uint8_t get_battery_level(const bool resetRead)
    }
 
    lastValue = batteryVoltage * 0.1 + lastValue * 0.9;
-   return utils::map(lastValue, lowVoltage, maxVoltage, 0, 100);
+   batteryLevel = utils::map(lastValue, lowVoltage, maxVoltage, 0, 100);
+   return batteryLevel;
 }
 
 

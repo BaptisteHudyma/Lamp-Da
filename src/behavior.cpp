@@ -263,7 +263,7 @@ void gradient_mode_update()
       break;
 
     default:  // error
-      currentAlert = Alerts::UNKNOWN_COLOR_STATE;
+      AlertManager.raise_alert(Alerts::UNKNOWN_COLOR_STATE);
       colorState = 0;
       colorCodeIndex = 0;
       strip.clear();
@@ -336,7 +336,7 @@ void calm_mode_update()
     break;
 
     default:  // error
-      currentAlert = Alerts::UNKNOWN_COLOR_STATE;
+      AlertManager.raise_alert(Alerts::UNKNOWN_COLOR_STATE);
       colorState = 0;
       strip.clear();
     break;
@@ -382,7 +382,7 @@ void party_mode_update()
     break;
 
     default:  // error
-      currentAlert = Alerts::UNKNOWN_COLOR_STATE;
+      AlertManager.raise_alert(Alerts::UNKNOWN_COLOR_STATE);
       colorState = 0;
       strip.clear();
     break;
@@ -410,7 +410,7 @@ void sound_mode_update()
     break;
 
     default:  // error
-      currentAlert = Alerts::UNKNOWN_COLOR_STATE;
+      AlertManager.raise_alert(Alerts::UNKNOWN_COLOR_STATE);
       colorState = 0;
       strip.clear();
     break;
@@ -430,7 +430,7 @@ void gyro_mode_update()
     break;
 
     default:  // error
-      currentAlert = Alerts::UNKNOWN_COLOR_STATE;
+      AlertManager.raise_alert(Alerts::UNKNOWN_COLOR_STATE);
       colorState = 0;
       strip.clear();
     break;
@@ -453,37 +453,29 @@ void display_battery_level()
   if(newCall - lastCall > refreshRate_ms or lastCall == 0)
   {
     lastCall = newCall;
-    const double percent = get_battery_level(false) / 100.0;
+    const uint8_t percent = get_battery_level(false);
 
     // 5% battery is critical
-    if(percent < 0.05)
+    if(percent < 5)
     {
       if (criticalbatteryRaisedTime == 0)
       {
         criticalbatteryRaisedTime = millis();
       }
-      currentAlert = Alerts::BATTERY_CRITICAL;
+      AlertManager.raise_alert(Alerts::BATTERY_CRITICAL);
     }
     else {
+      AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);
       criticalbatteryRaisedTime = 0;
+      
       // 10% battery is low, start alerting
-      if(percent < 0.10)
+      if(percent < 10)
       {
-        currentAlert = Alerts::BATTERY_LOW;
+        AlertManager.raise_alert(Alerts::BATTERY_LOW);
       }
       else {
-        // reset alert if battery is no longer critical
-        currentAlert = Alerts::NONE;
+        AlertManager.clear_alert(Alerts::BATTERY_LOW);
       }
-    }
- 
-    // normal mode
-    if(currentAlert == NONE)
-    {
-      //Serial.println(percent);
-      // red to green
-      // force green to be kind of low because red is not as powerfull
-      set_button_color(utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RGB(255, 0, 0).get_rgb().color, utils::ColorSpace::RGB(0,30,0).get_rgb().color, percent)));
     }
   }
 }
@@ -518,7 +510,7 @@ void color_mode_update()
 
     default:
       colorMode = 0;
-      currentAlert = Alerts::UNKNOWN_COLOR_MODE;
+      AlertManager.raise_alert(Alerts::UNKNOWN_COLOR_MODE);
     break;
   }
 
@@ -662,12 +654,16 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
   }
 }
 
-void handle_alerts()
+void handle_alerts(const Alert& alertManager)
 {
-  switch(currentAlert)
+  switch(alertManager.current())
   {
     case Alerts::NONE:
     {
+      // display battery level
+      // red to green
+      // force green to be kind of low because red is not as powerfull
+      set_button_color(utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RGB(255, 0, 0).get_rgb().color, utils::ColorSpace::RGB(0,30,0).get_rgb().color, batteryLevel / 100.0)));
       break;
     }
     case Alerts::BATTERY_CRITICAL:

@@ -13,7 +13,32 @@ enum Alerts {
     BATTERY_READINGS_INCOHERENT  // the pin that reads the battery value is not coherent with it's givent min and max
 };
 
-// store the current alert, if any
-static volatile Alerts currentAlert = Alerts::NONE;
+class Alert
+{
+public:
+    void raise_alert(const Alerts alert)
+    {
+        if (alert == Alerts::NONE)
+            return;
+        _current = alert;
+    }
+
+    void clear_alert(const Alerts alert)
+    {
+        if(_current != alert)
+            return;
+        _current = NONE;
+    }
+
+    Alerts current() const
+    {
+        return _current;
+    }
+
+private:
+    volatile Alerts _current = Alerts::NONE;
+};
+
+static Alert AlertManager;
 
 #endif

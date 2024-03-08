@@ -70,6 +70,31 @@ void setup()
   read_parameters();
 }
 
+void check_loop_runtime(const uint32_t runTime)
+{
+  static constexpr uint8_t maxAlerts = 5;
+  // check the loop duration
+  static uint8_t isOnSlowLoopCount = 0;
+  if(runTime > LOOP_UPDATE_PERIOD + 1)
+  {
+    isOnSlowLoopCount = min(isOnSlowLoopCount+1, maxAlerts);
+  }
+  else if(isOnSlowLoopCount > 0)
+  {
+    isOnSlowLoopCount--;
+  }
+
+  if(isOnSlowLoopCount >= maxAlerts)
+  {
+    AlertManager.raise_alert(Alerts::LONG_LOOP_UPDATE);
+  }
+  // lower the alert
+  else if(isOnSlowLoopCount <= 1)
+  {
+    AlertManager.clear_alert(Alerts::LONG_LOOP_UPDATE);
+  };
+}
+
 void loop() {
   uint32_t start = millis();
 
@@ -80,9 +105,6 @@ void loop() {
   bluetooth::parse_messages();
 #endif
   color_mode_update();
-
-  // display alerts if needed
-  handle_alerts();
 
   strip.show(); // show at the end of the loop (only does it if needed)
 
@@ -95,25 +117,8 @@ void loop() {
   }
 
   stop = millis();
+  check_loop_runtime(stop - start);
 
-  // check the loop duration
-  static uint8_t isOnSlowLoopCount = 0;
-  if(stop - start > LOOP_UPDATE_PERIOD + 1)
-  {
-    isOnSlowLoopCount++;
-  }
-  else if(isOnSlowLoopCount > 0)
-  {
-    isOnSlowLoopCount--;
-  }
-  if(isOnSlowLoopCount > 5)
-  {
-    currentAlert = Alerts::LONG_LOOP_UPDATE;
-  }
-  else if(currentAlert == currentAlert and isOnSlowLoopCount <= 1)
-  {
-    currentAlert = Alerts::NONE;
-  }
-  // debug the loop update period
-  //Serial.println(stop - start);
+  // display alerts if needed (for some reason, using the global variable creates a bug)
+  handle_alerts(AlertManager);
 }

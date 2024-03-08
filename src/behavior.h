@@ -3,6 +3,7 @@
 
 #include "utils/strip.h"
 #include "utils/constants.h"
+#include "alerts.h"
 
 #ifdef __AVR__
 #include <avr/power.h>  // Required for 16 MHz Adafruit Trinket
@@ -36,6 +37,6 @@ void button_clicked_callback(uint8_t consecutiveButtonCheck);
 void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDuration);
 
 // If any alert is set, will handle it
-void handle_alerts();
+void handle_alerts(const Alert& alertManager);
 
 #endif
