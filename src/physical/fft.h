@@ -426,7 +426,7 @@ const float agcSampleSmooth[AGC_NUM_PRESETS]  = {  1/12.f,   1/6.f,  1/16.f}; //
 // AGC presets end
 
 #ifndef SR_SQUELCH
-  uint8_t soundSquelch = 10;                  // squelch value for volume reactive routines (config value)
+  uint8_t soundSquelch = 2;                  // squelch value for volume reactive routines (config value)
 #else
   uint8_t soundSquelch = SR_SQUELCH;          // squelch value for volume reactive routines (config value)
 #endif

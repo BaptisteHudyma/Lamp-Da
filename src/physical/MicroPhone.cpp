@@ -172,17 +172,16 @@ void fftDisplay(const uint8_t speed, const uint8_t scale, const palette_t& palet
         band = constrain(band, 0, 15);
         uint16_t barHeight  = map(fftResult[band], 0, 255, 0, rows); // do not subtract -1 from rows here
         if (barHeight > previousBarHeight[x]) previousBarHeight[x] = barHeight; //drive the peak up
-
         uint32_t ledColor = 0; // black
         for (int y=0; y < barHeight; y++) {
             uint8_t colorIndex = map(y, 0, rows-1, 0, 255);
 
-            ledColor = get_color_from_palette((uint8_t)colorIndex, palette);
+            ledColor = get_color_from_palette(colorIndex, palette);
             strip.setPixelColorXY(x, rows - y, ledColor);
         }
         if (previousBarHeight[x] > 0)
         {
-            strip.setPixelColorXY(x, rows - previousBarHeight[x], ledColor);
+            strip.setPixelColorXY(x, rows - 1 - previousBarHeight[x], ledColor);
         }
 
         if (rippleTime && previousBarHeight[x]>0) previousBarHeight[x]--;    //delay/ripple effect

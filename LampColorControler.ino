@@ -73,6 +73,7 @@ void setup()
 void check_loop_runtime(const uint32_t runTime)
 {
   static constexpr uint8_t maxAlerts = 5;
+  static uint32_t alarmRaisedTime = 0;
   // check the loop duration
   static uint8_t isOnSlowLoopCount = 0;
   if(runTime > LOOP_UPDATE_PERIOD + 1)
@@ -86,10 +87,11 @@ void check_loop_runtime(const uint32_t runTime)
 
   if(isOnSlowLoopCount >= maxAlerts)
   {
+    alarmRaisedTime = millis();
     AlertManager.raise_alert(Alerts::LONG_LOOP_UPDATE);
   }
-  // lower the alert
-  else if(isOnSlowLoopCount <= 1)
+  // lower the alert (after 5 seconds)
+  else if(isOnSlowLoopCount <= 1 and millis() - alarmRaisedTime > 3000)
   {
     AlertManager.clear_alert(Alerts::LONG_LOOP_UPDATE);
   };
