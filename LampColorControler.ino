@@ -27,6 +27,7 @@ void setup()
   // END of Trinket-specific code.
 
   strip.begin();  // INITIALIZE NeoPixel strip object (REQUIRED)
+  strip.clear();
   strip.show();   // Turn OFF all pixels ASAP
   strip.setBrightness(50);
 
@@ -83,8 +84,7 @@ void loop() {
   // display alerts if needed
   handle_alerts();
 
-
-  strip.show(); // show at the end of the loop
+  strip.show(); // show at the end of the loop (only does it if needed)
 
   // wait for a delay if we are faster than the set refresh rate
   uint32_t stop = millis();

@@ -325,9 +325,7 @@ void fire(const uint8_t scalex, const uint8_t scaley, const uint8_t speed, const
   uint16_t a = millis();
   for (int i = 0; i < ceil(stripXCoordinates); i++) {
     for (int j = 0; j < ceil(stripYCoordinates); j++) {
-      COLOR c;
-      c.color = get_color_from_palette(qsub8(noise8::inoise(i * scalex, j * scaley + a, a / speed), abs8(j - (stripXCoordinates - 1)) * 255 / (stripXCoordinates - 1)), palette);
-      strip.setPixelColorXY((stripXCoordinates - 1) - i, j, c);
+      strip.setPixelColorXY((stripXCoordinates - 1) - i, j, get_color_from_palette(qsub8(noise8::inoise(i * scalex, j * scaley + a, a / speed), abs8(j - (stripXCoordinates - 1)) * 255 / (stripXCoordinates - 1)), palette));
     }
   }
 }
@@ -530,13 +528,9 @@ void mode_2DPolarLights(const uint8_t scale, const uint8_t speed, const palette_
   for (int x = 0; x <= cols; x++) {
     for (int y = 0; y < rows; y++) {
       step++;
-
-      COLOR c;
-      c.color = get_color_from_palette(qsub8(noise8::inoise((step%2) + x * _scale, y * 16 + step % 16, step / _speed),
+      strip.setPixelColorXY(x, y, get_color_from_palette(qsub8(noise8::inoise((step%2) + x * _scale, y * 16 + step % 16, step / _speed),
                                              fabsf((float)rows / 2.0f - (float)y) * adjustHeight
-                                            ), palette);
-
-      strip.setPixelColorXY(x, y, c);
+                                            ), palette));
     }
   }
 }
@@ -557,9 +551,7 @@ void mode_2DDrift(const uint8_t intensity, const uint8_t speed, const palette_t&
     uint16_t myX = centerX + (uint16_t)(sin_t(angle) * i) + (cols%2);
     uint16_t myY = centerY + (uint16_t)(cos_t(angle) * i) + (rows%2);
 
-    COLOR c;
-    c.color = get_color_from_palette((uint8_t)((i * 20) + t_20), palette);
-    strip.setPixelColorXY(myX, myY, c);
+    strip.setPixelColorXY(myX, myY, get_color_from_palette((uint8_t)((i * 20) + t_20), palette));
   }
   strip.blur(intensity>>3);
 } // mode_2DDrift()
@@ -635,18 +627,15 @@ void mode_2Ddistortionwaves(const uint8_t scale, const uint8_t speed, LedStrip& 
       byte gdistort = cos8((cos8(((x<<3)-a2)&255)+cos8(((y<<3)+a3)&255)+a+32 )&255)>>1; 
       byte bdistort = cos8((cos8(((x<<3)+a3)&255)+cos8(((y<<3)-a) &255)+a2+64)&255)>>1; 
 
-      byte valueR = rdistort+ w*  (a- ( ((xoffs - cx)  * (xoffs - cx)  + (yoffs - cy)  * (yoffs - cy))>>7  ));
-      byte valueG = gdistort+ w*  (a2-( ((xoffs - cx1) * (xoffs - cx1) + (yoffs - cy1) * (yoffs - cy1))>>7 ));
-      byte valueB = bdistort+ w*  (a3-( ((xoffs - cx2) * (xoffs - cx2) + (yoffs - cy2) * (yoffs - cy2))>>7 ));
-
-      valueR = utils::gamma8(cos8(valueR));
-      valueG = utils::gamma8(cos8(valueG));
-      valueB = utils::gamma8(cos8(valueB));
-
       COLOR c;
-      c.red = valueR;
-      c.green = valueG,
-      c.blue = valueB;
+      c.red = rdistort+ w*  (a- ( ((xoffs - cx)  * (xoffs - cx)  + (yoffs - cy)  * (yoffs - cy))>>7  ));
+      c.green = gdistort+ w*  (a2-( ((xoffs - cx1) * (xoffs - cx1) + (yoffs - cy1) * (yoffs - cy1))>>7 ));
+      c.blue = bdistort+ w*  (a3-( ((xoffs - cx2) * (xoffs - cx2) + (yoffs - cy2) * (yoffs - cy2))>>7 ));
+
+      c.red = utils::gamma8(cos8(c.red));
+      c.green = utils::gamma8(cos8(c.green));
+      c.blue = utils::gamma8(cos8(c.blue));
+
       strip.setPixelColorXY(x, y, c); 
     }
   }

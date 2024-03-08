@@ -26,9 +26,20 @@ class LedStrip : public Adafruit_NeoPixel
         }
     }
 
+    void show()
+    {
+        if (hasSomeChanges)
+        {
+            // only show if some changes were made
+            Adafruit_NeoPixel::show();
+        }
+        hasSomeChanges = false;
+    }
+
     void setPixelColor(uint16_t n, COLOR c)
     {
         _colors[n] = c;
+        hasSomeChanges = true;
         Adafruit_NeoPixel::setPixelColor(n, c.color);
     }
 
@@ -66,6 +77,11 @@ class LedStrip : public Adafruit_NeoPixel
         setPixelColor(to_strip(x, y), c);
     }
 
+    void setPixelColorXY(uint16_t x, uint16_t y, uint32_t c)
+    {
+        setPixelColor(to_strip(x, y), c);
+    }
+
     void fadeToBlackBy(const uint8_t fadeBy)
     {
         if (fadeBy == 0) return;   // optimization - no scaling to apply
@@ -98,8 +114,7 @@ class LedStrip : public Adafruit_NeoPixel
             setPixelColor(i, cur);
             carryover = part;
         }
-}
-
+    }
 
     uint32_t getPixelColor(uint16_t n) const
     {
@@ -119,6 +134,7 @@ class LedStrip : public Adafruit_NeoPixel
         {
             _colors[i] = c;
         };
+        hasSomeChanges = true;
         Adafruit_NeoPixel::clear();
     }
 
@@ -152,6 +168,9 @@ class LedStrip : public Adafruit_NeoPixel
 
     // save the expensive computation on world coordinates
     Cartesian lampCoordinates[LED_COUNT];
+
+    private:
+    bool hasSomeChanges;
 };
 
 #endif
