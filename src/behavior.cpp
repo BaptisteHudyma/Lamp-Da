@@ -405,12 +405,8 @@ void sound_mode_update()
     break;
  
     case 1: // pulse soud
-      // wipe a color pulse around the tube at each beat
-      static GenerateComplementaryColor complementaryColor = GenerateComplementaryColor(0.3);
-      if (categoryChange) redToGreenGradient.reset();
+      sound::fftDisplay(128, 128, PaletteHeatColors, categoryChange, strip, 255);
 
-      if (sound::pulse_beat_wipe(complementaryColor, strip))
-        complementaryColor.update();
     break;
 
     default:  // error

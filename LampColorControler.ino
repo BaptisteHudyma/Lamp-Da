@@ -49,7 +49,7 @@ void setup()
   digitalWrite(LED_POWER_PIN, HIGH);
 
   // activate microphone readings
-  sound::enable_microphone(16000);
+  sound::enable_microphone();
 #ifdef USE_BLUETOOTH
   bluetooth::enable_bluetooth();
   bluetooth::startup_sequence();

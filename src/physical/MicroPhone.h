@@ -7,11 +7,11 @@
 namespace sound {
 
 // decibel level for a silent room
-const float silenceLevelDb = -57.0;
-const float highLevelDb = 80.0; // microphone is not good enough at after this
+constexpr float silenceLevelDb = -57.0;
+constexpr float highLevelDb = 80.0; // microphone is not good enough at after this
 
 // start the microphone readings
-void enable_microphone(const uint32_t sampleRate);
+void enable_microphone();
 // close the microphone readings
 void disable_microphone();
 
@@ -26,11 +26,7 @@ float get_sound_level_Db();
  */
 void vu_meter(const Color& vuColor, LedStrip& strip);
 
-/**
- * \brief beat the color to the music pulse
- * \return true when a beat is detected
- */
-bool pulse_beat_wipe(const Color& color, LedStrip& strip);
+void fftDisplay(const uint8_t speed, const uint8_t scale, const palette_t& palette, const bool reset, LedStrip& strip, const uint8_t nbBands = stripXCoordinates);
 
 }
 
