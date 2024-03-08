@@ -28,6 +28,9 @@ void vu_meter(const Color& vuColor, LedStrip& strip);
 
 void fftDisplay(const uint8_t speed, const uint8_t scale, const palette_t& palette, const bool reset, LedStrip& strip, const uint8_t nbBands = stripXCoordinates);
 
+void mode_ripplepeak(const uint8_t rippleNumber, const palette_t& palette, LedStrip& strip);
+void mode_2DWaverly(const uint8_t speed, const uint8_t scale, const palette_t& palette, LedStrip& strip);
+
 }
 
 #endif

@@ -1,19 +1,17 @@
 #include "MicroPhone.h"
 
 #include "fft.h"
+#include <algorithm>
 #include <cstdint>
 #include <PDM.h>
 
+#include "../ext/random8.h"
+#include "../ext/noise.h"
+
 namespace sound {
 
-// audio source parameters and constant
-//constexpr double SAMPLE_RATE = 22050;        // Base sample rate in Hz - 22Khz is a standard rate. Physical sample time -> 23ms
-//constexpr double SAMPLE_RATE = 16000;        // 16kHz - use if FFTtask takes more than 20ms. Physical sample time -> 32ms
-//constexpr double SAMPLE_RATE = 20480;        // Base sample rate in Hz - 20Khz is experimental.    Physical sample time -> 25ms
-//constexpr double SAMPLE_RATE = 10240;        // Base sample rate in Hz - previous default.         Physical sample time -> 50ms
-
 // buffer to read samples into, each sample is 16-bits
-constexpr size_t sampleSize = samplesFFT;
+constexpr size_t sampleSize = 512;//samplesFFT;
 int16_t _sampleBuffer[sampleSize];
 volatile int samplesRead;
 
@@ -28,7 +26,7 @@ void on_PDM_data()
     const int bytesAvailable = PDM.available();
 
     // read into the sample buffer
-    PDM.read(_sampleBuffer, bytesAvailable);
+    PDM.read((char *)&_sampleBuffer[0], bytesAvailable);
 
     // number of samples read
     samplesRead = bytesAvailable / 2;
@@ -43,11 +41,8 @@ void enable_microphone()
         return;
     }
 
-    PDM.setBufferSize(sampleSize);
+    PDM.setBufferSize(512);
     PDM.onReceive(on_PDM_data);
-
-    // optionally set the gain, defaults to 20
-    PDM.setGain(30);
 
     // initialize PDM with:
     // - one channel (mono mode)
@@ -62,6 +57,23 @@ void enable_microphone()
             delay(1000);
         }
     }
+
+    // optionally set the gain, defaults to 20
+    PDM.setGain(30);
+
+    micDataReal = 0.0f;
+    volumeRaw = 0; volumeSmth = 0;
+    sampleAgc = 0; sampleAvg = 0;
+    sampleRaw = 0; rawSampleAgc = 0;
+    my_magnitude = 0; FFT_Magnitude = 0; FFT_MajorPeak = 1;
+    multAgc = 1;
+    // reset FFT data
+    memset(fftCalc, 0, sizeof(fftCalc)); 
+    memset(fftAvg, 0, sizeof(fftAvg)); 
+    memset(fftResult, 0, sizeof(fftResult)); 
+    for(int i=0; i<NUM_GEQ_CHANNELS; i+=2) fftResult[i] = 16; // make a tiny pattern
+    inputLevel = 128;                                    // reset level slider to default
+    autoResetPeak();
 
     isStarted = true;
 }
@@ -96,7 +108,7 @@ float get_sound_level_Db()
     return lastValue;
 }
 
-bool processFFT()
+bool processFFT(const bool runFFT = true)
 {
     if(samplesRead <= 0)
     {
@@ -105,18 +117,34 @@ bool processFFT()
 
     // get data
     uint32_t userloopDelay = LOOP_UPDATE_PERIOD;
-    for(uint i = 0; i < samplesRead; i++)
+    for(int i = 0; i < samplesRead; i++)
     {
-        float sample = _sampleBuffer[i];
+        float sample = (_sampleBuffer[i] & 0xFFFF);
 
         processSample(sample);
         agcAvg();
 
-        vReal[i] = sample;
+        vReal[i] = sampleRaw;
+        vImag[i] = 0;
+    }
+    for(int i = samplesRead; i < samplesFFT; i++)
+    {
+        vReal[i] = 0;
+        vImag[i] = 0;
     }
 
+    volumeSmth = (soundAgc) ? sampleAgc   : sampleAvg;
+    volumeRaw  = (soundAgc) ? rawSampleAgc: sampleRaw;
+    // update FFTMagnitude, taking into account AGC amplification
+    my_magnitude = FFT_Magnitude; // / 16.0f, 8.0f, 4.0f done in effects
+    if (soundAgc) my_magnitude *= multAgc;
+    if (volumeSmth < 1 ) my_magnitude = 0.001f;  // noise gate closed - mute
+    limitSampleDynamics();
+    autoResetPeak();
+
     samplesRead = 0;
-    FFTcode();
+    if(runFFT)
+        FFTcode();
 
     return true;
 }
@@ -187,5 +215,97 @@ void fftDisplay(const uint8_t speed, const uint8_t scale, const palette_t& palet
         if (rippleTime && previousBarHeight[x]>0) previousBarHeight[x]--;    //delay/ripple effect
     }
 }
+
+//4 bytes
+typedef struct Ripple {
+  uint8_t state;
+  uint8_t color;
+  uint16_t pos;
+} ripple;
+
+void mode_ripplepeak(const uint8_t rippleNumber, const palette_t& palette, LedStrip& strip) {                // * Ripple peak. By Andrew Tuline.
+                                                          // This currently has no controls.
+    #define maxsteps 16                                     // Case statement wouldn't allow a variable.
+
+    static uint32_t* ripplesBuffer = strip.get_buffer_ptr(0);
+    static uint8_t fadeLevel = 255;
+
+    uint16_t maxRipples = 128;
+    Ripple* ripples = reinterpret_cast<Ripple*>(ripplesBuffer);
+
+    strip.fadeToBlackBy(240);                                  // Lower frame rate means less effective fading than FastLED
+    strip.fadeToBlackBy(240);
+
+    COLOR cFond;
+    COLOR c;
+
+    processFFT();   // ignore return
+
+    const uint8_t rippleCount = map(rippleNumber, 0, 255, 0, maxRipples);
+    for (int i = 0; i < rippleCount; i++) {   // Limit the number of ripples.
+        if (samplePeak) ripples[i].state = 255;
+
+        switch (ripples[i].state) {
+        case 254:     // Inactive mode
+            break;
+
+        case 255:                                           // Initialize ripple variables.
+            ripples[i].pos = random16(LED_COUNT);
+            if (FFT_MajorPeak > 1)                          // log10(0) is "forbidden" (throws exception)
+            ripples[i].color = (int)(log10f(FFT_MajorPeak)*128);
+            else ripples[i].color = 0;
+            
+            ripples[i].state = 0;
+            break;
+
+        case 0:
+            cFond.color = strip.getPixelColor(i);
+            
+            c.color = get_color_from_palette(ripples[i].color, palette);
+            strip.setPixelColor(ripples[i].pos, utils::color_blend(cFond, c, fadeLevel));
+            ripples[i].state++;
+            break;
+
+        case maxsteps:                                      // At the end of the ripples. 254 is an inactive mode.
+            ripples[i].state = 254;
+            break;
+
+        default:                                            // Middle of the ripples.
+            cFond.color = strip.getPixelColor(i);
+            c.color = get_color_from_palette(ripples[i].color, palette);
+            strip.setPixelColor((ripples[i].pos + ripples[i].state + LED_COUNT) % LED_COUNT, utils::color_blend(cFond, c, fadeLevel/ripples[i].state*2));
+            strip.setPixelColor((ripples[i].pos - ripples[i].state + LED_COUNT) % LED_COUNT, utils::color_blend(cFond, c, fadeLevel/ripples[i].state*2));
+            ripples[i].state++;                               // Next step.
+            break;
+        } // switch step
+    } // for i
+} // mode_ripplepeak()
+
+
+void mode_2DWaverly(const uint8_t speed, const uint8_t scale, const palette_t& palette, LedStrip& strip) {
+    const uint16_t cols = ceil(stripXCoordinates);
+    const uint16_t rows = ceil(stripYCoordinates);
+
+    if (!processFFT(false))
+        return;
+
+    strip.fadeToBlackBy(speed);
+
+    long t = millis() / 2;
+    for (int i = 0; i < cols; i++) {
+        uint16_t thisVal = (1 + scale/64) * noise8::inoise(i * 45 , t , t)/2;
+        // use audio if available
+        thisVal /= 32; // reduce intensity of inoise8()
+        thisVal *= max(10.0, volumeSmth); // set a min size to always have the visual
+        thisVal = constrain(thisVal, 0, 512);
+        uint16_t thisMax = map(thisVal, 0, 512, 0, rows/2);
+        for (int j = 0; j < thisMax; j++) {
+            const auto color = get_color_from_palette((uint8_t)map(j, 0, thisMax, 250, 0), palette);
+            strip.addPixelColorXY(i, j, color);
+            strip.addPixelColorXY((cols - 1) - i, (rows - 1) - j, color);
+        }
+    }
+    strip.blur(16);
+} // mode_2DWaverly()
 
 }

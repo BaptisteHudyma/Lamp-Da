@@ -121,6 +121,29 @@ class LedStrip : public Adafruit_NeoPixel
         return _colors[n].color;
     }
 
+    // Blends the specified color with the existing pixel color.
+    void blendPixelColor(uint16_t n, uint32_t color, uint8_t blend) {
+        COLOR c1;
+        c1.color = getPixelColor(n);
+        COLOR c2;
+        c2.color = color;
+        setPixelColor(n, utils::color_blend(c1, c2, blend));
+    }
+
+    // Adds the specified color with the existing pixel color perserving color balance.
+    void addPixelColor(uint16_t n, uint32_t color, bool fast = false) {
+        COLOR c1;
+        c1.color = getPixelColor(n);
+        COLOR c2;
+        c2.color = color;
+
+        setPixelColor(n, utils::color_add(c1, c2, fast));
+    }
+
+    void addPixelColorXY(uint16_t x, uint16_t y, uint32_t color, bool fast = false) {
+        addPixelColor(to_strip(x, y), color, fast);
+    }
+
     uint32_t getRawPixelColor(uint16_t n) const
     {
         return Adafruit_NeoPixel::getPixelColor(n);

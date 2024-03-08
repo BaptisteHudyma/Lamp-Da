@@ -18,6 +18,7 @@ static bool limiterOn = false;                 // bool: enable / disable dynamic
 #else
 static bool limiterOn = true;
 #endif
+static uint16_t attackTime =  80;             // int: attack time in milliseconds. Default 0.08sec
 static uint16_t decayTime = 1400;             // int: decay time in milliseconds.  Default 1.40sec
 // user settable options for FFTResult scaling
 static uint8_t FFTScalingMode = 3;            // 0 none; 1 optimized logarithmic; 2 optimized linear; 3 optimized square root
@@ -40,6 +41,10 @@ static unsigned long timeOfPeak = 0; // time of last sample peak detection.
 static void detectSamplePeak(void);  // peak detection function (needs scaled FFT results in vReal[])
 static void autoResetPeak(void);     // peak auto-reset function
 
+// variables used in effects
+float   volumeSmth = 0.0f;    // either sampleAvg or sampleAgc depending on soundAgc; smoothed sample
+int16_t  volumeRaw = 0;       // either sampleRaw or rawSampleAgc depending on soundAgc
+float my_magnitude =0.0f;     // FFT_Magnitude, scaled by multAgc
 
 ////////////////////
 // Begin FFT Code //
@@ -400,7 +405,6 @@ double   control_integrated = 0.0;   // persistent across calls to agcAvg(); "in
 // variables used by getSample() and agcAvg()
 static int16_t  micIn = 0;           // Current sample starts with negative values and large values, which is why it's 16 bit signed
 static double   sampleMax = 0.0;     // Max sample over a few seconds. Needed for AGC controller.
-static double   micLev = 0.0;        // Used to convert returned value to have '0' as minimum. A leveller
 static float    expAdjF = 0.0f;      // Used for exponential filter.
 static float    sampleReal = 0.0f;	  // "sampleRaw" as float, to provide bits that are lost otherwise (before amplification by sampleGain or inputLevel). Needed for AGC.
 static int16_t  sampleRaw = 0;       // Current sample. Must only be updated ONCE!!! (amplified mic value by sampleGain and inputLevel)
@@ -426,7 +430,7 @@ const float agcSampleSmooth[AGC_NUM_PRESETS]  = {  1/12.f,   1/6.f,  1/16.f}; //
 // AGC presets end
 
 #ifndef SR_SQUELCH
-  uint8_t soundSquelch = 2;                  // squelch value for volume reactive routines (config value)
+  uint8_t soundSquelch = 10.0;                  // squelch value for volume reactive routines (config value)
 #else
   uint8_t soundSquelch = SR_SQUELCH;          // squelch value for volume reactive routines (config value)
 #endif
@@ -524,14 +528,11 @@ void processSample(int16_t sample)
   const float weighting = 0.2f; // Exponential filter weighting. Will be adjustable in a future release.
   const int   AGC_preset = (soundAgc > 0)? (soundAgc-1): 0; // make sure the _compiler_ knows this value will not change while we are inside the function
 
+  micDataReal = sample;
   micIn = sample;
-
-  micLev += (micDataReal-micLev) / 12288.0f;
-  if(micIn < micLev) micLev = ((micLev * 31.0f) + micDataReal) / 32.0f; // align MicLev to lowest input signal
-
-  micIn -= micLev;                                  // Let's center it to 0 now
+  
   // Using an exponential filter to smooth out the signal. We'll add controls for this in a future release.
-  float micInNoDC = fabsf(micDataReal - micLev);
+  float micInNoDC = fabsf(micDataReal);
   expAdjF = (weighting * micInNoDC + (1.0f-weighting) * expAdjF);
   expAdjF = fabsf(expAdjF);                         // Now (!) take the absolute value
 
@@ -569,5 +570,36 @@ void processSample(int16_t sample)
 } // getSample()
 
 
+/* Limits the dynamics of volumeSmth (= sampleAvg or sampleAgc). 
+    * does not affect FFTResult[] or volumeRaw ( = sample or rawSampleAgc) 
+*/
+// effects: Gravimeter, Gravcenter, Gravcentric, Noisefire, Plasmoid, Freqpixels, Freqwave, Gravfreq, (2D Swirl, 2D Waverly)
+void limitSampleDynamics(void) {
+  const float bigChange = 196;                  // just a representative number - a large, expected sample value
+  static unsigned long last_time = 0;
+  static float last_volumeSmth = 0.0f;
 
-  
+  if (limiterOn == false) return;
+
+  long delta_time = millis() - last_time;
+  delta_time = constrain(delta_time , 1, 1000); // below 1ms -> 1ms; above 1sec -> sily lil hick-up
+  float deltaSample = volumeSmth - last_volumeSmth;
+
+  if (attackTime > 0) {                         // user has defined attack time > 0
+    float maxAttack =   bigChange * float(delta_time) / float(attackTime);
+    if (deltaSample > maxAttack) deltaSample = maxAttack;
+  }
+  if (decayTime > 0) {                          // user has defined decay time > 0
+    float maxDecay  = - bigChange * float(delta_time) / float(decayTime);
+    if (deltaSample < maxDecay) deltaSample = maxDecay;
+  }
+
+  volumeSmth = last_volumeSmth + deltaSample; 
+
+  last_volumeSmth = volumeSmth;
+  last_time = millis();
+}
+
+
+
+

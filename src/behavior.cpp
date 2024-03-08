@@ -394,7 +394,7 @@ void party_mode_update()
 
 void sound_mode_update()
 {
-  constexpr uint8_t maxSoundState = 1;
+  constexpr uint8_t maxSoundState = 2;
   switch(clamp_state_values(colorState, maxSoundState))
   {
     case 0: // vue meter
@@ -407,6 +407,10 @@ void sound_mode_update()
     case 1: // pulse soud
       sound::fftDisplay(128, 128, PaletteHeatColors, categoryChange, strip, 255);
 
+    break;
+
+    case 2:
+      sound::mode_2DWaverly(128, 64, PalettePartyColors, strip);
     break;
 
     default:  // error
