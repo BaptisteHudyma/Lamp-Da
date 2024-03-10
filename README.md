@@ -30,6 +30,7 @@ Depends:
 - LampColorControler.ino: main class of the program, containing the setup and loop functions
 - src
     - behavior.h: controls the lamp behaviors: what button actions does what. It's here that the animations are called
+    - alert.h: Handle the diffferent alerts raised by the program
     - colors : Contain all the color/animations related stuff
         - animations.h: define some generic animations, that can be used as is with no fiddling
         - colors.h: Define the color class, that is the entrance point for all animations. You can define your own in it (SolidColor, DynamicColor, IndexedColor, ...)
@@ -37,13 +38,18 @@ Depends:
         - wipes.h: wipe animations, dot chase etc. Could be merged with animations.h in the future
     - ext: external libraries
     - physical: stuf related to the physical components: button, bluetooth, IMU, ...
+        - battery.h: handle the battery readings, for battery level
         - bluetooth.h: Control the bluetooth associated behavior (foe now, causes segfaults, so not used)
-        - button.h: control the button. Takes callbacks for actions on multiple button pushes. The implementation is intented to work with a tactile button (can be anything metallic really...)
+        - button.h: control the button. Takes callbacks for actions on multiple button pushes. Used to display stuf on the button if needed
+        - fft.h: implementation of the fft and assocated filtering
+        - fileSystem.h: handle the reading and writting of variables to memory
         - Microphone.h: control the microphone behavior. Make available some functions to get the sound level and beat. Gives some animations as well
     - utils: General functions and constants that everybody needs
         - colorspace.h: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !
         - contants.h: global constants used all around the program
+        - coordinates.h: give functions to use different coordinates on the lamp (1d, 2d and 3d)
         - strip.h: overload of the Adafruit_NeoPixel class, to get cleaner color with getPixelColor
+        - text.h: transform a given string to a displayed text on the lamp body  
         - utils.h: useful functions to make colors
 
 ## Physical build and architecture :
