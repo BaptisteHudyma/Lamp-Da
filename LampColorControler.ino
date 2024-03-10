@@ -13,11 +13,39 @@
 
 void setup()
 {
-  Serial.begin(115200);
-  analogReference(AR_DEFAULT);
-  
   // Necessary for sleep mode for some reason ??
-  Bluefruit.begin(1);
+  Bluefruit.begin();
+
+  analogReference(AR_DEFAULT);
+
+  // start the file system
+  fileSystem::setup();
+  read_parameters();  // read from the stored config
+
+  // initialize the battery level
+  get_battery_level(true);
+  for(uint i = 0; i < 100; ++i)
+  {
+    get_battery_level();
+  }
+
+  // critical battery level, do not wake up
+  if(get_battery_level() <= 5)
+  {
+    // alert user of low battery
+    for(uint i = 0; i < 10; i++)
+    {
+      set_button_color(utils::ColorSpace::RED);
+      delay(100);
+      set_button_color(utils::ColorSpace::BLACK);
+      delay(100);
+    }
+
+    // emergency shutdown
+    shutdown();
+  }
+
+  Serial.begin(115200);
   
   // These lines are specifically to support the Adafruit Trinket 5V 16 MHz.
   // Any other board, you can remove this part (but no harm leaving it):
@@ -26,7 +54,8 @@ void setup()
 #endif
   // END of Trinket-specific code.
 
-  strip.begin();  // INITIALIZE NeoPixel strip object (REQUIRED)
+  // initialize the strip object
+  strip.begin();
   strip.clear();
   strip.show();   // Turn OFF all pixels ASAP
   strip.setBrightness(50);
@@ -39,15 +68,14 @@ void setup()
   pinMode(LED_POWER_PIN, OUTPUT);
   pinMode(BATTERY_CHARGE_PIN, INPUT);
 
+  digitalWrite(LED_POWER_PIN, LOW); // start powered down
+
   pinMode(BUTTON_RED, OUTPUT);
   pinMode(BUTTON_GREEN, OUTPUT);
   pinMode(BUTTON_BLUE, OUTPUT);
   digitalWrite(BUTTON_RED, LOW);
   digitalWrite(BUTTON_GREEN, LOW);
   digitalWrite(BUTTON_BLUE, LOW);
-
-  // power up the system
-  digitalWrite(LED_POWER_PIN, HIGH);
 
   // activate microphone readings
   sound::enable_microphone();
@@ -56,18 +84,8 @@ void setup()
   bluetooth::startup_sequence();
 #endif
 
-  // start the file system
-  fileSystem::setup();
-
-  // initialize the battery level
-  get_battery_level(true);
-  for(uint i = 0; i < 100; ++i)
-  {
-    get_battery_level(false);
-  }
-
-  // read from the stored config
-  read_parameters();
+  // power up the system (last step)
+  digitalWrite(LED_POWER_PIN, HIGH);
 }
 
 void check_loop_runtime(const uint32_t runTime)

@@ -7,18 +7,21 @@
 
 static volatile uint8_t batteryLevel = 0.0;
 
+// TODO: map to real lipo curve
+
 // return a number between 0 and 100
-inline uint8_t get_battery_level(const bool resetRead)
+inline uint8_t get_battery_level(const bool resetRead = false)
 {
    constexpr float maxVoltage = 16.6;
-   constexpr float lowVoltage = 13.0;
+   constexpr float lowVoltage = 12.4;
 
    static float lastValue = 0;
 
    // map the input ADC out to voltage reading.
-   constexpr float minInValue = 500.0;
+   constexpr float minInValue = 560.0;
    constexpr float maxInValue = 720.0;
    const uint32_t pinRead = analogRead(BATTERY_CHARGE_PIN);
+
    if(pinRead < minInValue or pinRead > maxInValue)
    {
       AlertManager.raise_alert(Alerts::BATTERY_READINGS_INCOHERENT);
@@ -32,8 +35,26 @@ inline uint8_t get_battery_level(const bool resetRead)
    }
 
    lastValue = batteryVoltage * 0.1 + lastValue * 0.9;
-   batteryLevel = utils::map(lastValue, lowVoltage, maxVoltage, 0, 100);
-   return batteryLevel;
+   const float rawBatteryLevel = utils::map(lastValue, lowVoltage, maxVoltage, 0.0, 100.0);
+   
+   // remap to match the reality
+   if (rawBatteryLevel < 40.0)
+   {
+      // fast drop for the last half of the battery
+      batteryLevel = utils::map(rawBatteryLevel, 0.0, 40.0, 0.0, 12.0);
+   }
+   else if (rawBatteryLevel < 90.0)
+   {
+      // most of the battery level is here, slow slope
+      batteryLevel = utils::map(rawBatteryLevel, 40.0, 90.0, 12.0, 95.0);
+   }
+   else {
+      // battery level > 90
+      batteryLevel = utils::map(rawBatteryLevel, 90.0, 105.0, 95.0, 100.0); // highest 15% -> drop slowly
+   }
+
+
+   return batteryLevel; 
 }
 
 

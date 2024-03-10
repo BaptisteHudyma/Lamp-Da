@@ -322,12 +322,24 @@ bool fade_in(const Color& color, const uint32_t duration, const bool restart, Le
 
 void fire(const uint8_t scalex, const uint8_t scaley, const uint8_t speed, const palette_t& palette, LedStrip& strip)
 {
-  uint16_t a = millis();
+  static uint32_t step = 0;
+  uint16_t zSpeed = step/(256 - speed);
+  uint16_t ySpeed =  millis() / (256 - speed);
   for (int i = 0; i < ceil(stripXCoordinates); i++) {
     for (int j = 0; j < ceil(stripYCoordinates); j++) {
-      strip.setPixelColorXY((stripXCoordinates - 1) - i, j, get_color_from_palette(qsub8(noise8::inoise(i * scalex, j * scaley + a, a / speed), abs8(j - (stripXCoordinates - 1)) * 255 / (stripXCoordinates - 1)), palette));
+      strip.setPixelColorXY(
+        stripXCoordinates - i,
+        j,
+        get_color_from_palette(
+            qsub8(
+              noise8::inoise(i * scalex, j * scaley + ySpeed, zSpeed),
+              abs8(j - (stripXCoordinates - 1)) * 255 / (stripXCoordinates - 1)
+            ), 
+          palette)
+      );
     }
   }
+  step++;
 }
 
 void random_noise(const palette_t& palette, LedStrip& strip, const bool restart, const bool isColorLoop, const uint16_t scale)
@@ -548,8 +560,8 @@ void mode_2DDrift(const uint8_t intensity, const uint8_t speed, const palette_t&
   unsigned long t_20 = t/20; // softhack007: pre-calculating this gives about 10% speedup
   for (float i = 1; i < maxDim; i += 0.25) {
     float angle = radians(t * (maxDim - i));
-    uint16_t myX = centerX + (uint16_t)(sin_t(angle) * i) + (cols%2);
-    uint16_t myY = centerY + (uint16_t)(cos_t(angle) * i) + (rows%2);
+    uint16_t myX = centerX + (sin_t(angle) * i) + (cols%2);
+    uint16_t myY = centerY + (cos_t(angle) * i) + (rows%2);
 
     strip.setPixelColorXY(myX, myY, get_color_from_palette((uint8_t)((i * 20) + t_20), palette));
   }

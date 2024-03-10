@@ -21,6 +21,9 @@ extern uint8_t BRIGHTNESS;
 void read_parameters();
 void write_parameters();
 
+// put in shutdown mode, with external wakeup
+void shutdown();
+
 /**
  * \brief main update loop
  */

@@ -276,7 +276,7 @@ void gradient_mode_update()
 
 void calm_mode_update()
 {
-  constexpr uint8_t maxCalmColorState = 8;
+  constexpr uint8_t maxCalmColorState = 9;
   switch(clamp_state_values(colorState, maxCalmColorState))
   {
     case 0: // rainbow swirl animation
@@ -328,11 +328,15 @@ void calm_mode_update()
       break;
     
     case 7:
-      animations::fire(60, 60, 128, PaletteHeatColors, strip);
+      animations::fire(60, 60, 255, PaletteHeatColors, strip);
     break;
 
     case 8:
       animations::mode_2Ddistortionwaves(128, 128, strip);
+    break;
+
+    case 9:
+      animations::mode_2DDrift(255, 64, PaletteRainbowColors, strip);
     break;
 
     default:  // error
