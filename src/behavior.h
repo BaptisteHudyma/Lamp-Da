@@ -1,9 +1,9 @@
 #ifndef BEHAVIOR_HPP
 #define BEHAVIOR_HPP
 
-#include "utils/strip.h"
-#include "utils/constants.h"
 #include "alerts.h"
+#include "utils/constants.h"
+#include "utils/strip.h"
 
 #ifdef __AVR__
 #include <avr/power.h>  // Required for 16 MHz Adafruit Trinket
@@ -16,7 +16,7 @@ extern LedStrip strip;
 extern uint8_t BRIGHTNESS;
 
 /**
- * \brief Load the parameters from the filesystem 
+ * \brief Load the parameters from the filesystem
  */
 void read_parameters();
 void write_parameters();
@@ -30,14 +30,15 @@ void shutdown();
 void color_mode_update();
 
 /**
- * \brief callback of the button clicked sequence event 
+ * \brief callback of the button clicked sequence event
  */
 void button_clicked_callback(uint8_t consecutiveButtonCheck);
 
 /**
  * \brief callback of the button clicked sequence event with a final hold
  */
-void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDuration);
+void button_hold_callback(uint8_t consecutiveButtonCheck,
+                          uint32_t buttonHoldDuration);
 
 // If any alert is set, will handle it
 void handle_alerts();

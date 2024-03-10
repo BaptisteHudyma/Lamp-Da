@@ -3,21 +3,16 @@
 
 #include <cstdint>
 
-struct Cartesian
-{
-    int16_t x;
-    int16_t y;
-    int16_t z;
+struct Cartesian {
+  int16_t x;
+  int16_t y;
+  int16_t z;
 
-    Cartesian(const int16_t x, const int16_t y, const int16_t z):
-        x(x), y(y), z(z)
-    {};
+  Cartesian(const int16_t x, const int16_t y, const int16_t z)
+      : x(x), y(y), z(z){};
 
-    Cartesian():
-    x(0), y(0), z(0)
-    {}
+  Cartesian() : x(0), y(0), z(0) {}
 };
-
 
 /**
  * X is the vertical axis, starting at zero and ending at stripXCoordinates

@@ -1,20 +1,19 @@
 #include "wipes.h"
 
-#include "../utils/utils.h"
-#include "../utils/constants.h"
-#include "../utils/coordinates.h"
 #include <cstdint>
 
-namespace animations
-{
+#include "../utils/constants.h"
+#include "../utils/coordinates.h"
+#include "../utils/utils.h"
 
-bool dot_wipe_down(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
-{
+namespace animations {
+
+bool dot_wipe_down(const Color& color, const uint32_t duration,
+                   const bool restart, LedStrip& strip, const float cutOff) {
   static uint16_t targetIndex = UINT16_MAX;
 
   // reset condition
-  if (restart)
-  {
+  if (restart) {
     targetIndex = 0;
     return false;
   }
@@ -23,31 +22,32 @@ bool dot_wipe_down(const Color& color, const uint32_t duration, const bool resta
   const uint16_t endIndex = ceil(LED_COUNT * cutOff);
 
   // convert duration in delay for each segment
-  const unsigned long delay = max(LOOP_UPDATE_PERIOD, duration / (float)LED_COUNT) + 2;
+  const unsigned long delay =
+      max(LOOP_UPDATE_PERIOD, duration / (float)LED_COUNT) + 2;
 
   if (targetIndex < LED_COUNT) {
-
     strip.clear();
     // increment
-    for(uint32_t increment = LED_COUNT / ceil(duration / delay); increment > 0; increment--)
-    {
-      strip.setPixelColor(targetIndex, color.get_color(targetIndex, LED_COUNT));  //  Set pixel's color (in RAM)
+    for (uint32_t increment = LED_COUNT / ceil(duration / delay); increment > 0;
+         increment--) {
+      strip.setPixelColor(
+          targetIndex,
+          color.get_color(targetIndex,
+                          LED_COUNT));  //  Set pixel's color (in RAM)
       targetIndex += 1;
-      if (targetIndex >= endIndex)
-        break;
+      if (targetIndex >= endIndex) break;
     }
   }
 
   return targetIndex >= endIndex;
 }
 
-bool dot_wipe_up(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
-{
+bool dot_wipe_up(const Color& color, const uint32_t duration,
+                 const bool restart, LedStrip& strip, const float cutOff) {
   static uint16_t targetIndex = UINT16_MAX;
 
   // reset condition
-  if (restart)
-  {
+  if (restart) {
     targetIndex = LED_COUNT - 1;
     return false;
   }
@@ -56,31 +56,32 @@ bool dot_wipe_up(const Color& color, const uint32_t duration, const bool restart
   const uint16_t endIndex = floor((1.0 - cutOff) * LED_COUNT) - 2;
 
   // convert duration in delay for each segment
-  const unsigned long delay = max(LOOP_UPDATE_PERIOD, duration / (float)LED_COUNT);
+  const unsigned long delay =
+      max(LOOP_UPDATE_PERIOD, duration / (float)LED_COUNT);
 
   if (targetIndex >= 0) {
-
     strip.clear();
-    // increment 
-    for(uint32_t increment = LED_COUNT / ceil(duration / delay); increment > 0; increment--)
-    {
-      strip.setPixelColor(targetIndex, color.get_color(targetIndex, LED_COUNT));  //  Set pixel's color (in RAM)
+    // increment
+    for (uint32_t increment = LED_COUNT / ceil(duration / delay); increment > 0;
+         increment--) {
+      strip.setPixelColor(
+          targetIndex,
+          color.get_color(targetIndex,
+                          LED_COUNT));  //  Set pixel's color (in RAM)
       targetIndex -= 1;
-      if (targetIndex == UINT16_MAX or targetIndex < endIndex)
-        return true;
+      if (targetIndex == UINT16_MAX or targetIndex < endIndex) return true;
     }
   }
 
   return targetIndex == UINT16_MAX or targetIndex < endIndex;
 }
 
-bool color_wipe_down(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
-{
+bool color_wipe_down(const Color& color, const uint32_t duration,
+                     const bool restart, LedStrip& strip, const float cutOff) {
   static uint16_t targetIndex = UINT16_MAX;
 
   // reset condition
-  if (restart)
-  {
+  if (restart) {
     targetIndex = 0;
     return false;
   }
@@ -89,27 +90,26 @@ bool color_wipe_down(const Color& color, const uint32_t duration, const bool res
   const uint16_t endIndex = ceil(LED_COUNT * cutOff) + 2;
 
   // convert duration in delay for each segment
-  const unsigned long delay = max(LOOP_UPDATE_PERIOD, duration / (float)LED_COUNT);
+  const unsigned long delay =
+      max(LOOP_UPDATE_PERIOD, duration / (float)LED_COUNT);
   const uint32_t c = color.get_color(targetIndex, LED_COUNT);
 
-  // increment 
-  for(uint32_t increment = LED_COUNT / ceil(duration / delay); increment > 0; increment--)
-  {
+  // increment
+  for (uint32_t increment = LED_COUNT / ceil(duration / delay); increment > 0;
+       increment--) {
     strip.setPixelColor(targetIndex++, c);
-    if (targetIndex > endIndex)
-      break;
+    if (targetIndex > endIndex) break;
   }
 
   return targetIndex > endIndex;
 }
 
-bool color_wipe_up(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff)
-{
+bool color_wipe_up(const Color& color, const uint32_t duration,
+                   const bool restart, LedStrip& strip, const float cutOff) {
   static uint16_t targetIndex = UINT16_MAX;
 
   // reset condition
-  if (restart)
-  {
+  if (restart) {
     targetIndex = LED_COUNT - 1;
     return false;
   }
@@ -118,82 +118,74 @@ bool color_wipe_up(const Color& color, const uint32_t duration, const bool resta
   const uint16_t endIndex = floor((1.0 - cutOff) * LED_COUNT) - 2;
 
   // convert duration in delay for each segment
-  const unsigned long delay = max(LOOP_UPDATE_PERIOD, duration / (float)LED_COUNT);
+  const unsigned long delay =
+      max(LOOP_UPDATE_PERIOD, duration / (float)LED_COUNT);
   const uint32_t c = color.get_color(targetIndex, LED_COUNT);
 
-  // increment 
-  for(uint32_t increment = LED_COUNT / ceil(duration / delay); increment > 0; increment--)
-  {
+  // increment
+  for (uint32_t increment = LED_COUNT / ceil(duration / delay); increment > 0;
+       increment--) {
     strip.setPixelColor(targetIndex--, c);
-    if(targetIndex == UINT16_MAX or targetIndex < endIndex)
-      break;
+    if (targetIndex == UINT16_MAX or targetIndex < endIndex) break;
   }
 
   return targetIndex == UINT16_MAX or targetIndex < endIndex;
 }
 
-
-bool color_vertical_wipe_right(const Color& color,const uint32_t duration, const bool restart, LedStrip& strip)
-{
+bool color_vertical_wipe_right(const Color& color, const uint32_t duration,
+                               const bool restart, LedStrip& strip) {
   static uint16_t currentX = 0;
-  if(restart)
-  {
+  if (restart) {
     currentX = 0;
   }
 
   // convert duration in delay for each segment
-  const unsigned long delay = max(LOOP_UPDATE_PERIOD, duration / stripXCoordinates);
-  if (duration / stripXCoordinates <= LOOP_UPDATE_PERIOD)
-  {
-    for(uint16_t increment = stripXCoordinates / ceil(duration / delay); increment > 0; increment--)
-    {
-      for(uint16_t y = 0; y <= stripYCoordinates; ++y)
-      {
+  const unsigned long delay =
+      max(LOOP_UPDATE_PERIOD, duration / stripXCoordinates);
+  if (duration / stripXCoordinates <= LOOP_UPDATE_PERIOD) {
+    for (uint16_t increment = stripXCoordinates / ceil(duration / delay);
+         increment > 0; increment--) {
+      for (uint16_t y = 0; y <= stripYCoordinates; ++y) {
         const auto pixelIndex = to_strip(currentX, y);
-          strip.setPixelColor(pixelIndex, color.get_color(pixelIndex, LED_COUNT));
+        strip.setPixelColor(pixelIndex, color.get_color(pixelIndex, LED_COUNT));
       }
 
       ++currentX;
-      if(currentX > stripXCoordinates)
-      {
+      if (currentX > stripXCoordinates) {
+        return true;
+      }
+    }
+  } else  // delay is too long to increment cleanly, use gradients
+  {
+    static uint16_t lastSubstep = 0;
+    static auto buffer1 = strip.get_buffer_ptr(0);
+    const uint16_t maxSubstep =
+        LOOP_UPDATE_PERIOD / (stripXCoordinates / duration * 1000.0);
+
+    if (lastSubstep == 0) {
+      strip.buffer_current_colors(0);
+    }
+
+    const float level = lastSubstep / (float)maxSubstep;
+
+    for (uint16_t y = 0; y <= stripYCoordinates; ++y) {
+      const auto pixelIndex = to_strip(currentX, y);
+      strip.setPixelColor(
+          pixelIndex,
+          utils::get_gradient(buffer1[pixelIndex],
+                              color.get_color(pixelIndex, LED_COUNT), level));
+    }
+
+    lastSubstep++;
+    if (lastSubstep > maxSubstep) {
+      lastSubstep = 0;
+      ++currentX;
+      if (currentX > stripXCoordinates) {
         return true;
       }
     }
   }
-  else  // delay is too long to increment cleanly, use gradients
-  {
-      static uint16_t lastSubstep = 0;
-      static auto buffer1 = strip.get_buffer_ptr(0);
-      const uint16_t maxSubstep = LOOP_UPDATE_PERIOD / (stripXCoordinates / duration * 1000.0);
-
-      if(lastSubstep == 0)
-      {
-        strip.buffer_current_colors(0);
-      }
-
-      const float level = lastSubstep / (float)maxSubstep;
-
-      for(uint16_t y = 0; y <= stripYCoordinates; ++y)
-      {
-        const auto pixelIndex = to_strip(currentX, y);
-          strip.setPixelColor(pixelIndex, 
-              utils::get_gradient(buffer1[pixelIndex], color.get_color(pixelIndex, LED_COUNT), level)
-          );
-      }
-
-      lastSubstep++;
-      if(lastSubstep > maxSubstep)
-      {
-        lastSubstep = 0;
-        ++currentX;
-        if(currentX > stripXCoordinates)
-        {
-          return true;
-        }
-      }
-  }
   return false;
 }
 
-
-};
+};  // namespace animations

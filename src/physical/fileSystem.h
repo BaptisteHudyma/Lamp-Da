@@ -22,6 +22,6 @@ void write_state();
 bool get_value(const std::string& key, uint32_t& value);
 void set_value(const std::string& key, const uint32_t value);
 
-}
+}  // namespace fileSystem
 
 #endif

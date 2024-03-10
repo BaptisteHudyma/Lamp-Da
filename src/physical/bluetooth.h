@@ -17,6 +17,6 @@ void disable_bluetooth();
 // call at each loop turn
 void parse_messages();
 
-};
+};  // namespace bluetooth
 
 #endif
