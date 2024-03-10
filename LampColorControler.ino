@@ -24,7 +24,7 @@ void setup()
 
   // initialize the battery level
   get_battery_level(true);
-  for(uint i = 0; i < 100; ++i)
+  for(uint i = 0; i < 10; ++i)
   {
     get_battery_level();
   }
@@ -58,7 +58,7 @@ void setup()
   strip.begin();
   strip.clear();
   strip.show();   // Turn OFF all pixels ASAP
-  strip.setBrightness(50);
+  strip.setBrightness(BRIGHTNESS);
 
   // attach the button interrupt
   pinMode(BUTTON_PIN, INPUT_PULLUP_SENSE);
@@ -140,5 +140,5 @@ void loop() {
   check_loop_runtime(stop - start);
 
   // display alerts if needed (for some reason, using the global variable creates a bug)
-  handle_alerts(AlertManager);
+  handle_alerts();
 }

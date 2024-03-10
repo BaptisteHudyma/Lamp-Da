@@ -40,6 +40,6 @@ void button_clicked_callback(uint8_t consecutiveButtonCheck);
 void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDuration);
 
 // If any alert is set, will handle it
-void handle_alerts(const Alert& alertManager);
+void handle_alerts();
 
 #endif

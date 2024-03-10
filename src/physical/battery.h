@@ -7,8 +7,6 @@
 
 static volatile uint8_t batteryLevel = 0.0;
 
-// TODO: map to real lipo curve
-
 // return a number between 0 and 100
 inline uint8_t get_battery_level(const bool resetRead = false)
 {
@@ -17,7 +15,7 @@ inline uint8_t get_battery_level(const bool resetRead = false)
 
    static float lastValue = 0;
 
-   // map the input ADC out to voltage reading.
+   // map the input ADC out to voltage reading (calibration depending on the resistor used for the battery voltage measurments).
    constexpr float minInValue = 560.0;
    constexpr float maxInValue = 720.0;
    const uint32_t pinRead = analogRead(BATTERY_CHARGE_PIN);
@@ -34,7 +32,8 @@ inline uint8_t get_battery_level(const bool resetRead = false)
      lastValue = batteryVoltage;
    }
 
-   lastValue = batteryVoltage * 0.1 + lastValue * 0.9;
+   // filter by 1/10
+   lastValue += 0.1 * (batteryVoltage -lastValue);
    const float rawBatteryLevel = utils::map(lastValue, lowVoltage, maxVoltage, 0.0, 100.0);
    
    // remap to match the reality

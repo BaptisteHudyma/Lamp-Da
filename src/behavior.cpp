@@ -448,13 +448,10 @@ void gyro_mode_update()
   categoryChange = false;
 }
 
-
-static uint32_t criticalbatteryRaisedTime = 0;
-
 // Display a color on the button
 void display_battery_level()
 {
-  static constexpr uint32_t refreshRate_ms = 2000;
+  static constexpr uint32_t refreshRate_ms = 1000;
   static uint32_t lastCall = 0;
 
   const uint32_t newCall = millis();
@@ -464,20 +461,15 @@ void display_battery_level()
     const uint8_t percent = get_battery_level(false);
 
     // 5% battery is critical
-    if(percent < 5)
+    if(percent <= 5)
     {
-      if (criticalbatteryRaisedTime == 0)
-      {
-        criticalbatteryRaisedTime = millis();
-      }
       AlertManager.raise_alert(Alerts::BATTERY_CRITICAL);
     }
     else {
       AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);
-      criticalbatteryRaisedTime = 0;
       
       // 10% battery is low, start alerting
-      if(percent < 10)
+      if(percent <= 10)
       {
         AlertManager.raise_alert(Alerts::BATTERY_LOW);
       }
@@ -662,54 +654,55 @@ void button_hold_callback(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDur
   }
 }
 
-void handle_alerts(const Alert& alertManager)
+void handle_alerts()
 {
-  switch(alertManager.current())
+  const uint32_t current = AlertManager.current();
+  
+  static uint32_t criticalbatteryRaisedTime = 0; 
+
+  if(current == Alerts::NONE)
   {
-    case Alerts::NONE:
+    criticalbatteryRaisedTime = 0;
+
+    // display battery level
+    // red to green
+    // force green to be kind of low because red is not as powerfull
+    set_button_color(utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RGB(255, 0, 0).get_rgb().color, utils::ColorSpace::RGB(0,30,0).get_rgb().color, batteryLevel / 100.0)));
+  }
+  else {
+    if( (current & Alerts::BATTERY_READINGS_INCOHERENT) != 0x00)
     {
-      // display battery level
-      // red to green
-      // force green to be kind of low because red is not as powerfull
-      set_button_color(utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RGB(255, 0, 0).get_rgb().color, utils::ColorSpace::RGB(0,30,0).get_rgb().color, batteryLevel / 100.0)));
-      break;
+      // incohrent battery readings
+      button_blink(100, 100, utils::ColorSpace::GREEN);
     }
-    case Alerts::BATTERY_CRITICAL:
+    else if( (current & Alerts::BATTERY_CRITICAL) != 0x00)
     {
-      // critical battery alert: shutdown after 5 seconds
-      if(millis() - criticalbatteryRaisedTime > 5000)
+      // critical battery alert: shutdown after 2 seconds
+      if(criticalbatteryRaisedTime == 0)
+        criticalbatteryRaisedTime = millis();
+      else if(millis() - criticalbatteryRaisedTime > 2000)
       {
         // shutdown when battery is critical
         shutdown();
       }
       // blink if no shutdown
       button_blink(100, 100, utils::ColorSpace::RED);
-      break;
     }
-    case Alerts::BATTERY_LOW:
+    else if( (current & Alerts::BATTERY_LOW) != 0x00)
     {
+      criticalbatteryRaisedTime = 0;
       // fast blink red
       button_blink(300, 300, utils::ColorSpace::RED);
-      break;
     }
-    case Alerts::LONG_LOOP_UPDATE:
+    else if( (current & Alerts::LONG_LOOP_UPDATE) != 0x00)
     {
       // fast blink red
       button_blink(400, 400, utils::ColorSpace::FUSHIA);
-      break;
     }
-    case Alerts::BATTERY_READINGS_INCOHERENT:
-    {
-      // incohrent battery readings
-      criticalbatteryRaisedTime = 0;
-      button_blink(100, 100, utils::ColorSpace::GREEN);
-    }
-    default:
+    else
     {
       // unhandled case
-      criticalbatteryRaisedTime = 0;
       button_blink(300, 300, utils::ColorSpace::ORANGE);
-      break;
     }
   }
 }
