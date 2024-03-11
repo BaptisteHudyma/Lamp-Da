@@ -18,7 +18,7 @@
 #include "utils/utils.h"
 
 // extern declarations
-LedStrip strip(LED_PIN, NEO_RGB);
+LedStrip strip(LED_PIN);
 
 uint8_t BRIGHTNESS = 50;
 const char* brightnessKey = "brightness";
@@ -324,7 +324,7 @@ void calm_mode_update() {
       break;
 
     case 9:
-      animations::mode_2DDrift(255, 64, PaletteRainbowColors, strip);
+      animations::mode_2DDrift(64, 64, PaletteRainbowColors, strip);
       break;
 
     default:  // error
@@ -630,7 +630,6 @@ void handle_alerts() {
   const uint32_t current = AlertManager.current();
 
   static uint32_t criticalbatteryRaisedTime = 0;
-
   if (current == Alerts::NONE) {
     criticalbatteryRaisedTime = 0;
 

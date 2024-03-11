@@ -15,7 +15,8 @@ void setup() {
   // Necessary for sleep mode for some reason ??
   Bluefruit.begin();
 
-  analogReference(AR_DEFAULT);
+  analogReference(AR_INTERNAL_3_0);   // 3v reference
+  analogReadResolution(ADC_RES_EXP);  // Can be 8, 10, 12 or 14
 
   // start the file system
   fileSystem::setup();

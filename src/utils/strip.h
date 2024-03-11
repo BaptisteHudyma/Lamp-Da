@@ -6,13 +6,14 @@
 #include <cstdint>
 #include <cstring>
 
+#include "../ext/scale8.h"
 #include "constants.h"
 #include "coordinates.h"
 #include "utils.h"
 
 class LedStrip : public Adafruit_NeoPixel {
  public:
-  LedStrip(int16_t pin = 6, neoPixelType type = NEO_GRB + NEO_KHZ800)
+  LedStrip(int16_t pin, neoPixelType type = NEO_RGB + NEO_KHZ800)
       : Adafruit_NeoPixel(LED_COUNT, pin, type) {
     COLOR c;
     c.color = 0;
@@ -103,6 +104,9 @@ class LedStrip : public Adafruit_NeoPixel {
   }
 
   uint32_t getPixelColor(uint16_t n) const { return _colors[n].color; }
+  uint32_t getPixelColorXY(int16_t x, int16_t y) const {
+    return _colors[to_strip(x, y)].color;
+  }
 
   // Blends the specified color with the existing pixel color.
   void blendPixelColor(uint16_t n, uint32_t color, uint8_t blend) {

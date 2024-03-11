@@ -14,15 +14,15 @@ inline uint8_t get_battery_level(const bool resetRead = false) {
 
   static float lastValue = 0;
 
-  // map the input ADC out to voltage reading (calibration depending on the
-  // resistor used for the battery voltage measurments).
-  constexpr float minInValue = 560.0;
-  constexpr float maxInValue =
-      minInValue / lowVoltage *
-      maxVoltage;  // should be linear (voltage divider)
-  const uint32_t pinRead = analogRead(BATTERY_CHARGE_PIN);
+  // 3v internal ref, ADC resolution
+  constexpr uint16_t minInValue =
+      lowVoltage * voltageDividerCoeff * ADC_MAX_VALUE / 3.0;
+  constexpr uint16_t maxInValue =
+      maxVoltage * voltageDividerCoeff * ADC_MAX_VALUE / 3.0;
+  const uint16_t pinRead = analogRead(BATTERY_CHARGE_PIN);
 
-  if (pinRead < minInValue or pinRead > maxInValue) {
+  // in bounds with some margin
+  if (pinRead < minInValue * 0.97 or pinRead > maxInValue * 1.03) {
     AlertManager.raise_alert(Alerts::BATTERY_READINGS_INCOHERENT);
   }
   const float batteryVoltage =

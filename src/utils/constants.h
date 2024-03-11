@@ -46,6 +46,15 @@
 // battery charge pin: max voltage should be 3V
 #define BATTERY_CHARGE_PIN A1
 
+constexpr uint8_t ADC_RES_EXP =
+    12;  // resolution of the ADC, in bits (can be 8, 10, 12 or 14)
+constexpr uint32_t ADC_MAX_VALUE =
+    pow(2, ADC_RES_EXP);  // corresponding max value
+// map the input ADC out to voltage reading (calibration depending on the
+// resistor used for the battery voltage measurments).
+// it should drop maxVoltage to 3v (so about 1.0/5.5) but it's never exact
+constexpr float voltageDividerCoeff = 1.0 / 5.746;
+
 // parameters of the led strip used
 constexpr uint16_t ledByMeter = 160.0;   // the indexable led by meters
 constexpr float ledStripWidth_mm = 5.2;  // width of the led strip
