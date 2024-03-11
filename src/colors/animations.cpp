@@ -39,23 +39,25 @@ void fill(const Color& color, LedStrip& strip, const float cutOff) {
 }
 
 bool dot_ping_pong(const Color& color, const uint32_t duration,
-                   const bool restart, LedStrip& strip, const float cutOff) {
+                   const uint8_t fadeOut, const bool restart, LedStrip& strip,
+                   const float cutOff) {
   static bool isPongMode =
       false;  // true: animation is climbing back the display
 
   // reset condition
   if (restart) {
     isPongMode = false;
-    dot_wipe_up(color, duration / 2, true, strip);
-    dot_wipe_down(color, duration / 2, true, strip);
+    dot_wipe_up(color, duration / 2, fadeOut, true, strip);
+    dot_wipe_down(color, duration / 2, fadeOut, true, strip);
     return false;
   }
 
   if (isPongMode) {
-    return dot_wipe_up(color, duration / 2, false, strip, cutOff);
+    return dot_wipe_up(color, duration / 2, fadeOut, false, strip, cutOff);
   } else {
     // set pong mode to true when first animation is finished
-    isPongMode = dot_wipe_down(color, duration / 2, false, strip, cutOff);
+    isPongMode =
+        dot_wipe_down(color, duration / 2, fadeOut, false, strip, cutOff);
   }
 
   // finished if the target index is over the led limit

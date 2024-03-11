@@ -25,7 +25,7 @@ float get_sound_level_Db();
 /**
  * \brief Vu meter: should be reactive
  */
-void vu_meter(const Color& vuColor, LedStrip& strip);
+void vu_meter(const Color& vuColor, const uint8_t fadeOut, LedStrip& strip);
 
 void fftDisplay(const uint8_t speed, const uint8_t scale,
                 const palette_t& palette, const bool reset, LedStrip& strip,

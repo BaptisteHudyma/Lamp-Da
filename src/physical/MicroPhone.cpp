@@ -140,13 +140,13 @@ bool processFFT(const bool runFFT = true) {
   return true;
 }
 
-void vu_meter(const Color& vuColor, LedStrip& strip) {
+void vu_meter(const Color& vuColor, const uint8_t fadeOut, LedStrip& strip) {
   const float decibels = get_sound_level_Db();
   // convert to 0 - 1
   const float vuLevel = (decibels + abs(silenceLevelDb)) / highLevelDb;
 
   // display the gradient
-  strip.clear();
+  strip.fadeToBlackBy(fadeOut);
   animations::fill(vuColor, strip, vuLevel);
 }
 

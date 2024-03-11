@@ -544,7 +544,8 @@ bool display_text(const Color& color, const std::string& text,
 bool display_scrolling_text(const Color& color, const std::string& text,
                             const int16_t startYIndex, float scale,
                             const uint32_t duration, const bool reset,
-                            const bool paddEnd, LedStrip& strip) {
+                            const bool paddEnd, const uint8_t fadeOut,
+                            LedStrip& strip) {
   IFont const* font = font_from_scale(scale);
   const size_t textLength = font->get_width() * text.size();
 
@@ -553,12 +554,13 @@ bool display_scrolling_text(const Color& color, const std::string& text,
     xIndex = stripXCoordinates;
   }
 
+  strip.fadeToBlackBy(fadeOut);
+
   // convert duration in delay for each segment
   const uint32_t delay = max(LOOP_UPDATE_PERIOD, duration / textLength);
   if (duration / textLength < LOOP_UPDATE_PERIOD) {
     // fast animation: must skip some indexes
     const int16_t increment = textLength / ceil(duration / delay);
-    strip.clear();
     // return true when the whole text has been displayed
     if (display_text(color, text, xIndex, startYIndex, scale, paddEnd, strip)) {
       return true;
@@ -570,7 +572,6 @@ bool display_scrolling_text(const Color& color, const std::string& text,
     const uint32_t maxSubstep =
         LOOP_UPDATE_PERIOD / ((float)textLength / (float)duration * 1000.0);
 
-    strip.clear();
     if (display_text(color, text, xIndex, startYIndex, scale, paddEnd, strip)) {
       return true;
     }

@@ -373,7 +373,7 @@ void party_mode_update() {
 
       // ping pong a color for infinity
       isFinished = animations::dot_ping_pong(complementaryPingPongColor, 1000.0,
-                                             isFinished, strip);
+                                             128, isFinished, strip);
       if (isFinished) complementaryPingPongColor.update();  // update color
       break;
 
@@ -397,7 +397,7 @@ void sound_mode_update() {
           LedStrip::Color(255, 0, 0));  // gradient from red to green
       if (categoryChange) redToGreenGradient.reset();
 
-      sound::vu_meter(redToGreenGradient, strip);
+      sound::vu_meter(redToGreenGradient, 128, strip);
       break;
 
     case 1:  // pulse soud
