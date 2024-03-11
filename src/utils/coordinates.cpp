@@ -24,7 +24,7 @@ uint16_t to_strip(uint16_t screenX, uint16_t screenY) {
   if (screenX > stripXCoordinates) screenX = stripXCoordinates;
   if (screenY > stripYCoordinates) screenY = stripYCoordinates;
 
-  return min(LED_COUNT - 1, screenX + screenY * stripXCoordinates);
+  return constrain(screenX + screenY * stripXCoordinates, 0, LED_COUNT - 1);
 }
 
 Cartesian to_lamp(const uint16_t ledIndex) {

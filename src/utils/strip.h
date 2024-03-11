@@ -33,6 +33,7 @@ class LedStrip : public Adafruit_NeoPixel {
   }
 
   void setPixelColor(uint16_t n, COLOR c) {
+    n = constrain(n, 0, LED_COUNT - 1);
     _colors[n] = c;
     hasSomeChanges = true;
     Adafruit_NeoPixel::setPixelColor(n, c.color);
@@ -103,9 +104,11 @@ class LedStrip : public Adafruit_NeoPixel {
     }
   }
 
-  uint32_t getPixelColor(uint16_t n) const { return _colors[n].color; }
+  uint32_t getPixelColor(uint16_t n) const {
+    return _colors[constrain(n, 0, LED_COUNT - 1)].color;
+  }
   uint32_t getPixelColorXY(int16_t x, int16_t y) const {
-    return _colors[to_strip(x, y)].color;
+    return _colors[constrain(to_strip(x, y), 0, LED_COUNT - 1)].color;
   }
 
   // Blends the specified color with the existing pixel color.
@@ -148,7 +151,7 @@ class LedStrip : public Adafruit_NeoPixel {
   }
 
   inline Cartesian get_lamp_coordinates(uint16_t n) const {
-    return lampCoordinates[n];
+    return lampCoordinates[constrain(n, 0, LED_COUNT - 1)];
   }
 
   uint32_t* get_buffer_ptr(const uint8_t index) { return _buffers[index]; }

@@ -49,7 +49,6 @@ bool dot_ping_pong(const Color& color, const uint32_t duration,
     isPongMode = false;
     dot_wipe_up(color, duration / 2, fadeOut, true, strip);
     dot_wipe_down(color, duration / 2, fadeOut, true, strip);
-    return false;
   }
 
   if (isPongMode) {
@@ -76,7 +75,6 @@ bool color_pulse(const Color& color, const uint32_t durationPulseUp,
     isPongMode = false;
     color_wipe_up(color, durationPulseUp, true, strip);
     color_wipe_down(color, durationPulseDown, true, strip);
-    return false;
   }
 
   if (isPongMode) {
@@ -96,13 +94,12 @@ bool color_pulse(const Color& color, const uint32_t durationPulseUp,
 bool double_side_fill(const Color& color, const uint32_t duration,
                       const bool restart, LedStrip& strip) {
   if (restart) {
-    color_wipe_up(color, duration, true, strip, 0.5);
-    color_wipe_down(color, duration, true, strip, 0.5);
-    return false;
+    color_wipe_up(color, duration, true, strip, 0.51);
+    color_wipe_down(color, duration, true, strip, 0.51);
   }
 
-  return color_wipe_down(color, duration, false, strip, 0.5) or
-         color_wipe_up(color, duration, false, strip, 0.5);
+  return color_wipe_down(color, duration, false, strip, 0.51) or
+         color_wipe_up(color, duration, false, strip, 0.51);
 }
 
 bool police(const uint32_t duration, const bool restart, LedStrip& strip) {
@@ -112,7 +109,6 @@ bool police(const uint32_t duration, const bool restart, LedStrip& strip) {
   if (restart) {
     previousMillis = 0;
     state = 0;
-    return false;
   }
 
   // convert duration in delay

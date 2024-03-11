@@ -16,13 +16,20 @@ constexpr uint32_t COLOR_TIMING_UPDATE = LOOP_UPDATE_PERIOD * 3;
  */
 class Color {
  public:
-  virtual uint32_t get_color(const uint16_t index = 0,
-                             const uint16_t maxIndex = 0) const = 0;
+  uint32_t get_color(const uint16_t index = 0,
+                     const uint16_t maxIndex = 0) const {
+    // prevent the user to break the system
+    return get_color_internal(constrain(index, 0, maxIndex), maxIndex);
+  }
 
   /**
    * \brief reset the color
    */
   virtual void reset() = 0;
+
+ private:
+  virtual uint32_t get_color_internal(const uint16_t index = 0,
+                                      const uint16_t maxIndex = 0) const = 0;
 };
 
 /**
@@ -62,8 +69,8 @@ class GenerateSolidColor : public Color {
  public:
   GenerateSolidColor(const uint32_t color) : _color(color){};
 
-  uint32_t get_color(const uint16_t index = 0,
-                     const uint16_t maxIndex = 0) const override;
+  uint32_t get_color_internal(const uint16_t index = 0,
+                              const uint16_t maxIndex = 0) const override;
 
   void reset() override{};
 
@@ -78,8 +85,8 @@ class GenerateRainbowColor : public Color {
  public:
   GenerateRainbowColor(){};
 
-  uint32_t get_color(const uint16_t index,
-                     const uint16_t maxIndex) const override;
+  uint32_t get_color_internal(const uint16_t index,
+                              const uint16_t maxIndex) const override;
 
   void reset() override{};
 };
@@ -92,8 +99,8 @@ class GenerateGradientColor : public Color {
   GenerateGradientColor(const uint32_t colorStart, const uint32_t colorEnd)
       : _colorStart(colorStart), _colorEnd(colorEnd){};
 
-  uint32_t get_color(const uint16_t index,
-                     const uint16_t maxIndex) const override;
+  uint32_t get_color_internal(const uint16_t index,
+                              const uint16_t maxIndex) const override;
 
   void reset() override{};
 
@@ -109,8 +116,8 @@ class GenerateRoundColor : public Color {
  public:
   GenerateRoundColor(){};
 
-  uint32_t get_color(const uint16_t index,
-                     const uint16_t maxIndex) const override;
+  uint32_t get_color_internal(const uint16_t index,
+                              const uint16_t maxIndex) const override;
 
   void reset() override{};
 };
@@ -125,8 +132,8 @@ class GenerateRainbowSwirl : public DynamicColor {
       : _increment(UINT16_MAX / (period / COLOR_TIMING_UPDATE)),
         _firstPixelHue(0) {}
 
-  uint32_t get_color(const uint16_t index,
-                     const uint16_t maxIndex) const override;
+  uint32_t get_color_internal(const uint16_t index,
+                              const uint16_t maxIndex) const override;
 
   void reset() override { _firstPixelHue = 0; };
 
@@ -151,8 +158,8 @@ class GeneratePaletteStep : public DynamicColor {
   GeneratePaletteStep(const palette_t& palette)
       : _index(0), _paletteRef(&palette) {}
 
-  uint32_t get_color(const uint16_t index,
-                     const uint16_t maxIndex) const override;
+  uint32_t get_color_internal(const uint16_t index,
+                              const uint16_t maxIndex) const override;
 
   void reset() override { _index = 0; };
 
@@ -171,8 +178,8 @@ class GeneratePaletteIndexed : public IndexedColor {
   GeneratePaletteIndexed(const palette_t& palette)
       : _index(0), _paletteRef(&palette) {}
 
-  uint32_t get_color(const uint16_t index,
-                     const uint16_t maxIndex) const override;
+  uint32_t get_color_internal(const uint16_t index,
+                              const uint16_t maxIndex) const override;
 
   void update(const uint8_t index) override { _index = index; }
 
@@ -193,8 +200,8 @@ class GenerateRainbowPulse : public DynamicColor {
     _increment = fmax(float(UINT16_MAX) / float(colorDivisions), 1);
   }
 
-  uint32_t get_color(const uint16_t index,
-                     const uint16_t maxIndex) const override;
+  uint32_t get_color_internal(const uint16_t index,
+                              const uint16_t maxIndex) const override;
 
   void reset() override { _currentPixelHue = 0; };
 
@@ -215,8 +222,8 @@ class GenerateRainbowIndex : public IndexedColor {
   GenerateRainbowIndex(const uint8_t colorDivisions)
       : _increment(UINT16_MAX / float(colorDivisions)), _currentPixelHue(0) {}
 
-  uint32_t get_color(const uint16_t index,
-                     const uint16_t maxIndex) const override;
+  uint32_t get_color_internal(const uint16_t index,
+                              const uint16_t maxIndex) const override;
 
   void update(const uint8_t index) override {
     _currentPixelHue = float(index) * _increment;
@@ -236,8 +243,8 @@ class GeneratePastelPulse : public DynamicColor {
     _increment = fmax(float(UINT16_MAX) / float(colorDivisions), 1);
   }
 
-  uint32_t get_color(const uint16_t index,
-                     const uint16_t maxIndex) const override;
+  uint32_t get_color_internal(const uint16_t index,
+                              const uint16_t maxIndex) const override;
 
   void reset() override { _currentPixelHue = 0; };
 
@@ -260,8 +267,8 @@ class GenerateRandomColor : public DynamicColor {
  public:
   GenerateRandomColor();
 
-  uint32_t get_color(const uint16_t index,
-                     const uint16_t maxIndex) const override {
+  uint32_t get_color_internal(const uint16_t index,
+                              const uint16_t maxIndex) const override {
     return _color;
   }
 
@@ -286,8 +293,8 @@ class GenerateComplementaryColor : public DynamicColor {
     reset();
   }
 
-  uint32_t get_color(const uint16_t index,
-                     const uint16_t maxIndex) const override {
+  uint32_t get_color_internal(const uint16_t index,
+                              const uint16_t maxIndex) const override {
     return _color;
   }
 

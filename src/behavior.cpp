@@ -368,7 +368,7 @@ void party_mode_update() {
 
     case 2:
       static GenerateComplementaryColor complementaryPingPongColor =
-          GenerateComplementaryColor(0.3);
+          GenerateComplementaryColor(0.4);
       if (categoryChange) complementaryPingPongColor.reset();
 
       // ping pong a color for infinity

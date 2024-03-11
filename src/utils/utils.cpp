@@ -46,13 +46,15 @@ uint32_t get_random_complementary_color(const uint32_t color,
                                         const float tolerance) {
   COLOR c;
   c.color = color;
-  const uint16_t hue = ColorSpace::HSV(c).get_scaled_hue();
+  const float hue = ColorSpace::HSV(c).h;
 
   // add random offset
-  const float comp = 0.1 + (float)rand() / (float)RAND_MAX;  // 0.1 to 1.1
+  const float comp =
+      360.0 * (0.1 + utils::map(rand(), 0, RAND_MAX, -tolerance / 2.0,
+                                tolerance / 2.0));
+
   const uint16_t finalHue =
-      fmod(hue + UINT16_MAX / 2 + comp * tolerance * UINT16_MAX,
-           360.0f);  // add offset to the hue
+      fmod(hue + 360.0 / 2.0 + comp, 360.0f);  // add offset to the hue
   return utils::hue_to_rgb_sinus(finalHue);
 }
 
