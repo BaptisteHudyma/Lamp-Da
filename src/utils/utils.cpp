@@ -171,7 +171,7 @@ uint32_t hue_to_rgb_sinus(const uint16_t angle) {
 
   union COLOR colorArray;
   colorArray.red = lights[(angle + 120) % 360];
-  colorArray.green = lights[angle];
+  colorArray.green = lights[angle % 360];
   colorArray.blue = lights[(angle + 240) % 360];
   return colorArray.color;
 }

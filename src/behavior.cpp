@@ -262,7 +262,7 @@ void calm_mode_update() {
   constexpr uint8_t maxCalmColorState = 9;
   switch (clamp_state_values(colorState, maxCalmColorState)) {
     case 0:  // rainbow swirl animation
-      // display a color animation
+    {        // display a color animation
       static GenerateRainbowSwirl rainbowSwirl =
           GenerateRainbowSwirl(5000);  // swirl animation (5 seconds)
       if (categoryChange) rainbowSwirl.reset();
@@ -270,8 +270,9 @@ void calm_mode_update() {
       animations::fill(rainbowSwirl, strip);
       rainbowSwirl.update();  // update
       break;
-
+    }
     case 1:  // party wheel
+    {
       static auto lastColorStep = colorCodeIndex;
       static auto palettePartyColor =
           GeneratePaletteIndexed(PalettePartyColors);
@@ -288,50 +289,52 @@ void calm_mode_update() {
         palettePartyColor.update(currentIndex);
       }
       break;
-
-    case 2:
+    }
+    case 2: {
       animations::random_noise(PaletteLavaColors, strip, categoryChange, true,
                                3);
       break;
-
-    case 3:
+    }
+    case 3: {
       animations::random_noise(PaletteForestColors, strip, categoryChange, true,
                                3);
       break;
-
-    case 4:
+    }
+    case 4: {
       animations::random_noise(PaletteOceanColors, strip, categoryChange, true,
                                3);
       break;
-
-    case 5:
-      animations::random_noise(PalettePartyColors, strip, categoryChange, true,
-                               3);
-      break;
-
-    case 6:
-      // polar light
+    }
+    case 5: {  // polar light
       animations::mode_2DPolarLights(255, 128, PaletteAuroraColors,
                                      categoryChange, strip);
       break;
-
-    case 7:
+    }
+    case 6: {
       animations::fire(60, 60, 255, PaletteHeatColors, strip);
+      // animations::mode_lake(128, PaletteOceanColors, strip);
       break;
-
-    case 8:
-      animations::mode_2Ddistortionwaves(128, 128, strip);
+    }
+    case 7: {
+      animations::mode_sinewave(128, 128, PaletteRainbowColors, strip);
       break;
-
-    case 9:
+    }
+    case 8: {
       animations::mode_2DDrift(64, 64, PaletteRainbowColors, strip);
       break;
+    }
+    case 9: {
+      animations::mode_2Ddistortionwaves(128, 128, strip);
+      break;
+    }
 
     default:  // error
+    {
       AlertManager.raise_alert(Alerts::UNKNOWN_COLOR_STATE);
       colorState = 0;
       strip.clear();
       break;
+    }
   }
 
   // reset category change

@@ -1,6 +1,7 @@
 #include "animations.h"
 
 #include <math.h>
+#include <sys/types.h>
 
 #include <cmath>
 #include <cstdint>
@@ -557,8 +558,8 @@ void mode_2DDrift(
   const uint16_t cols = ceil(stripXCoordinates);
   const uint16_t rows = ceil(stripYCoordinates);
 
-  const uint16_t centerX = cols >> 1;
-  const uint16_t centerY = rows >> 1;
+  const uint16_t colsCenter = (cols >> 1) + cols % 2;
+  const uint16_t rowsCenter = (rows >> 1) + rows % 2;
 
   strip.fadeToBlackBy(128);
   const uint16_t maxDim = MAX(cols, rows) / 2;
@@ -567,8 +568,8 @@ void mode_2DDrift(
       t / 20;  // softhack007: pre-calculating this gives about 10% speedup
   for (float i = 1; i < maxDim; i += 0.25) {
     float angle = radians(t * (maxDim - i));
-    uint16_t myX = centerX + (sin_t(angle) * i) + (cols % 2);
-    uint16_t myY = centerY + (cos_t(angle) * i) + (rows % 2);
+    uint16_t myX = colsCenter + (sin_t(angle) * i);
+    uint16_t myY = rowsCenter + (cos_t(angle) * i);
 
     strip.setPixelColorXY(
         myX, myY, get_color_from_palette((uint8_t)((i * 20) + t_20), palette));
@@ -672,6 +673,108 @@ void mode_2Ddistortionwaves(const uint8_t scale, const uint8_t speed,
 
       strip.setPixelColorXY(x, y, c);
     }
+  }
+}
+
+// Calm effect, like a lake at night
+void mode_lake(const uint8_t speed, const palette_t& palette, LedStrip& strip) {
+  uint8_t sp = speed / 10;
+  int wave1 = beatsin8(sp + 2, -64, 64);
+  int wave2 = beatsin8(sp + 1, -64, 64);
+  uint8_t wave3 = beatsin8(sp + 2, 0, 80);
+  // CRGB fastled_col;
+
+  for (int i = 0; i < LED_COUNT; i++) {
+    uint8_t index =
+        cos8((i * 15) + wave1) / 2 + cubicwave8((i * 23) + wave2) / 2;
+    uint8_t lum = (index > wave3) ? index - wave3 : 0;
+    // fastled_col = ColorFromPalette(SEGPALETTE, map(index,0,255,0,240), lum,
+    // LINEARBLEND); SEGMENT.setPixelColor(i, fastled_col.red,
+    // fastled_col.green, fastled_col.blue);
+    strip.setPixelColor(i, get_color_from_palette(index, palette, lum));
+  }
+}
+
+void mode_sinewave(const uint8_t speed, const uint8_t intensity,
+                   const palette_t& palette, LedStrip& strip) {
+  // Adjustable sinewave. By Andrew Tuline
+  // #define qsuba(x, b)  ((x>b)?x-b:0)               // Analog Unsigned
+  // subtraction macro. if result <0, then => 0
+
+  static uint16_t step = 0;
+
+  uint16_t colorIndex =
+      millis() / 32;  //(256 - SEGMENT.fft1);  // Amount of colour change.
+
+  step += speed / 16;  // Speed of animation.
+  uint16_t freq =
+      intensity /
+      4;  // SEGMENT.fft2/8;                       // Frequency of the signal.
+
+  for (int i = 0; i < LED_COUNT;
+       i++) {  // For each of the LED's in the strand, set a brightness based on
+               // a wave as follows:
+    uint8_t pixBri = cubicwave8(
+        (i * freq) +
+        step);  // qsuba(cubicwave8((i*freq)+SEGENV.step),
+                // (255-SEGMENT.intensity)); // qsub sets a minimum value
+                // called thiscutoff. If < thiscutoff, then bright = 0.
+                // Otherwise, bright = 128 (as defined in qsub)..
+    // setPixCol(i, i*colorIndex/255, pixBri);
+    COLOR pixColor;
+    pixColor.color =
+        get_color_from_palette((uint8_t)(i * colorIndex / 255), palette);
+    COLOR back;
+    back.color = 0;
+    strip.setPixelColor(i, utils::color_blend(back, pixColor, pixBri));
+  }
+}
+
+// effect utility functions
+uint8_t sin_gap(uint16_t in) {
+  if (in & 0x100) return 0;
+  return sin8(
+      in +
+      192);  // correct phase shift of sine so that it starts and stops at 0
+}
+
+void running_base(bool saw, bool dual, const uint8_t speed,
+                  const uint8_t intensity, const palette_t& palette,
+                  LedStrip& strip) {
+  uint8_t x_scale = intensity >> 2;
+  uint32_t counter = (millis() * speed) >> 9;
+
+  COLOR c1;
+  c1.color = 0;
+
+  COLOR c2;
+
+  for (int i = 0; i < LED_COUNT; i++) {
+    uint16_t a = i * x_scale - counter;
+    if (saw) {
+      a &= 0xFF;
+      if (a < 16) {
+        a = 192 + a * 8;
+      } else {
+        a = map(a, 16, 255, 64, 192);
+      }
+      a = 255 - a;
+    }
+    uint8_t s = dual ? sin_gap(a) : sin8(a);
+
+    c2.color = get_color_from_palette((uint8_t)i, palette);
+    COLOR ca = utils::color_blend(c1, c2, s);
+    if (dual) {
+      uint16_t b = (LED_COUNT - 1 - i) * x_scale - counter;
+      uint8_t t = sin_gap(b);
+
+      c2.color = get_color_from_palette((uint8_t)i, palette);
+
+      COLOR cb;
+      cb = utils::color_blend(c1, c2, t);
+      ca = utils::color_blend(ca, cb, 127);
+    }
+    strip.setPixelColor(i, ca);
   }
 }
 

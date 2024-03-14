@@ -115,6 +115,17 @@ void hiphotic(const uint8_t speed, LedStrip& strip);
 
 void mode_2Ddistortionwaves(const uint8_t scale, const uint8_t speed,
                             LedStrip& strip);
+
+void mode_lake(const uint8_t speed, const palette_t& palette, LedStrip& strip);
+
+// Adjustable sinewave. By Andrew Tuline
+void mode_sinewave(const uint8_t speed, const uint8_t intensity,
+                   const palette_t& palette, LedStrip& strip);
+
+void running_base(bool saw, bool dual, const uint8_t speed,
+                  const uint8_t intensity, const palette_t& palette,
+                  LedStrip& strip);
+
 };  // namespace animations
 
 #endif
