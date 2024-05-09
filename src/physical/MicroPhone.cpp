@@ -47,8 +47,6 @@ void enable_microphone() {
   if (!PDM.begin(1, SAMPLE_RATE)) {
     // block program execution
     while (1) {
-      // slow blink if failed
-      digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
       delay(1000);
     }
   }

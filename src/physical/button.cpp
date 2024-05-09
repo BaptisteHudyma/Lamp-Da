@@ -5,8 +5,37 @@
 
 #define RELEASE_TIMING_MS 200
 
+// The button pin (one button pin to GND, the other to this pin)
+#define BUTTON_PIN D4
+// Pins for the led on the button
+#define BUTTON_RED D5
+#define BUTTON_GREEN D7
+#define BUTTON_BLUE D6
+
 static volatile bool wasButtonPressedDetected = false;
 void button_state_interrupt() { wasButtonPressedDetected = true; }
+
+void init_button() {
+  pinMode(BUTTON_RED, OUTPUT);
+  pinMode(BUTTON_GREEN, OUTPUT);
+  pinMode(BUTTON_BLUE, OUTPUT);
+
+  set_button_color(utils::ColorSpace::BLACK);
+
+  // attach the button interrupt
+  pinMode(BUTTON_PIN, INPUT_PULLUP_SENSE);
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), button_state_interrupt,
+                  CHANGE);
+}
+
+void set_wake_up_signal() {
+  // setup your wake-up pins.
+  pinMode(BUTTON_PIN,
+          INPUT_PULLUP_SENSE);  // this pin is pulled up and wakes up the board
+                                // when externally connected to ground.
+  // write delay
+  delay(100);
+}
 
 static volatile bool buttonPressListener = false;
 void read_while_pressed() {
@@ -115,21 +144,37 @@ void button_blink(const uint offFreq, const uint onFreq,
   }
 }
 
-void blink_led(const uint toggleFreq) {
-  static uint32_t lastCall = 0;
-  static bool ledState = false;
+void button_breeze(const uint32_t periodOn, const uint32_t periodOff,
+                   const utils::ColorSpace::RGB& color) {
+  static uint32_t startTime = 0;
 
-  // led is off, and last call was 100ms before
-  if (not ledState and millis() - lastCall > 100) {
-    ledState = true;
-    digitalWrite(LED_BUILTIN, HIGH);
-    lastCall = millis();
+  const uint32_t time = millis();
+  // breeze on
+  if (time - startTime < periodOn) {
+    float progression = (time - startTime) / (float)periodOn;
+
+    // rising edge
+    if (progression < 0.5) {
+      progression /= 0.5;
+
+      set_button_color(utils::ColorSpace::RGB(
+          utils::get_gradient(0, color.get_rgb().color, progression)));
+    }
+    // falling edge
+    else {
+      progression = 1.0 - progression;
+      progression /= 0.5;
+
+      set_button_color(utils::ColorSpace::RGB(
+          utils::get_gradient(0, color.get_rgb().color, progression)));
+    }
   }
-
-  // led is on, and last call was long ago
-  if (ledState and millis() - lastCall > toggleFreq) {
-    ledState = false;
-    digitalWrite(LED_BUILTIN, LOW);
-    lastCall = millis();
+  // breeze of
+  else if (time - startTime < periodOn + periodOff) {
+    set_button_color(utils::ColorSpace::BLACK);
+  } else {
+    // reset animation
+    startTime = time;
+    set_button_color(utils::ColorSpace::BLACK);
   }
 }

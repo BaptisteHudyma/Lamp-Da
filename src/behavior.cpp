@@ -3,11 +3,13 @@
 #include <cstdint>
 
 #include "alerts.h"
+#include "charger/charger.h"
 #include "colors/animations.h"
 #include "colors/palettes.h"
 #include "colors/wipes.h"
 #include "ext/math8.h"
 #include "ext/noise.h"
+#include "physical/IMU.h"
 #include "physical/MicroPhone.h"
 #include "physical/battery.h"
 #include "physical/button.h"
@@ -153,16 +155,68 @@ void write_parameters() {
   fileSystem::write_state();
 }
 
+static bool isShutdown = true;
+bool is_shutdown() { return isShutdown; }
+
+void startup_sequence() {
+  // initialize the battery level
+  get_battery_level(true);
+
+  // critical battery level, do not wake up
+  if (get_battery_level() <= batteryCritical + 1) {
+    // alert user of low battery
+    for (uint i = 0; i < 10; i++) {
+      set_button_color(utils::ColorSpace::RED);
+      delay(100);
+      set_button_color(utils::ColorSpace::BLACK);
+      delay(100);
+    }
+
+    // emergency shutdown
+    shutdown();
+  }
+
+  Serial.begin(115200);
+
+  // These lines are specifically to support the Adafruit Trinket 5V 16 MHz.
+  // Any other board, you can remove this part (but no harm leaving it):
+#if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
+  clock_prescale_set(clock_div_1);
+#endif
+  // END of Trinket-specific code.
+
+  // initialize the strip object
+  strip.begin();
+  strip.clear();
+  strip.show();  // Turn OFF all pixels ASAP
+  strip.setBrightness(BRIGHTNESS);
+
+  // activate microphone readings
+  sound::enable_microphone();
+#ifdef USE_BLUETOOTH
+  bluetooth::enable_bluetooth();
+  bluetooth::startup_sequence();
+#endif
+
+  // power up the system (last step)
+  analogWrite(OUT_BRIGHTNESS, min(180, max(5, BRIGHTNESS)));
+
+  isShutdown = false;
+}
+
 void shutdown() {
   // remove all colors from strip
   strip.clear();
   strip.show();  //  Update strip to match
 
   // deactivate strip power
-  digitalWrite(LED_POWER_PIN, LOW);
+  pinMode(OUT_BRIGHTNESS, OUTPUT);
+  analogWrite(OUT_BRIGHTNESS, 0);  // power down
+  delay(100);
 
-  // disable bluetooth and microphone
+  // disable bluetooth, imu and microphone
   sound::disable_microphone();
+  imu::disable_imu();
 #ifdef USE_BLUETOOTH
   bluetooth::disable_bluetooth();
 #endif
@@ -172,22 +226,21 @@ void shutdown() {
   write_parameters();
 
   // deactivate indicators
-  digitalWrite(LED_BUILTIN, HIGH);
   set_button_color(utils::ColorSpace::RGB(0, 0, 0));
 
-  // setup your wake-up pins.
-  pinMode(BUTTON_PIN,
-          INPUT_PULLUP_SENSE);  // this pin is pulled up and wakes up the board
-                                // when externally connected to ground.
+  // do not power down when charger is plugged in
+  if (!charger::is_powered_on()) {
+    set_wake_up_signal();
 
-  // write delay
-  delay(100);
+    // power down nrf52.
+    // If no sense pins are setup (or other hardware interrupts), the nrf52
+    // will not wake up.
+    sd_power_system_off();  // this function puts the whole nRF52 to deep
+                            // sleep.
+    // on wake up, it'll start back from the setup phase
+  }
 
-  // power down nrf52.
-  // If no sense pins are setup (or other hardware interrupts), the nrf52 will
-  // not wake up.
-  sd_power_system_off();  // this function puts the whole nRF52 to deep sleep.
-  // on wake up, it'll start back from the setup phase
+  isShutdown = true;
 }
 
 uint8_t clamp_state_values(uint8_t& state, const uint8_t maxValue) {
@@ -267,7 +320,10 @@ void calm_mode_update() {
           GenerateRainbowSwirl(5000);  // swirl animation (5 seconds)
       if (categoryChange) rainbowSwirl.reset();
 
-      animations::fill(rainbowSwirl, strip);
+      // animations::fill(rainbowSwirl, strip);
+
+      imu::gravity_fluid(128, rainbowSwirl, strip, categoryChange);
+
       rainbowSwirl.update();  // update
       break;
     }
@@ -442,26 +498,26 @@ void gyro_mode_update() {
   categoryChange = false;
 }
 
-// Display a color on the button
-void display_battery_level() {
+// Raise the battery low or battery critical alert
+void raise_battery_alert() {
   static constexpr uint32_t refreshRate_ms = 1000;
   static uint32_t lastCall = 0;
 
   const uint32_t newCall = millis();
   if (newCall - lastCall > refreshRate_ms or lastCall == 0) {
     lastCall = newCall;
-    const uint8_t percent = get_battery_level(false);
+    const uint8_t percent = get_battery_level();
 
-    // 5% battery is critical
-    if (percent <= 5) {
+    // % battery is critical
+    if (percent <= batteryCritical) {
       AlertManager.raise_alert(Alerts::BATTERY_CRITICAL);
-    } else {
+    } else if (percent > batteryCritical + 1) {
       AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);
 
-      // 10% battery is low, start alerting
-      if (percent <= 10) {
+      // % battery is low, start alerting
+      if (percent <= batteryLow) {
         AlertManager.raise_alert(Alerts::BATTERY_LOW);
-      } else {
+      } else if (percent > batteryLow + 1) {
         AlertManager.clear_alert(Alerts::BATTERY_LOW);
       }
     }
@@ -469,9 +525,6 @@ void display_battery_level() {
 }
 
 void color_mode_update() {
-  // start by displaying the battery level
-  display_battery_level();
-
   constexpr uint8_t maxColorMode = 4;
   switch (clamp_state_values(colorMode, maxColorMode)) {
     case 0:  // gradient mode
@@ -510,7 +563,11 @@ void button_clicked_callback(uint8_t consecutiveButtonCheck) {
 
   switch (consecutiveButtonCheck) {
     case 1:  // 1 click: shutdown
-      shutdown();
+      if (is_shutdown()) {
+        startup_sequence();
+      } else {
+        shutdown();
+      }
       break;
 
     case 2:  // 2 clicks: increment color state
@@ -636,11 +693,19 @@ void handle_alerts() {
   if (current == Alerts::NONE) {
     criticalbatteryRaisedTime = 0;
 
-    // display battery level
     // red to green
-    set_button_color(utils::ColorSpace::RGB(utils::get_gradient(
+    const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(
         utils::ColorSpace::RED.get_rgb().color,
-        utils::ColorSpace::GREEN.get_rgb().color, batteryLevel / 100.0)));
+        utils::ColorSpace::GREEN.get_rgb().color, get_battery_level() / 100.0));
+
+    // display battery level
+    if (charger::is_charge_enabled()) {
+      // charge mode
+      button_breeze(2000, 2000, buttonColor);
+    } else {
+      // normal mode
+      set_button_color(buttonColor);
+    }
   } else {
     if ((current & Alerts::BATTERY_READINGS_INCOHERENT) != 0x00) {
       // incohrent battery readings

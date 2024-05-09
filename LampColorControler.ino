@@ -1,7 +1,10 @@
+#include <Arduino.h>
+#include <Wire.h>
 #include <bluefruit.h>
 
 #include "src/alerts.h"
 #include "src/behavior.h"
+#include "src/charger/charger.h"
 #include "src/physical/MicroPhone.h"
 #include "src/physical/battery.h"
 #include "src/physical/bluetooth.h"
@@ -9,11 +12,10 @@
 #include "src/physical/fileSystem.h"
 #include "src/utils/utils.h"
 
-// #define USE_BLUETOOTH
-
 void setup() {
   // Necessary for sleep mode for some reason ??
   Bluefruit.begin();
+  Wire.begin();
 
   analogReference(AR_INTERNAL_3_0);   // 3v reference
   analogReadResolution(ADC_RES_EXP);  // Can be 8, 10, 12 or 14
@@ -22,68 +24,21 @@ void setup() {
   fileSystem::setup();
   read_parameters();  // read from the stored config
 
-  // initialize the battery level
-  get_battery_level(true);
-  for (uint i = 0; i < 10; ++i) {
-    get_battery_level();
+  /*
+  if (!charger::check_vendor_device_values()) {
+    // wrong device id
   }
+  */
 
-  // critical battery level, do not wake up
-  if (get_battery_level() <= 5) {
-    // alert user of low battery
-    for (uint i = 0; i < 10; i++) {
-      set_button_color(utils::ColorSpace::RED);
-      delay(100);
-      set_button_color(utils::ColorSpace::BLACK);
-      delay(100);
-    }
+  // set up button colors and callbacks
+  init_button();
 
-    // emergency shutdown
+  if (!charger::is_powered_on()) {
+    startup_sequence();
+  } else {
     shutdown();
+    charger::enable_charge();
   }
-
-  Serial.begin(115200);
-
-  // These lines are specifically to support the Adafruit Trinket 5V 16 MHz.
-  // Any other board, you can remove this part (but no harm leaving it):
-#if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
-  clock_prescale_set(clock_div_1);
-#endif
-  // END of Trinket-specific code.
-
-  // initialize the strip object
-  strip.begin();
-  strip.clear();
-  strip.show();  // Turn OFF all pixels ASAP
-  strip.setBrightness(BRIGHTNESS);
-
-  // attach the button interrupt
-  pinMode(BUTTON_PIN, INPUT_PULLUP_SENSE);
-  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), button_state_interrupt,
-                  CHANGE);
-
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(LED_POWER_PIN, OUTPUT);
-  pinMode(BATTERY_CHARGE_PIN, INPUT);
-
-  digitalWrite(LED_POWER_PIN, LOW);  // start powered down
-
-  pinMode(BUTTON_RED, OUTPUT);
-  pinMode(BUTTON_GREEN, OUTPUT);
-  pinMode(BUTTON_BLUE, OUTPUT);
-  digitalWrite(BUTTON_RED, LOW);
-  digitalWrite(BUTTON_GREEN, LOW);
-  digitalWrite(BUTTON_BLUE, LOW);
-
-  // activate microphone readings
-  sound::enable_microphone();
-#ifdef USE_BLUETOOTH
-  bluetooth::enable_bluetooth();
-  bluetooth::startup_sequence();
-#endif
-
-  // power up the system (last step)
-  digitalWrite(LED_POWER_PIN, HIGH);
 }
 
 void check_loop_runtime(const uint32_t runTime) {
@@ -113,10 +68,35 @@ void loop() {
   // loop is not ran in shutdown mode
   handle_button_events(button_clicked_callback, button_hold_callback);
 
+  if (charger::is_powered_on()) {
+    charger::enable_charge();
+  }
+
+  if (is_shutdown()) {
+    // display alerts if needed
+    handle_alerts();
+
+    // charger unplugged, real shutdown
+    if (!charger::is_powered_on()) {
+      shutdown();
+    }
+
+    delay(LOOP_UPDATE_PERIOD);
+    return;
+  }
+
+  if (!charger::is_powered_on()) {
+    // no battery alert when charger is on
+    raise_battery_alert();
+  } else {
+    AlertManager.clear_alert(Alerts::BATTERY_LOW);
+    AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);
+  }
+
 #ifdef USE_BLUETOOTH
   bluetooth::parse_messages();
 #endif
-  color_mode_update();
+  // color_mode_update();
 
   strip.show();  // show at the end of the loop (only does it if needed)
 
@@ -132,4 +112,7 @@ void loop() {
 
   // display alerts if needed
   handle_alerts();
+
+  // update the brightness
+  analogWrite(OUT_BRIGHTNESS, min(180, max(5, BRIGHTNESS)));
 }

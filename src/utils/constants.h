@@ -33,27 +33,14 @@
 // Which pin on the Arduino is connected to the LED command pin
 #define LED_PIN D2
 
-// The pin that triggers the power delivery to the LEDS.
-#define LED_POWER_PIN D7
-
-// The button pin (one button pin to GND, the other to this pin)
-#define BUTTON_PIN D0
-// Pins for the led on the button
-#define BUTTON_RED D3
-#define BUTTON_GREEN D4
-#define BUTTON_BLUE D5
-
-// battery charge pin: max voltage should be 3V
-#define BATTERY_CHARGE_PIN A1
-
 constexpr uint8_t ADC_RES_EXP =
     12;  // resolution of the ADC, in bits (can be 8, 10, 12 or 14)
 constexpr uint32_t ADC_MAX_VALUE =
     pow(2, ADC_RES_EXP);  // corresponding max value
 // map the input ADC out to voltage reading (calibration depending on the
 // resistor used for the battery voltage measurments).
-// it should drop maxVoltage to 3v (so about 1.0/5.5) but it's never exact
-constexpr float voltageDividerCoeff = 1.0 / 5.746;
+// The exact value is a 5.7021 reduction, but it's never exact
+constexpr float voltageDividerCoeff = 1.0 / 5.635;
 
 // parameters of the led strip used
 constexpr uint16_t ledByMeter = 160.0;   // the indexable led by meters
@@ -91,5 +78,8 @@ constexpr uint32_t LOOP_UPDATE_PERIOD =
     ceil(1.25 *
          (0.0483333 * LED_COUNT +
           1.5983333));  // milliseconds (average): depends of the number of leds
+
+constexpr float batteryCritical = 3;  // %
+constexpr float batteryLow = 5;       // %
 
 #endif

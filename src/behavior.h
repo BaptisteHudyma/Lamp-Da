@@ -21,8 +21,16 @@ extern uint8_t BRIGHTNESS;
 void read_parameters();
 void write_parameters();
 
+bool is_shutdown();
+
+// start sequence that check the battery level and start the leds, and power all
+// systems
+void startup_sequence();
+
 // put in shutdown mode, with external wakeup
 void shutdown();
+
+void raise_battery_alert();
 
 /**
  * \brief main update loop
