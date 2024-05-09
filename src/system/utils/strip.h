@@ -12,8 +12,7 @@
 #include "coordinates.h"
 #include "utils.h"
 
-static constexpr float baseCurrentConsumption =
-    0.40;  // strip consumption when all is turned of
+static constexpr float baseCurrentConsumption = 0.4;
 static constexpr float maxCurrentConsumption = 2.7 - baseCurrentConsumption;
 static constexpr float ampPerLed = maxCurrentConsumption / (float)LED_COUNT;
 
@@ -62,7 +61,6 @@ class LedStrip : public Adafruit_NeoPixel {
     n = constrain(n, 0, LED_COUNT - 1);
     _colors[n] = c;
     hasSomeChanges = true;
-
     Adafruit_NeoPixel::setPixelColor(n, c.color);
   }
 
