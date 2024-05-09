@@ -64,7 +64,7 @@ constexpr float maxStripConsumption_A = totalCons_Watt / inputVoltage_V;
 
 // compute the expected average loop runtime, scaled with the number of led +25%
 // for computations
-constexpr uint32_t LOOP_UPDATE_PERIOD = 10;
+constexpr uint32_t LOOP_UPDATE_PERIOD = 25;
 
 constexpr float batteryCritical = 3;  // %
 constexpr float batteryLow = 5;       // %

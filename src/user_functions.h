@@ -2,8 +2,12 @@
 #define SYSTEM_BASE_H
 
 #include "Arduino.h"
+#include "system/utils/strip.h"
 
 namespace user {
+
+// extern declarations
+extern LedStrip strip;
 
 // Called when the system is powered off
 // must be non blocking function
