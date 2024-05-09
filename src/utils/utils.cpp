@@ -8,9 +8,38 @@
 #include "../ext/math8.h"
 #include "../ext/scale8.h"
 #include "colorspace.h"
-#include "strip.h"
 
 namespace utils {
+
+/*!
+    @brief   Convert separate red, green and blue values into a single
+             "packed" 32-bit RGB color.
+    @param   r  Red brightness, 0 to 255.
+    @param   g  Green brightness, 0 to 255.
+    @param   b  Blue brightness, 0 to 255.
+    @return  32-bit packed RGB value, which can then be assigned to a
+             variable for later use or passed to the setPixelColor()
+             function. Packed RGB format is predictable, regardless of
+             LED strand color order.
+  */
+static uint32_t Color(uint8_t r, uint8_t g, uint8_t b) {
+  return ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
+}
+/*!
+  @brief   Convert separate red, green, blue and white values into a
+           single "packed" 32-bit WRGB color.
+  @param   r  Red brightness, 0 to 255.
+  @param   g  Green brightness, 0 to 255.
+  @param   b  Blue brightness, 0 to 255.
+  @param   w  White brightness, 0 to 255.
+  @return  32-bit packed WRGB value, which can then be assigned to a
+           variable for later use or passed to the setPixelColor()
+           function. Packed WRGB format is predictable, regardless of
+           LED strand color order.
+*/
+static uint32_t Color(uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
+  return ((uint32_t)w << 24) | ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
+}
 
 uint32_t get_random_color() {
   static uint8_t count;
@@ -82,7 +111,7 @@ uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd,
   colorStartArray.color = colorStart;
   colorEndArray.color = colorEnd;
 
-  return LedStrip::Color(
+  return Color(
       colorStartArray.red + level * (colorEndArray.red - colorStartArray.red),
       colorStartArray.green +
           level * (colorEndArray.green - colorStartArray.green),

@@ -3,14 +3,10 @@
 
 #include "alerts.h"
 #include "utils/constants.h"
-#include "utils/strip.h"
 
 #ifdef __AVR__
 #include <avr/power.h>  // Required for 16 MHz Adafruit Trinket
 #endif
-
-// Declare our NeoPixel strip object:
-extern LedStrip strip;
 
 // NeoPixel brightness, 0 (min) to 255 (max)
 extern uint8_t BRIGHTNESS;

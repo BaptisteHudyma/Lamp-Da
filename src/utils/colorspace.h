@@ -1,7 +1,7 @@
 #ifndef COLOR_SPACE_H
 #define COLOR_SPACE_H
 
-#include "strip.h"
+#include "utils.h"
 
 namespace utils::ColorSpace {
 

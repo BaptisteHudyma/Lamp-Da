@@ -96,9 +96,6 @@ void loop() {
 #ifdef USE_BLUETOOTH
   bluetooth::parse_messages();
 #endif
-  // color_mode_update();
-
-  strip.show();  // show at the end of the loop (only does it if needed)
 
   // wait for a delay if we are faster than the set refresh rate
   uint32_t stop = millis();
@@ -112,7 +109,4 @@ void loop() {
 
   // display alerts if needed
   handle_alerts();
-
-  // update the brightness
-  analogWrite(OUT_BRIGHTNESS, min(180, max(5, BRIGHTNESS)));
 }
