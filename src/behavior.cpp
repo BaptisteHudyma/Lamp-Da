@@ -15,22 +15,51 @@
 #include "utils/constants.h"
 #include "utils/utils.h"
 
-uint8_t BRIGHTNESS = 50;
 const char* brightnessKey = "brightness";
 
 // constantes
-static constexpr uint8_t MIN_BRIGHTNESS = 2;
-// max brightness depends on max power consumption
-static const uint8_t MAX_BRIGHTNESS =
-    min(1.0, maxPowerConsumption_A / maxStripConsumption_A) * 255;
+static constexpr uint8_t MIN_BRIGHTNESS = 5;
+
+// hold the current level of brightness out of the raise/lower animation
+uint8_t BRIGHTNESS = 50;  // default start value
+uint8_t currentBrightness = 50;
+
+/**
+ * Power on the current driver with a soecific current value
+ */
+void write_led_current(const float current) {
+  // map current value to driver value
+  const uint8_t mappedDriverValue =
+      utils::map(constrain(current, 0, maxPowerConsumption_A), 0,
+                 maxPowerConsumption_A, 0, 255);
+
+  analogWrite(OUT_BRIGHTNESS, mappedDriverValue);
+}
+
+/**
+ * Power on the current driver with a soecific brightness value
+ */
+void write_brightness(const uint8_t brightness) {  // map to current value
+  const float brightnessToCurrent =
+      utils::map(brightness, 0, 255, 0, maxStripConsumption_A);
+  write_led_current(brightnessToCurrent);
+}
+
+void update_brightness(const uint8_t newBrightness) {
+  if (BRIGHTNESS != newBrightness) {
+    BRIGHTNESS = newBrightness;
+
+    // TODO: update your brightness here
+  }
+}
 
 void read_parameters() {
   fileSystem::load_initial_values();
 
   uint32_t brightness = 0;
   if (fileSystem::get_value(std::string(brightnessKey), brightness)) {
-    // update it directly (bad design)
-    BRIGHTNESS = brightness;
+    currentBrightness = brightness;
+    update_brightness(brightness);
   }
 }
 
@@ -78,13 +107,16 @@ void startup_sequence() {
 #endif
 
   isShutdown = false;
+  // activate led
+  write_brightness(BRIGHTNESS);
+  currentBrightness = BRIGHTNESS;
 }
 
 void shutdown() {
   // deactivate strip power
   pinMode(OUT_BRIGHTNESS, OUTPUT);
-  analogWrite(OUT_BRIGHTNESS, 0);  // power down
-  delay(100);
+  write_brightness(0);  // power down
+  delay(10);
 
   // disable bluetooth, imu and microphone
   sound::disable_microphone();
@@ -154,6 +186,13 @@ void button_clicked_callback(uint8_t consecutiveButtonCheck) {
       }
       break;
 
+    case 2:
+      if (not is_shutdown()) {
+        currentBrightness = 255;  // update the slope value
+        update_brightness(255);
+      }
+      break;
+
     default:
       // unhandled
       break;
@@ -170,26 +209,20 @@ void button_hold_callback(uint8_t consecutiveButtonCheck,
   const bool isEndOfHoldEvent = buttonHoldDuration <= 1;
   buttonHoldDuration -= HOLD_BUTTON_MIN_MS;
 
-  // hold the current level of brightness out of the animation
-  static uint8_t currentBrightness = BRIGHTNESS;
-
   switch (consecutiveButtonCheck) {
     case 1:  // just hold the click
       if (!isEndOfHoldEvent) {
         const float percentOfTimeToGoUp =
-            float(MAX_BRIGHTNESS - currentBrightness) /
-            float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
+            float(255 - currentBrightness) / float(255 - MIN_BRIGHTNESS);
 
         const auto newBrightness =
             map(min(buttonHoldDuration,
                     BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
                 0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
-                currentBrightness, MAX_BRIGHTNESS);
-        if (BRIGHTNESS != newBrightness) {
-          BRIGHTNESS = newBrightness;
-        }
+                currentBrightness, 255);
+        update_brightness(newBrightness);
       } else {
-        // switch brigtness
+        // switch brightness
         currentBrightness = BRIGHTNESS;
       }
       break;
@@ -199,18 +232,16 @@ void button_hold_callback(uint8_t consecutiveButtonCheck,
       if (!isEndOfHoldEvent) {
         const double percentOfTimeToGoDown =
             float(currentBrightness - MIN_BRIGHTNESS) /
-            float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
+            float(255 - MIN_BRIGHTNESS);
 
         const auto newBrightness =
             map(min(buttonHoldDuration,
                     BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
                 0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
                 currentBrightness, MIN_BRIGHTNESS);
-        if (BRIGHTNESS != newBrightness) {
-          BRIGHTNESS = newBrightness;
-        }
+        update_brightness(newBrightness);
       } else {
-        // switch brigtness
+        // switch brightness
         currentBrightness = BRIGHTNESS;
       }
       break;
@@ -234,7 +265,7 @@ void handle_alerts() {
         utils::ColorSpace::GREEN.get_rgb().color, get_battery_level() / 100.0));
 
     // display battery level
-    if (charger::is_charge_enabled()) {
+    if (charger::enable_charge()) {
       // charge mode
       button_breeze(2000, 2000, buttonColor);
     } else {

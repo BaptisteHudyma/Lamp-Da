@@ -42,14 +42,14 @@ constexpr uint32_t ADC_MAX_VALUE =
 // The exact value is a 5.7021 reduction, but it's never exact
 constexpr float voltageDividerCoeff = 1.0 / 5.635;
 
-// parameters of the led strip used
-constexpr float consWattByMeter = 12;  // power consumption (in Watt/meters)
-constexpr float inputVoltage_V = 12;   // voltage (volts)
-constexpr float ledStripLenght_mm = 2000.0;
-
 // parameters of the lamp body
 constexpr float maxPowerConsumption_A =
-    3;  // Maxpower draw allowed on the system (Amperes)
+    2.6;  // Maxpower draw allowed on the system (Amperes)
+
+// parameters of the led strip used
+constexpr float consWattByMeter = 0;  // power consumption (in Watt/meters)
+constexpr float inputVoltage_V = 12;  // voltage (volts)
+constexpr float ledStripLenght_mm = 0;
 
 // physical parameters computations
 constexpr float totalCons_Watt = consWattByMeter * ledStripLenght_mm / 1000.0;
