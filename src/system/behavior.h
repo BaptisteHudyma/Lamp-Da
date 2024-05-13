@@ -14,35 +14,34 @@ extern uint8_t BRIGHTNESS;
 /**
  * \brief Load the parameters from the filesystem
  */
-void read_parameters();
-void write_parameters();
+extern void read_parameters();
+extern void write_parameters();
 
-bool is_shutdown();
+extern bool is_shutdown();
 
 // start sequence that check the battery level and start the leds, and power all
 // systems
-void startup_sequence();
+extern void startup_sequence();
 
 // put in shutdown mode, with external wakeup
-void shutdown();
+extern void shutdown();
 
-/**
- * \brief main update loop
- */
-void color_mode_update();
+extern void update_brightness(const uint8_t newBrightness,
+                              const bool shouldUpdateCurrentBrightness = false,
+                              const bool isInitialRead = false);
 
 /**
  * \brief callback of the button clicked sequence event
  */
-void button_clicked_callback(uint8_t consecutiveButtonCheck);
+extern void button_clicked_callback(const uint8_t consecutiveButtonCheck);
 
 /**
  * \brief callback of the button clicked sequence event with a final hold
  */
-void button_hold_callback(uint8_t consecutiveButtonCheck,
-                          uint32_t buttonHoldDuration);
+extern void button_hold_callback(const uint8_t consecutiveButtonCheck,
+                                 const uint32_t buttonHoldDuration);
 
 // If any alert is set, will handle it
-void handle_alerts();
+extern void handle_alerts();
 
 #endif

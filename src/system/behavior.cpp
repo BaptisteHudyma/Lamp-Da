@@ -26,11 +26,16 @@ static constexpr uint8_t MIN_BRIGHTNESS = 5;
 uint8_t BRIGHTNESS = 50;  // default start value
 uint8_t currentBrightness = 50;
 
-void update_brightness(const uint8_t newBrightness) {
+void update_brightness(const uint8_t newBrightness,
+                       const bool shouldUpdateCurrentBrightness,
+                       const bool isInitialRead) {
   if (BRIGHTNESS != newBrightness) {
     BRIGHTNESS = newBrightness;
 
-    user::brightness_update(newBrightness);
+    // do not call user functions when reading parameters
+    if (!isInitialRead) user::brightness_update(newBrightness);
+
+    if (shouldUpdateCurrentBrightness) currentBrightness = newBrightness;
   }
 }
 
@@ -40,8 +45,7 @@ void read_parameters() {
 
   uint32_t brightness = 0;
   if (fileSystem::get_value(std::string(brightnessKey), brightness)) {
-    currentBrightness = brightness;
-    update_brightness(brightness);
+    update_brightness(brightness, true, true);
   }
 
   user::read_parameters();
@@ -80,7 +84,7 @@ void startup_sequence() {
   Serial.begin(115200);
 
   // activate microphone readings
-  // sound::enable();
+  // microphone::enable();
 #ifdef USE_BLUETOOTH
   bluetooth::enable_bluetooth();
   bluetooth::startup_sequence();
@@ -110,7 +114,7 @@ void shutdown() {
   write_parameters();
 
   // deactivate indicators
-  button::set_color(utils::ColorSpace::RGB(0, 0, 0));
+  button::set_color(utils::ColorSpace::BLACK);
 
   // let the user power off the system
   user::power_off_sequence();
@@ -131,7 +135,7 @@ void shutdown() {
 }
 
 // call when the button is finally release
-void button_clicked_callback(uint8_t consecutiveButtonCheck) {
+void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
   if (consecutiveButtonCheck == 0) return;
 
   switch (consecutiveButtonCheck) {
@@ -154,8 +158,8 @@ void button_clicked_callback(uint8_t consecutiveButtonCheck) {
 
 #define BRIGHTNESS_RAMP_DURATION_MS 4000
 
-void button_hold_callback(uint8_t consecutiveButtonCheck,
-                          uint32_t buttonHoldDuration) {
+void button_hold_callback(const uint8_t consecutiveButtonCheck,
+                          const uint32_t buttonHoldDuration) {
   // no click event
   if (consecutiveButtonCheck == 0) return;
 
@@ -163,7 +167,7 @@ void button_hold_callback(uint8_t consecutiveButtonCheck,
   if (is_shutdown()) return;
 
   const bool isEndOfHoldEvent = buttonHoldDuration <= 1;
-  buttonHoldDuration -= HOLD_BUTTON_MIN_MS;
+  const uint32_t holdDuration = buttonHoldDuration - HOLD_BUTTON_MIN_MS;
 
   switch (consecutiveButtonCheck) {
     case 1:  // just hold the click
@@ -172,7 +176,7 @@ void button_hold_callback(uint8_t consecutiveButtonCheck,
             float(255 - currentBrightness) / float(255 - MIN_BRIGHTNESS);
 
         const auto newBrightness =
-            map(min(buttonHoldDuration,
+            map(min(holdDuration,
                     BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
                 0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
                 currentBrightness, 255);
@@ -191,7 +195,7 @@ void button_hold_callback(uint8_t consecutiveButtonCheck,
             float(255 - MIN_BRIGHTNESS);
 
         const auto newBrightness =
-            map(min(buttonHoldDuration,
+            map(min(holdDuration,
                     BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
                 0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
                 currentBrightness, MIN_BRIGHTNESS);
@@ -204,7 +208,7 @@ void button_hold_callback(uint8_t consecutiveButtonCheck,
 
     default:
       // user defined behavior
-      user::button_hold(consecutiveButtonCheck, buttonHoldDuration);
+      user::button_hold(consecutiveButtonCheck, holdDuration);
       break;
   }
 }
