@@ -33,7 +33,7 @@ bool enable_charge() {
   static bool isValueReseted = false;
   static bool isChargeEnabled = false;
 
-  if (get_battery_level() >= 98) {
+  if (battery::get_battery_level() >= 98) {
     // set charge current to 0
     if (not isValueReseted) {
       BQ25703Areg.chargeOption1.set_EN_IBAT(0);

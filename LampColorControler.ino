@@ -32,7 +32,7 @@ void setup() {
   */
 
   // set up button colors and callbacks
-  init_button();
+  button::init();
 
   if (!charger::is_powered_on()) {
     startup_sequence();
@@ -67,7 +67,7 @@ void loop() {
   uint32_t start = millis();
 
   // loop is not ran in shutdown mode
-  handle_button_events(button_clicked_callback, button_hold_callback);
+  button::handle_events(button_clicked_callback, button_hold_callback);
 
   if (charger::is_powered_on()) {
     charger::enable_charge();
@@ -91,7 +91,7 @@ void loop() {
 
   if (!charger::is_powered_on()) {
     // no battery alert when charger is on
-    raise_battery_alert();
+    battery::raise_battery_alert();
   } else {
     AlertManager.clear_alert(Alerts::BATTERY_LOW);
     AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);

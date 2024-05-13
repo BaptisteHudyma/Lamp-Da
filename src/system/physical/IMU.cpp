@@ -13,10 +13,13 @@ namespace imu {
 LSM6DS3 IMU(I2C_MODE, 0x6A);  // I2C device address 0x6A
 
 bool isStarted = false;
-void enable_imu() {
+void enable() {
   if (isStarted) {
     return;
   }
+
+  pinMode(PIN_LSM6DS3TR_C_POWER, OUTPUT);
+  digitalWrite(PIN_LSM6DS3TR_C_POWER, HIGH);
 
   if (IMU.begin() != 0) {
   }
@@ -24,11 +27,12 @@ void enable_imu() {
   isStarted = true;
 }
 
-void disable_imu() {
+void disable() {
   if (!isStarted) {
     return;
   }
-  // TODO: find how to deactivate the IMu
+
+  digitalWrite(PIN_LSM6DS3TR_C_POWER, LOW);
   isStarted = false;
 }
 
@@ -47,7 +51,7 @@ struct Reading {
 };
 
 Reading get_reading() {
-  if (!isStarted) enable_imu();
+  if (!isStarted) enable();
 
   Reading reads;
   // coordinate change to the lamp body

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-namespace sound {
+namespace microphone {
 
 // decibel level for a silent room
 constexpr float silenceLevelDb = -57.0;
@@ -11,15 +11,15 @@ constexpr float highLevelDb =
     80.0;  // microphone is not good enough at after this
 
 // start the microphone readings
-void enable_microphone();
+extern void enable();
 // close the microphone readings
-void disable_microphone();
+extern void disable();
 
 /**
  * \return the average sound level in decibels
  */
-float get_sound_level_Db();
+extern float get_sound_level_Db();
 
-}  // namespace sound
+}  // namespace microphone
 
 #endif

@@ -35,6 +35,7 @@ void update_brightness(const uint8_t newBrightness) {
 }
 
 void read_parameters() {
+  // load values in memory
   fileSystem::load_initial_values();
 
   uint32_t brightness = 0;
@@ -60,15 +61,15 @@ bool is_shutdown() { return isShutdown; }
 
 void startup_sequence() {
   // initialize the battery level
-  get_battery_level(true);
+  battery::get_battery_level(true);
 
   // critical battery level, do not wake up
-  if (get_battery_level() <= batteryCritical + 1) {
+  if (battery::get_battery_level() <= batteryCritical + 1) {
     // alert user of low battery
     for (uint i = 0; i < 10; i++) {
-      set_button_color(utils::ColorSpace::RED);
+      button::set_color(utils::ColorSpace::RED);
       delay(100);
-      set_button_color(utils::ColorSpace::BLACK);
+      button::set_color(utils::ColorSpace::BLACK);
       delay(100);
     }
 
@@ -79,7 +80,7 @@ void startup_sequence() {
   Serial.begin(115200);
 
   // activate microphone readings
-  // sound::enable_microphone();
+  // sound::enable();
 #ifdef USE_BLUETOOTH
   bluetooth::enable_bluetooth();
   bluetooth::startup_sequence();
@@ -94,12 +95,12 @@ void startup_sequence() {
 void shutdown() {
   // deactivate strip power
   pinMode(OUT_BRIGHTNESS, OUTPUT);
-  write_brightness(0);  // power down
+  ledpower::write_brightness(0);  // power down
   delay(10);
 
   // disable bluetooth, imu and microphone
-  sound::disable_microphone();
-  imu::disable_imu();
+  microphone::disable();
+  imu::disable();
 #ifdef USE_BLUETOOTH
   bluetooth::disable_bluetooth();
 #endif
@@ -109,14 +110,14 @@ void shutdown() {
   write_parameters();
 
   // deactivate indicators
-  set_button_color(utils::ColorSpace::RGB(0, 0, 0));
+  button::set_color(utils::ColorSpace::RGB(0, 0, 0));
 
   // let the user power off the system
   user::power_off_sequence();
 
   // do not power down when charger is plugged in
   if (!charger::is_powered_on()) {
-    set_wake_up_signal();
+    button::set_wake_up_signal();
 
     // power down nrf52.
     // If no sense pins are setup (or other hardware interrupts), the nrf52
@@ -216,22 +217,23 @@ void handle_alerts() {
     criticalbatteryRaisedTime = 0;
 
     // red to green
-    const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(
-        utils::ColorSpace::RED.get_rgb().color,
-        utils::ColorSpace::GREEN.get_rgb().color, get_battery_level() / 100.0));
+    const auto buttonColor = utils::ColorSpace::RGB(
+        utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
+                            utils::ColorSpace::GREEN.get_rgb().color,
+                            battery::get_battery_level() / 100.0));
 
     // display battery level
     if (charger::enable_charge()) {
       // charge mode
-      button_breeze(2000, 2000, buttonColor);
+      button::breeze(2000, 2000, buttonColor);
     } else {
       // normal mode
-      set_button_color(buttonColor);
+      button::set_color(buttonColor);
     }
   } else {
     if ((current & Alerts::BATTERY_READINGS_INCOHERENT) != 0x00) {
       // incohrent battery readings
-      button_blink(100, 100, utils::ColorSpace::GREEN);
+      button::blink(100, 100, utils::ColorSpace::GREEN);
     } else if ((current & Alerts::BATTERY_CRITICAL) != 0x00) {
       // critical battery alert: shutdown after 2 seconds
       if (criticalbatteryRaisedTime == 0)
@@ -241,17 +243,17 @@ void handle_alerts() {
         shutdown();
       }
       // blink if no shutdown
-      button_blink(100, 100, utils::ColorSpace::RED);
+      button::blink(100, 100, utils::ColorSpace::RED);
     } else if ((current & Alerts::BATTERY_LOW) != 0x00) {
       criticalbatteryRaisedTime = 0;
       // fast blink red
-      button_blink(300, 300, utils::ColorSpace::RED);
+      button::blink(300, 300, utils::ColorSpace::RED);
     } else if ((current & Alerts::LONG_LOOP_UPDATE) != 0x00) {
       // fast blink red
-      button_blink(400, 400, utils::ColorSpace::FUSHIA);
+      button::blink(400, 400, utils::ColorSpace::FUSHIA);
     } else {
       // unhandled case
-      button_blink(300, 300, utils::ColorSpace::ORANGE);
+      button::blink(300, 300, utils::ColorSpace::ORANGE);
     }
   }
 }

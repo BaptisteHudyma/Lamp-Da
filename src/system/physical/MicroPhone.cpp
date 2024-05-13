@@ -10,7 +10,7 @@
 #include "../utils/constants.h"
 #include "fft.h"
 
-namespace sound {
+namespace microphone {
 
 // buffer to read samples into, each sample is 16-bits
 constexpr size_t sampleSize = 512;  // samplesFFT;
@@ -34,10 +34,13 @@ void on_PDM_data() {
 }
 
 bool isStarted = false;
-void enable_microphone() {
+void enable() {
   if (isStarted) {
     return;
   }
+
+  pinMode(PIN_PDM_PWR, OUTPUT);
+  digitalWrite(PIN_PDM_PWR, HIGH);
 
   PDM.setBufferSize(512);
   PDM.onReceive(on_PDM_data);
@@ -78,12 +81,14 @@ void enable_microphone() {
   isStarted = true;
 }
 
-void disable_microphone() {
+void disable() {
   if (!isStarted) {
     return;
   }
 
   PDM.end();
+
+  digitalWrite(PIN_PDM_PWR, LOW);
   isStarted = false;
 }
 
@@ -139,4 +144,4 @@ bool processFFT(const bool runFFT = true) {
   return true;
 }
 
-}  // namespace sound
+}  // namespace microphone

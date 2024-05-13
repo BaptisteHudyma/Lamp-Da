@@ -1,6 +1,8 @@
 #ifndef SYSTEM_BASE_H
 #define SYSTEM_BASE_H
 
+#include "Arduino.h"
+
 namespace user {
 
 // Called when the system is powered off

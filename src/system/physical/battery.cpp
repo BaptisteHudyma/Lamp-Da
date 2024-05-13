@@ -4,6 +4,8 @@
 #include "../utils/constants.h"
 #include "../utils/utils.h"
 
+namespace battery {
+
 // return a number between 0 and 100
 uint8_t get_battery_level(const bool resetRead) {
   constexpr float maxVoltage = 4.2 * 4;
@@ -88,3 +90,5 @@ void raise_battery_alert() {
     }
   }
 }
+
+}  // namespace battery

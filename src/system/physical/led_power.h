@@ -3,10 +3,12 @@
 
 #include "Arduino.h"
 
+namespace ledpower {
+
 /** Write a current value directly to the led strip (DANGEROUS)
  * \param[in] current target current, from 0 (off) to maxPowerConsumption_A
  */
-extern void write_led_current(const float current);
+extern void write_current(const float current);
 
 /** \brief Write a brightness relative to the led strip used (refer to the
  * constant.h file)
@@ -14,5 +16,7 @@ extern void write_led_current(const float current);
  * maxStripConsumption_A
  */
 extern void write_brightness(const uint8_t brightness);
+
+}  // namespace ledpower
 
 #endif

@@ -3,10 +3,12 @@
 #include "../utils/constants.h"
 #include "../utils/utils.h"
 
+namespace ledpower {
+
 /**
  * Power on the current driver with a soecific current value
  */
-void write_led_current(const float current) {
+void write_current(const float current) {
   // map current value to driver value
   const uint8_t mappedDriverValue =
       utils::map(constrain(current, 0, maxPowerConsumption_A), 0,
@@ -21,5 +23,7 @@ void write_led_current(const float current) {
 void write_brightness(const uint8_t brightness) {  // map to current value
   const float brightnessToCurrent =
       utils::map(brightness, 0, 255, 0, maxStripConsumption_A);
-  write_led_current(brightnessToCurrent);
+  write_current(brightnessToCurrent);
 }
+
+}  // namespace ledpower

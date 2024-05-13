@@ -12,15 +12,17 @@
 #define BUTTON_GREEN D7
 #define BUTTON_BLUE D6
 
+namespace button {
+
 static volatile bool wasButtonPressedDetected = false;
 void button_state_interrupt() { wasButtonPressedDetected = true; }
 
-void init_button() {
+void init() {
   pinMode(BUTTON_RED, OUTPUT);
   pinMode(BUTTON_GREEN, OUTPUT);
   pinMode(BUTTON_BLUE, OUTPUT);
 
-  set_button_color(utils::ColorSpace::BLACK);
+  set_color(utils::ColorSpace::BLACK);
 
   // attach the button interrupt
   pinMode(BUTTON_PIN, INPUT_PULLUP_SENSE);
@@ -99,7 +101,7 @@ void treat_button_pressed(
   }
 }
 
-void handle_button_events(
+void handle_events(
     std::function<void(uint8_t)> clickSerieCallback,
     std::function<void(uint8_t, uint32_t)> clickHoldSerieCallback) {
   // keep reading the button value until unpressed
@@ -110,7 +112,7 @@ void handle_button_events(
                        clickHoldSerieCallback);
 }
 
-void set_button_color(utils::ColorSpace::RGB color) {
+void set_color(utils::ColorSpace::RGB color) {
   static constexpr float redColorCorrection = 1.0;
   static constexpr float greenColorCorrection =
       1.0 /
@@ -123,15 +125,15 @@ void set_button_color(utils::ColorSpace::RGB color) {
   analogWrite(BUTTON_BLUE, col.blue * blueColorCorrection);
 }
 
-void button_blink(const uint offFreq, const uint onFreq,
-                  utils::ColorSpace::RGB color) {
+void blink(const uint offFreq, const uint onFreq,
+           utils::ColorSpace::RGB color) {
   static uint32_t lastCall = 0;
   static bool ledState = false;
 
   // led is off, and last call was 100ms before
   if (not ledState and millis() - lastCall > onFreq) {
     ledState = true;
-    set_button_color(color);
+    set_color(color);
     lastCall = millis();
   }
 
@@ -139,13 +141,13 @@ void button_blink(const uint offFreq, const uint onFreq,
   if (ledState and millis() - lastCall > offFreq) {
     ledState = false;
     // set black
-    set_button_color(utils::ColorSpace::RGB(0));
+    set_color(utils::ColorSpace::RGB(0));
     lastCall = millis();
   }
 }
 
-void button_breeze(const uint32_t periodOn, const uint32_t periodOff,
-                   const utils::ColorSpace::RGB& color) {
+void breeze(const uint32_t periodOn, const uint32_t periodOff,
+            const utils::ColorSpace::RGB& color) {
   static uint32_t startTime = 0;
 
   const uint32_t time = millis();
@@ -157,7 +159,7 @@ void button_breeze(const uint32_t periodOn, const uint32_t periodOff,
     if (progression < 0.5) {
       progression /= 0.5;
 
-      set_button_color(utils::ColorSpace::RGB(
+      set_color(utils::ColorSpace::RGB(
           utils::get_gradient(0, color.get_rgb().color, progression)));
     }
     // falling edge
@@ -165,16 +167,18 @@ void button_breeze(const uint32_t periodOn, const uint32_t periodOff,
       progression = 1.0 - progression;
       progression /= 0.5;
 
-      set_button_color(utils::ColorSpace::RGB(
+      set_color(utils::ColorSpace::RGB(
           utils::get_gradient(0, color.get_rgb().color, progression)));
     }
   }
   // breeze of
   else if (time - startTime < periodOn + periodOff) {
-    set_button_color(utils::ColorSpace::BLACK);
+    set_color(utils::ColorSpace::BLACK);
   } else {
     // reset animation
     startTime = time;
-    set_button_color(utils::ColorSpace::BLACK);
+    set_color(utils::ColorSpace::BLACK);
   }
 }
+
+}  // namespace button

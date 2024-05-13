@@ -6,9 +6,9 @@
 namespace imu {
 
 // start the imu readings
-void enable_imu();
+void enable();
 // close the imu readings
-void disable_imu();
+void disable();
 
 }  // namespace imu
 
