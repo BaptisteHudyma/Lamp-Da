@@ -26,8 +26,6 @@ void startup_sequence();
 // put in shutdown mode, with external wakeup
 void shutdown();
 
-void raise_battery_alert();
-
 /**
  * \brief main update loop
  */

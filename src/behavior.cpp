@@ -11,6 +11,7 @@
 #include "physical/battery.h"
 #include "physical/button.h"
 #include "physical/fileSystem.h"
+#include "physical/led_power.h"
 #include "utils/colorspace.h"
 #include "utils/constants.h"
 #include "utils/utils.h"
@@ -23,27 +24,6 @@ static constexpr uint8_t MIN_BRIGHTNESS = 5;
 // hold the current level of brightness out of the raise/lower animation
 uint8_t BRIGHTNESS = 50;  // default start value
 uint8_t currentBrightness = 50;
-
-/**
- * Power on the current driver with a soecific current value
- */
-void write_led_current(const float current) {
-  // map current value to driver value
-  const uint8_t mappedDriverValue =
-      utils::map(constrain(current, 0, maxPowerConsumption_A), 0,
-                 maxPowerConsumption_A, 0, 255);
-
-  analogWrite(OUT_BRIGHTNESS, mappedDriverValue);
-}
-
-/**
- * Power on the current driver with a soecific brightness value
- */
-void write_brightness(const uint8_t brightness) {  // map to current value
-  const float brightnessToCurrent =
-      utils::map(brightness, 0, 255, 0, maxStripConsumption_A);
-  write_led_current(brightnessToCurrent);
-}
 
 void update_brightness(const uint8_t newBrightness) {
   if (BRIGHTNESS != newBrightness) {
@@ -145,32 +125,6 @@ void shutdown() {
   }
 
   isShutdown = true;
-}
-
-// Raise the battery low or battery critical alert
-void raise_battery_alert() {
-  static constexpr uint32_t refreshRate_ms = 1000;
-  static uint32_t lastCall = 0;
-
-  const uint32_t newCall = millis();
-  if (newCall - lastCall > refreshRate_ms or lastCall == 0) {
-    lastCall = newCall;
-    const uint8_t percent = get_battery_level();
-
-    // % battery is critical
-    if (percent <= batteryCritical) {
-      AlertManager.raise_alert(Alerts::BATTERY_CRITICAL);
-    } else if (percent > batteryCritical + 1) {
-      AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);
-
-      // % battery is low, start alerting
-      if (percent <= batteryLow) {
-        AlertManager.raise_alert(Alerts::BATTERY_LOW);
-      } else if (percent > batteryLow + 1) {
-        AlertManager.clear_alert(Alerts::BATTERY_LOW);
-      }
-    }
-  }
 }
 
 // call when the button is finally release
