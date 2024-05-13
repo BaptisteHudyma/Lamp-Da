@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "../user_functions.h"
 #include "alerts.h"
 #include "charger/charger.h"
 #include "ext/math8.h"
@@ -29,7 +30,7 @@ void update_brightness(const uint8_t newBrightness) {
   if (BRIGHTNESS != newBrightness) {
     BRIGHTNESS = newBrightness;
 
-    // TODO: update your brightness here
+    user::brightness_update(newBrightness);
   }
 }
 
@@ -41,11 +42,16 @@ void read_parameters() {
     currentBrightness = brightness;
     update_brightness(brightness);
   }
+
+  user::read_parameters();
 }
 
 void write_parameters() {
   fileSystem::clear();
   fileSystem::set_value(std::string(brightnessKey), BRIGHTNESS);
+
+  user::write_parameters();
+
   fileSystem::write_state();
 }
 
@@ -72,13 +78,6 @@ void startup_sequence() {
 
   Serial.begin(115200);
 
-  // These lines are specifically to support the Adafruit Trinket 5V 16 MHz.
-  // Any other board, you can remove this part (but no harm leaving it):
-#if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
-  clock_prescale_set(clock_div_1);
-#endif
-  // END of Trinket-specific code.
-
   // activate microphone readings
   // sound::enable_microphone();
 #ifdef USE_BLUETOOTH
@@ -87,9 +86,9 @@ void startup_sequence() {
 #endif
 
   isShutdown = false;
-  // activate led
-  write_brightness(BRIGHTNESS);
-  currentBrightness = BRIGHTNESS;
+
+  // let the user power on the system
+  user::power_on_sequence();
 }
 
 void shutdown() {
@@ -111,6 +110,9 @@ void shutdown() {
 
   // deactivate indicators
   set_button_color(utils::ColorSpace::RGB(0, 0, 0));
+
+  // let the user power off the system
+  user::power_off_sequence();
 
   // do not power down when charger is plugged in
   if (!charger::is_powered_on()) {
@@ -140,15 +142,11 @@ void button_clicked_callback(uint8_t consecutiveButtonCheck) {
       }
       break;
 
-    case 2:
-      if (not is_shutdown()) {
-        currentBrightness = 255;  // update the slope value
-        update_brightness(255);
-      }
-      break;
-
     default:
-      // unhandled
+      if (!is_shutdown()) {
+        // user behavior
+        user::button_clicked(consecutiveButtonCheck);
+      }
       break;
   }
 }
@@ -159,6 +157,9 @@ void button_hold_callback(uint8_t consecutiveButtonCheck,
                           uint32_t buttonHoldDuration) {
   // no click event
   if (consecutiveButtonCheck == 0) return;
+
+  // no events when shutdown
+  if (is_shutdown()) return;
 
   const bool isEndOfHoldEvent = buttonHoldDuration <= 1;
   buttonHoldDuration -= HOLD_BUTTON_MIN_MS;
@@ -201,7 +202,8 @@ void button_hold_callback(uint8_t consecutiveButtonCheck,
       break;
 
     default:
-      // unhandled
+      // user defined behavior
+      user::button_hold(consecutiveButtonCheck, buttonHoldDuration);
       break;
   }
 }

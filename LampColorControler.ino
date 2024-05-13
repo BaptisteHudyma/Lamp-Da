@@ -2,23 +2,24 @@
 #include <Wire.h>
 #include <bluefruit.h>
 
-#include "src/alerts.h"
-#include "src/behavior.h"
-#include "src/charger/charger.h"
-#include "src/physical/MicroPhone.h"
-#include "src/physical/battery.h"
-#include "src/physical/bluetooth.h"
-#include "src/physical/button.h"
-#include "src/physical/fileSystem.h"
-#include "src/utils/utils.h"
+#include "src/system/alerts.h"
+#include "src/system/behavior.h"
+#include "src/system/charger/charger.h"
+#include "src/system/physical/MicroPhone.h"
+#include "src/system/physical/battery.h"
+#include "src/system/physical/bluetooth.h"
+#include "src/system/physical/button.h"
+#include "src/system/physical/fileSystem.h"
+#include "src/system/utils/utils.h"
+#include "src/user_functions.h"
 
 void setup() {
   // Necessary for sleep mode for some reason ??
   Bluefruit.begin();
   Wire.begin();
 
-  analogReference(AR_INTERNAL_3_0);   // 3v reference
-  analogReadResolution(ADC_RES_EXP);  // Can be 8, 10, 12 or 14
+  analogReference(AR_INTERNAL_3_0);  // 3v reference
+  analogReadResolution(ADC_RES_EXP);
 
   // start the file system
   fileSystem::setup();
@@ -84,6 +85,9 @@ void loop() {
     delay(LOOP_UPDATE_PERIOD);
     return;
   }
+
+  // user loop call
+  user::loop();
 
   if (!charger::is_powered_on()) {
     // no battery alert when charger is on
