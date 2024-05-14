@@ -24,6 +24,7 @@ void button_clicked(const uint8_t clicks) {
       break;
 
     case 2:
+      // put luminosity to maximum
       update_brightness(255, true);
       break;
 
@@ -33,7 +34,8 @@ void button_clicked(const uint8_t clicks) {
   }
 }
 
-void button_hold(const uint8_t clicks, const uint32_t holdDuration) {}
+void button_hold(const uint8_t clicks, const bool isEndOfHoldEvent,
+                 const uint32_t holdDuration) {}
 
 void loop() {}
 
