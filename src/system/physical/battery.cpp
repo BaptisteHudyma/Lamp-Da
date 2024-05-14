@@ -22,9 +22,11 @@ uint8_t get_battery_level(const bool resetRead) {
   const uint16_t pinRead = analogRead(BAT21);
 
   // in bounds with some margin
-  if (pinRead < minInValue * 0.97 or pinRead > maxInValue * 1.03) {
+  if (pinRead < minInValue * 0.95 or pinRead > maxInValue * 1.05) {
     AlertManager.raise_alert(Alerts::BATTERY_READINGS_INCOHERENT);
     return 0;
+  } else {
+    AlertManager.clear_alert(Alerts::BATTERY_READINGS_INCOHERENT);
   }
   const float batteryVoltage =
       utils::map(pinRead, minInValue, maxInValue, lowVoltage, maxVoltage);

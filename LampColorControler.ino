@@ -69,10 +69,6 @@ void loop() {
   // loop is not ran in shutdown mode
   button::handle_events(button_clicked_callback, button_hold_callback);
 
-  if (charger::is_powered_on()) {
-    charger::enable_charge();
-  }
-
   if (is_shutdown()) {
     // display alerts if needed
     handle_alerts();
