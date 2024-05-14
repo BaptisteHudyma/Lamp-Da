@@ -1,0 +1,20 @@
+# File details
+- behavior.h: controls the lamp behaviors: what button actions does what, battery level, charger start and stops, ...
+- alert.h: Handle the diffferent alerts raised by the program
+- charger: charger related operations
+    - charger.h: enable and disable the charging operation
+- ext: external libraries
+- physical: stuf related to the physical components: button, bluetooth, IMU, ...
+    - battery.h: handle the battery readings, for battery level
+    - bluetooth.h: Control the bluetooth associated behavior (foe now, causes segfaults, so not used)
+    - BQ25703A.h: define i2c communications with the charger ic.
+    - button.h: control the button. Takes callbacks for actions on multiple button pushes. Used to display stuf on the button if needed
+    - fft.h: implementation of the fft and assocated filtering
+    - fileSystem.h: handle the reading and writting of variables to memory
+    - IMU.h: the imu related operations
+    - led_power.h: interface of the led constant current driver
+    - Microphone.h: control the microphone behavior. Make available some functions to get the sound level and beat. Gives some animations as well
+- utils: General functions and constants that everybody needs
+    - colorspace.h: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !
+    - constants.h: global constants used all around the program
+    - utils.h: useful functions to make colors
