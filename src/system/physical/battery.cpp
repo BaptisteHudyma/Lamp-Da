@@ -53,7 +53,7 @@ uint8_t get_battery_level(const bool resetRead) {
     batteryLevel = utils::map(rawBatteryLevel, 40.0, 90.0, 12.0, 95.0);
   } else {
     // battery level > 90
-    batteryLevel = utils::map(rawBatteryLevel, 90.0, 105.0, 95.0,
+    batteryLevel = utils::map(rawBatteryLevel, 90.0, 100.0, 95.0,
                               100.0);  // highest 15% -> drop slowly
   }
 

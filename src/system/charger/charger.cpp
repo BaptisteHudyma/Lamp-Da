@@ -34,10 +34,21 @@ bool enable_charge() {
   static bool isChargeEnabled = false;
   static bool isChargeResetted = false;
 
+  // prevent flickering when the charge is almost over
+  static bool voltageHysteresisActivated = false;
+
   bool shouldCharge = true;
   // battery high enough;: stop charge
-  if (battery::get_battery_level() >= 97) {
+  if (battery::get_battery_level() >= 99) {
     shouldCharge = false;
+    voltageHysteresisActivated = true;
+  }
+  // do not start charge back until we drop below the target threshold
+  else if (voltageHysteresisActivated) {
+    shouldCharge = false;
+    if (battery::get_battery_level() < 95) {
+      voltageHysteresisActivated = false;
+    }
   }
 
   // temperature too high, stop charge
@@ -65,6 +76,9 @@ bool enable_charge() {
     return false;
   }
 
+  // reset hysteresis
+  voltageHysteresisActivated = false;
+
   // Setting the max voltage that the charger will charge the batteries up
   // to
   if (is_powered_on()) {
@@ -72,7 +86,7 @@ bool enable_charge() {
       isChargeEnabled = true;
       // Setting the max voltage that the charger will charge the batteries up
       // to
-      BQ25703Areg.maxChargeVoltage.set_voltage(16400);  // max battery voltage
+      BQ25703Areg.maxChargeVoltage.set_voltage(16750);  // max battery voltage
       BQ25703Areg.chargeCurrent.set_current(1000);  // charge current regulation
 
       // Set the watchdog timer to not have a timeout
@@ -94,7 +108,7 @@ bool enable_charge() {
       // Once bits have been twiddled, send bytes to device
       charger.writeRegEx(BQ25703Areg.aDCOption);
 
-      BQ25703Areg.maxChargeVoltage.set_voltage(16400);
+      BQ25703Areg.maxChargeVoltage.set_voltage(16750);
     }
 
     // update the charge current
