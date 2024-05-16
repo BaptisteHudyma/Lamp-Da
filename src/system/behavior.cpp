@@ -235,7 +235,19 @@ void handle_alerts() {
       button::set_color(buttonColor);
     }
   } else {
-    if ((current & Alerts::BATTERY_READINGS_INCOHERENT) != 0x00) {
+    if ((current & Alerts::TEMP_CRITICAL) != 0x00) {
+      // shutdown when battery is critical
+      shutdown();
+    } else if ((current & Alerts::TEMP_TOO_HIGH) != 0x00) {
+      // proc temperature is too high, blink orange
+      button::blink(300, 300, utils::ColorSpace::ORANGE);
+
+      // limit brightness to half the max value
+      constexpr uint8_t clampedBrightness = 0.5 * 255;
+      if (BRIGHTNESS > clampedBrightness) {
+        update_brightness(clampedBrightness);
+      }
+    } else if ((current & Alerts::BATTERY_READINGS_INCOHERENT) != 0x00) {
       // incohrent battery readings
       button::blink(100, 100, utils::ColorSpace::GREEN);
     } else if ((current & Alerts::BATTERY_CRITICAL) != 0x00) {
@@ -252,12 +264,18 @@ void handle_alerts() {
       criticalbatteryRaisedTime = 0;
       // fast blink red
       button::blink(300, 300, utils::ColorSpace::RED);
+
+      // limit brightness to quarter of the max value
+      constexpr uint8_t clampedBrightness = 0.25 * 255;
+      if (BRIGHTNESS > clampedBrightness) {
+        update_brightness(clampedBrightness);
+      }
     } else if ((current & Alerts::LONG_LOOP_UPDATE) != 0x00) {
       // fast blink red
       button::blink(400, 400, utils::ColorSpace::FUSHIA);
     } else {
-      // unhandled case
-      button::blink(300, 300, utils::ColorSpace::ORANGE);
+      // unhandled case (white blink)
+      button::blink(300, 300, utils::ColorSpace::WHITE);
     }
   }
 }

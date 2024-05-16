@@ -85,6 +85,18 @@ void loop() {
   // user loop call
   user::loop();
 
+  // temperature alerts
+  const float procTemp = readCPUTemperature();
+  if (procTemp >= criticalSystemTemp_c) {
+    AlertManager.raise_alert(TEMP_CRITICAL);
+
+  } else if (procTemp >= maxSystemTemp_c) {
+    AlertManager.raise_alert(TEMP_TOO_HIGH);
+  } else {
+    AlertManager.clear_alert(TEMP_TOO_HIGH);
+    AlertManager.clear_alert(TEMP_CRITICAL);
+  }
+
   if (!charger::is_powered_on()) {
     // no battery alert when charger is on
     battery::raise_battery_alert();

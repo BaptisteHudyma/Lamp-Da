@@ -47,6 +47,9 @@ constexpr float voltageDividerCoeff = 1.0 / 5.635;
 constexpr float maxPowerConsumption_A =
     2.6;  // Maxpower draw allowed on the system (Amperes)
 
+constexpr float maxSystemTemp_c = 70;       // max proc temperature, in degrees
+constexpr float criticalSystemTemp_c = 80;  // max proc temperature, in degrees
+
 // physical parameters computations
 constexpr float totalCons_Watt = consWattByMeter * ledStripLenght_mm / 1000.0;
 constexpr float maxStripConsumption_A = totalCons_Watt / inputVoltage_V;

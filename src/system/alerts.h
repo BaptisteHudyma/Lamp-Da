@@ -14,8 +14,8 @@ enum Alerts {
   BATTERY_LOW = 0b0001000,       // battery is dangerously low
   LONG_LOOP_UPDATE = 0b0010000,  // the main loop is taking too long to execute
                                  // (bugs when reading button inputs)
-  UNKNOWN_COLOR_MODE = 0b0100000,   // An incorrect color mode was reached
-  UNKNOWN_COLOR_STATE = 0b1000000,  // An incorrect color state was reached
+  TEMP_TOO_HIGH = 0b0100000,     // Processor temperature is too high
+  TEMP_CRITICAL = 0b1000000,     // Processor temperature is critical
 };
 
 class Alert {

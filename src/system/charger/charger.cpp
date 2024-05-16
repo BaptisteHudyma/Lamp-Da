@@ -1,5 +1,6 @@
 #include "charger.h"
 
+#include "../alerts.h"
 #include "../physical/BQ25703A.h"
 #include "../physical/battery.h"
 
@@ -30,12 +31,25 @@ bool check_vendor_device_values() {
 bool is_powered_on() { return (digitalRead(CHARGE_OK) == HIGH); }
 
 bool enable_charge() {
-  static bool isValueReseted = false;
   static bool isChargeEnabled = false;
+  static bool isChargeResetted = false;
 
-  if (battery::get_battery_level() >= 98) {
-    // set charge current to 0
-    if (not isValueReseted) {
+  bool shouldCharge = true;
+  // battery high enough;: stop charge
+  if (battery::get_battery_level() >= 97) {
+    shouldCharge = false;
+  }
+
+  // temperature too high, stop charge
+  if ((AlertManager.current() & Alerts::TEMP_CRITICAL) != 0x00) {
+    shouldCharge = false;
+  }
+
+  // should not charge battery, or charge is not enabled
+  if (!shouldCharge) {
+    // stop charge already invoked ?
+    if (not isChargeResetted) {
+      // set charge current to 0
       BQ25703Areg.chargeOption1.set_EN_IBAT(0);
       charger.writeRegEx(BQ25703Areg.chargeOption1);
       BQ25703Areg.aDCOption.set_ADC_CONV(0);
@@ -43,16 +57,12 @@ bool enable_charge() {
       BQ25703Areg.aDCOption.set_EN_ADC_ICHG(0);
       charger.writeRegEx(BQ25703Areg.aDCOption);
 
-      BQ25703Areg.chargeCurrent.set_current(64);
-      isValueReseted = true;
+      BQ25703Areg.chargeCurrent.set_current(0);
+      isChargeResetted = true;
     }
 
-    isChargeEnabled = false;
-
-    // no need to charge past this point
+    // dont run the charge functions
     return false;
-  } else {
-    isValueReseted = false;
   }
 
   // Setting the max voltage that the charger will charge the batteries up
@@ -89,6 +99,9 @@ bool enable_charge() {
 
     // update the charge current
     BQ25703Areg.chargeCurrent.set_current(1000);
+
+    // flag to signal that the charge must be stopped
+    isChargeResetted = false;
   } else {
     isChargeEnabled = false;
   }
