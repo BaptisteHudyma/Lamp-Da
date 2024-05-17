@@ -61,4 +61,13 @@ constexpr uint32_t LOOP_UPDATE_PERIOD = 40;
 constexpr float batteryCritical = 3;  // %
 constexpr float batteryLow = 5;       // %
 
+// pins
+
+// The button pin (one button pin to GND, the other to this pin)
+#define BUTTON_PIN D4
+// Pins for the led on the button
+#define BUTTON_RED D5
+#define BUTTON_GREEN D7
+#define BUTTON_BLUE D6
+
 #endif

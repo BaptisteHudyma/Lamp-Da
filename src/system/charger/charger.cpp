@@ -46,7 +46,7 @@ bool enable_charge() {
   // do not start charge back until we drop below the target threshold
   else if (voltageHysteresisActivated) {
     shouldCharge = false;
-    if (battery::get_battery_level() < 95) {
+    if (battery::get_battery_level() < 97) {
       voltageHysteresisActivated = false;
     }
   }

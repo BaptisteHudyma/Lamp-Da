@@ -13,11 +13,6 @@ namespace button {
 void init();
 
 /**
- * \brief Set up the wake up pin ( must call before going to sleep)
- */
-void set_wake_up_signal();
-
-/**
  * \brief handle the button clicked events
  * \param[in] clickSerieCallback A callback for a seri of clicks. Parameter is
  * the number of consequtive clicks detected

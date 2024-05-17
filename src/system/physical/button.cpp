@@ -5,13 +5,6 @@
 
 #define RELEASE_TIMING_MS 200
 
-// The button pin (one button pin to GND, the other to this pin)
-#define BUTTON_PIN D4
-// Pins for the led on the button
-#define BUTTON_RED D5
-#define BUTTON_GREEN D7
-#define BUTTON_BLUE D6
-
 namespace button {
 
 static volatile bool wasButtonPressedDetected = false;
@@ -28,15 +21,6 @@ void init() {
   pinMode(BUTTON_PIN, INPUT_PULLUP_SENSE);
   attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), button_state_interrupt,
                   CHANGE);
-}
-
-void set_wake_up_signal() {
-  // setup your wake-up pins.
-  pinMode(BUTTON_PIN,
-          INPUT_PULLUP_SENSE);  // this pin is pulled up and wakes up the board
-                                // when externally connected to ground.
-  // write delay
-  delay(100);
 }
 
 static volatile bool buttonPressListener = false;

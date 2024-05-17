@@ -21,6 +21,10 @@ const char* brightnessKey = "brightness";
 
 // constantes
 static constexpr uint8_t MIN_BRIGHTNESS = 5;
+static constexpr uint8_t MAX_BRIGHTNESS = 255;
+
+static uint8_t MaxBrightnessLimit =
+    MAX_BRIGHTNESS;  // temporary upper bound for the brightness
 
 // hold the current level of brightness out of the raise/lower animation
 uint8_t BRIGHTNESS = 50;  // default start value
@@ -29,6 +33,9 @@ uint8_t currentBrightness = 50;
 void update_brightness(const uint8_t newBrightness,
                        const bool shouldUpdateCurrentBrightness,
                        const bool isInitialRead) {
+  // safety
+  if (newBrightness > MaxBrightnessLimit) return;
+
   if (BRIGHTNESS != newBrightness) {
     BRIGHTNESS = newBrightness;
 
@@ -121,14 +128,9 @@ void shutdown() {
 
   // do not power down when charger is plugged in
   if (!charger::is_powered_on()) {
-    button::set_wake_up_signal();
-
     // power down nrf52.
-    // If no sense pins are setup (or other hardware interrupts), the nrf52
-    // will not wake up.
-    sd_power_system_off();  // this function puts the whole nRF52 to deep
-                            // sleep.
     // on wake up, it'll start back from the setup phase
+    systemOff(BUTTON_PIN, 0);
   }
 
   isShutdown = true;
@@ -169,17 +171,20 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
   const bool isEndOfHoldEvent = buttonHoldDuration <= 1;
   const uint32_t holdDuration = buttonHoldDuration - HOLD_BUTTON_MIN_MS;
 
+  static constexpr float brightnessDivider =
+      1.0 / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
+
   switch (consecutiveButtonCheck) {
     case 1:  // just hold the click
       if (!isEndOfHoldEvent) {
         const float percentOfTimeToGoUp =
-            float(255 - currentBrightness) / float(255 - MIN_BRIGHTNESS);
+            float(MAX_BRIGHTNESS - currentBrightness) * brightnessDivider;
 
         const auto newBrightness =
             map(min(holdDuration,
                     BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
                 0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
-                currentBrightness, 255);
+                currentBrightness, MAX_BRIGHTNESS);
         update_brightness(newBrightness);
       } else {
         // switch brightness
@@ -191,8 +196,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
              // lower luminositity
       if (!isEndOfHoldEvent) {
         const double percentOfTimeToGoDown =
-            float(currentBrightness - MIN_BRIGHTNESS) /
-            float(255 - MIN_BRIGHTNESS);
+            float(currentBrightness - MIN_BRIGHTNESS) * brightnessDivider;
 
         const auto newBrightness =
             map(min(holdDuration,
@@ -218,6 +222,7 @@ void handle_alerts() {
 
   static uint32_t criticalbatteryRaisedTime = 0;
   if (current == Alerts::NONE) {
+    MaxBrightnessLimit = MAX_BRIGHTNESS;
     criticalbatteryRaisedTime = 0;
 
     // red to green
@@ -243,10 +248,9 @@ void handle_alerts() {
       button::blink(300, 300, utils::ColorSpace::ORANGE);
 
       // limit brightness to half the max value
-      constexpr uint8_t clampedBrightness = 0.5 * 255;
-      if (BRIGHTNESS > clampedBrightness) {
-        update_brightness(clampedBrightness);
-      }
+      constexpr uint8_t clampedBrightness = 0.5 * MAX_BRIGHTNESS;
+      MaxBrightnessLimit = clampedBrightness;
+      update_brightness(clampedBrightness);
     } else if ((current & Alerts::BATTERY_READINGS_INCOHERENT) != 0x00) {
       // incohrent battery readings
       button::blink(100, 100, utils::ColorSpace::GREEN);
@@ -266,10 +270,9 @@ void handle_alerts() {
       button::blink(300, 300, utils::ColorSpace::RED);
 
       // limit brightness to quarter of the max value
-      constexpr uint8_t clampedBrightness = 0.25 * 255;
-      if (BRIGHTNESS > clampedBrightness) {
-        update_brightness(clampedBrightness);
-      }
+      constexpr uint8_t clampedBrightness = 0.25 * MAX_BRIGHTNESS;
+      MaxBrightnessLimit = clampedBrightness;
+      update_brightness(clampedBrightness);
     } else if ((current & Alerts::LONG_LOOP_UPDATE) != 0x00) {
       // fast blink red
       button::blink(400, 400, utils::ColorSpace::FUSHIA);
