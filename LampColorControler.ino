@@ -14,8 +14,7 @@
 #include "src/user_functions.h"
 
 void setup() {
-  // Necessary for sleep mode for some reason ??
-  Bluefruit.begin();
+  // necessary for all i2c communications
   Wire.begin();
 
   analogReference(AR_INTERNAL_3_0);  // 3v reference

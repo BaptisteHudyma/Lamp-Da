@@ -100,7 +100,7 @@ void set_color(utils::ColorSpace::RGB color) {
   static constexpr float redColorCorrection = 1.0;
   static constexpr float greenColorCorrection =
       1.0 /
-      8.5;  // the green of this button is way way higher than the other colors
+      7.5;  // the green of this button is way way higher than the other colors
   static constexpr float blueColorCorrection = 1.0;
 
   const COLOR& col = color.get_rgb();
