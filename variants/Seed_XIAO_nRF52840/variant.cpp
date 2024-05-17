@@ -5,15 +5,15 @@
 #include "wiring_digital.h"
 
 const uint32_t g_ADigitalPinMap[] = {
-    2,   // D0 is P0.02/AIN0 (A0)
-    3,   // D1 is P0.03/AIN1 (A1)
-    28,  // D2 is P0.28/AIN4 (A2)
-    29,  // D3 is P0.29/AIN5 (A3)
-    42,  // D4 is P1.10
-    43,  // D5 is P1.11
-    44,  // D6 is P1.12
-    45,  // D7 is P1.13
-    46,  // D8 is P1.14
+    28,  // AD0 is P0.28/AIN4
+    29,  // AD1 is P0.29/AIN5
+    3,   // AD2 is P0.03/AIN1
+    2,   // AD3 is P0.02/AIN0
+    45,  // D4 is P1.13
+    46,  // D5 is P1.14
+    42,  // D6 is P1.10
+    44,  // D7 is P1.12
+    43,  // D8 is P1.11
 
     31,  // D9 is P0.31/AIN7: strip brightness
 

@@ -37,7 +37,7 @@ void setup() {
   // set up button colors and callbacks
   button::init();
 
-  if (!charger::is_usb_powered()) {
+  if (!charger::is_powered_on()) {
     startup_sequence();
   } else {
     shutdown();

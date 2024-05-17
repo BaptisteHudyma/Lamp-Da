@@ -64,10 +64,10 @@ constexpr float batteryLow = 5;       // %
 // pins
 
 // The button pin (one button pin to GND, the other to this pin)
-#define BUTTON_PIN D4
+static constexpr uint32_t BUTTON_PIN = D6;
 // Pins for the led on the button
-#define BUTTON_RED D5
-#define BUTTON_GREEN D7
-#define BUTTON_BLUE D6
+static constexpr uint32_t BUTTON_RED = D8;
+static constexpr uint32_t BUTTON_GREEN = D4;
+static constexpr uint32_t BUTTON_BLUE = D7;
 
 #endif

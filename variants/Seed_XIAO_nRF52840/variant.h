@@ -1,7 +1,7 @@
-#ifndef _SEEED_XIAO_NRF52840_H_
-#define _SEEED_XIAO_NRF52840_H_
+#ifndef _SEEED_XIAO_NRF52840_SENSE_H_
+#define _SEEED_XIAO_NRF52840_SENSE_H_
 
-#define TARGET_SEEED_XIAO_NRF52840
+#define TARGET_SEEED_XIAO_NRF52840_SENSE
 
 /** Master clock frequency */
 #define VARIANT_MCK (64000000ul)
@@ -25,7 +25,8 @@ extern "C" {
 #define NUM_ANALOG_OUTPUTS (0)
 
 // LEDs
-#define PIN_LED (LED_RED)
+#define LED_BLUE (PINS_COUNT)  // No connection
+#define PIN_LED (PINS_COUNT)
 #define LED_PWR (PINS_COUNT)
 #define PIN_NEOPIXEL (PINS_COUNT)
 #define NEOPIXEL_NUM (0)
@@ -35,27 +36,16 @@ extern "C" {
 // Buttons
 #define PIN_BUTTON1 (PINS_COUNT)
 
-// Digital PINs
-static const uint8_t D0 = 0;
-static const uint8_t D1 = 1;
-static const uint8_t D2 = 2;
-static const uint8_t D3 = 3;
+// Analog Digital PINs
+static const uint8_t AD0 = 0;
+static const uint8_t AD1 = 1;
+static const uint8_t AD2 = 2;
+static const uint8_t AD3 = 3;
 static const uint8_t D4 = 4;
 static const uint8_t D5 = 5;
 static const uint8_t D6 = 6;
 static const uint8_t D7 = 7;
 static const uint8_t D8 = 8;
-
-// Analog pins
-#define PIN_A0 (0)
-#define PIN_A1 (1)
-#define PIN_A2 (2)
-#define PIN_A3 (3)
-
-static const uint8_t A0 = PIN_A0;
-static const uint8_t A1 = PIN_A1;
-static const uint8_t A2 = PIN_A2;
-static const uint8_t A3 = PIN_A3;
 
 // IO
 #define OUT_BRIGHTNESS (9)
@@ -113,6 +103,10 @@ static const uint8_t SS = 7;
 // Default address for device. Note, it is without read/write bit. When read
 // with analyser, this will appear 1 bit shifted to the left
 #define BQ25703ADevaddr 0x6B
+
+// default address for the usb negociation component. When read
+// with analyser, this will appear 1 bit shifted to the left
+#define RT1715Devaddr 0x4E
 
 #ifdef __cplusplus
 }

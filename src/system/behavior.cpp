@@ -128,6 +128,8 @@ void shutdown() {
 
   // do not power down when charger is plugged in
   if (!charger::is_powered_on()) {
+    digitalWrite(USB_33V_PWR, LOW);
+
     // power down nrf52.
     // on wake up, it'll start back from the setup phase
     systemOff(BUTTON_PIN, 0);
