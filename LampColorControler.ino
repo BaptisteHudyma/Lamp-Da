@@ -26,8 +26,16 @@ void setup() {
   // start by resetting the led driver
   ledpower::write_current(0);
 
+  // resetted by watchdog
+  if ((readResetReason() & POWER_RESETREAS_DOG_Msk) != 0x00) {
+    // allow user to flash the program again, without running the currently
+    // stored program
+    enterSerialDfu();
+    // card will shutdown after that
+  }
+
   // set watchdog (reset the soft when the program crashes)
-  set_watchdog(10);  // second timeout
+  set_watchdog(5);  // second timeout
 
   // necessary for all i2c communications
   Wire.begin();

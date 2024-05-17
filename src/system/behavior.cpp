@@ -151,6 +151,11 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
       }
       break;
 
+    case 3:
+      // make watchdog crash (TODO: remove)
+      delay(6000);
+      break;
+
     default:
       if (!is_shutdown()) {
         // user behavior
