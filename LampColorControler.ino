@@ -14,9 +14,20 @@
 #include "src/system/utils/utils.h"
 #include "src/user_functions.h"
 
+void set_watchdog(const uint timeoutDelaySecond) {
+  // Configure WDT
+  NRF_WDT->CONFIG = 0x01;  // Configure WDT to run when CPU is asleep
+  NRF_WDT->CRV = timeoutDelaySecond * 32768 + 1;  // set timeout
+  NRF_WDT->RREN = 0x01;      // Enable the RR[0] reload register
+  NRF_WDT->TASKS_START = 1;  // Start WDT
+}
+
 void setup() {
   // start by resetting the led driver
   ledpower::write_current(0);
+
+  // set watchdog (reset the soft when the program crashes)
+  set_watchdog(10);  // second timeout
 
   // necessary for all i2c communications
   Wire.begin();
@@ -68,6 +79,9 @@ void check_loop_runtime(const uint32_t runTime) {
 
 void loop() {
   uint32_t start = millis();
+
+  // update watchdog (prevent crash)
+  NRF_WDT->RR[0] = WDT_RR_RR_Reload;
 
   // loop is not ran in shutdown mode
   button::handle_events(button_clicked_callback, button_hold_callback);
