@@ -10,10 +10,14 @@
 #include "src/system/physical/bluetooth.h"
 #include "src/system/physical/button.h"
 #include "src/system/physical/fileSystem.h"
+#include "src/system/physical/led_power.h"
 #include "src/system/utils/utils.h"
 #include "src/user_functions.h"
 
 void setup() {
+  // start by resetting the led driver
+  ledpower::write_current(0);
+
   // necessary for all i2c communications
   Wire.begin();
 
@@ -33,7 +37,7 @@ void setup() {
   // set up button colors and callbacks
   button::init();
 
-  if (!charger::is_powered_on()) {
+  if (!charger::is_usb_powered()) {
     startup_sequence();
   } else {
     shutdown();

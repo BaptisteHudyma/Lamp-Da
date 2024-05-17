@@ -250,7 +250,7 @@ void handle_alerts() {
       // limit brightness to half the max value
       constexpr uint8_t clampedBrightness = 0.5 * MAX_BRIGHTNESS;
       MaxBrightnessLimit = clampedBrightness;
-      update_brightness(clampedBrightness);
+      update_brightness(min(clampedBrightness, BRIGHTNESS));
     } else if ((current & Alerts::BATTERY_READINGS_INCOHERENT) != 0x00) {
       // incohrent battery readings
       button::blink(100, 100, utils::ColorSpace::GREEN);
@@ -272,7 +272,7 @@ void handle_alerts() {
       // limit brightness to quarter of the max value
       constexpr uint8_t clampedBrightness = 0.25 * MAX_BRIGHTNESS;
       MaxBrightnessLimit = clampedBrightness;
-      update_brightness(clampedBrightness);
+      update_brightness(min(clampedBrightness, BRIGHTNESS));
     } else if ((current & Alerts::LONG_LOOP_UPDATE) != 0x00) {
       // fast blink red
       button::blink(400, 400, utils::ColorSpace::FUSHIA);

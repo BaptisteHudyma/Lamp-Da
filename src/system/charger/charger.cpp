@@ -28,6 +28,9 @@ bool check_vendor_device_values() {
   return true;
 }
 
+bool is_usb_powered() {
+  return (NRF_POWER->USBREGSTATUS & POWER_USBREGSTATUS_VBUSDETECT_Msk) != 0x00;
+}
 bool is_powered_on() { return (digitalRead(CHARGE_OK) == HIGH); }
 
 bool enable_charge() {

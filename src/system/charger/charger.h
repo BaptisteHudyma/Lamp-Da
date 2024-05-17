@@ -5,6 +5,7 @@ namespace charger {
 
 bool check_vendor_device_values();
 
+bool is_usb_powered();
 bool is_powered_on();
 
 bool enable_charge();
