@@ -151,8 +151,13 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
       }
       break;
 
-    case 3:
-      // make watchdog crash (TODO: remove)
+    // force a safety reset of the program
+    case 5:
+      button::set_color(utils::ColorSpace::PINK);
+      // disable charger if charge was enabled
+      if (charger::enable_charge()) charger::disable_charge();
+
+      // make watchdog stop the execution
       delay(6000);
       break;
 

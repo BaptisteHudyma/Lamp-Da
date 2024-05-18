@@ -1,5 +1,7 @@
 #include "charger.h"
 
+#include <cstdint>
+
 #include "../alerts.h"
 #include "../physical/BQ25703A.h"
 #include "../physical/battery.h"
@@ -63,15 +65,7 @@ bool enable_charge() {
   if (!shouldCharge) {
     // stop charge already invoked ?
     if (not isChargeResetted) {
-      // set charge current to 0
-      BQ25703Areg.chargeOption1.set_EN_IBAT(0);
-      charger.writeRegEx(BQ25703Areg.chargeOption1);
-      BQ25703Areg.aDCOption.set_ADC_CONV(0);
-      BQ25703Areg.aDCOption.set_EN_ADC_IDCHG(0);
-      BQ25703Areg.aDCOption.set_EN_ADC_ICHG(0);
-      charger.writeRegEx(BQ25703Areg.aDCOption);
-
-      BQ25703Areg.chargeCurrent.set_current(0);
+      disable_charge();
       isChargeResetted = true;
     }
 
@@ -124,6 +118,25 @@ bool enable_charge() {
   }
 
   return isChargeEnabled;
+}
+
+void disable_charge() {
+  // set charge current to 0
+  BQ25703Areg.chargeOption1.set_EN_IBAT(0);
+  charger.writeRegEx(BQ25703Areg.chargeOption1);
+  BQ25703Areg.aDCOption.set_ADC_CONV(0);
+  BQ25703Areg.aDCOption.set_EN_ADC_IDCHG(0);
+  BQ25703Areg.aDCOption.set_EN_ADC_ICHG(0);
+  charger.writeRegEx(BQ25703Areg.aDCOption);
+
+  BQ25703Areg.chargeCurrent.set_current(0);
+}
+
+void set_system_voltage(const float voltage) {
+  const uint16_t v = voltage * 1000.0;
+  BQ25703Areg.minSystemVoltage.set_voltage(v);
+
+  Serial.println(BQ25703Areg.minSystemVoltage.get_voltage());
 }
 
 }  // namespace charger

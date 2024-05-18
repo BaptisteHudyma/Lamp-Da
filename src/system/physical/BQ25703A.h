@@ -19,30 +19,36 @@ Library for basic interfacing with BQ25703A battery management IC from TI
 #define DEVICE_ID 0x78
 #define MANUFACTURER_ID 0x40
 
-#define adcVBUS 0x27
-#define adcPSYS 0x26
-#define adcVSYS 0x2D
-#define adcVBAT 0x2C
-#define adcICHG 0x29
-#define adcIDCHG 0x28
-#define adcIIN 0x2B
-#define adcCMPIN 0x2A
-#define chargerStatus1 0x21
-#define chargerStatus2 0x20
-// #define manufacturerID                        0x2E
-// #define deviceID
-// 0x2D
-#define ADCOptions 0x3B
-#define ADCEns 0x3A
-#define SysVolt 0x0D
-#define chargerOption0reg1 0x01
-#define chargerOption0reg2 0x00
-#define chargerOption1reg1 0x31
-#define chargerOption1reg2 0x30
-#define chargeCurrentreg1 0x03
-#define chargeCurrentreg2 0x02
-#define maxChargeVoltageReg1 0x04
-#define maxChargeVoltageReg2 0x05
+#define CHARGE_CURRENT_ADDR 0x02
+#define MAX_CHARGE_VOLTAGE_ADDR 0x04
+#define MINIMUM_SYSTEM_VOLTAGE_ADDR 0x0C
+#define OTG_VOLTAGE_ADDR 0x06
+#define OTG_CURRENT_ADDR 0x08
+#define INPUT_VOLTAGE_ADDR 0x0A
+#define IIN_HOST_ADDR 0x0E
+#define IIN_DPM_ADDR 0x24
+
+#define CHARGE_OPTION_0_ADDR 0x00
+#define CHARGE_OPTION_1_ADDR 0x30
+#define CHARGE_OPTION_2_ADDR 0x32
+#define CHARGE_OPTION_3_ADDR 0x34
+
+#define PROCHOT_OPTION_0_ADDR 0x36
+#define PROCHOT_OPTION_1_ADDR 0x38
+
+#define ADC_OPTION_ADDR 0x3A
+#define CHARGE_STATUS_ADDR 0x20
+#define PROCHOT_STATUS_ADDR 0x22
+
+#define ADC_VBUS_PSYS_ADC_ADDR 0x27
+
+#define ADC_IBAT_ADDR 0x29
+#define CMPIN_ADC_ADDR 0x2B
+#define VBAT_ADC_ADDR 0x2C
+#define ADC_VSYS_ADDR 0x2D  // TODO
+
+#define MANUFACTURER_ID_ADDR 0x2E
+#define DEVICE_ID_ADDR 0x2F
 
 class BQ25703A {
  public:
@@ -146,7 +152,7 @@ class BQ25703A {
 
   struct Regt {
     struct ChargeOption0t {
-      uint8_t addr = 0x00;
+      uint8_t addr = CHARGE_OPTION_0_ADDR;
       byte val0 = 0x0E;
       byte val1 = 0x82;
       // Learn mode. Discharges with power connected. Default disabled
@@ -175,7 +181,7 @@ class BQ25703A {
       FIELD(val1, PWM_FREQ, 0x01, 0x01)
     } chargeOption0;
     struct ChargeOption1t {
-      uint8_t addr = 0x30;
+      uint8_t addr = CHARGE_OPTION_1_ADDR;
       byte val0 = 0x11;
       byte val1 = 0x02;
       // Internal comparator reference 2.3V or 1.2V. Default is 2.3V
@@ -205,7 +211,7 @@ class BQ25703A {
       FIELD(val1, PSYS_RATIO, 0x01, 0x01)
     } chargeOption1;
     struct ChargeOption2t {
-      uint8_t addr = 0x32;
+      uint8_t addr = CHARGE_OPTION_2_ADDR;
       byte val0 = 0xB7;
       byte val1 = 0x02;
       // Allow ILIM_HIZ pin to set current limit. Default is enabled
@@ -242,7 +248,7 @@ class BQ25703A {
       FIELD(val1, PKPWR_TMAX, 0x00, 0x02)
     } chargeOption2;
     struct ChargeOption3t {
-      uint8_t addr = 0x34;
+      uint8_t addr = CHARGE_OPTION_3_ADDR;
       byte val0 = 0x00;
       byte val1 = 0x00;
       // Control BAT FET during Hi-Z state. Default is disabled
@@ -263,7 +269,7 @@ class BQ25703A {
       FIELD(val1, EN_ICO_MODE, 0x03, 0x01)
     } chargeOption3;
     struct ProchotOption0t {
-      uint8_t addr = 0x36;
+      uint8_t addr = PROCHOT_OPTION_0_ADDR;
       byte val0 = 0x50;
       byte val1 = 0x92;
       // VSYS threshold; 5.75V, 6V, 6.25V, 6.5V. Default is 6V
@@ -286,7 +292,7 @@ class BQ25703A {
       FIELD(val1, ICRIT_DEG, 0x01, 0x02)
     } prochotOption0;
     struct ProchotOption1t {
-      uint8_t addr = 0x38;
+      uint8_t addr = PROCHOT_OPTION_1_ADDR;
       byte val0 = 0x20;
       byte val1 = 0x41;
       // PROCHOT profile comparator. Default is disabled.
@@ -312,7 +318,7 @@ class BQ25703A {
       FIELD(val1, IDCHG_DEG, 0x00, 0x02)
     } prochotOption1;
     struct ADCOptiont {
-      uint8_t addr = 0x3A;
+      uint8_t addr = ADC_OPTION_ADDR;
       byte val0 = 0x00;
       byte val1 = 0x20;
       // Enable comparator voltage reading. Default is disabled.
@@ -340,7 +346,7 @@ class BQ25703A {
       FIELD(val1, ADC_FULLSCALE, 0x05, 0x01)
     } aDCOption;
     struct ChargerStatust {
-      uint8_t addr = 0x20;
+      uint8_t addr = CHARGE_STATUS_ADDR;
       byte val0, val1;
       // Latched fault flag of adapter over voltage. Default is no fault.
       FIELD_RO(val0, Fault_ACOV, 0x07, 0x01)
@@ -373,7 +379,7 @@ class BQ25703A {
       FIELD_RO(val1, IN_OTG, 0x00, 0x01)
     } chargerStatus;
     struct ProchotStatust {
-      uint8_t addr = 0x22;
+      uint8_t addr = PROCHOT_STATUS_ADDR;
       byte val0, val1;
       // PROCHOT comparator trigger status. Default is not triggered.
       FIELD_RO(val0, STAT_COMP, 0x06, 0x01)
@@ -395,7 +401,7 @@ class BQ25703A {
       uint16_t current = 1500;
       byte val0 = 0x00;
       byte val1 = 0x08;
-      uint8_t addr = 0x02;
+      uint8_t addr = CHARGE_CURRENT_ADDR;
       void set_current(uint16_t set_cur) {
         setBytes(this, set_cur, 64, 8128, 0, 64);
         writeReg(this);
@@ -416,7 +422,7 @@ class BQ25703A {
       uint16_t voltage = 16800;
       byte val0 = 0xA0;
       byte val1 = 0x41;
-      uint8_t addr = 0x04;
+      uint8_t addr = MAX_CHARGE_VOLTAGE_ADDR;
       void set_voltage(uint16_t set_volt) {
         setBytes(this, set_volt, 1024, 19200, 0, 16);
 
@@ -439,18 +445,18 @@ class BQ25703A {
     struct MinSystemVoltaget {
       uint16_t voltage = 12288;
       byte val0, val1 = 0x30;
-      uint8_t addr = 0x0C;
+      uint8_t addr = MINIMUM_SYSTEM_VOLTAGE_ADDR;
       // Minimum system voltage. Default is for 4S.
       // 1024mV to 16128mV in 256mV steps, no offset
       void set_voltage(uint16_t set_volt) {
-        setBytes(this, set_volt, 1024, 12288, 0, 256);
+        setBytes(this, set_volt, 1024, 16128, 0, 256);
         writeReg(this);
         voltage = set_volt;
       }
 
       uint16_t get_voltage() {
         readReg(this, 2);
-        voltage = (val1 & 0b01111111) * 256;
+        voltage = (val1 & 0b00111111) * 256;
         return voltage;
       }
     } minSystemVoltage;
@@ -459,7 +465,7 @@ class BQ25703A {
       uint16_t current = 3250;
       byte val0 = 0x00;  // not used
       byte val1 = 0x40;
-      uint8_t addr = 0x0E;
+      uint8_t addr = IIN_HOST_ADDR;
       // Incoming current threshold before device lowers charging current.
       // 50mA to 6400 in 50mA steps, with 50mA offset.
       void set_current(uint16_t set_cur) {
@@ -477,7 +483,7 @@ class BQ25703A {
       uint16_t current = 0;
       byte val0 = 0x00;  // not used
       byte val1 = 0x00;
-      uint8_t addr = 0x24;
+      uint8_t addr = IIN_DPM_ADDR;
       // Incoming current threshold before device lowers charging current.
       // 50mA to 6400 in 50mA steps, with 50mA offset.
       uint16_t get_current() {
@@ -493,7 +499,7 @@ class BQ25703A {
       uint16_t voltage = 18720;
       byte val0 = 0x20;
       byte val1 = 0x49;
-      uint8_t addr = 0x0A;
+      uint8_t addr = INPUT_VOLTAGE_ADDR;
       // Incoming voltage threshold before device lowers charging current.
       // 3200mV to 19584mV in 64mA steps, with 3200mV offset.
       void set_voltage(uint16_t set_volt) {
@@ -503,7 +509,7 @@ class BQ25703A {
         val1 = (byte)((set_volt >> 8) & 0b00111111);
 
         writeReg(this);
-        voltage = set_volt;
+        // voltage = set_volt;
       }
       uint16_t get_voltage() {
         readReg(this, 2);
@@ -516,7 +522,7 @@ class BQ25703A {
       uint16_t voltage = 0;
       byte val0 = 0x00;
       byte val1 = 0x00;
-      uint8_t addr = 0x06;
+      uint8_t addr = OTG_VOLTAGE_ADDR;
       // OTG output voltage.
       // 4480mV to 20864mV in 64mA steps, with 4480mV offset.
       void set_voltage(uint16_t set_volt) {
@@ -535,7 +541,7 @@ class BQ25703A {
       uint16_t current = 0;
       byte val0 = 0x00;  // not used
       byte val1 = 0x00;
-      uint8_t addr = 0x08;
+      uint8_t addr = OTG_CURRENT_ADDR;
       // OTG output current limit.
       // 0mA to 6400mA in 50mA steps.
       void set_current(uint16_t set_cur) {
@@ -556,7 +562,7 @@ class BQ25703A {
       uint32_t Rsys = 30000;  // Value of resistor on PSYS pin
       byte val0 = 0x00;
       byte val1 = 0x00;
-      uint8_t addr = 0x26;
+      uint8_t addr = ADC_VBUS_PSYS_ADC_ADDR;
       // VBUS voltage and system power. VBUS is direct reading.
       // System power(W) is Vsys(mV)/Rsys(R) * 10^3
       uint16_t get_VBUS() {
@@ -586,7 +592,7 @@ class BQ25703A {
     struct ADCIBATt {  // read only
       uint16_t ICHG, IDCHG;
       byte val0, val1;
-      uint8_t addr = 0x28;
+      uint8_t addr = ADC_IBAT_ADDR;
       // ICHG charging current value
       uint16_t get_ICHG() {
         readReg(this, 2);
@@ -604,7 +610,7 @@ class BQ25703A {
     struct ADCIINCMPINt {  // read only
       uint16_t IIN, CMPIN;
       byte val0, val1;
-      uint8_t addr = 0x2A;
+      uint8_t addr = CMPIN_ADC_ADDR;
       // IIN input current reading
       uint16_t get_IIN() {
         readReg(this, 2);
@@ -623,7 +629,7 @@ class BQ25703A {
     struct ADCVSYSVBATt {  // read only
       uint16_t VSYS, VBAT;
       byte val0, val1;
-      uint8_t addr = 0x2C;
+      uint8_t addr = VBAT_ADC_ADDR;
       // VSYS system voltage
       uint16_t get_VSYS() {
         readReg(this, 2);
@@ -647,7 +653,7 @@ class BQ25703A {
     struct ManufacturerIDt {  // read only
       // Manufacturer ID
       byte val0, val1;
-      uint8_t addr = 0x2E;
+      uint8_t addr = MANUFACTURER_ID_ADDR;
       byte get_manufacturerID() {
         readReg(this, 1);
         return val0;
@@ -656,7 +662,7 @@ class BQ25703A {
     struct DeviceID {  // read only
       // Device ID
       byte val0, val1;
-      uint8_t addr = 0x2F;
+      uint8_t addr = DEVICE_ID_ADDR;
       byte get_deviceID() {
         readReg(this, 2);
         return val0;

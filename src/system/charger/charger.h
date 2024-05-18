@@ -10,6 +10,11 @@ bool is_powered_on();
 
 bool enable_charge();
 
+// write a sery of commands to the charger to disable the charging process
+void disable_charge();
+
+void set_system_voltage(const float voltage);
+
 }  // namespace charger
 
 #endif  // CHARGER_H

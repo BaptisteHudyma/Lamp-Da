@@ -26,12 +26,19 @@ void setup() {
   // start by resetting the led driver
   ledpower::write_current(0);
 
+  bool shouldAlertUser = false;
+
   // resetted by watchdog
   if ((readResetReason() & POWER_RESETREAS_DOG_Msk) != 0x00) {
     // allow user to flash the program again, without running the currently
     // stored program
-    enterSerialDfu();
-    // card will shutdown after that
+    if (charger::is_usb_powered()) {
+      // card will shutdown after that
+      enterSerialDfu();
+    } else {
+      // alert the user that the lamp was resetted by watchdog
+      shouldAlertUser = true;
+    }
   }
 
   // set watchdog (reset the soft when the program crashes)
@@ -55,6 +62,15 @@ void setup() {
 
   // set up button colors and callbacks
   button::init();
+
+  if (shouldAlertUser) {
+    for (int i = 0; i < 5; i++) {
+      button::set_color(utils::ColorSpace::WHITE);
+      delay(300);
+      button::set_color(utils::ColorSpace::BLACK);
+      delay(300);
+    }
+  }
 
   if (!charger::is_powered_on()) {
     startup_sequence();
