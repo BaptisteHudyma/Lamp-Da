@@ -38,6 +38,13 @@ void button_hold(const uint8_t clicks, const uint32_t holdDuration);
 // raised
 void loop();
 
+// if you set this to true, another thread will be spawned, it will call the
+// function user_thread
+bool should_spawn_thread();
+
+// called by the second thread, activated if should_spawn_thread is true
+void user_thread();
+
 }  // namespace user
 
 #endif

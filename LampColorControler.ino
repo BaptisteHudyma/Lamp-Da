@@ -78,6 +78,17 @@ void setup() {
     shutdown();
     charger::enable_charge();
   }
+
+  // user requested another thread, spawn it
+  if (user::should_spawn_thread()) {
+    Scheduler.startLoop(secondary_thread);
+  }
+}
+
+void secondary_thread() {
+  if (is_shutdown()) return;
+
+  user::user_thread();
 }
 
 void check_loop_runtime(const uint32_t runTime) {
