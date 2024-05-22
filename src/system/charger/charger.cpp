@@ -4,25 +4,32 @@
 
 #include "../alerts.h"
 #include "../physical/BQ25703A.h"
+#include "../physical/RT1715.h"
 #include "../physical/battery.h"
 
 namespace charger {
 
 // Initialise the device and library
-BQ25703A charger;
+bq2573a::BQ25703A charger;
 
-// Create instance of data structure
-BQ25703A::Regt BQ25703Areg;
+// Create instance of registers data structure
+bq2573a::BQ25703A::Regt BQ25703Areg;
+
+// Initialize usbc negociator
+rt1715::RT1715 usbc;
+
+// Create instance of registers data structure
+rt1715::RT1715::Regt RT1715reg;
 
 bool check_vendor_device_values() {
   byte manufacturerId = BQ25703Areg.manufacturerID.get_manufacturerID();
-  if (manufacturerId != MANUFACTURER_ID) {
+  if (manufacturerId != bq2573a::MANUFACTURER_ID) {
     // wrong manufacturer id
     return false;
   }
 
   byte deviceId = BQ25703Areg.deviceID.get_deviceID();
-  if (deviceId != DEVICE_ID) {
+  if (deviceId != bq2573a::DEVICE_ID) {
     // wrong device id
     return false;
   }

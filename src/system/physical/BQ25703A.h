@@ -16,39 +16,41 @@ Library for basic interfacing with BQ25703A battery management IC from TI
 
 #include "Arduino.h"
 
-#define DEVICE_ID 0x78
-#define MANUFACTURER_ID 0x40
+namespace bq2573a {
 
-#define CHARGE_CURRENT_ADDR 0x02
-#define MAX_CHARGE_VOLTAGE_ADDR 0x04
-#define MINIMUM_SYSTEM_VOLTAGE_ADDR 0x0C
-#define OTG_VOLTAGE_ADDR 0x06
-#define OTG_CURRENT_ADDR 0x08
-#define INPUT_VOLTAGE_ADDR 0x0A
-#define IIN_HOST_ADDR 0x0E
-#define IIN_DPM_ADDR 0x24
+constexpr uint16_t DEVICE_ID = 0x78;
+constexpr uint16_t MANUFACTURER_ID = 0x40;
 
-#define CHARGE_OPTION_0_ADDR 0x00
-#define CHARGE_OPTION_1_ADDR 0x30
-#define CHARGE_OPTION_2_ADDR 0x32
-#define CHARGE_OPTION_3_ADDR 0x34
+constexpr uint16_t CHARGE_CURRENT_ADDR = 0x02;
+constexpr uint16_t MAX_CHARGE_VOLTAGE_ADDR = 0x04;
+constexpr uint16_t MINIMUM_SYSTEM_VOLTAGE_ADDR = 0x0C;
 
-#define PROCHOT_OPTION_0_ADDR 0x36
-#define PROCHOT_OPTION_1_ADDR 0x38
+constexpr uint16_t OTG_VOLTAGE_ADDR = 0x06;
+constexpr uint16_t OTG_CURRENT_ADDR = 0x08;
 
-#define ADC_OPTION_ADDR 0x3A
-#define CHARGE_STATUS_ADDR 0x20
-#define PROCHOT_STATUS_ADDR 0x22
+constexpr uint16_t INPUT_VOLTAGE_ADDR = 0x0A;
+constexpr uint16_t IIN_HOST_ADDR = 0x0E;
+constexpr uint16_t IIN_DPM_ADDR = 0x24;
 
-#define ADC_VBUS_PSYS_ADC_ADDR 0x27
+constexpr uint16_t CHARGE_OPTION_0_ADDR = 0x00;
+constexpr uint16_t CHARGE_OPTION_1_ADDR = 0x30;
+constexpr uint16_t CHARGE_OPTION_2_ADDR = 0x32;
+constexpr uint16_t CHARGE_OPTION_3_ADDR = 0x34;
 
-#define ADC_IBAT_ADDR 0x29
-#define CMPIN_ADC_ADDR 0x2B
-#define VBAT_ADC_ADDR 0x2C
-#define ADC_VSYS_ADDR 0x2D  // TODO
+constexpr uint16_t PROCHOT_OPTION_0_ADDR = 0x36;
+constexpr uint16_t PROCHOT_OPTION_1_ADDR = 0x38;
 
-#define MANUFACTURER_ID_ADDR 0x2E
-#define DEVICE_ID_ADDR 0x2F
+constexpr uint16_t ADC_OPTION_ADDR = 0x3A;
+constexpr uint16_t CHARGE_STATUS_ADDR = 0x20;
+constexpr uint16_t PROCHOT_STATUS_ADDR = 0x22;
+constexpr uint16_t ADC_VBUS_PSYS_ADC_ADDR = 0x27;
+constexpr uint16_t ADC_IBAT_ADDR = 0x29;
+constexpr uint16_t CMPIN_ADC_ADDR = 0x2B;
+constexpr uint16_t VBAT_ADC_ADDR = 0x2C;
+constexpr uint16_t ADC_VSYS_ADDR = 0x2D;  // TODO
+
+constexpr uint16_t MANUFACTURER_ID_ADDR = 0x2E;
+constexpr uint16_t DEVICE_ID_ADDR = 0x2F;
 
 class BQ25703A {
  public:
@@ -677,5 +679,7 @@ class BQ25703A {
                               byte dataVal1);
   boolean read2ByteReg(byte regAddress, byte* val0, byte* val1);
 };
+
+}  // namespace bq2573a
 
 #endif  // BQ25703A_H

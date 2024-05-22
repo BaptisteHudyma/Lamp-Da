@@ -14,12 +14,14 @@
 
 #include "Arduino.h"
 
+namespace bq2573a {
+
 // Prints a binary number with leading zeros (Automatic Handling)
 #define PRINTBIN(Num)                                             \
   for (uint32_t t = (1UL << ((sizeof(Num) * 8) - 1)); t; t >>= 1) \
     Serial.write(Num &t ? '1' : '0');
 
-BQ25703A::BQ25703A() { Wire.begin(); }
+BQ25703A::BQ25703A() {}
 
 // I2C functions below here
 //------------------------------------------------------------------------
@@ -73,3 +75,5 @@ boolean BQ25703A::writeDataReg(const byte regAddress, byte dataVal0,
 //     return false; //if I2C comm fails
 //   }
 // }
+
+}  // namespace bq2573a
