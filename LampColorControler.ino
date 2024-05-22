@@ -5,6 +5,7 @@
 #include "src/system/alerts.h"
 #include "src/system/behavior.h"
 #include "src/system/charger/charger.h"
+#include "src/system/physical/IMU.h"
 #include "src/system/physical/MicroPhone.h"
 #include "src/system/physical/battery.h"
 #include "src/system/physical/bluetooth.h"
@@ -173,4 +174,8 @@ void loop() {
 
   // display alerts if needed
   handle_alerts();
+
+  // automaticaly deactivate sensors if they are not used for a time
+  microphone::disable_after_non_use();
+  imu::disable_after_non_use();
 }

@@ -15,6 +15,9 @@ extern void enable();
 // close the microphone readings
 extern void disable();
 
+// disable microphone if last use is old
+extern void disable_after_non_use();
+
 /**
  * \return the average sound level in decibels
  */

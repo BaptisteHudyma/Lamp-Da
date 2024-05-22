@@ -83,15 +83,11 @@ void startup_sequence() {
       button::set_color(utils::ColorSpace::BLACK);
       delay(100);
     }
-
-    // emergency shutdown
-    shutdown();
+    return;
   }
 
   Serial.begin(115200);
 
-  // activate microphone readings
-  // microphone::enable();
 #ifdef USE_BLUETOOTH
   bluetooth::enable_bluetooth();
   bluetooth::startup_sequence();
@@ -106,7 +102,7 @@ void startup_sequence() {
 void shutdown() {
   // deactivate strip power
   pinMode(OUT_BRIGHTNESS, OUTPUT);
-  ledpower::write_brightness(0);  // power down
+  ledpower::write_current(0);  // power down
   delay(10);
 
   // disable bluetooth, imu and microphone

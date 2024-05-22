@@ -6,9 +6,12 @@
 namespace imu {
 
 // start the imu readings
-void enable();
+extern void enable();
 // close the imu readings
-void disable();
+extern void disable();
+
+// disable imu if last use is old
+extern void disable_after_non_use();
 
 }  // namespace imu
 

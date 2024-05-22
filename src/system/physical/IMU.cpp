@@ -12,8 +12,11 @@ namespace imu {
 // Create a instance of class LSM6DS3
 LSM6DS3 IMU(I2C_MODE, 0x6A);  // I2C device address 0x6A
 
+static uint32_t lastIMUFunctionCall = 0;
 bool isStarted = false;
+
 void enable() {
+  lastIMUFunctionCall = millis();
   if (isStarted) {
     return;
   }
@@ -36,6 +39,13 @@ void disable() {
   isStarted = false;
 }
 
+void disable_after_non_use() {
+  if (isStarted and (millis() - lastIMUFunctionCall > 1000.0)) {
+    // disable microphone if last reading is old
+    disable();
+  }
+}
+
 struct vec3d {
   float x;
   float y;
@@ -51,14 +61,13 @@ struct Reading {
 };
 
 Reading get_reading() {
-  if (!isStarted) enable();
+  enable();
 
   Reading reads;
   // coordinate change to the lamp body
-  // it would be better with transformations matrices but hey, microcontrolers!
-  reads.accel.x = -IMU.readFloatAccelZ();
-  reads.accel.y = -IMU.readFloatAccelY();
-  reads.accel.z = IMU.readFloatAccelX();
+  reads.accel.x = IMU.readFloatAccelX();
+  reads.accel.y = IMU.readFloatAccelY();
+  reads.accel.z = IMU.readFloatAccelZ();
 
   // use this to debug the axes
 #if 1
@@ -70,9 +79,9 @@ Reading get_reading() {
   Serial.println("");
 #endif
 
-  reads.gyro.x = -IMU.readFloatGyroZ();
-  reads.gyro.y = -IMU.readFloatGyroY();
-  reads.gyro.z = IMU.readFloatGyroX();
+  reads.gyro.x = IMU.readFloatGyroX();
+  reads.gyro.y = IMU.readFloatGyroY();
+  reads.gyro.z = IMU.readFloatGyroZ();
   return reads;
 }
 
@@ -95,12 +104,5 @@ Reading get_filtered_reading(const bool resetFilter) {
 
   return filtered;
 }
-
-constexpr uint16_t N_GRAINS = 128;  // Number of grains
-struct Grain {
-  int16_t x, y;    // Position
-  int16_t vx, vy;  // Velocity
-  uint16_t pos;
-} grain[N_GRAINS];
 
 }  // namespace imu

@@ -33,13 +33,15 @@ void on_PDM_data() {
   samplesRead = bytesAvailable / 2;
 }
 
+static uint32_t lastMicFunctionCall = 0;
 bool isStarted = false;
+
 void enable() {
+  lastMicFunctionCall = millis();
   if (isStarted) {
     return;
   }
 
-  pinMode(PIN_PDM_PWR, OUTPUT);
   digitalWrite(PIN_PDM_PWR, HIGH);
 
   PDM.setBufferSize(512);
@@ -92,7 +94,16 @@ void disable() {
   isStarted = false;
 }
 
+void disable_after_non_use() {
+  if (isStarted and (millis() - lastMicFunctionCall > 1000.0)) {
+    // disable microphone if last reading is old
+    disable();
+  }
+}
+
 float get_sound_level_Db() {
+  enable();
+
   static float lastValue = 0;
 
   if (!samplesRead) return lastValue;
@@ -109,6 +120,8 @@ float get_sound_level_Db() {
 }
 
 bool processFFT(const bool runFFT = true) {
+  enable();
+
   if (samplesRead <= 0) {
     return false;
   }
