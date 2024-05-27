@@ -179,7 +179,6 @@ void calm_mode_update() {
     }
     case 1:  // party wheel
     {
-      static auto lastColorStep = colorCodeIndex;
       static auto palettePartyColor =
           GeneratePaletteIndexed(PalettePartyColors);
       static uint8_t currentIndex = 0;
@@ -451,9 +450,8 @@ void button_clicked(const uint8_t clicks) {
   }
 }
 
-void button_hold(const uint8_t clicks, const uint32_t holdDuration) {
-  bool isEndOfHoldEvent = holdDuration <= 1;
-
+void button_hold(const uint8_t clicks, const bool isEndOfHoldEvent,
+                 const uint32_t holdDuration) {
   switch (clicks) {
     case 3:  // 3 clicks and hold
       if (!isEndOfHoldEvent) {
