@@ -28,10 +28,13 @@ void button_clicked(const uint8_t clicks);
 /** \brief called when button is clicked and held pressed. It is called while
  * the button is pressed, so holdDuration increases
  * \param[in] clicks The number of consecutive clicks (>= 2)
- * \param[in] holdDuration The duration of the held event. will be 0 if the
- * button is released
+ * \param[in] isEndOfHoldEvent True when the user releases the button,
+ * holdDuration will contain junk
+ * \param[in] holdDuration The duration of the held event. (valid if
+ * isEndOfHoldEvent is false)
  */
-void button_hold(const uint8_t clicks, const uint32_t holdDuration);
+void button_hold(const uint8_t clicks, const bool isEndOfHoldEvent,
+                 const uint32_t holdDuration);
 
 // called at each loop call
 // if the duration of this call exeeds the loop target time, an alert will be

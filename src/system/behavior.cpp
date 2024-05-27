@@ -220,7 +220,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
 
     default:
       // user defined behavior
-      user::button_hold(consecutiveButtonCheck, holdDuration);
+      user::button_hold(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
       break;
   }
 }
