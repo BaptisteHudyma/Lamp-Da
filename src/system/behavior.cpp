@@ -10,6 +10,7 @@
 #include "physical/IMU.h"
 #include "physical/MicroPhone.h"
 #include "physical/battery.h"
+#include "physical/bluetooth.h"
 #include "physical/button.h"
 #include "physical/fileSystem.h"
 #include "physical/led_power.h"

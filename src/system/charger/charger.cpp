@@ -4,8 +4,9 @@
 
 #include "../alerts.h"
 #include "../physical/BQ25703A.h"
-#include "../physical/RT1715.h"
 #include "../physical/battery.h"
+#include "Arduino.h"
+#include "FUSB302/PD_UFP.h"
 
 namespace charger {
 
@@ -15,11 +16,7 @@ bq2573a::BQ25703A charger;
 // Create instance of registers data structure
 bq2573a::BQ25703A::Regt BQ25703Areg;
 
-// Initialize usbc negociator
-rt1715::RT1715 usbc;
-
-// Create instance of registers data structure
-rt1715::RT1715::Regt RT1715reg;
+PD_UFP_c PD_UFP;
 
 bool check_vendor_device_values() {
   byte manufacturerId = BQ25703Areg.manufacturerID.get_manufacturerID();
@@ -88,6 +85,10 @@ bool enable_charge() {
   if (is_powered_on()) {
     if (not isChargeEnabled) {
       isChargeEnabled = true;
+
+      // set the pd negociation
+      PD_UFP.init(CHARGE_INT, PD_POWER_OPTION_MAX_9V);
+
       // Setting the max voltage that the charger will charge the batteries up
       // to
       BQ25703Areg.maxChargeVoltage.set_voltage(16750);  // max battery voltage
@@ -114,6 +115,9 @@ bool enable_charge() {
 
       BQ25703Areg.maxChargeVoltage.set_voltage(16750);
     }
+
+    // run pd negociation
+    PD_UFP.run();
 
     // update the charge current
     BQ25703Areg.chargeCurrent.set_current(1000);
@@ -142,8 +146,6 @@ void disable_charge() {
 void set_system_voltage(const float voltage) {
   const uint16_t v = voltage * 1000.0;
   BQ25703Areg.minSystemVoltage.set_voltage(v);
-
-  Serial.println(BQ25703Areg.minSystemVoltage.get_voltage());
 }
 
 }  // namespace charger

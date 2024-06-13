@@ -40,7 +40,6 @@ extern "C" {
 static const uint8_t AD0 = 0;
 static const uint8_t AD1 = 1;
 static const uint8_t AD2 = 2;
-static const uint8_t AD3 = 3;
 static const uint8_t D4 = 4;
 static const uint8_t D5 = 5;
 static const uint8_t D6 = 6;
@@ -51,6 +50,7 @@ static const uint8_t D8 = 8;
 #define OUT_BRIGHTNESS (9)
 #define BAT21 (13)
 #define USB_33V_PWR (12)
+#define OUTPUT_VOLTAGE (3)
 
 // Charger
 #define CHARGE_OK (14)
@@ -103,10 +103,6 @@ static const uint8_t SS = 7;
 // Default address for device. Note, it is without read/write bit. When read
 // with analyser, this will appear 1 bit shifted to the left
 #define BQ25703ADevaddr 0x6B
-
-// default address for the usb negociation component. When read
-// with analyser, this will appear 1 bit shifted to the left
-#define RT1715Devaddr 0x4E
 
 #ifdef __cplusplus
 }
