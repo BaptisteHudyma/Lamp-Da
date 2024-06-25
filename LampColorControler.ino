@@ -172,6 +172,9 @@ void loop() {
   stop = millis();
   check_loop_runtime(stop - start);
 
+  // update led controler
+  ledpower::loop();
+
   // display alerts if needed
   handle_alerts();
 

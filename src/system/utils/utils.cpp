@@ -248,4 +248,10 @@ COLOR gamma32(COLOR color) {
   return color;
 }
 
+double analogToDividerVoltage(const uint16_t analogVal) {
+  static constexpr float multiplier =
+      (1.0 / (float)ADC_MAX_VALUE) * maxConvertedVoltage;
+  return analogVal * multiplier;
+}
+
 };  // namespace utils

@@ -10,7 +10,7 @@
 #define POW3(x) ((x) * (x) * (x))
 #define POW4(x) (POW2(x) * POW2(x))
 #define POW7(x) (POW3(x) * POW3(x) * (x))
-#define DegToRad(x) ((x)*M_PI / 180)
+#define DegToRad(x) ((x) * M_PI / 180)
 #define FADE16(x) scale16(x, x)
 #define FADE8(x) scale8(x, x)
 
@@ -72,6 +72,10 @@ float map(float x, float in_min, float in_max, float out_min, float out_max);
 void calcGammaTable(float gamma);
 COLOR gamma32(COLOR color);
 uint8_t gamma8(uint8_t value);
+
+// Convert a read on an analog pin to a voltage value
+// Depends on the set maxConvertedVoltage !!!!
+double analogToDividerVoltage(const uint16_t analogVal);
 
 };  // namespace utils
 

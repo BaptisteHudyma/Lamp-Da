@@ -36,12 +36,16 @@
 constexpr uint8_t ADC_RES_EXP =
     12;  // resolution of the ADC, in bits (can be 8, 10, 12 or 14)
 constexpr uint32_t ADC_MAX_VALUE =
-    pow(2, ADC_RES_EXP);  // corresponding max value
+    pow(2, ADC_RES_EXP);                         // corresponding max value
+constexpr float internalReferenceVoltage = 3.0;  // 3V
 
 // map the input ADC out to voltage reading (calibration depending on the
 // resistor used for the battery voltage measurments).
 // The exact value is a 5.7021 reduction, but it's never exact
 constexpr float voltageDividerCoeff = 1.0 / 5.635;
+// 3V internal ref for analog reads
+constexpr float maxConvertedVoltage =
+    internalReferenceVoltage / voltageDividerCoeff;
 
 // parameters of the lamp body
 constexpr float maxPowerConsumption_A =

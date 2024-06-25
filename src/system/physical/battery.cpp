@@ -15,10 +15,12 @@ uint8_t get_battery_level(const bool resetRead) {
   static uint8_t filteredBattLevel = 0;
 
   // 3v internal ref, ADC resolution
-  constexpr uint16_t minInValue =
-      lowVoltage * voltageDividerCoeff * ADC_MAX_VALUE / 3.0;
-  constexpr uint16_t maxInValue =
-      maxVoltage * voltageDividerCoeff * ADC_MAX_VALUE / 3.0;
+  static constexpr uint16_t minInValue = lowVoltage * voltageDividerCoeff *
+                                         ADC_MAX_VALUE /
+                                         internalReferenceVoltage;
+  static constexpr uint16_t maxInValue = maxVoltage * voltageDividerCoeff *
+                                         ADC_MAX_VALUE /
+                                         internalReferenceVoltage;
   const uint16_t pinRead = analogRead(BAT21);
 
   // in bounds with some margin
@@ -28,8 +30,7 @@ uint8_t get_battery_level(const bool resetRead) {
   }
   AlertManager.clear_alert(Alerts::BATTERY_READINGS_INCOHERENT);
 
-  const float batteryVoltage =
-      utils::map(pinRead, minInValue, maxInValue, lowVoltage, maxVoltage);
+  const float batteryVoltage = utils::analogToDividerVoltage(pinRead);
 
   // init or reset
   if (lastValue == 0 or resetRead) {

@@ -87,7 +87,7 @@ bool enable_charge() {
       isChargeEnabled = true;
 
       // set the pd negociation
-      PD_UFP.init(CHARGE_INT, PD_POWER_OPTION_MAX_9V);
+      PD_UFP.init(CHARGE_INT, PD_POWER_OPTION_MAX_20V);
 
       // Setting the max voltage that the charger will charge the batteries up
       // to
