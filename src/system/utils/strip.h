@@ -12,6 +12,11 @@
 #include "coordinates.h"
 #include "utils.h"
 
+static constexpr float baseCurrentConsumption =
+    0.40;  // strip consumption when all is turned of
+static constexpr float maxCurrentConsumption = 2.7 - baseCurrentConsumption;
+static constexpr float ampPerLed = maxCurrentConsumption / (float)LED_COUNT;
+
 class LedStrip : public Adafruit_NeoPixel {
  public:
   LedStrip(int16_t pin, neoPixelType type = NEO_RGB + NEO_KHZ800)
@@ -33,10 +38,31 @@ class LedStrip : public Adafruit_NeoPixel {
     hasSomeChanges = false;
   }
 
+  float estimateCurrentDraw() {
+    float estimatedCurrentDraw = 0.0;
+
+    const uint8_t b = getBrightness();
+    const float currentPerLed = utils::map(b, 0, 255, 0, ampPerLed);
+
+    for (uint16_t i = 0; i < LED_COUNT; ++i) {
+      COLOR c;
+      c.color = getRawPixelColor(i);
+
+      const float res = max(c.blue, max(c.red, c.green));
+      if (res <= 0) {
+        continue;
+      }
+
+      estimatedCurrentDraw += currentPerLed;
+    }
+    return max(baseCurrentConsumption, estimatedCurrentDraw);
+  }
+
   void setPixelColor(uint16_t n, COLOR c) {
     n = constrain(n, 0, LED_COUNT - 1);
     _colors[n] = c;
     hasSomeChanges = true;
+
     Adafruit_NeoPixel::setPixelColor(n, c.color);
   }
 
