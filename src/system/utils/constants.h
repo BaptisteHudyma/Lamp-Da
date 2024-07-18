@@ -65,6 +65,8 @@ constexpr uint32_t LOOP_UPDATE_PERIOD = 10;
 constexpr float batteryCritical = 3;  // %
 constexpr float batteryLow = 5;       // %
 
+constexpr uint32_t batteryMaxChargeCurrent = 1000;  // mA
+
 // pins
 
 // The button pin (one button pin to GND, the other to this pin)

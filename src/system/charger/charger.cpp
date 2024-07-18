@@ -5,6 +5,7 @@
 #include "../alerts.h"
 #include "../physical/BQ25703A.h"
 #include "../physical/battery.h"
+#include "../utils/constants.h"
 #include "Arduino.h"
 #include "FUSB302/PD_UFP.h"
 
@@ -92,7 +93,7 @@ bool enable_charge() {
       // Setting the max voltage that the charger will charge the batteries up
       // to
       BQ25703Areg.maxChargeVoltage.set_voltage(16750);  // max battery voltage
-      BQ25703Areg.chargeCurrent.set_current(1000);  // charge current regulation
+      BQ25703Areg.chargeCurrent.set_current(150);  // charge current regulation
 
       // Set the watchdog timer to not have a timeout
       // When changing bitfield values, call the writeRegEx function
@@ -119,8 +120,11 @@ bool enable_charge() {
     // run pd negociation
     PD_UFP.run();
 
-    // update the charge current
-    BQ25703Areg.chargeCurrent.set_current(1000);
+    // update the charge current (max charge current is defined by the battery
+    // used)
+    // get_current returns values in cA instead of mA, so must do x10
+    BQ25703Areg.chargeCurrent.set_current(
+        min(batteryMaxChargeCurrent, PD_UFP.get_current() * 10));
 
     // flag to signal that the charge must be stopped
     isChargeResetted = false;

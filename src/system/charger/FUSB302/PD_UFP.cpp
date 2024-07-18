@@ -293,7 +293,8 @@ bool PD_UFP_c::timer(void) {
 }
 
 void PD_UFP_c::set_default_power(void) {
-  status_power_ready(STATUS_POWER_TYP, PD_V(5), PD_A(1));
+  // 5V, 100mA default power
+  status_power_ready(STATUS_POWER_TYP, PD_V(5), PD_A(0.1));
   status_log_event(STATUS_LOG_POWER_READY);
 }
 

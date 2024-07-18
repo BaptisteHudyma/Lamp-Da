@@ -101,6 +101,8 @@ void startup_sequence() {
 }
 
 void shutdown() {
+  isShutdown = true;
+
   // deactivate strip power
   pinMode(OUT_BRIGHTNESS, OUTPUT);
   ledpower::write_current(0);  // power down
@@ -131,8 +133,6 @@ void shutdown() {
     // on wake up, it'll start back from the setup phase
     systemOff(BUTTON_PIN, 0);
   }
-
-  isShutdown = true;
 }
 
 // call when the button is finally release

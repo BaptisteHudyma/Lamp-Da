@@ -12,7 +12,6 @@ uint8_t get_battery_level(const bool resetRead) {
   constexpr float lowVoltage = 3.1 * 4;
 
   static float lastValue = 0;
-  static uint8_t filteredBattLevel = 0;
 
   // 3v internal ref, ADC resolution
   static constexpr uint16_t minInValue = lowVoltage * voltageDividerCoeff *
@@ -57,14 +56,6 @@ uint8_t get_battery_level(const bool resetRead) {
     batteryLevel = utils::map(rawBatteryLevel, 90.0, 100.0, 95.0,
                               100.0);  // highest 15% -> drop slowly
   }
-
-  if (filteredBattLevel == 0) {
-    filteredBattLevel = batteryLevel;
-  }
-
-  filteredBattLevel +=
-      filterValue * filteredBattLevel + (1.0 - filterValue) * batteryLevel;
-
   return batteryLevel;
 }
 

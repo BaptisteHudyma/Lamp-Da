@@ -70,7 +70,7 @@ Reading get_reading() {
   reads.accel.z = IMU.readFloatAccelZ();
 
   // use this to debug the axes
-#if 1
+#if 0
   Serial.print(reads.accel.x);
   Serial.print(",");
   Serial.print(reads.accel.y);
