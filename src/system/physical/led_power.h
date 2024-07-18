@@ -5,8 +5,6 @@
 
 namespace ledpower {
 
-void loop();
-
 /** Write a current value directly to the led strip (DANGEROUS)
  * \param[in] current target current, from 0 (off) to maxPowerConsumption_A
  */
@@ -18,8 +16,6 @@ extern void write_current(const float current);
  * maxStripConsumption_A
  */
 extern void write_brightness(const uint8_t brightness);
-
-extern void write_voltage(const float voltage);
 
 }  // namespace ledpower
 
