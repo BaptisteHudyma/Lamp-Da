@@ -94,10 +94,10 @@ void startup_sequence() {
   bluetooth::startup_sequence();
 #endif
 
-  isShutdown = false;
-
   // let the user power on the system
   user::power_on_sequence();
+
+  isShutdown = false;
 }
 
 void shutdown() {
