@@ -376,14 +376,14 @@ void color_mode_update() {
 }
 
 void power_on_sequence() {
+  pinMode(LED_POWER_PIN, OUTPUT);
+  digitalWrite(LED_POWER_PIN, HIGH);
+
   // initialize the strip object
   strip.begin();
   strip.clear();
   strip.show();  // Turn OFF all pixels ASAP
   strip.setBrightness(BRIGHTNESS);
-
-  pinMode(LED_POWER_PIN, OUTPUT);
-  digitalWrite(LED_POWER_PIN, HIGH);
 }
 
 void power_off_sequence() {
