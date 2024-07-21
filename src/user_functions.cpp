@@ -10,6 +10,11 @@ void power_on_sequence() { ledpower::write_brightness(BRIGHTNESS); }
 void power_off_sequence() {}
 
 void brightness_update(const uint8_t brightness) {
+  if (brightness == 255) {
+    // blip
+    ledpower::write_brightness(0);
+    delay(4);  // blip light off if we reached max level
+  }
   ledpower::write_brightness(brightness);
 }
 
