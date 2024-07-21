@@ -22,8 +22,8 @@ void init();
  * released
  */
 void handle_events(
-    std::function<void(uint8_t)> clickSerieCallback,
-    std::function<void(uint8_t, uint32_t)> clickHoldSerieCallback);
+    const std::function<void(uint8_t)>& clickSerieCallback,
+    const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback);
 
 /**
  * Display a color on the button

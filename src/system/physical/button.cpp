@@ -32,8 +32,8 @@ void read_while_pressed() {
 
 void treat_button_pressed(
     const bool isButtonPressDetected,
-    std::function<void(uint8_t)> clickSerieCallback,
-    std::function<void(uint8_t, uint32_t)> clickHoldSerieCallback) {
+    const std::function<void(uint8_t)>& clickSerieCallback,
+    const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback) {
   static uint8_t clickedEvents = 0;  // multiple clicks
   static uint32_t buttonHoldStart =
       0;  // start of the hold event in millis, valid if clicked event is > 0
@@ -86,8 +86,8 @@ void treat_button_pressed(
 }
 
 void handle_events(
-    std::function<void(uint8_t)> clickSerieCallback,
-    std::function<void(uint8_t, uint32_t)> clickHoldSerieCallback) {
+    const std::function<void(uint8_t)>& clickSerieCallback,
+    const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback) {
   // keep reading the button value until unpressed
   read_while_pressed();
 

@@ -41,7 +41,9 @@ void update_brightness(const uint8_t newBrightness,
     BRIGHTNESS = newBrightness;
 
     // do not call user functions when reading parameters
-    if (!isInitialRead) user::brightness_update(newBrightness);
+    if (!isInitialRead) {
+      user::brightness_update(newBrightness);
+    }
 
     if (shouldUpdateCurrentBrightness) currentBrightness = newBrightness;
   }
@@ -167,7 +169,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
   }
 }
 
-#define BRIGHTNESS_RAMP_DURATION_MS 4000
+#define BRIGHTNESS_RAMP_DURATION_MS 2000
 
 void button_hold_callback(const uint8_t consecutiveButtonCheck,
                           const uint32_t buttonHoldDuration) {

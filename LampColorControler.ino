@@ -46,6 +46,8 @@ void setup() {
   set_watchdog(5);  // second timeout
 
   // necessary for all i2c communications
+  Wire.setClock(400000);  // 400KHz clock
+  Wire.setTimeout(100);   // 300ms timout
   Wire.begin();
 
   analogReference(AR_INTERNAL_3_0);  // 3v reference
