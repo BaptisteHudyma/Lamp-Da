@@ -391,6 +391,7 @@ void power_off_sequence() {
   strip.show();  // Clear all pixels
 
   digitalWrite(LED_POWER_PIN, LOW);
+  pinMode(LED_POWER_PIN, INPUT_PULLDOWN);
 }
 
 void brightness_update(const uint8_t brightness) {
