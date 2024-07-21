@@ -133,7 +133,7 @@ class BQ25703A {
 #define GETMASK(index, size) (((1 << (size)) - 1) << (index))
 // macro to read bits from variable, using mask
 #define READFROM(data, index, size) \
-  (((data)&GETMASK((index), (size))) >> (index))
+  (((data) & GETMASK((index), (size))) >> (index))
 // macro to write bits into variable, using mask
 #define WRITETO(data, index, size, value) \
   ((data) = ((data) & (~GETMASK((index), (size)))) | ((value) << (index)))
@@ -570,7 +570,7 @@ class BQ25703A {
       uint16_t get_VBUS() {
         if (readReg(this, 2)) {
           // multiply up to mV value
-          VBUS = val1 * 64;
+          VBUS = val0 * 64;
           // Add in offset
           VBUS = VBUS + 3200;
           return VBUS;

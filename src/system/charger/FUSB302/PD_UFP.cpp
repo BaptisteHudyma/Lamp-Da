@@ -129,6 +129,14 @@ void PD_UFP_c::clock_prescale_set(uint8_t prescaler) {
   }
 }
 
+bool PD_UFP_c::is_vbus_ok() {
+  uint8_t vbus;
+  if (FUSB302_get_vbus_level(&FUSB302, &vbus) == FUSB302_SUCCESS) {
+    return vbus == 1;
+  }
+  return false;
+}
+
 FUSB302_ret_t PD_UFP_c::FUSB302_i2c_read(uint8_t dev_addr, uint8_t reg_addr,
                                          uint8_t *data, uint8_t count) {
   Wire.beginTransmission(dev_addr);

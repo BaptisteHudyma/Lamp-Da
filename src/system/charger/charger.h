@@ -3,6 +3,8 @@
 
 namespace charger {
 
+void setup();
+
 bool check_vendor_device_values();
 
 bool is_usb_powered();

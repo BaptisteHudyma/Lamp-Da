@@ -43,15 +43,19 @@ void setup() {
   }
 
   // set watchdog (reset the soft when the program crashes)
+  // Should be long enough to flash the microcontroler !!!
   set_watchdog(5);  // second timeout
 
   // necessary for all i2c communications
   Wire.setClock(400000);  // 400KHz clock
-  Wire.setTimeout(100);   // 300ms timout
+  Wire.setTimeout(100);   // ms timout
   Wire.begin();
 
   analogReference(AR_INTERNAL_3_0);  // 3v reference
   analogReadResolution(ADC_RES_EXP);
+
+  // setup charger
+  charger::setup();
 
   // start the file system
   fileSystem::setup();

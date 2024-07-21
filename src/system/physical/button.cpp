@@ -132,9 +132,9 @@ void blink(const uint offFreq, const uint onFreq,
 
 void breeze(const uint32_t periodOn, const uint32_t periodOff,
             const utils::ColorSpace::RGB& color) {
-  static uint32_t startTime = 0;
-
   const uint32_t time = millis();
+  static uint32_t startTime = time;
+
   // breeze on
   if (time - startTime < periodOn) {
     float progression = (time - startTime) / (float)periodOn;

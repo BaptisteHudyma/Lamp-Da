@@ -58,6 +58,8 @@ class PD_UFP_c {
   // Clock
   static void clock_prescale_set(uint8_t prescaler);
 
+  bool is_vbus_ok();
+
  protected:
   static FUSB302_ret_t FUSB302_i2c_read(uint8_t dev_addr, uint8_t reg_addr,
                                         uint8_t *data, uint8_t count);

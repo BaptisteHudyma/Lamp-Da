@@ -19,6 +19,16 @@ bq2573a::BQ25703A::Regt BQ25703Areg;
 
 PD_UFP_c PD_UFP;
 
+void setup() {
+  BQ25703Areg.chargeCurrent.set_current(150);  // charge current regulation
+
+  // set the pd negociation
+  PD_UFP.init(CHARGE_INT, PD_POWER_OPTION_MAX_20V);
+
+  // run first pd negociation
+  PD_UFP.run();
+}
+
 bool check_vendor_device_values() {
   byte manufacturerId = BQ25703Areg.manufacturerID.get_manufacturerID();
   if (manufacturerId != bq2573a::MANUFACTURER_ID) {
@@ -38,7 +48,14 @@ bool check_vendor_device_values() {
 bool is_usb_powered() {
   return (NRF_POWER->USBREGSTATUS & POWER_USBREGSTATUS_VBUSDETECT_Msk) != 0x00;
 }
+
 bool is_powered_on() { return (digitalRead(CHARGE_OK) == HIGH); }
+
+// check if the charger can use the max power (vbus voltage == negociated power)
+bool can_use_max_power() {
+  return BQ25703Areg.aDCVBUSPSYS.get_VBUS() >
+         (PD_UFP.get_voltage() * 50 - 2000);
+}
 
 bool enable_charge() {
   static bool isChargeEnabled = false;
@@ -87,7 +104,7 @@ bool enable_charge() {
     if (not isChargeEnabled) {
       isChargeEnabled = true;
 
-      // set the pd negociation
+      // set the pd negociation (also serve as a reset)
       PD_UFP.init(CHARGE_INT, PD_POWER_OPTION_MAX_20V);
 
       // Setting the max voltage that the charger will charge the batteries up
@@ -95,23 +112,22 @@ bool enable_charge() {
       BQ25703Areg.maxChargeVoltage.set_voltage(16750);  // max battery voltage
       BQ25703Areg.chargeCurrent.set_current(150);  // charge current regulation
 
-      // Set the watchdog timer to not have a timeout
-      // When changing bitfield values, call the writeRegEx function
-      // This is so you can change all the bits you want before sending out
-      // the byte.
-      BQ25703Areg.chargeOption0.set_WDTMR_ADJ(0);
-      charger.writeRegEx(BQ25703Areg.chargeOption0);
-
       // Set the ADC on IBAT to record values
       BQ25703Areg.chargeOption1.set_EN_IBAT(1);
       charger.writeRegEx(BQ25703Areg.chargeOption1);
 
       // Set ADC to make continuous readings. (uses more power)
       BQ25703Areg.aDCOption.set_ADC_CONV(1);
-      // Set individual ADC registers to read. All have default off.
+      // Set individual ADC registers to read. All have default off
+      BQ25703Areg.aDCOption.set_EN_ADC_CMPIN(1);
+      BQ25703Areg.aDCOption.set_EN_ADC_VBUS(1);
+      BQ25703Areg.aDCOption.set_EN_ADC_PSYS(1);
+      BQ25703Areg.aDCOption.set_EN_ADC_IIN(1);
       BQ25703Areg.aDCOption.set_EN_ADC_IDCHG(1);
       BQ25703Areg.aDCOption.set_EN_ADC_ICHG(1);
-      // Once bits have been twiddled, send bytes to device
+      BQ25703Areg.aDCOption.set_EN_ADC_VSYS(1);
+      BQ25703Areg.aDCOption.set_EN_ADC_VBAT(1);
+      //  Once bits have been twiddled, send bytes to device
       charger.writeRegEx(BQ25703Areg.aDCOption);
 
       BQ25703Areg.maxChargeVoltage.set_voltage(16750);
@@ -120,11 +136,16 @@ bool enable_charge() {
     // run pd negociation
     PD_UFP.run();
 
+    uint16_t chargeCurrent_mA = 100;  // default usb voltage
+    if (can_use_max_power()) {
+      // get_current returns values in cA instead of mA, so must do x10
+      chargeCurrent_mA = PD_UFP.get_current() * 10;
+    }
+
     // update the charge current (max charge current is defined by the battery
     // used)
-    // get_current returns values in cA instead of mA, so must do x10
     BQ25703Areg.chargeCurrent.set_current(
-        min(batteryMaxChargeCurrent, PD_UFP.get_current() * 10));
+        min(batteryMaxChargeCurrent, chargeCurrent_mA));
 
     // flag to signal that the charge must be stopped
     isChargeResetted = false;
@@ -140,8 +161,14 @@ void disable_charge() {
   BQ25703Areg.chargeOption1.set_EN_IBAT(0);
   charger.writeRegEx(BQ25703Areg.chargeOption1);
   BQ25703Areg.aDCOption.set_ADC_CONV(0);
+  BQ25703Areg.aDCOption.set_EN_ADC_CMPIN(0);
+  BQ25703Areg.aDCOption.set_EN_ADC_VBUS(0);
+  BQ25703Areg.aDCOption.set_EN_ADC_PSYS(0);
+  BQ25703Areg.aDCOption.set_EN_ADC_IIN(0);
   BQ25703Areg.aDCOption.set_EN_ADC_IDCHG(0);
   BQ25703Areg.aDCOption.set_EN_ADC_ICHG(0);
+  BQ25703Areg.aDCOption.set_EN_ADC_VSYS(0);
+  BQ25703Areg.aDCOption.set_EN_ADC_VBAT(0);
   charger.writeRegEx(BQ25703Areg.aDCOption);
 
   BQ25703Areg.chargeCurrent.set_current(0);
