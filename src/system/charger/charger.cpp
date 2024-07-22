@@ -137,9 +137,14 @@ bool enable_charge() {
     PD_UFP.run();
 
     uint16_t chargeCurrent_mA = 100;  // default usb voltage
-    if (can_use_max_power()) {
-      // get_current returns values in cA instead of mA, so must do x10
-      chargeCurrent_mA = PD_UFP.get_current() * 10;
+    if (PD_UFP.is_USB_PD_available()) {
+      if (can_use_max_power()) {
+        // get_current returns values in cA instead of mA, so must do x10
+        chargeCurrent_mA = PD_UFP.get_current() * 10;
+      }
+      // else: wait for power to climb
+    } else {
+      chargeCurrent_mA = 500;  // fallback current, for all chargeurs
     }
 
     // update the charge current (max charge current is defined by the battery

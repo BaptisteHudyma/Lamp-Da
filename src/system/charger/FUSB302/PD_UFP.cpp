@@ -42,7 +42,8 @@ enum {
 // PD_UFP_c
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 PD_UFP_c::PD_UFP_c()
-    : ready_voltage(0),
+    : isPowerNegociated(false),
+      ready_voltage(0),
       ready_current(0),
       PPS_voltage_next(0),
       PPS_current_next(0),
@@ -68,6 +69,8 @@ void PD_UFP_c::init(uint8_t int_pin, enum PD_power_option_t power_option) {
 void PD_UFP_c::init_PPS(uint8_t int_pin, uint16_t PPS_voltage,
                         uint8_t PPS_current,
                         enum PD_power_option_t power_option) {
+  isPowerNegociated = false;
+
   this->int_pin = int_pin;
   // Initialize FUSB302
   pinMode(int_pin, INPUT_PULLUP);  // Set FUSB302 int pin input ant pull up
@@ -213,6 +216,7 @@ void PD_UFP_c::handle_protocol_event(PD_protocol_event_t events) {
 
 void PD_UFP_c::handle_FUSB302_event(FUSB302_event_t events) {
   if (events & FUSB302_EVENT_DETACHED) {
+    isPowerNegociated = false;
     PD_protocol_reset(&protocol);
     return;
   }
@@ -234,6 +238,8 @@ void PD_UFP_c::handle_FUSB302_event(FUSB302_event_t events) {
     status_log_event(STATUS_LOG_CC);
   }
   if (events & FUSB302_EVENT_RX_SOP) {
+    isPowerNegociated = true;
+
     PD_protocol_event_t protocol_event = 0;
     uint16_t header;
     uint32_t obj[7];
@@ -245,6 +251,8 @@ void PD_UFP_c::handle_FUSB302_event(FUSB302_event_t events) {
     }
   }
   if (events & FUSB302_EVENT_GOOD_CRC_SENT) {
+    isPowerNegociated = true;
+
     uint16_t header;
     uint32_t obj[7];
     delay_ms(2); /* Delay respond in case there are retry messages */

@@ -59,6 +59,7 @@ class PD_UFP_c {
   static void clock_prescale_set(uint8_t prescaler);
 
   bool is_vbus_ok();
+  bool is_USB_PD_available() { return isPowerNegociated; }
 
  protected:
   static FUSB302_ret_t FUSB302_i2c_read(uint8_t dev_addr, uint8_t reg_addr,
@@ -96,6 +97,7 @@ class PD_UFP_c {
   uint8_t wait_ps_rdy;
   uint8_t send_request;
   static uint8_t clock_prescaler;
+  bool isPowerNegociated;
   // Time functions
   void delay_ms(uint16_t ms);
   uint16_t clock_ms(void);

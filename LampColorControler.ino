@@ -79,7 +79,9 @@ void setup() {
     }
   }
 
-  if (!charger::is_powered_on()) {
+  // started via VBUS (USB), go directly to charge mode
+  if (!charger::is_powered_on() &&
+      (readResetReason() & POWER_RESETREAS_VBUS_Msk) == 0x00) {
     startup_sequence();
   } else {
     shutdown();

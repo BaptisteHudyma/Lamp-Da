@@ -2,20 +2,22 @@
 #define ALERTS_H
 
 #include <cstdint>
+
+// 32 errors max
 enum Alerts {
   NONE = 0,  // system is sane and ready
 
   // always sort them by importance
-  MAIN_LOOP_FREEZE = 0b0000001,  // main loop does not respond
+  MAIN_LOOP_FREEZE = 1 << 0,  // main loop does not respond
   BATTERY_READINGS_INCOHERENT =
-      0b0000010,  // the pin that reads the battery value is not coherent with
-                  // it's givent min and max
-  BATTERY_CRITICAL = 0b0000100,  // battery is too low, shutdown immediatly
-  BATTERY_LOW = 0b0001000,       // battery is dangerously low
-  LONG_LOOP_UPDATE = 0b0010000,  // the main loop is taking too long to execute
-                                 // (bugs when reading button inputs)
-  TEMP_TOO_HIGH = 0b0100000,     // Processor temperature is too high
-  TEMP_CRITICAL = 0b1000000,     // Processor temperature is critical
+      1 << 1,  // the pin that reads the battery value is not coherent with
+               // it's givent min and max
+  BATTERY_CRITICAL = 1 << 2,  // battery is too low, shutdown immediatly
+  BATTERY_LOW = 1 << 3,       // battery is dangerously low
+  LONG_LOOP_UPDATE = 1 << 4,  // the main loop is taking too long to execute
+                              // (bugs when reading button inputs)
+  TEMP_TOO_HIGH = 1 << 5,     // Processor temperature is too high
+  TEMP_CRITICAL = 1 << 6,     // Processor temperature is critical
 };
 
 class Alert {
