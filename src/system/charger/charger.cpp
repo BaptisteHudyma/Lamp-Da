@@ -64,17 +64,32 @@ bool enable_charge() {
   // prevent flickering when the charge is almost over
   static bool voltageHysteresisActivated = false;
 
+  static uint8_t lastChargeValue = 0;
+  static uint32_t lastBatteryRead = 0;
+  const uint8_t batteryLevel = battery::get_battery_level();
+
+  if (batteryLevel > lastChargeValue) {
+    lastChargeValue = batteryLevel;
+    lastBatteryRead = millis();
+  }
+
   bool shouldCharge = true;
-  // battery high enough;: stop charge
-  if (battery::get_battery_level() >= 99) {
-    shouldCharge = false;
-    voltageHysteresisActivated = true;
+  // battery level is high
+  if (!voltageHysteresisActivated && batteryLevel >= 95) {
+    // battery level stable: stop charge
+    constexpr uint32_t timeoutMin = 7;
+    if (millis() - lastBatteryRead > 60 * 1000 * timeoutMin) {
+      shouldCharge = false;
+      voltageHysteresisActivated = true;
+    }
   }
   // do not start charge back until we drop below the target threshold
   else if (voltageHysteresisActivated) {
     shouldCharge = false;
-    if (battery::get_battery_level() < 97) {
+    if (batteryLevel < 90) {
       voltageHysteresisActivated = false;
+      lastBatteryRead = 0;
+      lastChargeValue = 0;
     }
   }
 
