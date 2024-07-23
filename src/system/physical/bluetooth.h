@@ -5,11 +5,13 @@
 
 namespace bluetooth {
 
+// #define USE_BLUETOOTH
+
 // call once when the program starts
 void startup_sequence();
 
-// enable the bluetooth controler
-void enable_bluetooth();
+// start the advertising sequence (with a timeout)
+void start_advertising();
 
 // disable the bluetooth controler
 void disable_bluetooth();

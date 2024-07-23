@@ -2,6 +2,8 @@
 
 #include <bluefruit.h>
 
+#include "../alerts.h"
+
 namespace bluetooth {
 
 #define ADV_TIMEOUT \
@@ -29,6 +31,8 @@ uint8_t packetbuffer[READ_BUFSIZE + 1];
 // Uart over BLE service
 BLEUart bleuart;
 
+static bool isInitialized = false;
+
 // convert a 4-bit nibble to a hexadecimal character
 char nibble_to_hex(uint8_t nibble) {
   nibble &= 0xF;
@@ -41,20 +45,26 @@ void byte_to_str(char *buff, uint8_t val) {
 }
 
 void connect_callback(uint16_t conn_hdl) {
+  AlertManager.clear_alert(Alerts::BLUETOOTH_ADVERT);
   Serial.println("Bluetooth connected");
 }
 
 void disconnect_callback(uint16_t conn_hdl, uint8_t reason) {
+  AlertManager.clear_alert(Alerts::BLUETOOTH_ADVERT);
   Serial.println("Bluetooth disconnected");
 }
 
 void adv_stop_callback(void) {
+  AlertManager.clear_alert(Alerts::BLUETOOTH_ADVERT);
   Serial.println("Advertising time passed, advertising will now stop.");
 }
 
 void startup_sequence() {
+  if (isInitialized) return;
+
   Bluefruit.autoConnLed(false);
   Bluefruit.setTxPower(4);  // Check bluefruit.h for supported values
+  Bluefruit.begin();
 
   // start uart reader
   bleuart.begin();
@@ -83,20 +93,33 @@ void startup_sequence() {
   // Since there is no room for 'Name' in Advertising packet
   Bluefruit.ScanResponse.addName();
 
+  Bluefruit.Advertising.setStopCallback(adv_stop_callback);
   Bluefruit.Advertising.restartOnDisconnect(true);
   Bluefruit.Advertising.setInterval(32, 244);  // in unit of 0.625 ms
   Bluefruit.Advertising.setFastTimeout(30);    // number of seconds in fast mode
 
   Bluefruit.Periph.setConnectCallback(connect_callback);
   Bluefruit.Periph.setDisconnectCallback(disconnect_callback);
+
+  isInitialized = true;
 }
 
-void enable_bluetooth() {
+void start_advertising() {
+  if (!isInitialized) return;
+
   Bluefruit.Advertising.start(
       ADV_TIMEOUT);  // Stop advertising entirely after ADV_TIMEOUT seconds
+
+  AlertManager.raise_alert(Alerts::BLUETOOTH_ADVERT);
 }
 
-void disable_bluetooth() { Bluefruit.Advertising.stop(); }
+void disable_bluetooth() {
+  if (!isInitialized) return;
+
+  AlertManager.clear_alert(Alerts::BLUETOOTH_ADVERT);
+
+  Bluefruit.Advertising.stop();
+}
 
 uint8_t readPacket(BLEUart *ble_uart, uint16_t timeout) {
   uint16_t origtimeout = timeout, replyidx = 0;
@@ -154,6 +177,8 @@ uint8_t readPacket(BLEUart *ble_uart, uint16_t timeout) {
 }
 
 void parse_messages() {
+  if (!isInitialized) return;
+
   // Wait for new data to arrive (1ms timeout)
   uint8_t len = readPacket(&bleuart, 1);
   if (len == 0) return;

@@ -92,7 +92,6 @@ void startup_sequence() {
   Serial.begin(115200);
 
 #ifdef USE_BLUETOOTH
-  bluetooth::enable_bluetooth();
   bluetooth::startup_sequence();
 #endif
 
@@ -150,8 +149,15 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
       }
       break;
 
-    // force a safety reset of the program
+    // enable bluetooth
     case 5:
+#ifdef USE_BLUETOOTH
+      bluetooth::start_advertising();
+#endif
+      break;
+
+    // force a safety reset of the program
+    case 6:
       button::set_color(utils::ColorSpace::PINK);
       // disable charger if charge was enabled
       if (charger::enable_charge()) charger::disable_charge();
@@ -283,10 +289,15 @@ void handle_alerts() {
       // limit brightness to quarter of the max value
       constexpr uint8_t clampedBrightness = 0.25 * MAX_BRIGHTNESS;
       MaxBrightnessLimit = clampedBrightness;
+
+      // save some battery
+      bluetooth::disable_bluetooth();
       update_brightness(min(clampedBrightness, BRIGHTNESS));
     } else if ((current & Alerts::LONG_LOOP_UPDATE) != 0x00) {
       // fast blink red
       button::blink(400, 400, utils::ColorSpace::FUSHIA);
+    } else if ((current & Alerts::BLUETOOTH_ADVERT) != 0x00) {
+      button::breeze(1000, 500, utils::ColorSpace::BLUE);
     } else {
       // unhandled case (white blink)
       button::blink(300, 300, utils::ColorSpace::WHITE);

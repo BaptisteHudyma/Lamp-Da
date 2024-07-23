@@ -18,6 +18,8 @@ enum Alerts {
                               // (bugs when reading button inputs)
   TEMP_TOO_HIGH = 1 << 5,     // Processor temperature is too high
   TEMP_CRITICAL = 1 << 6,     // Processor temperature is critical
+
+  BLUETOOTH_ADVERT = 1 << 7,  // bluetooth is advertising
 };
 
 class Alert {
