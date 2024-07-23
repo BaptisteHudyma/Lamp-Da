@@ -105,7 +105,10 @@ void startup_sequence() {
 }
 
 void start_advertising() {
-  if (!isInitialized) return;
+  if (!isInitialized) {
+    // call once when the program starts
+    startup_sequence();
+  }
 
   Bluefruit.Advertising.start(
       ADV_TIMEOUT);  // Stop advertising entirely after ADV_TIMEOUT seconds

@@ -91,10 +91,6 @@ void startup_sequence() {
 
   Serial.begin(115200);
 
-#ifdef USE_BLUETOOTH
-  bluetooth::startup_sequence();
-#endif
-
   // let the user power on the system
   user::power_on_sequence();
 
