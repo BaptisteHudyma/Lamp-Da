@@ -391,7 +391,9 @@ void power_off_sequence() {
   strip.show();  // Clear all pixels
 
   digitalWrite(LED_POWER_PIN, LOW);
-  pinMode(LED_POWER_PIN, INPUT_PULLDOWN);
+  // high drive input (5mA)
+  // The only way to discharge the DC-DC pin...
+  pinMode(LED_POWER_PIN, OUTPUT_H0H1);
 }
 
 void brightness_update(const uint8_t brightness) {
