@@ -8,37 +8,58 @@
 
 namespace user {
 
+constexpr int powerPin = AD1;
 constexpr int whitePin = AD0;
-constexpr int wellowPin = AD1;
+constexpr int yellowPin = AD2;
 
 const char* colorKey = "color";
 uint8_t currentColor = 0;
 uint8_t lastColor = 0;
 
-void set_color(const uint8_t color) {
-  static uint8_t lastWriteColor = 0;
-  analogWrite(wellowPin, UINT8_MAX - color);
-  analogWrite(whitePin, color);
+static uint8_t currentBrightness = 0;
 
-  lastWriteColor = color;
+void set_color(const uint8_t color) {
+  const float reduced = currentBrightness / 255.0;
+
+  uint8_t yellowColor = (UINT8_MAX - color) * reduced;
+  uint8_t whiteColor = color * reduced;
+
+  analogWrite(yellowPin, yellowColor);
+  analogWrite(whitePin, whiteColor);
 }
 
 void power_on_sequence() {
+  pinMode(powerPin, OUTPUT);
+  digitalWrite(powerPin, HIGH);
+
   pinMode(whitePin, OUTPUT);
-  pinMode(wellowPin, OUTPUT);
+  pinMode(yellowPin, OUTPUT);
+
+  analogWrite(yellowPin, 0);
+  analogWrite(whitePin, 0);
 
   ledpower::write_brightness(BRIGHTNESS);
 }
 
-void power_off_sequence() {}
+void power_off_sequence() {
+  analogWrite(yellowPin, 0);
+  analogWrite(whitePin, 0);
+
+  digitalWrite(powerPin, LOW);
+  // high drive input (5mA)
+  // The only way to discharge the DC-DC pin...
+  pinMode(powerPin, OUTPUT_H0H1);
+}
 
 void brightness_update(const uint8_t brightness) {
   if (brightness == 255) {
     // blip
-    ledpower::write_brightness(0);
+    currentBrightness = 0;
+    set_color(0);
     delay(4);  // blip light off if we reached max level
   }
-  ledpower::write_brightness(brightness);
+  currentBrightness = brightness;
+  set_color(currentColor);
 }
 
 void write_parameters() {
@@ -51,6 +72,8 @@ void read_parameters() {
     currentColor = mode;
     lastColor = currentColor;
   }
+
+  currentBrightness = BRIGHTNESS;
 }
 
 void button_clicked(const uint8_t clicks) {
