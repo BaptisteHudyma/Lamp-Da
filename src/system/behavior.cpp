@@ -123,8 +123,13 @@ void shutdown() {
   user::power_off_sequence();
 
   // do not power down when charger is plugged in
-  if (!charger::is_powered_on()) {
+  if (!charger::is_charging()) {
+    charger::shutdown();
     digitalWrite(USB_33V_PWR, LOW);
+
+    // wake up from charger plugged in
+    // nrf_gpio_cfg_sense_input(g_ADigitalPinMap[CHARGE_OK],
+    // NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_HIGH);
 
     // power down nrf52.
     // on wake up, it'll start back from the setup phase
@@ -156,7 +161,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
     case 6:
       button::set_color(utils::ColorSpace::PINK);
       // disable charger if charge was enabled
-      if (charger::enable_charge()) charger::disable_charge();
+      charger::disable_charge();
 
       // make watchdog stop the execution
       delay(6000);
@@ -233,6 +238,8 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
 void handle_alerts() {
   const uint32_t current = AlertManager.current();
 
+  const bool isChargeOk = charger::charge_processus();
+
   static uint32_t criticalbatteryRaisedTime = 0;
   if (current == Alerts::NONE) {
     MaxBrightnessLimit = MAX_BRIGHTNESS;
@@ -245,7 +252,7 @@ void handle_alerts() {
                             battery::get_battery_level() / 100.0));
 
     // display battery level
-    if (charger::enable_charge()) {
+    if (isChargeOk) {
       // charge mode
       button::breeze(2000, 2000, buttonColor);
     } else {

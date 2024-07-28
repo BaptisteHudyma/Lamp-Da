@@ -79,14 +79,11 @@ void setup() {
     }
   }
 
-  // started via VBUS (USB), go directly to charge mode
-  if (!charger::is_powered_on() &&
-      (readResetReason() & POWER_RESETREAS_VBUS_Msk) == 0x00) {
+  // started by interrupt (user)
+  if ((readResetReason() & POWER_RESETREAS_OFF_Msk) != 0x00) {
     startup_sequence();
-  } else {
-    shutdown();
-    charger::enable_charge();
   }
+  // else: start in shutdown mode
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread()) {
@@ -121,6 +118,30 @@ void check_loop_runtime(const uint32_t runTime) {
   };
 }
 
+void cpuTemperarureAlerts() {
+  // temperature alerts
+  const float procTemp = readCPUTemperature();
+  if (procTemp >= criticalSystemTemp_c) {
+    AlertManager.raise_alert(TEMP_CRITICAL);
+
+  } else if (procTemp >= maxSystemTemp_c) {
+    AlertManager.raise_alert(TEMP_TOO_HIGH);
+  } else {
+    AlertManager.clear_alert(TEMP_TOO_HIGH);
+    AlertManager.clear_alert(TEMP_CRITICAL);
+  }
+}
+
+void batteryAlerts() {
+  if (!charger::is_powered_on()) {
+    // no battery alert when charger is on
+    battery::raise_battery_alert();
+  } else {
+    AlertManager.clear_alert(Alerts::BATTERY_LOW);
+    AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);
+  }
+}
+
 void loop() {
   uint32_t start = millis();
 
@@ -135,7 +156,7 @@ void loop() {
     handle_alerts();
 
     // charger unplugged, real shutdown
-    if (!charger::is_powered_on()) {
+    if (!charger::is_charging()) {
       shutdown();
     }
 
@@ -146,25 +167,8 @@ void loop() {
   // user loop call
   user::loop();
 
-  // temperature alerts
-  const float procTemp = readCPUTemperature();
-  if (procTemp >= criticalSystemTemp_c) {
-    AlertManager.raise_alert(TEMP_CRITICAL);
-
-  } else if (procTemp >= maxSystemTemp_c) {
-    AlertManager.raise_alert(TEMP_TOO_HIGH);
-  } else {
-    AlertManager.clear_alert(TEMP_TOO_HIGH);
-    AlertManager.clear_alert(TEMP_CRITICAL);
-  }
-
-  if (!charger::is_powered_on()) {
-    // no battery alert when charger is on
-    battery::raise_battery_alert();
-  } else {
-    AlertManager.clear_alert(Alerts::BATTERY_LOW);
-    AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);
-  }
+  cpuTemperarureAlerts();
+  batteryAlerts();
 
 #ifdef USE_BLUETOOTH
   bluetooth::parse_messages();

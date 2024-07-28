@@ -171,7 +171,12 @@ class BQ25703A {
       FIELD(val0, CHRG_INHIBIT, 0x00, 0x01)
       // Enable low power mode. Default is enabled
       FIELD(val1, EN_LWPWR, 0x07, 0x01)
-      // Watchdog timer. Default is 175sec between commands (0x03)
+      // Watchdog timer. Reset it by setting ChargeCurrent  or MaxChargeVoltage
+      // commands
+      // 00b: Disable Watchdog Timer
+      // 01b: Enabled, 5 sec
+      // 10b: Enabled, 88 sec
+      // 11b: Enable Watchdog Timer, 175 sec <default at POR>
       FIELD(val1, WDTMR_ADJ, 0x05, 0x02)
       // Disable IDPM. Default is low (IDPM enabled)
       FIELD(val1, IDPM_AUTO_DISABLE, 0x04, 0x01)

@@ -19,11 +19,9 @@
 #include <string.h>
 
 #define t_PD_POLLING 100
-#define t_TypeCSinkWaitCap 350
+#define t_TypeCSinkWaitCap 300  // 350
 #define t_RequestToPSReady 580  // combine t_SenderResponse and t_PSTransition
 #define t_PPSRequest 5000       // must less than 10000 (10s)
-
-#define PIN_FUSB302_INT 12
 
 enum {
   STATUS_LOG_MSG_TX,
@@ -62,9 +60,36 @@ PD_UFP_c::PD_UFP_c()
   memset(&protocol, 0, sizeof(PD_protocol_t));
 }
 
+void PD_UFP_c::reset() {
+  isPowerNegociated = false;
+  ready_voltage = 0;
+  ready_current = 0;
+
+  PPS_voltage_next = 0;
+  PPS_current_next = 0;
+  status_initialized = 0;
+  status_src_cap_received = 0;
+
+  status_power = STATUS_POWER_NA;
+  time_polling = 0;
+  time_wait_src_cap = 0;
+  time_wait_ps_rdy = 0;
+  time_PPS_request = 0;
+  get_src_cap_retry_count = 0;
+  wait_src_cap = 0;
+  wait_ps_rdy = 0;
+  send_request = 0;
+
+  PD_protocol_reset(&protocol);
+}
+
 void PD_UFP_c::init(uint8_t int_pin, enum PD_power_option_t power_option) {
   init_PPS(int_pin, 0, 0, power_option);
 }
+
+// notify when the ic sends an interrupt signal
+bool interruptSet = false;
+void ic_interrupt() { interruptSet = true; }
 
 void PD_UFP_c::init_PPS(uint8_t int_pin, uint16_t PPS_voltage,
                         uint8_t PPS_current,
@@ -73,7 +98,10 @@ void PD_UFP_c::init_PPS(uint8_t int_pin, uint16_t PPS_voltage,
 
   this->int_pin = int_pin;
   // Initialize FUSB302
-  pinMode(int_pin, INPUT_PULLUP);  // Set FUSB302 int pin input ant pull up
+  pinMode(int_pin,
+          INPUT_PULLUP_SENSE);  // Set FUSB302 int pin input ant pull up
+  attachInterrupt(digitalPinToInterrupt(int_pin), ic_interrupt, CHANGE);
+
   FUSB302.i2c_address = 0x22;
   FUSB302.i2c_read = FUSB302_i2c_read;
   FUSB302.i2c_write = FUSB302_i2c_write;
@@ -94,12 +122,12 @@ void PD_UFP_c::init_PPS(uint8_t int_pin, uint16_t PPS_voltage,
   PD_protocol_init(&protocol);
   PD_protocol_set_power_option(&protocol, power_option);
   PD_protocol_set_PPS(&protocol, PPS_voltage, PPS_current, false);
-
-  status_log_event(STATUS_LOG_DEV);
 }
 
 void PD_UFP_c::run(void) {
-  if (timer() || digitalRead(int_pin) == 0) {
+  if (timer() || interruptSet) {
+    interruptSet = false;
+
     FUSB302_event_t FUSB302_events = 0;
     for (uint8_t i = 0;
          i < 3 && FUSB302_alert(&FUSB302, &FUSB302_events) != FUSB302_SUCCESS;
@@ -140,6 +168,14 @@ bool PD_UFP_c::is_vbus_ok() {
   return false;
 }
 
+uint16_t PD_UFP_c::get_vbus_voltage() {
+  uint16_t vbus = 0;
+  if (FUSB302_read_vbus_level(&FUSB302, &vbus) == FUSB302_SUCCESS) {
+    return vbus;
+  }
+  return 0;
+}
+
 FUSB302_ret_t PD_UFP_c::FUSB302_i2c_read(uint8_t dev_addr, uint8_t reg_addr,
                                          uint8_t *data, uint8_t count) {
   Wire.beginTransmission(dev_addr);
@@ -176,12 +212,10 @@ void PD_UFP_c::handle_protocol_event(PD_protocol_event_t events) {
     get_src_cap_retry_count = 0;
     wait_ps_rdy = 1;
     time_wait_ps_rdy = clock_ms();
-    status_log_event(STATUS_LOG_SRC_CAP);
   }
   if (events & PD_PROTOCOL_EVENT_REJECT) {
     if (wait_ps_rdy) {
       wait_ps_rdy = 0;
-      status_log_event(STATUS_LOG_POWER_REJECT);
     }
   }
   if (events & PD_PROTOCOL_EVENT_PS_RDY) {
@@ -198,18 +232,15 @@ void PD_UFP_c::handle_protocol_event(PD_protocol_event_t events) {
                             false);
         PPS_voltage_next = 0;
         send_request = 1;
-        status_log_event(STATUS_LOG_POWER_PPS_STARTUP);
       } else {
         time_PPS_request = clock_ms();
         status_power_ready(STATUS_POWER_PPS,
                            PD_protocol_get_PPS_voltage(&protocol),
                            PD_protocol_get_PPS_current(&protocol));
-        status_log_event(STATUS_LOG_POWER_READY);
       }
     } else {
       FUSB302_set_vbus_sense(&FUSB302, 1);
       status_power_ready(STATUS_POWER_TYP, p.max_v, p.max_i);
-      status_log_event(STATUS_LOG_POWER_READY);
     }
   }
 }
@@ -217,13 +248,13 @@ void PD_UFP_c::handle_protocol_event(PD_protocol_event_t events) {
 void PD_UFP_c::handle_FUSB302_event(FUSB302_event_t events) {
   if (events & FUSB302_EVENT_DETACHED) {
     isPowerNegociated = false;
-    PD_protocol_reset(&protocol);
+    reset();
     return;
   }
   if (events & FUSB302_EVENT_ATTACHED) {
     uint8_t cc1 = 0, cc2 = 0, cc = 0;
+    reset();
     FUSB302_get_cc(&FUSB302, &cc1, &cc2);
-    PD_protocol_reset(&protocol);
     if (cc1 && cc2 == 0) {
       cc = cc1;
     } else if (cc2 && cc1 == 0) {
@@ -235,7 +266,6 @@ void PD_UFP_c::handle_FUSB302_event(FUSB302_event_t events) {
     } else {
       set_default_power();
     }
-    status_log_event(STATUS_LOG_CC);
   }
   if (events & FUSB302_EVENT_RX_SOP) {
     isPowerNegociated = true;
@@ -245,7 +275,6 @@ void PD_UFP_c::handle_FUSB302_event(FUSB302_event_t events) {
     uint32_t obj[7];
     FUSB302_get_message(&FUSB302, &header, obj);
     PD_protocol_handle_msg(&protocol, header, obj, &protocol_event);
-    status_log_event(STATUS_LOG_MSG_RX, obj);
     if (protocol_event) {
       handle_protocol_event(protocol_event);
     }
@@ -257,7 +286,6 @@ void PD_UFP_c::handle_FUSB302_event(FUSB302_event_t events) {
     uint32_t obj[7];
     delay_ms(2); /* Delay respond in case there are retry messages */
     if (PD_protocol_respond(&protocol, &header, obj)) {
-      status_log_event(STATUS_LOG_MSG_TX, obj);
       FUSB302_tx_sop(&FUSB302, header, obj);
     }
   }
@@ -270,10 +298,9 @@ bool PD_UFP_c::timer(void) {
     if (get_src_cap_retry_count < 3) {
       uint16_t header;
       get_src_cap_retry_count += 1;
-      /* Try to request soruce capabilities message (will not cause power cycle
+      /* Try to request source capabilities message (will not cause power cycle
        * VBUS) */
       PD_protocol_create_get_src_cap(&protocol, &header);
-      status_log_event(STATUS_LOG_MSG_TX);
       FUSB302_tx_sop(&FUSB302, header, 0);
     } else {
       get_src_cap_retry_count = 0;
@@ -297,7 +324,6 @@ bool PD_UFP_c::timer(void) {
     /* Send request if option updated or regularly in PPS mode to keep power
      * alive */
     PD_protocol_create_request(&protocol, &header, obj);
-    status_log_event(STATUS_LOG_MSG_TX, obj);
     time_wait_ps_rdy = clock_ms();
     FUSB302_tx_sop(&FUSB302, header, obj);
   }
@@ -311,7 +337,6 @@ bool PD_UFP_c::timer(void) {
 void PD_UFP_c::set_default_power(void) {
   // 5V, 100mA default power
   status_power_ready(STATUS_POWER_TYP, PD_V(5), PD_A(0.1));
-  status_log_event(STATUS_LOG_POWER_READY);
 }
 
 void PD_UFP_c::status_power_ready(status_power_t status, uint16_t voltage,

@@ -79,4 +79,7 @@ FUSB302_ret_t FUSB302_tx_sop(FUSB302_dev_t *dev, uint16_t header,
 FUSB302_ret_t FUSB302_tx_hard_reset(FUSB302_dev_t *dev);
 FUSB302_ret_t FUSB302_alert(FUSB302_dev_t *dev, FUSB302_event_t *events);
 
+FUSB302_ret_t FUSB302_read_vbus_level(FUSB302_dev_t *dev,
+                                      uint16_t *vbusVoltage);
+
 #endif /* FUSB302_H */

@@ -4,18 +4,21 @@
 namespace charger {
 
 void setup();
+void shutdown();
 
 bool check_vendor_device_values();
 
 bool is_usb_powered();
 bool is_powered_on();
 
-bool enable_charge();
+// is charger active
+bool is_charging();
+
+// main charge processus, call at every cycles
+bool charge_processus();
 
 // write a sery of commands to the charger to disable the charging process
 void disable_charge();
-
-void set_system_voltage(const float voltage);
 
 }  // namespace charger
 

@@ -40,6 +40,7 @@
 
 /* Measure : 04h */
 #define MEAS_VBUS (0x01 << 6)
+#define MEAS_MDAC_MASK 0x3F
 
 /* Control0 : 06h */
 #define TX_FLUSH (0x01 << 6)
@@ -267,6 +268,36 @@ static inline FUSB302_ret_t reg_write(FUSB302_dev_t *dev, uint8_t address,
     dev->err_msg = FUSB302_ERR_MSG("Fail to write register");
   }
   return ret;
+}
+
+uint8_t read_vbus_bit(FUSB302_dev_t *dev, uint8_t mac) {
+  uint8_t orig_reg;
+  REG_READ(ADDRESS_MEASURE, &orig_reg, 1);
+
+  // set measure bit
+  uint8_t measure = MEAS_VBUS | (mac & MEAS_MDAC_MASK);
+  REG_WRITE(ADDRESS_MEASURE, &measure, 1);
+  dev->delay_ms(4);
+
+  uint8_t status0;
+  REG_READ(ADDRESS_STATUS0, &status0, 1);
+
+  REG_WRITE(ADDRESS_MEASURE, &orig_reg, 1);
+
+  return status0 & (1 << 5);
+}
+
+FUSB302_ret_t FUSB302_read_vbus_level(FUSB302_dev_t *dev,
+                                      uint16_t *vbusVoltage) {
+  uint8_t mdac = 0;
+  for (int i = 5; i >= 0; i--) {
+    uint8_t bitI = 1UL << i;
+    if (read_vbus_bit(dev, mdac | bitI)) mdac |= bitI;
+  }
+
+  *vbusVoltage = (mdac + 1) * 420;
+
+  return FUSB302_SUCCESS;
 }
 
 static FUSB302_ret_t FUSB302_read_cc_lvl(FUSB302_dev_t *dev,
@@ -528,7 +559,7 @@ FUSB302_ret_t FUSB302_get_cc(FUSB302_dev_t *dev, uint8_t *cc1, uint8_t *cc2) {
 FUSB302_ret_t FUSB302_get_vbus_level(FUSB302_dev_t *dev, uint8_t *vbus) {
   uint8_t reg_control;
   REG_READ(ADDRESS_STATUS0, &reg_control, 1);
-  *vbus = reg_control & VBUSOK ? 1 : 0;
+  *vbus = (reg_control & VBUSOK) ? 1 : 0;
   return FUSB302_SUCCESS;
 }
 
