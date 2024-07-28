@@ -21,7 +21,7 @@
 const char* brightnessKey = "brightness";
 
 // constantes
-static constexpr uint8_t MIN_BRIGHTNESS = 10;
+static constexpr uint8_t MIN_BRIGHTNESS = 15;
 static constexpr uint8_t MAX_BRIGHTNESS = 255;
 
 static uint8_t MaxBrightnessLimit =
