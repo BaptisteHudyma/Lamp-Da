@@ -4,7 +4,6 @@
 
 #include "system/behavior.h"
 #include "system/physical/fileSystem.h"
-#include "system/physical/led_power.h"
 
 namespace user {
 
@@ -29,26 +28,27 @@ void set_color(const uint8_t color) {
 }
 
 void power_on_sequence() {
+  pinMode(yellowPin, OUTPUT);
+  pinMode(whitePin, OUTPUT);
+
+  currentBrightness = BRIGHTNESS;
+  set_color(currentColor);
+
   pinMode(powerPin, OUTPUT);
   digitalWrite(powerPin, HIGH);
-
-  pinMode(whitePin, OUTPUT);
-  pinMode(yellowPin, OUTPUT);
-
-  analogWrite(yellowPin, 0);
-  analogWrite(whitePin, 0);
-
-  ledpower::write_brightness(BRIGHTNESS);
 }
 
 void power_off_sequence() {
-  analogWrite(yellowPin, 0);
-  analogWrite(whitePin, 0);
-
-  digitalWrite(powerPin, LOW);
   // high drive input (5mA)
   // The only way to discharge the DC-DC pin...
   pinMode(powerPin, OUTPUT_H0H1);
+  // turn off 12V driver
+  digitalWrite(powerPin, LOW);
+
+  delay(5);
+  // reset the output
+  currentBrightness = 0;
+  set_color(0);
 }
 
 void brightness_update(const uint8_t brightness) {
