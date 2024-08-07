@@ -156,7 +156,7 @@ void loop() {
     handle_alerts();
 
     // charger unplugged, real shutdown
-    if (!charger::is_charging()) {
+    if (!charger::is_usb_powered()) {
       shutdown();
     }
 

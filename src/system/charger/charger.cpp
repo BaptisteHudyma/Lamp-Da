@@ -34,9 +34,6 @@ void enable_charger() {
     //  BQ25703Areg.chargeOption3.set_BATFETOFF_HIZ(0);
     BQ25703Areg.chargeOption3.set_EN_OTG(0);
     charger.writeRegEx(BQ25703Areg.chargeOption3);
-
-    BQ25703Areg.chargeOption0.set_EN_LWPWR(0);
-    charger.writeRegEx(BQ25703Areg.chargeOption0);
   }
 }
 
@@ -52,6 +49,7 @@ void disable_charger() {
     BQ25703Areg.chargeOption3.set_EN_OTG(0);
     charger.writeRegEx(BQ25703Areg.chargeOption3);
 
+    // always deactivate low power mode for wake up
     BQ25703Areg.chargeOption0.set_EN_LWPWR(1);
     charger.writeRegEx(BQ25703Areg.chargeOption0);
   }
@@ -160,9 +158,14 @@ bool charge_processus() {
     if (batteryLevel >= 95) {
       // battery level stable: stop charge
       constexpr uint32_t timeoutMin = 7;
-      if (millis() - lastBatteryRead > 60 * 1000 * timeoutMin) {
+      // battery level stuck, stop charge
+      constexpr uint32_t safeTimeoutMin = 15;
+      const uint32_t timestamp = millis();
+      if (timestamp - lastBatteryRead > 60 * 1000 * timeoutMin) {
         shouldCharge = false;
         voltageHysteresisActivated = true;
+      } else if (timestamp - lastBatteryRead > 60 * 1000 * safeTimeoutMin) {
+        shouldCharge = false;
       }
     }
   }
@@ -194,7 +197,6 @@ bool charge_processus() {
     // dont run the charge functions
     return false;
   }
-
   // reset the reset flag
   isChargeResetted = false;
   // reset hysteresis
@@ -250,7 +252,7 @@ bool charge_processus() {
   // flag to signal that the charge must be stopped
   isChargeResetted = false;
 
-  return isChargeEnabled;
+  return true;
 }
 
 void disable_charge() {

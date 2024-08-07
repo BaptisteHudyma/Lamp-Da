@@ -123,7 +123,7 @@ void shutdown() {
   user::power_off_sequence();
 
   // do not power down when charger is plugged in
-  if (!charger::is_charging()) {
+  if (!charger::is_usb_powered()) {
     charger::shutdown();
     digitalWrite(USB_33V_PWR, LOW);
 

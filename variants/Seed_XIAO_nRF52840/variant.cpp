@@ -53,7 +53,7 @@ void initVariant() {
 
   pinMode(BAT21, INPUT);
 
-  pinMode(CHARGE_OK, INPUT_PULLUP_SENSE);
+  pinMode(CHARGE_OK, INPUT_PULLUP);
   pinMode(ENABLE_OTG, OUTPUT);
   pinMode(CHARGE_PROC_HOT, INPUT_PULLUP);
 
