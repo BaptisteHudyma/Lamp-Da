@@ -89,8 +89,6 @@ void startup_sequence() {
     return;
   }
 
-  Serial.begin(115200);
-
   // let the user power on the system
   user::power_on_sequence();
 

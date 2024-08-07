@@ -33,6 +33,10 @@
 
 #include <stdint.h>
 
+const String HARDWARE_VERSION = "1.0";
+const String BASE_SOFTWARE_VERSION =
+    "0.01";  // Update when the soft changes version
+
 constexpr uint8_t ADC_RES_EXP =
     12;  // resolution of the ADC, in bits (can be 8, 10, 12 or 14)
 constexpr uint32_t ADC_MAX_VALUE =

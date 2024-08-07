@@ -12,6 +12,7 @@
 #include "src/system/physical/button.h"
 #include "src/system/physical/fileSystem.h"
 #include "src/system/physical/led_power.h"
+#include "src/system/utils/serial.h"
 #include "src/system/utils/utils.h"
 #include "src/user_functions.h"
 
@@ -50,6 +51,9 @@ void setup() {
   Wire.setClock(400000);  // 400KHz clock
   Wire.setTimeout(100);   // ms timout
   Wire.begin();
+
+  // setup serial
+  serial::setup();
 
   analogReference(AR_INTERNAL_3_0);  // 3v reference
   analogReadResolution(ADC_RES_EXP);
@@ -150,6 +154,8 @@ void loop() {
 
   // loop is not ran in shutdown mode
   button::handle_events(button_clicked_callback, button_hold_callback);
+  // handle user serial events
+  serial::handleSerialEvents();
 
   if (is_shutdown()) {
     // display alerts if needed
@@ -187,7 +193,7 @@ void loop() {
   // display alerts if needed
   handle_alerts();
 
-  // automaticaly deactivate sensors if they are not used for a time
+  // automatically deactivate sensors if they are not used for a time
   microphone::disable_after_non_use();
   imu::disable_after_non_use();
 }

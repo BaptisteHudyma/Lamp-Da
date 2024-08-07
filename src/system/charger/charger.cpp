@@ -21,6 +21,8 @@ constexpr uint16_t baseChargeCurrent_mA = 128;
 
 PD_UFP_c PD_UFP;
 
+String status = "";
+
 static bool isChargeEnabled_s = true;
 void enable_charger() {
   // set charger to low impedance mode (enable charger)
@@ -88,6 +90,8 @@ void setup() {
 
   // first step, reset charger parameters
   disable_charge();
+
+  status.reserve(100);
 }
 
 void shutdown() { disable_charge(); }
@@ -153,30 +157,43 @@ bool charge_processus() {
       voltageHysteresisActivated = false;
       lastBatteryRead = 0;
       lastChargeValue = 0;
+      status = "NOT CHARGING: voltage hysteresys is being disabled";
+    } else {
+      status = "NOT CHARGING: voltage hysteresys activated";
     }
   } else {
+    // battery level stuck, stop charge (even if not full)
+    constexpr uint32_t safeTimeoutMin = 25;
+
+    // battery level high and stable: stop charge
+    constexpr uint32_t timeoutMin = 15;
+
+    const uint32_t timestamp = millis();
     if (batteryLevel >= 95) {
-      // battery level stable: stop charge
-      constexpr uint32_t timeoutMin = 7;
-      // battery level stuck, stop charge
-      constexpr uint32_t safeTimeoutMin = 15;
-      const uint32_t timestamp = millis();
       if (timestamp - lastBatteryRead > 60 * 1000 * timeoutMin) {
+        status = "NOT CHARGING: charge finished";
+
         shouldCharge = false;
         voltageHysteresisActivated = true;
-      } else if (timestamp - lastBatteryRead > 60 * 1000 * safeTimeoutMin) {
-        shouldCharge = false;
       }
+    } else if (timestamp - lastBatteryRead > 60 * 1000 * safeTimeoutMin) {
+      status = "NOT CHARGING: charge timeout: battery level stuck";
+
+      shouldCharge = false;
     }
   }
 
   // temperature too high, stop charge
   if ((AlertManager.current() & Alerts::TEMP_CRITICAL) != 0x00) {
+    status = "NOT CHARGING: temperature critical";
+
     shouldCharge = false;
   }
 
   // no power on VBUS, no charge
   if (!is_powered_on() && !PD_UFP.is_vbus_ok()) {
+    status = "NOT CHARGING: vbus level not ok";
+
     shouldCharge = false;
   }
   // else: normal voltages
@@ -204,6 +221,8 @@ bool charge_processus() {
 
   // charge part of the program
   if (not isChargeEnabled) {
+    status = "CHARGING: starting negociation";
+
     //  reset pd negociation
     PD_UFP.reset();
 
@@ -228,6 +247,7 @@ bool charge_processus() {
   uint16_t chargeCurrent_mA = baseChargeCurrent_mA;  // default usb voltage
   if (PD_UFP.is_USB_PD_available()) {
     if (can_use_max_power()) {
+      status = "CHARGING: USB PD power negociated";
       // get_current returns values in cA instead of mA, so must do x10
       chargeCurrent_mA = PD_UFP.get_current() * 10;
     }
@@ -235,6 +255,7 @@ bool charge_processus() {
   } else {
     // do not start charge without PD before one second
     if (millis() - startChargeEnabledTime > 2000) {
+      status = "CHARGING: standard charging mode after no charger answer";
       chargeCurrent_mA = 500;  // fallback current, for all chargeurs
     }
   }
@@ -264,5 +285,9 @@ void disable_charge() {
   setChargerADC(false);
   BQ25703Areg.chargeCurrent.set_current(baseChargeCurrent_mA);
 }
+
+String charge_status() { return status; }
+
+uint16_t getVbusVoltage_mV() { return PD_UFP.get_vbus_voltage(); }
 
 }  // namespace charger
