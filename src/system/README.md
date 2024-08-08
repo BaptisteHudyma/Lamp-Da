@@ -3,8 +3,10 @@
 - alert.h: Handle the diffferent alerts raised by the program
 - charger: charger related operations
     - charger.h: enable and disable the charging operation
+    - FUSB302: folder that contains the library to talk to the PD negocation ic. Adapted to this architecture
 - ext: external libraries
 - physical: stuf related to the physical components: button, bluetooth, IMU, ...
+    - LSM6DS3: library to talk to the IMU. Adapted to this architecture
     - battery.h: handle the battery readings, for battery level
     - bluetooth.h: Control the bluetooth associated behavior (foe now, causes segfaults, so not used)
     - BQ25703A.h: define i2c communications with the charger ic.
@@ -17,4 +19,5 @@
 - utils: General functions and constants that everybody needs
     - colorspace.h: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !
     - constants.h: global constants used all around the program
+    - serial.h: handle serial communication. Location of the CLI capabilities
     - utils.h: useful functions to make colors

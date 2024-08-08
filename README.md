@@ -1,22 +1,31 @@
-# LampColorControler
-An embedded program to control a led strip wrapped around a cylinder. Based on my own electrical design.
+# Lamp-Da
+
+A compact lantern project.
+
+This repository contains the software and PCB files to create a compact lantern, composed of a led strip wrapped around a 50mm cylinder.
 
 The code is not designed to be the most readable but to be robust, so it can be quite tricky to understand, sorry !
 
 ## Behavior
 
 base behavior:
-- The lamp starts and strops with one click.
+- The lamp starts and stops with one click.
 - The luminosity can be raised by clicking than holding, and diminished by double-clicking than holding.
 
 The battery level is displayed as a color gradient from green (high) to red (low).
 
+![battery levels](/Medias/lamp_top.jpg)
+
 Error and alerts are displayed as blinking animations:
 - low battery: slow red blinks
-- critical battery: fast red blinks
+- critical battery: fast red blinks, emergency shutdown
+- charging: breeze animation, changing color to reflect battery level
 - incoherent battery readings: fast green blinks
 - main loop too slow: fast fushia blinks
-- unhandled: fast orange blinks
+- temperature too high: fast orange blinks
+- temperature extreme: emergency shutdown
+- bluetooth advertising: blue breeze animation
+- unhandled: fast white blinks
 
 ### User defined behaviors
 The user MUST define the target behavior for the target uses.
@@ -25,20 +34,23 @@ Some functions are defined in user_functions.h, and must be implemented in user_
 They allow the user to program the exact desired behavior.
 
 Some branches are available for base models:
+- cct_led_strip: Program designed for a constant color temperature led strip.
 - constant_current_control_base: Program designed for a constant color led strip
 - indexable_strip_base: program designed for an indexable led strip wrapped around the lamp body
 
+![The different lamps](/Medias/lamp_types.jpg)
+Above: constant colors, cct, indexable
+
 ## File details
-- LampColorControler.ino: main class of the program, containing the setup and loop functions
-- variants/Seed_XIO_nRF52840
-    - variant.h: specification file to program the custom board of this project
-- src
+- Lamp-Da.ino: main class of the program, containing the setup and loop functions
     - user_constants.h: constants defined by the user for the program. they must be updated to match the lamp characteristics
     - user_functions.h; function called by the program, that the user must update for a specific application
 
 ## Physical build and architecture :
 
 The electrical circuit and build files can be found in the **electrical** folder.
+
+![electrical circuit](/Medias/circuit.jpg)
 
 The PCB can be ordered directly assembled from JLC PCB, for a total cost of around 270$ for the minimal 5 pieces command (price drops with a more commands, until around 11$/circuit).
 
@@ -53,6 +65,7 @@ The circuit features:
 - 9 programable IO pins (4 of which can be analog inputs, 4 can be pwm outputs). Based on nRF52840 ic.
 - MEMS Microphone, placed away from parasitic ringing components.
 - LSM6DS3TR IMU, placed on the exact center so the axis alignement is easy.
+- Bluetooth 5.1 low power, with correct 5/10m range.
 
 - Multiple protection features (ESD spikes protection, USB voltage snubber, USB voltage limitation, ...)
 
@@ -74,7 +87,7 @@ Once the bootloader is written, the microcontroler can be programed via USB, usi
 
 # Program flash
 
-Install the Adafruit nRF52 board support (version 1.2.0) [as described here](https://github.com/BaptisteHudyma/LampDa_nRF52_Arduino)
+Install the Adafruit nRF52 board support (version 1.6.1) [as described here](https://github.com/BaptisteHudyma/LampDa_nRF52_Arduino)
 
 Do not forget to replace the content of the version folder in .arduino15/packages/adafruit/hardware/nrf52 by the content of the [above repository](https://github.com/BaptisteHudyma/LampDa_nRF52_Arduino).
 
