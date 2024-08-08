@@ -170,11 +170,9 @@ void calm_mode_update() {
           GenerateRainbowSwirl(5000);  // swirl animation (5 seconds)
       if (categoryChange) rainbowSwirl.reset();
 
-      // animations::fill(rainbowSwirl, strip);
+      animations::fill(rainbowSwirl, strip);
 
-      imu::gravity_fluid(128, rainbowSwirl, strip, categoryChange);
-
-      rainbowSwirl.update();  // update
+      rainbowSwirl.update();
       break;
     }
     case 1:  // party wheel
@@ -217,7 +215,6 @@ void calm_mode_update() {
     }
     case 6: {
       animations::fire(60, 60, 255, PaletteHeatColors, strip);
-      // animations::mode_lake(128, PaletteOceanColors, strip);
       break;
     }
     case 7: {
@@ -306,13 +303,13 @@ void sound_mode_update() {
       microphone::vu_meter(redToGreenGradient, 128, strip);
       break;
 
-    case 1:  // pulse soud
-      microphone::fftDisplay(128, 128, PaletteHeatColors, categoryChange, strip,
-                             255);
+      /*case 1:  // pulse soud
+        microphone::fftDisplay(128, 128, PaletteHeatColors, categoryChange,
+        strip, 255);
 
-      break;
+        break;*/
 
-    case 2:
+    case 1:
       microphone::mode_2DWaverly(128, 64, PalettePartyColors, strip);
       break;
 
@@ -326,7 +323,7 @@ void sound_mode_update() {
   categoryChange = false;
 }
 
-void gyro_mode_update() {
+void sirenes_mode_update() {
   constexpr uint8_t maxGyroState = 0;
   switch (clamp_state_values(colorState, maxGyroState)) {
     case 0:
@@ -346,25 +343,28 @@ void gyro_mode_update() {
 void color_mode_update() {
   constexpr uint8_t maxColorMode = 4;
   switch (clamp_state_values(colorMode, maxColorMode)) {
-    case 0:  // gradient mode
+    case 0:  // Fixed colors, that the user can change
       gradient_mode_update();
       break;
 
-    case 1:  // calm mode
+    case 1:  // slow changing animations, nice to look at
       calm_mode_update();
       break;
 
     case 2:
+      // fast pacing animations
       party_mode_update();
       break;
 
-    case 3:  // sound mode
+    case 3:  // sound reacting mode
       sound_mode_update();
       break;
 
-    case 4:  // gyrophare
-      gyro_mode_update();
-      break;
+      /*
+      case 4:  // diverse alerts (police, firefighters etc)
+        sirenes_mode_update();
+        break;
+      */
 
     default:
       colorMode = 0;
