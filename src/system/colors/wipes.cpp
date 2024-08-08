@@ -60,7 +60,7 @@ bool dot_wipe_up(const Color& color, const uint32_t duration,
   const unsigned long delay =
       max(LOOP_UPDATE_PERIOD, duration / (float)LED_COUNT);
 
-  if (targetIndex >= 0 and targetIndex < LED_COUNT) {
+  if (targetIndex < LED_COUNT) {
     strip.fadeToBlackBy(fadeOut);
     // increment
     for (uint32_t increment = LED_COUNT / ceil(duration / delay); increment > 0;

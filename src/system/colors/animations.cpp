@@ -442,7 +442,8 @@ void candle(const palette_t& palette, LedStrip& strip) {
     const uint8_t minBrighness =
         currentStrenght - min(currentStrenght, targetPhaseAmplitude / 2);
     const uint8_t maxBrighness =
-        currentStrenght + min(255 - currentStrenght, targetPhaseAmplitude / 2);
+        currentStrenght +
+        min(UINT8_MAX - currentStrenght, targetPhaseAmplitude / 2);
 
     uint8_t brightness = random(minBrighness, maxBrighness);
     for (uint16_t i = 0; i < LED_COUNT; ++i) {
