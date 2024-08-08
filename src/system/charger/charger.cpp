@@ -163,10 +163,10 @@ bool charge_processus() {
     }
   } else {
     // battery level stuck, stop charge (even if not full)
-    constexpr uint32_t safeTimeoutMin = 25;
+    constexpr uint32_t safeTimeoutMin = 30;
 
     // battery level high and stable: stop charge
-    constexpr uint32_t timeoutMin = 15;
+    constexpr uint32_t timeoutMin = 20;
 
     const uint32_t timestamp = millis();
     if (batteryLevel >= 95) {
@@ -180,6 +180,16 @@ bool charge_processus() {
       status = "NOT CHARGING: charge timeout: battery level stuck";
 
       shouldCharge = false;
+
+      // battery level high and stable: stop charge
+      constexpr uint32_t timeoutRestartMin = 60;
+      if (timestamp - lastBatteryRead >
+          60 * 1000 * (safeTimeoutMin + timeoutRestartMin)) {
+        // reset charge after some time
+        voltageHysteresisActivated = false;
+        lastBatteryRead = 0;
+        lastChargeValue = 0;
+      }
     }
   }
 

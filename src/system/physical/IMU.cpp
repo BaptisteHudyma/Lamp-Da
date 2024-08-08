@@ -1,11 +1,10 @@
 #include "IMU.h"
 
-#include <LSM6DS3.h>
-
 #include <cstdint>
 #include <cstring>
 
 #include "Arduino.h"
+#include "LSM6DS3/LSM6DS3.h"
 
 namespace imu {
 

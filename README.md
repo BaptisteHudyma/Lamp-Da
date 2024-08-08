@@ -71,3 +71,13 @@ Once the bootloader is written, the microcontroler can be programed via USB, usi
 - Use a raspberry of any other linux system with gpios
 - Use the open source program **openocd** as described [in this post](https://forum.seeedstudio.com/t/xiao-ble-sense-bootloader-bricked-how-to-restore-it/263091/5)
 
+
+# Program flash
+
+Install the Adafruit nRF52 board support (version 1.2.0) [as described here](https://github.com/BaptisteHudyma/LampDa_nRF52_Arduino)
+
+Do not forget to replace the content of the version folder in .arduino15/packages/adafruit/hardware/nrf52 by the content of the [above repository](https://github.com/BaptisteHudyma/LampDa_nRF52_Arduino).
+
+After restarting the Arduino IDE, you can select "LampDa nRF52840" in Tools > Board > Adafruit nRF52 Board.
+
+After that, use the Arduino IDE as always, the program will compile for the LampDa board.
