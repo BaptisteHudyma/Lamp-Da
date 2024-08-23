@@ -24,6 +24,12 @@ void set_watchdog(const uint timeoutDelaySecond) {
   NRF_WDT->TASKS_START = 1;  // Start WDT
 }
 
+// if the system waked up by USB plugged in, set this flag
+bool wokeUpFromVBUS = false;
+
+// timestamp of the system wake up
+static uint32_t turnOnTime = 0;
+
 void setup() {
   // start by resetting the led driver
   ledpower::write_current(0);
@@ -35,13 +41,16 @@ void setup() {
     // allow user to flash the program again, without running the currently
     // stored program
     if (charger::is_usb_powered()) {
-      // card will shutdown after that
+      // system will reset & shutdown after that
       enterSerialDfu();
     } else {
       // alert the user that the lamp was resetted by watchdog
       shouldAlertUser = true;
     }
   }
+
+  // set turn on time
+  turnOnTime = millis();
 
   // set watchdog (reset the soft when the program crashes)
   // Should be long enough to flash the microcontroler !!!
@@ -88,6 +97,9 @@ void setup() {
     startup_sequence();
   }
   // else: start in shutdown mode
+  else {
+    wokeUpFromVBUS = true;
+  }
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread()) {
@@ -163,7 +175,11 @@ void loop() {
 
     // charger unplugged, real shutdown
     if (!charger::is_usb_powered()) {
-      shutdown();
+      if (wokeUpFromVBUS && millis() - turnOnTime < 2000) {
+        // security for charger with ringing voltage levels, wait some time for
+        // it to settle before shuting down
+      } else
+        shutdown();
     }
 
     delay(LOOP_UPDATE_PERIOD);

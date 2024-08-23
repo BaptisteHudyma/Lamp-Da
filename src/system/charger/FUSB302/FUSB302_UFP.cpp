@@ -277,7 +277,6 @@ uint8_t read_vbus_bit(FUSB302_dev_t *dev, uint8_t mac) {
   // set measure bit
   uint8_t measure = MEAS_VBUS | (mac & MEAS_MDAC_MASK);
   REG_WRITE(ADDRESS_MEASURE, &measure, 1);
-  dev->delay_ms(4);
 
   uint8_t status0;
   REG_READ(ADDRESS_STATUS0, &status0, 1);

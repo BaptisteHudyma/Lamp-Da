@@ -84,7 +84,6 @@ void setup() {
   // reset all registers of charger
   // BQ25703Areg.chargeOption3.set_RESET_REG(1);
   // charger.writeRegEx(BQ25703Areg.chargeOption3);
-  disable_charger();
 
   PD_UFP.init(CHARGE_INT, PD_POWER_OPTION_MAX_20V);
 

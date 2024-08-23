@@ -155,6 +155,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
 #endif
       break;
 
+#ifdef DEBUG_MODE
     // force a safety reset of the program
     case 6:
       button::set_color(utils::ColorSpace::PINK);
@@ -164,6 +165,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
       // make watchdog stop the execution
       delay(6000);
       break;
+#endif
 
     default:
       if (!is_shutdown()) {
