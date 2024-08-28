@@ -17,17 +17,17 @@ struct Cartesian {
 /**
  * X is the vertical axis, starting at zero and ending at stripXCoordinates
  */
-uint16_t to_screen_x(const uint16_t ledIndex);
+int16_t to_screen_x(const uint16_t ledIndex);
 
 /**
  * Y is the horizontal axis, starting at zero and ending at stripYCoordinates
  */
-uint16_t to_screen_y(const uint16_t ledIndex);
+int16_t to_screen_y(const uint16_t ledIndex);
 
 /**
  * Z is the depth axis, fixed to one (screen space)
  */
-uint16_t to_screen_z(const uint16_t ledIndex);
+int16_t to_screen_z(const uint16_t ledIndex);
 
 /**
  * Given the x and y, return the led index

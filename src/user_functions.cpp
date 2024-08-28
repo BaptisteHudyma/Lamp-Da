@@ -195,17 +195,17 @@ void calm_mode_update() {
     }
     case 2: {
       animations::random_noise(PaletteLavaColors, strip, categoryChange, true,
-                               3);
+                               64);
       break;
     }
     case 3: {
       animations::random_noise(PaletteForestColors, strip, categoryChange, true,
-                               3);
+                               64);
       break;
     }
     case 4: {
       animations::random_noise(PaletteOceanColors, strip, categoryChange, true,
-                               3);
+                               64);
       break;
     }
     case 5: {  // polar light
