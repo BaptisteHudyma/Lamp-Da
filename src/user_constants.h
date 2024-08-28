@@ -20,6 +20,7 @@ constexpr float ledSize_mm =
     1.0 / ledByMeter * 1000.0;  // size of the individual led
 constexpr float lampBodyCircumpherence_mm =
     2.0 * 3.14159265 * lampBodyRadius_mm;
+constexpr float ledPerTurn = lampBodyRadius_mm/ledByMeter; //Number of led per full turn
 constexpr float ledStripLenght_mm = LED_COUNT * ledSize_mm;
 
 constexpr float stripXCoordinates =
