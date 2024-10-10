@@ -4,8 +4,12 @@
 #include "../utils/utils.h"
 
 #define RELEASE_TIMING_MS 200
+#define RELEASE_BETWEEN_CLICKS 50
 
 namespace button {
+
+static ButtonStateTy buttonState = ButtonStateTy();
+ButtonStateTy get_button_state() { return buttonState; }
 
 static volatile bool wasButtonPressedDetected = false;
 void button_state_interrupt() { wasButtonPressedDetected = true; }
@@ -34,54 +38,50 @@ void treat_button_pressed(
     const bool isButtonPressDetected,
     const std::function<void(uint8_t)>& clickSerieCallback,
     const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback) {
-  static uint8_t clickedEvents = 0;  // multiple clicks
-  static uint32_t buttonHoldStart =
-      0;  // start of the hold event in millis, valid if clicked event is > 0
 
-  static uint32_t lastButtonPressedTime =
-      0;  // last time the pressed event was detected
-  static bool isButtonPressed = false;
-
-  const uint32_t currentMillis = millis();
-  const uint32_t sinceLastCall = currentMillis - lastButtonPressedTime;
-  const uint32_t buttonPressedDuration = currentMillis - buttonHoldStart;
+  buttonState.wasTriggered = false;
+  buttonState.lastEventTime = millis();
+  buttonState.sinceLastCall = buttonState.lastEventTime - buttonState.lastPressTime;
+  buttonState.pressDuration = buttonState.lastEventTime - buttonState.firstHoldTime;
 
   // currently in long press status
-  const bool isInLongPress =
-      isButtonPressed and buttonPressedDuration > HOLD_BUTTON_MIN_MS;
+  buttonState.isLongPressed = (buttonState.isPressed && buttonState.pressDuration > HOLD_BUTTON_MIN_MS);
 
   // remove button clicked if last call was too long ago
-  if (sinceLastCall > RELEASE_TIMING_MS or
-      (isInLongPress && sinceLastCall > RELEASE_TIMING_MS / 2)) {
-    // end of button press, change event
-    if (isInLongPress)
-      // signal end of click and hold
-      clickHoldSerieCallback(clickedEvents, 0);
-    else
-      clickSerieCallback(clickedEvents);
+  if ((buttonState.sinceLastCall > RELEASE_TIMING_MS) ||
+      (buttonState.isLongPressed && buttonState.sinceLastCall > RELEASE_TIMING_MS / 2)) {
+
+    // end of button press, trigger callback (press-hold action, or press action)
+    if (buttonState.isLongPressed) {
+      clickHoldSerieCallback(buttonState.nbClicksCounted, 0);
+    } else {
+      clickSerieCallback(buttonState.nbClicksCounted);
+    }
 
     // reset
-    clickedEvents = 0;
-    isButtonPressed = false;
-    buttonHoldStart = currentMillis;
+    buttonState.isPressed = false;
+    buttonState.isLongPressed = false;
+    buttonState.nbClicksCounted = 0;
+    buttonState.firstHoldTime = buttonState.lastEventTime;
+    buttonState.wasTriggered = true;
   }
 
   // set button high
   if (isButtonPressDetected) {
     // small delay since button press
-    if (sinceLastCall > 50) {
-      if (!isInLongPress) {
-        clickedEvents += 1;
-        buttonHoldStart = currentMillis;
+    if (buttonState.sinceLastCall > RELEASE_BETWEEN_CLICKS) {
+      if (!buttonState.isLongPressed) {
+        buttonState.nbClicksCounted += 1;
+        buttonState.firstHoldTime = buttonState.lastEventTime;
       }
     }
 
-    lastButtonPressedTime = currentMillis;
-    isButtonPressed = true;
+    buttonState.lastPressTime = buttonState.lastEventTime;
+    buttonState.isPressed = true;
   }
 
-  if (isInLongPress) {
-    clickHoldSerieCallback(clickedEvents, buttonPressedDuration);
+  if (buttonState.isLongPressed) {
+    clickHoldSerieCallback(buttonState.nbClicksCounted, buttonState.pressDuration);
   }
 }
 
