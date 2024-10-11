@@ -1,6 +1,10 @@
 #ifndef BEHAVIOR_HPP
 #define BEHAVIOR_HPP
 
+/** \file behavior.h
+ *  \brief Basic controller behavior, including alerts and user interactions
+ **/
+
 #include "alerts.h"
 #include "utils/constants.h"
 
@@ -30,14 +34,10 @@ extern void update_brightness(const uint8_t newBrightness,
                               const bool shouldUpdateCurrentBrightness = false,
                               const bool isInitialRead = false);
 
-/**
- * \brief callback of the button clicked sequence event
- */
+/// Main callback to handle "button clicked" sequence event
 extern void button_clicked_callback(const uint8_t consecutiveButtonCheck);
 
-/**
- * \brief callback of the button clicked sequence event with a final hold
- */
+/// Main callback to handle a "button clicked, then held" sequence event
 extern void button_hold_callback(const uint8_t consecutiveButtonCheck,
                                  const uint32_t buttonHoldDuration);
 
