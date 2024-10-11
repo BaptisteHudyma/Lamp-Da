@@ -74,6 +74,8 @@ static bool isShutdown = true;
 bool is_shutdown() { return isShutdown; }
 
 void startup_sequence() {
+  isShutdown = true;
+
   // initialize the battery level
   battery::get_battery_level(true);
 
@@ -86,6 +88,8 @@ void startup_sequence() {
       button::set_color(utils::ColorSpace::BLACK);
       delay(100);
     }
+
+    shutdown();
     return;
   }
 
@@ -96,7 +100,6 @@ void startup_sequence() {
 }
 
 void shutdown() {
-  isShutdown = true;
 
   // deactivate strip power
   pinMode(OUT_BRIGHTNESS, OUTPUT);
@@ -110,15 +113,22 @@ void shutdown() {
   bluetooth::disable_bluetooth();
 #endif
 
-  // save the current config to a file (akes some time so call it when the lamp
-  // appear to be shutdown already)
-  write_parameters();
-
   // deactivate indicators
   button::set_color(utils::ColorSpace::BLACK);
 
-  // let the user power off the system
-  user::power_off_sequence();
+  // some actions are to be done only if the system was power-on before
+  if(!isShutdown) {
+
+    // save the current config to a file
+    // (takes some time so call it when the lamp appear to be shutdown already)
+    write_parameters();
+
+    // let the user power off the system
+    user::power_off_sequence();
+  }
+
+  // flag system as powered down
+  isShutdown = true;
 
   // do not power down when charger is plugged in
   if (!charger::is_usb_powered()) {
