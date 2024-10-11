@@ -24,21 +24,48 @@ void brightness_update(const uint8_t brightness);
 void write_parameters();
 void read_parameters();
 
-/** \brief called when button is clicked
- * \param[in] clicks The number of consecutive clicks (>= 2)
+/** \brief called when button is clicked, whenever "default UI" is active.
+ *
+ * \param[in] clicks The number of consecutive clicks
  */
-void button_clicked(const uint8_t clicks);
+void button_clicked_default(const uint8_t clicks);
 
-/** \brief called when button is clicked and held pressed. It is called while
- * the button is pressed, so holdDuration increases
- * \param[in] clicks The number of consecutive clicks (>= 2)
- * \param[in] isEndOfHoldEvent True when the user releases the button,
- * holdDuration will contain junk
- * \param[in] holdDuration The duration of the held event. (valid if
- * isEndOfHoldEvent is false)
+/** \brief called when button is clicked then held pressed. It is called
+ *         repeatedly while the button is pressed, with holdDuration
+ *         increasing. This is called when "default UI" is active.
+ *
+ * \param[in] clicks Number of clicks including the long-pressed one
+ * \param[in] isEndOfHoldEvent True if the user released the button
+ * \param[in] holdDuration The duration of the held event
+ *
+ * Note that if isEndOfHoldEvent is True, then holdDuration is zero.
  */
-void button_hold(const uint8_t clicks, const bool isEndOfHoldEvent,
-                 const uint32_t holdDuration);
+void button_hold_default(const uint8_t clicks,
+                         const bool isEndOfHoldEvent,
+                         const uint32_t holdDuration);
+
+/** \brief called when button is clicked, if "usermode UI" is active. If an
+ *         action was performed, it must return true, if not (returns false)
+ *         the "default UI" action is performed.
+ *
+ * \param[in] clicks The number of consecutive clicks
+ */
+bool button_clicked_usermode(const uint8_t clicks);
+
+/** \brief called when button is clicked then held pressed, if "usermode UI" is
+ *         active. It is called repeatedly with holdDuration increasing. If an
+ *         action was performed, it must return true, if not (returns false)
+ *         the "default UI" action is performed.
+ *
+ * \param[in] clicks Number of clicks including the long-pressed one
+ * \param[in] isEndOfHoldEvent True when the user releases the button
+ * \param[in] holdDuration The duration of the held event
+ *
+ * Note that if isEndOfHoldEvent is True, then holdDuration is zero.
+ */
+bool button_hold_usermode(const uint8_t clicksBeforeLastHold,
+                          const bool isEndOfHoldEvent,
+                          const uint32_t holdDuration);
 
 // called at each loop call
 // if the duration of this call exeeds the loop target time, an alert will be
