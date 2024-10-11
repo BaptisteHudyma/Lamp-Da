@@ -31,6 +31,9 @@ static uint8_t MaxBrightnessLimit =
 uint8_t BRIGHTNESS = 50;  // default start value
 uint8_t currentBrightness = 50;
 
+// hold the boolean that configures if usermode UI is enable for the button
+bool isButtonUsermodeEnabled = false;
+
 void update_brightness(const uint8_t newBrightness,
                        const bool shouldUpdateCurrentBrightness,
                        const bool isInitialRead) {
@@ -93,6 +96,9 @@ void startup_sequence() {
     return;
   }
 
+  // usermode UI always disabled by default
+  button_disable_usermode();
+
   // let the user power on the system
   user::power_on_sequence();
 
@@ -100,6 +106,9 @@ void startup_sequence() {
 }
 
 void shutdown() {
+
+  // usermode UI always disabled by default
+  button_disable_usermode();
 
   // deactivate strip power
   pinMode(OUT_BRIGHTNESS, OUTPUT);
@@ -145,102 +154,186 @@ void shutdown() {
   }
 }
 
-// call when the button is finally release
+void button_disable_usermode() {
+  isButtonUsermodeEnabled = false;
+}
+
+bool is_button_usermode_enabled() {
+  return isButtonUsermodeEnabled;
+}
+
+// called when the button has been pressed N time
+//
 void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
   if (consecutiveButtonCheck == 0) return;
 
+  // reject other actions than "turning it on" if is_shutdown
+  if (is_shutdown()) {
+    if (consecutiveButtonCheck == 1) {
+      startup_sequence();
+    }
+    return;
+  }
+
+  // extended "usermode" UI bypass:
+  if (isButtonUsermodeEnabled) {
+
+    // custom usermode UI (return true to skip default action)
+    if (user::button_clicked_usermode(consecutiveButtonCheck)) {
+      return;
+    }
+  }
+
+  // basic "default" UI:
+  //    - 1 click: on/off
+  //    - 7+ clicks: shutdown immediately (or if DEBUG_MODE wait watchdog)
+  //
   switch (consecutiveButtonCheck) {
-    case 1:  // 1 click: shutdown
-      if (is_shutdown()) {
-        startup_sequence();
-      } else {
-        shutdown();
-      }
+
+    // 1 click: shutdown
+    case 1:
+      shutdown();
       break;
 
-    // enable bluetooth
-    case 5:
-#ifdef USE_BLUETOOTH
-      bluetooth::start_advertising();
-#endif
-      break;
+    // other behaviors
+    default:
+
+      // 7+ clicks: force shutdown (or safety reset if DEBUG_MODE)
+      if (consecutiveButtonCheck >= 7) {
+        button_disable_usermode();
 
 #ifdef DEBUG_MODE
-    // force a safety reset of the program
-    case 6:
-      button::set_color(utils::ColorSpace::PINK);
-      // disable charger if charge was enabled
-      charger::disable_charge();
-
-      // make watchdog stop the execution
-      delay(6000);
-      break;
+        // disable charger then wait 5s to be killed by watchdog
+        button::set_color(utils::ColorSpace::PINK);
+        charger::disable_charge();
+        delay(6000);
 #endif
 
-    default:
-      if (!is_shutdown()) {
-        // user behavior
-        user::button_clicked(consecutiveButtonCheck);
+        shutdown();
+        return;
       }
+
+      // user behaviors
+      user::button_clicked_default(consecutiveButtonCheck);
       break;
   }
 }
 
 #define BRIGHTNESS_RAMP_DURATION_MS 2000
 
+static constexpr float brightnessDivider = 1.0 / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
+
 void button_hold_callback(const uint8_t consecutiveButtonCheck,
                           const uint32_t buttonHoldDuration) {
-  // no click event
   if (consecutiveButtonCheck == 0) return;
 
-  // no events when shutdown
+  // compute parameters of the "press-hold" action
+  const bool isEndOfHoldEvent = (buttonHoldDuration <= 1);
+  const uint32_t holdDuration = (buttonHoldDuration > HOLD_BUTTON_MIN_MS)
+          ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
+
+  //
+  // "power-off" actions
+  //
+
+  // 3+hold (3s): turn it on, with bluetooth advertising
+#ifdef USE_BLUETOOTH
+  if (is_shutdown() && consecutiveButtonCheck == 3) {
+    if (isEndOfHoldEvent) return;
+    if (holdDuration > 3000 - HOLD_BUTTON_MIN_MS) {
+        startup_sequence();
+        bluetooth::start_advertising();
+        return;
+     }
+  }
+#endif
+
+  // 5+hold (3s): turn it on, but with usermode UI enabled
+  if (is_shutdown() && consecutiveButtonCheck == 5) {
+    if (isEndOfHoldEvent) return;
+    if (holdDuration > 3000 - HOLD_BUTTON_MIN_MS) {
+        startup_sequence();
+
+        for (uint8_t I = 0; I < 3; ++I) {
+          button::set_color(utils::ColorSpace::BLACK);
+          delay(100);
+          button::set_color(utils::ColorSpace::PINK);
+          delay(100);
+        }
+
+        isButtonUsermodeEnabled = true;
+        return;
+    }
+  }
+
   if (is_shutdown()) return;
 
-  const bool isEndOfHoldEvent = buttonHoldDuration <= 1;
-  const uint32_t holdDuration = buttonHoldDuration - HOLD_BUTTON_MIN_MS;
+  //
+  // "power-on" actions
+  //
 
-  static constexpr float brightnessDivider =
-      1.0 / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
+  // extended "usermode" UI called if enabled
+  if (isButtonUsermodeEnabled) {
 
+    // 5+hold (3s): always exit, can't be hooked
+    if (consecutiveButtonCheck == 5) {
+      if (holdDuration > 3000 - HOLD_BUTTON_MIN_MS) {
+        shutdown();
+        return;
+      }
+    }
+
+    // custom usermode UI (return true to skip default action)
+    if (user::button_hold_usermode(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration)) {
+      return;
+    }
+  }
+
+  // basic "default" UI:
+  //  - 1+hold: increase brightness
+  //  - 2+hold: decrease brightness
+  //
   switch (consecutiveButtonCheck) {
-    case 1:  // just hold the click
-      if (!isEndOfHoldEvent) {
+
+    // 1+hold: larger luminosity
+    case 1:
+      if (isEndOfHoldEvent) {
+        currentBrightness = BRIGHTNESS;
+
+      } else {
         const float percentOfTimeToGoUp =
-            float(MAX_BRIGHTNESS - currentBrightness) * brightnessDivider;
+          float(MAX_BRIGHTNESS - currentBrightness) * brightnessDivider;
 
         const auto newBrightness =
-            map(min(holdDuration,
-                    BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
-                0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
-                currentBrightness, MAX_BRIGHTNESS);
+          map(min(holdDuration,
+                  BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
+              0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
+              currentBrightness, MAX_BRIGHTNESS);
         update_brightness(newBrightness);
-      } else {
-        // switch brightness
-        currentBrightness = BRIGHTNESS;
       }
       break;
 
-    case 2:  // 2 click and hold
-             // lower luminositity
-      if (!isEndOfHoldEvent) {
+    // 2+hold: decrease brightness
+    case 2:
+      if (isEndOfHoldEvent) {
+        currentBrightness = BRIGHTNESS;
+
+      } else {
         const double percentOfTimeToGoDown =
-            float(currentBrightness - MIN_BRIGHTNESS) * brightnessDivider;
+          float(currentBrightness - MIN_BRIGHTNESS) * brightnessDivider;
 
         const auto newBrightness =
-            map(min(holdDuration,
-                    BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
-                0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
-                currentBrightness, MIN_BRIGHTNESS);
+          map(min(holdDuration,
+                  BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
+              0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
+              currentBrightness, MIN_BRIGHTNESS);
         update_brightness(newBrightness);
-      } else {
-        // switch brightness
-        currentBrightness = BRIGHTNESS;
       }
       break;
 
+    // user behaviors
     default:
-      // user defined behavior
-      user::button_hold(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
+      user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
       break;
   }
 }
