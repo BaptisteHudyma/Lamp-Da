@@ -453,10 +453,6 @@ void button_clicked_default(const uint8_t clicks) {
   }
 }
 
-bool button_clicked_usermode(const uint8_t clicks) {
-  return true;
-}
-
 void button_hold_default(const uint8_t clicks,
                          const bool isEndOfHoldEvent,
                          const uint32_t holdDuration) {
@@ -499,15 +495,23 @@ void button_hold_default(const uint8_t clicks,
   }
 }
 
+bool button_clicked_usermode(const uint8_t clicks) {
+  return true;
+}
+
 bool button_hold_usermode(const uint8_t clicks,
                           const bool isEndOfHoldEvent,
                           const uint32_t holdDuration) {
   return true;
 }
 
-void loop() { color_mode_update(); }
+void loop() {
+  color_mode_update();
+}
 
-bool should_spawn_thread() { return true; }
+bool should_spawn_thread() {
+  return true;
+}
 
 void user_thread() {
   strip.show();  // show at the end of the loop (only does it if needed)}
