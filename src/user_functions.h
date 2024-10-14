@@ -7,6 +7,7 @@
 
 #include "Arduino.h"
 #include "system/utils/strip.h"
+#include "modes/mode_types.h"
 
 /// Contains code handling custom user mode functions for indexable strips
 namespace user {
