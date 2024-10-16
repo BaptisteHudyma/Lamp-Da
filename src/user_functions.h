@@ -7,7 +7,7 @@
 
 #include "Arduino.h"
 #include "system/utils/strip.h"
-#include "modes/mode_types.h"
+#include "modes/mode_type.h"
 
 /// Contains code handling custom user mode functions for indexable strips
 namespace user {
@@ -70,7 +70,7 @@ void button_hold_default(const uint8_t nbClickAndHold,
 
 /** \brief Called to handle button click events if "usermode UI" is active
  *
- * By default, dispatched to modes::ModeTy::custom_click()
+ * By default, dispatched to modes::BasicMode::custom_click()
  *
  * \param[in] nbClick The number of clicks made by the user
  * \return Returns True if default UI action should be prevented
@@ -81,7 +81,7 @@ bool button_clicked_usermode(const uint8_t nbClick);
 
 /** \brief Called to handle button click+hold events if "usermode UI" is on
  *
- * By default, dispatched to modes::ModeTy::custom_hold()
+ * By default, dispatched to modes::BasicMode::custom_hold()
  *
  * \param[in] nbClickAndHold The number of clicks made by the user
  * \param[in] isEndOfHoldEvent True if the user just released the button
@@ -95,13 +95,13 @@ bool button_hold_usermode(const uint8_t nbClickAndHold,
 
 /** \brief Called at each tick of the main loop
  *
- * By default, dispatched to modes::ModeTy::loop()
+ * By default, dispatched to modes::BasicMode::loop()
  */
 void loop();
 
 /** \brief Determine if a second user_thread() loop thread should be spawned
  *
- * By default, returns True if any mode sets modes::ModeTy::requireUserThread
+ * By default, returns True if any mode sets modes::BasicMode::requireUserThread
  *
  * \return Return True if user_thread() shall be executed in another thread
  */
@@ -109,7 +109,7 @@ bool should_spawn_thread();
 
 /** \brief Called at each tick of the secondary thread
  *
- * By default, dispatched to modes::ModeTy::user_thread()
+ * By default, dispatched to modes::BasicMode::user_thread()
  *
  * \remark This loop is only if should_spawn_thread() returned
  * True when the system probed it to check if it needed a secondary thread

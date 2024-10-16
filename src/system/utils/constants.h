@@ -31,7 +31,8 @@
 #include "rp2040_pio.h"
 #endif
 
-#include <stdint.h>
+#include <cstdint>
+using uint = unsigned int;
 
 const String HARDWARE_VERSION = "1.0";
 const String BASE_SOFTWARE_VERSION =
@@ -79,5 +80,9 @@ static constexpr uint32_t BUTTON_PIN = D6;
 static constexpr uint32_t BUTTON_RED = D5; /* DO NOT COMMIT: this is D4 */
 static constexpr uint32_t BUTTON_GREEN = D4;
 static constexpr uint32_t BUTTON_BLUE = D7;
+
+#ifndef M_PI
+#define M_PI 3.141592653589793238462643
+#endif
 
 #endif
