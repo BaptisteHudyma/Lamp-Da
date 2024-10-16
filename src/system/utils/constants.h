@@ -31,7 +31,8 @@
 #include "rp2040_pio.h"
 #endif
 
-#include <stdint.h>
+#include <cstdint>
+using uint = unsigned int;
 
 const String HARDWARE_VERSION = "1.0";
 const String BASE_SOFTWARE_VERSION =

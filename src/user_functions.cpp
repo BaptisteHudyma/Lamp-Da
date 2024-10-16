@@ -10,9 +10,18 @@
 #include "system/physical/MicroPhone.h"
 #include "system/physical/fileSystem.h"
 
+#include "modes/group_type.h"
+#include "modes/default/fixed_modes.h"
+#include "modes/manager_type.h"
+
 namespace user {
 
+using ManagerTy = modes::ManagerFor<
+    FixedModes
+  >;
+
 LedStrip strip(AD0);
+ManagerTy modeManager(strip);
 
 constexpr uint32_t LED_POWER_PIN = AD1;
 
@@ -376,6 +385,8 @@ void color_mode_update() {
 }
 
 void power_on_sequence() {
+
+  // power on
   pinMode(LED_POWER_PIN, OUTPUT);
   digitalWrite(LED_POWER_PIN, HIGH);
 
@@ -384,32 +395,59 @@ void power_on_sequence() {
   strip.clear();
   strip.show();  // Turn OFF all pixels ASAP
   strip.setBrightness(BRIGHTNESS);
+
+  // callbacks
+  auto manager = modeManager.get_context();
+  manager.power_on_sequence();
 }
 
 void power_off_sequence() {
+
+  // callbacks
+  auto manager = modeManager.get_context();
+  manager.power_off_sequence();
+
+  // clean strip object
   strip.clear();
   strip.show();  // Clear all pixels
 
+  // power off
   digitalWrite(LED_POWER_PIN, LOW);
+  pinMode(LED_POWER_PIN, OUTPUT_H0H1);
+  //
   // high drive input (5mA)
   // The only way to discharge the DC-DC pin...
-  pinMode(LED_POWER_PIN, OUTPUT_H0H1);
 }
 
 void brightness_update(const uint8_t brightness) {
+
+  // set brightness in strip object
   strip.setBrightness(brightness);
+
+  // callbacks
+  auto manager = modeManager.get_context();
+  manager.brightness_update(brightness);
 }
 
 void write_parameters() {
+  auto manager = modeManager.get_context();
+
+  // TODO: migrate
   fileSystem::set_value(std::string(colorModeKey), colorMode);
   fileSystem::set_value(std::string(colorStateKey), colorState);
   fileSystem::set_value(std::string(colorCodeIndexForWarmLightKey),
                         colorCodeIndexForWarmLight);
   fileSystem::set_value(std::string(colorCodeIndexForColoredLightKey),
                         colorCodeIndexForColoredLight);
+
+  // callbacks
+  modeManager.get_context().write_parameters();
 }
 
 void read_parameters() {
+  auto manager = modeManager.get_context();
+
+  // TOOD: migrate
   uint32_t mode = 0;
   if (fileSystem::get_value(std::string(colorModeKey), mode)) {
     colorMode = mode;
@@ -431,24 +469,25 @@ void read_parameters() {
                             coloredLight)) {
     colorCodeIndexForColoredLight = coloredLight;
   }
+
+  // callbacks
+  manager.read_parameters();
 }
 
 void button_clicked_default(const uint8_t clicks) {
+  auto manager = modeManager.get_context();
+
   switch (clicks) {
-    case 2:  // 2 clicks: increment color state
-      increment_color_state();
+    case 2: // 2 clicks: next mode
+      manager.next_mode();
       break;
 
-    case 3:  // 3 clicks: decrement color state
-      decrement_color_state();
+    case 3: // 3 clicks: next group
+      manager.next_group();
       break;
 
-    case 4:  // 4 clicks: increment color mode
-      increment_color_mode();
-      break;
-
-    case 5:  // 5 clicks: decrement color mode
-      decrement_color_mode();
+    case 4: // 4 clicks: jump to favorite
+      // manager.jump_to_favorite()
       break;
   }
 }
@@ -496,25 +535,35 @@ void button_hold_default(const uint8_t clicks,
 }
 
 bool button_clicked_usermode(const uint8_t clicks) {
-  return true;
+  auto manager = modeManager.get_context();
+  return manager.custom_click(clicks);
 }
 
 bool button_hold_usermode(const uint8_t clicks,
                           const bool isEndOfHoldEvent,
                           const uint32_t holdDuration) {
-  return true;
+  auto manager = modeManager.get_context();
+  return manager.custom_hold(clicks, isEndOfHoldEvent, holdDuration);
 }
 
 void loop() {
-  color_mode_update();
+  auto manager = modeManager.get_context();
+  manager.loop();
+
+  // if user_thread is disabled, just strip.show() here
+  if (!ManagerTy::requireUserThread) {
+    strip.show();
+  }
 }
 
 bool should_spawn_thread() {
-  return true;
+  return ManagerTy::requireUserThread;
 }
 
 void user_thread() {
-  strip.show();  // show at the end of the loop (only does it if needed)}
+  auto manager = modeManager.get_context();
+  manager.user_thread();
+  strip.show();
 }
 
 }  // namespace user
