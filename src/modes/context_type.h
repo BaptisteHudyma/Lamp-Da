@@ -220,6 +220,11 @@ struct ContextTy {
     }
   }
 
+  /// Returns BasicMode::requireUserThread
+  bool LMBD_INLINE should_spawn_thread() {
+    return LocalBasicMode::requireUserThread;
+  }
+
   /// Binds to local BasicMode::user_thread()
   void LMBD_INLINE user_thread() {
     if constexpr (LocalBasicMode::requireUserThread) {
