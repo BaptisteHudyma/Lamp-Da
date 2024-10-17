@@ -10,21 +10,48 @@
 #include "system/physical/MicroPhone.h"
 #include "system/physical/fileSystem.h"
 
+//
+// code below requires c++17
+//
+
+#ifdef LMBD_EXPLICIT_CPP17_SUPPORT
+
 #include "modes/group_type.h"
 #include "modes/default/fixed_modes.h"
 #include "modes/manager_type.h"
 
 namespace user {
 
+//
+// list your groups & modes here
+//
+
 using ManagerTy = modes::ManagerFor<
     FixedModes
   >;
 
+//
+// implementation details
+//
+
+namespace _private {
+
 LedStrip strip(AD0);
 ManagerTy modeManager(strip);
 
-constexpr uint32_t LED_POWER_PIN = AD1;
+} // namespace _private
 
+static auto LMBD_INLINE get_context() {
+  return user::_private::modeManager.get_context();
+}
+
+static constexpr uint32_t LED_POWER_PIN = AD1;
+
+//
+// TODO: migrate all this
+//
+
+#if 0
 bool modeChange = true;      // signal a color mode change
 bool categoryChange = true;  // signal a color category change
 
@@ -383,33 +410,34 @@ void color_mode_update() {
   // reset mode change
   modeChange = false;
 }
+#endif
 
 void power_on_sequence() {
+  auto manager = get_context();
 
   // power on
   pinMode(LED_POWER_PIN, OUTPUT);
   digitalWrite(LED_POWER_PIN, HIGH);
 
   // initialize the strip object
-  strip.begin();
-  strip.clear();
-  strip.show();  // Turn OFF all pixels ASAP
-  strip.setBrightness(BRIGHTNESS);
+  manager.strip.begin();
+  manager.strip.clear();
+  manager.strip.show();  // Turn OFF all pixels ASAP
+  manager.strip.setBrightness(BRIGHTNESS);
 
   // callbacks
-  auto manager = modeManager.get_context();
   manager.power_on_sequence();
 }
 
 void power_off_sequence() {
 
   // callbacks
-  auto manager = modeManager.get_context();
+  auto manager = get_context();
   manager.power_off_sequence();
 
   // clean strip object
-  strip.clear();
-  strip.show();  // Clear all pixels
+  manager.strip.clear();
+  manager.strip.show();  // Clear all pixels
 
   // power off
   digitalWrite(LED_POWER_PIN, LOW);
@@ -420,18 +448,20 @@ void power_off_sequence() {
 }
 
 void brightness_update(const uint8_t brightness) {
+  auto manager = get_context();
 
   // set brightness in strip object
-  strip.setBrightness(brightness);
+  manager.strip.setBrightness(brightness);
 
   // callbacks
-  auto manager = modeManager.get_context();
   manager.brightness_update(brightness);
 }
 
 void write_parameters() {
-  auto manager = modeManager.get_context();
+  auto manager = get_context();
+  manager.write_parameters();
 
+#if 0
   // TODO: migrate
   fileSystem::set_value(std::string(colorModeKey), colorMode);
   fileSystem::set_value(std::string(colorStateKey), colorState);
@@ -439,14 +469,14 @@ void write_parameters() {
                         colorCodeIndexForWarmLight);
   fileSystem::set_value(std::string(colorCodeIndexForColoredLightKey),
                         colorCodeIndexForColoredLight);
-
-  // callbacks
-  modeManager.get_context().write_parameters();
+#endif
 }
 
 void read_parameters() {
-  auto manager = modeManager.get_context();
+  auto manager = get_context();
+  manager.read_parameters();
 
+#if 0
   // TOOD: migrate
   uint32_t mode = 0;
   if (fileSystem::get_value(std::string(colorModeKey), mode)) {
@@ -469,13 +499,11 @@ void read_parameters() {
                             coloredLight)) {
     colorCodeIndexForColoredLight = coloredLight;
   }
-
-  // callbacks
-  manager.read_parameters();
+#endif
 }
 
 void button_clicked_default(const uint8_t clicks) {
-  auto manager = modeManager.get_context();
+  auto manager = get_context();
 
   switch (clicks) {
     case 2: // 2 clicks: next mode
@@ -495,7 +523,9 @@ void button_clicked_default(const uint8_t clicks) {
 void button_hold_default(const uint8_t clicks,
                          const bool isEndOfHoldEvent,
                          const uint32_t holdDuration) {
+  return;
 
+#if 0
   switch (clicks) {
     case 3: // 3+hold: color wheel forward
       if (isEndOfHoldEvent) {
@@ -532,38 +562,100 @@ void button_hold_default(const uint8_t clicks,
       }
       break;
   }
+#endif
 }
 
 bool button_clicked_usermode(const uint8_t clicks) {
-  auto manager = modeManager.get_context();
+  auto manager = get_context();
   return manager.custom_click(clicks);
 }
 
 bool button_hold_usermode(const uint8_t clicks,
                           const bool isEndOfHoldEvent,
                           const uint32_t holdDuration) {
-  auto manager = modeManager.get_context();
+  auto manager = get_context();
   return manager.custom_hold(clicks, isEndOfHoldEvent, holdDuration);
 }
 
 void loop() {
-  auto manager = modeManager.get_context();
+  auto manager = get_context();
   manager.loop();
 
   // if user_thread is disabled, just strip.show() here
-  if (!ManagerTy::requireUserThread) {
-    strip.show();
+  if (!manager.should_spawn_thread()) {
+    manager.strip.show();
   }
 }
 
 bool should_spawn_thread() {
-  return ManagerTy::requireUserThread;
+  auto manager = get_context();
+  return manager.should_spawn_thread();
 }
 
 void user_thread() {
-  auto manager = modeManager.get_context();
+  auto manager = get_context();
   manager.user_thread();
-  strip.show();
+  manager.strip.show();
 }
 
 }  // namespace user
+
+#else
+#warning "This file requires --std=gnu++17 or higher to build!"
+
+//
+// no c++17 support -- use placeholder implementation
+//
+
+namespace user {
+
+LedStrip strip(AD0);
+static constexpr unsigned int LED_POWER_PIN = AD1;
+
+void power_on_sequence() {
+  pinMode(LED_POWER_PIN, OUTPUT);
+  digitalWrite(LED_POWER_PIN, HIGH);
+
+  strip.begin();
+  strip.clear();
+  strip.show();
+  strip.setBrightness(BRIGHTNESS);
+}
+
+void power_off_sequence() {
+  strip.clear();
+  strip.show();
+
+  digitalWrite(LED_POWER_PIN, LOW);
+  pinMode(LED_POWER_PIN, OUTPUT_H0H1);
+}
+
+void brightness_update(const uint8_t) { }
+void write_parameters() { }
+void read_parameters() { }
+void button_clicked_default(const uint8_t) { }
+void button_hold_default(const uint8_t, const bool, const uint32_t) { }
+
+bool button_clicked_usermode(const uint8_t) {
+    return false;
+}
+
+bool button_hold_usermode(const uint8_t, const bool, const uint32_t) {
+  return false;
+}
+
+void loop() {
+  strip.fill(LedStrip::Color(255, 0, 255), 0, LED_COUNT); // pink fill
+}
+
+bool should_spawn_thread() {
+  return true;
+}
+
+void user_thread() {
+  strip.show();
+}
+
+}
+
+#endif
