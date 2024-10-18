@@ -5,7 +5,7 @@
 
 namespace bluetooth {
 
-// #define USE_BLUETOOTH
+#define USE_BLUETOOTH
 
 // start the advertising sequence (with a timeout)
 void start_advertising();
