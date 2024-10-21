@@ -36,8 +36,15 @@ void setup() {
 
   bool shouldAlertUser = false;
 
+  uint32_t isFirstBoot = 1;
+  if (not fileSystem::get_value(std::string("isFirstBoot"), isFirstBoot) or
+      isFirstBoot) {
+    // if first boot, then store the flag
+    fileSystem::set_value(std::string("isFirstBoot"), 0);
+  }
+
   // resetted by watchdog
-  if ((readResetReason() & POWER_RESETREAS_DOG_Msk) != 0x00) {
+  if (!isFirstBoot && (readResetReason() & POWER_RESETREAS_DOG_Msk) != 0x00) {
     // allow user to flash the program again, without running the currently
     // stored program
     if (charger::is_usb_powered()) {
