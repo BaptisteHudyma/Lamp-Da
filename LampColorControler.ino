@@ -16,7 +16,7 @@
 #include "src/system/utils/utils.h"
 #include "src/user_functions.h"
 
-void set_watchdog(const uint timeoutDelaySecond) {
+void set_watchdog(const uint32_t timeoutDelaySecond) {
   // Configure WDT
   NRF_WDT->CONFIG = 0x01;  // Configure WDT to run when CPU is asleep
   NRF_WDT->CRV = timeoutDelaySecond * 32768 + 1;  // set timeout

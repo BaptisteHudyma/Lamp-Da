@@ -80,4 +80,8 @@ static constexpr uint32_t BUTTON_RED = D8;
 static constexpr uint32_t BUTTON_GREEN = D4;
 static constexpr uint32_t BUTTON_BLUE = D7;
 
+#ifndef M_PI
+#define M_PI 3.141592653589793238462643
+#endif
+
 #endif
