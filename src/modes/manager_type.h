@@ -33,6 +33,7 @@ struct ModeManagerTy {
   // tuple helpers
   using SelfTy = ModeManagerTy<AllGroups>;
   using AllGroupsTy = AllGroups;
+  // using AllStatesTy = details::StateTyFrom<AllGroups>;
   static constexpr uint8_t nbGroups{std::tuple_size_v<AllGroupsTy>};
 
   template <uint8_t Idx>

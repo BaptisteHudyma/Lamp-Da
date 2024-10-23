@@ -22,11 +22,12 @@ static auto context_as(auto& ctx) {
 }
 
 /// Local context exposing system features to active BasicMode
-template <typename LocalMode, typename ModeManager>
+template <typename LocalBasicMode, typename ModeManager>
 struct ContextTy {
   friend ModeManager;
 
-  using LocalBasicMode = LocalMode;
+  using SelfTy = ContextTy<LocalBasicMode, ModeManager>;
+  using LocalModeTy = LocalBasicMode;
   using ModeManagerTy = ModeManager;
 
   //
@@ -56,22 +57,22 @@ struct ContextTy {
 
   /// \private Jump to next group
   auto LMBD_INLINE next_group() {
-    if constexpr (LocalBasicMode::isGroupManager) {
-      LocalBasicMode::next_group(*this);
+    if constexpr (LocalModeTy::isGroupManager) {
+      LocalModeTy::next_group(*this);
     }
   }
 
   /// \private Jump to next mode
   auto LMBD_INLINE next_mode() {
-    if constexpr (LocalBasicMode::isModeManager) {
-      LocalBasicMode::next_mode(*this);
+    if constexpr (LocalModeTy::isModeManager) {
+      LocalModeTy::next_mode(*this);
     }
   }
 
   /// \private Reset active mode
   auto LMBD_INLINE reset_mode() {
-    if constexpr (LocalBasicMode::isModeManager) {
-      LocalBasicMode::reset_mode(*this);
+    if constexpr (LocalModeTy::isModeManager) {
+      LocalModeTy::reset_mode(*this);
     }
   }
 
@@ -138,97 +139,97 @@ struct ContextTy {
   }
 
   //
-  // quick bindings to \p LocalBasicMode
+  // quick bindings to \p LocalModeTy
   //
 
   /// Binds to local BasicMode::loop()
   void LMBD_INLINE loop() {
-    if constexpr (LocalBasicMode::simpleMode) {
-      LocalBasicMode::loop(this->strip);
+    if constexpr (LocalModeTy::simpleMode) {
+      LocalModeTy::loop(this->strip);
     } else {
-      LocalBasicMode::loop(*this);
+      LocalModeTy::loop(*this);
     }
   }
 
   /// Binds to local BasicMode::reset()
   void LMBD_INLINE reset() {
-    LocalBasicMode::reset(*this);
+    LocalModeTy::reset(*this);
   }
 
   /// Binds to local BasicMode::brightness_update()
   void LMBD_INLINE brightness_update(LMBD_USED uint8_t brightness) {
-    if constexpr (LocalBasicMode::hasBrightCallback) {
-      LocalBasicMode::brightness_update(*this, brightness);
+    if constexpr (LocalModeTy::hasBrightCallback) {
+      LocalModeTy::brightness_update(*this, brightness);
     }
   }
 
   /// Binds to local BasicMode::custom_ramp_update()
   void LMBD_INLINE custom_ramp_update(LMBD_USED uint8_t rampValue) {
-    if constexpr (LocalBasicMode::hasCustomRamp) {
-      LocalBasicMode::custom_ramp_update(*this, rampValue);
+    if constexpr (LocalModeTy::hasCustomRamp) {
+      LocalModeTy::custom_ramp_update(*this, rampValue);
     }
   }
 
   /// Binds to local BasicMode::custom_click()
   bool LMBD_INLINE custom_click(LMBD_USED uint8_t nbClick) {
-    if constexpr (LocalBasicMode::hasButtonCustomUI) {
-      return LocalBasicMode::custom_click(*this, nbClick);
-    } else {
-      return false;
+    if constexpr (LocalModeTy::hasButtonCustomUI) {
+      return LocalModeTy::custom_click(*this, nbClick);
     }
+
+    return false;
   }
 
   /// Binds to local BasicMode::custom_hold()
   bool LMBD_INLINE custom_hold(LMBD_USED uint8_t nbClickAndHold,
                                LMBD_USED bool isEndOfHoldEvent,
                                LMBD_USED uint32_t holdDuration) {
-    if constexpr (LocalBasicMode::hasButtonCustomUI) {
-      return LocalBasicMode::custom_hold(*this,
+    if constexpr (LocalModeTy::hasButtonCustomUI) {
+      return LocalModeTy::custom_hold(*this,
                                          nbClickAndHold,
                                          isEndOfHoldEvent,
                                          holdDuration);
-    } else {
-      return false;
     }
+
+    return false;
   }
 
   /// Binds to local BasicMode::power_on_sequence()
   void LMBD_INLINE power_on_sequence() {
-    if constexpr (LocalBasicMode::hasSystemCallbacks) {
-      LocalBasicMode::power_on_sequence(*this);
+    if constexpr (LocalModeTy::hasSystemCallbacks) {
+      LocalModeTy::power_on_sequence(*this);
     }
   }
 
   /// Binds to local BasicMode::power_off_sequence()
   void LMBD_INLINE power_off_sequence() {
-    if constexpr (LocalBasicMode::hasSystemCallbacks) {
-      LocalBasicMode::power_off_sequence(*this);
+    if constexpr (LocalModeTy::hasSystemCallbacks) {
+      LocalModeTy::power_off_sequence(*this);
     }
   }
 
   /// Binds to local BasicMode::write_parameters()
   void LMBD_INLINE write_parameters() {
-    if constexpr (LocalBasicMode::hasSystemCallbacks) {
-      LocalBasicMode::write_parameters(*this);
+    if constexpr (LocalModeTy::hasSystemCallbacks) {
+      LocalModeTy::write_parameters(*this);
     }
   }
 
   /// Binds to local BasicMode::read_parameters()
   void LMBD_INLINE read_parameters() {
-    if constexpr (LocalBasicMode::hasSystemCallbacks) {
-      LocalBasicMode::read_parameters(*this);
+    if constexpr (LocalModeTy::hasSystemCallbacks) {
+      LocalModeTy::read_parameters(*this);
     }
   }
 
   /// Returns BasicMode::requireUserThread
   bool LMBD_INLINE should_spawn_thread() {
-    return LocalBasicMode::requireUserThread;
+    return LocalModeTy::requireUserThread;
   }
 
   /// Binds to local BasicMode::user_thread()
   void LMBD_INLINE user_thread() {
-    if constexpr (LocalBasicMode::requireUserThread) {
-      LocalBasicMode::user_thread(*this);
+    if constexpr (LocalModeTy::requireUserThread) {
+      LocalModeTy::user_thread(*this);
     }
   }
 

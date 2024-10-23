@@ -16,20 +16,35 @@
 
 namespace modes {
 
-/// \private Implementation details of modes::GroupFor
+/// \private Return true if a mode failed verification to prevent extra errors
 template <typename AllModes>
+static constexpr bool verifyGroup() {
+    constexpr bool inheritsFromBasicMode = details::allOf<AllModes>::inheritsFromBasicMode;
+    static_assert(inheritsFromBasicMode, "All modes must inherit from modes::BasicMode!");
+
+    bool acc = false;
+    acc |= !inheritsFromBasicMode;
+    return acc ;
+}
+
+/// \private Implementation details of modes::GroupFor
+template <typename AllModes, bool earlyFail = verifyGroup<AllModes>()>
 struct GroupTy {
 
   // tuple helper
   using SelfTy = GroupTy<AllModes>;
   using AllModesTy = AllModes;
+  using AllStatesTy = details::StateTyFrom<AllModes>;
   static constexpr uint8_t nbModes{std::tuple_size_v<AllModesTy>};
 
   template <uint8_t Idx>
-  using ModeAt = std::tuple_element_t<Idx, AllModesTy>;
+  using ModeAtRaw = std::tuple_element_t<Idx, AllModesTy>;
+
+  template <uint8_t Idx>
+  using ModeAt = std::conditional_t<!earlyFail, ModeAtRaw<Idx>, BasicMode>;
 
   // required to support group-level context
-  using HasAnyMode = details::anyOf<AllModesTy>;
+  using HasAnyMode = details::anyOf<AllModesTy, earlyFail>;
   static constexpr bool simpleMode = false;
   static constexpr bool hasBrightCallback = HasAnyMode::hasBrightCallback;
   static constexpr bool hasSystemCallbacks = HasAnyMode::hasSystemCallbacks;

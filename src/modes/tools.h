@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <utility>
 
+#include "mode_type.h"
+
 // always_inline macro
 #define LMBD_INLINE __attribute__((always_inline))
 
@@ -11,6 +13,11 @@
 #define LMBD_USED [[maybe_unused]]
 
 namespace modes {
+
+struct NoState { };
+
+template <typename Mode>
+static constexpr bool isMode = std::is_base_of_v<BasicMode, Mode>;
 
 namespace details {
 
@@ -35,20 +42,36 @@ static constexpr void LMBD_INLINE unroll(CbTy &&cb) {
 template <typename TupleTy, uint8_t TupleSz = std::tuple_size_v<TupleTy>>
 struct forEach {
 
-  /// \private Return True if all elements returns True through \p QueryStruct
-  template <template<class> class QueryStruct>
+  /// \private Return True if any elements returns True through \p QueryStruct
+  template <template<class> class QueryStruct, bool hasError = false>
   static constexpr bool any() {
     bool acc = false;
-    unroll<TupleSz>([&](auto Idx) {
-      acc |= QueryStruct<std::tuple_element_t<Idx, TupleTy>>::value;
-    });
+    if constexpr (!hasError) {
+      unroll<TupleSz>([&](auto Idx) {
+        acc |= QueryStruct<std::tuple_element_t<Idx, TupleTy>>::value;
+      });
+    }
+    return acc;
+  }
+
+  /// \private Return True if all elements returns True through \p QueryStruct
+  template <template<class> class QueryStruct, bool hasError = false>
+  static constexpr bool all() {
+    bool acc = true;
+    if constexpr (!hasError) {
+      unroll<TupleSz>([&](auto Idx) {
+        acc &= QueryStruct<std::tuple_element_t<Idx, TupleTy>>::value;
+      });
+    } else {
+     return false;
+    }
     return acc;
   }
 
 };
 
 /// \private Defined boolean is True if any \p TupleTy item has boolean True
-template <typename TupleTy>
+template <typename TupleTy, bool hasError = false>
 struct anyOf {
 
   template <typename Ty>
@@ -68,12 +91,47 @@ struct anyOf {
 
   // usual suspects
   static constexpr bool simpleMode = false;
-  static constexpr bool hasBrightCallback = forEach<TupleTy>::template any<QHasBright>();
-  static constexpr bool hasCustomRamp = forEach<TupleTy>::template any<QCustomRamp>();
-  static constexpr bool hasButtonCustomUI = forEach<TupleTy>::template any<QButtonUI>();
-  static constexpr bool hasSystemCallbacks = forEach<TupleTy>::template any<QHasSystem>();
-  static constexpr bool requireUserThread = forEach<TupleTy>::template any<QUserThread>();
+  static constexpr bool hasBrightCallback = forEach<TupleTy>::template any<QHasBright, hasError>();
+  static constexpr bool hasCustomRamp = forEach<TupleTy>::template any<QCustomRamp, hasError>();
+  static constexpr bool hasButtonCustomUI = forEach<TupleTy>::template any<QButtonUI, hasError>();
+  static constexpr bool hasSystemCallbacks = forEach<TupleTy>::template any<QHasSystem, hasError>();
+  static constexpr bool requireUserThread = forEach<TupleTy>::template any<QUserThread, hasError>();
 };
+
+/// \private Defined boolean is True if all \p TupleTy item has boolean True
+template <typename TupleTy, bool hasError = false>
+struct allOf {
+
+  template <typename Ty>
+  struct QIsMode { static constexpr bool value = isMode<Ty>; };
+
+  static constexpr bool inheritsFromBasicMode = forEach<TupleTy>::template all<QIsMode, hasError>();
+};
+
+
+template <typename Mode,
+         typename StateTy = typename Mode::StateTy,
+         bool isDefault = std::is_same_v<StateTy, BasicMode::StateTy>,
+         typename RetTy = std::conditional_t<isDefault, NoState, StateTy>>
+static constexpr auto stateTyOfImpl(int) -> RetTy;
+
+template <typename>
+static constexpr auto stateTyOfImpl(...) -> NoState;
+
+/// \private Get StateTy if explicitly defined, or else EmptyState
+template <typename Mode>
+using StateTyOf = decltype(stateTyOfImpl<Mode>(0));
+
+/// \private Get std::tuple<Modes::StateTy...> from Modes...
+template <typename... Modes>
+using StateTyFor = std::tuple<StateTyOf<Modes>...>;
+
+template <typename... Modes>
+static constexpr auto stateTyFromImpl(std::tuple<Modes...>*) -> StateTyFor<Modes...>;
+
+/// \private Get std::tuple<Mode::StateTy...> from std::tuple<Mode...>
+template <typename AsTuple>
+using StateTyFrom = decltype(stateTyFromImpl((AsTuple*) 0));
 
 } // namespace details
 
