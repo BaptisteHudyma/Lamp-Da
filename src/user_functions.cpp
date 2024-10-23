@@ -14,7 +14,7 @@ namespace user {
 
 LedStrip strip(AD0);
 
-constexpr uint LED_POWER_PIN = AD1;
+constexpr uint32_t LED_POWER_PIN = AD1;
 
 bool modeChange = true;      // signal a color mode change
 bool categoryChange = true;  // signal a color category change
