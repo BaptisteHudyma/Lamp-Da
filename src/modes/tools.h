@@ -7,6 +7,9 @@
 // always_inline macro
 #define LMBD_INLINE __attribute__((always_inline))
 
+// maybe_unused macro
+#define LMBD_USED [[maybe_unused]]
+
 namespace modes {
 
 namespace details {

@@ -31,8 +31,7 @@ namespace modes {
  *  // full user mode definition
  *  struct MyCustomMode : public modes::FullMode {
  *
- *   template <typename CtxTy>
- *   static void loop(CtxTy& ctx) {
+ *   static void loop(auto& ctx) {
  *      auto& strip = ctx.strip;
  *      strip.clear();
  *
@@ -73,14 +72,14 @@ struct BasicMode {
   /** \brief Simplified user mode loop function (default)
    *
    * Loop function with a simplified prototype, which is called instead of full
-   * loop(CtxTy&) if BasicMode::simpleMode is True
+   * loop(auto&) if BasicMode::simpleMode is True
    *
-   * \remark To make mode stateful, define custom StateTy and use loop(CtxTy&)
+   * \remark To make mode stateful, define custom StateTy and use loop(auto&)
    * to retrieve context, then retrieve the state instance from context
    */
   static void loop(LedStrip& strip) { return; }
 
-  /// Picks between simplified BasicMode::loop() and full BasicMode::loop(CtxTy&)
+  /// Picks between simplified BasicMode::loop() and full BasicMode::loop(auto&)
   static constexpr bool simpleMode = true;
 
   /** \brief Custom user mode loop function (optional)
@@ -91,10 +90,9 @@ struct BasicMode {
    * \param[in] ctx The current context, providing a interface to the
    * controller and the LED strip, as well as an access to its state
    * \remark By default BasicMode::simpleMode is True and simplified loop() is
-   * called instead of loop(CtxTy&)
+   * called instead of loop(auto&)
    */
-  template<typename CtxTy>
-  static void loop(CtxTy& ctx) { return; }
+  static void loop(auto& ctx) { return; }
 
   /** \brief Custom callback when mode gains focus (optional)
    *
@@ -102,8 +100,7 @@ struct BasicMode {
    *
    * \param[in] ctx The current context
    */
-  template<typename CtxTy>
-  static void reset(CtxTy& ctx) { return; }
+  static void reset(auto& ctx) { return; }
 
   /// Toggles the use of custom BasicMode::brightness_update() callback
   static constexpr bool hasBrightCallback = false;
@@ -117,8 +114,7 @@ struct BasicMode {
    * \remark Use update_brightness() to change brightness in order for this
    * callback to be correctly handled at runtime
    */
-  template<typename CtxTy>
-  static void brightness_update(CtxTy& ctx, uint8_t brightness) { return; }
+  static void brightness_update(auto& ctx, uint8_t brightness) { return; }
 
   /// Toggles the use BasicMode::custom_ramp_update() callback
   static constexpr bool hasCustomRamp = false;
@@ -133,8 +129,7 @@ struct BasicMode {
    * \remark This behavior is in user::button_hold_default() and may be
    * prevented if custom "usermode UI" via custom_hold() is enabled
    */
-  template<typename CtxTy>
-  static void custom_ramp_update(CtxTy& ctx, uint8_t rampValue) {
+  static void custom_ramp_update(auto& ctx, uint8_t rampValue) {
     return;
   }
 
@@ -149,8 +144,7 @@ struct BasicMode {
    * \param[in] nbClick The number of clicks made by the user
    * \return Returns True if default UI action should be prevented
    */
-  template<typename CtxTy>
-  static bool custom_click(CtxTy& ctx, uint8_t nbClick) {
+  static bool custom_click(auto& ctx, uint8_t nbClick) {
     return false;
   }
 
@@ -165,8 +159,7 @@ struct BasicMode {
    * \return Returns True if default action must be prevented
    * \remark When \p isEndOfHoldEvent is True, then \p holdDuration is zero
    */
-  template<typename CtxTy>
-  static bool custom_hold(CtxTy& ctx,
+  static bool custom_hold(auto& ctx,
                           uint8_t nbClickAndHold,
                           bool isEndOfHoldEvent,
                           uint32_t holdDuration) {
@@ -194,8 +187,7 @@ struct BasicMode {
    * \param[in] ctx The current context
    * \remark This must be a non-blocking function
    */
-  template<typename CtxTy>
-  static void power_on_sequence(CtxTy& ctx) { return; }
+  static void power_on_sequence(auto& ctx) { return; }
 
   /** \brief Custom callback when the system powers off (optional)
    *
@@ -204,8 +196,7 @@ struct BasicMode {
    * \param[in] ctx The current context
    * \remark This must be a non-blocking function
    */
-  template<typename CtxTy>
-  static void power_off_sequence(CtxTy& ctx) { return; }
+  static void power_off_sequence(auto& ctx) { return; }
 
   /** \brief Custom callback to read parameters from filesystem (optional)
    *
@@ -213,8 +204,7 @@ struct BasicMode {
    *
    * \param[in] ctx The current context
    */
-  template<typename CtxTy>
-  static void read_parameters(CtxTy& ctx) { return; }
+  static void read_parameters(auto& ctx) { return; }
 
   /** \brief Custom callback to write parameters to filesystem (optional)
    *
@@ -222,8 +212,7 @@ struct BasicMode {
    *
    * \param[in] ctx The current context
    */
-  template<typename CtxTy>
-  static void write_parameters(CtxTy& ctx) { return; }
+  static void write_parameters(auto& ctx) { return; }
 
   /** \brief Toggles the use of custom BasicMode::user_thread() callback
    *
@@ -240,8 +229,7 @@ struct BasicMode {
    * \remark This is executed as prologue of user::user_thread() and hence
    * must complete quickly in order to keep the strip responsive
    */
-  template<typename CtxTy>
-  static void user_thread(CtxTy& ctx) {
+  static void user_thread(auto& ctx) {
     return;
   }
 

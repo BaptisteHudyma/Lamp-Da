@@ -16,8 +16,8 @@ namespace modes {
 ///
 /// \param[in] ctx Local context to bind to \p NewLocalMode
 /// \return A new context instance bound to the provided modes::BasicMode
-template <typename NewLocalMode, typename CtxTy>
-static auto context_as(CtxTy& ctx) {
+template <typename NewLocalMode>
+static auto context_as(auto& ctx) {
   return ctx.template context_as<NewLocalMode>();
 }
 
@@ -156,21 +156,21 @@ struct ContextTy {
   }
 
   /// Binds to local BasicMode::brightness_update()
-  void LMBD_INLINE brightness_update(uint8_t brightness) {
+  void LMBD_INLINE brightness_update(LMBD_USED uint8_t brightness) {
     if constexpr (LocalBasicMode::hasBrightCallback) {
       LocalBasicMode::brightness_update(*this, brightness);
     }
   }
 
   /// Binds to local BasicMode::custom_ramp_update()
-  void LMBD_INLINE custom_ramp_update(uint8_t rampValue) {
+  void LMBD_INLINE custom_ramp_update(LMBD_USED uint8_t rampValue) {
     if constexpr (LocalBasicMode::hasCustomRamp) {
       LocalBasicMode::custom_ramp_update(*this, rampValue);
     }
   }
 
   /// Binds to local BasicMode::custom_click()
-  bool LMBD_INLINE custom_click(uint8_t nbClick) {
+  bool LMBD_INLINE custom_click(LMBD_USED uint8_t nbClick) {
     if constexpr (LocalBasicMode::hasButtonCustomUI) {
       return LocalBasicMode::custom_click(*this, nbClick);
     } else {
@@ -179,9 +179,9 @@ struct ContextTy {
   }
 
   /// Binds to local BasicMode::custom_hold()
-  bool LMBD_INLINE custom_hold(uint8_t nbClickAndHold,
-                               bool isEndOfHoldEvent,
-                               uint32_t holdDuration) {
+  bool LMBD_INLINE custom_hold(LMBD_USED uint8_t nbClickAndHold,
+                               LMBD_USED bool isEndOfHoldEvent,
+                               LMBD_USED uint32_t holdDuration) {
     if constexpr (LocalBasicMode::hasButtonCustomUI) {
       return LocalBasicMode::custom_hold(*this,
                                          nbClickAndHold,

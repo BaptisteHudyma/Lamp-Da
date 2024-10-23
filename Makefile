@@ -5,6 +5,11 @@ CACHE_DIR=$(BUILD_DIR)/cache
 OBJECTS_DIR=$(BUILD_DIR)/objs
 ARTIFACTS=$(BUILD_DIR)/artifacts
 FQBN=adafruit:nrf52:lampDa_nrf52840
+CPP_STD_FLAGS=-std=gnu++17 -DLMBD_EXPLICIT_CPP17_SUPPORT
+CPP_BUILD_FLAGS=-fdiagnostics-color=always -fconcepts -Wno-unused-parameter
+#
+# to enable warnings:
+# 	LMBD_CPP_EXTRA_FLAGS="-Wall -Wextra" make
 
 all: doc build
 
@@ -56,9 +61,9 @@ $(BUILD_DIR)/process.sh: $(BUILD_DIR)/verbose-clean.txt
 	@echo '#!/bin/bash' > $(BUILD_DIR)/process.sh
 	@echo 'rm -f $(BUILD_DIR)/.process-success' >> $(BUILD_DIR)/process.sh
 	@echo 'set -xe' >> $(BUILD_DIR)/process.sh
-	@cat _build/verbose-clean.txt \
+	@tac _build/verbose-clean.txt \
 		| grep -Eo '^.*bin/arm-none-eabi-g++.*-std=gnu\+\+11.*-o [^ ]*_build/objs/sketch/src[^ ]*.cpp.o' \
-		| sed 's/-std=gnu++11/-std=gnu++17 -DLMBD_EXPLICIT_CPP17_SUPPORT -fdiagnostics-color=always/g' \
+		| sed 's/-std=gnu++11/$(CPP_STD_FLAGS) $(CPP_BUILD_FLAGS) $$LMBD_CPP_EXTRA_FLAGS/g' \
 	>> $(BUILD_DIR)/process.sh
 	@echo 'touch $(BUILD_DIR)/objs/.last-used' >> $(BUILD_DIR)/process.sh
 	@echo 'touch $(BUILD_DIR)/.process-success' >> $(BUILD_DIR)/process.sh
@@ -109,7 +114,11 @@ build: process $(BUILD_DIR)/properties.txt
 	# exporting artifacts...
 	@cp $(OBJECTS_DIR)/*.ino* $(ARTIFACTS)/
 
-clean: process-clear
+clean-doc:
+	@echo -e "\n --- $@"
+	rm -f doc/index.html
+
+clean: clean-doc process-clear
 	@echo -e "\n --- $@"
 	rm -rf $(OBJECTS_DIR) $(CACHE_DIR) $(BUILD_DIR)/*.txt
 	rm -rf $(BUILD_DIR)/.process-success $(BUILD_DIR)/.skip-clean

@@ -2,8 +2,7 @@
 #define FIXED_MODES_H
 
 struct KelvinMode : public modes::FullMode {
-  template <typename CtxTy>
-  static void loop(CtxTy& ctx) {
+  static void loop(auto& ctx) {
     static auto paletteHeatColor = GeneratePaletteIndexed(PaletteBlackBodyColors);
     paletteHeatColor.reset();
     paletteHeatColor.update(0);
@@ -12,8 +11,7 @@ struct KelvinMode : public modes::FullMode {
 };
 
 struct RainbowMode : public modes::FullMode {
-  template <typename CtxTy>
-  static void loop(CtxTy& ctx) {
+  static void loop(auto& ctx) {
     static auto rainbowIndex = GenerateRainbowIndex(UINT8_MAX);
     rainbowIndex.reset();
     rainbowIndex.update(0);

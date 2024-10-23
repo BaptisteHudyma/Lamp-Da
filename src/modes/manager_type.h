@@ -61,8 +61,8 @@ struct ModeManagerTy {
   }
 
   /// \private Dispatch active group to callback
-  template<typename CtxTy, typename CallBack>
-  static void LMBD_INLINE dispatch_group(CtxTy& ctx, CallBack&& cb) {
+  template<typename CallBack>
+  static void LMBD_INLINE dispatch_group(auto& ctx, CallBack&& cb) {
     uint8_t groupId = ctx.get_active_group(nbGroups);
 
     details::unroll<nbGroups>([&](auto Idx) LMBD_INLINE {
@@ -73,8 +73,8 @@ struct ModeManagerTy {
   }
 
   /// \private Forward each group to callback (if eligible)
-  template<bool systemCallbacksOnly, typename CtxTy, typename CallBack>
-  static void LMBD_INLINE foreach_group(CtxTy& ctx, CallBack&& cb) {
+  template<bool systemCallbacksOnly, typename CallBack>
+  static void LMBD_INLINE foreach_group(auto& ctx, CallBack&& cb) {
     if constexpr (systemCallbacksOnly) {
       details::unroll<nbGroups>([&](auto Idx) LMBD_INLINE {
         if /* TODO: constexpr */ (GroupAt<Idx>::hasSystemCallbacks) {
@@ -95,8 +95,7 @@ struct ModeManagerTy {
   static constexpr bool isGroupManager = true;
   static constexpr bool isModeManager = true;
 
-  template <typename CtxTy>
-  static void next_group(CtxTy& ctx) {
+  static void next_group(auto& ctx) {
     uint8_t groupId = ctx.get_active_group(nbGroups);
     ctx.set_active_group(groupId + 1, nbGroups);
     ctx.set_active_mode(0); // TODO: persist last picked mode
@@ -106,16 +105,14 @@ struct ModeManagerTy {
     ctx.modeManager.groupHasChanged = true;
   }
 
-  template <typename CtxTy>
-  static void next_mode(CtxTy& ctx) {
+  static void next_mode(auto& ctx) {
     dispatch_group(ctx, [](auto group) { group.next_mode(); });
 
     ctx.modeManager.modeHasChanged = true;
     ctx.modeManager.groupHasChanged = false;
   }
 
-  template <typename CtxTy>
-  static void reset_mode(CtxTy& ctx) {
+  static void reset_mode(auto& ctx) {
     dispatch_group(ctx, [](auto group) { group.reset_mode(); });
   }
 
@@ -123,54 +120,45 @@ struct ModeManagerTy {
   // all the callbacks
   //
 
-  template<typename CtxTy>
-  static void loop(CtxTy& ctx) {
+  static void loop(auto& ctx) {
     dispatch_group(ctx, [](auto group) { group.loop(); });
     ctx.modeManager.modeHasChanged = false;
     ctx.modeManager.groupHasChanged = false;
   }
 
-  template<typename CtxTy>
-  static void brightness_update(CtxTy& ctx, uint8_t brightness) {
+  static void brightness_update(auto& ctx, uint8_t brightness) {
     dispatch_group(ctx, [&](auto group) {
       group.brightness_update(brightness);
     });
   }
 
-  template<typename CtxTy>
-  static void power_on_sequence(CtxTy& ctx) {
+  static void power_on_sequence(auto& ctx) {
     foreach_group<true>(ctx, [](auto group) { group.power_on_sequence(); });
   }
 
-  template<typename CtxTy>
-  static void power_off_sequence(CtxTy& ctx) {
+  static void power_off_sequence(auto& ctx) {
     foreach_group<true>(ctx, [](auto group) { group.power_off_sequence(); });
   }
 
-  template<typename CtxTy>
-  static void write_parameters(CtxTy& ctx) {
+  static void write_parameters(auto& ctx) {
     foreach_group<true>(ctx, [](auto group) { group.write_parameters(); });
   }
 
-  template<typename CtxTy>
-  static void read_parameters(CtxTy& ctx) {
+  static void read_parameters(auto& ctx) {
     foreach_group<true>(ctx, [](auto group) { group.read_parameters(); });
   }
 
-  template<typename CtxTy>
-  static void user_thread(CtxTy& ctx) {
+  static void user_thread(auto& ctx) {
     dispatch_group(ctx, [](auto group) { group.user_thread(); });
   }
 
-  template<typename CtxTy>
-  static void custom_ramp_update(CtxTy& ctx, uint8_t rampValue) {
+  static void custom_ramp_update(auto& ctx, uint8_t rampValue) {
     dispatch_group(ctx, [&](auto group) {
       group.custom_ramp_update(rampValue);
     });
   }
 
-  template<typename CtxTy>
-  static bool custom_click(CtxTy& ctx, uint8_t nbClick) {
+  static bool custom_click(auto& ctx, uint8_t nbClick) {
     bool retVal = false;
     dispatch_group(ctx, [&](auto group) {
       retVal = group.custom_click(nbClick);
@@ -178,8 +166,7 @@ struct ModeManagerTy {
     return retVal;
   }
 
-  template<typename CtxTy>
-  static bool custom_hold(CtxTy& ctx,
+  static bool custom_hold(auto& ctx,
                           uint8_t nbClickAndHold,
                           bool isEndOfHoldEvent,
                           uint32_t holdDuration) {

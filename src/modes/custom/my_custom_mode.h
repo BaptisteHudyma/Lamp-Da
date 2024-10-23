@@ -3,28 +3,21 @@
 
 struct MyCustomMode : public modes::FullMode {
 
-  template <typename CtxTy>
-  static void loop(CtxTy& ctx) { }
-
-  template<typename CtxTy>
-  static void reset(CtxTy& ctx) { }
+  static void loop(auto& ctx) { }
+  static void reset(auto& ctx) { }
 
   // only if hasBrightCallback
-  template <typename CtxTy>
-  static void brightness_update(CtxTy& ctx, uint8_t brightness) { }
+  static void brightness_update(auto& ctx, uint8_t brightness) { }
 
   // only if hasCustomRamp
-  template <typename CtxTy>
-  static void custom_ramp_update(CtxTy& ctx, uint8_t rampValue) { }
+  static void custom_ramp_update(auto& ctx, uint8_t rampValue) { }
 
   // only if hasButtonCustomUI
-  template <typename CtxTy>
-  static bool custom_click(CtxTy& ctx, uint8_t nbClick) {
+  static bool custom_click(auto& ctx, uint8_t nbClick) {
     return false;
   }
 
-  template <typename CtxTy>
-  static bool custom_hold(CtxTy& ctx,
+  static bool custom_hold(auto& ctx,
                           uint8_t nbClickAndHold,
                           bool isEndOfHoldEvent,
                           uint32_t holdDuration) {
@@ -32,21 +25,13 @@ struct MyCustomMode : public modes::FullMode {
   }
 
   // only if hasSystemCallbacks
-  template <typename CtxTy>
-  static void power_on_sequence(CtxTy& ctx) { }
-
-  template <typename CtxTy>
-  static void power_off_sequence(CtxTy& ctx) { }
-
-  template <typename CtxTy>
-  static void read_parameters(CtxTy& ctx) { }
-
-  template <typename CtxTy>
-  static void write_parameters(CtxTy& ctx) { }
+  static void power_on_sequence(auto& ctx) { }
+  static void power_off_sequence(auto& ctx) { }
+  static void read_parameters(auto& ctx) { }
+  static void write_parameters(auto& ctx) { }
 
   // only if requireUserThread
-  template <typename CtxTy>
-  static void user_thread(CtxTy& ctx) { }
+  static void user_thread(auto& ctx) { }
 
   // keep only if customized
   struct StateTy { };
