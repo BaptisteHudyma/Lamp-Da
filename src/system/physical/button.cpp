@@ -109,7 +109,7 @@ void set_color(utils::ColorSpace::RGB color) {
   analogWrite(BUTTON_BLUE, col.blue * blueColorCorrection);
 }
 
-void blink(const uint offFreq, const uint onFreq,
+void blink(const uint32_t offFreq, const uint32_t onFreq,
            utils::ColorSpace::RGB color) {
   static uint32_t lastCall = 0;
   static bool ledState = false;

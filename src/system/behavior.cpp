@@ -80,7 +80,7 @@ void startup_sequence() {
   // critical battery level, do not wake up
   if (battery::get_battery_level() <= batteryCritical + 1) {
     // alert user of low battery
-    for (uint i = 0; i < 10; i++) {
+    for (uint8_t i = 0; i < 10; i++) {
       button::set_color(utils::ColorSpace::RED);
       delay(100);
       button::set_color(utils::ColorSpace::BLACK);
