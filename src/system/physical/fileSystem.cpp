@@ -21,8 +21,11 @@ std::map<std::string, uint32_t> _valueMap;
 
 static bool isSetup = false;
 void setup() {
-  isSetup = true;
-  InternalFS.begin();
+  if (!InternalFS.begin()) {
+    Serial.println("Failed to start file system");
+  } else {
+    isSetup = true;
+  }
 }
 
 void clear() { _valueMap.clear(); }
@@ -32,13 +35,21 @@ void load_initial_values() {
     setup();
   }
 
+  // failure case: TODO: something ?
+  if (!isSetup) {
+    return;
+  }
+
   _valueMap.clear();
 
-  file.open(FILENAME, FILE_O_READ);
   // file exist, good
-  if (file and file.isOpen() and file.available()) {
+  if (file.open(FILENAME, FILE_O_READ) and file.isOpen() and file.available()) {
     std::vector<char> vecRead(file.size());
-    file.read(vecRead.data(), vecRead.size());
+    const int retVal = file.read(vecRead.data(), vecRead.size());
+    if (retVal < 0) {
+      // error case
+      return;
+    }
 
     bool isWord = true;
     bool isValue = false;
@@ -69,8 +80,9 @@ void load_initial_values() {
       _valueMap[key] = atoi(value.c_str());
     }
     file.close();
+  } else {
+    // no initial values, first boost maybe
   }
-  // nothing to do
 }
 
 void write_state() {
@@ -78,20 +90,35 @@ void write_state() {
     setup();
   }
 
-  // hardcore, format the entire file system
-  // InternalFS.format();
+  // failure case: TODO: something ?
+  if (!isSetup) {
+    return;
+  }
 
   file.open(FILENAME, FILE_O_WRITE);
-  file.truncate(0);  // clear the file
-  file.close();
+  if (file) {
+    file.truncate(0);  // clear the file
+    file.close();
+  } else {
+    // error. the file should have been opened
+    Serial.println("file system error, reseting file format");
+
+    // hardcore, format the entire file system
+    InternalFS.format();
+  }
 
   delay(10);
 
   file.open(FILENAME, FILE_O_WRITE);
-  for (const auto& keyval : _valueMap) {
-    file.printf("%s:%d\n", keyval.first.c_str(), keyval.second);
+  if (file) {
+    for (const auto& keyval : _valueMap) {
+      file.printf("%s:%d\n", keyval.first.c_str(), keyval.second);
+    }
+    file.close();
+  } else {
+    // error. the file should have been opened
+    Serial.println("file creation failed, parameters wont be stored");
   }
-  file.close();
 }
 
 bool get_value(const std::string& key, uint32_t& value) {
