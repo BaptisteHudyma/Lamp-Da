@@ -111,7 +111,7 @@ struct allOf {
 
 template <typename Mode,
          typename StateTy = typename Mode::StateTy,
-         bool isDefault = std::is_same_v<StateTy, BasicMode::StateTy>,
+         bool isDefault = std::is_same_v<StateTy, BasicMode::StateTy> || (sizeof(StateTy) == 0),
          typename RetTy = std::conditional_t<isDefault, NoState, StateTy>>
 static constexpr auto stateTyOfImpl(int) -> RetTy;
 
@@ -133,7 +133,42 @@ static constexpr auto stateTyFromImpl(std::tuple<Modes...>*) -> StateTyFor<Modes
 template <typename AsTuple>
 using StateTyFrom = decltype(stateTyFromImpl((AsTuple*) 0));
 
+template <typename Item, typename... Items>
+static constexpr bool belongsToImpl(std::tuple<Items...>*) {
+  return (std::is_same_v<Item, Items> || ...);
+};
+
+/// \private Checks if \p Mode is member of \p AllModes as tuple
+template <typename Mode, typename AllModes>
+static constexpr bool ModeBelongsTo = belongsToImpl<Mode>((AllModes*) 0);
+
+/// \private Checks if \p Group is member of \p AllGroups as tuple
+template <typename Group, typename AllGroups>
+static constexpr bool GroupBelongsTo = belongsToImpl<Group>((AllGroups*) 0);
+
+template <typename Mode, typename AllGroups>
+static constexpr bool testIfModeExistsImpl() {
+  constexpr uint8_t NbGroups{std::tuple_size_v<AllGroups>};
+
+  bool acc = false;
+  unroll<NbGroups>([&](auto Idx) {
+    using GroupHere = std::tuple_element_t<Idx, AllGroups>;
+    using AllModes = typename GroupHere::AllModesTy;
+    acc |= ModeBelongsTo<Mode, AllModes>;
+  });
+
+  return acc;
+}
+
+/// \private Checks if \p Mode exists in the set of \p AllGroups
+template <typename Mode, typename AllGroups>
+static constexpr bool ModeExists = testIfModeExistsImpl<Mode, AllGroups>();
+
 } // namespace details
+
+/// \private see details::StateTyOf
+template <typename Mode>
+using StateTyOf = details::StateTyOf<Mode>;
 
 } // namespace modes
 

@@ -86,6 +86,34 @@ struct GroupTy {
   }
 
   //
+  // state
+  //
+
+  struct StateTy {
+    AllStatesTy modeStates;
+  };
+
+  template <typename Mode>
+  static auto* LMBD_INLINE getStateOf(auto& manager) {
+    using StateTy = typename Mode::StateTy;
+
+    StateTy* substate = nullptr;
+    details::unroll<nbModes>([&](auto Idx) {
+      using ModeHere = ModeAt<Idx>;
+      constexpr bool isHere = std::is_same_v<ModeHere, Mode>;
+
+      if constexpr (isHere) {
+        auto state = manager.template getStateGroupOf<SelfTy>();
+        if (state) {
+          substate = &std::get<StateTy>(state->modeStates);
+        }
+      }
+    });
+
+    return substate;
+  }
+
+  //
   // navigation
   //
 

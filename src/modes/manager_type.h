@@ -2,6 +2,7 @@
 #define MANAGER_TYPE_H
 
 #include <cstdint>
+#include <cassert>
 #include <utility>
 #include <tuple>
 
@@ -33,7 +34,7 @@ struct ModeManagerTy {
   // tuple helpers
   using SelfTy = ModeManagerTy<AllGroups>;
   using AllGroupsTy = AllGroups;
-  // using AllStatesTy = details::StateTyFrom<AllGroups>;
+  using AllStatesTy = details::StateTyFrom<AllGroups>;
   static constexpr uint8_t nbGroups{std::tuple_size_v<AllGroupsTy>};
 
   template <uint8_t Idx>
@@ -78,7 +79,10 @@ struct ModeManagerTy {
   static void LMBD_INLINE foreach_group(auto& ctx, CallBack&& cb) {
     if constexpr (systemCallbacksOnly) {
       details::unroll<nbGroups>([&](auto Idx) LMBD_INLINE {
-        if /* TODO: constexpr */ (GroupAt<Idx>::hasSystemCallbacks) {
+        using GroupHere = GroupAt<Idx>;
+        constexpr bool hasCallbacks = GroupHere::hasSystemCallbacks;
+
+        if constexpr (hasCallbacks) {
           cb(context_as<GroupAt<Idx>>(ctx));
         }
       });
@@ -86,6 +90,72 @@ struct ModeManagerTy {
       details::unroll<nbGroups>([&](auto Idx) LMBD_INLINE {
         cb(context_as<GroupAt<Idx>>(ctx));
       });
+    }
+  }
+
+  //
+  // state
+  //
+
+  struct StateTy {
+    AllStatesTy groupStates;
+  };
+
+  template <typename Group>
+  auto* LMBD_INLINE getStateGroupOf() {
+    using StateTy = StateTyOf<Group>;
+
+    StateTy* substate = nullptr;
+    details::unroll<nbGroups>([&](auto Idx) {
+      using GroupHere = GroupAt<Idx>;
+      constexpr bool IsHere = std::is_same_v<GroupHere, Group>;
+
+      if constexpr (IsHere) {
+        substate = &(std::get<StateTy>(state.groupStates));
+      }
+    });
+    assert(substate != nullptr && "this should be impossible :(");
+
+    static_assert(details::ModeBelongsTo<Group, AllGroups>);
+    return substate;
+  }
+
+  template <typename Mode>
+  StateTyOf<Mode>& LMBD_INLINE getStateOf() {
+    using TargetStateTy = StateTyOf<Mode>;
+
+    if constexpr (std::is_same_v<TargetStateTy, NoState>) {
+      return placeholder;
+    } else if constexpr (std::is_same_v<TargetStateTy, StateTy>) {
+      return state;
+    } else if constexpr (details::GroupBelongsTo<Mode, AllGroups>) {
+      TargetStateTy* substate = getStateGroupOf<Mode>();
+
+      if (substate == nullptr) {
+        substate = (TargetStateTy*) &placeholder;
+        assert(false && "using state placeholder should not happen!");
+      }
+
+      return *substate;
+    } else {
+      TargetStateTy* substate = nullptr;
+
+      details::unroll<nbGroups>([&](auto Idx) {
+        using Group = GroupAt<Idx>;
+        using AllModes = typename Group::AllModesTy;
+        if constexpr (details::ModeBelongsTo<Mode, AllModes>) {
+          substate = Group::template getStateOf<Mode>(*this);
+        }
+      });
+      assert(substate != nullptr && "this should be impossible :(");
+
+      if (substate == nullptr) {
+        substate = (TargetStateTy*) &placeholder;
+        assert(false && "using state placeholder should not happen!");
+      }
+
+      static_assert(details::ModeExists<Mode, AllGroups>);
+      return *substate;
     }
   }
 
@@ -189,6 +259,14 @@ struct ModeManagerTy {
   LedStrip& strip;
   bool modeHasChanged;
   bool groupHasChanged;
+
+  //
+  // private members
+  //
+
+private:
+  NoState placeholder;
+  StateTy state;
 };
 
 /** \brief Group together several mode groups defined through modes::GroupFor

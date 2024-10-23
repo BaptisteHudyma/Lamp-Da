@@ -7,7 +7,7 @@ ARTIFACTS=$(BUILD_DIR)/artifacts
 FQBN=adafruit:nrf52:lampDa_nrf52840
 PROJECT_INO=LampColorControler.ino
 CPP_STD_FLAGS=-std=gnu++17 -DLMBD_EXPLICIT_CPP17_SUPPORT
-CPP_BUILD_FLAGS=-fdiagnostics-color=always -fconcepts -Wno-unused-parameter
+CPP_BUILD_FLAGS=-fdiagnostics-color=always -fconcepts -Wno-unused-parameter -ftemplate-backtrace-limit=1
 #
 # to enable warnings:
 # 	LMBD_CPP_EXTRA_FLAGS="-Wall -Wextra" make

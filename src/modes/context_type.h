@@ -27,8 +27,9 @@ struct ContextTy {
   friend ModeManager;
 
   using SelfTy = ContextTy<LocalBasicMode, ModeManager>;
-  using LocalModeTy = LocalBasicMode;
   using ModeManagerTy = ModeManager;
+  using LocalModeTy = LocalBasicMode;
+  using StateTy = StateTyOf<LocalModeTy>;
 
   //
   // constructors
@@ -43,6 +44,7 @@ struct ContextTy {
   /// \private Use ModeManagerTy::get_context() to construct context
   ContextTy(ModeManagerTy& modeManager)
       : strip{modeManager.strip},
+        state{modeManager.template getStateOf<LocalModeTy>()},
         modeHasChanged{modeManager.modeHasChanged},
         groupHasChanged{modeManager.groupHasChanged},
         modeManager{modeManager} { }
@@ -238,6 +240,7 @@ struct ContextTy {
   //
 
   LedStrip& strip;
+  StateTy& state;
 
   bool modeHasChanged; ///< (compatibility) Prefer using BasicMode::reset()
   bool groupHasChanged; ///< (compatibility) Prefer using BasicMode::reset()
