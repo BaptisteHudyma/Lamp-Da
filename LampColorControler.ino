@@ -1,3 +1,4 @@
+
 #include <Arduino.h>
 #include <Wire.h>
 #include <bluefruit.h>
@@ -34,28 +35,6 @@ void setup() {
   // start by resetting the led driver
   ledpower::write_current(0);
 
-  bool shouldAlertUser = false;
-
-  uint32_t isFirstBoot = 1;
-  if (not fileSystem::get_value(std::string("isFirstBoot"), isFirstBoot) or
-      isFirstBoot) {
-    // if first boot, then store the flag
-    fileSystem::set_value(std::string("isFirstBoot"), 0);
-  }
-
-  // resetted by watchdog
-  if (!isFirstBoot && (readResetReason() & POWER_RESETREAS_DOG_Msk) != 0x00) {
-    // allow user to flash the program again, without running the currently
-    // stored program
-    if (charger::is_usb_powered()) {
-      // system will reset & shutdown after that
-      enterSerialDfu();
-    } else {
-      // alert the user that the lamp was resetted by watchdog
-      shouldAlertUser = true;
-    }
-  }
-
   // set turn on time
   turnOnTime = millis();
 
@@ -79,13 +58,38 @@ void setup() {
 
   // start the file system
   fileSystem::setup();
-  read_parameters();  // read from the stored config
 
-  /*
-  if (!charger::check_vendor_device_values()) {
-    // wrong device id
+  // check if we are in first boot mode
+  uint32_t isFirstBoot = 1;
+  fileSystem::get_value(std::string("ifb"), isFirstBoot);
+
+  bool shouldAlertUser = false;
+  // resetted by watchdog
+  if (!isFirstBoot) {
+    // started after reset, clear all code and go to bootloader mode
+    if ((readResetReason() & POWER_RESETREAS_RESETPIN_Msk) != 0x00) {
+      enterSerialDfu();
+    }
+
+    if ((readResetReason() & POWER_RESETREAS_DOG_Msk) != 0x00) {
+      // allow user to flash the program again, without running the currently
+      // stored program
+      if (charger::is_usb_powered()) {
+        // system will reset & shutdown after that
+        enterSerialDfu();
+      } else {
+        // alert the user that the lamp was resetted by watchdog
+        shouldAlertUser = true;
+      }
+    }
   }
-  */
+
+  // read from the stored config
+  read_parameters();
+  if (isFirstBoot) {
+    // if first boot, then store the flag
+    fileSystem::set_value(std::string("ifb"), 0);
+  }
 
   // set up button colors and callbacks
   button::init();
