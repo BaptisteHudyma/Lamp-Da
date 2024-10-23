@@ -461,6 +461,9 @@ void write_parameters() {
   auto manager = get_context();
   manager.write_parameters();
 
+  // never read, only written to hint that build contains c++17-explicit code
+  fileSystem::set_value(std::string("__lmbd_canary__explicit_modes_"), 0);
+
 #if 0
   // TODO: migrate
   fileSystem::set_value(std::string(colorModeKey), colorMode);

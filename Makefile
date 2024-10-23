@@ -5,6 +5,7 @@ CACHE_DIR=$(BUILD_DIR)/cache
 OBJECTS_DIR=$(BUILD_DIR)/objs
 ARTIFACTS=$(BUILD_DIR)/artifacts
 FQBN=adafruit:nrf52:lampDa_nrf52840
+PROJECT_INO=LampColorControler.ino
 CPP_STD_FLAGS=-std=gnu++17 -DLMBD_EXPLICIT_CPP17_SUPPORT
 CPP_BUILD_FLAGS=-fdiagnostics-color=always -fconcepts -Wno-unused-parameter
 #
@@ -113,6 +114,24 @@ build: process $(BUILD_DIR)/properties.txt
 	) || echo '-> everything looks fine :)'
 	# exporting artifacts...
 	@cp $(OBJECTS_DIR)/*.ino* $(ARTIFACTS)/
+
+$(ARTIFACTS)/$(PROJECT_INO).zip:
+	@echo -e "\n --- $@"
+	# no artifact found, building it from scratch...
+	make build
+
+verify-canary: $(ARTIFACTS)/$(PROJECT_INO).zip
+	@echo -e "\n --- $@"
+	# verifying artifact canary...
+	@(unzip -c $(ARTIFACTS)/$(PROJECT_INO).zip \
+		| strings \
+		| grep -q '_lmbd_canary__explicit_modes_' \
+		&& echo '-> canary found') \
+	|| (echo -e '\n\nERROR: string canary "_explicit_modes_" not found in artifact!\n\n' \
+		; false)
+
+verify: verify-canary
+	@echo -e " --- ok: $@"
 
 clean-doc:
 	@echo -e "\n --- $@"
