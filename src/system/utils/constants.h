@@ -31,7 +31,8 @@
 #include "rp2040_pio.h"
 #endif
 
-#include <stdint.h>
+#include <cstdint>
+using uint = unsigned int;
 
 const String HARDWARE_VERSION = "1.0";
 const String BASE_SOFTWARE_VERSION =
@@ -76,7 +77,7 @@ constexpr uint32_t batteryMaxChargeCurrent = 1000;  // mA
 // The button pin (one button pin to GND, the other to this pin)
 static constexpr uint32_t BUTTON_PIN = D6;
 // Pins for the led on the button
-static constexpr uint32_t BUTTON_RED = D8;
+static constexpr uint32_t BUTTON_RED = D5; /* DO NOT COMMIT: this is D4 */
 static constexpr uint32_t BUTTON_GREEN = D4;
 static constexpr uint32_t BUTTON_BLUE = D7;
 
