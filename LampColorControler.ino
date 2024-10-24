@@ -1,8 +1,8 @@
-
 #include <Arduino.h>
 #include <Wire.h>
 #include <bluefruit.h>
 
+#include "src/compile.h"
 #include "src/system/alerts.h"
 #include "src/system/behavior.h"
 #include "src/system/charger/charger.h"
@@ -15,7 +15,18 @@
 #include "src/system/physical/led_power.h"
 #include "src/system/utils/serial.h"
 #include "src/system/utils/utils.h"
-#include "src/user_functions.h"
+
+#ifdef LMBD_LAMP_TYPE__SIMPLE
+#include "src/user/simple/functions.h"
+#endif
+
+#ifdef LMBD_LAMP_TYPE__CCT
+#include "src/user/cct/functions.h"
+#endif
+
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+#include "src/user/indexable/functions.h"
+#endif
 
 void set_watchdog(const uint timeoutDelaySecond) {
   // Configure WDT
@@ -110,6 +121,9 @@ void setup() {
   // else: start in shutdown mode
   else {
     wokeUpFromVBUS = true;
+
+    // let the user start in unpowered mode (edge cases...)
+    user::power_off_sequence();
   }
 
   // user requested another thread, spawn it

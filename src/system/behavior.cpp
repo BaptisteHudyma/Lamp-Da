@@ -2,7 +2,18 @@
 
 #include <cstdint>
 
-#include "../user_functions.h"
+#ifdef LMBD_LAMP_TYPE__SIMPLE
+#include "../user/simple/functions.h"
+#endif
+
+#ifdef LMBD_LAMP_TYPE__CCT
+#include "../user/cct/functions.h"
+#endif
+
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+#include "../user/indexable/functions.h"
+#endif
+
 #include "alerts.h"
 #include "charger/charger.h"
 #include "ext/math8.h"
@@ -242,7 +253,7 @@ void handle_alerts() {
 
   static uint32_t criticalbatteryRaisedTime = 0;
   if (current == Alerts::NONE) {
-    MaxBrightnessLimit = MAX_BRIGHTNESS;
+    MaxBrightnessLimit = MAX_BRIGHTNESS;  // no alerts: reset the max brightness
     criticalbatteryRaisedTime = 0;
 
     // red to green
@@ -254,7 +265,7 @@ void handle_alerts() {
     // display battery level
     if (isChargeOk) {
       // charge mode
-      button::breeze(2000, 2000, buttonColor);
+      button::breeze(2000, 1000, buttonColor);
     } else {
       // normal mode
       button::set_color(buttonColor);

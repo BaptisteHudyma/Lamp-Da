@@ -30,6 +30,9 @@ String charge_status();
 // return the read value of vBus voltage (milliVolts)
 uint16_t getVbusVoltage_mV();
 
+// returns the read value of vBus voltage (millivolts)
+uint16_t getBatteryVoltage_mV();
+
 }  // namespace charger
 
 #endif  // CHARGER_H

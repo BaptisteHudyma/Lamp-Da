@@ -2,7 +2,10 @@
 #define MICRO_PHONE_H
 
 #include <stdint.h>
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 namespace microphone {
 
 // decibel level for a silent room

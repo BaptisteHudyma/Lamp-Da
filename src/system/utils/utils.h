@@ -67,7 +67,10 @@ COLOR color_add(COLOR c1, COLOR c2, bool fast = false);
 
 uint32_t hue_to_rgb_sinus(const uint16_t angle);
 
-float map(float x, float in_min, float in_max, float out_min, float out_max);
+constexpr float map(float x, float in_min, float in_max, float out_min,
+                    float out_max) {
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
 
 void calcGammaTable(float gamma);
 COLOR gamma32(COLOR color);

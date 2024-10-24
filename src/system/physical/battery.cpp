@@ -20,6 +20,8 @@ uint8_t get_battery_level(const bool resetRead) {
   static constexpr uint16_t maxInValue = maxVoltage * voltageDividerCoeff *
                                          ADC_MAX_VALUE /
                                          internalReferenceVoltage;
+
+  // TODO: replce with a read from the charging component
   const uint16_t pinRead = analogRead(BAT21);
 
   // in bounds with some margin

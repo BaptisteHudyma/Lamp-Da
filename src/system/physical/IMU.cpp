@@ -23,7 +23,11 @@ void enable() {
   pinMode(PIN_LSM6DS3TR_C_POWER, OUTPUT);
   digitalWrite(PIN_LSM6DS3TR_C_POWER, HIGH);
 
+  delay(5);  // voltage stabilization
+
   if (IMU.begin() != 0) {
+    // TODO: something ?
+    Serial.println("ERROR: IMU did not start");
   }
 
   isStarted = true;

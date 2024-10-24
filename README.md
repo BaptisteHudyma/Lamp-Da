@@ -30,21 +30,19 @@ Error and alerts are displayed as blinking animations:
 ### User defined behaviors
 The user MUST define the target behavior for the target uses.
 
-Some functions are defined in user_functions.h, and must be implemented in user_functions.cpp
+Some functions are defined in functions.h files, and must be implemented in functions.cpp
 They allow the user to program the exact desired behavior.
 
-Some branches are available for base models:
-- cct_led_strip: Program designed for a constant color temperature led strip.
-- constant_current_control_base: Program designed for a constant color led strip
-- indexable_strip_base: program designed for an indexable led strip wrapped around the lamp body
+Some user types are available for base models, in the user folder:
+- cct: Program designed for a constant color temperature led strip.
+- indexable: program designed for an indexable led strip wrapped around the lamp body
+- simple: Program designed for a constant color led strip
 
 ![The different lamps](/Medias/lamp_types.jpg)
-Above: constant colors, cct, indexable
+Above: simple, cct, indexable
 
 ## File details
 - Lamp-Da.ino: main class of the program, containing the setup and loop functions
-    - user_constants.h: constants defined by the user for the program. they must be updated to match the lamp characteristics
-    - user_functions.h; function called by the program, that the user must update for a specific application
 
 ## Physical build and architecture :
 

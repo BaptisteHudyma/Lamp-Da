@@ -205,10 +205,6 @@ uint32_t hue_to_rgb_sinus(const uint16_t angle) {
   return colorArray.color;
 }
 
-float map(float x, float in_min, float in_max, float out_min, float out_max) {
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
 // gamma 2.8 lookup table used for color correction
 static uint8_t gammaT[256] = {
     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,

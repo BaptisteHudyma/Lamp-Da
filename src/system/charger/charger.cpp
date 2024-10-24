@@ -32,8 +32,8 @@ void enable_charger() {
     BQ25703Areg.chargeOption1.set_FORCE_LATCHOFF(0);
     charger.writeRegEx(BQ25703Areg.chargeOption1);
 
-    // BQ25703Areg.chargeOption3.set_EN_HIZ(0);
-    //  BQ25703Areg.chargeOption3.set_BATFETOFF_HIZ(0);
+    BQ25703Areg.chargeOption3.set_EN_HIZ(0);
+    BQ25703Areg.chargeOption3.set_BATFETOFF_HIZ(0);
     BQ25703Areg.chargeOption3.set_EN_OTG(0);
     charger.writeRegEx(BQ25703Areg.chargeOption3);
   }
@@ -46,8 +46,13 @@ void disable_charger() {
     BQ25703Areg.chargeOption1.set_FORCE_LATCHOFF(1);
     charger.writeRegEx(BQ25703Areg.chargeOption1);
 
+    // This breaks the USB detection somehow
+    // -> There is a leakage between 3 and 4v on VBUS in HIGHZ mode,
+    // wastes energy and breaks USB detection (risk of lock)
+    // -> It seems to come from one of the MOSFET on the battery side
+
     // BQ25703Areg.chargeOption3.set_EN_HIZ(1);
-    //  BQ25703Areg.chargeOption3.set_BATFETOFF_HIZ(1);
+    // BQ25703Areg.chargeOption3.set_BATFETOFF_HIZ(1);
     BQ25703Areg.chargeOption3.set_EN_OTG(0);
     charger.writeRegEx(BQ25703Areg.chargeOption3);
 
@@ -127,7 +132,7 @@ bool can_use_max_power() {
   return PD_UFP.get_vbus_voltage() > (PD_UFP.get_voltage() * 50 - 2000);
 }
 
-static bool isCharging_s = true;
+static bool isCharging_s = false;
 bool is_charging() { return isCharging_s; }
 
 bool charge_processus() {

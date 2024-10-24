@@ -133,30 +133,30 @@ void blink(const uint offFreq, const uint onFreq,
 void breeze(const uint32_t periodOn, const uint32_t periodOff,
             const utils::ColorSpace::RGB& color) {
   const uint32_t time = millis();
+
+  // store the start time of the animation
   static uint32_t startTime = time;
 
   // breeze on
-  if (time - startTime < periodOn) {
-    float progression = (time - startTime) / (float)periodOn;
+  const uint32_t timeSinceStart = time - startTime;
+  if (timeSinceStart < periodOn) {
+    const float progression = utils::map(timeSinceStart, 0, periodOn, 0.0, 1.0);
 
     // rising edge
-    if (progression < 0.5) {
-      progression /= 0.5;
-
+    if (progression <= 0.5) {
+      // map from [0.0; 0.5] to [0.0; 1.0]
       set_color(utils::ColorSpace::RGB(
-          utils::get_gradient(0, color.get_rgb().color, progression)));
+          utils::get_gradient(0, color.get_rgb().color, 2.0 * progression)));
     }
     // falling edge
     else {
-      progression = 1.0 - progression;
-      progression /= 0.5;
-
-      set_color(utils::ColorSpace::RGB(
-          utils::get_gradient(0, color.get_rgb().color, progression)));
+      // map from ]0.5; 1.0] to [0.0; 1.0]
+      set_color(utils::ColorSpace::RGB(utils::get_gradient(
+          0, color.get_rgb().color, 2.0 * (1.0 - progression))));
     }
   }
-  // breeze of
-  else if (time - startTime < periodOn + periodOff) {
+  // breeze off
+  else if (timeSinceStart < periodOn + periodOff) {
     set_color(utils::ColorSpace::BLACK);
   } else {
     // reset animation

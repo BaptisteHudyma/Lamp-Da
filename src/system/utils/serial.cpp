@@ -2,9 +2,9 @@
 
 #include <Arduino.h>
 
-#include "../../user_constants.h"
 #include "../charger/charger.h"
 #include "../physical/battery.h"
+#include "../utils/constants.h"
 #include "constants.h"
 
 namespace serial {

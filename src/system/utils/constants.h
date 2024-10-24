@@ -3,7 +3,19 @@
 
 #include <cstdint>
 
-#include "../../user_constants.h"
+#ifdef LMBD_LAMP_TYPE__SIMPLE
+#include "../../user/simple/constants.h"
+#endif
+
+#ifdef LMBD_LAMP_TYPE__CCT
+#error "toto"
+#include "../../user/cct/_constants.h"
+#endif
+
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+#error "tata"
+#include "../../user/indexable/constants.h"
+#endif
 
 #ifdef ARDUINO
 #if (ARDUINO >= 100)
