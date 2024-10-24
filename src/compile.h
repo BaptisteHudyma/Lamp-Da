@@ -4,6 +4,8 @@
 // LMBD_LAMP_TYPE__SIMPLE
 #ifdef LMBD_LAMP_TYPE__SIMPLE
 
+#warning Compiling SIMPLE lamp type
+
 #ifdef LMBD_LAMP_TYPE__CCT
 #error "Cannot define CCT if SIMPLE is defined"
 #endif
@@ -16,6 +18,8 @@
 
 // LMBD_LAMP_TYPE__CCT
 #ifdef LMBD_LAMP_TYPE__CCT
+
+#warning Compiling CCT lamp type
 
 #ifdef LMBD_LAMP_TYPE__SIMPLE
 #error "Cannot define SIMPLE if CCT is defined"
@@ -30,6 +34,8 @@
 // LMBD_LAMP_TYPE__CCT
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
+#warning Compiling INDEXABLE lamp type
+
 #ifdef LMBD_LAMP_TYPE__SIMPLE
 #error "Cannot define SIMPLE if INDEXABLE is defined"
 #endif
@@ -39,5 +45,13 @@
 #endif
 
 #endif  // LMBD_LAMP_TYPE__CCT
+
+#ifndef LMBD_LAMP_TYPE__SIMPLE
+#ifndef LMBD_LAMP_TYPE__CCT
+#ifndef LMBD_LAMP_TYPE__INDEXABLE
+#error Must compile the program with a defined user mode
+#endif
+#endif
+#endif
 
 #endif

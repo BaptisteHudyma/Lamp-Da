@@ -46,10 +46,6 @@ void button_hold(const uint8_t clicks, const bool isEndOfHoldEvent,
 
 void loop() {}
 
-bool should_spawn_thread() { return false; }
-
-void user_thread() {}
-
 }  // namespace user
 
 #endif

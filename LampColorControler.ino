@@ -145,6 +145,11 @@ void check_loop_runtime(const uint32_t runTime) {
   static uint8_t isOnSlowLoopCount = 0;
   if (runTime > LOOP_UPDATE_PERIOD + 1) {
     isOnSlowLoopCount = min(isOnSlowLoopCount + 1, maxAlerts);
+
+    if (runTime > 500) {
+      // if loop time is too long, go back to flash mode
+      enterSerialDfu();
+    }
   } else if (isOnSlowLoopCount > 0) {
     isOnSlowLoopCount--;
   }

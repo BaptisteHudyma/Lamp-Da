@@ -49,7 +49,7 @@ void loop();
 
 // if you set this to true, another thread will be spawned, it will call the
 // function user_thread
-constexpr bool should_spawn_thread() { return false; };
+constexpr bool should_spawn_thread() { return true; };
 
 // called by the second thread, activated if should_spawn_thread is true
 void user_thread();

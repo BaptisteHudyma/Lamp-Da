@@ -339,9 +339,11 @@ void color_mode_update() {
       party_mode_update();
       break;
 
-    case 3:  // sound reacting mode
-      sound_mode_update();
-      break;
+      /*
+        case 3:  // sound reacting mode
+          sound_mode_update();
+          break;
+      */
 
       /*
       case 4:  // diverse alerts (police, firefighters etc)
