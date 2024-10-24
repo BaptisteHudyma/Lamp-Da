@@ -133,11 +133,15 @@ verify-canary: $(ARTIFACTS)/$(PROJECT_INO).zip
 verify: verify-canary
 	@echo -e " --- ok: $@"
 
+upload: verify
+	@echo -e "\n --- $@"
+	arduino-cli upload -b $(FQBN) -v -t -l serial -p /dev/ttyACM0 --input-dir '$(ARTIFACTS)'
+
 clean-doc:
 	@echo -e "\n --- $@"
 	rm -f doc/index.html
 
-clean: clean-doc process-clear
+clean: clean-doc
 	@echo -e "\n --- $@"
 	rm -rf $(OBJECTS_DIR) $(CACHE_DIR) $(BUILD_DIR)/*.txt
 	rm -rf $(BUILD_DIR)/.process-success $(BUILD_DIR)/.skip-clean
