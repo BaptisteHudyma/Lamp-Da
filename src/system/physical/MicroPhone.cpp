@@ -157,8 +157,4 @@ bool processFFT(const bool runFFT = true) {
   return true;
 }
 
-<<<<<<< Updated upstream
 }  // namespace microphone
-=======
-}  // namespace microphone
->>>>>>> Stashed changes

@@ -29,7 +29,8 @@ void handle_events(
  * Display a color on the button
  */
 void set_color(utils::ColorSpace::RGB color);
-void blink(const uint offFreq, const uint onFreq, utils::ColorSpace::RGB color);
+void blink(const uint32_t offFreq, const uint32_t onFreq,
+           utils::ColorSpace::RGB color);
 
 /**
  * \brief Make the breeze animation on the button

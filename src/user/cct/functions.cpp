@@ -1,10 +1,11 @@
 #ifdef LMBD_LAMP_TYPE__CCT
 
+#include "functions.h"
+
 #include <cstdint>
 
-#include "system/behavior.h"
-#include "system/physical/fileSystem.h"
-#include "user_functions.h"
+#include "../../system/behavior.h"
+#include "../../system/physical/fileSystem.h"
 
 namespace user {
 

@@ -6,6 +6,7 @@
 #include <cstdint>
 
 #include "../utils/colorspace.h"
+#include "../utils/strip.h"
 #include "../utils/utils.h"
 #include "palettes.h"
 

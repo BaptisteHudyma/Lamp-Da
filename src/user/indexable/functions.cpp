@@ -294,27 +294,8 @@ void party_mode_update() {
 }
 
 void sound_mode_update() {
-  constexpr uint8_t maxSoundState = 2;
+  constexpr uint8_t maxSoundState = 0;
   switch (clamp_state_values(colorState, maxSoundState)) {
-    case 0:  // vue meter
-      static GenerateGradientColor redToGreenGradient = GenerateGradientColor(
-          LedStrip::Color(0, 255, 0),
-          LedStrip::Color(255, 0, 0));  // gradient from red to green
-      if (categoryChange) redToGreenGradient.reset();
-
-      microphone::vu_meter(redToGreenGradient, 128, strip);
-      break;
-
-      /*case 1:  // pulse soud
-        microphone::fftDisplay(128, 128, PaletteHeatColors, categoryChange,
-        strip, 255);
-
-        break;*/
-
-    case 1:
-      microphone::mode_2DWaverly(128, 64, PalettePartyColors, strip);
-      break;
-
     default:  // error
       colorState = 0;
       strip.clear();
