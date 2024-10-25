@@ -22,6 +22,9 @@ enum Alerts
   BLUETOOTH_ADVERT = 1 << 7, // bluetooth is advertising
 
   HARDWARE_ALERT = 1 << 8, // any hardware alert
+
+  OTG_ACTIVATED = 1 << 9, // OTG activated
+  OTG_FAILED = 1 << 10,   // OTG failed
 };
 
 class Alert
