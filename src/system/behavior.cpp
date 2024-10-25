@@ -511,6 +511,19 @@ void handle_alerts()
     {
       button::breeze(1000, 500, utils::ColorSpace::BLUE);
     }
+    else if ((current & Alerts::OTG_FAILED) != 0x00)
+    {
+      button::blink(200, 200, utils::ColorSpace::FUSHIA);
+    }
+    else if ((current & Alerts::OTG_ACTIVATED) != 0x00)
+    {
+      // red to green
+      const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
+                                                                          utils::ColorSpace::GREEN.get_rgb().color,
+                                                                          battery::get_battery_level() / 100.0));
+
+      button::breeze(500, 500, buttonColor);
+    }
     else
     {
       // unhandled case (white blink)

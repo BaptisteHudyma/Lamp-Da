@@ -20,6 +20,9 @@ enum Alerts
   TEMP_CRITICAL = 1 << 6,               // Processor temperature is critical
 
   BLUETOOTH_ADVERT = 1 << 7, // bluetooth is advertising
+
+  OTG_ACTIVATED = 1 << 8, // OTG activated
+  OTG_FAILED = 1 << 9,    // OTG activated
 };
 
 class Alert
