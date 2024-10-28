@@ -48,7 +48,7 @@ void loop();
 constexpr bool should_spawn_thread() { return false; };
 
 // called by the second thread, activated if should_spawn_thread is true
-void user_thread() {};
+void user_thread();
 
 }  // namespace user
 
