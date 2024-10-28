@@ -379,6 +379,10 @@ void power_off_sequence() {
   // high drive input (5mA)
   // The only way to discharge the DC-DC pin...
   pinMode(LED_POWER_PIN, OUTPUT_H0H1);
+
+#ifdef LMBD_EXPLICIT_CPP17_SUPPORT
+  ensure_build_canary(); // (no-op) internal symbol used during build
+#endif
 }
 
 void brightness_update(const uint8_t brightness) {

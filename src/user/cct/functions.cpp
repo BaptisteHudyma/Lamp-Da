@@ -51,6 +51,10 @@ void power_off_sequence() {
   // reset the output
   currentBrightness = 0;
   set_color(0);
+
+#ifdef LMBD_EXPLICIT_CPP17_SUPPORT
+  ensure_build_canary(); // (no-op) internal symbol used during build
+#endif
 }
 
 void brightness_update(const uint8_t brightness) {
@@ -127,6 +131,8 @@ void button_hold(const uint8_t clicks, const bool isEndOfHoldEvent,
 }
 
 void loop() { set_color(currentColor); }
+
+void user_thread() {}
 
 }  // namespace user
 

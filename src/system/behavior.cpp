@@ -329,3 +329,18 @@ void handle_alerts() {
     }
   }
 }
+
+#ifdef LMBD_EXPLICIT_CPP17_SUPPORT
+const char* ensure_build_canary() {
+#ifdef LMBD_LAMP_TYPE__SIMPLE
+  return "_lmbd__build_canary__simple";
+#endif
+#ifdef LMBD_LAMP_TYPE__CCT
+  return "_lmbd__build_canary__cct";
+#endif
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+  return "_lmbd__build_canary__indexable";
+#endif
+  return (char*) nullptr;
+}
+#endif
