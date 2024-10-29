@@ -12,7 +12,7 @@ CPP_BUILD_FLAGS=-fdiagnostics-color=always -Wno-unused-parameter -ftemplate-back
 # to enable warnings:
 # 	LMBD_CPP_EXTRA_FLAGS="-Wall -Wextra" make
 
-all: doc build
+all: build
 
 #
 # to pick a lamp flavor:
