@@ -1,14 +1,17 @@
 SRC_DIR=$(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 VENV_DIR=$(SRC_DIR)venv
 BUILD_DIR=$(SRC_DIR)_build
+TOOLS_DIR=$(SRC_DIR)tools
 CACHE_DIR=$(BUILD_DIR)/cache
-OBJECTS_DIR=$(BUILD_DIR)/objs
 ARTIFACTS=$(BUILD_DIR)/artifacts
+OBJECTS_DIR=$(BUILD_DIR)/objs
+ARDUINO_LOC=$(BUILD_DIR)/arduino-cli
 
-# SHELL=/bin/bash
+SHELL:=/bin/bash # required by python3 virtualenv
 PYTHON_EXE=/usr/bin/env python3
 SOURCE_VENV=. $(VENV_DIR)/bin/activate
-ARDUINO_CLI=$(SOURCE_VENV) && $(shell which arduino-cli)
+ARDUINO_CLI_DETECTED=$(shell PATH="$(SRC_DIR):${PATH}" which arduino-cli)
+ARDUINO_CLI=$(SOURCE_VENV) && ARDUINO_LOC=$(ARDUINO_LOC) VENV_DIR=$(VENV_DIR) $(ARDUINO_CLI_DETECTED)
 ARDUINO_USER=$(shell $(ARDUINO_CLI) config get directories.user)
 ARDUINO_DATA=$(shell $(ARDUINO_CLI) config get directories.data)
 ARDUINO_BOARD=$(ARDUINO_DATA)/packages/adafruit/hardware/nrf52
@@ -27,6 +30,17 @@ CPP_BUILD_FLAGS=-fdiagnostics-color=always -Wno-unused-parameter -ftemplate-back
 # 	LMBD_CPP_EXTRA_FLAGS="-Wall -Wextra" make
 
 all: build
+
+#
+# make doc
+#
+
+$(SRC_DIR)/doc/index.html:
+	@echo; echo " --- $@"
+	cd $(SRC_DIR) && doxygen doxygen.conf
+
+doc: $(SRC_DIR)/doc/index.html
+	@echo " --- ok: $@"
 
 #
 # to pick a lamp flavor:
@@ -79,6 +93,128 @@ has-lamp-type:
 		 ; echo \
 		 ; false)
 
+#
+# dependency checks
+#
+
+has-board-installed: install-venv
+	@echo; echo " --- $@"
+	@($(ARDUINO_CLI) board listall\
+		| grep -q '$(FQBN)') || \
+		(echo; echo\
+		 ; echo 'ERROR: board "$(FQBN)" not found!' \
+		 ; echo \
+		 ; echo 'Troubleshooting:' \
+		 ; echo ' - home directory is "${HOME}"' \
+		 ; echo ' - detected "arduino-cli" is "$(ARDUINO_CLI_DETECTED)"' \
+		 ; echo '    - if empty, verify that "arduino-cli" is installed' \
+		 ; echo '    - try "make mr_proper arduino-cli-download safe-install" to try fully local setup' \
+		 ; echo '      (on some distributions, such local arduino-cli binary may not have network access)' \
+		 ; echo ' - detected $$(ARDUINO_DATA) directory is "$(ARDUINO_DATA)"' \
+		 ; echo '    - if empty, verify that "arduino-cli" is executable in $$PATH' \
+		 ; echo ' - adafruit should be listed in "$$(ARDUINO_DATA)/packages" below:' \
+		 ; echo -n '        '; ls '$(ARDUINO_DATA)/packages' \
+		 ; echo ' - nrf52 should be listed in "$$(ARDUINO_DATA)/packages/hardware" below:' \
+		 ; echo -n '        '; ls '$(ARDUINO_DATA)/packages/adafruit/hardware' \
+		 ; echo ' - have you replaced it by the "custom LampDa platform" repository?' \
+		 ; echo ' - if yes, the "LampDa_nrf52840" board should be listed below:'; echo \
+		 ; find $(ARDUINO_DATA)/packages/adafruit/hardware/nrf52 -name 'boards.txt' -exec cat '{}' \; \
+			| grep 'nrf52840.build.variant' \
+		 ; echo; echo ' - you can also try "make mr_proper safe-install" (may take 1.4 gigabyte of space)' \
+		 ; echo; echo \
+		 ; false)
+
+has-libs-installed(%): install-venv
+	@echo " --- $@($%)"
+	@($(ARDUINO_CLI) lib list\
+		| grep -q '$%') || \
+		(echo; echo\
+		 ; echo 'ERROR: library "$%" not found!' \
+		 ; echo \
+		 ; echo 'Troubleshooting:' \
+		 ; echo ' - home directory is "${HOME}"' \
+		 ; echo ' - detected arduino user directory is "$(ARDUINO_USER)"' \
+		 ; echo ' - library should be listed in "$(ARDUINO_USER)/libraries" below:' \
+		 ; echo -n '        '; ls '$(ARDUINO_USER)/libraries' \
+		 ; echo ' - install libraries through the IDE or using one of the following:' \
+		 ; echo '        arduino-cli lib install "$%"' \
+		 ; echo ' 		 make mr_proper safe-install-libs # (may take 1.4 gigabyte of space)' \
+		 ; echo; echo \
+		 ; false)
+
+check-compiler-cmd: has-board-installed
+	@echo " --- $@"
+	@($(COMPILER_PATH)$(COMPILER_CMD) --version \
+		| grep -qi 'Arm Embedded Processors') || \
+		(echo; echo\
+		 ; echo 'ERROR: compiler "$(COMPILER_CMD)" seems to be inappropriate?' \
+		 ; echo \
+		 ; echo 'Troubleshooting:' \
+		 ; echo ' - detected compiler path is "$(COMPILER_PATH)"' \
+		 ; echo ' - detected compiler command is "$(COMPILER_CMD)"' \
+		 ; echo ' - output of "$(COMPILER_CMD) --version" below:' \
+		 ; echo; $(COMPILER_PATH)$(COMPILER_CMD) --version \
+		 ; echo ' - expected "Arm Embedded Processors" in compiler version string' \
+		 ; echo ' - packages like "libc6-dev-i386" or "lib32-glibc" may be needed locally for 32-bit support' \
+		 ; echo ' - packages like "gcc-arm-none-eabi" or "arm-none-eabi-gcc" may be needed locally for ARM support' \
+		 ; echo ' - you can also try "make mr_proper safe-install" (may take 1.4 gigabyte of space)' \
+		 ; echo \
+		 ; false)
+
+$(BUILD_DIR)/.deps-ok:
+	@echo " --- $@"
+	@mkdir -p $(BUILD_DIR)
+	@test -f $(BUILD_DIR)/.deps-ok \
+		|| (make has-board-installed check-compiler-cmd 'has-libs-installed(Adafruit\ NeoPixel)' 'has-libs-installed(arduinoFFT)' \
+			&& touch $(BUILD_DIR)/.deps-ok)
+
+check-arduino-deps: install-venv $(BUILD_DIR)/.deps-ok
+	@echo " --- ok: $@"
+
+#
+# automatic install
+#	- try "make safe-install" to install all dependencies in a local directory
+#	- this could take up to 1.4 gigabytes of space :)
+#
+
+# virtualenv install
+$(VENV_DIR)/bin/activate:
+	@echo; echo " --- $@"
+	@($(PYTHON_EXE) -m venv $(VENV_DIR) \
+		&& $(SOURCE_VENV) \
+		&& $(PYTHON_EXE) -m pip install -r $(VENV_DIR)/../requirements.txt \
+		&& (adafruit-nrfutil version | grep -q 'adafruit-nrfutil version')) || \
+		(echo; echo \
+		 ; echo 'ERROR: python3 virtualenv seems to be not be functioning?' \
+		 ; echo \
+		 ; echo 'Troubleshooting:' \
+		 ; echo ' - virtualenv created at "$(VENV_DIR)"' \
+		 ; echo ' - "source $(VENV_DIR)/bin/activate" should make 'adafruit-nrfutil' available in $$PATH' \
+		 ; echo ' - try "python3 -m pip install --break-system-packages --user adafruit-nrfutil" to force install' \
+		 ; echo ' - packages like "python3-pip", "python3-venv" or "python3-wheel" may be needed locally' \
+		 ; echo ' - expected "adafruit-nrfutil version" literal string in the following command output:' \
+		 ; echo; echo ' $$ . $(VENV_DIR)/bin/activate && adafruit-nrfutil version' \
+		 ; . $(VENV_DIR)/bin/activate && adafruit-nrfutil version \
+		 ; echo \
+		 ; false)
+
+install-venv: $(VENV_DIR)/bin/activate
+	@echo " --- ok: $@"
+	@($(SOURCE_VENV) \
+		&& adafruit-nrfutil version | grep -q 'adafruit-nrfutil version') || \
+		(echo; echo \
+		 ; echo 'ERROR: python3 virtualenv seems to be not be functioning?' \
+		 ; echo \
+		 ; echo 'Troubleshooting:' \
+		 ; echo " - current shell is \"$$($$0 --version|head -n1|cut -f1 -d,)\" and must be \"GNU bash\" to support virtualenv" \
+		 ; echo ' - try "make mr_proper install-venv" to reinstall potentially missing requirements.txt' \
+		 ; echo ' - expected "adafruit-nrfutil version" literal string in the following command output:' \
+		 ; echo; echo ' $$ . $(VENV_DIR)/bin/activate && adafruit-nrfutil version' \
+		 ; . $(VENV_DIR)/bin/activate && adafruit-nrfutil version \
+		 ; echo \
+		 ; false)
+
+# this target may break local IDE install!
 clean-board-install: install-venv
 	@echo; echo " --- $@"
 	# remove (potentially modified) existing install...
@@ -99,28 +235,6 @@ unsafe-board-install: clean-board-install install-venv
 	@rm -rf $(ARDUINO_BOARD)
 	git clone --recurse-submodules $(CUSTOM_BOARD_URL) $(ARDUINO_BOARD)
 
-has-board-installed: install-venv
-	@echo; echo " --- $@"
-	@($(ARDUINO_CLI) board search '$(FQBN)' \
-		| grep -q 'LampDa') || \
-		(echo; echo\
-		 ; echo 'ERROR: board "$(FQBN)" not found!' \
-		 ; echo \
-		 ; echo 'Troubleshooting:' \
-		 ; echo ' - home directory is "${HOME}"' \
-		 ; echo ' - detected arduino data directory is "$(ARDUINO_DATA)"' \
-		 ; echo ' - adafruit should be listed in "$(ARDUINO_DATA)/packages" below:' \
-		 ; echo -n '        '; ls '$(ARDUINO_DATA)/packages' \
-		 ; echo ' - nrf52 should be listed in "$(ARDUINO_DATA)/packages/hardware" below:' \
-		 ; echo -n '        '; ls '$(ARDUINO_DATA)/packages/adafruit/hardware' \
-		 ; echo ' - have you replaced it by the "custom LampDa platform" repository?' \
-		 ; echo ' - if yes, the "LampDa_nrf52840" board should be listed below:'; echo \
-		 ; find $(ARDUINO_DATA)/packages/adafruit/hardware/nrf52 -name 'boards.txt' -exec cat '{}' \; \
-			| grep 'nrf52840.build.variant' \
-		 ; echo; echo ' - you can also try "make unsafe-board-install" (may break local IDE install!)' \
-		 ; echo; echo \
-		 ; false)
-
 # this target may break local IDE install!
 unsafe-install-libs: install-venv
 	@echo " --- $@"
@@ -129,68 +243,31 @@ unsafe-install-libs: install-venv
 	# installing arduinoFFT
 	@$(ARDUINO_CLI) lib install "arduinoFFT"
 
-has-libs-installed(%): install-venv
-	@echo " --- $@($%)"
-	@($(ARDUINO_CLI) lib list\
-		| grep -q '$%') || \
-		(echo; echo\
-		 ; echo 'ERROR: library "$%" not found!' \
-		 ; echo \
-		 ; echo 'Troubleshooting:' \
-		 ; echo ' - home directory is "${HOME}"' \
-		 ; echo ' - detected arduino user directory is "$(ARDUINO_USER)"' \
-		 ; echo ' - library should be listed in "$(ARDUINO_USER)/libraries" below:' \
-		 ; echo -n '        '; ls '$(ARDUINO_USER)/libraries' \
-		 ; echo ' - install libraries through the IDE or using one of the following:' \
-		 ; echo ' 		 make unsafe-install-libs # (may break local IDE install!)' \
-		 ; echo '        arduino-cli lib install "$%"' \
-		 ; echo; echo \
-		 ; false)
-
-check-compiler-cmd: has-board-installed
+local-arduino-cli:
 	@echo " --- $@"
-	@($(COMPILER_PATH)$(COMPILER_CMD) --version \
-		| grep -qi 'Arm Embedded Processors') || \
-		(echo; echo\
-		 ; echo 'ERROR: compiler "$(COMPILER_CMD)" seems to be inappropriate?' \
-		 ; echo \
-		 ; echo 'Troubleshooting:' \
-		 ; echo ' - detected compiler path is "$(COMPILER_PATH)"' \
-		 ; echo ' - detected compiler command is "$(COMPILER_CMD)"' \
-		 ; echo ' - output of "$(COMPILER_CMD) --version" below:' \
-		 ; echo; $(COMPILER_PATH)$(COMPILER_CMD) --version \
-		 ; echo ' - expected "Arm Embedded Processors" in compiler version string' \
-		 ; echo ' - package like "gcc-arm-none-eabi" or "arm-none-eabi-gcc" may be needed locally' \
-		 ; echo ' - you can also try "make unsafe-board-install" (may break local IDE install!)' \
-		 ; echo \
-		 ; false)
+	# enabling local arduino-cli command
+	@cp $(TOOLS_DIR)/arduino-cli $(SRC_DIR)
+	# adding local arduino-cli to .gitignore
+	@echo 'arduino-cli' >> $(SRC_DIR).gitignore
+	@echo '.gitignore' >> $(SRC_DIR).gitignore
 
-check-arduino-deps: has-board-installed check-compiler-cmd has-libs-installed(Adafruit\ NeoPixel) has-libs-installed(arduinoFFT)
-	@echo " --- ok: $@"
+arduino-cli-download:
+	mkdir -p $(ARDUINO_LOC)
+	# attempting to download arduino-cli in a local directory
+	@cd $(ARDUINO_LOC) \
+		&& curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=$(ARDUINO_LOC) /bin/sh
+	@echo 'WARNING: on some distributions, such local arduino-cli binaries may not have network access!'
 
-#
-# make doc
-#
-
-$(SRC_DIR)/doc/index.html:
-	@echo; echo " --- $@"
-	cd $(SRC_DIR) && doxygen doxygen.conf
-
-doc: $(SRC_DIR)/doc/index.html
-	@echo " --- ok: $@"
-
-$(VENV_DIR)/bin/activate:
-	@echo; echo " --- $@"
-	$(PYTHON_EXE) -m venv $(VENV_DIR)
-	$(SOURCE_VENV) && $(PYTHON_EXE) -m pip install -r $(VENV_DIR)/../requirements.txt
+safe-install: local-arduino-cli
+	@echo " --- $@"
+	make unsafe-board-install unsafe-install-libs
+	make check-arduino-deps
+	rm -rf $(ARDUINO_LOC)/downloads
 
 #
 # clean build
 #  - detects arduino's way of building the user sketch
 #
-
-install-venv: $(VENV_DIR)/bin/activate
-	@echo " --- ok: $@"
 
 $(BUILD_DIR)/.gitignore:
 	@echo; echo " --- $@"
@@ -301,6 +378,19 @@ build: has-lamp-type process $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 		&& echo && echo \
 	) || echo '-> everything went fine!'
 	# exporting artifacts...
+	@test -f $(OBJECTS_DIR)/*.ino.zip || (test ! -f $(OBJECTS_DIR)/*.ino.hex \
+		|| (echo; echo \
+			; echo 'ERROR: looks like "adafruit-nrfutil dfu genpkg" command failed to run?' \
+			; echo \
+			; echo 'Troubleshooting:' \
+			; echo ' - check in arduino logs that "adafruit-nrfutil" command was found in $$PATH' \
+			; echo ' - if not, verify that "adafruit-nrfutil" is installed in "$(VENV_DIR)"' \
+			; echo ' - if not, try the following to force a local install of the package:' \
+			; echo '        python3 -m pip install --break-system-packages --user adafruit-nrfutil' \
+			; echo ' - you can also try to run by hand the following:' \
+			; echo -n '        '; grep 'dfu genpkg' $(BUILD_DIR)/verbose.txt \
+			; echo \
+			; false))
 	@cp $(OBJECTS_DIR)/*.ino* $(ARTIFACTS)/
 
 #
@@ -372,3 +462,4 @@ mr_proper:
 	@(test ! -L venv && rm -rf venv) || true
 	rm -rf doc/*
 	rm -rf _build
+	rm -rf arduino-cli
