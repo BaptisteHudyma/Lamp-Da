@@ -19,8 +19,9 @@ void clear();
  */
 void write_state();
 
-bool get_value(const std::string& key, uint32_t& value);
-void set_value(const std::string& key, const uint32_t value);
+bool doKeyExists(const uint32_t key);
+bool get_value(const uint32_t key, uint32_t& value);
+void set_value(const uint32_t key, const uint32_t value);
 
 }  // namespace fileSystem
 

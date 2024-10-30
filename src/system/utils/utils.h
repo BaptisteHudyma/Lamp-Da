@@ -72,6 +72,12 @@ constexpr float map(float x, float in_min, float in_max, float out_min,
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
+// hash a string
+// param[in] off should be left to 0
+constexpr uint32_t hash(const char* s, const uint16_t off = 0) {
+  return !s[off] ? 5381 : (hash(s, off + 1) * 33) ^ s[off];
+}
+
 void calcGammaTable(float gamma);
 COLOR gamma32(COLOR color);
 uint8_t gamma8(uint8_t value);

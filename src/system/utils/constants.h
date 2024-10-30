@@ -72,8 +72,7 @@ constexpr float criticalSystemTemp_c = 80;  // max proc temperature, in degrees
 constexpr float totalCons_Watt = consWattByMeter * ledStripLenght_mm / 1000.0;
 constexpr float maxStripConsumption_A = totalCons_Watt / inputVoltage_V;
 
-// compute the expected average loop runtime, scaled with the number of led +25%
-// for computations
+// compute the expected average loop runtime
 constexpr uint32_t LOOP_UPDATE_PERIOD = 10;
 
 constexpr float batteryCritical = 3;  // %

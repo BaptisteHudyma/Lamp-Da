@@ -7,6 +7,7 @@
 
 #include "alerts.h"
 #include "utils/constants.h"
+#include "utils/utils.h"
 
 #ifdef __AVR__
 #include <avr/power.h>  // Required for 16 MHz Adafruit Trinket
@@ -14,6 +15,9 @@
 
 // NeoPixel brightness, 0 (min) to 255 (max)
 extern uint8_t BRIGHTNESS;
+
+/// First ever boot flag for this lamp
+static constexpr uint32_t isFirstBootKey = utils::hash("ifb");
 
 /**
  * \brief Load the parameters from the filesystem

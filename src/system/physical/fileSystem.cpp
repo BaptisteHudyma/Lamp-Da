@@ -3,6 +3,7 @@
 #include <Adafruit_LittleFS.h>
 #include <InternalFileSystem.h>
 
+#include <cassert>
 #include <map>
 #include <vector>
 
@@ -17,7 +18,19 @@ using namespace Adafruit_LittleFS_Namespace;
 File file(InternalFS);
 
 // the stored configurations
-std::map<std::string, uint32_t> _valueMap;
+std::map<uint32_t, uint32_t> _valueMap;
+
+struct keyValue {
+  uint32_t key;
+  uint32_t value;
+};
+constexpr size_t sizeOfData = sizeof(keyValue);
+
+// used to convert this struct to an array of bytes
+union KeyValToByteArray {
+  uint8_t data[sizeOfData];
+  keyValue kv;
+};
 
 static bool isSetup = false;
 void setup() {
@@ -51,34 +64,31 @@ void load_initial_values() {
       return;
     }
 
-    bool isWord = true;
-    bool isValue = false;
-    std::string key = "";
-    std::string value = "";
+    KeyValToByteArray converter;
+    converter.kv.key = 0;
+    converter.kv.value = 0;
+
+    uint8_t cnt = 0;  // when this reaches 8, a new word
     // parser state machine
     for (const char c : vecRead) {
-      if (c == '\n') {
-        isWord = true;
-        isValue = false;
+      if (cnt >= sizeOfData) {
+        _valueMap[converter.kv.key] = converter.kv.value;
 
-        if (!key.empty() and !value.empty()) {
-          _valueMap[key] = atoi(value.c_str());
-        }
-        key = "";
-        value = "";
-      } else if (c == ':') {
-        isWord = false;
-        isValue = true;
-      } else if (isWord) {
-        key += c;
-      } else if (isValue) {
-        value += c;
+        // reset
+        converter.kv.key = 0;
+        converter.kv.value = 0;
+        cnt = 0;
       }
+
+      converter.data[cnt] = c;
+      cnt++;
     }
 
-    if (!key.empty() and !value.empty()) {
-      _valueMap[key] = atoi(value.c_str());
+    // last word !
+    if (cnt >= sizeOfData) {
+      _valueMap[converter.kv.key] = converter.kv.value;
     }
+
     file.close();
   } else {
     // no initial values, first boost maybe
@@ -112,7 +122,11 @@ void write_state() {
   file.open(FILENAME, FILE_O_WRITE);
   if (file) {
     for (const auto& keyval : _valueMap) {
-      file.printf("%s:%d\n", keyval.first.c_str(), keyval.second);
+      KeyValToByteArray converter;
+      converter.kv.key = keyval.first;
+      converter.kv.value = keyval.second;
+      // write the data converted to a byte array
+      file.write(converter.data, sizeOfData);
     }
     file.close();
   } else {
@@ -121,7 +135,11 @@ void write_state() {
   }
 }
 
-bool get_value(const std::string& key, uint32_t& value) {
+bool doKeyExists(const uint32_t key) {
+  return _valueMap.find(key) != _valueMap.end();
+}
+
+bool get_value(const uint32_t key, uint32_t& value) {
   const auto& res = _valueMap.find(key);
   if (res != _valueMap.end()) {
     value = res->second;
@@ -130,7 +148,7 @@ bool get_value(const std::string& key, uint32_t& value) {
   return false;
 }
 
-void set_value(const std::string& key, const uint32_t value) {
+void set_value(const uint32_t key, const uint32_t value) {
   _valueMap[key] = value;
 }
 

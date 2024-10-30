@@ -11,6 +11,7 @@
 #include "../../system/physical/IMU.h"
 #include "../../system/physical/MicroPhone.h"
 #include "../../system/physical/fileSystem.h"
+#include "../../system/utils/utils.h"
 
 namespace user {
 
@@ -22,21 +23,21 @@ bool modeChange = true;      // signal a color mode change
 bool categoryChange = true;  // signal a color category change
 
 uint8_t colorMode = 0;  // color mode: main wheel of the color mode
-const char* colorModeKey = "colorMode";
+constexpr uint32_t colorModeKey = utils::hash("colorMode");
 
 uint8_t colorState = 0;  // color state: subwheel of the current color mode
-const char* colorStateKey = "colorState";
+constexpr uint32_t colorStateKey = utils::hash("colorState");
 
 uint8_t colorCodeIndex = 0;  // color code index, used for color indexion
 uint8_t lastColorCodeIndex = colorCodeIndex;
 
 uint8_t colorCodeIndexForWarmLight =
     0;  // color code index, used for color indexion of warm to white
-const char* colorCodeIndexForWarmLightKey = "warmLight";
+constexpr uint32_t colorCodeIndexForWarmLightKey = utils::hash("warmLight");
 
 uint8_t colorCodeIndexForColoredLight =
     0;  // color code index, used for color indexion of RGB
-const char* colorCodeIndexForColoredLightKey = "colorLight";
+constexpr uint32_t colorCodeIndexForColoredLightKey = utils::hash("colorLight");
 
 bool isFinished = true;
 bool switchMode = true;
@@ -381,7 +382,7 @@ void power_off_sequence() {
   pinMode(LED_POWER_PIN, OUTPUT_H0H1);
 
 #ifdef LMBD_EXPLICIT_CPP17_SUPPORT
-  ensure_build_canary(); // (no-op) internal symbol used during build
+  ensure_build_canary();  // (no-op) internal symbol used during build
 #endif
 }
 
@@ -390,34 +391,32 @@ void brightness_update(const uint8_t brightness) {
 }
 
 void write_parameters() {
-  fileSystem::set_value(std::string(colorModeKey), colorMode);
-  fileSystem::set_value(std::string(colorStateKey), colorState);
-  fileSystem::set_value(std::string(colorCodeIndexForWarmLightKey),
+  fileSystem::set_value(colorModeKey, colorMode);
+  fileSystem::set_value(colorStateKey, colorState);
+  fileSystem::set_value(colorCodeIndexForWarmLightKey,
                         colorCodeIndexForWarmLight);
-  fileSystem::set_value(std::string(colorCodeIndexForColoredLightKey),
+  fileSystem::set_value(colorCodeIndexForColoredLightKey,
                         colorCodeIndexForColoredLight);
 }
 
 void read_parameters() {
   uint32_t mode = 0;
-  if (fileSystem::get_value(std::string(colorModeKey), mode)) {
+  if (fileSystem::get_value(colorModeKey, mode)) {
     colorMode = mode;
   }
 
   uint32_t state = 0;
-  if (fileSystem::get_value(std::string(colorStateKey), state)) {
+  if (fileSystem::get_value(colorStateKey, state)) {
     colorState = state;
   }
 
   uint32_t warmLight = 0;
-  if (fileSystem::get_value(std::string(colorCodeIndexForWarmLightKey),
-                            warmLight)) {
+  if (fileSystem::get_value(colorCodeIndexForWarmLightKey, warmLight)) {
     colorCodeIndexForWarmLight = warmLight;
   }
 
   uint32_t coloredLight = 0;
-  if (fileSystem::get_value(std::string(colorCodeIndexForColoredLightKey),
-                            coloredLight)) {
+  if (fileSystem::get_value(colorCodeIndexForColoredLightKey, coloredLight)) {
     colorCodeIndexForColoredLight = coloredLight;
   }
 }

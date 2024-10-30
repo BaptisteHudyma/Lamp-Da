@@ -6,6 +6,7 @@
 
 #include "../../system/behavior.h"
 #include "../../system/physical/fileSystem.h"
+#include "../../system/utils/utils.h"
 
 namespace user {
 
@@ -13,7 +14,7 @@ constexpr int powerPin = AD1;
 constexpr int whitePin = AD0;
 constexpr int yellowPin = AD2;
 
-const char* colorKey = "color";
+constexpr uint32_t colorKey = utils::hash("color");
 uint8_t currentColor = 0;
 uint8_t lastColor = 0;
 
@@ -53,7 +54,7 @@ void power_off_sequence() {
   set_color(0);
 
 #ifdef LMBD_EXPLICIT_CPP17_SUPPORT
-  ensure_build_canary(); // (no-op) internal symbol used during build
+  ensure_build_canary();  // (no-op) internal symbol used during build
 #endif
 }
 
@@ -68,13 +69,11 @@ void brightness_update(const uint8_t brightness) {
   set_color(currentColor);
 }
 
-void write_parameters() {
-  fileSystem::set_value(std::string(colorKey), currentColor);
-}
+void write_parameters() { fileSystem::set_value(colorKey, currentColor); }
 
 void read_parameters() {
   uint32_t mode = 0;
-  if (fileSystem::get_value(std::string(colorKey), mode)) {
+  if (fileSystem::get_value(colorKey, mode)) {
     currentColor = mode;
     lastColor = currentColor;
   }

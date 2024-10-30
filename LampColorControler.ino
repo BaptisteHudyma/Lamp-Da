@@ -69,13 +69,13 @@ void setup() {
 
   // start the file system
   fileSystem::setup();
+  read_parameters();
 
-  // check if we are in first boot mode
-  uint32_t isFirstBoot = 1;
-  fileSystem::get_value(std::string("ifb"), isFirstBoot);
+  // check if we are in first boot mode (no first boot flag stored)
+  const bool isFirstBoot = !fileSystem::doKeyExists(isFirstBootKey);
 
   bool shouldAlertUser = false;
-  // resetted by watchdog
+  // handle start flags
   if (!isFirstBoot) {
     // started after reset, clear all code and go to bootloader mode
     if ((readResetReason() & POWER_RESETREAS_RESETPIN_Msk) != 0x00) {
@@ -93,13 +93,6 @@ void setup() {
         shouldAlertUser = true;
       }
     }
-  }
-
-  // read from the stored config
-  read_parameters();
-  if (isFirstBoot) {
-    // if first boot, then store the flag
-    fileSystem::set_value(std::string("ifb"), 0);
   }
 
   // set up button colors and callbacks

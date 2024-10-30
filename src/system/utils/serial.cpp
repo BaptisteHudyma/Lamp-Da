@@ -6,25 +6,21 @@
 #include "../physical/battery.h"
 #include "../utils/constants.h"
 #include "constants.h"
+#include "utils.h"
 
 namespace serial {
 
 constexpr uint8_t maxReadLinePerLoop = 5;
 constexpr uint8_t maxLineLenght = 200;
 
-// hash a string
-constexpr unsigned int hash(const char* s, int off = 0) {
-  return !s[off] ? 5381 : (hash(s, off + 1) * 33) ^ s[off];
-}
-
 inline const char* const boolToString(bool b) { return b ? "true" : "false"; }
 
 void handleCommand(const String& command) {
   Serial.println("");
 
-  switch (hash(command.c_str())) {
-    case hash("h"):
-    case hash("help"):
+  switch (utils::hash(command.c_str())) {
+    case utils::hash("h"):
+    case utils::hash("help"):
       Serial.println("");
       Serial.println("---Lamp-da CLI---");
       Serial.println("h: this page");
@@ -34,9 +30,9 @@ void handleCommand(const String& command) {
       Serial.println("-----------------");
       break;
 
-    case hash("v"):
-    case hash("V"):
-    case hash("version"):
+    case utils::hash("v"):
+    case utils::hash("V"):
+    case utils::hash("version"):
       Serial.print("hardware:");
       Serial.println(HARDWARE_VERSION);
       Serial.print("base software:");
@@ -45,13 +41,13 @@ void handleCommand(const String& command) {
       Serial.println(SOFTWARE_VERSION);
       break;
 
-    case hash("bl"):
+    case utils::hash("bl"):
       Serial.print("battery level:");
       Serial.print(battery::get_battery_level());
       Serial.println("%");
       break;
 
-    case hash("vbus"):
+    case utils::hash("vbus"):
       Serial.print("voltage on vbus:");
       Serial.print(charger::getVbusVoltage_mV());
       Serial.println("mV");
