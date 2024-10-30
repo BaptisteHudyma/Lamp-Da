@@ -136,7 +136,7 @@ bool can_use_max_power() {
 static bool isCharging_s = false;
 bool is_charging() { return isCharging_s; }
 
-bool charge_processus() {
+bool charge_processus_unrestricted() {
   static bool isChargeEnabled = false;
   static bool isChargeResetted = false;
 
@@ -163,18 +163,30 @@ bool charge_processus() {
       lastBatteryRead = 0;
       lastChargeValue = 0;
       status = "NOT CHARGING: voltage hysteresys is being disabled";
-    } else {
-      status = "NOT CHARGING: voltage hysteresys activated";
     }
+    // this is commented out to keep the last charger status
+    // else { status = "NOT CHARGING: voltage hysteresys activated"; }
   } else {
     // battery level stuck, stop charge (even if not full)
     constexpr uint32_t safeTimeoutMin = 30;
 
     // battery level high and stable: stop charge
     constexpr uint32_t timeoutMin = 20;
-
     const uint32_t timestamp = millis();
-    if (batteryLevel >= 95) {
+
+    // TODO: also stop charging process if charging current is none.
+
+    // full battery, can stop immediatly
+    if (batteryLevel >= 100) {
+      status = "NOT CHARGING: charge finished";
+
+      shouldCharge = false;
+      voltageHysteresisActivated = true;
+    }
+    // neer full, prepare to stop (after a fixed time)
+    // this handles the battery voltage equalizer process
+    else if (batteryLevel >= 95) {
+      // stop if the battery voltage did not change for a time
       if (timestamp - lastBatteryRead > 60 * 1000 * timeoutMin) {
         status = "NOT CHARGING: charge finished";
 
@@ -289,6 +301,20 @@ bool charge_processus() {
   isChargeResetted = false;
 
   return true;
+}
+
+bool charge_processus() {
+  static uint32_t lastChargeProcessusCall = 0;
+  static bool lastResponse = false;
+
+  const uint32_t time = millis();
+  // 100ms is a good timing for PD negociations
+  if (lastChargeProcessusCall == 0 or time - lastChargeProcessusCall > 100) {
+    lastResponse = charge_processus_unrestricted();
+    lastChargeProcessusCall = time;
+  }
+
+  return lastResponse;
 }
 
 void disable_charge() {

@@ -388,7 +388,7 @@ void handle_alerts() {
     const auto buttonColor = utils::ColorSpace::RGB(
         utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
                             utils::ColorSpace::GREEN.get_rgb().color,
-                            battery::get_battery_level() / 100.0));
+                            battery::get_raw_battery_level() / 100.0));
 
     // display battery level
     if (isChargeOk) {
