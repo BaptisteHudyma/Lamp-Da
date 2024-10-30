@@ -29,7 +29,7 @@
 #include "utils/constants.h"
 #include "utils/utils.h"
 
-const char* brightnessKey = "brightness";
+constexpr uint32_t brightnessKey = utils::hash("brightness");
 
 // constantes
 static constexpr uint8_t MIN_BRIGHTNESS = 5;
@@ -65,7 +65,7 @@ void read_parameters() {
   fileSystem::load_initial_values();
 
   uint32_t brightness = 0;
-  if (fileSystem::get_value(std::string(brightnessKey), brightness)) {
+  if (fileSystem::get_value(brightnessKey, brightness)) {
     update_brightness(brightness, true, true);
   }
 
@@ -74,7 +74,7 @@ void read_parameters() {
 
 void write_parameters() {
   fileSystem::clear();
-  fileSystem::set_value(std::string(brightnessKey), BRIGHTNESS);
+  fileSystem::set_value(brightnessKey, BRIGHTNESS);
 
   user::write_parameters();
 
@@ -111,7 +111,6 @@ void startup_sequence() {
 }
 
 void shutdown() {
-
   // flag system as powered down
   const bool wasAlreadyShutdown = isShutdown;
   isShutdown = true;
@@ -128,12 +127,8 @@ void shutdown() {
   bluetooth::disable_bluetooth();
 #endif
 
-  // deactivate indicators
-  button::set_color(utils::ColorSpace::BLACK);
-
   // some actions are to be done only if the system was power-on before
-  if(!wasAlreadyShutdown) {
-
+  if (!wasAlreadyShutdown) {
     // save the current config to a file
     // (takes some time so call it when the lamp appear to be shutdown already)
     write_parameters();
@@ -141,6 +136,9 @@ void shutdown() {
     // let the user power off the system
     user::power_off_sequence();
   }
+
+  // deactivate indicators
+  button::set_color(utils::ColorSpace::BLACK);
 
   // do not power down when charger is plugged in
   if (!charger::is_usb_powered()) {
@@ -341,6 +339,6 @@ const char* ensure_build_canary() {
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
   return "_lmbd__build_canary__indexable";
 #endif
-  return (char*) nullptr;
+  return (char*)nullptr;
 }
 #endif

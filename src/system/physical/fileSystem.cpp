@@ -17,7 +17,13 @@ using namespace Adafruit_LittleFS_Namespace;
 File file(InternalFS);
 
 // the stored configurations
-std::map<std::string, uint32_t> _valueMap;
+std::map<uint32_t, uint32_t> _valueMap;
+
+// used to convert two uint32 to 8 uint8
+union KeyValToByteArray {
+  uint8_t data[8];
+  uint32_t d[2];
+};
 
 static bool isSetup = false;
 void setup() {
@@ -51,34 +57,31 @@ void load_initial_values() {
       return;
     }
 
-    bool isWord = true;
-    bool isValue = false;
-    std::string key = "";
-    std::string value = "";
+    KeyValToByteArray converter;
+    converter.d[0] = 0;
+    converter.d[1] = 0;
+
+    uint8_t cnt = 0;  // when this reaches 8, a new word
     // parser state machine
     for (const char c : vecRead) {
-      if (c == '\n') {
-        isWord = true;
-        isValue = false;
+      if (cnt >= 8) {
+        _valueMap[converter.d[0]] = converter.d[1];
 
-        if (!key.empty() and !value.empty()) {
-          _valueMap[key] = atoi(value.c_str());
-        }
-        key = "";
-        value = "";
-      } else if (c == ':') {
-        isWord = false;
-        isValue = true;
-      } else if (isWord) {
-        key += c;
-      } else if (isValue) {
-        value += c;
+        // reset
+        converter.d[0] = 0;
+        converter.d[1] = 0;
+        cnt = 0;
       }
+
+      converter.data[cnt] = c;
+      cnt++;
     }
 
-    if (!key.empty() and !value.empty()) {
-      _valueMap[key] = atoi(value.c_str());
+    // last word !
+    if (cnt >= 8) {
+      _valueMap[converter.d[0]] = converter.d[1];
     }
+
     file.close();
   } else {
     // no initial values, first boost maybe
@@ -112,7 +115,12 @@ void write_state() {
   file.open(FILENAME, FILE_O_WRITE);
   if (file) {
     for (const auto& keyval : _valueMap) {
-      file.printf("%s:%d\n", keyval.first.c_str(), keyval.second);
+      KeyValToByteArray converter;
+      converter.d[0] = keyval.first;
+      converter.d[1] = keyval.second;
+      file.write(converter.data,
+                 8  // sizeof(converter.data)
+      );
     }
     file.close();
   } else {
@@ -121,7 +129,7 @@ void write_state() {
   }
 }
 
-bool get_value(const std::string& key, uint32_t& value) {
+bool get_value(const uint32_t key, uint32_t& value) {
   const auto& res = _valueMap.find(key);
   if (res != _valueMap.end()) {
     value = res->second;
@@ -130,7 +138,7 @@ bool get_value(const std::string& key, uint32_t& value) {
   return false;
 }
 
-void set_value(const std::string& key, const uint32_t value) {
+void set_value(const uint32_t key, const uint32_t value) {
   _valueMap[key] = value;
 }
 

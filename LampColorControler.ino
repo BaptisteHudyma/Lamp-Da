@@ -72,7 +72,7 @@ void setup() {
 
   // check if we are in first boot mode
   uint32_t isFirstBoot = 1;
-  fileSystem::get_value(std::string("ifb"), isFirstBoot);
+  fileSystem::get_value(utils::hash("ifb"), isFirstBoot);
 
   bool shouldAlertUser = false;
   // resetted by watchdog
@@ -99,7 +99,7 @@ void setup() {
   read_parameters();
   if (isFirstBoot) {
     // if first boot, then store the flag
-    fileSystem::set_value(std::string("ifb"), 0);
+    fileSystem::set_value(utils::hash("ifb"), 0);
   }
 
   // set up button colors and callbacks
