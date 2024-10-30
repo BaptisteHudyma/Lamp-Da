@@ -74,6 +74,8 @@ void read_parameters() {
 
 void write_parameters() {
   fileSystem::clear();
+
+  fileSystem::set_value(isFirstBootKey, 0);
   fileSystem::set_value(brightnessKey, BRIGHTNESS);
 
   user::write_parameters();

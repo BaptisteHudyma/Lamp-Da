@@ -19,6 +19,7 @@ void clear();
  */
 void write_state();
 
+bool doKeyExists(const uint32_t key);
 bool get_value(const uint32_t key, uint32_t& value);
 void set_value(const uint32_t key, const uint32_t value);
 

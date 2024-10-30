@@ -135,6 +135,10 @@ void write_state() {
   }
 }
 
+bool doKeyExists(const uint32_t key) {
+  return _valueMap.find(key) != _valueMap.end();
+}
+
 bool get_value(const uint32_t key, uint32_t& value) {
   const auto& res = _valueMap.find(key);
   if (res != _valueMap.end()) {
