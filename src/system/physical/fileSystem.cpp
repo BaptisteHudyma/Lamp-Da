@@ -3,6 +3,7 @@
 #include <Adafruit_LittleFS.h>
 #include <InternalFileSystem.h>
 
+#include <cassert>
 #include <map>
 #include <vector>
 
@@ -19,10 +20,16 @@ File file(InternalFS);
 // the stored configurations
 std::map<uint32_t, uint32_t> _valueMap;
 
-// used to convert two uint32 to 8 uint8
+struct keyValue {
+  uint32_t key;
+  uint32_t value;
+};
+constexpr size_t sizeOfData = sizeof(keyValue);
+
+// used to convert this struct to an array of bytes
 union KeyValToByteArray {
-  uint8_t data[8];
-  uint32_t d[2];
+  uint8_t data[sizeOfData];
+  keyValue kv;
 };
 
 static bool isSetup = false;
@@ -58,18 +65,18 @@ void load_initial_values() {
     }
 
     KeyValToByteArray converter;
-    converter.d[0] = 0;
-    converter.d[1] = 0;
+    converter.kv.key = 0;
+    converter.kv.value = 0;
 
     uint8_t cnt = 0;  // when this reaches 8, a new word
     // parser state machine
     for (const char c : vecRead) {
-      if (cnt >= 8) {
-        _valueMap[converter.d[0]] = converter.d[1];
+      if (cnt >= sizeOfData) {
+        _valueMap[converter.kv.key] = converter.kv.value;
 
         // reset
-        converter.d[0] = 0;
-        converter.d[1] = 0;
+        converter.kv.key = 0;
+        converter.kv.value = 0;
         cnt = 0;
       }
 
@@ -78,8 +85,8 @@ void load_initial_values() {
     }
 
     // last word !
-    if (cnt >= 8) {
-      _valueMap[converter.d[0]] = converter.d[1];
+    if (cnt >= sizeOfData) {
+      _valueMap[converter.kv.key] = converter.kv.value;
     }
 
     file.close();
@@ -116,11 +123,10 @@ void write_state() {
   if (file) {
     for (const auto& keyval : _valueMap) {
       KeyValToByteArray converter;
-      converter.d[0] = keyval.first;
-      converter.d[1] = keyval.second;
-      file.write(converter.data,
-                 8  // sizeof(converter.data)
-      );
+      converter.kv.key = keyval.first;
+      converter.kv.value = keyval.second;
+      // write the data converted to a byte array
+      file.write(converter.data, sizeOfData);
     }
     file.close();
   } else {
