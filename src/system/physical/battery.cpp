@@ -6,16 +6,31 @@
 
 namespace battery {
 
-constexpr uint8_t liionLevelToBatteryPercent(const float liionLevel) {
-  return (liionLevel < 40.0)
+constexpr uint8_t liionLevelToBatteryPercent(const float liionLevelPercent) {
+  return (liionLevelPercent < 40.0)
              ?
              // fast drop for the last half of the battery
-             utils::map(liionLevel, 0.0, 40.0, 0.0, 12.0)
-             : (liionLevel < 90.0)
+             utils::map(liionLevelPercent, 0.0, 40.0, 0.0, 12.0)
+             : (liionLevelPercent < 90.0)
                    // most of the battery level is here, slow slope
-                   ? utils::map(liionLevel, 40.0, 90.0, 12.0, 95.0)
+                   ? utils::map(liionLevelPercent, 40.0, 90.0, 12.0, 95.0)
                    // battery level > 90
-                   : utils::map(liionLevel, 90.0, 100.0, 95.0, 100.0);
+                   : utils::map(liionLevelPercent, 90.0, 100.0, 95.0, 100.0);
+}
+
+constexpr uint8_t get_battery_level_percent(const float batteryLevel) {
+  return liionLevelToBatteryPercent(
+      constrain(utils::map(batteryLevel, batteryMinVoltage, batteryMaxVoltage,
+                           0.0, 100.0),
+                0.0, 100.0));
+}
+
+constexpr uint8_t get_battery_max_safe_level() {
+  return get_battery_level_percent(batteryMaxVoltageSafe);
+}
+
+constexpr uint8_t get_battery_min_safe_level() {
+  return get_battery_level_percent(batteryMinVoltageSafe);
 }
 
 uint16_t read_battery_level() {
@@ -58,23 +73,16 @@ uint8_t get_raw_battery_level(const bool resetRead) {
   static constexpr float filterValue = (float)LOOP_UPDATE_PERIOD / 2000.0;
   lastValue += filterValue * (batteryVoltage - lastValue);
 
-  const float rawBatteryLevel = constrain(
-      utils::map(lastValue, batteryMinVoltage, batteryMaxVoltage, 0.0, 100.0),
-      0.0, 100.0);
-  return liionLevelToBatteryPercent(rawBatteryLevel);
+  return get_battery_level_percent(lastValue);
 }
 
 uint8_t get_battery_level(const bool resetRead) {
-  constexpr uint8_t trueBatteryMaxLevel =
-      liionLevelToBatteryPercent(batteryMaxVoltageSafe);
-  constexpr uint8_t trueBatteryMinLevel =
-      liionLevelToBatteryPercent(batteryMinVoltageSafe);
-
   // get the result of the total battery life, map it to the safe battery level
   // indicated by user
-  return constrain(utils::map(get_raw_battery_level(resetRead),
-                              trueBatteryMinLevel, trueBatteryMaxLevel, 0, 100),
-                   0, 100);
+  return constrain(
+      utils::map(get_raw_battery_level(resetRead), get_battery_min_safe_level(),
+                 get_battery_max_safe_level(), 0, 100),
+      0, 100);
 }
 
 // Raise the battery low or battery critical alert

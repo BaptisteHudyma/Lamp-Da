@@ -61,7 +61,7 @@ constexpr float batteryMaxVoltageSafe = 4.06 * batteryCount;
 // min voltage of a single li-ion cell
 constexpr float batteryMinVoltage = 3.0 * batteryCount;
 // min voltage of a li-ion cell to maximise lifetime
-constexpr float batteryMinVoltageSafe = 3.1 * batteryCount;
+constexpr float batteryMinVoltageSafe = 3.3 * batteryCount;
 
 // parameters of the lamp body
 constexpr float maxPowerConsumption_A =

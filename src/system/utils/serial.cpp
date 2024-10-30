@@ -43,6 +43,7 @@ void handleCommand(const String& command) {
       break;
 
     case utils::hash("bl"):
+    case utils::hash("battery"):
       Serial.print("raw battery level:");
       Serial.print(battery::get_raw_battery_level());
       Serial.println("%");
