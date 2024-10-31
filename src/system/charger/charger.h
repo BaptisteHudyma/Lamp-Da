@@ -22,7 +22,7 @@ bool is_charging();
 bool charge_processus();
 
 // write a sery of commands to the charger to disable the charging process
-void disable_charge();
+void disable_charge(const bool force = false);
 
 // return the current charge status, or status of the last charge action
 String charge_status();

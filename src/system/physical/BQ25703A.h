@@ -43,11 +43,10 @@ constexpr uint16_t PROCHOT_OPTION_1_ADDR = 0x38;
 constexpr uint16_t ADC_OPTION_ADDR = 0x3A;
 constexpr uint16_t CHARGE_STATUS_ADDR = 0x20;
 constexpr uint16_t PROCHOT_STATUS_ADDR = 0x22;
-constexpr uint16_t ADC_VBUS_PSYS_ADC_ADDR = 0x27;
-constexpr uint16_t ADC_IBAT_ADDR = 0x29;
-constexpr uint16_t CMPIN_ADC_ADDR = 0x2B;
+constexpr uint16_t ADC_VBUS_PSYS_ADC_ADDR = 0x26;
+constexpr uint16_t ADC_IBAT_ADDR = 0x28;
+constexpr uint16_t CMPIN_ADC_ADDR = 0x2A;
 constexpr uint16_t VBAT_ADC_ADDR = 0x2C;
-constexpr uint16_t ADC_VSYS_ADDR = 0x2D;  // TODO
 
 constexpr uint16_t MANUFACTURER_ID_ADDR = 0x2E;
 constexpr uint16_t DEVICE_ID_ADDR = 0x2F;
@@ -152,6 +151,107 @@ class BQ25703A {
 #define FIELD_RO(data, name, index, size) \
   inline decltype(data) name() { return READFROM(data, index, size); }
 
+  // Base class for register operations
+  struct IBaseRegister {
+    virtual uint16_t address() const = 0;
+
+    virtual uint16_t minVal() const = 0;
+    virtual uint16_t maxVal() const = 0;
+    virtual uint16_t resolution() const = 0;
+
+    virtual uint8_t bitLenght() const;
+    virtual uint8_t offset() const = 0;
+
+    uint16_t mask() const {
+      // convert a bit count to a bit mask
+      static constexpr uint16_t bitLenghtToBitMask[16] = {
+          0b0000000000000001, 0b0000000000000011, 0b0000000000000111,
+          0b0000000000001111, 0b0000000000011111, 0b0000000000111111,
+          0b0000000001111111, 0b0000000011111111, 0b0000000111111111,
+          0b0000001111111111, 0b0000011111111111, 0b0000111111111111,
+          0b0001111111111111, 0b0011111111111111, 0b0111111111111111,
+          0b1111111111111111,
+      };
+      return bitLenghtToBitMask[bitLenght()];
+
+      // this is cleaner but fails...
+      // I think there is a 8 bit cast somewhere
+      // return 1 << (bitLenght() + 1) - 1;
+    }
+
+    uint16_t get() {
+      byte valBytes[2];
+      if (readDataReg(address(), valBytes, 2)) {
+        // Cycle through array of data
+        byte val0 = (byte)valBytes[0];
+        byte val1 = (byte)valBytes[1];
+
+        // fuse them
+        uint16_t res = val1 << 8 | val0;
+        // unpack
+        res = (res >> offset()) & mask();
+        // convert to real units
+        return res * resolution() + minVal();
+      }
+      // error
+      return 0;
+    }
+
+    bool set(const uint16_t value) {
+      // convert to correct data format
+      uint16_t constraint = constrain(value, minVal(), maxVal());
+      constraint /= resolution();
+      // convert to binary word
+      constraint &= mask();     // mask off unused bits
+      constraint <<= offset();  // offset the register
+
+      const byte val0 = constraint;
+      const byte val1 = constraint >> 8;
+      return writeDataReg(address(), val0, val1);
+    }
+  };
+
+  // Base class for distinct stored value operations
+  struct IDoubleRegister {
+    virtual uint16_t address() const = 0;
+
+    virtual uint16_t minVal0() const = 0;
+    virtual uint16_t maskVal0() const = 0;
+    virtual uint16_t resolutionVal0() const = 0;
+
+    virtual uint16_t minVal1() const = 0;
+    virtual uint16_t maskVal1() const = 0;
+    virtual uint16_t resolutionVal1() const = 0;
+
+    uint16_t getVal0() {
+      byte valBytes[2];
+      if (readDataReg(address(), valBytes, 2)) {
+        // Cycle through array of data
+        byte val0 = (byte)valBytes[0];
+        // fuse them
+        uint16_t res = val0 & maskVal0();
+        // convert to real units
+        return res * resolutionVal0() + minVal0();
+      }
+      // error
+      return 0;
+    }
+
+    uint16_t getVal1() {
+      byte valBytes[2];
+      if (readDataReg(address(), valBytes, 2)) {
+        // Cycle through array of data
+        byte val1 = (byte)valBytes[1];
+        // fuse them
+        uint16_t res = val1 & maskVal1();
+        // convert to real units
+        return res * resolutionVal1() + minVal1();
+      }
+      // error
+      return 0;
+    }
+  };
+
   struct Regt {
     struct ChargeOption0t {
       uint8_t addr = CHARGE_OPTION_0_ADDR;
@@ -171,12 +271,10 @@ class BQ25703A {
       FIELD(val0, CHRG_INHIBIT, 0x00, 0x01)
       // Enable low power mode. Default is enabled
       FIELD(val1, EN_LWPWR, 0x07, 0x01)
-      // Watchdog timer. Reset it by setting ChargeCurrent  or MaxChargeVoltage
-      // commands
-      // 00b: Disable Watchdog Timer
-      // 01b: Enabled, 5 sec
-      // 10b: Enabled, 88 sec
-      // 11b: Enable Watchdog Timer, 175 sec <default at POR>
+      // Watchdog timer. Reset it by setting ChargeCurrent  or
+      // MaxChargeVoltage commands 00b: Disable Watchdog Timer 01b: Enabled, 5
+      // sec 10b: Enabled, 88 sec 11b: Enable Watchdog Timer, 175 sec <default
+      // at POR>
       FIELD(val1, WDTMR_ADJ, 0x05, 0x02)
       // Disable IDPM. Default is low (IDPM enabled)
       FIELD(val1, IDPM_AUTO_DISABLE, 0x04, 0x01)
@@ -206,7 +304,8 @@ class BQ25703A {
       FIELD(val0, AUTO_WAKEUP_EN, 0x00, 0x01)
       // Enable IBAT output buffer. Default is disabled
       FIELD(val1, EN_IBAT, 0x07, 0x01)
-      // PROCHOT during battery only; disabled, IDCHG, VSYS. Default is disabled
+      // PROCHOT during battery only; disabled, IDCHG, VSYS. Default is
+      // disabled
       FIELD(val1, EN_PROCHOT_LPWR, 0x05, 0x02)
       // Enable PSYS buffer. Default is disabled
       FIELD(val1, EN_PSYS, 0x04, 0x01)
@@ -225,11 +324,11 @@ class BQ25703A {
       FIELD(val0, EN_EXTILIM, 0x07, 0x01)
       // Function of IBAT pin; discharge or charge. Default is discharge
       FIELD(val0, EN_ICHG_IDCHG, 0x06, 0x01)
-      // Over Current Protection for Q2 by sensing VDS; 210mV or 150mV. Default
-      // is 150mV
+      // Over Current Protection for Q2 by sensing VDS; 210mV or 150mV.
+      // Default is 150mV
       FIELD(val0, Q2_OCP, 0x05, 0x01)
-      // Over Current Protection for input between ACP and ACN; 210mV or 150mV.
-      // default is 150mV
+      // Over Current Protection for input between ACP and ACN; 210mV or
+      // 150mV. default is 150mV
       FIELD(val0, ACX_OCP, 0x04, 0x01)
       // Input adapter OCP enable. Default is disabled
       FIELD(val0, EN_ACOC, 0x03, 0x01)
@@ -250,8 +349,8 @@ class BQ25703A {
       FIELD(val1, PKPWR_OVLD_STAT, 0x03, 0x01)
       // Indicator that device is in relaxation cycle. Default disabled
       FIELD(val1, PKPWR_RELAX_STAT, 0x02, 0x01)
-      // Peak power mode overload and relax cycle times; 5mS, 10mS, 20mS, 40mS.
-      // Default is 20mS
+      // Peak power mode overload and relax cycle times; 5mS, 10mS, 20mS,
+      // 40mS. Default is 20mS
       FIELD(val1, PKPWR_TMAX, 0x00, 0x02)
     } chargeOption2;
     struct ChargeOption3t {
@@ -260,8 +359,8 @@ class BQ25703A {
       byte val1 = 0x00;
       // Control BAT FET during Hi-Z state. Default is disabled
       FIELD(val0, BATFETOFF_HIZ, 0x01, 0x01)
-      // PSYS function during OTG mode. PSYS = battery discharge - IOTG or PSYS
-      // = battery discharge. Default 0
+      // PSYS function during OTG mode. PSYS = battery discharge - IOTG or
+      // PSYS = battery discharge. Default 0
       FIELD(val0, PSYS_OTG_IDCHG, 0x00, 0x01)
       // Enable Hi-Z(low power) mode. Default is disabled
       FIELD(val1, EN_HIZ, 0x07, 0x01)
@@ -281,8 +380,8 @@ class BQ25703A {
       byte val1 = 0x92;
       // VSYS threshold; 5.75V, 6V, 6.25V, 6.5V. Default is 6V
       FIELD(val0, VSYS_VTH, 0x06, 0x02)
-      // Enable PROCHOT voltage kept LOW until PROCHOT_CLEAR is written. Default
-      // is disabled
+      // Enable PROCHOT voltage kept LOW until PROCHOT_CLEAR is written.
+      // Default is disabled
       FIELD(val0, EN_PROCHOT_EX, 0x05, 0x01)
       // Minimum PROCHOT pulse length when EN_PROCHOT_EX is disabled; 100us,
       // 1ms, 10ms, 5ms. Default is 1ms
@@ -294,8 +393,8 @@ class BQ25703A {
       // ILIM2 threshold as percentage of IDPM; 110%-230%(5% step),
       // 250%-450%(50% step). Default is 150%
       FIELD(val1, ILIM2_VTH, 0x03, 0x05)
-      // ICRIT deglitch time. ICRIT is 110% of ILIM2; 15us, 100us, 400us, 800us.
-      // Default is 100us.
+      // ICRIT deglitch time. ICRIT is 110% of ILIM2; 15us, 100us, 400us,
+      // 800us. Default is 100us.
       FIELD(val1, ICRIT_DEG, 0x01, 0x02)
     } prochotOption0;
     struct ProchotOption1t {
@@ -308,7 +407,8 @@ class BQ25703A {
       FIELD(val0, PROCHOT_PROFILE_ICRIT, 0x05, 0x01)
       // Prochot is triggered if INOM threshold is reached. Default disabled.
       FIELD(val0, PROCHOT_PROFILE_INOM, 0x04, 0x01)
-      // Enable battery Current Discharge current reading. Default is disabled.
+      // Enable battery Current Discharge current reading. Default is
+      // disabled.
       FIELD(val0, PROCHOT_PROFILE_IDCHG, 0x03, 0x01)
       // Prochot is triggered if VSYS threshold is reached. Default disabled.
       FIELD(val0, PROCHOT_PROFILE_VSYS, 0x02, 0x01)
@@ -318,8 +418,8 @@ class BQ25703A {
       // PROCHOT will be triggered if the adapter is removed. Default is
       // disabled.
       FIELD(val0, PROCHOT_PROFILE_ACOK, 0x00, 0x01)
-      // IDCHG threshold. PROCHOT is triggered when IDCHG is above; 0-32356mA in
-      // 512mA steps. Default is 16384mA
+      // IDCHG threshold. PROCHOT is triggered when IDCHG is above; 0-32356mA
+      // in 512mA steps. Default is 16384mA
       FIELD(val1, IDCHG_VTH, 0x02, 0x06)
       // IDCHG deglitch time; 1.6ms, 100us, 6ms, 12ms. Default is 100us.
       FIELD(val1, IDCHG_DEG, 0x00, 0x02)
@@ -337,7 +437,8 @@ class BQ25703A {
       FIELD(val0, EN_ADC_PSYS, 0x05, 0x01)
       // Enable Current In current reading. Default is disabled.
       FIELD(val0, EN_ADC_IIN, 0x04, 0x01)
-      // Enable battery Current Discharge current reading. Default is disabled.
+      // Enable battery Current Discharge current reading. Default is
+      // disabled.
       FIELD(val0, EN_ADC_IDCHG, 0x03, 0x01)
       // Enable battery Current Charge current reading. Default is disabled.
       FIELD(val0, EN_ADC_ICHG, 0x02, 0x01)
@@ -366,9 +467,11 @@ class BQ25703A {
       FIELD_RO(val0, SYSOVP_STAT, 0x04, 0x01)
       // Resets faults latch. Default is disabled
       FIELD_RO(val0, Fault_Latchoff, 0x02, 0x01)
-      // Latched fault flag of OTG over voltage protection. Default is no fault.
+      // Latched fault flag of OTG over voltage protection. Default is no
+      // fault.
       FIELD_RO(val0, Fault_OTG_OVP, 0x01, 0x01)
-      // Latched fault flag of OTG over current protection. Default is no fault.
+      // Latched fault flag of OTG over current protection. Default is no
+      // fault.
       FIELD_RO(val0, Fault_OTG_UCP, 0x00, 0x01)
       // Input source present. Default is not connected.
       FIELD_RO(val1, AC_STAT, 0x07, 0x01)
@@ -404,257 +507,154 @@ class BQ25703A {
       // PROCHOT adapter removal trigger status. Default is not triggered.
       FIELD_RO(val0, STAT_Adapter_Removal, 0x00, 0x01)
     } prochotStatus;
-    struct ChargeCurrentt {
-      uint16_t current = 1500;
-      byte val0 = 0x00;
-      byte val1 = 0x08;
-      uint8_t addr = CHARGE_CURRENT_ADDR;
-      void set_current(uint16_t set_cur) {
-        setBytes(this, set_cur, 64, 8128, 0, 64);
-        writeReg(this);
-        current = set_cur;
-      }
-      // charge system current
-      uint16_t get_current() {
-        readReg(this, 2);
-        // multiply up to mA value
-        current = ((val1 & 0b00111111) << 2) | (val0 >> 6);
-        current *= 64;
-        // Add in offset current
-        current = current + 64;
-        return current;
-      }
+    struct ChargeCurrentt : public IBaseRegister {
+      uint16_t address() const override { return CHARGE_CURRENT_ADDR; }
+
+      virtual uint16_t minVal() const override { return 0; }
+      virtual uint16_t maxVal() const override { return 8128; }
+      virtual uint16_t resolution() const override { return 64; }
+
+      virtual uint8_t bitLenght() const override { return 7; }
+      virtual uint8_t offset() const override { return 6; }
     } chargeCurrent;
-    struct MaxChargeVoltaget {
-      uint16_t voltage = 16800;
-      byte val0 = 0xA0;
-      byte val1 = 0x41;
-      uint8_t addr = MAX_CHARGE_VOLTAGE_ADDR;
-      void set_voltage(uint16_t set_volt) {
-        setBytes(this, set_volt, 1024, 19200, 0, 16);
+    struct MaxChargeVoltaget : public IBaseRegister {
+      uint16_t address() const override { return MAX_CHARGE_VOLTAGE_ADDR; }
 
-        // writeReg( this );
-        voltage = set_volt;
-      }
-      // charge system voltage
-      uint16_t get_voltage() {
-        // readReg( this, 2 );
-        voltage = (val1 & 0b01111111) << 8 | (val0 & 0b11110000);
-        voltage = voltage >> 4;
+      // the min in the doc is set to 1024, but this is wrong in practice
+      virtual uint16_t minVal() const override { return 0; }
+      virtual uint16_t maxVal() const override { return 19200; }
+      virtual uint16_t resolution() const override { return 16; }
 
-        // multiply up to mV value
-        voltage *= 16;
-        // Add in offset voltage
-        voltage += 1024;
-        return voltage;
-      }
+      virtual uint8_t bitLenght() const override { return 11; }
+      virtual uint8_t offset() const override { return 4; }
     } maxChargeVoltage;
-    struct MinSystemVoltaget {
-      uint16_t voltage = 12288;
-      byte val0, val1 = 0x30;
-      uint8_t addr = MINIMUM_SYSTEM_VOLTAGE_ADDR;
-      // Minimum system voltage. Default is for 4S.
-      // 1024mV to 16128mV in 256mV steps, no offset
-      void set_voltage(uint16_t set_volt) {
-        setBytes(this, set_volt, 1024, 16128, 0, 256);
-        writeReg(this);
-        voltage = set_volt;
-      }
+    struct MinSystemVoltaget : public IBaseRegister {
+      uint16_t address() const override { return MINIMUM_SYSTEM_VOLTAGE_ADDR; }
 
-      uint16_t get_voltage() {
-        readReg(this, 2);
-        voltage = (val1 & 0b00111111) * 256;
-        return voltage;
-      }
+      virtual uint16_t minVal() const override { return 1024; }
+      virtual uint16_t maxVal() const override { return 16128; }
+      virtual uint16_t resolution() const override { return 256; }
+
+      virtual uint8_t bitLenght() const override { return 7; }
+      virtual uint8_t offset() const override { return 8; }
     } minSystemVoltage;
 
-    struct IIN_HOSTt {
-      uint16_t current = 3250;
-      byte val0 = 0x00;  // not used
-      byte val1 = 0x40;
-      uint8_t addr = IIN_HOST_ADDR;
-      // Incoming current threshold before device lowers charging current.
-      // 50mA to 6400 in 50mA steps, with 50mA offset.
-      void set_current(uint16_t set_cur) {
-        setBytes(this, set_cur, 50, 6400, 50, 50);
-        writeReg(this);
-        current = set_cur;
-      }
-      void get_current() {
-        readReg(this, 2);
-        current = (val1 & 0x01111111) * 50;
-        current += 50;
-      }
+    struct IIN_HOSTt : public IBaseRegister {
+      uint16_t address() const override { return IIN_HOST_ADDR; }
+
+      virtual uint16_t minVal() const override { return 0; }
+      virtual uint16_t maxVal() const override { return 6400; }
+      virtual uint16_t resolution() const override { return 50; }
+
+      virtual uint8_t bitLenght() const override { return 7; }
+      virtual uint8_t offset() const override { return 8; }
     } iIN_HOST;
-    struct IIN_DPMt {  // read only
-      uint16_t current = 0;
-      byte val0 = 0x00;  // not used
-      byte val1 = 0x00;
-      uint8_t addr = IIN_DPM_ADDR;
-      // Incoming current threshold before device lowers charging current.
-      // 50mA to 6400 in 50mA steps, with 50mA offset.
-      uint16_t get_current() {
-        readReg(this, 2);
-        // multiply up to mA value
-        current = val1 * 50;
-        // Add in offset
-        current = current + 50;
-        return current;
-      }
+    struct IIN_DPMt : public IBaseRegister {
+      uint16_t address() const override { return IIN_DPM_ADDR; }
+
+      virtual uint16_t minVal() const override { return 0; }
+      virtual uint16_t maxVal() const override { return 6400; }
+      virtual uint16_t resolution() const override { return 50; }
+
+      virtual uint8_t bitLenght() const override { return 7; }
+      virtual uint8_t offset() const override { return 8; }
     } iIN_DPM;
-    struct InputVoltaget {
-      uint16_t voltage = 18720;
-      byte val0 = 0x20;
-      byte val1 = 0x49;
-      uint8_t addr = INPUT_VOLTAGE_ADDR;
-      // Incoming voltage threshold before device lowers charging current.
-      // 3200mV to 19584mV in 64mA steps, with 3200mV offset.
-      void set_voltage(uint16_t set_volt) {
-        setBytes(this, set_volt, 3200, 19584, 3200, 64);
+    struct InputVoltaget : public IBaseRegister {
+      uint16_t address() const override { return INPUT_VOLTAGE_ADDR; }
 
-        val0 = (byte)(set_volt & 0b00000011) << 6;
-        val1 = (byte)((set_volt >> 8) & 0b00111111);
+      virtual uint16_t minVal() const override { return 3200; }
+      virtual uint16_t maxVal() const override { return 19584; }
+      virtual uint16_t resolution() const override { return 64; }
 
-        writeReg(this);
-        // voltage = set_volt;
-      }
-      uint16_t get_voltage() {
-        readReg(this, 2);
-
-        voltage = ((val1 & 0b00111111) << 2) | ((val0 & 0b11000000) >> 5);
-        return voltage;
-      }
+      virtual uint8_t bitLenght() const override { return 8; }
+      virtual uint8_t offset() const override { return 6; }
     } inputVoltage;
-    struct OTGVoltaget {
-      uint16_t voltage = 0;
-      byte val0 = 0x00;
-      byte val1 = 0x00;
-      uint8_t addr = OTG_VOLTAGE_ADDR;
-      // OTG output voltage.
-      // 4480mV to 20864mV in 64mA steps, with 4480mV offset.
-      void set_voltage(uint16_t set_volt) {
-        setBytes(this, set_volt, 4480, 20864, 4480, 64);
-        writeReg(this);
-        voltage = set_volt;
-      }
-      uint16_t get_voltage() {
-        readReg(this, 2);
+    struct OTGVoltaget : public IBaseRegister {
+      uint16_t address() const override { return OTG_VOLTAGE_ADDR; }
 
-        voltage = (val1 & 0b01111111) * 256;
-        return voltage;
-      }
+      virtual uint16_t minVal() const override { return 4480; }
+      virtual uint16_t maxVal() const override { return 20864; }
+      virtual uint16_t resolution() const override { return 64; }
+
+      virtual uint8_t bitLenght() const override { return 8; }
+      virtual uint8_t offset() const override { return 6; }
     } oTGVoltage;
-    struct OTGCurrentt {
-      uint16_t current = 0;
-      byte val0 = 0x00;  // not used
-      byte val1 = 0x00;
-      uint8_t addr = OTG_CURRENT_ADDR;
-      // OTG output current limit.
-      // 0mA to 6400mA in 50mA steps.
-      void set_current(uint16_t set_cur) {
-        setBytes(this, set_cur, 0, 6400, 0, 50);
-        writeReg(this);
-        current = set_cur;
-      }
-      uint16_t get_current() {
-        readReg(this, 2);
+    struct OTGCurrentt : public IBaseRegister {
+      uint16_t address() const override { return OTG_CURRENT_ADDR; }
 
-        current = (val1 & 0b011111111) * 50;
-        return current;
-      }
+      virtual uint16_t minVal() const override { return 0; }
+      virtual uint16_t maxVal() const override { return 6400; }
+      virtual uint16_t resolution() const override { return 50; }
+
+      virtual uint8_t bitLenght() const override { return 7; }
+      virtual uint8_t offset() const override { return 8; }
     } oTGCurrent;
-    struct ADCVBUSPSYSt {  // read only
-      float sysPower = 0;
-      uint16_t VBUS = 0;
-      uint32_t Rsys = 30000;  // Value of resistor on PSYS pin
-      byte val0 = 0x00;
-      byte val1 = 0x00;
-      uint8_t addr = ADC_VBUS_PSYS_ADC_ADDR;
-      // VBUS voltage and system power. VBUS is direct reading.
-      // System power(W) is Vsys(mV)/Rsys(R) * 10^3
-      uint16_t get_VBUS() {
-        if (readReg(this, 2)) {
-          // multiply up to mV value
-          VBUS = val0 * 64;
-          // Add in offset
-          VBUS = VBUS + 3200;
-          return VBUS;
-        } else {
-          return 0;
-        }
-      }
-      float get_sysPower() {
-        readReg(this, 2);
-        // multiply by the 12mV resolution
-        sysPower = (float)(val0 * 12);
-        // create temp large var and multiply by 1000 (uA/W)
-        double tempPower = (sysPower * 1000);
-        // Divide by the resistor value Rsys
-        tempPower = tempPower / Rsys;
-        // convert back to smaller variable
-        sysPower = (float)tempPower;
-        return sysPower;
-      }
+    struct ADCVBUSPSYSt : public IDoubleRegister {  // read only
+      uint16_t address() const override { return ADC_VBUS_PSYS_ADC_ADDR; };
+
+      uint16_t minVal0() const override { return 0; };
+      uint16_t maskVal0() const override { return 0b11111111; }
+      uint16_t resolutionVal0() const override { return 12; };
+
+      uint16_t minVal1() const override { return 3200; };
+      uint16_t maskVal1() const override { return 0b11111111; }
+      uint16_t resolutionVal1() const override { return 64; };
+
+      // input voltage on VBUS
+      uint16_t get_VBUS() { return getVal1(); }
+      // system power (exprimed as mV, which is strange...)
+      uint16_t get_PSYS() { return getVal0(); }
     } aDCVBUSPSYS;
-    struct ADCIBATt {  // read only
-      uint16_t ICHG, IDCHG;
-      byte val0, val1;
-      uint8_t addr = ADC_IBAT_ADDR;
-      // ICHG charging current value
-      uint16_t get_ICHG() {
-        readReg(this, 2);
-        // multiply up to mA value, first bit is reserved
-        ICHG = (val1 & 0b01111111) * 64;
-        return ICHG;
-      }
-      // IDCHG discharging current value
-      uint16_t get_IDCHG() {
-        // multiply up to mA value, first bit is reserved
-        IDCHG = (val0 & 0b01111111) * 256;
-        return IDCHG;
-      }
+    struct ADCIBATt : public IDoubleRegister {  // read only
+      uint16_t address() const override { return ADC_IBAT_ADDR; };
+
+      uint16_t minVal0() const override { return 0; };
+      uint16_t maskVal0() const override { return 0b01111111; }
+      uint16_t resolutionVal0() const override { return 256; };
+
+      uint16_t minVal1() const override { return 0; };
+      uint16_t maskVal1() const override { return 0b01111111; }
+      uint16_t resolutionVal1() const override { return 64; };
+
+      // ICHG battery charging current value
+      uint16_t get_ICHG() { return getVal1(); }
+      // IDCHG battery discharging current value
+      uint16_t get_IDCHG() { return getVal0(); }
     } aDCIBAT;
-    struct ADCIINCMPINt {  // read only
+    struct ADCIINCMPINt : public IDoubleRegister {  // read only
+      uint16_t address() const override { return CMPIN_ADC_ADDR; };
+
+      uint16_t minVal0() const override { return 0; };
+      uint16_t maskVal0() const override { return 0b11111111; }
+      uint16_t resolutionVal0() const override { return 12; };
+
+      uint16_t minVal1() const override { return 0; };
+      uint16_t maskVal1() const override { return 0b11111111; }
+      uint16_t resolutionVal1() const override { return 50; };
+
       uint16_t IIN, CMPIN;
       byte val0, val1;
       uint8_t addr = CMPIN_ADC_ADDR;
       // IIN input current reading
-      uint16_t get_IIN() {
-        readReg(this, 2);
-        // multiply up to mA value
-        IIN = val1 * 50;
-        return IIN;
-      }
+      uint16_t get_IIN() { return getVal1(); }
       // CMPIN voltage on comparator pin
-      uint16_t get_CMPIN() {
-        readReg(this, 2);
-        // multiply up to mV value
-        CMPIN = val0 * 12;
-        return CMPIN;
-      }
+      uint16_t get_CMPIN() { return getVal0(); }
     } aDCIINCMPIN;
-    struct ADCVSYSVBATt {  // read only
-      uint16_t VSYS, VBAT;
-      byte val0, val1;
-      uint8_t addr = VBAT_ADC_ADDR;
+    struct ADCVSYSVBATt : public IDoubleRegister {  // read only
+      uint16_t address() const override { return VBAT_ADC_ADDR; };
+
+      uint16_t minVal0() const override { return 2880; };
+      uint16_t maskVal0() const override { return 0b11111111; }
+      uint16_t resolutionVal0() const override { return 64; };
+
+      uint16_t minVal1() const override { return 2880; };
+      uint16_t maskVal1() const override { return 0b11111111; }
+      uint16_t resolutionVal1() const override { return 64; };
+
       // VSYS system voltage
-      uint16_t get_VSYS() {
-        readReg(this, 2);
-        // multiply up to mV value
-        VSYS = val1 * 64;
-        // Add in offset voltage
-        VSYS += 2880;
-        return VSYS;
-      }
+      uint16_t get_VSYS() { return getVal1(); }
       // VBAT voltage of battery
-      uint16_t get_VBAT() {
-        readReg(this, 2);
-        // multiply up to mV value
-        VBAT = val0 * 64;
-        // Add in offset voltage
-        VBAT += 2880;
-        return VBAT;
-      }
+      uint16_t get_VBAT() { return getVal0(); }
     } aDCVSYSVBAT;
 
     struct ManufacturerIDt {  // read only

@@ -30,9 +30,9 @@ PD_UFP_c PD_UFP;
 String status = "";
 
 static bool isChargeEnabled_s = true;
-void enable_charger() {
+void enable_charger(const bool force) {
   // set charger to low impedance mode (enable charger)
-  if (!isChargeEnabled_s) {
+  if (force or !isChargeEnabled_s) {
     isChargeEnabled_s = true;
 
     BQ25703Areg.chargeOption1.set_FORCE_LATCHOFF(0);
@@ -45,9 +45,9 @@ void enable_charger() {
   }
 }
 
-void disable_charger() {
+void disable_charger(const bool force) {
   // set charger to high impedance mode (disable charger)
-  if (isChargeEnabled_s) {
+  if (force or isChargeEnabled_s) {
     isChargeEnabled_s = false;
     BQ25703Areg.chargeOption1.set_FORCE_LATCHOFF(1);
     charger.writeRegEx(BQ25703Areg.chargeOption1);
@@ -94,6 +94,22 @@ void setChargerADC(const bool activate) {
   charger.writeRegEx(BQ25703Areg.aDCOption);
 }
 
+void read_alerts() {
+  // options
+  charger.readRegEx(BQ25703Areg.chargeOption0);
+  charger.readRegEx(BQ25703Areg.chargeOption1);
+  charger.readRegEx(BQ25703Areg.chargeOption2);
+  charger.readRegEx(BQ25703Areg.chargeOption3);
+
+  // processor hot alerts
+  charger.readRegEx(BQ25703Areg.prochotOption0);
+  charger.readRegEx(BQ25703Areg.prochotOption1);
+  charger.readRegEx(BQ25703Areg.prochotStatus);
+
+  charger.readRegEx(BQ25703Areg.aDCOption);
+  charger.readRegEx(BQ25703Areg.chargerStatus);
+}
+
 void setup() {
   // reset all registers of charger
   // BQ25703Areg.chargeOption3.set_RESET_REG(1);
@@ -102,7 +118,7 @@ void setup() {
   PD_UFP.init(CHARGE_INT, PD_POWER_OPTION_MAX_5V);
 
   // first step, reset charger parameters
-  disable_charge();
+  disable_charge(true);
 
   status.reserve(100);
 }
@@ -196,7 +212,7 @@ bool charge_processus() {
     else if (batteryLevel >= 95) {
       // stop if the battery voltage did not change for a time
       if (timestamp - lastBatteryRead > 60 * 1000 * timeoutMin) {
-        status = "NOT CHARGING: charge finished";
+        status = "NOT CHARGING: charge finished (bat not full)";
 
         shouldCharge = false;
         voltageHysteresisActivated = true;
@@ -261,6 +277,9 @@ bool charge_processus() {
   if (not isChargeEnabled) {
     status = "CHARGING: starting negociation";
 
+    // read and clear all
+    read_alerts();
+
     //  reset pd negociation
     PD_UFP.set_power_option(PD_POWER_OPTION_MAX_20V);
 
@@ -274,8 +293,10 @@ bool charge_processus() {
     startChargeEnabledTime = millis();
     isChargeEnabled = true;
 
-    BQ25703Areg.maxChargeVoltage.set_voltage(batteryMaxVoltage);
+    BQ25703Areg.maxChargeVoltage.set(batteryMaxVoltage);
   }
+
+  // Serial.println(BQ25703Areg.maxChargeVoltage.get());
 
   //  run pd negociation
   PD_UFP.run();
@@ -314,11 +335,12 @@ bool charge_processus() {
 
   // set charger to low impedance mode (enable charger)
   if (chargeCurrent_mA > baseChargeCurrent_mA) {
-    enable_charger();
+    enable_charger(false);
 
     // update the charge current (max charge current is defined by the battery
     // used)
-    BQ25703Areg.chargeCurrent.set_current(chargeCurrent_mA);
+    // Serial.println(chargeCurrent_mA);
+    BQ25703Areg.chargeCurrent.set(chargeCurrent_mA);
   }
 
   // flag to signal that the charge must be stopped
@@ -327,21 +349,22 @@ bool charge_processus() {
   return true;
 }
 
-void disable_charge() {
+void disable_charge(const bool force) {
   // reset the pd negociation
   PD_UFP.reset();
   PD_UFP.set_power_option(PD_POWER_OPTION_MAX_5V);
 
-  disable_charger();
+  disable_charger(force);
 
   setChargerADC(false);
-  BQ25703Areg.chargeCurrent.set_current(baseChargeCurrent_mA);
+
+  BQ25703Areg.chargeCurrent.set(baseChargeCurrent_mA);
 }
 
 String charge_status() { return status; }
 
 uint16_t getVbusVoltage_mV() { return PD_UFP.get_vbus_voltage(); }
 
-uint16_t getChargeCurrent() { return BQ25703Areg.chargeCurrent.get_current(); }
+uint16_t getChargeCurrent() { return BQ25703Areg.chargeCurrent.get(); }
 
 }  // namespace charger
