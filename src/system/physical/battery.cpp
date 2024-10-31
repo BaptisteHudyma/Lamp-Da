@@ -46,9 +46,7 @@ uint16_t read_battery_level() {
   return lastBatteryRead;
 }
 
-uint8_t get_raw_battery_level(const bool resetRead) {
-  static float lastValue = 0;
-
+float get_battery_voltage() {
   // 3v internal ref, ADC resolution
   static constexpr uint16_t minInValue = batteryMinVoltage *
                                          voltageDividerCoeff * ADC_MAX_VALUE /
@@ -64,7 +62,14 @@ uint8_t get_raw_battery_level(const bool resetRead) {
     return 0;
   }
   AlertManager.clear_alert(Alerts::BATTERY_READINGS_INCOHERENT);
-  const float batteryVoltage = utils::analogToDividerVoltage(pinRead);
+  return utils::analogToDividerVoltage(pinRead);
+}
+
+uint8_t get_raw_battery_level(const bool resetRead) {
+  static float lastValue = 0;
+
+  const float batteryVoltage = get_battery_voltage();
+
   // init or reset
   if (lastValue == 0 or resetRead) {
     lastValue = batteryVoltage;

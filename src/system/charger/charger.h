@@ -33,6 +33,10 @@ uint16_t getVbusVoltage_mV();
 // returns the read value of vBus voltage (millivolts)
 uint16_t getBatteryVoltage_mV();
 
+uint16_t getChargeCurrent();
+
+uint16_t getChargePower();
+
 }  // namespace charger
 
 #endif  // CHARGER_H

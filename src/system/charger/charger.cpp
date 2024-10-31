@@ -2,13 +2,12 @@
 
 #include <cstdint>
 
+#include "Arduino.h"
+#include "FUSB302/PD_UFP.h"
 #include "src/system/alerts.h"
 #include "src/system/physical/BQ25703A.h"
 #include "src/system/physical/battery.h"
 #include "src/system/utils/constants.h"
-
-#include "Arduino.h"
-#include "FUSB302/PD_UFP.h"
 
 namespace charger {
 
@@ -18,7 +17,13 @@ bq2573a::BQ25703A charger;
 // Create instance of registers data structure
 bq2573a::BQ25703A::Regt BQ25703Areg;
 
-constexpr uint16_t baseChargeCurrent_mA = 128;
+constexpr uint16_t baseChargeCurrent_mA = 64;
+
+// what do we expect from a standard USB vbus
+constexpr uint16_t vbusBaseCurrent_mA = 500;
+constexpr uint32_t vbusBasePower = 5 * vbusBaseCurrent_mA;
+
+constexpr float chargerEfficiency = 0.85;  // pessimistic estimation
 
 PD_UFP_c PD_UFP;
 
@@ -54,6 +59,9 @@ void disable_charger() {
 
     // BQ25703Areg.chargeOption3.set_EN_HIZ(1);
     // BQ25703Areg.chargeOption3.set_BATFETOFF_HIZ(1);
+
+    // end of warning zone
+
     BQ25703Areg.chargeOption3.set_EN_OTG(0);
     charger.writeRegEx(BQ25703Areg.chargeOption3);
 
@@ -91,7 +99,7 @@ void setup() {
   // BQ25703Areg.chargeOption3.set_RESET_REG(1);
   // charger.writeRegEx(BQ25703Areg.chargeOption3);
 
-  PD_UFP.init(CHARGE_INT, PD_POWER_OPTION_MAX_20V);
+  PD_UFP.init(CHARGE_INT, PD_POWER_OPTION_MAX_5V);
 
   // first step, reset charger parameters
   disable_charge();
@@ -136,7 +144,7 @@ bool can_use_max_power() {
 static bool isCharging_s = false;
 bool is_charging() { return isCharging_s; }
 
-bool charge_processus_unrestricted() {
+bool charge_processus() {
   static bool isChargeEnabled = false;
   static bool isChargeResetted = false;
 
@@ -238,6 +246,9 @@ bool charge_processus_unrestricted() {
       isChargeResetted = true;
     }
 
+    // continue to run pd process
+    PD_UFP.run();
+
     // dont run the charge functions
     return false;
   }
@@ -251,7 +262,7 @@ bool charge_processus_unrestricted() {
     status = "CHARGING: starting negociation";
 
     //  reset pd negociation
-    PD_UFP.reset();
+    PD_UFP.set_power_option(PD_POWER_OPTION_MAX_20V);
 
     // Set the watchdog timer to have a short timeout
     BQ25703Areg.chargeOption0.set_WDTMR_ADJ(1);  // timeout 5 seconds
@@ -263,7 +274,7 @@ bool charge_processus_unrestricted() {
     startChargeEnabledTime = millis();
     isChargeEnabled = true;
 
-    BQ25703Areg.maxChargeVoltage.set_voltage(16750);
+    BQ25703Areg.maxChargeVoltage.set_voltage(batteryMaxVoltage);
   }
 
   //  run pd negociation
@@ -271,21 +282,35 @@ bool charge_processus_unrestricted() {
 
   isCharging_s = true;
 
+  const float batteryVoltage = battery::get_battery_voltage();
+  // safe check
+  if (batteryVoltage <= 0) return false;
+
   uint16_t chargeCurrent_mA = baseChargeCurrent_mA;  // default usb voltage
   if (PD_UFP.is_USB_PD_available()) {
     if (can_use_max_power()) {
       status = "CHARGING: USB PD power negociated";
-      // get_current returns values in cA instead of mA, so must do x10
-      chargeCurrent_mA = PD_UFP.get_current() * 10;
+
+      // get_voltage returns values in steps of 50mV
+      const uint16_t negociationVoltage = PD_UFP.get_voltage() * 50;
+      // get_current returns values in steps of 10mA
+      const uint16_t negociationCurrent = PD_UFP.get_current() * 10;
+      const uint32_t usablePower =
+          (negociationVoltage * negociationCurrent) * chargerEfficiency;
+
+      chargeCurrent_mA = usablePower / batteryVoltage;
     }
     // else: wait for power to climb
   } else {
     // do not start charge without PD before one second
     if (millis() - startChargeEnabledTime > 2000) {
       status = "CHARGING: standard charging mode after no charger answer";
-      chargeCurrent_mA = 500;  // fallback current, for all chargeurs
+      // compute the charging current with the max USB voltage
+      chargeCurrent_mA = (vbusBasePower * chargerEfficiency) / batteryVoltage;
     }
   }
+  // limit to max charging current
+  chargeCurrent_mA = min(chargeCurrent_mA, batteryMaxChargeCurrent);
 
   // set charger to low impedance mode (enable charger)
   if (chargeCurrent_mA > baseChargeCurrent_mA) {
@@ -293,8 +318,7 @@ bool charge_processus_unrestricted() {
 
     // update the charge current (max charge current is defined by the battery
     // used)
-    BQ25703Areg.chargeCurrent.set_current(
-        min(batteryMaxChargeCurrent, chargeCurrent_mA));
+    BQ25703Areg.chargeCurrent.set_current(chargeCurrent_mA);
   }
 
   // flag to signal that the charge must be stopped
@@ -303,23 +327,10 @@ bool charge_processus_unrestricted() {
   return true;
 }
 
-bool charge_processus() {
-  static uint32_t lastChargeProcessusCall = 0;
-  static bool lastResponse = false;
-
-  const uint32_t time = millis();
-  // 100ms is a good timing for PD negociations
-  if (lastChargeProcessusCall == 0 or time - lastChargeProcessusCall > 100) {
-    lastResponse = charge_processus_unrestricted();
-    lastChargeProcessusCall = time;
-  }
-
-  return lastResponse;
-}
-
 void disable_charge() {
   // reset the pd negociation
   PD_UFP.reset();
+  PD_UFP.set_power_option(PD_POWER_OPTION_MAX_5V);
 
   disable_charger();
 
@@ -330,5 +341,7 @@ void disable_charge() {
 String charge_status() { return status; }
 
 uint16_t getVbusVoltage_mV() { return PD_UFP.get_vbus_voltage(); }
+
+uint16_t getChargeCurrent() { return BQ25703Areg.chargeCurrent.get_current(); }
 
 }  // namespace charger
