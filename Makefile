@@ -435,6 +435,17 @@ upload: has-lamp-type verify install-venv
 		&& $(ARDUINO_CLI) upload -b $(FQBN) -v -t -l serial -p "$$LMBD_UPLOAD_PORT" --input-dir '$(ARTIFACTS)'
 
 #
+# monitor
+#
+
+RLWRAP=$(shell test -f /usr/bin/rlwrap && echo '/usr/bin/rlwrap' || echo ':;')
+
+monitor: install-venv
+	@echo; echo " --- $@"
+	@export LMBD_MONITOR_PORT="$${LMBD_SERIAL_PORT:-/dev/ttyACM0}" \
+		&& $(RLWRAP) $(ARDUINO_CLI_DETECTED) monitor -p "$$LMBD_MONITOR_PORT" --config 115200
+
+#
 # cleanup
 #
 
