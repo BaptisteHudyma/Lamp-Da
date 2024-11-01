@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-#include "../utils/utils.h"
+#include "src/system/utils/utils.h"
 
 /// Cloudy color palette/ blue to blue-white
 const palette_t PaletteCloudColors = {Blue,      DarkBlue, DarkBlue,  DarkBlue,

@@ -2,9 +2,10 @@
 
 #include <cstdint>
 
-#include "../utils/constants.h"
-#include "../utils/coordinates.h"
-#include "../utils/strip.h"
+#include "src/system/utils/constants.h"
+#include "src/system/utils/coordinates.h"
+#include "src/system/utils/strip.h"
+
 #include "colors.h"
 
 namespace animations {

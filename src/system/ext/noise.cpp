@@ -1,6 +1,7 @@
 #include "noise.h"
 
-#include "../utils/utils.h"
+#include "src/system/utils/utils.h"
+
 #include "math8.h"
 
 static uint8_t const p[] = {

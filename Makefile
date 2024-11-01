@@ -23,8 +23,11 @@ FQBN=adafruit:nrf52:lampDa_nrf52840
 PROJECT_INO=LampColorControler.ino
 COMPILER_CMD=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.cpp.cmd|cut -f2 -d=)
 COMPILER_PATH=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.path|cut -f2 -d=)
-CPP_BASIC_FLAGS=-std=gnu++17 -fconcepts -D$(FULL_LAMP_TYPE) -DLMBD_CPP17
-CPP_BUILD_FLAGS=-fdiagnostics-color=always -Wno-unused-parameter -ftemplate-backtrace-limit=1
+
+CPP_INCLUDES=-I$(OBJECTS_DIR)/sketch -DLMBD_MISSING_DEFINE
+CPP_BASIC_FLAGS=-std=gnu++17 -fconcepts -DLMBD_CPP17 -D$(FULL_LAMP_TYPE) $(CPP_INCLUDES)
+CPP_BUILD_FLAGS=$(CPP_BASIC_FLAGS) -fdiagnostics-color=always -Wno-unused-parameter -ftemplate-backtrace-limit=1
+ARDUINO_EXTRA_FLAGS="compiler.cpp.extra_flags='$(CPP_INCLUDES) -D$(FULL_LAMP_TYPE)'"
 #
 # to enable warnings:
 # 	LMBD_CPP_EXTRA_FLAGS="-Wall -Wextra" make
@@ -280,7 +283,7 @@ $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt: has-lamp-type check-arduino-deps 
 	# read build properties to file...
 	@$(ARDUINO_CLI) compile -b $(FQBN) \
 			--build-path $(OBJECTS_DIR) --build-cache-path $(CACHE_DIR) \
-			--build-property "compiler.cpp.extra_flags=-D$(FULL_LAMP_TYPE)" \
+			--build-property "$(ARDUINO_EXTRA_FLAGS)" \
 			--show-properties > $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 
 build-clean: has-lamp-type $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
@@ -292,7 +295,7 @@ build-clean: has-lamp-type $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 			&& ($(ARDUINO_CLI) compile -b $(FQBN) --clean -v \
 				--log-level=trace --log-file $(BUILD_DIR)/build-clean-log.txt \
 				--build-path $(OBJECTS_DIR) --build-cache-path $(CACHE_DIR) \
-				--build-property "compiler.cpp.extra_flags=-D$(FULL_LAMP_TYPE)" \
+				--build-property "$(ARDUINO_EXTRA_FLAGS)" \
 		| tee $(BUILD_DIR)/verbose-clean.txt \
 		| grep -v "$(COMPILER_PATH)") \
 		&& touch $(BUILD_DIR)/.skip-${LMBD_LAMP_TYPE}-clean)) \
@@ -313,7 +316,7 @@ $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh: has-lamp-type $(BUILD_DIR)/verbose-cl
 	@echo 'set -xe' >> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@tac _build/verbose-clean.txt \
 		| grep -Eo '^.*bin/$(COMPILER_CMD).*-std=gnu\+\+11.*-o [^ ]*_build/objs/sketch/src[^ ]*.cpp.o' \
-		| sed 's/-std=gnu++11/$(CPP_BASIC_FLAGS) $(CPP_BUILD_FLAGS) $$LMBD_CPP_EXTRA_FLAGS/g' \
+		| sed 's#-std=gnu++11#$(CPP_BUILD_FLAGS) $$LMBD_CPP_EXTRA_FLAGS#g' \
 	>> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@echo 'touch $(BUILD_DIR)/objs/.last-used' >> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@echo 'touch $(BUILD_DIR)/.process-${LMBD_LAMP_TYPE}-success' >> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
@@ -353,7 +356,7 @@ build-dry: build-clean install-venv has-lamp-type
 	@mkdir -p $(ARTIFACTS) $(OBJECTS_DIR) $(CACHE_DIR)
 	@$(ARDUINO_CLI) compile -b $(FQBN) \
 			--build-path $(OBJECTS_DIR) --build-cache-path $(CACHE_DIR) \
-			--build-property "compiler.cpp.extra_flags=-D$(FULL_LAMP_TYPE)" \
+			--build-property "$(ARDUINO_EXTRA_FLAGS)" \
 			> /dev/null 2>&1 || true
 
 process: has-lamp-type build-dry process-clear $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
@@ -374,7 +377,7 @@ build: has-lamp-type process $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 	@$(ARDUINO_CLI) compile -b $(FQBN) -e -v \
 			--log-level=trace --log-file $(BUILD_DIR)/build-log.txt \
 			--build-path $(OBJECTS_DIR) --build-cache-path $(CACHE_DIR) \
-			--build-property "compiler.cpp.extra_flags=-D$(FULL_LAMP_TYPE)" \
+			--build-property "$(ARDUINO_EXTRA_FLAGS)" \
 			--output-dir $(ARTIFACTS) \
 		| tee $(BUILD_DIR)/verbose.txt \
 		| grep -v "$(COMPILER_PATH)" \

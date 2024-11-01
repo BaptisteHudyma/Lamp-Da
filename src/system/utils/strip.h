@@ -8,8 +8,9 @@
 #include <cstdint>
 #include <cstring>
 
-#include "../../user/indexable/constants.h"
-#include "../ext/scale8.h"
+#include "src/user/indexable/constants.h"
+#include "src/system/ext/scale8.h"
+
 #include "constants.h"
 #include "coordinates.h"
 #include "utils.h"

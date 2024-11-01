@@ -5,9 +5,10 @@
 #include <algorithm>
 #include <cstdint>
 
-#include "../ext/noise.h"
-#include "../ext/random8.h"
-#include "../utils/constants.h"
+#include "src/system/ext/noise.h"
+#include "src/system/ext/random8.h"
+#include "src/system/utils/constants.h"
+
 #include "fft.h"
 
 namespace microphone {

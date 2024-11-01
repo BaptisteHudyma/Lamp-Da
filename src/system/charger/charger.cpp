@@ -2,10 +2,11 @@
 
 #include <cstdint>
 
-#include "../alerts.h"
-#include "../physical/BQ25703A.h"
-#include "../physical/battery.h"
-#include "../utils/constants.h"
+#include "src/system/alerts.h"
+#include "src/system/physical/BQ25703A.h"
+#include "src/system/physical/battery.h"
+#include "src/system/utils/constants.h"
+
 #include "Arduino.h"
 #include "FUSB302/PD_UFP.h"
 

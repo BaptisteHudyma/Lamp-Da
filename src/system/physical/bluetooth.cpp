@@ -2,7 +2,7 @@
 
 #include <bluefruit.h>
 
-#include "../alerts.h"
+#include "src/system/alerts.h"
 
 namespace bluetooth {
 

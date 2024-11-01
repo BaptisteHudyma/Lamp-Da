@@ -4,15 +4,15 @@
 #include <cstdint>
 
 #ifdef LMBD_LAMP_TYPE__SIMPLE
-#include "../../user/simple/constants.h"
+#include "src/user/simple/constants.h"
 #endif
 
 #ifdef LMBD_LAMP_TYPE__CCT
-#include "../../user/cct/constants.h"
+#include "src/user/cct/constants.h"
 #endif
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
-#include "../../user/indexable/constants.h"
+#include "src/user/indexable/constants.h"
 #endif
 
 #ifdef ARDUINO

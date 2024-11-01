@@ -4,9 +4,9 @@
 
 #include <cstdint>
 
-#include "../../system/behavior.h"
-#include "../../system/physical/fileSystem.h"
-#include "../../system/utils/utils.h"
+#include "src/system/behavior.h"
+#include "src/system/physical/fileSystem.h"
+#include "src/system/utils/utils.h"
 
 namespace user {
 

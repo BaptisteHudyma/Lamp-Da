@@ -2,9 +2,10 @@
 
 #include <Arduino.h>
 
-#include "../charger/charger.h"
-#include "../physical/battery.h"
-#include "../utils/constants.h"
+#include "src/system/charger/charger.h"
+#include "src/system/physical/battery.h"
+#include "src/system/utils/constants.h"
+
 #include "constants.h"
 #include "utils.h"
 

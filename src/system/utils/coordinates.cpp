@@ -5,7 +5,8 @@
 #include <cmath>
 #include <cstdint>
 
-#include "../ext/math8.h"
+#include "src/system/ext/math8.h"
+
 #include "constants.h"
 
 uint16_t to_screen_x(const uint16_t ledIndex) {

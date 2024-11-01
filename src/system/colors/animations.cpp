@@ -8,12 +8,13 @@
 #include <cmath>
 #include <cstdint>
 
-#include "../ext/math8.h"
-#include "../ext/noise.h"
-#include "../ext/random8.h"
-#include "../utils/constants.h"
-#include "../utils/coordinates.h"
-#include "../utils/utils.h"
+#include "src/system/ext/math8.h"
+#include "src/system/ext/noise.h"
+#include "src/system/ext/random8.h"
+#include "src/system/utils/constants.h"
+#include "src/system/utils/coordinates.h"
+#include "src/system/utils/utils.h"
+
 #include "palettes.h"
 #include "wipes.h"
 

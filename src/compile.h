@@ -54,4 +54,13 @@
 #endif
 #endif
 
+// Users triggering this error, either:
+//  - has no idea what they are doing, and shell prefer using the Makefile
+//  - are autonomous, and can add all the necessary build flags
+//      (among which -I$(BUILD_DIR)/objs/sketch and other -D<define>)
+//
+#ifndef LMBD_MISSING_DEFINE
+#error "LMBD_MISSING_DEFINE missing, are you using the Makefile to build?"
+#endif
+
 #endif
