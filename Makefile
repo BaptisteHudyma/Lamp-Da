@@ -23,7 +23,7 @@ FQBN=adafruit:nrf52:lampDa_nrf52840
 PROJECT_INO=LampColorControler.ino
 COMPILER_CMD=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.cpp.cmd|cut -f2 -d=)
 COMPILER_PATH=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.path|cut -f2 -d=)
-CPP_BASIC_FLAGS=-std=gnu++17 -fconcepts -D$(FULL_LAMP_TYPE) -DLMBD_EXPLICIT_CPP17_SUPPORT
+CPP_BASIC_FLAGS=-std=gnu++17 -fconcepts -D$(FULL_LAMP_TYPE) -DLMBD_CPP17
 CPP_BUILD_FLAGS=-fdiagnostics-color=always -Wno-unused-parameter -ftemplate-backtrace-limit=1
 #
 # to enable warnings:
@@ -317,6 +317,15 @@ $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh: has-lamp-type $(BUILD_DIR)/verbose-cl
 	>> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@echo 'touch $(BUILD_DIR)/objs/.last-used' >> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@echo 'touch $(BUILD_DIR)/.process-${LMBD_LAMP_TYPE}-success' >> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
+	@test 8 -le $$(wc -l $@|cut -f 1 -d ' ') \
+		|| (echo; echo \
+			; echo 'ERROR: process-${LMBD_LAMP_TYPE}.sh is too short to be correct!' \
+			; echo \
+			; echo 'Troubleshooting:' \
+			; echo ' - does "LMBD_LAMP_TYPE=${LMBD_LAMP_TYPE} make clean build-clean" returns with no error?' \
+			; echo ' - if not, behavior detection may fail, as build can not be completed!' \
+			; echo \
+			; false)
 
 $(BUILD_DIR)/clear-${LMBD_LAMP_TYPE}.sh: has-lamp-type $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@echo; echo " --- $@"

@@ -72,10 +72,40 @@ constexpr float map(float x, float in_min, float in_max, float out_min,
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-// hash a string
-// param[in] off should be left to 0
-constexpr uint32_t hash(const char* s, const uint16_t off = 0) {
-  return !s[off] ? 5381 : (hash(s, off + 1) * 33) ^ s[off];
+/** \brief Hash input string into a 32-bit unsigned integer
+ *
+ * This is the xor-variant of the "djb2 hash" in its iterative form, starting
+ * from the beginning of the string for simplicity.
+ *
+ * \param[in] s Zero-terminated input string
+ * \param[in] maxSize (optional) Maximal byte count to process, defaults to 12
+ * \param[in] off (optional) Skip the first \p off bytes, defaults to 0
+ * \remark By default, only the first 12 bytes of the string are used!
+ */
+template <typename T>
+static constexpr uint32_t hash(const T s,
+                               const uint16_t maxSize = 12,
+                               const uint16_t off = 0) {
+#ifdef LMBD_CPP17
+  uint32_t hashAcc = 5381;
+  for (uint16_t I = 0; I < maxSize; ++I) {
+    if (s[I + off] == '\0') {
+      return hashAcc;
+    }
+
+    hashAcc = ((hashAcc << 5) + hashAcc) ^ s[I + off];
+  }
+  return hashAcc;
+#else
+  return !s[off] ? 5381 : (hash(s, maxSize, off + 1) * 33) ^ s[off];
+#endif
+}
+
+/// \private Same as hash, but takes priority when called with hash("string")
+template <int16_t N>
+static constexpr uint32_t hash(const char (&s)[N]) {
+  static_assert((N-1 <= 12) && "Use hash(s, maxSize) to hash strings longer than 12 bytes!");
+  return hash(s, 12);
 }
 
 void calcGammaTable(float gamma);

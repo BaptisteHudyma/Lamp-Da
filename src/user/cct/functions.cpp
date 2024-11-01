@@ -53,7 +53,7 @@ void power_off_sequence() {
   currentBrightness = 0;
   set_color(0);
 
-#ifdef LMBD_EXPLICIT_CPP17_SUPPORT
+#ifdef LMBD_CPP17
   ensure_build_canary();  // (no-op) internal symbol used during build
 #endif
 }

@@ -49,7 +49,7 @@ extern void button_hold_callback(const uint8_t consecutiveButtonCheck,
 extern void handle_alerts();
 
 /// \private Internal symbol used to signify which LMBD_LAMP_TYPE was specified
-#ifdef LMBD_EXPLICIT_CPP17_SUPPORT
+#ifdef LMBD_CPP17
 extern const char* ensure_build_canary();
 #endif
 
