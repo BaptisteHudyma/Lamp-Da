@@ -1,7 +1,7 @@
 #include "button.h"
 
-#include "../utils/constants.h"
-#include "../utils/utils.h"
+#include "src/system/utils/constants.h"
+#include "src/system/utils/utils.h"
 
 #define RELEASE_TIMING_MS 200
 #define RELEASE_BETWEEN_CLICKS 50

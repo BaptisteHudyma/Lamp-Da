@@ -5,9 +5,10 @@
 #include <cmath>
 #include <cstdint>
 
-#include "../utils/colorspace.h"
-#include "../utils/strip.h"
-#include "../utils/utils.h"
+#include "src/system/utils/colorspace.h"
+#include "src/system/utils/strip.h"
+#include "src/system/utils/utils.h"
+
 #include "palettes.h"
 
 uint32_t GenerateSolidColor::get_color_internal(const uint16_t index,

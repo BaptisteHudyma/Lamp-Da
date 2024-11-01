@@ -3,8 +3,8 @@
 #include <cmath>
 #include <cstdint>
 
-#include "../utils/constants.h"
-#include "../utils/utils.h"
+#include "src/system/utils/constants.h"
+#include "src/system/utils/utils.h"
 
 namespace ledpower {
 

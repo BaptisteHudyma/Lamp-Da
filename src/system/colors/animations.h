@@ -3,8 +3,9 @@
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
-#include "../utils/colorspace.h"
-#include "../utils/strip.h"
+#include "src/system/utils/colorspace.h"
+#include "src/system/utils/strip.h"
+
 #include "colors.h"
 
 namespace animations {

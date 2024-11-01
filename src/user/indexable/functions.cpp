@@ -2,16 +2,16 @@
 
 #include "functions.h"
 
-#include "../../system/behavior.h"
-#include "../../system/charger/charger.h"
-#include "../../system/colors/animations.h"
-#include "../../system/colors/colors.h"
-#include "../../system/colors/palettes.h"
-#include "../../system/colors/wipes.h"
-#include "../../system/physical/IMU.h"
-#include "../../system/physical/MicroPhone.h"
-#include "../../system/physical/fileSystem.h"
-#include "../../system/utils/utils.h"
+#include "src/system/behavior.h"
+#include "src/system/charger/charger.h"
+#include "src/system/colors/animations.h"
+#include "src/system/colors/colors.h"
+#include "src/system/colors/palettes.h"
+#include "src/system/colors/wipes.h"
+#include "src/system/physical/IMU.h"
+#include "src/system/physical/MicroPhone.h"
+#include "src/system/physical/fileSystem.h"
+#include "src/system/utils/utils.h"
 
 namespace user {
 

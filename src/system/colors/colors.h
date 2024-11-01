@@ -3,11 +3,11 @@
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
+#include <cstdint>
 #include <Arduino.h>
 
-#include <cstdint>
+#include "src/system/utils/constants.h"
 
-#include "../utils/constants.h"
 #include "palettes.h"
 
 // min color update frequency

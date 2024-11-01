@@ -1,8 +1,8 @@
 #include "battery.h"
 
-#include "../alerts.h"
-#include "../utils/constants.h"
-#include "../utils/utils.h"
+#include "src/system/alerts.h"
+#include "src/system/utils/constants.h"
+#include "src/system/utils/utils.h"
 
 namespace battery {
 

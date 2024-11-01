@@ -5,8 +5,9 @@
 
 #include <cstdint>
 
-#include "../ext/math8.h"
-#include "../ext/scale8.h"
+#include "src/system/ext/math8.h"
+#include "src/system/ext/scale8.h"
+
 #include "colorspace.h"
 
 namespace utils {

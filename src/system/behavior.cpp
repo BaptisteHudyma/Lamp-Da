@@ -3,15 +3,15 @@
 #include <cstdint>
 
 #ifdef LMBD_LAMP_TYPE__SIMPLE
-#include "../user/simple/functions.h"
+#include "src/user/simple/functions.h"
 #endif
 
 #ifdef LMBD_LAMP_TYPE__CCT
-#include "../user/cct/functions.h"
+#include "src/user/cct/functions.h"
 #endif
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
-#include "../user/indexable/functions.h"
+#include "src/user/indexable/functions.h"
 #endif
 
 #include "alerts.h"
