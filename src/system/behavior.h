@@ -45,6 +45,12 @@ extern void button_clicked_callback(const uint8_t consecutiveButtonCheck);
 extern void button_hold_callback(const uint8_t consecutiveButtonCheck,
                                  const uint32_t buttonHoldDuration);
 
+/// Disable button usermode UI
+extern void button_disable_usermode();
+
+/// Returns True only if button usermode UI is enabled
+extern bool is_button_usermode_enabled();
+
 // If any alert is set, will handle it
 extern void handle_alerts();
 
