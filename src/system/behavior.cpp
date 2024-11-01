@@ -330,7 +330,7 @@ void handle_alerts() {
   }
 }
 
-#ifdef LMBD_EXPLICIT_CPP17_SUPPORT
+#ifdef LMBD_CPP17
 const char* ensure_build_canary() {
 #ifdef LMBD_LAMP_TYPE__SIMPLE
   return "_lmbd__build_canary__simple";

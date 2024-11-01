@@ -12,7 +12,7 @@ namespace user {
 void power_on_sequence() { ledpower::write_brightness(BRIGHTNESS); }
 
 void power_off_sequence() {
-#ifdef LMBD_EXPLICIT_CPP17_SUPPORT
+#ifdef LMBD_CPP17
   ensure_build_canary();  // (no-op) internal symbol used during build
 #endif
 }

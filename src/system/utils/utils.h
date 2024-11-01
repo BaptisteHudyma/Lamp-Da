@@ -86,7 +86,7 @@ template <typename T>
 static constexpr uint32_t hash(const T s,
                                const uint16_t maxSize = 12,
                                const uint16_t off = 0) {
-#ifdef LMBD_EXPLICIT_CPP17_SUPPORT
+#ifdef LMBD_CPP17
   uint32_t hashAcc = 5381;
   for (uint16_t I = 0; I < maxSize; ++I) {
     if (s[I + off] == '\0') {
