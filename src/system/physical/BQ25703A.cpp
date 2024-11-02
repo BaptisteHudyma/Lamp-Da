@@ -47,10 +47,10 @@ boolean BQ25703A::readDataReg(const byte regAddress, byte *dataVal,
 
 boolean BQ25703A::writeDataReg(const byte regAddress, byte dataVal0,
                                byte dataVal1) {
-  byte array[3] = {regAddress, dataVal0, dataVal1};
-
   Wire.beginTransmission(BQ25703Aaddr);
-  if (!Wire.write(array, 3)) return false;
+  if (!Wire.write(regAddress)) return false;
+  if (!Wire.write(dataVal0)) return false;
+  if (!Wire.write(dataVal1)) return false;
   // succes ?
   return Wire.endTransmission() == 0;
 }

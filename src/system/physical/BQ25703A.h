@@ -92,26 +92,8 @@ class BQ25703A {
     }
   }
   template <typename T>
-  static boolean writeReg(T dataParam) {
-    // This is a function for writing data words.
-    // The number of bytes that make up a word is 2.
-    // It is called from functions within the structs.
-    if (writeDataReg(dataParam->addr, dataParam->val0, dataParam->val1)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-  template <typename T>
   static boolean writeRegEx(T dataParam) {
-    // This is a function for writing data words.
-    // It is called from the main program, without sending pointers
-    // It can be used to write the registers once the bits have been twiddled
-    if (writeDataReg(dataParam.addr, dataParam.val0, dataParam.val1)) {
-      return true;
-    } else {
-      return false;
-    }
+    return writeDataReg(dataParam.addr, dataParam.val0, dataParam.val1);
   }
   template <typename T>
   static void setBytes(const T& dataParam, uint16_t value, uint16_t minVal,
@@ -151,6 +133,9 @@ class BQ25703A {
 #define FIELD_RO(data, name, index, size) \
   inline decltype(data) name() { return READFROM(data, index, size); }
 
+  // used to set and reset the error flag
+  inline static bool isFlagRaised = false;
+
   // Base class for register operations
   struct IBaseRegister {
     virtual uint16_t address() const = 0;
@@ -164,19 +149,9 @@ class BQ25703A {
 
     uint16_t mask() const {
       // convert a bit count to a bit mask
-      static constexpr uint16_t bitLenghtToBitMask[16] = {
-          0b0000000000000001, 0b0000000000000011, 0b0000000000000111,
-          0b0000000000001111, 0b0000000000011111, 0b0000000000111111,
-          0b0000000001111111, 0b0000000011111111, 0b0000000111111111,
-          0b0000001111111111, 0b0000011111111111, 0b0000111111111111,
-          0b0001111111111111, 0b0011111111111111, 0b0111111111111111,
-          0b1111111111111111,
-      };
-      return bitLenghtToBitMask[bitLenght()];
-
-      // this is cleaner but fails...
-      // I think there is a 8 bit cast somewhere
-      // return 1 << (bitLenght() + 1) - 1;
+      uint16_t mask = 1;
+      mask <<= (bitLenght() + 1);
+      return mask - 1;
     }
 
     uint16_t get() {
@@ -189,25 +164,30 @@ class BQ25703A {
         // fuse them
         uint16_t res = val1 << 8 | val0;
         // unpack
-        res = (res >> offset()) & mask();
+        res >>= offset();
+        res &= mask();
         // convert to real units
         return res * resolution() + minVal();
       }
+      isFlagRaised = true;
       // error
       return 0;
     }
 
-    bool set(const uint16_t value) {
+    void set(const uint16_t value) {
       // convert to correct data format
       uint16_t constraint = constrain(value, minVal(), maxVal());
+      constraint -= minVal();
       constraint /= resolution();
       // convert to binary word
       constraint &= mask();     // mask off unused bits
       constraint <<= offset();  // offset the register
 
-      const byte val0 = constraint;
+      const byte val0 = constraint & 0b11111111;
       const byte val1 = constraint >> 8;
-      return writeDataReg(address(), val0, val1);
+      if (!writeDataReg(address(), val0, val1)) {
+        isFlagRaised = true;
+      }
     }
   };
 
@@ -233,6 +213,7 @@ class BQ25703A {
         // convert to real units
         return res * resolutionVal0() + minVal0();
       }
+      isFlagRaised = true;
       // error
       return 0;
     }
@@ -247,6 +228,7 @@ class BQ25703A {
         // convert to real units
         return res * resolutionVal1() + minVal1();
       }
+      isFlagRaised = true;
       // error
       return 0;
     }

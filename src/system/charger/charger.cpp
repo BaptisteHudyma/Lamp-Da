@@ -17,8 +17,6 @@ bq2573a::BQ25703A charger;
 // Create instance of registers data structure
 bq2573a::BQ25703A::Regt BQ25703Areg;
 
-constexpr uint16_t baseChargeCurrent_mA = 64;
-
 // what do we expect from a standard USB vbus
 constexpr uint16_t vbusBaseCurrent_mA = 500;
 constexpr uint32_t vbusBasePower = 5 * vbusBaseCurrent_mA;
@@ -37,6 +35,13 @@ void enable_charger(const bool force) {
 
     BQ25703Areg.chargeOption1.set_FORCE_LATCHOFF(0);
     charger.writeRegEx(BQ25703Areg.chargeOption1);
+
+    // toggle HIGHZ on and off, to prevent a register latch bug
+    /*
+    BQ25703Areg.chargeOption3.set_EN_HIZ(1);
+    BQ25703Areg.chargeOption3.set_BATFETOFF_HIZ(1);
+    charger.writeRegEx(BQ25703Areg.chargeOption3);
+    */
 
     BQ25703Areg.chargeOption3.set_EN_HIZ(0);
     BQ25703Areg.chargeOption3.set_BATFETOFF_HIZ(0);
@@ -112,15 +117,21 @@ void read_alerts() {
 
 void setup() {
   // reset all registers of charger
-  // BQ25703Areg.chargeOption3.set_RESET_REG(1);
-  // charger.writeRegEx(BQ25703Areg.chargeOption3);
+  BQ25703Areg.chargeOption3.set_RESET_REG(1);
+  charger.writeRegEx(BQ25703Areg.chargeOption3);
 
   PD_UFP.init(CHARGE_INT, PD_POWER_OPTION_MAX_5V);
 
   // first step, reset charger parameters
   disable_charge(true);
 
+  // set target voltage (convert to mv)
+  BQ25703Areg.maxChargeVoltage.set(batteryMaxVoltage * 1000);
+  // set charge current to 0
+  BQ25703Areg.chargeCurrent.set(0);
+
   status.reserve(100);
+  status = "UNINITIALIZED";
 }
 
 void shutdown() { disable_charge(); }
@@ -234,6 +245,22 @@ bool charge_processus() {
     }
   }
 
+  // base test: is the voltage register ok
+  if (BQ25703Areg.maxChargeVoltage.get() !=
+      uint16_t(batteryMaxVoltage * 1000)) {
+    status = "NOT CHARGING: register error " +
+             String(BQ25703Areg.maxChargeVoltage.get()) +
+             "!=" + String(uint16_t(batteryMaxVoltage * 1000));
+
+    shouldCharge = false;
+  }
+
+  // a charger command failed, interrupt charge
+  if (charger.isFlagRaised) {
+    status = "NOT CHARGING: flag read/write register failed";
+    shouldCharge = false;
+  }
+
   // temperature too high, stop charge
   if ((AlertManager.current() & Alerts::TEMP_CRITICAL) != 0x00) {
     status = "NOT CHARGING: temperature critical";
@@ -242,8 +269,14 @@ bool charge_processus() {
   }
 
   // no power on VBUS, no charge
-  if (!is_powered_on() && !PD_UFP.is_vbus_ok()) {
+  if (!PD_UFP.is_vbus_ok()) {
     status = "NOT CHARGING: vbus level not ok";
+
+    shouldCharge = false;
+  }
+  // the charge ok signal is off
+  if (!is_powered_on()) {
+    status = "NOT CHARGING: charger ok signal is off";
 
     shouldCharge = false;
   }
@@ -292,11 +325,7 @@ bool charge_processus() {
 
     startChargeEnabledTime = millis();
     isChargeEnabled = true;
-
-    BQ25703Areg.maxChargeVoltage.set(batteryMaxVoltage);
   }
-
-  // Serial.println(BQ25703Areg.maxChargeVoltage.get());
 
   //  run pd negociation
   PD_UFP.run();
@@ -304,46 +333,61 @@ bool charge_processus() {
   isCharging_s = true;
 
   const float batteryVoltage = battery::get_battery_voltage();
-  // safe check
-  if (batteryVoltage <= 0) return false;
+  // safe check (out of bounds)
+  if (batteryVoltage <= 0) {
+    status = "ERROR: battery voltage read returned wrong values";
+    // still return true, this error should correct itself
+    return true;
+  }
 
-  uint16_t chargeCurrent_mA = baseChargeCurrent_mA;  // default usb voltage
+  // default usb voltage/current
+  const uint16_t standardUsableCurrent_mA =
+      (vbusBasePower * chargerEfficiency) / batteryVoltage;
+
+  uint16_t chargeCurrent_mA = standardUsableCurrent_mA;
+
+  // if we are connected to a PD charger
   if (PD_UFP.is_USB_PD_available()) {
+    // the power was negociated & is available on vbus
     if (can_use_max_power()) {
       status = "CHARGING: USB PD power negociated";
 
-      // get_voltage returns values in steps of 50mV
-      const uint16_t negociationVoltage = PD_UFP.get_voltage() * 50;
+      // get_voltage returns values in steps of 50mV (convert to volts)
+      const float negociationVoltage = (PD_UFP.get_voltage() * 50) / 1000.0;
       // get_current returns values in steps of 10mA
       const uint16_t negociationCurrent = PD_UFP.get_current() * 10;
       const uint32_t usablePower =
           (negociationVoltage * negociationCurrent) * chargerEfficiency;
 
       chargeCurrent_mA = usablePower / batteryVoltage;
+    } else {
+      status = "CHARGING: waiting for USB PD power...";
     }
-    // else: wait for power to climb
   } else {
-    // do not start charge without PD before one second
-    if (millis() - startChargeEnabledTime > 2000) {
-      status = "CHARGING: standard charging mode after no charger answer";
-      // compute the charging current with the max USB voltage
-      chargeCurrent_mA = (vbusBasePower * chargerEfficiency) / batteryVoltage;
-    }
+    // just charge at default voltage/current
+    status = "CHARGING: slow charging mode";
   }
   // limit to max charging current
   chargeCurrent_mA = min(chargeCurrent_mA, batteryMaxChargeCurrent);
 
-  // set charger to low impedance mode (enable charger)
-  if (chargeCurrent_mA > baseChargeCurrent_mA) {
-    enable_charger(false);
-
-    // update the charge current (max charge current is defined by the battery
-    // used)
-    // Serial.println(chargeCurrent_mA);
-    BQ25703Areg.chargeCurrent.set(chargeCurrent_mA);
+  // safety checks (detect bad code above !)
+  if (chargeCurrent_mA < standardUsableCurrent_mA) {
+    status = "ERROR: charging current less than minimum standard current";
+    return false;
+  }
+  if (chargeCurrent_mA > batteryMaxChargeCurrent) {
+    status =
+        "ERROR: charging current more than maximum allowed current for "
+        "batteries";
+    return false;
   }
 
-  // flag to signal that the charge must be stopped
+  // enable component if needed
+  enable_charger(false);
+  // update the charge current
+  BQ25703Areg.chargeCurrent.set(chargeCurrent_mA);
+
+  // flag to signal that the charge is started
   isChargeResetted = false;
 
   return true;
@@ -358,7 +402,7 @@ void disable_charge(const bool force) {
 
   setChargerADC(false);
 
-  BQ25703Areg.chargeCurrent.set(baseChargeCurrent_mA);
+  BQ25703Areg.chargeCurrent.set(0);
 }
 
 String charge_status() { return status; }
