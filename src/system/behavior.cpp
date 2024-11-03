@@ -2,32 +2,22 @@
 
 #include <cstdint>
 
-#ifdef LMBD_LAMP_TYPE__SIMPLE
-#include "src/user/simple/functions.h"
-#endif
+#include "src/system/ext/math8.h"
+#include "src/system/ext/noise.h"
+#include "src/system/alerts.h"
+#include "src/system/charger/charger.h"
+#include "src/system/physical/battery.h"
+#include "src/system/physical/bluetooth.h"
+#include "src/system/physical/button.h"
+#include "src/system/physical/fileSystem.h"
+#include "src/system/physical/IMU.h"
+#include "src/system/physical/led_power.h"
+#include "src/system/physical/MicroPhone.h"
+#include "src/system/utils/colorspace.h"
+#include "src/system/utils/constants.h"
+#include "src/system/utils/utils.h"
 
-#ifdef LMBD_LAMP_TYPE__CCT
-#include "src/user/cct/functions.h"
-#endif
-
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
-#include "src/user/indexable/functions.h"
-#endif
-
-#include "alerts.h"
-#include "charger/charger.h"
-#include "ext/math8.h"
-#include "ext/noise.h"
-#include "physical/IMU.h"
-#include "physical/MicroPhone.h"
-#include "physical/battery.h"
-#include "physical/bluetooth.h"
-#include "physical/button.h"
-#include "physical/fileSystem.h"
-#include "physical/led_power.h"
-#include "utils/colorspace.h"
-#include "utils/constants.h"
-#include "utils/utils.h"
+#include "src/user/functions.h"
 
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
 
@@ -425,7 +415,12 @@ void handle_alerts() {
   }
 }
 
+//
+// do not modify (if you do not understand it)
+//
+
 #ifdef LMBD_CPP17
+
 const char* ensure_build_canary() {
 #ifdef LMBD_LAMP_TYPE__SIMPLE
   return "_lmbd__build_canary__simple";
@@ -436,6 +431,7 @@ const char* ensure_build_canary() {
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
   return "_lmbd__build_canary__indexable";
 #endif
-  return (char*)nullptr;
+  return (char*) nullptr;
 }
+
 #endif

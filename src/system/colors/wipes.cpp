@@ -1,12 +1,14 @@
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
+// this file is active only if LMBD_LAMP_TYPE=indexable
+#include "wipes.h"
+
 #include <cstdint>
 
+#include "src/system/colors/colors.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/coordinates.h"
 #include "src/system/utils/strip.h"
-
-#include "colors.h"
 
 namespace animations {
 

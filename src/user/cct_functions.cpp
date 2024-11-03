@@ -1,12 +1,12 @@
 #ifdef LMBD_LAMP_TYPE__CCT
 
-#include "functions.h"
-
 #include <cstdint>
 
 #include "src/system/behavior.h"
 #include "src/system/physical/fileSystem.h"
 #include "src/system/utils/utils.h"
+
+#include "src/user/functions.h"
 
 namespace user {
 
@@ -136,6 +136,8 @@ bool button_hold_usermode(const uint8_t, const bool, const uint32_t) {
 }
 
 void loop() { set_color(currentColor); }
+
+bool should_spawn_thread() { return false; }
 
 void user_thread() {}
 

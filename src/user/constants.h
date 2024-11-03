@@ -1,9 +1,43 @@
-#ifndef INDEXABLE_CONSTANTS_H
-#define INDEXABLE_CONSTANTS_H
-
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
+#ifndef USER_CONSTANTS_H
+#define USER_CONSTANTS_H
 
 #include <Arduino.h>
+
+//
+// simple lamp type
+//
+
+#ifdef LMBD_LAMP_TYPE__SIMPLE
+
+const String SOFTWARE_VERSION = "0.1";  // Update when the soft changes version
+
+// parameters of the led strip used
+constexpr float consWattByMeter = 12;  // power consumption (in Watt/meters)
+constexpr float inputVoltage_V = 12;   // voltage (volts)
+constexpr float ledStripLenght_mm = 91.0 * 25.0;  // 91 sections of 25 mm
+
+#endif // LMBD_LAMP_TYPE__SIMPLE
+
+//
+// cct lamp type
+//
+
+#ifdef LMBD_LAMP_TYPE__CCT
+
+const String SOFTWARE_VERSION = "0.1";  // Update when the soft changes version
+
+// parameters of the led strip used
+constexpr float consWattByMeter = 10;  // power consumption (in Watt/meters)
+constexpr float inputVoltage_V = 12;   // voltage (volts)
+constexpr float ledStripLenght_mm = 67.0 * 27.0;  // 67 sections of 27 mm
+
+#endif // LMBD_LAMP_TYPE__CCT
+
+//
+// indexable lamp type
+//
+
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
 
 const String SOFTWARE_VERSION = "0.1";  // Update when the soft changes version
 
@@ -30,6 +64,10 @@ constexpr float stripYCoordinates =
     ledStripLenght_mm / lampBodyCircumpherence_mm;
 constexpr float lampBodyHeight_mm = stripYCoordinates * ledStripWidth_mm;
 
-#endif
+#endif // LMBD_LAMP_TYPE__INDEXABLE
+
+//
+// add your own lamp type below :)
+//
 
 #endif

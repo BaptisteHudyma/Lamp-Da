@@ -1,6 +1,6 @@
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
-#include "functions.h"
+#include <cstdint>
 
 #include "src/system/behavior.h"
 #include "src/system/charger/charger.h"
@@ -8,10 +8,12 @@
 #include "src/system/colors/colors.h"
 #include "src/system/colors/palettes.h"
 #include "src/system/colors/wipes.h"
+#include "src/system/physical/fileSystem.h"
 #include "src/system/physical/IMU.h"
 #include "src/system/physical/MicroPhone.h"
-#include "src/system/physical/fileSystem.h"
 #include "src/system/utils/utils.h"
+
+#include "src/user/functions.h"
 
 namespace user {
 
@@ -489,6 +491,8 @@ bool button_hold_usermode(const uint8_t, const bool, const uint32_t) {
 }
 
 void loop() { color_mode_update(); }
+
+bool should_spawn_thread() { return true; }
 
 void user_thread() {
   strip.show();  // show at the end of the loop (only does it if needed)}

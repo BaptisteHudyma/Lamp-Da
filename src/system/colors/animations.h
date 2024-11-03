@@ -1,12 +1,12 @@
 #ifndef ANIMATIONS_ANIMATIONS_H
 #define ANIMATIONS_ANIMATIONS_H
 
+// this file is active only if LMBD_LAMP_TYPE=indexable
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
+#include "src/system/colors/colors.h"
 #include "src/system/utils/colorspace.h"
 #include "src/system/utils/strip.h"
-
-#include "colors.h"
 
 namespace animations {
 

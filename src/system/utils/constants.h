@@ -3,18 +3,6 @@
 
 #include <cstdint>
 
-#ifdef LMBD_LAMP_TYPE__SIMPLE
-#include "src/user/simple/constants.h"
-#endif
-
-#ifdef LMBD_LAMP_TYPE__CCT
-#include "src/user/cct/constants.h"
-#endif
-
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
-#include "src/user/indexable/constants.h"
-#endif
-
 #ifdef ARDUINO
 #if (ARDUINO >= 100)
 #include <Arduino.h>
@@ -42,6 +30,8 @@
 #endif
 
 #include <stdint.h>
+
+#include "src/user/constants.h"
 
 const String HARDWARE_VERSION = "1.0";
 const String BASE_SOFTWARE_VERSION =

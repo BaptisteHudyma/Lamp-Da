@@ -1,14 +1,14 @@
 #ifndef COLORS_H
 #define COLORS_H
 
+// this file is active only if LMBD_LAMP_TYPE=indexable
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
 #include <cstdint>
 #include <Arduino.h>
 
+#include "src/system/colors/palettes.h"
 #include "src/system/utils/constants.h"
-
-#include "palettes.h"
 
 // min color update frequency
 constexpr uint32_t COLOR_TIMING_UPDATE = LOOP_UPDATE_PERIOD * 3;

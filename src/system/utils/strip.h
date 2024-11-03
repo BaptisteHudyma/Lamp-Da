@@ -1,19 +1,20 @@
 #ifndef STRIP_H
 #define STRIP_H
 
+// this file is active only if LMBD_LAMP_TYPE=indexable
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
-
-#include <Adafruit_NeoPixel.h>
 
 #include <cstdint>
 #include <cstring>
 
-#include "src/user/indexable/constants.h"
-#include "src/system/ext/scale8.h"
+#include <Adafruit_NeoPixel.h>
 
-#include "constants.h"
-#include "coordinates.h"
-#include "utils.h"
+#include "src/system/ext/scale8.h"
+#include "src/system/utils/constants.h"
+#include "src/system/utils/coordinates.h"
+#include "src/system/utils/utils.h"
+
+#include "src/user/constants.h"
 
 static constexpr float baseCurrentConsumption = 0.4;
 static constexpr float maxCurrentConsumption = 2.7 - baseCurrentConsumption;
