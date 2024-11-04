@@ -171,6 +171,51 @@ bool can_use_max_power() {
 static bool isCharging_s = false;
 bool is_charging() { return isCharging_s; }
 
+static bool isPowerCreepingInProcess_s = false;
+/**
+ * \brief Slowly raise the charge current until VBUS drops below a threshold
+ * This is kind a dangerous, so use responsibly
+ * \param[in] batteryVoltage_V current battery voltage in volts
+ * \param[in] maxVbusCurrent_mA max current that we can draw on VBUS
+ * \return the target charging current to be set
+ */
+uint16_t regulate_vbus_with_power_creep(const float batteryVoltage_V,
+                                        const uint16_t maxVbusCurrent_mA) {
+  // no charge !!
+  if (!isCharging_s) return 0;
+
+  // power creep should only be used on VBUS at 5V
+  const uint16_t vbusVoltage_mV = BQ25703Areg.aDCVBUSPSYS.get_VBUS();
+  if (vbusVoltage_mV > 5300) {
+    return 0;
+  }
+
+  const uint16_t currentChargingCurrent = BQ25703Areg.chargeCurrent.get();
+
+  static uint32_t lastCall = 0;
+  const uint32_t time = millis();
+  // augment power until voltage starts to drop
+  // let some time pass for everything to settle
+  if (time - lastCall > 1000 && vbusVoltage_mV > 4500) {
+    lastCall = time;
+    isPowerCreepingInProcess_s = true;
+
+    const uint32_t possiblyUsablePower =
+        ((5 * maxVbusCurrent_mA) * chargerEfficiency) / batteryVoltage_V;
+    // slowly augment charging current, clamped by max charging current
+    return min(
+        possiblyUsablePower,
+        currentChargingCurrent + BQ25703Areg.aDCVBUSPSYS.resolutionVal1());
+  } else {
+    isPowerCreepingInProcess_s = false;
+    // stay in the confort zone
+    const uint16_t standardUsableCurrent_mA =
+        (vbusBasePower * chargerEfficiency) / batteryVoltage_V;
+
+    return max(currentChargingCurrent, standardUsableCurrent_mA);
+  }
+}
+
 bool charge_processus() {
   static bool isChargeEnabled = false;
   static bool isChargeResetted = false;
@@ -288,6 +333,7 @@ bool charge_processus() {
     startChargeEnabledTime = 0;
     isCharging_s = false;
     isChargeEnabled = false;
+    isPowerCreepingInProcess_s = false;
 
     // stop charge already invoked ?
     if (not isChargeResetted) {
@@ -363,19 +409,30 @@ bool charge_processus() {
     } else {
       status = "CHARGING: waiting for USB PD power...";
     }
+  }
+  // some power may be available, but some charge cable
+  // may provide a wrong information, so the charge current should
+  // be raised slowly, until the voltage on vbus starts to decrease
+  else if (PD_UFP.is_USB_power_available()) {
+    // get_current returns values in steps of 10mA
+    const uint16_t availableCurrent = PD_UFP.get_current() * 10;
+    chargeCurrent_mA =
+        regulate_vbus_with_power_creep(batteryVoltage, availableCurrent);
+    status = "CHARGING: charging with CC power detection";
   } else {
-    // just charge at default voltage/current
-    status = "CHARGING: slow charging mode";
+    // just charge at default voltage/current, with power creep
+    chargeCurrent_mA = regulate_vbus_with_power_creep(batteryVoltage, 1000);
+    status = "CHARGING: slow charging mode with power creep";
   }
   // limit to max charging current
-  chargeCurrent_mA = min(chargeCurrent_mA, batteryMaxChargeCurrent);
+  chargeCurrent_mA = min(chargeCurrent_mA, batteryMaxChargeCurrent_mA);
 
   // safety checks (detect bad code above !)
   if (chargeCurrent_mA < standardUsableCurrent_mA) {
     status = "ERROR: charging current less than minimum standard current";
     return false;
   }
-  if (chargeCurrent_mA > batteryMaxChargeCurrent) {
+  if (chargeCurrent_mA > batteryMaxChargeCurrent_mA) {
     status =
         "ERROR: charging current more than maximum allowed current for "
         "batteries";
@@ -407,8 +464,26 @@ void disable_charge(const bool force) {
 
 String charge_status() { return status; }
 
-uint16_t getVbusVoltage_mV() { return PD_UFP.get_vbus_voltage(); }
+uint16_t get_vbus_voltage_mV() { return PD_UFP.get_vbus_voltage(); }
 
-uint16_t getChargeCurrent() { return BQ25703Areg.chargeCurrent.get(); }
+uint16_t get_charge_current_mA() {
+  static uint16_t lastValue = 0;
+  static uint32_t lastCall = 0;
+  const uint32_t time = millis();
+  // only update every seconds
+  if (lastCall == 0 or time - lastCall > 1000) {
+    lastCall = time;
+    lastValue = BQ25703Areg.chargeCurrent.get();
+  }
+  return lastValue;
+}
+
+bool is_slow_charging() {
+  return is_charging() and
+         // this is just to have a cleaner charger animation during power creep
+         not isPowerCreepingInProcess_s and
+         // slow charging is defined as the low end of the max charge current
+         get_charge_current_mA() < batteryMaxChargeCurrent_mA * 0.25;
+}
 
 }  // namespace charger

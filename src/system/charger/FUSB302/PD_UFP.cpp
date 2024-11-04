@@ -62,6 +62,8 @@ PD_UFP_c::PD_UFP_c()
 
 void PD_UFP_c::reset() {
   isPowerNegociated = false;
+  isPowerDetectedCC = false;
+
   ready_voltage = 0;
   ready_current = 0;
 
@@ -247,7 +249,6 @@ void PD_UFP_c::handle_protocol_event(PD_protocol_event_t events) {
 
 void PD_UFP_c::handle_FUSB302_event(FUSB302_event_t events) {
   if (events & FUSB302_EVENT_DETACHED) {
-    isPowerNegociated = false;
     reset();
     return;
   }
@@ -262,7 +263,7 @@ void PD_UFP_c::handle_FUSB302_event(FUSB302_event_t events) {
     }
     /* TODO: handle no cc detected error */
     if (cc > 1) {
-      wait_src_cap = 1;
+      wait_src_cap = cc;
     } else {
       set_default_power();
     }
@@ -293,6 +294,7 @@ void PD_UFP_c::handle_FUSB302_event(FUSB302_event_t events) {
 
 bool PD_UFP_c::timer(void) {
   uint16_t t = clock_ms();
+  // waited source capacity for more than a threshold
   if (wait_src_cap && t - time_wait_src_cap > t_TypeCSinkWaitCap) {
     time_wait_src_cap = t;
     if (get_src_cap_retry_count < 3) {
@@ -303,12 +305,33 @@ bool PD_UFP_c::timer(void) {
       PD_protocol_create_get_src_cap(&protocol, &header);
       FUSB302_tx_sop(&FUSB302, header, 0);
     } else {
-      get_src_cap_retry_count = 0;
-      /* Hard reset will cause the source power cycle VBUS. */
-      FUSB302_tx_hard_reset(&FUSB302);
-      PD_protocol_reset(&protocol);
+      // no pd available, but we can get power source charac by checking the
+      // cable flag
+      switch (wait_src_cap) {
+        // 1.5A available
+        case 0b10:
+          isPowerDetectedCC = true;
+          status_power_ready(STATUS_POWER_TYP, PD_V(5), PD_A(1.5));
+          break;
+        // 3A available
+        case 0b11:
+          isPowerDetectedCC = true;
+          status_power_ready(STATUS_POWER_TYP, PD_V(5), PD_A(3));
+          break;
+        // default usb power (no need to signal...)
+        case 0b01:
+        default:
+          isPowerDetectedCC = false;
+          // ignore power flag and reset
+          get_src_cap_retry_count = 0;
+          /* Hard reset will cause the source power cycle VBUS. */
+          FUSB302_tx_hard_reset(&FUSB302);
+          PD_protocol_reset(&protocol);
+          break;
+      }
     }
   }
+  // wait for negociation
   if (wait_ps_rdy) {
     if (t - time_wait_ps_rdy > t_RequestToPSReady) {
       wait_ps_rdy = 0;

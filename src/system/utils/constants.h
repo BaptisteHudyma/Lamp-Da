@@ -80,7 +80,7 @@ constexpr uint32_t LOOP_UPDATE_PERIOD = 10;
 constexpr float batteryCritical = 3;  // %
 constexpr float batteryLow = 5;       // %
 
-constexpr uint32_t batteryMaxChargeCurrent = 1000;  // mA
+constexpr uint32_t batteryMaxChargeCurrent_mA = 1000;  // mA
 
 // pins
 

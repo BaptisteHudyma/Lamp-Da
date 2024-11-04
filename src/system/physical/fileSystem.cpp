@@ -43,6 +43,11 @@ void setup() {
 
 void clear() { _valueMap.clear(); }
 
+void clear_internal_fs() {
+  // hardcore, format the entire file system
+  InternalFS.format();
+}
+
 void load_initial_values() {
   if (!isSetup) {
     setup();

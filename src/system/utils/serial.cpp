@@ -4,10 +4,9 @@
 
 #include "src/system/charger/charger.h"
 #include "src/system/physical/battery.h"
+#include "src/system/physical/fileSystem.h"
 #include "src/system/utils/constants.h"
-
-#include "constants.h"
-#include "utils.h"
+#include "src/system/utils/utils.h"
 
 namespace serial {
 
@@ -28,6 +27,7 @@ void handleCommand(const String& command) {
       Serial.println("v: hardware & software version");
       Serial.println("bl: battery level");
       Serial.println("vbus: USB voltage bus infos");
+      Serial.println("format-fs: format the whole file system (dangerous)");
       Serial.println("-----------------");
       break;
 
@@ -54,10 +54,10 @@ void handleCommand(const String& command) {
 
     case utils::hash("vbus"):
       Serial.print("voltage on vbus:");
-      Serial.print(charger::getVbusVoltage_mV());
+      Serial.print(charger::get_vbus_voltage_mV());
       Serial.println("mV");
       Serial.print("charge current:");
-      Serial.print(charger::getChargeCurrent());
+      Serial.print(charger::get_charge_current_mA());
       Serial.println("mA");
       Serial.print("is usb powered:");
       Serial.println(boolToString(charger::is_usb_powered()));
@@ -69,6 +69,11 @@ void handleCommand(const String& command) {
       Serial.print(battery::get_battery_level());
       Serial.println("%");
       Serial.println(charger::charge_status());
+      break;
+
+    case utils::hash("format-fs"):
+      Serial.println("clearing the whole file format");
+      fileSystem::clear_internal_fs();
       break;
 
     default:
