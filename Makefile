@@ -316,6 +316,7 @@ $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh: has-lamp-type $(BUILD_DIR)/verbose-cl
 	@echo 'set -xe' >> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@tac _build/verbose-clean.txt \
 		| grep -Eo '^.*bin/$(COMPILER_CMD).*-std=gnu\+\+11.*-o [^ ]*_build/objs/sketch/src[^ ]*.cpp.o' \
+		| sed 's#-DLMBD_LAMP_TYPE[^ ]*##g' \
 		| sed 's#-std=gnu++11#$(CPP_BUILD_FLAGS) $$LMBD_CPP_EXTRA_FLAGS#g' \
 	>> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@echo 'touch $(BUILD_DIR)/objs/.last-used' >> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
@@ -341,7 +342,7 @@ $(BUILD_DIR)/clear-${LMBD_LAMP_TYPE}.sh: has-lamp-type $(BUILD_DIR)/process-${LM
 process-clear: has-lamp-type $(BUILD_DIR)/clear-${LMBD_LAMP_TYPE}.sh
 	@echo; echo " --- $@"
 	@test -e $(BUILD_DIR)/clear-${LMBD_LAMP_TYPE}.sh
-	# removing existing sketch objects...
+	# clearing previous builds...
 	@bash _build/clear-${LMBD_LAMP_TYPE}.sh > /dev/null 2>&1
 
 #
@@ -362,6 +363,8 @@ build-dry: build-clean install-venv has-lamp-type
 process: has-lamp-type build-dry process-clear $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@echo; echo " --- $@"
 	@test -e $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
+	@find $(BUILD_DIR)/objs/sketch -iname '*.cpp.o' -exec rm '{}' \; \
+		; # (this can replace process-clear on paper?)
 	# compiling sketch objects using process.sh script...
 	@bash _build/process-${LMBD_LAMP_TYPE}.sh 2>&1 /dev/stdout \
 		| tee _build/process-log.txt \
@@ -435,6 +438,20 @@ verify-canary: has-lamp-type $(ARTIFACTS)/$(PROJECT_INO).zip
 
 verify: verify-canary
 	@echo " --- ok: $@"
+
+verify-clean(%):
+	@echo " --- $@($%)"
+	@echo; echo Building with LMBD_LAMP_TYPE=$% to verify artifact...; echo
+	LMBD_LAMP_TYPE=$% make build verify
+
+verify-all:
+	@echo; echo " --- $@"
+	# verify that all lamp types build & validates
+	make clean
+	make 'verify-clean(indexable)'
+	make 'verify-clean(simple)'
+	make 'verify-clean(cct)'
+	@echo; echo 'Everything went fine :)'
 
 #
 # to customize upload port:

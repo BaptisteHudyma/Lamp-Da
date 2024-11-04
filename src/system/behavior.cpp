@@ -21,15 +21,24 @@
 
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
 
-// constantes
+// constants
 static constexpr uint8_t MIN_BRIGHTNESS = 5;
 static constexpr uint8_t MAX_BRIGHTNESS = 255;
+static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000;
+static constexpr uint32_t EARLY_ACTIONS_LIMIT_MS = 2000;
+static constexpr uint32_t EARLY_ACTIONS_HOLD_MS = 1500;
 
-static uint8_t MaxBrightnessLimit =
-    MAX_BRIGHTNESS;  // temporary upper bound for the brightness
+// temporary upper bound for the brightness
+static uint8_t MaxBrightnessLimit = MAX_BRIGHTNESS;
+
+// hold the last time startup_sequence has been called
+uint32_t lastStartupSequence = 0;
 
 // hold the boolean that configures if button's usermode UI is enabled
 bool isButtonUsermodeEnabled = false;
+
+// hold a boolean to avoid advertising several times in a row
+bool isBluetoothAdvertising = false;
 
 // hold the current level of brightness out of the raise/lower animation
 uint8_t BRIGHTNESS = 50;  // default start value
@@ -101,6 +110,9 @@ void startup_sequence() {
 
   // button usermode is always disabled by default
   button_disable_usermode();
+
+  // reset lastStartupSequence
+  lastStartupSequence = millis();
 
   // let the user power on the system
   user::power_on_sequence();
@@ -216,59 +228,79 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
   }
 }
 
-#define BRIGHTNESS_RAMP_DURATION_MS 2000
 static constexpr float brightnessDivider = 1.0 / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
 
 void button_hold_callback(const uint8_t consecutiveButtonCheck,
                           const uint32_t buttonHoldDuration) {
   if (consecutiveButtonCheck == 0) return;
+  if (is_shutdown()) return;
 
   // compute parameters of the "press-hold" action
   const bool isEndOfHoldEvent = (buttonHoldDuration <= 1);
   const uint32_t holdDuration = (buttonHoldDuration > HOLD_BUTTON_MIN_MS)
       ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
 
+  uint32_t realStartTime = millis() - lastStartupSequence;
+  if (realStartTime > holdDuration) {
+    realStartTime -= holdDuration;
+  }
+
   //
-  // "power off" actions
-  //    - actions to be performed by user when lamp is turned off
-  //    - temporary, as the wake-up path may not enable this to happen
-  //    - this could be refactored of actions to be done < 2s after start
+  // "early actions"
+  //    - actions to be performed by user just after lamp is turned on
+  //    - after 2s the default actions comes back
   //
 
-  // 3+hold (3s): turn it on, with bluetooth advertising
-#ifdef USE_BLUETOOTH
-  if (is_shutdown() && consecutiveButtonCheck == 3) {
+  if (realStartTime < EARLY_ACTIONS_LIMIT_MS) {
     if (isEndOfHoldEvent) return;
-    if (holdDuration > 3000 - HOLD_BUTTON_MIN_MS) {
-      startup_sequence();
-      bluetooth::start_advertising();
-      return;
+
+    // early action animation
+    if (consecutiveButtonCheck > 2) {
+      if ((holdDuration >> 7) & 0b1) {
+        button::set_color(utils::ColorSpace::BLACK);
+      } else if (holdDuration < EARLY_ACTIONS_HOLD_MS) {
+        button::set_color(utils::ColorSpace::GREEN);
+      } else if (consecutiveButtonCheck == 3) {
+        button::set_color(utils::ColorSpace::YELLOW);
+      } else if (consecutiveButtonCheck == 4) {
+        button::set_color(utils::ColorSpace::BLUE);
+      }
     }
-  }
+
+    // 3+hold (3s): turn it on, with button usermode enabled
+    if (consecutiveButtonCheck == 3) {
+      if (holdDuration > EARLY_ACTIONS_HOLD_MS) {
+        isButtonUsermodeEnabled = true;
+        return;
+      }
+    }
+
+    // 4+hold (3s): turn it on, with bluetooth advertising
+#ifdef USE_BLUETOOTH
+    if (consecutiveButtonCheck == 4) {
+      if (holdDuration > EARLY_ACTIONS_HOLD_MS) {
+        if (!isBluetoothAdvertising) {
+          bluetooth::start_advertising();
+        }
+
+        isBluetoothAdvertising = true;
+        return;
+      } else {
+        isBluetoothAdvertising = false;
+      }
+    }
 #endif
 
-  // 5+hold (3s): turn it on, with button usermode enabled
-  if (is_shutdown() && consecutiveButtonCheck == 5) {
-    if (isEndOfHoldEvent) return;
-    if (holdDuration > 3000 - HOLD_BUTTON_MIN_MS) {
-      startup_sequence();
-
-      // (2 pink flashes to confirm)
-      for (uint8_t I = 0; I < 2; ++I) {
-        button::set_color(utils::ColorSpace::BLACK);
-        delay(100);
-        button::set_color(utils::ColorSpace::PINK);
-        delay(100);
-      }
-
-      isButtonUsermodeEnabled = true;
+    // during "early actions" prevent other actions
+    if (consecutiveButtonCheck > 2) {
       return;
     }
   }
 
-  if (is_shutdown()) return;
+  //
+  // "button usermode" bypass
+  //
 
-  // extended "button usermode" bypass
   if (isButtonUsermodeEnabled) {
 
     // 5+hold (5s): always exit, can't be bypassed

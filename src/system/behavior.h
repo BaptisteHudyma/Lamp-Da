@@ -5,13 +5,14 @@
  *  \brief Basic controller behavior, including alerts and user interactions
  **/
 
-#include "alerts.h"
-#include "utils/constants.h"
-#include "utils/utils.h"
-
 #ifdef __AVR__
 #include <avr/power.h>  // Required for 16 MHz Adafruit Trinket
 #endif
+
+#include "src/compile.h"
+#include "src/system/alerts.h"
+#include "src/system/utils/constants.h"
+#include "src/system/utils/utils.h"
 
 // NeoPixel brightness, 0 (min) to 255 (max)
 extern uint8_t BRIGHTNESS;

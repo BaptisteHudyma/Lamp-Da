@@ -4,6 +4,13 @@
 #include <Arduino.h>
 
 //
+// common to all lamp type
+//
+
+// does button usermode defaults to "lockdown" mode?
+static constexpr bool usermodeDefaultsToLockdown = false;
+
+//
 // simple lamp type
 //
 

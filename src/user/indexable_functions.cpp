@@ -483,11 +483,11 @@ void button_hold_default(const uint8_t clicks,
 }
 
 bool button_clicked_usermode(const uint8_t) {
-  return false;
+  return usermodeDefaultsToLockdown;
 }
 
 bool button_hold_usermode(const uint8_t, const bool, const uint32_t) {
-  return false;
+  return usermodeDefaultsToLockdown;
 }
 
 void loop() { color_mode_update(); }
