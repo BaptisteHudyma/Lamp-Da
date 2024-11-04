@@ -11,7 +11,8 @@ SHELL:=/bin/bash # required by python3 virtualenv
 PYTHON_EXE=/usr/bin/env python3
 SOURCE_VENV=. $(VENV_DIR)/bin/activate
 ARDUINO_CLI_DETECTED=$(shell PATH="$(SRC_DIR):${PATH}" which arduino-cli)
-ARDUINO_CLI=$(SOURCE_VENV) && ARDUINO_LOC=$(ARDUINO_LOC) VENV_DIR=$(VENV_DIR) $(ARDUINO_CLI_DETECTED)
+ARDUINO_CLI_ENV=ARDUINO_LOC=$(ARDUINO_LOC) VENV_DIR=$(VENV_DIR) NB_JOBS=${LMBD_JOBS}
+ARDUINO_CLI=$(SOURCE_VENV) && $(ARDUINO_CLI_ENV) $(ARDUINO_CLI_DETECTED)
 ARDUINO_USER=$(shell $(ARDUINO_CLI) config get directories.user)
 ARDUINO_DATA=$(shell $(ARDUINO_CLI) config get directories.data)
 ARDUINO_BOARD=$(ARDUINO_DATA)/packages/adafruit/hardware/nrf52
@@ -280,11 +281,12 @@ $(BUILD_DIR)/.gitignore:
 
 $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt: has-lamp-type check-arduino-deps $(BUILD_DIR)/.gitignore
 	@echo; echo " --- $@"
-	# read build properties to file...
-	@$(ARDUINO_CLI) compile -b $(FQBN) \
+	# read build properties to file if needed...
+	@test -f $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt || (\
+		$(ARDUINO_CLI) compile -b $(FQBN) \
 			--build-path $(OBJECTS_DIR) --build-cache-path $(CACHE_DIR) \
 			--build-property "$(ARDUINO_EXTRA_FLAGS)" \
-			--show-properties > $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
+			--show-properties > $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt)
 
 build-clean: has-lamp-type $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 	@echo; echo " --- $@"
@@ -319,6 +321,9 @@ $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh: has-lamp-type $(BUILD_DIR)/verbose-cl
 		| sed 's#-DLMBD_LAMP_TYPE[^ ]*##g' \
 		| sed 's#-std=gnu++11#$(CPP_BUILD_FLAGS) $$LMBD_CPP_EXTRA_FLAGS#g' \
 	>> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
+	@test -z "${LMBD_JOBS}" || ( \
+		sed -i 's#^.*bin/arm-none-eabi-g++.*.cpp.o$$#(& || kill $$PPID) \&#' $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh ; \
+		echo 'wait || exit 1' >> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh)
 	@echo 'touch $(BUILD_DIR)/objs/.last-used' >> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@echo 'touch $(BUILD_DIR)/.process-${LMBD_LAMP_TYPE}-success' >> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@test 8 -le $$(wc -l $@|cut -f 1 -d ' ') \
@@ -353,12 +358,13 @@ process-clear: has-lamp-type $(BUILD_DIR)/clear-${LMBD_LAMP_TYPE}.sh
 #
 
 build-dry: build-clean install-venv has-lamp-type
-	# rebuild files to refresh cache before processing...
+	# refresh cache before processing...
 	@mkdir -p $(ARTIFACTS) $(OBJECTS_DIR) $(CACHE_DIR)
 	@$(ARDUINO_CLI) compile -b $(FQBN) \
+			--only-compilation-database \
 			--build-path $(OBJECTS_DIR) --build-cache-path $(CACHE_DIR) \
 			--build-property "$(ARDUINO_EXTRA_FLAGS)" \
-			> /dev/null 2>&1 || true
+		> /dev/null 2>&1 || true
 
 process: has-lamp-type build-dry process-clear $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@echo; echo " --- $@"
@@ -439,7 +445,7 @@ verify-canary: has-lamp-type $(ARTIFACTS)/$(PROJECT_INO).zip
 verify: verify-canary
 	@echo " --- ok: $@"
 
-verify-clean(%):
+verify-type(%):
 	@echo " --- $@($%)"
 	@echo; echo Building with LMBD_LAMP_TYPE=$% to verify artifact...; echo
 	LMBD_LAMP_TYPE=$% make build verify
@@ -447,10 +453,11 @@ verify-clean(%):
 verify-all:
 	@echo; echo " --- $@"
 	# verify that all lamp types build & validates
-	make clean
-	make 'verify-clean(indexable)'
-	make 'verify-clean(simple)'
-	make 'verify-clean(cct)'
+	make clean 'verify-type(indexable)'
+	@touch $(BUILD_DIR)/.skip-simple-clean # (re-use indexable setup)
+	make 'verify-type(simple)'
+	@touch $(BUILD_DIR)/.skip-cct-clean # (re-use indexable setup)
+	make 'verify-type(cct)'
 	@echo; echo 'Everything went fine :)'
 
 #
