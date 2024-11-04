@@ -2,41 +2,43 @@
 
 #include <cstdint>
 
-#ifdef LMBD_LAMP_TYPE__SIMPLE
-#include "src/user/simple/functions.h"
-#endif
+#include "src/system/ext/math8.h"
+#include "src/system/ext/noise.h"
+#include "src/system/alerts.h"
+#include "src/system/charger/charger.h"
+#include "src/system/physical/battery.h"
+#include "src/system/physical/bluetooth.h"
+#include "src/system/physical/button.h"
+#include "src/system/physical/fileSystem.h"
+#include "src/system/physical/IMU.h"
+#include "src/system/physical/led_power.h"
+#include "src/system/physical/MicroPhone.h"
+#include "src/system/utils/colorspace.h"
+#include "src/system/utils/constants.h"
+#include "src/system/utils/utils.h"
 
-#ifdef LMBD_LAMP_TYPE__CCT
-#include "src/user/cct/functions.h"
-#endif
+#include "src/user/functions.h"
 
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
-#include "src/user/indexable/functions.h"
-#endif
+static constexpr uint32_t brightnessKey = utils::hash("brightness");
 
-#include "alerts.h"
-#include "charger/charger.h"
-#include "ext/math8.h"
-#include "ext/noise.h"
-#include "physical/IMU.h"
-#include "physical/MicroPhone.h"
-#include "physical/battery.h"
-#include "physical/bluetooth.h"
-#include "physical/button.h"
-#include "physical/fileSystem.h"
-#include "physical/led_power.h"
-#include "utils/colorspace.h"
-#include "utils/constants.h"
-#include "utils/utils.h"
-
-constexpr uint32_t brightnessKey = utils::hash("brightness");
-
-// constantes
+// constants
 static constexpr uint8_t MIN_BRIGHTNESS = 5;
 static constexpr uint8_t MAX_BRIGHTNESS = 255;
+static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000;
+static constexpr uint32_t EARLY_ACTIONS_LIMIT_MS = 2000;
+static constexpr uint32_t EARLY_ACTIONS_HOLD_MS = 1500;
 
-static uint8_t MaxBrightnessLimit =
-    MAX_BRIGHTNESS;  // temporary upper bound for the brightness
+// temporary upper bound for the brightness
+static uint8_t MaxBrightnessLimit = MAX_BRIGHTNESS;
+
+// hold the last time startup_sequence has been called
+uint32_t lastStartupSequence = 0;
+
+// hold the boolean that configures if button's usermode UI is enabled
+bool isButtonUsermodeEnabled = false;
+
+// hold a boolean to avoid advertising several times in a row
+bool isBluetoothAdvertising = false;
 
 // hold the current level of brightness out of the raise/lower animation
 uint8_t BRIGHTNESS = 50;  // default start value
@@ -106,6 +108,12 @@ void startup_sequence() {
     return;
   }
 
+  // button usermode is always disabled by default
+  button_disable_usermode();
+
+  // reset lastStartupSequence
+  lastStartupSequence = millis();
+
   // let the user power on the system
   user::power_on_sequence();
 
@@ -116,6 +124,9 @@ void shutdown() {
   // flag system as powered down
   const bool wasAlreadyShutdown = isShutdown;
   isShutdown = true;
+
+  // button usermode is kept disabled
+  button_disable_usermode();
 
   // deactivate strip power
   pinMode(OUT_BRIGHTNESS, OUTPUT);
@@ -157,66 +168,173 @@ void shutdown() {
   }
 }
 
+void button_disable_usermode() {
+  isButtonUsermodeEnabled = false;
+}
+
+bool is_button_usermode_enabled() {
+  return isButtonUsermodeEnabled;
+}
+
 // call when the button is finally release
 void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
   if (consecutiveButtonCheck == 0) return;
 
+  // guard blocking other actions than "turning it on" if is_shutdown
+  if (is_shutdown()) {
+    if (consecutiveButtonCheck == 1) {
+      startup_sequence();
+    }
+    return;
+  }
+
+  // extended "button usermode" bypass
+  if (isButtonUsermodeEnabled) {
+    // user mode may return "True" to skip default action
+    if (user::button_clicked_usermode(consecutiveButtonCheck)) {
+      return;
+    }
+  }
+
+  // basic "default" UI:
+  //  - 1 click: on/off
+  //  - 7+ clicks: shutdown immediately (if DEBUG_MODE wait for watchdog)
+  //
   switch (consecutiveButtonCheck) {
-    case 1:  // 1 click: shutdown
-      if (is_shutdown()) {
-        startup_sequence();
-      } else {
-        shutdown();
-      }
+
+    // 1 click: shutdown
+    case 1:
+      shutdown();
       break;
 
-    // enable bluetooth
-    case 5:
-#ifdef USE_BLUETOOTH
-      bluetooth::start_advertising();
-#endif
-      break;
+    // other behaviors
+    default:
+
+      // 7+ clicks: force shutdown (or safety reset if DEBUG_MODE)
+      if (consecutiveButtonCheck >= 7) {
 
 #ifdef DEBUG_MODE
-    // force a safety reset of the program
-    case 6:
-      button::set_color(utils::ColorSpace::PINK);
-      // disable charger if charge was enabled
-      charger::disable_charge();
-
-      // make watchdog stop the execution
-      delay(6000);
-      break;
+        // disable charger and wait 5s to be killed by watchdog
+        button::set_color(utils::ColorSpace::PINK);
+        charger::disable_charge();
+        delay(6000);
 #endif
-
-    default:
-      if (!is_shutdown()) {
-        // user behavior
-        user::button_clicked(consecutiveButtonCheck);
+        shutdown();
+        return;
       }
+
+      user::button_clicked_default(consecutiveButtonCheck);
       break;
   }
 }
 
-#define BRIGHTNESS_RAMP_DURATION_MS 2000
+static constexpr float brightnessDivider = 1.0 / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
 
 void button_hold_callback(const uint8_t consecutiveButtonCheck,
                           const uint32_t buttonHoldDuration) {
-  // no click event
   if (consecutiveButtonCheck == 0) return;
-
-  // no events when shutdown
   if (is_shutdown()) return;
 
-  const bool isEndOfHoldEvent = buttonHoldDuration <= 1;
-  const uint32_t holdDuration = buttonHoldDuration - HOLD_BUTTON_MIN_MS;
+  // compute parameters of the "press-hold" action
+  const bool isEndOfHoldEvent = (buttonHoldDuration <= 1);
+  const uint32_t holdDuration = (buttonHoldDuration > HOLD_BUTTON_MIN_MS)
+      ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
 
-  static constexpr float brightnessDivider =
-      1.0 / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
+  uint32_t realStartTime = millis() - lastStartupSequence;
+  if (realStartTime > holdDuration) {
+    realStartTime -= holdDuration;
+  }
 
+  //
+  // "early actions"
+  //    - actions to be performed by user just after lamp is turned on
+  //    - after 2s the default actions comes back
+  //
+
+  if (realStartTime < EARLY_ACTIONS_LIMIT_MS) {
+    if (isEndOfHoldEvent) return;
+
+    // early action animation
+    if (consecutiveButtonCheck > 2) {
+      if ((holdDuration >> 7) & 0b1) {
+        button::set_color(utils::ColorSpace::BLACK);
+      } else if (holdDuration < EARLY_ACTIONS_HOLD_MS) {
+        button::set_color(utils::ColorSpace::GREEN);
+      } else if (consecutiveButtonCheck == 3) {
+        button::set_color(utils::ColorSpace::YELLOW);
+      } else if (consecutiveButtonCheck == 4) {
+        button::set_color(utils::ColorSpace::BLUE);
+      }
+    }
+
+    // 3+hold (3s): turn it on, with button usermode enabled
+    if (consecutiveButtonCheck == 3) {
+      if (holdDuration > EARLY_ACTIONS_HOLD_MS) {
+        isButtonUsermodeEnabled = true;
+        return;
+      }
+    }
+
+    // 4+hold (3s): turn it on, with bluetooth advertising
+#ifdef USE_BLUETOOTH
+    if (consecutiveButtonCheck == 4) {
+      if (holdDuration > EARLY_ACTIONS_HOLD_MS) {
+        if (!isBluetoothAdvertising) {
+          bluetooth::start_advertising();
+        }
+
+        isBluetoothAdvertising = true;
+        return;
+      } else {
+        isBluetoothAdvertising = false;
+      }
+    }
+#endif
+
+    // during "early actions" prevent other actions
+    if (consecutiveButtonCheck > 2) {
+      return;
+    }
+  }
+
+  //
+  // "button usermode" bypass
+  //
+
+  if (isButtonUsermodeEnabled) {
+
+    // 5+hold (5s): always exit, can't be bypassed
+    if (consecutiveButtonCheck == 5) {
+      if (holdDuration > 5000 - HOLD_BUTTON_MIN_MS) {
+        shutdown();
+        return;
+      }
+    }
+
+    // user mode may return "True" to skip default action
+    if (user::button_hold_usermode(consecutiveButtonCheck,
+                                   isEndOfHoldEvent,
+                                   holdDuration)) {
+      return;
+    }
+  }
+
+  //
+  // default actions
+  //
+
+  // basic "default" UI:
+  //  - 1+hold: increase brightness
+  //  - 2+hold: decrease brightness
+  //
   switch (consecutiveButtonCheck) {
-    case 1:  // just hold the click
-      if (!isEndOfHoldEvent) {
+
+    // 1+hold: increase brightness
+    case 1:
+      if (isEndOfHoldEvent) {
+        currentBrightness = BRIGHTNESS;
+
+      } else {
         const float percentOfTimeToGoUp =
             float(MAX_BRIGHTNESS - currentBrightness) * brightnessDivider;
 
@@ -225,16 +343,17 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
                     BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
                 0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
                 currentBrightness, MAX_BRIGHTNESS);
+
         update_brightness(newBrightness);
-      } else {
-        // switch brightness
-        currentBrightness = BRIGHTNESS;
       }
       break;
 
-    case 2:  // 2 click and hold
-             // lower luminositity
-      if (!isEndOfHoldEvent) {
+    // 2+hold: decrease brightness
+    case 2:
+      if (isEndOfHoldEvent) {
+        currentBrightness = BRIGHTNESS;
+
+      } else {
         const double percentOfTimeToGoDown =
             float(currentBrightness - MIN_BRIGHTNESS) * brightnessDivider;
 
@@ -243,16 +362,14 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
                     BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
                 0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
                 currentBrightness, MIN_BRIGHTNESS);
+
         update_brightness(newBrightness);
-      } else {
-        // switch brightness
-        currentBrightness = BRIGHTNESS;
       }
       break;
 
+    // other behaviors
     default:
-      // user defined behavior
-      user::button_hold(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
+      user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
       break;
   }
 }
@@ -330,7 +447,12 @@ void handle_alerts() {
   }
 }
 
+//
+// do not modify (if you do not understand it)
+//
+
 #ifdef LMBD_CPP17
+
 const char* ensure_build_canary() {
 #ifdef LMBD_LAMP_TYPE__SIMPLE
   return "_lmbd__build_canary__simple";
@@ -341,6 +463,7 @@ const char* ensure_build_canary() {
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
   return "_lmbd__build_canary__indexable";
 #endif
-  return (char*)nullptr;
+  return (char*) nullptr;
 }
+
 #endif

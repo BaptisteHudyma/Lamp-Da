@@ -5,13 +5,14 @@
  *  \brief Basic controller behavior, including alerts and user interactions
  **/
 
-#include "alerts.h"
-#include "utils/constants.h"
-#include "utils/utils.h"
-
 #ifdef __AVR__
 #include <avr/power.h>  // Required for 16 MHz Adafruit Trinket
 #endif
+
+#include "src/compile.h"
+#include "src/system/alerts.h"
+#include "src/system/utils/constants.h"
+#include "src/system/utils/utils.h"
 
 // NeoPixel brightness, 0 (min) to 255 (max)
 extern uint8_t BRIGHTNESS;
@@ -44,6 +45,12 @@ extern void button_clicked_callback(const uint8_t consecutiveButtonCheck);
 /// Main callback to handle a "button clicked, then held" sequence event
 extern void button_hold_callback(const uint8_t consecutiveButtonCheck,
                                  const uint32_t buttonHoldDuration);
+
+/// Disable button usermode UI
+extern void button_disable_usermode();
+
+/// Returns True only if button usermode UI is enabled
+extern bool is_button_usermode_enabled();
 
 // If any alert is set, will handle it
 extern void handle_alerts();

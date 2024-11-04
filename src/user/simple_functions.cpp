@@ -30,27 +30,32 @@ void write_parameters() {}
 
 void read_parameters() {}
 
-void button_clicked(const uint8_t clicks) {
+void button_clicked_default(const uint8_t clicks) {
   switch (clicks) {
-    case 0:
-    case 1:
-      break;
 
+    // put luminosity to maximum
     case 2:
-      // put luminosity to maximum
       update_brightness(255, true);
       break;
 
     default:
-      // nothing
       break;
   }
 }
 
-void button_hold(const uint8_t clicks, const bool isEndOfHoldEvent,
-                 const uint32_t holdDuration) {}
+void button_hold_default(const uint8_t, const bool, const uint32_t) {}
+
+bool button_clicked_usermode(const uint8_t) {
+  return usermodeDefaultsToLockdown;
+}
+
+bool button_hold_usermode(const uint8_t, const bool, const uint32_t) {
+  return usermodeDefaultsToLockdown;
+}
 
 void loop() {}
+
+bool should_spawn_thread() { return false; }
 
 void user_thread() {}
 

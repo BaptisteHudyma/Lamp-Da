@@ -1,5 +1,6 @@
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
+// this file is active only if LMBD_LAMP_TYPE=indexable
 #include "palettes.h"
 
 #include <cstdint>

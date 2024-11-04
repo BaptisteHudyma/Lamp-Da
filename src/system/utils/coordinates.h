@@ -1,6 +1,7 @@
 #ifndef UTILS_COORDINATES_H
 #define UTILS_COORDINATES_H
 
+// this file is active only if LMBD_LAMP_TYPE=indexable
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
 #include <cstdint>

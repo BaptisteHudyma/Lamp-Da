@@ -1,5 +1,6 @@
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
+// this file is active only if LMBD_LAMP_TYPE=indexable
 #include "animations.h"
 
 #include <math.h>
@@ -8,15 +9,14 @@
 #include <cmath>
 #include <cstdint>
 
+#include "src/system/colors/palettes.h"
+#include "src/system/colors/wipes.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 #include "src/system/ext/random8.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/coordinates.h"
 #include "src/system/utils/utils.h"
-
-#include "palettes.h"
-#include "wipes.h"
 
 namespace animations {
 

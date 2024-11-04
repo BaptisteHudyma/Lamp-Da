@@ -1,13 +1,13 @@
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
+// this file is active only if LMBD_LAMP_TYPE=indexable
 #include "coordinates.h"
 
 #include <cmath>
 #include <cstdint>
 
 #include "src/system/ext/math8.h"
-
-#include "constants.h"
+#include "src/system/utils/constants.h"
 
 uint16_t to_screen_x(const uint16_t ledIndex) {
   if (ledIndex > LED_COUNT) return 0;

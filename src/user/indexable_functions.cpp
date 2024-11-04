@@ -1,6 +1,6 @@
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
-#include "functions.h"
+#include <cstdint>
 
 #include "src/system/behavior.h"
 #include "src/system/charger/charger.h"
@@ -8,10 +8,12 @@
 #include "src/system/colors/colors.h"
 #include "src/system/colors/palettes.h"
 #include "src/system/colors/wipes.h"
+#include "src/system/physical/fileSystem.h"
 #include "src/system/physical/IMU.h"
 #include "src/system/physical/MicroPhone.h"
-#include "src/system/physical/fileSystem.h"
 #include "src/system/utils/utils.h"
+
+#include "src/user/functions.h"
 
 namespace user {
 
@@ -421,7 +423,7 @@ void read_parameters() {
   }
 }
 
-void button_clicked(const uint8_t clicks) {
+void button_clicked_default(const uint8_t clicks) {
   switch (clicks) {
     case 2:  // 2 clicks: increment color state
       increment_color_state();
@@ -441,24 +443,27 @@ void button_clicked(const uint8_t clicks) {
   }
 }
 
-void button_hold(const uint8_t clicks, const bool isEndOfHoldEvent,
-                 const uint32_t holdDuration) {
+void button_hold_default(const uint8_t clicks,
+                         const bool isEndOfHoldEvent,
+                         const uint32_t holdDuration) {
   switch (clicks) {
-    case 3:  // 3 clicks and hold
-      if (!isEndOfHoldEvent) {
+    case 3: // 3+hold: color wheel forward
+      if (isEndOfHoldEvent) {
+        lastColorCodeIndex = colorCodeIndex;
+      } else {
         constexpr uint32_t colorStepDuration_ms = 6000;
         const uint32_t timeShift =
             (colorStepDuration_ms * lastColorCodeIndex) / 255;
         const uint32_t colorStep =
             (holdDuration + timeShift) % colorStepDuration_ms;
         colorCodeIndex = map(colorStep, 0, colorStepDuration_ms, 0, UINT8_MAX);
-      } else {
-        lastColorCodeIndex = colorCodeIndex;
       }
       break;
 
-    case 4:  // 4 clicks and hold
-      if (!isEndOfHoldEvent) {
+    case 4: // 4+hold: color wheel backward
+      if (isEndOfHoldEvent) {
+        lastColorCodeIndex = colorCodeIndex;
+      } else {
         constexpr uint32_t colorStepDuration_ms = 6000;
         const uint32_t timeShift =
             (colorStepDuration_ms * lastColorCodeIndex) / 255;
@@ -472,14 +477,22 @@ void button_hold(const uint8_t clicks, const bool isEndOfHoldEvent,
         }
         const uint32_t colorStep = buttonHoldDuration % colorStepDuration_ms;
         colorCodeIndex = map(colorStep, 0, colorStepDuration_ms, UINT8_MAX, 0);
-      } else {
-        lastColorCodeIndex = colorCodeIndex;
       }
       break;
   }
 }
 
+bool button_clicked_usermode(const uint8_t) {
+  return usermodeDefaultsToLockdown;
+}
+
+bool button_hold_usermode(const uint8_t, const bool, const uint32_t) {
+  return usermodeDefaultsToLockdown;
+}
+
 void loop() { color_mode_update(); }
+
+bool should_spawn_thread() { return true; }
 
 void user_thread() {
   strip.show();  // show at the end of the loop (only does it if needed)}

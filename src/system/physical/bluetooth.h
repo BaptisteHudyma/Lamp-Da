@@ -3,9 +3,10 @@
 
 #include <stdint.h>
 
-namespace bluetooth {
+#include "src/compile.h"
+// - contains #define USE_BLUETOOTH
 
-// #define USE_BLUETOOTH
+namespace bluetooth {
 
 // start the advertising sequence (with a timeout)
 void start_advertising();

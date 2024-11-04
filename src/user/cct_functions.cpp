@@ -1,12 +1,12 @@
 #ifdef LMBD_LAMP_TYPE__CCT
 
-#include "functions.h"
-
 #include <cstdint>
 
 #include "src/system/behavior.h"
 #include "src/system/physical/fileSystem.h"
 #include "src/system/utils/utils.h"
+
+#include "src/user/functions.h"
 
 namespace user {
 
@@ -81,25 +81,23 @@ void read_parameters() {
   currentBrightness = BRIGHTNESS;
 }
 
-void button_clicked(const uint8_t clicks) {
+void button_clicked_default(const uint8_t clicks) {
   switch (clicks) {
-    case 0:
-    case 1:
-      break;
 
+    // put luminosity to maximum
     case 2:
-      // put luminosity to maximum
       update_brightness(255, true);
       break;
 
     default:
-      // nothing
       break;
   }
 }
 
-void button_hold(const uint8_t clicks, const bool isEndOfHoldEvent,
-                 const uint32_t holdDuration) {
+void button_hold_default(const uint8_t clicks,
+                         const bool isEndOfHoldEvent,
+                         const uint32_t holdDuration) {
+
   constexpr uint32_t COLOR_RAMP_DURATION_MS = 4000;
   switch (clicks) {
     case 3:  // 3 clicks and hold
@@ -129,7 +127,17 @@ void button_hold(const uint8_t clicks, const bool isEndOfHoldEvent,
   }
 }
 
+bool button_clicked_usermode(const uint8_t) {
+  return usermodeDefaultsToLockdown;
+}
+
+bool button_hold_usermode(const uint8_t, const bool, const uint32_t) {
+  return usermodeDefaultsToLockdown;
+}
+
 void loop() { set_color(currentColor); }
+
+bool should_spawn_thread() { return false; }
 
 void user_thread() {}
 

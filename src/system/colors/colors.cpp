@@ -1,15 +1,15 @@
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
+// this file is active only if LMBD_LAMP_TYPE=indexable
 #include "colors.h"
 
 #include <cmath>
 #include <cstdint>
 
+#include "src/system/colors/palettes.h"
 #include "src/system/utils/colorspace.h"
 #include "src/system/utils/strip.h"
 #include "src/system/utils/utils.h"
-
-#include "palettes.h"
 
 uint32_t GenerateSolidColor::get_color_internal(const uint16_t index,
                                                 const uint16_t maxIndex) const {

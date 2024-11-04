@@ -1,32 +1,21 @@
 #include <Arduino.h>
-#include <Wire.h>
 #include <bluefruit.h>
+#include <Wire.h>
 
 #include "src/compile.h"
 #include "src/system/alerts.h"
 #include "src/system/behavior.h"
 #include "src/system/charger/charger.h"
-#include "src/system/physical/IMU.h"
-#include "src/system/physical/MicroPhone.h"
 #include "src/system/physical/battery.h"
 #include "src/system/physical/bluetooth.h"
 #include "src/system/physical/button.h"
+#include "src/system/physical/IMU.h"
 #include "src/system/physical/fileSystem.h"
+#include "src/system/physical/MicroPhone.h"
 #include "src/system/physical/led_power.h"
 #include "src/system/utils/serial.h"
 #include "src/system/utils/utils.h"
-
-#ifdef LMBD_LAMP_TYPE__SIMPLE
-#include "src/user/simple/functions.h"
-#endif
-
-#ifdef LMBD_LAMP_TYPE__CCT
-#include "src/user/cct/functions.h"
-#endif
-
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
-#include "src/user/indexable/functions.h"
-#endif
+#include "src/user/functions.h"
 
 void set_watchdog(const uint32_t timeoutDelaySecond) {
   // Configure WDT

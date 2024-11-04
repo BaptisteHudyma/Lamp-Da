@@ -11,7 +11,8 @@ SHELL:=/bin/bash # required by python3 virtualenv
 PYTHON_EXE=/usr/bin/env python3
 SOURCE_VENV=. $(VENV_DIR)/bin/activate
 ARDUINO_CLI_DETECTED=$(shell PATH="$(SRC_DIR):${PATH}" which arduino-cli)
-ARDUINO_CLI=$(SOURCE_VENV) && ARDUINO_LOC=$(ARDUINO_LOC) VENV_DIR=$(VENV_DIR) $(ARDUINO_CLI_DETECTED)
+ARDUINO_CLI_ENV=ARDUINO_LOC=$(ARDUINO_LOC) VENV_DIR=$(VENV_DIR) NB_JOBS=${LMBD_JOBS}
+ARDUINO_CLI=$(SOURCE_VENV) && $(ARDUINO_CLI_ENV) $(ARDUINO_CLI_DETECTED)
 ARDUINO_USER=$(shell $(ARDUINO_CLI) config get directories.user)
 ARDUINO_DATA=$(shell $(ARDUINO_CLI) config get directories.data)
 ARDUINO_BOARD=$(ARDUINO_DATA)/packages/adafruit/hardware/nrf52
@@ -280,11 +281,12 @@ $(BUILD_DIR)/.gitignore:
 
 $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt: has-lamp-type check-arduino-deps $(BUILD_DIR)/.gitignore
 	@echo; echo " --- $@"
-	# read build properties to file...
-	@$(ARDUINO_CLI) compile -b $(FQBN) \
+	# read build properties to file if needed...
+	@test -f $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt || (\
+		$(ARDUINO_CLI) compile -b $(FQBN) \
 			--build-path $(OBJECTS_DIR) --build-cache-path $(CACHE_DIR) \
 			--build-property "$(ARDUINO_EXTRA_FLAGS)" \
-			--show-properties > $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
+			--show-properties > $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt)
 
 build-clean: has-lamp-type $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 	@echo; echo " --- $@"
@@ -316,8 +318,12 @@ $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh: has-lamp-type $(BUILD_DIR)/verbose-cl
 	@echo 'set -xe' >> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@tac _build/verbose-clean.txt \
 		| grep -Eo '^.*bin/$(COMPILER_CMD).*-std=gnu\+\+11.*-o [^ ]*_build/objs/sketch/src[^ ]*.cpp.o' \
+		| sed 's#-DLMBD_LAMP_TYPE[^ ]*##g' \
 		| sed 's#-std=gnu++11#$(CPP_BUILD_FLAGS) $$LMBD_CPP_EXTRA_FLAGS#g' \
 	>> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
+	@test -z "${LMBD_JOBS}" || ( \
+		sed -i 's#^.*bin/arm-none-eabi-g++.*.cpp.o$$#(& || kill $$PPID) \&#' $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh ; \
+		echo 'wait || exit 1' >> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh)
 	@echo 'touch $(BUILD_DIR)/objs/.last-used' >> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@echo 'touch $(BUILD_DIR)/.process-${LMBD_LAMP_TYPE}-success' >> $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@test 8 -le $$(wc -l $@|cut -f 1 -d ' ') \
@@ -341,7 +347,7 @@ $(BUILD_DIR)/clear-${LMBD_LAMP_TYPE}.sh: has-lamp-type $(BUILD_DIR)/process-${LM
 process-clear: has-lamp-type $(BUILD_DIR)/clear-${LMBD_LAMP_TYPE}.sh
 	@echo; echo " --- $@"
 	@test -e $(BUILD_DIR)/clear-${LMBD_LAMP_TYPE}.sh
-	# removing existing sketch objects...
+	# clearing previous builds...
 	@bash _build/clear-${LMBD_LAMP_TYPE}.sh > /dev/null 2>&1
 
 #
@@ -352,16 +358,19 @@ process-clear: has-lamp-type $(BUILD_DIR)/clear-${LMBD_LAMP_TYPE}.sh
 #
 
 build-dry: build-clean install-venv has-lamp-type
-	# rebuild files to refresh cache before processing...
+	# refresh cache before processing...
 	@mkdir -p $(ARTIFACTS) $(OBJECTS_DIR) $(CACHE_DIR)
 	@$(ARDUINO_CLI) compile -b $(FQBN) \
+			--only-compilation-database \
 			--build-path $(OBJECTS_DIR) --build-cache-path $(CACHE_DIR) \
 			--build-property "$(ARDUINO_EXTRA_FLAGS)" \
-			> /dev/null 2>&1 || true
+		> /dev/null 2>&1 || true
 
 process: has-lamp-type build-dry process-clear $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@echo; echo " --- $@"
 	@test -e $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
+	@find $(BUILD_DIR)/objs/sketch -iname '*.cpp.o' -exec rm '{}' \; \
+		; # (this can replace process-clear on paper?)
 	# compiling sketch objects using process.sh script...
 	@bash _build/process-${LMBD_LAMP_TYPE}.sh 2>&1 /dev/stdout \
 		| tee _build/process-log.txt \
@@ -435,6 +444,21 @@ verify-canary: has-lamp-type $(ARTIFACTS)/$(PROJECT_INO).zip
 
 verify: verify-canary
 	@echo " --- ok: $@"
+
+verify-type(%):
+	@echo " --- $@($%)"
+	@echo; echo Building with LMBD_LAMP_TYPE=$% to verify artifact...; echo
+	LMBD_LAMP_TYPE=$% make build verify
+
+verify-all:
+	@echo; echo " --- $@"
+	# verify that all lamp types build & validates
+	make clean 'verify-type(indexable)'
+	@touch $(BUILD_DIR)/.skip-simple-clean # (re-use indexable setup)
+	make 'verify-type(simple)'
+	@touch $(BUILD_DIR)/.skip-cct-clean # (re-use indexable setup)
+	make 'verify-type(cct)'
+	@echo; echo 'Everything went fine :)'
 
 #
 # to customize upload port:
