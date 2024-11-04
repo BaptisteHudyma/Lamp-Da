@@ -377,6 +377,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
 void handle_alerts() {
   const uint32_t current = AlertManager.current();
 
+  // charge processus, call ONCE per loop call
   const bool isChargeOk = charger::charge_processus();
 
   static uint32_t criticalbatteryRaisedTime = 0;
@@ -388,12 +389,19 @@ void handle_alerts() {
     const auto buttonColor = utils::ColorSpace::RGB(
         utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
                             utils::ColorSpace::GREEN.get_rgb().color,
-                            battery::get_battery_level() / 100.0));
+                            battery::get_raw_battery_level() / 100.0));
 
     // display battery level
     if (isChargeOk) {
-      // charge mode
-      button::breeze(2000, 1000, buttonColor);
+      if (charger::is_slow_charging()) {
+        // fast blinking
+        // TODO: find a better way to tell user that the chargeur is bad
+        button::blink(500, 500, buttonColor);
+      }
+      // standard charge mode
+      else {
+        button::breeze(2000, 1000, buttonColor);
+      }
     } else {
       // normal mode
       button::set_color(buttonColor);

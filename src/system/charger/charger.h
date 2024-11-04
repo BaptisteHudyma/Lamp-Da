@@ -22,16 +22,19 @@ bool is_charging();
 bool charge_processus();
 
 // write a sery of commands to the charger to disable the charging process
-void disable_charge();
+void disable_charge(const bool force = false);
 
 // return the current charge status, or status of the last charge action
 String charge_status();
 
 // return the read value of vBus voltage (milliVolts)
-uint16_t getVbusVoltage_mV();
+uint16_t get_vbus_voltage_mV();
 
-// returns the read value of vBus voltage (millivolts)
-uint16_t getBatteryVoltage_mV();
+// return the charging current currently applied to the battery
+uint16_t get_charge_current_mA();
+
+// return true if the battery is charging very slowly
+bool is_slow_charging();
 
 }  // namespace charger
 

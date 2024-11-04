@@ -51,12 +51,8 @@ boolean BQ25703A::writeDataReg(const byte regAddress, byte dataVal0,
   if (!Wire.write(regAddress)) return false;
   if (!Wire.write(dataVal0)) return false;
   if (!Wire.write(dataVal1)) return false;
-  byte ack = Wire.endTransmission();
-  if (ack == 0) {
-    return true;
-  } else {
-    return false;  // if I2C comm fails
-  }
+  // succes ?
+  return Wire.endTransmission() == 0;
 }
 
 // boolean BQ25703A::read2ByteReg( byte regAddress, byte *val0, byte *val1 ){

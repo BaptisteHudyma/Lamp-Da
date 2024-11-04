@@ -51,6 +51,18 @@ constexpr float voltageDividerCoeff = 1.0 / 5.635;
 constexpr float maxConvertedVoltage =
     internalReferenceVoltage / voltageDividerCoeff;
 
+// number of batteries for this model
+constexpr uint8_t batteryCount = 4;
+
+// max voltage of a single li-ion cell
+constexpr float batteryMaxVoltage = 4.2 * batteryCount;
+// max voltage of a li-ion cell to maximise lifetime
+constexpr float batteryMaxVoltageSafe = 4.06 * batteryCount;
+// min voltage of a single li-ion cell
+constexpr float batteryMinVoltage = 3.0 * batteryCount;
+// min voltage of a li-ion cell to maximise lifetime
+constexpr float batteryMinVoltageSafe = 3.3 * batteryCount;
+
 // parameters of the lamp body
 constexpr float maxPowerConsumption_A =
     2.6;  // Maxpower draw allowed on the system (Amperes)
@@ -68,7 +80,7 @@ constexpr uint32_t LOOP_UPDATE_PERIOD = 10;
 constexpr float batteryCritical = 3;  // %
 constexpr float batteryLow = 5;       // %
 
-constexpr uint32_t batteryMaxChargeCurrent = 1000;  // mA
+constexpr uint32_t batteryMaxChargeCurrent_mA = 1000;  // mA
 
 // pins
 

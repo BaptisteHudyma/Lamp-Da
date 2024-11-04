@@ -60,7 +60,11 @@ class PD_UFP_c {
 
   bool is_vbus_ok();
   uint16_t get_vbus_voltage();
+  // there is a PD compatible source, the power is negociated, or will be soon
   bool is_USB_PD_available() { return isPowerNegociated; }
+  // there is a standard USB, but may have some available power
+  // This is just an indication, the true available power may be much lower
+  bool is_USB_power_available() { return isPowerDetectedCC; }
 
   void reset();
 
@@ -101,6 +105,7 @@ class PD_UFP_c {
   uint8_t send_request;
   static uint8_t clock_prescaler;
   bool isPowerNegociated;
+  bool isPowerDetectedCC;
   // Time functions
   void delay_ms(uint16_t ms);
   uint16_t clock_ms(void);

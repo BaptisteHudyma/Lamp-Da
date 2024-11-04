@@ -12,7 +12,11 @@ void setup();
  */
 void load_initial_values();
 
+// clear the stored values in the currently loaded file system
 void clear();
+
+// hard clean of the whole filesystem, you will loose all stored data
+void clear_internal_fs();
 
 /**
  * \brief Will write the state and brighness values to the config file
