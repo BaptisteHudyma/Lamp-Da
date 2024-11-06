@@ -1,7 +1,7 @@
 #ifndef USER_FUNCTIONS_H
 #define USER_FUNCTIONS_H
 
-/** \file user_functions.h
+/** \file functions.h
  *  \brief Custom user mode functions for indexable strips
  **/
 
@@ -50,7 +50,6 @@ void read_parameters();
 /** \brief Called to handle button click events for default user mode behaviors
  *
  * Default behavior is the "default UI" navigation mode, that supports:
- *  - **WIP: this is YET to be implemented!**
  *  - 2 clicks: next user mode
  *  - 3 clicks: next mode group
  *  - 4 clicks: jump to favorite
@@ -65,9 +64,8 @@ void button_clicked_default(const uint8_t clicks);
 /** \brief Called to handle button click+hold events for user mode behaviors
  *
  * Default behavior is the "default UI" navigation mode, that supports:
- *  - **WIP: this is YET to be implemented!**
- *  - 3 click+hold: switch between user modes / custom user ramp
- *  - 4 click+hold: switch between mode groups
+ *  - 3 click+hold: configure custom user ramp
+ *  - 4 click+hold: scroll across modes and groups
  *  - 5 click+hold (3s): configure favorite modes
  *
  * Event 1H/2H (brightness) is handled by
