@@ -9,7 +9,7 @@ BUILD_DIR=${SIMU_BUILD_DIR}
 CXX=$(shell which c++)
 CXX_INCLUDE_DIRECTORIES=-I$(ROOT_DIR) -I$(SRC_DIR)include
 CXX_LDFLAGS=-lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system
-CXX_EXTRA_FLAGS=#-Wall -Wextra -pedantic
+CXX_EXTRA_FLAGS=-fconcepts -DLMBD_CPP17 #-Wall -Wextra -pedantic
 CXX_BUILD_FLAGS=--std=c++17 -O3 $(CXX_EXTRA_FLAGS) $(CXX_INCLUDE_DIRECTORIES)
 
 all: build

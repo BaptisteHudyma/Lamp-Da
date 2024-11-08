@@ -11,6 +11,8 @@ struct defaultSimulation {
   float fakeXorigin = 0; // start strip N led to the left
   float fakeXend = 0; // remove N led from right
 
+  defaultSimulation(LedStrip& strip) { }
+
   void loop(LedStrip& strip) { }
   void customEventHandler(sf::Event& event) { };
 

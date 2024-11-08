@@ -23,6 +23,8 @@ using utils::map;
 
 #include "src/system/utils/coordinates.cpp"
 
+#include <button_simulator.h>
+
 //
 // led strip fake struct
 //
@@ -258,10 +260,12 @@ struct simulator {
   static constexpr char title[] = "lampda simulator";
 
   static int run() {
-    T simu{};
 
     // time
     sf::Clock clock;
+
+    globalMillis = clock.getElapsedTime().asMilliseconds();
+    lastStartupSequence = millis();
 
     // sound
     LevelRecorder recorder;
@@ -273,8 +277,26 @@ struct simulator {
     // render window
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), title);
 
+    // build simu
+    T simu{strip};
+
     uint64_t skipframe = 0;
     while (window.isOpen()){
+
+      // handle button simulation (with fake millis())
+      globalMillis = clock.getElapsedTime().asMilliseconds() * 0.75;
+
+      button::treat_button_pressed(
+        sf::Keyboard::isKeyPressed(sf::Keyboard::Space), // button is Space
+
+        [&](uint8_t clicks) {
+          click_behavior(simu, clicks);
+        }, [&](uint8_t clicks, uint32_t hold) {
+          hold_behavior(simu, clicks, hold);
+        });
+
+      // update millis()
+      globalMillis = clock.getElapsedTime().asMilliseconds();
 
       // faster fps if "F" key is pressed
       if (simu.fps < 1000) {
@@ -285,9 +307,7 @@ struct simulator {
         }
       }
 
-      // update millis
-      globalMillis = clock.getElapsedTime().asMilliseconds();
-
+      // other events
       sf::Event event;
       while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
@@ -299,7 +319,8 @@ struct simulator {
       }
 
       // execute user function
-      simu.loop(strip);
+      if (!isShutdown)
+        simu.loop(strip);
 
       if (simu.fps > 250) {
         skipframe += 1;
@@ -309,6 +330,12 @@ struct simulator {
 
       // draw fake leds
       window.clear();
+
+      // fake shutdown lamp
+      if (isShutdown) {
+        window.display();
+        continue;
+      }
 
       for (int fXpos = -simu.fakeXorigin; fXpos < ledW - simu.fakeXend; ++fXpos) {
         for (int Ypos = 0; Ypos < ledH; ++Ypos) {
@@ -333,9 +360,13 @@ struct simulator {
           shape.setPosition(ledSz + rXpos * ledPadSz + ledOffset * (Ypos % 2) - Yoff * ledOffset,
                             rYpos * ledPadSz);
 
-          uint64_t b = (strip.leds[I] & 0xff);
-          uint64_t g = ((strip.leds[I] >> 8) & 0xff);
-          uint64_t r = ((strip.leds[I] >> 16) & 0xff);
+          float b = (strip.leds[I] & 0xff);
+          float g = ((strip.leds[I] >> 8) & 0xff);
+          float r = ((strip.leds[I] >> 16) & 0xff);
+
+          r = min(r, BRIGHTNESS);
+          g = min(g, BRIGHTNESS);
+          b = min(b, BRIGHTNESS);
 
           shape.setFillColor(sf::Color(r, g, b));
           window.draw(shape);

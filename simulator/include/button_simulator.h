@@ -1,0 +1,223 @@
+#ifndef BUTTON_SIMULATOR_H
+#define BUTTON_SIMULATOR_H
+
+void pinMode(auto, auto) { }
+#define OUTPUT 0x1021
+#define INPUT_PULLUP_SENSE 0x1022
+#define CHANGE 0x1023
+#define HIGH 0x1024
+
+int digitalPinToInterrupt(auto) { return 0; }
+void attachInterrupt(auto, auto, auto) { }
+int digitalRead(auto) { return 0; }
+void analogWrite(auto, auto) { }
+
+#define UTILS_H
+#define CONSTANTS_H
+#define COLOR_SPACE_H
+
+#include "src/system/physical/button.cpp"
+
+static bool isButtonUsermodeEnabled = false;
+static uint32_t lastStartupSequence = 0;
+static bool isShutdown = false;
+static bool isBluetoothAdvertising = false;
+static uint8_t currentBrightness = 255;
+static uint8_t BRIGHTNESS = 255;
+
+#define BRIGHTNESS_RAMP_DURATION_MS 2000
+#define MIN_BRIGHTNESS 5
+#define MAX_BRIGHTNESS 255
+#define EARLY_ACTIONS_LIMIT_MS 2000
+#define EARLY_ACTIONS_HOLD_MS 2000
+
+void click_behavior(auto& simu, uint8_t consecutiveButtonCheck) {
+  if (consecutiveButtonCheck == 0) return;
+  fprintf(stderr, "clicked %d\n", consecutiveButtonCheck);
+
+  // guard blocking other actions than "turning it on" if is_shutdown
+  if (isShutdown) {
+    if (consecutiveButtonCheck == 1) {
+      isShutdown = false;
+      lastStartupSequence = millis();
+      fprintf(stderr, "startup\n");
+    }
+    return;
+  }
+
+  // extended "button usermode" bypass
+  if (isButtonUsermodeEnabled) {
+    // user mode may return "True" to skip default action
+    if (simu.button_clicked_usermode(consecutiveButtonCheck)) {
+      return;
+    }
+  }
+
+  // basic "default" UI:
+  //  - 1 click: on/off
+  //  - 7+ clicks: shutdown immediately (if DEBUG_MODE wait for watchdog)
+  //
+  switch (consecutiveButtonCheck) {
+
+    // 1 click: shutdown
+    case 1:
+      isShutdown = true;
+      fprintf(stderr, "shutdown\n");
+      break;
+
+    // other behaviors
+    default:
+
+      // 7+ clicks: force shutdown (or safety reset if DEBUG_MODE)
+      if (consecutiveButtonCheck >= 7) {
+        isShutdown = true;
+        fprintf(stderr, "force-shutdown\n");
+        return;
+      }
+
+      simu.button_clicked_default(consecutiveButtonCheck);
+      break;
+  }
+}
+
+static constexpr float brightnessDivider = 1.0 / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
+
+void hold_behavior(auto& simu,
+                   uint8_t consecutiveButtonCheck,
+                   uint32_t buttonHoldDuration) {
+  if (consecutiveButtonCheck == 0) return;
+  if (isShutdown) return;
+
+  fprintf(stderr, "hold %d %d\n", consecutiveButtonCheck, buttonHoldDuration);
+
+  const bool isEndOfHoldEvent = (buttonHoldDuration <= 1);
+  const uint32_t holdDuration = (buttonHoldDuration > HOLD_BUTTON_MIN_MS)
+      ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
+
+  uint32_t realStartTime = millis() - lastStartupSequence;
+  if (realStartTime > holdDuration) {
+    realStartTime -= holdDuration;
+  }
+
+  if (realStartTime < EARLY_ACTIONS_LIMIT_MS) {
+    if (isEndOfHoldEvent && consecutiveButtonCheck > 2) return;
+
+    // 3+hold (3s): turn it on, with button usermode enabled
+    if (consecutiveButtonCheck == 3) {
+      if (holdDuration > EARLY_ACTIONS_HOLD_MS) {
+        fprintf(stderr, "button usermode enabled\n");
+        isButtonUsermodeEnabled = true;
+        return;
+      }
+    }
+
+    // 4+hold (3s): turn it on, with bluetooth advertising
+    if (consecutiveButtonCheck == 4) {
+      if (holdDuration > EARLY_ACTIONS_HOLD_MS) {
+        if (!isBluetoothAdvertising) {
+          fprintf(stderr, "bluetooth advertising\n");
+        }
+
+        isBluetoothAdvertising = true;
+        return;
+      } else {
+        isBluetoothAdvertising = false;
+      }
+    }
+
+    // during "early actions" prevent other actions
+    if (consecutiveButtonCheck > 2) {
+      return;
+    }
+  }
+
+  //
+  // "button usermode" bypass
+  //
+
+  if (isButtonUsermodeEnabled) {
+
+    // 5+hold (5s): always exit, can't be bypassed
+    if (consecutiveButtonCheck == 5) {
+      if (holdDuration > 5000 - HOLD_BUTTON_MIN_MS) {
+        isShutdown = true;
+        fprintf(stderr, "explicit shutdown\n");
+        return;
+      }
+    }
+
+    // user mode may return "True" to skip default action
+    if (simu.button_hold_usermode(consecutiveButtonCheck,
+                                  isEndOfHoldEvent,
+                                  holdDuration)) {
+      return;
+    }
+  }
+
+  //
+  // default actions
+  //
+
+  // basic "default" UI:
+  //  - 1+hold: increase brightness
+  //  - 2+hold: decrease brightness
+  //
+  switch (consecutiveButtonCheck) {
+
+    // 1+hold: increase brightness
+    case 1:
+      if (isEndOfHoldEvent) {
+        currentBrightness = BRIGHTNESS;
+        fprintf(stderr, "brightness set to %d\n", BRIGHTNESS);
+
+      } else {
+        const float percentOfTimeToGoUp =
+            float(MAX_BRIGHTNESS - currentBrightness) * brightnessDivider;
+        if (percentOfTimeToGoUp == 0) return;
+
+        const float newBrightness =
+            map(min(holdDuration,
+                    BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
+                0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
+                currentBrightness, MAX_BRIGHTNESS);
+
+        BRIGHTNESS = newBrightness;
+        fprintf(stderr, "brightness up %f\n", newBrightness);
+
+        simu.brightness_update(newBrightness);
+      }
+      break;
+
+    // 2+hold: decrease brightness
+    case 2:
+      if (isEndOfHoldEvent) {
+        currentBrightness = BRIGHTNESS;
+        fprintf(stderr, "brightness set to %d\n", BRIGHTNESS);
+
+      } else {
+        const double percentOfTimeToGoDown =
+            float(currentBrightness - MIN_BRIGHTNESS) * brightnessDivider;
+        if (percentOfTimeToGoDown == 0) return;
+
+        const float newBrightness =
+            map(min(holdDuration,
+                    BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
+                0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
+                currentBrightness, MIN_BRIGHTNESS);
+
+        BRIGHTNESS = newBrightness;
+        fprintf(stderr, "brightness down %f\n", newBrightness);
+
+        simu.brightness_update(newBrightness);
+      }
+      break;
+
+    // other behaviors
+    default:
+      simu.button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
+      break;
+  }
+}
+
+
+#endif
