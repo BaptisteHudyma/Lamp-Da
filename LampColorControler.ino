@@ -74,7 +74,7 @@ void setup() {
     if ((readResetReason() & POWER_RESETREAS_DOG_Msk) != 0x00) {
       // allow user to flash the program again, without running the currently
       // stored program
-      if (charger::is_usb_powered()) {
+      if (utils::is_powered_with_vbus()) {
         // system will reset & shutdown after that
         enterSerialDfu();
       } else {
@@ -161,12 +161,17 @@ void cpuTemperarureAlerts() {
 }
 
 void batteryAlerts() {
-  if (!charger::is_powered_on()) {
-    // no battery alert when charger is on
-    battery::raise_battery_alert();
-  } else {
+  const auto& chargerState = charger::get_state();
+  if (chargerState.status ==
+      charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING) {
+    // TODO: alert that the battery is missing
+  } else if (chargerState.is_charging()) {
+    // clear alerts when the device is charging
     AlertManager.clear_alert(Alerts::BATTERY_LOW);
     AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);
+  } else {
+    // no battery alert when charger is on
+    battery::raise_battery_alert();
   }
 }
 
@@ -181,12 +186,15 @@ void loop() {
   // handle user serial events
   serial::handleSerialEvents();
 
+  // run the charger loop (all the time)
+  charger::loop();
+
   if (is_shutdown()) {
     // display alerts if needed
     handle_alerts();
 
     // charger unplugged, real shutdown
-    if (!charger::is_usb_powered()) {
+    if (!utils::is_powered_with_vbus()) {
       if (wokeUpFromVBUS && millis() - turnOnTime < 2000) {
         // security for charger with ringing voltage levels, wait some time for
         // it to settle before shuting down

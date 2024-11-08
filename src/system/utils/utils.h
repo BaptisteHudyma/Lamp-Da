@@ -116,6 +116,9 @@ uint8_t gamma8(uint8_t value);
 // Depends on the set maxConvertedVoltage !!!!
 double analogToDividerVoltage(const uint16_t analogVal);
 
+// is the microcontroler powered by vbus
+bool is_powered_with_vbus();
+
 };  // namespace utils
 
 #endif

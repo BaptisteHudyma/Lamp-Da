@@ -251,4 +251,8 @@ double analogToDividerVoltage(const uint16_t analogVal) {
   return analogVal * multiplier;
 }
 
+bool is_powered_with_vbus() {
+  return (NRF_POWER->USBREGSTATUS & POWER_USBREGSTATUS_VBUSDETECT_Msk) != 0x00;
+}
+
 };  // namespace utils

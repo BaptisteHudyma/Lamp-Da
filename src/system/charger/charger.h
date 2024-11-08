@@ -7,34 +7,60 @@
 
 namespace charger {
 
+// call once at program startup
 void setup();
+// call at every loop runs
+void loop();
+// call when the system will shutdown
 void shutdown();
 
-bool check_vendor_device_values();
+struct Charger_t {
+  // everything below makes no sense if this is false
+  bool areMeasuresOk = false;
 
-bool is_usb_powered();
-bool is_powered_on();
+  // input current in VBUS side
+  uint16_t inputCurrent_mA = 0;
+  // charge current of the battery
+  uint16_t chargeCurrent_mA = 0;
+  // current VBUS voltage
+  uint16_t vbus_mV = 0;
 
-// is charger active
-bool is_charging();
+  // battery voltage
+  uint16_t batteryVoltage_mV = 0;
+  // battery current (> 0 charging, < 0 discharging)
+  int16_t batteryCurrent_mA = 0;
 
-// main charge processus, call at every cycles
-bool charge_processus();
+  enum ChargerStatus_t {
+    // not initialized yet
+    UNINITIALIZED,
 
-// write a sery of commands to the charger to disable the charging process
-void disable_charge(const bool force = false);
+    // no input power, charger is down
+    INACTIVE,
+    // charger detects power on the input
+    POWER_DETECTED,
+    // charging but very slowly
+    SLOW_CHARGING,
+    // currently charging the batteries
+    CHARGING,
+    // charging process is done
+    CHARGE_FINISHED,
 
-// return the current charge status, or status of the last charge action
-String charge_status();
+    // battery not detected
+    ERROR_BATTERY_MISSING,
+    // a software error was detected
+    ERROR_SOFTWARE,
+    // critical: some hardware is faulty
+    ERROR_HARDWARE
+  };
+  // global status
+  ChargerStatus_t status = ChargerStatus_t::UNINITIALIZED;
 
-// return the read value of vBus voltage (milliVolts)
-uint16_t get_vbus_voltage_mV();
+  // return true when the status is charging or powered
+  bool is_charging() const;
+  String get_status_str() const;
+};
 
-// return the charging current currently applied to the battery
-uint16_t get_charge_current_mA();
-
-// return true if the battery is charging very slowly
-bool is_slow_charging();
+Charger_t get_state();
 
 }  // namespace charger
 
