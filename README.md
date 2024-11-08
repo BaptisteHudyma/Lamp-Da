@@ -209,6 +209,24 @@ ln -s venv path/to/other/virtualenv
 make clean-artifacts upload-indexable
 ```
 
+If you want simulate a view of an "indexable mode" animation and have the
+[SFML](https://www.sfml-dev.org/) installed:
+
+```sh
+cd LampColorControler
+make simulator
+./_build/simulator/*-simulator
+```
+
+If you want to work with "indexable mode" simulator, add your custom `$NAME`
+simulation in `$(SRC_DIR)/simulator/src/$NAME-simulator.cpp` then build with:
+
+```sh
+cd LampColorControler
+make clean-simulator $NAME-simulator
+./_build/simulator/$NAME-simulator
+```
+
 Once you're finished with your work on the project:
 
 ```sh

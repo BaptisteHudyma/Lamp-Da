@@ -493,10 +493,35 @@ clean-doc:
 	@echo; echo " --- $@"
 	rm -f doc/index.html
 
-clean: clean-artifacts clean-doc
+clean: clean-artifacts clean-simulator clean-doc
 	@echo; echo " --- $@"
 	rm -rf $(OBJECTS_DIR) $(CACHE_DIR) $(BUILD_DIR)/*.txt
 	rm -rf $(BUILD_DIR)/.process-*-success $(BUILD_DIR)/.skip-*-clean
+
+#
+# simulator
+#
+
+.PRECIOUS: $(BUILD_DIR)/simulator/%-simulator
+
+$(BUILD_DIR)/simulator/%-simulator:
+	@echo; echo " --- $@"
+	@mkdir -p $(BUILD_DIR) $(BUILD_DIR)/simulator
+	@cd $(SRC_DIR)/simulator && \
+		LMBD_ROOT_DIR=$(SRC_DIR) SIMU_BUILD_DIR=$(BUILD_DIR)/simulator make $(shell basename "$@")
+
+clean-simulator:
+	@echo; echo " --- $@"
+	rm -rf $(BUILD_DIR)/simulator
+
+%-simulator: $(BUILD_DIR)/simulator/%-simulator
+	@echo " --- ok: $@"
+	@test -x '$<' \
+		&& (echo 'Artifact is ready here:'; echo '$<'; echo) \
+		|| (echo 'No artifact found, build failed?'; rm -f '$<')
+
+simulator: fire-simulator
+	@echo " --- ok: $@"
 
 #
 # remove
