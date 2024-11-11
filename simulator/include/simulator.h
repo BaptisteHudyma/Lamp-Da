@@ -8,6 +8,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio/SoundRecorder.hpp>
+#define MICRO_PHONE_H
 
 #define LMBD_SIMU_ENABLED
 #define LMBD_SIMU_REALCOLORS
@@ -23,14 +24,13 @@ using utils::map;
 
 #include "src/system/utils/coordinates.cpp"
 
-#include <button_simulator.h>
+#include <behavior_simulator.h>
 
 //
 // led strip fake struct
 //
 
 struct LedStrip {
-  uint8_t brightness;
   uint32_t leds[LED_COUNT];
 
   uint8_t _buffer8b[LED_COUNT];
@@ -39,16 +39,23 @@ struct LedStrip {
   std::unique_ptr<sf::RectangleShape> shapes[LED_COUNT];
 
   LedStrip() {
-
-    brightness = 255;
     for (size_t I = 0; I < LED_COUNT; ++I) {
       leds[I] = 0;
       shapes[I] = std::make_unique<sf::RectangleShape>();
     }
   }
 
+  void show() { }
+  void begin() { }
+
   uint8_t getBrightness() {
-    return brightness;
+    return BRIGHTNESS;
+  }
+
+  uint8_t setBrightness(uint8_t brightnessValue) {
+    BRIGHTNESS = brightnessValue;
+    currentBrightness = brightnessValue;
+    return BRIGHTNESS;
   }
 
   void setPixelColorXY(uint8_t X, uint8_t Y, uint8_t r, uint8_t g, uint8_t b);
@@ -166,47 +173,7 @@ void LedStrip::setPixelColorXY(uint8_t X, uint8_t Y, uint8_t r, uint8_t g, uint8
 }
 
 uint32_t LedStrip::ColorHSV(double h, double s, double v) {
-
-  int range = (int)std::floor(h / 60.0);
-  double c = v * s;
-  double x = c * (1 - abs(std::fmod(h / 60.0, 2) - 1.0));
-  double m = v - c;
-
-  uint8_t red = 0, green = 0, blue = 0;
-  switch (range) {
-    case 0:
-      red = (c + m) * 255;
-      green = (x + m) * 255;
-      blue = m * 255;
-      break;
-    case 1:
-      red = (x + m) * 255;
-      green = (c + m) * 255;
-      blue = m * 255;
-      break;
-    case 2:
-      red = m * 255;
-      green = (c + m) * 255;
-      blue = (x + m) * 255;
-      break;
-    case 3:
-      red = m * 255;
-      green = (x + m) * 255;
-      blue = (c + m) * 255;
-      break;
-    case 4:
-      red = (x + m) * 255;
-      green = m * 255;
-      blue = (c + m) * 255;
-      break;
-    default:  // case 5:
-      red = (c + m) * 255;
-      green = m * 255;
-      blue = (x + m) * 255;
-      break;
-  }
-
-  return (red << 16) | (blue << 8) | green;
+  return utils::ColorSpace::HSV(h, s, v).get_rgb().color;
 }
 
 //
@@ -280,6 +247,11 @@ struct simulator {
     // build simu
     T simu{strip};
 
+    // start the simulation
+    isShutdown = true;
+    power_on_behavior(simu);
+    bool shouldSpawnThread = simu.should_spawn_thread();
+
     uint64_t skipframe = 0;
     while (window.isOpen()){
 
@@ -295,18 +267,6 @@ struct simulator {
           hold_behavior(simu, clicks, hold);
         });
 
-      // update millis()
-      globalMillis = clock.getElapsedTime().asMilliseconds();
-
-      // faster fps if "F" key is pressed
-      if (simu.fps < 1000) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
-          sf::sleep(sf::milliseconds(1000.f / (simu.fps * 3)));
-        } else {
-          sf::sleep(sf::milliseconds(1000.f / simu.fps));
-        }
-      }
-
       // other events
       sf::Event event;
       while (window.pollEvent(event)) {
@@ -318,14 +278,29 @@ struct simulator {
         simu.customEventHandler(event);
       }
 
+      // update millis()
+      globalMillis = clock.getElapsedTime().asMilliseconds();
+
       // execute user function
       if (!isShutdown)
         simu.loop(strip);
 
+      float dt = clock.getElapsedTime().asMilliseconds() - globalMillis;
+
+      // re-execute immediately if faster fps needed
       if (simu.fps > 250) {
         skipframe += 1;
         if (skipframe % (((uint64_t) simu.fps) - 250) != 0)
           continue;
+      }
+
+      // faster fps if "F" key is pressed
+      if (simu.fps < 1000 && dt < 1000.f && simu.fps > 0) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
+          sf::sleep(sf::milliseconds((1000.f - dt) / (simu.fps * 3)));
+        } else {
+          sf::sleep(sf::milliseconds((1000.f - dt) / simu.fps));
+        }
       }
 
       // draw fake leds
@@ -374,6 +349,10 @@ struct simulator {
       }
 
       window.display();
+
+      // secondary thread
+      if (shouldSpawnThread && !isShutdown)
+        simu.user_thread();
     }
 
     return 0;
