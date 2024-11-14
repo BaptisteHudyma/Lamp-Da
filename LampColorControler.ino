@@ -74,7 +74,7 @@ void setup() {
     if ((readResetReason() & POWER_RESETREAS_DOG_Msk) != 0x00) {
       // allow user to flash the program again, without running the currently
       // stored program
-      if (utils::is_powered_with_vbus()) {
+      if (charger::is_vbus_signal_detected()) {
         // system will reset & shutdown after that
         enterSerialDfu();
       } else {
@@ -108,10 +108,19 @@ void setup() {
     user::power_off_sequence();
   }
 
+  // use the charging thread !
+  Scheduler.startLoop(charging_thread);
+
   // user requested another thread, spawn it
   if (user::should_spawn_thread()) {
     Scheduler.startLoop(secondary_thread);
   }
+}
+
+void charging_thread() {
+  // run the charger loop (all the time)
+  charger::loop();
+  delay(2);
 }
 
 void secondary_thread() {
@@ -186,15 +195,12 @@ void loop() {
   // handle user serial events
   serial::handleSerialEvents();
 
-  // run the charger loop (all the time)
-  charger::loop();
-
   if (is_shutdown()) {
     // display alerts if needed
     handle_alerts();
 
     // charger unplugged, real shutdown
-    if (!utils::is_powered_with_vbus()) {
+    if (!charger::is_vbus_powered()) {
       if (wokeUpFromVBUS && millis() - turnOnTime < 2000) {
         // security for charger with ringing voltage levels, wait some time for
         // it to settle before shuting down

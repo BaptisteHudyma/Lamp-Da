@@ -55,13 +55,13 @@ constexpr float maxConvertedVoltage =
 constexpr uint8_t batteryCount = 4;
 
 // max voltage of a single li-ion cell
-constexpr float batteryMaxVoltage = 4.2 * batteryCount;
+constexpr float batteryMaxVoltage_mV = 4200 * batteryCount;
 // max voltage of a li-ion cell to maximise lifetime
-constexpr float batteryMaxVoltageSafe = 4.06 * batteryCount;
+constexpr float batteryMaxVoltageSafe_mV = 4060 * batteryCount;
 // min voltage of a single li-ion cell
-constexpr float batteryMinVoltage = 3.0 * batteryCount;
+constexpr float batteryMinVoltage_mV = 3000 * batteryCount;
 // min voltage of a li-ion cell to maximise lifetime
-constexpr float batteryMinVoltageSafe = 3.3 * batteryCount;
+constexpr float batteryMinVoltageSafe_mV = 3300 * batteryCount;
 
 // parameters of the lamp body
 constexpr float maxPowerConsumption_A =
@@ -90,9 +90,5 @@ static constexpr uint32_t BUTTON_PIN = D6;
 static constexpr uint32_t BUTTON_RED = D8;
 static constexpr uint32_t BUTTON_GREEN = D4;
 static constexpr uint32_t BUTTON_BLUE = D7;
-
-#ifndef M_PI
-#define M_PI 3.141592653589793238462643
-#endif
 
 #endif

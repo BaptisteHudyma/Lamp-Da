@@ -10,7 +10,7 @@
 #define POW3(x) ((x) * (x) * (x))
 #define POW4(x) (POW2(x) * POW2(x))
 #define POW7(x) (POW3(x) * POW3(x) * (x))
-#define DegToRad(x) ((x) * M_PI / 180)
+#define DegToRad(x) ((x) * PI / 180)
 #define FADE16(x) scale16(x, x)
 #define FADE8(x) scale8(x, x)
 
@@ -116,8 +116,42 @@ uint8_t gamma8(uint8_t value);
 // Depends on the set maxConvertedVoltage !!!!
 double analogToDividerVoltage(const uint16_t analogVal);
 
-// is the microcontroler powered by vbus
-bool is_powered_with_vbus();
+// convert a liion battery level to a linear model
+constexpr uint8_t liion_level_to_battery_percent(
+    const float liionLevelPercent) {
+  return (liionLevelPercent < 40.0)
+             ?
+             // fast drop for the last half of the battery
+             utils::map(liionLevelPercent, 0.0, 40.0, 0.0, 12.0)
+             : (liionLevelPercent < 90.0)
+                   // most of the battery level is here, slow slope
+                   ? utils::map(liionLevelPercent, 40.0, 90.0, 12.0, 95.0)
+                   // battery level > 90
+                   : utils::map(liionLevelPercent, 90.0, 100.0, 95.0, 100.0);
+}
+
+//
+constexpr uint8_t get_battery_level_percent(const uint16_t batteryLevel) {
+  return liion_level_to_battery_percent(constrain(
+      map(batteryLevel, batteryMinVoltage_mV, batteryMaxVoltage_mV, 0.0, 100.0),
+      0.0, 100.0));
+}
+
+constexpr uint8_t get_battery_max_safe_level() {
+  return get_battery_level_percent(batteryMaxVoltageSafe_mV);
+}
+
+constexpr uint8_t get_battery_min_safe_level() {
+  return get_battery_level_percent(batteryMinVoltageSafe_mV);
+}
+
+constexpr uint8_t get_battery_level(const uint16_t batteryVoltage_mV) {
+  // get the result of the total battery life, map it to the safe battery level
+  // indicated by user
+  return constrain(map(batteryVoltage_mV, get_battery_min_safe_level(),
+                       get_battery_max_safe_level(), 0, 100),
+                   0, 100);
+}
 
 };  // namespace utils
 

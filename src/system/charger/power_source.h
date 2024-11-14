@@ -19,6 +19,9 @@ bool is_usb_power_delivery();
 // some power available on VBUS
 bool is_power_available();
 
+// is the microcontroler powered by vbus
+bool is_powered_with_vbus();
+
 }  // namespace powerSource
 
 #endif

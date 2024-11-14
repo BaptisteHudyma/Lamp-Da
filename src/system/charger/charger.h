@@ -60,6 +60,11 @@ struct Charger_t {
   String get_status_str() const;
 };
 
+bool is_vbus_powered();
+
+// the microcontroler is detecting a vbus input voltage
+bool is_vbus_signal_detected();
+
 Charger_t get_state();
 
 }  // namespace charger

@@ -95,21 +95,6 @@ class BQ25703A {
   static boolean writeRegEx(T dataParam) {
     return writeDataReg(dataParam.addr, dataParam.val0, dataParam.val1);
   }
-  template <typename T>
-  static void setBytes(const T& dataParam, uint16_t value, uint16_t minVal,
-                       uint16_t maxVal, uint16_t offset, uint16_t resVal) {
-    // catch out of bounds
-    if (value < minVal) value = minVal;
-    if (value > maxVal) value = maxVal;
-    // remove offset
-    value = value - offset;
-    // catch out of resolution
-    value = value / resVal;
-    value = value * resVal;
-    // extract bytes and return to struct variables
-    dataParam->val0 = (byte)(value);
-    dataParam->val1 = (byte)(value >> 8);
-  }
 // macro to generate bit mask to access bits
 #define GETMASK(index, size) (((1 << (size)) - 1) << (index))
 // macro to read bits from variable, using mask

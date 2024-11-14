@@ -57,11 +57,17 @@ void handleCommand(const String& command) {
       Serial.print("voltage on vbus:");
       Serial.print(chargerState.vbus_mV);
       Serial.println("mV");
+      Serial.print("input current:");
+      Serial.print(chargerState.inputCurrent_mA);
+      Serial.println("mA");
+      Serial.print("battery voltage:");
+      Serial.print(chargerState.batteryVoltage_mV);
+      Serial.println("mV");
       Serial.print("charge current:");
       Serial.print(chargerState.chargeCurrent_mA);
       Serial.println("mA");
       Serial.print("is usb powered:");
-      Serial.println(boolToString(utils::is_powered_with_vbus()));
+      Serial.println(boolToString(charger::is_vbus_signal_detected()));
       Serial.print("is charging:");
       Serial.println(boolToString(chargerState.is_charging()));
       Serial.print("battery level:");

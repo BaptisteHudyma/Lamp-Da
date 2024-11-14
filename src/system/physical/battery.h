@@ -5,8 +5,6 @@
 
 namespace battery {
 
-extern float get_battery_voltage();
-
 // return a number between 0 and 100
 // it corresponds to the real battery level
 extern uint8_t get_raw_battery_level(const bool resetRead = false);

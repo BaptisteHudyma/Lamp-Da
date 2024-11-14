@@ -89,6 +89,7 @@ void control_charge() {
                             // not already in OTG
                             not isInOtg;
   // inhibit charging
+  chargerIc.readRegEx(BQ25703Areg.chargeOption0);
   BQ25703Areg.chargeOption0.set_CHRG_INHIBIT(shouldCharge ? 0 : 1);
   chargerIc.writeRegEx(BQ25703Areg.chargeOption0);
 }
@@ -123,24 +124,26 @@ void enable_ico(const bool enable) {
 void update_battery() {
   battery_s.voltage_mV = measurments_s.battery_mV;
 
-  const uint16_t chargingCurrent = BQ25703Areg.aDCIBAT.get_ICHG();
+  const uint16_t chargingCurrent = measurments_s.batChargeCurrent_mA;
   const bool isInputSourcePresent = is_input_source_present();
 
   // charger is present (consider only charging current)
   if (isInputSourcePresent) {
     battery_s.current_mA = chargingCurrent;
   } else {
-    battery_s.current_mA = -BQ25703Areg.aDCIBAT.get_IDCHG();
+    battery_s.current_mA = -measurments_s.batDischargeCurrent_mA;
   }
 
   // output voltage saturated, battery is not here
   battery_s.isPresent =
-      battery_s.voltage_mV >= BQ25703Areg.maxChargeVoltage.get();
+      battery_s.voltage_mV < BQ25703Areg.maxChargeVoltage.get();
 
   // check the charging status
-  if (not isInputSourcePresent or chargingCurrent < 50) {
+  if (not isInputSourcePresent or chargingCurrent <= 0) {
     chargeStatus_s = ChargeStatus_t::OFF;
-  } else if (chargingCurrent < 250) {
+  }
+  //
+  else if (chargingCurrent < powerLimits_s.maxChargingCurrent_mA * 0.1) {
     chargeStatus_s = ChargeStatus_t::SLOW_CHARGE;
   } else if (BQ25703Areg.chargerStatus.IN_PCHRG() != 0) {
     chargeStatus_s = ChargeStatus_t::PRECHARGE;
@@ -156,6 +159,7 @@ void update_battery() {
 void run_ADC() {
   static bool isAdcTriggered = false;
   if (not isAdcTriggered) {
+    chargerIc.readRegEx(BQ25703Areg.aDCOption);
     // start a new ADC read
     BQ25703Areg.aDCOption.set_ADC_CONV(0);
     BQ25703Areg.aDCOption.set_ADC_START(1);
@@ -215,9 +219,6 @@ void program_input_current_limit() {
     const uint16_t writtenCurrent_mA =
         BQ25703Areg.iIN_HOST.set(inputCurrentLimit_mA);
 
-    // are we sure about this repetition ?
-    enable_ico(shouldUseICO);
-
     // check that the register is set
     if (writtenCurrent_mA != BQ25703Areg.iIN_HOST.get() or
         (not shouldUseICO and writtenCurrent_mA != BQ25703Areg.iIN_DPM.get())) {
@@ -275,6 +276,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
   // reset the parameters if needed
   if (forceReset) {
     // write the reset flag
+    chargerIc.readRegEx(BQ25703Areg.chargeOption3);
     BQ25703Areg.chargeOption3.set_RESET_REG(1);
     chargerIc.writeRegEx(BQ25703Areg.chargeOption3);
 
@@ -288,6 +290,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
   // everything went fine (for now)
   status_s = Status_t::NOMINAL;
 
+  chargerIc.readRegEx(BQ25703Areg.chargeOption3);
   // disable high impedance mode
   BQ25703Areg.chargeOption3.set_EN_HIZ(0);
   chargerIc.writeRegEx(BQ25703Areg.chargeOption3);
@@ -299,6 +302,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
   // disable ICO
   enable_ico(false);
 
+  chargerIc.readRegEx(BQ25703Areg.chargeOption0);
   // disable DPM auto
   BQ25703Areg.chargeOption0.set_IDPM_AUTO_DISABLE(0);
   // enable IDPM
@@ -310,6 +314,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
   // disable charge
   enable_charge(false);
 
+  chargerIc.readRegEx(BQ25703Areg.chargeOption1);
   // enable IBAT
   BQ25703Areg.chargeOption1.set_EN_IBAT(1);
   // enable PSYS
@@ -317,9 +322,12 @@ bool enable(const uint16_t minSystemVoltage_mV,
   chargerIc.writeRegEx(BQ25703Areg.chargeOption1);
 
   // set the nominal voltage values
-  BQ25703Areg.maxChargeVoltage.set(maxBatteryVoltage_mV);
-  BQ25703Areg.minSystemVoltage.set(minSystemVoltage_mV);
-  BQ25703Areg.inputVoltage.set(minInputVoltage_mV);
+  const auto maxBatteryVoltage_mV_read =
+      BQ25703Areg.maxChargeVoltage.set(maxBatteryVoltage_mV);
+  const auto minSystemVoltage_mV_read =
+      BQ25703Areg.minSystemVoltage.set(minSystemVoltage_mV);
+  const auto minInputVoltage_mV_read =
+      BQ25703Areg.inputVoltage.set(minInputVoltage_mV);
 
   // a write failed at some point
   if (chargerIc.isFlagRaised) {
@@ -335,10 +343,13 @@ bool enable(const uint16_t minSystemVoltage_mV,
     status_s = Status_t::ERROR;
     return false;
   }
-  if (BQ25703Areg.inputVoltage.get() != minInputVoltage_mV) {
+  /*
+  // there is a problem with this register on all the IC I tester
+  if (BQ25703Areg.inputVoltage.get() != minInputVoltage_mV_read) {
     status_s = Status_t::ERROR;
     return false;
   }
+  */
 
   // initial status update
   powerLimits_s.maxChargingCurrent_mA = maxChargingCurrent_mA;
@@ -347,25 +358,34 @@ bool enable(const uint16_t minSystemVoltage_mV,
 }
 
 void loop(const bool isChargeOk) {
+  const bool isChargeChanged = isChargeOk != isChargeOk_s;
   isChargeOk_s = isChargeOk;
 
-  // update status
-  run_status_update();
-  // update measurments
-  run_ADC();
+  static uint32_t lastUpdateTime = 0;
 
-  // do not run charger functions if status is not nominal
-  if (status_s != Status_t::NOMINAL) {
-    return;
+  const uint32_t time = millis();
+  // only update every 100ms
+  if (isChargeChanged or lastUpdateTime == 0 or time - lastUpdateTime >= 100) {
+    lastUpdateTime = time;
+
+    // update status
+    run_status_update();
+    // update measurments
+    run_ADC();
+
+    // do not run charger functions if status is not nominal
+    if (status_s != Status_t::NOMINAL) {
+      return;
+    }
+
+    // update the charge
+    control_charge();
+    // set the current limit to what is stored
+    program_input_current_limit();
+
+    // set max charge current
+    BQ25703Areg.chargeCurrent.set(powerLimits_s.maxChargingCurrent_mA);
   }
-
-  // update the charge
-  control_charge();
-  // set the current limit to what is stored
-  program_input_current_limit();
-
-  // set max charge current
-  BQ25703Areg.chargeCurrent.set(powerLimits_s.maxChargingCurrent_mA);
 }
 
 void shutdown() {
@@ -378,6 +398,7 @@ void shutdown() {
   program_input_current_limit();
 
   // enable low power mode
+  chargerIc.readRegEx(BQ25703Areg.chargeOption0);
   BQ25703Areg.chargeOption0.set_EN_LWPWR(1);
   chargerIc.writeRegEx(BQ25703Areg.chargeOption0);
 }
@@ -396,6 +417,7 @@ bool is_input_source_present() {
 
 void try_clear_faults() {
   // clear the fault we can clear, wait and see
+  chargerIc.readRegEx(BQ25703Areg.chargerStatus);
   if (BQ25703Areg.chargerStatus.SYSOVP_STAT()) {
     BQ25703Areg.chargerStatus.set_SYSOVP_STAT(0);
     chargerIc.writeRegEx(BQ25703Areg.chargerStatus);

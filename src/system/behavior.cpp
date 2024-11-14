@@ -154,9 +154,16 @@ void shutdown() {
   button::set_color(utils::ColorSpace::BLACK);
 
   // do not power down when charger is plugged in
-  if (!utils::is_powered_with_vbus()) {
+  if (!charger::is_vbus_powered()) {
     charger::shutdown();
     digitalWrite(USB_33V_PWR, LOW);
+
+    // wait until vbus is off (TODO: remove in newer versions of the hardware)
+    uint8_t cnt = 0;
+    while (cnt < 200 and charger::is_vbus_signal_detected()) {
+      delay(5);
+      cnt++;
+    }
 
     // wake up from charger plugged in
     // nrf_gpio_cfg_sense_input(g_ADigitalPinMap[CHARGE_OK],
