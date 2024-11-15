@@ -8,7 +8,12 @@
 #include "src/modes/default/fixed_modes.hpp"
 #include "src/modes/legacy/legacy_modes.hpp"
 
-using ManagerTy = modes::ManagerFor<
+struct MyCustomConfig : public modes::DefaultManagerConfig {
+  static constexpr uint32_t defaultCustomRampStepSpeedMs = 8;
+  static constexpr uint32_t scrollRampStepSpeedMs = 256;
+};
+
+using ManagerTy = modes::ManagerForConfig<MyCustomConfig,
     modes::FixedModes,
     modes::MiscFixedModes,
     modes::legacy::CalmModes,
