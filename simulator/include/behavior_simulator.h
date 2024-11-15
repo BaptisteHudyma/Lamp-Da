@@ -2,14 +2,19 @@
 #define BUTTON_SIMULATOR_H
 
 void pinMode(auto, auto) { }
-#define OUTPUT 0x1021
-#define INPUT_PULLUP_SENSE 0x1022
-#define CHANGE 0x1023
-#define HIGH 0x1024
+#define OUTPUT              0x1021
+#define OUTPUT_H0H1         0x1022
+#define INPUT_PULLUP_SENSE  0x1023
+#define CHANGE              0x1024
+#define LOW                 0x1025
+#define HIGH                0x1026
+#define LED_POWER_PIN       0x1027
 
+void ensure_build_canary() { }
 int digitalPinToInterrupt(auto) { return 0; }
 void attachInterrupt(auto, auto, auto) { }
 int digitalRead(auto) { return 0; }
+void digitalWrite(auto, auto) { }
 void analogWrite(auto, auto) { }
 
 #define UTILS_H
@@ -20,7 +25,7 @@ void analogWrite(auto, auto) { }
 
 static bool isButtonUsermodeEnabled = false;
 static uint32_t lastStartupSequence = 0;
-static bool isShutdown = false;
+static bool isShutdown = true;
 static bool isBluetoothAdvertising = false;
 static uint8_t currentBrightness = 255;
 static uint8_t BRIGHTNESS = 255;
@@ -31,6 +36,24 @@ static uint8_t BRIGHTNESS = 255;
 #define EARLY_ACTIONS_LIMIT_MS 2000
 #define EARLY_ACTIONS_HOLD_MS 2000
 
+void power_on_behavior(auto& simu) {
+  isShutdown = false;
+  lastStartupSequence = millis();
+  isButtonUsermodeEnabled = false;
+  fprintf(stderr, "startup\n");
+
+  simu.power_on_sequence();
+  simu.read_parameters();
+}
+
+void power_off_behavior(auto& simu) {
+  isShutdown = true;
+  fprintf(stderr, "shutdown\n");
+
+  simu.write_parameters();
+  simu.power_off_sequence();
+}
+
 void click_behavior(auto& simu, uint8_t consecutiveButtonCheck) {
   if (consecutiveButtonCheck == 0) return;
   fprintf(stderr, "clicked %d\n", consecutiveButtonCheck);
@@ -38,9 +61,7 @@ void click_behavior(auto& simu, uint8_t consecutiveButtonCheck) {
   // guard blocking other actions than "turning it on" if is_shutdown
   if (isShutdown) {
     if (consecutiveButtonCheck == 1) {
-      isShutdown = false;
-      lastStartupSequence = millis();
-      fprintf(stderr, "startup\n");
+      power_on_behavior(simu); // fake start
     }
     return;
   }
@@ -61,8 +82,7 @@ void click_behavior(auto& simu, uint8_t consecutiveButtonCheck) {
 
     // 1 click: shutdown
     case 1:
-      isShutdown = true;
-      fprintf(stderr, "shutdown\n");
+      power_off_behavior(simu); // fake stop
       break;
 
     // other behaviors
@@ -70,8 +90,8 @@ void click_behavior(auto& simu, uint8_t consecutiveButtonCheck) {
 
       // 7+ clicks: force shutdown (or safety reset if DEBUG_MODE)
       if (consecutiveButtonCheck >= 7) {
-        isShutdown = true;
-        fprintf(stderr, "force-shutdown\n");
+        fprintf(stderr, "(force-shutdown)\n");
+        power_off_behavior(simu); // fake stop
         return;
       }
 
@@ -124,11 +144,6 @@ void hold_behavior(auto& simu,
         isBluetoothAdvertising = false;
       }
     }
-
-    // during "early actions" prevent other actions
-    if (consecutiveButtonCheck > 2) {
-      return;
-    }
   }
 
   //
@@ -140,8 +155,7 @@ void hold_behavior(auto& simu,
     // 5+hold (5s): always exit, can't be bypassed
     if (consecutiveButtonCheck == 5) {
       if (holdDuration > 5000 - HOLD_BUTTON_MIN_MS) {
-        isShutdown = true;
-        fprintf(stderr, "explicit shutdown\n");
+        power_off_behavior(simu);
         return;
       }
     }
