@@ -11,8 +11,8 @@
  *  \brief modes::ManagerFor and associated definitions
  **/
 
-#include "src/modes/tools.hpp"
-#include "src/modes/context_type.hpp"
+#include "src/modes/include/tools.hpp"
+#include "src/modes/include/context_type.hpp"
 
 namespace modes {
 

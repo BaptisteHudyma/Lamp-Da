@@ -12,10 +12,10 @@
  *  \brief modes::GroupFor and associated definitions
  **/
 
-#include "src/modes/context_type.hpp"
-#include "src/modes/manager_type.hpp"
-#include "src/modes/mode_type.hpp"
-#include "src/modes/tools.hpp"
+#include "src/modes/include/context_type.hpp"
+#include "src/modes/include/manager_type.hpp"
+#include "src/modes/include/mode_type.hpp"
+#include "src/modes/include/tools.hpp"
 
 namespace modes {
 

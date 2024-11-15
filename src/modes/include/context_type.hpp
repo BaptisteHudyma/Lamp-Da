@@ -8,7 +8,7 @@
  *  \brief ContextTy and associated definitions
  **/
 
-#include "src/modes/tools.hpp"
+#include "src/modes/include/tools.hpp"
 
 namespace modes {
 
