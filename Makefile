@@ -520,7 +520,7 @@ clean-simulator:
 		&& (echo 'Artifact is ready here:'; echo '$<'; echo) \
 		|| (echo 'No artifact found, build failed?'; rm -f '$<')
 
-simulator: main-simulator
+simulator: indexable-simulator
 	@echo " --- ok: $@"
 
 #
