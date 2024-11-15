@@ -2,12 +2,12 @@
 
 #include "default_simulation.h"
 
-#include "src/modes/group_type.h"
-#include "src/modes/manager_type.h"
-#include "src/modes/mode_type.h"
+#include "src/modes/group_type.hpp"
+#include "src/modes/manager_type.hpp"
+#include "src/modes/mode_type.hpp"
 
-#include "src/modes/default/fixed_modes.h"
-#include "src/modes/legacy/legacy_modes.h"
+#include "src/modes/default/fixed_modes.hpp"
+#include "src/modes/legacy/legacy_modes.hpp"
 
 using ManagerTy = modes::ManagerFor<
     modes::FixedModes,
@@ -27,7 +27,7 @@ struct modeSimulation : public defaultSimulation {
 
   void loop(auto&) { loop(); }
 
-#include "src/modes/behavior_manager.h"
+#include "src/modes/user/indexable_behavior.hpp"
 
 private:
   ManagerTy modeManager;

@@ -52,7 +52,7 @@ static constexpr uint32_t LED_POWER_PIN = AD1;
 // indexable lamp is implemented in another castle
 //
 
-#include "src/modes/behavior_manager.hpp"
+#include "src/modes/user/indexable_behavior.hpp"
 
 }  // namespace user
 

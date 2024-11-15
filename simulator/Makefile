@@ -12,6 +12,8 @@ CXX_LDFLAGS=-lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system
 CXX_EXTRA_FLAGS=-fconcepts -DLMBD_CPP17 -ftemplate-backtrace-limit=1 #-Wall -Wextra -pedantic
 CXX_BUILD_FLAGS=--std=c++17 -O3 $(CXX_EXTRA_FLAGS) $(CXX_INCLUDE_DIRECTORIES)
 
+ALL_TARGETS=$(shell ls $(SRC_DIR)/src|grep -Eo '^[^-]*-simulator.cpp'|sed 's/.cpp$$//g')
+
 all: build
 
 check-deps:
@@ -53,7 +55,10 @@ $(BUILD_DIR)/%-simulator: $(SRC_DIR)src/%-simulator.cpp
 %-simulator: check-dirs check-deps $(BUILD_DIR)/%-simulator
 	@echo " --- ok: $@$%"
 
-build: fire-simulator
+build: indexable-simulator
+	@echo " --- ok: $@"
+
+verify-all: clean $(ALL_TARGETS)
 	@echo " --- ok: $@"
 
 clean:
