@@ -445,12 +445,25 @@ verify-canary: has-lamp-type $(ARTIFACTS)/$(PROJECT_INO).zip
 verify: verify-canary
 	@echo " --- ok: $@"
 
+verify-all-simulator:
+	@echo; echo " --- $@"
+	@mkdir -p $(BUILD_DIR) $(BUILD_DIR)/simulator
+	# verify that simulator can be build, and if so, verify it...
+	@cd $(SRC_DIR)/simulator && ( :\
+		; export LMBD_ROOT_DIR=$(SRC_DIR) \
+		; export SIMU_BUILD_DIR=$(BUILD_DIR)/simulator \
+		; if make check-deps \
+		; then make verify-all || \
+			(echo; echo 'ERROR: simulator verify-all failed!'; false) \
+		; else echo; echo 'Simulator dependencies not installed, skipping...' \
+		; fi)
+
 verify-type(%):
 	@echo " --- $@($%)"
 	@echo; echo Building with LMBD_LAMP_TYPE=$% to verify artifact...; echo
 	LMBD_LAMP_TYPE=$% make build verify
 
-verify-all:
+verify-all: verify-all-simulator
 	@echo; echo " --- $@"
 	# verify that all lamp types build & validates
 	make clean 'verify-type(indexable)'
