@@ -6,7 +6,7 @@
 #include <optional>
 #include <tuple>
 
-#include "src/modes/mode_type.hpp"
+#include "src/modes/include/mode_type.hpp"
 
 #ifndef LMBD_CPP17
 #error "File requires -DLMBD_CPP17 to explicitly enables C++17 features"

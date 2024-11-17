@@ -8,7 +8,8 @@
  *  \brief ContextTy and associated definitions
  **/
 
-#include "src/modes/tools.hpp"
+#include "src/modes/include/tools.hpp"
+#include "src/modes/include/default_config.hpp"
 
 namespace modes {
 
@@ -168,13 +169,41 @@ struct ContextTy {
     return value;
   }
 
-  /** \brief (setter) Set if the custom ramp saturates or wrap around
+  /** \brief (setter) Set a configurable boolean to target \p value
    *
-   * \in rampSaturates Set True if ramp should saturates, False to wrap around
+   * See modes::ConfigKeys for documentation of configurable booleans.
    */
-  void LMBD_INLINE set_custom_ramp_saturation(bool rampSaturates) {
+  template <ConfigKeys key>
+  void LMBD_INLINE set_config_bool(bool value) {
     auto ctx = modeManager.get_context();
-    ctx.state.rampHandler.rampSaturates = rampSaturates;
+    switch (key) {
+      case ConfigKeys::rampSaturates:
+        ctx.state.rampHandler.rampSaturates = value;
+        break;
+      case ConfigKeys::clearStripOnModeChange:
+        ctx.state.clearStripOnModeChange = value;
+        break;
+      default:
+        assert(false && "unsupported config key for booleans!");
+        break;
+    }
+  }
+
+  /** \brief (setter) Set a configurable integer (u32) to target \p value
+   *
+   * See modes::ConfigKeys for documentation of configurable (u32) integers.
+   */
+  template <ConfigKeys key>
+  void LMBD_INLINE set_config_u32(uint32_t value) {
+    auto ctx = modeManager.get_context();
+    switch (key) {
+      case ConfigKeys::customRampStepSpeedMs:
+        ctx.state.rampHandler.stepSpeed = value;
+        break;
+      default:
+        assert(false && "unsupported config key for u32!");
+        break;
+    }
   }
 
   /// (getter) Get active custom index (recalled when jumping favorites)

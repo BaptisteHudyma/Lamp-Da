@@ -11,9 +11,8 @@
 
 #ifdef LMBD_CPP17
 
-#include "src/modes/tools.hpp"
-#include "src/modes/group_type.hpp"
-#include "src/modes/manager_type.hpp"
+#include "src/modes/include/group_type.hpp"
+#include "src/modes/include/manager_type.hpp"
 
 #include "src/modes/default/fixed_modes.hpp"
 #include "src/modes/legacy/legacy_modes.hpp"

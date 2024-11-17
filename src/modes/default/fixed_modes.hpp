@@ -29,7 +29,7 @@ struct KelvinMode : public FixedMode {
 
   // (enable the ramp to saturates, instead of wrapping ramp around)
   static void reset(auto& ctx) {
-    ctx.set_custom_ramp_saturation(true);
+    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
   }
 };
 

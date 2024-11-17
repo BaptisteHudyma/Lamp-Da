@@ -11,12 +11,13 @@
  *  \brief modes::ManagerFor and associated definitions
  **/
 
-#include "src/modes/tools.hpp"
-#include "src/modes/context_type.hpp"
+#include "src/modes/include/tools.hpp"
+#include "src/modes/include/context_type.hpp"
+#include "src/modes/include/default_config.hpp"
 
 namespace modes {
 
-/// \private Active state is designated by a 64 integer
+/// \private Active state is designated by a 32-bit integer
 union ActiveIndexTy {
   struct {
     uint8_t groupIndex; // group id (as ordered in the manager)
@@ -25,16 +26,26 @@ union ActiveIndexTy {
     uint8_t customIndex; // custom (as set by the mode)
   };
 
-  uint64_t rawIndex;
+  uint32_t rawIndex;
+
+  // static constructors
+  //
+  static auto from(const uint8_t* arr) {
+    ActiveIndexTy index = {arr[0], arr[1], arr[2], arr[3]};
+    return index;
+  }
 };
 
 /// \private Contains the logic to handle a fixed-timestep range
+template <typename Config>
 struct RampHandlerTy {
-  static constexpr uint32_t startPeriod = 128;
+  using ConfigTy = Config;
+  static constexpr uint32_t startPeriod = Config::rampStartPeriodMs;
 
   // \in stepSpeed how long to wait before incrementing (ms)
   // \in rampSaturates does the ramp saturates, or else wrap around?
-  RampHandlerTy(uint32_t stepSpeed = 16, bool rampSaturates = false)
+  RampHandlerTy(uint32_t stepSpeed,
+                bool rampSaturates = Config::defaultRampSaturates)
     : stepSpeed{stepSpeed}, rampSaturates{rampSaturates},
       lastTimeMeasured{1000}, isForward{true} { }
 
@@ -89,11 +100,11 @@ struct RampHandlerTy {
 };
 
 /// \private Implementation details of modes::ManagerFor
-template <typename AllGroups>
+template <typename Config, typename AllGroups>
 struct ModeManagerTy {
 
-  // tuple helpers
-  using SelfTy = ModeManagerTy<AllGroups>;
+  using SelfTy = ModeManagerTy<Config, AllGroups>;
+  using ConfigTy = Config;
   using AllGroupsTy = AllGroups;
   using AllStatesTy = details::StateTyFrom<AllGroups>;
   static constexpr uint8_t nbGroups{std::tuple_size_v<AllGroupsTy>};
@@ -112,7 +123,8 @@ struct ModeManagerTy {
 
   // constructors
   ModeManagerTy(LedStrip& strip)
-    : activeIndex{{0, 0, 0, 0}}, strip{strip} { }
+    : activeIndex{ActiveIndexTy::from(Config::initialActiveIndex)},
+      strip{strip} { }
 
   ModeManagerTy() = delete;
   ModeManagerTy(const ModeManagerTy&) = delete;
@@ -159,16 +171,34 @@ struct ModeManagerTy {
   //
 
   struct StateTy {
+
+    // All group states, containing all modes individual states
     AllStatesTy groupStates;
-    RampHandlerTy rampHandler = {16};
-    RampHandlerTy scrollHandler = {512};
-    ActiveIndexTy currentFavorite = {0, 0, 0, 0};
+
+    // When switching group, remember which mode was on last time we visited it
     std::array<uint8_t, nbGroups> lastModeMemory = {};
 
-    // (executed before user reset_mode)
-    static void LMBD_INLINE reset_config(auto& ctx) {
+    // Ramp handlers: custom ramp (or "color ramp") and mode scroll ramp
+    RampHandlerTy<Config> rampHandler = {Config::defaultCustomRampStepSpeedMs};
+    RampHandlerTy<Config> scrollHandler = {Config::scrollRampStepSpeedMs};
+
+
+    bool clearStripOnModeChange = Config::defaultClearStripOnModeChange;
+
+    ActiveIndexTy currentFavorite = ActiveIndexTy::from(Config::defaultFavorite);
+
+    static void LMBD_INLINE before_reset(auto& ctx) {
       auto& self = ctx.state;
-      self.rampHandler.rampSaturates = false;
+      self.rampHandler.rampSaturates = Config::defaultRampSaturates;
+      self.rampHandler.stepSpeed = Config::defaultCustomRampStepSpeedMs;
+      self.clearStripOnModeChange = Config::defaultClearStripOnModeChange;
+    }
+
+    static void LMBD_INLINE after_reset(auto& ctx) {
+      auto& self = ctx.state;
+      if (self.clearStripOnModeChange) {
+        ctx.strip.clear();
+      }
     }
   };
 
@@ -264,8 +294,9 @@ struct ModeManagerTy {
   }
 
   static void next_mode(auto& ctx) {
-    ctx.state.reset_config(ctx);
+    ctx.state.before_reset(ctx);
     dispatch_group(ctx, [](auto group) { group.next_mode(); });
+    ctx.state.after_reset(ctx);
   }
 
   static void jump_to_favorite(auto& ctx) {
@@ -278,8 +309,9 @@ struct ModeManagerTy {
   }
 
   static void reset_mode(auto& ctx) {
-    ctx.state.reset_config(ctx);
+    ctx.state.before_reset(ctx);
     dispatch_group(ctx, [](auto group) { group.reset_mode(); });
+    ctx.state.after_reset(ctx);
   }
 
   static uint8_t get_modes_count(auto& ctx) {
@@ -365,6 +397,13 @@ private:
   StateTy state;
 };
 
+/** \brief Same as modes::ManagerFor but with custom defaults
+ *
+ * See modes::DefaultManagerConfig for guide on how to override configuration.
+ */
+template <typename ManagerConfig, typename... Groups>
+using ManagerForConfig = ModeManagerTy<ManagerConfig, std::tuple<Groups...>>;
+
 /** \brief Group together several mode groups defined through modes::GroupFor
  *
  * Binds all methods of the provided list of \p Groups and dispatch events
@@ -374,7 +413,7 @@ private:
  * as inside the modes::ManagerFor modes::ModeManagerTy singleton
  */
 template <typename... Groups>
-using ManagerFor = ModeManagerTy<std::tuple<Groups...>>;
+using ManagerFor = ModeManagerTy<DefaultManagerConfig, std::tuple<Groups...>>;
 
 } // namespace modes
 
