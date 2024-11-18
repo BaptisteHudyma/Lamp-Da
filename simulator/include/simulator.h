@@ -150,21 +150,6 @@ struct LedStrip {
 };
 
 //
-// lampda-specific code
-//
-
-#define STRIP_H
-#include "src/system/ext/noise.cpp"
-#include "src/system/colors/palettes.cpp"
-#include "src/system/colors/colors.cpp"
-#include "src/system/colors/wipes.cpp"
-#include "src/system/colors/animations.cpp"
-
-namespace {
-#include "src/system/utils/utils.cpp"
-}
-
-//
 // LedStrip hacks
 //
 
@@ -185,26 +170,35 @@ namespace microphone {
 static constexpr float silenceLevelDb = -57;
 static constexpr float highLevelDb = 80;
 
-static float sound_level;
+struct SoundStruct {
+  bool isValid = false;
 
-float get_sound_level_Db() {
-  return sound_level;
-}
+  float fftMajorPeakFrequency_Hz = 0.0;
+  float strongestPeakMagnitude = 0.0;
+  uint8_t fft[16];
+};
+static float sound_level;
+static SoundStruct soundStruct;
+
+float get_sound_level_Db() { return sound_level; }
+
+SoundStruct get_fft() { return soundStruct; }
 
 // to hook microphone & measure levelDb
 class LevelRecorder : public sf::SoundRecorder {
-    virtual bool onStart() { return true; }
+  virtual bool onStart() { return true; }
 
-    virtual bool onProcessSamples(const sf::Int16* samples, std::size_t sampleCount) {
-      float sumOfAll = 0;
-      for(std::size_t i = 0; i < sampleCount; i++) {
-          sumOfAll += powf(samples[i] / (float) 1024.0, 2.0);
-	    }
-
-      const float average = sumOfAll / (float) sampleCount;
-      sound_level = 20.0 * log10f(sqrtf(average));
-      return true;
+  virtual bool onProcessSamples(const sf::Int16* samples,
+                                std::size_t sampleCount) {
+    float sumOfAll = 0;
+    for (std::size_t i = 0; i < sampleCount; i++) {
+      sumOfAll += powf(samples[i] / (float)1024.0, 2.0);
     }
+
+    const float average = sumOfAll / (float)sampleCount;
+    sound_level = 20.0 * log10f(sqrtf(average));
+    return true;
+  }
 
     virtual void onStop() { }
 
@@ -213,6 +207,23 @@ public:
 };
 
 }
+
+//
+// lampda-specific code
+//
+
+#define STRIP_H
+#include "src/system/ext/noise.cpp"
+#include "src/system/colors/palettes.cpp"
+#include "src/system/colors/soundAnimations.cpp"
+#include "src/system/colors/colors.cpp"
+#include "src/system/colors/wipes.cpp"
+#include "src/system/colors/animations.cpp"
+
+namespace {
+#include "src/system/utils/utils.cpp"
+}
+
 
 using namespace microphone;
 

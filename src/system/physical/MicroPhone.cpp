@@ -5,18 +5,17 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "fft.h"
 #include "src/system/ext/noise.h"
 #include "src/system/ext/random8.h"
 #include "src/system/utils/constants.h"
 
-#include "fft.h"
-
 namespace microphone {
 
 // buffer to read samples into, each sample is 16-bits
-constexpr size_t sampleSize = 512;  // samplesFFT;
-int16_t _sampleBuffer[sampleSize];
-volatile int samplesRead;
+constexpr size_t SAMPLE_SIZE = 512;  // samplesFFT;
+int16_t _sampleBuffer[SAMPLE_SIZE];
+volatile uint16_t samplesRead;
 
 uint32_t lastMeasurmentMicros;
 uint32_t lastMeasurmentDurationMicros;
@@ -25,7 +24,7 @@ void on_PDM_data() {
   lastMeasurmentDurationMicros = newTime - lastMeasurmentMicros;
   lastMeasurmentMicros = newTime;
   // query the number of bytes available
-  const int bytesAvailable = PDM.available();
+  const uint16_t bytesAvailable = PDM.available();
 
   // read into the sample buffer
   PDM.read((char*)&_sampleBuffer[0], bytesAvailable);
@@ -35,7 +34,7 @@ void on_PDM_data() {
 }
 
 static uint32_t lastMicFunctionCall = 0;
-bool isStarted = false;
+static bool isStarted = false;
 
 void enable() {
   lastMicFunctionCall = millis();
@@ -62,13 +61,9 @@ void enable() {
   PDM.setGain(30);
 
   micDataReal = 0.0f;
-  volumeRaw = 0;
-  volumeSmth = 0;
   sampleAgc = 0;
   sampleAvg = 0;
-  sampleRaw = 0;
   rawSampleAgc = 0;
-  my_magnitude = 0;
   FFT_Magnitude = 0;
   FFT_MajorPeak = 1;
   multAgc = 1;
@@ -76,10 +71,6 @@ void enable() {
   memset(fftCalc, 0, sizeof(fftCalc));
   memset(fftAvg, 0, sizeof(fftAvg));
   memset(fftResult, 0, sizeof(fftResult));
-  for (int i = 0; i < NUM_GEQ_CHANNELS; i += 2)
-    fftResult[i] = 16;  // make a tiny pattern
-  inputLevel = 128;     // reset level slider to default
-  autoResetPeak();
 
   isStarted = true;
 }
@@ -104,16 +95,21 @@ void disable_after_non_use() {
 
 float get_sound_level_Db() {
   enable();
+  if (!isStarted) {
+    // ERROR
+    return 0.0;
+  }
 
   static float lastValue = 0;
 
   if (!samplesRead) return lastValue;
 
   float sumOfAll = 0.0;
-  for (int i = 0; i < samplesRead; i++) {
+  const uint16_t samples = min(SAMPLE_SIZE, samplesRead);
+  for (uint16_t i = 0; i < samples; i++) {
     sumOfAll += powf(_sampleBuffer[i] / (float)1024.0, 2.0);
   }
-  const float average = sumOfAll / (float)samplesRead;
+  const float average = sumOfAll / (float)samples;
 
   lastValue = 20.0 * log10f(sqrtf(average));
   // convert to decibels
@@ -122,40 +118,51 @@ float get_sound_level_Db() {
 
 bool processFFT(const bool runFFT = true) {
   enable();
+  if (!isStarted) {
+    // ERROR
+    return false;
+  }
 
-  if (samplesRead <= 0) {
+  if (!samplesRead) {
     return false;
   }
 
   // get data
-  uint32_t userloopDelay = LOOP_UPDATE_PERIOD;
-  for (int i = 0; i < samplesRead; i++) {
-    float sample = (_sampleBuffer[i] & 0xFFFF);
-
-    processSample(sample);
-    agcAvg();
-
-    vReal[i] = sampleRaw;
+  const uint16_t samples = min(SAMPLE_SIZE, samplesRead);
+  for (uint16_t i = 0; i < samples; i++) {
+    vReal[i] = _sampleBuffer[i];
     vImag[i] = 0;
   }
-  for (int i = samplesRead; i < samplesFFT; i++) {
+  // fill the rest with zeros
+  for (uint16_t i = samplesRead; i < samplesFFT; i++) {
     vReal[i] = 0;
     vImag[i] = 0;
   }
-
-  volumeSmth = (soundAgc) ? sampleAgc : sampleAvg;
-  volumeRaw = (soundAgc) ? rawSampleAgc : sampleRaw;
-  // update FFTMagnitude, taking into account AGC amplification
-  my_magnitude = FFT_Magnitude;  // / 16.0f, 8.0f, 4.0f done in effects
-  if (soundAgc) my_magnitude *= multAgc;
-  if (volumeSmth < 1) my_magnitude = 0.001f;  // noise gate closed - mute
-  limitSampleDynamics();
-  autoResetPeak();
 
   samplesRead = 0;
   if (runFFT) FFTcode();
 
   return true;
+}
+
+static SoundStruct soundStruct;
+
+SoundStruct get_fft() {
+  // process the sound input
+  if (!processFFT(true)) {
+    soundStruct.isValid = false;
+    return soundStruct;
+  }
+
+  // copy the FFT buffer
+  soundStruct.isValid = true;
+  soundStruct.fftMajorPeakFrequency_Hz = FFT_MajorPeak;
+  soundStruct.strongestPeakMagnitude = FFT_Magnitude;
+  // copy the fft results
+  for (uint8_t bandIndex = 0; bandIndex < numberOfFFtChanels; ++bandIndex) {
+    soundStruct.fft[bandIndex] = fftResult[bandIndex];
+  }
+  return soundStruct;
 }
 
 }  // namespace microphone

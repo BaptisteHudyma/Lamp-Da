@@ -13,12 +13,11 @@ struct MyCustomConfig : public modes::DefaultManagerConfig {
   static constexpr uint32_t scrollRampStepSpeedMs = 256;
 };
 
-using ManagerTy = modes::ManagerForConfig<MyCustomConfig,
-    modes::FixedModes,
-    modes::MiscFixedModes,
-    modes::legacy::CalmModes,
-    modes::legacy::PartyModes
-  >;
+using ManagerTy =
+    modes::ManagerForConfig<MyCustomConfig, modes::FixedModes,
+                            modes::MiscFixedModes, modes::legacy::CalmModes,
+                            modes::legacy::PartyModes,
+                            modes::legacy::SoundModes>;
 
 struct modeSimulation : public defaultSimulation {
   float fps = 60.f;

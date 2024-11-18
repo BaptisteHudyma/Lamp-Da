@@ -27,7 +27,8 @@ using ManagerTy = modes::ManagerFor<
     modes::FixedModes,
     // modes::MiscFixedModes,
     modes::legacy::CalmModes,
-    modes::legacy::PartyModes
+    modes::legacy::PartyModes,
+    modes::legacy::SoundModes
   >;
 
 //
