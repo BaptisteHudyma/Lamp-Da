@@ -43,25 +43,24 @@ constexpr uint32_t ADC_MAX_VALUE =
     pow(2, ADC_RES_EXP);                         // corresponding max value
 constexpr float internalReferenceVoltage = 3.0;  // 3V
 
-// map the input ADC out to voltage reading (calibration depending on the
-// resistor used for the battery voltage measurments).
-// The exact value is a 5.7021 reduction, but it's never exact
-constexpr float voltageDividerCoeff = 1.0 / 5.635;
-// 3V internal ref for analog reads
-constexpr float maxConvertedVoltage =
-    internalReferenceVoltage / voltageDividerCoeff;
+// map the input ADC out to voltage reading
+constexpr float voltageMeasurmentResistor1_Ohm = 221000;
+constexpr float voltageMeasurmentResistor2_Ohm = 47000;
+constexpr float voltageDividerCoeff =
+    voltageMeasurmentResistor2_Ohm /
+    (voltageMeasurmentResistor1_Ohm + voltageMeasurmentResistor2_Ohm);
 
 // number of batteries for this model
 constexpr uint8_t batteryCount = 4;
 
 // max voltage of a single li-ion cell
-constexpr float batteryMaxVoltage_mV = 4200 * batteryCount;
+constexpr uint16_t batteryMaxVoltage_mV = 4200 * batteryCount;
 // max voltage of a li-ion cell to maximise lifetime
-constexpr float batteryMaxVoltageSafe_mV = 4060 * batteryCount;
+constexpr uint16_t batteryMaxVoltageSafe_mV = 4060 * batteryCount;
 // min voltage of a single li-ion cell
-constexpr float batteryMinVoltage_mV = 3000 * batteryCount;
+constexpr uint16_t batteryMinVoltage_mV = 3000 * batteryCount;
 // min voltage of a li-ion cell to maximise lifetime
-constexpr float batteryMinVoltageSafe_mV = 3300 * batteryCount;
+constexpr uint16_t batteryMinVoltageSafe_mV = 3300 * batteryCount;
 
 // parameters of the lamp body
 constexpr float maxPowerConsumption_A =
@@ -77,8 +76,8 @@ constexpr float maxStripConsumption_A = totalCons_Watt / inputVoltage_V;
 // compute the expected average loop runtime
 constexpr uint32_t LOOP_UPDATE_PERIOD = 10;
 
-constexpr float batteryCritical = 3;  // %
-constexpr float batteryLow = 5;       // %
+constexpr float batteryCritical = 300;  // % *100
+constexpr float batteryLow = 500;       // % *100
 
 constexpr uint32_t batteryMaxChargeCurrent_mA = 1000;  // mA
 

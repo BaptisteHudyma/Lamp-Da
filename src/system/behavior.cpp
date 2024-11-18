@@ -91,9 +91,6 @@ bool is_shutdown() { return isShutdown; }
 void startup_sequence() {
   isShutdown = true;
 
-  // initialize the battery level
-  battery::get_battery_level(true);
-
   // critical battery level, do not wake up
   if (battery::get_battery_level() <= batteryCritical + 1) {
     // alert user of low battery
@@ -393,7 +390,7 @@ void handle_alerts() {
     const auto buttonColor = utils::ColorSpace::RGB(
         utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
                             utils::ColorSpace::GREEN.get_rgb().color,
-                            battery::get_raw_battery_level() / 100.0));
+                            battery::get_raw_battery_level() / 10000.0));
 
     // display battery level
     const auto& chargerStatus = charger::get_state();

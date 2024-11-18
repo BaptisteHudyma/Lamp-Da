@@ -58,13 +58,13 @@ bool should_charge() {
     return false;
   }
 
-  const uint8_t batteryPercent = utils::get_battery_level(
+  const uint16_t batteryPercent = utils::get_battery_level(
       utils::get_battery_level_percent(battery.voltage_mV));
 
   // battery charge is latched on
   if (isBatteryFullLatched_s) {
     // deactivate latch below a certain level
-    if (batteryPercent < 95) {
+    if (batteryPercent < 9500) {
       isBatteryFullLatched_s = false;
     }
     return false;
@@ -73,7 +73,7 @@ bool should_charge() {
   static uint32_t batteryFullDeglitchTime = 0;
 
   // check battery full status
-  if (batteryPercent >= 100) {
+  if (batteryPercent >= 10000) {
     const uint32_t time = millis();
 
     if (batteryFullDeglitchTime == 0) {
