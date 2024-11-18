@@ -45,31 +45,37 @@ void handleCommand(const String& command) {
     case utils::hash("bl"):
     case utils::hash("battery"):
       Serial.print("raw battery level:");
-      Serial.print(battery::get_raw_battery_level());
+      Serial.print(battery::get_raw_battery_level() / 100.0);
       Serial.println("%");
       Serial.print("battery level:");
-      Serial.print(battery::get_battery_level());
+      Serial.print(battery::get_battery_level() / 100.0);
       Serial.println("%");
       break;
 
-    case utils::hash("vbus"):
+    case utils::hash("vbus"): {
+      const auto& chargerState = charger::get_state();
       Serial.print("voltage on vbus:");
-      Serial.print(charger::get_vbus_voltage_mV());
+      Serial.print(chargerState.vbus_mV);
+      Serial.println("mV");
+      Serial.print("input current:");
+      Serial.print(chargerState.inputCurrent_mA);
+      Serial.println("mA");
+      Serial.print("battery voltage:");
+      Serial.print(chargerState.batteryVoltage_mV);
       Serial.println("mV");
       Serial.print("charge current:");
-      Serial.print(charger::get_charge_current_mA());
+      Serial.print(chargerState.chargeCurrent_mA);
       Serial.println("mA");
       Serial.print("is usb powered:");
-      Serial.println(boolToString(charger::is_usb_powered()));
-      Serial.print("is charger ok:");
-      Serial.println(boolToString(charger::is_powered_on()));
+      Serial.println(boolToString(charger::is_vbus_signal_detected()));
       Serial.print("is charging:");
-      Serial.println(boolToString(charger::is_charging()));
+      Serial.println(boolToString(chargerState.is_charging()));
       Serial.print("battery level:");
-      Serial.print(battery::get_battery_level());
+      Serial.print(battery::get_battery_level() / 100.0);
       Serial.println("%");
-      Serial.println(charger::charge_status());
+      Serial.println(chargerState.get_status_str());
       break;
+    }
 
     case utils::hash("format-fs"):
       Serial.println("clearing the whole file format");

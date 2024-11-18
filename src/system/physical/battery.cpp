@@ -1,93 +1,55 @@
 #include "battery.h"
 
 #include "src/system/alerts.h"
+#include "src/system/charger/charger.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 
 namespace battery {
 
-constexpr uint8_t liionLevelToBatteryPercent(const float liionLevelPercent) {
-  return (liionLevelPercent < 40.0)
-             ?
-             // fast drop for the last half of the battery
-             utils::map(liionLevelPercent, 0.0, 40.0, 0.0, 12.0)
-             : (liionLevelPercent < 90.0)
-                   // most of the battery level is here, slow slope
-                   ? utils::map(liionLevelPercent, 40.0, 90.0, 12.0, 95.0)
-                   // battery level > 90
-                   : utils::map(liionLevelPercent, 90.0, 100.0, 95.0, 100.0);
-}
-
-constexpr uint8_t get_battery_level_percent(const float batteryLevel) {
-  return liionLevelToBatteryPercent(
-      constrain(utils::map(batteryLevel, batteryMinVoltage, batteryMaxVoltage,
-                           0.0, 100.0),
-                0.0, 100.0));
-}
-
-constexpr uint8_t get_battery_max_safe_level() {
-  return get_battery_level_percent(batteryMaxVoltageSafe);
-}
-
-constexpr uint8_t get_battery_min_safe_level() {
-  return get_battery_level_percent(batteryMinVoltageSafe);
-}
-
-uint16_t read_battery_level() {
+uint16_t read_battery_mV() {
   static uint32_t lastReadTime = 0;
   static uint16_t lastBatteryRead = 0;
 
   const uint32_t time = millis();
   if (lastReadTime == 0 or time - lastReadTime > 500) {
     lastReadTime = time;
-    // TODO: replace with a read from the charging component
-    lastBatteryRead = analogRead(BAT21);
+    // read and convert to voltage
+    lastBatteryRead =
+        (utils::analogReadToVoltage(analogRead(BAT21)) / voltageDividerCoeff) *
+        1000;
   }
   return lastBatteryRead;
 }
 
-float get_battery_voltage() {
-  // 3v internal ref, ADC resolution
-  static constexpr uint16_t minInValue = batteryMinVoltage *
-                                         voltageDividerCoeff * ADC_MAX_VALUE /
-                                         internalReferenceVoltage;
-  static constexpr uint16_t maxInValue = batteryMaxVoltage *
-                                         voltageDividerCoeff * ADC_MAX_VALUE /
-                                         internalReferenceVoltage;
+uint16_t get_raw_battery_level() {
+  uint16_t batteryVoltage_mV = 0;
+  const auto& chargerStates = charger::get_state();
+  if (chargerStates.areMeasuresOk) {
+    // values from the ADC in the charging component
+    batteryVoltage_mV = chargerStates.batteryVoltage_mV;
+  } else {
+    // imprecise and varying in conditions, so prefer the ADC values
+    batteryVoltage_mV = read_battery_mV();
+  }
 
   // in bounds with some margin
-  const uint16_t pinRead = read_battery_level();
-  if (pinRead < minInValue * 0.95 or pinRead > maxInValue * 1.05) {
+  static constexpr uint16_t minInValue = batteryMinVoltage_mV * 0.95;
+  static constexpr uint16_t maxInValue = batteryMaxVoltage_mV * 1.05;
+  if (batteryVoltage_mV < minInValue or batteryVoltage_mV > maxInValue) {
     AlertManager.raise_alert(Alerts::BATTERY_READINGS_INCOHERENT);
-    return 0;
+    // return a default low value
+    return batteryMinVoltage_mV;
   }
   AlertManager.clear_alert(Alerts::BATTERY_READINGS_INCOHERENT);
-  return utils::analogToDividerVoltage(pinRead);
+
+  return utils::get_battery_level_percent(batteryVoltage_mV);
 }
 
-uint8_t get_raw_battery_level(const bool resetRead) {
-  static float lastValue = 0;
-
-  const float batteryVoltage = get_battery_voltage();
-
-  // init or reset
-  if (lastValue == 0 or resetRead) {
-    lastValue = batteryVoltage;
-  }
-  // average on 1 second
-  static constexpr float filterValue = (float)LOOP_UPDATE_PERIOD / 2000.0;
-  lastValue += filterValue * (batteryVoltage - lastValue);
-
-  return get_battery_level_percent(lastValue);
-}
-
-uint8_t get_battery_level(const bool resetRead) {
+uint16_t get_battery_level() {
   // get the result of the total battery life, map it to the safe battery level
   // indicated by user
-  return constrain(
-      utils::map(get_raw_battery_level(resetRead), get_battery_min_safe_level(),
-                 get_battery_max_safe_level(), 0, 100),
-      0, 100);
+  return utils::get_battery_level(get_raw_battery_level());
 }
 
 // Raise the battery low or battery critical alert
@@ -98,7 +60,7 @@ void raise_battery_alert() {
   const uint32_t newCall = millis();
   if (newCall - lastCall > refreshRate_ms or lastCall == 0) {
     lastCall = newCall;
-    const uint8_t percent = get_battery_level();
+    const uint16_t percent = get_battery_level();
 
     // % battery is critical
     if (percent <= batteryCritical) {

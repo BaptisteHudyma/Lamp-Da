@@ -74,7 +74,7 @@ void setup() {
     if ((readResetReason() & POWER_RESETREAS_DOG_Msk) != 0x00) {
       // allow user to flash the program again, without running the currently
       // stored program
-      if (charger::is_usb_powered()) {
+      if (charger::is_vbus_signal_detected()) {
         // system will reset & shutdown after that
         enterSerialDfu();
       } else {
@@ -108,10 +108,19 @@ void setup() {
     user::power_off_sequence();
   }
 
+  // use the charging thread !
+  Scheduler.startLoop(charging_thread);
+
   // user requested another thread, spawn it
   if (user::should_spawn_thread()) {
     Scheduler.startLoop(secondary_thread);
   }
+}
+
+void charging_thread() {
+  // run the charger loop (all the time)
+  charger::loop();
+  delay(2);
 }
 
 void secondary_thread() {
@@ -161,12 +170,17 @@ void cpuTemperarureAlerts() {
 }
 
 void batteryAlerts() {
-  if (!charger::is_powered_on()) {
-    // no battery alert when charger is on
-    battery::raise_battery_alert();
-  } else {
+  const auto& chargerState = charger::get_state();
+  if (chargerState.status ==
+      charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING) {
+    // TODO: alert that the battery is missing
+  } else if (chargerState.is_charging()) {
+    // clear alerts when the device is charging
     AlertManager.clear_alert(Alerts::BATTERY_LOW);
     AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);
+  } else {
+    // no battery alert when charger is on
+    battery::raise_battery_alert();
   }
 }
 
@@ -186,7 +200,7 @@ void loop() {
     handle_alerts();
 
     // charger unplugged, real shutdown
-    if (!charger::is_usb_powered()) {
+    if (!charger::is_vbus_powered()) {
       if (wokeUpFromVBUS && millis() - turnOnTime < 2000) {
         // security for charger with ringing voltage levels, wait some time for
         // it to settle before shuting down

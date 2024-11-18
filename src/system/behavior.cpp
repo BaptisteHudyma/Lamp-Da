@@ -91,9 +91,6 @@ bool is_shutdown() { return isShutdown; }
 void startup_sequence() {
   isShutdown = true;
 
-  // initialize the battery level
-  battery::get_battery_level(true);
-
   // critical battery level, do not wake up
   if (battery::get_battery_level() <= batteryCritical + 1) {
     // alert user of low battery
@@ -154,9 +151,16 @@ void shutdown() {
   button::set_color(utils::ColorSpace::BLACK);
 
   // do not power down when charger is plugged in
-  if (!charger::is_usb_powered()) {
+  if (!charger::is_vbus_powered()) {
     charger::shutdown();
     digitalWrite(USB_33V_PWR, LOW);
+
+    // wait until vbus is off (TODO: remove in newer versions of the hardware)
+    uint8_t cnt = 0;
+    while (cnt < 200 and charger::is_vbus_signal_detected()) {
+      delay(5);
+      cnt++;
+    }
 
     // wake up from charger plugged in
     // nrf_gpio_cfg_sense_input(g_ADigitalPinMap[CHARGE_OK],
@@ -377,9 +381,6 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
 void handle_alerts() {
   const uint32_t current = AlertManager.current();
 
-  // charge processus, call ONCE per loop call
-  const bool isChargeOk = charger::charge_processus();
-
   static uint32_t criticalbatteryRaisedTime = 0;
   if (current == Alerts::NONE) {
     MaxBrightnessLimit = MAX_BRIGHTNESS;  // no alerts: reset the max brightness
@@ -389,11 +390,13 @@ void handle_alerts() {
     const auto buttonColor = utils::ColorSpace::RGB(
         utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
                             utils::ColorSpace::GREEN.get_rgb().color,
-                            battery::get_raw_battery_level() / 100.0));
+                            battery::get_raw_battery_level() / 10000.0));
 
     // display battery level
-    if (isChargeOk) {
-      if (charger::is_slow_charging()) {
+    const auto& chargerStatus = charger::get_state();
+    if (chargerStatus.is_charging()) {
+      if (chargerStatus.status ==
+          charger::Charger_t::ChargerStatus_t::SLOW_CHARGING) {
         // fast blinking
         // TODO: find a better way to tell user that the chargeur is bad
         button::blink(500, 500, buttonColor);

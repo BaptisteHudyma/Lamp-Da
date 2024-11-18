@@ -95,21 +95,6 @@ class BQ25703A {
   static boolean writeRegEx(T dataParam) {
     return writeDataReg(dataParam.addr, dataParam.val0, dataParam.val1);
   }
-  template <typename T>
-  static void setBytes(const T& dataParam, uint16_t value, uint16_t minVal,
-                       uint16_t maxVal, uint16_t offset, uint16_t resVal) {
-    // catch out of bounds
-    if (value < minVal) value = minVal;
-    if (value > maxVal) value = maxVal;
-    // remove offset
-    value = value - offset;
-    // catch out of resolution
-    value = value / resVal;
-    value = value * resVal;
-    // extract bytes and return to struct variables
-    dataParam->val0 = (byte)(value);
-    dataParam->val1 = (byte)(value >> 8);
-  }
 // macro to generate bit mask to access bits
 #define GETMASK(index, size) (((1 << (size)) - 1) << (index))
 // macro to read bits from variable, using mask
@@ -174,20 +159,25 @@ class BQ25703A {
       return 0;
     }
 
-    void set(const uint16_t value) {
-      // convert to correct data format
-      uint16_t constraint = constrain(value, minVal(), maxVal());
-      constraint -= minVal();
-      constraint /= resolution();
+    uint16_t set(const uint16_t value) {
+      // convert to authorized values
+      const uint16_t constraint =
+          constrain(value, minVal(), maxVal()) - minVal();
+      // break it down to the correct resolution (integer division)
+      const uint16_t flatValue = constraint / resolution();
       // convert to binary word
-      constraint &= mask();     // mask off unused bits
-      constraint <<= offset();  // offset the register
+      uint16_t binaryWord = flatValue;
+      binaryWord &= mask();     // mask off unused bits (with &= for 16bits)
+      binaryWord <<= offset();  // offset the register (with <<= for 16 bits)
 
-      const byte val0 = constraint & 0b11111111;
-      const byte val1 = constraint >> 8;
+      const byte val0 = binaryWord & 0b11111111;
+      const byte val1 = binaryWord >> 8;
       if (!writeDataReg(address(), val0, val1)) {
         isFlagRaised = true;
       }
+
+      // return the value that was written to the register
+      return (flatValue * resolution()) + minVal();
     }
   };
 
@@ -446,7 +436,7 @@ class BQ25703A {
       FIELD_RO(val0, Fault_ACOC, 0x05, 0x01)
       // Latched fault flag of system over voltage protection. Default is no
       // fault.
-      FIELD_RO(val0, SYSOVP_STAT, 0x04, 0x01)
+      FIELD(val0, SYSOVP_STAT, 0x04, 0x01)
       // Resets faults latch. Default is disabled
       FIELD_RO(val0, Fault_Latchoff, 0x02, 0x01)
       // Latched fault flag of OTG over voltage protection. Default is no
@@ -524,23 +514,27 @@ class BQ25703A {
     struct IIN_HOSTt : public IBaseRegister {
       uint16_t address() const override { return IIN_HOST_ADDR; }
 
-      virtual uint16_t minVal() const override { return 0; }
+      virtual uint16_t minVal() const override { return 50; }
       virtual uint16_t maxVal() const override { return 6400; }
       virtual uint16_t resolution() const override { return 50; }
 
       virtual uint8_t bitLenght() const override { return 7; }
       virtual uint8_t offset() const override { return 8; }
     } iIN_HOST;
+    // IIN_DPM register reflects the actual input current limit programmed in
+    // the register, either from host or from ICO.
     struct IIN_DPMt : public IBaseRegister {
       uint16_t address() const override { return IIN_DPM_ADDR; }
 
-      virtual uint16_t minVal() const override { return 0; }
+      virtual uint16_t minVal() const override { return 50; }
       virtual uint16_t maxVal() const override { return 6400; }
       virtual uint16_t resolution() const override { return 50; }
 
       virtual uint8_t bitLenght() const override { return 7; }
       virtual uint8_t offset() const override { return 8; }
     } iIN_DPM;
+    // If the input voltage drops more than the InputVoltage register allows,
+    // the device enters DPM and reduces the charge current
     struct InputVoltaget : public IBaseRegister {
       uint16_t address() const override { return INPUT_VOLTAGE_ADDR; }
 
@@ -561,6 +555,8 @@ class BQ25703A {
       virtual uint8_t bitLenght() const override { return 8; }
       virtual uint8_t offset() const override { return 6; }
     } oTGVoltage;
+    // The OTGCurrent register is a limit after which the device will raise the
+    // OTG_OVP flag
     struct OTGCurrentt : public IBaseRegister {
       uint16_t address() const override { return OTG_CURRENT_ADDR; }
 
@@ -571,6 +567,7 @@ class BQ25703A {
       virtual uint8_t bitLenght() const override { return 7; }
       virtual uint8_t offset() const override { return 8; }
     } oTGCurrent;
+    // Allows to read the VBUS & PSYS voltage from the ADC
     struct ADCVBUSPSYSt : public IDoubleRegister {  // read only
       uint16_t address() const override { return ADC_VBUS_PSYS_ADC_ADDR; };
 
@@ -587,6 +584,7 @@ class BQ25703A {
       // system power (exprimed as mV, which is strange...)
       uint16_t get_PSYS() { return getVal0(); }
     } aDCVBUSPSYS;
+    // Allows to read the battery charge and discharge current from DAC
     struct ADCIBATt : public IDoubleRegister {  // read only
       uint16_t address() const override { return ADC_IBAT_ADDR; };
 

@@ -153,7 +153,7 @@ void LAB::from_rgb(const COLOR& rgb) {
 }
 
 COLOR LCH::get_rgb() const {
-  const double newH = this->h * M_PI / 180;
+  const double newH = this->h * PI / 180;
 
   LAB lab(this->l, std::cos(newH) * this->c, std::sin(newH) * this->c);
   return lab.get_rgb();
@@ -166,7 +166,7 @@ void LCH::from_rgb(const COLOR& rgb) {
   double c = std::sqrt(lab.a * lab.a + lab.b * lab.b);
   double h = std::atan2(lab.b, lab.a);
 
-  h = h / M_PI * 180;
+  h = h / PI * 180;
   if (h < 0) {
     h += 360;
   } else if (h >= 360) {
@@ -228,7 +228,7 @@ void OKLAB::from_rgb(const COLOR& rgb) {
 }
 
 COLOR OKLCH::get_rgb() const {
-  const double newH = this->h * M_PI / 180;
+  const double newH = this->h * PI / 180;
 
   OKLAB lab(this->l, std::cos(newH) * this->c, std::sin(newH) * this->c);
   return lab.get_rgb();
@@ -241,7 +241,7 @@ void OKLCH::from_rgb(const COLOR& rgb) {
   double c = std::sqrt(lab.a * lab.a + lab.b * lab.b);
   double h = std::atan2(lab.b, lab.a);
 
-  h = h / M_PI * 180;
+  h = h / PI * 180;
   if (h < 0) {
     h += 360;
   } else if (h >= 360) {
