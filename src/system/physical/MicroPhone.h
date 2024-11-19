@@ -6,9 +6,10 @@ namespace microphone {
 
 // decibel level for a silent room
 constexpr float silenceLevelDb = -57.0;
-constexpr float highLevelDb =
-    80.0;  // microphone is not good enough at after this
-constexpr uint8_t numberOfFFtChanels = 16;
+// microphone is not good enough at after this
+constexpr float highLevelDb = 80.0;
+// make this number close to the lamp max x coordinates
+constexpr uint8_t numberOfFFtChanels = 25;
 
 // start the microphone readings
 extern void enable();

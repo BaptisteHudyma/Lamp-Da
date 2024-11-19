@@ -17,6 +17,8 @@ constexpr size_t SAMPLE_SIZE = 512;  // samplesFFT;
 int16_t _sampleBuffer[SAMPLE_SIZE];
 volatile uint16_t samplesRead;
 
+FftAnalyzer<SAMPLE_SIZE, numberOfFFtChanels> fftAnalyzer;
+
 uint32_t lastMeasurmentMicros;
 uint32_t lastMeasurmentDurationMicros;
 void on_PDM_data() {
@@ -60,17 +62,7 @@ void enable() {
   // optionally set the gain, defaults to 20
   PDM.setGain(30);
 
-  micDataReal = 0.0f;
-  sampleAgc = 0;
-  sampleAvg = 0;
-  rawSampleAgc = 0;
-  FFT_Magnitude = 0;
-  FFT_MajorPeak = 1;
-  multAgc = 1;
-  // reset FFT data
-  memset(fftCalc, 0, sizeof(fftCalc));
-  memset(fftAvg, 0, sizeof(fftAvg));
-  memset(fftResult, 0, sizeof(fftResult));
+  fftAnalyzer.reset();
 
   isStarted = true;
 }
@@ -130,17 +122,15 @@ bool processFFT(const bool runFFT = true) {
   // get data
   const uint16_t samples = min(SAMPLE_SIZE, samplesRead);
   for (uint16_t i = 0; i < samples; i++) {
-    vReal[i] = _sampleBuffer[i];
-    vImag[i] = 0;
+    fftAnalyzer.set_data(_sampleBuffer[i], i);
   }
   // fill the rest with zeros
-  for (uint16_t i = samplesRead; i < samplesFFT; i++) {
-    vReal[i] = 0;
-    vImag[i] = 0;
+  for (uint16_t i = samplesRead; i < SAMPLE_SIZE; i++) {
+    fftAnalyzer.set_data(0, i);
   }
 
   samplesRead = 0;
-  if (runFFT) FFTcode();
+  if (runFFT) fftAnalyzer.FFTcode();
 
   return true;
 }
@@ -156,11 +146,11 @@ SoundStruct get_fft() {
 
   // copy the FFT buffer
   soundStruct.isValid = true;
-  soundStruct.fftMajorPeakFrequency_Hz = FFT_MajorPeak;
-  soundStruct.strongestPeakMagnitude = FFT_Magnitude;
+  soundStruct.fftMajorPeakFrequency_Hz = fftAnalyzer.get_major_peak();
+  soundStruct.strongestPeakMagnitude = fftAnalyzer.get_magnitude();
   // copy the fft results
   for (uint8_t bandIndex = 0; bandIndex < numberOfFFtChanels; ++bandIndex) {
-    soundStruct.fft[bandIndex] = fftResult[bandIndex];
+    soundStruct.fft[bandIndex] = fftAnalyzer.get_fft(bandIndex);
   }
   return soundStruct;
 }

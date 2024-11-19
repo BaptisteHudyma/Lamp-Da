@@ -51,7 +51,8 @@ void fft_display(const uint8_t speed, const uint8_t scale,
   }
 
   for (uint8_t x = 0; x < cols; ++x) {
-    const uint8_t mappedX = map(x, 0, cols, 1, 15);
+    const uint8_t mappedX =
+        map(x, 0, cols, 0, microphone::numberOfFFtChanels - 1);
     const uint8_t mappedY = map(fftRes.fft[mappedX], 0, 255, 0, rows);
 
     if (mappedY > previousBarHeight[x])

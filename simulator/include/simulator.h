@@ -179,6 +179,7 @@ struct SoundStruct {
 };
 static float sound_level;
 static SoundStruct soundStruct;
+constexpr uint8_t numberOfFFtChanels = 25;
 
 float get_sound_level_Db() { return sound_level; }
 
