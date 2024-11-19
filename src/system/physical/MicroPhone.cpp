@@ -2,7 +2,6 @@
 
 #include <PDM.h>
 
-#include <algorithm>
 #include <cstdint>
 
 #include "fft.h"
@@ -13,7 +12,7 @@
 namespace microphone {
 
 // buffer to read samples into, each sample is 16-bits
-constexpr size_t SAMPLE_SIZE = 512;  // samplesFFT;
+constexpr size_t SAMPLE_SIZE = 512; // samplesFFT;
 int16_t _sampleBuffer[SAMPLE_SIZE];
 volatile uint16_t samplesRead;
 
@@ -21,7 +20,8 @@ FftAnalyzer<SAMPLE_SIZE, numberOfFFtChanels> fftAnalyzer;
 
 uint32_t lastMeasurmentMicros;
 uint32_t lastMeasurmentDurationMicros;
-void on_PDM_data() {
+void on_PDM_data()
+{
   const uint32_t newTime = micros();
   lastMeasurmentDurationMicros = newTime - lastMeasurmentMicros;
   lastMeasurmentMicros = newTime;
@@ -38,9 +38,11 @@ void on_PDM_data() {
 static uint32_t lastMicFunctionCall = 0;
 static bool isStarted = false;
 
-void enable() {
+void enable()
+{
   lastMicFunctionCall = millis();
-  if (isStarted) {
+  if (isStarted)
+  {
     return;
   }
 
@@ -52,9 +54,11 @@ void enable() {
   // initialize PDM with:
   // - one channel (mono mode)
   // - a sample rate
-  if (!PDM.begin(1, SAMPLE_RATE)) {
+  if (!PDM.begin(1, SAMPLE_RATE))
+  {
     // block program execution
-    while (1) {
+    while (1)
+    {
       delay(1000);
     }
   }
@@ -67,8 +71,10 @@ void enable() {
   isStarted = true;
 }
 
-void disable() {
-  if (!isStarted) {
+void disable()
+{
+  if (!isStarted)
+  {
     return;
   }
 
@@ -78,27 +84,33 @@ void disable() {
   isStarted = false;
 }
 
-void disable_after_non_use() {
-  if (isStarted and (millis() - lastMicFunctionCall > 1000.0)) {
+void disable_after_non_use()
+{
+  if (isStarted and (millis() - lastMicFunctionCall > 1000.0))
+  {
     // disable microphone if last reading is old
     disable();
   }
 }
 
-float get_sound_level_Db() {
+float get_sound_level_Db()
+{
   enable();
-  if (!isStarted) {
+  if (!isStarted)
+  {
     // ERROR
     return 0.0;
   }
 
   static float lastValue = 0;
 
-  if (!samplesRead) return lastValue;
+  if (!samplesRead)
+    return lastValue;
 
   float sumOfAll = 0.0;
   const uint16_t samples = min(SAMPLE_SIZE, samplesRead);
-  for (uint16_t i = 0; i < samples; i++) {
+  for (uint16_t i = 0; i < samples; i++)
+  {
     sumOfAll += powf(_sampleBuffer[i] / (float)1024.0, 2.0);
   }
   const float average = sumOfAll / (float)samples;
@@ -108,38 +120,46 @@ float get_sound_level_Db() {
   return lastValue;
 }
 
-bool processFFT(const bool runFFT = true) {
+bool processFFT(const bool runFFT = true)
+{
   enable();
-  if (!isStarted) {
+  if (!isStarted)
+  {
     // ERROR
     return false;
   }
 
-  if (!samplesRead) {
+  if (!samplesRead)
+  {
     return false;
   }
 
   // get data
   const uint16_t samples = min(SAMPLE_SIZE, samplesRead);
-  for (uint16_t i = 0; i < samples; i++) {
+  for (uint16_t i = 0; i < samples; i++)
+  {
     fftAnalyzer.set_data(_sampleBuffer[i], i);
   }
   // fill the rest with zeros
-  for (uint16_t i = samplesRead; i < SAMPLE_SIZE; i++) {
+  for (uint16_t i = samplesRead; i < SAMPLE_SIZE; i++)
+  {
     fftAnalyzer.set_data(0, i);
   }
 
   samplesRead = 0;
-  if (runFFT) fftAnalyzer.FFTcode();
+  if (runFFT)
+    fftAnalyzer.FFTcode();
 
   return true;
 }
 
 static SoundStruct soundStruct;
 
-SoundStruct get_fft() {
+SoundStruct get_fft()
+{
   // process the sound input
-  if (!processFFT(true)) {
+  if (!processFFT(true))
+  {
     soundStruct.isValid = false;
     return soundStruct;
   }
@@ -149,10 +169,11 @@ SoundStruct get_fft() {
   soundStruct.fftMajorPeakFrequency_Hz = fftAnalyzer.get_major_peak();
   soundStruct.strongestPeakMagnitude = fftAnalyzer.get_magnitude();
   // copy the fft results
-  for (uint8_t bandIndex = 0; bandIndex < numberOfFFtChanels; ++bandIndex) {
+  for (uint8_t bandIndex = 0; bandIndex < numberOfFFtChanels; ++bandIndex)
+  {
     soundStruct.fft[bandIndex] = fftAnalyzer.get_fft(bandIndex);
   }
   return soundStruct;
 }
 
-}  // namespace microphone
+} // namespace microphone

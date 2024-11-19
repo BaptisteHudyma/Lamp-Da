@@ -24,7 +24,8 @@ extern void disable_after_non_use();
  */
 extern float get_sound_level_Db();
 
-struct SoundStruct {
+struct SoundStruct
+{
   bool isValid = false;
 
   float fftMajorPeakFrequency_Hz = 0.0;
@@ -38,6 +39,6 @@ struct SoundStruct {
  */
 extern SoundStruct get_fft();
 
-}  // namespace microphone
+} // namespace microphone
 
 #endif

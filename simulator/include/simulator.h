@@ -170,16 +170,17 @@ namespace microphone {
 static constexpr float silenceLevelDb = -57;
 static constexpr float highLevelDb = 80;
 
+constexpr uint8_t numberOfFFtChanels = 25;
+
 struct SoundStruct {
   bool isValid = false;
 
   float fftMajorPeakFrequency_Hz = 0.0;
   float strongestPeakMagnitude = 0.0;
-  uint8_t fft[16];
+  uint8_t fft[numberOfFFtChanels];
 };
 static float sound_level;
 static SoundStruct soundStruct;
-constexpr uint8_t numberOfFFtChanels = 25;
 
 float get_sound_level_Db() { return sound_level; }
 

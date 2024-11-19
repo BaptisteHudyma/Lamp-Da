@@ -473,6 +473,9 @@ verify-all: verify-all-simulator
 	make 'verify-type(cct)'
 	@echo; echo 'Everything went fine :)'
 
+format:
+	find src/ -iname '*.h' -o -iname '*.cpp' | xargs clang-format --style=file -i
+
 #
 # to customize upload port:
 # 	LMBD_SERIAL_PORT=/dev/ttyACM2 make # (default is /dev/ttyACM0)

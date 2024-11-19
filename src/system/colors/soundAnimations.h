@@ -13,10 +13,9 @@ namespace animations {
 
 void vu_meter(const Color& vuColor, const uint8_t fadeOut, LedStrip& strip);
 
-void fft_display(const uint8_t speed, const uint8_t scale,
-                 const palette_t& palette, LedStrip& strip);
+void fft_display(const uint8_t speed, const uint8_t scale, const palette_t& palette, LedStrip& strip);
 
-}  // namespace animations
+} // namespace animations
 
 #endif
 
