@@ -16,7 +16,7 @@
 
 // (extern declarations)
 namespace user {
-  extern LedStrip strip;
+extern LedStrip strip;
 }
 #endif
 
@@ -76,9 +76,7 @@ void button_clicked_default(const uint8_t clicks);
  * \param[in] holdDuration The duration of the on-going held event
  * \remark When \p isEndOfHoldEvent is True, then \p holdDuration is zero
  */
-void button_hold_default(const uint8_t nbClickAndHold,
-                         const bool isEndOfHoldEvent,
-                         const uint32_t holdDuration);
+void button_hold_default(const uint8_t nbClickAndHold, const bool isEndOfHoldEvent, const uint32_t holdDuration);
 
 /** \brief Called to handle button click events if "usermode UI" is active
  *
@@ -97,9 +95,7 @@ bool button_clicked_usermode(const uint8_t nbClick);
  * \return Should return True if default UI action should be prevented
  * \remark When \p isEndOfHoldEvent is True, then \p holdDuration is zero
  */
-bool button_hold_usermode(const uint8_t nbClickAndHold,
-                          const bool isEndOfHoldEvent,
-                          const uint32_t holdDuration);
+bool button_hold_usermode(const uint8_t nbClickAndHold, const bool isEndOfHoldEvent, const uint32_t holdDuration);
 
 /** \brief Called at each tick of the main loop
  *

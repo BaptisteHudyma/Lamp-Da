@@ -25,7 +25,7 @@
 #error "Cannot define INDEXABLE if SIMPLE is defined"
 #endif
 
-#endif  // LMBD_LAMP_TYPE__SIMPLE
+#endif // LMBD_LAMP_TYPE__SIMPLE
 
 // LMBD_LAMP_TYPE__CCT
 #ifdef LMBD_LAMP_TYPE__CCT
@@ -40,7 +40,7 @@
 #error "Cannot define INDEXABLE if CCT is defined"
 #endif
 
-#endif  // LMBD_LAMP_TYPE__CCT
+#endif // LMBD_LAMP_TYPE__CCT
 
 // LMBD_LAMP_TYPE__CCT
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
@@ -55,7 +55,7 @@
 #error "Cannot define CCT if INDEXABLE is defined"
 #endif
 
-#endif  // LMBD_LAMP_TYPE__CCT
+#endif // LMBD_LAMP_TYPE__CCT
 
 #ifndef LMBD_LAMP_TYPE__SIMPLE
 #ifndef LMBD_LAMP_TYPE__CCT

@@ -474,7 +474,8 @@ verify-all: verify-all-simulator
 	@echo; echo 'Everything went fine :)'
 
 format:
-	find src/ -iname '*.h' -o -iname '*.cpp' | xargs clang-format --style=file -i
+	find src/ -iname '*.h' -o -iname '*.cpp' -iname '*.hpp' | xargs clang-format --style=file -i
+	find simulator/ -iname '*.h' -o -iname '*.cpp' -iname '*.hpp' | xargs clang-format --style=file -i
 
 #
 # to customize upload port:

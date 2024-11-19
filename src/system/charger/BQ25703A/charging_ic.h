@@ -5,7 +5,8 @@
 #include <optional>
 namespace BQ25703A {
 
-enum Status_t {
+enum Status_t
+{
   // not initialized
   UNINITIALIZED,
   // works fine
@@ -19,7 +20,8 @@ enum Status_t {
   ERROR_HAS_FAULTS,
 };
 
-enum ChargeStatus_t {
+enum ChargeStatus_t
+{
   // no charging
   OFF,
   // battery undervoltage charge
@@ -50,8 +52,7 @@ void shutdown();
 void enable_charge(const bool enable);
 
 // set the input current limit
-void set_input_current_limit(const uint16_t maxInputCurrent_mA,
-                             const bool shouldUseICO);
+void set_input_current_limit(const uint16_t maxInputCurrent_mA, const bool shouldUseICO);
 
 // return true if an input source is present for the charger
 bool is_input_source_present();
@@ -66,7 +67,8 @@ Status_t get_status();
 ChargeStatus_t get_charge_status();
 
 // store the DAC values
-struct Measurments {
+struct Measurments
+{
   // the time those measurments were made
   uint32_t time_ms = 0;
   // do not use the values if they are invalid
@@ -91,7 +93,8 @@ struct Measurments {
 };
 Measurments get_measurments();
 
-struct Battery {
+struct Battery
+{
   // if false, the other infos are useless
   bool isPresent = false;
 
@@ -104,6 +107,6 @@ struct Battery {
 };
 Battery get_battery();
 
-}  // namespace BQ25703A
+} // namespace BQ25703A
 
 #endif

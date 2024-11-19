@@ -13,14 +13,16 @@ inline static bool isPowerSourceDetected_s = false;
 inline static uint32_t powerSourceDetectedTime_s = 0;
 
 // check if the charger can use the max power
-bool can_use_PD_full_power() {
+bool can_use_PD_full_power()
+{
   // voltage on VBUS is greater than negociated voltage - threshold (50 ms
   // steps)
   return PD_UFP.get_vbus_voltage() > (PD_UFP.get_voltage() * 50 - 2000);
 }
 
 // check if the source had time to stabilize
-bool is_vbus_stable() {
+bool is_vbus_stable()
+{
   return isPowerSourceDetected_s and
          // let some time pass after a new detection
          millis() - powerSourceDetectedTime_s > 1500;
@@ -32,13 +34,15 @@ bool is_vbus_stable() {
  *
  */
 
-bool setup() {
+bool setup()
+{
   // initialize the power delivery process
   PD_UFP.init(CHARGE_INT, PD_POWER_OPTION_MAX_20V);
   return true;
 }
 
-void loop() {
+void loop()
+{
   // run pd process
   PD_UFP.run();
 
@@ -46,8 +50,10 @@ void loop() {
 
   // source detected
   const uint32_t time = millis();
-  if (PD_UFP.is_vbus_ok()) {
-    if (not isPowerSourceDetected_s) {
+  if (PD_UFP.is_vbus_ok())
+  {
+    if (not isPowerSourceDetected_s)
+    {
       powerSourceDetectedTime_s = time;
       isPowerSourceDetected_s = true;
     }
@@ -58,23 +64,30 @@ void loop() {
            // plugged in power can flicker
            time - powerSourceDetectedTime_s > 100 and
            // vbus can become briefly invalid when using the ICO algorithm
-           time - lastVbusValid > 500) {
+           time - lastVbusValid > 500)
+  {
     isPowerSourceDetected_s = false;
   }
 }
 
-uint16_t get_max_input_current() {
+uint16_t get_max_input_current()
+{
   // vbus had time to stabilize
-  if (is_vbus_stable()) {
+  if (is_vbus_stable())
+  {
     // power delivery is here
     const bool isUsbPD = is_usb_power_delivery();
     // power is available
-    if (isUsbPD) {
-      if (can_use_PD_full_power()) {
+    if (isUsbPD)
+    {
+      if (can_use_PD_full_power())
+      {
         // resolution of 10 mA
         return PD_UFP.get_current() * 10;
       }
-    } else {
+    }
+    else
+    {
       // maximum USB current
       return 1500;
     }
@@ -87,8 +100,6 @@ bool is_usb_power_delivery() { return PD_UFP.is_USB_PD_available(); }
 
 bool is_power_available() { return isPowerSourceDetected_s; }
 
-bool is_powered_with_vbus() {
-  return (NRF_POWER->USBREGSTATUS & POWER_USBREGSTATUS_VBUSDETECT_Msk) != 0x00;
-}
+bool is_powered_with_vbus() { return (NRF_POWER->USBREGSTATUS & POWER_USBREGSTATUS_VBUSDETECT_Msk) != 0x00; }
 
-}  // namespace powerSource
+} // namespace powerSource

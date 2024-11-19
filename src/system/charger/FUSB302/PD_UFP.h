@@ -24,19 +24,26 @@
 #include "FUSB302_UFP.h"
 #include "PD_UFP_Protocol.h"
 
-enum { STATUS_POWER_NA = 0, STATUS_POWER_TYP, STATUS_POWER_PPS };
+enum
+{
+  STATUS_POWER_NA = 0,
+  STATUS_POWER_TYP,
+  STATUS_POWER_PPS
+};
 typedef uint8_t status_power_t;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // PD_UFP_c
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-class PD_UFP_c {
- public:
+class PD_UFP_c
+{
+public:
   PD_UFP_c();
   // Init
-  void init(uint8_t int_pin,
-            enum PD_power_option_t power_option = PD_POWER_OPTION_MAX_5V);
-  void init_PPS(uint8_t int_pin, uint16_t PPS_voltage, uint8_t PPS_current,
+  void init(uint8_t int_pin, enum PD_power_option_t power_option = PD_POWER_OPTION_MAX_5V);
+  void init_PPS(uint8_t int_pin,
+                uint16_t PPS_voltage,
+                uint8_t PPS_current,
                 enum PD_power_option_t power_option = PD_POWER_OPTION_MAX_5V);
   // Task
   void run(void);
@@ -45,12 +52,8 @@ class PD_UFP_c {
   bool is_PPS_ready(void) { return status_power == STATUS_POWER_PPS; }
   bool is_ps_transition(void) { return send_request || wait_ps_rdy; }
   // Get
-  uint16_t get_voltage(void) {
-    return ready_voltage;
-  }  // Voltage in 50mV units, 20mV(PPS)
-  uint16_t get_current(void) {
-    return ready_current;
-  }  // Current in 10mA units, 50mA(PPS)
+  uint16_t get_voltage(void) { return ready_voltage; } // Voltage in 50mV units, 20mV(PPS)
+  uint16_t get_current(void) { return ready_current; } // Current in 10mA units, 50mA(PPS)
   status_power_t get_ps_status(void) { return status_power; }
   // Set
   bool set_PPS(uint16_t PPS_voltage, uint8_t PPS_current);
@@ -68,11 +71,9 @@ class PD_UFP_c {
 
   void reset();
 
- protected:
-  static FUSB302_ret_t FUSB302_i2c_read(uint8_t dev_addr, uint8_t reg_addr,
-                                        uint8_t *data, uint8_t count);
-  static FUSB302_ret_t FUSB302_i2c_write(uint8_t dev_addr, uint8_t reg_addr,
-                                         uint8_t *data, uint8_t count);
+protected:
+  static FUSB302_ret_t FUSB302_i2c_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data, uint8_t count);
+  static FUSB302_ret_t FUSB302_i2c_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data, uint8_t count);
   static FUSB302_ret_t FUSB302_delay_ms(uint32_t t);
   void handle_protocol_event(PD_protocol_event_t events);
   void handle_FUSB302_event(FUSB302_event_t events);
@@ -89,8 +90,7 @@ class PD_UFP_c {
   uint16_t PPS_voltage_next;
   uint8_t PPS_current_next;
   // Status
-  virtual void status_power_ready(status_power_t status, uint16_t voltage,
-                                  uint16_t current);
+  virtual void status_power_ready(status_power_t status, uint16_t voltage, uint16_t current);
   uint8_t status_initialized;
   uint8_t status_src_cap_received;
   status_power_t status_power;

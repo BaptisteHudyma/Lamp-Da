@@ -5,17 +5,20 @@
 
 namespace utils::ColorSpace {
 
-class Base {
- public:
+class Base
+{
+public:
   virtual COLOR get_rgb() const = 0;
 };
 
-class XYZ : public Base {
- public:
+class XYZ : public Base
+{
+public:
   XYZ(const COLOR& c) { from_rgb(c); };
-  XYZ(double x, double y, double z) : x(x), y(y), z(z){};
+  XYZ(double x, double y, double z) : x(x), y(y), z(z) {};
 
-  static XYZ get_white() {
+  static XYZ get_white()
+  {
     static const XYZ white(95.047, 100.000, 108.883);
     return white;
   }
@@ -29,9 +32,11 @@ class XYZ : public Base {
   double z;
 };
 
-class RGB : public Base {
- public:
-  RGB(uint8_t red, uint8_t green, uint8_t blue) {
+class RGB : public Base
+{
+public:
+  RGB(uint8_t red, uint8_t green, uint8_t blue)
+  {
     _color.red = red;
     _color.green = green;
     _color.blue = blue;
@@ -41,7 +46,7 @@ class RGB : public Base {
 
   COLOR get_rgb() const override { return _color; }
 
- private:
+private:
   COLOR _color;
 };
 
@@ -60,10 +65,11 @@ static const RGB TOMATO(255, 99, 71);
 static const RGB ORANGE(255, 140, 0);
 static const RGB PURPLE(128, 0, 128);
 
-class HSV : public Base {
- public:
+class HSV : public Base
+{
+public:
   HSV(const COLOR& c) { from_rgb(c); };
-  HSV(double h, double s, double v) : h(h), s(s), v(v){};
+  HSV(double h, double s, double v) : h(h), s(s), v(v) {};
 
   COLOR get_rgb() const override;
 
@@ -76,10 +82,11 @@ class HSV : public Base {
   double v;
 };
 
-class LAB : public Base {
- public:
+class LAB : public Base
+{
+public:
   LAB(const COLOR& c) { from_rgb(c); };
-  LAB(const double l, const double a, const double b) : l(l), a(a), b(b){};
+  LAB(const double l, const double a, const double b) : l(l), a(a), b(b) {};
 
   // get the rgb form (for display)
   COLOR get_rgb() const override;
@@ -91,10 +98,11 @@ class LAB : public Base {
   double b;
 };
 
-class LCH : public Base {
- public:
+class LCH : public Base
+{
+public:
   LCH(const COLOR& c) { from_rgb(c); };
-  LCH(const double l, const double c, const double h) : l(l), c(c), h(h){};
+  LCH(const double l, const double c, const double h) : l(l), c(c), h(h) {};
 
   // get the rgb form (for display)
   COLOR get_rgb() const override;
@@ -105,13 +113,14 @@ class LCH : public Base {
 
   double l;
   double c;
-  double h;  // 0 - 360
+  double h; // 0 - 360
 };
 
-class OKLAB : public Base {
- public:
+class OKLAB : public Base
+{
+public:
   OKLAB(const COLOR& c) { from_rgb(c); };
-  OKLAB(const double l, const double a, const double b) : l(l), a(a), b(b){};
+  OKLAB(const double l, const double a, const double b) : l(l), a(a), b(b) {};
 
   // get the rgb form (for display)
   COLOR get_rgb() const override;
@@ -123,10 +132,11 @@ class OKLAB : public Base {
   double b;
 };
 
-class OKLCH : public Base {
- public:
+class OKLCH : public Base
+{
+public:
   OKLCH(const COLOR& c) { from_rgb(c); };
-  OKLCH(const double l, const double c, const double h) : l(l), c(c), h(h){};
+  OKLCH(const double l, const double c, const double h) : l(l), c(c), h(h) {};
 
   // get the rgb form (for display)
   COLOR get_rgb() const override;
@@ -137,9 +147,9 @@ class OKLCH : public Base {
 
   double l;
   double c;
-  double h;  // 0 - 360
+  double h; // 0 - 360
 };
 
-}  // namespace utils::ColorSpace
+} // namespace utils::ColorSpace
 
 #endif

@@ -20,8 +20,11 @@ namespace animations {
  * \param[in] cutOff between 0 and 1, how much this gradient will fill the
  * display before suddently cutting of \return True if the animation is finished
  */
-bool dot_wipe_down(const Color& color, const uint32_t duration,
-                   const uint8_t fadeOut, const bool restart, LedStrip& strip,
+bool dot_wipe_down(const Color& color,
+                   const uint32_t duration,
+                   const uint8_t fadeOut,
+                   const bool restart,
+                   LedStrip& strip,
                    const float cutOff = 1);
 
 /**
@@ -35,8 +38,11 @@ bool dot_wipe_down(const Color& color, const uint32_t duration,
  * \param[in] cutOff between 0 and 1, how much this gradient will fill the
  * display before suddently cutting of \return True if the animation is finished
  */
-bool dot_wipe_up(const Color& color, const uint32_t duration,
-                 const uint8_t fadeOut, const bool restart, LedStrip& strip,
+bool dot_wipe_up(const Color& color,
+                 const uint32_t duration,
+                 const uint8_t fadeOut,
+                 const bool restart,
+                 LedStrip& strip,
                  const float cutOff = 1);
 
 /**
@@ -48,9 +54,8 @@ bool dot_wipe_up(const Color& color, const uint32_t duration,
  * \param[in] cutOff between 0 and 1, how much this gradient will fill the
  * display before suddently cutting of \return True if the animation is finished
  */
-bool color_wipe_down(const Color& color, const uint32_t duration,
-                     const bool restart, LedStrip& strip,
-                     const float cutOff = 1);
+bool color_wipe_down(
+        const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff = 1);
 
 /**
  * \brief Progressivly fill the display with a color, during a certain duration.
@@ -61,8 +66,8 @@ bool color_wipe_down(const Color& color, const uint32_t duration,
  * \param[in] cutOff between 0 and 1, how much this gradient will fill the
  * display before suddently cutting of \return True if the animation is finished
  */
-bool color_wipe_up(const Color& color, const uint32_t duration,
-                   const bool restart, LedStrip& strip, const float cutOff = 1);
+bool color_wipe_up(
+        const Color& color, const uint32_t duration, const bool restart, LedStrip& strip, const float cutOff = 1);
 
 /**
  * \brief Progressivly fill the display with a color, during a certain duration.
@@ -72,10 +77,9 @@ bool color_wipe_up(const Color& color, const uint32_t duration,
  * \param[in, out] strip The led strip to control
  * \return True if the animation is finished
  */
-bool color_vertical_wipe_right(const Color& color, const uint32_t duration,
-                               const bool restart, LedStrip& strip);
+bool color_vertical_wipe_right(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip);
 
-};  // namespace animations
+}; // namespace animations
 
 #endif
 

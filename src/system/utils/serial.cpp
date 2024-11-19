@@ -15,10 +15,12 @@ constexpr uint8_t maxLineLenght = 200;
 
 inline const char* const boolToString(bool b) { return b ? "true" : "false"; }
 
-void handleCommand(const String& command) {
+void handleCommand(const String& command)
+{
   Serial.println("");
 
-  switch (utils::hash(command.c_str())) {
+  switch (utils::hash(command.c_str()))
+  {
     case utils::hash("h"):
     case utils::hash("help"):
       Serial.println("");
@@ -52,30 +54,31 @@ void handleCommand(const String& command) {
       Serial.println("%");
       break;
 
-    case utils::hash("vbus"): {
-      const auto& chargerState = charger::get_state();
-      Serial.print("voltage on vbus:");
-      Serial.print(chargerState.vbus_mV);
-      Serial.println("mV");
-      Serial.print("input current:");
-      Serial.print(chargerState.inputCurrent_mA);
-      Serial.println("mA");
-      Serial.print("battery voltage:");
-      Serial.print(chargerState.batteryVoltage_mV);
-      Serial.println("mV");
-      Serial.print("charge current:");
-      Serial.print(chargerState.chargeCurrent_mA);
-      Serial.println("mA");
-      Serial.print("is usb powered:");
-      Serial.println(boolToString(charger::is_vbus_signal_detected()));
-      Serial.print("is charging:");
-      Serial.println(boolToString(chargerState.is_charging()));
-      Serial.print("battery level:");
-      Serial.print(battery::get_battery_level() / 100.0);
-      Serial.println("%");
-      Serial.println(chargerState.get_status_str());
-      break;
-    }
+    case utils::hash("vbus"):
+      {
+        const auto& chargerState = charger::get_state();
+        Serial.print("voltage on vbus:");
+        Serial.print(chargerState.vbus_mV);
+        Serial.println("mV");
+        Serial.print("input current:");
+        Serial.print(chargerState.inputCurrent_mA);
+        Serial.println("mA");
+        Serial.print("battery voltage:");
+        Serial.print(chargerState.batteryVoltage_mV);
+        Serial.println("mV");
+        Serial.print("charge current:");
+        Serial.print(chargerState.chargeCurrent_mA);
+        Serial.println("mA");
+        Serial.print("is usb powered:");
+        Serial.println(boolToString(charger::is_vbus_signal_detected()));
+        Serial.print("is charging:");
+        Serial.println(boolToString(chargerState.is_charging()));
+        Serial.print("battery level:");
+        Serial.print(battery::get_battery_level() / 100.0);
+        Serial.println("%");
+        Serial.println(chargerState.get_status_str());
+        break;
+      }
 
     case utils::hash("format-fs"):
       Serial.println("clearing the whole file format");
@@ -92,40 +95,46 @@ void handleCommand(const String& command) {
 
 String inputString = "";
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
 
   inputString.reserve(255);
 }
 
-void handleSerialEvents() {
-  if (Serial.available()) {
+void handleSerialEvents()
+{
+  if (Serial.available())
+  {
     uint8_t lineRead = 0;
     uint8_t charRead = 0;
 
     inputString = "";
 
     // read available serial data
-    do {
+    do
+    {
       // get the new byte:
       const char inChar = (char)Serial.read();
       // if the incoming character is a newline, finish parsing
-      if (inChar == '\n') {
+      if (inChar == '\n')
+      {
         // handle the command
         handleCommand(inputString);
         inputString = "";
         lineRead += 1;
         charRead = 0;
-      } else {
+      }
+      else
+      {
         // add it to the inputString:
         inputString += inChar;
         charRead += 1;
       }
-    } while (Serial.available() && lineRead < maxReadLinePerLoop &&
-             charRead < maxLineLenght);
+    } while (Serial.available() && lineRead < maxReadLinePerLoop && charRead < maxLineLenght);
 
     inputString = "";
   }
 }
 
-}  // namespace serial
+} // namespace serial

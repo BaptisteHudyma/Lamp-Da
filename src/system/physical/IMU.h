@@ -13,6 +13,6 @@ extern void disable();
 // disable imu if last use is old
 extern void disable_after_non_use();
 
-}  // namespace imu
+} // namespace imu
 
 #endif

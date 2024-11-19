@@ -9,23 +9,26 @@
 namespace imu {
 
 // Create a instance of class LSM6DS3
-LSM6DS3 IMU(I2C_MODE, 0x6A);  // I2C device address 0x6A
+LSM6DS3 IMU(I2C_MODE, 0x6A); // I2C device address 0x6A
 
 static uint32_t lastIMUFunctionCall = 0;
 bool isStarted = false;
 
-void enable() {
+void enable()
+{
   lastIMUFunctionCall = millis();
-  if (isStarted) {
+  if (isStarted)
+  {
     return;
   }
 
   pinMode(PIN_LSM6DS3TR_C_POWER, OUTPUT);
   digitalWrite(PIN_LSM6DS3TR_C_POWER, HIGH);
 
-  delay(5);  // voltage stabilization
+  delay(5); // voltage stabilization
 
-  if (IMU.begin() != 0) {
+  if (IMU.begin() != 0)
+  {
     // TODO: something ?
     Serial.println("ERROR: IMU did not start");
   }
@@ -33,8 +36,10 @@ void enable() {
   isStarted = true;
 }
 
-void disable() {
-  if (!isStarted) {
+void disable()
+{
+  if (!isStarted)
+  {
     return;
   }
 
@@ -42,28 +47,37 @@ void disable() {
   isStarted = false;
 }
 
-void disable_after_non_use() {
-  if (isStarted and (millis() - lastIMUFunctionCall > 1000.0)) {
+void disable_after_non_use()
+{
+  if (isStarted and (millis() - lastIMUFunctionCall > 1000.0))
+  {
     // disable microphone if last reading is old
     disable();
   }
 }
 
-struct vec3d {
+struct vec3d
+{
   float x;
   float y;
   float z;
 };
 
-struct Accelerometer : public vec3d {};
-struct Gyroscope : public vec3d {};
+struct Accelerometer : public vec3d
+{
+};
+struct Gyroscope : public vec3d
+{
+};
 
-struct Reading {
+struct Reading
+{
   Accelerometer accel;
   Gyroscope gyro;
 };
 
-Reading get_reading() {
+Reading get_reading()
+{
   enable();
 
   Reading reads;
@@ -88,13 +102,17 @@ Reading get_reading() {
   return reads;
 }
 
-Reading get_filtered_reading(const bool resetFilter) {
+Reading get_filtered_reading(const bool resetFilter)
+{
   static Reading filtered;
 
   const Reading& read = get_reading();
-  if (resetFilter) {
+  if (resetFilter)
+  {
     filtered = read;
-  } else {
+  }
+  else
+  {
     // simple linear filter: average on the last 10 values
     filtered.accel.x += 0.1 * (read.accel.x - filtered.accel.x);
     filtered.accel.y += 0.1 * (read.accel.y - filtered.accel.y);
@@ -108,4 +126,4 @@ Reading get_filtered_reading(const bool resetFilter) {
   return filtered;
 }
 
-}  // namespace imu
+} // namespace imu
