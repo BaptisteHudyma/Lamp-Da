@@ -1,0 +1,22 @@
+#ifndef SOUND_ANIMATION_H
+#define SOUND_ANIMATION_H
+
+// this file is active only if LMBD_LAMP_TYPE=indexable
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+
+#include "src/system/colors/colors.h"
+#include "src/system/physical/MicroPhone.h"
+#include "src/system/utils/colorspace.h"
+#include "src/system/utils/strip.h"
+
+namespace animations {
+
+void vu_meter(const Color& vuColor, const uint8_t fadeOut, LedStrip& strip);
+
+void fft_display(const uint8_t speed, const uint8_t scale, const palette_t& palette, LedStrip& strip);
+
+} // namespace animations
+
+#endif
+
+#endif

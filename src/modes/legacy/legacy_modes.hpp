@@ -6,6 +6,7 @@
 #include "src/system/colors/animations.h"
 #include "src/system/colors/colors.h"
 #include "src/system/colors/palettes.h"
+#include "src/system/colors/soundAnimations.h"
 #include "src/system/colors/wipes.h"
 #include "src/system/physical/fileSystem.h"
 #include "src/system/physical/IMU.h"
@@ -222,17 +223,48 @@ struct PingPongMode : public LegacyMode {
     }
   }
 
-  static void reset(auto& ctx) {
-    ctx.state.complementaryPingPongColor.reset();
-  }
+  static void reset(auto& ctx) { ctx.state.complementaryPingPongColor.reset(); }
 
   struct StateTy {
-    GenerateComplementaryColor complementaryPingPongColor = GenerateComplementaryColor(0.4);
+    GenerateComplementaryColor complementaryPingPongColor =
+        GenerateComplementaryColor(0.4);
     bool isFinished = false;
   };
 };
 
-} // modes::legacy::party
+}  // namespace party
+
+namespace sound {
+
+struct VuMeterMode : public LegacyMode {
+  static void loop(auto& ctx) {
+    auto& state = ctx.state;
+    animations::vu_meter(state.redToGreenGradient, 128, ctx.strip);
+  }
+
+  static void reset(auto& ctx) {
+    auto& state = ctx.state;
+    state.redToGreenGradient.reset();
+  }
+
+  struct StateTy {
+    GenerateGradientColor redToGreenGradient = GenerateGradientColor(
+        LedStrip::Color(0, 255, 0),
+        LedStrip::Color(255, 0, 0));  // gradient from red to green};
+  };
+};
+
+struct FftMode : public LegacyMode {
+  static void loop(auto& ctx) {
+    animations::fft_display(64, 64, PalettePartyColors, ctx.strip);
+  }
+
+  static void reset(auto& ctx) {}
+
+  struct StateTy {};
+};
+
+}  // namespace sound
 
 //
 // Legacy modes groups
@@ -255,6 +287,11 @@ using PartyModes = modes::GroupFor<
   party::ColorWipeMode,
   party::RandomFillMode,
   party::PingPongMode
+>;
+
+using SoundModes = modes::GroupFor<
+  sound::VuMeterMode,
+  sound::FftMode
 >;
 
 } // modes::legacy
