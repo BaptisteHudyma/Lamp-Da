@@ -17,12 +17,13 @@
 #include "src/system/utils/utils.h"
 #include "src/user/functions.h"
 
-void set_watchdog(const uint32_t timeoutDelaySecond) {
+void set_watchdog(const uint32_t timeoutDelaySecond)
+{
   // Configure WDT
-  NRF_WDT->CONFIG = 0x01;  // Configure WDT to run when CPU is asleep
-  NRF_WDT->CRV = timeoutDelaySecond * 32768 + 1;  // set timeout
-  NRF_WDT->RREN = 0x01;      // Enable the RR[0] reload register
-  NRF_WDT->TASKS_START = 1;  // Start WDT
+  NRF_WDT->CONFIG = 0x01;                        // Configure WDT to run when CPU is asleep
+  NRF_WDT->CRV = timeoutDelaySecond * 32768 + 1; // set timeout
+  NRF_WDT->RREN = 0x01;                          // Enable the RR[0] reload register
+  NRF_WDT->TASKS_START = 1;                      // Start WDT
 }
 
 // if the system waked up by USB plugged in, set this flag
@@ -31,7 +32,8 @@ bool wokeUpFromVBUS = false;
 // timestamp of the system wake up
 static uint32_t turnOnTime = 0;
 
-void setup() {
+void setup()
+{
   // start by resetting the led driver
   ledpower::write_current(0);
 
@@ -40,17 +42,17 @@ void setup() {
 
   // set watchdog (reset the soft when the program crashes)
   // Should be long enough to flash the microcontroler !!!
-  set_watchdog(5);  // second timeout
+  set_watchdog(5); // second timeout
 
   // necessary for all i2c communications
-  Wire.setClock(400000);  // 400KHz clock
-  Wire.setTimeout(100);   // ms timout
+  Wire.setClock(400000); // 400KHz clock
+  Wire.setTimeout(100);  // ms timout
   Wire.begin();
 
   // setup serial
   serial::setup();
 
-  analogReference(AR_INTERNAL_3_0);  // 3v reference
+  analogReference(AR_INTERNAL_3_0); // 3v reference
   analogReadResolution(ADC_RES_EXP);
 
   // setup charger
@@ -65,19 +67,25 @@ void setup() {
 
   bool shouldAlertUser = false;
   // handle start flags
-  if (!isFirstBoot) {
+  if (!isFirstBoot)
+  {
     // started after reset, clear all code and go to bootloader mode
-    if ((readResetReason() & POWER_RESETREAS_RESETPIN_Msk) != 0x00) {
+    if ((readResetReason() & POWER_RESETREAS_RESETPIN_Msk) != 0x00)
+    {
       enterSerialDfu();
     }
 
-    if ((readResetReason() & POWER_RESETREAS_DOG_Msk) != 0x00) {
+    if ((readResetReason() & POWER_RESETREAS_DOG_Msk) != 0x00)
+    {
       // allow user to flash the program again, without running the currently
       // stored program
-      if (charger::is_vbus_signal_detected()) {
+      if (charger::is_vbus_signal_detected())
+      {
         // system will reset & shutdown after that
         enterSerialDfu();
-      } else {
+      }
+      else
+      {
         // alert the user that the lamp was resetted by watchdog
         shouldAlertUser = true;
       }
@@ -87,8 +95,10 @@ void setup() {
   // set up button colors and callbacks
   button::init();
 
-  if (shouldAlertUser) {
-    for (int i = 0; i < 5; i++) {
+  if (shouldAlertUser)
+  {
+    for (int i = 0; i < 5; i++)
+    {
       button::set_color(utils::ColorSpace::WHITE);
       delay(300);
       button::set_color(utils::ColorSpace::BLACK);
@@ -97,11 +107,13 @@ void setup() {
   }
 
   // started by interrupt (user)
-  if ((readResetReason() & POWER_RESETREAS_OFF_Msk) != 0x00) {
+  if ((readResetReason() & POWER_RESETREAS_OFF_Msk) != 0x00)
+  {
     startup_sequence();
   }
   // else: start in shutdown mode
-  else {
+  else
+  {
     wokeUpFromVBUS = true;
 
     // let the user start in unpowered mode (edge cases...)
@@ -112,79 +124,101 @@ void setup() {
   Scheduler.startLoop(charging_thread);
 
   // user requested another thread, spawn it
-  if (user::should_spawn_thread()) {
+  if (user::should_spawn_thread())
+  {
     Scheduler.startLoop(secondary_thread);
   }
 }
 
-void charging_thread() {
+void charging_thread()
+{
   // run the charger loop (all the time)
   charger::loop();
   delay(2);
 }
 
-void secondary_thread() {
-  if (is_shutdown()) return;
+void secondary_thread()
+{
+  if (is_shutdown())
+    return;
 
   user::user_thread();
 }
 
-void check_loop_runtime(const uint32_t runTime) {
+void check_loop_runtime(const uint32_t runTime)
+{
   static constexpr uint8_t maxAlerts = 5;
   static uint32_t alarmRaisedTime = 0;
   // check the loop duration
   static uint8_t isOnSlowLoopCount = 0;
-  if (runTime > LOOP_UPDATE_PERIOD + 1) {
+  if (runTime > LOOP_UPDATE_PERIOD + 1)
+  {
     isOnSlowLoopCount = min(isOnSlowLoopCount + 1, maxAlerts);
 
-    if (runTime > 500) {
+    if (runTime > 500)
+    {
       // if loop time is too long, go back to flash mode
       enterSerialDfu();
     }
-  } else if (isOnSlowLoopCount > 0) {
+  }
+  else if (isOnSlowLoopCount > 0)
+  {
     isOnSlowLoopCount--;
   }
 
-  if (isOnSlowLoopCount >= maxAlerts) {
+  if (isOnSlowLoopCount >= maxAlerts)
+  {
     alarmRaisedTime = millis();
     AlertManager.raise_alert(Alerts::LONG_LOOP_UPDATE);
   }
   // lower the alert (after 5 seconds)
-  else if (isOnSlowLoopCount <= 1 and millis() - alarmRaisedTime > 3000) {
+  else if (isOnSlowLoopCount <= 1 and millis() - alarmRaisedTime > 3000)
+  {
     AlertManager.clear_alert(Alerts::LONG_LOOP_UPDATE);
   };
 }
 
-void cpuTemperarureAlerts() {
+void cpuTemperarureAlerts()
+{
   // temperature alerts
   const float procTemp = readCPUTemperature();
-  if (procTemp >= criticalSystemTemp_c) {
+  if (procTemp >= criticalSystemTemp_c)
+  {
     AlertManager.raise_alert(TEMP_CRITICAL);
-
-  } else if (procTemp >= maxSystemTemp_c) {
+  }
+  else if (procTemp >= maxSystemTemp_c)
+  {
     AlertManager.raise_alert(TEMP_TOO_HIGH);
-  } else {
+  }
+  else
+  {
     AlertManager.clear_alert(TEMP_TOO_HIGH);
     AlertManager.clear_alert(TEMP_CRITICAL);
   }
 }
 
-void batteryAlerts() {
+void batteryAlerts()
+{
   const auto& chargerState = charger::get_state();
-  if (chargerState.status ==
-      charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING) {
+  if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)
+  {
     // TODO: alert that the battery is missing
-  } else if (chargerState.is_charging()) {
+  }
+  else if (chargerState.is_charging())
+  {
     // clear alerts when the device is charging
     AlertManager.clear_alert(Alerts::BATTERY_LOW);
     AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);
-  } else {
+  }
+  else
+  {
     // no battery alert when charger is on
     battery::raise_battery_alert();
   }
 }
 
-void loop() {
+void loop()
+{
   uint32_t start = millis();
 
   // update watchdog (prevent crash)
@@ -195,16 +229,20 @@ void loop() {
   // handle user serial events
   serial::handleSerialEvents();
 
-  if (is_shutdown()) {
+  if (is_shutdown())
+  {
     // display alerts if needed
     handle_alerts();
 
     // charger unplugged, real shutdown
-    if (!charger::is_vbus_powered()) {
-      if (wokeUpFromVBUS && millis() - turnOnTime < 2000) {
+    if (!charger::is_vbus_powered())
+    {
+      if (wokeUpFromVBUS && millis() - turnOnTime < 2000)
+      {
         // security for charger with ringing voltage levels, wait some time for
         // it to settle before shuting down
-      } else
+      }
+      else
         shutdown();
     }
 
@@ -225,7 +263,8 @@ void loop() {
   // wait for a delay if we are faster than the set refresh rate
   uint32_t stop = millis();
   const uint32_t loopDuration = (stop - start);
-  if (loopDuration < LOOP_UPDATE_PERIOD) {
+  if (loopDuration < LOOP_UPDATE_PERIOD)
+  {
     delay(LOOP_UPDATE_PERIOD - loopDuration);
   }
 

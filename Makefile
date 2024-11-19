@@ -415,6 +415,16 @@ build: has-lamp-type process $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 	@cp $(OBJECTS_DIR)/*.ino* $(ARTIFACTS)/
 
 #
+# Format the code base using the given clang-format file
+#
+
+format:
+	find LampColorControler.ino | xargs clang-format --style=file -i
+	find src/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file -i
+	find simulator/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file -i
+
+
+#
 # verify artifact
 # 	- we check the presence of "canary string" in output artifact for sanity
 #
@@ -465,6 +475,7 @@ verify-type(%):
 
 verify-all: verify-all-simulator
 	@echo; echo " --- $@"
+	make format
 	# verify that all lamp types build & validates
 	make clean 'verify-type(indexable)'
 	@touch $(BUILD_DIR)/.skip-simple-clean # (re-use indexable setup)
@@ -472,10 +483,6 @@ verify-all: verify-all-simulator
 	@touch $(BUILD_DIR)/.skip-cct-clean # (re-use indexable setup)
 	make 'verify-type(cct)'
 	@echo; echo 'Everything went fine :)'
-
-format:
-	find src/ -iname '*.h' -o -iname '*.cpp' -iname '*.hpp' | xargs clang-format --style=file -i
-	find simulator/ -iname '*.h' -o -iname '*.cpp' -iname '*.hpp' | xargs clang-format --style=file -i
 
 #
 # to customize upload port:
