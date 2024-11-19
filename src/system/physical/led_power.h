@@ -17,6 +17,6 @@ extern void write_current(const float current);
  */
 extern void write_brightness(const uint8_t brightness);
 
-}  // namespace ledpower
+} // namespace ledpower
 
 #endif

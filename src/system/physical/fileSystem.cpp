@@ -20,51 +20,63 @@ File file(InternalFS);
 // the stored configurations
 std::map<uint32_t, uint32_t> _valueMap;
 
-struct keyValue {
+struct keyValue
+{
   uint32_t key;
   uint32_t value;
 };
 constexpr size_t sizeOfData = sizeof(keyValue);
 
 // used to convert this struct to an array of bytes
-union KeyValToByteArray {
+union KeyValToByteArray
+{
   uint8_t data[sizeOfData];
   keyValue kv;
 };
 
 static bool isSetup = false;
-void setup() {
-  if (!InternalFS.begin()) {
+void setup()
+{
+  if (!InternalFS.begin())
+  {
     Serial.println("Failed to start file system");
-  } else {
+  }
+  else
+  {
     isSetup = true;
   }
 }
 
 void clear() { _valueMap.clear(); }
 
-void clear_internal_fs() {
+void clear_internal_fs()
+{
   // hardcore, format the entire file system
   InternalFS.format();
 }
 
-void load_initial_values() {
-  if (!isSetup) {
+void load_initial_values()
+{
+  if (!isSetup)
+  {
     setup();
   }
 
   // failure case: TODO: something ?
-  if (!isSetup) {
+  if (!isSetup)
+  {
     return;
   }
 
   _valueMap.clear();
 
   // file exist, good
-  if (file.open(FILENAME, FILE_O_READ) and file.isOpen() and file.available()) {
+  if (file.open(FILENAME, FILE_O_READ) and file.isOpen() and file.available())
+  {
     std::vector<char> vecRead(file.size());
     const int retVal = file.read(vecRead.data(), vecRead.size());
-    if (retVal < 0) {
+    if (retVal < 0)
+    {
       // error case
       return;
     }
@@ -73,10 +85,12 @@ void load_initial_values() {
     converter.kv.key = 0;
     converter.kv.value = 0;
 
-    uint8_t cnt = 0;  // when this reaches 8, a new word
+    uint8_t cnt = 0; // when this reaches 8, a new word
     // parser state machine
-    for (const char c : vecRead) {
-      if (cnt >= sizeOfData) {
+    for (const char c: vecRead)
+    {
+      if (cnt >= sizeOfData)
+      {
         _valueMap[converter.kv.key] = converter.kv.value;
 
         // reset
@@ -90,31 +104,40 @@ void load_initial_values() {
     }
 
     // last word !
-    if (cnt >= sizeOfData) {
+    if (cnt >= sizeOfData)
+    {
       _valueMap[converter.kv.key] = converter.kv.value;
     }
 
     file.close();
-  } else {
+  }
+  else
+  {
     // no initial values, first boost maybe
   }
 }
 
-void write_state() {
-  if (!isSetup) {
+void write_state()
+{
+  if (!isSetup)
+  {
     setup();
   }
 
   // failure case: TODO: something ?
-  if (!isSetup) {
+  if (!isSetup)
+  {
     return;
   }
 
   file.open(FILENAME, FILE_O_WRITE);
-  if (file) {
-    file.truncate(0);  // clear the file
+  if (file)
+  {
+    file.truncate(0); // clear the file
     file.close();
-  } else {
+  }
+  else
+  {
     // error. the file should have been opened
     Serial.println("file system error, reseting file format");
 
@@ -125,8 +148,10 @@ void write_state() {
   delay(10);
 
   file.open(FILENAME, FILE_O_WRITE);
-  if (file) {
-    for (const auto& keyval : _valueMap) {
+  if (file)
+  {
+    for (const auto& keyval: _valueMap)
+    {
       KeyValToByteArray converter;
       converter.kv.key = keyval.first;
       converter.kv.value = keyval.second;
@@ -134,27 +159,27 @@ void write_state() {
       file.write(converter.data, sizeOfData);
     }
     file.close();
-  } else {
+  }
+  else
+  {
     // error. the file should have been opened
     Serial.println("file creation failed, parameters wont be stored");
   }
 }
 
-bool doKeyExists(const uint32_t key) {
-  return _valueMap.find(key) != _valueMap.end();
-}
+bool doKeyExists(const uint32_t key) { return _valueMap.find(key) != _valueMap.end(); }
 
-bool get_value(const uint32_t key, uint32_t& value) {
+bool get_value(const uint32_t key, uint32_t& value)
+{
   const auto& res = _valueMap.find(key);
-  if (res != _valueMap.end()) {
+  if (res != _valueMap.end())
+  {
     value = res->second;
     return true;
   }
   return false;
 }
 
-void set_value(const uint32_t key, const uint32_t value) {
-  _valueMap[key] = value;
-}
+void set_value(const uint32_t key, const uint32_t value) { _valueMap[key] = value; }
 
-}  // namespace fileSystem
+} // namespace fileSystem

@@ -14,6 +14,6 @@ extern uint16_t get_battery_level();
 
 extern void raise_battery_alert();
 
-}  // namespace battery
+} // namespace battery
 
 #endif

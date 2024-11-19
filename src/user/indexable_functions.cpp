@@ -23,13 +23,11 @@ namespace user {
 // list your groups & modes here
 //
 
-using ManagerTy = modes::ManagerFor<
-    modes::FixedModes,
-    // modes::MiscFixedModes,
-    modes::legacy::CalmModes,
-    modes::legacy::PartyModes,
-    modes::legacy::SoundModes
-  >;
+using ManagerTy = modes::ManagerFor<modes::FixedModes,
+                                    // modes::MiscFixedModes,
+                                    modes::legacy::CalmModes,
+                                    modes::legacy::PartyModes,
+                                    modes::legacy::SoundModes>;
 
 //
 // implementation details
@@ -42,9 +40,7 @@ ManagerTy modeManager(strip);
 
 } // namespace _private
 
-static auto get_context() {
-  return user::_private::modeManager.get_context();
-}
+static auto get_context() { return user::_private::modeManager.get_context(); }
 
 static constexpr uint32_t LED_POWER_PIN = AD1;
 
@@ -54,7 +50,7 @@ static constexpr uint32_t LED_POWER_PIN = AD1;
 
 #include "src/modes/user/indexable_behavior.hpp"
 
-}  // namespace user
+} // namespace user
 
 #else
 #warning "This file requires --std=gnu++17 or higher to build!*"
@@ -67,28 +63,24 @@ static constexpr uint32_t LED_POWER_PIN = AD1;
 
 namespace user {
 
-void power_on_sequence() { }
-void power_off_sequence() { }
+void power_on_sequence() {}
+void power_off_sequence() {}
 
-void brightness_update(const uint8_t) { }
-void write_parameters() { }
-void read_parameters() { }
-void button_clicked_default(const uint8_t) { }
-void button_hold_default(const uint8_t, const bool, const uint32_t) { }
+void brightness_update(const uint8_t) {}
+void write_parameters() {}
+void read_parameters() {}
+void button_clicked_default(const uint8_t) {}
+void button_hold_default(const uint8_t, const bool, const uint32_t) {}
 
-bool button_clicked_usermode(const uint8_t) {
-    return false;
-}
+bool button_clicked_usermode(const uint8_t) { return false; }
 
-bool button_hold_usermode(const uint8_t, const bool, const uint32_t) {
-  return false;
-}
+bool button_hold_usermode(const uint8_t, const bool, const uint32_t) { return false; }
 
-void loop() { }
+void loop() {}
 bool should_spawn_thread() { return false; }
-void user_thread() { }
+void user_thread() {}
 
-}
+} // namespace user
 
 #endif // LMBD_CPP17
 

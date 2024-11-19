@@ -6,7 +6,7 @@
  **/
 
 #ifdef __AVR__
-#include <avr/power.h>  // Required for 16 MHz Adafruit Trinket
+#include <avr/power.h> // Required for 16 MHz Adafruit Trinket
 #endif
 
 #include "src/compile.h"
@@ -43,8 +43,7 @@ extern void update_brightness(const uint8_t newBrightness,
 extern void button_clicked_callback(const uint8_t consecutiveButtonCheck);
 
 /// Main callback to handle a "button clicked, then held" sequence event
-extern void button_hold_callback(const uint8_t consecutiveButtonCheck,
-                                 const uint32_t buttonHoldDuration);
+extern void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t buttonHoldDuration);
 
 /// Disable button usermode UI
 extern void button_disable_usermode();

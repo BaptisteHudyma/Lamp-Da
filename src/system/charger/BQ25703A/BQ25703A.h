@@ -51,67 +51,71 @@ constexpr uint16_t VBAT_ADC_ADDR = 0x2C;
 constexpr uint16_t MANUFACTURER_ID_ADDR = 0x2E;
 constexpr uint16_t DEVICE_ID_ADDR = 0x2F;
 
-class BQ25703A {
- public:
+class BQ25703A
+{
+public:
   BQ25703A();
   // Initialise the variable here, but it will be written from the main program
   static const byte BQ25703Aaddr = BQ25703ADevaddr;
 
-  template <typename T>
-  static boolean readReg(T* dataParam, const uint8_t arrLen) {
+  template<typename T> static boolean readReg(T* dataParam, const uint8_t arrLen)
+  {
     // This is a function for reading data words.
     // The number of bytes that make up a word is either 1 or 2.
 
     // Create an array to hold the returned data
     byte valBytes[arrLen];
     // Function to handle the I2C comms.
-    if (readDataReg(dataParam->addr, valBytes, arrLen)) {
+    if (readDataReg(dataParam->addr, valBytes, arrLen))
+    {
       // Cycle through array of data
       dataParam->val0 = valBytes[0];
-      if (arrLen >= 2) dataParam->val1 = valBytes[1];
+      if (arrLen >= 2)
+        dataParam->val1 = valBytes[1];
       return true;
-    } else {
+    }
+    else
+    {
       return false;
     }
   }
-  template <typename T>
-  boolean readRegEx(T& dataParam) {
+  template<typename T> boolean readRegEx(T& dataParam)
+  {
     // This is a function for reading data words.
     // The number of bytes that make up a word is 2.
     constexpr uint8_t arrLen = 2;
     // Create an array to hold the returned data
     byte valBytes[arrLen];
 
-    if (readDataReg(dataParam.addr, valBytes, arrLen)) {
+    if (readDataReg(dataParam.addr, valBytes, arrLen))
+    {
       // Cycle through array of data
       dataParam.val0 = (byte)valBytes[0];
       dataParam.val1 = (byte)valBytes[1];
       return true;
-    } else {
+    }
+    else
+    {
       return false;
     }
   }
-  template <typename T>
-  static boolean writeRegEx(T dataParam) {
+  template<typename T> static boolean writeRegEx(T dataParam)
+  {
     return writeDataReg(dataParam.addr, dataParam.val0, dataParam.val1);
   }
 // macro to generate bit mask to access bits
 #define GETMASK(index, size) (((1 << (size)) - 1) << (index))
 // macro to read bits from variable, using mask
-#define READFROM(data, index, size) \
-  (((data) & GETMASK((index), (size))) >> (index))
+#define READFROM(data, index, size) (((data) & GETMASK((index), (size))) >> (index))
 // macro to write bits into variable, using mask
-#define WRITETO(data, index, size, value) \
-  ((data) = ((data) & (~GETMASK((index), (size)))) | ((value) << (index)))
+#define WRITETO(data, index, size, value) ((data) = ((data) & (~GETMASK((index), (size)))) | ((value) << (index)))
 // macro to wrap functions for easy access
 // if name is called with empty brackets, read bits and return value
 // if name is prefixed with set_, write value in brackets into bits defined in
 // FIELD
 #define FIELD(data, name, index, size)                                 \
   inline decltype(data) name() { return READFROM(data, index, size); } \
-  inline void set_##name(decltype(data) value) {                       \
-    WRITETO(data, index, size, value);                                 \
-  }
+  inline void set_##name(decltype(data) value) { WRITETO(data, index, size, value); }
 
 // macro to wrap functions for easy access, read only
 // if name is called with empty brackets, read bits and return value
@@ -122,7 +126,8 @@ class BQ25703A {
   inline static bool isFlagRaised = false;
 
   // Base class for register operations
-  struct IBaseRegister {
+  struct IBaseRegister
+  {
     virtual uint16_t address() const = 0;
 
     virtual uint16_t minVal() const = 0;
@@ -132,16 +137,19 @@ class BQ25703A {
     virtual uint8_t bitLenght() const;
     virtual uint8_t offset() const = 0;
 
-    uint16_t mask() const {
+    uint16_t mask() const
+    {
       // convert a bit count to a bit mask
       uint16_t mask = 1;
       mask <<= (bitLenght() + 1);
       return mask - 1;
     }
 
-    uint16_t get() {
+    uint16_t get()
+    {
       byte valBytes[2];
-      if (readDataReg(address(), valBytes, 2)) {
+      if (readDataReg(address(), valBytes, 2))
+      {
         // Cycle through array of data
         byte val0 = (byte)valBytes[0];
         byte val1 = (byte)valBytes[1];
@@ -159,20 +167,21 @@ class BQ25703A {
       return 0;
     }
 
-    uint16_t set(const uint16_t value) {
+    uint16_t set(const uint16_t value)
+    {
       // convert to authorized values
-      const uint16_t constraint =
-          constrain(value, minVal(), maxVal()) - minVal();
+      const uint16_t constraint = constrain(value, minVal(), maxVal()) - minVal();
       // break it down to the correct resolution (integer division)
       const uint16_t flatValue = constraint / resolution();
       // convert to binary word
       uint16_t binaryWord = flatValue;
-      binaryWord &= mask();     // mask off unused bits (with &= for 16bits)
-      binaryWord <<= offset();  // offset the register (with <<= for 16 bits)
+      binaryWord &= mask();    // mask off unused bits (with &= for 16bits)
+      binaryWord <<= offset(); // offset the register (with <<= for 16 bits)
 
       const byte val0 = binaryWord & 0b11111111;
       const byte val1 = binaryWord >> 8;
-      if (!writeDataReg(address(), val0, val1)) {
+      if (!writeDataReg(address(), val0, val1))
+      {
         isFlagRaised = true;
       }
 
@@ -182,7 +191,8 @@ class BQ25703A {
   };
 
   // Base class for distinct stored value operations
-  struct IDoubleRegister {
+  struct IDoubleRegister
+  {
     virtual uint16_t address() const = 0;
 
     virtual uint16_t minVal0() const = 0;
@@ -193,9 +203,11 @@ class BQ25703A {
     virtual uint16_t maskVal1() const = 0;
     virtual uint16_t resolutionVal1() const = 0;
 
-    uint16_t getVal0() {
+    uint16_t getVal0()
+    {
       byte valBytes[2];
-      if (readDataReg(address(), valBytes, 2)) {
+      if (readDataReg(address(), valBytes, 2))
+      {
         // Cycle through array of data
         byte val0 = (byte)valBytes[0];
         // fuse them
@@ -208,9 +220,11 @@ class BQ25703A {
       return 0;
     }
 
-    uint16_t getVal1() {
+    uint16_t getVal1()
+    {
       byte valBytes[2];
-      if (readDataReg(address(), valBytes, 2)) {
+      if (readDataReg(address(), valBytes, 2))
+      {
         // Cycle through array of data
         byte val1 = (byte)valBytes[1];
         // fuse them
@@ -224,8 +238,10 @@ class BQ25703A {
     }
   };
 
-  struct Regt {
-    struct ChargeOption0t {
+  struct Regt
+  {
+    struct ChargeOption0t
+    {
       uint8_t addr = CHARGE_OPTION_0_ADDR;
       byte val0 = 0x0E;
       byte val1 = 0x82;
@@ -257,7 +273,8 @@ class BQ25703A {
       // PWM switching frequency, 800kHz or 1.2MHz. Default is high (800kHz)
       FIELD(val1, PWM_FREQ, 0x01, 0x01)
     } chargeOption0;
-    struct ChargeOption1t {
+    struct ChargeOption1t
+    {
       uint8_t addr = CHARGE_OPTION_1_ADDR;
       byte val0 = 0x11;
       byte val1 = 0x02;
@@ -288,7 +305,8 @@ class BQ25703A {
       // PSYS gain; 0.25uA/W or 1uA/W. Default is 1uA/W
       FIELD(val1, PSYS_RATIO, 0x01, 0x01)
     } chargeOption1;
-    struct ChargeOption2t {
+    struct ChargeOption2t
+    {
       uint8_t addr = CHARGE_OPTION_2_ADDR;
       byte val0 = 0xB7;
       byte val1 = 0x02;
@@ -325,7 +343,8 @@ class BQ25703A {
       // 40mS. Default is 20mS
       FIELD(val1, PKPWR_TMAX, 0x00, 0x02)
     } chargeOption2;
-    struct ChargeOption3t {
+    struct ChargeOption3t
+    {
       uint8_t addr = CHARGE_OPTION_3_ADDR;
       byte val0 = 0x00;
       byte val1 = 0x00;
@@ -346,7 +365,8 @@ class BQ25703A {
       // Enable Input Current Optimiser. Default is disabled
       FIELD(val1, EN_ICO_MODE, 0x03, 0x01)
     } chargeOption3;
-    struct ProchotOption0t {
+    struct ProchotOption0t
+    {
       uint8_t addr = PROCHOT_OPTION_0_ADDR;
       byte val0 = 0x50;
       byte val1 = 0x92;
@@ -369,7 +389,8 @@ class BQ25703A {
       // 800us. Default is 100us.
       FIELD(val1, ICRIT_DEG, 0x01, 0x02)
     } prochotOption0;
-    struct ProchotOption1t {
+    struct ProchotOption1t
+    {
       uint8_t addr = PROCHOT_OPTION_1_ADDR;
       byte val0 = 0x20;
       byte val1 = 0x41;
@@ -396,7 +417,8 @@ class BQ25703A {
       // IDCHG deglitch time; 1.6ms, 100us, 6ms, 12ms. Default is 100us.
       FIELD(val1, IDCHG_DEG, 0x00, 0x02)
     } prochotOption1;
-    struct ADCOptiont {
+    struct ADCOptiont
+    {
       uint8_t addr = ADC_OPTION_ADDR;
       byte val0 = 0x00;
       byte val1 = 0x20;
@@ -425,7 +447,8 @@ class BQ25703A {
       // ADC scale; 2.04V or 3.06V. Default is 3.06V
       FIELD(val1, ADC_FULLSCALE, 0x05, 0x01)
     } aDCOption;
-    struct ChargerStatust {
+    struct ChargerStatust
+    {
       uint8_t addr = CHARGE_STATUS_ADDR;
       byte val0, val1;
       // Latched fault flag of adapter over voltage. Default is no fault.
@@ -460,7 +483,8 @@ class BQ25703A {
       // Device is in OTG mode. Default is not
       FIELD_RO(val1, IN_OTG, 0x00, 0x01)
     } chargerStatus;
-    struct ProchotStatust {
+    struct ProchotStatust
+    {
       uint8_t addr = PROCHOT_STATUS_ADDR;
       byte val0, val1;
       // PROCHOT comparator trigger status. Default is not triggered.
@@ -479,7 +503,8 @@ class BQ25703A {
       // PROCHOT adapter removal trigger status. Default is not triggered.
       FIELD_RO(val0, STAT_Adapter_Removal, 0x00, 0x01)
     } prochotStatus;
-    struct ChargeCurrentt : public IBaseRegister {
+    struct ChargeCurrentt : public IBaseRegister
+    {
       uint16_t address() const override { return CHARGE_CURRENT_ADDR; }
 
       virtual uint16_t minVal() const override { return 0; }
@@ -489,7 +514,8 @@ class BQ25703A {
       virtual uint8_t bitLenght() const override { return 7; }
       virtual uint8_t offset() const override { return 6; }
     } chargeCurrent;
-    struct MaxChargeVoltaget : public IBaseRegister {
+    struct MaxChargeVoltaget : public IBaseRegister
+    {
       uint16_t address() const override { return MAX_CHARGE_VOLTAGE_ADDR; }
 
       // the min in the doc is set to 1024, but this is wrong in practice
@@ -500,7 +526,8 @@ class BQ25703A {
       virtual uint8_t bitLenght() const override { return 11; }
       virtual uint8_t offset() const override { return 4; }
     } maxChargeVoltage;
-    struct MinSystemVoltaget : public IBaseRegister {
+    struct MinSystemVoltaget : public IBaseRegister
+    {
       uint16_t address() const override { return MINIMUM_SYSTEM_VOLTAGE_ADDR; }
 
       virtual uint16_t minVal() const override { return 1024; }
@@ -511,7 +538,8 @@ class BQ25703A {
       virtual uint8_t offset() const override { return 8; }
     } minSystemVoltage;
 
-    struct IIN_HOSTt : public IBaseRegister {
+    struct IIN_HOSTt : public IBaseRegister
+    {
       uint16_t address() const override { return IIN_HOST_ADDR; }
 
       virtual uint16_t minVal() const override { return 50; }
@@ -523,7 +551,8 @@ class BQ25703A {
     } iIN_HOST;
     // IIN_DPM register reflects the actual input current limit programmed in
     // the register, either from host or from ICO.
-    struct IIN_DPMt : public IBaseRegister {
+    struct IIN_DPMt : public IBaseRegister
+    {
       uint16_t address() const override { return IIN_DPM_ADDR; }
 
       virtual uint16_t minVal() const override { return 50; }
@@ -535,7 +564,8 @@ class BQ25703A {
     } iIN_DPM;
     // If the input voltage drops more than the InputVoltage register allows,
     // the device enters DPM and reduces the charge current
-    struct InputVoltaget : public IBaseRegister {
+    struct InputVoltaget : public IBaseRegister
+    {
       uint16_t address() const override { return INPUT_VOLTAGE_ADDR; }
 
       virtual uint16_t minVal() const override { return 3200; }
@@ -545,7 +575,8 @@ class BQ25703A {
       virtual uint8_t bitLenght() const override { return 8; }
       virtual uint8_t offset() const override { return 6; }
     } inputVoltage;
-    struct OTGVoltaget : public IBaseRegister {
+    struct OTGVoltaget : public IBaseRegister
+    {
       uint16_t address() const override { return OTG_VOLTAGE_ADDR; }
 
       virtual uint16_t minVal() const override { return 4480; }
@@ -557,7 +588,8 @@ class BQ25703A {
     } oTGVoltage;
     // The OTGCurrent register is a limit after which the device will raise the
     // OTG_OVP flag
-    struct OTGCurrentt : public IBaseRegister {
+    struct OTGCurrentt : public IBaseRegister
+    {
       uint16_t address() const override { return OTG_CURRENT_ADDR; }
 
       virtual uint16_t minVal() const override { return 0; }
@@ -568,7 +600,8 @@ class BQ25703A {
       virtual uint8_t offset() const override { return 8; }
     } oTGCurrent;
     // Allows to read the VBUS & PSYS voltage from the ADC
-    struct ADCVBUSPSYSt : public IDoubleRegister {  // read only
+    struct ADCVBUSPSYSt : public IDoubleRegister
+    { // read only
       uint16_t address() const override { return ADC_VBUS_PSYS_ADC_ADDR; };
 
       uint16_t minVal0() const override { return 0; };
@@ -585,7 +618,8 @@ class BQ25703A {
       uint16_t get_PSYS() { return getVal0(); }
     } aDCVBUSPSYS;
     // Allows to read the battery charge and discharge current from DAC
-    struct ADCIBATt : public IDoubleRegister {  // read only
+    struct ADCIBATt : public IDoubleRegister
+    { // read only
       uint16_t address() const override { return ADC_IBAT_ADDR; };
 
       uint16_t minVal0() const override { return 0; };
@@ -601,7 +635,8 @@ class BQ25703A {
       // IDCHG battery discharging current value
       uint16_t get_IDCHG() { return getVal0(); }
     } aDCIBAT;
-    struct ADCIINCMPINt : public IDoubleRegister {  // read only
+    struct ADCIINCMPINt : public IDoubleRegister
+    { // read only
       uint16_t address() const override { return CMPIN_ADC_ADDR; };
 
       uint16_t minVal0() const override { return 0; };
@@ -620,7 +655,8 @@ class BQ25703A {
       // CMPIN voltage on comparator pin
       uint16_t get_CMPIN() { return getVal0(); }
     } aDCIINCMPIN;
-    struct ADCVSYSVBATt : public IDoubleRegister {  // read only
+    struct ADCVSYSVBATt : public IDoubleRegister
+    { // read only
       uint16_t address() const override { return VBAT_ADC_ADDR; };
 
       uint16_t minVal0() const override { return 2880; };
@@ -637,20 +673,24 @@ class BQ25703A {
       uint16_t get_VBAT() { return getVal0(); }
     } aDCVSYSVBAT;
 
-    struct ManufacturerIDt {  // read only
+    struct ManufacturerIDt
+    { // read only
       // Manufacturer ID
       byte val0, val1;
       uint8_t addr = MANUFACTURER_ID_ADDR;
-      byte get_manufacturerID() {
+      byte get_manufacturerID()
+      {
         readReg(this, 1);
         return val0;
       }
     } manufacturerID;
-    struct DeviceID {  // read only
+    struct DeviceID
+    { // read only
       // Device ID
       byte val0, val1;
       uint8_t addr = DEVICE_ID_ADDR;
-      byte get_deviceID() {
+      byte get_deviceID()
+      {
         readReg(this, 2);
         return val0;
       }
@@ -658,13 +698,11 @@ class BQ25703A {
   };
 
   // private:
-  static boolean readDataReg(const byte regAddress, byte* dataVal,
-                             const uint8_t arrLen);
-  static boolean writeDataReg(const byte regAddress, byte dataVal0,
-                              byte dataVal1);
+  static boolean readDataReg(const byte regAddress, byte* dataVal, const uint8_t arrLen);
+  static boolean writeDataReg(const byte regAddress, byte dataVal0, byte dataVal1);
   boolean read2ByteReg(byte regAddress, byte* val0, byte* val1);
 };
 
-}  // namespace bq2573a
+} // namespace bq2573a
 
-#endif  // BQ25703A_H
+#endif // BQ25703A_H

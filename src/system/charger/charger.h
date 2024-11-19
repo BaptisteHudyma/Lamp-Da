@@ -14,7 +14,8 @@ void loop();
 // call when the system will shutdown
 void shutdown();
 
-struct Charger_t {
+struct Charger_t
+{
   // everything below makes no sense if this is false
   bool areMeasuresOk = false;
 
@@ -30,7 +31,8 @@ struct Charger_t {
   // battery current (> 0 charging, < 0 discharging)
   int16_t batteryCurrent_mA = 0;
 
-  enum ChargerStatus_t {
+  enum ChargerStatus_t
+  {
     // not initialized yet
     UNINITIALIZED,
 
@@ -67,6 +69,6 @@ bool is_vbus_signal_detected();
 
 Charger_t get_state();
 
-}  // namespace charger
+} // namespace charger
 
-#endif  // CHARGER_H
+#endif // CHARGER_H

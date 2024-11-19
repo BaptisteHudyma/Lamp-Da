@@ -41,40 +41,46 @@ bool isButtonUsermodeEnabled = false;
 bool isBluetoothAdvertising = false;
 
 // hold the current level of brightness out of the raise/lower animation
-uint8_t BRIGHTNESS = 50;  // default start value
+uint8_t BRIGHTNESS = 50; // default start value
 uint8_t currentBrightness = 50;
 
-void update_brightness(const uint8_t newBrightness,
-                       const bool shouldUpdateCurrentBrightness,
-                       const bool isInitialRead) {
+void update_brightness(const uint8_t newBrightness, const bool shouldUpdateCurrentBrightness, const bool isInitialRead)
+{
   // safety
-  if (newBrightness > MaxBrightnessLimit) return;
+  if (newBrightness > MaxBrightnessLimit)
+    return;
 
-  if (BRIGHTNESS != newBrightness) {
+  if (BRIGHTNESS != newBrightness)
+  {
     BRIGHTNESS = newBrightness;
 
     // do not call user functions when reading parameters
-    if (!isInitialRead) {
+    if (!isInitialRead)
+    {
       user::brightness_update(newBrightness);
     }
 
-    if (shouldUpdateCurrentBrightness) currentBrightness = newBrightness;
+    if (shouldUpdateCurrentBrightness)
+      currentBrightness = newBrightness;
   }
 }
 
-void read_parameters() {
+void read_parameters()
+{
   // load values in memory
   fileSystem::load_initial_values();
 
   uint32_t brightness = 0;
-  if (fileSystem::get_value(brightnessKey, brightness)) {
+  if (fileSystem::get_value(brightnessKey, brightness))
+  {
     update_brightness(brightness, true, true);
   }
 
   user::read_parameters();
 }
 
-void write_parameters() {
+void write_parameters()
+{
   fileSystem::clear();
 
   fileSystem::set_value(isFirstBootKey, 0);
@@ -88,13 +94,16 @@ void write_parameters() {
 static bool isShutdown = true;
 bool is_shutdown() { return isShutdown; }
 
-void startup_sequence() {
+void startup_sequence()
+{
   isShutdown = true;
 
   // critical battery level, do not wake up
-  if (battery::get_battery_level() <= batteryCritical + 1) {
+  if (battery::get_battery_level() <= batteryCritical + 1)
+  {
     // alert user of low battery
-    for (uint8_t i = 0; i < 10; i++) {
+    for (uint8_t i = 0; i < 10; i++)
+    {
       button::set_color(utils::ColorSpace::RED);
       delay(100);
       button::set_color(utils::ColorSpace::BLACK);
@@ -117,7 +126,8 @@ void startup_sequence() {
   isShutdown = false;
 }
 
-void shutdown() {
+void shutdown()
+{
   // flag system as powered down
   const bool wasAlreadyShutdown = isShutdown;
   isShutdown = true;
@@ -127,7 +137,7 @@ void shutdown() {
 
   // deactivate strip power
   pinMode(OUT_BRIGHTNESS, OUTPUT);
-  ledpower::write_current(0);  // power down
+  ledpower::write_current(0); // power down
   delay(10);
 
   // disable bluetooth, imu and microphone
@@ -138,7 +148,8 @@ void shutdown() {
 #endif
 
   // some actions are to be done only if the system was power-on before
-  if (!wasAlreadyShutdown) {
+  if (!wasAlreadyShutdown)
+  {
     // save the current config to a file
     // (takes some time so call it when the lamp appear to be shutdown already)
     write_parameters();
@@ -151,13 +162,15 @@ void shutdown() {
   button::set_color(utils::ColorSpace::BLACK);
 
   // do not power down when charger is plugged in
-  if (!charger::is_vbus_powered()) {
+  if (!charger::is_vbus_powered())
+  {
     charger::shutdown();
     digitalWrite(USB_33V_PWR, LOW);
 
     // wait until vbus is off (TODO: remove in newer versions of the hardware)
     uint8_t cnt = 0;
-    while (cnt < 200 and charger::is_vbus_signal_detected()) {
+    while (cnt < 200 and charger::is_vbus_signal_detected())
+    {
       delay(5);
       cnt++;
     }
@@ -172,30 +185,32 @@ void shutdown() {
   }
 }
 
-void button_disable_usermode() {
-  isButtonUsermodeEnabled = false;
-}
+void button_disable_usermode() { isButtonUsermodeEnabled = false; }
 
-bool is_button_usermode_enabled() {
-  return isButtonUsermodeEnabled;
-}
+bool is_button_usermode_enabled() { return isButtonUsermodeEnabled; }
 
 // call when the button is finally release
-void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
-  if (consecutiveButtonCheck == 0) return;
+void button_clicked_callback(const uint8_t consecutiveButtonCheck)
+{
+  if (consecutiveButtonCheck == 0)
+    return;
 
   // guard blocking other actions than "turning it on" if is_shutdown
-  if (is_shutdown()) {
-    if (consecutiveButtonCheck == 1) {
+  if (is_shutdown())
+  {
+    if (consecutiveButtonCheck == 1)
+    {
       startup_sequence();
     }
     return;
   }
 
   // extended "button usermode" bypass
-  if (isButtonUsermodeEnabled) {
+  if (isButtonUsermodeEnabled)
+  {
     // user mode may return "True" to skip default action
-    if (user::button_clicked_usermode(consecutiveButtonCheck)) {
+    if (user::button_clicked_usermode(consecutiveButtonCheck))
+    {
       return;
     }
   }
@@ -204,8 +219,8 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
   //  - 1 click: on/off
   //  - 7+ clicks: shutdown immediately (if DEBUG_MODE wait for watchdog)
   //
-  switch (consecutiveButtonCheck) {
-
+  switch (consecutiveButtonCheck)
+  {
     // 1 click: shutdown
     case 1:
       shutdown();
@@ -215,8 +230,8 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
     default:
 
       // 7+ clicks: force shutdown (or safety reset if DEBUG_MODE)
-      if (consecutiveButtonCheck >= 7) {
-
+      if (consecutiveButtonCheck >= 7)
+      {
 #ifdef DEBUG_MODE
         // disable charger and wait 5s to be killed by watchdog
         button::set_color(utils::ColorSpace::PINK);
@@ -234,18 +249,21 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck) {
 
 static constexpr float brightnessDivider = 1.0 / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
 
-void button_hold_callback(const uint8_t consecutiveButtonCheck,
-                          const uint32_t buttonHoldDuration) {
-  if (consecutiveButtonCheck == 0) return;
-  if (is_shutdown()) return;
+void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t buttonHoldDuration)
+{
+  if (consecutiveButtonCheck == 0)
+    return;
+  if (is_shutdown())
+    return;
 
   // compute parameters of the "press-hold" action
   const bool isEndOfHoldEvent = (buttonHoldDuration <= 1);
-  const uint32_t holdDuration = (buttonHoldDuration > HOLD_BUTTON_MIN_MS)
-      ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
+  const uint32_t holdDuration =
+          (buttonHoldDuration > HOLD_BUTTON_MIN_MS) ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
 
   uint32_t realStartTime = millis() - lastStartupSequence;
-  if (realStartTime > holdDuration) {
+  if (realStartTime > holdDuration)
+  {
     realStartTime -= holdDuration;
   }
 
@@ -255,25 +273,37 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
   //    - after 2s the default actions comes back
   //
 
-  if (realStartTime < EARLY_ACTIONS_LIMIT_MS) {
-    if (isEndOfHoldEvent) return;
+  if (realStartTime < EARLY_ACTIONS_LIMIT_MS)
+  {
+    if (isEndOfHoldEvent)
+      return;
 
     // early action animation
-    if (consecutiveButtonCheck > 2) {
-      if ((holdDuration >> 7) & 0b1) {
+    if (consecutiveButtonCheck > 2)
+    {
+      if ((holdDuration >> 7) & 0b1)
+      {
         button::set_color(utils::ColorSpace::BLACK);
-      } else if (holdDuration < EARLY_ACTIONS_HOLD_MS) {
+      }
+      else if (holdDuration < EARLY_ACTIONS_HOLD_MS)
+      {
         button::set_color(utils::ColorSpace::GREEN);
-      } else if (consecutiveButtonCheck == 3) {
+      }
+      else if (consecutiveButtonCheck == 3)
+      {
         button::set_color(utils::ColorSpace::YELLOW);
-      } else if (consecutiveButtonCheck == 4) {
+      }
+      else if (consecutiveButtonCheck == 4)
+      {
         button::set_color(utils::ColorSpace::BLUE);
       }
     }
 
     // 3+hold (3s): turn it on, with button usermode enabled
-    if (consecutiveButtonCheck == 3) {
-      if (holdDuration > EARLY_ACTIONS_HOLD_MS) {
+    if (consecutiveButtonCheck == 3)
+    {
+      if (holdDuration > EARLY_ACTIONS_HOLD_MS)
+      {
         isButtonUsermodeEnabled = true;
         return;
       }
@@ -281,22 +311,28 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
 
     // 4+hold (3s): turn it on, with bluetooth advertising
 #ifdef USE_BLUETOOTH
-    if (consecutiveButtonCheck == 4) {
-      if (holdDuration > EARLY_ACTIONS_HOLD_MS) {
-        if (!isBluetoothAdvertising) {
+    if (consecutiveButtonCheck == 4)
+    {
+      if (holdDuration > EARLY_ACTIONS_HOLD_MS)
+      {
+        if (!isBluetoothAdvertising)
+        {
           bluetooth::start_advertising();
         }
 
         isBluetoothAdvertising = true;
         return;
-      } else {
+      }
+      else
+      {
         isBluetoothAdvertising = false;
       }
     }
 #endif
 
     // during "early actions" prevent other actions
-    if (consecutiveButtonCheck > 2) {
+    if (consecutiveButtonCheck > 2)
+    {
       return;
     }
   }
@@ -305,20 +341,21 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
   // "button usermode" bypass
   //
 
-  if (isButtonUsermodeEnabled) {
-
+  if (isButtonUsermodeEnabled)
+  {
     // 5+hold (5s): always exit, can't be bypassed
-    if (consecutiveButtonCheck == 5) {
-      if (holdDuration > 5000 - HOLD_BUTTON_MIN_MS) {
+    if (consecutiveButtonCheck == 5)
+    {
+      if (holdDuration > 5000 - HOLD_BUTTON_MIN_MS)
+      {
         shutdown();
         return;
       }
     }
 
     // user mode may return "True" to skip default action
-    if (user::button_hold_usermode(consecutiveButtonCheck,
-                                   isEndOfHoldEvent,
-                                   holdDuration)) {
+    if (user::button_hold_usermode(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration))
+    {
       return;
     }
   }
@@ -331,22 +368,23 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
   //  - 1+hold: increase brightness
   //  - 2+hold: decrease brightness
   //
-  switch (consecutiveButtonCheck) {
-
+  switch (consecutiveButtonCheck)
+  {
     // 1+hold: increase brightness
     case 1:
-      if (isEndOfHoldEvent) {
+      if (isEndOfHoldEvent)
+      {
         currentBrightness = BRIGHTNESS;
+      }
+      else
+      {
+        const float percentOfTimeToGoUp = float(MAX_BRIGHTNESS - currentBrightness) * brightnessDivider;
 
-      } else {
-        const float percentOfTimeToGoUp =
-            float(MAX_BRIGHTNESS - currentBrightness) * brightnessDivider;
-
-        const auto newBrightness =
-            map(min(holdDuration,
-                    BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
-                0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
-                currentBrightness, MAX_BRIGHTNESS);
+        const auto newBrightness = map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
+                                       0,
+                                       BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
+                                       currentBrightness,
+                                       MAX_BRIGHTNESS);
 
         update_brightness(newBrightness);
       }
@@ -354,18 +392,19 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
 
     // 2+hold: decrease brightness
     case 2:
-      if (isEndOfHoldEvent) {
+      if (isEndOfHoldEvent)
+      {
         currentBrightness = BRIGHTNESS;
+      }
+      else
+      {
+        const double percentOfTimeToGoDown = float(currentBrightness - MIN_BRIGHTNESS) * brightnessDivider;
 
-      } else {
-        const double percentOfTimeToGoDown =
-            float(currentBrightness - MIN_BRIGHTNESS) * brightnessDivider;
-
-        const auto newBrightness =
-            map(min(holdDuration,
-                    BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
-                0, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
-                currentBrightness, MIN_BRIGHTNESS);
+        const auto newBrightness = map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
+                                       0,
+                                       BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
+                                       currentBrightness,
+                                       MIN_BRIGHTNESS);
 
         update_brightness(newBrightness);
       }
@@ -378,42 +417,52 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
   }
 }
 
-void handle_alerts() {
+void handle_alerts()
+{
   const uint32_t current = AlertManager.current();
 
   static uint32_t criticalbatteryRaisedTime = 0;
-  if (current == Alerts::NONE) {
-    MaxBrightnessLimit = MAX_BRIGHTNESS;  // no alerts: reset the max brightness
+  if (current == Alerts::NONE)
+  {
+    MaxBrightnessLimit = MAX_BRIGHTNESS; // no alerts: reset the max brightness
     criticalbatteryRaisedTime = 0;
 
     // red to green
-    const auto buttonColor = utils::ColorSpace::RGB(
-        utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
-                            utils::ColorSpace::GREEN.get_rgb().color,
-                            battery::get_raw_battery_level() / 10000.0));
+    const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
+                                                                        utils::ColorSpace::GREEN.get_rgb().color,
+                                                                        battery::get_raw_battery_level() / 10000.0));
 
     // display battery level
     const auto& chargerStatus = charger::get_state();
-    if (chargerStatus.is_charging()) {
-      if (chargerStatus.status ==
-          charger::Charger_t::ChargerStatus_t::SLOW_CHARGING) {
+    if (chargerStatus.is_charging())
+    {
+      if (chargerStatus.status == charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
+      {
         // fast blinking
         // TODO: find a better way to tell user that the chargeur is bad
         button::blink(500, 500, buttonColor);
       }
       // standard charge mode
-      else {
+      else
+      {
         button::breeze(2000, 1000, buttonColor);
       }
-    } else {
+    }
+    else
+    {
       // normal mode
       button::set_color(buttonColor);
     }
-  } else {
-    if ((current & Alerts::TEMP_CRITICAL) != 0x00) {
+  }
+  else
+  {
+    if ((current & Alerts::TEMP_CRITICAL) != 0x00)
+    {
       // shutdown when battery is critical
       shutdown();
-    } else if ((current & Alerts::TEMP_TOO_HIGH) != 0x00) {
+    }
+    else if ((current & Alerts::TEMP_TOO_HIGH) != 0x00)
+    {
       // proc temperature is too high, blink orange
       button::blink(300, 300, utils::ColorSpace::ORANGE);
 
@@ -421,20 +470,27 @@ void handle_alerts() {
       constexpr uint8_t clampedBrightness = 0.5 * MAX_BRIGHTNESS;
       MaxBrightnessLimit = clampedBrightness;
       update_brightness(min(clampedBrightness, BRIGHTNESS));
-    } else if ((current & Alerts::BATTERY_READINGS_INCOHERENT) != 0x00) {
+    }
+    else if ((current & Alerts::BATTERY_READINGS_INCOHERENT) != 0x00)
+    {
       // incohrent battery readings
       button::blink(100, 100, utils::ColorSpace::GREEN);
-    } else if ((current & Alerts::BATTERY_CRITICAL) != 0x00) {
+    }
+    else if ((current & Alerts::BATTERY_CRITICAL) != 0x00)
+    {
       // critical battery alert: shutdown after 2 seconds
       if (criticalbatteryRaisedTime == 0)
         criticalbatteryRaisedTime = millis();
-      else if (millis() - criticalbatteryRaisedTime > 2000) {
+      else if (millis() - criticalbatteryRaisedTime > 2000)
+      {
         // shutdown when battery is critical
         shutdown();
       }
       // blink if no shutdown
       button::blink(100, 100, utils::ColorSpace::RED);
-    } else if ((current & Alerts::BATTERY_LOW) != 0x00) {
+    }
+    else if ((current & Alerts::BATTERY_LOW) != 0x00)
+    {
       criticalbatteryRaisedTime = 0;
       // fast blink red
       button::blink(300, 300, utils::ColorSpace::RED);
@@ -446,12 +502,18 @@ void handle_alerts() {
       // save some battery
       bluetooth::disable_bluetooth();
       update_brightness(min(clampedBrightness, BRIGHTNESS));
-    } else if ((current & Alerts::LONG_LOOP_UPDATE) != 0x00) {
+    }
+    else if ((current & Alerts::LONG_LOOP_UPDATE) != 0x00)
+    {
       // fast blink red
       button::blink(400, 400, utils::ColorSpace::FUSHIA);
-    } else if ((current & Alerts::BLUETOOTH_ADVERT) != 0x00) {
+    }
+    else if ((current & Alerts::BLUETOOTH_ADVERT) != 0x00)
+    {
       button::breeze(1000, 500, utils::ColorSpace::BLUE);
-    } else {
+    }
+    else
+    {
       // unhandled case (white blink)
       button::blink(300, 300, utils::ColorSpace::WHITE);
     }
@@ -464,7 +526,8 @@ void handle_alerts() {
 
 #ifdef LMBD_CPP17
 
-const char* ensure_build_canary() {
+const char* ensure_build_canary()
+{
 #ifdef LMBD_LAMP_TYPE__SIMPLE
   return "_lmbd__build_canary__simple";
 #endif
@@ -474,7 +537,7 @@ const char* ensure_build_canary() {
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
   return "_lmbd__build_canary__indexable";
 #endif
-  return (char*) nullptr;
+  return (char*)nullptr;
 }
 
 #endif
