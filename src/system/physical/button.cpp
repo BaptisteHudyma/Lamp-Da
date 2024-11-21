@@ -40,7 +40,6 @@ void treat_button_pressed(const bool isButtonPressDetected,
                           const std::function<void(uint8_t)>& clickSerieCallback,
                           const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback)
 {
-  buttonState.wasTriggered = false;
   buttonState.lastEventTime = millis();
   buttonState.sinceLastCall = buttonState.lastEventTime - buttonState.lastPressTime;
   buttonState.pressDuration = buttonState.lastEventTime - buttonState.firstHoldTime;
@@ -48,9 +47,9 @@ void treat_button_pressed(const bool isButtonPressDetected,
   // currently in long press status
   buttonState.isLongPressed = (buttonState.isPressed && buttonState.pressDuration > HOLD_BUTTON_MIN_MS);
 
-  // remove button clicked if last call was too long ago
-  if ((buttonState.sinceLastCall > RELEASE_TIMING_MS) ||
-      (buttonState.isLongPressed && buttonState.sinceLastCall > RELEASE_TIMING_MS / 2))
+  // remove button clicked if last call was too long ago (and an action is currently handled)
+  if (buttonState.wasTriggered and ((buttonState.sinceLastCall > RELEASE_TIMING_MS) or
+                                    (buttonState.isLongPressed && buttonState.sinceLastCall > RELEASE_TIMING_MS / 2)))
   {
     // end of button press, trigger callback (press-hold action, or press action)
     if (buttonState.isLongPressed)
@@ -67,12 +66,16 @@ void treat_button_pressed(const bool isButtonPressDetected,
     buttonState.isLongPressed = false;
     buttonState.nbClicksCounted = 0;
     buttonState.firstHoldTime = buttonState.lastEventTime;
-    buttonState.wasTriggered = true;
+    // reset the action handling process
+    buttonState.wasTriggered = false;
   }
 
   // set button high
   if (isButtonPressDetected)
   {
+    // press detected, trigger
+    buttonState.wasTriggered = true;
+
     // small delay since button press
     if (buttonState.sinceLastCall > RELEASE_BETWEEN_CLICKS)
     {
@@ -89,6 +92,9 @@ void treat_button_pressed(const bool isButtonPressDetected,
 
   if (buttonState.isLongPressed)
   {
+    // press detected, trigger
+    buttonState.wasTriggered = true;
+
     clickHoldSerieCallback(buttonState.nbClicksCounted, buttonState.pressDuration);
   }
 }

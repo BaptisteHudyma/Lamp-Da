@@ -50,6 +50,9 @@ void update_brightness(const uint8_t newBrightness, const bool shouldUpdateCurre
   if (newBrightness > MaxBrightnessLimit)
     return;
 
+  if (shouldUpdateCurrentBrightness)
+    currentBrightness = newBrightness;
+
   if (BRIGHTNESS != newBrightness)
   {
     BRIGHTNESS = newBrightness;
@@ -59,9 +62,6 @@ void update_brightness(const uint8_t newBrightness, const bool shouldUpdateCurre
     {
       user::brightness_update(newBrightness);
     }
-
-    if (shouldUpdateCurrentBrightness)
-      currentBrightness = newBrightness;
   }
 }
 
@@ -267,6 +267,12 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
     realStartTime -= holdDuration;
   }
 
+  // prevent the '#38: luminosity ramp flashes' bug
+  if (isEndOfHoldEvent)
+  {
+    update_brightness(BRIGHTNESS, true);
+  }
+
   //
   // "early actions"
   //    - actions to be performed by user just after lamp is turned on
@@ -374,7 +380,8 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
     case 1:
       if (isEndOfHoldEvent)
       {
-        currentBrightness = BRIGHTNESS;
+        // this action is duplicated, but it's rare so no consequences
+        update_brightness(BRIGHTNESS, true);
       }
       else
       {
@@ -394,7 +401,8 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
     case 2:
       if (isEndOfHoldEvent)
       {
-        currentBrightness = BRIGHTNESS;
+        // this action is duplicated, but it's rare so no consequences
+        update_brightness(BRIGHTNESS, true);
       }
       else
       {
@@ -469,7 +477,7 @@ void handle_alerts()
       // limit brightness to half the max value
       constexpr uint8_t clampedBrightness = 0.5 * MAX_BRIGHTNESS;
       MaxBrightnessLimit = clampedBrightness;
-      update_brightness(min(clampedBrightness, BRIGHTNESS));
+      update_brightness(min(clampedBrightness, BRIGHTNESS), true);
     }
     else if ((current & Alerts::BATTERY_READINGS_INCOHERENT) != 0x00)
     {
@@ -501,7 +509,7 @@ void handle_alerts()
 
       // save some battery
       bluetooth::disable_bluetooth();
-      update_brightness(min(clampedBrightness, BRIGHTNESS));
+      update_brightness(min(clampedBrightness, BRIGHTNESS), true);
     }
     else if ((current & Alerts::LONG_LOOP_UPDATE) != 0x00)
     {
