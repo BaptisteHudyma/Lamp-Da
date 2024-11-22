@@ -44,7 +44,7 @@ struct ButtonStateTy
   uint32_t firstHoldTime = 0;  // timestamp (millis) of first press (hold)
   uint8_t nbClicksCounted = 0; // nb of counted clicks
 
-  bool wasTriggered = false;  // was button triggered last update?
+  bool wasTriggered = false;  // was button action detected
   uint32_t pressDuration = 0; // estimated (millis) press duration
   uint32_t sinceLastCall = 0; // time (unprocessed) since last call
   uint32_t lastEventTime = 0; // last (unprocessed) time of call
