@@ -80,17 +80,10 @@ struct PaletteOceanMode : public PaletteMode
 // Fixed modes groups
 //
 
-using FixedModes = modes::GroupFor<
-  fixed::KelvinMode,
-  fixed::RainbowMode
->;
+using FixedModes = modes::GroupFor<fixed::KelvinMode, fixed::RainbowMode>;
 
-using MiscFixedModes = modes::GroupFor<
-  fixed::PalettePartyMode,
-  fixed::PaletteForestMode,
-  fixed::PaletteOceanMode
->;
+using MiscFixedModes = modes::GroupFor<fixed::PalettePartyMode, fixed::PaletteForestMode, fixed::PaletteOceanMode>;
 
-} // modes
+} // namespace modes
 
 #endif

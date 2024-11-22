@@ -14,8 +14,8 @@
 // constants
 using String = std::string;
 
-#define PI 3.1415926535897
-#define TWO_PI 6.2831853071795
+#define PI      3.1415926535897
+#define TWO_PI  6.2831853071795
 #define HALF_PI 1.5707963267948
 
 //
@@ -30,29 +30,22 @@ using String = std::string;
 
 using byte = uint8_t;
 
-template <typename T, typename U>
-T random(T min, U max) {
+template<typename T, typename U> T random(T min, U max)
+{
   uint32_t n = random();
   // bad random, but who cares?
   return (n % (max - min)) + min;
 }
 
-template <typename T>
-T random(T max) {
-  return random(0, max);
-}
+template<typename T> T random(T max) { return random(0, max); }
 
 //
 // ambiguous min/fmin/max/fmax/abs
 //
 
-static constexpr double min(double a, double b) {
-  return fmin(a, b);
-}
+static constexpr double min(double a, double b) { return fmin(a, b); }
 
-static constexpr double max(double a, double b) {
-  return fmax(a, b);
-}
+static constexpr double max(double a, double b) { return fmax(a, b); }
 
 using std::abs;
 
@@ -60,21 +53,22 @@ using std::abs;
 // misc functions
 //
 
-float radians(float degrees) {
-  return (degrees / 180.f) * PI;
-}
+float radians(float degrees) { return (degrees / 180.f) * PI; }
 
-template <typename T, typename V, typename U>
-static constexpr T constrain(const T& a, const V& mini, const U& maxi) {
-  if (a <= mini) return mini;
-  if (a >= maxi) return maxi;
+template<typename T, typename V, typename U> static constexpr T constrain(const T& a, const V& mini, const U& maxi)
+{
+  if (a <= mini)
+    return mini;
+  if (a >= maxi)
+    return maxi;
   return a;
 }
 
-template <typename T, typename V>
-static constexpr T pow(const T& a, const V& b) {
+template<typename T, typename V> static constexpr T pow(const T& a, const V& b)
+{
   T acc = 1;
-  for (V i = 0; i < b; ++i) {
+  for (V i = 0; i < b; ++i)
+  {
     acc *= a;
   }
   return acc;
@@ -86,8 +80,6 @@ static constexpr T pow(const T& a, const V& b) {
 
 static uint64_t globalMillis;
 
-uint64_t millis() {
-  return globalMillis;
-}
+uint64_t millis() { return globalMillis; }
 
 #endif

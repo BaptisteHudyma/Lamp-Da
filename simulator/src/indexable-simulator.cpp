@@ -8,18 +8,21 @@
 #include "src/modes/default/fixed_modes.hpp"
 #include "src/modes/legacy/legacy_modes.hpp"
 
-struct MyCustomConfig : public modes::DefaultManagerConfig {
+struct MyCustomConfig : public modes::DefaultManagerConfig
+{
   static constexpr uint32_t defaultCustomRampStepSpeedMs = 8;
   static constexpr uint32_t scrollRampStepSpeedMs = 256;
 };
 
-using ManagerTy =
-    modes::ManagerForConfig<MyCustomConfig, modes::FixedModes,
-                            modes::MiscFixedModes, modes::legacy::CalmModes,
-                            modes::legacy::PartyModes,
-                            modes::legacy::SoundModes>;
+using ManagerTy = modes::ManagerForConfig<MyCustomConfig,
+                                          modes::FixedModes,
+                                          modes::MiscFixedModes,
+                                          modes::legacy::CalmModes,
+                                          modes::legacy::PartyModes,
+                                          modes::legacy::SoundModes>;
 
-struct modeSimulation : public defaultSimulation {
+struct modeSimulation : public defaultSimulation
+{
   float fps = 60.f;
 
   auto get_context() { return modeManager.get_context(); }
@@ -34,7 +37,4 @@ private:
   ManagerTy modeManager;
 };
 
-int main() {
-  return simulator<modeSimulation>::run();
-}
-
+int main() { return simulator<modeSimulation>::run(); }
