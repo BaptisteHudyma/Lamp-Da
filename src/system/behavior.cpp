@@ -267,12 +267,6 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
     realStartTime -= holdDuration;
   }
 
-  // prevent the '#38: luminosity ramp flashes' bug
-  if (isEndOfHoldEvent)
-  {
-    update_brightness(BRIGHTNESS, true);
-  }
-
   //
   // "early actions"
   //    - actions to be performed by user just after lamp is turned on
@@ -281,9 +275,6 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 
   if (realStartTime < EARLY_ACTIONS_LIMIT_MS)
   {
-    if (isEndOfHoldEvent)
-      return;
-
     // early action animation
     if (consecutiveButtonCheck > 2)
     {
@@ -306,7 +297,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
     }
 
     // 3+hold (3s): turn it on, with button usermode enabled
-    if (consecutiveButtonCheck == 3)
+    if (!isEndOfHoldEvent and consecutiveButtonCheck == 3)
     {
       if (holdDuration > EARLY_ACTIONS_HOLD_MS)
       {
@@ -317,7 +308,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 
     // 4+hold (3s): turn it on, with bluetooth advertising
 #ifdef USE_BLUETOOTH
-    if (consecutiveButtonCheck == 4)
+    if (!isEndOfHoldEvent and consecutiveButtonCheck == 4)
     {
       if (holdDuration > EARLY_ACTIONS_HOLD_MS)
       {

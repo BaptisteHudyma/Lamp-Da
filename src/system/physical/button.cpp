@@ -45,11 +45,11 @@ void treat_button_pressed(const bool isButtonPressDetected,
   buttonState.pressDuration = buttonState.lastEventTime - buttonState.firstHoldTime;
 
   // currently in long press status
-  buttonState.isLongPressed = (buttonState.isPressed && buttonState.pressDuration > HOLD_BUTTON_MIN_MS);
+  buttonState.isLongPressed = (buttonState.isPressed and buttonState.pressDuration > HOLD_BUTTON_MIN_MS);
 
   // remove button clicked if last call was too long ago (and an action is currently handled)
   if (buttonState.wasTriggered and ((buttonState.sinceLastCall > RELEASE_TIMING_MS) or
-                                    (buttonState.isLongPressed && buttonState.sinceLastCall > RELEASE_TIMING_MS / 2)))
+                                    (buttonState.isLongPressed and buttonState.sinceLastCall > RELEASE_TIMING_MS / 2)))
   {
     // end of button press, trigger callback (press-hold action, or press action)
     if (buttonState.isLongPressed)
