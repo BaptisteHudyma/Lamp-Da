@@ -14,11 +14,8 @@ void power_on_sequence() {
   pinMode(LED_POWER_PIN, OUTPUT);
   digitalWrite(LED_POWER_PIN, HIGH);
 
-  // initialize the strip object
-  manager.strip.begin();
-  manager.strip.clear();
-  manager.strip.show();  // Turn OFF all pixels ASAP
-  manager.strip.setBrightness(BRIGHTNESS);
+  // initialize the lamp object
+  manager.lamp.startup();
 
   // callbacks
   manager.power_on_sequence();
@@ -30,9 +27,9 @@ void power_off_sequence() {
   auto manager = get_context();
   manager.power_off_sequence();
 
-  // clean strip object
-  manager.strip.clear();
-  manager.strip.show();  // Clear all pixels
+  // clear lamp on power-off
+  manager.lamp.clear();
+  manager.lamp.show();
 
   // power off
   digitalWrite(LED_POWER_PIN, LOW);
@@ -48,8 +45,8 @@ void power_off_sequence() {
 void brightness_update(const uint8_t brightness) {
   auto manager = get_context();
 
-  // set brightness in strip object
-  manager.strip.setBrightness(brightness);
+  // set brightness for underlying object (w/o re-entry in update_brightness)
+  manager.lamp.setBrightness(brightness, true, true);
 
   // callbacks
   manager.brightness_update(brightness);
@@ -208,7 +205,7 @@ bool should_spawn_thread() {
 
 void user_thread() {
   auto manager = get_context();
-  manager.strip.show();
+  manager.lamp.show();
 
   if (manager.should_spawn_thread()) {
     manager.user_thread();

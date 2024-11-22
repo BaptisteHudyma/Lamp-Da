@@ -1,10 +1,10 @@
 #ifndef MY_CUSTOM_MODE_H
 #define MY_CUSTOM_MODE_H
 
-struct MyCustomMode : public modes::FullMode {
-
-  static void loop(auto& ctx) { }
-  static void reset(auto& ctx) { }
+struct MyCustomMode : public modes::BasicMode
+{
+  static void loop(auto& ctx) {}
+  static void reset(auto& ctx) {}
 
   // only if hasBrightCallback
   static void brightness_update(auto& ctx, uint8_t brightness) { }

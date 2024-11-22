@@ -15,8 +15,7 @@
 namespace modes::legacy {
 
 /// Just a way to highlight which modes still uses src/system
-using LegacyMode = FullMode;
-using LegacySimpleMode = BasicMode;
+using LegacyMode = BasicMode;
 
 //
 // legacy calm modes
@@ -28,13 +27,11 @@ namespace calm {
 struct RainbowSwirlMode : public LegacyMode {
   static void loop(auto& ctx) {
     auto& state = ctx.state;
-    animations::fill(state.rainbowSwirl, ctx.strip);
+    animations::fill(state.rainbowSwirl, ctx.lamp.getLegacyStrip());
     state.rainbowSwirl.update();
   }
 
-  static void reset(auto& ctx) {
-    ctx.state.rainbowSwirl.reset();
-  }
+  static void reset(auto& ctx) { ctx.state.rainbowSwirl.reset(); }
 
   struct StateTy {
     GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);
@@ -45,8 +42,7 @@ struct RainbowSwirlMode : public LegacyMode {
 struct PartyFadeMode : public LegacyMode {
   static void loop(auto& ctx) {
     auto& state = ctx.state;
-    state.isFinished = animations::fade_in(
-      state.palettePartyColor, 100, state.isFinished, ctx.strip);
+    state.isFinished = animations::fade_in(state.palettePartyColor, 100, state.isFinished, ctx.lamp.getLegacyStrip());
 
     if (state.isFinished) {
       state.palettePartyColor.update(++state.currentIndex);
@@ -71,15 +67,15 @@ struct PartyFadeMode : public LegacyMode {
  * Inherit from `NoiseMode<YourMode>`
  *  - this enable all derived `StateTy` to be unique
  */
-template <typename T>
-struct NoiseMode : public LegacyMode {
-  static void reset(auto& ctx) {
-    ctx.state.categoryChange = true;
-  }
+template<typename T> struct NoiseMode : public LegacyMode
+{
+  static void reset(auto& ctx) { ctx.state.categoryChange = true; }
 
-  struct StateTy {
-    void random_noise(auto& strip, const palette_t& palette) {
-      animations::random_noise(palette, strip, categoryChange, true, 3);
+  struct StateTy
+  {
+    void random_noise(auto& lamp, const palette_t& palette)
+    {
+      animations::random_noise(palette, lamp.getLegacyStrip(), categoryChange, true, 3);
       categoryChange = false;
     }
 
@@ -88,32 +84,28 @@ struct NoiseMode : public LegacyMode {
 };
 
 /// Noise from PaletteLavaColors
-struct LavaNoiseMode : public NoiseMode<LavaNoiseMode> {
-  static void loop(auto& ctx) {
-    ctx.state.random_noise(ctx.strip, PaletteLavaColors);
-  }
+struct LavaNoiseMode : public NoiseMode<LavaNoiseMode>
+{
+  static void loop(auto& ctx) { ctx.state.random_noise(ctx.lamp, PaletteLavaColors); }
 };
 
 /// Noise from PaletteForestColors
-struct ForestNoiseMode : public NoiseMode<ForestNoiseMode> {
-  static void loop(auto& ctx) {
-    ctx.state.random_noise(ctx.strip, PaletteForestColors);
-  }
+struct ForestNoiseMode : public NoiseMode<ForestNoiseMode>
+{
+  static void loop(auto& ctx) { ctx.state.random_noise(ctx.lamp, PaletteForestColors); }
 };
 
 /// Noise from PaletteOceanColors
-struct OceanNoiseMode : public NoiseMode<OceanNoiseMode> {
-  static void loop(auto& ctx) {
-    ctx.state.random_noise(ctx.strip, PaletteOceanColors);
-  }
+struct OceanNoiseMode : public NoiseMode<OceanNoiseMode>
+{
+  static void loop(auto& ctx) { ctx.state.random_noise(ctx.lamp, PaletteOceanColors); }
 };
 
 /// Polar lights
 struct PolarMode : public LegacyMode {
   static void loop(auto& ctx) {
     auto& categoryChange = ctx.state.categoryChange;
-    animations::mode_2DPolarLights(
-      255, 128, PaletteAuroraColors, categoryChange, ctx.strip);
+    animations::mode_2DPolarLights(255, 128, PaletteAuroraColors, categoryChange, ctx.lamp.getLegacyStrip());
     categoryChange = false;
   }
 
@@ -127,31 +119,27 @@ struct PolarMode : public LegacyMode {
 };
 
 /// Fireplace
-struct FireMode : public LegacySimpleMode {
-  static void loop(auto& strip) {
-    animations::fire(60, 60, 255, PaletteHeatColors, strip);
-  }
+struct FireMode : public LegacyMode
+{
+  static void loop(auto& ctx) { animations::fire(60, 60, 255, PaletteHeatColors, ctx.lamp.getLegacyStrip()); }
 };
 
 /// Rainbow sin waves
-struct SineMode : public LegacySimpleMode {
-  static void loop(auto& strip) {
-    animations::mode_sinewave(128, 128, PaletteRainbowColors, strip);
-  }
+struct SineMode : public LegacyMode
+{
+  static void loop(auto& ctx) { animations::mode_sinewave(128, 128, PaletteRainbowColors, ctx.lamp.getLegacyStrip()); }
 };
 
 /// Bubbles
-struct DriftMode : public LegacySimpleMode {
-  static void loop(auto& strip) {
-    animations::mode_2DDrift(64, 64, PaletteRainbowColors, strip);
-  }
+struct DriftMode : public LegacyMode
+{
+  static void loop(auto& ctx) { animations::mode_2DDrift(64, 64, PaletteRainbowColors, ctx.lamp.getLegacyStrip()); }
 };
 
 /// Distortion
-struct DistMode : public LegacySimpleMode {
-  static void loop(auto& strip) {
-    animations::mode_2Ddistortionwaves(128, 128, strip);
-  }
+struct DistMode : public LegacyMode
+{
+  static void loop(auto& ctx) { animations::mode_2Ddistortionwaves(128, 128, ctx.lamp.getLegacyStrip()); }
 };
 
 } // modes::legacy::calm
@@ -166,11 +154,12 @@ namespace party {
 struct ColorWipeMode : public LegacyMode {
   static void loop(auto& ctx) {
     auto& state = ctx.state;
-    state.isFinished = state.switchMode ? (
-        animations::color_wipe_up(state.complementaryColor, 500, state.isFinished, ctx.strip)
-      ) : (
-        animations::color_wipe_down(state.complementaryColor, 500, state.isFinished, ctx.strip)
-      );
+    auto& legacyStrip = ctx.lamp.getLegacyStrip();
+
+    state.isFinished =
+            state.switchMode ?
+                    (animations::color_wipe_up(state.complementaryColor, 500, state.isFinished, legacyStrip)) :
+                    (animations::color_wipe_down(state.complementaryColor, 500, state.isFinished, legacyStrip));
 
     if (state.isFinished) {
       state.switchMode = !state.switchMode;
@@ -193,8 +182,8 @@ struct ColorWipeMode : public LegacyMode {
 struct RandomFillMode : public LegacyMode {
   static void loop(auto& ctx) {
     auto& state = ctx.state;
-    state.isFinished = animations::double_side_fill(
-      state.randomColor, 500, state.isFinished, ctx.strip);
+    state.isFinished =
+            animations::double_side_fill(state.randomColor, 500, state.isFinished, ctx.lamp.getLegacyStrip());
 
     if (state.isFinished) {
       state.randomColor.update();
@@ -216,7 +205,7 @@ struct PingPongMode : public LegacyMode {
   static void loop(auto& ctx) {
     auto& state = ctx.state;
     state.isFinished = animations::dot_ping_pong(
-      state.complementaryPingPongColor, 1000, 128, state.isFinished, ctx.strip);
+            state.complementaryPingPongColor, 1000, 128, state.isFinished, ctx.lamp.getLegacyStrip());
 
     if (state.isFinished) {
       state.complementaryPingPongColor.update();
@@ -239,7 +228,7 @@ namespace sound {
 struct VuMeterMode : public LegacyMode {
   static void loop(auto& ctx) {
     auto& state = ctx.state;
-    animations::vu_meter(state.redToGreenGradient, 128, ctx.strip);
+    animations::vu_meter(state.redToGreenGradient, 128, ctx.lamp.getLegacyStrip());
   }
 
   static void reset(auto& ctx) {
@@ -254,10 +243,9 @@ struct VuMeterMode : public LegacyMode {
   };
 };
 
-struct FftMode : public LegacyMode {
-  static void loop(auto& ctx) {
-    animations::fft_display(64, 64, PalettePartyColors, ctx.strip);
-  }
+struct FftMode : public LegacyMode
+{
+  static void loop(auto& ctx) { animations::fft_display(64, 64, PalettePartyColors, ctx.lamp.getLegacyStrip()); }
 
   static void reset(auto& ctx) {}
 

@@ -24,9 +24,7 @@ struct modeSimulation : public defaultSimulation {
 
   auto get_context() { return modeManager.get_context(); }
 
-  modeSimulation(LedStrip& strip)
-      : defaultSimulation(strip),
-        modeManager(strip) { }
+  modeSimulation(LampTy& lamp) : defaultSimulation(lamp), modeManager(lamp) {}
 
   void loop(auto&) { loop(); }
 

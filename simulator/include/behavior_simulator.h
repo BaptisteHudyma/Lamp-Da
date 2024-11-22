@@ -1,6 +1,9 @@
 #ifndef BUTTON_SIMULATOR_H
 #define BUTTON_SIMULATOR_H
 
+// prevent inclusion of colliding src/system/behavior.h
+#define BEHAVIOR_HPP
+
 void pinMode(auto, auto) { }
 #define OUTPUT              0x1021
 #define OUTPUT_H0H1         0x1022
@@ -29,6 +32,7 @@ static bool isShutdown = true;
 static bool isBluetoothAdvertising = false;
 static uint8_t currentBrightness = 255;
 static uint8_t BRIGHTNESS = 255;
+static uint8_t MaxBrightnessLimit = 255;
 
 #define BRIGHTNESS_RAMP_DURATION_MS 2000
 #define MIN_BRIGHTNESS 5
@@ -36,7 +40,30 @@ static uint8_t BRIGHTNESS = 255;
 #define EARLY_ACTIONS_LIMIT_MS 2000
 #define EARLY_ACTIONS_HOLD_MS 2000
 
-void power_on_behavior(auto& simu) {
+static bool deferredBrightnessCallback = false;
+
+void update_brightness(uint8_t newBrightness, bool shouldUpdateCurrentBrightness, bool isInitialRead)
+{
+  if (newBrightness > MaxBrightnessLimit)
+    return;
+
+  if (BRIGHTNESS != newBrightness)
+  {
+    BRIGHTNESS = newBrightness;
+
+    if (!isInitialRead)
+    {
+      fprintf(stderr, "re-entrant brightness callback deferred\n");
+      deferredBrightnessCallback = true;
+    }
+
+    if (shouldUpdateCurrentBrightness)
+      currentBrightness = newBrightness;
+  }
+}
+
+void power_on_behavior(auto& simu)
+{
   isShutdown = false;
   lastStartupSequence = millis();
   isButtonUsermodeEnabled = false;

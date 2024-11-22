@@ -67,10 +67,7 @@ void mode_2Ddistortionwaves(const uint8_t scale, const uint8_t speed,
 struct distortSimulation : public defaultSimulation {
   float fps = 20.f;
 
-  void loop(LedStrip& strip) {
-    mode_2Ddistortionwaves(128, 128, strip);
-  }
-
+  void loop(LampTy& lamp) { mode_2Ddistortionwaves(128, 128, lamp.getLegacyStrip()); }
 };
 
 int main() {

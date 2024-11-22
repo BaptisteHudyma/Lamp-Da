@@ -11,10 +11,10 @@ struct defaultSimulation {
   float fakeXorigin = 0; // start strip N led to the left
   float fakeXend = 0; // remove N led from right
 
-  defaultSimulation(LedStrip& strip) { }
+  defaultSimulation(LampTy& strip) {}
 
-  void loop(LedStrip& strip) { }
-  void customEventHandler(sf::Event& event) { };
+  void loop(LampTy& strip) {}
+  void customEventHandler(sf::Event& event) {};
 
   void button_clicked_default(const uint8_t clicks) { }
   void button_hold_default(const uint8_t clicks,

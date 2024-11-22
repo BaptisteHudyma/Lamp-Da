@@ -36,7 +36,8 @@ using ManagerTy = modes::ManagerFor<modes::FixedModes,
 namespace _private {
 
 LedStrip strip(AD0);
-ManagerTy modeManager(strip);
+modes::hardware::LampTy lamp {strip};
+ManagerTy modeManager(lamp);
 
 } // namespace _private
 

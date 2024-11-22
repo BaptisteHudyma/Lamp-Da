@@ -24,10 +24,7 @@ void fire(const uint8_t scalex, const uint8_t scaley, const uint8_t speed,
 struct fireSimulation : public defaultSimulation {
   float fps = 20.f;
 
-  void loop(LedStrip& strip) {
-    fire(60, 60, 255, PaletteHeatColors, strip);
-  }
-
+  void loop(LampTy& lamp) { fire(60, 60, 255, PaletteHeatColors, lamp.getLegacyStrip()); }
 };
 
 int main() {

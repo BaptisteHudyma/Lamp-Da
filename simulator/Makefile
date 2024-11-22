@@ -9,8 +9,9 @@ BUILD_DIR=${SIMU_BUILD_DIR}
 CXX=$(shell which c++)
 CXX_INCLUDE_DIRECTORIES=-I$(ROOT_DIR) -I$(SRC_DIR)include
 CXX_LDFLAGS=-lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system
+CXX_LAMP_FLAGS=-DLMBD_MISSING_DEFINE -DLMBD_LAMP_TYPE__INDEXABLE
 CXX_EXTRA_FLAGS=-fconcepts -DLMBD_CPP17 -ftemplate-backtrace-limit=1 #-Wall -Wextra -pedantic
-CXX_BUILD_FLAGS=--std=c++17 -O3 $(CXX_EXTRA_FLAGS) $(CXX_INCLUDE_DIRECTORIES)
+CXX_BUILD_FLAGS=--std=c++17 -O3 $(CXX_LAMP_FLAGS) $(CXX_EXTRA_FLAGS) $(CXX_INCLUDE_DIRECTORIES)
 
 ALL_TARGETS=$(shell ls $(SRC_DIR)/src|grep -Eo '^[^-]*-simulator.cpp'|sed 's/.cpp$$//g')
 

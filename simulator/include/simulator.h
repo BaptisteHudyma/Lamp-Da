@@ -1,6 +1,12 @@
 #include <Arduino.h>
 
-#define LMBD_LAMP_TYPE__INDEXABLE
+// prevent the inclusion of "src/system/MicroPhone.h"
+#define MICRO_PHONE_H
+
+// prevent the inclusion of "src/system/utils/strip.h"
+#define STRIP_H
+
+// see LMBD_LAMP_TYPE__INDEXABLE hard-coded in simulator/Makefile
 #include "src/user/constants.h"
 
 #include <memory>
@@ -8,7 +14,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio/SoundRecorder.hpp>
-#define MICRO_PHONE_H
 
 #define LMBD_SIMU_ENABLED
 #define LMBD_SIMU_REALCOLORS
@@ -214,7 +219,9 @@ public:
 // lampda-specific code
 //
 
-#define STRIP_H
+#include "src/modes/include/hardware/lamp_type.hpp"
+using LampTy = modes::hardware::LampTy;
+
 #include "src/system/ext/noise.cpp"
 #include "src/system/colors/palettes.cpp"
 #include "src/system/colors/soundAnimations.cpp"
@@ -252,13 +259,14 @@ struct simulator {
     recorder.start();
 
     // fake strip
-    LedStrip strip{};
+    LedStrip strip {};
+    modes::hardware::LampTy lamp {strip};
 
     // render window
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), title);
 
     // build simu
-    T simu{strip};
+    T simu {lamp};
 
     // start the simulation
     isShutdown = true;
@@ -294,9 +302,16 @@ struct simulator {
       // update millis()
       globalMillis = clock.getElapsedTime().asMilliseconds();
 
+      // call deferred brightness callbacks
+      if (deferredBrightnessCallback)
+      {
+        deferredBrightnessCallback = false;
+        simu.brightness_update(BRIGHTNESS);
+      }
+
       // execute user function
       if (!isShutdown)
-        simu.loop(strip);
+        simu.loop(lamp);
 
       float dt = clock.getElapsedTime().asMilliseconds() - globalMillis;
 
