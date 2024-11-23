@@ -1,7 +1,8 @@
 #ifndef BEHAVIOR_HPP
 #define BEHAVIOR_HPP
 
-/** \file behavior.h
+/** \file
+ *
  *  \brief Basic controller behavior, including alerts and user interactions
  **/
 

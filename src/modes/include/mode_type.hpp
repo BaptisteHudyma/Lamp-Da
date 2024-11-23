@@ -1,11 +1,12 @@
 #ifndef MODE_TYPE_H
 #define MODE_TYPE_H
 
-#include <cstdint>
-
-/** \file mode_type.hpp
+/** \file
+ *
  *  \brief Basic interface types to implement custom user modes
  **/
+
+#include <cstdint>
 
 /// Contains basic interface types to implement custom user modes
 namespace modes {
@@ -15,29 +16,13 @@ namespace modes {
  * Implement a custom user mode as follow:
  *
  * ```
- *  // simplified user mode definition
+ *  // user mode definition
  *  struct MyCustomMode : public modes::BasicMode {
- *    static void loop(LedStrip& strip) {
- *      strip.clear();
+ *    static void loop(auto& ctx) {
+ *      ctx.lamp.setBrightness(50);
  *
- *      // ... other things using strip
+ *      // ... other things using lamp
  *    }
- *  };
- * ```
- *
- * It is recommended to use the full user mode definition:
- *
- * ```
- *  // full user mode definition
- *  struct MyCustomMode : public modes::FullMode {
- *
- *   static void loop(auto& ctx) {
- *      auto& strip = ctx.strip;
- *      strip.clear();
- *
- *      // ... other things using strip & ctx
- *   }
- *
  *  };
  * ```
  *
@@ -64,33 +49,20 @@ namespace modes {
  * \remark BasicMode and all derived user modes should never be constructed,
  * use custom StateTy to implement stateful modes
  */
-struct BasicMode {
-
+struct BasicMode
+{
   /// Mode custom static state, made available through context (optional)
-  struct StateTy { };
+  struct StateTy
+  {
+  };
 
-  /** \brief Simplified user mode loop function (default)
-   *
-   * Loop function with a simplified prototype, which is called instead of full
-   * loop(auto&) if BasicMode::simpleMode is True
-   *
-   * \remark To make mode stateful, define custom StateTy and use loop(auto&)
-   * to retrieve context, then retrieve the state instance from context
-   */
-  static void loop(LedStrip& strip) { return; }
-
-  /// Picks between simplified BasicMode::loop() and full BasicMode::loop(auto&)
-  static constexpr bool simpleMode = true;
-
-  /** \brief Custom user mode loop function (optional)
+  /** \brief Custom user mode loop function (default)
    *
    * Loop function each tick called whenever the mode is set as the currently
    * active mode by the user
    *
-   * \param[in] ctx The current context, providing a interface to the
-   * controller and the LED strip, as well as an access to its state
-   * \remark By default BasicMode::simpleMode is True and simplified loop() is
-   * called instead of loop(auto&)
+   * \param[in] ctx The current context, providing a interface to the local
+   * state, the mode manager, as well as the hardware through its lamp object
    */
   static void loop(auto& ctx) { return; }
 
@@ -129,9 +101,7 @@ struct BasicMode {
    * \remark This behavior is in user::button_hold_default() and may be
    * prevented if custom "usermode UI" via custom_hold() is enabled
    */
-  static void custom_ramp_update(auto& ctx, uint8_t rampValue) {
-    return;
-  }
+  static void custom_ramp_update(auto& ctx, uint8_t rampValue) { return; }
 
   /// Toggles "usermode" button UI custom_click() and custom_hold()
   static constexpr bool hasButtonCustomUI = false;
@@ -144,9 +114,7 @@ struct BasicMode {
    * \param[in] nbClick The number of clicks made by the user
    * \return Returns True if default UI action should be prevented
    */
-  static bool custom_click(auto& ctx, uint8_t nbClick) {
-    return false;
-  }
+  static bool custom_click(auto& ctx, uint8_t nbClick) { return false; }
 
   /** \brief Custom "usermode" button UI for "click+hold" action (optional)
    *
@@ -159,10 +127,8 @@ struct BasicMode {
    * \return Returns True if default action must be prevented
    * \remark When \p isEndOfHoldEvent is True, then \p holdDuration is zero
    */
-  static bool custom_hold(auto& ctx,
-                          uint8_t nbClickAndHold,
-                          bool isEndOfHoldEvent,
-                          uint32_t holdDuration) {
+  static bool custom_hold(auto& ctx, uint8_t nbClickAndHold, bool isEndOfHoldEvent, uint32_t holdDuration)
+  {
     return false;
   }
 
@@ -216,8 +182,8 @@ struct BasicMode {
 
   /** \brief Toggles the use of custom BasicMode::user_thread() callback
    *
-   * \remark When this is enabled, default behavior is to only refresh strip in
-   * user::user_thread() after the BasicMode::user_thread() callback
+   * \remark When this is enabled, default is to call hardware::LampTy::show()
+   * in user::user_thread() after the BasicMode::user_thread() callback
    */
   static constexpr bool requireUserThread = false;
 
@@ -227,22 +193,15 @@ struct BasicMode {
    *
    * \param[in] ctx The current context
    * \remark This is executed as prologue of user::user_thread() and hence
-   * must complete quickly in order to keep the strip responsive
+   * must complete quickly in order to keep the lamp responsive
    */
-  static void user_thread(auto& ctx) {
-    return;
-  }
+  static void user_thread(auto& ctx) { return; }
 
   // modes shall not implement any constructors
-  BasicMode() = delete; ///< \private
-  BasicMode(const BasicMode&) = delete; ///< \private
+  BasicMode() = delete;                            ///< \private
+  BasicMode(const BasicMode&) = delete;            ///< \private
   BasicMode& operator=(const BasicMode&) = delete; ///< \private
 };
-
-  /// Alias for BasicMode with BasicMode::simpleMode to False
-  struct FullMode: public BasicMode {
-    static constexpr bool simpleMode = false;
-  };
 
 } // namespace modes
 

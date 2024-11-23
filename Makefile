@@ -423,6 +423,16 @@ format:
 	find src/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file -i
 	find simulator/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file -i
 
+format-hook:
+	cp .pre-commit .git/hooks/pre-commit
+
+format-verify:
+	@which clang-format > /dev/null \
+		|| (echo; echo Install clang / clang-format to verify format!)
+	@find LampColorControler.ino | xargs clang-format --style=file --dry-run --Werror
+	@find src/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file --dry-run -Werror
+	@find simulator/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file --dry-run -Werror
+	# format is ok :)
 
 #
 # verify artifact
@@ -473,9 +483,8 @@ verify-type(%):
 	@echo; echo Building with LMBD_LAMP_TYPE=$% to verify artifact...; echo
 	LMBD_LAMP_TYPE=$% make build verify
 
-verify-all: verify-all-simulator
+verify-all: format-verify verify-all-simulator
 	@echo; echo " --- $@"
-	make format
 	# verify that all lamp types build & validates
 	make clean 'verify-type(indexable)'
 	@touch $(BUILD_DIR)/.skip-simple-clean # (re-use indexable setup)

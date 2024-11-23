@@ -7,40 +7,29 @@ namespace modes {
 
 namespace fixed {
 
-/// Single-color mode for indexable strips with palette ramp
-struct FixedMode : public modes::FullMode {
-  static void loop(auto& ctx) {
-    uint32_t color = modes::colors::from_palette(
-      ctx.get_active_custom_ramp(),
-      ctx.state.palette);
-    ctx.fill(color);
-  }
-};
-
 //
 // main lightning modes
 //
 
 /// Black-body fixed colors ramp mode
-struct KelvinMode : public FixedMode {
-  struct StateTy {
-    static constexpr modes::colors::PaletteTy palette = modes::colors::PaletteBlackBodyColors;
-  };
+struct KelvinMode : public modes::BasicMode
+{
+  static void loop(auto& ctx) { ctx.lamp.setLightTemp(ctx.get_active_custom_ramp()); }
 
-  // (enable the ramp to saturates, instead of wrapping ramp around)
-  static void reset(auto& ctx) {
-    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
-  }
+  // (force ramp to saturates, instead of wrapping ramp around)
+  static void reset(auto& ctx) { ctx.template set_config_bool<ConfigKeys::rampSaturates>(true); }
 };
 
 /// Rainbow fixed colors ramp mode
-struct RainbowMode : public modes::FullMode {
-  static void loop(auto& ctx) {
+struct RainbowMode : public modes::BasicMode
+{
+  static void loop(auto& ctx)
+  {
     const float index = ctx.get_active_custom_ramp();
     const float hue = (index / 256.f) * 360.f;
-    uint32_t color = utils::hue_to_rgb_sinus(hue);
+    uint32_t color = colors::fromAngleHue(hue);
 
-    ctx.fill(color);
+    ctx.lamp.fill(color);
   }
 };
 
@@ -48,44 +37,53 @@ struct RainbowMode : public modes::FullMode {
 // optional "miscellaneous" group of other gradients
 //
 
+/// Single-color mode for indexable strips with palette ramp
+struct PaletteMode : public modes::BasicMode
+{
+  static void loop(auto& ctx)
+  {
+    uint32_t color = modes::colors::from_palette(ctx.get_active_custom_ramp(), ctx.state.palette);
+    ctx.lamp.fill(color);
+  }
+};
+
 /// Party fixed colors ramp mode
-struct PalettePartyMode : public FixedMode {
-  struct StateTy {
+struct PalettePartyMode : public PaletteMode
+{
+  struct StateTy
+  {
     static constexpr modes::colors::PaletteTy palette = modes::colors::PalettePartyColors;
   };
 };
 
 /// Forest fixed colors ramp mode
-struct PaletteForestMode : public FixedMode {
-  struct StateTy {
+struct PaletteForestMode : public PaletteMode
+{
+  struct StateTy
+  {
     static constexpr modes::colors::PaletteTy palette = modes::colors::PaletteForestColors;
   };
 };
 
 /// Ocean fixed colors ramp mode
-struct PaletteOceanMode : public FixedMode {
-  struct StateTy {
+struct PaletteOceanMode : public PaletteMode
+{
+  struct StateTy
+  {
     static constexpr modes::colors::PaletteTy palette = modes::colors::PaletteOceanColors;
   };
 };
 
-} // modes::fixed
+} // namespace fixed
 
 //
 // Fixed modes groups
 //
 
-using FixedModes = modes::GroupFor<
-  fixed::KelvinMode,
-  fixed::RainbowMode
->;
+using FixedModes = modes::GroupFor<fixed::KelvinMode, fixed::RainbowMode>;
 
-using MiscFixedModes = modes::GroupFor<
-  fixed::PalettePartyMode,
-  fixed::PaletteForestMode,
-  fixed::PaletteOceanMode
->;
+using MiscFixedModes = modes::GroupFor<fixed::PalettePartyMode, fixed::PaletteForestMode, fixed::PaletteOceanMode>;
 
-} // modes
+} // namespace modes
 
 #endif

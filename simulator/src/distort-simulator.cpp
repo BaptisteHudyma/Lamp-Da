@@ -2,8 +2,8 @@
 
 #include "default_simulation.h"
 
-void mode_2Ddistortionwaves(const uint8_t scale, const uint8_t speed,
-                            LedStrip& strip) {
+void mode_2Ddistortionwaves(const uint8_t scale, const uint8_t speed, LedStrip& strip)
+{
   const uint16_t cols = ceil(stripXCoordinates);
   const uint16_t rows = ceil(stripYCoordinates);
 
@@ -24,36 +24,23 @@ void mode_2Ddistortionwaves(const uint8_t scale, const uint8_t speed,
   uint16_t cy2 = beatsin8(14 - _speed, 0, rows - 1) * _scale;
 
   uint16_t xoffs = 0;
-  for (int x = 0; x < cols; x++) {
+  for (int x = 0; x < cols; x++)
+  {
     xoffs += _scale;
     uint16_t yoffs = 0;
 
-    for (int y = 0; y < rows; y++) {
+    for (int y = 0; y < rows; y++)
+    {
       yoffs += _scale;
 
-      byte rdistort =
-          cos8((cos8(((x << 3) + a) & 255) + cos8(((y << 3) - a2) & 255) + a3) &
-               255) >>
-          1;
-      byte gdistort = cos8((cos8(((x << 3) - a2) & 255) +
-                            cos8(((y << 3) + a3) & 255) + a + 32) &
-                           255) >>
-                      1;
-      byte bdistort = cos8((cos8(((x << 3) + a3) & 255) +
-                            cos8(((y << 3) - a) & 255) + a2 + 64) &
-                           255) >>
-                      1;
+      byte rdistort = cos8((cos8(((x << 3) + a) & 255) + cos8(((y << 3) - a2) & 255) + a3) & 255) >> 1;
+      byte gdistort = cos8((cos8(((x << 3) - a2) & 255) + cos8(((y << 3) + a3) & 255) + a + 32) & 255) >> 1;
+      byte bdistort = cos8((cos8(((x << 3) + a3) & 255) + cos8(((y << 3) - a) & 255) + a2 + 64) & 255) >> 1;
 
       COLOR c;
-      c.red = rdistort + w * (a - (((xoffs - cx) * (xoffs - cx) +
-                                    (yoffs - cy) * (yoffs - cy)) >>
-                                   7));
-      c.green = gdistort + w * (a2 - (((xoffs - cx1) * (xoffs - cx1) +
-                                       (yoffs - cy1) * (yoffs - cy1)) >>
-                                      7));
-      c.blue = bdistort + w * (a3 - (((xoffs - cx2) * (xoffs - cx2) +
-                                      (yoffs - cy2) * (yoffs - cy2)) >>
-                                     7));
+      c.red = rdistort + w * (a - (((xoffs - cx) * (xoffs - cx) + (yoffs - cy) * (yoffs - cy)) >> 7));
+      c.green = gdistort + w * (a2 - (((xoffs - cx1) * (xoffs - cx1) + (yoffs - cy1) * (yoffs - cy1)) >> 7));
+      c.blue = bdistort + w * (a3 - (((xoffs - cx2) * (xoffs - cx2) + (yoffs - cy2) * (yoffs - cy2)) >> 7));
 
       c.red = utils::gamma8(cos8(c.red));
       c.green = utils::gamma8(cos8(c.green));
@@ -64,16 +51,11 @@ void mode_2Ddistortionwaves(const uint8_t scale, const uint8_t speed,
   }
 }
 
-struct distortSimulation : public defaultSimulation {
+struct distortSimulation : public defaultSimulation
+{
   float fps = 20.f;
 
-  void loop(LedStrip& strip) {
-    mode_2Ddistortionwaves(128, 128, strip);
-  }
-
+  void loop(LampTy& lamp) { mode_2Ddistortionwaves(128, 128, lamp.getLegacyStrip()); }
 };
 
-int main() {
-  return simulator<distortSimulation>::run();
-}
-
+int main() { return simulator<distortSimulation>::run(); }

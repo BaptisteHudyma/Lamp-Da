@@ -38,11 +38,11 @@ namespace modes {
  *
  * See also modes::ConfigKeys for runtime configuration.
  */
-struct DefaultManagerConfig {
-
-//
-// useful config
-//
+struct DefaultManagerConfig
+{
+  //
+  // useful config
+  //
 
   /// By default, will custom ramp saturates, or else wrap around?
   static constexpr bool defaultRampSaturates = false;
@@ -53,9 +53,9 @@ struct DefaultManagerConfig {
   /// By default, how slow custom ramp changes value (milliseconds)
   static constexpr uint32_t defaultCustomRampStepSpeedMs = 16;
 
-//
-// misc config
-//
+  //
+  // misc config
+  //
 
   /// (misc) Override how slow mode & group scroll goes (milliseconds)
   static constexpr uint32_t scrollRampStepSpeedMs = 512;
@@ -97,10 +97,11 @@ struct DefaultManagerConfig {
  * All these values are reset to their default counterpart before each mode
  * change, see modes::DefaultManagerConfig on how to override these defaults.
  */
-enum class ConfigKeys : uint8_t {
-  rampSaturates, ///< (bool) Mode saturates on custom ramp, or else wrap?
+enum class ConfigKeys : uint8_t
+{
+  rampSaturates,          ///< (bool) Mode saturates on custom ramp, or else wrap?
   clearStripOnModeChange, ///< (bool) Mode clear strip after reset, or else do nothing?
-  customRampStepSpeedMs, ///< (u32) Mode time step for incrementing custom ramp (ms)
+  customRampStepSpeedMs,  ///< (u32) Mode time step for incrementing custom ramp (ms)
 };
 
 } // namespace modes

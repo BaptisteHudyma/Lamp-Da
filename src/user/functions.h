@@ -1,7 +1,8 @@
 #ifndef USER_FUNCTIONS_H
 #define USER_FUNCTIONS_H
 
-/** \file functions.h
+/** \file
+ *
  *  \brief Custom user mode functions for indexable strips
  **/
 

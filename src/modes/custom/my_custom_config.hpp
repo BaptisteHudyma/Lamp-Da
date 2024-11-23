@@ -3,13 +3,13 @@
 
 // uncomment only what you need to override
 //
-struct MyCustomConfig : public modes::DefaultManagerConfig {
+struct MyCustomConfig : public modes::DefaultManagerConfig
+{
   // static constexpr bool defaultRampSaturates = true;
   // static constexpr bool defaultClearStripOnModeChange = false;
   // static constexpr uint32_t defaultCustomRampStepSpeedMs = 32;
 };
 
-template <typename... Groups>
-using CustomManagerFor = modes::ManagerForConfig<MyCustomConfig, Groups...>;
+template<typename... Groups> using CustomManagerFor = modes::ManagerForConfig<MyCustomConfig, Groups...>;
 
 #endif
