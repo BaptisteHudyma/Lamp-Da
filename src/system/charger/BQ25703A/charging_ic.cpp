@@ -121,10 +121,17 @@ void control_OTG()
   static bool isOTGDisabled_s = false;
   if (isInOtg_s)
   {
+    // OTG use time
+    static uint32_t OTGStartTime_ms = 0;
+    static uint32_t lastOTGUsedTime_ms = 0;
+
     if (not isOTGInitialized_s)
     {
       isOTGInitialized_s = true;
       isOTGDisabled_s = false;
+
+      OTGStartTime_ms = millis();
+      lastOTGUsedTime_ms = millis();
 
       digitalWrite(ENABLE_OTG, HIGH);
       delay(1);
@@ -138,6 +145,34 @@ void control_OTG()
       AlertManager.raise_alert(Alerts::OTG_FAILED);
 
       delay(10);
+    }
+    else
+    {
+      // check current consumption
+      const auto& measurment = get_measurments();
+      if (not measurment.is_measurment_valid())
+      {
+        // do not run anything
+        return;
+      }
+
+      if (measurment.vbus_mV < 3200)
+      {
+        // wait for voltage to climb on VBUS
+        return;
+      }
+      if (measurment.vbus_mA > 0)
+      {
+        // update the last used time
+        lastOTGUsedTime_ms = millis();
+      }
+
+      // if some time has passed since the last use
+      if (millis() - lastOTGUsedTime_ms > 2000)
+      {
+        // disable the OTG if it's not used
+        disable_OTG();
+      }
     }
   }
   else
