@@ -305,6 +305,12 @@ void shutdown()
 
 void set_enable_charge(const bool shouldCharge) { enableCharge_s = shouldCharge; }
 
+void enable_OTG()
+{
+  BQ25703A::set_OTG_targets(5000, 1000);
+  BQ25703A::enable_OTG();
+}
+
 bool is_vbus_powered() { return powerSource::is_power_available(); }
 
 bool is_vbus_signal_detected() { return powerSource::is_powered_with_vbus(); }

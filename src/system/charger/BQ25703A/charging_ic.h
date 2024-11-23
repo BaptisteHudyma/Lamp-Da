@@ -2,7 +2,7 @@
 #define CHARGING_IC_H
 
 #include <cstdint>
-#include <optional>
+
 namespace BQ25703A {
 
 enum Status_t
@@ -56,6 +56,12 @@ void set_input_current_limit(const uint16_t maxInputCurrent_mA, const bool shoul
 
 // return true if an input source is present for the charger
 bool is_input_source_present();
+
+// Enable the OTG (also disable the charging process)
+void enable_OTG();
+void disable_OTG();
+// set the desired OTG capabilities
+void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA);
 
 // try to clear the faults that can be cleared.
 // if this succeeds, the status will be to NOMINAL next loop call
