@@ -28,7 +28,9 @@ void handleCommand(const String& command)
       Serial.println("h: this page");
       Serial.println("v: hardware & software version");
       Serial.println("bl: battery level");
-      Serial.println("vbus: USB voltage bus infos");
+      Serial.println("cinfo: charge infos");
+      Serial.println("cen: enable charger. Debug only");
+      Serial.println("cdis: disable charger. Debug only !");
       Serial.println("format-fs: format the whole file system (dangerous)");
       Serial.println("-----------------");
       break;
@@ -54,7 +56,7 @@ void handleCommand(const String& command)
       Serial.println("%");
       break;
 
-    case utils::hash("vbus"):
+    case utils::hash("cinfo"):
       {
         const auto& chargerState = charger::get_state();
         Serial.print("voltage on vbus:");
@@ -77,6 +79,37 @@ void handleCommand(const String& command)
         Serial.print(battery::get_battery_level() / 100.0);
         Serial.println("%");
         Serial.println(chargerState.get_status_str());
+        break;
+      }
+
+    case utils::hash("cen"):
+      Serial.println("Enabling the charging process");
+      charger::set_enable_charge(true);
+      break;
+
+    case utils::hash("cdis"):
+      Serial.println("Disabling the charging process");
+      charger::set_enable_charge(false);
+      break;
+
+    case utils::hash("ADC"):
+      {
+        const auto& chargerState = charger::get_state();
+        Serial.print("VBUS voltage: ");
+        Serial.print(chargerState.vbus_mV);
+        Serial.println("mV");
+
+        Serial.print("VBUS current: ");
+        Serial.print(chargerState.inputCurrent_mA);
+        Serial.println("mA");
+
+        Serial.print("Bat voltage: ");
+        Serial.print(chargerState.batteryVoltage_mV);
+        Serial.println("mV");
+
+        Serial.print("Bat current: ");
+        Serial.print(chargerState.batteryCurrent_mA);
+        Serial.println("mA");
         break;
       }
 
