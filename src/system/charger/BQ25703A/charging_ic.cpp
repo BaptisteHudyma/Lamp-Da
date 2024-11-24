@@ -246,7 +246,7 @@ void update_battery()
     chargeStatus_s = ChargeStatus_t::OFF;
   }
   //
-  else if (chargingCurrent < powerLimits_s.maxChargingCurrent_mA * 0.1)
+  else if (chargingCurrent <= powerLimits_s.maxChargingCurrent_mA * 0.1)
   {
     chargeStatus_s = ChargeStatus_t::SLOW_CHARGE;
   }
