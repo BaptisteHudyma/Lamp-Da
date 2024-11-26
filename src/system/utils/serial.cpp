@@ -34,8 +34,6 @@ void handleCommand(const String& command)
       Serial.println("cen: enable charger. Debug only");
       Serial.println("cdis: disable charger. Debug only !");
       Serial.println("format-fs: format the whole file system (dangerous)");
-      Serial.println("format-fs: format the whole file system (dangerous)");
-      Serial.println("-----------------");
       Serial.println("-----------------");
       break;
 

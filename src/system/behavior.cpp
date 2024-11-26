@@ -44,6 +44,9 @@ bool isBluetoothAdvertising = false;
 uint8_t BRIGHTNESS = 50; // default start value
 uint8_t currentBrightness = 50;
 
+// timestamp of the system wake up
+static uint32_t turnOnTime = millis();
+
 void update_brightness(const uint8_t newBrightness, const bool shouldUpdateCurrentBrightness, const bool isInitialRead)
 {
   // safety
@@ -418,7 +421,8 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 
 void handle_alerts()
 {
-  const uint32_t current = AlertManager.current();
+  // do not display alerts for the first 500 ms
+  const uint32_t current = ((millis() - turnOnTime) < 500) ? Alerts::NONE : AlertManager.current();
 
   static uint32_t criticalbatteryRaisedTime = 0;
   if (current == Alerts::NONE)
