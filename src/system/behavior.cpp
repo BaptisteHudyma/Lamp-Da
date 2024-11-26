@@ -44,6 +44,9 @@ bool isBluetoothAdvertising = false;
 uint8_t BRIGHTNESS = 50; // default start value
 uint8_t currentBrightness = 50;
 
+// timestamp of the system wake up
+static uint32_t turnOnTime = millis();
+
 void update_brightness(const uint8_t newBrightness, const bool shouldUpdateCurrentBrightness, const bool isInitialRead)
 {
   // safety
@@ -418,7 +421,8 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 
 void handle_alerts()
 {
-  const uint32_t current = AlertManager.current();
+  // do not display alerts for the first 500 ms
+  const uint32_t current = ((millis() - turnOnTime) < 500) ? Alerts::NONE : AlertManager.current();
 
   static uint32_t criticalbatteryRaisedTime = 0;
   if (current == Alerts::NONE)
@@ -435,7 +439,9 @@ void handle_alerts()
     const auto& chargerStatus = charger::get_state();
     if (chargerStatus.is_charging())
     {
-      if (chargerStatus.status == charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
+      // power detected with no charge or slow charging raises a special animation
+      if (chargerStatus.status == charger::Charger_t::ChargerStatus_t::POWER_DETECTED or
+          chargerStatus.status == charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
       {
         // fast blinking
         // TODO: find a better way to tell user that the chargeur is bad
@@ -459,6 +465,10 @@ void handle_alerts()
     {
       // shutdown when battery is critical
       shutdown();
+    }
+    else if ((current & Alerts::HARDWARE_ALERT) != 0x00)
+    {
+      button::blink(100, 50, utils::ColorSpace::TOMATO);
     }
     else if ((current & Alerts::TEMP_TOO_HIGH) != 0x00)
     {

@@ -83,7 +83,8 @@ uint16_t get_max_input_current()
       if (can_use_PD_full_power())
       {
         // resolution of 10 mA
-        return PD_UFP.get_current() * 10;
+        // do not use the whole current capabilities, or the source will cut us off
+        return (PD_UFP.get_current() * 10) * 0.90;
       }
     }
     else

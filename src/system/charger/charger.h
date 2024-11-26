@@ -14,6 +14,9 @@ void loop();
 // call when the system will shutdown
 void shutdown();
 
+// debug feature: disable the charging process
+void set_enable_charge(const bool shouldCharge);
+
 struct Charger_t
 {
   // everything below makes no sense if this is false

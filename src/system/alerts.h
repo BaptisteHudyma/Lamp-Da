@@ -20,6 +20,8 @@ enum Alerts
   TEMP_CRITICAL = 1 << 6,               // Processor temperature is critical
 
   BLUETOOTH_ADVERT = 1 << 7, // bluetooth is advertising
+
+  HARDWARE_ALERT = 1 << 8, // any hardware alert
 };
 
 class Alert
