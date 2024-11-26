@@ -435,7 +435,9 @@ void handle_alerts()
     const auto& chargerStatus = charger::get_state();
     if (chargerStatus.is_charging())
     {
-      if (chargerStatus.status == charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
+      // power detected with no charge or slow charging raises a special animation
+      if (chargerStatus.status == charger::Charger_t::ChargerStatus_t::POWER_DETECTED or
+          chargerStatus.status == charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
       {
         // fast blinking
         // TODO: find a better way to tell user that the chargeur is bad
@@ -459,6 +461,10 @@ void handle_alerts()
     {
       // shutdown when battery is critical
       shutdown();
+    }
+    else if ((current & Alerts::HARDWARE_ALERT) != 0x00)
+    {
+      button::blink(100, 50, utils::ColorSpace::TOMATO);
     }
     else if ((current & Alerts::TEMP_TOO_HIGH) != 0x00)
     {

@@ -139,14 +139,7 @@ void update_battery()
   const bool isInputSourcePresent = is_input_source_present();
 
   // charger is present (consider only charging current)
-  if (isInputSourcePresent)
-  {
-    battery_s.current_mA = chargingCurrent;
-  }
-  else
-  {
-    battery_s.current_mA = -measurments_s.batDischargeCurrent_mA;
-  }
+  battery_s.current_mA = (int16_t)chargingCurrent - (int16_t)measurments_s.batDischargeCurrent_mA;
 
   // output voltage saturated, battery is not here
   battery_s.isPresent = battery_s.voltage_mV < BQ25703Areg.maxChargeVoltage.get();
@@ -157,7 +150,7 @@ void update_battery()
     chargeStatus_s = ChargeStatus_t::OFF;
   }
   //
-  else if (chargingCurrent < powerLimits_s.maxChargingCurrent_mA * 0.1)
+  else if (chargingCurrent <= powerLimits_s.maxChargingCurrent_mA * 0.1)
   {
     chargeStatus_s = ChargeStatus_t::SLOW_CHARGE;
   }

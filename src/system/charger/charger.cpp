@@ -14,6 +14,9 @@ namespace charger {
 
 static bool isBatteryFullLatched_s = false;
 
+// used to stop the charge on user demand (debug behavior)
+static bool enableCharge_s = true;
+
 struct BatteryStatus_t
 {
   // is battery detected
@@ -35,6 +38,10 @@ static Charger_t charger;
 // check all charge conditions, and return true if the charge should be enabled
 bool should_charge()
 {
+  // user disabled the charge process
+  if (not enableCharge_s)
+    return false;
+
   // temperature too high, stop charge
   if ((AlertManager.current() & Alerts::TEMP_CRITICAL) != 0x00)
   {
@@ -80,7 +87,7 @@ bool should_charge()
   static uint32_t batteryFullDeglitchTime = 0;
 
   // check battery full status
-  if (batteryPercent >= 10000)
+  if (isBatteryFullLatched_s or batteryPercent >= 10000)
   {
     const uint32_t time = millis();
 
@@ -94,8 +101,8 @@ bool should_charge()
       batteryFullDeglitchTime = 0;
       // charge done, latch battery level
       isBatteryFullLatched_s = true;
+      return false;
     }
-    return false;
   }
   else
   {
@@ -260,9 +267,14 @@ void loop()
   // fast fail in case of errors
   if (is_status_error())
   {
+    AlertManager.raise_alert(Alerts::HARDWARE_ALERT);
     BQ25703A::enable_charge(false);
     // do NOT run charge functions
     return;
+  }
+  else
+  {
+    AlertManager.clear_alert(Alerts::HARDWARE_ALERT);
   }
 
   // if needed, enable charge
@@ -290,6 +302,8 @@ void shutdown()
   // shutdown charger component
   BQ25703A::shutdown();
 }
+
+void set_enable_charge(const bool shouldCharge) { enableCharge_s = shouldCharge; }
 
 bool is_vbus_powered() { return powerSource::is_power_available(); }
 
