@@ -2,10 +2,10 @@
 
 #include <Arduino.h>
 
-#include "PDlib/usb_pd_driver.h"
 #include "Wire.h"
 
-#include "PDlib/tcpm_driver.h"
+#include "PDlib/drivers/usb_pd_driver.h"
+#include "PDlib/drivers/tcpm_driver.h"
 #include "PDlib/usb_pd.h"
 
 // we only have one device, so always index 0

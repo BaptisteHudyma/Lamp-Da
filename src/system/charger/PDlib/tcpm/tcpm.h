@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-#include "tcpm_driver.h"
+#include "../drivers/tcpm_driver.h"
 #include "usb_pd_tcpm.h"
 
 #if defined(CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE) && !defined(CONFIG_USB_PD_DUAL_ROLE)
@@ -54,6 +54,7 @@ extern "C" {
   {
     if (tcpc_config[port].drv->get_vbus_level)
       return tcpc_config[port].drv->get_vbus_level(port);
+    // return 0 instead of a ptentially confusing error
     return 0;
   }
 

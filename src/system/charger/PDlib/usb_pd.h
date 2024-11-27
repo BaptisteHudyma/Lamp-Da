@@ -8,8 +8,8 @@
 #ifndef __USB_PD_H
 #define __USB_PD_H
 
-#include "tcpm_driver.h"
-#include "usb_pd_driver.h"
+#include "drivers/tcpm_driver.h"
+#include "drivers/usb_pd_driver.h"
 
 #ifdef __cplusplus
 extern "C" {

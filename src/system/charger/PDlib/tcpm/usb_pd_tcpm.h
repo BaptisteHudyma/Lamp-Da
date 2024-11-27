@@ -79,6 +79,18 @@ extern "C" {
     EC_ERROR_INTERNAL_LAST = 0x1FFFF
   };
 
+  struct ec_response_pd_chip_info
+  {
+    uint16_t vendor_id;
+    uint16_t product_id;
+    uint16_t device_id;
+    union
+    {
+      uint8_t fw_version_string[8];
+      uint64_t fw_version_number;
+    } __packed;
+  };
+
 /* Flags for i2c_xfer() */
 #define I2C_XFER_START  (1 << 0)                         /* Start smbus session from idle state */
 #define I2C_XFER_STOP   (1 << 1)                         /* Terminate smbus session with stop bit */

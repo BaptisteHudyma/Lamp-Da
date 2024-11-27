@@ -6,7 +6,7 @@
  */
 
 #include "usb_pd_driver.h"
-#include "usb_pd.h"
+#include "../usb_pd.h"
 #include "Arduino.h"
 
 #ifndef ARRAY_SIZE
@@ -29,67 +29,68 @@ uint32_t pd_task_set_event(uint32_t event, int wait_for_reply)
 }
 
 const uint32_t PROGMEM pd_src_pdo[] = {
-        //PDO_FIXED(5000, 1500, PDO_FIXED_FLAGS),
+        // PDO_FIXED(5000, 1500, PDO_FIXED_FLAGS),
 };
 const int PROGMEM pd_src_pdo_cnt = ARRAY_SIZE(pd_src_pdo);
 
-const uint32_t  PROGMEM pd_snk_pdo[] = {
-	// Support all SPR
-	PDO_FIXED(5000, 3000, PDO_FIXED_FLAGS),
-	PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
-	PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
-	PDO_FIXED(20000, 3000, PDO_FIXED_FLAGS),
+const uint32_t PROGMEM pd_snk_pdo[] = {
+        // Support all SPR
+        PDO_FIXED(5000, 3000, PDO_FIXED_FLAGS),
+        PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
+        PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
+        PDO_FIXED(20000, 3000, PDO_FIXED_FLAGS),
 };
 const int PROGMEM pd_snk_pdo_cnt = ARRAY_SIZE(pd_snk_pdo);
-
 
 int pdSources = 0;
 uint32_t* srcCapsSaved = NULL;
 
 uint32_t get_next_pdo_voltage()
 {
-	if(pdSources <= 0 || !srcCapsSaved)
-		return 0;
-	static uint8_t pdSourceCycle = 0;
-	if(pdSourceCycle < pdSources)
-	{
-		uint32_t ma, mv;
-		pd_extract_pdo_power(srcCapsSaved[pdSourceCycle], &ma, &mv);
-		pdSourceCycle++;
-		return mv;
-	}else {
-		pdSourceCycle = 0;
-	}
-	return 0;
+  if (pdSources <= 0 || !srcCapsSaved)
+    return 0;
+  static uint8_t pdSourceCycle = 0;
+  if (pdSourceCycle < pdSources)
+  {
+    uint32_t ma, mv;
+    pd_extract_pdo_power(srcCapsSaved[pdSourceCycle], &ma, &mv);
+    pdSourceCycle++;
+    return mv;
+  }
+  else
+  {
+    pdSourceCycle = 0;
+  }
+  return 0;
 }
 
 uint32_t get_next_pdo_amps()
 {
-	if(pdSources <= 0 || !srcCapsSaved)
-		return 0;
-	static uint8_t pdSourceCycle = 0;
-	if(pdSourceCycle < pdSources)
-	{
-		uint32_t ma, mv;
-		pd_extract_pdo_power(srcCapsSaved[pdSourceCycle], &ma, &mv);
-		pdSourceCycle++;
-		return ma;
-	}else {
-		pdSourceCycle = 0;
-	}
-	return 0;
+  if (pdSources <= 0 || !srcCapsSaved)
+    return 0;
+  static uint8_t pdSourceCycle = 0;
+  if (pdSourceCycle < pdSources)
+  {
+    uint32_t ma, mv;
+    pd_extract_pdo_power(srcCapsSaved[pdSourceCycle], &ma, &mv);
+    pdSourceCycle++;
+    return ma;
+  }
+  else
+  {
+    pdSourceCycle = 0;
+  }
+  return 0;
 }
 
 // Called by the pd algo when the source capabilities are received
-void pd_process_source_cap_callback(int port, int cnt, uint32_t* src_caps) {
-	pdSources = cnt;
-	srcCapsSaved = src_caps;
-	}
-
-uint8_t get_pd_source_cnt()
+void pd_process_source_cap_callback(int port, int cnt, uint32_t* src_caps)
 {
-	return pdSources;
+  pdSources = cnt;
+  srcCapsSaved = src_caps;
 }
+
+uint8_t get_pd_source_cnt() { return pdSources; }
 
 uint32_t availableCurrent = 0;
 uint32_t availableVoltage = 0;
@@ -99,23 +100,17 @@ void pd_set_input_current_limit(int port, uint32_t max_ma, uint32_t supply_volta
   availableVoltage = supply_voltage;
 }
 
-uint32_t get_available_pd_current_mA()
-{
-	return availableCurrent;
-}
+uint32_t get_available_pd_current_mA() { return availableCurrent; }
 
-uint32_t get_available_pd_voltage_mV()
-{
-	return availableVoltage;
-}
+uint32_t get_available_pd_voltage_mV() { return availableVoltage; }
 
 void reset_cache()
 {
-	pdSources = 0;
-	srcCapsSaved= NULL;
+  pdSources = 0;
+  srcCapsSaved = NULL;
 
-	availableCurrent = 0;
- 	availableVoltage = 0;
+  availableCurrent = 0;
+  availableVoltage = 0;
 }
 
 // valid voltages from 0 to 20V
@@ -132,10 +127,7 @@ timestamp_t get_time(void)
 }
 
 // close source voltage, discharge vbus
-void pd_power_supply_reset(int port) { 
-	
-	return;
-}
+void pd_power_supply_reset(int port) { return; }
 
 int pd_custom_vdm(int port, int cnt, uint32_t* payload, uint32_t** rpayload)
 {

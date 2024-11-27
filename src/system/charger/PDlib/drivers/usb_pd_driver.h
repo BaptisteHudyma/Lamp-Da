@@ -12,8 +12,7 @@
 extern "C" {
 #endif
 
-#include "usb_pd.h"
-
+#include "../usb_pd.h"
 #include <stdint.h>
 
 // #define CONFIG_BBRAM
@@ -31,6 +30,11 @@ extern "C" {
 
 /* Default pull-up value on the USB-C ports when they are used as source. */
 #define CONFIG_USB_PD_PULLUP TYPEC_RP_USB
+
+// remove a warning
+#ifdef PD_ROLE_DEFAULT
+#undef PD_ROLE_DEFAULT
+#endif
 
 /* Override PD_ROLE_DEFAULT in usb_pd.h */
 #define PD_ROLE_DEFAULT(port) (PD_ROLE_SINK)
@@ -56,8 +60,11 @@ extern "C" {
 
 #define PDO_FIXED_FLAGS (PDO_FIXED_DUAL_ROLE | PDO_FIXED_DATA_SWAP | PDO_FIXED_COMM_CAP)
 
+  extern void delay_us(uint64_t us);
+  extern void delay_ms(uint64_t ms);
+
 #define usleep(us) (delay_us(us))
-#define msleep(us) (delay_ms(us))
+#define msleep(ms) (delay_ms(ms))
 
   typedef union
   {

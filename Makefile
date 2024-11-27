@@ -420,7 +420,7 @@ build: has-lamp-type process $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 
 format:
 	find LampColorControler.ino | xargs clang-format --style=file -i
-	find src/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file -i
+	find src/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' -o -iname '*.c' | xargs clang-format --style=file -i
 	find simulator/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file -i
 
 format-hook:
@@ -430,7 +430,7 @@ format-verify:
 	@which clang-format > /dev/null \
 		|| (echo; echo Install clang / clang-format to verify format!)
 	@find LampColorControler.ino | xargs clang-format --style=file --dry-run --Werror
-	@find src/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file --dry-run -Werror
+	@find src/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' -o -iname '*.c' | xargs clang-format --style=file --dry-run -Werror
 	@find simulator/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file --dry-run -Werror
 	# format is ok :)
 

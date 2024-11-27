@@ -15,7 +15,7 @@ extern "C" {
 #include <stdint.h>
 
 // USB-C Stuff
-#include "tcpm.h"
+#include "../tcpm/tcpm.h"
 #include "FUSB302.h"
 #define CONFIG_USB_PD_PORT_COUNT 1
   extern struct i2c_master_module i2c_master_instance;
