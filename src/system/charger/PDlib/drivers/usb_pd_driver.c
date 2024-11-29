@@ -90,6 +90,9 @@ void pd_process_source_cap_callback(int port, int cnt, uint32_t* src_caps)
   srcCapsSaved = src_caps;
 }
 
+int isCableConnected_s = 0;
+void pd_connected_toggled_callback(int port, int isCablePlugged) { isCableConnected_s = isCablePlugged; }
+
 uint8_t get_pd_source_cnt() { return pdSources; }
 
 uint32_t availableCurrent = 0;
@@ -117,6 +120,10 @@ void reset_cache()
 int pd_is_valid_input_voltage(int mv) { return mv > 0 && mv <= 20000; }
 
 int pd_snk_is_vbus_provided(int port) { return 1; }
+
+int is_power_cable_connected() { return isCableConnected_s; }
+
+int is_pd_conector() { return srcCapsSaved != NULL; }
 
 timestamp_t get_time(void)
 {

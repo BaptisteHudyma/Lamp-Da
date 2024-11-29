@@ -10,6 +10,7 @@
 #include "../tcpm/tcpm.h"
 #include "../usb_pd.h"
 #include "platform.h"
+#include "usb_pd_driver.h"
 
 #define PACKET_IS_GOOD_CRC(head) (PD_HEADER_TYPE(head) == PD_CTRL_GOOD_CRC && PD_HEADER_CNT(head) == 0)
 
@@ -938,6 +939,55 @@ void tcpm_set_bist_test_data(int port)
   tcpc_write(port, TCPC_REG_CONTROL3, reg);
 }
 
+/*
+ * Compare VBUS voltage with given mdac reference voltage.
+ * returns non-zero if VBUS voltage >= (mdac + 1) * 420 mV
+ */
+static int fusb302_compare_mdac(int port, int mdac)
+{
+  int orig_reg, status0;
+
+  /* backup REG_MEASURE */
+  tcpc_read(port, TCPC_REG_MEASURE, &orig_reg);
+  /* set reg_measure bit 0~5 to mdac, and bit6 to 1(measure vbus) */
+  tcpc_write(port, TCPC_REG_MEASURE, (mdac & TCPC_REG_MEASURE_MDAC_MASK) | TCPC_REG_MEASURE_VBUS);
+
+  /* Wait on measurement */
+  delay_us(350);
+
+  /*
+   * Read status register, if STATUS0_COMP=1 then vbus is higher than
+   * (mdac + 1) * 0.42V
+   */
+  tcpc_read(port, TCPC_REG_STATUS0, &status0);
+  /* write back original value */
+  tcpc_write(port, TCPC_REG_MEASURE, orig_reg);
+
+  return status0 & TCPC_REG_STATUS0_COMP;
+}
+
+int fusb302_get_vbus_voltage(int port, int* vbus)
+{
+  int mdac = 0, i;
+
+  /*
+   * Implement by comparing VBUS with MDAC reference voltage, and binary
+   * search the value of MDAC.
+   *
+   * MDAC register has 6 bits, so we can simply search 1 bit per
+   * iteration, from MSB to LSB.
+   */
+  for (i = 5; i >= 0; i--)
+  {
+    if (fusb302_compare_mdac(port, mdac | (1 << i)))
+      mdac |= (1 << i);
+  }
+
+  *vbus = (mdac + 1) * 420;
+
+  return EC_SUCCESS;
+}
+
 const struct tcpm_drv fusb302_tcpm_drv = {
         .init = &fusb302_tcpm_init,
         .release = &fusb302_tcpm_release,
@@ -945,6 +995,7 @@ const struct tcpm_drv fusb302_tcpm_drv = {
 #ifdef CONFIG_USB_PD_VBUS_DETECT_TCPC
         .get_vbus_level = &fusb302_tcpm_get_vbus_level,
 #endif
+        .get_vbus_voltage = fusb302_get_vbus_voltage,
         .select_rp_value = &fusb302_tcpm_select_rp_value,
         .set_cc = &fusb302_tcpm_set_cc,
         .set_polarity = &fusb302_tcpm_set_polarity,

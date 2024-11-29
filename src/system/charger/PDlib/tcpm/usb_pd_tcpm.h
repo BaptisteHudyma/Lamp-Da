@@ -189,6 +189,16 @@ extern "C" {
     int (*get_vbus_level)(int port);
 
     /**
+     * Get VBUS voltage
+     *
+     * @param port Type-C port number
+     * @param vbus read VBUS voltage in mV
+     *
+     * @return EC_SUCCESS or error
+     */
+    int (*get_vbus_voltage)(int port, int* vbus);
+
+    /**
      * Set the value of the CC pull-up used when we are a source.
      *
      * @param port Type-C port number

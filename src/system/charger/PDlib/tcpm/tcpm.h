@@ -58,6 +58,14 @@ extern "C" {
     return 0;
   }
 
+  static inline int tcpm_get_vbus_voltage(int port)
+  {
+    // TODO: check returned error/unimplemented
+    int vbus;
+    tcpc_config[port].drv->get_vbus_voltage(port, &vbus);
+    return vbus;
+  }
+
   static inline int tcpm_select_rp_value(int port, int rp) { return tcpc_config[port].drv->select_rp_value(port, rp); }
 
   static inline int tcpm_set_cc(int port, int pull) { return tcpc_config[port].drv->set_cc(port, pull); }

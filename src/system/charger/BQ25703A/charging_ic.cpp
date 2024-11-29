@@ -57,6 +57,13 @@ void run_fault_detection()
       BQ25703Areg.chargerStatus.Fault_Latchoff() or BQ25703Areg.chargerStatus.Fault_OTG_OVP() or
       BQ25703Areg.chargerStatus.Fault_OTG_UCP())
   {
+    Serial.print(BQ25703Areg.chargerStatus.Fault_ACOV());
+    Serial.print(BQ25703Areg.chargerStatus.Fault_BATOC());
+    Serial.print(BQ25703Areg.chargerStatus.Fault_ACOC());
+    Serial.print(BQ25703Areg.chargerStatus.SYSOVP_STAT());
+    Serial.print(BQ25703Areg.chargerStatus.Fault_Latchoff());
+    Serial.print(BQ25703Areg.chargerStatus.Fault_OTG_OVP());
+    Serial.println(BQ25703Areg.chargerStatus.Fault_OTG_UCP());
     status_s = Status_t::ERROR_HAS_FAULTS;
   }
   // reset fault flag
@@ -102,17 +109,29 @@ void run_status_update()
 void control_charge()
 {
   // only charge when no errors
-  const bool shouldCharge = isChargeEnabled_s and isChargeOk_s and
-                            // no errors
-                            (status_s == Status_t::NOMINAL) and
-                            // battery is present
-                            battery_s.isPresent and
-                            // not already in OTG
-                            not isInOtg_s;
+  const bool shouldCharge =
+          // user allows charge
+          isChargeEnabled_s and
+          // charge ok signal from ic
+          isChargeOk_s and
+          // power limit current is set to valid value
+          powerLimits_s.current_mA > 0 and
+          // no errors
+          (status_s == Status_t::NOMINAL) and
+          // battery is present
+          battery_s.isPresent and
+          // not already in OTG
+          not isInOtg_s;
   // inhibit charging
   chargerIc.readRegEx(BQ25703Areg.chargeOption0);
-  BQ25703Areg.chargeOption0.set_CHRG_INHIBIT(shouldCharge ? 0 : 1);
-  chargerIc.writeRegEx(BQ25703Areg.chargeOption0);
+  const int shouldInihibit = shouldCharge ? 0 : 1;
+
+  // if charge status changed, writte it
+  if (BQ25703Areg.chargeOption0.CHRG_INHIBIT() != shouldInihibit)
+  {
+    BQ25703Areg.chargeOption0.set_CHRG_INHIBIT(shouldInihibit);
+    chargerIc.writeRegEx(BQ25703Areg.chargeOption0);
+  }
 }
 
 void control_OTG()
@@ -200,7 +219,9 @@ void enable_charge(const bool enable)
   // set the global status
   isChargeEnabled_s = enable;
 
-  control_charge();
+  // quick switch off charge
+  if (!isChargeEnabled_s)
+    control_charge();
 }
 
 // enable/disable the Input Current Optimizer algorithm
@@ -257,6 +278,11 @@ void update_battery()
   else if (BQ25703Areg.chargerStatus.IN_FCHRG() != 0)
   {
     chargeStatus_s = ChargeStatus_t::FASTCHARGE;
+  }
+  else if (isInputSourcePresent)
+  {
+    // TODO: check this
+    // deglitch time of deconnection ?
   }
   else
   {
@@ -340,6 +366,15 @@ void program_input_current_limit()
         (not shouldUseICO and writtenCurrent_mA != BQ25703Areg.iIN_DPM.get()))
     {
       // read/write error
+      Serial.print(writtenCurrent_mA);
+      Serial.print("mA != ");
+      Serial.print(BQ25703Areg.iIN_HOST.get());
+      Serial.print("mA OR ");
+      Serial.print(not shouldUseICO);
+      Serial.print(" and ");
+      Serial.print(writtenCurrent_mA);
+      Serial.print("mA != ");
+      Serial.println(BQ25703Areg.iIN_DPM.get());
       status_s = Status_t::ERROR;
       return;
     }
@@ -366,6 +401,7 @@ void program_input_current_limit()
   chargerIc.readRegEx(BQ25703Areg.chargeOption0);
   if (BQ25703Areg.chargeOption0.EN_IDPM() == 0)
   {
+    Serial.println("EN IDPM not enabled");
     status_s = Status_t::ERROR;
     return;
   }
@@ -494,6 +530,9 @@ void loop(const bool isChargeOk)
 
   static uint32_t lastUpdateTime = 0;
 
+  // update the charge
+  control_charge();
+
   const uint32_t time = millis();
   // only update every 100ms
   if (isChargeChanged or lastUpdateTime == 0 or time - lastUpdateTime >= 100)
@@ -511,8 +550,6 @@ void loop(const bool isChargeOk)
       return;
     }
 
-    // update the charge
-    control_charge();
     // update the OTG functionalities
     control_OTG();
     // set the current limit to what is stored
@@ -548,8 +585,6 @@ void set_input_current_limit(const uint16_t maxInputCurrent_mA, const bool shoul
 {
   powerLimits_s.current_mA = maxInputCurrent_mA;
   powerLimits_s.shoulduseICO = shouldUseICO;
-
-  program_input_current_limit();
 }
 
 bool is_input_source_present() { return BQ25703Areg.chargerStatus.AC_STAT() != 0; }

@@ -993,6 +993,13 @@ extern "C" {
   void pd_process_source_cap_callback(int port, int cnt, uint32_t* src_caps);
 
   /**
+   * Callback for when a pd connection is made or broken
+   *
+   * @param isCablePlugged set to 1 if a connection is detected
+   */
+  void pd_connected_toggled_callback(int port, int isCablePlugged);
+
+  /**
    * Process source capabilities packet
    *
    * @param port USB-C port number
@@ -1012,6 +1019,18 @@ extern "C" {
    */
   int pd_find_pdo_index(int port, int max_mv, uint32_t* pdo);
 
+  /**
+   * Return 1 if the current state is "sink_ready"
+   *
+   * @param port USB-C port number
+   */
+  int is_sink_ready(int port);
+
+  /**
+   * Return a human readable version of the pd state machine
+   *
+   * @param port USB-C port number
+   */
   char* get_state_cstr(int port);
 
   /**

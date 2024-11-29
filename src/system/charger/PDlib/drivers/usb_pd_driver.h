@@ -89,6 +89,11 @@ extern "C" {
   uint32_t get_next_pdo_amps();
   uint32_t get_next_pdo_voltage();
 
+  // is connected to a cable providing power
+  int is_power_cable_connected();
+  // The associated cable is pd capable
+  int is_pd_conector();
+
   // Get the current timestamp from the system timer.
   timestamp_t get_time(void);
 

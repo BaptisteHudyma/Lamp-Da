@@ -42,6 +42,12 @@ bool should_charge()
   if (not enableCharge_s)
     return false;
 
+  // our power source cannot give power
+  if (not powerSource::can_use_power())
+  {
+    return false;
+  }
+
   // temperature too high, stop charge
   if ((AlertManager.current() & Alerts::TEMP_CRITICAL) != 0x00)
   {
@@ -184,6 +190,7 @@ void update_state_status()
             }
           default:
             {
+              Serial.println("unhandled charge status");
               charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
               break;
             }

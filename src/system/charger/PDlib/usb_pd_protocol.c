@@ -411,6 +411,9 @@ static inline void set_state(int port, enum pd_states next_state)
 #endif
     /* Disable TCPC RX */
     tcpm_set_rx_enable(port, 0);
+
+    // signal disconnect
+    pd_connected_toggled_callback(port, 0);
   }
 
 #ifdef CONFIG_LOW_POWER_IDLE
@@ -2343,6 +2346,9 @@ void pd_run_state_machine(int port, int reset)
         {
           break;
         }
+
+        // signal connection
+        pd_connected_toggled_callback(port, 1);
       }
 
       /* Debounce complete */
@@ -2806,6 +2812,7 @@ void pd_run_state_machine(int port, int reset)
       }
 
       /* We are attached */
+      pd_connected_toggled_callback(port, 1);
       pd[port].polarity = get_snk_polarity(cc1, cc2);
       tcpm_set_polarity(port, pd[port].polarity);
       /* reset message ID  on connection */
@@ -4300,6 +4307,8 @@ typec_current_t get_typec_current_mA()
   }
   return typec_curr;
 }
+
+int is_sink_ready(int port) { return pd[port].task_state == PD_STATE_SNK_READY; }
 
 char* get_state_cstr(int port)
 {
