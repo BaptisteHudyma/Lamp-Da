@@ -317,7 +317,7 @@ void loop()
             // set the max input current for this source
             powerSource::get_max_input_current(),
             // use ICO to find max power we can use with this charger
-            powerSource::is_not_usb_power_delivery());
+            powerSource::is_standard_port());
     // enable charge
     BQ25703A::enable_charge(true);
   }

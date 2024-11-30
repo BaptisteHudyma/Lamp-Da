@@ -104,7 +104,7 @@ public:
     begin();
     clear();
     show();
-    setBrightness(BRIGHTNESS, true, true);
+    setBrightness(behavior::BRIGHTNESS, true, true);
   }
 
   /** \private Does necessary work to setup lamp from a powered-off state
@@ -253,7 +253,7 @@ public:
 
     if (!skipUpdateBrightness)
     {
-      update_brightness(brightness, false, skipCallbacks);
+      behavior::update_brightness(brightness, false, skipCallbacks);
     }
   }
 
@@ -266,7 +266,7 @@ public:
     }
     else
     {
-      return BRIGHTNESS;
+      return behavior::BRIGHTNESS;
     }
   }
 

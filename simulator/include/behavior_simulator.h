@@ -26,6 +26,8 @@ void analogWrite(auto, auto) {}
 
 #include "src/system/physical/button.cpp"
 
+namespace behavior {
+
 static bool isButtonUsermodeEnabled = false;
 static uint32_t lastStartupSequence = 0;
 static bool isShutdown = true;
@@ -283,5 +285,6 @@ void hold_behavior(auto& simu, uint8_t consecutiveButtonCheck, uint32_t buttonHo
       break;
   }
 }
+} // namespace behavior
 
 #endif

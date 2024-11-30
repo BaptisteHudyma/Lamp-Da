@@ -36,7 +36,7 @@ void power_on_sequence()
   pinMode(yellowPin, OUTPUT);
   pinMode(whitePin, OUTPUT);
 
-  currentBrightness = BRIGHTNESS;
+  currentBrightness = behavior::BRIGHTNESS;
   set_color(currentColor);
 
   pinMode(powerPin, OUTPUT);
@@ -85,7 +85,7 @@ void read_parameters()
     lastColor = currentColor;
   }
 
-  currentBrightness = BRIGHTNESS;
+  currentBrightness = behavior::BRIGHTNESS;
 }
 
 void button_clicked_default(const uint8_t clicks)
@@ -94,7 +94,7 @@ void button_clicked_default(const uint8_t clicks)
   {
     // put luminosity to maximum
     case 2:
-      update_brightness(255, true);
+      behavior::update_brightness(255, true);
       break;
 
     default:

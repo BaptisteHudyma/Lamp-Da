@@ -15,6 +15,8 @@
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 
+namespace behavior {
+
 // NeoPixel brightness, 0 (min) to 255 (max)
 extern uint8_t BRIGHTNESS;
 
@@ -25,16 +27,11 @@ static constexpr uint32_t isFirstBootKey = utils::hash("ifb");
  * \brief Load the parameters from the filesystem
  */
 extern void read_parameters();
-extern void write_parameters();
 
-extern bool is_shutdown();
-
-// start sequence that check the battery level and start the leds, and power all
-// systems
-extern void startup_sequence();
-
-// put in shutdown mode, with external wakeup
-extern void shutdown();
+/**
+ * \return true if the user code is runing
+ */
+extern bool is_user_code_running();
 
 extern void update_brightness(const uint8_t newBrightness,
                               const bool shouldUpdateCurrentBrightness = false,
@@ -52,8 +49,16 @@ extern void button_disable_usermode();
 /// Returns True only if button usermode UI is enabled
 extern bool is_button_usermode_enabled();
 
-// If any alert is set, will handle it
-extern void handle_alerts();
+/**
+ * \brief call once at program start, before the first main loop runs
+ * The system was powered from a vbus powered event, not a user action
+ */
+extern void set_woke_up_from_vbus(const bool wokeUp);
+
+// main loop of the system
+extern void loop();
+
+} // namespace behavior
 
 /// \private Internal symbol used to signify which LMBD_LAMP_TYPE was specified
 #ifdef LMBD_CPP17

@@ -332,8 +332,6 @@ uint16_t get_max_input_current()
   return 0;
 }
 
-bool is_not_usb_power_delivery() { return not is_usb_pd(); }
-
 bool is_power_available() { return isPowerSourceDetected_s; }
 
 bool can_use_power() { return canUseSourcePower_s; }

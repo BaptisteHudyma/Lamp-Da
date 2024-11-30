@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "charger/charger.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 #include "src/system/alerts.h"
@@ -17,7 +18,12 @@
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 
+#include "src/system/utils/state_machine.h"
+
 #include "src/user/functions.h"
+#include "utils/state_machine.h"
+
+namespace behavior {
 
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
 
@@ -27,6 +33,58 @@ static constexpr uint8_t MAX_BRIGHTNESS = 255;
 static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000;
 static constexpr uint32_t EARLY_ACTIONS_LIMIT_MS = 2000;
 static constexpr uint32_t EARLY_ACTIONS_HOLD_MS = 1500;
+
+// Define the state for the main prog state machine
+typedef enum
+{
+  // handle the start logic
+  START_LOGIC,
+
+  // Prepare the charging operations
+  PRE_CHARGER_OPERATION,
+  // Chargering, or usb OTG mode
+  CHARGER_OPERATIONS,
+  // close the charger components
+  POST_CHARGER_OPERATIONS,
+  // Prepare the light operation
+  PRE_OUTPUT_LIGHT,
+  // output voltage on, light the led strip and enable user modes
+  OUTPUT_LIGHT,
+  // close the output safely
+  POST_OUTPUT_LIGHT,
+
+  // shutdown state (when set, the board wil shutdown)
+  SHUTDOWN,
+
+  // Should never happen, default state
+  ERROR,
+} BehaviorStates;
+String BehaviorStatesStr[] = {
+        "START_LOGIC",
+        "PRE_CHARGER_OPERATION",
+        "CHARGER_OPERATIONS",
+        "POST_CHARGER_OPERATIONS",
+        "PRE_OUTPUT_LIGHT",
+        "OUTPUT_LIGHT",
+        "POST_OUTPUT_LIGHT",
+        "SHUTDOWN",
+        "ERROR",
+};
+// main state machine
+StateMachine<BehaviorStates> mainMachine(BehaviorStates::START_LOGIC);
+
+// system was powered from vbus power event
+static bool wokeUpFromVbus_s = false;
+bool did_woke_up_from_power() { return wokeUpFromVbus_s; }
+
+// target power on state (not actual state)
+static bool isTargetPoweredOn_s = false;
+bool is_system_should_be_powered() { return isTargetPoweredOn_s; }
+void set_power_on() { isTargetPoweredOn_s = true; }
+void set_power_off() { isTargetPoweredOn_s = false; }
+
+// return true if vbus is high
+bool is_charger_powered() { return charger::is_vbus_powered(); }
 
 // temporary upper bound for the brightness
 static uint8_t MaxBrightnessLimit = MAX_BRIGHTNESS;
@@ -94,98 +152,34 @@ void write_parameters()
   fileSystem::write_state();
 }
 
-static bool isShutdown = true;
-bool is_shutdown() { return isShutdown; }
+// user code is running when state is output
+bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::OUTPUT_LIGHT; }
 
-void startup_sequence()
+/**
+ * This turns off the system FOR REAL and enable the interrupt pin for power on
+ * DO NOT USE THIS IF YOU ARE NOT SURE, great potential for system brick
+ *
+ */
+void true_power_off()
 {
-  isShutdown = true;
+  charger::shutdown();
+  digitalWrite(USB_33V_PWR, LOW);
 
-  // critical battery level, do not wake up
-  if (battery::get_battery_level() <= batteryCritical + 1)
+  // wait until vbus is off (TODO: remove in newer versions of the hardware)
+  uint8_t cnt = 0;
+  while (cnt < 200 and charger::is_vbus_signal_detected())
   {
-    // alert user of low battery
-    for (uint8_t i = 0; i < 10; i++)
-    {
-      button::set_color(utils::ColorSpace::RED);
-      delay(100);
-      button::set_color(utils::ColorSpace::BLACK);
-      delay(100);
-    }
-
-    shutdown();
-    return;
+    delay(5);
+    cnt++;
   }
 
-  // button usermode is always disabled by default
-  button_disable_usermode();
+  // wake up from charger plugged in
+  // nrf_gpio_cfg_sense_input(g_ADigitalPinMap[CHARGE_OK],
+  // NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_HIGH);
 
-  // reset lastStartupSequence
-  lastStartupSequence = millis();
-
-  // let the user power on the system
-  user::power_on_sequence();
-
-  isShutdown = false;
-}
-
-void shutdown()
-{
-  // flag system as powered down
-  const bool wasAlreadyShutdown = isShutdown;
-  isShutdown = true;
-
-  // button usermode is kept disabled
-  button_disable_usermode();
-
-  // deactivate strip power
-  pinMode(OUT_BRIGHTNESS, OUTPUT);
-  ledpower::write_current(0); // power down
-  delay(10);
-
-  // disable bluetooth, imu and microphone
-  microphone::disable();
-  imu::disable();
-#ifdef USE_BLUETOOTH
-  bluetooth::disable_bluetooth();
-#endif
-
-  // some actions are to be done only if the system was power-on before
-  if (!wasAlreadyShutdown)
-  {
-    // save the current config to a file
-    // (takes some time so call it when the lamp appear to be shutdown already)
-    write_parameters();
-
-    // let the user power off the system
-    user::power_off_sequence();
-  }
-
-  // deactivate indicators
-  button::set_color(utils::ColorSpace::BLACK);
-
-  // do not power down when charger is plugged in
-  if (!charger::is_vbus_powered())
-  {
-    charger::shutdown();
-    digitalWrite(USB_33V_PWR, LOW);
-
-    // wait until vbus is off (TODO: remove in newer versions of the hardware)
-    uint8_t cnt = 0;
-    while (cnt < 200 and charger::is_vbus_signal_detected())
-    {
-      delay(5);
-      cnt++;
-    }
-
-    // wake up from charger plugged in
-    // nrf_gpio_cfg_sense_input(g_ADigitalPinMap[CHARGE_OK],
-    // NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_HIGH);
-
-    // power down nrf52.
-    // on wake up, it'll start back from the setup phase
-    systemOff(BUTTON_PIN, 0);
-  }
+  // power down nrf52.
+  // on wake up, it'll start back from the setup phase
+  systemOff(BUTTON_PIN, 0);
 }
 
 void button_disable_usermode() { isButtonUsermodeEnabled = false; }
@@ -198,12 +192,12 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   if (consecutiveButtonCheck == 0)
     return;
 
-  // guard blocking other actions than "turning it on" if is_shutdown
-  if (is_shutdown())
+  // guard blocking other actions than "turning it on"
+  if (not is_user_code_running())
   {
     if (consecutiveButtonCheck == 1)
     {
-      startup_sequence();
+      set_power_on();
     }
     return;
   }
@@ -226,7 +220,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   {
     // 1 click: shutdown
     case 1:
-      shutdown();
+      set_power_off();
       break;
 
     // other behaviors
@@ -241,7 +235,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
         charger::disable_charge();
         delay(6000);
 #endif
-        shutdown();
+        set_power_off();
         return;
       }
 
@@ -256,7 +250,8 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 {
   if (consecutiveButtonCheck == 0)
     return;
-  if (is_shutdown())
+  // no button callback when user code is not running
+  if (not is_user_code_running())
     return;
 
   // compute parameters of the "press-hold" action
@@ -348,7 +343,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
     {
       if (holdDuration > 5000 - HOLD_BUTTON_MIN_MS)
       {
-        shutdown();
+        set_power_off();
         return;
       }
     }
@@ -419,6 +414,45 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
   }
 }
 
+void set_cpu_temperarure_alerts()
+{
+  // temperature alerts
+  const float procTemp = readCPUTemperature();
+  if (procTemp >= criticalSystemTemp_c)
+  {
+    AlertManager.raise_alert(TEMP_CRITICAL);
+  }
+  else if (procTemp >= maxSystemTemp_c)
+  {
+    AlertManager.raise_alert(TEMP_TOO_HIGH);
+  }
+  else
+  {
+    AlertManager.clear_alert(TEMP_TOO_HIGH);
+    AlertManager.clear_alert(TEMP_CRITICAL);
+  }
+}
+
+void set_battery_alerts()
+{
+  const auto& chargerState = charger::get_state();
+  if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)
+  {
+    // TODO: alert that the battery is missing
+  }
+  else if (chargerState.is_charging())
+  {
+    // clear alerts when the device is charging
+    AlertManager.clear_alert(Alerts::BATTERY_LOW);
+    AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);
+  }
+  else
+  {
+    // no battery alert when charger is on
+    battery::raise_battery_alert();
+  }
+}
+
 void handle_alerts()
 {
   // do not display alerts for the first 500 ms
@@ -463,8 +497,8 @@ void handle_alerts()
   {
     if ((current & Alerts::TEMP_CRITICAL) != 0x00)
     {
-      // shutdown when battery is critical
-      shutdown();
+      // fast shutdown when temperature reaches critical levels
+      true_power_off();
     }
     else if ((current & Alerts::HARDWARE_ALERT) != 0x00)
     {
@@ -493,7 +527,7 @@ void handle_alerts()
       else if (millis() - criticalbatteryRaisedTime > 2000)
       {
         // shutdown when battery is critical
-        shutdown();
+        set_power_off();
       }
       // blink if no shutdown
       button::blink(100, 100, utils::ColorSpace::RED);
@@ -545,6 +579,250 @@ void handle_alerts()
     }
   }
 }
+
+void handle_error_state()
+{
+  // TODO ?
+  // go to sleep
+  mainMachine.set_state(BehaviorStates::SHUTDOWN);
+}
+
+void handle_start_logic_state()
+{
+  // preven early charging
+  charger::set_enable_charge(false);
+
+  if (did_woke_up_from_power())
+  {
+    // start the charge operation
+    mainMachine.set_state(BehaviorStates::PRE_CHARGER_OPERATION);
+  }
+  else
+  {
+    // small hack: the first button click is never registered, because it happens before the system boots
+    set_power_on();
+    // start the system normally
+    mainMachine.set_state(BehaviorStates::PRE_OUTPUT_LIGHT);
+  }
+}
+
+static uint32_t preChargeCalled = 0;
+void handle_pre_charger_operation_state()
+{
+  preChargeCalled = millis();
+  mainMachine.set_state(BehaviorStates::CHARGER_OPERATIONS);
+}
+
+void handle_charger_operation_state()
+{
+  // pressed the start button, stop charge and start lamp
+  if (is_system_should_be_powered())
+  {
+    // switch to output mode after the post charge operations
+    mainMachine.set_state(BehaviorStates::POST_CHARGER_OPERATIONS, 100, BehaviorStates::PRE_OUTPUT_LIGHT);
+    return;
+  }
+  // power disconected
+  const bool vbusDebounced = millis() - preChargeCalled > 500;
+  if (vbusDebounced)
+  {
+    if (not is_charger_powered())
+    {
+      // go to sleep after closing the charger
+      mainMachine.set_state(BehaviorStates::POST_CHARGER_OPERATIONS, 100, BehaviorStates::SHUTDOWN);
+      return;
+    }
+    else
+    {
+      // enable charge after the debounce
+      charger::set_enable_charge(true);
+    }
+  }
+  // else: ignore all
+}
+
+void handle_post_charger_operation_state()
+{
+  // forbid charging
+  charger::set_enable_charge(false);
+}
+
+void handle_pre_output_light_state()
+{
+  // critical battery level, do not wake up
+  if (battery::get_battery_level() <= batteryCritical + 1)
+  {
+    // alert user of low battery
+    for (uint8_t i = 0; i < 10; i++)
+    {
+      button::set_color(utils::ColorSpace::RED);
+      delay(100);
+      button::set_color(utils::ColorSpace::BLACK);
+      delay(100);
+    }
+
+    if (is_charger_powered())
+    {
+      // go to battery charge instead of shutdown
+      mainMachine.set_state(BehaviorStates::PRE_CHARGER_OPERATION);
+    }
+    else
+    {
+      // battery too low to be powered
+      mainMachine.set_state(BehaviorStates::SHUTDOWN);
+    }
+    return;
+  }
+
+  // button usermode is always disabled by default
+  button_disable_usermode();
+
+  // reset lastStartupSequence
+  lastStartupSequence = millis();
+
+  // let the user power on the system
+  user::power_on_sequence();
+
+  mainMachine.set_state(BehaviorStates::OUTPUT_LIGHT);
+}
+
+void handle_output_light_state()
+{
+  // should go to sleep
+  if (not is_system_should_be_powered())
+  {
+    if (is_charger_powered())
+    {
+      // charger is plugged, go to charger state
+      mainMachine.set_state(BehaviorStates::POST_OUTPUT_LIGHT, 100, BehaviorStates::PRE_CHARGER_OPERATION);
+    }
+    else
+    {
+      // got to sleep after the closing operations
+      mainMachine.set_state(BehaviorStates::POST_OUTPUT_LIGHT, 1000, BehaviorStates::SHUTDOWN);
+    }
+  }
+  // normal running loop
+  else
+  {
+    // user loop call
+    user::loop();
+
+    // set alerts if needed
+    set_cpu_temperarure_alerts();
+    set_battery_alerts();
+
+#ifdef USE_BLUETOOTH
+    bluetooth::parse_messages();
+#endif
+  }
+}
+
+void handle_post_output_light_state()
+{
+  // button usermode is kept disabled
+  button_disable_usermode();
+
+  // let the user power off the system
+  user::power_off_sequence();
+
+  // deactivate strip power
+  pinMode(OUT_BRIGHTNESS, OUTPUT);
+  ledpower::write_current(0); // power down
+
+  mainMachine.skip_timeout();
+}
+
+void handle_shutdown_state()
+{
+  // deactivate strip power
+  pinMode(OUT_BRIGHTNESS, OUTPUT);
+  ledpower::write_current(0); // power down
+  delay(10);
+
+  // disable bluetooth, imu and microphone
+  microphone::disable();
+  imu::disable();
+#ifdef USE_BLUETOOTH
+  bluetooth::disable_bluetooth();
+#endif
+
+  // save the current config to a file
+  // (takes some time so call it when the lamp appear to be shutdown already)
+  write_parameters();
+
+  // deactivate indicators
+  button::set_color(utils::ColorSpace::BLACK);
+
+  // power the system off
+  true_power_off();
+}
+
+/// Handle the behavior states
+void state_machine_behavior()
+{
+  mainMachine.run();
+  // if state changed, display the new state
+  if (mainMachine.state_just_changed())
+  {
+    Serial.print("BEHAVIOR_S_MACH > switched to state ");
+    Serial.println(BehaviorStatesStr[mainMachine.get_state()]);
+  }
+
+  switch (mainMachine.get_state())
+  {
+    // strange error state
+    case BehaviorStates::ERROR:
+      handle_error_state();
+      break;
+    // called when system starts
+    case BehaviorStates::START_LOGIC:
+      handle_start_logic_state();
+      break;
+    // prepare the charger operation
+    case BehaviorStates::PRE_CHARGER_OPERATION:
+      handle_pre_charger_operation_state();
+      break;
+    // charge batteries, or power OTG on USB-port
+    case BehaviorStates::CHARGER_OPERATIONS:
+      handle_charger_operation_state();
+      break;
+    case BehaviorStates::POST_CHARGER_OPERATIONS:
+      handle_post_charger_operation_state();
+      break;
+    // prepare the output light
+    case BehaviorStates::PRE_OUTPUT_LIGHT:
+      handle_pre_output_light_state();
+      break;
+    // output current to system, handle user inputs
+    case BehaviorStates::OUTPUT_LIGHT:
+      handle_output_light_state();
+      break;
+    case BehaviorStates::POST_OUTPUT_LIGHT:
+      handle_post_output_light_state();
+      break;
+    case BehaviorStates::SHUTDOWN:
+      handle_shutdown_state();
+      break;
+    default:
+      {
+        mainMachine.set_state(BehaviorStates::ERROR);
+      }
+      break;
+  }
+}
+
+// system was powered by vbus high event
+void set_woke_up_from_vbus(const bool wokeUp) { wokeUpFromVbus_s = wokeUp; }
+
+// main behavior loop
+void loop()
+{
+  state_machine_behavior();
+  handle_alerts();
+}
+
+} // namespace behavior
 
 //
 // do not modify (if you do not understand it)

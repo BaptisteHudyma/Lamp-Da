@@ -250,7 +250,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   //
 
   /// (getter) Return current brightness value
-  uint8_t LMBD_INLINE get_brightness() { return BRIGHTNESS; }
+  uint8_t LMBD_INLINE get_brightness() { return behavior::BRIGHTNESS; }
 
   //
   // quick bindings to \p LocalModeTy
