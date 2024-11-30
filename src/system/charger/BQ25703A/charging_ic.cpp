@@ -137,7 +137,7 @@ void control_charge()
 void control_OTG()
 {
   static bool isOTGInitialized_s = false;
-  static bool isOTGDisabled_s = false;
+  static bool isOTGReseted = false;
   if (isInOtg_s)
   {
     // OTG use time
@@ -147,7 +147,7 @@ void control_OTG()
     if (not isOTGInitialized_s)
     {
       isOTGInitialized_s = true;
-      isOTGDisabled_s = false;
+      isOTGReseted = false;
 
       OTGStartTime_ms = millis();
       lastOTGUsedTime_ms = millis();
@@ -187,25 +187,35 @@ void control_OTG()
       }
 
       // if some time has passed since the last use
-      if (millis() - lastOTGUsedTime_ms > 2000)
+      if (millis() - lastOTGUsedTime_ms > 10000)
       {
         // disable the OTG if it's not used
         disable_OTG();
+      }
+      else
+      {
+        // update the in OTG status to avoid deconnection
+        digitalWrite(ENABLE_OTG, HIGH);
+        chargerIc.readRegEx(BQ25703Areg.chargeOption3);
+        BQ25703Areg.chargeOption3.set_EN_OTG(1);
+        chargerIc.writeRegEx(BQ25703Areg.chargeOption3);
       }
     }
   }
   else
   {
-    if (not isOTGDisabled_s)
+    // should deactivate OTG, so do it
+    if (not isOTGReseted)
     {
       isOTGInitialized_s = false;
-      isOTGDisabled_s = true;
+      isOTGReseted = true;
+
+      disable_OTG();
 
       digitalWrite(ENABLE_OTG, LOW);
       delay(1);
       // 5V 0A for OTG (default)
-      BQ25703Areg.oTGVoltage.set(5000);
-      BQ25703Areg.oTGCurrent.set(0);
+      set_OTG_targets(5000, 0);
 
       AlertManager.clear_alert(Alerts::OTG_ACTIVATED);
       AlertManager.clear_alert(Alerts::OTG_FAILED);
@@ -532,6 +542,8 @@ void loop(const bool isChargeOk)
 
   // update the charge
   control_charge();
+  // update the OTG functionalities
+  control_OTG();
 
   const uint32_t time = millis();
   // only update every 100ms
@@ -550,8 +562,6 @@ void loop(const bool isChargeOk)
       return;
     }
 
-    // update the OTG functionalities
-    control_OTG();
     // set the current limit to what is stored
     program_input_current_limit();
 
@@ -616,6 +626,9 @@ void disable_OTG()
   chargerIc.readRegEx(BQ25703Areg.chargeOption3);
   BQ25703Areg.chargeOption3.set_EN_OTG(0);
   chargerIc.writeRegEx(BQ25703Areg.chargeOption3);
+
+  AlertManager.clear_alert(Alerts::OTG_ACTIVATED);
+  AlertManager.clear_alert(Alerts::OTG_FAILED);
 
   // deactivate this state LAST
   isInOtg_s = false;

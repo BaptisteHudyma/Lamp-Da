@@ -206,6 +206,7 @@ struct UsbPDData
       // Serial.print(vbusVoltage / 1000.0);
       // Serial.print("V, ");
       Serial.println(pdAlgoStatus);
+
       hasChanged = false;
     }
   }
@@ -235,7 +236,6 @@ bool setup()
 int reset = 0;
 void loop()
 {
-  // Serial.print(interruptSet);
   //  handle alerts
   if (interruptSet)
   {
@@ -339,5 +339,14 @@ bool is_power_available() { return isPowerSourceDetected_s; }
 bool can_use_power() { return canUseSourcePower_s; }
 
 bool is_powered_with_vbus() { return (NRF_POWER->USBREGSTATUS & POWER_USBREGSTATUS_VBUSDETECT_Msk) != 0x00; }
+
+OTGParameters get_otg_parameters()
+{
+  const auto& otg = get_OTG_requested_parameters();
+  OTGParameters tmp;
+  tmp.requestedCurrent_mA = otg.requestedCurrent_mA;
+  tmp.requestedVoltage_mV = otg.requestedVoltage_mV;
+  return tmp;
+}
 
 } // namespace powerSource

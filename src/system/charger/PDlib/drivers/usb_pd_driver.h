@@ -76,6 +76,13 @@ extern "C" {
     } le /* little endian words */;
   } timestamp_t;
 
+  struct SourcePowerParameters
+  {
+    uint16_t requestedVoltage_mV;
+    uint16_t requestedCurrent_mA;
+  };
+  struct SourcePowerParameters get_OTG_requested_parameters();
+
   uint32_t pd_task_set_event(uint32_t event, int wait_for_reply);
   void pd_power_supply_reset(int port);
 

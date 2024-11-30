@@ -16,6 +16,9 @@
 extern struct tc_module tc_instance;
 extern uint32_t g_us_timestamp_upper_32bit;
 
+struct SourcePowerParameters otgParameters;
+struct SourcePowerParameters get_OTG_requested_parameters() { return otgParameters; }
+
 uint32_t pd_task_set_event(uint32_t event, int wait_for_reply)
 {
   switch (event)
@@ -29,7 +32,7 @@ uint32_t pd_task_set_event(uint32_t event, int wait_for_reply)
 }
 
 const uint32_t PROGMEM pd_src_pdo[] = {
-        // PDO_FIXED(5000, 1500, PDO_FIXED_FLAGS),
+        PDO_FIXED(5000, 1500, PDO_FIXED_FLAGS),
 };
 const int PROGMEM pd_src_pdo_cnt = ARRAY_SIZE(pd_src_pdo);
 
@@ -114,6 +117,9 @@ void reset_cache()
 
   availableCurrent = 0;
   availableVoltage = 0;
+
+  // otgParameters.requestedVoltage_mV = 0;
+  // otgParameters.requestedCurrent_mA = 0;
 }
 
 // valid voltages from 0 to 20V
@@ -134,7 +140,13 @@ timestamp_t get_time(void)
 }
 
 // close source voltage, discharge vbus
-void pd_power_supply_reset(int port) { return; }
+void pd_power_supply_reset(int port)
+{
+  // reset OTG params
+  otgParameters.requestedVoltage_mV = 0;
+  otgParameters.requestedCurrent_mA = 0;
+  return;
+}
 
 int pd_custom_vdm(int port, int cnt, uint32_t* payload, uint32_t** rpayload)
 {
@@ -212,8 +224,10 @@ int pd_check_data_swap(int port, int data_role)
 
 int pd_check_power_swap(int port)
 {
-  /* Always refuse power swap */
+  // Always refuse power swap
   return 0;
+  // accept power swap
+  // TODO: return EC_SUCCESS;
 }
 
 // Check that the board health is good
@@ -222,6 +236,10 @@ int pd_board_checks(void) { return EC_SUCCESS; }
 // enable the source supply
 int pd_set_power_supply_ready(int port)
 {
+  // enable 5V OTG (cold start)
+  otgParameters.requestedVoltage_mV = 5000;
+  otgParameters.requestedCurrent_mA = 500;
+
 #if 0
 	/* Disable charging */
 	gpio_set_level(GPIO_USB_C0_CHARGE_L, 1);
@@ -237,7 +255,11 @@ int pd_set_power_supply_ready(int port)
 
 void pd_transition_voltage(int idx)
 {
-  /* No-operation: we are always 5V */
+  // augment OTG voltage/current to requested profile
+  uint32_t ma, mv;
+  pd_extract_pdo_power(pd_src_pdo[idx], &ma, &mv);
+  otgParameters.requestedVoltage_mV = mv;
+  otgParameters.requestedCurrent_mA = ma;
 
 #if 0
 	timestamp_t deadline;

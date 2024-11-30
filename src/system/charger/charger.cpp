@@ -35,11 +35,17 @@ static BatteryStatus_t batteryStatus;
 
 static Charger_t charger;
 
+bool isOtgEnabled_s = false;
+
 // check all charge conditions, and return true if the charge should be enabled
 bool should_charge()
 {
   // user disabled the charge process
   if (not enableCharge_s)
+    return false;
+
+  // no charge if OTG
+  if (isOtgEnabled_s)
     return false;
 
   // our power source cannot give power
@@ -117,6 +123,23 @@ bool should_charge()
 
   // all conditions passed
   return true;
+}
+
+// Enable the OTG
+void control_OTG(const uint16_t mv, const uint16_t ma)
+{
+  // disable otg
+  if (mv == 0 or ma == 0)
+  {
+    isOtgEnabled_s = false;
+    BQ25703A::disable_OTG();
+  }
+  else
+  {
+    isOtgEnabled_s = true;
+    BQ25703A::set_OTG_targets(mv, ma);
+    BQ25703A::enable_OTG();
+  }
 }
 
 bool is_status_error()
@@ -261,6 +284,9 @@ void setup()
 
 void loop()
 {
+  const auto& otg = powerSource::get_otg_parameters();
+  control_OTG(otg.requestedVoltage_mV, otg.requestedCurrent_mA);
+
   // run charger loop
   const bool isChargerOk = (digitalRead(CHARGE_OK) == HIGH);
   BQ25703A::loop(isChargerOk);
@@ -311,12 +337,6 @@ void shutdown()
 }
 
 void set_enable_charge(const bool shouldCharge) { enableCharge_s = shouldCharge; }
-
-void enable_OTG()
-{
-  BQ25703A::set_OTG_targets(5000, 1000);
-  BQ25703A::enable_OTG();
-}
 
 bool is_vbus_powered() { return powerSource::is_power_available(); }
 

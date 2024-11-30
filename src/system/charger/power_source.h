@@ -25,6 +25,14 @@ bool can_use_power();
 // is the microcontroler powered by vbus
 bool is_powered_with_vbus();
 
+// return the requested OTG parameters
+struct OTGParameters
+{
+  uint16_t requestedVoltage_mV;
+  uint16_t requestedCurrent_mA;
+};
+OTGParameters get_otg_parameters();
+
 } // namespace powerSource
 
 #endif
