@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "BQ25703A.h"
+#include "src/system/alerts.h"
 
 namespace BQ25703A {
 
@@ -31,7 +32,7 @@ inline static bool isChargeOk_s = false;
 // charger is charging
 inline static bool isChargeEnabled_s = false;
 // charger is in OTG state
-inline static bool isInOtg = false;
+inline static bool isInOtg_s = false;
 
 struct PowerLimits
 {
@@ -78,6 +79,22 @@ void run_status_update()
     // check faults
     run_fault_detection();
   }
+
+  // handle OTG alerts
+  if (isInOtg_s)
+  {
+    if (BQ25703Areg.chargerStatus.IN_OTG())
+    // TODO: check that the EN_OTG is still enabled
+    // if (BQ25703Areg.chargeOption3.EN_OTG())
+    {
+      AlertManager.clear_alert(Alerts::OTG_FAILED);
+      AlertManager.raise_alert(Alerts::OTG_ACTIVATED);
+    }
+    else
+    {
+      AlertManager.raise_alert(Alerts::OTG_FAILED);
+    }
+  }
 }
 
 // control the status of the charge
@@ -91,11 +108,90 @@ void control_charge()
                             // battery is present
                             battery_s.isPresent and
                             // not already in OTG
-                            not isInOtg;
+                            not isInOtg_s;
   // inhibit charging
   chargerIc.readRegEx(BQ25703Areg.chargeOption0);
   BQ25703Areg.chargeOption0.set_CHRG_INHIBIT(shouldCharge ? 0 : 1);
   chargerIc.writeRegEx(BQ25703Areg.chargeOption0);
+}
+
+void control_OTG()
+{
+  static bool isOTGInitialized_s = false;
+  static bool isOTGDisabled_s = false;
+  if (isInOtg_s)
+  {
+    // OTG use time
+    static uint32_t OTGStartTime_ms = 0;
+    static uint32_t lastOTGUsedTime_ms = 0;
+
+    if (not isOTGInitialized_s)
+    {
+      isOTGInitialized_s = true;
+      isOTGDisabled_s = false;
+
+      OTGStartTime_ms = millis();
+      lastOTGUsedTime_ms = millis();
+
+      digitalWrite(ENABLE_OTG, HIGH);
+      delay(1);
+
+      chargerIc.readRegEx(BQ25703Areg.chargeOption3);
+      BQ25703Areg.chargeOption3.set_EN_OTG(1);
+      chargerIc.writeRegEx(BQ25703Areg.chargeOption3);
+
+      // alert will be lowered on time
+      AlertManager.clear_alert(Alerts::OTG_ACTIVATED);
+      AlertManager.raise_alert(Alerts::OTG_FAILED);
+
+      delay(10);
+    }
+    else
+    {
+      // check current consumption
+      const auto& measurment = get_measurments();
+      if (not measurment.is_measurment_valid())
+      {
+        // do not run anything
+        return;
+      }
+
+      if (measurment.vbus_mV < 3200)
+      {
+        // wait for voltage to climb on VBUS
+        return;
+      }
+      if (measurment.vbus_mA > 0)
+      {
+        // update the last used time
+        lastOTGUsedTime_ms = millis();
+      }
+
+      // if some time has passed since the last use
+      if (millis() - lastOTGUsedTime_ms > 2000)
+      {
+        // disable the OTG if it's not used
+        disable_OTG();
+      }
+    }
+  }
+  else
+  {
+    if (not isOTGDisabled_s)
+    {
+      isOTGInitialized_s = false;
+      isOTGDisabled_s = true;
+
+      digitalWrite(ENABLE_OTG, LOW);
+      delay(1);
+      // 5V 0A for OTG (default)
+      BQ25703Areg.oTGVoltage.set(5000);
+      BQ25703Areg.oTGCurrent.set(0);
+
+      AlertManager.clear_alert(Alerts::OTG_ACTIVATED);
+      AlertManager.clear_alert(Alerts::OTG_FAILED);
+    }
+  }
 }
 
 // enable/disable the charge function
@@ -315,6 +411,10 @@ bool enable(const uint16_t minSystemVoltage_mV,
   }
 
   // everything went fine (for now)
+
+  // disable the OTG (safety)
+  disable_OTG();
+
   status_s = Status_t::NOMINAL;
 
   chargerIc.readRegEx(BQ25703Areg.chargeOption3);
@@ -325,6 +425,9 @@ bool enable(const uint16_t minSystemVoltage_mV,
   // disable low power mode
   BQ25703Areg.chargeOption0.set_EN_LWPWR(0);
   chargerIc.writeRegEx(BQ25703Areg.chargeOption0);
+
+  BQ25703Areg.prochotOption1.set_IDCHG_VTH(16384 / 512);
+  chargerIc.writeRegEx(BQ25703Areg.prochotOption1);
 
   // disable ICO
   enable_ico(false);
@@ -410,6 +513,8 @@ void loop(const bool isChargeOk)
 
     // update the charge
     control_charge();
+    // update the OTG functionalities
+    control_OTG();
     // set the current limit to what is stored
     program_input_current_limit();
 
@@ -422,6 +527,11 @@ void shutdown()
 {
   // disable charge
   isChargeOk_s = false;
+  // just in case
+  disable_OTG();
+
+  // run a last update
+  control_OTG();
   control_charge();
 
   // limit input current
@@ -453,6 +563,33 @@ void try_clear_faults()
     BQ25703Areg.chargerStatus.set_SYSOVP_STAT(0);
     chargerIc.writeRegEx(BQ25703Areg.chargerStatus);
   }
+}
+
+void enable_OTG()
+{
+  if (not isInOtg_s)
+  {
+    // activate this state FIRST
+    isInOtg_s = true;
+    // will deactivate the charge (because OTG)
+    control_charge();
+  }
+}
+
+void disable_OTG()
+{
+  chargerIc.readRegEx(BQ25703Areg.chargeOption3);
+  BQ25703Areg.chargeOption3.set_EN_OTG(0);
+  chargerIc.writeRegEx(BQ25703Areg.chargeOption3);
+
+  // deactivate this state LAST
+  isInOtg_s = false;
+}
+
+void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA)
+{
+  BQ25703Areg.oTGVoltage.set(voltage_mV);
+  BQ25703Areg.oTGCurrent.set(maxCurrent_mA);
 }
 
 Status_t get_status() { return status_s; }

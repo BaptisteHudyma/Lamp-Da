@@ -512,6 +512,10 @@ void handle_alerts()
       bluetooth::disable_bluetooth();
       update_brightness(min(clampedBrightness, BRIGHTNESS), true);
     }
+    else if ((current & Alerts::HARDWARE_ALERT) != 0x00)
+    {
+      button::blink(100, 50, utils::ColorSpace::TOMATO);
+    }
     else if ((current & Alerts::LONG_LOOP_UPDATE) != 0x00)
     {
       // fast blink red
@@ -520,6 +524,19 @@ void handle_alerts()
     else if ((current & Alerts::BLUETOOTH_ADVERT) != 0x00)
     {
       button::breeze(1000, 500, utils::ColorSpace::BLUE);
+    }
+    else if ((current & Alerts::OTG_FAILED) != 0x00)
+    {
+      button::blink(200, 200, utils::ColorSpace::FUSHIA);
+    }
+    else if ((current & Alerts::OTG_ACTIVATED) != 0x00)
+    {
+      // red to green
+      const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
+                                                                          utils::ColorSpace::GREEN.get_rgb().color,
+                                                                          battery::get_raw_battery_level() / 100.0));
+
+      button::breeze(500, 500, buttonColor);
     }
     else
     {

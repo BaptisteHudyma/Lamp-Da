@@ -28,13 +28,33 @@ void handleCommand(const String& command)
       Serial.println("h: this page");
       Serial.println("v: hardware & software version");
       Serial.println("bl: battery level");
-      Serial.println("vbus: USB voltage bus infos");
       Serial.println("cinfo: charge infos");
       Serial.println("ADC: all values from the ADC");
       Serial.println("cen: enable charger. Debug only");
       Serial.println("cdis: disable charger. Debug only !");
       Serial.println("format-fs: format the whole file system (dangerous)");
       Serial.println("-----------------");
+      break;
+
+    case utils::hash("v"):
+    case utils::hash("V"):
+    case utils::hash("version"):
+      Serial.print("hardware:");
+      Serial.println(HARDWARE_VERSION);
+      Serial.print("base software:");
+      Serial.println(BASE_SOFTWARE_VERSION);
+      Serial.print("user software:");
+      Serial.println(SOFTWARE_VERSION);
+      break;
+
+    case utils::hash("bl"):
+    case utils::hash("battery"):
+      Serial.print("raw battery level:");
+      Serial.print(battery::get_raw_battery_level() / 100.0);
+      Serial.println("%");
+      Serial.print("battery level:");
+      Serial.print(battery::get_battery_level() / 100.0);
+      Serial.println("%");
       break;
 
     case utils::hash("cinfo"):

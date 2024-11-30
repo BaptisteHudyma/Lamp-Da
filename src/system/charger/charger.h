@@ -17,6 +17,8 @@ void shutdown();
 // debug feature: disable the charging process
 void set_enable_charge(const bool shouldCharge);
 
+void enable_OTG();
+
 struct Charger_t
 {
   // everything below makes no sense if this is false
