@@ -4,21 +4,21 @@
 #include <InternalFileSystem.h>
 
 #include <cassert>
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 #include "src/system/utils/constants.h"
 
 namespace fileSystem {
 
-constexpr auto FILENAME = "/.lampda.par";
+static constexpr auto FILENAME = "/.lampda.par";
 
 using namespace Adafruit_LittleFS_Namespace;
 
 File file(InternalFS);
 
 // the stored configurations
-std::map<uint32_t, uint32_t> _valueMap;
+std::unordered_map<uint32_t, uint32_t> _valueMap;
 
 struct keyValue
 {
@@ -171,15 +171,36 @@ bool doKeyExists(const uint32_t key) { return _valueMap.find(key) != _valueMap.e
 
 bool get_value(const uint32_t key, uint32_t& value)
 {
+#ifdef LMBD_SIMU_ENABLED
+  fprintf(stderr, "fs: get_value %08x -> ", key);
+#endif
+
   const auto& res = _valueMap.find(key);
   if (res != _valueMap.end())
   {
     value = res->second;
+
+#ifdef LMBD_SIMU_ENABLED
+    fprintf(stderr, "%08x\n", value);
+#endif
+
     return true;
   }
+
+#ifdef LMBD_SIMU_ENABLED
+  fprintf(stderr, "not found\n");
+#endif
+
   return false;
 }
 
-void set_value(const uint32_t key, const uint32_t value) { _valueMap[key] = value; }
+void set_value(const uint32_t key, const uint32_t value)
+{
+  _valueMap[key] = value;
+
+#ifdef LMBD_SIMU_ENABLED
+  fprintf(stderr, "fs: set_value %08x -> %08x\n", key, value);
+#endif
+}
 
 } // namespace fileSystem
