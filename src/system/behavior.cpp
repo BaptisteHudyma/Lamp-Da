@@ -534,7 +534,7 @@ void handle_alerts()
       // red to green
       const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
                                                                           utils::ColorSpace::GREEN.get_rgb().color,
-                                                                          battery::get_raw_battery_level() / 100.0));
+                                                                          battery::get_raw_battery_level() / 10000.0));
 
       button::breeze(500, 500, buttonColor);
     }

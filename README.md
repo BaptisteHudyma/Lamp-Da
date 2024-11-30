@@ -58,7 +58,7 @@ It features a constant current strip that can be as high as continuous 2.3A, con
 The circuit features:
 - USB-C 4S li-ion charger, based on BQ25703A ic.
 - USB short circuit and EC protection, based on TPD8S300 ic.
-- USB-C power negotiation, base on FUSB302 ic.
+- USB-C power negotiation, base on FUSB302B ic.
 - Constant current led driver, that can maintain stable up to 2.3A, based on LM3409HV ic.
 - 9 programmable IO pins (4 of which can be analog inputs, 4 can be pwm outputs). Based on nRF52840 ic.
 - MEMS Microphone, placed away from parasitic ringing components.
