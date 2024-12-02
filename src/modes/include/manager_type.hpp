@@ -15,6 +15,7 @@
 #include "src/modes/include/tools.hpp"
 #include "src/modes/include/context_type.hpp"
 #include "src/modes/include/default_config.hpp"
+#include "src/modes/include/hardware/keystore.hpp"
 #include "src/modes/include/hardware/lamp_type.hpp"
 
 namespace modes {
@@ -118,14 +119,17 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   using AllStatesTy = details::StateTyFrom<AllGroups>;
   static constexpr uint8_t nbGroups {std::tuple_size_v<AllGroupsTy>};
 
+  // last group index must not collide with modes::store::noGroupIndex
+  static_assert(nbGroups < 16, "Maximum of 15 groups has been exceeded.");
+
   template<uint8_t Idx> using GroupAt = std::tuple_element_t<Idx, AllGroupsTy>;
 
   // required to support manager-level context
   using HasAnyGroup = details::anyOf<AllGroupsTy>;
   static constexpr bool hasBrightCallback = HasAnyGroup::hasBrightCallback;
-  static constexpr bool hasSystemCallbacks = HasAnyGroup::hasSystemCallbacks;
   static constexpr bool requireUserThread = HasAnyGroup::requireUserThread;
   static constexpr bool hasCustomRamp = HasAnyGroup::hasCustomRamp;
+  static constexpr bool hasSystemCallbacks = hasCustomRamp || HasAnyGroup::hasSystemCallbacks;
   static constexpr bool hasButtonCustomUI = HasAnyGroup::hasButtonCustomUI;
 
   // constructors
@@ -175,6 +179,20 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   }
 
   //
+  // store
+  //
+
+  // persistent values
+  enum class Store : uint16_t
+  {
+    lastActive,
+    modeMemory,
+    favoriteMode,
+  };
+
+  static constexpr uint32_t storeId = modes::store::derivateStoreId<modes::store::hash("ManagerStoreId"), AllGroupsTy>;
+
+  //
   // state
   //
 
@@ -186,14 +204,16 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     // When switching group, remember which mode was on last time we visited it
     std::array<uint8_t, nbGroups> lastModeMemory = {};
 
+    // Which mode was selected as favorite
+    ActiveIndexTy currentFavorite = ActiveIndexTy::from(Config::defaultFavorite);
+
     // Ramp handlers: custom ramp (or "color ramp") and mode scroll ramp
     RampHandlerTy<Config> rampHandler = {Config::defaultCustomRampStepSpeedMs};
     RampHandlerTy<Config> scrollHandler = {Config::scrollRampStepSpeedMs};
 
     bool clearStripOnModeChange = Config::defaultClearStripOnModeChange;
 
-    ActiveIndexTy currentFavorite = ActiveIndexTy::from(Config::defaultFavorite);
-
+    // configuration-related actions done before mode reset
     static void LMBD_INLINE before_reset(auto& ctx)
     {
       auto& self = ctx.state;
@@ -202,6 +222,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       self.clearStripOnModeChange = Config::defaultClearStripOnModeChange;
     }
 
+    // configuration-related actions done after mode reset
     static void LMBD_INLINE after_reset(auto& ctx)
     {
       auto& self = ctx.state;
@@ -305,14 +326,29 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void next_group(auto& ctx)
   {
-    uint8_t groupIdBefore = ctx.get_active_group(nbGroups);
+    // give an occasion to the current group to save its custom ramp
+    uint8_t modeIdBefore = ctx.get_active_mode();
+    dispatch_group(ctx, [&](auto group) {
+      if constexpr (group.hasCustomRamp)
+      {
+        group.state.save_ramps(group, modeIdBefore);
+      }
+    });
 
-    ctx.state.lastModeMemory[groupIdBefore] = ctx.get_active_mode();
+    // changes to lastModeMemory made in this function will be persistent
+    auto keyModeMemory = ctx.template storageFor<Store::modeMemory>(ctx.state.lastModeMemory);
+
+    // save last mode used in group, before switching
+    uint8_t groupIdBefore = ctx.get_active_group(nbGroups);
+    ctx.state.lastModeMemory[groupIdBefore] = modeIdBefore;
+
     ctx.set_active_group(groupIdBefore + 1, nbGroups);
 
+    // restore last mode used in group, after switching
     uint8_t groupIdAfter = ctx.get_active_group(nbGroups);
     ctx.set_active_mode(ctx.state.lastModeMemory[groupIdAfter]);
 
+    // reset new mode picked after group change
     ctx.reset_mode();
   }
 
@@ -327,11 +363,25 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void jump_to_favorite(auto& ctx)
   {
+    auto keyActive = ctx.template storageFor<Store::lastActive>(ctx.modeManager.activeIndex);
+
+    // reset once with the right mode
     ctx.modeManager.activeIndex = ctx.state.currentFavorite;
     ctx.reset_mode();
+
+    // if ramps loaded in reset_mode != ones saved as favorite, emulate update
+    if (ctx.modeManager.activeIndex.rawIndex != ctx.state.currentFavorite.rawIndex)
+    {
+      ctx.modeManager.activeIndex = ctx.state.currentFavorite;
+      custom_ramp_update(ctx, ctx.get_active_custom_ramp());
+    }
   }
 
-  static void set_favorite_now(auto& ctx) { ctx.state.currentFavorite = ctx.modeManager.activeIndex; }
+  static void set_favorite_now(auto& ctx)
+  {
+    auto keyFav = ctx.template storageFor<Store::favoriteMode>(ctx.state.currentFavorite);
+    ctx.state.currentFavorite = ctx.modeManager.activeIndex;
+  }
 
   static void reset_mode(auto& ctx)
   {
@@ -385,14 +435,44 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void write_parameters(auto& ctx)
   {
-    foreach_group<true>(ctx, [](auto group) {
+    ctx.template storageSaveOnly<Store::lastActive>(ctx.modeManager.activeIndex);
+
+    foreach_group<not hasCustomRamp>(ctx, [](auto group) {
+      if constexpr (group.hasCustomRamp)
+      {
+        group.state.save_ramps(group, group.get_active_mode());
+
+        using StoreHere = typename decltype(group)::StoreEnum;
+        group.template storageSaveOnly<StoreHere::rampMemory>(group.state.customRampMemory);
+        group.template storageSaveOnly<StoreHere::indexMemory>(group.state.customIndexMemory);
+      }
+
       group.write_parameters();
     });
   }
 
   static void read_parameters(auto& ctx)
   {
-    foreach_group<true>(ctx, [](auto group) {
+    // remove old filesystem data if we detect obsolete "storeId" serial
+    using LocalStore = details::LocalStoreOf<decltype(ctx)>;
+    LocalStore::template migrateStoreIfNeeded<storeId>();
+
+    // load last active mode & favorite
+    ctx.template storageLoadOnly<Store::lastActive>(ctx.modeManager.activeIndex);
+    ctx.template storageLoadOnly<Store::favoriteMode>(ctx.state.currentFavorite);
+
+    // for each group, migrate & handle custom ramp memory
+    foreach_group<not hasCustomRamp>(ctx, [](auto group) {
+      using LocalStore = details::LocalStoreOf<decltype(group)>;
+      LocalStore::template migrateStoreIfNeeded<storeId>();
+
+      if constexpr (group.hasCustomRamp)
+      {
+        using StoreHere = typename LocalStore::EnumTy;
+        group.template storageLoadOnly<StoreHere::rampMemory>(group.state.customRampMemory);
+        group.template storageLoadOnly<StoreHere::indexMemory>(group.state.customIndexMemory);
+      }
+
       group.read_parameters();
     });
   }

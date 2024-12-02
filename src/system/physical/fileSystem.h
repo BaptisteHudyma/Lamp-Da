@@ -27,6 +27,16 @@ bool doKeyExists(const uint32_t key);
 bool get_value(const uint32_t key, uint32_t& value);
 void set_value(const uint32_t key, const uint32_t value);
 
+/** \brief Drop all keys using the given bit prefix
+ *
+ * All keys such as `bitMatch == (bitSelect & key)` will be removed
+ *
+ * \param[in] bitMatch keys matching this pattern will be dropped
+ * \param[in] bitSelect select which key bits to match with
+ * \returns count of elements removed from storage
+ */
+uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect = 0xffffffff);
+
 } // namespace fileSystem
 
 #endif

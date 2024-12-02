@@ -78,11 +78,11 @@ constexpr float map(float x, float in_min, float in_max, float out_min, float ou
  * from the beginning of the string for simplicity.
  *
  * \param[in] s Zero-terminated input string
- * \param[in] maxSize (optional) Maximal byte count to process, defaults to 12
+ * \param[in] maxSize (optional) Maximal byte count to process, defaults to 14
  * \param[in] off (optional) Skip the first \p off bytes, defaults to 0
- * \remark By default, only the first 12 bytes of the string are used!
+ * \remark By default, only the first 14 bytes of the string are used!
  */
-template<typename T> static constexpr uint32_t hash(const T s, const uint16_t maxSize = 12, const uint16_t off = 0)
+template<typename T> static constexpr uint32_t hash(const T s, const uint16_t maxSize = 14, const uint16_t off = 0)
 {
 #ifdef LMBD_CPP17
   uint32_t hashAcc = 5381;
@@ -104,8 +104,8 @@ template<typename T> static constexpr uint32_t hash(const T s, const uint16_t ma
 /// \private Same as hash, but takes priority when called with hash("string")
 template<int16_t N> static constexpr uint32_t hash(const char (&s)[N])
 {
-  static_assert((N - 1 <= 12) && "Use hash(s, maxSize) to hash strings longer than 12 bytes!");
-  return hash(s, 12);
+  static_assert((N - 1 <= 14) && "Use hash(s, maxSize) to hash strings longer than 14 bytes!");
+  return hash(s, 14);
 }
 
 void calcGammaTable(float gamma);

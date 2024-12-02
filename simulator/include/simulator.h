@@ -306,7 +306,7 @@ template<typename T> struct simulator
       {
         if (event.type == sf::Event::Closed)
         {
-          power_off_behavior(simu);
+          behavior::power_off_behavior(simu);
           window.close();
           recorder.stop();
         }

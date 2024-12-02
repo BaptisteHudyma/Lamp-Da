@@ -395,7 +395,7 @@ build: has-lamp-type process $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 	# verifying if cached sketch objects were used...
 	@(grep -q -E ' -o [^ ]*/_build/objs/sketch/src/[^ ]*.cpp.o' $(BUILD_DIR)/verbose.txt \
 		&& echo && echo \
-		&& echo "ERROR: arduino-cli rebuilt sketch without our custom setup!" \
+		&& echo "ERROR: arduino-cli rebuilt sketch without our custom setup :(" \
 		&& echo && echo \
 	) || echo '-> everything went fine!'
 	# exporting artifacts...

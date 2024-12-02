@@ -203,4 +203,30 @@ void set_value(const uint32_t key, const uint32_t value)
 #endif
 }
 
+uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
+{
+  auto& c = _valueMap;
+
+  // std::erase_if implementation
+  //
+  auto old_size = c.size();
+  for (auto first = c.begin(), last = c.end(); first != last;)
+  {
+    uint32_t key = std::get<0>(*first);
+    if ((key & bitSelect) == bitMatch)
+    {
+      first = c.erase(first);
+
+#ifdef LMBD_SIMU_ENABLED
+      fprintf(stderr, "fs: key dropped %08x (matches %08x)\n", key, bitMatch & bitSelect);
+#endif
+    }
+    else
+    {
+      ++first;
+    }
+  }
+  return old_size - c.size();
+}
+
 } // namespace fileSystem
