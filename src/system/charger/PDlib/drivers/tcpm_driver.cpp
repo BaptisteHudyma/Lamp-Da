@@ -7,98 +7,40 @@
 
 #include "tcpm_driver.h"
 #include "Arduino.h"
-#include <Wire.h>
 
 extern const struct tcpc_config_t tcpc_config[CONFIG_USB_PD_PORT_COUNT];
 
-extern "C" {
-  // #include <Wire.h>
+constexpr uint8_t i2cDeviceIndex = 0;
 
-  void WirebeginTransmission(int addr) { Wire.beginTransmission(addr); }
-
-  void Wirewrite(int value) { Wire.write(value); }
-
-  void WireendTransmission(int stopBit) { Wire.endTransmission(stopBit); }
-
-  void WirerequestFrom(int addr, int quantity, int stopBit) { Wire.requestFrom(addr, quantity, stopBit); }
-
-  int Wireread() { return Wire.read(); }
-}
+// TODO: replace return 0 by return true result
 
 /* I2C wrapper functions - get I2C port / slave addr from config struct. */
 int tcpc_write(int port, int reg, int val)
 {
-  WirebeginTransmission(fusb302_I2C_SLAVE_ADDR);
-  Wirewrite(reg & 0xFF);
-  Wirewrite(val & 0xFF);
-  WireendTransmission(true);
-
+  i2c_write8(i2cDeviceIndex, fusb302_I2C_SLAVE_ADDR, reg & 0xFF, (uint8_t)val & 0xFF, 1);
   return 0;
 }
 
 int tcpc_write16(int port, int reg, int val)
 {
-  WirebeginTransmission(fusb302_I2C_SLAVE_ADDR);
-  Wirewrite(reg & 0xFF);
-  Wirewrite(val & 0xFF);
-  Wirewrite((val >> 8) & 0xFF);
-  WireendTransmission(true);
-
+  i2c_write16(i2cDeviceIndex, fusb302_I2C_SLAVE_ADDR, reg & 0xFF, (uint16_t)val, 1);
   return 0;
 }
 
 int tcpc_read(int port, int reg, int* val)
 {
-  WirebeginTransmission(fusb302_I2C_SLAVE_ADDR);
-  Wirewrite(reg & 0xFF);
-  WireendTransmission(false);
-  WirerequestFrom(fusb302_I2C_SLAVE_ADDR, 1, true);
-  *val = Wireread();
-
+  i2c_read8(i2cDeviceIndex, fusb302_I2C_SLAVE_ADDR, reg & 0xFF, (uint8_t*)val, 0);
   return 0;
 }
 
 int tcpc_read16(int port, int reg, int* val)
 {
-  WirebeginTransmission(fusb302_I2C_SLAVE_ADDR);
-  Wirewrite(reg & 0xFF);
-  WireendTransmission(false);
-  WirerequestFrom(fusb302_I2C_SLAVE_ADDR, 1, true);
-  *val = Wireread();
-  *val |= (Wireread() << 8);
-
+  i2c_read16(i2cDeviceIndex, fusb302_I2C_SLAVE_ADDR, reg & 0xFF, (uint16_t*)val, 0);
   return 0;
 }
 
 int tcpc_xfer(int port, const uint8_t* out, int out_size, uint8_t* in, int in_size, int flags)
 {
-  if (out_size)
-  {
-    WirebeginTransmission(fusb302_I2C_SLAVE_ADDR);
-    for (; out_size > 0; out_size--)
-    {
-      Wirewrite(*out);
-      out++;
-    }
-    if (flags & I2C_XFER_STOP)
-    {
-      WireendTransmission(true);
-    }
-    else
-    {
-      WireendTransmission(false);
-    }
-  }
-
-  if (in_size)
-  {
-    WirerequestFrom(fusb302_I2C_SLAVE_ADDR, in_size, (flags & I2C_XFER_STOP));
-    for (; in_size > 0; in_size--)
-    {
-      *in = Wireread();
-      in++;
-    }
-  }
-
+  i2c_xfer(i2cDeviceIndex, fusb302_I2C_SLAVE_ADDR, out_size, out, in_size, in, flags);
   return 0;
 }

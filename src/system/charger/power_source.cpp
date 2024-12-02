@@ -2,8 +2,6 @@
 
 #include <Arduino.h>
 
-#include "Wire.h"
-
 #include "PDlib/drivers/usb_pd_driver.h"
 #include "PDlib/drivers/tcpm_driver.h"
 #include "PDlib/usb_pd.h"
@@ -19,35 +17,6 @@ const struct tcpc_config_t tcpc_config[CONFIG_USB_PD_PORT_COUNT] = {
 static bool canUseSourcePower_s = false;
 
 namespace powerSource {
-
-bool writeI2cData(const uint8_t deviceAddr, const uint8_t registerAdd, const uint8_t size, uint8_t* buf)
-{
-  Wire.beginTransmission(deviceAddr);
-  Wire.write(registerAdd);
-  uint8_t count = size;
-  while (count > 0)
-  {
-    Wire.write(*buf++);
-    count--;
-  }
-  Wire.endTransmission();
-  return true;
-}
-
-bool readI2cData(const uint8_t deviceAddr, const uint8_t registerAdd, const uint8_t size, uint8_t* buf)
-{
-  Wire.beginTransmission(deviceAddr);
-  Wire.write(registerAdd);
-  Wire.endTransmission();
-  Wire.requestFrom(deviceAddr, size);
-  uint8_t count = size;
-  while (Wire.available() && count > 0)
-  {
-    *buf++ = Wire.read();
-    count--;
-  }
-  return count == 0;
-}
 
 // set to true when a power source is detected
 inline static bool isPowerSourceDetected_s = false;

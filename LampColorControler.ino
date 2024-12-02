@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <bluefruit.h>
-#include <Wire.h>
 
 #include "src/compile.h"
 #include "src/system/alerts.h"
@@ -16,6 +15,8 @@
 #include "src/system/utils/serial.h"
 #include "src/system/utils/utils.h"
 #include "src/user/functions.h"
+
+#include "src/system/platform/i2c.h"
 
 void set_watchdog(const uint32_t timeoutDelaySecond)
 {
@@ -41,9 +42,11 @@ void setup()
   set_watchdog(5); // second timeout
 
   // necessary for all i2c communications
-  Wire.setClock(400000); // 400KHz clock
-  Wire.setTimeout(100);  // ms timout
-  Wire.begin();
+  // 400KHz clock, 100mS timeout
+  for (uint8_t i = 0; i < WIRE_INTERFACES_COUNT; ++i)
+  {
+    i2c_setup(i, 400000, 100);
+  }
 
   // setup serial
   serial::setup();

@@ -12,13 +12,14 @@
 extern "C" {
 #endif
 
+#include "../../../platform/i2c.h"
+
 #include <stdint.h>
 
 // USB-C Stuff
 #include "../tcpm/tcpm.h"
 #include "FUSB302.h"
 #define CONFIG_USB_PD_PORT_COUNT 1
-  extern struct i2c_master_module i2c_master_instance;
 
 #ifdef __cplusplus
 }
