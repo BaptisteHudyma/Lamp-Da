@@ -56,13 +56,13 @@ struct LedStrip
   void show() {}
   void begin() {}
 
-  uint8_t getBrightness() { return BRIGHTNESS; }
+  uint8_t getBrightness() { return behavior::BRIGHTNESS; }
 
   uint8_t setBrightness(uint8_t brightnessValue)
   {
-    BRIGHTNESS = brightnessValue;
-    currentBrightness = brightnessValue;
-    return BRIGHTNESS;
+    behavior::BRIGHTNESS = brightnessValue;
+    behavior::currentBrightness = brightnessValue;
+    return behavior::BRIGHTNESS;
   }
 
   void setPixelColorXY(uint8_t X, uint8_t Y, uint8_t r, uint8_t g, uint8_t b);
@@ -258,7 +258,7 @@ template<typename T> struct simulator
     sf::Clock clock;
 
     globalMillis = clock.getElapsedTime().asMilliseconds();
-    lastStartupSequence = millis();
+    behavior::lastStartupSequence = millis();
 
     // sound
     LevelRecorder recorder;
@@ -275,8 +275,8 @@ template<typename T> struct simulator
     T simu {lamp};
 
     // start the simulation
-    isShutdown = true;
-    power_on_behavior(simu);
+    behavior::isShutdown = true;
+    behavior::power_on_behavior(simu);
     bool shouldSpawnThread = simu.should_spawn_thread();
 
     uint64_t skipframe = 0;
@@ -289,10 +289,10 @@ template<typename T> struct simulator
               sf::Keyboard::isKeyPressed(sf::Keyboard::Space), // button is Space
 
               [&](uint8_t clicks) {
-                click_behavior(simu, clicks);
+                behavior::click_behavior(simu, clicks);
               },
               [&](uint8_t clicks, uint32_t hold) {
-                hold_behavior(simu, clicks, hold);
+                behavior::hold_behavior(simu, clicks, hold);
               });
 
       // other events
@@ -312,14 +312,14 @@ template<typename T> struct simulator
       globalMillis = clock.getElapsedTime().asMilliseconds();
 
       // call deferred brightness callbacks
-      if (deferredBrightnessCallback)
+      if (behavior::deferredBrightnessCallback)
       {
-        deferredBrightnessCallback = false;
-        simu.brightness_update(BRIGHTNESS);
+        behavior::deferredBrightnessCallback = false;
+        simu.brightness_update(behavior::BRIGHTNESS);
       }
 
       // execute user function
-      if (!isShutdown)
+      if (!behavior::isShutdown)
         simu.loop(lamp);
 
       float dt = clock.getElapsedTime().asMilliseconds() - globalMillis;
@@ -349,7 +349,7 @@ template<typename T> struct simulator
       window.clear();
 
       // fake shutdown lamp
-      if (isShutdown)
+      if (behavior::isShutdown)
       {
         window.display();
         continue;
@@ -384,9 +384,9 @@ template<typename T> struct simulator
           float g = ((strip.leds[I] >> 8) & 0xff);
           float r = ((strip.leds[I] >> 16) & 0xff);
 
-          r = min(r, BRIGHTNESS);
-          g = min(g, BRIGHTNESS);
-          b = min(b, BRIGHTNESS);
+          r = min(r, behavior::BRIGHTNESS);
+          g = min(g, behavior::BRIGHTNESS);
+          b = min(b, behavior::BRIGHTNESS);
 
           shape.setFillColor(sf::Color(r, g, b));
           window.draw(shape);
@@ -396,7 +396,7 @@ template<typename T> struct simulator
       window.display();
 
       // secondary thread
-      if (shouldSpawnThread && !isShutdown)
+      if (shouldSpawnThread && !behavior::isShutdown)
         simu.user_thread();
     }
 

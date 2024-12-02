@@ -292,6 +292,11 @@ void loop()
   }
 }
 
+void shutdown()
+{
+  // nothing ?
+}
+
 uint16_t get_max_input_current()
 {
   // safety
@@ -331,8 +336,6 @@ uint16_t get_max_input_current()
   // we dont known for now the type of connection
   return 0;
 }
-
-bool is_not_usb_power_delivery() { return not is_usb_pd(); }
 
 bool is_power_available() { return isPowerSourceDetected_s; }
 

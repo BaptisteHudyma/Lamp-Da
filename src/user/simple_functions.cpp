@@ -9,7 +9,7 @@
 
 namespace user {
 
-void power_on_sequence() { ledpower::write_brightness(BRIGHTNESS); }
+void power_on_sequence() { ledpower::write_brightness(behavior::BRIGHTNESS); }
 
 void power_off_sequence()
 {
@@ -39,7 +39,7 @@ void button_clicked_default(const uint8_t clicks)
   {
     // put luminosity to maximum
     case 2:
-      update_brightness(255, true);
+      behavior::update_brightness(255, true);
       break;
 
     default:

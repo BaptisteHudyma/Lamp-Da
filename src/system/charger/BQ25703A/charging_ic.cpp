@@ -577,13 +577,13 @@ void shutdown()
   // just in case
   disable_OTG();
 
-  // run a last update
-  control_OTG();
-  control_charge();
-
   // limit input current
   powerLimits_s.set_default();
   program_input_current_limit();
+
+  // run a last update
+  control_OTG();
+  control_charge();
 
   // enable low power mode
   chargerIc.readRegEx(BQ25703Areg.chargeOption0);

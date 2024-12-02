@@ -26,12 +26,8 @@ void set_watchdog(const uint32_t timeoutDelaySecond)
   NRF_WDT->TASKS_START = 1;                      // Start WDT
 }
 
-// if the system waked up by USB plugged in, set this flag
-bool wokeUpFromVBUS = false;
-
 // timestamp of the system wake up
 static uint32_t turnOnTime = 0;
-
 void setup()
 {
   // start by resetting the led driver
@@ -60,26 +56,39 @@ void setup()
 
   // start the file system
   fileSystem::setup();
-  read_parameters();
+  behavior::read_parameters();
 
   // check if we are in first boot mode (no first boot flag stored)
-  const bool isFirstBoot = !fileSystem::doKeyExists(isFirstBootKey);
+  const bool isFirstBoot = !fileSystem::doKeyExists(behavior::isFirstBootKey);
+
+  const auto startReason = readResetReason();
+  // POWER_RESETREAS_RESETPIN_Msk: reset from pin-reset detected
+  // POWER_RESETREAS_DOG_Msk: reset from watchdog
+  // POWER_RESETREAS_SREQ_Msk: reset via soft reset
+  // POWER_RESETREAS_LOCKUP_Msk: reset from cpu lockup
+  // POWER_RESETREAS_OFF_Msk: wake up from pin interrupt
+  // POWER_RESETREAS_LPCOMP_Msk: wake up from analogic pin detect (LPCOMP)
+  // POWER_RESETREAS_DIF_Msk: wake up from debug interface
+  // POWER_RESETREAS_NFC_Msk: wake from NFC field detection
+  // POWER_RESETREAS_VBUS_Msk: wake from vbus high signal
 
   bool shouldAlertUser = false;
   // handle start flags
   if (!isFirstBoot)
   {
     // started after reset, clear all code and go to bootloader mode
-    if ((readResetReason() & POWER_RESETREAS_RESETPIN_Msk) != 0x00)
+    if ((startReason & POWER_RESETREAS_RESETPIN_Msk) != 0x00)
     {
       enterSerialDfu();
     }
 
-    if ((readResetReason() & POWER_RESETREAS_DOG_Msk) != 0x00)
+    if ((startReason & POWER_RESETREAS_DOG_Msk) != 0x00)
     {
-      // allow user to flash the program again, without running the currently
-      // stored program
-      if (charger::is_vbus_signal_detected())
+      // POWER_USBREGSTATUS_OUTPUTRDY_Msk : debounce time passed
+      // POWER_USBREGSTATUS_VBUSDETECT_Msk : vbus is detected on usb
+
+      // power detected on the USB, reset the program
+      if ((NRF_POWER->USBREGSTATUS & POWER_USBREGSTATUS_VBUSDETECT_Msk) != 0x00)
       {
         // system will reset & shutdown after that
         enterSerialDfu();
@@ -106,19 +115,12 @@ void setup()
     }
   }
 
-  // started by interrupt (user)
-  if ((readResetReason() & POWER_RESETREAS_OFF_Msk) != 0x00)
-  {
-    startup_sequence();
-  }
-  // else: start in shutdown mode
-  else
-  {
-    wokeUpFromVBUS = true;
+  const bool wasPoweredyByUserInterrupt = (startReason & POWER_RESETREAS_OFF_Msk) != 0x00;
+  // any wake up from something that is not an interrupt should be considered as vbus voltage
+  behavior::set_woke_up_from_vbus(not wasPoweredyByUserInterrupt);
 
-    // let the user start in unpowered mode (edge cases...)
-    user::power_off_sequence();
-  }
+  // let the user start in unpowered mode
+  user::power_off_sequence();
 
   // use the charging thread !
   Scheduler.startLoop(charging_thread);
@@ -132,6 +134,9 @@ void setup()
 
 void charging_thread()
 {
+  if (behavior::is_shuting_down())
+    return;
+
   // run the charger loop (all the time)
   charger::loop();
   delay(2);
@@ -139,7 +144,9 @@ void charging_thread()
 
 void secondary_thread()
 {
-  if (is_shutdown())
+  if (behavior::is_shuting_down())
+    return;
+  if (not behavior::is_user_code_running())
     return;
 
   user::user_thread();
@@ -178,45 +185,9 @@ void check_loop_runtime(const uint32_t runTime)
   };
 }
 
-void cpuTemperarureAlerts()
-{
-  // temperature alerts
-  const float procTemp = readCPUTemperature();
-  if (procTemp >= criticalSystemTemp_c)
-  {
-    AlertManager.raise_alert(TEMP_CRITICAL);
-  }
-  else if (procTemp >= maxSystemTemp_c)
-  {
-    AlertManager.raise_alert(TEMP_TOO_HIGH);
-  }
-  else
-  {
-    AlertManager.clear_alert(TEMP_TOO_HIGH);
-    AlertManager.clear_alert(TEMP_CRITICAL);
-  }
-}
-
-void batteryAlerts()
-{
-  const auto& chargerState = charger::get_state();
-  if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)
-  {
-    // TODO: alert that the battery is missing
-  }
-  else if (chargerState.is_charging())
-  {
-    // clear alerts when the device is charging
-    AlertManager.clear_alert(Alerts::BATTERY_LOW);
-    AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);
-  }
-  else
-  {
-    // no battery alert when charger is on
-    battery::raise_battery_alert();
-  }
-}
-
+/**
+ * \brief Run the main program loop
+ */
 void loop()
 {
   uint32_t start = millis();
@@ -225,40 +196,13 @@ void loop()
   NRF_WDT->RR[0] = WDT_RR_RR_Reload;
 
   // loop is not ran in shutdown mode
-  button::handle_events(button_clicked_callback, button_hold_callback);
+  button::handle_events(behavior::button_clicked_callback, behavior::button_hold_callback);
+
   // handle user serial events
   serial::handleSerialEvents();
 
-  if (is_shutdown())
-  {
-    // display alerts if needed
-    handle_alerts();
-
-    // charger unplugged, real shutdown
-    if (!charger::is_vbus_powered())
-    {
-      if (wokeUpFromVBUS && millis() - turnOnTime < 2000)
-      {
-        // security for charger with ringing voltage levels, wait some time for
-        // it to settle before shuting down
-      }
-      else
-        shutdown();
-    }
-
-    delay(LOOP_UPDATE_PERIOD);
-    return;
-  }
-
-  // user loop call
-  user::loop();
-
-  cpuTemperarureAlerts();
-  batteryAlerts();
-
-#ifdef USE_BLUETOOTH
-  bluetooth::parse_messages();
-#endif
+  // loop the behavior
+  behavior::loop();
 
   // wait for a delay if we are faster than the set refresh rate
   uint32_t stop = millis();
@@ -270,9 +214,6 @@ void loop()
 
   stop = millis();
   check_loop_runtime(stop - start);
-
-  // display alerts if needed
-  handle_alerts();
 
   // automatically deactivate sensors if they are not used for a time
   microphone::disable_after_non_use();
