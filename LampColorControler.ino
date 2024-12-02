@@ -134,6 +134,9 @@ void setup()
 
 void charging_thread()
 {
+  if (behavior::is_shuting_down())
+    return;
+
   // run the charger loop (all the time)
   charger::loop();
   delay(2);
@@ -141,6 +144,8 @@ void charging_thread()
 
 void secondary_thread()
 {
+  if (behavior::is_shuting_down())
+    return;
   if (not behavior::is_user_code_running())
     return;
 

@@ -58,6 +58,9 @@ extern void set_woke_up_from_vbus(const bool wokeUp);
 // main loop of the system
 extern void loop();
 
+// return true if the program is in the process of shuting down
+bool is_shuting_down();
+
 } // namespace behavior
 
 /// \private Internal symbol used to signify which LMBD_LAMP_TYPE was specified

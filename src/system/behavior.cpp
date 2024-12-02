@@ -82,6 +82,7 @@ static bool isTargetPoweredOn_s = false;
 bool is_system_should_be_powered() { return isTargetPoweredOn_s; }
 void set_power_on() { isTargetPoweredOn_s = true; }
 void set_power_off() { isTargetPoweredOn_s = false; }
+static bool isShutingDown_s = false;
 
 // return true if vbus is high
 bool is_charger_powered() { return charger::is_vbus_powered(); }
@@ -498,7 +499,7 @@ void handle_alerts()
     if ((current & Alerts::TEMP_CRITICAL) != 0x00)
     {
       // fast shutdown when temperature reaches critical levels
-      true_power_off();
+      mainMachine.set_state(BehaviorStates::SHUTDOWN);
     }
     else if ((current & Alerts::HARDWARE_ALERT) != 0x00)
     {
@@ -735,6 +736,10 @@ void handle_post_output_light_state()
 
 void handle_shutdown_state()
 {
+  isShutingDown_s = true;
+  // let other thread do stuff
+  yield();
+
   // deactivate strip power
   pinMode(OUT_BRIGHTNESS, OUTPUT);
   ledpower::write_current(0); // power down
@@ -821,6 +826,8 @@ void loop()
   state_machine_behavior();
   handle_alerts();
 }
+
+bool is_shuting_down() { return isShutingDown_s; }
 
 } // namespace behavior
 

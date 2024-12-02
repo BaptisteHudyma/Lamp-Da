@@ -334,6 +334,7 @@ void shutdown()
 {
   // shutdown charger component
   BQ25703A::shutdown();
+  powerSource::shutdown();
 }
 
 void set_enable_charge(const bool shouldCharge) { enableCharge_s = shouldCharge; }

@@ -10,6 +10,9 @@ bool setup();
 //
 void loop();
 
+// call once at program end
+void shutdown();
+
 // return the max current available for this source
 uint16_t get_max_input_current();
 

@@ -292,6 +292,11 @@ void loop()
   }
 }
 
+void shutdown()
+{
+  // nothing ?
+}
+
 uint16_t get_max_input_current()
 {
   // safety
