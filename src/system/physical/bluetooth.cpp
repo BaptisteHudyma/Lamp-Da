@@ -4,6 +4,8 @@
 
 #include "src/system/alerts.h"
 
+#include "src/system/platform/time.h"
+
 namespace bluetooth {
 
 #define ADV_TIMEOUT 30 // seconds. Set this higher to automatically stop advertising after a time
@@ -171,7 +173,7 @@ uint8_t readPacket(BLEUart* ble_uart, uint16_t timeout)
 
     if (timeout == 0)
       break;
-    delay(1);
+    delay_ms(1);
   }
 
   packetbuffer[replyidx] = 0; // null term

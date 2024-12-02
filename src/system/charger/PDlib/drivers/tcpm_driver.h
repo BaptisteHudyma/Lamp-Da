@@ -13,6 +13,7 @@ extern "C" {
 #endif
 
 #include "../../../platform/i2c.h"
+#include "../../../platform/time.h"
 
 #include <stdint.h>
 

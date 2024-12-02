@@ -18,6 +18,8 @@
 #include "src/system/utils/coordinates.h"
 #include "src/system/utils/utils.h"
 
+#include "src/system/platform/time.h"
+
 namespace animations {
 
 void fill(const Color& color, LedStrip& strip, const float cutOff)
@@ -137,7 +139,7 @@ bool police(const uint32_t duration, const bool restart, LedStrip& strip)
   const uint32_t bluePartLenght = 3.0 / 5.0 * partDelay;
   const uint32_t clearPartLenght = 2.0 / 5.0 * bluePartLenght;
 
-  const unsigned long currentMillis = millis();
+  const unsigned long currentMillis = time_ms();
 
   switch (state)
   {
@@ -263,7 +265,7 @@ bool fade_out(const uint32_t duration, const bool restart, LedStrip& strip)
   {
     fadeLevel = 0;
     maxFadeLevel = duration / LOOP_UPDATE_PERIOD;
-    startMillis = millis();
+    startMillis = time_ms();
 
     // buffer the start values
     strip.buffer_current_colors(0);
@@ -272,7 +274,7 @@ bool fade_out(const uint32_t duration, const bool restart, LedStrip& strip)
   }
 
   // get a fade level between 0 and max level
-  const uint8_t newFadeLevel = fmax(0.0, fmin(1.0, (millis() - startMillis) / (float)duration)) * maxFadeLevel;
+  const uint8_t newFadeLevel = fmax(0.0, fmin(1.0, (time_ms() - startMillis) / (float)duration)) * maxFadeLevel;
   if (newFadeLevel != fadeLevel)
   {
     fadeLevel = newFadeLevel;
@@ -309,7 +311,7 @@ bool fade_in(const Color& color,
   {
     fadeLevel = 0;
     maxFadeLevel = duration / LOOP_UPDATE_PERIOD;
-    startMillis = millis();
+    startMillis = time_ms();
 
     // buffer the start values
     strip.buffer_current_colors(0);
@@ -324,7 +326,7 @@ bool fade_in(const Color& color,
   }
 
   // get a fade level between 0 and maxFadeLevel
-  const uint32_t newFadeLevel = fmax(0.0, fmin(1.0, (millis() - startMillis) / (float)duration)) * maxFadeLevel;
+  const uint32_t newFadeLevel = fmax(0.0, fmin(1.0, (time_ms() - startMillis) / (float)duration)) * maxFadeLevel;
   if (newFadeLevel != fadeLevel)
   {
     fadeLevel = newFadeLevel;
@@ -348,7 +350,7 @@ void fire(const uint8_t scalex, const uint8_t scaley, const uint8_t speed, const
 {
   static uint32_t step = 0;
   uint16_t zSpeed = step / (256 - speed);
-  uint16_t ySpeed = millis() / (256 - speed);
+  uint16_t ySpeed = time_ms() / (256 - speed);
   for (int i = 0; i < ceil(stripXCoordinates); i++)
   {
     for (int j = 0; j < ceil(stripYCoordinates); j++)
@@ -384,9 +386,9 @@ void random_noise(
   }
 
   static uint32_t lastcall = 0;
-  if (millis() - lastcall > 30)
+  if (time_ms() - lastcall > 30)
   {
-    lastcall = millis();
+    lastcall = time_ms();
 
     // how much the new value influences the last one
     float dataSmoothing = 0.01;
@@ -460,11 +462,11 @@ void candle(const palette_t& palette, LedStrip& strip)
 
   // phase is a flicker phase: last a few seconds during witch a flickering
   // sequence will happen
-  const uint32_t currentMillis = millis();
+  const uint32_t currentMillis = time_ms();
   if (currentMillis - phaseStartTime > phaseDuration || sequenceIndex > sequencePerPhase)
   {
     // declare a new phase
-    phaseStartTime = millis();
+    phaseStartTime = time_ms();
     // set flame parameters
     targetPhaseAmplitude = random(flickeringMin, flickeringMax) + 1;
     targetPhaseStrength = random(targetPhaseAmplitude / 4, 255);
@@ -518,8 +520,8 @@ void phases(const bool moder, const uint8_t speed, const palette_t& palette, Led
   uint8_t modVal = 5;                             // SEGMENT.fft1/8+1;                         // You can
                                                   // change the modulus. AKA FFT1 (was 5).
 
-  uint8_t index = millis() / 64; // Set color rotation speed
-  *phase += speed / 32.0;        // You can change the speed of the wave. AKA SPEED (was .4)
+  uint8_t index = time_ms() / 64; // Set color rotation speed
+  *phase += speed / 32.0;         // You can change the speed of the wave. AKA SPEED (was .4)
 
   for (int i = 0; i < LED_COUNT; i++)
   {
@@ -603,7 +605,7 @@ void mode_2DDrift(const uint8_t intensity, const uint8_t speed, const palette_t&
 
   strip.fadeToBlackBy(128);
   const uint16_t maxDim = MAX(cols, rows) / 2;
-  unsigned long t = millis() / (32 - (speed >> 3));
+  unsigned long t = time_ms() / (32 - (speed >> 3));
   unsigned long t_20 = t / 20; // softhack007: pre-calculating this gives about 10% speedup
   for (float i = 1; i < maxDim; i += 0.25)
   {
@@ -632,7 +634,7 @@ static const uint8_t exp_gamma[256] = {
 
 void hiphotic(const uint8_t speed, LedStrip& strip)
 {
-  int a = millis() / (32 - (speed >> 3));
+  int a = time_ms() / (32 - (speed >> 3));
   for (int x = 0; x < ceil(stripXCoordinates); x++)
   {
     for (int y = 0; y < ceil(stripYCoordinates); y++)
@@ -660,7 +662,7 @@ void mode_2Ddistortionwaves(const uint8_t scale, const uint8_t speed, LedStrip& 
 
   uint8_t w = 2;
 
-  uint16_t a = millis() / 32;
+  uint16_t a = time_ms() / 32;
   uint16_t a2 = a / 2;
   uint16_t a3 = a / 3;
 
@@ -727,7 +729,7 @@ void mode_sinewave(const uint8_t speed, const uint8_t intensity, const palette_t
 
   static uint16_t step = 0;
 
-  uint16_t colorIndex = millis() / 32; //(256 - SEGMENT.fft1);  // Amount of colour change.
+  uint16_t colorIndex = time_ms() / 32; //(256 - SEGMENT.fft1);  // Amount of colour change.
 
   step += speed / 16;            // Speed of animation.
   uint16_t freq = intensity / 4; // SEGMENT.fft2/8;                       // Frequency of the signal.
@@ -760,7 +762,7 @@ void running_base(
         bool saw, bool dual, const uint8_t speed, const uint8_t intensity, const palette_t& palette, LedStrip& strip)
 {
   uint8_t x_scale = intensity >> 2;
-  uint32_t counter = (millis() * speed) >> 9;
+  uint32_t counter = (time_ms() * speed) >> 9;
 
   COLOR c1;
   c1.color = 0;

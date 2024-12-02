@@ -9,6 +9,8 @@
 
 #include "src/system/utils/constants.h"
 
+#include "src/system/platform/time.h"
+
 namespace fileSystem {
 
 static constexpr auto FILENAME = "/.lampda.par";
@@ -145,7 +147,7 @@ void write_state()
     InternalFS.format();
   }
 
-  delay(10);
+  delay_ms(10);
 
   file.open(FILENAME, FILE_O_WRITE);
   if (file)

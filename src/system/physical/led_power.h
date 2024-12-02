@@ -1,8 +1,7 @@
 #ifndef LED_POWER_HPP
 #define LED_POWER_HPP
 
-#include "Arduino.h"
-
+#include <cstdint>
 namespace ledpower {
 
 /** Write a current value directly to the led strip (DANGEROUS)

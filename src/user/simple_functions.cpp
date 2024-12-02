@@ -7,6 +7,8 @@
 #include "src/system/physical/led_power.h"
 #include "src/system/utils/utils.h"
 
+#include "src/system/platform/time.h"
+
 namespace user {
 
 void power_on_sequence() { ledpower::write_brightness(behavior::BRIGHTNESS); }
@@ -24,7 +26,7 @@ void brightness_update(const uint8_t brightness)
   {
     // blip
     ledpower::write_brightness(0);
-    delay(4); // blip light off if we reached max level
+    delay_ms(4); // blip light off if we reached max level
   }
   ledpower::write_brightness(brightness);
 }

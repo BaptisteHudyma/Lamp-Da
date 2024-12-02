@@ -6,6 +6,8 @@
 #include "Arduino.h"
 #include "LSM6DS3/LSM6DS3.h"
 
+#include "src/system/platform/time.h"
+
 namespace imu {
 
 // Create a instance of class LSM6DS3
@@ -16,7 +18,7 @@ bool isStarted = false;
 
 void enable()
 {
-  lastIMUFunctionCall = millis();
+  lastIMUFunctionCall = time_ms();
   if (isStarted)
   {
     return;
@@ -25,7 +27,7 @@ void enable()
   pinMode(PIN_LSM6DS3TR_C_POWER, OUTPUT);
   digitalWrite(PIN_LSM6DS3TR_C_POWER, HIGH);
 
-  delay(5); // voltage stabilization
+  delay_ms(5); // voltage stabilization
 
   if (IMU.begin() != 0)
   {
@@ -49,7 +51,7 @@ void disable()
 
 void disable_after_non_use()
 {
-  if (isStarted and (millis() - lastIMUFunctionCall > 1000.0))
+  if (isStarted and (time_ms() - lastIMUFunctionCall > 1000.0))
   {
     // disable microphone if last reading is old
     disable();

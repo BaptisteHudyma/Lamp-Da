@@ -6,6 +6,8 @@
 #include "PDlib/drivers/tcpm_driver.h"
 #include "PDlib/usb_pd.h"
 
+#include "src/system/platform/time.h"
+
 // we only have one device, so always index 0
 static constexpr int devicePort = 0;
 // USB-C Specific - TCPM start 1
@@ -28,9 +30,9 @@ int get_vbus_voltage()
   static int vbusVoltage = false;
   static uint32_t time = 0;
   // do not spam the system
-  if (time == 0 or millis() - time > 100)
+  if (time == 0 or time_ms() - time > 100)
   {
-    time = millis();
+    time = time_ms();
     vbusVoltage = tcpm_get_vbus_voltage(devicePort);
   }
   return vbusVoltage;
@@ -55,7 +57,7 @@ bool is_usb_pd()
   const bool isPd = is_pd_conector();
   if (isPd)
   {
-    lastPDdetected = millis();
+    lastPDdetected = time_ms();
   }
   return isPd;
 }
@@ -65,9 +67,9 @@ bool is_standard_port()
 {
   return isPowerSourceDetected_s and
          // let some time pass after a new detection
-         millis() - powerSourceDetectedTime_s > 1500 and
+         time_ms() - powerSourceDetectedTime_s > 1500 and
          // last pd detected was some time ago
-         millis() - lastPDdetected > 1000;
+         time_ms() - lastPDdetected > 1000;
 }
 
 bool interruptSet = false;
@@ -78,9 +80,9 @@ bool is_vbus_powered()
   static bool isVbusPresent = false;
   static uint32_t time = 0;
   // do not spam the system
-  if (time == 0 or millis() - time > 500)
+  if (time == 0 or time_ms() - time > 500)
   {
-    time = millis();
+    time = time_ms();
     isVbusPresent = pd_is_vbus_present(devicePort);
   }
   return isVbusPresent;
@@ -165,7 +167,7 @@ struct UsbPDData
   {
     if (hasChanged)
     {
-      Serial.print(millis());
+      Serial.print(time_ms());
       Serial.print(": ");
       Serial.print(isPowerCableDetected);
       Serial.print(isVbusPowered);
@@ -191,9 +193,9 @@ bool setup()
 {
   // 0 is success
   const bool initSucceeded = (tcpm_init(devicePort) == 0);
-  delay(50);
+  delay_ms(50);
   pd_init(devicePort);
-  delay(50);
+  delay_ms(50);
 
   pinMode(CHARGE_INT,
           INPUT_PULLUP_SENSE); // Set FUSB302 int pin input ant pull up
@@ -222,7 +224,7 @@ void loop()
   static uint32_t lastVbusValid = 0;
 
   // source detected
-  const uint32_t time = millis();
+  const uint32_t time = time_ms();
   if (is_vbus_powered())
   {
     if (not isPowerSourceDetected_s)

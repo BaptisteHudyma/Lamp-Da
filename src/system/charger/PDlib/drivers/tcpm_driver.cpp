@@ -6,7 +6,6 @@
  */
 
 #include "tcpm_driver.h"
-#include "Arduino.h"
 
 extern const struct tcpc_config_t tcpc_config[CONFIG_USB_PD_PORT_COUNT];
 

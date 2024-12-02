@@ -75,11 +75,11 @@ template<typename T, typename V> static constexpr T pow(const T& a, const V& b)
 }
 
 //
-// emulate millis()
+// emulate time_ms()
 //
 
 static uint64_t globalMillis;
 
-uint64_t millis() { return globalMillis; }
+uint64_t time_ms() { return globalMillis; }
 
 #endif

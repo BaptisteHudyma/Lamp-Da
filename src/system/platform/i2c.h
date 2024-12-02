@@ -26,7 +26,7 @@ extern "C" {
    * \param[in] baudrate The baud rate of this interface (100000, 250000, 400000) in hertz
    * \param[in] timeout The tiemout in milliseconds after which a read or write fails
    */
-  void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout);
+  extern void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout);
 
   /**
    * \brief Write data to the two wire interface
@@ -37,7 +37,8 @@ extern "C" {
    * \param[in,out] buf the data to write, in an array of size \ref size
    * \param[in] stopBit if > 0, will add a stopBit after message
    */
-  int i2c_writeData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t* buf, int stopBit);
+  extern int i2c_writeData(
+          uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t* buf, int stopBit);
 
   /**
    * \brief Read data from the two wire interface
@@ -48,7 +49,8 @@ extern "C" {
    * \param[in,out] buf the data to read, in an array of size \ref size
    * \param[in] stopBit if > 0, will add a stopBit after message
    */
-  int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t* buf, int stopBit);
+  extern int i2c_readData(
+          uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t* buf, int stopBit);
 
   /**
    * \brief Does a range read/write
@@ -60,13 +62,13 @@ extern "C" {
    * \param[in] in The buffer that contains the write data
    * \param[in] flags Flags to set the stop bit, start/stop info, etc
    */
-  int i2c_xfer(uint8_t i2cIndex,
-               uint8_t deviceAddr,
-               int out_size,
-               const uint8_t* out,
-               int in_size,
-               uint8_t* in,
-               uint8_t flags);
+  extern int i2c_xfer(uint8_t i2cIndex,
+                      uint8_t deviceAddr,
+                      int out_size,
+                      const uint8_t* out,
+                      int in_size,
+                      uint8_t* in,
+                      uint8_t flags);
 
   // define simple low weight handler
 

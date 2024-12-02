@@ -26,6 +26,7 @@ techsupport@sparkfun.com.
 #include "LSM6DS3.h"
 
 #include "src/system/platform/i2c.h"
+#include "src/system/platform/time.h"
 
 #include "stdint.h"
 
@@ -62,7 +63,7 @@ status_t LSM6DS3Core::beginCore(void)
                        ((uint32_t)NRF_GPIO_PIN_H0H1 << GPIO_PIN_CNF_DRIVE_Pos) |
                        ((uint32_t)NRF_GPIO_PIN_NOSENSE << GPIO_PIN_CNF_SENSE_Pos);
   digitalWrite(PIN_LSM6DS3TR_C_POWER, HIGH);
-  delay(10);
+  delay_ms(10);
 #endif
 
   // Spin for a few ms

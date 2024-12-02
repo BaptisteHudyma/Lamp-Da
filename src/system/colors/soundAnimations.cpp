@@ -47,9 +47,9 @@ void fft_display(const uint8_t speed, const uint8_t scale, const palette_t& pale
     return;
 
   bool rippleTime = false;
-  if (millis() - lastCall >= (256U - scale))
+  if (time_ms() - lastCall >= (256U - scale))
   {
-    lastCall = millis();
+    lastCall = time_ms();
     rippleTime = true;
   }
 

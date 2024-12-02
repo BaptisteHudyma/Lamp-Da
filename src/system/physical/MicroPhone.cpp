@@ -9,6 +9,8 @@
 #include "src/system/ext/random8.h"
 #include "src/system/utils/constants.h"
 
+#include "src/system/platform/time.h"
+
 namespace microphone {
 
 // buffer to read samples into, each sample is 16-bits
@@ -22,7 +24,7 @@ uint32_t lastMeasurmentMicros;
 uint32_t lastMeasurmentDurationMicros;
 void on_PDM_data()
 {
-  const uint32_t newTime = micros();
+  const uint32_t newTime = time_us();
   lastMeasurmentDurationMicros = newTime - lastMeasurmentMicros;
   lastMeasurmentMicros = newTime;
   // query the number of bytes available
@@ -40,7 +42,7 @@ static bool isStarted = false;
 
 void enable()
 {
-  lastMicFunctionCall = millis();
+  lastMicFunctionCall = time_ms();
   if (isStarted)
   {
     return;
@@ -59,7 +61,7 @@ void enable()
     // block program execution
     while (1)
     {
-      delay(1000);
+      delay_ms(1000);
     }
   }
 
@@ -86,7 +88,7 @@ void disable()
 
 void disable_after_non_use()
 {
-  if (isStarted and (millis() - lastMicFunctionCall > 1000.0))
+  if (isStarted and (time_ms() - lastMicFunctionCall > 1000.0))
   {
     // disable microphone if last reading is old
     disable();

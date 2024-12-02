@@ -14,7 +14,6 @@ Library for basic interfacing with BQ25703A battery management IC from TI
 #ifndef BQ25703A_H
 #define BQ25703A_H
 
-#include "Arduino.h"
 #include "src/system/platform/i2c.h"
 
 namespace bq2573a {

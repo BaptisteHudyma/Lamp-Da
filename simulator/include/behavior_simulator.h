@@ -69,7 +69,7 @@ void update_brightness(uint8_t newBrightness, bool shouldUpdateCurrentBrightness
 void power_on_behavior(auto& simu)
 {
   isShutdown = false;
-  lastStartupSequence = millis();
+  lastStartupSequence = time_ms();
   isButtonUsermodeEnabled = false;
   fprintf(stderr, "startup\n");
 
@@ -156,7 +156,7 @@ void hold_behavior(auto& simu, uint8_t consecutiveButtonCheck, uint32_t buttonHo
   const uint32_t holdDuration =
           (buttonHoldDuration > HOLD_BUTTON_MIN_MS) ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
 
-  uint32_t realStartTime = millis() - lastStartupSequence;
+  uint32_t realStartTime = time_ms() - lastStartupSequence;
   if (realStartTime > holdDuration)
   {
     realStartTime -= holdDuration;

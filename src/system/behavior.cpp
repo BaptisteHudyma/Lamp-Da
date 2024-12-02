@@ -20,6 +20,8 @@
 
 #include "src/system/utils/state_machine.h"
 
+#include "src/system/platform/time.h"
+
 #include "src/user/functions.h"
 #include "utils/state_machine.h"
 
@@ -104,7 +106,7 @@ uint8_t BRIGHTNESS = 50; // default start value
 uint8_t currentBrightness = 50;
 
 // timestamp of the system wake up
-static uint32_t turnOnTime = millis();
+static uint32_t turnOnTime = time_ms();
 
 void update_brightness(const uint8_t newBrightness, const bool shouldUpdateCurrentBrightness, const bool isInitialRead)
 {
@@ -170,7 +172,7 @@ void true_power_off()
   uint8_t cnt = 0;
   while (cnt < 200 and charger::is_vbus_signal_detected())
   {
-    delay(5);
+    delay_ms(5);
     cnt++;
   }
 
@@ -234,7 +236,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
         // disable charger and wait 5s to be killed by watchdog
         button::set_color(utils::ColorSpace::PINK);
         charger::disable_charge();
-        delay(6000);
+        delay_ms(6000);
 #endif
         set_power_off();
         return;
@@ -260,7 +262,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
   const uint32_t holdDuration =
           (buttonHoldDuration > HOLD_BUTTON_MIN_MS) ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
 
-  uint32_t realStartTime = millis() - lastStartupSequence;
+  uint32_t realStartTime = time_ms() - lastStartupSequence;
   if (realStartTime > holdDuration)
   {
     realStartTime -= holdDuration;
@@ -457,7 +459,7 @@ void set_battery_alerts()
 void handle_alerts()
 {
   // do not display alerts for the first 500 ms
-  const uint32_t current = ((millis() - turnOnTime) < 500) ? Alerts::NONE : AlertManager.current();
+  const uint32_t current = ((time_ms() - turnOnTime) < 500) ? Alerts::NONE : AlertManager.current();
 
   static uint32_t criticalbatteryRaisedTime = 0;
   if (current == Alerts::NONE)
@@ -524,8 +526,8 @@ void handle_alerts()
     {
       // critical battery alert: shutdown after 2 seconds
       if (criticalbatteryRaisedTime == 0)
-        criticalbatteryRaisedTime = millis();
-      else if (millis() - criticalbatteryRaisedTime > 2000)
+        criticalbatteryRaisedTime = time_ms();
+      else if (time_ms() - criticalbatteryRaisedTime > 2000)
       {
         // shutdown when battery is critical
         set_power_off();
@@ -610,7 +612,7 @@ void handle_start_logic_state()
 static uint32_t preChargeCalled = 0;
 void handle_pre_charger_operation_state()
 {
-  preChargeCalled = millis();
+  preChargeCalled = time_ms();
   mainMachine.set_state(BehaviorStates::CHARGER_OPERATIONS);
 }
 
@@ -624,7 +626,7 @@ void handle_charger_operation_state()
     return;
   }
   // power disconected
-  const bool vbusDebounced = millis() - preChargeCalled > 500;
+  const bool vbusDebounced = time_ms() - preChargeCalled > 500;
   if (vbusDebounced)
   {
     if (not is_charger_powered())
@@ -657,9 +659,9 @@ void handle_pre_output_light_state()
     for (uint8_t i = 0; i < 10; i++)
     {
       button::set_color(utils::ColorSpace::RED);
-      delay(100);
+      delay_ms(100);
       button::set_color(utils::ColorSpace::BLACK);
-      delay(100);
+      delay_ms(100);
     }
 
     if (is_charger_powered())
@@ -679,7 +681,7 @@ void handle_pre_output_light_state()
   button_disable_usermode();
 
   // reset lastStartupSequence
-  lastStartupSequence = millis();
+  lastStartupSequence = time_ms();
 
   // let the user power on the system
   user::power_on_sequence();
@@ -743,7 +745,7 @@ void handle_shutdown_state()
   // deactivate strip power
   pinMode(OUT_BRIGHTNESS, OUTPUT);
   ledpower::write_current(0); // power down
-  delay(10);
+  delay_ms(10);
 
   // disable bluetooth, imu and microphone
   microphone::disable();

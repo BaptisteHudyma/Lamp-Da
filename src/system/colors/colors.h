@@ -10,6 +10,8 @@
 #include "src/system/colors/palettes.h"
 #include "src/system/utils/constants.h"
 
+#include "src/system/platform/time.h"
+
 // min color update frequency
 constexpr uint32_t COLOR_TIMING_UPDATE = LOOP_UPDATE_PERIOD * 3;
 
@@ -46,7 +48,7 @@ public:
    */
   virtual bool update()
   {
-    const long unsigned currentMillis = millis();
+    const long unsigned currentMillis = time_ms();
     if (currentMillis - _lastUpdate > COLOR_TIMING_UPDATE) // ms update period
     {
       internal_update(currentMillis - _lastUpdate);

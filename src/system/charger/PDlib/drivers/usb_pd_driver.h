@@ -60,9 +60,6 @@ extern "C" {
 
 #define PDO_FIXED_FLAGS (PDO_FIXED_DUAL_ROLE | PDO_FIXED_DATA_SWAP | PDO_FIXED_COMM_CAP)
 
-  extern void delay_us(uint64_t us);
-  extern void delay_ms(uint64_t ms);
-
 #define usleep(us) (delay_us(us))
 #define msleep(ms) (delay_ms(ms))
 

@@ -10,6 +10,8 @@
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 
+#include "src/system/platform/time.h"
+
 namespace charger {
 
 static bool isBatteryFullLatched_s = false;
@@ -101,7 +103,7 @@ bool should_charge()
   // check battery full status
   if (isBatteryFullLatched_s or batteryPercent >= 10000)
   {
-    const uint32_t time = millis();
+    const uint32_t time = time_ms();
 
     if (batteryFullDeglitchTime == 0)
     {
