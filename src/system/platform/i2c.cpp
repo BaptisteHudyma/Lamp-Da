@@ -6,7 +6,7 @@
 #include "Wire.h"
 
 // set the two interfaces
-TwoWire* interfaces[] = {&Wire, &Wire1};
+TwoWire* PROGMEM interfaces[] = {&Wire, &Wire1};
 
 void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
 {

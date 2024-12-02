@@ -1,8 +1,6 @@
 #ifndef USER_CONSTANTS_H
 #define USER_CONSTANTS_H
 
-#include <Arduino.h>
-
 //
 // common to all lamp type
 //
@@ -16,7 +14,8 @@ static constexpr bool usermodeDefaultsToLockdown = false;
 
 #ifdef LMBD_LAMP_TYPE__SIMPLE
 
-const String SOFTWARE_VERSION = "0.1"; // Update when the soft changes version
+// Update when the soft changes version
+#define SOFTWARE_VERSION "0.1"
 
 // parameters of the led strip used
 constexpr float consWattByMeter = 12;            // power consumption (in Watt/meters)
@@ -31,7 +30,8 @@ constexpr float ledStripLenght_mm = 91.0 * 25.0; // 91 sections of 25 mm
 
 #ifdef LMBD_LAMP_TYPE__CCT
 
-const String SOFTWARE_VERSION = "0.1"; // Update when the soft changes version
+// Update when the soft changes version
+#define SOFTWARE_VERSION "0.1"
 
 // parameters of the led strip used
 constexpr float consWattByMeter = 10;            // power consumption (in Watt/meters)
@@ -46,7 +46,8 @@ constexpr float ledStripLenght_mm = 67.0 * 27.0; // 67 sections of 27 mm
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
-const String SOFTWARE_VERSION = "0.1"; // Update when the soft changes version
+// Update when the soft changes version
+#define SOFTWARE_VERSION "0.1"
 
 constexpr float lampBodyRadius_mm = 25; // external radius of the lamp body
 

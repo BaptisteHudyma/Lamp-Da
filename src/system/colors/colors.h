@@ -5,7 +5,6 @@
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
 #include <cstdint>
-#include <Arduino.h>
 
 #include "src/system/colors/palettes.h"
 #include "src/system/utils/constants.h"

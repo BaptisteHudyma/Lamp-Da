@@ -61,7 +61,7 @@ typedef enum
   // Should never happen, default state
   ERROR,
 } BehaviorStates;
-String BehaviorStatesStr[] = {
+const char* BehaviorStatesStr[] = {
         "START_LOGIC",
         "PRE_CHARGER_OPERATION",
         "CHARGER_OPERATIONS",
