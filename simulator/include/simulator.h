@@ -29,6 +29,10 @@ using utils::map;
 
 #include "src/system/utils/coordinates.cpp"
 
+void delay(uint32_t milli) { sf::sleep(sf::milliseconds(milli)); }
+
+#include <serial_simulator.h>
+#include <filesystem_simulator.h>
 #include <behavior_simulator.h>
 
 //
@@ -276,6 +280,7 @@ template<typename T> struct simulator
 
     // start the simulation
     behavior::isShutdown = true;
+    fileSystem::setup();
     behavior::power_on_behavior(simu);
     bool shouldSpawnThread = simu.should_spawn_thread();
 
@@ -301,6 +306,7 @@ template<typename T> struct simulator
       {
         if (event.type == sf::Event::Closed)
         {
+          behavior::power_off_behavior(simu);
           window.close();
           recorder.stop();
         }

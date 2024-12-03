@@ -15,13 +15,67 @@
 
 namespace modes {
 
+/// \private True iff Mode is a BasicMode
+template<typename Mode> static constexpr bool isMode = std::is_base_of_v<BasicMode, Mode>;
+
+//
+// StateTyOf
+//  - returns StateTy if defined
+//  - or else return EmptyState
+//
+
+/// \private Placeholder type for when no state is available
 struct NoState
 {
 };
 
-template<typename Mode> static constexpr bool isMode = std::is_base_of_v<BasicMode, Mode>;
+/// \private
+template<typename Mode,
+         typename StateTy = typename Mode::StateTy,
+         bool isDefault = std::is_same_v<StateTy, BasicMode::StateTy> || (sizeof(StateTy) == 0),
+         typename RetTy = std::conditional_t<isDefault, NoState, StateTy>>
+static constexpr auto stateTyOfImpl(int) -> RetTy;
 
+/// \private
+template<typename> static constexpr auto stateTyOfImpl(...) -> NoState;
+
+/// \private Get StateTy if explicitly defined, or else an empty NoState
+template<typename Mode> using StateTyOf = decltype(stateTyOfImpl<Mode>(0));
+
+//
+// Store
+//
+
+/// \private Tag meaning that no store has been enabled here
+struct NoStoreId
+{
+};
+
+/// \private Placeholder Enum for when no store is available
+enum class NoStoreHere : uint16_t
+{
+  noKeyDefined // placeholder (should not be used)
+};
+
+/// \private
+template<typename Mode,
+         typename EnumTy = typename Mode::Store,
+         bool isDefault = (Mode::storeId == BasicMode::storeId),
+         typename RetTy = std::conditional_t<isDefault, NoStoreHere, EnumTy>>
+static constexpr auto storeEnumOfImpl(int) -> RetTy;
+
+/// \private
+template<typename> static constexpr auto storeEnumOfImpl(...) -> NoStoreHere;
+
+/// \private Get \p Store type if explicitly defined, or else \p NoStoreHere
+template<typename Mode> using StoreEnumOf = decltype(storeEnumOfImpl<Mode>(0));
+
+/// \private
 namespace details {
+
+//
+// unroll
+//
 
 /// \private Implements unroll<N>(callback)
 template<class CbTy, uint8_t... Indexes>
@@ -40,6 +94,10 @@ template<uint8_t N, class CbTy> static constexpr void LMBD_INLINE unroll(CbTy&& 
           },
           Indexes);
 }
+
+//
+// forEach & anyOf & allOf
+//
 
 /// \private Helper to perform queries on elements of \p TupleTy
 template<typename TupleTy, uint8_t TupleSz = std::tuple_size_v<TupleTy>> struct forEach
@@ -111,23 +169,6 @@ template<typename TupleTy, bool hasError = false> struct anyOf
   static constexpr bool requireUserThread = forEach<TupleTy>::template any<QUserThread, hasError>();
 };
 
-//
-// StateTyOf definition:
-//  - returns StateTy if defined
-//  - or else return EmptyState
-//
-
-template<typename Mode,
-         typename StateTy = typename Mode::StateTy,
-         bool isDefault = std::is_same_v<StateTy, BasicMode::StateTy> || (sizeof(StateTy) == 0),
-         typename RetTy = std::conditional_t<isDefault, NoState, StateTy>>
-static constexpr auto stateTyOfImpl(int) -> RetTy;
-
-template<typename> static constexpr auto stateTyOfImpl(...) -> NoState;
-
-/// \private Get StateTy if explicitly defined, or else EmptyState
-template<typename Mode> using StateTyOf = decltype(stateTyOfImpl<Mode>(0));
-
 /// \private Defined boolean is True if all \p TupleTy item has boolean True
 template<typename TupleTy, bool hasError = false> struct allOf
 {
@@ -145,6 +186,10 @@ template<typename TupleTy, bool hasError = false> struct allOf
   static constexpr bool stateDefaultConstructible = forEach<TupleTy>::template all<QStateOk, hasError>();
 };
 
+//
+// StateTyFor & StateTyFrom
+//
+
 /// \private Get std::tuple<Modes::StateTy...> from Modes...
 template<typename... Modes> using StateTyFor = std::tuple<std::optional<StateTyOf<Modes>>...>;
 
@@ -152,6 +197,10 @@ template<typename... Modes> static constexpr auto stateTyFromImpl(std::tuple<Mod
 
 /// \private Get std::tuple<Mode::StateTy...> from std::tuple<Mode...>
 template<typename AsTuple> using StateTyFrom = decltype(stateTyFromImpl((AsTuple*)0));
+
+//
+// ModeBelongsTo & GroupBelongsTo
+//
 
 template<typename Item, typename... Items> static constexpr bool belongsToImpl(std::tuple<Items...>*)
 {
@@ -163,6 +212,83 @@ template<typename Mode, typename AllModes> static constexpr bool ModeBelongsTo =
 
 /// \private Checks if \p Group is member of \p AllGroups as tuple
 template<typename Group, typename AllGroups> static constexpr bool GroupBelongsTo = belongsToImpl<Group>((AllGroups*)0);
+
+//
+// GroupIdFrom & ModeIdFrom
+//
+
+template<typename Mode, typename AllGroups> static constexpr int groupIdFromImpl()
+{
+  int acc = -1;
+  constexpr uint8_t N = std::tuple_size_v<AllGroups>;
+  unroll<N>([&](auto Idx) {
+    constexpr uint8_t groupId = decltype(Idx)::value;
+    using GroupHere = std::tuple_element_t<groupId, AllGroups>;
+    using AllModesHere = typename GroupHere::AllModesTy;
+    if (acc != -1)
+      return;
+
+    // make GroupIdFrom<Group, AllGroups> return the proper groupId
+    if constexpr (std::is_same_v<Mode, GroupHere>)
+    {
+      acc = groupId;
+
+      // save groupId if Mode was found in Group
+    }
+    else if constexpr (ModeBelongsTo<Mode, AllModesHere>)
+    {
+      acc = groupId;
+    }
+  });
+  return acc;
+}
+
+template<typename Mode, typename AllGroups, int groupId> static constexpr int modeIdFromImpl()
+{
+  if constexpr (groupId < 0)
+  {
+    return -1;
+  }
+  else
+  {
+    using GroupHere = std::tuple_element_t<groupId, AllGroups>;
+    using AllModesHere = typename GroupHere::AllModesTy;
+
+    // early exit for calls to ModeIdFrom<Group, AllGroups, groupId>
+    if (std::is_same_v<Mode, GroupHere>)
+    {
+      return -1;
+    }
+
+    int acc = -1;
+    constexpr uint8_t N = std::tuple_size_v<AllModesHere>;
+    unroll<N>([&](auto Idx) {
+      constexpr uint8_t modeId = decltype(Idx)::value;
+      using ModeHere = std::tuple_element_t<modeId, AllModesHere>;
+      if (acc != -1)
+        return;
+
+      // save modeId if Mode found at that position in Group
+      if constexpr (std::is_same_v<Mode, ModeHere>)
+      {
+        acc = modeId;
+      }
+    });
+
+    return acc;
+  }
+}
+
+/// \private Return group number where \p Mode was found (or -1 if not found)
+template<typename Mode, typename AllGroups> static constexpr int GroupIdFrom = groupIdFromImpl<Mode, AllGroups>();
+
+/// \private Return position of \p Mode within its group (or -1 if not found)
+template<typename Mode, typename AllGroups, int GroupId = GroupIdFrom<Mode, AllGroups>>
+static constexpr int ModeIdFrom = modeIdFromImpl<Mode, AllGroups, GroupId>();
+
+//
+// ModeExists
+//
 
 template<typename Mode, typename AllGroups> static constexpr bool testIfModeExistsImpl()
 {
@@ -181,10 +307,23 @@ template<typename Mode, typename AllGroups> static constexpr bool testIfModeExis
 /// \private Checks if \p Mode exists in the set of \p AllGroups
 template<typename Mode, typename AllGroups> static constexpr bool ModeExists = testIfModeExistsImpl<Mode, AllGroups>();
 
-} // namespace details
+/// \private Reliably lookup what is LocalStore alias in Ctx
+template<typename Ctx> using LocalStoreOf = typename std::remove_cv_t<std::remove_reference_t<Ctx>>::LocalStore;
 
-/// \private see details::StateTyOf
-template<typename Mode> using StateTyOf = details::StateTyOf<Mode>;
+/** \private Relaxed implementation of C++20 std::bit_cast
+ *
+ * Adapted from https://en.cppreference.com/w/cpp/numeric/bit_cast
+ */
+template<size_t NBytes, class To, class From>
+static inline std::enable_if_t<NBytes <= sizeof(To) && NBytes <= sizeof(From) && std::is_trivially_copyable_v<To> &&
+                                       std::is_trivially_copyable_v<From>,
+                               void>
+        LMBD_INLINE bit_cast(To& dst, const From& src) noexcept
+{
+  std::memcpy(&dst, &src, NBytes);
+}
+
+} // namespace details
 
 } // namespace modes
 

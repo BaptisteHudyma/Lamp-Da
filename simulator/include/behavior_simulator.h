@@ -1,6 +1,8 @@
 #ifndef BEHAVIOR_SIMULATOR_H
 #define BEHAVIOR_SIMULATOR_H
 
+#include <filesystem_simulator.h>
+
 // prevent inclusion of colliding src/system/behavior.h
 #define BEHAVIOR_HPP
 
@@ -71,6 +73,7 @@ void power_on_behavior(auto& simu)
   isButtonUsermodeEnabled = false;
   fprintf(stderr, "startup\n");
 
+  fileSystem::load_initial_values();
   simu.power_on_sequence();
   simu.read_parameters();
 }
@@ -82,6 +85,7 @@ void power_off_behavior(auto& simu)
 
   simu.write_parameters();
   simu.power_off_sequence();
+  fileSystem::write_state();
 }
 
 void click_behavior(auto& simu, uint8_t consecutiveButtonCheck)

@@ -40,6 +40,6 @@ struct MyCustomMode : public modes::BasicMode
   static constexpr bool hasButtonCustomUI = false;
   static constexpr bool hasSystemCallbacks = false;
   static constexpr bool requireUserThread = false;
-}
+};
 
 #endif

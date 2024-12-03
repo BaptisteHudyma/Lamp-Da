@@ -44,8 +44,10 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   using AllStatesTy = details::StateTyFrom<AllModes>;
   static constexpr uint8_t nbModes {std::tuple_size_v<AllModesTy>};
 
-  template<uint8_t Idx> using ModeAtRaw = std::tuple_element_t<Idx, AllModesTy>;
+  // last mode index must not collide with modes::store::noModeIndex
+  static_assert(nbModes < 32, "Maximum of 31 modes has been exceeded.");
 
+  template<uint8_t Idx> using ModeAtRaw = std::tuple_element_t<Idx, AllModesTy>;
   template<uint8_t Idx> using ModeAt = std::conditional_t<!earlyFail, ModeAtRaw<Idx>, BasicMode>;
 
   // required to support group-level context
@@ -95,6 +97,19 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   }
 
   //
+  // store
+  //
+
+  // persistent values
+  enum class Store : uint16_t
+  {
+    rampMemory,
+    indexMemory
+  };
+
+  static constexpr uint32_t storeId = modes::store::derivateStoreId<modes::store::hash("GroupTyStoreId"), AllModesTy>;
+
+  //
   // state
   //
 
@@ -103,6 +118,24 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     AllStatesTy modeStates;
     std::array<uint8_t, nbModes> customRampMemory;
     std::array<uint8_t, nbModes> customIndexMemory;
+
+    void LMBD_INLINE save_ramps(auto& ctx, uint8_t modeId)
+    {
+      if constexpr (ctx.hasCustomRamp)
+      {
+        ctx.state.customRampMemory[modeId] = ctx.get_active_custom_ramp();
+        ctx.state.customIndexMemory[modeId] = ctx.get_active_custom_index();
+      }
+    }
+
+    void LMBD_INLINE load_ramps(auto& ctx, uint8_t modeId)
+    {
+      if constexpr (ctx.hasCustomRamp)
+      {
+        ctx.set_active_custom_ramp(ctx.state.customRampMemory[modeId]);
+        ctx.set_active_custom_index(ctx.state.customIndexMemory[modeId]);
+      }
+    }
   };
 
   template<typename Mode> static auto* LMBD_INLINE getStateOf(auto& manager)
@@ -146,20 +179,25 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   static void next_mode(auto& ctx)
   {
     uint8_t modeIdBefore = ctx.get_active_mode(nbModes);
+    if constexpr (ctx.hasCustomRamp)
+    {
+      ctx.state.save_ramps(ctx, modeIdBefore);
+    }
 
-    ctx.state.customRampMemory[modeIdBefore] = ctx.get_active_custom_ramp();
-    ctx.state.customIndexMemory[modeIdBefore] = ctx.get_active_custom_index();
     ctx.set_active_mode(modeIdBefore + 1, nbModes);
 
-    uint8_t modeIdAfter = ctx.get_active_mode(nbModes);
-    ctx.set_active_custom_ramp(ctx.state.customRampMemory[modeIdAfter]);
-    ctx.set_active_custom_index(ctx.state.customIndexMemory[modeIdAfter]);
-
+    // reset new mode we switched to
     ctx.reset_mode();
   }
 
   static void reset_mode(auto& ctx)
   {
+    if constexpr (ctx.hasCustomRamp)
+    {
+      uint8_t modeIdAfter = ctx.get_active_mode(nbModes);
+      ctx.state.load_ramps(ctx, modeIdAfter);
+    }
+
     dispatch_mode(ctx, [](auto mode) {
       mode.reset();
     });

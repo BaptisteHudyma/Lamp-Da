@@ -88,7 +88,10 @@ struct BasicMode
    */
   static void brightness_update(auto& ctx, uint8_t brightness) { return; }
 
-  /// Toggles the use BasicMode::custom_ramp_update() callback
+  /** \brief Toggles the use of custom ramps & BasicMode::custom_ramp_update()
+   *
+   * \remark Without this set to True, manager will NOT save custom ramp value!
+   */
   static constexpr bool hasCustomRamp = false;
 
   /** \brief Custom callback when system sets user ramp (optional)
@@ -182,7 +185,7 @@ struct BasicMode
 
   /** \brief Toggles the use of custom BasicMode::user_thread() callback
    *
-   * \remark When this is enabled, default is to call hardware::LampTy::show()
+   * \remark When this is enabled, default is to call hardware::LampTy's `show()`
    * in user::user_thread() after the BasicMode::user_thread() callback
    */
   static constexpr bool requireUserThread = false;
@@ -196,6 +199,50 @@ struct BasicMode
    * must complete quickly in order to keep the lamp responsive
    */
   static void user_thread(auto& ctx) { return; }
+
+  /** \brief Store identifier for persistent storage (optional)
+   *
+   * By default, all modes are reset upon a shutdown, providing no persistence
+   * of their state across several on/off cycles. To expose to the user a way
+   * to configure your mode in a persistent fashion, you can use:
+   *
+   * ```
+   *    static void loop(auto& ctx) {
+   *      uint8_t rampValue = ctx.get_active_custom_ramp();
+   *      // ... (use rampValue to pick a color or something) ...
+   *    }
+   *
+   *    static constexpr bool hasCustomRamp = true; // required
+   * ```
+   *
+   * This value is configurable through user interaction with the button. If
+   * you need a persistent value, private to your mode, you can use:
+   *
+   * ```
+   *    static void loop(auto& ctx) {
+   *      uint8_t indexValue = ctx.get_active_custom_index();
+   *      // ... (use indexValue to change how something works) ...
+   *
+   *      // at some point, indexValue is modified:
+   *      indexValue += 1;
+   *      ctx.set_active_custom_index(indexValue);
+   *
+   *      // next time mode is enabled, or saved as favorite, both custom
+   *      // values (rampValue, indexValue) are remembered by default
+   *    }
+   *
+   *    static constexpr bool hasCustomRamp = true; // also required
+   * ```
+   *
+   * These are the two always-available persistent state that a mode can
+   * configure by default. However, for more advanced modes (like games, with a
+   * list of high-scores, for example) more flexibility can be required.
+   *
+   * If you need such extended storage, see ContextTy::KeyProxy for usage.
+   *
+   * If you don't need these capabilities, just ignore this identifier :)
+   */
+  static constexpr uint32_t storeId = 0;
 
   // modes shall not implement any constructors
   BasicMode() = delete;                            ///< \private
