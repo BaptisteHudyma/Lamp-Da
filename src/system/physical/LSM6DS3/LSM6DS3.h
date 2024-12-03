@@ -7,11 +7,6 @@
     https://github.com/sparkfun/LSM6DS3_Breakout
     https://github.com/sparkfun/SparkFun_LSM6DS3_Arduino_Library
 
-    Resources:
-    Uses Wire.h for i2c operation
-    Uses SPI.h for SPI operation
-    Either can be omitted if not used
-
     Development environment specifics:
     Arduino IDE 1.6.4
     Teensy loader 1.23
@@ -84,9 +79,7 @@ public:
 
 private:
   // Communication stuff
-  uint8_t commInterface;
   uint8_t I2CAddress;
-  uint8_t chipSelectPin;
 };
 
 // This struct holds the settings the driver uses to do calculations

@@ -22,7 +22,7 @@ extern "C" {
 
 /* I2C slave address varies by part number */
 /* FUSB302BUCX / FUSB302BMPX */
-#define fusb302_I2C_SLAVE_ADDR 0x22 // 7-bit address for Arduino
+#define fusb302_I2C_SLAVE_ADDR 0x22 // 7-bit address
 /* FUSB302B01MPX */
 #define fusb302_I2C_SLAVE_ADDR_B01 0x23
 /* FUSB302B10MPX */

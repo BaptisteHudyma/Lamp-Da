@@ -1,9 +1,8 @@
 #ifndef CHARGER_H
 #define CHARGER_H
 
-#include <Arduino.h>
-
 #include <cstdint>
+#include <string>
 
 namespace charger {
 
@@ -62,7 +61,7 @@ struct Charger_t
 
   // return true when the status is charging or powered
   bool is_charging() const;
-  String get_status_str() const;
+  std::string get_status_str() const;
 };
 
 bool is_vbus_powered();

@@ -1,8 +1,7 @@
 #ifndef BATTERY_H
 #define BATTERY_H
 
-#include "Arduino.h"
-
+#include <cstdint>
 namespace battery {
 
 // return a number between 0 and 10000 (% * 100)

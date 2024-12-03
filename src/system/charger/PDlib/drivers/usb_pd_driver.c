@@ -134,8 +134,8 @@ int is_pd_conector() { return srcCapsSaved != NULL; }
 timestamp_t get_time(void)
 {
   timestamp_t t;
-  t.val = millis() * 1000;
-  t.val += micros() % 1000;
+  t.val = time_ms() * 1000;
+  t.val += time_us() % 1000;
   return t;
 }
 

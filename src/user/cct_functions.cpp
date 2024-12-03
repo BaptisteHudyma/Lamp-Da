@@ -6,6 +6,8 @@
 #include "src/system/physical/fileSystem.h"
 #include "src/system/utils/utils.h"
 
+#include "src/system/platform/time.h"
+
 #include "src/user/functions.h"
 
 namespace user {
@@ -51,7 +53,7 @@ void power_off_sequence()
   // turn off 12V driver
   digitalWrite(powerPin, LOW);
 
-  delay(5);
+  delay_ms(5);
   // reset the output
   currentBrightness = 0;
   set_color(0);
@@ -68,7 +70,7 @@ void brightness_update(const uint8_t brightness)
     // blip
     currentBrightness = 0;
     set_color(0);
-    delay(4); // blip light off if we reached max level
+    delay_ms(4); // blip light off if we reached max level
   }
   currentBrightness = brightness;
   set_color(currentColor);

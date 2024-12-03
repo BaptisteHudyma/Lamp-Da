@@ -3,6 +3,7 @@
 #define __INC_LIB8TION_MATH_H
 
 #include <Arduino.h> //PI constant
+#include "src/system/platform/time.h"
 
 #include "scale8.h"
 
@@ -933,7 +934,7 @@ LIB8STATIC_ALWAYS_INLINE float tan_t(float x)
 /// @warning Any "BPM88" parameter **MUST** always be provided in Q8.8 format!
 /// @note The beat generators need access to a millisecond counter
 /// to track elapsed time. See ::GET_MILLIS for reference. When using the
-/// Arduino `millis()` function, accuracy is a bit better than one part in a
+/// Arduino `time_ms()` function, accuracy is a bit better than one part in a
 /// thousand.
 ///
 /// @{
@@ -941,7 +942,7 @@ LIB8STATIC_ALWAYS_INLINE float tan_t(float x)
 /// Generates a 16-bit "sawtooth" wave at a given BPM, with BPM
 /// specified in Q8.8 fixed-point format.
 /// @param beats_per_minute_88 the frequency of the wave, in Q8.8 format
-/// @param timebase the time offset of the wave from the millis() timer
+/// @param timebase the time offset of the wave from the time_ms() timer
 /// @warning The BPM parameter **MUST** be provided in Q8.8 format! E.g.
 /// for 120 BPM it would be 120*256 = 30720. If you just want to specify
 /// "120", use beat16() or beat8().
@@ -955,12 +956,12 @@ LIB8STATIC uint16_t beat88(accum88 beats_per_minute_88, uint32_t timebase = 0)
   // The ratio 65536:60000 is 279.620266667:256; we'll call it 280:256.
   // The conversion is accurate to about 0.05%, more or less,
   // e.g. if you ask for "120 BPM", you'll get about "119.93".
-  return (((millis()) - timebase) * beats_per_minute_88 * 280) >> 16;
+  return (((time_ms()) - timebase) * beats_per_minute_88 * 280) >> 16;
 }
 
 /// Generates a 16-bit "sawtooth" wave at a given BPM
 /// @param beats_per_minute the frequency of the wave, in decimal
-/// @param timebase the time offset of the wave from the millis() timer
+/// @param timebase the time offset of the wave from the time_ms() timer
 LIB8STATIC uint16_t beat16(accum88 beats_per_minute, uint32_t timebase = 0)
 {
   // Convert simple 8-bit BPM's to full Q8.8 accum88's if needed
@@ -971,7 +972,7 @@ LIB8STATIC uint16_t beat16(accum88 beats_per_minute, uint32_t timebase = 0)
 
 /// Generates an 8-bit "sawtooth" wave at a given BPM
 /// @param beats_per_minute the frequency of the wave, in decimal
-/// @param timebase the time offset of the wave from the millis() timer
+/// @param timebase the time offset of the wave from the time_ms() timer
 LIB8STATIC uint8_t beat8(accum88 beats_per_minute, uint32_t timebase = 0)
 {
   return beat16(beats_per_minute, timebase) >> 8;
@@ -982,7 +983,7 @@ LIB8STATIC uint8_t beat8(accum88 beats_per_minute, uint32_t timebase = 0)
 /// @param beats_per_minute_88 the frequency of the wave, in Q8.8 format
 /// @param lowest the lowest output value of the sine wave
 /// @param highest the highest output value of the sine wave
-/// @param timebase the time offset of the wave from the millis() timer
+/// @param timebase the time offset of the wave from the time_ms() timer
 /// @param phase_offset phase offset of the wave from the current position
 /// @warning The BPM parameter **MUST** be provided in Q8.8 format! E.g.
 /// for 120 BPM it would be 120*256 = 30720. If you just want to specify
@@ -1006,7 +1007,7 @@ LIB8STATIC uint16_t beatsin88(accum88 beats_per_minute_88,
 /// @param beats_per_minute the frequency of the wave, in decimal
 /// @param lowest the lowest output value of the sine wave
 /// @param highest the highest output value of the sine wave
-/// @param timebase the time offset of the wave from the millis() timer
+/// @param timebase the time offset of the wave from the time_ms() timer
 /// @param phase_offset phase offset of the wave from the current position
 LIB8STATIC uint16_t beatsin16(accum88 beats_per_minute,
                               uint16_t lowest = 0,
@@ -1027,7 +1028,7 @@ LIB8STATIC uint16_t beatsin16(accum88 beats_per_minute,
 /// @param beats_per_minute the frequency of the wave, in decimal
 /// @param lowest the lowest output value of the sine wave
 /// @param highest the highest output value of the sine wave
-/// @param timebase the time offset of the wave from the millis() timer
+/// @param timebase the time offset of the wave from the time_ms() timer
 /// @param phase_offset phase offset of the wave from the current position
 LIB8STATIC uint8_t beatsin8(accum88 beats_per_minute,
                             uint8_t lowest = 0,

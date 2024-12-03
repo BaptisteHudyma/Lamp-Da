@@ -10,6 +10,8 @@
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 
+#include "src/system/platform/time.h"
+
 namespace charger {
 
 static bool isBatteryFullLatched_s = false;
@@ -101,7 +103,7 @@ bool should_charge()
   // check battery full status
   if (isBatteryFullLatched_s or batteryPercent >= 10000)
   {
-    const uint32_t time = millis();
+    const uint32_t time = time_ms();
 
     if (batteryFullDeglitchTime == 0)
     {
@@ -351,39 +353,39 @@ bool Charger_t::is_charging() const
          status == ChargerStatus_t::CHARGING;
 }
 
-String Charger_t::get_status_str() const
+std::string Charger_t::get_status_str() const
 {
   switch (status)
   {
     case ChargerStatus_t::UNINITIALIZED:
-      return String("UNINITIALIZED");
+      return std::string("UNINITIALIZED");
       break;
     case ChargerStatus_t::INACTIVE:
-      return String("INACTIVE");
+      return std::string("INACTIVE");
       break;
     case ChargerStatus_t::POWER_DETECTED:
-      return String("POWER_DETECTED");
+      return std::string("POWER_DETECTED");
       break;
     case ChargerStatus_t::SLOW_CHARGING:
-      return String("SLOW_CHARGING");
+      return std::string("SLOW_CHARGING");
       break;
     case ChargerStatus_t::CHARGING:
-      return String("CHARGING");
+      return std::string("CHARGING");
       break;
     case ChargerStatus_t::CHARGE_FINISHED:
-      return String("CHARGE_FINISHED");
+      return std::string("CHARGE_FINISHED");
       break;
     case ChargerStatus_t::ERROR_BATTERY_MISSING:
-      return String("ERROR_BATTERY_MISSING");
+      return std::string("ERROR_BATTERY_MISSING");
       break;
     case ChargerStatus_t::ERROR_SOFTWARE:
-      return String("ERROR_SOFTWARE");
+      return std::string("ERROR_SOFTWARE");
       break;
     case ChargerStatus_t::ERROR_HARDWARE:
-      return String("ERROR_HARDWARE");
+      return std::string("ERROR_HARDWARE");
       break;
     default:
-      return String("unhandled state");
+      return std::string("unhandled state");
       break;
   }
 }

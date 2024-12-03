@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <bluefruit.h>
-#include <Wire.h>
 
 #include "src/compile.h"
 #include "src/system/alerts.h"
@@ -16,6 +15,9 @@
 #include "src/system/utils/serial.h"
 #include "src/system/utils/utils.h"
 #include "src/user/functions.h"
+
+#include "src/system/platform/i2c.h"
+#include "src/system/platform/time.h"
 
 void set_watchdog(const uint32_t timeoutDelaySecond)
 {
@@ -34,16 +36,18 @@ void setup()
   ledpower::write_current(0);
 
   // set turn on time
-  turnOnTime = millis();
+  turnOnTime = time_ms();
 
   // set watchdog (reset the soft when the program crashes)
   // Should be long enough to flash the microcontroler !!!
   set_watchdog(5); // second timeout
 
   // necessary for all i2c communications
-  Wire.setClock(400000); // 400KHz clock
-  Wire.setTimeout(100);  // ms timout
-  Wire.begin();
+  // 400KHz clock, 100mS timeout
+  for (uint8_t i = 0; i < WIRE_INTERFACES_COUNT; ++i)
+  {
+    i2c_setup(i, 400000, 100);
+  }
 
   // setup serial
   serial::setup();
@@ -109,9 +113,9 @@ void setup()
     for (int i = 0; i < 5; i++)
     {
       button::set_color(utils::ColorSpace::WHITE);
-      delay(300);
+      delay_ms(300);
       button::set_color(utils::ColorSpace::BLACK);
-      delay(300);
+      delay_ms(300);
     }
   }
 
@@ -139,7 +143,7 @@ void charging_thread()
 
   // run the charger loop (all the time)
   charger::loop();
-  delay(2);
+  delay_ms(2);
 }
 
 void secondary_thread()
@@ -175,11 +179,11 @@ void check_loop_runtime(const uint32_t runTime)
 
   if (isOnSlowLoopCount >= maxAlerts)
   {
-    alarmRaisedTime = millis();
+    alarmRaisedTime = time_ms();
     AlertManager.raise_alert(Alerts::LONG_LOOP_UPDATE);
   }
   // lower the alert (after 5 seconds)
-  else if (isOnSlowLoopCount <= 1 and millis() - alarmRaisedTime > 3000)
+  else if (isOnSlowLoopCount <= 1 and time_ms() - alarmRaisedTime > 3000)
   {
     AlertManager.clear_alert(Alerts::LONG_LOOP_UPDATE);
   };
@@ -190,7 +194,7 @@ void check_loop_runtime(const uint32_t runTime)
  */
 void loop()
 {
-  uint32_t start = millis();
+  uint32_t start = time_ms();
 
   // update watchdog (prevent crash)
   NRF_WDT->RR[0] = WDT_RR_RR_Reload;
@@ -205,14 +209,14 @@ void loop()
   behavior::loop();
 
   // wait for a delay if we are faster than the set refresh rate
-  uint32_t stop = millis();
+  uint32_t stop = time_ms();
   const uint32_t loopDuration = (stop - start);
   if (loopDuration < LOOP_UPDATE_PERIOD)
   {
-    delay(LOOP_UPDATE_PERIOD - loopDuration);
+    delay_ms(LOOP_UPDATE_PERIOD - loopDuration);
   }
 
-  stop = millis();
+  stop = time_ms();
   check_loop_runtime(stop - start);
 
   // automatically deactivate sensors if they are not used for a time

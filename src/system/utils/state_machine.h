@@ -4,6 +4,8 @@
  * Define a generic state machina logic
  */
 
+#include "src/system/platform/time.h"
+
 template<typename State> class StateMachine
 {
 public:
@@ -18,7 +20,7 @@ public:
     if (isTimeoutSet)
     {
       // timeout reached
-      if (millis() >= timeout_ms)
+      if (time_ms() >= timeout_ms)
       {
         const bool hasChanged = set_state(afterTimeoutState);
         // should never have a state timeout go to itself
@@ -79,7 +81,7 @@ public:
     if (isTimeoutSet)
     {
       // potential clock overflow, be careful
-      timeout_ms = millis() + timeout;
+      timeout_ms = time_ms() + timeout;
     }
   }
 

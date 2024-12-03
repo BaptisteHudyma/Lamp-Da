@@ -6,7 +6,7 @@ void fire(const uint8_t scalex, const uint8_t scaley, const uint8_t speed, const
 {
   static uint32_t step = 0;
   uint16_t zSpeed = step / (256 - speed);
-  uint16_t ySpeed = millis() / (256 - speed);
+  uint16_t ySpeed = time_ms() / (256 - speed);
   for (int i = 0; i < ceil(stripXCoordinates); i++)
   {
     for (int j = 0; j < ceil(stripYCoordinates); j++)

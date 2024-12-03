@@ -76,7 +76,7 @@ ChargeStatus_t get_charge_status();
 struct Measurments
 {
   // the time those measurments were made
-  uint32_t time_ms = 0;
+  uint32_t time = 0;
   // do not use the values if they are invalid
   bool is_measurment_valid() const;
 

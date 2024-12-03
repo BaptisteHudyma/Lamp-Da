@@ -12,7 +12,7 @@ void mode_2Ddistortionwaves(const uint8_t scale, const uint8_t speed, LedStrip& 
 
   uint8_t w = 2;
 
-  uint16_t a = millis() / 32;
+  uint16_t a = time_ms() / 32;
   uint16_t a2 = a / 2;
   uint16_t a3 = a / 3;
 

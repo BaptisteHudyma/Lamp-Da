@@ -262,7 +262,7 @@ template<typename T> struct simulator
     sf::Clock clock;
 
     globalMillis = clock.getElapsedTime().asMilliseconds();
-    behavior::lastStartupSequence = millis();
+    behavior::lastStartupSequence = time_ms();
 
     // sound
     LevelRecorder recorder;
@@ -287,7 +287,7 @@ template<typename T> struct simulator
     uint64_t skipframe = 0;
     while (window.isOpen())
     {
-      // handle button simulation (with fake millis())
+      // handle button simulation (with fake time_ms())
       globalMillis = clock.getElapsedTime().asMilliseconds() * 0.75;
 
       button::treat_button_pressed(
@@ -314,7 +314,7 @@ template<typename T> struct simulator
         simu.customEventHandler(event);
       }
 
-      // update millis()
+      // update time_ms()
       globalMillis = clock.getElapsedTime().asMilliseconds();
 
       // call deferred brightness callbacks

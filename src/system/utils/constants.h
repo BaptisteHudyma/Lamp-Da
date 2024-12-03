@@ -3,38 +3,19 @@
 
 #include <cstdint>
 
-#ifdef ARDUINO
-#if (ARDUINO >= 100)
 #include <Arduino.h>
-#else
-#include <WProgram.h>
-#include <pins_arduino.h>
-#endif
 
 #ifdef USE_TINYUSB // For Serial when selecting TinyUSB
 #include <Adafruit_TinyUSB.h>
-#endif
-
-#endif
-
-#ifdef TARGET_LPC1768
-#include <Arduino.h>
-#endif
-
-#if defined(ARDUINO_ARCH_RP2040)
-#include <stdlib.h>
-
-#include "hardware/clocks.h"
-#include "hardware/pio.h"
-#include "rp2040_pio.h"
 #endif
 
 #include <stdint.h>
 
 #include "src/user/constants.h"
 
-const String HARDWARE_VERSION = "1.0";
-const String BASE_SOFTWARE_VERSION = "0.01"; // Update when the soft changes version
+#define HARDWARE_VERSION "1.0"
+// Update when the soft changes version
+#define BASE_SOFTWARE_VERSION "0.01"
 
 constexpr uint8_t ADC_RES_EXP = 12;                     // resolution of the ADC, in bits (can be 8, 10, 12 or 14)
 constexpr uint32_t ADC_MAX_VALUE = pow(2, ADC_RES_EXP); // corresponding max value

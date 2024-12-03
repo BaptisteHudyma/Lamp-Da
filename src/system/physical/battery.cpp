@@ -5,6 +5,8 @@
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 
+#include "src/system/platform/time.h"
+
 namespace battery {
 
 uint16_t read_battery_mV()
@@ -12,7 +14,7 @@ uint16_t read_battery_mV()
   static uint32_t lastReadTime = 0;
   static uint16_t lastBatteryRead = 0;
 
-  const uint32_t time = millis();
+  const uint32_t time = time_ms();
   if (lastReadTime == 0 or time - lastReadTime > 500)
   {
     lastReadTime = time;
@@ -64,7 +66,7 @@ void raise_battery_alert()
   static constexpr uint32_t refreshRate_ms = 1000;
   static uint32_t lastCall = 0;
 
-  const uint32_t newCall = millis();
+  const uint32_t newCall = time_ms();
   if (newCall - lastCall > refreshRate_ms or lastCall == 0)
   {
     lastCall = newCall;

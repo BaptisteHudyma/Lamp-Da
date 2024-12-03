@@ -3,6 +3,8 @@
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 
+#include "src/system/platform/time.h"
+
 #define RELEASE_TIMING_MS      200
 #define RELEASE_BETWEEN_CLICKS 50
 
@@ -40,7 +42,7 @@ void treat_button_pressed(const bool isButtonPressDetected,
                           const std::function<void(uint8_t)>& clickSerieCallback,
                           const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback)
 {
-  buttonState.lastEventTime = millis();
+  buttonState.lastEventTime = time_ms();
   buttonState.sinceLastCall = buttonState.lastEventTime - buttonState.lastPressTime;
   buttonState.pressDuration = buttonState.lastEventTime - buttonState.firstHoldTime;
 
@@ -128,26 +130,26 @@ void blink(const uint32_t offFreq, const uint32_t onFreq, utils::ColorSpace::RGB
   static bool ledState = false;
 
   // led is off, and last call was 100ms before
-  if (not ledState and millis() - lastCall > onFreq)
+  if (not ledState and time_ms() - lastCall > onFreq)
   {
     ledState = true;
     set_color(color);
-    lastCall = millis();
+    lastCall = time_ms();
   }
 
   // led is on, and last call was long ago
-  if (ledState and millis() - lastCall > offFreq)
+  if (ledState and time_ms() - lastCall > offFreq)
   {
     ledState = false;
     // set black
     set_color(utils::ColorSpace::RGB(0));
-    lastCall = millis();
+    lastCall = time_ms();
   }
 }
 
 void breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::ColorSpace::RGB& color)
 {
-  const uint32_t time = millis();
+  const uint32_t time = time_ms();
 
   // store the start time of the animation
   static uint32_t startTime = time;

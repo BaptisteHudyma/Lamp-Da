@@ -79,7 +79,7 @@ void handleCommand(const String& command)
         Serial.print("battery level:");
         Serial.print(battery::get_battery_level() / 100.0);
         Serial.println("%");
-        Serial.println(chargerState.get_status_str());
+        Serial.println(chargerState.get_status_str().c_str());
         break;
       }
 
