@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "charger/charger.h"
+#include "src/system/platform/gpio.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 #include "src/system/alerts.h"
@@ -24,6 +25,8 @@
 
 #include "src/user/functions.h"
 #include "utils/state_machine.h"
+
+#include "src/system/utils/input_output.h"
 
 namespace behavior {
 
@@ -166,7 +169,7 @@ bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::
 void true_power_off()
 {
   charger::shutdown();
-  digitalWrite(USB_33V_PWR, LOW);
+  DigitalPin(DigitalPin::GPIO::usb33Power).set_high(false);
 
   // wait until vbus is off (TODO: remove in newer versions of the hardware)
   uint8_t cnt = 0;
@@ -176,13 +179,12 @@ void true_power_off()
     cnt++;
   }
 
-  // wake up from charger plugged in
-  // nrf_gpio_cfg_sense_input(g_ADigitalPinMap[CHARGE_OK],
-  // NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_HIGH);
-
   // power down nrf52.
   // on wake up, it'll start back from the setup phase
-  systemOff(BUTTON_PIN, 0);
+  systemOff(ButtonPin.pin(), 0);
+  /*
+   * Nothing after this, systel is off !
+   */
 }
 
 void button_disable_usermode() { isButtonUsermodeEnabled = false; }
@@ -684,6 +686,8 @@ void handle_pre_output_light_state()
   lastStartupSequence = time_ms();
 
   // let the user power on the system
+  // TODO: this 12v activation should disapear
+  ledpower::activate_12v_power();
   user::power_on_sequence();
 
   mainMachine.set_state(BehaviorStates::OUTPUT_LIGHT);
@@ -729,8 +733,10 @@ void handle_post_output_light_state()
   // let the user power off the system
   user::power_off_sequence();
 
+  // TODO: this 12v activation should disapear
+  ledpower::deactivate_12v_power();
+
   // deactivate strip power
-  pinMode(OUT_BRIGHTNESS, OUTPUT);
   ledpower::write_current(0); // power down
 
   mainMachine.skip_timeout();
@@ -743,7 +749,6 @@ void handle_shutdown_state()
   yield();
 
   // deactivate strip power
-  pinMode(OUT_BRIGHTNESS, OUTPUT);
   ledpower::write_current(0); // power down
   delay_ms(10);
 

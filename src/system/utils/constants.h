@@ -3,8 +3,6 @@
 
 #include <cstdint>
 
-#include <Arduino.h>
-
 #ifdef USE_TINYUSB // For Serial when selecting TinyUSB
 #include <Adafruit_TinyUSB.h>
 #endif
@@ -56,14 +54,5 @@ constexpr float batteryCritical = 300; // % *100
 constexpr float batteryLow = 500;      // % *100
 
 constexpr uint32_t batteryMaxChargeCurrent_mA = 1000; // mA
-
-// pins
-
-// The button pin (one button pin to GND, the other to this pin)
-static constexpr uint32_t BUTTON_PIN = D6;
-// Pins for the led on the button
-static constexpr uint32_t BUTTON_RED = D8;
-static constexpr uint32_t BUTTON_GREEN = D4;
-static constexpr uint32_t BUTTON_BLUE = D7;
 
 #endif

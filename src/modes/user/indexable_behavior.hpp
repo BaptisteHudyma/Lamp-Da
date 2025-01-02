@@ -11,10 +11,6 @@ void power_on_sequence()
 {
   auto manager = get_context();
 
-  // power on
-  pinMode(LED_POWER_PIN, OUTPUT);
-  digitalWrite(LED_POWER_PIN, HIGH);
-
   // initialize the lamp object
   manager.lamp.startup();
 
@@ -32,9 +28,6 @@ void power_off_sequence()
   manager.lamp.clear();
   manager.lamp.show();
 
-  // power off
-  digitalWrite(LED_POWER_PIN, LOW);
-  pinMode(LED_POWER_PIN, OUTPUT_H0H1);
   //
   // high drive input (5mA)
   // The only way to discharge the DC-DC pin...

@@ -8,6 +8,8 @@
 #define RELEASE_TIMING_MS      200
 #define RELEASE_BETWEEN_CLICKS 50
 
+#include "src/system/utils/input_output.h"
+
 namespace button {
 
 static ButtonStateTy buttonState = ButtonStateTy();
@@ -18,21 +20,21 @@ void button_state_interrupt() { wasButtonPressedDetected = true; }
 
 void init()
 {
-  pinMode(BUTTON_RED, OUTPUT);
-  pinMode(BUTTON_GREEN, OUTPUT);
-  pinMode(BUTTON_BLUE, OUTPUT);
+  ButtonRedPin.set_pin_mode(DigitalPin::Mode::kOutput);
+  ButtonBluePin.set_pin_mode(DigitalPin::Mode::kOutput);
+  ButtonGreenPin.set_pin_mode(DigitalPin::Mode::kOutput);
 
   set_color(utils::ColorSpace::BLACK);
 
   // attach the button interrupt
-  pinMode(BUTTON_PIN, INPUT_PULLUP_SENSE);
-  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), button_state_interrupt, CHANGE);
+  ButtonPin.set_pin_mode(DigitalPin::Mode::kInputPullUp);
+  ButtonPin.attach_callback(button_state_interrupt, DigitalPin::Interrupt::kChange);
 }
 
 static volatile bool buttonPressListener = false;
 void read_while_pressed()
 {
-  if (wasButtonPressedDetected and digitalRead(BUTTON_PIN) == HIGH)
+  if (wasButtonPressedDetected and ButtonPin.is_high())
   {
     wasButtonPressedDetected = false;
   }
@@ -119,9 +121,9 @@ void set_color(utils::ColorSpace::RGB color)
   static constexpr float blueColorCorrection = 1.0;
 
   const COLOR& col = color.get_rgb();
-  analogWrite(BUTTON_RED, col.red * redColorCorrection);
-  analogWrite(BUTTON_GREEN, col.green * greenColorCorrection);
-  analogWrite(BUTTON_BLUE, col.blue * blueColorCorrection);
+  ButtonRedPin.write(col.red * redColorCorrection);
+  ButtonGreenPin.write(col.green * greenColorCorrection);
+  ButtonBluePin.write(col.blue * blueColorCorrection);
 }
 
 void blink(const uint32_t offFreq, const uint32_t onFreq, utils::ColorSpace::RGB color)

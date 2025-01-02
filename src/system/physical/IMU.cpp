@@ -3,10 +3,10 @@
 #include <cstdint>
 #include <cstring>
 
-#include "Arduino.h"
 #include "LSM6DS3/LSM6DS3.h"
 
 #include "src/system/platform/time.h"
+#include "src/system/platform/gpio.h"
 
 namespace imu {
 
@@ -24,18 +24,18 @@ void enable()
     return;
   }
 
-  pinMode(PIN_LSM6DS3TR_C_POWER, OUTPUT);
-  digitalWrite(PIN_LSM6DS3TR_C_POWER, HIGH);
+  DigitalPin powerPin(DigitalPin::GPIO::ImuPower);
+  powerPin.set_pin_mode(DigitalPin::Mode::kOutput);
+  powerPin.set_high(true);
 
   delay_ms(5); // voltage stabilization
 
   if (IMU.begin() != 0)
   {
     // TODO: something ?
-    Serial.println("ERROR: IMU did not start");
   }
-
-  isStarted = true;
+  else
+    isStarted = true;
 }
 
 void disable()
@@ -45,7 +45,9 @@ void disable()
     return;
   }
 
-  digitalWrite(PIN_LSM6DS3TR_C_POWER, LOW);
+  DigitalPin powerPin(DigitalPin::GPIO::ImuPower);
+  powerPin.set_high(false);
+
   isStarted = false;
 }
 

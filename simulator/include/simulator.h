@@ -1,4 +1,10 @@
+// include mock classes
+#include "simulator/mocks/m_time.h"
+#include "simulator/mocks/m_gpio.h"
+#include "simulator/mocks/m_i2c.h"
+
 #include <Arduino.h>
+#include <tuple>
 
 // prevent the inclusion of "src/system/MicroPhone.h"
 #define MICRO_PHONE_H
@@ -28,8 +34,6 @@ namespace {
 using utils::map;
 
 #include "src/system/utils/coordinates.cpp"
-
-void delay(uint32_t milli) { sf::sleep(sf::milliseconds(milli)); }
 
 #include <serial_simulator.h>
 #include <filesystem_simulator.h>

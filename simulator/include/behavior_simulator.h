@@ -6,21 +6,7 @@
 // prevent inclusion of colliding src/system/behavior.h
 #define BEHAVIOR_HPP
 
-void pinMode(auto, auto) {}
-#define OUTPUT             0x1021
-#define OUTPUT_H0H1        0x1022
-#define INPUT_PULLUP_SENSE 0x1023
-#define CHANGE             0x1024
-#define LOW                0x1025
-#define HIGH               0x1026
-#define LED_POWER_PIN      0x1027
-
 void ensure_build_canary() {}
-int digitalPinToInterrupt(auto) { return 0; }
-void attachInterrupt(auto, auto, auto) {}
-int digitalRead(auto) { return 0; }
-void digitalWrite(auto, auto) {}
-void analogWrite(auto, auto) {}
 
 #define UTILS_H
 #define CONSTANTS_H

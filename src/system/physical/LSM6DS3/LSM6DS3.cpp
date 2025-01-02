@@ -28,6 +28,8 @@ techsupport@sparkfun.com.
 #include "src/system/platform/i2c.h"
 #include "src/system/platform/time.h"
 
+#include "src/system/platform/gpio.h"
+
 #include "stdint.h"
 
 // TODO: on the new circuits, it will be another interface !!
@@ -55,16 +57,12 @@ LSM6DS3Core::LSM6DS3Core(uint8_t busType, uint8_t inputArg) : I2CAddress(0x6B) {
 status_t LSM6DS3Core::beginCore(void)
 {
   status_t returnError = IMU_SUCCESS;
-#ifdef PIN_LSM6DS3TR_C_POWER
-  pinMode(PIN_LSM6DS3TR_C_POWER, OUTPUT);
-  NRF_P1->PIN_CNF[8] = ((uint32_t)NRF_GPIO_PIN_DIR_OUTPUT << GPIO_PIN_CNF_DIR_Pos) |
-                       ((uint32_t)NRF_GPIO_PIN_INPUT_DISCONNECT << GPIO_PIN_CNF_INPUT_Pos) |
-                       ((uint32_t)NRF_GPIO_PIN_NOPULL << GPIO_PIN_CNF_PULL_Pos) |
-                       ((uint32_t)NRF_GPIO_PIN_H0H1 << GPIO_PIN_CNF_DRIVE_Pos) |
-                       ((uint32_t)NRF_GPIO_PIN_NOSENSE << GPIO_PIN_CNF_SENSE_Pos);
-  digitalWrite(PIN_LSM6DS3TR_C_POWER, HIGH);
+
+  DigitalPin powerPin(DigitalPin::GPIO::ImuPower);
+  powerPin.set_pin_mode(DigitalPin::Mode::kOutputHighCurrent);
+  powerPin.set_high(true);
+
   delay_ms(10);
-#endif
 
   // Spin for a few ms
   volatile uint8_t temp = 0;

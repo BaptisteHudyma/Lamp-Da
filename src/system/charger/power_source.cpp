@@ -7,6 +7,7 @@
 #include "PDlib/usb_pd.h"
 
 #include "src/system/platform/time.h"
+#include "src/system/platform/gpio.h"
 
 // we only have one device, so always index 0
 static constexpr int devicePort = 0;
@@ -197,9 +198,9 @@ bool setup()
   pd_init(devicePort);
   delay_ms(50);
 
-  pinMode(CHARGE_INT,
-          INPUT_PULLUP_SENSE); // Set FUSB302 int pin input ant pull up
-  attachInterrupt(digitalPinToInterrupt(CHARGE_INT), ic_interrupt, CHANGE);
+  DigitalPin chargerPin(DigitalPin::GPIO::ChargerInterrupt);
+  chargerPin.set_pin_mode(DigitalPin::Mode::kInputPullUp);
+  chargerPin.attach_callback(ic_interrupt, DigitalPin::Interrupt::kChange);
 
   return initSucceeded;
 }

@@ -16,6 +16,9 @@ extern void write_current(const float current);
  */
 extern void write_brightness(const uint8_t brightness);
 
+void activate_12v_power();
+void deactivate_12v_power();
+
 } // namespace ledpower
 
 #endif

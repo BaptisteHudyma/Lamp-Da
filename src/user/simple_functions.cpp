@@ -1,6 +1,6 @@
 #ifdef LMBD_LAMP_TYPE__SIMPLE
 
-#include "functions.h"
+#include <cstdint>
 
 #include "src/system/behavior.h"
 #include "src/system/physical/fileSystem.h"
@@ -8,6 +8,8 @@
 #include "src/system/utils/utils.h"
 
 #include "src/system/platform/time.h"
+
+#include "src/user/functions.h"
 
 namespace user {
 

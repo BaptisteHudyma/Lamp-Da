@@ -9,6 +9,7 @@
 #include "src/system/ext/random8.h"
 #include "src/system/utils/constants.h"
 
+#include "src/system/platform/gpio.h"
 #include "src/system/platform/time.h"
 
 namespace microphone {
@@ -48,7 +49,7 @@ void enable()
     return;
   }
 
-  digitalWrite(PIN_PDM_PWR, HIGH);
+  DigitalPin(DigitalPin::GPIO::microphonePower).set_high(true);
 
   PDM.setBufferSize(512);
   PDM.onReceive(on_PDM_data);
@@ -82,7 +83,7 @@ void disable()
 
   PDM.end();
 
-  digitalWrite(PIN_PDM_PWR, LOW);
+  DigitalPin(DigitalPin::GPIO::microphonePower).set_high(false);
   isStarted = false;
 }
 

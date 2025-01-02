@@ -6,15 +6,16 @@
 #include "src/system/physical/fileSystem.h"
 #include "src/system/utils/utils.h"
 
+#include "src/system/platform/gpio.h"
+
 #include "src/system/platform/time.h"
 
 #include "src/user/functions.h"
 
 namespace user {
 
-constexpr int powerPin = AD1;
-constexpr int whitePin = AD0;
-constexpr int yellowPin = AD2;
+static DigitalPin WhiteColorPin(DigitalPin::GPIO::a0);
+static DigitalPin YellowColorPin(DigitalPin::GPIO::a2);
 
 constexpr uint32_t colorKey = utils::hash("color");
 uint8_t currentColor = 0;
@@ -29,31 +30,21 @@ void set_color(const uint8_t color)
   uint8_t yellowColor = (UINT8_MAX - color) * reduced;
   uint8_t whiteColor = color * reduced;
 
-  analogWrite(yellowPin, yellowColor);
-  analogWrite(whitePin, whiteColor);
+  YellowColorPin.write(yellowColor);
+  WhiteColorPin.write(whiteColor);
 }
 
 void power_on_sequence()
 {
-  pinMode(yellowPin, OUTPUT);
-  pinMode(whitePin, OUTPUT);
+  YellowColorPin.set_pin_mode(DigitalPin::Mode::kOutput);
+  WhiteColorPin.set_pin_mode(DigitalPin::Mode::kOutput);
 
   currentBrightness = behavior::BRIGHTNESS;
   set_color(currentColor);
-
-  pinMode(powerPin, OUTPUT);
-  digitalWrite(powerPin, HIGH);
 }
 
 void power_off_sequence()
 {
-  // high drive input (5mA)
-  // The only way to discharge the DC-DC pin...
-  pinMode(powerPin, OUTPUT_H0H1);
-  // turn off 12V driver
-  digitalWrite(powerPin, LOW);
-
-  delay_ms(5);
   // reset the output
   currentBrightness = 0;
   set_color(0);

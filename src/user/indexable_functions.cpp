@@ -43,8 +43,6 @@ ManagerTy modeManager(lamp);
 
 static auto get_context() { return user::_private::modeManager.get_context(); }
 
-static constexpr uint32_t LED_POWER_PIN = AD1;
-
 //
 // indexable lamp is implemented in another castle
 //

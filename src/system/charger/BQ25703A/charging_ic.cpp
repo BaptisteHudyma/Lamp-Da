@@ -7,6 +7,7 @@
 #include "src/system/alerts.h"
 
 #include "src/system/platform/time.h"
+#include "src/system/platform/gpio.h"
 
 namespace BQ25703A {
 
@@ -155,7 +156,7 @@ void control_OTG()
       OTGStartTime_ms = time_ms();
       lastOTGUsedTime_ms = time_ms();
 
-      digitalWrite(ENABLE_OTG, HIGH);
+      DigitalPin(DigitalPin::GPIO::otgSignal).set_high(true);
       delay_ms(1);
 
       chargerIc.readRegEx(BQ25703Areg.chargeOption3);
@@ -198,7 +199,7 @@ void control_OTG()
       else
       {
         // update the in OTG status to avoid deconnection
-        digitalWrite(ENABLE_OTG, HIGH);
+        DigitalPin(DigitalPin::GPIO::otgSignal).set_high(true);
         chargerIc.readRegEx(BQ25703Areg.chargeOption3);
         BQ25703Areg.chargeOption3.set_EN_OTG(1);
         chargerIc.writeRegEx(BQ25703Areg.chargeOption3);
@@ -215,7 +216,7 @@ void control_OTG()
 
       disable_OTG();
 
-      digitalWrite(ENABLE_OTG, LOW);
+      DigitalPin(DigitalPin::GPIO::otgSignal).set_high(false);
       delay_ms(1);
       // 5V 0A for OTG (default)
       set_OTG_targets(5000, 0);

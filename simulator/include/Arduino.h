@@ -22,11 +22,15 @@ using String = std::string;
 // lampda-specific hacks
 //
 
-#define D4 0x1004;
-#define D5 0x1005;
-#define D6 0x1006;
-#define D7 0x1007;
-#define D8 0x1008;
+#define D4 0x1004
+#define D5 0x1005
+#define D6 0x1006
+#define D7 0x1007
+#define D8 0x1008
+
+#define A0 0x1000
+#define A1 0x1001
+#define A2 0x1002
 
 using byte = uint8_t;
 
@@ -79,7 +83,5 @@ template<typename T, typename V> static constexpr T pow(const T& a, const V& b)
 //
 
 static uint64_t globalMillis;
-
-uint64_t time_ms() { return globalMillis; }
 
 #endif

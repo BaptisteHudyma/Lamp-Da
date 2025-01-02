@@ -11,6 +11,7 @@
 #include "src/system/utils/utils.h"
 
 #include "src/system/platform/time.h"
+#include "src/system/platform/gpio.h"
 
 namespace charger {
 
@@ -284,13 +285,15 @@ void setup()
   charger.status = Charger_t::ChargerStatus_t::INACTIVE;
 }
 
+DigitalPin chargeOkPin(DigitalPin::GPIO::chargerOkSignal);
+
 void loop()
 {
   const auto& otg = powerSource::get_otg_parameters();
   control_OTG(otg.requestedVoltage_mV, otg.requestedCurrent_mA);
 
   // run charger loop
-  const bool isChargerOk = (digitalRead(CHARGE_OK) == HIGH);
+  const bool isChargerOk = chargeOkPin.is_high();
   BQ25703A::loop(isChargerOk);
 
   // run power source loop
