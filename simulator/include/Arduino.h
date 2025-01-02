@@ -14,23 +14,9 @@
 // constants
 using String = std::string;
 
-#define PI      3.1415926535897
-#define TWO_PI  6.2831853071795
-#define HALF_PI 1.5707963267948
-
 //
 // lampda-specific hacks
 //
-
-#define D4 0x1004
-#define D5 0x1005
-#define D6 0x1006
-#define D7 0x1007
-#define D8 0x1008
-
-#define A0 0x1000
-#define A1 0x1001
-#define A2 0x1002
 
 using byte = uint8_t;
 
@@ -57,7 +43,7 @@ using std::abs;
 // misc functions
 //
 
-float radians(float degrees) { return (degrees / 180.f) * PI; }
+float radians(float degrees) { return (degrees / 180.f) * M_PI; }
 
 template<typename T, typename V, typename U> static constexpr T constrain(const T& a, const V& mini, const U& maxi)
 {

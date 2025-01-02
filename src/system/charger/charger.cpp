@@ -2,7 +2,6 @@
 
 #include <cstdint>
 
-#include "Arduino.h"
 #include "BQ25703A/charging_ic.h"
 #include "power_source.h"
 #include "src/system/alerts.h"
@@ -12,6 +11,7 @@
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
+#include "src/system/platform/registers.h"
 
 namespace charger {
 
@@ -216,7 +216,6 @@ void update_state_status()
             }
           default:
             {
-              Serial.println("unhandled charge status");
               charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
               break;
             }
@@ -346,7 +345,7 @@ void set_enable_charge(const bool shouldCharge) { enableCharge_s = shouldCharge;
 
 bool is_vbus_powered() { return powerSource::is_power_available(); }
 
-bool is_vbus_signal_detected() { return powerSource::is_powered_with_vbus(); }
+bool is_vbus_signal_detected() { return is_voltage_detected_on_vbus(); }
 
 Charger_t get_state() { return charger; }
 

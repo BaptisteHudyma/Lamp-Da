@@ -25,7 +25,8 @@ public:
     otgSignal,
     usb33Power,
     microphonePower,
-    chargerOkSignal
+    chargerOkSignal,
+    batterySignal,
   };
   enum Mode
   {

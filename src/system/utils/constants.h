@@ -15,6 +15,10 @@
 // Update when the soft changes version
 #define BASE_SOFTWARE_VERSION "0.01"
 
+constexpr float c_PI = 3.1415926535897;
+constexpr float c_TWO_PI = 6.2831853071795;
+constexpr float c_HALF_PI = 1.5707963267948;
+
 constexpr uint8_t ADC_RES_EXP = 12;                     // resolution of the ADC, in bits (can be 8, 10, 12 or 14)
 constexpr uint32_t ADC_MAX_VALUE = pow(2, ADC_RES_EXP); // corresponding max value
 constexpr float internalReferenceVoltage = 3.0;         // 3V

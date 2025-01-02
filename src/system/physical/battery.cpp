@@ -6,8 +6,11 @@
 #include "src/system/utils/utils.h"
 
 #include "src/system/platform/time.h"
+#include "src/system/platform/gpio.h"
 
 namespace battery {
+
+DigitalPin batteryPin(DigitalPin::GPIO::batterySignal);
 
 uint16_t read_battery_mV()
 {
@@ -19,7 +22,7 @@ uint16_t read_battery_mV()
   {
     lastReadTime = time;
     // read and convert to voltage
-    lastBatteryRead = (utils::analogReadToVoltage(analogRead(BAT21)) / voltageDividerCoeff) * 1000;
+    lastBatteryRead = (utils::analogReadToVoltage(batteryPin.read()) / voltageDividerCoeff) * 1000;
   }
   return lastBatteryRead;
 }

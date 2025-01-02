@@ -104,6 +104,9 @@ DigitalPin::DigitalPin(GPIO pin)
     case GPIO::chargerOkSignal:
       mImpl = std::make_shared<DigitalPinImpl>(CHARGE_OK);
       break;
+    case GPIO::batterySignal:
+      mImpl = std::make_shared<DigitalPinImpl>(BAT21);
+      break;
   }
 }
 DigitalPin::~DigitalPin() = default;

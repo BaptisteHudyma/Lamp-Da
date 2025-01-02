@@ -1,6 +1,3 @@
-#include <Arduino.h>
-#include <bluefruit.h>
-
 #include "src/compile.h"
 #include "src/system/alerts.h"
 #include "src/system/behavior.h"
@@ -18,15 +15,7 @@
 
 #include "src/system/platform/i2c.h"
 #include "src/system/platform/time.h"
-
-void set_watchdog(const uint32_t timeoutDelaySecond)
-{
-  // Configure WDT
-  NRF_WDT->CONFIG = 0x01;                        // Configure WDT to run when CPU is asleep
-  NRF_WDT->CRV = timeoutDelaySecond * 32768 + 1; // set timeout
-  NRF_WDT->RREN = 0x01;                          // Enable the RR[0] reload register
-  NRF_WDT->TASKS_START = 1;                      // Start WDT
-}
+#include "src/system/platform/registers.h"
 
 // timestamp of the system wake up
 static uint32_t turnOnTime = 0;
@@ -40,11 +29,11 @@ void setup()
 
   // set watchdog (reset the soft when the program crashes)
   // Should be long enough to flash the microcontroler !!!
-  set_watchdog(5); // second timeout
+  setup_watchdog(5); // second timeout
 
   // necessary for all i2c communications
   // 400KHz clock, 100mS timeout
-  for (uint8_t i = 0; i < WIRE_INTERFACES_COUNT; ++i)
+  for (uint8_t i = 0; i < get_wire_interface_count(); ++i)
   {
     i2c_setup(i, 400000, 100);
   }
@@ -52,8 +41,8 @@ void setup()
   // setup serial
   serial::setup();
 
-  analogReference(AR_INTERNAL_3_0); // 3v reference
-  analogReadResolution(ADC_RES_EXP);
+  // first step !
+  setup_adc(ADC_RES_EXP);
 
   // setup charger
   charger::setup();
@@ -65,37 +54,23 @@ void setup()
   // check if we are in first boot mode (no first boot flag stored)
   const bool isFirstBoot = !fileSystem::doKeyExists(behavior::isFirstBootKey);
 
-  const auto startReason = readResetReason();
-  // POWER_RESETREAS_RESETPIN_Msk: reset from pin-reset detected
-  // POWER_RESETREAS_DOG_Msk: reset from watchdog
-  // POWER_RESETREAS_SREQ_Msk: reset via soft reset
-  // POWER_RESETREAS_LOCKUP_Msk: reset from cpu lockup
-  // POWER_RESETREAS_OFF_Msk: wake up from pin interrupt
-  // POWER_RESETREAS_LPCOMP_Msk: wake up from analogic pin detect (LPCOMP)
-  // POWER_RESETREAS_DIF_Msk: wake up from debug interface
-  // POWER_RESETREAS_NFC_Msk: wake from NFC field detection
-  // POWER_RESETREAS_VBUS_Msk: wake from vbus high signal
-
   bool shouldAlertUser = false;
   // handle start flags
   if (!isFirstBoot)
   {
     // started after reset, clear all code and go to bootloader mode
-    if ((startReason & POWER_RESETREAS_RESETPIN_Msk) != 0x00)
+    if (is_started_from_reset())
     {
-      enterSerialDfu();
+      enter_serial_dfu();
     }
 
-    if ((startReason & POWER_RESETREAS_DOG_Msk) != 0x00)
+    if (is_started_from_watchdog())
     {
-      // POWER_USBREGSTATUS_OUTPUTRDY_Msk : debounce time passed
-      // POWER_USBREGSTATUS_VBUSDETECT_Msk : vbus is detected on usb
-
       // power detected on the USB, reset the program
-      if ((NRF_POWER->USBREGSTATUS & POWER_USBREGSTATUS_VBUSDETECT_Msk) != 0x00)
+      if (is_voltage_detected_on_vbus())
       {
         // system will reset & shutdown after that
-        enterSerialDfu();
+        enter_serial_dfu();
       }
       else
       {
@@ -119,7 +94,7 @@ void setup()
     }
   }
 
-  const bool wasPoweredyByUserInterrupt = (startReason & POWER_RESETREAS_OFF_Msk) != 0x00;
+  const bool wasPoweredyByUserInterrupt = is_started_from_interrupt();
   // any wake up from something that is not an interrupt should be considered as vbus voltage
   behavior::set_woke_up_from_vbus(not wasPoweredyByUserInterrupt);
 
@@ -127,12 +102,12 @@ void setup()
   user::power_off_sequence();
 
   // use the charging thread !
-  Scheduler.startLoop(charging_thread);
+  start_thread(charging_thread);
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread())
   {
-    Scheduler.startLoop(secondary_thread);
+    start_thread(secondary_thread);
   }
 }
 
@@ -169,7 +144,7 @@ void check_loop_runtime(const uint32_t runTime)
     if (runTime > 500)
     {
       // if loop time is too long, go back to flash mode
-      enterSerialDfu();
+      enter_serial_dfu();
     }
   }
   else if (isOnSlowLoopCount > 0)
@@ -197,7 +172,7 @@ void loop()
   uint32_t start = time_ms();
 
   // update watchdog (prevent crash)
-  NRF_WDT->RR[0] = WDT_RR_RR_Reload;
+  kick_watchdog();
 
   // loop is not ran in shutdown mode
   button::handle_events(behavior::button_clicked_callback, behavior::button_hold_callback);

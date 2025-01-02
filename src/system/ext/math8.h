@@ -2,7 +2,7 @@
 #ifndef __INC_LIB8TION_MATH_H
 #define __INC_LIB8TION_MATH_H
 
-#include <Arduino.h> //PI constant
+#include "src/system/utils/constants.h"
 #include "src/system/platform/time.h"
 
 #include "scale8.h"
@@ -859,13 +859,13 @@ LIB8STATIC_ALWAYS_INLINE uint8_t cubicwave8(uint8_t in) { return ease8InOutCubic
 
 LIB8STATIC_ALWAYS_INLINE float cos_t(float phi)
 {
-  float x = modd(phi, TWO_PI);
+  float x = modd(phi, c_TWO_PI);
   if (x < 0)
     x = -1 * x;
   int8_t sign = 1;
-  if (x > PI)
+  if (x > c_PI)
   {
-    x -= PI;
+    x -= c_PI;
     sign = -1;
   }
   float xx = x * x;
@@ -881,7 +881,7 @@ LIB8STATIC_ALWAYS_INLINE float cos_t(float phi)
 
 LIB8STATIC_ALWAYS_INLINE float sin_t(float x)
 {
-  float res = cos_t(HALF_PI - x);
+  float res = cos_t(c_HALF_PI - x);
 #ifdef WLED_DEBUG_MATH
   Serial.printf("sin: %f,%f,%f,(%f)\n", x, res, sin(x), res - sin(x));
 #endif

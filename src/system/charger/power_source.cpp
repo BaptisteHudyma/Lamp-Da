@@ -313,8 +313,6 @@ bool is_power_available() { return isPowerSourceDetected_s; }
 
 bool can_use_power() { return canUseSourcePower_s; }
 
-bool is_powered_with_vbus() { return (NRF_POWER->USBREGSTATUS & POWER_USBREGSTATUS_VBUSDETECT_Msk) != 0x00; }
-
 OTGParameters get_otg_parameters()
 {
   const auto& otg = get_OTG_requested_parameters();

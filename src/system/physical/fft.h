@@ -316,7 +316,7 @@ public:
     if (useInputFilter > 0)
     {
       // filter parameter - we use constexpr as it does not need any RAM
-      // (evaluted at compile time) value = 1 - exp(-2*PI * FFilter / FSample);
+      // (evaluted at compile time) value = 1 - exp(-2*c_PI * FFilter / FSample);
       // // FFilter: filter cutoff frequency; FSample: sampling frequency
       constexpr float filter30Hz = 0.01823938f;  // rumbling = 10-25hz
       constexpr float filter70Hz = 0.04204211f;  // mains hum = 50-60hz

@@ -1,3 +1,6 @@
+#ifndef PLATFORM_I2C_CPP
+#define PLATFORM_I2C_CPP
+
 #include "i2c.h"
 
 #include <cassert>
@@ -95,3 +98,5 @@ int i2c_xfer(
 
   return 0;
 }
+
+#endif

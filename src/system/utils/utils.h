@@ -10,7 +10,7 @@
 #define POW3(x)     ((x) * (x) * (x))
 #define POW4(x)     (POW2(x) * POW2(x))
 #define POW7(x)     (POW3(x) * POW3(x) * (x))
-#define DegToRad(x) ((x) * PI / 180)
+#define DegToRad(x) ((x) * c_PI / 180)
 #define FADE16(x)   scale16(x, x)
 #define FADE8(x)    scale8(x, x)
 
