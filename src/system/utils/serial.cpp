@@ -25,10 +25,10 @@ void handleCommand(const std::string& command)
         lampda_print(
                 "---Lamp-da CLI---\n"
                 "h: this page\n"
-                "hardware & software version\n"
-                "bl: battery level\n"
-                "cinfo: charge infos\n"
-                "ADC: all values from the ADC\n"
+                "v: hardware & software version\n"
+                "bl: battery levels\n"
+                "cinfo: charger infos\n"
+                "ADC: values from the charger ADC\n"
                 "cen: enable charger. Debug only\n"
                 "format-fs: format the whole file system (dangerous)\n"
                 "-----------------");
@@ -36,22 +36,21 @@ void handleCommand(const std::string& command)
       }
 
     case utils::hash("v"):
-    case utils::hash("V"):
-    case utils::hash("version"):
       {
-        lampda_print("hardware:" HARDWARE_VERSION
-                     "\n"
-                     "base software:" BASE_SOFTWARE_VERSION
-                     "\n"
-                     "user software:" SOFTWARE_VERSION);
+        lampda_print(
+                "hardware:%s\n"
+                "base software:%s\n"
+                "user software:%s",
+                HARDWARE_VERSION,
+                BASE_SOFTWARE_VERSION,
+                SOFTWARE_VERSION);
         break;
       }
 
     case utils::hash("bl"):
-    case utils::hash("battery"):
       {
         lampda_print(
-                "raw battery level%f%%\n"
+                "raw battery level:%f%%\n"
                 "battery level:%f%%",
                 battery::get_raw_battery_level() / 100.0,
                 battery::get_battery_level() / 100.0);
@@ -70,7 +69,7 @@ void handleCommand(const std::string& command)
                 "is usb powered:%s\n"
                 "is charging:%s\n"
                 "battery level:%f%%\n"
-                "%s",
+                "-> %s",
                 chargerState.vbus_mV,
                 chargerState.inputCurrent_mA,
                 chargerState.batteryVoltage_mV,

@@ -11,6 +11,7 @@
 #include "src/system/physical/battery.h"
 #include "src/system/physical/bluetooth.h"
 #include "src/system/physical/button.h"
+#include "src/system/physical/indicator.h"
 #include "src/system/physical/fileSystem.h"
 #include "src/system/physical/IMU.h"
 #include "src/system/physical/led_power.h"
@@ -237,7 +238,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
       {
 #ifdef DEBUG_MODE
         // disable charger and wait 5s to be killed by watchdog
-        button::set_color(utils::ColorSpace::PINK);
+        indicator::set_color(utils::ColorSpace::PINK);
         charger::disable_charge();
         delay_ms(6000);
 #endif
@@ -284,19 +285,19 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
     {
       if ((holdDuration >> 7) & 0b1)
       {
-        button::set_color(utils::ColorSpace::BLACK);
+        indicator::set_color(utils::ColorSpace::BLACK);
       }
       else if (holdDuration < EARLY_ACTIONS_HOLD_MS)
       {
-        button::set_color(utils::ColorSpace::GREEN);
+        indicator::set_color(utils::ColorSpace::GREEN);
       }
       else if (consecutiveButtonCheck == 3)
       {
-        button::set_color(utils::ColorSpace::YELLOW);
+        indicator::set_color(utils::ColorSpace::YELLOW);
       }
       else if (consecutiveButtonCheck == 4)
       {
-        button::set_color(utils::ColorSpace::BLUE);
+        indicator::set_color(utils::ColorSpace::BLUE);
       }
     }
 
@@ -485,18 +486,18 @@ void handle_alerts()
       {
         // fast blinking
         // TODO: find a better way to tell user that the chargeur is bad
-        button::blink(500, 500, buttonColor);
+        indicator::blink(500, 500, buttonColor);
       }
       // standard charge mode
       else
       {
-        button::breeze(2000, 1000, buttonColor);
+        indicator::breeze(2000, 1000, buttonColor);
       }
     }
     else
     {
       // normal mode
-      button::set_color(buttonColor);
+      indicator::set_color(buttonColor);
     }
   }
   else
@@ -508,12 +509,12 @@ void handle_alerts()
     }
     else if ((current & Alerts::HARDWARE_ALERT) != 0x00)
     {
-      button::blink(100, 50, utils::ColorSpace::TOMATO);
+      indicator::blink(100, 50, utils::ColorSpace::TOMATO);
     }
     else if ((current & Alerts::TEMP_TOO_HIGH) != 0x00)
     {
       // proc temperature is too high, blink orange
-      button::blink(300, 300, utils::ColorSpace::ORANGE);
+      indicator::blink(300, 300, utils::ColorSpace::ORANGE);
 
       // limit brightness to half the max value
       constexpr uint8_t clampedBrightness = 0.5 * MAX_BRIGHTNESS;
@@ -523,7 +524,7 @@ void handle_alerts()
     else if ((current & Alerts::BATTERY_READINGS_INCOHERENT) != 0x00)
     {
       // incohrent battery readings
-      button::blink(100, 100, utils::ColorSpace::GREEN);
+      indicator::blink(100, 100, utils::ColorSpace::GREEN);
     }
     else if ((current & Alerts::BATTERY_CRITICAL) != 0x00)
     {
@@ -536,13 +537,13 @@ void handle_alerts()
         set_power_off();
       }
       // blink if no shutdown
-      button::blink(100, 100, utils::ColorSpace::RED);
+      indicator::blink(100, 100, utils::ColorSpace::RED);
     }
     else if ((current & Alerts::BATTERY_LOW) != 0x00)
     {
       criticalbatteryRaisedTime = 0;
       // fast blink red
-      button::blink(300, 300, utils::ColorSpace::RED);
+      indicator::blink(300, 300, utils::ColorSpace::RED);
 
       // limit brightness to quarter of the max value
       constexpr uint8_t clampedBrightness = 0.25 * MAX_BRIGHTNESS;
@@ -554,20 +555,20 @@ void handle_alerts()
     }
     else if ((current & Alerts::HARDWARE_ALERT) != 0x00)
     {
-      button::blink(100, 50, utils::ColorSpace::TOMATO);
+      indicator::blink(100, 50, utils::ColorSpace::TOMATO);
     }
     else if ((current & Alerts::LONG_LOOP_UPDATE) != 0x00)
     {
       // fast blink red
-      button::blink(400, 400, utils::ColorSpace::FUSHIA);
+      indicator::blink(400, 400, utils::ColorSpace::FUSHIA);
     }
     else if ((current & Alerts::BLUETOOTH_ADVERT) != 0x00)
     {
-      button::breeze(1000, 500, utils::ColorSpace::BLUE);
+      indicator::breeze(1000, 500, utils::ColorSpace::BLUE);
     }
     else if ((current & Alerts::OTG_FAILED) != 0x00)
     {
-      button::blink(200, 200, utils::ColorSpace::FUSHIA);
+      indicator::blink(200, 200, utils::ColorSpace::FUSHIA);
     }
     else if ((current & Alerts::OTG_ACTIVATED) != 0x00)
     {
@@ -576,12 +577,12 @@ void handle_alerts()
                                                                           utils::ColorSpace::GREEN.get_rgb().color,
                                                                           battery::get_raw_battery_level() / 10000.0));
 
-      button::breeze(500, 500, buttonColor);
+      indicator::breeze(500, 500, buttonColor);
     }
     else
     {
       // unhandled case (white blink)
-      button::blink(300, 300, utils::ColorSpace::WHITE);
+      indicator::blink(300, 300, utils::ColorSpace::WHITE);
     }
   }
 }
@@ -661,9 +662,9 @@ void handle_pre_output_light_state()
     // alert user of low battery
     for (uint8_t i = 0; i < 10; i++)
     {
-      button::set_color(utils::ColorSpace::RED);
+      indicator::set_color(utils::ColorSpace::RED);
       delay_ms(100);
-      button::set_color(utils::ColorSpace::BLACK);
+      indicator::set_color(utils::ColorSpace::BLACK);
       delay_ms(100);
     }
 
@@ -751,6 +752,8 @@ void handle_shutdown_state()
 
   // deactivate strip power
   ledpower::write_current(0); // power down
+  // TODO: this 12v activation should disapear
+  ledpower::deactivate_12v_power();
   delay_ms(10);
 
   // disable bluetooth, imu and microphone
@@ -765,7 +768,7 @@ void handle_shutdown_state()
   write_parameters();
 
   // deactivate indicators
-  button::set_color(utils::ColorSpace::BLACK);
+  indicator::set_color(utils::ColorSpace::BLACK);
 
   // power the system off
   true_power_off();

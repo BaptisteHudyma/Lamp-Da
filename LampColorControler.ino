@@ -5,6 +5,7 @@
 #include "src/system/physical/battery.h"
 #include "src/system/physical/bluetooth.h"
 #include "src/system/physical/button.h"
+#include "src/system/physical/indicator.h"
 #include "src/system/physical/IMU.h"
 #include "src/system/physical/fileSystem.h"
 #include "src/system/physical/MicroPhone.h"
@@ -82,14 +83,15 @@ void setup()
 
   // set up button colors and callbacks
   button::init();
+  indicator::init();
 
   if (shouldAlertUser)
   {
     for (int i = 0; i < 5; i++)
     {
-      button::set_color(utils::ColorSpace::WHITE);
+      indicator::set_color(utils::ColorSpace::WHITE);
       delay_ms(300);
-      button::set_color(utils::ColorSpace::BLACK);
+      indicator::set_color(utils::ColorSpace::BLACK);
       delay_ms(300);
     }
   }

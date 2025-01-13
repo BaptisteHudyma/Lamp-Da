@@ -1,8 +1,6 @@
 #ifndef FILESYSTEM_SIMULATOR_H
 #define FILESYSTEM_SIMULATOR_H
 
-#include <serial_simulator.h>
-
 #include <cstdio>
 #include <unistd.h>
 

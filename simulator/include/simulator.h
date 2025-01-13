@@ -37,7 +37,6 @@ using utils::map;
 
 #include "src/system/utils/coordinates.cpp"
 
-#include <serial_simulator.h>
 #include <filesystem_simulator.h>
 #include <behavior_simulator.h>
 

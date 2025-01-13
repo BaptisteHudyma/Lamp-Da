@@ -37,13 +37,13 @@ void activate_12v_power()
 {
   // power on
   LedPowerPin.set_pin_mode(DigitalPin::Mode::kOutput);
-  LedPowerPin.write(true);
+  LedPowerPin.set_high(true);
 }
 
 void deactivate_12v_power()
 {
   // power off
-  LedPowerPin.write(false);
+  LedPowerPin.set_high(false);
   LedPowerPin.set_pin_mode(DigitalPin::Mode::kOutputHighCurrent);
 }
 

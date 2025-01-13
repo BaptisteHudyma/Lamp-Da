@@ -89,10 +89,7 @@ void raise_battery_alert()
       {
         AlertManager.raise_alert(Alerts::BATTERY_LOW);
       }
-      else if (percent > batteryLow + 1)
-      {
-        AlertManager.clear_alert(Alerts::BATTERY_LOW);
-      }
+      // else: no need to clear, it will clear on it's one when charging
     }
   }
 }
