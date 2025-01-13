@@ -14,7 +14,7 @@ namespace ledpower {
  */
 void write_current(const float current)
 {
-  float currentCurrent = constrain(current, 0, maxPowerConsumption_A);
+  float currentCurrent = lmpd_constrain(current, 0, maxPowerConsumption_A);
 
   // map current value to driver value
   const uint8_t mappedDriverValue = utils::map(currentCurrent, 0, maxPowerConsumption_A, 0, 255);

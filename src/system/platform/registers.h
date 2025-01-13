@@ -1,6 +1,6 @@
 // do not use pragma once here, has this can be mocked
-#ifndef PLATFORM_REGISTERS
-#define PLATFORM_REGISTERS
+#ifndef PLATFORM_REGISTERS_H
+#define PLATFORM_REGISTERS_H
 
 #include <cstdint>
 

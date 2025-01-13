@@ -14,6 +14,11 @@
 #define FADE16(x)   scale16(x, x)
 #define FADE8(x)    scale8(x, x)
 
+template<typename T, typename V, typename U> static constexpr T lmpd_constrain(const T& a, const V& mini, const U& maxi)
+{
+  return (a <= mini) ? mini : (a >= maxi) ? maxi : a;
+}
+
 /**
  * \brief Use this to convert color to bytes
  */
@@ -119,7 +124,7 @@ constexpr double analogReadToVoltage(const uint16_t analogVal)
 }
 constexpr uint16_t voltageToAnalogRead(const float voltage)
 {
-  return constrain(voltage, 0, internalReferenceVoltage) * ADC_MAX_VALUE / internalReferenceVoltage;
+  return lmpd_constrain(voltage, 0, internalReferenceVoltage) * ADC_MAX_VALUE / internalReferenceVoltage;
 }
 
 // convert a liion battery level to a linear model
@@ -141,7 +146,7 @@ constexpr uint16_t liion_level_to_battery_percent(const uint16_t liionLevelPerce
 constexpr uint16_t get_battery_level_percent(const uint16_t batteryLevel)
 {
   return liion_level_to_battery_percent(
-          constrain(map(batteryLevel, batteryMinVoltage_mV, batteryMaxVoltage_mV, 0, 10000), 0, 10000));
+          lmpd_constrain(map(batteryLevel, batteryMinVoltage_mV, batteryMaxVoltage_mV, 0, 10000), 0, 10000));
 }
 
 constexpr uint16_t get_battery_max_safe_level() { return get_battery_level_percent(batteryMaxVoltageSafe_mV); }
@@ -152,7 +157,7 @@ constexpr uint16_t get_battery_level(const uint16_t batteryVoltage_mV)
 {
   // get the result of the total battery life, map it to the safe battery level
   // indicated by user
-  return constrain(
+  return lmpd_constrain(
           map(batteryVoltage_mV, get_battery_min_safe_level(), get_battery_max_safe_level(), 0, 10000), 0, 10000);
 }
 

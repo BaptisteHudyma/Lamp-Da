@@ -865,6 +865,8 @@ extern "C" {
 #define CHUNK_RESPONSE 0
 #define CHUNK_REQUEST  1
 
+#define NULL 0
+
 /* collision avoidance Rp values in REV 3.0 */
 #define SINK_TX_OK TYPEC_RP_3A0
 #define SINK_TX_NG TYPEC_RP_1A5

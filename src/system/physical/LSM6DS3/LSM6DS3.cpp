@@ -704,9 +704,7 @@ void LSM6DS3::fifoBegin(void)
 
   // Write the data
   writeRegister(LSM6DS3_ACC_GYRO_FIFO_CTRL1, thresholdLByte);
-  // Serial.println(thresholdLByte, HEX);
   writeRegister(LSM6DS3_ACC_GYRO_FIFO_CTRL2, thresholdHByte);
-  // Serial.println(thresholdHByte, HEX);
   writeRegister(LSM6DS3_ACC_GYRO_FIFO_CTRL3, tempFIFO_CTRL3);
   writeRegister(LSM6DS3_ACC_GYRO_FIFO_CTRL4, tempFIFO_CTRL4);
   writeRegister(LSM6DS3_ACC_GYRO_FIFO_CTRL5, tempFIFO_CTRL5);

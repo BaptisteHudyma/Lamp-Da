@@ -2,6 +2,8 @@
 #include "simulator/mocks/m_time.h"
 #include "simulator/mocks/m_gpio.h"
 #include "simulator/mocks/m_i2c.h"
+#include "simulator/mocks/m_print.h"
+#include "simulator/mocks/m_register.h"
 
 #include <Arduino.h>
 #include <tuple>

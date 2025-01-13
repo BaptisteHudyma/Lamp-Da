@@ -1,13 +1,12 @@
 #include "power_source.h"
 
-#include <Arduino.h>
-
 #include "PDlib/drivers/usb_pd_driver.h"
 #include "PDlib/drivers/tcpm_driver.h"
 #include "PDlib/usb_pd.h"
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
+#include "src/system/platform/print.h"
 
 // we only have one device, so always index 0
 static constexpr int devicePort = 0;
@@ -168,17 +167,13 @@ struct UsbPDData
   {
     if (hasChanged)
     {
-      Serial.print(time_ms());
-      Serial.print(": ");
-      Serial.print(isPowerCableDetected);
-      Serial.print(isVbusPowered);
-      Serial.print(isPowerSourceDetected);
-      Serial.print(isUsbPd);
-      Serial.print(": ");
-      // Serial.print(vbusVoltage / 1000.0);
-      // Serial.print("V, ");
-      Serial.println(pdAlgoStatus);
-
+      lampda_print("%d: %d%d%d%d: %fV",
+                   time_ms(),
+                   isPowerCableDetected,
+                   isVbusPowered,
+                   isPowerSourceDetected,
+                   isUsbPd,
+                   vbusVoltage / 1000.0);
       hasChanged = false;
     }
   }

@@ -45,15 +45,6 @@ using std::abs;
 
 float radians(float degrees) { return (degrees / 180.f) * M_PI; }
 
-template<typename T, typename V, typename U> static constexpr T constrain(const T& a, const V& mini, const U& maxi)
-{
-  if (a <= mini)
-    return mini;
-  if (a >= maxi)
-    return maxi;
-  return a;
-}
-
 template<typename T, typename V> static constexpr T pow(const T& a, const V& b)
 {
   T acc = 1;

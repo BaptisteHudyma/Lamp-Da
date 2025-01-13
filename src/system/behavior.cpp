@@ -22,6 +22,7 @@
 #include "src/system/utils/state_machine.h"
 
 #include "src/system/platform/time.h"
+#include "src/system/platform/print.h"
 
 #include "src/user/functions.h"
 #include "utils/state_machine.h"
@@ -777,8 +778,7 @@ void state_machine_behavior()
   // if state changed, display the new state
   if (mainMachine.state_just_changed())
   {
-    Serial.print("BEHAVIOR_S_MACH > switched to state ");
-    Serial.println(BehaviorStatesStr[mainMachine.get_state()]);
+    lampda_print("BEHAVIOR_S_MACH > switched to state %s", BehaviorStatesStr[mainMachine.get_state()]);
   }
 
   switch (mainMachine.get_state())

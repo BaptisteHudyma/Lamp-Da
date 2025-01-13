@@ -7,6 +7,7 @@
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
+#include "src/system/platform/print.h"
 
 namespace imu {
 
@@ -91,13 +92,8 @@ Reading get_reading()
   reads.accel.z = IMU.readFloatAccelZ();
 
   // use this to debug the axes
-#if 0
-  Serial.print(reads.accel.x);
-  Serial.print(",");
-  Serial.print(reads.accel.y);
-  Serial.print(",");
-  Serial.print(reads.accel.z);
-  Serial.println("");
+#if 1
+  lampda_print("%f, %f, %f", reads.accel.x, reads.accel.y, reads.accel.z);
 #endif
 
   reads.gyro.x = IMU.readFloatGyroX();

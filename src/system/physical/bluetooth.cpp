@@ -5,6 +5,7 @@
 #include "src/system/alerts.h"
 
 #include "src/system/platform/time.h"
+#include "src/system/platform/print.h"
 
 namespace bluetooth {
 
@@ -50,19 +51,19 @@ void byte_to_str(char* buff, uint8_t val)
 void connect_callback(uint16_t conn_hdl)
 {
   AlertManager.clear_alert(Alerts::BLUETOOTH_ADVERT);
-  Serial.println("Bluetooth connected");
+  lampda_print("Bluetooth connected");
 }
 
 void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
 {
   AlertManager.clear_alert(Alerts::BLUETOOTH_ADVERT);
-  Serial.println("Bluetooth disconnected");
+  lampda_print("Bluetooth disconnected");
 }
 
 void adv_stop_callback(void)
 {
   AlertManager.clear_alert(Alerts::BLUETOOTH_ADVERT);
-  Serial.println("Advertising time passed, advertising will now stop.");
+  lampda_print("Advertising time passed, advertising will now stop.");
 }
 
 void startup_sequence()
@@ -86,8 +87,7 @@ void startup_sequence()
   Bluefruit.setName(ble_name);
 
   // Configure and start the BLE Uart service
-  Serial.println("Blutooth started under the name:");
-  Serial.println(ble_name);
+  lampda_print("Blutooth started under the name:%s", ble_name);
 
   // Advertising packet
   Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
@@ -196,7 +196,7 @@ uint8_t readPacket(BLEUart* ble_uart, uint16_t timeout)
   // Throw an error message if the checksum's don't match
   if (xsum != checksum)
   {
-    Serial.print("Checksum mismatch in packet");
+    lampda_print("Checksum mismatch in packet");
     return 0;
   }
 
@@ -214,23 +214,7 @@ void parse_messages()
   if (len == 0)
     return;
 
-  // Color packet
-  if (packetbuffer[1] == 'C')
-  {
-    uint8_t red = packetbuffer[2];
-    uint8_t green = packetbuffer[3];
-    uint8_t blue = packetbuffer[4];
-    Serial.print("RGB #");
-    if (red < 0x10)
-      Serial.print("0");
-    Serial.print(red, HEX);
-    if (green < 0x10)
-      Serial.print("0");
-    Serial.print(green, HEX);
-    if (blue < 0x10)
-      Serial.print("0");
-    Serial.println(blue, HEX);
-  }
+  // TODO: handle ble messages
 }
 
 } // namespace bluetooth

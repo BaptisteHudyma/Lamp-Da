@@ -1,12 +1,12 @@
 #include "charging_ic.h"
 
 #include <cstdint>
-#include "Arduino.h"
 
 #include "BQ25703A.h"
 #include "src/system/alerts.h"
 
 #include "src/system/platform/time.h"
+#include "src/system/platform/print.h"
 #include "src/system/platform/gpio.h"
 
 namespace BQ25703A {
@@ -61,13 +61,14 @@ void run_fault_detection()
       BQ25703Areg.chargerStatus.Fault_Latchoff() or BQ25703Areg.chargerStatus.Fault_OTG_OVP() or
       BQ25703Areg.chargerStatus.Fault_OTG_UCP())
   {
-    Serial.print(BQ25703Areg.chargerStatus.Fault_ACOV());
-    Serial.print(BQ25703Areg.chargerStatus.Fault_BATOC());
-    Serial.print(BQ25703Areg.chargerStatus.Fault_ACOC());
-    Serial.print(BQ25703Areg.chargerStatus.SYSOVP_STAT());
-    Serial.print(BQ25703Areg.chargerStatus.Fault_Latchoff());
-    Serial.print(BQ25703Areg.chargerStatus.Fault_OTG_OVP());
-    Serial.println(BQ25703Areg.chargerStatus.Fault_OTG_UCP());
+    lampda_print("%d%d%d%d%d%d%d",
+                 BQ25703Areg.chargerStatus.Fault_ACOV(),
+                 BQ25703Areg.chargerStatus.Fault_BATOC(),
+                 BQ25703Areg.chargerStatus.Fault_ACOC(),
+                 BQ25703Areg.chargerStatus.SYSOVP_STAT(),
+                 BQ25703Areg.chargerStatus.Fault_Latchoff(),
+                 BQ25703Areg.chargerStatus.Fault_OTG_OVP(),
+                 BQ25703Areg.chargerStatus.Fault_OTG_UCP());
     status_s = Status_t::ERROR_HAS_FAULTS;
   }
   // reset fault flag
@@ -416,7 +417,7 @@ void program_input_current_limit()
   chargerIc.readRegEx(BQ25703Areg.chargeOption0);
   if (BQ25703Areg.chargeOption0.EN_IDPM() == 0)
   {
-    Serial.println("EN IDPM not enabled");
+    lampda_print("EN IDPM not enabled");
     status_s = Status_t::ERROR;
     return;
   }

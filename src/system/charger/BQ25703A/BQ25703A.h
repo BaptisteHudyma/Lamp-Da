@@ -16,7 +16,12 @@ Library for basic interfacing with BQ25703A battery management IC from TI
 
 #include "src/system/platform/i2c.h"
 
+#include "src/system/utils/utils.h"
+#include <cstdint>
+
 namespace bq2573a {
+
+using byte = uint8_t;
 
 // Platform specific
 constexpr uint8_t i2cObjectIndex = 0;
@@ -64,7 +69,7 @@ public:
   // Initialise the variable here, but it will be written from the main program
   static const byte BQ25703Aaddr = BQ25703ADevaddr;
 
-  template<typename T> static boolean readReg(T* dataParam, const uint8_t arrLen)
+  template<typename T> static bool readReg(T* dataParam, const uint8_t arrLen)
   {
     // This is a function for reading data words.
     // The number of bytes that make up a word is either 1 or 2.
@@ -85,7 +90,7 @@ public:
       return false;
     }
   }
-  template<typename T> boolean readRegEx(T& dataParam)
+  template<typename T> bool readRegEx(T& dataParam)
   {
     // This is a function for reading data words.
     // The number of bytes that make up a word is 2.
@@ -106,7 +111,7 @@ public:
     }
   }
   // used by external functions to write registers
-  template<typename T> static boolean writeRegEx(T dataParam)
+  template<typename T> static bool writeRegEx(T dataParam)
   {
     byte valBytes[2];
     valBytes[0] = dataParam.val0;
@@ -180,7 +185,7 @@ public:
     uint16_t set(const uint16_t value)
     {
       // convert to authorized values
-      const uint16_t constraint = constrain(value, minVal(), maxVal()) - minVal();
+      const uint16_t constraint = lmpd_constrain(value, minVal(), maxVal()) - minVal();
       // break it down to the correct resolution (integer division)
       const uint16_t flatValue = constraint / resolution();
       // convert to binary word
@@ -706,12 +711,12 @@ public:
   };
 
 private:
-  static boolean readDataReg(const byte regAddress, byte* dataVal, const uint8_t arrLen)
+  static bool readDataReg(const byte regAddress, byte* dataVal, const uint8_t arrLen)
   {
     return i2c_readData(i2cObjectIndex, BQ25703Aaddr, regAddress, arrLen, dataVal, usesStopBit ? 1 : 0) == 0;
   }
 
-  static boolean writeData16(const byte regAddress, uint16_t data)
+  static bool writeData16(const byte regAddress, uint16_t data)
   {
     return i2c_write16(i2cObjectIndex, BQ25703Aaddr, regAddress, data, usesStopBit ? 1 : 0) == 0;
   }

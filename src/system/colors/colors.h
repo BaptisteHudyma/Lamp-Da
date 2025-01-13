@@ -8,6 +8,7 @@
 
 #include "src/system/colors/palettes.h"
 #include "src/system/utils/constants.h"
+#include "src/system/utils/utils.h"
 
 #include "src/system/platform/time.h"
 
@@ -23,7 +24,7 @@ public:
   uint32_t get_color(const uint16_t index = 0, const uint16_t maxIndex = 0) const
   {
     // prevent the user to break the system
-    return get_color_internal(constrain(index, 0, maxIndex), maxIndex);
+    return get_color_internal(lmpd_constrain(index, 0, maxIndex), maxIndex);
   }
 
   /**
