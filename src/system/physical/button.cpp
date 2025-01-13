@@ -1,3 +1,6 @@
+#ifndef PHYSICAL_BUTTON_CPP
+#define PHYSICAL_BUTTON_CPP
+
 #include "button.h"
 
 #include "src/system/utils/constants.h"
@@ -109,3 +112,5 @@ void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
 }
 
 } // namespace button
+
+#endif

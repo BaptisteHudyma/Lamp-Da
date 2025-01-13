@@ -9,6 +9,8 @@
 #include <vector>
 #include <cstdarg>
 
+#include "src/system/platform/print.h"
+
 /**
  * \brief call once at program start
  */

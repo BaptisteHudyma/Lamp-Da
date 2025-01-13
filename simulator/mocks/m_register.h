@@ -4,7 +4,7 @@
 
 #define PLATFORM_REGISTER_CPP
 
-#include <cstdint>
+#include "src/system/platform/registers.h"
 
 // set tup the software watchedog
 void setup_watchdog(const uint32_t timeoutDelaySecond) {}
