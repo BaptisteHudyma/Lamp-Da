@@ -15,6 +15,8 @@
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 
+#include "src/system/platform/gpio.h"
+
 namespace behavior {
 
 // NeoPixel brightness, 0 (min) to 255 (max)
@@ -59,7 +61,7 @@ extern void set_woke_up_from_vbus(const bool wokeUp);
 extern void loop();
 
 // return true if the program is in the process of shuting down
-bool is_shuting_down();
+extern bool is_shuting_down();
 
 } // namespace behavior
 

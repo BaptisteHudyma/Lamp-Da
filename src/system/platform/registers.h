@@ -29,5 +29,13 @@ extern bool is_started_from_interrupt();
 
 typedef void (*taskfunc_t)(void);
 extern void start_thread(taskfunc_t taskFunction);
+// make this thread pass the control to other threads
+extern void yield_this_thread();
+
+// make a read of the CPU temp
+extern float read_CPU_temperature_degreesC();
+
+// Put the system to sleep, with a wake up pin
+extern void go_to_sleep(int wakeUpPin);
 
 #endif

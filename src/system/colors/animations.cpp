@@ -468,9 +468,9 @@ void candle(const palette_t& palette, LedStrip& strip)
     // declare a new phase
     phaseStartTime = time_ms();
     // set flame parameters
-    targetPhaseAmplitude = random(flickeringMin, flickeringMax) + 1;
-    targetPhaseStrength = random(targetPhaseAmplitude / 4, 255);
-    phaseDuration = random(minPhaseDuration, maxPhaseDuration);
+    targetPhaseAmplitude = random8(flickeringMin, flickeringMax) + 1;
+    targetPhaseStrength = random8(targetPhaseAmplitude / 4, 255);
+    phaseDuration = random16(minPhaseDuration, maxPhaseDuration);
     lastStrenght = currentStrenght;
 
     sequencePerPhase = phaseDuration / sequenceDividerPeriod;
@@ -491,12 +491,12 @@ void candle(const palette_t& palette, LedStrip& strip)
     const uint8_t minBrighness = currentStrenght - min(currentStrenght, targetPhaseAmplitude / 2);
     const uint8_t maxBrighness = currentStrenght + min(UINT8_MAX - currentStrenght, targetPhaseAmplitude / 2);
 
-    uint8_t brightness = random(minBrighness, maxBrighness);
+    uint8_t brightness = random8(minBrighness, maxBrighness);
     for (uint16_t i = 0; i < LED_COUNT; ++i)
     {
       // vary flicker wiht bigger amplitude
       if (i % 4 == 0)
-        brightness = random(minBrighness, maxBrighness);
+        brightness = random8(minBrighness, maxBrighness);
       strip.setPixelColor(i,
                           get_color_from_palette(noise8::inoise(noisePosition + noiseScale * i), palette, brightness));
     }
@@ -563,8 +563,8 @@ void mode_2DPolarLights(
     step = 0;
   }
 
-  float adjustHeight = (float)map(rows, 8, 32, 28, 12); // maybe use mapf() ???
-  uint16_t adjScale = map(cols, 8, 64, 310, 63);
+  float adjustHeight = (float)utils::map(rows, 8, 32, 28, 12); // maybe use mapf() ???
+  uint16_t adjScale = utils::map(cols, 8, 64, 310, 63);
   /*
     if (SEGENV.aux1 != SEGMENT.custom1/12) {   // Hacky palette rotation. We
     need that black. SEGENV.aux1 = SEGMENT.custom1/12; for (int i = 0; i < 16;
@@ -575,8 +575,8 @@ void mode_2DPolarLights(
       }
     }
   */
-  uint16_t _scale = map(scale, 0, 255, 30, adjScale);
-  byte _speed = map(speed, 0, 255, 128, 16);
+  uint16_t _scale = utils::map(scale, 0, 255, 30, adjScale);
+  byte _speed = utils::map(speed, 0, 255, 128, 16);
 
   for (int x = 0; x <= cols; x++)
   {
@@ -609,7 +609,7 @@ void mode_2DDrift(const uint8_t intensity, const uint8_t speed, const palette_t&
   unsigned long t_20 = t / 20; // softhack007: pre-calculating this gives about 10% speedup
   for (float i = 1; i < maxDim; i += 0.25)
   {
-    float angle = radians(t * (maxDim - i));
+    float angle = to_radians(t * (maxDim - i));
     uint16_t myX = colsCenter + (sin_t(angle) * i);
     uint16_t myY = rowsCenter + (cos_t(angle) * i);
 
@@ -714,7 +714,7 @@ void mode_lake(const uint8_t speed, const palette_t& palette, LedStrip& strip)
   {
     uint8_t index = cos8((i * 15) + wave1) / 2 + cubicwave8((i * 23) + wave2) / 2;
     uint8_t lum = (index > wave3) ? index - wave3 : 0;
-    // fastled_col = ColorFromPalette(SEGPALETTE, map(index,0,255,0,240), lum,
+    // fastled_col = ColorFromPalette(SEGPALETTE, utils::map(index,0,255,0,240), lum,
     // LINEARBLEND); SEGMENT.setPixelColor(i, fastled_col.red,
     // fastled_col.green, fastled_col.blue);
     strip.setPixelColor(i, get_color_from_palette(index, palette, lum));
@@ -781,7 +781,7 @@ void running_base(
       }
       else
       {
-        a = map(a, 16, 255, 64, 192);
+        a = utils::map(a, 16, 255, 64, 192);
       }
       a = 255 - a;
     }

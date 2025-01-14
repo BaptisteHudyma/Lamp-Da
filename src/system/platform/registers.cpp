@@ -49,4 +49,10 @@ bool is_started_from_interrupt() { return (readResetReason() & POWER_RESETREAS_O
 
 void start_thread(taskfunc_t taskFunction) { Scheduler.startLoop(taskFunction); }
 
+void yield_this_thread() { yield(); }
+
+float read_CPU_temperature_degreesC() { return readCPUTemperature(); }
+
+void go_to_sleep(int wakeUpPin) { systemOff(wakeUpPin, 0); }
+
 #endif

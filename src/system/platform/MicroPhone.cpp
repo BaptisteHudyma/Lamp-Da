@@ -1,3 +1,6 @@
+#ifndef MICROPHONE_IMPL_CPP
+#define MICROPHONE_IMPL_CPP
+
 #include "MicroPhone.h"
 
 #include <PDM.h>
@@ -180,3 +183,5 @@ SoundStruct get_fft()
 }
 
 } // namespace microphone
+
+#endif

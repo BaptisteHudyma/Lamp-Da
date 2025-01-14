@@ -2,33 +2,33 @@
 
 #include <cstdint>
 
-#include "charger/charger.h"
-#include "src/system/platform/gpio.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
+
 #include "src/system/alerts.h"
 #include "src/system/charger/charger.h"
+
 #include "src/system/physical/battery.h"
-#include "src/system/physical/bluetooth.h"
 #include "src/system/physical/button.h"
 #include "src/system/physical/indicator.h"
-#include "src/system/physical/fileSystem.h"
 #include "src/system/physical/IMU.h"
 #include "src/system/physical/led_power.h"
-#include "src/system/physical/MicroPhone.h"
+
 #include "src/system/utils/colorspace.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
-
 #include "src/system/utils/state_machine.h"
+#include "src/system/utils/input_output.h"
 
+#include "src/system/platform/MicroPhone.h"
+#include "src/system/platform/bluetooth.h"
+#include "src/system/platform/fileSystem.h"
 #include "src/system/platform/time.h"
 #include "src/system/platform/print.h"
+#include "src/system/platform/gpio.h"
+#include "src/system/platform/registers.h"
 
 #include "src/user/functions.h"
-#include "utils/state_machine.h"
-
-#include "src/system/utils/input_output.h"
 
 namespace behavior {
 
@@ -183,7 +183,7 @@ void true_power_off()
 
   // power down nrf52.
   // on wake up, it'll start back from the setup phase
-  systemOff(ButtonPin.pin(), 0);
+  go_to_sleep(ButtonPin.pin());
   /*
    * Nothing after this, systel is off !
    */
@@ -383,11 +383,11 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
       {
         const float percentOfTimeToGoUp = float(MAX_BRIGHTNESS - currentBrightness) * brightnessDivider;
 
-        const auto newBrightness = map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
-                                       0,
-                                       BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
-                                       currentBrightness,
-                                       MAX_BRIGHTNESS);
+        const auto newBrightness = utils::map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
+                                              0,
+                                              BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
+                                              currentBrightness,
+                                              MAX_BRIGHTNESS);
 
         update_brightness(newBrightness);
       }
@@ -404,11 +404,11 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
       {
         const double percentOfTimeToGoDown = float(currentBrightness - MIN_BRIGHTNESS) * brightnessDivider;
 
-        const auto newBrightness = map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
-                                       0,
-                                       BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
-                                       currentBrightness,
-                                       MIN_BRIGHTNESS);
+        const auto newBrightness = utils::map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
+                                              0,
+                                              BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
+                                              currentBrightness,
+                                              MIN_BRIGHTNESS);
 
         update_brightness(newBrightness);
       }
@@ -424,7 +424,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 void set_cpu_temperarure_alerts()
 {
   // temperature alerts
-  const float procTemp = readCPUTemperature();
+  const float procTemp = read_CPU_temperature_degreesC();
   if (procTemp >= criticalSystemTemp_c)
   {
     AlertManager.raise_alert(TEMP_CRITICAL);
@@ -748,7 +748,7 @@ void handle_shutdown_state()
 {
   isShutingDown_s = true;
   // let other thread do stuff
-  yield();
+  yield_this_thread();
 
   // deactivate strip power
   ledpower::write_current(0); // power down
@@ -849,6 +849,8 @@ bool is_shuting_down() { return isShutingDown_s; }
 
 const char* ensure_build_canary()
 {
+#warning "compiling ensure_build_canary"
+
 #ifdef LMBD_LAMP_TYPE__SIMPLE
   return "_lmbd__build_canary__simple";
 #endif

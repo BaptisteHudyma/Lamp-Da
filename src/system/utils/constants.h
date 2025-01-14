@@ -1,6 +1,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include <cmath>
 #include <cstdint>
 
 #ifdef USE_TINYUSB // For Serial when selecting TinyUSB
@@ -21,9 +22,9 @@ constexpr float c_HALF_PI = 1.5707963267948;
 
 using byte = uint8_t;
 
-constexpr uint8_t ADC_RES_EXP = 12;                     // resolution of the ADC, in bits (can be 8, 10, 12 or 14)
-constexpr uint32_t ADC_MAX_VALUE = pow(2, ADC_RES_EXP); // corresponding max value
-constexpr float internalReferenceVoltage = 3.0;         // 3V
+constexpr uint8_t ADC_RES_EXP = 12;                        // resolution of the ADC, in bits (can be 8, 10, 12 or 14)
+static const uint32_t ADC_MAX_VALUE = pow(2, ADC_RES_EXP); // corresponding max value
+constexpr float internalReferenceVoltage = 3.0;            // 3V
 
 // map the input ADC out to voltage reading
 constexpr float voltageMeasurmentResistor1_Ohm = 221000;

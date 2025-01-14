@@ -7,6 +7,7 @@
 
 #include "src/system/ext/math8.h"
 #include "src/system/ext/scale8.h"
+#include "src/system/ext/random8.h"
 
 #include "colorspace.h"
 
@@ -46,13 +47,13 @@ uint32_t get_random_color()
   static uint8_t count;
 
   uint8_t color[3];
-  color[count] = random(256);
-  uint8_t a0 = random(1);
+  color[count] = random8(255);
+  uint8_t a0 = random8(1);
   uint8_t a1 = ((!a0) + count + 1) % 3;
   a0 = (count + a0 + 1) % 3;
   color[a0] = 255 - color[count];
   color[a1] = 0;
-  count += random(15); // to avoid repeating patterns
+  count += random8(15); // to avoid repeating patterns
   count %= 3;
 
   union COLOR colorArray;

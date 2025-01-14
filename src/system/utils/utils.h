@@ -19,6 +19,19 @@ template<typename T, typename V, typename U> static constexpr T lmpd_constrain(c
   return (a <= mini) ? mini : (a >= maxi) ? maxi : a;
 }
 
+//
+// ambiguous min/fmin/max/fmax/abs
+//
+
+#ifndef Arduino_h
+
+template<typename N, typename M> static constexpr N min(const N a, const M b) { return a < b ? a : b; }
+template<typename N, typename M> static constexpr N max(const N a, const M b) { return a > b ? a : b; }
+
+#endif
+
+template<typename N> static constexpr N to_radians(N degrees) { return degrees * M_PI / 180.f; }
+
 /**
  * \brief Use this to convert color to bytes
  */
@@ -146,7 +159,7 @@ constexpr uint16_t liion_level_to_battery_percent(const uint16_t liionLevelPerce
 constexpr uint16_t get_battery_level_percent(const uint16_t batteryLevel)
 {
   return liion_level_to_battery_percent(
-          lmpd_constrain(map(batteryLevel, batteryMinVoltage_mV, batteryMaxVoltage_mV, 0, 10000), 0, 10000));
+          lmpd_constrain(utils::map(batteryLevel, batteryMinVoltage_mV, batteryMaxVoltage_mV, 0, 10000), 0, 10000));
 }
 
 constexpr uint16_t get_battery_max_safe_level() { return get_battery_level_percent(batteryMaxVoltageSafe_mV); }
@@ -158,7 +171,9 @@ constexpr uint16_t get_battery_level(const uint16_t batteryVoltage_mV)
   // get the result of the total battery life, map it to the safe battery level
   // indicated by user
   return lmpd_constrain(
-          map(batteryVoltage_mV, get_battery_min_safe_level(), get_battery_max_safe_level(), 0, 10000), 0, 10000);
+          utils::map(batteryVoltage_mV, get_battery_min_safe_level(), get_battery_max_safe_level(), 0, 10000),
+          0,
+          10000);
 }
 
 }; // namespace utils

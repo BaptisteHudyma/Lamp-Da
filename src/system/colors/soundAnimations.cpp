@@ -55,8 +55,8 @@ void fft_display(const uint8_t speed, const uint8_t scale, const palette_t& pale
 
   for (uint8_t x = 0; x < cols; ++x)
   {
-    const uint8_t mappedX = map(x, 0, cols, 0, microphone::numberOfFFtChanels - 1);
-    const uint8_t mappedY = map(fftRes.fft[mappedX], 0, 255, 0, rows);
+    const uint8_t mappedX = utils::map(x, 0, cols, 0, microphone::numberOfFFtChanels - 1);
+    const uint8_t mappedY = utils::map(fftRes.fft[mappedX], 0, 255, 0, rows);
 
     if (mappedY > previousBarHeight[x])
       previousBarHeight[x] = mappedY; // drive the peak up
@@ -64,7 +64,7 @@ void fft_display(const uint8_t speed, const uint8_t scale, const palette_t& pale
     uint32_t ledColor = 0; // black
     for (int y = 0; y < mappedY; y++)
     {
-      uint8_t colorIndex = map(y, 0, rows - 1, 0, 255);
+      uint8_t colorIndex = utils::map(y, 0, rows - 1, 0, 255);
 
       ledColor = get_color_from_palette(colorIndex, palette);
       strip.setPixelColorXY(x, rows - y, ledColor);
