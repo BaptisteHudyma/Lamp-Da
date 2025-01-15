@@ -1,9 +1,6 @@
-#ifndef MOCK_I2C_H
-#define MOCK_I2C_H
+#include "src/system/platform/i2c.h"
 
 #define PLATFORM_I2C_CPP
-
-#include "src/system/platform/i2c.h"
 
 #include <cstdint>
 
@@ -24,5 +21,3 @@ int i2c_xfer(
 {
   return 0;
 }
-
-#endif

@@ -1,7 +1,12 @@
 #include "fileSystem.h"
 
+#ifndef LMBD_SIMULATION
 #include <Adafruit_LittleFS.h>
 #include <InternalFileSystem.h>
+#else
+#include "simulator/mocks/Adafruit_LittleFS.h"
+#include "simulator/mocks/InternalFileSystem.h"
+#endif
 
 #include <cassert>
 #include <unordered_map>

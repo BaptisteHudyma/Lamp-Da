@@ -3,3 +3,4 @@ _build
 .gitignore
 .lampda.par
 */**/*.o
+*/**/*.d

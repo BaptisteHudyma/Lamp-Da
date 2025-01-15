@@ -1,9 +1,6 @@
-#ifndef MOCK_TIME_H
-#define MOCK_TIME_H
+#include "src/system/platform/time.h"
 
 #define PLATFORM_TIME_CPP
-
-#include "src/system/platform/time.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -19,5 +16,3 @@ uint32_t time_us(void) { return s_clock.getElapsedTime().asMicroseconds(); }
 void delay_ms(uint32_t dwMs) { sf::sleep(sf::milliseconds(dwMs)); }
 
 void delay_us(uint32_t dwUs) { sf::sleep(sf::microseconds(dwUs)); }
-
-#endif

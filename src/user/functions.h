@@ -9,7 +9,7 @@
 #include "src/system/utils/strip.h"
 
 // (extern declarations)
-namespace user {
+namespace user::_private {
 extern LedStrip strip;
 }
 #endif

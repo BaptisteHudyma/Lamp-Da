@@ -128,6 +128,6 @@ int DigitalPin::pin() const { return mImpl->mDigitalPin; }
 
 void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode) { mImpl->attach_callback(func, mode); }
 
-extern void brigthness_write_analog(uint16_t value) { analogWrite(OUT_BRIGHTNESS, value); }
+void brigthness_write_analog(uint16_t value) { analogWrite(OUT_BRIGHTNESS, value); }
 
 #endif

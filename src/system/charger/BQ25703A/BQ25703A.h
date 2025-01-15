@@ -143,13 +143,15 @@ public:
   // Base class for register operations
   struct IBaseRegister
   {
+    virtual ~IBaseRegister() {};
+
     virtual uint16_t address() const = 0;
 
     virtual uint16_t minVal() const = 0;
     virtual uint16_t maxVal() const = 0;
     virtual uint16_t resolution() const = 0;
 
-    virtual uint8_t bitLenght() const;
+    virtual uint8_t bitLenght() const = 0;
     virtual uint8_t offset() const = 0;
 
     uint16_t mask() const

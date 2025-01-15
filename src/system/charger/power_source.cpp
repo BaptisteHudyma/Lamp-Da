@@ -99,7 +99,7 @@ struct UsbPDData
   uint16_t maxInputCurrent;
   uint16_t maxInputVoltage;
 
-  char* pdAlgoStatus;
+  std::string pdAlgoStatus;
 
   // when true, this struct has changed !
   bool hasChanged = false;
@@ -155,7 +155,7 @@ struct UsbPDData
       maxInputVoltage = newmaxInputVoltage;
     }
 
-    char* newStatus = get_state_cstr(devicePort);
+    const auto& newStatus = std::string(get_state_cstr(devicePort));
     if (newStatus != pdAlgoStatus)
     {
       hasChanged = true;

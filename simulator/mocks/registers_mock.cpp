@@ -1,10 +1,12 @@
-// do not use pragma once here, has this can be mocked
-#ifndef MOCK_REGISTERS_H
-#define MOCK_REGISTERS_H
+#include "src/system/platform/registers.h"
+
+#include "simulator/include/hardware_influencer.h"
 
 #define PLATFORM_REGISTER_CPP
 
-#include "src/system/platform/registers.h"
+namespace mock_registers {
+bool isDeepSleep;
+}
 
 // set tup the software watchedog
 void setup_watchdog(const uint32_t timeoutDelaySecond) {}
@@ -32,5 +34,8 @@ bool is_started_from_interrupt() { return true; }
 
 typedef void (*taskfunc_t)(void);
 void start_thread(taskfunc_t taskFunction) {}
+void yield_this_thread() {}
 
-#endif
+float read_CPU_temperature_degreesC() { return 30; }
+
+void go_to_sleep(int wakeUpPin) { mock_registers::isDeepSleep = true; };

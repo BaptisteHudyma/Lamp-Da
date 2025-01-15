@@ -32,6 +32,7 @@ void init()
 static volatile bool buttonPressListener = false;
 void read_while_pressed()
 {
+  // this is a pullup, so higgh means no button press
   if (wasButtonPressedDetected and ButtonPin.is_high())
   {
     wasButtonPressedDetected = false;
