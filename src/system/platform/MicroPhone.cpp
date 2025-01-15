@@ -1,3 +1,6 @@
+#ifndef MICROPHONE_IMPL_CPP
+#define MICROPHONE_IMPL_CPP
+
 #include "MicroPhone.h"
 
 #include <PDM.h>
@@ -8,6 +11,9 @@
 #include "src/system/ext/noise.h"
 #include "src/system/ext/random8.h"
 #include "src/system/utils/constants.h"
+
+#include "src/system/platform/gpio.h"
+#include "src/system/platform/time.h"
 
 namespace microphone {
 
@@ -22,7 +28,7 @@ uint32_t lastMeasurmentMicros;
 uint32_t lastMeasurmentDurationMicros;
 void on_PDM_data()
 {
-  const uint32_t newTime = micros();
+  const uint32_t newTime = time_us();
   lastMeasurmentDurationMicros = newTime - lastMeasurmentMicros;
   lastMeasurmentMicros = newTime;
   // query the number of bytes available
@@ -40,13 +46,13 @@ static bool isStarted = false;
 
 void enable()
 {
-  lastMicFunctionCall = millis();
+  lastMicFunctionCall = time_ms();
   if (isStarted)
   {
     return;
   }
 
-  digitalWrite(PIN_PDM_PWR, HIGH);
+  DigitalPin(DigitalPin::GPIO::microphonePower).set_high(true);
 
   PDM.setBufferSize(512);
   PDM.onReceive(on_PDM_data);
@@ -59,7 +65,7 @@ void enable()
     // block program execution
     while (1)
     {
-      delay(1000);
+      delay_ms(1000);
     }
   }
 
@@ -80,13 +86,13 @@ void disable()
 
   PDM.end();
 
-  digitalWrite(PIN_PDM_PWR, LOW);
+  DigitalPin(DigitalPin::GPIO::microphonePower).set_high(false);
   isStarted = false;
 }
 
 void disable_after_non_use()
 {
-  if (isStarted and (millis() - lastMicFunctionCall > 1000.0))
+  if (isStarted and (time_ms() - lastMicFunctionCall > 1000.0))
   {
     // disable microphone if last reading is old
     disable();
@@ -177,3 +183,5 @@ SoundStruct get_fft()
 }
 
 } // namespace microphone
+
+#endif

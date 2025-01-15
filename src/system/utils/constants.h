@@ -1,44 +1,30 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include <cmath>
 #include <cstdint>
-
-#ifdef ARDUINO
-#if (ARDUINO >= 100)
-#include <Arduino.h>
-#else
-#include <WProgram.h>
-#include <pins_arduino.h>
-#endif
 
 #ifdef USE_TINYUSB // For Serial when selecting TinyUSB
 #include <Adafruit_TinyUSB.h>
-#endif
-
-#endif
-
-#ifdef TARGET_LPC1768
-#include <Arduino.h>
-#endif
-
-#if defined(ARDUINO_ARCH_RP2040)
-#include <stdlib.h>
-
-#include "hardware/clocks.h"
-#include "hardware/pio.h"
-#include "rp2040_pio.h"
 #endif
 
 #include <stdint.h>
 
 #include "src/user/constants.h"
 
-const String HARDWARE_VERSION = "1.0";
-const String BASE_SOFTWARE_VERSION = "0.01"; // Update when the soft changes version
+#define HARDWARE_VERSION "1.0"
+// Update when the soft changes version
+#define BASE_SOFTWARE_VERSION "0.01"
 
-constexpr uint8_t ADC_RES_EXP = 12;                     // resolution of the ADC, in bits (can be 8, 10, 12 or 14)
-constexpr uint32_t ADC_MAX_VALUE = pow(2, ADC_RES_EXP); // corresponding max value
-constexpr float internalReferenceVoltage = 3.0;         // 3V
+constexpr float c_PI = 3.1415926535897;
+constexpr float c_TWO_PI = 6.2831853071795;
+constexpr float c_HALF_PI = 1.5707963267948;
+
+using byte = uint8_t;
+
+constexpr uint8_t ADC_RES_EXP = 12;                        // resolution of the ADC, in bits (can be 8, 10, 12 or 14)
+static const uint32_t ADC_MAX_VALUE = pow(2, ADC_RES_EXP); // corresponding max value
+constexpr float internalReferenceVoltage = 3.0;            // 3V
 
 // map the input ADC out to voltage reading
 constexpr float voltageMeasurmentResistor1_Ohm = 221000;
@@ -75,14 +61,5 @@ constexpr float batteryCritical = 300; // % *100
 constexpr float batteryLow = 500;      // % *100
 
 constexpr uint32_t batteryMaxChargeCurrent_mA = 1000; // mA
-
-// pins
-
-// The button pin (one button pin to GND, the other to this pin)
-static constexpr uint32_t BUTTON_PIN = D6;
-// Pins for the led on the button
-static constexpr uint32_t BUTTON_RED = D8;
-static constexpr uint32_t BUTTON_GREEN = D4;
-static constexpr uint32_t BUTTON_BLUE = D7;
 
 #endif

@@ -24,17 +24,6 @@ void init();
 void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
                    const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback);
 
-/**
- * Display a color on the button
- */
-void set_color(utils::ColorSpace::RGB color);
-void blink(const uint32_t offFreq, const uint32_t onFreq, utils::ColorSpace::RGB color);
-
-/**
- * \brief Make the breeze animation on the button
- */
-void breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::ColorSpace::RGB& color);
-
 // Button state
 struct ButtonStateTy
 {

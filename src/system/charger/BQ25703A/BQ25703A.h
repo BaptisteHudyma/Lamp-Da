@@ -14,9 +14,20 @@ Library for basic interfacing with BQ25703A battery management IC from TI
 #ifndef BQ25703A_H
 #define BQ25703A_H
 
-#include "Arduino.h"
+#include "src/system/platform/i2c.h"
+
+#include "src/system/utils/utils.h"
+#include <cstdint>
 
 namespace bq2573a {
+
+using byte = uint8_t;
+
+// Platform specific
+constexpr uint8_t i2cObjectIndex = 0;
+// \Platform specific
+
+constexpr bool usesStopBit = true;
 
 constexpr uint16_t DEVICE_ID = 0x78;
 constexpr uint16_t MANUFACTURER_ID = 0x40;
@@ -54,11 +65,11 @@ constexpr uint16_t DEVICE_ID_ADDR = 0x2F;
 class BQ25703A
 {
 public:
-  BQ25703A();
+  BQ25703A() {};
   // Initialise the variable here, but it will be written from the main program
-  static const byte BQ25703Aaddr = BQ25703ADevaddr;
+  static const byte BQ25703Aaddr = 0x6B; // I2C address
 
-  template<typename T> static boolean readReg(T* dataParam, const uint8_t arrLen)
+  template<typename T> static bool readReg(T* dataParam, const uint8_t arrLen)
   {
     // This is a function for reading data words.
     // The number of bytes that make up a word is either 1 or 2.
@@ -79,7 +90,7 @@ public:
       return false;
     }
   }
-  template<typename T> boolean readRegEx(T& dataParam)
+  template<typename T> bool readRegEx(T& dataParam)
   {
     // This is a function for reading data words.
     // The number of bytes that make up a word is 2.
@@ -99,9 +110,13 @@ public:
       return false;
     }
   }
-  template<typename T> static boolean writeRegEx(T dataParam)
+  // used by external functions to write registers
+  template<typename T> static bool writeRegEx(T dataParam)
   {
-    return writeDataReg(dataParam.addr, dataParam.val0, dataParam.val1);
+    byte valBytes[2];
+    valBytes[0] = dataParam.val0;
+    valBytes[1] = dataParam.val1;
+    return i2c_writeData(i2cObjectIndex, BQ25703Aaddr, dataParam.addr, 2, valBytes, usesStopBit ? 1 : 0) == 0;
   }
 // macro to generate bit mask to access bits
 #define GETMASK(index, size) (((1 << (size)) - 1) << (index))
@@ -170,7 +185,7 @@ public:
     uint16_t set(const uint16_t value)
     {
       // convert to authorized values
-      const uint16_t constraint = constrain(value, minVal(), maxVal()) - minVal();
+      const uint16_t constraint = lmpd_constrain(value, minVal(), maxVal()) - minVal();
       // break it down to the correct resolution (integer division)
       const uint16_t flatValue = constraint / resolution();
       // convert to binary word
@@ -178,9 +193,7 @@ public:
       binaryWord &= mask();    // mask off unused bits (with &= for 16bits)
       binaryWord <<= offset(); // offset the register (with <<= for 16 bits)
 
-      const byte val0 = binaryWord & 0b11111111;
-      const byte val1 = binaryWord >> 8;
-      if (!writeDataReg(address(), val0, val1))
+      if (!writeData16(address(), binaryWord))
       {
         isFlagRaised = true;
       }
@@ -697,10 +710,16 @@ public:
     } deviceID;
   };
 
-  // private:
-  static boolean readDataReg(const byte regAddress, byte* dataVal, const uint8_t arrLen);
-  static boolean writeDataReg(const byte regAddress, byte dataVal0, byte dataVal1);
-  boolean read2ByteReg(byte regAddress, byte* val0, byte* val1);
+private:
+  static bool readDataReg(const byte regAddress, byte* dataVal, const uint8_t arrLen)
+  {
+    return i2c_readData(i2cObjectIndex, BQ25703Aaddr, regAddress, arrLen, dataVal, usesStopBit ? 1 : 0) == 0;
+  }
+
+  static bool writeData16(const byte regAddress, uint16_t data)
+  {
+    return i2c_write16(i2cObjectIndex, BQ25703Aaddr, regAddress, data, usesStopBit ? 1 : 0) == 0;
+  }
 };
 
 } // namespace bq2573a

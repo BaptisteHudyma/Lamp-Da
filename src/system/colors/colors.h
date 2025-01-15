@@ -5,10 +5,12 @@
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
 #include <cstdint>
-#include <Arduino.h>
 
 #include "src/system/colors/palettes.h"
 #include "src/system/utils/constants.h"
+#include "src/system/utils/utils.h"
+
+#include "src/system/platform/time.h"
 
 // min color update frequency
 constexpr uint32_t COLOR_TIMING_UPDATE = LOOP_UPDATE_PERIOD * 3;
@@ -22,7 +24,7 @@ public:
   uint32_t get_color(const uint16_t index = 0, const uint16_t maxIndex = 0) const
   {
     // prevent the user to break the system
-    return get_color_internal(constrain(index, 0, maxIndex), maxIndex);
+    return get_color_internal(lmpd_constrain(index, 0, maxIndex), maxIndex);
   }
 
   /**
@@ -46,7 +48,7 @@ public:
    */
   virtual bool update()
   {
-    const long unsigned currentMillis = millis();
+    const long unsigned currentMillis = time_ms();
     if (currentMillis - _lastUpdate > COLOR_TIMING_UPDATE) // ms update period
     {
       internal_update(currentMillis - _lastUpdate);

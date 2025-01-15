@@ -70,7 +70,7 @@ public:
 
   void setPixelColor(uint16_t n, COLOR c)
   {
-    n = constrain(n, 0, LED_COUNT - 1);
+    n = lmpd_constrain(n, 0, LED_COUNT - 1);
     _colors[n] = c;
     hasSomeChanges = true;
     Adafruit_NeoPixel::setPixelColor(n, c.color);
@@ -171,10 +171,10 @@ public:
     }
   }
 
-  uint32_t getPixelColor(uint16_t n) const { return _colors[constrain(n, 0, LED_COUNT - 1)].color; }
+  uint32_t getPixelColor(uint16_t n) const { return _colors[lmpd_constrain(n, 0, LED_COUNT - 1)].color; }
   uint32_t getPixelColorXY(int16_t x, int16_t y) const
   {
-    return _colors[constrain(to_strip(x, y), 0, LED_COUNT - 1)].color;
+    return _colors[lmpd_constrain(to_strip(x, y), 0, LED_COUNT - 1)].color;
   }
 
   // Blends the specified color with the existing pixel color.
@@ -218,7 +218,10 @@ public:
     Adafruit_NeoPixel::clear();
   }
 
-  inline Cartesian get_lamp_coordinates(uint16_t n) const { return lampCoordinates[constrain(n, 0, LED_COUNT - 1)]; }
+  inline Cartesian get_lamp_coordinates(uint16_t n) const
+  {
+    return lampCoordinates[lmpd_constrain(n, 0, LED_COUNT - 1)];
+  }
 
   uint32_t* get_buffer_ptr(const uint8_t index) { return _buffers[index]; }
 

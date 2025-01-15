@@ -1,13 +1,6 @@
 #ifndef USER_FUNCTIONS_H
 #define USER_FUNCTIONS_H
 
-/** \file
- *
- *  \brief Custom user mode functions for indexable strips
- **/
-
-#include "Arduino.h"
-
 //
 // code specific to LMBD_LAMP_TYPE=indexable
 //

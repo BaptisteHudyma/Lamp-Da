@@ -9,6 +9,9 @@
 
 #include "src/system/utils/constants.h"
 
+#include "src/system/platform/time.h"
+#include "src/system/platform/print.h"
+
 namespace fileSystem {
 
 static constexpr auto FILENAME = "/.lampda.par";
@@ -39,7 +42,7 @@ void setup()
 {
   if (!InternalFS.begin())
   {
-    Serial.println("Failed to start file system");
+    lampda_print("Failed to start file system");
   }
   else
   {
@@ -139,13 +142,13 @@ void write_state()
   else
   {
     // error. the file should have been opened
-    Serial.println("file system error, reseting file format");
+    lampda_print("file system error, reseting file format");
 
     // hardcore, format the entire file system
     InternalFS.format();
   }
 
-  delay(10);
+  delay_ms(10);
 
   file.open(FILENAME, FILE_O_WRITE);
   if (file)
@@ -163,7 +166,7 @@ void write_state()
   else
   {
     // error. the file should have been opened
-    Serial.println("file creation failed, parameters wont be stored");
+    lampda_print("file creation failed, parameters wont be stored");
   }
 }
 

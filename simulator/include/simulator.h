@@ -1,4 +1,12 @@
+// include mock classes
+#include "simulator/mocks/m_time.h"
+#include "simulator/mocks/m_gpio.h"
+#include "simulator/mocks/m_i2c.h"
+#include "simulator/mocks/m_print.h"
+#include "simulator/mocks/m_register.h"
+
 #include <Arduino.h>
+#include <tuple>
 
 // prevent the inclusion of "src/system/MicroPhone.h"
 #define MICRO_PHONE_H
@@ -29,9 +37,6 @@ using utils::map;
 
 #include "src/system/utils/coordinates.cpp"
 
-void delay(uint32_t milli) { sf::sleep(sf::milliseconds(milli)); }
-
-#include <serial_simulator.h>
 #include <filesystem_simulator.h>
 #include <behavior_simulator.h>
 
@@ -262,7 +267,7 @@ template<typename T> struct simulator
     sf::Clock clock;
 
     globalMillis = clock.getElapsedTime().asMilliseconds();
-    behavior::lastStartupSequence = millis();
+    behavior::lastStartupSequence = time_ms();
 
     // sound
     LevelRecorder recorder;
@@ -287,7 +292,7 @@ template<typename T> struct simulator
     uint64_t skipframe = 0;
     while (window.isOpen())
     {
-      // handle button simulation (with fake millis())
+      // handle button simulation (with fake time_ms())
       globalMillis = clock.getElapsedTime().asMilliseconds() * 0.75;
 
       button::treat_button_pressed(
@@ -314,7 +319,7 @@ template<typename T> struct simulator
         simu.customEventHandler(event);
       }
 
-      // update millis()
+      // update time_ms()
       globalMillis = clock.getElapsedTime().asMilliseconds();
 
       // call deferred brightness callbacks

@@ -91,11 +91,6 @@ extern "C" {
     } __packed;
   };
 
-/* Flags for i2c_xfer() */
-#define I2C_XFER_START  (1 << 0)                         /* Start smbus session from idle state */
-#define I2C_XFER_STOP   (1 << 1)                         /* Terminate smbus session with stop bit */
-#define I2C_XFER_SINGLE (I2C_XFER_START | I2C_XFER_STOP) /* One transaction */
-
 /* Default retry count for transmitting */
 #define PD_RETRY_COUNT 3
 

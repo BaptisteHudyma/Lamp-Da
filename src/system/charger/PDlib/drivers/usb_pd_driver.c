@@ -7,7 +7,6 @@
 
 #include "usb_pd_driver.h"
 #include "../usb_pd.h"
-#include "Arduino.h"
 
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(t) (sizeof(t) / sizeof(t[0]))
@@ -31,19 +30,19 @@ uint32_t pd_task_set_event(uint32_t event, int wait_for_reply)
   return 0;
 }
 
-const uint32_t PROGMEM pd_src_pdo[] = {
+const uint32_t pd_src_pdo[] = {
         PDO_FIXED(5000, 1500, PDO_FIXED_FLAGS),
 };
-const int PROGMEM pd_src_pdo_cnt = ARRAY_SIZE(pd_src_pdo);
+const int pd_src_pdo_cnt = ARRAY_SIZE(pd_src_pdo);
 
-const uint32_t PROGMEM pd_snk_pdo[] = {
+const uint32_t pd_snk_pdo[] = {
         // Support all SPR
         PDO_FIXED(5000, 3000, PDO_FIXED_FLAGS),
         PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
         PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
         PDO_FIXED(20000, 3000, PDO_FIXED_FLAGS),
 };
-const int PROGMEM pd_snk_pdo_cnt = ARRAY_SIZE(pd_snk_pdo);
+const int pd_snk_pdo_cnt = ARRAY_SIZE(pd_snk_pdo);
 
 int pdSources = 0;
 uint32_t* srcCapsSaved = NULL;
@@ -134,8 +133,8 @@ int is_pd_conector() { return srcCapsSaved != NULL; }
 timestamp_t get_time(void)
 {
   timestamp_t t;
-  t.val = millis() * 1000;
-  t.val += micros() % 1000;
+  t.val = time_ms() * 1000;
+  t.val += time_us() % 1000;
   return t;
 }
 

@@ -1,8 +1,7 @@
 #ifndef LED_POWER_HPP
 #define LED_POWER_HPP
 
-#include "Arduino.h"
-
+#include <cstdint>
 namespace ledpower {
 
 /** Write a current value directly to the led strip (DANGEROUS)
@@ -16,6 +15,9 @@ extern void write_current(const float current);
  * maxStripConsumption_A
  */
 extern void write_brightness(const uint8_t brightness);
+
+void activate_12v_power();
+void deactivate_12v_power();
 
 } // namespace ledpower
 

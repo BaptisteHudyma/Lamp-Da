@@ -2,26 +2,33 @@
 
 #include <cstdint>
 
-#include "charger/charger.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
+
 #include "src/system/alerts.h"
 #include "src/system/charger/charger.h"
+
 #include "src/system/physical/battery.h"
-#include "src/system/physical/bluetooth.h"
 #include "src/system/physical/button.h"
-#include "src/system/physical/fileSystem.h"
+#include "src/system/physical/indicator.h"
 #include "src/system/physical/IMU.h"
 #include "src/system/physical/led_power.h"
-#include "src/system/physical/MicroPhone.h"
+
 #include "src/system/utils/colorspace.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
-
 #include "src/system/utils/state_machine.h"
+#include "src/system/utils/input_output.h"
+
+#include "src/system/platform/MicroPhone.h"
+#include "src/system/platform/bluetooth.h"
+#include "src/system/platform/fileSystem.h"
+#include "src/system/platform/time.h"
+#include "src/system/platform/print.h"
+#include "src/system/platform/gpio.h"
+#include "src/system/platform/registers.h"
 
 #include "src/user/functions.h"
-#include "utils/state_machine.h"
 
 namespace behavior {
 
@@ -59,7 +66,7 @@ typedef enum
   // Should never happen, default state
   ERROR,
 } BehaviorStates;
-String BehaviorStatesStr[] = {
+const char* BehaviorStatesStr[] = {
         "START_LOGIC",
         "PRE_CHARGER_OPERATION",
         "CHARGER_OPERATIONS",
@@ -104,7 +111,7 @@ uint8_t BRIGHTNESS = 50; // default start value
 uint8_t currentBrightness = 50;
 
 // timestamp of the system wake up
-static uint32_t turnOnTime = millis();
+static uint32_t turnOnTime = time_ms();
 
 void update_brightness(const uint8_t newBrightness, const bool shouldUpdateCurrentBrightness, const bool isInitialRead)
 {
@@ -164,23 +171,22 @@ bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::
 void true_power_off()
 {
   charger::shutdown();
-  digitalWrite(USB_33V_PWR, LOW);
+  DigitalPin(DigitalPin::GPIO::usb33Power).set_high(false);
 
   // wait until vbus is off (TODO: remove in newer versions of the hardware)
   uint8_t cnt = 0;
   while (cnt < 200 and charger::is_vbus_signal_detected())
   {
-    delay(5);
+    delay_ms(5);
     cnt++;
   }
 
-  // wake up from charger plugged in
-  // nrf_gpio_cfg_sense_input(g_ADigitalPinMap[CHARGE_OK],
-  // NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_HIGH);
-
   // power down nrf52.
   // on wake up, it'll start back from the setup phase
-  systemOff(BUTTON_PIN, 0);
+  go_to_sleep(ButtonPin.pin());
+  /*
+   * Nothing after this, systel is off !
+   */
 }
 
 void button_disable_usermode() { isButtonUsermodeEnabled = false; }
@@ -232,9 +238,9 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
       {
 #ifdef DEBUG_MODE
         // disable charger and wait 5s to be killed by watchdog
-        button::set_color(utils::ColorSpace::PINK);
+        indicator::set_color(utils::ColorSpace::PINK);
         charger::disable_charge();
-        delay(6000);
+        delay_ms(6000);
 #endif
         set_power_off();
         return;
@@ -260,7 +266,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
   const uint32_t holdDuration =
           (buttonHoldDuration > HOLD_BUTTON_MIN_MS) ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
 
-  uint32_t realStartTime = millis() - lastStartupSequence;
+  uint32_t realStartTime = time_ms() - lastStartupSequence;
   if (realStartTime > holdDuration)
   {
     realStartTime -= holdDuration;
@@ -279,19 +285,19 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
     {
       if ((holdDuration >> 7) & 0b1)
       {
-        button::set_color(utils::ColorSpace::BLACK);
+        indicator::set_color(utils::ColorSpace::BLACK);
       }
       else if (holdDuration < EARLY_ACTIONS_HOLD_MS)
       {
-        button::set_color(utils::ColorSpace::GREEN);
+        indicator::set_color(utils::ColorSpace::GREEN);
       }
       else if (consecutiveButtonCheck == 3)
       {
-        button::set_color(utils::ColorSpace::YELLOW);
+        indicator::set_color(utils::ColorSpace::YELLOW);
       }
       else if (consecutiveButtonCheck == 4)
       {
-        button::set_color(utils::ColorSpace::BLUE);
+        indicator::set_color(utils::ColorSpace::BLUE);
       }
     }
 
@@ -377,11 +383,11 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
       {
         const float percentOfTimeToGoUp = float(MAX_BRIGHTNESS - currentBrightness) * brightnessDivider;
 
-        const auto newBrightness = map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
-                                       0,
-                                       BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
-                                       currentBrightness,
-                                       MAX_BRIGHTNESS);
+        const auto newBrightness = utils::map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
+                                              0,
+                                              BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
+                                              currentBrightness,
+                                              MAX_BRIGHTNESS);
 
         update_brightness(newBrightness);
       }
@@ -398,11 +404,11 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
       {
         const double percentOfTimeToGoDown = float(currentBrightness - MIN_BRIGHTNESS) * brightnessDivider;
 
-        const auto newBrightness = map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
-                                       0,
-                                       BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
-                                       currentBrightness,
-                                       MIN_BRIGHTNESS);
+        const auto newBrightness = utils::map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
+                                              0,
+                                              BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
+                                              currentBrightness,
+                                              MIN_BRIGHTNESS);
 
         update_brightness(newBrightness);
       }
@@ -418,7 +424,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 void set_cpu_temperarure_alerts()
 {
   // temperature alerts
-  const float procTemp = readCPUTemperature();
+  const float procTemp = read_CPU_temperature_degreesC();
   if (procTemp >= criticalSystemTemp_c)
   {
     AlertManager.raise_alert(TEMP_CRITICAL);
@@ -457,7 +463,7 @@ void set_battery_alerts()
 void handle_alerts()
 {
   // do not display alerts for the first 500 ms
-  const uint32_t current = ((millis() - turnOnTime) < 500) ? Alerts::NONE : AlertManager.current();
+  const uint32_t current = ((time_ms() - turnOnTime) < 500) ? Alerts::NONE : AlertManager.current();
 
   static uint32_t criticalbatteryRaisedTime = 0;
   if (current == Alerts::NONE)
@@ -480,18 +486,18 @@ void handle_alerts()
       {
         // fast blinking
         // TODO: find a better way to tell user that the chargeur is bad
-        button::blink(500, 500, buttonColor);
+        indicator::blink(500, 500, buttonColor);
       }
       // standard charge mode
       else
       {
-        button::breeze(2000, 1000, buttonColor);
+        indicator::breeze(2000, 1000, buttonColor);
       }
     }
     else
     {
       // normal mode
-      button::set_color(buttonColor);
+      indicator::set_color(buttonColor);
     }
   }
   else
@@ -503,12 +509,12 @@ void handle_alerts()
     }
     else if ((current & Alerts::HARDWARE_ALERT) != 0x00)
     {
-      button::blink(100, 50, utils::ColorSpace::TOMATO);
+      indicator::blink(100, 50, utils::ColorSpace::TOMATO);
     }
     else if ((current & Alerts::TEMP_TOO_HIGH) != 0x00)
     {
       // proc temperature is too high, blink orange
-      button::blink(300, 300, utils::ColorSpace::ORANGE);
+      indicator::blink(300, 300, utils::ColorSpace::ORANGE);
 
       // limit brightness to half the max value
       constexpr uint8_t clampedBrightness = 0.5 * MAX_BRIGHTNESS;
@@ -518,26 +524,26 @@ void handle_alerts()
     else if ((current & Alerts::BATTERY_READINGS_INCOHERENT) != 0x00)
     {
       // incohrent battery readings
-      button::blink(100, 100, utils::ColorSpace::GREEN);
+      indicator::blink(100, 100, utils::ColorSpace::GREEN);
     }
     else if ((current & Alerts::BATTERY_CRITICAL) != 0x00)
     {
       // critical battery alert: shutdown after 2 seconds
       if (criticalbatteryRaisedTime == 0)
-        criticalbatteryRaisedTime = millis();
-      else if (millis() - criticalbatteryRaisedTime > 2000)
+        criticalbatteryRaisedTime = time_ms();
+      else if (time_ms() - criticalbatteryRaisedTime > 2000)
       {
         // shutdown when battery is critical
         set_power_off();
       }
       // blink if no shutdown
-      button::blink(100, 100, utils::ColorSpace::RED);
+      indicator::blink(100, 100, utils::ColorSpace::RED);
     }
     else if ((current & Alerts::BATTERY_LOW) != 0x00)
     {
       criticalbatteryRaisedTime = 0;
       // fast blink red
-      button::blink(300, 300, utils::ColorSpace::RED);
+      indicator::blink(300, 300, utils::ColorSpace::RED);
 
       // limit brightness to quarter of the max value
       constexpr uint8_t clampedBrightness = 0.25 * MAX_BRIGHTNESS;
@@ -549,20 +555,20 @@ void handle_alerts()
     }
     else if ((current & Alerts::HARDWARE_ALERT) != 0x00)
     {
-      button::blink(100, 50, utils::ColorSpace::TOMATO);
+      indicator::blink(100, 50, utils::ColorSpace::TOMATO);
     }
     else if ((current & Alerts::LONG_LOOP_UPDATE) != 0x00)
     {
       // fast blink red
-      button::blink(400, 400, utils::ColorSpace::FUSHIA);
+      indicator::blink(400, 400, utils::ColorSpace::FUSHIA);
     }
     else if ((current & Alerts::BLUETOOTH_ADVERT) != 0x00)
     {
-      button::breeze(1000, 500, utils::ColorSpace::BLUE);
+      indicator::breeze(1000, 500, utils::ColorSpace::BLUE);
     }
     else if ((current & Alerts::OTG_FAILED) != 0x00)
     {
-      button::blink(200, 200, utils::ColorSpace::FUSHIA);
+      indicator::blink(200, 200, utils::ColorSpace::FUSHIA);
     }
     else if ((current & Alerts::OTG_ACTIVATED) != 0x00)
     {
@@ -571,12 +577,12 @@ void handle_alerts()
                                                                           utils::ColorSpace::GREEN.get_rgb().color,
                                                                           battery::get_raw_battery_level() / 10000.0));
 
-      button::breeze(500, 500, buttonColor);
+      indicator::breeze(500, 500, buttonColor);
     }
     else
     {
       // unhandled case (white blink)
-      button::blink(300, 300, utils::ColorSpace::WHITE);
+      indicator::blink(300, 300, utils::ColorSpace::WHITE);
     }
   }
 }
@@ -610,7 +616,7 @@ void handle_start_logic_state()
 static uint32_t preChargeCalled = 0;
 void handle_pre_charger_operation_state()
 {
-  preChargeCalled = millis();
+  preChargeCalled = time_ms();
   mainMachine.set_state(BehaviorStates::CHARGER_OPERATIONS);
 }
 
@@ -624,7 +630,7 @@ void handle_charger_operation_state()
     return;
   }
   // power disconected
-  const bool vbusDebounced = millis() - preChargeCalled > 500;
+  const bool vbusDebounced = time_ms() - preChargeCalled > 500;
   if (vbusDebounced)
   {
     if (not is_charger_powered())
@@ -656,10 +662,10 @@ void handle_pre_output_light_state()
     // alert user of low battery
     for (uint8_t i = 0; i < 10; i++)
     {
-      button::set_color(utils::ColorSpace::RED);
-      delay(100);
-      button::set_color(utils::ColorSpace::BLACK);
-      delay(100);
+      indicator::set_color(utils::ColorSpace::RED);
+      delay_ms(100);
+      indicator::set_color(utils::ColorSpace::BLACK);
+      delay_ms(100);
     }
 
     if (is_charger_powered())
@@ -679,9 +685,11 @@ void handle_pre_output_light_state()
   button_disable_usermode();
 
   // reset lastStartupSequence
-  lastStartupSequence = millis();
+  lastStartupSequence = time_ms();
 
   // let the user power on the system
+  // TODO: this 12v activation should disapear
+  ledpower::activate_12v_power();
   user::power_on_sequence();
 
   mainMachine.set_state(BehaviorStates::OUTPUT_LIGHT);
@@ -727,8 +735,10 @@ void handle_post_output_light_state()
   // let the user power off the system
   user::power_off_sequence();
 
+  // TODO: this 12v activation should disapear
+  ledpower::deactivate_12v_power();
+
   // deactivate strip power
-  pinMode(OUT_BRIGHTNESS, OUTPUT);
   ledpower::write_current(0); // power down
 
   mainMachine.skip_timeout();
@@ -738,12 +748,13 @@ void handle_shutdown_state()
 {
   isShutingDown_s = true;
   // let other thread do stuff
-  yield();
+  yield_this_thread();
 
   // deactivate strip power
-  pinMode(OUT_BRIGHTNESS, OUTPUT);
   ledpower::write_current(0); // power down
-  delay(10);
+  // TODO: this 12v activation should disapear
+  ledpower::deactivate_12v_power();
+  delay_ms(10);
 
   // disable bluetooth, imu and microphone
   microphone::disable();
@@ -757,7 +768,7 @@ void handle_shutdown_state()
   write_parameters();
 
   // deactivate indicators
-  button::set_color(utils::ColorSpace::BLACK);
+  indicator::set_color(utils::ColorSpace::BLACK);
 
   // power the system off
   true_power_off();
@@ -770,8 +781,7 @@ void state_machine_behavior()
   // if state changed, display the new state
   if (mainMachine.state_just_changed())
   {
-    Serial.print("BEHAVIOR_S_MACH > switched to state ");
-    Serial.println(BehaviorStatesStr[mainMachine.get_state()]);
+    lampda_print("BEHAVIOR_S_MACH > switched to state %s", BehaviorStatesStr[mainMachine.get_state()]);
   }
 
   switch (mainMachine.get_state())
@@ -839,6 +849,8 @@ bool is_shuting_down() { return isShutingDown_s; }
 
 const char* ensure_build_canary()
 {
+#warning "compiling ensure_build_canary"
+
 #ifdef LMBD_LAMP_TYPE__SIMPLE
   return "_lmbd__build_canary__simple";
 #endif

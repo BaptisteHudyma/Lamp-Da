@@ -9,8 +9,10 @@
 #include "../tcpm/usb_pd_tcpm.h"
 #include "../tcpm/tcpm.h"
 #include "../usb_pd.h"
-#include "platform.h"
 #include "usb_pd_driver.h"
+
+// for memcpy
+#include <string.h>
 
 #define PACKET_IS_GOOD_CRC(head) (PD_HEADER_TYPE(head) == PD_CTRL_GOOD_CRC && PD_HEADER_CNT(head) == 0)
 
@@ -122,7 +124,7 @@ static int measure_cc_pin_source(int port, int cc_measure)
   tcpc_write(port, TCPC_REG_MEASURE, state[port].mdac_vnc);
 
   /* Wait on measurement */
-  platform_usleep(250);
+  delay_us(250);
 
   /* Read status register */
   tcpc_read(port, TCPC_REG_STATUS0, &reg);
@@ -137,7 +139,7 @@ static int measure_cc_pin_source(int port, int cc_measure)
     tcpc_write(port, TCPC_REG_MEASURE, state[port].mdac_rd);
 
     /* Wait on measurement */
-    platform_usleep(250);
+    delay_us(250);
 
     /* Read status register */
     tcpc_read(port, TCPC_REG_STATUS0, &reg);
@@ -207,7 +209,7 @@ static void detect_cc_pin_sink(int port, int* cc1, int* cc2)
   /* CC1 is now being measured by FUSB302. */
 
   /* Wait on measurement */
-  platform_usleep(250);
+  delay_us(250);
 
   tcpc_read(port, TCPC_REG_STATUS0, &bc_lvl_cc1);
 
@@ -229,7 +231,7 @@ static void detect_cc_pin_sink(int port, int* cc1, int* cc2)
   /* CC2 is now being measured by FUSB302. */
 
   /* Wait on measurement */
-  platform_usleep(250);
+  delay_us(250);
 
   tcpc_read(port, TCPC_REG_STATUS0, &bc_lvl_cc2);
 

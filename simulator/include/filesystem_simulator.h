@@ -1,8 +1,6 @@
 #ifndef FILESYSTEM_SIMULATOR_H
 #define FILESYSTEM_SIMULATOR_H
 
-#include <serial_simulator.h>
-
 #include <cstdio>
 #include <unistd.h>
 
@@ -154,7 +152,7 @@ struct File
 // comment this to enable verbose filesystem debug log in simulator
 #undef LMBD_SIMU_ENABLED
 
-#include "src/system/physical/fileSystem.cpp"
+#include "src/system/platform/fileSystem.cpp"
 
 #ifndef LMBD_SIMU_ENABLED
 #define LMBD_SIMU_ENABLED

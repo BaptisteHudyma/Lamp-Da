@@ -3,8 +3,11 @@
 #include <cstdint>
 #include <cstring>
 
-#include "Arduino.h"
 #include "LSM6DS3/LSM6DS3.h"
+
+#include "src/system/platform/time.h"
+#include "src/system/platform/gpio.h"
+#include "src/system/platform/print.h"
 
 namespace imu {
 
@@ -16,24 +19,24 @@ bool isStarted = false;
 
 void enable()
 {
-  lastIMUFunctionCall = millis();
+  lastIMUFunctionCall = time_ms();
   if (isStarted)
   {
     return;
   }
 
-  pinMode(PIN_LSM6DS3TR_C_POWER, OUTPUT);
-  digitalWrite(PIN_LSM6DS3TR_C_POWER, HIGH);
+  DigitalPin powerPin(DigitalPin::GPIO::ImuPower);
+  powerPin.set_pin_mode(DigitalPin::Mode::kOutput);
+  powerPin.set_high(true);
 
-  delay(5); // voltage stabilization
+  delay_ms(5); // voltage stabilization
 
   if (IMU.begin() != 0)
   {
     // TODO: something ?
-    Serial.println("ERROR: IMU did not start");
   }
-
-  isStarted = true;
+  else
+    isStarted = true;
 }
 
 void disable()
@@ -43,13 +46,15 @@ void disable()
     return;
   }
 
-  digitalWrite(PIN_LSM6DS3TR_C_POWER, LOW);
+  DigitalPin powerPin(DigitalPin::GPIO::ImuPower);
+  powerPin.set_high(false);
+
   isStarted = false;
 }
 
 void disable_after_non_use()
 {
-  if (isStarted and (millis() - lastIMUFunctionCall > 1000.0))
+  if (isStarted and (time_ms() - lastIMUFunctionCall > 1000.0))
   {
     // disable microphone if last reading is old
     disable();
@@ -87,13 +92,8 @@ Reading get_reading()
   reads.accel.z = IMU.readFloatAccelZ();
 
   // use this to debug the axes
-#if 0
-  Serial.print(reads.accel.x);
-  Serial.print(",");
-  Serial.print(reads.accel.y);
-  Serial.print(",");
-  Serial.print(reads.accel.z);
-  Serial.println("");
+#if 1
+  lampda_print("%f, %f, %f", reads.accel.x, reads.accel.y, reads.accel.z);
 #endif
 
   reads.gyro.x = IMU.readFloatGyroX();

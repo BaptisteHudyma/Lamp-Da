@@ -5,6 +5,10 @@
 #include "BQ25703A.h"
 #include "src/system/alerts.h"
 
+#include "src/system/platform/time.h"
+#include "src/system/platform/print.h"
+#include "src/system/platform/gpio.h"
+
 namespace BQ25703A {
 
 // specific to BQ25703A
@@ -57,13 +61,14 @@ void run_fault_detection()
       BQ25703Areg.chargerStatus.Fault_Latchoff() or BQ25703Areg.chargerStatus.Fault_OTG_OVP() or
       BQ25703Areg.chargerStatus.Fault_OTG_UCP())
   {
-    Serial.print(BQ25703Areg.chargerStatus.Fault_ACOV());
-    Serial.print(BQ25703Areg.chargerStatus.Fault_BATOC());
-    Serial.print(BQ25703Areg.chargerStatus.Fault_ACOC());
-    Serial.print(BQ25703Areg.chargerStatus.SYSOVP_STAT());
-    Serial.print(BQ25703Areg.chargerStatus.Fault_Latchoff());
-    Serial.print(BQ25703Areg.chargerStatus.Fault_OTG_OVP());
-    Serial.println(BQ25703Areg.chargerStatus.Fault_OTG_UCP());
+    lampda_print("%d%d%d%d%d%d%d",
+                 BQ25703Areg.chargerStatus.Fault_ACOV(),
+                 BQ25703Areg.chargerStatus.Fault_BATOC(),
+                 BQ25703Areg.chargerStatus.Fault_ACOC(),
+                 BQ25703Areg.chargerStatus.SYSOVP_STAT(),
+                 BQ25703Areg.chargerStatus.Fault_Latchoff(),
+                 BQ25703Areg.chargerStatus.Fault_OTG_OVP(),
+                 BQ25703Areg.chargerStatus.Fault_OTG_UCP());
     status_s = Status_t::ERROR_HAS_FAULTS;
   }
   // reset fault flag
@@ -149,11 +154,11 @@ void control_OTG()
       isOTGInitialized_s = true;
       isOTGReseted = false;
 
-      OTGStartTime_ms = millis();
-      lastOTGUsedTime_ms = millis();
+      OTGStartTime_ms = time_ms();
+      lastOTGUsedTime_ms = time_ms();
 
-      digitalWrite(ENABLE_OTG, HIGH);
-      delay(1);
+      DigitalPin(DigitalPin::GPIO::otgSignal).set_high(true);
+      delay_ms(1);
 
       chargerIc.readRegEx(BQ25703Areg.chargeOption3);
       BQ25703Areg.chargeOption3.set_EN_OTG(1);
@@ -163,7 +168,7 @@ void control_OTG()
       AlertManager.clear_alert(Alerts::OTG_ACTIVATED);
       AlertManager.raise_alert(Alerts::OTG_FAILED);
 
-      delay(10);
+      delay_ms(10);
     }
     else
     {
@@ -183,11 +188,11 @@ void control_OTG()
       if (measurment.vbus_mA > 0)
       {
         // update the last used time
-        lastOTGUsedTime_ms = millis();
+        lastOTGUsedTime_ms = time_ms();
       }
 
       // if some time has passed since the last use
-      if (millis() - lastOTGUsedTime_ms > 10000)
+      if (time_ms() - lastOTGUsedTime_ms > 10000)
       {
         // disable the OTG if it's not used
         disable_OTG();
@@ -195,7 +200,7 @@ void control_OTG()
       else
       {
         // update the in OTG status to avoid deconnection
-        digitalWrite(ENABLE_OTG, HIGH);
+        DigitalPin(DigitalPin::GPIO::otgSignal).set_high(true);
         chargerIc.readRegEx(BQ25703Areg.chargeOption3);
         BQ25703Areg.chargeOption3.set_EN_OTG(1);
         chargerIc.writeRegEx(BQ25703Areg.chargeOption3);
@@ -212,8 +217,8 @@ void control_OTG()
 
       disable_OTG();
 
-      digitalWrite(ENABLE_OTG, LOW);
-      delay(1);
+      DigitalPin(DigitalPin::GPIO::otgSignal).set_high(false);
+      delay_ms(1);
       // 5V 0A for OTG (default)
       set_OTG_targets(5000, 0);
 
@@ -339,7 +344,7 @@ void run_ADC()
     isAdcTriggered = false;
 
     // store everything in the measurment struct
-    measurments_s.time_ms = millis();
+    measurments_s.time = time_ms();
     measurments_s.vbus_mV = BQ25703Areg.aDCVBUSPSYS.get_VBUS();
     measurments_s.psys_mV = BQ25703Areg.aDCVBUSPSYS.get_PSYS();
     measurments_s.batChargeCurrent_mA = BQ25703Areg.aDCIBAT.get_ICHG();
@@ -376,7 +381,7 @@ void program_input_current_limit()
         (not shouldUseICO and writtenCurrent_mA != BQ25703Areg.iIN_DPM.get()))
     {
       // read/write error
-      Serial.print(writtenCurrent_mA);
+      /*Serial.print(writtenCurrent_mA);
       Serial.print("mA != ");
       Serial.print(BQ25703Areg.iIN_HOST.get());
       Serial.print("mA OR ");
@@ -385,6 +390,7 @@ void program_input_current_limit()
       Serial.print(writtenCurrent_mA);
       Serial.print("mA != ");
       Serial.println(BQ25703Areg.iIN_DPM.get());
+      */
       status_s = Status_t::ERROR;
       return;
     }
@@ -411,7 +417,7 @@ void program_input_current_limit()
   chargerIc.readRegEx(BQ25703Areg.chargeOption0);
   if (BQ25703Areg.chargeOption0.EN_IDPM() == 0)
   {
-    Serial.println("EN IDPM not enabled");
+    lampda_print("EN IDPM not enabled");
     status_s = Status_t::ERROR;
     return;
   }
@@ -451,7 +457,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
     // wait until the flag is lowered
     do
     {
-      delay(5);
+      delay_ms(5);
       chargerIc.readRegEx(BQ25703Areg.chargeOption3);
     } while (BQ25703Areg.chargeOption3.RESET_REG() == 1);
   }
@@ -545,7 +551,7 @@ void loop(const bool isChargeOk)
   // update the OTG functionalities
   control_OTG();
 
-  const uint32_t time = millis();
+  const uint32_t time = time_ms();
   // only update every 100ms
   if (isChargeChanged or lastUpdateTime == 0 or time - lastUpdateTime >= 100)
   {
@@ -647,7 +653,7 @@ ChargeStatus_t get_charge_status() { return chargeStatus_s; }
 bool Measurments::is_measurment_valid() const
 {
   // initialized and recent
-  return this->time_ms > 0 and (millis() - this->time_ms) < 2000;
+  return this->time > 0 and (time_ms() - this->time) < 2000;
 }
 
 Measurments get_measurments() { return measurments_s; };

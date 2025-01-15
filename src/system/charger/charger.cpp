@@ -2,13 +2,16 @@
 
 #include <cstdint>
 
-#include "Arduino.h"
 #include "BQ25703A/charging_ic.h"
 #include "power_source.h"
 #include "src/system/alerts.h"
 #include "src/system/physical/battery.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
+
+#include "src/system/platform/time.h"
+#include "src/system/platform/gpio.h"
+#include "src/system/platform/registers.h"
 
 namespace charger {
 
@@ -101,7 +104,7 @@ bool should_charge()
   // check battery full status
   if (isBatteryFullLatched_s or batteryPercent >= 10000)
   {
-    const uint32_t time = millis();
+    const uint32_t time = time_ms();
 
     if (batteryFullDeglitchTime == 0)
     {
@@ -213,7 +216,6 @@ void update_state_status()
             }
           default:
             {
-              Serial.println("unhandled charge status");
               charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
               break;
             }
@@ -282,13 +284,15 @@ void setup()
   charger.status = Charger_t::ChargerStatus_t::INACTIVE;
 }
 
+DigitalPin chargeOkPin(DigitalPin::GPIO::chargerOkSignal);
+
 void loop()
 {
   const auto& otg = powerSource::get_otg_parameters();
   control_OTG(otg.requestedVoltage_mV, otg.requestedCurrent_mA);
 
   // run charger loop
-  const bool isChargerOk = (digitalRead(CHARGE_OK) == HIGH);
+  const bool isChargerOk = chargeOkPin.is_high();
   BQ25703A::loop(isChargerOk);
 
   // run power source loop
@@ -341,7 +345,7 @@ void set_enable_charge(const bool shouldCharge) { enableCharge_s = shouldCharge;
 
 bool is_vbus_powered() { return powerSource::is_power_available(); }
 
-bool is_vbus_signal_detected() { return powerSource::is_powered_with_vbus(); }
+bool is_vbus_signal_detected() { return is_voltage_detected_on_vbus(); }
 
 Charger_t get_state() { return charger; }
 
@@ -351,39 +355,39 @@ bool Charger_t::is_charging() const
          status == ChargerStatus_t::CHARGING;
 }
 
-String Charger_t::get_status_str() const
+std::string Charger_t::get_status_str() const
 {
   switch (status)
   {
     case ChargerStatus_t::UNINITIALIZED:
-      return String("UNINITIALIZED");
+      return std::string("UNINITIALIZED");
       break;
     case ChargerStatus_t::INACTIVE:
-      return String("INACTIVE");
+      return std::string("INACTIVE");
       break;
     case ChargerStatus_t::POWER_DETECTED:
-      return String("POWER_DETECTED");
+      return std::string("POWER_DETECTED");
       break;
     case ChargerStatus_t::SLOW_CHARGING:
-      return String("SLOW_CHARGING");
+      return std::string("SLOW_CHARGING");
       break;
     case ChargerStatus_t::CHARGING:
-      return String("CHARGING");
+      return std::string("CHARGING");
       break;
     case ChargerStatus_t::CHARGE_FINISHED:
-      return String("CHARGE_FINISHED");
+      return std::string("CHARGE_FINISHED");
       break;
     case ChargerStatus_t::ERROR_BATTERY_MISSING:
-      return String("ERROR_BATTERY_MISSING");
+      return std::string("ERROR_BATTERY_MISSING");
       break;
     case ChargerStatus_t::ERROR_SOFTWARE:
-      return String("ERROR_SOFTWARE");
+      return std::string("ERROR_SOFTWARE");
       break;
     case ChargerStatus_t::ERROR_HARDWARE:
-      return String("ERROR_HARDWARE");
+      return std::string("ERROR_HARDWARE");
       break;
     default:
-      return String("unhandled state");
+      return std::string("unhandled state");
       break;
   }
 }

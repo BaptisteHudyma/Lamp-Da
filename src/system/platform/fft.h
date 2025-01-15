@@ -28,6 +28,8 @@
 
 #include "arduinoFFT.h"
 
+#include "src/system/utils/utils.h"
+
 constexpr int SAMPLE_RATE = 16000; // Base sample rate in Hz - standard.
                                    // Physical sample time -> 50ms
 // constexpr int SAMPLE_RATE = 20480;            // Base sample rate in Hz -
@@ -281,7 +283,7 @@ public:
    */
   uint16_t get_bin_min_frequency(uint16_t index)
   {
-    index = constrain(index, 0, fftResCount);
+    index = lmpd_constrain(index, 0, fftResCount);
     return minFrequenciesPerBin[index];
   }
 
@@ -292,19 +294,19 @@ public:
    */
   uint16_t get_bin_max_frequency(uint16_t index)
   {
-    index = constrain(index, 0, fftResCount);
+    index = lmpd_constrain(index, 0, fftResCount);
     return maxFrequenciesPerBin[index];
   }
 
   uint8_t get_fft(uint16_t channel)
   {
-    channel = constrain(channel, 0, fftResCount);
+    channel = lmpd_constrain(channel, 0, fftResCount);
     return fftResult[channel];
   }
 
   void set_data(const int16_t data, uint16_t index)
   {
-    index = constrain(index, 0, samplesFFT);
+    index = lmpd_constrain(index, 0, samplesFFT);
     vReal[index] = data;
     vImag[index] = 0;
   }
@@ -316,7 +318,7 @@ public:
     if (useInputFilter > 0)
     {
       // filter parameter - we use constexpr as it does not need any RAM
-      // (evaluted at compile time) value = 1 - exp(-2*PI * FFilter / FSample);
+      // (evaluted at compile time) value = 1 - exp(-2*c_PI * FFilter / FSample);
       // // FFilter: filter cutoff frequency; FSample: sampling frequency
       constexpr float filter30Hz = 0.01823938f;  // rumbling = 10-25hz
       constexpr float filter70Hz = 0.04204211f;  // mains hum = 50-60hz
@@ -395,8 +397,8 @@ public:
 
     FFT.majorPeak(&FFT_MajorPeak,
                   &FFT_Magnitude); // let the effects know which freq was most dominant
-    FFT_MajorPeak = constrain(FFT_MajorPeak, 1.0f,
-                              5120.0f); // restrict value to range expected by effects
+    FFT_MajorPeak = lmpd_constrain(FFT_MajorPeak, 1.0f,
+                                   5120.0f); // restrict value to range expected by effects
     FFT_Magnitude = fabsf(FFT_Magnitude);
 
     for (int i = 0; i < samplesFFT; i++)
@@ -436,8 +438,8 @@ public:
       // Now, let's dump it all into fftResult. Need to do this, otherwise other
       // routines might grab fftResult values prematurely.
       // fftResult[i] = (int)fftCalc[i];
-      fftResult[i] = constrain((int)fftCalc[i], 0,
-                               254); // question: why do we constrain values to 8bit here ???
+      fftResult[i] = lmpd_constrain((int)fftCalc[i], 0,
+                                    254); // question: why do we constrain values to 8bit here ???
       fftAvg[i] = (float)fftResult[i] * .05 + (1 - .05) * fftAvg[i];
     }
 

@@ -8,6 +8,7 @@
 
 #include "src/system/ext/math8.h"
 #include "src/system/utils/constants.h"
+#include "src/system/utils/utils.h"
 
 uint16_t to_screen_x(const uint16_t ledIndex)
 {
@@ -34,7 +35,7 @@ uint16_t to_strip(uint16_t screenX, uint16_t screenY)
   if (screenY > stripYCoordinates)
     screenY = stripYCoordinates;
 
-  return constrain(screenX + screenY * stripXCoordinates, 0, LED_COUNT - 1);
+  return lmpd_constrain(screenX + screenY * stripXCoordinates, 0, LED_COUNT - 1);
 }
 
 Cartesian to_lamp(const uint16_t ledIndex)

@@ -1,11 +1,15 @@
 #ifdef LMBD_LAMP_TYPE__SIMPLE
 
-#include "functions.h"
+#include <cstdint>
 
 #include "src/system/behavior.h"
-#include "src/system/physical/fileSystem.h"
 #include "src/system/physical/led_power.h"
 #include "src/system/utils/utils.h"
+
+#include "src/system/platform/time.h"
+#include "src/system/platform/fileSystem.h"
+
+#include "src/user/functions.h"
 
 namespace user {
 
@@ -24,7 +28,7 @@ void brightness_update(const uint8_t brightness)
   {
     // blip
     ledpower::write_brightness(0);
-    delay(4); // blip light off if we reached max level
+    delay_ms(4); // blip light off if we reached max level
   }
   ledpower::write_brightness(brightness);
 }
