@@ -10,4 +10,8 @@ namespace mock_registers {
 extern bool isDeepSleep;
 } // namespace mock_registers
 
+namespace mock_microphone {
+extern void set_sound_level(float soundLevel);
+}
+
 #endif

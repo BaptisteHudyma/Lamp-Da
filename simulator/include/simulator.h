@@ -52,6 +52,8 @@ template<typename T> struct simulator
 
       const float average = sumOfAll / (float)sampleCount;
       _soundLevel = 20.0 * log10f(sqrtf(average));
+
+      mock_microphone::set_sound_level(_soundLevel);
       return true;
     }
 
