@@ -11,7 +11,11 @@ extern bool isDeepSleep;
 } // namespace mock_registers
 
 namespace mock_microphone {
-extern void set_sound_level(float soundLevel);
+void set_sound_level(float soundLevel);
+}
+
+namespace mock_indicator {
+uint32_t get_color();
 }
 
 #endif

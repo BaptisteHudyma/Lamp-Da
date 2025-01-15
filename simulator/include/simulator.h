@@ -9,6 +9,7 @@
 // see LMBD_LAMP_TYPE__INDEXABLE hard-coded in simulator/Makefile
 #include "src/user/constants.h"
 
+#include <SFML/Graphics/Color.hpp>
 #include <memory>
 #include <cstring>
 #include <iostream>
@@ -82,6 +83,10 @@ template<typename T> struct simulator
 
     // render window
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), title);
+
+    sf::CircleShape indicator(60);
+    sf::CircleShape buttonMask(40);
+    buttonMask.setFillColor(sf::Color::Black);
 
     // build simu
     T simu;
@@ -181,6 +186,19 @@ template<typename T> struct simulator
           window.draw(shape);
         }
       }
+
+      // display the indicator button
+      const uint32_t indicatorColor = mock_indicator::get_color();
+      float b = (indicatorColor & 0xff);
+      float g = ((indicatorColor >> 8) & 0xff);
+      float r = ((indicatorColor >> 16) & 0xff);
+      indicator.setFillColor(sf::Color(r, g, b));
+      const auto coordX = simu.ledSizePx * ledW / 2.0;
+      const auto coordY = simu.ledSizePx * (ledH + 4);
+      indicator.setPosition(coordX, coordY);
+      buttonMask.setPosition(coordX + buttonMask.getRadius() / 2, coordY + buttonMask.getRadius() / 2);
+      window.draw(indicator);
+      window.draw(buttonMask);
 
       window.display();
     }
