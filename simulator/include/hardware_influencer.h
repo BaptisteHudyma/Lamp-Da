@@ -8,14 +8,22 @@ void update_callbacks();
 
 namespace mock_registers {
 extern bool isDeepSleep;
+extern float cpuTemperature;
+// run the other thread functions
+extern bool shouldStopThreads;
+void run_threads();
 } // namespace mock_registers
 
 namespace mock_microphone {
-void set_sound_level(float soundLevel);
+extern float soundLevel;
 }
 
 namespace mock_indicator {
 uint32_t get_color();
+}
+
+namespace mock_battery {
+extern float voltage;
 }
 
 #endif

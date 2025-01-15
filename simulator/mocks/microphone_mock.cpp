@@ -7,9 +7,8 @@
 
 #define MICROPHONE_IMPL_CPP
 
-float _soundLevel = 0.0;
 namespace mock_microphone {
-void set_sound_level(float soundLevel) { _soundLevel = soundLevel; }
+float soundLevel;
 } // namespace mock_microphone
 
 namespace microphone {
@@ -20,7 +19,7 @@ void disable() {}
 
 void disable_after_non_use() {}
 
-float get_sound_level_Db() { return _soundLevel; }
+float get_sound_level_Db() { return mock_microphone::soundLevel; }
 
 static SoundStruct soundStruct;
 SoundStruct get_fft() { return soundStruct; }

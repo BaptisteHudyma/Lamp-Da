@@ -4,9 +4,10 @@
 #include "PDlib/drivers/tcpm_driver.h"
 #include "PDlib/usb_pd.h"
 
+#include "src/system/utils/print.h"
+
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
-#include "src/system/platform/print.h"
 
 // we only have one device, so always index 0
 static constexpr int devicePort = 0;
@@ -167,8 +168,7 @@ struct UsbPDData
   {
     if (hasChanged)
     {
-      lampda_print("%d: %d%d%d%d: %fV",
-                   time_ms(),
+      lampda_print("PD algo: %d%d%d%d: %fV",
                    isPowerCableDetected,
                    isVbusPowered,
                    isPowerSourceDetected,

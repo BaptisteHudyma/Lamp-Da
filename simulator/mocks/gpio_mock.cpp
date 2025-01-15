@@ -41,6 +41,11 @@ namespace mock_indicator {
 COLOR idColor;
 uint32_t get_color() { return idColor.color; }
 } // namespace mock_indicator
+
+namespace mock_battery {
+float voltage;
+} // namespace mock_battery
+
 class DigitalPinImpl
 {
 public:
@@ -81,7 +86,16 @@ public:
     }
   }
 
-  uint16_t read() { return 0; }
+  uint16_t read()
+  {
+    switch (_pin)
+    {
+      case DigitalPin::GPIO::batterySignal:
+        return utils::voltageToAnalogRead(mock_battery::voltage * voltageDividerCoeff);
+        break;
+    }
+    return 0;
+  }
 
   void attach_callback(voidFuncPtr cllbk) { mock_gpios::callbacks[_pin] = cllbk; }
 

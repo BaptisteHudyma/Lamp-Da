@@ -8,7 +8,7 @@ BUILD_DIR=${SIMU_BUILD_DIR}
 
 CXX=$(shell which c++)
 CXX_INCLUDE_DIRECTORIES=-I$(ROOT_DIR) -I$(SRC_DIR)include
-CXX_LDFLAGS=-lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system
+CXX_LDFLAGS=-lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system -pthread
 CXX_LAMP_FLAGS=-DLMBD_MISSING_DEFINE -DLMBD_SIMULATION -DLMBD_LAMP_TYPE__INDEXABLE
 CXX_EXTRA_FLAGS=-fconcepts -DLMBD_CPP17 -ftemplate-backtrace-limit=1 #-Wall -Wextra -pedantic
 CXX_BUILD_FLAGS=--std=c++17 -O3 $(CXX_LAMP_FLAGS) $(CXX_EXTRA_FLAGS) $(CXX_INCLUDE_DIRECTORIES)
@@ -37,7 +37,7 @@ check-deps:
 	@echo; echo " --- $@"
 	# building test program linked with SFML...
 	@echo 'int main(){}' > '$(BUILD_DIR)/.main.cpp'
-	@($(CXX) $(CXX_LDFLAGS) '$(BUILD_DIR)/.main.cpp' -o /dev/zero) || \
+	@($(CXX) '$(BUILD_DIR)/.main.cpp' -o /dev/zero $(CXX_LDFLAGS)) || \
 		(echo; echo\
 		 ; echo 'ERROR: unable to link against the SFML library!' \
 		 ; echo \
@@ -54,6 +54,7 @@ check-deps:
 
 check-dirs:
 	@echo; echo " --- $@"
+	@mkdir -p $(BUILD_DIR)
 	@test -d '$(BUILD_DIR)/../simulator' \
 		|| (echo; echo 'Bad path: SIMU_BUILD_DIR='$$SIMU_BUILD_DIR \
 			; echo 'Usage: SIMU_BUILD_DIR=../_build/simulator make' \
@@ -68,20 +69,21 @@ check-dirs:
 
 $(BUILD_DIR)/%-simulator: $(SRC_DIR)src/%-simulator.cpp $(MOCK_OBJ) $(OBJ)
 	@echo; echo " --- $@"
-	$(CXX) $(CXX_LDFLAGS) $(CXX_BUILD_FLAGS) -c $< -o $@.o
-	$(CXX) $(CXX_LDFLAGS) $(CXX_BUILD_FLAGS) -o $@ $(MOCK_OBJ) $(OBJ) $@.o
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXX_BUILD_FLAGS) -c $< -o $@.o $(CXX_LDFLAGS)
+	$(CXX) $(CXX_BUILD_FLAGS) -o $@ $(MOCK_OBJ) $(OBJ) $@.o $(CXX_LDFLAGS)
 
 # generer les fichiers objets
 $(BUILD_DIR)/%.o: %.cpp %.d
 	@echo; echo building $<
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXX_BUILD_FLAGS) -c $(INCLUDES) $< -o $@
+	$(CXX) $(CXX_BUILD_FLAGS) -c $(INCLUDES) $< -o $@ $(CXX_LDFLAGS)
 
 # generer les fichiers objets
 $(BUILD_DIR)/%.o: %.c %.d
 	@echo; echo building $<
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXX_BUILD_FLAGS) -c $(INCLUDES) $< -o $@
+	$(CXX) $(CXX_BUILD_FLAGS) -c $(INCLUDES) $< -o $@ $(CXX_LDFLAGS)
 
 # Générer des fichiers de dépendances
 %.d: %.cpp
@@ -110,4 +112,4 @@ verify-all: clean $(ALL_TARGETS)
 
 clean:
 	rm -f $(BUILD_DIR)/*-simulator
-	rm -f $(BUILD_DIR)
+	rm -rf $(BUILD_DIR)

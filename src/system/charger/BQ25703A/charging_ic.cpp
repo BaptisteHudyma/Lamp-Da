@@ -4,9 +4,9 @@
 
 #include "BQ25703A.h"
 #include "src/system/alerts.h"
+#include "src/system/utils/print.h"
 
 #include "src/system/platform/time.h"
-#include "src/system/platform/print.h"
 #include "src/system/platform/gpio.h"
 
 namespace BQ25703A {

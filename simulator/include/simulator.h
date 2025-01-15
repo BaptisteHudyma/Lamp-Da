@@ -2,6 +2,7 @@
 #define SIMULATOR_H
 
 #include <Arduino.h>
+#include "parameter_parser.h"
 
 // Call the main file after mocks
 #include "src/system/global.h"
@@ -25,8 +26,11 @@ constexpr int ledW = stripXCoordinates;
 constexpr int ledH = stripYCoordinates;
 
 #include "src/user/functions.h"
+#include "src/system/utils/utils.h"
 
 #include "simulator/include/hardware_influencer.h"
+
+#include <thread>
 
 //
 // simulator core loop
@@ -52,16 +56,13 @@ template<typename T> struct simulator
       }
 
       const float average = sumOfAll / (float)sampleCount;
-      _soundLevel = 20.0 * log10f(sqrtf(average));
-
-      mock_microphone::set_sound_level(_soundLevel);
+      mock_microphone::soundLevel = 20.0 * log10f(sqrtf(average));
       return true;
     }
 
     virtual void onStop() {}
 
   public:
-    float _soundLevel;
     ~LevelRecorder() { stop(); }
   };
 
@@ -88,11 +89,18 @@ template<typename T> struct simulator
     sf::CircleShape buttonMask(40);
     buttonMask.setFillColor(sf::Color::Black);
 
+    // load initial values
+    read_and_update_parameters();
+
     // build simu
     T simu;
 
     // Main program setup
     global::main_setup();
+
+    // mock run the threads (do not give each subprocess a thread)
+    mock_registers::shouldStopThreads = false;
+    std::thread mockThreads(&mock_registers::run_threads);
 
     uint64_t skipframe = 0;
     while (window.isOpen())
@@ -100,6 +108,8 @@ template<typename T> struct simulator
       // update time_ms()
       globalMillis = clock.getElapsedTime().asMilliseconds();
 
+      // update simu parameters
+      read_and_update_parameters();
       // update the callbacks of the gpios (simulate interrupts)
       mock_gpios::update_callbacks();
 
@@ -202,6 +212,10 @@ template<typename T> struct simulator
 
       window.display();
     }
+
+    // close all threads
+    mock_registers::shouldStopThreads = true;
+    mockThreads.join();
 
     return 0;
   }

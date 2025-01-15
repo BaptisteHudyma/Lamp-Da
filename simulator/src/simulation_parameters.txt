@@ -1,0 +1,10 @@
+# This file is read at every simulation tick, so you can change the simu parameters at runtime
+
+# Battery voltage, in Volt, in interval [13.0, 16.4]
+batt_V 15.5
+
+# temperature of the CPU, in degrees C
+cpu_temp 50
+
+# delay added to the algo each loop run, to simulate an heavy program load (in mS)
+algo_del 0

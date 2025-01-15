@@ -2,6 +2,7 @@
 #define ALERTS_H
 
 #include <cstdint>
+#include "src/system/utils/print.h"
 
 // 32 errors max
 enum Alerts
@@ -27,6 +28,39 @@ enum Alerts
   OTG_FAILED = 1 << 10,   // OTG activation failed
 };
 
+inline const char* AlertsToText(const Alerts alert)
+{
+  switch (alert)
+  {
+    case NONE:
+      return "NONE";
+    case MAIN_LOOP_FREEZE:
+      return "MAIN_LOOP_FREEZE";
+    case BATTERY_READINGS_INCOHERENT:
+      return "BATTERY_READING_INCOHERENT";
+    case BATTERY_CRITICAL:
+      return "BATTERY_CRITICAL";
+    case BATTERY_LOW:
+      return "BATTERY_LOW";
+    case LONG_LOOP_UPDATE:
+      return "LONG_LOOP_UPDATE";
+    case TEMP_TOO_HIGH:
+      return "TEMP_TOO_HIGH";
+    case TEMP_CRITICAL:
+      return "TEMP_CRITICAL";
+    case BLUETOOTH_ADVERT:
+      return "BLUETOOTH_ADVERT";
+    case HARDWARE_ALERT:
+      return "HARDWARE_ALERT";
+    case OTG_ACTIVATED:
+      return "OTG_ACTIVATED";
+    case OTG_FAILED:
+      return "OTG_FAILED";
+    default:
+      return "UNSUPPORTED TYPE";
+  }
+}
+
 class Alert
 {
 public:
@@ -34,13 +68,20 @@ public:
   {
     if (alert == Alerts::NONE)
       return;
+    if ((_current & alert) != 0x0)
+      return;
+
+    lampda_print("ALERT raised: %s", AlertsToText(alert));
     _current |= alert;
   }
 
   void clear_alert(const Alerts alert)
   {
+    if (alert == Alerts::NONE)
+      return;
     if ((_current & alert) == 0x0)
       return;
+    lampda_print("ALERT cleared: %s", AlertsToText(alert));
     _current ^= alert;
   }
 

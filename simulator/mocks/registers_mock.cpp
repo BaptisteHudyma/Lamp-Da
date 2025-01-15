@@ -1,12 +1,28 @@
 #include "src/system/platform/registers.h"
 
 #include "simulator/include/hardware_influencer.h"
+#include <vector>
 
 #define PLATFORM_REGISTER_CPP
 
+typedef void (*taskfunc_t)(void);
+std::vector<taskfunc_t> threadPool;
+
 namespace mock_registers {
-bool isDeepSleep;
+bool isDeepSleep = false;
+float cpuTemperature;
+
+bool shouldStopThreads = false;
+void run_threads()
+{
+  // run until deep sleep
+  while (not shouldStopThreads)
+    for (auto& fun: threadPool)
+    {
+      fun();
+    }
 }
+} // namespace mock_registers
 
 // set tup the software watchedog
 void setup_watchdog(const uint32_t timeoutDelaySecond) {}
@@ -32,10 +48,9 @@ bool is_started_from_watchdog() { return false; }
 // started by user interrupt
 bool is_started_from_interrupt() { return true; }
 
-typedef void (*taskfunc_t)(void);
-void start_thread(taskfunc_t taskFunction) {}
+void start_thread(taskfunc_t taskFunction) { threadPool.emplace_back(taskFunction); }
 void yield_this_thread() {}
 
-float read_CPU_temperature_degreesC() { return 30; }
+float read_CPU_temperature_degreesC() { return mock_registers::cpuTemperature; }
 
 void go_to_sleep(int wakeUpPin) { mock_registers::isDeepSleep = true; };

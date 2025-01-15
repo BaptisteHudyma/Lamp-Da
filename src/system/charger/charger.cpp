@@ -156,13 +156,19 @@ bool is_status_error()
 // update the charger status state
 void update_state_status()
 {
+  static BQ25703A::Status_t previousStatus = BQ25703A::Status_t::UNINITIALIZED;
+  const BQ25703A::Status_t chargerStatus = BQ25703A::get_status();
   // check the charger ic first
-  switch (BQ25703A::get_status())
+  switch (chargerStatus)
   {
     case BQ25703A::Status_t::UNINITIALIZED:
     case BQ25703A::Status_t::ERROR:
       { // locked in a broken state
         // TODO: shutdown ? alert ?
+        if (previousStatus != BQ25703A::Status_t::UNINITIALIZED or previousStatus != BQ25703A::Status_t::ERROR)
+        {
+          lampda_print("ERROR: charger in UNINITIALIZED/ERROR state");
+        }
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
         break;
       }
@@ -170,11 +176,20 @@ void update_state_status()
       {
         // broken charger ic
         // TODO: shutdown ? alert ?
+        if (previousStatus != BQ25703A::Status_t::ERROR_COMPONENT)
+        {
+          lampda_print("ERROR: charger in ERROR_COMPONENT state");
+        }
         charger.status = Charger_t::ChargerStatus_t::ERROR_HARDWARE;
         break;
       }
     case BQ25703A::Status_t::ERROR_HAS_FAULTS:
       {
+        if (previousStatus != BQ25703A::Status_t::ERROR_HAS_FAULTS)
+        {
+          lampda_print("ERROR: charger in ERROR_HAS_FAULTS state");
+        }
+
         // hopefully temporary
         BQ25703A::try_clear_faults();
         // TODO: add a count on the fault clearing
@@ -223,6 +238,8 @@ void update_state_status()
         break;
       }
   }
+  // update previous status
+  previousStatus = chargerStatus;
 }
 
 // update the charger state
