@@ -14,10 +14,6 @@ extern bool shouldStopThreads;
 void run_threads();
 } // namespace mock_registers
 
-namespace mock_microphone {
-extern float soundLevel;
-}
-
 namespace mock_indicator {
 uint32_t get_color();
 }

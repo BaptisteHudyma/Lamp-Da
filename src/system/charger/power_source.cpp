@@ -168,12 +168,13 @@ struct UsbPDData
   {
     if (hasChanged)
     {
-      lampda_print("PD algo: %d%d%d%d: %fV",
+      lampda_print("PD algo: %d%d%d%d: %fV | %s",
                    isPowerCableDetected,
                    isVbusPowered,
                    isPowerSourceDetected,
                    isUsbPd,
-                   vbusVoltage / 1000.0);
+                   vbusVoltage / 1000.0,
+                   pdAlgoStatus.c_str());
       hasChanged = false;
     }
   }

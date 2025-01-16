@@ -11,8 +11,10 @@
 #include "src/system/physical/battery.h"
 #include "src/system/physical/button.h"
 #include "src/system/physical/indicator.h"
+#include "src/system/physical/fileSystem.h"
 #include "src/system/physical/IMU.h"
 #include "src/system/physical/led_power.h"
+#include "src/system/physical/sound.h"
 
 #include "src/system/utils/colorspace.h"
 #include "src/system/utils/constants.h"
@@ -21,9 +23,7 @@
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/print.h"
 
-#include "src/system/platform/MicroPhone.h"
 #include "src/system/platform/bluetooth.h"
-#include "src/system/physical/fileSystem.h"
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/registers.h"

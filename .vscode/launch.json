@@ -2,14 +2,23 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "simulation",
+      "type": "gdb",
+      "request": "launch",
+      "target": "${workspaceFolder}/_build/simulator/indexable-simulator",
+      "arguments": "",
+      "stopAtEntry": false,
+      "cwd": "${workspaceRoot}"
+    },
+    {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/baptisteh/.arduino/LampColorControler/src/system/physical",
-      "program": "/home/baptisteh/.arduino/LampColorControler/src/system/physical/build/Debug/outDebug",
+      "cwd": "/home/baptisteh/Arduino/LampColorControler",
+      "program": "/home/baptisteh/Arduino/LampColorControler/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

@@ -16,7 +16,6 @@
 #include <iostream>
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio/SoundRecorder.hpp>
 
 #define LMBD_SIMU_ENABLED
 #define LMBD_SIMU_REALCOLORS
@@ -42,45 +41,12 @@ template<typename T> struct simulator
   static constexpr float screenHeight = 1080;
   static constexpr char title[] = "lampda simulator";
 
-  // to hook microphone & measure levelDb
-  class LevelRecorder : public sf::SoundRecorder
-  {
-    virtual bool onStart() { return true; }
-
-    virtual bool onProcessSamples(const sf::Int16* samples, std::size_t sampleCount)
-    {
-      float sumOfAll = 0;
-      for (std::size_t i = 0; i < sampleCount; i++)
-      {
-        sumOfAll += powf(samples[i] / (float)1024.0, 2.0);
-      }
-
-      const float average = sumOfAll / (float)sampleCount;
-      mock_microphone::soundLevel = 20.0 * log10f(sqrtf(average));
-      return true;
-    }
-
-    virtual void onStop() {}
-
-  public:
-    ~LevelRecorder() { stop(); }
-  };
-
-  inline static LevelRecorder recorder;
-
   static int run()
   {
     // time
     sf::Clock clock;
 
     globalMillis = clock.getElapsedTime().asMilliseconds();
-
-    // sound
-    if (not recorder.start())
-    {
-      std::cerr << "Could not start sound monitoring" << std::endl;
-      return 1;
-    }
 
     // render window
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), title);
@@ -116,17 +82,6 @@ template<typename T> struct simulator
       // deep sleep, exit
       if (mock_registers::isDeepSleep)
         break;
-
-      // other events
-      sf::Event event;
-      while (window.pollEvent(event))
-      {
-        if (event.type == sf::Event::Closed)
-        {
-          window.close();
-          recorder.stop();
-        }
-      }
 
       // main program loop
       global::main_loop();
@@ -213,6 +168,7 @@ template<typename T> struct simulator
       window.display();
     }
 
+    window.close();
     // close all threads
     mock_registers::shouldStopThreads = true;
     mockThreads.join();

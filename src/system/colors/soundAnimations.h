@@ -8,7 +8,7 @@
 #include "src/system/utils/colorspace.h"
 #include "src/system/utils/strip.h"
 
-#include "src/system/platform/MicroPhone.h"
+#include "src/system/physical/sound.h"
 
 namespace animations {
 

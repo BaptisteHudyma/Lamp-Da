@@ -8,6 +8,7 @@
 #include <cstdarg>
 
 #include "src/system/platform/time.h"
+#include <mutex>
 
 #define PLATFORM_PRINT_CPP
 
@@ -19,7 +20,12 @@ void init_prints() {}
 /**
  * \brief Print a screen to the external world
  */
-void lampda_print(const std::string& str) { std::cout << time_ms() << "> " << str << std::endl; }
+std::mutex mut;
+void lampda_print(const std::string& str)
+{
+  std::scoped_lock(mut);
+  std::cout << time_ms() << "> " << str << std::endl;
+}
 
 /**
  * \breif read external inputs (may take some time)

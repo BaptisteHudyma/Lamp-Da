@@ -8,10 +8,10 @@
 #include "src/system/colors/palettes.h"
 #include "src/system/colors/soundAnimations.h"
 #include "src/system/colors/wipes.h"
-#include "src/system/physical/IMU.h"
 
+#include "src/system/physical/IMU.h"
+#include "src/system/physical/sound.h"
 #include "src/system/physical/fileSystem.h"
-#include "src/system/platform/MicroPhone.h"
 
 namespace modes::legacy {
 

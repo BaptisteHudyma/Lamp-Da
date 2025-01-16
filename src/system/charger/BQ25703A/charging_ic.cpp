@@ -61,7 +61,7 @@ void run_fault_detection()
       BQ25703Areg.chargerStatus.Fault_Latchoff() or BQ25703Areg.chargerStatus.Fault_OTG_OVP() or
       BQ25703Areg.chargerStatus.Fault_OTG_UCP())
   {
-    lampda_print("%d%d%d%d%d%d%d",
+    lampda_print("Charger ic faults: %d%d%d%d%d%d%d",
                  BQ25703Areg.chargerStatus.Fault_ACOV(),
                  BQ25703Areg.chargerStatus.Fault_BATOC(),
                  BQ25703Areg.chargerStatus.Fault_ACOC(),
