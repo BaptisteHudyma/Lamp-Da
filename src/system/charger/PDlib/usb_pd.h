@@ -1035,7 +1035,7 @@ extern "C" {
    *
    * @param port USB-C port number
    */
-  char* get_state_cstr(int port);
+  const char* get_state_cstr(int port);
 
   /**
    * Extract power information out of a Power Data Object (PDO)

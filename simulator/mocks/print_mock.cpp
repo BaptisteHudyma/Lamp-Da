@@ -1,15 +1,16 @@
-#ifndef MOCK_PRINT_H
-#define MOCK_PRINT_H
+#include "src/system/platform/print.h"
 
 #include <cstdio>
 #include <iostream>
-#define PLATFORM_PRINT_CPP
 
 #include <string>
 #include <vector>
 #include <cstdarg>
 
-#include "src/system/platform/print.h"
+#include "src/system/platform/time.h"
+#include <mutex>
+
+#define PLATFORM_PRINT_CPP
 
 /**
  * \brief call once at program start
@@ -18,14 +19,12 @@ void init_prints() {}
 
 /**
  * \brief Print a screen to the external world
- * To use with caution, this process can be slow
  */
-void lampda_print(const std::string& str) { std::cout << str << std::endl; }
-void lampda_print(const char* fmt, ...)
+std::mutex mut;
+void lampda_print(const std::string& str)
 {
-  va_list args;
-  va_start(args, fmt);
-  printf(fmt, args);
+  std::scoped_lock(mut);
+  std::cout << time_ms() << "> " << str << std::endl;
 }
 
 /**
@@ -37,5 +36,3 @@ std::vector<std::string> read_inputs()
   // TODO
   return res;
 }
-
-#endif

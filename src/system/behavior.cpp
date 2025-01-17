@@ -11,20 +11,20 @@
 #include "src/system/physical/battery.h"
 #include "src/system/physical/button.h"
 #include "src/system/physical/indicator.h"
+#include "src/system/physical/fileSystem.h"
 #include "src/system/physical/IMU.h"
 #include "src/system/physical/led_power.h"
+#include "src/system/physical/sound.h"
 
 #include "src/system/utils/colorspace.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 #include "src/system/utils/state_machine.h"
 #include "src/system/utils/input_output.h"
+#include "src/system/utils/print.h"
 
-#include "src/system/platform/MicroPhone.h"
 #include "src/system/platform/bluetooth.h"
-#include "src/system/platform/fileSystem.h"
 #include "src/system/platform/time.h"
-#include "src/system/platform/print.h"
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/registers.h"
 
@@ -462,11 +462,12 @@ void set_battery_alerts()
 
 void handle_alerts()
 {
-  // do not display alerts for the first 500 ms
-  const uint32_t current = ((time_ms() - turnOnTime) < 500) ? Alerts::NONE : AlertManager.current();
-
   static uint32_t criticalbatteryRaisedTime = 0;
-  if (current == Alerts::NONE)
+
+  // do not display alerts for the first 500 ms
+  const bool shouldIgnoreAlerts = (time_ms() - turnOnTime) < 500;
+
+  if (shouldIgnoreAlerts or AlertManager.is_clear())
   {
     MaxBrightnessLimit = MAX_BRIGHTNESS; // no alerts: reset the max brightness
     criticalbatteryRaisedTime = 0;
@@ -502,16 +503,16 @@ void handle_alerts()
   }
   else
   {
-    if ((current & Alerts::TEMP_CRITICAL) != 0x00)
+    if (AlertManager.is_raised(Alerts::TEMP_CRITICAL))
     {
       // fast shutdown when temperature reaches critical levels
       mainMachine.set_state(BehaviorStates::SHUTDOWN);
     }
-    else if ((current & Alerts::HARDWARE_ALERT) != 0x00)
+    else if (AlertManager.is_raised(Alerts::HARDWARE_ALERT))
     {
       indicator::blink(100, 50, utils::ColorSpace::TOMATO);
     }
-    else if ((current & Alerts::TEMP_TOO_HIGH) != 0x00)
+    else if (AlertManager.is_raised(Alerts::TEMP_TOO_HIGH))
     {
       // proc temperature is too high, blink orange
       indicator::blink(300, 300, utils::ColorSpace::ORANGE);
@@ -521,12 +522,12 @@ void handle_alerts()
       MaxBrightnessLimit = clampedBrightness;
       update_brightness(min(clampedBrightness, BRIGHTNESS), true);
     }
-    else if ((current & Alerts::BATTERY_READINGS_INCOHERENT) != 0x00)
+    else if (AlertManager.is_raised(Alerts::BATTERY_READINGS_INCOHERENT))
     {
       // incohrent battery readings
       indicator::blink(100, 100, utils::ColorSpace::GREEN);
     }
-    else if ((current & Alerts::BATTERY_CRITICAL) != 0x00)
+    else if (AlertManager.is_raised(Alerts::BATTERY_CRITICAL))
     {
       // critical battery alert: shutdown after 2 seconds
       if (criticalbatteryRaisedTime == 0)
@@ -539,7 +540,7 @@ void handle_alerts()
       // blink if no shutdown
       indicator::blink(100, 100, utils::ColorSpace::RED);
     }
-    else if ((current & Alerts::BATTERY_LOW) != 0x00)
+    else if (AlertManager.is_raised(Alerts::BATTERY_LOW))
     {
       criticalbatteryRaisedTime = 0;
       // fast blink red
@@ -553,24 +554,24 @@ void handle_alerts()
       bluetooth::disable_bluetooth();
       update_brightness(min(clampedBrightness, BRIGHTNESS), true);
     }
-    else if ((current & Alerts::HARDWARE_ALERT) != 0x00)
+    else if (AlertManager.is_raised(Alerts::HARDWARE_ALERT))
     {
       indicator::blink(100, 50, utils::ColorSpace::TOMATO);
     }
-    else if ((current & Alerts::LONG_LOOP_UPDATE) != 0x00)
+    else if (AlertManager.is_raised(Alerts::LONG_LOOP_UPDATE))
     {
       // fast blink red
       indicator::blink(400, 400, utils::ColorSpace::FUSHIA);
     }
-    else if ((current & Alerts::BLUETOOTH_ADVERT) != 0x00)
+    else if (AlertManager.is_raised(Alerts::BLUETOOTH_ADVERT))
     {
       indicator::breeze(1000, 500, utils::ColorSpace::BLUE);
     }
-    else if ((current & Alerts::OTG_FAILED) != 0x00)
+    else if (AlertManager.is_raised(Alerts::OTG_FAILED))
     {
       indicator::blink(200, 200, utils::ColorSpace::FUSHIA);
     }
-    else if ((current & Alerts::OTG_ACTIVATED) != 0x00)
+    else if (AlertManager.is_raised(Alerts::OTG_ACTIVATED))
     {
       // red to green
       const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,

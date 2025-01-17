@@ -45,7 +45,7 @@ static uint8_t pd_comm_enabled[CONFIG_USB_PD_PORT_COUNT];
 #else /* CONFIG_COMMON_RUNTIME */
 #define CPRINTF(format, args...)
 #define CPRINTS(format, args...)
-static const int debug_level;
+static const int debug_level = 0;
 #endif
 
 #ifdef CONFIG_USB_PD_DUAL_ROLE
@@ -340,7 +340,7 @@ static inline void set_state(int port, enum pd_states next_state)
   int i;
 #endif
 
-  set_state_timeout(port, 0, 0);
+  set_state_timeout(port, 0, PD_STATE_DISABLED);
   pd[port].task_state = next_state;
 
   if (last_state == next_state)
@@ -4310,7 +4310,7 @@ typec_current_t get_typec_current_mA()
 
 int is_sink_ready(int port) { return pd[port].task_state == PD_STATE_SNK_READY; }
 
-char* get_state_cstr(int port)
+const char* get_state_cstr(int port)
 {
   switch (pd[port].task_state)
   {

@@ -67,7 +67,7 @@ class BQ25703A
 public:
   BQ25703A() {};
   // Initialise the variable here, but it will be written from the main program
-  static const byte BQ25703Aaddr = 0x6B; // I2C address
+  static const byte BQ25703Aaddr = chargeI2cAddress; // I2C address
 
   template<typename T> static bool readReg(T* dataParam, const uint8_t arrLen)
   {
@@ -143,13 +143,15 @@ public:
   // Base class for register operations
   struct IBaseRegister
   {
+    virtual ~IBaseRegister() {};
+
     virtual uint16_t address() const = 0;
 
     virtual uint16_t minVal() const = 0;
     virtual uint16_t maxVal() const = 0;
     virtual uint16_t resolution() const = 0;
 
-    virtual uint8_t bitLenght() const;
+    virtual uint8_t bitLenght() const = 0;
     virtual uint8_t offset() const = 0;
 
     uint16_t mask() const

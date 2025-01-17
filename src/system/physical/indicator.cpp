@@ -8,13 +8,14 @@
 #include "src/system/platform/time.h"
 
 #include "src/system/platform/gpio.h"
+#include "src/system/utils/input_output.h"
 
 namespace indicator {
 
 // Pins for the led on the button
-static DigitalPin ButtonRedPin(DigitalPin::GPIO::p8);
-static DigitalPin ButtonGreenPin(DigitalPin::GPIO::p4);
-static DigitalPin ButtonBluePin(DigitalPin::GPIO::p7);
+static DigitalPin ButtonRedPin(RedIndicator);
+static DigitalPin ButtonGreenPin(GreenIndicator);
+static DigitalPin ButtonBluePin(BlueIndicator);
 
 void init()
 {

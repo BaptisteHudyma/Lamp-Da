@@ -4,16 +4,12 @@
 
 #include "BQ25703A.h"
 #include "src/system/alerts.h"
+#include "src/system/utils/print.h"
 
 #include "src/system/platform/time.h"
-#include "src/system/platform/print.h"
 #include "src/system/platform/gpio.h"
 
 namespace BQ25703A {
-
-// specific to BQ25703A
-static constexpr uint8_t MANUFACTURE_ID = 0x40;
-static constexpr uint8_t DEVICE_ID = 0x78;
 
 // Initialise the device and library
 bq2573a::BQ25703A chargerIc;
@@ -61,7 +57,7 @@ void run_fault_detection()
       BQ25703Areg.chargerStatus.Fault_Latchoff() or BQ25703Areg.chargerStatus.Fault_OTG_OVP() or
       BQ25703Areg.chargerStatus.Fault_OTG_UCP())
   {
-    lampda_print("%d%d%d%d%d%d%d",
+    lampda_print("Charger ic faults: %d%d%d%d%d%d%d",
                  BQ25703Areg.chargerStatus.Fault_ACOV(),
                  BQ25703Areg.chargerStatus.Fault_BATOC(),
                  BQ25703Areg.chargerStatus.Fault_ACOC(),
@@ -437,8 +433,8 @@ bool enable(const uint16_t minSystemVoltage_mV,
             const uint16_t maxChargingCurrent_mA,
             const bool forceReset)
 {
-  if (chargerIc.isFlagRaised or BQ25703Areg.manufacturerID.get_manufacturerID() != MANUFACTURE_ID or
-      BQ25703Areg.deviceID.get_deviceID() != DEVICE_ID)
+  if (chargerIc.isFlagRaised or BQ25703Areg.manufacturerID.get_manufacturerID() != bq2573a::MANUFACTURER_ID or
+      BQ25703Areg.deviceID.get_deviceID() != bq2573a::DEVICE_ID)
   {
     // error: not detected, or those constants do not indicate a BQ25703A
     // charger

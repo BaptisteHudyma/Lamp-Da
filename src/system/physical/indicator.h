@@ -4,6 +4,7 @@
 #include "src/system/utils/colorspace.h"
 
 namespace indicator {
+
 extern void init();
 
 extern void set_color(utils::ColorSpace::RGB c);

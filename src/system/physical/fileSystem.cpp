@@ -1,16 +1,21 @@
 #include "fileSystem.h"
 
+#ifndef LMBD_SIMULATION
 #include <Adafruit_LittleFS.h>
 #include <InternalFileSystem.h>
+#else
+#include "simulator/mocks/Adafruit_LittleFS.h"
+#include "simulator/mocks/InternalFileSystem.h"
+#endif
 
 #include <cassert>
 #include <unordered_map>
 #include <vector>
 
 #include "src/system/utils/constants.h"
+#include "src/system/utils/print.h"
 
 #include "src/system/platform/time.h"
-#include "src/system/platform/print.h"
 
 namespace fileSystem {
 

@@ -7,7 +7,11 @@
 #include <cstdint>
 #include <cstring>
 
+#ifndef LMBD_SIMULATION
 #include <Adafruit_NeoPixel.h>
+#else
+#include "simulator/mocks/Adafruit_NeoPixel.h"
+#endif
 
 #include "src/system/ext/scale8.h"
 #include "src/system/utils/constants.h"

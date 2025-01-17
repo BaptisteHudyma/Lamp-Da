@@ -53,14 +53,13 @@ int pd_check_requested_voltage(uint32_t rdo, const int port)
   return EC_SUCCESS;
 }
 
-static int stub_pd_board_check_request(uint32_t rdo, int pdo_cnt)
+int pd_board_check_request(uint32_t rdo, int pdo_cnt)
 {
   int idx = RDO_POS(rdo);
 
   /* Check for invalid index */
   return (!idx || idx > pdo_cnt) ? EC_ERROR_INVAL : EC_SUCCESS;
 }
-int pd_board_check_request(uint32_t, int) __attribute__((weak, alias("stub_pd_board_check_request")));
 
 #ifdef CONFIG_USB_PD_DUAL_ROLE
 /* Last received source cap */

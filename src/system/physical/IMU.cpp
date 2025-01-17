@@ -4,15 +4,16 @@
 #include <cstring>
 
 #include "LSM6DS3/LSM6DS3.h"
+#include "src/system/utils/print.h"
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
-#include "src/system/platform/print.h"
+#include "src/system/platform/i2c.h"
 
 namespace imu {
 
 // Create a instance of class LSM6DS3
-LSM6DS3 IMU(I2C_MODE, 0x6A); // I2C device address 0x6A
+LSM6DS3 IMU(I2C_MODE, imuI2cAddress); // I2C device address
 
 static uint32_t lastIMUFunctionCall = 0;
 bool isStarted = false;

@@ -4,9 +4,10 @@
 #include "PDlib/drivers/tcpm_driver.h"
 #include "PDlib/usb_pd.h"
 
+#include "src/system/utils/print.h"
+
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
-#include "src/system/platform/print.h"
 
 // we only have one device, so always index 0
 static constexpr int devicePort = 0;
@@ -99,7 +100,7 @@ struct UsbPDData
   uint16_t maxInputCurrent;
   uint16_t maxInputVoltage;
 
-  char* pdAlgoStatus;
+  std::string pdAlgoStatus;
 
   // when true, this struct has changed !
   bool hasChanged = false;
@@ -155,7 +156,7 @@ struct UsbPDData
       maxInputVoltage = newmaxInputVoltage;
     }
 
-    char* newStatus = get_state_cstr(devicePort);
+    const auto& newStatus = std::string(get_state_cstr(devicePort));
     if (newStatus != pdAlgoStatus)
     {
       hasChanged = true;
@@ -167,13 +168,13 @@ struct UsbPDData
   {
     if (hasChanged)
     {
-      lampda_print("%d: %d%d%d%d: %fV",
-                   time_ms(),
+      lampda_print("PD algo: %d%d%d%d: %fV | %s",
                    isPowerCableDetected,
                    isVbusPowered,
                    isPowerSourceDetected,
                    isUsbPd,
-                   vbusVoltage / 1000.0);
+                   vbusVoltage / 1000.0,
+                   pdAlgoStatus.c_str());
       hasChanged = false;
     }
   }

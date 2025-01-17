@@ -8,6 +8,10 @@ extern "C" {
 
 #include <stdint.h>
 
+  static const uint8_t pdNegociationI2cAddress = 0x22;
+  static const uint8_t chargeI2cAddress = 0x60;
+  static const uint8_t imuI2cAddress = 0x6A;
+
 /* Flags for i2c_xfer() */
 #define I2C_XFER_START  (1 << 0)                         /* Start smbus session from idle state */
 #define I2C_XFER_STOP   (1 << 1)                         /* Terminate smbus session with stop bit */

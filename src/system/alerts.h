@@ -2,11 +2,12 @@
 #define ALERTS_H
 
 #include <cstdint>
+#include "src/system/utils/print.h"
 
-// 32 errors max
+// 31 errors max
 enum Alerts
 {
-  NONE = 0, // system is sane and ready
+  // 0 means no errors
 
   // always sort them by importance
   MAIN_LOOP_FREEZE = 1 << 0,            // main loop does not respond
@@ -27,24 +28,66 @@ enum Alerts
   OTG_FAILED = 1 << 10,   // OTG activation failed
 };
 
+inline const char* AlertsToText(const Alerts alert)
+{
+  switch (alert)
+  {
+    case MAIN_LOOP_FREEZE:
+      return "MAIN_LOOP_FREEZE";
+    case BATTERY_READINGS_INCOHERENT:
+      return "BATTERY_READING_INCOHERENT";
+    case BATTERY_CRITICAL:
+      return "BATTERY_CRITICAL";
+    case BATTERY_LOW:
+      return "BATTERY_LOW";
+    case LONG_LOOP_UPDATE:
+      return "LONG_LOOP_UPDATE";
+    case TEMP_TOO_HIGH:
+      return "TEMP_TOO_HIGH";
+    case TEMP_CRITICAL:
+      return "TEMP_CRITICAL";
+    case BLUETOOTH_ADVERT:
+      return "BLUETOOTH_ADVERT";
+    case HARDWARE_ALERT:
+      return "HARDWARE_ALERT";
+    case OTG_ACTIVATED:
+      return "OTG_ACTIVATED";
+    case OTG_FAILED:
+      return "OTG_FAILED";
+    default:
+      return "UNSUPPORTED TYPE";
+  }
+}
+
 class Alert
 {
 public:
   void raise_alert(const Alerts alert)
   {
-    if (alert == Alerts::NONE)
+    if (is_raised(alert))
       return;
+
+    lampda_print("ALERT raised: %s", AlertsToText(alert));
     _current |= alert;
   }
 
   void clear_alert(const Alerts alert)
   {
-    if ((_current & alert) == 0x0)
+    if (not is_raised(alert))
       return;
+    lampda_print("ALERT cleared: %s", AlertsToText(alert));
     _current ^= alert;
   }
 
-  uint32_t current() const { return _current; }
+  /**
+   * \brief Return true if an alert is raised
+   */
+  bool is_raised(const Alerts alert) const { return (_current & alert) != 0x00; }
+
+  /**
+   * \brief Return true if no alerts are raised
+   */
+  bool is_clear() const { return _current == 0x00; }
 
 private:
   uint32_t _current;

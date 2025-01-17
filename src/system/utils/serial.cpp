@@ -4,9 +4,9 @@
 #include "src/system/physical/battery.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
+#include "src/system/utils/print.h"
 
-#include "src/system/platform/fileSystem.h"
-#include "src/system/platform/print.h"
+#include "src/system/physical/fileSystem.h"
 
 namespace serial {
 
@@ -112,7 +112,7 @@ void handleCommand(const std::string& command)
       break;
 
     default:
-      lampda_print("unknown command: %s", command);
+      lampda_print("unknown command: %s", command.c_str());
       lampda_print("type h for available commands");
       break;
   }

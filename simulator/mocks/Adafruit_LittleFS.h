@@ -1,8 +1,13 @@
-#ifndef FILESYSTEM_SIMULATOR_H
-#define FILESYSTEM_SIMULATOR_H
+#ifndef FAKE_LITTLEFS_H
+#define FAKE_LITTLEFS_H
 
 #include <cstdio>
 #include <unistd.h>
+
+namespace Adafruit_LittleFS_Namespace {
+static constexpr uint8_t _placeholder_littlefs = 0;
+
+} // namespace Adafruit_LittleFS_Namespace
 
 struct InternalFSTy
 {
@@ -148,14 +153,5 @@ struct File
   const char* filemode;
   InternalFSTy& InternalFS;
 };
-
-// comment this to enable verbose filesystem debug log in simulator
-#undef LMBD_SIMU_ENABLED
-
-#include "src/system/platform/fileSystem.cpp"
-
-#ifndef LMBD_SIMU_ENABLED
-#define LMBD_SIMU_ENABLED
-#endif
 
 #endif
