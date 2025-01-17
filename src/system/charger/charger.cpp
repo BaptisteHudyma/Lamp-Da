@@ -58,7 +58,7 @@ bool should_charge()
   }
 
   // temperature too high, stop charge
-  if ((AlertManager.current() & Alerts::TEMP_CRITICAL) != 0x00)
+  if (AlertManager.is_raised(Alerts::TEMP_CRITICAL))
   {
     return false;
   }

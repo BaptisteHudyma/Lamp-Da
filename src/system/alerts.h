@@ -4,10 +4,10 @@
 #include <cstdint>
 #include "src/system/utils/print.h"
 
-// 32 errors max
+// 31 errors max
 enum Alerts
 {
-  NONE = 0, // system is sane and ready
+  // 0 means no errors
 
   // always sort them by importance
   MAIN_LOOP_FREEZE = 1 << 0,            // main loop does not respond
@@ -32,8 +32,6 @@ inline const char* AlertsToText(const Alerts alert)
 {
   switch (alert)
   {
-    case NONE:
-      return "NONE";
     case MAIN_LOOP_FREEZE:
       return "MAIN_LOOP_FREEZE";
     case BATTERY_READINGS_INCOHERENT:
@@ -66,9 +64,7 @@ class Alert
 public:
   void raise_alert(const Alerts alert)
   {
-    if (alert == Alerts::NONE)
-      return;
-    if ((_current & alert) != 0x0)
+    if (is_raised(alert))
       return;
 
     lampda_print("ALERT raised: %s", AlertsToText(alert));
@@ -77,15 +73,21 @@ public:
 
   void clear_alert(const Alerts alert)
   {
-    if (alert == Alerts::NONE)
-      return;
-    if ((_current & alert) == 0x0)
+    if (not is_raised(alert))
       return;
     lampda_print("ALERT cleared: %s", AlertsToText(alert));
     _current ^= alert;
   }
 
-  uint32_t current() const { return _current; }
+  /**
+   * \brief Return true if an alert is raised
+   */
+  bool is_raised(const Alerts alert) const { return (_current & alert) != 0x00; }
+
+  /**
+   * \brief Return true if no alerts are raised
+   */
+  bool is_clear() const { return _current == 0x00; }
 
 private:
   uint32_t _current;

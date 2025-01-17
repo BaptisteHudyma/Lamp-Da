@@ -67,7 +67,7 @@ class BQ25703A
 public:
   BQ25703A() {};
   // Initialise the variable here, but it will be written from the main program
-  static const byte BQ25703Aaddr = 0x6B; // I2C address
+  static const byte BQ25703Aaddr = chargeI2cAddress; // I2C address
 
   template<typename T> static bool readReg(T* dataParam, const uint8_t arrLen)
   {

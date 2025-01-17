@@ -13,15 +13,25 @@ bool isDeepSleep = false;
 float cpuTemperature;
 
 bool shouldStopThreads = false;
+
+void single_run_thread()
+{
+  for (auto& fun: threadPool)
+  {
+    fun();
+  }
+}
+
 void run_threads()
 {
+// TODO: missing mocks for charger & pd negociator
+#if 0
   // run until deep sleep
   while (not shouldStopThreads)
-    for (auto& fun: threadPool)
-    {
-      fun();
-    }
+    single_run_thread();
+#endif
 }
+
 } // namespace mock_registers
 
 // set tup the software watchedog
@@ -49,7 +59,7 @@ bool is_started_from_watchdog() { return false; }
 bool is_started_from_interrupt() { return true; }
 
 void start_thread(taskfunc_t taskFunction) { threadPool.emplace_back(taskFunction); }
-void yield_this_thread() {}
+void yield_this_thread() { mock_registers::single_run_thread(); }
 
 float read_CPU_temperature_degreesC() { return mock_registers::cpuTemperature; }
 

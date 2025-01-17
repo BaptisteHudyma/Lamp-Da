@@ -112,7 +112,7 @@ void handleCommand(const std::string& command)
       break;
 
     default:
-      lampda_print("unknown command: %s", command);
+      lampda_print("unknown command: %s", command.c_str());
       lampda_print("type h for available commands");
       break;
   }

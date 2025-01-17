@@ -71,17 +71,29 @@ template<typename T> struct simulator
     uint64_t skipframe = 0;
     while (window.isOpen())
     {
+      // read events, prevent windows lockup
+      sf::Event event;
+      while (window.pollEvent(event))
+      {
+#if 0
+        if (event.type == sf::Event::Closed)
+        {
+          window.close();
+        }
+#endif
+      }
+
       // update time_ms()
       globalMillis = clock.getElapsedTime().asMilliseconds();
+
+      // deep sleep, exit
+      if (mock_registers::isDeepSleep)
+        break;
 
       // update simu parameters
       read_and_update_parameters();
       // update the callbacks of the gpios (simulate interrupts)
       mock_gpios::update_callbacks();
-
-      // deep sleep, exit
-      if (mock_registers::isDeepSleep)
-        break;
 
       // main program loop
       global::main_loop();

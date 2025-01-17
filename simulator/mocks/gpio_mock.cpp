@@ -21,13 +21,6 @@ void update_callbacks()
   {
     if (pin == buttonPin)
     {
-      if (mock_registers::isDeepSleep)
-      {
-        // wake up on space press
-        mock_registers::isDeepSleep = not sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
-        continue;
-      }
-
       isButtonPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
       if (isButtonPressed)
         callback();

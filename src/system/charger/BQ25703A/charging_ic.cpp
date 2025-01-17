@@ -11,10 +11,6 @@
 
 namespace BQ25703A {
 
-// specific to BQ25703A
-static constexpr uint8_t MANUFACTURE_ID = 0x40;
-static constexpr uint8_t DEVICE_ID = 0x78;
-
 // Initialise the device and library
 bq2573a::BQ25703A chargerIc;
 
@@ -437,8 +433,8 @@ bool enable(const uint16_t minSystemVoltage_mV,
             const uint16_t maxChargingCurrent_mA,
             const bool forceReset)
 {
-  if (chargerIc.isFlagRaised or BQ25703Areg.manufacturerID.get_manufacturerID() != MANUFACTURE_ID or
-      BQ25703Areg.deviceID.get_deviceID() != DEVICE_ID)
+  if (chargerIc.isFlagRaised or BQ25703Areg.manufacturerID.get_manufacturerID() != bq2573a::MANUFACTURER_ID or
+      BQ25703Areg.deviceID.get_deviceID() != bq2573a::DEVICE_ID)
   {
     // error: not detected, or those constants do not indicate a BQ25703A
     // charger
