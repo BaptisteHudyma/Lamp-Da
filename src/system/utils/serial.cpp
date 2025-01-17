@@ -97,7 +97,7 @@ void handleCommand(const std::string& command)
         lampda_print(
                 "VBUS voltage:%dmV\n"
                 "VBUS current:%dmA\n"
-                "Bat voltage:%dmV\n",
+                "Bat voltage:%dmV\n"
                 "Bat current:%dmA",
                 chargerState.vbus_mV,
                 chargerState.inputCurrent_mA,

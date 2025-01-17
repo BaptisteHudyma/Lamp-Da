@@ -9,7 +9,7 @@ extern "C" {
 #include <stdint.h>
 
   static const uint8_t pdNegociationI2cAddress = 0x22;
-  static const uint8_t chargeI2cAddress = 0x60;
+  static const uint8_t chargeI2cAddress = 0x6B;
   static const uint8_t imuI2cAddress = 0x6A;
 
 /* Flags for i2c_xfer() */
