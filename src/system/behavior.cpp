@@ -7,6 +7,7 @@
 
 #include "src/system/alerts.h"
 #include "src/system/charger/charger.h"
+#include "src/system/charger/power_source.h"
 
 #include "src/system/physical/battery.h"
 #include "src/system/physical/button.h"
@@ -630,10 +631,11 @@ void handle_charger_operation_state()
     mainMachine.set_state(BehaviorStates::POST_CHARGER_OPERATIONS, 100, BehaviorStates::PRE_OUTPUT_LIGHT);
     return;
   }
-  // power disconected
-  const bool vbusDebounced = time_ms() - preChargeCalled > 500;
+  // wait a bit after going to charger mode, maybe vbus is bouncing around
+  const bool vbusDebounced = powerSource::can_use_power() or (time_ms() - preChargeCalled) > 5000;
   if (vbusDebounced)
   {
+    // no power, shutdown everything
     if (not is_charger_powered())
     {
       // go to sleep after closing the charger
@@ -689,8 +691,6 @@ void handle_pre_output_light_state()
   lastStartupSequence = time_ms();
 
   // let the user power on the system
-  // TODO: this 12v activation should disapear
-  ledpower::activate_12v_power();
   user::power_on_sequence();
 
   mainMachine.set_state(BehaviorStates::OUTPUT_LIGHT);
@@ -736,7 +736,7 @@ void handle_post_output_light_state()
   // let the user power off the system
   user::power_off_sequence();
 
-  // TODO: this 12v activation should disapear
+  // TODO: this 12v deactivation should disapear
   ledpower::deactivate_12v_power();
 
   // deactivate strip power
@@ -753,7 +753,7 @@ void handle_shutdown_state()
 
   // deactivate strip power
   ledpower::write_current(0); // power down
-  // TODO: this 12v activation should disapear
+  // TODO: this 12v deactivation should disapear
   ledpower::deactivate_12v_power();
   delay_ms(10);
 
