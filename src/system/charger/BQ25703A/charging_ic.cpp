@@ -176,7 +176,9 @@ void control_OTG()
         return;
       }
 
-      if (measurment.vbus_mV < 3200)
+      // 3200 is the minimum voltage that the DAC can measure for vbus...
+      // TODO: find and set the value from the right constant
+      if (measurment.vbus_mV <= 3200)
       {
         // wait for voltage to climb on VBUS
         return;
