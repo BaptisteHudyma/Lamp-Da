@@ -54,7 +54,7 @@ public:
     float estimatedCurrentDraw = 0.0;
 
     const uint8_t b = getBrightness();
-    const float currentPerLed = utils::map(b, 0, 255, 0, ampPerLed);
+    const float currentPerLed = lmpd_map<float>(b, 0, 255, 0.0f, ampPerLed);
 
     for (uint16_t i = 0; i < LED_COUNT; ++i)
     {

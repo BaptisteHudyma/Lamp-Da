@@ -19,6 +19,12 @@ template<typename T, typename V, typename U> static constexpr T lmpd_constrain(c
   return (a <= mini) ? mini : (a >= maxi) ? maxi : a;
 }
 
+template<typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+static constexpr T lmpd_map(T1 x, T2 in_min, T3 in_max, T4 out_min, T5 out_max)
+{
+  return (x - in_min) * (out_max - out_min) / static_cast<float>(in_max - in_min) + out_min;
+}
+
 //
 // ambiguous min/fmin/max/fmax/abs
 //
@@ -85,11 +91,6 @@ COLOR color_add(COLOR c1, COLOR c2, bool fast = false);
 
 uint32_t hue_to_rgb_sinus(const uint16_t angle);
 
-constexpr float map(float x, float in_min, float in_max, float out_min, float out_max)
-{
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
 /** \brief Hash input string into a 32-bit unsigned integer
  *
  * This is the xor-variant of the "djb2 hash" in its iterative form, starting
@@ -138,42 +139,6 @@ constexpr double analogReadToVoltage(const uint16_t analogVal)
 constexpr uint16_t voltageToAnalogRead(const float voltage)
 {
   return lmpd_constrain(voltage, 0, internalReferenceVoltage) * ADC_MAX_VALUE / internalReferenceVoltage;
-}
-
-// convert a liion battery level to a linear model
-constexpr uint16_t liion_level_to_battery_percent(const uint16_t liionLevelPercent)
-{
-  return (liionLevelPercent < 4000) ?
-                 // fast drop for the last half of the battery
-                 utils::map(liionLevelPercent, 0, 4000, 0, 1200) :
-                 (liionLevelPercent < 9000)
-                         // most of the battery level is here, slow slope
-                         ?
-                 utils::map(liionLevelPercent, 4000, 9000, 1200, 9500)
-                 // battery level > 90
-                 :
-                 utils::map(liionLevelPercent, 9000, 10000, 9500, 10000);
-}
-
-//
-constexpr uint16_t get_battery_level_percent(const uint16_t batteryLevel)
-{
-  return liion_level_to_battery_percent(
-          lmpd_constrain(utils::map(batteryLevel, batteryMinVoltage_mV, batteryMaxVoltage_mV, 0, 10000), 0, 10000));
-}
-
-constexpr uint16_t get_battery_max_safe_level() { return get_battery_level_percent(batteryMaxVoltageSafe_mV); }
-
-constexpr uint16_t get_battery_min_safe_level() { return get_battery_level_percent(batteryMinVoltageSafe_mV); }
-
-constexpr uint16_t get_battery_level(const uint16_t batteryVoltage_mV)
-{
-  // get the result of the total battery life, map it to the safe battery level
-  // indicated by user
-  return lmpd_constrain(
-          utils::map(batteryVoltage_mV, get_battery_min_safe_level(), get_battery_max_safe_level(), 0, 10000),
-          0,
-          10000);
 }
 
 }; // namespace utils

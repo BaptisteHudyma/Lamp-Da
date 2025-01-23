@@ -36,7 +36,6 @@ namespace behavior {
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
 
 // constants
-static constexpr uint8_t MIN_BRIGHTNESS = 5;
 static constexpr uint8_t MAX_BRIGHTNESS = 255;
 static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000;
 static constexpr uint32_t EARLY_ACTIONS_LIMIT_MS = 2000;
@@ -110,27 +109,26 @@ bool isBluetoothAdvertising = false;
 // hold the current level of brightness out of the raise/lower animation
 uint8_t BRIGHTNESS = 50; // default start value
 uint8_t currentBrightness = 50;
+uint8_t get_brightness() { return BRIGHTNESS; }
 
 // timestamp of the system wake up
 static uint32_t turnOnTime = time_ms();
 
 void update_brightness(const uint8_t newBrightness, const bool shouldUpdateCurrentBrightness, const bool isInitialRead)
 {
-  // safety
-  if (newBrightness > MaxBrightnessLimit)
-    return;
+  const uint8_t trueNewBrightness = (newBrightness < MaxBrightnessLimit) ? newBrightness : MaxBrightnessLimit;
 
   if (shouldUpdateCurrentBrightness)
-    currentBrightness = newBrightness;
+    currentBrightness = trueNewBrightness;
 
-  if (BRIGHTNESS != newBrightness)
+  if (BRIGHTNESS != trueNewBrightness)
   {
-    BRIGHTNESS = newBrightness;
+    BRIGHTNESS = trueNewBrightness;
 
     // do not call user functions when reading parameters
     if (!isInitialRead)
     {
-      user::brightness_update(newBrightness);
+      user::brightness_update(trueNewBrightness);
     }
   }
 }
@@ -252,7 +250,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   }
 }
 
-static constexpr float brightnessDivider = 1.0 / float(MAX_BRIGHTNESS - MIN_BRIGHTNESS);
+static constexpr float brightnessDivider = 1.0 / float(MAX_BRIGHTNESS);
 
 void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t buttonHoldDuration)
 {
@@ -384,11 +382,12 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
       {
         const float percentOfTimeToGoUp = float(MAX_BRIGHTNESS - currentBrightness) * brightnessDivider;
 
-        const auto newBrightness = utils::map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
-                                              0,
-                                              BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
-                                              currentBrightness,
-                                              MAX_BRIGHTNESS);
+        const auto newBrightness =
+                lmpd_map<uint8_t>(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
+                                  0,
+                                  max(1, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
+                                  currentBrightness,
+                                  MAX_BRIGHTNESS);
 
         update_brightness(newBrightness);
       }
@@ -403,13 +402,14 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
       }
       else
       {
-        const double percentOfTimeToGoDown = float(currentBrightness - MIN_BRIGHTNESS) * brightnessDivider;
+        const double percentOfTimeToGoDown = float(currentBrightness) * brightnessDivider;
 
-        const auto newBrightness = utils::map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
-                                              0,
-                                              BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
-                                              currentBrightness,
-                                              MIN_BRIGHTNESS);
+        const auto newBrightness =
+                lmpd_map<uint8_t>(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
+                                  0,
+                                  max(1, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
+                                  currentBrightness,
+                                  0);
 
         update_brightness(newBrightness);
       }
