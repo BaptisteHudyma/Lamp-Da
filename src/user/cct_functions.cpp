@@ -103,11 +103,11 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       if (!isEndOfHoldEvent)
       {
         const float percentOfTimeToGoUp = float(UINT8_MAX - lastColor) / (float)UINT8_MAX;
-        currentColor = map(min(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp),
-                           0,
-                           COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp,
-                           lastColor,
-                           UINT8_MAX);
+        currentColor = lmpd_map<uint8_t>(min(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp),
+                                         0,
+                                         COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp,
+                                         lastColor,
+                                         UINT8_MAX);
       }
       else
       {
@@ -120,11 +120,11 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       {
         const double percentOfTimeToGoDown = float(lastColor) / (float)UINT8_MAX;
 
-        currentColor = map(min(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown),
-                           0,
-                           COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown,
-                           lastColor,
-                           0);
+        currentColor = lmpd_map<uint8_t>(min(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown),
+                                         0,
+                                         COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown,
+                                         lastColor,
+                                         0);
       }
       else
       {

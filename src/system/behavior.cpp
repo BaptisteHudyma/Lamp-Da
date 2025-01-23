@@ -383,11 +383,12 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
       {
         const float percentOfTimeToGoUp = float(MAX_BRIGHTNESS - currentBrightness) * brightnessDivider;
 
-        const auto newBrightness = utils::map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
-                                              0,
-                                              max(1, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
-                                              currentBrightness,
-                                              MAX_BRIGHTNESS);
+        const auto newBrightness =
+                lmpd_map<uint8_t>(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
+                                  0,
+                                  max(1, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
+                                  currentBrightness,
+                                  MAX_BRIGHTNESS);
 
         update_brightness(newBrightness);
       }
@@ -404,11 +405,12 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
       {
         const double percentOfTimeToGoDown = float(currentBrightness - MIN_BRIGHTNESS) * brightnessDivider;
 
-        const auto newBrightness = utils::map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
-                                              0,
-                                              max(1, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
-                                              currentBrightness,
-                                              MIN_BRIGHTNESS);
+        const auto newBrightness =
+                lmpd_map<uint8_t>(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
+                                  0,
+                                  max(1, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
+                                  currentBrightness,
+                                  MIN_BRIGHTNESS);
 
         update_brightness(newBrightness);
       }

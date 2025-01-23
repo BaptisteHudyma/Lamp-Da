@@ -563,8 +563,8 @@ void mode_2DPolarLights(
     step = 0;
   }
 
-  float adjustHeight = (float)utils::map(rows, 8, 32, 28, 12); // maybe use mapf() ???
-  uint16_t adjScale = utils::map(cols, 8, 64, 310, 63);
+  float adjustHeight = lmpd_map<float>(rows, 8, 32, 28, 12); // maybe use mapf() ???
+  uint16_t adjScale = lmpd_map<uint16_t>(cols, 8, 64, 310, 63);
   /*
     if (SEGENV.aux1 != SEGMENT.custom1/12) {   // Hacky palette rotation. We
     need that black. SEGENV.aux1 = SEGMENT.custom1/12; for (int i = 0; i < 16;
@@ -575,8 +575,8 @@ void mode_2DPolarLights(
       }
     }
   */
-  uint16_t _scale = utils::map(scale, 0, 255, 30, adjScale);
-  byte _speed = utils::map(speed, 0, 255, 128, 16);
+  uint16_t _scale = lmpd_map<uint16_t>(scale, 0, 255, 30, adjScale);
+  byte _speed = lmpd_map<byte>(speed, 0, 255, 128, 16);
 
   for (int x = 0; x <= cols; x++)
   {
@@ -714,7 +714,7 @@ void mode_lake(const uint8_t speed, const palette_t& palette, LedStrip& strip)
   {
     uint8_t index = cos8((i * 15) + wave1) / 2 + cubicwave8((i * 23) + wave2) / 2;
     uint8_t lum = (index > wave3) ? index - wave3 : 0;
-    // fastled_col = ColorFromPalette(SEGPALETTE, utils::map(index,0,255,0,240), lum,
+    // fastled_col = ColorFromPalette(SEGPALETTE, lmpd_map(index,0,255,0,240), lum,
     // LINEARBLEND); SEGMENT.setPixelColor(i, fastled_col.red,
     // fastled_col.green, fastled_col.blue);
     strip.setPixelColor(i, get_color_from_palette(index, palette, lum));
@@ -781,7 +781,7 @@ void running_base(
       }
       else
       {
-        a = utils::map(a, 16, 255, 64, 192);
+        a = lmpd_map<uint16_t>(a, 16, 255, 64, 192);
       }
       a = 255 - a;
     }

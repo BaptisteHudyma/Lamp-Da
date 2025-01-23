@@ -3,7 +3,6 @@
 #include "src/system/alerts.h"
 #include "src/system/charger/charger.h"
 #include "src/system/utils/constants.h"
-#include "src/system/utils/utils.h"
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
@@ -53,14 +52,14 @@ uint16_t get_raw_battery_level()
   }
   AlertManager.clear_alert(Alerts::BATTERY_READINGS_INCOHERENT);
 
-  return utils::get_battery_level_percent(batteryVoltage_mV);
+  return get_level_percent(batteryVoltage_mV);
 }
 
 uint16_t get_battery_level()
 {
   // get the result of the total battery life, map it to the safe battery level
   // indicated by user
-  return utils::get_battery_level(get_raw_battery_level());
+  return get_level(get_raw_battery_level());
 }
 
 // Raise the battery low or battery critical alert

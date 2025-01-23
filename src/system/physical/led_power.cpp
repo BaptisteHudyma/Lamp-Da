@@ -17,7 +17,7 @@ void write_current(const float current)
   float currentCurrent = lmpd_constrain(current, 0, maxPowerConsumption_A);
 
   // map current value to driver value
-  const uint8_t mappedDriverValue = utils::map(currentCurrent, 0, maxPowerConsumption_A, 0, 255);
+  const uint8_t mappedDriverValue = lmpd_map<uint8_t>(currentCurrent, 0, maxPowerConsumption_A, 0, 255);
 
   brigthness_write_analog(mappedDriverValue);
 }
@@ -27,7 +27,7 @@ void write_current(const float current)
  */
 void write_brightness(const uint8_t brightness)
 { // map to current value
-  const float brightnessToCurrent = utils::map(brightness, 0, 255, 0, maxStripConsumption_A);
+  const float brightnessToCurrent = lmpd_map<float>(brightness, 0, 255, 0, maxStripConsumption_A);
   write_current(brightnessToCurrent);
 }
 
