@@ -38,7 +38,7 @@ void power_on_sequence()
   YellowColorPin.set_pin_mode(DigitalPin::Mode::kOutput);
   WhiteColorPin.set_pin_mode(DigitalPin::Mode::kOutput);
 
-  currentBrightness = behavior::BRIGHTNESS;
+  currentBrightness = behavior::get_brightness();
   set_color(currentColor);
 }
 
@@ -77,7 +77,7 @@ void read_parameters()
     lastColor = currentColor;
   }
 
-  currentBrightness = behavior::BRIGHTNESS;
+  currentBrightness = behavior::get_brightness();
 }
 
 void button_clicked_default(const uint8_t clicks)

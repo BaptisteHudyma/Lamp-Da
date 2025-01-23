@@ -110,27 +110,26 @@ bool isBluetoothAdvertising = false;
 // hold the current level of brightness out of the raise/lower animation
 uint8_t BRIGHTNESS = 50; // default start value
 uint8_t currentBrightness = 50;
+uint8_t get_brightness() { return BRIGHTNESS; }
 
 // timestamp of the system wake up
 static uint32_t turnOnTime = time_ms();
 
 void update_brightness(const uint8_t newBrightness, const bool shouldUpdateCurrentBrightness, const bool isInitialRead)
 {
-  // safety
-  if (newBrightness > MaxBrightnessLimit)
-    return;
+  const uint8_t trueNewBrightness = lmpd_constrain(newBrightness, MIN_BRIGHTNESS, MaxBrightnessLimit);
 
   if (shouldUpdateCurrentBrightness)
-    currentBrightness = newBrightness;
+    currentBrightness = trueNewBrightness;
 
-  if (BRIGHTNESS != newBrightness)
+  if (BRIGHTNESS != trueNewBrightness)
   {
-    BRIGHTNESS = newBrightness;
+    BRIGHTNESS = trueNewBrightness;
 
     // do not call user functions when reading parameters
     if (!isInitialRead)
     {
-      user::brightness_update(newBrightness);
+      user::brightness_update(trueNewBrightness);
     }
   }
 }
@@ -386,7 +385,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 
         const auto newBrightness = utils::map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
                                               0,
-                                              BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp,
+                                              max(1, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
                                               currentBrightness,
                                               MAX_BRIGHTNESS);
 
@@ -407,7 +406,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 
         const auto newBrightness = utils::map(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
                                               0,
-                                              BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown,
+                                              max(1, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
                                               currentBrightness,
                                               MIN_BRIGHTNESS);
 

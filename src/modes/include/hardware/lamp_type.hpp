@@ -96,7 +96,7 @@ public:
    *  - call lamp.begin()
    *  - call lamp.clear()
    *  - call lamp.show()
-   *  - call lamp.setBrightness(BRIGHTNESS, true, true)
+   *  - call lamp.setBrightness(get_brightness(), true, true)
    *
    * Supports all flavors, even if most steps are no-op if not indexable
    */
@@ -108,7 +108,7 @@ public:
     begin();
     clear();
     show();
-    setBrightness(behavior::BRIGHTNESS, true, true);
+    setBrightness(behavior::get_brightness(), true, true);
   }
 
   /** \private Does necessary work to setup lamp from a powered-off state
@@ -270,7 +270,7 @@ public:
     }
     else
     {
-      return behavior::BRIGHTNESS;
+      return behavior::get_brightness();
     }
   }
 

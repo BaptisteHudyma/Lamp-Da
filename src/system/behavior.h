@@ -19,8 +19,8 @@
 
 namespace behavior {
 
-// NeoPixel brightness, 0 (min) to 255 (max)
-extern uint8_t BRIGHTNESS;
+// get the current brightness value
+uint8_t get_brightness();
 
 /// First ever boot flag for this lamp
 static constexpr uint32_t isFirstBootKey = utils::hash("ifb");

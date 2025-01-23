@@ -13,7 +13,7 @@
 
 namespace user {
 
-void power_on_sequence() { ledpower::write_brightness(behavior::BRIGHTNESS); }
+void power_on_sequence() { ledpower::write_brightness(behavior::get_brightness()); }
 
 void power_off_sequence()
 {
