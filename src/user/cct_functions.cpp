@@ -4,6 +4,7 @@
 
 #include "src/system/behavior.h"
 #include "src/system/utils/utils.h"
+#include "src/system/utils/curves.h"
 
 #include "src/system/platform/gpio.h"
 #include "src/system/physical/fileSystem.h"
@@ -12,6 +13,8 @@
 #include "src/user/functions.h"
 
 namespace user {
+
+constexpr uint8_t minBrightness = 13;
 
 static DigitalPin WhiteColorPin(DigitalPin::GPIO::a0);
 static DigitalPin YellowColorPin(DigitalPin::GPIO::a2);
@@ -38,8 +41,7 @@ void power_on_sequence()
   YellowColorPin.set_pin_mode(DigitalPin::Mode::kOutput);
   WhiteColorPin.set_pin_mode(DigitalPin::Mode::kOutput);
 
-  currentBrightness = behavior::get_brightness();
-  set_color(currentColor);
+  brightness_update(behavior::get_brightness());
 }
 
 void power_off_sequence()
@@ -62,7 +64,15 @@ void brightness_update(const uint8_t brightness)
     set_color(0);
     delay_ms(4); // blip light off if we reached max level
   }
-  currentBrightness = brightness;
+
+  // map to a new curve, favorising low levels
+  using curve_t = Curve<uint8_t, uint8_t>;
+  using point_t = curve_t::Point;
+  static curve_t brightnessCurve(
+          {point_t {minBrightness, minBrightness}, point_t {100, 35}, point_t {200, 128}, point_t {255, 255}});
+
+  currentBrightness = brightnessCurve.sample(max(minBrightness, brightness));
+
   set_color(currentColor);
 }
 

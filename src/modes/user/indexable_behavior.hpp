@@ -36,15 +36,18 @@ void power_off_sequence()
   ensure_build_canary();
 }
 
+constexpr uint8_t minBrightness = 5;
+
 void brightness_update(const uint8_t brightness)
 {
+  const uint8_t trueBrightness = max(minBrightness, brightness);
   auto manager = get_context();
 
   // set brightness for underlying object (w/o re-entry in update_brightness)
-  manager.lamp.setBrightness(brightness, true, true);
+  manager.lamp.setBrightness(trueBrightness, true, true);
 
   // callbacks
-  manager.brightness_update(brightness);
+  manager.brightness_update(trueBrightness);
 }
 
 void write_parameters()

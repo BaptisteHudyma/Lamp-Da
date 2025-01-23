@@ -5,6 +5,7 @@
 #include "src/system/behavior.h"
 #include "src/system/physical/led_power.h"
 #include "src/system/utils/utils.h"
+#include "src/system/utils/curves.h"
 
 #include "src/system/platform/time.h"
 #include "src/system/physical/fileSystem.h"
@@ -13,7 +14,9 @@
 
 namespace user {
 
-void power_on_sequence() { ledpower::write_brightness(behavior::get_brightness()); }
+constexpr uint8_t minBrightness = 4;
+
+void power_on_sequence() { brightness_update(behavior::get_brightness()); }
 
 void power_off_sequence()
 {
@@ -30,7 +33,14 @@ void brightness_update(const uint8_t brightness)
     ledpower::write_brightness(0);
     delay_ms(4); // blip light off if we reached max level
   }
-  ledpower::write_brightness(brightness);
+
+  // map to a new curve, favorising low levels
+  using curve_t = Curve<uint8_t, uint8_t>;
+  using point_t = curve_t::Point;
+  static curve_t brightnessCurve(
+          {point_t {minBrightness, minBrightness}, point_t {100, 35}, point_t {200, 128}, point_t {255, 255}});
+
+  ledpower::write_brightness(brightnessCurve.sample(max(minBrightness, brightness)));
 }
 
 void write_parameters() {}
