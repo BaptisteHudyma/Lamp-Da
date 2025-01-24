@@ -171,6 +171,16 @@ public:
   uint16_t fifoGetStatus(void);
   void fifoEnd(void);
 
+  enum InterruptType
+  {
+    None, // no interrupt
+    Fall, // raised during a free fall event
+    // BigMotion,   // raised with a >6g acceleration
+    // Step,        // raised on a step event
+    // AngleChange, // raised on portrait to landscape (or inverse) rotation
+  };
+  bool enable_interrupt1(const InterruptType interr);
+
   float calcGyro(int16_t);
   float calcAccel(int16_t);
 
@@ -788,7 +798,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL1_XL
-    Address       : 0X10
+    Address       : LSM6DS3_ACC_GYRO_CTRL1_XL
     Bit Group Name: BW_XL
     Permission    : RW
 *******************************************************************************/
@@ -802,7 +812,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL1_XL
-    Address       : 0X10
+    Address       : LSM6DS3_ACC_GYRO_CTRL1_XL
     Bit Group Name: FS_XL
     Permission    : RW
 *******************************************************************************/
@@ -816,7 +826,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL1_XL
-    Address       : 0X10
+    Address       : LSM6DS3_ACC_GYRO_CTRL1_XL
     Bit Group Name: ODR_XL
     Permission    : RW
 *******************************************************************************/
@@ -1201,7 +1211,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL9_XL
-    Address       : 0X18
+    Address       : LSM6DS3_ACC_GYRO_CTRL9_XL
     Bit Group Name: XEN_XL
     Permission    : RW
 *******************************************************************************/
@@ -1213,7 +1223,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL9_XL
-    Address       : 0X18
+    Address       : LSM6DS3_ACC_GYRO_CTRL9_XL
     Bit Group Name: YEN_XL
     Permission    : RW
 *******************************************************************************/
@@ -1225,7 +1235,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL9_XL
-    Address       : 0X18
+    Address       : LSM6DS3_ACC_GYRO_CTRL9_XL
     Bit Group Name: ZEN_XL
     Permission    : RW
 *******************************************************************************/
@@ -1393,7 +1403,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : WAKE_UP_SRC
-    Address       : 0X1B
+    Address       : LSM6DS3_ACC_GYRO_WAKE_UP_SRC
     Bit Group Name: Z_WU
     Permission    : RO
 *******************************************************************************/
@@ -1405,7 +1415,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : WAKE_UP_SRC
-    Address       : 0X1B
+    Address       : LSM6DS3_ACC_GYRO_WAKE_UP_SRC
     Bit Group Name: Y_WU
     Permission    : RO
 *******************************************************************************/
@@ -1417,7 +1427,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : WAKE_UP_SRC
-    Address       : 0X1B
+    Address       : LSM6DS3_ACC_GYRO_WAKE_UP_SRC
     Bit Group Name: X_WU
     Permission    : RO
 *******************************************************************************/
@@ -1429,7 +1439,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : WAKE_UP_SRC
-    Address       : 0X1B
+    Address       : LSM6DS3_ACC_GYRO_WAKE_UP_SRC
     Bit Group Name: WU_EV_STATUS
     Permission    : RO
 *******************************************************************************/
@@ -1441,7 +1451,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : WAKE_UP_SRC
-    Address       : 0X1B
+    Address       : LSM6DS3_ACC_GYRO_WAKE_UP_SRC
     Bit Group Name: SLEEP_EV_STATUS
     Permission    : RO
 *******************************************************************************/
@@ -1453,7 +1463,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : WAKE_UP_SRC
-    Address       : 0X1B
+    Address       : LSM6DS3_ACC_GYRO_WAKE_UP_SRC
     Bit Group Name: FF_EV_STATUS
     Permission    : RO
 *******************************************************************************/
@@ -1465,7 +1475,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_SRC
-    Address       : 0X1C
+    Address       : LSM6DS3_ACC_GYRO_TAP_SRC
     Bit Group Name: Z_TAP
     Permission    : RO
 *******************************************************************************/
@@ -1477,7 +1487,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_SRC
-    Address       : 0X1C
+    Address       : LSM6DS3_ACC_GYRO_TAP_SRC
     Bit Group Name: Y_TAP
     Permission    : RO
 *******************************************************************************/
@@ -1489,7 +1499,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_SRC
-    Address       : 0X1C
+    Address       : LSM6DS3_ACC_GYRO_TAP_SRC
     Bit Group Name: X_TAP
     Permission    : RO
 *******************************************************************************/
@@ -1501,7 +1511,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_SRC
-    Address       : 0X1C
+    Address       : LSM6DS3_ACC_GYRO_TAP_SRC
     Bit Group Name: TAP_SIGN
     Permission    : RO
 *******************************************************************************/
@@ -1513,7 +1523,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_SRC
-    Address       : 0X1C
+    Address       : LSM6DS3_ACC_GYRO_TAP_SRC
     Bit Group Name: DOUBLE_TAP_EV_STATUS
     Permission    : RO
 *******************************************************************************/
@@ -1525,7 +1535,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_SRC
-    Address       : 0X1C
+    Address       : LSM6DS3_ACC_GYRO_TAP_SRC
     Bit Group Name: SINGLE_TAP_EV_STATUS
     Permission    : RO
 *******************************************************************************/
@@ -1537,7 +1547,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_SRC
-    Address       : 0X1C
+    Address       : LSM6DS3_ACC_GYRO_TAP_SRC
     Bit Group Name: TAP_EV_STATUS
     Permission    : RO
 *******************************************************************************/
@@ -1549,7 +1559,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : D6D_SRC
-    Address       : 0X1D
+    Address       : LSM6DS3_ACC_GYRO_D6D_SRC
     Bit Group Name: DSD_XL
     Permission    : RO
 *******************************************************************************/
@@ -1561,7 +1571,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : D6D_SRC
-    Address       : 0X1D
+    Address       : LSM6DS3_ACC_GYRO_D6D_SRC
     Bit Group Name: DSD_XH
     Permission    : RO
 *******************************************************************************/
@@ -1573,7 +1583,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : D6D_SRC
-    Address       : 0X1D
+    Address       : LSM6DS3_ACC_GYRO_D6D_SRC
     Bit Group Name: DSD_YL
     Permission    : RO
 *******************************************************************************/
@@ -1585,7 +1595,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : D6D_SRC
-    Address       : 0X1D
+    Address       : LSM6DS3_ACC_GYRO_D6D_SRC
     Bit Group Name: DSD_YH
     Permission    : RO
 *******************************************************************************/
@@ -1597,7 +1607,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : D6D_SRC
-    Address       : 0X1D
+    Address       : LSM6DS3_ACC_GYRO_D6D_SRC
     Bit Group Name: DSD_ZL
     Permission    : RO
 *******************************************************************************/
@@ -1609,7 +1619,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : D6D_SRC
-    Address       : 0X1D
+    Address       : LSM6DS3_ACC_GYRO_D6D_SRC
     Bit Group Name: DSD_ZH
     Permission    : RO
 *******************************************************************************/
@@ -1621,7 +1631,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : D6D_SRC
-    Address       : 0X1D
+    Address       : LSM6DS3_ACC_GYRO_D6D_SRC
     Bit Group Name: D6D_EV_STATUS
     Permission    : RO
 *******************************************************************************/
@@ -1633,7 +1643,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : STATUS_REG
-    Address       : 0X1E
+    Address       : LSM6DS3_ACC_GYRO_STATUS_REG
     Bit Group Name: XLDA
     Permission    : RO
 *******************************************************************************/
@@ -1645,7 +1655,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : STATUS_REG
-    Address       : 0X1E
+    Address       : LSM6DS3_ACC_GYRO_STATUS_REG
     Bit Group Name: GDA
     Permission    : RO
 *******************************************************************************/
@@ -1657,7 +1667,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : STATUS_REG
-    Address       : 0X1E
+    Address       : LSM6DS3_ACC_GYRO_STATUS_REG
     Bit Group Name: EV_BOOT
     Permission    : RO
 *******************************************************************************/
@@ -1669,7 +1679,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : FIFO_STATUS1
-    Address       : 0X3A
+    Address       : LSM6DS3_ACC_GYRO_FIFO_STATUS1
     Bit Group Name: DIFF_FIFO
     Permission    : RO
 *******************************************************************************/
@@ -1680,7 +1690,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : FIFO_STATUS2
-    Address       : 0X3B
+    Address       : LSM6DS3_ACC_GYRO_FIFO_STATUS2
     Bit Group Name: FIFO_EMPTY
     Permission    : RO
 *******************************************************************************/
@@ -1692,7 +1702,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : FIFO_STATUS2
-    Address       : 0X3B
+    Address       : LSM6DS3_ACC_GYRO_FIFO_STATUS2
     Bit Group Name: FIFO_FULL
     Permission    : RO
 *******************************************************************************/
@@ -1704,7 +1714,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : FIFO_STATUS2
-    Address       : 0X3B
+    Address       : LSM6DS3_ACC_GYRO_FIFO_STATUS2
     Bit Group Name: OVERRUN
     Permission    : RO
 *******************************************************************************/
@@ -1716,7 +1726,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : FIFO_STATUS2
-    Address       : 0X3B
+    Address       : LSM6DS3_ACC_GYRO_FIFO_STATUS2
     Bit Group Name: WTM
     Permission    : RO
 *******************************************************************************/
@@ -1728,7 +1738,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : FIFO_STATUS3
-    Address       : 0X3C
+    Address       : LSM6DS3_ACC_GYRO_FIFO_STATUS3
     Bit Group Name: FIFO_PATTERN
     Permission    : RO
 *******************************************************************************/
@@ -1739,7 +1749,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : FUNC_SRC
-    Address       : 0X53
+    Address       : LSM6DS3_ACC_GYRO_FUNC_SRC
     Bit Group Name: SENS_HUB_END
     Permission    : RO
 *******************************************************************************/
@@ -1751,7 +1761,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : FUNC_SRC
-    Address       : 0X53
+    Address       : LSM6DS3_ACC_GYRO_FUNC_SRC
     Bit Group Name: SOFT_IRON_END
     Permission    : RO
 *******************************************************************************/
@@ -1763,7 +1773,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : FUNC_SRC
-    Address       : 0X53
+    Address       : LSM6DS3_ACC_GYRO_FUNC_SRC
     Bit Group Name: PEDO_EV_STATUS
     Permission    : RO
 *******************************************************************************/
@@ -1775,7 +1785,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : FUNC_SRC
-    Address       : 0X53
+    Address       : LSM6DS3_ACC_GYRO_FUNC_SRC
     Bit Group Name: TILT_EV_STATUS
     Permission    : RO
 *******************************************************************************/
@@ -1787,7 +1797,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : FUNC_SRC
-    Address       : 0X53
+    Address       : LSM6DS3_ACC_GYRO_FUNC_SRC
     Bit Group Name: SIGN_MOT_EV_STATUS
     Permission    : RO
 *******************************************************************************/
@@ -1799,7 +1809,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_CFG1
-    Address       : 0X58
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
     Bit Group Name: LIR
     Permission    : RW
 *******************************************************************************/
@@ -1811,7 +1821,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_CFG1
-    Address       : 0X58
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
     Bit Group Name: TAP_Z_EN
     Permission    : RW
 *******************************************************************************/
@@ -1823,7 +1833,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_CFG1
-    Address       : 0X58
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
     Bit Group Name: TAP_Y_EN
     Permission    : RW
 *******************************************************************************/
@@ -1835,7 +1845,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_CFG1
-    Address       : 0X58
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
     Bit Group Name: TAP_X_EN
     Permission    : RW
 *******************************************************************************/
@@ -1846,8 +1856,20 @@ typedef enum
 } LSM6DS3_ACC_GYRO_TAP_X_EN_t;
 
 /*******************************************************************************
+    Register      : SLOPE_FDS
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
+    Bit Group Name: TILT_EN
+    Permission    : RW
+*******************************************************************************/
+typedef enum
+{
+  LSM6DS3_ACC_GYRO_SLOPE_FDS_DISABLED = 0x00,
+  LSM6DS3_ACC_GYRO_SLOPE_FDS_ENABLED = 1 << 4,
+} LSM6DS3_ACC_GYRO_SLOPE_FDS_t;
+
+/*******************************************************************************
     Register      : TAP_CFG1
-    Address       : 0X58
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
     Bit Group Name: TILT_EN
     Permission    : RW
 *******************************************************************************/
@@ -1859,7 +1881,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_CFG1
-    Address       : 0X58
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
     Bit Group Name: PEDO_EN
     Permission    : RW
 *******************************************************************************/
@@ -1871,7 +1893,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_CFG1
-    Address       : 0X58
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
     Bit Group Name: TIMER_EN
     Permission    : RW
 *******************************************************************************/
@@ -1883,7 +1905,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_THS_6D
-    Address       : 0X59
+    Address       : LSM6DS3_ACC_GYRO_TAP_THS_6D
     Bit Group Name: TAP_THS
     Permission    : RW
 *******************************************************************************/
@@ -1892,7 +1914,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : TAP_THS_6D
-    Address       : 0X59
+    Address       : LSM6DS3_ACC_GYRO_TAP_THS_6D
     Bit Group Name: SIXD_THS
     Permission    : RW
 *******************************************************************************/
@@ -1906,7 +1928,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT_DUR2
-    Address       : 0X5A
+    Address       : LSM6DS3_ACC_GYRO_INT_DUR2
     Bit Group Name: SHOCK
     Permission    : RW
 *******************************************************************************/
@@ -1915,7 +1937,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT_DUR2
-    Address       : 0X5A
+    Address       : LSM6DS3_ACC_GYRO_INT_DUR2
     Bit Group Name: QUIET
     Permission    : RW
 *******************************************************************************/
@@ -1924,7 +1946,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT_DUR2
-    Address       : 0X5A
+    Address       : LSM6DS3_ACC_GYRO_INT_DUR2
     Bit Group Name: DUR
     Permission    : RW
 *******************************************************************************/
@@ -1933,7 +1955,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : WAKE_UP_THS
-    Address       : 0X5B
+    Address       : LSM6DS3_ACC_GYRO_WAKE_UP_THS
     Bit Group Name: WK_THS
     Permission    : RW
 *******************************************************************************/
@@ -1942,7 +1964,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : WAKE_UP_THS
-    Address       : 0X5B
+    Address       : LSM6DS3_ACC_GYRO_WAKE_UP_THS
     Bit Group Name: INACTIVITY_ON
     Permission    : RW
 *******************************************************************************/
@@ -1954,7 +1976,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : WAKE_UP_THS
-    Address       : 0X5B
+    Address       : LSM6DS3_ACC_GYRO_WAKE_UP_THS
     Bit Group Name: SINGLE_DOUBLE_TAP
     Permission    : RW
 *******************************************************************************/
@@ -1966,7 +1988,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : WAKE_UP_DUR
-    Address       : 0X5C
+    Address       : LSM6DS3_ACC_GYRO_WAKE_UP_DUR
     Bit Group Name: SLEEP_DUR
     Permission    : RW
 *******************************************************************************/
@@ -1975,7 +1997,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : WAKE_UP_DUR
-    Address       : 0X5C
+    Address       : LSM6DS3_ACC_GYRO_WAKE_UP_DUR
     Bit Group Name: TIMER_HR
     Permission    : RW
 *******************************************************************************/
@@ -1987,7 +2009,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : WAKE_UP_DUR
-    Address       : 0X5C
+    Address       : LSM6DS3_ACC_GYRO_WAKE_UP_DUR
     Bit Group Name: WAKE_DUR
     Permission    : RW
 *******************************************************************************/
@@ -1996,36 +2018,37 @@ typedef enum
 
 /*******************************************************************************
     Register      : FREE_FALL
-    Address       : 0X5D
+    Address       : LSM6DS3_ACC_GYRO_FREE_FALL
     Bit Group Name: FF_DUR
     Permission    : RW
 *******************************************************************************/
-#define LSM6DS3_ACC_GYRO_FF_FREE_FALL_DUR_MASK     0xF8
-#define LSM6DS3_ACC_GYRO_FF_FREE_FALL_DUR_POSITION 3
-#define LSM6DS3_ACC_GYRO_FF_WAKE_UP_DUR_MASK       0x80
-#define LSM6DS3_ACC_GYRO_FF_WAKE_UP_DUR_POSITION   7
+#define LSM6DS3_ACC_GYRO_FREE_FALL_DUR_MASK     0xF8
+#define LSM6DS3_ACC_GYRO_FREE_FALL_DUR_POSITION 3
+
+#define LSM6DS3_ACC_GYRO_FF_WAKE_UP_DUR_MASK     0x80
+#define LSM6DS3_ACC_GYRO_FF_WAKE_UP_DUR_POSITION 7
 
 /*******************************************************************************
     Register      : FREE_FALL
-    Address       : 0X5D
+    Address       : LSM6DS3_ACC_GYRO_FREE_FALL
     Bit Group Name: FF_THS
     Permission    : RW
 *******************************************************************************/
 typedef enum
 {
-  LSM6DS3_ACC_GYRO_FF_THS_5 = 0x00,
-  LSM6DS3_ACC_GYRO_FF_THS_7 = 0x01,
-  LSM6DS3_ACC_GYRO_FF_THS_8 = 0x02,
-  LSM6DS3_ACC_GYRO_FF_THS_10 = 0x03,
-  LSM6DS3_ACC_GYRO_FF_THS_11 = 0x04,
-  LSM6DS3_ACC_GYRO_FF_THS_13 = 0x05,
-  LSM6DS3_ACC_GYRO_FF_THS_15 = 0x06,
-  LSM6DS3_ACC_GYRO_FF_THS_16 = 0x07,
+  LSM6DS3_ACC_GYRO_FF_THS_5 = 0x00,  // 156mg
+  LSM6DS3_ACC_GYRO_FF_THS_7 = 0x01,  // 219mg
+  LSM6DS3_ACC_GYRO_FF_THS_8 = 0x02,  // 250mg
+  LSM6DS3_ACC_GYRO_FF_THS_10 = 0x03, // 312mg
+  LSM6DS3_ACC_GYRO_FF_THS_11 = 0x04, // 344mg
+  LSM6DS3_ACC_GYRO_FF_THS_13 = 0x05, // 406mg
+  LSM6DS3_ACC_GYRO_FF_THS_15 = 0x06, // 469mg
+  LSM6DS3_ACC_GYRO_FF_THS_16 = 0x07, // 500mg
 } LSM6DS3_ACC_GYRO_FF_THS_t;
 
 /*******************************************************************************
     Register      : MD1_CFG
-    Address       : 0X5E
+    Address       : LSM6DS3_ACC_GYRO_MD1_CFG
     Bit Group Name: INT1_TIMER
     Permission    : RW
 *******************************************************************************/
@@ -2037,7 +2060,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD1_CFG
-    Address       : 0X5E
+    Address       : LSM6DS3_ACC_GYRO_MD1_CFG
     Bit Group Name: INT1_TILT
     Permission    : RW
 *******************************************************************************/
@@ -2049,7 +2072,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD1_CFG
-    Address       : 0X5E
+    Address       : LSM6DS3_ACC_GYRO_MD1_CFG
     Bit Group Name: INT1_6D
     Permission    : RW
 *******************************************************************************/
@@ -2061,7 +2084,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD1_CFG
-    Address       : 0X5E
+    Address       : LSM6DS3_ACC_GYRO_MD1_CFG
     Bit Group Name: INT1_TAP
     Permission    : RW
 *******************************************************************************/
@@ -2073,7 +2096,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD1_CFG
-    Address       : 0X5E
+    Address       : LSM6DS3_ACC_GYRO_MD1_CFG
     Bit Group Name: INT1_FF
     Permission    : RW
 *******************************************************************************/
@@ -2085,7 +2108,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD1_CFG
-    Address       : 0X5E
+    Address       : LSM6DS3_ACC_GYRO_MD1_CFG
     Bit Group Name: INT1_WU
     Permission    : RW
 *******************************************************************************/
@@ -2097,7 +2120,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD1_CFG
-    Address       : 0X5E
+    Address       : LSM6DS3_ACC_GYRO_MD1_CFG
     Bit Group Name: INT1_SINGLE_TAP
     Permission    : RW
 *******************************************************************************/
@@ -2109,7 +2132,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD1_CFG
-    Address       : 0X5E
+    Address       : LSM6DS3_ACC_GYRO_MD1_CFG
     Bit Group Name: INT1_SLEEP
     Permission    : RW
 *******************************************************************************/
@@ -2121,7 +2144,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD2_CFG
-    Address       : 0X5F
+    Address       : LSM6DS3_ACC_GYRO_MD2_CFG
     Bit Group Name: INT2_TIMER
     Permission    : RW
 *******************************************************************************/
@@ -2133,7 +2156,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD2_CFG
-    Address       : 0X5F
+    Address       : LSM6DS3_ACC_GYRO_MD2_CFG
     Bit Group Name: INT2_TILT
     Permission    : RW
 *******************************************************************************/
@@ -2145,7 +2168,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD2_CFG
-    Address       : 0X5F
+    Address       : LSM6DS3_ACC_GYRO_MD2_CFG
     Bit Group Name: INT2_6D
     Permission    : RW
 *******************************************************************************/
@@ -2157,7 +2180,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD2_CFG
-    Address       : 0X5F
+    Address       : LSM6DS3_ACC_GYRO_MD2_CFG
     Bit Group Name: INT2_TAP
     Permission    : RW
 *******************************************************************************/
@@ -2169,7 +2192,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD2_CFG
-    Address       : 0X5F
+    Address       : LSM6DS3_ACC_GYRO_MD2_CFG
     Bit Group Name: INT2_FF
     Permission    : RW
 *******************************************************************************/
@@ -2181,7 +2204,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD2_CFG
-    Address       : 0X5F
+    Address       : LSM6DS3_ACC_GYRO_MD2_CFG
     Bit Group Name: INT2_WU
     Permission    : RW
 *******************************************************************************/
@@ -2193,7 +2216,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD2_CFG
-    Address       : 0X5F
+    Address       : LSM6DS3_ACC_GYRO_MD2_CFG
     Bit Group Name: INT2_SINGLE_TAP
     Permission    : RW
 *******************************************************************************/
@@ -2205,7 +2228,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MD2_CFG
-    Address       : 0X5F
+    Address       : LSM6DS3_ACC_GYRO_MD2_CFG
     Bit Group Name: INT2_SLEEP
     Permission    : RW
 *******************************************************************************/
