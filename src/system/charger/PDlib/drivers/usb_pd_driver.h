@@ -78,7 +78,18 @@ extern "C" {
     uint16_t requestedVoltage_mV;
     uint16_t requestedCurrent_mA;
   };
+
+  /**
+   * \brief return the requested OnTheGo parameters, negociated with a power sink
+   */
   struct SourcePowerParameters get_OTG_requested_parameters();
+
+  /**
+   * \brief allow or forbid power sourcing from this device
+   * \param[in] allowPowerSourcing If 0, this device will only charge. Else, if negociated via usb, this device will
+   * charge others.
+   */
+  void set_allow_power_sourcing(const int allowPowerSourcing);
 
   uint32_t pd_task_set_event(uint32_t event, int wait_for_reply);
   void pd_power_supply_reset(int port);
