@@ -25,9 +25,10 @@ void power_off_sequence()
 #endif
 }
 
-void brightness_update(const uint8_t brightness)
+void brightness_update(const brightness_t brightness)
 {
-  if (brightness == 255)
+  const brightness_t constraintBrightness = min(brightness, maxBrightness);
+  if (constraintBrightness >= maxBrightness)
   {
     // blip
     ledpower::write_brightness(0);
@@ -35,11 +36,10 @@ void brightness_update(const uint8_t brightness)
   }
 
   // map to a new curve, favorising low levels
-  using curve_t = curves::ExponentialCurve<uint8_t, uint8_t>;
-  static curve_t brightnessCurve(curve_t::point_t {0, minBrightness},
-                                      curve_t::point_t {255, 255}, 50.0);
+  using curve_t = curves::ExponentialCurve<brightness_t, uint8_t>;
+  static curve_t brightnessCurve(curve_t::point_t {0, minBrightness}, curve_t::point_t {maxBrightness, 255}, 50.0);
 
-  ledpower::write_brightness(brightnessCurve.sample(brightness));
+  ledpower::write_brightness(round(brightnessCurve.sample(constraintBrightness)));
 }
 
 void write_parameters() {}
@@ -52,7 +52,7 @@ void button_clicked_default(const uint8_t clicks)
   {
     // put luminosity to maximum
     case 2:
-      behavior::update_brightness(255, true);
+      behavior::update_brightness(maxBrightness, true);
       break;
 
     default:

@@ -412,7 +412,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     });
   }
 
-  static void brightness_update(auto& ctx, uint8_t brightness)
+  static void brightness_update(auto& ctx, brightness_t brightness)
   {
     dispatch_group(ctx, [&](auto group) {
       group.brightness_update(brightness);

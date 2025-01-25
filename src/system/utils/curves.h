@@ -83,7 +83,9 @@ public:
    * \param[in] exponent The strenght factor of this exponential. Set to 1 for a linear curve, > 1 gives strong
    * exponential, < 1  gives log curves
    */
-  ExponentialCurve(const point_t& pointA, const point_t& pointB, const double exponent = 15.0)
+  ExponentialCurve(const point_t& pointA, const point_t& pointB, const double exponent = 15.0) :
+    lowerBound(pointA.y),
+    upperBound(pointB.y)
   {
     const double div = pointA.y / static_cast<double>(pointB.y);
     if (div <= -1.0)
@@ -105,12 +107,16 @@ public:
    * Be aware that the result is always casted from a floating point !!
    * -> for integer types, it will be the same as calling "floor()" on the result
    */
-  U sample(const T x) const {
+  float sample(const T x) const
+  {
     const float res = pow(static_cast<double>(x) + _a, _exp) * _b;
-    return static_cast<T>(round(res));
+    return lmpd_constrain(res, lowerBound, upperBound);
   }
 
 private:
+  const T lowerBound;
+  const T upperBound;
+
   double _exp;
   double _a;
   double _b;

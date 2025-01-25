@@ -36,7 +36,6 @@ namespace behavior {
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
 
 // constants
-static constexpr uint8_t MAX_BRIGHTNESS = 255;
 static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000;
 static constexpr uint32_t EARLY_ACTIONS_LIMIT_MS = 2000;
 static constexpr uint32_t EARLY_ACTIONS_HOLD_MS = 1500;
@@ -95,7 +94,7 @@ static bool isShutingDown_s = false;
 bool is_charger_powered() { return charger::is_vbus_powered(); }
 
 // temporary upper bound for the brightness
-static uint8_t MaxBrightnessLimit = MAX_BRIGHTNESS;
+static brightness_t MaxBrightnessLimit = maxBrightness;
 
 // hold the last time startup_sequence has been called
 uint32_t lastStartupSequence = 0;
@@ -107,16 +106,19 @@ bool isButtonUsermodeEnabled = false;
 bool isBluetoothAdvertising = false;
 
 // hold the current level of brightness out of the raise/lower animation
-uint8_t BRIGHTNESS = 50; // default start value
-uint8_t currentBrightness = 50;
-uint8_t get_brightness() { return BRIGHTNESS; }
+brightness_t BRIGHTNESS = 200; // default start value
+brightness_t currentBrightness = 200;
+brightness_t get_brightness() { return BRIGHTNESS; }
 
 // timestamp of the system wake up
 static uint32_t turnOnTime = time_ms();
 
-void update_brightness(const uint8_t newBrightness, const bool shouldUpdateCurrentBrightness, const bool isInitialRead)
+void update_brightness(const brightness_t newBrightness,
+                       const bool shouldUpdateCurrentBrightness,
+                       const bool isInitialRead)
 {
-  const uint8_t trueNewBrightness = (newBrightness < MaxBrightnessLimit) ? newBrightness : MaxBrightnessLimit;
+  // set to the user max limit (limit can be changed by system)
+  const brightness_t trueNewBrightness = min(newBrightness, MaxBrightnessLimit);
 
   if (shouldUpdateCurrentBrightness)
     currentBrightness = trueNewBrightness;
@@ -379,13 +381,17 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
       else
       {
         // no updates, already at max brightness
-        if (MAX_BRIGHTNESS - currentBrightness == 0)
+        if (maxBrightness - currentBrightness == 0)
           break;
-        const float percentOfTimeToGoUp = (MAX_BRIGHTNESS - currentBrightness) / float(MAX_BRIGHTNESS);
+        const float percentOfTimeToGoUp = (maxBrightness - currentBrightness) / float(maxBrightness);
         const uint32_t brightnessRampMaxDuration = BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp;
 
-        const auto newBrightness =
-                lmpd_map<uint32_t, uint8_t>(min(holdDuration, brightnessRampMaxDuration), 0, brightnessRampMaxDuration, currentBrightness, MAX_BRIGHTNESS);
+        const brightness_t newBrightness =
+                lmpd_map<uint32_t, brightness_t>(min(holdDuration, brightnessRampMaxDuration),
+                                                 0,
+                                                 brightnessRampMaxDuration,
+                                                 currentBrightness,
+                                                 maxBrightness);
 
         update_brightness(newBrightness);
       }
@@ -404,10 +410,11 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
         if (currentBrightness == 0)
           break;
 
-        const double percentOfTimeToGoDown = currentBrightness / float(MAX_BRIGHTNESS);
+        const double percentOfTimeToGoDown = currentBrightness / float(maxBrightness);
         const uint32_t brightnessRampMaxDuration = BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown;
 
-        const auto newBrightness = lmpd_map<uint32_t, uint8_t>(min(holdDuration, brightnessRampMaxDuration), 0, brightnessRampMaxDuration, currentBrightness, 0);
+        const brightness_t newBrightness = lmpd_map<uint32_t, brightness_t>(
+                min(holdDuration, brightnessRampMaxDuration), 0, brightnessRampMaxDuration, currentBrightness, 0);
         update_brightness(newBrightness);
       }
       break;
@@ -467,7 +474,7 @@ void handle_alerts()
 
   if (shouldIgnoreAlerts or AlertManager.is_clear())
   {
-    MaxBrightnessLimit = MAX_BRIGHTNESS; // no alerts: reset the max brightness
+    MaxBrightnessLimit = maxBrightness; // no alerts: reset the max brightness
     criticalbatteryRaisedTime = 0;
 
     // red to green
@@ -516,7 +523,7 @@ void handle_alerts()
       indicator::blink(300, 300, utils::ColorSpace::ORANGE);
 
       // limit brightness to half the max value
-      constexpr uint8_t clampedBrightness = 0.5 * MAX_BRIGHTNESS;
+      constexpr brightness_t clampedBrightness = 0.5 * maxBrightness;
       MaxBrightnessLimit = clampedBrightness;
       update_brightness(min(clampedBrightness, BRIGHTNESS), true);
     }
@@ -545,7 +552,7 @@ void handle_alerts()
       indicator::blink(300, 300, utils::ColorSpace::RED);
 
       // limit brightness to quarter of the max value
-      constexpr uint8_t clampedBrightness = 0.25 * MAX_BRIGHTNESS;
+      constexpr brightness_t clampedBrightness = 0.25 * maxBrightness;
       MaxBrightnessLimit = clampedBrightness;
 
       // save some battery

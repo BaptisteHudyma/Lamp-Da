@@ -7,7 +7,7 @@ struct MyCustomMode : public modes::BasicMode
   static void reset(auto& ctx) {}
 
   // only if hasBrightCallback
-  static void brightness_update(auto& ctx, uint8_t brightness) {}
+  static void brightness_update(auto& ctx, brightness_t brightness) {}
 
   // only if hasCustomRamp
   static void custom_ramp_update(auto& ctx, uint8_t rampValue) {}

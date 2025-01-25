@@ -38,7 +38,9 @@ inline uint16_t liion_level_to_battery_percent(const uint16_t liionLevelPercent)
 inline uint16_t get_level_percent(const uint16_t batteryLevel_mV)
 {
   return liion_level_to_battery_percent(lmpd_constrain(
-          lmpd_map<uint16_t, uint16_t>(batteryLevel_mV, batteryMinVoltage_mV, batteryMaxVoltage_mV, 0, 10000), 0, 10000));
+          lmpd_map<uint16_t, uint16_t>(batteryLevel_mV, batteryMinVoltage_mV, batteryMaxVoltage_mV, 0, 10000),
+          0,
+          10000));
 }
 
 /**

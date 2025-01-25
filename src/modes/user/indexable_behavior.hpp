@@ -36,7 +36,7 @@ void power_off_sequence()
   ensure_build_canary();
 }
 
-void brightness_update(const uint8_t brightness)
+void brightness_update(const brightness_t brightness)
 {
   auto manager = get_context();
 
