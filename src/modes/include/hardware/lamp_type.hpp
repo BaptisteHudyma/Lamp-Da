@@ -252,7 +252,9 @@ public:
 
     if constexpr (flavor == LampTypes::indexable)
     {
-      strip.setBrightness(brightness);
+      constexpr uint8_t minBrightness = 5;
+      const uint8_t trueBrightness = max(minBrightness, brightness);
+      strip.setBrightness(trueBrightness);
     }
 
     if (!skipUpdateBrightness)

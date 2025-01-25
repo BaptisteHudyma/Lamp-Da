@@ -6,21 +6,29 @@
 #include <algorithm>
 #include <vector>
 
-template<typename T, typename U> class Curve
+namespace curves {
+
+template<typename T, typename U> struct Point
+{
+  T x;
+  U y;
+};
+
+/**
+ * Given a set of points, will fit multiple linear segments to it.
+ *
+ */
+template<typename T, typename U> class LinearCurve
 {
 public:
-  struct Point
-  {
-    T x;
-    U y;
-  };
+  using point_t = Point<T, U>;
 
-  Curve(const std::vector<Point>& points)
+  LinearCurve(const std::vector<point_t>& points)
   {
     pts = points;
 
     // sort the vector by the x coordinate
-    auto lbd = [](const Point& a, const Point& b) {
+    auto lbd = [](const point_t& a, const point_t& b) {
       return a.x < b.x;
     };
     std::sort(pts.begin(), pts.end(), lbd);
@@ -32,7 +40,7 @@ public:
     if (pts.size() < 2)
       return 0;
 
-    Point lastPt = pts[0];
+    point_t lastPt = pts[0];
     // low bound failure
     if (x < lastPt.x)
     {
@@ -41,11 +49,11 @@ public:
 
     for (size_t i = 1; i < pts.size(); ++i)
     {
-      Point pt = pts[i];
+      const point_t& pt = pts[i];
       // in this segment bound
       if (x >= lastPt.x and x <= pt.x)
       {
-        return lmpd_map<U>(x, lastPt.x, pt.x, lastPt.y, pt.y);
+        return lmpd_map<T, U>(x, lastPt.x, pt.x, lastPt.y, pt.y);
       }
       // update last point
       lastPt = pt;
@@ -56,7 +64,58 @@ public:
   }
 
 private:
-  std::vector<Point> pts;
+  std::vector<point_t> pts;
 };
+
+/**
+ * Given two points and an exponent, fit an exponential function
+ *
+ */
+template<typename T, typename U> class ExponentialCurve
+{
+public:
+  using point_t = Point<T, U>;
+
+  /**
+   * \brief Exponential curve fitting to two points
+   * \param[in] pointA
+   * \param[in] pointB
+   * \param[in] exponent The strenght factor of this exponential. Set to 1 for a linear curve, > 1 gives strong
+   * exponential, < 1  gives log curves
+   */
+  ExponentialCurve(const point_t& pointA, const point_t& pointB, const double exponent = 15.0)
+  {
+    const double div = pointA.y / static_cast<double>(pointB.y);
+    if (div <= -1.0)
+    {
+      // Error: linear approx...
+      _exp = 1;
+      _a = 0;
+      _b = 1;
+      return;
+    }
+    const double A = exp(log(div) / exponent);
+    _exp = exponent;
+    _a = (static_cast<double>(pointA.x) - static_cast<double>(pointB.x) * A) / (A - 1);
+    _b = static_cast<double>(pointA.y) / pow(static_cast<double>(pointA.x + _a), exponent);
+  }
+
+  /**
+   * \brief Sample the exponential curve
+   * Be aware that the result is always casted from a floating point !!
+   * -> for integer types, it will be the same as calling "floor()" on the result
+   */
+  U sample(const T x) const {
+    const float res = pow(static_cast<double>(x) + _a, _exp) * _b;
+    return static_cast<T>(round(res));
+  }
+
+private:
+  double _exp;
+  double _a;
+  double _b;
+};
+
+} // namespace curves
 
 #endif

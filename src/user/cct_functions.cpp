@@ -66,12 +66,11 @@ void brightness_update(const uint8_t brightness)
   }
 
   // map to a new curve, favorising low levels
-  using curve_t = Curve<uint8_t, uint8_t>;
-  using point_t = curve_t::Point;
-  static curve_t brightnessCurve(
-          {point_t {minBrightness, minBrightness}, point_t {100, 35}, point_t {200, 128}, point_t {255, 255}});
+  using curve_t = curves::ExponentialCurve<uint8_t, uint8_t>;
+  static curve_t brightnessCurve(curve_t::point_t {0, minBrightness},
+                                      curve_t::point_t {255, 255}, 50.0);
 
-  currentBrightness = brightnessCurve.sample(max(minBrightness, brightness));
+  currentBrightness = brightnessCurve.sample(brightness);
 
   set_color(currentColor);
 }
@@ -113,7 +112,7 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       if (!isEndOfHoldEvent)
       {
         const float percentOfTimeToGoUp = float(UINT8_MAX - lastColor) / (float)UINT8_MAX;
-        currentColor = lmpd_map<uint8_t>(min(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp),
+        currentColor = lmpd_map<uint32_t, uint8_t>(min(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp),
                                          0,
                                          COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp,
                                          lastColor,
@@ -130,7 +129,7 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       {
         const double percentOfTimeToGoDown = float(lastColor) / (float)UINT8_MAX;
 
-        currentColor = lmpd_map<uint8_t>(min(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown),
+        currentColor = lmpd_map<uint32_t, uint8_t>(min(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown),
                                          0,
                                          COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown,
                                          lastColor,

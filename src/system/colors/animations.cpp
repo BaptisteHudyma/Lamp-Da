@@ -563,8 +563,8 @@ void mode_2DPolarLights(
     step = 0;
   }
 
-  float adjustHeight = lmpd_map<float>(rows, 8, 32, 28, 12); // maybe use mapf() ???
-  uint16_t adjScale = lmpd_map<uint16_t>(cols, 8, 64, 310, 63);
+  float adjustHeight = lmpd_map<uint32_t, float>(rows, 8, 32, 28, 12); // maybe use mapf() ???
+  uint16_t adjScale = lmpd_map<uint32_t, uint16_t>(cols, 8, 64, 310, 63);
   /*
     if (SEGENV.aux1 != SEGMENT.custom1/12) {   // Hacky palette rotation. We
     need that black. SEGENV.aux1 = SEGMENT.custom1/12; for (int i = 0; i < 16;
@@ -575,8 +575,8 @@ void mode_2DPolarLights(
       }
     }
   */
-  uint16_t _scale = lmpd_map<uint16_t>(scale, 0, 255, 30, adjScale);
-  byte _speed = lmpd_map<byte>(speed, 0, 255, 128, 16);
+  uint16_t _scale = lmpd_map<uint8_t, uint16_t>(scale, 0, 255, 30, adjScale);
+  byte _speed = lmpd_map<byte, byte>(speed, 0, 255, 128, 16);
 
   for (int x = 0; x <= cols; x++)
   {
@@ -781,7 +781,7 @@ void running_base(
       }
       else
       {
-        a = lmpd_map<uint16_t>(a, 16, 255, 64, 192);
+        a = lmpd_map<uint16_t, uint16_t>(a, 16, 255, 64, 192);
       }
       a = 255 - a;
     }

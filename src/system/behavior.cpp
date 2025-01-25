@@ -250,8 +250,6 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   }
 }
 
-static constexpr float brightnessDivider = 1.0 / float(MAX_BRIGHTNESS);
-
 void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t buttonHoldDuration)
 {
   if (consecutiveButtonCheck == 0)
@@ -380,14 +378,14 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
       }
       else
       {
-        const float percentOfTimeToGoUp = float(MAX_BRIGHTNESS - currentBrightness) * brightnessDivider;
+        // no updates, already at max brightness
+        if (MAX_BRIGHTNESS - currentBrightness == 0)
+          break;
+        const float percentOfTimeToGoUp = (MAX_BRIGHTNESS - currentBrightness) / float(MAX_BRIGHTNESS);
+        const uint32_t brightnessRampMaxDuration = BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp;
 
         const auto newBrightness =
-                lmpd_map<uint8_t>(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
-                                  0,
-                                  max(1, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp),
-                                  currentBrightness,
-                                  MAX_BRIGHTNESS);
+                lmpd_map<uint32_t, uint8_t>(min(holdDuration, brightnessRampMaxDuration), 0, brightnessRampMaxDuration, currentBrightness, MAX_BRIGHTNESS);
 
         update_brightness(newBrightness);
       }
@@ -402,15 +400,14 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
       }
       else
       {
-        const double percentOfTimeToGoDown = float(currentBrightness) * brightnessDivider;
+        // no updates, already at min brightness
+        if (currentBrightness == 0)
+          break;
 
-        const auto newBrightness =
-                lmpd_map<uint8_t>(min(holdDuration, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
-                                  0,
-                                  max(1, BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown),
-                                  currentBrightness,
-                                  0);
+        const double percentOfTimeToGoDown = currentBrightness / float(MAX_BRIGHTNESS);
+        const uint32_t brightnessRampMaxDuration = BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown;
 
+        const auto newBrightness = lmpd_map<uint32_t, uint8_t>(min(holdDuration, brightnessRampMaxDuration), 0, brightnessRampMaxDuration, currentBrightness, 0);
         update_brightness(newBrightness);
       }
       break;

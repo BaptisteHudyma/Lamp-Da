@@ -35,12 +35,11 @@ void brightness_update(const uint8_t brightness)
   }
 
   // map to a new curve, favorising low levels
-  using curve_t = Curve<uint8_t, uint8_t>;
-  using point_t = curve_t::Point;
-  static curve_t brightnessCurve(
-          {point_t {minBrightness, minBrightness}, point_t {100, 35}, point_t {200, 128}, point_t {255, 255}});
+  using curve_t = curves::ExponentialCurve<uint8_t, uint8_t>;
+  static curve_t brightnessCurve(curve_t::point_t {0, minBrightness},
+                                      curve_t::point_t {255, 255}, 50.0);
 
-  ledpower::write_brightness(brightnessCurve.sample(max(minBrightness, brightness)));
+  ledpower::write_brightness(brightnessCurve.sample(brightness));
 }
 
 void write_parameters() {}
