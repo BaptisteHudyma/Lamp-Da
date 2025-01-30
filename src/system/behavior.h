@@ -19,8 +19,8 @@
 
 namespace behavior {
 
-// get the current brightness value
-uint8_t get_brightness();
+// get the current brightness value (in range 0-maxBrightness)
+brightness_t get_brightness();
 
 /// First ever boot flag for this lamp
 static constexpr uint32_t isFirstBootKey = utils::hash("ifb");
@@ -35,7 +35,13 @@ extern void read_parameters();
  */
 extern bool is_user_code_running();
 
-extern void update_brightness(const uint8_t newBrightness,
+/**
+ * \brief update the brightness parameter
+ * \param[in] newBrightness The new desired brightness (up to maxBrightness)
+ * \param[in] shouldUpdateCurrentBrightness If true, will update the temporary brightness variable
+ * \param[in] isInitialRead If true, this call is the first with the read parameters
+ */
+extern void update_brightness(const brightness_t newBrightness,
                               const bool shouldUpdateCurrentBrightness = false,
                               const bool isInitialRead = false);
 

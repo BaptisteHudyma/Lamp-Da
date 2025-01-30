@@ -33,7 +33,7 @@ void power_off_sequence();
  * \remark Use update_brightness() to change brightness in order for
  * brightness_update() to be correctly called on brightness change
  */
-void brightness_update(const uint8_t brightness);
+void brightness_update(const brightness_t brightness);
 
 /// Called when system wants to write parameters to filesystem
 void write_parameters();

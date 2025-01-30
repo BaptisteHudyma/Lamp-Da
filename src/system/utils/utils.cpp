@@ -71,7 +71,7 @@ uint32_t get_complementary_color(const uint32_t color)
 
   const uint16_t finalHue = (uint32_t)(hue + UINT16_MAX / 2.0) % UINT16_MAX;
   // add a cardan shift to the hue, to opbtain the symetrical color
-  return utils::hue_to_rgb_sinus(lmpd_map<uint16_t>(finalHue, 0, UINT16_MAX, 0, 360));
+  return utils::hue_to_rgb_sinus(lmpd_map<uint16_t, uint16_t>(finalHue, 0, UINT16_MAX, 0, 360));
 }
 
 uint32_t get_random_complementary_color(const uint32_t color, const float tolerance)
@@ -81,7 +81,7 @@ uint32_t get_random_complementary_color(const uint32_t color, const float tolera
   const float hue = ColorSpace::HSV(c).h;
 
   // add random offset
-  const float comp = 360.0 * (0.1 + lmpd_map<float>(rand(), 0, RAND_MAX, -tolerance / 2.0, tolerance / 2.0));
+  const float comp = 360.0 * (0.1 + lmpd_map<uint32_t, float>(rand(), 0, RAND_MAX, -tolerance / 2.0, tolerance / 2.0));
 
   const uint16_t finalHue = fmod(hue + 360.0 / 2.0 + comp, 360.0f); // add offset to the hue
   return utils::hue_to_rgb_sinus(finalHue);

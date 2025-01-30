@@ -19,7 +19,7 @@ namespace modes {
  *  // user mode definition
  *  struct MyCustomMode : public modes::BasicMode {
  *    static void loop(auto& ctx) {
- *      ctx.lamp.setBrightness(50);
+ *      ctx.lamp.setBrightness(200);
  *
  *      // ... other things using lamp
  *    }
@@ -86,7 +86,7 @@ struct BasicMode
    * \remark Use update_brightness() to change brightness in order for this
    * callback to be correctly handled at runtime
    */
-  static void brightness_update(auto& ctx, uint8_t brightness) { return; }
+  static void brightness_update(auto& ctx, brightness_t brightness) { return; }
 
   /** \brief Toggles the use of custom ramps & BasicMode::custom_ramp_update()
    *

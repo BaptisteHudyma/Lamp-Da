@@ -69,7 +69,7 @@ namespace user {
 void power_on_sequence() {}
 void power_off_sequence() {}
 
-void brightness_update(const uint8_t) {}
+void brightness_update(const brightness_t) {}
 void write_parameters() {}
 void read_parameters() {}
 void button_clicked_default(const uint8_t) {}

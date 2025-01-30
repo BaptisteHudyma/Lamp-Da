@@ -20,10 +20,11 @@ extern void raise_battery_alert();
 // convert a liion battery level to a linear model
 inline uint16_t liion_level_to_battery_percent(const uint16_t liionLevelPercent)
 {
-  using curve_t = Curve<uint16_t, uint16_t>;
-  using point_t = curve_t::Point;
-  static curve_t liionVoltagePercentToRealPercent(
-          {point_t {0, 0}, point_t {4000, 1200}, point_t {9000, 9500}, point_t {10000, 10000}});
+  using curve_t = curves::LinearCurve<uint16_t, uint16_t>;
+  static curve_t liionVoltagePercentToRealPercent({curve_t::point_t {0, 0},
+                                                   curve_t::point_t {4000, 1200},
+                                                   curve_t::point_t {9000, 9500},
+                                                   curve_t::point_t {10000, 10000}});
 
   // sample the curve
   return liionVoltagePercentToRealPercent.sample(liionLevelPercent);
@@ -37,7 +38,9 @@ inline uint16_t liion_level_to_battery_percent(const uint16_t liionLevelPercent)
 inline uint16_t get_level_percent(const uint16_t batteryLevel_mV)
 {
   return liion_level_to_battery_percent(lmpd_constrain(
-          lmpd_map<uint16_t>(batteryLevel_mV, batteryMinVoltage_mV, batteryMaxVoltage_mV, 0, 10000), 0, 10000));
+          lmpd_map<uint16_t, uint16_t>(batteryLevel_mV, batteryMinVoltage_mV, batteryMaxVoltage_mV, 0, 10000),
+          0,
+          10000));
 }
 
 /**
@@ -58,7 +61,7 @@ inline uint16_t get_level(const uint16_t batteryLevel)
   // get the result of the total battery life, map it to the safe battery level
   // indicated by user
   return lmpd_constrain(
-          lmpd_map<uint16_t>(batteryLevel, get_min_safe_level(), get_max_safe_level(), 0, 10000), 0, 10000);
+          lmpd_map<uint16_t, uint16_t>(batteryLevel, get_min_safe_level(), get_max_safe_level(), 0, 10000), 0, 10000);
 }
 
 } // namespace battery

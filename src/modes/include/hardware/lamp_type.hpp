@@ -6,6 +6,7 @@
 #include "src/compile.h"
 #include "src/system/behavior.h"
 #include "src/user/constants.h"
+#include "src/system/utils/curves.h"
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #include "src/system/utils/strip.h"
@@ -246,13 +247,19 @@ public:
    *
    * Note that \p skipUpdateBrightness implies \p skipCallbacks implicitly
    */
-  void LMBD_INLINE setBrightness(uint8_t brightness, bool skipCallbacks = true, bool skipUpdateBrightness = false)
+  void LMBD_INLINE setBrightness(const brightness_t brightness,
+                                 const bool skipCallbacks = true,
+                                 const bool skipUpdateBrightness = false)
   {
     assert((skipCallbacks || !skipUpdateBrightness) && "implicit callback skip!");
 
     if constexpr (flavor == LampTypes::indexable)
     {
-      strip.setBrightness(brightness);
+      constexpr uint8_t minBrightness = 5;
+      using curve_t = curves::LinearCurve<brightness_t, uint8_t>;
+      static curve_t brightnessCurve({curve_t::point_t {0, minBrightness}, curve_t::point_t {maxBrightness, 255}});
+
+      strip.setBrightness(brightnessCurve.sample(brightness));
     }
 
     if (!skipUpdateBrightness)
@@ -270,7 +277,7 @@ public:
     }
     else
     {
-      return behavior::get_brightness();
+      return behavior::get_brightness() / maxBrightness * 255;
     }
   }
 

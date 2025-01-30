@@ -62,4 +62,8 @@ constexpr float batteryLow = 500;      // % *100
 
 constexpr uint32_t batteryMaxChargeCurrent_mA = 1000; // mA
 
+using brightness_t = uint16_t;
+constexpr brightness_t maxBrightness = 1024;
+// min brightness is always zero
+
 #endif

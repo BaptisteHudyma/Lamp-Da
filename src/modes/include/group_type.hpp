@@ -214,7 +214,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     });
   }
 
-  static void brightness_update(auto& ctx, uint8_t brightness)
+  static void brightness_update(auto& ctx, brightness_t brightness)
   {
     dispatch_mode(ctx, [&](auto mode) {
       mode.brightness_update(brightness);

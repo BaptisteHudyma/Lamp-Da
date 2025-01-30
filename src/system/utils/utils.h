@@ -19,10 +19,9 @@ template<typename T, typename V, typename U> static constexpr T lmpd_constrain(c
   return (a <= mini) ? mini : (a >= maxi) ? maxi : a;
 }
 
-template<typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
-static constexpr T lmpd_map(T1 x, T2 in_min, T3 in_max, T4 out_min, T5 out_max)
+template<typename T, typename U> static constexpr U lmpd_map(T x, T in_min, T in_max, U out_min, U out_max)
 {
-  return (x - in_min) * (out_max - out_min) / static_cast<float>(in_max - in_min) + out_min;
+  return (out_max - out_min) * ((x - in_min) / float(in_max - in_min)) + out_min;
 }
 
 //

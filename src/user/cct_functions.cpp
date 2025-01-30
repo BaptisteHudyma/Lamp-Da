@@ -55,9 +55,10 @@ void power_off_sequence()
 #endif
 }
 
-void brightness_update(const uint8_t brightness)
+void brightness_update(const brightness_t brightness)
 {
-  if (brightness == 255)
+  const brightness_t constraintBrightness = min(brightness, maxBrightness);
+  if (constraintBrightness == maxBrightness)
   {
     // blip
     currentBrightness = 0;
@@ -66,12 +67,10 @@ void brightness_update(const uint8_t brightness)
   }
 
   // map to a new curve, favorising low levels
-  using curve_t = Curve<uint8_t, uint8_t>;
-  using point_t = curve_t::Point;
-  static curve_t brightnessCurve(
-          {point_t {minBrightness, minBrightness}, point_t {100, 35}, point_t {200, 128}, point_t {255, 255}});
+  using curve_t = curves::ExponentialCurve<brightness_t, uint8_t>;
+  static curve_t brightnessCurve(curve_t::point_t {0, minBrightness}, curve_t::point_t {maxBrightness, 255}, 50.0);
 
-  currentBrightness = brightnessCurve.sample(max(minBrightness, brightness));
+  currentBrightness = round(brightnessCurve.sample(constraintBrightness));
 
   set_color(currentColor);
 }
@@ -96,7 +95,7 @@ void button_clicked_default(const uint8_t clicks)
   {
     // put luminosity to maximum
     case 2:
-      behavior::update_brightness(255, true);
+      behavior::update_brightness(maxBrightness, true);
       break;
 
     default:
@@ -113,11 +112,11 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       if (!isEndOfHoldEvent)
       {
         const float percentOfTimeToGoUp = float(UINT8_MAX - lastColor) / (float)UINT8_MAX;
-        currentColor = lmpd_map<uint8_t>(min(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp),
-                                         0,
-                                         COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp,
-                                         lastColor,
-                                         UINT8_MAX);
+        currentColor = lmpd_map<uint32_t, uint8_t>(min(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp),
+                                                   0,
+                                                   COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp,
+                                                   lastColor,
+                                                   UINT8_MAX);
       }
       else
       {
@@ -130,11 +129,11 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       {
         const double percentOfTimeToGoDown = float(lastColor) / (float)UINT8_MAX;
 
-        currentColor = lmpd_map<uint8_t>(min(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown),
-                                         0,
-                                         COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown,
-                                         lastColor,
-                                         0);
+        currentColor = lmpd_map<uint32_t, uint8_t>(min(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown),
+                                                   0,
+                                                   COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown,
+                                                   lastColor,
+                                                   0);
       }
       else
       {
