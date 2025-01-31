@@ -48,7 +48,7 @@ uint16_t get_raw_battery_level()
   {
     AlertManager.raise_alert(Alerts::BATTERY_READINGS_INCOHERENT);
     // return a default low value
-    return batteryMinVoltage_mV;
+    return get_level_percent(minInValue);
   }
   AlertManager.clear_alert(Alerts::BATTERY_READINGS_INCOHERENT);
 

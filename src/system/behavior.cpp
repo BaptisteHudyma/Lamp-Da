@@ -23,6 +23,7 @@
 #include "src/system/utils/state_machine.h"
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/print.h"
+#include "src/system/utils/brightness_handle.h"
 
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/time.h"
@@ -93,9 +94,6 @@ static bool isShutingDown_s = false;
 // return true if vbus is high
 bool is_charger_powered() { return charger::is_vbus_powered(); }
 
-// temporary upper bound for the brightness
-static brightness_t MaxBrightnessLimit = maxBrightness;
-
 // hold the last time startup_sequence has been called
 uint32_t lastStartupSequence = 0;
 
@@ -105,35 +103,8 @@ bool isButtonUsermodeEnabled = false;
 // hold a boolean to avoid advertising several times in a row
 bool isBluetoothAdvertising = false;
 
-// hold the current level of brightness out of the raise/lower animation
-brightness_t BRIGHTNESS = 200; // default start value
-brightness_t currentBrightness = 200;
-brightness_t get_brightness() { return BRIGHTNESS; }
-
 // timestamp of the system wake up
 static uint32_t turnOnTime = time_ms();
-
-void update_brightness(const brightness_t newBrightness,
-                       const bool shouldUpdateCurrentBrightness,
-                       const bool isInitialRead)
-{
-  // set to the user max limit (limit can be changed by system)
-  const brightness_t trueNewBrightness = min(newBrightness, MaxBrightnessLimit);
-
-  if (shouldUpdateCurrentBrightness)
-    currentBrightness = trueNewBrightness;
-
-  if (BRIGHTNESS != trueNewBrightness)
-  {
-    BRIGHTNESS = trueNewBrightness;
-
-    // do not call user functions when reading parameters
-    if (!isInitialRead)
-    {
-      user::brightness_update(trueNewBrightness);
-    }
-  }
-}
 
 void read_parameters()
 {
@@ -143,7 +114,8 @@ void read_parameters()
   uint32_t brightness = 0;
   if (fileSystem::get_value(brightnessKey, brightness))
   {
-    update_brightness(brightness, true, true);
+    brightness::update_brightness(brightness, true);
+    brightness::update_previous_brightness();
   }
 
   user::read_parameters();
@@ -154,7 +126,7 @@ void write_parameters()
   fileSystem::clear();
 
   fileSystem::set_value(isFirstBootKey, 0);
-  fileSystem::set_value(brightnessKey, BRIGHTNESS);
+  fileSystem::set_value(brightnessKey, brightness::get_brightness());
 
   user::write_parameters();
 
@@ -375,25 +347,24 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
     case 1:
       if (isEndOfHoldEvent)
       {
-        // this action is duplicated, but it's rare so no consequences
-        update_brightness(BRIGHTNESS, true);
+        brightness::update_previous_brightness();
       }
       else
       {
+        const brightness_t prevBrightness = brightness::get_previous_brightness();
         // no updates, already at max brightness
-        if (maxBrightness - currentBrightness == 0)
+        if (maxBrightness - prevBrightness == 0)
           break;
-        const float percentOfTimeToGoUp = (maxBrightness - currentBrightness) / float(maxBrightness);
+        const float percentOfTimeToGoUp = (maxBrightness - prevBrightness) / float(maxBrightness);
         const uint32_t brightnessRampMaxDuration = BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp;
 
         const brightness_t newBrightness =
                 lmpd_map<uint32_t, brightness_t>(min(holdDuration, brightnessRampMaxDuration),
                                                  0,
                                                  brightnessRampMaxDuration,
-                                                 currentBrightness,
+                                                 prevBrightness,
                                                  maxBrightness);
-
-        update_brightness(newBrightness);
+        brightness::update_brightness(newBrightness);
       }
       break;
 
@@ -401,21 +372,21 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
     case 2:
       if (isEndOfHoldEvent)
       {
-        // this action is duplicated, but it's rare so no consequences
-        update_brightness(BRIGHTNESS, true);
+        brightness::update_previous_brightness();
       }
       else
       {
+        const brightness_t prevBrightness = brightness::get_previous_brightness();
         // no updates, already at min brightness
-        if (currentBrightness == 0)
+        if (prevBrightness == 0)
           break;
 
-        const double percentOfTimeToGoDown = currentBrightness / float(maxBrightness);
+        const double percentOfTimeToGoDown = prevBrightness / float(maxBrightness);
         const uint32_t brightnessRampMaxDuration = BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown;
 
         const brightness_t newBrightness = lmpd_map<uint32_t, brightness_t>(
-                min(holdDuration, brightnessRampMaxDuration), 0, brightnessRampMaxDuration, currentBrightness, 0);
-        update_brightness(newBrightness);
+                min(holdDuration, brightnessRampMaxDuration), 0, brightnessRampMaxDuration, prevBrightness, 0);
+        brightness::update_brightness(newBrightness);
       }
       break;
 
@@ -474,7 +445,7 @@ void handle_alerts()
 
   if (shouldIgnoreAlerts or AlertManager.is_clear())
   {
-    MaxBrightnessLimit = maxBrightness; // no alerts: reset the max brightness
+    brightness::set_max_brightness(maxBrightness); // no alerts: reset the max brightness
     criticalbatteryRaisedTime = 0;
 
     // red to green
@@ -524,8 +495,10 @@ void handle_alerts()
 
       // limit brightness to half the max value
       constexpr brightness_t clampedBrightness = 0.5 * maxBrightness;
-      MaxBrightnessLimit = clampedBrightness;
-      update_brightness(min(clampedBrightness, BRIGHTNESS), true);
+
+      brightness::set_max_brightness(clampedBrightness);
+      brightness::update_brightness(min(clampedBrightness, brightness::get_brightness()));
+      brightness::update_previous_brightness();
     }
     else if (AlertManager.is_raised(Alerts::BATTERY_READINGS_INCOHERENT))
     {
@@ -553,11 +526,13 @@ void handle_alerts()
 
       // limit brightness to quarter of the max value
       constexpr brightness_t clampedBrightness = 0.25 * maxBrightness;
-      MaxBrightnessLimit = clampedBrightness;
+      brightness::set_max_brightness(clampedBrightness);
 
       // save some battery
       bluetooth::disable_bluetooth();
-      update_brightness(min(clampedBrightness, BRIGHTNESS), true);
+
+      brightness::update_brightness(min(clampedBrightness, brightness::get_brightness()));
+      brightness::update_previous_brightness();
     }
     else if (AlertManager.is_raised(Alerts::HARDWARE_ALERT))
     {
