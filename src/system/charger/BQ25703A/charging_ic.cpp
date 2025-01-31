@@ -95,12 +95,12 @@ void run_status_update()
     // TODO: check that the EN_OTG is still enabled
     // if (BQ25703Areg.chargeOption3.EN_OTG())
     {
-      AlertManager.clear_alert(Alerts::OTG_FAILED);
-      AlertManager.raise_alert(Alerts::OTG_ACTIVATED);
+      alerts::manager.clear(alerts::Type::OTG_FAILED);
+      alerts::manager.raise(alerts::Type::OTG_ACTIVATED);
     }
     else
     {
-      AlertManager.raise_alert(Alerts::OTG_FAILED);
+      alerts::manager.raise(alerts::Type::OTG_FAILED);
     }
   }
 }
@@ -161,8 +161,8 @@ void control_OTG()
       chargerIc.writeRegEx(BQ25703Areg.chargeOption3);
 
       // alert will be lowered on time
-      AlertManager.clear_alert(Alerts::OTG_ACTIVATED);
-      AlertManager.raise_alert(Alerts::OTG_FAILED);
+      alerts::manager.clear(alerts::Type::OTG_ACTIVATED);
+      alerts::manager.raise(alerts::Type::OTG_FAILED);
 
       delay_ms(10);
     }
@@ -218,8 +218,8 @@ void control_OTG()
       // 5V 0A for OTG (default)
       set_OTG_targets(5000, 0);
 
-      AlertManager.clear_alert(Alerts::OTG_ACTIVATED);
-      AlertManager.clear_alert(Alerts::OTG_FAILED);
+      alerts::manager.clear(alerts::Type::OTG_ACTIVATED);
+      alerts::manager.clear(alerts::Type::OTG_FAILED);
     }
   }
 }
@@ -629,8 +629,8 @@ void disable_OTG()
   BQ25703Areg.chargeOption3.set_EN_OTG(0);
   chargerIc.writeRegEx(BQ25703Areg.chargeOption3);
 
-  AlertManager.clear_alert(Alerts::OTG_ACTIVATED);
-  AlertManager.clear_alert(Alerts::OTG_FAILED);
+  alerts::manager.clear(alerts::Type::OTG_ACTIVATED);
+  alerts::manager.clear(alerts::Type::OTG_FAILED);
 
   // deactivate this state LAST
   isInOtg_s = false;

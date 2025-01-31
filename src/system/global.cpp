@@ -71,12 +71,12 @@ void check_loop_runtime(const uint32_t runTime)
   if (isOnSlowLoopCount >= maxAlerts)
   {
     alarmRaisedTime = time_ms();
-    AlertManager.raise_alert(Alerts::LONG_LOOP_UPDATE);
+    alerts::manager.raise(alerts::Type::LONG_LOOP_UPDATE);
   }
   // lower the alert (after 5 seconds)
   else if (isOnSlowLoopCount <= 1 and time_ms() - alarmRaisedTime > 3000)
   {
-    AlertManager.clear_alert(Alerts::LONG_LOOP_UPDATE);
+    alerts::manager.clear(alerts::Type::LONG_LOOP_UPDATE);
   };
 }
 
