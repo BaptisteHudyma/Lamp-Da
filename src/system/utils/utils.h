@@ -24,14 +24,12 @@ template<typename T, typename U> static constexpr U lmpd_map(T x, T in_min, T in
   return (out_max - out_min) * ((x - in_min) / float(in_max - in_min)) + out_min;
 }
 
-//
-// ambiguous min/fmin/max/fmax/abs
-//
-
 #ifndef Arduino_h
 
 template<typename N, typename M> static constexpr N min(const N a, const M b) { return a < b ? a : b; }
 template<typename N, typename M> static constexpr N max(const N a, const M b) { return a > b ? a : b; }
+
+template<typename N> static constexpr N abs(const N a) { return std::abs(a); }
 
 #endif
 

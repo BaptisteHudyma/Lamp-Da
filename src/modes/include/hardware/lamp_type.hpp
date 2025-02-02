@@ -4,9 +4,9 @@
 #include <cassert>
 
 #include "src/compile.h"
-#include "src/system/behavior.h"
 #include "src/user/constants.h"
 #include "src/system/utils/curves.h"
+#include "src/system/utils/brightness_handle.h"
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #include "src/system/utils/strip.h"
@@ -109,7 +109,7 @@ public:
     begin();
     clear();
     show();
-    setBrightness(behavior::get_brightness(), true, true);
+    setBrightness(brightness::get_brightness(), true, true);
   }
 
   /** \private Does necessary work to setup lamp from a powered-off state
@@ -237,7 +237,7 @@ public:
    *
    * Several behaviors:
    *  - by default, do not call user callbacks to avoid re-entry
-   *  - by default, do call global brightness update handler (from behavior.h)
+   *  - by default, do call global brightness update handler (from brightness_handle.h)
    *  - also set the brightness in underlying strip object, if necessary
    *
    * Thus:
@@ -264,7 +264,7 @@ public:
 
     if (!skipUpdateBrightness)
     {
-      behavior::update_brightness(brightness, false, skipCallbacks);
+      brightness::update_brightness(brightness, skipCallbacks);
     }
   }
 
@@ -277,7 +277,7 @@ public:
     }
     else
     {
-      return behavior::get_brightness() / maxBrightness * 255;
+      return brightness::get_brightness() / maxBrightness * 255;
     }
   }
 

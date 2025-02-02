@@ -15,8 +15,6 @@ extern uint16_t get_raw_battery_level();
 // returns the battery level, corresponding to user safe choice (0-10000)
 extern uint16_t get_battery_level();
 
-extern void raise_battery_alert();
-
 // convert a liion battery level to a linear model
 inline uint16_t liion_level_to_battery_percent(const uint16_t liionLevelPercent)
 {

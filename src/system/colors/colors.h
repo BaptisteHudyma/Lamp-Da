@@ -13,7 +13,7 @@
 #include "src/system/platform/time.h"
 
 // min color update frequency
-constexpr uint32_t COLOR_TIMING_UPDATE = LOOP_UPDATE_PERIOD * 3;
+constexpr uint32_t COLOR_TIMING_UPDATE = MAIN_LOOP_UPDATE_PERIOD_MS * 3;
 
 /**
  * \brief Basic color generation class

@@ -5,6 +5,7 @@
 #include "src/system/behavior.h"
 #include "src/system/utils/utils.h"
 #include "src/system/utils/curves.h"
+#include "src/system/utils/brightness_handle.h"
 
 #include "src/system/platform/gpio.h"
 #include "src/system/physical/fileSystem.h"
@@ -41,7 +42,7 @@ void power_on_sequence()
   YellowColorPin.set_pin_mode(DigitalPin::Mode::kOutput);
   WhiteColorPin.set_pin_mode(DigitalPin::Mode::kOutput);
 
-  brightness_update(behavior::get_brightness());
+  brightness_update(brightness::get_brightness());
 }
 
 void power_off_sequence()
@@ -86,7 +87,7 @@ void read_parameters()
     lastColor = currentColor;
   }
 
-  currentBrightness = behavior::get_brightness();
+  currentBrightness = brightness::get_brightness();
 }
 
 void button_clicked_default(const uint8_t clicks)
@@ -95,7 +96,8 @@ void button_clicked_default(const uint8_t clicks)
   {
     // put luminosity to maximum
     case 2:
-      behavior::update_brightness(maxBrightness, true);
+      brightness::update_brightness(maxBrightness);
+      brightness::update_previous_brightness();
       break;
 
     default:

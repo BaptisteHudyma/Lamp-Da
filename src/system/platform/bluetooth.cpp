@@ -50,19 +50,19 @@ void byte_to_str(char* buff, uint8_t val)
 
 void connect_callback(uint16_t conn_hdl)
 {
-  AlertManager.clear_alert(Alerts::BLUETOOTH_ADVERT);
+  alerts::manager.clear(alerts::Type::BLUETOOTH_ADVERT);
   lampda_print("Bluetooth connected");
 }
 
 void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
 {
-  AlertManager.clear_alert(Alerts::BLUETOOTH_ADVERT);
+  alerts::manager.clear(alerts::Type::BLUETOOTH_ADVERT);
   lampda_print("Bluetooth disconnected");
 }
 
 void adv_stop_callback(void)
 {
-  AlertManager.clear_alert(Alerts::BLUETOOTH_ADVERT);
+  alerts::manager.clear(alerts::Type::BLUETOOTH_ADVERT);
   lampda_print("Advertising time passed, advertising will now stop.");
 }
 
@@ -121,7 +121,7 @@ void start_advertising()
 
   Bluefruit.Advertising.start(ADV_TIMEOUT); // Stop advertising entirely after ADV_TIMEOUT seconds
 
-  AlertManager.raise_alert(Alerts::BLUETOOTH_ADVERT);
+  alerts::manager.raise(alerts::Type::BLUETOOTH_ADVERT);
 }
 
 void disable_bluetooth()
@@ -129,7 +129,7 @@ void disable_bluetooth()
   if (!isInitialized)
     return;
 
-  AlertManager.clear_alert(Alerts::BLUETOOTH_ADVERT);
+  alerts::manager.clear(alerts::Type::BLUETOOTH_ADVERT);
 
   Bluefruit.Advertising.stop();
 }

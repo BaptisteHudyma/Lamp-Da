@@ -264,7 +264,7 @@ bool fade_out(const uint32_t duration, const bool restart, LedStrip& strip)
   if (restart)
   {
     fadeLevel = 0;
-    maxFadeLevel = duration / LOOP_UPDATE_PERIOD;
+    maxFadeLevel = duration / MAIN_LOOP_UPDATE_PERIOD_MS;
     startMillis = time_ms();
 
     // buffer the start values
@@ -310,7 +310,7 @@ bool fade_in(const Color& color,
   if (restart)
   {
     fadeLevel = 0;
-    maxFadeLevel = duration / LOOP_UPDATE_PERIOD;
+    maxFadeLevel = duration / MAIN_LOOP_UPDATE_PERIOD_MS;
     startMillis = time_ms();
 
     // buffer the start values

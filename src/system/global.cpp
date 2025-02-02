@@ -53,7 +53,7 @@ void check_loop_runtime(const uint32_t runTime)
   static uint32_t alarmRaisedTime = 0;
   // check the loop duration
   static uint8_t isOnSlowLoopCount = 0;
-  if (runTime > LOOP_UPDATE_PERIOD + 1)
+  if (runTime > MAIN_LOOP_UPDATE_PERIOD_MS + 1)
   {
     isOnSlowLoopCount = min(isOnSlowLoopCount + 1, maxAlerts);
 
@@ -71,12 +71,12 @@ void check_loop_runtime(const uint32_t runTime)
   if (isOnSlowLoopCount >= maxAlerts)
   {
     alarmRaisedTime = time_ms();
-    AlertManager.raise_alert(Alerts::LONG_LOOP_UPDATE);
+    alerts::manager.raise(alerts::Type::LONG_LOOP_UPDATE);
   }
-  // lower the alert (after 5 seconds)
-  else if (isOnSlowLoopCount <= 1 and time_ms() - alarmRaisedTime > 3000)
+  // lower the alert (after some time)
+  else if (isOnSlowLoopCount <= 1 and time_ms() - alarmRaisedTime > 1000)
   {
-    AlertManager.clear_alert(Alerts::LONG_LOOP_UPDATE);
+    alerts::manager.clear(alerts::Type::LONG_LOOP_UPDATE);
   };
 }
 
@@ -176,7 +176,7 @@ void main_setup()
 /**
  * \brief Run the main program loop
  */
-void main_loop()
+void main_loop(const uint32_t addedDelay)
 {
   uint32_t start = time_ms();
 
@@ -192,16 +192,18 @@ void main_loop()
   // loop the behavior
   behavior::loop();
 
-  // wait for a delay if we are faster than the set refresh rate
-  uint32_t stop = time_ms();
-  const uint32_t loopDuration = (stop - start);
-  if (loopDuration < LOOP_UPDATE_PERIOD)
-  {
-    delay_ms(LOOP_UPDATE_PERIOD - loopDuration);
-  }
+  // add the required delay
+  if (addedDelay > 0)
+    delay_ms(addedDelay);
 
-  stop = time_ms();
-  check_loop_runtime(stop - start);
+  // wait for a delay if we are faster than the set refresh rate
+  const uint32_t stop = time_ms();
+  const uint32_t loopDuration = (stop - start);
+  if (loopDuration < MAIN_LOOP_UPDATE_PERIOD_MS)
+  {
+    delay_ms(MAIN_LOOP_UPDATE_PERIOD_MS - loopDuration);
+  }
+  check_loop_runtime(loopDuration);
 
   // automatically deactivate sensors if they are not used for a time
   microphone::disable_after_non_use();

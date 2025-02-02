@@ -8,6 +8,7 @@
 #include "src/system/physical/battery.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
+#include "src/system/utils/print.h"
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
@@ -58,7 +59,7 @@ bool should_charge()
   }
 
   // temperature too high, stop charge
-  if (AlertManager.is_raised(Alerts::TEMP_CRITICAL))
+  if (alerts::manager.is_raised(alerts::Type::TEMP_CRITICAL))
   {
     return false;
   }
@@ -321,14 +322,14 @@ void loop()
   // fast fail in case of errors
   if (is_status_error())
   {
-    AlertManager.raise_alert(Alerts::HARDWARE_ALERT);
+    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
     BQ25703A::enable_charge(false);
     // do NOT run charge functions
     return;
   }
   else
   {
-    AlertManager.clear_alert(Alerts::HARDWARE_ALERT);
+    alerts::manager.clear(alerts::Type::HARDWARE_ALERT);
   }
 
   // if needed, enable charge

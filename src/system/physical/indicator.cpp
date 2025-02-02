@@ -45,11 +45,13 @@ bool breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::Colo
 
   // store the start time of the animation
   static uint32_t startTime = time;
+  static bool isOn = false;
 
   // breeze on
   const uint32_t timeSinceStart = time - startTime;
   if (timeSinceStart < periodOn)
   {
+    isOn = true;
     const float progression = lmpd_map<uint32_t, float>(timeSinceStart, 0, periodOn, 0.0, 1.0);
 
     // rising edge
@@ -68,16 +70,18 @@ bool breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::Colo
   // breeze off
   else if (timeSinceStart < periodOn + periodOff)
   {
+    isOn = false;
     set_color(utils::ColorSpace::BLACK);
   }
   else
   {
+    isOn = false;
     // reset animation
     startTime = time;
     set_color(utils::ColorSpace::BLACK);
   }
 
-  return false;
+  return not isOn;
 }
 
 bool blink(const uint32_t offFreq, const uint32_t onFreq, utils::ColorSpace::RGB color)
@@ -85,7 +89,7 @@ bool blink(const uint32_t offFreq, const uint32_t onFreq, utils::ColorSpace::RGB
   static uint32_t lastCall = 0;
   static bool ledState = false;
 
-  // led is off, and last call was 100ms before
+  // led is off, and last call was some delay before
   if (not ledState and time_ms() - lastCall > onFreq)
   {
     ledState = true;
@@ -102,7 +106,7 @@ bool blink(const uint32_t offFreq, const uint32_t onFreq, utils::ColorSpace::RGB
     lastCall = time_ms();
   }
 
-  return false;
+  return not ledState;
 }
 
 } // namespace indicator
