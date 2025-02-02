@@ -113,7 +113,7 @@ struct AlertBase
   }
 
   /**
-   * \brief function executed all the time while this alert is raised
+   * \brief function executed when this alert is raised
    */
   virtual void execute() const {};
 
@@ -137,7 +137,7 @@ struct AlertBase
     return (time - raisedTime) > alert_shutdown_timeout();
   }
 
-  virtual void handle_raised_state(const uint32_t time)
+  virtual bool handle_raised_state(const uint32_t time)
   {
     if (not _isRaisedHandled)
     {
@@ -145,10 +145,14 @@ struct AlertBase
       loweredTime = 0;
       _isRaisedHandled = true;
       _isLoweredHandled = false;
+
+      return true;
     }
+
+    return false;
   }
 
-  virtual void handle_lowered_state(const uint32_t time)
+  virtual bool handle_lowered_state(const uint32_t time)
   {
     if (not _isLoweredHandled)
     {
@@ -156,7 +160,9 @@ struct AlertBase
       loweredTime = time;
       _isLoweredHandled = true;
       _isRaisedHandled = false;
+      return true;
     }
+    return false;
   }
 
   // private:
@@ -230,12 +236,12 @@ struct Alert_BatteryLow : public AlertBase
   {
     // limit brightness to quarter of the max value
     constexpr brightness_t clampedBrightness = 0.25 * maxBrightness;
-    brightness::set_max_brightness(clampedBrightness);
 
     // save some battery
     bluetooth::disable_bluetooth();
 
-    brightness::update_brightness(min(clampedBrightness, brightness::get_brightness()));
+    brightness::set_max_brightness(clampedBrightness);
+    brightness::update_brightness(brightness::get_brightness());
     brightness::update_previous_brightness();
   }
 
@@ -275,7 +281,7 @@ struct Alert_TempTooHigh : public AlertBase
     constexpr brightness_t clampedBrightness = 0.5 * maxBrightness;
 
     brightness::set_max_brightness(clampedBrightness);
-    brightness::update_brightness(min(clampedBrightness, brightness::get_brightness()));
+    brightness::update_brightness(brightness::get_brightness());
     brightness::update_previous_brightness();
   }
 
@@ -367,7 +373,12 @@ void update_alerts()
       else
       {
         // call this before any other processes, sets the delays
-        alert->handle_raised_state(currTime);
+        if (alert->handle_raised_state(currTime))
+        {
+          // execute this alert action
+          alert->execute();
+        }
+
         if (alert->should_shutdown_system(currTime))
         {
           // notify the system shutdown request
@@ -437,15 +448,10 @@ void handle_all(const bool shouldIgnoreAlerts)
   {
     if (manager.is_raised(alert->get_type()))
     {
-      // execute this alert action
-      alert->execute();
-
-      // display the alert, if another was not displayed
-      if (not isFirstAlertShown)
-      {
-        isFirstAlertShown = true;
-        alert->show();
-      }
+      // display only the first alert
+      isFirstAlertShown = true;
+      alert->show();
+      break;
     }
   }
 

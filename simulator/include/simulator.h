@@ -1,7 +1,6 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 
-#include <Arduino.h>
 #include "parameter_parser.h"
 
 // Call the main file after mocks
@@ -46,8 +45,6 @@ template<typename T> struct simulator
     // time
     sf::Clock clock;
 
-    globalMillis = clock.getElapsedTime().asMilliseconds();
-
     // render window
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), title);
 
@@ -83,9 +80,6 @@ template<typename T> struct simulator
 #endif
       }
 
-      // update time_ms()
-      globalMillis = clock.getElapsedTime().asMilliseconds();
-
       // deep sleep, exit
       if (mock_registers::isDeepSleep)
         break;
@@ -96,30 +90,7 @@ template<typename T> struct simulator
       mock_gpios::update_callbacks();
 
       // main program loop
-      global::main_loop();
-
-      float dt = clock.getElapsedTime().asMilliseconds() - globalMillis;
-
-      // re-execute immediately if faster fps needed
-      if (simu.fps > 250)
-      {
-        skipframe += 1;
-        if (skipframe % (((uint64_t)simu.fps) - 250) != 0)
-          continue;
-      }
-
-      // faster fps if "F" key is pressed
-      if (simu.fps < 1000 && dt < 1000.f && simu.fps > 0)
-      {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
-        {
-          sf::sleep(sf::milliseconds((1000.f - dt) / (simu.fps * 3)));
-        }
-        else
-        {
-          sf::sleep(sf::milliseconds((1000.f - dt) / simu.fps));
-        }
-      }
+      global::main_loop(mock_registers::addedAlgoDelay);
 
       // draw fake leds
       window.clear();
