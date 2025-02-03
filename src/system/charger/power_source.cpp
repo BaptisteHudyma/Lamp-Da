@@ -13,7 +13,7 @@
 static constexpr int devicePort = 0;
 // USB-C Specific - TCPM start 1
 const struct tcpc_config_t tcpc_config[CONFIG_USB_PD_PORT_COUNT] = {
-        {0, fusb302_I2C_SLAVE_ADDR, &fusb302_tcpm_drv},
+        {0, fusb302_I2C_SLAVE_ADDR, &fusb302_tcpm_drv, tcpc_alert_polarity::TCPC_ALERT_ACTIVE_HIGH},
 };
 // USB-C Specific - TCPM end 1
 
@@ -245,11 +245,11 @@ void loop()
 
   if (
           // valid input source
-          isPowerSourceDetected_s and
-                  // is valid source (pd with power, or non pd)
-                  (is_usb_pd() and can_use_PD_full_power()) or
-          // is standard usb c
-          (is_standard_port()))
+          isPowerSourceDetected_s and (
+                                              // is pd with power
+                                              (is_usb_pd() and can_use_PD_full_power()) or
+                                              // is standard usb c
+                                              (is_standard_port())))
   {
     canUseSourcePower_s = true;
   }
