@@ -8,37 +8,41 @@
 
 namespace battery {
 
-// return a number between 0 and 10000 (% * 100)
-// it corresponds to the real battery level
-extern uint16_t get_raw_battery_level();
+// get the battery voltage, untreated
+extern uint16_t get_raw_battery_voltage_mv();
 
-// returns the battery level, corresponding to user safe choice (0-10000)
-extern uint16_t get_battery_level();
-
-// convert a liion battery level to a linear model
-inline uint16_t liion_level_to_battery_percent(const uint16_t liionLevelPercent)
+/**
+ * \brief convert a single liion battery voltage to a percent level model
+ * \param[in] liionLevel_mv The voltage of the whole battery
+ * \param[in] batteryCountSerie How many liion cells in serie
+ * \return The battery percent, x100
+ */
+inline uint16_t liion_mv_to_battery_percent(const uint16_t liionLevel_mv, const uint8_t batteryCountSerie)
 {
   using curve_t = curves::LinearCurve<uint16_t, uint16_t>;
-  static curve_t liionVoltagePercentToRealPercent({curve_t::point_t {0, 0},
-                                                   curve_t::point_t {4000, 1200},
-                                                   curve_t::point_t {9000, 9500},
-                                                   curve_t::point_t {10000, 10000}});
+  static curve_t liionVoltagePercentToRealPercent({// low end of the curve, sharp drop
+                                                   curve_t::point_t {3000, 0},
+                                                   curve_t::point_t {3210, 500},
+                                                   curve_t::point_t {3350, 1000},
+                                                   curve_t::point_t {3430, 1500},
+                                                   curve_t::point_t {3470, 2000},
+                                                   // linear approximation works well enough in range 20-90%
+                                                   curve_t::point_t {4080, 9000},
+                                                   curve_t::point_t {4110, 9500},
+                                                   curve_t::point_t {4180, 10000}});
 
   // sample the curve
-  return liionVoltagePercentToRealPercent.sample(liionLevelPercent);
+  return liionVoltagePercentToRealPercent.sample(liionLevel_mv / batteryCountSerie);
 }
 
 /**
  * \brief transform a battery voltage measurment to a percent * 100 estimate
- * \param[in] batteryLevel_mV the measured battery level
+ * \param[in] batteryLevel_mV the measured battery voltage
  * \return the battery level, in percent * 100
  */
-inline uint16_t get_level_percent(const uint16_t batteryLevel_mV)
+inline uint16_t get_level_percent(const uint16_t batteryVoltage_mV)
 {
-  return liion_level_to_battery_percent(lmpd_constrain(
-          lmpd_map<uint16_t, uint16_t>(batteryLevel_mV, batteryMinVoltage_mV, batteryMaxVoltage_mV, 0, 10000),
-          0,
-          10000));
+  return liion_mv_to_battery_percent(batteryVoltage_mV, batteryCount);
 }
 
 /**
@@ -54,12 +58,22 @@ inline uint16_t get_min_safe_level() { return get_level_percent(batteryMinVoltag
 /**
  * \brief returns the battery level, mapped to the desired safe battery level
  */
-inline uint16_t get_level(const uint16_t batteryLevel)
+inline uint16_t get_level_safe(const uint16_t battery_mv)
 {
   // get the result of the total battery life, map it to the safe battery level
   // indicated by user
-  return lmpd_constrain(
-          lmpd_map<uint16_t, uint16_t>(batteryLevel, get_min_safe_level(), get_max_safe_level(), 0, 10000), 0, 10000);
+  return lmpd_constrain(lmpd_map<uint16_t, uint16_t>(
+                                get_level_percent(battery_mv), get_min_safe_level(), get_max_safe_level(), 0, 10000),
+                        0,
+                        10000);
+}
+
+// returns the battery level, corresponding to user safe choice (0-10000)
+inline uint16_t get_battery_level()
+{
+  // get the result of the total battery life, map it to the safe battery level
+  // indicated by user
+  return get_level_safe(get_raw_battery_voltage_mv());
 }
 
 } // namespace battery

@@ -52,7 +52,7 @@ void handleCommand(const std::string& command)
         lampda_print(
                 "raw battery level:%f%%\n"
                 "battery level:%f%%",
-                battery::get_raw_battery_level() / 100.0,
+                battery::get_level_percent(battery::get_raw_battery_voltage_mv()) / 100.0,
                 battery::get_battery_level() / 100.0);
         break;
       }

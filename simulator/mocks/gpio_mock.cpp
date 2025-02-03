@@ -3,7 +3,6 @@
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/utils.h"
 #include <SFML/Graphics.hpp>
-#include <iostream>
 
 #include "simulator/include/hardware_influencer.h"
 
@@ -85,7 +84,6 @@ public:
     {
       case DigitalPin::GPIO::batterySignal:
         return utils::voltageToAnalogRead(mock_battery::voltage * voltageDividerCoeff);
-        break;
     }
     return 0;
   }

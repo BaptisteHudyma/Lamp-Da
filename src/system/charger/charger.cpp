@@ -87,7 +87,8 @@ bool should_charge()
     return false;
   }
 
-  const uint16_t batteryPercent = battery::get_level(battery::get_level_percent(battery.voltage_mV));
+  // get the estimation of the level, between the safe bounds
+  const uint16_t batteryPercent = battery::get_level_safe(battery.voltage_mV);
 
   // battery charge is latched on
   if (isBatteryFullLatched_s)

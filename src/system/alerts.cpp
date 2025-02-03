@@ -329,10 +329,11 @@ struct Alert_HardwareAlert : public AlertBase
 struct Alert_OtgActivated : public AlertBase
 {
   bool show() const override
-  { // red to green
+  {
+    // red to green
     const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
                                                                         utils::ColorSpace::GREEN.get_rgb().color,
-                                                                        battery::get_raw_battery_level() / 10000.0));
+                                                                        battery::get_battery_level() / 10000.0));
 
     return indicator::breeze(500, 500, buttonColor);
   }
@@ -413,7 +414,7 @@ void handle_all(const bool shouldIgnoreAlerts)
     // red to green
     const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
                                                                         utils::ColorSpace::GREEN.get_rgb().color,
-                                                                        battery::get_raw_battery_level() / 10000.0));
+                                                                        battery::get_battery_level() / 10000.0));
 
     // display battery level
     const auto& chargerStatus = charger::get_state();
