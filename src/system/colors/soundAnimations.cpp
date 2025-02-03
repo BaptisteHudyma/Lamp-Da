@@ -21,20 +21,22 @@ void vu_meter(const Color& vuColor, const uint8_t fadeOut, LedStrip& strip)
 
 void fft_display(const uint8_t speed, const uint8_t scale, const palette_t& palette, LedStrip& strip)
 {
+  static constexpr uint8_t bufferIndexToUse = 0;
+
   const auto& fftRes = microphone::get_fft();
 
   static uint32_t lastCall = 0;
   static uint32_t call = 0;
-  static uint16_t* previousBarHeight = strip._buffer16b;
 
   if (call == 0)
   {
     lastCall = 0;
     call = 0;
 
-    memset(previousBarHeight, 0, sizeof(previousBarHeight));
+    strip.fill_buffer(bufferIndexToUse, 0);
   }
 
+  static auto previousBarHeight = strip.get_buffer_ptr(bufferIndexToUse);
   static const uint16_t cols = ceil(stripXCoordinates);
   static const uint16_t rows = ceil(stripYCoordinates);
 

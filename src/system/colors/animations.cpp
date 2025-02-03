@@ -259,7 +259,7 @@ bool fade_out(const uint32_t duration, const bool restart, LedStrip& strip)
   static uint32_t fadeLevel = 0;
 
   // shared buffer
-  static uint32_t* ledStates = strip.get_buffer_ptr(0);
+  static auto ledStates = strip.get_buffer_ptr(0);
 
   if (restart)
   {
@@ -304,8 +304,8 @@ bool fade_in(const Color& color,
   static unsigned long startMillis = 0;
   static uint32_t maxFadeLevel = 0;
   static uint32_t fadeLevel = 0;
-  static uint32_t* ledStates = strip.get_buffer_ptr(0);
-  static uint32_t* targetStates = strip.get_buffer_ptr(1);
+  static auto ledStates = strip.get_buffer_ptr(0);
+  static auto targetStates = strip.get_buffer_ptr(1);
 
   if (restart)
   {
@@ -370,8 +370,8 @@ void random_noise(
         const palette_t& palette, LedStrip& strip, const bool restart, const bool isColorLoop, const uint16_t scale)
 {
   static const float speed = 3000;
+  static constexpr uint8_t bufferIndexToUse = 0;
 
-  static uint16_t* noise = strip._buffer16b;
   // noise coordinates
   static float x = random16();
   static float y = random16();
@@ -382,8 +382,12 @@ void random_noise(
     x = random16();
     y = random16();
     z = random16();
-    memset(strip._buffer16b, 0, sizeof(strip._buffer16b));
+
+    strip.fill_buffer(bufferIndexToUse, 0);
   }
+
+  // reference to a value buffer
+  static auto noise = strip.get_buffer_ptr(bufferIndexToUse);
 
   static uint32_t lastcall = 0;
   if (time_ms() - lastcall > 30)

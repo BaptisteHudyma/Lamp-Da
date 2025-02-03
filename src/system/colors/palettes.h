@@ -4,9 +4,11 @@
 // this file is active only if LMBD_LAMP_TYPE=indexable
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
+#include <array>
 #include <cstdint>
 
-typedef uint32_t palette_t[16];
+static constexpr uint8_t PALETTE_SIZE = 16;
+using palette_t = std::array<uint32_t, PALETTE_SIZE>;
 
 /// @brief Color temperature values
 /// @details These color values are separated into two groups: black body

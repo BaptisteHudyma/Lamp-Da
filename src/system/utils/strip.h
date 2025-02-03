@@ -236,9 +236,6 @@ public:
     memset(_buffers[index], value, sizeof(_buffers[index]));
   }
 
-  uint8_t _buffer8b[LED_COUNT];
-  uint16_t _buffer16b[LED_COUNT];
-
 private:
   COLOR _colors[LED_COUNT];
   // buffers for computations
