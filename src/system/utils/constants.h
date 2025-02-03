@@ -55,7 +55,7 @@ constexpr float totalCons_Watt = consWattByMeter * ledStripLenght_mm / 1000.0;
 constexpr float maxStripConsumption_A = totalCons_Watt / inputVoltage_V;
 
 // compute the expected average loop runtime (in ms)
-constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = 1000 / 90.0;
+constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = 1000 / 80.0;
 
 constexpr float batteryCritical = 300; // % *100
 constexpr float batteryLow = 500;      // % *100
