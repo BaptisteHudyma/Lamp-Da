@@ -52,7 +52,11 @@ private:
 
 extern AlertManager_t manager;
 
+// handle the behavior for all alerts
 void handle_all(const bool shouldIgnoreAlerts);
+// show all the raised alerts
+void show_all();
+// return true if an alert requested an immediate shutdown
 bool is_request_shutdown();
 
 } // namespace alerts

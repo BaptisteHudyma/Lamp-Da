@@ -1,12 +1,15 @@
 #include "serial.h"
 
 #include "src/system/charger/charger.h"
+
 #include "src/system/physical/battery.h"
+#include "src/system/physical/fileSystem.h"
+
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 #include "src/system/utils/print.h"
 
-#include "src/system/physical/fileSystem.h"
+#include "src/system/alerts.h"
 
 namespace serial {
 
@@ -30,6 +33,7 @@ void handleCommand(const std::string& command)
                 "cinfo: charger infos\n"
                 "ADC: values from the charger ADC\n"
                 "cen: enable charger. Debug only\n"
+                "alerts: show all raised alerts"
                 "format-fs: format the whole file system (dangerous)\n"
                 "-----------------");
         break;
@@ -68,6 +72,7 @@ void handleCommand(const std::string& command)
                 "charge current:%dmA\n"
                 "is usb powered:%s\n"
                 "is charging:%s\n"
+                "is effec charging:%s\n"
                 "battery level:%f%%\n"
                 "-> %s",
                 chargerState.vbus_mV,
@@ -76,10 +81,15 @@ void handleCommand(const std::string& command)
                 chargerState.chargeCurrent_mA,
                 boolToString(charger::is_vbus_signal_detected()),
                 boolToString(chargerState.is_charging()),
+                boolToString(chargerState.is_effectivly_charging()),
                 battery::get_battery_level() / 100.0,
                 chargerState.get_status_str().c_str());
         break;
       }
+
+    case utils::hash("alerts"):
+      alerts::show_all();
+      break;
 
     case utils::hash("cen"):
       lampda_print("Enabling the charging process");

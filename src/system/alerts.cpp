@@ -191,15 +191,15 @@ struct Alert_BatteryCritical : public AlertBase
 {
   bool should_be_raised() const override
   {
-    const uint16_t percent = __internal::get_battery_level();
-    return percent < batteryCritical;
+    const auto& chargerState = charger::get_state();
+    return not chargerState.is_effectivly_charging() and __internal::get_battery_level() < batteryCritical;
   }
 
   bool should_be_cleared() const override
   {
     // battery low can only be cleared on charging operations
     const auto& chargerState = charger::get_state();
-    return chargerState.is_charging();
+    return chargerState.is_effectivly_charging();
   }
 
   uint32_t alert_shutdown_timeout() const override
@@ -221,15 +221,15 @@ struct Alert_BatteryLow : public AlertBase
 {
   bool should_be_raised() const override
   {
-    const uint16_t percent = __internal::get_battery_level();
-    return percent < batteryLow;
+    const auto& chargerState = charger::get_state();
+    return not chargerState.is_effectivly_charging() and __internal::get_battery_level() < batteryLow;
   }
 
   bool should_be_cleared() const override
   {
     // battery low can only be cleared on charging operations
     const auto& chargerState = charger::get_state();
-    return chargerState.is_charging();
+    return chargerState.is_effectivly_charging();
   }
 
   void execute() const override
@@ -460,6 +460,25 @@ void handle_all(const bool shouldIgnoreAlerts)
   if (not isFirstAlertShown)
   {
     indicator::blink(300, 300, utils::ColorSpace::WHITE);
+  }
+}
+
+void show_all()
+{
+  if (manager.is_clear())
+  {
+    lampda_print("No alerts raised");
+  }
+  else
+  {
+    lampda_print("Raised alerts:");
+    for (auto alert: allAlerts)
+    {
+      if (manager.is_raised(alert->get_type()))
+      {
+        lampda_print("- %s", AlertsToText(alert->get_type()));
+      }
+    }
   }
 }
 

@@ -112,8 +112,8 @@ bool should_charge()
     {
       batteryFullDeglitchTime = time;
     }
-    // the battery needs to stay == 100 for 5 seconds
-    else if (time - batteryFullDeglitchTime > 5000)
+    // the battery needs to stay == 100 for 20 seconds
+    else if (time - batteryFullDeglitchTime > 20 * 1000)
     {
       batteryFullDeglitchTime = 0;
       // charge done, latch battery level
@@ -373,6 +373,8 @@ bool Charger_t::is_charging() const
   return status == ChargerStatus_t::POWER_DETECTED or status == ChargerStatus_t::SLOW_CHARGING or
          status == ChargerStatus_t::CHARGING;
 }
+
+bool Charger_t::is_effectivly_charging() const { return status == ChargerStatus_t::CHARGING; }
 
 std::string Charger_t::get_status_str() const
 {
