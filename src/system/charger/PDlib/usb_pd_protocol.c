@@ -1493,7 +1493,7 @@ static void handle_ctrl_request(int port, uint16_t head, uint32_t* payload)
       break;
     case PD_CTRL_PR_SWAP:
 #ifdef CONFIG_USB_PD_DUAL_ROLE
-      if (pd_check_power_swap(port))
+      if (pd_is_power_swap_succesful(port))
       {
         send_control(port, PD_CTRL_ACCEPT);
         /*
@@ -1512,7 +1512,7 @@ static void handle_ctrl_request(int port, uint16_t head, uint32_t* payload)
 #endif
       break;
     case PD_CTRL_DR_SWAP:
-      if (pd_check_data_swap(port, pd[port].data_role))
+      if (pd_is_data_swap_allowed(port, pd[port].data_role) == EC_SUCCESS)
       {
         /*
          * Accept switch and perform data swap. Clear
@@ -2465,7 +2465,7 @@ void pd_run_state_machine(int port, int reset)
         /* Query capabilities of the other side */
         res = send_source_cap(port);
         /* packet was acked => PD capable device) */
-        if (res >= 0)
+        if (res >= 2)
         {
           set_state(port, PD_STATE_SRC_NEGOCIATE);
           timeout = 10 * MSEC_US;

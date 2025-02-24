@@ -1207,7 +1207,7 @@ extern "C" {
    * @param port USB-C port number
    * @return True if power swap is allowed, False otherwise
    */
-  int pd_check_power_swap(int port);
+  int pd_is_power_swap_succesful(int port);
 
   /**
    * Check if data swap is allowed.
@@ -1216,7 +1216,7 @@ extern "C" {
    * @param data_role current data role
    * @return True if data swap is allowed, False otherwise
    */
-  int pd_check_data_swap(int port, int data_role);
+  int pd_is_data_swap_allowed(int port, int data_role);
 
   /**
    * Check if vconn swap is allowed.
