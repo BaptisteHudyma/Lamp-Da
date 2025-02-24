@@ -1,6 +1,8 @@
 #ifndef USER_CONSTANTS_H
 #define USER_CONSTANTS_H
 
+#include <cstdint>
+
 //
 // common to all lamp type
 //

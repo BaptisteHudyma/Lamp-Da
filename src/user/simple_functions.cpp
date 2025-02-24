@@ -5,6 +5,7 @@
 #include "src/system/behavior.h"
 #include "src/system/physical/led_power.h"
 #include "src/system/utils/utils.h"
+#include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/curves.h"
 
 #include "src/system/platform/time.h"
@@ -16,7 +17,7 @@ namespace user {
 
 constexpr uint8_t minBrightness = 4;
 
-void power_on_sequence() { brightness_update(behavior::get_brightness()); }
+void power_on_sequence() { brightness_update(brightness::get_brightness()); }
 
 void power_off_sequence()
 {
@@ -52,7 +53,8 @@ void button_clicked_default(const uint8_t clicks)
   {
     // put luminosity to maximum
     case 2:
-      behavior::update_brightness(maxBrightness, true);
+      brightness::update_brightness(maxBrightness);
+      brightness::update_previous_brightness();
       break;
 
     default:

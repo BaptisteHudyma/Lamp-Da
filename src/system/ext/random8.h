@@ -39,8 +39,7 @@
 #endif
 
 /// Seed for the random number generator functions
-LIB8STATIC_ALWAYS_INLINE uint16_t rand16seed =
-        APPLY_FASTLED_RAND16_2053(rand16seed) + FASTLED_RAND16_13849; // = RAND16_SEED;
+inline uint16_t rand16seed = APPLY_FASTLED_RAND16_2053(rand16seed) + FASTLED_RAND16_13849; // = RAND16_SEED;
 
 /// Generate an 8-bit random number
 /// @returns random 8-bit number, in the range 0-255

@@ -11,6 +11,9 @@ namespace battery {
 
 DigitalPin batteryPin(DigitalPin::GPIO::batterySignal);
 
+/**
+ * \brief read the battery voltage from the GPIO
+ */
 uint16_t read_battery_mV()
 {
   static uint32_t lastReadTime = 0;
@@ -26,7 +29,11 @@ uint16_t read_battery_mV()
   return lastBatteryRead;
 }
 
-uint16_t get_raw_battery_level()
+/**
+ * \brief Return the battery voltage and raise the battery incoherent alert if needed
+ * This will use the GPIO rread at first, and the charger ADC when available
+ */
+uint16_t get_raw_battery_voltage_mv()
 {
   uint16_t batteryVoltage_mV = 0;
   const auto& chargerStates = charger::get_state();
@@ -43,54 +50,18 @@ uint16_t get_raw_battery_level()
 
   // in bounds with some margin
   static constexpr uint16_t minInValue = batteryMinVoltage_mV * 0.95;
-  static constexpr uint16_t maxInValue = batteryMaxVoltage_mV * 1.05;
+  static constexpr uint16_t maxInValue =
+          batteryMaxVoltage_mV * 1.01; // this should not go over 17v, the max limit we can handle with the current
+                                       // hardware (and sampling rate)
   if (batteryVoltage_mV < minInValue or batteryVoltage_mV > maxInValue)
   {
-    AlertManager.raise_alert(Alerts::BATTERY_READINGS_INCOHERENT);
+    alerts::manager.raise(alerts::Type::BATTERY_READINGS_INCOHERENT);
     // return a default low value
     return batteryMinVoltage_mV;
   }
-  AlertManager.clear_alert(Alerts::BATTERY_READINGS_INCOHERENT);
-
-  return get_level_percent(batteryVoltage_mV);
-}
-
-uint16_t get_battery_level()
-{
-  // get the result of the total battery life, map it to the safe battery level
-  // indicated by user
-  return get_level(get_raw_battery_level());
-}
-
-// Raise the battery low or battery critical alert
-void raise_battery_alert()
-{
-  static constexpr uint32_t refreshRate_ms = 1000;
-  static uint32_t lastCall = 0;
-
-  const uint32_t newCall = time_ms();
-  if (newCall - lastCall > refreshRate_ms or lastCall == 0)
-  {
-    lastCall = newCall;
-    const uint16_t percent = get_battery_level();
-
-    // % battery is critical
-    if (percent <= batteryCritical)
-    {
-      AlertManager.raise_alert(Alerts::BATTERY_CRITICAL);
-    }
-    else if (percent > batteryCritical + 1)
-    {
-      AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);
-
-      // % battery is low, start alerting
-      if (percent <= batteryLow)
-      {
-        AlertManager.raise_alert(Alerts::BATTERY_LOW);
-      }
-      // else: no need to clear, it will clear on it's one when charging
-    }
-  }
+  // return the true battery voltage
+  alerts::manager.clear(alerts::Type::BATTERY_READINGS_INCOHERENT);
+  return batteryVoltage_mV;
 }
 
 } // namespace battery

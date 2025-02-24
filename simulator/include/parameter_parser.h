@@ -46,6 +46,10 @@ inline void read_and_update_parameters()
       {
         mock_registers::cpuTemperature = value;
       }
+      else if (key == addedAlgoDelayKey)
+      {
+        mock_registers::addedAlgoDelay = value;
+      }
       // TODO: other parameters
     }
   }

@@ -61,6 +61,7 @@ struct Charger_t
 
   // return true when the status is charging or powered
   bool is_charging() const;
+  bool is_effectivly_charging() const;
   std::string get_status_str() const;
 };
 

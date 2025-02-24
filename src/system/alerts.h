@@ -2,10 +2,11 @@
 #define ALERTS_H
 
 #include <cstdint>
-#include "src/system/utils/print.h"
+
+namespace alerts {
 
 // 31 errors max
-enum Alerts
+enum Type : uint32_t
 {
   // 0 means no errors
 
@@ -28,61 +29,17 @@ enum Alerts
   OTG_FAILED = 1 << 10,   // OTG activation failed
 };
 
-inline const char* AlertsToText(const Alerts alert)
-{
-  switch (alert)
-  {
-    case MAIN_LOOP_FREEZE:
-      return "MAIN_LOOP_FREEZE";
-    case BATTERY_READINGS_INCOHERENT:
-      return "BATTERY_READING_INCOHERENT";
-    case BATTERY_CRITICAL:
-      return "BATTERY_CRITICAL";
-    case BATTERY_LOW:
-      return "BATTERY_LOW";
-    case LONG_LOOP_UPDATE:
-      return "LONG_LOOP_UPDATE";
-    case TEMP_TOO_HIGH:
-      return "TEMP_TOO_HIGH";
-    case TEMP_CRITICAL:
-      return "TEMP_CRITICAL";
-    case BLUETOOTH_ADVERT:
-      return "BLUETOOTH_ADVERT";
-    case HARDWARE_ALERT:
-      return "HARDWARE_ALERT";
-    case OTG_ACTIVATED:
-      return "OTG_ACTIVATED";
-    case OTG_FAILED:
-      return "OTG_FAILED";
-    default:
-      return "UNSUPPORTED TYPE";
-  }
-}
-
-class Alert
+class AlertManager_t
 {
 public:
-  void raise_alert(const Alerts alert)
-  {
-    if (is_raised(alert))
-      return;
+  void raise(const Type type);
 
-    lampda_print("ALERT raised: %s", AlertsToText(alert));
-    _current |= alert;
-  }
-
-  void clear_alert(const Alerts alert)
-  {
-    if (not is_raised(alert))
-      return;
-    lampda_print("ALERT cleared: %s", AlertsToText(alert));
-    _current ^= alert;
-  }
+  void clear(const Type type);
 
   /**
    * \brief Return true if an alert is raised
    */
-  bool is_raised(const Alerts alert) const { return (_current & alert) != 0x00; }
+  bool is_raised(const Type type) const { return (_current & type) != 0x00; }
 
   /**
    * \brief Return true if no alerts are raised
@@ -93,6 +50,15 @@ private:
   uint32_t _current;
 };
 
-extern Alert AlertManager;
+extern AlertManager_t manager;
+
+// handle the behavior for all alerts
+void handle_all(const bool shouldIgnoreAlerts);
+// show all the raised alerts
+void show_all();
+// return true if an alert requested an immediate shutdown
+bool is_request_shutdown();
+
+} // namespace alerts
 
 #endif

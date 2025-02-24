@@ -272,10 +272,10 @@ uint32_t get_color_from_palette(const uint8_t index, const palette_t& palette, c
 
 uint32_t get_color_from_palette(const uint16_t index, const palette_t& palette, const uint8_t brightness)
 {
-  const float ramp = (index / (float)UINT16_MAX) * 16;
+  const float ramp = (index / (float)UINT16_MAX) * PALETTE_SIZE;
 
-  const uint8_t renormIndex = floor(ramp);     // convert to [0; 15] (divide by 16)
-  const float blendIndex = ramp - renormIndex; // get the fractional part
+  const uint8_t renormIndex = min(floor(ramp), PALETTE_SIZE - 1);        // convert to [0; 15] (divide by 16)
+  const float blendIndex = lmpd_constrain(ramp - renormIndex, 0.0, 1.0); // get the fractional part
 
   const uint32_t entry = palette[renormIndex];
 
@@ -291,7 +291,7 @@ uint32_t get_color_from_palette(const uint16_t index, const palette_t& palette, 
   if (blendIndex > 0)
   {
     union COLOR nextColor;
-    if (renormIndex == 15)
+    if (renormIndex == PALETTE_SIZE - 1)
     {
       nextColor.color = palette[0];
     }

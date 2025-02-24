@@ -1,6 +1,7 @@
 #include "src/system/platform/registers.h"
 
 #include "simulator/include/hardware_influencer.h"
+#include <cstdint>
 #include <vector>
 
 #define PLATFORM_REGISTER_CPP
@@ -11,6 +12,7 @@ std::vector<taskfunc_t> threadPool;
 namespace mock_registers {
 bool isDeepSleep = false;
 float cpuTemperature;
+uint32_t addedAlgoDelay;
 
 bool shouldStopThreads = false;
 

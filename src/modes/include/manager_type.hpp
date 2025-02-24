@@ -435,7 +435,9 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void write_parameters(auto& ctx)
   {
+    // this scope is the only one where parameters will be kept
     ctx.template storageSaveOnly<Store::lastActive>(ctx.modeManager.activeIndex);
+    ctx.template storageSaveOnly<Store::favoriteMode>(ctx.modeManager.state.currentFavorite);
 
     foreach_group<not hasCustomRamp>(ctx, [](auto group) {
       if constexpr (group.hasCustomRamp)

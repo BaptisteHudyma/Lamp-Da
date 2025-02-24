@@ -8,6 +8,7 @@
 #include "src/system/physical/battery.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
+#include "src/system/utils/print.h"
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
@@ -58,7 +59,7 @@ bool should_charge()
   }
 
   // temperature too high, stop charge
-  if (AlertManager.is_raised(Alerts::TEMP_CRITICAL))
+  if (alerts::manager.is_raised(alerts::Type::TEMP_CRITICAL))
   {
     return false;
   }
@@ -86,7 +87,8 @@ bool should_charge()
     return false;
   }
 
-  const uint16_t batteryPercent = battery::get_level(battery::get_level_percent(battery.voltage_mV));
+  // get the estimation of the level, between the safe bounds
+  const uint16_t batteryPercent = battery::get_level_safe(battery.voltage_mV);
 
   // battery charge is latched on
   if (isBatteryFullLatched_s)
@@ -110,8 +112,8 @@ bool should_charge()
     {
       batteryFullDeglitchTime = time;
     }
-    // the battery needs to stay == 100 for 5 seconds
-    else if (time - batteryFullDeglitchTime > 5000)
+    // the battery needs to stay == 100 for 20 seconds
+    else if (time - batteryFullDeglitchTime > 20 * 1000)
     {
       batteryFullDeglitchTime = 0;
       // charge done, latch battery level
@@ -321,14 +323,14 @@ void loop()
   // fast fail in case of errors
   if (is_status_error())
   {
-    AlertManager.raise_alert(Alerts::HARDWARE_ALERT);
+    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
     BQ25703A::enable_charge(false);
     // do NOT run charge functions
     return;
   }
   else
   {
-    AlertManager.clear_alert(Alerts::HARDWARE_ALERT);
+    alerts::manager.clear(alerts::Type::HARDWARE_ALERT);
   }
 
   // if needed, enable charge
@@ -371,6 +373,8 @@ bool Charger_t::is_charging() const
   return status == ChargerStatus_t::POWER_DETECTED or status == ChargerStatus_t::SLOW_CHARGING or
          status == ChargerStatus_t::CHARGING;
 }
+
+bool Charger_t::is_effectivly_charging() const { return status == ChargerStatus_t::CHARGING; }
 
 std::string Charger_t::get_status_str() const
 {

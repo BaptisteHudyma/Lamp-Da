@@ -23,6 +23,7 @@
 #include "src/system/utils/state_machine.h"
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/print.h"
+#include "src/system/utils/brightness_handle.h"
 
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/time.h"
@@ -93,9 +94,6 @@ static bool isShutingDown_s = false;
 // return true if vbus is high
 bool is_charger_powered() { return charger::is_vbus_powered(); }
 
-// temporary upper bound for the brightness
-static brightness_t MaxBrightnessLimit = maxBrightness;
-
 // hold the last time startup_sequence has been called
 uint32_t lastStartupSequence = 0;
 
@@ -105,35 +103,8 @@ bool isButtonUsermodeEnabled = false;
 // hold a boolean to avoid advertising several times in a row
 bool isBluetoothAdvertising = false;
 
-// hold the current level of brightness out of the raise/lower animation
-brightness_t BRIGHTNESS = 200; // default start value
-brightness_t currentBrightness = 200;
-brightness_t get_brightness() { return BRIGHTNESS; }
-
 // timestamp of the system wake up
 static uint32_t turnOnTime = time_ms();
-
-void update_brightness(const brightness_t newBrightness,
-                       const bool shouldUpdateCurrentBrightness,
-                       const bool isInitialRead)
-{
-  // set to the user max limit (limit can be changed by system)
-  const brightness_t trueNewBrightness = min(newBrightness, MaxBrightnessLimit);
-
-  if (shouldUpdateCurrentBrightness)
-    currentBrightness = trueNewBrightness;
-
-  if (BRIGHTNESS != trueNewBrightness)
-  {
-    BRIGHTNESS = trueNewBrightness;
-
-    // do not call user functions when reading parameters
-    if (!isInitialRead)
-    {
-      user::brightness_update(trueNewBrightness);
-    }
-  }
-}
 
 void read_parameters()
 {
@@ -143,7 +114,8 @@ void read_parameters()
   uint32_t brightness = 0;
   if (fileSystem::get_value(brightnessKey, brightness))
   {
-    update_brightness(brightness, true, true);
+    brightness::update_brightness(brightness, true);
+    brightness::update_previous_brightness();
   }
 
   user::read_parameters();
@@ -154,7 +126,7 @@ void write_parameters()
   fileSystem::clear();
 
   fileSystem::set_value(isFirstBootKey, 0);
-  fileSystem::set_value(brightnessKey, BRIGHTNESS);
+  fileSystem::set_value(brightnessKey, brightness::get_brightness());
 
   user::write_parameters();
 
@@ -375,25 +347,24 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
     case 1:
       if (isEndOfHoldEvent)
       {
-        // this action is duplicated, but it's rare so no consequences
-        update_brightness(BRIGHTNESS, true);
+        brightness::update_previous_brightness();
       }
       else
       {
+        const brightness_t prevBrightness = brightness::get_previous_brightness();
         // no updates, already at max brightness
-        if (maxBrightness - currentBrightness == 0)
+        if (maxBrightness - prevBrightness == 0)
           break;
-        const float percentOfTimeToGoUp = (maxBrightness - currentBrightness) / float(maxBrightness);
+        const float percentOfTimeToGoUp = (maxBrightness - prevBrightness) / float(maxBrightness);
         const uint32_t brightnessRampMaxDuration = BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp;
 
         const brightness_t newBrightness =
                 lmpd_map<uint32_t, brightness_t>(min(holdDuration, brightnessRampMaxDuration),
                                                  0,
                                                  brightnessRampMaxDuration,
-                                                 currentBrightness,
+                                                 prevBrightness,
                                                  maxBrightness);
-
-        update_brightness(newBrightness);
+        brightness::update_brightness(newBrightness);
       }
       break;
 
@@ -401,21 +372,21 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
     case 2:
       if (isEndOfHoldEvent)
       {
-        // this action is duplicated, but it's rare so no consequences
-        update_brightness(BRIGHTNESS, true);
+        brightness::update_previous_brightness();
       }
       else
       {
+        const brightness_t prevBrightness = brightness::get_previous_brightness();
         // no updates, already at min brightness
-        if (currentBrightness == 0)
+        if (prevBrightness == 0)
           break;
 
-        const double percentOfTimeToGoDown = currentBrightness / float(maxBrightness);
+        const double percentOfTimeToGoDown = prevBrightness / float(maxBrightness);
         const uint32_t brightnessRampMaxDuration = BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown;
 
         const brightness_t newBrightness = lmpd_map<uint32_t, brightness_t>(
-                min(holdDuration, brightnessRampMaxDuration), 0, brightnessRampMaxDuration, currentBrightness, 0);
-        update_brightness(newBrightness);
+                min(holdDuration, brightnessRampMaxDuration), 0, brightnessRampMaxDuration, prevBrightness, 0);
+        brightness::update_brightness(newBrightness);
       }
       break;
 
@@ -423,173 +394,6 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
     default:
       user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
       break;
-  }
-}
-
-void set_cpu_temperarure_alerts()
-{
-  // temperature alerts
-  const float procTemp = read_CPU_temperature_degreesC();
-  if (procTemp >= criticalSystemTemp_c)
-  {
-    AlertManager.raise_alert(TEMP_CRITICAL);
-  }
-  else if (procTemp >= maxSystemTemp_c)
-  {
-    AlertManager.raise_alert(TEMP_TOO_HIGH);
-  }
-  else
-  {
-    AlertManager.clear_alert(TEMP_TOO_HIGH);
-    AlertManager.clear_alert(TEMP_CRITICAL);
-  }
-}
-
-void set_battery_alerts()
-{
-  const auto& chargerState = charger::get_state();
-  if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)
-  {
-    // TODO: alert that the battery is missing
-  }
-  else if (chargerState.is_charging())
-  {
-    // clear alerts when the device is charging
-    AlertManager.clear_alert(Alerts::BATTERY_LOW);
-    AlertManager.clear_alert(Alerts::BATTERY_CRITICAL);
-  }
-  else
-  {
-    // no battery alert when charger is on
-    battery::raise_battery_alert();
-  }
-}
-
-void handle_alerts()
-{
-  static uint32_t criticalbatteryRaisedTime = 0;
-
-  // do not display alerts for the first 500 ms
-  const bool shouldIgnoreAlerts = (time_ms() - turnOnTime) < 500;
-
-  if (shouldIgnoreAlerts or AlertManager.is_clear())
-  {
-    MaxBrightnessLimit = maxBrightness; // no alerts: reset the max brightness
-    criticalbatteryRaisedTime = 0;
-
-    // red to green
-    const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
-                                                                        utils::ColorSpace::GREEN.get_rgb().color,
-                                                                        battery::get_raw_battery_level() / 10000.0));
-
-    // display battery level
-    const auto& chargerStatus = charger::get_state();
-    if (chargerStatus.is_charging())
-    {
-      // power detected with no charge or slow charging raises a special animation
-      if (chargerStatus.status == charger::Charger_t::ChargerStatus_t::POWER_DETECTED or
-          chargerStatus.status == charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
-      {
-        // fast blinking
-        // TODO: find a better way to tell user that the chargeur is bad
-        indicator::blink(500, 500, buttonColor);
-      }
-      // standard charge mode
-      else
-      {
-        indicator::breeze(2000, 1000, buttonColor);
-      }
-    }
-    else
-    {
-      // normal mode
-      indicator::set_color(buttonColor);
-    }
-  }
-  else
-  {
-    if (AlertManager.is_raised(Alerts::TEMP_CRITICAL))
-    {
-      // fast shutdown when temperature reaches critical levels
-      mainMachine.set_state(BehaviorStates::SHUTDOWN);
-    }
-    else if (AlertManager.is_raised(Alerts::HARDWARE_ALERT))
-    {
-      indicator::blink(100, 50, utils::ColorSpace::TOMATO);
-    }
-    else if (AlertManager.is_raised(Alerts::TEMP_TOO_HIGH))
-    {
-      // proc temperature is too high, blink orange
-      indicator::blink(300, 300, utils::ColorSpace::ORANGE);
-
-      // limit brightness to half the max value
-      constexpr brightness_t clampedBrightness = 0.5 * maxBrightness;
-      MaxBrightnessLimit = clampedBrightness;
-      update_brightness(min(clampedBrightness, BRIGHTNESS), true);
-    }
-    else if (AlertManager.is_raised(Alerts::BATTERY_READINGS_INCOHERENT))
-    {
-      // incohrent battery readings
-      indicator::blink(100, 100, utils::ColorSpace::GREEN);
-    }
-    else if (AlertManager.is_raised(Alerts::BATTERY_CRITICAL))
-    {
-      // critical battery alert: shutdown after 2 seconds
-      if (criticalbatteryRaisedTime == 0)
-        criticalbatteryRaisedTime = time_ms();
-      else if (time_ms() - criticalbatteryRaisedTime > 2000)
-      {
-        // shutdown when battery is critical
-        set_power_off();
-      }
-      // blink if no shutdown
-      indicator::blink(100, 100, utils::ColorSpace::RED);
-    }
-    else if (AlertManager.is_raised(Alerts::BATTERY_LOW))
-    {
-      criticalbatteryRaisedTime = 0;
-      // fast blink red
-      indicator::blink(300, 300, utils::ColorSpace::RED);
-
-      // limit brightness to quarter of the max value
-      constexpr brightness_t clampedBrightness = 0.25 * maxBrightness;
-      MaxBrightnessLimit = clampedBrightness;
-
-      // save some battery
-      bluetooth::disable_bluetooth();
-      update_brightness(min(clampedBrightness, BRIGHTNESS), true);
-    }
-    else if (AlertManager.is_raised(Alerts::HARDWARE_ALERT))
-    {
-      indicator::blink(100, 50, utils::ColorSpace::TOMATO);
-    }
-    else if (AlertManager.is_raised(Alerts::LONG_LOOP_UPDATE))
-    {
-      // fast blink red
-      indicator::blink(400, 400, utils::ColorSpace::FUSHIA);
-    }
-    else if (AlertManager.is_raised(Alerts::BLUETOOTH_ADVERT))
-    {
-      indicator::breeze(1000, 500, utils::ColorSpace::BLUE);
-    }
-    else if (AlertManager.is_raised(Alerts::OTG_FAILED))
-    {
-      indicator::blink(200, 200, utils::ColorSpace::FUSHIA);
-    }
-    else if (AlertManager.is_raised(Alerts::OTG_ACTIVATED))
-    {
-      // red to green
-      const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
-                                                                          utils::ColorSpace::GREEN.get_rgb().color,
-                                                                          battery::get_raw_battery_level() / 10000.0));
-
-      indicator::breeze(500, 500, buttonColor);
-    }
-    else
-    {
-      // unhandled case (white blink)
-      indicator::blink(300, 300, utils::ColorSpace::WHITE);
-    }
   }
 }
 
@@ -722,9 +526,13 @@ void handle_output_light_state()
     // user loop call
     user::loop();
 
-    // set alerts if needed
-    set_cpu_temperarure_alerts();
-    set_battery_alerts();
+#if 0 // TODO
+    const auto& chargerState = charger::get_state();
+    if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)
+    {
+      // TODO: alert that the battery is missing
+    }
+#endif
 
 #ifdef USE_BLUETOOTH
     bluetooth::parse_messages();
@@ -839,7 +647,16 @@ void set_woke_up_from_vbus(const bool wokeUp) { wokeUpFromVbus_s = wokeUp; }
 void loop()
 {
   state_machine_behavior();
-  handle_alerts();
+
+  // do not display alerts for the first 500 ms
+  const bool shouldIgnoreAlerts = (time_ms() - turnOnTime) < 500;
+  alerts::handle_all(shouldIgnoreAlerts);
+  // alert requested an emergency shutdown, do it
+  if (alerts::is_request_shutdown())
+  {
+    lampda_print("emergency shutdown from alert");
+    handle_shutdown_state();
+  }
 }
 
 bool is_shuting_down() { return isShutingDown_s; }
