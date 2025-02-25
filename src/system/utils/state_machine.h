@@ -9,7 +9,7 @@
 template<typename State> class StateMachine
 {
 public:
-  StateMachine(const State s) : current(s), lastState(s), afterTimeoutState(s), timeout_ms(0) {}
+  StateMachine(const State s) : current(s), lastState(s), timeout_ms(0), afterTimeoutState(s) {}
 
   /**
    * \brief timeout check, and such, call it often
@@ -47,6 +47,7 @@ public:
     // reset the timeout time
     isTimeoutSet = false;
     timeout_ms = 0;
+    stateSetTime = time_ms();
 
     didStateJustChanged = true;
     return true;
@@ -107,13 +108,18 @@ public:
     }
   }
 
+  // return the time at which this state was raised
+  uint32_t get_state_raised_time() const { return stateSetTime; }
+
 private:
   /// The current state the algorithm is in
   State current;
   /// keep a reference to the last state
   State lastState;
 
-  /// prevent some errors with clock value wrap
+  // The time this state was raised
+  uint32_t stateSetTime;
+  // prevent some errors with clock value wrap
   bool isTimeoutSet;
   /// the time this state should timeout and go to /ref afterTimeoutState
   uint32_t timeout_ms;

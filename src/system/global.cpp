@@ -1,3 +1,4 @@
+#include "power/power_handler.h"
 #include "src/compile.h"
 
 #include "src/system/alerts.h"
@@ -11,6 +12,8 @@
 #include "src/system/physical/fileSystem.h"
 #include "src/system/physical/led_power.h"
 #include "src/system/physical/sound.h"
+
+#include "src/system/power/power_handler.h"
 
 #include "src/system/utils/serial.h"
 #include "src/system/utils/utils.h"
@@ -34,6 +37,7 @@ void charging_thread()
 
   // run the charger loop (all the time)
   charger::loop();
+  power::loop();
   delay_ms(2);
 }
 
@@ -107,6 +111,7 @@ void main_setup()
 
   // setup charger
   charger::setup();
+  power::init();
 
   // start the file system
   fileSystem::setup();

@@ -1017,9 +1017,9 @@ static int pd_send_request_msg(int port, int always_send_request)
     if (pd[port].prev_request_mv == supply_voltage)
       return EC_SUCCESS;
 #ifdef CONFIG_CHARGE_MANAGER
-      /* Limit current to PD_MIN_MA during transition */
-      // else
-      //	charge_manager_force_ceil(port, PD_MIN_MA);
+    /* Limit current to PD_MIN_MA during transition */
+    // else
+    //	charge_manager_force_ceil(port, PD_MIN_MA);
 #endif
   }
 
@@ -1077,20 +1077,20 @@ static void pd_update_pdo_flags(int port, uint32_t pdo)
     pd[port].flags &= ~PD_FLAGS_PARTNER_DR_DATA;
 
 #ifdef CONFIG_CHARGE_MANAGER
-    /*
-     * Treat device as a dedicated charger (meaning we should charge
-     * from it) if it does not support power swap, or if it is externally
-     * powered, or if we are a sink and the device identity matches a
-     * charging white-list.
-     */
-    /*
-    if (!(pd[port].flags & PD_FLAGS_PARTNER_DR_POWER) ||
-        (pd[port].flags & PD_FLAGS_PARTNER_EXTPOWER) ||
-        charge_whitelisted)
-        charge_manager_update_dualrole(port, CAP_DEDICATED);
-    else
-        charge_manager_update_dualrole(port, CAP_DUALROLE);
-    */
+  /*
+   * Treat device as a dedicated charger (meaning we should charge
+   * from it) if it does not support power swap, or if it is externally
+   * powered, or if we are a sink and the device identity matches a
+   * charging white-list.
+   */
+  /*
+  if (!(pd[port].flags & PD_FLAGS_PARTNER_DR_POWER) ||
+      (pd[port].flags & PD_FLAGS_PARTNER_EXTPOWER) ||
+      charge_whitelisted)
+      charge_manager_update_dualrole(port, CAP_DEDICATED);
+  else
+      charge_manager_update_dualrole(port, CAP_DUALROLE);
+  */
 #endif
 }
 
