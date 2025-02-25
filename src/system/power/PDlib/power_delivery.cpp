@@ -1,8 +1,8 @@
-#include "power_source.h"
+#include "power_delivery.h"
 
-#include "PDlib/drivers/usb_pd_driver.h"
-#include "PDlib/drivers/tcpm_driver.h"
-#include "PDlib/usb_pd.h"
+#include "drivers/usb_pd_driver.h"
+#include "drivers/tcpm_driver.h"
+#include "usb_pd.h"
 
 #include "src/system/utils/print.h"
 
@@ -19,7 +19,7 @@ const struct tcpc_config_t tcpc_config[CONFIG_USB_PD_PORT_COUNT] = {
 
 static bool canUseSourcePower_s = false;
 
-namespace powerSource {
+namespace powerDelivery {
 
 // set to true when a power source is detected
 inline static bool isPowerSourceDetected_s = false;
@@ -186,10 +186,15 @@ UsbPDData data;
  *
  */
 
+bool isSetup = false;
 bool setup()
 {
   // 0 is success
-  const bool initSucceeded = (tcpm_init(devicePort) == 0);
+  if (i2c_check_existence(devicePort, fusb302_I2C_SLAVE_ADDR) != 0)
+  {
+    return 0;
+  }
+  bool initSucceeded = (tcpm_init(devicePort) == 0);
   delay_ms(50);
   pd_init(devicePort);
   delay_ms(50);
@@ -198,12 +203,19 @@ bool setup()
   chargerPin.set_pin_mode(DigitalPin::Mode::kInputPullUp);
   chargerPin.attach_callback(ic_interrupt, DigitalPin::Interrupt::kChange);
 
+  isSetup = initSucceeded;
   return initSucceeded;
 }
 
 int reset = 0;
 void loop()
 {
+  // no setup, skip loop
+  if (!isSetup)
+  {
+    return;
+  }
+
   //  handle alerts
   if (interruptSet)
   {
@@ -318,4 +330,4 @@ OTGParameters get_otg_parameters()
   return tmp;
 }
 
-} // namespace powerSource
+} // namespace powerDelivery

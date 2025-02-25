@@ -52,18 +52,17 @@ The electrical circuit and build files can be found in the **electrical** folder
 
 The PCB can be ordered directly assembled from JLC PCB, for a total cost of around 270$ for the minimal 5 pieces command (price drops with a more commands, until around 11$/circuit).
 
-The circuit is 4 cells li-ion USB C charger, that is also programmable via the same USB port.
-It features a constant current strip that can be as high as continuous 2.3A, controlled by PWM.
+The circuit is 3 cells li-ion USB C charger, that is also programmable via the same USB port.
 
 The circuit features:
-- USB-C 4S li-ion charger, based on BQ25703A ic.
+- USB-C 3S li-ion charger, based on BQ25713 ic.
 - USB short circuit and EC protection, based on TPD8S300 ic.
 - USB-C power negotiation, base on FUSB302B ic.
 - Constant current led driver, that can maintain stable up to 2.3A, based on LM3409HV ic.
-- 9 programmable IO pins (4 of which can be analog inputs, 4 can be pwm outputs). Based on nRF52840 ic.
+- 8 programmable IO pins (4 of which can be analog inputs, 4 can be pwm outputs). Based on nRF52840 ic.
 - MEMS Microphone, placed away from parasitic ringing components.
-- LSM6DS3TR IMU, placed on the exact center so the axis alignment is easy.
-- Bluetooth 5.1 low power, with correct 5/10m range.
+- LSM6DS3TR IMU
+- Bluetooth 5.1 low power, with 5/10m range.
 
 - Multiple protection features (ESD spikes protection, USB voltage snubber, USB voltage limitation, ...)
 

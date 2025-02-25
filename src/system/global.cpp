@@ -3,7 +3,6 @@
 
 #include "src/system/alerts.h"
 #include "src/system/behavior.h"
-#include "src/system/charger/charger.h"
 
 #include "src/system/physical/battery.h"
 #include "src/system/physical/button.h"
@@ -13,6 +12,7 @@
 #include "src/system/physical/led_power.h"
 #include "src/system/physical/sound.h"
 
+#include "src/system/power/charger.h"
 #include "src/system/power/power_handler.h"
 
 #include "src/system/utils/serial.h"
@@ -34,9 +34,6 @@ void charging_thread()
 {
   if (behavior::is_shuting_down())
     return;
-
-  // run the charger loop (all the time)
-  charger::loop();
   power::loop();
   delay_ms(2);
 }
@@ -109,8 +106,7 @@ void main_setup()
   // first step !
   setup_adc(ADC_RES_EXP);
 
-  // setup charger
-  charger::setup();
+  // setup power components
   power::init();
 
   // start the file system

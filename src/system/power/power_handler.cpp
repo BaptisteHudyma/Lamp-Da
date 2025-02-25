@@ -3,6 +3,9 @@
 #include "src/system/utils/print.h"
 #include "src/system/utils/state_machine.h"
 
+#include "PDlib/power_delivery.h"
+#include "charger.h"
+
 namespace power {
 
 static constexpr uint32_t clearPowerRailFailureDelay_ms = 1000;
@@ -98,7 +101,10 @@ void handle_shutdown()
   // lock vbus gate
   // lock output gate
 
-  // set high impedence for power ic
+  powerDelivery::shutdown();
+
+  // shutdown charger component
+  charger::shutdown();
 }
 
 void handle_error_state()
@@ -202,7 +208,7 @@ bool go_to_otg_mode()
 bool go_to_shutdown()
 {
   // no need to check if we can switch case in this case
-  __private::switch_state(PowerStates::SHUTDOWN);
+  __private::powerMachine.set_state(PowerStates::SHUTDOWN);
   return true;
 }
 
@@ -211,7 +217,11 @@ bool set_output_voltage_mv(const uint32_t) { return false; }
 bool set_output_max_current_mA(const uint32_t) { return false; }
 
 // charge mode
-bool enable_charge(const bool) { return false; }
+bool enable_charge(const bool enable)
+{
+  charger::set_enable_charge(enable);
+  return true;
+}
 
 // otg mode
 bool set_otg_voltage_mv(const uint32_t) { return false; }
@@ -219,9 +229,16 @@ bool set_otg_max_current_mA(const uint32_t) { return false; }
 
 void init()
 {
-  // TODO: enable and set the power component parameters
+  const bool success = powerDelivery::setup();
+  if (!success)
+  {
+    __private::switch_state(PowerStates::ERROR);
+    return;
+  }
 
   __private::switch_state(PowerStates::IDLE);
+
+  charger::setup();
 }
 
 void loop()
@@ -229,7 +246,11 @@ void loop()
   // run power module state machine
   __private::state_machine_behavior();
 
-  // run the pd negociation
+  // run pd negociation loop
+  powerDelivery::loop();
+
+  // run the charger loop (all the time)
+  charger::loop();
 }
 
 } // namespace power

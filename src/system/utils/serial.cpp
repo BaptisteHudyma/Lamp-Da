@@ -1,6 +1,6 @@
 #include "serial.h"
 
-#include "src/system/charger/charger.h"
+#include "src/system/power/charger.h"
 
 #include "src/system/physical/battery.h"
 #include "src/system/physical/fileSystem.h"
@@ -32,7 +32,6 @@ void handleCommand(const std::string& command)
                 "bl: battery levels\n"
                 "cinfo: charger infos\n"
                 "ADC: values from the charger ADC\n"
-                "cen: enable charger. Debug only\n"
                 "alerts: show all raised alerts\n"
                 "format-fs: format the whole file system (dangerous)\n"
                 "-----------------");
@@ -89,16 +88,6 @@ void handleCommand(const std::string& command)
 
     case utils::hash("alerts"):
       alerts::show_all();
-      break;
-
-    case utils::hash("cen"):
-      lampda_print("Enabling the charging process");
-      charger::set_enable_charge(true);
-      break;
-
-    case utils::hash("cdis"):
-      lampda_print("Disabling the charging process");
-      charger::set_enable_charge(false);
       break;
 
     case utils::hash("ADC"):

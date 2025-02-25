@@ -6,7 +6,7 @@ The board can only be used as a data URP (USB slave, if you dont speak USB "nome
 By default it should be used as a sink, but do whatever.
 
 This lib handles power profile selection (as SINK) or power profile selection handling (as source), and power role swap.
-The power role swap allows the system to go from sink to source, if requested by the plugged in device. 
+The power role swap allows the system to go from sink to source, if requested by the plugged in device.
 
 Here is an indicative map if you really really need to get going, or maybe just curious:
 - the **drivers** folder contains the drivers for certain PD negociation chips. This project uses the FUSB302B for now, but this could change in the future.

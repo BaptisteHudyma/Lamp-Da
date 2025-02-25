@@ -10,7 +10,7 @@ namespace charger {
 void setup();
 // call at every loop runs
 void loop();
-// call when the system will shutdown
+
 void shutdown();
 
 // debug feature: disable the charging process
@@ -66,6 +66,7 @@ struct Charger_t
 };
 
 bool is_vbus_powered();
+bool can_use_vbus_power();
 
 // the microcontroler is detecting a vbus input voltage
 bool is_vbus_signal_detected();

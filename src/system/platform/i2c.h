@@ -33,6 +33,11 @@ extern "C" {
   extern void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout);
 
   /**
+   * \brief Return 0 if the address exists on the I2C line
+   */
+  extern int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr);
+
+  /**
    * \brief Write data to the two wire interface
    * \param[in] i2cIndex The index of the i2c interface (from 0 to WIRE_INTERFACES_COUNT - 1)
    * \param[in] deviceAddr the address of the target device
