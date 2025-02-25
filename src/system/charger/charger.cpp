@@ -280,7 +280,7 @@ void setup()
 
   // start with default parameters
   const bool isChargerEnabled =
-          BQ25703A::enable(batteryMinVoltageSafe_mV, batteryMaxVoltage_mV, 4000, batteryMaxChargeCurrent_mA, false);
+          BQ25703A::enable(batteryMinVoltageSafe_mV, batteryMaxVoltage_mV, batteryMaxChargeCurrent_mA, false);
   if (not isChargerEnabled)
   {
     const auto chargerStatus = BQ25703A::get_status();

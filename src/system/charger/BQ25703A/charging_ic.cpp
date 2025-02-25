@@ -429,7 +429,6 @@ void program_input_current_limit()
 
 bool enable(const uint16_t minSystemVoltage_mV,
             const uint16_t maxBatteryVoltage_mV,
-            const uint16_t minInputVoltage_mV,
             const uint16_t maxChargingCurrent_mA,
             const bool forceReset)
 {
@@ -502,7 +501,6 @@ bool enable(const uint16_t minSystemVoltage_mV,
   // set the nominal voltage values
   const auto maxBatteryVoltage_mV_read = BQ25703Areg.maxChargeVoltage.set(maxBatteryVoltage_mV);
   const auto minSystemVoltage_mV_read = BQ25703Areg.minSystemVoltage.set(minSystemVoltage_mV);
-  const auto minInputVoltage_mV_read = BQ25703Areg.inputVoltage.set(minInputVoltage_mV);
 
   // a write failed at some point
   if (chargerIc.isFlagRaised)
@@ -521,14 +519,6 @@ bool enable(const uint16_t minSystemVoltage_mV,
     status_s = Status_t::ERROR;
     return false;
   }
-  /*
-  // there is a problem with this register on all the IC I tester
-  if (BQ25703Areg.inputVoltage.get() != minInputVoltage_mV_read) {
-    status_s = Status_t::ERROR;
-    return false;
-  }
-  */
-
   // initial status update
   powerLimits_s.maxChargingCurrent_mA = maxChargingCurrent_mA;
   run_status_update();

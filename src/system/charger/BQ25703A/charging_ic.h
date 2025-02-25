@@ -36,7 +36,6 @@ enum ChargeStatus_t
 // call on program start
 bool enable(const uint16_t minSystemVoltage_mV,
             const uint16_t maxBatteryVoltage_mV,
-            const uint16_t minInputVoltage_mV,
             const uint16_t maxChargingCurrent_mA,
             const bool forceReset = false);
 

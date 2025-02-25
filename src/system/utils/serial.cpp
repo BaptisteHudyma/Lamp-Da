@@ -33,7 +33,7 @@ void handleCommand(const std::string& command)
                 "cinfo: charger infos\n"
                 "ADC: values from the charger ADC\n"
                 "cen: enable charger. Debug only\n"
-                "alerts: show all raised alerts"
+                "alerts: show all raised alerts\n"
                 "format-fs: format the whole file system (dangerous)\n"
                 "-----------------");
         break;

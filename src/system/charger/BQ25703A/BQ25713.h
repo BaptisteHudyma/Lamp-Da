@@ -69,26 +69,6 @@ public:
   // Initialise the variable here, but it will be written from the main program
   static const byte BQ25713addr = chargeI2cAddress; // I2C address
 
-  template<typename T> static bool readReg(T* dataParam)
-  {
-    // This is a function for reading data words.
-    // The number of bytes that make up a word is either 1 or 2.
-
-    // Create an array to hold the returned data
-    byte valBytes[2];
-    // Function to handle the I2C comms.
-    if (readDataReg(dataParam->addr, valBytes, 2))
-    {
-      // Cycle through array of data
-      dataParam->val0 = valBytes[0];
-      dataParam->val1 = valBytes[1];
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
   template<typename T> bool readRegEx(T& dataParam)
   {
     // This is a function for reading data words.
@@ -104,10 +84,7 @@ public:
       dataParam.val1 = (byte)valBytes[1];
       return true;
     }
-    else
-    {
-      return false;
-    }
+    return false;
   }
   // used by external functions to write registers
   template<typename T> static bool writeRegEx(T dataParam)
@@ -803,23 +780,25 @@ public:
     struct ManufacturerIDt
     { // read only
       // Manufacturer ID
-      byte val0, val1;
       uint8_t addr = MANUFACTURER_ID_ADDR;
       byte get_manufacturerID()
       {
-        readReg(this);
-        return val0;
+        byte valBytes[1];
+        // Function to handle the I2C comms.
+        readDataReg(addr, valBytes, 1);
+        return (byte)valBytes[0];
       }
     } manufacturerID;
     struct DeviceID
     { // read only
       // Device ID
-      byte val0, val1;
       uint8_t addr = DEVICE_ID_ADDR;
       byte get_deviceID()
       {
-        readReg(this);
-        return val0;
+        byte valBytes[1];
+        // Function to handle the I2C comms.
+        readDataReg(addr, valBytes, 1);
+        return (byte)valBytes[0];
       }
     } deviceID;
   };
