@@ -1,8 +1,8 @@
-#ifndef POWER_SOURCE_H
-#define POWER_SOURCE_H
+#ifndef PD_POWER_DELIVERY_H
+#define PD_POWER_DELIVERY_H
 
 #include <cstdint>
-namespace powerSource {
+namespace powerDelivery {
 
 // call once at program start
 bool setup();
@@ -33,6 +33,6 @@ struct OTGParameters
 };
 OTGParameters get_otg_parameters();
 
-} // namespace powerSource
+} // namespace powerDelivery
 
 #endif

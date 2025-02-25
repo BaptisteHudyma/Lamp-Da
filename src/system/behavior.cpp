@@ -7,9 +7,8 @@
 #include "src/system/ext/noise.h"
 
 #include "src/system/alerts.h"
-#include "src/system/charger/charger.h"
-#include "src/system/charger/power_source.h"
 
+#include "src/system/power/charger.h"
 #include "src/system/power/power_handler.h"
 
 #include "src/system/physical/battery.h"
@@ -143,7 +142,6 @@ bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::
  */
 void true_power_off()
 {
-  charger::shutdown();
   DigitalPin(DigitalPin::GPIO::usb33Power).set_high(false);
 
   // wait until vbus is off (TODO: remove in newer versions of the hardware)
@@ -212,7 +210,6 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
 #ifdef DEBUG_MODE
         // disable charger and wait 5s to be killed by watchdog
         indicator::set_color(utils::ColorSpace::PINK);
-        charger::disable_charge();
         power::enable_charge(false);
         delay_ms(6000);
 #endif
@@ -408,7 +405,6 @@ void handle_error_state()
 void handle_start_logic_state()
 {
   // preven early charging
-  charger::set_enable_charge(false);
   power::enable_charge(false);
 
   if (did_woke_up_from_power())
@@ -439,7 +435,6 @@ void handle_charger_operation_state()
   if (is_system_should_be_powered())
   {
     // forbid charging
-    charger::set_enable_charge(false);
     power::enable_charge(false);
     yield_this_thread();
 
@@ -448,14 +443,13 @@ void handle_charger_operation_state()
     return;
   }
   // wait a bit after going to charger mode, maybe vbus is bouncing around
-  const bool vbusDebounced = powerSource::can_use_power() or (time_ms() - preChargeCalled) > 5000;
+  const bool vbusDebounced = charger::can_use_vbus_power() or (time_ms() - preChargeCalled) > 5000;
   if (vbusDebounced)
   {
     // no power, shutdown everything
     if (not is_charger_powered())
     {
       // forbid charging
-      charger::set_enable_charge(false);
       power::enable_charge(false);
       yield_this_thread();
 
@@ -466,7 +460,6 @@ void handle_charger_operation_state()
     else
     {
       // enable charge after the debounce
-      charger::set_enable_charge(true);
       power::enable_charge(true);
     }
   }
@@ -580,7 +573,7 @@ void handle_shutdown_state()
     yield_this_thread();
     // hack
     power::loop();
-    delay(1);
+    delay_ms(1);
   }
 
   // deactivate strip power

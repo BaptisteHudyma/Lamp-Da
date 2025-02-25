@@ -4,7 +4,7 @@
 - charger: charger related operations
     - charger.h: main high level logic to use the charger, as well as power switches
     - power_source.h: handle pd negociation, cable detection, ...
-    - BQ25703A: Folder to handler the charging processes with the target ic
+    - drivers: Folder to handler the charging processes with the target ic
     - PDlib: folder that contains the library to talk to the PD negocation ic. Adapted to this architecture
 - ext: external libraries
 - physical: stuf related to the physical components: button, bluetooth, IMU, ...

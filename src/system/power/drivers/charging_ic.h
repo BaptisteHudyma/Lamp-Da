@@ -3,7 +3,8 @@
 
 #include <cstdint>
 
-namespace BQ25703A {
+namespace charger {
+namespace drivers {
 
 enum Status_t
 {
@@ -112,6 +113,7 @@ struct Battery
 };
 Battery get_battery();
 
-} // namespace BQ25703A
+} // namespace drivers
+} // namespace charger
 
 #endif
