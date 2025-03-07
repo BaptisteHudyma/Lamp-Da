@@ -2,12 +2,14 @@
 
 #include <cstdint>
 
+#include "power/power_handler.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 
 #include "src/system/alerts.h"
-#include "src/system/charger/charger.h"
-#include "src/system/charger/power_source.h"
+
+#include "src/system/power/charger.h"
+#include "src/system/power/power_handler.h"
 
 #include "src/system/physical/battery.h"
 #include "src/system/physical/button.h"
@@ -49,10 +51,8 @@ typedef enum
 
   // Prepare the charging operations
   PRE_CHARGER_OPERATION,
-  // Chargering, or usb OTG mode
+  // Charging, or usb OTG mode
   CHARGER_OPERATIONS,
-  // close the charger components
-  POST_CHARGER_OPERATIONS,
   // Prepare the light operation
   PRE_OUTPUT_LIGHT,
   // output voltage on, light the led strip and enable user modes
@@ -70,7 +70,6 @@ const char* BehaviorStatesStr[] = {
         "START_LOGIC",
         "PRE_CHARGER_OPERATION",
         "CHARGER_OPERATIONS",
-        "POST_CHARGER_OPERATIONS",
         "PRE_OUTPUT_LIGHT",
         "OUTPUT_LIGHT",
         "POST_OUTPUT_LIGHT",
@@ -143,7 +142,6 @@ bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::
  */
 void true_power_off()
 {
-  charger::shutdown();
   DigitalPin(DigitalPin::GPIO::usb33Power).set_high(false);
 
   // wait until vbus is off (TODO: remove in newer versions of the hardware)
@@ -212,7 +210,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
 #ifdef DEBUG_MODE
         // disable charger and wait 5s to be killed by watchdog
         indicator::set_color(utils::ColorSpace::PINK);
-        charger::disable_charge();
+        power::enable_charge(false);
         delay_ms(6000);
 #endif
         set_power_off();
@@ -407,7 +405,7 @@ void handle_error_state()
 void handle_start_logic_state()
 {
   // preven early charging
-  charger::set_enable_charge(false);
+  power::enable_charge(false);
 
   if (did_woke_up_from_power())
   {
@@ -427,6 +425,7 @@ static uint32_t preChargeCalled = 0;
 void handle_pre_charger_operation_state()
 {
   preChargeCalled = time_ms();
+  power::go_to_charger_mode();
   mainMachine.set_state(BehaviorStates::CHARGER_OPERATIONS);
 }
 
@@ -435,34 +434,36 @@ void handle_charger_operation_state()
   // pressed the start button, stop charge and start lamp
   if (is_system_should_be_powered())
   {
+    // forbid charging
+    power::enable_charge(false);
+    yield_this_thread();
+
     // switch to output mode after the post charge operations
-    mainMachine.set_state(BehaviorStates::POST_CHARGER_OPERATIONS, 100, BehaviorStates::PRE_OUTPUT_LIGHT);
+    mainMachine.set_state(BehaviorStates::PRE_OUTPUT_LIGHT);
     return;
   }
   // wait a bit after going to charger mode, maybe vbus is bouncing around
-  const bool vbusDebounced = powerSource::can_use_power() or (time_ms() - preChargeCalled) > 5000;
+  const bool vbusDebounced = charger::can_use_vbus_power() or (time_ms() - preChargeCalled) > 5000;
   if (vbusDebounced)
   {
     // no power, shutdown everything
     if (not is_charger_powered())
     {
+      // forbid charging
+      power::enable_charge(false);
+      yield_this_thread();
+
       // go to sleep after closing the charger
-      mainMachine.set_state(BehaviorStates::POST_CHARGER_OPERATIONS, 100, BehaviorStates::SHUTDOWN);
+      mainMachine.set_state(BehaviorStates::SHUTDOWN);
       return;
     }
     else
     {
       // enable charge after the debounce
-      charger::set_enable_charge(true);
+      power::enable_charge(true);
     }
   }
   // else: ignore all
-}
-
-void handle_post_charger_operation_state()
-{
-  // forbid charging
-  charger::set_enable_charge(false);
 }
 
 void handle_pre_output_light_state()
@@ -491,6 +492,8 @@ void handle_pre_output_light_state()
     }
     return;
   }
+
+  power::go_to_output_mode();
 
   // button usermode is always disabled by default
   button_disable_usermode();
@@ -560,8 +563,18 @@ void handle_post_output_light_state()
 void handle_shutdown_state()
 {
   isShutingDown_s = true;
-  // let other thread do stuff
-  yield_this_thread();
+
+  // shutdown all external power
+  power::go_to_shutdown();
+
+  // let other thread do stuff for a while
+  for (uint i = 0; i < 5; i++)
+  {
+    yield_this_thread();
+    // hack
+    power::loop();
+    delay_ms(1);
+  }
 
   // deactivate strip power
   ledpower::write_current(0); // power down
@@ -614,9 +627,6 @@ void state_machine_behavior()
     // charge batteries, or power OTG on USB-port
     case BehaviorStates::CHARGER_OPERATIONS:
       handle_charger_operation_state();
-      break;
-    case BehaviorStates::POST_CHARGER_OPERATIONS:
-      handle_post_charger_operation_state();
       break;
     // prepare the output light
     case BehaviorStates::PRE_OUTPUT_LIGHT:

@@ -69,27 +69,6 @@ public:
   // Initialise the variable here, but it will be written from the main program
   static const byte BQ25703Aaddr = chargeI2cAddress; // I2C address
 
-  template<typename T> static bool readReg(T* dataParam, const uint8_t arrLen)
-  {
-    // This is a function for reading data words.
-    // The number of bytes that make up a word is either 1 or 2.
-
-    // Create an array to hold the returned data
-    byte valBytes[arrLen];
-    // Function to handle the I2C comms.
-    if (readDataReg(dataParam->addr, valBytes, arrLen))
-    {
-      // Cycle through array of data
-      dataParam->val0 = valBytes[0];
-      if (arrLen >= 2)
-        dataParam->val1 = valBytes[1];
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
   template<typename T> bool readRegEx(T& dataParam)
   {
     // This is a function for reading data words.
@@ -105,11 +84,9 @@ public:
       dataParam.val1 = (byte)valBytes[1];
       return true;
     }
-    else
-    {
-      return false;
-    }
+    return false;
   }
+
   // used by external functions to write registers
   template<typename T> static bool writeRegEx(T dataParam)
   {
@@ -141,9 +118,9 @@ public:
   inline static bool isFlagRaised = false;
 
   // Base class for register operations
-  struct IBaseRegister
+  struct IBaseReadRegister
   {
-    virtual ~IBaseRegister() {};
+    virtual ~IBaseReadRegister() {};
 
     virtual uint16_t address() const = 0;
 
@@ -184,6 +161,29 @@ public:
       return 0;
     }
 
+    uint16_t set(const uint16_t value)
+    {
+      // convert to authorized values
+      const uint16_t constraint = lmpd_constrain(value, minVal(), maxVal()) - minVal();
+      // break it down to the correct resolution (integer division)
+      const uint16_t flatValue = constraint / resolution();
+      // convert to binary word
+      uint16_t binaryWord = flatValue;
+      binaryWord &= mask();    // mask off unused bits (with &= for 16bits)
+      binaryWord <<= offset(); // offset the register (with <<= for 16 bits)
+
+      if (!writeData16(address(), binaryWord))
+      {
+        isFlagRaised = true;
+      }
+
+      // return the value that was written to the register
+      return (flatValue * resolution()) + minVal();
+    }
+  };
+
+  struct IBaseRegister : public IBaseReadRegister
+  {
     uint16_t set(const uint16_t value)
     {
       // convert to authorized values
@@ -545,11 +545,12 @@ public:
     {
       uint16_t address() const override { return MINIMUM_SYSTEM_VOLTAGE_ADDR; }
 
-      virtual uint16_t minVal() const override { return 1024; }
+      // the min in the doc is set to 1024, but this is wrong in practice
+      virtual uint16_t minVal() const override { return 0; }
       virtual uint16_t maxVal() const override { return 16128; }
       virtual uint16_t resolution() const override { return 256; }
 
-      virtual uint8_t bitLenght() const override { return 7; }
+      virtual uint8_t bitLenght() const override { return 6; }
       virtual uint8_t offset() const override { return 8; }
     } minSystemVoltage;
 
@@ -566,7 +567,7 @@ public:
     } iIN_HOST;
     // IIN_DPM register reflects the actual input current limit programmed in
     // the register, either from host or from ICO.
-    struct IIN_DPMt : public IBaseRegister
+    struct IIN_DPMt : public IBaseReadRegister
     {
       uint16_t address() const override { return IIN_DPM_ADDR; }
 
@@ -688,26 +689,28 @@ public:
       uint16_t get_VBAT() { return getVal0(); }
     } aDCVSYSVBAT;
 
-    struct ManufacturerIDt
-    { // read only
+    struct ManufacturerIDt // read only
+    {
       // Manufacturer ID
-      byte val0, val1;
       uint8_t addr = MANUFACTURER_ID_ADDR;
       byte get_manufacturerID()
       {
-        readReg(this, 1);
-        return val0;
+        byte valBytes[1];
+        // Function to handle the I2C comms.
+        readDataReg(addr, valBytes, 1);
+        return (byte)valBytes[0];
       }
     } manufacturerID;
-    struct DeviceID
-    { // read only
+    struct DeviceID // read only
+    {
       // Device ID
-      byte val0, val1;
       uint8_t addr = DEVICE_ID_ADDR;
       byte get_deviceID()
       {
-        readReg(this, 2);
-        return val0;
+        byte valBytes[1];
+        // Function to handle the I2C comms.
+        readDataReg(addr, valBytes, 1);
+        return (byte)valBytes[0];
       }
     } deviceID;
   };

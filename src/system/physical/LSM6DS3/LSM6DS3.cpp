@@ -74,6 +74,11 @@ status_t LSM6DS3Core::beginCore(void)
   // Check the ID register to determine if the operation was a success.
   uint8_t readCheck;
 
+  if (i2c_check_existence(i2cDeviceIndex, I2CAddress) != 0)
+  {
+    returnError = IMU_HW_ERROR;
+  }
+
   readRegister(&readCheck, LSM6DS3_ACC_GYRO_WHO_AM_I_REG);
   if (!(readCheck == LSM6DS3_ACC_GYRO_WHO_AM_I || readCheck == LSM6DS3_C_ACC_GYRO_WHO_AM_I))
   {

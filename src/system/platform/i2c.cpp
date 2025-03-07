@@ -26,6 +26,19 @@ void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
   wire->begin();
 }
 
+int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
+{
+  if (i2cIndex >= WIRE_INTERFACES_COUNT)
+  {
+    assert(false);
+    return 1;
+  }
+  auto wire = interfaces[i2cIndex];
+
+  wire->beginTransmission(deviceAddr);
+  return wire->endTransmission();
+}
+
 int i2c_writeData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t* buf, int stopBit)
 {
   if (i2cIndex >= WIRE_INTERFACES_COUNT)

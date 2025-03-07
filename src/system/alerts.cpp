@@ -12,7 +12,7 @@
 #include "src/system/utils/constants.h"
 #include "src/system/utils/brightness_handle.h"
 
-#include "src/system/charger/charger.h"
+#include "src/system/power/charger.h"
 
 namespace alerts {
 

@@ -1,8 +1,10 @@
 #ifndef LEGACY_MODES_H
 #define LEGACY_MODES_H
 
-#include "src/system/charger/charger.h"
+#include "src/system/power/charger.h"
+
 #include "src/system/utils/utils.h"
+
 #include "src/system/colors/animations.h"
 #include "src/system/colors/colors.h"
 #include "src/system/colors/palettes.h"
