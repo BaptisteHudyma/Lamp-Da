@@ -2,6 +2,7 @@
 #define POWER_POWER_HANDLER_H
 
 #include <cstdint>
+#include <string>
 namespace power {
 
 // call before all
@@ -18,15 +19,19 @@ bool go_to_shutdown();
 
 // control special commands for every states
 // output mode
-bool set_output_voltage_mv(const uint32_t);
-bool set_output_max_current_mA(const uint32_t);
+bool set_output_voltage_mv(const uint16_t);
+bool set_output_max_current_mA(const uint16_t);
 
 // charge mode
 bool enable_charge(const bool);
 
 // otg mode
-bool set_otg_voltage_mv(const uint32_t);
-bool set_otg_max_current_mA(const uint32_t);
+bool set_otg_voltage_mv(const uint16_t);
+bool set_otg_max_current_mA(const uint16_t);
+
+std::string get_state();
+
+bool is_in_output_mode();
 
 } // namespace power
 

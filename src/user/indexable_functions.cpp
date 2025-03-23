@@ -36,7 +36,7 @@ using ManagerTy = modes::ManagerFor<modes::FixedModes,
 namespace _private {
 
 // The button pin (one button pin to GND, the other to this pin)
-constexpr DigitalPin::GPIO ledStripPinId = DigitalPin::GPIO::a0;
+constexpr DigitalPin::GPIO ledStripPinId = DigitalPin::GPIO::gpio7;
 static DigitalPin LedStripPin(ledStripPinId);
 
 LedStrip strip(LedStripPin.pin());

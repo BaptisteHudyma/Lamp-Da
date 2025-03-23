@@ -16,7 +16,7 @@
 #include "src/system/physical/indicator.h"
 #include "src/system/physical/fileSystem.h"
 #include "src/system/physical/IMU.h"
-#include "src/system/physical/led_power.h"
+#include "src/system/physical/output_power.h"
 #include "src/system/physical/sound.h"
 
 #include "src/system/utils/colorspace.h"
@@ -142,7 +142,12 @@ bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::
  */
 void true_power_off()
 {
-  DigitalPin(DigitalPin::GPIO::usb33Power).set_high(false);
+  // disable peripherals
+  DigitalPin(DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(false);
+  // disable gates
+  DigitalPin(DigitalPin::GPIO::Output_Disable5Vbus).set_high(false);
+  DigitalPin(DigitalPin::GPIO::Output_EnableVbusGate).set_high(false);
+  DigitalPin(DigitalPin::GPIO::Output_EnableOutputGate).set_high(false);
 
   // wait until vbus is off (TODO: remove in newer versions of the hardware)
   uint8_t cnt = 0;
@@ -551,11 +556,8 @@ void handle_post_output_light_state()
   // let the user power off the system
   user::power_off_sequence();
 
-  // TODO: this 12v deactivation should disapear
-  ledpower::deactivate_12v_power();
-
   // deactivate strip power
-  ledpower::write_current(0); // power down
+  outputPower::write_voltage(0); // power down
 
   mainMachine.skip_timeout();
 }
@@ -577,9 +579,7 @@ void handle_shutdown_state()
   }
 
   // deactivate strip power
-  ledpower::write_current(0); // power down
-  // TODO: this 12v deactivation should disapear
-  ledpower::deactivate_12v_power();
+  outputPower::write_voltage(0); // power down
   delay_ms(10);
 
   // disable bluetooth, imu and microphone
@@ -670,6 +670,8 @@ void loop()
 }
 
 bool is_shuting_down() { return isShutingDown_s; }
+
+std::string get_state() { return std::string(BehaviorStatesStr[mainMachine.get_state()]); }
 
 } // namespace behavior
 

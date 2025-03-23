@@ -7,29 +7,8 @@
 #include "src/system/power/charger.h"
 
 #include "src/system/platform/time.h"
-#include "src/system/platform/gpio.h"
 
 namespace battery {
-
-DigitalPin batteryPin(DigitalPin::GPIO::batterySignal);
-
-/**
- * \brief read the battery voltage from the GPIO
- */
-uint16_t read_battery_mV()
-{
-  static uint32_t lastReadTime = 0;
-  static uint16_t lastBatteryRead = 0;
-
-  const uint32_t time = time_ms();
-  if (lastReadTime == 0 or time - lastReadTime > 500)
-  {
-    lastReadTime = time;
-    // read and convert to voltage
-    lastBatteryRead = (utils::analogReadToVoltage(batteryPin.read()) / voltageDividerCoeff) * 1000;
-  }
-  return lastBatteryRead;
-}
 
 /**
  * \brief Return the battery voltage and raise the battery incoherent alert if needed
@@ -44,11 +23,9 @@ uint16_t get_raw_battery_voltage_mv()
     // values from the ADC in the charging component
     batteryVoltage_mV = chargerStates.batteryVoltage_mV;
   }
+  // else: not ready yet ?
   else
-  {
-    // imprecise and varying in conditions, so prefer the ADC values
-    batteryVoltage_mV = read_battery_mV();
-  }
+    batteryVoltage_mV = batteryMaxVoltage_mV;
 
   // in bounds with some margin
   static constexpr uint16_t minInValue = batteryMinVoltage_mV * 0.95;

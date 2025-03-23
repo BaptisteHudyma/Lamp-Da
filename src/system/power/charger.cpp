@@ -254,6 +254,9 @@ void update_state()
     charger.chargeCurrent_mA = measurements.batChargeCurrent_mA;
     charger.inputCurrent_mA = measurements.vbus_mA;
     charger.vbus_mV = measurements.vbus_mV;
+    charger.isChargeOkSignalHigh = measurements.isChargeOk;
+
+    charger.isInOtg = drivers::is_in_OTG();
 
     const auto& battery = drivers::get_battery();
     charger.batteryCurrent_mA = battery.current_mA;
@@ -302,13 +305,10 @@ void setup()
   charger.status = Charger_t::ChargerStatus_t::INACTIVE;
 }
 
-DigitalPin chargeOkPin(DigitalPin::GPIO::chargerOkSignal);
+DigitalPin chargeOkPin(DigitalPin::GPIO::Input_isChargeOk);
 
 void loop()
 {
-  const auto& otg = powerDelivery::get_otg_parameters();
-  control_OTG(otg.requestedVoltage_mV, otg.requestedCurrent_mA);
-
   // run charger loop
   const bool isChargerOk = chargeOkPin.is_high();
   drivers::loop(isChargerOk);

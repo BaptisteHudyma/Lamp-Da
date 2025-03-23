@@ -1,6 +1,8 @@
 #include "serial.h"
 
+#include "src/system/power/power_handler.h"
 #include "src/system/power/charger.h"
+#include "src/system/behavior.h"
 
 #include "src/system/physical/battery.h"
 #include "src/system/physical/fileSystem.h"
@@ -32,6 +34,7 @@ void handleCommand(const std::string& command)
                 "bl: battery levels\n"
                 "cinfo: charger infos\n"
                 "ADC: values from the charger ADC\n"
+                "power: power state machine states\n"
                 "alerts: show all raised alerts\n"
                 "format-fs: format the whole file system (dangerous)\n"
                 "-----------------");
@@ -65,15 +68,17 @@ void handleCommand(const std::string& command)
         const auto& chargerState = charger::get_state();
 
         lampda_print(
+                "is charge signal ok:%s\n"
                 "voltage on vbus:%dmV\n"
                 "input current:%dmA\n"
                 "battery voltage:%dmV\n"
                 "charge current:%dmA\n"
-                "is usb powered:%s\n"
+                "is usb serial connected:%s\n"
                 "is charging:%s\n"
                 "is effec charging:%s\n"
                 "battery level:%f%%\n"
                 "-> %s",
+                boolToString(chargerState.isChargeOkSignalHigh),
                 chargerState.vbus_mV,
                 chargerState.inputCurrent_mA,
                 chargerState.batteryVoltage_mV,
@@ -102,6 +107,16 @@ void handleCommand(const std::string& command)
                 chargerState.inputCurrent_mA,
                 chargerState.batteryVoltage_mV,
                 chargerState.batteryCurrent_mA);
+        break;
+      }
+
+    case utils::hash("power"):
+      {
+        lampda_print(
+                "state machine state:%s\n"
+                "behavior machine state:%s",
+                power::get_state().c_str(),
+                behavior::get_state().c_str());
         break;
       }
 

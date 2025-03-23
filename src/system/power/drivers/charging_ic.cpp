@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "BQ25703A.h"
+#include "BQ25713.h"
 #include "src/system/alerts.h"
 #include "src/system/utils/print.h"
 
@@ -13,10 +13,10 @@ namespace charger {
 namespace drivers {
 
 // Initialise the device and library
-bq2573a::BQ25703A chargerIc;
+bq25713::BQ25713 chargerIc;
 
 // Create instance of registers data structure
-bq2573a::BQ25703A::Regt chargerIcRegisters;
+bq25713::BQ25713::Regt chargerIcRegisters;
 
 // store the ADC measurments
 static Measurments measurments_s;
@@ -56,7 +56,7 @@ void run_fault_detection()
   if (chargerIcRegisters.chargerStatus.Fault_ACOV() or chargerIcRegisters.chargerStatus.Fault_BATOC() or
       chargerIcRegisters.chargerStatus.Fault_ACOC() or chargerIcRegisters.chargerStatus.SYSOVP_STAT() or
       chargerIcRegisters.chargerStatus.Fault_Latchoff() or chargerIcRegisters.chargerStatus.Fault_OTG_OVP() or
-      chargerIcRegisters.chargerStatus.Fault_OTG_UCP())
+      chargerIcRegisters.chargerStatus.Fault_OTG_UVP())
   {
     lampda_print("Charger ic faults: %d%d%d%d%d%d%d",
                  chargerIcRegisters.chargerStatus.Fault_ACOV(),
@@ -65,7 +65,7 @@ void run_fault_detection()
                  chargerIcRegisters.chargerStatus.SYSOVP_STAT(),
                  chargerIcRegisters.chargerStatus.Fault_Latchoff(),
                  chargerIcRegisters.chargerStatus.Fault_OTG_OVP(),
-                 chargerIcRegisters.chargerStatus.Fault_OTG_UCP());
+                 chargerIcRegisters.chargerStatus.Fault_OTG_UVP());
     status_s = Status_t::ERROR_HAS_FAULTS;
   }
   // reset fault flag
@@ -98,7 +98,6 @@ void run_status_update()
     // if (chargerIcRegisters.chargeOption3.EN_OTG())
     {
       alerts::manager.clear(alerts::Type::OTG_FAILED);
-      alerts::manager.raise(alerts::Type::OTG_ACTIVATED);
     }
     else
     {
@@ -155,15 +154,15 @@ void control_OTG()
       OTGStartTime_ms = time_ms();
       lastOTGUsedTime_ms = time_ms();
 
-      DigitalPin(DigitalPin::GPIO::otgSignal).set_high(true);
+      DigitalPin(DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
       delay_ms(1);
 
       chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+      chargerIcRegisters.chargeOption3.set_OTG_RANGE_LOW(0);
       chargerIcRegisters.chargeOption3.set_EN_OTG(1);
       chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
 
       // alert will be lowered on time
-      alerts::manager.clear(alerts::Type::OTG_ACTIVATED);
       alerts::manager.raise(alerts::Type::OTG_FAILED);
 
       delay_ms(10);
@@ -178,7 +177,7 @@ void control_OTG()
         return;
       }
 
-      if (measurment.vbus_mV < 3200)
+      if (measurment.vbus_mV <= 3200)
       {
         // wait for voltage to climb on VBUS
         return;
@@ -189,20 +188,11 @@ void control_OTG()
         lastOTGUsedTime_ms = time_ms();
       }
 
-      // if some time has passed since the last use
-      if (time_ms() - lastOTGUsedTime_ms > 10000)
-      {
-        // disable the OTG if it's not used
-        disable_OTG();
-      }
-      else
-      {
-        // update the in OTG status to avoid deconnection
-        DigitalPin(DigitalPin::GPIO::otgSignal).set_high(true);
-        chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
-        chargerIcRegisters.chargeOption3.set_EN_OTG(1);
-        chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
-      }
+      // update the in OTG status to avoid deconnection
+      DigitalPin(DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
+      chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+      chargerIcRegisters.chargeOption3.set_EN_OTG(1);
+      chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
     }
   }
   else
@@ -215,12 +205,11 @@ void control_OTG()
 
       disable_OTG();
 
-      DigitalPin(DigitalPin::GPIO::otgSignal).set_high(false);
+      DigitalPin(DigitalPin::GPIO::Output_EnableOnTheGo).set_high(false);
       delay_ms(1);
       // 5V 0A for OTG (default)
       set_OTG_targets(5000, 0);
 
-      alerts::manager.clear(alerts::Type::OTG_ACTIVATED);
       alerts::manager.clear(alerts::Type::OTG_FAILED);
     }
   }
@@ -434,7 +423,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
             const uint16_t maxChargingCurrent_mA,
             const bool forceReset)
 {
-  if (i2c_check_existence(bq2573a::i2cObjectIndex, bq2573a::BQ25703A::BQ25703Aaddr) != 0)
+  if (i2c_check_existence(bq25713::i2cObjectIndex, bq25713::BQ25713::BQ25713addr) != 0)
   {
     // error: device not detected
     // charger
@@ -442,10 +431,10 @@ bool enable(const uint16_t minSystemVoltage_mV,
     return false;
   }
 
-  if (chargerIc.isFlagRaised or chargerIcRegisters.manufacturerID.get_manufacturerID() != bq2573a::MANUFACTURER_ID or
-      chargerIcRegisters.deviceID.get_deviceID() != bq2573a::DEVICE_ID)
+  if (chargerIc.isFlagRaised or chargerIcRegisters.manufacturerID.get_manufacturerID() != bq25713::MANUFACTURER_ID or
+      chargerIcRegisters.deviceID.get_deviceID() != bq25713::DEVICE_ID)
   {
-    // error: those constants do not indicate a BQ25703A
+    // error: those constants do not indicate a BQ25713
     // charger
     status_s = Status_t::ERROR_COMPONENT;
     return false;
@@ -483,7 +472,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
   chargerIcRegisters.chargeOption0.set_EN_LWPWR(0);
   chargerIc.writeRegEx(chargerIcRegisters.chargeOption0);
 
-  chargerIcRegisters.prochotOption1.set_IDCHG_VTH(16384 / 512);
+  chargerIcRegisters.prochotOption1.set_IDCHG_VTH(maxBatteryVoltage_mV / 512);
   chargerIc.writeRegEx(chargerIcRegisters.prochotOption1);
 
   // disable ICO
@@ -552,6 +541,7 @@ void loop(const bool isChargeOk)
   if (isChargeChanged or lastUpdateTime == 0 or time - lastUpdateTime >= 100)
   {
     lastUpdateTime = time;
+    measurments_s.isChargeOk = isChargeOk;
 
     // update status
     run_status_update();
@@ -591,6 +581,11 @@ void shutdown()
   chargerIc.readRegEx(chargerIcRegisters.chargeOption0);
   chargerIcRegisters.chargeOption0.set_EN_LWPWR(1);
   chargerIc.writeRegEx(chargerIcRegisters.chargeOption0);
+
+  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+  // enable high impedance mode
+  chargerIcRegisters.chargeOption3.set_EN_HIZ(1);
+  chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
 }
 
 void set_input_current_limit(const uint16_t maxInputCurrent_mA, const bool shouldUseICO)
@@ -629,7 +624,6 @@ void disable_OTG()
   chargerIcRegisters.chargeOption3.set_EN_OTG(0);
   chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
 
-  alerts::manager.clear(alerts::Type::OTG_ACTIVATED);
   alerts::manager.clear(alerts::Type::OTG_FAILED);
 
   // deactivate this state LAST
@@ -638,9 +632,13 @@ void disable_OTG()
 
 void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA)
 {
-  chargerIcRegisters.oTGVoltage.set(voltage_mV);
+  // OTG voltage register depends on another register...
+  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+  chargerIcRegisters.oTGVoltage.set(voltage_mV, chargerIcRegisters.chargeOption3.OTG_RANGE_LOW());
   chargerIcRegisters.oTGCurrent.set(maxCurrent_mA);
 }
+
+bool is_in_OTG() { return isInOtg_s; }
 
 Status_t get_status() { return status_s; }
 

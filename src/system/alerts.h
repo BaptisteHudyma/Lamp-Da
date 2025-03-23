@@ -25,8 +25,7 @@ enum Type : uint32_t
 
   HARDWARE_ALERT = 1 << 8, // any hardware alert
 
-  OTG_ACTIVATED = 1 << 9, // OTG activated
-  OTG_FAILED = 1 << 10,   // OTG activation failed
+  OTG_FAILED = 1 << 10, // OTG activation failed
 };
 
 class AlertManager_t

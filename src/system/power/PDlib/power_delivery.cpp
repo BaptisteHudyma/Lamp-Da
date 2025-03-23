@@ -192,15 +192,14 @@ bool setup()
   // 0 is success
   if (i2c_check_existence(devicePort, fusb302_I2C_SLAVE_ADDR) != 0)
   {
-    return 0;
+    return false;
   }
   bool initSucceeded = (tcpm_init(devicePort) == 0);
   delay_ms(50);
   pd_init(devicePort);
   delay_ms(50);
 
-  DigitalPin chargerPin(DigitalPin::GPIO::ChargerInterrupt);
-  chargerPin.set_pin_mode(DigitalPin::Mode::kInputPullUp);
+  DigitalPin chargerPin(DigitalPin::GPIO::Signal_PowerDelivery);
   chargerPin.attach_callback(ic_interrupt, DigitalPin::Interrupt::kChange);
 
   isSetup = initSucceeded;
@@ -248,7 +247,7 @@ void loop()
            // plugged in power can flicker
            time - powerSourceDetectedTime_s > 100 and
            // vbus can become briefly invalid when using the ICO algorithm
-           time - lastVbusValid > 500)
+           time - lastVbusValid > 1000)
   {
     isPowerSourceDetected_s = false;
     reset = 1;

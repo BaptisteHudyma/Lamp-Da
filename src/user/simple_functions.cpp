@@ -3,19 +3,19 @@
 #include <cstdint>
 
 #include "src/system/behavior.h"
-#include "src/system/physical/led_power.h"
+
 #include "src/system/utils/utils.h"
 #include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/curves.h"
 
 #include "src/system/platform/time.h"
+
 #include "src/system/physical/fileSystem.h"
+#include "src/system/physical/output_power.h"
 
 #include "src/user/functions.h"
 
 namespace user {
-
-constexpr uint8_t minBrightness = 4;
 
 void power_on_sequence() { brightness_update(brightness::get_brightness()); }
 
@@ -32,15 +32,17 @@ void brightness_update(const brightness_t brightness)
   if (constraintBrightness >= maxBrightness)
   {
     // blip
-    ledpower::write_brightness(0);
+    outputPower::write_voltage(0);
     delay_ms(4); // blip light off if we reached max level
   }
 
   // map to a new curve, favorising low levels
-  using curve_t = curves::ExponentialCurve<brightness_t, uint8_t>;
-  static curve_t brightnessCurve(curve_t::point_t {0, minBrightness}, curve_t::point_t {maxBrightness, 255}, 50.0);
+  static constexpr uint16_t maxOutputVoltage_mV = inputVoltage_V * 1000;
+  using curve_t = curves::ExponentialCurve<brightness_t, uint16_t>;
+  static curve_t brightnessCurve(
+          curve_t::point_t {0, 9400}, curve_t::point_t {maxBrightness, maxOutputVoltage_mV}, 1.0);
 
-  ledpower::write_brightness(round(brightnessCurve.sample(constraintBrightness)));
+  outputPower::write_voltage(round(brightnessCurve.sample(constraintBrightness)));
 }
 
 void write_parameters() {}

@@ -33,7 +33,7 @@ techsupport@sparkfun.com.
 #include "stdint.h"
 
 // TODO: on the new circuits, it will be another interface !!
-static constexpr uint8_t i2cDeviceIndex = 1;
+static constexpr uint8_t i2cDeviceIndex = 0;
 static constexpr bool usesStopBit = true;
 
 //****************************************************************************//
@@ -57,10 +57,6 @@ LSM6DS3Core::LSM6DS3Core(uint8_t busType, uint8_t inputArg) : I2CAddress(0x6B) {
 status_t LSM6DS3Core::beginCore(void)
 {
   status_t returnError = IMU_SUCCESS;
-
-  DigitalPin powerPin(DigitalPin::GPIO::ImuPower);
-  powerPin.set_pin_mode(DigitalPin::Mode::kOutputHighCurrent);
-  powerPin.set_high(true);
 
   delay_ms(10);
 

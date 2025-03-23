@@ -159,26 +159,6 @@ public:
       // error
       return 0;
     }
-
-    uint16_t set(const uint16_t value)
-    {
-      // convert to authorized values
-      const uint16_t constraint = lmpd_constrain(value, minVal(), maxVal()) - minVal();
-      // break it down to the correct resolution (integer division)
-      const uint16_t flatValue = constraint / resolution();
-      // convert to binary word
-      uint16_t binaryWord = flatValue;
-      binaryWord &= mask();    // mask off unused bits (with &= for 16bits)
-      binaryWord <<= offset(); // offset the register (with <<= for 16 bits)
-
-      if (!writeData16(address(), binaryWord))
-      {
-        isFlagRaised = true;
-      }
-
-      // return the value that was written to the register
-      return (flatValue * resolution()) + minVal();
-    }
   };
 
   struct IBaseRegister : public IBaseReadRegister
@@ -683,12 +663,31 @@ public:
     {
       uint16_t address() const override { return OTG_VOLTAGE_ADDR; }
 
-      virtual uint16_t minVal() const override { return 3000; }
+      uint16_t get(bool isLowVoltageMode)
+      {
+        // set min value depending on low otg voltage mode
+        minValue = isLowVoltageMode ? 0 : 1280;
+
+        return IBaseRegister::get();
+      }
+
+      void set(uint16_t val, bool isLowVoltageMode)
+      {
+        // set min value depending on low otg voltage mode
+        minValue = isLowVoltageMode ? 0 : 1280;
+
+        IBaseRegister::set(val);
+      }
+
+      // min val should be 3000mV, but in practise thats not it
+      virtual uint16_t minVal() const override { return minValue; }
       virtual uint16_t maxVal() const override { return 20800; }
       virtual uint16_t resolution() const override { return 8; }
 
       virtual uint8_t bitLenght() const override { return 12; }
       virtual uint8_t offset() const override { return 2; }
+
+      uint16_t minValue = 0;
     } oTGVoltage;
     // The OTGCurrent register is a limit after which the device will raise the
     // OTG_OVP flag

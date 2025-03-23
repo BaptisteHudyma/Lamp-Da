@@ -33,7 +33,7 @@ constexpr float voltageDividerCoeff =
         voltageMeasurmentResistor2_Ohm / (voltageMeasurmentResistor1_Ohm + voltageMeasurmentResistor2_Ohm);
 
 // number of batteries for this model
-constexpr uint8_t batteryCount = 4;
+constexpr uint8_t batteryCount = 3;
 
 // max voltage of a single li-ion cell
 constexpr uint16_t batteryMaxVoltage_mV = 4200 * batteryCount;

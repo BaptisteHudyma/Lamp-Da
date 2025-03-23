@@ -15,7 +15,7 @@
     - fft.h: implementation of the fft and assocated filtering
     - fileSystem.h: handle the reading and writting of variables to memory
     - IMU.h: the imu related operations
-    - led_power.h: interface of the led constant current driver
+    - output_power.h: interface of the output voltage driver
     - Microphone.h: control the microphone behavior. Make available some functions to get the sound level and beat. Gives some animations as well
 - utils: General functions and constants that everybody needs
     - colorspace.h: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !

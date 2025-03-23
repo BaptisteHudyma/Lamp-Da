@@ -26,10 +26,6 @@ void enable()
     return;
   }
 
-  DigitalPin powerPin(DigitalPin::GPIO::ImuPower);
-  powerPin.set_pin_mode(DigitalPin::Mode::kOutput);
-  powerPin.set_high(true);
-
   delay_ms(5); // voltage stabilization
 
   if (IMU.begin() != 0)
@@ -47,8 +43,7 @@ void disable()
     return;
   }
 
-  DigitalPin powerPin(DigitalPin::GPIO::ImuPower);
-  powerPin.set_high(false);
+  // TODO: enter deep sleep
 
   isStarted = false;
 }

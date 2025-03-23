@@ -3,12 +3,15 @@
 #include <cstdint>
 
 #include "src/system/behavior.h"
+
 #include "src/system/utils/utils.h"
 #include "src/system/utils/curves.h"
 #include "src/system/utils/brightness_handle.h"
 
-#include "src/system/platform/gpio.h"
 #include "src/system/physical/fileSystem.h"
+#include "src/system/physical/output_power.h"
+
+#include "src/system/platform/gpio.h"
 #include "src/system/platform/time.h"
 
 #include "src/user/functions.h"
@@ -17,8 +20,8 @@ namespace user {
 
 constexpr uint8_t minBrightness = 13;
 
-static DigitalPin WhiteColorPin(DigitalPin::GPIO::a0);
-static DigitalPin YellowColorPin(DigitalPin::GPIO::a2);
+static DigitalPin WhiteColorPin(DigitalPin::GPIO::gpio6);
+static DigitalPin YellowColorPin(DigitalPin::GPIO::gpio7);
 
 constexpr uint32_t colorKey = utils::hash("color");
 uint8_t currentColor = 0;
@@ -73,6 +76,7 @@ void brightness_update(const brightness_t brightness)
 
   currentBrightness = round(brightnessCurve.sample(constraintBrightness));
 
+  outputPower::write_voltage(inputVoltage_V * 1000);
   set_color(currentColor);
 }
 

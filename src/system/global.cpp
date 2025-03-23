@@ -9,7 +9,7 @@
 #include "src/system/physical/indicator.h"
 #include "src/system/physical/IMU.h"
 #include "src/system/physical/fileSystem.h"
-#include "src/system/physical/led_power.h"
+#include "src/system/physical/output_power.h"
 #include "src/system/physical/sound.h"
 
 #include "src/system/power/charger.h"
@@ -83,8 +83,11 @@ void check_loop_runtime(const uint32_t runTime)
 
 void main_setup()
 {
+  // enable peripherals (enable i2c lines)
+  DigitalPin(DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(true);
+
   // start by resetting the led driver
-  ledpower::write_current(0);
+  outputPower::write_voltage(0);
 
   // set turn on time
   turnOnTime = time_ms();
@@ -99,6 +102,8 @@ void main_setup()
   {
     i2c_setup(i, 400000, 100);
   }
+  // stability delay (dont ask...)
+  delay_ms(10);
 
   // setup serial
   serial::setup();

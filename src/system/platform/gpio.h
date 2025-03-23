@@ -11,26 +11,40 @@ class DigitalPin
 public:
   enum GPIO
   {
-    a0,
-    a1,
-    a2,
-    p4,
-    p5,
-    p6,
-    p7,
-    p8,
+    gpio0,
+    gpio1,
+    gpio2,
+    gpio3,
+    gpio4,
+    gpio5,
+    gpio6,
+    gpio7,
 
-    ChargerInterrupt,
-    ImuPower,
-    otgSignal,
-    usb33Power,
-    microphonePower,
-    chargerOkSignal,
-    batterySignal,
+    Input_isChargeOk,
+
+    Signal_PowerDelivery,
+    Signal_UsbProtectionFault,
+    Signal_VbusGateFaukt,
+    Signal_ChargerProcHot,
+    Signal_BatteryBalancerAlert,
+    Signal_ImuInterrupt1,
+    Signal_ImuInterrupt2,
+
+    Output_EnableExternalPeripherals,
+    Output_EnableMicrophone,
+    Output_VbusFastRoleSwap,
+    Output_VbusDirection,
+    Output_Disable5Vbus,
+    Output_EnableOnTheGo,
+    // danger zone: only one of the next 3 signals should be active at a time
+    Output_DischargeVbus,
+    Output_EnableVbusGate,
+    Output_EnableOutputGate
   };
   enum Mode
   {
-    kInput = 0,
+    kDefault = 0,
+    kInput,
     kOutput,
 
     kInputPullUp,
@@ -65,7 +79,5 @@ public:
 private:
   std::shared_ptr<DigitalPinImpl> mImpl;
 };
-
-extern void brigthness_write_analog(uint16_t value);
 
 #endif

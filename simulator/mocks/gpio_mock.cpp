@@ -82,8 +82,6 @@ public:
   {
     switch (_pin)
     {
-      case DigitalPin::GPIO::batterySignal:
-        return utils::voltageToAnalogRead(mock_battery::voltage * voltageDividerCoeff);
     }
     return 0;
   }
@@ -113,5 +111,3 @@ uint16_t DigitalPin::read() const { return mImpl->read(); }
 int DigitalPin::pin() const { return 0; }
 
 void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode) { mImpl->attach_callback(func); }
-
-void brigthness_write_analog(uint16_t value) {}

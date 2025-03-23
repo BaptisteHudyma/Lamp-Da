@@ -11,6 +11,7 @@ extern "C" {
   static const uint8_t pdNegociationI2cAddress = 0x22;
   static const uint8_t chargeI2cAddress = 0x6B;
   static const uint8_t imuI2cAddress = 0x6A;
+  static const uint8_t batteryBalancerI2cAddress = 0x08;
 
 /* Flags for i2c_xfer() */
 #define I2C_XFER_START  (1 << 0)                         /* Start smbus session from idle state */
