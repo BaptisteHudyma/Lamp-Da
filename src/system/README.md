@@ -1,24 +1,47 @@
 # File details
-- behavior.h: controls the lamp behaviors: what button actions does what, battery level, charger start and stops, ...
 - alert.h: Handle the diffferent alerts raised by the program
-- charger: charger related operations
-    - charger.h: main high level logic to use the charger, as well as power switches
-    - power_source.h: handle pd negociation, cable detection, ...
-    - drivers: Folder to handler the charging processes with the target ic
-    - PDlib: folder that contains the library to talk to the PD negocation ic. Adapted to this architecture
+- behavior.h: controls the lamp behaviors: what button actions does what, battery level, charger start and stops, ...
+- global.h: main entry point for the program
+- colors: Define color & color operations, as well as some animations for RGB lamp type
+    - animations.h: define some generic animations, for RGB lamp type
+    - colors.h: define color modes classes, for RGB lamp type
+    - palettes.h: define some color palettes, for RGB lamp type
+    - soundAnimations.h: define some animations related to microphones, for RGB lamp type
+    - wipes.h: define some moving animations, for RGB lamp type
 - ext: external libraries
 - physical: stuf related to the physical components: button, bluetooth, IMU, ...
     - LSM6DS3: library to talk to the IMU. Adapted to this architecture
     - battery.h: handle the battery readings, for battery level
-    - bluetooth.h: Control the bluetooth associated behavior
     - button.h: control the button. Takes callbacks for actions on multiple button pushes. Used to display stuf on the button if needed
-    - fft.h: implementation of the fft and assocated filtering
     - fileSystem.h: handle the reading and writting of variables to memory
     - IMU.h: the imu related operations
+    - indicator.h: visual indicator controler (led in the button)
     - output_power.h: interface of the output voltage driver
-    - Microphone.h: control the microphone behavior. Make available some functions to get the sound level and beat. Gives some animations as well
+    - sound.h: microphone main input point. Compute FFT and auto disable
+- platform: Hardware drivers, implement the platform specific code
+    - bluetooth.h: bluetooth interfaces
+    - fft.h: implementation of the fft and assocated filtering
+    - gpio.h: programmable pins interface
+    - i2c.h; i2c interface
+    - pdm_handle.h: microphone interface (through PDM)
+    - print.h: display & debug interface (through serial connection)
+    - register.h: NRF52840 specific register access
+    - time.h: time & chrono interface
+- power: Handler for the power components (charger, usb negociation, ...)
+    - drivers: Folder to handler the charging processes with the target ic
+    - PDlib: folder that contains the library to talk to the PD negocation ic. Adapted to this architecture
+    - charger.h: main high level logic to use the charger, as well as power switches
+    - power_gate.h: the electrical gates to isolate output & vbus form each others
+    - power_source.h: handle pd negociation, cable detection, ...
 - utils: General functions and constants that everybody needs
+    - brightness_handle.h: handle the brightness passthrough
     - colorspace.h: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !
     - constants.h: global constants used all around the program
+    - coordinates.h: coordinate system for the lamp body (only used in RGB lamp type)
+    - curves.h: define custom curve and curve sampling functions
+    - input_output.h: define the gpio used for the button & indicator
+    - print.h: access to the print/debug interface with string composing
     - serial.h: handle serial communication. Location of the CLI capabilities
+    - state_machine.h: generic state machine class, used for all main logic
+    - strip.h: define the strip object (for now, only used in RGB lamp type)
     - utils.h: useful functions to make colors

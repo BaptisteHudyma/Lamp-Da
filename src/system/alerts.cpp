@@ -321,7 +321,7 @@ struct Alert_BluetoothAdvertisement : public AlertBase
 
 struct Alert_HardwareAlert : public AlertBase
 {
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::GREEN); }
+  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::PURPLE); }
 
   Type get_type() const override { return Type::HARDWARE_ALERT; }
 };
