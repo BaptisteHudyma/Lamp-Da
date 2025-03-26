@@ -7,15 +7,19 @@
 
 #include "PDlib/power_delivery.h"
 #include "charger.h"
+#include "power_gates.h"
 
 namespace power {
 
+static constexpr uint32_t clearPowerRailMinDelay_ms = 100;
 static constexpr uint32_t clearPowerRailFailureDelay_ms = 1000;
 
-static uint16_t _otgVoltage_mV = 0;
-static uint16_t _otgCurrent_mA = 0;
+static_assert(clearPowerRailMinDelay_ms < clearPowerRailFailureDelay_ms,
+              "clear power rail min activation is less than min unlock delay");
+
 static uint16_t _outputVoltage_mV = 0;
 static uint16_t _outputCurrent_mA = 0;
+static bool _isChargeEnabled = false;
 
 // Define the state for the main prog state machine
 typedef enum
@@ -56,46 +60,12 @@ namespace __private {
 // main state machine (start in error to force user to init)
 StateMachine<PowerStates> powerMachine(PowerStates::ERROR);
 
-DigitalPin enableVbusGate(DigitalPin::GPIO::Output_EnableVbusGate);
-DigitalPin enablePowerGate(DigitalPin::GPIO::Output_EnableOutputGate);
 DigitalPin dischargeVbus(DigitalPin::GPIO::Output_DischargeVbus);
-
+DigitalPin vbusDirection(DigitalPin::GPIO::Output_VbusDirection);
+DigitalPin fastRoleSwap(DigitalPin::GPIO::Output_VbusFastRoleSwap);
 } // namespace __private
 
-void disable_gates()
-{
-  __private::dischargeVbus.set_high(false);
-  __private::enableVbusGate.set_high(false);
-  __private::enablePowerGate.set_high(false);
-}
-
-void enable_vbus_gate()
-{
-  __private::dischargeVbus.set_high(false);
-
-  if (not __private::enablePowerGate.is_high())
-  {
-    __private::enableVbusGate.set_high(true);
-  }
-  else
-  {
-    // error !
-  }
-}
-
-void enable_power_gate()
-{
-  __private::dischargeVbus.set_high(false);
-
-  if (not __private::enableVbusGate.is_high())
-  {
-    __private::enablePowerGate.set_high(true);
-  }
-  else
-  {
-    // error !
-  }
-}
+uint32_t get_vbus_rail_voltage() { return powerDelivery::get_vbus_voltage(); }
 
 uint32_t get_power_rail_voltage()
 {
@@ -111,13 +81,34 @@ uint32_t get_power_rail_voltage()
   }
 }
 
+void set_otg_parameters(uint16_t voltage_mV, uint16_t current_mA)
+{
+  static uint16_t lastOtgVoltage_mV = 0;
+  static uint16_t lastOtgCurrent_mA = 0;
+  if (lastOtgVoltage_mV != voltage_mV || lastOtgCurrent_mA != current_mA)
+  {
+    lastOtgVoltage_mV = voltage_mV;
+    lastOtgCurrent_mA = current_mA;
+
+    // ramp up output voltage
+    charger::control_OTG(voltage_mV, current_mA);
+  }
+}
+
 void handle_clear_power_rails()
 {
-  // close all gates
-  disable_gates();
+  // disable all gates
+  powergates::disable_gates();
+  // prevent reverse current flow
+  __private::vbusDirection.set_high(false);
+  __private::fastRoleSwap.set_high(false);
 
-  // min value for rail voltage is 3200mV
-  if (get_power_rail_voltage() <= 3200)
+  // disable OTG if needed
+  set_otg_parameters(0, 0);
+
+  // wait at least a little bit, and min value for power rail voltage is 3200mV
+  if (time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailMinDelay_ms and
+      get_power_rail_voltage() <= 3200)
   {
     __private::dischargeVbus.set_high(false);
 
@@ -139,44 +130,70 @@ void handle_clear_power_rails()
 void handle_charging_mode()
 {
   // open vbus
-  enable_vbus_gate();
+  powergates::enable_vbus_gate();
+
+  if (powergates::is_vbus_gate_enabled())
+  {
+    charger::set_enable_charge(_isChargeEnabled);
+  }
 
   // charge OR idle and do nothing (end of charge)
+
+  // OTG requested, switch to OTG mode
+  if (powerDelivery::get_otg_parameters().is_otg_requested())
+  {
+    go_to_otg_mode();
+    return;
+  }
 }
 
 void handle_output_voltage_mode()
 {
-  // open vbus
-  // enable_power_gate();
+  set_otg_parameters(_outputVoltage_mV, _outputCurrent_mA);
 
-  static uint16_t lastOtgVoltage_mV = 0;
-  static uint16_t lastOtgCurrent_mA = 0;
-  if (lastOtgVoltage_mV != _outputVoltage_mV || lastOtgCurrent_mA != _outputCurrent_mA)
+  // open power gate when voltage matches expected voltage
+  uint32_t vbusVoltage = get_power_rail_voltage();
+  if (vbusVoltage >= _outputVoltage_mV * 0.9 and vbusVoltage <= _outputVoltage_mV * 1.1)
   {
-    lastOtgVoltage_mV = _outputVoltage_mV;
-    lastOtgCurrent_mA = _outputCurrent_mA;
-
-    // ramp up output voltage
-    charger::control_OTG(_outputVoltage_mV, _outputCurrent_mA);
+    // close power gate
+    powergates::enable_power_gate();
   }
-
-  // allow control of output voltage
+  else
+  {
+    powergates::disable_gates();
+  }
 }
 
 void handle_otg_mode()
 {
+  const auto requested = powerDelivery::get_otg_parameters();
   // ramp up output voltage
   // then unlock the vbus gate
-  // charger::control_OTG(_otgVoltage_mV, _otgCurrent_mA);
+  set_otg_parameters(requested.requestedVoltage_mV, requested.requestedCurrent_mA);
 
-  // open vbus
-  enable_vbus_gate();
+  if (time_ms() - __private::powerMachine.get_state_raised_time() < 100)
+  {
+    // prepare fast role swap
+    powergates::disable_gates();
+    __private::fastRoleSwap.set_high(true);
+
+    // for now, do not disable the gate
+    return;
+  }
+
+  // allow reverse current flow
+  __private::vbusDirection.set_high(true);
+
+  // close vbus gate
+  powergates::enable_vbus_gate();
 }
 
 void handle_shutdown()
 {
-  // close all gates
-  disable_gates();
+  // disable all gates
+  powergates::disable_gates();
+
+  set_otg_parameters(0, 0);
 
   powerDelivery::shutdown();
 
@@ -186,7 +203,11 @@ void handle_shutdown()
 
 void handle_error_state()
 {
-  //
+  // disable all gates
+  powergates::disable_gates();
+
+  // disable OTG
+  set_otg_parameters(0, 0);
 }
 
 namespace __private {
@@ -304,46 +325,39 @@ bool set_output_max_current_mA(const uint16_t outputCurrent_mA)
 // charge mode
 bool enable_charge(const bool enable)
 {
-  charger::set_enable_charge(enable);
+  _isChargeEnabled = enable;
   return true;
-}
-
-// otg mode
-bool set_otg_voltage_mv(const uint32_t otgVolage_mV)
-{
-  _otgVoltage_mV = otgVolage_mV;
-  return false;
-}
-
-bool set_otg_max_current_mA(const uint32_t otgVCurrent_mA)
-{
-  _otgCurrent_mA = otgVCurrent_mA;
-  return false;
 }
 
 std::string get_state() { return std::string(PowerStatesStr[__private::powerMachine.get_state()]); }
 
 bool is_in_output_mode() { return __private::powerMachine.get_state() == PowerStates::OUTPUT_VOLTAGE_MODE; }
+bool is_in_otg_mode() { return __private::powerMachine.get_state() == PowerStates::OTG_MODE; }
 
 void init()
 {
-  disable_gates();
+  powergates::init();
 
+  // switch without a timing
+  __private::powerMachine.set_state(PowerStates::IDLE);
+
+  // charging component, setup first
+  charger::setup();
+
+  // at the very last, power delivery
   const bool success = powerDelivery::setup();
   if (!success)
   {
     __private::switch_state(PowerStates::ERROR);
     return;
   }
-  // switch without a timing
-  __private::powerMachine.set_state(PowerStates::IDLE);
-  disable_gates();
-
-  charger::setup();
 }
 
 void loop()
 {
+  // fist action, update power gate status
+  powergates::loop();
+
   // run power module state machine
   __private::state_machine_behavior();
 

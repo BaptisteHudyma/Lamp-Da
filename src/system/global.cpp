@@ -83,6 +83,11 @@ void check_loop_runtime(const uint32_t runTime)
 
 void main_setup()
 {
+#ifdef IS_HARDWARE_1_0
+  DigitalPin(DigitalPin::GPIO::Input_isChargeOk).set_pin_mode(DigitalPin::Mode::kInputPullUp);
+  DigitalPin(DigitalPin::GPIO::Signal_BatteryBalancerAlert).set_pin_mode(DigitalPin::Mode::kInputPullUp);
+#endif
+
   // enable peripherals (enable i2c lines)
   DigitalPin(DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(true);
 
@@ -105,14 +110,10 @@ void main_setup()
   // stability delay (dont ask...)
   delay_ms(10);
 
-  // setup serial
-  serial::setup();
-
   // first step !
   setup_adc(ADC_RES_EXP);
 
-  // setup power components
-  power::init();
+  // do some stuff before starting the peripherals
 
   // start the file system
   fileSystem::setup();
@@ -120,6 +121,14 @@ void main_setup()
 
   // check if we are in first boot mode (no first boot flag stored)
   const bool isFirstBoot = !fileSystem::doKeyExists(behavior::isFirstBootKey);
+
+  // can start !
+
+  // setup serial
+  serial::setup();
+
+  // setup power components
+  power::init();
 
   bool shouldAlertUser = false;
   // handle start flags

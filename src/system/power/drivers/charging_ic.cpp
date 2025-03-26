@@ -500,6 +500,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
   // set the nominal voltage values
   const auto maxBatteryVoltage_mV_read = chargerIcRegisters.maxChargeVoltage.set(maxBatteryVoltage_mV);
   const auto minSystemVoltage_mV_read = chargerIcRegisters.minSystemVoltage.set(minSystemVoltage_mV);
+  const auto minInputVoltage_mV_read = chargerIcRegisters.inputVoltage.set(4200);
 
   // a write failed at some point
   if (chargerIc.isFlagRaised)

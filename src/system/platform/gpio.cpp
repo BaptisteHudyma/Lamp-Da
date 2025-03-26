@@ -6,6 +6,31 @@
 #include <Arduino.h>
 #include <memory>
 
+#include "src/system/utils/constants.h"
+
+// check expected firmware version
+#ifndef LAMPDA_FIRMWARE_VERSION_MAJOR
+#error "Undefined firmware version major"
+#endif
+
+#ifndef LAMPDA_FIRMWARE_VERSION_MINOR
+#error "Undefined firmware version minor"
+#endif
+
+// check expected firmware version
+#ifndef EXPECTED_FIRMWARE_VERSION_MAJOR
+#error "Undefined expected firmware version major"
+#endif
+
+#ifndef EXPECTED_FIRMWARE_VERSION_MINOR
+#error "Undefined expected firmware version minor"
+#endif
+
+#if EXPECTED_FIRMWARE_VERSION_MAJOR != LAMPDA_FIRMWARE_VERSION_MAJOR || \
+        EXPECTED_FIRMWARE_VERSION_MINOR != LAMPDA_FIRMWARE_VERSION_MINOR
+#error "Firmware version missmatch"
+#endif
+
 class DigitalPinImpl
 {
 public:
@@ -26,6 +51,9 @@ public:
         pinMode(mDigitalPin, OUTPUT);
         break;
       case DigitalPin::kInputPullUp:
+        pinMode(mDigitalPin, INPUT_PULLUP);
+        break;
+      case DigitalPin::kInputPullUpSense:
         pinMode(mDigitalPin, INPUT_PULLUP_SENSE);
         break;
       case DigitalPin::kOutputHighCurrent:
@@ -100,7 +128,7 @@ DigitalPin::DigitalPin(GPIO pin)
     case GPIO::Signal_UsbProtectionFault:
       mImpl = std::make_shared<DigitalPinImpl>(I_INT_USB_PROT_FAULT);
       break;
-    case GPIO::Signal_VbusGateFaukt:
+    case GPIO::Signal_VbusGateFault:
       mImpl = std::make_shared<DigitalPinImpl>(I_INT_VBUS_GATE_FAULT);
       break;
     case GPIO::Signal_ChargerProcHot:
@@ -127,9 +155,6 @@ DigitalPin::DigitalPin(GPIO pin)
       break;
     case GPIO::Output_VbusDirection:
       mImpl = std::make_shared<DigitalPinImpl>(O_VBUS_DIR);
-      break;
-    case GPIO::Output_Disable5Vbus:
-      mImpl = std::make_shared<DigitalPinImpl>(O_DIS_5V_VBUS);
       break;
     case GPIO::Output_EnableOnTheGo:
       mImpl = std::make_shared<DigitalPinImpl>(O_ENABLE_OTG);

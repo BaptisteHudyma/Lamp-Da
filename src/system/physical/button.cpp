@@ -25,7 +25,7 @@ void button_state_interrupt() { wasButtonPressedDetected = true; }
 void init()
 {
   // attach the button interrupt
-  ButtonPin.set_pin_mode(DigitalPin::Mode::kInputPullUp);
+  ButtonPin.set_pin_mode(DigitalPin::Mode::kInputPullUpSense);
   ButtonPin.attach_callback(button_state_interrupt, DigitalPin::Interrupt::kChange);
 }
 

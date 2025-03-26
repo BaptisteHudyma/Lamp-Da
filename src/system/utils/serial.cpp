@@ -44,11 +44,13 @@ void handleCommand(const std::string& command)
     case utils::hash("v"):
       {
         lampda_print(
-                "hardware:%s\n"
-                "base software:%s\n"
+                "hardware:%d.%d\n"
+                "firmware:%d.%d\n"
                 "user software:%s",
-                HARDWARE_VERSION,
-                BASE_SOFTWARE_VERSION,
+                HARDWARE_VERSION_MAJOR,
+                HARDWARE_VERSION_MINOR,
+                EXPECTED_FIRMWARE_VERSION_MAJOR,
+                EXPECTED_FIRMWARE_VERSION_MINOR,
                 SOFTWARE_VERSION);
         break;
       }

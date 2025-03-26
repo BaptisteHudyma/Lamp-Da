@@ -145,7 +145,11 @@ void true_power_off()
   // disable peripherals
   DigitalPin(DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(false);
   // disable gates
-  DigitalPin(DigitalPin::GPIO::Output_Disable5Vbus).set_high(false);
+#ifdef IS_HARDWARE_1_0
+  // disable pullup in sleep mode (in V>1.0, done electrically)
+  DigitalPin(DigitalPin::GPIO::Input_isChargeOk).set_pin_mode(DigitalPin::Mode::kInput);
+  DigitalPin(DigitalPin::GPIO::Signal_BatteryBalancerAlert).set_pin_mode(DigitalPin::Mode::kInput);
+#endif
   DigitalPin(DigitalPin::GPIO::Output_EnableVbusGate).set_high(false);
   DigitalPin(DigitalPin::GPIO::Output_EnableOutputGate).set_high(false);
 
@@ -452,7 +456,12 @@ void handle_charger_operation_state()
   if (vbusDebounced)
   {
     // no power, shutdown everything
-    if (not is_charger_powered())
+    if (power::is_in_otg_mode())
+    {
+      // do nothing (for now !)
+      // TODO, stop if battery gets low
+    }
+    else if (not is_charger_powered())
     {
       // forbid charging
       power::enable_charge(false);

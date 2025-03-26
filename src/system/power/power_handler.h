@@ -25,13 +25,10 @@ bool set_output_max_current_mA(const uint16_t);
 // charge mode
 bool enable_charge(const bool);
 
-// otg mode
-bool set_otg_voltage_mv(const uint16_t);
-bool set_otg_max_current_mA(const uint16_t);
-
 std::string get_state();
 
 bool is_in_output_mode();
+bool is_in_otg_mode();
 
 } // namespace power
 

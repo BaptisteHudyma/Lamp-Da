@@ -1,6 +1,11 @@
 #ifndef COMPILE_H
 #define COMPILE_H
 
+// define hardware constants
+#if HARDWARE_VERSION_MAJOR == 1 && HARDWARE_VERSION_MINOR == 0
+#warning "hardware version set to 1.0"
+#endif
+
 //
 // optional defines
 //

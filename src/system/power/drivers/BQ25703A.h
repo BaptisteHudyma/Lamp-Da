@@ -160,26 +160,6 @@ public:
       // error
       return 0;
     }
-
-    uint16_t set(const uint16_t value)
-    {
-      // convert to authorized values
-      const uint16_t constraint = lmpd_constrain(value, minVal(), maxVal()) - minVal();
-      // break it down to the correct resolution (integer division)
-      const uint16_t flatValue = constraint / resolution();
-      // convert to binary word
-      uint16_t binaryWord = flatValue;
-      binaryWord &= mask();    // mask off unused bits (with &= for 16bits)
-      binaryWord <<= offset(); // offset the register (with <<= for 16 bits)
-
-      if (!writeData16(address(), binaryWord))
-      {
-        isFlagRaised = true;
-      }
-
-      // return the value that was written to the register
-      return (flatValue * resolution()) + minVal();
-    }
   };
 
   struct IBaseRegister : public IBaseReadRegister

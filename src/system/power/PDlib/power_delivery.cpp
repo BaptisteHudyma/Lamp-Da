@@ -28,7 +28,7 @@ inline static uint32_t powerSourceDetectedTime_s = 0;
 
 int get_vbus_voltage()
 {
-  static int vbusVoltage = false;
+  static int vbusVoltage = 0;
   static uint32_t time = 0;
   // do not spam the system
   if (time == 0 or time_ms() - time > 100)
@@ -195,9 +195,7 @@ bool setup()
     return false;
   }
   bool initSucceeded = (tcpm_init(devicePort) == 0);
-  delay_ms(50);
   pd_init(devicePort);
-  delay_ms(50);
 
   DigitalPin chargerPin(DigitalPin::GPIO::Signal_PowerDelivery);
   chargerPin.attach_callback(ic_interrupt, DigitalPin::Interrupt::kChange);

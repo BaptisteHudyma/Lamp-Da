@@ -12,9 +12,18 @@
 
 #include "src/user/constants.h"
 
-#define HARDWARE_VERSION "1.0"
-// Update when the soft changes version
-#define BASE_SOFTWARE_VERSION "0.01"
+// current hardware version
+#define HARDWARE_VERSION_MAJOR 1
+#define HARDWARE_VERSION_MINOR 0
+
+// define hardware constants
+#if HARDWARE_VERSION_MAJOR == 1 && HARDWARE_VERSION_MINOR == 0
+#define IS_HARDWARE_1_0
+#endif
+
+// expected firmware version, will not compile if missmatch
+#define EXPECTED_FIRMWARE_VERSION_MAJOR 1
+#define EXPECTED_FIRMWARE_VERSION_MINOR 0
 
 constexpr float c_PI = 3.1415926535897;
 constexpr float c_TWO_PI = 6.2831853071795;

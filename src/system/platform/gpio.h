@@ -24,7 +24,7 @@ public:
 
     Signal_PowerDelivery,
     Signal_UsbProtectionFault,
-    Signal_VbusGateFaukt,
+    Signal_VbusGateFault,
     Signal_ChargerProcHot,
     Signal_BatteryBalancerAlert,
     Signal_ImuInterrupt1,
@@ -34,7 +34,6 @@ public:
     Output_EnableMicrophone,
     Output_VbusFastRoleSwap,
     Output_VbusDirection,
-    Output_Disable5Vbus,
     Output_EnableOnTheGo,
     // danger zone: only one of the next 3 signals should be active at a time
     Output_DischargeVbus,
@@ -48,6 +47,7 @@ public:
     kOutput,
 
     kInputPullUp,
+    kInputPullUpSense,
     kOutputHighCurrent,
   };
   enum Interrupt
