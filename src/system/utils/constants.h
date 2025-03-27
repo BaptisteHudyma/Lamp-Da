@@ -53,6 +53,13 @@ constexpr uint16_t batteryMinVoltage_mV = 3000 * batteryCount;
 // min voltage of a li-ion cell to maximise lifetime
 constexpr uint16_t batteryMinVoltageSafe_mV = 3300 * batteryCount;
 
+// absolute minimum/maximum singular liion battery voltage
+constexpr uint16_t minSingularBatteryVoltage_mV = 2800;
+constexpr uint16_t maxSingularBatteryVoltage_mV = 4300;
+// absolute minimum/maximum battery pack voltage
+constexpr uint16_t minBatteryVoltage_mV = minSingularBatteryVoltage_mV * batteryCount;
+constexpr uint16_t maxBatteryVoltage_mV = maxSingularBatteryVoltage_mV * batteryCount;
+
 // parameters of the lamp body
 constexpr float maxPowerConsumption_A = 2.6; // Maxpower draw allowed on the system (Amperes)
 

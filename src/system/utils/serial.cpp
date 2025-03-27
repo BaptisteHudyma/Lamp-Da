@@ -1,7 +1,9 @@
 #include "serial.h"
 
+#include "constants.h"
 #include "src/system/power/power_handler.h"
 #include "src/system/power/charger.h"
+#include "src/system/power/balancer.h"
 #include "src/system/behavior.h"
 
 #include "src/system/physical/battery.h"
@@ -31,7 +33,7 @@ void handleCommand(const std::string& command)
                 "---Lamp-da CLI---\n"
                 "h: this page\n"
                 "v: hardware & software version\n"
-                "bl: battery levels\n"
+                "bat: battery info/levels\n"
                 "cinfo: charger infos\n"
                 "ADC: values from the charger ADC\n"
                 "power: power state machine states\n"
@@ -55,13 +57,47 @@ void handleCommand(const std::string& command)
         break;
       }
 
-    case utils::hash("bl"):
+    case utils::hash("bat"):
       {
-        lampda_print(
-                "raw battery level:%f%%\n"
-                "battery level:%f%%",
-                battery::get_level_percent(battery::get_raw_battery_voltage_mv()) / 100.0,
-                battery::get_battery_level() / 100.0);
+        const auto& balancerStatus = balancer::get_status();
+        const bool areBalancerValueValid = balancerStatus.is_valid();
+
+        if (areBalancerValueValid)
+        {
+          // print individual battery voltages
+          for (uint8_t i = 0; i < batteryCount; ++i)
+            lampda_print("batt %d: %d mV", i, balancerStatus.batteryVoltages_mV[i]);
+          lampda_print("total (from balancer) %dmv\n", balancerStatus.stackVoltage_mV);
+        }
+        else
+        {
+          lampda_print("balancer measurments not valid");
+        }
+
+        const auto& chargerStatus = charger::get_state();
+        const bool areChargerValueValid = chargerStatus.areMeasuresOk;
+        if (areChargerValueValid)
+        {
+          lampda_print("total (from charger) %dmv", chargerStatus.batteryVoltage_mV);
+        }
+        else
+        {
+          lampda_print("charger measurments not valid");
+        }
+
+        if (areChargerValueValid and areBalancerValueValid)
+        {
+          // print individual battery voltages
+          lampda_print(
+                  "raw battery level:%f%%\n"
+                  "battery level:%f%%",
+                  battery::get_level_percent(battery::get_raw_battery_voltage_mv()) / 100.0,
+                  battery::get_battery_level() / 100.0);
+        }
+        else
+        {
+          lampda_print("Battery measurments not valid");
+        }
         break;
       }
 

@@ -1,5 +1,6 @@
 #include "power_handler.h"
 
+#include "balancer.h"
 #include "src/system/utils/print.h"
 #include "src/system/utils/state_machine.h"
 
@@ -10,6 +11,8 @@
 #include "power_gates.h"
 
 namespace power {
+
+bool _isShutdownCompleted = false;
 
 static constexpr uint32_t clearPowerRailMinDelay_ms = 100;
 static constexpr uint32_t clearPowerRailFailureDelay_ms = 1000;
@@ -103,6 +106,10 @@ void handle_clear_power_rails()
   __private::vbusDirection.set_high(false);
   __private::fastRoleSwap.set_high(false);
 
+  // disable charge & balancing if needed
+  charger::set_enable_charge(false);
+  balancer::enable_balancing(false);
+
   // disable OTG if needed
   set_otg_parameters(0, 0);
 
@@ -135,6 +142,7 @@ void handle_charging_mode()
   if (powergates::is_vbus_gate_enabled())
   {
     charger::set_enable_charge(_isChargeEnabled);
+    balancer::enable_balancing(_isChargeEnabled);
   }
 
   // charge OR idle and do nothing (end of charge)
@@ -192,13 +200,16 @@ void handle_shutdown()
 {
   // disable all gates
   powergates::disable_gates();
-
   set_otg_parameters(0, 0);
 
   powerDelivery::shutdown();
 
   // shutdown charger component
   charger::shutdown();
+
+  balancer::go_to_sleep();
+
+  _isShutdownCompleted = true;
 }
 
 void handle_error_state()
@@ -310,6 +321,8 @@ bool go_to_shutdown()
   return true;
 }
 
+bool is_state_shutdown_effected() { return _isShutdownCompleted; }
+
 bool set_output_voltage_mv(const uint16_t outputVoltage_mV)
 {
   _outputVoltage_mV = outputVoltage_mV;
@@ -341,6 +354,12 @@ void init()
   // switch without a timing
   __private::powerMachine.set_state(PowerStates::IDLE);
 
+  if (not balancer::init())
+  {
+    // TODO:
+    // nothing ? the lamp can work without this
+  }
+
   // charging component, setup first
   charger::setup();
 
@@ -366,6 +385,9 @@ void loop()
 
   // run the charger loop (all the time)
   charger::loop();
+
+  // run the balancer loop (all the time)
+  balancer::loop();
 }
 
 } // namespace power

@@ -32,7 +32,6 @@ techsupport@sparkfun.com.
 
 #include "stdint.h"
 
-// TODO: on the new circuits, it will be another interface !!
 static constexpr uint8_t i2cDeviceIndex = 0;
 static constexpr bool usesStopBit = true;
 

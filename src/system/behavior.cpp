@@ -543,7 +543,7 @@ void handle_output_light_state()
     // user loop call
     user::loop();
 
-#if 0 // TODO
+#if 0
     const auto& chargerState = charger::get_state();
     if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)
     {
@@ -579,12 +579,20 @@ void handle_shutdown_state()
   power::go_to_shutdown();
 
   // let other thread do stuff for a while
-  for (uint i = 0; i < 5; i++)
+  for (uint i = 0; i < 10; i++)
   {
     yield_this_thread();
     // hack
     power::loop();
+
+    if (power::is_state_shutdown_effected())
+      break;
     delay_ms(1);
+  }
+
+  if (not power::is_state_shutdown_effected())
+  {
+    // error: shuting down without the whole procedure
   }
 
   // deactivate strip power

@@ -413,7 +413,6 @@ void handle_all(const bool shouldIgnoreAlerts)
                chargerStatus.status == charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
       {
         // fast blinking
-        // TODO: find a better way to tell user that the chargeur is bad
         indicator::blink(500, 500, buttonColor);
       }
       // standard charge mode

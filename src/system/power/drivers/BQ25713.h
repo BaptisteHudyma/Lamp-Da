@@ -1,12 +1,11 @@
 /**************************************************************************/
 /*!
   @file     BQ25713.h
-  @author   Lorro
-
-  Update by Baptiste Hudyma: 2024
+  @author   Baptiste Hudyma
 
 Library for basic interfacing with BQ25713 battery management IC from TI
 
+Based on Lorro's implementation for BQ25703A driver
 
 */
 /**************************************************************************/
@@ -601,7 +600,7 @@ public:
     {
       uint16_t address() const override { return MAX_CHARGE_VOLTAGE_ADDR; }
 
-      // TODO: the min in the doc is set to 1024, but this is wrong in practice
+      // the min in the doc is set to 1024, but this is wrong in practice
       virtual uint16_t minVal() const override { return 0; }
       virtual uint16_t maxVal() const override { return 19200; }
       virtual uint16_t resolution() const override { return 8; }
@@ -613,7 +612,7 @@ public:
     {
       uint16_t address() const override { return MINIMUM_SYSTEM_VOLTAGE_ADDR; }
 
-      // TODO: the min in the doc is set to 1024, but this is wrong in practice
+      // the min in the doc is set to 1024, but this is wrong in practice
       virtual uint16_t minVal() const override { return 0; }
       virtual uint16_t maxVal() const override { return 16128; }
       virtual uint16_t resolution() const override { return 256; }

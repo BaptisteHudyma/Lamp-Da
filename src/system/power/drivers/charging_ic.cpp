@@ -94,8 +94,6 @@ void run_status_update()
   if (isInOtg_s)
   {
     if (chargerIcRegisters.chargerStatus.IN_OTG())
-    // TODO: check that the EN_OTG is still enabled
-    // if (chargerIcRegisters.chargeOption3.EN_OTG())
     {
       alerts::manager.clear(alerts::Type::OTG_FAILED);
     }
