@@ -2,8 +2,9 @@
 
 #include <cstdint>
 
-#include "BQ25703A/charging_ic.h"
-#include "power_source.h"
+#include "drivers/charging_ic.h"
+#include "PDlib/power_delivery.h"
+
 #include "src/system/alerts.h"
 #include "src/system/physical/battery.h"
 #include "src/system/utils/constants.h"
@@ -53,7 +54,7 @@ bool should_charge()
     return false;
 
   // our power source cannot give power
-  if (not powerSource::can_use_power())
+  if (not powerDelivery::can_use_power())
   {
     return false;
   }
@@ -65,20 +66,20 @@ bool should_charge()
   }
 
   // no power on VBUS, no charge
-  if (not powerSource::is_power_available())
+  if (not powerDelivery::is_power_available())
   {
     isBatteryFullLatched_s = false;
     return false;
   }
 
   // no valid measurments from system yet
-  const auto& measurments = BQ25703A::get_measurments();
+  const auto& measurments = drivers::get_measurments();
   if (not measurments.is_measurment_valid())
   {
     return false;
   }
   // get the battery
-  const auto& battery = BQ25703A::get_battery();
+  const auto& battery = drivers::get_battery();
 
   // battery not connected
   if (not battery.isPresent)
@@ -137,13 +138,13 @@ void control_OTG(const uint16_t mv, const uint16_t ma)
   if (mv == 0 or ma == 0)
   {
     isOtgEnabled_s = false;
-    BQ25703A::disable_OTG();
+    drivers::disable_OTG();
   }
   else
   {
     isOtgEnabled_s = true;
-    BQ25703A::set_OTG_targets(mv, ma);
-    BQ25703A::enable_OTG();
+    drivers::set_OTG_targets(mv, ma);
+    drivers::enable_OTG();
   }
 }
 
@@ -159,12 +160,12 @@ bool is_status_error()
 void update_state_status()
 {
   static Charger_t::ChargerStatus_t previousStatus = Charger_t::ChargerStatus_t::UNINITIALIZED;
-  const BQ25703A::Status_t chargerStatus = BQ25703A::get_status();
+  const drivers::Status_t chargerStatus = drivers::get_status();
   // check the charger ic first
   switch (chargerStatus)
   {
-    case BQ25703A::Status_t::UNINITIALIZED:
-    case BQ25703A::Status_t::ERROR:
+    case drivers::Status_t::UNINITIALIZED:
+    case drivers::Status_t::ERROR:
       { // locked in a broken state
         // TODO: shutdown ? alert ?
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
@@ -174,7 +175,7 @@ void update_state_status()
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
         break;
       }
-    case BQ25703A::Status_t::ERROR_COMPONENT:
+    case drivers::Status_t::ERROR_COMPONENT:
       {
         // broken charger ic
         // TODO: shutdown ? alert ?
@@ -185,7 +186,7 @@ void update_state_status()
         charger.status = Charger_t::ChargerStatus_t::ERROR_HARDWARE;
         break;
       }
-    case BQ25703A::Status_t::ERROR_HAS_FAULTS:
+    case drivers::Status_t::ERROR_HAS_FAULTS:
       {
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
@@ -193,7 +194,7 @@ void update_state_status()
         }
 
         // hopefully temporary
-        BQ25703A::try_clear_faults();
+        drivers::try_clear_faults();
         // TODO: add a count on the fault clearing
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
         break;
@@ -201,32 +202,32 @@ void update_state_status()
     default:
       {
         // then check the charge status
-        switch (BQ25703A::get_charge_status())
+        switch (drivers::get_charge_status())
         {
-          case BQ25703A::ChargeStatus_t::OFF:
+          case drivers::ChargeStatus_t::OFF:
             {
               if (isBatteryFullLatched_s)
               {
                 charger.status = Charger_t::ChargerStatus_t::CHARGE_FINISHED;
               }
-              else if (not BQ25703A::get_battery().isPresent)
+              else if (not drivers::get_battery().isPresent)
               {
                 charger.status = Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING;
               }
-              else if (powerSource::is_power_available())
+              else if (powerDelivery::is_power_available())
                 charger.status = Charger_t::ChargerStatus_t::POWER_DETECTED;
               else
                 // only return to inactive mode
                 charger.status = Charger_t::ChargerStatus_t::INACTIVE;
               break;
             }
-          case BQ25703A::ChargeStatus_t::PRECHARGE:
-          case BQ25703A::ChargeStatus_t::FASTCHARGE:
+          case drivers::ChargeStatus_t::PRECHARGE:
+          case drivers::ChargeStatus_t::FASTCHARGE:
             {
               charger.status = Charger_t::ChargerStatus_t::CHARGING;
               break;
             }
-          case BQ25703A::ChargeStatus_t::SLOW_CHARGE:
+          case drivers::ChargeStatus_t::SLOW_CHARGE:
             {
               charger.status = Charger_t::ChargerStatus_t::SLOW_CHARGING;
               break;
@@ -247,14 +248,17 @@ void update_state_status()
 // update the charger state
 void update_state()
 {
-  const auto& measurements = BQ25703A::get_measurments();
+  const auto& measurements = drivers::get_measurments();
   if (measurements.is_measurment_valid())
   {
     charger.chargeCurrent_mA = measurements.batChargeCurrent_mA;
     charger.inputCurrent_mA = measurements.vbus_mA;
     charger.vbus_mV = measurements.vbus_mV;
+    charger.isChargeOkSignalHigh = measurements.isChargeOk;
 
-    const auto& battery = BQ25703A::get_battery();
+    charger.isInOtg = drivers::is_in_OTG();
+
+    const auto& battery = drivers::get_battery();
     charger.batteryCurrent_mA = battery.current_mA;
     charger.batteryVoltage_mV = battery.voltage_mV;
 
@@ -276,15 +280,13 @@ void update_state()
 
 void setup()
 {
-  powerSource::setup();
-
   // start with default parameters
   const bool isChargerEnabled =
-          BQ25703A::enable(batteryMinVoltageSafe_mV, batteryMaxVoltage_mV, 4000, batteryMaxChargeCurrent_mA, false);
+          drivers::enable(batteryMinVoltageSafe_mV, batteryMaxVoltage_mV, batteryMaxChargeCurrent_mA, false);
   if (not isChargerEnabled)
   {
-    const auto chargerStatus = BQ25703A::get_status();
-    if (chargerStatus == BQ25703A::Status_t::ERROR_COMPONENT)
+    const auto chargerStatus = drivers::get_status();
+    if (chargerStatus == drivers::Status_t::ERROR_COMPONENT)
     {
       // hardware error on the charger part
       charger.status = Charger_t::ChargerStatus_t::ERROR_HARDWARE;
@@ -303,19 +305,13 @@ void setup()
   charger.status = Charger_t::ChargerStatus_t::INACTIVE;
 }
 
-DigitalPin chargeOkPin(DigitalPin::GPIO::chargerOkSignal);
+DigitalPin chargeOkPin(DigitalPin::GPIO::Input_isChargeOk);
 
 void loop()
 {
-  const auto& otg = powerSource::get_otg_parameters();
-  control_OTG(otg.requestedVoltage_mV, otg.requestedCurrent_mA);
-
   // run charger loop
   const bool isChargerOk = chargeOkPin.is_high();
-  BQ25703A::loop(isChargerOk);
-
-  // run power source loop
-  powerSource::loop();
+  drivers::loop(isChargerOk);
 
   // update the charger state
   update_state();
@@ -324,7 +320,7 @@ void loop()
   if (is_status_error())
   {
     alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
-    BQ25703A::enable_charge(false);
+    drivers::enable_charge(false);
     // do NOT run charge functions
     return;
   }
@@ -336,33 +332,34 @@ void loop()
   // if needed, enable charge
   if (isChargerOk and should_charge())
   {
-    BQ25703A::set_input_current_limit(
+    drivers::set_input_current_limit(
             // set the max input current for this source
-            powerSource::get_max_input_current(),
+            powerDelivery::get_max_input_current(),
             // use ICO to find max power we can use with this charger
-            powerSource::is_standard_port());
+            powerDelivery::is_standard_port());
     // enable charge
-    BQ25703A::enable_charge(true);
+    drivers::enable_charge(true);
   }
   else
   {
     // disable current
-    BQ25703A::set_input_current_limit(0, false);
+    drivers::set_input_current_limit(0, false);
     // disable charge
-    BQ25703A::enable_charge(false);
+    drivers::enable_charge(false);
   }
 }
 
 void shutdown()
 {
   // shutdown charger component
-  BQ25703A::shutdown();
-  powerSource::shutdown();
+  drivers::shutdown();
 }
 
 void set_enable_charge(const bool shouldCharge) { enableCharge_s = shouldCharge; }
 
-bool is_vbus_powered() { return powerSource::is_power_available(); }
+bool is_vbus_powered() { return powerDelivery::is_power_available(); }
+
+bool can_use_vbus_power() { return powerDelivery::can_use_power(); }
 
 bool is_vbus_signal_detected() { return is_voltage_detected_on_vbus(); }
 
@@ -373,6 +370,8 @@ bool Charger_t::is_charging() const
   return status == ChargerStatus_t::POWER_DETECTED or status == ChargerStatus_t::SLOW_CHARGING or
          status == ChargerStatus_t::CHARGING;
 }
+
+bool Charger_t::is_charge_finished() const { return status == ChargerStatus_t::CHARGE_FINISHED; }
 
 bool Charger_t::is_effectivly_charging() const { return status == ChargerStatus_t::CHARGING; }
 

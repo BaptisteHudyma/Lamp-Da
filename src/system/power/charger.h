@@ -10,7 +10,7 @@ namespace charger {
 void setup();
 // call at every loop runs
 void loop();
-// call when the system will shutdown
+
 void shutdown();
 
 // debug feature: disable the charging process
@@ -20,6 +20,9 @@ struct Charger_t
 {
   // everything below makes no sense if this is false
   bool areMeasuresOk = false;
+
+  bool isChargeOkSignalHigh;
+  bool isInOtg;
 
   // input current in VBUS side
   uint16_t inputCurrent_mA = 0;
@@ -62,10 +65,16 @@ struct Charger_t
   // return true when the status is charging or powered
   bool is_charging() const;
   bool is_effectivly_charging() const;
+  bool is_charge_finished() const;
   std::string get_status_str() const;
 };
 
 bool is_vbus_powered();
+bool can_use_vbus_power();
+
+// set the otg parameters
+// set to 0 to deactivate
+void control_OTG(const uint16_t mv, const uint16_t ma);
 
 // the microcontroler is detecting a vbus input voltage
 bool is_vbus_signal_detected();

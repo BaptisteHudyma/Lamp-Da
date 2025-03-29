@@ -1,25 +1,24 @@
 /**************************************************************************/
 /*!
-  @file     BQ25703A.h
-  @author   Lorro
+  @file     BQ25713.h
+  @author   Baptiste Hudyma
 
-  Update by Baptiste Hudyma: 2024
+Library for basic interfacing with BQ25713 battery management IC from TI
 
-Library for basic interfacing with BQ25703A battery management IC from TI
-
+Based on Lorro's implementation for BQ25703A driver
 
 */
 /**************************************************************************/
 
-#ifndef BQ25703A_H
-#define BQ25703A_H
+#ifndef BQ25713_H
+#define BQ25713_H
 
 #include "src/system/platform/i2c.h"
 
 #include "src/system/utils/utils.h"
 #include <cstdint>
 
-namespace bq2573a {
+namespace bq25713 {
 
 using byte = uint8_t;
 
@@ -29,7 +28,7 @@ constexpr uint8_t i2cObjectIndex = 0;
 
 constexpr bool usesStopBit = true;
 
-constexpr uint16_t DEVICE_ID = 0x78;
+constexpr uint16_t DEVICE_ID = 0x88;
 constexpr uint16_t MANUFACTURER_ID = 0x40;
 
 constexpr uint16_t CHARGE_CURRENT_ADDR = 0x02;
@@ -62,34 +61,16 @@ constexpr uint16_t VBAT_ADC_ADDR = 0x2C;
 constexpr uint16_t MANUFACTURER_ID_ADDR = 0x2E;
 constexpr uint16_t DEVICE_ID_ADDR = 0x2F;
 
-class BQ25703A
+constexpr uint16_t OTG_ENABLE_CELL_LOW_VOLTAGE =
+        3550; // minimum single cell voltage at which the OTG will refuse to start
+
+class BQ25713
 {
 public:
-  BQ25703A() {};
+  BQ25713() {};
   // Initialise the variable here, but it will be written from the main program
-  static const byte BQ25703Aaddr = chargeI2cAddress; // I2C address
+  static const byte BQ25713addr = chargeI2cAddress; // I2C address
 
-  template<typename T> static bool readReg(T* dataParam, const uint8_t arrLen)
-  {
-    // This is a function for reading data words.
-    // The number of bytes that make up a word is either 1 or 2.
-
-    // Create an array to hold the returned data
-    byte valBytes[arrLen];
-    // Function to handle the I2C comms.
-    if (readDataReg(dataParam->addr, valBytes, arrLen))
-    {
-      // Cycle through array of data
-      dataParam->val0 = valBytes[0];
-      if (arrLen >= 2)
-        dataParam->val1 = valBytes[1];
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
   template<typename T> bool readRegEx(T& dataParam)
   {
     // This is a function for reading data words.
@@ -105,10 +86,7 @@ public:
       dataParam.val1 = (byte)valBytes[1];
       return true;
     }
-    else
-    {
-      return false;
-    }
+    return false;
   }
   // used by external functions to write registers
   template<typename T> static bool writeRegEx(T dataParam)
@@ -116,7 +94,7 @@ public:
     byte valBytes[2];
     valBytes[0] = dataParam.val0;
     valBytes[1] = dataParam.val1;
-    return i2c_writeData(i2cObjectIndex, BQ25703Aaddr, dataParam.addr, 2, valBytes, usesStopBit ? 1 : 0) == 0;
+    return i2c_writeData(i2cObjectIndex, BQ25713addr, dataParam.addr, 2, valBytes, usesStopBit ? 1 : 0) == 0;
   }
 // macro to generate bit mask to access bits
 #define GETMASK(index, size) (((1 << (size)) - 1) << (index))
@@ -141,9 +119,9 @@ public:
   inline static bool isFlagRaised = false;
 
   // Base class for register operations
-  struct IBaseRegister
+  struct IBaseReadRegister
   {
-    virtual ~IBaseRegister() {};
+    virtual ~IBaseReadRegister() {};
 
     virtual uint16_t address() const = 0;
 
@@ -183,7 +161,10 @@ public:
       // error
       return 0;
     }
+  };
 
+  struct IBaseRegister : public IBaseReadRegister
+  {
     uint16_t set(const uint16_t value)
     {
       // convert to authorized values
@@ -260,6 +241,8 @@ public:
       uint8_t addr = CHARGE_OPTION_0_ADDR;
       byte val0 = 0x0E;
       byte val1 = 0x82;
+      // To disable the hiccup mode during the system short protection
+      FIELD(val0, SYS_SHORT_DISABLE, 0x06, 0x01)
       // Learn mode. Discharges with power connected. Default disabled
       FIELD(val0, EN_LEARN, 0x05, 0x01)
       // Current shunt amplifier 20x or 40x. Default is 20x
@@ -287,6 +270,8 @@ public:
       FIELD(val1, EN_OOA, 0x02, 0x01)
       // PWM switching frequency, 800kHz or 1.2MHz. Default is high (800kHz)
       FIELD(val1, PWM_FREQ, 0x01, 0x01)
+      // PTM mode input voltage and current ripple reduction
+      FIELD(val1, LOW_PTM_RIPPLE, 0x00, 0x01)
     } chargeOption0;
     struct ChargeOption1t
     {
@@ -319,6 +304,10 @@ public:
       FIELD(val1, RSNS_RSR, 0x02, 0x01)
       // PSYS gain; 0.25uA/W or 1uA/W. Default is 1uA/W
       FIELD(val1, PSYS_RATIO, 0x01, 0x01)
+      // elect the ILIM_HIZ pin function
+      // 0b: charger enters HIZ mode when pull low the ILIM_HIZ pin. <default at POR>
+      // 1b: charger enters PTM when pull low the ILIM_HIZ pin
+      FIELD(val1, PTM_PINSEL, 0x00, 0x01)
     } chargeOption1;
     struct ChargeOption2t
     {
@@ -363,6 +352,24 @@ public:
       uint8_t addr = CHARGE_OPTION_3_ADDR;
       byte val0 = 0x00;
       byte val1 = 0x00;
+      // Enable the conservative VAP mode.
+      // 0b: Disabled <default at POR>
+      // 1b: Enabled
+      FIELD(val0, EN_CON_VAP, 0x06, 0x01)
+      // The selection of the external OTG/VAP pin control.
+      // 0b: the external OTG/VAP pin controls the EN/DIS VAP mode
+      // 1b: the external OTG/VAP pin controls the EN/DIS OTG mode <default at POR>
+      FIELD(val0, OTG_VAP_MODE, 0x05, 0x01)
+      // 4 levels inductor average current clamp.
+      // 00b: 6A
+      // 01b: 10A
+      // 10b: 15A <default at POR>
+      // 11b: Disabled
+      FIELD(val0, IL_AVG, 0x03, 0x02)
+      // Selection of the different OTG output voltage range.
+      // 0b: VOTG high range 4.28 V - 20.8 V <default at POR>
+      // 1b: VOTG low range 3 V - 19.52 V
+      FIELD(val0, OTG_RANGE_LOW, 0x02, 0x01)
       // Control BAT FET during Hi-Z state. Default is disabled
       FIELD(val0, BATFETOFF_HIZ, 0x01, 0x01)
       // PSYS function during OTG mode. PSYS = battery discharge - IOTG or
@@ -385,30 +392,54 @@ public:
       uint8_t addr = PROCHOT_OPTION_0_ADDR;
       byte val0 = 0x50;
       byte val1 = 0x92;
-      // VSYS threshold; 5.75V, 6V, 6.25V, 6.5V. Default is 6V
-      FIELD(val0, VSYS_VTH, 0x06, 0x02)
-      // Enable PROCHOT voltage kept LOW until PROCHOT_CLEAR is written.
-      // Default is disabled
-      FIELD(val0, EN_PROCHOT_EX, 0x05, 0x01)
-      // Minimum PROCHOT pulse length when EN_PROCHOT_EX is disabled; 100us,
-      // 1ms, 10ms, 5ms. Default is 1ms
-      FIELD(val0, PROCHOT_WIDTH, 0x03, 0x02)
-      // Clears PROCHOT pulse when EN_PROCHOT_EX is enabled. Default is idle.
-      FIELD(val0, PROCHOT_CLEAR, 0x02, 0x01)
+      // VSYS Threshold to trigger discharging VBUS in VAP mode.
+      // Measure on VSYS with fixed 5-μs deglitch time. Trigger when SYS pin voltage is
+      // below the thresholds.
+      // 2S - 4S battery
+      // 0000b - 1111b: 5.9 V - 7.4V with 0.1 V step size.
+      // 1S battery
+      // 0000b - 0111b: 3.1 V - 3.8 V with 0.1 V step size.
+      // 1000b - 1111b: 3.1 V - 3.8 V with 0.1 V step size.
+      FIELD(val0, VSYS_TH1, 0x04, 0x03)
+      // VSYS Threshold to assert /PROCHOT_VSYS.
+      // Measure on VSYS with fixed 5-μs deglitch time. Trigger when SYS pin voltage is
+      // below the thresholds.
+      // 2S - 4S battery
+      // 00b: 5.9V; 01b: 6.2V <default at POR>;
+      // 10b: 6.5V; 11b: 6.8V.
+      // 1S battery
+      // 00b: 3.1V; 01b: 3.3V <default at POR>;
+      // 10b: 3.5V; 11b: 3.7V
+      FIELD(val0, VSYS_TH2, 0x02, 0x02)
       // INOM deglitch time; 1ms or 50ms. Default is 1ms
       FIELD(val0, INOM_DEG, 0x01, 0x01)
+      // Enable the lower threshold of the PROCHOT_VDPM comparator
+      // 0b: the threshold of the PROCHOT_VDPM comparator follows the same VinDPM
+      // REG0x0A/0B() setting.
+      // 1b: the threshold of the PROCHOT_VDPM comparator is lower and determined by
+      // REG0x37[0] setting. <default at POR>
+      FIELD(val0, LOWER_PROCHOT_VDPM, 0x00, 0x01)
       // ILIM2 threshold as percentage of IDPM; 110%-230%(5% step),
       // 250%-450%(50% step). Default is 150%
       FIELD(val1, ILIM2_VTH, 0x03, 0x05)
       // ICRIT deglitch time. ICRIT is 110% of ILIM2; 15us, 100us, 400us,
       // 800us. Default is 100us.
       FIELD(val1, ICRIT_DEG, 0x01, 0x02)
+      // Lower threshold of the PROCHOT_VDPM comparator
+      // When REG0x36[0]=1, the threshold of the PROCHOT_VDPM comparator is
+      // determined by this bit setting.
+      // 0b: 80% of VinDPM threshold <default at POR>.
+      // 1b: 90% of VinDPM threshold
+      FIELD(val1, PROCHOT_VDPM_80_90, 0x00, 0x00)
     } prochotOption0;
     struct ProchotOption1t
     {
       uint8_t addr = PROCHOT_OPTION_1_ADDR;
       byte val0 = 0x20;
       byte val1 = 0x41;
+      // When all the REG0x38[7:0] bits are 0, PROCHOT function is disabled.
+      // Bit7 PP_VDPM detects VBUS voltage
+      FIELD(val0, PROCHOT_PROFILE_VDPM, 0x07, 0x01)
       // PROCHOT profile comparator. Default is disabled.
       FIELD(val0, PROCHOT_PROFILE_COMP, 0x06, 0x01)
       // Prochot is triggered if ICRIT threshold is reached. Default enabled.
@@ -475,6 +506,8 @@ public:
       // Latched fault flag of system over voltage protection. Default is no
       // fault.
       FIELD(val0, SYSOVP_STAT, 0x04, 0x01)
+      // When SYS is lower than 2.4V, then 7 times restart tries are failed.
+      FIELD(val0, Fault_SYS_SHORT, 0x03, 0x01)
       // Resets faults latch. Default is disabled
       FIELD_RO(val0, Fault_Latchoff, 0x02, 0x01)
       // Latched fault flag of OTG over voltage protection. Default is no
@@ -482,11 +515,13 @@ public:
       FIELD_RO(val0, Fault_OTG_OVP, 0x01, 0x01)
       // Latched fault flag of OTG over current protection. Default is no
       // fault.
-      FIELD_RO(val0, Fault_OTG_UCP, 0x00, 0x01)
+      FIELD_RO(val0, Fault_OTG_UVP, 0x00, 0x01)
       // Input source present. Default is not connected.
       FIELD_RO(val1, AC_STAT, 0x07, 0x01)
       // After ICO routine is done, bit goes to zero.
       FIELD_RO(val1, ICO_DONE, 0x06, 0x01)
+      // Charger is not operated in VAP mode
+      FIELD_RO(val1, IN_VAP, 0x05, 0x01)
       // Charger is in VINDPM or OTG mode. Default is not
       FIELD_RO(val1, IN_VINDPM, 0x04, 0x01)
       // Device is in current in DPM mode. Default is not
@@ -502,6 +537,8 @@ public:
     {
       uint8_t addr = PROCHOT_STATUS_ADDR;
       byte val0, val1;
+      // PROCHOT VDPM status. Default is not triggered.
+      FIELD_RO(val0, STAT_VDPM, 0x07, 0x01)
       // PROCHOT comparator trigger status. Default is not triggered.
       FIELD_RO(val0, STAT_COMP, 0x06, 0x01)
       // PROCHOT current critical trigger status. Default is not triggered.
@@ -517,6 +554,39 @@ public:
       FIELD_RO(val0, STAT_Battery_Removal, 0x01, 0x01)
       // PROCHOT adapter removal trigger status. Default is not triggered.
       FIELD_RO(val0, STAT_Adapter_Removal, 0x00, 0x01)
+
+      // PROCHOT Pulse Extension Enable. When pulse extension is
+      // enabled, keep the PROCHOT pin voltage LOW until host writes
+      // REG0x23[3] = 0.
+      // 0b: Disable pulse extension <default at POR>
+      // 1b: Enable pulse extension
+      FIELD(val1, EN_PROCHOT_EXIT, 0x06, 0x01)
+      // PROCHOT Pulse Width.
+      // Minimum PROCHOT pulse width when REG0x23[6] = 0
+      // 00b: 100 us
+      // 01b: 1 ms
+      // 10b: 10 ms <default at POR>
+      // 11b: 5 ms
+      FIELD(val1, PROCHOT_WIDTH, 0x04, 0x02)
+      // PROCHOT Pulse Clear.
+      // Clear PROCHOT pulse when 0x23[6] = 1.
+      // 0b: Clear PROCHOT pulse and drive PROCHOT pin HIGH
+      // 1b: Idle <default at POR>
+      FIELD(val1, PROCHOT_CLEAR, 0x03, 0x01)
+      // This status bit reports a failure to load VBUS 7 consecutive times
+      // in VAP mode, which indicates the battery voltage might be not
+      // high enough to enter VAP mode, or the VAP loading current
+      // settings are too high.
+      // 0b: Not is VAP failure <default at POR>
+      // 1b: In VAP failure, the charger exits VAP mode, and latches off
+      // until the host writes this bit to 0.
+      FIELD(val1, STAT_VAP_FAIL, 0x01, 0x01)
+      // When the charger is operated in VAP mode, it can exit VAP by
+      // either being disabled through host, or there is any charger faults.
+      // 0b: PROCHOT_EXIT_VAP is not active <default at POR>
+      // 1b: PROCHOT_EXIT_VAP is active, PROCHOT pin is low until
+      // host writes this status bit to 0.
+      FIELD(val1, STAT_EXIT_VAP, 0x00, 0x01)
     } prochotStatus;
     struct ChargeCurrentt : public IBaseRegister
     {
@@ -536,20 +606,21 @@ public:
       // the min in the doc is set to 1024, but this is wrong in practice
       virtual uint16_t minVal() const override { return 0; }
       virtual uint16_t maxVal() const override { return 19200; }
-      virtual uint16_t resolution() const override { return 16; }
+      virtual uint16_t resolution() const override { return 8; }
 
-      virtual uint8_t bitLenght() const override { return 11; }
-      virtual uint8_t offset() const override { return 4; }
+      virtual uint8_t bitLenght() const override { return 12; }
+      virtual uint8_t offset() const override { return 3; }
     } maxChargeVoltage;
     struct MinSystemVoltaget : public IBaseRegister
     {
       uint16_t address() const override { return MINIMUM_SYSTEM_VOLTAGE_ADDR; }
 
-      virtual uint16_t minVal() const override { return 1024; }
+      // the min in the doc is set to 1024, but this is wrong in practice
+      virtual uint16_t minVal() const override { return 0; }
       virtual uint16_t maxVal() const override { return 16128; }
       virtual uint16_t resolution() const override { return 256; }
 
-      virtual uint8_t bitLenght() const override { return 7; }
+      virtual uint8_t bitLenght() const override { return 6; }
       virtual uint8_t offset() const override { return 8; }
     } minSystemVoltage;
 
@@ -566,7 +637,7 @@ public:
     } iIN_HOST;
     // IIN_DPM register reflects the actual input current limit programmed in
     // the register, either from host or from ICO.
-    struct IIN_DPMt : public IBaseRegister
+    struct IIN_DPMt : public IBaseReadRegister
     {
       uint16_t address() const override { return IIN_DPM_ADDR; }
 
@@ -594,12 +665,31 @@ public:
     {
       uint16_t address() const override { return OTG_VOLTAGE_ADDR; }
 
-      virtual uint16_t minVal() const override { return 4480; }
-      virtual uint16_t maxVal() const override { return 20864; }
-      virtual uint16_t resolution() const override { return 64; }
+      uint16_t get(bool isLowVoltageMode)
+      {
+        // set min value depending on low otg voltage mode
+        minValue = isLowVoltageMode ? 0 : 1280;
 
-      virtual uint8_t bitLenght() const override { return 8; }
-      virtual uint8_t offset() const override { return 6; }
+        return IBaseRegister::get();
+      }
+
+      void set(uint16_t val, bool isLowVoltageMode)
+      {
+        // set min value depending on low otg voltage mode
+        minValue = isLowVoltageMode ? 0 : 1280;
+
+        IBaseRegister::set(val);
+      }
+
+      // min val should be 3000mV, but in practise thats not it
+      virtual uint16_t minVal() const override { return minValue; }
+      virtual uint16_t maxVal() const override { return 20800; }
+      virtual uint16_t resolution() const override { return 8; }
+
+      virtual uint8_t bitLenght() const override { return 12; }
+      virtual uint8_t offset() const override { return 2; }
+
+      uint16_t minValue = 0;
     } oTGVoltage;
     // The OTGCurrent register is a limit after which the device will raise the
     // OTG_OVP flag
@@ -619,7 +709,7 @@ public:
     { // read only
       uint16_t address() const override { return ADC_VBUS_PSYS_ADC_ADDR; };
 
-      uint16_t minVal0() const override { return 0; };
+      uint16_t minVal0() const override { return 0; }; // TODO: check this
       uint16_t maskVal0() const override { return 0b11111111; }
       uint16_t resolutionVal0() const override { return 12; };
 
@@ -691,23 +781,25 @@ public:
     struct ManufacturerIDt
     { // read only
       // Manufacturer ID
-      byte val0, val1;
       uint8_t addr = MANUFACTURER_ID_ADDR;
       byte get_manufacturerID()
       {
-        readReg(this, 1);
-        return val0;
+        byte valBytes[1];
+        // Function to handle the I2C comms.
+        readDataReg(addr, valBytes, 1);
+        return (byte)valBytes[0];
       }
     } manufacturerID;
     struct DeviceID
     { // read only
       // Device ID
-      byte val0, val1;
       uint8_t addr = DEVICE_ID_ADDR;
       byte get_deviceID()
       {
-        readReg(this, 2);
-        return val0;
+        byte valBytes[1];
+        // Function to handle the I2C comms.
+        readDataReg(addr, valBytes, 1);
+        return (byte)valBytes[0];
       }
     } deviceID;
   };
@@ -715,15 +807,15 @@ public:
 private:
   static bool readDataReg(const byte regAddress, byte* dataVal, const uint8_t arrLen)
   {
-    return i2c_readData(i2cObjectIndex, BQ25703Aaddr, regAddress, arrLen, dataVal, usesStopBit ? 1 : 0) == 0;
+    return i2c_readData(i2cObjectIndex, BQ25713addr, regAddress, arrLen, dataVal, usesStopBit ? 1 : 0) == 0;
   }
 
   static bool writeData16(const byte regAddress, uint16_t data)
   {
-    return i2c_write16(i2cObjectIndex, BQ25703Aaddr, regAddress, data, usesStopBit ? 1 : 0) == 0;
+    return i2c_write16(i2cObjectIndex, BQ25713addr, regAddress, data, usesStopBit ? 1 : 0) == 0;
   }
 };
 
-} // namespace bq2573a
+} // namespace bq25713
 
-#endif // BQ25703A_H
+#endif // BQ25713_H

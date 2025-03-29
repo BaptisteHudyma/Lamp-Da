@@ -12,9 +12,22 @@
 
 #include "src/user/constants.h"
 
-#define HARDWARE_VERSION "1.0"
-// Update when the soft changes version
-#define BASE_SOFTWARE_VERSION "0.01"
+// current hardware version
+#define HARDWARE_VERSION_MAJOR 1
+#define HARDWARE_VERSION_MINOR 0
+
+// define hardware constants
+#if HARDWARE_VERSION_MAJOR == 1 && HARDWARE_VERSION_MINOR == 0
+#define IS_HARDWARE_1_0
+#endif
+
+// expected firmware version, will not compile if missmatch
+#define EXPECTED_FIRMWARE_VERSION_MAJOR 1
+#define EXPECTED_FIRMWARE_VERSION_MINOR 0
+
+// increment for every  release
+#define SOFTWARE_VERSION_MAJOR 1
+#define SOFTWARE_VERSION_MINOR 0
 
 constexpr float c_PI = 3.1415926535897;
 constexpr float c_TWO_PI = 6.2831853071795;
@@ -33,7 +46,7 @@ constexpr float voltageDividerCoeff =
         voltageMeasurmentResistor2_Ohm / (voltageMeasurmentResistor1_Ohm + voltageMeasurmentResistor2_Ohm);
 
 // number of batteries for this model
-constexpr uint8_t batteryCount = 4;
+constexpr uint8_t batteryCount = 3;
 
 // max voltage of a single li-ion cell
 constexpr uint16_t batteryMaxVoltage_mV = 4200 * batteryCount;
@@ -43,6 +56,13 @@ constexpr uint16_t batteryMaxVoltageSafe_mV = 4060 * batteryCount;
 constexpr uint16_t batteryMinVoltage_mV = 3000 * batteryCount;
 // min voltage of a li-ion cell to maximise lifetime
 constexpr uint16_t batteryMinVoltageSafe_mV = 3300 * batteryCount;
+
+// absolute minimum/maximum singular liion battery voltage
+constexpr uint16_t minSingularBatteryVoltage_mV = 2800;
+constexpr uint16_t maxSingularBatteryVoltage_mV = 4300;
+// absolute minimum/maximum battery pack voltage
+constexpr uint16_t minBatteryVoltage_mV = minSingularBatteryVoltage_mV * batteryCount;
+constexpr uint16_t maxBatteryVoltage_mV = maxSingularBatteryVoltage_mV * batteryCount;
 
 // parameters of the lamp body
 constexpr float maxPowerConsumption_A = 2.6; // Maxpower draw allowed on the system (Amperes)

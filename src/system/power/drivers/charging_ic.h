@@ -3,7 +3,8 @@
 
 #include <cstdint>
 
-namespace BQ25703A {
+namespace charger {
+namespace drivers {
 
 enum Status_t
 {
@@ -36,7 +37,6 @@ enum ChargeStatus_t
 // call on program start
 bool enable(const uint16_t minSystemVoltage_mV,
             const uint16_t maxBatteryVoltage_mV,
-            const uint16_t minInputVoltage_mV,
             const uint16_t maxChargingCurrent_mA,
             const bool forceReset = false);
 
@@ -62,6 +62,7 @@ void enable_OTG();
 void disable_OTG();
 // set the desired OTG capabilities
 void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA);
+bool is_in_OTG();
 
 // try to clear the faults that can be cleared.
 // if this succeeds, the status will be to NOMINAL next loop call
@@ -79,6 +80,9 @@ struct Measurments
   uint32_t time = 0;
   // do not use the values if they are invalid
   bool is_measurment_valid() const;
+
+  // indicates if the charge signal from charger is high
+  bool isChargeOk;
 
   // voltage on vbus
   uint16_t vbus_mV;
@@ -113,6 +117,7 @@ struct Battery
 };
 Battery get_battery();
 
-} // namespace BQ25703A
+} // namespace drivers
+} // namespace charger
 
 #endif

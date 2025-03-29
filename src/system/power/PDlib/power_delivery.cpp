@@ -1,8 +1,8 @@
-#include "power_source.h"
+#include "power_delivery.h"
 
-#include "PDlib/drivers/usb_pd_driver.h"
-#include "PDlib/drivers/tcpm_driver.h"
-#include "PDlib/usb_pd.h"
+#include "drivers/usb_pd_driver.h"
+#include "drivers/tcpm_driver.h"
+#include "usb_pd.h"
 
 #include "src/system/utils/print.h"
 
@@ -19,7 +19,7 @@ const struct tcpc_config_t tcpc_config[CONFIG_USB_PD_PORT_COUNT] = {
 
 static bool canUseSourcePower_s = false;
 
-namespace powerSource {
+namespace powerDelivery {
 
 // set to true when a power source is detected
 inline static bool isPowerSourceDetected_s = false;
@@ -28,7 +28,7 @@ inline static uint32_t powerSourceDetectedTime_s = 0;
 
 int get_vbus_voltage()
 {
-  static int vbusVoltage = false;
+  static int vbusVoltage = 0;
   static uint32_t time = 0;
   // do not spam the system
   if (time == 0 or time_ms() - time > 100)
@@ -84,7 +84,9 @@ bool is_vbus_powered()
   if (time == 0 or time_ms() - time > 500)
   {
     time = time_ms();
-    isVbusPresent = pd_is_vbus_present(devicePort);
+    // isVbusPresent = pd_is_vbus_present(devicePort);
+    // more reliable when vbus is under load
+    isVbusPresent = get_vbus_voltage() >= 3000;
   }
   return isVbusPresent;
 }
@@ -186,24 +188,33 @@ UsbPDData data;
  *
  */
 
+bool isSetup = false;
 bool setup()
 {
   // 0 is success
-  const bool initSucceeded = (tcpm_init(devicePort) == 0);
-  delay_ms(50);
+  if (i2c_check_existence(devicePort, fusb302_I2C_SLAVE_ADDR) != 0)
+  {
+    return false;
+  }
+  bool initSucceeded = (tcpm_init(devicePort) == 0);
   pd_init(devicePort);
-  delay_ms(50);
 
-  DigitalPin chargerPin(DigitalPin::GPIO::ChargerInterrupt);
-  chargerPin.set_pin_mode(DigitalPin::Mode::kInputPullUp);
+  DigitalPin chargerPin(DigitalPin::GPIO::Signal_PowerDelivery);
   chargerPin.attach_callback(ic_interrupt, DigitalPin::Interrupt::kChange);
 
+  isSetup = initSucceeded;
   return initSucceeded;
 }
 
 int reset = 0;
 void loop()
 {
+  // no setup, skip loop
+  if (!isSetup)
+  {
+    return;
+  }
+
   //  handle alerts
   if (interruptSet)
   {
@@ -236,7 +247,7 @@ void loop()
            // plugged in power can flicker
            time - powerSourceDetectedTime_s > 100 and
            // vbus can become briefly invalid when using the ICO algorithm
-           time - lastVbusValid > 500)
+           time - lastVbusValid > 1000)
   {
     isPowerSourceDetected_s = false;
     reset = 1;
@@ -318,4 +329,4 @@ OTGParameters get_otg_parameters()
   return tmp;
 }
 
-} // namespace powerSource
+} // namespace powerDelivery

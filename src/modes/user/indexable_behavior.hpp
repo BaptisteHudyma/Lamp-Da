@@ -11,6 +11,9 @@ void power_on_sequence()
 {
   auto manager = get_context();
 
+  // set output voltage
+  outputPower::write_voltage(inputVoltage_V * 1000);
+
   // initialize the lamp object
   manager.lamp.startup();
 
@@ -28,9 +31,7 @@ void power_off_sequence()
   manager.lamp.clear();
   manager.lamp.show();
 
-  //
-  // high drive input (5mA)
-  // The only way to discharge the DC-DC pin...
+  outputPower::write_voltage(0);
 
   // (no-op) internal symbol used during build
   ensure_build_canary();

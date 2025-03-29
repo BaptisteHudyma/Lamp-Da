@@ -1,6 +1,10 @@
 #include "serial.h"
 
-#include "src/system/charger/charger.h"
+#include "constants.h"
+#include "src/system/power/power_handler.h"
+#include "src/system/power/charger.h"
+#include "src/system/power/balancer.h"
+#include "src/system/behavior.h"
 
 #include "src/system/physical/battery.h"
 #include "src/system/physical/fileSystem.h"
@@ -29,11 +33,11 @@ void handleCommand(const std::string& command)
                 "---Lamp-da CLI---\n"
                 "h: this page\n"
                 "v: hardware & software version\n"
-                "bl: battery levels\n"
+                "bat: battery info/levels\n"
                 "cinfo: charger infos\n"
                 "ADC: values from the charger ADC\n"
-                "cen: enable charger. Debug only\n"
-                "alerts: show all raised alerts"
+                "power: power state machine states\n"
+                "alerts: show all raised alerts\n"
                 "format-fs: format the whole file system (dangerous)\n"
                 "-----------------");
         break;
@@ -42,22 +46,65 @@ void handleCommand(const std::string& command)
     case utils::hash("v"):
       {
         lampda_print(
-                "hardware:%s\n"
-                "base software:%s\n"
-                "user software:%s",
-                HARDWARE_VERSION,
-                BASE_SOFTWARE_VERSION,
-                SOFTWARE_VERSION);
+                "hardware:%d.%d\n"
+                "firmware:%d.%d\n"
+                "software:%d.%d\n"
+                "user software:%d.%d",
+                HARDWARE_VERSION_MAJOR,
+                HARDWARE_VERSION_MINOR,
+                EXPECTED_FIRMWARE_VERSION_MAJOR,
+                EXPECTED_FIRMWARE_VERSION_MINOR,
+                SOFTWARE_VERSION_MAJOR,
+                SOFTWARE_VERSION_MINOR,
+                USER_SOFTWARE_VERSION_MAJOR,
+                USER_SOFTWARE_VERSION_MINOR);
         break;
       }
 
-    case utils::hash("bl"):
+    case utils::hash("bat"):
       {
-        lampda_print(
-                "raw battery level:%f%%\n"
-                "battery level:%f%%",
-                battery::get_level_percent(battery::get_raw_battery_voltage_mv()) / 100.0,
-                battery::get_battery_level() / 100.0);
+        const auto& balancerStatus = balancer::get_status();
+        const bool areBalancerValueValid = balancerStatus.is_valid();
+
+        if (areBalancerValueValid)
+        {
+          // print individual battery voltages
+          for (uint8_t i = 0; i < batteryCount; ++i)
+            lampda_print("cell %d: %d mV, is balancing: %s",
+                         i,
+                         balancerStatus.batteryVoltages_mV[i],
+                         boolToString(balancerStatus.isBalancing[i]));
+          lampda_print("total (from balancer) %dmv\n", balancerStatus.stackVoltage_mV);
+        }
+        else
+        {
+          lampda_print("balancer measurments not valid");
+        }
+
+        const auto& chargerStatus = charger::get_state();
+        const bool areChargerValueValid = chargerStatus.areMeasuresOk;
+        if (areChargerValueValid)
+        {
+          lampda_print("total (from charger) %dmv", chargerStatus.batteryVoltage_mV);
+        }
+        else
+        {
+          lampda_print("charger measurments not valid");
+        }
+
+        if (areChargerValueValid or areBalancerValueValid)
+        {
+          // print individual battery voltages
+          lampda_print(
+                  "raw battery level:%f%%\n"
+                  "battery level:%f%%",
+                  battery::get_level_percent(battery::get_raw_battery_voltage_mv()) / 100.0,
+                  battery::get_battery_level() / 100.0);
+        }
+        else
+        {
+          lampda_print("Battery measurments not valid");
+        }
         break;
       }
 
@@ -66,15 +113,17 @@ void handleCommand(const std::string& command)
         const auto& chargerState = charger::get_state();
 
         lampda_print(
+                "is charge signal ok:%s\n"
                 "voltage on vbus:%dmV\n"
                 "input current:%dmA\n"
                 "battery voltage:%dmV\n"
                 "charge current:%dmA\n"
-                "is usb powered:%s\n"
+                "is usb serial connected:%s\n"
                 "is charging:%s\n"
                 "is effec charging:%s\n"
                 "battery level:%f%%\n"
                 "-> %s",
+                boolToString(chargerState.isChargeOkSignalHigh),
                 chargerState.vbus_mV,
                 chargerState.inputCurrent_mA,
                 chargerState.batteryVoltage_mV,
@@ -91,16 +140,6 @@ void handleCommand(const std::string& command)
       alerts::show_all();
       break;
 
-    case utils::hash("cen"):
-      lampda_print("Enabling the charging process");
-      charger::set_enable_charge(true);
-      break;
-
-    case utils::hash("cdis"):
-      lampda_print("Disabling the charging process");
-      charger::set_enable_charge(false);
-      break;
-
     case utils::hash("ADC"):
       {
         const auto& chargerState = charger::get_state();
@@ -113,6 +152,16 @@ void handleCommand(const std::string& command)
                 chargerState.inputCurrent_mA,
                 chargerState.batteryVoltage_mV,
                 chargerState.batteryCurrent_mA);
+        break;
+      }
+
+    case utils::hash("power"):
+      {
+        lampda_print(
+                "state machine state:%s\n"
+                "behavior machine state:%s",
+                power::get_state().c_str(),
+                behavior::get_state().c_str());
         break;
       }
 

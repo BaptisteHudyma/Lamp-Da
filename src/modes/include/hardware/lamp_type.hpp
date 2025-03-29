@@ -10,7 +10,7 @@
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #include "src/system/utils/strip.h"
-#include "src/system/physical/led_power.h"
+#include "src/system/physical/output_power.h"
 #endif
 
 #include "src/modes/include/colors/utils.hpp"
@@ -103,9 +103,6 @@ public:
    */
   void LMBD_INLINE startup()
   {
-    // TODO: this 12v activation should disapear
-    ledpower::activate_12v_power();
-
     begin();
     clear();
     show();

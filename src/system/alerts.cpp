@@ -7,12 +7,14 @@
 #include "src/system/physical/indicator.h"
 #include "src/system/physical/battery.h"
 
+#include "src/system/power/power_handler.h"
+
 #include "src/system/utils/print.h"
 #include "src/system/utils/utils.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/brightness_handle.h"
 
-#include "src/system/charger/charger.h"
+#include "src/system/power/charger.h"
 
 namespace alerts {
 
@@ -41,8 +43,6 @@ inline const char* AlertsToText(const Type type)
       return "BLUETOOTH_ADVERT";
     case HARDWARE_ALERT:
       return "HARDWARE_ALERT";
-    case OTG_ACTIVATED:
-      return "OTG_ACTIVATED";
     case OTG_FAILED:
       return "OTG_FAILED";
     default:
@@ -321,24 +321,9 @@ struct Alert_BluetoothAdvertisement : public AlertBase
 
 struct Alert_HardwareAlert : public AlertBase
 {
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::GREEN); }
+  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::PURPLE); }
 
   Type get_type() const override { return Type::HARDWARE_ALERT; }
-};
-
-struct Alert_OtgActivated : public AlertBase
-{
-  bool show() const override
-  {
-    // red to green
-    const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
-                                                                        utils::ColorSpace::GREEN.get_rgb().color,
-                                                                        battery::get_battery_level() / 10000.0));
-
-    return indicator::breeze(500, 500, buttonColor);
-  }
-
-  Type get_type() const override { return Type::OTG_ACTIVATED; }
 };
 
 struct Alert_OtgFailed : public AlertBase
@@ -357,8 +342,7 @@ AlertBase* allAlerts[] = {new Alert_HardwareAlert,
                           new Alert_BatteryLow,
                           new Alert_LongLoopUpdate,
                           new Alert_BluetoothAdvertisement,
-                          new Alert_OtgFailed,
-                          new Alert_OtgActivated};
+                          new Alert_OtgFailed};
 
 void update_alerts()
 {
@@ -420,12 +404,15 @@ void handle_all(const bool shouldIgnoreAlerts)
     const auto& chargerStatus = charger::get_state();
     if (chargerStatus.is_charging())
     {
+      if (!power::is_in_output_mode() and chargerStatus.isInOtg)
+      {
+        indicator::breeze(500, 500, buttonColor);
+      }
       // power detected with no charge or slow charging raises a special animation
-      if (chargerStatus.status == charger::Charger_t::ChargerStatus_t::POWER_DETECTED or
-          chargerStatus.status == charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
+      else if (chargerStatus.status == charger::Charger_t::ChargerStatus_t::POWER_DETECTED or
+               chargerStatus.status == charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
       {
         // fast blinking
-        // TODO: find a better way to tell user that the chargeur is bad
         indicator::blink(500, 500, buttonColor);
       }
       // standard charge mode
@@ -434,10 +421,16 @@ void handle_all(const bool shouldIgnoreAlerts)
         indicator::breeze(2000, 1000, buttonColor);
       }
     }
+    // output mode, or end of charge : standard display
+    else if (power::is_in_output_mode() or chargerStatus.is_charge_finished())
+    {
+      // normal output mode
+      // chargerStatus.isInOtg should be true
+      indicator::set_color(buttonColor);
+    }
     else
     {
-      // normal mode
-      indicator::set_color(buttonColor);
+      // what are we doing here ? error
     }
 
     // skip the other alerts

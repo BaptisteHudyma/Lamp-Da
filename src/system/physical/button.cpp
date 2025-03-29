@@ -25,14 +25,14 @@ void button_state_interrupt() { wasButtonPressedDetected = true; }
 void init()
 {
   // attach the button interrupt
-  ButtonPin.set_pin_mode(DigitalPin::Mode::kInputPullUp);
+  ButtonPin.set_pin_mode(DigitalPin::Mode::kInputPullUpSense);
   ButtonPin.attach_callback(button_state_interrupt, DigitalPin::Interrupt::kChange);
 }
 
 static volatile bool buttonPressListener = false;
 void read_while_pressed()
 {
-  // this is a pullup, so higgh means no button press
+  // this is a pullup, so high means no button press
   if (wasButtonPressedDetected and ButtonPin.is_high())
   {
     wasButtonPressedDetected = false;

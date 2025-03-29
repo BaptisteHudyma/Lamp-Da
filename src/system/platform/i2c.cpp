@@ -3,13 +3,23 @@
 
 #include "i2c.h"
 
+#include "time.h"
+
 #include <cassert>
 
 // platform specific code
 #include "Wire.h"
+#include "rtos.h" // tied to FreeRTOS for serialization
 
 // set the two interfaces
-TwoWire* PROGMEM interfaces[] = {&Wire, &Wire1};
+TwoWire* PROGMEM interfaces[] = {&Wire};
+
+// mutex to prevent i2c lockups
+StaticSemaphore_t _Mutex;
+SemaphoreHandle_t i2cMutex = xSemaphoreCreateMutexStatic(&_Mutex);
+
+void _lockMutex(void) { xSemaphoreTake(i2cMutex, portMAX_DELAY); }
+void _unlockMutex(void) { xSemaphoreGive(i2cMutex); }
 
 void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
 {
@@ -26,6 +36,23 @@ void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
   wire->begin();
 }
 
+int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
+{
+  if (i2cIndex >= WIRE_INTERFACES_COUNT)
+  {
+    return 1;
+  }
+  _lockMutex();
+  auto wire = interfaces[i2cIndex];
+
+  wire->beginTransmission(deviceAddr);
+  const auto res = wire->endTransmission();
+
+  _unlockMutex();
+
+  return res;
+}
+
 int i2c_writeData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t* buf, int stopBit)
 {
   if (i2cIndex >= WIRE_INTERFACES_COUNT)
@@ -33,12 +60,16 @@ int i2c_writeData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uin
     assert(false);
     return 1;
   }
+  _lockMutex();
   auto wire = interfaces[i2cIndex];
 
   wire->beginTransmission(deviceAddr);
   wire->write(registerAdd);
   const uint8_t written = wire->write(buf, size);
   wire->endTransmission(stopBit != 0);
+
+  _unlockMutex();
+
   return 0;
 }
 
@@ -49,6 +80,7 @@ int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint
     assert(false);
     return 1;
   }
+  _lockMutex();
   auto wire = interfaces[i2cIndex];
 
   wire->beginTransmission(deviceAddr);
@@ -61,6 +93,8 @@ int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint
     *buf++ = wire->read();
     count--;
   }
+  _unlockMutex();
+
   // return 0 for success
   return (count == 0) ? 0 : 1;
 }
@@ -73,6 +107,8 @@ int i2c_xfer(
     assert(false);
     return 1;
   }
+
+  _lockMutex();
   auto wire = interfaces[i2cIndex];
 
   if (out_size)
@@ -95,6 +131,7 @@ int i2c_xfer(
       in++;
     }
   }
+  _unlockMutex();
 
   return 0;
 }

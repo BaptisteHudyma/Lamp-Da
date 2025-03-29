@@ -6,6 +6,31 @@
 #include <Arduino.h>
 #include <memory>
 
+#include "src/system/utils/constants.h"
+
+// check expected firmware version
+#ifndef LAMPDA_FIRMWARE_VERSION_MAJOR
+#error "Undefined firmware version major"
+#endif
+
+#ifndef LAMPDA_FIRMWARE_VERSION_MINOR
+#error "Undefined firmware version minor"
+#endif
+
+// check expected firmware version
+#ifndef EXPECTED_FIRMWARE_VERSION_MAJOR
+#error "Undefined expected firmware version major"
+#endif
+
+#ifndef EXPECTED_FIRMWARE_VERSION_MINOR
+#error "Undefined expected firmware version minor"
+#endif
+
+#if EXPECTED_FIRMWARE_VERSION_MAJOR != LAMPDA_FIRMWARE_VERSION_MAJOR || \
+        EXPECTED_FIRMWARE_VERSION_MINOR != LAMPDA_FIRMWARE_VERSION_MINOR
+#error "Firmware version missmatch"
+#endif
+
 class DigitalPinImpl
 {
 public:
@@ -16,6 +41,9 @@ public:
   {
     switch (mode)
     {
+      case DigitalPin::kDefault:
+        // trust the system, the pin mode is already set
+        break;
       case DigitalPin::kInput:
         pinMode(mDigitalPin, INPUT);
         break;
@@ -23,6 +51,9 @@ public:
         pinMode(mDigitalPin, OUTPUT);
         break;
       case DigitalPin::kInputPullUp:
+        pinMode(mDigitalPin, INPUT_PULLUP);
+        break;
+      case DigitalPin::kInputPullUpSense:
         pinMode(mDigitalPin, INPUT_PULLUP_SENSE);
         break;
       case DigitalPin::kOutputHighCurrent:
@@ -62,50 +93,81 @@ DigitalPin::DigitalPin(GPIO pin)
 {
   switch (pin)
   {
-    case GPIO::a0:
-      mImpl = std::make_shared<DigitalPinImpl>(AD0);
+    case GPIO::gpio0:
+      mImpl = std::make_shared<DigitalPinImpl>(D0);
       break;
-    case GPIO::a1:
-      mImpl = std::make_shared<DigitalPinImpl>(AD1);
+    case GPIO::gpio1:
+      mImpl = std::make_shared<DigitalPinImpl>(D1);
       break;
-    case GPIO::a2:
-      mImpl = std::make_shared<DigitalPinImpl>(AD2);
+    case GPIO::gpio2:
+      mImpl = std::make_shared<DigitalPinImpl>(D2);
       break;
-    case GPIO::p4:
+    case GPIO::gpio3:
+      mImpl = std::make_shared<DigitalPinImpl>(D3);
+      break;
+    case GPIO::gpio4:
       mImpl = std::make_shared<DigitalPinImpl>(D4);
       break;
-    case GPIO::p5:
+    case GPIO::gpio5:
       mImpl = std::make_shared<DigitalPinImpl>(D5);
       break;
-    case GPIO::p6:
+    case GPIO::gpio6:
       mImpl = std::make_shared<DigitalPinImpl>(D6);
       break;
-    case GPIO::p7:
+    case GPIO::gpio7:
       mImpl = std::make_shared<DigitalPinImpl>(D7);
       break;
-    case GPIO::p8:
-      mImpl = std::make_shared<DigitalPinImpl>(D8);
+
+    case GPIO::Input_isChargeOk:
+      mImpl = std::make_shared<DigitalPinImpl>(I_IS_CHARGE_OK);
       break;
-    case GPIO::ChargerInterrupt:
-      mImpl = std::make_shared<DigitalPinImpl>(CHARGE_INT);
+
+    case GPIO::Signal_PowerDelivery:
+      mImpl = std::make_shared<DigitalPinImpl>(I_INT_PD_SIGNAL);
       break;
-    case GPIO::ImuPower:
-      mImpl = std::make_shared<DigitalPinImpl>(PIN_LSM6DS3TR_C_POWER);
+    case GPIO::Signal_UsbProtectionFault:
+      mImpl = std::make_shared<DigitalPinImpl>(I_INT_USB_PROT_FAULT);
       break;
-    case GPIO::otgSignal:
-      mImpl = std::make_shared<DigitalPinImpl>(ENABLE_OTG);
+    case GPIO::Signal_VbusGateFault:
+      mImpl = std::make_shared<DigitalPinImpl>(I_INT_VBUS_GATE_FAULT);
       break;
-    case GPIO::usb33Power:
-      mImpl = std::make_shared<DigitalPinImpl>(USB_33V_PWR);
+    case GPIO::Signal_ChargerProcHot:
+      mImpl = std::make_shared<DigitalPinImpl>(I_INT_CHARGE_PROC_HOT);
       break;
-    case GPIO::microphonePower:
-      mImpl = std::make_shared<DigitalPinImpl>(PIN_PDM_PWR);
+    case GPIO::Signal_BatteryBalancerAlert:
+      mImpl = std::make_shared<DigitalPinImpl>(I_INT_BLNC_ALERT);
       break;
-    case GPIO::chargerOkSignal:
-      mImpl = std::make_shared<DigitalPinImpl>(CHARGE_OK);
+    case GPIO::Signal_ImuInterrupt1:
+      mImpl = std::make_shared<DigitalPinImpl>(I_INT_IMU_INT1);
       break;
-    case GPIO::batterySignal:
-      mImpl = std::make_shared<DigitalPinImpl>(BAT21);
+    case GPIO::Signal_ImuInterrupt2:
+      mImpl = std::make_shared<DigitalPinImpl>(I_INT_IMU_INT2);
+      break;
+
+    case GPIO::Output_EnableExternalPeripherals:
+      mImpl = std::make_shared<DigitalPinImpl>(O_EN_EXT_PWR);
+      break;
+    case GPIO::Output_EnableMicrophone:
+      mImpl = std::make_shared<DigitalPinImpl>(O_EN_PDM_PWR);
+      break;
+    case GPIO::Output_VbusFastRoleSwap:
+      mImpl = std::make_shared<DigitalPinImpl>(O_VBUS_FRS);
+      break;
+    case GPIO::Output_VbusDirection:
+      mImpl = std::make_shared<DigitalPinImpl>(O_VBUS_DIR);
+      break;
+    case GPIO::Output_EnableOnTheGo:
+      mImpl = std::make_shared<DigitalPinImpl>(O_ENABLE_OTG);
+      break;
+
+    case GPIO::Output_DischargeVbus:
+      mImpl = std::make_shared<DigitalPinImpl>(O_VBUS_DISCHARGE);
+      break;
+    case GPIO::Output_EnableVbusGate:
+      mImpl = std::make_shared<DigitalPinImpl>(O_EN_VBUS_GATE);
+      break;
+    case GPIO::Output_EnableOutputGate:
+      mImpl = std::make_shared<DigitalPinImpl>(O_EN_OUTPUT_PWR);
       break;
   }
 }
@@ -127,7 +189,5 @@ uint16_t DigitalPin::read() const { return mImpl->read(); }
 int DigitalPin::pin() const { return mImpl->mDigitalPin; }
 
 void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode) { mImpl->attach_callback(func, mode); }
-
-void brigthness_write_analog(uint16_t value) { analogWrite(OUT_BRIGHTNESS, value); }
 
 #endif

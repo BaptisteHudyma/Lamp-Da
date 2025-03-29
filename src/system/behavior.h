@@ -56,6 +56,8 @@ extern void loop();
 // return true if the program is in the process of shuting down
 extern bool is_shuting_down();
 
+std::string get_state();
+
 } // namespace behavior
 
 /// \private Internal symbol used to signify which LMBD_LAMP_TYPE was specified

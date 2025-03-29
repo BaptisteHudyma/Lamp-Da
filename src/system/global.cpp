@@ -1,16 +1,19 @@
+#include "power/power_handler.h"
 #include "src/compile.h"
 
 #include "src/system/alerts.h"
 #include "src/system/behavior.h"
-#include "src/system/charger/charger.h"
 
 #include "src/system/physical/battery.h"
 #include "src/system/physical/button.h"
 #include "src/system/physical/indicator.h"
 #include "src/system/physical/IMU.h"
 #include "src/system/physical/fileSystem.h"
-#include "src/system/physical/led_power.h"
+#include "src/system/physical/output_power.h"
 #include "src/system/physical/sound.h"
+
+#include "src/system/power/charger.h"
+#include "src/system/power/power_handler.h"
 
 #include "src/system/utils/serial.h"
 #include "src/system/utils/utils.h"
@@ -31,9 +34,7 @@ void charging_thread()
 {
   if (behavior::is_shuting_down())
     return;
-
-  // run the charger loop (all the time)
-  charger::loop();
+  power::loop();
   delay_ms(2);
 }
 
@@ -82,8 +83,16 @@ void check_loop_runtime(const uint32_t runTime)
 
 void main_setup()
 {
+#ifdef IS_HARDWARE_1_0
+  DigitalPin(DigitalPin::GPIO::Input_isChargeOk).set_pin_mode(DigitalPin::Mode::kInputPullUp);
+  DigitalPin(DigitalPin::GPIO::Signal_BatteryBalancerAlert).set_pin_mode(DigitalPin::Mode::kInputPullUp);
+#endif
+
+  // enable peripherals (enable i2c lines)
+  DigitalPin(DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(true);
+
   // start by resetting the led driver
-  ledpower::write_current(0);
+  outputPower::write_voltage(0);
 
   // set turn on time
   turnOnTime = time_ms();
@@ -98,15 +107,13 @@ void main_setup()
   {
     i2c_setup(i, 400000, 100);
   }
-
-  // setup serial
-  serial::setup();
+  // stability delay (dont ask...)
+  delay_ms(10);
 
   // first step !
   setup_adc(ADC_RES_EXP);
 
-  // setup charger
-  charger::setup();
+  // do some stuff before starting the peripherals
 
   // start the file system
   fileSystem::setup();
@@ -114,6 +121,14 @@ void main_setup()
 
   // check if we are in first boot mode (no first boot flag stored)
   const bool isFirstBoot = !fileSystem::doKeyExists(behavior::isFirstBootKey);
+
+  // can start !
+
+  // setup serial
+  serial::setup();
+
+  // setup power components
+  power::init();
 
   bool shouldAlertUser = false;
   // handle start flags

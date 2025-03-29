@@ -32,8 +32,7 @@ techsupport@sparkfun.com.
 
 #include "stdint.h"
 
-// TODO: on the new circuits, it will be another interface !!
-static constexpr uint8_t i2cDeviceIndex = 1;
+static constexpr uint8_t i2cDeviceIndex = 0;
 static constexpr bool usesStopBit = true;
 
 //****************************************************************************//
@@ -58,10 +57,6 @@ status_t LSM6DS3Core::beginCore(void)
 {
   status_t returnError = IMU_SUCCESS;
 
-  DigitalPin powerPin(DigitalPin::GPIO::ImuPower);
-  powerPin.set_pin_mode(DigitalPin::Mode::kOutputHighCurrent);
-  powerPin.set_high(true);
-
   delay_ms(10);
 
   // Spin for a few ms
@@ -73,6 +68,11 @@ status_t LSM6DS3Core::beginCore(void)
 
   // Check the ID register to determine if the operation was a success.
   uint8_t readCheck;
+
+  if (i2c_check_existence(i2cDeviceIndex, I2CAddress) != 0)
+  {
+    returnError = IMU_HW_ERROR;
+  }
 
   readRegister(&readCheck, LSM6DS3_ACC_GYRO_WHO_AM_I_REG);
   if (!(readCheck == LSM6DS3_ACC_GYRO_WHO_AM_I || readCheck == LSM6DS3_C_ACC_GYRO_WHO_AM_I))

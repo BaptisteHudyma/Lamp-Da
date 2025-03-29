@@ -12,6 +12,19 @@ namespace battery {
 extern uint16_t get_raw_battery_voltage_mv();
 
 /**
+ * \brief return true if the battery pack can be used as a energy source
+ * This status is updated after calling \ref get_raw_battery_voltage_mv
+ */
+extern bool is_battery_usable_as_power_source();
+/**
+ * \brief Return true if this battery can be charged
+ * Check only for validity, not voltage.
+ * If this is false, starting a charge process can break the system
+ * This status is updated after calling \ref get_raw_battery_voltage_mv
+ */
+extern bool can_battery_be_charged();
+
+/**
  * \brief convert a single liion battery voltage to a percent level model
  * \param[in] liionLevel_mv The voltage of the whole battery
  * \param[in] batteryCountSerie How many liion cells in serie
@@ -46,24 +59,18 @@ inline uint16_t get_level_percent(const uint16_t batteryVoltage_mV)
 }
 
 /**
- * \brief Return the max safe battery level, in percent * 100
- */
-inline uint16_t get_max_safe_level() { return get_level_percent(batteryMaxVoltageSafe_mV); }
-
-/**
- * \brief Return the min safe battery level, in percent * 100
- */
-inline uint16_t get_min_safe_level() { return get_level_percent(batteryMinVoltageSafe_mV); }
-
-/**
  * \brief returns the battery level, mapped to the desired safe battery level
  */
 inline uint16_t get_level_safe(const uint16_t battery_mv)
 {
+  // save the init values
+  static const uint16_t minSafeLevel_percent = get_level_percent(batteryMinVoltageSafe_mV);
+  static const uint16_t maxSafeLevel_percent = get_level_percent(batteryMaxVoltageSafe_mV);
+
   // get the result of the total battery life, map it to the safe battery level
   // indicated by user
   return lmpd_constrain(lmpd_map<uint16_t, uint16_t>(
-                                get_level_percent(battery_mv), get_min_safe_level(), get_max_safe_level(), 0, 10000),
+                                get_level_percent(battery_mv), minSafeLevel_percent, maxSafeLevel_percent, 0, 10000),
                         0,
                         10000);
 }

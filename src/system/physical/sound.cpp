@@ -19,7 +19,7 @@ bool enable()
   if (isStarted)
     return true;
 
-  DigitalPin(DigitalPin::GPIO::microphonePower).set_high(true);
+  DigitalPin(DigitalPin::GPIO::Output_EnableMicrophone).set_high(true);
   isStarted = _private::start();
   return isStarted;
 }
@@ -30,7 +30,7 @@ void disable()
     return;
 
   _private::stop();
-  DigitalPin(DigitalPin::GPIO::microphonePower).set_high(false);
+  DigitalPin(DigitalPin::GPIO::Output_EnableMicrophone).set_high(false);
   isStarted = false;
 }
 

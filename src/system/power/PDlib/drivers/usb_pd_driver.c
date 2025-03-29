@@ -18,6 +18,9 @@ extern uint32_t g_us_timestamp_upper_32bit;
 struct SourcePowerParameters otgParameters;
 struct SourcePowerParameters get_OTG_requested_parameters() { return otgParameters; }
 
+int canBecomePowerSource = 1; // enabled by default
+void set_allow_power_sourcing(const int allowPowerSourcing) { canBecomePowerSource = allowPowerSourcing != 0; }
+
 uint32_t pd_task_set_event(uint32_t event, int wait_for_reply)
 {
   switch (event)
@@ -142,7 +145,7 @@ timestamp_t get_time(void)
 void pd_power_supply_reset(int port)
 {
   // reset OTG params
-  otgParameters.requestedVoltage_mV = 0;
+  otgParameters.requestedVoltage_mV = 5000;
   otgParameters.requestedCurrent_mA = 0;
   return;
 }
@@ -215,18 +218,16 @@ int pd_custom_vdm(int port, int cnt, uint32_t* payload, uint32_t** rpayload)
 
 void pd_execute_data_swap(int port, int data_role) { /* Do nothing */ }
 
-int pd_check_data_swap(int port, int data_role)
+int pd_is_data_swap_allowed(int port, int data_role)
 {
   // Never allow data swap
   return 0;
 }
 
-int pd_check_power_swap(int port)
+int pd_is_power_swap_succesful(int port)
 {
-  // Always refuse power swap
-  return 0;
   // accept power swap
-  // TODO: return EC_SUCCESS;
+  return canBecomePowerSource != 0;
 }
 
 // Check that the board health is good

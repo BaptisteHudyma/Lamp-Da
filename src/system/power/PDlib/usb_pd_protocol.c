@@ -1017,9 +1017,9 @@ static int pd_send_request_msg(int port, int always_send_request)
     if (pd[port].prev_request_mv == supply_voltage)
       return EC_SUCCESS;
 #ifdef CONFIG_CHARGE_MANAGER
-      /* Limit current to PD_MIN_MA during transition */
-      // else
-      //	charge_manager_force_ceil(port, PD_MIN_MA);
+    /* Limit current to PD_MIN_MA during transition */
+    // else
+    //	charge_manager_force_ceil(port, PD_MIN_MA);
 #endif
   }
 
@@ -1077,20 +1077,20 @@ static void pd_update_pdo_flags(int port, uint32_t pdo)
     pd[port].flags &= ~PD_FLAGS_PARTNER_DR_DATA;
 
 #ifdef CONFIG_CHARGE_MANAGER
-    /*
-     * Treat device as a dedicated charger (meaning we should charge
-     * from it) if it does not support power swap, or if it is externally
-     * powered, or if we are a sink and the device identity matches a
-     * charging white-list.
-     */
-    /*
-    if (!(pd[port].flags & PD_FLAGS_PARTNER_DR_POWER) ||
-        (pd[port].flags & PD_FLAGS_PARTNER_EXTPOWER) ||
-        charge_whitelisted)
-        charge_manager_update_dualrole(port, CAP_DEDICATED);
-    else
-        charge_manager_update_dualrole(port, CAP_DUALROLE);
-    */
+  /*
+   * Treat device as a dedicated charger (meaning we should charge
+   * from it) if it does not support power swap, or if it is externally
+   * powered, or if we are a sink and the device identity matches a
+   * charging white-list.
+   */
+  /*
+  if (!(pd[port].flags & PD_FLAGS_PARTNER_DR_POWER) ||
+      (pd[port].flags & PD_FLAGS_PARTNER_EXTPOWER) ||
+      charge_whitelisted)
+      charge_manager_update_dualrole(port, CAP_DEDICATED);
+  else
+      charge_manager_update_dualrole(port, CAP_DUALROLE);
+  */
 #endif
 }
 
@@ -1493,7 +1493,7 @@ static void handle_ctrl_request(int port, uint16_t head, uint32_t* payload)
       break;
     case PD_CTRL_PR_SWAP:
 #ifdef CONFIG_USB_PD_DUAL_ROLE
-      if (pd_check_power_swap(port))
+      if (pd_is_power_swap_succesful(port))
       {
         send_control(port, PD_CTRL_ACCEPT);
         /*
@@ -1512,7 +1512,7 @@ static void handle_ctrl_request(int port, uint16_t head, uint32_t* payload)
 #endif
       break;
     case PD_CTRL_DR_SWAP:
-      if (pd_check_data_swap(port, pd[port].data_role))
+      if (pd_is_data_swap_allowed(port, pd[port].data_role) == EC_SUCCESS)
       {
         /*
          * Accept switch and perform data swap. Clear
@@ -2465,7 +2465,7 @@ void pd_run_state_machine(int port, int reset)
         /* Query capabilities of the other side */
         res = send_source_cap(port);
         /* packet was acked => PD capable device) */
-        if (res >= 0)
+        if (res >= 2)
         {
           set_state(port, PD_STATE_SRC_NEGOCIATE);
           timeout = 10 * MSEC_US;
