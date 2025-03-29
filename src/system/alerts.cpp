@@ -421,8 +421,8 @@ void handle_all(const bool shouldIgnoreAlerts)
         indicator::breeze(2000, 1000, buttonColor);
       }
     }
-    // output mode, standard display
-    else if (power::is_in_output_mode())
+    // output mode, or end of charge : standard display
+    else if (power::is_in_output_mode() or chargerStatus.is_charge_finished())
     {
       // normal output mode
       // chargerStatus.isInOtg should be true

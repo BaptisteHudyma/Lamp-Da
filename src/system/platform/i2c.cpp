@@ -3,6 +3,8 @@
 
 #include "i2c.h"
 
+#include "time.h"
+
 #include <cassert>
 
 // platform specific code
@@ -47,6 +49,7 @@ int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
   const auto res = wire->endTransmission();
 
   _unlockMutex();
+
   return res;
 }
 
@@ -66,6 +69,7 @@ int i2c_writeData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uin
   wire->endTransmission(stopBit != 0);
 
   _unlockMutex();
+
   return 0;
 }
 
@@ -90,6 +94,7 @@ int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint
     count--;
   }
   _unlockMutex();
+
   // return 0 for success
   return (count == 0) ? 0 : 1;
 }

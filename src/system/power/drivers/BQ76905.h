@@ -101,7 +101,19 @@ constexpr uint16_t SUBCOMMAND_PROT_RECOVERY_ADDR = 0x009B;
 
 // most of them are not implemented to prevent missuse
 
+constexpr uint16_t SUBCOMMAND_CONFIGURATION_DA_ADDR = 0x9019;
 constexpr uint16_t SUBCOMMAND_CONFIGURATION_VCELL_MODE_ADDR = 0x901B;
+constexpr uint16_t SUBCOMMAND_CONFIGURATION_TS_OFFSET_ADDR = 0x900E;
+
+// compute data checksum for communication
+uint8_t checksum(uint8_t lenght, uint8_t* data)
+{
+  uint8_t checksum = 0;
+  for (uint8_t i = 0; i < lenght; ++i)
+    checksum += data[i];
+  checksum = 0xff & (~checksum);
+  return checksum;
+}
 
 class BQ76905
 {
@@ -212,52 +224,80 @@ public:
       // set command
       raw_send();
 
-      byte valBytes[4];
-      if (readDataReg(SUBCOMMAND_DATA_ADDR, valBytes, 4))
-      {
-        // Cycle through array of data
-        byte val0 = (byte)valBytes[0];
-        byte val1 = (byte)valBytes[1];
-        byte val2 = (byte)valBytes[2];
-        byte val3 = (byte)valBytes[3];
+      delay_us(2000);
 
-        // fuse them (little endian)
-        uint32_t res = val3 << 24 | val2 << 16 | val1 << 8 | val0;
+      constexpr uint8_t dataSize = 12;
+      byte valBytes[dataSize];
+      if (readDataReg(SUBCOMMAND_DATA_ADDR, valBytes, dataSize))
+      {
+        // fuse them (TODO: return the whole register instead of just 32 bits)
+        uint32_t res = valBytes[3] << 24 | valBytes[2] << 16 | valBytes[1] << 8 | valBytes[0];
         return res;
       }
       isFlagRaised = true;
       return 0;
     }
 
-    void raw_write(uint8_t lenght, uint8_t* data)
+    uint32_t raw_read_big_endian()
     {
-      if (lenght > 4)
-        return;
+      // set command
+      raw_send();
 
-      const uint8_t dataSize = 2 + lenght;
+      delay_us(2000);
+
+      byte valBytes[12];
+      if (readDataReg(SUBCOMMAND_DATA_ADDR, valBytes, 12))
+      {
+        // fuse them (TODO: return the whole register instead of just 32 bits)
+        uint32_t res = valBytes[2] << 24 | valBytes[3] << 16 | valBytes[0] << 8 | valBytes[1];
+        return res;
+      }
+      isFlagRaised = true;
+      return 0;
+    }
+
+    void raw_write8(uint8_t data)
+    {
+      const uint8_t dataSize = 3;
 
       // 2 bytes for adress (always), max data to send on 32 bits
-      byte valBytes[2 + 4];
-      valBytes[0] = command_address() % 256;
-      valBytes[1] = command_address() / 256;
+      byte valBytes[dataSize];
+      valBytes[0] = command_address() & 0xff;
+      valBytes[1] = (command_address() >> 8) & 0xff;
+      valBytes[2] = data;
 
-      // compute the data checksum
-      uint16_t datasum = valBytes[0] + valBytes[1];
-      for (uint8_t i = 0; i < lenght; ++i)
-      {
-        valBytes[i + 2] = data[i];
-        datasum += data[i];
-      }
+      raw_write(dataSize, valBytes);
+    }
 
-      if (not writeData(SUBCOMMAND_ADDR, dataSize, valBytes))
+    void raw_write16(uint16_t data)
+    {
+      const uint8_t dataSize = 4;
+
+      // 2 bytes for adress (always), max data to send on 32 bits
+      byte valBytes[dataSize];
+      valBytes[0] = command_address() & 0xff;
+      valBytes[1] = (command_address() >> 8) & 0xff;
+      valBytes[2] = data & 0xff;
+      valBytes[3] = (data >> 8) & 0xff;
+
+      raw_write(dataSize, valBytes);
+    }
+
+  private:
+    // internal command write
+    void raw_write(uint8_t lenght, uint8_t* data)
+    {
+      if (not writeData(SUBCOMMAND_ADDR, lenght, data))
       {
         isFlagRaised = true;
         return;
       }
 
+      delay_us(2000);
+
       byte checkSumData[2];
-      checkSumData[0] = ~datasum & 0xFF;
-      checkSumData[1] = dataSize + 2;
+      checkSumData[0] = checksum(lenght, data);
+      checkSumData[1] = lenght + 2;
 
       // Write Data Checksum and length, required for RAM writes
       if (not writeData(SUBCOMMAND_DATA_CHECKSUM_ADDR, 2, checkSumData))
@@ -335,7 +375,7 @@ public:
       //   0 = Indicates protection fault has not triggered
       //   1 = indicates protection fault has triggered
       FIELD_RO(val1, REGOUT, 0x00, 0x01)
-    } SafetyAlertA;
+    } safetyAlertA;
 
     // Provides individual alert signals when enabled safety alerts have triggered.
     // Provides individual fault signals when enabled safety faults have triggered.
@@ -410,7 +450,7 @@ public:
       //   0 = Indicates protection fault has not triggered
       //   1 = indicates protection fault has triggered
       FIELD_RO(val1, VSS_FAULT, 0x00, 0x01)
-    } SafetyAlertB;
+    } safetyAlertB;
 
     // Provides flags related to battery status.
     struct BatteryStatust
@@ -487,7 +527,7 @@ public:
       //   1 = Device is in autonomous FET control mode, FETs can be enabled by the device if no conditions or commands
       //   prevent them being enabled.
       FIELD_RO(val1, FET_EN, 0x00, 0x01)
-    } BatteryStatus;
+    } batteryStatus;
 
     // Latched signal used to assert the ALERT pin. Write a bit high to clear the latched bit.
     struct AlarmStatust
@@ -575,7 +615,7 @@ public:
       //   0 = Flag is not set
       //   1 = Flag is set
       FIELD(val1, CB, 0x00, 0x01)
-    } AlarmStatus;
+    } alarmStatus;
 
     // Unlatched value of flags which can be selected to be latched (using Alarm Enable()) and used to assert the ALERT
     // pin.
@@ -647,7 +687,7 @@ public:
       //   1 = Flag is set
       FIELD_RO(val1, CB, 0x00, 0x01)
 
-    } AlarmRawStatus;
+    } alarmRawStatus;
 
     // Mask for Alarm Status(). Can be written to change during operation to change which alarm sources are enabled. The
     // default value of this parameter is set by Settings:Configuration:Default Alarm Mask
@@ -739,7 +779,7 @@ public:
       //  0 = This bit in Alarm Raw Status() is not included in Alarm Status()
       //  1 = This bit in Alarm Raw Status() is included in Alarm Status()
       FIELD(val1, CB, 0x00, 0x01)
-    } AlarmEnable;
+    } alarmEnable;
 
     // FET Control: Allows host control of individual FET drivers.
     struct FetControlt
@@ -763,13 +803,14 @@ public:
       //  0 = DSG FET driver is allowed to turn on if other conditions are met.
       //  1 = DSG FET driver is forced on.
       FIELD(val0, DSG_ON, 0x00, 0x01)
-    } FetControl;
+    } fetControl;
 
     // REGOUT Control: Changes voltage regulator settings.
     struct RegoutControlt
     {
       uint8_t addr = REGOUT_CONTROL_ADDR;
       byte val0 = 0x00;
+      byte val1 = 0x00;
 
       // Control for TS pullup to stay biased continuously.
       //  0 = TS pullup resistor is not continuously connected.
@@ -790,7 +831,7 @@ public:
       //  7 = REGOUT LDO is set to 5 V
       FIELD(val0, REGOUTV, 0x00, 0x03)
 
-    } RegoutControl;
+    } regoutControl;
 
     // Controls the PWM mode of the DSG FET driver. Values are not used until the second byte is written.
     struct DsgFetDriverPwmControlt
@@ -812,7 +853,7 @@ public:
       // Settings from 30.52 μs to 3.876 ms in steps of 30.52 μs
       // A setting of 0 disables PWM mode, such that this command has no effect
       FIELD(val1, DSGPWMON, 0x00, 0x07)
-    } DsgFetDriverPwmControl;
+    } dsgFetDriverPwmControl;
 
     // Controls the PWM mode of the CHG FET driver. Values are not used until the second byte is written.
     struct ChFetDriverPwmControlt
@@ -834,43 +875,43 @@ public:
       // Settings from 30.52 μs to 3.876 ms in steps of 30.52 μs
       // A setting of 0 disables PWM mode, such that this command has no effect.
       FIELD(val1, CHGPWMON, 0x00, 0x07)
-    } ChFetDriverPwmControl;
+    } chFetDriverPwmControl;
 
     // 16-bit voltage on cell 1 (mV)
     struct Cell1Voltaget : public IBaseReadRegister
     {
       uint16_t address() const override { return CELL_1_VOLTAGE_ADDR; };
-    } Cell1Voltage;
+    } cell1Voltage;
 
     // 16-bit voltage on cell 2 (mV)
     struct Cell2Voltaget : public IBaseReadRegister
     {
       uint16_t address() const override { return CELL_2_VOLTAGE_ADDR; };
-    } Cell2Voltage;
+    } cell2Voltage;
 
     // 16-bit voltage on cell 3 (mV)
     struct Cell3Voltaget : public IBaseReadRegister
     {
       uint16_t address() const override { return CELL_3_VOLTAGE_ADDR; };
-    } Cell3Voltage;
+    } cell3Voltage;
 
     // 16-bit voltage on cell 4 (mV)
     struct Cell4Voltaget : public IBaseReadRegister
     {
       uint16_t address() const override { return CELL_4_VOLTAGE_ADDR; };
-    } Cell4Voltage;
+    } cell4Voltage;
 
     // 16-bit voltage on cell 5 (mV)
     struct Cell5Voltaget : public IBaseReadRegister
     {
       uint16_t address() const override { return CELL_5_VOLTAGE_ADDR; };
-    } Cell5Voltage;
+    } cell5Voltage;
 
     // Internal 1.8V regulator voltage measured using bandgap reference, used for diagnostic of VREF1 vs VREF2.
     struct Reg18Voltaget : public IBaseReadRegister
     {
       uint16_t address() const override { return REG_18_VOLTAGE_ADDR; };
-    } Reg18Voltage;
+    } reg18Voltage;
 
     // Measurement of VSS using ADC, used for diagnostic of ADC input mux (mV)
     struct VSSVoltaget : public IBaseReadRegister
@@ -882,19 +923,19 @@ public:
     struct StackVoltaget : public IBaseReadRegister
     {
       uint16_t address() const override { return STACK_VOLTAGE_ADDR; };
-    } StackVoltage;
+    } stackVoltage;
 
     // This is the most recent measured internal die temperature (degrees).
     struct IntTemperatureVoltaget : public IBaseReadRegister
     {
       uint16_t address() const override { return INT_TEMPERATURE_ADDR; };
-    } IntTemperatureVoltage;
+    } intTemperatureVoltage;
 
     // ADC measurement of the TS pin
     struct TsMeasurmentVoltaget : public IBaseReadRegister
     {
       uint16_t address() const override { return TS_MEASURMENT_ADDR; };
-    } TsMeasurmentVoltage;
+    } tsMeasurmentVoltage;
 
     /**
      *
@@ -914,7 +955,7 @@ public:
         const uint16_t number = res & UINT16_MAX;
         return number;
       }
-    } DeviceNumber;
+    } deviceNumber;
 
     // The FW_VERSION subcommand returns three 16-bit word values.
     struct FirmwareVersiont : public ISubcommandReadRegister
@@ -925,7 +966,7 @@ public:
       // products.
       uint16_t get_device_number()
       {
-        const uint32_t res = raw_read();
+        const uint32_t res = raw_read_big_endian();
         // first two bytes
         const uint16_t number = res & UINT16_MAX;
         return number;
@@ -934,7 +975,7 @@ public:
       // Bytes 3-2: Firmware Version (Big-Endian): Device firmware major and minor version number (Big-Endian).
       uint16_t get_firmware_version()
       {
-        const uint32_t res = raw_read();
+        const uint32_t res = raw_read_big_endian();
         // first two bytes
         const uint16_t number = (res >> 16) & UINT16_MAX;
         return number;
@@ -943,7 +984,7 @@ public:
       // not supported yet
       // Bytes 5-4: Build Number (Big-Endian): Firmware build number in big-endian, binary coded decimal format for
       // compatibility with legacy products. uint16_t get_build_number();
-    } FirmwareVersion;
+    } firmwareVersion;
 
     // Hardware Version: Reports the device hardware version number
     struct HardwareVersiont : public ISubcommandReadRegister
@@ -956,7 +997,7 @@ public:
         const uint16_t number = res & UINT16_MAX;
         return number;
       }
-    } HardwareVersion;
+    } hardwareVersion;
 
     struct PassQt : public ISubcommandReadRegister
     {
@@ -993,7 +1034,7 @@ public:
         return number;
       }
       */
-    } PassQ;
+    } passQ;
 
     // This command resets the accumulated charge and timer
     struct ResetPassQt : public ISubcommandRegister
@@ -1001,7 +1042,7 @@ public:
       uint16_t command_address() const override { return SUBCOMMAND_RESET_PASSQ_ADDR; }
 
       void send() { raw_send(); }
-    } ResetPassQ;
+    } resetPassQ;
 
     // This command is sent to exit DEEPSLEEP mode.
     struct ExitDeepSleept : public ISubcommandRegister
@@ -1009,7 +1050,7 @@ public:
       uint16_t command_address() const override { return SUBCOMMAND_EXIT_DEEPSLEEP_ADDR; }
 
       void send() { raw_send(); }
-    } ExitDeepSleep;
+    } exitDeepSleep;
 
     // This command is sent to enter DEEPSLEEP mode. Must be sent twice in a row within 4s to take effect
     struct DeepSleept : public ISubcommandRegister
@@ -1017,7 +1058,7 @@ public:
       uint16_t command_address() const override { return SUBCOMMAND_DEEPSLEEP_ADDR; }
 
       void send() { raw_send(); }
-    } DeepSleep;
+    } deepSleep;
 
     // This command is sent to start SHUTDOWN sequence. Must be sent twice in a row within 4s to take effect. If sent a
     // third time, the shutdown delay is skipped
@@ -1036,7 +1077,7 @@ public:
       uint16_t command_address() const override { return SUBCOMMAND_RESET_ADDR; }
 
       void send() { raw_send(); }
-    } Reset;
+    } reset;
 
     // This command is sent to toggle the FET_EN bit in Battery Status(). FET_EN=0 means manual FET control. FET_EN=1
     // means autonomous device FET control
@@ -1045,7 +1086,7 @@ public:
       uint16_t command_address() const override { return SUBCOMMAND_FET_ENABLE_ADDR; }
 
       void send() { raw_send(); }
-    } FetEnable;
+    } fetEnable;
 
     // This command is sent to place the device in SEALED mode
     struct Sealt : public ISubcommandRegister
@@ -1053,7 +1094,7 @@ public:
       uint16_t command_address() const override { return SUBCOMMAND_SEAL_ADDR; }
 
       void send() { raw_send(); }
-    } Seal;
+    } seal;
 
     // WRITE ONLY
     struct SecurityKeyst : public ISubcommandReadRegister
@@ -1075,9 +1116,10 @@ public:
         data[2] = FaKey2 | UINT8_MAX;
         data[3] = (FaKey2 >> 8) | UINT8_MAX;
 
-        raw_write(4, data);
+        // TODO
+        // raw_write(4, data);
       }
-    } SecurityKeys;
+    } securityKeys;
 
     // Cell balancing active cells: When read, reports a bit mask of which cells are being actively balanced.
     // When written, starts balancing on the specified cells.
@@ -1097,21 +1139,21 @@ public:
       // Bit 2 corresponds to the second active cell
       // Bit 1 corresponds to the first active cell (connected between VC1 and VC0)
       // Bit 0 is reserved, read/write 0 to this bit
-      uint8_t get()
+      uint32_t get()
       {
         const uint32_t res = raw_read();
-        const uint8_t number = res & UINT8_MAX;
-        return number;
+        return res;
+        // TODO
+        // const uint8_t number = res & UINT8_MAX;
+        // return number;
       }
 
       void set_balancing(uint8_t cell1, uint8_t cell2, uint8_t cell3, uint8_t cell4, uint8_t cell5)
       {
-        uint8_t data = 0;
-        data = cell1 << 1 | cell2 << 2 | cell3 << 3 | cell4 << 4 | cell5 << 5;
-
-        raw_write(1, &data);
+        uint8_t data = (cell1 & 1) << 1 | (cell2 & 1) << 2 | (cell3 & 1) << 3 | (cell4 & 1) << 4 | (cell5 & 1) << 5;
+        raw_write8(data);
       }
-    } CbActiveCells;
+    } cbActiveCells;
 
     // This command is sent to place the device in CONFIG_UPDATE mode
     struct SetCfgUpdatet : public ISubcommandRegister
@@ -1119,7 +1161,7 @@ public:
       uint16_t command_address() const override { return SUBCOMMAND_SET_CFGUPDATE_ADDR; }
 
       void send() { raw_send(); }
-    } SetCfgUpdate;
+    } setCfgUpdate;
 
     // This command is sent to exit CONFIG_UPDATE mode
     struct ExitCfgUpdatet : public ISubcommandRegister
@@ -1127,7 +1169,7 @@ public:
       uint16_t command_address() const override { return SUBCOMMAND_EXIT_CFGUPDATE_ADDR; }
 
       void send() { raw_send(); }
-    } ExitCfgUpdate;
+    } exitCfgUpdate;
 
     // Programmable timer, which allows the REGOUT LDO to be disabled and wakened after a programmed time or by alarm
     struct ProgTimert : public ISubcommandReadRegister
@@ -1181,12 +1223,11 @@ public:
 
       void set_timer(uint8_t progTimer, uint8_t regoutSd, uint8_t regoutSdDelay, uint8_t regoutAlarmWake)
       {
-        uint8_t data[2];
-        data[0] = progTimer & UINT8_MAX;
-        data[1] = (regoutSd & 0b1) | (regoutSdDelay & 0b11) << 1 | (regoutAlarmWake & 0b1) << 3;
-        raw_write(2, data);
+        uint16_t data = progTimer & UINT8_MAX;
+        data |= ((regoutSd & 0b1) | (regoutSdDelay & 0b11) << 1 | (regoutAlarmWake & 0b1) << 3) << 8;
+        raw_write16(data);
       }
-    } ProgTimer;
+    } progTimer;
 
     // This command is sent to allow the device to enter SLEEP mode
     struct SleepEnablet : public ISubcommandRegister
@@ -1194,7 +1235,7 @@ public:
       uint16_t command_address() const override { return SUBCOMMAND_SLEEP_ENABLE_ADDR; }
 
       void send() { raw_send(); }
-    } SleepEnable;
+    } sleepEnable;
 
     // This command is sent to block the device from entering SLEEP mode
     struct SleepDisablet : public ISubcommandRegister
@@ -1202,7 +1243,7 @@ public:
       uint16_t command_address() const override { return SUBCOMMAND_SLEEP_DISABLE_ADDR; }
 
       void send() { raw_send(); }
-    } SleepDisable;
+    } sleepDisable;
 
     // This command enables the host to allow recovery of selected protection faults
     struct ProtRecoveryt : public ISubcommandReadRegister
@@ -1291,9 +1332,28 @@ public:
                        (overcurentDicharge2Recovery & 0b1) << 3 | (overcurentDicharge1Recovery & 0b1) << 4 |
                        (shortCircuitDischargeRecovery & 0b1) << 5 | (diagRecovery & 0b1) << 6 |
                        (cellVoltageRecovery & 0b1) << 7;
-        raw_write(1, &data);
+        raw_write8(data);
       }
-    } ProtRecovery;
+    } protRecovery;
+
+    struct SettingConfiguration_DAt : public ISubcommandReadRegister
+    {
+      uint16_t command_address() const override { return SUBCOMMAND_CONFIGURATION_DA_ADDR; }
+
+      void set_disable_ts_reading()
+      {
+        // TODO handle other parameters
+        uint16_t data = 0;
+        data |= 1 << 8;
+        raw_write16(data);
+      }
+
+      uint16_t get()
+      {
+        uint32_t data = raw_read();
+        return data & UINT16_MAX;
+      }
+    } settingConfiguration_DA;
 
     // Not every system uses all of the cell input pins. If the system has fewer cells than the device supports, some VC
     // input pins must be shorted together. To prevent action being taken for cell undervoltage conditions on pins that
@@ -1323,10 +1383,16 @@ public:
         if (cellNumber > 5)
           return;
 
-        uint8_t data = cellNumber;
-        raw_write(1, &data);
+        raw_write8(cellNumber);
       }
-    } ConfigurateVcell;
+    } configurateVcell;
+
+    struct TsOffsett : public ISubcommandReadRegister
+    {
+      uint16_t command_address() const override { return SUBCOMMAND_CONFIGURATION_TS_OFFSET_ADDR; }
+
+      void set(uint16_t offset) { raw_write16(offset); }
+    } tsOffset;
   };
 
 private:

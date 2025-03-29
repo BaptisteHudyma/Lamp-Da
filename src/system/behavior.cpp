@@ -165,7 +165,7 @@ void true_power_off()
   // on wake up, it'll start back from the setup phase
   go_to_sleep(ButtonPin.pin());
   /*
-   * Nothing after this, systel is off !
+   * Nothing after this, system is off !
    */
 }
 
@@ -483,7 +483,7 @@ void handle_charger_operation_state()
 void handle_pre_output_light_state()
 {
   // critical battery level, do not wake up
-  if (battery::get_battery_level() <= batteryCritical + 1)
+  if (battery::get_battery_level() <= batteryCritical + 1 or not battery::is_battery_usable_as_power_source())
   {
     // alert user of low battery
     for (uint8_t i = 0; i < 10; i++)

@@ -30,6 +30,7 @@
 - power: Handler for the power components (charger, usb negociation, ...)
     - drivers: Folder to handler the charging processes with the target ic
     - PDlib: folder that contains the library to talk to the PD negocation ic. Adapted to this architecture
+    - balancer.h: handle the battery balancing, and some battery measurments
     - charger.h: main high level logic to use the charger, as well as power switches
     - power_gate.h: the electrical gates to isolate output & vbus form each others
     - power_source.h: handle pd negociation, cable detection, ...

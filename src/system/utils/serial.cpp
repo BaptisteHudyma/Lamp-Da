@@ -48,12 +48,16 @@ void handleCommand(const std::string& command)
         lampda_print(
                 "hardware:%d.%d\n"
                 "firmware:%d.%d\n"
-                "user software:%s",
+                "software:%d.%d\n"
+                "user software:%d.%d",
                 HARDWARE_VERSION_MAJOR,
                 HARDWARE_VERSION_MINOR,
                 EXPECTED_FIRMWARE_VERSION_MAJOR,
                 EXPECTED_FIRMWARE_VERSION_MINOR,
-                SOFTWARE_VERSION);
+                SOFTWARE_VERSION_MAJOR,
+                SOFTWARE_VERSION_MINOR,
+                USER_SOFTWARE_VERSION_MAJOR,
+                USER_SOFTWARE_VERSION_MINOR);
         break;
       }
 
@@ -66,7 +70,10 @@ void handleCommand(const std::string& command)
         {
           // print individual battery voltages
           for (uint8_t i = 0; i < batteryCount; ++i)
-            lampda_print("batt %d: %d mV", i, balancerStatus.batteryVoltages_mV[i]);
+            lampda_print("cell %d: %d mV, is balancing: %s",
+                         i,
+                         balancerStatus.batteryVoltages_mV[i],
+                         boolToString(balancerStatus.isBalancing[i]));
           lampda_print("total (from balancer) %dmv\n", balancerStatus.stackVoltage_mV);
         }
         else
@@ -85,7 +92,7 @@ void handleCommand(const std::string& command)
           lampda_print("charger measurments not valid");
         }
 
-        if (areChargerValueValid and areBalancerValueValid)
+        if (areChargerValueValid or areBalancerValueValid)
         {
           // print individual battery voltages
           lampda_print(

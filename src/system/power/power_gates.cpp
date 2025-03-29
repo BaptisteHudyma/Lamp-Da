@@ -7,6 +7,8 @@ namespace powergates {
 
 bool isInit = false;
 
+// if this is too low, there is a risk that both gate can be active at the same time
+// potentially destructive behavior
 constexpr uint32_t gateSwitchDelay_ms = 100;
 
 namespace __private {

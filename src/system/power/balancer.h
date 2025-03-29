@@ -11,6 +11,8 @@ struct Status
 {
   // cells voltages, in order
   uint16_t batteryVoltages_mV[batteryCount];
+  // true if the cell is currently balancing
+  bool isBalancing[batteryCount];
   // voltage of the battery pack
   uint16_t stackVoltage_mV;
   // temperature of the component
@@ -20,8 +22,6 @@ struct Status
   uint32_t lastMeasurmentUpdate = 0;
 
   bool is_valid() const;
-
-  bool is_balanced() const;
 };
 
 Status get_status();

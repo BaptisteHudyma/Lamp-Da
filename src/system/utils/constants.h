@@ -25,6 +25,10 @@
 #define EXPECTED_FIRMWARE_VERSION_MAJOR 1
 #define EXPECTED_FIRMWARE_VERSION_MINOR 0
 
+// increment for every  release
+#define SOFTWARE_VERSION_MAJOR 1
+#define SOFTWARE_VERSION_MINOR 0
+
 constexpr float c_PI = 3.1415926535897;
 constexpr float c_TWO_PI = 6.2831853071795;
 constexpr float c_HALF_PI = 1.5707963267948;

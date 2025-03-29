@@ -11,62 +11,119 @@
 
 namespace battery {
 
+static uint16_t s_batteryVoltage_mV = 0;
+
+void check_individual_batteries(const balancer::Status& balancerStatus)
+{
+#if 0 // TODO finish the cell check below
+  // in bounds with some margin
+  static constexpr uint16_t minBatteryValue = batteryMinVoltage_mV * 0.95;
+  static constexpr uint16_t maxBatteryValue =
+          batteryMaxVoltage_mV * 1.01;
+
+  uint16_t packVoltage = 0;
+  // check individual battery voltages
+  for (uint8_t i = 0; i < batteryCount; ++i)
+  {
+    const uint16_t batteryVoltage = balancerStatus.batteryVoltages_mV[i];
+    if (batteryVoltage == 0)
+    {
+      // disconected battery
+      // or wrong read
+      // This is not good, but ok the lamp can survive without.
+      // It will unbalance after a time, and endup not working after a lot of charge/discharge cycles
+    }
+    else if (batteryVoltage < minSingularBatteryVoltage_mV or batteryVoltage > maxSingularBatteryVoltage_mV)
+    {
+      // TODO: alert battery voltage is incoherent
+    }
+    packVoltage += batteryVoltage;
+  }
+
+  // incoherent with the pack voltage. Disconnected battery ?
+  if (packVoltage < balancerStatus.stackVoltage_mV - 50)
+  {
+    // TODO: alert disconected battery
+  }
+#endif
+}
+
 /**
- * \brief Return the battery voltage and raise the battery incoherent alert if needed
- * This will use the GPIO rread at first, and the charger ADC when available
+ * \brief check the battery pack voltage, and individual cell voltages
+ * This should be the main used function.
+ * \return false in case of a problem
+ */
+bool check_balancer_battery_voltage()
+{
+  const auto& balancerStatus = balancer::get_status();
+  if (balancerStatus.is_valid())
+  {
+    s_batteryVoltage_mV = balancerStatus.stackVoltage_mV;
+
+    // check each battery voltage for validity
+    check_individual_batteries(balancerStatus);
+    return true;
+  }
+  return false;
+}
+
+/**
+ * \brief check the battery voltage from charging component
+ */
+bool check_charger_battery_voltage()
+{
+  const auto& chargerStates = charger::get_state();
+  if (chargerStates.areMeasuresOk)
+  {
+    // values from the ADC in the charging component
+    s_batteryVoltage_mV = chargerStates.batteryVoltage_mV;
+    return true;
+  }
+  return false;
+}
+
+/**
+ * \brief Return the battery voltage and raise the battery incoherent alert if needed.
  */
 uint16_t get_raw_battery_voltage_mv()
 {
   uint16_t batteryVoltage_mV = 0;
 
-  const auto& balancerStatus = balancer::get_status();
-  if (balancerStatus.is_valid())
+  //
+  if (not check_balancer_battery_voltage() and not check_charger_battery_voltage())
   {
-    batteryVoltage_mV = balancerStatus.stackVoltage_mV;
-
-    // in bounds with some margin
-    static constexpr uint16_t minBatteryValue = batteryMinVoltage_mV * 0.95;
-    static constexpr uint16_t maxBatteryValue =
-            batteryMaxVoltage_mV * 1.01; // this should not go over 17v, the max limit we can handle with the current
-                                         // hardware (and sampling rate)
-
-    // check individual battery voltages
-    for (uint8_t i = 0; i < batteryCount; ++i)
-    {
-      const uint16_t batteryVoltage = balancerStatus.batteryVoltages_mV[i];
-      if (batteryVoltage < minSingularBatteryVoltage_mV or batteryVoltage > maxSingularBatteryVoltage_mV)
-      {
-        // TODO: alert for disconected battery
-
-        alerts::manager.raise(alerts::Type::BATTERY_READINGS_INCOHERENT);
-        // return a default low value
-        return batteryMinVoltage_mV;
-      }
-    }
-  }
-  else
-  {
-    const auto& chargerStates = charger::get_state();
-    if (chargerStates.areMeasuresOk)
-    {
-      // values from the ADC in the charging component
-      batteryVoltage_mV = chargerStates.batteryVoltage_mV;
-    }
-    // else: not ready yet ?
-    else
-      batteryVoltage_mV = batteryMaxVoltage_mV;
+    // else: not ready yet ? error, return max voltage for now
+    // TODO: after a set time, return an error, the system should not be used without batteries
+    return batteryMaxVoltage_mV;
   }
 
-  // in bounds with some margin
-  if (batteryVoltage_mV < minBatteryVoltage_mV or batteryVoltage_mV > maxBatteryVoltage_mV)
+  // check battery pack validity (in bounds with some margin)
+  if (s_batteryVoltage_mV < minBatteryVoltage_mV or s_batteryVoltage_mV > maxBatteryVoltage_mV)
   {
     alerts::manager.raise(alerts::Type::BATTERY_READINGS_INCOHERENT);
-    // return a default low value
-    return batteryMinVoltage_mV;
+    // return a default value
+    return batteryMaxVoltage_mV;
   }
   // return the true battery voltage
   alerts::manager.clear(alerts::Type::BATTERY_READINGS_INCOHERENT);
-  return batteryVoltage_mV;
+  return s_batteryVoltage_mV;
+}
+
+bool is_battery_usable_as_power_source()
+{
+  // TODO implement: return false if
+  // - stack reading incoherent
+  // - first battery of the stack is disconnected
+  // - a battery voltage is below the safety voltage
+  return true;
+}
+
+bool can_battery_be_charged()
+{
+  // TODO: implement: return false if
+  // - first or last battery of the stack are disconected
+  // - ?
+  return true;
 }
 
 } // namespace battery

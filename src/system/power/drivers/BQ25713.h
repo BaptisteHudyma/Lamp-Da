@@ -61,6 +61,9 @@ constexpr uint16_t VBAT_ADC_ADDR = 0x2C;
 constexpr uint16_t MANUFACTURER_ID_ADDR = 0x2E;
 constexpr uint16_t DEVICE_ID_ADDR = 0x2F;
 
+constexpr uint16_t OTG_ENABLE_CELL_LOW_VOLTAGE =
+        3550; // minimum single cell voltage at which the OTG will refuse to start
+
 class BQ25713
 {
 public:

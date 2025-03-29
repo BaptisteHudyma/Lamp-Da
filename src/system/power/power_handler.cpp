@@ -1,12 +1,14 @@
 #include "power_handler.h"
 
-#include "balancer.h"
 #include "src/system/utils/print.h"
 #include "src/system/utils/state_machine.h"
+
+#include "src/system/physical/battery.h"
 
 #include "src/system/platform/gpio.h"
 
 #include "PDlib/power_delivery.h"
+#include "balancer.h"
 #include "charger.h"
 #include "power_gates.h"
 
@@ -142,13 +144,14 @@ void handle_charging_mode()
   if (powergates::is_vbus_gate_enabled())
   {
     charger::set_enable_charge(_isChargeEnabled);
-    balancer::enable_balancing(_isChargeEnabled);
+    // balance while we have power on vbus
+    balancer::enable_balancing(true);
   }
 
   // charge OR idle and do nothing (end of charge)
 
   // OTG requested, switch to OTG mode
-  if (powerDelivery::get_otg_parameters().is_otg_requested())
+  if (powerDelivery::get_otg_parameters().is_otg_requested() and battery::is_battery_usable_as_power_source())
   {
     go_to_otg_mode();
     return;

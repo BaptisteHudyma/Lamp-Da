@@ -371,6 +371,8 @@ bool Charger_t::is_charging() const
          status == ChargerStatus_t::CHARGING;
 }
 
+bool Charger_t::is_charge_finished() const { return status == ChargerStatus_t::CHARGE_FINISHED; }
+
 bool Charger_t::is_effectivly_charging() const { return status == ChargerStatus_t::CHARGING; }
 
 std::string Charger_t::get_status_str() const
