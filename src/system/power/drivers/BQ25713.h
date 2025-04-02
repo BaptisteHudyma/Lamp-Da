@@ -167,12 +167,11 @@ public:
   {
     uint16_t set(const uint16_t value)
     {
-      // convert to authorized values
-      const uint16_t constraint = lmpd_constrain(value, minVal(), maxVal()) - minVal();
-      // break it down to the correct resolution (integer division)
-      const uint16_t flatValue = constraint / resolution();
+      // convert to authorized values, break it down to the correct resolution (integer division)
+      const uint16_t constraint = (lmpd_constrain(value, minVal(), maxVal()) - minVal()) / resolution();
+
       // convert to binary word
-      uint16_t binaryWord = flatValue;
+      uint16_t binaryWord = constraint;
       binaryWord &= mask();    // mask off unused bits (with &= for 16bits)
       binaryWord <<= offset(); // offset the register (with <<= for 16 bits)
 
@@ -182,7 +181,7 @@ public:
       }
 
       // return the value that was written to the register
-      return (flatValue * resolution()) + minVal();
+      return (constraint * resolution()) + minVal();
     }
   };
 
@@ -678,7 +677,8 @@ public:
         // set min value depending on low otg voltage mode
         minValue = isLowVoltageMode ? 0 : 1280;
 
-        IBaseRegister::set(val);
+        // TODO: why do the OTG voltage is always 184mV above what is requested
+        IBaseRegister::set(val - 184);
       }
 
       // min val should be 3000mV, but in practise thats not it

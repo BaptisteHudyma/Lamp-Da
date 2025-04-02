@@ -115,8 +115,9 @@ void handle_clear_power_rails()
   // disable OTG if needed
   set_otg_parameters(0, 0);
 
-  // wait at least a little bit, and min value for power rail voltage is 3200mV
+  // wait at least a little bit
   if (time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailMinDelay_ms and
+      // power rail below min measurment voltage
       get_power_rail_voltage() <= 3200)
   {
     __private::dischargeVbus.set_high(false);
@@ -141,6 +142,16 @@ void handle_charging_mode()
   // open vbus
   powergates::enable_vbus_gate();
 
+  // OTG requested, switch to OTG mode
+  if (powerDelivery::get_otg_parameters().is_otg_requested() and battery::is_battery_usable_as_power_source())
+  {
+    // disable balancing
+    balancer::enable_balancing(false);
+    // start otg
+    go_to_otg_mode();
+    return;
+  }
+
   if (powergates::is_vbus_gate_enabled())
   {
     charger::set_enable_charge(_isChargeEnabled);
@@ -149,13 +160,6 @@ void handle_charging_mode()
   }
 
   // charge OR idle and do nothing (end of charge)
-
-  // OTG requested, switch to OTG mode
-  if (powerDelivery::get_otg_parameters().is_otg_requested() and battery::is_battery_usable_as_power_source())
-  {
-    go_to_otg_mode();
-    return;
-  }
 }
 
 void handle_output_voltage_mode()
@@ -178,6 +182,9 @@ void handle_output_voltage_mode()
 void handle_otg_mode()
 {
   const auto requested = powerDelivery::get_otg_parameters();
+
+  charger::set_enable_charge(false);
+
   // ramp up output voltage
   // then unlock the vbus gate
   set_otg_parameters(requested.requestedVoltage_mV, requested.requestedCurrent_mA);
