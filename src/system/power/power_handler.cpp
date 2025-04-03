@@ -16,7 +16,7 @@ namespace power {
 
 bool _isShutdownCompleted = false;
 
-static constexpr uint32_t clearPowerRailMinDelay_ms = 100;
+static constexpr uint32_t clearPowerRailMinDelay_ms = 50;
 static constexpr uint32_t clearPowerRailFailureDelay_ms = 1000;
 
 static_assert(clearPowerRailMinDelay_ms < clearPowerRailFailureDelay_ms,

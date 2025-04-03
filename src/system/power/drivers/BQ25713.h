@@ -678,7 +678,7 @@ public:
         minValue = isLowVoltageMode ? 0 : 1280;
 
         // TODO: why do the OTG voltage is always 184mV above what is requested
-        IBaseRegister::set(val - 184);
+        IBaseRegister::set(val - 174);
       }
 
       // min val should be 3000mV, but in practise thats not it
