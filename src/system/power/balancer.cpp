@@ -56,95 +56,12 @@ uint16_t get_battery_voltage_mv(const uint8_t index)
 // 3 batteries version
 void set_balancing(uint8_t battery1, uint8_t battery2, uint8_t battery3)
 {
-  balancerRegisters.cbActiveCells.set_balancing(battery1, battery2, 0, 0, battery3);
-  /*
-    lampda_print("%d %d %d", 0x0A, balancerRegisters.cbActiveCells.get(), balancerRegisters.tsMeasurmentVoltage.get());
-
-    balancer.readRegEx(balancerRegisters.safetyAlertA);
-    balancer.readRegEx(balancerRegisters.safetyAlertB);
-    balancer.readRegEx(balancerRegisters.alarmEnable);
-    balancer.readRegEx(balancerRegisters.batteryStatus);
-    balancer.readRegEx(balancerRegisters.alarmStatus);
-    lampda_print("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
-                 balancerRegisters.safetyAlertA.COV_ALERT(),
-                 balancerRegisters.safetyAlertA.CUV_ALERT(),
-                 balancerRegisters.safetyAlertA.OCC_ALERT(),
-                 balancerRegisters.safetyAlertA.OCD1_ALERT(),
-                 balancerRegisters.safetyAlertA.OCD2_ALERT(),
-                 balancerRegisters.safetyAlertA.SCD_ALERT(),
-                 balancerRegisters.safetyAlertA.COV_FAULT(),
-                 balancerRegisters.safetyAlertA.OCD1_ALERT(),
-                 balancerRegisters.safetyAlertA.OCD1_FAULT(),
-                 balancerRegisters.safetyAlertA.OCD2_ALERT(),
-                 balancerRegisters.safetyAlertA.OCD2_FAULT(),
-                 balancerRegisters.safetyAlertA.SCD_ALERT(),
-                 balancerRegisters.safetyAlertA.SCD_FAULT(),
-                 balancerRegisters.safetyAlertA.CURLATCH(),
-                 balancerRegisters.safetyAlertA.REGOUT());
-    lampda_print("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
-                 balancerRegisters.safetyAlertB.OTD_ALERT(),
-                 balancerRegisters.safetyAlertB.OTC_ALERT(),
-                 balancerRegisters.safetyAlertB.UTD_ALERT(),
-                 balancerRegisters.safetyAlertB.UTC_ALERT(),
-                 balancerRegisters.safetyAlertB.OTINT_ALERT(),
-                 balancerRegisters.safetyAlertB.HWD_ALERT(),
-                 balancerRegisters.safetyAlertB.VREF_ALERT(),
-                 balancerRegisters.safetyAlertB.VSS_ALERT(),
-                 balancerRegisters.safetyAlertB.OTD_FAULT(),
-                 balancerRegisters.safetyAlertB.OTC_FAULT(),
-                 balancerRegisters.safetyAlertB.UTD_FAULT(),
-                 balancerRegisters.safetyAlertB.UTC_FAULT(),
-                 balancerRegisters.safetyAlertB.OTINT_FAULT(),
-                 balancerRegisters.safetyAlertB.HWD_FAULT(),
-                 balancerRegisters.safetyAlertB.VREF_FAULT(),
-                 balancerRegisters.safetyAlertB.VSS_FAULT());
-    lampda_print("%d %d %d %d %d %d %d %d %d %d %d %d %d",
-                 balancerRegisters.batteryStatus.POR(),
-                 balancerRegisters.batteryStatus.SLEEP_EN(),
-                 balancerRegisters.batteryStatus.CFGUPDATE(),
-                 balancerRegisters.batteryStatus.ALERTPIN(),
-                 balancerRegisters.batteryStatus.CHG(),
-                 balancerRegisters.batteryStatus.DSG(),
-                 balancerRegisters.batteryStatus.CHGDETFLAG(),
-                 balancerRegisters.batteryStatus.SLEEP(),
-                 balancerRegisters.batteryStatus.DEEPSLEEP(),
-                 balancerRegisters.batteryStatus.SA(),
-                 balancerRegisters.batteryStatus.SS(),
-                 balancerRegisters.batteryStatus.SEC(),
-                 balancerRegisters.batteryStatus.FET_EN());
-    lampda_print("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
-                 balancerRegisters.alarmEnable.FULLSCAN(),
-                 balancerRegisters.alarmEnable.ADSCAN(),
-                 balancerRegisters.alarmEnable.WAKE(),
-                 balancerRegisters.alarmEnable.SLEEP(),
-                 balancerRegisters.alarmEnable.TIMER_ALARM(),
-                 balancerRegisters.alarmEnable.INITCOMP(),
-                 balancerRegisters.alarmEnable.CDTOGGLE(),
-                 balancerRegisters.alarmEnable.POR(),
-                 balancerRegisters.alarmEnable.SSB(),
-                 balancerRegisters.alarmEnable.SAA(),
-                 balancerRegisters.alarmEnable.SAB(),
-                 balancerRegisters.alarmEnable.XCHG(),
-                 balancerRegisters.alarmEnable.XDSG(),
-                 balancerRegisters.alarmEnable.SHUTV(),
-                 balancerRegisters.alarmEnable.CB());
-    lampda_print("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
-                 balancerRegisters.alarmStatus.FULLSCAN(),
-                 balancerRegisters.alarmStatus.ADSCAN(),
-                 balancerRegisters.alarmStatus.WAKE(),
-                 balancerRegisters.alarmStatus.SLEEP(),
-                 balancerRegisters.alarmStatus.TIMER_ALARM(),
-                 balancerRegisters.alarmStatus.INITCOMP(),
-                 balancerRegisters.alarmStatus.CDTOGGLE(),
-                 balancerRegisters.alarmStatus.POR(),
-                 balancerRegisters.alarmStatus.SSB(),
-                 balancerRegisters.alarmStatus.SAA(),
-                 balancerRegisters.alarmStatus.SAB(),
-                 balancerRegisters.alarmStatus.XCHG(),
-                 balancerRegisters.alarmStatus.XDSG(),
-                 balancerRegisters.alarmStatus.SHUTV(),
-                 balancerRegisters.alarmStatus.CB());
-  */
+  balancerRegisters.cbActiveCells.set_CBCELLS_0(battery1 & 1);
+  balancerRegisters.cbActiveCells.set_CBCELLS_1(battery2 & 1);
+  balancerRegisters.cbActiveCells.set_CBCELLS_2(battery3 & 1);
+  balancerRegisters.cbActiveCells.set_CBCELLS_3(0);
+  balancerRegisters.cbActiveCells.set_CBCELLS_4(0);
+  balancerRegisters.cbActiveCells.write();
 }
 
 void balance_batteries()
@@ -163,15 +80,31 @@ void balance_batteries()
       batteryVoltageMin = status.batteryVoltages_mV[i];
   }
 
+  balancerRegisters.cbActiveCells.read_reg();
+
+  bool isBalancing[batteryCount];
+  isBalancing[0] = balancerRegisters.cbActiveCells.CBCELLS_0();
+  isBalancing[1] = balancerRegisters.cbActiveCells.CBCELLS_1();
+  isBalancing[2] = balancerRegisters.cbActiveCells.CBCELLS_2();
+
   // all cells too far above should be throttled down
+  bool hasChanged = false;
   uint8_t set[batteryCount];
   for (uint8_t i = 0; i < batteryCount; i++)
   {
     // set the cell to balance if too far from the mean
-    set[i] = status.batteryVoltages_mV[i] >= (batteryVoltageMin + unbalancedMv);
+    if (isBalancing[i] == 0)
+      set[i] = (status.batteryVoltages_mV[i] >= (batteryVoltageMin + unbalancedMv)) ? 1 : 0;
+    // is already balancing, latch until we reach the same (sameish) voltage
+    else
+      set[i] = (status.batteryVoltages_mV[i] > batteryVoltageMin) ? 1 : 0;
+
+    if (isBalancing[i] != set[i])
+      hasChanged = true;
   }
-  // start balancing
-  set_balancing(set[0], set[1], set[2]);
+  // balance
+  if (hasChanged)
+    set_balancing(set[0], set[1], set[2]);
 }
 
 void disable_battery_balancing()
@@ -217,19 +150,18 @@ bool init()
   balancerRegisters.alarmEnable.set_CB(1);       // signal cell balancing
   balancer.writeRegEx(balancerRegisters.alarmEnable);
 
-  /*
-    // deactivate external temperature sensing and pullup on TS
-    balancerRegisters.settingConfiguration_DA.set_disable_ts_reading();
-    balancer.readRegEx(balancerRegisters.regoutControl);
-    balancerRegisters.regoutControl.set_TS_ON(0);
-    balancer.writeRegEx(balancerRegisters.regoutControl);
-  */
+  // deactivate external temperature sensing and pullup on TS
+  balancerRegisters.settingConfiguration_DA.read_reg();
+  balancerRegisters.settingConfiguration_DA.set_TSMODE(1);
+  balancerRegisters.settingConfiguration_DA.write();
 
   // offset to prevent balancing lockup
-  balancerRegisters.tsOffset.set(10);
+  balancerRegisters.tsOffset.set(-10);
 
   // set number of cells
-  balancerRegisters.configurateVcell.set(batteryCount);
+  balancerRegisters.configurateVcell.read_reg();
+  balancerRegisters.configurateVcell.set_VCELL(batteryCount);
+  balancerRegisters.configurateVcell.write();
 
   // exist config mode after startup
   balancerRegisters.exitCfgUpdate.send();
@@ -265,21 +197,15 @@ void loop()
     {
       _status.batteryVoltages_mV[i] = get_battery_voltage_mv(i);
     }
-    /*
+
     // set is balancing status
-        balancer.readRegEx(balancerRegisters.alarmStatus);
+    balancer.readRegEx(balancerRegisters.alarmStatus);
 
-        const uint32_t balancing = balancerRegisters.cbActiveCells.get();
-         lampda_print("%d %d %d %d",
-                      balancerRegisters.tsMeasurmentVoltage.get(),
-                      balancing,
-                      balancerRegisters.alarmStatus.CB(),
-                      balancer.isFlagRaised);
+    balancerRegisters.cbActiveCells.read_reg();
+    _status.isBalancing[0] = (balancerRegisters.cbActiveCells.CBCELLS_0() != 0x00);
+    _status.isBalancing[1] = (balancerRegisters.cbActiveCells.CBCELLS_1() != 0x00);
+    _status.isBalancing[2] = (balancerRegisters.cbActiveCells.CBCELLS_2() != 0x00);
 
-        _status.isBalancing[0] = (balancing & 0b000010) != 0x00;
-        _status.isBalancing[1] = (balancing & 0b000100) != 0x00;
-        _status.isBalancing[2] = (balancing & 0b100000) != 0x00;
-    */
     _status.lastMeasurmentUpdate = time;
   }
 
@@ -316,7 +242,7 @@ void go_to_sleep()
 
   // send 3 times, with delay between each
   balancerRegisters.deepSleep.send();
-  delay(10);
+  delay_ms(10);
   balancerRegisters.deepSleep.send();
 }
 

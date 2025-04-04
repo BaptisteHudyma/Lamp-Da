@@ -126,7 +126,7 @@ void control_charge()
   chargerIc.readRegEx(chargerIcRegisters.chargeOption0);
   const int shouldInihibit = shouldCharge ? 0 : 1;
 
-  // if charge status changed, writte it
+  // if charge status changed, write it
   if (chargerIcRegisters.chargeOption0.CHRG_INHIBIT() != shouldInihibit)
   {
     chargerIcRegisters.chargeOption0.set_CHRG_INHIBIT(shouldInihibit);
@@ -583,7 +583,7 @@ void shutdown()
 
   chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
   // enable high impedance mode
-  chargerIcRegisters.chargeOption3.set_EN_HIZ(1);
+  chargerIcRegisters.chargeOption3.set_EN_HIZ(0);
   chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
 }
 

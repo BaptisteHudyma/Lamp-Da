@@ -9,7 +9,9 @@ bool isInit = false;
 
 // if this is too low, there is a risk that both gate can be active at the same time
 // potentially destructive behavior
-constexpr uint32_t gateSwitchDelay_ms = 100;
+constexpr uint32_t gateSwitchDelay_ms = 50;
+
+bool isPowerGateReallyEnabled = false;
 
 namespace __private {
 DigitalPin enableVbusGate(DigitalPin::GPIO::Output_EnableVbusGate);
@@ -19,7 +21,11 @@ DigitalPin enablePowerGate(DigitalPin::GPIO::Output_EnableOutputGate);
 void enable_gate(bool isVbusGate)
 {
   // force gates to have opposite states
-  __private::enablePowerGate.set_high(!isVbusGate);
+  if (not isVbusGate)
+  {
+    __private::enablePowerGate.set_high(!isVbusGate);
+    isPowerGateReallyEnabled = !isVbusGate;
+  }
   __private::enableVbusGate.set_high(isVbusGate);
 }
 
@@ -68,6 +74,8 @@ void switch_delayed_power_gate(bool enable)
 bool is_power_gate_switched() { return time_ms() - powerGateStartSwitchingTime > gateSwitchDelay_ms; }
 bool is_vbus_gate_switched() { return time_ms() - vbusGateStartSwitchingTime > gateSwitchDelay_ms; }
 
+bool is_power_gate_enabled() { return isPowerGateReallyEnabled; }
+
 void init()
 {
   disable_gates();
@@ -92,15 +100,15 @@ void loop()
   }
 }
 
+bool __is_power_gate_enabled() { return isPowerGateEnabled and is_power_gate_switched(); }
+
 void enable_power_gate()
 {
-  if (is_power_gate_enabled())
+  if (__is_power_gate_enabled())
     return;
   disable_vbus_gate();
   switch_delayed_power_gate(true);
 }
-
-bool is_power_gate_enabled() { return isPowerGateEnabled and is_power_gate_switched(); }
 
 void enable_vbus_gate()
 {
@@ -118,6 +126,6 @@ void disable_gates()
   disable_power_gate();
 }
 
-bool are_gate_disabled() { return not is_vbus_gate_enabled() and not is_power_gate_enabled(); }
+bool are_gate_disabled() { return not is_vbus_gate_enabled() and not __is_power_gate_enabled(); }
 
 } // namespace powergates

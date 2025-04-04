@@ -58,6 +58,7 @@ The circuit is 3 cells li-ion USB C charger, that is also programmable via the s
 
 The circuit features:
 - USB-C 3S li-ion charger, based on BQ25713 ic.
+- Battery balancing, based on BQ76905 ic.
 - USB short circuit and EC protection, based on TPD8S300 ic.
 - USB-C power negotiation, base on FUSB302B ic.
 - Constant current led driver, that can maintain stable up to 2.3A, based on LM3409HV ic.
