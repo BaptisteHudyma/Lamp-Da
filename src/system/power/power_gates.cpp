@@ -3,6 +3,8 @@
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/time.h"
 
+#include "src/system/utils/print.h"
+
 namespace powergates {
 
 bool isInit = false;
@@ -20,13 +22,21 @@ DigitalPin enablePowerGate(DigitalPin::GPIO::Output_EnableOutputGate);
 
 void enable_gate(bool isVbusGate)
 {
+  const bool isVbusGateEnabled = isVbusGate;
+  const bool isPowerGateEnabled = not isVbusGate;
+
   // force gates to have opposite states
-  if (not isVbusGate)
-  {
-    __private::enablePowerGate.set_high(!isVbusGate);
-    isPowerGateReallyEnabled = !isVbusGate;
-  }
-  __private::enableVbusGate.set_high(isVbusGate);
+  __private::enablePowerGate.set_high(isPowerGateEnabled);
+  __private::enableVbusGate.set_high(isVbusGateEnabled);
+
+  // set real status
+  delay_ms(1);
+  isPowerGateReallyEnabled = isPowerGateEnabled;
+
+  if (isPowerGateEnabled)
+    lampda_print("power gate enabled");
+  else
+    lampda_print("vbus gate enabled");
 }
 
 bool isVbusGateEnabled = false;
@@ -39,6 +49,9 @@ uint32_t powerGateStartSwitchingTime = 0;
 
 void disable_vbus_gate()
 {
+  if (__private::enableVbusGate.is_high())
+    lampda_print("vbus gate disabled");
+
   __private::enableVbusGate.set_high(false);
   isVbusGateEnabled = false;
   isVbusGateSwitching = false;
@@ -46,6 +59,9 @@ void disable_vbus_gate()
 
 void disable_power_gate()
 {
+  if (__private::enablePowerGate.is_high())
+    lampda_print("power gate disabled");
+
   __private::enablePowerGate.set_high(false);
   isPowerGateEnabled = false;
   isPowerGateSwitching = false;

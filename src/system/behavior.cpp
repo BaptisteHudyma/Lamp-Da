@@ -525,9 +525,24 @@ void handle_pre_output_light_state()
 
 void handle_output_light_state()
 {
-  // wait for power gates
-  if (not powergates::is_power_gate_enabled())
+  static bool waitingForPowerGate_messageDisplayed = true;
+  static bool waitingForOutputReadyGate = true;
+
+  // wait for power gates (and display message when ready)
+  if (not powergates::is_power_gate_enabled() or not power::is_output_mode_ready())
+  {
+    if (waitingForPowerGate_messageDisplayed)
+    {
+      lampda_print("Behavior>Output mode: waiting for power gate");
+      waitingForPowerGate_messageDisplayed = false;
+    }
     return;
+  }
+  else if (not waitingForPowerGate_messageDisplayed)
+  {
+    lampda_print("Behavior>Output mode: power gate ready");
+    waitingForPowerGate_messageDisplayed = true;
+  }
 
   // should go to sleep
   if (not is_system_should_be_powered())

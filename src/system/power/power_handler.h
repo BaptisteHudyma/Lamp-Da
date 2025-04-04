@@ -30,6 +30,8 @@ bool enable_charge(const bool);
 
 std::string get_state();
 
+bool is_output_mode_ready();
+
 bool is_in_output_mode();
 bool is_in_otg_mode();
 

@@ -9,7 +9,7 @@
 namespace balancer {
 
 // threshold at which point a battery is considered unbalanced with another
-constexpr uint16_t unbalancedMv = 5;
+constexpr uint16_t unbalancedMv = 3;
 
 static_assert(batteryCount == 3, "The balancing code only supports 3 cells");
 

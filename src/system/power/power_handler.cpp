@@ -16,7 +16,7 @@ namespace power {
 
 bool _isShutdownCompleted = false;
 
-static constexpr uint32_t clearPowerRailMinDelay_ms = 50;
+static constexpr uint32_t clearPowerRailMinDelay_ms = 10;
 static constexpr uint32_t clearPowerRailFailureDelay_ms = 1000;
 
 static_assert(clearPowerRailMinDelay_ms < clearPowerRailFailureDelay_ms,
@@ -60,6 +60,9 @@ const char* PowerStatesStr[] = {
         "ERROR",
 };
 
+static bool s_isOutputModeReady = false;
+bool is_output_mode_ready() { return s_isOutputModeReady; }
+
 namespace __private {
 
 // main state machine (start in error to force user to init)
@@ -102,6 +105,8 @@ void set_otg_parameters(uint16_t voltage_mV, uint16_t current_mA)
 
 void handle_clear_power_rails()
 {
+  s_isOutputModeReady = false;
+
   // disable all gates
   powergates::disable_gates();
   // prevent reverse current flow
@@ -121,7 +126,6 @@ void handle_clear_power_rails()
       get_power_rail_voltage() <= 3200)
   {
     __private::dischargeVbus.set_high(false);
-
     // all is clear, skip to next step
     __private::powerMachine.skip_timeout();
   }
@@ -172,9 +176,11 @@ void handle_output_voltage_mode()
   {
     // close power gate
     powergates::enable_power_gate();
+    s_isOutputModeReady = true;
   }
   else
   {
+    s_isOutputModeReady = false;
     powergates::disable_gates();
   }
 }

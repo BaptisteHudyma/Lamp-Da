@@ -525,8 +525,12 @@ bool enable(const uint16_t minSystemVoltage_mV,
 
 void loop(const bool isChargeOk)
 {
-  const bool isChargeChanged = isChargeOk != isChargeOk_s;
+  static bool isInOtg = false;
+
+  // instant update if the state changed
+  const bool isChargeChanged = (isChargeOk != isChargeOk_s) or (isInOtg != isInOtg_s);
   isChargeOk_s = isChargeOk;
+  isInOtg = isInOtg_s;
 
   static uint32_t lastUpdateTime = 0;
 
