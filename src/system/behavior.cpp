@@ -435,6 +435,13 @@ static uint32_t preChargeCalled = 0;
 void handle_pre_charger_operation_state()
 {
   preChargeCalled = time_ms();
+
+  if (not battery::can_battery_be_charged())
+  {
+    // battery cannot be charged
+    return;
+  }
+
   power::go_to_charger_mode();
   mainMachine.set_state(BehaviorStates::CHARGER_OPERATIONS);
 }

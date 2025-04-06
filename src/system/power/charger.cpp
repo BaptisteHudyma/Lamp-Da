@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "balancer.h"
 #include "drivers/charging_ic.h"
 #include "PDlib/power_delivery.h"
 
@@ -52,6 +53,18 @@ bool should_charge()
   // no charge if OTG
   if (isOtgEnabled_s)
     return false;
+
+  // wait for balancer
+  const auto& balancerStatus = balancer::get_status();
+  if (not balancerStatus.is_valid())
+    return false;
+
+  for (uint8_t i = 0; i < batteryCount; ++i)
+  {
+    // do not charge if a battery voltage goes over the max voltage
+    if (balancerStatus.batteryVoltages_mV[i] >= maxLiionVoltage_mV)
+      return false;
+  }
 
   // our power source cannot give power
   if (not powerDelivery::can_use_power())
@@ -253,7 +266,7 @@ void update_state()
   {
     charger.chargeCurrent_mA = measurements.batChargeCurrent_mA;
     charger.inputCurrent_mA = measurements.vbus_mA;
-    charger.vbus_mV = measurements.vbus_mV;
+    charger.powerRail_mV = measurements.vbus_mV;
     charger.isChargeOkSignalHigh = measurements.isChargeOk;
 
     charger.isInOtg = drivers::is_in_OTG();

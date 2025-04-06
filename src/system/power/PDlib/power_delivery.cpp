@@ -78,17 +78,9 @@ void ic_interrupt() { interruptSet = true; }
 
 bool is_vbus_powered()
 {
-  static bool isVbusPresent = false;
-  static uint32_t time = 0;
-  // do not spam the system
-  if (time == 0 or time_ms() - time > 500)
-  {
-    time = time_ms();
-    // isVbusPresent = pd_is_vbus_present(devicePort);
-    // more reliable when vbus is under load
-    isVbusPresent = get_vbus_voltage() >= 3000;
-  }
-  return isVbusPresent;
+  // isVbusPresent = pd_is_vbus_present(devicePort);
+  // more reliable when vbus is under load
+  return get_vbus_voltage() >= 3000;
 }
 
 struct UsbPDData

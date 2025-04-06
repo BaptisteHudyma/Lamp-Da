@@ -80,7 +80,7 @@ uint32_t get_power_rail_voltage()
   const auto& state = charger::get_state();
   if (state.areMeasuresOk)
   {
-    return state.vbus_mV;
+    return state.powerRail_mV;
   }
   else
   {

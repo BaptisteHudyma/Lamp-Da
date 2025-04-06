@@ -1,12 +1,46 @@
 # Lamp-Da
 
-A compact lantern project.
+A programmable board integrated with a liion battery charger, battery balancer, multiple sensors and gpios (with 3 analog inputs).
 
-This repository contains the software and PCB files to create a compact lantern, composed of a led strip wrapped around a 50mm cylinder.
+This repository contains the bootloader, software and hardware files to create and program the board.
 
-The code is not designed to be the most readable but to be robust, so it can be quite tricky to understand, sorry !
+The system supports programming and charge throught the same USB-C port.
+
+The board is made to fit into a 50mm tube.
+
+## File details
+- LampColorControler.ino: main class of the program, containing the setup and loop functions
+
+## Physical build and architecture :
+
+The electrical circuit and build files can be found in the **electrical** folder.
+
+![electrical circuit](/Medias/circuit.jpg)
+
+The PCB can be ordered directly assembled from JLC PCB, for a total cost of around 270$ for the minimal 5 pieces command (price drops with a more commands, until around 22$/circuit).
+
+The circuit is 3 cells li-ion USB C charger & balancer & power source, that is also programmable via the same USB port.
+
+The circuit features:
+- USB-C 3S li-ion charger, based on BQ25713 ic.
+- Battery balancing, based on BQ76905 ic.
+- USB short circuit and EC protection, based on TPD8S300 ic.
+- USB-C power negotiation, base on FUSB302B ic.
+- Programable voltage source, from 3V to 20V, up to 3A, using the charge component
+- 8 programmable IO pins (3 of which can be analog inputs, 4 can be pwm outputs). Based on nRF52840 ic.
+- MEMS Microphone, placed away from parasitic ringing components.
+- LSM6DS3TR IMU
+- Bluetooth 5.1 low power, with 5/10m range.
+
+- Multiple protection features (ESD spikes protection, USB voltage snubber, USB voltage limitation, ...)
+
+Be careful:
+- **NO REVERSE VOLTAGE PROTECTION FOR BATTERY**: it will blow the circuit right up
+- **IO are 3.3V max**, any voltage greater will destroy the system
 
 ## Behavior
+
+The code in this repo is made to be used as compact lanterns.
 
 base behavior:
 - The lamp starts and stops with one click.
@@ -43,55 +77,17 @@ Some user types are available for base models, in the user folder:
 ![The different lamps](/Medias/lamp_types.jpg)
 Above: simple, cct, indexable
 
-## File details
-- Lamp-Da.ino: main class of the program, containing the setup and loop functions
-
-## Physical build and architecture :
-
-The electrical circuit and build files can be found in the **electrical** folder.
-
-![electrical circuit](/Medias/circuit.jpg)
-
-The PCB can be ordered directly assembled from JLC PCB, for a total cost of around 270$ for the minimal 5 pieces command (price drops with a more commands, until around 11$/circuit).
-
-The circuit is 3 cells li-ion USB C charger, that is also programmable via the same USB port.
-
-The circuit features:
-- USB-C 3S li-ion charger, based on BQ25713 ic.
-- Battery balancing, based on BQ76905 ic.
-- USB short circuit and EC protection, based on TPD8S300 ic.
-- USB-C power negotiation, base on FUSB302B ic.
-- Constant current led driver, that can maintain stable up to 2.3A, based on LM3409HV ic.
-- 8 programmable IO pins (4 of which can be analog inputs, 4 can be pwm outputs). Based on nRF52840 ic.
-- MEMS Microphone, placed away from parasitic ringing components.
-- LSM6DS3TR IMU
-- Bluetooth 5.1 low power, with 5/10m range.
-
-- Multiple protection features (ESD spikes protection, USB voltage snubber, USB voltage limitation, ...)
-
-Be careful:
-- **NO REVERSE VOLTAGE PROTECTION FOR BATTERY**: it will blow the circuit right up
-- IO are 3.3V max, any voltage greater will destroy the system
-
-
-### How to program
-
-Out of factory, the system will miss a bootloader.
-
-You can flash a bootloader using the **IO | CL** pads on the board, with a JTAG probe, or an open source solution described below:
-
-Once the bootloader is written, the microcontroller can be programmed via USB, using the Arduino IDE or any flashing program.
-
 #### Bootloader flash
+Out of factory, the board will miss a bootloader.
 
 - Use a raspberry of any other linux system with gpios
-- Use the open source program **openocd** as described [in this post](https://forum.seeedstudio.com/t/xiao-ble-sense-bootloader-bricked-how-to-restore-it/263091/5)
+- Use the open source program **openocd** as described in the **flashInfo** folder of this repository.
 
 # Building the project
 
 The supported platform to work with the project is:
 
-- Linux (Debian/Ubuntu/Archlinux/etc) with Arduino 2.0 or later
+- Linux (Debian/Ubuntu/Archlinux/etc)
 
 ## Installing dependencies
 

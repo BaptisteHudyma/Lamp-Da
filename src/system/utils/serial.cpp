@@ -5,6 +5,7 @@
 #include "src/system/behavior.h"
 
 #include "src/system/power/power_handler.h"
+#include "src/system/power/PDlib/power_delivery.h"
 #include "src/system/power/charger.h"
 #include "src/system/power/balancer.h"
 
@@ -129,7 +130,7 @@ void handleCommand(const std::string& command)
                 "battery level:%f%%\n"
                 "-> %s",
                 boolToString(chargerState.isChargeOkSignalHigh),
-                chargerState.vbus_mV,
+                chargerState.powerRail_mV,
                 chargerState.inputCurrent_mA,
                 chargerState.batteryVoltage_mV,
                 chargerState.chargeCurrent_mA,
@@ -149,12 +150,14 @@ void handleCommand(const std::string& command)
       {
         const auto& chargerState = charger::get_state();
         lampda_print(
-                "VBUS voltage:%dmV\n"
-                "VBUS current:%dmA\n"
+                "PowerRail voltage:%dmV\n"
+                "PowerRail current:%dmA\n"
+                "VBUS voltage:%dmA\n"
                 "Bat voltage:%dmV\n"
                 "Bat current:%dmA",
-                chargerState.vbus_mV,
+                chargerState.powerRail_mV,
                 chargerState.inputCurrent_mA,
+                powerDelivery::get_vbus_voltage(),
                 chargerState.batteryVoltage_mV,
                 chargerState.batteryCurrent_mA);
         break;
