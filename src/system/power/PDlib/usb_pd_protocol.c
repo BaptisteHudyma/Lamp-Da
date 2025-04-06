@@ -1218,8 +1218,6 @@ void pd_request_power_swap(int port)
     set_state(port, PD_STATE_SRC_SWAP_INIT);
   else if (pd[port].task_state == PD_STATE_SNK_READY)
     set_state(port, PD_STATE_SNK_SWAP_INIT);
-  // getting rid of task stuff
-  // task_wake(PD_PORT_TO_TASK_ID(port));
 }
 
 #ifdef CONFIG_USBC_VCONN_SWAP
