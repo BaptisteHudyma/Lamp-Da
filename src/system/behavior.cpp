@@ -419,6 +419,9 @@ void handle_start_logic_state()
 
   if (did_woke_up_from_power())
   {
+    // signal to the alert manager that we started by power input
+    alerts::signal_wake_up_from_charger();
+
     // start the charge operation
     mainMachine.set_state(BehaviorStates::PRE_CHARGER_OPERATION);
   }

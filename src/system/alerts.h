@@ -51,6 +51,9 @@ private:
 
 extern AlertManager_t manager;
 
+// call to signal that the system just powered up from charger
+void signal_wake_up_from_charger();
+
 // handle the behavior for all alerts
 void handle_all(const bool shouldIgnoreAlerts);
 // show all the raised alerts
