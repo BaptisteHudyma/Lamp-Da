@@ -55,6 +55,27 @@ uint16_t get_battery_voltage_mv(const uint8_t index)
   return 0;
 }
 
+/**
+ * \brief Compute the maximum number of cells that should be balanced at the same time
+ * prevent the breakage of the component at high temperatures
+ */
+uint8_t compute_cell_balancing_max()
+{
+  if (_status.is_valid())
+  {
+    for (uint8_t i = 0; i < 5; i++)
+    {
+      // augment the temperature threshold, until 30 + 4 * 10 => 70 degrees
+      if (_status.temperature_degrees < 30 + i * 10)
+      {
+        // transform the index into a cell count (5 to 1)
+        return 5 - i;
+      }
+    }
+  }
+  return 0;
+}
+
 // user should write the register after calling this function
 // balancerRegisters.cbActiveCells.write();
 void set_balancing(uint8_t cellIndex, bool shouldBalance)
@@ -128,6 +149,8 @@ void balance_batteries()
       batteryVoltageMin = status.batteryVoltages_mV[i];
   }
 
+  uint8_t maxCellsToBalance = compute_cell_balancing_max();
+
   // read active battery register
   balancerRegisters.cbActiveCells.read_reg();
 
@@ -139,8 +162,13 @@ void balance_batteries()
 
     bool shouldBalance = false;
 
+    // no cells to balance left
+    if (maxCellsToBalance == 0)
+    {
+      shouldBalance = false;
+    }
     // battery is too high, and should be emptied a litte bit
-    if (status.batteryVoltages_mV[i] >= maxLiionVoltage_mV)
+    else if (status.batteryVoltages_mV[i] >= maxLiionVoltage_mV)
     {
       shouldBalance = true;
     }
@@ -153,6 +181,10 @@ void balance_batteries()
       else
         shouldBalance = status.batteryVoltages_mV[i] > batteryVoltageMin;
     }
+
+    // limit the cell to balance in parallel
+    if (shouldBalance)
+      maxCellsToBalance--;
 
     if (isBalancing != shouldBalance)
     {
