@@ -8,6 +8,7 @@
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
+#include "src/system/platform/registers.h"
 
 namespace charger {
 namespace drivers {
@@ -560,8 +561,22 @@ void loop(const bool isChargeOk)
     // set the current limit to what is stored
     program_input_current_limit();
 
-    // set max charge current
-    chargerIcRegisters.chargeCurrent.set(powerLimits_s.maxChargingCurrent_mA);
+    // stop charge
+    if (powerLimits_s.maxChargingCurrent_mA == 0)
+    {
+      chargerIcRegisters.chargeCurrent.set(powerLimits_s.maxChargingCurrent_mA);
+    }
+    // throttle charge current with temperature
+    else
+    {
+      // set max charge current
+      const float coreTemp = read_CPU_temperature_degreesC();
+      // will be 0 when temp reaches 70 degrees, stopping the charge
+      // below 40 degrees, no reduction of charge current is made
+      const float reducer = lmpd_constrain(lmpd_map<float, float>(coreTemp, 40.0, 70.0, 1.0, 0.0), 0.0, 1.0);
+      // write the reduced current
+      chargerIcRegisters.chargeCurrent.set(reducer * powerLimits_s.maxChargingCurrent_mA);
+    }
   }
 }
 
