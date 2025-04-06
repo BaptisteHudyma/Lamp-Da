@@ -4,7 +4,6 @@
  */
 
 #include "usb_pd.h"
-#include "hooks.h"
 
 #ifdef CONFIG_COMMON_RUNTIME
 #define CPRINTS(format, args...) cprints(CC_USBPD, format, ##args)
@@ -870,8 +869,6 @@ static void pd_usb_billboard_deferred(void)
 
 #endif
 }
-
-DECLARE_DEFERRED(pd_usb_billboard_deferred);
 
 #ifdef CONFIG_USB_PD_ALT_MODE_DFP
 static int hc_remote_pd_discovery(struct host_cmd_handler_args* args)

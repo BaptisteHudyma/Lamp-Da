@@ -22,6 +22,7 @@ extern "C" {
 // #define CONFIG_USB_PD_ALT_MODE
 // #define CONFIG_USB_PD_CHROMEOS
 #define CONFIG_USB_PD_DUAL_ROLE
+  // #define CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE
   // #define CONFIG_USB_PD_GIVE_BACK
   // #define CONFIG_USB_PD_SIMPLE_DFP
   // #define CONFIG_USB_PD_TCPM_TCPCI
@@ -83,6 +84,9 @@ extern "C" {
    * \brief return the requested OnTheGo parameters, negociated with a power sink
    */
   struct SourcePowerParameters get_OTG_requested_parameters();
+
+  void pd_startup();
+  void pd_turn_off();
 
   /**
    * \brief allow or forbid power sourcing from this device
