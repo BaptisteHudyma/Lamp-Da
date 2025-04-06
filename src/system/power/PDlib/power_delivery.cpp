@@ -63,6 +63,14 @@ bool is_usb_pd()
   return isPd;
 }
 
+bool is_cable_detected()
+{
+  int cc1;
+  int cc2;
+  tcpm_get_cc(devicePort, &cc1, &cc2);
+  return cc1 != TYPEC_CC_VOLT_OPEN or cc2 != TYPEC_CC_VOLT_OPEN;
+}
+
 // check if the source is simple USB, with a stabilize delay
 bool is_standard_port()
 {

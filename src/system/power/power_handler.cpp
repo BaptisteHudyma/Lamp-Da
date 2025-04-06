@@ -188,6 +188,8 @@ void handle_output_voltage_mode()
 void handle_otg_mode()
 {
   const auto requested = powerDelivery::get_otg_parameters();
+  if (not requested.is_otg_requested())
+    return;
 
   charger::set_enable_charge(false);
 
