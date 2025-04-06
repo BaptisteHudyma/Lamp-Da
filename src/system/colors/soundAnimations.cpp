@@ -15,8 +15,8 @@ void vu_meter(const Color& vuColor, const uint8_t fadeOut, LedStrip& strip)
   const float vuLevel = (decibels + abs(microphone::silenceLevelDb)) / microphone::highLevelDb;
 
   // display the gradient
-  strip.fadeToBlackBy(fadeOut);
   animations::fill(vuColor, strip, vuLevel);
+  strip.fadeToBlackBy(fadeOut);
 }
 
 void fft_display(const uint8_t speed, const uint8_t scale, const palette_t& palette, LedStrip& strip)
