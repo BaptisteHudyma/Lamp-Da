@@ -139,12 +139,20 @@ void balance_batteries()
 
     bool shouldBalance = false;
 
-    // set the cell to balance if too far from the mean
-    if (isBalancing)
-      shouldBalance = status.batteryVoltages_mV[i] >= (batteryVoltageMin + unbalancedMv);
-    // is already balancing, latch until we reach the same (sameish) voltage
+    // battery is too high, and should be emptied a litte bit
+    if (status.batteryVoltages_mV[i] >= maxLiionVoltage_mV)
+    {
+      shouldBalance = true;
+    }
     else
-      shouldBalance = status.batteryVoltages_mV[i] > batteryVoltageMin;
+    {
+      // set the cell to balance if too far from the mean
+      if (isBalancing)
+        shouldBalance = status.batteryVoltages_mV[i] >= (batteryVoltageMin + unbalancedMv);
+      // is already balancing, latch until we reach the same (sameish) voltage
+      else
+        shouldBalance = status.batteryVoltages_mV[i] > batteryVoltageMin;
+    }
 
     if (isBalancing != shouldBalance)
     {

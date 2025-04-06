@@ -92,7 +92,7 @@ uint16_t get_battery_level()
   if (lastCallTime == 0 or (currTime - lastCallTime) > 1000.0)
   {
     lastCallTime = currTime;
-    lastPercent = battery::get_battery_level();
+    lastPercent = battery::get_battery_minimum_cell_level();
   }
   return lastPercent;
 }
@@ -416,9 +416,10 @@ void handle_all(const bool shouldIgnoreAlerts)
     brightness::set_max_brightness(maxBrightness); // no alerts: reset the max brightness
 
     // red to green
-    const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
-                                                                        utils::ColorSpace::GREEN.get_rgb().color,
-                                                                        battery::get_battery_level() / 10000.0));
+    const auto buttonColor =
+            utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
+                                                       utils::ColorSpace::GREEN.get_rgb().color,
+                                                       battery::get_battery_minimum_cell_level() / 10000.0));
 
     // display battery level
     const auto& chargerStatus = charger::get_state();

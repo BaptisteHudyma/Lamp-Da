@@ -53,15 +53,15 @@ inline uint16_t liion_mv_to_battery_percent(const uint16_t liionLevel_mv, const 
  * \param[in] batteryLevel_mV the measured battery voltage
  * \return the battery level, in percent * 100
  */
-inline uint16_t get_level_percent(const uint16_t batteryVoltage_mV)
+inline uint16_t get_level_percent(const uint16_t batteryVoltage_mV, const uint8_t cellCount = batteryCount)
 {
-  return liion_mv_to_battery_percent(batteryVoltage_mV, batteryCount);
+  return liion_mv_to_battery_percent(batteryVoltage_mV, cellCount);
 }
 
 /**
  * \brief returns the battery level, mapped to the desired safe battery level
  */
-inline uint16_t get_level_safe(const uint16_t battery_mv)
+inline uint16_t get_level_safe(const uint16_t battery_mv, const uint8_t cellCount = batteryCount)
 {
   // save the init values
   static const uint16_t minSafeLevel_percent = get_level_percent(batteryMinVoltageSafe_mV);
@@ -69,10 +69,11 @@ inline uint16_t get_level_safe(const uint16_t battery_mv)
 
   // get the result of the total battery life, map it to the safe battery level
   // indicated by user
-  return lmpd_constrain(lmpd_map<uint16_t, uint16_t>(
-                                get_level_percent(battery_mv), minSafeLevel_percent, maxSafeLevel_percent, 0, 10000),
-                        0,
-                        10000);
+  return lmpd_constrain(
+          lmpd_map<uint16_t, uint16_t>(
+                  get_level_percent(battery_mv, cellCount), minSafeLevel_percent, maxSafeLevel_percent, 0, 10000),
+          0,
+          10000);
 }
 
 // returns the battery level, corresponding to user safe choice (0-10000)
@@ -82,6 +83,16 @@ inline uint16_t get_battery_level()
   // indicated by user
   return get_level_safe(get_raw_battery_voltage_mv());
 }
+
+/**
+ * \brief Return the level of the cell of the stack with the minimum battery
+ */
+uint16_t get_battery_minimum_cell_level();
+
+/**
+ * \brief Return the level of the cell of the stack with the maximum battery
+ */
+uint16_t get_battery_maximum_cell_level();
 
 } // namespace battery
 

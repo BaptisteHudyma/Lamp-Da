@@ -59,12 +59,22 @@ bool should_charge()
   if (not balancerStatus.is_valid())
     return false;
 
+  static uint32_t batteryTooHighLatchTime = 0;
   for (uint8_t i = 0; i < batteryCount; ++i)
   {
     // do not charge if a battery voltage goes over the max voltage
     if (balancerStatus.batteryVoltages_mV[i] >= maxLiionVoltage_mV)
+    {
+      batteryTooHighLatchTime = time_ms();
       return false;
+    }
   }
+  // latch the status of battery too high for a time, to let the balancer work
+  if (batteryTooHighLatchTime > 0 and (time_ms() - batteryTooHighLatchTime) < 20000)
+  {
+    return false;
+  }
+  batteryTooHighLatchTime = 0;
 
   // our power source cannot give power
   if (not powerDelivery::can_use_power())
