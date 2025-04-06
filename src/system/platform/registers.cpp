@@ -27,7 +27,7 @@ void setup_adc(uint8_t resolution)
 
 uint8_t get_wire_interface_count() { return WIRE_INTERFACES_COUNT; }
 
-void enter_serial_dfu() { enterSerialDfu(); }
+void enter_serial_dfu() { enterUf2Dfu(); }
 
 bool is_voltage_detected_on_vbus() { return (NRF_POWER->USBREGSTATUS & POWER_USBREGSTATUS_VBUSDETECT_Msk) != 0x00; }
 

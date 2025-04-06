@@ -176,7 +176,7 @@ public:
 
     virtual uint16_t address() const = 0;
 
-    uint16_t get()
+    int16_t get()
     {
       byte valBytes[2];
       if (readDataReg(address(), valBytes, 2))
@@ -188,7 +188,7 @@ public:
         // fuse them
         uint16_t res = val1 << 8 | val0;
         // convert to real units
-        return res;
+        return (uint16_t)res;
       }
       isFlagRaised = true;
       // error
@@ -218,42 +218,48 @@ public:
   {
     virtual ~ISubcommandReadRegister() {};
 
-  protected:
-    uint32_t raw_read()
+    static constexpr uint8_t readDataSize = 12;
+    byte valBytes[readDataSize];
+
+    uint32_t get_read_results()
     {
-      // set command
-      raw_send();
-
-      delay_us(2000);
-
-      constexpr uint8_t dataSize = 12;
-      byte valBytes[dataSize];
-      if (readDataReg(SUBCOMMAND_DATA_ADDR, valBytes, dataSize))
-      {
-        // fuse them (TODO: return the whole register instead of just 32 bits)
-        uint32_t res = valBytes[3] << 24 | valBytes[2] << 16 | valBytes[1] << 8 | valBytes[0];
-        return res;
-      }
-      isFlagRaised = true;
-      return 0;
+      const uint32_t res = (valBytes[3] << 24) | (valBytes[2] << 16) | (valBytes[1] << 8) | valBytes[0];
+      return res;
     }
 
-    uint32_t raw_read_big_endian()
+  protected:
+    void raw_read()
     {
       // set command
       raw_send();
 
       delay_us(2000);
 
-      byte valBytes[12];
-      if (readDataReg(SUBCOMMAND_DATA_ADDR, valBytes, 12))
+      if (!readDataReg(SUBCOMMAND_DATA_ADDR, valBytes, readDataSize))
       {
-        // fuse them (TODO: return the whole register instead of just 32 bits)
-        uint32_t res = valBytes[2] << 24 | valBytes[3] << 16 | valBytes[0] << 8 | valBytes[1];
-        return res;
+        isFlagRaised = true;
+      }
+    }
+
+    void raw_read_big_endian()
+    {
+      // set command
+      raw_send();
+
+      delay_us(2000);
+
+      byte tempValBytes[readDataSize];
+      if (readDataReg(SUBCOMMAND_DATA_ADDR, tempValBytes, 12))
+      {
+        for (uint i = 0; i < readDataSize; i += 2)
+        {
+          // big endian
+          valBytes[i + 1] = tempValBytes[i];
+          valBytes[i] = tempValBytes[i + 1];
+        }
+        return;
       }
       isFlagRaised = true;
-      return 0;
     }
 
     void raw_write8(uint8_t data)
@@ -305,6 +311,25 @@ public:
         isFlagRaised = true;
         return;
       }
+    }
+  };
+
+  struct ISubCommandManyRegisters : ISubcommandReadRegister
+  {
+    uint8_t val0;
+    uint8_t val1;
+
+    void read_reg()
+    {
+      raw_read();
+      val0 = valBytes[0];
+      val1 = valBytes[1];
+    }
+
+    void write()
+    {
+      uint16_t vals = val1 << 8 | val0;
+      raw_write16(vals);
     }
   };
 
@@ -951,8 +976,8 @@ public:
 
       uint16_t get()
       {
-        const uint32_t res = raw_read();
-        const uint16_t number = res & UINT16_MAX;
+        raw_read();
+        const uint16_t number = get_read_results() & UINT16_MAX;
         return number;
       }
     } deviceNumber;
@@ -966,18 +991,18 @@ public:
       // products.
       uint16_t get_device_number()
       {
-        const uint32_t res = raw_read_big_endian();
+        raw_read_big_endian();
         // first two bytes
-        const uint16_t number = res & UINT16_MAX;
+        const uint16_t number = get_read_results() & UINT16_MAX;
         return number;
       }
 
       // Bytes 3-2: Firmware Version (Big-Endian): Device firmware major and minor version number (Big-Endian).
       uint16_t get_firmware_version()
       {
-        const uint32_t res = raw_read_big_endian();
+        raw_read_big_endian();
         // first two bytes
-        const uint16_t number = (res >> 16) & UINT16_MAX;
+        const uint16_t number = (get_read_results() >> 16) & UINT16_MAX;
         return number;
       }
 
@@ -993,8 +1018,8 @@ public:
 
       uint16_t get()
       {
-        const uint32_t res = raw_read();
-        const uint16_t number = res & UINT16_MAX;
+        raw_read();
+        const uint16_t number = get_read_results() & UINT16_MAX;
         return number;
       }
     } hardwareVersion;
@@ -1007,8 +1032,8 @@ public:
       // full 48-bit field having units of userA- seconds
       uint32_t get_PassQLsb()
       {
-        const uint32_t res = raw_read();
-        const uint32_t number = res & UINT32_MAX;
+        raw_read();
+        const uint32_t number = get_read_results() & UINT32_MAX;
         return number;
       }
 
@@ -1018,8 +1043,8 @@ public:
       /*
       uint16_t get_PassQMsb()
       {
-        const uint32_t res = raw_read();
-        const uint16_t number = (res >> 32) & UINT16_MAX;
+        raw_read();
+        const uint16_t number = (get_read_results() >> 32) & UINT16_MAX;
         return number;
       }
       */
@@ -1029,8 +1054,8 @@ public:
       /*
       uint32_t get_PassTime()
       {
-        const uint32_t res = raw_read();
-        const uint32_t number = (res >> 48) & UINT32_MAX;
+        raw_read();
+        const uint32_t number = (get_read_results() >> 48) & UINT32_MAX;
         return number;
       }
       */
@@ -1128,31 +1153,33 @@ public:
     {
       uint16_t command_address() const override { return SUBCOMMAND_CB_ACTIVE_CELLS_ADDR; }
 
+      uint8_t val0;
+
+      void read_reg()
+      {
+        raw_read();
+        val0 = valBytes[0];
+      }
+
+      void write() { raw_write8(val0); }
+
       // Cell balancing active cells: When read, reports a bit mask of which cells are being actively balanced. When
       // written, starts balancing on the specified cells.
       // Write 0x00 to turn balancing off.
       // Bit 7 is reserved, read/write 0 to this bit
       // Bit 6 is reserved, read/write 0 to this bit
       // Bit 5 corresponds to the fifth active cell
+      FIELD(val0, CBCELLS_4, 0x05, 0x01);
       // Bit 4 corresponds to the fourth active cell
+      FIELD(val0, CBCELLS_3, 0x04, 0x01);
       // Bit 3 corresponds to the third active cell
+      FIELD(val0, CBCELLS_2, 0x03, 0x01);
       // Bit 2 corresponds to the second active cell
+      FIELD(val0, CBCELLS_1, 0x02, 0x01);
       // Bit 1 corresponds to the first active cell (connected between VC1 and VC0)
+      FIELD(val0, CBCELLS_0, 0x01, 0x01);
       // Bit 0 is reserved, read/write 0 to this bit
-      uint32_t get()
-      {
-        const uint32_t res = raw_read();
-        return res;
-        // TODO
-        // const uint8_t number = res & UINT8_MAX;
-        // return number;
-      }
 
-      void set_balancing(uint8_t cell1, uint8_t cell2, uint8_t cell3, uint8_t cell4, uint8_t cell5)
-      {
-        uint8_t data = (cell1 & 1) << 1 | (cell2 & 1) << 2 | (cell3 & 1) << 3 | (cell4 & 1) << 4 | (cell5 & 1) << 5;
-        raw_write8(data);
-      }
     } cbActiveCells;
 
     // This command is sent to place the device in CONFIG_UPDATE mode
@@ -1172,61 +1199,37 @@ public:
     } exitCfgUpdate;
 
     // Programmable timer, which allows the REGOUT LDO to be disabled and wakened after a programmed time or by alarm
-    struct ProgTimert : public ISubcommandReadRegister
+    struct ProgTimert : public ISubCommandManyRegisters
     {
       uint16_t command_address() const override { return SUBCOMMAND_PROG_TIMER_ADDR; }
 
       // Control to determine if REGOUT is wakened when an Alarm Status() bit asserts.
-      // 0 = Do not re-enable the REGOUT LDO if any bit in Alarm Status() asserts while the timer is running (default).
-      // 1 = If [REGOUT_SD]=1 and any bit in Alarm Status() asserts while the timer is running, reenable the REGOUT LDO
+      // 0 = Do not re-enable the REGOUT LDO if any bit in Alarm Status() asserts while the timer is running
+      // (default).
+      // 1 = If [REGOUT_SD]=1 and any bit in Alarm Status() asserts while the timer is running, reenable the
+      // REGOUT LDO
       // based on the setting of REGOUT Control()
-      uint8_t get_REGOUT_ALARM_WK()
-      {
-        const uint32_t res = raw_read();
-        const uint8_t number = (res >> 11) & 0b1;
-        return number;
-      }
+      FIELD(val1, REGOUT_ALARM_WK, 0x03, 0x02);
 
       // Delay before REGOUT is disabled when the timer is initiated while REGOUT is powered, and [REGOUT_SD]=1.
       // 0 = Zero delay (default).
       // 1 = 250ms delay.
       // 2 = 1-sec delay.
       // 3 = 4-sec delay
-      uint8_t get_REGOUT_SD_DLY()
-      {
-        const uint32_t res = raw_read();
-        const uint8_t number = (res >> 9) & 0b11;
-        return number;
-      }
+      FIELD(val1, REGOUT_SD_DLY, 0x01, 0x02)
 
       // Control to determine if REGOUT is disabled when the command is sent.
       // 0 = do not disable the REGOUT LDO when command is sent (default).
       // 1 = disable the REGOUT LDO when the timer is initiated, after delay of
-      // [REGOUT_SD_DLY]. When the timer expires, re-enable the REGOUT LDO based on the status of REGOUT Control().
-      uint8_t get_REGOUT_SD()
-      {
-        const uint32_t res = raw_read();
-        const uint8_t number = (res >> 8) & 0b1;
-        return number;
-      }
+      // [REGOUT_SD_DLY]. When the timer expires, re-enable the REGOUT LDO based on the status of REGOUT
+      // Control().
+      FIELD(val1, REGOUT_SD, 0x00, 0x01)
 
-      // Timer value programmable from 250 ms to 4 seconds in 250 ms increments (settings 1 to 16), and from 5 seconds
-      // to 243 seconds in 1 second increments (settings 17 to 255).
-      // A setting of zero disables the timer.
-      // Whenever this field is written with a non-zero value, it initiates the timer
-      uint8_t get_prog_timer()
-      {
-        const uint32_t res = raw_read();
-        const uint8_t number = res & UINT8_MAX;
-        return number;
-      }
+      // Timer value programmable from 250 ms to 4 seconds in 250 ms increments (settings 1 to 16), and from 5
+      // seconds to 243 seconds in 1 second increments (settings 17 to 255). A setting of zero disables the
+      // timer. Whenever this field is written with a non-zero value, it initiates the timer
+      FIELD(val0, PROG_TMR, 0x00, 0x08)
 
-      void set_timer(uint8_t progTimer, uint8_t regoutSd, uint8_t regoutSdDelay, uint8_t regoutAlarmWake)
-      {
-        uint16_t data = progTimer & UINT8_MAX;
-        data |= ((regoutSd & 0b1) | (regoutSdDelay & 0b11) << 1 | (regoutAlarmWake & 0b1) << 3) << 8;
-        raw_write16(data);
-      }
     } progTimer;
 
     // This command is sent to allow the device to enter SLEEP mode
@@ -1248,111 +1251,94 @@ public:
     // This command enables the host to allow recovery of selected protection faults
     struct ProtRecoveryt : public ISubcommandReadRegister
     {
+      uint8_t val0;
+
+      void read_reg()
+      {
+        raw_read();
+        val0 = valBytes[0];
+      }
+
+      void write() { raw_write8(val0); }
+
       uint16_t command_address() const override { return SUBCOMMAND_PROT_RECOVERY_ADDR; }
 
       // Cell Overvoltage or Cell Undervoltage fault recovery
       // 0 = Recovery of an COV/CUV fault is not triggered
       // 1 = Recovery of an COV/CUV fault is triggered.
-      uint8_t get_volt_rec()
-      {
-        const uint32_t res = raw_read();
-        const uint8_t number = (res >> 6) & 0b1;
-        return number;
-      }
+      FIELD(val0, VOLTREC, 0x07, 0x01);
 
       // Recovery for a VSS or VREF fault from Safety Status B()
       // 0 = Recovery of a VSS or VREF fault is not triggered
       // 1 = Recovery of a VSS or VREF fault is triggered
-      uint8_t get_diag_rec()
-      {
-        const uint32_t res = raw_read();
-        const uint8_t number = (res >> 6) & 0b1;
-        return number;
-      }
+      FIELD(val0, DIAGREC, 0x06, 0x01);
 
       // Short Circuit in Discharge fault recovery
       // 0 = Recovery of an SCD fault is not triggered
       // 1 = Recovery of an SCD fault is triggered
-      uint8_t get_scd_rec()
-      {
-        const uint32_t res = raw_read();
-        const uint8_t number = (res >> 5) & 0b1;
-        return number;
-      }
+      FIELD(val0, SCDREC, 0x05, 0x01);
 
       // Overcurrent in Discharge 1 fault recovery
       // 0 = Recovery of an OCD1 fault is not triggered
       // 1 = Recovery of an OCD1 fault is triggered
-      uint8_t get_ocd1_rec()
-      {
-        const uint32_t res = raw_read();
-        const uint8_t number = (res >> 4) & 0b1;
-        return number;
-      }
+      FIELD(val0, OCD1REC, 0x04, 0x01);
 
       // Overcurrent in Discharge 2 fault recovery
       // 0 = Recovery of an OCD2 fault is not triggered
       // 1 = Recovery of an OCD2 fault is triggered.
-      uint8_t get_ocd2_rec()
-      {
-        const uint32_t res = raw_read();
-        const uint8_t number = (res >> 3) & 0b1;
-        return number;
-      }
+      FIELD(val0, OCD2REC, 0x03, 0x01);
 
       // Overcurrent in Charge fault recovery
       // 0 = Recovery of an OCC fault is not triggered
       // 1 = Recovery of an OCC fault is triggered.
-      uint8_t get_occ_rec()
-      {
-        const uint32_t res = raw_read();
-        const uint8_t number = (res >> 2) & 0b1;
-        return number;
-      }
+      FIELD(val0, OCCREC, 0x02, 0x01);
 
       // Temperature fault recovery
       // 0 = Recovery of a temperature fault is not triggered
       // 1 = Recovery of a temperature fault is triggered.
-      uint8_t get_temp_prec()
-      {
-        const uint32_t res = raw_read();
-        const uint8_t number = (res >> 1) & 0b1;
-        return number;
-      }
-
-      void set_recovery(uint8_t temperatureRecovery,
-                        uint8_t overcurentChargeRecovery,
-                        uint8_t overcurentDicharge2Recovery,
-                        uint8_t overcurentDicharge1Recovery,
-                        uint8_t shortCircuitDischargeRecovery,
-                        uint8_t diagRecovery,
-                        uint8_t cellVoltageRecovery)
-      {
-        uint8_t data = (temperatureRecovery & 0b1) << 1 | (overcurentChargeRecovery & 0b1) << 2 |
-                       (overcurentDicharge2Recovery & 0b1) << 3 | (overcurentDicharge1Recovery & 0b1) << 4 |
-                       (shortCircuitDischargeRecovery & 0b1) << 5 | (diagRecovery & 0b1) << 6 |
-                       (cellVoltageRecovery & 0b1) << 7;
-        raw_write8(data);
-      }
+      FIELD(val0, TEMPREC, 0x01, 0x01);
     } protRecovery;
 
-    struct SettingConfiguration_DAt : public ISubcommandReadRegister
+    struct SettingConfiguration_DAt : public ISubCommandManyRegisters
     {
       uint16_t command_address() const override { return SUBCOMMAND_CONFIGURATION_DA_ADDR; }
 
-      void set_disable_ts_reading()
-      {
-        // TODO handle other parameters
-        uint16_t data = 0;
-        data |= 1 << 8;
-        raw_write16(data);
-      }
+      // This bit controls whether the TS pin is used for external thermistor measurement or as a general purpose ADC
+      // input.
+      //  0 = TS pin is used for external thermistor measurement, with the internal pullup resistor enabled during
+      //  measurement, and the ADC used in ratiometric mode, using the internal REG18 LDO voltage for the pullup
+      //  resistor bias and for the ADC reference.
+      // 1 = TS pin is used for general purpose ADC voltage measurement, with the internal pullup resistor disabled
+      // during measurement, and the ADC using the internal bandgap for its reference.
+      FIELD(val1, TSMODE, 0x00, 0x01);
 
-      uint16_t get()
-      {
-        uint32_t data = raw_read();
-        return data & UINT16_MAX;
-      }
+      // Selects coulomb counter mode. Note that CC1 Current() and accumulated charge integration only operates in modes
+      // where the coulomb counter is running continuously (0x00 NORMAL mode, or 0x01 NORMAL mode while no idle slots
+      // are being introduced, or 0x02 NORMAL mode)
+      FIELD(val0, CCMODE, 0x06, 0x02);
+
+      // Selects ADC conversion speed for cell voltage measurements. Higher speed results in higher noise in
+      // conversions.
+      // 0 = 2.93 ms per conversion (default)
+      // 1 = 1.46 ms per conversion
+      // 2 = 732 μs per conversion
+      // 3 = 366 μs per conversion
+      FIELD(val0, CVADCSPEED, 0x04, 0x02);
+
+      // Selects ADC conversion speed for current measurements. Higher speed results in higher noise in conversions.
+      // 0 = 2.93 ms per conversion (default)
+      // 1 = 1.46 ms per conversion
+      // 2 = 732 μs per conversion
+      // 3 = 366 μs per conversion
+      FIELD(val0, IADCSPEED, 0x02, 0x02);
+
+      // Selects ADC conversion speed for Shared Slot measurements. Higher speed results in higher noise in conversions.
+      // 0 = 2.93 ms per conversion (default)
+      // 1 = 1.46 ms per conversion
+      // 2 = 732 μs per conversion
+      // 3 = 366 μs per conversion
+      FIELD(val0, SSADCSPEED, 0x00, 0x02);
+
     } settingConfiguration_DA;
 
     // Not every system uses all of the cell input pins. If the system has fewer cells than the device supports, some VC
@@ -1371,27 +1357,38 @@ public:
     {
       uint16_t command_address() const override { return SUBCOMMAND_CONFIGURATION_VCELL_MODE_ADDR; }
 
-      uint8_t get()
+      uint8_t val0;
+
+      void read_reg()
       {
-        const uint32_t res = raw_read();
-        const uint8_t number = res & 0b1111;
-        return number;
+        raw_read();
+        val0 = valBytes[0];
       }
 
-      void set(uint8_t cellNumber)
-      {
-        if (cellNumber > 5)
-          return;
+      void write() { raw_write8(val0); }
 
-        raw_write8(cellNumber);
-      }
+      // Not every system uses all of the cell input pins. If the system has fewer cells than the device supports, some
+      // VC input pins must be shorted together. To prevent action being taken for cell undervoltage conditions on pins
+      // that are shorted, set these bits appropriately.
+      // 0 = All cell inputs are used for actual cells.
+      // 1 = All cell inputs are used for actual cells.
+      // 2 = Two actual cells are in use (VC5-VC4A, VC1-VC0), unused cell pins can be shorted to an adjacent cell pin at
+      // the device or connected through RC to the cells.
+      // 3 = Three actual cells are in use (VC5-VC4A, VC2-VC1, VC1-VC0), unused cell pins can be shorted to an adjacent
+      // cell pin at the device or connected through RC to the cells.
+      // 4 = Four actual cells are in use (VC5-VC4A, VC4B-VC3A, VC2-VC1, VC1-VC0), unused cell pins can be shorted to an
+      // adjacent cell pin at the device or connected through RC to the cells.
+      // 5 = All cell inputs are used for actual cells.
+      FIELD(val0, VCELL, 0x00, 0x03);
+
     } configurateVcell;
 
     struct TsOffsett : public ISubcommandReadRegister
     {
       uint16_t command_address() const override { return SUBCOMMAND_CONFIGURATION_TS_OFFSET_ADDR; }
 
-      void set(uint16_t offset) { raw_write16(offset); }
+      // signed to unsigned raw covertion
+      void set(int16_t offset) { raw_write16((int16_t)offset); }
     } tsOffset;
   };
 

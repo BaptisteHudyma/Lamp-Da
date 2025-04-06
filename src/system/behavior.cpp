@@ -10,6 +10,7 @@
 
 #include "src/system/power/charger.h"
 #include "src/system/power/power_handler.h"
+#include "src/system/power/power_gates.h"
 
 #include "src/system/physical/battery.h"
 #include "src/system/physical/button.h"
@@ -434,6 +435,13 @@ static uint32_t preChargeCalled = 0;
 void handle_pre_charger_operation_state()
 {
   preChargeCalled = time_ms();
+
+  if (not battery::can_battery_be_charged())
+  {
+    // battery cannot be charged
+    return;
+  }
+
   power::go_to_charger_mode();
   mainMachine.set_state(BehaviorStates::CHARGER_OPERATIONS);
 }
@@ -518,11 +526,31 @@ void handle_pre_output_light_state()
   // let the user power on the system
   user::power_on_sequence();
 
+  // this function is executed OUNCE
   mainMachine.set_state(BehaviorStates::OUTPUT_LIGHT);
 }
 
 void handle_output_light_state()
 {
+  static bool waitingForPowerGate_messageDisplayed = true;
+  static bool waitingForOutputReadyGate = true;
+
+  // wait for power gates (and display message when ready)
+  if (not powergates::is_power_gate_enabled() or not power::is_output_mode_ready())
+  {
+    if (waitingForPowerGate_messageDisplayed)
+    {
+      lampda_print("Behavior>Output mode: waiting for power gate");
+      waitingForPowerGate_messageDisplayed = false;
+    }
+    return;
+  }
+  else if (not waitingForPowerGate_messageDisplayed)
+  {
+    lampda_print("Behavior>Output mode: power gate ready");
+    waitingForPowerGate_messageDisplayed = true;
+  }
+
   // should go to sleep
   if (not is_system_should_be_powered())
   {

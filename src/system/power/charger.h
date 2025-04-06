@@ -28,8 +28,9 @@ struct Charger_t
   uint16_t inputCurrent_mA = 0;
   // charge current of the battery
   uint16_t chargeCurrent_mA = 0;
-  // current VBUS voltage
-  uint16_t vbus_mV = 0;
+  // powerRail voltage (can be the same as VBUS in charge & OTG mode)
+  // min value at 3200mV
+  uint16_t powerRail_mV = 0;
 
   // battery voltage
   uint16_t batteryVoltage_mV = 0;
