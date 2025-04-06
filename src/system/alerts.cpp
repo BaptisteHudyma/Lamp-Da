@@ -1,5 +1,6 @@
 #include "alerts.h"
 
+#include "platform/time.h"
 #include "src/system/platform/time.h"
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/registers.h"
@@ -20,6 +21,18 @@ namespace alerts {
 
 AlertManager_t manager;
 bool _request_shutdown = false;
+
+// stay at zero in normal operation
+// set to the real startup time to ignore the battery alerts while the system starts
+uint32_t _startupChargerTime = 0;
+// ready to display battery alerts
+bool is_battery_alert_ready()
+{
+  const bool isReady = _startupChargerTime == 0 or (time_ms() - _startupChargerTime) > 5000;
+  if (isReady)
+    _startupChargerTime = 0;
+  return isReady;
+}
 
 inline const char* AlertsToText(const Type type)
 {
@@ -79,7 +92,7 @@ uint16_t get_battery_level()
   if (lastCallTime == 0 or (currTime - lastCallTime) > 1000.0)
   {
     lastCallTime = currTime;
-    lastPercent = battery::get_battery_level();
+    lastPercent = battery::get_battery_minimum_cell_level();
   }
   return lastPercent;
 }
@@ -191,6 +204,8 @@ struct Alert_BatteryCritical : public AlertBase
 {
   bool should_be_raised() const override
   {
+    if (not is_battery_alert_ready())
+      return false;
     const auto& chargerState = charger::get_state();
     return not chargerState.is_effectivly_charging() and __internal::get_battery_level() < batteryCritical;
   }
@@ -221,6 +236,9 @@ struct Alert_BatteryLow : public AlertBase
 {
   bool should_be_raised() const override
   {
+    if (not is_battery_alert_ready())
+      return false;
+
     const auto& chargerState = charger::get_state();
     return not chargerState.is_effectivly_charging() and __internal::get_battery_level() < batteryLow;
   }
@@ -386,6 +404,8 @@ void update_alerts()
   }
 }
 
+void signal_wake_up_from_charger() { _startupChargerTime = time_ms(); }
+
 void handle_all(const bool shouldIgnoreAlerts)
 {
   // update all alerts
@@ -396,9 +416,10 @@ void handle_all(const bool shouldIgnoreAlerts)
     brightness::set_max_brightness(maxBrightness); // no alerts: reset the max brightness
 
     // red to green
-    const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
-                                                                        utils::ColorSpace::GREEN.get_rgb().color,
-                                                                        battery::get_battery_level() / 10000.0));
+    const auto buttonColor =
+            utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
+                                                       utils::ColorSpace::GREEN.get_rgb().color,
+                                                       battery::get_battery_minimum_cell_level() / 10000.0));
 
     // display battery level
     const auto& chargerStatus = charger::get_state();

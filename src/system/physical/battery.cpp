@@ -126,4 +126,60 @@ bool can_battery_be_charged()
   return true;
 }
 
+uint16_t get_battery_minimum_cell_level()
+{
+  uint16_t minCellVoltage = maxSingularBatteryVoltage_mV;
+  const auto& balancerStatus = balancer::get_status();
+  if (balancerStatus.is_valid())
+  {
+    for (uint8_t i = 0; i < batteryCount; ++i)
+    {
+      const auto cellVoltage = balancerStatus.batteryVoltages_mV[i];
+      // TODO: check voltage validity
+      if (cellVoltage < minCellVoltage)
+        minCellVoltage = cellVoltage;
+    }
+  }
+
+  // no min cell voltage, maybe balancer is disconected
+  if (minCellVoltage == maxSingularBatteryVoltage_mV)
+  {
+    return get_battery_level();
+  }
+  else
+  {
+    // get the result of the total battery life, map it to the safe battery level
+    // indicated by user
+    return get_level_safe(minCellVoltage, 1);
+  }
+}
+
+uint16_t get_battery_maximum_cell_level()
+{
+  uint16_t maxCellVoltage = minSingularBatteryVoltage_mV;
+  const auto& balancerStatus = balancer::get_status();
+  if (balancerStatus.is_valid())
+  {
+    for (uint8_t i = 0; i < batteryCount; ++i)
+    {
+      const auto cellVoltage = balancerStatus.batteryVoltages_mV[i];
+      // TODO: check voltage validity
+      if (cellVoltage > maxCellVoltage)
+        maxCellVoltage = cellVoltage;
+    }
+  }
+
+  // no min cell voltage, maybe balancer is disconected
+  if (maxCellVoltage == minSingularBatteryVoltage_mV)
+  {
+    return get_battery_level();
+  }
+  else
+  {
+    // get the result of the total battery life, map it to the safe battery level
+    // indicated by user
+    return get_level_safe(maxCellVoltage, 1);
+  }
+}
+
 } // namespace battery

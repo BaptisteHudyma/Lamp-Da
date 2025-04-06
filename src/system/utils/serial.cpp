@@ -103,9 +103,11 @@ void handleCommand(const std::string& command)
           // print individual battery voltages
           lampda_print(
                   "raw battery level:%f%%\n"
-                  "battery level:%f%%",
+                  "battery level:%f%%\n"
+                  "minimum cell level:%f%%",
                   battery::get_level_percent(battery::get_raw_battery_voltage_mv()) / 100.0,
-                  battery::get_battery_level() / 100.0);
+                  battery::get_battery_level() / 100.0,
+                  battery::get_battery_minimum_cell_level() / 100.0);
         }
         else
         {

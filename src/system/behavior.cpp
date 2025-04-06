@@ -419,6 +419,9 @@ void handle_start_logic_state()
 
   if (did_woke_up_from_power())
   {
+    // signal to the alert manager that we started by power input
+    alerts::signal_wake_up_from_charger();
+
     // start the charge operation
     mainMachine.set_state(BehaviorStates::PRE_CHARGER_OPERATION);
   }
@@ -491,7 +494,8 @@ void handle_charger_operation_state()
 void handle_pre_output_light_state()
 {
   // critical battery level, do not wake up
-  if (battery::get_battery_level() <= batteryCritical + 1 or not battery::is_battery_usable_as_power_source())
+  if (battery::get_battery_minimum_cell_level() <= batteryCritical + 1 or
+      not battery::is_battery_usable_as_power_source())
   {
     // alert user of low battery
     for (uint8_t i = 0; i < 10; i++)

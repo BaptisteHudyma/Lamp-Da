@@ -48,18 +48,25 @@ constexpr float voltageDividerCoeff =
 // number of batteries for this model
 constexpr uint8_t batteryCount = 3;
 
-// max voltage of a single li-ion cell
-constexpr uint16_t batteryMaxVoltage_mV = 4200 * batteryCount;
-// max voltage of a li-ion cell to maximise lifetime
-constexpr uint16_t batteryMaxVoltageSafe_mV = 4060 * batteryCount;
-// min voltage of a single li-ion cell
-constexpr uint16_t batteryMinVoltage_mV = 3000 * batteryCount;
-// min voltage of a li-ion cell to maximise lifetime
-constexpr uint16_t batteryMinVoltageSafe_mV = 3300 * batteryCount;
-
 // absolute minimum/maximum singular liion battery voltage
-constexpr uint16_t minSingularBatteryVoltage_mV = 2800;
-constexpr uint16_t maxSingularBatteryVoltage_mV = 4300;
+constexpr uint16_t minLiionVoltage_mV = 2900;
+constexpr uint16_t maxLiionVoltage_mV = 4200;
+
+constexpr uint16_t minSafeLiionVoltage_mV = 3300;
+constexpr uint16_t maxSafeLiionVoltage_mV = 4060;
+
+// max voltage of a single li-ion cell
+constexpr uint16_t batteryMaxVoltage_mV = maxLiionVoltage_mV * batteryCount;
+// max voltage of a li-ion cell to maximise lifetime
+constexpr uint16_t batteryMaxVoltageSafe_mV = maxSafeLiionVoltage_mV * batteryCount;
+// min voltage of a single li-ion cell
+constexpr uint16_t batteryMinVoltage_mV = minLiionVoltage_mV * batteryCount;
+// min voltage of a li-ion cell to maximise lifetime
+constexpr uint16_t batteryMinVoltageSafe_mV = minSafeLiionVoltage_mV * batteryCount;
+
+constexpr uint16_t minSingularBatteryVoltage_mV = minLiionVoltage_mV * 0.9;
+constexpr uint16_t maxSingularBatteryVoltage_mV = maxLiionVoltage_mV * 1.1;
+
 // absolute minimum/maximum battery pack voltage
 constexpr uint16_t minBatteryVoltage_mV = minSingularBatteryVoltage_mV * batteryCount;
 constexpr uint16_t maxBatteryVoltage_mV = maxSingularBatteryVoltage_mV * batteryCount;
