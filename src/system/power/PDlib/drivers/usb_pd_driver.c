@@ -50,6 +50,18 @@ const int pd_snk_pdo_cnt = ARRAY_SIZE(pd_snk_pdo);
 int pdSources = 0;
 uint32_t* srcCapsSaved = NULL;
 
+void pd_startup()
+{
+  // dual_role_on();
+  dual_role_force_sink();
+}
+
+void pd_turn_off()
+{
+  dual_role_off();
+  dual_role_force_sink();
+}
+
 uint32_t get_next_pdo_voltage()
 {
   if (pdSources <= 0 || !srcCapsSaved)
@@ -297,11 +309,11 @@ void pd_transition_voltage(int idx)
 
 void pd_check_dr_role(int port, int dr_role, int flags)
 {
-#if 0
-	/* If UFP, try to switch to DFP */
-	if ((flags & PD_FLAGS_PARTNER_DR_DATA) && dr_role == PD_ROLE_UFP)
-	pd_request_data_swap(port);
-#endif
+  /*
+      // If UFP, try to switch to DFP
+      if ((flags & PD_FLAGS_PARTNER_DR_DATA) && dr_role == PD_ROLE_UFP)
+      pd_request_data_swap(port);
+  */
 }
 
 void pd_check_pr_role(int port, int pr_role, int flags)
@@ -324,5 +336,5 @@ void pd_check_pr_role(int port, int pr_role, int flags)
 		     (partner_extpower && pr_role == PD_ROLE_SOURCE))
 			pd_request_power_swap(port);
 	}
-#endif // if 0
+#endif
 }

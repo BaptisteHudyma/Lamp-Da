@@ -190,6 +190,7 @@ bool setup()
   }
   bool initSucceeded = (tcpm_init(devicePort) == 0);
   pd_init(devicePort);
+  pd_startup();
 
   DigitalPin chargerPin(DigitalPin::GPIO::Signal_PowerDelivery);
   chargerPin.attach_callback(ic_interrupt, DigitalPin::Interrupt::kChange);
@@ -263,10 +264,7 @@ void loop()
   }
 }
 
-void shutdown()
-{
-  // nothing ?
-}
+void shutdown() { pd_turn_off(); }
 
 uint16_t get_max_input_current()
 {

@@ -6,7 +6,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "hooks.h"
 #include "usb_pd.h"
 #include "tcpm/usb_pd_tcpm.h"
 #include "tcpm/tcpm.h"
@@ -3393,7 +3392,7 @@ void pd_run_state_machine(int port, int reset)
 }
 
 #ifdef CONFIG_USB_PD_DUAL_ROLE
-static void dual_role_on(void)
+void dual_role_on(void)
 {
   int i;
 
@@ -3410,22 +3409,18 @@ static void dual_role_on(void)
   pd_set_dual_role(PD_DRP_TOGGLE_ON);
   CPRINTS("chipset -> S0");
 }
-DECLARE_HOOK(HOOK_CHIPSET_RESUME, dual_role_on, HOOK_PRIO_DEFAULT);
 
-static void dual_role_off(void)
+void dual_role_off(void)
 {
   pd_set_dual_role(PD_DRP_TOGGLE_OFF);
   CPRINTS("chipset -> S3");
 }
-DECLARE_HOOK(HOOK_CHIPSET_SUSPEND, dual_role_off, HOOK_PRIO_DEFAULT);
-DECLARE_HOOK(HOOK_CHIPSET_STARTUP, dual_role_off, HOOK_PRIO_DEFAULT);
 
-static void dual_role_force_sink(void)
+void dual_role_force_sink(void)
 {
   pd_set_dual_role(PD_DRP_FORCE_SINK);
   CPRINTS("chipset -> S5");
 }
-DECLARE_HOOK(HOOK_CHIPSET_SHUTDOWN, dual_role_force_sink, HOOK_PRIO_DEFAULT);
 
 #endif /* CONFIG_USB_PD_DUAL_ROLE */
 
