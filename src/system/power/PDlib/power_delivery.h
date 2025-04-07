@@ -32,6 +32,16 @@ bool is_power_available();
 // can use this source as power entry
 bool can_use_power();
 
+/**
+ * \brief Call to allow or forbid OTG mode
+ */
+void allow_otg(const bool);
+
+/**
+ * \brief return true is the system is prepaping to switch to OTG mode
+ */
+bool is_switching_to_otg();
+
 // return the requested OTG parameters
 struct OTGParameters
 {
