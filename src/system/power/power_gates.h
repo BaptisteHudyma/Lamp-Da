@@ -22,6 +22,10 @@ bool is_power_gate_enabled();
  * This will first disable the power gate, then after a delay enable the vbus gate
  */
 void enable_vbus_gate();
+/**
+ * \brief Fast swap only: diretcly close output gate and enable vbus gate
+ */
+void enable_vbus_gate_DIRECT();
 
 /**
  * \brief return true when the gate if enabled (after the delay)

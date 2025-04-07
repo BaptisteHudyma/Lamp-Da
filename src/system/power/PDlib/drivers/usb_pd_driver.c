@@ -21,6 +21,9 @@ struct SourcePowerParameters get_OTG_requested_parameters() { return otgParamete
 int canBecomePowerSource = 1; // enabled by default
 void set_allow_power_sourcing(const int allowPowerSourcing) { canBecomePowerSource = allowPowerSourcing != 0; }
 
+int _isActivatingOTG = 0;
+int is_activating_otg() { return _isActivatingOTG; }
+
 uint32_t pd_task_set_event(uint32_t event, int wait_for_reply)
 {
   switch (event)
@@ -159,6 +162,7 @@ void pd_power_supply_reset(int port)
   // reset OTG params
   otgParameters.requestedVoltage_mV = 5000;
   otgParameters.requestedCurrent_mA = 0;
+  _isActivatingOTG = 0;
   return;
 }
 
@@ -232,8 +236,8 @@ void pd_execute_data_swap(int port, int data_role) { /* Do nothing */ }
 
 int pd_is_data_swap_allowed(int port, int data_role)
 {
-  // Never allow data swap
-  return 0;
+  // allow data swap
+  return 1;
 }
 
 int pd_is_power_swap_succesful(int port)
@@ -248,20 +252,11 @@ int pd_board_checks(void) { return EC_SUCCESS; }
 // enable the source supply
 int pd_set_power_supply_ready(int port)
 {
+  _isActivatingOTG = 1;
   // enable 5V OTG (cold start)
   otgParameters.requestedVoltage_mV = 5000;
   otgParameters.requestedCurrent_mA = 500;
 
-#if 0
-	/* Disable charging */
-	gpio_set_level(GPIO_USB_C0_CHARGE_L, 1);
-
-	/* Enable VBUS source */
-	gpio_set_level(GPIO_USB_C0_5V_EN, 1);
-
-	/* notify host of power info change */
-	pd_send_host_event(PD_EVENT_POWER_CHANGE);
-#endif               // if 0
   return EC_SUCCESS; /* we are ready */
 }
 
@@ -270,41 +265,9 @@ void pd_transition_voltage(int idx)
   // augment OTG voltage/current to requested profile
   uint32_t ma, mv;
   pd_extract_pdo_power(pd_src_pdo[idx], &ma, &mv);
+
   otgParameters.requestedVoltage_mV = mv;
   otgParameters.requestedCurrent_mA = ma;
-
-#if 0
-	timestamp_t deadline;
-	uint32_t mv = src_pdo_charge[idx - 1].mv;
-
-	/* Is this a transition to a new voltage? */
-	if (charge_port_is_active() && vbus[CHG].mv != mv) {
-		/*
-		 * Alter voltage limit on charge port, this should cause
-		 * the port to select the desired PDO.
-		 */
-		pd_set_external_voltage_limit(CHG, mv);
-
-		/* Wait for CHG transition */
-		deadline.val = get_time().val + PD_T_PS_TRANSITION;
-		CPRINTS("Waiting for CHG port transition");
-		while (charge_port_is_active() &&
-		       vbus[CHG].mv != mv &&
-		       get_time().val < deadline.val)
-			msleep(10);
-
-		if (vbus[CHG].mv != mv) {
-			CPRINTS("Missed CHG transition, resetting DUT");
-			pd_power_supply_reset(DUT);
-			return;
-		}
-
-		CPRINTS("CHG transitioned");
-	}
-
-	vbus[DUT].mv = vbus[CHG].mv;
-	vbus[DUT].ma = vbus[CHG].ma;
-#endif // if 0
 }
 
 void pd_check_dr_role(int port, int dr_role, int flags)

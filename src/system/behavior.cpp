@@ -154,7 +154,8 @@ void true_power_off()
   DigitalPin(DigitalPin::GPIO::Output_EnableVbusGate).set_high(false);
   DigitalPin(DigitalPin::GPIO::Output_EnableOutputGate).set_high(false);
 
-  // wait until vbus is off (TODO: remove in newer versions of the hardware)
+  // wait until vbus is off
+  // without this check, the lamp can "rebound" back to on state
   uint8_t cnt = 0;
   while (cnt < 200 and charger::is_vbus_signal_detected())
   {
@@ -167,6 +168,7 @@ void true_power_off()
   go_to_sleep(ButtonPin.pin());
   /*
    * Nothing after this, system is off !
+   * TODO: add an error status if we reach here
    */
 }
 
@@ -466,12 +468,13 @@ void handle_charger_operation_state()
   const bool vbusDebounced = charger::can_use_vbus_power() or (time_ms() - preChargeCalled) > 5000;
   if (vbusDebounced)
   {
-    // no power, shutdown everything
+    // otg mode
     if (power::is_in_otg_mode())
     {
       // do nothing (for now !)
       // TODO, stop if battery gets low
     }
+    // no power, shutdown everything
     else if (not is_charger_powered())
     {
       // forbid charging

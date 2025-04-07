@@ -633,6 +633,8 @@ void enable_OTG()
     isInOtg_s = true;
     // will deactivate the charge (because OTG)
     control_charge();
+    // start otg directly
+    control_OTG();
   }
 }
 

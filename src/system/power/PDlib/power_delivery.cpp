@@ -9,11 +9,14 @@
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
 
+#include "../drivers/charging_ic.h"
+#include "../power_gates.h"
+
 // we only have one device, so always index 0
 static constexpr int devicePort = 0;
 // USB-C Specific - TCPM start 1
 const struct tcpc_config_t tcpc_config[CONFIG_USB_PD_PORT_COUNT] = {
-        {0, fusb302_I2C_SLAVE_ADDR, &fusb302_tcpm_drv, tcpc_alert_polarity::TCPC_ALERT_ACTIVE_HIGH},
+        {devicePort, fusb302_I2C_SLAVE_ADDR, &fusb302_tcpm_drv, tcpc_alert_polarity::TCPC_ALERT_ACTIVE_HIGH},
 };
 // USB-C Specific - TCPM end 1
 
@@ -230,6 +233,43 @@ void loop()
 
   // standard code
 
+  static bool isFastRoleSwap = false;
+  // ignore source activity if we are otg (prevent spurious reset)
+  if (is_activating_otg())
+  {
+    if (not isFastRoleSwap)
+    {
+      isFastRoleSwap = true;
+
+      // prepare fast role swap
+      powergates::disable_gates();
+      DigitalPin(DigitalPin::GPIO::Output_VbusFastRoleSwap).set_high(true);
+
+      // force otg on, and prep vbus gate, all in this loop iteration (skip all safety steps !!!)
+      charger::drivers::set_OTG_targets(5000, 1000);
+      charger::drivers::enable_OTG();
+
+      // wait until OTG drops to acceptable level
+      while (charger::drivers::get_measurments().vbus_mV > 5500)
+      {
+        delay_us(50);
+      }
+
+      // wait for vbus voltage to drop to acceptable level
+      while (tcpm_get_vbus_voltage(devicePort) > 5500)
+      {
+        delay_us(50);
+      }
+
+      // enable gate direction
+      DigitalPin(DigitalPin::GPIO::Output_VbusDirection).set_high(true);
+      powergates::enable_vbus_gate_DIRECT();
+    }
+    return;
+  }
+
+  isFastRoleSwap = false;
+
   static uint32_t lastVbusValid = 0;
 
   // source detected
@@ -326,5 +366,9 @@ OTGParameters get_otg_parameters()
   tmp.requestedVoltage_mV = otg.requestedVoltage_mV;
   return tmp;
 }
+
+void allow_otg(const bool allow) { set_allow_power_sourcing(allow); }
+
+bool is_switching_to_otg() { return is_activating_otg() != 0; }
 
 } // namespace powerDelivery
