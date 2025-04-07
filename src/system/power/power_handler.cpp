@@ -147,7 +147,7 @@ void handle_charging_mode()
   powergates::enable_vbus_gate();
 
   // OTG requested, switch to OTG mode
-  if (powerDelivery::get_otg_parameters().is_otg_requested() and battery::is_battery_usable_as_power_source())
+  if (powerDelivery::is_switching_to_otg() and battery::is_battery_usable_as_power_source())
   {
     // disable balancing
     balancer::enable_balancing(false);
@@ -193,10 +193,15 @@ void handle_otg_mode()
 
   charger::set_enable_charge(false);
 
+  // we do not have the parameters yet
+  if (not requested.is_otg_requested())
+    return;
+
   // ramp up output voltage
   // then unlock the vbus gate
   set_otg_parameters(requested.requestedVoltage_mV, requested.requestedCurrent_mA);
 
+  /*
   if (time_ms() - __private::powerMachine.get_state_raised_time() < 100)
   {
     // prepare fast role swap
@@ -206,6 +211,7 @@ void handle_otg_mode()
     // for now, do not disable the gate
     return;
   }
+  */
 
   // allow reverse current flow
   __private::vbusDirection.set_high(true);
