@@ -8,12 +8,16 @@
 #ifndef __USB_PD_H
 #define __USB_PD_H
 
-#include "drivers/tcpm_driver.h"
-#include "drivers/usb_pd_driver.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "drivers/tcpm_driver.h"
+#include "drivers/usb_pd_driver.h"
+
+// TODO: this define should not be necessary, but for some reason it is..
+#define CONFIG_USB_PD_DUAL_ROLE
+// end of TODO
 
 /* Time units in microseconds */
 #define MSEC_US   (1000ul)
@@ -1591,6 +1595,10 @@ static inline void pd_send_host_event(int mask) {}
    * @return true if the PD task is not suspended.
    */
   int pd_is_port_enabled(int port);
+
+  void dual_role_on(void);
+  void dual_role_off(void);
+  void dual_role_force_sink(void);
 
   /* Callback when the hardware has detected an incoming packet */
   void pd_rx_event(int port);
