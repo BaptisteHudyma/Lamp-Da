@@ -281,23 +281,19 @@ void pd_check_dr_role(int port, int dr_role, int flags)
 
 void pd_check_pr_role(int port, int pr_role, int flags)
 {
-#if 0
-	/*
-	 * If partner is dual-role power and dualrole toggling is on, consider
-	 * if a power swap is necessary.
-	 */
-	if ((flags & PD_FLAGS_PARTNER_DR_POWER) &&
-	    pd_get_dual_role() == PD_DRP_TOGGLE_ON) {
-		/*
-		 * If we are a sink and partner is not externally powered, then
-		 * swap to become a source. If we are source and partner is
-		 * externally powered, swap to become a sink.
-		 */
-		int partner_extpower = flags & PD_FLAGS_PARTNER_EXTPOWER;
+  /*
+   * If partner is dual-role power and dualrole toggling is on, consider
+   * if a power swap is necessary.
+   */
+  if ((flags & PD_FLAGS_PARTNER_DR_POWER) && pd_get_dual_role() == PD_DRP_TOGGLE_ON)
+  {
+    /*
+     * If we are a sink and partner is not externally powered, then swap to become a source.
+     * If we are source and partner is externally powered, swap to become a sink.
+     */
+    int partner_extpower = flags & PD_FLAGS_PARTNER_EXTPOWER;
 
-		if ((!partner_extpower && pr_role == PD_ROLE_SINK) ||
-		     (partner_extpower && pr_role == PD_ROLE_SOURCE))
-			pd_request_power_swap(port);
-	}
-#endif
+    if ((!partner_extpower && pr_role == PD_ROLE_SINK) || (partner_extpower && pr_role == PD_ROLE_SOURCE))
+      pd_request_power_swap(port);
+  }
 }

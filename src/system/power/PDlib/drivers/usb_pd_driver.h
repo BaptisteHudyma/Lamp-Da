@@ -13,38 +13,8 @@ extern "C" {
 #endif
 
 #include "../usb_pd.h"
+#include "../config.h"
 #include <stdint.h>
-
-// save the power profile to avoid renogociation when line is bouncing
-// #define CONFIG_BBRAM
-// automatically select highest power profile
-#define CONFIG_CHARGE_MANAGER
-// ??
-// #define CONFIG_USBC_BACKWARDS_COMPATIBLE_DFP
-// allow vcon swap (we dont have a vconn on this system)
-// #define CONFIG_USBC_VCONN_SWAP
-// Allow alternative modes of DFP/UFP
-// #define CONFIG_USB_PD_ALT_MODE
-// USB can be DFP or UFP
-#define CONFIG_USB_PD_DUAL_ROLE
-// automatically switches between roles (if CONFIG_USB_PD_DUAL_ROLE is defined)
-// #define CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE
-// Configure as simple down facing port, no vendor id & other features
-// #define CONFIG_USB_PD_SIMPLE_DFP
-// send get_source_cap message on reset
-#define CONFIG_USB_PD_TCPM_TCPCI
-// allow detection of vbus level (not voltage)
-// #define CONFIG_USB_PD_VBUS_DETECT_TCPC
-// Enable to prefer higher voltage profiles in case of power profile tie
-#define PD_PREFER_HIGH_VOLTAGE
-// #define PD_PREFER_LOW_VOLTAGE
-// ??
-// #define CONFIG_USB_PD_MAX_SINGLE_SOURCE_CURRENT
-// usb 3.0 (battery caps, and others)
-// #define CONFIG_USB_PD_REV30
-
-/* Default pull-up value on the USB-C ports when they are used as source. */
-#define CONFIG_USB_PD_PULLUP TYPEC_RP_USB
 
 // remove a warning
 #ifdef PD_ROLE_DEFAULT
@@ -54,17 +24,13 @@ extern "C" {
 /* Override PD_ROLE_DEFAULT in usb_pd.h */
 #define PD_ROLE_DEFAULT(port) (PD_ROLE_SINK)
 
-/* Don't automatically change roles */
-#undef CONFIG_USB_PD_INITIAL_DRP_STATE
-#define CONFIG_USB_PD_INITIAL_DRP_STATE PD_DRP_FREEZE
-
 /* board specific type-C power constants */
 /*
  * delay to turn on the power supply max is ~16ms.
  * delay to turn off the power supply max is about ~180ms.
  */
-#define PD_POWER_SUPPLY_TURN_ON_DELAY  100000 /* us */
-#define PD_POWER_SUPPLY_TURN_OFF_DELAY 20000  /* us */
+#define PD_POWER_SUPPLY_TURN_ON_DELAY  10000 /* us */
+#define PD_POWER_SUPPLY_TURN_OFF_DELAY 20000 /* us */
 
 /* Define typical operating power and max power */
 #define PD_OPERATING_POWER_MW (2250ull)

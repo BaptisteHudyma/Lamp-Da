@@ -8,6 +8,8 @@
 #ifndef __CROS_EC_USB_PD_TCPM_H
 #define __CROS_EC_USB_PD_TCPM_H
 
+#include "../config.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

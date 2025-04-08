@@ -7,7 +7,7 @@
 namespace charger {
 
 // call once at program startup
-void setup();
+bool setup();
 // call at every loop runs
 void loop();
 

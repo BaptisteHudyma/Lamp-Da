@@ -301,7 +301,7 @@ void update_state()
  *
  * */
 
-void setup()
+bool setup()
 {
   // start with default parameters
   const bool isChargerEnabled =
@@ -321,11 +321,12 @@ void setup()
     }
 
     // abort init
-    return;
+    return false;
   }
   // else: init is ok
 
   charger.status = Charger_t::ChargerStatus_t::INACTIVE;
+  return true;
 }
 
 DigitalPin chargeOkPin(DigitalPin::GPIO::Input_isChargeOk);
