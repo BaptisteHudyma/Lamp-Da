@@ -15,6 +15,8 @@ extern "C" {
 #include "../drivers/tcpm_driver.h"
 #include "usb_pd_tcpm.h"
 
+#include "../config.h"
+
 #if defined(CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE) && !defined(CONFIG_USB_PD_DUAL_ROLE)
 #error "DRP auto toggle requires board to have DRP support"
 #error "Please upgrade your board configuration"

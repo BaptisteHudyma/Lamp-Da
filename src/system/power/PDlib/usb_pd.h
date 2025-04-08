@@ -12,12 +12,9 @@
 extern "C" {
 #endif
 
+#include "config.h"
 #include "drivers/tcpm_driver.h"
 #include "drivers/usb_pd_driver.h"
-
-// TODO: this define should not be necessary, but for some reason it is..
-#define CONFIG_USB_PD_DUAL_ROLE
-// end of TODO
 
 /* Time units in microseconds */
 #define MSEC_US   (1000ul)

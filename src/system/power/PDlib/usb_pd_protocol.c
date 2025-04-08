@@ -10,6 +10,7 @@
 #include "tcpm/usb_pd_tcpm.h"
 #include "tcpm/tcpm.h"
 #include "drivers/usb_pd_driver.h"
+#include <assert.h>
 
 #ifdef CONFIG_COMMON_RUNTIME
 #define CPRINTF(format, args...) cprintf(CC_USBPD, format, ##args)
@@ -102,7 +103,7 @@ static const uint8_t vdo_ver[] = {VDM_VER10, VDM_VER10, VDM_VER20};
 // variables that used to be pd_task, but had to be promoted
 // so both pd_init and pd_run_state_machine can see them
 static int head;
-static int port = TASK_ID_TO_PD_PORT(task_get_current());
+static const int port = TASK_ID_TO_PD_PORT(task_get_current());
 static uint32_t payload[7];
 static int timeout = 10 * MSEC_US;
 static int cc1, cc2;
@@ -113,9 +114,7 @@ static uint64_t next_role_swap = PD_T_DRP_SNK;
 #ifndef CONFIG_USB_PD_VBUS_DETECT_NONE
 static int snk_hard_reset_vbus_off = 0;
 #endif
-#ifdef CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE
-static const int auto_toggle_supported = tcpm_auto_toggle_supported(port);
-#endif
+
 #if defined(CONFIG_CHARGE_MANAGER)
 static typec_current_t typec_curr = 0, typec_curr_change = 0;
 #endif /* CONFIG_CHARGE_MANAGER */
@@ -2156,6 +2155,11 @@ void pd_run_state_machine(int port, int reset)
 {
   if (reset)
     pd[port].task_state = PD_STATE_SOFT_RESET;
+
+#ifdef CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE
+  // TODO: should be static
+  const int auto_toggle_supported = tcpm_auto_toggle_supported(port);
+#endif
 
 #ifdef CONFIG_USB_PD_REV30
   /* send any pending messages */

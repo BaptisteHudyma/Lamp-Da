@@ -385,11 +385,16 @@ void init()
   }
 
   // charging component, setup first
-  charger::setup();
+  const bool chargerSuccess = charger::setup();
+  if (!chargerSuccess)
+  {
+    __private::switch_state(PowerStates::ERROR);
+    return;
+  }
 
   // at the very last, power delivery
-  const bool success = powerDelivery::setup();
-  if (!success)
+  const bool pdSuccess = powerDelivery::setup();
+  if (!pdSuccess)
   {
     __private::switch_state(PowerStates::ERROR);
     return;
