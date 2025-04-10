@@ -29,6 +29,7 @@ bool set_output_max_current_mA(const uint16_t);
 bool enable_charge(const bool);
 
 std::string get_state();
+std::string get_error_string();
 
 bool is_output_mode_ready();
 

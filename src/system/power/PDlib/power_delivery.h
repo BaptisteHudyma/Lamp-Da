@@ -2,6 +2,7 @@
 #define PD_POWER_DELIVERY_H
 
 #include <cstdint>
+#include <vector>
 namespace powerDelivery {
 
 // call once at program start
@@ -41,6 +42,17 @@ void allow_otg(const bool);
  * \brief return true is the system is prepaping to switch to OTG mode
  */
 bool is_switching_to_otg();
+
+struct PDOTypes
+{
+  uint32_t voltage_mv;
+  uint32_t maxCurrent_mA;
+};
+
+/**
+ * \brief If the charger is PD compatible, return it's capabilities
+ */
+std::vector<PDOTypes> get_available_pd();
 
 // return the requested OTG parameters
 struct OTGParameters

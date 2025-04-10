@@ -423,15 +423,15 @@ void handle_all(const bool shouldIgnoreAlerts)
 
     // display battery level
     const auto& chargerStatus = charger::get_state();
-    if (chargerStatus.is_charging())
+    if (!power::is_in_output_mode() and chargerStatus.isInOtg)
     {
-      if (!power::is_in_output_mode() and chargerStatus.isInOtg)
-      {
-        indicator::breeze(500, 500, buttonColor);
-      }
+      indicator::breeze(500, 500, buttonColor);
+    }
+    else if (chargerStatus.is_charging())
+    {
       // power detected with no charge or slow charging raises a special animation
-      else if (chargerStatus.status == charger::Charger_t::ChargerStatus_t::POWER_DETECTED or
-               chargerStatus.status == charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
+      if (chargerStatus.status == charger::Charger_t::ChargerStatus_t::POWER_DETECTED or
+          chargerStatus.status == charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
       {
         // fast blinking
         indicator::blink(500, 500, buttonColor);

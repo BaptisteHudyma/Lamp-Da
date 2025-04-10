@@ -37,7 +37,12 @@ uint32_t pd_task_set_event(uint32_t event, int wait_for_reply)
 }
 
 const uint32_t pd_src_pdo[] = {
+        // TODO: set the PDO with the battery pack watt
         PDO_FIXED(5000, 1500, PDO_FIXED_FLAGS),
+        PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
+        PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
+        // TODO: debug PPS
+        // PDO_VAR(4750, 20000, 3000)
 };
 const int pd_src_pdo_cnt = ARRAY_SIZE(pd_src_pdo);
 
@@ -47,7 +52,8 @@ const uint32_t pd_snk_pdo[] = {
         PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
         PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
         PDO_FIXED(20000, 3000, PDO_FIXED_FLAGS),
-};
+        // PPS
+        PDO_VAR(4750, 20000, 3000)};
 const int pd_snk_pdo_cnt = ARRAY_SIZE(pd_snk_pdo);
 
 int pdSources = 0;
@@ -65,44 +71,6 @@ void pd_turn_off()
   dual_role_force_sink();
 }
 
-uint32_t get_next_pdo_voltage()
-{
-  if (pdSources <= 0 || !srcCapsSaved)
-    return 0;
-  static uint8_t pdSourceCycle = 0;
-  if (pdSourceCycle < pdSources)
-  {
-    uint32_t ma, mv;
-    pd_extract_pdo_power(srcCapsSaved[pdSourceCycle], &ma, &mv);
-    pdSourceCycle++;
-    return mv;
-  }
-  else
-  {
-    pdSourceCycle = 0;
-  }
-  return 0;
-}
-
-uint32_t get_next_pdo_amps()
-{
-  if (pdSources <= 0 || !srcCapsSaved)
-    return 0;
-  static uint8_t pdSourceCycle = 0;
-  if (pdSourceCycle < pdSources)
-  {
-    uint32_t ma, mv;
-    pd_extract_pdo_power(srcCapsSaved[pdSourceCycle], &ma, &mv);
-    pdSourceCycle++;
-    return ma;
-  }
-  else
-  {
-    pdSourceCycle = 0;
-  }
-  return 0;
-}
-
 // Called by the pd algo when the source capabilities are received
 void pd_process_source_cap_callback(int port, int cnt, uint32_t* src_caps)
 {
@@ -114,6 +82,12 @@ int isCableConnected_s = 0;
 void pd_connected_toggled_callback(int port, int isCablePlugged) { isCableConnected_s = isCablePlugged; }
 
 uint8_t get_pd_source_cnt() { return pdSources; }
+uint32_t get_pd_source(const uint8_t index)
+{
+  if (index > pdSources)
+    return 0;
+  return srcCapsSaved[index];
+}
 
 uint32_t availableCurrent = 0;
 uint32_t availableVoltage = 0;
@@ -135,14 +109,14 @@ void reset_cache()
   availableCurrent = 0;
   availableVoltage = 0;
 
-  // otgParameters.requestedVoltage_mV = 0;
-  // otgParameters.requestedCurrent_mA = 0;
+  _isActivatingOTG = 0;
+
+  otgParameters.requestedVoltage_mV = 0;
+  otgParameters.requestedCurrent_mA = 0;
 }
 
 // valid voltages from 0 to 20V
 int pd_is_valid_input_voltage(int mv) { return mv > 0 && mv <= 20000; }
-
-int pd_snk_is_vbus_provided(int port) { return 1; }
 
 int is_power_cable_connected() { return isCableConnected_s; }
 
@@ -234,10 +208,10 @@ int pd_custom_vdm(int port, int cnt, uint32_t* payload, uint32_t** rpayload)
 
 void pd_execute_data_swap(int port, int data_role) { /* Do nothing */ }
 
-int pd_is_data_swap_allowed(int port, int data_role)
+int pd_check_data_swap(int port, int data_role)
 {
-  // allow data swap
-  return 1;
+  /* Allow data swap if we are a UFP, otherwise don't allow. */
+  return (data_role == PD_ROLE_UFP) ? 1 : 0;
 }
 
 int pd_is_power_swap_succesful(int port)

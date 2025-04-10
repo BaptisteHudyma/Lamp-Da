@@ -88,14 +88,13 @@ extern "C" {
   void pd_power_supply_reset(int port);
 
   extern uint8_t get_pd_source_cnt();
+  extern uint32_t get_pd_source(const uint8_t index);
+
   extern uint32_t get_available_pd_current_mA();
   extern uint32_t get_available_pd_voltage_mV();
 
   // reset the cached values, call on power supply unplugged
   extern void reset_cache();
-
-  uint32_t get_next_pdo_amps();
-  uint32_t get_next_pdo_voltage();
 
   // is connected to a cable providing power
   int is_power_cable_connected();

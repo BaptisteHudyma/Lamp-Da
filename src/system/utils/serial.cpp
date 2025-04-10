@@ -41,6 +41,7 @@ void handleCommand(const std::string& command)
                 "bat: battery info/levels\n"
                 "cinfo: charger infos\n"
                 "ADC: values from the charger ADC\n"
+                "PD: display the connected PD capabilities\n"
                 "power: power state machine states\n"
                 "alerts: show all raised alerts\n"
                 "format-fs: format the whole file system (dangerous)\n"
@@ -165,12 +166,29 @@ void handleCommand(const std::string& command)
         break;
       }
 
+    case utils::hash("PD"):
+      {
+        const auto& pd = powerDelivery::get_available_pd();
+        if (pd.empty())
+        {
+          lampda_print("No power delivery capabilities");
+        }
+        else
+        {
+          lampda_print("Power delivery profiles :");
+          for (const auto& pdo: pd)
+            lampda_print("- %dmV, %dmA", pdo.voltage_mv, pdo.maxCurrent_mA);
+        }
+        break;
+      }
+
     case utils::hash("power"):
       {
         lampda_print(
-                "state machine state:%s\n"
+                "state machine state:%s (str: %s)\n"
                 "behavior machine state:%s",
                 power::get_state().c_str(),
+                power::get_error_string().c_str(),
                 behavior::get_state().c_str());
         break;
       }

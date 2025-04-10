@@ -1,6 +1,12 @@
 #ifndef USB_PD_CONFIG
 #define USB_PD_CONFIG
 
+/*
+ * Provide common runtime layer code (tasks, hooks ...)
+ * You want this unless you are doing a really tiny firmware.
+ */
+#undef CONFIG_COMMON_RUNTIME
+
 // automatically select highest power profile
 #define CONFIG_CHARGE_MANAGER
 
@@ -8,6 +14,10 @@
 #define CONFIG_USBC_BACKWARDS_COMPATIBLE_DFP
 
 /* Support for USB type-c vconn. Not needed for captive cables. */
+// our hardware  does not support it.
+#undef CONFIG_USBC_VCONN
+
+/* Support VCONN swap */
 #undef CONFIG_USBC_VCONN_SWAP
 
 /* Support for USB PD alternate mode */
@@ -17,7 +27,7 @@
 #define CONFIG_USB_PD_DUAL_ROLE
 
 /* Define if this board can used TCPC-controlled DRP toggle */
-#define CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE
+#undef CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE
 
 /* Simple DFP, such as power adapter, will not send discovery VDM on connect */
 #undef CONFIG_USB_PD_SIMPLE_DFP
@@ -118,5 +128,23 @@
 
 /* Save power by waking up on VBUS rather than polling CC */
 #define CONFIG_USB_PD_LOW_POWER
+
+/* Define if this board, operating as a sink, can give power back to a source */
+#undef CONFIG_USB_PD_GIVE_BACK
+
+/* Dynamic USB PD source capability */
+#undef CONFIG_USB_PD_DYNAMIC_SRC_CAP
+
+/*****************************************************************************/
+/*
+ * Define CONFIG_USB_PD_VBUS_MEASURE_TCPC if the tcpc on the board supports
+ * VBUS measurement.
+ */
+#if defined(CONFIG_USB_PD_TCPM_FUSB302)
+// vbus measurment
+#define CONFIG_USB_PD_VBUS_MEASURE_TCPC
+// only support 2.0
+#undef CONFIG_USB_PD_REV30
+#endif
 
 #endif
