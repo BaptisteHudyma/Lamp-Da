@@ -86,6 +86,12 @@ public:
     }
   }
 
+  void detach_interrupts()
+  {
+    const auto pinInterr = digitalPinToInterrupt(mDigitalPin);
+    detachInterrupt(pinInterr);
+  }
+
   int mDigitalPin;
 };
 
@@ -189,5 +195,7 @@ uint16_t DigitalPin::read() const { return mImpl->read(); }
 int DigitalPin::pin() const { return mImpl->mDigitalPin; }
 
 void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode) { mImpl->attach_callback(func, mode); }
+
+void DigitalPin::detach_interrupts() { mImpl->detach_interrupts(); }
 
 #endif

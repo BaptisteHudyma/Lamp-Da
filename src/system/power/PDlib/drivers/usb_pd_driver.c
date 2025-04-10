@@ -53,7 +53,8 @@ const uint32_t pd_snk_pdo[] = {
         PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
         PDO_FIXED(20000, 3000, PDO_FIXED_FLAGS),
         // PPS
-        PDO_VAR(4750, 20000, 3000)};
+        // PDO_VAR(4750u, 20000u, 3000u)
+};
 const int pd_snk_pdo_cnt = ARRAY_SIZE(pd_snk_pdo);
 
 int pdSources = 0;

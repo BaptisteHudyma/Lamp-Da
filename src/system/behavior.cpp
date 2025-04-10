@@ -615,7 +615,13 @@ void handle_post_output_light_state()
 
 void handle_shutdown_state()
 {
+  // detach the button interrupts
+  ButtonPin.detach_interrupts();
+  delay_ms(1);
+
+  // block other threads
   isShutingDown_s = true;
+  delay_ms(5);
 
   // shutdown all external power
   power::go_to_shutdown();

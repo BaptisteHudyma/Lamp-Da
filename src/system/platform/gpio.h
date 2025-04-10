@@ -75,6 +75,7 @@ public:
 
   typedef void (*voidFuncPtr)(void);
   void attach_callback(voidFuncPtr func, Interrupt mode);
+  void detach_interrupts();
 
 private:
   std::shared_ptr<DigitalPinImpl> mImpl;

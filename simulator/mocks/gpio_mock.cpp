@@ -88,6 +88,8 @@ public:
 
   void attach_callback(voidFuncPtr cllbk) { mock_gpios::callbacks[_pin] = cllbk; }
 
+  void detach_interrupts() { mock_gpios::callbacks.erase(_pin); }
+
 public:
   DigitalPin::GPIO _pin;
 };
@@ -111,3 +113,5 @@ uint16_t DigitalPin::read() const { return mImpl->read(); }
 int DigitalPin::pin() const { return 0; }
 
 void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode) { mImpl->attach_callback(func); }
+
+void DigitalPin::detach_interrupts() { mImpl->detach_interrupts(); }
