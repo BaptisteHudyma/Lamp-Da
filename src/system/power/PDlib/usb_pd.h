@@ -409,41 +409,6 @@ extern "C" {
 #define PD_PRODUCT_PID(vdo)   (((vdo) >> 16) & 0xffff)
 
 /*
- * Cable VDO
- * ---------
- * <31:28> :: Cable HW version
- * <27:24> :: Cable FW version
- * <23:20> :: SBZ
- * <19:18> :: type-C to Type-A/B/C (00b == A, 01 == B, 10 == C)
- * <17>    :: Type-C to Plug/Receptacle (0b == plug, 1b == receptacle)
- * <16:13> :: cable latency (0001 == <10ns(~1m length))
- * <12:11> :: cable termination type (11b == both ends active VCONN req)
- * <10>    :: SSTX1 Directionality support (0b == fixed, 1b == cfgable)
- * <9>     :: SSTX2 Directionality support
- * <8>     :: SSRX1 Directionality support
- * <7>     :: SSRX2 Directionality support
- * <6:5>   :: Vbus current handling capability
- * <4>     :: Vbus through cable (0b == no, 1b == yes)
- * <3>     :: SOP" controller present? (0b == no, 1b == yes)
- * <2:0>   :: USB SS Signaling support
- */
-#define CABLE_ATYPE          0
-#define CABLE_BTYPE          1
-#define CABLE_CTYPE          2
-#define CABLE_PLUG           0
-#define CABLE_RECEPTACLE     1
-#define CABLE_CURR_1A5       0
-#define CABLE_CURR_3A        1
-#define CABLE_CURR_5A        2
-#define CABLE_USBSS_U2_ONLY  0
-#define CABLE_USBSS_U31_GEN1 1
-#define CABLE_USBSS_U31_GEN2 2
-#define VDO_CABLE(hw, fw, cbl, gdr, lat, term, tx1d, tx2d, rx1d, rx2d, cur, vps, sopp, usbss)                        \
-  (((hw) & 0x7) << 28 | ((fw) & 0x7) << 24 | ((cbl) & 0x3) << 18 | (gdr) << 17 | ((lat) & 0x7) << 13 |               \
-   ((term) & 0x3) << 11 | (tx1d) << 10 | (tx2d) << 9 | (rx1d) << 8 | (rx2d) << 7 | ((cur) & 0x3) << 5 | (vps) << 4 | \
-   (sopp) << 3 | ((usbss) & 0x7))
-
-/*
  * AMA VDO
  * ---------
  * <31:28> :: Cable HW version
@@ -465,18 +430,6 @@ extern "C" {
 #define PD_VDO_AMA_VCONN_REQ(vdo) (((vdo) >> 4) & 1)
 #define PD_VDO_AMA_VBUS_REQ(vdo)  (((vdo) >> 3) & 1)
 
-#define AMA_VCONN_PWR_1W   0
-#define AMA_VCONN_PWR_1W5  1
-#define AMA_VCONN_PWR_2W   2
-#define AMA_VCONN_PWR_3W   3
-#define AMA_VCONN_PWR_4W   4
-#define AMA_VCONN_PWR_5W   5
-#define AMA_VCONN_PWR_6W   6
-#define AMA_USBSS_U2_ONLY  0
-#define AMA_USBSS_U31_GEN1 1
-#define AMA_USBSS_U31_GEN2 2
-#define AMA_USBSS_BBONLY   3
-
 /*
  * SVDM Discover SVIDs request -> response
  *
@@ -488,22 +441,6 @@ extern "C" {
 #define VDO_SVID(svid0, svid1) (((svid0) & 0xffff) << 16 | ((svid1) & 0xffff))
 #define PD_VDO_SVID_SVID0(vdo) ((vdo) >> 16)
 #define PD_VDO_SVID_SVID1(vdo) ((vdo) & 0xffff)
-
-/*
- * Google modes capabilities
- * <31:8> : reserved
- * <7:0>  : mode
- */
-#define VDO_MODE_GOOGLE(mode) (mode & 0xff)
-
-#define MODE_GOOGLE_FU 1 /* Firmware Update mode */
-
-/*
- * Mode Capabilities
- *
- * Number of VDOs supplied is SID dependent (but <= 6 VDOS?)
- */
-#define VDO_MODE_CNT_DISPLAYPORT 1
 
 /*
  * DisplayPort modes capabilities
@@ -652,6 +589,11 @@ extern "C" {
     PD_STATE_SNK_SWAP_SRC_DISABLE,
     PD_STATE_SNK_SWAP_STANDBY,
     PD_STATE_SNK_SWAP_COMPLETE,
+
+    PD_STATE_SRC_SWAP_INIT,
+    PD_STATE_SRC_SWAP_SNK_DISABLE,
+    PD_STATE_SRC_SWAP_SRC_DISABLE,
+    PD_STATE_SRC_SWAP_STANDBY,
 #endif /* CONFIG_USB_PD_DUAL_ROLE */
 
     PD_STATE_SRC_DISCONNECTED,
@@ -668,11 +610,6 @@ extern "C" {
     PD_STATE_DR_SWAP,
 
 #ifdef CONFIG_USB_PD_DUAL_ROLE
-    PD_STATE_SRC_SWAP_INIT,
-    PD_STATE_SRC_SWAP_SNK_DISABLE,
-    PD_STATE_SRC_SWAP_SRC_DISABLE,
-    PD_STATE_SRC_SWAP_STANDBY,
-
 #ifdef CONFIG_USBC_VCONN_SWAP
     PD_STATE_VCONN_SWAP_SEND,
     PD_STATE_VCONN_SWAP_INIT,
@@ -1188,14 +1125,6 @@ extern "C" {
   int pd_board_checks(void);
 
   /**
-   * Return if VBUS is detected on type-C port
-   *
-   * @param port USB-C port number
-   * @return VBUS is detected
-   */
-  int pd_snk_is_vbus_provided(int port);
-
-  /**
    * Notify PD protocol that VBUS has gone low
    *
    * @param port USB-C port number
@@ -1217,7 +1146,7 @@ extern "C" {
    * @param data_role current data role
    * @return True if data swap is allowed, False otherwise
    */
-  int pd_is_data_swap_allowed(int port, int data_role);
+  int pd_check_data_swap(int port, int data_role);
 
   /**
    * Check if vconn swap is allowed.

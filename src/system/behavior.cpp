@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "power/charger.h"
 #include "power/power_handler.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
@@ -469,7 +470,7 @@ void handle_charger_operation_state()
   if (vbusDebounced)
   {
     // otg mode
-    if (power::is_in_otg_mode())
+    if (charger::get_state().isInOtg)
     {
       // do nothing (for now !)
       // TODO, stop if battery gets low
@@ -549,6 +550,12 @@ void handle_output_light_state()
     {
       lampda_print("Behavior>Output mode: waiting for power gate");
       waitingForPowerGate_messageDisplayed = false;
+    }
+
+    if (time_ms() - mainMachine.get_state_raised_time() > 1000)
+    {
+      lampda_print("Behavior>Output mode: power gate took too long to switch");
+      mainMachine.set_state(BehaviorStates::ERROR);
     }
     return;
   }

@@ -14,6 +14,10 @@
 // for memcpy
 #include <string.h>
 
+#if defined(CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE) || defined(CONFIG_USB_PD_DISCHARGE_TCPC)
+#error "Unsupported config options of fusb302 PD driver"
+#endif
+
 #define PACKET_IS_GOOD_CRC(head) (PD_HEADER_TYPE(head) == PD_CTRL_GOOD_CRC && PD_HEADER_CNT(head) == 0)
 
 static struct fusb302_chip_state
@@ -853,7 +857,6 @@ void fusb302_tcpc_alert(int port)
   tcpc_read(port, TCPC_REG_INTERRUPTA, &interrupta);
   tcpc_read(port, TCPC_REG_INTERRUPTB, &interruptb);
 
-#if 0
   /*
    * Ignore BC_LVL changes when transmitting / receiving PD,
    * since CC level will constantly change.
@@ -866,7 +869,6 @@ void fusb302_tcpc_alert(int port)
     /* CC Status change */
     // task_set_event(PD_PORT_TO_TASK_ID(port), PD_EVENT_CC, 0);
   }
-#endif
 
   if (interrupt & TCPC_REG_INTERRUPT_COLLISION)
   {

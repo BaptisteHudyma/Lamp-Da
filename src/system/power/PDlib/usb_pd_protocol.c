@@ -1508,7 +1508,7 @@ static void handle_ctrl_request(int port, uint16_t head, uint32_t* payload)
 #endif
       break;
     case PD_CTRL_DR_SWAP:
-      if (pd_is_data_swap_allowed(port, pd[port].data_role) == EC_SUCCESS)
+      if (pd_check_data_swap(port, pd[port].data_role) == EC_SUCCESS)
       {
         /*
          * Accept switch and perform data swap. Clear

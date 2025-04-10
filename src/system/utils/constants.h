@@ -50,6 +50,7 @@ constexpr uint8_t batteryCount = 3;
 
 // absolute minimum/maximum singular liion battery voltage
 constexpr uint16_t minLiionVoltage_mV = 2900;
+constexpr uint16_t typicalLiionVoltage_mV = 3700;
 constexpr uint16_t maxLiionVoltage_mV = 4200;
 
 constexpr uint16_t minSafeLiionVoltage_mV = 3300;
@@ -59,6 +60,8 @@ constexpr uint16_t maxSafeLiionVoltage_mV = 4060;
 constexpr uint16_t batteryMaxVoltage_mV = maxLiionVoltage_mV * batteryCount;
 // max voltage of a li-ion cell to maximise lifetime
 constexpr uint16_t batteryMaxVoltageSafe_mV = maxSafeLiionVoltage_mV * batteryCount;
+// typical pack voltage
+constexpr uint16_t batteryTypicalVoltageSafe_mV = typicalLiionVoltage_mV * batteryCount;
 // min voltage of a single li-ion cell
 constexpr uint16_t batteryMinVoltage_mV = minLiionVoltage_mV * batteryCount;
 // min voltage of a li-ion cell to maximise lifetime
@@ -87,7 +90,8 @@ constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = 1000 / 80.0;
 constexpr float batteryCritical = 300; // % *100
 constexpr float batteryLow = 500;      // % *100
 
-constexpr uint32_t batteryMaxChargeCurrent_mA = 1000; // mA
+constexpr uint32_t batteryMaxChargeCurrent_mA = 1000;          // mA
+constexpr uint32_t batteryMaxChargeDischargeCurrent_mA = 5000; // mA
 
 using brightness_t = uint16_t;
 constexpr brightness_t maxBrightness = 1024;

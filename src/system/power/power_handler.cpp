@@ -25,6 +25,7 @@ static_assert(clearPowerRailMinDelay_ms < clearPowerRailFailureDelay_ms,
 static uint16_t _outputVoltage_mV = 0;
 static uint16_t _outputCurrent_mA = 0;
 static bool _isChargeEnabled = false;
+static std::string _errorStr = "";
 
 // Define the state for the main prog state machine
 typedef enum
@@ -136,6 +137,7 @@ void handle_clear_power_rails()
     // timeout after which we go to error ?
     if (time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailFailureDelay_ms)
     {
+      _errorStr = "CLEAR_POWER_RAILS: discharge VBUS failed";
       __private::powerMachine.set_state(PowerStates::ERROR);
     }
   }
@@ -289,6 +291,7 @@ void state_machine_behavior()
       break;
     default:
       {
+        _errorStr = "default case not handled";
         powerMachine.set_state(PowerStates::ERROR);
       }
       break;
@@ -367,6 +370,7 @@ bool enable_charge(const bool enable)
 }
 
 std::string get_state() { return std::string(PowerStatesStr[__private::powerMachine.get_state()]); }
+std::string get_error_string() { return _errorStr; }
 
 bool is_in_output_mode() { return __private::powerMachine.get_state() == PowerStates::OUTPUT_VOLTAGE_MODE; }
 bool is_in_otg_mode() { return __private::powerMachine.get_state() == PowerStates::OTG_MODE; }

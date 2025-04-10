@@ -265,6 +265,9 @@ void loop()
       DigitalPin(DigitalPin::GPIO::Output_VbusDirection).set_high(true);
       powergates::enable_vbus_gate_DIRECT();
     }
+    // after the activation turn, disable the flag
+    else
+      isPowerSourceDetected_s = false;
     return;
   }
 
@@ -323,21 +326,6 @@ uint16_t get_max_input_current()
   // power delivery detected
   if (is_usb_pd())
   {
-    /*const auto ma = get_next_pdo_amps();
-    const auto mv = get_next_pdo_voltage();
-    if (ma > 0 && mv > 0)
-    {
-      Serial.print("- ");
-      Serial.print(ma);
-      Serial.print("ma, ");
-      Serial.print(mv);
-      Serial.println("mv");
-    }
-    else
-    {
-      Serial.println("");
-    }*/
-
     if (can_use_PD_full_power())
     {
       // do not use the whole current capabilities, or the source will cut us off
@@ -370,5 +358,18 @@ OTGParameters get_otg_parameters()
 void allow_otg(const bool allow) { set_allow_power_sourcing(allow); }
 
 bool is_switching_to_otg() { return is_activating_otg() != 0; }
+
+std::vector<PDOTypes> get_available_pd()
+{
+  std::vector<PDOTypes> pdos;
+  for (uint8_t i = 0; i < get_pd_source_cnt(); ++i)
+  {
+    PDOTypes t;
+    pd_extract_pdo_power(get_pd_source(i), &t.maxCurrent_mA, &t.voltage_mv);
+    pdos.emplace_back(t);
+  }
+
+  return pdos;
+}
 
 } // namespace powerDelivery
