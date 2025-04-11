@@ -68,7 +68,7 @@ constexpr uint16_t batteryMinVoltage_mV = minLiionVoltage_mV * batteryCount;
 constexpr uint16_t batteryMinVoltageSafe_mV = minSafeLiionVoltage_mV * batteryCount;
 
 constexpr uint16_t minSingularBatteryVoltage_mV = minLiionVoltage_mV * 0.9;
-constexpr uint16_t maxSingularBatteryVoltage_mV = maxLiionVoltage_mV * 1.1;
+constexpr uint16_t maxSingularBatteryVoltage_mV = maxLiionVoltage_mV * 1.01;
 
 // absolute minimum/maximum battery pack voltage
 constexpr uint16_t minBatteryVoltage_mV = minSingularBatteryVoltage_mV * batteryCount;
