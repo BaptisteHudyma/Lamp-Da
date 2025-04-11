@@ -41,7 +41,7 @@ inline const char* AlertsToText(const Type type)
     case MAIN_LOOP_FREEZE:
       return "MAIN_LOOP_FREEZE";
     case BATTERY_READINGS_INCOHERENT:
-      return "BATTERY_READING_INCOHERENT";
+      return "BATTERY_READINGS_INCOHERENT";
     case BATTERY_CRITICAL:
       return "BATTERY_CRITICAL";
     case BATTERY_LOW:

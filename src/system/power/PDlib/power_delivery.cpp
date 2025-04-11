@@ -15,9 +15,8 @@
 // we only have one device, so always index 0
 static constexpr int devicePort = 0;
 // USB-C Specific - TCPM start 1
-const struct tcpc_config_t tcpc_config[CONFIG_USB_PD_PORT_COUNT] = {
-        {devicePort, fusb302_I2C_SLAVE_ADDR, &fusb302_tcpm_drv, tcpc_alert_polarity::TCPC_ALERT_ACTIVE_HIGH},
-};
+const struct tcpc_config_t tcpc_config = {
+        devicePort, fusb302_I2C_SLAVE_ADDR, &fusb302_tcpm_drv, tcpc_alert_polarity::TCPC_ALERT_ACTIVE_HIGH};
 // USB-C Specific - TCPM end 1
 
 static bool canUseSourcePower_s = false;
@@ -37,7 +36,7 @@ int get_vbus_voltage()
   if (time == 0 or time_ms() - time > 100)
   {
     time = time_ms();
-    vbusVoltage = tcpm_get_vbus_voltage(devicePort);
+    vbusVoltage = tcpm_get_vbus_voltage();
   }
   return vbusVoltage;
 }
@@ -48,12 +47,10 @@ bool can_use_PD_full_power()
   // voltage on VBUS is greater than (negociated voltage minus a threshold)
   return get_available_pd_voltage_mV() > 0 and
          // the algo confirms that we are a sink
-         is_sink_ready(devicePort) and
+         is_sink_ready() and
          // the voltage/current rise should be over
          get_vbus_voltage() >= get_available_pd_voltage_mV() - 1000;
 }
-
-bool is_power_cable_detected() { return is_power_cable_connected(); }
 
 uint32_t lastPDdetected = 0;
 bool is_usb_pd()
@@ -70,7 +67,7 @@ bool is_cable_detected()
 {
   int cc1;
   int cc2;
-  tcpm_get_cc(devicePort, &cc1, &cc2);
+  tcpm_get_cc(&cc1, &cc2);
   return cc1 != TYPEC_CC_VOLT_OPEN or cc2 != TYPEC_CC_VOLT_OPEN;
 }
 
@@ -96,7 +93,6 @@ bool is_vbus_powered()
 
 struct UsbPDData
 {
-  bool isPowerCableDetected;
   bool isVbusPowered;
   bool isPowerSourceDetected;
   bool isUsbPd;
@@ -112,13 +108,6 @@ struct UsbPDData
 
   void update()
   {
-    const bool newIsCableDetected = is_power_cable_detected();
-    if (newIsCableDetected != isPowerCableDetected)
-    {
-      hasChanged = true;
-      isPowerCableDetected = newIsCableDetected;
-    }
-
     const bool newisVbusPowered = is_vbus_powered();
     if (newisVbusPowered != isVbusPowered)
     {
@@ -161,7 +150,7 @@ struct UsbPDData
       maxInputVoltage = newmaxInputVoltage;
     }
 
-    const auto& newStatus = std::string(get_state_cstr(devicePort));
+    const auto& newStatus = std::string(get_state_cstr());
     if (newStatus != pdAlgoStatus)
     {
       hasChanged = true;
@@ -173,8 +162,7 @@ struct UsbPDData
   {
     if (hasChanged)
     {
-      lampda_print("PD algo: %d%d%d%d: %fV | %s",
-                   isPowerCableDetected,
+      lampda_print("PD algo: %d%d%d: %fV | %s",
                    isVbusPowered,
                    isPowerSourceDetected,
                    isUsbPd,
@@ -199,8 +187,9 @@ bool setup()
   {
     return false;
   }
-  bool initSucceeded = (tcpm_init(devicePort) == 0);
-  pd_init(devicePort);
+  bool initSucceeded = (tcpm_init() == 0);
+  delay_ms(50);
+  pd_init();
   pd_startup();
 
   DigitalPin chargerPin(DigitalPin::GPIO::Signal_PowerDelivery);
@@ -210,7 +199,6 @@ bool setup()
   return initSucceeded;
 }
 
-int reset = 0;
 void loop()
 {
   // no setup, skip loop
@@ -223,10 +211,9 @@ void loop()
   if (interruptSet)
   {
     interruptSet = false;
-    tcpc_alert(devicePort);
+    tcpc_alert();
   }
-  pd_run_state_machine(devicePort, reset);
-  reset = 0;
+  pd_loop();
 
   data.update();
   data.serial_show();
@@ -256,7 +243,7 @@ void loop()
       }
 
       // wait for vbus voltage to drop to acceptable level
-      while (tcpm_get_vbus_voltage(devicePort) > 5500)
+      while (tcpm_get_vbus_voltage() > 5500)
       {
         delay_us(50);
       }
@@ -269,6 +256,14 @@ void loop()
     else
       isPowerSourceDetected_s = false;
     return;
+  }
+  else if (isFastRoleSwap)
+  {
+    charger::drivers::disable_OTG();
+
+    // enable gate direction
+    DigitalPin(DigitalPin::GPIO::Output_VbusDirection).set_high(false);
+    powergates::disable_gates();
   }
 
   isFastRoleSwap = false;
@@ -294,7 +289,6 @@ void loop()
            time - lastVbusValid > 1000)
   {
     isPowerSourceDetected_s = false;
-    reset = 1;
     reset_cache();
   }
 

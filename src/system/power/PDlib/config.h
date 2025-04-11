@@ -105,8 +105,6 @@
 /* Initial DRP / toggle policy */
 #define CONFIG_USB_PD_INITIAL_DRP_STATE PD_DRP_TOGGLE_OFF
 
-#define CONFIG_USB_PD_PORT_COUNT 1
-
 /*
  * USB Product ID. Each platform (e.g. baseboard set) should have a single
  * VID/PID combination. If there is a big enough change within a platform,
@@ -127,7 +125,7 @@
 #undef CONFIG_USB_PD_TCPC_LOW_POWER
 
 /* Save power by waking up on VBUS rather than polling CC */
-#define CONFIG_USB_PD_LOW_POWER
+#undef CONFIG_USB_PD_LOW_POWER
 
 /* Define if this board, operating as a sink, can give power back to a source */
 #undef CONFIG_USB_PD_GIVE_BACK

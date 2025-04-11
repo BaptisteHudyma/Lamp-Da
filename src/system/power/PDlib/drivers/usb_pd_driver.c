@@ -24,23 +24,11 @@ void set_allow_power_sourcing(const int allowPowerSourcing) { canBecomePowerSour
 int _isActivatingOTG = 0;
 int is_activating_otg() { return _isActivatingOTG; }
 
-uint32_t pd_task_set_event(uint32_t event, int wait_for_reply)
-{
-  switch (event)
-  {
-    case PD_EVENT_TX:
-      break;
-    default:
-      break;
-  }
-  return 0;
-}
-
 const uint32_t pd_src_pdo[] = {
         // TODO: set the PDO with the battery pack watt
         PDO_FIXED(5000, 1500, PDO_FIXED_FLAGS),
-        PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
-        PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
+        // PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
+        // PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
         // TODO: debug PPS
         // PDO_VAR(4750, 20000, 3000)
 };
@@ -62,25 +50,22 @@ uint32_t* srcCapsSaved = NULL;
 
 void pd_startup()
 {
-  // dual_role_on();
-  dual_role_force_sink();
+  // if enabled, will send updates when source
+  pd_ping_enable(0);
 }
 
 void pd_turn_off()
 {
-  dual_role_off();
-  dual_role_force_sink();
+  // stop negociation for sleep mode
+  pd_request_source_voltage(5000);
 }
 
 // Called by the pd algo when the source capabilities are received
-void pd_process_source_cap_callback(int port, int cnt, uint32_t* src_caps)
+void pd_process_source_cap_callback(int cnt, uint32_t* src_caps)
 {
   pdSources = cnt;
   srcCapsSaved = src_caps;
 }
-
-int isCableConnected_s = 0;
-void pd_connected_toggled_callback(int port, int isCablePlugged) { isCableConnected_s = isCablePlugged; }
 
 uint8_t get_pd_source_cnt() { return pdSources; }
 uint32_t get_pd_source(const uint8_t index)
@@ -92,7 +77,7 @@ uint32_t get_pd_source(const uint8_t index)
 
 uint32_t availableCurrent = 0;
 uint32_t availableVoltage = 0;
-void pd_set_input_current_limit(int port, uint32_t max_ma, uint32_t supply_voltage)
+void pd_set_input_current_limit(uint32_t max_ma, uint32_t supply_voltage)
 {
   availableCurrent = max_ma;
   availableVoltage = supply_voltage;
@@ -116,10 +101,15 @@ void reset_cache()
   otgParameters.requestedCurrent_mA = 0;
 }
 
+void pd_loop()
+{
+  static int reset = 0;
+  pd_run_state_machine(reset);
+  reset = 0;
+}
+
 // valid voltages from 0 to 20V
 int pd_is_valid_input_voltage(int mv) { return mv > 0 && mv <= 20000; }
-
-int is_power_cable_connected() { return isCableConnected_s; }
 
 int is_pd_conector() { return srcCapsSaved != NULL; }
 
@@ -132,7 +122,7 @@ timestamp_t get_time(void)
 }
 
 // close source voltage, discharge vbus
-void pd_power_supply_reset(int port)
+void pd_power_supply_reset()
 {
   // reset OTG params
   otgParameters.requestedVoltage_mV = 5000;
@@ -141,7 +131,7 @@ void pd_power_supply_reset(int port)
   return;
 }
 
-int pd_custom_vdm(int port, int cnt, uint32_t* payload, uint32_t** rpayload)
+int pd_custom_vdm(int cnt, uint32_t* payload, uint32_t** rpayload)
 {
 #if 0
 	int cmd = PD_VDO_CMD(payload[0]);
@@ -165,7 +155,7 @@ int pd_custom_vdm(int port, int cnt, uint32_t* payload, uint32_t** rpayload)
 			dev_id = VDO_INFO_HW_DEV_ID(payload[6]);
 			is_rw = VDO_INFO_IS_RW(payload[6]);
 
-			is_latest = pd_dev_store_rw_hash(port,
+			is_latest = pd_dev_store_rw_hash(
 							 dev_id,
 							 payload + 1,
 							 is_rw ?
@@ -186,7 +176,7 @@ int pd_custom_vdm(int port, int cnt, uint32_t* payload, uint32_t** rpayload)
 			//	is_rw);
 		} else if (cnt == 6) {
 			/* really old devices don't have last byte */
-			pd_dev_store_rw_hash(port, dev_id, payload + 1,
+			pd_dev_store_rw_hash( dev_id, payload + 1,
 					     SYSTEM_IMAGE_UNKNOWN);
 		}
 		break;
@@ -194,28 +184,23 @@ int pd_custom_vdm(int port, int cnt, uint32_t* payload, uint32_t** rpayload)
 		CPRINTF("Current: %dmA\n", payload[1]);
 		break;
 	case VDO_CMD_FLIP:
-		/* TODO: usb_mux_flip(port); */
+		/* TODO: usb_mux_flip(); */
 		break;
-#ifdef CONFIG_USB_PD_LOGGING
-	case VDO_CMD_GET_LOG:
-		pd_log_recv_vdm(port, cnt, payload);
-		break;
-#endif /* CONFIG_USB_PD_LOGGING */
 	}
 #endif // if 0
 
   return 0;
 }
 
-void pd_execute_data_swap(int port, int data_role) { /* Do nothing */ }
+void pd_execute_data_swap(int data_role) { /* Do nothing */ }
 
-int pd_check_data_swap(int port, int data_role)
+int pd_check_data_swap(int data_role)
 {
   /* Allow data swap if we are a UFP, otherwise don't allow. */
   return (data_role == PD_ROLE_UFP) ? 1 : 0;
 }
 
-int pd_is_power_swap_succesful(int port)
+int pd_is_power_swap_succesful()
 {
   // accept power swap
   return canBecomePowerSource != 0;
@@ -225,7 +210,7 @@ int pd_is_power_swap_succesful(int port)
 int pd_board_checks(void) { return EC_SUCCESS; }
 
 // enable the source supply
-int pd_set_power_supply_ready(int port)
+int pd_set_power_supply_ready()
 {
   _isActivatingOTG = 1;
   // enable 5V OTG (cold start)
@@ -245,30 +230,34 @@ void pd_transition_voltage(int idx)
   otgParameters.requestedCurrent_mA = ma;
 }
 
-void pd_check_dr_role(int port, int dr_role, int flags)
+void pd_check_dr_role(int dr_role, int flags)
 {
   /*
       // If UFP, try to switch to DFP
       if ((flags & PD_FLAGS_PARTNER_DR_DATA) && dr_role == PD_ROLE_UFP)
-      pd_request_data_swap(port);
+      pd_request_data_swap();
   */
 }
 
-void pd_check_pr_role(int port, int pr_role, int flags)
+void pd_check_pr_role(int pr_role, int flags)
 {
+  // for some reason, this function can be called in disconnected state
+  if (!pd_is_connected())
+    return;
+
   /*
    * If partner is dual-role power and dualrole toggling is on, consider
    * if a power swap is necessary.
    */
-  if ((flags & PD_FLAGS_PARTNER_DR_POWER) && pd_get_dual_role() == PD_DRP_TOGGLE_ON)
+  if ((flags & PD_FLAGS_PARTNER_DR_POWER) && pd_get_dual_role() == PD_DRP_TOGGLE_OFF) // PD_DRP_TOGGLE_ON)
   {
     /*
      * If we are a sink and partner is not externally powered, then swap to become a source.
      * If we are source and partner is externally powered, swap to become a sink.
      */
-    int partner_extpower = flags & PD_FLAGS_PARTNER_EXTPOWER;
+    int partner_extpower = flags & PD_FLAGS_PARTNER_UNCONSTR;
 
     if ((!partner_extpower && pr_role == PD_ROLE_SINK) || (partner_extpower && pr_role == PD_ROLE_SOURCE))
-      pd_request_power_swap(port);
+      pd_request_power_swap();
   }
 }

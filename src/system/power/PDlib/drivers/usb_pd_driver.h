@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 /* Override PD_ROLE_DEFAULT in usb_pd.h */
-#define PD_ROLE_DEFAULT(port) (PD_ROLE_SINK)
+#define PD_ROLE_DEFAULT() (PD_ROLE_SINK)
 
 /* board specific type-C power constants */
 /*
@@ -72,6 +72,8 @@ extern "C" {
   void pd_startup();
   void pd_turn_off();
 
+  void pd_loop();
+
   /**
    * \brief allow or forbid power sourcing from this device
    * \param[in] allowPowerSourcing If 0, this device will only charge. Else, if negociated via usb, this device will
@@ -84,8 +86,7 @@ extern "C" {
    */
   int is_activating_otg();
 
-  uint32_t pd_task_set_event(uint32_t event, int wait_for_reply);
-  void pd_power_supply_reset(int port);
+  void pd_power_supply_reset();
 
   extern uint8_t get_pd_source_cnt();
   extern uint32_t get_pd_source(const uint8_t index);
@@ -96,8 +97,6 @@ extern "C" {
   // reset the cached values, call on power supply unplugged
   extern void reset_cache();
 
-  // is connected to a cable providing power
-  int is_power_cable_connected();
   // The associated cable is pd capable
   int is_pd_conector();
 
