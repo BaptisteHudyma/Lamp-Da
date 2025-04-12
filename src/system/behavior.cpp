@@ -540,8 +540,9 @@ void handle_pre_output_light_state()
 
 void handle_output_light_state()
 {
+// TODO remove when the mock threads will be running
+#ifndef LMBD_IN_SIMULATION
   static bool waitingForPowerGate_messageDisplayed = true;
-  static bool waitingForOutputReadyGate = true;
 
   // wait for power gates (and display message when ready)
   if (not powergates::is_power_gate_enabled() or not power::is_output_mode_ready())
@@ -564,6 +565,7 @@ void handle_output_light_state()
     lampda_print("Behavior>Output mode: power gate ready");
     waitingForPowerGate_messageDisplayed = true;
   }
+#endif
 
   // should go to sleep
   if (not is_system_should_be_powered())
