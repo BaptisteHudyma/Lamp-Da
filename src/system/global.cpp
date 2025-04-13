@@ -83,6 +83,10 @@ void check_loop_runtime(const uint32_t runTime)
 
 void main_setup()
 {
+  // set watchdog (reset the soft when the program crashes)
+  // Should be long enough to flash the microcontroler !!!
+  setup_watchdog(5); // second timeout
+
 #ifdef IS_HARDWARE_1_0
   DigitalPin(DigitalPin::GPIO::Input_isChargeOk).set_pin_mode(DigitalPin::Mode::kInputPullUp);
   DigitalPin(DigitalPin::GPIO::Signal_BatteryBalancerAlert).set_pin_mode(DigitalPin::Mode::kInputPullUp);
@@ -97,18 +101,14 @@ void main_setup()
   // set turn on time
   turnOnTime = time_ms();
 
-  // set watchdog (reset the soft when the program crashes)
-  // Should be long enough to flash the microcontroler !!!
-  setup_watchdog(5); // second timeout
-
   // necessary for all i2c communications
   // 400KHz clock, 100mS timeout
   for (uint8_t i = 0; i < get_wire_interface_count(); ++i)
   {
     i2c_setup(i, 400000, 100);
   }
-  // stability delay (dont ask...)
-  delay_ms(10);
+  // stability delay (let components start)
+  delay_ms(30);
 
   // first step !
   setup_adc(ADC_RES_EXP);

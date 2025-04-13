@@ -30,10 +30,11 @@ void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
   }
   auto wire = interfaces[i2cIndex];
 
+  // begin before all, then set parameters
+  wire->begin();
   // set parameters
   wire->setClock(baudrate);
   wire->setTimeout(timeout);
-  wire->begin();
 }
 
 int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
