@@ -107,8 +107,8 @@ void main_setup()
   {
     i2c_setup(i, 400000, 100);
   }
-  // stability delay (let components start)
-  delay_ms(30);
+  // stability delay
+  delay_ms(1);
 
   // first step !
   setup_adc(ADC_RES_EXP);

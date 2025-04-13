@@ -187,16 +187,16 @@ bool setup()
   {
     return false;
   }
-  bool initSucceeded = (tcpm_init() == 0);
-  delay_ms(50);
+
   pd_init();
+  delay_ms(5);
   pd_startup();
 
   DigitalPin chargerPin(DigitalPin::GPIO::Signal_PowerDelivery);
   chargerPin.attach_callback(ic_interrupt, DigitalPin::Interrupt::kChange);
 
-  isSetup = initSucceeded;
-  return initSucceeded;
+  isSetup = true;
+  return true;
 }
 
 void loop()
