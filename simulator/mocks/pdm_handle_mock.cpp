@@ -3,8 +3,8 @@
 #include "src/system/utils/utils.h"
 #include "src/system/platform/time.h"
 
+#include <SFML/Graphics/PrimitiveType.hpp>
 #include <cmath>
-#include <iostream>
 
 #include <SFML/Audio/SoundRecorder.hpp>
 
@@ -15,7 +15,7 @@ class LevelRecorder : public sf::SoundRecorder
 {
   virtual bool onStart() { return true; }
 
-  virtual bool onProcessSamples(const sf::Int16* samples, std::size_t sampleCount)
+  virtual bool onProcessSamples(const std::int16_t* samples, std::size_t sampleCount)
   {
     data.sampleRead = 0;
     data.sampleDuration_us = 0; // TODO

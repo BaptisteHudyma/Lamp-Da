@@ -6,11 +6,12 @@ BUILD_DIR=${SIMU_BUILD_DIR}
 # 	- LMBD_ROOT_DIR root directory of the repository
 # 	- SIMU_BUILD_DIR target build directory (named "simulator")
 
+GCC=$(shell which gcc)
 CXX=$(shell which c++)
 CXX_INCLUDE_DIRECTORIES=-I$(ROOT_DIR) -I$(SRC_DIR)include
 CXX_LDFLAGS=-lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system -pthread
-CXX_LAMP_FLAGS=-DLMBD_MISSING_DEFINE -DLMBD_SIMULATION -DLMBD_LAMP_TYPE__INDEXABLE
-CXX_EXTRA_FLAGS=-fconcepts -DLMBD_CPP17 -ftemplate-backtrace-limit=1 -Wall -Wextra -pedantic # -fsanitize=undefined,address -fstack-protector-all
+CXX_LAMP_FLAGS=-DLMBD_MISSING_DEFINE -DLMBD_SIMULATION -DLMBD_LAMP_TYPE__INDEXABLE -DLMBD_IN_SIMULATION
+CXX_EXTRA_FLAGS=-fconcepts -DLMBD_CPP17 -ftemplate-backtrace-limit=1 # -Wall -Wextra -pedantic # -fsanitize=undefined,address -fstack-protector-all
 CXX_BUILD_FLAGS=--std=c++17 -O3 -g -fsanitize=address -fno-omit-frame-pointer -DCMAKE_EXPORT_COMPILE_COMMANDS=1 $(CXX_LAMP_FLAGS) $(CXX_EXTRA_FLAGS) $(CXX_INCLUDE_DIRECTORIES)
 
 
@@ -83,13 +84,13 @@ $(BUILD_DIR)/%.o: %.cpp %.d
 $(BUILD_DIR)/%.o: %.c %.d
 	@echo; echo building $<
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXX_BUILD_FLAGS) -c $(INCLUDES) $< -o $@ $(CXX_LDFLAGS)
+	$(GCC) -DLMBD_IN_SIMULATION -c $(INCLUDES) $< -o $@
 
 # Générer des fichiers de dépendances
 %.d: %.cpp
 	@echo; echo linking $<
 	@mkdir -p $(dir $@)
-	g++ -MM -MG -MT $(CXX_LDFLAGS) $(CXX_BUILD_FLAGS) $(INCLUDES) $< > $@
+	$(CXX) -MM -MG -MT $(CXX_LDFLAGS) $(CXX_BUILD_FLAGS) $(INCLUDES) $< > $@
 
 # Générer des fichiers de dépendances
 %.d: %.c

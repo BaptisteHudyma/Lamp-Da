@@ -1,5 +1,8 @@
 #include "src/system/platform/gpio.h"
 
+#include <SFML/Window/Keyboard.hpp>
+#include <map>
+
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/utils.h"
 #include <SFML/Graphics.hpp>
@@ -12,7 +15,7 @@ typedef void (*voidFuncPtr)(void);
 
 namespace mock_gpios {
 
-static std::map<DigitalPin::GPIO, voidFuncPtr> callbacks;
+inline static std::map<DigitalPin::GPIO, voidFuncPtr> callbacks;
 static bool isButtonPressed = false;
 void update_callbacks()
 {
@@ -20,7 +23,7 @@ void update_callbacks()
   {
     if (pin == buttonPin)
     {
-      isButtonPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
+      isButtonPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
       if (isButtonPressed)
         callback();
     }
