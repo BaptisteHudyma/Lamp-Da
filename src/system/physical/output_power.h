@@ -9,6 +9,11 @@ namespace outputPower {
  */
 extern void write_voltage(const uint16_t voltage_mv);
 
+/**
+ * \brief Very short interruption of output voltage
+ */
+extern void blip();
+
 } // namespace outputPower
 
 #endif
