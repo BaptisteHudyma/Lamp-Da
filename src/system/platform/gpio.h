@@ -1,6 +1,7 @@
 #ifndef PLATFORM_GPIO_H
 #define PLATFORM_GPIO_H
 
+#include <set>
 #include <memory>
 #include <stdint.h>
 
@@ -75,8 +76,22 @@ public:
 
   typedef void (*voidFuncPtr)(void);
   void attach_callback(voidFuncPtr func, Interrupt mode);
+  void detach_callbacks();
+
+  static void detach_all()
+  {
+    // detach all set interrupts
+    for (DigitalPin::GPIO pin: DigitalPin::s_gpiosWithInterrupts)
+    {
+      DigitalPin(pin).detach_callbacks();
+    }
+    DigitalPin::s_gpiosWithInterrupts.clear();
+  }
 
 private:
+  inline static std::set<GPIO> s_gpiosWithInterrupts;
+
+  GPIO mGpio;
   std::shared_ptr<DigitalPinImpl> mImpl;
 };
 

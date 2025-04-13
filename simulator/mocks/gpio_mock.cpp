@@ -88,11 +88,13 @@ public:
 
   void attach_callback(voidFuncPtr cllbk) { mock_gpios::callbacks[_pin] = cllbk; }
 
+  void detach_callbacks() { mock_gpios::callbacks.erase(_pin); }
+
 public:
   DigitalPin::GPIO _pin;
 };
 
-DigitalPin::DigitalPin(DigitalPin::GPIO pin) { mImpl = std::make_shared<DigitalPinImpl>(pin); }
+DigitalPin::DigitalPin(DigitalPin::GPIO pin) : mGpio(pin) { mImpl = std::make_shared<DigitalPinImpl>(pin); }
 DigitalPin::~DigitalPin() = default;
 DigitalPin::DigitalPin(const DigitalPin& other) = default;
 
@@ -110,4 +112,14 @@ uint16_t DigitalPin::read() const { return mImpl->read(); }
 
 int DigitalPin::pin() const { return 0; }
 
-void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode) { mImpl->attach_callback(func); }
+void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode)
+{
+  DigitalPin::s_gpiosWithInterrupts.emplace(mGpio);
+  mImpl->attach_callback(func);
+}
+
+void DigitalPin::detach_callbacks()
+{
+  DigitalPin::s_gpiosWithInterrupts.erase(mGpio);
+  mImpl->detach_callbacks();
+}
