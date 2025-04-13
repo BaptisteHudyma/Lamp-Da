@@ -86,10 +86,16 @@ public:
     }
   }
 
+  void detach_callbacks()
+  {
+    const auto pinInterr = digitalPinToInterrupt(mDigitalPin);
+    detachInterrupt(pinInterr);
+  }
+
   int mDigitalPin;
 };
 
-DigitalPin::DigitalPin(GPIO pin)
+DigitalPin::DigitalPin(GPIO pin) : mGpio(pin)
 {
   switch (pin)
   {
@@ -188,6 +194,16 @@ uint16_t DigitalPin::read() const { return mImpl->read(); }
 
 int DigitalPin::pin() const { return mImpl->mDigitalPin; }
 
-void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode) { mImpl->attach_callback(func, mode); }
+void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode)
+{
+  DigitalPin::s_gpiosWithInterrupts.emplace(mGpio);
+  mImpl->attach_callback(func, mode);
+}
+
+void DigitalPin::detach_callbacks()
+{
+  DigitalPin::s_gpiosWithInterrupts.erase(mGpio);
+  mImpl->detach_callbacks();
+}
 
 #endif

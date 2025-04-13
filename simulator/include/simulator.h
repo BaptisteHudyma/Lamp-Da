@@ -36,8 +36,8 @@ constexpr int ledH = stripYCoordinates;
 
 template<typename T> struct simulator
 {
-  static constexpr float screenWidth = 1920;
-  static constexpr float screenHeight = 1080;
+  static constexpr uint screenWidth = 1920;
+  static constexpr uint screenHeight = 1080;
   static constexpr char title[] = "lampda simulator";
 
   static int run()
@@ -46,7 +46,7 @@ template<typename T> struct simulator
     sf::Clock clock;
 
     // render window
-    sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), title);
+    sf::RenderWindow window(sf::VideoMode({screenWidth, screenHeight}), title);
 
     sf::CircleShape indicator(60);
     sf::CircleShape buttonMask(40);
@@ -69,8 +69,7 @@ template<typename T> struct simulator
     while (window.isOpen())
     {
       // read events, prevent windows lockup
-      sf::Event event;
-      while (window.pollEvent(event))
+      while (const std::optional event = window.pollEvent())
       {
 #if 0
         if (event.type == sf::Event::Closed)
@@ -93,7 +92,7 @@ template<typename T> struct simulator
       global::main_loop(mock_registers::addedAlgoDelay);
 
       // draw fake leds
-      window.clear();
+      window.clear(sf::Color::Black);
 
       for (int fXpos = -simu.fakeXorigin; fXpos < ledW - simu.fakeXend; ++fXpos)
       {
@@ -118,7 +117,7 @@ template<typename T> struct simulator
 
           int rXpos = fXpos + simu.fakeXorigin;
           int rYpos = Ypos + Yoff;
-          shape.setPosition(ledSz + rXpos * ledPadSz + ledOffset * (Ypos % 2) - Yoff * ledOffset, rYpos * ledPadSz);
+          shape.setPosition({ledSz + rXpos * ledPadSz + ledOffset * (Ypos % 2) - Yoff * ledOffset, rYpos * ledPadSz});
 
           const uint32_t color = user::_private::strip.getPixelColor(I);
           const uint8_t brightnes = user::_private::strip.getBrightness();
@@ -141,10 +140,10 @@ template<typename T> struct simulator
       float g = ((indicatorColor >> 8) & 0xff);
       float r = ((indicatorColor >> 16) & 0xff);
       indicator.setFillColor(sf::Color(r, g, b));
-      const auto coordX = simu.ledSizePx * ledW / 2.0;
-      const auto coordY = simu.ledSizePx * (ledH + 4);
-      indicator.setPosition(coordX, coordY);
-      buttonMask.setPosition(coordX + buttonMask.getRadius() / 2, coordY + buttonMask.getRadius() / 2);
+      const float coordX = simu.ledSizePx * ledW / 2.0;
+      const float coordY = simu.ledSizePx * (ledH + 4);
+      indicator.setPosition({coordX, coordY});
+      buttonMask.setPosition({coordX + buttonMask.getRadius() / 2, coordY + buttonMask.getRadius() / 2});
       window.draw(indicator);
       window.draw(buttonMask);
 

@@ -116,6 +116,24 @@ void loop()
   }
 }
 
+namespace power {
+
+void blip()
+{
+  if (isPowerGateReallyEnabled)
+  {
+    isPowerGateReallyEnabled = false;
+
+    __private::enablePowerGate.set_high(false);
+    delay_ms(50);
+    __private::enablePowerGate.set_high(true);
+
+    isPowerGateReallyEnabled = true;
+  }
+}
+
+} // namespace power
+
 bool __is_power_gate_enabled() { return isPowerGateEnabled and is_power_gate_switched(); }
 
 void enable_power_gate()

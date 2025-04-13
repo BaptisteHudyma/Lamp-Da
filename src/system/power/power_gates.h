@@ -6,6 +6,16 @@ namespace powergates {
 void init();
 void loop();
 
+// specific power commands
+namespace power {
+
+/**
+ * \brief blip power gate (very short power interruption)
+ */
+void blip();
+
+} // namespace power
+
 /**
  * \brief enable the power gate
  * This will first disable the vbus gate, then after a delay enable the power gate
