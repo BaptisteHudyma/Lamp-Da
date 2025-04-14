@@ -10,6 +10,7 @@ void init();
 
 // call often
 void loop();
+void pd_loop();
 
 // control state change
 bool go_to_output_mode();

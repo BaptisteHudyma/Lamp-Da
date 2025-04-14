@@ -30,12 +30,22 @@ namespace global {
 // timestamp of the system wake up
 static uint32_t turnOnTime = 0;
 
-void charging_thread()
+// battery checks & charge & power gates
+void power_thread()
 {
   if (behavior::is_shuting_down())
     return;
   power::loop();
-  delay_ms(2);
+  delay_ms(20);
+}
+
+// power negociation thread (must be fast)
+void pd_thread()
+{
+  if (behavior::is_shuting_down())
+    return;
+  power::pd_loop();
+  delay_ms(1);
 }
 
 void secondary_thread()
@@ -178,15 +188,15 @@ void main_setup()
   // let the user start in unpowered mode
   user::power_off_sequence();
 
+  start_thread(pd_thread, "usbpd", 0, 1024);
   // use the charging thread !
-  // cannot raise the priority without crashing the system
-  start_thread(charging_thread, "power", 0, 1024);
+  start_thread(power_thread, "power", 0, 256);
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread())
   {
     // give a high stack but low priority to user
-    start_thread(secondary_thread, "user", 0, 512);
+    start_thread(secondary_thread, "user", 0, 1024);
   }
 }
 

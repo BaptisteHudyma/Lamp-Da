@@ -401,14 +401,17 @@ void loop()
   // run power module state machine
   __private::state_machine_behavior();
 
-  // run pd negociation loop
-  powerDelivery::loop();
-
   // run the charger loop (all the time)
   charger::loop();
 
   // run the balancer loop (all the time)
   balancer::loop();
+}
+
+void pd_loop()
+{
+  // run pd negociation loop
+  powerDelivery::loop();
 }
 
 } // namespace power
