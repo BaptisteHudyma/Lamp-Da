@@ -65,6 +65,9 @@ void start_thread(taskfunc_t taskFunction, const char* const taskName, const uin
   threadPool.emplace_back(taskFunction);
 }
 void yield_this_thread() { mock_registers::single_run_thread(); }
+void suspend_this_thread()
+{ // TODO
+}
 
 float read_CPU_temperature_degreesC() { return mock_registers::cpuTemperature; }
 

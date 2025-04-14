@@ -34,16 +34,22 @@ static uint32_t turnOnTime = 0;
 void power_thread()
 {
   if (behavior::is_shuting_down())
+  {
+    suspend_this_thread();
     return;
+  }
   power::loop();
-  delay_ms(20);
+  delay_ms(3);
 }
 
 // power negociation thread (must be fast)
 void pd_thread()
 {
   if (behavior::is_shuting_down())
+  {
+    suspend_this_thread();
     return;
+  }
   power::pd_loop();
   delay_ms(1);
 }
@@ -51,7 +57,10 @@ void pd_thread()
 void secondary_thread()
 {
   if (behavior::is_shuting_down())
+  {
+    suspend_this_thread();
     return;
+  }
   if (not behavior::is_user_code_running())
     return;
 

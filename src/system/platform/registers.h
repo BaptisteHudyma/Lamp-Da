@@ -42,6 +42,7 @@ extern void start_thread(taskfunc_t taskFunction,
                          const uint16_t stackSize = 1024);
 // make this thread pass the control to other threads
 extern void yield_this_thread();
+extern void suspend_this_thread();
 
 // make a read of the CPU temp
 extern float read_CPU_temperature_degreesC();

@@ -12,9 +12,6 @@
 #define ARRAY_SIZE(t) (sizeof(t) / sizeof(t[0]))
 #endif
 
-extern struct tc_module tc_instance;
-extern uint32_t g_us_timestamp_upper_32bit;
-
 struct SourcePowerParameters otgParameters;
 struct SourcePowerParameters get_OTG_requested_parameters() { return otgParameters; }
 

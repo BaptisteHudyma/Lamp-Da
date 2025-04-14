@@ -65,6 +65,8 @@ void start_thread(taskfunc_t taskFunction, const char* const taskName, const uin
 
 void yield_this_thread() { yield(); }
 
+void suspend_this_thread() { vTaskSuspend(NULL); }
+
 float read_CPU_temperature_degreesC() { return readCPUTemperature(); }
 
 void go_to_sleep(int wakeUpPin) { systemOff(wakeUpPin, 0); }
