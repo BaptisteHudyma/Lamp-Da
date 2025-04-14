@@ -47,7 +47,21 @@ bool is_started_from_watchdog() { return (readResetReason() & POWER_RESETREAS_DO
 
 bool is_started_from_interrupt() { return (readResetReason() & POWER_RESETREAS_OFF_Msk) != 0x00; }
 
-void start_thread(taskfunc_t taskFunction) { Scheduler.startLoop(taskFunction); }
+void start_thread(taskfunc_t taskFunction, const char* const taskName, const uint8_t priority, const uint16_t stackSize)
+{
+  if (priority >= 2)
+  {
+    Scheduler.startLoop(taskFunction, max(configMINIMAL_STACK_SIZE, stackSize), TASK_PRIO_HIGH, taskName);
+  }
+  else if (priority >= 1)
+  {
+    Scheduler.startLoop(taskFunction, max(configMINIMAL_STACK_SIZE, stackSize), TASK_PRIO_NORMAL, taskName);
+  }
+  else
+  {
+    Scheduler.startLoop(taskFunction, max(configMINIMAL_STACK_SIZE, stackSize), TASK_PRIO_LOW, taskName);
+  }
+}
 
 void yield_this_thread() { yield(); }
 

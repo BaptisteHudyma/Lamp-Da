@@ -46,6 +46,7 @@ void handleCommand(const std::string& command)
                 "alerts: show all raised alerts\n"
                 "format-fs: format the whole file system (dangerous)\n"
                 "DFU: clear this program from memory, enter update mode\n"
+                "tasks: display a debug of task usages\n"
                 "-----------------");
         break;
       }
@@ -200,6 +201,12 @@ void handleCommand(const std::string& command)
 
     case utils::hash("DFU"):
       enter_serial_dfu();
+      break;
+
+    case utils::hash("tasks"):
+      char buff[512];
+      vTaskList(buff);
+      lampda_print("%s", buff);
       break;
 
     default:

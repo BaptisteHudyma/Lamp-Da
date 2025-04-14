@@ -60,7 +60,10 @@ bool is_started_from_watchdog() { return false; }
 // started by user interrupt
 bool is_started_from_interrupt() { return true; }
 
-void start_thread(taskfunc_t taskFunction) { threadPool.emplace_back(taskFunction); }
+void start_thread(taskfunc_t taskFunction, const char* const taskName, const uint8_t priority, const uint16_t stackSize)
+{
+  threadPool.emplace_back(taskFunction);
+}
 void yield_this_thread() { mock_registers::single_run_thread(); }
 
 float read_CPU_temperature_degreesC() { return mock_registers::cpuTemperature; }

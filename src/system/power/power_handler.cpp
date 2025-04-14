@@ -203,18 +203,6 @@ void handle_otg_mode()
   // then unlock the vbus gate
   set_otg_parameters(requested.requestedVoltage_mV, requested.requestedCurrent_mA);
 
-  /*
-  if (time_ms() - __private::powerMachine.get_state_raised_time() < 100)
-  {
-    // prepare fast role swap
-    powergates::disable_gates();
-    __private::fastRoleSwap.set_high(true);
-
-    // for now, do not disable the gate
-    return;
-  }
-  */
-
   // allow reverse current flow
   __private::vbusDirection.set_high(true);
 

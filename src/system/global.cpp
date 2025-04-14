@@ -179,12 +179,14 @@ void main_setup()
   user::power_off_sequence();
 
   // use the charging thread !
-  start_thread(charging_thread);
+  // cannot raise the priority without crashing the system
+  start_thread(charging_thread, "power", 0, 1024);
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread())
   {
-    start_thread(secondary_thread);
+    // give a high stack but low priority to user
+    start_thread(secondary_thread, "user", 0, 512);
   }
 }
 

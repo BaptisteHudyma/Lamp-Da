@@ -28,7 +28,18 @@ extern bool is_started_from_watchdog();
 extern bool is_started_from_interrupt();
 
 typedef void (*taskfunc_t)(void);
-extern void start_thread(taskfunc_t taskFunction);
+/**
+ * \brief Start a separate thread, running until the system shuts off
+ * \param taskFunction the function to run
+ * \param[in] taskName The name associated
+ * \param[in] priority from  to 2, this thread priority
+ * \param[in] stackSize The size of the stack to allocate. can be ignored and checked while running using the command
+ * line
+ */
+extern void start_thread(taskfunc_t taskFunction,
+                         const char* const taskName,
+                         const uint8_t priority = 0,
+                         const uint16_t stackSize = 1024);
 // make this thread pass the control to other threads
 extern void yield_this_thread();
 
