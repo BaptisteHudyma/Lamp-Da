@@ -495,6 +495,8 @@ void handle_charger_operation_state()
   // else: ignore all
 }
 
+static uint32_t lastOutputLightValidTime = 0;
+
 void handle_pre_output_light_state()
 {
   // critical battery level, do not wake up
@@ -534,6 +536,8 @@ void handle_pre_output_light_state()
   // let the user power on the system
   user::power_on_sequence();
 
+  lastOutputLightValidTime = time_ms();
+
   // this function is executed OUNCE
   mainMachine.set_state(BehaviorStates::OUTPUT_LIGHT);
 }
@@ -553,7 +557,7 @@ void handle_output_light_state()
       waitingForPowerGate_messageDisplayed = false;
     }
 
-    if (time_ms() - mainMachine.get_state_raised_time() > 1000)
+    if (time_ms() - lastOutputLightValidTime > 1000)
     {
       lampda_print("Behavior>Output mode: power gate took too long to switch");
       mainMachine.set_state(BehaviorStates::ERROR);
@@ -566,6 +570,8 @@ void handle_output_light_state()
     waitingForPowerGate_messageDisplayed = true;
   }
 #endif
+
+  lastOutputLightValidTime = time_ms();
 
   // should go to sleep
   if (not is_system_should_be_powered())

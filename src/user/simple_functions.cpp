@@ -28,29 +28,21 @@ void power_off_sequence()
 
 void brightness_update(const brightness_t brightness)
 {
-  static brightness_t prevBrightness = 0;
-
   const brightness_t constraintBrightness = min(brightness, maxBrightness);
 
-  // onlt update when brightness changes
-  if (prevBrightness != constraintBrightness)
+  if (constraintBrightness >= maxBrightness)
   {
-    prevBrightness = constraintBrightness;
-
-    if (constraintBrightness >= maxBrightness)
-    {
-      // blip
-      outputPower::blip();
-    }
-
-    // map to a new curve, favorising low levels
-    static constexpr uint16_t maxOutputVoltage_mV = inputVoltage_V * 1000;
-    using curve_t = curves::ExponentialCurve<brightness_t, uint16_t>;
-    static curve_t brightnessCurve(
-            curve_t::point_t {0, 9400}, curve_t::point_t {maxBrightness, maxOutputVoltage_mV}, 1.0);
-
-    outputPower::write_voltage(round(brightnessCurve.sample(constraintBrightness)));
+    // blip
+    outputPower::blip();
   }
+
+  // map to a new curve, favorising low levels
+  static constexpr uint16_t maxOutputVoltage_mV = inputVoltage_V * 1000;
+  using curve_t = curves::ExponentialCurve<brightness_t, uint16_t>;
+  static curve_t brightnessCurve(
+          curve_t::point_t {0, 9400}, curve_t::point_t {maxBrightness, maxOutputVoltage_mV}, 1.0);
+
+  outputPower::write_voltage(round(brightnessCurve.sample(constraintBrightness)));
 }
 
 void write_parameters() {}
