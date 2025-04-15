@@ -3956,7 +3956,7 @@ void pd_run_state_machine(int reset)
 }
 
 #ifdef CONFIG_USB_PD_DUAL_ROLE
-void dual_role_on(void)
+void pd_dual_role_on(void)
 {
   int i;
 
@@ -3967,7 +3967,22 @@ void dual_role_on(void)
 
   pd.flags |= PD_FLAGS_CHECK_IDENTITY;
 
-  pd_set_dual_role(PD_DRP_TOGGLE_ON);
+  pd_set_dual_role(PD_DRP_TOGGLE_OFF);
+  CPRINTS("chipset -> S0");
+}
+
+void pd_dual_role_off(void)
+{
+  int i;
+
+#ifdef CONFIG_CHARGE_MANAGER
+  // if (charge_manager_get_active_charge_port() != i)
+#endif
+  pd.flags |= PD_FLAGS_CHECK_PR_ROLE | PD_FLAGS_CHECK_DR_ROLE;
+
+  pd.flags |= PD_FLAGS_CHECK_IDENTITY;
+
+  pd_set_dual_role(PD_DRP_FORCE_SINK);
   CPRINTS("chipset -> S0");
 }
 

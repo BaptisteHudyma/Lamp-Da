@@ -42,6 +42,17 @@ void power_thread()
   delay_ms(3);
 }
 
+void pd_interrupt_thread()
+{
+  if (behavior::is_shuting_down())
+  {
+    suspend_this_thread();
+    return;
+  }
+  power::pd_interrupt_loop();
+  delay_ms(1);
+}
+
 // power negociation thread (must be fast)
 void pd_thread()
 {
@@ -126,8 +137,8 @@ void main_setup()
   {
     i2c_setup(i, 400000, 100);
   }
-  // stability delay
-  delay_ms(1);
+  // stability/turn on delay
+  delay_ms(10);
 
   // first step !
   setup_adc(ADC_RES_EXP);
@@ -197,9 +208,10 @@ void main_setup()
   // let the user start in unpowered mode
   user::power_off_sequence();
 
+  start_thread(pd_interrupt_thread, "intpd", 0, 255);
   start_thread(pd_thread, "usbpd", 0, 1024);
   // use the charging thread !
-  start_thread(power_thread, "power", 0, 256);
+  start_thread(power_thread, "power", 0, 255);
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread())

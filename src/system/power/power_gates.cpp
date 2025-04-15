@@ -155,7 +155,7 @@ void enable_vbus_gate()
 void enable_vbus_gate_DIRECT()
 {
   disable_power_gate();
-  enable_gate(false);
+  enable_gate(true);
 }
 
 bool is_vbus_gate_enabled() { return isVbusGateEnabled and is_vbus_gate_switched(); }

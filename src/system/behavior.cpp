@@ -634,6 +634,8 @@ void handle_shutdown_state()
     yield_this_thread();
     // hack
     power::loop();
+    power::pd_interrupt_loop();
+    power::pd_loop();
 
     if (power::is_state_shutdown_effected())
       break;

@@ -10,6 +10,7 @@ void init();
 
 // call often
 void loop();
+void pd_interrupt_loop();
 void pd_loop();
 
 // control state change

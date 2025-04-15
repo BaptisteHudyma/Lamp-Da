@@ -8,7 +8,9 @@ namespace powerDelivery {
 // call once at program start
 bool setup();
 
-//
+// call often to handle interrupts
+void interrupt_handle();
+// call often
 void loop();
 
 // call once at program end

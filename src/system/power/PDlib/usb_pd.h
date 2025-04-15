@@ -1349,6 +1349,9 @@ static inline void pd_send_host_event(int mask) {}
    */
   void pd_set_suspend(int enable);
 
+  void pd_dual_role_on(void);
+  void pd_dual_role_off(void);
+
   /**
    * Check if the port has been initialized and PD task has not been
    * suspended.

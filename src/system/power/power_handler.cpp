@@ -117,6 +117,8 @@ void handle_clear_power_rails()
   // disable charge & balancing if needed
   charger::set_enable_charge(false);
   balancer::enable_balancing(false);
+  // disable eventual OTG
+  powerDelivery::allow_otg(false);
 
   // disable OTG if needed
   set_otg_parameters(0, 0);
@@ -145,6 +147,8 @@ void handle_clear_power_rails()
 
 void handle_charging_mode()
 {
+  // allow OTG in charge mode only
+  powerDelivery::allow_otg(true);
   // open vbus
   powergates::enable_vbus_gate();
 
@@ -406,6 +410,12 @@ void loop()
 
   // run the balancer loop (all the time)
   balancer::loop();
+}
+
+void pd_interrupt_loop()
+{
+  // handle interrupts outside of the pd loop, as the loop can enter a wait state
+  powerDelivery::interrupt_handle();
 }
 
 void pd_loop()

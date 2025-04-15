@@ -8,6 +8,7 @@
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
+#include "src/system/platform/registers.h"
 
 #include "../drivers/charging_ic.h"
 #include "../power_gates.h"
@@ -199,11 +200,12 @@ bool setup()
   return true;
 }
 
-void loop()
+void interrupt_handle()
 {
   // no setup, skip loop
   if (!isSetup)
   {
+    suspend_this_thread();
     return;
   }
 
@@ -212,6 +214,16 @@ void loop()
   {
     interruptSet = false;
     tcpc_alert();
+  }
+}
+
+void loop()
+{
+  // no setup, skip loop
+  if (!isSetup)
+  {
+    suspend_this_thread();
+    return;
   }
   pd_loop();
 
