@@ -13,6 +13,7 @@ extern "C" {
 #endif
 
 #include "config.h"
+#include "task.h"
 #include "drivers/tcpm_driver.h"
 #include "drivers/usb_pd_driver.h"
 

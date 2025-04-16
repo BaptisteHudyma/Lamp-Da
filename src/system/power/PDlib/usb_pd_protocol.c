@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "usb_pd.h"
+#include "task.h"
 #include "tcpm/usb_pd_tcpm.h"
 #include "tcpm/tcpm.h"
 #include "drivers/usb_pd_driver.h"

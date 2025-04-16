@@ -10,6 +10,7 @@
 #include "../tcpm/tcpm.h"
 #include "../usb_pd.h"
 #include "usb_pd_driver.h"
+#include "../task.h"
 
 // for memcpy
 #include <string.h>

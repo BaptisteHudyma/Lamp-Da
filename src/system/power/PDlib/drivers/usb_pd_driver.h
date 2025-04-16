@@ -48,16 +48,6 @@ extern "C" {
 #define usleep(us) (delay_us(us))
 #define msleep(ms) (delay_ms(ms))
 
-  typedef union
-  {
-    uint64_t val;
-    struct
-    {
-      uint32_t lo;
-      uint32_t hi;
-    } le /* little endian words */;
-  } timestamp_t;
-
   struct SourcePowerParameters
   {
     uint16_t requestedVoltage_mV;
@@ -99,9 +89,6 @@ extern "C" {
 
   // The associated cable is pd capable
   int is_pd_conector();
-
-  // Get the current timestamp from the system timer.
-  timestamp_t get_time(void);
 
 /* Standard macros / definitions */
 #ifndef MAX

@@ -183,6 +183,9 @@ UsbPDData data;
 bool isSetup = false;
 bool setup()
 {
+  // start task scheduler
+  start_thread(task_scheduler, "task_sched");
+
   // 0 is success
   if (i2c_check_existence(devicePort, fusb302_I2C_SLAVE_ADDR) != 0)
   {

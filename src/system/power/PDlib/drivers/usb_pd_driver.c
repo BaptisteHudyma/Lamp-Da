@@ -110,14 +110,6 @@ int pd_is_valid_input_voltage(int mv) { return mv > 0 && mv <= 20000; }
 
 int is_pd_conector() { return srcCapsSaved != NULL; }
 
-timestamp_t get_time(void)
-{
-  timestamp_t t;
-  t.val = time_ms() * 1000;
-  t.val += time_us() % 1000;
-  return t;
-}
-
 // close source voltage, discharge vbus
 void pd_power_supply_reset()
 {
