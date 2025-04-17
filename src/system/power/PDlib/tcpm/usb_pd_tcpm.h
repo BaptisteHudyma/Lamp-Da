@@ -10,6 +10,7 @@
 
 #include "../config.h"
 #include <assert.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -265,8 +266,6 @@ extern "C" {
      * Release the TCPM hardware and disconnect the driver.
      * Only .init() can be called after .release().
      *
-     * @param port Type-C port number
-     *
      * @return EC_SUCCESS or error
      */
     int (*release)();
@@ -274,20 +273,19 @@ extern "C" {
     /**
      * Read the CC line status.
      *
-     * @param port Type-C port number
      * @param cc1 pointer to CC status for CC1
      * @param cc2 pointer to CC status for CC2
      *
      * @return EC_SUCCESS or error
      */
-    int (*get_cc)(int* cc1, int* cc2);
+    int (*get_cc)(enum tcpc_cc_voltage_status* cc1, enum tcpc_cc_voltage_status* cc2);
 
     /**
-     * Read VBUS
+     * Check VBUS level
      *
-     * @param port Type-C port number
+     * @param level safe level voltage to check against
      *
-     * @return 0 => VBUS not detected, 1 => VBUS detected
+     * @return False => VBUS not at level, True => VBUS at level
      */
     int (*get_vbus_level)();
 
@@ -304,7 +302,6 @@ extern "C" {
     /**
      * Set the value of the CC pull-up used when we are a source.
      *
-     * @param port Type-C port number
      * @param rp One of enum tcpc_rp_value
      *
      * @return EC_SUCCESS or error
@@ -314,7 +311,6 @@ extern "C" {
     /**
      * Set the CC pull resistor. This sets our role as either source or sink.
      *
-     * @param port Type-C port number
      * @param pull One of enum tcpc_cc_pull
      *
      * @return EC_SUCCESS or error
@@ -324,18 +320,30 @@ extern "C" {
     /**
      * Set polarity
      *
-     * @param port Type-C port number
-     * @param polarity 0=> transmit on CC1, 1=> transmit on CC2
+     * @param polarity port polarity
      *
      * @return EC_SUCCESS or error
      */
-    int (*set_polarity)(int polarity);
+    int (*set_polarity)(enum tcpc_cc_polarity polarity);
+
+#ifdef CONFIG_USB_PD_DECODE_SOP
+    /**
+     * Control receive of SOP' and SOP'' messages. This is provided
+     * separately from set_vconn so that we can preemptively disable
+     * receipt of SOP' messages during a VCONN swap, or disable during spans
+     * when port partners may erroneously be sending cable messages.
+     *
+     * @param enable Enable SOP' and SOP'' messages
+     *
+     * @return EC_SUCCESS or error
+     */
+    int (*sop_prime_enable)(int enable);
+#endif
 
     /**
      * Set Vconn.
      *
-     * @param port Type-C port number
-     * @param polarity Polarity of the CC line to read
+     * @param enable Enable/Disable Vconn
      *
      * @return EC_SUCCESS or error
      */
@@ -344,7 +352,6 @@ extern "C" {
     /**
      * Set PD message header to use for goodCRC
      *
-     * @param port Type-C port number
      * @param power_role Power role to use in header
      * @param data_role Data role to use in header
      *
@@ -355,7 +362,6 @@ extern "C" {
     /**
      * Set RX enable flag
      *
-     * @param port Type-C port number
      * @enable true for enable, false for disable
      *
      * @return EC_SUCCESS or error
@@ -376,7 +382,6 @@ extern "C" {
     /**
      * Transmit PD message
      *
-     * @param port Type-C port number
      * @param type Transmit type
      * @param header Packet header
      * @param cnt Number of bytes in payload
@@ -389,40 +394,137 @@ extern "C" {
     /**
      * TCPC is asserting alert
      *
-     * @param port Type-C port number
      */
     void (*tcpc_alert)();
 
     /**
      * Discharge PD VBUS on src/sink disconnect & power role swap
      *
-     * @param port Type-C port number
      * @param enable Discharge enable or disable
      */
     void (*tcpc_discharge_vbus)(int enable);
+
+    /**
+     * Auto Discharge Disconnect
+     *
+     * @param enable Auto Discharge enable or disable
+     */
+    void (*tcpc_enable_auto_discharge_disconnect)(int enable);
+
+    /**
+     * Manual control of TCPC DebugAccessory enable
+     *
+     * @param enable Debug Accessory enable or disable
+     */
+    int (*debug_accessory)(int enable);
+
+    /**
+     * Break debug connection, if TCPC requires specific commands to be run
+     * in order to correctly exit a debug connection.
+     *
+     */
+    int (*debug_detach)();
 
 #ifdef CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE
     /**
      * Enable TCPC auto DRP toggling.
      *
-     * @param port Type-C port number
-     * @param enable 1: Enable 0: Disable
      *
      * @return EC_SUCCESS or error
      */
-    int (*drp_toggle)(int enable);
+    int (*drp_toggle)();
 #endif
 
     /**
      * Get firmware version.
      *
-     * @param port Type-C port number
-     * @param renew Force renewal
-     * @param info Pointer to pointer to PD chip info
+     * @param live Fetch live chip info or hard-coded + cached info
+     * @param info Pointer to PD chip info; NULL to cache the info only
      *
      * @return EC_SUCCESS or error
      */
-    int (*get_chip_info)(int renew, struct ec_response_pd_chip_info** info);
+    int (*get_chip_info)(int live, struct ec_response_pd_chip_info** info);
+
+#ifdef CONFIG_USBC_PPC
+    /**
+     * Request current sinking state of the TCPC
+     * NOTE: this is most useful for PPCs that can not tell on their own
+     *
+     * @param is_sinking true for sinking, false for not
+     *
+     * @return EC_SUCCESS, EC_ERROR_UNIMPLEMENTED or error
+     */
+    int (*get_snk_ctrl)(int* sinking);
+
+    /**
+     * Send SinkVBUS or DisableSinkVBUS command
+     *
+     * @enable true for enable, false for disable
+     *
+     * @return EC_SUCCESS or error
+     */
+    int (*set_snk_ctrl)(int enable);
+
+    /**
+     * Request current sourcing state of the TCPC
+     * NOTE: this is most useful for PPCs that can not tell on their own
+     *
+     * @param is_sourcing true for sourcing, false for not
+     *
+     * @return EC_SUCCESS, EC_ERROR_UNIMPLEMENTED or error
+     */
+    int (*get_src_ctrl)(int* sourcing);
+
+    /**
+     * Send SourceVBUS or DisableSourceVBUS command
+     *
+     * @enable true for enable, false for disable
+     *
+     * @return EC_SUCCESS or error
+     */
+    int (*set_src_ctrl)(int enable);
+#endif
+
+#ifdef CONFIG_USB_PD_TCPC_LOW_POWER
+    /**
+     * Instructs the TCPC to enter into low power mode.
+     *
+     * NOTE: Do no use tcpc_(read|write) style helper methods in this
+     * function. You must use i2c_(read|write) directly.
+     *
+     *
+     * @return EC_SUCCESS or error
+     */
+    int (*enter_low_power_mode)();
+#endif
+
+#ifdef CONFIG_USB_PD_FRS_TCPC
+    /**
+     * Enable/Disable TCPC FRS detection
+     *
+     * @param enable FRS enable (true) disable (false)
+     *
+     * @return EC_SUCCESS or error
+     */
+    int (*set_frs_enable)(int enable);
+#endif
+
+    /**
+     * Handle TCPCI Faults
+     *
+     * @param port Type-C port number
+     * @param fault TCPCI fault status value
+     *
+     * @return EC_SUCCESS or error
+     */
+    int (*handle_fault)(int fault);
+
+#ifdef CONFIG_CMD_TCPC_DUMP
+    /**
+     * Dump TCPC registers
+     */
+    void (*dump_registers)();
+#endif /* defined(CONFIG_CMD_TCPC_DUMP) */
   };
 
   enum tcpc_alert_polarity

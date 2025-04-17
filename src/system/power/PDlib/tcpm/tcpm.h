@@ -50,7 +50,10 @@ extern "C" {
 
   static inline int tcpm_release() { return tcpc_config.drv->release(); }
 
-  static inline int tcpm_get_cc(int* cc1, int* cc2) { return tcpc_config.drv->get_cc(cc1, cc2); }
+  static inline int tcpm_get_cc(enum tcpc_cc_voltage_status* cc1, enum tcpc_cc_voltage_status* cc2)
+  {
+    return tcpc_config.drv->get_cc(cc1, cc2);
+  }
 
   static inline int tcpm_get_vbus_level()
   {
@@ -75,7 +78,10 @@ extern "C" {
 
   static inline int tcpm_set_cc(int pull) { return tcpc_config.drv->set_cc(pull); }
 
-  static inline int tcpm_set_polarity(int polarity) { return tcpc_config.drv->set_polarity(polarity); }
+  static inline int tcpm_set_polarity(enum tcpc_cc_polarity polarity)
+  {
+    return tcpc_config.drv->set_polarity(polarity);
+  }
 
   static inline int tcpm_set_vconn(int enable) { return tcpc_config.drv->set_vconn(enable); }
 
@@ -103,7 +109,13 @@ extern "C" {
 #ifdef CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE
   static inline int tcpm_auto_toggle_supported() { return !!tcpc_config.drv->drp_toggle; }
 
-  static inline int tcpm_set_drp_toggle(int enable) { return tcpc_config.drv->drp_toggle(enable); }
+  static inline int tcpm_enable_drp_toggle() { return tcpc_config.drv->drp_toggle(); }
+#endif
+
+#ifdef CONFIG_USB_PD_TCPC_LOW_POWER
+  static inline int tcpm_enter_low_power_mode() { return tcpc_config.drv->enter_low_power_mode(); }
+#else
+  int tcpm_enter_low_power_mode();
 #endif
 
 #ifdef CONFIG_CMD_I2C_STRESS_TEST_TCPC

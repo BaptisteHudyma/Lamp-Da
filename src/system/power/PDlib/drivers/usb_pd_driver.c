@@ -21,6 +21,9 @@ void set_allow_power_sourcing(const int allowPowerSourcing) { canBecomePowerSour
 int _isActivatingOTG = 0;
 int is_activating_otg() { return _isActivatingOTG; }
 
+int _shouldStopVbus = 0;
+int should_stop_vbus_charge() { return _shouldStopVbus; }
+
 const uint32_t pd_src_pdo[] = {
         // TODO: set the PDO with the battery pack watt
         PDO_FIXED(5000, 1500, PDO_FIXED_FLAGS),
@@ -80,6 +83,18 @@ void pd_set_input_current_limit(uint32_t max_ma, uint32_t supply_voltage)
   availableVoltage = supply_voltage;
 }
 
+#ifndef CONFIG_CHARGER
+int board_get_battery_soc()
+{
+  // TODO: real battery level
+  return 100;
+}
+#endif
+
+#ifdef CONFIG_USB_PD_GIVE_BACK
+void pd_snk_give_back(uint32_t* const ma, uint32_t* const mv) { _shouldStopVbus = 1; }
+#endif
+
 uint32_t get_available_pd_current_mA() { return availableCurrent; }
 
 uint32_t get_available_pd_voltage_mV() { return availableVoltage; }
@@ -96,6 +111,8 @@ void reset_cache()
 
   otgParameters.requestedVoltage_mV = 0;
   otgParameters.requestedCurrent_mA = 0;
+
+  _shouldStopVbus = 0;
 }
 
 void pd_loop() { pd_run_state_machine(); }
@@ -236,7 +253,7 @@ void pd_check_pr_role(int pr_role, int flags)
    * If partner is dual-role power and dualrole toggling is on, consider
    * if a power swap is necessary.
    */
-  if ((flags & PD_FLAGS_PARTNER_DR_POWER) && pd_get_dual_role() == PD_DRP_TOGGLE_OFF) // PD_DRP_TOGGLE_ON)
+  if ((flags & PD_FLAGS_PARTNER_DR_POWER) && pd_get_dual_role() == PD_DRP_TOGGLE_ON)
   {
     /*
      * If we are a sink and partner is not externally powered, then swap to become a source.

@@ -106,6 +106,8 @@ extern "C" {
     return events & event_mask;
   }
 
+  uint32_t* task_get_event_bitmap() { return &tasks.event; }
+
 #ifdef __cplusplus
 }
 #endif

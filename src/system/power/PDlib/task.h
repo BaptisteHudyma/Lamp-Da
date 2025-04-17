@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define TASK_EVENT_PD_AWAKE (1 << 18)
+
 /* task_wake() called on task */
 #define TASK_EVENT_WAKE (1 << 29)
 
@@ -78,5 +80,10 @@ uint32_t task_wait_event_mask(uint32_t event_mask, int timeout_us);
  * Wake a task.  This sends it the TASK_EVENT_WAKE event.
  */
 static inline void task_wake() { task_set_event(TASK_EVENT_WAKE); }
+
+/**
+ * Return a pointer to the bitmap of events of the task.
+ */
+uint32_t* task_get_event_bitmap();
 
 #endif

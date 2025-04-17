@@ -66,8 +66,8 @@ bool is_usb_pd()
 
 bool is_cable_detected()
 {
-  int cc1;
-  int cc2;
+  enum tcpc_cc_voltage_status cc1;
+  enum tcpc_cc_voltage_status cc2;
   tcpm_get_cc(&cc1, &cc2);
   return cc1 != TYPEC_CC_VOLT_OPEN or cc2 != TYPEC_CC_VOLT_OPEN;
 }
@@ -194,6 +194,13 @@ void interrupt_handle()
 void pd_run()
 {
   pd_loop();
+
+  // partner asked us to stop to pull current
+  if (should_stop_vbus_charge())
+  {
+    powergates::disable_gates();
+    return;
+  }
 
   static bool isFastRoleSwap = false;
   // ignore source activity if we are otg (prevent spurious reset)

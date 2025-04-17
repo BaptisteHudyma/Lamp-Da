@@ -12,6 +12,7 @@
 #include "balancer.h"
 #include "charger.h"
 #include "power_gates.h"
+#include <cstdint>
 
 namespace power {
 
@@ -87,7 +88,7 @@ uint32_t get_power_rail_voltage()
   else
   {
     // temp value, will lock the gates until measures are good
-    return 5000;
+    return UINT32_MAX;
   }
 }
 

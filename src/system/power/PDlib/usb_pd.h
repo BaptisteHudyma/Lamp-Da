@@ -187,6 +187,16 @@ extern "C" {
 #define PD_T_VDM_SNDR_RSP    (30 * MSEC_US)  /* max of 30ms */
 #define PD_T_VDM_WAIT_MODE_E (100 * MSEC_US) /* enter/exit the same max */
 
+  enum pd_drp_next_states
+  {
+    DRP_TC_DEFAULT,
+    DRP_TC_UNATTACHED_SNK,
+    DRP_TC_ATTACHED_WAIT_SNK,
+    DRP_TC_UNATTACHED_SRC,
+    DRP_TC_ATTACHED_WAIT_SRC,
+    DRP_TC_DRP_AUTO_TOGGLE
+  };
+
   /* function table for entered mode */
   struct amode_fx
   {
@@ -712,6 +722,16 @@ extern "C" {
    * @return Current dual-role state, from enum pd_dual_role_states
    */
   enum pd_dual_role_states pd_get_dual_role(void);
+
+#ifndef CONFIG_CHARGER
+  /**
+   * Return the battery state of charge, in percents
+   */
+  int board_get_battery_soc();
+#endif
+
+  void pd_set_dual_role_no_wakeup(enum pd_dual_role_states state);
+
   /**
    * Set dual role state, from among enum pd_dual_role_states
    *
@@ -1417,6 +1437,91 @@ static inline void pd_send_host_event(int mask) {}
    * @param status status of the transmission
    */
   void pd_transmit_complete(int status);
+
+  /**
+   * Get current data role
+   *
+   * @param port Port number from which to get role
+   */
+  enum pd_data_role pd_get_data_role();
+
+  /**
+   * Get current power role
+   *
+   * @param port Port number from which to get power role
+   */
+  enum pd_power_role pd_get_power_role();
+
+  /**
+   * Check if the battery is capable of powering the system
+   *
+   * @return true if capable of, else false.
+   */
+  int pd_is_battery_capable(void);
+
+  /**
+   * Check if PD is capable of trying as source
+   *
+   * @return true if capable of, else false.
+   */
+  int pd_is_try_source_capable(void);
+
+  /**
+   * Request for VCONN swap
+   *
+   * @param port USB-C Port number
+   */
+  void pd_request_vconn_swap();
+
+  /**
+   * Get the current CC line states from PD task
+   *
+   * @param port USB-C Port number
+   * @return CC state
+   */
+  enum pd_cc_states pd_get_task_cc_state();
+
+  /**
+   * Get the current PD state of USB-C port
+   *
+   * @param port USB-C Port number
+   * @return PD state
+   * Note: TCPMv1 returns enum pd_states
+   *       TCPMv2 returns enum usb_tc_state
+   */
+  uint8_t pd_get_task_state();
+
+  /**
+   * Get the current PD state name of USB-C port
+   *
+   * @param port USB-C Port number
+   * @return Pointer to PD state name
+   */
+  const char* pd_get_task_state_name();
+
+  /**
+   * Get current VCONN state of USB-C port
+   *
+   * @param port USB-C Port number
+   * @return true if VCONN is on else false
+   */
+  int pd_get_vconn_state();
+
+  /**
+   * Check if port partner is dual role power
+   *
+   * @param port USB-C Port number
+   * @return true if partner is dual role power else false
+   */
+  int pd_get_partner_dual_role_power();
+
+  /**
+   * Check if port partner is unconstrained power
+   *
+   * @param port USB-C Port number
+   * @return true if partner is unconstrained power else false
+   */
+  int pd_get_partner_unconstr_power();
 
   /**
    * Get port polarity.

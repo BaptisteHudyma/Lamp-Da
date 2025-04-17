@@ -76,6 +76,9 @@ extern "C" {
    */
   int is_activating_otg();
 
+  // should stop all vbus current loading
+  int should_stop_vbus_charge();
+
   void pd_power_supply_reset();
 
   extern uint8_t get_pd_source_cnt();
