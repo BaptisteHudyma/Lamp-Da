@@ -8,7 +8,7 @@
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
-#include "src/system/platform/registers.h"
+#include "src/system/platform/threads.h"
 
 #include "../drivers/charging_ic.h"
 #include "../power_gates.h"
@@ -184,7 +184,7 @@ bool isSetup = false;
 bool setup()
 {
   // start task scheduler
-  start_thread(task_scheduler, "task_sched");
+  start_thread(task_scheduler, taskScheduler_taskName, 0, 255);
 
   // 0 is success
   if (i2c_check_existence(devicePort, fusb302_I2C_SLAVE_ADDR) != 0)

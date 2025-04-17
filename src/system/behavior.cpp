@@ -33,6 +33,7 @@
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/registers.h"
+#include "src/system/platform/threads.h"
 
 #include "src/user/functions.h"
 
@@ -640,8 +641,9 @@ void handle_shutdown_state()
     yield_this_thread();
     // hack
     power::loop();
-    power::pd_interrupt_loop();
-    power::pd_loop();
+    // do not run the pd loop, it can hang it's own thread (and )
+    // power::pd_interrupt_loop();
+    // power::pd_loop();
 
     if (power::is_state_shutdown_effected())
       break;

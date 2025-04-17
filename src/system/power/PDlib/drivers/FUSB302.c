@@ -753,8 +753,8 @@ static int fusb302_tcpm_get_message(uint32_t* payload, int* head)
    * If our FIFO is non-empty then we may have a packet, we may get
    * fewer interrupts than packets due to interrupt latency.
    */
-  // if (!fusb302_rx_fifo_is_empty())
-  //	task_set_event(PD_PORT_TO_TASK_ID(), PD_EVENT_RX, 0);
+  if (!fusb302_rx_fifo_is_empty())
+    task_set_event(PD_EVENT_RX);
 
   return rv;
 }
@@ -868,7 +868,7 @@ void fusb302_tcpc_alert()
   if (interrupt & TCPC_REG_INTERRUPT_BC_LVL)
   {
     /* CC Status change */
-    // task_set_event(PD_PORT_TO_TASK_ID(), PD_EVENT_CC, 0);
+    task_set_event(PD_EVENT_CC);
   }
 
   if (interrupt & TCPC_REG_INTERRUPT_COLLISION)
@@ -880,8 +880,7 @@ void fusb302_tcpc_alert()
   /* GoodCRC was received, our FIFO is now non-empty */
   if (interrupta & TCPC_REG_INTERRUPTA_TX_SUCCESS)
   {
-    // task_set_event(PD_PORT_TO_TASK_ID(),
-    //		PD_EVENT_RX, 0);
+    task_set_event(PD_EVENT_RX);
 
     pd_transmit_complete(TCPC_TX_COMPLETE_SUCCESS);
   }
@@ -911,7 +910,7 @@ void fusb302_tcpc_alert()
 
     pd_execute_hard_reset();
 
-    // task_wake(PD_PORT_TO_TASK_ID());
+    task_wake();
   }
 
   if (interruptb & TCPC_REG_INTERRUPTB_GCRCSENT)
@@ -920,8 +919,7 @@ void fusb302_tcpc_alert()
     /* (this interrupt fires after the GoodCRC finishes) */
     if (state.rx_enable)
     {
-      // task_set_event(PD_PORT_TO_TASK_ID(),
-      //		PD_EVENT_RX, 0);
+      task_set_event(PD_EVENT_RX);
     }
     else
     {

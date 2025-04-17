@@ -26,19 +26,6 @@ extern "C" {
 /* PD Host command timeout */
 #define PD_HOST_COMMAND_TIMEOUT_US SECOND_US
 
-/*
- * Define PD_PORT_TO_TASK_ID() and TASK_ID_TO_PD_PORT() macros to
- * go between PD port number and task ID. Assume that TASK_ID_PD_C0 is the
- * lowest task ID and IDs are on a continuous range.
- */
-#ifdef HAS_TASK_PD_C0
-#define PD_PORT_TO_TASK_ID()   (TASK_ID_PD_C0 + ())
-#define TASK_ID_TO_PD_PORT(id) ((id) - TASK_ID_PD_C0)
-#else
-#define PD_PORT_TO_TASK_ID()   -1 /* dummy task ID */
-#define TASK_ID_TO_PD_PORT(id) 0
-#endif /* CONFIG_COMMON_RUNTIME */
-
   enum pd_rx_errors
   {
     PD_RX_ERR_INVAL = -1,           /* Invalid packet */

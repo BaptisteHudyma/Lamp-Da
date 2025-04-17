@@ -24,6 +24,7 @@
 #include "src/system/platform/i2c.h"
 #include "src/system/platform/time.h"
 #include "src/system/platform/registers.h"
+#include "src/system/platform/threads.h"
 
 namespace global {
 
@@ -208,16 +209,16 @@ void main_setup()
   // let the user start in unpowered mode
   user::power_off_sequence();
 
-  start_thread(pd_interrupt_thread, "intpd", 0, 255);
-  start_thread(pd_thread, "usbpd", 0, 1024);
+  start_thread(pd_interrupt_thread, pdInterruptHandle_taskName, 0, 255);
+  start_thread(pd_thread, pd_taskName, 0, 1024);
   // use the charging thread !
-  start_thread(power_thread, "power", 0, 255);
+  start_thread(power_thread, power_taskName, 0, 255);
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread())
   {
     // give a high stack but low priority to user
-    start_thread(secondary_thread, "user", 0, 1024);
+    start_thread(secondary_thread, user_taskName, 0, 1024);
   }
 }
 
@@ -240,6 +241,10 @@ void main_loop(const uint32_t addedDelay)
   // loop the behavior
   behavior::loop();
 
+  // automatically deactivate sensors if they are not used for a time
+  microphone::disable_after_non_use();
+  imu::disable_after_non_use();
+
   // add the required delay
   if (addedDelay > 0)
     delay_ms(addedDelay);
@@ -252,10 +257,6 @@ void main_loop(const uint32_t addedDelay)
     delay_ms(MAIN_LOOP_UPDATE_PERIOD_MS - loopDuration);
   }
   check_loop_runtime(loopDuration);
-
-  // automatically deactivate sensors if they are not used for a time
-  microphone::disable_after_non_use();
-  imu::disable_after_non_use();
 }
 
 } // namespace global

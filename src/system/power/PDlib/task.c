@@ -5,10 +5,11 @@ extern "C" {
 #endif
 
 #include "../../platform/time.h"
+#include "../../platform/threads.h"
 
   struct emu_task_t
   {
-    uint8_t resume;
+    int isWaiting;
     uint32_t event;
     timestamp_t wake_time;
   };
@@ -27,20 +28,29 @@ extern "C" {
   {
     timestamp_t now = get_time();
 
-    if (tasks.event || now.val >= tasks.wake_time.val)
+    // task event is set, or timeout
+    if (tasks.isWaiting && (tasks.event || now.val >= tasks.wake_time.val))
     {
       now = get_time();
       if (now.val >= tasks.wake_time.val)
+      {
         tasks.event |= TASK_EVENT_TIMER;
+      }
       tasks.wake_time.val = ~0ull;
-      tasks.resume = 1;
+      tasks.isWaiting = 0;
+      // resume the pd threads
+      resume_thread(pd_taskName);
+      // suspend scheduler
+      suspend_this_thread();
     }
-    delay_ms(1);
+    else
+      delay_ms(1);
   }
 
   uint32_t task_set_event(uint32_t event)
   {
     tasks.event |= event;
+    resume_thread(taskScheduler_taskName);
     return 0;
   }
 
@@ -48,12 +58,15 @@ extern "C" {
   {
     if (timeout_us > 0)
       tasks.wake_time.val = get_time().val + timeout_us;
+    else
+      // set max delay
+      tasks.wake_time.val = (~0x00);
 
-    tasks.resume = 0;
-    while (!tasks.resume)
-    {
-      delay_ms(1);
-    }
+    tasks.isWaiting = 1;
+    // resume scheduler
+    resume_thread(taskScheduler_taskName);
+    // then wait until event is set (or timeout)
+    suspend_this_thread();
 
     /* Resume */
     int ret = tasks.event;
