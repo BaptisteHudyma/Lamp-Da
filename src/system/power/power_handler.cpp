@@ -6,6 +6,7 @@
 #include "src/system/physical/battery.h"
 
 #include "src/system/platform/gpio.h"
+#include "src/system/platform/threads.h"
 
 #include "PDlib/power_delivery.h"
 #include "balancer.h"
@@ -337,6 +338,16 @@ bool go_to_shutdown()
 {
   // no need to check if we can switch case in this case
   __private::powerMachine.set_state(PowerStates::SHUTDOWN);
+
+  // let thread do stuff for a while
+  for (uint i = 0; i < 10; i++)
+  {
+    // hack: loop a bit to close all contracts
+    loop();
+    if (is_state_shutdown_effected())
+      break;
+  }
+
   return true;
 }
 
@@ -367,6 +378,7 @@ std::string get_error_string() { return _errorStr; }
 bool is_in_output_mode() { return __private::powerMachine.get_state() == PowerStates::OUTPUT_VOLTAGE_MODE; }
 bool is_in_otg_mode() { return __private::powerMachine.get_state() == PowerStates::OTG_MODE; }
 
+static bool isSetup = false;
 void init()
 {
   powergates::init();
@@ -395,6 +407,18 @@ void init()
     __private::switch_state(PowerStates::ERROR);
     return;
   }
+  isSetup = true;
+}
+
+void start_threads()
+{
+  if (!isSetup)
+    return;
+
+  //   use the charging thread !
+  start_thread(loop, power_taskName, 0, 1024);
+
+  powerDelivery::start_threads();
 }
 
 void loop()
@@ -405,23 +429,16 @@ void loop()
   // run power module state machine
   __private::state_machine_behavior();
 
+  // run the power delivery update loop
+  powerDelivery::loop();
+
   // run the charger loop (all the time)
   charger::loop();
 
   // run the balancer loop (all the time)
   balancer::loop();
-}
 
-void pd_interrupt_loop()
-{
-  // handle interrupts outside of the pd loop, as the loop can enter a wait state
-  powerDelivery::interrupt_handle();
-}
-
-void pd_loop()
-{
-  // run pd negociation loop
-  powerDelivery::loop();
+  delay_ms(1);
 }
 
 } // namespace power

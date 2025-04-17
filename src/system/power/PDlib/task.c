@@ -44,7 +44,9 @@ extern "C" {
       suspend_this_thread();
     }
     else
+    {
       delay_ms(1);
+    }
   }
 
   uint32_t task_set_event(uint32_t event)

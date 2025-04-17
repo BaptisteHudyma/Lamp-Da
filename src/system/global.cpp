@@ -31,48 +31,8 @@ namespace global {
 // timestamp of the system wake up
 static uint32_t turnOnTime = 0;
 
-// battery checks & charge & power gates
-void power_thread()
-{
-  if (behavior::is_shuting_down())
-  {
-    suspend_this_thread();
-    return;
-  }
-  power::loop();
-  delay_ms(3);
-}
-
-void pd_interrupt_thread()
-{
-  if (behavior::is_shuting_down())
-  {
-    suspend_this_thread();
-    return;
-  }
-  power::pd_interrupt_loop();
-  delay_ms(1);
-}
-
-// power negociation thread (must be fast)
-void pd_thread()
-{
-  if (behavior::is_shuting_down())
-  {
-    suspend_this_thread();
-    return;
-  }
-  power::pd_loop();
-  delay_ms(1);
-}
-
 void secondary_thread()
 {
-  if (behavior::is_shuting_down())
-  {
-    suspend_this_thread();
-    return;
-  }
   if (not behavior::is_user_code_running())
     return;
 
@@ -209,10 +169,8 @@ void main_setup()
   // let the user start in unpowered mode
   user::power_off_sequence();
 
-  start_thread(pd_interrupt_thread, pdInterruptHandle_taskName, 0, 255);
-  start_thread(pd_thread, pd_taskName, 0, 1024);
-  // use the charging thread !
-  start_thread(power_thread, power_taskName, 0, 255);
+  // start all power threads
+  power::start_threads();
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread())

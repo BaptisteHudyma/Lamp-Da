@@ -1377,7 +1377,7 @@ static inline void pd_send_host_event(int mask) {}
    * to iterate through the state machine. It uses get_time() to
    * determine what actions to take each call.
    */
-  void pd_run_state_machine(int reset);
+  void pd_run_state_machine();
 
   /* --- Protocol layer functions --- */
 

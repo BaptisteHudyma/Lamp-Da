@@ -63,8 +63,11 @@ extern "C" {
   static inline int tcpm_get_vbus_voltage()
   {
     // TODO: check returned error/unimplemented
-    int vbus;
-    tcpc_config.drv->get_vbus_voltage(&vbus);
+    int vbus = 0;
+    if (tcpc_config.drv->get_vbus_voltage)
+    {
+      tcpc_config.drv->get_vbus_voltage(&vbus);
+    }
     return vbus;
   }
 

@@ -82,8 +82,11 @@ bool is_standard_port()
          time_ms() - lastPDdetected > 1000;
 }
 
-bool interruptSet = false;
-void ic_interrupt() { interruptSet = true; }
+void ic_interrupt()
+{
+  // wake up interrupt thread (cannot run code in the interrupt callback)
+  resume_thread(pdInterruptHandle_taskName);
+}
 
 bool is_vbus_powered()
 {
@@ -180,60 +183,17 @@ UsbPDData data;
  *
  */
 
-bool isSetup = false;
-bool setup()
-{
-  // start task scheduler
-  start_thread(task_scheduler, taskScheduler_taskName, 0, 255);
-
-  // 0 is success
-  if (i2c_check_existence(devicePort, fusb302_I2C_SLAVE_ADDR) != 0)
-  {
-    return false;
-  }
-
-  pd_init();
-  delay_ms(5);
-  pd_startup();
-
-  DigitalPin chargerPin(DigitalPin::GPIO::Signal_PowerDelivery);
-  chargerPin.attach_callback(ic_interrupt, DigitalPin::Interrupt::kChange);
-
-  isSetup = true;
-  return true;
-}
-
 void interrupt_handle()
 {
-  // no setup, skip loop
-  if (!isSetup)
-  {
-    suspend_this_thread();
-    return;
-  }
-
-  //  handle alerts
-  if (interruptSet)
-  {
-    interruptSet = false;
-    tcpc_alert();
-  }
+  // only waken up on thread update
+  tcpc_alert();
+  // this thread only runs when interrupt is set
+  suspend_this_thread();
 }
 
-void loop()
+void pd_run()
 {
-  // no setup, skip loop
-  if (!isSetup)
-  {
-    suspend_this_thread();
-    return;
-  }
   pd_loop();
-
-  data.update();
-  data.serial_show();
-
-  // standard code
 
   static bool isFastRoleSwap = false;
   // ignore source activity if we are otg (prevent spurious reset)
@@ -280,8 +240,53 @@ void loop()
     DigitalPin(DigitalPin::GPIO::Output_VbusDirection).set_high(false);
     powergates::disable_gates();
   }
-
   isFastRoleSwap = false;
+}
+
+static bool isSetup = false;
+
+bool setup()
+{
+  // 0 is success
+  if (i2c_check_existence(devicePort, fusb302_I2C_SLAVE_ADDR) != 0)
+  {
+    return false;
+  }
+
+  pd_init();
+  delay_ms(5);
+  pd_startup();
+
+  DigitalPin chargerPin(DigitalPin::GPIO::Signal_PowerDelivery);
+  chargerPin.attach_callback(ic_interrupt, DigitalPin::Interrupt::kChange);
+
+  isSetup = true;
+  return true;
+}
+
+void start_threads()
+{
+  if (!isSetup)
+    return;
+
+  // start task scheduler, in suspended state
+  start_suspended_thread(task_scheduler, taskScheduler_taskName, 0, 255);
+  // start interrupt handle, in suspended state
+  start_suspended_thread(interrupt_handle, pdInterruptHandle_taskName, 0, 255);
+  // start pd handle loop
+  start_thread(pd_run, pd_taskName, 0, 1024);
+}
+
+void loop()
+{
+  data.update();
+  data.serial_show();
+
+  // ignore source activity if we are otg (prevent spurious reset)
+  if (is_activating_otg())
+  {
+    return;
+  }
 
   static uint32_t lastVbusValid = 0;
 

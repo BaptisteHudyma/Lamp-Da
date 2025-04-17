@@ -7,11 +7,10 @@ namespace power {
 
 // call before all
 void init();
+void start_threads();
 
 // call often
 void loop();
-void pd_interrupt_loop();
-void pd_loop();
 
 // control state change
 bool go_to_output_mode();

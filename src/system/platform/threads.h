@@ -26,11 +26,19 @@ extern "C" {
                            const char* const taskName,
                            const int priority,
                            const int stackSize);
+  // start a thread in suspend state
+  extern void start_suspended_thread(taskfunc_t taskFunction,
+                                     const char* const taskName,
+                                     const int priority,
+                                     const int stackSize);
   // make this thread pass the control to other threads
   extern void yield_this_thread();
 
   // threads can only suspend itself
   extern void suspend_this_thread();
+
+  // DANGEROUS: suspend all threads started from here
+  extern void suspend_all_threads();
 
   // resume a target thread
   extern void resume_thread(const char* const taskName);

@@ -24,7 +24,7 @@ int is_activating_otg() { return _isActivatingOTG; }
 const uint32_t pd_src_pdo[] = {
         // TODO: set the PDO with the battery pack watt
         PDO_FIXED(5000, 1500, PDO_FIXED_FLAGS),
-        // PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
+        PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
         // PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
         // TODO: debug PPS
         // PDO_VAR(4750, 20000, 3000)
@@ -98,23 +98,21 @@ void reset_cache()
   otgParameters.requestedCurrent_mA = 0;
 }
 
-void pd_loop()
-{
-  static int reset = 0;
-  pd_run_state_machine(reset);
-  reset = 0;
-}
+void pd_loop() { pd_run_state_machine(); }
 
 // valid voltages from 0 to 20V
 int pd_is_valid_input_voltage(int mv) { return mv > 0 && mv <= 20000; }
 
 int is_pd_conector() { return srcCapsSaved != NULL; }
 
+void pd_connected_event() {}
+void pd_disconnected_event() {}
+
 // close source voltage, discharge vbus
 void pd_power_supply_reset()
 {
   // reset OTG params
-  otgParameters.requestedVoltage_mV = 5000;
+  otgParameters.requestedVoltage_mV = 0;
   otgParameters.requestedCurrent_mA = 0;
   _isActivatingOTG = 0;
   return;

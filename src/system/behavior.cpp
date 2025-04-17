@@ -91,7 +91,6 @@ static bool isTargetPoweredOn_s = false;
 bool is_system_should_be_powered() { return isTargetPoweredOn_s; }
 void set_power_on() { isTargetPoweredOn_s = true; }
 void set_power_off() { isTargetPoweredOn_s = false; }
-static bool isShutingDown_s = false;
 
 // return true if vbus is high
 bool is_charger_powered() { return charger::is_vbus_powered(); }
@@ -629,26 +628,13 @@ void handle_shutdown_state()
   delay_ms(1);
 
   // block other threads
-  isShutingDown_s = true;
+  suspend_all_threads();
+  for (uint i = 0; i < 5; ++i)
+    yield_this_thread();
   delay_ms(5);
 
   // shutdown all external power
   power::go_to_shutdown();
-
-  // let other thread do stuff for a while
-  for (uint i = 0; i < 10; i++)
-  {
-    yield_this_thread();
-    // hack
-    power::loop();
-    // do not run the pd loop, it can hang it's own thread (and )
-    // power::pd_interrupt_loop();
-    // power::pd_loop();
-
-    if (power::is_state_shutdown_effected())
-      break;
-    delay_ms(1);
-  }
 
   if (not power::is_state_shutdown_effected())
   {
@@ -745,8 +731,6 @@ void loop()
     handle_shutdown_state();
   }
 }
-
-bool is_shuting_down() { return isShutingDown_s; }
 
 std::string get_state() { return std::string(BehaviorStatesStr[mainMachine.get_state()]); }
 

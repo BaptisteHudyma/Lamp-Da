@@ -5,12 +5,11 @@
 #include <vector>
 namespace powerDelivery {
 
-// call once at program start
+// call once at program start, start all threads
 bool setup();
+void start_threads();
 
-// call often to handle interrupts
-void interrupt_handle();
-// call often
+// call often (update status)
 void loop();
 
 // call once at program end
