@@ -43,6 +43,9 @@ extern "C" {
   // resume a target thread
   extern void resume_thread(const char* const taskName);
 
+  // compute and return a debug for threads
+  extern void get_thread_debug(char* textBuff);
+
 #ifdef __cplusplus
 }
 #endif

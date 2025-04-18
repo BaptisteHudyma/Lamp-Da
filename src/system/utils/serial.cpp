@@ -10,6 +10,7 @@
 #include "src/system/power/balancer.h"
 
 #include "src/system/platform/registers.h"
+#include "src/system/platform/threads.h"
 
 #include "src/system/physical/battery.h"
 #include "src/system/physical/fileSystem.h"
@@ -205,7 +206,7 @@ void handleCommand(const std::string& command)
 
     case utils::hash("tasks"):
       char buff[512];
-      vTaskList(buff);
+      get_thread_debug(buff);
       lampda_print("%s", buff);
       break;
 

@@ -25,6 +25,8 @@ int _shouldStopVbus = 0;
 int should_stop_vbus_charge() { return _shouldStopVbus; }
 
 const uint32_t pd_src_pdo[] = {
+        // DO NOT GO ABOVE 3A ! the spec forbid this unless we use a vconn chip
+
         // TODO: set the PDO with the battery pack watt
         PDO_FIXED(5000, 1500, PDO_FIXED_FLAGS),
         PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
@@ -51,7 +53,7 @@ uint32_t* srcCapsSaved = NULL;
 void pd_startup()
 {
   // if enabled, will send updates when source
-  pd_ping_enable(0);
+  pd_ping_enable(1);
 }
 
 void pd_turn_off()

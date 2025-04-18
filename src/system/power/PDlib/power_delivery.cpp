@@ -13,6 +13,9 @@
 #include "../drivers/charging_ic.h"
 #include "../power_gates.h"
 
+// remove this to remove all PD algorithms
+#define USE_PD_ALGO_LOOP
+
 // we only have one device, so always index 0
 static constexpr int devicePort = 0;
 // USB-C Specific - TCPM start 1
@@ -185,15 +188,24 @@ UsbPDData data;
 
 void interrupt_handle()
 {
+#ifdef USE_PD_ALGO_LOOP
   // only waken up on thread update
   tcpc_alert();
+#endif
   // this thread only runs when interrupt is set
   suspend_this_thread();
 }
 
 void pd_run()
 {
+  // PD loop limits the run of this threads by waiting for events
+  // DO NOT REMOVE THE PD STATE MACHINE
+  // or -> add a delay to this loop instead
+#ifdef USE_PD_ALGO_LOOP
   pd_loop();
+#else
+  delay_ms(10);
+#endif
 
   // partner asked us to stop to pull current
   if (should_stop_vbus_charge())
@@ -204,7 +216,7 @@ void pd_run()
 
   static bool isFastRoleSwap = false;
   // ignore source activity if we are otg (prevent spurious reset)
-  if (is_activating_otg())
+  if (is_switching_to_otg())
   {
     if (not isFastRoleSwap)
     {
@@ -290,7 +302,7 @@ void loop()
   data.serial_show();
 
   // ignore source activity if we are otg (prevent spurious reset)
-  if (is_activating_otg())
+  if (is_switching_to_otg())
   {
     return;
   }

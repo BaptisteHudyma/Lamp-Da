@@ -160,6 +160,7 @@ void main_setup()
       indicator::set_color(utils::ColorSpace::BLACK);
       delay_ms(300);
     }
+    indicator::set_color(utils::ColorSpace::BLACK);
   }
 
   const bool wasPoweredyByUserInterrupt = is_started_from_interrupt();

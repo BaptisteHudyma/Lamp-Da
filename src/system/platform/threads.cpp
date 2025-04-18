@@ -119,4 +119,6 @@ void resume_thread(const char* const taskName)
   vTaskResume(handle->second);
 }
 
+void get_thread_debug(char* textBuff) { vTaskList(textBuff); }
+
 #endif

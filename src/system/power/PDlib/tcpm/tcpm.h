@@ -27,9 +27,7 @@ extern "C" {
 
   /* I2C wrapper functions - get I2C port / slave addr from config struct. */
   int tcpc_write(int reg, int val);
-  int tcpc_write16(int reg, int val);
   int tcpc_read(int reg, int* val);
-  int tcpc_read16(int reg, int* val);
   int tcpc_xfer(const uint8_t* out, int out_size, uint8_t* in, int in_size, int flags);
 
   /* TCPM driver wrapper function */
@@ -65,7 +63,7 @@ extern "C" {
 
   static inline int tcpm_get_vbus_voltage()
   {
-    // TODO: check returned error/unimplemented
+    // TODO: check returned error
     int vbus = 0;
     if (tcpc_config.drv->get_vbus_voltage)
     {
