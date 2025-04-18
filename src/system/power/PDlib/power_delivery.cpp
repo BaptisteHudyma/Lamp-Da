@@ -224,11 +224,13 @@ void pd_run()
 
       // prepare fast role swap
       powergates::disable_gates();
-      DigitalPin(DigitalPin::GPIO::Output_VbusFastRoleSwap).set_high(true);
 
       // force otg on, and prep vbus gate, all in this loop iteration (skip all safety steps !!!)
       charger::drivers::set_OTG_targets(5000, 1000);
       charger::drivers::enable_OTG();
+
+      DigitalPin(DigitalPin::GPIO::Output_VbusFastRoleSwap).set_high(true);
+      DigitalPin(DigitalPin::GPIO::Output_DischargeVbus).set_high(true);
 
       // wait until OTG drops to acceptable level
       while (charger::drivers::get_measurments().vbus_mV > 5500)

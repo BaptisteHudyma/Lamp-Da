@@ -16,6 +16,7 @@ void loop();
 bool go_to_output_mode();
 bool go_to_charger_mode();
 bool go_to_otg_mode();
+bool go_to_idle();
 bool go_to_shutdown();
 
 // return true when the shutdown state if finished

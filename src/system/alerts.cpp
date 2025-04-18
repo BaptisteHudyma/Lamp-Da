@@ -451,7 +451,16 @@ void handle_all(const bool shouldIgnoreAlerts)
     }
     else
     {
-      // what are we doing here ? error
+      // we can handup here when starting/shutting down the system
+
+      // red to green
+      const auto buttonColor =
+              utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
+                                                         utils::ColorSpace::GREEN.get_rgb().color,
+                                                         battery::get_battery_minimum_cell_level() / 10000.0));
+
+      // no charger operation, no output mode
+      indicator::blink(1000, 1000, buttonColor);
     }
 
     // skip the other alerts

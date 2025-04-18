@@ -196,14 +196,13 @@ void handle_output_voltage_mode()
 void handle_otg_mode()
 {
   const auto requested = powerDelivery::get_otg_parameters();
-  if (not requested.is_otg_requested())
-    return;
-
-  charger::set_enable_charge(false);
-
   // we do not have the parameters yet
   if (not requested.is_otg_requested())
+  {
     return;
+  }
+
+  charger::set_enable_charge(false);
 
   // ramp up output voltage
   // then unlock the vbus gate
@@ -329,6 +328,17 @@ bool go_to_otg_mode()
   if (__private::can_switch_states())
   {
     __private::switch_state(PowerStates::OTG_MODE);
+    return true;
+  }
+
+  return false;
+}
+
+bool go_to_idle()
+{
+  if (__private::can_switch_states())
+  {
+    __private::switch_state(PowerStates::IDLE);
     return true;
   }
 

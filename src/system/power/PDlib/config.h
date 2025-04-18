@@ -145,4 +145,7 @@
 #undef CONFIG_USB_PD_REV30
 #endif
 
+/* Override PD_ROLE_DEFAULT in usb_pd.h */
+#define PD_ROLE_DEFAULT() (PD_ROLE_SINK)
+
 #endif

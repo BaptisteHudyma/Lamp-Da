@@ -16,14 +16,6 @@ extern "C" {
 #include "../config.h"
 #include <stdint.h>
 
-// remove a warning
-#ifdef PD_ROLE_DEFAULT
-#undef PD_ROLE_DEFAULT
-#endif
-
-/* Override PD_ROLE_DEFAULT in usb_pd.h */
-#define PD_ROLE_DEFAULT() (PD_ROLE_SINK)
-
 /* board specific type-C power constants */
 /*
  * delay to turn on the power supply max is ~16ms.

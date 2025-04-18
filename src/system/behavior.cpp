@@ -93,7 +93,7 @@ void set_power_on() { isTargetPoweredOn_s = true; }
 void set_power_off() { isTargetPoweredOn_s = false; }
 
 // return true if vbus is high
-bool is_charger_powered() { return charger::is_vbus_powered(); }
+bool is_charger_powered() { return charger::is_vbus_powered() || is_voltage_detected_on_vbus(); }
 
 // hold the last time startup_sequence has been called
 uint32_t lastStartupSequence = 0;
@@ -478,7 +478,7 @@ void handle_charger_operation_state()
     // no power, shutdown everything
     else if (not is_charger_powered())
     {
-      // forbid charging
+      // forbbid charging
       power::enable_charge(false);
       yield_this_thread();
 
