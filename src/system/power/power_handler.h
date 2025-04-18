@@ -19,9 +19,6 @@ bool go_to_otg_mode();
 bool go_to_idle();
 bool go_to_shutdown();
 
-// return true when the shutdown state if finished
-bool is_state_shutdown_effected();
-
 // control special commands for every states
 // output mode
 bool set_output_voltage_mv(const uint16_t);

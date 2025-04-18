@@ -345,24 +345,17 @@ bool go_to_idle()
   return false;
 }
 
+bool is_state_shutdown_effected() { return _isShutdownCompleted; }
+
 bool go_to_shutdown()
 {
   // no need to check if we can switch case in this case
   __private::powerMachine.set_state(PowerStates::SHUTDOWN);
 
-  // let thread do stuff for a while
-  for (uint i = 0; i < 10; i++)
-  {
-    // hack: loop a bit to close all contracts
-    loop();
-    if (is_state_shutdown_effected())
-      break;
-  }
+  handle_shutdown();
 
-  return true;
+  return is_state_shutdown_effected();
 }
-
-bool is_state_shutdown_effected() { return _isShutdownCompleted; }
 
 bool set_output_voltage_mv(const uint16_t outputVoltage_mV)
 {

@@ -164,6 +164,10 @@ void true_power_off()
     cnt++;
   }
 
+  // deactivate indicators
+  indicator::set_color(utils::ColorSpace::BLACK);
+  delay_ms(1);
+
   // power down nrf52.
   // on wake up, it'll start back from the setup phase
   go_to_sleep(ButtonPin.pin());
@@ -623,23 +627,21 @@ void handle_post_output_light_state()
 
 void handle_shutdown_state()
 {
-  // detach the button interrupts
-  DigitalPin::detach_all(); // detach the interrupts
-  delay_ms(1);
-
   // block other threads
   suspend_all_threads();
-  for (uint i = 0; i < 5; ++i)
-    yield_this_thread();
-  delay_ms(5);
+
+  // detach the button interrupts
+  DigitalPin::detach_all(); // detach the interrupts
+  delay_ms(10);
 
   // shutdown all external power
-  power::go_to_shutdown();
-
-  if (not power::is_state_shutdown_effected())
+  if (not power::go_to_shutdown())
   {
-    // error: shuting down without the whole procedure
+    // TODO: error ?
   }
+
+  // deactivate indicators
+  indicator::set_color(utils::ColorSpace::ORANGE);
 
   // deactivate strip power
   outputPower::write_voltage(0); // power down
@@ -655,9 +657,6 @@ void handle_shutdown_state()
   // save the current config to a file
   // (takes some time so call it when the lamp appear to be shutdown already)
   write_parameters();
-
-  // deactivate indicators
-  indicator::set_color(utils::ColorSpace::BLACK);
 
   // power the system off
   true_power_off();
