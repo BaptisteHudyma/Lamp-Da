@@ -6,11 +6,13 @@
 #include "src/system/physical/battery.h"
 
 #include "src/system/platform/gpio.h"
+#include "src/system/platform/threads.h"
 
 #include "PDlib/power_delivery.h"
 #include "balancer.h"
 #include "charger.h"
 #include "power_gates.h"
+#include <cstdint>
 
 namespace power {
 
@@ -25,6 +27,7 @@ static_assert(clearPowerRailMinDelay_ms < clearPowerRailFailureDelay_ms,
 static uint16_t _outputVoltage_mV = 0;
 static uint16_t _outputCurrent_mA = 0;
 static bool _isChargeEnabled = false;
+static std::string _errorStr = "";
 
 // Define the state for the main prog state machine
 typedef enum
@@ -85,7 +88,7 @@ uint32_t get_power_rail_voltage()
   else
   {
     // temp value, will lock the gates until measures are good
-    return 5000;
+    return UINT32_MAX;
   }
 }
 
@@ -116,6 +119,8 @@ void handle_clear_power_rails()
   // disable charge & balancing if needed
   charger::set_enable_charge(false);
   balancer::enable_balancing(false);
+  // disable eventual OTG
+  powerDelivery::allow_otg(false);
 
   // disable OTG if needed
   set_otg_parameters(0, 0);
@@ -136,6 +141,7 @@ void handle_clear_power_rails()
     // timeout after which we go to error ?
     if (time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailFailureDelay_ms)
     {
+      _errorStr = "CLEAR_POWER_RAILS: discharge VBUS failed";
       __private::powerMachine.set_state(PowerStates::ERROR);
     }
   }
@@ -143,11 +149,13 @@ void handle_clear_power_rails()
 
 void handle_charging_mode()
 {
+  // allow OTG in charge mode only
+  powerDelivery::allow_otg(true);
   // open vbus
   powergates::enable_vbus_gate();
 
   // OTG requested, switch to OTG mode
-  if (powerDelivery::get_otg_parameters().is_otg_requested() and battery::is_battery_usable_as_power_source())
+  if (powerDelivery::is_switching_to_otg() and battery::is_battery_usable_as_power_source())
   {
     // disable balancing
     balancer::enable_balancing(false);
@@ -188,22 +196,17 @@ void handle_output_voltage_mode()
 void handle_otg_mode()
 {
   const auto requested = powerDelivery::get_otg_parameters();
+  // we do not have the parameters yet
+  if (not requested.is_otg_requested())
+  {
+    return;
+  }
 
   charger::set_enable_charge(false);
 
   // ramp up output voltage
   // then unlock the vbus gate
   set_otg_parameters(requested.requestedVoltage_mV, requested.requestedCurrent_mA);
-
-  if (time_ms() - __private::powerMachine.get_state_raised_time() < 100)
-  {
-    // prepare fast role swap
-    powergates::disable_gates();
-    __private::fastRoleSwap.set_high(true);
-
-    // for now, do not disable the gate
-    return;
-  }
 
   // allow reverse current flow
   __private::vbusDirection.set_high(true);
@@ -281,6 +284,7 @@ void state_machine_behavior()
       break;
     default:
       {
+        _errorStr = "default case not handled";
         powerMachine.set_state(PowerStates::ERROR);
       }
       break;
@@ -330,14 +334,28 @@ bool go_to_otg_mode()
   return false;
 }
 
+bool go_to_idle()
+{
+  if (__private::can_switch_states())
+  {
+    __private::switch_state(PowerStates::IDLE);
+    return true;
+  }
+
+  return false;
+}
+
+bool is_state_shutdown_effected() { return _isShutdownCompleted; }
+
 bool go_to_shutdown()
 {
   // no need to check if we can switch case in this case
   __private::powerMachine.set_state(PowerStates::SHUTDOWN);
-  return true;
-}
 
-bool is_state_shutdown_effected() { return _isShutdownCompleted; }
+  handle_shutdown();
+
+  return is_state_shutdown_effected();
+}
 
 bool set_output_voltage_mv(const uint16_t outputVoltage_mV)
 {
@@ -359,10 +377,12 @@ bool enable_charge(const bool enable)
 }
 
 std::string get_state() { return std::string(PowerStatesStr[__private::powerMachine.get_state()]); }
+std::string get_error_string() { return _errorStr; }
 
 bool is_in_output_mode() { return __private::powerMachine.get_state() == PowerStates::OUTPUT_VOLTAGE_MODE; }
 bool is_in_otg_mode() { return __private::powerMachine.get_state() == PowerStates::OTG_MODE; }
 
+static bool isSetup = false;
 void init()
 {
   powergates::init();
@@ -377,15 +397,32 @@ void init()
   }
 
   // charging component, setup first
-  charger::setup();
-
-  // at the very last, power delivery
-  const bool success = powerDelivery::setup();
-  if (!success)
+  const bool chargerSuccess = charger::setup();
+  if (!chargerSuccess)
   {
     __private::switch_state(PowerStates::ERROR);
     return;
   }
+
+  // at the very last, power delivery
+  const bool pdSuccess = powerDelivery::setup();
+  if (!pdSuccess)
+  {
+    __private::switch_state(PowerStates::ERROR);
+    return;
+  }
+  isSetup = true;
+}
+
+void start_threads()
+{
+  if (!isSetup)
+    return;
+
+  //   use the charging thread !
+  start_thread(loop, power_taskName, 0, 1024);
+
+  powerDelivery::start_threads();
 }
 
 void loop()
@@ -396,7 +433,7 @@ void loop()
   // run power module state machine
   __private::state_machine_behavior();
 
-  // run pd negociation loop
+  // run the power delivery update loop
   powerDelivery::loop();
 
   // run the charger loop (all the time)
@@ -404,6 +441,8 @@ void loop()
 
   // run the balancer loop (all the time)
   balancer::loop();
+
+  delay_ms(1);
 }
 
 } // namespace power

@@ -7,6 +7,7 @@ namespace power {
 
 // call before all
 void init();
+void start_threads();
 
 // call often
 void loop();
@@ -15,10 +16,8 @@ void loop();
 bool go_to_output_mode();
 bool go_to_charger_mode();
 bool go_to_otg_mode();
+bool go_to_idle();
 bool go_to_shutdown();
-
-// return true when the shutdown state if finished
-bool is_state_shutdown_effected();
 
 // control special commands for every states
 // output mode
@@ -29,6 +28,7 @@ bool set_output_max_current_mA(const uint16_t);
 bool enable_charge(const bool);
 
 std::string get_state();
+std::string get_error_string();
 
 bool is_output_mode_ready();
 

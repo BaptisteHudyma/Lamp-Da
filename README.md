@@ -213,16 +213,7 @@ If you want simulate a view of an "indexable mode" animation and have the
 ```sh
 cd LampColorControler
 make simulator
-./_build/simulator/*-simulator
-```
-
-If you want to work with "indexable mode" simulator, add your custom `$NAME`
-simulation in `$(SRC_DIR)/simulator/src/$NAME-simulator.cpp` then build with:
-
-```sh
-cd LampColorControler
-make clean-simulator $NAME-simulator
-./_build/simulator/$NAME-simulator
+./_build/simulator/indexable-simulator
 ```
 
 Once you're finished with your work on the project:

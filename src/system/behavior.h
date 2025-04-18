@@ -53,9 +53,6 @@ extern void set_woke_up_from_vbus(const bool wokeUp);
 // main loop of the system
 extern void loop();
 
-// return true if the program is in the process of shuting down
-extern bool is_shuting_down();
-
 std::string get_state();
 
 } // namespace behavior

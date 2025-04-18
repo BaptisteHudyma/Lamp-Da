@@ -9,6 +9,16 @@ void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout) {}
 int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
 {
   // error status
+  switch (i2cIndex)
+  {
+    case pdNegociationI2cAddress:
+    case chargeI2cAddress:
+    case imuI2cAddress:
+    case batteryBalancerI2cAddress:
+      {
+        return 0;
+      }
+  }
   return 1;
 }
 
@@ -25,6 +35,10 @@ int i2c_writeData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uin
         break;
       }
     case imuI2cAddress:
+      {
+        break;
+      }
+    case batteryBalancerI2cAddress:
       {
         break;
       }
@@ -48,6 +62,10 @@ int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint
       {
         break;
       }
+    case batteryBalancerI2cAddress:
+      {
+        break;
+      }
   }
   return 1;
 }
@@ -66,6 +84,10 @@ int i2c_xfer(
         break;
       }
     case imuI2cAddress:
+      {
+        break;
+      }
+    case batteryBalancerI2cAddress:
       {
         break;
       }

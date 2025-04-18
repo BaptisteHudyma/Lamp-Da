@@ -136,12 +136,12 @@ uint16_t get_battery_minimum_cell_level()
     {
       const auto cellVoltage = balancerStatus.batteryVoltages_mV[i];
       // TODO: check voltage validity
-      if (cellVoltage < minCellVoltage)
+      if (cellVoltage >= minSingularBatteryVoltage_mV and cellVoltage < minCellVoltage)
         minCellVoltage = cellVoltage;
     }
   }
 
-  // no min cell voltage, maybe balancer is disconected
+  // no min cell voltage, maybe balancer is disconnected
   if (minCellVoltage == maxSingularBatteryVoltage_mV)
   {
     return get_battery_level();

@@ -2,12 +2,8 @@
 
 #include "simulator/include/hardware_influencer.h"
 #include <cstdint>
-#include <vector>
 
 #define PLATFORM_REGISTER_CPP
-
-typedef void (*taskfunc_t)(void);
-std::vector<taskfunc_t> threadPool;
 
 namespace mock_registers {
 bool isDeepSleep = false;
@@ -15,24 +11,6 @@ float cpuTemperature;
 uint32_t addedAlgoDelay;
 
 bool shouldStopThreads = false;
-
-void single_run_thread()
-{
-  for (auto& fun: threadPool)
-  {
-    fun();
-  }
-}
-
-void run_threads()
-{
-// TODO: missing mocks for charger & pd negociator
-#if 0
-  // run until deep sleep
-  while (not shouldStopThreads)
-    single_run_thread();
-#endif
-}
 
 } // namespace mock_registers
 
@@ -59,9 +37,6 @@ bool is_started_from_reset() { return false; }
 bool is_started_from_watchdog() { return false; }
 // started by user interrupt
 bool is_started_from_interrupt() { return true; }
-
-void start_thread(taskfunc_t taskFunction) { threadPool.emplace_back(taskFunction); }
-void yield_this_thread() { mock_registers::single_run_thread(); }
 
 float read_CPU_temperature_degreesC() { return mock_registers::cpuTemperature; }
 

@@ -24,24 +24,15 @@
 #include "src/system/platform/i2c.h"
 #include "src/system/platform/time.h"
 #include "src/system/platform/registers.h"
+#include "src/system/platform/threads.h"
 
 namespace global {
 
 // timestamp of the system wake up
 static uint32_t turnOnTime = 0;
 
-void charging_thread()
-{
-  if (behavior::is_shuting_down())
-    return;
-  power::loop();
-  delay_ms(2);
-}
-
 void secondary_thread()
 {
-  if (behavior::is_shuting_down())
-    return;
   if (not behavior::is_user_code_running())
     return;
 
@@ -107,8 +98,8 @@ void main_setup()
   {
     i2c_setup(i, 400000, 100);
   }
-  // stability delay (let components start)
-  delay_ms(30);
+  // stability/turn on delay
+  delay_ms(10);
 
   // first step !
   setup_adc(ADC_RES_EXP);
@@ -169,6 +160,7 @@ void main_setup()
       indicator::set_color(utils::ColorSpace::BLACK);
       delay_ms(300);
     }
+    indicator::set_color(utils::ColorSpace::BLACK);
   }
 
   const bool wasPoweredyByUserInterrupt = is_started_from_interrupt();
@@ -178,13 +170,14 @@ void main_setup()
   // let the user start in unpowered mode
   user::power_off_sequence();
 
-  // use the charging thread !
-  start_thread(charging_thread);
+  // start all power threads
+  power::start_threads();
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread())
   {
-    start_thread(secondary_thread);
+    // give a high stack but low priority to user
+    start_thread(secondary_thread, user_taskName, 0, 1024);
   }
 }
 
@@ -207,6 +200,10 @@ void main_loop(const uint32_t addedDelay)
   // loop the behavior
   behavior::loop();
 
+  // automatically deactivate sensors if they are not used for a time
+  microphone::disable_after_non_use();
+  imu::disable_after_non_use();
+
   // add the required delay
   if (addedDelay > 0)
     delay_ms(addedDelay);
@@ -219,10 +216,6 @@ void main_loop(const uint32_t addedDelay)
     delay_ms(MAIN_LOOP_UPDATE_PERIOD_MS - loopDuration);
   }
   check_loop_runtime(loopDuration);
-
-  // automatically deactivate sensors if they are not used for a time
-  microphone::disable_after_non_use();
-  imu::disable_after_non_use();
 }
 
 } // namespace global

@@ -8,13 +8,19 @@
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
+#include "src/system/platform/threads.h"
+
+#include "../drivers/charging_ic.h"
+#include "../power_gates.h"
+
+// remove this to remove all PD algorithms
+#define USE_PD_ALGO_LOOP
 
 // we only have one device, so always index 0
 static constexpr int devicePort = 0;
 // USB-C Specific - TCPM start 1
-const struct tcpc_config_t tcpc_config[CONFIG_USB_PD_PORT_COUNT] = {
-        {0, fusb302_I2C_SLAVE_ADDR, &fusb302_tcpm_drv, tcpc_alert_polarity::TCPC_ALERT_ACTIVE_HIGH},
-};
+const struct tcpc_config_t tcpc_config = {
+        devicePort, fusb302_I2C_SLAVE_ADDR, &fusb302_tcpm_drv, tcpc_alert_polarity::TCPC_ALERT_ACTIVE_HIGH};
 // USB-C Specific - TCPM end 1
 
 static bool canUseSourcePower_s = false;
@@ -34,7 +40,7 @@ int get_vbus_voltage()
   if (time == 0 or time_ms() - time > 100)
   {
     time = time_ms();
-    vbusVoltage = tcpm_get_vbus_voltage(devicePort);
+    vbusVoltage = tcpm_get_vbus_voltage();
   }
   return vbusVoltage;
 }
@@ -45,12 +51,10 @@ bool can_use_PD_full_power()
   // voltage on VBUS is greater than (negociated voltage minus a threshold)
   return get_available_pd_voltage_mV() > 0 and
          // the algo confirms that we are a sink
-         is_sink_ready(devicePort) and
+         is_sink_ready() and
          // the voltage/current rise should be over
          get_vbus_voltage() >= get_available_pd_voltage_mV() - 1000;
 }
-
-bool is_power_cable_detected() { return is_power_cable_connected(); }
 
 uint32_t lastPDdetected = 0;
 bool is_usb_pd()
@@ -63,6 +67,14 @@ bool is_usb_pd()
   return isPd;
 }
 
+bool is_cable_detected()
+{
+  enum tcpc_cc_voltage_status cc1;
+  enum tcpc_cc_voltage_status cc2;
+  tcpm_get_cc(&cc1, &cc2);
+  return cc1 != TYPEC_CC_VOLT_OPEN or cc2 != TYPEC_CC_VOLT_OPEN;
+}
+
 // check if the source is simple USB, with a stabilize delay
 bool is_standard_port()
 {
@@ -73,8 +85,11 @@ bool is_standard_port()
          time_ms() - lastPDdetected > 1000;
 }
 
-bool interruptSet = false;
-void ic_interrupt() { interruptSet = true; }
+void ic_interrupt()
+{
+  // wake up interrupt thread (cannot run code in the interrupt callback)
+  resume_thread(pdInterruptHandle_taskName);
+}
 
 bool is_vbus_powered()
 {
@@ -85,7 +100,6 @@ bool is_vbus_powered()
 
 struct UsbPDData
 {
-  bool isPowerCableDetected;
   bool isVbusPowered;
   bool isPowerSourceDetected;
   bool isUsbPd;
@@ -101,13 +115,6 @@ struct UsbPDData
 
   void update()
   {
-    const bool newIsCableDetected = is_power_cable_detected();
-    if (newIsCableDetected != isPowerCableDetected)
-    {
-      hasChanged = true;
-      isPowerCableDetected = newIsCableDetected;
-    }
-
     const bool newisVbusPowered = is_vbus_powered();
     if (newisVbusPowered != isVbusPowered)
     {
@@ -150,7 +157,7 @@ struct UsbPDData
       maxInputVoltage = newmaxInputVoltage;
     }
 
-    const auto& newStatus = std::string(get_state_cstr(devicePort));
+    const auto& newStatus = std::string(get_state_cstr());
     if (newStatus != pdAlgoStatus)
     {
       hasChanged = true;
@@ -162,8 +169,7 @@ struct UsbPDData
   {
     if (hasChanged)
     {
-      lampda_print("PD algo: %d%d%d%d: %fV | %s",
-                   isPowerCableDetected,
+      lampda_print("PD algo: %d%d%d: %fV | %s",
                    isVbusPowered,
                    isPowerSourceDetected,
                    isUsbPd,
@@ -180,7 +186,86 @@ UsbPDData data;
  *
  */
 
-bool isSetup = false;
+void interrupt_handle()
+{
+#ifdef USE_PD_ALGO_LOOP
+  // only waken up on thread update
+  tcpc_alert();
+#endif
+  // this thread only runs when interrupt is set
+  suspend_this_thread();
+}
+
+void pd_run()
+{
+  // PD loop limits the run of this threads by waiting for events
+  // DO NOT REMOVE THE PD STATE MACHINE
+  // or -> add a delay to this loop instead
+#ifdef USE_PD_ALGO_LOOP
+  pd_loop();
+#else
+  delay_ms(10);
+#endif
+
+  // partner asked us to stop to pull current
+  if (should_stop_vbus_charge())
+  {
+    powergates::disable_gates();
+    return;
+  }
+
+  static bool isFastRoleSwap = false;
+  // ignore source activity if we are otg (prevent spurious reset)
+  if (is_switching_to_otg())
+  {
+    if (not isFastRoleSwap)
+    {
+      isFastRoleSwap = true;
+
+      // prepare fast role swap
+      powergates::disable_gates();
+
+      // force otg on, and prep vbus gate, all in this loop iteration (skip all safety steps !!!)
+      charger::drivers::set_OTG_targets(5000, 1000);
+      charger::drivers::enable_OTG();
+
+      DigitalPin(DigitalPin::GPIO::Output_VbusFastRoleSwap).set_high(true);
+      DigitalPin(DigitalPin::GPIO::Output_DischargeVbus).set_high(true);
+
+      // wait until OTG drops to acceptable level
+      while (charger::drivers::get_measurments().vbus_mV > 5500)
+      {
+        delay_us(50);
+      }
+
+      // wait for vbus voltage to drop to acceptable level
+      while (tcpm_get_vbus_voltage() > 5500)
+      {
+        delay_us(50);
+      }
+
+      // enable gate direction
+      DigitalPin(DigitalPin::GPIO::Output_VbusDirection).set_high(true);
+      powergates::enable_vbus_gate_DIRECT();
+    }
+    // after the activation turn, disable the flag
+    else
+      isPowerSourceDetected_s = false;
+    return;
+  }
+  else if (isFastRoleSwap)
+  {
+    charger::drivers::disable_OTG();
+
+    // enable gate direction
+    DigitalPin(DigitalPin::GPIO::Output_VbusDirection).set_high(false);
+    powergates::disable_gates();
+  }
+  isFastRoleSwap = false;
+}
+
+static bool isSetup = false;
+
 bool setup()
 {
   // 0 is success
@@ -188,38 +273,41 @@ bool setup()
   {
     return false;
   }
-  bool initSucceeded = (tcpm_init(devicePort) == 0);
-  pd_init(devicePort);
+
+  pd_init();
+  delay_ms(5);
+  pd_startup();
 
   DigitalPin chargerPin(DigitalPin::GPIO::Signal_PowerDelivery);
   chargerPin.attach_callback(ic_interrupt, DigitalPin::Interrupt::kChange);
 
-  isSetup = initSucceeded;
-  return initSucceeded;
+  isSetup = true;
+  return true;
 }
 
-int reset = 0;
+void start_threads()
+{
+  if (!isSetup)
+    return;
+
+  // start task scheduler, in suspended state
+  start_suspended_thread(task_scheduler, taskScheduler_taskName, 0, 255);
+  // start interrupt handle, in suspended state
+  start_suspended_thread(interrupt_handle, pdInterruptHandle_taskName, 0, 255);
+  // start pd handle loop
+  start_thread(pd_run, pd_taskName, 0, 1024);
+}
+
 void loop()
 {
-  // no setup, skip loop
-  if (!isSetup)
-  {
-    return;
-  }
-
-  //  handle alerts
-  if (interruptSet)
-  {
-    interruptSet = false;
-    tcpc_alert(devicePort);
-  }
-  pd_run_state_machine(devicePort, reset);
-  reset = 0;
-
   data.update();
   data.serial_show();
 
-  // standard code
+  // ignore source activity if we are otg (prevent spurious reset)
+  if (is_switching_to_otg())
+  {
+    return;
+  }
 
   static uint32_t lastVbusValid = 0;
 
@@ -242,7 +330,6 @@ void loop()
            time - lastVbusValid > 1000)
   {
     isPowerSourceDetected_s = false;
-    reset = 1;
     reset_cache();
   }
 
@@ -263,10 +350,7 @@ void loop()
   }
 }
 
-void shutdown()
-{
-  // nothing ?
-}
+void shutdown() { pd_turn_off(); }
 
 uint16_t get_max_input_current()
 {
@@ -277,21 +361,6 @@ uint16_t get_max_input_current()
   // power delivery detected
   if (is_usb_pd())
   {
-    /*const auto ma = get_next_pdo_amps();
-    const auto mv = get_next_pdo_voltage();
-    if (ma > 0 && mv > 0)
-    {
-      Serial.print("- ");
-      Serial.print(ma);
-      Serial.print("ma, ");
-      Serial.print(mv);
-      Serial.println("mv");
-    }
-    else
-    {
-      Serial.println("");
-    }*/
-
     if (can_use_PD_full_power())
     {
       // do not use the whole current capabilities, or the source will cut us off
@@ -319,6 +388,23 @@ OTGParameters get_otg_parameters()
   tmp.requestedCurrent_mA = otg.requestedCurrent_mA;
   tmp.requestedVoltage_mV = otg.requestedVoltage_mV;
   return tmp;
+}
+
+void allow_otg(const bool allow) { set_allow_power_sourcing(allow); }
+
+bool is_switching_to_otg() { return is_activating_otg() != 0; }
+
+std::vector<PDOTypes> get_available_pd()
+{
+  std::vector<PDOTypes> pdos;
+  for (uint8_t i = 0; i < get_pd_source_cnt(); ++i)
+  {
+    PDOTypes t;
+    pd_extract_pdo_power(get_pd_source(i), &t.maxCurrent_mA, &t.voltage_mv);
+    pdos.emplace_back(t);
+  }
+
+  return pdos;
 }
 
 } // namespace powerDelivery

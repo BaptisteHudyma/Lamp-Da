@@ -13,35 +13,8 @@ extern "C" {
 #endif
 
 #include "../usb_pd.h"
+#include "../config.h"
 #include <stdint.h>
-
-// #define CONFIG_BBRAM
-#define CONFIG_CHARGE_MANAGER
-// #define CONFIG_USBC_BACKWARDS_COMPATIBLE_DFP
-// #define CONFIG_USBC_VCONN_SWAP
-// #define CONFIG_USB_PD_ALT_MODE
-// #define CONFIG_USB_PD_CHROMEOS
-#define CONFIG_USB_PD_DUAL_ROLE
-  // #define CONFIG_USB_PD_GIVE_BACK
-  // #define CONFIG_USB_PD_SIMPLE_DFP
-  // #define CONFIG_USB_PD_TCPM_TCPCI
-
-#define CONFIG_USB_PD_VBUS_DETECT_TCPC
-
-/* Default pull-up value on the USB-C ports when they are used as source. */
-#define CONFIG_USB_PD_PULLUP TYPEC_RP_USB
-
-// remove a warning
-#ifdef PD_ROLE_DEFAULT
-#undef PD_ROLE_DEFAULT
-#endif
-
-/* Override PD_ROLE_DEFAULT in usb_pd.h */
-#define PD_ROLE_DEFAULT(port) (PD_ROLE_SINK)
-
-/* Don't automatically change roles */
-#undef CONFIG_USB_PD_INITIAL_DRP_STATE
-#define CONFIG_USB_PD_INITIAL_DRP_STATE PD_DRP_FREEZE
 
 /* board specific type-C power constants */
 /*
@@ -52,26 +25,20 @@ extern "C" {
 #define PD_POWER_SUPPLY_TURN_OFF_DELAY 20000 /* us */
 
 /* Define typical operating power and max power */
-// Most Arduinos seem to be ok with 12 V, but have problems starting around 15 V.
 #define PD_OPERATING_POWER_MW (2250ull)
-#define PD_MAX_CURRENT_MA     (5000ull)
-#define PD_MAX_VOLTAGE_MV     (20000ull)
-#define PD_MAX_POWER_MW       (PD_MAX_VOLTAGE_MV * PD_MAX_CURRENT_MA / 1000)
+
+#define PD_MIN_CURRENT_MA (100ull)
+#define PD_MIN_VOLTAGE_MV (5000ull)
+#define PD_MIN_POWER_MW   (PD_MIN_VOLTAGE_MV * PD_MIN_CURRENT_MA / 1000)
+
+#define PD_MAX_CURRENT_MA (5000ull)
+#define PD_MAX_VOLTAGE_MV (20000ull)
+#define PD_MAX_POWER_MW   (PD_MAX_VOLTAGE_MV * PD_MAX_CURRENT_MA / 1000)
 
 #define PDO_FIXED_FLAGS (PDO_FIXED_DUAL_ROLE | PDO_FIXED_DATA_SWAP | PDO_FIXED_COMM_CAP)
 
 #define usleep(us) (delay_us(us))
 #define msleep(ms) (delay_ms(ms))
-
-  typedef union
-  {
-    uint64_t val;
-    struct
-    {
-      uint32_t lo;
-      uint32_t hi;
-    } le /* little endian words */;
-  } timestamp_t;
 
   struct SourcePowerParameters
   {
@@ -84,6 +51,11 @@ extern "C" {
    */
   struct SourcePowerParameters get_OTG_requested_parameters();
 
+  void pd_startup();
+  void pd_turn_off();
+
+  void pd_loop();
+
   /**
    * \brief allow or forbid power sourcing from this device
    * \param[in] allowPowerSourcing If 0, this device will only charge. Else, if negociated via usb, this device will
@@ -91,26 +63,27 @@ extern "C" {
    */
   void set_allow_power_sourcing(const int allowPowerSourcing);
 
-  uint32_t pd_task_set_event(uint32_t event, int wait_for_reply);
-  void pd_power_supply_reset(int port);
+  /**
+   * \brief return 1 if the system is preparing a swap
+   */
+  int is_activating_otg();
+
+  // should stop all vbus current loading
+  int should_stop_vbus_charge();
+
+  void pd_power_supply_reset();
 
   extern uint8_t get_pd_source_cnt();
+  extern uint32_t get_pd_source(const uint8_t index);
+
   extern uint32_t get_available_pd_current_mA();
   extern uint32_t get_available_pd_voltage_mV();
 
   // reset the cached values, call on power supply unplugged
   extern void reset_cache();
 
-  uint32_t get_next_pdo_amps();
-  uint32_t get_next_pdo_voltage();
-
-  // is connected to a cable providing power
-  int is_power_cable_connected();
   // The associated cable is pd capable
   int is_pd_conector();
-
-  // Get the current timestamp from the system timer.
-  timestamp_t get_time(void);
 
 /* Standard macros / definitions */
 #ifndef MAX

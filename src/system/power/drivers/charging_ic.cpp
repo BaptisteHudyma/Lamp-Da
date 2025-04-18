@@ -154,17 +154,18 @@ void control_OTG()
       lastOTGUsedTime_ms = time_ms();
 
       DigitalPin(DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
-      delay_ms(1);
 
       chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
       chargerIcRegisters.chargeOption3.set_OTG_RANGE_LOW(0);
       chargerIcRegisters.chargeOption3.set_EN_OTG(1);
       chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
 
-      // alert will be lowered on time
-      alerts::manager.raise(alerts::Type::OTG_FAILED);
-
-      delay_ms(10);
+      chargerIc.readRegEx(chargerIcRegisters.chargerStatus);
+      if (not chargerIcRegisters.chargerStatus.IN_OTG())
+      {
+        // alert will be lowered on time
+        alerts::manager.raise(alerts::Type::OTG_FAILED);
+      }
     }
     else
     {
@@ -633,6 +634,8 @@ void enable_OTG()
     isInOtg_s = true;
     // will deactivate the charge (because OTG)
     control_charge();
+    // start otg directly
+    control_OTG();
   }
 }
 

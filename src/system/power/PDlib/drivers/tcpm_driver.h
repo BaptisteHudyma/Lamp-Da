@@ -20,7 +20,8 @@ extern "C" {
 // USB-C Stuff
 #include "../tcpm/tcpm.h"
 #include "FUSB302.h"
-#define CONFIG_USB_PD_PORT_COUNT 1
+
+#include "../config.h"
 
 #ifdef __cplusplus
 }

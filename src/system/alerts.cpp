@@ -41,7 +41,7 @@ inline const char* AlertsToText(const Type type)
     case MAIN_LOOP_FREEZE:
       return "MAIN_LOOP_FREEZE";
     case BATTERY_READINGS_INCOHERENT:
-      return "BATTERY_READING_INCOHERENT";
+      return "BATTERY_READINGS_INCOHERENT";
     case BATTERY_CRITICAL:
       return "BATTERY_CRITICAL";
     case BATTERY_LOW:
@@ -423,15 +423,15 @@ void handle_all(const bool shouldIgnoreAlerts)
 
     // display battery level
     const auto& chargerStatus = charger::get_state();
-    if (chargerStatus.is_charging())
+    if (!power::is_in_output_mode() and chargerStatus.isInOtg)
     {
-      if (!power::is_in_output_mode() and chargerStatus.isInOtg)
-      {
-        indicator::breeze(500, 500, buttonColor);
-      }
+      indicator::breeze(500, 500, buttonColor);
+    }
+    else if (chargerStatus.is_charging())
+    {
       // power detected with no charge or slow charging raises a special animation
-      else if (chargerStatus.status == charger::Charger_t::ChargerStatus_t::POWER_DETECTED or
-               chargerStatus.status == charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
+      if (chargerStatus.status == charger::Charger_t::ChargerStatus_t::POWER_DETECTED or
+          chargerStatus.status == charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
       {
         // fast blinking
         indicator::blink(500, 500, buttonColor);
@@ -451,7 +451,16 @@ void handle_all(const bool shouldIgnoreAlerts)
     }
     else
     {
-      // what are we doing here ? error
+      // we can handup here when starting/shutting down the system
+
+      // red to green
+      const auto buttonColor =
+              utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
+                                                         utils::ColorSpace::GREEN.get_rgb().color,
+                                                         battery::get_battery_minimum_cell_level() / 10000.0));
+
+      // no charger operation, no output mode
+      indicator::blink(1000, 1000, buttonColor);
     }
 
     // skip the other alerts

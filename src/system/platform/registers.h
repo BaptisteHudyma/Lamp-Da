@@ -27,11 +27,6 @@ extern bool is_started_from_watchdog();
 // started by user interrupt
 extern bool is_started_from_interrupt();
 
-typedef void (*taskfunc_t)(void);
-extern void start_thread(taskfunc_t taskFunction);
-// make this thread pass the control to other threads
-extern void yield_this_thread();
-
 // make a read of the CPU temp
 extern float read_CPU_temperature_degreesC();
 

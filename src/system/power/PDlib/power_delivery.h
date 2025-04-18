@@ -2,12 +2,14 @@
 #define PD_POWER_DELIVERY_H
 
 #include <cstdint>
+#include <vector>
 namespace powerDelivery {
 
-// call once at program start
+// call once at program start, start all threads
 bool setup();
+void start_threads();
 
-//
+// call often (update status)
 void loop();
 
 // call once at program end
@@ -22,11 +24,36 @@ uint16_t get_max_input_current();
 // return true if this voltage source is from a standard non pd port
 bool is_standard_port();
 
+// return true is a cbale is connected
+// may not be connected to anything
+bool is_cable_detected();
+
 // some power available on VBUS
 bool is_power_available();
 
 // can use this source as power entry
 bool can_use_power();
+
+/**
+ * \brief Call to allow or forbid OTG mode
+ */
+void allow_otg(const bool);
+
+/**
+ * \brief return true is the system is prepaping to switch to OTG mode
+ */
+bool is_switching_to_otg();
+
+struct PDOTypes
+{
+  uint32_t voltage_mv;
+  uint32_t maxCurrent_mA;
+};
+
+/**
+ * \brief If the charger is PD compatible, return it's capabilities
+ */
+std::vector<PDOTypes> get_available_pd();
 
 // return the requested OTG parameters
 struct OTGParameters

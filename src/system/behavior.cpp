@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "power/charger.h"
 #include "power/power_handler.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
@@ -32,6 +33,7 @@
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/registers.h"
+#include "src/system/platform/threads.h"
 
 #include "src/user/functions.h"
 
@@ -89,10 +91,9 @@ static bool isTargetPoweredOn_s = false;
 bool is_system_should_be_powered() { return isTargetPoweredOn_s; }
 void set_power_on() { isTargetPoweredOn_s = true; }
 void set_power_off() { isTargetPoweredOn_s = false; }
-static bool isShutingDown_s = false;
 
 // return true if vbus is high
-bool is_charger_powered() { return charger::is_vbus_powered(); }
+bool is_charger_powered() { return charger::is_vbus_powered() || is_voltage_detected_on_vbus(); }
 
 // hold the last time startup_sequence has been called
 uint32_t lastStartupSequence = 0;
@@ -154,7 +155,8 @@ void true_power_off()
   DigitalPin(DigitalPin::GPIO::Output_EnableVbusGate).set_high(false);
   DigitalPin(DigitalPin::GPIO::Output_EnableOutputGate).set_high(false);
 
-  // wait until vbus is off (TODO: remove in newer versions of the hardware)
+  // wait until vbus is off
+  // without this check, the lamp can "rebound" back to on state
   uint8_t cnt = 0;
   while (cnt < 200 and charger::is_vbus_signal_detected())
   {
@@ -162,11 +164,16 @@ void true_power_off()
     cnt++;
   }
 
+  // deactivate indicators
+  indicator::set_color(utils::ColorSpace::BLACK);
+  delay_ms(1);
+
   // power down nrf52.
   // on wake up, it'll start back from the setup phase
   go_to_sleep(ButtonPin.pin());
   /*
    * Nothing after this, system is off !
+   * TODO: add an error status if we reach here
    */
 }
 
@@ -466,15 +473,16 @@ void handle_charger_operation_state()
   const bool vbusDebounced = charger::can_use_vbus_power() or (time_ms() - preChargeCalled) > 5000;
   if (vbusDebounced)
   {
-    // no power, shutdown everything
-    if (power::is_in_otg_mode())
+    // otg mode
+    if (charger::get_state().isInOtg)
     {
       // do nothing (for now !)
       // TODO, stop if battery gets low
     }
+    // no power, shutdown everything
     else if (not is_charger_powered())
     {
-      // forbid charging
+      // forbbid charging
       power::enable_charge(false);
       yield_this_thread();
 
@@ -490,6 +498,8 @@ void handle_charger_operation_state()
   }
   // else: ignore all
 }
+
+static uint32_t lastOutputLightValidTime = 0;
 
 void handle_pre_output_light_state()
 {
@@ -530,14 +540,17 @@ void handle_pre_output_light_state()
   // let the user power on the system
   user::power_on_sequence();
 
+  lastOutputLightValidTime = time_ms();
+
   // this function is executed OUNCE
   mainMachine.set_state(BehaviorStates::OUTPUT_LIGHT);
 }
 
 void handle_output_light_state()
 {
+// TODO remove when the mock threads will be running
+#ifndef LMBD_IN_SIMULATION
   static bool waitingForPowerGate_messageDisplayed = true;
-  static bool waitingForOutputReadyGate = true;
 
   // wait for power gates (and display message when ready)
   if (not powergates::is_power_gate_enabled() or not power::is_output_mode_ready())
@@ -547,6 +560,12 @@ void handle_output_light_state()
       lampda_print("Behavior>Output mode: waiting for power gate");
       waitingForPowerGate_messageDisplayed = false;
     }
+
+    if (time_ms() - lastOutputLightValidTime > 1000)
+    {
+      lampda_print("Behavior>Output mode: power gate took too long to switch");
+      mainMachine.set_state(BehaviorStates::ERROR);
+    }
     return;
   }
   else if (not waitingForPowerGate_messageDisplayed)
@@ -554,6 +573,9 @@ void handle_output_light_state()
     lampda_print("Behavior>Output mode: power gate ready");
     waitingForPowerGate_messageDisplayed = true;
   }
+#endif
+
+  lastOutputLightValidTime = time_ms();
 
   // should go to sleep
   if (not is_system_should_be_powered())
@@ -605,33 +627,21 @@ void handle_post_output_light_state()
 
 void handle_shutdown_state()
 {
+  // block other threads
+  suspend_all_threads();
+
   // detach the button interrupts
   DigitalPin::detach_all(); // detach the interrupts
-  delay_ms(1);
-
-  // block other threads
-  isShutingDown_s = true;
-  delay_ms(5);
+  delay_ms(10);
 
   // shutdown all external power
-  power::go_to_shutdown();
-
-  // let other thread do stuff for a while
-  for (uint i = 0; i < 10; i++)
+  if (not power::go_to_shutdown())
   {
-    yield_this_thread();
-    // hack
-    power::loop();
-
-    if (power::is_state_shutdown_effected())
-      break;
-    delay_ms(1);
+    // TODO: error ?
   }
 
-  if (not power::is_state_shutdown_effected())
-  {
-    // error: shuting down without the whole procedure
-  }
+  // deactivate indicators
+  indicator::set_color(utils::ColorSpace::ORANGE);
 
   // deactivate strip power
   outputPower::write_voltage(0); // power down
@@ -647,9 +657,6 @@ void handle_shutdown_state()
   // save the current config to a file
   // (takes some time so call it when the lamp appear to be shutdown already)
   write_parameters();
-
-  // deactivate indicators
-  indicator::set_color(utils::ColorSpace::BLACK);
 
   // power the system off
   true_power_off();
@@ -723,8 +730,6 @@ void loop()
     handle_shutdown_state();
   }
 }
-
-bool is_shuting_down() { return isShutingDown_s; }
 
 std::string get_state() { return std::string(BehaviorStatesStr[mainMachine.get_state()]); }
 

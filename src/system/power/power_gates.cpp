@@ -152,6 +152,12 @@ void enable_vbus_gate()
   switch_delayed_vbus_gate(true);
 }
 
+void enable_vbus_gate_DIRECT()
+{
+  disable_power_gate();
+  enable_gate(true);
+}
+
 bool is_vbus_gate_enabled() { return isVbusGateEnabled and is_vbus_gate_switched(); }
 
 void disable_gates()
