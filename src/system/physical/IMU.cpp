@@ -18,6 +18,13 @@ LSM6DS3 IMU(I2C_MODE, imuI2cAddress); // I2C device address
 static uint32_t lastIMUFunctionCall = 0;
 bool isStarted = false;
 
+// when set to true, the imu will not autostop
+bool lockAutoStop = false;
+
+// interrupt 1
+DigitalPin interrupt1Pin(DigitalPin::GPIO::Signal_ImuInterrupt1);
+bool isInterruptEnabled = false;
+
 void enable()
 {
   lastIMUFunctionCall = time_ms();
@@ -28,9 +35,10 @@ void enable()
 
   delay_ms(5); // voltage stabilization
 
-  if (IMU.begin() != 0)
+  if (IMU.begin() != IMU_SUCCESS)
   {
     // TODO: something ?
+    lampda_print("fail to start");
   }
   else
     isStarted = true;
@@ -43,6 +51,9 @@ void disable()
     return;
   }
 
+  // remove callbacks from interrupts
+  interrupt1Pin.detach_callbacks();
+
   // TODO: enter deep sleep
 
   isStarted = false;
@@ -50,32 +61,65 @@ void disable()
 
 void disable_after_non_use()
 {
-  if (isStarted and (time_ms() - lastIMUFunctionCall > 1000.0))
+  if (!isStarted)
+    return;
+  if (lockAutoStop)
+    return;
+
+  // started, allow to auto stop, and 1 second without events
+  if (time_ms() - lastIMUFunctionCall > 1000.0)
   {
     // disable microphone if last reading is old
     disable();
+    lampda_print("imu stop: non use");
   }
 }
 
-struct vec3d
-{
-  float x;
-  float y;
-  float z;
-};
+void interrupt1_callback() { isInterruptEnabled = true; }
 
-struct Accelerometer : public vec3d
+bool enable_interrupt_1(EventType eventType)
 {
-};
-struct Gyroscope : public vec3d
-{
-};
+  enable();
+  if (not isStarted)
+  {
+    return false;
+  }
 
-struct Reading
+  switch (eventType)
+  {
+    case FreeFall:
+      if (not IMU.enable_interrupt1(LSM6DS3::InterruptType::Fall))
+      {
+        lampda_print("enable fail");
+        return false;
+      }
+      break;
+    default:
+      // do not enable interrupt
+      return false;
+  }
+
+  // prevent shutdown when no events
+  lockAutoStop = true;
+  interrupt1Pin.set_pin_mode(DigitalPin::Mode::kInput);
+  interrupt1Pin.detach_callbacks();
+  interrupt1Pin.attach_callback(interrupt1_callback, DigitalPin::Interrupt::kRisingEdge);
+  return true;
+}
+
+void disable_interrupt_1()
 {
-  Accelerometer accel;
-  Gyroscope gyro;
-};
+  IMU.enable_interrupt1(LSM6DS3::InterruptType::None);
+  // allow auto shutdown
+  lockAutoStop = false;
+}
+
+bool is_interrupt1_enabled()
+{
+  const bool temp = isInterruptEnabled;
+  isInterruptEnabled = false;
+  return temp;
+}
 
 Reading get_reading()
 {
@@ -86,11 +130,6 @@ Reading get_reading()
   reads.accel.x = IMU.readFloatAccelX();
   reads.accel.y = IMU.readFloatAccelY();
   reads.accel.z = IMU.readFloatAccelZ();
-
-  // use this to debug the axes
-#if 1
-  lampda_print("%f, %f, %f", reads.accel.x, reads.accel.y, reads.accel.z);
-#endif
 
   reads.gyro.x = IMU.readFloatGyroX();
   reads.gyro.y = IMU.readFloatGyroY();

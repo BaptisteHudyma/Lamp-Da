@@ -26,7 +26,6 @@ techsupport@sparkfun.com.
 #include "LSM6DS3.h"
 
 #include "src/system/platform/i2c.h"
-#include "src/system/platform/time.h"
 #include "src/system/platform/print.h"
 
 #include "src/system/platform/gpio.h"
@@ -57,8 +56,6 @@ LSM6DS3Core::LSM6DS3Core(uint8_t busType, uint8_t inputArg) : I2CAddress(0x6B) {
 status_t LSM6DS3Core::beginCore(void)
 {
   status_t returnError = IMU_SUCCESS;
-
-  delay_ms(10);
 
   // Spin for a few ms
   volatile uint8_t temp = 0;
@@ -218,7 +215,7 @@ LSM6DS3::LSM6DS3(uint8_t busType, uint8_t inputArg) : LSM6DS3Core(busType, input
   settings.accelODROff = 1;
   settings.accelRange = 16;         // Max G force readable.  Can be: 2, 4, 8, 16
   settings.accelSampleRate = 416;   // Hz.  Can be: 13, 26, 52, 104, 208, 416,
-                                    // 833, 1666, 3332, 6664, 13330
+                                    // 833, 1666, 3332, 6664
   settings.accelBandWidth = 100;    // Hz.  Can be: 50, 100, 200, 400;
   settings.accelFifoEnabled = 1;    // Set to include accelerometer in the FIFO
   settings.accelFifoDecimation = 1; // set 1 for on /1
@@ -326,9 +323,6 @@ status_t LSM6DS3::begin()
         break;
       case 6660:
         dataToWrite |= LSM6DS3_ACC_GYRO_ODR_XL_6660Hz;
-        break;
-      case 13330:
-        dataToWrite |= LSM6DS3_ACC_GYRO_ODR_XL_13330Hz;
         break;
     }
   }
@@ -797,13 +791,28 @@ bool LSM6DS3::enable_interrupt1(const InterruptType interr)
                                        sleepDuration << LSM6DS3_ACC_GYRO_SLEEP_DUR_POSITION;
         error += writeRegister(LSM6DS3_ACC_GYRO_WAKE_UP_DUR, wakeUpDurFlags);
 
-        const uint8_t timingThreshold =
-                (6 << LSM6DS3_ACC_GYRO_FREE_FALL_DUR_POSITION) & LSM6DS3_ACC_GYRO_FREE_FALL_DUR_MASK; // 6 samples
-        const uint8_t accelerationThreashold = LSM6DS3_ACC_GYRO_FF_THS_5;
+        const uint8_t timingThreshold = (6 << LSM6DS3_ACC_GYRO_FREE_FALL_DUR_POSITION) &
+                                        LSM6DS3_ACC_GYRO_FREE_FALL_DUR_MASK; // 6 samples for event
+        const uint8_t accelerationThreashold = LSM6DS3_ACC_GYRO_FF_THS_5;    // acceleration threshold for event
         const uint8_t freeFallParams = timingThreshold | accelerationThreashold;
         error += writeRegister(LSM6DS3_ACC_GYRO_FREE_FALL, freeFallParams);
 
-        return error != status_t::IMU_SUCCESS;
+        return error == status_t::IMU_SUCCESS;
+      }
+
+    case InterruptType::BigMotion:
+      {
+        break;
+      }
+
+    case InterruptType::Step:
+      {
+        break;
+      }
+
+    case InterruptType::AngleChange:
+      {
+        break;
       }
 
     case InterruptType::None:
@@ -824,9 +833,9 @@ bool LSM6DS3::enable_interrupt1(const InterruptType interr)
       }
     default:
       {
-        lampda_print("enable_interrupt1: case not handled");
         break;
       }
   }
+  lampda_print("enable_interrupt1: case not handled");
   return false;
 }

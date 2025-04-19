@@ -4,8 +4,6 @@
 #include <cstdint>
 #include <functional>
 
-#include "src/system/utils/colorspace.h"
-
 namespace button {
 
 #define HOLD_BUTTON_MIN_MS 500 // press and hold delay (ms)
