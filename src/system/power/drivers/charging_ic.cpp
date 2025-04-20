@@ -260,23 +260,33 @@ void update_battery()
   // charger is present (consider only charging current)
   battery_s.current_mA = (int16_t)chargingCurrent - (int16_t)measurments_s.batDischargeCurrent_mA;
 
+  const uint16_t batteryMaxVoltage = chargerIcRegisters.maxChargeVoltage.get();
+  const bool isAlmostFullyCharged = battery_s.voltage_mV > batteryMaxVoltage * 0.99;
+
   // output voltage saturated, battery is not here
-  battery_s.isPresent = battery_s.voltage_mV < chargerIcRegisters.maxChargeVoltage.get();
+  battery_s.isPresent = battery_s.voltage_mV <= (batteryMaxVoltage + chargerIcRegisters.aDCVSYSVBAT.resolutionVal0());
 
   // check the charging status
-  if (not isInputSourcePresent or chargingCurrent <= 0)
+  if (not isInputSourcePresent or (not isAlmostFullyCharged and chargingCurrent <= 0))
   {
     chargeStatus_s = ChargeStatus_t::OFF;
   }
-  //
+  // special case: almot fully charged will drop the charge current
+  else if (isAlmostFullyCharged)
+  {
+    chargeStatus_s = ChargeStatus_t::FASTCHARGE;
+  }
+  // charging current gets low
   else if (chargingCurrent <= powerLimits_s.maxChargingCurrent_mA * 0.1)
   {
     chargeStatus_s = ChargeStatus_t::SLOW_CHARGE;
   }
+  // pre charge
   else if (chargerIcRegisters.chargerStatus.IN_PCHRG() != 0)
   {
     chargeStatus_s = ChargeStatus_t::PRECHARGE;
   }
+  // normal charge
   else if (chargerIcRegisters.chargerStatus.IN_FCHRG() != 0)
   {
     chargeStatus_s = ChargeStatus_t::FASTCHARGE;
@@ -421,6 +431,7 @@ void program_input_current_limit()
 bool enable(const uint16_t minSystemVoltage_mV,
             const uint16_t maxBatteryVoltage_mV,
             const uint16_t maxChargingCurrent_mA,
+            const uint16_t maxDichargingCurrent_mA,
             const bool forceReset)
 {
   if (i2c_check_existence(bq25713::i2cObjectIndex, bq25713::BQ25713::BQ25713addr) != 0)
@@ -472,7 +483,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
   chargerIcRegisters.chargeOption0.set_EN_LWPWR(0);
   chargerIc.writeRegEx(chargerIcRegisters.chargeOption0);
 
-  chargerIcRegisters.prochotOption1.set_IDCHG_VTH(maxBatteryVoltage_mV / 512);
+  chargerIcRegisters.prochotOption1.set_IDCHG_VTH(128 + (maxDichargingCurrent_mA / 512));
   chargerIc.writeRegEx(chargerIcRegisters.prochotOption1);
 
   // disable ICO
@@ -611,6 +622,12 @@ void set_input_current_limit(const uint16_t maxInputCurrent_mA, const bool shoul
 {
   powerLimits_s.current_mA = maxInputCurrent_mA;
   powerLimits_s.shoulduseICO = shouldUseICO;
+}
+
+uint16_t get_charge_current()
+{
+  return measurments_s.batChargeCurrent_mA;
+  // return chargerIcRegisters.chargeCurrent.get();
 }
 
 bool is_input_source_present() { return chargerIcRegisters.chargerStatus.AC_STAT() != 0; }

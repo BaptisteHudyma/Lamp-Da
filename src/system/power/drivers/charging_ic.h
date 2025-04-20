@@ -38,6 +38,7 @@ enum ChargeStatus_t
 bool enable(const uint16_t minSystemVoltage_mV,
             const uint16_t maxBatteryVoltage_mV,
             const uint16_t maxChargingCurrent_mA,
+            const uint16_t maxDichargingCurrent_mA,
             const bool forceReset = false);
 
 // call every loop turn
@@ -53,6 +54,9 @@ void enable_charge(const bool enable);
 
 // set the input current limit
 void set_input_current_limit(const uint16_t maxInputCurrent_mA, const bool shouldUseICO);
+
+// return the actual charge current
+uint16_t get_charge_current();
 
 // return true if an input source is present for the charger
 bool is_input_source_present();

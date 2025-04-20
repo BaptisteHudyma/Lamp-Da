@@ -90,10 +90,10 @@ constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = 1000 / 80.0;
 constexpr float batteryCritical = 300; // % *100
 constexpr float batteryLow = 500;      // % *100
 
-constexpr uint32_t batteryMaxChargeCurrent_mA = 1000;          // mA
-constexpr uint32_t batteryMaxChargeDischargeCurrent_mA = 5000; // mA
+constexpr uint32_t batteryMaxChargeCurrent_mA = 1000;    // mA
+constexpr uint32_t batteryMaxDischargeCurrent_mA = 5000; // mA
 
-constexpr uint32_t batteryTypicalPower_mW = batteryMaxChargeDischargeCurrent_mA * batteryTypicalVoltageSafe_mV / 1000;
+constexpr uint32_t batteryTypicalPower_mW = batteryMaxDischargeCurrent_mA * batteryTypicalVoltageSafe_mV / 1000;
 
 using brightness_t = uint16_t;
 constexpr brightness_t maxBrightness = 1024;
