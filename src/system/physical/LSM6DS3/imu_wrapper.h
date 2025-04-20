@@ -62,6 +62,9 @@ public:
   bool enable_interrupt1(const InterruptType interr);
   void disable_interrupt1();
 
+  bool enable_interrupt2(const InterruptType interr);
+  void disable_interrupt2();
+
   // return true if the interrupt is raised, do not depend on physical interrupt pins
   bool is_event_detected(const InterruptType interr);
 

@@ -629,7 +629,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT1_CTRL
-    Address       : 0X0D
+    Address       : LSM6DS3_ACC_GYRO_INT1_CTRL
     Bit Group Name: INT1_DRDY_XL
     Permission    : RW
     Comment       : Accelerometer Data Ready on INT1 pad. Default value: 0
@@ -642,7 +642,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT1_CTRL
-    Address       : 0X0D
+    Address       : LSM6DS3_ACC_GYRO_INT1_CTRL
     Bit Group Name: INT1_DRDY_G
     Permission    : RW
     Comment       : Gyroscope Data Ready on INT1 pad. Default value: 0
@@ -655,7 +655,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT1_CTRL
-    Address       : 0X0D
+    Address       : LSM6DS3_ACC_GYRO_INT1_CTRL
     Bit Group Name: INT1_BOOT
     Permission    : RW
     Comment       : Boot status available on INT1 pad. Default value: 0
@@ -668,7 +668,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT1_CTRL
-    Address       : 0X0D
+    Address       : LSM6DS3_ACC_GYRO_INT1_CTRL
     Bit Group Name: INT1_FTH
     Permission    : RW
     Comment       : FIFO threshold interrupt on INT1 pad. Default value: 0
@@ -681,7 +681,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT1_CTRL
-    Address       : 0X0D
+    Address       : LSM6DS3_ACC_GYRO_INT1_CTRL
     Bit Group Name: INT1_OVR
     Permission    : RW
     Comment       : FIFO overrun interrupt on INT1 pad. Default value: 0
@@ -694,7 +694,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT1_CTRL
-    Address       : 0X0D
+    Address       : LSM6DS3_ACC_GYRO_INT1_CTRL
     Bit Group Name: INT1_FSS5
     Permission    : RW
     Comment       : FIFO full flag interrupt enable on INT1 pad. Default value: 0
@@ -707,7 +707,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT1_CTRL
-    Address       : 0X0D
+    Address       : LSM6DS3_ACC_GYRO_INT1_CTRL
     Bit Group Name: INT1_SIGN_MOT
     Permission    : RW
     Comment       : Significant motion interrupt enable on INT1 pad. Default value: 0
@@ -720,7 +720,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT1_CTRL
-    Address       : 0X0D
+    Address       : LSM6DS3_ACC_GYRO_INT1_CTRL
     Bit Group Name: INT1_PEDO
     Permission    : RW
     Comment       : Pedometer step recognition interrupt enable on INT1 pad. Default value: 0
@@ -733,7 +733,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT2_CTRL
-    Address       : 0X0E
+    Address       : LSM6DS3_ACC_GYRO_INT2_CTRL
     Bit Group Name: INT2_DRDY_XL
     Permission    : RW
     Comment       : Accelerometer Data Ready on INT2 pad. Default value: 0
@@ -746,7 +746,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT2_CTRL
-    Address       : 0X0E
+    Address       : LSM6DS3_ACC_GYRO_INT2_CTRL
     Bit Group Name: INT2_DRDY_G
     Permission    : RW
     Comment       : Gyroscope Data Ready on INT2 pad. Default value: 0
@@ -759,7 +759,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT2_CTRL
-    Address       : 0X0E
+    Address       : LSM6DS3_ACC_GYRO_INT2_CTRL
     Bit Group Name: INT2_DRDY_TEMP
     Permission    : RW
     Comment       : Temperature Data Ready in INT2 pad. Default value: 0
@@ -772,7 +772,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT2_CTRL
-    Address       : 0X0E
+    Address       : LSM6DS3_ACC_GYRO_INT2_CTRL
     Bit Group Name: INT2_FTH
     Permission    : RW
     Comment       : FIFO threshold interrupt on INT2 pad. Default value: 0
@@ -785,8 +785,8 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT2_CTRL
-    Address       : 0X0E
-    Bit Group Name: INT2_OVR
+    Address       : LSM6DS3_ACC_GYRO_INT2_CTRL
+    Bit Group Name: INT2_FIFO_OVR
     Permission    : RW
     Comment       : FIFO overrun interrupt on INT2 pad. Default value: 0
 *******************************************************************************/
@@ -798,8 +798,8 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT2_CTRL
-    Address       : 0X0E
-    Bit Group Name: INT2_FSS5
+    Address       : LSM6DS3_ACC_GYRO_INT2_CTRL
+    Bit Group Name: INT2_ FULL_FLAG
     Permission    : RW
     Comment       : FIFO full flag interrupt enable on INT2 pad. Default value: 0
 *******************************************************************************/
@@ -811,7 +811,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT2_CTRL
-    Address       : 0X0E
+    Address       : LSM6DS3_ACC_GYRO_INT2_CTRL
     Bit Group Name: INT2_SIGN_MOT
     Permission    : RW
     Comment       : Step counter overflow interrupt enable on INT2 pad. Default value: 0
@@ -824,8 +824,8 @@ typedef enum
 
 /*******************************************************************************
     Register      : INT2_CTRL
-    Address       : 0X0E
-    Bit Group Name: INT2_PEDO
+    Address       : LSM6DS3_ACC_GYRO_INT2_CTRL
+    Bit Group Name: INT2_STEP_DELTA
     Permission    : RW
     Comment       : Pedometer step recognition interrupt on delta time(1) enable on INT2 pad. Default value: 0
 *******************************************************************************/
@@ -2409,9 +2409,9 @@ typedef enum
 *******************************************************************************/
 typedef enum
 {
-  LSM6DS3_ACC_GYRO_INT1_TAP_DISABLED = 0x00,
-  LSM6DS3_ACC_GYRO_INT1_TAP_ENABLED = 0x08,
-} LSM6DS3_ACC_GYRO_INT1_TAP_t;
+  LSM6DS3_ACC_GYRO_INT1_DOUBLE_TAP_DISABLED = 0x00,
+  LSM6DS3_ACC_GYRO_INT1_DOUBLE_TAP_ENABLED = 0x08,
+} LSM6DS3_ACC_GYRO_INT1_DOUBLE_TAP_t;
 
 /*******************************************************************************
     Register      : MD1_CFG
@@ -2513,9 +2513,9 @@ typedef enum
 *******************************************************************************/
 typedef enum
 {
-  LSM6DS3_ACC_GYRO_INT2_TAP_DISABLED = 0x00,
-  LSM6DS3_ACC_GYRO_INT2_TAP_ENABLED = 0x08,
-} LSM6DS3_ACC_GYRO_INT2_TAP_t;
+  LSM6DS3_ACC_GYRO_INT2_DOUBLE_TAP_DISABLED = 0x00,
+  LSM6DS3_ACC_GYRO_INT2_DOUBLE_TAP_ENABLED = 0x08,
+} LSM6DS3_ACC_GYRO_INT2_DOUBLE_TAP_t;
 
 /*******************************************************************************
     Register      : MD2_CFG
@@ -2559,7 +2559,7 @@ typedef enum
 /*******************************************************************************
     Register      : MD2_CFG
     Address       : LSM6DS3_ACC_GYRO_MD2_CFG
-    Bit Group Name: INT2_SLEEP
+    Bit Group Name: INT2_INACT_STATE
     Permission    : RW
     Comment       : Routing on INT2 of inactivity mode. Default: 0
 *******************************************************************************/

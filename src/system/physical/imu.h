@@ -20,12 +20,21 @@ enum EventType
   Tilt,      // raised event during orientation flip
 };
 
+// enable a specific event
+bool enable_event_detection(const EventType eventType);
+// disable a specific event
+bool disable_event_detection(const EventType eventType);
+
 // read the event bit
 bool is_event_detected(const EventType eventType);
 
-// enable the interrupt 1 with an event type, wired to the interrupt pin IMU1
-extern bool enable_interrupt_1(const EventType eventType);
-extern void disable_interrupt_1();
+// enable the interrupt 1 with an event type, wired to the interrupt pin 1 of IMU
+extern bool link_event_to_interrupt1(const EventType eventType);
+extern void unlink_interrupt_1();
+
+// enable the interrupt 2 with an event type, wired to the interrupt pin 2 of IMU
+extern bool link_event_to_interrupt2(const EventType eventType);
+extern void unlink_interrupt_2();
 
 // read and reset the interrupt bit
 bool is_interrupt1_enabled();
