@@ -1,3 +1,4 @@
+#include "physical/imu.h"
 #include "power/power_handler.h"
 #include "src/compile.h"
 
@@ -7,7 +8,7 @@
 #include "src/system/physical/battery.h"
 #include "src/system/physical/button.h"
 #include "src/system/physical/indicator.h"
-#include "src/system/physical/IMU.h"
+#include "src/system/physical/imu.h"
 #include "src/system/physical/fileSystem.h"
 #include "src/system/physical/output_power.h"
 #include "src/system/physical/sound.h"
@@ -150,6 +151,7 @@ void main_setup()
   // set up button colors and callbacks
   button::init();
   indicator::init();
+  imu::init();
 
   if (shouldAlertUser)
   {
@@ -202,7 +204,6 @@ void main_loop(const uint32_t addedDelay)
 
   // automatically deactivate sensors if they are not used for a time
   microphone::disable_after_non_use();
-  imu::disable_after_non_use();
 
   // add the required delay
   if (addedDelay > 0)

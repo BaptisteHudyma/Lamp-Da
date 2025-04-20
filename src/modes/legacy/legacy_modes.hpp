@@ -11,7 +11,7 @@
 #include "src/system/colors/soundAnimations.h"
 #include "src/system/colors/wipes.h"
 
-#include "src/system/physical/IMU.h"
+#include "src/system/physical/imu.h"
 #include "src/system/physical/sound.h"
 #include "src/system/physical/fileSystem.h"
 

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "physical/imu.h"
 #include "power/charger.h"
 #include "power/power_handler.h"
 #include "src/system/ext/math8.h"
@@ -17,7 +18,7 @@
 #include "src/system/physical/button.h"
 #include "src/system/physical/indicator.h"
 #include "src/system/physical/fileSystem.h"
-#include "src/system/physical/IMU.h"
+#include "src/system/physical/imu.h"
 #include "src/system/physical/output_power.h"
 #include "src/system/physical/sound.h"
 
@@ -649,7 +650,7 @@ void handle_shutdown_state()
 
   // disable bluetooth, imu and microphone
   microphone::disable();
-  imu::disable();
+  imu::shutdown();
 #ifdef USE_BLUETOOTH
   bluetooth::disable_bluetooth();
 #endif

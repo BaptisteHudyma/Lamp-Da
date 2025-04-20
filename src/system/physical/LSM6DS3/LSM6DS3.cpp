@@ -26,9 +26,6 @@ techsupport@sparkfun.com.
 #include "LSM6DS3.h"
 
 #include "src/system/platform/i2c.h"
-#include "src/system/platform/time.h"
-
-#include "src/system/platform/gpio.h"
 
 #include "stdint.h"
 
@@ -56,8 +53,6 @@ LSM6DS3Core::LSM6DS3Core(uint8_t busType, uint8_t inputArg) : I2CAddress(0x6B) {
 status_t LSM6DS3Core::beginCore(void)
 {
   status_t returnError = IMU_SUCCESS;
-
-  delay_ms(10);
 
   // Spin for a few ms
   volatile uint8_t temp = 0;
@@ -217,7 +212,7 @@ LSM6DS3::LSM6DS3(uint8_t busType, uint8_t inputArg) : LSM6DS3Core(busType, input
   settings.accelODROff = 1;
   settings.accelRange = 16;         // Max G force readable.  Can be: 2, 4, 8, 16
   settings.accelSampleRate = 416;   // Hz.  Can be: 13, 26, 52, 104, 208, 416,
-                                    // 833, 1666, 3332, 6664, 13330
+                                    // 833, 1666, 3332, 6664
   settings.accelBandWidth = 100;    // Hz.  Can be: 50, 100, 200, 400;
   settings.accelFifoEnabled = 1;    // Set to include accelerometer in the FIFO
   settings.accelFifoDecimation = 1; // set 1 for on /1
@@ -325,9 +320,6 @@ status_t LSM6DS3::begin()
         break;
       case 6660:
         dataToWrite |= LSM6DS3_ACC_GYRO_ODR_XL_6660Hz;
-        break;
-      case 13330:
-        dataToWrite |= LSM6DS3_ACC_GYRO_ODR_XL_13330Hz;
         break;
     }
   }

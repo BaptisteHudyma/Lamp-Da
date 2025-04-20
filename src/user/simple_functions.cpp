@@ -7,6 +7,7 @@
 #include "src/system/utils/utils.h"
 #include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/curves.h"
+#include "src/system/utils/print.h"
 
 #include "src/system/platform/time.h"
 
