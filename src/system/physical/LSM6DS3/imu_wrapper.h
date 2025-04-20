@@ -1,6 +1,7 @@
 #ifndef IMU_WRAPPER_H
 #define IMU_WRAPPER_H
 
+#include <cstdint>
 namespace imu {
 
 struct vec3d
@@ -64,6 +65,8 @@ public:
 
   bool enable_interrupt2(const InterruptType interr);
   void disable_interrupt2();
+
+  uint16_t get_step_count();
 
   // return true if the interrupt is raised, do not depend on physical interrupt pins
   bool is_event_detected(const InterruptType interr);

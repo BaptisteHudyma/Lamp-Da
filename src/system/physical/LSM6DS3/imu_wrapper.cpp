@@ -355,6 +355,18 @@ void Wrapper::disable_interrupt2()
   __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_INT2_CTRL, int2Flag2);
 }
 
+uint16_t Wrapper::get_step_count()
+{
+  uint8_t data1 = 0;
+  __internal::IMU.readRegister(&data1, LSM6DS3_ACC_GYRO_STEP_COUNTER_H);
+  uint8_t data2 = 0;
+  __internal::IMU.readRegister(&data2, LSM6DS3_ACC_GYRO_STEP_COUNTER_L);
+
+  uint16_t res = 0;
+  res = data1 << 8 | data2;
+  return res;
+}
+
 bool Wrapper::is_event_detected(const InterruptType interr)
 {
   switch (interr)

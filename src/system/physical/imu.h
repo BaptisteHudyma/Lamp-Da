@@ -33,6 +33,7 @@ extern bool link_event_to_interrupt1(const EventType eventType);
 extern void unlink_interrupt_1();
 
 // enable the interrupt 2 with an event type, wired to the interrupt pin 2 of IMU
+// EVENT BigMotion & Step NOT SUPPORTED ON INTERRUPT 2
 extern bool link_event_to_interrupt2(const EventType eventType);
 extern void unlink_interrupt_2();
 
