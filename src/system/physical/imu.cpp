@@ -14,129 +14,96 @@ namespace imu {
 // instance of the IMU controler
 Wrapper imuInstance;
 
-static uint32_t lastIMUFunctionCall = 0;
-bool isStarted = false;
-
-// when set to true, the imu will not autostop
-bool lockAutoStop = false;
-
 // interrupt 1
 DigitalPin interrupt1Pin(DigitalPin::GPIO::Signal_ImuInterrupt1);
-bool isInterruptEnabled = false;
 
-void enable()
+void init()
 {
-  lastIMUFunctionCall = time_ms();
-  if (isStarted)
-    return;
-
   if (not imuInstance.init())
   {
     // TODO: something ?
     lampda_print("fail to start");
   }
   else
-    isStarted = true;
+  {
+    // start each events
+    imuInstance.enable_free_fall_detection();
+    imuInstance.enable_big_motion_detection();
+    imuInstance.enable_step_detection();
+    imuInstance.enable_tilt_detection();
+  }
 }
 
-void disable()
+void shutdown()
 {
-  if (!isStarted)
-  {
-    return;
-  }
-
   // remove callbacks from interrupts
   interrupt1Pin.detach_callbacks();
 
   // enter deep sleep
   imuInstance.shutdown();
-
-  isStarted = false;
-}
-
-void disable_after_non_use()
-{
-  if (!isStarted)
-    return;
-  if (lockAutoStop)
-    return;
-
-  // started, allow to auto stop, and 1 second without events
-  if (time_ms() - lastIMUFunctionCall > 1000.0)
-  {
-    // disable imu if last reading is old
-    disable();
-    lampda_print("imu stop: non use");
-  }
-}
-
-void interrupt1_callback() { isInterruptEnabled = true; }
-
-bool enable_detection(const EventType eventType)
-{
-  enable();
-  if (not isStarted)
-  {
-    lampda_print("enable_detection: failed to start imu");
-    return false;
-  }
-
-  switch (eventType)
-  {
-    case FreeFall:
-      if (not imuInstance.enable_detection(Wrapper::InterruptType::Fall))
-      {
-        lampda_print("enable_detection: enable freefall interrupt failed");
-        return false;
-      }
-      break;
-    default:
-      // do not enable interrupt
-      return false;
-  }
-  return true;
-}
-
-void disable_detection(const EventType eventType)
-{
-  switch (eventType)
-  {
-    case FreeFall:
-      imuInstance.disable_detection(Wrapper::InterruptType::Fall);
-      break;
-    default:
-      break;
-  }
 }
 
 bool is_event_detected(const EventType eventType)
 {
   switch (eventType)
   {
-    case FreeFall:
-      return imuInstance.is_event_detected(Wrapper::InterruptType::Fall);
+    case EventType::FreeFall:
+      return imuInstance.is_event_detected(Wrapper::InterruptType::FreeFall);
+
+    case EventType::BigMotion:
+      return imuInstance.is_event_detected(Wrapper::InterruptType::BigMotion);
+
+    case EventType::Step:
+      return imuInstance.is_event_detected(Wrapper::InterruptType::Step);
+
+    case EventType::Tilt:
+      return imuInstance.is_event_detected(Wrapper::InterruptType::AngleChange);
 
     default:
       return false;
   }
 }
 
+// interrupt 1 result
+bool isInterrupt1Enabled = false;
+void interrupt1_callback() { isInterrupt1Enabled = true; }
+bool is_interrupt1_enabled()
+{
+  const bool temp = isInterrupt1Enabled;
+  isInterrupt1Enabled = false;
+  return temp;
+}
+
+// enable the interrupt 1 on event
 bool enable_interrupt_1(const EventType eventType)
 {
-  enable();
-  if (not isStarted)
-  {
-    lampda_print("enable_interrupt_1: failed to start imu");
-    return false;
-  }
-
   switch (eventType)
   {
-    case FreeFall:
-      if (not imuInstance.enable_interrupt1(Wrapper::InterruptType::Fall))
+    case EventType::FreeFall:
+      if (not imuInstance.enable_interrupt1(Wrapper::InterruptType::FreeFall))
       {
         lampda_print("enable_interrupt_1: enable freefall interrupt failed");
+        return false;
+      }
+      break;
+    case EventType::BigMotion:
+      if (not imuInstance.enable_interrupt1(Wrapper::InterruptType::BigMotion))
+      {
+        lampda_print("enable_interrupt_1: enable big motion interrupt failed");
+        return false;
+      }
+      break;
+    case EventType::Step:
+      if (not imuInstance.enable_interrupt1(Wrapper::InterruptType::Step))
+      {
+        lampda_print("enable_interrupt_1: enable step interrupt failed");
+        return false;
+      }
+      break;
+    case EventType::Tilt:
+      if (not imuInstance.enable_interrupt1(Wrapper::InterruptType::AngleChange))
+      {
+        lampda_print("enable_interrupt_1: enable tilt interrupt failed");
         return false;
       }
       break;
@@ -146,38 +113,17 @@ bool enable_interrupt_1(const EventType eventType)
   }
 
   // prevent shutdown when no events
-  lockAutoStop = true;
   interrupt1Pin.set_pin_mode(DigitalPin::Mode::kInput);
   interrupt1Pin.detach_callbacks();
   interrupt1Pin.attach_callback(interrupt1_callback, DigitalPin::Interrupt::kChange);
   return true;
 }
 
-void disable_interrupt_1()
-{
-  imuInstance.enable_interrupt1(Wrapper::InterruptType::None);
-  // allow auto shutdown
-  lockAutoStop = false;
-}
-
-bool is_interrupt1_enabled()
-{
-  const bool temp = isInterruptEnabled;
-  isInterruptEnabled = false;
-  return temp;
-
-  // return imuInstance.is_interrupt_raised(Wrapper::InterruptType::Fall);
-}
+void disable_interrupt_1() { imuInstance.disable_interrupt1(); }
 
 Reading get_filtered_reading(const bool resetFilter)
 {
   static Reading filtered;
-  enable();
-  if (not isStarted)
-  {
-    lampda_print("get_filtered_reading: failed to start imu");
-    return filtered;
-  }
 
   const Reading& read = imuInstance.get_reading();
   if (resetFilter)

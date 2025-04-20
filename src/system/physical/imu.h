@@ -8,22 +8,17 @@
 // IMU is auto activated when used
 namespace imu {
 
-// close the imu readings
-extern void disable();
+extern void init();
 
-// disable imu if last use is old
-extern void disable_after_non_use();
+extern void shutdown();
 
 enum EventType
 {
   FreeFall,  // raised during a free fall event
   BigMotion, // raised during a big acceleration
+  Step,      // raised during step detection
+  Tilt,      // raised event during orientation flip
 };
-
-// enable event detection
-bool enable_detection(const EventType eventType);
-// disable event detection (WILL ALSO DISABLE ANY ASSOCIATED INTERRUPT)
-void disable_detection(const EventType eventType);
 
 // read the event bit
 bool is_event_detected(const EventType eventType);

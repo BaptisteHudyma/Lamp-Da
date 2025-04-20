@@ -87,67 +87,101 @@ bool Wrapper::disable_free_fall_detection()
 
 bool Wrapper::enable_big_motion_detection()
 {
-  // TODO
   uint8_t error = status_t::IMU_SUCCESS;
 
-  // enable significatn motion detection
+  // enable significant motion detection
   uint8_t ctrl10_flags = 0;
   error += __internal::IMU.readRegister(&ctrl10_flags, LSM6DS3_ACC_GYRO_CTRL10_C);
+  ctrl10_flags |= LSM6DS3_ACC_GYRO_FUNC_EN_t::LSM6DS3_ACC_GYRO_FUNC_EN_ENABLED;
   ctrl10_flags |= LSM6DS3_ACC_GYRO_SIGN_MOTION_EN_t::LSM6DS3_ACC_GYRO_SIGN_MOTION_EN_ENABLED;
   error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_CTRL10_C, ctrl10_flags);
-
-  // latch interrupt
-  uint8_t tapFlags = 0;
-  error += __internal::IMU.readRegister(&tapFlags, LSM6DS3_ACC_GYRO_TAP_CFG);
-  tapFlags |= LSM6DS3_ACC_GYRO_LIR_t::LSM6DS3_ACC_GYRO_LIR_ENABLED;
-  error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_TAP_CFG, tapFlags);
 
   return error == status_t::IMU_SUCCESS;
 }
 
 bool Wrapper::disable_big_motion_detection()
 {
-  // TODO
-  return false;
+  uint8_t error = status_t::IMU_SUCCESS;
+
+  // enable significant motion detection
+  uint8_t ctrl10_flags = 0;
+  error += __internal::IMU.readRegister(&ctrl10_flags, LSM6DS3_ACC_GYRO_CTRL10_C);
+  ctrl10_flags &= ~LSM6DS3_ACC_GYRO_SIGN_MOTION_EN_t::LSM6DS3_ACC_GYRO_SIGN_MOTION_EN_ENABLED;
+  error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_CTRL10_C, ctrl10_flags);
+
+  return error == status_t::IMU_SUCCESS;
 }
 
-bool Wrapper::enable_detection(const InterruptType interr)
+bool Wrapper::enable_step_detection()
 {
-  switch (interr)
-  {
-    case InterruptType::Fall:
-      return enable_free_fall_detection();
-    case InterruptType::BigMotion:
-      return enable_big_motion_detection();
+  uint8_t error = status_t::IMU_SUCCESS;
 
-    case InterruptType::Step:
-      {
-        break;
-      }
+  // enable functions detection
+  uint8_t ctrl10_flags = 0;
+  error += __internal::IMU.readRegister(&ctrl10_flags, LSM6DS3_ACC_GYRO_CTRL10_C);
+  ctrl10_flags |= LSM6DS3_ACC_GYRO_FUNC_EN_t::LSM6DS3_ACC_GYRO_FUNC_EN_ENABLED;
+  ctrl10_flags |= LSM6DS3_ACC_GYRO_PEDO_RST_STEP_t::LSM6DS3_ACC_GYRO_PEDO_RST_STEP_ENABLED;
+  error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_CTRL10_C, ctrl10_flags);
 
-    case InterruptType::AngleChange:
-      {
-        break;
-      }
+  // enable significant motion detection
+  uint8_t tapCfg_flags = 0;
+  error += __internal::IMU.readRegister(&tapCfg_flags, LSM6DS3_ACC_GYRO_TAP_CFG);
+  tapCfg_flags |= LSM6DS3_ACC_GYRO_PEDO_EN_t::LSM6DS3_ACC_GYRO_PEDO_EN_ENABLED;
+  error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_TAP_CFG, tapCfg_flags);
 
-    case InterruptType::None:
-      {
-        break;
-      }
-    default:
-      {
-        break;
-      }
-  }
-  lampda_print("enable_detection: case not handled");
-  return false;
+  return error == status_t::IMU_SUCCESS;
+}
+
+bool Wrapper::disable_step_detection()
+{
+  uint8_t error = status_t::IMU_SUCCESS;
+
+  // enable significant motion detection
+  uint8_t tapCfg_flags = 0;
+  error += __internal::IMU.readRegister(&tapCfg_flags, LSM6DS3_ACC_GYRO_TAP_CFG);
+  tapCfg_flags |= LSM6DS3_ACC_GYRO_PEDO_EN_t::LSM6DS3_ACC_GYRO_PEDO_EN_DISABLED;
+  error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_TAP_CFG, tapCfg_flags);
+
+  return error == status_t::IMU_SUCCESS;
+}
+
+bool Wrapper::enable_tilt_detection()
+{
+  uint8_t error = status_t::IMU_SUCCESS;
+
+  // enable functions detection
+  uint8_t ctrl10_flags = 0;
+  error += __internal::IMU.readRegister(&ctrl10_flags, LSM6DS3_ACC_GYRO_CTRL10_C);
+  ctrl10_flags |= LSM6DS3_ACC_GYRO_FUNC_EN_t::LSM6DS3_ACC_GYRO_FUNC_EN_ENABLED;
+  error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_CTRL10_C, ctrl10_flags);
+
+  // enable significant motion detection
+  uint8_t tapCfg_flags = 0;
+  error += __internal::IMU.readRegister(&tapCfg_flags, LSM6DS3_ACC_GYRO_TAP_CFG);
+  tapCfg_flags |= LSM6DS3_ACC_GYRO_TILT_EN_t::LSM6DS3_ACC_GYRO_TILT_EN_ENABLED;
+  error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_TAP_CFG, tapCfg_flags);
+
+  return error == status_t::IMU_SUCCESS;
+}
+
+bool Wrapper::disable_tilt_detection()
+{
+  uint8_t error = status_t::IMU_SUCCESS;
+
+  // enable significant motion detection
+  uint8_t tapCfg_flags = 0;
+  error += __internal::IMU.readRegister(&tapCfg_flags, LSM6DS3_ACC_GYRO_TAP_CFG);
+  tapCfg_flags &= ~LSM6DS3_ACC_GYRO_TILT_EN_t::LSM6DS3_ACC_GYRO_TILT_EN_ENABLED;
+  error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_TAP_CFG, tapCfg_flags);
+
+  return error == status_t::IMU_SUCCESS;
 }
 
 void Wrapper::disable_detection(const InterruptType interr)
 {
   switch (interr)
   {
-    case InterruptType::Fall:
+    case InterruptType::FreeFall:
       disable_free_fall_detection();
       break;
     case InterruptType::BigMotion:
@@ -155,19 +189,13 @@ void Wrapper::disable_detection(const InterruptType interr)
       break;
 
     case InterruptType::Step:
-      {
-        break;
-      }
+      disable_step_detection();
+      break;
 
     case InterruptType::AngleChange:
-      {
-        break;
-      }
+      disable_step_detection();
+      break;
 
-    case InterruptType::None:
-      {
-        break;
-      }
     default:
       {
         break;
@@ -179,68 +207,46 @@ bool Wrapper::enable_interrupt1(const InterruptType interr)
 {
   switch (interr)
   {
-    case InterruptType::Fall:
+    case InterruptType::FreeFall:
       {
-        if (enable_free_fall_detection())
-        {
-          uint8_t error = status_t::IMU_SUCCESS;
-          // MD1_CFG Functions routing on INT1 register
-          const uint8_t int1Flag = LSM6DS3_ACC_GYRO_INT1_TIMER_t::LSM6DS3_ACC_GYRO_INT1_TIMER_DISABLED |
-                                   LSM6DS3_ACC_GYRO_INT1_TILT_t::LSM6DS3_ACC_GYRO_INT1_TILT_DISABLED |
-                                   LSM6DS3_ACC_GYRO_INT1_6D_t::LSM6DS3_ACC_GYRO_INT1_6D_DISABLED |
-                                   LSM6DS3_ACC_GYRO_INT1_TAP_t::LSM6DS3_ACC_GYRO_INT1_TAP_DISABLED |
-                                   LSM6DS3_ACC_GYRO_INT1_FF_t::LSM6DS3_ACC_GYRO_INT1_FF_ENABLED | // enable free fall
-                                   LSM6DS3_ACC_GYRO_INT1_WU_t::LSM6DS3_ACC_GYRO_INT1_WU_DISABLED |
-                                   LSM6DS3_ACC_GYRO_INT1_SINGLE_TAP_t::LSM6DS3_ACC_GYRO_INT1_SINGLE_TAP_DISABLED |
-                                   LSM6DS3_ACC_GYRO_INT1_SLEEP_t::LSM6DS3_ACC_GYRO_INT1_SLEEP_DISABLED;
-          error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_MD1_CFG, int1Flag);
-          return error == status_t::IMU_SUCCESS;
-        }
+        uint8_t error = status_t::IMU_SUCCESS;
+        // MD1_CFG Functions routing on INT1 register
+        uint8_t int1Flag = 0;
+        error += __internal::IMU.readRegister(&int1Flag, LSM6DS3_ACC_GYRO_MD1_CFG);
+        int1Flag |= LSM6DS3_ACC_GYRO_INT1_FF_t::LSM6DS3_ACC_GYRO_INT1_FF_ENABLED;
+        error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_MD1_CFG, int1Flag);
+        return error == status_t::IMU_SUCCESS;
       }
 
     case InterruptType::BigMotion:
       {
-        if (enable_big_motion_detection())
-        {
-          uint8_t error = status_t::IMU_SUCCESS;
-          // MD1_CFG Functions routing on INT1 register
-          const uint8_t int1Flag = LSM6DS3_ACC_GYRO_INT1_TIMER_t::LSM6DS3_ACC_GYRO_INT1_TIMER_DISABLED |
-                                   LSM6DS3_ACC_GYRO_INT1_TILT_t::LSM6DS3_ACC_GYRO_INT1_TILT_DISABLED |
-                                   LSM6DS3_ACC_GYRO_INT1_6D_t::LSM6DS3_ACC_GYRO_INT1_6D_DISABLED |
-                                   LSM6DS3_ACC_GYRO_INT1_TAP_t::LSM6DS3_ACC_GYRO_INT1_TAP_DISABLED |
-                                   LSM6DS3_ACC_GYRO_INT1_FF_t::LSM6DS3_ACC_GYRO_INT1_FF_ENABLED | // enable free fall
-                                   LSM6DS3_ACC_GYRO_INT1_WU_t::LSM6DS3_ACC_GYRO_INT1_WU_DISABLED |
-                                   LSM6DS3_ACC_GYRO_INT1_SINGLE_TAP_t::LSM6DS3_ACC_GYRO_INT1_SINGLE_TAP_DISABLED |
-                                   LSM6DS3_ACC_GYRO_INT1_SLEEP_t::LSM6DS3_ACC_GYRO_INT1_SLEEP_DISABLED;
-          error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_MD1_CFG, int1Flag);
-          return error == status_t::IMU_SUCCESS;
-        }
-        break;
+        uint8_t error = status_t::IMU_SUCCESS;
+        // INT1_CTRL Functions routing on INT1 register
+        uint8_t int1Flag = 0;
+        error += __internal::IMU.readRegister(&int1Flag, LSM6DS3_ACC_GYRO_INT1_CTRL);
+        int1Flag |= LSM6DS3_ACC_GYRO_INT1_SIGN_MOT_t::LSM6DS3_ACC_GYRO_INT1_SIGN_MOT_ENABLED;
+        error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_INT1_CTRL, int1Flag);
+        return error == status_t::IMU_SUCCESS;
       }
 
     case InterruptType::Step:
       {
-        break;
+        uint8_t error = status_t::IMU_SUCCESS;
+        // INT1_CTRL Functions routing on INT1 register
+        uint8_t int1Flag = 0;
+        error += __internal::IMU.readRegister(&int1Flag, LSM6DS3_ACC_GYRO_INT1_CTRL);
+        int1Flag |= LSM6DS3_ACC_GYRO_INT1_PEDO_t::LSM6DS3_ACC_GYRO_INT1_PEDO_ENABLED;
+        error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_INT1_CTRL, int1Flag);
+        return error == status_t::IMU_SUCCESS;
       }
 
     case InterruptType::AngleChange:
       {
-        break;
-      }
-
-    case InterruptType::None:
-      {
         uint8_t error = status_t::IMU_SUCCESS;
-
         // MD1_CFG Functions routing on INT1 register
-        const uint8_t int1Flag = LSM6DS3_ACC_GYRO_INT1_TIMER_t::LSM6DS3_ACC_GYRO_INT1_TIMER_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_TILT_t::LSM6DS3_ACC_GYRO_INT1_TILT_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_6D_t::LSM6DS3_ACC_GYRO_INT1_6D_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_TAP_t::LSM6DS3_ACC_GYRO_INT1_TAP_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_FF_t::LSM6DS3_ACC_GYRO_INT1_FF_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_WU_t::LSM6DS3_ACC_GYRO_INT1_WU_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_SINGLE_TAP_t::LSM6DS3_ACC_GYRO_INT1_SINGLE_TAP_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_SLEEP_t::LSM6DS3_ACC_GYRO_INT1_SLEEP_DISABLED;
+        uint8_t int1Flag = 0;
+        error += __internal::IMU.readRegister(&int1Flag, LSM6DS3_ACC_GYRO_MD1_CFG);
+        int1Flag |= LSM6DS3_ACC_GYRO_INT1_TILT_t::LSM6DS3_ACC_GYRO_INT1_TILT_ENABLED;
         error += __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_MD1_CFG, int1Flag);
         return error == status_t::IMU_SUCCESS;
       }
@@ -253,11 +259,34 @@ bool Wrapper::enable_interrupt1(const InterruptType interr)
   return false;
 }
 
+void Wrapper::disable_interrupt1()
+{
+  const uint8_t int1Flag = LSM6DS3_ACC_GYRO_INT1_TIMER_t::LSM6DS3_ACC_GYRO_INT1_TIMER_DISABLED |
+                           LSM6DS3_ACC_GYRO_INT1_TILT_t::LSM6DS3_ACC_GYRO_INT1_TILT_DISABLED |
+                           LSM6DS3_ACC_GYRO_INT1_6D_t::LSM6DS3_ACC_GYRO_INT1_6D_DISABLED |
+                           LSM6DS3_ACC_GYRO_INT1_TAP_t::LSM6DS3_ACC_GYRO_INT1_TAP_DISABLED |
+                           LSM6DS3_ACC_GYRO_INT1_FF_t::LSM6DS3_ACC_GYRO_INT1_FF_DISABLED |
+                           LSM6DS3_ACC_GYRO_INT1_WU_t::LSM6DS3_ACC_GYRO_INT1_WU_DISABLED |
+                           LSM6DS3_ACC_GYRO_INT1_SINGLE_TAP_t::LSM6DS3_ACC_GYRO_INT1_SINGLE_TAP_DISABLED |
+                           LSM6DS3_ACC_GYRO_INT1_SLEEP_t::LSM6DS3_ACC_GYRO_INT1_SLEEP_DISABLED;
+  __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_MD1_CFG, int1Flag);
+
+  const uint8_t int1Flag2 = LSM6DS3_ACC_GYRO_INT1_DRDY_XL_t::LSM6DS3_ACC_GYRO_INT1_DRDY_XL_DISABLED |
+                            LSM6DS3_ACC_GYRO_INT1_DRDY_G_t::LSM6DS3_ACC_GYRO_INT1_DRDY_G_DISABLED |
+                            LSM6DS3_ACC_GYRO_INT1_BOOT_t::LSM6DS3_ACC_GYRO_INT1_BOOT_DISABLED |
+                            LSM6DS3_ACC_GYRO_INT1_FTH_t::LSM6DS3_ACC_GYRO_INT1_FTH_DISABLED |
+                            LSM6DS3_ACC_GYRO_INT1_OVR_t::LSM6DS3_ACC_GYRO_INT1_OVR_DISABLED |
+                            LSM6DS3_ACC_GYRO_INT1_FULL_FLAG_t::LSM6DS3_ACC_GYRO_INT1_FULL_FLAG_DISABLED |
+                            LSM6DS3_ACC_GYRO_INT1_SIGN_MOT_t::LSM6DS3_ACC_GYRO_INT1_SIGN_MOT_DISABLED |
+                            LSM6DS3_ACC_GYRO_INT1_PEDO_t::LSM6DS3_ACC_GYRO_INT1_PEDO_DISABLED;
+  __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_INT1_CTRL, int1Flag);
+}
+
 bool Wrapper::is_event_detected(const InterruptType interr)
 {
   switch (interr)
   {
-    case InterruptType::Fall:
+    case InterruptType::FreeFall:
       {
         uint8_t wakeup_flags = 0;
         const uint8_t error = __internal::IMU.readRegister(&wakeup_flags, LSM6DS3_ACC_GYRO_WAKE_UP_SRC);
@@ -268,19 +297,31 @@ bool Wrapper::is_event_detected(const InterruptType interr)
 
     case InterruptType::BigMotion:
       {
+        uint8_t func_flags = 0;
+        const uint8_t error = __internal::IMU.readRegister(&func_flags, LSM6DS3_ACC_GYRO_FUNC_SRC);
+        // big motion detected
+        return (error == status_t::IMU_SUCCESS) and
+               (func_flags & LSM6DS3_ACC_GYRO_SIGN_MOTION_IA_t::LSM6DS3_ACC_GYRO_SIGN_MOTION_IA_DETECTED);
       }
 
     case InterruptType::Step:
       {
+        uint8_t func_flags = 0;
+        const uint8_t error = __internal::IMU.readRegister(&func_flags, LSM6DS3_ACC_GYRO_FUNC_SRC);
+        // step detected
+        return (error == status_t::IMU_SUCCESS) and
+               (func_flags & LSM6DS3_ACC_GYRO_STEP_DETECTED_t::LSM6DS3_ACC_GYRO_STEP_DETECTED);
       }
 
     case InterruptType::AngleChange:
       {
+        uint8_t func_flags = 0;
+        const uint8_t error = __internal::IMU.readRegister(&func_flags, LSM6DS3_ACC_GYRO_FUNC_SRC);
+        // tilt detected
+        return (error == status_t::IMU_SUCCESS) and
+               (func_flags & LSM6DS3_ACC_GYRO_TILT_IA_t::LSM6DS3_ACC_GYRO_TILT_IA_DETECTED);
       }
 
-    case InterruptType::None:
-      {
-      }
     default:
       {
         break;

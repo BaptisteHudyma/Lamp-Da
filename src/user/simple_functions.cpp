@@ -7,17 +7,24 @@
 #include "src/system/utils/utils.h"
 #include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/curves.h"
+#include "src/system/utils/print.h"
 
 #include "src/system/platform/time.h"
 
 #include "src/system/physical/fileSystem.h"
 #include "src/system/physical/output_power.h"
+#include "src/system/physical/imu.h"
 
 #include "src/user/functions.h"
 
 namespace user {
 
-void power_on_sequence() { brightness_update(brightness::get_brightness()); }
+void power_on_sequence()
+{
+  brightness_update(brightness::get_brightness());
+
+  imu::enable_interrupt_1(imu::EventType::BigMotion);
+}
 
 void power_off_sequence()
 {
@@ -70,7 +77,26 @@ bool button_clicked_usermode(const uint8_t) { return usermodeDefaultsToLockdown;
 
 bool button_hold_usermode(const uint8_t, const bool, const uint32_t) { return usermodeDefaultsToLockdown; }
 
-void loop() {}
+void loop()
+{
+  static uint32_t event_raised_time = 0;
+  static brightness_t savedBrightness = 0;
+
+  // if (imu::is_event_detected(imu::EventType::FreeFall))
+  if (imu::is_event_detected(imu::EventType::BigMotion))
+  // if (imu::is_interrupt1_enabled())
+  {
+    brightness_update(0);
+    savedBrightness = brightness::get_brightness();
+    event_raised_time = time_ms();
+  }
+
+  if (event_raised_time != 0 and time_ms() - event_raised_time > 300)
+  {
+    brightness_update(savedBrightness);
+    event_raised_time = 0;
+  }
+}
 
 bool should_spawn_thread() { return false; }
 
