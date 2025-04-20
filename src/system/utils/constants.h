@@ -47,13 +47,16 @@ constexpr float voltageDividerCoeff =
 
 // number of batteries for this model
 constexpr uint8_t batteryCount = 3;
+constexpr float batteryChargeC_Rate = 0.33;
+constexpr float batteryDischargeC_Rate = 1.0;
+constexpr uint32_t batteryCapacity_mAH = 4850; // mA hours
 
 // absolute minimum/maximum singular liion battery voltage
-constexpr uint16_t minLiionVoltage_mV = 2900;
-constexpr uint16_t typicalLiionVoltage_mV = 3700;
+constexpr uint16_t minLiionVoltage_mV = 2500;
+constexpr uint16_t typicalLiionVoltage_mV = 3630;
 constexpr uint16_t maxLiionVoltage_mV = 4200;
 
-constexpr uint16_t minSafeLiionVoltage_mV = 3300;
+constexpr uint16_t minSafeLiionVoltage_mV = 3100;
 constexpr uint16_t maxSafeLiionVoltage_mV = 4060;
 
 // max voltage of a single li-ion cell
@@ -90,10 +93,11 @@ constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = 1000 / 80.0;
 constexpr float batteryCritical = 300; // % *100
 constexpr float batteryLow = 500;      // % *100
 
-constexpr uint32_t batteryMaxChargeCurrent_mA = 1000;    // mA
-constexpr uint32_t batteryMaxDischargeCurrent_mA = 5000; // mA
+// compute battery limits from c-rates
+constexpr uint32_t batteryMaxChargeCurrent_mA = batteryChargeC_Rate * batteryCapacity_mAH;       // mA
+constexpr uint32_t batteryMaxDischargeCurrent_mA = batteryDischargeC_Rate * batteryCapacity_mAH; // mA
 
-constexpr uint32_t batteryTypicalPower_mW = batteryMaxDischargeCurrent_mA * batteryTypicalVoltageSafe_mV / 1000;
+constexpr uint32_t batteryTypicalPower_mWH = batteryCapacity_mAH * batteryTypicalVoltageSafe_mV / 1000;
 
 using brightness_t = uint16_t;
 constexpr brightness_t maxBrightness = 1024;
