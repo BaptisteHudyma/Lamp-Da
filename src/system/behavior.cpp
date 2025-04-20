@@ -17,7 +17,7 @@
 #include "src/system/physical/button.h"
 #include "src/system/physical/indicator.h"
 #include "src/system/physical/fileSystem.h"
-#include "src/system/physical/IMU.h"
+#include "src/system/physical/imu.h"
 #include "src/system/physical/output_power.h"
 #include "src/system/physical/sound.h"
 

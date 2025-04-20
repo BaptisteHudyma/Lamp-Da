@@ -1,19 +1,18 @@
-#include "IMU.h"
+#include "imu.h"
 
 #include <cstdint>
 #include <cstring>
 
-#include "LSM6DS3/LSM6DS3.h"
+#include "LSM6DS3/imu_wrapper.h"
 #include "src/system/utils/print.h"
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
-#include "src/system/platform/i2c.h"
 
 namespace imu {
 
-// Create a instance of class LSM6DS3
-LSM6DS3 IMU(I2C_MODE, imuI2cAddress); // I2C device address
+// instance of the IMU controler
+Wrapper imuInstance;
 
 static uint32_t lastIMUFunctionCall = 0;
 bool isStarted = false;
@@ -29,13 +28,9 @@ void enable()
 {
   lastIMUFunctionCall = time_ms();
   if (isStarted)
-  {
     return;
-  }
 
-  delay_ms(5); // voltage stabilization
-
-  if (IMU.begin() != IMU_SUCCESS)
+  if (not imuInstance.init())
   {
     // TODO: something ?
     lampda_print("fail to start");
@@ -54,7 +49,8 @@ void disable()
   // remove callbacks from interrupts
   interrupt1Pin.detach_callbacks();
 
-  // TODO: enter deep sleep
+  // enter deep sleep
+  imuInstance.shutdown();
 
   isStarted = false;
 }
@@ -69,7 +65,7 @@ void disable_after_non_use()
   // started, allow to auto stop, and 1 second without events
   if (time_ms() - lastIMUFunctionCall > 1000.0)
   {
-    // disable microphone if last reading is old
+    // disable imu if last reading is old
     disable();
     lampda_print("imu stop: non use");
   }
@@ -77,20 +73,70 @@ void disable_after_non_use()
 
 void interrupt1_callback() { isInterruptEnabled = true; }
 
-bool enable_interrupt_1(EventType eventType)
+bool enable_detection(const EventType eventType)
 {
   enable();
   if (not isStarted)
   {
+    lampda_print("enable_detection: failed to start imu");
     return false;
   }
 
   switch (eventType)
   {
     case FreeFall:
-      if (not IMU.enable_interrupt1(LSM6DS3::InterruptType::Fall))
+      if (not imuInstance.enable_detection(Wrapper::InterruptType::Fall))
       {
-        lampda_print("enable fail");
+        lampda_print("enable_detection: enable freefall interrupt failed");
+        return false;
+      }
+      break;
+    default:
+      // do not enable interrupt
+      return false;
+  }
+  return true;
+}
+
+void disable_detection(const EventType eventType)
+{
+  switch (eventType)
+  {
+    case FreeFall:
+      imuInstance.disable_detection(Wrapper::InterruptType::Fall);
+      break;
+    default:
+      break;
+  }
+}
+
+bool is_event_detected(const EventType eventType)
+{
+  switch (eventType)
+  {
+    case FreeFall:
+      return imuInstance.is_event_detected(Wrapper::InterruptType::Fall);
+
+    default:
+      return false;
+  }
+}
+
+bool enable_interrupt_1(const EventType eventType)
+{
+  enable();
+  if (not isStarted)
+  {
+    lampda_print("enable_interrupt_1: failed to start imu");
+    return false;
+  }
+
+  switch (eventType)
+  {
+    case FreeFall:
+      if (not imuInstance.enable_interrupt1(Wrapper::InterruptType::Fall))
+      {
+        lampda_print("enable_interrupt_1: enable freefall interrupt failed");
         return false;
       }
       break;
@@ -103,13 +149,13 @@ bool enable_interrupt_1(EventType eventType)
   lockAutoStop = true;
   interrupt1Pin.set_pin_mode(DigitalPin::Mode::kInput);
   interrupt1Pin.detach_callbacks();
-  interrupt1Pin.attach_callback(interrupt1_callback, DigitalPin::Interrupt::kRisingEdge);
+  interrupt1Pin.attach_callback(interrupt1_callback, DigitalPin::Interrupt::kChange);
   return true;
 }
 
 void disable_interrupt_1()
 {
-  IMU.enable_interrupt1(LSM6DS3::InterruptType::None);
+  imuInstance.enable_interrupt1(Wrapper::InterruptType::None);
   // allow auto shutdown
   lockAutoStop = false;
 }
@@ -119,29 +165,21 @@ bool is_interrupt1_enabled()
   const bool temp = isInterruptEnabled;
   isInterruptEnabled = false;
   return temp;
-}
 
-Reading get_reading()
-{
-  enable();
-
-  Reading reads;
-  // coordinate change to the lamp body
-  reads.accel.x = IMU.readFloatAccelX();
-  reads.accel.y = IMU.readFloatAccelY();
-  reads.accel.z = IMU.readFloatAccelZ();
-
-  reads.gyro.x = IMU.readFloatGyroX();
-  reads.gyro.y = IMU.readFloatGyroY();
-  reads.gyro.z = IMU.readFloatGyroZ();
-  return reads;
+  // return imuInstance.is_interrupt_raised(Wrapper::InterruptType::Fall);
 }
 
 Reading get_filtered_reading(const bool resetFilter)
 {
   static Reading filtered;
+  enable();
+  if (not isStarted)
+  {
+    lampda_print("get_filtered_reading: failed to start imu");
+    return filtered;
+  }
 
-  const Reading& read = get_reading();
+  const Reading& read = imuInstance.get_reading();
   if (resetFilter)
   {
     filtered = read;

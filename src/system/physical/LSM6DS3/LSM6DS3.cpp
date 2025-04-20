@@ -26,9 +26,6 @@ techsupport@sparkfun.com.
 #include "LSM6DS3.h"
 
 #include "src/system/platform/i2c.h"
-#include "src/system/platform/print.h"
-
-#include "src/system/platform/gpio.h"
 
 #include "stdint.h"
 
@@ -741,101 +738,4 @@ void LSM6DS3::fifoEnd(void)
 {
   // turn off the fifo
   writeRegister(LSM6DS3_ACC_GYRO_FIFO_STATUS1, 0x00); // Disable
-}
-
-bool LSM6DS3::enable_interrupt1(const InterruptType interr)
-{
-  switch (interr)
-  {
-    case InterruptType::Fall:
-      {
-        uint8_t error = status_t::IMU_SUCCESS;
-
-        // Wakeup source
-        const uint8_t wakeUpFlags =
-                LSM6DS3_ACC_GYRO_Z_WU_t::LSM6DS3_ACC_GYRO_Z_WU_NOT_DETECTED |
-                LSM6DS3_ACC_GYRO_Y_WU_t::LSM6DS3_ACC_GYRO_Y_WU_NOT_DETECTED |
-                LSM6DS3_ACC_GYRO_X_WU_t::LSM6DS3_ACC_GYRO_X_WU_NOT_DETECTED |
-                LSM6DS3_ACC_GYRO_WU_EV_STATUS_t::LSM6DS3_ACC_GYRO_WU_EV_STATUS_NOT_DETECTED |
-                LSM6DS3_ACC_GYRO_SLEEP_EV_STATUS_t::LSM6DS3_ACC_GYRO_SLEEP_EV_STATUS_NOT_DETECTED |
-                LSM6DS3_ACC_GYRO_FF_EV_STATUS_t::LSM6DS3_ACC_GYRO_FF_EV_STATUS_DETECTED; // free fall detection
-        error += writeRegister(LSM6DS3_ACC_GYRO_WAKE_UP_SRC, wakeUpFlags);
-
-        // latch interrupt
-        const uint8_t tapFlags = LSM6DS3_ACC_GYRO_LIR_t::LSM6DS3_ACC_GYRO_LIR_DISABLED | // latched interrupt (disabled)
-                                 LSM6DS3_ACC_GYRO_TAP_Z_EN_t::LSM6DS3_ACC_GYRO_TAP_Z_EN_DISABLED |
-                                 LSM6DS3_ACC_GYRO_TAP_Y_EN_t::LSM6DS3_ACC_GYRO_TAP_Y_EN_DISABLED |
-                                 LSM6DS3_ACC_GYRO_TAP_X_EN_t::LSM6DS3_ACC_GYRO_TAP_X_EN_DISABLED |
-                                 LSM6DS3_ACC_GYRO_SLOPE_FDS_t::LSM6DS3_ACC_GYRO_SLOPE_FDS_DISABLED |
-                                 LSM6DS3_ACC_GYRO_TILT_EN_t::LSM6DS3_ACC_GYRO_TILT_EN_DISABLED |
-                                 LSM6DS3_ACC_GYRO_PEDO_EN_t::LSM6DS3_ACC_GYRO_PEDO_EN_DISABLED |
-                                 LSM6DS3_ACC_GYRO_TIMER_EN_t::LSM6DS3_ACC_GYRO_TIMER_EN_ENABLED; // enable interrupt
-        error += writeRegister(LSM6DS3_ACC_GYRO_TAP_CFG1, tapFlags);
-
-        // MD1_CFG Functions routing on INT1 register
-        const uint8_t int1Flag = LSM6DS3_ACC_GYRO_INT1_TIMER_t::LSM6DS3_ACC_GYRO_INT1_TIMER_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_TILT_t::LSM6DS3_ACC_GYRO_INT1_TILT_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_6D_t::LSM6DS3_ACC_GYRO_INT1_6D_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_TAP_t::LSM6DS3_ACC_GYRO_INT1_TAP_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_FF_t::LSM6DS3_ACC_GYRO_INT1_FF_ENABLED | // enable free fall
-                                 LSM6DS3_ACC_GYRO_INT1_WU_t::LSM6DS3_ACC_GYRO_INT1_WU_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_SINGLE_TAP_t::LSM6DS3_ACC_GYRO_INT1_SINGLE_TAP_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_SLEEP_t::LSM6DS3_ACC_GYRO_INT1_SLEEP_DISABLED;
-        error += writeRegister(LSM6DS3_ACC_GYRO_MD1_CFG, int1Flag);
-
-        // set to default values
-        const uint8_t sleepDuration = 0 & LSM6DS3_ACC_GYRO_SLEEP_DUR_MASK;
-        const uint8_t wakeUpDur = 0 & LSM6DS3_ACC_GYRO_WAKE_DUR_MASK;
-        const uint8_t wakeUpDurFlags = LSM6DS3_ACC_GYRO_TIMER_HR_t::LSM6DS3_ACC_GYRO_TIMER_HR_6_4ms |
-                                       wakeUpDur << LSM6DS3_ACC_GYRO_WAKE_DUR_POSITION |
-                                       sleepDuration << LSM6DS3_ACC_GYRO_SLEEP_DUR_POSITION;
-        error += writeRegister(LSM6DS3_ACC_GYRO_WAKE_UP_DUR, wakeUpDurFlags);
-
-        const uint8_t timingThreshold = (6 << LSM6DS3_ACC_GYRO_FREE_FALL_DUR_POSITION) &
-                                        LSM6DS3_ACC_GYRO_FREE_FALL_DUR_MASK; // 6 samples for event
-        const uint8_t accelerationThreashold = LSM6DS3_ACC_GYRO_FF_THS_5;    // acceleration threshold for event
-        const uint8_t freeFallParams = timingThreshold | accelerationThreashold;
-        error += writeRegister(LSM6DS3_ACC_GYRO_FREE_FALL, freeFallParams);
-
-        return error == status_t::IMU_SUCCESS;
-      }
-
-    case InterruptType::BigMotion:
-      {
-        break;
-      }
-
-    case InterruptType::Step:
-      {
-        break;
-      }
-
-    case InterruptType::AngleChange:
-      {
-        break;
-      }
-
-    case InterruptType::None:
-      {
-        uint8_t error = status_t::IMU_SUCCESS;
-
-        // MD1_CFG Functions routing on INT1 register
-        const uint8_t int1Flag = LSM6DS3_ACC_GYRO_INT1_TIMER_t::LSM6DS3_ACC_GYRO_INT1_TIMER_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_TILT_t::LSM6DS3_ACC_GYRO_INT1_TILT_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_6D_t::LSM6DS3_ACC_GYRO_INT1_6D_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_TAP_t::LSM6DS3_ACC_GYRO_INT1_TAP_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_FF_t::LSM6DS3_ACC_GYRO_INT1_FF_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_WU_t::LSM6DS3_ACC_GYRO_INT1_WU_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_SINGLE_TAP_t::LSM6DS3_ACC_GYRO_INT1_SINGLE_TAP_DISABLED |
-                                 LSM6DS3_ACC_GYRO_INT1_SLEEP_t::LSM6DS3_ACC_GYRO_INT1_SLEEP_DISABLED;
-        error += writeRegister(LSM6DS3_ACC_GYRO_MD1_CFG, int1Flag);
-        return true;
-      }
-    default:
-      {
-        break;
-      }
-  }
-  lampda_print("enable_interrupt1: case not handled");
-  return false;
 }

@@ -190,6 +190,10 @@ public:
   float calcGyro(int16_t);
   float calcAccel(int16_t);
 
+protected:
+  bool enable_free_fall_detection();
+  bool enable_big_motion_detection();
+
 private:
 };
 
@@ -264,15 +268,24 @@ private:
 #define LSM6DS3_ACC_GYRO_TIMESTAMP2_REG   0X42
 #define LSM6DS3_ACC_GYRO_STEP_COUNTER_L   0X4B
 #define LSM6DS3_ACC_GYRO_STEP_COUNTER_H   0X4C
-#define LSM6DS3_ACC_GYRO_FUNC_SRC         0X53
-#define LSM6DS3_ACC_GYRO_TAP_CFG1         0X58
-#define LSM6DS3_ACC_GYRO_TAP_THS_6D       0X59
-#define LSM6DS3_ACC_GYRO_INT_DUR2         0X5A
-#define LSM6DS3_ACC_GYRO_WAKE_UP_THS      0X5B
-#define LSM6DS3_ACC_GYRO_WAKE_UP_DUR      0X5C
-#define LSM6DS3_ACC_GYRO_FREE_FALL        0X5D
-#define LSM6DS3_ACC_GYRO_MD1_CFG          0X5E
-#define LSM6DS3_ACC_GYRO_MD2_CFG          0X5F
+// Significant motion, tilt, step detector, hard/soft-iron and sensor hub interrupt source register (r).
+#define LSM6DS3_ACC_GYRO_FUNC_SRC 0X53
+// Timestamp, pedometer, tilt, filtering, and tap recognition functions configuration register (r/w).
+#define LSM6DS3_ACC_GYRO_TAP_CFG 0X58
+// Portrait/landscape position and tap function threshold register (r/w).
+#define LSM6DS3_ACC_GYRO_TAP_THS_6D 0X59
+// Tap recognition function setting register (r/w).
+#define LSM6DS3_ACC_GYRO_INT_DUR2 0X5A
+// Single and double-tap function threshold register (r/w)
+#define LSM6DS3_ACC_GYRO_WAKE_UP_THS 0X5B
+// Free-fall, wakeup, timestamp and sleep mode functions duration setting register (r/w).
+#define LSM6DS3_ACC_GYRO_WAKE_UP_DUR 0X5C
+// Free-fall function duration setting register (r/w).
+#define LSM6DS3_ACC_GYRO_FREE_FALL 0X5D
+// Functions routing on INT1 register (r/w)
+#define LSM6DS3_ACC_GYRO_MD1_CFG 0X5E
+// Functions routing on INT2 register (r/w).
+#define LSM6DS3_ACC_GYRO_MD2_CFG 0X5F
 
 /************** Access Device RAM  *******************/
 #define LSM6DS3_ACC_GYRO_ADDR0_TO_RW_RAM  0x62
@@ -931,7 +944,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL3_C
-    Address       : 0X12
+    Address       : LSM6DS3_ACC_GYRO_CTRL3_C
     Bit Group Name: SW_RESET
     Permission    : RW
     Comment       : Software reset. Default value: 0
@@ -944,7 +957,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL3_C
-    Address       : 0X12
+    Address       : LSM6DS3_ACC_GYRO_CTRL3_C
     Bit Group Name: BLE
     Permission    : RW
     Comment       : Big/Little Endian Data selection. Default value 0
@@ -957,7 +970,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL3_C
-    Address       : 0X12
+    Address       : LSM6DS3_ACC_GYRO_CTRL3_C
     Bit Group Name: IF_INC
     Permission    : RW
     Comment       : Register address automatically incremented during a multiple byte access with a serial interface
@@ -971,7 +984,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL3_C
-    Address       : 0X12
+    Address       : LSM6DS3_ACC_GYRO_CTRL3_C
     Bit Group Name: SIM
     Permission    : RW
     Comment       : SPI Serial Interface Mode selection. Default value: 0
@@ -984,7 +997,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL3_C
-    Address       : 0X12
+    Address       : LSM6DS3_ACC_GYRO_CTRL3_C
     Bit Group Name: PP_OD
     Permission    : RW
     Comment       : Push-pull/open-drain selection on INT1 and INT2 pads. Default value: 0
@@ -997,7 +1010,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL3_C
-    Address       : 0X12
+    Address       : LSM6DS3_ACC_GYRO_CTRL3_C
     Bit Group Name: INT_ACT_LEVEL
     Permission    : RW
     Comment       : Interrupt activation level. Default value: 0
@@ -1010,7 +1023,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL3_C
-    Address       : 0X12
+    Address       : LSM6DS3_ACC_GYRO_CTRL3_C
     Bit Group Name: BDU
     Permission    : RW
     Comment       : Block Data Update. Default value:
@@ -1023,7 +1036,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL3_C
-    Address       : 0X12
+    Address       : LSM6DS3_ACC_GYRO_CTRL3_C
     Bit Group Name: BOOT
     Permission    : RW
     Comment       : Reboot memory content. Default value: 0
@@ -1036,7 +1049,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL4_C
-    Address       : 0X13
+    Address       : LSM6DS3_ACC_GYRO_CTRL4_C
     Bit Group Name: STOP_ON_FTH
     Permission    : RW
     Comment       : Enable FIFO threshold level use. Default value: 0
@@ -1049,7 +1062,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL4_C
-    Address       : 0X13
+    Address       : LSM6DS3_ACC_GYRO_CTRL4_C
     Bit Group Name: I2C_DISABLE
     Permission    : RW
     Comment       : Disable I2C interface. Default value: 0
@@ -1062,7 +1075,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL4_C
-    Address       : 0X13
+    Address       : LSM6DS3_ACC_GYRO_CTRL4_C
     Bit Group Name: DRDY_MSK
     Permission    : RW
     Comment       : Data-ready mask enable. If enabled, when switching from Power-Down to an active mode, the
@@ -1077,7 +1090,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL4_C
-    Address       : 0X13
+    Address       : LSM6DS3_ACC_GYRO_CTRL4_C
     Bit Group Name: FIFO_TEMP_EN
     Permission    : RW
     Comment       : Enable temperature data as 4th FIFO data set(3). Default: 0
@@ -1090,7 +1103,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL4_C
-    Address       : 0X13
+    Address       : LSM6DS3_ACC_GYRO_CTRL4_C
     Bit Group Name: INT2_ON_INT1
     Permission    : RW
     Comment       : All interrupt signals available on INT1 pad enable. Default value: 0
@@ -1103,7 +1116,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL4_C
-    Address       : 0X13
+    Address       : LSM6DS3_ACC_GYRO_CTRL4_C
     Bit Group Name: SLEEP_G
     Permission    : RW
     Comment       : Gyroscope sleep mode enable. Default value: 0
@@ -1116,7 +1129,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL4_C
-    Address       : 0X13
+    Address       : LSM6DS3_ACC_GYRO_CTRL4_C
     Bit Group Name: BW_SCAL_ODR
     Permission    : RW
     Comment       : Accelerometer bandwidth selection. Default value: 0
@@ -1131,7 +1144,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL5_C
-    Address       : 0X14
+    Address       : LSM6DS3_ACC_GYRO_CTRL5_C
     Bit Group Name: ST_XL
     Permission    : RW
     Comment       : Linear acceleration sensor self-test enable. Default value: 00
@@ -1146,7 +1159,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL5_C
-    Address       : 0X14
+    Address       : LSM6DS3_ACC_GYRO_CTRL5_C
     Bit Group Name: ST_G
     Permission    : RW
     Comment       : Angular rate sensor self-test enable. Default value: 00
@@ -1161,7 +1174,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL5_C
-    Address       : 0X14
+    Address       : LSM6DS3_ACC_GYRO_CTRL5_C
     Bit Group Name: ROUNDING
     Permission    : RW
     Comment       : Circular burst-mode (rounding) read from output registers. Default: 000
@@ -1185,7 +1198,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL6_C
-    Address       : 0X15
+    Address       : LSM6DS3_ACC_GYRO_CTRL6_C
     Bit Group Name: XL_HM_MODE
     Permission    : RW
     Comment       : High-performance operating mode disable for accelerometer(1). Default value: 0
@@ -1198,7 +1211,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL6_C
-    Address       : 0X15
+    Address       : LSM6DS3_ACC_GYRO_CTRL6_C
     Bit Group Name: LVL2_EN
     Permission    : RW
     Comment       : Gyroscope level-sensitive latched enable. Default value: 0
@@ -1211,7 +1224,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL6_C
-    Address       : 0X15
+    Address       : LSM6DS3_ACC_GYRO_CTRL6_C
     Bit Group Name: LVL_EN
     Permission    : RW
     Comment       : Gyroscope data level-sensitive trigger enable. Default value: 0
@@ -1224,7 +1237,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL6_C
-    Address       : 0X15
+    Address       : LSM6DS3_ACC_GYRO_CTRL6_C
     Bit Group Name: TRIG_EN
     Permission    : RW
     Comment       : Gyroscope data edge-sensitive trigger enable. Default value: 0
@@ -1237,7 +1250,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL7_G
-    Address       : 0X16
+    Address       : LSM6DS3_ACC_GYRO_CTRL7_G
     Bit Group Name: ROUNDING_STATUS
     Permission    : RW
     Comment       : Source register rounding function enable on STATUS_REG (1Eh), FUNC_SRC (53h) and WAKE_UP_SRC (1Bh)
@@ -1251,7 +1264,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL7_G
-    Address       : 0X16
+    Address       : LSM6DS3_ACC_GYRO_CTRL7_G
     Bit Group Name: HP_G_RST
     Permission    : RW
     Comment       : Gyro digital HP filter reset. Default: 0
@@ -1264,7 +1277,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL7_G
-    Address       : 0X16
+    Address       : LSM6DS3_ACC_GYRO_CTRL7_G
     Bit Group Name: HPCF_G
     Permission    : RW
     Comment       : Gyroscope high-pass filter cutoff frequency selection. Default value: 00.
@@ -1279,7 +1292,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL7_G
-    Address       : 0X16
+    Address       : LSM6DS3_ACC_GYRO_CTRL7_G
     Bit Group Name: HP_G_EN
     Permission    : RW
     Comment       : Gyroscope digital high-pass filter enable. The filter is enabled only if the gyro is in HP mode.
@@ -1293,7 +1306,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL7_G
-    Address       : 0X16
+    Address       : LSM6DS3_ACC_GYRO_CTRL7_G
     Bit Group Name: G_HM_MODE
     Permission    : RW
     Comment       : High-performance operating mode disable for gyroscope. Default: 0
@@ -1306,7 +1319,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL8_XL
-    Address       : 0X17
+    Address       : LSM6DS3_ACC_GYRO_CTRL8_XL
     Bit Group Name: LOW_PASS_ON_6D
     Permission    : RW
     Comment       : Low-pass filter on 6D function selection.
@@ -1319,7 +1332,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL8_XL
-    Address       : 0X17
+    Address       : LSM6DS3_ACC_GYRO_CTRL8_XL
     Bit Group Name: HP_SLOPE_XL_EN
     Permission    : RW
     Comment       : Accelerometer slope filter / high-pass filter selection
@@ -1332,7 +1345,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL8_XL
-    Address       : 0X17
+    Address       : LSM6DS3_ACC_GYRO_CTRL8_XL
     Bit Group Name: HPCF_XL
     Permission    : RW
     Comment       : Accelerometer slope filter and high-pass filter configuration and cutoff setting. Refer to Table 68.
@@ -1353,7 +1366,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL8_XL
-    Address       : 0X17
+    Address       : LSM6DS3_ACC_GYRO_CTRL8_XL
     Bit Group Name: LPF2_XL_EN
     Permission    : RW
     Comment       : Accelerometer low-pass filter LPF2 selection. Refer to Figure 6.
@@ -1418,7 +1431,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL10_C
-    Address       : 0X19
+    Address       : LSM6DS3_ACC_GYRO_CTRL10_C
     Bit Group Name: SIGN_MOTION_EN
     Permission    : RW
     Comment       : Enable significant motion function. Default value: 0
@@ -1431,7 +1444,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL10_C
-    Address       : 0X19
+    Address       : LSM6DS3_ACC_GYRO_CTRL10_C
     Bit Group Name: PEDO_RST_STEP
     Permission    : RW
     Comment       : Reset pedometer step counter. Default value:
@@ -1444,7 +1457,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL10_C
-    Address       : 0X19
+    Address       : LSM6DS3_ACC_GYRO_CTRL10_C
     Bit Group Name: FUNC_EN
     Permission    : RW
     Comment       : Enable embedded functionalities (pedometer, tilt, significant motion, sensor hub and ironing) and
@@ -1458,7 +1471,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL10_C
-    Address       : 0X19
+    Address       : LSM6DS3_ACC_GYRO_CTRL10_C
     Bit Group Name: XEN_G
     Permission    : RW
     Comment       : Gyroscope pitch axis (X) output enable. Default value: 1
@@ -1471,7 +1484,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL10_C
-    Address       : 0X19
+    Address       : LSM6DS3_ACC_GYRO_CTRL10_C
     Bit Group Name: YEN_G
     Permission    : RW
     Comment       : Gyroscope roll axis (Y) output enable. Default value: 1
@@ -1484,7 +1497,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : CTRL10_C
-    Address       : 0X19
+    Address       : LSM6DS3_ACC_GYRO_CTRL10_C
     Bit Group Name: ZEN_G
     Permission    : RW
     Comment       : Gyroscope yaw axis (Z) output enable. Default value: 1
@@ -1497,7 +1510,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MASTER_CONFIG
-    Address       : 0X1A
+    Address       : LSM6DS3_ACC_GYRO_MASTER_CONFIG
     Bit Group Name: MASTER_ON
     Permission    : RW
     Comment       : Sensor hub I2C master enable. Default: 0
@@ -1511,7 +1524,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MASTER_CONFIG
-    Address       : 0X1A
+    Address       : LSM6DS3_ACC_GYRO_MASTER_CONFIG
     Bit Group Name: IRON_EN
     Permission    : RW
     Comment       : Enable hard-iron correction algorithm for magnetometer. Default value: 0
@@ -1524,7 +1537,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MASTER_CONFIG
-    Address       : 0X1A
+    Address       : LSM6DS3_ACC_GYRO_MASTER_CONFIG
     Bit Group Name: PASS_THRU_MODE
     Permission    : RW
     Comment       : I2C interface pass-through. Default value: 0
@@ -1537,7 +1550,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MASTER_CONFIG
-    Address       : 0X1A
+    Address       : LSM6DS3_ACC_GYRO_MASTER_CONFIG
     Bit Group Name: PULL_UP_EN
     Permission    : RW
     Comment       : Auxiliary I2C pull-up. Default value: 0
@@ -1550,7 +1563,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MASTER_CONFIG
-    Address       : 0X1A
+    Address       : LSM6DS3_ACC_GYRO_MASTER_CONFIG
     Bit Group Name: START_CONFIG
     Permission    : RW
     Comment       : Sensor Hub trigger signal selection. Default valu
@@ -1563,7 +1576,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MASTER_CONFIG
-    Address       : 0X1A
+    Address       : LSM6DS3_ACC_GYRO_MASTER_CONFIG
     Bit Group Name: DATA_VAL_SEL_FIFO
     Permission    : RW
     Comment       : Selection of FIFO data-valid signal. Default value: 0
@@ -1576,7 +1589,7 @@ typedef enum
 
 /*******************************************************************************
     Register      : MASTER_CONFIG
-    Address       : 0X1A
+    Address       : LSM6DS3_ACC_GYRO_MASTER_CONFIG
     Bit Group Name: DRDY_ON_INT1
     Permission    : RW
     Comment       : Manage the Master DRDY signal on INT1 pad. Default: 0
@@ -2037,15 +2050,15 @@ typedef enum
 /*******************************************************************************
     Register      : FUNC_SRC
     Address       : LSM6DS3_ACC_GYRO_FUNC_SRC
-    Bit Group Name: SIGN_MOT_IA
+    Bit Group Name: SIGN_MOTION_IA
     Permission    : RO
     Comment       : Significant motion event detection status. Default value: 0
 *******************************************************************************/
 typedef enum
 {
-  LSM6DS3_ACC_GYRO_SIGN_MOT_IA_STATUS_NOT_DETECTED = 0x00,
-  LSM6DS3_ACC_GYRO_SIGN_MOT_IA_STATUS_DETECTED = 0x40,
-} LSM6DS3_ACC_GYRO_SIGN_MOT_IA_STATUS_t;
+  LSM6DS3_ACC_GYRO_SIGN_MOTION_IA_NOT_DETECTED = 0x00,
+  LSM6DS3_ACC_GYRO_SIGN_MOTION_IA_DETECTED = 0x40,
+} LSM6DS3_ACC_GYRO_SIGN_MOTION_IA_t;
 
 /*******************************************************************************
     Register      : FUNC_SRC
@@ -2062,8 +2075,8 @@ typedef enum
 } LSM6DS3_ACC_GYRO_STEP_COUNT_DELTA_IA_STATUS_t;
 
 /*******************************************************************************
-    Register      : TAP_CFG1
-    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
+    Register      : TAP_CFG
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG
     Bit Group Name: LIR
     Permission    : RW
     Comment       : Latched Interrupt. Default value: 0
@@ -2075,8 +2088,8 @@ typedef enum
 } LSM6DS3_ACC_GYRO_LIR_t;
 
 /*******************************************************************************
-    Register      : TAP_CFG1
-    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
+    Register      : TAP_CFG
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG
     Bit Group Name: TAP_Z_EN
     Permission    : RW
     Comment       : Enable Z direction in tap recognition. Default value: 0
@@ -2088,8 +2101,8 @@ typedef enum
 } LSM6DS3_ACC_GYRO_TAP_Z_EN_t;
 
 /*******************************************************************************
-    Register      : TAP_CFG1
-    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
+    Register      : TAP_CFG
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG
     Bit Group Name: TAP_Y_EN
     Permission    : RW
     Comment       : Enable Y direction in tap recognition. Default value: 0
@@ -2101,8 +2114,8 @@ typedef enum
 } LSM6DS3_ACC_GYRO_TAP_Y_EN_t;
 
 /*******************************************************************************
-    Register      : TAP_CFG1
-    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
+    Register      : TAP_CFG
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG
     Bit Group Name: TAP_X_EN
     Permission    : RW
     Comment       : Enable X direction in tap recognition. Default value: 0
@@ -2114,8 +2127,8 @@ typedef enum
 } LSM6DS3_ACC_GYRO_TAP_X_EN_t;
 
 /*******************************************************************************
-    Register      : SLOPE_FDS
-    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
+    Register      : TAP_CFG
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG
     Bit Group Name: SLOPE_FDS
     Permission    : RW
     Comment       : Enable accelerometer HP and LPF2 filters (refer to Figure 6). Default value: 0
@@ -2127,8 +2140,8 @@ typedef enum
 } LSM6DS3_ACC_GYRO_SLOPE_FDS_t;
 
 /*******************************************************************************
-    Register      : TAP_CFG1
-    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
+    Register      : TAP_CFG
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG
     Bit Group Name: TILT_EN
     Permission    : RW
     Comment       : Tilt calculation enable. Default value: 0
@@ -2140,8 +2153,8 @@ typedef enum
 } LSM6DS3_ACC_GYRO_TILT_EN_t;
 
 /*******************************************************************************
-    Register      : TAP_CFG1
-    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
+    Register      : TAP_CFG
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG
     Bit Group Name: PEDO_EN
     Permission    : RW
     Comment       : Pedometer algorithm enable. Default value: 0
@@ -2153,8 +2166,8 @@ typedef enum
 } LSM6DS3_ACC_GYRO_PEDO_EN_t;
 
 /*******************************************************************************
-    Register      : TAP_CFG1
-    Address       : LSM6DS3_ACC_GYRO_TAP_CFG1
+    Register      : TAP_CFG
+    Address       : LSM6DS3_ACC_GYRO_TAP_CFG
     Bit Group Name: TIMER_EN
     Permission    : RW
     Comment       : Timestamp count enable, output data are collected in TIMESTAMP0_REG (40h), TIMESTAMP1_REG (41h),

@@ -14,7 +14,7 @@
     - battery.h: handle the battery readings, for battery level
     - button.h: control the button. Takes callbacks for actions on multiple button pushes. Used to display stuf on the button if needed
     - fileSystem.h: handle the reading and writting of variables to memory
-    - IMU.h: the imu related operations
+    - imu.h: the imu related operations
     - indicator.h: visual indicator controler (led in the button)
     - output_power.h: interface of the output voltage driver
     - sound.h: microphone main input point. Compute FFT and auto disable
