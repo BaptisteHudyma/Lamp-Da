@@ -111,24 +111,25 @@ bool should_charge()
     return false;
   }
 
-  // get the estimation of the level, between the safe bounds
-  const uint16_t batteryPercent = battery::get_level_safe(battery.voltage_mV);
-
   // battery charge is latched on
   if (isBatteryFullLatched_s)
   {
     // deactivate latch below a certain level
-    if (batteryPercent < 9500)
+    if (battery::get_level_safe(battery.voltage_mV) < 9500)
     {
       isBatteryFullLatched_s = false;
     }
     return false;
   }
 
+  // reached end of charge state
+  const bool isEndOfCharge =
+          drivers::get_charge_current() <= 0 and charger.status == Charger_t::ChargerStatus_t::CHARGING;
+
   static uint32_t batteryFullDeglitchTime = 0;
 
   // check battery full status
-  if (isBatteryFullLatched_s or batteryPercent >= 10000)
+  if (isBatteryFullLatched_s or isEndOfCharge)
   {
     const uint32_t time = time_ms();
 
@@ -136,8 +137,8 @@ bool should_charge()
     {
       batteryFullDeglitchTime = time;
     }
-    // the battery needs to stay == 100 for 20 seconds
-    else if (time - batteryFullDeglitchTime > 20 * 1000)
+    // the battery needs to stay == 100 for 5 seconds
+    else if (time - batteryFullDeglitchTime > 5 * 1000)
     {
       batteryFullDeglitchTime = 0;
       // charge done, latch battery level
@@ -229,11 +230,7 @@ void update_state_status()
         {
           case drivers::ChargeStatus_t::OFF:
             {
-              if (isBatteryFullLatched_s)
-              {
-                charger.status = Charger_t::ChargerStatus_t::CHARGE_FINISHED;
-              }
-              else if (not drivers::get_battery().isPresent)
+              if (not drivers::get_battery().isPresent)
               {
                 charger.status = Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING;
               }
@@ -247,7 +244,10 @@ void update_state_status()
           case drivers::ChargeStatus_t::PRECHARGE:
           case drivers::ChargeStatus_t::FASTCHARGE:
             {
-              charger.status = Charger_t::ChargerStatus_t::CHARGING;
+              if (isBatteryFullLatched_s)
+                charger.status = Charger_t::ChargerStatus_t::CHARGE_FINISHED;
+              else
+                charger.status = Charger_t::ChargerStatus_t::CHARGING;
               break;
             }
           case drivers::ChargeStatus_t::SLOW_CHARGE:
@@ -299,13 +299,16 @@ void update_state()
  *
  *  HEADER DEFINITIONS
  *
- * */
+ */
 
 bool setup()
 {
   // start with default parameters
-  const bool isChargerEnabled =
-          drivers::enable(batteryMinVoltageSafe_mV, batteryMaxVoltage_mV, batteryMaxChargeCurrent_mA, false);
+  const bool isChargerEnabled = drivers::enable(batteryMinVoltageSafe_mV,
+                                                batteryMaxVoltageSafe_mV,
+                                                batteryMaxChargeCurrent_mA,
+                                                batteryMaxDischargeCurrent_mA,
+                                                false);
   if (not isChargerEnabled)
   {
     const auto chargerStatus = drivers::get_status();

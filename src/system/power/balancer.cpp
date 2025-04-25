@@ -175,7 +175,7 @@ void balance_batteries()
     else
     {
       // set the cell to balance if too far from the mean
-      if (isBalancing)
+      if (not isBalancing)
         shouldBalance = status.batteryVoltages_mV[i] >= (batteryVoltageMin + unbalancedMv);
       // is already balancing, latch until we reach the same (sameish) voltage
       else

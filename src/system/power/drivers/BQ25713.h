@@ -456,8 +456,7 @@ public:
       // PROCHOT will be triggered if the adapter is removed. Default is
       // disabled.
       FIELD(val0, PROCHOT_PROFILE_ACOK, 0x00, 0x01)
-      // IDCHG threshold. PROCHOT is triggered when IDCHG is above; 0-32356mA
-      // in 512mA steps. Default is 16384mA
+      // range 0 A to 32256 mA, step 512 mA. There is a 128 mA offset. Measure current between SRN and SRP.
       FIELD(val1, IDCHG_VTH, 0x02, 0x06)
       // IDCHG deglitch time; 1.6ms, 100us, 6ms, 12ms. Default is 100us.
       FIELD(val1, IDCHG_DEG, 0x00, 0x02)
