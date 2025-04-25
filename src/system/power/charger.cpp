@@ -111,24 +111,44 @@ bool should_charge()
     return false;
   }
 
-  // get the estimation of the level, between the safe bounds
-  const uint16_t batteryPercent = battery::get_level_safe(battery.voltage_mV);
-
   // battery charge is latched on
   if (isBatteryFullLatched_s)
   {
     // deactivate latch below a certain level
-    if (batteryPercent < 9500)
+    if (battery::get_level_safe(battery.voltage_mV) < 9500)
     {
       isBatteryFullLatched_s = false;
     }
     return false;
   }
+
   // reached end of charge state
-  else if (drivers::get_charge_current() <= 0 and charger.status == Charger_t::ChargerStatus_t::CHARGING)
+  const bool isEndOfCharge =
+          drivers::get_charge_current() <= 0 and charger.status == Charger_t::ChargerStatus_t::CHARGING;
+
+  static uint32_t batteryFullDeglitchTime = 0;
+
+  // check battery full status
+  if (isBatteryFullLatched_s or isEndOfCharge)
   {
-    isBatteryFullLatched_s = true;
-    return false;
+    const uint32_t time = time_ms();
+
+    if (batteryFullDeglitchTime == 0)
+    {
+      batteryFullDeglitchTime = time;
+    }
+    // the battery needs to stay == 100 for 5 seconds
+    else if (time - batteryFullDeglitchTime > 5 * 1000)
+    {
+      batteryFullDeglitchTime = 0;
+      // charge done, latch battery level
+      isBatteryFullLatched_s = true;
+      return false;
+    }
+  }
+  else
+  {
+    batteryFullDeglitchTime = 0;
   }
 
   // all conditions passed

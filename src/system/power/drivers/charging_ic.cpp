@@ -630,7 +630,11 @@ uint16_t get_charge_current()
   // return chargerIcRegisters.chargeCurrent.get();
 }
 
-bool is_input_source_present() { return chargerIcRegisters.chargerStatus.AC_STAT() != 0; }
+bool is_input_source_present()
+{
+  chargerIc.readRegEx(chargerIcRegisters.chargerStatus);
+  return chargerIcRegisters.chargerStatus.AC_STAT() != 0 and not isInOtg_s;
+}
 
 void try_clear_faults()
 {
