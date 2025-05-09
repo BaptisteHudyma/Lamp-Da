@@ -2,9 +2,6 @@
 
 #include <cstdint>
 
-#include "physical/imu.h"
-#include "power/charger.h"
-#include "power/power_handler.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 
@@ -167,6 +164,7 @@ void true_power_off()
 
   // deactivate indicators
   indicator::set_color(utils::ColorSpace::BLACK);
+  DigitalPin::deactivate_gpios(); // physically disconnect gpios
   delay_ms(1);
 
   // power down nrf52.
@@ -640,9 +638,6 @@ void handle_shutdown_state()
   {
     // TODO: error ?
   }
-
-  // deactivate indicators
-  indicator::set_color(utils::ColorSpace::ORANGE);
 
   // deactivate strip power
   outputPower::write_voltage(0); // power down
