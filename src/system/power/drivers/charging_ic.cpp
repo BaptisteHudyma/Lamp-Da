@@ -613,7 +613,7 @@ void shutdown()
   chargerIc.writeRegEx(chargerIcRegisters.chargeOption0);
 
   chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
-  // enable high impedance mode
+  // disable high impedance mode
   chargerIcRegisters.chargeOption3.set_EN_HIZ(0);
   chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
 }

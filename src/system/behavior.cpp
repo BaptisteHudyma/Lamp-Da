@@ -626,11 +626,13 @@ void handle_post_output_light_state()
 
 void handle_shutdown_state()
 {
+  // detach all interrupts, to prevent interruption of shutdown
+  DigitalPin::detach_all();
+  yield_this_thread();
+
   // block other threads
   suspend_all_threads();
 
-  // detach the button interrupts
-  DigitalPin::detach_all(); // detach the interrupts
   delay_ms(10);
 
   // shutdown all external power
