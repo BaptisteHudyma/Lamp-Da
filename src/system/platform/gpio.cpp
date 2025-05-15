@@ -31,6 +31,16 @@
 #error "Firmware version missmatch"
 #endif
 
+// Register function to disconnect gpios
+void disconnect_pin(uint32_t ulPin)
+{
+  if (ulPin >= PINS_COUNT)
+  {
+    return;
+  }
+  nrf_gpio_cfg_default(g_ADigitalPinMap[ulPin]);
+}
+
 class DigitalPinImpl
 {
 public:
@@ -205,5 +215,7 @@ void DigitalPin::detach_callbacks()
   DigitalPin::s_gpiosWithInterrupts.erase(mGpio);
   mImpl->detach_callbacks();
 }
+
+void DigitalPin::disconnect() { disconnect_pin(mImpl->mDigitalPin); }
 
 #endif

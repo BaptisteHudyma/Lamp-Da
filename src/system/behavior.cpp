@@ -2,9 +2,6 @@
 
 #include <cstdint>
 
-#include "physical/imu.h"
-#include "power/charger.h"
-#include "power/power_handler.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 
@@ -167,6 +164,7 @@ void true_power_off()
 
   // deactivate indicators
   indicator::set_color(utils::ColorSpace::BLACK);
+  DigitalPin::deactivate_gpios(); // physically disconnect gpios
   delay_ms(1);
 
   // power down nrf52.
@@ -628,11 +626,13 @@ void handle_post_output_light_state()
 
 void handle_shutdown_state()
 {
+  // detach all interrupts, to prevent interruption of shutdown
+  DigitalPin::detach_all();
+  yield_this_thread();
+
   // block other threads
   suspend_all_threads();
 
-  // detach the button interrupts
-  DigitalPin::detach_all(); // detach the interrupts
   delay_ms(10);
 
   // shutdown all external power
@@ -640,9 +640,6 @@ void handle_shutdown_state()
   {
     // TODO: error ?
   }
-
-  // deactivate indicators
-  indicator::set_color(utils::ColorSpace::ORANGE);
 
   // deactivate strip power
   outputPower::write_voltage(0); // power down

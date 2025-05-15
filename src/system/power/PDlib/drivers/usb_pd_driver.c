@@ -56,11 +56,7 @@ void pd_startup()
   pd_ping_enable(1);
 }
 
-void pd_turn_off()
-{
-  // stop negociation for sleep mode
-  pd_request_source_voltage(5000);
-}
+void pd_turn_off() {}
 
 // Called by the pd algo when the source capabilities are received
 void pd_process_source_cap_callback(int cnt, uint32_t* src_caps)

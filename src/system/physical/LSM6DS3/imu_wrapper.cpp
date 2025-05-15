@@ -49,7 +49,7 @@ bool Wrapper::shutdown()
   return false;
 }
 
-Reading get_reading()
+Reading Wrapper::get_reading()
 {
   Reading reads;
   // coordinate change to the lamp body

@@ -1,9 +1,7 @@
 #include "imu.h"
 
-#include <cstdint>
 #include <cstring>
 
-#include "LSM6DS3/imu_wrapper.h"
 #include "src/system/utils/print.h"
 
 #include "src/system/platform/time.h"

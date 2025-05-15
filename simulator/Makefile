@@ -72,7 +72,7 @@ $(BUILD_DIR)/%-simulator: $(SRC_DIR)src/%-simulator.cpp $(MOCK_OBJ) $(OBJ)
 	@echo; echo " --- $@"
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXX_BUILD_FLAGS) -c $< -o $@.o $(CXX_LDFLAGS)
-	$(CXX) $(CXX_BUILD_FLAGS) -o $@ $(MOCK_OBJ) $(OBJ) $@.o $(CXX_LDFLAGS)
+	$(CXX) $(CXX_BUILD_FLAGS) $(MOCK_OBJ) $(OBJ) $@.o -o $@  $(CXX_LDFLAGS)
 
 # generer les fichiers objets
 $(BUILD_DIR)/%.o: %.cpp %.d

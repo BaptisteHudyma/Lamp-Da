@@ -11,6 +11,7 @@
 
 #include "src/system/platform/registers.h"
 #include "src/system/platform/threads.h"
+#include "src/system/platform/i2c.h"
 
 #include "src/system/physical/battery.h"
 #include "src/system/physical/fileSystem.h"
@@ -149,6 +150,18 @@ void handleCommand(const std::string& command)
 
     case utils::hash("alerts"):
       alerts::show_all();
+      break;
+
+    case utils::hash("i2c"):
+      lampda_print(
+              "fusb detected : %d\n"
+              "imu detected: %d\n"
+              "balancer detected: %d\n"
+              "charger detected: %d\n",
+              i2c_check_existence(0, pdNegociationI2cAddress) == 0,
+              i2c_check_existence(0, imuI2cAddress) == 0,
+              i2c_check_existence(0, batteryBalancerI2cAddress) == 0,
+              i2c_check_existence(0, chargeI2cAddress) == 0);
       break;
 
     case utils::hash("ADC"):
