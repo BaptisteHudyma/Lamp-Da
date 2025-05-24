@@ -126,3 +126,9 @@ void DigitalPin::detach_callbacks()
   DigitalPin::s_gpiosWithInterrupts.erase(mGpio);
   mImpl->detach_callbacks();
 }
+
+void DigitalPin::disconnect()
+{
+  // do nothing ?
+  // TODO
+}

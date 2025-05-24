@@ -2,9 +2,6 @@
 
 #include <cstdint>
 
-#include "physical/imu.h"
-#include "power/charger.h"
-#include "power/power_handler.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 
@@ -94,7 +91,7 @@ void set_power_on() { isTargetPoweredOn_s = true; }
 void set_power_off() { isTargetPoweredOn_s = false; }
 
 // return true if vbus is high
-bool is_charger_powered() { return charger::is_vbus_powered() || is_voltage_detected_on_vbus(); }
+bool is_charger_powered() { return charger::is_vbus_powered(); }
 
 // hold the last time startup_sequence has been called
 uint32_t lastStartupSequence = 0;
@@ -167,6 +164,7 @@ void true_power_off()
 
   // deactivate indicators
   indicator::set_color(utils::ColorSpace::BLACK);
+  DigitalPin::deactivate_gpios(); // physically disconnect gpios
   delay_ms(1);
 
   // power down nrf52.
@@ -628,11 +626,13 @@ void handle_post_output_light_state()
 
 void handle_shutdown_state()
 {
+  // detach all interrupts, to prevent interruption of shutdown
+  DigitalPin::detach_all();
+  yield_this_thread();
+
   // block other threads
   suspend_all_threads();
 
-  // detach the button interrupts
-  DigitalPin::detach_all(); // detach the interrupts
   delay_ms(10);
 
   // shutdown all external power
@@ -640,9 +640,6 @@ void handle_shutdown_state()
   {
     // TODO: error ?
   }
-
-  // deactivate indicators
-  indicator::set_color(utils::ColorSpace::ORANGE);
 
   // deactivate strip power
   outputPower::write_voltage(0); // power down

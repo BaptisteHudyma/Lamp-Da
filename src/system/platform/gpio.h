@@ -78,6 +78,10 @@ public:
   void attach_callback(voidFuncPtr func, Interrupt mode);
   void detach_callbacks();
 
+  // if called, this pin will be physically disconnected from any power/gnd
+  // if will need to be reinitialized
+  void disconnect();
+
   static void detach_all()
   {
     // detach all set interrupts
@@ -86,6 +90,16 @@ public:
       DigitalPin(pin).detach_callbacks();
     }
     DigitalPin::s_gpiosWithInterrupts.clear();
+  }
+
+  // call this when the gpios needs to be deactivated
+  static void deactivate_gpios()
+  {
+    // loop though all gpios, deactivate them all
+    for (int pin = GPIO::gpio0; pin != GPIO::Output_EnableOutputGate; ++pin)
+    {
+      DigitalPin((GPIO)pin).disconnect();
+    }
   }
 
 private:

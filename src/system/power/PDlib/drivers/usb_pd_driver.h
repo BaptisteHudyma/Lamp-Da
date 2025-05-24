@@ -64,6 +64,11 @@ extern "C" {
   void set_allow_power_sourcing(const int allowPowerSourcing);
 
   /**
+   * Regularly update thez battery level
+   */
+  void set_battery_level(const uint8_t battLevelPercent);
+
+  /**
    * \brief return 1 if the system is preparing a swap
    */
   int is_activating_otg();
