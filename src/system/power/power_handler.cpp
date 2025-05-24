@@ -305,6 +305,7 @@ bool go_to_output_mode()
 {
   if (__private::can_switch_states())
   {
+    powerDelivery::suspend_pd_state_machine();
     __private::switch_state(PowerStates::OUTPUT_VOLTAGE_MODE);
     return true;
   }
@@ -316,6 +317,7 @@ bool go_to_charger_mode()
   // TODO: and other checks
   if (__private::can_switch_states())
   {
+    powerDelivery::resume_pd_state_machine();
     __private::switch_state(PowerStates::CHARGING_MODE);
     return true;
   }
@@ -327,6 +329,7 @@ bool go_to_otg_mode()
 {
   if (__private::can_switch_states())
   {
+    powerDelivery::resume_pd_state_machine();
     __private::switch_state(PowerStates::OTG_MODE);
     return true;
   }

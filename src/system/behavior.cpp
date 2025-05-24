@@ -91,7 +91,7 @@ void set_power_on() { isTargetPoweredOn_s = true; }
 void set_power_off() { isTargetPoweredOn_s = false; }
 
 // return true if vbus is high
-bool is_charger_powered() { return charger::is_vbus_powered() || is_voltage_detected_on_vbus(); }
+bool is_charger_powered() { return charger::is_vbus_powered(); }
 
 // hold the last time startup_sequence has been called
 uint32_t lastStartupSequence = 0;

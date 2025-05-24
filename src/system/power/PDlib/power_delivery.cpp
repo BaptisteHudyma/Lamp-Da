@@ -6,6 +6,8 @@
 
 #include "src/system/utils/print.h"
 
+#include "src/system/physical/battery.h"
+
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/threads.h"
@@ -31,6 +33,10 @@ namespace powerDelivery {
 inline static bool isPowerSourceDetected_s = false;
 // set to the time when the source is detected
 inline static uint32_t powerSourceDetectedTime_s = 0;
+
+inline static bool should_run_pd_state_machine = true;
+void suspend_pd_state_machine() { should_run_pd_state_machine = false; }
+void resume_pd_state_machine() { should_run_pd_state_machine = true; }
 
 int get_vbus_voltage()
 {
@@ -87,8 +93,9 @@ bool is_standard_port()
 
 void ic_interrupt()
 {
-  // wake up interrupt thread (cannot run code in the interrupt callback)
-  resume_thread(pdInterruptHandle_taskName);
+  if (should_run_pd_state_machine)
+    // wake up interrupt thread (cannot run code in the interrupt callback)
+    resume_thread(pdInterruptHandle_taskName);
 }
 
 bool is_vbus_powered()
@@ -198,6 +205,10 @@ void interrupt_handle()
 
 void pd_run()
 {
+  // do not run when not asked to run
+  if (!should_run_pd_state_machine)
+    return;
+
   // PD loop limits the run of this threads by waiting for events
   // DO NOT REMOVE THE PD STATE MACHINE
   // or -> add a delay to this loop instead
@@ -302,6 +313,9 @@ void loop()
 {
   data.update();
   data.serial_show();
+
+  // TODO update battery level
+  set_battery_level(100); // battery::get_battery_level() / 100);
 
   // ignore source activity if we are otg (prevent spurious reset)
   if (is_switching_to_otg())

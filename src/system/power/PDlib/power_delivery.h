@@ -15,6 +15,9 @@ void loop();
 // call once at program end
 void shutdown();
 
+void suspend_pd_state_machine();
+void resume_pd_state_machine();
+
 // use the vbus measure from negociator (close to USBC, 0 to N volts)
 int get_vbus_voltage();
 

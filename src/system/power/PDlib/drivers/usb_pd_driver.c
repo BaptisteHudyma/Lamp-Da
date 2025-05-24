@@ -18,6 +18,9 @@ struct SourcePowerParameters get_OTG_requested_parameters() { return otgParamete
 int canBecomePowerSource = 1; // enabled by default
 void set_allow_power_sourcing(const int allowPowerSourcing) { canBecomePowerSource = allowPowerSourcing != 0; }
 
+uint8_t batteryLevelPercent = 0;
+void set_battery_level(const uint8_t battLevelPercent) { batteryLevelPercent = battLevelPercent; }
+
 int _isActivatingOTG = 0;
 int is_activating_otg() { return _isActivatingOTG; }
 
@@ -31,7 +34,7 @@ const uint32_t pd_src_pdo[] = {
         PDO_FIXED(5000, 1500, PDO_FIXED_FLAGS),
         PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
         // PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
-        // TODO: debug PPS
+        // PPS (not supported)
         // PDO_VAR(4750, 20000, 3000)
 };
 const int pd_src_pdo_cnt = ARRAY_SIZE(pd_src_pdo);
@@ -42,7 +45,7 @@ const uint32_t pd_snk_pdo[] = {
         PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
         PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
         PDO_FIXED(20000, 3000, PDO_FIXED_FLAGS),
-        // PPS
+        // PPS (not supported)
         // PDO_VAR(4750u, 20000u, 3000u)
 };
 const int pd_snk_pdo_cnt = ARRAY_SIZE(pd_snk_pdo);
@@ -82,11 +85,7 @@ void pd_set_input_current_limit(uint32_t max_ma, uint32_t supply_voltage)
 }
 
 #ifndef CONFIG_CHARGER
-int board_get_battery_soc()
-{
-  // TODO: real battery level
-  return 100;
-}
+int board_get_battery_soc() { return batteryLevelPercent; }
 #endif
 
 #ifdef CONFIG_USB_PD_GIVE_BACK
@@ -119,9 +118,6 @@ void pd_loop() { pd_run_state_machine(); }
 int pd_is_valid_input_voltage(int mv) { return mv > 0 && mv <= 20000; }
 
 int is_pd_conector() { return srcCapsSaved != NULL; }
-
-void pd_connected_event() {}
-void pd_disconnected_event() {}
 
 // close source voltage, discharge vbus
 void pd_power_supply_reset()
@@ -243,10 +239,6 @@ void pd_check_dr_role(int dr_role, int flags)
 
 void pd_check_pr_role(int pr_role, int flags)
 {
-  // for some reason, this function can be called in disconnected state
-  if (!pd_is_connected())
-    return;
-
   /*
    * If partner is dual-role power and dualrole toggling is on, consider
    * if a power swap is necessary.
