@@ -3,7 +3,7 @@
 #include <cstdint>
 
 #include "balancer.h"
-#include "drivers/charging_ic.h"
+#include "charging_ic.h"
 #include "PDlib/power_delivery.h"
 
 #include "src/system/alerts.h"
