@@ -2,13 +2,17 @@
 
 #include <cstdint>
 
-#include "BQ25713.h"
-#include "src/system/alerts.h"
-#include "src/system/utils/print.h"
-
+#include "src/system/platform/i2c.h"
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/registers.h"
+
+#include "src/system/alerts.h"
+#include "src/system/utils/print.h"
+#include "src/system/utils/utils.h"
+
+// use depend of component
+#include "depends/BQ25713/BQ25713.h"
 
 namespace charger {
 namespace drivers {

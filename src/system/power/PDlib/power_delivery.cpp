@@ -12,7 +12,7 @@
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/threads.h"
 
-#include "../drivers/charging_ic.h"
+#include "../charging_ic.h"
 #include "../power_gates.h"
 
 // remove this to remove all PD algorithms

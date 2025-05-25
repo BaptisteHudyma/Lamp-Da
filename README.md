@@ -128,10 +128,11 @@ First clone the repository:
 ```sh
 git clone "https://github.com/BaptisteHudyma" LampColorControler
 cd LampColorControler
-make
+git submodule update --init
+make verify-all
 ```
 
-As highlighted above, this project uses Arduino platform, you will need to
+As highlighted above, this project uses Arduino SDK, you will need to
 install Arduino before continuing to the next step.
 
 Then, check that `arduino-cli` is available in path:

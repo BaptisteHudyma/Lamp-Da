@@ -1,10 +1,14 @@
 #include "balancer.h"
 
 #include "src/system/platform/time.h"
+#include "src/system/platform/i2c.h"
+
 #include "src/system/utils/print.h"
 
-#include "drivers/BQ76905.h"
 #include <cstdint>
+
+// use depend of component
+#include "depends/BQ76905/BQ76905.h"
 
 namespace balancer {
 

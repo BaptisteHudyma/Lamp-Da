@@ -1,0 +1,6 @@
+[submodule "depends/BQ76905"]
+	path = depends/BQ76905
+	url = https://github.com/BaptisteHudyma/BQ76905.git
+[submodule "depends/BQ25713"]
+	path = depends/BQ25713
+	url = https://github.com/BaptisteHudyma/BQ25713.git
