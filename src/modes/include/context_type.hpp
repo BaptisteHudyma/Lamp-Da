@@ -33,7 +33,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   using StateTy = StateTyOf<LocalModeTy>;
 
   /// \private True if LocalModeTy is a BasicMode
-  static constexpr bool isMode = isMode<LocalModeTy>;
+  static constexpr bool isMode = is_mode<LocalModeTy>;
 
   /// \private True if context is root "manager" context
   static constexpr bool isManager = std::is_same_v<LocalModeTy, ModeManagerTy>;

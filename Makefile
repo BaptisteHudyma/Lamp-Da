@@ -6,6 +6,7 @@ CACHE_DIR=$(BUILD_DIR)/cache
 ARTIFACTS=$(BUILD_DIR)/artifacts
 OBJECTS_DIR=$(BUILD_DIR)/objs
 ARDUINO_LOC=$(BUILD_DIR)/arduino-cli
+COMPILED_UF2=$(BUILD_DIR)/uf2
 
 SHELL:=/bin/bash # required by python3 virtualenv
 PYTHON_EXE=/usr/bin/env python3
@@ -382,7 +383,7 @@ build: has-lamp-type process $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 	# checking if sketch object preprocessing was successful...
 	@test -e $(BUILD_DIR)/.process-${LMBD_LAMP_TYPE}-success || (echo '->' error happened! && false)
 	# building project...
-	@mkdir -p $(ARTIFACTS) $(OBJECTS_DIR) $(CACHE_DIR)
+	@mkdir -p $(ARTIFACTS) $(OBJECTS_DIR) $(CACHE_DIR) $(COMPILED_UF2)
 	@$(ARDUINO_CLI) compile -b $(FQBN) -e -v \
 			--log-level=trace --log-file $(BUILD_DIR)/build-log.txt \
 			--build-path $(OBJECTS_DIR) --build-cache-path $(CACHE_DIR) \
@@ -414,12 +415,14 @@ build: has-lamp-type process $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 			; false))
 	@cp $(OBJECTS_DIR)/*.ino* $(ARTIFACTS)/
 
+	@python scripts/uf2conv.py $(ARTIFACTS)/$(PROJECT_INO).hex -c -f 0xADA52840 -o $(COMPILED_UF2)/${LMBD_LAMP_TYPE}.uf2
+
 #
 # Format the code base using the given clang-format file
 #
 
 format:
-	find LampColorControler.ino | xargs clang-format --style=file -i
+	find $(PROJECT_INO) | xargs clang-format --style=file -i
 	find src/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' -o -iname '*.c' | xargs clang-format --style=file -i
 	find simulator/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file -i
 
@@ -429,7 +432,7 @@ format-hook:
 format-verify:
 	@which clang-format > /dev/null \
 		|| (echo; echo Install clang / clang-format to verify format!)
-	@find LampColorControler.ino | xargs clang-format --style=file --dry-run --Werror
+	@find $(PROJECT_INO)| xargs clang-format --style=file --dry-run --Werror
 	@find src/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' -o -iname '*.c' | xargs clang-format --style=file --dry-run -Werror
 	@find simulator/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file --dry-run -Werror
 	# format is ok :)

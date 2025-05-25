@@ -16,7 +16,7 @@
 namespace modes {
 
 /// \private True iff Mode is a BasicMode
-template<typename Mode> static constexpr bool isMode = std::is_base_of_v<BasicMode, Mode>;
+template<typename Mode> static constexpr bool is_mode = std::is_base_of_v<BasicMode, Mode>;
 
 //
 // StateTyOf
@@ -174,7 +174,7 @@ template<typename TupleTy, bool hasError = false> struct allOf
 {
   template<typename Ty> struct QIsMode
   {
-    static constexpr bool value = isMode<Ty>;
+    static constexpr bool value = is_mode<Ty>;
   };
 
   template<typename Ty> struct QStateOk
