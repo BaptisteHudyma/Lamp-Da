@@ -38,6 +38,16 @@ Be careful:
 - **NO REVERSE VOLTAGE PROTECTION FOR BATTERY**: it will blow the circuit right up
 - **IO are 3.3V max**, any voltage greater will destroy the system
 
+## Update the system
+
+You can update the program without any tools :
+
+Open a serial connection to the lamp, and use the "DFU" command to reset the system.
+The system will appear on a computer as a USB file device.
+
+You just need to copy the .uf2 file matching your lamp type into this USB device.
+It will then reboot and update the system itself.
+
 ## Behavior
 
 The code in this repo is made to be used as compact lanterns.
