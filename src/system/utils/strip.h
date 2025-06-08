@@ -17,6 +17,7 @@
 #include "src/system/utils/constants.h"
 #include "src/system/utils/coordinates.h"
 #include "src/system/utils/utils.h"
+#include "src/system/utils/vector_math.h"
 
 #include "src/user/constants.h"
 
@@ -222,10 +223,11 @@ public:
     Adafruit_NeoPixel::clear();
   }
 
-  inline Cartesian get_lamp_coordinates(uint16_t n) const
+  inline vec3d get_lamp_coordinates(const uint16_t n) const
   {
     return lampCoordinates[lmpd_constrain(n, 0, LED_COUNT - 1)];
   }
+  inline uint16_t get_strip_index_from_lamp_coordinates(const vec3d& n) const { return to_led_index(n); }
 
   uint32_t* get_buffer_ptr(const uint8_t index) { return _buffers[index]; }
 
@@ -242,7 +244,7 @@ private:
   uint32_t _buffers[2][LED_COUNT];
 
   // save the expensive computation on world coordinates
-  Cartesian lampCoordinates[LED_COUNT];
+  vec3d lampCoordinates[LED_COUNT];
 
 private:
   bool hasSomeChanges;

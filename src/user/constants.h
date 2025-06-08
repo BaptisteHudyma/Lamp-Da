@@ -10,6 +10,12 @@
 // does button usermode defaults to "lockdown" mode?
 static constexpr bool usermodeDefaultsToLockdown = false;
 
+constexpr float c_PI = 3.1415926535897;
+constexpr float c_TWO_PI = 6.2831853071795;
+constexpr float c_HALF_PI = 1.5707963267948;
+
+constexpr float c_degreesToRadians = c_PI / 180.0;
+
 //
 // simple lamp type
 //
@@ -72,13 +78,20 @@ constexpr float consWattByMeter = 5;    // power consumption (in Watt/meters)
 constexpr float inputVoltage_V = 12;    // voltage (volts)
 constexpr uint16_t ledByMeter = 160.0;  // the indexable led by meters
 constexpr float ledStripWidth_mm = 5.2; // width of the led strip
+constexpr float ledStripHeigh_mm = 0.7; // heigh of the led strip (calibrated for this strip)
 
 // physical parameters computations
 constexpr float ledSize_mm = 1.0 / ledByMeter * 1000.0; // size of the individual led
-constexpr float lampBodyCircumpherence_mm = 2.0 * 3.14159265 * lampBodyRadius_mm;
+constexpr float lampBodyCircumpherence_mm =
+        c_TWO_PI * (lampBodyRadius_mm + ledStripHeigh_mm / 2.0); // external circumpherence, adjusted for led height
 constexpr float ledStripLenght_mm = LED_COUNT * ledSize_mm;
 
-constexpr float stripXCoordinates = lampBodyCircumpherence_mm / ledSize_mm + 0.35;
+// led per tube circumpherence
+constexpr float ledPerTurn = lampBodyCircumpherence_mm / ledSize_mm;
+// estimate of the lamp height
+const float lampHeight = round(ledStripWidth_mm * LED_COUNT / ledPerTurn);
+
+constexpr float stripXCoordinates = lampBodyCircumpherence_mm / ledSize_mm;
 constexpr float stripYCoordinates = ledStripLenght_mm / lampBodyCircumpherence_mm;
 constexpr float lampBodyHeight_mm = stripYCoordinates * ledStripWidth_mm;
 

@@ -10,23 +10,12 @@
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 
-uint16_t to_screen_x(const uint16_t ledIndex)
-{
-  if (ledIndex > LED_COUNT)
-    return 0;
+float to_helix_x(const uint16_t ledIndex) { return stripXCoordinates * cos(ledIndex / ledPerTurn * c_TWO_PI); }
 
-  return round(std::fmod(ledIndex, stripXCoordinates));
-}
+float to_helix_y(const uint16_t ledIndex) { return stripXCoordinates * sin(ledIndex / ledPerTurn * c_TWO_PI); }
 
-uint16_t to_screen_y(const uint16_t ledIndex)
-{
-  if (ledIndex > LED_COUNT)
-    return 0;
-  static constexpr float divider = 1.0 / stripXCoordinates;
-  return floor(ledIndex * divider);
-}
-
-uint16_t to_screen_z(const uint16_t ledIndex) { return 1; }
+// the minus is for inverse helix
+float to_helix_z(const uint16_t ledIndex) { return -ledStripWidth_mm * ledIndex / ledPerTurn; }
 
 uint16_t to_strip(uint16_t screenX, uint16_t screenY)
 {
@@ -38,19 +27,32 @@ uint16_t to_strip(uint16_t screenX, uint16_t screenY)
   return lmpd_constrain(screenX + screenY * stripXCoordinates, 0, LED_COUNT - 1);
 }
 
-Cartesian to_lamp(const uint16_t ledIndex)
+vec3d to_lamp(const uint16_t ledIndex)
 {
-  // save some processing power
-  static constexpr float calc = 1.0 / stripXCoordinates * UINT16_MAX;
-  const uint16_t traj = to_screen_x(ledIndex) * calc;
+  if (ledIndex > LED_COUNT)
+    return vec3d(0, 0, 0);
+  return vec3d(to_helix_x(ledIndex), to_helix_y(ledIndex), to_helix_z(ledIndex));
+}
 
-  const int16_t x = cos16(traj);
-  const int16_t y = sin16(traj);
+uint16_t to_led_index(const vec3d& coordinates)
+{
+  // snip Z per possible lines
+  const int16_t adjustedZ = floor(-coordinates.z / ledStripWidth_mm);
 
-  static constexpr float calc2 = (1.0 / stripYCoordinates) * INT16_MAX * 2.0;
-  const int16_t z = to_screen_y(ledIndex) * calc2;
+  // convert position to angle around z axis
+  float angle = std::atan2(coordinates.y, coordinates.x);
+  if (angle < 0)
+    angle += c_TWO_PI;
+  // indexing around the led turn
+  const float position = angle / c_TWO_PI * stripXCoordinates;
 
-  return Cartesian(x, y, z);
+  // convert to led index (approx)
+  int16_t ledIndex = round(adjustedZ * stripXCoordinates + position * stripXCoordinates);
+  if (ledIndex < 0)
+    return 0;
+  if (ledIndex > LED_COUNT)
+    return LED_COUNT;
+  return ledIndex;
 }
 
 #endif

@@ -85,7 +85,7 @@ template<typename T> struct NoiseMode : public LegacyMode
   {
     void random_noise(auto& lamp, const palette_t& palette)
     {
-      animations::random_noise(palette, lamp.getLegacyStrip(), categoryChange, true, 3);
+      animations::random_noise(palette, lamp.getLegacyStrip(), categoryChange, true, 600);
       categoryChange = false;
     }
 

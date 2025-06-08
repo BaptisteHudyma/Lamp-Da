@@ -29,12 +29,6 @@
 #define SOFTWARE_VERSION_MAJOR 1
 #define SOFTWARE_VERSION_MINOR 0
 
-constexpr float c_PI = 3.1415926535897;
-constexpr float c_TWO_PI = 6.2831853071795;
-constexpr float c_HALF_PI = 1.5707963267948;
-
-constexpr float c_degreesToRadians = c_PI / 180.0;
-
 using byte = uint8_t;
 
 constexpr uint8_t ADC_RES_EXP = 12;                        // resolution of the ADC, in bits (can be 8, 10, 12 or 14)
