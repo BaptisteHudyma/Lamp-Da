@@ -234,17 +234,22 @@ Reading get_filtered_reading(const bool resetFilter)
 {
   static Reading filtered;
 
+  constexpr float oneG = 9.80665;
+
   const Reading& read = imuInstance.get_reading();
   if (resetFilter)
   {
     filtered = read;
+    filtered.accel.x *= oneG;
+    filtered.accel.y *= oneG;
+    filtered.accel.z *= oneG;
   }
   else
   {
     // simple linear filter: average on the last 10 values
-    filtered.accel.x += 0.1 * (read.accel.x - filtered.accel.x);
-    filtered.accel.y += 0.1 * (read.accel.y - filtered.accel.y);
-    filtered.accel.z += 0.1 * (read.accel.z - filtered.accel.z);
+    filtered.accel.x += 0.1 * (read.accel.x * oneG - filtered.accel.x);
+    filtered.accel.y += 0.1 * (read.accel.y * oneG - filtered.accel.y);
+    filtered.accel.z += 0.1 * (read.accel.z * oneG - filtered.accel.z);
 
     filtered.gyro.x += 0.1 * (read.gyro.x - filtered.gyro.x);
     filtered.gyro.y += 0.1 * (read.gyro.y - filtered.gyro.y);

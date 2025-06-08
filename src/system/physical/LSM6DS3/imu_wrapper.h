@@ -20,7 +20,9 @@ struct Gyroscope : public vec3d
 
 struct Reading
 {
+  // accelerometer in G
   Accelerometer accel;
+  // gyroscopic speed in degree per second
   Gyroscope gyro;
 };
 

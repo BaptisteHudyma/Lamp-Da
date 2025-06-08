@@ -9,10 +9,9 @@
 #include "src/system/colors/colors.h"
 #include "src/system/colors/palettes.h"
 #include "src/system/colors/soundAnimations.h"
+#include "src/system/colors/imuAnimations.h"
 #include "src/system/colors/wipes.h"
 
-#include "src/system/physical/imu.h"
-#include "src/system/physical/sound.h"
 #include "src/system/physical/fileSystem.h"
 
 namespace modes::legacy {
@@ -278,6 +277,17 @@ struct FftMode : public LegacyMode
 
 } // namespace sound
 
+namespace imu {
+
+struct LiquideMode : public LegacyMode
+{
+  static void loop(auto& ctx) { animations::liquid(ctx.lamp.getLegacyStrip()); }
+
+  static void reset(auto& ctx) {}
+};
+
+} // namespace imu
+
 //
 // Legacy modes groups
 //
@@ -296,6 +306,8 @@ using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
 using PartyModes = modes::GroupFor<party::ColorWipeMode, party::RandomFillMode, party::PingPongMode>;
 
 using SoundModes = modes::GroupFor<sound::VuMeterMode, sound::FftMode>;
+
+using ImuModes = modes::GroupFor<imu::LiquideMode>;
 
 } // namespace modes::legacy
 
