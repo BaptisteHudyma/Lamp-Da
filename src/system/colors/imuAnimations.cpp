@@ -2,6 +2,8 @@
 
 #include "imuAnimations.h"
 
+#include "src/system/ext/random8.h"
+
 #include "src/system/utils/print.h"
 #include "src/system/colors/colors.h"
 
@@ -35,8 +37,8 @@ void gravity_fluid(const uint8_t fade, const Color& color, LedStrip& strip, cons
     { // For each sand grain...
       do
       {
-        grain[i].x = random(WIDTH * 256);  // Assign random position within
-        grain[i].y = random(HEIGHT * 256); // the 'grain' coordinate space
+        grain[i].x = random16(WIDTH * 256);  // Assign random position within
+        grain[i].y = random16(HEIGHT * 256); // the 'grain' coordinate space
         // Check if corresponding pixel position is already occupied...
         for (j = 0;
              (j < i) && (((grain[i].x / 256) != (grain[j].x / 256)) || ((grain[i].y / 256) != (grain[j].y / 256)));
@@ -71,8 +73,8 @@ void gravity_fluid(const uint8_t fade, const Color& color, LedStrip& strip, cons
   float v;    // Absolute velocity
   for (int i = 0; i < N_GRAINS; i++)
   {
-    grain[i].vx += ax;               // A little randomness makes
-    grain[i].vy += ay + random(az2); // tall stacks topple better!
+    grain[i].vx += ax;                 // A little randomness makes
+    grain[i].vy += ay + random16(az2); // tall stacks topple better!
     // Terminal velocity (in any direction) is 256 units -- equal to
     // 1 pixel -- which keeps moving grains from passing through each other
     // and other such mayhem.  Though it takes some extra math, velocity is

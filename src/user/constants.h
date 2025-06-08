@@ -25,6 +25,11 @@ constexpr float consWattByMeter = 12;            // power consumption (in Watt/m
 constexpr float inputVoltage_V = 12;             // voltage (volts)
 constexpr float ledStripLenght_mm = 91.0 * 25.0; // 91 sections of 25 mm
 
+// define position of led 0 to the circuit center
+constexpr float ledZeroToCircuitRotationX_degrees = 0;
+constexpr float ledZeroToCircuitRotationY_degrees = 0;
+constexpr float ledZeroToCircuitRotationZ_degrees = 22;
+
 #endif // LMBD_LAMP_TYPE__SIMPLE
 
 //
@@ -41,6 +46,11 @@ constexpr float ledStripLenght_mm = 91.0 * 25.0; // 91 sections of 25 mm
 constexpr float consWattByMeter = 10;            // power consumption (in Watt/meters)
 constexpr float inputVoltage_V = 12;             // voltage (volts)
 constexpr float ledStripLenght_mm = 67.0 * 27.0; // 67 sections of 27 mm
+
+// define position of led 0 to the circuit center
+constexpr float ledZeroToCircuitRotationX_degrees = 0;
+constexpr float ledZeroToCircuitRotationY_degrees = 0;
+constexpr float ledZeroToCircuitRotationZ_degrees = 20;
 
 #endif // LMBD_LAMP_TYPE__CCT
 
@@ -71,6 +81,11 @@ constexpr float ledStripLenght_mm = LED_COUNT * ledSize_mm;
 constexpr float stripXCoordinates = lampBodyCircumpherence_mm / ledSize_mm + 0.35;
 constexpr float stripYCoordinates = ledStripLenght_mm / lampBodyCircumpherence_mm;
 constexpr float lampBodyHeight_mm = stripYCoordinates * ledStripWidth_mm;
+
+// define position of led 0 to the circuit center
+constexpr float ledZeroToCircuitRotationX_degrees = 0;
+constexpr float ledZeroToCircuitRotationY_degrees = 0;
+constexpr float ledZeroToCircuitRotationZ_degrees = 22;
 
 #endif // LMBD_LAMP_TYPE__INDEXABLE
 

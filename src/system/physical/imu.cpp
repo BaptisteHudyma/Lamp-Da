@@ -2,7 +2,10 @@
 
 #include <cstring>
 
+#include "LSM6DS3/imu_wrapper.h"
+#include "src/system/utils/constants.h"
 #include "src/system/utils/print.h"
+#include "src/system/utils/vector_math.h"
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
@@ -17,6 +20,17 @@ DigitalPin interrupt1Pin(DigitalPin::GPIO::Signal_ImuInterrupt1);
 DigitalPin interrupt2Pin(DigitalPin::GPIO::Signal_ImuInterrupt2);
 
 bool isInitialized = false;
+
+// transform imu coordinates to board coordinates
+const TransformationMatrix imuToBoardTransformation(
+        vec3d(imuToCircuitRotationX_rad, imuToCircuitRotationY_rad, imuToCircuitRotationZ_rad),
+        vec3d(imuToCircuitPositionX_m, imuToCircuitPositionY_m, imuToCircuitPositionZ_m));
+
+// transform board coordinates to first pixel
+const TransformationMatrix boardToFirstPixelTransformation(vec3d(ledZeroToCircuitRotationX_degrees* c_degreesToRadians,
+                                                                 ledZeroToCircuitRotationY_degrees* c_degreesToRadians,
+                                                                 ledZeroToCircuitRotationZ_degrees* c_degreesToRadians),
+                                                           vec3d(0, 0, 0));
 
 void init()
 {
@@ -256,7 +270,12 @@ Reading get_filtered_reading(const bool resetFilter)
     filtered.gyro.z += 0.1 * (read.gyro.z - filtered.gyro.z);
   }
 
-  return filtered;
+  // transform to lamp body space
+  // this new object is necessary or the computation returns garbage. TODO: WHY
+  Reading lampSpaceVector;
+  lampSpaceVector.accel = boardToFirstPixelTransformation.transform(imuToBoardTransformation.transform(filtered.accel));
+  lampSpaceVector.gyro = boardToFirstPixelTransformation.transform(imuToBoardTransformation.transform(filtered.gyro));
+  return lampSpaceVector;
 }
 
 } // namespace imu
