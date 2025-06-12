@@ -34,24 +34,54 @@ vec3d to_lamp(const uint16_t ledIndex)
   return vec3d(to_helix_x(ledIndex), to_helix_y(ledIndex), to_helix_z(ledIndex));
 }
 
-uint16_t to_led_index(const vec3d& coordinates)
+bool is_lamp_coordinate_out_of_bounds(const float angle_rad, const float z)
 {
-  // snip Z per possible lines
-  const int16_t adjustedZ = floor(-coordinates.z / ledStripWidth_mm);
+  static const uint16_t maxZCoordinate = floor(-to_helix_z(LED_COUNT) / ledStripWidth_mm);
 
-  // convert position to angle around z axis
-  float angle = std::atan2(coordinates.y, coordinates.x);
-  if (angle < 0)
-    angle += c_TWO_PI;
+  // snip Z per possible lines
+  uint16_t zIndex = floor(-z / ledStripWidth_mm);
+  if (zIndex < 0.0)
+    return true;
+  if (zIndex > maxZCoordinate)
+    return true;
+
   // indexing around the led turn
-  const float position = angle / c_TWO_PI * stripXCoordinates;
+  const float angularPosition = wrap_angle(angle_rad) / c_TWO_PI * stripXCoordinates;
 
   // convert to led index (approx)
-  int16_t ledIndex = round(adjustedZ * stripXCoordinates + position * stripXCoordinates);
+  int16_t ledIndex = round(angularPosition + zIndex * stripXCoordinates);
+  if (ledIndex < 0)
+    return true;
+  if (ledIndex >= LED_COUNT)
+    return true;
+  return false;
+}
+
+uint16_t to_led_index(const float angle_rad, const float z)
+{
+  static const uint16_t maxZCoordinate = floor(-to_helix_z(LED_COUNT) / ledStripWidth_mm);
+
+  // snip Z per possible lines
+  uint16_t zIndex = floor(-z / ledStripWidth_mm);
+  if (zIndex < 0.0)
+    zIndex = 0.0;
+  if (zIndex > maxZCoordinate)
+    zIndex = maxZCoordinate;
+
+  // indexing around the led turn
+  const float angularPosition = wrap_angle(angle_rad) / c_TWO_PI * stripXCoordinates;
+
+  // convert to led index (approx)
+  int16_t ledIndex = round(angularPosition + zIndex * stripXCoordinates);
+  if (ledIndex < 0)
+    ledIndex = round(angularPosition + (zIndex + 1) * stripXCoordinates);
+  if (ledIndex >= LED_COUNT)
+    ledIndex = round(angularPosition + (zIndex - 1) * stripXCoordinates);
+
   if (ledIndex < 0)
     return 0;
-  if (ledIndex > LED_COUNT)
-    return LED_COUNT;
+  if (ledIndex >= LED_COUNT)
+    return LED_COUNT - 1;
   return ledIndex;
 }
 

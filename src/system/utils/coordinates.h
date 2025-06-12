@@ -32,10 +32,12 @@ uint16_t to_strip(const uint16_t screenX, const uint16_t screenY);
  */
 vec3d to_lamp(const uint16_t ledIndex);
 
+bool is_lamp_coordinate_out_of_bounds(const float angle_rad, const float z);
+
 /**
- * \brief convert a cartesian position to a led index
+ * \brief convert a lamp coordinate to a led index
  */
-uint16_t to_led_index(const vec3d& coordinates);
+uint16_t to_led_index(const float angle_rad, const float z);
 
 #endif
 

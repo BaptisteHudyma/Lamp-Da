@@ -227,7 +227,10 @@ public:
   {
     return lampCoordinates[lmpd_constrain(n, 0, LED_COUNT - 1)];
   }
-  inline uint16_t get_strip_index_from_lamp_coordinates(const vec3d& n) const { return to_led_index(n); }
+  inline uint16_t get_strip_index_from_lamp_cylindrical_coordinates(const float theta, const float z) const
+  {
+    return to_led_index(theta, z);
+  }
 
   uint32_t* get_buffer_ptr(const uint8_t index) { return _buffers[index]; }
 

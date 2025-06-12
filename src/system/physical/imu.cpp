@@ -27,9 +27,9 @@ const TransformationMatrix imuToBoardTransformation(
         vec3d(imuToCircuitPositionX_m, imuToCircuitPositionY_m, imuToCircuitPositionZ_m));
 
 // transform board coordinates to first pixel
-const TransformationMatrix boardToFirstPixelTransformation(vec3d(ledZeroToCircuitRotationX_degrees* c_degreesToRadians,
-                                                                 ledZeroToCircuitRotationY_degrees* c_degreesToRadians,
-                                                                 ledZeroToCircuitRotationZ_degrees* c_degreesToRadians),
+const TransformationMatrix boardToFirstPixelTransformation(vec3d(circuitToLedZeroRotationX_degrees* c_degreesToRadians,
+                                                                 circuitToLedZeroRotationY_degrees* c_degreesToRadians,
+                                                                 circuitToLedZeroRotationZ_degrees* c_degreesToRadians),
                                                            vec3d(0, 0, 0));
 
 void init()
@@ -275,6 +275,10 @@ Reading get_filtered_reading(const bool resetFilter)
   Reading lampSpaceVector;
   lampSpaceVector.accel = boardToFirstPixelTransformation.transform(imuToBoardTransformation.transform(filtered.accel));
   lampSpaceVector.gyro = boardToFirstPixelTransformation.transform(imuToBoardTransformation.transform(filtered.gyro));
+  // inverse z axis
+  lampSpaceVector.accel.x = -lampSpaceVector.accel.x;
+  lampSpaceVector.accel.y = -lampSpaceVector.accel.y;
+  lampSpaceVector.accel.z = -lampSpaceVector.accel.z;
   return lampSpaceVector;
 }
 

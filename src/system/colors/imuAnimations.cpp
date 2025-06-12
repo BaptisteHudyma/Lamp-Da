@@ -7,6 +7,8 @@
 #include "src/system/utils/print.h"
 #include "src/system/colors/colors.h"
 
+#include "src/system/colors/particule_cylinder.h"
+
 namespace animations {
 
 constexpr uint16_t N_GRAINS = 128; // Number of grains
@@ -225,19 +227,40 @@ void gravity_fluid(const uint8_t fade, const Color& color, LedStrip& strip, cons
 
 void liquid(LedStrip& strip)
 {
-  static bool isInit = false;
+  static bool init = false;
+  static Particulate particule;
+  static uint16_t prevPosition;
+  static uint32_t lastCall;
+
   static GenerateRainbowColor rainbow;
 
-  if (not isInit)
+  if (!init)
   {
+    lastCall = time_ms();
+
     rainbow = GenerateRainbowColor();
-    isInit = true;
-    gravity_fluid(100, rainbow, strip, true);
+    init = true;
+    prevPosition = 0;
+
+    const vec3d position = strip.get_lamp_coordinates(prevPosition);
+
+    particule = Particulate(position);
+    return;
   }
-  else
-  {
-    gravity_fluid(100, rainbow, strip, false);
-  }
+
+  const auto& reading = imu::get_filtered_reading(!init);
+
+  const uint32_t newTime = time_ms();
+  const float deltaTime = (newTime - lastCall) / 1000.0f;
+
+  particule.apply_acceleration(reading.accel, deltaTime);
+  particule.constraint_into_lamp_body();
+
+  const auto id = strip.get_strip_index_from_lamp_cylindrical_coordinates(particule.theta_rad, particule.z_mm);
+
+  strip.fadeToBlackBy(128);
+  strip.setPixelColor(id, rainbow.get_color(id, LED_COUNT));
+  lastCall = newTime;
 }
 
 } // namespace animations
