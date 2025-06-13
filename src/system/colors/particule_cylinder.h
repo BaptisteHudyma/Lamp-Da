@@ -16,8 +16,9 @@
 
 static constexpr float cylinderRadius_m = lampBodyRadius_mm / 1000.0;
 static constexpr float angularSpeedGain = 50000; // this gain compensate the angular acceleration for better display
-static constexpr float reboundCoeff = 0.1;
-static constexpr float speedDampening = 0.99;
+static constexpr float linearSpeedGain = 1.0;
+static constexpr float reboundCoeff = 0.1;    // low rebound [0 - 1] on walls
+static constexpr float speedDampening = 0.92; // low speed dampening [0-0.99] at every steps (viscosity)
 
 struct Particulate
 {
@@ -60,7 +61,7 @@ struct Particulate
     const vec3d& accelerationVector = tangantialVector.add(directVector);
 
     return vec2d(angularSpeedGain * accelerationVector.dot(e_theta) / static_cast<float>(cylinderRadius_m) * delaTime,
-                 accelerationVector.dot(e_z) * delaTime);
+                 linearSpeedGain * accelerationVector.dot(e_z) * delaTime);
   }
 
   /**

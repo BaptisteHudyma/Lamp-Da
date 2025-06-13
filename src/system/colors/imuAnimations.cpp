@@ -7,7 +7,7 @@
 
 namespace animations {
 
-static constexpr size_t particuleCount = 200;
+static constexpr uint8_t particuleCount = 255;
 ParticuleSystem particuleSystem(particuleCount);
 
 uint16_t generate_random_particule_position(size_t) { return random16(LED_COUNT); }

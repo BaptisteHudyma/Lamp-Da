@@ -20,12 +20,13 @@ class ParticuleSystem
 public:
   ParticuleSystem() : particuleCount(0) { ParticuleSystem::occupiedSpacesSet.clear(); }
 
-  ParticuleSystem(const size_t _desiredParticleCount) : particuleCount(min(maxParticuleCount, _desiredParticleCount))
+  ParticuleSystem(const uint8_t _desiredParticleCount) : particuleCount(min(maxParticuleCount, _desiredParticleCount))
   {
     ParticuleSystem::occupiedSpacesSet.clear();
   }
 
-  ParticuleSystem(const size_t _desiredParticleCount, const std::function<uint16_t(size_t)>& positionGeneratorFuction) :
+  ParticuleSystem(const uint8_t _desiredParticleCount,
+                  const std::function<uint16_t(size_t)>& positionGeneratorFuction) :
     particuleCount(min(maxParticuleCount, _desiredParticleCount))
   {
     ParticuleSystem::occupiedSpacesSet.clear();
@@ -51,7 +52,7 @@ public:
   }
 
   // forced to be less than maxParticuleCount
-  const size_t particuleCount;
+  const uint8_t particuleCount;
 
   void iterate_no_collisions(const vec3d& accelerationCartesian, const float deltaTime)
   {
@@ -125,7 +126,7 @@ protected:
   }
 
 private:
-  static constexpr size_t maxParticuleCount = 248;
+  static constexpr uint8_t maxParticuleCount = 255;
   static inline Particulate particules[maxParticuleCount];
   static inline std::set<uint16_t> occupiedSpacesSet; // store the occupied spaces
 };

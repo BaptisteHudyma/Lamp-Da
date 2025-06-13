@@ -279,12 +279,13 @@ struct FftMode : public LegacyMode
 
 namespace imu {
 
-struct LiquideMode : public LegacyMode
+struct RainbowLiquideMode : public LegacyMode
 {
   static void loop(auto& ctx)
   {
     auto& state = ctx.state;
     animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), false);
+    state.color.update();
   }
 
   static void reset(auto& ctx)
@@ -296,7 +297,30 @@ struct LiquideMode : public LegacyMode
 
   struct StateTy
   {
-    GenerateRainbowColor color = GenerateRainbowColor();
+    GenerateRainbowSwirl color = GenerateRainbowSwirl(5000);
+    uint8_t persistance = 210;
+  };
+};
+
+struct PaletteLiquideMode : public LegacyMode
+{
+  static void loop(auto& ctx)
+  {
+    auto& state = ctx.state;
+    animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), false);
+    state.color.update();
+  }
+
+  static void reset(auto& ctx)
+  {
+    auto& state = ctx.state;
+    state.color.reset();
+    animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), true);
+  }
+
+  struct StateTy
+  {
+    GeneratePalette color = GeneratePalette(2, PaletteForestColors);
     uint8_t persistance = 210;
   };
 };
@@ -322,7 +346,7 @@ using PartyModes = modes::GroupFor<party::ColorWipeMode, party::RandomFillMode, 
 
 using SoundModes = modes::GroupFor<sound::VuMeterMode, sound::FftMode>;
 
-using ImuModes = modes::GroupFor<imu::LiquideMode>;
+using ImuModes = modes::GroupFor<imu::RainbowLiquideMode, imu::PaletteLiquideMode>;
 
 } // namespace modes::legacy
 
