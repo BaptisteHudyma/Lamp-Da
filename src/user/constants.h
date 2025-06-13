@@ -89,7 +89,7 @@ constexpr float ledStripLenght_mm = LED_COUNT * ledSize_mm;
 // led per tube circumpherence
 constexpr float ledPerTurn = lampBodyCircumpherence_mm / ledSize_mm;
 // estimate of the lamp height
-const float lampHeight = round(ledStripWidth_mm * LED_COUNT / ledPerTurn);
+const float lampHeight = ledStripWidth_mm * LED_COUNT / ledPerTurn;
 
 constexpr float stripXCoordinates = lampBodyCircumpherence_mm / ledSize_mm;
 constexpr float stripYCoordinates = ledStripLenght_mm / lampBodyCircumpherence_mm;

@@ -1,3 +1,5 @@
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+
 #ifndef PARTICULE_SYSTEM_H
 #define PARTICULE_SYSTEM_H
 
@@ -5,10 +7,9 @@
 #include <functional>
 #include <set>
 
+#include "src/system/ext/random8.h"
 #include "src/system/colors/colors.h"
 #include "src/system/colors/particule_cylinder.h"
-
-uint16_t generat_random_particule_position(size_t) { return random16(LED_COUNT); }
 
 /**
  * \brief Define a particule system
@@ -22,7 +23,6 @@ public:
   ParticuleSystem(const size_t _desiredParticleCount) : particuleCount(min(maxParticuleCount, _desiredParticleCount))
   {
     ParticuleSystem::occupiedSpacesSet.clear();
-    init_particules(generat_random_particule_position);
   }
 
   ParticuleSystem(const size_t _desiredParticleCount, const std::function<uint16_t(size_t)>& positionGeneratorFuction) :
@@ -126,5 +126,7 @@ private:
   static inline Particulate particules[maxParticuleCount];
   static inline std::set<uint16_t> occupiedSpacesSet; // store the occupied spaces
 };
+
+#endif
 
 #endif

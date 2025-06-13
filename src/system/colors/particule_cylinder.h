@@ -1,3 +1,5 @@
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+
 #ifndef PARTICULE_CYLINDER_H
 #define PARTICULE_CYLINDER_H
 
@@ -135,5 +137,7 @@ struct Particulate
   float theta_rad;
   float z_mm;
 };
+
+#endif
 
 #endif

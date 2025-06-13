@@ -281,9 +281,24 @@ namespace imu {
 
 struct LiquideMode : public LegacyMode
 {
-  static void loop(auto& ctx) { animations::liquid(ctx.lamp.getLegacyStrip()); }
+  static void loop(auto& ctx)
+  {
+    auto& state = ctx.state;
+    animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), false);
+  }
 
-  static void reset(auto& ctx) {}
+  static void reset(auto& ctx)
+  {
+    auto& state = ctx.state;
+    state.color.reset();
+    animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), true);
+  }
+
+  struct StateTy
+  {
+    GenerateRainbowColor color = GenerateRainbowColor();
+    uint8_t persistance = 210;
+  };
 };
 
 } // namespace imu

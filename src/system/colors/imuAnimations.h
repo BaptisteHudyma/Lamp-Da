@@ -8,11 +8,9 @@
 #include "src/system/utils/colorspace.h"
 #include "src/system/utils/strip.h"
 
-#include "src/system/physical/imu.h"
-
 namespace animations {
 
-void liquid(LedStrip& strip);
+void liquid(const uint8_t persistance, const Color& color, LedStrip& strip, const bool restart);
 
 }
 
