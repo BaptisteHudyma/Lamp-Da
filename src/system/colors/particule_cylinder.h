@@ -85,7 +85,7 @@ struct Particulate
     zSpeed_mS = lmpd_constrain(zSpeed_mS + speedIncrement.y, -maxVerticalSpeed_mmS, maxVerticalSpeed_mmS);
 
     static constexpr float angularUnit = stripXCoordinates / c_TWO_PI;
-    static constexpr float verticalUnit = ledStripWidth_mm;
+    static constexpr float verticalUnit = ledStripWidth_mm * 1.5;
 
     // update position (limit speed to pixel unit per dt)
     const float angularPositionIncrement = lmpd_constrain(thetaSpeed_radS * delaTime, -angularUnit, angularUnit);
@@ -105,10 +105,12 @@ struct Particulate
       _savedLampIndex = to_lamp_index_no_bounds();
   }
 
-  Particulate simulate_after_acceleration(const vec3d& accelerationCartesian_m, const float delaTime) const
+  Particulate simulate_after_acceleration(const vec3d& accelerationCartesian_m,
+                                          const float delaTime,
+                                          const bool shouldContrain = true) const
   {
     Particulate simulated(*this);
-    simulated.apply_acceleration(accelerationCartesian_m, delaTime);
+    simulated.apply_acceleration(accelerationCartesian_m, delaTime, shouldContrain);
     return simulated;
   }
 

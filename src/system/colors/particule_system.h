@@ -23,22 +23,24 @@ public:
   ParticuleSystem(const uint8_t _desiredParticleCount) : particuleCount(min(maxParticuleCount, _desiredParticleCount))
   {
     ParticuleSystem::occupiedSpacesSet.clear();
+    ParticuleSystem::allocatedParticuleIndexes.clear();
   }
 
-  ParticuleSystem(const uint8_t _desiredParticleCount,
-                  const std::function<uint16_t(size_t)>& positionGeneratorFuction) :
+  ParticuleSystem(const uint8_t _desiredParticleCount, const std::function<int16_t(size_t)>& positionGeneratorFuction) :
     particuleCount(min(maxParticuleCount, _desiredParticleCount))
   {
     ParticuleSystem::occupiedSpacesSet.clear();
+    ParticuleSystem::allocatedParticuleIndexes.clear();
     init_particules(positionGeneratorFuction);
   }
 
-  void init_particules(const std::function<uint16_t(size_t)>& positionGeneratorFuction)
+  void init_particules(const std::function<int16_t(size_t)>& positionGeneratorFuction)
   {
     ParticuleSystem::occupiedSpacesSet.clear();
+    ParticuleSystem::allocatedParticuleIndexes.clear();
     for (size_t i = 0; i < particuleCount; ++i)
     {
-      uint16_t pos = positionGeneratorFuction(i);
+      int16_t pos = positionGeneratorFuction(i);
       int maxTries = 3;
       while (ParticuleSystem::is_position_taken(pos) and maxTries > 0)
       {
@@ -46,35 +48,54 @@ public:
         maxTries--;
       }
       // generate start position from user function
-      ParticuleSystem::particules[i] = Particulate(to_lamp(pos));
+      ParticuleSystem::particules[i] = Particulate(to_lamp_unconstraint(pos));
       ParticuleSystem::occupiedSpacesSet.insert(pos);
+      ParticuleSystem::allocatedParticuleIndexes.insert(i);
+    }
+  }
+
+  void init_deferred_particules(uint8_t particlesToPop, const std::function<int16_t(size_t)>& positionGeneratorFuction)
+  {
+    for (size_t i = 0; i < particuleCount and particlesToPop > 0; ++i)
+    {
+      if (ParticuleSystem::allocatedParticuleIndexes.find(i) != ParticuleSystem::allocatedParticuleIndexes.cend())
+      {
+        // already allocated
+        continue;
+      }
+      int16_t pos = positionGeneratorFuction(i);
+      int maxTries = 3;
+      while (ParticuleSystem::is_position_taken(pos) and maxTries > 0)
+      {
+        pos = positionGeneratorFuction(i);
+        maxTries--;
+      }
+      // generate start position from user function
+      ParticuleSystem::particules[i] = Particulate(to_lamp_unconstraint(pos));
+      ParticuleSystem::occupiedSpacesSet.insert(pos);
+      ParticuleSystem::allocatedParticuleIndexes.insert(i);
+      particlesToPop--;
     }
   }
 
   // forced to be less than maxParticuleCount
   const uint8_t particuleCount;
 
-  void iterate_no_collisions(const vec3d& accelerationCartesian, const float deltaTime)
+  void iterate_no_collisions(const vec3d& accelerationCartesian,
+                             const float deltaTime,
+                             const bool shouldContrain = true)
   {
     for (size_t i = 0; i < particuleCount; ++i)
     {
       Particulate& p = ParticuleSystem::particules[i];
-      const int16_t ledIndex = p._savedLampIndex;
-
       // apply force and constrain
-      p.apply_acceleration(accelerationCartesian, deltaTime);
-
-      // update particule position in occupation set
-      const int16_t newLedIndex = p._savedLampIndex;
-      if (newLedIndex != ledIndex)
-      {
-        ParticuleSystem::occupiedSpacesSet.erase(ledIndex);
-        ParticuleSystem::occupiedSpacesSet.insert(newLedIndex);
-      }
+      p.apply_acceleration(accelerationCartesian, deltaTime, shouldContrain);
     }
   }
 
-  void iterate_with_collisions(const vec3d& accelerationCartesian, const float deltaTime)
+  void iterate_with_collisions(const vec3d& accelerationCartesian,
+                               const float deltaTime,
+                               const bool shouldContrain = true)
   {
     for (size_t i = 0; i < particuleCount; ++i)
     {
@@ -82,7 +103,7 @@ public:
       const int16_t ledIndex = p._savedLampIndex;
 
       // simulate instead of updating directly
-      Particulate newP = p.simulate_after_acceleration(accelerationCartesian, deltaTime);
+      Particulate newP = p.simulate_after_acceleration(accelerationCartesian, deltaTime, shouldContrain);
 
       // update particule position in occupation set
       const int16_t newLedIndex = newP._savedLampIndex;
@@ -109,6 +130,22 @@ public:
     }
   }
 
+  /**
+   * \brief Filter and respawn particles depending on condition
+   */
+  void depop_particules(const std::function<bool(const Particulate&)>& shouldDepop)
+  {
+    for (size_t i = 0; i < particuleCount; ++i)
+    {
+      auto& parti = ParticuleSystem::particules[i];
+      if (shouldDepop(parti))
+      {
+        ParticuleSystem::allocatedParticuleIndexes.erase(i);
+        ParticuleSystem::occupiedSpacesSet.erase(parti._savedLampIndex);
+      }
+    }
+  }
+
   void show(const Color& color, LedStrip& strip)
   {
     for (size_t i = 0; i < particuleCount; ++i)
@@ -120,7 +157,7 @@ public:
   }
 
 protected:
-  static bool is_position_taken(const uint16_t pos)
+  static bool is_position_taken(const int16_t pos)
   {
     return ParticuleSystem::occupiedSpacesSet.find(pos) != ParticuleSystem::occupiedSpacesSet.cend();
   }
@@ -128,7 +165,8 @@ protected:
 private:
   static constexpr uint8_t maxParticuleCount = 255;
   static inline Particulate particules[maxParticuleCount];
-  static inline std::set<uint16_t> occupiedSpacesSet; // store the occupied spaces
+  static inline std::set<int16_t> occupiedSpacesSet;         // store the occupied spaces
+  static inline std::set<uint8_t> allocatedParticuleIndexes; // store the allcoated particules
 };
 
 #endif

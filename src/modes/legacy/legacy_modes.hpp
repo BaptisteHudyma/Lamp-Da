@@ -325,6 +325,29 @@ struct PaletteLiquideMode : public LegacyMode
   };
 };
 
+struct LiquideRainMode : public LegacyMode
+{
+  static void loop(auto& ctx)
+  {
+    auto& state = ctx.state;
+    animations::rain(state.persistance, state.color, ctx.lamp.getLegacyStrip(), false);
+    // state.color.update();
+  }
+
+  static void reset(auto& ctx)
+  {
+    auto& state = ctx.state;
+    state.color.reset();
+    animations::rain(state.persistance, state.color, ctx.lamp.getLegacyStrip(), true);
+  }
+
+  struct StateTy
+  {
+    GeneratePalette color = GeneratePalette(2, PaletteOceanColors);
+    uint8_t persistance = 100;
+  };
+};
+
 } // namespace imu
 
 //
@@ -346,7 +369,7 @@ using PartyModes = modes::GroupFor<party::ColorWipeMode, party::RandomFillMode, 
 
 using SoundModes = modes::GroupFor<sound::VuMeterMode, sound::FftMode>;
 
-using ImuModes = modes::GroupFor<imu::RainbowLiquideMode, imu::PaletteLiquideMode>;
+using ImuModes = modes::GroupFor<imu::RainbowLiquideMode, imu::PaletteLiquideMode, imu::LiquideRainMode>;
 
 } // namespace modes::legacy
 

@@ -9,12 +9,12 @@
 #include "src/system/ext/math8.h"
 #include "src/system/utils/utils.h"
 
-float to_helix_x(const uint16_t ledIndex) { return stripXCoordinates * cos(ledIndex / ledPerTurn * c_TWO_PI); }
+float to_helix_x(const int16_t ledIndex) { return stripXCoordinates * cos(ledIndex / ledPerTurn * c_TWO_PI); }
 
-float to_helix_y(const uint16_t ledIndex) { return stripXCoordinates * sin(ledIndex / ledPerTurn * c_TWO_PI); }
+float to_helix_y(const int16_t ledIndex) { return stripXCoordinates * sin(ledIndex / ledPerTurn * c_TWO_PI); }
 
 // the minus is for inverse helix
-float to_helix_z(const uint16_t ledIndex) { return -ledStripWidth_mm * ledIndex / ledPerTurn; }
+float to_helix_z(const int16_t ledIndex) { return -ledStripWidth_mm * ledIndex / ledPerTurn; }
 
 uint16_t to_strip(uint16_t screenX, uint16_t screenY)
 {
@@ -30,6 +30,11 @@ vec3d to_lamp(const uint16_t ledIndex)
 {
   if (ledIndex > LED_COUNT)
     return vec3d(0, 0, 0);
+  return vec3d(to_helix_x(ledIndex), to_helix_y(ledIndex), to_helix_z(ledIndex));
+}
+
+vec3d to_lamp_unconstraint(const int16_t ledIndex)
+{
   return vec3d(to_helix_x(ledIndex), to_helix_y(ledIndex), to_helix_z(ledIndex));
 }
 

@@ -12,7 +12,9 @@ namespace animations {
 
 void liquid(const uint8_t persistance, const Color& color, LedStrip& strip, const bool restart);
 
-}
+void rain(const uint8_t persistance, const Color& color, LedStrip& strip, const bool restart);
+
+} // namespace animations
 
 #endif
 
