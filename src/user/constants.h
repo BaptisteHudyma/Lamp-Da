@@ -76,14 +76,13 @@ constexpr float lampBodyRadius_mm = 25; // external radius of the lamp body
 constexpr uint16_t LED_COUNT = 556;     // How many indexable leds are attached to the controler
 constexpr float consWattByMeter = 5;    // power consumption (in Watt/meters)
 constexpr float inputVoltage_V = 12;    // voltage (volts)
-constexpr uint16_t ledByMeter = 160.0;  // the indexable led by meters
+constexpr float ledByMeter = 162.6;     // the REAL indexable led by meters (for a 160Led/m)
 constexpr float ledStripWidth_mm = 5.2; // width of the led strip
 constexpr float ledStripHeigh_mm = 0.7; // heigh of the led strip (calibrated for this strip)
 
 // physical parameters computations
-constexpr float ledSize_mm = 1.0 / ledByMeter * 1000.0; // size of the individual led
-constexpr float lampBodyCircumpherence_mm =
-        c_TWO_PI * (lampBodyRadius_mm + ledStripHeigh_mm / 2.0); // external circumpherence, adjusted for led height
+constexpr float ledSize_mm = 1.0 / ledByMeter * 1000.0;                   // size of the individual led
+constexpr float lampBodyCircumpherence_mm = c_TWO_PI * lampBodyRadius_mm; // external circumpherence
 constexpr float ledStripLenght_mm = LED_COUNT * ledSize_mm;
 
 // led per tube circumpherence

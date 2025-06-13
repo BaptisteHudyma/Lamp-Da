@@ -34,12 +34,15 @@ public:
 
   void init_particules(const std::function<uint16_t(size_t)>& positionGeneratorFuction)
   {
+    ParticuleSystem::occupiedSpacesSet.clear();
     for (size_t i = 0; i < particuleCount; ++i)
     {
       uint16_t pos = positionGeneratorFuction(i);
-      while (ParticuleSystem::is_position_taken(pos))
+      int maxTries = 3;
+      while (ParticuleSystem::is_position_taken(pos) and maxTries > 0)
       {
         pos = positionGeneratorFuction(i);
+        maxTries--;
       }
       // generate start position from user function
       ParticuleSystem::particules[i] = Particulate(to_lamp(pos));
