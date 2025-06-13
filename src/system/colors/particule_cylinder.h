@@ -13,8 +13,9 @@
  */
 
 static constexpr float cylinderRadius_m = lampBodyRadius_mm / 1000.0;
+static constexpr float angularSpeedGain = 50000; // this gain compensate the angular acceleration for better display
 static constexpr float reboundCoeff = 0.1;
-static constexpr float speedDampening = 0.95;
+static constexpr float speedDampening = 0.99;
 
 struct Particulate
 {
@@ -36,10 +37,15 @@ struct Particulate
   {
   }
 
-  /**
-   * \brief apply a cartesian acceleration to this particulate
-   */
-  void apply_acceleration(const vec3d& accelerationCartesian_m, const float delaTime)
+  Particulate(const Particulate& other) :
+    thetaSpeed_radS(other.thetaSpeed_radS),
+    zSpeed_mS(other.zSpeed_mS),
+    theta_rad(other.theta_rad),
+    z_mm(other.z_mm)
+  {
+  }
+
+  vec2d compute_speed_increment(const vec3d& accelerationCartesian_m, const float delaTime) const
   {
     // speed vector on radial
     const vec3d e_theta(-sin(theta_rad) * cylinderRadius_m, cos(theta_rad) * cylinderRadius_m, 0);
@@ -49,20 +55,39 @@ struct Particulate
     // compute the speed vector on cylinder surface
     const vec3d& tangantialVector = e_theta.multiply(accelerationCartesian_m.dot(e_theta));
     const vec3d& directVector = e_z.multiply(accelerationCartesian_m.dot(e_z));
+    const vec3d& accelerationVector = tangantialVector.add(directVector);
+
+    return vec2d(angularSpeedGain * accelerationVector.dot(e_theta) / static_cast<float>(cylinderRadius_m) * delaTime,
+                 accelerationVector.dot(e_z) * delaTime);
+  }
+
+  /**
+   * \brief apply a cartesian acceleration to this particulate
+   */
+  void apply_acceleration(const vec3d& accelerationCartesian_m, const float delaTime)
+  {
+    const auto& speedIncrement = compute_speed_increment(accelerationCartesian_m, delaTime);
+    // start by dampening the speed
+    dampen_speed(speedDampening);
 
     // update speed
-    thetaSpeed_radS += 50000.0 * tangantialVector.dot(e_theta) / static_cast<float>(cylinderRadius_m) * delaTime;
-    zSpeed_mS += directVector.dot(e_z) * delaTime;
-    // dampen the speed
-    thetaSpeed_radS *= speedDampening;
-    zSpeed_mS *= speedDampening;
+    thetaSpeed_radS += speedIncrement.x;
+    zSpeed_mS += speedIncrement.y;
 
-    // update position
-    theta_rad += thetaSpeed_radS * delaTime;
-    z_mm += (zSpeed_mS * delaTime) * 1000.0;
+    // update position (limit speed to 1px per dt)
+    theta_rad +=
+            lmpd_constrain(thetaSpeed_radS * delaTime, -stripXCoordinates / c_TWO_PI, stripXCoordinates / c_TWO_PI);
+    z_mm += (lmpd_constrain(zSpeed_mS * delaTime, -ledStripWidth_mm, ledStripWidth_mm)) * 1000.0;
 
     // limit the derivation of the angle
     theta_rad = wrap_angle(theta_rad);
+  }
+
+  Particulate simulate_after_acceleration(const vec3d& accelerationCartesian_m, const float delaTime) const
+  {
+    Particulate simulated(*this);
+    simulated.apply_acceleration(accelerationCartesian_m, delaTime);
+    return simulated;
   }
 
   /**
@@ -95,6 +120,14 @@ struct Particulate
       zSpeed_mS = -zSpeed_mS * reboundCoeff;
     }
   }
+
+  void dampen_speed(const float dampenFactor)
+  {
+    thetaSpeed_radS *= dampenFactor;
+    zSpeed_mS *= dampenFactor;
+  }
+
+  uint16_t to_lamp_index() const { return to_led_index(theta_rad, z_mm); }
 
   float thetaSpeed_radS;
   float zSpeed_mS;

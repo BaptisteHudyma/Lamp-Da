@@ -6,23 +6,51 @@
  */
 
 /**
- * \brief 3d vector in any space
+ * \brief 2d vector in any space
  */
-struct vec3d
+struct vec2d
 {
   float x;
   float y;
+
+  vec2d() : x(0), y(0) {}
+  vec2d(const vec2d& other) : x(other.x), y(other.y) {}
+  vec2d(const float _x, const float _y) : x(_x), y(_y) {}
+
+  float dot(const vec2d& other) const { return this->x * other.x + this->y * other.y; }
+  vec2d multiply(const vec2d& other) const { return vec2d(this->x * other.x, this->y * other.y); }
+  vec2d multiply(const float mult) const { return vec2d(this->x * mult, this->y * mult); }
+  vec2d add(const vec2d& other) const { return vec2d(this->x + other.x, this->y + other.y); }
+  vec2d add(const float mult) const { return vec2d(this->x + mult, this->y + mult); }
+
+  vec2d& operator=(const vec2d& other)
+  {
+    // Guard self assignment
+    if (this == &other)
+      return *this;
+
+    this->x = other.x;
+    this->y = other.y;
+    return *this;
+  }
+};
+
+/**
+ * \brief 3d vector in any space
+ */
+struct vec3d : public vec2d
+{
   float z;
 
-  vec3d() : x(0), y(0), z(0) {}
-  vec3d(const vec3d& other) : x(other.x), y(other.y), z(other.z) {}
-  vec3d(const float _x, const float _y, const float _z) : x(_x), y(_y), z(_z) {}
+  vec3d() : vec2d(), z(0) {}
+  vec3d(const float _x, const float _y, const float _z) : vec2d(_x, _y), z(_z) {}
+  vec3d(const vec2d& res, const float _z) : vec2d(res), z(_z) {}
 
-  float dot(const vec3d& other) const { return this->x * other.x + this->y * other.y + this->z * other.z; }
-  vec3d multiply(const vec3d& other) const { return vec3d(this->x * other.x, this->y * other.y, this->z * other.z); }
-  vec3d multiply(const float mult) const { return vec3d(this->x * mult, this->y * mult, this->z * mult); }
-  vec3d add(const vec3d& other) const { return vec3d(this->x + other.x, this->y + other.y, this->z + other.z); }
-  vec3d add(const float mult) const { return vec3d(this->x + mult, this->y + mult, this->z + mult); }
+  float dot(const vec3d& other) const { return vec2d::dot(other) + this->z * other.z; }
+  vec3d multiply(const vec3d& other) const { return vec3d(vec2d::multiply(other), this->z * other.z); }
+  vec3d multiply(const float mult) const { return vec3d(vec2d::multiply(mult), this->z * mult); }
+  vec3d add(const vec3d& other) const { return vec3d(vec2d::add(other), this->z + other.z); }
+  vec3d add(const float mult) const { return vec3d(vec2d::add(mult), this->z + mult); }
 
   vec3d& operator=(const vec3d& other)
   {
@@ -48,11 +76,24 @@ struct vec4d : public vec3d
   vec4d(const float _x, const float _y, const float _z, const float _w) : vec3d(_x, _y, _z) {}
   vec4d(const vec3d& res, const float _w) : vec3d(res), w(_w) {}
 
-  float dot(const vec4d& other) const { return vec3d::dot(*this) + this->w * other.w; }
-  vec4d multiply(const vec4d& other) const { return vec4d(vec3d::multiply(*this), this->w * other.w); }
+  float dot(const vec4d& other) const { return vec3d::dot(other) + this->w * other.w; }
+  vec4d multiply(const vec4d& other) const { return vec4d(vec3d::multiply(other), this->w * other.w); }
   vec4d multiply(const float mult) const { return vec4d(vec3d::multiply(mult), this->w * mult); }
-  vec4d add(const vec4d& other) const { return vec4d(vec3d::add(*this), this->w + other.w); }
+  vec4d add(const vec4d& other) const { return vec4d(vec3d::add(other), this->w + other.w); }
   vec4d add(const float mult) const { return vec4d(vec3d::add(mult), this->w + mult); }
+
+  vec4d& operator=(const vec4d& other)
+  {
+    // Guard self assignment
+    if (this == &other)
+      return *this;
+
+    this->x = other.x;
+    this->y = other.y;
+    this->z = other.z;
+    this->w = other.w;
+    return *this;
+  }
 };
 
 /**
