@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include "src/system/utils/vector_math.h"
+#include "src/system/utils/constants.h"
 
 /**
  * \brief X is the vertical axis, starting at zero and ending at stripXCoordinates
@@ -32,12 +33,19 @@ uint16_t to_strip(const uint16_t screenX, const uint16_t screenY);
  */
 vec3d to_lamp(const uint16_t ledIndex);
 
+inline bool is_led_index_valid(const int16_t ledIndex) { return ledIndex >= 0 and ledIndex < LED_COUNT; }
+
 bool is_lamp_coordinate_out_of_bounds(const float angle_rad, const float z);
 
 /**
  * \brief convert a lamp coordinate to a led index
  */
 uint16_t to_led_index(const float angle_rad, const float z);
+
+/**
+ * \brief convert a lamp coordinate to a led index, the result can be an index out of the lamp body
+ */
+int16_t to_led_index_no_bounds(const float angle_rad, const float z);
 
 #endif
 

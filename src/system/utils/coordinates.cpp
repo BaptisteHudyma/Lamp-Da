@@ -7,7 +7,6 @@
 #include <cstdint>
 
 #include "src/system/ext/math8.h"
-#include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 
 float to_helix_x(const uint16_t ledIndex) { return stripXCoordinates * cos(ledIndex / ledPerTurn * c_TWO_PI); }
@@ -32,29 +31,6 @@ vec3d to_lamp(const uint16_t ledIndex)
   if (ledIndex > LED_COUNT)
     return vec3d(0, 0, 0);
   return vec3d(to_helix_x(ledIndex), to_helix_y(ledIndex), to_helix_z(ledIndex));
-}
-
-bool is_lamp_coordinate_out_of_bounds(const float angle_rad, const float z)
-{
-  static const uint16_t maxZCoordinate = floor(-to_helix_z(LED_COUNT) / ledStripWidth_mm);
-
-  // snip Z per possible lines
-  uint16_t zIndex = floor(-z / ledStripWidth_mm);
-  if (zIndex < 0.0)
-    return true;
-  if (zIndex > maxZCoordinate)
-    return true;
-
-  // indexing around the led turn
-  const float angularPosition = wrap_angle(angle_rad) / c_TWO_PI * stripXCoordinates;
-
-  // convert to led index (approx)
-  int16_t ledIndex = round(angularPosition + zIndex * stripXCoordinates);
-  if (ledIndex < 0)
-    return true;
-  if (ledIndex >= LED_COUNT)
-    return true;
-  return false;
 }
 
 uint16_t to_led_index(const float angle_rad, const float z)
@@ -83,6 +59,24 @@ uint16_t to_led_index(const float angle_rad, const float z)
   if (ledIndex >= LED_COUNT)
     return LED_COUNT - 1;
   return ledIndex;
+}
+
+int16_t to_led_index_no_bounds(const float angle_rad, const float z)
+{
+  static const uint16_t maxZCoordinate = floor(-to_helix_z(LED_COUNT) / ledStripWidth_mm);
+
+  // snip Z per possible lines
+  uint16_t zIndex = floor(-z / ledStripWidth_mm);
+  // indexing around the led turn
+  const float angularPosition = wrap_angle(angle_rad) / c_TWO_PI * stripXCoordinates;
+
+  // convert to led index (approx)
+  return round(angularPosition + zIndex * stripXCoordinates);
+}
+
+bool is_lamp_coordinate_out_of_bounds(const float angle_rad, const float z)
+{
+  return not is_led_index_valid(to_led_index_no_bounds(angle_rad, z));
 }
 
 #endif

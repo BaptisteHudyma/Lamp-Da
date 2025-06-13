@@ -20,6 +20,9 @@ static constexpr float linearSpeedGain = 1.0;
 static constexpr float reboundCoeff = 0.1;    // low rebound [0 - 1] on walls
 static constexpr float speedDampening = 0.92; // low speed dampening [0-0.99] at every steps (viscosity)
 
+static constexpr float maxAngularSpeed_radS = 4 * c_TWO_PI;
+static constexpr float maxVerticalSpeed_mmS = 50;
+
 struct Particulate
 {
   Particulate() : thetaSpeed_radS(0.0), zSpeed_mS(0.0), theta_rad(0.0), z_mm(0.0) {}
@@ -30,6 +33,7 @@ struct Particulate
     theta_rad(atan2(positionCartesian.y, positionCartesian.x)),
     z_mm(positionCartesian.z)
   {
+    _savedLampIndex = to_lamp_index_no_bounds();
   }
 
   Particulate(const float positionTheta_rad, const float positionZ_mm) :
@@ -38,22 +42,25 @@ struct Particulate
     theta_rad(positionTheta_rad),
     z_mm(positionZ_mm)
   {
+    _savedLampIndex = to_lamp_index_no_bounds();
   }
 
   Particulate(const Particulate& other) :
     thetaSpeed_radS(other.thetaSpeed_radS),
     zSpeed_mS(other.zSpeed_mS),
     theta_rad(other.theta_rad),
-    z_mm(other.z_mm)
+    z_mm(other.z_mm),
+    _savedLampIndex(other._savedLampIndex)
   {
   }
 
   vec2d compute_speed_increment(const vec3d& accelerationCartesian_m, const float delaTime) const
   {
-    // speed vector on radial
+    // speed vector on radial (derivative of cartesian to cylinder coordinates for theta)
     const vec3d e_theta(-sin(theta_rad) * cylinderRadius_m, cos(theta_rad) * cylinderRadius_m, 0);
-    // speed vector on z
+    // speed vector on z (derivative of cartesian to cylinder coordinates for z)
     const vec3d e_z(0, 0, 1);
+    // ignore the radius derivative, as we want to stay on the cylinder surface
 
     // compute the speed vector on cylinder surface
     const vec3d& tangantialVector = e_theta.multiply(accelerationCartesian_m.dot(e_theta));
@@ -67,23 +74,35 @@ struct Particulate
   /**
    * \brief apply a cartesian acceleration to this particulate
    */
-  void apply_acceleration(const vec3d& accelerationCartesian_m, const float delaTime)
+  void apply_acceleration(const vec3d& accelerationCartesian_m, const float delaTime, const bool shouldContrain = true)
   {
     const auto& speedIncrement = compute_speed_increment(accelerationCartesian_m, delaTime);
     // start by dampening the speed
     dampen_speed(speedDampening);
 
     // update speed
-    thetaSpeed_radS += speedIncrement.x;
-    zSpeed_mS += speedIncrement.y;
+    thetaSpeed_radS = lmpd_constrain(thetaSpeed_radS + speedIncrement.x, -maxAngularSpeed_radS, maxAngularSpeed_radS);
+    zSpeed_mS = lmpd_constrain(zSpeed_mS + speedIncrement.y, -maxVerticalSpeed_mmS, maxVerticalSpeed_mmS);
 
-    // update position (limit speed to 1px per dt)
-    theta_rad +=
-            lmpd_constrain(thetaSpeed_radS * delaTime, -stripXCoordinates / c_TWO_PI, stripXCoordinates / c_TWO_PI);
-    z_mm += (lmpd_constrain(zSpeed_mS * delaTime, -ledStripWidth_mm, ledStripWidth_mm)) * 1000.0;
+    static constexpr float angularUnit = stripXCoordinates / c_TWO_PI;
+    static constexpr float verticalUnit = ledStripWidth_mm;
+
+    // update position (limit speed to pixel unit per dt)
+    const float angularPositionIncrement = lmpd_constrain(thetaSpeed_radS * delaTime, -angularUnit, angularUnit);
+    const float verticalPositionIncrement = lmpd_constrain(zSpeed_mS * delaTime, -verticalUnit, verticalUnit) * 1000.0;
+
+    // update particle position
+    z_mm += verticalPositionIncrement;
+    theta_rad += angularPositionIncrement;
 
     // limit the derivation of the angle
     theta_rad = wrap_angle(theta_rad);
+
+    // constrain to the lamp body
+    if (shouldContrain)
+      constraint_into_lamp_body();
+    else
+      _savedLampIndex = to_lamp_index_no_bounds();
   }
 
   Particulate simulate_after_acceleration(const vec3d& accelerationCartesian_m, const float delaTime) const
@@ -98,29 +117,41 @@ struct Particulate
    */
   void constraint_into_lamp_body()
   {
+    _savedLampIndex = to_lamp_index_no_bounds();
+
     // coordinates go from 0 to -max
     if (z_mm > 0)
     {
       z_mm = 0;
       zSpeed_mS = -zSpeed_mS * reboundCoeff;
+      _savedLampIndex = to_lamp_index_no_bounds();
     }
 
     if (z_mm < -lampHeight)
     {
       z_mm = -lampHeight;
       zSpeed_mS = -zSpeed_mS * reboundCoeff;
+      _savedLampIndex = to_lamp_index_no_bounds();
     }
 
     // handle the real limits (led strip do not start and end at zero depth)
-    if (z_mm >= 0 and is_lamp_coordinate_out_of_bounds(theta_rad, z_mm))
+    if (not is_led_index_valid(_savedLampIndex))
     {
-      z_mm = ledStripWidth_mm * 1.5;
-      zSpeed_mS = -zSpeed_mS * reboundCoeff;
-    }
-    if (z_mm <= -lampHeight and is_lamp_coordinate_out_of_bounds(theta_rad, z_mm))
-    {
-      z_mm = -lampHeight + ledStripWidth_mm * 1.5;
-      zSpeed_mS = -zSpeed_mS * reboundCoeff;
+      // we are too high above the first led
+      if (z_mm >= 0)
+      {
+        // go one unit lower
+        z_mm = ledStripWidth_mm * 1.5;
+        zSpeed_mS = -zSpeed_mS * reboundCoeff;
+      }
+      else
+      {
+        // go one unit above
+        z_mm = -lampHeight + ledStripWidth_mm * 1.5;
+        zSpeed_mS = -zSpeed_mS * reboundCoeff;
+      }
+      // udpate index
+      _savedLampIndex = to_lamp_index_no_bounds();
     }
   }
 
@@ -131,12 +162,16 @@ struct Particulate
   }
 
   uint16_t to_lamp_index() const { return to_led_index(theta_rad, z_mm); }
+  int16_t to_lamp_index_no_bounds() const { return to_led_index_no_bounds(theta_rad, z_mm); }
 
   float thetaSpeed_radS;
   float zSpeed_mS;
 
   float theta_rad;
   float z_mm;
+
+  // optimization
+  int16_t _savedLampIndex;
 };
 
 #endif

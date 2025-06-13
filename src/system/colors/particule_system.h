@@ -59,14 +59,13 @@ public:
     for (size_t i = 0; i < particuleCount; ++i)
     {
       Particulate& p = ParticuleSystem::particules[i];
-      const uint16_t ledIndex = p.to_lamp_index();
+      const int16_t ledIndex = p._savedLampIndex;
 
       // apply force and constrain
       p.apply_acceleration(accelerationCartesian, deltaTime);
-      p.constraint_into_lamp_body();
 
       // update particule position in occupation set
-      const uint16_t newLedIndex = p.to_lamp_index();
+      const int16_t newLedIndex = p._savedLampIndex;
       if (newLedIndex != ledIndex)
       {
         ParticuleSystem::occupiedSpacesSet.erase(ledIndex);
@@ -80,14 +79,13 @@ public:
     for (size_t i = 0; i < particuleCount; ++i)
     {
       Particulate& p = ParticuleSystem::particules[i];
-      const uint16_t ledIndex = p.to_lamp_index();
+      const int16_t ledIndex = p._savedLampIndex;
 
       // simulate instead of updating directly
       Particulate newP = p.simulate_after_acceleration(accelerationCartesian, deltaTime);
-      newP.constraint_into_lamp_body();
 
       // update particule position in occupation set
-      uint16_t newLedIndex = newP.to_lamp_index();
+      const int16_t newLedIndex = newP._savedLampIndex;
       if (newLedIndex != ledIndex)
       {
         // check collision : no collision
@@ -115,7 +113,9 @@ public:
   {
     for (size_t i = 0; i < particuleCount; ++i)
     {
-      strip.setPixelColor(ParticuleSystem::particules[i].to_lamp_index(), color.get_color(i, particuleCount));
+      const auto& index = ParticuleSystem::particules[i]._savedLampIndex;
+      if (is_led_index_valid(index))
+        strip.setPixelColor(index, color.get_color(i, particuleCount));
     }
   }
 
