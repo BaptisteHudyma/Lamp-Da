@@ -25,9 +25,10 @@
 #define EXPECTED_FIRMWARE_VERSION_MAJOR 1
 #define EXPECTED_FIRMWARE_VERSION_MINOR 0
 
+// Base software version, common to all systems
 // increment for every  release
-#define SOFTWARE_VERSION_MAJOR 1
-#define SOFTWARE_VERSION_MINOR 0
+#define BASE_SOFTWARE_VERSION_MAJOR 1
+#define BASE_SOFTWARE_VERSION_MINOR 0
 
 using byte = uint8_t;
 

@@ -58,14 +58,14 @@ void handleCommand(const std::string& command)
         lampda_print(
                 "hardware:%d.%d\n"
                 "firmware:%d.%d\n"
-                "software:%d.%d\n"
+                "base software:%d.%d\n"
                 "user software:%d.%d",
                 HARDWARE_VERSION_MAJOR,
                 HARDWARE_VERSION_MINOR,
                 EXPECTED_FIRMWARE_VERSION_MAJOR,
                 EXPECTED_FIRMWARE_VERSION_MINOR,
-                SOFTWARE_VERSION_MAJOR,
-                SOFTWARE_VERSION_MINOR,
+                BASE_SOFTWARE_VERSION_MAJOR,
+                BASE_SOFTWARE_VERSION_MINOR,
                 USER_SOFTWARE_VERSION_MAJOR,
                 USER_SOFTWARE_VERSION_MINOR);
         break;

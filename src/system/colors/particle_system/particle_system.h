@@ -139,7 +139,7 @@ public:
     }
   }
 
-  void show(const Color& color, LedStrip& strip)
+  void show(const Color& color, const uint16_t maxColorIndex, LedStrip& strip)
   {
     for (size_t i = 0; i < particuleCount; ++i)
     {
@@ -149,7 +149,7 @@ public:
 
       const auto& index = particules[i]._savedLampIndex;
       if (is_led_index_valid(index))
-        strip.setPixelColor(index, color.get_color(i, particuleCount));
+        strip.setPixelColor(index, color.get_color(i % maxColorIndex, maxColorIndex));
     }
   }
 

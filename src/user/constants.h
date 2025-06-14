@@ -23,8 +23,8 @@ constexpr float c_degreesToRadians = c_PI / 180.0f;
 #ifdef LMBD_LAMP_TYPE__SIMPLE
 
 // Update when the soft changes version
-#define USER_SOFTWARE_VERSION_MAJOR 0
-#define USER_SOFTWARE_VERSION_MINOR 1
+#define USER_SOFTWARE_VERSION_MAJOR 1
+#define USER_SOFTWARE_VERSION_MINOR 0
 
 // parameters of the led strip used
 constexpr float consWattByMeter = 12;            // power consumption (in Watt/meters)
@@ -67,7 +67,7 @@ constexpr float circuitToLedZeroRotationZ_degrees = 88;
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
 // Update when the soft changes version
-#define USER_SOFTWARE_VERSION_MAJOR 0
+#define USER_SOFTWARE_VERSION_MAJOR 1
 #define USER_SOFTWARE_VERSION_MINOR 1
 
 constexpr float lampBodyRadius_mm = 25; // external radius of the lamp body

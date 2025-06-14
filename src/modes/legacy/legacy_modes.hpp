@@ -349,7 +349,7 @@ struct LiquideRainMode : public LegacyMode
 
   struct StateTy
   {
-    GeneratePalette color = GeneratePalette(2, PaletteCloudColors);
+    GeneratePalette color = GeneratePalette(2, PaletteWaterColors);
     uint8_t persistance = 100;
   };
 };

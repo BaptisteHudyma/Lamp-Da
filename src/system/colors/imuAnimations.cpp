@@ -30,6 +30,7 @@ void liquid(const uint8_t persistance, const Color& color, LedStrip& strip, cons
 {
   static bool isFirstInit = true;
   static uint32_t lastCall = 0;
+  static constexpr uint16_t particuleCount = 255;
 
   const bool shouldreset = restart || isFirstInit || (time_ms() - lastCall) > 500;
 
@@ -37,7 +38,6 @@ void liquid(const uint8_t persistance, const Color& color, LedStrip& strip, cons
   if (shouldreset)
   {
     isFirstInit = false;
-    static constexpr uint16_t particuleCount = 255;
     particuleSystem.set_max_particle_count(particuleCount);
     particuleSystem.init_particules(generate_random_particule_position);
     lastCall = time_ms();
@@ -50,7 +50,7 @@ void liquid(const uint8_t persistance, const Color& color, LedStrip& strip, cons
   particuleSystem.iterate_with_collisions(reading.accel, deltaTime);
 
   strip.fadeToBlackBy(255 - persistance);
-  particuleSystem.show(color, strip);
+  particuleSystem.show(color, particuleCount, strip);
 
   lastCall = newTime;
 }
@@ -62,10 +62,12 @@ bool recycle_particules_if_too_far(const Particle& p)
 
 void rain(const uint8_t rainDensity, const uint8_t persistance, const Color& color, LedStrip& strip, const bool restart)
 {
-  static bool isFirstInit = true;
-  static uint32_t lastCall = 0;
   static constexpr float lightRainDropsPerSecond = 1;
   static constexpr float heavyRainDropsPerSecond = 700;
+  static constexpr uint16_t particuleCount = 512;
+
+  static bool isFirstInit = true;
+  static uint32_t lastCall = 0;
   static float rainDropSpawn = 0.0;
 
   const bool shouldreset = restart || isFirstInit || (time_ms() - lastCall) > 500;
@@ -75,7 +77,6 @@ void rain(const uint8_t rainDensity, const uint8_t persistance, const Color& col
   if (shouldreset)
   {
     isFirstInit = false;
-    static constexpr uint16_t particuleCount = 512;
     particuleSystem.set_max_particle_count(particuleCount);
     lastCall = time_ms();
     return;
@@ -103,7 +104,8 @@ void rain(const uint8_t rainDensity, const uint8_t persistance, const Color& col
   particuleSystem.depop_particules(recycle_particules_if_too_far);
 
   strip.fadeToBlackBy(255 - persistance);
-  particuleSystem.show(color, strip);
+  // break palette size to display more colors per drops
+  particuleSystem.show(color, 5, strip);
 
   lastCall = newTime;
 }

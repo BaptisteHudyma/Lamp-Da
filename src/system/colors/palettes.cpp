@@ -79,6 +79,24 @@ const palette_t PaletteOceanColors = {MidnightBlue,
                                       Aqua,
                                       LightSkyBlue};
 
+/// Water colors, blues
+const palette_t PaletteWaterColors = {MidnightBlue,
+                                      DarkBlue,
+                                      MidnightBlue,
+                                      Navy,
+                                      DarkBlue,
+                                      MediumBlue,
+                                      MediumBlue,
+                                      Teal,
+                                      CadetBlue,
+                                      Blue,
+                                      DarkCyan,
+                                      CornflowerBlue,
+                                      Aquamarine,
+                                      MediumBlue,
+                                      Aqua,
+                                      LightSkyBlue};
+
 /// Forest colors, greens
 const palette_t PaletteForestColors = {DarkGreen,
                                        DarkGreen,

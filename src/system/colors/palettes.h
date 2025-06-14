@@ -237,14 +237,15 @@ typedef enum
 
 } HTMLColorCode;
 
-extern const palette_t PaletteCloudColors;
-extern const palette_t PaletteLavaColors;
-extern const palette_t PaletteFlameColors;
-extern const palette_t PaletteOceanColors;
-extern const palette_t PaletteForestColors;
-extern const palette_t PaletteRainbowColors;
-extern const palette_t PalettePartyColors;
-extern const palette_t PaletteBlackBodyColors;
+extern const palette_t PaletteCloudColors;     // blue/white palette
+extern const palette_t PaletteLavaColors;      // red orange black
+extern const palette_t PaletteFlameColors;     // lots of orange, touches of gold/yellow
+extern const palette_t PaletteOceanColors;     // Ocean colors, blues and whites
+extern const palette_t PaletteWaterColors;     // Water colors, blues
+extern const palette_t PaletteForestColors;    // Forest colors, greens
+extern const palette_t PaletteRainbowColors;   // HSV Rainbow
+extern const palette_t PalettePartyColors;     // basically, HSV with no green. looks better when lighing people
+extern const palette_t PaletteBlackBodyColors; // Black body radiation
 extern const palette_t PaletteHeatColors;
 extern const palette_t PaletteAuroraColors;
 
