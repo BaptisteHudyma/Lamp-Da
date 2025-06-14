@@ -37,7 +37,7 @@ void liquid(const uint8_t persistance, const Color& color, LedStrip& strip, cons
   if (shouldreset)
   {
     isFirstInit = false;
-    static constexpr uint8_t particuleCount = 255;
+    static constexpr uint16_t particuleCount = 255;
     particuleSystem.set_max_particle_count(particuleCount);
     particuleSystem.init_particules(generate_random_particule_position);
     lastCall = time_ms();
@@ -60,10 +60,13 @@ bool recycle_particules_if_too_far(const Particle& p)
   return p.z_mm > stripXCoordinates * 3 or p.z_mm < -(lampHeight + stripXCoordinates * 3);
 }
 
-void rain(const uint8_t persistance, const Color& color, LedStrip& strip, const bool restart)
+void rain(const uint8_t rainDensity, const uint8_t persistance, const Color& color, LedStrip& strip, const bool restart)
 {
   static bool isFirstInit = true;
   static uint32_t lastCall = 0;
+  static constexpr float lightRainDropsPerSecond = 1;
+  static constexpr float heavyRainDropsPerSecond = 700;
+  static float rainDropSpawn = 0.0;
 
   const bool shouldreset = restart || isFirstInit || (time_ms() - lastCall) > 500;
 
@@ -72,17 +75,26 @@ void rain(const uint8_t persistance, const Color& color, LedStrip& strip, const 
   if (shouldreset)
   {
     isFirstInit = false;
-    static constexpr uint8_t particuleCount = 50;
+    static constexpr uint16_t particuleCount = 512;
     particuleSystem.set_max_particle_count(particuleCount);
     lastCall = time_ms();
     return;
   }
 
-  // initialize particules in a deffered way, when free spots are available
-  particuleSystem.init_deferred_particules(4, generate_particule_at_extremes);
-
+  // time since last call
   const uint32_t newTime = time_ms();
   const float deltaTime = (newTime - lastCall) / 1000.0f;
+
+  // multiply by 2 because we rain on both sides of the lamp, half of the drops are not seen
+  const float expectedDropPerSecond = 2 * (rainDensity / 255.0 * heavyRainDropsPerSecond + lightRainDropsPerSecond);
+  rainDropSpawn += expectedDropPerSecond * deltaTime;
+
+  if (rainDropSpawn > 1.0)
+  {
+    // initialize particules in a deffered way, when free spots are available
+    particuleSystem.init_deferred_particules(rainDropSpawn, generate_particule_at_extremes);
+    rainDropSpawn = 0.0;
+  }
 
   // no collisions between particles, and with no lamp limits
   static constexpr bool shouldKeepInLampBounds = false;

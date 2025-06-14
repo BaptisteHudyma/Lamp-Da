@@ -32,7 +32,7 @@ public:
    * \brief Call when you want to change the particle count of the simulation
    * Can be called once when starting the particle system
    */
-  void set_max_particle_count(const uint8_t _particleCount)
+  void set_max_particle_count(const uint16_t _particleCount)
   {
     particuleCount = min(ParticleSystem::maxParticuleCount, _particleCount);
   }
@@ -172,13 +172,13 @@ protected:
   }
 
 private:
-  static constexpr uint8_t maxParticuleCount = 255;
+  static constexpr uint16_t maxParticuleCount = 512;
   Particle particules[maxParticuleCount];
   bool isAllocated[maxParticuleCount]; // store the allocated particules flag
   std::set<int16_t> occupiedSpacesSet; // store the occupied spaces
 
   // forced to be less than maxParticuleCount
-  uint8_t particuleCount;
+  uint16_t particuleCount;
 };
 
 #endif

@@ -330,7 +330,8 @@ struct LiquideRainMode : public LegacyMode
   static void loop(auto& ctx)
   {
     auto& state = ctx.state;
-    animations::rain(state.persistance, state.color, ctx.lamp.getLegacyStrip(), false);
+    // rain density mapped to the button ramp
+    animations::rain(ctx.get_active_custom_ramp(), state.persistance, state.color, ctx.lamp.getLegacyStrip(), false);
     // using the update will change de color of the drops at each iteration
     state.color.update();
   }
@@ -339,8 +340,12 @@ struct LiquideRainMode : public LegacyMode
   {
     auto& state = ctx.state;
     state.color.reset();
-    animations::rain(state.persistance, state.color, ctx.lamp.getLegacyStrip(), true);
+    animations::rain(1, state.persistance, state.color, ctx.lamp.getLegacyStrip(), true);
+    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
   }
+
+  // hint manager to save our custom ramp
+  static constexpr bool hasCustomRamp = true;
 
   struct StateTy
   {
