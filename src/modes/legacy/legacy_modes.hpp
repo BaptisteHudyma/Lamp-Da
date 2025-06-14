@@ -331,7 +331,8 @@ struct LiquideRainMode : public LegacyMode
   {
     auto& state = ctx.state;
     animations::rain(state.persistance, state.color, ctx.lamp.getLegacyStrip(), false);
-    // state.color.update();
+    // using the update will change de color of the drops at each iteration
+    state.color.update();
   }
 
   static void reset(auto& ctx)
@@ -343,7 +344,7 @@ struct LiquideRainMode : public LegacyMode
 
   struct StateTy
   {
-    GeneratePalette color = GeneratePalette(2, PaletteOceanColors);
+    GeneratePalette color = GeneratePalette(2, PaletteCloudColors);
     uint8_t persistance = 100;
   };
 };

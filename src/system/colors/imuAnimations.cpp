@@ -2,13 +2,14 @@
 
 #include "imuAnimations.h"
 
-#include "src/system/colors/particule_system.h"
+#include "src/system/colors/particle_system/particle_system.h"
 #include "src/system/physical/imu.h"
 
 namespace animations {
 
-static constexpr uint8_t particuleCount = 255;
-ParticuleSystem particuleSystem(particuleCount);
+// ALL IMU ANIMATIONS SHARE THIS PARTICLE SYSTEM
+// Spawn another if multiple systems should run in parralel
+inline static ParticleSystem particuleSystem = ParticleSystem();
 
 int16_t generate_random_particule_position(size_t) { return random16(LED_COUNT); }
 int16_t generate_particule_at_top_random_position(size_t)
@@ -28,13 +29,16 @@ int16_t generate_particule_at_extremes(size_t i)
 void liquid(const uint8_t persistance, const Color& color, LedStrip& strip, const bool restart)
 {
   static bool isFirstInit = true;
-
-  const auto& reading = imu::get_filtered_reading(restart || isFirstInit);
-
   static uint32_t lastCall = 0;
-  if (restart || isFirstInit)
+
+  const bool shouldreset = restart || isFirstInit || (time_ms() - lastCall) > 500;
+
+  const auto& reading = imu::get_filtered_reading(shouldreset);
+  if (shouldreset)
   {
     isFirstInit = false;
+    static constexpr uint8_t particuleCount = 255;
+    particuleSystem.set_max_particle_count(particuleCount);
     particuleSystem.init_particules(generate_random_particule_position);
     lastCall = time_ms();
     return;
@@ -51,42 +55,43 @@ void liquid(const uint8_t persistance, const Color& color, LedStrip& strip, cons
   lastCall = newTime;
 }
 
-bool recycle_particules_if_too_far(const Particulate& p)
+bool recycle_particules_if_too_far(const Particle& p)
 {
   return p.z_mm > stripXCoordinates * 3 or p.z_mm < -(lampHeight + stripXCoordinates * 3);
 }
 
-static constexpr uint8_t particuleCount2 = 50;
-ParticuleSystem particuleSystem2(particuleCount2);
-
 void rain(const uint8_t persistance, const Color& color, LedStrip& strip, const bool restart)
 {
   static bool isFirstInit = true;
-
-  const auto& reading = imu::get_filtered_reading(restart || isFirstInit);
-
   static uint32_t lastCall = 0;
-  if (restart || isFirstInit)
+
+  const bool shouldreset = restart || isFirstInit || (time_ms() - lastCall) > 500;
+
+  const auto& reading = imu::get_filtered_reading(shouldreset);
+
+  if (shouldreset)
   {
     isFirstInit = false;
+    static constexpr uint8_t particuleCount = 50;
+    particuleSystem.set_max_particle_count(particuleCount);
     lastCall = time_ms();
     return;
   }
 
   // initialize particules in a deffered way, when free spots are available
-  particuleSystem2.init_deferred_particules(4, generate_particule_at_extremes);
+  particuleSystem.init_deferred_particules(4, generate_particule_at_extremes);
 
   const uint32_t newTime = time_ms();
   const float deltaTime = (newTime - lastCall) / 1000.0f;
 
   // no collisions between particles, and with no lamp limits
   static constexpr bool shouldKeepInLampBounds = false;
-  particuleSystem2.iterate_no_collisions(reading.accel, deltaTime, shouldKeepInLampBounds);
+  particuleSystem.iterate_no_collisions(reading.accel, deltaTime, shouldKeepInLampBounds);
   // depop particules that fell too far
-  particuleSystem2.depop_particules(recycle_particules_if_too_far);
+  particuleSystem.depop_particules(recycle_particules_if_too_far);
 
   strip.fadeToBlackBy(255 - persistance);
-  particuleSystem2.show(color, strip);
+  particuleSystem.show(color, strip);
 
   lastCall = newTime;
 }

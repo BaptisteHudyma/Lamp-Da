@@ -1,7 +1,7 @@
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
-#ifndef PARTICULE_CYLINDER_H
-#define PARTICULE_CYLINDER_H
+#ifndef PARTICLE_H
+#define PARTICLE_H
 
 #include "src/system/utils/vector_math.h"
 #include "src/system/utils/coordinates.h"
@@ -11,7 +11,7 @@
 #include "src/system/utils/print.h"
 
 /**
- * \brief Define a particule in cylindrical space, and movement equations on the cylinder surface
+ * \brief Define a particle in cylindrical space, and movement equations on the cylinder surface
  */
 
 static constexpr float cylinderRadius_m = lampBodyRadius_mm / 1000.0;
@@ -23,11 +23,11 @@ static constexpr float speedDampening = 0.92; // low speed dampening [0-0.99] at
 static constexpr float maxAngularSpeed_radS = 4 * c_TWO_PI;
 static constexpr float maxVerticalSpeed_mmS = 50;
 
-struct Particulate
+struct Particle
 {
-  Particulate() : thetaSpeed_radS(0.0), zSpeed_mS(0.0), theta_rad(0.0), z_mm(0.0) {}
+  Particle() : thetaSpeed_radS(0.0), zSpeed_mS(0.0), theta_rad(0.0), z_mm(0.0) {}
 
-  Particulate(const vec3d& positionCartesian) :
+  Particle(const vec3d& positionCartesian) :
     thetaSpeed_radS(0.0),
     zSpeed_mS(0.0),
     theta_rad(atan2(positionCartesian.y, positionCartesian.x)),
@@ -36,7 +36,7 @@ struct Particulate
     _savedLampIndex = to_lamp_index_no_bounds();
   }
 
-  Particulate(const float positionTheta_rad, const float positionZ_mm) :
+  Particle(const float positionTheta_rad, const float positionZ_mm) :
     thetaSpeed_radS(0.0),
     zSpeed_mS(0.0),
     theta_rad(positionTheta_rad),
@@ -45,7 +45,7 @@ struct Particulate
     _savedLampIndex = to_lamp_index_no_bounds();
   }
 
-  Particulate(const Particulate& other) :
+  Particle(const Particle& other) :
     thetaSpeed_radS(other.thetaSpeed_radS),
     zSpeed_mS(other.zSpeed_mS),
     theta_rad(other.theta_rad),
@@ -105,17 +105,17 @@ struct Particulate
       _savedLampIndex = to_lamp_index_no_bounds();
   }
 
-  Particulate simulate_after_acceleration(const vec3d& accelerationCartesian_m,
-                                          const float delaTime,
-                                          const bool shouldContrain = true) const
+  Particle simulate_after_acceleration(const vec3d& accelerationCartesian_m,
+                                       const float delaTime,
+                                       const bool shouldContrain = true) const
   {
-    Particulate simulated(*this);
+    Particle simulated(*this);
     simulated.apply_acceleration(accelerationCartesian_m, delaTime, shouldContrain);
     return simulated;
   }
 
   /**
-   * \brief Contrain the particule movement to the cylinder, limiting the movement at the extremities
+   * \brief Contrain the particle movement to the cylinder, limiting the movement at the extremities
    */
   void constraint_into_lamp_body()
   {
