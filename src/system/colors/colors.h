@@ -158,6 +158,35 @@ private:
 };
 
 /**
+ * \brief Display color from a palette
+ * \param[in] palette The palette to use
+ */
+class GeneratePalette : public DynamicColor
+{
+public:
+  GeneratePalette(const uint8_t increment, const palette_t& palette) :
+    _increment(increment),
+    _index(0),
+    _paletteRef(&palette)
+  {
+  }
+
+  uint32_t get_color_internal(const uint16_t index, const uint16_t maxIndex) const override;
+
+  void reset() override { _index = 0; };
+
+private:
+  /**
+   * \brief Call when you want the animation to progress
+   */
+  void internal_update(const uint32_t deltaTimeMilli) override { _index += _increment; };
+
+  uint8_t _increment;
+  uint16_t _index;
+  const palette_t* _paletteRef;
+};
+
+/**
  * \brief Step through a palette
  * \param[in] palette The palette to use
  */

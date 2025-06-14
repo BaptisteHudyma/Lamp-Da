@@ -2,26 +2,17 @@
 #define IMU_WRAPPER_H
 
 #include <cstdint>
+
+#include "src/system/utils/vector_math.h"
+
 namespace imu {
-
-struct vec3d
-{
-  float x;
-  float y;
-  float z;
-};
-
-struct Accelerometer : public vec3d
-{
-};
-struct Gyroscope : public vec3d
-{
-};
 
 struct Reading
 {
-  Accelerometer accel;
-  Gyroscope gyro;
+  // accelerometer in G
+  vec3d accel;
+  // gyroscopic speed in degree per second
+  vec3d gyro;
 };
 
 class Wrapper

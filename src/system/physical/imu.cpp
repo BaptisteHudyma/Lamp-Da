@@ -2,7 +2,10 @@
 
 #include <cstring>
 
+#include "LSM6DS3/imu_wrapper.h"
+#include "src/system/utils/constants.h"
 #include "src/system/utils/print.h"
+#include "src/system/utils/vector_math.h"
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
@@ -17,6 +20,17 @@ DigitalPin interrupt1Pin(DigitalPin::GPIO::Signal_ImuInterrupt1);
 DigitalPin interrupt2Pin(DigitalPin::GPIO::Signal_ImuInterrupt2);
 
 bool isInitialized = false;
+
+// transform imu coordinates to board coordinates
+const TransformationMatrix imuToBoardTransformation(
+        vec3d(imuToCircuitRotationX_rad, imuToCircuitRotationY_rad, imuToCircuitRotationZ_rad),
+        vec3d(imuToCircuitPositionX_m, imuToCircuitPositionY_m, imuToCircuitPositionZ_m));
+
+// transform board coordinates to first pixel
+const TransformationMatrix boardToFirstPixelTransformation(vec3d(circuitToLedZeroRotationX_degrees* c_degreesToRadians,
+                                                                 circuitToLedZeroRotationY_degrees* c_degreesToRadians,
+                                                                 circuitToLedZeroRotationZ_degrees* c_degreesToRadians),
+                                                           vec3d(0, 0, 0));
 
 void init()
 {
@@ -234,24 +248,38 @@ Reading get_filtered_reading(const bool resetFilter)
 {
   static Reading filtered;
 
+  constexpr float oneG = 9.80665;
+
   const Reading& read = imuInstance.get_reading();
   if (resetFilter)
   {
     filtered = read;
+    filtered.accel.x *= oneG;
+    filtered.accel.y *= oneG;
+    filtered.accel.z *= oneG;
   }
   else
   {
     // simple linear filter: average on the last 10 values
-    filtered.accel.x += 0.1 * (read.accel.x - filtered.accel.x);
-    filtered.accel.y += 0.1 * (read.accel.y - filtered.accel.y);
-    filtered.accel.z += 0.1 * (read.accel.z - filtered.accel.z);
+    filtered.accel.x += 0.1 * (read.accel.x * oneG - filtered.accel.x);
+    filtered.accel.y += 0.1 * (read.accel.y * oneG - filtered.accel.y);
+    filtered.accel.z += 0.1 * (read.accel.z * oneG - filtered.accel.z);
 
     filtered.gyro.x += 0.1 * (read.gyro.x - filtered.gyro.x);
     filtered.gyro.y += 0.1 * (read.gyro.y - filtered.gyro.y);
     filtered.gyro.z += 0.1 * (read.gyro.z - filtered.gyro.z);
   }
 
-  return filtered;
+  // transform to lamp body space
+  // this new object is necessary or the computation returns garbage. TODO: WHY
+  Reading lampSpaceVector;
+  lampSpaceVector.accel = boardToFirstPixelTransformation.transform(imuToBoardTransformation.transform(filtered.accel));
+  lampSpaceVector.gyro = boardToFirstPixelTransformation.transform(imuToBoardTransformation.transform(filtered.gyro));
+  // inverse z axis
+  lampSpaceVector.accel.x = -lampSpaceVector.accel.x;
+  lampSpaceVector.accel.y = -lampSpaceVector.accel.y;
+  lampSpaceVector.accel.z = -lampSpaceVector.accel.z;
+  return lampSpaceVector;
 }
 
 } // namespace imu

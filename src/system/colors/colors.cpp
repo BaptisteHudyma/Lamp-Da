@@ -37,6 +37,13 @@ uint32_t GenerateRainbowSwirl::get_color_internal(const uint16_t index, const ui
   return utils::hue_to_rgb_sinus(lmpd_map<uint16_t, uint16_t>(pixelHue, 0, UINT16_MAX, 0, 360));
 }
 
+uint32_t GeneratePalette::get_color_internal(const uint16_t index, const uint16_t maxIndex) const
+{
+  const uint16_t indexAdded = (index + _index) % UINT16_MAX;
+  return get_color_from_palette(static_cast<uint8_t>(indexAdded / static_cast<float>(maxIndex) * UINT8_MAX),
+                                *_paletteRef);
+}
+
 uint32_t GeneratePaletteStep::get_color_internal(const uint16_t index, const uint16_t maxIndex) const
 {
   return get_color_from_palette(_index, *_paletteRef);

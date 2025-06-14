@@ -502,6 +502,11 @@ bool enable(const uint16_t minSystemVoltage_mV,
   chargerIcRegisters.chargeOption0.set_WDTMR_ADJ(1);
   chargerIc.writeRegEx(chargerIcRegisters.chargeOption0);
 
+  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+  // set 6A inductor (TODO: change with system constants)
+  chargerIcRegisters.chargeOption3.set_IL_AVG(0b0);
+  chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
+
   // disable charge
   enable_charge(false);
 

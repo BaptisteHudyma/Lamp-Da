@@ -35,6 +35,13 @@ template<typename N> static constexpr N abs(const N a) { return std::abs(a); }
 
 template<typename N> static constexpr N to_radians(N degrees) { return degrees * M_PI / 180.f; }
 
+inline float wrap_angle(const float angle)
+{
+  if (angle >= 0 and angle <= c_TWO_PI)
+    return angle;
+  return angle - c_TWO_PI * floor(angle / c_TWO_PI);
+}
+
 /**
  * \brief Use this to convert color to bytes
  */

@@ -9,10 +9,9 @@
 #include "src/system/colors/colors.h"
 #include "src/system/colors/palettes.h"
 #include "src/system/colors/soundAnimations.h"
+#include "src/system/colors/imuAnimations.h"
 #include "src/system/colors/wipes.h"
 
-#include "src/system/physical/imu.h"
-#include "src/system/physical/sound.h"
 #include "src/system/physical/fileSystem.h"
 
 namespace modes::legacy {
@@ -86,7 +85,7 @@ template<typename T> struct NoiseMode : public LegacyMode
   {
     void random_noise(auto& lamp, const palette_t& palette)
     {
-      animations::random_noise(palette, lamp.getLegacyStrip(), categoryChange, true, 3);
+      animations::random_noise(palette, lamp.getLegacyStrip(), categoryChange, true, 600);
       categoryChange = false;
     }
 
@@ -278,6 +277,85 @@ struct FftMode : public LegacyMode
 
 } // namespace sound
 
+namespace imu {
+
+struct RainbowLiquideMode : public LegacyMode
+{
+  static void loop(auto& ctx)
+  {
+    auto& state = ctx.state;
+    animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), false);
+    state.color.update();
+  }
+
+  static void reset(auto& ctx)
+  {
+    auto& state = ctx.state;
+    state.color.reset();
+    animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), true);
+  }
+
+  struct StateTy
+  {
+    GenerateRainbowSwirl color = GenerateRainbowSwirl(5000);
+    uint8_t persistance = 210;
+  };
+};
+
+struct PaletteLiquideMode : public LegacyMode
+{
+  static void loop(auto& ctx)
+  {
+    auto& state = ctx.state;
+    animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), false);
+    state.color.update();
+  }
+
+  static void reset(auto& ctx)
+  {
+    auto& state = ctx.state;
+    state.color.reset();
+    animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), true);
+  }
+
+  struct StateTy
+  {
+    GeneratePalette color = GeneratePalette(2, PaletteForestColors);
+    uint8_t persistance = 210;
+  };
+};
+
+struct LiquideRainMode : public LegacyMode
+{
+  static void loop(auto& ctx)
+  {
+    auto& state = ctx.state;
+    // rain density mapped to the button ramp
+    animations::rain(ctx.get_active_custom_ramp(), state.persistance, state.color, ctx.lamp.getLegacyStrip(), false);
+    // using the update will change de color of the drops at each iteration
+    state.color.update();
+  }
+
+  static void reset(auto& ctx)
+  {
+    auto& state = ctx.state;
+    state.color.reset();
+    animations::rain(1, state.persistance, state.color, ctx.lamp.getLegacyStrip(), true);
+    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
+  }
+
+  // hint manager to save our custom ramp
+  static constexpr bool hasCustomRamp = true;
+
+  struct StateTy
+  {
+    GeneratePalette color = GeneratePalette(2, PaletteWaterColors);
+    uint8_t persistance = 100;
+  };
+};
+
+} // namespace imu
+
 //
 // Legacy modes groups
 //
@@ -296,6 +374,8 @@ using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
 using PartyModes = modes::GroupFor<party::ColorWipeMode, party::RandomFillMode, party::PingPongMode>;
 
 using SoundModes = modes::GroupFor<sound::VuMeterMode, sound::FftMode>;
+
+using ImuModes = modes::GroupFor<imu::RainbowLiquideMode, imu::PaletteLiquideMode, imu::LiquideRainMode>;
 
 } // namespace modes::legacy
 

@@ -25,13 +25,10 @@
 #define EXPECTED_FIRMWARE_VERSION_MAJOR 1
 #define EXPECTED_FIRMWARE_VERSION_MINOR 0
 
+// Base software version, common to all systems
 // increment for every  release
-#define SOFTWARE_VERSION_MAJOR 1
-#define SOFTWARE_VERSION_MINOR 0
-
-constexpr float c_PI = 3.1415926535897;
-constexpr float c_TWO_PI = 6.2831853071795;
-constexpr float c_HALF_PI = 1.5707963267948;
+#define BASE_SOFTWARE_VERSION_MAJOR 1
+#define BASE_SOFTWARE_VERSION_MINOR 0
 
 using byte = uint8_t;
 
@@ -41,6 +38,18 @@ constexpr float internalReferenceVoltage = 3.0;            // 3V
 
 // number of batteries for this model
 constexpr uint8_t batteryCount = 3;
+
+// define position of imu to the circuit center
+constexpr float imuToCircuitRotationX_rad = 0 * c_degreesToRadians;
+constexpr float imuToCircuitRotationY_rad = 0 * c_degreesToRadians;
+#ifdef IS_HARDWARE_1_0
+constexpr float imuToCircuitRotationZ_rad = -9 * c_degreesToRadians;
+#else
+constexpr float imuToCircuitRotationZ_rad = -4 * c_degreesToRadians;
+#endif
+constexpr float imuToCircuitPositionX_m = 8.915 / 1000.0;
+constexpr float imuToCircuitPositionY_m = -5.769 / 1000.0;
+constexpr float imuToCircuitPositionZ_m = 0 / 1000.0;
 
 // battery specific constants
 constexpr float batteryChargeC_Rate = 0.33;
