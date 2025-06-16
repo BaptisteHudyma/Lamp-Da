@@ -19,7 +19,12 @@
 class ParticleSystem
 {
 public:
-  ParticleSystem() : particuleCount(0)
+  ParticleSystem() : particuleCount(0) { reset(); }
+
+  /**
+   * \brief  reset system to zero count
+   */
+  void reset()
   {
     occupiedSpacesSet.clear();
     for (size_t i = 0; i < ParticleSystem::maxParticuleCount; ++i)
@@ -35,6 +40,7 @@ public:
   void set_max_particle_count(const uint16_t _particleCount)
   {
     particuleCount = min(ParticleSystem::maxParticuleCount, _particleCount);
+    reset();
   }
 
   void init_particules(const std::function<int16_t(size_t)>& positionGeneratorFunction)

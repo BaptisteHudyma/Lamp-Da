@@ -272,51 +272,42 @@ struct FftMode : public LegacyMode
 
 namespace imu {
 
-struct RainbowLiquideMode : public LegacyMode
+struct LiquideMode : public LegacyMode
 {
   static void loop(auto& ctx)
   {
     auto& state = ctx.state;
-    animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), state.categoryChange);
-    state.color.update();
+
+    // get color from ramp
+    const uint8_t rampIndex =
+            min(floor(ctx.get_active_custom_ramp() / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1);
+    DynamicColor* color = state._colors[rampIndex];
+
+    animations::liquid(state.persistance, *color, ctx.lamp.getLegacyStrip(), state.categoryChange);
+    color->update();
     state.categoryChange = false;
   }
 
   static void reset(auto& ctx)
   {
     auto& state = ctx.state;
-    state.color.reset();
+    for (DynamicColor* color: state._colors)
+    {
+      color->reset();
+    }
+    ctx.template set_config_bool<ConfigKeys::rampSaturates>(false);
     state.categoryChange = true;
   }
 
   struct StateTy
   {
-    GenerateRainbowSwirl color = GenerateRainbowSwirl(5000);
-    uint8_t persistance = 210;
-    bool categoryChange = false;
-  };
-};
+    // store references to palettes
+    DynamicColor* _colors[4] = {new GeneratePalette(2, PaletteOceanColors),
+                                new GenerateRainbowSwirl(5000),
+                                new GeneratePalette(2, PaletteAuroraColors),
+                                new GeneratePalette(2, PaletteForestColors)};
+    const uint8_t maxPalettesCount = 4;
 
-struct PaletteLiquideMode : public LegacyMode
-{
-  static void loop(auto& ctx)
-  {
-    auto& state = ctx.state;
-    animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), state.categoryChange);
-    state.color.update();
-    state.categoryChange = false;
-  }
-
-  static void reset(auto& ctx)
-  {
-    auto& state = ctx.state;
-    state.color.reset();
-    state.categoryChange = true;
-  }
-
-  struct StateTy
-  {
-    GeneratePalette color = GeneratePalette(2, PaletteForestColors);
     uint8_t persistance = 210;
     bool categoryChange = false;
   };
@@ -370,13 +361,13 @@ using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
                                   calm::FireMode,
                                   calm::SineMode,
                                   calm::DriftMode,
-                                  calm::DistMode>;
+                                  calm::DistMode,
+                                  imu::LiquideMode,
+                                  imu::LiquideRainMode>;
 
 using PartyModes = modes::GroupFor<party::ColorWipeMode, party::RandomFillMode, party::PingPongMode>;
 
 using SoundModes = modes::GroupFor<sound::VuMeterMode, sound::FftMode>;
-
-using ImuModes = modes::GroupFor<imu::RainbowLiquideMode, imu::PaletteLiquideMode, imu::LiquideRainMode>;
 
 } // namespace modes::legacy
 

@@ -38,6 +38,7 @@ void liquid(const uint8_t persistance, const Color& color, LedStrip& strip, cons
   if (shouldreset)
   {
     isFirstInit = false;
+    particuleSystem.reset();
     particuleSystem.set_max_particle_count(particuleCount);
     particuleSystem.init_particules(generate_random_particule_position);
     lastCall = time_ms();
@@ -77,6 +78,7 @@ void rain(const uint8_t rainDensity, const uint8_t persistance, const Color& col
   if (shouldreset)
   {
     isFirstInit = false;
+    particuleSystem.reset();
     particuleSystem.set_max_particle_count(particuleCount);
     lastCall = time_ms();
     return;
