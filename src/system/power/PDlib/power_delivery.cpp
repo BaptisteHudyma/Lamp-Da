@@ -314,8 +314,8 @@ void loop()
   data.update();
   data.serial_show();
 
-  // TODO update battery level
-  set_battery_level(100); // battery::get_battery_level() / 100);
+  // update battery level
+  set_battery_level(battery::get_battery_level() / 100);
 
   // ignore source activity if we are otg (prevent spurious reset)
   if (is_switching_to_otg())

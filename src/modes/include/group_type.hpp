@@ -82,7 +82,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     if constexpr (systemCallbacksOnly)
     {
       details::unroll<nbModes>([&](auto Idx) LMBD_INLINE {
-        if /* TODO: constexpr */ (ModeAt<Idx>::hasSystemCallbacks)
+        if constexpr (ModeAt<Idx>::hasSystemCallbacks)
         {
           cb(context_as<ModeAt<Idx>>(ctx));
         }
