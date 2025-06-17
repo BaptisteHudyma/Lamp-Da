@@ -68,10 +68,8 @@ uint16_t to_led_index(const float angle_rad, const float z)
 
 int16_t to_led_index_no_bounds(const float angle_rad, const float z)
 {
-  static const uint16_t maxZCoordinate = floor(-to_helix_z(LED_COUNT) / ledStripWidth_mm);
-
   // snip Z per possible lines
-  uint16_t zIndex = floor(-z / ledStripWidth_mm);
+  const int16_t zIndex = floor(-z / ledStripWidth_mm);
   // indexing around the led turn
   const float angularPosition = wrap_angle(angle_rad) / c_TWO_PI * stripXCoordinates;
 

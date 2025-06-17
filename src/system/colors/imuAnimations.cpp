@@ -89,13 +89,13 @@ void rain(const uint8_t rainDensity, const uint8_t persistance, const Color& col
   const float deltaTime = (newTime - lastCall) / 1000.0f;
 
   // multiply by 2 because we rain on both sides of the lamp, half of the drops are not seen
-  const float expectedDropPerSecond = 2 * (rainDensity / 255.0 * heavyRainDropsPerSecond + lightRainDropsPerSecond);
+  const float expectedDropPerSecond = rainDensity / 255.0 * heavyRainDropsPerSecond + lightRainDropsPerSecond;
   rainDropSpawn += expectedDropPerSecond * deltaTime;
 
   if (rainDropSpawn > 1.0)
   {
     // initialize particules in a deffered way, when free spots are available
-    particuleSystem.init_deferred_particules(rainDropSpawn, generate_particule_at_extremes);
+    particuleSystem.init_deferred_particules(2 * rainDropSpawn, generate_particule_at_extremes);
     rainDropSpawn = 0.0;
   }
 
