@@ -384,8 +384,8 @@ uint16_t get_max_input_current()
   // no usb pd since some time, and vbus seems stable so try to use it
   else if (is_standard_port())
   {
-    // maximum USB current
-    return 1500;
+    // maximum USB current (hacky, would prefer USB type detection)
+    return 800;
   }
   // we dont known for now the type of connection
   return 0;
