@@ -244,13 +244,15 @@ void pd_run()
       DigitalPin(DigitalPin::GPIO::Output_DischargeVbus).set_high(true);
 
       // wait until OTG drops to acceptable level
-      while (charger::drivers::get_measurments().vbus_mV > 5500)
+      uint64_t timeout = get_time().val + 500 * MSEC_US;
+      while (get_time().val < timeout and charger::drivers::get_measurments().vbus_mV > 5500)
       {
         delay_us(50);
       }
 
       // wait for vbus voltage to drop to acceptable level
-      while (tcpm_get_vbus_voltage() > 5500)
+      timeout = get_time().val + 500 * MSEC_US;
+      while (get_time().val < timeout and tcpm_get_vbus_voltage() > 5500)
       {
         delay_us(50);
       }

@@ -28,7 +28,7 @@
 // Base software version, common to all systems
 // increment for every  release
 #define BASE_SOFTWARE_VERSION_MAJOR 1
-#define BASE_SOFTWARE_VERSION_MINOR 0
+#define BASE_SOFTWARE_VERSION_MINOR 1
 
 using byte = uint8_t;
 
