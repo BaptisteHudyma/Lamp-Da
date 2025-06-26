@@ -464,11 +464,12 @@ bool enable(const uint16_t minSystemVoltage_mV,
     chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
 
     // wait until the flag is lowered
+    uint32_t timeout = time_ms() + 500;
     do
     {
       delay_ms(5);
       chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
-    } while (chargerIcRegisters.chargeOption3.RESET_REG() == 1);
+    } while (time_ms() < timeout and chargerIcRegisters.chargeOption3.RESET_REG() == 1);
   }
 
   // everything went fine (for now)
