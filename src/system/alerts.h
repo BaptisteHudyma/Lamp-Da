@@ -25,6 +25,8 @@ enum Type : uint32_t
 
   HARDWARE_ALERT = 1 << 8, // any hardware alert
 
+  FAVORITE_SET = 1 << 9, // user favorite mode is set
+
   OTG_FAILED = 1 << 10, // OTG activation failed
 };
 

@@ -56,6 +56,8 @@ inline const char* AlertsToText(const Type type)
       return "BLUETOOTH_ADVERT";
     case HARDWARE_ALERT:
       return "HARDWARE_ALERT";
+    case FAVORITE_SET:
+      return "FAVORITE_SET";
     case OTG_FAILED:
       return "OTG_FAILED";
     default:
@@ -344,6 +346,19 @@ struct Alert_HardwareAlert : public AlertBase
   Type get_type() const override { return Type::HARDWARE_ALERT; }
 };
 
+struct Alert_FavoriteSet : public AlertBase
+{
+  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::TEAL); }
+
+  Type get_type() const override { return Type::FAVORITE_SET; }
+
+  bool should_be_cleared() const override
+  {
+    // cleared after a delay
+    return raisedTime > 0 and (time_ms() - raisedTime) > 1000;
+  }
+};
+
 struct Alert_OtgFailed : public AlertBase
 {
   bool show() const override { return indicator::blink(200, 200, utils::ColorSpace::FUSHIA); }
@@ -360,6 +375,7 @@ AlertBase* allAlerts[] = {new Alert_HardwareAlert,
                           new Alert_BatteryLow,
                           new Alert_LongLoopUpdate,
                           new Alert_BluetoothAdvertisement,
+                          new Alert_FavoriteSet,
                           new Alert_OtgFailed};
 
 void update_alerts()

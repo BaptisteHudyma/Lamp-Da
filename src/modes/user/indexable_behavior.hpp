@@ -175,10 +175,12 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
 
     case 5: // 5 click+hold: configure favorite
 
-      // TODO: add button animation to help know when favorite is set
       if (holdDuration > 2000)
       {
         manager.set_favorite_now();
+
+        // raise the favorite alert (autoclearing)
+        alerts::manager.raise(alerts::Type::FAVORITE_SET);
       }
 
       break;

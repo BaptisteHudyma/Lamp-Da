@@ -314,8 +314,8 @@ void loop()
   data.update();
   data.serial_show();
 
-  // TODO update battery level
-  set_battery_level(100); // battery::get_battery_level() / 100);
+  // update battery level
+  set_battery_level(battery::get_battery_level() / 100);
 
   // ignore source activity if we are otg (prevent spurious reset)
   if (is_switching_to_otg())
@@ -384,8 +384,8 @@ uint16_t get_max_input_current()
   // no usb pd since some time, and vbus seems stable so try to use it
   else if (is_standard_port())
   {
-    // maximum USB current
-    return 1500;
+    // maximum USB current (hacky, would prefer USB type detection)
+    return 800;
   }
   // we dont known for now the type of connection
   return 0;

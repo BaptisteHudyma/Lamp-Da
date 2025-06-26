@@ -72,43 +72,48 @@ struct PartyFadeMode : public LegacyMode
   };
 };
 
-/** \brief Parent class for legacy noise modes
- *
- * Inherit from `NoiseMode<YourMode>`
- *  - this enable all derived `StateTy` to be unique
- */
-template<typename T> struct NoiseMode : public LegacyMode
+struct NoiseMode : public LegacyMode
 {
-  static void reset(auto& ctx) { ctx.state.categoryChange = true; }
+  static void loop(auto& ctx)
+  {
+    auto& state = ctx.state;
+
+    if (state.selectedPalette)
+    {
+      animations::random_noise(*state.selectedPalette, ctx.lamp.getLegacyStrip(), state.categoryChange, true, 600);
+      state.categoryChange = false;
+    }
+  }
+
+  static void custom_ramp_update(auto& ctx, uint8_t rampValue)
+  {
+    auto& state = ctx.state;
+
+    const uint8_t rampIndex = min(floor(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1);
+    state.selectedPalette = state._palettes[rampIndex];
+  }
+
+  static void reset(auto& ctx)
+  {
+    ctx.state.categoryChange = true;
+    ctx.template set_config_bool<ConfigKeys::rampSaturates>(false);
+    custom_ramp_update(ctx, ctx.get_active_custom_ramp());
+  }
 
   struct StateTy
   {
-    void random_noise(auto& lamp, const palette_t& palette)
-    {
-      animations::random_noise(palette, lamp.getLegacyStrip(), categoryChange, true, 600);
-      categoryChange = false;
-    }
+    // store references to palettes
+    const palette_t* _palettes[3] = {&PaletteLavaColors, &PaletteForestColors, &PaletteOceanColors};
+    const uint8_t maxPalettesCount = 3;
+
+    // store selected palette
+    palette_t const* selectedPalette;
 
     bool categoryChange = false;
   };
-};
 
-/// Noise from PaletteLavaColors
-struct LavaNoiseMode : public NoiseMode<LavaNoiseMode>
-{
-  static void loop(auto& ctx) { ctx.state.random_noise(ctx.lamp, PaletteLavaColors); }
-};
-
-/// Noise from PaletteForestColors
-struct ForestNoiseMode : public NoiseMode<ForestNoiseMode>
-{
-  static void loop(auto& ctx) { ctx.state.random_noise(ctx.lamp, PaletteForestColors); }
-};
-
-/// Noise from PaletteOceanColors
-struct OceanNoiseMode : public NoiseMode<OceanNoiseMode>
-{
-  static void loop(auto& ctx) { ctx.state.random_noise(ctx.lamp, PaletteOceanColors); }
+  // hint manager to save our custom ramp
+  static constexpr bool hasCustomRamp = true;
 };
 
 /// Polar lights
@@ -279,49 +284,57 @@ struct FftMode : public LegacyMode
 
 namespace imu {
 
-struct RainbowLiquideMode : public LegacyMode
+struct LiquideMode : public LegacyMode
 {
   static void loop(auto& ctx)
   {
     auto& state = ctx.state;
-    animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), false);
-    state.color.update();
+
+    if (state._color)
+    {
+      animations::liquid(state.persistance, *state._color, ctx.lamp.getLegacyStrip(), state.categoryChange);
+      state._color->update();
+      state.categoryChange = false;
+    }
+  }
+
+  static void custom_ramp_update(auto& ctx, uint8_t rampValue)
+  {
+    auto& state = ctx.state;
+
+    // get color from ramp
+    const uint8_t rampIndex = min(floor(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1);
+    state._color = state._colors[rampIndex];
   }
 
   static void reset(auto& ctx)
   {
     auto& state = ctx.state;
-    state.color.reset();
-    animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), true);
+    for (DynamicColor* color: state._colors)
+    {
+      color->reset();
+    }
+    ctx.template set_config_bool<ConfigKeys::rampSaturates>(false);
+    custom_ramp_update(ctx, ctx.get_active_custom_ramp());
+    state.categoryChange = true;
   }
+
+  // hint manager to save our custom ramp
+  static constexpr bool hasCustomRamp = true;
 
   struct StateTy
   {
-    GenerateRainbowSwirl color = GenerateRainbowSwirl(5000);
+    // store references to palettes
+    DynamicColor* _colors[4] = {new GeneratePalette(2, PaletteOceanColors),
+                                new GenerateRainbowSwirl(5000),
+                                new GeneratePalette(2, PaletteAuroraColors),
+                                new GeneratePalette(2, PaletteForestColors)};
+    const uint8_t maxPalettesCount = 4;
+
+    DynamicColor* _color;
+
     uint8_t persistance = 210;
-  };
-};
-
-struct PaletteLiquideMode : public LegacyMode
-{
-  static void loop(auto& ctx)
-  {
-    auto& state = ctx.state;
-    animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), false);
-    state.color.update();
-  }
-
-  static void reset(auto& ctx)
-  {
-    auto& state = ctx.state;
-    state.color.reset();
-    animations::liquid(state.persistance, state.color, ctx.lamp.getLegacyStrip(), true);
-  }
-
-  struct StateTy
-  {
-    GeneratePalette color = GeneratePalette(2, PaletteForestColors);
-    uint8_t persistance = 210;
+    bool categoryChange = false;
   };
 };
 
@@ -330,18 +343,24 @@ struct LiquideRainMode : public LegacyMode
   static void loop(auto& ctx)
   {
     auto& state = ctx.state;
-    // rain density mapped to the button ramp
-    animations::rain(ctx.get_active_custom_ramp(), state.persistance, state.color, ctx.lamp.getLegacyStrip(), false);
+    // rain is density mapped to the button ramp
+    animations::rain(state.density, state.persistance, state.color, ctx.lamp.getLegacyStrip(), state.categoryChange);
     // using the update will change de color of the drops at each iteration
     state.color.update();
+    state.categoryChange = false;
   }
+
+  static void custom_ramp_update(auto& ctx, uint8_t rampValue) { ctx.state.density = rampValue; }
 
   static void reset(auto& ctx)
   {
     auto& state = ctx.state;
     state.color.reset();
-    animations::rain(1, state.persistance, state.color, ctx.lamp.getLegacyStrip(), true);
+    state.categoryChange = true;
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
+
+    // set default value
+    custom_ramp_update(ctx, ctx.get_active_custom_ramp());
   }
 
   // hint manager to save our custom ramp
@@ -351,6 +370,8 @@ struct LiquideRainMode : public LegacyMode
   {
     GeneratePalette color = GeneratePalette(2, PaletteWaterColors);
     uint8_t persistance = 100;
+    uint8_t density;
+    bool categoryChange = false;
   };
 };
 
@@ -362,20 +383,18 @@ struct LiquideRainMode : public LegacyMode
 
 using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
                                   calm::PartyFadeMode,
-                                  calm::LavaNoiseMode,
-                                  calm::ForestNoiseMode,
-                                  calm::OceanNoiseMode,
+                                  calm::NoiseMode,
                                   calm::PolarMode,
                                   calm::FireMode,
                                   calm::SineMode,
                                   calm::DriftMode,
-                                  calm::DistMode>;
+                                  calm::DistMode,
+                                  imu::LiquideMode,
+                                  imu::LiquideRainMode>;
 
 using PartyModes = modes::GroupFor<party::ColorWipeMode, party::RandomFillMode, party::PingPongMode>;
 
 using SoundModes = modes::GroupFor<sound::VuMeterMode, sound::FftMode>;
-
-using ImuModes = modes::GroupFor<imu::RainbowLiquideMode, imu::PaletteLiquideMode, imu::LiquideRainMode>;
 
 } // namespace modes::legacy
 
