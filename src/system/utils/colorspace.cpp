@@ -90,12 +90,12 @@ void HSV::from_rgb(const COLOR& rgb)
   double g = rgb.green / 255.0;
   double b = rgb.blue / 255.0;
 
-  double min = std::fmin(r, std::fmin(g, b));
-  double max = std::fmax(r, std::fmax(g, b));
-  double delta = max - min;
+  double _min = min(r, min(g, b));
+  double _max = max(r, max(g, b));
+  double delta = _max - _min;
 
-  this->v = max;
-  this->s = (max > 1e-3) ? (delta / max) : 0;
+  this->v = _max;
+  this->s = (_max > 1e-3) ? (delta / _max) : 0;
 
   if (delta == 0)
   {
@@ -103,15 +103,15 @@ void HSV::from_rgb(const COLOR& rgb)
   }
   else
   {
-    if (r == max)
+    if (r == _max)
     {
       this->h = (g - b) / delta;
     }
-    else if (g == max)
+    else if (g == _max)
     {
       this->h = 2 + (b - r) / delta;
     }
-    else if (b == max)
+    else if (b == _max)
     {
       this->h = 4 + (r - g) / delta;
     }
