@@ -19,40 +19,76 @@ namespace button {
 static ButtonStateTy buttonState = ButtonStateTy();
 ButtonStateTy get_button_state() { return buttonState; }
 
-static volatile bool wasButtonPressedDetected = false;
-void button_state_interrupt() { wasButtonPressedDetected = true; }
+bool is_button_pressed()
+{
+  // this is a pullup, so high means no button press
+  return not ButtonPin.is_high();
+}
 
-void init()
+static bool isSystemStartClick = true;
+
+static volatile bool wasButtonPressedDetected = false;
+void button_state_interrupt()
+{
+  // There is a bit too much operations for an interrupt, but it's supposed to be rare
+  // And it's ok for a real time kernel
+  const bool isbuttonStillpressed = is_button_pressed();
+  if (isbuttonStillpressed)
+  {
+    const uint32_t currentTime = time_ms();
+    // small delay since button press, register a click
+    if ((currentTime - buttonState.lastPressTime) > RELEASE_BETWEEN_CLICKS)
+    {
+      if (!buttonState.isLongPressed)
+      {
+        buttonState.nbClicksCounted += 1;
+        buttonState.firstHoldTime = currentTime;
+      }
+    }
+    // update trigger flags
+    buttonState.lastPressTime = currentTime;
+    buttonState.wasTriggered = true;
+    buttonState.isPressed = true;
+  }
+
+  // update flag
+  wasButtonPressedDetected = isbuttonStillpressed;
+}
+
+void init(const bool isSystemStartedFromButton)
 {
   // attach the button interrupt
   ButtonPin.set_pin_mode(DigitalPin::Mode::kInputPullUpSense);
   ButtonPin.attach_callback(button_state_interrupt, DigitalPin::Interrupt::kChange);
-}
 
-static volatile bool buttonPressListener = false;
-void read_while_pressed()
-{
-  // this is a pullup, so high means no button press
-  if (wasButtonPressedDetected and ButtonPin.is_high())
+  if (isSystemStartedFromButton)
   {
-    wasButtonPressedDetected = false;
+    // simulate a click
+    button_state_interrupt();
+
+    // first click
+    buttonState.nbClicksCounted = 1;
+
+    buttonState.lastPressTime = time_ms();
+    buttonState.wasTriggered = true;
+    buttonState.isPressed = true;
   }
 }
 
-void treat_button_pressed(const bool isButtonPressDetected,
-                          const std::function<void(uint8_t)>& clickSerieCallback,
-                          const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback)
+void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
+                   const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback)
 {
-  buttonState.lastEventTime = time_ms();
-  buttonState.sinceLastCall = buttonState.lastEventTime - buttonState.lastPressTime;
-  buttonState.pressDuration = buttonState.lastEventTime - buttonState.firstHoldTime;
+  const bool isButtonPressDetected = wasButtonPressedDetected;
+  const uint32_t currentTime = time_ms();
+  const uint32_t sinceLastCall = currentTime - buttonState.lastPressTime;
+  const uint32_t pressDuration = currentTime - buttonState.firstHoldTime;
 
   // currently in long press status
-  buttonState.isLongPressed = (buttonState.isPressed and buttonState.pressDuration > HOLD_BUTTON_MIN_MS);
+  buttonState.isLongPressed = (buttonState.isPressed and pressDuration > HOLD_BUTTON_MIN_MS);
 
   // remove button clicked if last call was too long ago (and an action is currently handled)
-  if (buttonState.wasTriggered and ((buttonState.sinceLastCall > RELEASE_TIMING_MS) or
-                                    (buttonState.isLongPressed and buttonState.sinceLastCall > RELEASE_TIMING_MS / 2)))
+  if (buttonState.wasTriggered and
+      ((sinceLastCall > RELEASE_TIMING_MS) or (buttonState.isLongPressed and sinceLastCall > RELEASE_TIMING_MS / 2)))
   {
     // end of button press, trigger callback (press-hold action, or press action)
     if (buttonState.isLongPressed)
@@ -65,10 +101,12 @@ void treat_button_pressed(const bool isButtonPressDetected,
     }
 
     // reset
+    isSystemStartClick = false;
+
     buttonState.isPressed = false;
     buttonState.isLongPressed = false;
     buttonState.nbClicksCounted = 0;
-    buttonState.firstHoldTime = buttonState.lastEventTime;
+    buttonState.firstHoldTime = currentTime;
     // reset the action handling process
     buttonState.wasTriggered = false;
   }
@@ -76,21 +114,8 @@ void treat_button_pressed(const bool isButtonPressDetected,
   // set button high
   if (isButtonPressDetected)
   {
-    // press detected, trigger
-    buttonState.wasTriggered = true;
-
-    // small delay since button press
-    if (buttonState.sinceLastCall > RELEASE_BETWEEN_CLICKS)
-    {
-      if (!buttonState.isLongPressed)
-      {
-        buttonState.nbClicksCounted += 1;
-        buttonState.firstHoldTime = buttonState.lastEventTime;
-      }
-    }
-
-    buttonState.lastPressTime = buttonState.lastEventTime;
-    buttonState.isPressed = true;
+    // press detected, update last event time
+    buttonState.lastPressTime = currentTime;
   }
 
   if (buttonState.isLongPressed)
@@ -98,19 +123,11 @@ void treat_button_pressed(const bool isButtonPressDetected,
     // press detected, trigger
     buttonState.wasTriggered = true;
 
-    clickHoldSerieCallback(buttonState.nbClicksCounted, buttonState.pressDuration);
+    clickHoldSerieCallback(buttonState.nbClicksCounted, pressDuration);
   }
 }
 
-void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
-                   const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback)
-{
-  // keep reading the button value until unpressed
-  read_while_pressed();
-
-  // check the button pressed status
-  treat_button_pressed(wasButtonPressedDetected, clickSerieCallback, clickHoldSerieCallback);
-}
+bool is_system_start_click() { return isSystemStartClick; }
 
 } // namespace button
 
