@@ -11,6 +11,7 @@
 
 #include "src/system/colors/palettes.h"
 #include "src/system/colors/wipes.h"
+#include "src/system/colors/text.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 #include "src/system/ext/random8.h"
@@ -806,6 +807,13 @@ void running_base(
     }
     strip.setPixelColor(i, ca);
   }
+}
+
+void show_text(const Color& color, const std::string& text, LedStrip& strip)
+{
+  static bool isOver = true;
+
+  isOver = text::display_scrolling_text(color, text, 4, 1, 2000, isOver, true, 50, strip);
 }
 
 } // namespace animations

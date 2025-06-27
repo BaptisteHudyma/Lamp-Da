@@ -38,7 +38,7 @@ bool display_text(const Color& color,
  * \param[in] text Text to display (will start at index X 0)
  * \param[in] startYIndex height at which the text starts, in lamp coordinates
  * \param[in] scale Between 0 and 1, size of the characters
- * \param[in] duration duration of the scroll (in milliseconds)
+ * \param[in] durationPerChar duration of the scroll for each characters (in milliseconds)
  * \param[in] reset Set to true to reset the animation
  * \param[in] paddEnd if true, will not consider the animation over until the last letter disappears from the strip
  * \param[in] fadeOut Fade amount per call. low will leave traces, high will be sharp
@@ -49,7 +49,7 @@ bool display_scrolling_text(const Color& color,
                             const std::string& text,
                             const int16_t startYIndex,
                             float scale,
-                            const uint32_t duration,
+                            const uint32_t durationPerChar,
                             const bool reset,
                             const bool paddEnd,
                             const uint8_t fadeOut,

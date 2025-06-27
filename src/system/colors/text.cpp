@@ -9,6 +9,7 @@
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
+#include "src/system/utils/print.h"
 
 namespace text {
 
@@ -467,54 +468,40 @@ bool display_scrolling_text(const Color& color,
                             const std::string& text,
                             const int16_t startYIndex,
                             float scale,
-                            const uint32_t duration,
+                            const uint32_t durationPerChar,
                             const bool reset,
                             const bool paddEnd,
                             const uint8_t fadeOut,
                             LedStrip& strip)
 {
-  IFont const* font = font_from_scale(scale);
-  const size_t textLength = font->get_width() * text.size();
-
-  static int16_t xIndex = stripXCoordinates;
+  static float xIndex = stripXCoordinates;
+  static uint32_t lastCall;
   if (reset)
   {
     xIndex = stripXCoordinates;
+    lastCall = time_ms();
+    return false;
   }
 
   strip.fadeToBlackBy(fadeOut);
 
-  // convert duration in delay for each segment
-  const uint32_t delay = max(MAIN_LOOP_UPDATE_PERIOD_MS, duration / textLength);
-  if (duration / textLength < MAIN_LOOP_UPDATE_PERIOD_MS)
-  {
-    // fast animation: must skip some indexes
-    const int16_t increment = textLength / ceil(duration / delay);
-    // return true when the whole text has been displayed
-    if (display_text(color, text, xIndex, startYIndex, scale, paddEnd, strip))
-    {
-      return true;
-    }
-    xIndex -= increment;
-  }
-  else
-  {
-    // slow animation: blend
-    static uint32_t lastSubstep = 0;
-    const uint32_t maxSubstep = MAIN_LOOP_UPDATE_PERIOD_MS / ((float)textLength / (float)duration * 1000.0);
+  // slow animation: blend
+  static uint32_t lastSubstep = 0;
+  const uint32_t maxSubstep = MAIN_LOOP_UPDATE_PERIOD_MS / durationPerChar;
 
-    if (display_text(color, text, xIndex, startYIndex, scale, paddEnd, strip))
-    {
-      return true;
-    }
-
-    lastSubstep++;
-    if (lastSubstep > maxSubstep)
-    {
-      lastSubstep = 0;
-      xIndex--;
-    }
+  if (display_text(color, text, xIndex, startYIndex, scale, paddEnd, strip))
+  {
+    return true;
   }
+
+  const float fontSize = static_cast<float>(font_from_scale(scale)->get_width());
+
+  const float dt = time_ms() - lastCall;
+  const float letterIterationsToCompleteTurn = static_cast<float>(durationPerChar) / dt;
+  // here, the size of the letter is ignored
+  const float increment = (stripXCoordinates + fontSize) / letterIterationsToCompleteTurn;
+  xIndex -= increment;
+  lastCall = time_ms();
 
   return false;
 }
