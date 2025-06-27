@@ -8,7 +8,7 @@ namespace button {
 
 #define HOLD_BUTTON_MIN_MS 500 // press and hold delay (ms)
 
-void init();
+void init(const bool isSystemStartedFromButton);
 
 /**
  * \brief handle the button clicked events
@@ -31,11 +31,7 @@ struct ButtonStateTy
   uint32_t firstHoldTime = 0;  // timestamp (millis) of first press (hold)
   uint8_t nbClicksCounted = 0; // nb of counted clicks
 
-  bool wasTriggered = false;  // was button action detected
-  uint32_t pressDuration = 0; // estimated (millis) press duration
-  uint32_t sinceLastCall = 0; // time (unprocessed) since last call
-  uint32_t lastEventTime = 0; // last (unprocessed) time of call
-  bool lastRawButton = false; // last (unprocessed) boolean value read
+  bool wasTriggered = false; // was button action detected
 };
 
 /**

@@ -148,8 +148,10 @@ void main_setup()
     }
   }
 
+  const bool wasPoweredByUserInterrupt = is_started_from_interrupt();
+
   // set up button colors and callbacks
-  button::init();
+  button::init(wasPoweredByUserInterrupt);
   indicator::init();
   imu::init();
 
@@ -165,9 +167,8 @@ void main_setup()
     indicator::set_color(utils::ColorSpace::BLACK);
   }
 
-  const bool wasPoweredyByUserInterrupt = is_started_from_interrupt();
   // any wake up from something that is not an interrupt should be considered as vbus voltage
-  behavior::set_woke_up_from_vbus(not wasPoweredyByUserInterrupt);
+  behavior::set_woke_up_from_vbus(not wasPoweredByUserInterrupt);
 
   // let the user start in unpowered mode
   user::power_off_sequence();

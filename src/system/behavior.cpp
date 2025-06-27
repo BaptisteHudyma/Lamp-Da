@@ -44,6 +44,8 @@ static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000;
 static constexpr uint32_t EARLY_ACTIONS_LIMIT_MS = 2000;
 static constexpr uint32_t EARLY_ACTIONS_HOLD_MS = 1500;
 
+static const uint32_t systemStartTime = time_ms();
+
 // Define the state for the main prog state machine
 typedef enum
 {
@@ -214,7 +216,9 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   {
     // 1 click: shutdown
     case 1:
-      set_power_off();
+      // woke up from longer than a delay
+      if (time_ms() - systemStartTime > 1000)
+        set_power_off();
       break;
 
     // other behaviors
