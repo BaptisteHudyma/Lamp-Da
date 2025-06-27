@@ -22,6 +22,12 @@ void init(const bool isSystemStartedFromButton);
 void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
                    const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback);
 
+/**
+ * \brief Indicates that this click is the one triggered by the system start
+ * It is set to false after the click chain stops
+ */
+bool is_system_start_click();
+
 // Button state
 struct ButtonStateTy
 {

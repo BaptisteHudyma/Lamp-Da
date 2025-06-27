@@ -25,6 +25,8 @@ bool is_button_pressed()
   return not ButtonPin.is_high();
 }
 
+static bool isSystemStartClick = true;
+
 static volatile bool wasButtonPressedDetected = false;
 void button_state_interrupt()
 {
@@ -73,12 +75,6 @@ void init(const bool isSystemStartedFromButton)
   }
 }
 
-void treat_button_pressed(const bool isButtonPressDetected,
-                          const std::function<void(uint8_t)>& clickSerieCallback,
-                          const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback)
-{
-}
-
 void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
                    const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback)
 {
@@ -105,6 +101,8 @@ void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
     }
 
     // reset
+    isSystemStartClick = false;
+
     buttonState.isPressed = false;
     buttonState.isLongPressed = false;
     buttonState.nbClicksCounted = 0;
@@ -128,6 +126,8 @@ void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
     clickHoldSerieCallback(buttonState.nbClicksCounted, pressDuration);
   }
 }
+
+bool is_system_start_click() { return isSystemStartClick; }
 
 } // namespace button
 

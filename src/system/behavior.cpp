@@ -198,6 +198,8 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
     return;
   }
 
+  const bool isSystemStartClick = button::is_system_start_click();
+
   // extended "button usermode" bypass
   if (isButtonUsermodeEnabled)
   {
@@ -216,9 +218,13 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   {
     // 1 click: shutdown
     case 1:
-      // woke up from longer than a delay
-      if (time_ms() - systemStartTime > 1000)
-        set_power_off();
+      // do not turn off on first button press
+      if (not isSystemStartClick)
+      {
+        // woke up from longer than a delay, allowed to shut down
+        if (time_ms() - systemStartTime > 1000)
+          set_power_off();
+      }
       break;
 
     // other behaviors
@@ -249,6 +255,9 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
   // no button callback when user code is not running
   if (not is_user_code_running())
     return;
+
+  // click chain that woke up the system
+  const bool isSystemStartClick = button::is_system_start_click();
 
   // compute parameters of the "press-hold" action
   const bool isEndOfHoldEvent = (buttonHoldDuration <= 1);
