@@ -29,7 +29,7 @@ void power_off_sequence()
 
   // clear lamp on power-off
   manager.lamp.clear();
-  manager.lamp.show();
+  manager.lamp.show_now();
 
   outputPower::write_voltage(0);
 

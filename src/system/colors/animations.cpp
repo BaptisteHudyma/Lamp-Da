@@ -813,7 +813,7 @@ void show_text(const Color& color, const std::string& text, LedStrip& strip)
 {
   static bool isOver = true;
 
-  isOver = text::display_scrolling_text(color, text, 4, 1, 2000, isOver, true, 50, strip);
+  isOver = text::display_scrolling_text(color, text, 4, 1, 2000, isOver, true, 200, strip);
 }
 
 } // namespace animations
