@@ -19,13 +19,17 @@ inline static std::map<DigitalPin::GPIO, voidFuncPtr> callbacks;
 static bool isButtonPressed = false;
 void update_callbacks()
 {
+  static bool wasButtonPressed = false;
   for (const auto& [pin, callback]: callbacks)
   {
     if (pin == buttonPin)
     {
       isButtonPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
-      if (isButtonPressed)
+      if (isButtonPressed != wasButtonPressed)
+      {
         callback();
+        wasButtonPressed = isButtonPressed;
+      }
     }
   }
 }
@@ -117,6 +121,7 @@ int DigitalPin::pin() const { return 0; }
 
 void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode)
 {
+  // TODO: handle different interrupts
   DigitalPin::s_gpiosWithInterrupts.emplace(mGpio);
   mImpl->attach_callback(func);
 }

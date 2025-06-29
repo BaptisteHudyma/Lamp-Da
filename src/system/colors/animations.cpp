@@ -11,6 +11,7 @@
 
 #include "src/system/colors/palettes.h"
 #include "src/system/colors/wipes.h"
+#include "src/system/colors/text.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 #include "src/system/ext/random8.h"
@@ -24,8 +25,8 @@ namespace animations {
 
 void fill(const Color& color, LedStrip& strip, const float cutOff)
 {
-  const float adaptedCutoff = fmin(fmax(cutOff, 0.0), 1.0);
-  const uint16_t maxCutOff = fmin(fmax(adaptedCutoff * LED_COUNT, 1.0), LED_COUNT);
+  const float adaptedCutoff = min(max(cutOff, 0.0), 1.0);
+  const uint16_t maxCutOff = min(max(adaptedCutoff * LED_COUNT, 1.0), LED_COUNT);
   for (uint16_t i = 0; i < LED_COUNT; ++i)
   {
     const uint32_t c = color.get_color(i, LED_COUNT);
@@ -274,7 +275,7 @@ bool fade_out(const uint32_t duration, const bool restart, LedStrip& strip)
   }
 
   // get a fade level between 0 and max level
-  const uint8_t newFadeLevel = fmax(0.0, fmin(1.0, (time_ms() - startMillis) / (float)duration)) * maxFadeLevel;
+  const uint8_t newFadeLevel = max(0.0, min(1.0, (time_ms() - startMillis) / (float)duration)) * maxFadeLevel;
   if (newFadeLevel != fadeLevel)
   {
     fadeLevel = newFadeLevel;
@@ -326,7 +327,7 @@ bool fade_in(const Color& color,
   }
 
   // get a fade level between 0 and maxFadeLevel
-  const uint32_t newFadeLevel = fmax(0.0, fmin(1.0, (time_ms() - startMillis) / (float)duration)) * maxFadeLevel;
+  const uint32_t newFadeLevel = max(0.0, min(1.0, (time_ms() - startMillis) / (float)duration)) * maxFadeLevel;
   if (newFadeLevel != fadeLevel)
   {
     fadeLevel = newFadeLevel;
@@ -806,6 +807,13 @@ void running_base(
     }
     strip.setPixelColor(i, ca);
   }
+}
+
+void show_text(const Color& color, const std::string& text, LedStrip& strip)
+{
+  static bool isOver = true;
+
+  isOver = text::display_scrolling_text(color, text, 4, 1, 2000, isOver, true, 50, strip);
 }
 
 } // namespace animations

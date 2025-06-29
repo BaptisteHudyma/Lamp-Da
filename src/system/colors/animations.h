@@ -130,6 +130,8 @@ void mode_sinewave(const uint8_t speed, const uint8_t intensity, const palette_t
 void running_base(
         bool saw, bool dual, const uint8_t speed, const uint8_t intensity, const palette_t& palette, LedStrip& strip);
 
+void show_text(const Color& color, const std::string& text, LedStrip& strip);
+
 }; // namespace animations
 
 #endif

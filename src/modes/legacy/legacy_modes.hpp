@@ -269,6 +269,27 @@ struct VuMeterMode : public LegacyMode
   };
 };
 
+struct TextScrollMode : public LegacyMode
+{
+  static void loop(auto& ctx)
+  {
+    auto& state = ctx.state;
+    animations::show_text(state.rainbowSwirl, "KTAPHONIE VIOLONSOULS", ctx.lamp.getLegacyStrip());
+    state.rainbowSwirl.update();
+  }
+
+  static void reset(auto& ctx)
+  {
+    auto& state = ctx.state;
+    state.rainbowSwirl.reset();
+  }
+
+  struct StateTy
+  {
+    GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);
+  };
+};
+
 struct FftMode : public LegacyMode
 {
   static void loop(auto& ctx) { animations::fft_display(64, 64, PalettePartyColors, ctx.lamp.getLegacyStrip()); }
@@ -389,6 +410,7 @@ using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
                                   calm::SineMode,
                                   calm::DriftMode,
                                   calm::DistMode,
+                                  sound::TextScrollMode,
                                   imu::LiquideMode,
                                   imu::LiquideRainMode>;
 

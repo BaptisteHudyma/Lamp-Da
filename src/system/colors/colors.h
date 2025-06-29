@@ -234,7 +234,7 @@ class GenerateRainbowPulse : public DynamicColor
 public:
   GenerateRainbowPulse(const uint8_t colorDivisions) : _currentPixelHue(0)
   {
-    _increment = fmax(float(UINT16_MAX) / float(colorDivisions), 1);
+    _increment = max(float(UINT16_MAX) / float(colorDivisions), 1);
   }
 
   uint32_t get_color_internal(const uint16_t index, const uint16_t maxIndex) const override;
@@ -277,7 +277,7 @@ class GeneratePastelPulse : public DynamicColor
 public:
   GeneratePastelPulse(const uint8_t colorDivisions) : _currentPixelHue(0)
   {
-    _increment = fmax(float(UINT16_MAX) / float(colorDivisions), 1);
+    _increment = max(float(UINT16_MAX) / float(colorDivisions), 1);
   }
 
   uint32_t get_color_internal(const uint16_t index, const uint16_t maxIndex) const override;
