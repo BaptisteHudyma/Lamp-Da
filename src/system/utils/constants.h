@@ -85,6 +85,9 @@ constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = 1000 / 80.0;
  *
  */
 
+// EXEPCTED delta time for each loop run
+constexpr float loopDeltaTime = MAIN_LOOP_UPDATE_PERIOD_MS / 1000.0;
+
 // max voltage of a single li-ion cell
 constexpr uint16_t batteryMaxVoltage_mV = maxLiionVoltage_mV * batteryCount;
 // max voltage of a li-ion cell to maximise lifetime

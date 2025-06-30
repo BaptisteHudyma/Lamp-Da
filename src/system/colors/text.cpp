@@ -475,11 +475,9 @@ bool display_scrolling_text(const Color& color,
                             LedStrip& strip)
 {
   static float xIndex = stripXCoordinates;
-  static uint32_t lastCall;
   if (reset)
   {
     xIndex = stripXCoordinates;
-    lastCall = time_ms();
     return false;
   }
 
@@ -496,12 +494,11 @@ bool display_scrolling_text(const Color& color,
 
   const float fontSize = static_cast<float>(font_from_scale(scale)->get_width());
 
-  const float dt = time_ms() - lastCall;
-  const float letterIterationsToCompleteTurn = static_cast<float>(durationPerChar) / dt;
+  const float letterIterationsToCompleteTurn =
+          static_cast<float>(durationPerChar) / static_cast<float>(MAIN_LOOP_UPDATE_PERIOD_MS);
   // here, the size of the letter is ignored
   const float increment = (stripXCoordinates + fontSize) / letterIterationsToCompleteTurn;
   xIndex -= increment;
-  lastCall = time_ms();
 
   return false;
 }
