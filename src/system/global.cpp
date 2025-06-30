@@ -184,12 +184,44 @@ void main_setup()
   }
 }
 
+void regulate_loop_runtime(const uint32_t addedDelay)
+{
+  // add the required delay
+  if (addedDelay > 0)
+    delay_ms(addedDelay);
+
+  const uint32_t loopStartTime = time_ms();
+
+  // fix the initialization or long wait
+  static uint32_t lastLoopEndTime;
+  if (loopStartTime - lastLoopEndTime > 1000)
+    lastLoopEndTime = loopStartTime;
+
+  // wait for a delay if we are faster than the set refresh rate
+  const uint32_t loopDuration = loopStartTime - lastLoopEndTime;
+  if (loopDuration < MAIN_LOOP_UPDATE_PERIOD_MS)
+  {
+    delay_ms(MAIN_LOOP_UPDATE_PERIOD_MS - loopDuration);
+  }
+  // else: run time normal or too long
+
+  // raise alerts if computations are too long
+  check_loop_runtime(loopDuration);
+  // update loop end time
+  lastLoopEndTime = time_ms();
+}
+
 /**
  * \brief Run the main program loop
  */
 void main_loop(const uint32_t addedDelay)
 {
-  uint32_t start = time_ms();
+  // regulate to a fixed fps count
+  regulate_loop_runtime(addedDelay);
+
+  /*
+   * Normal loop starts here (all computations)
+   */
 
   // update watchdog (prevent crash)
   kick_watchdog();
@@ -205,19 +237,6 @@ void main_loop(const uint32_t addedDelay)
 
   // automatically deactivate sensors if they are not used for a time
   microphone::disable_after_non_use();
-
-  // add the required delay
-  if (addedDelay > 0)
-    delay_ms(addedDelay);
-
-  // wait for a delay if we are faster than the set refresh rate
-  const uint32_t stop = time_ms();
-  const uint32_t loopDuration = (stop - start);
-  if (loopDuration < MAIN_LOOP_UPDATE_PERIOD_MS)
-  {
-    delay_ms(MAIN_LOOP_UPDATE_PERIOD_MS - loopDuration);
-  }
-  check_loop_runtime(loopDuration);
 }
 
 } // namespace global
