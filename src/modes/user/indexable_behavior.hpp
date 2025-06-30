@@ -31,8 +31,6 @@ void power_off_sequence()
   manager.lamp.clear();
   manager.lamp.show_now();
 
-  outputPower::write_voltage(0);
-
   // (no-op) internal symbol used during build
   ensure_build_canary();
 }
