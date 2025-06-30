@@ -631,7 +631,7 @@ void handle_post_output_light_state()
   // let the user power off the system
   user::power_off_sequence();
   // write/stability delay
-  delay(10);
+  delay_ms(10);
 
   // deactivate strip power
   outputPower::write_voltage(0); // power down

@@ -29,10 +29,9 @@ int16_t generate_particule_at_extremes(size_t i)
 void liquid(const uint8_t persistance, const Color& color, LedStrip& strip, const bool restart)
 {
   static bool isFirstInit = true;
-  static uint32_t lastCall = 0;
   static constexpr uint16_t particuleCount = 255;
 
-  const bool shouldreset = restart || isFirstInit || (time_ms() - lastCall) > 500;
+  const bool shouldreset = restart || isFirstInit;
 
   const auto& reading = imu::get_filtered_reading(shouldreset);
   if (shouldreset)
@@ -41,19 +40,13 @@ void liquid(const uint8_t persistance, const Color& color, LedStrip& strip, cons
     particuleSystem.reset();
     particuleSystem.set_max_particle_count(particuleCount);
     particuleSystem.init_particules(generate_random_particule_position);
-    lastCall = time_ms();
     return;
   }
 
-  const uint32_t newTime = time_ms();
-  const float deltaTime = (newTime - lastCall) / 1000.0f;
-
-  particuleSystem.iterate_with_collisions(reading.accel, deltaTime);
+  particuleSystem.iterate_with_collisions(reading.accel, loopDeltaTime);
 
   strip.fadeToBlackBy(255 - persistance);
   particuleSystem.show(color, particuleCount, strip);
-
-  lastCall = newTime;
 }
 
 bool recycle_particules_if_too_far(const Particle& p)
@@ -68,10 +61,9 @@ void rain(const uint8_t rainDensity, const uint8_t persistance, const Color& col
   static constexpr uint16_t particuleCount = 512;
 
   static bool isFirstInit = true;
-  static uint32_t lastCall = 0;
   static float rainDropSpawn = 0.0;
 
-  const bool shouldreset = restart || isFirstInit || (time_ms() - lastCall) > 500;
+  const bool shouldreset = restart || isFirstInit;
 
   const auto& reading = imu::get_filtered_reading(shouldreset);
 
@@ -80,17 +72,12 @@ void rain(const uint8_t rainDensity, const uint8_t persistance, const Color& col
     isFirstInit = false;
     particuleSystem.reset();
     particuleSystem.set_max_particle_count(particuleCount);
-    lastCall = time_ms();
     return;
   }
 
-  // time since last call
-  const uint32_t newTime = time_ms();
-  const float deltaTime = (newTime - lastCall) / 1000.0f;
-
   // multiply by 2 because we rain on both sides of the lamp, half of the drops are not seen
   const float expectedDropPerSecond = rainDensity / 255.0 * heavyRainDropsPerSecond + lightRainDropsPerSecond;
-  rainDropSpawn += expectedDropPerSecond * deltaTime;
+  rainDropSpawn += expectedDropPerSecond * loopDeltaTime;
 
   if (rainDropSpawn > 1.0)
   {
@@ -101,15 +88,13 @@ void rain(const uint8_t rainDensity, const uint8_t persistance, const Color& col
 
   // no collisions between particles, and with no lamp limits
   static constexpr bool shouldKeepInLampBounds = false;
-  particuleSystem.iterate_no_collisions(reading.accel, deltaTime, shouldKeepInLampBounds);
+  particuleSystem.iterate_no_collisions(reading.accel, loopDeltaTime, shouldKeepInLampBounds);
   // depop particules that fell too far
   particuleSystem.depop_particules(recycle_particules_if_too_far);
 
   strip.fadeToBlackBy(255 - persistance);
   // break palette size to display more colors per drops
   particuleSystem.show(color, 5, strip);
-
-  lastCall = newTime;
 }
 
 } // namespace animations
