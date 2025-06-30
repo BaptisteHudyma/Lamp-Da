@@ -50,6 +50,12 @@ public:
     hasSomeChanges = false;
   }
 
+  void show_now()
+  {
+    Adafruit_NeoPixel::show();
+    hasSomeChanges = false;
+  }
+
   float estimateCurrentDraw()
   {
     float estimatedCurrentDraw = 0.0;
@@ -77,7 +83,6 @@ public:
   {
     n = lmpd_constrain(n, 0, LED_COUNT - 1);
     _colors[n] = c;
-    hasSomeChanges = true;
     Adafruit_NeoPixel::setPixelColor(n, c.color);
   }
 
@@ -218,10 +223,12 @@ public:
     for (uint16_t i = 0; i < LED_COUNT; ++i)
     {
       _colors[i] = c;
-    };
-    hasSomeChanges = true;
+    }
     Adafruit_NeoPixel::clear();
   }
+
+  // signal the strip that it can display the update
+  void signal_display() { hasSomeChanges = true; }
 
   inline vec3d get_lamp_coordinates(const uint16_t n) const
   {
@@ -250,7 +257,7 @@ private:
   vec3d lampCoordinates[LED_COUNT];
 
 private:
-  bool hasSomeChanges;
+  volatile bool hasSomeChanges;
 };
 
 #endif

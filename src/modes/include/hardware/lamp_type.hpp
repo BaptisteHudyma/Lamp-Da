@@ -105,7 +105,7 @@ public:
   {
     begin();
     clear();
-    show();
+    show_now();
     setBrightness(brightness::get_brightness(), true, true);
   }
 
@@ -143,6 +143,27 @@ public:
     if constexpr (flavor == LampTypes::indexable)
     {
       strip.show();
+    }
+    else
+    {
+      // (this is optimized out, and is essentially no-op for other flavors)
+      assert(true);
+    }
+  }
+
+  /** \private Does necessary work to display not-yet-shown lamp changes
+   *
+   * If LampTy::flavor is LampTypes::indexable then:
+   *  - update the output of the lamp with currently buffered changes IMMEDIATLY
+   *
+   * Or else, subject to change as other flavors are integrated:
+   *  - does nothing
+   */
+  void LMBD_INLINE show_now()
+  {
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      strip.show_now();
     }
     else
     {
