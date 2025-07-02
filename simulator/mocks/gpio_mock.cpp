@@ -121,7 +121,7 @@ int DigitalPin::pin() const { return 0; }
 
 void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode)
 {
-  // TODO: handle different interrupts
+  // TODO issue #132: handle different interrupts
   DigitalPin::s_gpiosWithInterrupts.emplace(mGpio);
   mImpl->attach_callback(func);
 }
@@ -135,5 +135,5 @@ void DigitalPin::detach_callbacks()
 void DigitalPin::disconnect()
 {
   // do nothing ?
-  // TODO
+  // TODO issue #132
 }

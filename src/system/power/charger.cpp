@@ -191,7 +191,7 @@ void update_state_status()
     case drivers::Status_t::UNINITIALIZED:
     case drivers::Status_t::ERROR:
       { // locked in a broken state
-        // TODO: shutdown ? alert ?
+        // TODO issue #130: shutdown ? alert ?
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
           lampda_print("ERROR: charger in UNINITIALIZED/ERROR state");
@@ -202,7 +202,7 @@ void update_state_status()
     case drivers::Status_t::ERROR_COMPONENT:
       {
         // broken charger ic
-        // TODO: shutdown ? alert ?
+        // TODO: issue #130: shutdown ? alert ?
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_HARDWARE)
         {
           lampda_print("ERROR: charger in ERROR_COMPONENT state");
@@ -219,7 +219,7 @@ void update_state_status()
 
         // hopefully temporary
         drivers::try_clear_faults();
-        // TODO: add a count on the fault clearing
+        // TODO issue #130: add a count on the fault clearing
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
         break;
       }

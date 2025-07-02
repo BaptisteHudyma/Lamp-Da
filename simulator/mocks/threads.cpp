@@ -20,7 +20,7 @@ void single_run_thread()
 
 void run_threads()
 {
-// TODO: missing mocks for charger & pd negociator
+// TODO issue #132: missing mocks for charger & pd negociator
 #if 0
   // run until deep sleep
   while (not shouldStopThreads)
@@ -45,12 +45,12 @@ void start_suspended_thread(taskfunc_t taskFunction,
 void yield_this_thread() { mock_registers::single_run_thread(); }
 void suspend_this_thread()
 {
-  // TODO
+  // TODO issue #132
 }
 
 void suspend_all_threads()
 {
-  // TODO
+  // TODO issue #132
 }
 
 void resume_thread(const char* const taskName) {}

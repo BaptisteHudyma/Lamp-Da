@@ -504,7 +504,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
   chargerIc.writeRegEx(chargerIcRegisters.chargeOption0);
 
   chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
-  // set 6A inductor (TODO: change with system constants)
+  // set 6A inductor (TODO issue #131: change with system constants)
   chargerIcRegisters.chargeOption3.set_IL_AVG(0b0);
   chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
 

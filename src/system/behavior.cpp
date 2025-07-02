@@ -174,7 +174,7 @@ void true_power_off()
   go_to_sleep(ButtonPin.pin());
   /*
    * Nothing after this, system is off !
-   * TODO: add an error status if we reach here
+   * TODO issue #128: add an error status if we reach here
    */
 }
 
@@ -426,7 +426,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 
 void handle_error_state()
 {
-  // TODO ?
+  // TODO issue #129
   // go to sleep
   mainMachine.set_state(BehaviorStates::SHUTDOWN);
 }
@@ -489,7 +489,7 @@ void handle_charger_operation_state()
     if (charger::get_state().isInOtg)
     {
       // do nothing (for now !)
-      // TODO, stop if battery gets low
+      // TODO issue #133, stop if battery gets low, or temperature high
     }
     // no power, shutdown everything
     else if (not is_charger_powered())
@@ -560,7 +560,7 @@ void handle_pre_output_light_state()
 
 void handle_output_light_state()
 {
-// TODO remove when the mock threads will be running
+// TODO issue #132 remove when the mock threads will be running
 #ifndef LMBD_IN_SIMULATION
   static bool waitingForPowerGate_messageDisplayed = true;
 
@@ -609,6 +609,7 @@ void handle_output_light_state()
     // user loop call
     user::loop();
 
+// TODO issue #136
 #if 0
     const auto& chargerState = charger::get_state();
     if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)

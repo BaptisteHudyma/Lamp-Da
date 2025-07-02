@@ -2233,7 +2233,7 @@ static void pd_update_try_source(void)
    */
   pd.flags &= ~PD_FLAGS_TRY_SRC;
 }
-// TODO
+// TODO issue #135
 // DECLARE_HOOK(HOOK_BATTERY_SOC_CHANGE, pd_update_try_source, HOOK_PRIO_DEFAULT);
 #endif
 
@@ -3381,7 +3381,7 @@ void pd_run_state_machine()
         break;
       }
 
-// TODO restore the power source mode
+// TODO issue #134 restore the power source mode
 #if 0
        /* If no source detected, check for role toggle. */
        if (drp_state == PD_DRP_TOGGLE_ON && get_time().val >= next_role_swap)

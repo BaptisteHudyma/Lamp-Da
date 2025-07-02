@@ -18,7 +18,7 @@ class LevelRecorder : public sf::SoundRecorder
   virtual bool onProcessSamples(const std::int16_t* samples, std::size_t sampleCount)
   {
     data.sampleRead = 0;
-    data.sampleDuration_us = 0; // TODO
+    data.sampleDuration_us = 0; // TODO issue #132
     const size_t readCnt = min(sampleCount, microphone::PdmData::SAMPLE_SIZE);
     for (std::size_t i = 0; i < readCnt; i++)
     {
@@ -46,7 +46,7 @@ bool start() { return recorder.start(16000); }
 
 void stop() { recorder.stop(); }
 
-// TODO
+// TODO issue #132
 SoundStruct soundStruct;
 SoundStruct process_fft(const PdmData& data) { return soundStruct; }
 
