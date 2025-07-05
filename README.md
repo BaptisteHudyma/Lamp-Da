@@ -114,7 +114,7 @@ Alternatively, at the cost of some additional disk space, you may use the provid
 `Makefile` to install all dependencies:
 
 ```sh
-git clone "https://github.com/BaptisteHudyma" LampColorControler
+git clone https://github.com/BaptisteHudyma/Lamp-Da.git LampColorControler
 cd LampColorControler
 make mr_proper arduino-cli-download safe-install
 ```
@@ -126,7 +126,7 @@ This will install everything in the `$SRC_DIR/_build/arduino-cli/` directory.
 First clone the repository:
 
 ```sh
-git clone "https://github.com/BaptisteHudyma" LampColorControler
+git clone https://github.com/BaptisteHudyma/Lamp-Da.git LampColorControler
 cd LampColorControler
 git submodule update --init
 make verify-all
