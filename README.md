@@ -129,7 +129,6 @@ First clone the repository:
 git clone https://github.com/BaptisteHudyma/Lamp-Da.git LampColorControler
 cd LampColorControler
 git submodule update --init
-make verify-all
 ```
 
 As highlighted above, this project uses Arduino SDK, you will need to
