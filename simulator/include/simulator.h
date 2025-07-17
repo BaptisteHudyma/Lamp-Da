@@ -6,7 +6,7 @@
 // Call the main file after mocks
 #include "src/system/global.h"
 
-// see LMBD_LAMP_TYPE__INDEXABLE hard-coded in simulator/Makefile
+// see LMBD_LAMP_TYPE__${UPPER_SIM_NAME} hard-coded in simulator/Makefile
 #include "src/user/constants.h"
 
 #include <SFML/Graphics/Color.hpp>
@@ -18,7 +18,6 @@
 
 #define LMBD_SIMU_ENABLED
 #define LMBD_SIMU_REALCOLORS
-#define LMBD_LAMP_TYPE__INDEXABLE
 
 constexpr int ledW = stripXCoordinates;
 constexpr int ledH = stripYCoordinates;
@@ -71,17 +70,18 @@ template<typename T> struct simulator
       // read events, prevent windows lockup
       while (const std::optional event = window.pollEvent())
       {
-#if 0
-        if (event.type == sf::Event::Closed)
+        if (event->is<sf::Event::Closed>())
         {
           window.close();
+          break;
         }
-#endif
       }
 
       // deep sleep, exit
-      if (mock_registers::isDeepSleep)
+      if (mock_registers::isDeepSleep) {
+        window.close();
         break;
+      }
 
       // update simu parameters
       read_and_update_parameters();
@@ -150,11 +150,9 @@ template<typename T> struct simulator
       window.display();
     }
 
-    window.close();
     // close all threads
     mock_registers::shouldStopThreads = true;
     mockThreads.join();
-
     return 0;
   }
 };
