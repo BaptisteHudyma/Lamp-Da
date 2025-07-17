@@ -1,7 +1,4 @@
 venv
 _build
 .lampda.par
-*/**/*.o
-*/**/*.d
-*/**/*.txt
 arduino-cli

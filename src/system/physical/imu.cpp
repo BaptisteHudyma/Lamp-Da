@@ -37,7 +37,7 @@ void init()
   if (not imuInstance.init())
   {
     // TODO: something ?
-    lampda_print("fail to start");
+    lampda_print("IMU failed to start");
     isInitialized = false;
   }
   else

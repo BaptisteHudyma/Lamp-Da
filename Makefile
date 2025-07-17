@@ -548,7 +548,9 @@ $(BUILD_DIR)/simulator/%-simulator:
 
 clean-simulator:
 	@echo; echo " --- $@"
-	rm -rf $(BUILD_DIR)/simulator
+	@test -e $(BUILD_DIR)/simulator/Makefile \
+		&& (cd $(BUILD_DIR)/simulator && make clean) \
+		|| (rm -rf $(BUILD_DIR)/simulator)
 
 %-simulator: $(BUILD_DIR)/simulator/%-simulator
 	@echo " --- ok: $@"
