@@ -253,8 +253,8 @@ local-arduino-cli:
 	# enabling local arduino-cli command
 	@cp $(TOOLS_DIR)/arduino-cli $(SRC_DIR)
 	# adding local arduino-cli to .gitignore
-	@echo 'arduino-cli' >> $(SRC_DIR).gitignore
-	@echo '.gitignore' >> $(SRC_DIR).gitignore
+	# @echo 'arduino-cli' >> $(SRC_DIR).gitignore
+	# @echo '.gitignore' >> $(SRC_DIR).gitignore
 
 arduino-cli-download:
 	mkdir -p $(ARDUINO_LOC)

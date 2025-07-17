@@ -1,8 +1,7 @@
 venv
 _build
-.gitignore
 .lampda.par
-arduino-cli
 */**/*.o
 */**/*.d
 */**/*.txt
+arduino-cli
