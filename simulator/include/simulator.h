@@ -78,7 +78,8 @@ template<typename T> struct simulator
       }
 
       // deep sleep, exit
-      if (mock_registers::isDeepSleep) {
+      if (mock_registers::isDeepSleep)
+      {
         window.close();
         break;
       }

@@ -73,7 +73,7 @@ constexpr float circuitToLedZeroRotationZ_degrees = 88;
 constexpr float lampBodyRadius_mm = 25; // external radius of the lamp body
 
 // parameters of the led strip used
-constexpr uint16_t LED_COUNT = 556;     // How many indexable leds are attached to the controler
+constexpr uint16_t LED_COUNT = 570;     // How many indexable leds are attached to the controler
 constexpr float consWattByMeter = 5;    // power consumption (in Watt/meters)
 constexpr float inputVoltage_V = 12;    // voltage (volts)
 constexpr float ledByMeter = 162.6;     // the REAL indexable led by meters (for a 160Led/m)
