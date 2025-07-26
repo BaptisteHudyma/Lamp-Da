@@ -424,7 +424,7 @@ build: has-lamp-type process $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 format:
 	find $(PROJECT_INO) | xargs clang-format --style=file -i
 	find src/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' -o -iname '*.c' | xargs clang-format --style=file -i
-	find simulator/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file -i
+	find simulator/include simulator/src simulator/mocks -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file -i
 
 format-hook:
 	cp .pre-commit .git/hooks/pre-commit
