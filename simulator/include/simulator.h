@@ -16,7 +16,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#define LMBD_SIMU_ENABLED
 #define LMBD_SIMU_REALCOLORS
 
 constexpr int ledW = stripXCoordinates;
