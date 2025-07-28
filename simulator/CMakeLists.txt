@@ -123,6 +123,10 @@ set(SIMULATOR_MOCKS
     ${LMBD_ROOT_DIR}/simulator/mocks/bluetooth_mock.cpp
 )
 
+set(SIMULATOR_STATE
+    ${LMBD_ROOT_DIR}/simulator/src/simulator_state.cpp
+)
+
 # Simulator Targets
 function(create_simulator_target SIM_NAME)
     string(TOUPPER "${SIM_NAME}" UPPER_SIM_NAME)
@@ -142,6 +146,7 @@ function(create_simulator_target SIM_NAME)
         ${SRC_SYSTEM_EXT}
         ${SRC_SYSTEM_GLOBAL}
         ${SIMULATOR_MOCKS}
+        ${SIMULATOR_STATE}
         ${LMBD_ROOT_DIR}/src/user/${SIM_NAME}_functions.cpp
     )
     target_compile_definitions(simulator_${SIM_NAME} PUBLIC LMBD_LAMP_TYPE__${UPPER_SIM_NAME})
@@ -172,7 +177,13 @@ endfunction()
 create_simulator_target(indexable)
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/simulation_parameters.txt
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/simulation_parameters.txt
     ${CMAKE_CURRENT_BINARY_DIR}/simulation_parameters.txt
+    COPYONLY
+)
+
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/DejaVuSansMono.ttf
+    ${CMAKE_CURRENT_BINARY_DIR}/DejaVuSansMono.ttf
     COPYONLY
 )

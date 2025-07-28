@@ -1,11 +1,11 @@
-#include "src/system/platform/gpio.h"
-
-#include <SFML/Window/Keyboard.hpp>
 #include <map>
+
+#include "simulator_state.h"
+
+#include "src/system/platform/gpio.h"
 
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/utils.h"
-#include <SFML/Graphics.hpp>
 
 #include "simulator/include/hardware_influencer.h"
 
@@ -24,7 +24,7 @@ void update_callbacks()
   {
     if (pin == buttonPin)
     {
-      isButtonPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
+      isButtonPressed = sim::globals::state.isButtonPressed;
       if (isButtonPressed != wasButtonPressed)
       {
         callback();
