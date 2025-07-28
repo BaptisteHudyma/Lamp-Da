@@ -179,7 +179,7 @@ bool doKeyExists(const uint32_t key) { return _valueMap.find(key) != _valueMap.e
 
 bool get_value(const uint32_t key, uint32_t& value)
 {
-#ifdef LMBD_SIMU_ENABLED
+#ifdef LMBD_SIMULATION
   fprintf(stderr, "fs: get_value %08x -> ", key);
 #endif
 
@@ -188,14 +188,14 @@ bool get_value(const uint32_t key, uint32_t& value)
   {
     value = res->second;
 
-#ifdef LMBD_SIMU_ENABLED
+#ifdef LMBD_SIMULATION
     fprintf(stderr, "%08x\n", value);
 #endif
 
     return true;
   }
 
-#ifdef LMBD_SIMU_ENABLED
+#ifdef LMBD_SIMULATION
   fprintf(stderr, "not found\n");
 #endif
 
@@ -206,7 +206,7 @@ void set_value(const uint32_t key, const uint32_t value)
 {
   _valueMap[key] = value;
 
-#ifdef LMBD_SIMU_ENABLED
+#ifdef LMBD_SIMULATION
   fprintf(stderr, "fs: set_value %08x -> %08x\n", key, value);
 #endif
 }
@@ -225,7 +225,7 @@ uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
     {
       first = c.erase(first);
 
-#ifdef LMBD_SIMU_ENABLED
+#ifdef LMBD_SIMULATION
       fprintf(stderr, "fs: key dropped %08x (matches %08x)\n", key, bitMatch & bitSelect);
 #endif
     }

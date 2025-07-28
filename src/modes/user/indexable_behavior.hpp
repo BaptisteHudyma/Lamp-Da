@@ -78,7 +78,7 @@ void button_clicked_default(const uint8_t clicks)
       break;
   }
 
-#ifdef LMBD_SIMU_ENABLED
+#ifdef LMBD_SIMULATION
   fprintf(stderr, "group %d *mode %d\n", manager.get_active_group(), manager.get_active_mode());
 #endif
 }
