@@ -25,15 +25,16 @@ static constexpr LMBD_INLINE uint32_t fromRGB(uint8_t r, uint8_t g, uint8_t b)
 }
 
 /// Exposes (r, g, b) as uint8_t in struct from a single uint32_t color
-struct ToRGB {
+struct ToRGB
+{
+  constexpr LMBD_INLINE ToRGB(uint32_t color) :
+    r {(uint8_t)((color >> 16) & 0xff)},
+    g {(uint8_t)((color >> 8) & 0xff)},
+    b {(uint8_t)(color & 0xff)}
+  {
+  }
 
- constexpr LMBD_INLINE ToRGB(uint32_t color) :
-   r{(uint8_t) ((color >> 16) & 0xff)},
-   g{(uint8_t) ((color >> 8) & 0xff)},
-   b{(uint8_t) (color & 0xff)}
- { }
-
- uint8_t r, g, b;
+  uint8_t r, g, b;
 };
 
 static constexpr uint8_t colorRotation[360] = {

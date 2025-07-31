@@ -416,16 +416,23 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void set_favorite_now(auto& ctx, uint8_t which_one = 0)
   {
-    if (which_one == 0) {
+    if (which_one == 0)
+    {
       auto keyFav = ctx.template storageFor<Store::favoriteMode0>(ctx.state.currentFavorite0);
       ctx.state.currentFavorite0 = ctx.modeManager.activeIndex;
-    } else if (which_one == 1) {
+    }
+    else if (which_one == 1)
+    {
       auto keyFav = ctx.template storageFor<Store::favoriteMode1>(ctx.state.currentFavorite1);
       ctx.state.currentFavorite1 = ctx.modeManager.activeIndex;
-    } else if (which_one == 2) {
+    }
+    else if (which_one == 2)
+    {
       auto keyFav = ctx.template storageFor<Store::favoriteMode2>(ctx.state.currentFavorite2);
       ctx.state.currentFavorite2 = ctx.modeManager.activeIndex;
-    } else if (which_one == 3) {
+    }
+    else if (which_one == 3)
+    {
       auto keyFav = ctx.template storageFor<Store::favoriteMode3>(ctx.state.currentFavorite3);
       ctx.state.currentFavorite3 = ctx.modeManager.activeIndex;
     }
@@ -455,10 +462,12 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void loop(auto& ctx)
   {
-    if (ctx.state.isFavoritePending > 0) {
+    if (ctx.state.isFavoritePending > 0)
+    {
       ctx.state.isFavoritePending -= 1;
 
-      if (ctx.state.isFavoritePending == 0) {
+      if (ctx.state.isFavoritePending == 0)
+      {
         ctx.set_favorite_now(ctx.state.whichFavoritePending);
         alerts::manager.raise(alerts::Type::FAVORITE_SET);
       }
@@ -636,12 +645,12 @@ namespace modes::details {
 //
 
 /// \private animate favorite picks
-template <bool displayFavoriteNumber = true>
-void _animate_favorite_pick(auto& ctx, float holdDuration, float stepSize) {
+template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ctx, float holdDuration, float stepSize)
+{
   uint32_t stepCount = floor(holdDuration / stepSize);
   uint32_t stepProgress = floor((holdDuration * 256.0) / stepSize);
 
-  stepCount = stepCount % 4; // up to 4 favorite: which_one is 0, 1, 2, 3
+  stepCount = stepCount % 4;         // up to 4 favorite: which_one is 0, 1, 2, 3
   stepProgress = stepProgress % 256; // where we are: 0-255 rampColorRing
 
   // display ramp to show where user is standing
@@ -655,13 +664,18 @@ void _animate_favorite_pick(auto& ctx, float holdDuration, float stepSize) {
     anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Orange, colors::White>);
 
   // extra display on the first pixels (count pixels to know fav no)
-  if constexpr (displayFavoriteNumber) {
+  if constexpr (displayFavoriteNumber)
+  {
     ctx.skipFirstLedsForFrames(0);
-    for (uint8_t i = 0; i < stepCount + 2; ++i) {
-      if (i < stepCount + 1) {
+    for (uint8_t i = 0; i < stepCount + 2; ++i)
+    {
+      if (i < stepCount + 1)
+      {
         ctx.lamp.setPixelColor(i, colors::Cyan);
-      } else {
-      ctx.lamp.setPixelColor(i, colors::Black);
+      }
+      else
+      {
+        ctx.lamp.setPixelColor(i, colors::Black);
       }
     }
     ctx.skipFirstLedsForFrames(ctx.lamp.maxWidth * 2, 10);
@@ -675,6 +689,6 @@ void _animate_favorite_pick(auto& ctx, float holdDuration, float stepSize) {
   ctx.skipNextFrames(10);
 }
 
-} // modes::details
+} // namespace modes::details
 
 #endif
