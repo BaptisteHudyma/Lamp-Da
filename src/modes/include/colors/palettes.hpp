@@ -9,6 +9,8 @@
 #include <cstdint>
 #include <array>
 
+#include "src/modes/include/colors/utils.hpp"
+
 namespace modes::colors {
 
 /// Palette types
@@ -421,6 +423,33 @@ static constexpr PaletteTy PaletteAuroraColors = {0x000000,
                                                   0xff6600,
                                                   0xff3300,
                                                   0xff0000};
+
+/// \private return a palette from two colors
+template <uint32_t startColor, uint32_t endColor>
+static constexpr PaletteTy _gradient_palette_from_color() {
+  using ToRGB = modes::colors::ToRGB;
+  constexpr ToRGB start{startColor};
+  constexpr ToRGB end{endColor};
+
+  PaletteTy palette{};
+  constexpr float step = palette.size() - 1;
+  constexpr float dr = (end.r - start.r) / step;
+  constexpr float dg = (end.g - start.g) / step;
+  constexpr float db = (end.b - start.b) / step;
+
+  for (size_t I = 0; I < palette.size(); ++I) {
+    uint8_t r = start.r + (I * dr);
+    uint8_t g = start.g + (I * dg);
+    uint8_t b = start.b + (I * db);
+    palette[I] = modes::colors::fromRGB(r, g, b);
+  }
+
+  return palette;
+}
+
+/// Return a palette gradient from \p startColor to \p endColor
+template <uint32_t startColor, uint32_t endColor>
+static constexpr PaletteTy PaletteGradient = _gradient_palette_from_color<startColor, endColor>();
 
 /** \brief Return a color from a palette
  * \param[in] index from 0 to 255, the index of color we want from the palette
