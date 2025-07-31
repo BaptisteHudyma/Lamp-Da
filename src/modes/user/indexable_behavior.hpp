@@ -74,7 +74,15 @@ void button_clicked_default(const uint8_t clicks)
       break;
 
     case 4: // 4 clicks: jump to favorite
-      manager.jump_to_favorite();
+      auto now = manager.lamp.get_time_ms();
+      if ((now - manager.state.lastFavoriteJump) > 2000) {
+        manager.state.lastFavoriteStep = 0;
+      } else {
+        manager.state.lastFavoriteStep += 1;
+      }
+      manager.state.lastFavoriteJump = now;
+
+      manager.jump_to_favorite(manager.state.lastFavoriteStep % 4);
       break;
   }
 
@@ -172,15 +180,9 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       break;
 
     case 5: // 5 click+hold: configure favorite
-
-      if (holdDuration > 2000)
-      {
-        manager.set_favorite_now();
-
-        // raise the favorite alert (autoclearing)
-        alerts::manager.raise(alerts::Type::FAVORITE_SET);
+      if (holdDuration > 1000) {
+        modes::details::_animate_favorite_pick(manager, holdDuration - 1000, 2000);
       }
-
       break;
 
     default:
