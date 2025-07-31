@@ -13,6 +13,7 @@
 #include "src/system/physical/output_power.h"
 #endif
 
+#include "src/system/platform/time.h"
 #include "src/system/physical/sound.h"
 
 #include "src/modes/include/colors/utils.hpp"
@@ -449,13 +450,16 @@ public:
    */
   void LMBD_INLINE setPixelColorXY(uint16_t X, uint16_t Y, uint32_t color) { setPixelColor(to_strip(X, Y), color); }
 
-  /** \brief (physical) Return current sound level in decibels
-   *
-   */
+  /// \brief (physical) Return current sound level in decibels
   float LMBD_INLINE get_sound_level()
   {
     const float level = microphone::get_sound_level_Db();
     return (level > -70) ? level : -70; // avoid -inf or NaN
+  }
+
+  /// \brief (physical) Return relative time as milliseconds
+  uint32_t LMBD_INLINE get_time_ms() {
+    return time_ms();
   }
 };
 
