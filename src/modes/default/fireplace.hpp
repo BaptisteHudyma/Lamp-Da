@@ -45,7 +45,7 @@ struct FireMode : public BasicMode
     // tick forward
     ctx.state.step += 1;
     const int16_t zSpeed = ctx.state.step / (256 - speed);
-    const int16_t ySpeed = time_ms() / (256 - speed);
+    const int16_t ySpeed = ctx.lamp.get_time_ms() / (256 - speed);
 
     // measure custom ramp for fire sound sensitivity
     const float index = ctx.get_active_custom_ramp();
