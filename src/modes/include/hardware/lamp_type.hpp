@@ -458,9 +458,7 @@ public:
   }
 
   /// \brief (physical) Return relative time as milliseconds
-  uint32_t LMBD_INLINE get_time_ms() {
-    return time_ms();
-  }
+  uint32_t LMBD_INLINE get_time_ms() { return time_ms(); }
 };
 
 } // namespace modes::hardware
