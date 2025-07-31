@@ -13,6 +13,8 @@
 #include "src/system/physical/output_power.h"
 #endif
 
+#include "src/system/physical/sound.h"
+
 #include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/compile.hpp"
 
@@ -49,8 +51,13 @@ static constexpr LampTypes lampType = _lampType;
  *
  * TODO: write recipes for best practices when doing Simple/CCT/Indexable
  */
-struct LampTy
+template<typename ModeManager> struct LampTy
 {
+  friend ModeManager;
+  using SelfTy = LampTy<ModeManager>;
+  using ModeManagerTy = ModeManager;
+  using ManagerStateTy = typename ModeManagerTy::StateTy;
+
   //
   // private constructors
   //
@@ -59,12 +66,15 @@ struct LampTy
   LampTy(const LampTy&) = delete;            ///< \private
   LampTy& operator=(const LampTy&) = delete; ///< \private
 
+private:
+  ManagerStateTy* _stateManagerPtr = nullptr;
+
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 private:
-  static constexpr uint16_t _width = stripXCoordinates;  ///< \private
-  static constexpr uint16_t _height = stripYCoordinates; ///< \private
-  static constexpr uint16_t _ledCount = LED_COUNT;       ///< \private
-  LedStrip& strip;                                       ///< \private
+  static constexpr uint16_t _width = ceil(stripXCoordinates);  ///< \private
+  static constexpr uint16_t _height = ceil(stripYCoordinates); ///< \private
+  static constexpr uint16_t _ledCount = LED_COUNT;             ///< \private
+  LedStrip& strip;                                             ///< \private
 
 public:
   /// \private Constructor used to wrap strip if needed
@@ -90,6 +100,13 @@ public:
   //
   // private API
   //
+
+  /// \private get a reference to manager state
+  ManagerStateTy& get_manager_state()
+  {
+    assert(_stateManagerPtr != nullptr);
+    return *_stateManagerPtr;
+  }
 
   /** \private Startup sequence of the lamp from a powered-off state
    *
@@ -187,13 +204,13 @@ public:
 
   /** \brief (indexable) Width of "pixel space" w/ lamp taken as a LED matrix
    *
-   * Equal to \p stripXCoordinates if LampTypes::indexable or else 16
+   * Equal to \p stripXCoordinates (ceil) if LampTypes::indexable or else 16
    */
   static constexpr uint16_t maxWidth = _width;
 
   /** \brief (indexable) Height of "pixel space" w/ lamp taken as a LED matrix
    *
-   * Equal to stripYCoordinates if LampTypes::indexable or else 16
+   * Equal to \p stripYCoordinates (ceil) if LampTypes::indexable or else 16
    */
   static constexpr uint16_t maxHeight = _height;
 
@@ -411,6 +428,12 @@ public:
   {
     if constexpr (flavor == LampTypes::indexable)
     {
+      const auto& state = get_manager_state();
+      if (state.skipFirstLedsForEffect && n < state.skipFirstLedsForAmount)
+      {
+        return;
+      }
+
       assert(n < ledCount && "invalid LED index");
       strip.setPixelColor(n, color);
     }
@@ -418,6 +441,21 @@ public:
     {
       assert(false && "unsupported");
     }
+  }
+
+  /** \brief (indexable) Set the X,Y-th LED color
+   *
+   * See modes::fromRGB() to set \p color
+   */
+  void LMBD_INLINE setPixelColorXY(uint16_t X, uint16_t Y, uint32_t color) { setPixelColor(to_strip(X, Y), color); }
+
+  /** \brief (physical) Return current sound level in decibels
+   *
+   */
+  float LMBD_INLINE get_sound_level()
+  {
+    const float level = microphone::get_sound_level_Db();
+    return (level > -70) ? level : -70; // avoid -inf or NaN
   }
 };
 
