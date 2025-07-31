@@ -15,6 +15,7 @@
 #include "src/modes/include/manager_type.hpp"
 
 #include "src/modes/default/fixed_modes.hpp"
+#include "src/modes/default/fireplace.hpp"
 #include "src/modes/legacy/legacy_modes.hpp"
 
 namespace user {

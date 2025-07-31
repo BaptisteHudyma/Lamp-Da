@@ -14,6 +14,8 @@
 
 #include "src/system/physical/fileSystem.h"
 
+#include "src/modes/default/fireplace.hpp"
+
 namespace modes::legacy {
 
 /// Just a way to highlight which modes still uses src/system
@@ -132,12 +134,6 @@ struct PolarMode : public LegacyMode
   {
     bool categoryChange = false;
   };
-};
-
-/// Fireplace
-struct FireMode : public LegacyMode
-{
-  static void loop(auto& ctx) { animations::fire(60, 60, 255, PaletteHeatColors, ctx.lamp.getLegacyStrip()); }
 };
 
 /// Rainbow sin waves
@@ -385,7 +381,7 @@ using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
                                   calm::PartyFadeMode,
                                   calm::NoiseMode,
                                   calm::PolarMode,
-                                  calm::FireMode,
+                                  default_modes::FireMode,
                                   calm::SineMode,
                                   calm::DriftMode,
                                   calm::DistMode,
