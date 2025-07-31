@@ -30,6 +30,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   using SelfTy = ContextTy<LocalBasicMode, ModeManager>;
   using ModeManagerTy = ModeManager;
   using LocalModeTy = LocalBasicMode;
+  using ThisLampTy = typename ModeManagerTy::ThisLampTy;
   using StateTy = StateTyOf<LocalModeTy>;
 
   /// \private True if LocalModeTy is a BasicMode
@@ -409,6 +410,33 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   }
 
   //
+  // special effects
+  //
+
+  /** \brief Skip the few next calls to active mode ``.loop``
+   */
+  void LMBD_INLINE skipNextFrames(uint8_t count = 1)
+  {
+    auto ctx = modeManager.get_context();
+    ctx.state.skipNextFrameEffect = count;
+  }
+
+  /** \brief Skip the first few LEDs update during several frames
+   *
+   * Next calls to @ref modes::hardware::LampTy.setPixelColor() no longer write
+   * on the \p amount first lower LEDs, making them static.
+   *
+   * See modes::colors::rampColorRing
+   *
+   */
+  void LMBD_INLINE skipFirstLedsForFrames(uint8_t amount, uint8_t count = 1)
+  {
+    auto ctx = modeManager.get_context();
+    ctx.state.skipFirstLedsForAmount = amount;
+    ctx.state.skipFirstLedsForEffect = count;
+  }
+
+  //
   // quick bindings to \p LocalModeTy
   //
 
@@ -525,8 +553,8 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   // context members for direct access
   //
 
-  hardware::LampTy& lamp; ///< Interact with the lamp hardware
-  StateTy& state;         ///< Interact with the current active mode state
+  ThisLampTy& lamp; ///< Interact with the lamp hardware
+  StateTy& state;   ///< Interact with the current active mode state
 
 private:
   ModeManagerTy& modeManager;

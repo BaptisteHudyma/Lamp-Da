@@ -2,6 +2,7 @@
 #define USER_CONSTANTS_H
 
 #include <cstdint>
+#include <cmath>
 
 //
 // common to all lamp type
@@ -93,6 +94,9 @@ const float lampHeight = ledStripWidth_mm * LED_COUNT / ledPerTurn;
 constexpr float stripXCoordinates = lampBodyCircumpherence_mm / ledSize_mm;
 constexpr float stripYCoordinates = ledStripLenght_mm / lampBodyCircumpherence_mm;
 constexpr float lampBodyHeight_mm = stripYCoordinates * ledStripWidth_mm;
+
+constexpr uint16_t stripMatrixWidth = ceil(stripXCoordinates);
+constexpr uint16_t stripMatrixHeight = ceil(stripYCoordinates);
 
 // define position of led 0 to the circuit center
 constexpr float circuitToLedZeroRotationX_degrees = 0;

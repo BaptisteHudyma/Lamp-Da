@@ -40,7 +40,7 @@ constexpr DigitalPin::GPIO ledStripPinId = DigitalPin::GPIO::gpio6;
 static DigitalPin LedStripPin(ledStripPinId);
 
 LedStrip strip(LedStripPin.pin());
-modes::hardware::LampTy lamp {strip};
+modes::hardware::LampTy<ManagerTy> lamp {strip};
 ManagerTy modeManager(lamp);
 
 } // namespace _private

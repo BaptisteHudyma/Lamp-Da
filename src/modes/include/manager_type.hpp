@@ -115,6 +115,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 {
   using SelfTy = ModeManagerTy<Config, AllGroups>;
   using ConfigTy = Config;
+  using ThisLampTy = hardware::LampTy<SelfTy>;
   using AllGroupsTy = AllGroups;
   using AllStatesTy = details::StateTyFrom<AllGroups>;
   static constexpr uint8_t nbGroups {std::tuple_size_v<AllGroupsTy>};
@@ -133,7 +134,10 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   static constexpr bool hasButtonCustomUI = HasAnyGroup::hasButtonCustomUI;
 
   // constructors
-  ModeManagerTy(hardware::LampTy& lamp) : activeIndex {ActiveIndexTy::from(Config::initialActiveIndex)}, lamp {lamp} {}
+  ModeManagerTy(ThisLampTy& lamp) : activeIndex {ActiveIndexTy::from(Config::initialActiveIndex)}, lamp {lamp}
+  {
+    lamp._stateManagerPtr = &(get_context().state);
+  }
 
   ModeManagerTy() = delete;
   ModeManagerTy(const ModeManagerTy&) = delete;
@@ -212,6 +216,11 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     RampHandlerTy<Config> scrollHandler = {Config::scrollRampStepSpeedMs};
 
     bool clearStripOnModeChange = Config::defaultClearStripOnModeChange;
+
+    // special effects
+    uint8_t skipNextFrameEffect = 0;    // should the next .loop() mode be skipped?
+    uint8_t skipFirstLedsForEffect = 0; // should the loop skip some lower LEDs?
+    uint8_t skipFirstLedsForAmount = 0; // how many pixels to shave from the top?
 
     // configuration-related actions done before mode reset
     static void LMBD_INLINE before_reset(auto& ctx)
@@ -407,6 +416,17 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void loop(auto& ctx)
   {
+    if (ctx.state.skipFirstLedsForEffect > 0)
+    {
+      ctx.state.skipFirstLedsForEffect -= 1;
+    }
+
+    if (ctx.state.skipNextFrameEffect > 0)
+    {
+      ctx.state.skipNextFrameEffect -= 1;
+      return;
+    }
+
     dispatch_group(ctx, [](auto group) {
       group.loop();
     });
@@ -516,7 +536,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   //
 
   ActiveIndexTy activeIndex;
-  hardware::LampTy& lamp;
+  ThisLampTy& lamp;
 
   //
   // private members
