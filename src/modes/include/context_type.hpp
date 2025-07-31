@@ -101,30 +101,30 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   }
 
   /// \private Jump to favorite mode
-  auto LMBD_INLINE jump_to_favorite()
+  auto LMBD_INLINE jump_to_favorite(uint8_t which_one = 0)
   {
     if constexpr (LocalModeTy::isModeManager)
     {
-      LocalModeTy::jump_to_favorite(*this);
+      LocalModeTy::jump_to_favorite(*this, which_one);
     }
     else
     {
       auto& manager = modeManager.get_context();
-      return manager.jump_to_favorite();
+      return manager.jump_to_favorite(which_one);
     }
   }
 
   /// \private Set active favorite now
-  auto LMBD_INLINE set_favorite_now()
+  auto LMBD_INLINE set_favorite_now(uint8_t which_one = 0)
   {
     if constexpr (LocalModeTy::isModeManager)
     {
-      LocalModeTy::set_favorite_now(*this);
+      LocalModeTy::set_favorite_now(*this, which_one);
     }
     else
     {
       auto& manager = modeManager.get_context();
-      return manager.set_favorite_now();
+      return manager.set_favorite_now(which_one);
     }
   }
 
