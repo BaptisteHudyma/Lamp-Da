@@ -315,7 +315,6 @@ struct LiquideMode : public LegacyMode
     state.categoryChange = true;
   }
 
-  // hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
 
   struct StateTy

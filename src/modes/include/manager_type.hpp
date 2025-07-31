@@ -18,6 +18,8 @@
 #include "src/modes/include/hardware/keystore.hpp"
 #include "src/modes/include/hardware/lamp_type.hpp"
 
+#include "src/modes/include/anims/ramp_update.hpp"
+
 namespace modes {
 
 /// \private Active state is designated by a 32-bit integer
@@ -54,7 +56,9 @@ template<typename Config> struct RampHandlerTy
     stepSpeed {stepSpeed},
     rampSaturates {rampSaturates},
     lastTimeMeasured {1000},
-    isForward {true}
+    isForward {true},
+    animEffect {Config::defaultCustomRampAnimEffect},
+    animChoice {Config::defaultCustomRampAnimChoice}
   {
   }
 
@@ -106,6 +110,8 @@ template<typename Config> struct RampHandlerTy
 
   uint32_t stepSpeed;
   bool rampSaturates;
+  bool animEffect;
+  bool animChoice;
   uint32_t lastTimeMeasured;
   bool isForward;
 };
@@ -508,6 +514,11 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void custom_ramp_update(auto& ctx, uint8_t rampValue)
   {
+    if (ctx.state.rampHandler.animEffect)
+    {
+      modes::anims::_rampAnimDispatch(ctx.state.rampHandler.animChoice, ctx, rampValue);
+    }
+
     dispatch_group(ctx, [&](auto group) {
       group.custom_ramp_update(rampValue);
     });

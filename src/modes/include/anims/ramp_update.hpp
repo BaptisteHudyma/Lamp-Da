@@ -91,6 +91,23 @@ void rampColorRing(auto& ctx, uint8_t rampValue, auto palette)
   ctx.skipFirstLedsForFrames(ctx.lamp.maxWidth * nbBlackLines, freezeSize);
 }
 
+/// \private (dispatch ramp animation)
+void inline LMBD_INLINE _rampAnimDispatch(uint32_t index, auto& ctx, uint8_t rampValue)
+{
+  if (index == 0)
+  {
+    rampColorRing(ctx, rampValue, modes::colors::PaletteBlackBodyColors);
+  }
+  else if (index == 1)
+  {
+    rampRainbow(ctx, rampValue);
+  }
+  else
+  {
+    return; // TODO: we can add other rampColorRing variants :)
+  }
+}
+
 } // namespace modes::anims
 
 #endif
