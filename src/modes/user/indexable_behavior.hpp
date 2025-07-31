@@ -96,6 +96,7 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   auto manager = get_context();
   auto& rampHandler = manager.state.rampHandler;
   auto& scrollHandler = manager.state.scrollHandler;
+  scrollHandler.isForward = false; // (always scroll modes backward)
 
   switch (clicks)
   {
