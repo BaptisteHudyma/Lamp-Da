@@ -385,6 +385,9 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
       case ConfigKeys::clearStripOnModeChange:
         ctx.state.clearStripOnModeChange = value;
         break;
+      case ConfigKeys::customRampAnimEffect:
+        ctx.state.rampHandler.animEffect = value;
+        break;
       default:
         assert(false && "unsupported config key for booleans!");
         break;
@@ -402,6 +405,9 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     {
       case ConfigKeys::customRampStepSpeedMs:
         ctx.state.rampHandler.stepSpeed = value;
+        break;
+      case ConfigKeys::customRampAnimChoice:
+        ctx.state.rampHandler.animChoice = value;
         break;
       default:
         assert(false && "unsupported config key for u32!");

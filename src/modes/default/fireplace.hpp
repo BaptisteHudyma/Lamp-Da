@@ -81,11 +81,6 @@ struct FireMode : public BasicMode
       }
     }
   }
-
-  static void custom_ramp_update(auto& ctx, uint8_t rampValue)
-  {
-    anims::rampColorRing(ctx, rampValue, colors::PaletteBlackBodyColors);
-  }
 };
 
 } // namespace modes::default_modes
