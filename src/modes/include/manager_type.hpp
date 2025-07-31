@@ -466,7 +466,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     {
       ctx.state.isFavoritePending -= 1;
 
-      if (ctx.state.isFavoritePending == 0)
+      if (ctx.state.isFavoritePending == 0 && ctx.state.whichFavoritePending < 4)
       {
         ctx.set_favorite_now(ctx.state.whichFavoritePending);
         alerts::manager.raise(alerts::Type::FAVORITE_SET);
@@ -647,29 +647,33 @@ namespace modes::details {
 /// \private animate favorite picks
 template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ctx, float holdDuration, float stepSize)
 {
-  uint32_t stepCount = floor(holdDuration / stepSize);
+  // where we are: 0-255 rampColorRing
   uint32_t stepProgress = floor((holdDuration * 256.0) / stepSize);
+  stepProgress = stepProgress % 256;
 
-  stepCount = stepCount % 4;         // up to 4 favorite: which_one is 0, 1, 2, 3
-  stepProgress = stepProgress % 256; // where we are: 0-255 rampColorRing
+  // up to 5 step state: "which_one" is [0, 1, 2, 3] and "do not set" is 4
+  uint32_t stepCount = 4 + floor(holdDuration / stepSize);
+  stepCount = stepCount % 5;
 
   // display ramp to show where user is standing
   if (stepCount == 0)
-    anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Red, colors::White>);
-  if (stepCount == 1)
     anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Green, colors::White>);
-  if (stepCount == 2)
+  if (stepCount == 1)
     anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Blue, colors::White>);
-  if (stepCount == 3)
+  if (stepCount == 2)
     anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Orange, colors::White>);
+  if (stepCount == 3)
+    anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Purple, colors::White>);
+  if (stepCount == 4)
+    anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::White, colors::Cyan>);
 
   // extra display on the first pixels (count pixels to know fav no)
   if constexpr (displayFavoriteNumber)
   {
     ctx.skipFirstLedsForFrames(0);
-    for (uint8_t i = 0; i < stepCount + 2; ++i)
+    for (uint8_t i = 0; i < 4; ++i)
     {
-      if (i < stepCount + 1)
+      if (stepCount != 4 && i < stepCount + 1)
       {
         ctx.lamp.setPixelColor(i, colors::Cyan);
       }

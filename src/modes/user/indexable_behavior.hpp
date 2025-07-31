@@ -184,9 +184,9 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       break;
 
     case 5: // 5 click+hold: configure favorite
-      if (holdDuration > 1000)
+      if (holdDuration > 10)
       {
-        modes::details::_animate_favorite_pick(manager, holdDuration - 1000, 2000);
+        modes::details::_animate_favorite_pick(manager, holdDuration, 2000);
       }
       break;
 
