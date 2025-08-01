@@ -49,14 +49,14 @@ namespace modes::audio {
  * You can use ``avgDelta`` as-is to build modes reactive to the surrounding
  * sounds while being able to somewhat ignore noisy environments.
  *
- * You can configure ``eventCutoff`` (in centidecibels) as the minimum sound
+ * You can configure ``eventCutoff`` (in centibels) as the minimum sound
  * level required to trigger a ``delta`` contrast of 1.0 (the larger the
  * cut-off, the larger the required difference against the average level).
  *
  * The ``hasEvent`` boolean is triggered if ``avgDelta`` is above 1.0 for
  * at least ``nbEventSample`` ticks. The ``eventScale`` integer is
  * proportional to the largest ``avgMax * delta`` value during this period,
- * scaled down by ``eventNorm`` (in centidecibels).
+ * scaled down by ``eventNorm`` (in centibels).
  *
  * The ``windowSize`` (in quarter-ticks) is used for ``avgLevel`` and
  * ``avgMax`` (the larger the window, the less reactive the average) and
