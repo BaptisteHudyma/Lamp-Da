@@ -104,7 +104,7 @@ void inline LMBD_INLINE _rampAnimDispatch(uint32_t index, auto& ctx, uint8_t ram
   }
   else
   {
-    return; // TODO: we can add other rampColorRing variants :)
+    return; // let's add other rampColorRing variants :)
   }
 }
 

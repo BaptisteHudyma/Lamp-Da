@@ -689,7 +689,7 @@ template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ct
   ctx.state.isFavoritePending = 30;
   ctx.state.whichFavoritePending = stepCount;
 
-  // TODO: remove this freeze, after migrating legacy modes :)
+  // TODO: #153 remove this freeze, after migrating legacy modes :)
   ctx.skipNextFrames(10);
 }
 
