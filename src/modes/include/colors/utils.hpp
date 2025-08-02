@@ -7,7 +7,6 @@
  */
 
 #include "src/modes/include/compile.hpp"
-#include "src/modes/include/colors/palettes.hpp"
 
 //
 // Color utilities likely already defined elsewhere
@@ -24,6 +23,19 @@ static constexpr LMBD_INLINE uint32_t fromRGB(uint8_t r, uint8_t g, uint8_t b)
   uint32_t gx = g;
   return (rx << 16) | (gx << 8) | b;
 }
+
+/// Exposes (r, g, b) as uint8_t in struct from a single uint32_t color
+struct ToRGB
+{
+  constexpr LMBD_INLINE ToRGB(uint32_t color) :
+    r {(uint8_t)((color >> 16) & 0xff)},
+    g {(uint8_t)((color >> 8) & 0xff)},
+    b {(uint8_t)(color & 0xff)}
+  {
+  }
+
+  uint8_t r, g, b;
+};
 
 static constexpr uint8_t colorRotation[360] = {
         0,   0,   0,   0,   0,   1,   1,   2,   2,   3,   4,   5,   6,   7,   8,   9,   11,  12,  13,  15,  17,  18,
@@ -52,6 +64,12 @@ static constexpr LMBD_INLINE uint32_t fromAngleHue(uint16_t angleDegrees)
   uint8_t b = colorRotation[(angleDegrees + 240) % 360];
   return fromRGB(r, g, b);
 }
+
+} // namespace modes::colors
+
+#include "src/modes/include/colors/palettes.hpp"
+
+namespace modes::colors {
 
 /** \brief Given a 0-255 value, return a color approximating a kelvin temperature
  *

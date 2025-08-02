@@ -30,6 +30,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   using SelfTy = ContextTy<LocalBasicMode, ModeManager>;
   using ModeManagerTy = ModeManager;
   using LocalModeTy = LocalBasicMode;
+  using ThisLampTy = typename ModeManagerTy::ThisLampTy;
   using StateTy = StateTyOf<LocalModeTy>;
 
   /// \private True if LocalModeTy is a BasicMode
@@ -100,30 +101,30 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   }
 
   /// \private Jump to favorite mode
-  auto LMBD_INLINE jump_to_favorite()
+  auto LMBD_INLINE jump_to_favorite(uint8_t which_one = 0)
   {
     if constexpr (LocalModeTy::isModeManager)
     {
-      LocalModeTy::jump_to_favorite(*this);
+      LocalModeTy::jump_to_favorite(*this, which_one);
     }
     else
     {
       auto& manager = modeManager.get_context();
-      return manager.jump_to_favorite();
+      return manager.jump_to_favorite(which_one);
     }
   }
 
   /// \private Set active favorite now
-  auto LMBD_INLINE set_favorite_now()
+  auto LMBD_INLINE set_favorite_now(uint8_t which_one = 0)
   {
     if constexpr (LocalModeTy::isModeManager)
     {
-      LocalModeTy::set_favorite_now(*this);
+      LocalModeTy::set_favorite_now(*this, which_one);
     }
     else
     {
       auto& manager = modeManager.get_context();
-      return manager.set_favorite_now();
+      return manager.set_favorite_now(which_one);
     }
   }
 
@@ -384,6 +385,9 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
       case ConfigKeys::clearStripOnModeChange:
         ctx.state.clearStripOnModeChange = value;
         break;
+      case ConfigKeys::customRampAnimEffect:
+        ctx.state.rampHandler.animEffect = value;
+        break;
       default:
         assert(false && "unsupported config key for booleans!");
         break;
@@ -402,10 +406,40 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
       case ConfigKeys::customRampStepSpeedMs:
         ctx.state.rampHandler.stepSpeed = value;
         break;
+      case ConfigKeys::customRampAnimChoice:
+        ctx.state.rampHandler.animChoice = value;
+        break;
       default:
         assert(false && "unsupported config key for u32!");
         break;
     }
+  }
+
+  //
+  // special effects
+  //
+
+  /** \brief Skip the few next calls to active mode ``.loop``
+   */
+  void LMBD_INLINE skipNextFrames(uint8_t count = 1)
+  {
+    auto ctx = modeManager.get_context();
+    ctx.state.skipNextFrameEffect = count;
+  }
+
+  /** \brief Skip the first few LEDs update during several frames
+   *
+   * Next calls to @ref modes::hardware::LampTy.setPixelColor() no longer write
+   * on the \p amount first lower LEDs, making them static.
+   *
+   * See modes::colors::rampColorRing
+   *
+   */
+  void LMBD_INLINE skipFirstLedsForFrames(uint8_t amount, uint8_t count = 1)
+  {
+    auto ctx = modeManager.get_context();
+    ctx.state.skipFirstLedsForAmount = amount;
+    ctx.state.skipFirstLedsForEffect = count;
   }
 
   //
@@ -525,8 +559,8 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   // context members for direct access
   //
 
-  hardware::LampTy& lamp; ///< Interact with the lamp hardware
-  StateTy& state;         ///< Interact with the current active mode state
+  ThisLampTy& lamp; ///< Interact with the lamp hardware
+  StateTy& state;   ///< Interact with the current active mode state
 
 private:
   ModeManagerTy& modeManager;

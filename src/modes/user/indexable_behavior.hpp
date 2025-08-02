@@ -74,11 +74,22 @@ void button_clicked_default(const uint8_t clicks)
       break;
 
     case 4: // 4 clicks: jump to favorite
-      manager.jump_to_favorite();
+      auto now = manager.lamp.get_time_ms();
+      if ((now - manager.state.lastFavoriteJump) > 2000)
+      {
+        manager.state.lastFavoriteStep = 0;
+      }
+      else
+      {
+        manager.state.lastFavoriteStep += 1;
+      }
+      manager.state.lastFavoriteJump = now;
+
+      manager.jump_to_favorite(manager.state.lastFavoriteStep % 4);
       break;
   }
 
-#ifdef LMBD_SIMU_ENABLED
+#ifdef LMBD_SIMULATION
   fprintf(stderr, "group %d *mode %d\n", manager.get_active_group(), manager.get_active_mode());
 #endif
 }
@@ -88,6 +99,7 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   auto manager = get_context();
   auto& rampHandler = manager.state.rampHandler;
   auto& scrollHandler = manager.state.scrollHandler;
+  scrollHandler.isForward = false; // (always scroll modes backward)
 
   switch (clicks)
   {
@@ -172,15 +184,10 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       break;
 
     case 5: // 5 click+hold: configure favorite
-
-      if (holdDuration > 2000)
+      if (holdDuration > 10)
       {
-        manager.set_favorite_now();
-
-        // raise the favorite alert (autoclearing)
-        alerts::manager.raise(alerts::Type::FAVORITE_SET);
+        modes::details::_animate_favorite_pick(manager, holdDuration, 2000);
       }
-
       break;
 
     default:

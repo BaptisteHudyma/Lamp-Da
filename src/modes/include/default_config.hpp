@@ -53,6 +53,12 @@ struct DefaultManagerConfig
   /// By default, how slow custom ramp changes value (milliseconds)
   static constexpr uint32_t defaultCustomRampStepSpeedMs = 16;
 
+  /// By default, use custom ramp animation, or else do nothing?
+  static constexpr bool defaultCustomRampAnimEffect = true;
+
+  /// By default, which custom ramp animation to use?
+  static constexpr uint32_t defaultCustomRampAnimChoice = 0;
+
   //
   // misc config
   //
@@ -102,6 +108,8 @@ enum class ConfigKeys : uint8_t
   rampSaturates,          ///< (bool) Mode saturates on custom ramp, or else wrap?
   clearStripOnModeChange, ///< (bool) Mode clear strip after reset, or else do nothing?
   customRampStepSpeedMs,  ///< (u32) Mode time step for incrementing custom ramp (ms)
+  customRampAnimEffect,   ///< (bool) Mode uses custom ramp anim. or not?
+  customRampAnimChoice,   ///< (u32) Which custom ramp anim. to use (rainbow, etc)
 };
 
 } // namespace modes
