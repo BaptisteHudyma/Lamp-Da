@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.25)
 project(LampSimulator CXX C)
 
 set(LMBD_ROOT_DIR $ENV{LMBD_ROOT_DIR} CACHE PATH "Root directory for the project")
@@ -6,6 +6,7 @@ if(LMBD_ROOT_DIR STREQUAL "")
     set(LMBD_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../")
 endif()
 
+# get SFML version, if not found, use FetchContent
 set(SFML_VERSION 3.0.1)
 set(SFML_FETCH 0 CACHE PATH "If not set, try to use local install of SFML")
 if (NOT SFML_FETCH)
@@ -18,16 +19,20 @@ if (NOT SFML_FOUND)
 endif()
 
 if (SFML_FETCH)
+    set(BUILD_SHARED_LIBS OFF)
     include(FetchContent)
-    FetchContent_Declare(SFML
+    FetchContent_Declare(sfml
         GIT_REPOSITORY https://github.com/SFML/SFML.git
         GIT_TAG ${SFML_VERSION}
         GIT_SHALLOW ON
+        SYSTEM
         EXCLUDE_FROM_ALL
-        SYSTEM)
+        OVERRIDE_FIND_PACKAGE
+    )
     FetchContent_MakeAvailable(SFML)
-endif()
 
+    find_package(SFML ${SFML_VERSION} COMPONENTS System Window Graphics Audio Main)
+endif()
 
 # Compiler and Flags
 set(CMAKE_CXX_STANDARD 17)
@@ -151,25 +156,17 @@ function(create_simulator_target SIM_NAME)
     )
     target_compile_definitions(simulator_${SIM_NAME} PUBLIC LMBD_LAMP_TYPE__${UPPER_SIM_NAME})
 
-    if (SFML_FETCH)
-        target_link_libraries(${TARGET_NAME}
-            simulator_${SIM_NAME}
-            SFML::System
-            SFML::Window
-            SFML::Graphics
-            SFML::Audio
-            pthread
-        )
-    else()
-        target_link_libraries(${TARGET_NAME}
-            simulator_${SIM_NAME}
-            sfml-graphics
-            sfml-window
-            sfml-audio
-            sfml-system
-            pthread
-        )
-    endif()
+    target_link_libraries(simulator_${SIM_NAME}
+        sfml-graphics
+        sfml-window
+        sfml-audio
+        sfml-system
+    )
+
+    target_link_libraries(${TARGET_NAME}
+        simulator_${SIM_NAME}
+        pthread
+    )
 
 endfunction()
 
