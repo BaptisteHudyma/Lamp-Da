@@ -12,7 +12,7 @@ struct defaultSimulation
   float fakeXorigin = 0; // start lamp N led to the left
   float fakeXend = 0;    // remove N led from right
 
-  float buttonSize = 40.f; // draw a lamp button of 40 pixels
+  float buttonSize = 40.f;   // draw a lamp button of 40 pixels
   float buttonMargin = 15.f; // draw a button color indicator 10 pixels larger
 
   defaultSimulation() {}
