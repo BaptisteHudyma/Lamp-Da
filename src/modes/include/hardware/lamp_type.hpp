@@ -6,7 +6,10 @@
 #include "src/compile.h"
 #include "src/user/constants.h"
 #include "src/system/utils/curves.h"
+#include "src/system/utils/constants.h"
 #include "src/system/utils/brightness_handle.h"
+
+#include "src/system/ext/math8.h"
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #include "src/system/utils/strip.h"
@@ -15,6 +18,8 @@
 
 #include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/compile.hpp"
+
+#include "src/system/platform/time.h"
 
 /// Provide interface to the physical hardware and other facilities
 namespace modes::hardware {
@@ -68,7 +73,7 @@ private:
 
 public:
   /// \private Constructor used to wrap strip if needed
-  LMBD_INLINE LampTy(LedStrip& strip) : strip {strip} {}
+  LMBD_INLINE LampTy(LedStrip& strip) : strip {strip}, tick {0}, raw_frame_count {0} {}
 #else
 private:
   // (placeholder values to avoid bad fails on misuse)
@@ -84,12 +89,22 @@ private:
 
 public:
   /// \private Constructor used to wrap strip if needed
-  LMBD_INLINE LampTy() : fakeStrip {}, strip {fakeStrip} {}
+  LMBD_INLINE LampTy() : fakeStrip {}, strip {fakeStrip}, tick {0}, raw_frame_count {0} {}
 #endif
 
   //
   // private API
   //
+
+  /// \private (refresh internal const tick variable)
+  void LMBD_INLINE refresh_tick_value()
+  {
+    uint32_t* writable_tick = const_cast<uint32_t*>(&tick);
+    *writable_tick = time_ms() / 16; // dividing by 16 is fast +approx. 60 fps
+
+    uint32_t* writable_frame_count = const_cast<uint32_t*>(&raw_frame_count);
+    *writable_frame_count += 1; // monotonous
+  }
 
   /** \private Startup sequence of the lamp from a powered-off state
    *
@@ -178,6 +193,9 @@ public:
 
   /// Which lamp flavor is currently used by the implementation?
   static constexpr LampTypes flavor = lampType;
+
+  /// What is the maximal brightness for that lamp?
+  static constexpr brightness_t maxBrightness = ::maxBrightness;
 
   /** \brief (indexable) Count of indexable LEDs on the lamp
    *
@@ -419,6 +437,24 @@ public:
       assert(false && "unsupported");
     }
   }
+
+  /** \brief (physical) Tick number, ever-increasing at 60fps
+   *
+   * This value increments 62.5 times per second and is updated once per loop.
+   *
+   * It is based on the internal board clock, depending on hardware and load
+   * some values may be skipped, but overall that counter is time-based and
+   * best used to build animations.
+   */
+  volatile const uint32_t tick;
+
+  /** \brief (physical) Raw frame count, incremented at an undefined rate
+   *
+   * This value increments everytime the loop method is called, and its rate
+   * may vary depending on hardware and load. If used to build animations, this
+   * may cause irregular updates.
+   */
+  volatile const uint32_t raw_frame_count;
 };
 
 } // namespace modes::hardware
