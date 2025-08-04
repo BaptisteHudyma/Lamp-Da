@@ -40,11 +40,11 @@ all: build
 # make doc
 #
 
-$(SRC_DIR)/doc/html/index.html:
+$(SRC_DIR)/docs/html/index.html:
 	@echo; echo " --- $@"
 	cd $(SRC_DIR) && doxygen doxygen.conf
 
-doc: $(SRC_DIR)/doc/html/index.html
+doc: $(SRC_DIR)/docs/html/index.html
 	@echo " --- ok: $@"
 
 #
@@ -527,7 +527,7 @@ clean-artifacts:
 
 clean-doc:
 	@echo; echo " --- $@"
-	rm -f doc/html/index.html
+	rm -f docs/html/index.html
 
 clean: clean-artifacts clean-simulator clean-doc
 	@echo; echo " --- $@"
@@ -570,6 +570,6 @@ remove: mr_proper
 mr_proper:
 	@echo; echo " --- $@"
 	@(test ! -L venv && rm -rf venv) || true
-	rm -rf doc/html/*
+	rm -rf docs/html/*
 	rm -rf _build
 	rm -rf arduino-cli
