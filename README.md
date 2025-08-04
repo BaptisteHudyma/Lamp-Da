@@ -197,6 +197,7 @@ To build the documentation, you must have `doxygen` installed:
 # use "make clean-doc doc" to force documentation rebuild
 cd LampColorControler
 make doc
+$(BROWSER) doc/html/index.html
 ```
 
 When changing lamp type or adding a new file to the sketch, use:
