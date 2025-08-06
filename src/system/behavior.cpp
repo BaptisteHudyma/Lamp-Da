@@ -561,7 +561,7 @@ void handle_pre_output_light_state()
 void handle_output_light_state()
 {
 // TODO issue #132 remove when the mock threads will be running
-#ifndef LMBD_IN_SIMULATION
+#ifndef LMBD_SIMULATION
   static bool waitingForPowerGate_messageDisplayed = true;
 
   // wait for power gates (and display message when ready)
