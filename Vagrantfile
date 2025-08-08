@@ -57,7 +57,7 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder ".", "/LampColorControler", type: "rsync",
     rsync__auto: false,
     rsync__exclude: [".vagrant", "_build", "_vagrant_build", "venv",
-                     "doc", "src", "depends", "flashInfo", "scripts", "simulator", "tools",
+                     "docs", "src", "depends", "flashInfo", "scripts", "simulator", "tools",
                      "objects", "electrical", "Medias"]
 
   # Disable the default share of the current code directory. Doing this
