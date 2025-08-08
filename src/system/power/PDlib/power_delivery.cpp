@@ -207,7 +207,9 @@ void pd_run()
 {
   // do not run when not asked to run
   if (!should_run_pd_state_machine)
+  {
     return;
+  }
 
   // PD loop limits the run of this threads by waiting for events
   // DO NOT REMOVE THE PD STATE MACHINE

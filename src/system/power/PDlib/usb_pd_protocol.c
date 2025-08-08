@@ -1325,7 +1325,9 @@ static int pd_send_request_msg(int always_send_request)
   {
     /* Don't re-request the same voltage */
     if (pd.prev_request_mv == supply_voltage)
+    {
       return EC_SUCCESS;
+    }
 #ifdef CONFIG_CHARGE_MANAGER
     /* Limit current to PD_MIN_MA during transition */
     // else
@@ -1379,7 +1381,9 @@ static void pd_update_pdo_flags(uint32_t pdo)
   if (pdo & PDO_FIXED_DATA_SWAP)
     pd.flags |= PD_FLAGS_PARTNER_DR_DATA;
   else
+  {
     pd.flags &= ~PD_FLAGS_PARTNER_DR_DATA;
+  }
 
 #ifdef CONFIG_CHARGE_MANAGER
   /*
@@ -2862,7 +2866,9 @@ void pd_run_state_machine()
 
       /* Debounce the cc state */
       if (get_time().val < pd.cc_debounce)
+      {
         break;
+      }
 
       /* Debounce complete */
       // if (IS_ENABLED(CONFIG_COMMON_RUNTIME))

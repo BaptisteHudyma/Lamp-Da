@@ -1,0 +1,34 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./LampColorControler
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        path: LampColorControler
+        submodules: 'true'
+    - name: setup
+      run : make mr_proper arduino-cli-download safe-install
+    - name: verify format
+      run : make format-verify
+    # MISSING build for simu:  no X11 on headless github serves
+    - name: make simple
+      run : make simple
+    - name: make cct
+      run : make cct
+    - name: make indexable
+      run : make indexable
