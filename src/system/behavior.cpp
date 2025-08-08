@@ -172,10 +172,13 @@ void true_power_off()
   // power down nrf52.
   // on wake up, it'll start back from the setup phase
   go_to_sleep(ButtonPin.pin());
+
   /*
    * Nothing after this, system is off !
-   * TODO issue #128: add an error status if we reach here
    */
+
+  // if we reach this, the system fails to go to sleep, register may be broken
+  alerts::manager.raise(alerts::Type::SYSTEM_OFF_FAILED);
 }
 
 void button_disable_usermode() { isButtonUsermodeEnabled = false; }

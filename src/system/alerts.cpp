@@ -60,6 +60,8 @@ inline const char* AlertsToText(const Type type)
       return "FAVORITE_SET";
     case OTG_FAILED:
       return "OTG_FAILED";
+    case SYSTEM_OFF_FAILED:
+      return "SYSTEM_OFF_FAILED";
     default:
       return "UNSUPPORTED TYPE";
   }
@@ -366,6 +368,25 @@ struct Alert_OtgFailed : public AlertBase
   Type get_type() const override { return Type::OTG_FAILED; }
 };
 
+struct Alert_SystemShutdownFailed : public AlertBase
+{
+  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::PURPLE); }
+
+  Type get_type() const override { return Type::SYSTEM_OFF_FAILED; }
+
+  bool should_be_cleared() const override
+  {
+    // cleared after a delay
+    if (raisedTime > 0 and (time_ms() - raisedTime) > 1000)
+    {
+      // is this failes, the system is just too broken to be repaired
+      enter_serial_dfu();
+      return true;
+    }
+    return false;
+  }
+};
+
 // Alerts must be sorted by importance, only the first activated one will be shown
 AlertBase* allAlerts[] = {new Alert_HardwareAlert,
                           new Alert_TempCritical,
@@ -376,7 +397,8 @@ AlertBase* allAlerts[] = {new Alert_HardwareAlert,
                           new Alert_LongLoopUpdate,
                           new Alert_BluetoothAdvertisement,
                           new Alert_FavoriteSet,
-                          new Alert_OtgFailed};
+                          new Alert_OtgFailed,
+                          new Alert_SystemShutdownFailed};
 
 void update_alerts()
 {
