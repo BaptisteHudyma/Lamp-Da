@@ -58,7 +58,7 @@ verify-all: clean build
 
 clean:
 	rm -f $(BUILD_DIR)/*-simulator
-	cd $(BUILD_DIR) && make clean
+	cd $(ROOT_DIR) && make clean
 
 mr_proper:
 	rm -rf $(BUILD_DIR)

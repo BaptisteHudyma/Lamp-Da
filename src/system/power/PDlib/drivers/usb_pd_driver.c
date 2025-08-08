@@ -190,7 +190,10 @@ int pd_custom_vdm(int cnt, uint32_t* payload, uint32_t** rpayload)
   return 0;
 }
 
-void pd_execute_data_swap(int data_role) { /* Do nothing */ }
+void pd_execute_data_swap(int data_role)
+{
+  // Do nothing
+}
 
 int pd_check_data_swap(int data_role)
 {

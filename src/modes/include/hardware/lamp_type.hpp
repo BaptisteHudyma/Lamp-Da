@@ -87,9 +87,9 @@ private:
   static constexpr uint16_t _height = 16;    ///< \private
   static constexpr uint16_t _ledCount = 256; ///< \private
 
-  struct LedStrip
+  struct LedStrip ///< \private
   {
-  }; ///< \private
+  };
   LedStrip fakeStrip; ///< \private
   LedStrip& strip;    ///< \private
 
