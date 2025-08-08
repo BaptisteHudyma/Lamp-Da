@@ -487,6 +487,8 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     dispatch_group(ctx, [](auto group) {
       group.loop();
     });
+
+    ctx.lamp.refresh_tick_value();
   }
 
   static void brightness_update(auto& ctx, brightness_t brightness)

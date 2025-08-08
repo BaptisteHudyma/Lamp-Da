@@ -95,242 +95,32 @@ Out of factory, the board will miss a bootloader.
 
 # Building the project
 
+## Quick Setup
+
 The supported platform to work with the project is:
 
-- Linux (Debian/Ubuntu/Archlinux/etc)
+ - Linux (Debian/Ubuntu/Archlinux/etc)
 
-## Installing dependencies
+You will find a full guide on how to build the project here:
 
-You will need to:
+ - [Quick Setup](docs/QuickSetup.md) -- also lists all required dependencies
 
- - Install the Arduino IDE and verify that `arduino-cli` is accessible in path
- - Install the Adafruit nRF52 board support (version 1.6.1) [as described here](https://github.com/BaptisteHudyma/LampDa_nRF52_Arduino?tab=readme-ov-file#recommended-adafruit-nrf52-bsp-via-the-arduino-board-manager)
- - Replace the content of the `$HOME/.arduino15/packages/adafruit/hardware/nrf52` by the content of the [above repository](https://github.com/BaptisteHudyma/LampDa_nRF52_Arduino)
- - Install [`adafruit-nrfutil`](https://github.com/adafruit/Adafruit_nRF52_nrfutil) from PyPI
- - Install the [`Adafruit Neopixel`](https://docs.arduino.cc/libraries/adafruit-neopixel) and
-   [`arduinofft`](https://docs.arduino.cc/libraries/arduinofft/) libraries
+Note that after building documentation, it will be in `docs/html/index.html`
 
-Alternatively, at the cost of some additional disk space, you may use the provided
-`Makefile` to install all dependencies:
+## Other Guides
 
-```sh
-git clone https://github.com/BaptisteHudyma/Lamp-Da.git LampColorControler
-cd LampColorControler
-git submodule update --init
-make mr_proper arduino-cli-download safe-install
-```
+You will find a guide on how to setup a virtual machine to build the project:
 
-This will install everything in the `$SRC_DIR/_build/arduino-cli/` directory.
+ - [Virtual Machine](docs/VirtualMachine.md) -- experimental, work-in-progress
 
-## Quick setup
+You will find contribution guidelines to the project here:
 
-First clone the repository:
+ - [Contributing](docs/Contributing.md) -- **required to read for contributors**
 
-```sh
-git clone https://github.com/BaptisteHudyma/Lamp-Da.git LampColorControler
-cd LampColorControler
-git submodule update --init
-```
+As a beginner, you will find a guide to develop your own lighting mode here:
 
-As highlighted above, this project uses Arduino SDK, you will need to
-install Arduino before continuing to the next step.
+ - [Writing Modes](docs/WritingModes.md) -- not done yet :)
 
-Then, check that `arduino-cli` is available in path:
+--------------------------------------------
 
-```sh
-arduino-cli version
-```
-
-If `arduino-cli` is available and you find yourself in trouble installing the
-dependencies by hand, you can use:
-
-```sh
-# download+install all dependencies (~1.4Go) in $SRC_DIR/_build/arduino-cli/
-cd LampColorControler
-make safe-install
-```
-
-If your system does not package `arduino-cli` or if you're not satisfied with
-its packaging, you may try:
-
-```sh
-# also download+install arduino-cli in $SRC_DIR/_build/arduino-cli/
-cd LampColorControler
-make arduino-cli-download safe-install
-```
-
-You will then be able to build the project as follows:
-
-```sh
-# build project assuming {simple,cct,indexable} lamp type
-cd LampColorControler
-make simple
-```
-
-After plugging your board, you should be able to upload as follows:
-
-```sh
-# upload to board using the upload-{simple,cct,indexable} target
-cd LampColorControler
-make upload-simple
-```
-
-If you need to configure the serial port of the board before upload, use:
-
-```sh
-# by default LMBD_SERIAL_PORT is /dev/ttyACM0
-cd LampColorControler
-LMBD_SERIAL_PORT=/dev/ttyACM1 make upload-simple
-```
-
-Once your board is running, to connect to its serial monitor, use:
-
-```sh
-# use LMBD_SERIAL_PORT as above to configure the serial port
-cd LampColorControler
-make monitor
-```
-
-To build the documentation, you must have `doxygen` installed:
-
-```sh
-# use "make clean-doc doc" to force documentation rebuild
-cd LampColorControler
-make doc
-```
-
-When changing lamp type or adding a new file to the sketch, use:
-
-```sh
-# use "make clean-artifacts" to remove the output binary artifact
-cd LampColorControler
-make clean
-make indexable
-```
-
-If you have a `virtualenv` somewhere with `adafruit-nrfutil` already installed,
-you may setup a link to explicitly use it:
-
-```sh
-# the Makefile will source $SRC_DIR/venv/bin/activate
-cd LampColorControler
-ln -s venv path/to/other/virtualenv
-make clean-artifacts upload-indexable
-```
-
-If you want simulate a view of an "indexable mode" animation and have the
-[SFML](https://www.sfml-dev.org/) installed:
-
-```sh
-cd LampColorControler
-make simulator
-./_build/simulator/indexable-simulator
-```
-
-Once you're finished with your work on the project:
-
-```sh
-# this removes build artifacts AND all local dependencies
-cd LampColorControler
-make mr_proper
-```
-
-## Vagrant setup (WIP)
-
-There is a `VagrantFile` provided, for people that has a working
-[Vagrant](https://developer.hashicorp.com/vagrant/docs/installation)
-installation:
-
-```sh
-cd LampColorControler
-vagrant up # turn on the VM +provision +default builds
-vagrant ssh # get a shell inside the VM
-```
-
-The repository is copied to the VM in `/LampColorControler`, you can do
-`vagrant rsync` to synchronize it again, `vagrant reload` to restart the VM,
-or `vagrant halt` to stop it.
-
-To build & upload to a lamp plugged as an USB device:
-
-```sh
-vagrant ssh -c "cd /LampColorControler && make clean-artifacts upload-indexable"
-```
-
-To copy files from the VM guest to the host:
-
-```sh
-vagrant plugin install vagrant-scp
-mkdir _vagrant_build # must exist before copying
-vagrant scp lampbuild:/LampColorControler/<source> ./_vagrant_build/
-```
-
-To try X11 forwarding:
-
-```sh
-vagrant ssh -c "sudo vim /etc/ssh/sshd_config" # verify sshd config: AddressFamily inet
-vagrant ssh -c "sudo systemctl restart sshd"
-vagrant ssh -c "cd /LampColorControler && make simulator"
-vagrant ssh -c "cd /LampColorControler/_build/simulator && ./indexable-simulator" -- -Y
-```
-
-## Contributing code
-
-If `clang` is installed on your platform, automatic format will be available:
-
-```sh
-# this format all files using clang-format
-cd LampColorControler
-make format
-```
-
-You can verify that all files are properly formatted with:
-
-```sh
-# this fails if some files are not properly formatted
-cd LampColorControler
-make format-verify
-```
-
-You can add this verification as a [git pre-commit
-hook](https://git-scm.com/book/ms/v2/Customizing-Git-Git-Hooks) with:
-
-```sh
-# before every "git commit" checks if formatting is good
-cd LampColorControler
-make format-hook
-git commit # will implictly run "make format-verify"
-```
-
-You can check that all files still build after your change using:
-
-```sh
-# clean then build everything, including all lamp type
-cd LampColorControler
-make verify-all
-```
-
-Note that simulator files are build only if all dependencies are available.
-
-## How the build system works?
-
-We are relying on Arduino and Adafruit's integrations to do a lot of things.
-We want to use modern compiler features and some customization to our setup,
-while we don't want to modify how Adafruit's platform core and libraries are
-build.
-
-On first build, we will thus first:
-
-0. compile a "clean" `build-clean` target later used to detect how Arduino
-   builds our sketch
-
-Then, on all subsequent builds:
-
-1. compile a "dry" `build-dry` target which will build core+libraries with the
-   default setup
-2. rebuild the sketch objects using our own custom setup (C++17, other flags)
-4. compile a "final" `build` target which will let the `arduino-cli` reuse all
-   the already-build objects, to produce a final artifact
-
-This is a hack and sanity checks are in place to verify that the sketch have
-been properly build (see `make verify-canary`)
+Feel free to open an issue to ask your questions or give your ideas!
