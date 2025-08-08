@@ -29,4 +29,6 @@ void write_voltage(const uint16_t voltage_mv)
 
 void blip() { powergates::power::blip(); }
 
+void disable_power_gates() { powergates::disable_gates(); }
+
 } // namespace outputPower

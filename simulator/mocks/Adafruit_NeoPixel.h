@@ -5,7 +5,6 @@
 #include "src/system/utils/utils.h"
 
 #include <memory>
-#include <SFML/Graphics.hpp>
 
 using neoPixelType = int;
 
@@ -15,15 +14,7 @@ static constexpr int NEO_KHZ800 = 1;
 class Adafruit_NeoPixel
 {
 public:
-  Adafruit_NeoPixel(size_t ledCount, int16_t pin, neoPixelType type)
-  {
-    brightness = 255;
-
-    for (size_t I = 0; I < LED_COUNT; ++I)
-    {
-      shapes[I] = std::make_unique<sf::RectangleShape>();
-    }
-  };
+  Adafruit_NeoPixel(size_t ledCount, int16_t pin, neoPixelType type) { brightness = 255; };
 
   void begin() {}
 
@@ -49,7 +40,6 @@ public:
 
   // vars
   uint8_t brightness;
-  std::unique_ptr<sf::RectangleShape> shapes[LED_COUNT];
 };
 
 #endif

@@ -1,0 +1,69 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  format-verify:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./LampColorControler
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        path: LampColorControler
+        submodules: 'true'
+    - name: verify format
+      run : make format-verify
+
+  Documentation:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./LampColorControler
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        path: LampColorControler
+        submodules: 'true'
+    - name: Documentation
+      run :
+        sudo apt install doxygen -y &&
+        make doc
+
+  # MISSING build for simu:  no X11 on headless github serves
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [format-verify]
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./LampColorControler
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        path: LampColorControler
+        submodules: 'true'
+
+    - name: setup
+      run :
+        make mr_proper arduino-cli-download safe-install
+    - name: simple led strip build
+      run : make simple
+    - name: cct led strip build
+      run : make cct
+    - name: indexable led strip build
+      run : make indexable

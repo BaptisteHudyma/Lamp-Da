@@ -109,10 +109,12 @@ void main_setup()
 
   // start the file system
   fileSystem::setup();
-  behavior::read_parameters();
 
-  // check if we are in first boot mode (no first boot flag stored)
-  const bool isFirstBoot = !fileSystem::doKeyExists(behavior::isFirstBootKey);
+  // check if we are in first boot mode (read parameters fails)
+  const bool isFirstBoot = not behavior::read_parameters();
+#ifdef LMBD_SIMULATION
+  fprintf(stderr, "Is first time boot %d\n", isFirstBoot);
+#endif
 
   // can start !
 

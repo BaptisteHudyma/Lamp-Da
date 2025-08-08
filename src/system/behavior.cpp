@@ -107,10 +107,10 @@ bool isBluetoothAdvertising = false;
 // timestamp of the system wake up
 static uint32_t turnOnTime = time_ms();
 
-void read_parameters()
+bool read_parameters()
 {
   // load values in memory
-  fileSystem::load_initial_values();
+  const bool isFileLoaded = fileSystem::load_initial_values();
 
   uint32_t brightness = 0;
   if (fileSystem::get_value(brightnessKey, brightness))
@@ -120,13 +120,13 @@ void read_parameters()
   }
 
   user::read_parameters();
+  return isFileLoaded;
 }
 
 void write_parameters()
 {
   fileSystem::clear();
 
-  fileSystem::set_value(isFirstBootKey, 0);
   fileSystem::set_value(brightnessKey, brightness::get_brightness());
 
   user::write_parameters();
@@ -172,10 +172,13 @@ void true_power_off()
   // power down nrf52.
   // on wake up, it'll start back from the setup phase
   go_to_sleep(ButtonPin.pin());
+
   /*
    * Nothing after this, system is off !
-   * TODO issue #128: add an error status if we reach here
    */
+
+  // if we reach this, the system fails to go to sleep, register may be broken
+  alerts::manager.raise(alerts::Type::SYSTEM_OFF_FAILED);
 }
 
 void button_disable_usermode() { isButtonUsermodeEnabled = false; }
@@ -426,9 +429,9 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 
 void handle_error_state()
 {
-  // TODO issue #129
-  // go to sleep
-  mainMachine.set_state(BehaviorStates::SHUTDOWN);
+  // if error state, raise alert
+  if (not alerts::manager.is_raised(alerts::Type::SYSTEM_IN_ERROR_STATE))
+    alerts::manager.raise(alerts::Type::SYSTEM_IN_ERROR_STATE);
 }
 
 void handle_start_logic_state()
@@ -561,7 +564,7 @@ void handle_pre_output_light_state()
 void handle_output_light_state()
 {
 // TODO issue #132 remove when the mock threads will be running
-#ifndef LMBD_IN_SIMULATION
+#ifndef LMBD_SIMULATION
   static bool waitingForPowerGate_messageDisplayed = true;
 
   // wait for power gates (and display message when ready)
@@ -635,7 +638,8 @@ void handle_post_output_light_state()
   delay_ms(10);
 
   // deactivate strip power
-  outputPower::write_voltage(0); // power down
+  outputPower::disable_power_gates(); // close external voltage path
+  outputPower::write_voltage(0);      // power down
 
   mainMachine.skip_timeout();
 }

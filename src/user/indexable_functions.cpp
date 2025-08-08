@@ -15,6 +15,7 @@
 #include "src/modes/include/manager_type.hpp"
 
 #include "src/modes/default/fixed_modes.hpp"
+#include "src/modes/default/fireplace.hpp"
 #include "src/modes/legacy/legacy_modes.hpp"
 
 namespace user {
@@ -40,7 +41,7 @@ constexpr DigitalPin::GPIO ledStripPinId = DigitalPin::GPIO::gpio6;
 static DigitalPin LedStripPin(ledStripPinId);
 
 LedStrip strip(LedStripPin.pin());
-modes::hardware::LampTy lamp {strip};
+modes::hardware::LampTy<ManagerTy> lamp {strip};
 ManagerTy modeManager(lamp);
 
 } // namespace _private

@@ -53,12 +53,12 @@ $(BUILD_DIR)/%-simulator: $(BUILD_DIR)/CMakeCache.txt
 build: indexable-simulator
 	@echo " --- ok: $@"
 
-verify-all: clean $(ALL_TARGETS)
+verify-all: clean build
 	@echo " --- ok: $@"
 
 clean:
 	rm -f $(BUILD_DIR)/*-simulator
-	cd $(BUILD_DIR) && make clean
+	cd $(ROOT_DIR) && make clean
 
 mr_proper:
 	rm -rf $(BUILD_DIR)

@@ -21,8 +21,10 @@ ADAFRUIT_URL=https://adafruit.github.io/arduino-board-index/package_adafruit_ind
 CUSTOM_BOARD_URL=https://github.com/BaptisteHudyma/LampDa_nRF52_Arduino
 FULL_LAMP_TYPE=LMBD_LAMP_TYPE__$(shell echo ${LMBD_LAMP_TYPE} | tr '[:lower:]' '[:upper:]')
 
+FOLDER_NAME=$(shell basename $(SRC_DIR))
 FQBN=adafruit:nrf52:lampDa_nrf52840
-PROJECT_INO=LampColorControler.ino
+PROJECT_NAME=LampColorControler
+PROJECT_INO=$(PROJECT_NAME).ino
 COMPILER_CMD=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.cpp.cmd|cut -f2 -d=)
 COMPILER_PATH=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.path|cut -f2 -d=)
 
@@ -40,11 +42,11 @@ all: build
 # make doc
 #
 
-$(SRC_DIR)/doc/index.html:
+$(SRC_DIR)/docs/html/index.html:
 	@echo; echo " --- $@"
 	cd $(SRC_DIR) && doxygen doxygen.conf
 
-doc: $(SRC_DIR)/doc/index.html
+doc: $(SRC_DIR)/docs/html/index.html
 	@echo " --- ok: $@"
 
 #
@@ -76,7 +78,20 @@ upload-simple:
 upload-indexable:
 	LMBD_LAMP_TYPE="indexable" make upload
 
-has-lamp-type:
+
+has-correct-folder-name:
+	@echo; echo " --- $@"
+	@[ $(FOLDER_NAME) == $(PROJECT_NAME) ] || \
+		(echo; echo \
+		 ; echo 'ERROR: The folder name should be $(PROJECT_NAME)' \
+		 ; echo \
+		 ; echo 'The repository should have been cloned using' \
+		 ; echo '    git clone https://github.com/BaptisteHudyma/Lamp-Da.git $(PROJECT_NAME)' \
+		 ; echo \
+		 ; echo \
+		 ; false)
+
+has-lamp-type: has-correct-folder-name
 	@echo; echo " --- $@"
 	@test ! -z "$$LMBD_LAMP_TYPE" || \
 		(echo; echo \
@@ -97,6 +112,7 @@ has-lamp-type:
 		 ; echo \
 		 ; echo \
 		 ; false)
+
 
 #
 # dependency checks
@@ -424,7 +440,7 @@ build: has-lamp-type process $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 format:
 	find $(PROJECT_INO) | xargs clang-format --style=file -i
 	find src/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' -o -iname '*.c' | xargs clang-format --style=file -i
-	find simulator/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file -i
+	find simulator/include simulator/src simulator/mocks -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file -i
 
 format-hook:
 	cp .pre-commit .git/hooks/pre-commit
@@ -527,7 +543,7 @@ clean-artifacts:
 
 clean-doc:
 	@echo; echo " --- $@"
-	rm -f doc/index.html
+	rm -f docs/html/index.html
 
 clean: clean-artifacts clean-simulator clean-doc
 	@echo; echo " --- $@"
@@ -567,9 +583,9 @@ simulator: indexable-simulator
 
 remove: mr_proper
 
-mr_proper:
+mr_proper: has-correct-folder-name
 	@echo; echo " --- $@"
 	@(test ! -L venv && rm -rf venv) || true
-	rm -rf doc/*
+	rm -rf docs/html/*
 	rm -rf _build
 	rm -rf arduino-cli
