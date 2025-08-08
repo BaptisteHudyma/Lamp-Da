@@ -43,7 +43,7 @@ jobs:
   
   build-lamp:
     runs-on: ubuntu-latest
-    needs: [format-verify]
+    needs: [format]
 
     defaults:
       run:
@@ -68,7 +68,7 @@ jobs:
  
   build-simulator:
     runs-on: ubuntu-latest
-    needs: [format-verify]
+    needs: [format]
 
     steps:
     - uses: actions/checkout@v4

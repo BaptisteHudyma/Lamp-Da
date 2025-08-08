@@ -11,7 +11,7 @@ defaults:
     working-directory: ./LampColorControler 
 
 jobs:
-  format-verify:
+  format:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,7 +24,7 @@ jobs:
 
   build-simulator:
     runs-on: ubuntu-latest
-    needs: [format-verify]
+    needs: [format]
 
     steps:
     - uses: actions/checkout@v4
