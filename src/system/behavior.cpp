@@ -635,7 +635,8 @@ void handle_post_output_light_state()
   delay_ms(10);
 
   // deactivate strip power
-  outputPower::write_voltage(0); // power down
+  outputPower::disable_power_gates(); // close external voltage path
+  outputPower::write_voltage(0);      // power down
 
   mainMachine.skip_timeout();
 }

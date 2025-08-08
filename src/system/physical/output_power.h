@@ -14,6 +14,11 @@ extern void write_voltage(const uint16_t voltage_mv);
  */
 extern void blip();
 
+/**
+ * \brief close all external voltage path
+ */
+void disable_power_gates();
+
 } // namespace outputPower
 
 #endif
