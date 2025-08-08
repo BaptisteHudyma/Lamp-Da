@@ -62,6 +62,8 @@ inline const char* AlertsToText(const Type type)
       return "OTG_FAILED";
     case SYSTEM_OFF_FAILED:
       return "SYSTEM_OFF_FAILED";
+    case SYSTEM_IN_ERROR_STATE:
+      return "SYSTEM_IN_ERROR_STATE";
     default:
       return "UNSUPPORTED TYPE";
   }
@@ -387,6 +389,19 @@ struct Alert_SystemShutdownFailed : public AlertBase
   }
 };
 
+struct Alert_SystemInErrorState : public AlertBase
+{
+  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::PINK); }
+
+  Type get_type() const override { return Type::SYSTEM_IN_ERROR_STATE; }
+
+  uint32_t alert_shutdown_timeout() const
+  {
+    // shutdown after a time, error state is not recoverable
+    return 5000;
+  }
+};
+
 // Alerts must be sorted by importance, only the first activated one will be shown
 AlertBase* allAlerts[] = {new Alert_HardwareAlert,
                           new Alert_TempCritical,
@@ -398,7 +413,8 @@ AlertBase* allAlerts[] = {new Alert_HardwareAlert,
                           new Alert_BluetoothAdvertisement,
                           new Alert_FavoriteSet,
                           new Alert_OtgFailed,
-                          new Alert_SystemShutdownFailed};
+                          new Alert_SystemShutdownFailed,
+                          new Alert_SystemInErrorState};
 
 void update_alerts()
 {

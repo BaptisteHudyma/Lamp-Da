@@ -429,9 +429,9 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 
 void handle_error_state()
 {
-  // TODO issue #129
-  // go to sleep
-  mainMachine.set_state(BehaviorStates::SHUTDOWN);
+  // if error state, raise alert
+  if (not alerts::manager.is_raised(alerts::Type::SYSTEM_IN_ERROR_STATE))
+    alerts::manager.raise(alerts::Type::SYSTEM_IN_ERROR_STATE);
 }
 
 void handle_start_logic_state()
