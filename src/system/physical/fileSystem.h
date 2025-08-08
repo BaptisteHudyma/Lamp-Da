@@ -11,7 +11,7 @@ void setup();
 /**
  * \brief Will initialize the state and brighness values if they exist
  */
-void load_initial_values();
+bool load_initial_values();
 
 // clear the stored values in the currently loaded file system
 void clear();

@@ -19,13 +19,11 @@
 
 namespace behavior {
 
-/// First ever boot flag for this lamp
-static constexpr uint32_t isFirstBootKey = utils::hash("ifb");
-
 /**
  * \brief Load the parameters from the filesystem
+ * \return True is the parameters where loaded
  */
-extern void read_parameters();
+extern bool read_parameters();
 
 /**
  * \return true if the user code is runing

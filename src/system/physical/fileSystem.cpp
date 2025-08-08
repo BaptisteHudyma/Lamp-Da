@@ -63,7 +63,7 @@ void clear_internal_fs()
   InternalFS.format();
 }
 
-void load_initial_values()
+bool load_initial_values()
 {
   if (!isSetup)
   {
@@ -73,7 +73,7 @@ void load_initial_values()
   // failure case: TODO: something ?
   if (!isSetup)
   {
-    return;
+    return false;
   }
 
   _valueMap.clear();
@@ -86,7 +86,7 @@ void load_initial_values()
     if (retVal < 0)
     {
       // error case
-      return;
+      return false;
     }
 
     KeyValToByteArray converter;
@@ -118,11 +118,13 @@ void load_initial_values()
     }
 
     file.close();
+    return true;
   }
   else
   {
     // no initial values, first boost maybe
   }
+  return false;
 }
 
 void write_state()
