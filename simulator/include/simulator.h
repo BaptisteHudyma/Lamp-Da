@@ -53,7 +53,7 @@ template<typename T> struct simulator
     // init font
     sf::Font font;
     bool enableFont = false, enableText = false;
-    if (font.openFromFile("DejaVuSansMono.ttf"))
+    if (font.openFromFile("simulator/resources/DejaVuSansMono.ttf"))
     {
       enableFont = true;
     }
