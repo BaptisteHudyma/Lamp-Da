@@ -28,6 +28,8 @@ enum Type : uint32_t
   FAVORITE_SET = 1 << 9, // user favorite mode is set
 
   OTG_FAILED = 1 << 10, // OTG activation failed
+
+  SYSTEM_OFF_FAILED = 1 << 11, // system failed to go to sleep, big trouble here
 };
 
 class AlertManager_t
