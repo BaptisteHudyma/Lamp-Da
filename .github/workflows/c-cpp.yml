@@ -89,10 +89,9 @@ jobs:
 
     - name: setup
       run :
-        make mr_proper arduino-cli-download safe-install #Not sure if needed...
+         sudo apt install xorg libx11-dev libxrandr-dev -y 
     - name: build
       run:
-        sudo apt install xorg openbox -y && 
         Xvfb $DISPLAY -screen 0 1920x1080x24 &
-        sleep 5 &
+        sleep 5 &&
         make simulator
