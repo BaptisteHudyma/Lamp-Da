@@ -21,8 +21,10 @@ ADAFRUIT_URL=https://adafruit.github.io/arduino-board-index/package_adafruit_ind
 CUSTOM_BOARD_URL=https://github.com/BaptisteHudyma/LampDa_nRF52_Arduino
 FULL_LAMP_TYPE=LMBD_LAMP_TYPE__$(shell echo ${LMBD_LAMP_TYPE} | tr '[:lower:]' '[:upper:]')
 
+FOLDER_NAME=$(shell basename $(SRC_DIR))
 FQBN=adafruit:nrf52:lampDa_nrf52840
-PROJECT_INO=LampColorControler.ino
+PROJECT_NAME=LampColorControler
+PROJECT_INO=$(PROJECT_NAME).ino
 COMPILER_CMD=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.cpp.cmd|cut -f2 -d=)
 COMPILER_PATH=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.path|cut -f2 -d=)
 
@@ -76,7 +78,20 @@ upload-simple:
 upload-indexable:
 	LMBD_LAMP_TYPE="indexable" make upload
 
-has-lamp-type:
+
+has-correct-folder-name:
+	@echo; echo " --- $@"
+	@[ $(FOLDER_NAME) == $(PROJECT_NAME) ] || \
+		(echo; echo \
+		 ; echo 'ERROR: The folder name should be $(PROJECT_NAME)' \
+		 ; echo \
+		 ; echo 'The repository should have been cloned using' \
+		 ; echo '    git clone https://github.com/BaptisteHudyma/Lamp-Da.git $(PROJECT_NAME)' \
+		 ; echo \
+		 ; echo \
+		 ; false)
+
+has-lamp-type: has-correct-folder-name
 	@echo; echo " --- $@"
 	@test ! -z "$$LMBD_LAMP_TYPE" || \
 		(echo; echo \
@@ -97,6 +112,7 @@ has-lamp-type:
 		 ; echo \
 		 ; echo \
 		 ; false)
+
 
 #
 # dependency checks
@@ -567,7 +583,7 @@ simulator: indexable-simulator
 
 remove: mr_proper
 
-mr_proper:
+mr_proper: has-correct-folder-name
 	@echo; echo " --- $@"
 	@(test ! -L venv && rm -rf venv) || true
 	rm -rf docs/html/*
