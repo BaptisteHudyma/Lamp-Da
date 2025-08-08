@@ -40,9 +40,7 @@ jobs:
       run :
         sudo apt install doxygen -y &&
         make doc
-
-  # MISSING build for simu:  no X11 on headless github serves
-
+  
   build:
     runs-on: ubuntu-latest
     needs: [format-verify]
@@ -67,8 +65,28 @@ jobs:
       run : make cct
     - name: indexable led strip build
       run : make indexable
-    - name: simulator build
+   
+  
+  build-simulator:
+    runs-on: ubuntu-latest
+    needs: [format-verify]
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./LampColorControler
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        path: LampColorControler
+        submodules: 'true'
+
+    - name: setup
+      run :
+        make mr_proper arduino-cli-download safe-install #Not sure if needed...
+    - name: build
       run: 
         sudo apt install xvfb -y &&
-        Xvfb :100 -ac &&
+        Xvfb :100 -ac &
         export DISPLAY=:100 && make simulator
