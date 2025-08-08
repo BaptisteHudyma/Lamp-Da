@@ -7,7 +7,7 @@
 
 #include "simulator/include/hardware_influencer.h"
 
-static const char* fileName = "./simulation_parameters.txt";
+static const char* fileName = "./simulator/resources/simulation_parameters.txt";
 
 static const char* batteryVoltageKey = "batt_V";
 static const char* cpuTemperatureKey = "cpu_temp";
