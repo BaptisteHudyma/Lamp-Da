@@ -107,10 +107,10 @@ bool isBluetoothAdvertising = false;
 // timestamp of the system wake up
 static uint32_t turnOnTime = time_ms();
 
-void read_parameters()
+bool read_parameters()
 {
   // load values in memory
-  fileSystem::load_initial_values();
+  const bool isFileLoaded = fileSystem::load_initial_values();
 
   uint32_t brightness = 0;
   if (fileSystem::get_value(brightnessKey, brightness))
@@ -120,13 +120,13 @@ void read_parameters()
   }
 
   user::read_parameters();
+  return isFileLoaded;
 }
 
 void write_parameters()
 {
   fileSystem::clear();
 
-  fileSystem::set_value(isFirstBootKey, 0);
   fileSystem::set_value(brightnessKey, brightness::get_brightness());
 
   user::write_parameters();
