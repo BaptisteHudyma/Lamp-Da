@@ -6,14 +6,19 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  DISPLAY: ":100"
+
+#TODO: factorize every defaults by putting it here
+
 jobs:
   format-verify:
     runs-on: ubuntu-latest
 
-    defaults:
+    defaults: 
       run:
         shell: bash
-        working-directory: ./LampColorControler
+        working-directory: ./LampColorControler 
 
     steps:
     - uses: actions/checkout@v4
@@ -41,7 +46,7 @@ jobs:
         sudo apt install doxygen -y &&
         make doc
   
-  build:
+  build-lamp:
     runs-on: ubuntu-latest
     needs: [format-verify]
 
@@ -87,6 +92,6 @@ jobs:
         make mr_proper arduino-cli-download safe-install #Not sure if needed...
     - name: build
       run: 
-        sudo apt install xvfb -y &&
-        Xvfb :100 -ac &
-        export DISPLAY=:100 && make simulator
+        Xvfb $DISPLAY -screen 0 1920x1080x24 &
+        sleep 5 
+        make simulator
