@@ -53,9 +53,12 @@ template<typename T> struct simulator
     // init font
     sf::Font font;
     bool enableFont = false, enableText = false;
-    if (font.openFromFile("DejaVuSansMono.ttf")) {
+    if (font.openFromFile("DejaVuSansMono.ttf"))
+    {
       enableFont = true;
-    } else {
+    }
+    else
+    {
       fprintf(stderr, "DejaVuSansMono.ttf not found, disabling text...");
     }
 
@@ -164,34 +167,48 @@ template<typename T> struct simulator
           auto& state = sim::globals::state;
 
           // pause event
-          if (state.lastKeyPressed == 'p') {
+          if (state.lastKeyPressed == 'p')
+          {
             state.paused = !state.paused;
           }
 
           // verbose event
-          if (state.lastKeyPressed == 'v') {
+          if (state.lastKeyPressed == 'v')
+          {
             state.verbose = !state.verbose;
           }
 
           // slower simulation
-          if (state.lastKeyPressed == 's') {
-            if (state.slowTimeFactor > 1.50) {
+          if (state.lastKeyPressed == 's')
+          {
+            if (state.slowTimeFactor > 1.50)
+            {
               state.slowTimeFactor *= 0.95;
-            } else if (state.slowTimeFactor > 1.0) {
+            }
+            else if (state.slowTimeFactor > 1.0)
+            {
               state.slowTimeFactor = ceil(state.slowTimeFactor * 20 - 1) / 20;
-            } else {
+            }
+            else
+            {
               state.slowTimeFactor = max(0.1, state.slowTimeFactor - 0.05);
             }
             fprintf(stderr, "slower %f\n", state.slowTimeFactor);
           }
 
           // faster simulation
-          if (state.lastKeyPressed == 'f') {
-            if (state.slowTimeFactor > 1.20) {
+          if (state.lastKeyPressed == 'f')
+          {
+            if (state.slowTimeFactor > 1.20)
+            {
               state.slowTimeFactor *= 1.05;
-            } else if (state.slowTimeFactor > 1.0) {
+            }
+            else if (state.slowTimeFactor > 1.0)
+            {
               state.slowTimeFactor = ceil(state.slowTimeFactor * 20 + 1) / 20;
-            } else {
+            }
+            else
+            {
               state.slowTimeFactor += 0.05;
             }
             fprintf(stderr, "faster %f\n", state.slowTimeFactor);
@@ -208,7 +225,8 @@ template<typename T> struct simulator
           float dy = indCoordY - mousePos.y + simu.buttonSize;
           float norm = simu.buttonSize;
 
-          if (dx * dx + dy * dy < norm * norm) {
+          if (dx * dx + dy * dy < norm * norm)
+          {
             mouseClick += 3;
           }
           break;
@@ -226,8 +244,8 @@ template<typename T> struct simulator
       // TODO: #156 move mock-specific parts to another process
       // ======================================================
 
-      if (!sim::globals::state.paused) {
-
+      if (!sim::globals::state.paused)
+      {
         // deep sleep, exit
         if (mock_registers::isDeepSleep)
         {
@@ -298,27 +316,29 @@ template<typename T> struct simulator
           window.draw(shape);
 
           // display text information if mouse is pressed
-          if (enableText) {
-
+          if (enableText)
+          {
             // (used to compute which pixel is pointed by mouse)
             int MouseYpos = 1 + (mousePos.y / ledPadSz);
             float MouseXpos = ((mousePos.x - ledSz - (MouseYpos % 2 - Yoff) * ledOffset) / ledPadSz);
 
-            if (MouseYpos > ledH + 1 && !sim::globals::state.verbose) {
+            if (MouseYpos > ledH + 1 && !sim::globals::state.verbose)
+            {
               enableText = false;
               continue;
             }
 
             float offsetY = 0;
-            if (MouseXpos < simu.fakeXorigin - 0.5) {
+            if (MouseXpos < simu.fakeXorigin - 0.5)
+            {
               offsetY = ledSz;
               MouseYpos += 1;
             }
 
             // display Ypos on the right
             float dy = abs(shape.getPosition().y - mousePos.y + ledSz / 2 + offsetY);
-            if (fXpos + 1 >= ledW - simu.fakeXend && dy < ledPadSz / 2) {
-
+            if (fXpos + 1 >= ledW - simu.fakeXend && dy < ledPadSz / 2)
+            {
               sf::Text text(font, std::to_string(Ypos));
               text.setCharacterSize(12);
 
@@ -329,7 +349,8 @@ template<typename T> struct simulator
 
             // display Xpos on the bottom
             float dx = abs(shape.getPosition().x - mousePos.x - (MouseYpos % 2) * ledOffset + ledSz / 2);
-            if (Ypos + 1 >= ledH && dx < ledPadSz / 2) {
+            if (Ypos + 1 >= ledH && dx < ledPadSz / 2)
+            {
               sf::Text text(font, std::to_string(Xpos));
               text.setCharacterSize(12);
 
@@ -339,7 +360,8 @@ template<typename T> struct simulator
             }
 
             // display color at pixel
-            if (dx < ledPadSz / 2 && dy < ledPadSz / 2) {
+            if (dx < ledPadSz / 2 && dy < ledPadSz / 2)
+            {
               auto str = "(" + std::to_string(int(r)) + ", ";
               str += std::to_string(int(g)) + ", ";
               str += std::to_string(int(b)) + ")";

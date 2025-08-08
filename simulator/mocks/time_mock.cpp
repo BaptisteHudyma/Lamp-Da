@@ -2,7 +2,7 @@
 
 #define PLATFORM_TIME_CPP
 
-#include <SFML/Graphics.hpp>
+#include <SFML/System/Time.hpp>
 
 #include "simulator_state.h"
 
