@@ -1,7 +1,7 @@
 name: Lamp-Da main branch CI
 
 on:
-  push:
+  pull_request:
     paths:
       - "src/**"
       - "simulator/**"
