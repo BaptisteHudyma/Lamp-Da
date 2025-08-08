@@ -67,3 +67,8 @@ jobs:
       run : make cct
     - name: indexable led strip build
       run : make indexable
+    - name: simulator build
+      run: 
+        apt install xorg-x11-server-Xvfb &&
+        Xvfb :100 -ac &&
+        export DISPLAY=:100 && make simulator
