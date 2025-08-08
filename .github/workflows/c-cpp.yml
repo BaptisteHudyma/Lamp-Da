@@ -69,6 +69,6 @@ jobs:
       run : make indexable
     - name: simulator build
       run: 
-        sudo apt install xorg-x11-server-Xvfb -y &&
+        sudo apt install xvfb -y &&
         Xvfb :100 -ac &&
         export DISPLAY=:100 && make simulator
