@@ -11,8 +11,8 @@
 
 #include "src/system/platform/time.h"
 
-#define RELEASE_TIMING_MS      200
-#define RELEASE_BETWEEN_CLICKS 50
+#define RELEASE_TIMING_MS      250 // time to release the button after no inputs
+#define RELEASE_BETWEEN_CLICKS 50  // minimum release timing (debounce)
 
 namespace button {
 
