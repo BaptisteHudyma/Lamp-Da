@@ -7,7 +7,7 @@ namespace indicator {
 
 extern void init();
 
-extern void set_color(utils::ColorSpace::RGB c);
+extern void set_color(const utils::ColorSpace::RGB& c);
 
 /**
  * \brief Breeze animation
