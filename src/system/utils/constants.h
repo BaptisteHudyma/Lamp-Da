@@ -75,10 +75,6 @@ static constexpr float criticalSystemTemp_c = 80; // max proc temperature, in de
 static constexpr float batteryCritical = 300; // % *100
 static constexpr float batteryLow = 500;      // % *100
 
-// compute the expected average loop runtime (in ms)
-// defined as milliseconds / FPS
-static constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = 1000 / 80.0;
-
 /**
  *
  *      Computations from set constants
