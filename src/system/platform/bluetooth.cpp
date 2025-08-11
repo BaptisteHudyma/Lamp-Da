@@ -71,15 +71,14 @@ void startup_sequence()
   if (isInitialized)
     return;
 
+  Bluefruit.begin(1, 1);
   Bluefruit.autoConnLed(false);
   Bluefruit.setTxPower(4); // Check bluefruit.h for supported values
-  Bluefruit.begin();
 
   // start uart reader
   bleuart.begin();
 
-  char ble_name[16] = "Lampda-LSD-XXXX"; // Null-terminated string must be 1 longer than you
-                                         // set it, for the null
+  char ble_name[16] = "Lampda-LSD-XXXX"; // Null-terminated string must be 1 longer than you set it, for the null
   // Fill in the XXXX in ble_name
   byte_to_str(&ble_name[11], (MAC_ADDRESS_LOW >> 8) & 0xFF);
   byte_to_str(&ble_name[13], MAC_ADDRESS_LOW & 0xFF);
@@ -119,6 +118,7 @@ void start_advertising()
     startup_sequence();
   }
 
+  Bluefruit.printInfo();
   Bluefruit.Advertising.start(ADV_TIMEOUT); // Stop advertising entirely after ADV_TIMEOUT seconds
 
   alerts::manager.raise(alerts::Type::BLUETOOTH_ADVERT);

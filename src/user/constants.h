@@ -27,6 +27,10 @@ static constexpr float c_degreesToRadians = c_PI / 180.0f;
 #define USER_SOFTWARE_VERSION_MAJOR 1
 #define USER_SOFTWARE_VERSION_MINOR 0
 
+// compute the expected average loop runtime (in ms)
+// defined as milliseconds / FPS
+static constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = 1000 / 80.0;
+
 // parameters of the led strip used
 static constexpr float consWattByMeter = 12;            // power consumption (in Watt/meters)
 static constexpr float inputVoltage_V = 12;             // voltage (volts)
@@ -48,6 +52,10 @@ static constexpr float circuitToLedZeroRotationZ_degrees = 88;
 // Update when the soft changes version
 #define USER_SOFTWARE_VERSION_MAJOR 0
 #define USER_SOFTWARE_VERSION_MINOR 1
+
+// compute the expected average loop runtime (in ms)
+// defined as milliseconds / FPS
+static constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = 1000 / 80.0;
 
 // parameters of the led strip used
 static constexpr float consWattByMeter = 10;            // power consumption (in Watt/meters)
@@ -74,12 +82,31 @@ static constexpr float circuitToLedZeroRotationZ_degrees = 88;
 static constexpr float lampBodyRadius_mm = 25; // external radius of the lamp body
 
 // parameters of the led strip used
+#ifdef LMBD_LAMP_TYPE__INDEXABLE_IS_HD
+// hd 240L/m strip
+static constexpr uint16_t LED_COUNT = 870;     // How many indexable leds are attached to the controler
+static constexpr float consWattByMeter = 5;    // power consumption (in Watt/meters)
+static constexpr float inputVoltage_V = 12;    // voltage (volts)
+static constexpr float ledByMeter = 244;       // the REAL indexable led by meters (for a 240Led/m)
+static constexpr float ledStripWidth_mm = 5.2; // width of the led strip
+static constexpr float ledStripHeigh_mm = 0.7; // heigh of the led strip (calibrated for this strip)
+
+// compute the expected average loop runtime (in ms)
+// defined as milliseconds / FPS
+static constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = 1000 / 40.0;
+#else
+// standard 160L/m strip
 static constexpr uint16_t LED_COUNT = 580;     // How many indexable leds are attached to the controler
 static constexpr float consWattByMeter = 5;    // power consumption (in Watt/meters)
 static constexpr float inputVoltage_V = 12;    // voltage (volts)
 static constexpr float ledByMeter = 162.6;     // the REAL indexable led by meters (for a 160Led/m)
 static constexpr float ledStripWidth_mm = 5.2; // width of the led strip
 static constexpr float ledStripHeigh_mm = 0.7; // heigh of the led strip (calibrated for this strip)
+
+// compute the expected average loop runtime (in ms)
+// defined as milliseconds / FPS
+static constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = 1000 / 80.0;
+#endif
 
 // physical parameters computations
 static constexpr float ledSize_mm = 1.0 / ledByMeter * 1000.0;                   // size of the individual led
