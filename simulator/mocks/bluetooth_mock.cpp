@@ -8,4 +8,8 @@ void start_advertising() {}
 // disable the bluetooth controler
 void disable_bluetooth() {}
 
+void write_battery_level(const uint8_t batteryLevel) {}
+
+void notify_battery_level(const uint8_t batteryLevel) {}
+
 }; // namespace bluetooth

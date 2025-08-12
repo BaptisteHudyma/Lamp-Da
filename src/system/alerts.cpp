@@ -1,6 +1,5 @@
 #include "alerts.h"
 
-#include "platform/time.h"
 #include "src/system/platform/time.h"
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/registers.h"
@@ -97,8 +96,14 @@ uint16_t get_battery_level()
   const uint32_t currTime = time_ms();
   if (lastCallTime == 0 or (currTime - lastCallTime) > 1000.0)
   {
+    const uint16_t newPercent = battery::get_battery_minimum_cell_level();
+    if (lastCallTime == 0 or (lastPercent / 100) != (newPercent / 100))
+    {
+      bluetooth::write_battery_level(newPercent / 100);
+    }
+
     lastCallTime = currTime;
-    lastPercent = battery::get_battery_minimum_cell_level();
+    lastPercent = newPercent;
   }
   return lastPercent;
 }
@@ -246,7 +251,12 @@ struct Alert_BatteryLow : public AlertBase
       return false;
 
     const auto& chargerState = charger::get_state();
-    return not chargerState.is_effectivly_charging() and __internal::get_battery_level() < batteryLow;
+    const auto& batteryLevel = __internal::get_battery_level();
+    const bool isBatteryLow = not chargerState.is_effectivly_charging() and batteryLevel < batteryLow;
+    // battery low will be raise, notify bluetooth
+    if (isBatteryLow)
+      bluetooth::notify_battery_level(batteryLevel / 100);
+    return isBatteryLow;
   }
 
   bool should_be_cleared() const override

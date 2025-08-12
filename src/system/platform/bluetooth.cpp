@@ -14,6 +14,8 @@ namespace bluetooth {
 
 // System Info Service
 BLEDis bleSystemInfo;
+// System battery service
+BLEBas bleBatteryService;
 
 static bool isInitialized = false;
 
@@ -84,6 +86,7 @@ void startup_sequence()
 
   // add services
   bleSystemInfo.begin();
+  bleBatteryService.begin();
 
   const uint32_t MAC_ADDRESS_0 = NRF_FICR->DEVICEADDR[0];
   const uint32_t MAC_ADDRESS_1 = NRF_FICR->DEVICEADDR[1];
@@ -106,6 +109,7 @@ void startup_sequence()
 
   // Advertise services that we want to advertise only
   Bluefruit.Advertising.addService(bleSystemInfo);
+  // Bluefruit.Advertising.addService(bleBatteryService);
 
   // Secondary Scan Response packet (optional)
   // Since there is no room for 'Name' in Advertising packet
@@ -144,6 +148,20 @@ void disable_bluetooth()
   alerts::manager.clear(alerts::Type::BLUETOOTH_ADVERT);
 
   Bluefruit.Advertising.stop();
+}
+
+void write_battery_level(const uint8_t batteryLevel)
+{
+  if (!isInitialized)
+    return;
+  bleBatteryService.write(batteryLevel);
+}
+
+void notify_battery_level(const uint8_t batteryLevel)
+{
+  if (!isInitialized)
+    return;
+  bleBatteryService.notify(batteryLevel);
 }
 
 } // namespace bluetooth
