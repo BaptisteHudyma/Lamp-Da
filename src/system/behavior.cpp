@@ -620,10 +620,6 @@ void handle_output_light_state()
       // TODO: alert that the battery is missing
     }
 #endif
-
-#ifdef USE_BLUETOOTH
-    bluetooth::parse_messages();
-#endif
   }
 }
 

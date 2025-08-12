@@ -8,7 +8,4 @@ void start_advertising() {}
 // disable the bluetooth controler
 void disable_bluetooth() {}
 
-// call at each loop turn
-void parse_messages() {}
-
 }; // namespace bluetooth
