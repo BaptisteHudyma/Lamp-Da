@@ -240,7 +240,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
         // disable charger and wait 5s to be killed by watchdog
         indicator::set_color(utils::ColorSpace::PINK);
         power::enable_charge(false);
-        delay_ms(6000);
+        delay_ms(100000); // crash the system
 #endif
         set_power_off();
         return;
