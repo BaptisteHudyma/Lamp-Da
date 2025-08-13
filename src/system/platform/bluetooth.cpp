@@ -12,6 +12,9 @@ namespace bluetooth {
 
 #define ADV_TIMEOUT 30 // seconds. Set this higher to automatically stop advertising after a time
 
+#define BLE_APPEARANCE_LIGHT_SOURCE_GENERIC          0x07C0 /**< Light fixture BLE appearance flag (official flags) */
+#define BLE_APPEARANCE_LIGHT_SOURCE_MULTICOLOR_ARRAY 0x07C6 /**< Light fixture BLE appearance flag (official flags) */
+
 // System Info Service
 BLEDis bleSystemInfo;
 // System battery service
@@ -34,19 +37,19 @@ void byte_to_str(char* buff, uint8_t val)
 
 void connect_callback(uint16_t conn_hdl)
 {
-  alerts::manager.clear(alerts::Type::BLUETOOTH_ADVERT);
+  stop_bluetooth_advertising();
   lampda_print("Bluetooth connected");
 }
 
 void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
 {
-  alerts::manager.clear(alerts::Type::BLUETOOTH_ADVERT);
+  stop_bluetooth_advertising();
   lampda_print("Bluetooth disconnected");
 }
 
 void adv_stop_callback(void)
 {
-  alerts::manager.clear(alerts::Type::BLUETOOTH_ADVERT);
+  stop_bluetooth_advertising();
   lampda_print("Advertising time passed, advertising will now stop.");
 }
 
@@ -71,6 +74,9 @@ void set_device_informations()
   bleSystemInfo.setManufacturer("Lambda le fou");
   // bleSystemInfo.setRegCertList();
   // bleSystemInfo.setPNPID();
+
+  // setup service
+  bleSystemInfo.begin();
 }
 
 void startup_sequence()
@@ -78,14 +84,15 @@ void startup_sequence()
   if (isInitialized)
     return;
 
-  Bluefruit.begin(1, 1);
+  // pairs devices
+  static constexpr uint8_t peripheralCount = 1;
+  static constexpr uint8_t centralCount = 0;
+  Bluefruit.begin(peripheralCount, centralCount);
   Bluefruit.autoConnLed(false);
   Bluefruit.setTxPower(4); // Check bluefruit.h for supported values
 
-  set_device_informations();
-
   // add services
-  bleSystemInfo.begin();
+  set_device_informations();
   bleBatteryService.begin();
 
   const uint32_t MAC_ADDRESS_0 = NRF_FICR->DEVICEADDR[0];
@@ -97,8 +104,9 @@ void startup_sequence()
   byte_to_str(&ble_name[9], (MAC_ADDRESS_0 >> 16) & 0xFF);
   byte_to_str(&ble_name[12], (MAC_ADDRESS_0 >> 8) & 0xFF);
   byte_to_str(&ble_name[14], (MAC_ADDRESS_0 >> 0) & 0xFF);
-  // Set the name we just made
+  // Set the name we just made, and appearance
   Bluefruit.setName(ble_name);
+  Bluefruit.setAppearance(BLE_APPEARANCE_LIGHT_SOURCE_MULTICOLOR_ARRAY);
 
   // Configure and start the BLE Uart service
   lampda_print("Blutooth started under the name:%s", ble_name);
@@ -140,7 +148,7 @@ void start_advertising()
   alerts::manager.raise(alerts::Type::BLUETOOTH_ADVERT);
 }
 
-void disable_bluetooth()
+void stop_bluetooth_advertising()
 {
   if (!isInitialized)
     return;

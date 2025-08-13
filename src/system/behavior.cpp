@@ -665,7 +665,7 @@ void handle_shutdown_state()
   microphone::disable();
   imu::shutdown();
 #ifdef USE_BLUETOOTH
-  bluetooth::disable_bluetooth();
+  bluetooth::stop_bluetooth_advertising();
 #endif
 
   // save the current config to a file

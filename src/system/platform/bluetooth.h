@@ -11,8 +11,8 @@ namespace bluetooth {
 // start the advertising sequence (with a timeout)
 void start_advertising();
 
-// disable the bluetooth controler
-void disable_bluetooth();
+// disable the bluetooth advertising, but not the bluetooth
+void stop_bluetooth_advertising();
 
 // update battery level
 void write_battery_level(const uint8_t batteryLevel);

@@ -272,7 +272,7 @@ struct Alert_BatteryLow : public AlertBase
     constexpr brightness_t clampedBrightness = 0.25 * maxBrightness;
 
     // save some battery
-    bluetooth::disable_bluetooth();
+    bluetooth::stop_bluetooth_advertising();
 
     brightness::set_max_brightness(clampedBrightness);
     brightness::update_brightness(brightness::get_brightness());
