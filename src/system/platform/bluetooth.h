@@ -14,8 +14,9 @@ void start_advertising();
 // disable the bluetooth controler
 void disable_bluetooth();
 
-// call at each loop turn
-void parse_messages();
+// update battery level
+void write_battery_level(const uint8_t batteryLevel);
+void notify_battery_level(const uint8_t batteryLevel);
 
 }; // namespace bluetooth
 
