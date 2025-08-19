@@ -19,7 +19,6 @@ struct FireMode : public BasicMode
   /// Fire custom ramp sets how sensitive it is to ambiant sound
   static constexpr bool hasCustomRamp = true;
 
-  static constexpr uint8_t speed = 255;  ///< (1-255) How slow is your fire?
   static constexpr uint16_t xScale = 60; ///< Noise scaling (X direction)
   static constexpr uint16_t yScale = 60; ///< Noise scaling (Y direction)
 
@@ -28,13 +27,11 @@ struct FireMode : public BasicMode
 
   struct StateTy
   {
-    uint32_t step;
     audio::SoundEventTy<> soundEvent;
   };
 
   static void reset(auto& ctx)
   {
-    ctx.state.step = 0;
     ctx.state.soundEvent.reset(ctx);
 
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
@@ -43,9 +40,8 @@ struct FireMode : public BasicMode
   static void loop(auto& ctx)
   {
     // tick forward
-    ctx.state.step += 1;
-    const int16_t zSpeed = ctx.state.step / (256 - speed);
-    const int16_t ySpeed = ctx.lamp.get_time_ms() / (256 - speed);
+    const int16_t zSpeed = ctx.lamp.tick;
+    const int16_t ySpeed = zSpeed * ctx.lamp.frameDurationMs;
 
     // measure custom ramp for fire sound sensitivity
     const float index = ctx.get_active_custom_ramp();
