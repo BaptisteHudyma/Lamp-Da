@@ -118,7 +118,7 @@ public:
   void LMBD_INLINE refresh_tick_value()
   {
     uint32_t* writable_tick = const_cast<uint32_t*>(&tick);
-    *writable_tick = time_ms() / 16; // dividing by 16 is fast +approx. 60 fps
+    *writable_tick = time_ms() / frameDurationMs;
 
     uint32_t* writable_frame_count = const_cast<uint32_t*>(&raw_frame_count);
     *writable_frame_count += 1; // monotonous
@@ -214,6 +214,12 @@ public:
 
   /// What is the maximal brightness for that lamp?
   static constexpr brightness_t maxBrightness = ::maxBrightness;
+
+  /// Hardward try to call .loop() every frameDurationMs (12ms for 83.3fps)
+  static constexpr uint32_t frameDurationMs = MAIN_LOOP_UPDATE_PERIOD_MS;
+
+  // (we have 12ms and 83.3fps values to be updated in this file)
+  static_assert(frameDurationMs == 12, "Update the documentation of .tick :)");
 
   /** \brief (indexable) Count of indexable LEDs on the lamp
    *
@@ -477,13 +483,13 @@ public:
 
   /// \brief (physical) Return relative time as milliseconds
   uint32_t LMBD_INLINE get_time_ms() { return time_ms(); }
-  /** \brief (physical) Tick number, ever-increasing at 60fps
+
+  /** \brief (physical) Tick number, ever-increasing every frameDurationMs
    *
-   * This value increments 62.5 times per second and is updated once per loop.
+   * This value increments 83.3 times per second and is updated once per loop.
    *
-   * It is based on the internal board clock, depending on hardware and load
-   * some values may be skipped, but overall that counter is time-based and
-   * best used to build animations.
+   * It is based on the internal board clock, that counter is time-based and
+   * best used to build animations, but intermediary values may be skipped.
    */
   volatile const uint32_t tick;
 
@@ -491,7 +497,7 @@ public:
    *
    * This value increments everytime the loop method is called, and its rate
    * may vary depending on hardware and load. If used to build animations, this
-   * may cause irregular updates.
+   * may cause stutters or visible slowdowns during loads.
    */
   volatile const uint32_t raw_frame_count;
 };
