@@ -6,9 +6,10 @@ namespace bluetooth {
 void start_advertising() {}
 
 // disable the bluetooth controler
-void disable_bluetooth() {}
+void stop_bluetooth_advertising() {}
 
-// call at each loop turn
-void parse_messages() {}
+void write_battery_level(const uint8_t batteryLevel) {}
+
+void notify_battery_level(const uint8_t batteryLevel) {}
 
 }; // namespace bluetooth

@@ -75,7 +75,7 @@ void main_setup()
 {
   // set watchdog (reset the soft when the program crashes)
   // Should be long enough to flash the microcontroler !!!
-  setup_watchdog(5); // second timeout
+  setup_watchdog(10); // second timeout
 
 #ifdef IS_HARDWARE_1_0
   DigitalPin(DigitalPin::GPIO::Input_isChargeOk).set_pin_mode(DigitalPin::Mode::kInputPullUp);

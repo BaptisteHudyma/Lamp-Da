@@ -11,7 +11,7 @@
 //
 
 // #define DEBUG_MODE
-// #define USE_BLUETOOTH
+#define USE_BLUETOOTH
 
 //
 // lamp type detection
