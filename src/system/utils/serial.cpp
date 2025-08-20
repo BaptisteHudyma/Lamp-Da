@@ -46,6 +46,7 @@ void handleCommand(const std::string& command)
                 "PD: display the connected PD capabilities\n"
                 "power: power state machine states\n"
                 "alerts: show all raised alerts\n"
+                "i2c: start an i2c present check\n"
                 "format-fs: format the whole file system (dangerous)\n"
                 "DFU: clear this program from memory, enter update mode\n"
                 "tasks: display a debug of task usages\n"
@@ -134,7 +135,7 @@ void handleCommand(const std::string& command)
                 "is charging:%s\n"
                 "is effec charging:%s\n"
                 "battery level:%f%%\n"
-                "-> %s",
+                "-> charger status: %s",
                 boolToString(chargerState.isChargeOkSignalHigh),
                 chargerState.powerRail_mV,
                 chargerState.inputCurrent_mA,
@@ -145,6 +146,15 @@ void handleCommand(const std::string& command)
                 boolToString(chargerState.is_effectivly_charging()),
                 battery::get_battery_level() / 100.0,
                 chargerState.get_status_str().c_str());
+        // in case there is a software error, display it
+        if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_HARDWARE)
+        {
+          lampda_print("\t hardware error detail: \"%s\"", chargerState.hardwareErrorMessage.c_str());
+        }
+        if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
+        {
+          lampda_print("\t software error detail: \"%s\"", chargerState.softwareErrorMessage.c_str());
+        }
         break;
       }
 
@@ -153,16 +163,18 @@ void handleCommand(const std::string& command)
       break;
 
     case utils::hash("i2c"):
-      lampda_print(
-              "fusb detected : %d\n"
-              "imu detected: %d\n"
-              "balancer detected: %d\n"
-              "charger detected: %d\n",
-              i2c_check_existence(0, pdNegociationI2cAddress) == 0,
-              i2c_check_existence(0, imuI2cAddress) == 0,
-              i2c_check_existence(0, batteryBalancerI2cAddress) == 0,
-              i2c_check_existence(0, chargeI2cAddress) == 0);
-      break;
+      {
+        lampda_print(
+                "fusb detected : %d\n"
+                "imu detected: %d\n"
+                "balancer detected: %d\n"
+                "charger detected: %d",
+                i2c_check_existence(0, pdNegociationI2cAddress) == 0,
+                i2c_check_existence(0, imuI2cAddress) == 0,
+                i2c_check_existence(0, batteryBalancerI2cAddress) == 0,
+                i2c_check_existence(0, chargeI2cAddress) == 0);
+        break;
+      }
 
     case utils::hash("ADC"):
       {
@@ -200,7 +212,7 @@ void handleCommand(const std::string& command)
     case utils::hash("power"):
       {
         lampda_print(
-                "state machine state:%s (str: %s)\n"
+                "state machine state: %s. error msgs: %s \n"
                 "behavior machine state:%s",
                 power::get_state().c_str(),
                 power::get_error_string().c_str(),

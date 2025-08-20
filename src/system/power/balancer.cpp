@@ -17,7 +17,7 @@ constexpr uint16_t unbalancedMv = 3;
 
 //
 static_assert(HARDWARE_VERSION_MAJOR == 1 and batteryCount == 3,
-              "The 1.0 & 1.1 hardware only supports 3 cells for balancing");
+              "The 1.X hardware only supports 3 cells for balancing");
 
 bool Status::is_valid() const
 {

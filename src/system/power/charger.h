@@ -68,6 +68,10 @@ struct Charger_t
   bool is_effectivly_charging() const;
   bool is_charge_finished() const;
   std::string get_status_str() const;
+
+  // should contain a more detailed error
+  std::string hardwareErrorMessage = "";
+  std::string softwareErrorMessage = "";
 };
 
 bool is_vbus_powered();

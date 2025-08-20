@@ -380,7 +380,7 @@ struct Alert_OtgFailed : public AlertBase
 {
   bool show() const override
   {
-    return indicator::blink(200, 200, {utils::ColorSpace::FUSHIA, utils::ColorSpace::YELLOW});
+    return indicator::blink(300, 200, {utils::ColorSpace::BLUE, utils::ColorSpace::YELLOW});
   }
 
   Type get_type() const override { return Type::OTG_FAILED; }

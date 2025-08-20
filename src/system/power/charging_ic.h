@@ -2,6 +2,7 @@
 #define CHARGING_IC_H
 
 #include <cstdint>
+#include <string>
 
 namespace charger {
 namespace drivers {
@@ -74,6 +75,8 @@ void try_clear_faults();
 
 // return the status of the component
 Status_t get_status();
+// return a string with details on the error status
+std::string get_status_detail();
 // return the charge status of the battery
 ChargeStatus_t get_charge_status();
 
