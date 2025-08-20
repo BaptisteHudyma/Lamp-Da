@@ -64,13 +64,15 @@ Error and alerts are displayed as blinking animations:
 - low battery: slow red blinks
 - critical battery: fast red blinks, emergency shutdown after short delay
 - charging: breeze animation, changing color to indicate battery level
-- incoherent battery readings: fast green blinks (battery reading do not match the set battery type)
+- incoherent battery readings: fast green/red blinks (battery reading do not match the set battery type)
 - main loop too slow: fast fushia blinks
 - temperature too high: fast orange blinks
 - temperature extreme: emergency shutdown
-- OTG failed: pink fast blink (failed to start the output power)
+- OTG failed: pink/yellow fast blink (failed to start the output power)
 - bluetooth advertising: blue breeze animation
-- hardware alert: fast purple blinks: generic alert to indicate the failure of a component, without recovery
+- hardware alert: fast purple/cyan blinks: generic alert to indicate the failure of a component, without recovery
+- system off failed : fast purple/white blinks : system failed ot go to sleep, it will reset to default program and will need to be reflashed
+- system in error state : fast pink/orange, then shutdown : reached an error state and is stuck here. Shutdown after five seconds
 - unhandled: fast white blinks
 
 ### User defined behaviors
