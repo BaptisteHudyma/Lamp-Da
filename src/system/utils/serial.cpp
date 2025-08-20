@@ -46,6 +46,7 @@ void handleCommand(const std::string& command)
                 "PD: display the connected PD capabilities\n"
                 "power: power state machine states\n"
                 "alerts: show all raised alerts\n"
+                "i2c: start an i2c present check\n"
                 "format-fs: format the whole file system (dangerous)\n"
                 "DFU: clear this program from memory, enter update mode\n"
                 "tasks: display a debug of task usages\n"
@@ -162,16 +163,18 @@ void handleCommand(const std::string& command)
       break;
 
     case utils::hash("i2c"):
-      lampda_print(
-              "fusb detected : %d\n"
-              "imu detected: %d\n"
-              "balancer detected: %d\n"
-              "charger detected: %d\n",
-              i2c_check_existence(0, pdNegociationI2cAddress) == 0,
-              i2c_check_existence(0, imuI2cAddress) == 0,
-              i2c_check_existence(0, batteryBalancerI2cAddress) == 0,
-              i2c_check_existence(0, chargeI2cAddress) == 0);
-      break;
+      {
+        lampda_print(
+                "fusb detected : %d\n"
+                "imu detected: %d\n"
+                "balancer detected: %d\n"
+                "charger detected: %d",
+                i2c_check_existence(0, pdNegociationI2cAddress) == 0,
+                i2c_check_existence(0, imuI2cAddress) == 0,
+                i2c_check_existence(0, batteryBalancerI2cAddress) == 0,
+                i2c_check_existence(0, chargeI2cAddress) == 0);
+        break;
+      }
 
     case utils::hash("ADC"):
       {
