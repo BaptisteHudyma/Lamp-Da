@@ -134,7 +134,7 @@ void handleCommand(const std::string& command)
                 "is charging:%s\n"
                 "is effec charging:%s\n"
                 "battery level:%f%%\n"
-                "-> %s",
+                "-> charger status: %s",
                 boolToString(chargerState.isChargeOkSignalHigh),
                 chargerState.powerRail_mV,
                 chargerState.inputCurrent_mA,
@@ -145,6 +145,15 @@ void handleCommand(const std::string& command)
                 boolToString(chargerState.is_effectivly_charging()),
                 battery::get_battery_level() / 100.0,
                 chargerState.get_status_str().c_str());
+        // in case there is a software error, display it
+        if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_HARDWARE)
+        {
+          lampda_print("\t hardware error detail: \"%s\"", chargerState.hardwareErrorMessage.c_str());
+        }
+        if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
+        {
+          lampda_print("\t software error detail: \"%s\"", chargerState.softwareErrorMessage.c_str());
+        }
         break;
       }
 

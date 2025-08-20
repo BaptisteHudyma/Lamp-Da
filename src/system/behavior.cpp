@@ -439,6 +439,12 @@ void handle_start_logic_state()
   // preven early charging
   power::enable_charge(false);
 
+  // if an hardware alert is raised before starting, the system should remain locked
+  if (alerts::manager.is_raised(alerts::Type::HARDWARE_ALERT))
+  {
+    return;
+  }
+
   if (did_woke_up_from_power())
   {
     // signal to the alert manager that we started by power input

@@ -30,6 +30,8 @@ static Battery battery_s;
 
 // store the component status
 inline static Status_t status_s = Status_t::UNINITIALIZED;
+// store an error message for errors
+inline static std::string status_error = "";
 // store the current charge status of the system
 inline static ChargeStatus_t chargeStatus_s = ChargeStatus_t::OFF;
 
@@ -443,6 +445,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
     // error: device not detected
     // charger
     status_s = Status_t::ERROR_COMPONENT;
+    status_error = "charging component is not detected on i2c line";
     return false;
   }
 
@@ -452,6 +455,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
     // error: those constants do not indicate a BQ25713
     // charger
     status_s = Status_t::ERROR_COMPONENT;
+    status_error = "charging component do not match expected ids";
     return false;
   }
 
@@ -693,6 +697,8 @@ void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA)
 bool is_in_OTG() { return isInOtg_s; }
 
 Status_t get_status() { return status_s; }
+
+std::string get_status_detail() { return status_error; }
 
 ChargeStatus_t get_charge_status() { return chargeStatus_s; }
 
