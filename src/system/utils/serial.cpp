@@ -209,7 +209,7 @@ void handleCommand(const std::string& command)
     case utils::hash("power"):
       {
         lampda_print(
-                "state machine state:%s (str: %s)\n"
+                "state machine state: %s. error msgs: %s \n"
                 "behavior machine state:%s",
                 power::get_state().c_str(),
                 power::get_error_string().c_str(),

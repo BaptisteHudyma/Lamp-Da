@@ -398,33 +398,47 @@ void init()
   // switch without a timing
   __private::powerMachine.set_state(PowerStates::IDLE);
 
+  bool isSuccessful = true;
+  _errorStr = "";
+
   if (not balancer::init())
   {
-    _errorStr = "Init balancer component failed";
-    __private::switch_state(PowerStates::ERROR);
+    _errorStr += "\n\t- Init balancer component failed";
+
+    __private::powerMachine.set_state(PowerStates::ERROR);
     alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
-    return;
+    isSuccessful = false;
   }
 
   // charging component, setup first
   const bool chargerSuccess = charger::setup();
   if (!chargerSuccess)
   {
-    _errorStr = "Init charger component failed";
-    __private::switch_state(PowerStates::ERROR);
+    _errorStr += "\n\t- Init charger component failed";
+
+    __private::powerMachine.set_state(PowerStates::ERROR);
     alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
-    return;
+    isSuccessful = false;
   }
 
   // at the very last, power delivery
   const bool pdSuccess = powerDelivery::setup();
   if (!pdSuccess)
   {
-    _errorStr = "Init power delivery component failed";
-    __private::switch_state(PowerStates::ERROR);
+    _errorStr += "\n\t- Init power delivery component failed";
+
+    __private::powerMachine.set_state(PowerStates::ERROR);
     alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+    isSuccessful = false;
+  }
+
+  if (not isSuccessful)
+  {
+    // failed initialisation, skip
     return;
   }
+  _errorStr = "x";
+
   isSetup = true;
 }
 
