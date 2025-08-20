@@ -80,6 +80,19 @@ static constexpr LMBD_INLINE uint32_t fromTemp(uint8_t temp)
   return from_palette<false>(temp, PaletteBlackBodyColors);
 }
 
+COLOR blend(COLOR leftColor, COLOR rightColor, uint16_t blend, bool b16 = false)
+{
+ return utils::color_blend(leftColor, rightColor, blend, b16);
+}
+
+template<bool isVideoMode = false>
+LMBD_INLINE COLOR fade(COLOR inputColor, uint8_t fadeAmount)
+{
+  return utils::color_fade(inputColor, fadeAmount, isVideoMode);  
+}
+
 } // namespace modes::colors
+
+
 
 #endif
