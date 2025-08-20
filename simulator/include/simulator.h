@@ -24,6 +24,9 @@
 constexpr int ledW = stripXCoordinates;
 constexpr int ledH = stripYCoordinates;
 
+constexpr float fLedW = stripXCoordinates;
+constexpr float fResidueW = 1 / (2 * fLedW - 2 * floor(fLedW) - 1);
+
 #include "src/user/functions.h"
 #include "src/system/utils/utils.h"
 
@@ -91,6 +94,9 @@ template<typename T> struct simulator
 
     // =================================================
 
+    // reference to global state
+    auto& state = sim::globals::state;
+
     uint64_t skipframe = 0;
     while (window.isOpen())
     {
@@ -98,7 +104,7 @@ template<typename T> struct simulator
 
       mousePos = sf::Mouse::getPosition(window);
       enableText = enableFont && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
-      enableText |= sim::globals::state.verbose;
+      enableText |= state.verbose;
 
       // read events, prevent windows lockup
       while (const std::optional event = window.pollEvent())
@@ -111,7 +117,6 @@ template<typename T> struct simulator
 
         if (event->is<sf::Event::KeyPressed>())
         {
-          auto& state = sim::globals::state;
           auto kpressed = event->getIf<sf::Event::KeyPressed>();
           switch (kpressed->code)
           {
@@ -129,6 +134,9 @@ template<typename T> struct simulator
               break;
             case sf::Keyboard::Key::V: // v == verbose
               state.lastKeyPressed = 'v';
+              break;
+            case sf::Keyboard::Key::T: // t == tick +pause
+              state.lastKeyPressed = 't';
               break;
             case sf::Keyboard::Key::W:
               state.lastKeyPressed = 'w';
@@ -164,7 +172,12 @@ template<typename T> struct simulator
 
         if (event->is<sf::Event::KeyReleased>())
         {
-          auto& state = sim::globals::state;
+          // tick forward (once) and pause
+          if (state.lastKeyPressed == 't')
+          {
+            state.paused = false;
+            state.tickAndPause = 2;
+          }
 
           // pause event
           if (state.lastKeyPressed == 'p')
@@ -234,17 +247,26 @@ template<typename T> struct simulator
       }
 
       // update simulator global state
-      sim::globals::state.isButtonPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
+      state.isButtonPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
       if (mouseClick > 0)
       {
         mouseClick -= 1;
-        sim::globals::state.isButtonPressed = true;
+        state.isButtonPressed = true;
+      }
+
+      if (state.tickAndPause > 0)
+      {
+        if (state.tickAndPause == 1)
+        {
+          state.paused = true;
+        }
+        state.tickAndPause -= 1;
       }
 
       // TODO: #156 move mock-specific parts to another process
       // ======================================================
 
-      if (!sim::globals::state.paused)
+      if (!state.paused)
       {
         // deep sleep, exit
         if (mock_registers::isDeepSleep)
@@ -267,11 +289,11 @@ template<typename T> struct simulator
 
       for (size_t I = 0; I < LED_COUNT; ++I)
       {
-        sim::globals::state.colorBuffer[I] = user::_private::strip.getPixelColor(I);
-        sim::globals::state.brightness = user::_private::strip.getBrightness();
+        state.colorBuffer[I] = user::_private::strip.getPixelColor(I);
+        state.brightness = user::_private::strip.getBrightness();
       }
 
-      sim::globals::state.indicatorColor = mock_indicator::get_color();
+      state.indicatorColor = mock_indicator::get_color();
       // ======================================================
 
       // draw fake leds
@@ -300,14 +322,18 @@ template<typename T> struct simulator
 
           int rXpos = fXpos + simu.fakeXorigin;
           int rYpos = Ypos + Yoff;
-          shape.setPosition({ledSz + rXpos * ledPadSz + ledOffset * (Ypos % 2) - Yoff * ledOffset, rYpos * ledPadSz});
+          int shiftR = Ypos / fResidueW;
+          int shiftL = Ypos + shiftR + 1;
 
-          const uint32_t color = sim::globals::state.colorBuffer[I];
+          shape.setPosition({ledSz + rXpos * ledPadSz + ledOffset * (shiftL % 2) - (Yoff - shiftR) * ledOffset,
+                             rYpos * ledPadSz});
+
+          const uint32_t color = state.colorBuffer[I];
           float b = (color & 0xff);
           float g = ((color >> 8) & 0xff);
           float r = ((color >> 16) & 0xff);
 
-          const auto brightness = sim::globals::state.brightness;
+          const auto brightness = state.brightness;
           r = min(r, brightness);
           g = min(g, brightness);
           b = min(b, brightness);
@@ -320,9 +346,11 @@ template<typename T> struct simulator
           {
             // (used to compute which pixel is pointed by mouse)
             int MouseYpos = 1 + (mousePos.y / ledPadSz);
-            float MouseXpos = ((mousePos.x - ledSz - (MouseYpos % 2 - Yoff) * ledOffset) / ledPadSz);
+            shiftR = MouseYpos / fResidueW;
+            shiftL = MouseYpos + shiftR + 1;
+            float MouseXpos = ((mousePos.x - ledSz - (shiftL % 2 - Yoff + shiftR) * ledOffset) / ledPadSz);
 
-            if (MouseYpos > ledH + 1 && !sim::globals::state.verbose)
+            if (MouseYpos > ledH + 1 && !state.verbose)
             {
               enableText = false;
               continue;
@@ -348,7 +376,9 @@ template<typename T> struct simulator
             }
 
             // display Xpos on the bottom
-            float dx = abs(shape.getPosition().x - mousePos.x - (MouseYpos % 2) * ledOffset + ledSz / 2);
+            int shiftR = MouseYpos / fResidueW;
+            int shiftL = MouseYpos + shiftR + 1;
+            float dx = abs(shape.getPosition().x - mousePos.x - (MouseYpos % 2) * ledOffset + ledSz);
             if (Ypos + 1 >= ledH && dx < ledPadSz / 2)
             {
               sf::Text text(font, std::to_string(Xpos));
@@ -378,7 +408,7 @@ template<typename T> struct simulator
       }
 
       // display the indicator button
-      const uint32_t indicatorColor = sim::globals::state.indicatorColor;
+      const uint32_t indicatorColor = state.indicatorColor;
       float b = (indicatorColor & 0xff);
       float g = ((indicatorColor >> 8) & 0xff);
       float r = ((indicatorColor >> 16) & 0xff);
