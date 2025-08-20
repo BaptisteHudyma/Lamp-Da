@@ -206,7 +206,7 @@ struct Alert_MainLoopFreeze : public AlertBase
 
 struct Alert_BatteryReadingIncoherent : public AlertBase
 {
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::GREEN); }
+  bool show() const override { return indicator::blink(100, 100, {utils::ColorSpace::GREEN, utils::ColorSpace::RED}); }
 
   Type get_type() const override { return Type::BATTERY_READINGS_INCOHERENT; }
 };
@@ -355,7 +355,10 @@ struct Alert_BluetoothAdvertisement : public AlertBase
 
 struct Alert_HardwareAlert : public AlertBase
 {
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::PURPLE); }
+  bool show() const override
+  {
+    return indicator::blink(100, 100, {utils::ColorSpace::PURPLE, utils::ColorSpace::TEAL});
+  }
 
   Type get_type() const override { return Type::HARDWARE_ALERT; }
 };
@@ -375,23 +378,29 @@ struct Alert_FavoriteSet : public AlertBase
 
 struct Alert_OtgFailed : public AlertBase
 {
-  bool show() const override { return indicator::blink(200, 200, utils::ColorSpace::FUSHIA); }
+  bool show() const override
+  {
+    return indicator::blink(200, 200, {utils::ColorSpace::FUSHIA, utils::ColorSpace::YELLOW});
+  }
 
   Type get_type() const override { return Type::OTG_FAILED; }
 };
 
 struct Alert_SystemShutdownFailed : public AlertBase
 {
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::PURPLE); }
+  bool show() const override
+  {
+    return indicator::blink(100, 100, {utils::ColorSpace::PURPLE, utils::ColorSpace::WHITE});
+  }
 
   Type get_type() const override { return Type::SYSTEM_OFF_FAILED; }
 
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    if (raisedTime > 0 and (time_ms() - raisedTime) > 1000)
+    if (raisedTime > 0 and (time_ms() - raisedTime) > 2000)
     {
-      // is this failes, the system is just too broken to be repaired
+      // is this fails, the system is just too broken to be repaired
       enter_serial_dfu();
       return true;
     }
@@ -401,7 +410,10 @@ struct Alert_SystemShutdownFailed : public AlertBase
 
 struct Alert_SystemInErrorState : public AlertBase
 {
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::PINK); }
+  bool show() const override
+  {
+    return indicator::blink(100, 100, {utils::ColorSpace::PINK, utils::ColorSpace::ORANGE});
+  }
 
   Type get_type() const override { return Type::SYSTEM_IN_ERROR_STATE; }
 
