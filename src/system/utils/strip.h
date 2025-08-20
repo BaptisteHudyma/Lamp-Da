@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <array>
 
 #ifndef LMBD_SIMULATION
 #include <Adafruit_NeoPixel.h>
@@ -21,12 +22,20 @@
 
 #include "src/user/constants.h"
 
+static constexpr size_t stripNbBuffers = 2;
 static constexpr float baseCurrentConsumption = 0.4;
 static constexpr float maxCurrentConsumption = 2.7 - baseCurrentConsumption;
 static constexpr float ampPerLed = maxCurrentConsumption / (float)LED_COUNT;
 
+namespace modes::hardware {
+struct LampTy;
+}
+
 class LedStrip : public Adafruit_NeoPixel
 {
+  using BufferTy = std::array<uint32_t, LED_COUNT>;
+  friend struct modes::hardware::LampTy;
+
 public:
   LedStrip(int16_t pin, neoPixelType type = NEO_RGB + NEO_KHZ800) : Adafruit_NeoPixel(LED_COUNT, pin, type)
   {
@@ -239,19 +248,24 @@ public:
     return to_led_index(theta, z);
   }
 
-  uint32_t* get_buffer_ptr(const uint8_t index) { return _buffers[index]; }
+  uint32_t* get_buffer_ptr(const uint8_t index) { return _buffers[index].data(); }
 
-  void buffer_current_colors(const uint8_t index) { memcpy(_buffers[index], _colors, sizeof(_colors)); }
+  void buffer_current_colors(const uint8_t index)
+  {
+    static_assert(sizeof(BufferTy) == sizeof(_colors));
+    memcpy(_buffers[index].data(), _colors, sizeof(_colors));
+  }
 
   void fill_buffer(const uint8_t index, const uint32_t value)
   {
-    memset(_buffers[index], value, sizeof(_buffers[index]));
+    memset(_buffers[index].data(), value, sizeof(BufferTy));
   }
 
 private:
   COLOR _colors[LED_COUNT];
+
   // buffers for computations
-  uint32_t _buffers[2][LED_COUNT];
+  BufferTy _buffers[stripNbBuffers];
 
   // save the expensive computation on world coordinates
   vec3d lampCoordinates[LED_COUNT];

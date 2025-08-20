@@ -86,11 +86,12 @@ private:
   static constexpr uint16_t _width = floor(_fwidth);     ///< \private
   static constexpr uint16_t _height = floor(_fheight);   ///< \private
   static constexpr uint16_t _ledCount = LED_COUNT;       ///< \private
+  static constexpr uint16_t _nbBuffers = stripNbBuffers; ///< \private
   LedStrip& strip;                                       ///< \private
 
 public:
   /// \private Constructor used to wrap strip if needed
-  LMBD_INLINE LampTy(LedStrip& strip) : config {}, strip {strip}, tick {0}, raw_frame_count {0} {}
+  LMBD_INLINE LampTy(LedStrip& strip) : config {}, strip {strip}, now {0}, tick {0}, raw_frame_count {0} {}
 #else
 private:
   // (placeholder values to avoid bad fails on misuse)
@@ -99,16 +100,18 @@ private:
   static constexpr uint16_t _width = 16;     ///< \private
   static constexpr uint16_t _height = 16;    ///< \private
   static constexpr uint16_t _ledCount = 512; ///< \private
+  static constexpr uint16_t _nbBuffers = 2;  ///< \private
 
   struct LedStrip ///< \private
   {
+    BufferTy _buffers[_nbBuffers];
   };
   LedStrip fakeStrip; ///< \private
   LedStrip& strip;    ///< \private
 
 public:
   /// \private Constructor used to wrap strip if needed
-  LMBD_INLINE LampTy() : config {}, fakeStrip {}, strip {fakeStrip}, tick {0}, raw_frame_count {0} {}
+  LMBD_INLINE LampTy() : config {}, fakeStrip {}, strip {fakeStrip}, now {0}, tick {0}, raw_frame_count {0} {}
 #endif
 
   //
@@ -118,8 +121,11 @@ public:
   /// \private (refresh internal const tick variable)
   void LMBD_INLINE refresh_tick_value()
   {
+    uint32_t* writeable_now = const_cast<uint32_t*>(&now);
+    *writeable_now = time_ms();
+
     uint32_t* writable_tick = const_cast<uint32_t*>(&tick);
-    *writable_tick = time_ms() / frameDurationMs;
+    *writable_tick = now / frameDurationMs;
 
     uint32_t* writable_frame_count = const_cast<uint32_t*>(&raw_frame_count);
     *writable_frame_count += 1; // monotonous
@@ -250,6 +256,15 @@ public:
 
   /// Visually (X,Y) coordinates may appear shifted every \p shiftResidue rows
   static constexpr uint16_t shiftResidue = 1 / (2 * _fwidth - 2 * floor(_fwidth) - 1);
+
+  /** \brief (indexable) Number of color buffers available for direct access
+   *
+   * Equal to \p stripNbBuffers if LampTypes::indexable or else 2
+   */
+  static constexpr uint8_t nbBuffers = _nbBuffers;
+
+  /// Type for a uint32_t buffer of exactly ledCount length
+  using BufferTy = std::array<uint32_t, _ledCount>;
 
   //
   // public helpers
@@ -485,6 +500,115 @@ public:
    */
   void LMBD_INLINE setPixelColorXY(uint16_t X, uint16_t Y, uint32_t color) { setPixelColor(to_strip(X, Y), color); }
 
+  /** \brief Get a reference to the \p bufIdx temporary buffer
+   *
+   * These buffers can be used for computations by the active mode, but their
+   * content may be erased if the mode is reset or if used elsewhere in code.
+   */
+  template<uint8_t bufIdx = 0> BufferTy& LMBD_INLINE getTempBuffer()
+  {
+    static_assert(bufIdx < nbBuffers, "bufIdx must be lower than nbBuffers");
+    BufferTy& buffer = strip._buffers[bufIdx];
+    return buffer;
+  }
+
+  /** \brief Fill temporary buffer \p bufIdx with given \p value
+   *
+   * Equivalent to ``getTempBuffer().fill(value)``
+   */
+  template<uint8_t bufIdx = 0, typename T> void LMBD_INLINE fillTempBuffer(const T& value)
+  {
+    getTempBuffer<bufIdx>().fill(value);
+  }
+
+  /** \brief (indexable) Display \p bufIdx temporary buffer as LED colors
+   *
+   * This ``memcpy`` the selected buffer to the internal strip color buffer.
+   */
+  template<uint8_t bufIdx = 0> void setColorsFromBuffer()
+  {
+    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
+    const BufferTy& buffer = getTempBuffer<bufIdx>();
+    if (config.skipFirstLedsForEffect)
+    {
+      uint16_t Idx = config.skipFirstLedsForAmount;
+      uint16_t Sz = sizeof(strip._colors) - Idx * sizeof(uint32_t);
+      memcpy(&strip._colors[Idx], &buffer[Idx], Sz);
+    }
+    else
+    {
+      memcpy(strip._colors, buffer.data(), sizeof(strip._colors));
+    }
+  }
+
+  template<uint8_t dstBufIdx = 0, uint8_t srcBufIdx = 1> void setColorsFromMixedBuffers(float phase)
+  {
+    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
+    const BufferTy& dstBuf = getTempBuffer<dstBufIdx>();
+    const BufferTy& srcBuf = getTempBuffer<srcBufIdx>();
+
+    uint16_t start = 0, end = srcBuf.size();
+    if (config.skipFirstLedsForEffect)
+    {
+      start = config.skipFirstLedsForAmount;
+    }
+
+    for (uint16_t I = start; I < end; ++I)
+    {
+      COLOR src, dst;
+      src.color = srcBuf[I];
+      dst.color = dstBuf[I];
+      strip._colors[I].color = utils::get_gradient(src.color, dst.color, phase);
+    }
+  }
+
+  /** \brief (indexable) Display \p bufIdx temporary buffer, but reversed
+   */
+  template<uint8_t bufIdx = 0> void setColorsFromBufferReversed(bool skipLastLine)
+  {
+    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
+    const BufferTy& buffer = getTempBuffer<bufIdx>();
+
+    uint16_t start = 0, end = buffer.size();
+    if (config.skipFirstLedsForEffect)
+    {
+      start = config.skipFirstLedsForAmount;
+    }
+
+    if (skipLastLine)
+    {
+      end = maxWidth * maxHeight;
+    }
+
+    for (uint16_t I = 0, J = start; I < end - start; ++I, ++J)
+    {
+      strip._colors[J].color = buffer[end - start - I - 1];
+    }
+  }
+
+  /** \brief (indexable) Copy all current LEDs color to \p bufIdx temp. buffer
+   *
+   * If \p forceFullRead is True, also copy skipped content.
+   */
+  template<uint8_t bufIdx = 0, bool forceFullRead = false> void getColorsToBuffer()
+  {
+    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
+
+    BufferTy& buffer = getTempBuffer<bufIdx>();
+    if (!forceFullRead && config.skipFirstLedsForEffect)
+    {
+      uint16_t Idx = config.skipFirstLedsForAmount;
+      uint16_t Sz = sizeof(strip._colors) - Idx * sizeof(uint32_t);
+
+      buffer.fill(0);
+      memcpy(&buffer[Idx], &strip._colors[Idx], Sz);
+    }
+    else
+    {
+      memcpy(buffer.data(), strip._colors, sizeof(strip._colors));
+    }
+  }
+
   /// \brief (physical) Return current sound level in decibels
   float LMBD_INLINE get_sound_level()
   {
@@ -494,6 +618,13 @@ public:
 
   /// \brief (physical) Return relative time as milliseconds
   uint32_t LMBD_INLINE get_time_ms() { return time_ms(); }
+
+  /** \brief (physical) The "now" on milliseconds, updated just before loop.
+   *
+   * This value is \p get_time_ms() called once and used as basis for \p tick
+   * and may wrap around every three weeks of functioning.
+   */
+  volatile const uint32_t now;
 
   /** \brief (physical) Tick number, ever-increasing every frameDurationMs
    *
