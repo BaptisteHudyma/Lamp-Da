@@ -57,12 +57,19 @@ static constexpr LampTypes lampType = _lampType;
  *
  * TODO: write recipes for best practices when doing Simple/CCT/Indexable
  */
-template<typename ModeManager> struct LampTy
+struct LampTy
 {
-  friend ModeManager;
-  using SelfTy = LampTy<ModeManager>;
-  using ModeManagerTy = ModeManager;
-  using ManagerStateTy = typename ModeManagerTy::StateTy;
+  //
+  // state managed by manager
+  //
+
+  struct LampConfig
+  {
+    uint16_t skipFirstLedsForEffect = 0;
+    uint16_t skipFirstLedsForAmount = 0;
+  };
+
+  LampConfig config;
 
   //
   // private constructors
@@ -72,25 +79,26 @@ template<typename ModeManager> struct LampTy
   LampTy(const LampTy&) = delete;            ///< \private
   LampTy& operator=(const LampTy&) = delete; ///< \private
 
-private:
-  ManagerStateTy* _stateManagerPtr = nullptr;
-
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 private:
-  static constexpr uint16_t _width = ceil(stripXCoordinates);  ///< \private
-  static constexpr uint16_t _height = ceil(stripYCoordinates); ///< \private
-  static constexpr uint16_t _ledCount = LED_COUNT;             ///< \private
-  LedStrip& strip;                                             ///< \private
+  static constexpr float _fwidth = stripXCoordinates;    ///< \private
+  static constexpr float _fheight = stripYCoordinates;   ///< \private
+  static constexpr uint16_t _width = floor(_fwidth);     ///< \private
+  static constexpr uint16_t _height = floor(_fheight);   ///< \private
+  static constexpr uint16_t _ledCount = LED_COUNT;       ///< \private
+  LedStrip& strip;                                       ///< \private
 
 public:
   /// \private Constructor used to wrap strip if needed
-  LMBD_INLINE LampTy(LedStrip& strip) : strip {strip}, tick {0}, raw_frame_count {0} {}
+  LMBD_INLINE LampTy(LedStrip& strip) : config {}, strip {strip}, tick {0}, raw_frame_count {0} {}
 #else
 private:
   // (placeholder values to avoid bad fails on misuse)
+  static constexpr float _fwidth = 16.0;     ///< \private
+  static constexpr float _fheight = 16.0;    ///< \private
   static constexpr uint16_t _width = 16;     ///< \private
   static constexpr uint16_t _height = 16;    ///< \private
-  static constexpr uint16_t _ledCount = 256; ///< \private
+  static constexpr uint16_t _ledCount = 512; ///< \private
 
   struct LedStrip ///< \private
   {
@@ -100,19 +108,12 @@ private:
 
 public:
   /// \private Constructor used to wrap strip if needed
-  LMBD_INLINE LampTy() : fakeStrip {}, strip {fakeStrip}, tick {0}, raw_frame_count {0} {}
+  LMBD_INLINE LampTy() : config {}, fakeStrip {}, strip {fakeStrip}, tick {0}, raw_frame_count {0} {}
 #endif
 
   //
   // private API
   //
-
-  /// \private get a reference to manager state
-  ManagerStateTy& get_manager_state()
-  {
-    assert(_stateManagerPtr != nullptr);
-    return *_stateManagerPtr;
-  }
 
   /// \private (refresh internal const tick variable)
   void LMBD_INLINE refresh_tick_value()
@@ -223,21 +224,32 @@ public:
 
   /** \brief (indexable) Count of indexable LEDs on the lamp
    *
-   * Equal to \p LED_COUNT if LampTypes::indexable or else 256
+   * Equal to \p LED_COUNT if LampTypes::indexable or else 512
    */
   static constexpr uint16_t ledCount = _ledCount;
 
   /** \brief (indexable) Width of "pixel space" w/ lamp taken as a LED matrix
    *
-   * Equal to \p stripXCoordinates (ceil) if LampTypes::indexable or else 16
+   * Equal to \p stripXCoordinates (floor) if LampTypes::indexable or else 16
    */
   static constexpr uint16_t maxWidth = _width;
 
+  /// Width as a precise floating point number, equal to \p stripXCoordinates
+  static constexpr float maxWidthFloat = _fwidth;
+
   /** \brief (indexable) Height of "pixel space" w/ lamp taken as a LED matrix
    *
-   * Equal to \p stripYCoordinates (ceil) if LampTypes::indexable or else 16
+   * Equal to \p stripYCoordinates (floor) if LampTypes::indexable or else 16
+   *
+   * Note that the last (incomplete) line of LEDs may not be accounted here.
    */
   static constexpr uint16_t maxHeight = _height;
+
+  /// Height as a precise floating point number, equal to \p stripYCoordinates
+  static constexpr float maxHeightFloat = _fheight;
+
+  /// Visually (X,Y) coordinates may appear shifted every \p shiftResidue rows
+  static constexpr uint16_t shiftResidue = 1 / (2 * _fwidth - 2 * floor(_fwidth) - 1);
 
   //
   // public helpers
@@ -453,8 +465,7 @@ public:
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      const auto& state = get_manager_state();
-      if (state.skipFirstLedsForEffect && n < state.skipFirstLedsForAmount)
+      if (config.skipFirstLedsForEffect && n < config.skipFirstLedsForAmount)
       {
         return;
       }

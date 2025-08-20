@@ -69,12 +69,12 @@ void rampColorRing(auto& ctx, uint8_t rampValue, auto palette)
 {
   ctx.skipFirstLedsForFrames(0);
 
-  for (uint8_t i = 0; i < ctx.lamp.maxWidth * nbBlackLines - 1; ++i)
+  for (uint8_t i = 0; i < ctx.lamp.maxWidth * nbBlackLines; ++i)
   {
     ctx.lamp.setPixelColor(i, 0);
   }
 
-  for (uint16_t i = 0; i < ctx.lamp.maxWidth - 1; ++i)
+  for (uint16_t i = 0; i < ctx.lamp.maxWidth; ++i)
   {
     uint8_t rampScale = (i * 255) / ctx.lamp.maxWidth;
     if (rampScale < rampValue)
