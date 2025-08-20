@@ -16,6 +16,7 @@ struct GlobalSimStateTy
   bool isButtonPressed = false;
   char lastKeyPressed = 0;
   uint8_t brightness = 255;
+  uint8_t tickAndPause = 0;
   uint32_t colorBuffer[LED_COUNT] = {};
   uint32_t indicatorColor = 0;
   float slowTimeFactor = 1.0;
