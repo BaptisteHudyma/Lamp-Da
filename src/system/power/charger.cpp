@@ -324,9 +324,6 @@ bool setup()
       charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
     }
 
-    // raise here, loop will never be reached
-    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
-
     // abort init
     return false;
   }

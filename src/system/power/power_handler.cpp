@@ -3,6 +3,8 @@
 #include "src/system/utils/print.h"
 #include "src/system/utils/state_machine.h"
 
+#include "src/system/alerts.h"
+
 #include "src/system/physical/battery.h"
 
 #include "src/system/platform/gpio.h"
@@ -386,6 +388,9 @@ bool is_in_output_mode() { return __private::powerMachine.get_state() == PowerSt
 bool is_in_otg_mode() { return __private::powerMachine.get_state() == PowerStates::OTG_MODE; }
 
 static bool isSetup = false;
+
+bool is_setup() { return isSetup; }
+
 void init()
 {
   powergates::init();
@@ -395,15 +400,19 @@ void init()
 
   if (not balancer::init())
   {
-    // TODO:
-    // nothing ? the lamp can work without this
+    _errorStr = "Init balancer component failed";
+    __private::switch_state(PowerStates::ERROR);
+    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+    return;
   }
 
   // charging component, setup first
   const bool chargerSuccess = charger::setup();
   if (!chargerSuccess)
   {
+    _errorStr = "Init charger component failed";
     __private::switch_state(PowerStates::ERROR);
+    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
     return;
   }
 
@@ -411,7 +420,9 @@ void init()
   const bool pdSuccess = powerDelivery::setup();
   if (!pdSuccess)
   {
+    _errorStr = "Init power delivery component failed";
     __private::switch_state(PowerStates::ERROR);
+    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
     return;
   }
   isSetup = true;
@@ -419,7 +430,7 @@ void init()
 
 void start_threads()
 {
-  if (!isSetup)
+  if (!is_setup())
     return;
 
   //   use the charging thread !

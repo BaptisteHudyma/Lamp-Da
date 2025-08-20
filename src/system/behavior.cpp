@@ -445,6 +445,12 @@ void handle_start_logic_state()
     return;
   }
 
+  // setup failed
+  if (not power::is_setup())
+  {
+    return;
+  }
+
   if (did_woke_up_from_power())
   {
     // signal to the alert manager that we started by power input
