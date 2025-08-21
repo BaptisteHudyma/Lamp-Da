@@ -6,10 +6,10 @@
 
 // set tup the software watchedog
 extern void setup_watchdog(const uint32_t timeoutDelaySecond);
-extern void kick_watchdog();
+extern void kick_watchdog(const uint8_t registerId);
 
 // setup the ADC
-extern void setup_adc(uint8_t resolution);
+extern void setup_adc(const uint8_t resolution);
 
 // get the number of wire com interfaces
 extern uint8_t get_wire_interface_count();
@@ -31,6 +31,6 @@ extern bool is_started_from_interrupt();
 extern float read_CPU_temperature_degreesC();
 
 // Put the system to sleep, with a wake up pin
-extern void go_to_sleep(int wakeUpPin);
+extern void go_to_sleep(const int wakeUpPin);
 
 #endif
