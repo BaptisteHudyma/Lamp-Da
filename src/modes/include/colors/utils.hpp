@@ -80,16 +80,65 @@ static constexpr LMBD_INLINE uint32_t fromTemp(uint8_t temp)
   return from_palette<false>(temp, PaletteBlackBodyColors);
 }
 
+/** 
+ * \brief blend to two colors 
+ * 
+ * @param[in] leftColor    : the first color to use
+ * @param[in] rightColor   : the second color to use
+ * @param[in] blend        : the amount of the first color use in the blend
+ * @param[in] b16 optional : use b16 for a more 
+ * 
+ * @return the new color computed
+ */
 COLOR blend(COLOR leftColor, COLOR rightColor, uint16_t blend, bool b16 = false)
 {
- return utils::color_blend(leftColor, rightColor, blend, b16);
+  if (blend == 0)
+    return leftColor;
+  uint16_t blendmax = b16 ? 0xFFFF : 0xFF;
+  if (blend >= blendmax)
+    return rightColor;
+  uint8_t shift = b16 ? 16 : 8;
+
+  COLOR res;
+  res.white = ((rightColor.white * blend) + (leftColor.white * (blendmax - blend))) >> shift;
+  res.red = ((rightColor.red * blend) + (leftColor.red * (blendmax - blend))) >> shift;
+  res.green = ((rightColor.green * blend) + (leftColor.green * (blendmax - blend))) >> shift;
+  res.blue = ((rightColor.blue * blend) + (leftColor.blue * (blendmax - blend))) >> shift;
+
+  return res;
 }
 
+ /** 
+ * \brief fade the color toward black
+ * 
+ * if using template "isVideoMode" method the resulting color will never become black unless it
+ * is already black
+ * 
+ * @param[in] inputColor    : the first color to use
+ * @param[in] fadeAmount   : the second color to use
+ * 
+ * @return the new color computed
+ */
 template<bool isVideoMode = false>
 LMBD_INLINE COLOR fade(COLOR inputColor, uint8_t fadeAmount)
 {
-  return utils::color_fade(inputColor, fadeAmount, isVideoMode);  
+  if (isVideoMode)
+  {
+    inputColor.red = scale8_video(inputColor.red, fadeAmount);
+    inputColor.green = scale8_video(inputColor.green, fadeAmount);
+    inputColor.blue = scale8_video(inputColor.blue, fadeAmount);
+    inputColor.white = scale8_video(inputColor.white, fadeAmount);
+  }
+  else
+  {
+    inputColor.red = scale8(inputColor.red, fadeAmount);
+    inputColor.green = scale8(inputColor.green, fadeAmount);
+    inputColor.blue = scale8(inputColor.blue, fadeAmount);
+    inputColor.white = scale8(inputColor.white, fadeAmount);
+  }
+  return inputColor;
 }
+
 
 } // namespace modes::colors
 

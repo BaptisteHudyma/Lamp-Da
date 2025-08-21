@@ -15,6 +15,7 @@
 #include "src/system/physical/fileSystem.h"
 
 #include "src/modes/default/fireplace.hpp"
+#include "src/modes/default/sine_mode.hpp"
 
 namespace modes::legacy {
 
@@ -134,12 +135,6 @@ struct PolarMode : public LegacyMode
   {
     bool categoryChange = false;
   };
-};
-
-/// Rainbow sin waves
-struct SineMode : public LegacyMode
-{
-  static void loop(auto& ctx) { animations::mode_sinewave(128, 128, PaletteRainbowColors, ctx.lamp.getLegacyStrip()); }
 };
 
 /// Bubbles
@@ -381,8 +376,7 @@ using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
                                   calm::NoiseMode,
                                   calm::PolarMode,
                                   default_modes::FireMode,
-                                  calm::SineMode,
-                                  default_modes::SineMode2,
+                                  default_modes::SineMode,
                                   calm::DriftMode,
                                   calm::DistMode,
                                   imu::LiquideMode,
