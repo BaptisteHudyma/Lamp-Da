@@ -2,6 +2,7 @@
 #define PLATFORM_REGISTER_CPP
 
 #include "registers.h"
+#include "time.h"
 
 // constants
 #include "src/system/utils/constants.h"
@@ -85,7 +86,20 @@ bool is_started_from_watchdog() { return (readResetReason() & POWER_RESETREAS_DO
 
 bool is_started_from_interrupt() { return (readResetReason() & POWER_RESETREAS_OFF_Msk) != 0x00; }
 
-float read_CPU_temperature_degreesC() { return readCPUTemperature(); }
+float read_CPU_temperature_degreesC()
+{
+  static uint32_t lastCallTime = 0;
+  static float procTemp = 0.0;
+
+  // avoid spam of the register command
+  const uint32_t currTime = time_ms();
+  if (lastCallTime == 0 or (currTime - lastCallTime) > 500.0)
+  {
+    lastCallTime = currTime;
+    procTemp = readCPUTemperature();
+  }
+  return procTemp;
+}
 
 void go_to_sleep(const int wakeUpPin) { systemOff(wakeUpPin, 0); }
 

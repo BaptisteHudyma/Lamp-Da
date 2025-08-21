@@ -184,12 +184,14 @@ void handleCommand(const std::string& command)
                 "PowerRail current:%dmA\n"
                 "VBUS voltage:%dmA\n"
                 "Bat voltage:%dmV\n"
-                "Bat current:%dmA",
+                "Bat current:%dmA\n"
+                "Temperature:%fC",
                 chargerState.powerRail_mV,
                 chargerState.inputCurrent_mA,
                 powerDelivery::get_vbus_voltage(),
                 chargerState.batteryVoltage_mV,
-                chargerState.batteryCurrent_mA);
+                chargerState.batteryCurrent_mA,
+                read_CPU_temperature_degreesC());
         break;
       }
 
