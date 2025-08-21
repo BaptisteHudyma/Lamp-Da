@@ -7,10 +7,11 @@
  **/
 
 #include <cstdint>
-#include <cassert>
 #include <utility>
 #include <tuple>
 #include <array>
+
+#include <src/system/assert.h>
 
 #include "src/modes/include/tools.hpp"
 #include "src/modes/include/context_type.hpp"

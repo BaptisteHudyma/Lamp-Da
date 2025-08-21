@@ -1,10 +1,9 @@
 #ifndef MODES_HARDWARE_LAMP_TYPE_HPP
 #define MODES_HARDWARE_LAMP_TYPE_HPP
 
-#include <cassert>
-
 #include "src/compile.h"
 #include "src/user/constants.h"
+#include <src/system/assert.h>
 #include "src/system/utils/curves.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/brightness_handle.h"

@@ -97,8 +97,9 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
     currentLine = newLine;
 
     // save result to buffer & move to next line
-    assert(nextStart + width <= buffer.size());
-    std::copy(newLine.begin(), newLine.end(), buffer.begin() + nextStart);
+    if (assertBool(nextStart + width <= buffer.size()))
+      std::copy(newLine.begin(), newLine.end(), buffer.begin() + nextStart);
+
     lastLine = (1 + lastLine) % (nbLines + 1);
   }
 
@@ -146,8 +147,8 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
     if (lineIndex < nbLines)
     {
       uint16_t lineStart = lineIndex * fwidth;
-      assert(lineStart + width <= buffer.size());
-      std::copy(buffer.cbegin() + lineStart, buffer.cbegin() + lineStart + width, newLine.begin());
+      if (assertBool(lineStart + width <= buffer.size()))
+        std::copy(buffer.cbegin() + lineStart, buffer.cbegin() + lineStart + width, newLine.begin());
     }
 
     return newLine;
@@ -178,8 +179,8 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
       if (skewed && I == 2)
         shiftStart -= 1;
 
-      assert(shiftStart + line.size() <= buffer.size());
-      std::copy(line.begin() + ((I || !skewed) ? 0 : 1), line.end(), buffer.begin() + shiftStart);
+      if (assertBool(shiftStart + line.size() <= buffer.size()))
+        std::copy(line.begin() + ((I || !skewed) ? 0 : 1), line.end(), buffer.begin() + shiftStart);
     }
   }
 
