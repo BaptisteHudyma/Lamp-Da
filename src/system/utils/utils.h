@@ -29,7 +29,7 @@ template<typename T, typename U> static constexpr U lmpd_map(T x, T in_min, T in
 template<typename N, typename M> static constexpr N min(const N a, const M b) { return a < b ? a : b; }
 template<typename N, typename M> static constexpr N max(const N a, const M b) { return a > b ? a : b; }
 
-template<typename N> static constexpr N abs(const N a) { return std::abs(a); }
+template<typename N> static constexpr N abs(const N a) { return std::abs(N(a)); }
 
 #endif
 

@@ -30,7 +30,6 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   using SelfTy = ContextTy<LocalBasicMode, ModeManager>;
   using ModeManagerTy = ModeManager;
   using LocalModeTy = LocalBasicMode;
-  using ThisLampTy = typename ModeManagerTy::ThisLampTy;
   using StateTy = StateTyOf<LocalModeTy>;
 
   /// \private True if LocalModeTy is a BasicMode
@@ -438,8 +437,8 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   void LMBD_INLINE skipFirstLedsForFrames(uint8_t amount, uint8_t count = 1)
   {
     auto ctx = modeManager.get_context();
-    ctx.state.skipFirstLedsForAmount = amount;
-    ctx.state.skipFirstLedsForEffect = count;
+    ctx.lamp.config.skipFirstLedsForAmount = amount;
+    ctx.lamp.config.skipFirstLedsForEffect = count;
   }
 
   //
@@ -559,8 +558,8 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   // context members for direct access
   //
 
-  ThisLampTy& lamp; ///< Interact with the lamp hardware
-  StateTy& state;   ///< Interact with the current active mode state
+  hardware::LampTy& lamp; ///< Interact with the lamp hardware
+  StateTy& state;         ///< Interact with the current active mode state
 
 private:
   ModeManagerTy& modeManager;

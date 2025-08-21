@@ -1,10 +1,9 @@
 #ifndef MODES_HARDWARE_LAMP_TYPE_HPP
 #define MODES_HARDWARE_LAMP_TYPE_HPP
 
-#include <cassert>
-
 #include "src/compile.h"
 #include "src/user/constants.h"
+#include <src/system/assert.h>
 #include "src/system/utils/curves.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/brightness_handle.h"
@@ -57,12 +56,19 @@ static constexpr LampTypes lampType = _lampType;
  *
  * TODO: write recipes for best practices when doing Simple/CCT/Indexable
  */
-template<typename ModeManager> struct LampTy
+struct LampTy
 {
-  friend ModeManager;
-  using SelfTy = LampTy<ModeManager>;
-  using ModeManagerTy = ModeManager;
-  using ManagerStateTy = typename ModeManagerTy::StateTy;
+  //
+  // state managed by manager
+  //
+
+  struct LampConfig
+  {
+    uint16_t skipFirstLedsForEffect = 0;
+    uint16_t skipFirstLedsForAmount = 0;
+  };
+
+  LampConfig config;
 
   //
   // private constructors
@@ -72,53 +78,53 @@ template<typename ModeManager> struct LampTy
   LampTy(const LampTy&) = delete;            ///< \private
   LampTy& operator=(const LampTy&) = delete; ///< \private
 
-private:
-  ManagerStateTy* _stateManagerPtr = nullptr;
-
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 private:
-  static constexpr uint16_t _width = ceil(stripXCoordinates);  ///< \private
-  static constexpr uint16_t _height = ceil(stripYCoordinates); ///< \private
-  static constexpr uint16_t _ledCount = LED_COUNT;             ///< \private
-  LedStrip& strip;                                             ///< \private
+  static constexpr float _fwidth = stripXCoordinates;    ///< \private
+  static constexpr float _fheight = stripYCoordinates;   ///< \private
+  static constexpr uint16_t _width = floor(_fwidth);     ///< \private
+  static constexpr uint16_t _height = floor(_fheight);   ///< \private
+  static constexpr uint16_t _ledCount = LED_COUNT;       ///< \private
+  static constexpr uint16_t _nbBuffers = stripNbBuffers; ///< \private
+  LedStrip& strip;                                       ///< \private
 
 public:
   /// \private Constructor used to wrap strip if needed
-  LMBD_INLINE LampTy(LedStrip& strip) : strip {strip}, tick {0}, raw_frame_count {0} {}
+  LMBD_INLINE LampTy(LedStrip& strip) : config {}, strip {strip}, now {0}, tick {0}, raw_frame_count {0} {}
 #else
 private:
   // (placeholder values to avoid bad fails on misuse)
+  static constexpr float _fwidth = 16.0;     ///< \private
+  static constexpr float _fheight = 16.0;    ///< \private
   static constexpr uint16_t _width = 16;     ///< \private
   static constexpr uint16_t _height = 16;    ///< \private
-  static constexpr uint16_t _ledCount = 256; ///< \private
+  static constexpr uint16_t _ledCount = 512; ///< \private
+  static constexpr uint16_t _nbBuffers = 2;  ///< \private
 
   struct LedStrip ///< \private
   {
+    BufferTy _buffers[_nbBuffers];
   };
   LedStrip fakeStrip; ///< \private
   LedStrip& strip;    ///< \private
 
 public:
   /// \private Constructor used to wrap strip if needed
-  LMBD_INLINE LampTy() : fakeStrip {}, strip {fakeStrip}, tick {0}, raw_frame_count {0} {}
+  LMBD_INLINE LampTy() : config {}, fakeStrip {}, strip {fakeStrip}, now {0}, tick {0}, raw_frame_count {0} {}
 #endif
 
   //
   // private API
   //
 
-  /// \private get a reference to manager state
-  ManagerStateTy& get_manager_state()
-  {
-    assert(_stateManagerPtr != nullptr);
-    return *_stateManagerPtr;
-  }
-
   /// \private (refresh internal const tick variable)
   void LMBD_INLINE refresh_tick_value()
   {
+    uint32_t* writeable_now = const_cast<uint32_t*>(&now);
+    *writeable_now = time_ms();
+
     uint32_t* writable_tick = const_cast<uint32_t*>(&tick);
-    *writable_tick = time_ms() / frameDurationMs;
+    *writable_tick = now / frameDurationMs;
 
     uint32_t* writable_frame_count = const_cast<uint32_t*>(&raw_frame_count);
     *writable_frame_count += 1; // monotonous
@@ -223,21 +229,41 @@ public:
 
   /** \brief (indexable) Count of indexable LEDs on the lamp
    *
-   * Equal to \p LED_COUNT if LampTypes::indexable or else 256
+   * Equal to \p LED_COUNT if LampTypes::indexable or else 512
    */
   static constexpr uint16_t ledCount = _ledCount;
 
   /** \brief (indexable) Width of "pixel space" w/ lamp taken as a LED matrix
    *
-   * Equal to \p stripXCoordinates (ceil) if LampTypes::indexable or else 16
+   * Equal to \p stripXCoordinates (floor) if LampTypes::indexable or else 16
    */
   static constexpr uint16_t maxWidth = _width;
 
+  /// Width as a precise floating point number, equal to \p stripXCoordinates
+  static constexpr float maxWidthFloat = _fwidth;
+
   /** \brief (indexable) Height of "pixel space" w/ lamp taken as a LED matrix
    *
-   * Equal to \p stripYCoordinates (ceil) if LampTypes::indexable or else 16
+   * Equal to \p stripYCoordinates (floor) if LampTypes::indexable or else 16
+   *
+   * Note that the last (incomplete) line of LEDs may not be accounted here.
    */
   static constexpr uint16_t maxHeight = _height;
+
+  /// Height as a precise floating point number, equal to \p stripYCoordinates
+  static constexpr float maxHeightFloat = _fheight;
+
+  /// Visually (X,Y) coordinates may appear shifted every \p shiftResidue rows
+  static constexpr uint16_t shiftResidue = 1 / (2 * _fwidth - 2 * floor(_fwidth) - 1);
+
+  /** \brief (indexable) Number of color buffers available for direct access
+   *
+   * Equal to \p stripNbBuffers if LampTypes::indexable or else 2
+   */
+  static constexpr uint8_t nbBuffers = _nbBuffers;
+
+  /// Type for a uint32_t buffer of exactly ledCount length
+  using BufferTy = std::array<uint32_t, _ledCount>;
 
   //
   // public helpers
@@ -453,8 +479,7 @@ public:
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      const auto& state = get_manager_state();
-      if (state.skipFirstLedsForEffect && n < state.skipFirstLedsForAmount)
+      if (config.skipFirstLedsForEffect && n < config.skipFirstLedsForAmount)
       {
         return;
       }
@@ -474,6 +499,115 @@ public:
    */
   void LMBD_INLINE setPixelColorXY(uint16_t X, uint16_t Y, uint32_t color) { setPixelColor(to_strip(X, Y), color); }
 
+  /** \brief Get a reference to the \p bufIdx temporary buffer
+   *
+   * These buffers can be used for computations by the active mode, but their
+   * content may be erased if the mode is reset or if used elsewhere in code.
+   */
+  template<uint8_t bufIdx = 0> BufferTy& LMBD_INLINE getTempBuffer()
+  {
+    static_assert(bufIdx < nbBuffers, "bufIdx must be lower than nbBuffers");
+    BufferTy& buffer = strip._buffers[bufIdx];
+    return buffer;
+  }
+
+  /** \brief Fill temporary buffer \p bufIdx with given \p value
+   *
+   * Equivalent to ``getTempBuffer().fill(value)``
+   */
+  template<uint8_t bufIdx = 0, typename T> void LMBD_INLINE fillTempBuffer(const T& value)
+  {
+    getTempBuffer<bufIdx>().fill(value);
+  }
+
+  /** \brief (indexable) Display \p bufIdx temporary buffer as LED colors
+   *
+   * This ``memcpy`` the selected buffer to the internal strip color buffer.
+   */
+  template<uint8_t bufIdx = 0> void setColorsFromBuffer()
+  {
+    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
+    const BufferTy& buffer = getTempBuffer<bufIdx>();
+    if (config.skipFirstLedsForEffect)
+    {
+      uint16_t Idx = config.skipFirstLedsForAmount;
+      uint16_t Sz = sizeof(strip._colors) - Idx * sizeof(uint32_t);
+      memcpy(&strip._colors[Idx], &buffer[Idx], Sz);
+    }
+    else
+    {
+      memcpy(strip._colors, buffer.data(), sizeof(strip._colors));
+    }
+  }
+
+  template<uint8_t dstBufIdx = 0, uint8_t srcBufIdx = 1> void setColorsFromMixedBuffers(float phase)
+  {
+    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
+    const BufferTy& dstBuf = getTempBuffer<dstBufIdx>();
+    const BufferTy& srcBuf = getTempBuffer<srcBufIdx>();
+
+    uint16_t start = 0, end = srcBuf.size();
+    if (config.skipFirstLedsForEffect)
+    {
+      start = config.skipFirstLedsForAmount;
+    }
+
+    for (uint16_t I = start; I < end; ++I)
+    {
+      COLOR src, dst;
+      src.color = srcBuf[I];
+      dst.color = dstBuf[I];
+      strip._colors[I].color = utils::get_gradient(src.color, dst.color, phase);
+    }
+  }
+
+  /** \brief (indexable) Display \p bufIdx temporary buffer, but reversed
+   */
+  template<uint8_t bufIdx = 0> void setColorsFromBufferReversed(bool skipLastLine)
+  {
+    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
+    const BufferTy& buffer = getTempBuffer<bufIdx>();
+
+    uint16_t start = 0, end = buffer.size();
+    if (config.skipFirstLedsForEffect)
+    {
+      start = config.skipFirstLedsForAmount;
+    }
+
+    if (skipLastLine)
+    {
+      end = maxWidth * maxHeight;
+    }
+
+    for (uint16_t I = 0, J = start; I < end - start; ++I, ++J)
+    {
+      strip._colors[J].color = buffer[end - start - I - 1];
+    }
+  }
+
+  /** \brief (indexable) Copy all current LEDs color to \p bufIdx temp. buffer
+   *
+   * If \p forceFullRead is True, also copy skipped content.
+   */
+  template<uint8_t bufIdx = 0, bool forceFullRead = false> void getColorsToBuffer()
+  {
+    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
+
+    BufferTy& buffer = getTempBuffer<bufIdx>();
+    if (!forceFullRead && config.skipFirstLedsForEffect)
+    {
+      uint16_t Idx = config.skipFirstLedsForAmount;
+      uint16_t Sz = sizeof(strip._colors) - Idx * sizeof(uint32_t);
+
+      buffer.fill(0);
+      memcpy(&buffer[Idx], &strip._colors[Idx], Sz);
+    }
+    else
+    {
+      memcpy(buffer.data(), strip._colors, sizeof(strip._colors));
+    }
+  }
+
   /// \brief (physical) Return current sound level in decibels
   float LMBD_INLINE get_sound_level()
   {
@@ -483,6 +617,13 @@ public:
 
   /// \brief (physical) Return relative time as milliseconds
   uint32_t LMBD_INLINE get_time_ms() { return time_ms(); }
+
+  /** \brief (physical) The "now" on milliseconds, updated just before loop.
+   *
+   * This value is \p get_time_ms() called once and used as basis for \p tick
+   * and may wrap around every three weeks of functioning.
+   */
+  volatile const uint32_t now;
 
   /** \brief (physical) Tick number, ever-increasing every frameDurationMs
    *
