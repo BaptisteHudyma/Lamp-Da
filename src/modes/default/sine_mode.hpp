@@ -24,29 +24,29 @@ struct SineMode : public modes::BasicMode
     // the ramp will not return to 0 after reach 255 (and the oposite)
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
   }
-  
+
   static void loop(auto& ctx)
   {
     uint8_t intensity = 128;
-    uint16_t colorIndex = time_ms() / 32;              // Amount of colour change.
-    const uint8_t index = ctx.get_active_custom_ramp()/4;
+    uint16_t colorIndex = ctx.lamp.tick / 16; // Amount of colour change.
+    const uint8_t index = ctx.get_active_custom_ramp() / 4;
 
-    ctx.state.step += speed / 16 ;                     // Speed of animation.
-    uint16_t freq = (intensity + index) / 4;           // Frequency of the signal.
+    ctx.state.step += speed / 16;            // Speed of animation.
+    uint16_t freq = (intensity + index) / 4; // Frequency of the signal.
 
     for (int i = 0; i < LED_COUNT; i++)
-    {                                                 // For each of the LED's in the strand, set a brightness based on
-                                                      // a wave as follows:
+    { // For each of the LED's in the strand, set a brightness based on
+      // a wave as follows:
       uint8_t pixBri = cubicwave8((i * freq) + ctx.state.step); // qsuba(cubicwave8((i*freq)+SEGENV.step),
-                                                      // (255-SEGMENT.intensity)); // qsub sets a minimum value
-                                                      // called thiscutoff. If < thiscutoff, then bright = 0.
-                                                      // Otherwise, bright = 128 (as defined in qsub)..
+                                                                // (255-SEGMENT.intensity)); // qsub sets a minimum
+                                                                // value called thiscutoff. If < thiscutoff, then bright
+                                                                // = 0. Otherwise, bright = 128 (as defined in qsub)..
       COLOR pixColor;
       // get the pixel color from PaletteRainbowColors
       pixColor.color = modes::colors::from_palette((uint8_t)(i * colorIndex / 255), PaletteRainbowColors);
-      // blend the pixel color with the black color 
+      // blend the pixel color with the black color
       ctx.lamp.setPixelColor(i, modes::colors::fade<false>(pixColor, pixBri).color);
-	  }
+    }
   }
 };
 

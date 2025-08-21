@@ -83,14 +83,14 @@ static constexpr LMBD_INLINE uint32_t fromTemp(uint8_t temp)
   return from_palette<false>(temp, PaletteBlackBodyColors);
 }
 
-/** 
- * \brief blend to two colors 
- * 
+/**
+ * \brief blend to two colors
+ *
  * @param[in] leftColor    : the first color to use
  * @param[in] rightColor   : the second color to use
  * @param[in] blend        : the amount of the first color use in the blend
- * @param[in] b16 optional : use b16 for a more 
- * 
+ * @param[in] b16 optional : use b16 for a more
+ *
  * @return the new color computed
  */
 COLOR blend(COLOR leftColor, COLOR rightColor, uint16_t blend, bool b16 = false)
@@ -111,19 +111,18 @@ COLOR blend(COLOR leftColor, COLOR rightColor, uint16_t blend, bool b16 = false)
   return res;
 }
 
- /** 
+/**
  * \brief fade the color toward black
- * 
+ *
  * if using template "isVideoMode" method the resulting color will never become black unless it
  * is already black
- * 
+ *
  * @param[in] inputColor    : the first color to use
  * @param[in] fadeAmount   : the second color to use
- * 
+ *
  * @return the new color computed
  */
-template<bool isVideoMode = false>
-LMBD_INLINE COLOR fade(COLOR inputColor, uint8_t fadeAmount)
+template<bool isVideoMode = false> COLOR fade(COLOR inputColor, uint8_t fadeAmount)
 {
   if (isVideoMode)
   {
@@ -142,9 +141,6 @@ LMBD_INLINE COLOR fade(COLOR inputColor, uint8_t fadeAmount)
   return inputColor;
 }
 
-
 } // namespace modes::colors
-
-
 
 #endif
