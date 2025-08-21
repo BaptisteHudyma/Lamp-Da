@@ -76,6 +76,9 @@ static constexpr float criticalSystemTemp_c = 80; // max proc temperature, in de
 static constexpr float batteryCritical = 300; // % *100
 static constexpr float batteryLow = 500;      // % *100
 
+// watchdog ids
+static constexpr uint8_t USER_WATCHDOG_ID = 0;
+
 /**
  *
  *      Computations from set constants

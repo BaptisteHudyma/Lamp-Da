@@ -224,7 +224,7 @@ void main_loop(const uint32_t addedDelay)
    */
 
   // update watchdog (prevent crash)
-  kick_watchdog();
+  kick_watchdog(USER_WATCHDOG_ID);
 
   // loop is not ran in shutdown mode
   button::handle_events(behavior::button_clicked_callback, behavior::button_hold_callback);

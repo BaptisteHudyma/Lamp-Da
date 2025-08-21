@@ -14,10 +14,10 @@ bool shouldStopThreads = false;
 
 } // namespace mock_registers
 
-// set tup the software watchedog
+// setup the software watchedog
 void setup_watchdog(const uint32_t timeoutDelaySecond) {}
 
-void kick_watchdog() {}
+void kick_watchdog(const uint8_t registerId) {}
 
 // setup the ADC
 void setup_adc(uint8_t resolution) {}
@@ -40,4 +40,4 @@ bool is_started_from_interrupt() { return true; }
 
 float read_CPU_temperature_degreesC() { return mock_registers::cpuTemperature; }
 
-void go_to_sleep(int wakeUpPin) { mock_registers::isDeepSleep = true; };
+void go_to_sleep(const int wakeUpPin) { mock_registers::isDeepSleep = true; };
