@@ -30,7 +30,7 @@ void set_color(const utils::ColorSpace::RGB& c)
 {
   // Red green and blue leds of this indicators do not have the same power
   static constexpr float redColorCorrection = 1.0;
-  static constexpr float greenColorCorrection = 1.0 / 2.5;
+  static constexpr float greenColorCorrection = 1.0 / 3.0;
   static constexpr float blueColorCorrection = 1.0 / 4.0;
 
   const COLOR& col = c.get_rgb();
@@ -84,16 +84,38 @@ bool breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::Colo
   return not isOn;
 }
 
-bool blink(const uint32_t offFreq, const uint32_t onFreq, utils::ColorSpace::RGB color)
+bool color_loop(const uint32_t colorDuration, std::initializer_list<utils::ColorSpace::RGB> colors)
+{
+  static uint32_t lastCall = 0;
+  static size_t currentColorIndex = 0;
+
+  // last call was some delay before
+  if (lastCall == 0 and time_ms() - lastCall > colorDuration)
+  {
+    set_color(*(colors.begin() + currentColorIndex));
+    lastCall = time_ms();
+
+    // increase index, limit to colors size
+    currentColorIndex = (currentColorIndex + 1) % colors.size();
+  }
+
+  return currentColorIndex == 0;
+}
+
+bool blink(const uint32_t offFreq, const uint32_t onFreq, std::initializer_list<utils::ColorSpace::RGB> colors)
 {
   static uint32_t lastCall = 0;
   static bool ledState = false;
+  static size_t currentColorIndex = 0;
 
   // led is off, and last call was some delay before
   if (not ledState and time_ms() - lastCall > onFreq)
   {
+    // increase index, limit to colors size
+    currentColorIndex = (currentColorIndex + 1) % colors.size();
+
     ledState = true;
-    set_color(color);
+    set_color(*(colors.begin() + currentColorIndex));
     lastCall = time_ms();
   }
 
@@ -102,7 +124,7 @@ bool blink(const uint32_t offFreq, const uint32_t onFreq, utils::ColorSpace::RGB
   {
     ledState = false;
     // set black
-    set_color(utils::ColorSpace::RGB(0));
+    set_color(utils::ColorSpace::BLACK);
     lastCall = time_ms();
   }
 

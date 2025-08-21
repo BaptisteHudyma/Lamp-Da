@@ -3,10 +3,13 @@
 #include "src/system/utils/print.h"
 #include "src/system/utils/state_machine.h"
 
+#include "src/system/alerts.h"
+
 #include "src/system/physical/battery.h"
 
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/threads.h"
+#include "src/system/platform/registers.h"
 
 #include "PDlib/power_delivery.h"
 #include "balancer.h"
@@ -386,6 +389,9 @@ bool is_in_output_mode() { return __private::powerMachine.get_state() == PowerSt
 bool is_in_otg_mode() { return __private::powerMachine.get_state() == PowerStates::OTG_MODE; }
 
 static bool isSetup = false;
+
+bool is_setup() { return isSetup; }
+
 void init()
 {
   powergates::init();
@@ -393,33 +399,56 @@ void init()
   // switch without a timing
   __private::powerMachine.set_state(PowerStates::IDLE);
 
+  bool isSuccessful = true;
+  _errorStr = "";
+
+// TODO issue #132 remove when the mock components will be running
+#ifndef LMBD_SIMULATION
   if (not balancer::init())
   {
-    // TODO:
-    // nothing ? the lamp can work without this
+    _errorStr += "\n\t- Init balancer component failed";
+
+    __private::powerMachine.set_state(PowerStates::ERROR);
+    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+    isSuccessful = false;
   }
 
   // charging component, setup first
   const bool chargerSuccess = charger::setup();
   if (!chargerSuccess)
   {
-    __private::switch_state(PowerStates::ERROR);
-    return;
+    _errorStr += "\n\t- Init charger component failed";
+
+    __private::powerMachine.set_state(PowerStates::ERROR);
+    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+    isSuccessful = false;
   }
 
   // at the very last, power delivery
   const bool pdSuccess = powerDelivery::setup();
   if (!pdSuccess)
   {
-    __private::switch_state(PowerStates::ERROR);
+    _errorStr += "\n\t- Init power delivery component failed";
+
+    __private::powerMachine.set_state(PowerStates::ERROR);
+    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+    isSuccessful = false;
+  }
+#endif
+
+  if (not isSuccessful)
+  {
+    // failed initialisation, skip
     return;
   }
+  _errorStr = "x";
+
   isSetup = true;
 }
 
 void start_threads()
 {
-  if (!isSetup)
+  if (!is_setup())
     return;
 
   //   use the charging thread !
@@ -430,6 +459,9 @@ void start_threads()
 
 void loop()
 {
+  // kick power watchdog
+  kick_watchdog(POWER_WATCHDOG_ID);
+
   // fist action, update power gate status
   powergates::loop();
 

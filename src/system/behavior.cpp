@@ -90,7 +90,20 @@ bool did_woke_up_from_power() { return wokeUpFromVbus_s; }
 static bool isTargetPoweredOn_s = false;
 bool is_system_should_be_powered() { return isTargetPoweredOn_s; }
 void set_power_on() { isTargetPoweredOn_s = true; }
-void set_power_off() { isTargetPoweredOn_s = false; }
+void set_power_off()
+{
+  // prevent early shutdown
+  if (time_ms() - systemStartTime < 1000)
+    return;
+
+  isTargetPoweredOn_s = false;
+}
+
+// allow system to be powered if no hardware alert and power is setup
+bool can_system_allowed_to_be_powered()
+{
+  return not(alerts::manager.is_raised(alerts::Type::HARDWARE_ALERT) or not power::is_setup());
+}
 
 // return true if vbus is high
 bool is_charger_powered() { return charger::is_vbus_powered(); }
@@ -191,6 +204,17 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   if (consecutiveButtonCheck == 0)
     return;
 
+  // guard blocking other actions than "turn off"
+  if (not can_system_allowed_to_be_powered())
+  {
+    // allow turn off after a time
+    if (consecutiveButtonCheck == 1)
+    {
+      set_power_off();
+    }
+    return;
+  }
+
   // guard blocking other actions than "turning it on"
   if (not is_user_code_running())
   {
@@ -224,9 +248,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
       // do not turn off on first button press
       if (not isSystemStartClick)
       {
-        // woke up from longer than a delay, allowed to shut down
-        if (time_ms() - systemStartTime > 1000)
-          set_power_off();
+        set_power_off();
       }
       break;
 
@@ -240,7 +262,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
         // disable charger and wait 5s to be killed by watchdog
         indicator::set_color(utils::ColorSpace::PINK);
         power::enable_charge(false);
-        delay_ms(100000); // crash the system
+        delay_ms(20000); // crash the system
 #endif
         set_power_off();
         return;
@@ -429,6 +451,18 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 
 void handle_error_state()
 {
+  // not allowed to start, can only be stopped
+  if (not can_system_allowed_to_be_powered())
+  {
+    // turn off system is needed
+    if (not is_system_should_be_powered())
+    {
+      // got to sleep after the closing operations
+      mainMachine.set_state(BehaviorStates::SHUTDOWN);
+    }
+    return;
+  }
+
   // if error state, raise alert
   if (not alerts::manager.is_raised(alerts::Type::SYSTEM_IN_ERROR_STATE))
     alerts::manager.raise(alerts::Type::SYSTEM_IN_ERROR_STATE);
@@ -436,8 +470,16 @@ void handle_error_state()
 
 void handle_start_logic_state()
 {
-  // preven early charging
+  // prevent early charging
   power::enable_charge(false);
+
+  // safety for failure of components at startup
+  if (not can_system_allowed_to_be_powered())
+  {
+    set_power_on();
+    mainMachine.set_state(BehaviorStates::ERROR);
+    return;
+  }
 
   if (did_woke_up_from_power())
   {

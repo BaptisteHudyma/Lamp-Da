@@ -7,10 +7,11 @@
  **/
 
 #include <cstdint>
-#include <cassert>
 #include <utility>
 #include <tuple>
 #include <array>
+
+#include <src/system/assert.h>
 
 #include "src/modes/include/tools.hpp"
 #include "src/modes/include/context_type.hpp"
@@ -121,7 +122,6 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 {
   using SelfTy = ModeManagerTy<Config, AllGroups>;
   using ConfigTy = Config;
-  using ThisLampTy = hardware::LampTy<SelfTy>;
   using AllGroupsTy = AllGroups;
   using AllStatesTy = details::StateTyFrom<AllGroups>;
   static constexpr uint8_t nbGroups {std::tuple_size_v<AllGroupsTy>};
@@ -140,10 +140,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   static constexpr bool hasButtonCustomUI = HasAnyGroup::hasButtonCustomUI;
 
   // constructors
-  ModeManagerTy(ThisLampTy& lamp) : activeIndex {ActiveIndexTy::from(Config::initialActiveIndex)}, lamp {lamp}
-  {
-    lamp._stateManagerPtr = &(get_context().state);
-  }
+  ModeManagerTy(hardware::LampTy& lamp) : activeIndex {ActiveIndexTy::from(Config::initialActiveIndex)}, lamp {lamp} {}
 
   ModeManagerTy() = delete;
   ModeManagerTy(const ModeManagerTy&) = delete;
@@ -236,9 +233,11 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     bool clearStripOnModeChange = Config::defaultClearStripOnModeChange;
 
     // special effects
-    uint8_t skipNextFrameEffect = 0;    // should the next .loop() mode be skipped?
-    uint8_t skipFirstLedsForEffect = 0; // should the loop skip some lower LEDs?
-    uint8_t skipFirstLedsForAmount = 0; // how many pixels to shave from the top?
+    uint8_t skipNextFrameEffect = 0; // should the next .loop() mode be skipped?
+
+    // inside lamp.config
+    //  - skipFirstLedsForEffect = 0; // should the loop skip some lower LEDs?
+    //  - skipFirstLedsForAmount = 0; // how many pixels to shave from the top?
 
     // configuration-related actions done before mode reset
     static void LMBD_INLINE before_reset(auto& ctx)
@@ -473,9 +472,9 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       }
     }
 
-    if (ctx.state.skipFirstLedsForEffect > 0)
+    if (ctx.lamp.config.skipFirstLedsForEffect > 0)
     {
-      ctx.state.skipFirstLedsForEffect -= 1;
+      ctx.lamp.config.skipFirstLedsForEffect -= 1;
     }
 
     if (ctx.state.skipNextFrameEffect > 0)
@@ -484,11 +483,11 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       return;
     }
 
+    ctx.lamp.refresh_tick_value();
+
     dispatch_group(ctx, [](auto group) {
       group.loop();
     });
-
-    ctx.lamp.refresh_tick_value();
   }
 
   static void brightness_update(auto& ctx, brightness_t brightness)
@@ -610,7 +609,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   //
 
   ActiveIndexTy activeIndex;
-  ThisLampTy& lamp;
+  hardware::LampTy& lamp;
 
   //
   // private members

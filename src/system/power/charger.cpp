@@ -191,10 +191,10 @@ void update_state_status()
     case drivers::Status_t::UNINITIALIZED:
     case drivers::Status_t::ERROR:
       { // locked in a broken state
-        // TODO issue #130: shutdown ? alert ?
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
-          lampda_print("ERROR: charger in UNINITIALIZED/ERROR state");
+          charger.softwareErrorMessage = "ERROR: charger in UNINITIALIZED/ERROR state";
+          lampda_print(charger.softwareErrorMessage);
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
         break;
@@ -202,10 +202,10 @@ void update_state_status()
     case drivers::Status_t::ERROR_COMPONENT:
       {
         // broken charger ic
-        // TODO: issue #130: shutdown ? alert ?
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_HARDWARE)
         {
-          lampda_print("ERROR: charger in ERROR_COMPONENT state");
+          charger.hardwareErrorMessage = "ERROR: charger in ERROR_COMPONENT state";
+          lampda_print(charger.hardwareErrorMessage);
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_HARDWARE;
         break;
@@ -214,13 +214,13 @@ void update_state_status()
       {
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
-          lampda_print("ERROR: charger in ERROR_HAS_FAULTS state");
+          charger.softwareErrorMessage = "ERROR: charger in ERROR_HAS_FAULTS state";
+          lampda_print(charger.softwareErrorMessage);
         }
+        charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
 
         // hopefully temporary
         drivers::try_clear_faults();
-        // TODO issue #130: add a count on the fault clearing
-        charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
         break;
       }
     default:
@@ -316,6 +316,7 @@ bool setup()
     {
       // hardware error on the charger part
       charger.status = Charger_t::ChargerStatus_t::ERROR_HARDWARE;
+      charger.hardwareErrorMessage = drivers::get_status_detail();
     }
     else
     {

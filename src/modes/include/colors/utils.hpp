@@ -37,6 +37,9 @@ struct ToRGB
   uint8_t r, g, b;
 };
 
+/// Return color (w, w, w) as a single uint32_t integer
+static constexpr LMBD_INLINE uint32_t fromGrey(uint32_t w) { return fromRGB(w, w, w); }
+
 static constexpr uint8_t colorRotation[360] = {
         0,   0,   0,   0,   0,   1,   1,   2,   2,   3,   4,   5,   6,   7,   8,   9,   11,  12,  13,  15,  17,  18,
         20,  22,  24,  26,  28,  30,  32,  35,  37,  39,  42,  44,  47,  49,  52,  55,  58,  60,  63,  66,  69,  72,

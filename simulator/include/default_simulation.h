@@ -3,7 +3,7 @@
 
 struct defaultSimulation
 {
-  float fps = 60.f; // how fast animation is
+  float fps = 80.f; // how fast animation is
 
   float ledSizePx = 24.f;   // square size to represent one LED (in pixels)
   float ledPaddingPx = 4.f; // padding between two LEDs (in pixels)

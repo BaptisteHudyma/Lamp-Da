@@ -108,21 +108,6 @@ uint16_t get_battery_level()
   return lastPercent;
 }
 
-// only sample proc temperature level every N steps
-float get_processor_temperature()
-{
-  static uint32_t lastCallTime = 0;
-  static float procTemp = 0.0;
-
-  const uint32_t currTime = time_ms();
-  if (lastCallTime == 0 or (currTime - lastCallTime) > 500.0)
-  {
-    lastCallTime = currTime;
-    procTemp = read_CPU_temperature_degreesC();
-  }
-  return procTemp;
-}
-
 } // namespace __internal
 
 struct AlertBase
@@ -206,7 +191,7 @@ struct Alert_MainLoopFreeze : public AlertBase
 
 struct Alert_BatteryReadingIncoherent : public AlertBase
 {
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::GREEN); }
+  bool show() const override { return indicator::blink(100, 100, {utils::ColorSpace::GREEN, utils::ColorSpace::RED}); }
 
   Type get_type() const override { return Type::BATTERY_READINGS_INCOHERENT; }
 };
@@ -300,13 +285,13 @@ struct Alert_TempTooHigh : public AlertBase
   bool should_be_raised() const override
   {
     // raised above a threshold
-    return __internal::get_processor_temperature() >= maxSystemTemp_c;
+    return read_CPU_temperature_degreesC() >= maxSystemTemp_c;
   }
 
   bool should_be_cleared() const override
   {
     // cleared below a threshold
-    return __internal::get_processor_temperature() <= maxSystemTemp_c * 0.75;
+    return read_CPU_temperature_degreesC() <= maxSystemTemp_c * 0.75;
   }
 
   void execute() const override
@@ -329,7 +314,7 @@ struct Alert_TempCritical : public AlertBase
   bool should_be_raised() const override
   {
     // raised above a threshold
-    return __internal::get_processor_temperature() >= criticalSystemTemp_c;
+    return read_CPU_temperature_degreesC() >= criticalSystemTemp_c;
   }
 
   // never need to clear this alert, temp too high will always be a complete shutdown
@@ -355,7 +340,10 @@ struct Alert_BluetoothAdvertisement : public AlertBase
 
 struct Alert_HardwareAlert : public AlertBase
 {
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::PURPLE); }
+  bool show() const override
+  {
+    return indicator::blink(100, 100, {utils::ColorSpace::PURPLE, utils::ColorSpace::TEAL});
+  }
 
   Type get_type() const override { return Type::HARDWARE_ALERT; }
 };
@@ -375,23 +363,29 @@ struct Alert_FavoriteSet : public AlertBase
 
 struct Alert_OtgFailed : public AlertBase
 {
-  bool show() const override { return indicator::blink(200, 200, utils::ColorSpace::FUSHIA); }
+  bool show() const override
+  {
+    return indicator::blink(300, 200, {utils::ColorSpace::BLUE, utils::ColorSpace::YELLOW});
+  }
 
   Type get_type() const override { return Type::OTG_FAILED; }
 };
 
 struct Alert_SystemShutdownFailed : public AlertBase
 {
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::PURPLE); }
+  bool show() const override
+  {
+    return indicator::blink(100, 100, {utils::ColorSpace::PURPLE, utils::ColorSpace::WHITE});
+  }
 
   Type get_type() const override { return Type::SYSTEM_OFF_FAILED; }
 
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    if (raisedTime > 0 and (time_ms() - raisedTime) > 1000)
+    if (raisedTime > 0 and (time_ms() - raisedTime) > 2000)
     {
-      // is this failes, the system is just too broken to be repaired
+      // is this fails, the system is just too broken to be repaired
       enter_serial_dfu();
       return true;
     }
@@ -401,7 +395,10 @@ struct Alert_SystemShutdownFailed : public AlertBase
 
 struct Alert_SystemInErrorState : public AlertBase
 {
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::PINK); }
+  bool show() const override
+  {
+    return indicator::blink(100, 100, {utils::ColorSpace::PINK, utils::ColorSpace::ORANGE});
+  }
 
   Type get_type() const override { return Type::SYSTEM_IN_ERROR_STATE; }
 

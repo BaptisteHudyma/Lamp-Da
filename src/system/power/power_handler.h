@@ -8,6 +8,7 @@ namespace power {
 // call before all
 void init();
 void start_threads();
+bool is_setup();
 
 // call often
 void loop();
