@@ -77,7 +77,8 @@ static constexpr float batteryCritical = 300; // % *100
 static constexpr float batteryLow = 500;      // % *100
 
 // watchdog ids
-static constexpr uint8_t USER_WATCHDOG_ID = 0;
+static constexpr uint8_t USER_WATCHDOG_ID = 0;  // user thread watchdog
+static constexpr uint8_t POWER_WATCHDOG_ID = 2; // power thread watchdog
 
 /**
  *

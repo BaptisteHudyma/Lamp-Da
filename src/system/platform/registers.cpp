@@ -45,7 +45,8 @@ void setup_watchdog(const uint32_t timeoutDelaySecond)
   nrf_wdt_reload_value_set(NRF_WDT, timeoutDelaySecond * 32768 + 1); // set timeout
 
   // enable registers
-  nrf_wdt_reload_request_enable(NRF_WDT, registerId_to_register(USER_WATCHDOG_ID)); // Enable the RR[0] reload register
+  nrf_wdt_reload_request_enable(NRF_WDT, registerId_to_register(USER_WATCHDOG_ID));
+  nrf_wdt_reload_request_enable(NRF_WDT, registerId_to_register(POWER_WATCHDOG_ID));
 
   nrf_wdt_task_trigger(NRF_WDT, NRF_WDT_TASK_START); // Start WDT
 }

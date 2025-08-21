@@ -9,6 +9,7 @@
 
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/threads.h"
+#include "src/system/platform/registers.h"
 
 #include "PDlib/power_delivery.h"
 #include "balancer.h"
@@ -455,6 +456,9 @@ void start_threads()
 
 void loop()
 {
+  // kick power watchdog
+  kick_watchdog(POWER_WATCHDOG_ID);
+
   // fist action, update power gate status
   powergates::loop();
 
