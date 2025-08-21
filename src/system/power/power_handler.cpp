@@ -402,6 +402,8 @@ void init()
   bool isSuccessful = true;
   _errorStr = "";
 
+// TODO issue #132 remove when the mock components will be running
+#ifndef LMBD_SIMULATION
   if (not balancer::init())
   {
     _errorStr += "\n\t- Init balancer component failed";
@@ -432,6 +434,7 @@ void init()
     alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
     isSuccessful = false;
   }
+#endif
 
   if (not isSuccessful)
   {

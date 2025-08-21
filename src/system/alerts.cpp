@@ -108,21 +108,6 @@ uint16_t get_battery_level()
   return lastPercent;
 }
 
-// only sample proc temperature level every N steps
-float get_processor_temperature()
-{
-  static uint32_t lastCallTime = 0;
-  static float procTemp = 0.0;
-
-  const uint32_t currTime = time_ms();
-  if (lastCallTime == 0 or (currTime - lastCallTime) > 500.0)
-  {
-    lastCallTime = currTime;
-    procTemp = read_CPU_temperature_degreesC();
-  }
-  return procTemp;
-}
-
 } // namespace __internal
 
 struct AlertBase
@@ -300,13 +285,13 @@ struct Alert_TempTooHigh : public AlertBase
   bool should_be_raised() const override
   {
     // raised above a threshold
-    return __internal::get_processor_temperature() >= maxSystemTemp_c;
+    return read_CPU_temperature_degreesC() >= maxSystemTemp_c;
   }
 
   bool should_be_cleared() const override
   {
     // cleared below a threshold
-    return __internal::get_processor_temperature() <= maxSystemTemp_c * 0.75;
+    return read_CPU_temperature_degreesC() <= maxSystemTemp_c * 0.75;
   }
 
   void execute() const override
@@ -329,7 +314,7 @@ struct Alert_TempCritical : public AlertBase
   bool should_be_raised() const override
   {
     // raised above a threshold
-    return __internal::get_processor_temperature() >= criticalSystemTemp_c;
+    return read_CPU_temperature_degreesC() >= criticalSystemTemp_c;
   }
 
   // never need to clear this alert, temp too high will always be a complete shutdown
