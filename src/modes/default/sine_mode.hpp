@@ -1,6 +1,8 @@
 #ifndef SINE_MODE_H
 #define SINE_MODE_H
 
+// Base on the Adjustable sinewave. By Andrew Tuline
+
 #include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/colors/palettes.hpp"
 namespace modes::default_modes {
@@ -28,7 +30,7 @@ struct SineMode : public modes::BasicMode
   static void loop(auto& ctx)
   {
     uint8_t intensity = 128;
-    uint16_t colorIndex = ctx.lamp.tick / 16; // Amount of colour change.
+    uint16_t colorIndex = ctx.lamp.tick / 4; // Amount of colour change.
     const uint8_t index = ctx.get_active_custom_ramp() / 4;
 
     ctx.state.step += speed / 16;            // Speed of animation.

@@ -726,35 +726,6 @@ void mode_lake(const uint8_t speed, const palette_t& palette, LedStrip& strip)
   }
 }
 
-void mode_sinewave(const uint8_t speed, const uint8_t intensity, const palette_t& palette, LedStrip& strip)
-{
-  // Adjustable sinewave. By Andrew Tuline
-  // #define qsuba(x, b)  ((x>b)?x-b:0)               // Analog Unsigned
-  // subtraction macro. if result <0, then => 0
-
-  static uint16_t step = 0;
-
-  uint16_t colorIndex = time_ms() / 32; //(256 - SEGMENT.fft1);  // Amount of colour change.
-
-  step += speed / 16;            // Speed of animation.
-  uint16_t freq = intensity / 4; // SEGMENT.fft2/8;                       // Frequency of the signal.
-
-  for (int i = 0; i < LED_COUNT; i++)
-  {                                                 // For each of the LED's in the strand, set a brightness based on
-                                                    // a wave as follows:
-    uint8_t pixBri = cubicwave8((i * freq) + step); // qsuba(cubicwave8((i*freq)+SEGENV.step),
-                                                    // (255-SEGMENT.intensity)); // qsub sets a minimum value
-                                                    // called thiscutoff. If < thiscutoff, then bright = 0.
-                                                    // Otherwise, bright = 128 (as defined in qsub)..
-    // setPixCol(i, i*colorIndex/255, pixBri);
-    COLOR pixColor;
-    pixColor.color = get_color_from_palette((uint8_t)(i * colorIndex / 255), palette);
-    COLOR back;
-    back.color = 0;
-    strip.setPixelColor(i, utils::color_blend(back, pixColor, pixBri));
-  }
-}
-
 // effect utility functions
 uint8_t sin_gap(uint16_t in)
 {
