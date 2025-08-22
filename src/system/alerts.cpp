@@ -13,6 +13,7 @@
 #include "src/system/utils/utils.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/brightness_handle.h"
+#include "src/system/utils/time_utils.h"
 
 #include "src/system/power/charger.h"
 
@@ -90,19 +91,15 @@ namespace __internal {
 // only sample battery level every N steps
 uint16_t get_battery_level()
 {
-  static uint32_t lastCallTime = 0;
   static uint16_t lastPercent = 0;
 
-  const uint32_t currTime = time_ms();
-  if (lastCallTime == 0 or (currTime - lastCallTime) > 1000.0)
+  EVERY_N_MILLIS(1000.0)
   {
     const uint16_t newPercent = battery::get_battery_minimum_cell_level();
-    if (lastCallTime == 0 or (lastPercent / 100) != (newPercent / 100))
+    if ((lastPercent / 100) != (newPercent / 100))
     {
       bluetooth::write_battery_level(newPercent / 100);
     }
-
-    lastCallTime = currTime;
     lastPercent = newPercent;
   }
   return lastPercent;

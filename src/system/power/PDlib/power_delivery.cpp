@@ -5,6 +5,7 @@
 #include "usb_pd.h"
 
 #include "src/system/utils/print.h"
+#include "src/system/utils/time_utils.h"
 
 #include "src/system/physical/battery.h"
 
@@ -12,8 +13,8 @@
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/threads.h"
 
-#include "../charging_ic.h"
-#include "../power_gates.h"
+#include "src/system/power/charging_ic.h"
+#include "src/system/power/power_gates.h"
 
 // remove this to remove all PD algorithms
 #define USE_PD_ALGO_LOOP
@@ -41,13 +42,8 @@ void resume_pd_state_machine() { should_run_pd_state_machine = true; }
 int get_vbus_voltage()
 {
   static int vbusVoltage = 0;
-  static uint32_t time = 0;
   // do not spam the system
-  if (time == 0 or time_ms() - time > 100)
-  {
-    time = time_ms();
-    vbusVoltage = tcpm_get_vbus_voltage();
-  }
+  EVERY_N_MILLIS(100) { vbusVoltage = tcpm_get_vbus_voltage(); }
   return vbusVoltage;
 }
 

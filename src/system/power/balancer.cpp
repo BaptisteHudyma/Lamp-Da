@@ -4,6 +4,7 @@
 #include "src/system/platform/i2c.h"
 
 #include "src/system/utils/print.h"
+#include "src/system/utils/time_utils.h"
 
 #include <cstdint>
 
@@ -287,8 +288,7 @@ void loop()
   }
 
   // refresh
-  const uint32_t time = time_ms();
-  if (_status.lastMeasurmentUpdate == 0 or time - _status.lastMeasurmentUpdate > 800)
+  EVERY_N_MILLIS(800)
   {
     _status.stackVoltage_mV = balancerRegisters.stackVoltage.get();
     _status.temperature_degrees = balancerRegisters.intTemperatureVoltage.get();
@@ -301,18 +301,14 @@ void loop()
       _status.isBalancing[i] = is_balancing(i);
     }
 
-    _status.lastMeasurmentUpdate = time;
+    // update measurments
+    _status.lastMeasurmentUpdate = time_ms();
   }
 
   // if the balancing process is enabled, balance batteries
   if (isBalancingEnabled)
   {
-    static uint32_t lastBalancingUpdateTime = 0;
-    if (time - lastBalancingUpdateTime > 1000)
-    {
-      balance_batteries();
-      lastBalancingUpdateTime = time;
-    }
+    EVERY_N_MILLIS(1000) { balance_batteries(); }
   }
 }
 
