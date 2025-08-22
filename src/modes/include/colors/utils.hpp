@@ -83,6 +83,62 @@ static constexpr LMBD_INLINE uint32_t fromTemp(uint8_t temp)
   return from_palette<false>(temp, PaletteBlackBodyColors);
 }
 
+/**
+ * \brief blend to two colors
+ *
+ * @param[in] leftColor    : the first color to use
+ * @param[in] rightColor   : the second color to use
+ * @param[in] blend        : the amount of the first color use in the blend
+ * @param[in] b16 optional : use b16 for a more
+ *
+ * @return the new color computed
+ */
+uint32_t blend(uint32_t leftColor, uint32_t rightColor, uint16_t blend, bool b16 = false)
+{
+  if (blend == 0)
+    return leftColor;
+  uint16_t blendmax = b16 ? 0xFFFF : 0xFF;
+  if (blend >= blendmax)
+    return rightColor;
+  uint8_t shift = b16 ? 16 : 8;
+
+  ToRGB left_rgb(leftColor);
+  ToRGB right_rgb(rightColor);
+
+  return fromRGB(((right_rgb.r * blend) + (left_rgb.r * (blendmax - blend))) >> shift,
+                 ((right_rgb.g * blend) + (left_rgb.g * (blendmax - blend))) >> shift,
+                 ((right_rgb.b * blend) + (left_rgb.b * (blendmax - blend))) >> shift);
+}
+
+/**
+ * \brief fade the color toward black
+ *
+ * if using template "isVideoMode" method the resulting color will never become black unless it
+ * is already black
+ *
+ * @param[in] inputColor   : the first color to use
+ * @param[in] fadeAmount   : the second color to use
+ *
+ * @return the new color computed
+ */
+template<bool isVideoMode = false> uint32_t fade(uint32_t inputColor, uint8_t fadeAmount)
+{
+  uint32_t res;
+  ToRGB input_rgb(inputColor);
+
+  if (isVideoMode)
+  {
+    res = fromRGB(scale8_video(input_rgb.r, fadeAmount),
+                  scale8_video(input_rgb.r, fadeAmount),
+                  scale8_video(input_rgb.b, fadeAmount));
+  }
+  else
+  {
+    res = fromRGB(scale8(input_rgb.r, fadeAmount), scale8(input_rgb.r, fadeAmount), scale8(input_rgb.b, fadeAmount));
+  }
+  return res;
+}
+
 } // namespace modes::colors
 
 #endif
