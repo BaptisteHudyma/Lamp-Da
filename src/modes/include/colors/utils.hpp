@@ -93,7 +93,7 @@ static constexpr LMBD_INLINE uint32_t fromTemp(uint8_t temp)
  *
  * @return the new color computed
  */
-COLOR blend(COLOR leftColor, COLOR rightColor, uint16_t blend, bool b16 = false)
+uint32_t blend(uint32_t leftColor, uint32_t rightColor, uint16_t blend, bool b16 = false)
 {
   if (blend == 0)
     return leftColor;
@@ -102,13 +102,12 @@ COLOR blend(COLOR leftColor, COLOR rightColor, uint16_t blend, bool b16 = false)
     return rightColor;
   uint8_t shift = b16 ? 16 : 8;
 
-  COLOR res;
-  res.white = ((rightColor.white * blend) + (leftColor.white * (blendmax - blend))) >> shift;
-  res.red = ((rightColor.red * blend) + (leftColor.red * (blendmax - blend))) >> shift;
-  res.green = ((rightColor.green * blend) + (leftColor.green * (blendmax - blend))) >> shift;
-  res.blue = ((rightColor.blue * blend) + (leftColor.blue * (blendmax - blend))) >> shift;
+  ToRGB left_rgb(leftColor);
+  ToRGB right_rgb(rightColor);
 
-  return res;
+  return fromRGB(((right_rgb.r * blend) + (left_rgb.r * (blendmax - blend))) >> shift,
+                 ((right_rgb.g * blend) + (left_rgb.g * (blendmax - blend))) >> shift,
+                 ((right_rgb.b * blend) + (left_rgb.b * (blendmax - blend))) >> shift);
 }
 
 /**
@@ -117,28 +116,27 @@ COLOR blend(COLOR leftColor, COLOR rightColor, uint16_t blend, bool b16 = false)
  * if using template "isVideoMode" method the resulting color will never become black unless it
  * is already black
  *
- * @param[in] inputColor    : the first color to use
+ * @param[in] inputColor   : the first color to use
  * @param[in] fadeAmount   : the second color to use
  *
  * @return the new color computed
  */
-template<bool isVideoMode = false> COLOR fade(COLOR inputColor, uint8_t fadeAmount)
+template<bool isVideoMode = false> uint32_t fade(uint32_t inputColor, uint8_t fadeAmount)
 {
+  uint32_t res;
+  ToRGB input_rgb(inputColor);
+
   if (isVideoMode)
   {
-    inputColor.red = scale8_video(inputColor.red, fadeAmount);
-    inputColor.green = scale8_video(inputColor.green, fadeAmount);
-    inputColor.blue = scale8_video(inputColor.blue, fadeAmount);
-    inputColor.white = scale8_video(inputColor.white, fadeAmount);
+    res = fromRGB(scale8_video(input_rgb.r, fadeAmount),
+                  scale8_video(input_rgb.r, fadeAmount),
+                  scale8_video(input_rgb.b, fadeAmount));
   }
   else
   {
-    inputColor.red = scale8(inputColor.red, fadeAmount);
-    inputColor.green = scale8(inputColor.green, fadeAmount);
-    inputColor.blue = scale8(inputColor.blue, fadeAmount);
-    inputColor.white = scale8(inputColor.white, fadeAmount);
+    res = fromRGB(scale8(input_rgb.r, fadeAmount), scale8(input_rgb.r, fadeAmount), scale8(input_rgb.b, fadeAmount));
   }
-  return inputColor;
+  return res;
 }
 
 } // namespace modes::colors
