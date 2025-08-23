@@ -15,10 +15,56 @@ namespace bluetooth {
 #define BLE_APPEARANCE_LIGHT_SOURCE_GENERIC          0x07C0 /**< Light fixture BLE appearance flag (official flags) */
 #define BLE_APPEARANCE_LIGHT_SOURCE_MULTICOLOR_ARRAY 0x07C6 /**< Light fixture BLE appearance flag (official flags) */
 
+const uint8_t UUID128_SVC_BANLANX[16] = {
+        // 0x00, 0x00, 0xff, 0xe0, 0x00, 0x00, 0x10, 0x00, 0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb
+        0xfb,
+        0x34,
+        0x9b,
+        0x5f,
+        0x80,
+        0x00,
+        0x00,
+        0x80,
+        0x00,
+        0x10,
+        0x00,
+        0x00,
+        0xe0,
+        0xff,
+        0x00,
+        0x00};
+const uint8_t UUID128_CHR_BANLANX[16] = {
+        0xfb, 0x34, 0x9b, 0x5f, 0x80, 0x00, 0x00, 0x80, 0x00, 0x10, 0x00, 0x00, 0xe1, 0xff, 0x00, 0x00};
+
+struct BanlanxService : public BLEService
+{
+protected:
+  BLECharacteristic _writeCharac;
+
+public:
+  BanlanxService(void) : BLEService(UUID128_SVC_BANLANX), _writeCharac(UUID128_CHR_BANLANX) {}
+
+  virtual err_t begin(void)
+  {
+    // Invoke base class begin()
+    VERIFY_STATUS(BLEService::begin());
+
+    _writeCharac.setProperties(CHR_PROPS_WRITE | CHR_PROPS_READ);
+    _writeCharac.setPermission(SECMODE_OPEN, SECMODE_NO_ACCESS);
+    _writeCharac.setFixedLen(1);
+    _writeCharac.setUserDescriptor("TEST");
+    VERIFY_STATUS(_writeCharac.begin());
+
+    return ERROR_NONE;
+  }
+};
+
 // System Info Service
 BLEDis bleSystemInfo;
 // System battery service
 BLEBas bleBatteryService;
+// Banlanx led display controller
+BanlanxService banlanxService;
 
 static bool isInitialized = false;
 
@@ -94,6 +140,7 @@ void startup_sequence()
   // add services
   set_device_informations();
   bleBatteryService.begin();
+  banlanxService.begin();
 
   const uint32_t MAC_ADDRESS_0 = NRF_FICR->DEVICEADDR[0];
   const uint32_t MAC_ADDRESS_1 = NRF_FICR->DEVICEADDR[1];
@@ -118,6 +165,7 @@ void startup_sequence()
   // Advertise services that we want to advertise only
   Bluefruit.Advertising.addService(bleSystemInfo);
   // Bluefruit.Advertising.addService(bleBatteryService);
+  Bluefruit.Advertising.addService(banlanxService);
 
   // Secondary Scan Response packet (optional)
   // Since there is no room for 'Name' in Advertising packet
