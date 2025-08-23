@@ -5,6 +5,7 @@
 #include "time.h"
 
 // constants
+#include "src/system/utils/time_utils.h"
 #include "src/system/utils/constants.h"
 
 // registers
@@ -88,16 +89,9 @@ bool is_started_from_interrupt() { return (readResetReason() & POWER_RESETREAS_O
 
 float read_CPU_temperature_degreesC()
 {
-  static uint32_t lastCallTime = 0;
   static float procTemp = 0.0;
-
   // avoid spam of the register command
-  const uint32_t currTime = time_ms();
-  if (lastCallTime == 0 or (currTime - lastCallTime) > 500.0)
-  {
-    lastCallTime = currTime;
-    procTemp = readCPUTemperature();
-  }
+  EVERY_N_MILLIS(500) { procTemp = readCPUTemperature(); }
   return procTemp;
 }
 

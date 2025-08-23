@@ -677,7 +677,8 @@ void handle_post_output_light_state()
 
   // deactivate strip power
   outputPower::disable_power_gates(); // close external voltage path
-  outputPower::write_voltage(0);      // power down
+  delay_ms(1);
+  outputPower::write_voltage(0); // power down
 
   mainMachine.skip_timeout();
 }
@@ -691,6 +692,7 @@ void handle_shutdown_state()
   // block other threads
   suspend_all_threads();
 
+  yield_this_thread();
   delay_ms(10);
 
   // shutdown all external power

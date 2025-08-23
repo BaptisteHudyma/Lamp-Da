@@ -5,10 +5,11 @@
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
-#include "src/system/platform/time.h"
-
-#include "src/system/platform/gpio.h"
 #include "src/system/utils/input_output.h"
+#include "src/system/utils/time_utils.h"
+
+#include "src/system/platform/time.h"
+#include "src/system/platform/gpio.h"
 
 namespace indicator {
 
@@ -86,14 +87,12 @@ bool breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::Colo
 
 bool color_loop(const uint32_t colorDuration, std::initializer_list<utils::ColorSpace::RGB> colors)
 {
-  static uint32_t lastCall = 0;
   static size_t currentColorIndex = 0;
 
-  // last call was some delay before
-  if (lastCall == 0 and time_ms() - lastCall > colorDuration)
+  // last call was some delay before (with a refresh of the delay)
+  EVERY_N_MILLIS_REFRESH(colorDuration)
   {
     set_color(*(colors.begin() + currentColorIndex));
-    lastCall = time_ms();
 
     // increase index, limit to colors size
     currentColorIndex = (currentColorIndex + 1) % colors.size();

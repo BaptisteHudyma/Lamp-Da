@@ -10,6 +10,7 @@
 #include "src/system/alerts.h"
 #include "src/system/utils/print.h"
 #include "src/system/utils/utils.h"
+#include "src/system/utils/time_utils.h"
 
 // use depend of component
 #include "depends/BQ25713/BQ25713.h"
@@ -559,18 +560,14 @@ void loop(const bool isChargeOk)
   isChargeOk_s = isChargeOk;
   isInOtg = isInOtg_s;
 
-  static uint32_t lastUpdateTime = 0;
-
   // update the charge
   control_charge();
   // update the OTG functionalities
   control_OTG();
 
-  const uint32_t time = time_ms();
   // only update every 100ms
-  if (isChargeChanged or lastUpdateTime == 0 or time - lastUpdateTime >= 100)
+  EVERY_N_MILLIS_COND(isChargeChanged, 100)
   {
-    lastUpdateTime = time;
     measurments_s.isChargeOk = isChargeOk;
 
     // update status

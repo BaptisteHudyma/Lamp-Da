@@ -7,8 +7,6 @@
 #include "src/system/power/charger.h"
 #include "src/system/power/balancer.h"
 
-#include "src/system/platform/time.h"
-
 namespace battery {
 
 static uint16_t s_batteryVoltage_mV = 0;
