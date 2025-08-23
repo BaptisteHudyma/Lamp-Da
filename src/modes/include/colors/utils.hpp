@@ -129,12 +129,12 @@ template<bool isVideoMode = false> uint32_t fade(uint32_t inputColor, uint8_t fa
   if (isVideoMode)
   {
     res = fromRGB(scale8_video(input_rgb.r, fadeAmount),
-                  scale8_video(input_rgb.r, fadeAmount),
+                  scale8_video(input_rgb.g, fadeAmount),
                   scale8_video(input_rgb.b, fadeAmount));
   }
   else
   {
-    res = fromRGB(scale8(input_rgb.r, fadeAmount), scale8(input_rgb.r, fadeAmount), scale8(input_rgb.b, fadeAmount));
+    res = fromRGB(scale8(input_rgb.r, fadeAmount), scale8(input_rgb.g, fadeAmount), scale8(input_rgb.b, fadeAmount));
   }
   return res;
 }

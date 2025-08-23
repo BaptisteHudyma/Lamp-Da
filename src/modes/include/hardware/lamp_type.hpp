@@ -471,6 +471,30 @@ public:
     }
   }
 
+  /**
+   * \brief Fill the display with a color, with an optional cutoff value
+   * \param[in] PaletteTy an array of several colors
+   * \param[in] cutOff between 0 and 1, how much this gradient will fill the
+   * display before suddently cutting of
+   */
+  void LMBD_INLINE fill(const modes::colors::PaletteTy& palette, const float cutOff = 1)
+  {
+    const float adaptedCutoff = min(max(cutOff, 0.0), 1.0);
+    const uint16_t maxCutOff = min(max(adaptedCutoff * ledCount, 0), ledCount);
+    for (uint16_t i = 0; i < ledCount; ++i)
+    {
+      const auto c = modes::colors::from_palette<false, uint8_t>((i * 255) / (ledCount - 1), palette);
+      if (i >= maxCutOff)
+      {
+        strip.setPixelColor(i, 0);
+      }
+      else
+      {
+        strip.setPixelColor(i, c);
+      }
+    }
+  }
+
   /** \brief (indexable) Set the n-th LED color
    *
    * See modes::fromRGB() to set \p color
