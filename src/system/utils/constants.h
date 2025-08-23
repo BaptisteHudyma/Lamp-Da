@@ -20,6 +20,9 @@
 #if HARDWARE_VERSION_MAJOR == 1 && HARDWARE_VERSION_MINOR == 0
 #define IS_HARDWARE_1_0
 #endif
+#if HARDWARE_VERSION_MAJOR == 1 && HARDWARE_VERSION_MINOR == 1
+#define IS_HARDWARE_1_1
+#endif
 
 // expected firmware version, will not compile if missmatch
 // Update your dependencies : adafruit lampda_nrf52840
