@@ -472,10 +472,10 @@ public:
   }
 
   /**
-   * \brief Fill the display with a color, with an optional cutoff value
+   * \brief Fill the display with some colors, with an optional cutoff value
    * \param[in] PaletteTy an array of several colors
-   * \param[in] cutOff between 0 and 1, how much this gradient will fill the
-   * display before suddently cutting of
+   * \param[in] cutOff between 0 and 1, how much this PaletteTy will fill the
+   * display before suddently cutting off
    */
   void LMBD_INLINE fill(const modes::colors::PaletteTy& palette, const float cutOff = 1)
   {

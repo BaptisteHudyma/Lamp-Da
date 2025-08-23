@@ -21,10 +21,6 @@ struct VuMeterMode : public BasicMode
 
     const float decibels = ctx.state.soundEvent.level;
 
-    /*
-      the ramp will reduce/increase the minimun level of Db
-      for activation of Leds
-    */
     // measure custom ramp for fire sound sensitivity
     const float index = ctx.get_active_custom_ramp();
     // compute the threshold
@@ -35,7 +31,6 @@ struct VuMeterMode : public BasicMode
     // 1 = all led light up
     const float vuLevel = (decibels + abs(threshold_db)) / microphone::highLevelDb;
 
-    //
     ctx.lamp.fill(palette, (decibels > threshold_db) ? vuLevel : 0);
   }
 
