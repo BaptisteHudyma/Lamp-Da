@@ -44,6 +44,7 @@ public:
    * \brief Return true if an alert is raised
    */
   bool is_raised(const Type type) const { return (_current & type) != 0x00; }
+  bool is_any_alert_raised() const { return _current != 0x00; }
 
   /**
    * \brief Return true if no alerts are raised

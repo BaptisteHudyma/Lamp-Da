@@ -13,6 +13,9 @@ bool is_setup();
 // call often
 void loop();
 
+// if this returns true, do nothing
+bool is_in_error_state();
+
 // control state change
 bool go_to_output_mode();
 bool go_to_charger_mode();

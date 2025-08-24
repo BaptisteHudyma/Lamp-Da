@@ -198,6 +198,13 @@ void handle_output_voltage_mode()
 
 void handle_otg_mode()
 {
+  // end of OTG, switch to charger
+  if (!powerDelivery::is_switching_to_otg())
+  {
+    go_to_charger_mode();
+    return;
+  }
+
   const auto requested = powerDelivery::get_otg_parameters();
   // we do not have the parameters yet
   if (not requested.is_otg_requested())
@@ -302,6 +309,8 @@ void switch_state(const PowerStates newState)
 bool can_switch_states() { return powerMachine.get_state() != PowerStates::ERROR; }
 
 } // namespace __private
+
+bool is_in_error_state() { return __private::powerMachine.get_state() == PowerStates::ERROR; }
 
 // control parameters
 bool go_to_output_mode()

@@ -24,7 +24,7 @@ typedef union
   } le /* little endian words */;
 } timestamp_t;
 
-// Get the current timestamp from the system timer.
+// Get the current timestamp from the system timer (in uS).
 timestamp_t get_time(void);
 
 // call in a dedicated task

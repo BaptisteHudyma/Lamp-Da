@@ -3387,30 +3387,27 @@ void pd_run_state_machine()
         break;
       }
 
-// TODO issue #134 restore the power source mode
-#if 0
-       /* If no source detected, check for role toggle. */
-       if (drp_state == PD_DRP_TOGGLE_ON && get_time().val >= next_role_swap)
-       {
-         /* Swap roles to source */
-         pd_set_power_role( PD_ROLE_SOURCE);
-         set_state( PD_STATE_SRC_DISCONNECTED);
-         tcpm_set_cc( TYPEC_CC_RP);
-         next_role_swap = get_time().val + PD_T_DRP_SRC;
+      /* If no source detected, check for role toggle. */
+      if (drp_state == PD_DRP_TOGGLE_ON && get_time().val >= next_role_swap)
+      {
+        /* Swap roles to source */
+        pd_set_power_role(PD_ROLE_SOURCE);
+        set_state(PD_STATE_SRC_DISCONNECTED);
+        tcpm_set_cc(TYPEC_CC_RP);
+        next_role_swap = get_time().val + PD_T_DRP_SRC;
 
 #ifdef CONFIG_USB_PD_TCPC_LOW_POWER
-         /*
-          * Clear low power mode flag as we are swapping
-          * states quickly.
-          */
-         pd.flags &= ~PD_FLAGS_LPM_REQUESTED;
+        /*
+         * Clear low power mode flag as we are swapping
+         * states quickly.
+         */
+        pd.flags &= ~PD_FLAGS_LPM_REQUESTED;
 #endif
 
-         /* Swap states quickly */
-         timeout = 2 * MSEC_US;
-         break;
-       }
-#endif
+        /* Swap states quickly */
+        timeout = 2 * MSEC_US;
+        break;
+      }
 
 #ifdef CONFIG_USB_PD_TCPC_LOW_POWER
       /*
