@@ -51,7 +51,7 @@ const uint32_t pd_snk_pdo[] = {
 const int pd_snk_pdo_cnt = ARRAY_SIZE(pd_snk_pdo);
 
 int pdSources = 0;
-uint32_t* srcCapsSaved = NULL;
+uint32_t srcCapsSaved[5];
 
 void pd_startup()
 {
@@ -65,7 +65,8 @@ void pd_turn_off() {}
 void pd_process_source_cap_callback(int cnt, uint32_t* src_caps)
 {
   pdSources = cnt;
-  srcCapsSaved = src_caps;
+  for (int i = 0; i < cnt; i++)
+    srcCapsSaved[i] = src_caps[i];
 }
 
 uint8_t get_pd_source_cnt() { return pdSources; }
@@ -99,7 +100,6 @@ uint32_t get_available_pd_voltage_mV() { return availableVoltage; }
 void reset_cache()
 {
   pdSources = 0;
-  srcCapsSaved = NULL;
 
   availableCurrent = 0;
   availableVoltage = 0;
@@ -112,12 +112,20 @@ void reset_cache()
   _shouldStopVbus = 0;
 }
 
-void pd_loop() { pd_run_state_machine(); }
+void pd_loop()
+{
+  pd_run_state_machine();
+
+  if (!pd_is_connected())
+  {
+    pd_power_supply_reset();
+  }
+}
 
 // valid voltages from 0 to 20V
 int pd_is_valid_input_voltage(int mv) { return mv > 0 && mv <= 20000; }
 
-int is_pd_conector() { return srcCapsSaved != NULL; }
+int is_pd_conector() { return pdSources != 0; }
 
 // close source voltage, discharge vbus
 void pd_power_supply_reset()

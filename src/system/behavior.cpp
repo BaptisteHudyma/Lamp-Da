@@ -102,7 +102,7 @@ void set_power_off()
 // allow system to be powered if no hardware alert and power is setup
 bool can_system_allowed_to_be_powered()
 {
-  return not(alerts::manager.is_raised(alerts::Type::HARDWARE_ALERT) or not power::is_setup());
+  return not(alerts::manager.is_raised(alerts::Type::SYSTEM_IN_ERROR_STATE) or not power::is_setup());
 }
 
 // return true if vbus is high
@@ -464,8 +464,7 @@ void handle_error_state()
   }
 
   // if error state, raise alert
-  if (not alerts::manager.is_raised(alerts::Type::SYSTEM_IN_ERROR_STATE))
-    alerts::manager.raise(alerts::Type::SYSTEM_IN_ERROR_STATE);
+  alerts::manager.raise(alerts::Type::SYSTEM_IN_ERROR_STATE);
 }
 
 void handle_start_logic_state()
