@@ -398,12 +398,6 @@ struct Alert_SystemInErrorState : public AlertBase
   }
 
   Type get_type() const override { return Type::SYSTEM_IN_ERROR_STATE; }
-
-  uint32_t alert_shutdown_timeout() const
-  {
-    // shutdown after a time, error state is not recoverable
-    return 5000;
-  }
 };
 
 // Alerts must be sorted by importance, only the first activated one will be shown

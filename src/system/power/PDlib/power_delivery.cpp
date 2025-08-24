@@ -243,8 +243,10 @@ void pd_run()
       charger::drivers::set_OTG_targets(5000, 1000);
       charger::drivers::enable_OTG();
 
-      DigitalPin(DigitalPin::GPIO::Output_VbusFastRoleSwap).set_high(true);
-      DigitalPin(DigitalPin::GPIO::Output_DischargeVbus).set_high(true);
+      DigitalPin dischargeVbus(DigitalPin::GPIO::Output_DischargeVbus);
+      DigitalPin fastRoleSwap(DigitalPin::GPIO::Output_VbusFastRoleSwap);
+      dischargeVbus.set_high(true);
+      fastRoleSwap.set_high(true);
 
       // wait until OTG drops to acceptable level
       uint64_t timeout = get_time().val + 500 * MSEC_US;
@@ -262,6 +264,8 @@ void pd_run()
 
       // enable gate direction
       DigitalPin(DigitalPin::GPIO::Output_VbusDirection).set_high(true);
+      dischargeVbus.set_high(false);
+      fastRoleSwap.set_high(false);
       powergates::enable_vbus_gate_DIRECT();
     }
     // after the activation turn, disable the flag
