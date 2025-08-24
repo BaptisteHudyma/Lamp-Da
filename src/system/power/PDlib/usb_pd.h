@@ -44,6 +44,7 @@ extern "C" {
 #define PD_EVENT_UPDATE_DUAL_ROLE   (1 << 6) /* DRP state has changed */
 #define PD_EVENT_DEVICE_ACCESSED    (1 << 7)
 #define PD_EVENT_POWER_STATE_CHANGE (1 << 8)
+#define PD_EVENT_RX_HARD_RESET      (1 << 11) /* Receive a Hard Reset. */
 
 /* --- PD data message helpers --- */
 #define PDO_MAX_OBJECTS 7
@@ -886,11 +887,12 @@ extern "C" {
   ((type) | ((rev) << 6) | ((drole) << 5) | ((prole) << 8) | ((id) << 9) | ((cnt) << 12) | ((ext) << 15))
 
 /* Used for processing pd header */
-#define PD_HEADER_EXT(header)  (((header) >> 15) & 1)
-#define PD_HEADER_CNT(header)  (((header) >> 12) & 7)
-#define PD_HEADER_TYPE(header) ((header) & 0xF)
-#define PD_HEADER_ID(header)   (((header) >> 9) & 7)
-#define PD_HEADER_REV(header)  (((header) >> 6) & 3)
+#define PD_HEADER_EXT(header)   (((header) >> 15) & 1)
+#define PD_HEADER_CNT(header)   (((header) >> 12) & 7)
+#define PD_HEADER_TYPE(header)  ((header) & 0xF)
+#define PD_HEADER_ID(header)    (((header) >> 9) & 7)
+#define PD_HEADER_REV(header)   (((header) >> 6) & 3)
+#define PD_HEADER_DROLE(header) (((header) >> 5) & 1)
 
 /* Used for processing pd extended header */
 #define PD_EXT_HEADER_CHUNKED(header)   (((header) >> 15) & 1)

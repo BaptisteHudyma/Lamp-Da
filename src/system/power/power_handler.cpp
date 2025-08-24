@@ -163,7 +163,8 @@ void handle_charging_mode()
     // disable balancing
     balancer::enable_balancing(false);
     // start otg
-    go_to_otg_mode();
+    powerDelivery::resume_pd_state_machine();
+    __private::powerMachine.set_state(PowerStates::OTG_MODE);
     return;
   }
 

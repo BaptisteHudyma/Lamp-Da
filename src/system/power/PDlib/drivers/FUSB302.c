@@ -797,11 +797,31 @@ static int fusb302_tcpm_transmit(enum tcpm_transmit_type type, uint16_t header, 
       buf[buf_pos++] = fusb302_TKN_SYNC1;
       buf[buf_pos++] = fusb302_TKN_SYNC2;
 
-      fusb302_send_message(header, data, buf, buf_pos);
-      // wait for the GoodCRC to come back before we let the rest
-      // of the code do stuff like change polarity and miss it
-      delay_us(1200);
-      return 0;
+      return fusb302_send_message(header, data, buf, buf_pos);
+    case TCPC_TX_SOP_PRIME:
+
+      /* put register address first for of burst tcpc write */
+      buf[buf_pos++] = TCPC_REG_FIFOS;
+
+      /* Write the SOP' Ordered Set into TX FIFO */
+      buf[buf_pos++] = fusb302_TKN_SYNC1;
+      buf[buf_pos++] = fusb302_TKN_SYNC1;
+      buf[buf_pos++] = fusb302_TKN_SYNC3;
+      buf[buf_pos++] = fusb302_TKN_SYNC3;
+
+      return fusb302_send_message(header, data, buf, buf_pos);
+    case TCPC_TX_SOP_PRIME_PRIME:
+
+      /* put register address first for of burst tcpc write */
+      buf[buf_pos++] = TCPC_REG_FIFOS;
+
+      /* Write the SOP'' Ordered Set into TX FIFO */
+      buf[buf_pos++] = fusb302_TKN_SYNC1;
+      buf[buf_pos++] = fusb302_TKN_SYNC3;
+      buf[buf_pos++] = fusb302_TKN_SYNC1;
+      buf[buf_pos++] = fusb302_TKN_SYNC3;
+
+      return fusb302_send_message(header, data, buf, buf_pos);
     case TCPC_TX_HARD_RESET:
       /* Simply hit the SEND_HARD_RESET bit */
       tcpc_read(TCPC_REG_CONTROL3, &reg);
@@ -819,7 +839,7 @@ static int fusb302_tcpm_transmit(enum tcpm_transmit_type type, uint16_t header, 
       reg |= TCPC_REG_CONTROL0_TX_START;
       tcpc_write(TCPC_REG_CONTROL0, reg);
 
-      // task_wait_event(PD_T_BIST_TRANSMIT);
+      task_wait_event(PD_T_BIST_TRANSMIT);
 
       /* Clear BIST mode bit, TX_START is self-clearing */
       tcpc_read(TCPC_REG_CONTROL1, &reg);
@@ -835,14 +855,17 @@ static int fusb302_tcpm_transmit(enum tcpm_transmit_type type, uint16_t header, 
 }
 
 #ifdef CONFIG_USB_PD_VBUS_DETECT_TCPC
-static int fusb302_tcpm_get_vbus_level()
+static int fusb302_tcpm_check_vbus_level(enum vbus_level level)
 {
   int reg;
 
   /* Read status register */
   tcpc_read(TCPC_REG_STATUS0, &reg);
 
-  return (reg & TCPC_REG_STATUS0_VBUSOK) ? 1 : 0;
+  if (level == VBUS_PRESENT)
+    return (reg & TCPC_REG_STATUS0_VBUSOK) ? 1 : 0;
+  else
+    return (reg & TCPC_REG_STATUS0_VBUSOK) ? 0 : 1;
 }
 #endif
 
@@ -878,11 +901,25 @@ void fusb302_tcpc_alert()
     pd_transmit_complete(TCPC_TX_COMPLETE_FAILED);
   }
 
+#ifdef CONFIG_USB_PD_VBUS_DETECT_TCPC
+  if (interrupt & TCPC_REG_INTERRUPT_VBUSOK)
+  {
+    /* VBUS crossed threshold */
+#ifdef CONFIG_USB_CHARGER
+    usb_charger_vbus_change(fusb302_tcpm_check_vbus_level(VBUS_PRESENT));
+#else
+    if (!fusb302_tcpm_check_vbus_level(VBUS_PRESENT))
+      pd_vbus_low();
+#endif
+    task_wake();
+    // hook_notify(HOOK_AC_CHANGE);
+  }
+#endif
+
   /* GoodCRC was received, our FIFO is now non-empty */
   if (interrupta & TCPC_REG_INTERRUPTA_TX_SUCCESS)
   {
     task_set_event(PD_EVENT_RX);
-
     pd_transmit_complete(TCPC_TX_COMPLETE_SUCCESS);
   }
 
@@ -908,10 +945,7 @@ void fusb302_tcpc_alert()
 
     /* bring FUSB302 out of reset */
     fusb302_pd_reset();
-
-    pd_execute_hard_reset();
-
-    task_wake();
+    task_set_event(PD_EVENT_RX_HARD_RESET);
   }
 
   if (interruptb & TCPC_REG_INTERRUPTB_GCRCSENT)
@@ -1059,7 +1093,7 @@ const struct tcpm_drv fusb302_tcpm_drv = {
         .release = &fusb302_tcpm_release,
         .get_cc = &fusb302_tcpm_get_cc,
 #ifdef CONFIG_USB_PD_VBUS_DETECT_TCPC
-        .get_vbus_level = &fusb302_tcpm_get_vbus_level,
+        .get_vbus_level = &fusb302_tcpm_check_vbus_level,
 #endif
         .get_vbus_voltage = fusb302_get_vbus_voltage,
         .select_rp_value = &fusb302_tcpm_select_rp_value,

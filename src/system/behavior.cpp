@@ -452,15 +452,11 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 void handle_error_state()
 {
   // not allowed to start, can only be stopped
-  if (not can_system_allowed_to_be_powered())
+  // turn off system is needed
+  if (not is_system_should_be_powered())
   {
-    // turn off system is needed
-    if (not is_system_should_be_powered())
-    {
-      // got to sleep after the closing operations
-      mainMachine.set_state(BehaviorStates::SHUTDOWN);
-    }
-    return;
+    // got to sleep after the closing operations
+    mainMachine.set_state(BehaviorStates::SHUTDOWN);
   }
 
   // if error state, raise alert
@@ -476,6 +472,11 @@ void handle_start_logic_state()
   if (not can_system_allowed_to_be_powered())
   {
     set_power_on();
+    mainMachine.set_state(BehaviorStates::ERROR);
+    return;
+  }
+  if (power::is_in_error_state())
+  {
     mainMachine.set_state(BehaviorStates::ERROR);
     return;
   }
@@ -500,6 +501,12 @@ void handle_start_logic_state()
 static uint32_t preChargeCalled = 0;
 void handle_pre_charger_operation_state()
 {
+  if (power::is_in_error_state())
+  {
+    mainMachine.set_state(BehaviorStates::ERROR);
+    return;
+  }
+
   preChargeCalled = time_ms();
 
   if (not battery::can_battery_be_charged())
@@ -514,6 +521,12 @@ void handle_pre_charger_operation_state()
 
 void handle_charger_operation_state()
 {
+  if (power::is_in_error_state())
+  {
+    mainMachine.set_state(BehaviorStates::ERROR);
+    return;
+  }
+
   // pressed the start button, stop charge and start lamp
   if (is_system_should_be_powered())
   {
@@ -559,6 +572,12 @@ static uint32_t lastOutputLightValidTime = 0;
 
 void handle_pre_output_light_state()
 {
+  if (power::is_in_error_state())
+  {
+    mainMachine.set_state(BehaviorStates::ERROR);
+    return;
+  }
+
   // critical battery level, do not wake up
   if (battery::get_battery_minimum_cell_level() <= batteryCritical + 1 or
       not battery::is_battery_usable_as_power_source())
@@ -604,6 +623,12 @@ void handle_pre_output_light_state()
 
 void handle_output_light_state()
 {
+  if (power::is_in_error_state())
+  {
+    mainMachine.set_state(BehaviorStates::ERROR);
+    return;
+  }
+
 // TODO issue #132 remove when the mock threads will be running
 #ifndef LMBD_SIMULATION
   static bool waitingForPowerGate_messageDisplayed = true;

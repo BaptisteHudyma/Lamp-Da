@@ -397,7 +397,7 @@ void pd_vbus_low() { pd.flags &= ~PD_FLAGS_VBUS_NEVER_LOW; }
 int pd_is_vbus_present()
 {
 #ifdef CONFIG_USB_PD_VBUS_DETECT_TCPC
-  return tcpm_get_vbus_level();
+  return tcpm_get_vbus_level(VBUS_PRESENT);
 #else
   return pd_snk_is_vbus_provided();
 #endif
@@ -531,7 +531,7 @@ static inline void set_state(enum pd_states next_state)
     if (last_state != PD_STATE_SNK_DISCONNECTED_DEBOUNCE && last_state != PD_STATE_SRC_DISCONNECTED_DEBOUNCE)
     {
       pd.flags &= ~PD_FLAGS_RESET_ON_DISCONNECT_MASK;
-      // reset_pd_cable();
+      // TODO: reset_pd_cable();
     }
 
     /* Clear the input current limit */
@@ -1599,7 +1599,11 @@ void pd_request_data_swap()
   task_wake();
 }
 
-static void pd_set_power_role(enum pd_power_role role) { pd.power_role = role; }
+static void pd_set_power_role(enum pd_power_role role)
+{
+  // TODO: dual role stuf here too
+  pd.power_role = role;
+}
 
 static void pd_dr_swap()
 {
@@ -2250,6 +2254,15 @@ void pd_set_dual_role_no_wakeup(enum pd_dual_role_states state)
 #endif
 }
 
+static int pd_is_power_swapping()
+{
+  /* return true if in the act of swapping power roles */
+  return pd.task_state == PD_STATE_SNK_SWAP_SNK_DISABLE || pd.task_state == PD_STATE_SNK_SWAP_SRC_DISABLE ||
+         pd.task_state == PD_STATE_SNK_SWAP_STANDBY || pd.task_state == PD_STATE_SNK_SWAP_COMPLETE ||
+         pd.task_state == PD_STATE_SRC_SWAP_SNK_DISABLE || pd.task_state == PD_STATE_SRC_SWAP_SRC_DISABLE ||
+         pd.task_state == PD_STATE_SRC_SWAP_STANDBY;
+}
+
 void pd_set_dual_role(enum pd_dual_role_states state)
 {
   pd_set_dual_role_no_wakeup(state);
@@ -2262,15 +2275,14 @@ void pd_update_dual_role_config()
 {
   /*
    * Change to sink if port is currently a source AND (new DRP
-   * state is force sink OR new DRP state is either toggle off
-   * or debug accessory toggle only and we are in the source
-   * disconnected state).
+   * state is force sink OR new DRP state is toggle off and we are in the
+   * source disconnected state).
    */
   if (pd.power_role == PD_ROLE_SOURCE &&
-      ((drp_state == PD_DRP_FORCE_SINK && !pd_ts_dts_plugged()) ||
+      (drp_state == PD_DRP_FORCE_SINK ||
        (drp_state == PD_DRP_TOGGLE_OFF && pd.task_state == PD_STATE_SRC_DISCONNECTED)))
   {
-    pd.power_role = PD_ROLE_SINK;
+    pd_set_power_role(PD_ROLE_SINK);
     set_state(PD_STATE_SNK_DISCONNECTED);
     tcpm_set_cc(TYPEC_CC_RD);
     /* Make sure we're not sourcing VBUS. */
@@ -2279,11 +2291,14 @@ void pd_update_dual_role_config()
 
   /*
    * Change to source if port is currently a sink and the
-   * new DRP state is force source.
+   * new DRP state is force source. If we are performing
+   * power swap we won't change anything because
+   * changing state will disrupt power swap process
+   * and we are power swapping to desired power role.
    */
-  if (pd.power_role == PD_ROLE_SINK && drp_state == PD_DRP_FORCE_SOURCE)
+  if (pd.power_role == PD_ROLE_SINK && drp_state == PD_DRP_FORCE_SOURCE && !pd_is_power_swapping())
   {
-    pd.power_role = PD_ROLE_SOURCE;
+    pd_set_power_role(PD_ROLE_SOURCE);
     set_state(PD_STATE_SRC_DISCONNECTED);
     tcpm_set_cc(TYPEC_CC_RP);
   }
@@ -2295,15 +2310,6 @@ void pd_update_dual_role_config()
 }
 
 int pd_get_role() { return pd.power_role; }
-
-static int pd_is_power_swapping()
-{
-  /* return true if in the act of swapping power roles */
-  return pd.task_state == PD_STATE_SNK_SWAP_SNK_DISABLE || pd.task_state == PD_STATE_SNK_SWAP_SRC_DISABLE ||
-         pd.task_state == PD_STATE_SNK_SWAP_STANDBY || pd.task_state == PD_STATE_SNK_SWAP_COMPLETE ||
-         pd.task_state == PD_STATE_SRC_SWAP_SNK_DISABLE || pd.task_state == PD_STATE_SRC_SWAP_SRC_DISABLE ||
-         pd.task_state == PD_STATE_SRC_SWAP_STANDBY;
-}
 
 /*
  * Provide Rp to ensure the partner port is in a known state (eg. not
@@ -2686,29 +2692,46 @@ void pd_run_state_machine()
         (
 #ifdef CONFIG_USB_PD_DUAL_ROLE
                 (PD_ROLE_DEFAULT() == PD_ROLE_SINK && pd.task_state == PD_STATE_SNK_READY) ||
+                (pd.task_state == PD_STATE_SOFT_RESET) ||
 #endif
                 (PD_ROLE_DEFAULT() == PD_ROLE_SOURCE && pd.task_state == PD_STATE_SRC_READY)))
     {
-      tcpm_set_polarity(pd.polarity);
+      pd_set_polarity(pd.polarity);
       tcpm_set_msg_header(pd.power_role, pd.data_role);
       tcpm_set_rx_enable(1);
     }
     else
     {
       /* Ensure state variables are at default */
-      pd.power_role = PD_ROLE_DEFAULT();
+      pd_set_power_role(PD_ROLE_DEFAULT());
       pd.vdm_state = VDM_STATE_DONE;
       set_state(PD_DEFAULT_STATE());
+#ifdef CONFIG_USB_PD_DUAL_ROLE
+      pd_update_dual_role_config();
+#endif
     }
   }
 #endif
 
+#ifdef CONFIG_USBC_PPC
+  /*
+   * TODO: Useful for non-PPC cases as well, but only needed
+   * for PPC cases right now. Revisit later.
+   */
+  if (evt & PD_EVENT_SEND_HARD_RESET)
+    set_state(PD_STATE_HARD_RESET_SEND);
+#endif /* defined(CONFIG_USBC_PPC) */
+
+  if (evt & PD_EVENT_RX_HARD_RESET)
+    pd_execute_hard_reset();
+
   /* process any potential incoming message */
   incoming_packet = evt & PD_EVENT_RX;
-  // if (incoming_packet) {
-  if (!tcpm_get_message(payload, &head))
-    handle_request(head, payload);
-  //}
+  if (incoming_packet)
+  {
+    if (tcpm_get_message(payload, &head) == EC_SUCCESS)
+      handle_request(head, payload);
+  }
 
   if (pd.req_suspend_state)
     set_state(PD_STATE_SUSPENDED);
@@ -3002,7 +3025,7 @@ void pd_run_state_machine()
       break;
     case PD_STATE_SRC_STARTUP:
       /* Reset cable attributes and flags */
-      // reset_pd_cable();
+      // TODO reset_pd_cable();
       /* Wait for power source to enable */
       if (pd.last_state != pd.task_state)
       {
@@ -3090,7 +3113,20 @@ void pd_run_state_machine()
       if (res >= 0)
       {
         timeout = 10 * MSEC_US;
-        /* it'a time to ping regularly the sink */
+
+        /*
+         * Give the sink some time to send any messages
+         * before we may send messages of our own.  Add
+         * some jitter of up to ~192ms, to prevent
+         * multiple collisions. This delay also allows
+         * the sink device to request power role swap
+         * and allow the the accept message to be sent
+         * prior to CMD_DISCOVER_IDENT being sent in the
+         * SRC_READY state.
+         */
+        pd.ready_state_holdoff_timer = get_time().val + SRC_READY_HOLD_OFF_US + (get_time().le.lo & 0xf) * 12 * MSEC_US;
+
+        /* it's time to ping regularly the sink */
         set_state(PD_STATE_SRC_READY);
       }
       else

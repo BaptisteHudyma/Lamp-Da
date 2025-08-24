@@ -64,7 +64,7 @@ void pd_turn_off() {}
 // Called by the pd algo when the source capabilities are received
 void pd_process_source_cap_callback(int cnt, uint32_t* src_caps)
 {
-  pdSources = cnt;
+  pdSources = (cnt > 5) ? 5 : cnt;
   for (int i = 0; i < cnt; i++)
     srcCapsSaved[i] = src_caps[i];
 }

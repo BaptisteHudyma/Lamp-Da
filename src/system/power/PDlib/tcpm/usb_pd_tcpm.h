@@ -251,6 +251,18 @@ extern "C" {
     TCPC_TX_COMPLETE_FAILED = 2,
   };
 
+  /*
+   * USB-C PD Vbus levels
+   *
+   * Return true on Vbus check if Vbus is...
+   */
+  enum vbus_level
+  {
+    VBUS_SAFE0V,  /* less than vSafe0V max */
+    VBUS_PRESENT, /* at least vSafe5V min */
+    VBUS_REMOVED, /* less than vSinkDisconnect max */
+  };
+
   struct tcpm_drv
   {
     /**
@@ -287,7 +299,7 @@ extern "C" {
      *
      * @return False => VBUS not at level, True => VBUS at level
      */
-    int (*get_vbus_level)();
+    int (*get_vbus_level)(enum vbus_level level);
 
     /**
      * Get VBUS voltage

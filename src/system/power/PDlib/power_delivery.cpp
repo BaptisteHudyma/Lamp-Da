@@ -171,23 +171,29 @@ struct UsbPDData
       hasChanged = true;
       pdAlgoStatus = newStatus;
     }
+
+    if (hasChanged)
+    {
+      serial_show();
+    }
   }
 
   void serial_show()
   {
-    if (hasChanged)
-    {
-      lampda_print("PD algo: %d%d%d: %fV | %s",
-                   isVbusPowered,
-                   isPowerSourceDetected,
-                   isUsbPd,
-                   vbusVoltage / 1000.0,
-                   pdAlgoStatus.c_str());
-      hasChanged = false;
-    }
+    lampda_print("PD algo: %d %d%d%d: %fV | %s",
+                 should_run_pd_state_machine,
+                 isVbusPowered,
+                 isPowerSourceDetected,
+                 isUsbPd,
+                 vbusVoltage / 1000.0,
+                 pdAlgoStatus.c_str());
+    hasChanged = false;
   }
 };
 UsbPDData data;
+
+void show_pd_status() { data.serial_show(); }
+
 /**
  *
  *      HEADER FUNCTIONS BELOW
@@ -321,7 +327,6 @@ void start_threads()
 void loop()
 {
   data.update();
-  data.serial_show();
 
   // update battery level
   set_battery_level(battery::get_battery_level() / 100);
