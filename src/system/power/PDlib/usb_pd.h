@@ -1406,9 +1406,6 @@ static inline void pd_send_host_event(int mask) {}
    */
   void pd_set_suspend(int enable);
 
-  void pd_dual_role_on(void);
-  void pd_dual_role_off(void);
-
   /**
    * Check if the port has been initialized and PD task has not been
    * suspended.
@@ -1647,8 +1644,6 @@ static inline void pd_send_host_event(int mask) {}
    * @param port USB-C port number
    */
   int pd_ts_dts_plugged();
-
-  typec_current_t get_typec_current_mA();
 
   /* ----- Logging ----- */
   static inline void pd_log_event(uint8_t type, uint8_t size_port, uint16_t data, void* payload) {}

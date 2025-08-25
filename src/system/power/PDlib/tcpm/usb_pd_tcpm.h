@@ -246,6 +246,7 @@ extern "C" {
 
   enum tcpc_transmit_complete
   {
+    TCPC_TX_UNSET = -1,
     TCPC_TX_COMPLETE_SUCCESS = 0,
     TCPC_TX_COMPLETE_DISCARDED = 1,
     TCPC_TX_COMPLETE_FAILED = 2,

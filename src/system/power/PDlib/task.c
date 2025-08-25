@@ -7,11 +7,13 @@ extern "C" {
 #include "../../platform/time.h"
 #include "../../platform/threads.h"
 
+#define WAKE_EVENT_SIGNAL  (1 << 2)
+#define RESUME_TASK_SIGNAL (1 << 3)
+
   struct emu_task_t
   {
-    int isWaiting;
-    uint32_t event;
-    timestamp_t wake_time;
+    volatile uint32_t timeout_us;
+    volatile uint32_t event;
   };
 
   struct emu_task_t tasks;
@@ -26,47 +28,41 @@ extern "C" {
 
   void task_scheduler(void)
   {
-    timestamp_t now = get_time();
-
-    // task event is set, or timeout
-    if (tasks.isWaiting && (tasks.event || now.val >= tasks.wake_time.val))
+    // wait for eternity or until an event
+    int result = wait_notification(0);
+    // ignore all signals exept resume signals
+    if (result & RESUME_TASK_SIGNAL)
     {
-      now = get_time();
-      if (now.val >= tasks.wake_time.val)
-      {
+      // wait for the target event
+      result = wait_notification(tasks.timeout_us / 1000);
+      // after this, the task is timeout or resolved
+      if (result & SCHED_NOTIFY_TIMER) // timeout
         tasks.event |= TASK_EVENT_TIMER;
-      }
-      tasks.wake_time.val = ~0ull;
-      tasks.isWaiting = 0;
       // resume the pd threads
       resume_thread(pd_taskName);
-      // suspend scheduler
-      suspend_this_thread();
-    }
-    else
-    {
-      delay_ms(1);
     }
   }
 
   uint32_t task_set_event(uint32_t event)
   {
     tasks.event |= event;
-    resume_thread(taskScheduler_taskName);
+    notify_thread(taskScheduler_taskName, WAKE_EVENT_SIGNAL);
     return 0;
   }
 
   uint32_t task_wait_event(int timeout_us)
   {
     if (timeout_us > 0)
-      tasks.wake_time.val = get_time().val + timeout_us;
+    {
+      tasks.timeout_us = timeout_us;
+    }
     else
+    {
       // set max delay
-      tasks.wake_time.val = (~0x00);
-
-    tasks.isWaiting = 1;
+      tasks.timeout_us = 0;
+    }
     // resume scheduler
-    resume_thread(taskScheduler_taskName);
+    notify_thread(taskScheduler_taskName, RESUME_TASK_SIGNAL);
     // then wait until event is set (or timeout)
     suspend_this_thread();
 
@@ -106,7 +102,7 @@ extern "C" {
     return events & event_mask;
   }
 
-  uint32_t* task_get_event_bitmap() { return &tasks.event; }
+  void task_clear_event_bitmap(uint32_t eventToClear) { tasks.event &= (~eventToClear); }
 
 #ifdef __cplusplus
 }

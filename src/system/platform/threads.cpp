@@ -103,6 +103,8 @@ void suspend_all_threads()
 {
   for (auto handle: handles)
   {
+    // notify to cancel timeouts
+    xTaskNotifyGive(handle.second);
     vTaskSuspend(handle.second);
   }
 }
@@ -130,6 +132,42 @@ void resume_thread(const char* const taskName)
   }
 
   vTaskResume(handle->second);
+}
+
+void notify_thread(const char* const taskName, int wakeUpEvent)
+{
+  auto handle = handles.find(taskName);
+  if (handle == handles.cend())
+  {
+    lampda_print("ERROR: task handle %s do not exist", taskName);
+    return;
+  }
+  xTaskNotify(handle->second, wakeUpEvent, eSetBits);
+}
+
+int wait_notification(const int timeout_ms)
+{
+  uint32_t notifiedValue = 0;
+  BaseType_t result;
+
+  if (timeout_ms <= 0)
+    result = xTaskNotifyWait(0,              // don't clear on entry
+                             UINT32_MAX,     // clear all bits on exit
+                             &notifiedValue, // returned value
+                             portMAX_DELAY);
+  else
+    result = xTaskNotifyWait(0,              // don't clear on entry
+                             UINT32_MAX,     // clear all bits on exit
+                             &notifiedValue, // returned value
+                             ms2tick(timeout_ms));
+
+  if (result == pdFALSE)
+  {
+    // timeout
+    notifiedValue |= SCHED_NOTIFY_TIMER;
+  }
+
+  return notifiedValue;
 }
 
 void get_thread_debug(char* textBuff) { vTaskList(textBuff); }

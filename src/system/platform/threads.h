@@ -6,6 +6,8 @@
 extern "C" {
 #endif
 
+#define SCHED_NOTIFY_TIMER (1 << 0) // reserved event mask
+
   // store tasks names here
   const char* const pd_taskName = "usbpd";
   const char* const pdInterruptHandle_taskName = "intpd";
@@ -45,6 +47,12 @@ extern "C" {
 
   // resume a target thread
   extern void resume_thread(const char* const taskName);
+
+  // notify a thread to resume
+  extern void notify_thread(const char* const taskName, int wakeUpEvent);
+  // block this thread until a timeout or notification is received
+  // return the wake up flag
+  extern int wait_notification(const int timeout_ms);
 
   // compute and return a debug for threads
   extern void get_thread_debug(char* textBuff);

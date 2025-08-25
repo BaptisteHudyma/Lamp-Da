@@ -724,8 +724,7 @@ static int reset_device_and_notify()
    * waking the TCPC, but it has also set PD_EVENT_TCPC_RESET again, which
    * would result in a second, unnecessary init.
    */
-  uint32_t* res = task_get_event_bitmap();
-  (*res) &= (~PD_EVENT_TCPC_RESET);
+  task_clear_event_bitmap(PD_EVENT_TCPC_RESET);
 
   /*
    * Now that we are done waking up the device, handle device access
@@ -736,7 +735,13 @@ static int reset_device_and_notify()
   /* Clear SW LPM state; the state machine will set it again if needed */
   pd.flags &= ~PD_FLAGS_LPM_REQUESTED;
 
-  task_set_event(TASK_EVENT_PD_AWAKE);
+  /* Wake up all waiting tasks. */
+  while (waiting_tasks)
+  {
+		task = __fls(waiting_tasks);
+		waiting_tasks &= ~(1 << task);
+		task_set_event(task, TASK_EVENT_PD_AWAKE);
+	}
 
   return rv;
 }
@@ -805,6 +810,12 @@ int pd_capable()
 
 static int pd_transmit(enum tcpm_transmit_type type, uint16_t header, const uint32_t* data, enum ams_seq ams)
 {
+  int evt;
+  int res;
+#ifdef CONFIG_USB_PD_REV30
+  int sink_ng = 0;
+#endif
+
   /* If comms are disabled, do not transmit, return error */
   if (!pd_comm_is_enabled())
     return -1;
@@ -818,18 +829,22 @@ static int pd_transmit(enum tcpm_transmit_type type, uint16_t header, const uint
 #ifdef CONFIG_USB_PD_REV30
   /* Source-coordinated collision avoidance */
   /*
-   * In order to avoid message collisions due to asynchronous Messaging
-   * sent from the Sink, the Source sets Rp to SinkTxOk to indicate to
-   * the Sink that it is ok to initiate an AMS. When the Source wishes
-   * to initiate an AMS it sets Rp to SinkTxNG. When the Sink detects
-   * that Rp is set to SinkTxOk it May initiate an AMS. When the Sink
-   * detects that Rp is set to SinkTxNG it Shall Not initiate an AMS
-   * and Shall only send Messages that are part of an AMS the Source has
-   * initiated. Note that this restriction applies to SOP* AMS’s i.e.
-   * for both Port to Port and Port to Cable Plug communications.
+   * USB PD Rev 3.0, Version 2.0: Section 2.7.3.2
+   * Collision Avoidance - Protocol Layer
    *
-   * This starts after an Explicit Contract is in place
-   * PD R3 V1.1 Section 2.5.2.
+   * In order to avoid message collisions due to asynchronous Messaging
+   * sent from the Sink, the Source sets Rp to SinkTxOk (3A) to indicate
+   * to the Sink that it is ok to initiate an AMS. When the Source wishes
+   * to initiate an AMS, it sets Rp to SinkTxNG (1.5A).
+   * When the Sink detects that Rp is set to SinkTxOk, it May initiate an
+   * AMS. When the Sink detects that Rp is set to SinkTxNG it Shall Not
+   * initiate an AMS and Shall only send Messages that are part of an AMS
+   * the Source has initiated.
+   * Note that this restriction applies to SOP* AMS’s i.e. for both Port
+   * to Port and Port to Cable Plug communications.
+   *
+   * This starts after an Explicit Contract is in place (see section 2.5.2
+   * SOP* Collision Avoidance).
    *
    * Note: a Sink can still send Hard Reset signaling at any time.
    */
@@ -839,32 +854,24 @@ static int pd_transmit(enum tcpm_transmit_type type, uint16_t header, const uint
     {
       /*
        * Inform Sink that it can't transmit. If a sink
-       * transmition is in progress and a collsion occurs,
+       * transmission is in progress and a collision occurs,
        * a reset is generated. This should be rare because
        * all extended messages are chunked. This effectively
        * defaults to PD REV 2.0 collision avoidance.
        */
       sink_can_xmit(SINK_TX_NG);
+      sink_ng = 1;
     }
     else if (type != TCPC_TX_HARD_RESET)
     {
-      int cc1;
-      int cc2;
+      enum tcpc_cc_voltage_status cc1, cc2;
 
       tcpm_get_cc(&cc1, &cc2);
       if (cc1 == TYPEC_CC_VOLT_RP_1_5 || cc2 == TYPEC_CC_VOLT_RP_1_5)
       {
         /* Sink can't transmit now. */
-        /* Check if message is already buffered. */
-        if (pd.ca_buffered)
-          return -1;
-
-        /* Buffer message and send later. */
-        pd.ca_type = type;
-        pd.ca_header = header;
-        memcpy(pd.ca_buffer, data, sizeof(uint32_t) * PD_HEADER_CNT(header));
-        pd.ca_buffered = 1;
-        return 1;
+        /* Return failure, pd_task can retry later */
+        return -1;
       }
     }
   }
@@ -872,7 +879,7 @@ static int pd_transmit(enum tcpm_transmit_type type, uint16_t header, const uint
   tcpm_transmit(type, header, data);
 
   /* Wait until TX is complete */
-  const int evt = task_wait_event_mask(PD_EVENT_TX, PD_T_TCPC_TX_TIMEOUT);
+  evt = task_wait_event_mask(PD_EVENT_TX, PD_T_TCPC_TX_TIMEOUT);
 
   if (evt & TASK_EVENT_TIMER)
     return -1;
@@ -881,14 +888,9 @@ static int pd_transmit(enum tcpm_transmit_type type, uint16_t header, const uint
   res = pd.tx_status == TCPC_TX_COMPLETE_SUCCESS ? 1 : -1;
 
 #ifdef CONFIG_USB_PD_REV30
-  /*
-   * If the source just completed a transmit, tell
-   * the sink it can transmit if it wants to.
-   */
-  if ((pd.rev == PD_REV30) && (pd.power_role == PD_ROLE_SOURCE) && (pd.flags & PD_FLAGS_EXPLICIT_CONTRACT))
-  {
+  /* If the AMS transaction failed to start, reset CC to OK */
+  if (res < 0 && sink_ng)
     sink_can_xmit(SINK_TX_OK);
-  }
 #endif
   return res;
 }
@@ -1770,11 +1772,27 @@ static void handle_ctrl_request(uint16_t head, uint32_t* payload)
         pd_set_input_current_limit(pd.curr_limit, pd.supply_voltage);
 #ifdef CONFIG_CHARGE_MANAGER
         /* Set ceiling based on what's negotiated */
-        // charge_manager_set_ceil( CEIL_REQUESTOR_PD, pd.curr_limit);
+        // TODO charge_manager_set_ceil( CEIL_REQUESTOR_PD, pd.curr_limit);
 #endif
       }
       break;
 #endif
+    case PD_CTRL_REJECT:
+      if (pd.task_state == PD_STATE_ENTER_USB)
+      {
+#ifndef CONFIG_USBC_SS_MUX
+        break;
+#endif
+        /*
+         * Since Enter USB sets the mux state to SAFE mode,
+         * resetting the mux state back to USB mode on
+         * recieveing a NACK.
+         */
+        // TODO usb_mux_set(USB_PD_MUX_USB_ENABLED, USB_SWITCH_CONNECT, pd.polarity);
+
+        set_state(READY_RETURN_STATE());
+        break;
+      }
     case PD_CTRL_WAIT:
       if (pd.task_state == PD_STATE_DR_SWAP)
       {
@@ -2074,6 +2092,7 @@ enum pd_drp_next_states drp_auto_toggle_next_state(uint64_t* drp_sink_time,
 static void handle_request(uint16_t head, uint32_t* payload)
 {
   int cnt = PD_HEADER_CNT(head);
+  int data_role = PD_HEADER_DROLE(head);
   int p;
 
   /* dump received packet content (only dump ping at debug level 3) */
@@ -2086,17 +2105,44 @@ static void handle_request(uint16_t head, uint32_t* payload)
   }
 
   /*
-   * If we are in disconnected state, we shouldn't get a request.
-   * Ignore it if we get one.
+   * If we are in disconnected state, we shouldn't get a request. Do
+   * a hard reset if we get one.
    */
   if (!pd_is_connected())
+    set_state(PD_STATE_HARD_RESET_SEND);
+
+  /*
+   * When a data role conflict is detected, USB-C ErrorRecovery
+   * actions shall be performed, and transitioning to unattached state
+   * is one such legal action.
+   */
+  if (pd.data_role == data_role)
+  {
+    /*
+     * If the port doesn't support removing the terminations, just
+     * go to the unattached state.
+     */
+    if (tcpm_set_cc(TYPEC_CC_OPEN) == EC_SUCCESS)
+    {
+      /* Do not drive VBUS or VCONN. */
+      pd_power_supply_reset();
+#ifdef CONFIG_USBC_VCONN
+      set_vconn(port, 0);
+#endif /* defined(CONFIG_USBC_VCONN) */
+      usleep(PD_T_ERROR_RECOVERY);
+
+      /* Restore terminations. */
+      tcpm_set_cc(DUAL_ROLE_IF_ELSE(TYPEC_CC_RD, TYPEC_CC_RP));
+    }
+    set_state(DUAL_ROLE_IF_ELSE(PD_STATE_SNK_DISCONNECTED, PD_STATE_SRC_DISCONNECTED));
     return;
+  }
 
 #ifdef CONFIG_USB_PD_REV30
   /* Check if this is an extended chunked data message. */
   if (pd.rev == PD_REV30 && PD_HEADER_EXT(head))
   {
-    handle_ext_request(, head, payload);
+    handle_ext_request(head, payload);
     return;
   }
 #endif
@@ -2423,11 +2469,6 @@ void pd_update_dual_role_config()
     set_state(PD_STATE_SRC_DISCONNECTED);
     tcpm_set_cc(TYPEC_CC_RP);
   }
-
-#if defined(CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE) && defined(CONFIG_USB_PD_TCPC_LOW_POWER)
-  /* When switching drp mode, make sure tcpc is out of standby mode */
-  tcpm_enable_drp_toggle();
-#endif
 }
 
 int pd_get_role() { return pd.power_role; }
@@ -2605,33 +2646,33 @@ typec_current_t usb_get_typec_current_limit(enum tcpc_cc_polarity polarity,
                                             enum tcpc_cc_voltage_status cc1,
                                             enum tcpc_cc_voltage_status cc2)
 {
-	typec_current_t charge = 0;
-	enum tcpc_cc_voltage_status cc;
-	enum tcpc_cc_voltage_status cc_alt;
+  typec_current_t charge = 0;
+  enum tcpc_cc_voltage_status cc;
+  enum tcpc_cc_voltage_status cc_alt;
 
-	cc = polarity_rm_dts(polarity) ? cc2 : cc1;
-	cc_alt = polarity_rm_dts(polarity) ? cc1 : cc2;
+  cc = polarity_rm_dts(polarity) ? cc2 : cc1;
+  cc_alt = polarity_rm_dts(polarity) ? cc1 : cc2;
 
   switch (cc)
   {
-	case TYPEC_CC_VOLT_RP_3_0:
-		if (!cc_is_rp(cc_alt) || cc_alt == TYPEC_CC_VOLT_RP_DEF)
-    charge = 3000;
-		else if (cc_alt == TYPEC_CC_VOLT_RP_1_5)
-			charge = 500;
-		break;
-	case TYPEC_CC_VOLT_RP_1_5:
-    charge = 1500;
-		break;
-	case TYPEC_CC_VOLT_RP_DEF:
-		charge = 500;
-		break;
-	default:
-		break;
-	}
+    case TYPEC_CC_VOLT_RP_3_0:
+      if (!cc_is_rp(cc_alt) || cc_alt == TYPEC_CC_VOLT_RP_DEF)
+        charge = 3000;
+      else if (cc_alt == TYPEC_CC_VOLT_RP_1_5)
+        charge = 500;
+      break;
+    case TYPEC_CC_VOLT_RP_1_5:
+      charge = 1500;
+      break;
+    case TYPEC_CC_VOLT_RP_DEF:
+      charge = 500;
+      break;
+    default:
+      break;
+  }
 
 #ifdef CONFIG_USBC_DISABLE_CHARGE_FROM_RP_DEF
-	if (charge == 500)
+  if (charge == 500)
     charge = 0;
 #endif
 
@@ -2712,6 +2753,9 @@ static int pd_restart_tcpc()
 
 void pd_init()
 {
+  // set initial status
+  pd.tx_status = TCPC_TX_UNSET;
+
 #ifdef CONFIG_COMMON_RUNTIME
   pd_init_tasks();
 #endif
@@ -2726,7 +2770,7 @@ void pd_init()
 
   /* Initialize TCPM driver and wait for TCPC to be ready */
   res = reset_device_and_notify();
-	invalidate_last_message_id();
+  invalidate_last_message_id();
 
 #ifdef CONFIG_USB_PD_DUAL_ROLE
   pd_partner_port_reset();
@@ -3224,9 +3268,10 @@ void pd_run_state_machine()
         break;
       }
 
+#ifdef CONFIG_COMMON_RUNTIME
       /* Debounce complete */
-      // if (IS_ENABLED(CONFIG_COMMON_RUNTIME))
-      //   hook_notify(HOOK_USB_PD_CONNECT);
+      hook_notify(HOOK_USB_PD_CONNECT);
+#endif
 
 #ifdef CONFIG_USBC_PPC
       /*
@@ -4620,39 +4665,6 @@ void pd_run_state_machine()
 #endif /* CONFIG_USB_PD_DUAL_ROLE */
 }
 
-#ifdef CONFIG_USB_PD_DUAL_ROLE
-void pd_dual_role_on(void)
-{
-  int i;
-
-#ifdef CONFIG_CHARGE_MANAGER
-  // if (charge_manager_get_active_charge_port() != i)
-#endif
-  pd.flags |= PD_FLAGS_CHECK_PR_ROLE | PD_FLAGS_CHECK_DR_ROLE;
-
-  pd.flags |= PD_FLAGS_CHECK_IDENTITY;
-
-  pd_set_dual_role(PD_DRP_TOGGLE_OFF);
-  CPRINTS("chipset -> S0");
-}
-
-void pd_dual_role_off(void)
-{
-  int i;
-
-#ifdef CONFIG_CHARGE_MANAGER
-  // if (charge_manager_get_active_charge_port() != i)
-#endif
-  pd.flags |= PD_FLAGS_CHECK_PR_ROLE | PD_FLAGS_CHECK_DR_ROLE;
-
-  pd.flags |= PD_FLAGS_CHECK_IDENTITY;
-
-  pd_set_dual_role(PD_DRP_FORCE_SINK);
-  CPRINTS("chipset -> S0");
-}
-
-#endif /* CONFIG_USB_PD_DUAL_ROLE */
-
 int pd_is_port_enabled()
 {
   switch (pd.task_state)
@@ -5241,16 +5253,6 @@ static int pd_control(struct host_cmd_handler_args* args)
 
 DECLARE_HOST_COMMAND(EC_CMD_PD_CONTROL, pd_control, EC_VER_MASK(0));
 #endif /* CONFIG_CMD_PD_CONTROL */
-
-typec_current_t get_typec_current_mA()
-{
-  if ((typec_curr & TYPEC_CURRENT_DTS_MASK) != 0x00)
-  {
-    // remove the set bit
-    return typec_curr ^ TYPEC_CURRENT_DTS_MASK;
-  }
-  return typec_curr;
-}
 
 int is_sink_ready() { return pd.task_state == PD_STATE_SNK_READY; }
 

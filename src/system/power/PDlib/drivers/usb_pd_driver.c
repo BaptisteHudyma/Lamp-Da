@@ -15,6 +15,9 @@
 struct SourcePowerParameters otgParameters;
 struct SourcePowerParameters get_OTG_requested_parameters() { return otgParameters; }
 
+struct SinkUsableParameters allowedConsumption;
+struct SinkUsableParameters get_allowed_consuption() { return allowedConsumption; }
+
 int canBecomePowerSource = 1; // enabled by default
 void set_allow_power_sourcing(const int allowPowerSourcing) { canBecomePowerSource = allowPowerSourcing != 0; }
 
@@ -33,7 +36,8 @@ const uint32_t pd_src_pdo[] = {
         // TODO issue #131 & #118: set the PDO with the battery pack watt
         PDO_FIXED(5000, 1500, PDO_FIXED_FLAGS),
         PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
-        // PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
+        PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
+        PDO_FIXED(20000, 3000, PDO_FIXED_FLAGS),
         // PPS (not supported)
         // PDO_VAR(4750, 20000, 3000)
 };
@@ -71,7 +75,9 @@ void pd_process_source_cap_callback(int cnt, uint32_t* src_caps)
 
 void typec_set_input_current_limit(typec_current_t max_ma, uint32_t supply_voltage)
 {
-  // TODO
+  allowedConsumption.voltage_mV = supply_voltage;
+  allowedConsumption.current_mA = max_ma;
+  allowedConsumption.timestamp = time_ms();
 }
 
 uint8_t get_pd_source_cnt() { return pdSources; }
@@ -240,7 +246,7 @@ void pd_transition_voltage(int idx)
 {
   // augment OTG voltage/current to requested profile
   uint32_t ma, mv;
-  pd_extract_pdo_power(pd_src_pdo[idx], &ma, &mv);
+  pd_extract_pdo_power(pd_src_pdo[idx - 1], &ma, &mv);
 
   otgParameters.requestedVoltage_mV = mv;
   otgParameters.requestedCurrent_mA = ma;

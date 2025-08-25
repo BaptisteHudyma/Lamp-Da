@@ -100,7 +100,7 @@ bool is_standard_port()
 void ic_interrupt()
 {
   // wake up interrupt thread (cannot run code in the interrupt callback)
-  resume_thread(pdInterruptHandle_taskName);
+  notify_thread(pdInterruptHandle_taskName, 2);
 }
 
 bool is_vbus_powered()
@@ -197,6 +197,8 @@ struct UsbPDData
                  vbusVoltage / 1000.0,
                  pdAlgoStatus.c_str());
     hasChanged = false;
+    lampda_print(
+            "allowed usage: %d mA, %d mV", get_allowed_consuption().current_mA, get_allowed_consuption().voltage_mV);
   }
 };
 UsbPDData data;
@@ -211,12 +213,13 @@ void show_pd_status() { data.serial_show(); }
 
 void interrupt_handle()
 {
+  // this thread only runs when signal is sent
+  wait_notification(0);
+
 #ifdef USE_PD_ALGO_LOOP
   // only waken up on thread update
   tcpc_alert();
 #endif
-  // this thread only runs when interrupt is set
-  suspend_this_thread();
 }
 
 void pd_run()
@@ -308,7 +311,8 @@ bool setup()
   pd_startup();
 
   DigitalPin chargerPin(DigitalPin::GPIO::Signal_PowerDelivery);
-  chargerPin.attach_callback(ic_interrupt, DigitalPin::Interrupt::kFallingEdge);
+  chargerPin.attach_callback(ic_interrupt,
+                             DigitalPin::Interrupt::kFallingEdge); // normal high, so focus on falling edge
 
   isSetup = true;
   return true;
@@ -320,11 +324,11 @@ void start_threads()
     return;
 
   // start task scheduler, in suspended state
-  start_suspended_thread(task_scheduler, taskScheduler_taskName, 2, 255);
+  start_thread(task_scheduler, taskScheduler_taskName, 2, 255);
   // start interrupt handle, in suspended state
-  start_suspended_thread(interrupt_handle, pdInterruptHandle_taskName, 2, 255);
+  start_thread(interrupt_handle, pdInterruptHandle_taskName, 2, 255);
   // start pd handle loop
-  start_thread(pd_run, pd_taskName, 2, 1024);
+  start_thread(pd_run, pd_taskName, 1, 1024);
 }
 
 void loop()

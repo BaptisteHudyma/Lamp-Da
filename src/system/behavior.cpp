@@ -726,7 +726,7 @@ void handle_shutdown_state()
     // block other threads
     suspend_all_threads();
     yield_this_thread();
-    delay(5);
+    delay_ms(5);
   }
   if (maxChecks == 0)
   {

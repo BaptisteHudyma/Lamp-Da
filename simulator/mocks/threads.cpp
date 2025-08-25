@@ -57,4 +57,7 @@ int is_all_suspended() { return 1; }
 
 void resume_thread(const char* const taskName) {}
 
+void notify_thread(const char* const taskName, int wakeUpEvent) {};
+int wait_notification(const int timeout_ms) { return 0; }
+
 void get_thread_debug(char* textBuff) {}

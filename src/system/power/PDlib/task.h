@@ -82,8 +82,8 @@ uint32_t task_wait_event_mask(uint32_t event_mask, int timeout_us);
 static inline void task_wake() { task_set_event(TASK_EVENT_WAKE); }
 
 /**
- * Return a pointer to the bitmap of events of the task.
+ * Clear a bit events of the task.
  */
-uint32_t* task_get_event_bitmap();
+void task_clear_event_bitmap(uint32_t eventToClear);
 
 #endif

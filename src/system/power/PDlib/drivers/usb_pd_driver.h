@@ -21,8 +21,8 @@ extern "C" {
  * delay to turn on the power supply max is ~16ms.
  * delay to turn off the power supply max is about ~180ms.
  */
-#define PD_POWER_SUPPLY_TURN_ON_DELAY  10000 /* us */
-#define PD_POWER_SUPPLY_TURN_OFF_DELAY 20000 /* us */
+#define PD_POWER_SUPPLY_TURN_ON_DELAY  30 * MSEC_US  /* us */
+#define PD_POWER_SUPPLY_TURN_OFF_DELAY 100 * MSEC_US /* us */
 
 /* Define typical operating power and max power */
 #define PD_OPERATING_POWER_MW (2250ull)
@@ -46,10 +46,18 @@ extern "C" {
     uint16_t requestedCurrent_mA;
   };
 
+  struct SinkUsableParameters
+  {
+    uint32_t current_mA;
+    uint32_t voltage_mV;
+    uint32_t timestamp;
+  };
+
   /**
    * \brief return the requested OnTheGo parameters, negociated with a power sink
    */
   struct SourcePowerParameters get_OTG_requested_parameters();
+  struct SinkUsableParameters get_allowed_consuption();
 
   void pd_startup();
   void pd_turn_off();
