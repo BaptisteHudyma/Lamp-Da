@@ -152,9 +152,9 @@ void handle_clear_power_rails()
 
 void handle_charging_mode()
 {
-  // allow OTG in charge mode only
-  powerDelivery::allow_otg(true);
-  // open vbus
+  // resume PD state machine
+  powerDelivery::resume_pd_state_machine();
+  // enable vbus path
   powergates::enable_vbus_gate();
 
   // OTG requested, switch to OTG mode
@@ -163,7 +163,6 @@ void handle_charging_mode()
     // disable balancing
     balancer::enable_balancing(false);
     // start otg
-    powerDelivery::resume_pd_state_machine();
     __private::powerMachine.set_state(PowerStates::OTG_MODE);
     return;
   }
@@ -175,11 +174,17 @@ void handle_charging_mode()
     balancer::enable_balancing(true);
   }
 
+  // allow OTG in charge mode only
+  powerDelivery::allow_otg(true);
+
   // charge OR idle and do nothing (end of charge)
 }
 
 void handle_output_voltage_mode()
 {
+  // never run PD in output mode !
+  powerDelivery::suspend_pd_state_machine();
+
   set_otg_parameters(_outputVoltage_mV, _outputCurrent_mA);
 
   // open power gate when voltage matches expected voltage
@@ -202,9 +207,16 @@ void handle_otg_mode()
   // end of OTG, switch to charger
   if (!powerDelivery::is_switching_to_otg())
   {
+    // temporary suspend
+    powerDelivery::suspend_pd_state_machine();
+    powerDelivery::allow_otg(false);
+    set_otg_parameters(0, 0);
     go_to_charger_mode();
     return;
   }
+
+  // resume PD state machine
+  powerDelivery::resume_pd_state_machine();
 
   const auto requested = powerDelivery::get_otg_parameters();
   // we do not have the parameters yet
@@ -319,6 +331,9 @@ bool go_to_output_mode()
   if (__private::can_switch_states())
   {
     powerDelivery::suspend_pd_state_machine();
+    powerDelivery::allow_otg(false);
+    set_otg_parameters(0, 0);
+
     __private::switch_state(PowerStates::OUTPUT_VOLTAGE_MODE);
     return true;
   }
@@ -330,7 +345,6 @@ bool go_to_charger_mode()
   // TODO: and other checks
   if (__private::can_switch_states())
   {
-    powerDelivery::resume_pd_state_machine();
     __private::switch_state(PowerStates::CHARGING_MODE);
     return true;
   }
@@ -342,7 +356,6 @@ bool go_to_otg_mode()
 {
   if (__private::can_switch_states())
   {
-    powerDelivery::resume_pd_state_machine();
     __private::switch_state(PowerStates::OTG_MODE);
     return true;
   }

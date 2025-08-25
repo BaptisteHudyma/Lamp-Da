@@ -69,6 +69,11 @@ extern "C" {
   void set_battery_level(const uint8_t battLevelPercent);
 
   /**
+   * \brief set usb pd to suspend mode
+   */
+  void supsend_usb_pd(int shouldSuspend);
+
+  /**
    * \brief return 1 if the system is preparing a swap
    */
   int is_activating_otg();

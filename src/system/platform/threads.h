@@ -40,6 +40,9 @@ extern "C" {
   // DANGEROUS: suspend all threads started from here
   extern void suspend_all_threads();
 
+  // check that all threads are suspended (mandatory for sleep mode)
+  extern int is_all_suspended();
+
   // resume a target thread
   extern void resume_thread(const char* const taskName);
 

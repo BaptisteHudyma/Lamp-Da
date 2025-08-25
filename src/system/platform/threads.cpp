@@ -2,7 +2,8 @@
 #define PLATFORM_THREADS_CPP
 
 #include "threads.h"
-#include "print.h"
+
+#include "src/system/utils/print.h"
 
 #include <Arduino.h>
 #include <map>
@@ -90,7 +91,7 @@ void start_suspended_thread(taskfunc_t taskFunction,
   }
   else
   {
-    lampda_print("task creation failed");
+    lampda_print("task %s creation failed", taskName);
   }
 }
 
@@ -106,13 +107,25 @@ void suspend_all_threads()
   }
 }
 
+int is_all_suspended()
+{
+  for (const auto& handle_it: handles)
+  {
+    if (eTaskGetState(handle_it.second) != eTaskState::eSuspended)
+    {
+      return 0;
+    }
+  }
+  return 1;
+}
+
 void resume_thread(const char* const taskName)
 {
   // handle already exists
   auto handle = handles.find(taskName);
   if (handle == handles.cend())
   {
-    lampda_print("task handle do not exist");
+    lampda_print("ERROR: task handle %s do not exist", taskName);
     return;
   }
 

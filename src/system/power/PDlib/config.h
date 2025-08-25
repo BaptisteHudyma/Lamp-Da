@@ -8,6 +8,7 @@
 #undef CONFIG_COMMON_RUNTIME
 
 // automatically select highest power profile
+// TODO most of the implementation is commented out
 #define CONFIG_CHARGE_MANAGER
 
 /* Support v1.1 type-C connection state machine */

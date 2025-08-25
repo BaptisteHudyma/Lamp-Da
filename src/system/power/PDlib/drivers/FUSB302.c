@@ -397,8 +397,12 @@ static int fusb302_tcpm_init()
   reg &= ~TCPC_REG_MASK_COLLISION;
   /* misc alert */
   reg &= ~TCPC_REG_MASK_ALERT;
-  /* packet received with correct CRC */
-  reg &= ~TCPC_REG_MASK_CRC_CHK;
+#ifdef CONFIG_USB_PD_VBUS_DETECT_TCPC
+  /* TODO(crbug.com/791109): Clean up VBUS notification. */
+
+  /* VBUS threshold crossed (~4.0V) */
+  reg &= ~TCPC_REG_MASK_VBUSOK;
+#endif
   tcpc_write(TCPC_REG_MASK, reg);
 
   reg = 0xFF;
@@ -426,11 +430,20 @@ static int fusb302_tcpm_init()
   tcpm_set_polarity(0);
   tcpm_set_vconn(0);
 
-  fusb302_auto_goodcrc_enable(0);
-
-  /* Turn on the power! */
   /* TODO: Reduce power consumption */
   tcpc_write(TCPC_REG_POWER, TCPC_REG_POWER_PWR_ALL);
+
+#if defined(CONFIG_USB_PD_VBUS_DETECT_TCPC) && defined(CONFIG_USB_CHARGER)
+  /* Wait for the reference voltage to stablize */
+  usleep(250);
+  /*
+   * Initialize VBUS supplier when VBUS is already present before
+   * init (e.g. Cold reboot with charger plugged).
+   */
+  tcpc_read(port, TCPC_REG_STATUS0, &reg);
+  if (reg & TCPC_REG_STATUS0_VBUSOK)
+    usb_charger_vbus_change(port, 1);
+#endif
 
   return 0;
 }
@@ -572,6 +585,21 @@ static int fusb302_tcpm_set_polarity(enum tcpc_cc_polarity polarity)
   return 0;
 }
 
+static int fusb302_tcpm_decode_sop_prime_enable(int enable)
+{
+  int reg;
+
+  if (tcpc_read(TCPC_REG_CONTROL1, &reg))
+    return EC_ERROR_UNKNOWN;
+
+  if (enable != 0)
+    reg |= (TCPC_REG_CONTROL1_ENSOP1 | TCPC_REG_CONTROL1_ENSOP2);
+  else
+    reg &= ~(TCPC_REG_CONTROL1_ENSOP1 | TCPC_REG_CONTROL1_ENSOP2);
+
+  return tcpc_write(TCPC_REG_CONTROL1, reg);
+}
+
 static int fusb302_tcpm_set_vconn(int enable)
 {
   /*
@@ -591,6 +619,14 @@ static int fusb302_tcpm_set_vconn(int enable)
   {
     /* set to saved polarity */
     tcpm_set_polarity(state.cc_polarity);
+
+#ifdef CONFIG_USB_PD_DECODE_SOP
+    if (state.rx_enable)
+    {
+      if (fusb302_tcpm_decode_sop_prime_enable(true))
+        return EC_ERROR_UNKNOWN;
+    }
+#endif
   }
   else
   {
@@ -601,6 +637,14 @@ static int fusb302_tcpm_set_vconn(int enable)
     reg &= ~TCPC_REG_SWITCHES0_VCONN_CC2;
 
     tcpc_write(TCPC_REG_SWITCHES0, reg);
+
+#ifdef CONFIG_USB_PD_DECODE_SOP
+    if (state.rx_enable)
+    {
+      if (fusb302_tcpm_decode_sop_prime_enable(false))
+        return EC_ERROR_UNKNOWN;
+    }
+#endif
   }
 
   return 0;
@@ -673,6 +717,21 @@ static int fusb302_tcpm_set_rx_enable(int enable)
       tcpc_write(TCPC_REG_MASK, reg & ~TCPC_REG_MASK_BC_LVL);
   }
 
+#ifdef CONFIG_USB_PD_DECODE_SOP
+  /*
+   * Only the VCONN Source is allowed to communicate
+   * with the Cable Plugs.
+   */
+  if (state.vconn_enabled)
+  {
+    if (tcpc_read(TCPC_REG_CONTROL1, &reg))
+      return EC_ERROR_UNKNOWN;
+
+    reg |= (TCPC_REG_CONTROL1_ENSOP1 | TCPC_REG_CONTROL1_ENSOP2);
+    tcpc_write(TCPC_REG_CONTROL1, reg);
+  }
+#endif
+
   fusb302_auto_goodcrc_enable(enable);
 
   return 0;
@@ -701,19 +760,17 @@ static int fusb302_tcpm_get_message(uint32_t* payload, int* head)
   uint8_t buf[32];
   int rv, len;
 
-  /* If our FIFO is empty then we have no packet */
-  if (fusb302_rx_fifo_is_empty())
-    return EC_ERROR_UNKNOWN;
-
   /* Read until we have a non-GoodCRC packet or an empty FIFO */
   do
   {
     buf[0] = TCPC_REG_FIFOS;
+    // tcpc_lock(1);
 
     /*
      * PART 1 OF BURST READ: Write in register address.
      * Issue a START, no STOP.
      */
+    // rv = tcpc_xfer_unlocked(buf, 1, 0, 0, I2C_XFER_START);
     rv = tcpc_xfer(buf, 1, 0, 0, I2C_XFER_START);
 
     /*
@@ -723,6 +780,7 @@ static int fusb302_tcpm_get_message(uint32_t* payload, int* head)
      * and determine how many more bytes we need to read.
      * TODO: Check token to ensure valid packet.
      */
+    // rv |= tcpc_xfer_unlocked(0, 0, buf, 3, I2C_XFER_START);
     rv |= tcpc_xfer(0, 0, buf, 3, I2C_XFER_START);
 
     /* Grab the header */
@@ -737,8 +795,10 @@ static int fusb302_tcpm_get_message(uint32_t* payload, int* head)
      * No START, but do issue a STOP at the end.
      * add 4 to len to read CRC out
      */
+    // rv |= tcpc_xfer_unlocked(0, 0, buf, len+4, I2C_XFER_STOP);
     rv |= tcpc_xfer(0, 0, buf, len + 4, I2C_XFER_STOP);
 
+    // tcpc_lock(0);
   } while (!rv && PACKET_IS_GOOD_CRC(*head) && !fusb302_rx_fifo_is_empty());
 
   if (!rv)
@@ -750,12 +810,19 @@ static int fusb302_tcpm_get_message(uint32_t* payload, int* head)
       memcpy(payload, buf, len);
   }
 
-  /*
-   * If our FIFO is non-empty then we may have a packet, we may get
-   * fewer interrupts than packets due to interrupt latency.
-   */
-  if (!fusb302_rx_fifo_is_empty())
-    task_set_event(PD_EVENT_RX);
+#ifdef CONFIG_USB_PD_DECODE_SOP
+  {
+    int reg;
+
+    if (tcpc_read(port, TCPC_REG_STATUS1, &reg))
+      return EC_ERROR_UNKNOWN;
+
+    if (reg & TCPC_REG_STATUS1_RXSOP1)
+      *head |= PD_HEADER_SOP(PD_MSG_SOP_PRIME);
+    else if (reg & TCPC_REG_STATUS1_RXSOP2)
+      *head |= PD_HEADER_SOP(PD_MSG_SOP_PRIME_PRIME);
+  }
+#endif
 
   return rv;
 }
@@ -912,7 +979,7 @@ void fusb302_tcpc_alert()
       pd_vbus_low();
 #endif
     task_wake();
-    // hook_notify(HOOK_AC_CHANGE);
+    // TODO hook_notify(HOOK_AC_CHANGE);
   }
 #endif
 
@@ -954,7 +1021,9 @@ void fusb302_tcpc_alert()
     /* (this interrupt fires after the GoodCRC finishes) */
     if (state.rx_enable)
     {
-      task_set_event(PD_EVENT_RX);
+      /* Pull all RX messages from TCPC into EC memory */
+      while (!fusb302_rx_fifo_is_empty())
+        tcpm_enqueue_message();
     }
     else
     {

@@ -36,8 +36,18 @@ inline static bool isPowerSourceDetected_s = false;
 inline static uint32_t powerSourceDetectedTime_s = 0;
 
 inline static bool should_run_pd_state_machine = true;
-void suspend_pd_state_machine() { should_run_pd_state_machine = false; }
-void resume_pd_state_machine() { should_run_pd_state_machine = true; }
+void suspend_pd_state_machine()
+{
+  if (should_run_pd_state_machine)
+    supsend_usb_pd(1);
+  should_run_pd_state_machine = false;
+}
+void resume_pd_state_machine()
+{
+  if (!should_run_pd_state_machine)
+    supsend_usb_pd(0);
+  should_run_pd_state_machine = true;
+}
 
 int get_vbus_voltage()
 {
@@ -89,9 +99,8 @@ bool is_standard_port()
 
 void ic_interrupt()
 {
-  if (should_run_pd_state_machine)
-    // wake up interrupt thread (cannot run code in the interrupt callback)
-    resume_thread(pdInterruptHandle_taskName);
+  // wake up interrupt thread (cannot run code in the interrupt callback)
+  resume_thread(pdInterruptHandle_taskName);
 }
 
 bool is_vbus_powered()
@@ -212,12 +221,6 @@ void interrupt_handle()
 
 void pd_run()
 {
-  // do not run when not asked to run
-  if (!should_run_pd_state_machine)
-  {
-    return;
-  }
-
   // PD loop limits the run of this threads by waiting for events
   // DO NOT REMOVE THE PD STATE MACHINE
   // or -> add a delay to this loop instead
@@ -305,7 +308,7 @@ bool setup()
   pd_startup();
 
   DigitalPin chargerPin(DigitalPin::GPIO::Signal_PowerDelivery);
-  chargerPin.attach_callback(ic_interrupt, DigitalPin::Interrupt::kChange);
+  chargerPin.attach_callback(ic_interrupt, DigitalPin::Interrupt::kFallingEdge);
 
   isSetup = true;
   return true;
@@ -317,11 +320,11 @@ void start_threads()
     return;
 
   // start task scheduler, in suspended state
-  start_suspended_thread(task_scheduler, taskScheduler_taskName, 0, 255);
+  start_suspended_thread(task_scheduler, taskScheduler_taskName, 2, 255);
   // start interrupt handle, in suspended state
-  start_suspended_thread(interrupt_handle, pdInterruptHandle_taskName, 0, 255);
+  start_suspended_thread(interrupt_handle, pdInterruptHandle_taskName, 2, 255);
   // start pd handle loop
-  start_thread(pd_run, pd_taskName, 0, 1024);
+  start_thread(pd_run, pd_taskName, 2, 1024);
 }
 
 void loop()

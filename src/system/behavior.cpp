@@ -713,16 +713,25 @@ void handle_shutdown_state()
   DigitalPin::detach_all();
   yield_this_thread();
 
-  // block other threads
-  suspend_all_threads();
-
-  yield_this_thread();
-  delay_ms(10);
-
   // shutdown all external power
   if (not power::go_to_shutdown())
   {
     // TODO: error ?
+  }
+
+  uint8_t maxChecks = 100;
+  while (is_all_suspended() != 1 and maxChecks > 0)
+  {
+    maxChecks--;
+    // block other threads
+    suspend_all_threads();
+    yield_this_thread();
+    delay(5);
+  }
+  if (maxChecks == 0)
+  {
+    // some task as refused to power off !!
+    // TODO : alert ?
   }
 
   // deactivate strip power

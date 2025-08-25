@@ -577,6 +577,16 @@ extern "C" {
     return cc1 == TYPEC_CC_VOLT_RD && cc2 == TYPEC_CC_VOLT_RD;
   }
 
+  static inline uint8_t board_get_src_dts_polarity()
+  {
+    /*
+     * If the port in SRC DTS, the polarity is determined by the board,
+     * i.e. what Rp impedance the CC lines are pulled. If this function
+     * is not overridden, assume CC1 is primary.
+     */
+    return 0;
+  }
+
   /**
    * Returns true if we detect the port partner is a src debug accessory.
    */

@@ -59,7 +59,7 @@ void pd_startup()
   pd_ping_enable(1);
 }
 
-void pd_turn_off() {}
+void pd_turn_off() { supsend_usb_pd(1); }
 
 // Called by the pd algo when the source capabilities are received
 void pd_process_source_cap_callback(int cnt, uint32_t* src_caps)
@@ -67,6 +67,11 @@ void pd_process_source_cap_callback(int cnt, uint32_t* src_caps)
   pdSources = (cnt > 5) ? 5 : cnt;
   for (int i = 0; i < cnt; i++)
     srcCapsSaved[i] = src_caps[i];
+}
+
+void typec_set_input_current_limit(typec_current_t max_ma, uint32_t supply_voltage)
+{
+  // TODO
 }
 
 uint8_t get_pd_source_cnt() { return pdSources; }
@@ -96,6 +101,8 @@ void pd_snk_give_back(uint32_t* const ma, uint32_t* const mv) { _shouldStopVbus 
 uint32_t get_available_pd_current_mA() { return availableCurrent; }
 
 uint32_t get_available_pd_voltage_mV() { return availableVoltage; }
+
+void supsend_usb_pd(int shouldSuspend) { pd_set_suspend(shouldSuspend); }
 
 void reset_cache()
 {
