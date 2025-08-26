@@ -67,7 +67,7 @@ extern "C" {
     suspend_this_thread();
 
     /* Resume */
-    int ret = tasks.event;
+    uint32_t ret = tasks.event;
     tasks.event = 0;
     return ret;
   }

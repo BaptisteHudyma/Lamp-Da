@@ -986,7 +986,6 @@ void fusb302_tcpc_alert()
   /* GoodCRC was received, our FIFO is now non-empty */
   if (interrupta & TCPC_REG_INTERRUPTA_TX_SUCCESS)
   {
-    task_set_event(PD_EVENT_RX);
     pd_transmit_complete(TCPC_TX_COMPLETE_SUCCESS);
   }
 

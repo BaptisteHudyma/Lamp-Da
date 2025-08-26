@@ -60,7 +60,7 @@ uint32_t srcCapsSaved[5];
 void pd_startup()
 {
   // if enabled, will send updates when source
-  pd_ping_enable(1);
+  // pd_ping_enable(1);
 }
 
 void pd_turn_off() { supsend_usb_pd(1); }
@@ -129,9 +129,26 @@ void pd_loop()
 {
   pd_run_state_machine();
 
-  if (!pd_is_connected())
+  // HACK BELOW : ping in source mode
+
+  // disconnect auto if no detection
+  static uint32_t lastTime;
+  if (time_ms() - lastTime > 1000)
   {
-    pd_power_supply_reset();
+    static uint32_t firstSourceTime;
+    if (is_sourcing())
+    {
+      // source started since a time
+      if (time_ms() - firstSourceTime > 2000)
+      {
+        int res = send_control(PD_CTRL_PING);
+        if (res < 0)
+          pd_power_supply_reset();
+      }
+    }
+    else
+      firstSourceTime = time_ms();
+    lastTime = time_ms();
   }
 }
 
@@ -238,6 +255,8 @@ int pd_set_power_supply_ready()
   // enable 5V OTG (cold start)
   otgParameters.requestedVoltage_mV = 5000;
   otgParameters.requestedCurrent_mA = 500;
+
+  // TODO activate OTG here, instead of waiting
 
   return EC_SUCCESS; /* we are ready */
 }

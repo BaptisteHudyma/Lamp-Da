@@ -738,10 +738,10 @@ static int reset_device_and_notify()
   /* Wake up all waiting tasks. */
   while (waiting_tasks)
   {
-		task = __fls(waiting_tasks);
-		waiting_tasks &= ~(1 << task);
-		task_set_event(task, TASK_EVENT_PD_AWAKE);
-	}
+    task = __fls(waiting_tasks);
+    waiting_tasks &= ~(1 << task);
+    task_set_event(task, TASK_EVENT_PD_AWAKE);
+  }
 
   return rv;
 }
@@ -824,7 +824,7 @@ static int pd_transmit(enum tcpm_transmit_type type, uint16_t header, const uint
    * all RX messages.
    */
   if (tcpm_has_pending_message())
-    return -1;
+    return 0; // not an error
 
 #ifdef CONFIG_USB_PD_REV30
   /* Source-coordinated collision avoidance */
@@ -921,7 +921,9 @@ static void pd_update_roles()
   tcpm_set_msg_header(pd.power_role, pd.data_role);
 }
 
-static int send_control(int type)
+int is_sourcing() { return pd.task_state == PD_STATE_SRC_READY; }
+
+int send_control(int type)
 {
   int bit_len;
   uint16_t header = PD_HEADER(type, pd.power_role, pd.data_role, pd.msg_id, 0, pd_get_rev(), 0);
@@ -1515,6 +1517,11 @@ static void handle_data_request(uint16_t head, uint32_t* payload)
 
         /* Source will resend source cap on failure */
         pd_send_request_msg(1);
+
+        // We call the callback after we send the request
+        // because the timing on Request seems to be sensitive
+        // User code can take the time until PS_RDY to do stuff
+        pd_process_source_cap_callback(cnt, payload);
       }
       break;
 #endif /* CONFIG_USB_PD_DUAL_ROLE */

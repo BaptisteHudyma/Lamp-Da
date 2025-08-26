@@ -70,7 +70,7 @@
 #undef CONFIG_USBC_SS_MUX
 
 /* Use this option to enable Try.SRC mode for Dual Role devices */
-#define CONFIG_USB_PD_TRY_SRC
+#undef CONFIG_USB_PD_TRY_SRC
 
 /* Set the default minimum battery percentage for Try.Src to be enabled */
 #define CONFIG_USB_PD_TRY_SRC_MIN_BATT_SOC 5
@@ -104,7 +104,7 @@
 #define CONFIG_USB_PD_PULLUP TYPEC_RP_1A5
 
 /* Initial DRP / toggle policy */
-#define CONFIG_USB_PD_INITIAL_DRP_STATE PD_DRP_TOGGLE_ON
+#define CONFIG_USB_PD_INITIAL_DRP_STATE PD_DRP_TOGGLE_OFF
 
 /*
  * USB Product ID. Each platform (e.g. baseboard set) should have a single
@@ -129,7 +129,7 @@
 #undef CONFIG_USB_PD_LOW_POWER
 
 /* Define if this board, operating as a sink, can give power back to a source */
-#define CONFIG_USB_PD_GIVE_BACK
+#undef CONFIG_USB_PD_GIVE_BACK
 
 /* Dynamic USB PD source capability */
 #undef CONFIG_USB_PD_DYNAMIC_SRC_CAP

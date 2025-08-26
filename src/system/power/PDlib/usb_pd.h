@@ -37,7 +37,6 @@ extern "C" {
   };
 
 /* Events for USB PD task */
-#define PD_EVENT_RX                 (1 << 2) /* Incoming packet event */
 #define PD_EVENT_TX                 (1 << 3) /* Outgoing packet event */
 #define PD_EVENT_CC                 (1 << 4) /* CC line change event */
 #define PD_EVENT_TCPC_RESET         (1 << 5) /* TCPC has reset */
@@ -747,6 +746,11 @@ extern "C" {
    * @param port Port number from which to get role
    */
   int pd_get_role();
+
+  //  TODO HACK below
+  int is_sourcing();
+  int send_control(int type);
+  // ezndofTODO
 
 #endif
 
