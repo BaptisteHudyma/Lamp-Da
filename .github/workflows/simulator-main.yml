@@ -34,8 +34,9 @@ jobs:
 
     - name: setup
       run :
-         sudo apt update && 
-         sudo apt install libx11-dev libxrandr-dev libxcursor-dev libxi-dev libudev-dev libfreetype-dev libvorbis-dev libflac-dev libgl1-mesa-dev -y 
+         sudo apt update &&
+         sudo apt install libsfml-dev -y &&
+         sudo apt install libx11-dev libxrandr-dev libxcursor-dev libxi-dev libudev-dev libfreetype-dev libvorbis-dev libflac-dev libgl1-mesa-dev libopenal-dev libalut-dev -y
     - name: build
       run:
         make simulator
