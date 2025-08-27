@@ -93,7 +93,7 @@ static constexpr LMBD_INLINE uint32_t fromTemp(uint8_t temp)
  *
  * @return the new color computed
  */
-uint32_t blend(uint32_t leftColor, uint32_t rightColor, uint16_t blend, bool b16 = false)
+static uint32_t blend(uint32_t leftColor, uint32_t rightColor, uint16_t blend, bool b16 = false)
 {
   if (blend == 0)
     return leftColor;
@@ -121,7 +121,7 @@ uint32_t blend(uint32_t leftColor, uint32_t rightColor, uint16_t blend, bool b16
  *
  * @return the new color computed
  */
-template<bool isVideoMode = false> uint32_t fade(uint32_t inputColor, uint8_t fadeAmount)
+template<bool isVideoMode = false> static uint32_t fade(uint32_t inputColor, uint8_t fadeAmount)
 {
   uint32_t res;
   ToRGB input_rgb(inputColor);

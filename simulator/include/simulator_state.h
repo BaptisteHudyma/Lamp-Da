@@ -3,7 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "src/user/constants.h"
+#include "src/modes/include/hardware/lamp_type.hpp"
+using _LampTy = modes::hardware::LampTy;
 
 namespace sim {
 
@@ -15,9 +16,9 @@ struct GlobalSimStateTy
   bool verbose = false;
   bool isButtonPressed = false;
   char lastKeyPressed = 0;
-  uint8_t brightness = 255;
   uint8_t tickAndPause = 0;
-  uint32_t colorBuffer[LED_COUNT] = {};
+  uint16_t brightness = 255;
+  uint32_t colorBuffer[_LampTy::ledCount] = {};
   uint32_t indicatorColor = 0;
   float slowTimeFactor = 1.0;
 };

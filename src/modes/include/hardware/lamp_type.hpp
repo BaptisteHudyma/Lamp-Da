@@ -1,9 +1,11 @@
 #ifndef MODES_HARDWARE_LAMP_TYPE_HPP
 #define MODES_HARDWARE_LAMP_TYPE_HPP
 
+#include <cstring>
+
 #include "src/compile.h"
 #include "src/user/constants.h"
-#include <src/system/assert.h>
+#include "src/system/assert.h"
 #include "src/system/utils/curves.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/brightness_handle.h"
@@ -22,6 +24,10 @@
 #include "src/modes/include/compile.hpp"
 
 #include "src/system/platform/time.h"
+
+namespace modes {
+static constexpr uint16_t to_strip(uint16_t, uint16_t);
+}
 
 /// Provide interface to the physical hardware and other facilities
 namespace modes::hardware {
@@ -74,10 +80,6 @@ struct LampTy
   // private constructors
   //
 
-  LampTy() = delete;                         ///< \private
-  LampTy(const LampTy&) = delete;            ///< \private
-  LampTy& operator=(const LampTy&) = delete; ///< \private
-
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 private:
   static constexpr float _fwidth = stripXCoordinates;    ///< \private
@@ -88,22 +90,45 @@ private:
   static constexpr uint16_t _nbBuffers = stripNbBuffers; ///< \private
   LedStrip& strip;                                       ///< \private
 
+  /// Type for a uint32_t buffer of exactly ledCount length
+  using BufferTy = std::array<uint32_t, _ledCount>;
+
+  LampTy() = delete;                         ///< \private
+  LampTy(const LampTy&) = delete;            ///< \private
+  LampTy& operator=(const LampTy&) = delete; ///< \private
+
 public:
   /// \private Constructor used to wrap strip if needed
   LMBD_INLINE LampTy(LedStrip& strip) : config {}, strip {strip}, now {0}, tick {0}, raw_frame_count {0} {}
 #else
 private:
   // (placeholder values to avoid bad fails on misuse)
-  static constexpr float _fwidth = 16.0;     ///< \private
-  static constexpr float _fheight = 16.0;    ///< \private
-  static constexpr uint16_t _width = 16;     ///< \private
-  static constexpr uint16_t _height = 16;    ///< \private
-  static constexpr uint16_t _ledCount = 512; ///< \private
+  static constexpr float _fwidth = 23.5451;  ///< \private
+  static constexpr float _fheight = 22.51;   ///< \private
+  static constexpr uint16_t _width = 23;     ///< \private
+  static constexpr uint16_t _height = 22;    ///< \private
+  static constexpr uint16_t _ledCount = 530; ///< \private
   static constexpr uint16_t _nbBuffers = 2;  ///< \private
+
+  /// Type for a uint32_t buffer of exactly ledCount length
+  using BufferTy = std::array<uint32_t, _ledCount>;
+
+  LampTy(const LampTy&) = delete;            ///< \private
+  LampTy& operator=(const LampTy&) = delete; ///< \private
 
   struct LedStrip ///< \private
   {
     BufferTy _buffers[_nbBuffers];
+    COLOR _colors[_ledCount];
+
+    void begin();
+    void show();
+    void show_now();
+    void clear();
+    void setBrightness(uint8_t);
+    uint8_t getBrightness();
+    void fadeToBlackBy(uint8_t);
+    void setPixelColor(uint16_t, uint32_t);
   };
   LedStrip fakeStrip; ///< \private
   LedStrip& strip;    ///< \private
@@ -261,9 +286,6 @@ public:
    * Equal to \p stripNbBuffers if LampTypes::indexable or else 2
    */
   static constexpr uint8_t nbBuffers = _nbBuffers;
-
-  /// Type for a uint32_t buffer of exactly ledCount length
-  using BufferTy = std::array<uint32_t, _ledCount>;
 
   //
   // public helpers
@@ -644,5 +666,23 @@ public:
 };
 
 } // namespace modes::hardware
+
+namespace modes {
+
+/* \brief Convert \p x and \p y coordinates to a linear position on strip
+ */
+static constexpr uint16_t to_strip(uint16_t x, uint16_t y)
+{
+  if (x > hardware::LampTy::maxWidth)
+    x = hardware::LampTy::maxWidth;
+  if (y > hardware::LampTy::maxHeight)
+    y = hardware::LampTy::maxHeight;
+
+  uint16_t n = x + y * hardware::LampTy::maxWidthFloat;
+  if (n >= hardware::LampTy::ledCount)
+    n = hardware::LampTy::ledCount - 1;
+  return n;
+}
+} // namespace modes
 
 #endif
