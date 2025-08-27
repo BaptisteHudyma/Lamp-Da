@@ -6,16 +6,18 @@ if(LMBD_ROOT_DIR STREQUAL "")
     set(LMBD_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../")
 endif()
 
-# get SFML version, if not found, use FetchContent
-set(SFML_VERSION 3.0.1)
+# use local SFML2 install, if not available, use FetchContent to get 2.6.1
+set(SFML_VERSION 2)
 set(SFML_FETCH 0 CACHE PATH "If not set, try to use local install of SFML")
 if (NOT SFML_FETCH)
-    find_package(SFML ${SFML_VERSION} COMPONENTS System Window Graphics Audio)
+    find_package(SFML ${SFML_VERSION} COMPONENTS system window graphics audio)
 endif()
 
+# (not all SFML2 can't be rebuild on recent cmake)
+set(SFML_VERSION_LOCAL_BUILD 2.6.1)
 if (NOT SFML_FOUND)
     set(SFML_FETCH 1)
-    message(WARNING "No local installation of SFML ${SFML_VERSION} found!\n... cmake will try to build SFML locally :)")
+    message(WARNING "No local installation of SFML ${SFML_VERSION} found!\n... cmake will try to build SFML ${SFML_VERSION_LOCAL_BUILD} locally :)")
 endif()
 
 if (SFML_FETCH)
@@ -23,7 +25,7 @@ if (SFML_FETCH)
     include(FetchContent)
     FetchContent_Declare(sfml
         GIT_REPOSITORY https://github.com/SFML/SFML.git
-        GIT_TAG ${SFML_VERSION}
+        GIT_TAG ${SFML_VERSION_LOCAL_BUILD}
         GIT_SHALLOW ON
         SYSTEM
         EXCLUDE_FROM_ALL

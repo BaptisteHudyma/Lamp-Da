@@ -94,9 +94,9 @@ Vagrant.configure("2") do |config|
     # for python dependencies (!! python is python3 !!)
     apt-get install -y python3 python3-venv python-is-python3
     #
-    # all dependencies required for SFML 3.0.1
-    apt-get install -y libx11-dev libxrandr-dev libxcursor-dev libxi-dev libudev-dev libfreetype-dev libvorbis-dev libflac-dev
-    apt-get install -y libsfml-dev # (this sets up SFML 2.6.2)
+    # all dependencies required for SFML 2.6.1
+    apt-get install -y libx11-dev libxrandr-dev libxcursor-dev libxi-dev libudev-dev libfreetype-dev libvorbis-dev libflac-dev libopenal-dev libalut-dev
+    apt-get install -y libsfml-dev # (this sets up SFML 2.5.1)
     #
     # by default, download+install arduino-cli in _build/arduino-cli directory
     chown -R vagrant:vagrant /LampColorControler/*

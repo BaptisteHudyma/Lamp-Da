@@ -22,12 +22,12 @@ is a list of packages that you may need to use this project:
  - `python3 python3-venv python-is-python3` to flash the board & use tools
  - optionally, if you want to build the simulator:
 
-    - `libsfml-dev` if you are on a platform that have `SFML 3.0.1`
-      (e.g. `sid` or `experimental`)
-    - `libx11-dev libxrandr-dev libxcursor-dev libxi-dev libudev-dev` and
-      `libfreetype-dev libvorbis-dev libflac-dev` if you only have `SFML 2.6.2`
-      or lower available, as the simulator build system will try to download
-      and compile the last SFML version from source.
+    - `libsfml-dev` if you are on a platform that have `SFML 2.5.1` or greater
+    - `libx11-dev libxrandr-dev libxcursor-dev libxi-dev libudev-dev`,
+      `libfreetype-dev libvorbis-dev libflac-dev` and
+      `libopenal-dev libalut-dev` if you do not have `SFML2`, as the simulator
+      build system will try to download and compile
+      `SFML 2.6.1` from source.
 
 Depending on your setup (Ubuntu, WSL, Fedora, Archlinux, …) you may need to
 install other packages, such as `arduino-cli` or `arduino-ide` as described

@@ -1,10 +1,11 @@
+#include <memory>
+
 #include "src/system/platform/pdm_handle.h"
 
 #include "src/system/utils/utils.h"
 #include "src/system/platform/time.h"
 
 #include <SFML/Graphics/PrimitiveType.hpp>
-#include <cmath>
 
 #include <SFML/Audio/SoundRecorder.hpp>
 
@@ -35,18 +36,44 @@ public:
   microphone::PdmData data;
   ~LevelRecorder() { stop(); }
 };
-LevelRecorder recorder;
+std::unique_ptr<LevelRecorder> recorder;
 
 namespace microphone {
 namespace _private {
 
-PdmData get() { return recorder.data; }
+PdmData get()
+{
+  if (recorder)
+  {
+    return recorder->data;
+  }
+  else
+  {
+    return {};
+  };
+}
 
-bool start() { return recorder.start(16000); }
+bool start()
+{
+  fprintf(stderr, "started\n");
+  fflush(stderr);
 
-void stop() { recorder.stop(); }
+  if (!recorder)
+    recorder = std::make_unique<LevelRecorder>();
 
-// TODO issue #132
+  return recorder->start(16000);
+}
+
+void stop()
+{
+  if (recorder)
+  {
+    recorder->stop();
+    recorder = nullptr;
+  }
+}
+
+// TODO issue #132 (mock sound input parameters)
 SoundStruct soundStruct;
 SoundStruct process_fft(const PdmData& data) { return soundStruct; }
 

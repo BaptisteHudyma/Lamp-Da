@@ -61,7 +61,7 @@ template<typename T> struct simulator
     // init font
     sf::Font font;
     bool enableFont = false, enableText = false;
-    if (font.openFromFile("simulator/resources/DejaVuSansMono.ttf"))
+    if (font.loadFromFile("simulator/resources/DejaVuSansMono.ttf"))
     {
       enableFont = true;
     }
@@ -109,18 +109,19 @@ template<typename T> struct simulator
       enableText |= state.verbose;
 
       // read events, prevent windows lockup
-      while (const std::optional event = window.pollEvent())
+      sf::Event event;
+      while (window.pollEvent(event))
       {
-        if (event->is<sf::Event::Closed>())
+        if (event.type == sf::Event::Closed)
         {
           window.close();
           break;
         }
 
-        if (event->is<sf::Event::KeyPressed>())
+        if (event.type == sf::Event::KeyPressed)
         {
-          auto kpressed = event->getIf<sf::Event::KeyPressed>();
-          switch (kpressed->code)
+          auto kpressed = event.key.code;
+          switch (kpressed)
           {
             default:
               state.lastKeyPressed = 0;
@@ -172,7 +173,7 @@ template<typename T> struct simulator
           break;
         }
 
-        if (event->is<sf::Event::KeyReleased>())
+        if (event.type == sf::Event::KeyReleased)
         {
           // tick forward (once) and pause
           if (state.lastKeyPressed == 't')
@@ -234,7 +235,7 @@ template<typename T> struct simulator
           break;
         }
 
-        if (event->is<sf::Event::MouseButtonPressed>())
+        if (event.type == sf::Event::MouseButtonPressed)
         {
           float dx = indCoordX - mousePos.x + simu.buttonSize;
           float dy = indCoordY - mousePos.y + simu.buttonSize;
@@ -380,8 +381,7 @@ template<typename T> struct simulator
             float dy = abs(shape.getPosition().y - mousePos.y + ledSz / 2 + offsetY);
             if (fXpos + 1 >= ledW - simu.fakeXend && dy < ledPadSz / 2)
             {
-              sf::Text text(font, std::to_string(Ypos));
-              text.setCharacterSize(12);
+              sf::Text text(std::to_string(Ypos), font, 12);
 
               sf::Vector2f where(ledSz + (ledW + simu.fakeXorigin) * ledPadSz + ledOffset * 2, rYpos * ledPadSz + 6);
               text.setPosition(where);
@@ -394,8 +394,7 @@ template<typename T> struct simulator
             float dx = abs(shape.getPosition().x - mousePos.x - (MouseYpos % 2) * ledOffset + ledSz);
             if (Ypos + 1 >= ledH && dx < ledPadSz / 2)
             {
-              sf::Text text(font, std::to_string(Xpos));
-              text.setCharacterSize(12);
+              sf::Text text(std::to_string(Xpos), font, 12);
 
               sf::Vector2f where(ledSz + rXpos * ledPadSz - Yoff * ledOffset + 16, (ledH + Yoff) * ledPadSz + 8);
               text.setPosition(where);
@@ -409,8 +408,7 @@ template<typename T> struct simulator
               str += std::to_string(int(g)) + ", ";
               str += std::to_string(int(b)) + ")";
 
-              sf::Text text(font, str);
-              text.setCharacterSize(12);
+              sf::Text text(str, font, 12);
 
               sf::Vector2f where(indCoordX + simu.buttonSize * 3, indCoordY - 16.f);
               text.setPosition(where);
