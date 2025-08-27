@@ -1,7 +1,6 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 
-#include <memory>
 #include <cstring>
 #include <iostream>
 
@@ -16,6 +15,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/System/Time.hpp>
 #include <SFML/Window/Keyboard.hpp>
 
 #define LMBD_SIMU_REALCOLORS
@@ -44,14 +44,19 @@ template<typename T> struct simulator
   static constexpr uint screenHeight = 1080;
   static constexpr char title[] = "lampda simulator";
 
+  static constexpr uint brightnessWidth = 480;
+
   static int run()
   {
-    // init shapes
-    std::array<std::unique_ptr<sf::RectangleShape>, _LampTy::ledCount> shapes {};
-    for (size_t I = 0; I < shapes.size(); ++I)
-    {
-      shapes[I] = std::make_unique<sf::RectangleShape>();
-    }
+    T simu;
+    sf::Clock time;
+
+    // brightness tracker
+    std::array<uint16_t, brightnessWidth> brightnessTracker {};
+    std::array<sf::RectangleShape, brightnessWidth> dots;
+
+    // pixel shapes
+    std::array<sf::RectangleShape, _LampTy::ledCount> shapes;
 
     // init font
     sf::Font font;
@@ -68,15 +73,12 @@ template<typename T> struct simulator
     // render window
     sf::RenderWindow window(sf::VideoMode({screenWidth, screenHeight}), title);
 
-    // build simu
-    T simu;
-
     sf::CircleShape buttonMask(simu.buttonSize);
     sf::CircleShape indicator(simu.buttonSize + simu.buttonMargin);
     buttonMask.setFillColor(sf::Color::Black);
 
     sf::Vector2<int> mousePos = sf::Mouse::getPosition(window);
-    const float indCoordX = simu.ledSizePx * ledW / 2.0;
+    const float indCoordX = simu.buttonLeftPos;
     const float indCoordY = simu.ledSizePx * (ledH + 6);
 
     // TODO: #156 move mock-specific parts to another process
@@ -324,7 +326,7 @@ template<typename T> struct simulator
           }
 
           size_t I = modes::to_strip(Xpos, Ypos);
-          auto& shape = *shapes[I];
+          auto& shape = shapes[I];
 
           const float ledSz = simu.ledSizePx;
           const auto ledPadSz = simu.ledPaddingPx + simu.ledSizePx;
@@ -410,7 +412,7 @@ template<typename T> struct simulator
               sf::Text text(font, str);
               text.setCharacterSize(12);
 
-              sf::Vector2f where(indCoordX + simu.buttonSize * 3, indCoordY);
+              sf::Vector2f where(indCoordX + simu.buttonSize * 3, indCoordY - 16.f);
               text.setPosition(where);
               window.draw(text);
             }
@@ -429,6 +431,31 @@ template<typename T> struct simulator
       window.draw(indicator);
       window.draw(buttonMask);
 
+      // track brightness & display dot curve
+      float now = (time.getElapsedTime().asMilliseconds() * simu.fps) / 1000.f;
+      uint32_t trackerPos = now / simu.brightnessRate;
+
+      trackerPos = trackerPos % brightnessTracker.size();
+      brightnessTracker[trackerPos] = state.brightness;
+      brightnessTracker[(trackerPos + 1) % brightnessTracker.size()] = 0;
+
+      float xDotsOrigin = indCoordX + simu.buttonSize * 2 + simu.buttonMargin * 2 + 16.f;
+      float yDotsOrigin = indCoordY + simu.brightnessScale;
+
+      for (size_t I = 0; I < brightnessTracker.size(); ++I)
+      {
+        auto& dot = dots[I];
+
+        float v = (brightnessTracker[I] * simu.brightnessScale) / 256;
+        float x = xDotsOrigin + I;
+        float y = yDotsOrigin - v;
+        dot.setSize({1, 1});
+        dot.setPosition({x, y});
+        dot.setFillColor(sf::Color(0, 0xff, 0));
+        window.draw(dot);
+      }
+
+      // draw window
       window.display();
     }
 
