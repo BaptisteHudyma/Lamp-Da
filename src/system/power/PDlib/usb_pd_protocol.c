@@ -609,7 +609,9 @@ static inline void set_state(enum pd_states next_state)
 
     /* Disable Auto Discharge Disconnect */
     if (not_auto_toggling)
+    {
       tcpm_enable_auto_discharge_disconnect(0);
+    }
 
     /* detect USB PD cc disconnect */
 #ifdef CONFIG_COMMON_RUNTIME
@@ -2505,7 +2507,9 @@ static void pd_partner_port_reset()
    * contract in place.
    */
   if (pd_comm_is_enabled())
+  {
     return;
+  }
 
   /* If we just lost power, don't apply Rp. */
 #if 0
