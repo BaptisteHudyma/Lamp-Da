@@ -172,6 +172,7 @@ endfunction()
 
 # Create simulator targets dynamically
 create_simulator_target(indexable)
+create_simulator_target(simple)
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/simulation_parameters.txt

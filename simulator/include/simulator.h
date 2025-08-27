@@ -1,11 +1,15 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 
+#include <memory>
+#include <cstring>
+#include <iostream>
+
+// include this first
+#include "src/system/global.h"
+
 #include "parameter_parser.h"
 #include "simulator_state.h"
-
-// Call the main file after mocks
-#include "src/system/global.h"
 
 // see LMBD_LAMP_TYPE__${UPPER_SIM_NAME} hard-coded in simulator/Makefile
 #include "src/user/constants.h"
@@ -13,18 +17,14 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Window/Keyboard.hpp>
-#include <memory>
-#include <cstring>
-#include <iostream>
-
-#include <SFML/Graphics.hpp>
 
 #define LMBD_SIMU_REALCOLORS
 
-constexpr int ledW = stripXCoordinates;
-constexpr int ledH = stripYCoordinates;
+// (_LampTy from simulator_state.h)
+constexpr int ledW = _LampTy::maxWidth;
+constexpr int ledH = _LampTy::maxHeight;
 
-constexpr float fLedW = stripXCoordinates;
+constexpr float fLedW = _LampTy::maxWidthFloat;
 constexpr float fResidueW = 1 / (2 * fLedW - 2 * floor(fLedW) - 1);
 
 #include "src/user/functions.h"
@@ -47,8 +47,8 @@ template<typename T> struct simulator
   static int run()
   {
     // init shapes
-    std::unique_ptr<sf::RectangleShape> shapes[LED_COUNT];
-    for (size_t I = 0; I < LED_COUNT; ++I)
+    std::array<std::unique_ptr<sf::RectangleShape>, _LampTy::ledCount> shapes {};
+    for (size_t I = 0; I < shapes.size(); ++I)
     {
       shapes[I] = std::make_unique<sf::RectangleShape>();
     }
@@ -287,10 +287,21 @@ template<typename T> struct simulator
         global::main_loop(mock_registers::addedAlgoDelay);
       }
 
-      for (size_t I = 0; I < LED_COUNT; ++I)
+      if constexpr (_LampTy::flavor == modes::hardware::LampTypes::indexable)
       {
-        state.colorBuffer[I] = user::_private::strip.getPixelColor(I);
-        state.brightness = user::_private::strip.getBrightness();
+        for (size_t I = 0; I < _LampTy::ledCount; ++I)
+        {
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+          state.colorBuffer[I] = user::_private::strip.getPixelColor(I);
+          state.brightness = user::_private::strip.getBrightness();
+#endif
+        }
+      }
+      else
+      {
+        for (size_t I = 0; I < _LampTy::ledCount; ++I)
+          state.colorBuffer[I] = 0xffff00;
+        state.brightness = (brightness::get_brightness() * 255) / maxBrightness;
       }
 
       state.indicatorColor = mock_indicator::get_color();
@@ -312,7 +323,7 @@ template<typename T> struct simulator
             Yoff = 1;
           }
 
-          size_t I = to_strip(Xpos, Ypos);
+          size_t I = modes::to_strip(Xpos, Ypos);
           auto& shape = *shapes[I];
 
           const float ledSz = simu.ledSizePx;
