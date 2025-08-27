@@ -750,7 +750,7 @@ extern "C" {
   //  TODO HACK below
   int is_sourcing();
   int send_control(int type);
-  // ezndofTODO
+  // endofTODO
 
 #endif
 

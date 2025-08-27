@@ -60,6 +60,7 @@ uint32_t srcCapsSaved[5];
 void pd_startup()
 {
   // if enabled, will send updates when source
+  // TODO: do not work with this version of the state machine
   // pd_ping_enable(1);
 }
 
@@ -125,32 +126,7 @@ void reset_cache()
   _shouldStopVbus = 0;
 }
 
-void pd_loop()
-{
-  pd_run_state_machine();
-
-  // HACK BELOW : ping in source mode
-
-  // disconnect auto if no detection
-  static uint32_t lastTime;
-  if (time_ms() - lastTime > 1000)
-  {
-    static uint32_t firstSourceTime;
-    if (is_sourcing())
-    {
-      // source started since a time
-      if (time_ms() - firstSourceTime > 2000)
-      {
-        int res = send_control(PD_CTRL_PING);
-        if (res < 0)
-          pd_power_supply_reset();
-      }
-    }
-    else
-      firstSourceTime = time_ms();
-    lastTime = time_ms();
-  }
-}
+void pd_loop() { pd_run_state_machine(); }
 
 // valid voltages from 0 to 20V
 int pd_is_valid_input_voltage(int mv) { return mv > 0 && mv <= 20000; }

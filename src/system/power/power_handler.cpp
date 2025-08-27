@@ -150,6 +150,9 @@ void handle_clear_power_rails()
   }
 }
 
+// keep track of current consumption
+static uint32_t timeSinceOTGNoCurrentUse;
+
 void handle_charging_mode()
 {
   // resume PD state machine
@@ -162,6 +165,7 @@ void handle_charging_mode()
   {
     // disable balancing
     balancer::enable_balancing(false);
+    timeSinceOTGNoCurrentUse = time_ms();
     // start otg
     __private::powerMachine.set_state(PowerStates::OTG_MODE);
     return;
@@ -204,11 +208,32 @@ void handle_output_voltage_mode()
 
 void handle_otg_mode()
 {
+  // shutdown OTG if no current consumption for X seconds
+  const auto& state = charger::get_state();
+  if (state.inputCurrent_mA <= 10)
+  {
+    if (time_ms() - timeSinceOTGNoCurrentUse > 2000)
+    {
+      // reset pd machine
+      powerDelivery::suspend_pd_state_machine();
+      powerDelivery::resume_pd_state_machine();
+
+      // temporary suspend
+      powerDelivery::allow_otg(false);
+      set_otg_parameters(0, 0);
+      go_to_charger_mode();
+      return;
+    }
+  }
+  else
+  {
+    timeSinceOTGNoCurrentUse = time_ms();
+  }
+
   // end of OTG, switch to charger
   if (!powerDelivery::is_switching_to_otg())
   {
     // temporary suspend
-    powerDelivery::suspend_pd_state_machine();
     powerDelivery::allow_otg(false);
     set_otg_parameters(0, 0);
     go_to_charger_mode();
@@ -356,6 +381,7 @@ bool go_to_otg_mode()
 {
   if (__private::can_switch_states())
   {
+    timeSinceOTGNoCurrentUse = time_ms();
     __private::switch_state(PowerStates::OTG_MODE);
     return true;
   }

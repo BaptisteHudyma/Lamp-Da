@@ -189,11 +189,13 @@ struct UsbPDData
 
   void serial_show()
   {
-    lampda_print("PD algo: %d %d%d%d: %fV | %s",
+    lampda_print("PD algo: %d %d%d%d: [PDO %fV %fA] %fV | %s",
                  should_run_pd_state_machine,
                  isVbusPowered,
                  isPowerSourceDetected,
                  isUsbPd,
+                 maxInputVoltage / 1000.0,
+                 maxInputCurrent / 1000.0,
                  vbusVoltage / 1000.0,
                  pdAlgoStatus.c_str());
     hasChanged = false;

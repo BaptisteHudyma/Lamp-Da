@@ -142,7 +142,8 @@ void notify_thread(const char* const taskName, int wakeUpEvent)
     lampda_print("ERROR: task handle %s do not exist", taskName);
     return;
   }
-  xTaskNotify(handle->second, wakeUpEvent, eSetBits);
+  BaseType_t signal = pdFALSE;
+  xTaskNotifyFromISR(handle->second, wakeUpEvent, eSetBits, &signal);
 }
 
 int wait_notification(const int timeout_ms)
