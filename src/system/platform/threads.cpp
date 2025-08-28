@@ -2,7 +2,8 @@
 #define PLATFORM_THREADS_CPP
 
 #include "threads.h"
-#include "print.h"
+
+#include "src/system/utils/print.h"
 
 #include <Arduino.h>
 #include <map>
@@ -90,7 +91,7 @@ void start_suspended_thread(taskfunc_t taskFunction,
   }
   else
   {
-    lampda_print("task creation failed");
+    lampda_print("task %s creation failed", taskName);
   }
 }
 
@@ -102,8 +103,22 @@ void suspend_all_threads()
 {
   for (auto handle: handles)
   {
+    // notify to cancel timeouts
+    xTaskNotifyGive(handle.second);
     vTaskSuspend(handle.second);
   }
+}
+
+int is_all_suspended()
+{
+  for (const auto& handle_it: handles)
+  {
+    if (eTaskGetState(handle_it.second) != eTaskState::eSuspended)
+    {
+      return 0;
+    }
+  }
+  return 1;
 }
 
 void resume_thread(const char* const taskName)
@@ -112,11 +127,48 @@ void resume_thread(const char* const taskName)
   auto handle = handles.find(taskName);
   if (handle == handles.cend())
   {
-    lampda_print("task handle do not exist");
+    lampda_print("ERROR: task handle %s do not exist", taskName);
     return;
   }
 
   vTaskResume(handle->second);
+}
+
+void notify_thread(const char* const taskName, int wakeUpEvent)
+{
+  auto handle = handles.find(taskName);
+  if (handle == handles.cend())
+  {
+    lampda_print("ERROR: task handle %s do not exist", taskName);
+    return;
+  }
+  BaseType_t signal = pdFALSE;
+  xTaskNotifyFromISR(handle->second, wakeUpEvent, eSetBits, &signal);
+}
+
+int wait_notification(const int timeout_ms)
+{
+  uint32_t notifiedValue = 0;
+  BaseType_t result;
+
+  if (timeout_ms <= 0)
+    result = xTaskNotifyWait(0,              // don't clear on entry
+                             UINT32_MAX,     // clear all bits on exit
+                             &notifiedValue, // returned value
+                             portMAX_DELAY);
+  else
+    result = xTaskNotifyWait(0,              // don't clear on entry
+                             UINT32_MAX,     // clear all bits on exit
+                             &notifiedValue, // returned value
+                             ms2tick(timeout_ms));
+
+  if (result == pdFALSE)
+  {
+    // timeout
+    notifiedValue |= SCHED_NOTIFY_TIMER;
+  }
+
+  return notifiedValue;
 }
 
 void get_thread_debug(char* textBuff) { vTaskList(textBuff); }

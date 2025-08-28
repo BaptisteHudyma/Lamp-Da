@@ -57,6 +57,7 @@ struct PDOTypes
  * \brief If the charger is PD compatible, return it's capabilities
  */
 std::vector<PDOTypes> get_available_pd();
+void show_pd_status();
 
 // return the requested OTG parameters
 struct OTGParameters

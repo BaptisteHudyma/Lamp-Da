@@ -246,9 +246,22 @@ extern "C" {
 
   enum tcpc_transmit_complete
   {
+    TCPC_TX_UNSET = -1,
     TCPC_TX_COMPLETE_SUCCESS = 0,
     TCPC_TX_COMPLETE_DISCARDED = 1,
     TCPC_TX_COMPLETE_FAILED = 2,
+  };
+
+  /*
+   * USB-C PD Vbus levels
+   *
+   * Return true on Vbus check if Vbus is...
+   */
+  enum vbus_level
+  {
+    VBUS_SAFE0V,  /* less than vSafe0V max */
+    VBUS_PRESENT, /* at least vSafe5V min */
+    VBUS_REMOVED, /* less than vSinkDisconnect max */
   };
 
   struct tcpm_drv
@@ -287,7 +300,7 @@ extern "C" {
      *
      * @return False => VBUS not at level, True => VBUS at level
      */
-    int (*get_vbus_level)();
+    int (*get_vbus_level)(enum vbus_level level);
 
     /**
      * Get VBUS voltage
@@ -563,6 +576,16 @@ extern "C" {
   static inline int cc_is_snk_dbg_acc(enum tcpc_cc_voltage_status cc1, enum tcpc_cc_voltage_status cc2)
   {
     return cc1 == TYPEC_CC_VOLT_RD && cc2 == TYPEC_CC_VOLT_RD;
+  }
+
+  static inline uint8_t board_get_src_dts_polarity()
+  {
+    /*
+     * If the port in SRC DTS, the polarity is determined by the board,
+     * i.e. what Rp impedance the CC lines are pulled. If this function
+     * is not overridden, assume CC1 is primary.
+     */
+    return 0;
   }
 
   /**

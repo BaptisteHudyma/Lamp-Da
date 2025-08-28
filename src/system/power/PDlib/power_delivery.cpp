@@ -36,8 +36,18 @@ inline static bool isPowerSourceDetected_s = false;
 inline static uint32_t powerSourceDetectedTime_s = 0;
 
 inline static bool should_run_pd_state_machine = true;
-void suspend_pd_state_machine() { should_run_pd_state_machine = false; }
-void resume_pd_state_machine() { should_run_pd_state_machine = true; }
+void suspend_pd_state_machine()
+{
+  if (should_run_pd_state_machine)
+    supsend_usb_pd(1);
+  should_run_pd_state_machine = false;
+}
+void resume_pd_state_machine()
+{
+  if (!should_run_pd_state_machine)
+    supsend_usb_pd(0);
+  should_run_pd_state_machine = true;
+}
 
 int get_vbus_voltage()
 {
@@ -89,9 +99,8 @@ bool is_standard_port()
 
 void ic_interrupt()
 {
-  if (should_run_pd_state_machine)
-    // wake up interrupt thread (cannot run code in the interrupt callback)
-    resume_thread(pdInterruptHandle_taskName);
+  // wake up interrupt thread (cannot run code in the interrupt callback)
+  notify_thread(pdInterruptHandle_taskName, 2);
 }
 
 bool is_vbus_powered()
@@ -171,23 +180,33 @@ struct UsbPDData
       hasChanged = true;
       pdAlgoStatus = newStatus;
     }
+
+    if (hasChanged)
+    {
+      serial_show();
+    }
   }
 
   void serial_show()
   {
-    if (hasChanged)
-    {
-      lampda_print("PD algo: %d%d%d: %fV | %s",
-                   isVbusPowered,
-                   isPowerSourceDetected,
-                   isUsbPd,
-                   vbusVoltage / 1000.0,
-                   pdAlgoStatus.c_str());
-      hasChanged = false;
-    }
+    lampda_print("PD algo: %d %d%d%d: [PDO %fV %fA] %fV | %s",
+                 should_run_pd_state_machine,
+                 isVbusPowered,
+                 isPowerSourceDetected,
+                 isUsbPd,
+                 maxInputVoltage / 1000.0,
+                 maxInputCurrent / 1000.0,
+                 vbusVoltage / 1000.0,
+                 pdAlgoStatus.c_str());
+    hasChanged = false;
+    lampda_print(
+            "allowed usage: %d mA, %d mV", get_allowed_consuption().current_mA, get_allowed_consuption().voltage_mV);
   }
 };
 UsbPDData data;
+
+void show_pd_status() { data.serial_show(); }
+
 /**
  *
  *      HEADER FUNCTIONS BELOW
@@ -196,22 +215,17 @@ UsbPDData data;
 
 void interrupt_handle()
 {
+  // this thread only runs when signal is sent
+  wait_notification(0);
+
 #ifdef USE_PD_ALGO_LOOP
   // only waken up on thread update
   tcpc_alert();
 #endif
-  // this thread only runs when interrupt is set
-  suspend_this_thread();
 }
 
 void pd_run()
 {
-  // do not run when not asked to run
-  if (!should_run_pd_state_machine)
-  {
-    return;
-  }
-
   // PD loop limits the run of this threads by waiting for events
   // DO NOT REMOVE THE PD STATE MACHINE
   // or -> add a delay to this loop instead
@@ -243,8 +257,10 @@ void pd_run()
       charger::drivers::set_OTG_targets(5000, 1000);
       charger::drivers::enable_OTG();
 
-      DigitalPin(DigitalPin::GPIO::Output_VbusFastRoleSwap).set_high(true);
-      DigitalPin(DigitalPin::GPIO::Output_DischargeVbus).set_high(true);
+      DigitalPin dischargeVbus(DigitalPin::GPIO::Output_DischargeVbus);
+      DigitalPin fastRoleSwap(DigitalPin::GPIO::Output_VbusFastRoleSwap);
+      dischargeVbus.set_high(true);
+      fastRoleSwap.set_high(true);
 
       // wait until OTG drops to acceptable level
       uint64_t timeout = get_time().val + 500 * MSEC_US;
@@ -262,6 +278,8 @@ void pd_run()
 
       // enable gate direction
       DigitalPin(DigitalPin::GPIO::Output_VbusDirection).set_high(true);
+      dischargeVbus.set_high(false);
+      fastRoleSwap.set_high(false);
       powergates::enable_vbus_gate_DIRECT();
     }
     // after the activation turn, disable the flag
@@ -295,7 +313,8 @@ bool setup()
   pd_startup();
 
   DigitalPin chargerPin(DigitalPin::GPIO::Signal_PowerDelivery);
-  chargerPin.attach_callback(ic_interrupt, DigitalPin::Interrupt::kChange);
+  chargerPin.attach_callback(ic_interrupt,
+                             DigitalPin::Interrupt::kFallingEdge); // normal high, so focus on falling edge
 
   isSetup = true;
   return true;
@@ -307,17 +326,16 @@ void start_threads()
     return;
 
   // start task scheduler, in suspended state
-  start_suspended_thread(task_scheduler, taskScheduler_taskName, 0, 255);
+  start_thread(task_scheduler, taskScheduler_taskName, 2, 255);
   // start interrupt handle, in suspended state
-  start_suspended_thread(interrupt_handle, pdInterruptHandle_taskName, 0, 255);
+  start_thread(interrupt_handle, pdInterruptHandle_taskName, 2, 255);
   // start pd handle loop
-  start_thread(pd_run, pd_taskName, 0, 1024);
+  start_thread(pd_run, pd_taskName, 1, 1024);
 }
 
 void loop()
 {
   data.update();
-  data.serial_show();
 
   // update battery level
   set_battery_level(battery::get_battery_level() / 100);

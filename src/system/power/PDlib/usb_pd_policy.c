@@ -4,6 +4,7 @@
  */
 
 #include "usb_pd.h"
+#include <string.h>
 
 #ifdef CONFIG_COMMON_RUNTIME
 #define CPRINTS(format, args...) cprints(CC_USBPD, format, ##args)
@@ -243,6 +244,151 @@ void pd_process_source_cap(int cnt, uint32_t* src_caps)
   // charge_manager_set_ceil( CEIL_REQUESTOR_PD, PD_MIN_MA);
   pd_set_input_current_limit(ma, mv);
 #endif
+}
+
+struct cached_tcpm_message
+{
+  uint32_t header;
+  uint32_t payload[7];
+};
+
+/* Cache depth needs to be power of 2 */
+/* TODO: Keep track of the high water mark */
+#define CACHE_DEPTH      (1 << 3)
+#define CACHE_DEPTH_MASK (CACHE_DEPTH - 1)
+
+struct queue
+{
+  /*
+   * Head points to the index of the first empty slot to put a new RX
+   * message. Must be masked before used in lookup.
+   */
+  uint32_t head;
+  /*
+   * Tail points to the index of the first message for the PD task to
+   * consume. Must be masked before used in lookup.
+   */
+  uint32_t tail;
+  struct cached_tcpm_message buffer[CACHE_DEPTH];
+};
+static struct queue cached_messages;
+
+/* Note this method can be called from an interrupt context. */
+int tcpm_enqueue_message()
+{
+  int rv;
+  struct queue* const q = &cached_messages;
+  struct cached_tcpm_message* const head = &q->buffer[q->head & CACHE_DEPTH_MASK];
+
+  if (q->head - q->tail == CACHE_DEPTH)
+  {
+    CPRINTS("C%d RX EC Buffer full!", port);
+    return EC_ERROR_OVERFLOW;
+  }
+
+  /* Blank any old message, just in case. */
+  memset(head, 0, sizeof(*head));
+  /* Call the raw driver without caching */
+  rv = tcpc_config.drv->get_message(head->payload, &head->header);
+  if (rv)
+  {
+    CPRINTS("Could not retrieve RX message (%d)", rv);
+    return rv;
+  }
+
+  /* Increment atomically to ensure get_message_raw happens-before */
+  // TODO: atomic_add(&q->head, 1);
+  q->head += 1;
+
+  /* Wake PD task up so it can process incoming RX messages */
+  task_set_event(TASK_EVENT_WAKE);
+
+  return EC_SUCCESS;
+}
+
+int tcpm_has_pending_message()
+{
+  const struct queue* const q = &cached_messages;
+
+  return q->head != q->tail;
+}
+
+int tcpm_dequeue_message(uint32_t* const payload, int* const header)
+{
+  struct queue* const q = &cached_messages;
+  struct cached_tcpm_message* const tail = &q->buffer[q->tail & CACHE_DEPTH_MASK];
+
+  if (!tcpm_has_pending_message())
+  {
+    CPRINTS("No message in RX buffer!");
+    return EC_ERROR_BUSY;
+  }
+
+  /* Copy cache data in to parameters */
+  *header = tail->header;
+  memcpy(payload, tail->payload, sizeof(tail->payload));
+
+  /* Increment atomically to ensure memcpy happens-before */
+  // TODO atomic_add(&q->tail, 1);
+  q->tail += 1;
+  return EC_SUCCESS;
+}
+
+void tcpm_clear_pending_messages()
+{
+  struct queue* const q = &cached_messages;
+
+  q->tail = q->head;
+}
+
+/* Cable structure for storing cable attributes */
+struct pd_cable
+{
+  /* Note: the following fields are used by TCPMv1 */
+  /* Last received SOP' message id counter*/
+  uint8_t last_sop_p_msg_id;
+  /* Last received SOP'' message id counter*/
+  uint8_t last_sop_p_p_msg_id;
+  /* Cable flags. See CABLE_FLAGS_* */
+  uint8_t flags;
+  /* For storing Discover mode response from device */
+  // union tbt_mode_resp_device dev_mode_resp;
+  /* For storing Discover mode response from cable */
+  // union tbt_mode_resp_cable cable_mode_resp;
+
+  /* Cable revision */
+  // enum pd_rev_type rev;
+};
+
+static struct pd_cable cable;
+
+int consume_sop_prime_repeat_msg(uint8_t msg_id)
+{
+  if (cable.last_sop_p_msg_id != msg_id)
+  {
+    cable.last_sop_p_msg_id = msg_id;
+    return 0;
+  }
+  CPRINTF("SOP Prime repeat msg_id %d\n", msg_id);
+  return 1;
+}
+
+int consume_sop_prime_prime_repeat_msg(uint8_t msg_id)
+{
+  if (cable.last_sop_p_p_msg_id != msg_id)
+  {
+    cable.last_sop_p_p_msg_id = msg_id;
+    return 0;
+  }
+  CPRINTF("SOP Prime Prime repeat msg_id %d\n", msg_id);
+  return 1;
+}
+
+void reset_pd_cable()
+{
+  memset(&cable, 0, sizeof(cable));
+  cable.last_sop_p_msg_id = INVALID_MSG_ID_COUNTER;
+  cable.last_sop_p_p_msg_id = INVALID_MSG_ID_COUNTER;
 }
 
 #pragma weak pd_process_source_cap_callback

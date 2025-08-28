@@ -37,13 +37,13 @@ extern "C" {
   };
 
 /* Events for USB PD task */
-#define PD_EVENT_RX                 (1 << 2) /* Incoming packet event */
 #define PD_EVENT_TX                 (1 << 3) /* Outgoing packet event */
 #define PD_EVENT_CC                 (1 << 4) /* CC line change event */
 #define PD_EVENT_TCPC_RESET         (1 << 5) /* TCPC has reset */
 #define PD_EVENT_UPDATE_DUAL_ROLE   (1 << 6) /* DRP state has changed */
 #define PD_EVENT_DEVICE_ACCESSED    (1 << 7)
 #define PD_EVENT_POWER_STATE_CHANGE (1 << 8)
+#define PD_EVENT_RX_HARD_RESET      (1 << 11) /* Receive a Hard Reset. */
 
 /* --- PD data message helpers --- */
 #define PDO_MAX_OBJECTS 7
@@ -747,6 +747,11 @@ extern "C" {
    */
   int pd_get_role();
 
+  //  TODO HACK below
+  int is_sourcing();
+  int send_control(int type);
+  // endofTODO
+
 #endif
 
   /* Control Message type */
@@ -833,6 +838,22 @@ extern "C" {
     PD_DATA_VENDOR_DEF = 15,
   };
 
+  /*
+   * Cable plug. See 6.2.1.1.7 Cable Plug. Only applies to SOP' and SOP".
+   * Replaced by pd_power_role for SOP packets.
+   */
+  enum pd_cable_plug
+  {
+    PD_PLUG_FROM_DFP_UFP = 0,
+    PD_PLUG_FROM_CABLE = 1
+  };
+
+  enum cable_outlet
+  {
+    CABLE_PLUG = 0,
+    CABLE_RECEPTACLE = 1,
+  };
+
 /* Protocol revision */
 #define PD_REV10 0
 #define PD_REV20 1
@@ -886,11 +907,30 @@ extern "C" {
   ((type) | ((rev) << 6) | ((drole) << 5) | ((prole) << 8) | ((id) << 9) | ((cnt) << 12) | ((ext) << 15))
 
 /* Used for processing pd header */
-#define PD_HEADER_EXT(header)  (((header) >> 15) & 1)
-#define PD_HEADER_CNT(header)  (((header) >> 12) & 7)
-#define PD_HEADER_TYPE(header) ((header) & 0xF)
-#define PD_HEADER_ID(header)   (((header) >> 9) & 7)
-#define PD_HEADER_REV(header)  (((header) >> 6) & 3)
+#define PD_HEADER_EXT(header)   (((header) >> 15) & 1)
+#define PD_HEADER_CNT(header)   (((header) >> 12) & 7)
+#define PD_HEADER_TYPE(header)  ((header) & 0xF)
+#define PD_HEADER_ID(header)    (((header) >> 9) & 7)
+#define PD_HEADER_REV(header)   (((header) >> 6) & 3)
+#define PD_HEADER_DROLE(header) (((header) >> 5) & 1)
+
+/*
+ * The message header is a 16-bit value that's stored in a 32-bit data type.
+ * SOP* is encoded in bits 31 to 28 of the 32-bit data type.
+ * NOTE: This is not part of the PD spec.
+ */
+#define PD_HEADER_GET_SOP(header) (((header) >> 28) & 0xf)
+#define PD_HEADER_SOP(sop)        (((sop) & 0xf) << 28)
+
+  enum pd_msg_type
+  {
+    PD_MSG_SOP,
+    PD_MSG_SOP_PRIME,
+    PD_MSG_SOP_PRIME_PRIME,
+    PD_MSG_SOP_DBG_PRIME,
+    PD_MSG_SOP_DBG_PRIME_PRIME,
+    PD_MSG_SOP_CBL_RST,
+  };
 
 /* Used for processing pd extended header */
 #define PD_EXT_HEADER_CHUNKED(header)   (((header) >> 15) & 1)
@@ -973,6 +1013,19 @@ extern "C" {
    * @return True if max voltage request allowed, False otherwise
    */
   int pd_is_max_request_allowed(void);
+
+  /**
+   * Reads a message using get_message_raw driver method and puts it into EC's
+   * cache.
+   */
+  int tcpm_enqueue_message();
+  int tcpm_has_pending_message();
+  int tcpm_dequeue_message(uint32_t* const payload, int* const header);
+  void tcpm_clear_pending_messages();
+
+  int consume_sop_prime_repeat_msg(uint8_t msg_id);
+  int consume_sop_prime_prime_repeat_msg(uint8_t msg_id);
+  void reset_pd_cable();
 
   /**
    * Callback with source capabilities packet
@@ -1357,9 +1410,6 @@ static inline void pd_send_host_event(int mask) {}
    */
   void pd_set_suspend(int enable);
 
-  void pd_dual_role_on(void);
-  void pd_dual_role_off(void);
-
   /**
    * Check if the port has been initialized and PD task has not been
    * suspended.
@@ -1598,8 +1648,6 @@ static inline void pd_send_host_event(int mask) {}
    * @param port USB-C port number
    */
   int pd_ts_dts_plugged();
-
-  typec_current_t get_typec_current_mA();
 
   /* ----- Logging ----- */
   static inline void pd_log_event(uint8_t type, uint8_t size_port, uint16_t data, void* payload) {}

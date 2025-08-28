@@ -53,10 +53,10 @@ extern "C" {
     return tcpc_config.drv->get_cc(cc1, cc2);
   }
 
-  static inline int tcpm_get_vbus_level()
+  static inline int tcpm_get_vbus_level(enum vbus_level level)
   {
     if (tcpc_config.drv->get_vbus_level)
-      return tcpc_config.drv->get_vbus_level();
+      return tcpc_config.drv->get_vbus_level(level);
     // return 0 instead of a ptentially confusing error
     return 0;
   }
@@ -89,6 +89,14 @@ extern "C" {
   }
 
   static inline int tcpm_set_rx_enable(int enable) { return tcpc_config.drv->set_rx_enable(enable); }
+
+  static inline void tcpm_enable_auto_discharge_disconnect(int enable)
+  {
+    const struct tcpm_drv* tcpc = tcpc_config.drv;
+
+    if (tcpc->tcpc_enable_auto_discharge_disconnect)
+      tcpc->tcpc_enable_auto_discharge_disconnect(enable);
+  }
 
   static inline int tcpm_get_message(uint32_t* payload, int* head)
   {
@@ -158,7 +166,7 @@ int tcpm_get_cc(int* cc1, int* cc2);
  *
  * @return 0 => VBUS not detected, 1 => VBUS detected
  */
-int tcpm_get_vbus_level();
+int tcpm_get_vbus_level(enum vbus_level level);
 
 /**
  * Set the value of the CC pull-up used when we are a source.

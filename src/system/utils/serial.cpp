@@ -197,6 +197,7 @@ void handleCommand(const std::string& command)
 
     case utils::hash("PD"):
       {
+        powerDelivery::show_pd_status();
         const auto& pd = powerDelivery::get_available_pd();
         if (pd.empty())
         {

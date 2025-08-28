@@ -150,11 +150,14 @@ void handle_clear_power_rails()
   }
 }
 
+// keep track of current consumption
+static uint32_t timeSinceOTGNoCurrentUse;
+
 void handle_charging_mode()
 {
-  // allow OTG in charge mode only
-  powerDelivery::allow_otg(true);
-  // open vbus
+  // resume PD state machine
+  powerDelivery::resume_pd_state_machine();
+  // enable vbus path
   powergates::enable_vbus_gate();
 
   // OTG requested, switch to OTG mode
@@ -162,8 +165,9 @@ void handle_charging_mode()
   {
     // disable balancing
     balancer::enable_balancing(false);
+    timeSinceOTGNoCurrentUse = time_ms();
     // start otg
-    go_to_otg_mode();
+    __private::powerMachine.set_state(PowerStates::OTG_MODE);
     return;
   }
 
@@ -174,11 +178,17 @@ void handle_charging_mode()
     balancer::enable_balancing(true);
   }
 
+  // allow OTG in charge mode only
+  powerDelivery::allow_otg(true);
+
   // charge OR idle and do nothing (end of charge)
 }
 
 void handle_output_voltage_mode()
 {
+  // never run PD in output mode !
+  powerDelivery::suspend_pd_state_machine();
+
   set_otg_parameters(_outputVoltage_mV, _outputCurrent_mA);
 
   // open power gate when voltage matches expected voltage
@@ -198,6 +208,41 @@ void handle_output_voltage_mode()
 
 void handle_otg_mode()
 {
+  // shutdown OTG if no current consumption for X seconds
+  const auto& state = charger::get_state();
+  if (state.inputCurrent_mA <= 10)
+  {
+    if (time_ms() - timeSinceOTGNoCurrentUse > 2000)
+    {
+      // reset pd machine
+      powerDelivery::suspend_pd_state_machine();
+      powerDelivery::resume_pd_state_machine();
+
+      // temporary suspend
+      powerDelivery::allow_otg(false);
+      set_otg_parameters(0, 0);
+      go_to_charger_mode();
+      return;
+    }
+  }
+  else
+  {
+    timeSinceOTGNoCurrentUse = time_ms();
+  }
+
+  // end of OTG, switch to charger
+  if (!powerDelivery::is_switching_to_otg())
+  {
+    // temporary suspend
+    powerDelivery::allow_otg(false);
+    set_otg_parameters(0, 0);
+    go_to_charger_mode();
+    return;
+  }
+
+  // resume PD state machine
+  powerDelivery::resume_pd_state_machine();
+
   const auto requested = powerDelivery::get_otg_parameters();
   // we do not have the parameters yet
   if (not requested.is_otg_requested())
@@ -303,12 +348,17 @@ bool can_switch_states() { return powerMachine.get_state() != PowerStates::ERROR
 
 } // namespace __private
 
+bool is_in_error_state() { return __private::powerMachine.get_state() == PowerStates::ERROR; }
+
 // control parameters
 bool go_to_output_mode()
 {
   if (__private::can_switch_states())
   {
     powerDelivery::suspend_pd_state_machine();
+    powerDelivery::allow_otg(false);
+    set_otg_parameters(0, 0);
+
     __private::switch_state(PowerStates::OUTPUT_VOLTAGE_MODE);
     return true;
   }
@@ -320,7 +370,6 @@ bool go_to_charger_mode()
   // TODO: and other checks
   if (__private::can_switch_states())
   {
-    powerDelivery::resume_pd_state_machine();
     __private::switch_state(PowerStates::CHARGING_MODE);
     return true;
   }
@@ -332,7 +381,7 @@ bool go_to_otg_mode()
 {
   if (__private::can_switch_states())
   {
-    powerDelivery::resume_pd_state_machine();
+    timeSinceOTGNoCurrentUse = time_ms();
     __private::switch_state(PowerStates::OTG_MODE);
     return true;
   }

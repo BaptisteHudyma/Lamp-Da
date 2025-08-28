@@ -135,6 +135,7 @@ static int res, incoming_packet = 0;
 static int hard_reset_count = 0;
 #ifdef CONFIG_USB_PD_DUAL_ROLE
 static uint64_t next_role_swap = PD_T_DRP_SNK;
+static uint8_t saved_flgs = 0;
 #ifndef CONFIG_USB_PD_VBUS_DETECT_NONE
 static int snk_hard_reset_vbus_off = 0;
 #endif
@@ -397,12 +398,44 @@ void pd_vbus_low() { pd.flags &= ~PD_FLAGS_VBUS_NEVER_LOW; }
 int pd_is_vbus_present()
 {
 #ifdef CONFIG_USB_PD_VBUS_DETECT_TCPC
-  return tcpm_get_vbus_level();
+  return tcpm_get_vbus_level(VBUS_PRESENT);
 #else
   return pd_snk_is_vbus_provided();
 #endif
 }
 #endif
+
+uint8_t savedPortFlags;
+int pd_get_saved_port_flags(uint8_t* flags)
+{
+  flags = &savedPortFlags;
+#if 0
+	if (system_get_bbram(get_bbram_idx(port), flags) != EC_SUCCESS) {
+#ifndef CHIP_HOST
+		ccprintf("PD NVRAM FAIL");
+#endif
+		return EC_ERROR_UNKNOWN;
+	}
+#endif
+  return EC_SUCCESS;
+}
+
+void pd_update_saved_port_flags(uint8_t flag, uint8_t do_set)
+{
+  uint8_t saved_flags;
+
+  if (pd_get_saved_port_flags(&saved_flags) != EC_SUCCESS)
+    return;
+
+  if (do_set)
+    saved_flags |= flag;
+  else
+    saved_flags &= ~flag;
+
+#if 0
+  pd_set_saved_port_flags(saved_flags);
+#endif
+}
 
 #ifdef CONFIG_USB_PD_DUAL_ROLE
 /* Last received source cap */
@@ -423,27 +456,6 @@ void pd_set_src_caps(int cnt, uint32_t* src_caps)
 
 uint8_t pd_get_src_cap_cnt() { return pd_src_cap_cnt; }
 #endif /* CONFIG_USB_PD_DUAL_ROLE */
-
-static void pe_handle_detach(void)
-{
-  /*
-   * PD 3.0 Section 8.3.3.3.8
-   * Note: The HardResetCounter is reset on a power cycle or Detach.
-   */
-  hard_reset_count = 0;
-
-  /* Reset port events */
-  // pd_clear_events(GENMASK(31, 0));
-
-  /* Tell Policy Engine to invalidate the explicit contract */
-  pd.flags &= ~PD_FLAGS_EXPLICIT_CONTRACT;
-
-  /*
-   * Saved Source and Sink Capabilities are no longer valid on disconnect
-   */
-  pd_set_src_caps(0, NULL);
-  // pe_set_snk_caps(0, NULL);
-}
 
 static inline void set_state(enum pd_states next_state)
 {
@@ -531,14 +543,14 @@ static inline void set_state(enum pd_states next_state)
     if (last_state != PD_STATE_SNK_DISCONNECTED_DEBOUNCE && last_state != PD_STATE_SRC_DISCONNECTED_DEBOUNCE)
     {
       pd.flags &= ~PD_FLAGS_RESET_ON_DISCONNECT_MASK;
-      // reset_pd_cable();
+      reset_pd_cable();
     }
 
     /* Clear the input current limit */
     pd_set_input_current_limit(0, 0);
 #ifdef CONFIG_CHARGE_MANAGER
-    // typec_set_input_current_limit( 0, 0);
-    // charge_manager_set_ceil( CEIL_REQUESTOR_PD, CHARGE_CEIL_NONE);
+    typec_set_input_current_limit(0, 0);
+    // TODO charge_manager_set_ceil( CEIL_REQUESTOR_PD, CHARGE_CEIL_NONE);
 #endif
 #ifdef CONFIG_BC12_DETECT_DATA_ROLE_TRIGGER
     /*
@@ -551,8 +563,8 @@ static inline void set_state(enum pd_states next_state)
 #ifdef CONFIG_USBC_VCONN
     set_vconn(0);
 #endif /* defined(CONFIG_USBC_VCONN) */
-       // pd_update_saved_port_flags( PD_BBRMFLG_EXPLICIT_CONTRACT, 0);
-#else  /* CONFIG_USB_PD_DUAL_ROLE */
+    pd_update_saved_port_flags(PD_BBRMFLG_EXPLICIT_CONTRACT, 0);
+#else /* CONFIG_USB_PD_DUAL_ROLE */
   if (next_state == PD_STATE_SRC_DISCONNECTED)
   {
 #ifdef CONFIG_USBC_VCONN
@@ -570,9 +582,11 @@ static inline void set_state(enum pd_states next_state)
     /* Adjust rev to highest level*/
     pd.rev = PD_REV30;
 #endif
-
+#ifdef CONFIG_USB_PD_CHROMEOS
+    pd.dev_id = 0;
+#endif
 #ifdef CONFIG_CHARGE_MANAGER
-    // charge_manager_update_dualrole( CAP_UNKNOWN);
+    // TODO charge_manager_update_dualrole( CAP_UNKNOWN);
 #endif
 #ifdef CONFIG_USB_PD_ALT_MODE_DFP
     if (pd_dfp_exit_mode(TCPC_TX_SOP, 0, 0))
@@ -594,12 +608,16 @@ static inline void set_state(enum pd_states next_state)
     invalidate_last_message_id();
 
     /* Disable Auto Discharge Disconnect */
-    // if (not_auto_toggling)
-    //	tcpm_enable_auto_discharge_disconnect( 0);
+    if (not_auto_toggling)
+    {
+      tcpm_enable_auto_discharge_disconnect(0);
+    }
 
     /* detect USB PD cc disconnect */
-    // if (IS_ENABLED(CONFIG_COMMON_RUNTIME))
-    pe_handle_detach();
+#ifdef CONFIG_COMMON_RUNTIME
+    hook_notify(HOOK_USB_PD_DISCONNECT);
+    calls->pe_handle_detach();
+#endif
   }
 
 #ifdef CONFIG_USB_PD_REV30
@@ -708,8 +726,7 @@ static int reset_device_and_notify()
    * waking the TCPC, but it has also set PD_EVENT_TCPC_RESET again, which
    * would result in a second, unnecessary init.
    */
-  uint32_t* res = task_get_event_bitmap();
-  (*res) &= (~PD_EVENT_TCPC_RESET);
+  task_clear_event_bitmap(PD_EVENT_TCPC_RESET);
 
   /*
    * Now that we are done waking up the device, handle device access
@@ -720,7 +737,13 @@ static int reset_device_and_notify()
   /* Clear SW LPM state; the state machine will set it again if needed */
   pd.flags &= ~PD_FLAGS_LPM_REQUESTED;
 
-  task_set_event(TASK_EVENT_PD_AWAKE);
+  /* Wake up all waiting tasks. */
+  while (waiting_tasks)
+  {
+    task = __fls(waiting_tasks);
+    waiting_tasks &= ~(1 << task);
+    task_set_event(task, TASK_EVENT_PD_AWAKE);
+  }
 
   return rv;
 }
@@ -780,28 +803,50 @@ void pd_transmit_complete(int status)
 }
 
 /* Return true if partner port is known to be PD capable. */
-int pd_capable() { return (pd.flags & PD_FLAGS_PREVIOUS_PD_CONN); }
+int pd_capable()
+{
+  return
+          // TODO: weird double negation
+          !!(pd.flags & PD_FLAGS_PREVIOUS_PD_CONN);
+}
 
 static int pd_transmit(enum tcpm_transmit_type type, uint16_t header, const uint32_t* data, enum ams_seq ams)
 {
+  int evt;
+  int res;
+#ifdef CONFIG_USB_PD_REV30
+  int sink_ng = 0;
+#endif
+
   /* If comms are disabled, do not transmit, return error */
   if (!pd_comm_is_enabled())
     return -1;
+
+  /* Don't try to transmit anything until we have processed
+   * all RX messages.
+   */
+  if (tcpm_has_pending_message())
+    return 0; // not an error
+
 #ifdef CONFIG_USB_PD_REV30
   /* Source-coordinated collision avoidance */
   /*
-   * In order to avoid message collisions due to asynchronous Messaging
-   * sent from the Sink, the Source sets Rp to SinkTxOk to indicate to
-   * the Sink that it is ok to initiate an AMS. When the Source wishes
-   * to initiate an AMS it sets Rp to SinkTxNG. When the Sink detects
-   * that Rp is set to SinkTxOk it May initiate an AMS. When the Sink
-   * detects that Rp is set to SinkTxNG it Shall Not initiate an AMS
-   * and Shall only send Messages that are part of an AMS the Source has
-   * initiated. Note that this restriction applies to SOP* AMS’s i.e.
-   * for both Port to Port and Port to Cable Plug communications.
+   * USB PD Rev 3.0, Version 2.0: Section 2.7.3.2
+   * Collision Avoidance - Protocol Layer
    *
-   * This starts after an Explicit Contract is in place
-   * PD R3 V1.1 Section 2.5.2.
+   * In order to avoid message collisions due to asynchronous Messaging
+   * sent from the Sink, the Source sets Rp to SinkTxOk (3A) to indicate
+   * to the Sink that it is ok to initiate an AMS. When the Source wishes
+   * to initiate an AMS, it sets Rp to SinkTxNG (1.5A).
+   * When the Sink detects that Rp is set to SinkTxOk, it May initiate an
+   * AMS. When the Sink detects that Rp is set to SinkTxNG it Shall Not
+   * initiate an AMS and Shall only send Messages that are part of an AMS
+   * the Source has initiated.
+   * Note that this restriction applies to SOP* AMS’s i.e. for both Port
+   * to Port and Port to Cable Plug communications.
+   *
+   * This starts after an Explicit Contract is in place (see section 2.5.2
+   * SOP* Collision Avoidance).
    *
    * Note: a Sink can still send Hard Reset signaling at any time.
    */
@@ -811,32 +856,24 @@ static int pd_transmit(enum tcpm_transmit_type type, uint16_t header, const uint
     {
       /*
        * Inform Sink that it can't transmit. If a sink
-       * transmition is in progress and a collsion occurs,
+       * transmission is in progress and a collision occurs,
        * a reset is generated. This should be rare because
        * all extended messages are chunked. This effectively
        * defaults to PD REV 2.0 collision avoidance.
        */
       sink_can_xmit(SINK_TX_NG);
+      sink_ng = 1;
     }
     else if (type != TCPC_TX_HARD_RESET)
     {
-      int cc1;
-      int cc2;
+      enum tcpc_cc_voltage_status cc1, cc2;
 
       tcpm_get_cc(&cc1, &cc2);
       if (cc1 == TYPEC_CC_VOLT_RP_1_5 || cc2 == TYPEC_CC_VOLT_RP_1_5)
       {
         /* Sink can't transmit now. */
-        /* Check if message is already buffered. */
-        if (pd.ca_buffered)
-          return -1;
-
-        /* Buffer message and send later. */
-        pd.ca_type = type;
-        pd.ca_header = header;
-        memcpy(pd.ca_buffer, data, sizeof(uint32_t) * PD_HEADER_CNT(header));
-        pd.ca_buffered = 1;
-        return 1;
+        /* Return failure, pd_task can retry later */
+        return -1;
       }
     }
   }
@@ -844,7 +881,7 @@ static int pd_transmit(enum tcpm_transmit_type type, uint16_t header, const uint
   tcpm_transmit(type, header, data);
 
   /* Wait until TX is complete */
-  const int evt = task_wait_event_mask(PD_EVENT_TX, PD_T_TCPC_TX_TIMEOUT);
+  evt = task_wait_event_mask(PD_EVENT_TX, PD_T_TCPC_TX_TIMEOUT);
 
   if (evt & TASK_EVENT_TIMER)
     return -1;
@@ -853,14 +890,9 @@ static int pd_transmit(enum tcpm_transmit_type type, uint16_t header, const uint
   res = pd.tx_status == TCPC_TX_COMPLETE_SUCCESS ? 1 : -1;
 
 #ifdef CONFIG_USB_PD_REV30
-  /*
-   * If the source just completed a transmit, tell
-   * the sink it can transmit if it wants to.
-   */
-  if ((pd.rev == PD_REV30) && (pd.power_role == PD_ROLE_SOURCE) && (pd.flags & PD_FLAGS_EXPLICIT_CONTRACT))
-  {
+  /* If the AMS transaction failed to start, reset CC to OK */
+  if (res < 0 && sink_ng)
     sink_can_xmit(SINK_TX_OK);
-  }
 #endif
   return res;
 }
@@ -891,7 +923,9 @@ static void pd_update_roles()
   tcpm_set_msg_header(pd.power_role, pd.data_role);
 }
 
-static int send_control(int type)
+int is_sourcing() { return pd.task_state == PD_STATE_SRC_READY; }
+
+int send_control(int type)
 {
   int bit_len;
   uint16_t header = PD_HEADER(type, pd.power_role, pd.data_role, pd.msg_id, 0, pd_get_rev(), 0);
@@ -1207,21 +1241,45 @@ static void handle_vdm_request(int cnt, uint32_t* payload)
     CPRINTF("Unhandled VDM VID %04x CMD %04x\n", PD_VDO_VID(payload[0]), payload[0] & 0xFFFF);
 }
 
+static void pd_set_data_role(enum pd_data_role role)
+{
+  pd.data_role = role;
+#ifdef CONFIG_USB_PD_DUAL_ROLE
+  pd_update_saved_port_flags(PD_BBRMFLG_DATA_ROLE, role);
+#endif /* defined(CONFIG_USB_PD_DUAL_ROLE) */
+  pd_execute_data_swap(role);
+
+  // TODO set_usb_mux_with_current_data_role();
+  pd_update_roles();
+#ifdef CONFIG_BC12_DETECT_DATA_ROLE_TRIGGER
+  /*
+   * For BC1.2 detection that is triggered on data role change events
+   * instead of VBUS changes, need to set an event to wake up the USB_CHG
+   * task and indicate the current data role.
+   */
+  if (role == PD_ROLE_UFP)
+    task_set_event(USB_CHG_EVENT_DR_UFP);
+  else if (role == PD_ROLE_DFP)
+    task_set_event(USB_CHG_EVENT_DR_DFP);
+#endif /* CONFIG_BC12_DETECT_DATA_ROLE_TRIGGER */
+}
+
 void pd_execute_hard_reset()
 {
-  if (pd.last_state == PD_STATE_HARD_RESET_SEND)
-    CPRINTF("C HARD RST TX\n");
-  else
-    CPRINTF("C HARD RST RX\n");
+  int hard_rst_tx = pd.last_state == PD_STATE_HARD_RESET_SEND;
+
+  CPRINTF("HARD RST %cX\n", hard_rst_tx ? 'T' : 'R');
 
   pd.msg_id = 0;
+  invalidate_last_message_id();
+  tcpm_set_rx_enable(0);
 #ifdef CONFIG_USB_PD_ALT_MODE_DFP
-  pd_dfp_exit_mode(0, 0);
+  if (pd_dfp_exit_mode(TCPC_TX_SOP, 0, 0))
+    usb_mux_set_safe_mode();
 #endif
 
 #ifdef CONFIG_USB_PD_REV30
   pd.rev = PD_REV30;
-  pd_ca_reset();
 #endif
   /*
    * Fake set last state to hard reset to make sure that the next
@@ -1242,28 +1300,53 @@ void pd_execute_hard_reset()
 
   if (pd.power_role == PD_ROLE_SINK)
   {
+    /* Initial data role for sink is UFP */
+    pd_set_data_role(PD_ROLE_UFP);
+
     /* Clear the input current limit */
     pd_set_input_current_limit(0, 0);
 #ifdef CONFIG_CHARGE_MANAGER
-    // charge_manager_set_ceil(
-    //			CEIL_REQUESTOR_PD,
-    //			CHARGE_CEIL_NONE);
+    // TODO charge_manager_set_ceil( CEIL_REQUESTOR_PD, CHARGE_CEIL_NONE);
 #endif /* CONFIG_CHARGE_MANAGER */
+
+#ifdef CONFIG_USBC_VCONN
+    /*
+     * Sink must turn off Vconn after a hard reset if it was being
+     * sourced previously
+     */
+    if (pd.flags & PD_FLAGS_VCONN_ON)
+    {
+      set_vconn(0);
+      pd_set_vconn_role(PD_ROLE_VCONN_OFF);
+    }
+#endif
 
     set_state(PD_STATE_SNK_HARD_RESET_RECOVER);
     return;
   }
+  else
+  {
+    /* Initial data role for source is DFP */
+    pd_set_data_role(PD_ROLE_DFP);
+  }
+
 #endif /* CONFIG_USB_PD_DUAL_ROLE */
+
+  if (!hard_rst_tx)
+    usleep(PD_T_PS_HARD_RESET);
 
   /* We are a source, cut power */
   pd_power_supply_reset();
   pd.src_recover = get_time().val + PD_T_SRC_RECOVER;
+#ifdef CONFIG_USBC_VCONN
+  set_vconn(0);
+#endif
   set_state(PD_STATE_SRC_HARD_RESET_RECOVER);
 }
 
 static void execute_soft_reset()
 {
-  pd.msg_id = 0;
+  invalidate_last_message_id();
   set_state(DUAL_ROLE_IF_ELSE(PD_STATE_SNK_DISCOVERY, PD_STATE_SRC_DISCOVERY));
   CPRINTF("C Soft Rst\n");
 }
@@ -1466,7 +1549,9 @@ static void handle_data_request(uint16_t head, uint32_t* payload)
 
           /* explicit contract is now in place */
           pd.flags |= PD_FLAGS_EXPLICIT_CONTRACT;
-
+#ifdef CONFIG_USB_PD_DUAL_ROLE
+          pd_update_saved_port_flags(PD_BBRMFLG_EXPLICIT_CONTRACT, 1);
+#endif /* CONFIG_USB_PD_DUAL_ROLE */
           pd.requested_idx = RDO_POS(payload[0]);
           set_state(PD_STATE_SRC_ACCEPTED);
           return;
@@ -1558,26 +1643,6 @@ int pd_is_disconnected()
           ;
 }
 
-static void pd_set_data_role(enum pd_data_role role)
-{
-  pd.data_role = role;
-  pd_execute_data_swap(role);
-
-  // set_usb_mux_with_current_data_role();
-  pd_update_roles();
-#ifdef CONFIG_BC12_DETECT_DATA_ROLE_TRIGGER
-  /*
-   * For BC1.2 detection that is triggered on data role change events
-   * instead of VBUS changes, need to set an event to wake up the USB_CHG
-   * task and indicate the current data role.
-   */
-  if (role == PD_ROLE_UFP)
-    task_set_event(USB_CHG_EVENT_DR_UFP);
-  else if (role == PD_ROLE_DFP)
-    task_set_event(USB_CHG_EVENT_DR_DFP);
-#endif /* CONFIG_BC12_DETECT_DATA_ROLE_TRIGGER */
-}
-
 #ifdef CONFIG_USBC_VCONN
 static void pd_set_vconn_role(int role)
 {
@@ -1599,7 +1664,13 @@ void pd_request_data_swap()
   task_wake();
 }
 
-static void pd_set_power_role(enum pd_power_role role) { pd.power_role = role; }
+static void pd_set_power_role(enum pd_power_role role)
+{
+  pd.power_role = role;
+#ifdef CONFIG_USB_PD_DUAL_ROLE
+  pd_update_saved_port_flags(PD_BBRMFLG_POWER_ROLE, role);
+#endif /* defined(CONFIG_USB_PD_DUAL_ROLE) */
+}
 
 static void pd_dr_swap()
 {
@@ -1710,11 +1781,27 @@ static void handle_ctrl_request(uint16_t head, uint32_t* payload)
         pd_set_input_current_limit(pd.curr_limit, pd.supply_voltage);
 #ifdef CONFIG_CHARGE_MANAGER
         /* Set ceiling based on what's negotiated */
-        // charge_manager_set_ceil( CEIL_REQUESTOR_PD, pd.curr_limit);
+        // TODO charge_manager_set_ceil( CEIL_REQUESTOR_PD, pd.curr_limit);
 #endif
       }
       break;
 #endif
+    case PD_CTRL_REJECT:
+      if (pd.task_state == PD_STATE_ENTER_USB)
+      {
+#ifndef CONFIG_USBC_SS_MUX
+        break;
+#endif
+        /*
+         * Since Enter USB sets the mux state to SAFE mode,
+         * resetting the mux state back to USB mode on
+         * recieveing a NACK.
+         */
+        // TODO usb_mux_set(USB_PD_MUX_USB_ENABLED, USB_SWITCH_CONNECT, pd.polarity);
+
+        set_state(READY_RETURN_STATE());
+        break;
+      }
     case PD_CTRL_WAIT:
       if (pd.task_state == PD_STATE_DR_SWAP)
       {
@@ -1802,21 +1889,21 @@ static void handle_ctrl_request(uint16_t head, uint32_t* payload)
       {
         /* explicit contract goes away for power swap */
         pd.flags &= ~PD_FLAGS_EXPLICIT_CONTRACT;
-        // pd_update_saved_port_flags( PD_BBRMFLG_EXPLICIT_CONTRACT, 0);
+        pd_update_saved_port_flags(PD_BBRMFLG_EXPLICIT_CONTRACT, 0);
         set_state(PD_STATE_SRC_SWAP_SNK_DISABLE);
       }
       else if (pd.task_state == PD_STATE_SNK_SWAP_INIT)
       {
         /* explicit contract goes away for power swap */
         pd.flags &= ~PD_FLAGS_EXPLICIT_CONTRACT;
-        // pd_update_saved_port_flags( PD_BBRMFLG_EXPLICIT_CONTRACT, 0);
+        pd_update_saved_port_flags(PD_BBRMFLG_EXPLICIT_CONTRACT, 0);
         set_state(PD_STATE_SNK_SWAP_SNK_DISABLE);
       }
       else if (pd.task_state == PD_STATE_SNK_REQUESTED)
       {
         /* explicit contract is now in place */
         pd.flags |= PD_FLAGS_EXPLICIT_CONTRACT;
-        // pd_update_saved_port_flags( PD_BBRMFLG_EXPLICIT_CONTRACT, 1);
+        pd_update_saved_port_flags(PD_BBRMFLG_EXPLICIT_CONTRACT, 1);
         set_state(PD_STATE_SNK_TRANSITION);
 #endif
       }
@@ -2014,6 +2101,7 @@ enum pd_drp_next_states drp_auto_toggle_next_state(uint64_t* drp_sink_time,
 static void handle_request(uint16_t head, uint32_t* payload)
 {
   int cnt = PD_HEADER_CNT(head);
+  int data_role = PD_HEADER_DROLE(head);
   int p;
 
   /* dump received packet content (only dump ping at debug level 3) */
@@ -2026,17 +2114,44 @@ static void handle_request(uint16_t head, uint32_t* payload)
   }
 
   /*
-   * If we are in disconnected state, we shouldn't get a request.
-   * Ignore it if we get one.
+   * If we are in disconnected state, we shouldn't get a request. Do
+   * a hard reset if we get one.
    */
   if (!pd_is_connected())
+    set_state(PD_STATE_HARD_RESET_SEND);
+
+  /*
+   * When a data role conflict is detected, USB-C ErrorRecovery
+   * actions shall be performed, and transitioning to unattached state
+   * is one such legal action.
+   */
+  if (pd.data_role == data_role)
+  {
+    /*
+     * If the port doesn't support removing the terminations, just
+     * go to the unattached state.
+     */
+    if (tcpm_set_cc(TYPEC_CC_OPEN) == EC_SUCCESS)
+    {
+      /* Do not drive VBUS or VCONN. */
+      pd_power_supply_reset();
+#ifdef CONFIG_USBC_VCONN
+      set_vconn(port, 0);
+#endif /* defined(CONFIG_USBC_VCONN) */
+      usleep(PD_T_ERROR_RECOVERY);
+
+      /* Restore terminations. */
+      tcpm_set_cc(DUAL_ROLE_IF_ELSE(TYPEC_CC_RD, TYPEC_CC_RP));
+    }
+    set_state(DUAL_ROLE_IF_ELSE(PD_STATE_SNK_DISCONNECTED, PD_STATE_SRC_DISCONNECTED));
     return;
+  }
 
 #ifdef CONFIG_USB_PD_REV30
   /* Check if this is an extended chunked data message. */
   if (pd.rev == PD_REV30 && PD_HEADER_EXT(head))
   {
-    handle_ext_request(, head, payload);
+    handle_ext_request(head, payload);
     return;
   }
 #endif
@@ -2109,6 +2224,7 @@ static void pd_vdm_send_state_machine()
 {
   int res;
   uint16_t header;
+  enum tcpm_transmit_type msg_type = pd.xmit_type;
 
   switch (pd.vdm_state)
   {
@@ -2127,10 +2243,74 @@ static void pd_vdm_send_state_machine()
       if (pdo_busy())
         break;
 
-      /* Prepare and send VDM */
-      header =
-              PD_HEADER(PD_DATA_VENDOR_DEF, pd.power_role, pd.data_role, pd.msg_id, (int)pd.vdo_count, pd_get_rev(), 0);
-      res = pd_transmit(TCPC_TX_SOP, header, pd.vdo_data, AMS_START);
+      /*
+       * To communicate with the cable plug, an explicit contract
+       * should be established, VCONN should be enabled and data role
+       * that can communicate with the cable plug should be in place.
+       * For USB3.0, UFP/DFP can communicate whereas in case of
+       * USB2.0 only DFP can talk to the cable plug.
+       *
+       * For communication between USB2.0 UFP and cable plug,
+       * data role swap takes place during source and sink
+       * negotiation and in case of failure, a soft reset is issued.
+       */
+      if ((msg_type == TCPC_TX_SOP_PRIME) || (msg_type == TCPC_TX_SOP_PRIME_PRIME))
+      {
+        /* Prepare SOP'/SOP'' header and send VDM */
+        header = PD_HEADER(
+                PD_DATA_VENDOR_DEF, PD_PLUG_FROM_DFP_UFP, 0, pd.msg_id, (int)pd.vdo_count, pd_get_rev(TCPC_TX_SOP), 0);
+        res = pd_transmit(msg_type, header, pd.vdo_data, AMS_START);
+        /*
+         * In the case of SOP', if there is no response from
+         * the cable, it's a non-emark cable and therefore the
+         * pd flow should continue irrespective of cable
+         * response, sending discover_identity so the pd flow
+         * remains intact.
+         *
+         * In the case of SOP'', if there is no response from
+         * the cable, exit Thunderbolt-Compatible mode
+         * discovery, reset the mux state since, the mux will
+         * be set to a safe state before entering
+         * Thunderbolt-Compatible mode and enter the default
+         * mode.
+         */
+        if (res < 0)
+        {
+          header = PD_HEADER(PD_DATA_VENDOR_DEF,
+                             pd.power_role,
+                             pd.data_role,
+                             pd.msg_id,
+                             (int)pd.vdo_count,
+                             pd_get_rev(TCPC_TX_SOP),
+                             0);
+#ifdef CONFIG_USBC_SS_MUX
+          if ((msg_type == TCPC_TX_SOP_PRIME_PRIME))
+          {
+            exit_tbt_mode_sop_prime();
+          }
+          else
+#endif
+                  if (msg_type == TCPC_TX_SOP_PRIME)
+          {
+            pd.vdo_data[0] = VDO(USB_SID_PD, 1, CMD_DISCOVER_SVID);
+          }
+          res = pd_transmit(TCPC_TX_SOP, header, pd.vdo_data, AMS_START);
+          reset_pd_cable();
+        }
+      }
+      else
+      {
+        /* Prepare SOP header and send VDM */
+        header = PD_HEADER(PD_DATA_VENDOR_DEF,
+                           pd.power_role,
+                           pd.data_role,
+                           pd.msg_id,
+                           (int)pd.vdo_count,
+                           pd_get_rev(TCPC_TX_SOP),
+                           0);
+        res = pd_transmit(TCPC_TX_SOP, header, pd.vdo_data, AMS_START);
+      }
+
       if (res < 0)
       {
         pd.vdm_state = VDM_STATE_ERR_SEND;
@@ -2250,6 +2430,15 @@ void pd_set_dual_role_no_wakeup(enum pd_dual_role_states state)
 #endif
 }
 
+static int pd_is_power_swapping()
+{
+  /* return true if in the act of swapping power roles */
+  return pd.task_state == PD_STATE_SNK_SWAP_SNK_DISABLE || pd.task_state == PD_STATE_SNK_SWAP_SRC_DISABLE ||
+         pd.task_state == PD_STATE_SNK_SWAP_STANDBY || pd.task_state == PD_STATE_SNK_SWAP_COMPLETE ||
+         pd.task_state == PD_STATE_SRC_SWAP_SNK_DISABLE || pd.task_state == PD_STATE_SRC_SWAP_SRC_DISABLE ||
+         pd.task_state == PD_STATE_SRC_SWAP_STANDBY;
+}
+
 void pd_set_dual_role(enum pd_dual_role_states state)
 {
   pd_set_dual_role_no_wakeup(state);
@@ -2262,15 +2451,14 @@ void pd_update_dual_role_config()
 {
   /*
    * Change to sink if port is currently a source AND (new DRP
-   * state is force sink OR new DRP state is either toggle off
-   * or debug accessory toggle only and we are in the source
-   * disconnected state).
+   * state is force sink OR new DRP state is toggle off and we are in the
+   * source disconnected state).
    */
   if (pd.power_role == PD_ROLE_SOURCE &&
-      ((drp_state == PD_DRP_FORCE_SINK && !pd_ts_dts_plugged()) ||
+      (drp_state == PD_DRP_FORCE_SINK ||
        (drp_state == PD_DRP_TOGGLE_OFF && pd.task_state == PD_STATE_SRC_DISCONNECTED)))
   {
-    pd.power_role = PD_ROLE_SINK;
+    pd_set_power_role(PD_ROLE_SINK);
     set_state(PD_STATE_SNK_DISCONNECTED);
     tcpm_set_cc(TYPEC_CC_RD);
     /* Make sure we're not sourcing VBUS. */
@@ -2279,31 +2467,20 @@ void pd_update_dual_role_config()
 
   /*
    * Change to source if port is currently a sink and the
-   * new DRP state is force source.
+   * new DRP state is force source. If we are performing
+   * power swap we won't change anything because
+   * changing state will disrupt power swap process
+   * and we are power swapping to desired power role.
    */
-  if (pd.power_role == PD_ROLE_SINK && drp_state == PD_DRP_FORCE_SOURCE)
+  if (pd.power_role == PD_ROLE_SINK && drp_state == PD_DRP_FORCE_SOURCE && !pd_is_power_swapping())
   {
-    pd.power_role = PD_ROLE_SOURCE;
+    pd_set_power_role(PD_ROLE_SOURCE);
     set_state(PD_STATE_SRC_DISCONNECTED);
     tcpm_set_cc(TYPEC_CC_RP);
   }
-
-#if defined(CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE) && defined(CONFIG_USB_PD_TCPC_LOW_POWER)
-  /* When switching drp mode, make sure tcpc is out of standby mode */
-  tcpm_enable_drp_toggle();
-#endif
 }
 
 int pd_get_role() { return pd.power_role; }
-
-static int pd_is_power_swapping()
-{
-  /* return true if in the act of swapping power roles */
-  return pd.task_state == PD_STATE_SNK_SWAP_SNK_DISABLE || pd.task_state == PD_STATE_SNK_SWAP_SRC_DISABLE ||
-         pd.task_state == PD_STATE_SNK_SWAP_STANDBY || pd.task_state == PD_STATE_SNK_SWAP_COMPLETE ||
-         pd.task_state == PD_STATE_SRC_SWAP_SNK_DISABLE || pd.task_state == PD_STATE_SRC_SWAP_SRC_DISABLE ||
-         pd.task_state == PD_STATE_SRC_SWAP_STANDBY;
-}
 
 /*
  * Provide Rp to ensure the partner port is in a known state (eg. not
@@ -2312,26 +2489,49 @@ static int pd_is_power_swapping()
 static void pd_partner_port_reset()
 {
   uint64_t timeout;
+  uint8_t flags;
 
-#ifdef CONFIG_BBRAM
   /*
-   * Check our battery-backed previous port state. If PD comms were
-   * active, and we didn't just lose power, make sure we
-   * don't boot into RO with a pre-existing power contract.
+   * If there is no contract in place (or if we fail to read the BBRAM
+   * flags), there is no need to reset the partner.
    */
-  if (!pd_get_saved_active() || system_get_image_copy() != SYSTEM_IMAGE_RO ||
-      system_get_reset_flags() & (RESET_FLAG_BROWNOUT | RESET_FLAG_POWER_ON))
+  if (pd_get_saved_port_flags(&flags) != EC_SUCCESS || !(flags & PD_BBRMFLG_EXPLICIT_CONTRACT))
     return;
-#endif // CONFIG_BBRAM
-  /* Provide Rp for 100 msec. or until we no longer have VBUS. */
+
+  /*
+   * If we reach here, an explicit contract is in place.
+   *
+   * If PD communications are allowed, don't apply Rp.  We'll issue a
+   * SoftReset later on and renegotiate our contract.  This particular
+   * condition only applies to unlocked RO images with an explicit
+   * contract in place.
+   */
+  if (pd_comm_is_enabled())
+  {
+    return;
+  }
+
+  /* If we just lost power, don't apply Rp. */
+#if 0
+	if (system_get_reset_flags() &
+	    (EC_RESET_FLAG_BROWNOUT | EC_RESET_FLAG_POWER_ON))
+		return;
+#endif
+
+  /*
+   * Clear the active contract bit before we apply Rp in case we
+   * intentionally brown out because we cut off our only power supply.
+   */
+  pd_update_saved_port_flags(PD_BBRMFLG_EXPLICIT_CONTRACT, 0);
+
+  /* Provide Rp for 200 msec. or until we no longer have VBUS. */
+  CPRINTF("Apply Rp!\n");
+  // TODO cflush();
   tcpm_set_cc(TYPEC_CC_RP);
-  timeout = get_time().val + 100 * MSEC_US;
+  timeout = get_time().val + 200 * MSEC_US;
 
   while (get_time().val < timeout && pd_is_vbus_present())
     msleep(10);
-#ifdef CONFIG_BBRAM
-  pd_set_saved_active(0);
-#endif
 }
 #endif /* CONFIG_USB_PD_DUAL_ROLE */
 
@@ -2440,21 +2640,52 @@ void pd_set_polarity(enum tcpc_cc_polarity polarity)
 }
 
 #if defined(CONFIG_CHARGE_MANAGER)
-/**
- * Returns type C current limit (mA) based upon cc_voltage (mV).
+/*
+ * CC values for regular sources and Debug sources (aka DTS)
+ *
+ * Source type  Mode of Operation   CC1    CC2
+ * ---------------------------------------------
+ * Regular      Default USB Power   RpUSB  Open
+ * Regular      USB-C @ 1.5 A       Rp1A5  Open
+ * Regular      USB-C @ 3 A	    Rp3A0  Open
+ * DTS		Default USB Power   Rp3A0  Rp1A5
+ * DTS		USB-C @ 1.5 A       Rp1A5  RpUSB
+ * DTS		USB-C @ 3 A	    Rp3A0  RpUSB
  */
-static typec_current_t get_typec_current_limit(int polarity, int cc1, int cc2)
-{
-  typec_current_t charge;
-  int cc = polarity ? cc2 : cc1;
-  int cc_alt = polarity ? cc1 : cc2;
 
-  if (cc == TYPEC_CC_VOLT_RP_3_0 && cc_alt != TYPEC_CC_VOLT_RP_1_5)
-    charge = 3000;
-  else if (cc == TYPEC_CC_VOLT_RP_1_5)
-    charge = 1500;
-  else
+typec_current_t usb_get_typec_current_limit(enum tcpc_cc_polarity polarity,
+                                            enum tcpc_cc_voltage_status cc1,
+                                            enum tcpc_cc_voltage_status cc2)
+{
+  typec_current_t charge = 0;
+  enum tcpc_cc_voltage_status cc;
+  enum tcpc_cc_voltage_status cc_alt;
+
+  cc = polarity_rm_dts(polarity) ? cc2 : cc1;
+  cc_alt = polarity_rm_dts(polarity) ? cc1 : cc2;
+
+  switch (cc)
+  {
+    case TYPEC_CC_VOLT_RP_3_0:
+      if (!cc_is_rp(cc_alt) || cc_alt == TYPEC_CC_VOLT_RP_DEF)
+        charge = 3000;
+      else if (cc_alt == TYPEC_CC_VOLT_RP_1_5)
+        charge = 500;
+      break;
+    case TYPEC_CC_VOLT_RP_1_5:
+      charge = 1500;
+      break;
+    case TYPEC_CC_VOLT_RP_DEF:
+      charge = 500;
+      break;
+    default:
+      break;
+  }
+
+#ifdef CONFIG_USBC_DISABLE_CHARGE_FROM_RP_DEF
+  if (charge == 500)
     charge = 0;
+#endif
 
   if (cc_is_rp(cc_alt))
     charge |= TYPEC_CURRENT_DTS_MASK;
@@ -2533,6 +2764,9 @@ static int pd_restart_tcpc()
 
 void pd_init()
 {
+  // set initial status
+  pd.tx_status = TCPC_TX_UNSET;
+
 #ifdef CONFIG_COMMON_RUNTIME
   pd_init_tasks();
 #endif
@@ -2546,10 +2780,11 @@ void pd_init()
 #endif
 
   /* Initialize TCPM driver and wait for TCPC to be ready */
-  res = tcpm_init();
+  res = reset_device_and_notify();
+  invalidate_last_message_id();
 
 #ifdef CONFIG_USB_PD_DUAL_ROLE
-  // pd_partner_port_reset();
+  pd_partner_port_reset();
 #endif
 
   CPRINTS("TCPC init %s", res ? "failed" : "ready");
@@ -2579,8 +2814,7 @@ void pd_init()
    * present. This flag is used to maintain a PD connection after a
    * reset by sending a soft reset.
    */
-  // pd.flags = pd_is_vbus_present() ? PD_FLAGS_VBUS_NEVER_LOW : 0;
-  pd.flags = 0;
+  pd.flags = pd_is_vbus_present() ? PD_FLAGS_VBUS_NEVER_LOW : 0;
 #endif
 
   /* Disable TCPC RX until connection is established */
@@ -2591,8 +2825,61 @@ void pd_init()
   usb_mux_init();
 #endif
 
+#ifdef CONFIG_USB_PD_DUAL_ROLE
+  /*
+   * If there's an explicit contract in place, let's restore the data and
+   * power roles such that any messages we send to the port partner will
+   * still be valid.
+   */
+  if (pd_comm_is_enabled() && (pd_get_saved_port_flags(&saved_flgs) == EC_SUCCESS) &&
+      (saved_flgs & PD_BBRMFLG_EXPLICIT_CONTRACT))
+  {
+    /* Only attempt to maintain previous sink contracts */
+    if ((saved_flgs & PD_BBRMFLG_POWER_ROLE) == PD_ROLE_SINK)
+    {
+      pd_set_power_role((saved_flgs & PD_BBRMFLG_POWER_ROLE) ? PD_ROLE_SOURCE : PD_ROLE_SINK);
+      pd_set_data_role((saved_flgs & PD_BBRMFLG_DATA_ROLE) ? PD_ROLE_DFP : PD_ROLE_UFP);
+#ifdef CONFIG_USBC_VCONN
+      pd_set_vconn_role(port, (saved_flgs & PD_BBRMFLG_VCONN_ROLE) ? PD_ROLE_VCONN_ON : PD_ROLE_VCONN_OFF);
+#endif /* CONFIG_USBC_VCONN */
+
+      /*
+       * Since there is an explicit contract in place, let's
+       * issue a SoftReset such that we can renegotiate with
+       * our port partner in order to synchronize our state
+       * machines.
+       */
+      this_state = PD_STATE_SOFT_RESET;
+
+      /*
+       * Re-discover any alternate modes we may have been
+       * using with this port partner.
+       */
+      pd.flags |= PD_FLAGS_CHECK_IDENTITY;
+    }
+    else
+    {
+      /*
+       * Vbus was turned off during the power supply reset
+       * earlier, so clear the contract flag and re-start as
+       * default role
+       */
+      pd_update_saved_port_flags(PD_BBRMFLG_EXPLICIT_CONTRACT, 0);
+    }
+    /*
+     * Set the TCPC reset event such that we can set our CC
+     * terminations, determine polarity, and enable RX so we
+     * can hear back from our port partner if maintaining our old
+     * connection.
+     */
+    task_set_event(PD_EVENT_TCPC_RESET);
+  }
+#endif /* defined(CONFIG_USB_PD_DUAL_ROLE) */
+       /* Set the power role if we haven't already. */
+  if (this_state != PD_STATE_SOFT_RESET)
+    pd_set_power_role(PD_ROLE_DEFAULT());
+
   /* Initialize PD protocol state variables for each port. */
-  pd.power_role = PD_ROLE_DEFAULT();
   pd.vdm_state = VDM_STATE_DONE;
   set_state(this_state);
 #ifdef CONFIG_USB_PD_MAX_SINGLE_SOURCE_CURRENT
@@ -2611,9 +2898,55 @@ void pd_init()
 #ifdef CONFIG_CHARGE_MANAGER
   /* Initialize PD and type-C supplier current limits to 0 */
   pd_set_input_current_limit(0, 0);
-  // typec_set_input_current_limit( 0, 0);
+  typec_set_input_current_limit(0, 0);
   // charge_manager_update_dualrole( CAP_UNKNOWN);
 #endif
+}
+
+static int consume_sop_repeat_message(uint8_t msg_id)
+{
+  if (pd.last_msg_id != msg_id)
+  {
+    pd.last_msg_id = msg_id;
+    return 0;
+  }
+  CPRINTF("Repeat msg_id %d\n", msg_id);
+  return 1;
+}
+
+/**
+ * Identify and drop any duplicate messages received at the port.
+ *
+ * @param port USB PD TCPC port number
+ * @param msg_header Message Header containing the RX message ID
+ * @return True if the received message is a duplicate one, False otherwise.
+ *
+ * From USB PD version 1.3 section 6.7.1, the port which communicates
+ * using SOP* Packets Shall maintain copies of the last MessageID for
+ * each type of SOP* it uses.
+ */
+static int consume_repeat_message(uint32_t msg_header)
+{
+  uint8_t msg_id = PD_HEADER_ID(msg_header);
+  enum tcpm_transmit_type sop = PD_HEADER_GET_SOP(msg_header);
+
+  /* If repeat message ignore, except softreset control request. */
+  if (PD_HEADER_TYPE(msg_header) == PD_CTRL_SOFT_RESET && PD_HEADER_CNT(msg_header) == 0)
+  {
+    return 0;
+  }
+  else if (sop == TCPC_TX_SOP_PRIME)
+  {
+    return consume_sop_prime_repeat_msg(msg_id);
+  }
+  else if (sop == TCPC_TX_SOP_PRIME_PRIME)
+  {
+    return consume_sop_prime_prime_repeat_msg(msg_id);
+  }
+  else
+  {
+    return consume_sop_repeat_message(msg_id);
+  }
 }
 
 /**
@@ -2648,6 +2981,25 @@ void pd_run_state_machine()
   /* wait for next event/packet or timeout expiration */
   int evt = task_wait_event(timeout);
 
+#ifdef CONFIG_USB_PD_TCPC_LOW_POWER
+  if (evt & (PD_EXIT_LOW_POWER_EVENT_MASK | TASK_EVENT_WAKE))
+    exit_low_power_mode();
+  if (evt & PD_EVENT_DEVICE_ACCESSED)
+    handle_device_access();
+#endif
+#ifdef CONFIG_POWER_COMMON
+  if (evt & PD_EVENT_POWER_STATE_CHANGE)
+    handle_new_power_state();
+#endif
+
+#if defined(CONFIG_USB_PD_ALT_MODE_DFP)
+  if (evt & PD_EVENT_SYSJUMP)
+  {
+    exit_supported_alt_mode();
+    notify_sysjump_ready();
+  }
+#endif
+
 #ifdef CONFIG_USB_PD_DUAL_ROLE
   if (evt & PD_EVENT_UPDATE_DUAL_ROLE)
     pd_update_dual_role_config();
@@ -2672,9 +3024,44 @@ void pd_run_state_machine()
   if ((evt & PD_EVENT_TCPC_RESET) && (pd.task_state != PD_STATE_DRP_AUTO_TOGGLE))
   {
 #endif
-    /* Ensure CC termination is default */
-    tcpm_set_cc(PD_ROLE_DEFAULT() == PD_ROLE_SOURCE ? TYPEC_CC_RP : TYPEC_CC_RD);
+#ifdef CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE
+  }
 
+  if ((evt & PD_EVENT_TCPC_RESET) && (pd[port].task_state != PD_STATE_DRP_AUTO_TOGGLE))
+  {
+#endif
+#ifdef CONFIG_USB_PD_DUAL_ROLE
+    if (pd.task_state == PD_STATE_SOFT_RESET)
+    {
+      enum tcpc_cc_voltage_status cc1, cc2;
+
+      /*
+       * Set the terminations to match our power
+       * role.
+       */
+      tcpm_set_cc(pd.power_role ? TYPEC_CC_RP : TYPEC_CC_RD);
+
+      /* Determine the polarity. */
+      tcpm_get_cc(&cc1, &cc2);
+      if (pd.power_role == PD_ROLE_SINK)
+      {
+        pd.polarity = get_snk_polarity(cc1, cc2);
+      }
+      else if (cc_is_snk_dbg_acc(cc1, cc2))
+      {
+        pd.polarity = board_get_src_dts_polarity();
+      }
+      else
+      {
+        pd.polarity = get_src_polarity(cc1, cc2);
+      }
+    }
+    else
+#endif /* CONFIG_USB_PD_DUAL_ROLE */
+    {
+      /* Ensure CC termination is default */
+      tcpm_set_cc(PD_ROLE_DEFAULT() == PD_ROLE_SOURCE ? TYPEC_CC_RP : TYPEC_CC_RD);
+    }
     /*
      * If we have a stable contract in the default role,
      * then simply update TCPC with some missing info
@@ -2686,29 +3073,51 @@ void pd_run_state_machine()
         (
 #ifdef CONFIG_USB_PD_DUAL_ROLE
                 (PD_ROLE_DEFAULT() == PD_ROLE_SINK && pd.task_state == PD_STATE_SNK_READY) ||
+                (pd.task_state == PD_STATE_SOFT_RESET) ||
 #endif
                 (PD_ROLE_DEFAULT() == PD_ROLE_SOURCE && pd.task_state == PD_STATE_SRC_READY)))
     {
-      tcpm_set_polarity(pd.polarity);
+      pd_set_polarity(pd.polarity);
       tcpm_set_msg_header(pd.power_role, pd.data_role);
       tcpm_set_rx_enable(1);
     }
     else
     {
       /* Ensure state variables are at default */
-      pd.power_role = PD_ROLE_DEFAULT();
+      pd_set_power_role(PD_ROLE_DEFAULT());
       pd.vdm_state = VDM_STATE_DONE;
       set_state(PD_DEFAULT_STATE());
+#ifdef CONFIG_USB_PD_DUAL_ROLE
+      pd_update_dual_role_config();
+#endif
     }
   }
 #endif
 
+#ifdef CONFIG_USBC_PPC
+  /*
+   * TODO: Useful for non-PPC cases as well, but only needed
+   * for PPC cases right now. Revisit later.
+   */
+  if (evt & PD_EVENT_SEND_HARD_RESET)
+    set_state(PD_STATE_HARD_RESET_SEND);
+#endif /* defined(CONFIG_USBC_PPC) */
+
+  if (evt & PD_EVENT_RX_HARD_RESET)
+    pd_execute_hard_reset();
+
   /* process any potential incoming message */
-  incoming_packet = evt & PD_EVENT_RX;
-  // if (incoming_packet) {
-  if (!tcpm_get_message(payload, &head))
-    handle_request(head, payload);
-  //}
+  incoming_packet = tcpm_has_pending_message();
+  if (incoming_packet)
+  {
+    /* Dequeue and consume duplicate message ID. */
+    if (tcpm_dequeue_message(payload, &head) == EC_SUCCESS && !consume_repeat_message(head))
+      handle_request(head, payload);
+
+    /* Check if there are any more messages */
+    if (tcpm_has_pending_message())
+      task_set_event(TASK_EVENT_WAKE);
+  }
 
   if (pd.req_suspend_state)
     set_state(PD_STATE_SUSPENDED);
@@ -2870,9 +3279,10 @@ void pd_run_state_machine()
         break;
       }
 
+#ifdef CONFIG_COMMON_RUNTIME
       /* Debounce complete */
-      // if (IS_ENABLED(CONFIG_COMMON_RUNTIME))
-      //   hook_notify(HOOK_USB_PD_CONNECT);
+      hook_notify(HOOK_USB_PD_CONNECT);
+#endif
 
 #ifdef CONFIG_USBC_PPC
       /*
@@ -2904,7 +3314,7 @@ void pd_run_state_machine()
         pd_set_data_role(PD_ROLE_DFP);
 
         /* Enable Auto Discharge Disconnect */
-        // tcpm_enable_auto_discharge_disconnect( 1);
+        tcpm_enable_auto_discharge_disconnect(1);
 
         if (new_cc_state == PD_CC_UFP_DEBUG_ACC)
           pd.flags |= PD_FLAGS_TS_DTS_PARTNER;
@@ -3002,7 +3412,7 @@ void pd_run_state_machine()
       break;
     case PD_STATE_SRC_STARTUP:
       /* Reset cable attributes and flags */
-      // reset_pd_cable();
+      reset_pd_cable();
       /* Wait for power source to enable */
       if (pd.last_state != pd.task_state)
       {
@@ -3028,13 +3438,16 @@ void pd_run_state_machine()
       }
       break;
     case PD_STATE_SRC_DISCOVERY:
+      now = get_time();
       if (pd.last_state != pd.task_state)
       {
+        caps_count = 0;
+        next_src_cap = now.val;
         /*
          * If we have had PD connection with this port
          * partner, then start NoResponseTimer.
          */
-        if (pd.flags & PD_FLAGS_PREVIOUS_PD_CONN)
+        if (pd_capable())
           set_state_timeout(get_time().val + PD_T_NO_RESPONSE,
                             hard_reset_count < PD_HARD_RESET_COUNT ? PD_STATE_HARD_RESET_SEND :
                                                                      PD_STATE_SRC_DISCONNECTED);
@@ -3058,6 +3471,7 @@ void pd_run_state_machine()
         else
         { /* failed, retry later */
           timeout = PD_T_SEND_SOURCE_CAP;
+          next_src_cap = now.val + PD_T_SEND_SOURCE_CAP;
           caps_count++;
         }
       }
@@ -3080,6 +3494,7 @@ void pd_run_state_machine()
       /* Switch to the new requested voltage */
       if (pd.last_state != pd.task_state)
       {
+        pd.flags |= PD_FLAGS_CHECK_VCONN_STATE;
         pd_transition_voltage(pd.requested_idx);
         set_state_timeout(get_time().val + PD_POWER_SUPPLY_TURN_ON_DELAY, PD_STATE_SRC_TRANSITION);
       }
@@ -3090,7 +3505,20 @@ void pd_run_state_machine()
       if (res >= 0)
       {
         timeout = 10 * MSEC_US;
-        /* it'a time to ping regularly the sink */
+
+        /*
+         * Give the sink some time to send any messages
+         * before we may send messages of our own.  Add
+         * some jitter of up to ~192ms, to prevent
+         * multiple collisions. This delay also allows
+         * the sink device to request power role swap
+         * and allow the the accept message to be sent
+         * prior to CMD_DISCOVER_IDENT being sent in the
+         * SRC_READY state.
+         */
+        pd.ready_state_holdoff_timer = get_time().val + SRC_READY_HOLD_OFF_US + (get_time().le.lo & 0xf) * 12 * MSEC_US;
+
+        /* it's time to ping regularly the sink */
         set_state(PD_STATE_SRC_READY);
       }
       else
@@ -3310,6 +3738,22 @@ void pd_run_state_machine()
         if (rstatus != 0 && rstatus != EC_ERROR_UNIMPLEMENTED)
           CPRINTS("TCPC release failed!");
 #endif
+        /* Drain any outstanding software message queues. */
+        tcpm_clear_pending_messages();
+
+        /* Wait for resume */
+        while (pd.task_state == PD_STATE_SUSPENDED)
+        {
+#ifdef CONFIG_USB_PD_ALT_MODE_DFP
+          int evt = task_wait_event(-1);
+
+          if (evt & PD_EVENT_SYSJUMP)
+            /* Nothing to do for sysjump prep */
+            notify_sysjump_ready();
+#else
+          task_wait_event(-1);
+#endif
+        }
 
 #ifdef CONFIG_USB_PD_TCPC
         pd_hw_init(PD_ROLE_DEFAULT());
@@ -3324,6 +3768,9 @@ void pd_run_state_machine()
         /* Set the CC termination and state back to default */
         tcpm_set_cc(PD_ROLE_DEFAULT() == PD_ROLE_SOURCE ? TYPEC_CC_RP : TYPEC_CC_RD);
         set_state(PD_DEFAULT_STATE());
+        // TODO: not standard : do not send get source capabilities here
+        send_control(PD_CTRL_GET_SOURCE_CAP);
+        // ENDOFTODO
         CPRINTS("TCPC resumed!");
 #endif
         break;
@@ -3387,30 +3834,27 @@ void pd_run_state_machine()
         break;
       }
 
-// TODO issue #134 restore the power source mode
-#if 0
-       /* If no source detected, check for role toggle. */
-       if (drp_state == PD_DRP_TOGGLE_ON && get_time().val >= next_role_swap)
-       {
-         /* Swap roles to source */
-         pd_set_power_role( PD_ROLE_SOURCE);
-         set_state( PD_STATE_SRC_DISCONNECTED);
-         tcpm_set_cc( TYPEC_CC_RP);
-         next_role_swap = get_time().val + PD_T_DRP_SRC;
+      /* If no source detected, check for role toggle. */
+      if (drp_state == PD_DRP_TOGGLE_ON && get_time().val >= next_role_swap)
+      {
+        /* Swap roles to source */
+        pd_set_power_role(PD_ROLE_SOURCE);
+        set_state(PD_STATE_SRC_DISCONNECTED);
+        tcpm_set_cc(TYPEC_CC_RP);
+        next_role_swap = get_time().val + PD_T_DRP_SRC;
 
 #ifdef CONFIG_USB_PD_TCPC_LOW_POWER
-         /*
-          * Clear low power mode flag as we are swapping
-          * states quickly.
-          */
-         pd.flags &= ~PD_FLAGS_LPM_REQUESTED;
+        /*
+         * Clear low power mode flag as we are swapping
+         * states quickly.
+         */
+        pd.flags &= ~PD_FLAGS_LPM_REQUESTED;
 #endif
 
-         /* Swap states quickly */
-         timeout = 2 * MSEC_US;
-         break;
-       }
-#endif
+        /* Swap states quickly */
+        timeout = 2 * MSEC_US;
+        break;
+      }
 
 #ifdef CONFIG_USB_PD_TCPC_LOW_POWER
       /*
@@ -3484,10 +3928,10 @@ void pd_run_state_machine()
       /* initial data role for sink is UFP */
       pd_set_data_role(PD_ROLE_UFP);
       /* Enable Auto Discharge Disconnect */
-      // tcpm_enable_auto_discharge_disconnect( 1);
+      tcpm_enable_auto_discharge_disconnect(1);
 #if defined(CONFIG_CHARGE_MANAGER)
-      // typec_curr = usb_get_typec_current_limit(pd.polarity, cc1, cc2);
-      // typec_set_input_current_limit( typec_curr, TYPE_C_VOLTAGE);
+      typec_curr = usb_get_typec_current_limit(pd.polarity, cc1, cc2);
+      typec_set_input_current_limit(typec_curr, TYPE_C_VOLTAGE);
 #endif
 
 #ifdef CONFIG_USBC_PPC
@@ -3506,7 +3950,7 @@ void pd_run_state_machine()
       {
         pd.flags |= PD_FLAGS_CHECK_PR_ROLE | PD_FLAGS_CHECK_DR_ROLE | PD_FLAGS_CHECK_IDENTITY;
         /* Reset cable attributes and flags */
-        // reset_pd_cable();
+        reset_pd_cable();
 
         if (new_cc_state == PD_CC_DFP_DEBUG_ACC)
           pd.flags |= PD_FLAGS_TS_DTS_PARTNER;
@@ -3593,7 +4037,7 @@ void pd_run_state_machine()
            * now, so it won't be de-selected by
            * the charge manager leaving safe mode.
            */
-          // charge_manager_update_dualrole( CAP_DEDICATED);
+          // TODO charge_manager_update_dualrole( CAP_DEDICATED);
 #endif
           CPRINTS("Battery low. "
                   "Hold reset timer");
@@ -3639,15 +4083,14 @@ void pd_run_state_machine()
 
       /* Check if CC pull-up has changed */
       tcpm_get_cc(&cc1, &cc2);
-      if (typec_curr != get_typec_current_limit(pd.polarity, cc1, cc2))
+      if (typec_curr != usb_get_typec_current_limit(pd.polarity, cc1, cc2))
       {
         /* debounce signal by requiring two reads */
         if (typec_curr_change)
         {
           /* set new input current limit */
-          typec_curr = get_typec_current_limit(pd.polarity, cc1, cc2);
-          // typec_set_input_current_limit(
-          //	 typec_curr, TYPE_C_VOLTAGE);
+          typec_curr = usb_get_typec_current_limit(pd.polarity, cc1, cc2);
+          typec_set_input_current_limit(typec_curr, TYPE_C_VOLTAGE);
         }
         else
         {
@@ -3771,7 +4214,7 @@ void pd_run_state_machine()
       /* Stop drawing power */
       pd_set_input_current_limit(0, 0);
 #ifdef CONFIG_CHARGE_MANAGER
-      // typec_set_input_current_limit( 0, 0);
+      typec_set_input_current_limit(0, 0);
       // charge_manager_set_ceil(
       //			CEIL_REQUESTOR_PD,
       //			CHARGE_CEIL_NONE);
@@ -3929,10 +4372,9 @@ void pd_run_state_machine()
          * effects of a wrong assumption here
          * are minimal.
          */
-        // charge_manager_update_dualrole( CAP_DEDICATED);
+        // TODO charge_manager_update_dualrole( CAP_DEDICATED);
       }
 #endif
-
       if (hard_reset_sent)
         break;
 
@@ -4237,39 +4679,6 @@ void pd_run_state_machine()
 #endif /* CONFIG_USB_PD_DUAL_ROLE */
 }
 
-#ifdef CONFIG_USB_PD_DUAL_ROLE
-void pd_dual_role_on(void)
-{
-  int i;
-
-#ifdef CONFIG_CHARGE_MANAGER
-  // if (charge_manager_get_active_charge_port() != i)
-#endif
-  pd.flags |= PD_FLAGS_CHECK_PR_ROLE | PD_FLAGS_CHECK_DR_ROLE;
-
-  pd.flags |= PD_FLAGS_CHECK_IDENTITY;
-
-  pd_set_dual_role(PD_DRP_TOGGLE_OFF);
-  CPRINTS("chipset -> S0");
-}
-
-void pd_dual_role_off(void)
-{
-  int i;
-
-#ifdef CONFIG_CHARGE_MANAGER
-  // if (charge_manager_get_active_charge_port() != i)
-#endif
-  pd.flags |= PD_FLAGS_CHECK_PR_ROLE | PD_FLAGS_CHECK_DR_ROLE;
-
-  pd.flags |= PD_FLAGS_CHECK_IDENTITY;
-
-  pd_set_dual_role(PD_DRP_FORCE_SINK);
-  CPRINTS("chipset -> S0");
-}
-
-#endif /* CONFIG_USB_PD_DUAL_ROLE */
-
 int pd_is_port_enabled()
 {
   switch (pd.task_state)
@@ -4507,62 +4916,95 @@ static const enum typec_mux typec_mux_map[USB_PD_CTRL_MUX_COUNT] = {
 };
 #endif
 
-static int hc_usb_pd_control(struct host_cmd_handler_args* args)
+static enum ec_status hc_usb_pd_control(struct host_cmd_handler_args* args)
 {
   const struct ec_params_usb_pd_control* p = args->params;
+  struct ec_response_usb_pd_control_v2* r_v2 = args->response;
   struct ec_response_usb_pd_control_v1* r_v1 = args->response;
   struct ec_response_usb_pd_control* r = args->response;
+  const char* task_state_name;
+  mux_state_t mux_state;
 
-  if (p->port >= 1)
+  if (p->port >= board_get_usb_pd_port_count())
     return EC_RES_INVALID_PARAM;
 
   if (p->role >= USB_PD_CTRL_ROLE_COUNT || p->mux >= USB_PD_CTRL_MUX_COUNT)
     return EC_RES_INVALID_PARAM;
 
   if (p->role != USB_PD_CTRL_ROLE_NO_CHANGE)
-    pd_set_dual_role(dual_role_map[p->role]);
+  {
+    if (IS_ENABLED(CONFIG_USB_PD_DUAL_ROLE))
+      pd_set_dual_role(p->port, dual_role_map[p->role]);
+    else
+      return EC_RES_INVALID_PARAM;
+  }
 
-#ifdef CONFIG_USBC_SS_MUX
-  if (p->mux != USB_PD_CTRL_MUX_NO_CHANGE)
-    usb_mux_set(p->typec_mux_map[p->mux],
-                typec_mux_map[p->mux] == TYPEC_MUX_NONE ? USB_SWITCH_DISCONNECT : USB_SWITCH_CONNECT,
-                pd_get_polarity(p->port));
-#endif /* CONFIG_USBC_SS_MUX */
+  if (IS_ENABLED(CONFIG_USBC_SS_MUX) && p->mux != USB_PD_CTRL_MUX_NO_CHANGE)
+    usb_mux_set(p->port,
+                typec_mux_map[p->mux],
+                typec_mux_map[p->mux] == USB_PD_MUX_NONE ? USB_SWITCH_DISCONNECT : USB_SWITCH_CONNECT,
+                polarity_rm_dts(pd_get_polarity(p->port)));
 
   if (p->swap == USB_PD_CTRL_SWAP_DATA)
+  {
     pd_request_data_swap(p->port);
-#ifdef CONFIG_USB_PD_DUAL_ROLE
-  else if (p->swap == USB_PD_CTRL_SWAP_POWER)
-    pd_request_power_swap(p->port);
-#ifdef CONFIG_USBC_VCONN_SWAP
-  else if (p->swap == USB_PD_CTRL_SWAP_VCONN)
-    pd_request_vconn_swap(p->port);
-#endif
-#endif
-
-  if (args->version == 0)
-  {
-    r->enabled = pd_comm_is_enabled(p->port);
-    r->role = pd[p->port].power_role;
-    r->polarity = pd[p->port].polarity;
-    r->state = pd[p->port].task_state;
-    args->response_size = sizeof(*r);
   }
-  else
+  else if (IS_ENABLED(CONFIG_USB_PD_DUAL_ROLE))
   {
-    r_v1->enabled = (pd_comm_is_enabled(p->port) ? PD_CTRL_RESP_ENABLED_COMMS : 0) |
-                    (pd_is_connected(p->port) ? PD_CTRL_RESP_ENABLED_CONNECTED : 0) |
-                    ((pd[p->port].flags & PD_FLAGS_PREVIOUS_PD_CONN) ? PD_CTRL_RESP_ENABLED_PD_CAPABLE : 0);
-    r_v1->role = (pd[p->port].power_role ? PD_CTRL_RESP_ROLE_POWER : 0) |
-                 (pd[p->port].data_role ? PD_CTRL_RESP_ROLE_DATA : 0) |
-                 ((pd[p->port].flags & PD_FLAGS_VCONN_ON) ? PD_CTRL_RESP_ROLE_VCONN : 0) |
-                 ((pd[p->port].flags & PD_FLAGS_PARTNER_DR_POWER) ? PD_CTRL_RESP_ROLE_DR_POWER : 0) |
-                 ((pd[p->port].flags & PD_FLAGS_PARTNER_DR_DATA) ? PD_CTRL_RESP_ROLE_DR_DATA : 0) |
-                 ((pd[p->port].flags & PD_FLAGS_PARTNER_USB_COMM) ? PD_CTRL_RESP_ROLE_USB_COMM : 0) |
-                 ((pd[p->port].flags & PD_FLAGS_PARTNER_UNCONSTR) ? PD_CTRL_RESP_ROLE_EXT_POWERED : 0);
-    r_v1->polarity = pd[p->port].polarity;
-    strzcpy(r_v1->state, pd_state_names[pd[p->port].task_state], sizeof(r_v1->state));
-    args->response_size = sizeof(*r_v1);
+    if (p->swap == USB_PD_CTRL_SWAP_POWER)
+      pd_request_power_swap(p->port);
+    else if (IS_ENABLED(CONFIG_USBC_VCONN_SWAP) && p->swap == USB_PD_CTRL_SWAP_VCONN)
+      pd_request_vconn_swap(p->port);
+  }
+
+  switch (args->version)
+  {
+    case 0:
+      r->enabled = pd_comm_is_enabled(p->port);
+      r->polarity = pd_get_polarity(p->port);
+      r->role = pd_get_power_role(p->port);
+      r->state = pd_get_task_state(p->port);
+      args->response_size = sizeof(*r);
+      break;
+    case 1:
+    case 2:
+      r_v2->enabled = (pd_comm_is_enabled(p->port) ? PD_CTRL_RESP_ENABLED_COMMS : 0) |
+                      (pd_is_connected(p->port) ? PD_CTRL_RESP_ENABLED_CONNECTED : 0) |
+                      (pd_capable(p->port) ? PD_CTRL_RESP_ENABLED_PD_CAPABLE : 0);
+      r_v2->role = pd_get_role_flags(p->port);
+      r_v2->polarity = pd_get_polarity(p->port);
+
+      r_v2->cc_state = pd_get_task_cc_state(p->port);
+      task_state_name = pd_get_task_state_name(p->port);
+      if (task_state_name)
+        strzcpy(r_v2->state, task_state_name, sizeof(r_v2->state));
+      else
+        r_v2->state[0] = '\0';
+
+      r_v2->control_flags = get_pd_control_flags(p->port);
+      if (IS_ENABLED(CONFIG_USB_PD_ALT_MODE_DFP))
+      {
+        r_v2->dp_mode = get_dp_pin_mode(p->port);
+        mux_state = usb_mux_get(p->port);
+        if (mux_state & USB_PD_MUX_USB4_ENABLED)
+        {
+          r_v2->cable_speed = get_usb4_cable_speed(p->port);
+        }
+        if (mux_state & USB_PD_MUX_TBT_COMPAT_ENABLED || mux_state & USB_PD_MUX_USB4_ENABLED)
+        {
+          r_v2->cable_speed = get_tbt_cable_speed(p->port);
+          r_v2->cable_gen = get_tbt_rounded_support(p->port);
+        }
+      }
+
+      if (args->version == 1)
+        args->response_size = sizeof(*r_v1);
+      else
+        args->response_size = sizeof(*r_v2);
+
+      break;
+    default:
+      return EC_RES_INVALID_PARAM;
   }
   return EC_RES_SUCCESS;
 }
@@ -4825,16 +5267,6 @@ static int pd_control(struct host_cmd_handler_args* args)
 
 DECLARE_HOST_COMMAND(EC_CMD_PD_CONTROL, pd_control, EC_VER_MASK(0));
 #endif /* CONFIG_CMD_PD_CONTROL */
-
-typec_current_t get_typec_current_mA()
-{
-  if ((typec_curr & TYPEC_CURRENT_DTS_MASK) != 0x00)
-  {
-    // remove the set bit
-    return typec_curr ^ TYPEC_CURRENT_DTS_MASK;
-  }
-  return typec_curr;
-}
 
 int is_sink_ready() { return pd.task_state == PD_STATE_SNK_READY; }
 
