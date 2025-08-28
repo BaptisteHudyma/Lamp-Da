@@ -515,13 +515,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   //
 
   /// Binds to local BasicMode::loop()
-  void LMBD_INLINE loop()
-  {
-    LocalModeTy::loop(*this);
-
-    // signal display update every loop
-    this->lamp.getLegacyStrip().signal_display();
-  }
+  void LMBD_INLINE loop() { LocalModeTy::loop(*this); }
 
   /// Binds to local BasicMode::on_enter_mode()
   void LMBD_INLINE on_enter_mode()
