@@ -16,6 +16,7 @@
 
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/default/sine_mode.hpp"
+#include "src/modes/default/vumeter.hpp"
 
 namespace modes::legacy {
 
@@ -239,27 +240,6 @@ struct PingPongMode : public LegacyMode
 
 namespace sound {
 
-struct VuMeterMode : public LegacyMode
-{
-  static void loop(auto& ctx)
-  {
-    auto& state = ctx.state;
-    animations::vu_meter(state.redToGreenGradient, 128, ctx.lamp.getLegacyStrip());
-  }
-
-  static void reset(auto& ctx)
-  {
-    auto& state = ctx.state;
-    state.redToGreenGradient.reset();
-  }
-
-  struct StateTy
-  {
-    GenerateGradientColor redToGreenGradient = GenerateGradientColor(
-            LedStrip::Color(0, 255, 0), LedStrip::Color(255, 0, 0)); // gradient from red to green};
-  };
-};
-
 struct FftMode : public LegacyMode
 {
   static void loop(auto& ctx) { animations::fft_display(64, 64, PalettePartyColors, ctx.lamp.getLegacyStrip()); }
@@ -384,7 +364,7 @@ using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
 
 using PartyModes = modes::GroupFor<party::ColorWipeMode, party::RandomFillMode, party::PingPongMode>;
 
-using SoundModes = modes::GroupFor<sound::VuMeterMode, sound::FftMode>;
+using SoundModes = modes::GroupFor<modes::default_modes::VuMeterMode, sound::FftMode>;
 
 } // namespace modes::legacy
 
