@@ -18,6 +18,8 @@
 
 namespace user {
 
+void brightness_update(const brightness_t brightness);
+
 void power_on_sequence() { brightness_update(brightness::get_brightness()); }
 
 void power_off_sequence()

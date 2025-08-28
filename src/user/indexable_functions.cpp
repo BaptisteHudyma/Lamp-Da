@@ -1,4 +1,5 @@
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
+#ifndef LMBD_SIMPLE_EMULATOR
 
 #include <cstdint>
 
@@ -88,4 +89,5 @@ void user_thread() {}
 
 #endif // LMBD_CPP17
 
+#endif // NOT LMBD_SIMPLE_EMULATOR
 #endif // LMBD_LAMP_TYPE__INDEXABLE
