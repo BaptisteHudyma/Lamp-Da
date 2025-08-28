@@ -53,7 +53,8 @@ static auto get_context() { return user::_private::modeManager.get_context(); }
 // indexable lamp is implemented in another castle
 //
 
-#include "src/modes/user/indexable_behavior.hpp"
+#include "src/modes/user/default_behavior.hpp"   // default manager callbacks
+#include "src/modes/user/indexable_behavior.hpp" // custom RGB UI of the lamp
 
 } // namespace user
 

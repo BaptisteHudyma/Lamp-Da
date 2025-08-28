@@ -22,7 +22,7 @@ namespace _sublamp {
 #include "src/user/simple_functions.cpp"
 #undef LMBD_LAMP_TYPE__SIMPLE
 
-}
+} // namespace _sublamp
 
 //
 // code below requires c++17
@@ -59,15 +59,13 @@ LedStrip strip(LedStripPin.pin());
 // proxy simple2indexable
 //
 
-void power_on_sequence() {
+void power_on_sequence()
+{
   _sublamp::user::power_on_sequence();
   ensure_build_canary();
 }
 
-void power_off_sequence()
-{
-  _sublamp::user::power_off_sequence();
-}
+void power_off_sequence() { _sublamp::user::power_off_sequence(); }
 
 void brightness_update(const brightness_t brightness)
 {
@@ -75,28 +73,18 @@ void brightness_update(const brightness_t brightness)
   _private::strip.setBrightness((255 * brightness) / maxBrightness);
 }
 
-void write_parameters() {
-  _sublamp::user::write_parameters();
-}
+void write_parameters() { _sublamp::user::write_parameters(); }
 
-void read_parameters() {
-  _sublamp::user::read_parameters();
-}
+void read_parameters() { _sublamp::user::read_parameters(); }
 
-void button_clicked_default(const uint8_t clicks)
-{
-  _sublamp::user::button_clicked_default(clicks);
-}
+void button_clicked_default(const uint8_t clicks) { _sublamp::user::button_clicked_default(clicks); }
 
 void button_hold_default(const uint8_t a, const bool b, const uint32_t c)
 {
   _sublamp::user::button_hold_default(a, b, c);
 }
 
-bool button_clicked_usermode(const uint8_t a)
-{
-  return _sublamp::user::button_clicked_usermode(a);
-}
+bool button_clicked_usermode(const uint8_t a) { return _sublamp::user::button_clicked_usermode(a); }
 
 bool button_hold_usermode(const uint8_t a, const bool b, const uint32_t c)
 {
@@ -113,15 +101,9 @@ void loop()
   _sublamp::user::loop();
 }
 
-bool should_spawn_thread()
-{
-  return _sublamp::user::should_spawn_thread();
-}
+bool should_spawn_thread() { return _sublamp::user::should_spawn_thread(); }
 
-void user_thread()
-{
-  return _sublamp::user::user_thread();
-}
+void user_thread() { return _sublamp::user::user_thread(); }
 
 } // namespace user
 

@@ -1,62 +1,10 @@
-#ifndef BEHAVIOR_MANAGER_H
-#define BEHAVIOR_MANAGER_H
+#ifndef INDEXABLE_BEHAVIOR_MANAGER_H
+#define INDEXABLE_BEHAVIOR_MANAGER_H
 
 //
 // note: this code is included as-is by:
 //  - user/indexable_functions.h
-//  - simulator/src/mode-simulator.cpp
 //
-
-void power_on_sequence()
-{
-  auto manager = get_context();
-
-  // set output voltage
-  outputPower::write_voltage(inputVoltage_V * 1000);
-
-  // initialize the lamp object
-  manager.lamp.startup();
-
-  // callbacks
-  manager.power_on_sequence();
-}
-
-void power_off_sequence()
-{
-  // callbacks
-  auto manager = get_context();
-  manager.power_off_sequence();
-
-  // clear lamp on power-off
-  manager.lamp.clear();
-  manager.lamp.show_now();
-
-  // (no-op) internal symbol used during build
-  ensure_build_canary();
-}
-
-void brightness_update(const brightness_t brightness)
-{
-  auto manager = get_context();
-
-  // set brightness for underlying object (w/o re-entry in update_brightness)
-  manager.lamp.setBrightness(brightness, true, true);
-
-  // callbacks
-  manager.brightness_update(brightness);
-}
-
-void write_parameters()
-{
-  auto manager = get_context();
-  manager.write_parameters();
-}
-
-void read_parameters()
-{
-  auto manager = get_context();
-  manager.read_parameters();
-}
 
 void button_clicked_default(const uint8_t clicks)
 {
@@ -204,37 +152,6 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
 
     default:
       break;
-  }
-}
-
-bool button_clicked_usermode(const uint8_t clicks)
-{
-  auto manager = get_context();
-  return manager.custom_click(clicks);
-}
-
-bool button_hold_usermode(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)
-{
-  auto manager = get_context();
-  return manager.custom_hold(clicks, isEndOfHoldEvent, holdDuration);
-}
-
-void loop()
-{
-  auto manager = get_context();
-  manager.loop();
-}
-
-bool should_spawn_thread() { return true; }
-
-void user_thread()
-{
-  auto manager = get_context();
-  manager.lamp.show();
-
-  if (manager.should_spawn_thread())
-  {
-    manager.user_thread();
   }
 }
 
