@@ -31,7 +31,7 @@ void check_individual_batteries(const balancer::Status& balancerStatus)
       // This is not good, but ok the lamp can survive without.
       // It will unbalance after a time, and endup not working after a lot of charge/discharge cycles
     }
-    else if (batteryVoltage < minSingularBatteryVoltage_mV or batteryVoltage > maxSingularBatteryVoltage_mV)
+    else if (not is_cell_voltage_valid(batteryVoltage))
     {
       // TODO: alert battery voltage is incoherent
     }
@@ -95,6 +95,9 @@ uint16_t get_raw_battery_voltage_mv()
     return batteryMaxVoltage_mV;
   }
 
+  // absolute minimum/maximum battery pack voltage
+  static constexpr uint16_t minBatteryVoltage_mV = minSingularBatteryVoltage_mV * batteryCount;
+  static constexpr uint16_t maxBatteryVoltage_mV = maxSingularBatteryVoltage_mV * batteryCount;
   // check battery pack validity (in bounds with some margin)
   if (s_batteryVoltage_mV < minBatteryVoltage_mV or s_batteryVoltage_mV > maxBatteryVoltage_mV)
   {
@@ -103,7 +106,6 @@ uint16_t get_raw_battery_voltage_mv()
     return batteryMaxVoltage_mV;
   }
   // return the true battery voltage
-  alerts::manager.clear(alerts::Type::BATTERY_READINGS_INCOHERENT);
   return s_batteryVoltage_mV;
 }
 
