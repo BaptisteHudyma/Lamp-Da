@@ -1,5 +1,6 @@
 #include "balancer.h"
 
+#include "src/system/alerts.h"
 #include "src/system/platform/time.h"
 #include "src/system/platform/i2c.h"
 
@@ -149,8 +150,7 @@ void balance_batteries()
   for (uint8_t i = 0; i < batteryCount; i++)
   {
     // do not use invalid voltage as balancing reference
-    if (status.batteryVoltages_mV[i] >= minSingularBatteryVoltage_mV and
-        status.batteryVoltages_mV[i] < batteryVoltageMin)
+    if (is_cell_voltage_valid(status.batteryVoltages_mV[i]) and status.batteryVoltages_mV[i] < batteryVoltageMin)
       batteryVoltageMin = status.batteryVoltages_mV[i];
   }
 
@@ -287,9 +287,12 @@ void loop()
     isInitFirstFullScanDone = true;
   }
 
+  static bool isBalancingAllowed = true;
+
   // refresh
-  EVERY_N_MILLIS(800)
+  EVERY_N_MILLIS(500)
   {
+    isBalancingAllowed = true;
     _status.stackVoltage_mV = balancerRegisters.stackVoltage.get();
     _status.temperature_degrees = balancerRegisters.intTemperatureVoltage.get();
 
@@ -299,6 +302,17 @@ void loop()
     {
       _status.batteryVoltages_mV[i] = get_battery_voltage_mv(i);
       _status.isBalancing[i] = is_balancing(i);
+
+      if (not is_cell_voltage_valid(_status.batteryVoltages_mV[i]))
+      {
+        isBalancingAllowed = false;
+      }
+    }
+
+    if (not isBalancingAllowed)
+    {
+      alerts::manager.raise(alerts::Type::BATTERY_READINGS_INCOHERENT);
+      disable_battery_balancing();
     }
 
     // update measurments
@@ -306,7 +320,7 @@ void loop()
   }
 
   // if the balancing process is enabled, balance batteries
-  if (isBalancingEnabled)
+  if (isBalancingEnabled && isBalancingAllowed)
   {
     EVERY_N_MILLIS(1000) { balance_batteries(); }
   }

@@ -103,10 +103,6 @@ static constexpr uint16_t batteryMinVoltage_mV = minLiionVoltage_mV * batteryCou
 // min voltage of a li-ion cell to maximise lifetime
 static constexpr uint16_t batteryMinVoltageSafe_mV = minSafeLiionVoltage_mV * batteryCount;
 
-// absolute minimum/maximum battery pack voltage
-static constexpr uint16_t minBatteryVoltage_mV = minSingularBatteryVoltage_mV * batteryCount;
-static constexpr uint16_t maxBatteryVoltage_mV = maxSingularBatteryVoltage_mV * batteryCount;
-
 // physical parameters computations
 static constexpr float totalCons_Watt = consWattByMeter * ledStripLenght_mm / 1000.0;
 static constexpr float maxStripConsumption_A = totalCons_Watt / inputVoltage_V;
@@ -116,6 +112,14 @@ static constexpr uint32_t batteryMaxChargeCurrent_mA = batteryChargeC_Rate * bat
 static constexpr uint32_t batteryMaxDischargeCurrent_mA = batteryDischargeC_Rate * batteryCapacity_mAH; // mA
 
 static constexpr uint32_t batteryTypicalPower_mWH = batteryCapacity_mAH * batteryTypicalVoltageSafe_mV / 1000;
+
+/**
+ * \brief check battery cell voltage against min/max limits
+ */
+inline bool is_cell_voltage_valid(const uint16_t cellVoltage_mv)
+{
+  return cellVoltage_mv > minSingularBatteryVoltage_mV && cellVoltage_mv < maxSingularBatteryVoltage_mV;
+}
 
 using brightness_t = uint16_t;
 static constexpr brightness_t maxBrightness = 1024;

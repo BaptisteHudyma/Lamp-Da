@@ -69,23 +69,6 @@ inline const char* AlertsToText(const Type type)
   }
 }
 
-void AlertManager_t::raise(const Type type)
-{
-  if (is_raised(type))
-    return;
-
-  lampda_print("ALERT raised: %s", AlertsToText(type));
-  _current |= type;
-}
-
-void AlertManager_t::clear(const Type type)
-{
-  if (not is_raised(type))
-    return;
-  lampda_print("ALERT cleared: %s", AlertsToText(type));
-  _current ^= type;
-}
-
 namespace __internal {
 
 // only sample battery level every N steps
@@ -158,6 +141,9 @@ struct AlertBase
     return false;
   }
 
+  // an alert continuously firing as to be updated
+  void update_raise_time(const uint32_t time) { raisedTime = time; }
+
   virtual bool handle_lowered_state(const uint32_t time)
   {
     if (not _isLoweredHandled)
@@ -191,6 +177,12 @@ struct Alert_BatteryReadingIncoherent : public AlertBase
   bool show() const override { return indicator::blink(100, 100, {utils::ColorSpace::GREEN, utils::ColorSpace::RED}); }
 
   Type get_type() const override { return Type::BATTERY_READINGS_INCOHERENT; }
+
+  bool should_be_cleared() const override
+  {
+    // cleared after a delay
+    return raisedTime > 0 and (time_ms() - raisedTime) > 2000;
+  }
 };
 
 struct Alert_BatteryCritical : public AlertBase
@@ -559,5 +551,33 @@ void show_all()
 }
 
 bool is_request_shutdown() { return _request_shutdown; }
+
+void AlertManager_t::raise(const Type type)
+{
+  if (is_raised(type))
+  {
+    // update raise time
+    for (auto& alert: allAlerts)
+    {
+      if (type == alert->get_type())
+      {
+        alert->update_raise_time(time_ms());
+        break;
+      }
+    }
+    return;
+  }
+
+  lampda_print("ALERT raised: %s", AlertsToText(type));
+  _current |= type;
+}
+
+void AlertManager_t::clear(const Type type)
+{
+  if (not is_raised(type))
+    return;
+  lampda_print("ALERT cleared: %s", AlertsToText(type));
+  _current ^= type;
+}
 
 } // namespace alerts
