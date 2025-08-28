@@ -3768,6 +3768,9 @@ void pd_run_state_machine()
         /* Set the CC termination and state back to default */
         tcpm_set_cc(PD_ROLE_DEFAULT() == PD_ROLE_SOURCE ? TYPEC_CC_RP : TYPEC_CC_RD);
         set_state(PD_DEFAULT_STATE());
+        // TODO: not standard : do not send get source capabilities here
+        send_control(PD_CTRL_GET_SOURCE_CAP);
+        // ENDOFTODO
         CPRINTS("TCPC resumed!");
 #endif
         break;
