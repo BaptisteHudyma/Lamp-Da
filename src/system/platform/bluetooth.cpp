@@ -4,8 +4,8 @@
 
 #include "src/system/alerts.h"
 #include "src/system/utils/constants.h"
-#include "src/system/utils/print.h"
 
+#include "src/system/platform/print.h"
 #include "src/system/platform/time.h"
 
 namespace bluetooth {

@@ -7,8 +7,8 @@
 #include "src/system/utils/utils.h"
 #include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/curves.h"
-#include "src/system/utils/print.h"
 
+#include "src/system/platform/print.h"
 #include "src/system/platform/time.h"
 
 #include "src/system/physical/fileSystem.h"

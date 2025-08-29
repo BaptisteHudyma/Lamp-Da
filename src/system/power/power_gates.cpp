@@ -2,8 +2,7 @@
 
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/time.h"
-
-#include "src/system/utils/print.h"
+#include "src/system/platform/print.h"
 
 namespace powergates {
 

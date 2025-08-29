@@ -5,13 +5,35 @@
 
 #include <Arduino.h>
 
+extern "C" {
+  // hack to use prints in c files
+#include "src/system/utils/print.h"
+}
+
+// mutex to prevent lockups
+StaticSemaphore_t _PrintMutex;
+SemaphoreHandle_t printMutex = xSemaphoreCreateMutexStatic(&_PrintMutex);
+
+void _lockPrintMutex(void) { xSemaphoreTake(printMutex, portMAX_DELAY); }
+void _unlockPrintMutex(void) { xSemaphoreGive(printMutex); }
+
 void init_prints() { Serial.begin(115200); }
 
-void lampda_print(const std::string& str)
+void lampda_print(const char* format, ...)
 {
+  _lockPrintMutex();
+
+  static char buffer[1024];
+  va_list argptr;
+  va_start(argptr, format);
+  vsprintf(buffer, format, argptr);
+  va_end(argptr);
+
   Serial.print(millis());
   Serial.print("> ");
-  Serial.println(str.c_str());
+  Serial.println(buffer);
+
+  _unlockPrintMutex();
 }
 
 constexpr uint8_t maxReadLinePerLoop = 5;
@@ -19,6 +41,8 @@ constexpr uint8_t maxLineLenght = 200;
 
 std::vector<std::string> read_inputs()
 {
+  _lockPrintMutex();
+
   std::vector<std::string> ret;
 
   if (Serial.available())
@@ -50,6 +74,8 @@ std::vector<std::string> read_inputs()
       }
     } while (Serial.available() && lineRead < maxReadLinePerLoop && charRead < maxLineLenght);
   }
+
+  _unlockPrintMutex();
   return ret;
 }
 

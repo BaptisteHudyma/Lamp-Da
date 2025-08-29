@@ -4,11 +4,11 @@
 #include "drivers/tcpm_driver.h"
 #include "usb_pd.h"
 
-#include "src/system/utils/print.h"
 #include "src/system/utils/time_utils.h"
 
 #include "src/system/physical/battery.h"
 
+#include "src/system/platform/print.h"
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/threads.h"
@@ -189,7 +189,7 @@ struct UsbPDData
 
   void serial_show()
   {
-    lampda_print("PD algo: %d %d%d%d: [PDO %fV %fA] %fV | %s",
+    lampda_print("PD algo: %d %d%d%d: [PDO %.2fV %.2fA] %.2fV | %s",
                  should_run_pd_state_machine,
                  isVbusPowered,
                  isPowerSourceDetected,

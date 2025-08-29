@@ -10,8 +10,8 @@
 #include "src/system/physical/battery.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
-#include "src/system/utils/print.h"
 
+#include "src/system/platform/print.h"
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/registers.h"
@@ -194,7 +194,7 @@ void update_state_status()
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
           charger.softwareErrorMessage = "ERROR: charger in UNINITIALIZED/ERROR state";
-          lampda_print(charger.softwareErrorMessage);
+          lampda_print(charger.softwareErrorMessage.c_str());
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
         break;
@@ -205,7 +205,7 @@ void update_state_status()
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_HARDWARE)
         {
           charger.hardwareErrorMessage = "ERROR: charger in ERROR_COMPONENT state";
-          lampda_print(charger.hardwareErrorMessage);
+          lampda_print(charger.hardwareErrorMessage.c_str());
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_HARDWARE;
         break;
@@ -215,7 +215,7 @@ void update_state_status()
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
           charger.softwareErrorMessage = "ERROR: charger in ERROR_HAS_FAULTS state";
-          lampda_print(charger.softwareErrorMessage);
+          lampda_print(charger.softwareErrorMessage.c_str());
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
 

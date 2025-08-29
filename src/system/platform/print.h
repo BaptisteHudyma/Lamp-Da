@@ -3,17 +3,14 @@
 
 #include <string>
 #include <vector>
+#include <stdarg.h>
+
+#include "src/system/utils/print.h"
 
 /**
  * \brief call once at program start
  */
 extern void init_prints();
-
-/**
- * \brief Print a screen to the external world
- * To use with caution, this process can be slow
- */
-extern void lampda_print(const std::string& str);
 
 /**
  * \breif read external inputs (may take some time)

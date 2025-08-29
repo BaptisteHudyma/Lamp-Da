@@ -24,7 +24,6 @@
 #include "src/system/utils/utils.h"
 #include "src/system/utils/state_machine.h"
 #include "src/system/utils/input_output.h"
-#include "src/system/utils/print.h"
 #include "src/system/utils/brightness_handle.h"
 
 #include "src/system/platform/bluetooth.h"
@@ -32,6 +31,7 @@
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/registers.h"
 #include "src/system/platform/threads.h"
+#include "src/system/platform/print.h"
 
 #include "src/user/functions.h"
 

@@ -1,13 +1,10 @@
-#ifndef UTILS_PRINT_H
-#define UTILS_PRINT_H
-
-// need to display the result to screen
-#include "src/system/platform/print.h"
+#ifndef C_LOGGER_H
+#define C_LOGGER_H
 
 /**
- * \brief Print a composite string by unpacking all arguments
- *
+ * This file should be used by .c files to access print functions
  */
-void lampda_print(const char* fmt, ...);
+
+void lampda_print(const char* format, ...);
 
 #endif

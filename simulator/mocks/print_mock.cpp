@@ -12,6 +12,11 @@
 
 #define PLATFORM_PRINT_CPP
 
+extern "C" {
+  // hack to use prints in c files
+#include "src/system/utils/print.h"
+}
+
 /**
  * \brief call once at program start
  */
@@ -21,10 +26,17 @@ void init_prints() {}
  * \brief Print a screen to the external world
  */
 std::mutex mut;
-void lampda_print(const std::string& str)
+void lampda_print(const char* format, ...)
 {
   std::scoped_lock(mut);
-  std::cout << time_ms() << "> " << str << std::endl;
+
+  static char buffer[1024];
+  va_list argptr;
+  va_start(argptr, format);
+  vsprintf(buffer, format, argptr);
+  va_end(argptr);
+
+  std::cout << time_ms() << "> " << buffer << std::endl;
 }
 
 /**
