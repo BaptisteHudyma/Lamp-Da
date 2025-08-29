@@ -42,7 +42,7 @@ void set_error_state_message(const std::string& errorMsg)
 {
   if (_errorStr.empty())
   {
-    _errorStr = "\n\t" + errorMsg;
+    _errorStr = errorMsg;
   }
 }
 
@@ -468,10 +468,7 @@ void init()
 #ifndef LMBD_SIMULATION
   if (not balancer::init())
   {
-    errorStr += "- Init balancer component failed";
-
-    __private::powerMachine.set_state(PowerStates::ERROR);
-    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+    errorStr += "\n\t- Init balancer component failed";
     isSuccessful = false;
   }
 
@@ -480,9 +477,6 @@ void init()
   if (!chargerSuccess)
   {
     errorStr += "\n\t- Init charger component failed";
-
-    __private::powerMachine.set_state(PowerStates::ERROR);
-    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
     isSuccessful = false;
   }
 
@@ -491,19 +485,16 @@ void init()
   if (!pdSuccess)
   {
     errorStr += "\n\t- Init power delivery component failed";
-
-    __private::powerMachine.set_state(PowerStates::ERROR);
-    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
     isSuccessful = false;
   }
 #endif
 
-  // set error message if needed
-  if (not errorStr.empty())
-    set_error_state_message(errorStr);
-
   if (not isSuccessful)
   {
+    __private::powerMachine.set_state(PowerStates::ERROR);
+    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+
+    set_error_state_message(errorStr);
     // failed initialisation, skip
     return;
   }
