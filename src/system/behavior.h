@@ -53,6 +53,9 @@ extern void loop();
 
 std::string get_state();
 
+/// return the error message associated with the error state
+std::string get_error_state_message();
+
 } // namespace behavior
 
 /// \private Internal symbol used to signify which LMBD_LAMP_TYPE was specified

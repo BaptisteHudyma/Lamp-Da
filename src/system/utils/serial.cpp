@@ -44,7 +44,7 @@ void handleCommand(const std::string& command)
                 "cinfo: charger infos\n"
                 "ADC: values from the charger ADC\n"
                 "PD: display the connected PD capabilities\n"
-                "power: power state machine states\n"
+                "states: state machine states\n"
                 "alerts: show all raised alerts\n"
                 "i2c: start an i2c present check\n"
                 "format-fs: format the whole file system (dangerous)\n"
@@ -212,14 +212,14 @@ void handleCommand(const std::string& command)
         break;
       }
 
-    case utils::hash("power"):
+    case utils::hash("states"):
       {
-        lampda_print(
-                "state machine state: %s. error msgs: %s \n"
-                "behavior machine state:%s",
-                power::get_state().c_str(),
-                power::get_error_string().c_str(),
-                behavior::get_state().c_str());
+        lampda_print("behavior machine state:%s. error msgs: %s",
+                     behavior::get_state().c_str(),
+                     behavior::get_error_state_message().c_str());
+        lampda_print("power state machine state: %s. error msgs: %s",
+                     power::get_state().c_str(),
+                     power::get_error_string().c_str());
         break;
       }
 

@@ -17,15 +17,15 @@ static constexpr float c_HALF_PI = 1.5707963267948;
 
 static constexpr float c_degreesToRadians = c_PI / 180.0f;
 
+// Update when the soft changes version
+#define USER_SOFTWARE_VERSION_MAJOR 1
+#define USER_SOFTWARE_VERSION_MINOR 2
+
 //
 // simple lamp type
 //
 
 #ifdef LMBD_LAMP_TYPE__SIMPLE
-
-// Update when the soft changes version
-#define USER_SOFTWARE_VERSION_MAJOR 1
-#define USER_SOFTWARE_VERSION_MINOR 0
 
 // compute the expected average loop runtime (in ms)
 // defined as milliseconds / FPS
@@ -49,10 +49,6 @@ static constexpr float circuitToLedZeroRotationZ_degrees = 88;
 
 #ifdef LMBD_LAMP_TYPE__CCT
 
-// Update when the soft changes version
-#define USER_SOFTWARE_VERSION_MAJOR 0
-#define USER_SOFTWARE_VERSION_MINOR 1
-
 // compute the expected average loop runtime (in ms)
 // defined as milliseconds / FPS
 static constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = 1000 / 80.0;
@@ -74,10 +70,6 @@ static constexpr float circuitToLedZeroRotationZ_degrees = 88;
 //
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
-
-// Update when the soft changes version
-#define USER_SOFTWARE_VERSION_MAJOR 1
-#define USER_SOFTWARE_VERSION_MINOR 1
 
 static constexpr float lampBodyRadius_mm = 25; // external radius of the lamp body
 
