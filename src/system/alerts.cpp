@@ -3,13 +3,13 @@
 #include "src/system/platform/time.h"
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/registers.h"
+#include "src/system/platform/print.h"
 
 #include "src/system/physical/indicator.h"
 #include "src/system/physical/battery.h"
 
 #include "src/system/power/power_handler.h"
 
-#include "src/system/utils/print.h"
 #include "src/system/utils/utils.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/brightness_handle.h"

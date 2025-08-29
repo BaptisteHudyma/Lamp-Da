@@ -12,13 +12,13 @@
 #include "src/system/platform/registers.h"
 #include "src/system/platform/threads.h"
 #include "src/system/platform/i2c.h"
+#include "src/system/platform/print.h"
 
 #include "src/system/physical/battery.h"
 #include "src/system/physical/fileSystem.h"
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
-#include "src/system/utils/print.h"
 
 #include "src/system/alerts.h"
 
@@ -107,9 +107,9 @@ void handleCommand(const std::string& command)
         {
           // print individual battery voltages
           lampda_print(
-                  "raw battery level:%f%%\n"
-                  "battery level:%f%%\n"
-                  "minimum cell level:%f%%",
+                  "raw battery level:%.2f%%\n"
+                  "battery level:%.2f%%\n"
+                  "minimum cell level:%.2f%%",
                   battery::get_level_percent(battery::get_raw_battery_voltage_mv()) / 100.0,
                   battery::get_battery_level() / 100.0,
                   battery::get_battery_minimum_cell_level() / 100.0);
@@ -134,7 +134,7 @@ void handleCommand(const std::string& command)
                 "is usb serial connected:%s\n"
                 "is charging:%s\n"
                 "is effec charging:%s\n"
-                "battery level:%f%%\n"
+                "battery level:%.2f%%\n"
                 "-> charger status: %s",
                 boolToString(chargerState.isChargeOkSignalHigh),
                 chargerState.powerRail_mV,

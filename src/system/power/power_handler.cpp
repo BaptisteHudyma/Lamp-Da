@@ -1,12 +1,12 @@
 #include "power_handler.h"
 
-#include "src/system/utils/print.h"
 #include "src/system/utils/state_machine.h"
 
 #include "src/system/alerts.h"
 
 #include "src/system/physical/battery.h"
 
+#include "src/system/platform/print.h"
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/threads.h"
 #include "src/system/platform/registers.h"

@@ -1,10 +1,11 @@
 #include "balancer.h"
 
 #include "src/system/alerts.h"
+
 #include "src/system/platform/time.h"
 #include "src/system/platform/i2c.h"
+#include "src/system/platform/print.h"
 
-#include "src/system/utils/print.h"
 #include "src/system/utils/time_utils.h"
 
 #include <cstdint>

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <stdarg.h>
 
 /**
  * \brief call once at program start
@@ -13,7 +14,7 @@ extern void init_prints();
  * \brief Print a screen to the external world
  * To use with caution, this process can be slow
  */
-extern void lampda_print(const std::string& str);
+extern void lampda_print(const char* format, ...);
 
 /**
  * \breif read external inputs (may take some time)

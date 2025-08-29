@@ -4,11 +4,11 @@
 
 #include "LSM6DS3/imu_wrapper.h"
 #include "src/system/utils/constants.h"
-#include "src/system/utils/print.h"
 #include "src/system/utils/vector_math.h"
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
+#include "src/system/platform/print.h"
 
 namespace imu {
 

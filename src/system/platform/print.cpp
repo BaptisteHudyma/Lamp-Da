@@ -7,11 +7,17 @@
 
 void init_prints() { Serial.begin(115200); }
 
-void lampda_print(const std::string& str)
+void lampda_print(const char* format, ...)
 {
+  static char buffer[1024];
+  va_list argptr;
+  va_start(argptr, format);
+  vsprintf(buffer, format, argptr);
+  va_end(argptr);
+
   Serial.print(millis());
   Serial.print("> ");
-  Serial.println(str.c_str());
+  Serial.println(buffer);
 }
 
 constexpr uint8_t maxReadLinePerLoop = 5;
