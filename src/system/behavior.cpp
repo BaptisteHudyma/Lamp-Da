@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "power/power_gates.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 
@@ -449,8 +450,26 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
   }
 }
 
+static std::string errorStateRaisedStr = "";
+void set_error_state_message(const std::string& errorMsg)
+{
+  if (errorStateRaisedStr.empty())
+  {
+    errorStateRaisedStr = "\n\t" + errorMsg;
+  }
+}
+std::string get_error_state_message()
+{
+  if (errorStateRaisedStr.empty())
+    return "x";
+  return errorStateRaisedStr;
+}
+
 void handle_error_state()
 {
+  set_error_state_message("Unspecified raised error state reason");
+  powergates::disable_gates();
+
   // not allowed to start, can only be stopped
   // turn off system is needed
   if (not is_system_should_be_powered())
@@ -472,11 +491,13 @@ void handle_start_logic_state()
   if (not can_system_allowed_to_be_powered())
   {
     set_power_on();
+    set_error_state_message("system not allow to power on in start logic state");
     mainMachine.set_state(BehaviorStates::ERROR);
     return;
   }
   if (power::is_in_error_state())
   {
+    set_error_state_message("power system in error state in start logic state");
     mainMachine.set_state(BehaviorStates::ERROR);
     return;
   }
@@ -503,6 +524,7 @@ void handle_pre_charger_operation_state()
 {
   if (power::is_in_error_state())
   {
+    set_error_state_message("power system in error state in pre charger operation state");
     mainMachine.set_state(BehaviorStates::ERROR);
     return;
   }
@@ -523,6 +545,7 @@ void handle_charger_operation_state()
 {
   if (power::is_in_error_state())
   {
+    set_error_state_message("power system in error state in charger operation state");
     mainMachine.set_state(BehaviorStates::ERROR);
     return;
   }
@@ -574,6 +597,7 @@ void handle_pre_output_light_state()
 {
   if (power::is_in_error_state())
   {
+    set_error_state_message("power system in error state in pre output light state");
     mainMachine.set_state(BehaviorStates::ERROR);
     return;
   }
@@ -625,6 +649,7 @@ void handle_output_light_state()
 {
   if (power::is_in_error_state())
   {
+    set_error_state_message("power system in error state in output light state");
     mainMachine.set_state(BehaviorStates::ERROR);
     return;
   }
@@ -644,7 +669,9 @@ void handle_output_light_state()
 
     if (time_ms() - lastOutputLightValidTime > 1000)
     {
-      lampda_print("Behavior>Output mode: power gate took too long to switch");
+      set_error_state_message("power gate took too long to switch in output light state " +
+                              std::to_string(powergates::is_power_gate_enabled()) +
+                              std::to_string(power::is_output_mode_ready()));
       mainMachine.set_state(BehaviorStates::ERROR);
     }
     return;
@@ -797,6 +824,7 @@ void state_machine_behavior()
       break;
     default:
       {
+        set_error_state_message("reached state machine default state");
         mainMachine.set_state(BehaviorStates::ERROR);
       }
       break;

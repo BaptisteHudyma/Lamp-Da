@@ -32,6 +32,20 @@ static uint16_t _outputCurrent_mA = 0;
 static bool _isChargeEnabled = false;
 static std::string _errorStr = "";
 
+std::string get_error_string()
+{
+  if (_errorStr.empty())
+    return "x";
+  return _errorStr;
+}
+void set_error_state_message(const std::string& errorMsg)
+{
+  if (_errorStr.empty())
+  {
+    _errorStr = "\n\t" + errorMsg;
+  }
+}
+
 // Define the state for the main prog state machine
 typedef enum
 {
@@ -113,6 +127,8 @@ void handle_clear_power_rails()
 {
   s_isOutputModeReady = false;
 
+  powerDelivery::suspend_pd_state_machine();
+
   // disable all gates
   powergates::disable_gates();
   // prevent reverse current flow
@@ -144,7 +160,7 @@ void handle_clear_power_rails()
     // timeout after which we go to error ?
     if (time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailFailureDelay_ms)
     {
-      _errorStr = "CLEAR_POWER_RAILS: discharge VBUS failed";
+      set_error_state_message("CLEAR_POWER_RAILS: discharge VBUS failed");
       __private::powerMachine.set_state(PowerStates::ERROR);
     }
   }
@@ -208,22 +224,14 @@ void handle_output_voltage_mode()
 
 void handle_otg_mode()
 {
+  bool otgNoActivity = false;
+
   // shutdown OTG if no current consumption for X seconds
   const auto& state = charger::get_state();
-  if (state.inputCurrent_mA <= 10)
+  // no current since a timing
+  if (state.inputCurrent_mA <= 10 && time_ms() - timeSinceOTGNoCurrentUse > 2000)
   {
-    if (time_ms() - timeSinceOTGNoCurrentUse > 2000)
-    {
-      // reset pd machine
-      powerDelivery::suspend_pd_state_machine();
-      powerDelivery::resume_pd_state_machine();
-
-      // temporary suspend
-      powerDelivery::allow_otg(false);
-      set_otg_parameters(0, 0);
-      go_to_charger_mode();
-      return;
-    }
+    otgNoActivity = true;
   }
   else
   {
@@ -231,12 +239,18 @@ void handle_otg_mode()
   }
 
   // end of OTG, switch to charger
-  if (!powerDelivery::is_switching_to_otg())
+  if (otgNoActivity or !powerDelivery::is_switching_to_otg())
   {
+    // reset pd machine
+    powerDelivery::suspend_pd_state_machine();
+    powerDelivery::resume_pd_state_machine();
+
     // temporary suspend
     powerDelivery::allow_otg(false);
     set_otg_parameters(0, 0);
-    go_to_charger_mode();
+
+    // no need for power gate, we are the one to push current
+    __private::powerMachine.set_state(PowerStates::CHARGING_MODE);
     return;
   }
 
@@ -332,7 +346,7 @@ void state_machine_behavior()
       break;
     default:
       {
-        _errorStr = "default case not handled";
+        set_error_state_message("default case not handled");
         powerMachine.set_state(PowerStates::ERROR);
       }
       break;
@@ -432,7 +446,6 @@ bool enable_charge(const bool enable)
 }
 
 std::string get_state() { return std::string(PowerStatesStr[__private::powerMachine.get_state()]); }
-std::string get_error_string() { return _errorStr; }
 
 bool is_in_output_mode() { return __private::powerMachine.get_state() == PowerStates::OUTPUT_VOLTAGE_MODE; }
 bool is_in_otg_mode() { return __private::powerMachine.get_state() == PowerStates::OTG_MODE; }
@@ -449,13 +462,13 @@ void init()
   __private::powerMachine.set_state(PowerStates::IDLE);
 
   bool isSuccessful = true;
-  _errorStr = "";
+  std::string errorStr = "";
 
 // TODO issue #132 remove when the mock components will be running
 #ifndef LMBD_SIMULATION
   if (not balancer::init())
   {
-    _errorStr += "\n\t- Init balancer component failed";
+    errorStr += "- Init balancer component failed";
 
     __private::powerMachine.set_state(PowerStates::ERROR);
     alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
@@ -466,7 +479,7 @@ void init()
   const bool chargerSuccess = charger::setup();
   if (!chargerSuccess)
   {
-    _errorStr += "\n\t- Init charger component failed";
+    errorStr += "\n\t- Init charger component failed";
 
     __private::powerMachine.set_state(PowerStates::ERROR);
     alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
@@ -477,7 +490,7 @@ void init()
   const bool pdSuccess = powerDelivery::setup();
   if (!pdSuccess)
   {
-    _errorStr += "\n\t- Init power delivery component failed";
+    errorStr += "\n\t- Init power delivery component failed";
 
     __private::powerMachine.set_state(PowerStates::ERROR);
     alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
@@ -485,12 +498,15 @@ void init()
   }
 #endif
 
+  // set error message if needed
+  if (not errorStr.empty())
+    set_error_state_message(errorStr);
+
   if (not isSuccessful)
   {
     // failed initialisation, skip
     return;
   }
-  _errorStr = "x";
 
   isSetup = true;
 }
