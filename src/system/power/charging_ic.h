@@ -79,6 +79,8 @@ Status_t get_status();
 std::string get_status_detail();
 // return the charge status of the battery
 ChargeStatus_t get_charge_status();
+// contains details on software error if any
+std::string get_software_error_message();
 
 // store the DAC values
 struct Measurments

@@ -193,7 +193,8 @@ void update_state_status()
       { // locked in a broken state
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
-          charger.softwareErrorMessage = "ERROR: charger in UNINITIALIZED/ERROR state";
+          charger.softwareErrorMessage =
+                  "ERROR: charger in UNINITIALIZED/ERROR state : " + drivers::get_software_error_message();
           lampda_print(charger.softwareErrorMessage.c_str());
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
@@ -257,6 +258,9 @@ void update_state_status()
             }
           default:
             {
+              charger.hardwareErrorMessage = "ERROR: charger state reached default state";
+              lampda_print(charger.hardwareErrorMessage.c_str());
+
               charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
               break;
             }

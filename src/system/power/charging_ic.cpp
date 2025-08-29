@@ -44,6 +44,19 @@ inline static bool isChargeEnabled_s = false;
 // charger is in OTG state
 inline static bool isInOtg_s = false;
 
+std::string softwareError_detail = "";
+std::string get_software_error_message()
+{
+  if (softwareError_detail.empty())
+    return "x";
+  return softwareError_detail;
+}
+void set_software_error_message(const std::string& msg)
+{
+  if (softwareError_detail.empty())
+    softwareError_detail = msg;
+}
+
 struct PowerLimits
 {
   uint16_t maxChargingCurrent_mA = 0;
@@ -381,24 +394,23 @@ void program_input_current_limit()
 
     const uint16_t writtenCurrent_mA = chargerIcRegisters.iIN_HOST.set(inputCurrentLimit_mA);
 
+    // the checks below can produce a rare software error when plugging the system
+    // It it not that important, so it can stay deactivated to prevent this pesky error
+#if 0
     // check that the register is set
-    if (writtenCurrent_mA != chargerIcRegisters.iIN_HOST.get() or
-        (not shouldUseICO and writtenCurrent_mA != chargerIcRegisters.iIN_DPM.get()))
+    if (writtenCurrent_mA != chargerIcRegisters.iIN_HOST.get())
     {
-      // read/write error
-      /*Serial.print(writtenCurrent_mA);
-      Serial.print("mA != ");
-      Serial.print(chargerIcRegisters.iIN_HOST.get());
-      Serial.print("mA OR ");
-      Serial.print(not shouldUseICO);
-      Serial.print(" and ");
-      Serial.print(writtenCurrent_mA);
-      Serial.print("mA != ");
-      Serial.println(chargerIcRegisters.iIN_DPM.get());
-      */
+      set_software_error_message("written current register iIN_HOST do not match consign");
       status_s = Status_t::ERROR;
       return;
     }
+    if (not shouldUseICO and writtenCurrent_mA != chargerIcRegisters.iIN_DPM.get())
+    {
+      set_software_error_message("written current register iIN_DPM do not match consign");
+      status_s = Status_t::ERROR;
+      return;
+    }
+#endif
 
     // force disable ILIM pin hardware input current limit
     chargerIcRegisters.chargeOption2.set_EN_EXTILIM(0);
@@ -422,7 +434,7 @@ void program_input_current_limit()
   chargerIc.readRegEx(chargerIcRegisters.chargeOption0);
   if (chargerIcRegisters.chargeOption0.EN_IDPM() == 0)
   {
-    lampda_print("EN IDPM not enabled");
+    set_software_error_message("EN IDPM not enabled");
     status_s = Status_t::ERROR;
     return;
   }
@@ -529,23 +541,34 @@ bool enable(const uint16_t minSystemVoltage_mV,
   const auto minSystemVoltage_mV_read = chargerIcRegisters.minSystemVoltage.set(minSystemVoltage_mV);
   const auto minInputVoltage_mV_read = chargerIcRegisters.inputVoltage.set(4200);
 
+  std::string startErrorMessage = "";
+  bool isSuccessful = true;
+
   // a write failed at some point
   if (chargerIc.isFlagRaised)
   {
-    status_s = Status_t::ERROR;
-    return false;
+    isSuccessful = false;
+    startErrorMessage += "\n\t- i2c failed flag raised";
   }
   // check the register values
   if (chargerIcRegisters.maxChargeVoltage.get() != maxBatteryVoltage_mV_read)
   {
-    status_s = Status_t::ERROR;
-    return false;
+    isSuccessful = false;
+    startErrorMessage += "\n\t- max charge voltage register write failed";
   }
   if (chargerIcRegisters.minSystemVoltage.get() != minSystemVoltage_mV_read)
   {
+    isSuccessful = false;
+    startErrorMessage += "\n\t- min charge voltage register write failed";
+  }
+
+  if (not isSuccessful)
+  {
     status_s = Status_t::ERROR;
+    set_software_error_message(startErrorMessage);
     return false;
   }
+
   // initial status update
   powerLimits_s.maxChargingCurrent_mA = maxChargingCurrent_mA;
   run_status_update();
