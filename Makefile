@@ -29,9 +29,9 @@ COMPILER_CMD=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep co
 COMPILER_PATH=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.path|cut -f2 -d=)
 
 CPP_INCLUDES=-I$(OBJECTS_DIR)/sketch -DLMBD_MISSING_DEFINE
-CPP_BASIC_FLAGS=-std=gnu++17 -fconcepts -DNDEBUG -DLMBD_CPP17 -D$(FULL_LAMP_TYPE) $(CPP_INCLUDES)
+CPP_BASIC_FLAGS=-std=gnu++17 -fconcepts -DNDEBUG -DLMBD_CPP17 -D$(FULL_LAMP_TYPE) $(CPP_INCLUDES) ${LMBD_EXTRA_FLAGS}
 CPP_BUILD_FLAGS=$(CPP_BASIC_FLAGS) -fdiagnostics-color=always -Wno-unused-parameter -ftemplate-backtrace-limit=1 # -fsanitize=undefined,address -fstack-protector-all
-ARDUINO_EXTRA_FLAGS="compiler.cpp.extra_flags='$(CPP_INCLUDES) -D$(FULL_LAMP_TYPE)'"
+ARDUINO_EXTRA_FLAGS="compiler.cpp.extra_flags='$(CPP_INCLUDES) -D$(FULL_LAMP_TYPE) ${LMBD_EXTRA_FLAGS}'"
 #
 # to enable warnings:
 # 	LMBD_CPP_EXTRA_FLAGS="-Wall -Wextra" make
@@ -60,6 +60,8 @@ simple: build-simple
 
 indexable: build-indexable
 
+simple2indexable: build-simple2indexable
+
 build-cct:
 	LMBD_LAMP_TYPE="cct" make build
 
@@ -68,6 +70,9 @@ build-simple:
 
 build-indexable:
 	LMBD_LAMP_TYPE="indexable" make build
+
+build-simple2indexable:
+	LMBD_LAMP_TYPE="indexable" LMBD_EXTRA_FLAGS="-DLMBD_SIMPLE_EMULATOR=1" make build
 
 upload-cct:
 	LMBD_LAMP_TYPE="cct" make upload
@@ -78,6 +83,8 @@ upload-simple:
 upload-indexable:
 	LMBD_LAMP_TYPE="indexable" make upload
 
+upload-simple2indexable:
+	LMBD_LAMP_TYPE="indexable" LMBD_EXTRA_FLAGS="-DLMBD_SIMPLE_EMULATOR=1" make upload
 
 has-correct-folder-name:
 	@echo; echo " --- $@"
