@@ -15,11 +15,11 @@
 TwoWire* PROGMEM interfaces[] = {&Wire};
 
 // mutex to prevent i2c lockups
-StaticSemaphore_t _Mutex;
-SemaphoreHandle_t i2cMutex = xSemaphoreCreateMutexStatic(&_Mutex);
+StaticSemaphore_t _I2CMutex;
+SemaphoreHandle_t i2cMutex = xSemaphoreCreateMutexStatic(&_I2CMutex);
 
-void _lockMutex(void) { xSemaphoreTake(i2cMutex, portMAX_DELAY); }
-void _unlockMutex(void) { xSemaphoreGive(i2cMutex); }
+void _lockI2CMutex(void) { xSemaphoreTake(i2cMutex, portMAX_DELAY); }
+void _unlockI2CMutex(void) { xSemaphoreGive(i2cMutex); }
 
 void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
 {
@@ -43,13 +43,13 @@ int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
   {
     return 1;
   }
-  _lockMutex();
+  _lockI2CMutex();
   auto wire = interfaces[i2cIndex];
 
   wire->beginTransmission(deviceAddr);
   const auto res = wire->endTransmission();
 
-  _unlockMutex();
+  _unlockI2CMutex();
 
   return res;
 }
@@ -61,7 +61,7 @@ int i2c_writeData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uin
     assert(false);
     return 1;
   }
-  _lockMutex();
+  _lockI2CMutex();
   auto wire = interfaces[i2cIndex];
 
   wire->beginTransmission(deviceAddr);
@@ -69,7 +69,7 @@ int i2c_writeData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uin
   const uint8_t written = wire->write(buf, size);
   wire->endTransmission(stopBit != 0);
 
-  _unlockMutex();
+  _unlockI2CMutex();
 
   return 0;
 }
@@ -81,7 +81,7 @@ int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint
     assert(false);
     return 1;
   }
-  _lockMutex();
+  _lockI2CMutex();
   auto wire = interfaces[i2cIndex];
 
   wire->beginTransmission(deviceAddr);
@@ -94,7 +94,7 @@ int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint
     *buf++ = wire->read();
     count--;
   }
-  _unlockMutex();
+  _unlockI2CMutex();
 
   // return 0 for success
   return (count == 0) ? 0 : 1;
@@ -109,7 +109,7 @@ int i2c_xfer(
     return 1;
   }
 
-  _lockMutex();
+  _lockI2CMutex();
   auto wire = interfaces[i2cIndex];
 
   if (out_size)
@@ -132,7 +132,7 @@ int i2c_xfer(
       in++;
     }
   }
-  _unlockMutex();
+  _unlockI2CMutex();
 
   return 0;
 }

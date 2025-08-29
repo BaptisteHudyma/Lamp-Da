@@ -12,6 +12,11 @@
 
 #define PLATFORM_PRINT_CPP
 
+extern "C" {
+  // hack to use prints in c files
+#include "src/system/utils/print.h"
+}
+
 /**
  * \brief call once at program start
  */

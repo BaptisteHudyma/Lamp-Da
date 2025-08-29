@@ -8,6 +8,9 @@
 #include "usb_pd_driver.h"
 #include "../usb_pd.h"
 
+// not used here, but show that it works !
+#include "../../../utils/print.h"
+
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(t) (sizeof(t) / sizeof(t[0]))
 #endif
