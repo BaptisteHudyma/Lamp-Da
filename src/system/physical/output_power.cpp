@@ -27,7 +27,7 @@ void write_voltage(const uint16_t voltage_mv)
   power::set_output_max_current_mA(3000);
 }
 
-void blip() { powergates::power::blip(); }
+void blip(const uint32_t timing) { powergates::power::blip(timing); }
 
 void disable_power_gates() { powergates::disable_gates(); }
 

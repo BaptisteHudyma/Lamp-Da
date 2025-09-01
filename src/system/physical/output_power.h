@@ -12,7 +12,7 @@ extern void write_voltage(const uint16_t voltage_mv);
 /**
  * \brief Very short interruption of output voltage
  */
-extern void blip();
+extern void blip(const uint32_t timing);
 
 /**
  * \brief close all external voltage path

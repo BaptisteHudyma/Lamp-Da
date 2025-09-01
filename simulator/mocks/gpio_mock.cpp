@@ -7,6 +7,8 @@
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/utils.h"
 
+#include "src/system/physical/indicator.h"
+
 #include "simulator/include/hardware_influencer.h"
 
 #define PLATFORM_GPIO_CPP
@@ -68,18 +70,18 @@ public:
     {
       case RedIndicator:
         {
-          mock_indicator::idColor.red = (value & 255);
+          mock_indicator::idColor.red = (value & 255) / indicator::redColorCorrection;
           break;
         }
       case GreenIndicator:
         {
           // correction value for the real luminosity
-          mock_indicator::idColor.green = (value & 255) * 7.5;
+          mock_indicator::idColor.green = (value & 255) / indicator::greenColorCorrection;
           break;
         }
       case BlueIndicator:
         {
-          mock_indicator::idColor.blue = (value & 255);
+          mock_indicator::idColor.blue = (value & 255) / indicator::blueColorCorrection;
           break;
         }
     }
