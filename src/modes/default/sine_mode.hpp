@@ -36,8 +36,9 @@ struct SineMode : public modes::BasicMode
     ctx.state.step += speed / 16;            // Speed of animation.
     uint16_t freq = (intensity + index) / 4; // Frequency of the signal.
 
-    for (int i = 0; i < LED_COUNT; i++)
-    { // For each of the LED's in the strand, set a brightness based on
+    for (int i = 0; i < ctx.lamp.ledCount; i++)
+    {
+      // For each of the LED's in the strand, set a brightness based on
       // a wave as follows:
       uint8_t pixBri = cubicwave8((i * freq) + ctx.state.step); // qsuba(cubicwave8((i*freq)+SEGENV.step),
                                                                 // (255-SEGMENT.intensity)); // qsub sets a minimum
