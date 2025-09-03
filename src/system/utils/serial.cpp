@@ -40,6 +40,7 @@ void handleCommand(const std::string& command)
                 "---Lamp-da CLI---\n"
                 "h: this page\n"
                 "v: hardware & software version\n"
+                "t: return the lamp type\n"
                 "bat: battery info/levels\n"
                 "cinfo: charger infos\n"
                 "ADC: values from the charger ADC\n"
@@ -69,6 +70,24 @@ void handleCommand(const std::string& command)
                 BASE_SOFTWARE_VERSION_MINOR,
                 USER_SOFTWARE_VERSION_MAJOR,
                 USER_SOFTWARE_VERSION_MINOR);
+        break;
+      }
+
+    case utils::hash("t"):
+      {
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+        lampda_print("indexable");
+#else
+#ifdef LMBD_LAMP_TYPE__SIMPLE
+        lampda_print("simple");
+#else
+#ifdef LMBD_LAMP_TYPE__CCT
+        lampda_print("cct");
+#else
+#error "Unspecified lamp type in CLI"
+#endif /* LMBD_LAMP_TYPE__CCT */
+#endif /* LMBD_LAMP_TYPE__SIMPLE */
+#endif /* LMBD_LAMP_TYPE__INDEXABLE */
         break;
       }
 
@@ -185,7 +204,7 @@ void handleCommand(const std::string& command)
                 "VBUS voltage:%dmA\n"
                 "Bat voltage:%dmV\n"
                 "Bat current:%dmA\n"
-                "Temperature:%fC",
+                "Temperature:%.2fC",
                 chargerState.powerRail_mV,
                 chargerState.inputCurrent_mA,
                 powerDelivery::get_vbus_voltage(),
