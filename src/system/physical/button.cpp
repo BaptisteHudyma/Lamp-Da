@@ -11,9 +11,6 @@
 
 #include "src/system/platform/time.h"
 
-#define RELEASE_TIMING_MS      250 // time to release the button after no inputs
-#define RELEASE_BETWEEN_CLICKS 50  // minimum release timing (debounce)
-
 namespace button {
 
 static ButtonStateTy buttonState = ButtonStateTy();
@@ -57,6 +54,11 @@ void button_state_interrupt()
 
 void init(const bool isSystemStartedFromButton)
 {
+  static_assert(RELEASE_BETWEEN_CLICKS < RELEASE_TIMING_MS,
+                "release debounce should always be less than release timing");
+  static_assert((RELEASE_BETWEEN_CLICKS + RELEASE_TIMING_MS) < HOLD_BUTTON_MIN_MS,
+                "button release timing should always be less then the button hold timing");
+
   // attach the button interrupt
   ButtonPin.set_pin_mode(DigitalPin::Mode::kInputPullUpSense);
   ButtonPin.attach_callback(button_state_interrupt, DigitalPin::Interrupt::kChange);

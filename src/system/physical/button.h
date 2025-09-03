@@ -6,7 +6,9 @@
 
 namespace button {
 
-#define HOLD_BUTTON_MIN_MS 500 // press and hold delay (ms)
+#define RELEASE_BETWEEN_CLICKS 50  // minimum release timing (debounce)
+#define RELEASE_TIMING_MS      250 // time to release the button after no inputs
+#define HOLD_BUTTON_MIN_MS     500 // press and hold delay (ms)
 
 void init(const bool isSystemStartedFromButton);
 

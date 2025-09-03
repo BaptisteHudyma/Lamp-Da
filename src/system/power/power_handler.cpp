@@ -207,11 +207,11 @@ void handle_output_voltage_mode()
 
   set_otg_parameters(_outputVoltage_mV, _outputCurrent_mA);
 
-  // open power gate when voltage matches expected voltage
-  uint32_t vbusVoltage = get_power_rail_voltage();
+  // enable power gate when voltage matches expected voltage
+  const uint32_t vbusVoltage = get_power_rail_voltage();
   if (vbusVoltage >= _outputVoltage_mV * 0.9 and vbusVoltage <= _outputVoltage_mV * 1.1)
   {
-    // close power gate
+    // enable power gate
     powergates::enable_power_gate();
     s_isOutputModeReady = true;
   }

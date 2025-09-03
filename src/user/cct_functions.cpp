@@ -66,7 +66,7 @@ void brightness_update(const brightness_t brightness)
   if (constraintBrightness == maxBrightness)
   {
     // blip
-    outputPower::blip();
+    outputPower::blip(50);
   }
 
   // map to a new curve, favorising low levels

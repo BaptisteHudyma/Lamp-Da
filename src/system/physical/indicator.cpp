@@ -29,11 +29,6 @@ void init()
 
 void set_color(const utils::ColorSpace::RGB& c)
 {
-  // Red green and blue leds of this indicators do not have the same power
-  static constexpr float redColorCorrection = 1.0;
-  static constexpr float greenColorCorrection = 1.0 / 3.0;
-  static constexpr float blueColorCorrection = 1.0 / 4.0;
-
   const COLOR& col = c.get_rgb();
   ButtonRedPin.write(col.red * redColorCorrection);
   ButtonGreenPin.write(col.green * greenColorCorrection);

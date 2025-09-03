@@ -1,6 +1,7 @@
 #ifndef POWER_GATES_H
 #define POWER_GATES_H
 
+#include <cstdint>
 namespace powergates {
 
 void init();
@@ -11,8 +12,9 @@ namespace power {
 
 /**
  * \brief blip power gate (very short power interruption)
+ * \param[in] timing a timing in milliseconds, limited to 1 second
  */
-void blip();
+void blip(const uint32_t timing);
 
 } // namespace power
 

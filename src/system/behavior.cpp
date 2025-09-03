@@ -468,7 +468,7 @@ std::string get_error_state_message()
 void handle_error_state()
 {
   set_error_state_message("Unspecified raised error state reason");
-  powergates::disable_gates();
+  outputPower::disable_power_gates();
 
   // not allowed to start, can only be stopped
   // turn off system is needed

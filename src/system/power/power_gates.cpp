@@ -12,6 +12,10 @@ bool isInit = false;
 // potentially destructive behavior
 constexpr uint32_t gateSwitchDelay_ms = 50;
 
+// wake up time for a blip output gate. DANGER
+static uint32_t blipWakeUpTime = 0;
+
+// indicates if the power gate is really on, not switching or other
 bool isPowerGateReallyEnabled = false;
 
 namespace __private {
@@ -113,22 +117,42 @@ void loop()
     enable_gate(false);
     isPowerGateSwitching = false;
   }
+
+  // allow blipping
+  // This is dangerous for the hardware, dont touch if you dont know how
+  if (isPowerGateReallyEnabled)
+  {
+    // prepare blip wake up
+    if (blipWakeUpTime != 0 && time_ms() >= blipWakeUpTime)
+    {
+      // REALLY DANGEROUS STUFF : enable power gate without checks
+      __private::enablePowerGate.set_high(true);
+      // reset time
+      blipWakeUpTime = 0;
+    }
+  }
+  else
+  {
+    // always reset if power gate is inactive
+    blipWakeUpTime = 0;
+  }
 }
 
 namespace power {
 
-void blip()
+void blip(const uint32_t timing)
 {
-  if (isPowerGateReallyEnabled)
+  // hard limit on blip
+  if (timing <= 0 or timing > 1000 or not isPowerGateReallyEnabled)
   {
-    isPowerGateReallyEnabled = false;
-
-    __private::enablePowerGate.set_high(false);
-    delay_ms(50);
-    __private::enablePowerGate.set_high(true);
-
-    isPowerGateReallyEnabled = true;
+    blipWakeUpTime = 0;
+    return;
   }
+
+  blipWakeUpTime = time_ms() + timing;
+
+  // deactivate without checks, not that dangerous...
+  __private::enablePowerGate.set_high(false);
 }
 
 } // namespace power
