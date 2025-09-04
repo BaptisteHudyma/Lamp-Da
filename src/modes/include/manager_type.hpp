@@ -369,6 +369,25 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.state.after_reset(ctx);
   }
 
+  /// jump to an active index cleanly
+  static void jump_to_new_active_index(auto& ctx, const ActiveIndexTy& newActiveIndex)
+  {
+    auto keyActive = ctx.template storageFor<Store::lastActive>(ctx.modeManager.activeIndex);
+
+    ctx.set_active_group(newActiveIndex.groupIndex, nbGroups);
+    ctx.set_active_mode(newActiveIndex.modeIndex);
+    // just copy the other values
+    ctx.modeManager.activeIndex.customIndex = newActiveIndex.customIndex;
+    ctx.modeManager.activeIndex.rampIndex = newActiveIndex.rampIndex;
+
+    // if ramps loaded in reset_mode != ones saved as favorite, emulate update
+    if (ctx.modeManager.activeIndex.rawIndex != newActiveIndex.rawIndex)
+    {
+      ctx.modeManager.activeIndex = newActiveIndex;
+      custom_ramp_update(ctx, ctx.get_active_custom_ramp());
+    }
+  }
+
   static void jump_to_favorite(auto& ctx, uint8_t which_one = 0)
   {
     auto keyActive = ctx.template storageFor<Store::lastActive>(ctx.modeManager.activeIndex);
@@ -384,15 +403,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       targetFavorite = ctx.state.currentFavorite3;
 
     // reset once with the right mode
-    ctx.modeManager.activeIndex = targetFavorite;
-    ctx.reset_mode();
-
-    // if ramps loaded in reset_mode != ones saved as favorite, emulate update
-    if (ctx.modeManager.activeIndex.rawIndex != targetFavorite.rawIndex)
-    {
-      ctx.modeManager.activeIndex = targetFavorite;
-      custom_ramp_update(ctx, ctx.get_active_custom_ramp());
-    }
+    jump_to_new_active_index(ctx, targetFavorite);
   }
 
   static void set_favorite_now(auto& ctx, uint8_t which_one = 0)
@@ -439,6 +450,8 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void enter_group(auto& ctx)
   {
+    // TODO: check this with issue #255
+
     // restore last mode used in group
     uint8_t groupIdAfter = ctx.get_active_group(nbGroups);
     ctx.set_active_mode(ctx.state.lastModeMemory[groupIdAfter]);
