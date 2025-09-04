@@ -30,6 +30,7 @@
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
+#include "src/system/platform/i2c.h"
 #include "src/system/platform/registers.h"
 #include "src/system/platform/threads.h"
 #include "src/system/platform/print.h"
@@ -153,11 +154,17 @@ bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::
 
 /**
  * This turns off the system FOR REAL and enable the interrupt pin for power on
- * DO NOT USE THIS IF YOU ARE NOT SURE, great potential for system brick
- *
+ * DO NOT USE THIS IF YOU ARE NOT SURE, great potential for system brick/lock
  */
 void true_power_off()
 {
+  // stop i2c interfaces
+  for (uint8_t i = 0; i < get_wire_interface_count(); ++i)
+  {
+    i2c_turn_off(i);
+  }
+  delay_ms(5);
+
   // disable peripherals
   DigitalPin(DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(false);
   // disable gates
@@ -168,15 +175,6 @@ void true_power_off()
 #endif
   DigitalPin(DigitalPin::GPIO::Output_EnableVbusGate).set_high(false);
   DigitalPin(DigitalPin::GPIO::Output_EnableOutputGate).set_high(false);
-
-  // wait until vbus is off
-  // without this check, the lamp can "rebound" back to on state
-  uint8_t cnt = 0;
-  while (cnt < 200 and charger::is_vbus_signal_detected())
-  {
-    delay_ms(5);
-    cnt++;
-  }
 
   // deactivate indicators
   indicator::set_color(utils::ColorSpace::BLACK);
@@ -191,7 +189,7 @@ void true_power_off()
    * Nothing after this, system is off !
    */
 
-  // if we reach this, the system fails to go to sleep, register may be broken
+  // if we reach this, the system failed to go to sleep, register may be broken
   alerts::manager.raise(alerts::Type::SYSTEM_OFF_FAILED);
 }
 
@@ -757,7 +755,7 @@ void handle_shutdown_state()
   }
   if (maxChecks == 0)
   {
-    // some task as refused to power off !!
+    // some task have refused to power off !!
     // TODO : alert ?
   }
 
@@ -846,6 +844,9 @@ void loop()
   if (alerts::is_request_shutdown())
   {
     lampda_print("emergency shutdown from alert");
+    // just in case, turn off eventual states
+    handle_post_output_light_state();
+    // shutdown normally
     handle_shutdown_state();
   }
 }

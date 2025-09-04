@@ -34,6 +34,13 @@ extern "C" {
   extern void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout);
 
   /**
+   * \brief Turn of the i2c interface, all i2c functions will return an error after that, until i2c_setup is called
+   * again
+   * \param[in] i2cIndex The index of the i2c interface (from 0 to WIRE_INTERFACES_COUNT - 1)
+   */
+  extern void i2c_turn_off(uint8_t i2cIndex);
+
+  /**
    * \brief Return 0 if the address exists on the I2C line
    */
   extern int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr);

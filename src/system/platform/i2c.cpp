@@ -13,6 +13,7 @@
 
 // set the two interfaces
 TwoWire* PROGMEM interfaces[] = {&Wire};
+bool PROGMEM isInit[] = {false};
 
 // mutex to prevent i2c lockups
 StaticSemaphore_t _I2CMutex;
@@ -35,11 +36,26 @@ void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
   // set parameters
   wire->setClock(baudrate);
   wire->setTimeout(timeout);
+
+  isInit[i2cIndex] = true;
+}
+
+void i2c_turn_off(uint8_t i2cIndex)
+{
+  if (i2cIndex >= WIRE_INTERFACES_COUNT)
+  {
+    assert(false);
+    return;
+  }
+  auto wire = interfaces[i2cIndex];
+
+  isInit[i2cIndex] = false;
+  wire->end();
 }
 
 int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
 {
-  if (i2cIndex >= WIRE_INTERFACES_COUNT)
+  if (i2cIndex >= WIRE_INTERFACES_COUNT or not isInit[i2cIndex])
   {
     return 1;
   }
@@ -56,7 +72,7 @@ int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
 
 int i2c_writeData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t* buf, int stopBit)
 {
-  if (i2cIndex >= WIRE_INTERFACES_COUNT)
+  if (i2cIndex >= WIRE_INTERFACES_COUNT or not isInit[i2cIndex])
   {
     assert(false);
     return 1;
@@ -76,7 +92,7 @@ int i2c_writeData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uin
 
 int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t* buf, int stopBit)
 {
-  if (i2cIndex >= WIRE_INTERFACES_COUNT)
+  if (i2cIndex >= WIRE_INTERFACES_COUNT or not isInit[i2cIndex])
   {
     assert(false);
     return 1;
@@ -103,7 +119,7 @@ int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint
 int i2c_xfer(
         uint8_t i2cIndex, uint8_t deviceAddr, int out_size, const uint8_t* out, int in_size, uint8_t* in, uint8_t flags)
 {
-  if (i2cIndex >= WIRE_INTERFACES_COUNT)
+  if (i2cIndex >= WIRE_INTERFACES_COUNT or not isInit[i2cIndex])
   {
     assert(false);
     return 1;
