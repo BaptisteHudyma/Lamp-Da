@@ -352,22 +352,8 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void next_group(auto& ctx)
   {
-    // give an occasion to the current group to save its custom ramp
-    uint8_t modeIdBefore = ctx.get_active_mode();
-    dispatch_group(ctx, [&](auto group) {
-      if constexpr (group.hasCustomRamp)
-      {
-        group.state.save_ramps(group, modeIdBefore);
-      }
-    });
-
-    // changes to lastModeMemory made in this function will be persistent
-    auto keyModeMemory = ctx.template storageFor<Store::modeMemory>(ctx.state.lastModeMemory);
-
-    // save last mode used in group, before switching
+    // change current group
     uint8_t groupIdBefore = ctx.get_active_group(nbGroups);
-    ctx.state.lastModeMemory[groupIdBefore] = modeIdBefore;
-
     ctx.set_active_group(groupIdBefore + 1, nbGroups);
 
     // restore last mode used in group, after switching
@@ -453,6 +439,33 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       value = decltype(group)::LocalModeTy::nbModes;
     });
     return value;
+  }
+
+  static void quit_group(auto& ctx)
+  {
+    //
+    uint8_t modeIdBefore = ctx.get_active_mode();
+
+    // changes to lastModeMemory made in this function will be persistent
+    auto keyModeMemory = ctx.template storageFor<Store::modeMemory>(ctx.state.lastModeMemory);
+
+    // save last mode used in group, before switching
+    uint8_t groupIdBefore = ctx.get_active_group(nbGroups);
+    ctx.state.lastModeMemory[groupIdBefore] = modeIdBefore;
+  }
+
+  static void quit_mode(auto& ctx)
+  {
+    // TODO: this quit_mode is redundant with the one in group_type, cannot switch mode without switching mode
+
+    // give an occasion to the current group to save its custom ramp
+    uint8_t modeIdBefore = ctx.get_active_mode();
+    dispatch_group(ctx, [&](auto group) {
+      if constexpr (group.hasCustomRamp)
+      {
+        group.state.save_ramps(group, modeIdBefore);
+      }
+    });
   }
 
   //

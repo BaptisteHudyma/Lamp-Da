@@ -174,6 +174,10 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   {
     if (value + 1 > maxValueWrap)
       value = 0;
+
+    // signal that we are quitting the group
+    quit_group();
+    // switch group
     modeManager.activeIndex.groupIndex = value;
     return value;
   }
@@ -190,6 +194,10 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   {
     if (value + 1 > maxValueWrap)
       value = 0;
+
+    // signal that we are quitting the mode
+    quit_mode();
+    // switch mode
     modeManager.activeIndex.modeIndex = value;
     return value;
   }
@@ -439,6 +447,38 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     auto ctx = modeManager.get_context();
     ctx.lamp.config.skipFirstLedsForAmount = amount;
     ctx.lamp.config.skipFirstLedsForEffect = count;
+  }
+
+  //
+  // Binder for group and mode enter/quit
+  //
+
+  /// Call when quitting a group
+  void LMBD_INLINE quit_group()
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      LocalModeTy::quit_group(*this);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      return manager.quit_group();
+    }
+  }
+
+  /// Call when quitting a mode
+  void LMBD_INLINE quit_mode()
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      LocalModeTy::quit_mode(*this);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      return manager.quit_mode();
+    }
   }
 
   //

@@ -180,11 +180,6 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   static void next_mode(auto& ctx)
   {
     uint8_t modeIdBefore = ctx.get_active_mode(nbModes);
-    if constexpr (ctx.hasCustomRamp)
-    {
-      ctx.state.save_ramps(ctx, modeIdBefore);
-    }
-
     ctx.set_active_mode(modeIdBefore + 1, nbModes);
 
     // reset new mode we switched to
@@ -202,6 +197,15 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     dispatch_mode(ctx, [](auto mode) {
       mode.reset();
     });
+  }
+
+  static void quit_mode(auto& ctx)
+  {
+    uint8_t modeIdBefore = ctx.get_active_mode(nbModes);
+    if constexpr (ctx.hasCustomRamp)
+    {
+      ctx.state.save_ramps(ctx, modeIdBefore);
+    }
   }
 
   //
