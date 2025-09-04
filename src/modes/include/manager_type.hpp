@@ -28,8 +28,11 @@ union ActiveIndexTy
 {
   struct
   {
-    uint8_t groupIndex;  // group id (as ordered in the manager)
-    uint8_t modeIndex;   // mode id (as ordered in its group)
+    /// the two index below should only be modified by set_active_group & set_active_mode
+    uint8_t groupIndex; // group id (as ordered in the manager)
+    uint8_t modeIndex;  // mode id (as ordered in its group)
+    ///
+
     uint8_t rampIndex;   // ramp value (as set by the user)
     uint8_t customIndex; // custom (as set by the mode)
   };
@@ -355,13 +358,6 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     // change current group
     uint8_t groupIdBefore = ctx.get_active_group(nbGroups);
     ctx.set_active_group(groupIdBefore + 1, nbGroups);
-
-    // restore last mode used in group, after switching
-    uint8_t groupIdAfter = ctx.get_active_group(nbGroups);
-    ctx.set_active_mode(ctx.state.lastModeMemory[groupIdAfter]);
-
-    // reset new mode picked after group change
-    ctx.reset_mode();
   }
 
   static void next_mode(auto& ctx)
@@ -441,6 +437,13 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     return value;
   }
 
+  static void enter_group(auto& ctx)
+  {
+    // restore last mode used in group
+    uint8_t groupIdAfter = ctx.get_active_group(nbGroups);
+    ctx.set_active_mode(ctx.state.lastModeMemory[groupIdAfter]);
+  }
+
   static void quit_group(auto& ctx)
   {
     //
@@ -454,17 +457,17 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.state.lastModeMemory[groupIdBefore] = modeIdBefore;
   }
 
+  static void enter_mode(auto& ctx)
+  {
+    dispatch_group(ctx, [](auto group) {
+      group.enter_mode();
+    });
+  }
+
   static void quit_mode(auto& ctx)
   {
-    // TODO: this quit_mode is redundant with the one in group_type, cannot switch mode without switching mode
-
-    // give an occasion to the current group to save its custom ramp
-    uint8_t modeIdBefore = ctx.get_active_mode();
-    dispatch_group(ctx, [&](auto group) {
-      if constexpr (group.hasCustomRamp)
-      {
-        group.state.save_ramps(group, modeIdBefore);
-      }
+    dispatch_group(ctx, [](auto group) {
+      group.quit_mode();
     });
   }
 

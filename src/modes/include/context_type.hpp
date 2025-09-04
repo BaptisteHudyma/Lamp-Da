@@ -179,6 +179,8 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     quit_group();
     // switch group
     modeManager.activeIndex.groupIndex = value;
+    // signal that we enter a new group
+    enter_group();
     return value;
   }
 
@@ -199,6 +201,8 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     quit_mode();
     // switch mode
     modeManager.activeIndex.modeIndex = value;
+    // signal that we entered a new mode
+    enter_mode();
     return value;
   }
 
@@ -453,6 +457,20 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   // Binder for group and mode enter/quit
   //
 
+  /// Call when entering a group
+  void LMBD_INLINE enter_group()
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      LocalModeTy::enter_group(*this);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      return manager.enter_group();
+    }
+  }
+
   /// Call when quitting a group
   void LMBD_INLINE quit_group()
   {
@@ -464,6 +482,20 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     {
       auto& manager = modeManager.get_context();
       return manager.quit_group();
+    }
+  }
+
+  /// Call when entering a mode
+  void LMBD_INLINE enter_mode()
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      LocalModeTy::enter_mode(*this);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      return manager.enter_mode();
     }
   }
 

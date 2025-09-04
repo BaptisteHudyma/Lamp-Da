@@ -125,7 +125,6 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
           if (modeIndex > 0)
           {
             manager.set_active_mode(modeIndex - 1, modeCount);
-            manager.reset_mode();
 
             // or else decrement group, then set mode to last one
           }
@@ -146,7 +145,6 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
             // backward scroll: set mode to last one on group change
             modeCount = manager.get_modes_count();
             manager.set_active_mode(modeCount - 1, modeCount);
-            manager.reset_mode();
           }
 
           // we are going forward
@@ -177,7 +175,6 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
 
             // forward scroll: set mode to first one on group change
             manager.set_active_mode(0, modeCount);
-            manager.reset_mode();
           }
         }
       });

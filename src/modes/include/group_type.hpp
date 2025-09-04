@@ -181,9 +181,6 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   {
     uint8_t modeIdBefore = ctx.get_active_mode(nbModes);
     ctx.set_active_mode(modeIdBefore + 1, nbModes);
-
-    // reset new mode we switched to
-    ctx.reset_mode();
   }
 
   static void reset_mode(auto& ctx)
@@ -197,6 +194,12 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     dispatch_mode(ctx, [](auto mode) {
       mode.reset();
     });
+  }
+
+  static void enter_mode(auto& ctx)
+  {
+    // reset new mode we switched to
+    ctx.reset_mode();
   }
 
   static void quit_mode(auto& ctx)
