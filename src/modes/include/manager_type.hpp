@@ -66,6 +66,15 @@ template<typename Config> struct RampHandlerTy
   {
   }
 
+  void LMBD_INLINE reset()
+  {
+    isForward = true;
+    stepSpeed = Config::defaultCustomRampStepSpeedMs;
+    rampSaturates = Config::defaultRampSaturates;
+    animEffect = Config::defaultCustomRampAnimEffect;
+    animChoice = Config::defaultCustomRampAnimChoice;
+  }
+
   void LMBD_INLINE update_ramp(uint8_t rampValue, uint32_t holdTime, auto callback)
   {
     // restart the rampage
@@ -254,8 +263,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     static void LMBD_INLINE before_reset(auto& ctx)
     {
       auto& self = ctx.state;
-      self.rampHandler.rampSaturates = Config::defaultRampSaturates;
-      self.rampHandler.stepSpeed = Config::defaultCustomRampStepSpeedMs;
+      self.rampHandler.reset();
       self.clearStripOnModeChange = Config::defaultClearStripOnModeChange;
     }
 
