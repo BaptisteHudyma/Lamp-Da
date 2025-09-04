@@ -131,7 +131,14 @@ void resume_thread(const char* const taskName)
     return;
   }
 
-  vTaskResume(handle->second);
+  if (isInISR())
+  {
+    xTaskResumeFromISR(handle->second);
+  }
+  else
+  {
+    vTaskResume(handle->second);
+  }
 }
 
 void notify_thread(const char* const taskName, int wakeUpEvent)
@@ -142,8 +149,17 @@ void notify_thread(const char* const taskName, int wakeUpEvent)
     lampda_print("ERROR: task handle %s do not exist", taskName);
     return;
   }
-  BaseType_t signal = pdFALSE;
-  xTaskNotifyFromISR(handle->second, wakeUpEvent, eSetBits, &signal);
+  if (isInISR())
+  {
+    BaseType_t signal = pdFALSE;
+    xTaskNotifyFromISR(handle->second, wakeUpEvent, eSetBits, &signal);
+  }
+  else
+  {
+    vTaskSuspendAll();
+    xTaskNotify(handle->second, wakeUpEvent, eSetBits);
+    (void)xTaskResumeAll();
+  }
 }
 
 int wait_notification(const int timeout_ms)
