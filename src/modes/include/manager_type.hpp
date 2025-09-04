@@ -28,8 +28,11 @@ union ActiveIndexTy
 {
   struct
   {
-    uint8_t groupIndex;  // group id (as ordered in the manager)
-    uint8_t modeIndex;   // mode id (as ordered in its group)
+    /// the two index below should only be modified by set_active_group & set_active_mode
+    uint8_t groupIndex; // group id (as ordered in the manager)
+    uint8_t modeIndex;  // mode id (as ordered in its group)
+    ///
+
     uint8_t rampIndex;   // ramp value (as set by the user)
     uint8_t customIndex; // custom (as set by the mode)
   };
@@ -352,30 +355,9 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void next_group(auto& ctx)
   {
-    // give an occasion to the current group to save its custom ramp
-    uint8_t modeIdBefore = ctx.get_active_mode();
-    dispatch_group(ctx, [&](auto group) {
-      if constexpr (group.hasCustomRamp)
-      {
-        group.state.save_ramps(group, modeIdBefore);
-      }
-    });
-
-    // changes to lastModeMemory made in this function will be persistent
-    auto keyModeMemory = ctx.template storageFor<Store::modeMemory>(ctx.state.lastModeMemory);
-
-    // save last mode used in group, before switching
+    // change current group
     uint8_t groupIdBefore = ctx.get_active_group(nbGroups);
-    ctx.state.lastModeMemory[groupIdBefore] = modeIdBefore;
-
     ctx.set_active_group(groupIdBefore + 1, nbGroups);
-
-    // restore last mode used in group, after switching
-    uint8_t groupIdAfter = ctx.get_active_group(nbGroups);
-    ctx.set_active_mode(ctx.state.lastModeMemory[groupIdAfter]);
-
-    // reset new mode picked after group change
-    ctx.reset_mode();
   }
 
   static void next_mode(auto& ctx)
@@ -385,6 +367,25 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       group.next_mode();
     });
     ctx.state.after_reset(ctx);
+  }
+
+  /// jump to an active index cleanly
+  static void jump_to_new_active_index(auto& ctx, const ActiveIndexTy& newActiveIndex)
+  {
+    auto keyActive = ctx.template storageFor<Store::lastActive>(ctx.modeManager.activeIndex);
+
+    ctx.set_active_group(newActiveIndex.groupIndex, nbGroups);
+    ctx.set_active_mode(newActiveIndex.modeIndex);
+    // just copy the other values
+    ctx.modeManager.activeIndex.customIndex = newActiveIndex.customIndex;
+    ctx.modeManager.activeIndex.rampIndex = newActiveIndex.rampIndex;
+
+    // if ramps loaded in reset_mode != ones saved as favorite, emulate update
+    if (ctx.modeManager.activeIndex.rawIndex != newActiveIndex.rawIndex)
+    {
+      ctx.modeManager.activeIndex = newActiveIndex;
+      custom_ramp_update(ctx, ctx.get_active_custom_ramp());
+    }
   }
 
   static void jump_to_favorite(auto& ctx, uint8_t which_one = 0)
@@ -402,15 +403,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       targetFavorite = ctx.state.currentFavorite3;
 
     // reset once with the right mode
-    ctx.modeManager.activeIndex = targetFavorite;
-    ctx.reset_mode();
-
-    // if ramps loaded in reset_mode != ones saved as favorite, emulate update
-    if (ctx.modeManager.activeIndex.rawIndex != targetFavorite.rawIndex)
-    {
-      ctx.modeManager.activeIndex = targetFavorite;
-      custom_ramp_update(ctx, ctx.get_active_custom_ramp());
-    }
+    jump_to_new_active_index(ctx, targetFavorite);
   }
 
   static void set_favorite_now(auto& ctx, uint8_t which_one = 0)
@@ -453,6 +446,42 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       value = decltype(group)::LocalModeTy::nbModes;
     });
     return value;
+  }
+
+  static void enter_group(auto& ctx)
+  {
+    // TODO: check this with issue #255
+
+    // restore last mode used in group
+    uint8_t groupIdAfter = ctx.get_active_group(nbGroups);
+    ctx.set_active_mode(ctx.state.lastModeMemory[groupIdAfter]);
+  }
+
+  static void quit_group(auto& ctx)
+  {
+    //
+    uint8_t modeIdBefore = ctx.get_active_mode();
+
+    // changes to lastModeMemory made in this function will be persistent
+    auto keyModeMemory = ctx.template storageFor<Store::modeMemory>(ctx.state.lastModeMemory);
+
+    // save last mode used in group, before switching
+    uint8_t groupIdBefore = ctx.get_active_group(nbGroups);
+    ctx.state.lastModeMemory[groupIdBefore] = modeIdBefore;
+  }
+
+  static void enter_mode(auto& ctx)
+  {
+    dispatch_group(ctx, [](auto group) {
+      group.enter_mode();
+    });
+  }
+
+  static void quit_mode(auto& ctx)
+  {
+    dispatch_group(ctx, [](auto group) {
+      group.quit_mode();
+    });
   }
 
   //
