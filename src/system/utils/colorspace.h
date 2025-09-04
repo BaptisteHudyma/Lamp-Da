@@ -63,6 +63,7 @@ static const RGB YELLOW(200, 255, 0);
 static const RGB PINK(255, 20, 147);
 static const RGB TOMATO(255, 99, 71);
 static const RGB ORANGE(255, 140, 0);
+static const RGB DARK_ORANGE(255, 90, 0);
 static const RGB PURPLE(128, 0, 128);
 
 class HSV : public Base

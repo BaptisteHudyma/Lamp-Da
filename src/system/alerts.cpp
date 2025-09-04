@@ -293,7 +293,7 @@ struct Alert_TempTooHigh : public AlertBase
     brightness::update_previous_brightness();
   }
 
-  bool show() const override { return indicator::blink(300, 300, utils::ColorSpace::ORANGE); }
+  bool show() const override { return indicator::blink(300, 300, utils::ColorSpace::DARK_ORANGE); }
 
   Type get_type() const override { return Type::TEMP_TOO_HIGH; }
 };
@@ -315,7 +315,7 @@ struct Alert_TempCritical : public AlertBase
     return 0;
   }
 
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::ORANGE); }
+  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::DARK_ORANGE); }
 
   Type get_type() const override { return Type::TEMP_CRITICAL; }
 };
