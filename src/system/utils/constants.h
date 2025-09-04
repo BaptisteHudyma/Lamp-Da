@@ -125,4 +125,7 @@ using brightness_t = uint16_t;
 static constexpr brightness_t maxBrightness = 1024;
 // min brightness is always zero
 
+// asserts
+static_assert(maxSystemTemp_c < criticalSystemTemp_c, "max system temp must be less than critical temp");
+
 #endif

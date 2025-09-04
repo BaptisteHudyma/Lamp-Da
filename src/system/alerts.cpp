@@ -293,7 +293,7 @@ struct Alert_TempTooHigh : public AlertBase
     brightness::update_previous_brightness();
   }
 
-  bool show() const override { return indicator::blink(300, 300, utils::ColorSpace::ORANGE); }
+  bool show() const override { return indicator::blink(300, 300, utils::ColorSpace::DARK_ORANGE); }
 
   Type get_type() const override { return Type::TEMP_TOO_HIGH; }
 };
@@ -315,7 +315,7 @@ struct Alert_TempCritical : public AlertBase
     return 0;
   }
 
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::ORANGE); }
+  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::DARK_ORANGE); }
 
   Type get_type() const override { return Type::TEMP_CRITICAL; }
 };
@@ -393,7 +393,8 @@ struct Alert_SystemInErrorState : public AlertBase
 };
 
 // Alerts must be sorted by importance, only the first activated one will be shown
-AlertBase* allAlerts[] = {new Alert_HardwareAlert,
+AlertBase* allAlerts[] = {new Alert_SystemShutdownFailed,
+                          new Alert_HardwareAlert,
                           new Alert_TempCritical,
                           new Alert_TempTooHigh,
                           new Alert_BatteryReadingIncoherent,
@@ -403,7 +404,6 @@ AlertBase* allAlerts[] = {new Alert_HardwareAlert,
                           new Alert_BluetoothAdvertisement,
                           new Alert_FavoriteSet,
                           new Alert_OtgFailed,
-                          new Alert_SystemShutdownFailed,
                           new Alert_SystemInErrorState};
 
 void update_alerts()
