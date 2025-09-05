@@ -613,10 +613,11 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void custom_ramp_update(auto& ctx, uint8_t rampValue)
   {
-    if (ctx.state.rampHandler.animEffect)
-    {
-      modes::anims::_rampAnimDispatch(ctx.state.rampHandler.animChoice, ctx, rampValue);
-    }
+    uint8_t groupId = ctx.get_active_group();
+    uint8_t modeId = ctx.get_active_mode();
+
+    if (ctx.everyCustomRamp[groupId][modeId] && ctx.state.rampHandler.animEffect)
+      modes::anims::_rampAnimDispatch(ctx, ctx.state.rampHandler.animChoice, rampValue);
 
     dispatch_group(ctx, [&](auto group) {
       group.custom_ramp_update(rampValue);
