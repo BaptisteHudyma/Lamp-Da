@@ -59,6 +59,13 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   static constexpr bool hasCustomRamp = HasAnyMode::hasCustomRamp;
   static constexpr bool hasButtonCustomUI = HasAnyMode::hasButtonCustomUI;
 
+  // useful for runtime tests of mode properties
+  static constexpr auto everyBrightCallback = HasAnyMode::everyBrightCallback;
+  static constexpr auto everySystemCallbacks = HasAnyMode::everySystemCallbacks;
+  static constexpr auto everyRequireUserThread = HasAnyMode::everyRequireUserThread;
+  static constexpr auto everyCustomRamp = HasAnyMode::everyCustomRamp;
+  static constexpr auto everyButtonCustomUI = HasAnyMode::everyButtonCustomUI;
+
   // constructors
   GroupTy() = delete;
   GroupTy(const GroupTy&) = delete;

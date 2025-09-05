@@ -92,7 +92,7 @@ void rampColorRing(auto& ctx, uint8_t rampValue, auto palette)
 }
 
 /// \private (dispatch ramp animation)
-void inline LMBD_INLINE _rampAnimDispatch(uint32_t index, auto& ctx, uint8_t rampValue)
+void inline LMBD_INLINE _rampAnimDispatch(auto& ctx, uint32_t index, uint8_t rampValue)
 {
   if (index == 0)
   {
