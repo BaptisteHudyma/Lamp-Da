@@ -5,6 +5,7 @@
 
 #include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/colors/palettes.hpp"
+
 namespace modes::default_modes {
 
 struct SineMode : public modes::BasicMode
