@@ -142,6 +142,14 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   static constexpr bool hasSystemCallbacks = hasCustomRamp || HasAnyGroup::hasSystemCallbacks;
   static constexpr bool hasButtonCustomUI = HasAnyGroup::hasButtonCustomUI;
 
+  // useful for runtime tests of mode properties
+  using EveryModeBool = details::asTableFor<AllGroupsTy>;
+  static constexpr auto everyBrightCallback = EveryModeBool::everyBrightCallback;
+  static constexpr auto everyRequireUserThread = EveryModeBool::everyRequireUserThread;
+  static constexpr auto everyCustomRamp = EveryModeBool::everyCustomRamp;
+  static constexpr auto everySystemCallbacks = EveryModeBool::everySystemCallbacks;
+  static constexpr auto everyButtonCustomUI = EveryModeBool::everyButtonCustomUI;
+
   // constructors
   ModeManagerTy(hardware::LampTy& lamp) : activeIndex {ActiveIndexTy::from(Config::initialActiveIndex)}, lamp {lamp} {}
 

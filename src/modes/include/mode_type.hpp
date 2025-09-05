@@ -248,6 +248,13 @@ struct BasicMode
   BasicMode() = delete;                            ///< \private
   BasicMode(const BasicMode&) = delete;            ///< \private
   BasicMode& operator=(const BasicMode&) = delete; ///< \private
+
+  // polyfill (to be ignored in this context)
+  static constexpr bool everyBrightCallback = false;    ///< \private
+  static constexpr bool everySystemCallbacks = false;   ///< \private
+  static constexpr bool everyRequireUserThread = false; ///< \private
+  static constexpr bool everyCustomRamp = false;        ///< \private
+  static constexpr bool everyButtonCustomUI = false;    ///< \private
 };
 
 } // namespace modes

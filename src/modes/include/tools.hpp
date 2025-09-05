@@ -131,6 +131,56 @@ template<typename TupleTy, uint8_t TupleSz = std::tuple_size_v<TupleTy>> struct 
     }
     return acc;
   }
+
+  /// \private Return a std::array of all bool given as input via \p QueryStruct
+  template<template<class> class QueryStruct, bool hasError = false> static constexpr auto asTable()
+  {
+    // collect all values as table
+    std::array<bool, TupleSz> acc {};
+    if constexpr (!hasError)
+    {
+      unroll<TupleSz>([&](auto Idx) {
+        constexpr size_t I = decltype(Idx)::value;
+        acc[I] = QueryStruct<std::tuple_element_t<Idx, TupleTy>>::value;
+      });
+    }
+    return acc;
+  }
+
+  /// \private Return the maximal size of all std::array queried via \p QueryStruct
+  template<template<class> class QueryStruct, bool hasError = false> static constexpr size_t getMaxTableSize()
+  {
+    size_t acc = 0;
+    if constexpr (!hasError)
+    {
+      unroll<TupleSz>([&](auto Idx) {
+        size_t sz = QueryStruct<std::tuple_element_t<Idx, TupleTy>>::value.size();
+        if (sz > acc)
+          acc = sz;
+      });
+    }
+    return acc;
+  }
+
+  /// \private Return a std::array<std::array> of the table of all table via \p QueryStruct
+  template<template<class> class QueryStruct, size_t MaxSz, bool hasError = false> static constexpr auto asTable2D()
+  {
+    // collect all values as table
+    std::array<std::array<bool, MaxSz>, TupleSz> acc {};
+    if constexpr (!hasError)
+    {
+      unroll<TupleSz>([&](auto Idx) {
+        constexpr size_t I = decltype(Idx)::value;
+
+        auto& remote = QueryStruct<std::tuple_element_t<Idx, TupleTy>>::value;
+        for (size_t J = 0; J < remote.size() && J < MaxSz; ++J)
+        {
+          acc[I][J] = remote[J];
+        }
+      });
+    }
+    return acc;
+  }
 };
 
 /// \private Defined boolean is True if any \p TupleTy item has boolean True
@@ -167,6 +217,51 @@ template<typename TupleTy, bool hasError = false> struct anyOf
   static constexpr bool hasButtonCustomUI = forEach<TupleTy>::template any<QButtonUI, hasError>();
   static constexpr bool hasSystemCallbacks = forEach<TupleTy>::template any<QHasSystem, hasError>();
   static constexpr bool requireUserThread = forEach<TupleTy>::template any<QUserThread, hasError>();
+
+  // as table
+  static constexpr auto everyBrightCallback = forEach<TupleTy>::template asTable<QHasBright, hasError>();
+  static constexpr auto everyCustomRamp = forEach<TupleTy>::template asTable<QCustomRamp, hasError>();
+  static constexpr auto everyButtonCustomUI = forEach<TupleTy>::template asTable<QButtonUI, hasError>();
+  static constexpr auto everySystemCallbacks = forEach<TupleTy>::template asTable<QHasSystem, hasError>();
+  static constexpr auto everyRequireUserThread = forEach<TupleTy>::template asTable<QUserThread, hasError>();
+};
+
+/// \private As 2D table for all important booleans we need
+template<typename TupleTy, bool hasError = false> struct asTableFor
+{
+  template<typename Ty> struct QHasBright
+  {
+    static constexpr auto value = Ty::everyBrightCallback;
+  };
+
+  template<typename Ty> struct QCustomRamp
+  {
+    static constexpr auto value = Ty::everyCustomRamp;
+  };
+
+  template<typename Ty> struct QButtonUI
+  {
+    static constexpr auto value = Ty::everyButtonCustomUI;
+  };
+
+  template<typename Ty> struct QHasSystem
+  {
+    static constexpr auto value = Ty::everySystemCallbacks;
+  };
+
+  template<typename Ty> struct QUserThread
+  {
+    static constexpr auto value = Ty::everyRequireUserThread;
+  };
+
+  static constexpr size_t maxTableSz = forEach<TupleTy>::template getMaxTableSize<QHasBright, hasError>();
+
+  static constexpr auto everyBrightCallback = forEach<TupleTy>::template asTable2D<QHasBright, maxTableSz, hasError>();
+  static constexpr auto everyCustomRamp = forEach<TupleTy>::template asTable2D<QCustomRamp, maxTableSz, hasError>();
+  static constexpr auto everyButtonCustomUI = forEach<TupleTy>::template asTable2D<QButtonUI, maxTableSz, hasError>();
+  static constexpr auto everySystemCallbacks = forEach<TupleTy>::template asTable2D<QHasSystem, maxTableSz, hasError>();
+  static constexpr auto everyRequireUserThread =
+          forEach<TupleTy>::template asTable2D<QUserThread, maxTableSz, hasError>();
 };
 
 /// \private Defined boolean is True if all \p TupleTy item has boolean True

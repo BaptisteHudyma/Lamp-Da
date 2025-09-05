@@ -90,7 +90,21 @@ void button_clicked_default(const uint8_t clicks)
   }
 
 #ifdef LMBD_SIMULATION
-  fprintf(stderr, "group %d *mode %d\n", manager.get_active_group(), manager.get_active_mode());
+  {
+    int _groupId = manager.get_active_group();
+    int _modeId = manager.get_active_mode();
+    fprintf(stderr, "group %d *mode %d\n", _groupId, _modeId);
+    if (manager.everyBrightCallback[_groupId][_modeId])
+      fprintf(stderr, " - hasBrightCallback\n");
+    if (manager.everyCustomRamp[_groupId][_modeId])
+      fprintf(stderr, " - hasCustomRamp\n");
+    if (manager.everyRequireUserThread[_groupId][_modeId])
+      fprintf(stderr, " - requireUserThread\n");
+    if (manager.everySystemCallbacks[_groupId][_modeId])
+      fprintf(stderr, " - hasSystemCallbacks\n");
+    if (manager.everyButtonCustomUI[_groupId][_modeId])
+      fprintf(stderr, " - hasButtonCustomUI\n");
+  }
 #endif
 }
 

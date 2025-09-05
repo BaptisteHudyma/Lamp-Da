@@ -38,12 +38,19 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   /// \private True if context is root "manager" context
   static constexpr bool isManager = std::is_same_v<LocalModeTy, ModeManagerTy>;
 
-  // useful proxies
+  // useful proxies (exposes mode properties)
   static constexpr bool hasBrightCallback = LocalModeTy::hasBrightCallback;   ///< \private
   static constexpr bool hasSystemCallbacks = LocalModeTy::hasSystemCallbacks; ///< \private
   static constexpr bool requireUserThread = LocalModeTy::requireUserThread;   ///< \private
   static constexpr bool hasCustomRamp = LocalModeTy::hasCustomRamp;           ///< \private
   static constexpr bool hasButtonCustomUI = LocalModeTy::hasButtonCustomUI;   ///< \private
+
+  // more proxies (exposes tables of mode properties)
+  static constexpr auto everyBrightCallback = LocalModeTy::everyBrightCallback;       ///< \private
+  static constexpr auto everySystemCallbacks = LocalModeTy::everySystemCallbacks;     ///< \private
+  static constexpr auto everyRequireUserThread = LocalModeTy::everyRequireUserThread; ///< \private
+  static constexpr auto everyCustomRamp = LocalModeTy::everyCustomRamp;               ///< \private
+  static constexpr auto everyButtonCustomUI = LocalModeTy::everyButtonCustomUI;       ///< \private
 
   //
   // constructors
