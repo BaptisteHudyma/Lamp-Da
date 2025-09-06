@@ -66,6 +66,15 @@ template<typename Config> struct RampHandlerTy
   {
   }
 
+  void LMBD_INLINE reset()
+  {
+    isForward = true;
+    stepSpeed = Config::defaultCustomRampStepSpeedMs;
+    rampSaturates = Config::defaultRampSaturates;
+    animEffect = Config::defaultCustomRampAnimEffect;
+    animChoice = Config::defaultCustomRampAnimChoice;
+  }
+
   void LMBD_INLINE update_ramp(uint8_t rampValue, uint32_t holdTime, auto callback)
   {
     // restart the rampage
@@ -254,8 +263,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     static void LMBD_INLINE before_reset(auto& ctx)
     {
       auto& self = ctx.state;
-      self.rampHandler.rampSaturates = Config::defaultRampSaturates;
-      self.rampHandler.stepSpeed = Config::defaultCustomRampStepSpeedMs;
+      self.rampHandler.reset();
       self.clearStripOnModeChange = Config::defaultClearStripOnModeChange;
     }
 
@@ -370,11 +378,9 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void next_mode(auto& ctx)
   {
-    ctx.state.before_reset(ctx);
     dispatch_group(ctx, [](auto group) {
       group.next_mode();
     });
-    ctx.state.after_reset(ctx);
   }
 
   /// jump to an active index cleanly
@@ -480,9 +486,18 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void enter_mode(auto& ctx)
   {
+    // this is a bit hackish
+    // before reset is mandatory here to reset the ramps correctly
+    ctx.state.before_reset(ctx);
+
+    // enter mode
     dispatch_group(ctx, [](auto group) {
       group.enter_mode();
     });
+
+    // this is a bit hackish
+    // after reset is mandatory here to reset the ramps correctly
+    ctx.state.after_reset(ctx);
   }
 
   static void quit_mode(auto& ctx)
