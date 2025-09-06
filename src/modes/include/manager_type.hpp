@@ -378,11 +378,9 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void next_mode(auto& ctx)
   {
-    ctx.state.before_reset(ctx);
     dispatch_group(ctx, [](auto group) {
       group.next_mode();
     });
-    ctx.state.after_reset(ctx);
   }
 
   /// jump to an active index cleanly
@@ -488,9 +486,18 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void enter_mode(auto& ctx)
   {
+    // this is a bit hackish
+    // before reset is mandatory here to reset the ramps correctly
+    ctx.state.before_reset(ctx);
+
+    // enter mode
     dispatch_group(ctx, [](auto group) {
       group.enter_mode();
     });
+
+    // this is a bit hackish
+    // after reset is mandatory here to reset the ramps correctly
+    ctx.state.after_reset(ctx);
   }
 
   static void quit_mode(auto& ctx)
