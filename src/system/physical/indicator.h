@@ -13,7 +13,12 @@ static constexpr float blueColorCorrection = 1.0 / 4.0;
 
 extern void init();
 
+/// set the color of the indicator
 extern void set_color(const utils::ColorSpace::RGB& c);
+
+/// set an indicator brightness
+extern void set_brightness(const uint8_t brightness);
+extern uint8_t get_brightness();
 
 /**
  * \brief Breeze animation

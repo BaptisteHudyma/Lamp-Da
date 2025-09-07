@@ -18,6 +18,8 @@ static DigitalPin ButtonRedPin(RedIndicator);
 static DigitalPin ButtonGreenPin(GreenIndicator);
 static DigitalPin ButtonBluePin(BlueIndicator);
 
+static inline float brigthnessMultiplier = 1.0f;
+
 void init()
 {
   ButtonRedPin.set_pin_mode(DigitalPin::Mode::kOutput);
@@ -30,10 +32,13 @@ void init()
 void set_color(const utils::ColorSpace::RGB& c)
 {
   const COLOR& col = c.get_rgb();
-  ButtonRedPin.write(col.red * redColorCorrection);
-  ButtonGreenPin.write(col.green * greenColorCorrection);
-  ButtonBluePin.write(col.blue * blueColorCorrection);
+  ButtonRedPin.write(col.red * redColorCorrection * brigthnessMultiplier);
+  ButtonGreenPin.write(col.green * greenColorCorrection * brigthnessMultiplier);
+  ButtonBluePin.write(col.blue * blueColorCorrection * brigthnessMultiplier);
 }
+
+void set_brightness(const uint8_t brightness) { brigthnessMultiplier = brightness / 255.0; }
+uint8_t get_brightness() { return brigthnessMultiplier * 255; }
 
 bool breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::ColorSpace::RGB& color)
 {

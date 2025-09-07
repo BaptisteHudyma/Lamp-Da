@@ -40,6 +40,7 @@
 namespace behavior {
 
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
+static constexpr uint32_t indicatorBrightnessKey = utils::hash("indBright");
 
 // constants
 static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000;
@@ -134,6 +135,12 @@ bool read_parameters()
     brightness::update_previous_brightness();
   }
 
+  uint32_t indicatorBrightness = 0;
+  if (fileSystem::get_value(indicatorBrightnessKey, indicatorBrightness))
+  {
+    indicator::set_brightness(indicatorBrightness);
+  }
+
   user::read_parameters();
   return isFileLoaded;
 }
@@ -143,6 +150,7 @@ void write_parameters()
   fileSystem::clear();
 
   fileSystem::set_value(brightnessKey, brightness::get_brightness());
+  fileSystem::set_value(indicatorBrightnessKey, indicator::get_brightness());
 
   user::write_parameters();
 
