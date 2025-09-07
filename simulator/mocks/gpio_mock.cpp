@@ -3,6 +3,7 @@
 #include "simulator_state.h"
 
 #include "src/system/platform/gpio.h"
+#include "src/system/platform/print.h"
 
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/utils.h"
@@ -17,23 +18,55 @@ typedef void (*voidFuncPtr)(void);
 
 namespace mock_gpios {
 
-inline static std::map<DigitalPin::GPIO, voidFuncPtr> callbacks;
+inline static std::map<DigitalPin::GPIO, voidFuncPtr> callbacksRisingEdge;
+inline static std::map<DigitalPin::GPIO, voidFuncPtr> callbacksFallingEdge;
+inline static std::map<DigitalPin::GPIO, voidFuncPtr> callbacksChange;
+
 static bool isButtonPressed = false;
+
+// only update button :/ thats bad
 void update_callbacks()
 {
   static bool wasButtonPressed = false;
-  for (const auto& [pin, callback]: callbacks)
+
+  isButtonPressed = sim::globals::state.isButtonPressed;
+
+  // event on change
+  if (isButtonPressed != wasButtonPressed)
   {
-    if (pin == buttonPin)
+    // change always called
+    for (const auto& [pin, callback]: callbacksChange)
     {
-      isButtonPressed = sim::globals::state.isButtonPressed;
-      if (isButtonPressed != wasButtonPressed)
+      // only handle button pin callbacks
+      if (pin != buttonPin)
+        continue;
+      callback();
+    }
+
+    if (isButtonPressed)
+    {
+      for (const auto& [pin, callback]: callbacksRisingEdge)
       {
+        // only handle button pin callbacks
+        if (pin != buttonPin)
+          continue;
         callback();
-        wasButtonPressed = isButtonPressed;
+      }
+    }
+    else
+    {
+      for (const auto& [pin, callback]: callbacksFallingEdge)
+      {
+        // only handle button pin callbacks
+        if (pin != buttonPin)
+          continue;
+        callback();
       }
     }
   }
+
+  // update
+  wasButtonPressed = isButtonPressed;
 }
 
 } // namespace mock_gpios
@@ -95,9 +128,38 @@ public:
     return 0;
   }
 
-  void attach_callback(voidFuncPtr cllbk) { mock_gpios::callbacks[_pin] = cllbk; }
+  void attach_callback(voidFuncPtr cllbk, DigitalPin::Interrupt mode)
+  {
+    // cannot have two interrupt callback types
+    mock_gpios::callbacksChange.erase(_pin);
+    mock_gpios::callbacksRisingEdge.erase(_pin);
+    mock_gpios::callbacksFallingEdge.erase(_pin);
 
-  void detach_callbacks() { mock_gpios::callbacks.erase(_pin); }
+    switch (mode)
+    {
+      case DigitalPin::Interrupt::kFallingEdge:
+        mock_gpios::callbacksFallingEdge[_pin] = cllbk;
+        break;
+
+      case DigitalPin::Interrupt::kRisingEdge:
+        mock_gpios::callbacksRisingEdge[_pin] = cllbk;
+        break;
+
+      case DigitalPin::Interrupt::kChange:
+        mock_gpios::callbacksChange[_pin] = cllbk;
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  void detach_callbacks()
+  {
+    mock_gpios::callbacksChange.erase(_pin);
+    mock_gpios::callbacksRisingEdge.erase(_pin);
+    mock_gpios::callbacksFallingEdge.erase(_pin);
+  }
 
 public:
   DigitalPin::GPIO _pin;
@@ -123,9 +185,8 @@ int DigitalPin::pin() const { return 0; }
 
 void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode)
 {
-  // TODO issue #132: handle different interrupts
   DigitalPin::s_gpiosWithInterrupts.emplace(mGpio);
-  mImpl->attach_callback(func);
+  mImpl->attach_callback(func, mode);
 }
 
 void DigitalPin::detach_callbacks()
