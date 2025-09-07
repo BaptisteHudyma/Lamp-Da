@@ -72,7 +72,7 @@ struct BasicMode
    *
    * \param[in] ctx The current context
    */
-  static void reset(auto& ctx) { return; }
+  static void on_enter_mode(auto& ctx) { return; }
 
   /// Toggles the use of custom BasicMode::brightness_update() callback
   static constexpr bool hasBrightCallback = false;

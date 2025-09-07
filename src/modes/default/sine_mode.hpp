@@ -20,7 +20,7 @@ struct SineMode : public modes::BasicMode
     uint16_t step;
   };
 
-  static void reset(auto& ctx)
+  static void on_enter_mode(auto& ctx)
   {
     ctx.state.step = 0;
 

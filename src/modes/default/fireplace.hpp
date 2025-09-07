@@ -30,7 +30,7 @@ struct FireMode : public BasicMode
     audio::SoundEventTy<> soundEvent;
   };
 
-  static void reset(auto& ctx)
+  static void on_enter_mode(auto& ctx)
   {
     ctx.state.soundEvent.reset(ctx);
 

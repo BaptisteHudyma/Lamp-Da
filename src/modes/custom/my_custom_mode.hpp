@@ -4,7 +4,7 @@
 struct MyCustomMode : public modes::BasicMode
 {
   static void loop(auto& ctx) {}
-  static void reset(auto& ctx) {}
+  static void on_enter_mode(auto& ctx) {}
 
   // only if hasBrightCallback
   static void brightness_update(auto& ctx, brightness_t brightness) {}

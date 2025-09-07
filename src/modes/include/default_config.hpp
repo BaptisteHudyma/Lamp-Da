@@ -78,7 +78,7 @@ struct DefaultManagerConfig
 
 /** \brief Keys to enable modes to change configuration at runtime.
  *
- * During modes::BasicMode::reset() callback, modes can change configuration
+ * During modes::BasicMode::on_enter_mode() callback, modes can change configuration
  * temporarily, for example to change how the ramp behaves, or how fast it
  * goes.
  *
@@ -86,7 +86,7 @@ struct DefaultManagerConfig
  *
  * ```
  *   // set value for "rampSaturates" to "True" for active mode
- *   static void reset(auto& ctx) {
+ *   static void on_enter_mode(auto& ctx) {
  *     ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
  *   }
  * ```
@@ -95,7 +95,7 @@ struct DefaultManagerConfig
  *
  * ```
  *   // set value for "customRampStepSpeedMs" to "32" for active mode
- *   static void reset(auto& ctx) {
+ *   static void on_enter_mode(auto& ctx) {
  *     ctx.template set_config_u32<ConfigKeys::customRampStepSpeedMs>(32);
  *   }
  * ```

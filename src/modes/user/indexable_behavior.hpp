@@ -56,7 +56,6 @@ void read_parameters()
 {
   auto manager = get_context();
   manager.read_parameters();
-  manager.reset_mode();
 }
 
 void button_clicked_default(const uint8_t clicks)

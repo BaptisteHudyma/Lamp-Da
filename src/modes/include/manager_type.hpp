@@ -259,16 +259,16 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     //  - skipFirstLedsForEffect = 0; // should the loop skip some lower LEDs?
     //  - skipFirstLedsForAmount = 0; // how many pixels to shave from the top?
 
-    // configuration-related actions done before mode reset
-    static void LMBD_INLINE before_reset(auto& ctx)
+    // configuration-related actions done before entering mode
+    static void LMBD_INLINE before_enter_mode(auto& ctx)
     {
       auto& self = ctx.state;
       self.rampHandler.reset();
       self.clearStripOnModeChange = Config::defaultClearStripOnModeChange;
     }
 
-    // configuration-related actions done after mode reset
-    static void LMBD_INLINE after_reset(auto& ctx)
+    // configuration-related actions done after mode entering
+    static void LMBD_INLINE after_enter_mode(auto& ctx)
     {
       auto& self = ctx.state;
       if (self.clearStripOnModeChange)
@@ -394,7 +394,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.modeManager.activeIndex.customIndex = newActiveIndex.customIndex;
     ctx.modeManager.activeIndex.rampIndex = newActiveIndex.rampIndex;
 
-    // if ramps loaded in reset_mode != ones saved as favorite, emulate update
+    // if ramps loaded in enter_mode != ones saved as favorite, emulate update
     if (ctx.modeManager.activeIndex.rawIndex != newActiveIndex.rawIndex)
     {
       ctx.modeManager.activeIndex = newActiveIndex;
@@ -444,15 +444,6 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     }
   }
 
-  static void reset_mode(auto& ctx)
-  {
-    ctx.state.before_reset(ctx);
-    dispatch_group(ctx, [](auto group) {
-      group.reset_mode();
-    });
-    ctx.state.after_reset(ctx);
-  }
-
   static uint8_t get_modes_count(auto& ctx)
   {
     uint8_t value = 0;
@@ -486,18 +477,14 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void enter_mode(auto& ctx)
   {
-    // this is a bit hackish
-    // before reset is mandatory here to reset the ramps correctly
-    ctx.state.before_reset(ctx);
+    ctx.state.before_enter_mode(ctx);
 
     // enter mode
     dispatch_group(ctx, [](auto group) {
       group.enter_mode();
     });
 
-    // this is a bit hackish
-    // after reset is mandatory here to reset the ramps correctly
-    ctx.state.after_reset(ctx);
+    ctx.state.after_enter_mode(ctx);
   }
 
   static void quit_mode(auto& ctx)
