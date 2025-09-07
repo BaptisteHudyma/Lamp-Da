@@ -32,7 +32,7 @@ struct BubbleMode : public BasicMode
   static constexpr auto algeaColor = colors::ForestGreen;
   static constexpr auto starColor = colors::Gold;
 
-  static void reset(auto& ctx)
+  static void on_enter_mode(auto& ctx)
   {
     // fill the initial automata with zeros +few colored pixels
     GridTy::LineTy first {};
@@ -140,7 +140,7 @@ struct SierpinskiMode : public BasicMode
     GridTy grid;
   };
 
-  static void reset(auto& ctx)
+  static void on_enter_mode(auto& ctx)
   {
     // fill the initial automata with zeros +few colored pixels
     GridTy::LineTy first {};

@@ -17,7 +17,7 @@ struct KelvinMode : public modes::BasicMode
   static void loop(auto& ctx) { ctx.lamp.setLightTemp(ctx.get_active_custom_ramp()); }
 
   // configure custom ramp
-  static void reset(auto& ctx)
+  static void on_enter_mode(auto& ctx)
   {
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
     ctx.template set_config_bool<ConfigKeys::customRampAnimEffect>(false);
@@ -31,7 +31,7 @@ struct KelvinMode : public modes::BasicMode
 struct RainbowMode : public modes::BasicMode
 {
   // configure custom ramp
-  static void reset(auto& ctx) { ctx.template set_config_bool<ConfigKeys::customRampAnimEffect>(false); }
+  static void on_enter_mode(auto& ctx) { ctx.template set_config_bool<ConfigKeys::customRampAnimEffect>(false); }
 
   static void loop(auto& ctx)
   {
@@ -53,7 +53,7 @@ struct RainbowMode : public modes::BasicMode
 /// Single-color mode for indexable strips with palette ramp
 struct PaletteMode : public modes::BasicMode
 {
-  static void reset(auto& ctx) { ctx.template set_config_bool<ConfigKeys::customRampAnimEffect>(false); }
+  static void on_enter_mode(auto& ctx) { ctx.template set_config_bool<ConfigKeys::customRampAnimEffect>(false); }
 
   static void loop(auto& ctx)
   {

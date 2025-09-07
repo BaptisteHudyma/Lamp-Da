@@ -38,7 +38,7 @@ struct RainbowSwirlMode : public LegacyMode
     state.rainbowSwirl.update();
   }
 
-  static void reset(auto& ctx) { ctx.state.rainbowSwirl.reset(); }
+  static void on_enter_mode(auto& ctx) { ctx.state.rainbowSwirl.reset(); }
 
   struct StateTy
   {
@@ -60,7 +60,7 @@ struct PartyFadeMode : public LegacyMode
     }
   }
 
-  static void reset(auto& ctx)
+  static void on_enter_mode(auto& ctx)
   {
     auto& state = ctx.state;
     state.currentIndex = 0;
@@ -96,7 +96,7 @@ struct NoiseMode : public LegacyMode
     state.selectedPalette = state._palettes[rampIndex];
   }
 
-  static void reset(auto& ctx)
+  static void on_enter_mode(auto& ctx)
   {
     ctx.state.categoryChange = true;
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(false);
@@ -129,7 +129,7 @@ struct PolarMode : public LegacyMode
     categoryChange = false;
   }
 
-  static void reset(auto& ctx) { ctx.state.categoryChange = true; }
+  static void on_enter_mode(auto& ctx) { ctx.state.categoryChange = true; }
 
   struct StateTy
   {
@@ -177,7 +177,7 @@ struct ColorWipeMode : public LegacyMode
     }
   }
 
-  static void reset(auto& ctx) { ctx.state.complementaryColor.reset(); }
+  static void on_enter_mode(auto& ctx) { ctx.state.complementaryColor.reset(); }
 
   struct StateTy
   {
@@ -202,7 +202,7 @@ struct RandomFillMode : public LegacyMode
     }
   }
 
-  static void reset(auto& ctx) { ctx.state.randomColor.reset(); }
+  static void on_enter_mode(auto& ctx) { ctx.state.randomColor.reset(); }
 
   struct StateTy
   {
@@ -226,7 +226,7 @@ struct PingPongMode : public LegacyMode
     }
   }
 
-  static void reset(auto& ctx) { ctx.state.complementaryPingPongColor.reset(); }
+  static void on_enter_mode(auto& ctx) { ctx.state.complementaryPingPongColor.reset(); }
 
   struct StateTy
   {
@@ -247,7 +247,7 @@ struct VuMeterMode : public LegacyMode
     animations::vu_meter(state.redToGreenGradient, 128, ctx.lamp.getLegacyStrip());
   }
 
-  static void reset(auto& ctx)
+  static void on_enter_mode(auto& ctx)
   {
     auto& state = ctx.state;
     state.redToGreenGradient.reset();
@@ -264,7 +264,7 @@ struct FftMode : public LegacyMode
 {
   static void loop(auto& ctx) { animations::fft_display(64, 64, PalettePartyColors, ctx.lamp.getLegacyStrip()); }
 
-  static void reset(auto& ctx) {}
+  static void on_enter_mode(auto& ctx) {}
 
   struct StateTy
   {
@@ -298,7 +298,7 @@ struct LiquideMode : public LegacyMode
     state._color = state._colors[rampIndex];
   }
 
-  static void reset(auto& ctx)
+  static void on_enter_mode(auto& ctx)
   {
     auto& state = ctx.state;
     for (DynamicColor* color: state._colors)
@@ -342,7 +342,7 @@ struct LiquideRainMode : public LegacyMode
 
   static void custom_ramp_update(auto& ctx, uint8_t rampValue) { ctx.state.density = rampValue; }
 
-  static void reset(auto& ctx)
+  static void on_enter_mode(auto& ctx)
   {
     auto& state = ctx.state;
     state.color.reset();

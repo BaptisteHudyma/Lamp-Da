@@ -56,7 +56,6 @@ void read_parameters()
 {
   auto manager = get_context();
   manager.read_parameters();
-  manager.reset_mode();
 }
 
 void button_clicked_default(const uint8_t clicks)
@@ -98,6 +97,8 @@ void button_clicked_default(const uint8_t clicks)
       fprintf(stderr, " - hasBrightCallback\n");
     if (manager.everyCustomRamp[_groupId][_modeId])
       fprintf(stderr, " - hasCustomRamp\n");
+    if (manager.state.rampHandler.animEffect)
+      fprintf(stderr, " - has anim effect\n");
     if (manager.everyRequireUserThread[_groupId][_modeId])
       fprintf(stderr, " - requireUserThread\n");
     if (manager.everySystemCallbacks[_groupId][_modeId])

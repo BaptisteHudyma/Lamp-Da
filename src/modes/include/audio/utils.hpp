@@ -20,7 +20,7 @@ namespace modes::audio {
  *      modes::audio::SoundEventTy<> soundEvent;
  *    };
  *
- *    static void reset(auto& ctx) {
+ *    static void on_enter_mode(auto& ctx) {
  *      ctx.state.soundEvent.reset(ctx);
  *    }
  *
@@ -83,7 +83,7 @@ struct SoundEventTy
   /// Window size used for ``avgDelta``
   static constexpr float _windowShort = windowShort / 4.0;
 
-  /// Call this once inside the mode reset callback
+  /// Call this once inside the mode on_enter_mode callback
   void reset(auto& ctx)
   {
     level = ctx.lamp.get_sound_level();

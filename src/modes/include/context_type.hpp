@@ -151,20 +151,6 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
   }
 
-  /// \private Reset active mode
-  auto LMBD_INLINE reset_mode()
-  {
-    if constexpr (LocalModeTy::isModeManager)
-    {
-      LocalModeTy::reset_mode(*this);
-    }
-    else
-    {
-      auto& manager = modeManager.get_context();
-      return manager.reset_mode();
-    }
-  }
-
   //
   // getters / setters for activeIndex
   //
@@ -533,14 +519,14 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     this->lamp.getLegacyStrip().signal_display();
   }
 
-  /// Binds to local BasicMode::reset()
-  void LMBD_INLINE reset()
+  /// Binds to local BasicMode::on_enter_mode()
+  void LMBD_INLINE on_enter_mode()
   {
     if (hasStore)
     {
       LocalStore::template migrateStoreIfNeeded<LocalModeTy::storeId>();
     }
-    LocalModeTy::reset(*this);
+    LocalModeTy::on_enter_mode(*this);
   }
 
   /// Binds to local BasicMode::brightness_update()
