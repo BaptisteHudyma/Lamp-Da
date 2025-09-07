@@ -10,6 +10,7 @@
 #include "src/system/physical/indicator.h"
 
 #include "src/system/platform/time.h"
+#include "src/system/platform/print.h"
 
 namespace button {
 
@@ -126,6 +127,13 @@ void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
     buttonState.wasTriggered = true;
 
     clickHoldSerieCallback(buttonState.nbClicksCounted, pressDuration);
+  }
+
+  // safety : an interrupt may have been missed, and the button is locked in a logic pressed state
+  if (isButtonPressDetected && not is_button_pressed() && pressDuration > RELEASE_BETWEEN_CLICKS)
+  {
+    button_state_interrupt();
+    lampda_print("Button interrupt shortcut due to state lock detected");
   }
 }
 

@@ -541,6 +541,10 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     foreach_group<true>(ctx, [](auto group) {
       group.power_on_sequence();
     });
+
+    // activate current mode
+    uint8_t groupIdBefore = ctx.get_active_group(nbGroups);
+    ctx.set_active_group(groupIdBefore);
   }
 
   static void power_off_sequence(auto& ctx)
