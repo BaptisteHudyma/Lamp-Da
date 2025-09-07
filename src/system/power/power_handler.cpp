@@ -23,6 +23,7 @@ bool _isShutdownCompleted = false;
 
 static constexpr uint32_t clearPowerRailMinDelay_ms = 10;
 static constexpr uint32_t clearPowerRailFailureDelay_ms = 1000;
+static constexpr uint32_t otgNoUseTimeToDisconnect_ms = 1000;
 
 static_assert(clearPowerRailMinDelay_ms < clearPowerRailFailureDelay_ms,
               "clear power rail min activation is less than min unlock delay");
@@ -229,9 +230,11 @@ void handle_otg_mode()
   // shutdown OTG if no current consumption for X seconds
   const auto& state = charger::get_state();
   // no current since a timing
-  if (state.inputCurrent_mA <= 10 && time_ms() - timeSinceOTGNoCurrentUse > 2000)
+  if (state.inputCurrent_mA <= 10)
   {
-    otgNoActivity = true;
+    // if no current use since a timing, stop otg
+    if (time_ms() - timeSinceOTGNoCurrentUse > otgNoUseTimeToDisconnect_ms)
+      otgNoActivity = true;
   }
   else
   {

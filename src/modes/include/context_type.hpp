@@ -14,6 +14,8 @@
 #include "src/modes/include/tools.hpp"
 #include "src/modes/include/default_config.hpp"
 
+#include "src/system/platform/print.h"
+
 namespace modes {
 
 /// Bind provided context to another modes::BasicMode
@@ -190,12 +192,14 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     if (value + 1 > maxValueWrap)
       value = 0;
 
+    auto manager = modeManager.get_context();
+
     // signal that we are quitting the mode
-    quit_mode();
+    modeManager.quit_mode(manager);
     // switch mode
     modeManager.activeIndex.modeIndex = value;
     // signal that we entered a new mode
-    enter_mode();
+    modeManager.enter_mode(manager);
     return value;
   }
 

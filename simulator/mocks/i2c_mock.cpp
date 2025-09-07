@@ -6,6 +6,8 @@
 
 void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout) {}
 
+void i2c_turn_off(uint8_t i2cIndex) {}
+
 int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
 {
   // error status
