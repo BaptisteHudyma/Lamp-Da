@@ -300,29 +300,8 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
   //    - after 2s the default actions comes back
   //
 
-  if (realStartTime < EARLY_ACTIONS_LIMIT_MS)
+  if (isSystemStartClick)
   {
-    // early action animation
-    if (consecutiveButtonCheck > 2)
-    {
-      if ((holdDuration >> 7) & 0b1)
-      {
-        indicator::set_color(utils::ColorSpace::BLACK);
-      }
-      else if (holdDuration < EARLY_ACTIONS_HOLD_MS)
-      {
-        indicator::set_color(utils::ColorSpace::GREEN);
-      }
-      else if (consecutiveButtonCheck == 3)
-      {
-        indicator::set_color(utils::ColorSpace::YELLOW);
-      }
-      else if (consecutiveButtonCheck == 4)
-      {
-        indicator::set_color(utils::ColorSpace::BLUE);
-      }
-    }
-
     // 3+hold (3s): turn it on, with button usermode enabled
     if (!isEndOfHoldEvent and consecutiveButtonCheck == 3)
     {
@@ -347,18 +326,9 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
         isBluetoothAdvertising = true;
         return;
       }
-      else
-      {
-        isBluetoothAdvertising = false;
-      }
-    }
-#endif
-
-    // during "early actions" prevent other actions
-    if (consecutiveButtonCheck > 2)
-    {
       return;
     }
+#endif
   }
 
   //
