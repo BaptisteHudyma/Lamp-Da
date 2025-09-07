@@ -59,6 +59,8 @@ public:
         break;
       case DigitalPin::kOutput:
         pinMode(mDigitalPin, OUTPUT);
+        // prevent brief flash at startup
+        set_high(false);
         break;
       case DigitalPin::kInputPullUp:
         pinMode(mDigitalPin, INPUT_PULLUP);
