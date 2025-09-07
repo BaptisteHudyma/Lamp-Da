@@ -24,7 +24,7 @@ void _unlockI2CMutex(void) { xSemaphoreGive(i2cMutex); }
 
 void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
 {
-  if (i2cIndex >= WIRE_INTERFACES_COUNT)
+  if (i2cIndex >= WIRE_INTERFACES_COUNT or isInit[i2cIndex])
   {
     assert(false);
     return;
@@ -47,10 +47,18 @@ void i2c_turn_off(uint8_t i2cIndex)
     assert(false);
     return;
   }
+  // no need to turn off an unitiliazied class
+  if (not isInit[i2cIndex])
+  {
+    return;
+  }
+
+  _lockI2CMutex();
   auto wire = interfaces[i2cIndex];
 
   isInit[i2cIndex] = false;
   wire->end();
+  _unlockI2CMutex();
 }
 
 int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
