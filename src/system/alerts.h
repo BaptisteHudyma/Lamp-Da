@@ -68,4 +68,15 @@ bool is_request_shutdown();
 
 } // namespace alerts
 
+namespace indicator {
+
+// indicator level can be
+// 0 : indicator and alerts displayed as 100% brightness
+// 1 : indicator off, alerts displayed as 25% brightness
+// 2 : indicator and alerts displayed as 25% brightness
+void set_brightness_level(const uint8_t level);
+uint8_t get_brightness_level();
+
+} // namespace indicator
+
 #endif

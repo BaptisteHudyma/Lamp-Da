@@ -2,7 +2,6 @@
 
 #include <cstdint>
 
-#include "power/power_gates.h"
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 
@@ -40,7 +39,7 @@
 namespace behavior {
 
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
-static constexpr uint32_t indicatorBrightnessKey = utils::hash("indBright");
+static constexpr uint32_t indicatorLevelKey = utils::hash("indLvl");
 
 // constants
 static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000;
@@ -135,10 +134,10 @@ bool read_parameters()
     brightness::update_previous_brightness();
   }
 
-  uint32_t indicatorBrightness = 0;
-  if (fileSystem::get_value(indicatorBrightnessKey, indicatorBrightness))
+  uint32_t indicatorLevel = 0;
+  if (fileSystem::get_value(indicatorLevelKey, indicatorLevel))
   {
-    indicator::set_brightness(indicatorBrightness);
+    indicator::set_brightness_level(indicatorLevel);
   }
 
   user::read_parameters();
@@ -150,7 +149,7 @@ void write_parameters()
   fileSystem::clear();
 
   fileSystem::set_value(brightnessKey, brightness::get_brightness());
-  fileSystem::set_value(indicatorBrightnessKey, indicator::get_brightness());
+  fileSystem::set_value(indicatorLevelKey, indicator::get_brightness_level());
 
   user::write_parameters();
 
@@ -211,6 +210,13 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   if (consecutiveButtonCheck == 0)
     return;
 
+  // can be called when systel is alseep
+  if (consecutiveButtonCheck == 7)
+  {
+    indicator::set_brightness_level(indicator::get_brightness_level() + 1);
+    return;
+  }
+
   // guard blocking other actions than "turn off"
   if (not can_system_allowed_to_be_powered())
   {
@@ -246,7 +252,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
 
   // basic "default" UI:
   //  - 1 click: on/off
-  //  - 7+ clicks: shutdown immediately (if DEBUG_MODE wait for watchdog)
+  //  - 10+ clicks: shutdown immediately (if DEBUG_MODE wait for watchdog)
   //
   switch (consecutiveButtonCheck)
   {
@@ -261,9 +267,8 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
 
     // other behaviors
     default:
-
-      // 7+ clicks: force shutdown (or safety reset if DEBUG_MODE)
-      if (consecutiveButtonCheck >= 7)
+      // 10+ clicks: force shutdown (or safety reset if DEBUG_MODE)
+      if (consecutiveButtonCheck >= 10)
       {
 #ifdef DEBUG_MODE
         // disable charger and wait 5s to be killed by watchdog

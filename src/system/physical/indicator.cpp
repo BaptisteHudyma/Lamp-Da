@@ -13,6 +13,10 @@
 
 namespace indicator {
 
+static_assert(redColorCorrection * 255 > 32, "red correction is too small to be visible");
+static_assert(greenColorCorrection * 255 > 32, "green correction is too small to be visible");
+static_assert(blueColorCorrection * 255 > 32, "blue correction is too small to be visible");
+
 // Pins for the led on the button
 static DigitalPin ButtonRedPin(RedIndicator);
 static DigitalPin ButtonGreenPin(GreenIndicator);
@@ -32,9 +36,9 @@ void init()
 void set_color(const utils::ColorSpace::RGB& c)
 {
   const COLOR& col = c.get_rgb();
-  ButtonRedPin.write(col.red * redColorCorrection * brigthnessMultiplier);
-  ButtonGreenPin.write(col.green * greenColorCorrection * brigthnessMultiplier);
-  ButtonBluePin.write(col.blue * blueColorCorrection * brigthnessMultiplier);
+  ButtonRedPin.write(std::ceil(col.red * redColorCorrection * brigthnessMultiplier));
+  ButtonGreenPin.write(std::ceil(col.green * greenColorCorrection * brigthnessMultiplier));
+  ButtonBluePin.write(std::ceil(col.blue * blueColorCorrection * brigthnessMultiplier));
 }
 
 void set_brightness(const uint8_t brightness) { brigthnessMultiplier = brightness / 255.0; }
