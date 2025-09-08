@@ -437,7 +437,7 @@ public:
       cur = colors::add<true>(colors::fade<false>(c, keep), carryover);
       if (i > 0)
       {
-        c = getPixelColor(i - 1);
+        c = strip.getPixelColor(i - 1);
         strip.setPixelColor(i - 1, colors::add<true>(c, part));
       }
       strip.setPixelColor(i, cur);

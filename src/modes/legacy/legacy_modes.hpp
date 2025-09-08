@@ -17,6 +17,7 @@
 #include "src/modes/default/aurora.hpp"
 #include "src/modes/default/distortion_waves.hpp"
 #include "src/modes/default/fireplace.hpp"
+#include "src/modes/default/perlin_noise.hpp"
 #include "src/modes/default/sine_mode.hpp"
 #include "src/modes/default/spiral.hpp"
 
@@ -76,50 +77,6 @@ struct PartyFadeMode : public LegacyMode
     uint8_t currentIndex = 0;
     bool isFinished = false;
   };
-};
-
-struct NoiseMode : public LegacyMode
-{
-  static void loop(auto& ctx)
-  {
-    auto& state = ctx.state;
-
-    if (state.selectedPalette)
-    {
-      animations::random_noise(*state.selectedPalette, ctx.lamp.getLegacyStrip(), state.categoryChange, true, 600);
-      state.categoryChange = false;
-    }
-  }
-
-  static void custom_ramp_update(auto& ctx, uint8_t rampValue)
-  {
-    auto& state = ctx.state;
-
-    const uint8_t rampIndex = min(floor(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1);
-    state.selectedPalette = state._palettes[rampIndex];
-  }
-
-  static void on_enter_mode(auto& ctx)
-  {
-    ctx.state.categoryChange = true;
-    ctx.template set_config_bool<ConfigKeys::rampSaturates>(false);
-    custom_ramp_update(ctx, ctx.get_active_custom_ramp());
-  }
-
-  struct StateTy
-  {
-    // store references to palettes
-    const palette_t* _palettes[3] = {&PaletteLavaColors, &PaletteForestColors, &PaletteOceanColors};
-    const uint8_t maxPalettesCount = 3;
-
-    // store selected palette
-    palette_t const* selectedPalette;
-
-    bool categoryChange = false;
-  };
-
-  // hint manager to save our custom ramp
-  static constexpr bool hasCustomRamp = true;
 };
 
 } // namespace calm
@@ -346,7 +303,7 @@ struct LiquideRainMode : public LegacyMode
 
 using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
                                   calm::PartyFadeMode,
-                                  calm::NoiseMode,
+                                  default_modes::PerlinNoiseMode,
                                   default_modes::AuroraMode,
                                   default_modes::FireMode,
                                   default_modes::SineMode,

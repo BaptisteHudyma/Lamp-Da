@@ -45,7 +45,7 @@ struct SineMode : public modes::BasicMode
                                                                 // value called thiscutoff. If < thiscutoff, then bright
                                                                 // = 0. Otherwise, bright = 128 (as defined in qsub)..
       // get the pixel color from PaletteRainbowColors
-      const auto pixColor = modes::colors::from_palette((uint8_t)(i * colorIndex / 255), PaletteRainbowColors);
+      const auto pixColor = colors::from_palette((uint8_t)(i * colorIndex / 255), PaletteRainbowColors);
       // blend the pixel color with the black color
       ctx.lamp.setPixelColor(i, modes::colors::fade<false>(pixColor, pixBri));
     }

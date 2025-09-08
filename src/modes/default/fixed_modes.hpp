@@ -31,7 +31,12 @@ struct KelvinMode : public modes::BasicMode
 struct RainbowMode : public modes::BasicMode
 {
   // configure custom ramp
-  static void on_enter_mode(auto& ctx) { ctx.template set_config_bool<ConfigKeys::customRampAnimEffect>(false); }
+  static void on_enter_mode(auto& ctx)
+  {
+    ctx.template set_config_bool<ConfigKeys::customRampAnimEffect>(false);
+    // this ramps should be slow
+    ctx.template set_config_u32<ConfigKeys::customRampStepSpeedMs>(50);
+  }
 
   static void loop(auto& ctx)
   {

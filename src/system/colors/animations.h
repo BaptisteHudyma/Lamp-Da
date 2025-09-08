@@ -99,9 +99,6 @@ bool fade_in(const Color& color,
              const float firstCutOff = 0.0,
              const float secondCutOff = 1.0);
 
-void random_noise(
-        const palette_t& palette, LedStrip& strip, const bool restart, const bool isColorLoop, const uint16_t scale);
-
 void candle(const palette_t& palette, LedStrip& strip);
 
 /**
