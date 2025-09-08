@@ -36,7 +36,6 @@
 #include "src/system/platform/print.h"
 
 #include "src/user/functions.h"
-#include "utils/print.h"
 
 namespace behavior {
 
@@ -293,6 +292,8 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 {
   if (consecutiveButtonCheck == 0)
     return;
+  static uint32_t lastButtonPressedTime_ms = time_ms();
+
   // no button callback when user code is not running
   if (not is_user_code_running())
     return;
@@ -302,6 +303,9 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 
   // compute parameters of the "press-hold" action
   const bool isEndOfHoldEvent = (buttonHoldDuration <= 1);
+  if (isEndOfHoldEvent)
+    lastButtonPressedTime_ms = time_ms();
+
   const uint32_t holdDuration =
           (buttonHoldDuration > HOLD_BUTTON_MIN_MS) ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
 
@@ -375,45 +379,77 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
   // default actions
   //
 
-  // number of steps to update brightness
-  static constexpr uint32_t brightnessUpdateSteps = BRIGHTNESS_RAMP_DURATION_MS / BRIGHTNESS_LOOP_UPDATE_EVERY;
-  static uint32_t brightnessUpdateStepSize = max(1u, maxBrightness / brightnessUpdateSteps);
-
   // basic "default" UI:
-  //  - 1+hold: increase brightness
-  //  - 2+hold: decrease brightness
   //
   switch (consecutiveButtonCheck)
   {
-    // 1+hold: increase brightness
+    // 1+hold, 2+hold: brightness control
     case 1:
-    // 2+hold: decrease brightness
     case 2:
-      // update brightness every N milliseconds
+      // number of steps to update brightness
+      static constexpr uint32_t brightnessUpdateSteps = BRIGHTNESS_RAMP_DURATION_MS / BRIGHTNESS_LOOP_UPDATE_EVERY;
+      static uint32_t brightnessUpdateStepSize = max(1u, maxBrightness / brightnessUpdateSteps);
+
+      // negative go low, positive go high
+      static int rampSide = 1;
+      static uint32_t lastBrightnessUpdateTime_ms = time_ms();
+
+      if (isEndOfHoldEvent)
+      {
+        // reverse on release
+        rampSide = -rampSide;
+        lastBrightnessUpdateTime_ms = time_ms();
+        brightness::update_previous_brightness();
+        break;
+      }
+
+      // update brightness every N milliseconds (or end of hold)
       EVERY_N_MILLIS(BRIGHTNESS_LOOP_UPDATE_EVERY)
       {
-        // update ramp every N
-        if (isEndOfHoldEvent)
+        // first actions, set ramp side
+        if (holdDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)
         {
-          brightness::update_previous_brightness();
+          // 2 clics always go low
+          if (consecutiveButtonCheck == 2)
+            rampSide = -1;
+          // ramp at maximum, go low
+          else if (brightness::get_brightness() >= maxBrightness)
+            rampSide = -1;
+          // if more than 1 second elapsed, fall back to raise ramp
+          else if (time_ms() - lastBrightnessUpdateTime_ms >= 1000)
+            rampSide = 1;
         }
-        // 1 clic
-        else if (consecutiveButtonCheck == 1)
+        // press for too long, go down
+        // TODO do this from level max, no start of ramp
+        else if (holdDuration >= 5000)
         {
-          const brightness_t brightness = brightness::get_brightness();
-          // no updates, already at max brightness
-          if (brightness >= maxBrightness)
-            break;
-          brightness::update_brightness(brightness + brightnessUpdateStepSize);
+          // stayed pressed too long, turn off
+          if (holdDuration >= 10000)
+          {
+            set_power_off();
+          }
+          else
+            rampSide = -1;
         }
-        // 2 clics
+
+        const brightness_t brightness = brightness::get_brightness();
+        // go down
+        if (rampSide < 0)
+        {
+          if (brightness <= brightnessUpdateStepSize)
+            // min level
+            brightness::update_brightness(1);
+          else
+            brightness::update_brightness(brightness - brightnessUpdateStepSize);
+        }
+        /// go up
         else
         {
-          const brightness_t brightness = brightness::get_brightness();
-          // no updates, already at max brightness
-          if (brightness < brightnessUpdateStepSize)
-            break;
-          brightness::update_brightness(brightness - brightnessUpdateStepSize);
+          if (brightness + brightnessUpdateStepSize >= maxBrightness)
+            // min level
+            brightness::update_brightness(maxBrightness);
+          else
+            brightness::update_brightness(brightness + brightnessUpdateStepSize);
         }
       }
       break;
