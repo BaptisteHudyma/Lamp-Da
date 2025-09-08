@@ -13,10 +13,16 @@
 
 namespace indicator {
 
+static_assert(redColorCorrection * 255 > 32, "red correction is too small to be visible");
+static_assert(greenColorCorrection * 255 > 32, "green correction is too small to be visible");
+static_assert(blueColorCorrection * 255 > 32, "blue correction is too small to be visible");
+
 // Pins for the led on the button
 static DigitalPin ButtonRedPin(RedIndicator);
 static DigitalPin ButtonGreenPin(GreenIndicator);
 static DigitalPin ButtonBluePin(BlueIndicator);
+
+static inline float brigthnessMultiplier = 1.0f;
 
 void init()
 {
@@ -30,10 +36,13 @@ void init()
 void set_color(const utils::ColorSpace::RGB& c)
 {
   const COLOR& col = c.get_rgb();
-  ButtonRedPin.write(col.red * redColorCorrection);
-  ButtonGreenPin.write(col.green * greenColorCorrection);
-  ButtonBluePin.write(col.blue * blueColorCorrection);
+  ButtonRedPin.write(std::ceil(col.red * redColorCorrection * brigthnessMultiplier));
+  ButtonGreenPin.write(std::ceil(col.green * greenColorCorrection * brigthnessMultiplier));
+  ButtonBluePin.write(std::ceil(col.blue * blueColorCorrection * brigthnessMultiplier));
 }
+
+void set_brightness(const uint8_t brightness) { brigthnessMultiplier = brightness / 255.0; }
+uint8_t get_brightness() { return brigthnessMultiplier * 255; }
 
 bool breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::ColorSpace::RGB& color)
 {

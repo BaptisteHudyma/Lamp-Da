@@ -22,6 +22,9 @@ namespace alerts {
 AlertManager_t manager;
 bool _request_shutdown = false;
 
+// if true, do not display the indicator in normal mode
+bool skipIndicator = false;
+
 // stay at zero in normal operation
 // set to the real startup time to ignore the battery alerts while the system starts
 uint32_t _startupChargerTime = 0;
@@ -458,7 +461,15 @@ void handle_all(const bool shouldIgnoreAlerts)
 
   if (shouldIgnoreAlerts or manager.is_clear())
   {
-    brightness::set_max_brightness(maxBrightness); // no alerts: reset the max brightness
+    // no alerts: reset the max brightness
+    brightness::set_max_brightness(maxBrightness);
+
+    // do nothing to display anything
+    if (skipIndicator)
+    {
+      indicator::set_color(utils::ColorSpace::BLACK);
+      return;
+    }
 
     // red to green
     const auto buttonColor =
@@ -581,3 +592,37 @@ void AlertManager_t::clear(const Type type)
 }
 
 } // namespace alerts
+
+namespace indicator {
+
+static inline uint8_t _level = 0;
+
+void set_brightness_level(const uint8_t level)
+{
+  static constexpr uint8_t lowBrightness = 64;
+  static constexpr uint8_t midBrightness = 128;
+  switch (level)
+  {
+    case 1:
+      _level = 1;
+      alerts::skipIndicator = true;
+      indicator::set_brightness(lowBrightness);
+      break;
+    case 2:
+      _level = 2;
+      alerts::skipIndicator = false;
+      indicator::set_brightness(lowBrightness);
+      break;
+    // 0 and default are the same : level too high should loop back
+    case 0:
+    default:
+      _level = 0;
+      alerts::skipIndicator = false;
+      indicator::set_brightness(255);
+      break;
+  }
+}
+
+uint8_t get_brightness_level() { return _level; }
+
+} // namespace indicator
