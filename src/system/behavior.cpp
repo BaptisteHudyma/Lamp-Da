@@ -134,7 +134,7 @@ bool read_parameters()
   if (fileSystem::get_value(brightnessKey, brightness))
   {
     brightness::update_brightness(brightness, true);
-    brightness::update_previous_brightness();
+    brightness::update_saved_brightness();
   }
 
   uint32_t indicatorLevel = 0;
@@ -151,7 +151,8 @@ void write_parameters()
 {
   fileSystem::clear();
 
-  fileSystem::set_value(brightnessKey, brightness::get_brightness());
+  // only save saved brightness, not current
+  fileSystem::set_value(brightnessKey, brightness::get_saved_brightness());
   fileSystem::set_value(indicatorLevelKey, indicator::get_brightness_level());
 
   user::write_parameters();
@@ -399,13 +400,15 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
         // reverse on release
         rampSide = -rampSide;
         lastBrightnessUpdateTime_ms = time_ms();
-        brightness::update_previous_brightness();
+        brightness::update_saved_brightness();
         break;
       }
 
       // update brightness every N milliseconds (or end of hold)
       EVERY_N_MILLIS(BRIGHTNESS_LOOP_UPDATE_EVERY)
       {
+        const brightness_t brightness = brightness::get_brightness();
+
         // first actions, set ramp side
         if (holdDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)
         {
@@ -413,7 +416,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
           if (consecutiveButtonCheck == 2)
             rampSide = -1;
           // ramp at maximum, go low
-          else if (brightness::get_brightness() >= maxBrightness)
+          else if (brightness >= maxBrightness)
             rampSide = -1;
           // if more than 1 second elapsed, fall back to raise ramp
           else if (time_ms() - lastBrightnessUpdateTime_ms >= 1000)
@@ -423,16 +426,19 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
         // TODO do this from level max, no start of ramp
         else if (holdDuration >= 5000)
         {
+// this do not work, because system starts right back up, because button is stil pulled low...
+#if 0
           // stayed pressed too long, turn off
           if (holdDuration >= 10000)
           {
             set_power_off();
+            break;
           }
           else
-            rampSide = -1;
+#endif
+          rampSide = -1;
         }
 
-        const brightness_t brightness = brightness::get_brightness();
         // go down
         if (rampSide < 0)
         {
@@ -451,6 +457,9 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
           else
             brightness::update_brightness(brightness + brightnessUpdateStepSize);
         }
+
+        // update saved brightness
+        brightness::update_saved_brightness();
       }
       break;
 

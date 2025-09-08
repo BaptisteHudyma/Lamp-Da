@@ -100,7 +100,6 @@ void button_clicked_default(const uint8_t clicks)
     // put luminosity to maximum
     case 2:
       brightness::update_brightness(maxBrightness);
-      brightness::update_previous_brightness();
       break;
 
     default:
