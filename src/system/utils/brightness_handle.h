@@ -8,8 +8,8 @@ namespace brightness {
 // return the current brightness value (in range 0-maxBrightness)
 brightness_t get_brightness();
 
-// return the brightness before the update
-brightness_t get_previous_brightness();
+// return the saved brightness level
+brightness_t get_saved_brightness();
 
 // return the maximum allowed brightness
 brightness_t get_max_brightness();
@@ -17,8 +17,8 @@ brightness_t get_max_brightness();
 // set the new max brightness (limited to maxBrightness)
 void set_max_brightness(const brightness_t brg);
 
-// update the prev brightness value
-void update_previous_brightness();
+// update the saved brightness value with the current brightness
+void update_saved_brightness();
 
 /**
  * \brief update the internal brightness values

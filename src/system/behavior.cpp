@@ -25,6 +25,7 @@
 #include "src/system/utils/state_machine.h"
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/brightness_handle.h"
+#include "src/system/utils/time_utils.h"
 
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/time.h"
@@ -42,7 +43,9 @@ static constexpr uint32_t brightnessKey = utils::hash("brightness");
 static constexpr uint32_t indicatorLevelKey = utils::hash("indLvl");
 
 // constants
-static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000;
+static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000; /// duration of the brightness ramp
+static constexpr uint32_t BRIGHTNESS_LOOP_UPDATE_EVERY = 20;  /// frequency update of the ramp
+
 static constexpr uint32_t EARLY_ACTIONS_LIMIT_MS = 2000;
 static constexpr uint32_t EARLY_ACTIONS_HOLD_MS = 1500;
 
@@ -131,7 +134,7 @@ bool read_parameters()
   if (fileSystem::get_value(brightnessKey, brightness))
   {
     brightness::update_brightness(brightness, true);
-    brightness::update_previous_brightness();
+    brightness::update_saved_brightness();
   }
 
   uint32_t indicatorLevel = 0;
@@ -148,7 +151,8 @@ void write_parameters()
 {
   fileSystem::clear();
 
-  fileSystem::set_value(brightnessKey, brightness::get_brightness());
+  // only save saved brightness, not current
+  fileSystem::set_value(brightnessKey, brightness::get_saved_brightness());
   fileSystem::set_value(indicatorLevelKey, indicator::get_brightness_level());
 
   user::write_parameters();
@@ -289,6 +293,8 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 {
   if (consecutiveButtonCheck == 0)
     return;
+  static uint32_t lastButtonPressedTime_ms = time_ms();
+
   // no button callback when user code is not running
   if (not is_user_code_running())
     return;
@@ -298,6 +304,9 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 
   // compute parameters of the "press-hold" action
   const bool isEndOfHoldEvent = (buttonHoldDuration <= 1);
+  if (isEndOfHoldEvent)
+    lastButtonPressedTime_ms = time_ms();
+
   const uint32_t holdDuration =
           (buttonHoldDuration > HOLD_BUTTON_MIN_MS) ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
 
@@ -372,57 +381,94 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
   //
 
   // basic "default" UI:
-  //  - 1+hold: increase brightness
-  //  - 2+hold: decrease brightness
   //
   switch (consecutiveButtonCheck)
   {
-    // 1+hold: increase brightness
+    // 1+hold, 2+hold: brightness control
     case 1:
-      if (isEndOfHoldEvent)
-      {
-        brightness::update_previous_brightness();
-      }
-      else
-      {
-        const brightness_t prevBrightness = brightness::get_previous_brightness();
-        // no updates, already at max brightness
-        if (maxBrightness - prevBrightness == 0)
-          break;
-        const float percentOfTimeToGoUp = (maxBrightness - prevBrightness) / float(maxBrightness);
-        const uint32_t brightnessRampMaxDuration = BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoUp;
-
-        const brightness_t newBrightness =
-                lmpd_map<uint32_t, brightness_t>(min(holdDuration, brightnessRampMaxDuration),
-                                                 0,
-                                                 brightnessRampMaxDuration,
-                                                 prevBrightness,
-                                                 maxBrightness);
-        brightness::update_brightness(newBrightness);
-      }
-      break;
-
-    // 2+hold: decrease brightness
     case 2:
+      // number of steps to update brightness
+      static constexpr uint32_t brightnessUpdateSteps = BRIGHTNESS_RAMP_DURATION_MS / BRIGHTNESS_LOOP_UPDATE_EVERY;
+      static uint32_t brightnessUpdateStepSize = max(1u, maxBrightness / brightnessUpdateSteps);
+
+      // negative go low, positive go high
+      static int rampSide = 1;
+      static uint32_t lastBrightnessUpdateTime_ms = time_ms();
+
       if (isEndOfHoldEvent)
       {
-        brightness::update_previous_brightness();
+        // reverse on release
+        rampSide = -rampSide;
+        lastBrightnessUpdateTime_ms = time_ms();
+        brightness::update_saved_brightness();
+        break;
       }
-      else
+
+      // update brightness every N milliseconds (or end of hold)
+      EVERY_N_MILLIS(BRIGHTNESS_LOOP_UPDATE_EVERY)
       {
-        const brightness_t prevBrightness = brightness::get_previous_brightness();
-        // no updates, already at min brightness
-        if (prevBrightness == 0)
-          break;
+        const brightness_t brightness = brightness::get_brightness();
 
-        const double percentOfTimeToGoDown = prevBrightness / float(maxBrightness);
-        const uint32_t brightnessRampMaxDuration = BRIGHTNESS_RAMP_DURATION_MS * percentOfTimeToGoDown;
+        // first actions, set ramp side
+        if (holdDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)
+        {
+          // 2 clics always go low
+          if (consecutiveButtonCheck == 2)
+            rampSide = -1;
+          // ramp at maximum, go low
+          else if (brightness >= maxBrightness)
+            rampSide = -1;
+          // if more than 1 second elapsed, fall back to raise ramp
+          else if (time_ms() - lastBrightnessUpdateTime_ms >= 1000)
+            rampSide = 1;
+        }
+        // press for too long, go down
+        // TODO do this from level max, no start of ramp
+        else if (holdDuration >= 5000)
+        {
+// this do not work, because system starts right back up, because button is stil pulled low...
+#if 0
+          // stayed pressed too long, turn off
+          if (holdDuration >= 10000)
+          {
+            set_power_off();
+            break;
+          }
+          else
+#endif
+          rampSide = -1;
+        }
 
-        const brightness_t newBrightness = lmpd_map<uint32_t, brightness_t>(
-                min(holdDuration, brightnessRampMaxDuration), 0, brightnessRampMaxDuration, prevBrightness, 0);
-        brightness::update_brightness(newBrightness);
+        // go down
+        if (rampSide < 0)
+        {
+          if (brightness <= brightnessUpdateStepSize)
+            // min level
+            brightness::update_brightness(1);
+          else
+            brightness::update_brightness(brightness - brightnessUpdateStepSize);
+        }
+        /// go up
+        else
+        {
+          if (brightness + brightnessUpdateStepSize >= maxBrightness)
+            // min level
+            brightness::update_brightness(maxBrightness);
+          else
+            brightness::update_brightness(brightness + brightnessUpdateStepSize);
+        }
+
+        // update saved brightness
+        brightness::update_saved_brightness();
       }
       break;
+
+    case 7:
+      {
+        // every seconds, update the indicator
+        EVERY_N_MILLIS(1000) { indicator::set_brightness_level(indicator::get_brightness_level() + 1); }
+        break;
+      }
 
     // other behaviors
     default:

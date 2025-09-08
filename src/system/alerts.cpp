@@ -253,7 +253,6 @@ struct Alert_BatteryLow : public AlertBase
 
     brightness::set_max_brightness(clampedBrightness);
     brightness::update_brightness(brightness::get_brightness());
-    brightness::update_previous_brightness();
   }
 
   bool show() const override
@@ -293,7 +292,6 @@ struct Alert_TempTooHigh : public AlertBase
 
     brightness::set_max_brightness(clampedBrightness);
     brightness::update_brightness(brightness::get_brightness());
-    brightness::update_previous_brightness();
   }
 
   bool show() const override { return indicator::blink(300, 300, utils::ColorSpace::DARK_ORANGE); }
