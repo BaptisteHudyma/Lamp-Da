@@ -25,6 +25,7 @@
 #include "src/system/utils/state_machine.h"
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/brightness_handle.h"
+#include "src/system/utils/time_utils.h"
 
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/time.h"
@@ -423,6 +424,13 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
         brightness::update_brightness(newBrightness);
       }
       break;
+
+    case 7:
+      {
+        // every seconds, update the indicator
+        EVERY_N_MILLIS(1000) { indicator::set_brightness_level(indicator::get_brightness_level() + 1); }
+        break;
+      }
 
     // other behaviors
     default:
