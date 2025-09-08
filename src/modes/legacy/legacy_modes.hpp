@@ -17,6 +17,7 @@
 #include "src/modes/default/distortion_waves.hpp"
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/default/sine_mode.hpp"
+#include "src/modes/default/spiral.hpp"
 
 namespace modes::legacy {
 
@@ -136,12 +137,6 @@ struct PolarMode : public LegacyMode
   {
     bool categoryChange = false;
   };
-};
-
-/// Bubbles
-struct DriftMode : public LegacyMode
-{
-  static void loop(auto& ctx) { animations::mode_2DDrift(64, 64, PaletteRainbowColors, ctx.lamp.getLegacyStrip()); }
 };
 
 } // namespace calm
@@ -372,7 +367,7 @@ using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
                                   calm::PolarMode,
                                   default_modes::FireMode,
                                   default_modes::SineMode,
-                                  calm::DriftMode,
+                                  default_modes::SpiralMode,
                                   default_modes::DistortionWaveMode,
                                   imu::LiquideMode,
                                   imu::LiquideRainMode>;

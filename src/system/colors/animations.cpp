@@ -578,31 +578,6 @@ void mode_2DPolarLights(
   }
 }
 
-void mode_2DDrift(const uint8_t intensity, const uint8_t speed, const palette_t& palette, LedStrip& strip)
-{ // By: Stepko
-  // https://editor.soulmatelights.com/gallery/884-drift
-  // , Modified by: Andrew Tuline
-  const uint16_t cols = ceil(stripXCoordinates);
-  const uint16_t rows = ceil(stripYCoordinates);
-
-  const uint16_t colsCenter = (cols >> 1) + cols % 2;
-  const uint16_t rowsCenter = (rows >> 1) + rows % 2;
-
-  strip.fadeToBlackBy(128);
-  const uint16_t maxDim = MAX(cols, rows) / 2;
-  unsigned long t = time_ms() / (32 - (speed >> 3));
-  unsigned long t_20 = t / 20; // softhack007: pre-calculating this gives about 10% speedup
-  for (float i = 1; i < maxDim; i += 0.25)
-  {
-    float angle = to_radians(t * (maxDim - i));
-    uint16_t myX = colsCenter + (sin_t(angle) * i);
-    uint16_t myY = rowsCenter + (cos_t(angle) * i);
-
-    strip.setPixelColorXY(myX, myY, get_color_from_palette((uint8_t)((i * 20) + t_20), palette));
-  }
-  strip.blur(intensity >> 3);
-} // mode_2DDrift()
-
 static const uint8_t exp_gamma[256] = {
         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
         1,   1,   1,   1,   1,   1,   1,   1,   1,   2,   2,   2,   2,   2,   2,   2,   2,   2,   3,   3,   3,   3,
