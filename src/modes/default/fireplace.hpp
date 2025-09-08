@@ -14,6 +14,9 @@
 namespace modes::default_modes {
 
 /// Emulate a fireplace, optionally sound-sensitive
+
+// Based on "Perlin noise fire procedure" - ldirko
+// https://editor.soulmatelights.com/gallery/234-fire
 struct FireMode : public BasicMode
 {
   /// Fire custom ramp sets how sensitive it is to ambiant sound

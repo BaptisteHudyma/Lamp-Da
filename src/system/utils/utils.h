@@ -131,10 +131,6 @@ template<int16_t N> static constexpr uint32_t hash(const char (&s)[N])
   return hash(s, 14);
 }
 
-void calcGammaTable(float gamma);
-COLOR gamma32(COLOR color);
-uint8_t gamma8(uint8_t value);
-
 // Convert a read on an analog pin to a voltage value
 constexpr double analogReadToVoltage(const uint16_t analogVal)
 {

@@ -14,6 +14,7 @@
 
 #include "src/system/physical/fileSystem.h"
 
+#include "src/modes/default/distortion_waves.hpp"
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/default/sine_mode.hpp"
 
@@ -141,12 +142,6 @@ struct PolarMode : public LegacyMode
 struct DriftMode : public LegacyMode
 {
   static void loop(auto& ctx) { animations::mode_2DDrift(64, 64, PaletteRainbowColors, ctx.lamp.getLegacyStrip()); }
-};
-
-/// Distortion
-struct DistMode : public LegacyMode
-{
-  static void loop(auto& ctx) { animations::mode_2Ddistortionwaves(128, 128, ctx.lamp.getLegacyStrip()); }
 };
 
 } // namespace calm
@@ -378,7 +373,7 @@ using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
                                   default_modes::FireMode,
                                   default_modes::SineMode,
                                   calm::DriftMode,
-                                  calm::DistMode,
+                                  default_modes::DistortionWaveMode,
                                   imu::LiquideMode,
                                   imu::LiquideRainMode>;
 

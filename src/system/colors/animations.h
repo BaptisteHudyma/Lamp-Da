@@ -99,12 +99,6 @@ bool fade_in(const Color& color,
              const float firstCutOff = 0.0,
              const float secondCutOff = 1.0);
 
-/**
- * Fire animation
- * https://editor.soulmatelights.com/gallery/234-fire
- */
-void fire(const uint8_t scalex, const uint8_t scaley, const uint8_t speed, const palette_t& palette, LedStrip& strip);
-
 void random_noise(
         const palette_t& palette, LedStrip& strip, const bool restart, const bool isColorLoop, const uint16_t scale);
 
@@ -119,8 +113,6 @@ void mode_2DPolarLights(
         const uint8_t scale, const uint8_t speed, const palette_t& palette, const bool reset, LedStrip& strip);
 void mode_2DDrift(const uint8_t intensity, const uint8_t speed, const palette_t& palette, LedStrip& strip);
 void hiphotic(const uint8_t speed, LedStrip& strip);
-
-void mode_2Ddistortionwaves(const uint8_t scale, const uint8_t speed, LedStrip& strip);
 
 void mode_lake(const uint8_t speed, const palette_t& palette, LedStrip& strip);
 
