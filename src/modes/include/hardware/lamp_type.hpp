@@ -84,7 +84,7 @@ struct LampTy
 private:
   static constexpr float _fwidth = stripXCoordinates;    ///< \private
   static constexpr float _fheight = stripYCoordinates;   ///< \private
-  static constexpr uint16_t _width = floor(_fwidth);     ///< \private
+  static constexpr uint16_t _width = ceil(_fwidth);      ///< \private
   static constexpr uint16_t _height = floor(_fheight);   ///< \private
   static constexpr uint16_t _ledCount = LED_COUNT;       ///< \private
   static constexpr uint16_t _nbBuffers = stripNbBuffers; ///< \private
@@ -261,7 +261,7 @@ public:
 
   /** \brief (indexable) Width of "pixel space" w/ lamp taken as a LED matrix
    *
-   * Equal to \p stripXCoordinates (floor) if LampTypes::indexable or else 16
+   * Equal to \p stripXCoordinates (ceil) if LampTypes::indexable or else 16
    */
   static constexpr uint16_t maxWidth = _width;
 

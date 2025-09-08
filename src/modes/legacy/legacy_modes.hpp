@@ -14,6 +14,7 @@
 
 #include "src/system/physical/fileSystem.h"
 
+#include "src/modes/default/aurora.hpp"
 #include "src/modes/default/distortion_waves.hpp"
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/default/sine_mode.hpp"
@@ -119,24 +120,6 @@ struct NoiseMode : public LegacyMode
 
   // hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
-};
-
-/// Polar lights
-struct PolarMode : public LegacyMode
-{
-  static void loop(auto& ctx)
-  {
-    auto& categoryChange = ctx.state.categoryChange;
-    animations::mode_2DPolarLights(255, 128, PaletteAuroraColors, categoryChange, ctx.lamp.getLegacyStrip());
-    categoryChange = false;
-  }
-
-  static void on_enter_mode(auto& ctx) { ctx.state.categoryChange = true; }
-
-  struct StateTy
-  {
-    bool categoryChange = false;
-  };
 };
 
 } // namespace calm
@@ -364,7 +347,7 @@ struct LiquideRainMode : public LegacyMode
 using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
                                   calm::PartyFadeMode,
                                   calm::NoiseMode,
-                                  calm::PolarMode,
+                                  default_modes::AuroraMode,
                                   default_modes::FireMode,
                                   default_modes::SineMode,
                                   default_modes::SpiralMode,

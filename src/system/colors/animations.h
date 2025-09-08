@@ -109,8 +109,6 @@ void candle(const palette_t& palette, LedStrip& strip);
  * \param[in] moder: add some random noise
  */
 void phases(const bool moder, const uint8_t speed, const palette_t& palette, LedStrip& strip);
-void mode_2DPolarLights(
-        const uint8_t scale, const uint8_t speed, const palette_t& palette, const bool reset, LedStrip& strip);
 void hiphotic(const uint8_t speed, LedStrip& strip);
 
 void mode_lake(const uint8_t speed, const palette_t& palette, LedStrip& strip);

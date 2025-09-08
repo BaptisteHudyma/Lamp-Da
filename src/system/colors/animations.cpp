@@ -533,51 +533,6 @@ void phases(const bool moder, const uint8_t speed, const palette_t& palette, Led
   }
 }
 
-void mode_2DPolarLights(
-        const uint8_t scale, const uint8_t speed, const palette_t& palette, const bool reset, LedStrip& strip)
-{ // By: Kostyantyn Matviyevskyy
-  // https://editor.soulmatelights.com/gallery/762-polar-lights
-  // , Modified by: Andrew Tuline
-  const uint16_t cols = stripXCoordinates;
-  const uint16_t rows = stripYCoordinates;
-  static uint32_t step = 0;
-
-  if (reset)
-  {
-    strip.clear();
-    step = 0;
-  }
-
-  float adjustHeight = lmpd_map<uint32_t, float>(rows, 8, 32, 28, 12); // maybe use mapf() ???
-  uint16_t adjScale = lmpd_map<uint32_t, uint16_t>(cols, 8, 64, 310, 63);
-  /*
-    if (SEGENV.aux1 != SEGMENT.custom1/12) {   // Hacky palette rotation. We
-    need that black. SEGENV.aux1 = SEGMENT.custom1/12; for (int i = 0; i < 16;
-    i++) { long ilk; ilk = (long)currentPalette[i].r << 16; ilk +=
-    (long)currentPalette[i].g << 8; ilk += (long)currentPalette[i].b; ilk = (ilk
-    << SEGENV.aux1) | (ilk >> (24 - SEGENV.aux1)); currentPalette[i].r = ilk >>
-    16; currentPalette[i].g = ilk >> 8; currentPalette[i].b = ilk;
-      }
-    }
-  */
-  uint16_t _scale = lmpd_map<uint8_t, uint16_t>(scale, 0, 255, 30, adjScale);
-  byte _speed = lmpd_map<byte, byte>(speed, 0, 255, 128, 16);
-
-  for (int x = 0; x <= cols; x++)
-  {
-    for (int y = 0; y < rows; y++)
-    {
-      step++;
-      strip.setPixelColorXY(
-              x,
-              y,
-              get_color_from_palette(qsub8(noise8::inoise((step % 2) + x * _scale, y * 16 + step % 16, step / _speed),
-                                           fabsf((float)rows / 2.0f - (float)y) * adjustHeight),
-                                     palette));
-    }
-  }
-}
-
 static const uint8_t exp_gamma[256] = {
         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
         1,   1,   1,   1,   1,   1,   1,   1,   1,   2,   2,   2,   2,   2,   2,   2,   2,   2,   3,   3,   3,   3,

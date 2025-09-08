@@ -32,9 +32,6 @@ struct DistortionWaveMode : public BasicMode
 
   static void loop(auto& ctx)
   {
-    const uint16_t cols = ctx.lamp.maxWidth;
-    const uint16_t rows = ctx.lamp.maxHeight;
-
     const uint8_t _speed = ctx.state.speed / 32;
     const uint8_t _scale = ctx.state.scale / 32;
 
@@ -44,20 +41,20 @@ struct DistortionWaveMode : public BasicMode
     const uint16_t a2 = a / 2;
     const uint16_t a3 = a / 3;
 
-    const uint16_t cx = beatsin8(10 - _speed, 0, cols - 1) * _scale;
-    const uint16_t cy = beatsin8(12 - _speed, 0, rows - 1) * _scale;
-    const uint16_t cx1 = beatsin8(13 - _speed, 0, cols - 1) * _scale;
-    const uint16_t cy1 = beatsin8(15 - _speed, 0, rows - 1) * _scale;
-    const uint16_t cx2 = beatsin8(17 - _speed, 0, cols - 1) * _scale;
-    const uint16_t cy2 = beatsin8(14 - _speed, 0, rows - 1) * _scale;
+    const uint16_t cx = beatsin8(10 - _speed, 0, ctx.lamp.maxWidth - 1) * _scale;
+    const uint16_t cy = beatsin8(12 - _speed, 0, ctx.lamp.maxHeight - 1) * _scale;
+    const uint16_t cx1 = beatsin8(13 - _speed, 0, ctx.lamp.maxWidth - 1) * _scale;
+    const uint16_t cy1 = beatsin8(15 - _speed, 0, ctx.lamp.maxHeight - 1) * _scale;
+    const uint16_t cx2 = beatsin8(17 - _speed, 0, ctx.lamp.maxWidth - 1) * _scale;
+    const uint16_t cy2 = beatsin8(14 - _speed, 0, ctx.lamp.maxHeight - 1) * _scale;
 
     uint16_t xoffs = 0;
-    for (int x = 0; x < cols; x++)
+    for (int x = 0; x < ctx.lamp.maxWidth; x++)
     {
       xoffs += _scale;
       uint16_t yoffs = 0;
 
-      for (int y = 0; y < rows; y++)
+      for (int y = 0; y < ctx.lamp.maxHeight; y++)
       {
         yoffs += _scale;
 

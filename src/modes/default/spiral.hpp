@@ -26,7 +26,7 @@ struct SpiralMode : public BasicMode
 
   static void on_enter_mode(auto& ctx)
   {
-    ctx.state.fade = 16;
+    ctx.state.fade = 64;
     ctx.state.intensity = 64;
     ctx.state.speed = 250;
     ctx.state.palette = colors::PaletteRainbowColors;
