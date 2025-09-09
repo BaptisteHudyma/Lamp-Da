@@ -83,12 +83,13 @@ struct PerlinNoiseMode : public BasicMode
     const auto z = state.positionZ;
     const auto scale = state.scale;
 
+    // this is too heavy to run at full, speed, display every other pixels instead of refreshing amm
     static constexpr size_t everyNIndex = 2;
     const size_t firstIndex = ctx.lamp.tick % everyNIndex;
 
     // how much the new value changes the last one
     static constexpr float dataSmoothing = 0.01f;
-    for (size_t i = firstIndex; i < LED_COUNT; i += everyNIndex)
+    for (size_t i = firstIndex; i < ctx.lamp.ledCount; i += everyNIndex)
     {
       // TODO: use new strip interface coordinates
       const auto res = ctx.lamp.getLegacyStrip().get_lamp_coordinates(i);
@@ -102,10 +103,10 @@ struct PerlinNoiseMode : public BasicMode
     state.positionX += state.speed / 8;
     state.positionY -= state.speed / 16;
 
-    for (size_t i = firstIndex; i < LED_COUNT; i += everyNIndex)
+    for (size_t i = firstIndex; i < ctx.lamp.ledCount; i += everyNIndex)
     {
       uint16_t index = noiseBuffer[i];
-      uint8_t bri = noiseBuffer[LED_COUNT - 1 - i] >> 8;
+      uint8_t bri = noiseBuffer[ctx.lamp.ledCount - 1 - i] >> 8;
 
       // if this palette is a 'loop', add a slowly-changing base value
       index += state.ihue;
