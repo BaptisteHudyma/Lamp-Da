@@ -239,7 +239,7 @@ void OKLAB::from_rgb(const COLOR& rgb)
 
 COLOR OKLCH::get_rgb() const
 {
-  const double newH = this->h * c_PI / 180;
+  const double newH = this->h * c_PI / 180.0;
 
   OKLAB lab(this->l, std::cos(newH) * this->c, std::sin(newH) * this->c);
   return lab.get_rgb();

@@ -393,7 +393,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 
       // negative go low, positive go high
       static int rampSide = 1;
-      static uint32_t lastBrightnessUpdateTime_ms = time_ms();
+      static uint32_t lastBrightnessUpdateTime_ms = 0;
 
       if (isEndOfHoldEvent)
       {
@@ -419,14 +419,14 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
           else if (brightness >= maxBrightness)
             rampSide = -1;
           // if more than 1 second elapsed, fall back to raise ramp
-          else if (time_ms() - lastBrightnessUpdateTime_ms >= 1000)
+          else if (lastBrightnessUpdateTime_ms == 0 or time_ms() - lastBrightnessUpdateTime_ms >= 1000)
             rampSide = 1;
         }
         // press for too long, go down
         // TODO do this from level max, no start of ramp
         else if (holdDuration >= 5000)
         {
-// this do not work, because system starts right back up, because button is stil pulled low...
+// this do not work, because system starts right back up, because button is still pulled low...
 #if 0
           // stayed pressed too long, turn off
           if (holdDuration >= 10000)

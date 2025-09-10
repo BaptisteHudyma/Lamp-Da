@@ -129,6 +129,7 @@ private:
     uint8_t getBrightness();
     void fadeToBlackBy(uint8_t);
     void setPixelColor(uint16_t, uint32_t);
+    uint32_t getPixelColor(uint16_t);
   };
   LedStrip fakeStrip; ///< \private
   LedStrip& strip;    ///< \private
@@ -411,6 +412,39 @@ public:
     }
   }
 
+  /** \brief Blur currently displayed content by \p blurBy units
+   * /!\ Only applied along the strip, not in 2D /!\
+   *
+   * If LampTy::flavor is LampTypes::indexable then:
+   *  - do not change brightness, only scale color of individual LEDs
+   *
+   * Or else, for other flavors of lamp:
+   *  - blue colors by \p blurBy floored at zero
+   */
+  void LMBD_INLINE blur(uint8_t blurBy)
+  {
+    if (blurBy == 0)
+      return; // optimization: 0 means "don't blur"
+    uint8_t keep = 255 - blurBy;
+    uint8_t seep = blurBy >> 1;
+
+    uint32_t carryover = 0;
+    for (unsigned i = 0; i < ledCount; i++)
+    {
+      uint32_t cur = strip.getPixelColor(i);
+      uint32_t c = cur;
+      uint32_t part = colors::fade<false>(c, seep);
+      cur = colors::add<true>(colors::fade<false>(c, keep), carryover);
+      if (i > 0)
+      {
+        c = strip.getPixelColor(i - 1);
+        strip.setPixelColor(i - 1, colors::add<true>(c, part));
+      }
+      strip.setPixelColor(i, cur);
+      carryover = part;
+    }
+  }
+
   /** \brief Fill lamp with target light temperature, if supported
    *
    * If LampTy::flavor is LampTypes::simple then:
@@ -508,6 +542,26 @@ public:
 
       assert(n < ledCount && "invalid LED index");
       strip.setPixelColor(n, color);
+    }
+    else
+    {
+      assert(false && "unsupported");
+    }
+  }
+
+  /** \brief (indexable) Get the n-th LED color
+   */
+  uint32_t LMBD_INLINE getPixelColor(uint16_t n)
+  {
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      if (config.skipFirstLedsForEffect && n < config.skipFirstLedsForAmount)
+      {
+        return 0;
+      }
+
+      assert(n < ledCount && "invalid LED index");
+      return strip.getPixelColor(n);
     }
     else
     {
@@ -636,9 +690,6 @@ public:
     const float level = microphone::get_sound_level_Db();
     return (level > -70) ? level : -70; // avoid -inf or NaN
   }
-
-  /// \brief (physical) Return relative time as milliseconds
-  uint32_t LMBD_INLINE get_time_ms() { return time_ms(); }
 
   /** \brief (physical) The "now" on milliseconds, updated just before loop.
    *

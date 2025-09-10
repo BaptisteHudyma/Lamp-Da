@@ -73,7 +73,7 @@ void button_clicked_default(const uint8_t clicks)
       break;
 
     case 4: // 4 clicks: jump to favorite
-      auto now = manager.lamp.get_time_ms();
+      auto now = manager.lamp.now;
       if ((now - manager.state.lastFavoriteJump) > 2000)
       {
         manager.state.lastFavoriteStep = 0;

@@ -464,20 +464,26 @@ static constexpr uint32_t from_palette(UIntTy index, const PaletteTy& palette, u
   // convert to [0; 15] (divide by 16)
   uint8_t renormIndex = index >> 4;
   // get least significant part for the blend factor
-  uint8_t blendIndex = index & 0x0F;
+  float blendIndex = (index & 0x0F) / 255.0f;
 
   // support for uint16_t
   if constexpr (sizeof(UIntTy) > 1)
   {
-    const float findex = index;
-    const float percent = (findex / ((float)UINT16_MAX)) * 16.f;
-    renormIndex = percent;
-    blendIndex = 256.f * (percent - renormIndex);
+    const float remapedIndex = (index / static_cast<float>(UINT16_MAX)) * 16.f;
+    renormIndex = min(floor(remapedIndex), 15);
+    blendIndex = remapedIndex - renormIndex;
     static_assert(std::is_same_v<UIntTy, uint16_t>, "u8 or u16");
   }
 
   if (renormIndex >= 16)
     return 0;
+
+  // limit blend index
+  if (blendIndex < 0.0f)
+    blendIndex = 0.0f;
+  if (blendIndex > 1.0f)
+    blendIndex = 1.0f;
+
   const uint32_t entry = palette[renormIndex];
 
   // convert to rgb
@@ -486,7 +492,7 @@ static constexpr uint32_t from_palette(UIntTy index, const PaletteTy& palette, u
   uint8_t blue1 = entry & 0x0000ff;
 
   // need to blend the palette
-  if (blendIndex != 0)
+  if (blendIndex > 0)
   {
     uint32_t nextColor = 0;
     if (renormIndex == 15)
@@ -498,15 +504,14 @@ static constexpr uint32_t from_palette(UIntTy index, const PaletteTy& palette, u
       nextColor = palette[1 + renormIndex];
     }
 
-    const uint8_t tmpF2 = blendIndex << 4;
-    const float f1 = (255 - tmpF2) / 256.0;
-    const float f2 = tmpF2 / 256.0;
+    const float f1 = blendIndex;
+    const float f2 = 1.0 - blendIndex;
 
-    const uint8_t red2 = (nextColor & 0xff0000) >> 16;
+    const uint8_t red2 = (nextColor >> 16) & 0x0000ff;
     red1 = red1 * f1;
     red1 += red2 * f2;
 
-    const uint8_t green2 = (nextColor & 0x00ff00) >> 8;
+    const uint8_t green2 = (nextColor >> 8) & 0x0000ff;
     green1 = green1 * f1;
     green1 += green2 * f2;
 

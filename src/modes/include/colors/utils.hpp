@@ -139,6 +139,37 @@ template<bool isVideoMode = false> static uint32_t fade(uint32_t inputColor, uin
   return res;
 }
 
+template<bool isFast = false> uint32_t add(uint32_t c1, uint32_t c2)
+{
+  ToRGB input1_rgb(c1);
+  ToRGB input2_rgb(c2);
+
+  if (isFast)
+  {
+    return fromRGB(
+            qadd8(input1_rgb.r, input2_rgb.r), qadd8(input1_rgb.g, input2_rgb.g), qadd8(input1_rgb.b, input2_rgb.b));
+  }
+  else
+  {
+    uint32_t r = input1_rgb.r + input2_rgb.r;
+    uint32_t g = input1_rgb.g + input2_rgb.g;
+    uint32_t b = input1_rgb.b + input2_rgb.b;
+    uint16_t max = r;
+    if (g > max)
+      max = g;
+    if (b > max)
+      max = b;
+    if (max < 256)
+    {
+      return fromRGB(r, g, b);
+    }
+    else
+    {
+      return fromRGB(r * 255 / max, g * 255 / max, b * 255 / max);
+    }
+  }
+}
+
 } // namespace modes::colors
 
 #endif
