@@ -28,6 +28,9 @@ void update_saved_brightness();
  */
 void update_brightness(const brightness_t newBrightness, const bool isInitialRead = false);
 
+/// \brief Get time offset in milliseconds when brightness was last updated
+uint32_t when_last_update_brightness();
+
 } // namespace brightness
 
 #endif

@@ -1,6 +1,8 @@
 #include "brightness_handle.h"
 
 #include "src/user/functions.h"
+
+#include "src/system/platform/time.h"
 #include "utils.h"
 
 namespace brightness {
@@ -12,6 +14,10 @@ static brightness_t MaxBrightnessLimit = maxBrightness;
 // hold the current level of brightness out of the raise/lower animation
 brightness_t BRIGHTNESS = 200; // default start value
 brightness_t savedBrightness = 200;
+
+// hold when update_brightness() was last called
+uint32_t lastBrightnessUpdate = 0;
+
 } // namespace __internal
 
 brightness_t get_brightness() { return __internal::BRIGHTNESS; }
@@ -37,6 +43,10 @@ void update_brightness(const brightness_t newBrightness, const bool isInitialRea
       user::brightness_update(trueNewBrightness);
     }
   }
+
+  __internal::lastBrightnessUpdate = time_ms();
 }
+
+uint32_t when_last_update_brightness() { return __internal::lastBrightnessUpdate; }
 
 } // namespace brightness

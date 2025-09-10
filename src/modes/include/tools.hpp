@@ -2,6 +2,7 @@
 #define USER_MODE_TOOLS_H
 
 #include <cstdint>
+#include <cstring>
 #include <utility>
 #include <optional>
 #include <tuple>

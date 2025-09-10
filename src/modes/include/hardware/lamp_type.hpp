@@ -5,25 +5,26 @@
 
 #include "src/compile.h"
 #include "src/user/constants.h"
+
 #include "src/system/assert.h"
+#include "src/system/physical/sound.h"
+#include "src/system/physical/output_power.h"
+#include "src/system/platform/time.h"
+
+#include "src/system/utils/print.h"
 #include "src/system/utils/curves.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/brightness_handle.h"
+#include "src/system/utils/utils.h"
 
 #include "src/system/ext/math8.h"
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #include "src/system/utils/strip.h"
-#include "src/system/physical/output_power.h"
 #endif
 
-#include "src/system/platform/time.h"
-#include "src/system/physical/sound.h"
-
-#include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/compile.hpp"
-
-#include "src/system/platform/time.h"
+#include "src/modes/include/colors/utils.hpp"
 
 namespace modes {
 static constexpr uint16_t to_strip(uint16_t, uint16_t);
@@ -124,8 +125,9 @@ private:
     void begin();
     void show();
     void show_now();
+    void signal_display();
     void clear();
-    void setBrightness(uint8_t);
+    void setBrightness(brightness_t);
     uint8_t getBrightness();
     void fadeToBlackBy(uint8_t);
     void setPixelColor(uint16_t, uint32_t);
@@ -168,6 +170,10 @@ public:
    */
   void LMBD_INLINE startup()
   {
+    // set output voltage for indexable
+    if constexpr (flavor == LampTypes::indexable)
+      outputPower::write_voltage(inputVoltage_V * 1000);
+
     begin();
     clear();
     show_now();
@@ -237,6 +243,27 @@ public:
     }
   }
 
+  /** \private Signal to underlying strip that things are ready to be displayed
+   *
+   * If LampTy::flavor is LampTypes::indexable then:
+   *  - call the .signal_display() method of the underlying strip object
+   *
+   * Or else, subject to change as other flavors are integrated:
+   *  - does nothing
+   */
+  void LMBD_INLINE signal_display()
+  {
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      strip.signal_display();
+    }
+    else
+    {
+      // (this is optimized out, and is essentially no-op for other flavors)
+      assert(true);
+    }
+  }
+
   //
   // public constants
   //
@@ -252,6 +279,9 @@ public:
 
   // (we have 12ms and 83.3fps values to be updated in this file)
   static_assert(frameDurationMs == 12, "Update the documentation of .tick :)");
+
+  /// Limit mode-requested brightness changes to one every few frames
+  static constexpr uint32_t brightnessDurationMs = frameDurationMs * 2;
 
   /** \brief (indexable) Count of indexable LEDs on the lamp
    *
@@ -346,19 +376,26 @@ public:
    *
    * Several behaviors:
    *  - by default, do not call user callbacks to avoid re-entry
-   *  - by default, do call global brightness update handler (from brightness_handle.h)
+   *  - by default, do call global brightness update handler (see brightness_handle.h)
+   *  - by default, do NOT save brightness using "previous_brightness_update"
    *  - also set the brightness in underlying strip object, if necessary
    *
    * Thus:
    *  - if \p skipCallbacks is false, do call user callbacks w/ re-entry risks
    *  - if \p skipUpdateBrightness is true, only set strip object brightness,
    *    or do nothing if LampTy::flavor is not LampTypes::indexable
+   *  - if \p updatePreviousBrightess is true, save brightness and next time
+   *    user navigate brightness, use it as starting point (see tempBrightness)
+   *
+   * Note that calls to `brightness::update_brightness` are throttled to once
+   * in every 50ms to avoid freezing user brightness navigation.
    *
    * Note that \p skipUpdateBrightness implies \p skipCallbacks implicitly
    */
   void LMBD_INLINE setBrightness(const brightness_t brightness,
                                  const bool skipCallbacks = true,
-                                 const bool skipUpdateBrightness = false)
+                                 const bool skipUpdateBrightness = false,
+                                 const bool updatePreviousBrightess = false)
   {
     assert((skipCallbacks || !skipUpdateBrightness) && "implicit callback skip!");
 
@@ -371,23 +408,94 @@ public:
       strip.setBrightness(brightnessCurve.sample(brightness));
     }
 
+    if constexpr (flavor == LampTypes::simple)
+    {
+      const brightness_t constraintBrightness = min(brightness, maxBrightness);
+      if (constraintBrightness >= maxBrightness)
+        outputPower::blip(50); // blip
+
+      constexpr uint16_t maxOutputVoltage_mV = inputVoltage_V * 1000;
+      using curve_t = curves::ExponentialCurve<brightness_t, uint16_t>;
+      static curve_t brightnessCurve(
+              curve_t::point_t {0, 9400}, curve_t::point_t {maxBrightness, maxOutputVoltage_mV}, 1.0);
+
+      outputPower::write_voltage(round(brightnessCurve.sample(constraintBrightness)));
+    }
+
     if (!skipUpdateBrightness)
     {
-      brightness::update_brightness(brightness, skipCallbacks);
+      uint32_t last = brightness::when_last_update_brightness();
+      if ((this->now - last) > brightnessDurationMs)
+        brightness::update_brightness(brightness, skipCallbacks);
     }
+    if (updatePreviousBrightess)
+      brightness::update_saved_brightness();
   }
 
-  /// Get brightness of the lamp
-  uint8_t LMBD_INLINE getBrightness()
+  /* \brief Temporarily set brightness, without affecting brightness navigation
+   *
+   * Skip callbacks.
+   *
+   * Set brightness, without affecting internal brightness navigation state,
+   * which imply that next time an user increases / lowers brightness, it
+   * starts again from another internal "previously saved" brightness.
+   *
+   * Equivalent to ``setBrightness(true, false, false)``
+   */
+  void LMBD_INLINE tempBrightness(const brightness_t brightness)
+  {
+    brightness_t current = getBrightness();
+    if (current != brightness)
+      setBrightness(brightness, true, false, false);
+  }
+
+  /* \brief Jump to brightness, affecting the next brightness navigation
+   *
+   * Skip callbacks.
+   *
+   * Set brightness, affecting internal brightness navigation state,
+   * which imply that next time an user increases / lowers brightness, it
+   * starts again from the provided brightness.
+   *
+   * Equivalent to ``setBrightness(true, false, true)``
+   */
+  void LMBD_INLINE jumpBrightness(const brightness_t brightness) { setBrightness(brightness, true, false, true); }
+
+  /* \brief Get brightness of the lamp
+   *
+   * If \p readPreviousBrightness is true, return the internally saved
+   * brightness state, used for user navigation of brightness.
+   *
+   * TODO: determine if we should keep 0-255 or have minBrightness-maxBrightness
+   */
+  brightness_t LMBD_INLINE getBrightness(const bool readPreviousBrightness = false)
   {
     if constexpr (flavor == LampTypes::indexable)
     {
+      if (readPreviousBrightness)
+        return brightness::get_saved_brightness();
       return strip.getBrightness();
     }
     else
     {
-      return brightness::get_brightness() / maxBrightness * 255;
+      if (readPreviousBrightness)
+        return brightness::get_saved_brightness();
+      else
+        return brightness::get_brightness();
     }
+  }
+
+  /// Alias for ``getBrightness(true)``
+  brightness_t LMBD_INLINE getSavedBrightness() { return getBrightness(true); }
+
+  /// Reset brightness to internal saved brightness, skip callbacks
+  void LMBD_INLINE restoreBrightness()
+  {
+    brightness_t current = getBrightness();
+    brightness_t saved = getBrightness(true);
+
+    if (current != saved)
+      setBrightness(saved, true, false, false);
   }
 
   /** \brief Fade currently displayed content by \p fadeBy units

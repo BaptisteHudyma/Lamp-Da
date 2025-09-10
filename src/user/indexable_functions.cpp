@@ -1,4 +1,5 @@
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
+#ifndef LMBD_SIMPLE_EMULATOR
 
 #include <cstdint>
 
@@ -52,7 +53,8 @@ static auto get_context() { return user::_private::modeManager.get_context(); }
 // indexable lamp is implemented in another castle
 //
 
-#include "src/modes/user/indexable_behavior.hpp"
+#include "src/modes/user/default_behavior.hpp"   // default manager callbacks
+#include "src/modes/user/indexable_behavior.hpp" // custom RGB UI of the lamp
 
 } // namespace user
 
@@ -88,4 +90,5 @@ void user_thread() {}
 
 #endif // LMBD_CPP17
 
+#endif // NOT LMBD_SIMPLE_EMULATOR
 #endif // LMBD_LAMP_TYPE__INDEXABLE
