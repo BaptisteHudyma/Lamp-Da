@@ -28,7 +28,7 @@ struct AuroraMode : public BasicMode
 
   static void on_enter_mode(auto& ctx)
   {
-    static constexpr uint16_t adjScale = linear_scale<uint32_t, uint16_t>(ctx.lamp.maxWidth, 8, 64, 310, 63);
+    static constexpr uint16_t adjScale = linear_scale<uint32_t, uint16_t>(ctx.lamp.maxWidth + 1, 8, 64, 310, 63);
 
     static constexpr uint8_t scale = 255;
     static constexpr uint8_t speed = 128;
@@ -48,7 +48,7 @@ struct AuroraMode : public BasicMode
     const auto& palette = ctx.state.palette;
 
     uint32_t step = ctx.state.step;
-    for (int x = 0; x < ctx.lamp.maxWidth; x++)
+    for (int x = 0; x < ctx.lamp.maxWidth + 1; x++)
     {
       const int scaledX = x * ctx.state.scale;
       for (int y = 0; y < ctx.lamp.maxHeight; y++, step++)

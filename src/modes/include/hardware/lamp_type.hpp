@@ -84,7 +84,7 @@ struct LampTy
 private:
   static constexpr float _fwidth = stripXCoordinates;    ///< \private
   static constexpr float _fheight = stripYCoordinates;   ///< \private
-  static constexpr uint16_t _width = ceil(_fwidth);      ///< \private
+  static constexpr uint16_t _width = floor(_fwidth);     ///< \private
   static constexpr uint16_t _height = floor(_fheight);   ///< \private
   static constexpr uint16_t _ledCount = LED_COUNT;       ///< \private
   static constexpr uint16_t _nbBuffers = stripNbBuffers; ///< \private
@@ -261,7 +261,7 @@ public:
 
   /** \brief (indexable) Width of "pixel space" w/ lamp taken as a LED matrix
    *
-   * Equal to \p stripXCoordinates (ceil) if LampTypes::indexable or else 16
+   * Equal to \p stripXCoordinates (floor) if LampTypes::indexable or else 16
    */
   static constexpr uint16_t maxWidth = _width;
 
@@ -690,9 +690,6 @@ public:
     const float level = microphone::get_sound_level_Db();
     return (level > -70) ? level : -70; // avoid -inf or NaN
   }
-
-  /// \brief (physical) Return relative time as milliseconds
-  uint32_t LMBD_INLINE get_time_ms() { return time_ms(); }
 
   /** \brief (physical) The "now" on milliseconds, updated just before loop.
    *

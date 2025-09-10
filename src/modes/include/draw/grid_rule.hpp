@@ -218,7 +218,7 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
     }
     else
     {
-      int now = lamp.get_time_ms();
+      int now = lamp.now;
       int frameDuration = rampValue + lamp.frameDurationMs;
 
       if (abs(int(now - lastUpdate)) > frameDuration)
