@@ -107,8 +107,9 @@ bool is_vbus_powered()
 {
   // isVbusPresent = pd_is_vbus_present(devicePort);
 
-  // more reliable when vbus is under load
-  if (charger::drivers::get_measurments().vbus_mA >= 100)
+  // more reliable when vbus is under load from battery charging
+  const auto& measurments = charger::drivers::get_measurments();
+  if (measurments.isChargeOk and measurments.vbus_mA >= 100)
     return get_vbus_voltage() >= 3000;
   else
     // no load, threshold is higher
