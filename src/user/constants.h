@@ -19,7 +19,7 @@ static constexpr float c_degreesToRadians = c_PI / 180.0f;
 
 // Update when the soft changes version
 #define USER_SOFTWARE_VERSION_MAJOR 1
-#define USER_SOFTWARE_VERSION_MINOR 3
+#define USER_SOFTWARE_VERSION_MINOR 4
 
 //
 // simple lamp type
