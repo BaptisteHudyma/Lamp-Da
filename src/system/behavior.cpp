@@ -49,6 +49,9 @@ static constexpr uint32_t BRIGHTNESS_LOOP_UPDATE_EVERY = 20;  /// frequency upda
 static constexpr uint32_t EARLY_ACTIONS_LIMIT_MS = 2000;
 static constexpr uint32_t EARLY_ACTIONS_HOLD_MS = 1500;
 
+// time to block turn off since turn on
+static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 800;
+
 // pre output light call timing (lamp output starts)
 // Starts at system start time
 static uint32_t preOutputLightCalled = time_ms();
@@ -100,7 +103,7 @@ void set_power_on() { isTargetPoweredOn_s = true; }
 void set_power_off()
 {
   // prevent early shutdown when system is just booting, or lamp jst turns on
-  if (time_ms() - preOutputLightCalled < 1000)
+  if (time_ms() - preOutputLightCalled < SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY)
     return;
 
   isTargetPoweredOn_s = false;
@@ -506,6 +509,10 @@ void handle_error_state()
     // got to sleep after the closing operations
     mainMachine.set_state(BehaviorStates::SHUTDOWN);
   }
+
+  // kick power and user watchdog (prevent reset)
+  kick_watchdog(POWER_WATCHDOG_ID);
+  kick_watchdog(USER_WATCHDOG_ID);
 
   // if error state, raise alert
   alerts::manager.raise(alerts::Type::SYSTEM_IN_ERROR_STATE);
