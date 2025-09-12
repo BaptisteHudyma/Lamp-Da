@@ -4,6 +4,8 @@
 #include "src/system/platform/time.h"
 #include "src/system/platform/print.h"
 
+#include <cassert>
+
 namespace powergates {
 
 bool isInit = false;
@@ -142,6 +144,11 @@ namespace power {
 
 void blip(const uint32_t timing)
 {
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+  // NEVER EVER BLIP THE INDEXABLE, the strip is too weak
+  assert(false);
+#endif
+
   // hard limit on blip
   if (timing <= 0 or timing > 1000 or not isPowerGateReallyEnabled)
   {

@@ -27,6 +27,13 @@ void write_voltage(const uint16_t voltage_mv)
   power::set_output_max_current_mA(3000);
 }
 
+void write_temporary_output_limits(const uint16_t voltage_mv, const uint16_t current_ma, const uint32_t timeout_ms)
+{
+  const uint32_t realTimeout_ms = min(5000, timeout_ms);
+  //
+  power::set_temporary_output(voltage_mv, current_ma, realTimeout_ms);
+}
+
 void blip(const uint32_t timing) { powergates::power::blip(timing); }
 
 void disable_power_gates() { powergates::disable_gates(); }

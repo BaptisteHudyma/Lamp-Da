@@ -15,7 +15,9 @@
 #include "balancer.h"
 #include "charger.h"
 #include "power_gates.h"
+
 #include <cstdint>
+#include <cassert>
 
 namespace power {
 
@@ -28,8 +30,15 @@ static constexpr uint32_t otgNoUseTimeToDisconnect_ms = 1000;
 static_assert(clearPowerRailMinDelay_ms < clearPowerRailFailureDelay_ms,
               "clear power rail min activation is less than min unlock delay");
 
+// true voltage/current output limits
 static uint16_t _outputVoltage_mV = 0;
 static uint16_t _outputCurrent_mA = 0;
+
+// temporary voltage/current limits
+static uint16_t _temporaryOutputVoltage_mV = 0;
+static uint16_t _temporaryOutputCurrent_mA = 0;
+static uint32_t _temporaryOutputTimeOut = 0;
+
 static bool _isChargeEnabled = false;
 static std::string _errorStr = "";
 
@@ -203,14 +212,32 @@ void handle_charging_mode()
 
 void handle_output_voltage_mode()
 {
+  static constexpr float voltageGateLowerMultiplier = 0.9f;
+  static constexpr float voltageGateHigherMultiplier = 1.1f;
+
   // never run PD in output mode !
   powerDelivery::suspend_pd_state_machine();
 
-  set_otg_parameters(_outputVoltage_mV, _outputCurrent_mA);
+  const uint32_t vbusVoltage = get_power_rail_voltage();
+
+  bool isVbusVoltageOk = false;
+  // if we are in temporary output mode, use temporary limits
+  if (time_ms() < _temporaryOutputTimeOut)
+  {
+    set_otg_parameters(_temporaryOutputVoltage_mV, _temporaryOutputCurrent_mA);
+    isVbusVoltageOk = (vbusVoltage >= _temporaryOutputVoltage_mV * voltageGateLowerMultiplier and
+                       vbusVoltage <= _temporaryOutputVoltage_mV * voltageGateHigherMultiplier);
+  }
+  else
+  {
+    _temporaryOutputTimeOut = 0;
+    set_otg_parameters(_outputVoltage_mV, _outputCurrent_mA);
+    isVbusVoltageOk = (vbusVoltage >= _outputVoltage_mV * voltageGateLowerMultiplier and
+                       vbusVoltage <= _outputVoltage_mV * voltageGateHigherMultiplier);
+  }
 
   // enable power gate when voltage matches expected voltage
-  const uint32_t vbusVoltage = get_power_rail_voltage();
-  if (vbusVoltage >= _outputVoltage_mV * 0.9 and vbusVoltage <= _outputVoltage_mV * 1.1)
+  if (isVbusVoltageOk)
   {
     // enable power gate
     powergates::enable_power_gate();
@@ -438,16 +465,38 @@ bool go_to_error()
   return true;
 }
 
-bool set_output_voltage_mv(const uint16_t outputVoltage_mV)
+void set_output_voltage_mv(const uint16_t outputVoltage_mV)
 {
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+  // NEVER EVER CHANGE INDEXABLE VOLTAGE
+  if (outputVoltage_mV != 0 or outputVoltage_mV != (inputVoltage_V * 1000))
+  {
+    assert(false);
+  }
+#endif
+  _temporaryOutputTimeOut = 0;
   _outputVoltage_mV = outputVoltage_mV;
-  return false;
 }
 
-bool set_output_max_current_mA(const uint16_t outputCurrent_mA)
+void set_output_max_current_mA(const uint16_t outputCurrent_mA)
 {
+  _temporaryOutputTimeOut = 0;
   _outputCurrent_mA = outputCurrent_mA;
-  return false;
+}
+
+void set_temporary_output(const uint16_t outputVoltage_mV, const uint16_t outputCurrent_mA, const uint16_t timeout)
+{
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+  // NEVER EVER CHANGE INDEXABLE VOLTAGE
+  if (outputVoltage_mV != (inputVoltage_V * 1000))
+  {
+    assert(false);
+  }
+#endif
+  // set output timeout
+  _temporaryOutputTimeOut = time_ms() + timeout;
+  _temporaryOutputVoltage_mV = outputVoltage_mV;
+  _temporaryOutputCurrent_mA = outputCurrent_mA;
 }
 
 // charge mode
