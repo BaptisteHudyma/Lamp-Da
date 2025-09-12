@@ -34,9 +34,9 @@ public:
    * \param[in] s The new state to set
    * \return True if the state was updated
    */
-  bool set_state(const State s)
+  bool set_state(const State s, bool forceUpdate = false)
   {
-    if (s == current)
+    if (not forceUpdate and s == current)
     {
       // ignore a set state with same value
       return false;
@@ -62,9 +62,15 @@ public:
    */
   bool set_state(const State s, const uint32_t timeout, const State stateOnTimeout)
   {
-    // set the new state (only if after timeout is not the same)
-    if (set_state(s) and s != stateOnTimeout)
+    // set the new state if
+    // - no timeout is active
+    // - new state changes
+    // - timeout state changes
+    if (not isTimeoutSet or (s != current or afterTimeoutState != stateOnTimeout))
     {
+      // force update state
+      set_state(s, true);
+      // set a timeout
       isTimeoutSet = true;
       // set after timeout state & timeout
       update_timeout(timeout);

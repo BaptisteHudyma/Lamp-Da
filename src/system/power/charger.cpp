@@ -166,6 +166,9 @@ void control_OTG(const uint16_t mv, const uint16_t ma)
   }
   else
   {
+    // reenable battery charging
+    isBatteryFullLatched_s = false;
+
     isOtgEnabled_s = true;
     drivers::set_OTG_targets(mv, ma);
     drivers::enable_OTG();

@@ -49,7 +49,12 @@ static constexpr uint32_t BRIGHTNESS_LOOP_UPDATE_EVERY = 20;  /// frequency upda
 static constexpr uint32_t EARLY_ACTIONS_LIMIT_MS = 2000;
 static constexpr uint32_t EARLY_ACTIONS_HOLD_MS = 1500;
 
-static const uint32_t systemStartTime = time_ms();
+// time to block turn off since turn on
+static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 500;
+
+// pre output light call timing (lamp output starts)
+// Starts at system start time
+static uint32_t preOutputLightCalled = time_ms();
 
 // Define the state for the main prog state machine
 typedef enum
@@ -97,8 +102,8 @@ bool is_system_should_be_powered() { return isTargetPoweredOn_s; }
 void set_power_on() { isTargetPoweredOn_s = true; }
 void set_power_off()
 {
-  // prevent early shutdown
-  if (time_ms() - systemStartTime < 1000)
+  // prevent early shutdown when system is just booting, or lamp jst turns on
+  if (time_ms() - preOutputLightCalled < SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY)
     return;
 
   isTargetPoweredOn_s = false;
@@ -495,7 +500,6 @@ std::string get_error_state_message()
 void handle_error_state()
 {
   set_error_state_message("Unspecified raised error state reason");
-  outputPower::disable_power_gates();
 
   // not allowed to start, can only be stopped
   // turn off system is needed
@@ -504,6 +508,13 @@ void handle_error_state()
     // got to sleep after the closing operations
     mainMachine.set_state(BehaviorStates::SHUTDOWN);
   }
+
+  // power states go to error too
+  power::go_to_error();
+
+  // kick power and user watchdog (prevent reset)
+  kick_watchdog(POWER_WATCHDOG_ID);
+  kick_watchdog(USER_WATCHDOG_ID);
 
   // if error state, raise alert
   alerts::manager.raise(alerts::Type::SYSTEM_IN_ERROR_STATE);
@@ -619,7 +630,6 @@ void handle_charger_operation_state()
 }
 
 static uint32_t lastOutputLightValidTime = 0;
-
 void handle_pre_output_light_state()
 {
   if (power::is_in_error_state())
@@ -654,6 +664,7 @@ void handle_pre_output_light_state()
     }
     return;
   }
+  preOutputLightCalled = time_ms();
 
   power::go_to_output_mode();
 
@@ -703,11 +714,7 @@ void handle_output_light_state()
     }
     return;
   }
-  else if (not waitingForPowerGate_messageDisplayed)
-  {
-    lampda_print("Behavior>Output mode: power gate ready");
-    waitingForPowerGate_messageDisplayed = true;
-  }
+  waitingForPowerGate_messageDisplayed = true;
 #endif
 
   lastOutputLightValidTime = time_ms();
