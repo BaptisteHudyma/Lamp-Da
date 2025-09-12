@@ -166,9 +166,7 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
       uint16_t shiftTweak = I * fwidth + 0.5;
 
       // unholy coordinate system w/ LEDs 0.041151pt too long
-      constexpr uint16_t residue = 1 / (2 * fwidth - 2 * floor(fwidth) - 1);
-
-      if (skewed && shiftStart == shiftTweak && (I > 2 && I != residue))
+      if (skewed && shiftStart == shiftTweak && (I > 2 && I != lamp.shiftResidue))
       {
         auto last = line[0];
         std::copy(line.begin() + 1, line.end(), line.begin());

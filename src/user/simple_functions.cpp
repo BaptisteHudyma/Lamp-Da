@@ -21,7 +21,8 @@ namespace user {
 // list your groups & modes here
 //
 
-using ManagerTy = modes::ManagerFor<modes::brightness::StaticLightOnly, modes::brightness::FlashesGroup>;
+using ManagerTy = modes::
+        ManagerFor<modes::brightness::StaticLightOnly, modes::brightness::CalmGroup, modes::brightness::FlashesGroup>;
 
 //
 // implementation details
