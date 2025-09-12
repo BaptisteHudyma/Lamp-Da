@@ -4,6 +4,8 @@
 #include "src/system/ext/random8.h"
 #include "src/system/ext/math8.h"
 
+#include "src/system/utils/utils.h"
+
 namespace modes::brightness {
 /// Basic lightning mode (does nothing, brightness may be adjusted)
 struct StaticLightMode : public BasicMode
@@ -163,8 +165,50 @@ struct Candle : public BasicMode
   }
 };
 
+struct StroboscopeMode : public BasicMode
+{
+  /// regulate stroboscopic speed
+  static constexpr bool hasCustomRamp = true;
+
+  static constexpr uint32_t stroboMaxFreq = 1000 * (1 / 30.0);
+  static constexpr uint32_t stroboMinFreq = 1000 * (1 / 7.0);
+
+  struct StateTy
+  {
+    uint32_t lastCall;
+    uint32_t pulseDuration;
+  };
+
+  static void on_enter_mode(auto& ctx)
+  {
+    ctx.state.lastCall = 0;
+    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
+    ctx.template set_config_bool<ConfigKeys::customRampAnimEffect>(false);
+
+    custom_ramp_update(ctx, ctx.get_active_custom_ramp());
+  }
+
+  static void custom_ramp_update(auto& ctx, uint8_t rampValue)
+  {
+    ctx.state.pulseDuration = lmpd_map<uint8_t, uint32_t>(rampValue, 0, 255, stroboMinFreq, stroboMaxFreq);
+  }
+
+  static void loop(auto& ctx)
+  {
+    const auto pulseDuration = ctx.state.pulseDuration;
+
+    // no stroboscope for indexable strip
+    static constexpr uint32_t onTime = 5;
+    if (ctx.lamp.now - ctx.state.lastCall >= pulseDuration)
+    {
+      ctx.lamp.blip(pulseDuration - onTime);
+      ctx.state.lastCall = ctx.lamp.now;
+    }
+  }
+};
+
 using CalmGroup = GroupFor<Candle>;
-using FlashesGroup = GroupFor<OnePulse, ManyPulse<2>, ManyPulse<3>>;
+using FlashesGroup = GroupFor<StroboscopeMode, OnePulse, ManyPulse<2>>;
 
 } // namespace modes::brightness
 
