@@ -50,7 +50,7 @@ static constexpr uint32_t EARLY_ACTIONS_LIMIT_MS = 2000;
 static constexpr uint32_t EARLY_ACTIONS_HOLD_MS = 1500;
 
 // time to block turn off since turn on
-static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 800;
+static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 500;
 
 // pre output light call timing (lamp output starts)
 // Starts at system start time

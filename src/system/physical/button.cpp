@@ -64,7 +64,8 @@ void init(const bool isSystemStartedFromButton)
   ButtonPin.set_pin_mode(DigitalPin::Mode::kInputPullUpSense);
   ButtonPin.attach_callback(button_state_interrupt, DigitalPin::Interrupt::kChange);
 
-  if (isSystemStartedFromButton)
+  // prevent multiple clicks on start
+  if (isSystemStartedFromButton and buttonState.nbClicksCounted == 0)
   {
     // simulate a click
     button_state_interrupt();
