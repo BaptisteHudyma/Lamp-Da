@@ -23,8 +23,13 @@ bool go_to_error();
 
 // control special commands for every states
 // output mode
-bool set_output_voltage_mv(const uint16_t);
-bool set_output_max_current_mA(const uint16_t);
+void set_output_voltage_mv(const uint16_t);
+void set_output_max_current_mA(const uint16_t);
+/**
+ * \brief Set a new output with a time limit, after wich the output will go back to the original values
+ * It is canceled at any point by a call to set_output_voltage_mv
+ */
+void set_temporary_output(const uint16_t outputVoltage_mV, const uint16_t outputCurrent_mA, const uint16_t timeout_ms);
 
 // charge mode
 bool enable_charge(const bool);

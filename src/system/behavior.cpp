@@ -755,6 +755,8 @@ void handle_post_output_light_state()
   // button usermode is kept disabled
   button_disable_usermode();
 
+  // restore saved brightness
+  brightness::update_brightness(brightness::get_saved_brightness());
   // let the user power off the system
   user::power_off_sequence();
   // write/stability delay
