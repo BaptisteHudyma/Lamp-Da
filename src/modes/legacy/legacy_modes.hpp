@@ -15,6 +15,7 @@
 #include "src/system/physical/fileSystem.h"
 
 #include "src/modes/default/aurora.hpp"
+#include "src/modes/default/automaton.hpp"
 #include "src/modes/default/distortion_waves.hpp"
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/default/perlin_noise.hpp"
@@ -310,7 +311,9 @@ using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
                                   default_modes::SpiralMode,
                                   default_modes::DistortionWaveMode,
                                   imu::LiquideMode,
-                                  imu::LiquideRainMode>;
+                                  imu::LiquideRainMode,
+                                  automaton::BubbleMode,
+                                  automaton::SierpinskiMode>;
 
 using PartyModes = modes::GroupFor<party::ColorWipeMode, party::RandomFillMode, party::PingPongMode>;
 

@@ -91,7 +91,7 @@ struct PerlinNoiseMode : public BasicMode
     static constexpr float dataSmoothing = 0.01f;
     for (size_t i = firstIndex; i < ctx.lamp.ledCount; i += everyNIndex)
     {
-      // TODO: use new strip interface coordinates
+      // TODO #150: use new strip interface coordinates
       const auto res = ctx.lamp.getLegacyStrip().get_lamp_coordinates(i);
       uint16_t data = noise16::inoise(x + scale * res.x, y + scale * res.y, z + scale * res.z);
 
