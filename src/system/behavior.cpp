@@ -49,7 +49,9 @@ static constexpr uint32_t BRIGHTNESS_LOOP_UPDATE_EVERY = 20;  /// frequency upda
 static constexpr uint32_t EARLY_ACTIONS_LIMIT_MS = 2000;
 static constexpr uint32_t EARLY_ACTIONS_HOLD_MS = 1500;
 
-static const uint32_t systemStartTime = time_ms();
+// pre output light call timing (lamp output starts)
+// Starts at system start time
+static uint32_t preOutputLightCalled = time_ms();
 
 // Define the state for the main prog state machine
 typedef enum
@@ -97,8 +99,8 @@ bool is_system_should_be_powered() { return isTargetPoweredOn_s; }
 void set_power_on() { isTargetPoweredOn_s = true; }
 void set_power_off()
 {
-  // prevent early shutdown
-  if (time_ms() - systemStartTime < 1000)
+  // prevent early shutdown when system is just booting, or lamp jst turns on
+  if (time_ms() - preOutputLightCalled < 1000)
     return;
 
   isTargetPoweredOn_s = false;
@@ -619,7 +621,6 @@ void handle_charger_operation_state()
 }
 
 static uint32_t lastOutputLightValidTime = 0;
-
 void handle_pre_output_light_state()
 {
   if (power::is_in_error_state())
@@ -654,6 +655,7 @@ void handle_pre_output_light_state()
     }
     return;
   }
+  preOutputLightCalled = time_ms();
 
   power::go_to_output_mode();
 
