@@ -282,7 +282,7 @@ void update_battery()
   battery_s.current_mA = (int16_t)chargingCurrent - (int16_t)measurments_s.batDischargeCurrent_mA;
 
   const uint16_t batteryMaxVoltage = chargerIcRegisters.maxChargeVoltage.get();
-  const bool isAlmostFullyCharged = battery_s.voltage_mV > batteryMaxVoltage * 0.99;
+  const bool isAlmostFullyCharged = battery_s.voltage_mV > (batteryMaxVoltage * 0.99);
 
   // output voltage saturated, battery is not here
   battery_s.isPresent = battery_s.voltage_mV <= (batteryMaxVoltage + chargerIcRegisters.aDCVSYSVBAT.resolutionVal0());
