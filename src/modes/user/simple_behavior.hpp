@@ -54,10 +54,16 @@ void button_clicked_default(const uint8_t clicks)
 
 void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)
 {
+  auto manager = get_context();
+  auto& rampHandler = manager.state.rampHandler;
+
   switch (clicks)
   {
-    case 3:
-      // no-op
+    case 3: // 3 click+hold: configure custom ramp
+      rampHandler.update_ramp(manager.get_active_custom_ramp(), holdDuration, [&](uint8_t rampValue) {
+        manager.custom_ramp_update(rampValue);
+        manager.set_active_custom_ramp(rampValue);
+      });
       break;
     default:
       break;
