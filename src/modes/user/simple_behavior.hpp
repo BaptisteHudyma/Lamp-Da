@@ -14,7 +14,18 @@ void button_clicked_default(const uint8_t clicks)
   {
     case 2:
       if (manager.get_active_group() == 0)
-        manager.lamp.jumpBrightness(maxBrightness);
+      {
+        // if at max brightness, go to saved brightness
+        if (manager.lamp.getBrightness() == maxBrightness)
+        {
+          manager.lamp.restoreBrightness();
+        }
+        // else set max brightness
+        else
+        {
+          manager.lamp.tempBrightness(maxBrightness);
+        }
+      }
       else
         manager.next_mode();
       break;
