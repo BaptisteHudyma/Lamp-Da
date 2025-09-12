@@ -119,7 +119,7 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
   /// Same as \p .update() but uses two buffers, required for \p smoothDisplay()
   void LMBD_INLINE smoothUpdate(LampTy& lamp, auto& callback)
   {
-    hardware::LampTy::BufferTy bufCopy = lamp.template getTempBuffer<dstBufIdx>();
+    auto bufCopy = lamp.template getTempBuffer<dstBufIdx>();
     update(lamp, callback);
     lamp.template getTempBuffer<srcBufIdx>() = bufCopy;
   }
@@ -212,7 +212,7 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
 
       smoothDisplay(lamp, counter, smoothFrame);
       if constexpr (ConfigTy::renderBlurAmount)
-        lamp.getLegacyStrip().blur(ConfigTy::renderBlurAmount);
+        lamp.blur(ConfigTy::renderBlurAmount);
 
       // coarser display for slow scrolling (smoothing too visible)
     }
@@ -228,7 +228,7 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
 
         display(lamp);
         if constexpr (ConfigTy::renderBlurAmount)
-          lamp.getLegacyStrip().blur(ConfigTy::renderBlurAmount);
+          lamp.blur(ConfigTy::renderBlurAmount);
       }
     }
   }
