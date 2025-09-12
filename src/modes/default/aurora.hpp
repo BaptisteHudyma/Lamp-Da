@@ -48,10 +48,10 @@ struct AuroraMode : public BasicMode
     const auto& palette = ctx.state.palette;
 
     uint32_t step = ctx.state.step;
-    for (int x = 0; x < ctx.lamp.maxWidth + 1; x++)
+    for (int x = 0; x <= ctx.lamp.maxWidth; x++)
     {
       const int scaledX = x * ctx.state.scale;
-      for (int y = 0; y < ctx.lamp.maxHeight; y++, step++)
+      for (int y = 0; y <= ctx.lamp.maxHeight; y++, step++)
       {
         const auto& color = colors::from_palette(
                 qsub8(noise8::inoise((step % 2) + scaledX, y * 16 + step % 16, step * _speedDivider),

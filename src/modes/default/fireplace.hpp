@@ -68,9 +68,9 @@ struct FireMode : public BasicMode
     }
 
     // for each line, generate noise & set pixels
-    for (uint16_t j = 0; j < ctx.lamp.maxHeight; ++j)
+    for (uint16_t j = 0; j <= ctx.lamp.maxHeight; ++j)
     {
-      for (uint16_t i = 0; i < ctx.lamp.maxWidth + 1; ++i)
+      for (uint16_t i = 0; i <= ctx.lamp.maxWidth; ++i)
       {
         const auto flame = noise8::inoise(i * xScale, j * yScale + ySpeed, zSpeed);
         const auto pixel = MIN(223, qsub8(flame, decay[j]));

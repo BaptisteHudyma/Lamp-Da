@@ -49,12 +49,12 @@ struct DistortionWaveMode : public BasicMode
     const uint16_t cy2 = beatsin8(14 - _speed, 0, ctx.lamp.maxHeight - 1) * _scale;
 
     uint16_t xoffs = 0;
-    for (int x = 0; x < ctx.lamp.maxWidth + 1; x++)
+    for (int x = 0; x <= ctx.lamp.maxWidth; x++)
     {
       xoffs += _scale;
       uint16_t yoffs = 0;
 
-      for (int y = 0; y < ctx.lamp.maxHeight; y++)
+      for (int y = 0; y <= ctx.lamp.maxHeight; y++)
       {
         yoffs += _scale;
 
