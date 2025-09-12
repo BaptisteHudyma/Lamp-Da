@@ -14,6 +14,9 @@ extern "C" {
 StaticSemaphore_t _PrintMutex;
 SemaphoreHandle_t printMutex = xSemaphoreCreateMutexStatic(&_PrintMutex);
 
+// only keep the chars inside a certain ascii range
+bool is_ignore_char(char c) { return c < 32; }
+
 void _lockPrintMutex(void) { xSemaphoreTake(printMutex, portMAX_DELAY); }
 void _unlockPrintMutex(void) { xSemaphoreGive(printMutex); }
 
@@ -60,7 +63,15 @@ std::vector<std::string> read_inputs()
       // if the incoming character is a newline, finish parsing
       if (inChar == '\n')
       {
-        ret.push_back(inputString);
+        // do not add empty strings and null terminated only strings
+        if (inputString.size() != 0)
+        {
+          // add null termination if needed
+          if (inputString[inputString.size() - 1] != '\0')
+            inputString += '\0';
+
+          ret.push_back(inputString);
+        }
 
         inputString = "";
         lineRead += 1;
@@ -69,7 +80,10 @@ std::vector<std::string> read_inputs()
       else
       {
         // add it to the inputString:
-        inputString += inChar;
+        if (not is_ignore_char(inChar))
+        {
+          inputString += inChar;
+        }
         charRead += 1;
       }
     } while (Serial.available() && lineRead < maxReadLinePerLoop && charRead < maxLineLenght);
