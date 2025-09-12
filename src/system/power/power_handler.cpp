@@ -429,6 +429,15 @@ bool go_to_shutdown()
   return is_state_shutdown_effected();
 }
 
+bool go_to_error()
+{
+  if (__private::powerMachine.set_state(PowerStates::ERROR))
+  {
+    set_error_state_message("error raised by caller");
+  }
+  return true;
+}
+
 bool set_output_voltage_mv(const uint16_t outputVoltage_mV)
 {
   _outputVoltage_mV = outputVoltage_mV;
@@ -505,18 +514,7 @@ void init()
   isSetup = true;
 }
 
-void start_threads()
-{
-  if (!is_setup())
-    return;
-
-  //   use the charging thread !
-  start_thread(loop, power_taskName, 0, 1024);
-
-  powerDelivery::start_threads();
-}
-
-void loop()
+void power_loop()
 {
   // kick power watchdog
   kick_watchdog(POWER_WATCHDOG_ID);
@@ -537,6 +535,17 @@ void loop()
   balancer::loop();
 
   delay_ms(1);
+}
+
+void start_threads()
+{
+  if (!is_setup())
+    return;
+
+  //   use the charging thread !
+  start_thread(power_loop, power_taskName, 0, 1024);
+
+  powerDelivery::start_threads();
 }
 
 } // namespace power

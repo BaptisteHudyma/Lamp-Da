@@ -10,9 +10,6 @@ void init();
 void start_threads();
 bool is_setup();
 
-// call often
-void loop();
-
 // if this returns true, do nothing
 bool is_in_error_state();
 
@@ -22,6 +19,7 @@ bool go_to_charger_mode();
 bool go_to_otg_mode();
 bool go_to_idle();
 bool go_to_shutdown();
+bool go_to_error();
 
 // control special commands for every states
 // output mode

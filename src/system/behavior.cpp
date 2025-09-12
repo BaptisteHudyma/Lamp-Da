@@ -500,7 +500,6 @@ std::string get_error_state_message()
 void handle_error_state()
 {
   set_error_state_message("Unspecified raised error state reason");
-  outputPower::disable_power_gates();
 
   // not allowed to start, can only be stopped
   // turn off system is needed
@@ -509,6 +508,9 @@ void handle_error_state()
     // got to sleep after the closing operations
     mainMachine.set_state(BehaviorStates::SHUTDOWN);
   }
+
+  // power states go to error too
+  power::go_to_error();
 
   // kick power and user watchdog (prevent reset)
   kick_watchdog(POWER_WATCHDOG_ID);
@@ -712,11 +714,7 @@ void handle_output_light_state()
     }
     return;
   }
-  else if (not waitingForPowerGate_messageDisplayed)
-  {
-    lampda_print("Behavior>Output mode: power gate ready");
-    waitingForPowerGate_messageDisplayed = true;
-  }
+  waitingForPowerGate_messageDisplayed = true;
 #endif
 
   lastOutputLightValidTime = time_ms();
