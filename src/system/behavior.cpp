@@ -46,9 +46,6 @@ static constexpr uint32_t indicatorLevelKey = utils::hash("indLvl");
 static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000; /// duration of the brightness ramp
 static constexpr uint32_t BRIGHTNESS_LOOP_UPDATE_EVERY = 20;  /// frequency update of the ramp
 
-static constexpr uint32_t EARLY_ACTIONS_LIMIT_MS = 2000;
-static constexpr uint32_t EARLY_ACTIONS_HOLD_MS = 1500;
-
 // time to block turn off since turn on
 static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 500;
 
@@ -213,52 +210,51 @@ void button_disable_usermode() { isButtonUsermodeEnabled = false; }
 
 bool is_button_usermode_enabled() { return isButtonUsermodeEnabled; }
 
-// call when the button is finally release
-void button_clicked_callback(const uint8_t consecutiveButtonCheck)
+namespace button_press_handles {
+
+/**
+ * \brief handle system start event
+ *
+ * \return false if an action was handled
+ */
+bool system_start_button_click_callback(const uint8_t consecutiveButtonCheck) { return true; }
+
+/**
+ *  \brief handle custom actions
+ */
+bool usermode_button_click_callback(const uint8_t consecutiveButtonCheck)
 {
-  if (consecutiveButtonCheck == 0)
-    return;
-
-  // can be called when systel is alseep
-  if (consecutiveButtonCheck == 7)
+  // user mode may return "True" to skip default action
+  if (user::button_clicked_usermode(consecutiveButtonCheck))
   {
-    indicator::set_brightness_level(indicator::get_brightness_level() + 1);
-    return;
+    return false;
   }
+  return true;
+}
 
-  // guard blocking other actions than "turn off"
-  if (not can_system_allowed_to_be_powered())
+/**
+ * \brief button click callbacks that will ALWAYS be called
+ *
+ * \return true if the button handling can continue
+ */
+bool always_button_click_callback(const uint8_t consecutiveButtonCheck)
+{
+  switch (consecutiveButtonCheck)
   {
-    // allow turn off after a time
-    if (consecutiveButtonCheck == 1)
-    {
-      set_power_off();
-    }
-    return;
+    case 7:
+      {
+        indicator::set_brightness_level(indicator::get_brightness_level() + 1);
+        return false;
+      }
   }
+  return true;
+}
 
-  // guard blocking other actions than "turning it on"
-  if (not is_user_code_running())
-  {
-    if (consecutiveButtonCheck == 1)
-    {
-      set_power_on();
-    }
-    return;
-  }
-
-  const bool isSystemStartClick = button::is_system_start_click();
-
-  // extended "button usermode" bypass
-  if (isButtonUsermodeEnabled)
-  {
-    // user mode may return "True" to skip default action
-    if (user::button_clicked_usermode(consecutiveButtonCheck))
-    {
-      return;
-    }
-  }
-
+/**
+ * \brief Handle inputs when system is turned on
+ */
+void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck)
+{
   // basic "default" UI:
   //  - 1 click: on/off
   //  - 10+ clicks: shutdown immediately (if DEBUG_MODE wait for watchdog)
@@ -268,7 +264,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
     // 1 click: shutdown
     case 1:
       // do not turn off on first button press
-      if (not isSystemStartClick)
+      if (not button::is_system_start_click())
       {
         set_power_off();
       }
@@ -294,97 +290,109 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   }
 }
 
-void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t buttonHoldDuration)
+/**
+ * \brief handle system start event
+ *
+ * \return false if an action was handled
+ */
+bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
+                                       const bool isEndOfHoldEvent,
+                                       const uint32_t buttonHoldDuration)
 {
-  if (consecutiveButtonCheck == 0)
-    return;
-  static uint32_t lastButtonPressedTime_ms = time_ms();
-
-  // no button callback when user code is not running
-  if (not is_user_code_running())
-    return;
-
-  // click chain that woke up the system
-  const bool isSystemStartClick = button::is_system_start_click();
-
-  // compute parameters of the "press-hold" action
-  const bool isEndOfHoldEvent = (buttonHoldDuration <= 1);
-  if (isEndOfHoldEvent)
-    lastButtonPressedTime_ms = time_ms();
-
-  const uint32_t holdDuration =
-          (buttonHoldDuration > HOLD_BUTTON_MIN_MS) ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
-
-  uint32_t realStartTime = time_ms() - lastStartupSequence;
-  if (realStartTime > holdDuration)
+  switch (consecutiveButtonCheck)
   {
-    realStartTime -= holdDuration;
-  }
-
-  //
-  // "early actions"
-  //    - actions to be performed by user just after lamp is turned on
-  //    - after 2s the default actions comes back
-  //
-
-  if (isSystemStartClick)
-  {
-    // 3+hold (3s): turn it on, with button usermode enabled
-    if (!isEndOfHoldEvent and consecutiveButtonCheck == 3)
-    {
-      if (holdDuration > EARLY_ACTIONS_HOLD_MS)
+    case 3:
       {
-        isButtonUsermodeEnabled = true;
-        return;
-      }
-    }
-
-    // 4+hold (3s): turn it on, with bluetooth advertising
-#ifdef USE_BLUETOOTH
-    if (!isEndOfHoldEvent and consecutiveButtonCheck == 4)
-    {
-      if (holdDuration > EARLY_ACTIONS_HOLD_MS)
-      {
-        if (!isBluetoothAdvertising)
+        // 3+hold (2s): turn it on, with button usermode enabled
+        if (buttonHoldDuration > 2000)
         {
-          bluetooth::start_advertising();
+          isButtonUsermodeEnabled = true;
         }
-
-        isBluetoothAdvertising = true;
-        return;
+        return false;
       }
-      return;
-    }
-#endif
+    case 4:
+      {
+        // 4+hold (2s): turn on, with bluetooth advertising
+        if (buttonHoldDuration > 2000)
+        {
+          if (!isBluetoothAdvertising)
+          {
+            bluetooth::start_advertising();
+          }
+
+          isBluetoothAdvertising = true;
+        }
+        return false;
+      }
   }
 
-  //
-  // "button usermode" bypass
-  //
+  return true;
+}
 
-  if (isButtonUsermodeEnabled)
+/**
+ *  \brief handle custom actions
+ */
+bool usermode_button_hold_callback(const uint8_t consecutiveButtonCheck,
+                                   const bool isEndOfHoldEvent,
+                                   const uint32_t buttonHoldDuration)
+{
+  switch (consecutiveButtonCheck)
   {
     // 5+hold (5s): always exit, can't be bypassed
-    if (consecutiveButtonCheck == 5)
-    {
-      if (holdDuration > 5000 - HOLD_BUTTON_MIN_MS)
+    case 5:
       {
-        set_power_off();
-        return;
+        if (buttonHoldDuration > 5000)
+        {
+          set_power_off();
+          return false;
+        }
+        // passthrought
       }
-    }
-
-    // user mode may return "True" to skip default action
-    if (user::button_hold_usermode(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration))
-    {
-      return;
-    }
+    default:
+      {
+        // user mode may return "True" to skip default action
+        if (user::button_hold_usermode(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration))
+        {
+          return false;
+        }
+        break;
+      }
   }
 
-  //
-  // default actions
-  //
+  return true;
+}
 
+/**
+ * \brief button hold callbacks that will ALWAYS be called
+ *
+ * \return true if the button handling can continue
+ */
+bool always_button_hold_callback(const uint8_t consecutiveButtonCheck,
+                                 const bool isEndOfHoldEvent,
+                                 const uint32_t buttonHoldDuration)
+{
+  switch (consecutiveButtonCheck)
+  {
+    // 7 clics and hold : toggle indicator
+    case 7:
+      {
+        // every seconds, update the indicator
+        EVERY_N_MILLIS(1000) { indicator::set_brightness_level(indicator::get_brightness_level() + 1); }
+        return false;
+      }
+  }
+
+  return true;
+}
+
+/**
+ * \brief Handle inputs when system is turned on
+ *
+ */
+void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
+                                         const bool isEndOfHoldEvent,
+                                         const uint32_t buttonHoldDuration)
+{
   // basic "default" UI:
   //
   switch (consecutiveButtonCheck)
@@ -415,7 +423,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
         const brightness_t brightness = brightness::get_brightness();
 
         // first actions, set ramp side
-        if (holdDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)
+        if (buttonHoldDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)
         {
           // 2 clics always go low
           if (consecutiveButtonCheck == 2)
@@ -429,12 +437,12 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
         }
         // press for too long, go down
         // TODO do this from level max, no start of ramp
-        else if (holdDuration >= 5000)
+        else if (buttonHoldDuration >= 5000)
         {
 // this do not work, because system starts right back up, because button is still pulled low...
 #if 0
           // stayed pressed too long, turn off
-          if (holdDuration >= 10000)
+          if (buttonHoldDuration >= 10000)
           {
             set_power_off();
             break;
@@ -468,17 +476,130 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
       }
       break;
 
-    case 7:
-      {
-        // every seconds, update the indicator
-        EVERY_N_MILLIS(1000) { indicator::set_brightness_level(indicator::get_brightness_level() + 1); }
-        break;
-      }
-
     // other behaviors
     default:
-      user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
+      user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
       break;
+  }
+}
+
+} // namespace button_press_handles
+
+// call when the button is finally release after a chain of clicks
+void button_clicked_callback(const uint8_t consecutiveButtonCheck)
+{
+  if (consecutiveButtonCheck == 0)
+    return;
+
+  // guard blocking other actions than "turn off", if not allowed to run
+  if (not can_system_allowed_to_be_powered())
+  {
+    if (consecutiveButtonCheck == 1)
+    {
+      set_power_off();
+    }
+
+    // block all actions
+    return;
+  }
+
+  //
+  // Handle system start click
+  //
+  if (button::is_system_start_click())
+  {
+    const bool canContinue = button_press_handles::system_start_button_click_callback(consecutiveButtonCheck);
+    if (not canContinue)
+      return;
+  }
+
+  //
+  // extended "button usermode" bypass
+  //
+  if (isButtonUsermodeEnabled)
+  {
+    const bool canContinue = button_press_handles::usermode_button_click_callback(consecutiveButtonCheck);
+    if (not canContinue)
+      return;
+  }
+
+  //
+  // Always enabled events
+  //
+  const bool canContinue = button_press_handles::always_button_click_callback(consecutiveButtonCheck);
+  if (not canContinue)
+    return;
+
+  //
+  //  guard blocking other actions than "turning on"
+  //
+  if (is_user_code_running())
+  {
+    // system is enabled, handle events
+    button_press_handles::system_enabled_button_click_callback(consecutiveButtonCheck);
+  }
+  else
+  {
+    // only available action is turning on
+    if (consecutiveButtonCheck == 1)
+    {
+      set_power_on();
+    }
+  }
+}
+
+// call when the button in a chain of clicks with a long press
+// It is called every loop turn while button is pressed
+void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t buttonHoldDuration)
+{
+  if (consecutiveButtonCheck == 0)
+    return;
+
+  // compute parameters of the "press-hold" action
+  const bool isEndOfHoldEvent = (buttonHoldDuration <= 1);
+
+  // rectify hold duration
+  const uint32_t holdDuration =
+          (buttonHoldDuration > HOLD_BUTTON_MIN_MS) ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
+
+  //
+  // "start event" button
+  //
+  if (button::is_system_start_click())
+  {
+    const bool canContinue = button_press_handles::system_start_button_hold_callback(
+            consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
+    if (not canContinue)
+      return;
+  }
+
+  //
+  // "button usermode" bypass
+  //
+  if (isButtonUsermodeEnabled)
+  {
+    const bool canContinue =
+            button_press_handles::usermode_button_hold_callback(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
+    if (not canContinue)
+      return;
+  }
+
+  //
+  // "button always handled" actions
+  //
+  const bool canContinue =
+          button_press_handles::always_button_hold_callback(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
+  // dont handle events if false
+  if (not canContinue)
+    return;
+
+  //
+  // "user code button" actions
+  //
+  if (is_user_code_running())
+  {
+    // handle user inputs
+    button_press_handles::system_enabled_button_hold_callback(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
   }
 }
 
