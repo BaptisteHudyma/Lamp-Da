@@ -31,14 +31,11 @@ void button_clicked_default(const uint8_t clicks)
       break;
 
     case 3:
-      if (manager.get_active_group() == 0)
+      // 3C at max brightness will produce a light boost (dangerous for the strip if held for a long time)
+      if (manager.get_active_group() == 0 and manager.lamp.getBrightness() == maxBrightness)
       {
-        // 3C at max brightness will produce a light boost (dangerous for the strip if held for a long time)
-        if (manager.lamp.getBrightness() == maxBrightness)
-        {
-          // write a power boost (dangerous) for a limited time
-          outputPower::write_temporary_output_limits(inputVoltage_V * 1000 * 1.2f, 5000, 5000);
-        }
+        // write a power boost (dangerous) for a limited time
+        outputPower::write_temporary_output_limits(inputVoltage_V * 1000 * 1.2f, 5000, 5000);
       }
       else
       {
@@ -57,10 +54,16 @@ void button_clicked_default(const uint8_t clicks)
 
 void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)
 {
+  auto manager = get_context();
+  auto& rampHandler = manager.state.rampHandler;
+
   switch (clicks)
   {
-    case 3:
-      // no-op
+    case 3: // 3 click+hold: configure custom ramp
+      rampHandler.update_ramp(manager.get_active_custom_ramp(), holdDuration, [&](uint8_t rampValue) {
+        manager.custom_ramp_update(rampValue);
+        manager.set_active_custom_ramp(rampValue);
+      });
       break;
     default:
       break;

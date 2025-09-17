@@ -372,6 +372,26 @@ public:
     }
   }
 
+  /** \brief blip the power gate for set time
+   *
+   * If LampTy::flavor is LampTypes::indexable then:
+   *  - clear LED strip with black pixels
+   * Else
+   *  - disable output power for a duration
+   */
+  void LMBD_INLINE blip(const uint32_t duration)
+  {
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      // (this is optimized out, and is essentially no-op for other flavors)
+      assert(true);
+    }
+    else
+    {
+      outputPower::blip(duration);
+    }
+  }
+
   /** \brief Set brightness of the lamp
    *
    * Several behaviors:

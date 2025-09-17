@@ -21,7 +21,7 @@ template<typename T, typename V, typename U> static constexpr T lmpd_constrain(c
 
 template<typename T, typename U> static constexpr U lmpd_map(T x, T in_min, T in_max, U out_min, U out_max)
 {
-  return (out_max - out_min) * ((x - in_min) / float(in_max - in_min)) + out_min;
+  return ((float)out_max - out_min) * (((float)x - in_min) / float((float)in_max - in_min)) + out_min;
 }
 
 #ifndef Arduino_h
