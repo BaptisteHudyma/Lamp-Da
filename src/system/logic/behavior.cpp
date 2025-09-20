@@ -5,14 +5,14 @@
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 
-#include "src/system/alerts.h"
+#include "src/system/logic/alerts.h"
+#include "src/system/logic/inputs.h"
 
 #include "src/system/power/charger.h"
 #include "src/system/power/power_handler.h"
 #include "src/system/power/power_gates.h"
 
 #include "src/system/physical/battery.h"
-#include "src/system/physical/button.h"
 #include "src/system/physical/indicator.h"
 #include "src/system/physical/fileSystem.h"
 #include "src/system/physical/imu.h"
@@ -24,7 +24,6 @@
 #include "src/system/utils/utils.h"
 #include "src/system/utils/state_machine.h"
 #include "src/system/utils/input_output.h"
-#include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/time_utils.h"
 
 #include "src/system/platform/bluetooth.h"
@@ -42,12 +41,11 @@ namespace behavior {
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
 static constexpr uint32_t indicatorLevelKey = utils::hash("indLvl");
 
-// constants
-static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000; /// duration of the brightness ramp
-static constexpr uint32_t BRIGHTNESS_LOOP_UPDATE_EVERY = 20;  /// frequency update of the ramp
-
 // time to block turn off since turn on
 static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 500;
+
+// timestamp of the system wake up
+static uint32_t wakeUpTime = time_ms();
 
 // pre output light call timing (lamp output starts)
 // Starts at system start time
@@ -114,18 +112,6 @@ bool can_system_allowed_to_be_powered()
 
 // return true if vbus is high
 bool is_charger_powered() { return charger::is_vbus_powered(); }
-
-// hold the last time startup_sequence has been called
-uint32_t lastStartupSequence = 0;
-
-// hold the boolean that configures if button's usermode UI is enabled
-bool isButtonUsermodeEnabled = false;
-
-// hold a boolean to avoid advertising several times in a row
-bool isBluetoothAdvertising = false;
-
-// timestamp of the system wake up
-static uint32_t turnOnTime = time_ms();
 
 bool read_parameters()
 {
@@ -206,403 +192,6 @@ void true_power_off()
   alerts::manager.raise(alerts::Type::SYSTEM_OFF_FAILED);
 }
 
-void button_disable_usermode() { isButtonUsermodeEnabled = false; }
-
-bool is_button_usermode_enabled() { return isButtonUsermodeEnabled; }
-
-namespace button_press_handles {
-
-/**
- * \brief handle system start event
- *
- * \return false if an action was handled
- */
-bool system_start_button_click_callback(const uint8_t consecutiveButtonCheck) { return true; }
-
-/**
- *  \brief handle custom actions
- */
-bool usermode_button_click_callback(const uint8_t consecutiveButtonCheck)
-{
-  // user mode may return "True" to skip default action
-  if (user::button_clicked_usermode(consecutiveButtonCheck))
-  {
-    return false;
-  }
-  return true;
-}
-
-/**
- * \brief button click callbacks that will ALWAYS be called
- *
- * \return true if the button handling can continue
- */
-bool always_button_click_callback(const uint8_t consecutiveButtonCheck)
-{
-  switch (consecutiveButtonCheck)
-  {
-    case 7:
-      {
-        indicator::set_brightness_level(indicator::get_brightness_level() + 1);
-        return false;
-      }
-  }
-  return true;
-}
-
-/**
- * \brief Handle inputs when system is turned on
- */
-void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck)
-{
-  // basic "default" UI:
-  //  - 1 click: on/off
-  //  - 10+ clicks: shutdown immediately (if DEBUG_MODE wait for watchdog)
-  //
-  switch (consecutiveButtonCheck)
-  {
-    // 1 click: shutdown
-    case 1:
-      // do not turn off on first button press
-      if (not button::is_system_start_click())
-      {
-        set_power_off();
-      }
-      break;
-
-    // other behaviors
-    default:
-      // 10+ clicks: force shutdown (or safety reset if DEBUG_MODE)
-      if (consecutiveButtonCheck >= 10)
-      {
-#ifdef DEBUG_MODE
-        // disable charger and wait 5s to be killed by watchdog
-        indicator::set_color(utils::ColorSpace::PINK);
-        power::enable_charge(false);
-        delay_ms(20000); // crash the system
-#endif
-        set_power_off();
-        return;
-      }
-
-      user::button_clicked_default(consecutiveButtonCheck);
-      break;
-  }
-}
-
-/**
- * \brief handle system start event
- *
- * \return false if an action was handled
- */
-bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
-                                       const bool isEndOfHoldEvent,
-                                       const uint32_t buttonHoldDuration)
-{
-  switch (consecutiveButtonCheck)
-  {
-    case 3:
-      {
-        // 3+hold (2s): turn it on, with button usermode enabled
-        if (buttonHoldDuration > 2000)
-        {
-          isButtonUsermodeEnabled = true;
-        }
-        return false;
-      }
-    case 4:
-      {
-        // 4+hold (2s): turn on, with bluetooth advertising
-        if (buttonHoldDuration > 2000)
-        {
-          if (!isBluetoothAdvertising)
-          {
-            bluetooth::start_advertising();
-          }
-
-          isBluetoothAdvertising = true;
-        }
-        return false;
-      }
-  }
-
-  return true;
-}
-
-/**
- *  \brief handle custom actions
- */
-bool usermode_button_hold_callback(const uint8_t consecutiveButtonCheck,
-                                   const bool isEndOfHoldEvent,
-                                   const uint32_t buttonHoldDuration)
-{
-  switch (consecutiveButtonCheck)
-  {
-    // 5+hold (5s): always exit, can't be bypassed
-    case 5:
-      {
-        if (buttonHoldDuration > 5000)
-        {
-          set_power_off();
-          return false;
-        }
-        // passthrought
-      }
-    default:
-      {
-        // user mode may return "True" to skip default action
-        if (user::button_hold_usermode(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration))
-        {
-          return false;
-        }
-        break;
-      }
-  }
-
-  return true;
-}
-
-/**
- * \brief button hold callbacks that will ALWAYS be called
- *
- * \return true if the button handling can continue
- */
-bool always_button_hold_callback(const uint8_t consecutiveButtonCheck,
-                                 const bool isEndOfHoldEvent,
-                                 const uint32_t buttonHoldDuration)
-{
-  switch (consecutiveButtonCheck)
-  {
-    // 7 clics and hold : toggle indicator
-    case 7:
-      {
-        // every seconds, update the indicator
-        EVERY_N_MILLIS(1000) { indicator::set_brightness_level(indicator::get_brightness_level() + 1); }
-        return false;
-      }
-  }
-
-  return true;
-}
-
-/**
- * \brief Handle inputs when system is turned on
- *
- */
-void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
-                                         const bool isEndOfHoldEvent,
-                                         const uint32_t buttonHoldDuration)
-{
-  // basic "default" UI:
-  //
-  switch (consecutiveButtonCheck)
-  {
-    // 1+hold, 2+hold: brightness control
-    case 1:
-    case 2:
-      // number of steps to update brightness
-      static constexpr uint32_t brightnessUpdateSteps = BRIGHTNESS_RAMP_DURATION_MS / BRIGHTNESS_LOOP_UPDATE_EVERY;
-      static uint32_t brightnessUpdateStepSize = max(1u, maxBrightness / brightnessUpdateSteps);
-
-      // negative go low, positive go high
-      static int rampSide = 1;
-      static uint32_t lastBrightnessUpdateTime_ms = 0;
-
-      if (isEndOfHoldEvent)
-      {
-        // reverse on release
-        rampSide = -rampSide;
-        lastBrightnessUpdateTime_ms = time_ms();
-        brightness::update_saved_brightness();
-        break;
-      }
-
-      // update brightness every N milliseconds (or end of hold)
-      EVERY_N_MILLIS(BRIGHTNESS_LOOP_UPDATE_EVERY)
-      {
-        const brightness_t brightness = brightness::get_brightness();
-
-        // first actions, set ramp side
-        if (buttonHoldDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)
-        {
-          // 2 clics always go low
-          if (consecutiveButtonCheck == 2)
-            rampSide = -1;
-          // ramp at maximum, go low
-          else if (brightness >= maxBrightness)
-            rampSide = -1;
-          // if more than 1 second elapsed, fall back to raise ramp
-          else if (lastBrightnessUpdateTime_ms == 0 or time_ms() - lastBrightnessUpdateTime_ms >= 1000)
-            rampSide = 1;
-        }
-        // press for too long, go down
-        // TODO do this from level max, no start of ramp
-        else if (buttonHoldDuration >= 5000)
-        {
-// this do not work, because system starts right back up, because button is still pulled low...
-#if 0
-          // stayed pressed too long, turn off
-          if (buttonHoldDuration >= 10000)
-          {
-            set_power_off();
-            break;
-          }
-          else
-#endif
-          rampSide = -1;
-        }
-
-        // go down
-        if (rampSide < 0)
-        {
-          if (brightness <= brightnessUpdateStepSize)
-            // min level
-            brightness::update_brightness(1);
-          else
-            brightness::update_brightness(brightness - brightnessUpdateStepSize);
-        }
-        /// go up
-        else
-        {
-          if (brightness + brightnessUpdateStepSize >= maxBrightness)
-            // min level
-            brightness::update_brightness(maxBrightness);
-          else
-            brightness::update_brightness(brightness + brightnessUpdateStepSize);
-        }
-
-        // update saved brightness
-        brightness::update_saved_brightness();
-      }
-      break;
-
-    // other behaviors
-    default:
-      user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
-      break;
-  }
-}
-
-} // namespace button_press_handles
-
-// call when the button is finally release after a chain of clicks
-void button_clicked_callback(const uint8_t consecutiveButtonCheck)
-{
-  if (consecutiveButtonCheck == 0)
-    return;
-
-  // guard blocking other actions than "turn off", if not allowed to run
-  if (not can_system_allowed_to_be_powered())
-  {
-    if (consecutiveButtonCheck == 1)
-    {
-      set_power_off();
-    }
-
-    // block all actions
-    return;
-  }
-
-  //
-  // Handle system start click
-  //
-  if (button::is_system_start_click())
-  {
-    const bool canContinue = button_press_handles::system_start_button_click_callback(consecutiveButtonCheck);
-    if (not canContinue)
-      return;
-  }
-
-  //
-  // extended "button usermode" bypass
-  //
-  if (isButtonUsermodeEnabled)
-  {
-    const bool canContinue = button_press_handles::usermode_button_click_callback(consecutiveButtonCheck);
-    if (not canContinue)
-      return;
-  }
-
-  //
-  // Always enabled events
-  //
-  const bool canContinue = button_press_handles::always_button_click_callback(consecutiveButtonCheck);
-  if (not canContinue)
-    return;
-
-  //
-  //  guard blocking other actions than "turning on"
-  //
-  if (is_user_code_running())
-  {
-    // system is enabled, handle events
-    button_press_handles::system_enabled_button_click_callback(consecutiveButtonCheck);
-  }
-  else
-  {
-    // only available action is turning on
-    if (consecutiveButtonCheck == 1)
-    {
-      set_power_on();
-    }
-  }
-}
-
-// call when the button in a chain of clicks with a long press
-// It is called every loop turn while button is pressed
-void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t buttonHoldDuration)
-{
-  if (consecutiveButtonCheck == 0)
-    return;
-
-  // compute parameters of the "press-hold" action
-  const bool isEndOfHoldEvent = (buttonHoldDuration <= 1);
-
-  // rectify hold duration
-  const uint32_t holdDuration =
-          (buttonHoldDuration > HOLD_BUTTON_MIN_MS) ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
-
-  //
-  // "start event" button
-  //
-  if (button::is_system_start_click())
-  {
-    const bool canContinue = button_press_handles::system_start_button_hold_callback(
-            consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
-    if (not canContinue)
-      return;
-  }
-
-  //
-  // "button usermode" bypass
-  //
-  if (isButtonUsermodeEnabled)
-  {
-    const bool canContinue =
-            button_press_handles::usermode_button_hold_callback(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
-    if (not canContinue)
-      return;
-  }
-
-  //
-  // "button always handled" actions
-  //
-  const bool canContinue =
-          button_press_handles::always_button_hold_callback(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
-  // dont handle events if false
-  if (not canContinue)
-    return;
-
-  //
-  // "user code button" actions
-  //
-  if (is_user_code_running())
-  {
-    // handle user inputs
-    button_press_handles::system_enabled_button_hold_callback(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
-  }
-}
-
 static std::string errorStateRaisedStr = "";
 void set_error_state_message(const std::string& errorMsg)
 {
@@ -616,6 +205,17 @@ std::string get_error_state_message()
   if (errorStateRaisedStr.empty())
     return "x";
   return errorStateRaisedStr;
+}
+
+void go_to_error_state(const std::string& errorMsg)
+{
+  // signal to the system we dont want to turn off until user asked
+  // thats better to debug an error
+  set_power_on();
+  // set error msg
+  set_error_state_message(errorMsg);
+  // got to error state
+  mainMachine.set_state(BehaviorStates::ERROR);
 }
 
 void handle_error_state()
@@ -649,15 +249,12 @@ void handle_start_logic_state()
   // safety for failure of components at startup
   if (not can_system_allowed_to_be_powered())
   {
-    set_power_on();
-    set_error_state_message("system not allow to power on in start logic state");
-    mainMachine.set_state(BehaviorStates::ERROR);
+    go_to_error_state("system not allow to power on in start logic state");
     return;
   }
   if (power::is_in_error_state())
   {
-    set_error_state_message("power system in error state in start logic state");
-    mainMachine.set_state(BehaviorStates::ERROR);
+    go_to_error_state("power system in error state in start logic state");
     return;
   }
 
@@ -683,8 +280,7 @@ void handle_pre_charger_operation_state()
 {
   if (power::is_in_error_state())
   {
-    set_error_state_message("power system in error state in pre charger operation state");
-    mainMachine.set_state(BehaviorStates::ERROR);
+    go_to_error_state("power system in error state in pre charger operation state");
     return;
   }
 
@@ -704,8 +300,7 @@ void handle_charger_operation_state()
 {
   if (power::is_in_error_state())
   {
-    set_error_state_message("power system in error state in charger operation state");
-    mainMachine.set_state(BehaviorStates::ERROR);
+    go_to_error_state("power system in error state in charger operation state");
     return;
   }
 
@@ -755,8 +350,7 @@ void handle_pre_output_light_state()
 {
   if (power::is_in_error_state())
   {
-    set_error_state_message("power system in error state in pre output light state");
-    mainMachine.set_state(BehaviorStates::ERROR);
+    go_to_error_state("power system in error state in pre output light state");
     return;
   }
 
@@ -789,12 +383,6 @@ void handle_pre_output_light_state()
 
   power::go_to_output_mode();
 
-  // button usermode is always disabled by default
-  button_disable_usermode();
-
-  // reset lastStartupSequence
-  lastStartupSequence = time_ms();
-
   // let the user power on the system
   user::power_on_sequence();
 
@@ -808,8 +396,7 @@ void handle_output_light_state()
 {
   if (power::is_in_error_state())
   {
-    set_error_state_message("power system in error state in output light state");
-    mainMachine.set_state(BehaviorStates::ERROR);
+    go_to_error_state("power system in error state in output light state");
     return;
   }
 
@@ -828,10 +415,9 @@ void handle_output_light_state()
 
     if (time_ms() - lastOutputLightValidTime > 1000)
     {
-      set_error_state_message("power gate took too long to switch in output light state " +
-                              std::to_string(powergates::is_power_gate_enabled()) +
-                              std::to_string(power::is_output_mode_ready()));
-      mainMachine.set_state(BehaviorStates::ERROR);
+      go_to_error_state("power gate took too long to switch in output light state " +
+                        std::to_string(powergates::is_power_gate_enabled()) +
+                        std::to_string(power::is_output_mode_ready()));
     }
     return;
   }
@@ -874,7 +460,7 @@ void handle_output_light_state()
 void handle_post_output_light_state()
 {
   // button usermode is kept disabled
-  button_disable_usermode();
+  inputs::button_disable_usermode();
 
   // restore saved brightness
   brightness::update_brightness(brightness::get_saved_brightness());
@@ -981,8 +567,7 @@ void state_machine_behavior()
       break;
     default:
       {
-        set_error_state_message("reached state machine default state");
-        mainMachine.set_state(BehaviorStates::ERROR);
+        go_to_error_state("reached state machine default state");
       }
       break;
   }
@@ -997,7 +582,7 @@ void loop()
   state_machine_behavior();
 
   // do not display alerts for the first 500 ms
-  const bool shouldIgnoreAlerts = (time_ms() - turnOnTime) < 500;
+  const bool shouldIgnoreAlerts = (time_ms() - wakeUpTime) < 500;
   alerts::handle_all(shouldIgnoreAlerts);
   // alert requested an emergency shutdown, do it
   if (alerts::is_request_shutdown())

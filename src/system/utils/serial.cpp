@@ -2,7 +2,7 @@
 
 #include "constants.h"
 
-#include "src/system/behavior.h"
+#include "src/system/logic/behavior.h"
 
 #include "src/system/power/power_handler.h"
 #include "src/system/power/PDlib/power_delivery.h"
@@ -20,7 +20,7 @@
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 
-#include "src/system/alerts.h"
+#include "src/system/logic/alerts.h"
 
 namespace serial {
 

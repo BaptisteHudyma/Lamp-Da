@@ -6,11 +6,12 @@
 #include "src/compile.h"
 #include "src/user/constants.h"
 
-#include "src/system/assert.h"
 #include "src/system/physical/sound.h"
 #include "src/system/physical/output_power.h"
+
 #include "src/system/platform/time.h"
 
+#include "src/system/utils/assert.h"
 #include "src/system/utils/print.h"
 #include "src/system/utils/curves.h"
 #include "src/system/utils/constants.h"

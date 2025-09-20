@@ -12,7 +12,7 @@
 #include <tuple>
 #include <array>
 
-#include <src/system/assert.h>
+#include <src/system/utils/assert.h>
 
 #include "src/modes/include/context_type.hpp"
 #include "src/modes/include/manager_type.hpp"

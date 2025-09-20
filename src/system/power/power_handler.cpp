@@ -2,7 +2,7 @@
 
 #include "src/system/utils/state_machine.h"
 
-#include "src/system/alerts.h"
+#include "src/system/logic/alerts.h"
 
 #include "src/system/physical/battery.h"
 

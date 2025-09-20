@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "src/system/behavior.h"
+#include "src/system/logic/behavior.h"
 
 #include "src/system/utils/utils.h"
 #include "src/system/utils/curves.h"

@@ -8,7 +8,7 @@
 #include "src/system/platform/registers.h"
 #include "src/system/platform/print.h"
 
-#include "src/system/alerts.h"
+#include "src/system/logic/alerts.h"
 
 #include "src/system/utils/utils.h"
 #include "src/system/utils/time_utils.h"
