@@ -111,6 +111,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   // persistent values
   enum class Store : uint16_t
   {
+    lastSetMode,
     rampMemory,
     indexMemory
   };
@@ -129,14 +130,22 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
 
     void LMBD_INLINE save_ramps(auto& ctx, uint8_t modeId)
     {
-      ctx.state.customRampMemory[modeId] = ctx.get_active_custom_ramp();
-      ctx.state.customIndexMemory[modeId] = ctx.get_active_custom_index();
+      assert(modeId < nbModes);
+      if constexpr (ctx.hasCustomRamp)
+      {
+        ctx.state.customRampMemory[modeId] = ctx.get_active_custom_ramp();
+        ctx.state.customIndexMemory[modeId] = ctx.get_active_custom_index();
+      }
     }
 
     void LMBD_INLINE load_ramps(auto& ctx, uint8_t modeId)
     {
-      ctx.set_active_custom_ramp(ctx.state.customRampMemory[modeId]);
-      ctx.set_active_custom_index(ctx.state.customIndexMemory[modeId]);
+      assert(modeId < nbModes);
+      if constexpr (ctx.hasCustomRamp)
+      {
+        ctx.set_active_custom_ramp(ctx.state.customRampMemory[modeId]);
+        ctx.set_active_custom_index(ctx.state.customIndexMemory[modeId]);
+      }
     }
   };
 

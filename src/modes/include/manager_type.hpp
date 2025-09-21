@@ -194,14 +194,14 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
         if constexpr (hasCallbacks)
         {
-          cb(context_as<GroupAt<Idx>>(ctx));
+          cb(context_as<GroupAt<Idx>>(ctx), Idx);
         }
       });
     }
     else
     {
       details::unroll<nbGroups>([&](auto Idx) LMBD_INLINE {
-        cb(context_as<GroupAt<Idx>>(ctx));
+        cb(context_as<GroupAt<Idx>>(ctx), Idx);
       });
     }
   }
@@ -454,13 +454,20 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     return value;
   }
 
-  static void enter_group(auto& ctx)
+  static void enter_group(auto& ctx, const uint8_t value)
   {
-    // TODO: check this with issue #255
+    auto manager = ctx.modeManager.get_context();
 
-    // restore last mode used in group
-    uint8_t groupIdAfter = ctx.get_active_group(nbGroups);
-    ctx.set_active_mode(ctx.state.lastModeMemory[groupIdAfter]);
+    // signal that we are quitting the mode
+    ctx.modeManager.quit_mode(manager);
+
+    // switch group (after quit mode)
+    ctx.modeManager.activeIndex.groupIndex = value;
+    // switch mode (restore last stored id)
+    ctx.modeManager.activeIndex.modeIndex = ctx.state.lastModeMemory[value];
+
+    // signal that we entered a new mode
+    ctx.modeManager.enter_mode(manager);
   }
 
   static void quit_group(auto& ctx)
@@ -539,7 +546,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void power_on_sequence(auto& ctx)
   {
-    foreach_group<true>(ctx, [](auto group) {
+    foreach_group<true>(ctx, [](auto group, auto groupId) {
       group.power_on_sequence();
     });
 
@@ -550,7 +557,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void power_off_sequence(auto& ctx)
   {
-    foreach_group<true>(ctx, [](auto group) {
+    foreach_group<true>(ctx, [](auto group, auto groupId) {
       group.power_off_sequence();
     });
   }
@@ -566,12 +573,13 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.template storageSaveOnly<Store::favoriteMode2>(ctx.modeManager.state.currentFavorite2);
     ctx.template storageSaveOnly<Store::favoriteMode3>(ctx.modeManager.state.currentFavorite3);
 
-    foreach_group<not hasCustomRamp>(ctx, [](auto group) {
+    foreach_group<not hasCustomRamp>(ctx, [&ctx](auto group, auto groupId) {
+      using StoreHere = typename decltype(group)::StoreEnum;
+      // save last mode used per group
+      group.template storageSaveOnly<StoreHere::lastSetMode>(ctx.state.lastModeMemory[groupId]);
+
       if constexpr (group.hasCustomRamp)
       {
-        group.state.save_ramps(group, group.get_active_mode());
-
-        using StoreHere = typename decltype(group)::StoreEnum;
         group.template storageSaveOnly<StoreHere::rampMemory>(group.state.customRampMemory);
         group.template storageSaveOnly<StoreHere::indexMemory>(group.state.customIndexMemory);
       }
@@ -596,13 +604,17 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.template storageLoadOnly<Store::favoriteMode3>(ctx.state.currentFavorite3);
 
     // for each group, migrate & handle custom ramp memory
-    foreach_group<not hasCustomRamp>(ctx, [](auto group) {
+    foreach_group<not hasCustomRamp>(ctx, [&ctx](auto group, auto groupId) {
       using LocalStore = details::LocalStoreOf<decltype(group)>;
       LocalStore::template migrateStoreIfNeeded<storeId>();
 
+      using StoreHere = typename LocalStore::EnumTy;
+
+      // save last mode used per group
+      group.template storageLoadOnly<StoreHere::lastSetMode>(ctx.state.lastModeMemory[groupId]);
+
       if constexpr (group.hasCustomRamp)
       {
-        using StoreHere = typename LocalStore::EnumTy;
         group.template storageLoadOnly<StoreHere::rampMemory>(group.state.customRampMemory);
         group.template storageLoadOnly<StoreHere::indexMemory>(group.state.customIndexMemory);
       }
