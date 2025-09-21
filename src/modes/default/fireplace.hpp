@@ -59,21 +59,17 @@ struct FireMode : public BasicMode
 
     // precompute "fire intensity" line per line
     intensity *= ctx.lamp.maxHeight;
-    uint8_t decay[ctx.lamp.maxHeight] = {};
-
-    for (int16_t j = 0; j < ctx.lamp.maxHeight; ++j)
-    {
-      const float here = MAX(intensity - j * 255.0, 0.0);
-      decay[j] = MIN(here / ctx.lamp.maxHeight, 255.0);
-    }
 
     // for each line, generate noise & set pixels
     for (uint16_t j = 0; j <= ctx.lamp.maxHeight; ++j)
     {
+      const float here = MAX(intensity - j * 255.0, 0.0);
+      const uint8_t decay = MIN(here / ctx.lamp.maxHeight, 255.0);
+
       for (uint16_t i = 0; i <= ctx.lamp.maxWidth; ++i)
       {
         const auto flame = noise8::inoise(i * xScale, j * yScale + ySpeed, zSpeed);
-        const auto pixel = MIN(223, qsub8(flame, decay[j]));
+        const auto pixel = MIN(223, qsub8(flame, decay));
         const auto color = modes::colors::from_palette<false, uint8_t>(pixel, palette);
 
         ctx.lamp.setPixelColorXY(i, j, color);
