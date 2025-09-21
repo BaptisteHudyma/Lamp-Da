@@ -129,20 +129,14 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
 
     void LMBD_INLINE save_ramps(auto& ctx, uint8_t modeId)
     {
-      if constexpr (ctx.hasCustomRamp)
-      {
-        ctx.state.customRampMemory[modeId] = ctx.get_active_custom_ramp();
-        ctx.state.customIndexMemory[modeId] = ctx.get_active_custom_index();
-      }
+      ctx.state.customRampMemory[modeId] = ctx.get_active_custom_ramp();
+      ctx.state.customIndexMemory[modeId] = ctx.get_active_custom_index();
     }
 
     void LMBD_INLINE load_ramps(auto& ctx, uint8_t modeId)
     {
-      if constexpr (ctx.hasCustomRamp)
-      {
-        ctx.set_active_custom_ramp(ctx.state.customRampMemory[modeId]);
-        ctx.set_active_custom_index(ctx.state.customIndexMemory[modeId]);
-      }
+      ctx.set_active_custom_ramp(ctx.state.customRampMemory[modeId]);
+      ctx.set_active_custom_index(ctx.state.customIndexMemory[modeId]);
     }
   };
 
@@ -193,11 +187,8 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   static void enter_mode(auto& ctx)
   {
     // set ramps if they exist
-    if constexpr (ctx.hasCustomRamp)
-    {
-      uint8_t modeIdAfter = ctx.get_active_mode(nbModes);
-      ctx.state.load_ramps(ctx, modeIdAfter);
-    }
+    uint8_t modeIdAfter = ctx.get_active_mode(nbModes);
+    ctx.state.load_ramps(ctx, modeIdAfter);
 
     // start new mode we switched to
     dispatch_mode(ctx, [](auto mode) {
@@ -209,10 +200,8 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   {
     // save ramps if they exist
     uint8_t modeIdBefore = ctx.get_active_mode(nbModes);
-    if constexpr (ctx.hasCustomRamp)
-    {
-      ctx.state.save_ramps(ctx, modeIdBefore);
-    }
+    // save ramps if they exist
+    ctx.state.save_ramps(ctx, modeIdBefore);
   }
 
   //
