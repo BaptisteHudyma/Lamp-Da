@@ -13,25 +13,30 @@ void button_clicked_default(const uint8_t clicks)
   switch (clicks)
   {
     case 2: // 2 clicks: next mode
-      manager.next_mode();
+      if (manager.state.isInFavoriteMockGroup)
+      {
+        // if in favorite, next favorite
+        manager.state.lastFavoriteStep += 1;
+        manager.jump_to_favorite(manager.state.lastFavoriteStep % 4);
+      }
+      else
+      {
+        // else: just change mode
+        manager.next_mode();
+      }
       break;
 
     case 3: // 3 clicks: next group
+      // reset favorite indicator
+      manager.state.isInFavoriteMockGroup = false;
+      manager.state.lastFavoriteStep = 0;
+
       manager.next_group();
       break;
 
     case 4: // 4 clicks: jump to favorite
-      auto now = manager.lamp.now;
-      if ((now - manager.state.lastFavoriteJump) > 2000)
-      {
-        manager.state.lastFavoriteStep = 0;
-      }
-      else
-      {
-        manager.state.lastFavoriteStep += 1;
-      }
-      manager.state.lastFavoriteJump = now;
-
+      manager.state.lastFavoriteStep = 0;
+      manager.state.isInFavoriteMockGroup = true;
       manager.jump_to_favorite(manager.state.lastFavoriteStep % 4);
       break;
   }

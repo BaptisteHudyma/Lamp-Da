@@ -245,7 +245,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     uint8_t isFavoritePending = 0;
     uint8_t whichFavoritePending = 0;
     uint8_t lastFavoriteStep = 0;
-    uint32_t lastFavoriteJump = 0;
+    bool isInFavoriteMockGroup = false;
 
     // Ramp handlers: custom ramp (or "color ramp") and mode scroll ramp
     RampHandlerTy<Config> rampHandler = {Config::defaultCustomRampStepSpeedMs};
