@@ -109,16 +109,16 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   }
 
   /// \private Jump to favorite mode
-  auto LMBD_INLINE jump_to_favorite(uint8_t which_one = 0)
+  auto LMBD_INLINE jump_to_favorite(uint8_t which_one, bool shouldSaveLastActiveIndex)
   {
     if constexpr (LocalModeTy::isModeManager)
     {
-      LocalModeTy::jump_to_favorite(*this, which_one);
+      LocalModeTy::jump_to_favorite(*this, which_one, shouldSaveLastActiveIndex);
     }
     else
     {
       auto& manager = modeManager.get_context();
-      return manager.jump_to_favorite(which_one);
+      return manager.jump_to_favorite(which_one, shouldSaveLastActiveIndex);
     }
   }
 

@@ -218,7 +218,8 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     favoriteMode0,
     favoriteMode1,
     favoriteMode2,
-    favoriteMode3
+    favoriteMode3,
+    lastUsedFavorite
   };
 
   static constexpr uint32_t storeId = modes::store::derivateStoreId<modes::store::hash("ManagerStoreId"), AllGroupsTy>;
@@ -246,6 +247,8 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     uint8_t whichFavoritePending = 0;
     uint8_t lastFavoriteStep = 0;
     bool isInFavoriteMockGroup = false;
+    uint8_t beforeFavoriteGroupIndex = 0;
+    uint8_t beforeFavoriteModeIndex = 0;
 
     // Ramp handlers: custom ramp (or "color ramp") and mode scroll ramp
     RampHandlerTy<Config> rampHandler = {Config::defaultCustomRampStepSpeedMs};
@@ -387,8 +390,6 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   /// jump to an active index cleanly
   static void jump_to_new_active_index(auto& ctx, const ActiveIndexTy& newActiveIndex)
   {
-    auto keyActive = ctx.template storageFor<Store::lastActive>(ctx.modeManager.activeIndex);
-
     ctx.set_active_group(newActiveIndex.groupIndex, nbGroups);
     ctx.set_active_mode(newActiveIndex.modeIndex);
     // just copy the other values
@@ -403,9 +404,18 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     }
   }
 
-  static void jump_to_favorite(auto& ctx, uint8_t which_one = 0)
+  static void jump_to_favorite(auto& ctx, uint8_t which_one, bool shouldSaveLastActiveIndex)
   {
-    auto keyActive = ctx.template storageFor<Store::lastActive>(ctx.modeManager.activeIndex);
+    // wrap back to max number of favorites
+    which_one = (which_one % 4);
+    ctx.state.lastFavoriteStep = which_one;
+
+    // store last active index before jump
+    if (shouldSaveLastActiveIndex)
+    {
+      ctx.state.beforeFavoriteGroupIndex = ctx.modeManager.activeIndex.groupIndex;
+      ctx.state.beforeFavoriteModeIndex = ctx.modeManager.activeIndex.modeIndex;
+    }
 
     auto targetFavorite = ActiveIndexTy::from(Config::defaultFavorite);
     if (which_one == 0)
@@ -572,6 +582,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.template storageSaveOnly<Store::favoriteMode1>(ctx.modeManager.state.currentFavorite1);
     ctx.template storageSaveOnly<Store::favoriteMode2>(ctx.modeManager.state.currentFavorite2);
     ctx.template storageSaveOnly<Store::favoriteMode3>(ctx.modeManager.state.currentFavorite3);
+    ctx.template storageSaveOnly<Store::lastUsedFavorite>(ctx.modeManager.state.lastFavoriteStep);
 
     foreach_group<not hasCustomRamp>(ctx, [&ctx](auto group, auto groupId) {
       using StoreHere = typename decltype(group)::StoreEnum;
@@ -602,6 +613,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.template storageLoadOnly<Store::favoriteMode1>(ctx.state.currentFavorite1);
     ctx.template storageLoadOnly<Store::favoriteMode2>(ctx.state.currentFavorite2);
     ctx.template storageLoadOnly<Store::favoriteMode3>(ctx.state.currentFavorite3);
+    ctx.template storageLoadOnly<Store::lastUsedFavorite>(ctx.modeManager.state.lastFavoriteStep);
 
     // for each group, migrate & handle custom ramp memory
     foreach_group<not hasCustomRamp>(ctx, [&ctx](auto group, auto groupId) {

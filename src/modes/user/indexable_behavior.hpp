@@ -17,7 +17,7 @@ void button_clicked_default(const uint8_t clicks)
       {
         // if in favorite, next favorite
         manager.state.lastFavoriteStep += 1;
-        manager.jump_to_favorite(manager.state.lastFavoriteStep % 4);
+        manager.jump_to_favorite(manager.state.lastFavoriteStep, false);
       }
       else
       {
@@ -27,17 +27,28 @@ void button_clicked_default(const uint8_t clicks)
       break;
 
     case 3: // 3 clicks: next group
-      // reset favorite indicator
-      manager.state.isInFavoriteMockGroup = false;
-      manager.state.lastFavoriteStep = 0;
-
-      manager.next_group();
+      if (manager.state.isInFavoriteMockGroup)
+      {
+        // reset favorite indicator
+        manager.state.isInFavoriteMockGroup = false;
+        // return to previous state
+        manager.set_active_group(manager.state.beforeFavoriteGroupIndex);
+        manager.set_active_mode(manager.state.beforeFavoriteModeIndex);
+      }
+      else
+      {
+        // true next group
+        manager.next_group();
+      }
       break;
 
     case 4: // 4 clicks: jump to favorite
-      manager.state.lastFavoriteStep = 0;
-      manager.state.isInFavoriteMockGroup = true;
-      manager.jump_to_favorite(manager.state.lastFavoriteStep % 4);
+      if (not manager.state.isInFavoriteMockGroup)
+      {
+        manager.state.isInFavoriteMockGroup = true;
+        // jump and save last used mode
+        manager.jump_to_favorite(manager.state.lastFavoriteStep, true);
+      }
       break;
   }
 
