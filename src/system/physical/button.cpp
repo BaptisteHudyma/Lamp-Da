@@ -7,8 +7,6 @@
 #include "src/system/utils/utils.h"
 #include "src/system/utils/input_output.h"
 
-#include "src/system/physical/indicator.h"
-
 #include "src/system/platform/time.h"
 #include "src/system/platform/print.h"
 

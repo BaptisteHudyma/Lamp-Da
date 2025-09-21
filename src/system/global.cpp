@@ -1,10 +1,10 @@
 #include "src/compile.h"
 
-#include "src/system/alerts.h"
-#include "src/system/behavior.h"
+#include "src/system/logic/alerts.h"
+#include "src/system/logic/behavior.h"
+#include "src/system/logic/inputs.h"
 
 #include "src/system/physical/battery.h"
-#include "src/system/physical/button.h"
 #include "src/system/physical/indicator.h"
 #include "src/system/physical/imu.h"
 #include "src/system/physical/fileSystem.h"
@@ -21,14 +21,12 @@
 
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/i2c.h"
+#include "src/system/platform/gpio.h"
 #include "src/system/platform/time.h"
 #include "src/system/platform/registers.h"
 #include "src/system/platform/threads.h"
 
 namespace global {
-
-// timestamp of the system wake up
-static uint32_t turnOnTime = 0;
 
 void secondary_thread()
 {
@@ -87,9 +85,6 @@ void main_setup()
 
   // start by resetting the led driver
   outputPower::write_voltage(0);
-
-  // set turn on time
-  turnOnTime = time_ms();
 
   // necessary for all i2c communications
   // 400KHz clock, 100mS timeout
@@ -151,8 +146,7 @@ void main_setup()
   const bool wasPoweredByUserInterrupt = is_started_from_interrupt();
 
   // set up button colors and callbacks
-  button::init(wasPoweredByUserInterrupt);
-  indicator::init();
+  inputs::init(wasPoweredByUserInterrupt);
   imu::init();
 
   if (shouldAlertUser)
@@ -226,8 +220,8 @@ void main_loop(const uint32_t addedDelay)
   // update watchdog (prevent crash)
   kick_watchdog(USER_WATCHDOG_ID);
 
-  // loop is not ran in shutdown mode
-  button::handle_events(behavior::button_clicked_callback, behavior::button_hold_callback);
+  // handle inputs
+  inputs::loop();
 
   // handle user serial events
   serial::handleSerialEvents();

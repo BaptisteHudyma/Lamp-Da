@@ -6,7 +6,7 @@
 #include "charging_ic.h"
 #include "PDlib/power_delivery.h"
 
-#include "src/system/alerts.h"
+#include "src/system/logic/alerts.h"
 #include "src/system/physical/battery.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"

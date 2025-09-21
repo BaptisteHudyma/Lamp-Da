@@ -113,9 +113,13 @@ set(SRC_SYSTEM_EXT
 )
 
 set(SRC_SYSTEM_GLOBAL
-    ${LMBD_ROOT_DIR}/src/system/alerts.cpp
-    ${LMBD_ROOT_DIR}/src/system/behavior.cpp
     ${LMBD_ROOT_DIR}/src/system/global.cpp
+)
+
+set(SRC_SYSTEM_LOGIC
+    ${LMBD_ROOT_DIR}/src/system/logic/alerts.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/behavior.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/inputs.cpp
 )
 
 set(SIMULATOR_MOCKS
@@ -150,6 +154,7 @@ function(create_simulator_target SIM_NAME)
         ${SRC_SYSTEM_PHYSICAL}
         ${SRC_SYSTEM_PDLIB_C}
         ${SRC_SYSTEM_EXT}
+        ${SRC_SYSTEM_LOGIC}
         ${SRC_SYSTEM_GLOBAL}
         ${SIMULATOR_MOCKS}
         ${SIMULATOR_STATE}

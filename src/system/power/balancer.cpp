@@ -1,6 +1,6 @@
 #include "balancer.h"
 
-#include "src/system/alerts.h"
+#include "src/system/logic/alerts.h"
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/i2c.h"

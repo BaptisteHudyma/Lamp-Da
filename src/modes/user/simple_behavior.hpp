@@ -35,7 +35,7 @@ void button_clicked_default(const uint8_t clicks)
       if (manager.get_active_group() == 0 and manager.lamp.getBrightness() == maxBrightness)
       {
         // write a power boost (dangerous) for a limited time
-        outputPower::write_temporary_output_limits(inputVoltage_V * 1000 * 1.2f, 5000, 5000);
+        outputPower::write_temporary_output_limits(stripInputVoltage_mV * 1.2f, 5000, 5000);
       }
       else
       {

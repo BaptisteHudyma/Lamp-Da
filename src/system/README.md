@@ -1,6 +1,4 @@
 # File details
-- alert.h: Handle the diffferent alerts raised by the program
-- behavior.h: controls the lamp behaviors: what button actions does what, battery level, charger start and stops, ...
 - global.h: main entry point for the program
 - colors: Define color & color operations, as well as some animations for RGB lamp type
     - animations.h: define some generic animations, for RGB lamp type
@@ -9,6 +7,10 @@
     - soundAnimations.h: define some animations related to microphones, for RGB lamp type
     - wipes.h: define some moving animations, for RGB lamp type
 - ext: external libraries
+- logic: handle high level system logic (Input actions, button presses, main state machine...)
+    - alert.h: Handle the diffferent alerts raised by the program
+    - behavior.h: controls the lamp behaviors: battery level, charger start and stops, ...
+    - inputs.h: what button actions does what
 - physical: stuf related to the physical components: button, bluetooth, IMU, ...
     - LSM6DS3: library to talk to the IMU. Adapted to this architecture
     - battery.h: handle the battery readings, for battery level

@@ -5,6 +5,10 @@
 // code specific to LMBD_LAMP_TYPE=indexable
 //
 
+#include <cstdint>
+
+#include "src/system/utils/brightness_handle.h"
+
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #include "src/system/utils/strip.h"
 

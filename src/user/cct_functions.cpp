@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "src/system/behavior.h"
+#include "src/system/logic/behavior.h"
 
 #include "src/system/utils/utils.h"
 #include "src/system/utils/curves.h"
@@ -75,7 +75,7 @@ void brightness_update(const brightness_t brightness)
 
   currentBrightness = round(brightnessCurve.sample(constraintBrightness));
 
-  outputPower::write_voltage(inputVoltage_V * 1000);
+  outputPower::write_voltage(stripInputVoltage_mV);
   set_color(currentColor);
 }
 

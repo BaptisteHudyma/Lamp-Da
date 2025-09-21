@@ -2,7 +2,7 @@
 
 #include "src/system/utils/state_machine.h"
 
-#include "src/system/alerts.h"
+#include "src/system/logic/alerts.h"
 
 #include "src/system/physical/battery.h"
 
@@ -469,7 +469,8 @@ void set_output_voltage_mv(const uint16_t outputVoltage_mV)
 {
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
   // NEVER EVER CHANGE INDEXABLE VOLTAGE
-  if (outputVoltage_mV != 0 or outputVoltage_mV != (inputVoltage_V * 1000))
+  const bool isInRange = (outputVoltage_mV == 0) or (outputVoltage_mV == stripInputVoltage_mV);
+  if (not isInRange)
   {
     assert(false);
   }
@@ -488,7 +489,7 @@ void set_temporary_output(const uint16_t outputVoltage_mV, const uint16_t output
 {
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
   // NEVER EVER CHANGE INDEXABLE VOLTAGE
-  if (outputVoltage_mV != (inputVoltage_V * 1000))
+  if (outputVoltage_mV != stripInputVoltage_mV)
   {
     assert(false);
   }
