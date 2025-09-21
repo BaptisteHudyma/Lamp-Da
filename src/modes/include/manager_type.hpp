@@ -194,14 +194,14 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
         if constexpr (hasCallbacks)
         {
-          cb(context_as<GroupAt<Idx>>(ctx));
+          cb(context_as<GroupAt<Idx>>(ctx), Idx);
         }
       });
     }
     else
     {
       details::unroll<nbGroups>([&](auto Idx) LMBD_INLINE {
-        cb(context_as<GroupAt<Idx>>(ctx));
+        cb(context_as<GroupAt<Idx>>(ctx), Idx);
       });
     }
   }
@@ -546,7 +546,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void power_on_sequence(auto& ctx)
   {
-    foreach_group<true>(ctx, [](auto group) {
+    foreach_group<true>(ctx, [](auto group, auto groupId) {
       group.power_on_sequence();
     });
 
@@ -557,7 +557,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void power_off_sequence(auto& ctx)
   {
-    foreach_group<true>(ctx, [](auto group) {
+    foreach_group<true>(ctx, [](auto group, auto groupId) {
       group.power_off_sequence();
     });
   }
@@ -573,10 +573,13 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.template storageSaveOnly<Store::favoriteMode2>(ctx.modeManager.state.currentFavorite2);
     ctx.template storageSaveOnly<Store::favoriteMode3>(ctx.modeManager.state.currentFavorite3);
 
-    foreach_group<not hasCustomRamp>(ctx, [](auto group) {
+    foreach_group<not hasCustomRamp>(ctx, [&ctx](auto group, auto groupId) {
+      using StoreHere = typename decltype(group)::StoreEnum;
+      // save last mode used per group
+      group.template storageSaveOnly<StoreHere::lastSetMode>(ctx.state.lastModeMemory[groupId]);
+
       if constexpr (group.hasCustomRamp)
       {
-        using StoreHere = typename decltype(group)::StoreEnum;
         group.template storageSaveOnly<StoreHere::rampMemory>(group.state.customRampMemory);
         group.template storageSaveOnly<StoreHere::indexMemory>(group.state.customIndexMemory);
       }
@@ -601,13 +604,17 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.template storageLoadOnly<Store::favoriteMode3>(ctx.state.currentFavorite3);
 
     // for each group, migrate & handle custom ramp memory
-    foreach_group<not hasCustomRamp>(ctx, [](auto group) {
+    foreach_group<not hasCustomRamp>(ctx, [&ctx](auto group, auto groupId) {
       using LocalStore = details::LocalStoreOf<decltype(group)>;
       LocalStore::template migrateStoreIfNeeded<storeId>();
 
+      using StoreHere = typename LocalStore::EnumTy;
+
+      // save last mode used per group
+      group.template storageLoadOnly<StoreHere::lastSetMode>(ctx.state.lastModeMemory[groupId]);
+
       if constexpr (group.hasCustomRamp)
       {
-        using StoreHere = typename LocalStore::EnumTy;
         group.template storageLoadOnly<StoreHere::rampMemory>(group.state.customRampMemory);
         group.template storageLoadOnly<StoreHere::indexMemory>(group.state.customIndexMemory);
       }
