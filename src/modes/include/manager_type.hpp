@@ -454,13 +454,20 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     return value;
   }
 
-  static void enter_group(auto& ctx)
+  static void enter_group(auto& ctx, const uint8_t value)
   {
-    // TODO: check this with issue #255
+    auto manager = ctx.modeManager.get_context();
 
-    // restore last mode used in group
-    uint8_t groupIdAfter = ctx.get_active_group(nbGroups);
-    ctx.set_active_mode(ctx.state.lastModeMemory[groupIdAfter]);
+    // signal that we are quitting the mode
+    ctx.modeManager.quit_mode(manager);
+
+    // switch group (after quit mode)
+    ctx.modeManager.activeIndex.groupIndex = value;
+    // switch mode (restore last stored id)
+    ctx.modeManager.activeIndex.modeIndex = ctx.state.lastModeMemory[value];
+
+    // signal that we entered a new mode
+    ctx.modeManager.enter_mode(manager);
   }
 
   static void quit_group(auto& ctx)
@@ -569,8 +576,6 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     foreach_group<not hasCustomRamp>(ctx, [](auto group) {
       if constexpr (group.hasCustomRamp)
       {
-        group.state.save_ramps(group, group.get_active_mode());
-
         using StoreHere = typename decltype(group)::StoreEnum;
         group.template storageSaveOnly<StoreHere::rampMemory>(group.state.customRampMemory);
         group.template storageSaveOnly<StoreHere::indexMemory>(group.state.customIndexMemory);
