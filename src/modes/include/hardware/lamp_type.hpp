@@ -173,7 +173,7 @@ public:
   {
     // set output voltage for indexable
     if constexpr (flavor == LampTypes::indexable)
-      outputPower::write_voltage(inputVoltage_V * 1000);
+      outputPower::write_voltage(stripInputVoltage_mV);
 
     begin();
     clear();
@@ -435,7 +435,7 @@ public:
       if (constraintBrightness >= maxBrightness)
         outputPower::blip(50); // blip
 
-      constexpr uint16_t maxOutputVoltage_mV = inputVoltage_V * 1000;
+      constexpr uint16_t maxOutputVoltage_mV = stripInputVoltage_mV;
       using curve_t = curves::ExponentialCurve<brightness_t, uint16_t>;
       static curve_t brightnessCurve(
               curve_t::point_t {0, 9400}, curve_t::point_t {maxBrightness, maxOutputVoltage_mV}, 1.0);
