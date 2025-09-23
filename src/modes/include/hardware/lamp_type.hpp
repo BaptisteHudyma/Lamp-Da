@@ -384,8 +384,9 @@ public:
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      // (this is optimized out, and is essentially no-op for other flavors)
-      assert(true);
+      // disable strip temporarily
+      // should be reactivated by the manager
+      tempBrightness(0);
     }
     else
     {

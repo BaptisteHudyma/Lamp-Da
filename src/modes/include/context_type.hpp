@@ -450,11 +450,9 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   void blip(const uint32_t duration)
   {
     auto ctx = modeManager.get_context();
-
-    // clear strip
-    ctx.lamp.clear();
+    // skip the next frames
     ctx.state.skipNextFrameEffect = ceil(duration / static_cast<float>(ctx.lamp.frameDurationMs));
-
+    // turn off the output
     ctx.lamp.blip(duration);
   }
 

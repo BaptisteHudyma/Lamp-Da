@@ -567,6 +567,12 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     if (ctx.state.skipNextFrameEffect > 0)
     {
       ctx.state.skipNextFrameEffect -= 1;
+
+      // reached last skip frame, restore mode
+      if (ctx.state.skipNextFrameEffect == 0)
+      {
+        ctx.lamp.restoreBrightness();
+      }
       return;
     }
 
