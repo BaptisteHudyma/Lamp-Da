@@ -194,14 +194,14 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
         if constexpr (hasCallbacks)
         {
-          cb(context_as<GroupAt<Idx>>(ctx), Idx);
+          cb(context_as<GroupAt<Idx>>(ctx));
         }
       });
     }
     else
     {
       details::unroll<nbGroups>([&](auto Idx) LMBD_INLINE {
-        cb(context_as<GroupAt<Idx>>(ctx), Idx);
+        cb(context_as<GroupAt<Idx>>(ctx));
       });
     }
   }
@@ -215,6 +215,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   {
     lastActive,
     modeMemory,
+    usedFavoriteCount,
     favoriteMode0,
     favoriteMode1,
     favoriteMode2,
@@ -237,10 +238,12 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     std::array<uint8_t, nbGroups> lastModeMemory = {};
 
     // Which mode was selected as favorite
+    static constexpr uint8_t maxFavoriteCount = 4;
     ActiveIndexTy currentFavorite0 = ActiveIndexTy::from(Config::defaultFavorite);
     ActiveIndexTy currentFavorite1 = ActiveIndexTy::from(Config::defaultFavorite);
     ActiveIndexTy currentFavorite2 = ActiveIndexTy::from(Config::defaultFavorite);
     ActiveIndexTy currentFavorite3 = ActiveIndexTy::from(Config::defaultFavorite);
+    uint8_t usedFavoriteCount = 0; // number of favorite set by user [0, maxFavoriteCount]
 
     // (variables for pending favorite state machine)
     uint8_t isFavoritePending = 0;
@@ -404,10 +407,14 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     }
   }
 
-  static void jump_to_favorite(auto& ctx, uint8_t which_one, bool shouldSaveLastActiveIndex)
+  static bool jump_to_favorite(auto& ctx, uint8_t which_one, bool shouldSaveLastActiveIndex)
   {
+    // sanity check
+    if (ctx.state.usedFavoriteCount <= 0)
+      return false;
+
     // wrap back to max number of favorites
-    which_one = (which_one % 4);
+    which_one = (which_one % ctx.state.usedFavoriteCount);
     ctx.state.lastFavoriteStep = which_one;
 
     // store last active index before jump
@@ -418,41 +425,62 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     }
 
     auto targetFavorite = ActiveIndexTy::from(Config::defaultFavorite);
-    if (which_one == 0)
-      targetFavorite = ctx.state.currentFavorite0;
-    if (which_one == 1)
-      targetFavorite = ctx.state.currentFavorite1;
-    if (which_one == 2)
-      targetFavorite = ctx.state.currentFavorite2;
-    if (which_one == 3)
-      targetFavorite = ctx.state.currentFavorite3;
-
+    switch (which_one)
+    {
+      case 0:
+        targetFavorite = ctx.state.currentFavorite0;
+        break;
+      case 1:
+        targetFavorite = ctx.state.currentFavorite1;
+        break;
+      case 2:
+        targetFavorite = ctx.state.currentFavorite2;
+        break;
+      case 3:
+        targetFavorite = ctx.state.currentFavorite3;
+        break;
+      default: // unhandled case
+        return false;
+    }
     // reset once with the right mode
     jump_to_new_active_index(ctx, targetFavorite);
+    return true;
   }
 
-  static void set_favorite_now(auto& ctx, uint8_t which_one = 0)
+  static bool set_favorite_now(auto& ctx, uint8_t which_one = 0)
   {
+    // new favorite added
+    if (which_one != ctx.state.maxFavoriteCount && which_one == ctx.state.usedFavoriteCount)
+    {
+      // augment favorite count until we reach the max
+      ctx.state.usedFavoriteCount = min(ctx.state.usedFavoriteCount + 1, ctx.state.maxFavoriteCount);
+    }
+
     if (which_one == 0)
     {
       auto keyFav = ctx.template storageFor<Store::favoriteMode0>(ctx.state.currentFavorite0);
       ctx.state.currentFavorite0 = ctx.modeManager.activeIndex;
+      return true;
     }
     else if (which_one == 1)
     {
       auto keyFav = ctx.template storageFor<Store::favoriteMode1>(ctx.state.currentFavorite1);
       ctx.state.currentFavorite1 = ctx.modeManager.activeIndex;
+      return true;
     }
     else if (which_one == 2)
     {
       auto keyFav = ctx.template storageFor<Store::favoriteMode2>(ctx.state.currentFavorite2);
       ctx.state.currentFavorite2 = ctx.modeManager.activeIndex;
+      return true;
     }
     else if (which_one == 3)
     {
       auto keyFav = ctx.template storageFor<Store::favoriteMode3>(ctx.state.currentFavorite3);
       ctx.state.currentFavorite3 = ctx.modeManager.activeIndex;
+      return true;
     }
+    return false;
   }
 
   static uint8_t get_modes_count(auto& ctx)
@@ -522,10 +550,12 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     {
       ctx.state.isFavoritePending -= 1;
 
-      if (ctx.state.isFavoritePending == 0 && ctx.state.whichFavoritePending < 4)
+      if (ctx.state.isFavoritePending == 0 && ctx.state.whichFavoritePending <= ctx.state.usedFavoriteCount)
       {
-        ctx.set_favorite_now(ctx.state.whichFavoritePending);
-        alerts::manager.raise(alerts::Type::FAVORITE_SET);
+        if (ctx.set_favorite_now(ctx.state.whichFavoritePending))
+        {
+          alerts::manager.raise(alerts::Type::FAVORITE_SET);
+        }
       }
     }
 
@@ -556,7 +586,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void power_on_sequence(auto& ctx)
   {
-    foreach_group<true>(ctx, [](auto group, auto groupId) {
+    foreach_group<true>(ctx, [](auto group) {
       group.power_on_sequence();
     });
 
@@ -567,7 +597,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void power_off_sequence(auto& ctx)
   {
-    foreach_group<true>(ctx, [](auto group, auto groupId) {
+    foreach_group<true>(ctx, [](auto group) {
       group.power_off_sequence();
     });
   }
@@ -577,20 +607,19 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     // this scope is the only one where parameters will be kept
     ctx.template storageSaveOnly<Store::lastActive>(ctx.modeManager.activeIndex);
 
-    // save the 4 possible favorites
+    // save the maxFavoriteCount possible favorites
+    ctx.template storageSaveOnly<Store::usedFavoriteCount>(ctx.modeManager.state.usedFavoriteCount);
     ctx.template storageSaveOnly<Store::favoriteMode0>(ctx.modeManager.state.currentFavorite0);
     ctx.template storageSaveOnly<Store::favoriteMode1>(ctx.modeManager.state.currentFavorite1);
     ctx.template storageSaveOnly<Store::favoriteMode2>(ctx.modeManager.state.currentFavorite2);
     ctx.template storageSaveOnly<Store::favoriteMode3>(ctx.modeManager.state.currentFavorite3);
     ctx.template storageSaveOnly<Store::lastUsedFavorite>(ctx.modeManager.state.lastFavoriteStep);
+    ctx.template storageSaveOnly<Store::modeMemory>(ctx.state.lastModeMemory);
 
-    foreach_group<not hasCustomRamp>(ctx, [&ctx](auto group, auto groupId) {
-      using StoreHere = typename decltype(group)::StoreEnum;
-      // save last mode used per group
-      group.template storageSaveOnly<StoreHere::lastSetMode>(ctx.state.lastModeMemory[groupId]);
-
+    foreach_group<not hasCustomRamp>(ctx, [&ctx](auto group) {
       if constexpr (group.hasCustomRamp)
       {
+        using StoreHere = typename decltype(group)::StoreEnum;
         group.template storageSaveOnly<StoreHere::rampMemory>(group.state.customRampMemory);
         group.template storageSaveOnly<StoreHere::indexMemory>(group.state.customIndexMemory);
       }
@@ -608,25 +637,23 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     // load last active mode
     ctx.template storageLoadOnly<Store::lastActive>(ctx.modeManager.activeIndex);
 
-    // load the 4 possible favorites
+    // load the maxFavoriteCount possible favorites
+    ctx.template storageLoadOnly<Store::usedFavoriteCount>(ctx.modeManager.state.usedFavoriteCount);
     ctx.template storageLoadOnly<Store::favoriteMode0>(ctx.state.currentFavorite0);
     ctx.template storageLoadOnly<Store::favoriteMode1>(ctx.state.currentFavorite1);
     ctx.template storageLoadOnly<Store::favoriteMode2>(ctx.state.currentFavorite2);
     ctx.template storageLoadOnly<Store::favoriteMode3>(ctx.state.currentFavorite3);
     ctx.template storageLoadOnly<Store::lastUsedFavorite>(ctx.modeManager.state.lastFavoriteStep);
+    ctx.template storageLoadOnly<Store::modeMemory>(ctx.state.lastModeMemory);
 
     // for each group, migrate & handle custom ramp memory
-    foreach_group<not hasCustomRamp>(ctx, [&ctx](auto group, auto groupId) {
+    foreach_group<not hasCustomRamp>(ctx, [&ctx](auto group) {
       using LocalStore = details::LocalStoreOf<decltype(group)>;
       LocalStore::template migrateStoreIfNeeded<storeId>();
 
-      using StoreHere = typename LocalStore::EnumTy;
-
-      // save last mode used per group
-      group.template storageLoadOnly<StoreHere::lastSetMode>(ctx.state.lastModeMemory[groupId]);
-
       if constexpr (group.hasCustomRamp)
       {
+        using StoreHere = typename LocalStore::EnumTy;
         group.template storageLoadOnly<StoreHere::rampMemory>(group.state.customRampMemory);
         group.template storageLoadOnly<StoreHere::indexMemory>(group.state.customIndexMemory);
       }
@@ -717,33 +744,44 @@ namespace modes::details {
 /// \private animate favorite picks
 template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ctx, float holdDuration, float stepSize)
 {
+  // user as a number of favorite set
+  // occasional +1 if not all favorite are set (allow a new favorite)
+  const uint8_t numberOfFavoriteSet =
+          ctx.state.usedFavoriteCount + ((ctx.state.usedFavoriteCount < ctx.state.maxFavoriteCount) ? 1 : 0);
+
   // where we are: 0-255 rampColorRing
   uint32_t stepProgress = floor((holdDuration * 256.0) / stepSize);
   stepProgress = stepProgress % 256;
 
-  // up to 5 step state: "which_one" is [0, 1, 2, 3] and "do not set" is 4
-  uint32_t stepCount = 4 + floor(holdDuration / stepSize);
-  stepCount = stepCount % 5;
+  // up to maxFavoriteCount step state: "which_one" is [0, 1, 2, 3, ...] and "do not set" is the max index + 1
+  uint32_t stepCount = numberOfFavoriteSet + floor(holdDuration / stepSize);
+  stepCount = stepCount % (numberOfFavoriteSet + 1);
 
   // display ramp to show where user is standing
-  if (stepCount == 0)
-    anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Green, colors::White>);
-  if (stepCount == 1)
-    anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Blue, colors::White>);
-  if (stepCount == 2)
-    anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Orange, colors::White>);
-  if (stepCount == 3)
-    anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Purple, colors::White>);
-  if (stepCount == 4)
+  if (stepCount >= numberOfFavoriteSet)
+  {
+    // cancel action
     anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::White, colors::Cyan>);
+  }
+  else
+  {
+    if (stepCount == 0)
+      anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Green, colors::White>);
+    if (stepCount == 1)
+      anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Blue, colors::White>);
+    if (stepCount == 2)
+      anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Orange, colors::White>);
+    if (stepCount == 3)
+      anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Purple, colors::White>);
+  }
 
   // extra display on the first pixels (count pixels to know fav no)
   if constexpr (displayFavoriteNumber)
   {
     ctx.skipFirstLedsForFrames(0);
-    for (uint8_t i = 0; i < 4; ++i)
+    for (uint8_t i = 0; i < min(4, numberOfFavoriteSet + 1); ++i)
     {
-      if (stepCount != 4 && i < stepCount + 1)
+      if (stepCount < numberOfFavoriteSet && i < stepCount + 1)
       {
         ctx.lamp.setPixelColor(i, colors::Cyan);
       }

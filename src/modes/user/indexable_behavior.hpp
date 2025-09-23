@@ -17,7 +17,8 @@ void button_clicked_default(const uint8_t clicks)
       {
         // if in favorite, next favorite
         manager.state.lastFavoriteStep += 1;
-        manager.jump_to_favorite(manager.state.lastFavoriteStep, false);
+        // sanity check, if it fails, quit favorites
+        manager.state.isInFavoriteMockGroup = manager.jump_to_favorite(manager.state.lastFavoriteStep, false);
       }
       else
       {
@@ -26,9 +27,12 @@ void button_clicked_default(const uint8_t clicks)
       }
       break;
 
-    case 3: // 3 clicks: next group
+    case 3: // 3 clicks: next group or quit favorite group
       if (manager.state.isInFavoriteMockGroup)
       {
+#ifdef LMBD_SIMULATION
+        fprintf(stderr, "Exit fake favorite group\n");
+#endif
         // reset favorite indicator
         manager.state.isInFavoriteMockGroup = false;
         // return to previous state
@@ -43,11 +47,18 @@ void button_clicked_default(const uint8_t clicks)
       break;
 
     case 4: // 4 clicks: jump to favorite
+
       if (not manager.state.isInFavoriteMockGroup)
       {
-        manager.state.isInFavoriteMockGroup = true;
         // jump and save last used mode
-        manager.jump_to_favorite(manager.state.lastFavoriteStep, true);
+        manager.state.isInFavoriteMockGroup = manager.jump_to_favorite(manager.state.lastFavoriteStep, true);
+
+#ifdef LMBD_SIMULATION
+        if (manager.state.isInFavoriteMockGroup)
+          fprintf(stderr, "Enter fake favorite group\n");
+        else
+          fprintf(stderr, "fake favorite group entry refusal !\n");
+#endif
       }
       break;
   }
