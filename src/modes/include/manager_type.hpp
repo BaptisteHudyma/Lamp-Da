@@ -244,6 +244,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     // (variables for pending favorite state machine)
     uint8_t isFavoritePending = 0;
     uint8_t whichFavoritePending = 0;
+    uint8_t isFavoriteDeletePending = 0;
     uint8_t lastFavoriteStep = 0;
     bool isInFavoriteMockGroup = false;
     uint8_t beforeFavoriteGroupIndex = 0;
@@ -446,6 +447,42 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     return false;
   }
 
+  static bool delete_favorite_now(auto& ctx)
+  {
+    // delete current
+    const auto which_one = ctx.state.lastFavoriteStep;
+    if (ctx.state.usedFavoriteCount > 0 and which_one < ctx.state.maxFavoriteCount)
+    {
+      ctx.state.usedFavoriteCount -= 1;
+
+      for (uint8_t i = which_one; i < ctx.state.maxFavoriteCount - 1; ++i)
+      {
+        // make them all go down one spot
+        ctx.state.favorites[i] = ctx.state.favorites[i + 1];
+      }
+      // changed favorite index, jump
+      if (ctx.state.usedFavoriteCount > 0)
+      {
+        jump_to_new_active_index(ctx, ctx.state.favorites[which_one % ctx.state.usedFavoriteCount]);
+      }
+      else
+      {
+        // no more favorite, restore last used
+
+        // reset favorite indicator
+        ctx.state.isInFavoriteMockGroup = false;
+        // return to previous state
+        ctx.set_active_group(ctx.state.beforeFavoriteGroupIndex);
+        ctx.set_active_mode(ctx.state.beforeFavoriteModeIndex);
+
+        // blip to indicate favorite mode exit
+        ctx.blip(250);
+      }
+      return true;
+    }
+    return false;
+  }
+
   static uint8_t get_modes_count(auto& ctx)
   {
     uint8_t value = 0;
@@ -519,6 +556,17 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
         {
           alerts::manager.raise(alerts::Type::FAVORITE_SET);
         }
+      }
+    }
+
+    if (ctx.state.isFavoriteDeletePending > 0)
+    {
+      ctx.state.isFavoriteDeletePending -= 1;
+
+      // delete favorite
+      if (ctx.state.isFavoriteDeletePending == 0)
+      {
+        ctx.delete_favorite_now();
       }
     }
 
@@ -704,6 +752,28 @@ namespace modes::details {
 // \private API
 //
 
+/// \private display a lit pixel per given favorite index
+void display_favorite_number_ramp(auto& ctx,
+                                  const uint8_t favoriteIndex,
+                                  const uint8_t maxFavoriteIndex,
+                                  const bool display = false)
+{
+  ctx.skipFirstLedsForFrames(0);
+  const uint8_t maxPixelDisplay = min(ctx.state.maxFavoriteCount, maxFavoriteIndex);
+  for (uint8_t i = 0; i < maxPixelDisplay; ++i)
+  {
+    if (display and i <= favoriteIndex)
+    {
+      ctx.lamp.setPixelColor(i, colors::Cyan);
+    }
+    else
+    {
+      ctx.lamp.setPixelColor(i, colors::Black);
+    }
+  }
+  ctx.skipFirstLedsForFrames(ctx.lamp.maxWidth * 2, 10);
+}
+
 /// \private animate favorite picks
 template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ctx, float holdDuration, float stepSize)
 {
@@ -749,20 +819,8 @@ template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ct
   // extra display on the first pixels (count pixels to know fav no)
   if constexpr (displayFavoriteNumber)
   {
-    ctx.skipFirstLedsForFrames(0);
-    const uint8_t maxPixelDisplay = min(ctx.state.maxFavoriteCount, numberOfFavoriteSet);
-    for (uint8_t i = 0; i < maxPixelDisplay; ++i)
-    {
-      if (stepCount < numberOfFavoriteSet && i < stepCount + 1)
-      {
-        ctx.lamp.setPixelColor(i, colors::Cyan);
-      }
-      else
-      {
-        ctx.lamp.setPixelColor(i, colors::Black);
-      }
-    }
-    ctx.skipFirstLedsForFrames(ctx.lamp.maxWidth * 2, 10);
+    // display ramp
+    display_favorite_number_ramp(ctx, stepCount, numberOfFavoriteSet, stepCount < numberOfFavoriteSet);
   }
 
   // set this, after a while upon no longer holding button, favorite is set
@@ -771,6 +829,43 @@ template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ct
 
   // TODO: #153 remove this freeze, after migrating legacy modes :)
   ctx.skipNextFrames(10);
+}
+
+template<bool displayFavoriteNumber = true> void _animate_favorite_delete(auto& ctx, float holdDuration, float stepSize)
+{
+  // no favorite deletion if no favorites
+  if (ctx.state.usedFavoriteCount <= 0)
+    return;
+
+  // where we are: 0-255 rampColorRing
+  uint32_t stepProgress = floor((holdDuration * 256.0) / stepSize);
+  stepProgress = stepProgress % 256;
+
+  uint32_t stepCount = 1 + floor(holdDuration / stepSize);
+  stepCount = stepCount % 2;
+
+  if (stepCount == 1)
+  {
+    anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Orange, colors::Red>);
+
+    // extra display on the first pixels (count pixels to know fav no)
+    if constexpr (displayFavoriteNumber)
+    {
+      // display ramp
+      display_favorite_number_ramp(ctx, ctx.state.lastFavoriteStep, ctx.state.usedFavoriteCount, stepCount == 1);
+    }
+
+    // set this, after a while upon no longer holding button, favorite is removed
+    ctx.state.isFavoriteDeletePending = 30;
+
+    // TODO: #153 remove this freeze, after migrating legacy modes :)
+    ctx.skipNextFrames(10);
+  }
+  else
+  {
+    // no animation
+    ctx.state.isFavoriteDeletePending = 0;
+  }
 }
 
 } // namespace modes::details

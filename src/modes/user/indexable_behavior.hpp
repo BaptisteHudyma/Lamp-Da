@@ -176,10 +176,18 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       break;
 
     case 5: // 5 click+hold: configure favorite
-      // no new favorite in favorite
-      if (not isEndOfHoldEvent and not manager.state.isInFavoriteMockGroup)
+      if (not isEndOfHoldEvent)
       {
-        modes::details::_animate_favorite_pick(manager, holdDuration, 1500);
+        if (not manager.state.isInFavoriteMockGroup)
+        {
+          // no new favorite in favorite
+          modes::details::_animate_favorite_pick(manager, holdDuration, 1500);
+        }
+        else
+        {
+          // remove current favorite
+          modes::details::_animate_favorite_delete(manager, holdDuration, 2000);
+        }
       }
       break;
 

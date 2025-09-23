@@ -136,6 +136,20 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
   }
 
+  /// \private Set active favorite now
+  auto LMBD_INLINE delete_favorite_now()
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      return LocalModeTy::delete_favorite_now(*this);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      return manager.delete_favorite_now();
+    }
+  }
+
   /// \private Get number of groups available
   auto LMBD_INLINE get_groups_count() { return modeManager.nbGroups; }
 
