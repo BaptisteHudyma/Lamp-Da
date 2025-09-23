@@ -201,7 +201,7 @@ struct StroboscopeMode : public BasicMode
     static constexpr uint32_t onTime = 5;
     if (ctx.lamp.now - ctx.state.lastCall >= pulseDuration)
     {
-      ctx.lamp.blip(pulseDuration - onTime);
+      ctx.blip(pulseDuration - onTime);
       ctx.state.lastCall = ctx.lamp.now;
     }
   }

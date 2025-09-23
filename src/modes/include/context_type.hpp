@@ -192,6 +192,16 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
 
     auto manager = modeManager.get_context();
 
+    // if next mode is the same as current one, add a blip to help user differenciate
+    if (modeManager.activeIndex.modeIndex == value)
+    {
+      // This is not complete, there is no group check, so the blip will be visible sometimes on modes with the same
+      // modeIndex in different groups
+
+      // blip to indicate a mode change to the same mode
+      manager.blip(100);
+    }
+
     // signal that we are quitting the mode
     modeManager.quit_mode(manager);
     // switch mode
@@ -431,6 +441,21 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   {
     auto ctx = modeManager.get_context();
     ctx.state.skipNextFrameEffect = count;
+  }
+
+  /**
+   * \brief Turn off the output for a duration
+   * \param[in] duration in milliseconds
+   */
+  void blip(const uint32_t duration)
+  {
+    auto ctx = modeManager.get_context();
+
+    // clear strip
+    ctx.lamp.clear();
+    ctx.state.skipNextFrameEffect = ceil(duration / static_cast<float>(ctx.lamp.frameDurationMs));
+
+    ctx.lamp.blip(duration);
   }
 
   /** \brief Skip the first few LEDs update during several frames

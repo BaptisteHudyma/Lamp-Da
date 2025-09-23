@@ -38,6 +38,9 @@ void button_clicked_default(const uint8_t clicks)
         // return to previous state
         manager.set_active_group(manager.state.beforeFavoriteGroupIndex);
         manager.set_active_mode(manager.state.beforeFavoriteModeIndex);
+
+        // blip to indicate favorite mode exit
+        manager.blip(250);
       }
       else
       {
@@ -51,14 +54,12 @@ void button_clicked_default(const uint8_t clicks)
       if (not manager.state.isInFavoriteMockGroup)
       {
         // jump and save last used mode
-        manager.state.isInFavoriteMockGroup = manager.jump_to_favorite(manager.state.lastFavoriteStep, true);
-
-#ifdef LMBD_SIMULATION
-        if (manager.state.isInFavoriteMockGroup)
-          fprintf(stderr, "Enter fake favorite group\n");
-        else
-          fprintf(stderr, "fake favorite group entry refusal !\n");
-#endif
+        if (manager.jump_to_favorite(manager.state.lastFavoriteStep, true))
+        {
+          manager.state.isInFavoriteMockGroup = true;
+          // blip to indicate favorite mode enter
+          manager.blip(250);
+        }
       }
       break;
   }
@@ -101,77 +102,82 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       break;
 
     case 4: // 4 click+hold: scroll across modes and group
-      scrollHandler.update_ramp(128, holdDuration, [&](uint8_t rampValue) {
-        uint8_t modeIndex = manager.get_active_mode();
-        uint8_t groupIndex = manager.get_active_group();
-        uint8_t modeCount = manager.get_modes_count();
-        uint8_t groupCount = manager.get_groups_count();
+      // no scroll in favorite
+      if (not manager.state.isInFavoriteMockGroup)
+      {
+        scrollHandler.update_ramp(128, holdDuration, [&](uint8_t rampValue) {
+          uint8_t modeIndex = manager.get_active_mode();
+          uint8_t groupIndex = manager.get_active_group();
+          uint8_t modeCount = manager.get_modes_count();
+          uint8_t groupCount = manager.get_groups_count();
 
-        // we are going backward
-        //
-        if (rampValue < 128)
-        {
-          // if modeIndex is not the first, just decrement it
-          if (modeIndex > 0)
-          {
-            manager.set_active_mode(modeIndex - 1, modeCount);
-
-            // or else decrement group, then set mode to last one
-          }
-          else
-          {
-            // if groupIndex is not the first, just decrement it
-            if (groupIndex > 0)
-            {
-              manager.set_active_group(groupIndex - 1, groupCount);
-
-              // else wrap to last group
-            }
-            else
-            {
-              manager.set_active_group(groupCount - 1, groupCount);
-            }
-
-            // backward scroll: set mode to last one on group change
-            modeCount = manager.get_modes_count();
-            manager.set_active_mode(modeCount - 1, modeCount);
-          }
-
-          // we are going forward
+          // we are going backward
           //
-        }
-        else
-        {
-          // if modeIndex is not the last, just increment it
-          if (modeIndex + 1 < modeCount)
+          if (rampValue < 128)
           {
-            manager.next_mode();
-
-            // or else increment group
-          }
-          else
-          {
-            // if groupIndex is not the last, just increment it
-            if (groupIndex + 1 < groupCount)
+            // if modeIndex is not the first, just decrement it
+            if (modeIndex > 0)
             {
-              manager.next_group();
+              manager.set_active_mode(modeIndex - 1, modeCount);
 
-              // else wrap to first group
+              // or else decrement group, then set mode to last one
             }
             else
             {
-              manager.set_active_group(0, groupCount);
+              // if groupIndex is not the first, just decrement it
+              if (groupIndex > 0)
+              {
+                manager.set_active_group(groupIndex - 1, groupCount);
+
+                // else wrap to last group
+              }
+              else
+              {
+                manager.set_active_group(groupCount - 1, groupCount);
+              }
+
+              // backward scroll: set mode to last one on group change
+              modeCount = manager.get_modes_count();
+              manager.set_active_mode(modeCount - 1, modeCount);
             }
 
-            // forward scroll: set mode to first one on group change
-            manager.set_active_mode(0, modeCount);
+            // we are going forward
+            //
           }
-        }
-      });
+          else
+          {
+            // if modeIndex is not the last, just increment it
+            if (modeIndex + 1 < modeCount)
+            {
+              manager.next_mode();
+
+              // or else increment group
+            }
+            else
+            {
+              // if groupIndex is not the last, just increment it
+              if (groupIndex + 1 < groupCount)
+              {
+                manager.next_group();
+
+                // else wrap to first group
+              }
+              else
+              {
+                manager.set_active_group(0, groupCount);
+              }
+
+              // forward scroll: set mode to first one on group change
+              manager.set_active_mode(0, modeCount);
+            }
+          }
+        });
+      }
       break;
 
     case 5: // 5 click+hold: configure favorite
-      if (holdDuration > 10)
+      // no new favorite in favorite
+      if (not manager.state.isInFavoriteMockGroup)
       {
         modes::details::_animate_favorite_pick(manager, holdDuration, 2000);
       }
