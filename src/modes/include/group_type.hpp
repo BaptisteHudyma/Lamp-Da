@@ -111,7 +111,6 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   // persistent values
   enum class Store : uint16_t
   {
-    lastSetMode,
     rampMemory,
     indexMemory
   };

@@ -54,6 +54,7 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
     lastLine = 0;
     currentLine = firstLine;
 
+    lamp.template fillTempBuffer(0);
     auto& buffer = lamp.template getTempBuffer<dstBufIdx>();
     std::copy(currentLine.begin(), currentLine.end(), buffer.begin());
   }
