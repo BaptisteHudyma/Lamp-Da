@@ -67,6 +67,8 @@ inline const char* AlertsToText(const Type type)
       return "SYSTEM_OFF_FAILED";
     case SYSTEM_IN_ERROR_STATE:
       return "SYSTEM_IN_ERROR_STATE";
+    case SYSTEM_IN_LOCKOUT:
+      return "SYSTEM_IN_LOCKOUT";
     default:
       return "UNSUPPORTED TYPE";
   }
@@ -393,6 +395,19 @@ struct Alert_SystemInErrorState : public AlertBase
   Type get_type() const override { return Type::SYSTEM_IN_ERROR_STATE; }
 };
 
+struct Alert_SystemInLockout : public AlertBase
+{
+  bool show() const override
+  {
+    return indicator::blink(
+            200,
+            50,
+            {utils::ColorSpace::BLACK, utils::ColorSpace::BLUE, utils::ColorSpace::WHITE, utils::ColorSpace::RED});
+  }
+
+  Type get_type() const override { return Type::SYSTEM_IN_LOCKOUT; }
+};
+
 // Alerts must be sorted by importance, only the first activated one will be shown
 AlertBase* allAlerts[] = {new Alert_SystemShutdownFailed,
                           new Alert_HardwareAlert,
@@ -405,7 +420,8 @@ AlertBase* allAlerts[] = {new Alert_SystemShutdownFailed,
                           new Alert_BluetoothAdvertisement,
                           new Alert_FavoriteSet,
                           new Alert_OtgFailed,
-                          new Alert_SystemInErrorState};
+                          new Alert_SystemInErrorState,
+                          new Alert_SystemInLockout};
 
 void update_alerts()
 {
@@ -587,6 +603,22 @@ void AlertManager_t::clear(const Type type)
     return;
   lampda_print("ALERT cleared: %s", AlertsToText(type));
   _current ^= type;
+}
+
+uint32_t AlertManager_t::get_time_since_raised(const Type type)
+{
+  for (auto alert: allAlerts)
+  {
+    if (alert->get_type() == type)
+    {
+      // safety if the alert was raised in between, or not yet handled
+      if (not is_raised(type) or not alert->_isRaisedHandled)
+        return 0;
+      // compute raised time
+      return time_ms() - alert->raisedTime;
+    }
+  }
+  return 0;
 }
 
 } // namespace alerts
