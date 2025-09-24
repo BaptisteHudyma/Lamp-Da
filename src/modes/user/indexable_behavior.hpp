@@ -111,7 +111,27 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       });
       break;
 
-    case 4: // 4 click+hold: scroll across modes and group
+    case 4: // 4 click+hold: configure favorite
+      if (not isEndOfHoldEvent)
+      {
+        if (not manager.state.isInFavoriteMockGroup)
+        {
+          // no new favorite in favorite
+          modes::details::_animate_favorite_pick(manager, holdDuration, 1500);
+        }
+        else
+        {
+          // remove current favorite
+          modes::details::_animate_favorite_delete(manager, holdDuration, 2000);
+        }
+      }
+      break;
+
+    case 5:
+      // TODO: sunset timer
+      break;
+
+    case 6: // 6 click+hold: scroll across modes and group
       // no scroll in favorite
       if (not manager.state.isInFavoriteMockGroup)
       {
@@ -124,22 +144,6 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
         else
         {
           manager.handle_scroll_modes(holdDuration);
-        }
-      }
-      break;
-
-    case 5: // 5 click+hold: configure favorite
-      if (not isEndOfHoldEvent)
-      {
-        if (not manager.state.isInFavoriteMockGroup)
-        {
-          // no new favorite in favorite
-          modes::details::_animate_favorite_pick(manager, holdDuration, 1500);
-        }
-        else
-        {
-          // remove current favorite
-          modes::details::_animate_favorite_delete(manager, holdDuration, 2000);
         }
       }
       break;
