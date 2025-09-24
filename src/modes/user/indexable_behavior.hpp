@@ -22,8 +22,20 @@ void button_clicked_default(const uint8_t clicks)
       }
       else
       {
-        // else: just change mode
-        manager.next_mode();
+        if (manager.state.isLastScrollAGroupChange and manager.lamp.now - manager.state.lastScrollStopped < 2000)
+        {
+          // last action was a group change & timer did not run out yet:
+          // change group
+          manager.next_group();
+
+          // prevent further jumps
+          manager.state.isLastScrollAGroupChange = false;
+        }
+        else
+        {
+          // else: just change mode
+          manager.next_mode();
+        }
       }
       break;
 
@@ -89,96 +101,26 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
 {
   auto manager = get_context();
   auto& rampHandler = manager.state.rampHandler;
-  auto& scrollHandler = manager.state.scrollHandler;
-  scrollHandler.isForward = false; // (always scroll modes backward)
 
   switch (clicks)
   {
     case 3: // 3 click+hold: configure custom ramp
-      rampHandler.update_ramp(manager.get_active_custom_ramp(), holdDuration, [&](uint8_t rampValue) {
-        manager.custom_ramp_update(rampValue);
-        manager.set_active_custom_ramp(rampValue);
-      });
-      break;
-
-    case 4: // 4 click+hold: scroll across modes and group
-      // no scroll in favorite
+            // no ramps in favorite group
       if (not manager.state.isInFavoriteMockGroup)
       {
-        scrollHandler.update_ramp(128, holdDuration, [&](uint8_t rampValue) {
-          uint8_t modeIndex = manager.get_active_mode();
-          uint8_t groupIndex = manager.get_active_group();
-          uint8_t modeCount = manager.get_modes_count();
-          uint8_t groupCount = manager.get_groups_count();
-
-          // we are going backward
-          //
-          if (rampValue < 128)
-          {
-            // if modeIndex is not the first, just decrement it
-            if (modeIndex > 0)
-            {
-              manager.set_active_mode(modeIndex - 1, modeCount);
-
-              // or else decrement group, then set mode to last one
-            }
-            else
-            {
-              // if groupIndex is not the first, just decrement it
-              if (groupIndex > 0)
-              {
-                manager.set_active_group(groupIndex - 1, groupCount);
-
-                // else wrap to last group
-              }
-              else
-              {
-                manager.set_active_group(groupCount - 1, groupCount);
-              }
-
-              // backward scroll: set mode to last one on group change
-              modeCount = manager.get_modes_count();
-              manager.set_active_mode(modeCount - 1, modeCount);
-            }
-
-            // we are going forward
-            //
-          }
-          else
-          {
-            // if modeIndex is not the last, just increment it
-            if (modeIndex + 1 < modeCount)
-            {
-              manager.next_mode();
-
-              // or else increment group
-            }
-            else
-            {
-              // if groupIndex is not the last, just increment it
-              if (groupIndex + 1 < groupCount)
-              {
-                manager.next_group();
-
-                // else wrap to first group
-              }
-              else
-              {
-                manager.set_active_group(0, groupCount);
-              }
-
-              // forward scroll: set mode to first one on group change
-              manager.set_active_mode(0, modeCount);
-            }
-          }
+        rampHandler.update_ramp(manager.get_active_custom_ramp(), holdDuration, [&](uint8_t rampValue) {
+          manager.custom_ramp_update(rampValue);
+          manager.set_active_custom_ramp(rampValue);
         });
       }
       break;
 
-    case 5: // 5 click+hold: configure favorite
+    case 4: // 4 click+hold: configure favorite
       if (not isEndOfHoldEvent)
       {
-        if (not manager.state.isInFavoriteMockGroup)
+        // lock to prevent addition of favorite from favorite & if we are deleting favorites
+        // the second case can happen when the user delete all favorites
+        if (not manager.state.isInFavoriteMockGroup && not manager.state.isInDeleteFavorite)
         {
           // no new favorite in favorite
           modes::details::_animate_favorite_pick(manager, holdDuration, 1500);
@@ -187,6 +129,31 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
         {
           // remove current favorite
           modes::details::_animate_favorite_delete(manager, holdDuration, 2000);
+        }
+      }
+      else
+      {
+        manager.state.isInDeleteFavorite = false;
+      }
+      break;
+
+    case 5:
+      // TODO: sunset timer
+      break;
+
+    case 6: // 6 click+hold: scroll across modes and group
+      // no scroll in favorite
+      if (not manager.state.isInFavoriteMockGroup)
+      {
+        // register end of scroll
+        if (isEndOfHoldEvent)
+        {
+          // update release time
+          manager.state.lastScrollStopped = manager.lamp.now;
+        }
+        else
+        {
+          manager.handle_scroll_modes(holdDuration);
         }
       }
       break;
