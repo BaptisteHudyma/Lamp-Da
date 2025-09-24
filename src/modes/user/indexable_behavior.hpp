@@ -89,8 +89,6 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
 {
   auto manager = get_context();
   auto& rampHandler = manager.state.rampHandler;
-  auto& scrollHandler = manager.state.scrollHandler;
-  scrollHandler.isForward = false; // (always scroll modes backward)
 
   switch (clicks)
   {
@@ -103,75 +101,9 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
 
     case 4: // 4 click+hold: scroll across modes and group
       // no scroll in favorite
-      if (not manager.state.isInFavoriteMockGroup)
+      if (not manager.state.isInFavoriteMockGroup && not isEndOfHoldEvent)
       {
-        scrollHandler.update_ramp(128, holdDuration, [&](uint8_t rampValue) {
-          uint8_t modeIndex = manager.get_active_mode();
-          uint8_t groupIndex = manager.get_active_group();
-          uint8_t modeCount = manager.get_modes_count();
-          uint8_t groupCount = manager.get_groups_count();
-
-          // we are going backward
-          //
-          if (rampValue < 128)
-          {
-            // if modeIndex is not the first, just decrement it
-            if (modeIndex > 0)
-            {
-              manager.set_active_mode(modeIndex - 1, modeCount);
-
-              // or else decrement group, then set mode to last one
-            }
-            else
-            {
-              // if groupIndex is not the first, just decrement it
-              if (groupIndex > 0)
-              {
-                manager.set_active_group(groupIndex - 1, groupCount);
-
-                // else wrap to last group
-              }
-              else
-              {
-                manager.set_active_group(groupCount - 1, groupCount);
-              }
-
-              // backward scroll: set mode to last one on group change
-              modeCount = manager.get_modes_count();
-              manager.set_active_mode(modeCount - 1, modeCount);
-            }
-
-            // we are going forward
-            //
-          }
-          else
-          {
-            // if modeIndex is not the last, just increment it
-            if (modeIndex + 1 < modeCount)
-            {
-              manager.next_mode();
-
-              // or else increment group
-            }
-            else
-            {
-              // if groupIndex is not the last, just increment it
-              if (groupIndex + 1 < groupCount)
-              {
-                manager.next_group();
-
-                // else wrap to first group
-              }
-              else
-              {
-                manager.set_active_group(0, groupCount);
-              }
-
-              // forward scroll: set mode to first one on group change
-              manager.set_active_mode(0, modeCount);
-            }
-          }
-        });
+        manager.handle_scroll_modes(holdDuration);
       }
       break;
 

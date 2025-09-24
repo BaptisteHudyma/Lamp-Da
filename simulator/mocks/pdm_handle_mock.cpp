@@ -55,7 +55,7 @@ PdmData get()
 
 bool start()
 {
-  fprintf(stderr, "started\n");
+  fprintf(stderr, "mic started\n");
   fflush(stderr);
 
   if (!recorder)

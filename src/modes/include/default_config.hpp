@@ -64,7 +64,7 @@ struct DefaultManagerConfig
   //
 
   /// (misc) Override how slow mode & group scroll goes (milliseconds)
-  static constexpr uint32_t scrollRampStepSpeedMs = 512;
+  static constexpr uint32_t scrollRampStepSpeedMs = 850;
 
   /// (misc) Override ramp wait time before starting (milliseconds)
   static constexpr uint32_t rampStartPeriodMs = 128;

@@ -150,6 +150,20 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
   }
 
+  /// \private scrll through all modes
+  auto LMBD_INLINE handle_scroll_modes(const uint32_t holdDuration)
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      return LocalModeTy::handle_scroll_modes(*this, holdDuration);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      return manager.handle_scroll_modes(holdDuration);
+    }
+  }
+
   /// \private Get number of groups available
   auto LMBD_INLINE get_groups_count() { return modeManager.nbGroups; }
 

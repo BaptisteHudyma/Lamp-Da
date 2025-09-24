@@ -22,6 +22,139 @@
 
 #include "src/modes/include/anims/ramp_update.hpp"
 
+namespace modes::details {
+
+//
+// \private API
+//
+
+/**
+ * \brief Animate a ramp
+ * \param[in,out] ctx
+ * \param[in] holdDuration duration since ramp start
+ * \param[in] stepSize duration of the ramp
+ * \param[in] palette palette to display on the ramp, as a gradient
+ */
+template<bool displayFavoriteNumber = true>
+void _animate_ramp(auto& ctx, float holdDuration, float stepSize, auto palette)
+{
+  // where we are: 0-255 rampColorRing
+  uint32_t stepProgress = floor((holdDuration * 256.0) / stepSize);
+  stepProgress = stepProgress % 256;
+
+  anims::rampColorRing(ctx, stepProgress, palette);
+}
+
+/// \private display a lit pixel per given favorite index
+void display_favorite_number_ramp(auto& ctx,
+                                  const uint8_t favoriteIndex,
+                                  const uint8_t maxFavoriteIndex,
+                                  const bool display = false)
+{
+  ctx.skipFirstLedsForFrames(0);
+  const uint8_t maxPixelDisplay = min(ctx.state.maxFavoriteCount, maxFavoriteIndex);
+  for (uint8_t i = 0; i < maxPixelDisplay; ++i)
+  {
+    if (display and i <= favoriteIndex)
+    {
+      ctx.lamp.setPixelColor(i, colors::Cyan);
+    }
+    else
+    {
+      ctx.lamp.setPixelColor(i, colors::Black);
+    }
+  }
+  ctx.skipFirstLedsForFrames(ctx.lamp.maxWidth * 2, 10);
+}
+
+/// \private animate favorite picks
+template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ctx, float holdDuration, float stepSize)
+{
+  // user as a number of favorite set
+  // occasional +1 if not all favorite are set (allow a new favorite)
+  const uint8_t numberOfFavoriteSet =
+          ctx.state.usedFavoriteCount + ((ctx.state.usedFavoriteCount < ctx.state.maxFavoriteCount) ? 1 : 0);
+
+  // up to maxFavoriteCount step state: "which_one" is [0, 1, 2, 3, ...] and "do not set" is the max index + 1
+  uint32_t stepCount = numberOfFavoriteSet + floor(holdDuration / stepSize);
+  stepCount = stepCount % (numberOfFavoriteSet + 1);
+
+  // display ramp to show where user is standing
+  if (stepCount >= numberOfFavoriteSet)
+  {
+    // cancel action
+    _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::White, colors::Cyan>);
+  }
+  else
+  {
+    // animate with different colors
+    switch (stepCount % 4)
+    {
+      case 0:
+        _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Green, colors::White>);
+        break;
+      case 1:
+        _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Blue, colors::White>);
+        break;
+      case 2:
+        _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Orange, colors::White>);
+        break;
+      case 3:
+        _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Purple, colors::White>);
+        break;
+    }
+  }
+
+  // extra display on the first pixels (count pixels to know fav no)
+  if constexpr (displayFavoriteNumber)
+  {
+    // display ramp
+    display_favorite_number_ramp(ctx, stepCount, numberOfFavoriteSet, stepCount < numberOfFavoriteSet);
+  }
+
+  // set this, after a while upon no longer holding button, favorite is set
+  ctx.state.isFavoritePending = 30;
+  ctx.state.whichFavoritePending = stepCount;
+
+  // TODO: #153 remove this freeze, after migrating legacy modes :)
+  ctx.skipNextFrames(10);
+}
+
+template<bool displayFavoriteNumber = true> void _animate_favorite_delete(auto& ctx, float holdDuration, float stepSize)
+{
+  // no favorite deletion if no favorites
+  if (ctx.state.usedFavoriteCount <= 0)
+    return;
+
+  uint32_t stepCount = 1 + floor(holdDuration / stepSize);
+  stepCount = stepCount % 2;
+
+  if (stepCount == 1)
+  {
+    _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Orange, colors::Red>);
+
+    // extra display on the first pixels (count pixels to know fav no)
+    if constexpr (displayFavoriteNumber)
+    {
+      // display ramp
+      display_favorite_number_ramp(ctx, ctx.state.lastFavoriteStep, ctx.state.usedFavoriteCount, stepCount == 1);
+    }
+
+    // set this, after a while upon no longer holding button, favorite is removed
+    ctx.state.isFavoriteDeletePending = 30;
+
+    // TODO: #153 remove this freeze, after migrating legacy modes :)
+    ctx.skipNextFrames(10);
+  }
+  else
+  {
+    // no animation
+    ctx.state.isFavoriteDeletePending = 0;
+  }
+}
+
+} // namespace modes::details
+
 namespace modes {
 
 /// \private Active state is designated by a 32-bit integer
@@ -483,6 +616,93 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     return false;
   }
 
+  /// scroll through all modes
+  static void handle_scroll_modes(auto& ctx, uint32_t holdDuration)
+  {
+    auto& scrollHandler = ctx.state.scrollHandler;
+    scrollHandler.isForward = false; // (always scroll modes backward)
+
+    static constexpr uint32_t scrollActivationTiming = 1500;
+    if (holdDuration <= scrollActivationTiming)
+    {
+      // display the ramp and do nothing else
+      modes::details::_animate_ramp(
+              ctx, holdDuration, scrollActivationTiming, colors::PaletteGradient<colors::White, colors::Cyan>);
+
+      // TODO: #153 remove this freeze, after migrating legacy modes :)
+      ctx.skipNextFrames(1);
+      return;
+    }
+
+    scrollHandler.update_ramp(128, holdDuration, [&](uint8_t rampValue) {
+      uint8_t modeIndex = ctx.get_active_mode();
+      uint8_t groupIndex = ctx.get_active_group();
+      uint8_t modeCount = ctx.get_modes_count();
+      uint8_t groupCount = ctx.get_groups_count();
+
+      // we are going backward
+      //
+      if (rampValue < 128)
+      {
+        // if modeIndex is not the first, just decrement it
+        if (modeIndex > 0)
+        {
+          ctx.set_active_mode(modeIndex - 1, modeCount);
+
+          // or else decrement group, then set mode to last one
+        }
+        else
+        {
+          // if groupIndex is not the first, just decrement it
+          if (groupIndex > 0)
+          {
+            ctx.set_active_group(groupIndex - 1, groupCount);
+
+            // else wrap to last group
+          }
+          else
+          {
+            ctx.set_active_group(groupCount - 1, groupCount);
+          }
+
+          // backward scroll: set mode to last one on group change
+          modeCount = ctx.get_modes_count();
+          ctx.set_active_mode(modeCount - 1, modeCount);
+        }
+
+        // we are going forward
+        //
+      }
+      else
+      {
+        // if modeIndex is not the last, just increment it
+        if (modeIndex + 1 < modeCount)
+        {
+          ctx.next_mode();
+
+          // or else increment group
+        }
+        else
+        {
+          // if groupIndex is not the last, just increment it
+          if (groupIndex + 1 < groupCount)
+          {
+            ctx.next_group();
+
+            // else wrap to first group
+          }
+          else
+          {
+            ctx.set_active_group(0, groupCount);
+          }
+
+          // forward scroll: set mode to first one on group change
+          ctx.set_active_mode(0, modeCount);
+        }
+      }
+    });
+  }
+
   static uint8_t get_modes_count(auto& ctx)
   {
     uint8_t value = 0;
@@ -745,129 +965,5 @@ template<typename ManagerConfig, typename... Groups> using ManagerForConfig =
 template<typename... Groups> using ManagerFor = ModeManagerTy<DefaultManagerConfig, std::tuple<Groups...>>;
 
 } // namespace modes
-
-namespace modes::details {
-
-//
-// \private API
-//
-
-/// \private display a lit pixel per given favorite index
-void display_favorite_number_ramp(auto& ctx,
-                                  const uint8_t favoriteIndex,
-                                  const uint8_t maxFavoriteIndex,
-                                  const bool display = false)
-{
-  ctx.skipFirstLedsForFrames(0);
-  const uint8_t maxPixelDisplay = min(ctx.state.maxFavoriteCount, maxFavoriteIndex);
-  for (uint8_t i = 0; i < maxPixelDisplay; ++i)
-  {
-    if (display and i <= favoriteIndex)
-    {
-      ctx.lamp.setPixelColor(i, colors::Cyan);
-    }
-    else
-    {
-      ctx.lamp.setPixelColor(i, colors::Black);
-    }
-  }
-  ctx.skipFirstLedsForFrames(ctx.lamp.maxWidth * 2, 10);
-}
-
-/// \private animate favorite picks
-template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ctx, float holdDuration, float stepSize)
-{
-  // user as a number of favorite set
-  // occasional +1 if not all favorite are set (allow a new favorite)
-  const uint8_t numberOfFavoriteSet =
-          ctx.state.usedFavoriteCount + ((ctx.state.usedFavoriteCount < ctx.state.maxFavoriteCount) ? 1 : 0);
-
-  // where we are: 0-255 rampColorRing
-  uint32_t stepProgress = floor((holdDuration * 256.0) / stepSize);
-  stepProgress = stepProgress % 256;
-
-  // up to maxFavoriteCount step state: "which_one" is [0, 1, 2, 3, ...] and "do not set" is the max index + 1
-  uint32_t stepCount = numberOfFavoriteSet + floor(holdDuration / stepSize);
-  stepCount = stepCount % (numberOfFavoriteSet + 1);
-
-  // display ramp to show where user is standing
-  if (stepCount >= numberOfFavoriteSet)
-  {
-    // cancel action
-    anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::White, colors::Cyan>);
-  }
-  else
-  {
-    // animate with different colors
-    switch (stepCount % 4)
-    {
-      case 0:
-        anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Green, colors::White>);
-        break;
-      case 1:
-        anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Blue, colors::White>);
-        break;
-      case 2:
-        anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Orange, colors::White>);
-        break;
-      case 3:
-        anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Purple, colors::White>);
-        break;
-    }
-  }
-
-  // extra display on the first pixels (count pixels to know fav no)
-  if constexpr (displayFavoriteNumber)
-  {
-    // display ramp
-    display_favorite_number_ramp(ctx, stepCount, numberOfFavoriteSet, stepCount < numberOfFavoriteSet);
-  }
-
-  // set this, after a while upon no longer holding button, favorite is set
-  ctx.state.isFavoritePending = 30;
-  ctx.state.whichFavoritePending = stepCount;
-
-  // TODO: #153 remove this freeze, after migrating legacy modes :)
-  ctx.skipNextFrames(10);
-}
-
-template<bool displayFavoriteNumber = true> void _animate_favorite_delete(auto& ctx, float holdDuration, float stepSize)
-{
-  // no favorite deletion if no favorites
-  if (ctx.state.usedFavoriteCount <= 0)
-    return;
-
-  // where we are: 0-255 rampColorRing
-  uint32_t stepProgress = floor((holdDuration * 256.0) / stepSize);
-  stepProgress = stepProgress % 256;
-
-  uint32_t stepCount = 1 + floor(holdDuration / stepSize);
-  stepCount = stepCount % 2;
-
-  if (stepCount == 1)
-  {
-    anims::rampColorRing(ctx, stepProgress, colors::PaletteGradient<colors::Orange, colors::Red>);
-
-    // extra display on the first pixels (count pixels to know fav no)
-    if constexpr (displayFavoriteNumber)
-    {
-      // display ramp
-      display_favorite_number_ramp(ctx, ctx.state.lastFavoriteStep, ctx.state.usedFavoriteCount, stepCount == 1);
-    }
-
-    // set this, after a while upon no longer holding button, favorite is removed
-    ctx.state.isFavoriteDeletePending = 30;
-
-    // TODO: #153 remove this freeze, after migrating legacy modes :)
-    ctx.skipNextFrames(10);
-  }
-  else
-  {
-    // no animation
-    ctx.state.isFavoriteDeletePending = 0;
-  }
-}
-
-} // namespace modes::details
 
 #endif
