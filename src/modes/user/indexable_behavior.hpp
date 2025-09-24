@@ -22,8 +22,20 @@ void button_clicked_default(const uint8_t clicks)
       }
       else
       {
-        // else: just change mode
-        manager.next_mode();
+        if (manager.state.isLastScrollAGroupChange and manager.lamp.now - manager.state.lastScrollStopped < 2000)
+        {
+          // last action was a group change & timer did not run out yet:
+          // change group
+          manager.next_group();
+
+          // prevent further jumps
+          manager.state.isLastScrollAGroupChange = false;
+        }
+        else
+        {
+          // else: just change mode
+          manager.next_mode();
+        }
       }
       break;
 
@@ -101,9 +113,18 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
 
     case 4: // 4 click+hold: scroll across modes and group
       // no scroll in favorite
-      if (not manager.state.isInFavoriteMockGroup && not isEndOfHoldEvent)
+      if (not manager.state.isInFavoriteMockGroup)
       {
-        manager.handle_scroll_modes(holdDuration);
+        // register end of scroll
+        if (isEndOfHoldEvent)
+        {
+          // update release time
+          manager.state.lastScrollStopped = manager.lamp.now;
+        }
+        else
+        {
+          manager.handle_scroll_modes(holdDuration);
+        }
       }
       break;
 

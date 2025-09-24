@@ -383,6 +383,9 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     uint8_t beforeFavoriteGroupIndex = 0;
     uint8_t beforeFavoriteModeIndex = 0;
 
+    bool isLastScrollAGroupChange = false; // last mode change in scroll changed group
+    uint32_t lastScrollStopped = 0;        // keep track of the last scrool release time
+
     // Ramp handlers: custom ramp (or "color ramp") and mode scroll ramp
     RampHandlerTy<Config> rampHandler = {Config::defaultCustomRampStepSpeedMs};
     RampHandlerTy<Config> scrollHandler = {Config::scrollRampStepSpeedMs};
@@ -622,7 +625,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     auto& scrollHandler = ctx.state.scrollHandler;
     scrollHandler.isForward = false; // (always scroll modes backward)
 
-    static constexpr uint32_t scrollActivationTiming = 1500;
+    static constexpr uint32_t scrollActivationTiming = 1200;
     if (holdDuration <= scrollActivationTiming)
     {
       // display the ramp and do nothing else
@@ -640,6 +643,8 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       uint8_t modeCount = ctx.get_modes_count();
       uint8_t groupCount = ctx.get_groups_count();
 
+      ctx.state.isLastScrollAGroupChange = false;
+
       // we are going backward
       //
       if (rampValue < 128)
@@ -653,6 +658,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
         }
         else
         {
+          ctx.state.isLastScrollAGroupChange = true;
           // if groupIndex is not the first, just decrement it
           if (groupIndex > 0)
           {
@@ -684,6 +690,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
         }
         else
         {
+          ctx.state.isLastScrollAGroupChange = true;
           // if groupIndex is not the last, just increment it
           if (groupIndex + 1 < groupCount)
           {
