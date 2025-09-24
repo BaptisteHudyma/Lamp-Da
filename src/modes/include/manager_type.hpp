@@ -34,15 +34,17 @@ namespace modes::details {
  * \param[in] holdDuration duration since ramp start
  * \param[in] stepSize duration of the ramp
  * \param[in] palette palette to display on the ramp, as a gradient
+ * \return true if ramp arrives at the end
  */
 template<bool displayFavoriteNumber = true>
-void _animate_ramp(auto& ctx, float holdDuration, float stepSize, auto palette)
+bool _animate_ramp(auto& ctx, float holdDuration, float stepSize, auto palette)
 {
   // where we are: 0-255 rampColorRing
   uint32_t stepProgress = floor((holdDuration * 256.0) / stepSize);
   stepProgress = stepProgress % 256;
 
   anims::rampColorRing(ctx, stepProgress, palette);
+  return (stepProgress >= 254);
 }
 
 /// \private display a lit pixel per given favorite index
@@ -113,7 +115,7 @@ template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ct
   }
 
   // set this, after a while upon no longer holding button, favorite is set
-  ctx.state.isFavoritePending = 30;
+  ctx.state.isFavoritePending = 10;
   ctx.state.whichFavoritePending = stepCount;
 
   // TODO: #153 remove this freeze, after migrating legacy modes :)
@@ -126,31 +128,35 @@ template<bool displayFavoriteNumber = true> void _animate_favorite_delete(auto& 
   if (ctx.state.usedFavoriteCount <= 0)
     return;
 
-  uint32_t stepCount = 1 + floor(holdDuration / stepSize);
+  ctx.state.isInDeleteFavorite = true;
+
+  uint32_t stepCount = floor(holdDuration / stepSize);
   stepCount = stepCount % 2;
 
-  if (stepCount == 1)
+  if (stepCount == 0)
   {
-    _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Orange, colors::Red>);
+    if (_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Orange, colors::Red>))
+    {
+      // set this on ramp saturation. The favorite will be removed in 2 frames
+      ctx.state.isFavoriteDeletePending = 2;
+    }
+    else
+    {
+      // no deletion if release on ramp
+      ctx.state.isFavoriteDeletePending = 0;
+    }
 
     // extra display on the first pixels (count pixels to know fav no)
     if constexpr (displayFavoriteNumber)
     {
       // display ramp
-      display_favorite_number_ramp(ctx, ctx.state.lastFavoriteStep, ctx.state.usedFavoriteCount, stepCount == 1);
+      display_favorite_number_ramp(ctx, ctx.state.lastFavoriteStep, ctx.state.usedFavoriteCount, true);
     }
-
-    // set this, after a while upon no longer holding button, favorite is removed
-    ctx.state.isFavoriteDeletePending = 30;
 
     // TODO: #153 remove this freeze, after migrating legacy modes :)
     ctx.skipNextFrames(10);
   }
-  else
-  {
-    // no animation
-    ctx.state.isFavoriteDeletePending = 0;
-  }
+  // else: do nothing
 }
 
 } // namespace modes::details
@@ -377,6 +383,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     // (variables for pending favorite state machine)
     uint8_t isFavoritePending = 0;
     uint8_t whichFavoritePending = 0;
+    bool isInDeleteFavorite = false;
     uint8_t isFavoriteDeletePending = 0;
     uint8_t lastFavoriteStep = 0;
     bool isInFavoriteMockGroup = false;

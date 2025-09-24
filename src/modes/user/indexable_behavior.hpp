@@ -105,16 +105,22 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   switch (clicks)
   {
     case 3: // 3 click+hold: configure custom ramp
-      rampHandler.update_ramp(manager.get_active_custom_ramp(), holdDuration, [&](uint8_t rampValue) {
-        manager.custom_ramp_update(rampValue);
-        manager.set_active_custom_ramp(rampValue);
-      });
+            // no ramps in favorite group
+      if (not manager.state.isInFavoriteMockGroup)
+      {
+        rampHandler.update_ramp(manager.get_active_custom_ramp(), holdDuration, [&](uint8_t rampValue) {
+          manager.custom_ramp_update(rampValue);
+          manager.set_active_custom_ramp(rampValue);
+        });
+      }
       break;
 
     case 4: // 4 click+hold: configure favorite
       if (not isEndOfHoldEvent)
       {
-        if (not manager.state.isInFavoriteMockGroup)
+        // lock to prevent addition of favorite from favorite & if we are deleting favorites
+        // the second case can happen when the user delete all favorites
+        if (not manager.state.isInFavoriteMockGroup && not manager.state.isInDeleteFavorite)
         {
           // no new favorite in favorite
           modes::details::_animate_favorite_pick(manager, holdDuration, 1500);
@@ -124,6 +130,10 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
           // remove current favorite
           modes::details::_animate_favorite_delete(manager, holdDuration, 2000);
         }
+      }
+      else
+      {
+        manager.state.isInDeleteFavorite = false;
       }
       break;
 
