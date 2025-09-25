@@ -424,6 +424,23 @@ static constexpr PaletteTy PaletteAuroraColors = {0x000000,
                                                   0xff3300,
                                                   0xff0000};
 
+static constexpr PaletteTy PalettePapiColors = {0x0000FF,
+                                                0x0F9DE8,
+                                                0x2BFAFA,
+                                                0x791CF8,
+                                                0x9683EC,
+                                                0xFF0000,
+                                                0xFFFF00,
+                                                0xFF7F00,
+                                                0xE73E05,
+                                                0xFF00FF,
+                                                0x00FF00,
+                                                0x87E990,
+                                                0x54F98D,
+                                                0x660099,
+                                                0xFF007F,
+                                                0xFFFFFF};
+
 /// \private return a palette from two colors
 template<uint32_t startColor, uint32_t endColor> static constexpr PaletteTy _gradient_palette_from_color()
 {
