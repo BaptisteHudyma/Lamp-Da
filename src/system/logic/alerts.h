@@ -31,6 +31,8 @@ enum Type : uint32_t
 
   SYSTEM_OFF_FAILED = 1 << 11,     // system failed to go to sleep, big trouble here
   SYSTEM_IN_ERROR_STATE = 1 << 12, // system is locked in an error state
+
+  SYSTEM_IN_LOCKOUT = 1 << 13, // system lockout, the lamp should not output any light
 };
 
 class AlertManager_t
@@ -49,6 +51,11 @@ public:
    * \brief Return true if no alerts are raised
    */
   bool is_clear() const { return _current == 0x00; }
+
+  /**
+   * \return the time since this alert was raised, or zero if it's not
+   */
+  uint32_t get_time_since_raised(const Type type);
 
 private:
   uint32_t _current;

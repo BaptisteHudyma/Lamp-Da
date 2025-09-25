@@ -40,6 +40,7 @@ namespace behavior {
 
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
 static constexpr uint32_t indicatorLevelKey = utils::hash("indLvl");
+static constexpr uint32_t isLockoutModeKey = utils::hash("lckMode");
 
 // time to block turn off since turn on
 static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 500;
@@ -117,6 +118,8 @@ bool read_parameters()
 {
   // load values in memory
   const bool isFileLoaded = fileSystem::load_initial_values();
+  if (!isFileLoaded)
+    return false;
 
   uint32_t brightness = 0;
   if (fileSystem::get_value(brightnessKey, brightness))
@@ -131,8 +134,15 @@ bool read_parameters()
     indicator::set_brightness_level(indicatorLevel);
   }
 
+  uint32_t isInLockoutMode = 0;
+  if (fileSystem::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
+  {
+    // system in lockout, raise the alert
+    alerts::manager.raise(alerts::Type::SYSTEM_IN_LOCKOUT);
+  }
+
   user::read_parameters();
-  return isFileLoaded;
+  return true;
 }
 
 void write_parameters()
@@ -142,6 +152,8 @@ void write_parameters()
   // only save saved brightness, not current
   fileSystem::set_value(brightnessKey, brightness::get_saved_brightness());
   fileSystem::set_value(indicatorLevelKey, indicator::get_brightness_level());
+  // lockout mode always kept, if not deactivated by system
+  fileSystem::set_value(isLockoutModeKey, alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT));
 
   user::write_parameters();
 
@@ -283,6 +295,8 @@ void handle_pre_charger_operation_state()
     go_to_error_state("power system in error state in pre charger operation state");
     return;
   }
+  // clear lockout in charge mode
+  alerts::manager.clear(alerts::Type::SYSTEM_IN_LOCKOUT);
 
   preChargeCalled = time_ms();
 
@@ -345,6 +359,27 @@ void handle_charger_operation_state()
   // else: ignore all
 }
 
+bool check_handle_exit_output_mode()
+{
+  // should go to sleep
+  if (not is_system_should_be_powered())
+  {
+    if (is_charger_powered())
+    {
+      // charger is plugged, go to charger state
+      mainMachine.set_state(BehaviorStates::POST_OUTPUT_LIGHT, 100, BehaviorStates::PRE_CHARGER_OPERATION);
+    }
+    else
+    {
+      // got to sleep after the closing operations
+      mainMachine.set_state(BehaviorStates::POST_OUTPUT_LIGHT, 1000, BehaviorStates::SHUTDOWN);
+    }
+    return true;
+  }
+
+  return false;
+}
+
 static uint32_t lastOutputLightValidTime = 0;
 void handle_pre_output_light_state()
 {
@@ -352,6 +387,23 @@ void handle_pre_output_light_state()
   {
     go_to_error_state("power system in error state in pre output light state");
     return;
+  }
+
+  static bool isMessageDisplayed = false;
+  if (alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT))
+  {
+    if (not isMessageDisplayed)
+    {
+      lampda_print("not output in lockout state");
+      isMessageDisplayed = true;
+    }
+    // check if we may go to sleep
+    check_handle_exit_output_mode();
+    return;
+  }
+  else
+  {
+    isMessageDisplayed = false;
   }
 
   // critical battery level, do not wake up
@@ -426,22 +478,8 @@ void handle_output_light_state()
 
   lastOutputLightValidTime = time_ms();
 
-  // should go to sleep
-  if (not is_system_should_be_powered())
-  {
-    if (is_charger_powered())
-    {
-      // charger is plugged, go to charger state
-      mainMachine.set_state(BehaviorStates::POST_OUTPUT_LIGHT, 100, BehaviorStates::PRE_CHARGER_OPERATION);
-    }
-    else
-    {
-      // got to sleep after the closing operations
-      mainMachine.set_state(BehaviorStates::POST_OUTPUT_LIGHT, 1000, BehaviorStates::SHUTDOWN);
-    }
-  }
   // normal running loop
-  else
+  if (not check_handle_exit_output_mode())
   {
     // user loop call
     user::loop();

@@ -35,10 +35,25 @@ namespace button_press_handles {
  *
  * \return false if an action was handled
  */
-bool system_start_button_click_callback(const uint8_t consecutiveButtonCheck)
+void system_start_button_click_callback(const uint8_t consecutiveButtonCheck)
 {
-  // nothing for now
-  return true;
+  const bool isStartedInLockout = alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT);
+  // if in lockout mode, unlock
+  if (consecutiveButtonCheck >= 3)
+  {
+    alerts::manager.clear(alerts::Type::SYSTEM_IN_LOCKOUT);
+  }
+
+  switch (consecutiveButtonCheck)
+  {
+    case 4:
+      // activate lockout if not already in it
+      if (not isStartedInLockout)
+        alerts::manager.raise(alerts::Type::SYSTEM_IN_LOCKOUT);
+      break;
+    default:
+      break;
+  }
 }
 
 /**
@@ -121,6 +136,12 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
                                        const bool isEndOfHoldEvent,
                                        const uint32_t buttonHoldDuration)
 {
+  // if in lockout mode, unlock
+  if (consecutiveButtonCheck >= 3)
+  {
+    alerts::manager.clear(alerts::Type::SYSTEM_IN_LOCKOUT);
+  }
+
   switch (consecutiveButtonCheck)
   {
     case 3:
@@ -332,10 +353,15 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   //
   if (button::is_system_start_click())
   {
-    const bool canContinue = button_press_handles::system_start_button_click_callback(consecutiveButtonCheck);
-    if (not canContinue)
-      return;
+    button_press_handles::system_start_button_click_callback(consecutiveButtonCheck);
+
+    // system start clicks always return, prevent much annoyance later on
+    return;
   }
+
+  // no inputs allowed in lockout
+  if (alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT))
+    return;
 
   //
   // extended "button usermode" bypass
@@ -397,6 +423,10 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
       return;
   }
 
+  // no inputs allowed in lockout
+  if (alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT))
+    return;
+
   //
   // "button usermode" bypass
   //
@@ -437,6 +467,17 @@ void loop()
 {
   // loop is not ran in shutdown mode
   button::handle_events(button_clicked_callback, button_hold_callback);
+
+  // at any point when the alert is raised, got to power off
+  if (alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT) and
+      alerts::manager.get_time_since_raised(alerts::Type::SYSTEM_IN_LOCKOUT) > 950)
+  {
+    const auto& buttonState = button::get_button_state();
+    const bool isButtonPressed = buttonState.isPressed or buttonState.isLongPressed;
+    // shutdown with button pressed starts right back up.
+    if (not isButtonPressed)
+      behavior::set_power_off();
+  }
 }
 
 void button_disable_usermode() { isButtonUsermodeEnabled = false; }
