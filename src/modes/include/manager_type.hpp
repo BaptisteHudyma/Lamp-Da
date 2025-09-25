@@ -356,7 +356,8 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     modeMemory,
     usedFavoriteCount,
     favoriteModes,
-    lastUsedFavorite
+    lastUsedFavorite,
+    isInFavoriteGroup
   };
 
   static constexpr uint32_t storeId = modes::store::derivateStoreId<modes::store::hash("ManagerStoreId"), AllGroupsTy>;
@@ -841,9 +842,17 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       group.power_on_sequence();
     });
 
-    // activate current mode
-    uint8_t groupIdBefore = ctx.get_active_group(nbGroups);
-    ctx.set_active_group(groupIdBefore);
+    // activate last used favorite, in the favorite group
+    if (ctx.state.isInFavoriteMockGroup && jump_to_favorite(ctx, ctx.state.lastFavoriteStep, false))
+    {
+      // success jump to favorite
+    }
+    else
+    {
+      // activate current mode
+      uint8_t groupIdBefore = ctx.get_active_group(nbGroups);
+      ctx.set_active_group(groupIdBefore);
+    }
   }
 
   static void power_off_sequence(auto& ctx)
@@ -862,6 +871,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.template storageSaveOnly<Store::usedFavoriteCount>(ctx.modeManager.state.usedFavoriteCount);
     ctx.template storageSaveOnly<Store::favoriteModes>(ctx.modeManager.state.favorites);
     ctx.template storageSaveOnly<Store::lastUsedFavorite>(ctx.modeManager.state.lastFavoriteStep);
+    ctx.template storageSaveOnly<Store::isInFavoriteGroup>(ctx.state.isInFavoriteMockGroup);
     ctx.template storageSaveOnly<Store::modeMemory>(ctx.state.lastModeMemory);
 
     foreach_group<not hasCustomRamp>(ctx, [&ctx](auto group) {
@@ -889,6 +899,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.template storageLoadOnly<Store::usedFavoriteCount>(ctx.modeManager.state.usedFavoriteCount);
     ctx.template storageLoadOnly<Store::favoriteModes>(ctx.state.favorites);
     ctx.template storageLoadOnly<Store::lastUsedFavorite>(ctx.modeManager.state.lastFavoriteStep);
+    ctx.template storageLoadOnly<Store::isInFavoriteGroup>(ctx.state.isInFavoriteMockGroup);
     ctx.template storageLoadOnly<Store::modeMemory>(ctx.state.lastModeMemory);
 
     // for each group, migrate & handle custom ramp memory
