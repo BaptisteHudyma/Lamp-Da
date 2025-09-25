@@ -67,13 +67,6 @@ void init(const bool isSystemStartedFromButton)
   {
     // simulate a click
     button_state_interrupt();
-
-    // first click
-    buttonState.nbClicksCounted = 1;
-
-    buttonState.lastPressTime = time_ms();
-    buttonState.wasTriggered = true;
-    buttonState.isPressed = true;
   }
 }
 
