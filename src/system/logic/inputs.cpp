@@ -35,7 +35,7 @@ namespace button_press_handles {
  *
  * \return false if an action was handled
  */
-void system_start_button_click_callback(const uint8_t consecutiveButtonCheck)
+bool system_start_button_click_callback(const uint8_t consecutiveButtonCheck)
 {
   const bool isStartedInLockout = alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT);
   // if in lockout mode, unlock
@@ -50,10 +50,11 @@ void system_start_button_click_callback(const uint8_t consecutiveButtonCheck)
       // activate lockout if not already in it
       if (not isStartedInLockout)
         alerts::manager.raise(alerts::Type::SYSTEM_IN_LOCKOUT);
-      break;
+      return false;
     default:
       break;
   }
+  return true;
 }
 
 /**
@@ -353,10 +354,9 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   //
   if (button::is_system_start_click())
   {
-    button_press_handles::system_start_button_click_callback(consecutiveButtonCheck);
-
-    // system start clicks always return, prevent much annoyance later on
-    return;
+    const bool canContinue = button_press_handles::system_start_button_click_callback(consecutiveButtonCheck);
+    if (not canContinue)
+      return;
   }
 
   // no inputs allowed in lockout

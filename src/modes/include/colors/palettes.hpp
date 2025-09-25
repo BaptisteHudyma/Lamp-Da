@@ -438,7 +438,7 @@ static constexpr PaletteTy PalettePapiColors = {0x0000FF,
                                                 0x87E990,
                                                 0x54F98D,
                                                 0x660099,
-                                                0xFF7F,
+                                                0xFF007F,
                                                 0xFFFFFF};
 
 /// \private return a palette from two colors
