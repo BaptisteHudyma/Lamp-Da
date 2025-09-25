@@ -58,7 +58,12 @@ struct RainbowMode : public modes::BasicMode
 /// Single-color mode for indexable strips with palette ramp
 struct PaletteMode : public modes::BasicMode
 {
-  static void on_enter_mode(auto& ctx) { ctx.template set_config_bool<ConfigKeys::customRampAnimEffect>(false); }
+  static void on_enter_mode(auto& ctx)
+  {
+    ctx.template set_config_bool<ConfigKeys::customRampAnimEffect>(false);
+    // this ramps should be slow
+    ctx.template set_config_u32<ConfigKeys::customRampStepSpeedMs>(16 / 255.0f * 850);
+  }
 
   static void loop(auto& ctx)
   {
@@ -97,13 +102,21 @@ struct PaletteOceanMode : public PaletteMode
   };
 };
 
+struct PalettePapiMode : public PaletteMode
+{
+  struct StateTy
+  {
+    static constexpr modes::colors::PaletteTy palette = modes::colors::PalettePapiColors;
+  };
+};
+
 } // namespace fixed
 
 //
 // Fixed modes groups
 //
 
-using FixedModes = modes::GroupFor<fixed::KelvinMode, fixed::RainbowMode>;
+using FixedModes = modes::GroupFor<fixed::KelvinMode, fixed::RainbowMode, fixed::PalettePapiMode>;
 
 using MiscFixedModes = modes::GroupFor<fixed::PalettePartyMode, fixed::PaletteForestMode, fixed::PaletteOceanMode>;
 
