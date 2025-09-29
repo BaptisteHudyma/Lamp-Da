@@ -482,8 +482,8 @@ static constexpr uint32_t from_palette(UIntTy index, const PaletteTy& palette, u
 {
   // convert to [0; 15] (divide by 16)
   uint8_t renormIndex = index >> 4;
-  // get least significant part for the blend factor
-  float blendIndex = (index & 0x0F) / 255.0f;
+  // get least significant part for the blend factor (15 levels + 0)
+  float blendIndex = 1.0 - (index & 0x0F) / 16.0f;
 
   // support for uint16_t
   if constexpr (sizeof(UIntTy) > 1)
@@ -491,7 +491,11 @@ static constexpr uint32_t from_palette(UIntTy index, const PaletteTy& palette, u
     const float remapedIndex = (index / static_cast<float>(UINT16_MAX)) * 16.f;
     renormIndex = min(floor(remapedIndex), 15);
     blendIndex = remapedIndex - renormIndex;
-    static_assert(std::is_same_v<UIntTy, uint16_t>, "u8 or u16");
+    static_assert(std::is_same_v<UIntTy, uint16_t>, "u8 or u16 allowed only");
+  }
+  else
+  {
+    static_assert(std::is_same_v<UIntTy, uint8_t>, "u8 or u16 allowed only");
   }
 
   if (renormIndex >= 16)
