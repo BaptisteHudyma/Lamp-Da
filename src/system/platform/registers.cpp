@@ -59,6 +59,12 @@ void kick_watchdog(const uint8_t registerId)
   nrf_wdt_reload_request_set(NRF_WDT, registerId_to_register(registerId));
 }
 
+uint64_t get_device_serial_number()
+{
+  static const uint64_t deviceId = (static_cast<uint64_t>(NRF_FICR->DEVICEID[0]) << 32) | (NRF_FICR->DEVICEID[1]);
+  return deviceId;
+}
+
 void setup_adc(const uint8_t resolution)
 {
   analogReference(AR_INTERNAL_3_0); // 3v reference

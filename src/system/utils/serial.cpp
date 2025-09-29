@@ -41,6 +41,7 @@ void handleCommand(const std::string& command)
                 "h: this page\n"
                 "v: hardware & software version\n"
                 "t: return the lamp type\n"
+                "id: return the board serial number\n"
                 "bat: battery info/levels\n"
                 "cinfo: charger infos\n"
                 "ADC: values from the charger ADC\n"
@@ -88,6 +89,12 @@ void handleCommand(const std::string& command)
 #endif /* LMBD_LAMP_TYPE__CCT */
 #endif /* LMBD_LAMP_TYPE__SIMPLE */
 #endif /* LMBD_LAMP_TYPE__INDEXABLE */
+        break;
+      }
+
+    case utils::hash("id"):
+      {
+        lampda_print("Serial number: %lu", get_device_serial_number());
         break;
       }
 
