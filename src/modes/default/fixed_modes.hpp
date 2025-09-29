@@ -56,7 +56,7 @@ struct RainbowMode : public modes::BasicMode
 //
 
 /// Single-color mode for indexable strips with palette ramp
-struct PaletteMode : public modes::BasicMode
+template<bool isStep = false> struct PaletteMode : public modes::BasicMode
 {
   static void on_enter_mode(auto& ctx)
   {
@@ -67,7 +67,12 @@ struct PaletteMode : public modes::BasicMode
 
   static void loop(auto& ctx)
   {
-    uint32_t color = modes::colors::from_palette(ctx.get_active_custom_ramp(), ctx.state.palette);
+    const uint8_t customRamp = ctx.get_active_custom_ramp();
+    uint32_t color = modes::colors::from_palette(
+            // if palette is stepped, remove all intermediate colors
+            static_cast<uint8_t>(isStep ? (customRamp >> 4) << 4 : customRamp),
+            // not stepped, allow interpolation
+            ctx.state.palette);
     ctx.lamp.fill(color);
   }
 
@@ -76,7 +81,7 @@ struct PaletteMode : public modes::BasicMode
 };
 
 /// Party fixed colors ramp mode
-struct PalettePartyMode : public PaletteMode
+struct PalettePartyMode : public PaletteMode<false>
 {
   struct StateTy
   {
@@ -85,7 +90,7 @@ struct PalettePartyMode : public PaletteMode
 };
 
 /// Forest fixed colors ramp mode
-struct PaletteForestMode : public PaletteMode
+struct PaletteForestMode : public PaletteMode<false>
 {
   struct StateTy
   {
@@ -94,7 +99,7 @@ struct PaletteForestMode : public PaletteMode
 };
 
 /// Ocean fixed colors ramp mode
-struct PaletteOceanMode : public PaletteMode
+struct PaletteOceanMode : public PaletteMode<false>
 {
   struct StateTy
   {
@@ -102,7 +107,7 @@ struct PaletteOceanMode : public PaletteMode
   };
 };
 
-struct PalettePapiMode : public PaletteMode
+struct PalettePapiMode : public PaletteMode<true>
 {
   struct StateTy
   {
