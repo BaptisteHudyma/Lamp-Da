@@ -26,6 +26,8 @@
 #include "src/system/platform/registers.h"
 #include "src/system/platform/threads.h"
 
+#include "src/system/ext/random8.h"
+
 namespace global {
 
 void secondary_thread()
@@ -97,6 +99,8 @@ void main_setup()
 
   // first step !
   setup_adc(ADC_RES_EXP);
+  // set random seed
+  random16_set_seed(get_device_serial_number() & 0xffff);
 
   // do some stuff before starting the peripherals
 

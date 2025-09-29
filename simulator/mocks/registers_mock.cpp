@@ -19,6 +19,12 @@ void setup_watchdog(const uint32_t timeoutDelaySecond) {}
 
 void kick_watchdog(const uint8_t registerId) {}
 
+uint64_t get_device_serial_number()
+{
+  // litteraly do not care :)
+  return 0;
+}
+
 // setup the ADC
 void setup_adc(uint8_t resolution) {}
 
