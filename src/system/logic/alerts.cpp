@@ -641,7 +641,7 @@ uint32_t AlertManager_t::get_time_since_raised(const Type type)
   return 0;
 }
 
-bool AlertManager_t::can_use_lamp_power() const
+bool AlertManager_t::can_use_output_power() const
 {
   if (is_clear())
     return true;
