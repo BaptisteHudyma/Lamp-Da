@@ -13,6 +13,7 @@
 #include "src/system/power/power_gates.h"
 
 #include "src/system/physical/battery.h"
+#include "src/system/physical/button.h"
 #include "src/system/physical/indicator.h"
 #include "src/system/physical/fileSystem.h"
 #include "src/system/physical/imu.h"
@@ -362,7 +363,7 @@ void handle_charger_operation_state()
 bool check_handle_exit_output_mode()
 {
   // should go to sleep
-  if (not is_system_should_be_powered())
+  if (not is_system_should_be_powered() or not alerts::manager.can_use_lamp_power())
   {
     if (is_charger_powered())
     {
@@ -630,6 +631,21 @@ void loop()
     handle_post_output_light_state();
     // shutdown normally
     handle_shutdown_state();
+  }
+
+  // only handle those when system is not in alert state
+  if (mainMachine.get_state() != BehaviorStates::ERROR)
+  {
+    // at any point when the alert is raised, got to power off
+    if (alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT) and
+        alerts::manager.get_time_since_raised(alerts::Type::SYSTEM_IN_LOCKOUT) > 950)
+    {
+      const auto& buttonState = button::get_button_state();
+      const bool isButtonPressed = buttonState.isPressed or buttonState.isLongPressed;
+      // shutdown with button pressed starts right back up.
+      if (not isButtonPressed)
+        behavior::set_power_off();
+    }
   }
 }
 

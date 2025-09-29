@@ -57,6 +57,16 @@ public:
    */
   uint32_t get_time_since_raised(const Type type);
 
+  /**
+   * \brief an alert is raised that prevent power output
+   */
+  bool can_use_lamp_power() const;
+
+  /**
+   * \brief an alert is raised that prevent battery charging
+   */
+  bool can_charge_battery() const;
+
 private:
   uint32_t _current;
 };
