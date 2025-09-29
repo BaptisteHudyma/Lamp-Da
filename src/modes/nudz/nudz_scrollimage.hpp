@@ -22,18 +22,18 @@ namespace modes::nudz
       // ctx.lamp.fill(colors::Green);
       // ctx.lamp.setBrightness(ctx.lamp.tick % ctx.lamp.maxBrightness);
 
-      float speed = (float(ctx.get_active_custom_ramp()) - 128) / 500.f;
+      float speed = (float(ctx.get_active_custom_ramp()) - 128.f) / 500.f;
       // ease stop at 0
-      if(speed < -0.01)
-        speed += 0.01;
-      else if(speed > 0.01)
-        speed -= 0.01;
+      if(speed < -0.02)
+        speed += 0.02;
+      else if(speed > 0.02)
+        speed -= 0.02;
       else
         speed = 0.f;
 
       // decal needs a state to keep continuous while speed is changed
-      uint32_t decal = ctx.state.decal
-        + unsigned((ctx.lamp.tick - ctx.state.last_tick) * speed);
+      int32_t decal = ctx.state.decal
+        + int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed);
       if(decal != ctx.state.decal)
       {
         ctx.state.decal = decal;
@@ -62,6 +62,21 @@ namespace modes::nudz
 
     static void loop(auto& ctx) {
       loop_image(ctx, heineken_image);
+    }
+
+  };
+
+
+  struct NudzViolonsaoulsMode : public NudzScrollImageMode {
+
+    struct StateTy : public NudzScrollImageMode::StateTy
+    {
+    };
+
+#include "violonsaouls_image.hpp"
+
+    static void loop(auto& ctx) {
+      loop_image(ctx, violonsaouls_image);
     }
 
   };
