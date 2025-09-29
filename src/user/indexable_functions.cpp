@@ -22,13 +22,18 @@
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/legacy/legacy_modes.hpp"
 
+#include "src/modes/nudz/nudz_green.hpp"
+
 namespace user {
 
 //
 // list your groups & modes here
 //
 
-using ManagerTy = modes::ManagerFor<modes::FixedModes,
+using NudzGroup = modes::GroupFor<modes::nudz::NudzGreenMode>;
+
+using ManagerTy = modes::ManagerFor<NudzGroup,
+                                    modes::FixedModes,
                                     // modes::MiscFixedModes,
                                     modes::legacy::CalmModes,
                                     modes::legacy::PartyModes,
