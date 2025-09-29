@@ -13,6 +13,7 @@
 #include "src/system/power/power_gates.h"
 
 #include "src/system/physical/battery.h"
+#include "src/system/physical/button.h"
 #include "src/system/physical/indicator.h"
 #include "src/system/physical/fileSystem.h"
 #include "src/system/physical/imu.h"
@@ -376,6 +377,16 @@ bool check_handle_exit_output_mode()
     }
     return true;
   }
+  else if (not alerts::manager.can_use_lamp_power())
+  {
+    // wait a bit then shutdown
+    if (time_ms() - preOutputLightCalled > 3000)
+    {
+      // indicate we should power the systemm off
+      set_power_off();
+    }
+    return true;
+  }
 
   return false;
 }
@@ -383,13 +394,26 @@ bool check_handle_exit_output_mode()
 static uint32_t lastOutputLightValidTime = 0;
 void handle_pre_output_light_state()
 {
+  static bool isMessageDisplayed = false;
+
   if (power::is_in_error_state())
   {
     go_to_error_state("power system in error state in pre output light state");
     return;
   }
+  // power usage is forbidden
+  if (not alerts::manager.can_use_lamp_power())
+  {
+    if (not isMessageDisplayed)
+    {
+      lampda_print("not output allowed");
+      isMessageDisplayed = true;
+    }
+    // check if we may go to sleep
+    check_handle_exit_output_mode();
+    return;
+  }
 
-  static bool isMessageDisplayed = false;
   if (alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT))
   {
     if (not isMessageDisplayed)
@@ -401,10 +425,9 @@ void handle_pre_output_light_state()
     check_handle_exit_output_mode();
     return;
   }
-  else
-  {
-    isMessageDisplayed = false;
-  }
+
+  //
+  isMessageDisplayed = false;
 
   // critical battery level, do not wake up
   if (battery::get_battery_minimum_cell_level() <= batteryCritical + 1 or
@@ -630,6 +653,22 @@ void loop()
     handle_post_output_light_state();
     // shutdown normally
     handle_shutdown_state();
+  }
+
+  // only handle those when system is not in alert state
+  if (mainMachine.get_state() == BehaviorStates::PRE_OUTPUT_LIGHT or
+      mainMachine.get_state() == BehaviorStates::OUTPUT_LIGHT)
+  {
+    // at any point when the alert is raised, got to power off
+    if (alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT) and
+        alerts::manager.get_time_since_raised(alerts::Type::SYSTEM_IN_LOCKOUT) > 950)
+    {
+      const auto& buttonState = button::get_button_state();
+      const bool isButtonPressed = buttonState.isPressed or buttonState.isLongPressed;
+      // shutdown with button pressed starts right back up.
+      if (not isButtonPressed)
+        behavior::set_power_off();
+    }
   }
 }
 

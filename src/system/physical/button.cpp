@@ -73,6 +73,10 @@ void init(const bool isSystemStartedFromButton)
     buttonState.wasTriggered = true;
     buttonState.isPressed = true;
   }
+  else
+  {
+    isSystemStartClick = false;
+  }
 }
 
 void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,

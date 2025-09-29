@@ -8,6 +8,7 @@
 #include "src/system/ext/random8.h"
 
 #include "src/modes/include/colors/palettes.hpp"
+#include <cstdlib>
 
 /// Basic "default" modes included with the hardware
 namespace modes::default_modes {
@@ -26,14 +27,21 @@ struct PerlinNoiseMode : public BasicMode
     float positionY;
     float positionZ;
 
-    float speed;
+    float speedX;
+    float speedY;
+    float speedZ;
+    static constexpr float maxSpeed = 500;
+
     uint16_t scale;
 
     uint16_t ihue;
 
     // store references to palettes
-    const palette_t* _palettes[3] = {&PaletteLavaColors, &PaletteForestColors, &PaletteOceanColors};
-    const uint8_t maxPalettesCount = 3;
+    static constexpr uint8_t maxPalettesCount = 4;
+    const palette_t* _palettes[maxPalettesCount] = {&colors::PaletteRainbowColors,
+                                                    &colors::PaletteLavaColors,
+                                                    &colors::PaletteForestColors,
+                                                    &colors::PaletteOceanColors};
 
     // store selected palette
     palette_t const* selectedPalette;
@@ -45,12 +53,16 @@ struct PerlinNoiseMode : public BasicMode
     ctx.state.positionY = random16();
     ctx.state.positionZ = random16();
 
-    ctx.state.speed = 1000;
+    ctx.state.speedX = random8();
+    ctx.state.speedY = random8();
+    ctx.state.speedZ = random8();
     ctx.state.scale = 600;
 
     ctx.state.ihue = 0;
 
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(false);
+    // this ramps should be slow
+    ctx.template set_config_u32<ConfigKeys::customRampStepSpeedMs>(ctx.state.maxPalettesCount / 255.0f * 850);
 
     ctx.lamp.template fillTempBuffer<bufferIndexToUse>(0);
 
@@ -100,8 +112,16 @@ struct PerlinNoiseMode : public BasicMode
     }
 
     // apply slow drift to X and Y, just for visual variation.
-    state.positionX += state.speed / 8;
-    state.positionY -= state.speed / 16;
+    state.positionX += state.speedX;
+    state.positionY += state.speedY;
+    state.positionZ += state.speedZ;
+
+    state.speedX = lmpd_constrain(
+            state.speedX + lmpd_map<uint8_t, int>(random8(), 0, 255, -25, 25), -ctx.state.maxSpeed, ctx.state.maxSpeed);
+    state.speedY = lmpd_constrain(
+            state.speedY + lmpd_map<uint8_t, int>(random8(), 0, 255, -25, 25), -ctx.state.maxSpeed, ctx.state.maxSpeed);
+    state.speedZ = lmpd_constrain(
+            state.speedZ + lmpd_map<uint8_t, int>(random8(), 0, 255, -25, 25), -ctx.state.maxSpeed, ctx.state.maxSpeed);
 
     for (size_t i = firstIndex; i < ctx.lamp.ledCount; i += everyNIndex)
     {

@@ -162,6 +162,10 @@ struct AlertBase
     return false;
   }
 
+  // override to prevent lamp actions on alerts
+  virtual bool should_prevent_lamp_output() const { return false; }
+  virtual bool should_prevent_battery_charge() const { return false; }
+
   // private:
   //
   bool _isRaisedHandled = false;
@@ -188,6 +192,9 @@ struct Alert_BatteryReadingIncoherent : public AlertBase
     // cleared after a delay
     return raisedTime > 0 and (time_ms() - raisedTime) > 2000;
   }
+
+  bool should_prevent_lamp_output() const override { return true; }
+  bool should_prevent_battery_charge() const override { return true; }
 };
 
 struct Alert_BatteryCritical : public AlertBase
@@ -321,6 +328,8 @@ struct Alert_TempCritical : public AlertBase
   bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::DARK_ORANGE); }
 
   Type get_type() const override { return Type::TEMP_CRITICAL; }
+
+  bool should_prevent_battery_charge() const override { return true; }
 };
 
 struct Alert_BluetoothAdvertisement : public AlertBase
@@ -338,6 +347,9 @@ struct Alert_HardwareAlert : public AlertBase
   }
 
   Type get_type() const override { return Type::HARDWARE_ALERT; }
+
+  bool should_prevent_lamp_output() const override { return true; }
+  bool should_prevent_battery_charge() const override { return true; }
 };
 
 struct Alert_FavoriteSet : public AlertBase
@@ -361,6 +373,8 @@ struct Alert_OtgFailed : public AlertBase
   }
 
   Type get_type() const override { return Type::OTG_FAILED; }
+
+  bool should_prevent_lamp_output() const override { return true; }
 };
 
 struct Alert_SystemShutdownFailed : public AlertBase
@@ -383,6 +397,9 @@ struct Alert_SystemShutdownFailed : public AlertBase
     }
     return false;
   }
+
+  bool should_prevent_lamp_output() const override { return true; }
+  bool should_prevent_battery_charge() const override { return true; }
 };
 
 struct Alert_SystemInErrorState : public AlertBase
@@ -393,6 +410,9 @@ struct Alert_SystemInErrorState : public AlertBase
   }
 
   Type get_type() const override { return Type::SYSTEM_IN_ERROR_STATE; }
+
+  bool should_prevent_lamp_output() const override { return true; }
+  bool should_prevent_battery_charge() const override { return true; }
 };
 
 struct Alert_SystemInLockout : public AlertBase
@@ -619,6 +639,36 @@ uint32_t AlertManager_t::get_time_since_raised(const Type type)
     }
   }
   return 0;
+}
+
+bool AlertManager_t::can_use_lamp_power() const
+{
+  if (is_clear())
+    return true;
+
+  for (auto alert: allAlerts)
+  {
+    if (alert->_isRaisedHandled && alert->should_prevent_lamp_output())
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool AlertManager_t::can_charge_battery() const
+{
+  if (is_clear())
+    return true;
+
+  for (auto alert: allAlerts)
+  {
+    if (alert->_isRaisedHandled && alert->should_prevent_battery_charge())
+    {
+      return false;
+    }
+  }
+  return true;
 }
 
 } // namespace alerts

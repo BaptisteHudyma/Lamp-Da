@@ -338,7 +338,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
     return;
 
   // guard blocking other actions than "turn off", if not allowed to run
-  if (not behavior::can_system_allowed_to_be_powered())
+  if (not behavior::can_system_allowed_to_be_powered() and not button::is_system_start_click())
   {
     if (consecutiveButtonCheck == 1)
     {
@@ -467,17 +467,6 @@ void loop()
 {
   // loop is not ran in shutdown mode
   button::handle_events(button_clicked_callback, button_hold_callback);
-
-  // at any point when the alert is raised, got to power off
-  if (alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT) and
-      alerts::manager.get_time_since_raised(alerts::Type::SYSTEM_IN_LOCKOUT) > 950)
-  {
-    const auto& buttonState = button::get_button_state();
-    const bool isButtonPressed = buttonState.isPressed or buttonState.isLongPressed;
-    // shutdown with button pressed starts right back up.
-    if (not isButtonPressed)
-      behavior::set_power_off();
-  }
 }
 
 void button_disable_usermode() { isButtonUsermodeEnabled = false; }
