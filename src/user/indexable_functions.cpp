@@ -22,7 +22,7 @@
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/legacy/legacy_modes.hpp"
 
-#include "src/modes/nudz/nudz_green.hpp"
+#include "src/modes/nudz/nudz_scrollimage.hpp"
 
 namespace user {
 
@@ -30,7 +30,7 @@ namespace user {
 // list your groups & modes here
 //
 
-using NudzGroup = modes::GroupFor<modes::nudz::NudzGreenMode>;
+using NudzGroup = modes::GroupFor<modes::nudz::NudzHeinekenMode>;
 
 using ManagerTy = modes::ManagerFor<NudzGroup,
                                     modes::FixedModes,

@@ -3,15 +3,13 @@
 namespace modes::nudz
 {
 
-  struct NudzGreenMode : public BasicMode {
+  struct NudzScrollImageMode : public BasicMode {
 
     struct StateTy
     {
       uint32_t decal;
       uint32_t last_tick;
     };
-
-#include "heineken_image.hpp"
 
     static void on_enter_mode(auto& ctx)
     {
@@ -20,7 +18,7 @@ namespace modes::nudz
       ctx.state.last_tick = 0;
     }
 
-    static void loop(auto& ctx) {
+    static void loop_image(auto& ctx, const uint32_t *simage) {
       // ctx.lamp.fill(colors::Green);
       // ctx.lamp.setBrightness(ctx.lamp.tick % ctx.lamp.maxBrightness);
 
@@ -46,14 +44,26 @@ namespace modes::nudz
       uint16_t imHeight = 22;
       uint32_t w = std::min(uint32_t(ctx.lamp.maxWidth), uint32_t(imWidth));
       uint32_t h = std::min(uint32_t(ctx.lamp.maxHeight), uint32_t(imHeight));
+      // const uint32_t *simage = image();
       for(uint32_t y=0; y<h; ++y)
         for(uint32_t x=0; x<w; ++x)
           ctx.lamp.setPixelColorXY(x, y,
-                                   heineken_image[y * imWidth
-                                                  + (x + decal) % imWidth]);
+                                   simage[y * imWidth
+                                   + (x + decal) % imWidth]);
     }
 
     static constexpr bool hasCustomRamp = true;
+  };
+
+
+  struct NudzHeinekenMode : public NudzScrollImageMode {
+
+#include "heineken_image.hpp"
+
+    static void loop(auto& ctx) {
+      loop_image(ctx, heineken_image);
+    }
+
   };
 
 }
