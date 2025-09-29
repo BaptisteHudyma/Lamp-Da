@@ -483,7 +483,7 @@ static constexpr uint32_t from_palette(UIntTy index, const PaletteTy& palette, u
   // convert to [0; 15] (divide by 16)
   uint8_t renormIndex = index >> 4;
   // get least significant part for the blend factor (15 levels + 0)
-  float blendIndex = 1.0 - (index & 0x0F) / 16.0f;
+  float blendIndex = (index & 0x0F) / 16.0f;
 
   // support for uint16_t
   if constexpr (sizeof(UIntTy) > 1)
@@ -506,6 +506,7 @@ static constexpr uint32_t from_palette(UIntTy index, const PaletteTy& palette, u
     blendIndex = 0.0f;
   if (blendIndex > 1.0f)
     blendIndex = 1.0f;
+  blendIndex = 1.0 - blendIndex;
 
   const uint32_t entry = palette[renormIndex];
 
