@@ -60,7 +60,7 @@ public:
   /**
    * \brief an alert is raised that prevent power output
    */
-  bool can_use_lamp_power() const;
+  bool can_use_output_power() const;
 
   /**
    * \brief an alert is raised that prevent battery charging

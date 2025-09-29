@@ -269,7 +269,7 @@ void handle_otg_mode()
   }
 
   // end of OTG, switch to charger
-  if (otgNoActivity or !powerDelivery::is_switching_to_otg())
+  if (otgNoActivity or !powerDelivery::is_switching_to_otg() or !battery::is_battery_usable_as_power_source())
   {
     // reset pd machine
     powerDelivery::suspend_pd_state_machine();
@@ -423,7 +423,7 @@ bool go_to_charger_mode()
 
 bool go_to_otg_mode()
 {
-  if (__private::can_switch_states())
+  if (__private::can_switch_states() and battery::is_battery_usable_as_power_source())
   {
     timeSinceOTGNoCurrentUse = time_ms();
     __private::switch_state(PowerStates::OTG_MODE);
