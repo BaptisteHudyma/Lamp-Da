@@ -7,18 +7,25 @@ import os
 in_img = sys.argv[1]
 out_src = sys.argv[2]
 if len(sys.argv) >= 4:
-    out_var = sys.argv[3]
+    out_cls = sys.argv[3]
 else:
-    out_var = os.path.basename(out_src)
-    out_var = out_var.split('.')[0]
+    out_cls = 'ImageTy'
+    out_cls = os.path.basename(out_src)
+    out_cls = out_cls.split('.')[0]
+    if out_cls.endswith('_image'):
+        out_cls = out_cls[:-6]
+    out_cls = out_cls[0].upper() + out_cls[1:] + 'ImageTy'
 
 image = Image.open(in_img)
 btes = image.tobytes()
-sz = (25, 22)
+sz = (image.width, image.height)
 
 with open(out_src, 'w') as of:
 
-    print(f'static constexpr uint32_t {out_var}[] = {{', file=of)
+    print(f'''    struct {out_cls} {{
+      static constexpr uint16_t width = {image.width};
+      static constexpr uint16_t height = {image.height};
+      static constexpr uint32_t rgbData[] = {{ ''', file=of)
     i = 0
     for y in range(sz[1]):
         for x in range(sz[0]):
@@ -28,7 +35,8 @@ with open(out_src, 'w') as of:
             else:
                 r, g, b = btes[i: i+3]
                 i += 3
-            print('0x%02x%02x%02x,' % (r, g, b), file=of)
+            end = '\n' if x == sz[0] - 1 else ' '
+            print('0x%02x%02x%02x,' % (r, g, b), file=of, end=end)
 
-    print('};', file=of)
+    print('      };\n    };', file=of)
 
