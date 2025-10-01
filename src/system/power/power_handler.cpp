@@ -154,6 +154,14 @@ void handle_clear_power_rails()
   // disable OTG if needed
   set_otg_parameters(0, 0);
 
+// TODO issue #132 remove when the mock threads will be running
+#ifdef LMBD_SIMULATION
+  __private::dischargeVbus.set_high(false);
+  // all is clear, skip to next step
+  __private::powerMachine.skip_timeout();
+  return;
+#endif
+
   // wait at least a little bit
   if (time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailMinDelay_ms and
       // power rail below min measurment voltage
@@ -533,6 +541,7 @@ void init()
     errorStr += "\n\t- Init balancer component failed";
     isSuccessful = false;
   }
+#endif
 
   // charging component, setup first
   const bool chargerSuccess = charger::setup();
@@ -542,6 +551,8 @@ void init()
     isSuccessful = false;
   }
 
+// TODO issue #132 remove when the mock components will be running
+#ifndef LMBD_SIMULATION
   // at the very last, power delivery
   const bool pdSuccess = powerDelivery::setup();
   if (!pdSuccess)

@@ -20,12 +20,9 @@ void single_run_thread()
 
 void run_threads()
 {
-// TODO issue #132: missing mocks for charger & pd negociator
-#if 0
   // run until deep sleep
-  while (not shouldStopThreads)
+  while (not mock_registers::shouldStopThreads)
     single_run_thread();
-#endif
 }
 
 } // namespace mock_registers

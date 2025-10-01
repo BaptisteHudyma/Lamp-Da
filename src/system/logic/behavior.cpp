@@ -377,6 +377,7 @@ bool check_handle_exit_output_mode()
     }
     return true;
   }
+#ifndef LMBD_SIMULATION
   else if (not alerts::manager.can_use_output_power())
   {
     // wait a bit then shutdown
@@ -387,6 +388,7 @@ bool check_handle_exit_output_mode()
     }
     return true;
   }
+#endif
 
   return false;
 }

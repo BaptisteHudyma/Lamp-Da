@@ -1,0 +1,183 @@
+#ifndef BQ25713_MOCK_H
+#define BQ25713_MOCK_H
+
+#include "i_ic.h"
+
+// use depend of real component (to have the registers)
+#include "depends/BQ25713/BQ25713.h"
+
+// hardwaree influencer simulator
+#include "simulator/include/hardware_influencer.h"
+#include <map>
+#include <memory>
+
+class BQ25713Mock : public IntegratedCircuitMock_I
+{
+public:
+  BQ25713Mock()
+  {
+    // fill register map
+
+    // ids
+    _registerMap[bq25713::MANUFACTURER_ID_ADDR] = std::make_unique<ManufacturerId>();
+    _registerMap[bq25713::DEVICE_ID_ADDR] = std::make_unique<DeviceId>();
+
+    // simple read bit
+    _registerMap[bq25713::CHARGE_OPTION_0_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::CHARGE_OPTION_1_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::CHARGE_OPTION_2_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::CHARGE_OPTION_3_ADDR] = std::make_unique<Register>();
+
+    _registerMap[bq25713::ADC_OPTION_ADDR] = std::make_unique<AdcOption_Register>();
+    _registerMap[bq25713::PROCHOT_STATUS_ADDR] = std::make_unique<Register>();
+
+    _registerMap[bq25713::PROCHOT_OPTION_0_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::PROCHOT_OPTION_1_ADDR] = std::make_unique<Register>();
+
+    // status
+    _registerMap[bq25713::CHARGE_STATUS_ADDR] = std::make_unique<ChargerStatus_Register>();
+    //
+    _registerMap[bq25713::VBAT_ADC_ADDR] = std::make_unique<VBAT_ADC_Register>();
+    _registerMap[bq25713::CHARGE_CURRENT_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::MAX_CHARGE_VOLTAGE_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::MINIMUM_SYSTEM_VOLTAGE_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::OTG_VOLTAGE_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::OTG_CURRENT_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::INPUT_VOLTAGE_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::IIN_HOST_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::IIN_DPM_ADDR] = std::make_unique<Register>();
+
+    _registerMap[bq25713::ADC_VBUS_PSYS_ADC_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::ADC_IBAT_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::CMPIN_ADC_ADDR] = std::make_unique<Register>();
+  }
+
+  uint8_t get_i2c_address() const override { return bq25713::BQ25713::BQ25713addr; }
+
+  int i2c_write_data(const uint8_t registerAddress, const uint8_t dataSize, const uint8_t* dataBuffer) override
+  {
+    if (_registerMap[registerAddress] != nullptr)
+    {
+      uint16_t data = dataBuffer[0];
+      if (dataSize > 1)
+        data |= (dataBuffer[1] << 8);
+      return _registerMap[registerAddress]->write(data);
+    }
+
+    // failure
+    return 1;
+  }
+
+  int i2c_read_data(const uint8_t registerAddress, const uint8_t dataSize, uint8_t* dataBuffer) override
+  {
+    if (_registerMap[registerAddress] != nullptr)
+    {
+      const uint16_t d = _registerMap[registerAddress]->read();
+
+      dataBuffer[0] = d & 0xff;
+      if (dataSize > 1)
+        dataBuffer[1] = (d >> 8) & 0xff;
+      return 0;
+    }
+
+    // failure
+    return 1;
+  }
+
+  int i2c_xfer_data(const int outSize, const uint8_t* out, const int inSize, uint8_t* in) override
+  {
+    // failure
+    return 1;
+  }
+
+protected:
+private:
+  // Create instance of registers data structure
+  inline static bq25713::BQ25713::Regt IcRegisters;
+
+  // interface with base registers
+  static uint16_t encode_to_base_read_register(const uint16_t val, const bq25713::BQ25713::IBaseReadRegister* reg)
+  {
+    // constraint
+    uint16_t valC = (std::min(std::max(val, reg->minVal()), reg->maxVal()) - reg->minVal()) / reg->resolution();
+    // rectified
+    uint16_t valR = (valC & reg->mask()) << reg->offset();
+    return valR;
+  }
+  static uint16_t encode_to_double_register(const uint16_t val0,
+                                            const uint16_t val1,
+                                            const bq25713::BQ25713::IDoubleRegister* reg)
+  {
+    // rectified vals
+    uint8_t val0R = (std::max(val0, reg->minVal0()) - reg->minVal0()) / reg->resolutionVal0();
+    uint8_t val1R = (std::max(val1, reg->minVal1()) - reg->minVal1()) / reg->resolutionVal1();
+
+    uint16_t result = (val1R & reg->maskVal1()) << 8 | (val0R & reg->maskVal0());
+    return result;
+  }
+
+  // register entry point
+  struct Register
+  {
+    uint16_t _data = 0;
+
+    virtual uint16_t read() { return _data; }
+    virtual int write(uint16_t data)
+    {
+      _data = data;
+      return 0;
+    }
+  };
+
+  struct ChargerStatus_Register : public Register
+  {
+    uint16_t read() override
+    {
+      uint8_t val0 = 0;
+
+      uint8_t val1 = 0;
+      // val1 |= 1 << 0x07;  // AC stat
+      val1 |= 1 << 0x06; // ICO done
+      val1 |= 1 << 0x00; // in OTG
+
+      return val1 << 8 | val0;
+    }
+  };
+
+  struct AdcOption_Register : public Register
+  {
+    uint16_t read() override
+    {
+      uint8_t val0 = 0;
+
+      uint8_t val1 = 0;
+      val1 |= 0 << 0x06; // ADC_START
+
+      return val1 << 8 | val0;
+    }
+  };
+
+  // Battery and Vsys register
+  struct VBAT_ADC_Register : public Register
+  {
+    uint16_t read() override
+    {
+      return encode_to_double_register(
+              mock_battery::voltage * 1000.0, mock_battery::voltage * 1000.0, &IcRegisters.aDCVSYSVBAT);
+    }
+  };
+
+  struct ManufacturerId : public Register
+  {
+    uint16_t read() override { return bq25713::MANUFACTURER_ID; }
+  };
+
+  struct DeviceId : public Register
+  {
+    uint16_t read() override { return bq25713::DEVICE_ID; }
+  };
+
+  std::unique_ptr<Register> _registerMap[255];
+};
+
+#endif
