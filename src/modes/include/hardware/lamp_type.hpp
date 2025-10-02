@@ -26,10 +26,18 @@
 
 #include "src/modes/include/compile.hpp"
 #include "src/modes/include/colors/utils.hpp"
+#include "src/modes/include/hardware/coordinates.hpp"
 
 namespace modes {
+
+struct XYTy
+{
+  uint16_t x, y;
+};
+
 static constexpr uint16_t to_strip(uint16_t, uint16_t);
-}
+static constexpr XYTy strip_to_XY(uint16_t n);
+} // namespace modes
 
 /// Provide interface to the physical hardware and other facilities
 namespace modes::hardware {
@@ -92,8 +100,12 @@ private:
   static constexpr uint16_t _nbBuffers = stripNbBuffers; ///< \private
   LedStrip& strip;                                       ///< \private
 
+  /// \private oversized buffer size to account for "overflowing" LEDs
+  static constexpr uint16_t _safeBufSize = (_width + 1) * (_height + 1);
+
   /// Type for a uint32_t buffer of exactly ledCount length
   using BufferTy = std::array<uint32_t, _ledCount>;
+  // using BufferTy = std::array<uint32_t, _safeBufSize>;
 
   LampTy() = delete;                         ///< \private
   LampTy(const LampTy&) = delete;            ///< \private
@@ -112,8 +124,12 @@ private:
   static constexpr uint16_t _ledCount = 530; ///< \private
   static constexpr uint16_t _nbBuffers = 2;  ///< \private
 
+  /// \private oversized buffer size to account for "overflowing" LEDs
+  static constexpr uint16_t _safeBufSize = (_width + 1) * (_height + 1);
+
   /// Type for a uint32_t buffer of exactly ledCount length
   using BufferTy = std::array<uint32_t, _ledCount>;
+  // using BufferTy = std::array<uint32_t, _safeBufSize>;
 
   LampTy(const LampTy&) = delete;            ///< \private
   LampTy& operator=(const LampTy&) = delete; ///< \private
@@ -121,7 +137,7 @@ private:
   struct LedStrip ///< \private
   {
     BufferTy _buffers[_nbBuffers];
-    COLOR _colors[_ledCount];
+    COLOR _colors[_ledCount]; // !! slighly smaller than buffers in _buffers !!
 
     void begin();
     void show();
@@ -278,8 +294,10 @@ public:
   /// Hardward try to call .loop() every frameDurationMs (12ms for 83.3fps)
   static constexpr uint32_t frameDurationMs = MAIN_LOOP_UPDATE_PERIOD_MS;
 
+#ifndef LMBD_LAMP_TYPE__INDEXABLE_IS_HD
   // (we have 12ms and 83.3fps values to be updated in this file)
   static_assert(frameDurationMs == 12, "Update the documentation of .tick :)");
+#endif
 
   /// Limit mode-requested brightness changes to one every few frames
   static constexpr uint32_t brightnessDurationMs = frameDurationMs * 2;
@@ -292,26 +310,67 @@ public:
 
   /** \brief (indexable) Width of "pixel space" w/ lamp taken as a LED matrix
    *
-   * Equal to \p stripXCoordinates (floor) if LampTypes::indexable or else 16
+   * This width equals the smallest maximal X coordinate for which all rows
+   * are fully displayed on the lamp taken as an "XY-display" LED matrix.
+   *
+   * All rows are of length of at least \p maxWidth but some will be of length
+   * \p maxOverflowWidth depending on the exact diameter of the lamp and
+   * density of the LED strip.
+   *
+   * Equal to \p stripXCoordinates (floor) if LampTypes::indexable or else 23
    */
   static constexpr uint16_t maxWidth = _width;
 
   /// Width as a precise floating point number, equal to \p stripXCoordinates
   static constexpr float maxWidthFloat = _fwidth;
 
+  /// Larger width, taken as the absolute maximum X coordinate on all rows
+  static constexpr uint16_t maxOverflowWidth = maxWidth + 1;
+
   /** \brief (indexable) Height of "pixel space" w/ lamp taken as a LED matrix
    *
-   * Equal to \p stripYCoordinates (floor) if LampTypes::indexable or else 16
+   * This height equals the largest Y coordinate for which a full \p maxWidth
+   * row can be displayed, the last row at coordinate \p maxOverflowHeight
+   * being likely to be truncated depending on the exact diameter of the lamp
+   * and density of the LED strip.
    *
-   * Note that the last (incomplete) line of LEDs may not be accounted here.
+   * The largest LED matrix fully displayed on the lamp taken as an XY screen
+   * display is thus of width \p maxWidth and height \p maxHeight leaving out
+   * some "outside" of the default display size.
+   *
+   * Equal to \p stripYCoordinates (floor) if LampTypes::indexable or else 22
    */
   static constexpr uint16_t maxHeight = _height;
 
   /// Height as a precise floating point number, equal to \p stripYCoordinates
   static constexpr float maxHeightFloat = _fheight;
 
-  /// Visually (X,Y) coordinates may appear shifted every \p shiftResidue rows
-  static constexpr uint16_t shiftResidue = 1 / (2 * _fwidth - 2 * floor(_fwidth) - 1);
+  /// Larger height, taken as the absolute maximum Y coordinate, overflowing
+  static constexpr uint16_t maxOverflowHeight = maxHeight + 1;
+
+  /// \private Exact visual (X,Y) shift for each row of LED rolled around lamp
+  static constexpr float shiftPerTurn = _fwidth - floor(_fwidth - 0.0001);
+
+  /// \private Fixed "period" of the (X,Y) shift for each row (set at 2)
+  static constexpr uint16_t shiftPeriod = 2;
+
+  // (while shifting every shiftPeriod, we have a residue accumulating)
+  static constexpr float _invShiftResidue = shiftPeriod * (_fwidth - floor(_fwidth - 0.0001));
+
+  /// \private Approximate (broken) visual coordinate X-shift every \p shiftResidue rows
+  static constexpr uint16_t shiftResidue = 100.0 / abs(100.0 * _invShiftResidue - 100.0);
+
+  /// \private All **exact** "residue" / amount of X-shift given the Y coordinate
+  static constexpr auto allResiduesY = details::computeResidues<maxOverflowHeight>(_fwidth);
+
+  /// \private Is row at Y coordinate slightly longer than \p maxWidth or not?
+  static constexpr auto allDeltaResiduesY = details::computeDeltaResidues<maxOverflowHeight>(_fwidth);
+
+  /// \private Return **total** exact accumulated X-shift residue, accross all previous rows
+  static constexpr auto extraShiftResiduesY = details::computeExtraShiftResidues<maxOverflowHeight>(_fwidth);
+
+  /// \private Last (final) total X-shift at the end, all row shifts together
+  static constexpr int extraShiftTotal = extraShiftResiduesY[maxOverflowHeight - 1];
 
   /** \brief (indexable) Number of color buffers available for direct access
    *
@@ -705,6 +764,18 @@ public:
    */
   void LMBD_INLINE setPixelColorXY(uint16_t X, uint16_t Y, uint32_t color) { setPixelColor(to_strip(X, Y), color); }
 
+  /** \brief (indexable) Given X,Y coordinate, return a corresponding LED index
+   *
+   * Uses modes::to_strip as implementation (both function are equivalent)
+   */
+  static uint16_t LMBD_INLINE fromXYtoStripIndex(uint16_t X, uint16_t Y) { return to_strip(X, Y); }
+
+  /** \brief (indexable) Given a LED index, return a corresponding X,Y value
+   *
+   * Uses modes::strip_to_XY as implementation (both function are equivalent)
+   */
+  static XYTy LMBD_INLINE fromStripIndexToXY(uint16_t N) { return strip_to_XY(N); }
+
   /** \brief Get a reference to the \p bufIdx temporary buffer
    *
    * These buffers can be used for computations by the active mode, but their
@@ -850,20 +921,57 @@ public:
 
 namespace modes {
 
-/* \brief Convert \p x and \p y coordinates to a linear position on strip
- */
+/// \brief Convert \p x and \p y coordinates to a linear position on strip
 static constexpr uint16_t to_strip(uint16_t x, uint16_t y)
 {
-  if (x > hardware::LampTy::maxWidth)
-    x = hardware::LampTy::maxWidth;
-  if (y > hardware::LampTy::maxHeight)
-    y = hardware::LampTy::maxHeight;
+  // maxHeight is the last "full" row and maxOverflowHeight is truncated row
+  //  -> user max use to_strip(x, maxOverflowHeight) to set truncated row
+  if (y >= hardware::LampTy::maxOverflowHeight)
+  {
+    y = hardware::LampTy::maxOverflowHeight - 1;
+  }
 
-  uint16_t n = x + y * hardware::LampTy::maxWidthFloat;
+  // if row is longer (because next row gets a shift) use maxOverflowWidth
+  if (hardware::LampTy::allDeltaResiduesY[y])
+  {
+    if (x >= hardware::LampTy::maxOverflowWidth)
+    {
+      x = hardware::LampTy::maxOverflowWidth - 1;
+    }
+
+    // if row is aligned to XY maxWidth/maxHeight matrix, use maxWidth instead
+  }
+  else if (x >= hardware::LampTy::maxWidth)
+  {
+    x = hardware::LampTy::maxWidth - 1;
+  }
+
+  // final result is capped by the "real" LED count of the strip
+  uint16_t n = x + y * hardware::LampTy::maxWidth + hardware::LampTy::allResiduesY[y];
   if (n >= hardware::LampTy::ledCount)
     n = hardware::LampTy::ledCount - 1;
   return n;
 }
+
+/// \brief Convert a \p n index on the LED strip to a matching XY coordinate
+static constexpr XYTy strip_to_XY(uint16_t n)
+{
+  // (saturates N to ledCount)
+  if (n >= hardware::LampTy::ledCount)
+    n = hardware::LampTy::ledCount - 1;
+
+  uint16_t y = 0;
+  while (y * hardware::LampTy::maxWidth + hardware::LampTy::allResiduesY[y] <= n)
+    y += 1;
+
+  if (y == 0)
+    return {0, 0};
+  y -= 1;
+
+  uint16_t x = n - y * hardware::LampTy::maxWidth - hardware::LampTy::allResiduesY[y];
+  return {x, y};
+}
+
 } // namespace modes
 
 #endif

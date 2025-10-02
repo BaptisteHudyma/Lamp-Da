@@ -70,7 +70,6 @@ static constexpr float circuitToLedZeroRotationZ_degrees = 88;
 //
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
-
 static constexpr float lampBodyRadius_mm = 25; // external radius of the lamp body
 
 // parameters of the led strip used
@@ -101,7 +100,7 @@ static constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = 1000 / 80.0;
 #endif
 
 // physical parameters computations
-static constexpr float ledSize_mm = 1.0 / ledByMeter * 1000.0;                   // size of the individual led
+static constexpr float ledSize_mm = 1000.0 / ledByMeter;                         // size of the individual led
 static constexpr float lampBodyCircumpherence_mm = c_TWO_PI * lampBodyRadius_mm; // external circumpherence
 static constexpr float ledStripLenght_mm = LED_COUNT * ledSize_mm;
 
