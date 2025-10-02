@@ -22,7 +22,8 @@
 
 // (_LampTy from simulator_state.h)
 constexpr int ledW = _LampTy::maxWidth;
-constexpr int ledH = _LampTy::maxHeight;
+constexpr int ledH = _LampTy::maxOverflowHeight;
+constexpr int ledCount = _LampTy::ledCount;
 
 constexpr float fLedW = _LampTy::maxWidthFloat;
 constexpr float fResidueW = 1 / (2 * fLedW - 2 * floor(fLedW) - 1);
@@ -55,6 +56,10 @@ template<typename T> struct simulator
     std::array<uint16_t, brightnessWidth> brightnessTracker {};
     std::array<sf::RectangleShape, brightnessWidth> dots;
 
+    // matrix shift
+    int fakeXorigin = 0;
+    int fakeXend = 0;
+
     // pixel shapes
     std::array<sf::RectangleShape, _LampTy::ledCount> shapes;
 
@@ -79,7 +84,7 @@ template<typename T> struct simulator
 
     sf::Vector2<int> mousePos = sf::Mouse::getPosition(window);
     const float indCoordX = simu.buttonLeftPos;
-    const float indCoordY = simu.ledSizePx * (ledH + 6);
+    const float indCoordY = (simu.ledSizePx + simu.ledPaddingPx) * (ledH + 3);
 
     // TODO: #156 move mock-specific parts to another process
     // ======================================================
@@ -129,23 +134,23 @@ template<typename T> struct simulator
             case sf::Keyboard::Key::P: // p == pause
               state.lastKeyPressed = 'p';
               break;
-            case sf::Keyboard::Key::F: // f == faster
-              state.lastKeyPressed = 'f';
-              break;
-            case sf::Keyboard::Key::S: // s == slower
-              state.lastKeyPressed = 's';
-              break;
             case sf::Keyboard::Key::V: // v == verbose
               state.lastKeyPressed = 'v';
               break;
             case sf::Keyboard::Key::T: // t == tick +pause
               state.lastKeyPressed = 't';
               break;
-            case sf::Keyboard::Key::W:
-              state.lastKeyPressed = 'w';
+            case sf::Keyboard::Key::H: // h == higher speed
+              state.lastKeyPressed = 'h';
               break;
-            case sf::Keyboard::Key::A:
-              state.lastKeyPressed = 'a';
+            case sf::Keyboard::Key::G: // g == glower speeds
+              state.lastKeyPressed = 'g';
+              break;
+            case sf::Keyboard::Key::J: // j == shift matrix left
+              state.lastKeyPressed = 'j';
+              break;
+            case sf::Keyboard::Key::K: // k == shift matrix right
+              state.lastKeyPressed = 'k';
               break;
             case sf::Keyboard::Key::D:
               state.lastKeyPressed = 'd';
@@ -158,9 +163,6 @@ template<typename T> struct simulator
               break;
             case sf::Keyboard::Key::R:
               state.lastKeyPressed = 'r';
-              break;
-            case sf::Keyboard::Key::G:
-              state.lastKeyPressed = 'g';
               break;
             case sf::Keyboard::Key::C:
               state.lastKeyPressed = 'c';
@@ -195,7 +197,7 @@ template<typename T> struct simulator
           }
 
           // slower simulation
-          if (state.lastKeyPressed == 's')
+          if (state.lastKeyPressed == 'g')
           {
             if (state.slowTimeFactor > 1.50)
             {
@@ -213,7 +215,7 @@ template<typename T> struct simulator
           }
 
           // faster simulation
-          if (state.lastKeyPressed == 'f')
+          if (state.lastKeyPressed == 'h')
           {
             if (state.slowTimeFactor > 1.20)
             {
@@ -228,6 +230,24 @@ template<typename T> struct simulator
               state.slowTimeFactor += 0.05;
             }
             fprintf(stderr, "faster %f\n", state.slowTimeFactor);
+          }
+
+          // shift forward XY display
+          if (state.lastKeyPressed == 'k')
+          {
+            fakeXorigin += 1;
+            if (fakeXorigin > ledW - 1)
+              fakeXorigin = 0;
+            fakeXend = max(fakeXorigin - min(4, ledW - 1 - fakeXorigin), 0);
+          }
+
+          // shift backward XY display
+          if (state.lastKeyPressed == 'j')
+          {
+            fakeXorigin -= 1;
+            if (fakeXorigin < 0)
+              fakeXorigin = ledW - 1;
+            fakeXend = max(fakeXorigin - min(4, ledW - 1 - fakeXorigin), 0);
           }
 
           // reset key pressed
@@ -310,37 +330,65 @@ template<typename T> struct simulator
       state.indicatorColor = mock_indicator::get_color();
       // ======================================================
 
-      // draw fake leds
-      window.clear(sf::Color::Black);
+      const float ledSz = simu.ledSizePx;
+      const auto ledPadSz = simu.ledPaddingPx + simu.ledSizePx;
+      const auto ledOffset = ledSz / _LampTy::shiftPeriod;
 
-      for (int fXpos = -simu.fakeXorigin; fXpos < ledW - simu.fakeXend; ++fXpos)
+      const float Xbase = _LampTy::extraShiftTotal > 0 ? 0 : -_LampTy::extraShiftTotal;
+      const float Xextra = _LampTy::extraShiftTotal < 0 ? 0 : _LampTy::extraShiftTotal;
+
+      // draw slightly grey background to hightlight turned off LEDs
+      window.clear(sf::Color(13, 12, 11));
+
+      for (int Ypos = 0; Ypos < ledH; ++Ypos)
       {
-        for (int Ypos = 0; Ypos < ledH; ++Ypos)
+        int realRowSize = ledW;
+        if (_LampTy::allDeltaResiduesY[Ypos])
+          realRowSize += 1;
+
+        for (int fXpos = -fakeXorigin; fXpos < realRowSize - fakeXend; ++fXpos)
         {
-          int Yoff = 0;
+          int Yoff = 0, Xoff = 0;
 
           int Xpos = fXpos;
           if (fXpos < 0)
           {
-            Xpos = ledW + fXpos;
+            Xpos = realRowSize + fXpos;
             Yoff = 1;
+
+            if (_LampTy::allDeltaResiduesY[Ypos])
+              Xoff = 1;
           }
 
           size_t I = modes::to_strip(Xpos, Ypos);
           auto& shape = shapes[I];
 
-          const float ledSz = simu.ledSizePx;
-          const auto ledPadSz = simu.ledPaddingPx + simu.ledSizePx;
-          const auto ledOffset = simu.ledOffsetPx;
+          auto realPos = modes::strip_to_XY(I);
+          if (realPos.x != Xpos || realPos.y != Ypos)
+            continue;
+
           shape.setSize({ledSz, ledSz});
 
-          int rXpos = fXpos + simu.fakeXorigin;
+          int rXpos = fXpos + fakeXorigin + Xoff;
           int rYpos = Ypos + Yoff;
-          int shiftR = Ypos / fResidueW;
+          int shiftR = _LampTy::extraShiftResiduesY[Ypos];
           int shiftL = Ypos + shiftR + 1;
 
-          shape.setPosition({ledSz + rXpos * ledPadSz + ledOffset * (shiftL % 2) - (Yoff - shiftR) * ledOffset,
-                             rYpos * ledPadSz});
+          if (_LampTy::shiftResidue == 1 && _LampTy::shiftPerTurn < 0.1)
+            shiftR = 0;
+
+          float shapeX = ledSz + rXpos * ledPadSz;
+          shapeX += ledOffset * Xbase;
+          shapeX += ledOffset * (shiftL % _LampTy::shiftPeriod);
+          shapeX -= (ledOffset - simu.ledPaddingPx / 2) * (Yoff - shiftR);
+          shapeX -= Xoff * simu.ledPaddingPx;
+
+          // make the origin more obvious
+          if (fXpos >= 0)
+            shapeX += simu.ledPaddingPx;
+
+          float shapeY = rYpos * ledPadSz;
+          shape.setPosition({shapeX, shapeY});
 
           const uint32_t color = state.colorBuffer[I];
           float b = (color & 0xff);
@@ -358,61 +406,67 @@ template<typename T> struct simulator
           // display text information if mouse is pressed
           if (enableText)
           {
-            // (used to compute which pixel is pointed by mouse)
-            int MouseYpos = 1 + (mousePos.y / ledPadSz);
-            shiftR = MouseYpos / fResidueW;
-            shiftL = MouseYpos + shiftR + 1;
-            float MouseXpos = ((mousePos.x - ledSz - (shiftL % 2 - Yoff + shiftR) * ledOffset) / ledPadSz);
+            int MouseYpos = mousePos.y;
+            int MouseXpos = mousePos.x;
 
-            if (MouseYpos > ledH + 1 && !state.verbose)
-            {
-              enableText = false;
+            auto shapeXY = shape.getPosition();
+            float dx = shapeXY.x + ledSz / 2 - MouseXpos;
+            float dy = shapeXY.y + ledSz / 2 - MouseYpos;
+
+            // all shapes too far from cursor, does not display info
+            if (abs(2 * dx) > ledPadSz || abs(2 * dy) > ledPadSz)
               continue;
-            }
 
-            float offsetY = 0;
-            if (MouseXpos < simu.fakeXorigin - 0.5)
+            // display (X,Y) on bottom-right
+            float largestX = ledSz + (ledW + 1 + fakeXorigin - fakeXend) * ledPadSz + ledOffset * (Xextra + Xbase);
+            float largestY = (ledH + Yoff) * ledPadSz + 8;
             {
-              offsetY = ledSz;
-              MouseYpos += 1;
+              auto str = "(" + std::to_string(Xpos) + ", " + std::to_string(Ypos) + ")";
+
+              sf::Text text(str, font, 12);
+              sf::Vector2f where(largestX, largestY);
+              text.setPosition(where);
+              window.draw(text);
             }
 
             // display Ypos on the right
-            float dy = abs(shape.getPosition().y - mousePos.y + ledSz / 2 + offsetY);
-            if (fXpos + 1 >= ledW - simu.fakeXend && dy < ledPadSz / 2)
             {
-              sf::Text text(std::to_string(Ypos), font, 12);
+              auto str = std::to_string(Ypos);
+              if (_LampTy::allDeltaResiduesY[Ypos])
+                str += " *";
 
-              sf::Vector2f where(ledSz + (ledW + simu.fakeXorigin) * ledPadSz + ledOffset * 2, rYpos * ledPadSz + 6);
+              sf::Text text(str, font, 12);
+              sf::Vector2f where(largestX, shapeXY.y + ledSz / 4);
               text.setPosition(where);
               window.draw(text);
             }
 
             // display Xpos on the bottom
-            int shiftR = MouseYpos / fResidueW;
-            int shiftL = MouseYpos + shiftR + 1;
-            float dx = abs(shape.getPosition().x - mousePos.x - (MouseYpos % 2) * ledOffset + ledSz);
-            if (Ypos + 1 >= ledH && dx < ledPadSz / 2)
             {
-              sf::Text text(std::to_string(Xpos), font, 12);
+              auto str = std::to_string(Xpos);
+              if (Xpos == ledW)
+                str += " *";
 
-              sf::Vector2f where(ledSz + rXpos * ledPadSz - Yoff * ledOffset + 16, (ledH + Yoff) * ledPadSz + 8);
+              sf::Text text(str, font, 12);
+              sf::Vector2f where(shapeXY.x, largestY);
               text.setPosition(where);
               window.draw(text);
             }
 
-            // display color at pixel
-            if (dx < ledPadSz / 2 && dy < ledPadSz / 2)
+            // display misc info next to button
             {
               auto str = "(" + std::to_string(int(r)) + ", ";
               str += std::to_string(int(g)) + ", ";
               str += std::to_string(int(b)) + ")";
+              str += ", " + std::to_string(I);
 
               sf::Text text(str, font, 12);
-
-              sf::Vector2f where(indCoordX + simu.buttonSize * 3, indCoordY - 16.f);
+              sf::Vector2f where(indCoordX + simu.buttonSize * 3, indCoordY - 24.f);
               text.setPosition(where);
               window.draw(text);
+
+              // (avoid superposed text)
+              enableText = false;
             }
           }
         }
