@@ -10,6 +10,7 @@
 #include "src/system/platform/time.h"
 #include <mutex>
 #include <thread>
+#include <atomic>
 
 #define PLATFORM_PRINT_CPP
 
@@ -19,6 +20,8 @@ extern "C" {
 }
 
 std::vector<std::string> inputCommands;
+
+std::atomic<bool> canRunInputThread = false; // TODO kill
 std::thread inputThread;
 
 /**
@@ -27,8 +30,9 @@ std::thread inputThread;
 void init_prints()
 {
   // spawn cin read thread
+  canRunInputThread = true;
   inputThread = std::thread([&]() {
-    while (true)
+    while (canRunInputThread)
     {
       std::string s;
       // blocking call

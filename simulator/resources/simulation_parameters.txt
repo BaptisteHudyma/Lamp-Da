@@ -3,6 +3,9 @@
 # Battery voltage, in Volt, in interval [9.0, 12.4]
 batt_V 11.4
 
+# voltage applied to the USB input
+vbus_V 0.0
+
 # temperature of the CPU, in degrees C
 cpu_temp 50
 

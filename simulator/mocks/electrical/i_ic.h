@@ -11,6 +11,9 @@
 class IntegratedCircuitMock_I
 {
 public:
+  // run an update of the object properties
+  virtual void run_electrical_update() = 0;
+
   // the i2c adress of the device
   virtual uint8_t get_i2c_address() const = 0;
 

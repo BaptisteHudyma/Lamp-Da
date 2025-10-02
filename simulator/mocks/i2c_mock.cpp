@@ -4,8 +4,12 @@
 
 #include <cstdint>
 #include <memory>
+#include <thread>
+#include <atomic>
 
 #include "src/system/platform/i2c.h"
+#include "src/system/platform/time.h"
+
 #include "simulator/mocks/electrical/i_ic.h"
 #include "simulator/mocks/electrical/BQ25713_mock.h"
 
@@ -17,11 +21,40 @@ const std::unique_ptr<IntegratedCircuitMock_I> icMocks[numberOfMocks] = {
 };
 bool isI2cAvailable = false;
 
+namespace mock_electrical {
+// output at the power rail
+float powerRailVoltage;
+float powerRailCurrent;
+// output at the led output
+float outputVoltage;
+float outputCurrent;
+// output on vbus rail
+float vbusVoltage;
+float vbusCurrent;
+
+float inputVbusVoltage;
+float chargeOtgOutput;
+} // namespace mock_electrical
+
+std::atomic<bool> canRunComponentUpdateThread = false;
+std::thread componentUpdateThread;
+
 void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
 {
   if (i2cIndex != 0)
     return;
 
+  canRunComponentUpdateThread = true;
+  componentUpdateThread = std::thread([&]() {
+    while (canRunComponentUpdateThread)
+    {
+      for (const auto& icMock: icMocks)
+      {
+        icMock->run_electrical_update();
+      }
+      delay_ms(1);
+    }
+  });
   isI2cAvailable = true;
 }
 
@@ -30,6 +63,7 @@ void i2c_turn_off(uint8_t i2cIndex)
   if (i2cIndex != 0)
     return;
 
+  canRunComponentUpdateThread = false;
   isI2cAvailable = false;
 }
 

@@ -32,6 +32,8 @@ constexpr float fResidueW = 1 / (2 * fLedW - 2 * floor(fLedW) - 1);
 #include "src/system/utils/utils.h"
 
 #include "simulator/include/hardware_influencer.h"
+// handle simulation of voltage and current in the system
+#include "simulator/mocks/electrical/electrical_mock.cpp"
 
 #include <thread>
 
@@ -91,6 +93,8 @@ template<typename T> struct simulator
 
     // load initial values
     read_and_update_parameters();
+    // start electrical simulation,
+    start_electrical_mock();
 
     // Main program setup
     global::main_setup();
@@ -310,12 +314,14 @@ template<typename T> struct simulator
         global::main_loop(mock_registers::addedAlgoDelay);
       }
 
+      const bool isOutputEnabled = mock_electrical::outputVoltage > 9.0;
+
       if constexpr (_LampTy::flavor == modes::hardware::LampTypes::indexable)
       {
         for (size_t I = 0; I < _LampTy::ledCount; ++I)
         {
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
-          state.colorBuffer[I] = user::_private::strip.getPixelColor(I);
+          state.colorBuffer[I] = isOutputEnabled ? user::_private::strip.getPixelColor(I) : 0;
           state.brightness = user::_private::strip.getBrightness();
 #endif
         }
@@ -323,7 +329,7 @@ template<typename T> struct simulator
       else
       {
         for (size_t I = 0; I < _LampTy::ledCount; ++I)
-          state.colorBuffer[I] = 0xffff00;
+          state.colorBuffer[I] = isOutputEnabled ? 0xffff00 : 0;
         state.brightness = (brightness::get_brightness() * 255) / maxBrightness;
       }
 
@@ -510,6 +516,8 @@ template<typename T> struct simulator
       // draw window
       window.display();
     }
+
+    stop_electrical_mock();
 
     return 0;
   }

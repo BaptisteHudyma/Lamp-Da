@@ -476,8 +476,6 @@ void handle_output_light_state()
     return;
   }
 
-// TODO issue #132 remove when the mock threads will be running
-#ifndef LMBD_SIMULATION
   static bool waitingForPowerGate_messageDisplayed = true;
 
   // wait for power gates (and display message when ready)
@@ -498,7 +496,6 @@ void handle_output_light_state()
     return;
   }
   waitingForPowerGate_messageDisplayed = true;
-#endif
 
   lastOutputLightValidTime = time_ms();
 

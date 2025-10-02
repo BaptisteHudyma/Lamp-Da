@@ -8,8 +8,18 @@
 
 // hardwaree influencer simulator
 #include "simulator/include/hardware_influencer.h"
+
+#include "src/system/platform/print.h"
+#include "src/system/platform/gpio.h"
+
 #include <map>
 #include <memory>
+
+// independant of enabl/disable
+float targetOTGVoltage = 0.0;
+namespace __private {
+DigitalPin enableOTG(DigitalPin::GPIO::Output_EnableOnTheGo);
+}
 
 class BQ25713Mock : public IntegratedCircuitMock_I
 {
@@ -41,15 +51,37 @@ public:
     _registerMap[bq25713::CHARGE_CURRENT_ADDR] = std::make_unique<Register>();
     _registerMap[bq25713::MAX_CHARGE_VOLTAGE_ADDR] = std::make_unique<Register>();
     _registerMap[bq25713::MINIMUM_SYSTEM_VOLTAGE_ADDR] = std::make_unique<Register>();
-    _registerMap[bq25713::OTG_VOLTAGE_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::OTG_VOLTAGE_ADDR] = std::make_unique<OTG_Register>();
     _registerMap[bq25713::OTG_CURRENT_ADDR] = std::make_unique<Register>();
     _registerMap[bq25713::INPUT_VOLTAGE_ADDR] = std::make_unique<Register>();
     _registerMap[bq25713::IIN_HOST_ADDR] = std::make_unique<Register>();
     _registerMap[bq25713::IIN_DPM_ADDR] = std::make_unique<Register>();
 
-    _registerMap[bq25713::ADC_VBUS_PSYS_ADC_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::ADC_VBUS_PSYS_ADC_ADDR] = std::make_unique<AdcVbusPsys_Register>();
     _registerMap[bq25713::ADC_IBAT_ADDR] = std::make_unique<Register>();
     _registerMap[bq25713::CMPIN_ADC_ADDR] = std::make_unique<Register>();
+  }
+
+  void run_electrical_update() override
+  {
+    // TODO
+
+    // check OTG enable
+    const uint16_t chargeOption3 = _registerMap[bq25713::CHARGE_OPTION_3_ADDR]->read();
+    if (chargeOption3)
+    {
+      const uint8_t val0 = chargeOption3 & 0xff;
+      const uint8_t val1 = (chargeOption3 >> 8) & 0xff;
+      // EN_OTG
+      if ((val1 & (1 << 0x04)) != 0 && __private::enableOTG.is_high())
+      {
+        mock_electrical::chargeOtgOutput = targetOTGVoltage;
+      }
+      else
+      {
+        mock_electrical::chargeOtgOutput = 0;
+      }
+    }
   }
 
   uint8_t get_i2c_address() const override { return bq25713::BQ25713::BQ25713addr; }
@@ -104,6 +136,16 @@ private:
     uint16_t valR = (valC & reg->mask()) << reg->offset();
     return valR;
   }
+  static uint16_t decode_base_register_value(const uint16_t val, const bq25713::BQ25713::IBaseReadRegister* reg)
+  {
+    // unpack
+    uint16_t res = val;
+    res >>= reg->offset();
+    res &= reg->mask();
+    // convert to real units
+    return res * reg->resolution() + reg->minVal();
+  }
+
   static uint16_t encode_to_double_register(const uint16_t val0,
                                             const uint16_t val1,
                                             const bq25713::BQ25713::IDoubleRegister* reg)
@@ -154,6 +196,29 @@ private:
       val1 |= 0 << 0x06; // ADC_START
 
       return val1 << 8 | val0;
+    }
+  };
+
+  struct OTG_Register : public Register
+  {
+    int write(uint16_t data) override
+    {
+      const uint16_t decoded = decode_base_register_value(data, &IcRegisters.oTGVoltage);
+
+      // adjust for low range
+      targetOTGVoltage = (decoded + (IcRegisters.chargeOption3.OTG_RANGE_LOW() ? 0 : 1280) + 154) / 1000.0;
+
+      _data = data;
+      return 0;
+    }
+  };
+
+  struct AdcVbusPsys_Register : public Register
+  {
+    uint16_t read() override
+    {
+      return encode_to_double_register(
+              mock_battery::voltage * 1000.0, mock_electrical::powerRailVoltage * 1000.0, &IcRegisters.aDCVBUSPSYS);
     }
   };
 
