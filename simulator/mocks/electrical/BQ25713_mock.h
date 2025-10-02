@@ -13,7 +13,6 @@
 #include "src/system/platform/gpio.h"
 
 #include <map>
-#include <memory>
 
 // independant of enabl/disable
 float targetOTGVoltage = 0.0;
@@ -86,42 +85,6 @@ public:
 
   uint8_t get_i2c_address() const override { return bq25713::BQ25713::BQ25713addr; }
 
-  int i2c_write_data(const uint8_t registerAddress, const uint8_t dataSize, const uint8_t* dataBuffer) override
-  {
-    if (_registerMap[registerAddress] != nullptr)
-    {
-      uint16_t data = dataBuffer[0];
-      if (dataSize > 1)
-        data |= (dataBuffer[1] << 8);
-      return _registerMap[registerAddress]->write(data);
-    }
-
-    // failure
-    return 1;
-  }
-
-  int i2c_read_data(const uint8_t registerAddress, const uint8_t dataSize, uint8_t* dataBuffer) override
-  {
-    if (_registerMap[registerAddress] != nullptr)
-    {
-      const uint16_t d = _registerMap[registerAddress]->read();
-
-      dataBuffer[0] = d & 0xff;
-      if (dataSize > 1)
-        dataBuffer[1] = (d >> 8) & 0xff;
-      return 0;
-    }
-
-    // failure
-    return 1;
-  }
-
-  int i2c_xfer_data(const int outSize, const uint8_t* out, const int inSize, uint8_t* in) override
-  {
-    // failure
-    return 1;
-  }
-
 protected:
 private:
   // Create instance of registers data structure
@@ -157,19 +120,6 @@ private:
     uint16_t result = (val1R & reg->maskVal1()) << 8 | (val0R & reg->maskVal0());
     return result;
   }
-
-  // register entry point
-  struct Register
-  {
-    uint16_t _data = 0;
-
-    virtual uint16_t read() { return _data; }
-    virtual int write(uint16_t data)
-    {
-      _data = data;
-      return 0;
-    }
-  };
 
   struct ChargerStatus_Register : public Register
   {
@@ -241,8 +191,6 @@ private:
   {
     uint16_t read() override { return bq25713::DEVICE_ID; }
   };
-
-  std::unique_ptr<Register> _registerMap[255];
 };
 
 #endif

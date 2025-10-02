@@ -314,14 +314,15 @@ template<typename T> struct simulator
         global::main_loop(mock_registers::addedAlgoDelay);
       }
 
-      const bool isOutputEnabled = mock_electrical::outputVoltage > 9.0;
-
+      const bool isOutputEnabled = is_output_enabled();
       if constexpr (_LampTy::flavor == modes::hardware::LampTypes::indexable)
       {
+        const bool isVoltageHighEnough = mock_electrical::outputVoltage > 11.5;
         for (size_t I = 0; I < _LampTy::ledCount; ++I)
         {
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
-          state.colorBuffer[I] = isOutputEnabled ? user::_private::strip.getPixelColor(I) : 0;
+          state.colorBuffer[I] =
+                  isOutputEnabled ? (isVoltageHighEnough ? user::_private::strip.getPixelColor(I) : 0xffffff) : 0;
           state.brightness = user::_private::strip.getBrightness();
 #endif
         }

@@ -22,6 +22,8 @@ DigitalPin fastRoleSwap(DigitalPin::GPIO::Output_VbusFastRoleSwap);
 std::atomic<bool> canRunElectricalSimuThread = false;
 std::thread electricalSimuThread;
 
+bool is_output_enabled() { return __private::enablePowerGate.is_high(); }
+
 void start_electrical_mock()
 {
   mock_electrical::powerRailVoltage = 0;
