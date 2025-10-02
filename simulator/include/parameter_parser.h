@@ -10,6 +10,7 @@
 static const char* fileName = "./simulator/resources/simulation_parameters.txt";
 
 static const char* batteryVoltageKey = "batt_V";
+static const char* vbusVoltageKey = "vbus_V";
 static const char* cpuTemperatureKey = "cpu_temp";
 static const char* addedAlgoDelayKey = "algo_del";
 
@@ -41,6 +42,10 @@ inline void read_and_update_parameters()
       if (key == batteryVoltageKey)
       {
         mock_battery::voltage = value;
+      }
+      else if (key == vbusVoltageKey)
+      {
+        mock_electrical::inputVbusVoltage = value;
       }
       else if (key == cpuTemperatureKey)
       {

@@ -533,6 +533,7 @@ void init()
     errorStr += "\n\t- Init balancer component failed";
     isSuccessful = false;
   }
+#endif
 
   // charging component, setup first
   const bool chargerSuccess = charger::setup();
@@ -542,6 +543,8 @@ void init()
     isSuccessful = false;
   }
 
+// TODO issue #132 remove when the mock components will be running
+#ifndef LMBD_SIMULATION
   // at the very last, power delivery
   const bool pdSuccess = powerDelivery::setup();
   if (!pdSuccess)
