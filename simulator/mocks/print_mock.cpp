@@ -9,6 +9,7 @@
 
 #include "src/system/platform/time.h"
 #include <mutex>
+#include <thread>
 
 #define PLATFORM_PRINT_CPP
 
@@ -17,10 +18,30 @@ extern "C" {
 #include "src/system/utils/print.h"
 }
 
+std::vector<std::string> inputCommands;
+std::thread inputThread;
+
 /**
  * \brief call once at program start
  */
-void init_prints() {}
+void init_prints()
+{
+  // spawn cin read thread
+  inputThread = std::thread([&]() {
+    while (true)
+    {
+      std::string s;
+      // blocking call
+      std::getline(std::cin, s, '\n');
+
+      if (not s.empty())
+      {
+        std::scoped_lock(mut);
+        inputCommands.push_back(s);
+      }
+    }
+  });
+}
 
 /**
  * \brief Print a screen to the external world
@@ -40,11 +61,11 @@ void lampda_print(const char* format, ...)
 }
 
 /**
- * \breif read external inputs (may take some time)
+ * \brief read external inputs (may take some time)
  */
 std::vector<std::string> read_inputs()
 {
-  std::vector<std::string> res;
-  // TODO issue #132
+  std::vector<std::string> res = inputCommands;
+  inputCommands.clear();
   return res;
 }
