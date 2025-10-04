@@ -312,9 +312,9 @@ namespace modes::nudz
           bubble.y = float(random8(uint8_t(levels[bubble.x])));
           bubble.speed = float(random8()) / 256 * 0.05 + 0.05;
           bubble.color = ctx.state.foam_color;
-          bubble.color_fade = float(random8()) / 256 * 0.05 + 0.95;
+          bubble.color_fade = float(random8()) / 256 * 0.029 + 0.975;
         }
-        if(int(bubble.y) >= levels[bubble.x] || random16(100) < 1)
+        if(int(bubble.y) >= levels[bubble.x])
         {
           bubble.x = -1;  // die
           continue;
@@ -337,6 +337,15 @@ namespace modes::nudz
           float(bubble.color & 0xff) * bubble.color_fade
           + float(ctx.state.beer_color & 0xff) * (1. - bubble.color_fade));
         bubble.color = (r << 16) + (g << 8) + b;
+        // if we get cose to beer color, the bubble gets invisible and dies
+        // theshold is 5 in R, G, B
+        if((float(r) - float((ctx.state.beer_color & 0xff0000) >> 16))
+            * (float(r) - float((ctx.state.beer_color & 0xff0000) >> 16))
+          + (float(g) - float((ctx.state.beer_color & 0xff00) >> 8))
+            * (float(g) - float((ctx.state.beer_color & 0xff00) >> 8))
+          + (float(b) - float(ctx.state.beer_color & 0xff))
+            * (float(b) - float(ctx.state.beer_color & 0xff)) < 125)
+            bubble.x = -1;
       }
     }
 
