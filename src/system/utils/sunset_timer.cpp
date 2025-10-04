@@ -17,16 +17,27 @@ uint32_t sunsetTimerEndTime_s = 0;
 
 static constexpr uint32_t brightnessRampDownTime_min = 3;
 static constexpr uint32_t brightnessRampDownTime_s = brightnessRampDownTime_min * 60;
-static constexpr uint32_t sunsetLoopTiming_ms = 200;
-static constexpr uint16_t brigthnessDecreasePerLoop =
-        (maxBrightness / ((brightnessRampDownTime_s * 1000) / sunsetLoopTiming_ms)) + 1;
+static constexpr uint16_t brigthnessDecreasePerLoop = 1;
 
 const char* const sunset_taskName = "sunset";
+
+// sunset loop time to reduce brightness gradually
+uint32_t get_sunset_loop_timing_ms()
+{
+  const auto& maxBrightnessStep = brightness::get_saved_brightness() / brigthnessDecreasePerLoop;
+  if (maxBrightnessStep <= 0)
+    return 100;
+  const uint32_t res = ((brightnessRampDownTime_s * 1000) / maxBrightnessStep) + 1;
+  if (res <= 5)
+    return 5;
+  // minimum turn off delay, to prevent too slow turn off at low luminosities
+  return res;
+}
 
 void sunset_process_loop()
 {
   // this thread runs very slowly
-  delay_ms(sunsetLoopTiming_ms);
+  delay_ms(get_sunset_loop_timing_ms());
 
   if (sunsetTimerEndTime_s == 0)
   {
