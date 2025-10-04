@@ -30,17 +30,17 @@ namespace user {
 // list your groups & modes here
 //
 
-using NudzGroup = modes::GroupFor<modes::nudz::NudzHeinekenMode,
+using NudzModes = modes::GroupFor<modes::nudz::NudzHeinekenMode,
                                   modes::nudz::NudzHuitSixMode,
                                   modes::nudz::NudzViolonsaoulsMode,
                                   modes::nudz::NudzBeerGlassMode>;
 
-using ManagerTy = modes::ManagerFor<NudzGroup,
-                                    modes::FixedModes,
+using ManagerTy = modes::ManagerFor<modes::FixedModes,
                                     // modes::MiscFixedModes,
                                     modes::legacy::CalmModes,
                                     modes::legacy::PartyModes,
-                                    modes::legacy::SoundModes>;
+                                    modes::legacy::SoundModes,
+                                    NudzModes>;
 
 //
 // implementation details
