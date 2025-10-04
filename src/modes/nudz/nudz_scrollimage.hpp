@@ -95,24 +95,25 @@ namespace modes::nudz
   struct NudzBeerGlassMode : public BasicMode {
 
     struct BubbleTy {
-      BubbleTy() : x(-1.f), y(0.f), speed(0.f), born(0), color(0x706050),
+      BubbleTy() : x(-1.f), y(0.f), speed(0.f), color(0x706050),
                    color_fade(0.9) {}
       int x;
       float y;
       float speed;
-      uint32_t born;
       uint32_t color;
       float color_fade;
     };
 
     struct StateTy {
-      float level;
-      float ampl;
-      float accmax;
-      float fall_ampl;
-      float wave_ampl;
-      float decay;
-      float bounce_ratio;
+      float level;          // average level of beer
+      float ampl;           // accel amplitude factor
+      float accmax;         // clamp accel to avoid too large changes
+      float fall_ampl;      // height a wave will go down at each step
+      float wave_ampl;      // wave speed
+      float decay;          // speed decay factor
+      float bounce_ratio;   // if ratio > 0.5 a wave dropping can increae
+                            // its neighbours height over its new height,
+                            // thus produce a new wave
       uint32_t beer_color;
       uint32_t foam_color;
       uint32_t background_color;
@@ -145,6 +146,21 @@ namespace modes::nudz
     }
 
     static void loop(auto& ctx) {
+      updateLevels(ctx);
+
+      // display
+      displayLevels(ctx);
+
+      // bubbles
+      makeBubbles(ctx);
+
+      // draw accel
+      if(ctx.get_active_custom_ramp() >= 128)
+        drawAccel(ctx);
+    }
+
+    static void updateLevels(auto & ctx)
+    {
       uint32_t nx = ctx.lamp.maxWidth;
       uint32_t ny = ctx.lamp.maxHeight;
 
@@ -172,20 +188,31 @@ namespace modes::nudz
 
       std::vector<float> ospeeds = speeds;
 
+      // accelerate column by column
+      // the "column" model is very simple and easy,
+      // but cannot account for real orientation changes
+      // since the Z (column) axis is always considered to be vertical
       for(uint32_t x=0; x<nx; ++x)
       {
+        // angular coords of the pixel
         float angle = float(x) / nx * M_PI * 2;
+        // normal and tangent to the lamp
         vec2d norm(cos(angle), sin(angle));
         vec2d tan(-norm.y, norm.x);
+        // we consider the accel will push pixels away from the wall
+        // in the direction opposite to the force (if we consider the lamp
+        // as the reference coords
         float acc0 = norm.dot(acc);
-        if(acc0 < 0.f)
-          acc0 = 0.f;
+        if(acc0 < 0.f)  // force and normal in the same direction:
+          acc0 = 0.f;   // we cannot move because the lamp wall blocks it
+
         float sign = 1.f;
-        if(acc.dot(tan) > 0)
+        if(acc.dot(tan) > 0)  // direction of the propagation
           sign = -1.f;
         speeds[x] -= levels[x] * acc0 * sign;
         ospeeds[x] -= levels[x] * acc0 * sign;
-        float diff = speeds[x];
+        float diff = speeds[x];  // quantity of "beer pixels" which should
+                                 // transfer to neighboring column
         uint32_t x1, x2;
         if(diff < 0)
         {
@@ -193,15 +220,18 @@ namespace modes::nudz
             x1 = nx - 1;
           else
             x1 = x - 1;
-          if(levels[x] < -diff)
+          if(levels[x] < -diff)  // we cannot remove more material than
+                                 // the quantity available in this col.
             diff = -levels[x];
-          levels[x1] -= diff;
+          levels[x1] -= diff;   // transfer from col x to x1
           levels[x] += diff;
-          ospeeds[x1] += diff * ctx.state.wave_ampl;
+          ospeeds[x1] += diff * ctx.state.wave_ampl;  // impulse a speed to x1
         }
         else
         {
           diff *= 0.7; // compensate loop propagation direction
+                       // because the iteration is left-to-right
+                       // and moves to the right are thus way faster
           if(x == nx - 1)
             x1 = 0;
           else
@@ -214,8 +244,11 @@ namespace modes::nudz
         }
       }
 
+      // we have worked in a copy of speeds to avoid too fast propagation
+      // in the iteration direction (left to right)
       ctx.state.speeds = ospeeds;
 
+      // drop and move waves
       for(uint32_t x=0; x<nx; ++x)
       {
         uint32_t x1 = x + 1;
@@ -236,6 +269,13 @@ namespace modes::nudz
         speeds[x] -= diff * ctx.state.wave_ampl;
         speeds[x] *= ctx.state.decay;
       }
+    }
+
+    static void displayLevels(auto & ctx)
+    {
+      auto & levels = ctx.state.levels;
+      uint32_t nx = ctx.lamp.maxWidth;
+      uint32_t ny = ctx.lamp.maxHeight;
 
       for(uint32_t x=0; x<=nx; ++x )
       {
@@ -243,7 +283,6 @@ namespace modes::nudz
         if(x == nx)
           x0 = nx - 1;
         int32_t y, y1 = int(levels[x0]);
-//         int32_t y, y1 = 10;
         if( y1 >= ny )
           y1 = ny - 1;
         y1 = ny - 1 - y1;
@@ -254,9 +293,15 @@ namespace modes::nudz
         for(;y<ny; ++y)
           ctx.lamp.setPixelColorXY(x, y, ctx.state.beer_color);
       }
+    }
 
-      // bubbles
+    static void makeBubbles(auto & ctx)
+    {
       auto & bubbles = ctx.state.bubbles;
+      auto & levels = ctx.state.levels;
+      uint32_t nx = ctx.lamp.maxWidth;
+      uint32_t ny = ctx.lamp.maxHeight;
+
       for(uint32_t i=0; i<ctx.state.nbubbles; ++i)
       {
         auto & bubble = bubbles[i];
@@ -266,7 +311,6 @@ namespace modes::nudz
           bubble.x = random8(nx);
           bubble.y = float(random8(uint8_t(levels[bubble.x])));
           bubble.speed = float(random8()) / 256 * 0.05 + 0.05;
-          bubble.born = ctx.lamp.tick;
           bubble.color = ctx.state.foam_color;
           bubble.color_fade = float(random8()) / 256 * 0.05 + 0.95;
         }
@@ -294,39 +338,44 @@ namespace modes::nudz
           + float(ctx.state.beer_color & 0xff) * (1. - bubble.color_fade));
         bubble.color = (r << 16) + (g << 8) + b;
       }
+    }
 
-      // draw accel
-      if(ctx.get_active_custom_ramp() >= 128)
-      {
-        int32_t ax = int32_t(accel.x);
-        int32_t ay = int32_t(accel.y);
-        int32_t az = int32_t(accel.z);
-        if( ax < -10)
-          ax = -10;
-        else if(ax > 10)
-          ax = 10;
-        if( ay < -10)
-          ay = -10;
-        else if(ay > 10)
-          ay = 10;
-        if( az < -10)
-          az = -10;
-        else if(az > 10)
-          az = 10;
-        uint32_t x;
-        for(x=10+ax; x<10; ++x)
-          ctx.lamp.setPixelColorXY(x, 0, 0x800000);
-        for(x=10; x<10+ax; ++x)
-          ctx.lamp.setPixelColorXY(x, 0, 0x008000);
-        for(x=10+ay; x<10; ++x)
-          ctx.lamp.setPixelColorXY(x, 1, 0x800000);
-        for(x=10; x<10+ay; ++x)
-          ctx.lamp.setPixelColorXY(x, 1, 0x008000);
-        for(x=10+az; x<10; ++x)
-          ctx.lamp.setPixelColorXY(x, 2, 0x800000);
-        for(x=10; x<10+az; ++x)
-          ctx.lamp.setPixelColorXY(x, 2, 0x008000);
-      }
+    static void drawAccel(auto & ctx)
+    {
+      const auto& reading = imu::get_filtered_reading(false);
+      const auto accel = reading.accel;
+
+      int32_t ax = int32_t(accel.x);
+      int32_t ay = int32_t(accel.y);
+      int32_t az = int32_t(accel.z);
+
+      // clamp to -10 - 10
+      if( ax < -10)
+        ax = -10;
+      else if(ax > 10)
+        ax = 10;
+      if( ay < -10)
+        ay = -10;
+      else if(ay > 10)
+        ay = 10;
+      if( az < -10)
+        az = -10;
+      else if(az > 10)
+        az = 10;
+
+      uint32_t x;
+      for(x=10+ax; x<10; ++x)
+        ctx.lamp.setPixelColorXY(x, 0, 0x800000);
+      for(x=10; x<10+ax; ++x)
+        ctx.lamp.setPixelColorXY(x, 0, 0x008000);
+      for(x=10+ay; x<10; ++x)
+        ctx.lamp.setPixelColorXY(x, 1, 0x800000);
+      for(x=10; x<10+ay; ++x)
+        ctx.lamp.setPixelColorXY(x, 1, 0x008000);
+      for(x=10+az; x<10; ++x)
+        ctx.lamp.setPixelColorXY(x, 2, 0x800000);
+      for(x=10; x<10+az; ++x)
+        ctx.lamp.setPixelColorXY(x, 2, 0x008000);
     }
 
     static constexpr bool hasCustomRamp = true;
