@@ -16,6 +16,7 @@
 
 #include "src/system/utils/serial.h"
 #include "src/system/utils/utils.h"
+#include "src/system/utils/sunset_timer.h"
 
 #include "src/user/functions.h"
 
@@ -173,6 +174,8 @@ void main_setup()
 
   // start all power threads
   power::start_threads();
+  // start sunset timer thread
+  sunset::init();
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread())

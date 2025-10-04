@@ -91,6 +91,9 @@ template<typename T> struct simulator
     // TODO: #156 move mock-specific parts to another process
     // ======================================================
 
+    // mock run the threads (do not give each subprocess a thread)
+    mock_registers::shouldStopThreads = false;
+
     // load initial values
     read_and_update_parameters();
     // start electrical simulation,
@@ -98,10 +101,6 @@ template<typename T> struct simulator
 
     // Main program setup
     global::main_setup();
-
-    // mock run the threads (do not give each subprocess a thread)
-    mock_registers::shouldStopThreads = false;
-    std::thread mockThreads(&mock_registers::run_threads);
 
     // =================================================
 
@@ -300,7 +299,6 @@ template<typename T> struct simulator
         {
           // close all threads
           mock_registers::shouldStopThreads = true;
-          mockThreads.join();
           window.close();
           break;
         }

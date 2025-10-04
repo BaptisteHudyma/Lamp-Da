@@ -25,6 +25,7 @@
 #include "src/system/utils/utils.h"
 #include "src/system/utils/state_machine.h"
 #include "src/system/utils/input_output.h"
+#include "src/system/utils/sunset_timer.h"
 #include "src/system/utils/time_utils.h"
 
 #include "src/system/platform/bluetooth.h"
@@ -459,6 +460,9 @@ void handle_pre_output_light_state()
 
   power::go_to_output_mode();
 
+  // update brigthness with saved brightness
+  brightness::update_brightness(brightness::get_saved_brightness());
+
   // let the user power on the system
   user::power_on_sequence();
 
@@ -521,8 +525,6 @@ void handle_post_output_light_state()
   // button usermode is kept disabled
   inputs::button_disable_usermode();
 
-  // restore saved brightness
-  brightness::update_brightness(brightness::get_saved_brightness());
   // let the user power off the system
   user::power_off_sequence();
   // write/stability delay

@@ -13,6 +13,7 @@
 
 #include <src/system/logic/alerts.h>
 #include <src/system/utils/assert.h>
+#include <src/system/utils/sunset_timer.h>
 
 #include "src/modes/include/tools.hpp"
 #include "src/modes/include/context_type.hpp"
@@ -43,8 +44,12 @@ bool _animate_ramp(auto& ctx, float holdDuration, float stepSize, auto palette)
   uint32_t stepProgress = floor((holdDuration * 256.0) / stepSize);
   stepProgress = stepProgress % 256;
 
-  anims::rampColorRing(ctx, stepProgress, palette);
-  return (stepProgress >= 254);
+  // only display on indexable
+  if constexpr (ctx.lamp.flavor == hardware::LampTypes::indexable)
+  {
+    anims::rampColorRing(ctx, stepProgress, palette);
+  }
+  return (stepProgress >= 250);
 }
 
 /// \private display a lit pixel per given favorite index
@@ -157,6 +162,20 @@ template<bool displayFavoriteNumber = true> void _animate_favorite_delete(auto& 
     ctx.skipNextFrames(10);
   }
   // else: do nothing
+}
+
+template<bool shouldDisplayRamp = true, bool shouldBlip = true>
+void _animate_sunset_timer(auto& ctx, uint32_t holdDuration, float stepSize)
+{
+  if (_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::White, colors::Red>))
+  {
+    ctx.state.isSunsetTimingPending = 2;
+  }
+  else
+  {
+    // TODO: #153 remove this freeze, after migrating legacy modes :)
+    ctx.skipNextFrames(10);
+  }
 }
 
 } // namespace modes::details
@@ -390,6 +409,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     bool isInFavoriteMockGroup = false;
     uint8_t beforeFavoriteGroupIndex = 0;
     uint8_t beforeFavoriteModeIndex = 0;
+    uint8_t isSunsetTimingPending = 0;
 
     bool isLastScrollAGroupChange = false; // last mode change in scroll changed group
     uint32_t lastScrollStopped = 0;        // keep track of the last scrool release time
@@ -781,6 +801,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void loop(auto& ctx)
   {
+    // handle pending favorite
     if (ctx.state.isFavoritePending > 0)
     {
       ctx.state.isFavoritePending -= 1;
@@ -794,6 +815,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       }
     }
 
+    // handle favorite delete
     if (ctx.state.isFavoriteDeletePending > 0)
     {
       ctx.state.isFavoriteDeletePending -= 1;
@@ -802,6 +824,19 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       if (ctx.state.isFavoriteDeletePending == 0)
       {
         ctx.delete_favorite_now();
+      }
+    }
+
+    // handle the sunset timer update
+    if (ctx.state.isSunsetTimingPending > 0)
+    {
+      ctx.state.isSunsetTimingPending -= 1;
+      if (ctx.state.isSunsetTimingPending == 0)
+      {
+        // set and update sunset timer
+        sunset::add_time_minutes(5);
+        // blip AFTER the update
+        ctx.blip(50);
       }
     }
 

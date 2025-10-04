@@ -47,6 +47,12 @@ extern "C" {
    */
   extern void delay_us(uint32_t dwUs);
 
+  // help functions
+  inline uint32_t time_s() { return time_ms() / 1000; }
+  inline uint32_t time_min() { return time_s() / 60; }
+
+  inline void delay_s(uint32_t s) { delay_ms(s * 1000); }
+
 #ifdef __cplusplus
 }
 #endif

@@ -69,6 +69,8 @@ inline const char* AlertsToText(const Type type)
       return "SYSTEM_IN_ERROR_STATE";
     case SYSTEM_IN_LOCKOUT:
       return "SYSTEM_IN_LOCKOUT";
+    case SUNSET_TIMER_ENABLED:
+      return "SUNSET_TIMER_ENABLED";
     default:
       return "UNSUPPORTED TYPE";
   }
@@ -428,6 +430,22 @@ struct Alert_SystemInLockout : public AlertBase
   Type get_type() const override { return Type::SYSTEM_IN_LOCKOUT; }
 };
 
+struct Alert_SunsetTimerSet : public AlertBase
+{
+  bool show() const override
+  {
+    // red to green
+    const auto buttonColor =
+            utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
+                                                       utils::ColorSpace::GREEN.get_rgb().color,
+                                                       battery::get_battery_minimum_cell_level() / 10000.0));
+
+    return indicator::breeze(5000, 5000, buttonColor);
+  }
+
+  Type get_type() const override { return Type::SUNSET_TIMER_ENABLED; }
+};
+
 // Alerts must be sorted by importance, only the first activated one will be shown
 AlertBase* allAlerts[] = {new Alert_SystemShutdownFailed,
                           new Alert_HardwareAlert,
@@ -441,7 +459,8 @@ AlertBase* allAlerts[] = {new Alert_SystemShutdownFailed,
                           new Alert_FavoriteSet,
                           new Alert_OtgFailed,
                           new Alert_SystemInErrorState,
-                          new Alert_SystemInLockout};
+                          new Alert_SystemInLockout,
+                          new Alert_SunsetTimerSet};
 
 void update_alerts()
 {

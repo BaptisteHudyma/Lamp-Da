@@ -45,15 +45,24 @@ void write_parameters();
 /// Called when system wants to read parameters from filesystem
 void read_parameters();
 
+/**
+ * \brief Called to handle button click on lamp start
+ *
+ * \param[in] nbClick The number of clicks made by the user
+ */
+bool button_start_click_default(const uint8_t clicks);
+
+/**
+ * \brief Called to handle button hold on lamp start
+ *
+ * \param[in] nbClickAndHold The number of clicks made by the user
+ * \param[in] isEndOfHoldEvent True if the user just released the button
+ * \param[in] holdDuration The duration of the on-going held event
+ * \remark When \p isEndOfHoldEvent is True, then \p holdDuration is zero
+ */
+bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration);
+
 /** \brief Called to handle button click events for default user mode behaviors
- *
- * Default behavior is the "default UI" navigation mode, that supports:
- *  - 2 clicks: next user mode
- *  - 3 clicks: next mode group
- *  - 4 clicks: jump to favorite
- *
- * Event 1C/7C+ (shutdown) is handled by
- * button_clicked_callback() in behavior.h
  *
  * \param[in] nbClick The number of clicks made by the user
  */
