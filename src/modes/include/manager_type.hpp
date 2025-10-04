@@ -165,11 +165,16 @@ template<bool displayFavoriteNumber = true> void _animate_favorite_delete(auto& 
 }
 
 template<bool shouldDisplayRamp = true, bool shouldBlip = true>
-void _animate_sunset_timer(auto& ctx, uint32_t holdDuration, uint32_t stepSize)
+void _animate_sunset_timer(auto& ctx, uint32_t holdDuration, float stepSize)
 {
   if (_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::White, colors::Red>))
   {
     ctx.state.isSunsetTimingPending = 2;
+  }
+  else
+  {
+    // TODO: #153 remove this freeze, after migrating legacy modes :)
+    ctx.skipNextFrames(10);
   }
 }
 

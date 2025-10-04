@@ -360,9 +360,17 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   //
   if (button::is_system_start_click())
   {
-    const bool canContinue = button_press_handles::system_start_button_click_callback(consecutiveButtonCheck);
+    bool canContinue = button_press_handles::system_start_button_click_callback(consecutiveButtonCheck);
     if (not canContinue)
       return;
+
+    const bool isStartedInLockout = alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT);
+    if (not isStartedInLockout)
+    {
+      canContinue = user::button_start_click_default(consecutiveButtonCheck);
+      if (not canContinue)
+        return;
+    }
   }
 
   // no inputs allowed in lockout
@@ -423,10 +431,18 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
   //
   if (button::is_system_start_click())
   {
-    const bool canContinue = button_press_handles::system_start_button_hold_callback(
+    bool canContinue = button_press_handles::system_start_button_hold_callback(
             consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
     if (not canContinue)
       return;
+
+    const bool isStartedInLockout = alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT);
+    if (not isStartedInLockout)
+    {
+      canContinue = user::button_start_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
+      if (not canContinue)
+        return;
+    }
   }
 
   // no inputs allowed in lockout

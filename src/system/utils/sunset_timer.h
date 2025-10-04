@@ -17,6 +17,9 @@ void bump_timer();
 /// cancel the current active timer
 void cancel_timer();
 
+/// True if timer is running
+bool is_enabled();
+
 } // namespace sunset
 
 #endif

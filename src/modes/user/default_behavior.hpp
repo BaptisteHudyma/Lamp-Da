@@ -69,6 +69,25 @@ void read_parameters()
   manager.read_parameters();
 }
 
+bool button_start_click_default(const uint8_t clicks) { return false; }
+
+bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)
+{
+  switch (clicks)
+  {
+    case 5:
+      if (holdDuration > 0)
+      {
+        // sunset timer !
+        auto manager = get_context();
+        modes::details::_animate_sunset_timer(manager, holdDuration, 1000);
+        return true;
+      }
+  }
+
+  return false;
+}
+
 bool button_clicked_usermode(const uint8_t clicks)
 {
   auto manager = get_context();

@@ -117,4 +117,6 @@ void cancel_timer()
   alerts::manager.clear(alerts::Type::SUNSET_TIMER_ENABLED);
 }
 
+bool is_enabled() { return sunsetTimerEndTime_s > 0; }
+
 } // namespace sunset
