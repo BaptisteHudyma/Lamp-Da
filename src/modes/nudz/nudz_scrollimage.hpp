@@ -133,7 +133,7 @@ namespace modes::nudz
       ctx.state.wave_ampl = 0.3f;
       ctx.state.decay = 0.7f;
       ctx.state.bounce_ratio = 0.7f;
-      ctx.state.beer_color = 0x504010;
+      ctx.state.beer_color = 0x503000;
       ctx.state.foam_color = 0x706050;
       ctx.state.background_color = 0x000000;
       ctx.state.levels = std::vector<float>(ctx.lamp.maxWidth,
@@ -155,7 +155,7 @@ namespace modes::nudz
       makeBubbles(ctx);
 
       // draw accel
-      if(ctx.get_active_custom_ramp() >= 128)
+      if(ctx.get_active_custom_ramp() >= 240)
         drawAccel(ctx);
     }
 
@@ -169,6 +169,22 @@ namespace modes::nudz
 
       auto & levels = ctx.state.levels;
       auto & speeds = ctx.state.speeds;
+
+      // change global level, if needed, according to custom ramp
+      float newLevel = float(ctx.get_active_custom_ramp()) / 255 * (ny - 1);
+      float diffLevel = newLevel - ctx.state.level;
+      if(diffLevel < 0)
+      {
+        // avoid leak in beer quantity
+        float missing = 0.f;
+        for(uint32_t x=0; x<nx; ++x)
+          if(levels[x] < -diffLevel)
+            missing += -diffLevel - levels[x];
+        diffLevel += missing / nx;
+      }
+      ctx.state.level = newLevel;
+      for(uint32_t x=0; x<nx; ++x)
+          levels[x] += diffLevel;
 
       vec2d acc(accel.x, accel.y);
       // threshold because there is a drift in the accel
