@@ -95,11 +95,14 @@ namespace modes::nudz
   struct NudzBeerGlassMode : public BasicMode {
 
     struct BubbleTy {
-      BubbleTy() : x(-1.f), y(0.f), speed(0.f), born(0) {}
+      BubbleTy() : x(-1.f), y(0.f), speed(0.f), born(0), color(0x706050),
+                   color_fade(0.9) {}
       int x;
       float y;
       float speed;
       uint32_t born;
+      uint32_t color;
+      float color_fade;
     };
 
     struct StateTy {
@@ -129,8 +132,8 @@ namespace modes::nudz
       ctx.state.wave_ampl = 0.3f;
       ctx.state.decay = 0.7f;
       ctx.state.bounce_ratio = 0.7f;
-      ctx.state.beer_color = 0x605010;
-      ctx.state.foam_color = 0x807060;
+      ctx.state.beer_color = 0x504010;
+      ctx.state.foam_color = 0x706050;
       ctx.state.background_color = 0x000000;
       ctx.state.levels = std::vector<float>(ctx.lamp.maxWidth,
                                             ctx.state.level);
@@ -257,21 +260,39 @@ namespace modes::nudz
       for(uint32_t i=0; i<ctx.state.nbubbles; ++i)
       {
         auto & bubble = bubbles[i];
-        if(bubble.x < 0)
+        if(bubble.x < 0)  // free slot
         {
-          bubble.x = int(float(random16(256)) / 256 * nx);
-          bubble.y = float(random16(256)) / 256 * levels[i];
-          bubble.speed = float(random16()) / 65535 * 0.1;
+          // new bubble
+          bubble.x = random8(nx);
+          bubble.y = float(random8(uint8_t(levels[bubble.x])));
+          bubble.speed = float(random8()) / 256 * 0.05 + 0.05;
           bubble.born = ctx.lamp.tick;
+          bubble.color = ctx.state.foam_color;
+          bubble.color_fade = float(random8()) / 256 * 0.05 + 0.95;
         }
-        if(int(bubble.y) >= levels[i] || random16(100) < 1)
+        if(int(bubble.y) >= levels[bubble.x] || random16(100) < 1)
         {
-          bubble.x = -1;
+          bubble.x = -1;  // die
           continue;
         }
         ctx.lamp.setPixelColorXY(bubble.x, ny - 1 - int(bubble.y),
-                                 ctx.state.foam_color);
+                                 bubble.color);
+
+        // move for next time
         bubble.y += bubble.speed;
+        // fade color to beer color
+        uint8_t r = uint8_t(
+          float((bubble.color & 0xff0000) >> 16) * bubble.color_fade
+          + float((ctx.state.beer_color & 0xff0000) >> 16)
+            * (1. - bubble.color_fade));
+        uint8_t g = uint8_t(
+          float((bubble.color & 0xff00) >> 8) * bubble.color_fade
+          + float((ctx.state.beer_color & 0xff00) >> 8)
+            * (1. - bubble.color_fade));
+        uint8_t b = uint8_t(
+          float(bubble.color & 0xff) * bubble.color_fade
+          + float(ctx.state.beer_color & 0xff) * (1. - bubble.color_fade));
+        bubble.color = (r << 16) + (g << 8) + b;
       }
 
       // draw accel
