@@ -35,20 +35,8 @@ void sunset_process_loop()
   }
   else
   {
-    if (time_s() > sunsetTimerEndTime_s)
-    {
-      // shutdown and reset
-      brightness::update_brightness(0);
-      lampda_print("Shutdown with sunset timer");
-      behavior::set_power_off();
-      cancel_timer();
-      return;
-    }
-
-    // handle brightness
-    const uint32_t timeLeft_s = sunsetTimerEndTime_s - time_s();
     // less than N minutes, start to decrease brightness
-    if (timeLeft_s < brightnessRampDownTime_s)
+    if (time_s() + brightnessRampDownTime_s >= sunsetTimerEndTime_s)
     {
       // decrease brightness every N seconds left
       const auto currentBrightness = brightness::get_brightness();

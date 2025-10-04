@@ -76,7 +76,7 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
   switch (clicks)
   {
     case 5:
-      if (holdDuration > 0)
+      if (not isEndOfHoldEvent and holdDuration > 0)
       {
         // sunset timer !
         auto manager = get_context();
