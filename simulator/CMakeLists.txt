@@ -63,10 +63,11 @@ set(SRC_SYSTEM_UTILS
     ${LMBD_ROOT_DIR}/src/system/utils/coordinates.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/colorspace.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/brightness_handle.cpp
-    ${LMBD_ROOT_DIR}/src/system/utils/vector_math.cpp
-    ${LMBD_ROOT_DIR}/src/system/utils/utils.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/serial.cpp
-)
+    ${LMBD_ROOT_DIR}/src/system/utils/sunset_timer.cpp
+    ${LMBD_ROOT_DIR}/src/system/utils/utils.cpp
+    ${LMBD_ROOT_DIR}/src/system/utils/vector_math.cpp
+    )
 
 set(SRC_SYSTEM_COLORS
     ${LMBD_ROOT_DIR}/src/system/colors/imuAnimations.cpp

@@ -1,56 +1,56 @@
 #define PLATFORM_THREADS_CPP
 
 #include "src/system/platform/threads.h"
+#include "src/system/platform/time.h"
 
 #include "simulator/include/hardware_influencer.h"
 #include <vector>
+#include <thread>
 
 typedef void (*taskfunc_t)(void);
-std::vector<taskfunc_t> threadPool;
+std::vector<std::thread> threadPool;
 
-namespace mock_registers {
-
-void single_run_thread()
-{
-  for (auto& fun: threadPool)
-  {
-    fun();
-  }
-}
-
-void run_threads()
-{
-  // run until deep sleep
-  while (not mock_registers::shouldStopThreads)
-    single_run_thread();
-}
-
-} // namespace mock_registers
+bool isSupspended = false;
 
 void start_thread(taskfunc_t taskFunction, const char* const taskName, const int priority, const int stackSize)
 {
-  threadPool.emplace_back(taskFunction);
+  threadPool.emplace_back(std::thread([&]() {
+    while (not mock_registers::shouldStopThreads)
+    {
+      if (not isSupspended)
+        taskFunction();
+      delay_ms(1);
+    }
+  }));
 }
 void start_suspended_thread(taskfunc_t taskFunction,
                             const char* const taskName,
                             const int priority,
                             const int stackSize)
 {
-  threadPool.emplace_back(taskFunction);
+  threadPool.emplace_back(std::thread([&]() {
+    while (not mock_registers::shouldStopThreads)
+    {
+      if (not isSupspended)
+        taskFunction();
+      delay_ms(1);
+    }
+  }));
 }
 
-void yield_this_thread() { mock_registers::single_run_thread(); }
+void yield_this_thread()
+{
+  // TODO issue #132
+}
+
 void suspend_this_thread()
 {
   // TODO issue #132
 }
 
-void suspend_all_threads()
-{
-  // TODO issue #132
-}
+void suspend_all_threads() { isSupspended = true; }
 
-int is_all_suspended() { return 1; }
+int is_all_suspended() { return isSupspended ? 1 : 0; }
 
 void resume_thread(const char* const taskName) {}
 

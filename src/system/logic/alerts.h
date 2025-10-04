@@ -33,6 +33,8 @@ enum Type : uint32_t
   SYSTEM_IN_ERROR_STATE = 1 << 12, // system is locked in an error state
 
   SYSTEM_IN_LOCKOUT = 1 << 13, // system lockout, the lamp should not output any light
+
+  SUNSET_TIMER_ENABLED = 1 << 14, // active sunset timer, system will auto turn off
 };
 
 class AlertManager_t

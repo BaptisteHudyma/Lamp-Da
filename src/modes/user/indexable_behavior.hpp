@@ -138,7 +138,8 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       break;
 
     case 5:
-      // TODO: sunset timer
+      // sunset timer !
+      modes::details::_animate_sunset_timer(manager, holdDuration, 1000);
       break;
 
     case 6: // 6 click+hold: scroll across modes and group
