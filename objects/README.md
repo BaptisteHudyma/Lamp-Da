@@ -17,15 +17,13 @@ BOM:
 - cylindrical tube, external diameter 50mm, internal diameter 46mm, 12cm length
 - 3x 21700 Li-ion batteries, in a 3S configuration
 - 15cm clear heat shrink, 60mm diameter
-- 16mm pushbutton
 - 6 wire USB-C, panel mounted
 - 15cm of rope, 2mm diameter
 - 2 cylindrical pins (35mmx3mm)
 - 2 cylindrical pins (50mmx3mm)
 - the PCB
 - USB-C 6 pins RGB push button
-- Clear shrink wrap
-- JST connector for battery
+- JST connector for battery (JST XH2.54MM, 4P, wire length 15CM)
 
 ![USBC 6 pins](/Medias/6pin_usb_c.png) ![RGB push button](/Medias/rgb_push_button.png) ![Clear shrink wrap](/Medias/clear_shrink_wrap.png)
 
