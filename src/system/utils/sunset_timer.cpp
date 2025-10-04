@@ -38,7 +38,7 @@ void sunset_process_loop()
     if (time_s() > sunsetTimerEndTime_s)
     {
       // shutdown and reset
-
+      brightness::update_brightness(0);
       lampda_print("Shutdown with sunset timer");
       behavior::set_power_off();
       cancel_timer();
