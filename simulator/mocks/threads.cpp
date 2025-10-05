@@ -1,59 +1,58 @@
 #define PLATFORM_THREADS_CPP
 
 #include "src/system/platform/threads.h"
+#include "src/system/platform/time.h"
 
 #include "simulator/include/hardware_influencer.h"
 #include <vector>
+#include <thread>
 
 typedef void (*taskfunc_t)(void);
-std::vector<taskfunc_t> threadPool;
+std::vector<std::thread> threadPool;
 
-namespace mock_registers {
-
-void single_run_thread()
-{
-  for (auto& fun: threadPool)
-  {
-    fun();
-  }
-}
-
-void run_threads()
-{
-// TODO issue #132: missing mocks for charger & pd negociator
-#if 0
-  // run until deep sleep
-  while (not shouldStopThreads)
-    single_run_thread();
-#endif
-}
-
-} // namespace mock_registers
+bool isSuspended = false;
 
 void start_thread(taskfunc_t taskFunction, const char* const taskName, const int priority, const int stackSize)
 {
-  threadPool.emplace_back(taskFunction);
+  // ALWAYS CAPTURE taskFunction EXPLICITLY
+  threadPool.emplace_back(std::thread([taskFunction]() {
+    while (taskFunction and not mock_registers::shouldStopThreads)
+    {
+      if (not isSuspended)
+        taskFunction();
+      delay_ms(1);
+    }
+  }));
 }
 void start_suspended_thread(taskfunc_t taskFunction,
                             const char* const taskName,
                             const int priority,
                             const int stackSize)
 {
-  threadPool.emplace_back(taskFunction);
+  // ALWAYS CAPTURE taskFunction EXPLICITLY
+  threadPool.emplace_back(std::thread([taskFunction]() {
+    while (taskFunction and not mock_registers::shouldStopThreads)
+    {
+      if (not isSuspended)
+        taskFunction();
+      delay_ms(1);
+    }
+  }));
 }
 
-void yield_this_thread() { mock_registers::single_run_thread(); }
+void yield_this_thread()
+{
+  // TODO issue #132
+}
+
 void suspend_this_thread()
 {
   // TODO issue #132
 }
 
-void suspend_all_threads()
-{
-  // TODO issue #132
-}
+void suspend_all_threads() { isSuspended = true; }
 
-int is_all_suspended() { return 1; }
+int is_all_suspended() { return isSuspended ? 1 : 0; }
 
 void resume_thread(const char* const taskName) {}
 

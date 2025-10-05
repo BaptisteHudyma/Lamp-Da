@@ -16,6 +16,7 @@
 
 #include "src/system/utils/serial.h"
 #include "src/system/utils/utils.h"
+#include "src/system/utils/sunset_timer.h"
 
 #include "src/user/functions.h"
 
@@ -25,6 +26,8 @@
 #include "src/system/platform/time.h"
 #include "src/system/platform/registers.h"
 #include "src/system/platform/threads.h"
+
+#include "src/system/ext/random8.h"
 
 namespace global {
 
@@ -97,6 +100,8 @@ void main_setup()
 
   // first step !
   setup_adc(ADC_RES_EXP);
+  // set random seed
+  random16_set_seed(get_device_serial_number() & 0xffff);
 
   // do some stuff before starting the peripherals
 
@@ -169,6 +174,8 @@ void main_setup()
 
   // start all power threads
   power::start_threads();
+  // start sunset timer thread
+  sunset::init();
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread())

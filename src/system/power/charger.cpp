@@ -83,7 +83,7 @@ bool should_charge()
   }
 
   // temperature too high, stop charge
-  if (alerts::manager.is_raised(alerts::Type::TEMP_CRITICAL))
+  if (not alerts::manager.can_charge_battery())
   {
     return false;
   }
@@ -329,6 +329,7 @@ bool setup()
     {
       // soft error, still very very bad at startup
       charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
+      charger.softwareErrorMessage = drivers::get_software_error_message();
     }
 
     // abort init

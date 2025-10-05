@@ -66,8 +66,13 @@ void read_parameters() {}
 void button_clicked_default(const uint8_t) {}
 void button_hold_default(const uint8_t, const bool, const uint32_t) {}
 
-bool button_clicked_usermode(const uint8_t) { return false; }
+bool button_start_click_default(const uint8_t clicks) { return false; }
+bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)
+{
+  return false;
+}
 
+bool button_clicked_usermode(const uint8_t) { return false; }
 bool button_hold_usermode(const uint8_t, const bool, const uint32_t) { return false; }
 
 void loop() {}

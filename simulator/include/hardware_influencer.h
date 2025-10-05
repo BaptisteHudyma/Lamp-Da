@@ -21,6 +21,23 @@ namespace mock_indicator {
 uint32_t get_color();
 }
 
+namespace mock_electrical {
+// output at the power rail
+extern float powerRailVoltage;
+extern float powerRailCurrent;
+// output at the led output
+extern float outputVoltage;
+extern float outputCurrent;
+// output on vbus rail
+extern float vbusVoltage;
+extern float vbusCurrent;
+
+// voltage applied to the USB input (controled by user)
+extern float inputVbusVoltage;
+// keep the OTG command voltage
+extern float chargeOtgOutput;
+} // namespace mock_electrical
+
 namespace mock_battery {
 extern float voltage;
 }

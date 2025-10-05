@@ -115,7 +115,7 @@ bool is_battery_usable_as_power_source()
   // - stack reading incoherent
   // - first battery of the stack is disconnected
   // - a battery voltage is below the safety voltage
-  return true;
+  return alerts::manager.can_use_output_power();
 }
 
 bool can_battery_be_charged()

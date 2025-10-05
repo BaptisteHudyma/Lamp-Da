@@ -13,6 +13,7 @@
 
 #include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/time_utils.h"
+#include "src/system/utils/sunset_timer.h"
 
 #include <cstdint>
 
@@ -246,45 +247,46 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
     // 1+hold, 2+hold: brightness control
     case 1:
     case 2:
-      // number of steps to update brightness
-      static constexpr uint32_t brightnessUpdateSteps = BRIGHTNESS_RAMP_DURATION_MS / BRIGHTNESS_LOOP_UPDATE_EVERY;
-      static uint32_t brightnessUpdateStepSize = max(1u, maxBrightness / brightnessUpdateSteps);
-
-      // negative go low, positive go high
-      static int rampSide = 1;
-      static uint32_t lastBrightnessUpdateTime_ms = 0;
-
-      if (isEndOfHoldEvent)
       {
-        // reverse on release
-        rampSide = -rampSide;
-        lastBrightnessUpdateTime_ms = time_ms();
-        brightness::update_saved_brightness();
-        break;
-      }
+        // number of steps to update brightness
+        static constexpr uint32_t brightnessUpdateSteps = BRIGHTNESS_RAMP_DURATION_MS / BRIGHTNESS_LOOP_UPDATE_EVERY;
+        static uint32_t brightnessUpdateStepSize = max(1u, maxBrightness / brightnessUpdateSteps);
 
-      // update brightness every N milliseconds (or end of hold)
-      EVERY_N_MILLIS(BRIGHTNESS_LOOP_UPDATE_EVERY)
-      {
-        const brightness_t brightness = brightness::get_brightness();
+        // negative go low, positive go high
+        static int rampSide = 1;
+        static uint32_t lastBrightnessUpdateTime_ms = 0;
 
-        // first actions, set ramp side
-        if (buttonHoldDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)
+        if (isEndOfHoldEvent)
         {
-          // 2 clics always go low
-          if (consecutiveButtonCheck == 2)
-            rampSide = -1;
-          // ramp at maximum, go low
-          else if (brightness >= maxBrightness)
-            rampSide = -1;
-          // if more than 1 second elapsed, fall back to raise ramp
-          else if (lastBrightnessUpdateTime_ms == 0 or time_ms() - lastBrightnessUpdateTime_ms >= 1000)
-            rampSide = 1;
+          // reverse on release
+          rampSide = -rampSide;
+          lastBrightnessUpdateTime_ms = time_ms();
+          brightness::update_saved_brightness();
+          break;
         }
-        // press for too long, go down
-        // TODO do this from level max, no start of ramp
-        else if (buttonHoldDuration >= 5000)
+
+        // update brightness every N milliseconds (or end of hold)
+        EVERY_N_MILLIS(BRIGHTNESS_LOOP_UPDATE_EVERY)
         {
+          const brightness_t brightness = brightness::get_brightness();
+
+          // first actions, set ramp side
+          if (buttonHoldDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)
+          {
+            // 2 clics always go low
+            if (consecutiveButtonCheck == 2)
+              rampSide = -1;
+            // ramp at maximum, go low
+            else if (brightness >= maxBrightness)
+              rampSide = -1;
+            // if more than 1 second elapsed, fall back to raise ramp
+            else if (lastBrightnessUpdateTime_ms == 0 or time_ms() - lastBrightnessUpdateTime_ms >= 1000)
+              rampSide = 1;
+          }
+          // press for too long, go down
+          // TODO do this from level max, no start of ramp
+          else if (buttonHoldDuration >= 5000)
+          {
 // this do not work, because system starts right back up, because button is still pulled low...
 #if 0
           // stayed pressed too long, turn off
@@ -295,30 +297,34 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
           }
           else
 #endif
-          rampSide = -1;
-        }
+            rampSide = -1;
+          }
 
-        // go down
-        if (rampSide < 0)
-        {
-          if (brightness <= brightnessUpdateStepSize)
-            // min level
-            brightness::update_brightness(1);
+          // go down
+          if (rampSide < 0)
+          {
+            if (brightness <= brightnessUpdateStepSize)
+              // min level
+              brightness::update_brightness(1);
+            else
+              brightness::update_brightness(brightness - brightnessUpdateStepSize);
+          }
+          /// go up
           else
-            brightness::update_brightness(brightness - brightnessUpdateStepSize);
-        }
-        /// go up
-        else
-        {
-          if (brightness + brightnessUpdateStepSize >= maxBrightness)
-            // min level
-            brightness::update_brightness(maxBrightness);
-          else
-            brightness::update_brightness(brightness + brightnessUpdateStepSize);
-        }
+          {
+            // alert of sunset update
+            sunset::bump_timer();
 
-        // update saved brightness
-        brightness::update_saved_brightness();
+            if (brightness + brightnessUpdateStepSize >= maxBrightness)
+              // min level
+              brightness::update_brightness(maxBrightness);
+            else
+              brightness::update_brightness(brightness + brightnessUpdateStepSize);
+          }
+
+          // update saved brightness
+          brightness::update_saved_brightness();
+        }
       }
       break;
 
@@ -338,7 +344,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
     return;
 
   // guard blocking other actions than "turn off", if not allowed to run
-  if (not behavior::can_system_allowed_to_be_powered())
+  if (not behavior::can_system_allowed_to_be_powered() and not button::is_system_start_click())
   {
     if (consecutiveButtonCheck == 1)
     {
@@ -354,9 +360,17 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   //
   if (button::is_system_start_click())
   {
-    const bool canContinue = button_press_handles::system_start_button_click_callback(consecutiveButtonCheck);
+    bool canContinue = button_press_handles::system_start_button_click_callback(consecutiveButtonCheck);
     if (not canContinue)
       return;
+
+    const bool isStartedInLockout = alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT);
+    if (not isStartedInLockout)
+    {
+      canContinue = user::button_start_click_default(consecutiveButtonCheck);
+      if (not canContinue)
+        return;
+    }
   }
 
   // no inputs allowed in lockout
@@ -417,10 +431,18 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
   //
   if (button::is_system_start_click())
   {
-    const bool canContinue = button_press_handles::system_start_button_hold_callback(
+    bool canContinue = button_press_handles::system_start_button_hold_callback(
             consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
     if (not canContinue)
       return;
+
+    const bool isStartedInLockout = alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT);
+    if (not isStartedInLockout)
+    {
+      canContinue = user::button_start_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
+      if (not canContinue)
+        return;
+    }
   }
 
   // no inputs allowed in lockout
@@ -467,17 +489,6 @@ void loop()
 {
   // loop is not ran in shutdown mode
   button::handle_events(button_clicked_callback, button_hold_callback);
-
-  // at any point when the alert is raised, got to power off
-  if (alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT) and
-      alerts::manager.get_time_since_raised(alerts::Type::SYSTEM_IN_LOCKOUT) > 950)
-  {
-    const auto& buttonState = button::get_button_state();
-    const bool isButtonPressed = buttonState.isPressed or buttonState.isLongPressed;
-    // shutdown with button pressed starts right back up.
-    if (not isButtonPressed)
-      behavior::set_power_off();
-  }
 }
 
 void button_disable_usermode() { isButtonUsermodeEnabled = false; }

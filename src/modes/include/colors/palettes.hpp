@@ -424,22 +424,24 @@ static constexpr PaletteTy PaletteAuroraColors = {0x000000,
                                                   0xff3300,
                                                   0xff0000};
 
-static constexpr PaletteTy PalettePapiColors = {0x0000FF,
-                                                0x0F9DE8,
-                                                0x2BFAFA,
-                                                0x791CF8,
-                                                0x9683EC,
-                                                0xFF0000,
-                                                0xFFFF00,
-                                                0xFF7F00,
-                                                0xE73E05,
-                                                0xFF00FF,
-                                                0x00FF00,
-                                                0x87E990,
-                                                0x54F98D,
-                                                0x660099,
-                                                0xFF007F,
-                                                0xFFFFFF};
+static constexpr PaletteTy PalettePapiColors = {
+        0x0000FF, // deep blue
+        0x0F9DE8, // cerulien blue
+        0x2BFAFA, // cyan
+        0x791CF8, // indigo
+        0x9683EC, // lavander
+        0xFF0000, // red
+        0xFFFF00, // yellow
+        0xFF7F00, // orange
+        0xE73E05, // corail
+        0xFF00FF, // magenta
+        0x00FF00, // green
+        0x87E990, // jade
+        0x058E8E, // teal
+        0x660099, // violet
+        0xFF007F, // pink
+        0xFFFFFF  // white
+};
 
 /// \private return a palette from two colors
 template<uint32_t startColor, uint32_t endColor> static constexpr PaletteTy _gradient_palette_from_color()
@@ -480,8 +482,8 @@ static constexpr uint32_t from_palette(UIntTy index, const PaletteTy& palette, u
 {
   // convert to [0; 15] (divide by 16)
   uint8_t renormIndex = index >> 4;
-  // get least significant part for the blend factor
-  float blendIndex = (index & 0x0F) / 255.0f;
+  // get least significant part for the blend factor (15 levels + 0)
+  float blendIndex = (index & 0x0F) / 16.0f;
 
   // support for uint16_t
   if constexpr (sizeof(UIntTy) > 1)
@@ -489,7 +491,11 @@ static constexpr uint32_t from_palette(UIntTy index, const PaletteTy& palette, u
     const float remapedIndex = (index / static_cast<float>(UINT16_MAX)) * 16.f;
     renormIndex = min(floor(remapedIndex), 15);
     blendIndex = remapedIndex - renormIndex;
-    static_assert(std::is_same_v<UIntTy, uint16_t>, "u8 or u16");
+    static_assert(std::is_same_v<UIntTy, uint16_t>, "u8 or u16 allowed only");
+  }
+  else
+  {
+    static_assert(std::is_same_v<UIntTy, uint8_t>, "u8 or u16 allowed only");
   }
 
   if (renormIndex >= 16)
@@ -500,6 +506,7 @@ static constexpr uint32_t from_palette(UIntTy index, const PaletteTy& palette, u
     blendIndex = 0.0f;
   if (blendIndex > 1.0f)
     blendIndex = 1.0f;
+  blendIndex = 1.0 - blendIndex;
 
   const uint32_t entry = palette[renormIndex];
 

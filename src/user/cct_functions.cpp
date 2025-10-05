@@ -93,6 +93,13 @@ void read_parameters()
   currentBrightness = brightness::get_brightness();
 }
 
+bool button_start_click_default(const uint8_t clicks) { return false; }
+
+bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)
+{
+  return false;
+}
+
 void button_clicked_default(const uint8_t clicks)
 {
   switch (clicks)

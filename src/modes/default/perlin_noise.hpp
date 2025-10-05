@@ -8,6 +8,8 @@
 #include "src/system/ext/random8.h"
 
 #include "src/modes/include/colors/palettes.hpp"
+#include <cstdint>
+#include <cstdlib>
 
 /// Basic "default" modes included with the hardware
 namespace modes::default_modes {
@@ -22,18 +24,26 @@ struct PerlinNoiseMode : public BasicMode
 
   struct StateTy
   {
-    float positionX;
-    float positionY;
-    float positionZ;
+    uint32_t positionX;
+    uint32_t positionY;
+    uint32_t positionZ;
 
-    float speed;
+    int16_t speedX;
+    int16_t speedY;
+    int16_t speedZ;
+    static constexpr uint16_t minSpeed = 25;
+    static constexpr uint16_t maxSpeed = 400;
+
     uint16_t scale;
 
     uint16_t ihue;
 
     // store references to palettes
-    const palette_t* _palettes[3] = {&PaletteLavaColors, &PaletteForestColors, &PaletteOceanColors};
-    const uint8_t maxPalettesCount = 3;
+    static constexpr uint8_t maxPalettesCount = 4;
+    const palette_t* _palettes[maxPalettesCount] = {&colors::PaletteRainbowColors,
+                                                    &colors::PaletteLavaColors,
+                                                    &colors::PaletteForestColors,
+                                                    &colors::PaletteOceanColors};
 
     // store selected palette
     palette_t const* selectedPalette;
@@ -41,16 +51,20 @@ struct PerlinNoiseMode : public BasicMode
 
   static void on_enter_mode(auto& ctx)
   {
-    ctx.state.positionX = random16();
-    ctx.state.positionY = random16();
-    ctx.state.positionZ = random16();
+    ctx.state.positionX = UINT32_MAX / 2 + random16() / 2;
+    ctx.state.positionY = UINT32_MAX / 2 + random16() / 2;
+    ctx.state.positionZ = UINT32_MAX / 2 + random16() / 2;
 
-    ctx.state.speed = 1000;
+    ctx.state.speedX = random8();
+    ctx.state.speedY = random8();
+    ctx.state.speedZ = random8();
     ctx.state.scale = 600;
 
     ctx.state.ihue = 0;
 
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(false);
+    // this ramps should be slow
+    ctx.template set_config_u32<ConfigKeys::customRampStepSpeedMs>(ctx.state.maxPalettesCount / 255.0f * 850);
 
     ctx.lamp.template fillTempBuffer<bufferIndexToUse>(0);
 
@@ -65,15 +79,56 @@ struct PerlinNoiseMode : public BasicMode
     state.selectedPalette = state._palettes[rampIndex];
   }
 
+  static int16_t get_next_speed(auto& ctx, const uint32_t position, int16_t speed)
+  {
+    static constexpr int16_t speedBleedof = 25;
+    static constexpr int16_t acceleration = 25;
+    static constexpr uint32_t confortZone = UINT32_MAX / 200000;
+
+    // close to zero, set mostly positive speeds
+    if (position < confortZone)
+    {
+      // bleed off speed to zero
+      if (speed < 0)
+        speed += speedBleedof;
+      else
+        speed = lmpd_constrain(
+                speed + lmpd_map<uint8_t, int16_t>(random8(), 0, 255, 0, acceleration * 2), 0, ctx.state.maxSpeed);
+    }
+    else if (position > (UINT32_MAX - confortZone))
+    {
+      // bleed off speed to zero
+      if (speed > 0)
+        speed -= speedBleedof;
+      else
+        speed = lmpd_constrain(
+                speed + lmpd_map<uint8_t, int16_t>(random8(), 0, 255, -acceleration * 2, 0), -ctx.state.maxSpeed, 0);
+    }
+    else
+    {
+      // free range x speed
+      speed = lmpd_constrain(speed + lmpd_map<uint8_t, int16_t>(random8(), 0, 255, -acceleration, acceleration),
+                             -ctx.state.maxSpeed,
+                             ctx.state.maxSpeed);
+      // prevent too slow speed
+      if (speed < 0 and speed > -ctx.state.minSpeed)
+        speed = -ctx.state.minSpeed;
+      else if (speed > 0 and speed < ctx.state.minSpeed)
+        speed = ctx.state.minSpeed;
+    }
+
+    return speed;
+  }
+
   static void loop(auto& ctx)
   {
-    if (!ctx.state.selectedPalette)
+    auto& state = ctx.state;
+    auto& lamp = ctx.lamp;
+    if (!state.selectedPalette)
       return;
 
     // reference to a value buffer
-    static auto noiseBuffer = ctx.lamp.template getTempBuffer<bufferIndexToUse>();
-
-    auto& state = ctx.state;
+    static auto noiseBuffer = lamp.template getTempBuffer<bufferIndexToUse>();
 
     // copy to prevent a ramp update mid animation
     const palette_t palette = *(state.selectedPalette);
@@ -85,28 +140,33 @@ struct PerlinNoiseMode : public BasicMode
 
     // this is too heavy to run at full, speed, display every other pixels instead of refreshing amm
     static constexpr size_t everyNIndex = 2;
-    const size_t firstIndex = ctx.lamp.tick % everyNIndex;
+    const size_t firstIndex = lamp.tick % everyNIndex;
 
-    // how much the new value changes the last one
-    static constexpr float dataSmoothing = 0.01f;
-    for (size_t i = firstIndex; i < ctx.lamp.ledCount; i += everyNIndex)
+    // update noise values
+    for (size_t i = firstIndex; i < lamp.ledCount; i += everyNIndex)
     {
       // TODO #150: use new strip interface coordinates
-      const auto res = ctx.lamp.getLegacyStrip().get_lamp_coordinates(i);
+      const auto res = lamp.getLegacyStrip().get_lamp_coordinates(i);
       uint16_t data = noise16::inoise(x + scale * res.x, y + scale * res.y, z + scale * res.z);
 
       // smooth over time to prevent suddent jumps
-      noiseBuffer[i] = noiseBuffer[i] * dataSmoothing + data * (1.0 - dataSmoothing);
+      noiseBuffer[i] = data;
     }
 
     // apply slow drift to X and Y, just for visual variation.
-    state.positionX += state.speed / 8;
-    state.positionY -= state.speed / 16;
+    state.positionX += state.speedX;
+    state.positionY += state.speedY;
+    state.positionZ += state.speedZ;
 
-    for (size_t i = firstIndex; i < ctx.lamp.ledCount; i += everyNIndex)
+    // vary speed
+    state.speedX = get_next_speed(ctx, state.positionX, state.speedX);
+    state.speedY = get_next_speed(ctx, state.positionY, state.speedY);
+    state.speedZ = get_next_speed(ctx, state.positionZ, state.speedZ);
+
+    for (size_t i = firstIndex; i < lamp.ledCount; i += everyNIndex)
     {
       uint16_t index = noiseBuffer[i];
-      uint8_t bri = noiseBuffer[ctx.lamp.ledCount - 1 - i] >> 8;
+      uint8_t bri = noiseBuffer[lamp.ledCount - 1 - i] >> 8;
 
       // if this palette is a 'loop', add a slowly-changing base value
       index += state.ihue;
@@ -122,7 +182,7 @@ struct PerlinNoiseMode : public BasicMode
         bri = dim8_raw(bri * 2);
       }
 
-      ctx.lamp.setPixelColor(i, colors::from_palette(index, palette, bri));
+      lamp.setPixelColor(i, colors::from_palette(index, palette, bri));
     }
 
     state.ihue += 1;

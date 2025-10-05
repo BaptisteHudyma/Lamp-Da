@@ -80,6 +80,9 @@ namespace mock_battery {
 float voltage;
 } // namespace mock_battery
 
+// store output values
+uint8_t pinOutputValue[255];
+
 class DigitalPinImpl
 {
 public:
@@ -94,11 +97,15 @@ public:
       return !mock_gpios::isButtonPressed;
     }
 
-    return false;
+    return pinOutputValue[_pin] >= 128;
   }
+
+  void set_high(bool isHigh) { pinOutputValue[_pin] = isHigh ? 255 : 0; }
 
   void write(uint16_t value)
   {
+    pinOutputValue[_pin] = value;
+
     switch (_pin)
     {
       case RedIndicator:
@@ -120,13 +127,7 @@ public:
     }
   }
 
-  uint16_t read()
-  {
-    switch (_pin)
-    {
-    }
-    return 0;
-  }
+  uint16_t read() { return pinOutputValue[_pin]; }
 
   void attach_callback(voidFuncPtr cllbk, DigitalPin::Interrupt mode)
   {
@@ -175,7 +176,7 @@ void DigitalPin::set_pin_mode(Mode mode) {}
 
 bool DigitalPin::is_high() const { return mImpl->is_high(); }
 
-void DigitalPin::set_high(bool is_high) {}
+void DigitalPin::set_high(bool is_high) { return mImpl->set_high(is_high); }
 
 void DigitalPin::write(uint16_t value) { mImpl->write(value); }
 

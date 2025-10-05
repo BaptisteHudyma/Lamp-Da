@@ -4,9 +4,12 @@
 
 #include <cstdint>
 
-// set tup the software watchedog
+// settup the software watchedog
 extern void setup_watchdog(const uint32_t timeoutDelaySecond);
 extern void kick_watchdog(const uint8_t registerId);
+
+// get serial number 1 and 2 part
+extern uint64_t get_device_serial_number();
 
 // setup the ADC
 extern void setup_adc(const uint8_t resolution);

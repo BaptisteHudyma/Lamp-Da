@@ -33,6 +33,8 @@ enum Type : uint32_t
   SYSTEM_IN_ERROR_STATE = 1 << 12, // system is locked in an error state
 
   SYSTEM_IN_LOCKOUT = 1 << 13, // system lockout, the lamp should not output any light
+
+  SUNSET_TIMER_ENABLED = 1 << 14, // active sunset timer, system will auto turn off
 };
 
 class AlertManager_t
@@ -56,6 +58,16 @@ public:
    * \return the time since this alert was raised, or zero if it's not
    */
   uint32_t get_time_since_raised(const Type type);
+
+  /**
+   * \brief an alert is raised that prevent power output
+   */
+  bool can_use_output_power() const;
+
+  /**
+   * \brief an alert is raised that prevent battery charging
+   */
+  bool can_charge_battery() const;
 
 private:
   uint32_t _current;
