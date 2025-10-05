@@ -10,14 +10,15 @@
 typedef void (*taskfunc_t)(void);
 std::vector<std::thread> threadPool;
 
-bool isSupspended = false;
+bool isSuspended = false;
 
 void start_thread(taskfunc_t taskFunction, const char* const taskName, const int priority, const int stackSize)
 {
-  threadPool.emplace_back(std::thread([&]() {
-    while (not mock_registers::shouldStopThreads)
+  // ALWAYS CAPTURE taskFunction EXPLICITLY
+  threadPool.emplace_back(std::thread([taskFunction]() {
+    while (taskFunction and not mock_registers::shouldStopThreads)
     {
-      if (not isSupspended)
+      if (not isSuspended)
         taskFunction();
       delay_ms(1);
     }
@@ -28,10 +29,11 @@ void start_suspended_thread(taskfunc_t taskFunction,
                             const int priority,
                             const int stackSize)
 {
-  threadPool.emplace_back(std::thread([&]() {
-    while (not mock_registers::shouldStopThreads)
+  // ALWAYS CAPTURE taskFunction EXPLICITLY
+  threadPool.emplace_back(std::thread([taskFunction]() {
+    while (taskFunction and not mock_registers::shouldStopThreads)
     {
-      if (not isSupspended)
+      if (not isSuspended)
         taskFunction();
       delay_ms(1);
     }
@@ -48,9 +50,9 @@ void suspend_this_thread()
   // TODO issue #132
 }
 
-void suspend_all_threads() { isSupspended = true; }
+void suspend_all_threads() { isSuspended = true; }
 
-int is_all_suspended() { return isSupspended ? 1 : 0; }
+int is_all_suspended() { return isSuspended ? 1 : 0; }
 
 void resume_thread(const char* const taskName) {}
 
