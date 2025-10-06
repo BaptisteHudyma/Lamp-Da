@@ -4,9 +4,10 @@
 namespace modes::nudz {
 
 //   struct ImageTy {
-//     static constexpr uint16_t width = 25;
+//     static constexpr uint16_t width = 26;
 //     static constexpr uint16_t height = 22;
-//     static constexpr std::vector<uint32_t> colormap;
+//     static constexpr uint32_t colormapSize = 0;
+//     static constexpr uint32_t colormap[];
 //     static constexpr uint8_t indexData[] = {};
 //     static constexpr uint32_t rgbData[] = { 0x800000, 0x008000 };
 //   };
@@ -55,7 +56,7 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
     uint16_t imHeight = ImageType::height;
     uint32_t w = std::min(uint32_t(ctx.lamp.maxWidth + 1), uint32_t(imWidth));
     uint32_t h = std::min(uint32_t(ctx.lamp.maxHeight), uint32_t(imHeight));
-    if(ImageType::colormapSize == 0)
+    if (ImageType::colormapSize == 0)
       for (uint32_t y = 0; y < h; ++y)
         for (uint32_t x = 0; x < w; ++x)
           ctx.lamp.setPixelColorXY(x, y, ImageType::rgbData[y * imWidth + (x + decal) % imWidth]);
@@ -63,8 +64,7 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
       // indexed colormap
       for (uint32_t y = 0; y < h; ++y)
         for (uint32_t x = 0; x < w; ++x)
-          ctx.lamp.setPixelColorXY(
-            x, y,
+          ctx.lamp.setPixelColorXY(x, y,
             ImageType::colormap[ImageType::indexData[y * imWidth + (x + decal) % imWidth]]);
   }
 

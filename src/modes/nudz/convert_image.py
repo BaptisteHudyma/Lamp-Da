@@ -53,22 +53,26 @@ if cmap:
 
 with open(out_src, 'w') as of:
 
-    print(f'''    struct {out_cls} {{
-      static constexpr uint16_t width = {image.width};
-      static constexpr uint16_t height = {image.height};''', file=of)
+    print(f'''struct {out_cls}
+{{
+  static constexpr uint16_t width = {image.width};
+  static constexpr uint16_t height = {image.height};''', file=of)
     if cmap:
-        print(f'      static constexpr uint32_t colormapSize = {len(cmap)};',
+        print(f'  static constexpr uint32_t colormapSize = {len(cmap)};',
               file=of)
-        print('      static constexpr uint32_t colormap[] = {\n'
-              '        ', end='', file=of)
+        print('  // clang-format off\n'
+              '  static constexpr uint32_t colormap[] = {', file=of)
+        end = '\n'
         for i in sorted(cmap_i.keys()):
             rgb = cmap_i[i]
+            prefix = '     ' if end == '\n' else ''
             end = '\n' if i % 8 == 7 else ' '
-            print('0x%06x,' % rgb, end=end, file=of)
-        print('\n      };', file=of)
+            print('%s0x%06x,' % (prefix, rgb), end=end, file=of)
+        print('\n  };', file=of)
 
-        print('      static constexpr uint8_t indexData[] = {', file=of)
+        print('  static constexpr uint8_t indexData[] = {', file=of)
         i = 0
+        end = '\n'
         for y in range(sz[1]):
             for x in range(sz[0]):
                 if image.mode == 'RGBA':
@@ -78,18 +82,21 @@ with open(out_src, 'w') as of:
                     r, g, b = btes[i: i+3]
                     i += 3
                 rgb = (r << 16) | (g << 8) | b
+                prefix = '     ' if end == '\n' else ''
                 end = '\n' if (x == sz[0] - 1 or x % 16 == 15) else ' '
-                print('0x%02x,' % cmap[rgb], file=of, end=end)
-        print('      };', file=of)
+                print('%s0x%02x,' % (prefix, cmap[rgb]), file=of, end=end)
+        print('  };', file=of)
 
-        print('      static constexpr uint32_t rgbData[] = {};', file=of)
-        print('    };', file=of)
+        print('  // clang-format on\n  static constexpr uint32_t rgbData[] = {};', file=of)
+        print('};', file=of)
     else:
-        print('''      static constexpr uint32_t colormapSize = 0;
-      static constexpr uint32_t colormap[] = {};
-      static constexpr uint8_t indexData[] = {};
-      static constexpr uint32_t rgbData[] = { ''', file=of)
+        print('''  static constexpr uint32_t colormapSize = 0;
+  static constexpr uint32_t colormap[] = {};
+  static constexpr uint8_t indexData[] = {};
+  // clang-format off
+  static constexpr uint32_t rgbData[] = { ''', file=of)
         i = 0
+        end = '\n'
         for y in range(sz[1]):
             for x in range(sz[0]):
                 if image.mode == 'RGBA':
@@ -98,8 +105,9 @@ with open(out_src, 'w') as of:
                 else:
                     r, g, b = btes[i: i+3]
                     i += 3
-                end = '\n' if x == sz[0] - 1 else ' '
-                print('0x%02x%02x%02x,' % (r, g, b), file=of, end=end)
+                prefix = '     ' if end == '\n' else ''
+                end = '\n' if (x == sz[0] - 1 or x % 16 == 15) else ' '
+                print('%s0x%02x%02x%02x,' % (prefix, r, g, b), file=of,
+                      end=end)
 
-        print('      };\n    };', file=of)
-
+        print('  };\n  // clang-format on\n};', file=of)
