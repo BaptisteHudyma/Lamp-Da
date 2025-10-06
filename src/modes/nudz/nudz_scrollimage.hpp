@@ -64,8 +64,8 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
       // indexed colormap
       for (uint32_t y = 0; y < h; ++y)
         for (uint32_t x = 0; x < w; ++x)
-          ctx.lamp.setPixelColorXY(x, y,
-            ImageType::colormap[ImageType::indexData[y * imWidth + (x + decal) % imWidth]]);
+          ctx.lamp.setPixelColorXY(
+                  x, y, ImageType::colormap[ImageType::indexData[y * imWidth + (x + decal) % imWidth]]);
   }
 
   static constexpr bool hasCustomRamp = true;
