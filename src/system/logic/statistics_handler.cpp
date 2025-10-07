@@ -114,8 +114,8 @@ uint32_t get_output_on_time()
 
 void signal_output_on()
 {
-  //
-  outputOn_time_s = time_s();
+  if (outputOn_time_s == UINT32_MAX)
+    outputOn_time_s = time_s();
 }
 
 void signal_output_off()
@@ -143,8 +143,8 @@ uint32_t get_battery_charging_time()
 
 void signal_battery_charging_on()
 {
-  //
-  batteryCharge_time_s = time_s();
+  if (batteryCharge_time_s == UINT32_MAX)
+    batteryCharge_time_s = time_s();
 }
 void signal_battery_charging_off()
 {

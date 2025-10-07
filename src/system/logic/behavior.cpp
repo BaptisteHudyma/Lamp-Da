@@ -41,6 +41,7 @@
 
 namespace behavior {
 
+static constexpr uint32_t cleanSleepKey = utils::hash("cleanSleep");
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
 static constexpr uint32_t indicatorLevelKey = utils::hash("indLvl");
 static constexpr uint32_t isLockoutModeKey = utils::hash("lckMode");
@@ -127,6 +128,14 @@ bool read_parameters()
   // load statistics first
   statistics::load_from_memory();
 
+  uint32_t wasPutToSleepCleanly = 0;
+  fileSystem::system::get_value(cleanSleepKey, wasPutToSleepCleanly);
+  if (wasPutToSleepCleanly == 0)
+  {
+    // dirty sleep alert
+    alerts::manager.raise(alerts::Type::SYSTEM_SLEEP_SKIPPED);
+  }
+
   uint32_t brightness = 0;
   if (fileSystem::system::get_value(brightnessKey, brightness))
   {
@@ -149,9 +158,15 @@ bool read_parameters()
 
   user::read_parameters();
 
-  // TODO #293 Clear and write the unclean turn off flag
-
   return true;
+}
+
+void setup_clean_sleep_flag()
+{
+  // clear clean sleep flag
+  fileSystem::system::set_value(cleanSleepKey, 0);
+  // write parameters, if a crash happens, we will notice a dirty flag
+  fileSystem::system::write_to_file();
 }
 
 void write_parameters()
@@ -161,6 +176,7 @@ void write_parameters()
   // write updated statistics
   statistics::write_to_memory();
 
+  fileSystem::system::set_value(cleanSleepKey, 1);
   // only save saved brightness, not current
   fileSystem::system::set_value(brightnessKey, brightness::get_saved_brightness());
   fileSystem::system::set_value(indicatorLevelKey, indicator::get_brightness_level());
@@ -300,6 +316,9 @@ void handle_start_logic_state()
     // start the system normally
     mainMachine.set_state(BehaviorStates::PRE_OUTPUT_LIGHT);
   }
+
+  // set clean flag early on
+  setup_clean_sleep_flag();
 }
 
 static uint32_t preChargeCalled = 0;
