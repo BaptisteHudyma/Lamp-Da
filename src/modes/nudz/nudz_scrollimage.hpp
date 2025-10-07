@@ -18,14 +18,19 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
   {
     float minSpeed = -0.5f;
     float maxSpeed = 0.5f;
-    uint32_t decal;
+    bool randomScroll = false;
+    uint32_t xdecal;
+    uint32_t ydecal;
     uint32_t last_tick;
+    int8_t xdirection = 1;
+    int8_t ydirection = 0;
   };
 
   static void on_enter_mode(auto& ctx)
   {
     // reset stateful events
-    ctx.state.decal = 0;
+    ctx.state.xdecal = 0;
+    ctx.state.ydecal = 0;
     ctx.state.last_tick = 0;
   }
 
@@ -44,28 +49,69 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
     else
       speed = 0.f;
 
+    uint16_t imWidth = ImageType::width;
+    uint16_t imHeight = ImageType::height;
+
     // decal needs a state to keep continuous while speed is changed
-    int32_t decal = ctx.state.decal + int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed);
-    if (decal != ctx.state.decal)
+    int32_t xdecal = ctx.state.xdecal + int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed);
+    int32_t ydecal = 0;
+    if (ctx.state.randomScroll)
     {
-      ctx.state.decal = decal;
+      xdecal = int32_t(ctx.state.xdecal) + int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed) * ctx.state.xdirection;
+      if (ctx.state.ydirection != 0)
+        ydecal = int32_t(ctx.state.ydecal) + int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed) * ctx.state.ydirection;
+      if (xdecal < 0)
+      {
+        xdecal = 0;
+        ctx.state.xdirection *= -random8(2);
+        ctx.state.ydirection = random8(3) - 1;
+        if (ctx.state.xdirection == 0 && ctx.state.ydirection == 0)
+          ctx.state.ydirection = random8(2) * 2 - 1;
+      }
+      else if (xdecal + ctx.lamp.maxWidth >= imWidth)
+      {
+        xdecal = imWidth - ctx.lamp.maxWidth - 1;
+        ctx.state.xdirection *= -random8(2);
+        ctx.state.ydirection = random8(3) - 1;
+        if (ctx.state.xdirection == 0 && ctx.state.ydirection == 0)
+          ctx.state.ydirection = random8(2) * 2 - 1;
+      }
+      if (ydecal < 0)
+      {
+        ydecal = 0;
+        ctx.state.ydirection *= -random8(2);
+        ctx.state.xdirection = random8(3) - 1;
+        if (ctx.state.xdirection == 0 && ctx.state.ydirection == 0)
+          ctx.state.xdirection = random8(2) * 2 - 1;
+      }
+      else if (ydecal + ctx.lamp.maxHeight >= imHeight)
+      {
+        ydecal = imHeight - ctx.lamp.maxHeight - 1;
+        ctx.state.ydirection *= -random8(2);
+        ctx.state.xdirection = random8(3) - 1;
+        if (ctx.state.xdirection == 0 && ctx.state.ydirection == 0)
+          ctx.state.xdirection = random8(2) * 2 - 1;
+      }
+    }
+    if (xdecal != ctx.state.xdecal || ydecal != ctx.state.ydecal)
+    {
+      ctx.state.xdecal = xdecal;
+      ctx.state.ydecal = ydecal;
       ctx.state.last_tick = ctx.lamp.tick;
     }
 
-    uint16_t imWidth = ImageType::width;
-    uint16_t imHeight = ImageType::height;
     uint32_t w = std::min(uint32_t(ctx.lamp.maxWidth + 1), uint32_t(imWidth));
     uint32_t h = std::min(uint32_t(ctx.lamp.maxHeight), uint32_t(imHeight));
     if (ImageType::colormapSize == 0)
       for (uint32_t y = 0; y < h; ++y)
         for (uint32_t x = 0; x < w; ++x)
-          ctx.lamp.setPixelColorXY(x, y, ImageType::rgbData[y * imWidth + (x + decal) % imWidth]);
+          ctx.lamp.setPixelColorXY(x, y, ImageType::rgbData[((y + ydecal) % imHeight) * imWidth + (x + xdecal) % imWidth]);
     else
       // indexed colormap
       for (uint32_t y = 0; y < h; ++y)
         for (uint32_t x = 0; x < w; ++x)
           ctx.lamp.setPixelColorXY(
-                  x, y, ImageType::colormap[ImageType::indexData[y * imWidth + (x + decal) % imWidth]]);
+                  x, y, ImageType::colormap[ImageType::indexData[((y + ydecal) % imHeight) * imWidth + (x + xdecal) % imWidth]]);
   }
 
   static constexpr bool hasCustomRamp = true;
@@ -87,8 +133,12 @@ struct NudzViolonsaoulsMode : public NudzScrollImageMode<ViolonsaoulsImageTy>
   {
     float minSpeed = 0.f;
     float maxSpeed = 0.5f;
-    uint32_t decal;
+    bool randomScroll = false;
+    uint32_t xdecal;
+    uint32_t ydecal;
     uint32_t last_tick;
+    int8_t xdirection = 1;
+    int8_t ydirection = 0;
   };
 };
 
