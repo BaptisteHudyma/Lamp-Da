@@ -129,8 +129,8 @@ bool read_parameters()
   statistics::load_from_memory();
 
   uint32_t wasPutToSleepCleanly = 0;
-  fileSystem::system::get_value(cleanSleepKey, wasPutToSleepCleanly);
-  if (wasPutToSleepCleanly == 0)
+  const bool isCleanFlagFound = fileSystem::system::get_value(cleanSleepKey, wasPutToSleepCleanly);
+  if (not isCleanFlagFound or wasPutToSleepCleanly != 0xDEADBEEF)
   {
     // dirty sleep alert
     alerts::manager.raise(alerts::Type::SYSTEM_SLEEP_SKIPPED);
@@ -176,7 +176,7 @@ void write_parameters()
   // write updated statistics
   statistics::write_to_memory();
 
-  fileSystem::system::set_value(cleanSleepKey, 1);
+  fileSystem::system::set_value(cleanSleepKey, 0xDEADBEEF);
   // only save saved brightness, not current
   fileSystem::system::set_value(brightnessKey, brightness::get_saved_brightness());
   fileSystem::system::set_value(indicatorLevelKey, indicator::get_brightness_level());
