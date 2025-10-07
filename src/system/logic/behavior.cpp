@@ -128,26 +128,29 @@ bool read_parameters()
   statistics::load_from_memory();
 
   uint32_t brightness = 0;
-  if (fileSystem::get_value(brightnessKey, brightness))
+  if (fileSystem::system::get_value(brightnessKey, brightness))
   {
     brightness::update_brightness(brightness, true);
     brightness::update_saved_brightness();
   }
 
   uint32_t indicatorLevel = 0;
-  if (fileSystem::get_value(indicatorLevelKey, indicatorLevel))
+  if (fileSystem::system::get_value(indicatorLevelKey, indicatorLevel))
   {
     indicator::set_brightness_level(indicatorLevel);
   }
 
   uint32_t isInLockoutMode = 0;
-  if (fileSystem::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
+  if (fileSystem::system::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
   {
     // system in lockout, raise the alert
     alerts::manager.raise(alerts::Type::SYSTEM_IN_LOCKOUT);
   }
 
   user::read_parameters();
+
+  // TODO #293 Clear and write the unclean turn off flag
+
   return true;
 }
 
@@ -159,14 +162,15 @@ void write_parameters()
   statistics::write_to_memory();
 
   // only save saved brightness, not current
-  fileSystem::set_value(brightnessKey, brightness::get_saved_brightness());
-  fileSystem::set_value(indicatorLevelKey, indicator::get_brightness_level());
+  fileSystem::system::set_value(brightnessKey, brightness::get_saved_brightness());
+  fileSystem::system::set_value(indicatorLevelKey, indicator::get_brightness_level());
   // lockout mode always kept, if not deactivated by system
-  fileSystem::set_value(isLockoutModeKey, alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT));
+  fileSystem::system::set_value(isLockoutModeKey, alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT));
 
   user::write_parameters();
 
-  fileSystem::write_state();
+  fileSystem::user::write_to_file();
+  fileSystem::system::write_to_file();
 }
 
 // user code is running when state is output

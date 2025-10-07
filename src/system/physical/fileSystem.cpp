@@ -9,7 +9,7 @@
 #endif
 
 #include <cassert>
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 #include "src/system/utils/constants.h"
@@ -19,14 +19,15 @@
 
 namespace fileSystem {
 
-static constexpr auto FILENAME = "/.lampda.par";
+static constexpr auto FILENAME_USER = "/.lampda.par";
+// store lamp internal parameters, that should not be erased
+static constexpr auto FILENAME_INTERNAL = "/.internal.par";
 
 using namespace Adafruit_LittleFS_Namespace;
+File paramFile(InternalFS); // instance to avoid recreating objects
 
-File file(InternalFS);
-
-// the stored configurations
-std::unordered_map<uint32_t, uint32_t> _valueMap;
+std::map<uint32_t, uint32_t> _userParametersValueMap;
+std::map<uint32_t, uint32_t> _systemParametersValueMap;
 
 struct keyValue
 {
@@ -55,7 +56,11 @@ void setup()
   }
 }
 
-void clear() { _valueMap.clear(); }
+void clear()
+{
+  _userParametersValueMap.clear();
+  // never clear lamp prameters
+}
 
 void clear_internal_fs()
 {
@@ -63,26 +68,14 @@ void clear_internal_fs()
   InternalFS.format();
 }
 
-bool load_initial_values()
+namespace __internal {
+
+bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& paramMap)
 {
-  if (!isSetup)
+  if (paramFile.open(fileName, FILE_O_READ) and paramFile.isOpen() and paramFile.available())
   {
-    setup();
-  }
-
-  // failure case: TODO: something ?
-  if (!isSetup)
-  {
-    return false;
-  }
-
-  _valueMap.clear();
-
-  // file exist, good
-  if (file.open(FILENAME, FILE_O_READ) and file.isOpen() and file.available())
-  {
-    std::vector<char> vecRead(file.size());
-    const int retVal = file.read(vecRead.data(), vecRead.size());
+    std::vector<char> vecRead(paramFile.size());
+    const int retVal = paramFile.read(vecRead.data(), vecRead.size());
     if (retVal < 0)
     {
       // error case
@@ -99,7 +92,7 @@ bool load_initial_values()
     {
       if (cnt >= sizeOfData)
       {
-        _valueMap[converter.kv.key] = converter.kv.value;
+        paramMap[converter.kv.key] = converter.kv.value;
 
         // reset
         converter.kv.key = 0;
@@ -114,20 +107,59 @@ bool load_initial_values()
     // last word !
     if (cnt >= sizeOfData)
     {
-      _valueMap[converter.kv.key] = converter.kv.value;
+      paramMap[converter.kv.key] = converter.kv.value;
     }
 
-    file.close();
+    paramFile.close();
     return true;
-  }
-  else
-  {
-    // no initial values, first boost maybe
   }
   return false;
 }
 
-void write_state()
+bool write_file(const char* filePath, std::map<uint32_t, uint32_t>& paramMap)
+{
+  // check if it exists
+  if (paramFile.open(filePath, FILE_O_WRITE) and paramFile.isOpen())
+  {
+    paramFile.seek(0); // return to the begining of the file
+  }
+  else
+  {
+    // error. the file should have been opened
+    lampda_print("file system error, reseting file format");
+
+    // hardcore, format the entire file system
+    InternalFS.format();
+    delay_ms(10);
+  }
+
+  if (not paramFile.isOpen())
+    paramFile.open(filePath, FILE_O_WRITE);
+  if (paramFile.isOpen())
+  {
+    for (const auto& keyval: paramMap)
+    {
+      KeyValToByteArray converter;
+      converter.kv.key = keyval.first;
+      converter.kv.value = keyval.second;
+      // write the data converted to a byte array
+      paramFile.write(converter.data, sizeOfData);
+    }
+    paramFile.close();
+  }
+  else
+  {
+    // error. the file should have been opened
+    lampda_print("file creation failed, system parameters wont be stored");
+    return false;
+  }
+
+  return true;
+}
+
+} // namespace __internal
+
+bool load_initial_values()
 {
   if (!isSetup)
   {
@@ -137,56 +169,33 @@ void write_state()
   // failure case: TODO: something ?
   if (!isSetup)
   {
-    return;
+    return false;
   }
 
-  file.open(FILENAME, FILE_O_WRITE);
-  if (file)
-  {
-    file.truncate(0); // clear the file
-    file.close();
-  }
-  else
-  {
-    // error. the file should have been opened
-    lampda_print("file system error, reseting file format");
+  _systemParametersValueMap.clear();
+  _userParametersValueMap.clear();
 
-    // hardcore, format the entire file system
-    InternalFS.format();
-  }
+  // file exist, not first boot
+  const bool internalParameterFileExists = __internal::read_file_content(FILENAME_INTERNAL, _systemParametersValueMap);
 
-  delay_ms(10);
+  //  dont really care if user parameters failed to load
+  const bool isSuccess = __internal::read_file_content(FILENAME_USER, _userParametersValueMap);
 
-  file.open(FILENAME, FILE_O_WRITE);
-  if (file)
-  {
-    for (const auto& keyval: _valueMap)
-    {
-      KeyValToByteArray converter;
-      converter.kv.key = keyval.first;
-      converter.kv.value = keyval.second;
-      // write the data converted to a byte array
-      file.write(converter.data, sizeOfData);
-    }
-    file.close();
-  }
-  else
-  {
-    // error. the file should have been opened
-    lampda_print("file creation failed, parameters wont be stored");
-  }
+  return internalParameterFileExists;
 }
 
-bool doKeyExists(const uint32_t key) { return _valueMap.find(key) != _valueMap.end(); }
+namespace system {
+
+bool doKeyExists(const uint32_t key) { return _systemParametersValueMap.find(key) != _systemParametersValueMap.end(); }
 
 bool get_value(const uint32_t key, uint32_t& value)
 {
 #ifdef LMBD_SIMULATION
-  fprintf(stderr, "fs: get_value %08x -> ", key);
+  fprintf(stderr, "fsi: get_value %08x -> ", key);
 #endif
 
-  const auto& res = _valueMap.find(key);
-  if (res != _valueMap.end())
+  const auto& res = _systemParametersValueMap.find(key);
+  if (res != _systemParametersValueMap.end())
   {
     value = res->second;
 
@@ -206,16 +215,16 @@ bool get_value(const uint32_t key, uint32_t& value)
 
 void set_value(const uint32_t key, const uint32_t value)
 {
-  _valueMap[key] = value;
+  _systemParametersValueMap[key] = value;
 
 #ifdef LMBD_SIMULATION
-  fprintf(stderr, "fs: set_value %08x -> %08x\n", key, value);
+  fprintf(stderr, "fsi: set_value %08x -> %08x\n", key, value);
 #endif
 }
 
 uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
 {
-  auto& c = _valueMap;
+  auto& c = _systemParametersValueMap;
 
   // std::erase_if implementation
   //
@@ -228,7 +237,7 @@ uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
       first = c.erase(first);
 
 #ifdef LMBD_SIMULATION
-      fprintf(stderr, "fs: key dropped %08x (matches %08x)\n", key, bitMatch & bitSelect);
+      fprintf(stderr, "fsi: key dropped %08x (matches %08x)\n", key, bitMatch & bitSelect);
 #endif
     }
     else
@@ -238,5 +247,117 @@ uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
   }
   return old_size - c.size();
 }
+
+void write_to_file()
+{
+  if (!isSetup)
+  {
+    setup();
+  }
+
+  // failure case: TODO: something ?
+  if (!isSetup)
+  {
+    return;
+  }
+
+  // write internal parameters
+  const bool systemParameterWriteSuccess = __internal::write_file(FILENAME_INTERNAL, _systemParametersValueMap);
+  if (not systemParameterWriteSuccess)
+  {
+    // TODO: handle error
+    lampda_print("could not save system parameters");
+  }
+}
+
+} // namespace system
+
+namespace user {
+
+bool doKeyExists(const uint32_t key) { return _userParametersValueMap.find(key) != _userParametersValueMap.end(); }
+
+bool get_value(const uint32_t key, uint32_t& value)
+{
+#ifdef LMBD_SIMULATION
+  fprintf(stderr, "fsu: get_value %08x -> ", key);
+#endif
+
+  const auto& res = _userParametersValueMap.find(key);
+  if (res != _userParametersValueMap.end())
+  {
+    value = res->second;
+
+#ifdef LMBD_SIMULATION
+    fprintf(stderr, "%08x\n", value);
+#endif
+
+    return true;
+  }
+
+#ifdef LMBD_SIMULATION
+  fprintf(stderr, "not found\n");
+#endif
+
+  return false;
+}
+
+void set_value(const uint32_t key, const uint32_t value)
+{
+  _userParametersValueMap[key] = value;
+
+#ifdef LMBD_SIMULATION
+  fprintf(stderr, "fsu: set_value %08x -> %08x\n", key, value);
+#endif
+}
+
+uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
+{
+  auto& c = _userParametersValueMap;
+
+  // std::erase_if implementation
+  //
+  auto old_size = c.size();
+  for (auto first = c.begin(), last = c.end(); first != last;)
+  {
+    uint32_t key = std::get<0>(*first);
+    if ((key & bitSelect) == bitMatch)
+    {
+      first = c.erase(first);
+
+#ifdef LMBD_SIMULATION
+      fprintf(stderr, "fsu: key dropped %08x (matches %08x)\n", key, bitMatch & bitSelect);
+#endif
+    }
+    else
+    {
+      ++first;
+    }
+  }
+  return old_size - c.size();
+}
+
+void write_to_file()
+{
+  if (!isSetup)
+  {
+    setup();
+  }
+
+  // failure case: TODO: something ?
+  if (!isSetup)
+  {
+    return;
+  }
+
+  // user first
+  const bool userParameterWriteSuccess = __internal::write_file(FILENAME_USER, _userParametersValueMap);
+  if (not userParameterWriteSuccess)
+  {
+    // TODO: handle error
+    lampda_print("could not save user parameters");
+  }
+}
+
+} // namespace user
 
 } // namespace fileSystem

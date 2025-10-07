@@ -23,6 +23,7 @@ namespace statistics {
  */
 
 //
+inline static uint32_t boot_count = 0;
 inline static uint32_t button_press_count = 0;
 // About 136 years can be used here, ok :)
 // UINT32_MAX / M  / H  / D  / Y
@@ -31,8 +32,11 @@ inline static uint32_t button_press_count = 0;
 inline static uint32_t system_on_minutes = 0;
 inline static uint32_t output_on_minutes = 0;
 inline static uint32_t battery_charge_minutes = 0;
-inline static uint32_t alertRaisedCnt[32] = {};
 
+static constexpr uint8_t alertArraySize = 32;
+inline static uint32_t alertRaisedCnt[alertArraySize] = {};
+
+static constexpr uint32_t bootCountKey = utils::hash("bootCnt");
 static constexpr uint32_t buttonPressCountKey = utils::hash("buttonP");
 static constexpr uint32_t systemOnTimeSKey = utils::hash("sysOn");
 static constexpr uint32_t outputOnTimeSKey = utils::hash("outOn");
@@ -48,15 +52,18 @@ uint32_t get_system_on_time() { return system_on_minutes + max(1, time_s() / 60)
  */
 void load_from_memory()
 {
-  fileSystem::get_value(buttonPressCountKey, button_press_count);
-  fileSystem::get_value(systemOnTimeSKey, system_on_minutes);
-  fileSystem::get_value(outputOnTimeSKey, output_on_minutes);
-  fileSystem::get_value(chargeOnTimeSKey, battery_charge_minutes);
+  fileSystem::system::get_value(bootCountKey, boot_count);
+  boot_count += 1;
 
-  for (uint8_t alertIndex = 0; alertIndex < 32; alertIndex++)
+  fileSystem::system::get_value(buttonPressCountKey, button_press_count);
+  fileSystem::system::get_value(systemOnTimeSKey, system_on_minutes);
+  fileSystem::system::get_value(outputOnTimeSKey, output_on_minutes);
+  fileSystem::system::get_value(chargeOnTimeSKey, battery_charge_minutes);
+
+  for (uint8_t alertIndex = 0; alertIndex < alertArraySize; alertIndex++)
   {
     const uint32_t alertCntBefore = alertRaisedCnt[alertIndex];
-    fileSystem::get_value(get_alert_storage_key(alertIndex), alertRaisedCnt[alertIndex]);
+    fileSystem::system::get_value(get_alert_storage_key(alertIndex), alertRaisedCnt[alertIndex]);
     if (alertCntBefore > alertRaisedCnt[alertIndex])
     {
       // fallback to prevent early alert crush
@@ -69,17 +76,18 @@ void load_from_memory()
  */
 void write_to_memory()
 {
-  fileSystem::set_value(buttonPressCountKey, button_press_count);
-  fileSystem::set_value(outputOnTimeSKey, output_on_minutes);
-  fileSystem::set_value(chargeOnTimeSKey, battery_charge_minutes);
+  fileSystem::system::set_value(bootCountKey, boot_count);
+  fileSystem::system::set_value(buttonPressCountKey, button_press_count);
+  fileSystem::system::set_value(outputOnTimeSKey, output_on_minutes);
+  fileSystem::system::set_value(chargeOnTimeSKey, battery_charge_minutes);
 
   // system time starts at zero
-  fileSystem::set_value(systemOnTimeSKey, get_system_on_time());
+  fileSystem::system::set_value(systemOnTimeSKey, get_system_on_time());
 
   // store alerts
-  for (uint8_t alertIndex = 0; alertIndex < 32; alertIndex++)
+  for (uint8_t alertIndex = 0; alertIndex < alertArraySize; alertIndex++)
   {
-    fileSystem::set_value(get_alert_storage_key(alertIndex), alertRaisedCnt[alertIndex]);
+    fileSystem::system::set_value(get_alert_storage_key(alertIndex), alertRaisedCnt[alertIndex]);
   }
 }
 
@@ -92,9 +100,9 @@ void signal_button_press() { button_press_count += 1; }
 inline static uint32_t outputOn_time_s = UINT32_MAX;
 uint32_t get_output_on_time()
 {
-  const uint32_t currentTime_s = time_s();
   if (outputOn_time_s != UINT32_MAX)
   {
+    const uint32_t currentTime_s = time_s();
     if (currentTime_s >= outputOn_time_s)
       return output_on_minutes + max(1, (currentTime_s - outputOn_time_s) / 60);
     else
@@ -121,9 +129,9 @@ void signal_output_off()
 inline static uint32_t batteryCharge_time_s = UINT32_MAX;
 uint32_t get_battery_charging_time()
 {
-  const uint32_t currentTime_s = time_s();
   if (batteryCharge_time_s != UINT32_MAX)
   {
+    const uint32_t currentTime_s = time_s();
     if (currentTime_s >= batteryCharge_time_s)
       return battery_charge_minutes + max(1, (currentTime_s - batteryCharge_time_s) / 60);
     else
@@ -153,7 +161,7 @@ void signal_alert_raised(uint32_t alertMask)
     alertMask >>= 1;
     alertIndex++;
   }
-  if (alertIndex != 0)
+  if (alertIndex != 0 and alertIndex < alertArraySize)
     alertRaisedCnt[alertIndex - 1] += 1;
 }
 
@@ -161,10 +169,12 @@ void show(const bool shouldShowAlerts)
 {
   lampda_print(
           "stats:\n"
+          "boot cnt: %u\n"
           "button clicks: %u\n"
           "time on %umin\n"
           "output on %umin\n"
           "charge on %umin",
+          boot_count,
           button_press_count,
           get_system_on_time(),
           get_output_on_time(),
@@ -175,7 +185,7 @@ void show(const bool shouldShowAlerts)
     lampda_print("alert raised cnt stats :");
     bool anyAlertToDisplay = false;
     // store alerts
-    for (uint8_t alertIndex = 0; alertIndex < 32; alertIndex++)
+    for (uint8_t alertIndex = 0; alertIndex < alertArraySize; alertIndex++)
     {
       if (alertRaisedCnt[alertIndex] > 0)
       {
