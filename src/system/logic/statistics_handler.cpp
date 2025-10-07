@@ -17,7 +17,7 @@ namespace statistics {
  * - time turn on (in minutes)
  * - time output on (in minutes)
  * - time battery charging (in minutes)
- * - alerts raised count :  TODO
+ * - alerts raised count
  *
  * Fill more as needed
  */
@@ -31,12 +31,17 @@ inline static uint32_t button_press_count = 0;
 inline static uint32_t system_on_minutes = 0;
 inline static uint32_t output_on_minutes = 0;
 inline static uint32_t battery_charge_minutes = 0;
+inline static uint32_t alertRaisedCnt[32] = {};
 
 static constexpr uint32_t buttonPressCountKey = utils::hash("buttonP");
 static constexpr uint32_t systemOnTimeSKey = utils::hash("sysOn");
 static constexpr uint32_t outputOnTimeSKey = utils::hash("outOn");
 static constexpr uint32_t chargeOnTimeSKey = utils::hash("chrgOn");
 
+// compute a key for each alert
+uint32_t get_alert_storage_key(uint8_t alertIndex) { return 0xFFFFFF00 | alertIndex; }
+
+// system on time is easy: system always starts with time zero
 uint32_t get_system_on_time() { return system_on_minutes + max(1, time_s() / 60); }
 
 /**
@@ -47,6 +52,17 @@ void load_from_memory()
   fileSystem::get_value(systemOnTimeSKey, system_on_minutes);
   fileSystem::get_value(outputOnTimeSKey, output_on_minutes);
   fileSystem::get_value(chargeOnTimeSKey, battery_charge_minutes);
+
+  for (uint8_t alertIndex = 0; alertIndex < 32; alertIndex++)
+  {
+    const uint32_t alertCntBefore = alertRaisedCnt[alertIndex];
+    fileSystem::get_value(get_alert_storage_key(alertIndex), alertRaisedCnt[alertIndex]);
+    if (alertCntBefore > alertRaisedCnt[alertIndex])
+    {
+      // fallback to prevent early alert crush
+      alertRaisedCnt[alertIndex] = alertCntBefore;
+    }
+  }
 }
 
 /**
@@ -59,6 +75,12 @@ void write_to_memory()
 
   // system time starts at zero
   fileSystem::set_value(systemOnTimeSKey, get_system_on_time());
+
+  // store alerts
+  for (uint8_t alertIndex = 0; alertIndex < 32; alertIndex++)
+  {
+    fileSystem::set_value(get_alert_storage_key(alertIndex), alertRaisedCnt[alertIndex]);
+  }
 }
 
 /**
@@ -123,7 +145,19 @@ void signal_battery_charging_off()
   batteryCharge_time_s = UINT32_MAX;
 }
 
-void show()
+void signal_alert_raised(uint32_t alertMask)
+{
+  uint8_t alertIndex = 0;
+  while (alertMask != 0)
+  {
+    alertMask >>= 1;
+    alertIndex++;
+  }
+  if (alertIndex != 0)
+    alertRaisedCnt[alertIndex - 1] += 1;
+}
+
+void show(const bool shouldShowAlerts)
 {
   lampda_print(
           "stats:\n"
@@ -135,6 +169,23 @@ void show()
           get_system_on_time(),
           get_output_on_time(),
           get_battery_charging_time());
+
+  if (shouldShowAlerts)
+  {
+    lampda_print("alert raised cnt stats :");
+    bool anyAlertToDisplay = false;
+    // store alerts
+    for (uint8_t alertIndex = 0; alertIndex < 32; alertIndex++)
+    {
+      if (alertRaisedCnt[alertIndex] > 0)
+      {
+        anyAlertToDisplay = true;
+        lampda_print("- %u : %u", alertIndex, alertRaisedCnt[alertIndex]);
+      }
+    }
+    if (not anyAlertToDisplay)
+      lampda_print("no alerts registered");
+  }
 }
 
 } // namespace statistics

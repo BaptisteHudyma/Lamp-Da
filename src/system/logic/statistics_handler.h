@@ -34,9 +34,14 @@ void signal_battery_charging_on();
 void signal_battery_charging_off();
 
 /**
+ * \brief signal alert raised
+ */
+void signal_alert_raised(uint32_t alertMask);
+
+/**
  * Display statistics on output
  */
-void show();
+void show(const bool shouldShowAlerts = true);
 
 } // namespace statistics
 

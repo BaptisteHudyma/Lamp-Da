@@ -1,5 +1,7 @@
 #include "alerts.h"
 
+#include "src/system/logic/statistics_handler.h"
+
 #include "src/system/platform/time.h"
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/registers.h"
@@ -630,6 +632,10 @@ void AlertManager_t::raise(const Type type)
       }
     }
     return;
+  }
+  else
+  {
+    statistics::signal_alert_raised(type);
   }
 
   lampda_print("ALERT raised: %s", AlertsToText(type));

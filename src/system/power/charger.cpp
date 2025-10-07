@@ -355,8 +355,12 @@ void loop()
   // fast fail in case of errors
   if (is_status_error())
   {
-    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
     drivers::enable_charge(false);
+
+    // allow some start time to prevent wrong error display
+    if (time_ms() >= 100)
+      alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+
     // do NOT run charge functions
     return;
   }

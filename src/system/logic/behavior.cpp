@@ -38,7 +38,6 @@
 #include "src/system/platform/print.h"
 
 #include "src/user/functions.h"
-#include "statistics_handler.h"
 
 namespace behavior {
 
@@ -50,11 +49,11 @@ static constexpr uint32_t isLockoutModeKey = utils::hash("lckMode");
 static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 500;
 
 // timestamp of the system wake up
-static uint32_t wakeUpTime = time_ms();
+static uint32_t wakeUpTime = 0;
 
 // pre output light call timing (lamp output starts)
 // Starts at system start time
-static uint32_t preOutputLightCalled = time_ms();
+static uint32_t preOutputLightCalled = 0;
 
 // Define the state for the main prog state machine
 typedef enum
