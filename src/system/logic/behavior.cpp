@@ -230,7 +230,6 @@ std::string get_error_state_message()
 
 void go_to_error_state(const std::string& errorMsg)
 {
-  statistics::signal_battery_charging_off();
   statistics::signal_output_off();
 
   // signal to the system we dont want to turn off until user asked
@@ -319,7 +318,6 @@ void handle_pre_charger_operation_state()
   }
 
   power::go_to_charger_mode();
-  statistics::signal_battery_charging_on();
   mainMachine.set_state(BehaviorStates::CHARGER_OPERATIONS);
 }
 
@@ -339,7 +337,6 @@ void handle_charger_operation_state()
     yield_this_thread();
 
     // switch to output mode after the post charge operations
-    statistics::signal_battery_charging_off();
     mainMachine.set_state(BehaviorStates::PRE_OUTPUT_LIGHT);
     return;
   }
@@ -590,7 +587,6 @@ void handle_shutdown_state()
   bluetooth::stop_bluetooth_advertising();
 #endif
 
-  statistics::signal_battery_charging_off();
   statistics::signal_output_off();
 
   // save the current config to a file
