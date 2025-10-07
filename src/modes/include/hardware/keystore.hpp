@@ -77,6 +77,9 @@ template<int16_t N> static inline bool LMBD_INLINE hasValue(const char (&key)[N]
   return fileSystem::user::doKeyExists(hash(key), out);
 }
 
+/// Force clear the stored parameters
+static inline void clear_stored() { fileSystem::clear(); }
+
 /**
  * \brief  Check for migration and erase all values if needed
  * IT WILL ERASE THE WHOLE MEMORY, EVENT STATISTICS

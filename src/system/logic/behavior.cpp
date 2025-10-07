@@ -120,42 +120,45 @@ bool is_charger_powered() { return charger::is_vbus_powered(); }
 
 bool read_parameters()
 {
+  bool isSuccess = false;
   // load system values in memory
   if (not fileSystem::system::load_from_file())
   {
     alerts::manager.raise(alerts::Type::SYSTEM_SLEEP_SKIPPED);
-    return false;
   }
-
-  // load statistics first
-  statistics::load_from_memory();
-
-  uint32_t wasPutToSleepCleanly = 0;
-  const bool isCleanFlagFound = fileSystem::system::get_value(cleanSleepKey, wasPutToSleepCleanly);
-  if (not isCleanFlagFound or wasPutToSleepCleanly != 0xDEADBEEF)
+  else
   {
-    // dirty sleep alert
-    alerts::manager.raise(alerts::Type::SYSTEM_SLEEP_SKIPPED);
-  }
+    isSuccess = true;
+    // load statistics first
+    statistics::load_from_memory();
 
-  uint32_t brightness = 0;
-  if (fileSystem::system::get_value(brightnessKey, brightness))
-  {
-    brightness::update_brightness(brightness, true);
-    brightness::update_saved_brightness();
-  }
+    uint32_t wasPutToSleepCleanly = 0;
+    const bool isCleanFlagFound = fileSystem::system::get_value(cleanSleepKey, wasPutToSleepCleanly);
+    if (not isCleanFlagFound or wasPutToSleepCleanly != 0xDEADBEEF)
+    {
+      // dirty sleep alert
+      alerts::manager.raise(alerts::Type::SYSTEM_SLEEP_SKIPPED);
+    }
 
-  uint32_t indicatorLevel = 0;
-  if (fileSystem::system::get_value(indicatorLevelKey, indicatorLevel))
-  {
-    indicator::set_brightness_level(indicatorLevel);
-  }
+    uint32_t brightness = 0;
+    if (fileSystem::system::get_value(brightnessKey, brightness))
+    {
+      brightness::update_brightness(brightness, true);
+      brightness::update_saved_brightness();
+    }
 
-  uint32_t isInLockoutMode = 0;
-  if (fileSystem::system::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
-  {
-    // system in lockout, raise the alert
-    alerts::manager.raise(alerts::Type::SYSTEM_IN_LOCKOUT);
+    uint32_t indicatorLevel = 0;
+    if (fileSystem::system::get_value(indicatorLevelKey, indicatorLevel))
+    {
+      indicator::set_brightness_level(indicatorLevel);
+    }
+
+    uint32_t isInLockoutMode = 0;
+    if (fileSystem::system::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
+    {
+      // system in lockout, raise the alert
+      alerts::manager.raise(alerts::Type::SYSTEM_IN_LOCKOUT);
+    }
   }
 
   if (fileSystem::user::load_from_file())
@@ -164,7 +167,7 @@ bool read_parameters()
   }
   // else: we can live without the user parameters
 
-  return true;
+  return isSuccess;
 }
 
 void setup_clean_sleep_flag()

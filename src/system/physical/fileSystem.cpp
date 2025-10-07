@@ -26,6 +26,7 @@ static constexpr auto FILENAME_INTERNAL = "/.internal.par";
 using namespace Adafruit_LittleFS_Namespace;
 File paramFile(InternalFS); // instance to avoid recreating objects
 
+size_t lastUserParameterSize = 0;
 std::map<uint32_t, uint32_t> _userParametersValueMap;
 std::map<uint32_t, uint32_t> _systemParametersValueMap;
 
@@ -58,6 +59,7 @@ void setup()
 
 void clear()
 {
+  lastUserParameterSize = _userParametersValueMap.size();
   _userParametersValueMap.clear();
   // never clear lamp prameters
 }
@@ -72,6 +74,7 @@ namespace __internal {
 
 bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& paramMap)
 {
+  paramMap.clear();
   if (paramFile.open(fileName, FILE_O_READ) and paramFile.isOpen() and paramFile.available())
   {
     std::vector<char> vecRead(paramFile.size());
@@ -100,7 +103,9 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
           paramMap[converter.kv.key] = converter.kv.value;
         }
         else
+        {
           hasDuplicates = true;
+        }
 
         // reset
         converter.kv.key = 0;
@@ -118,7 +123,7 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
       paramMap[converter.kv.key] = converter.kv.value;
     }
 
-    // erase file content in case of dupliates
+    // erase file content in case of duplicates
     if (hasDuplicates)
       paramFile.truncate(0);
 
@@ -128,12 +133,19 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
   return false;
 }
 
-bool write_file(const char* filePath, std::map<uint32_t, uint32_t>& paramMap)
+bool write_file(const char* filePath, std::map<uint32_t, uint32_t>& paramMap, const bool shouldEraseFirst = false)
 {
   // check if it exists
   if (paramFile.open(filePath, FILE_O_WRITE) and paramFile.isOpen())
   {
-    paramFile.seek(0); // return to the begining of the file
+    if (not shouldEraseFirst)
+      paramFile.seek(0); // return to the begining of the file
+    else
+    {
+      // erase file content
+      paramFile.truncate(0);
+      paramFile.close();
+    }
   }
   else
   {
@@ -270,7 +282,6 @@ bool load_from_file()
     return false;
   }
 
-  _systemParametersValueMap.clear();
   return __internal::read_file_content(FILENAME_INTERNAL, _systemParametersValueMap);
 }
 
@@ -354,7 +365,9 @@ void write_to_file()
   }
 
   // user first
-  const bool userParameterWriteSuccess = __internal::write_file(FILENAME_USER, _userParametersValueMap);
+  const bool shouldEraseFile = lastUserParameterSize > _userParametersValueMap.size();
+  const bool userParameterWriteSuccess =
+          __internal::write_file(FILENAME_USER, _userParametersValueMap, shouldEraseFile);
   if (not userParameterWriteSuccess)
   {
     // TODO: handle error
@@ -375,7 +388,6 @@ bool load_from_file()
     return false;
   }
 
-  _userParametersValueMap.clear();
   return __internal::read_file_content(FILENAME_USER, _userParametersValueMap);
 }
 

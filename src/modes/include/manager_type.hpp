@@ -899,6 +899,9 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   static void write_parameters(auto& ctx)
   {
+    // clear the stored parameters, before storing ours.
+    store::clear_stored();
+
     // this scope is the only one where parameters will be kept
     ctx.template storageSaveOnly<Store::lastActive>(ctx.modeManager.activeIndex);
 
