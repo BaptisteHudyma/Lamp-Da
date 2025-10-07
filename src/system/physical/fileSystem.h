@@ -8,11 +8,6 @@ namespace fileSystem {
 
 void setup();
 
-/**
- * \brief Will initialize the state and brighness values if they exist
- */
-bool load_initial_values();
-
 // clear the stored values in the currently loaded file system
 void clear();
 
@@ -42,6 +37,11 @@ uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect = 0x
  */
 void write_to_file();
 
+/**
+ * \brief Load system values from memory
+ */
+bool load_from_file();
+
 } // namespace system
 
 // user file space
@@ -66,6 +66,11 @@ uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect = 0x
  * /!\ a failure will erase the system memory
  */
 void write_to_file();
+
+/**
+ * \brief Load user values from memory
+ */
+bool load_from_file();
 
 } // namespace user
 

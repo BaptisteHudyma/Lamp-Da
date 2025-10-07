@@ -120,10 +120,12 @@ bool is_charger_powered() { return charger::is_vbus_powered(); }
 
 bool read_parameters()
 {
-  // load values in memory
-  const bool isFileLoaded = fileSystem::load_initial_values();
-  if (!isFileLoaded)
+  // load system values in memory
+  if (not fileSystem::system::load_from_file())
+  {
+    alerts::manager.raise(alerts::Type::SYSTEM_SLEEP_SKIPPED);
     return false;
+  }
 
   // load statistics first
   statistics::load_from_memory();
@@ -156,7 +158,11 @@ bool read_parameters()
     alerts::manager.raise(alerts::Type::SYSTEM_IN_LOCKOUT);
   }
 
-  user::read_parameters();
+  if (fileSystem::user::load_from_file())
+  {
+    user::read_parameters();
+  }
+  // else: we can live without the user parameters
 
   return true;
 }

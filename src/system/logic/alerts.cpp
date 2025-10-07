@@ -459,7 +459,7 @@ struct Alert_SkippedCleanSleep : public AlertBase
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    return (raisedTime > 0 and (time_ms() - raisedTime) > 5000);
+    return (raisedTime > 0 and (time_ms() - raisedTime) > 3000);
   }
 };
 

@@ -86,13 +86,21 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
     converter.kv.key = 0;
     converter.kv.value = 0;
 
+    bool hasDuplicates = false;
+
     uint8_t cnt = 0; // when this reaches 8, a new word
     // parser state machine
     for (const char c: vecRead)
     {
       if (cnt >= sizeOfData)
       {
-        paramMap[converter.kv.key] = converter.kv.value;
+        // only modify the first data of the list
+        if (paramMap.find(converter.kv.key) == paramMap.end())
+        {
+          paramMap[converter.kv.key] = converter.kv.value;
+        }
+        else
+          hasDuplicates = true;
 
         // reset
         converter.kv.key = 0;
@@ -109,6 +117,10 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
     {
       paramMap[converter.kv.key] = converter.kv.value;
     }
+
+    // erase file content in case of dupliates
+    if (hasDuplicates)
+      paramFile.truncate(0);
 
     paramFile.close();
     return true;
@@ -158,31 +170,6 @@ bool write_file(const char* filePath, std::map<uint32_t, uint32_t>& paramMap)
 }
 
 } // namespace __internal
-
-bool load_initial_values()
-{
-  if (!isSetup)
-  {
-    setup();
-  }
-
-  // failure case: TODO: something ?
-  if (!isSetup)
-  {
-    return false;
-  }
-
-  _systemParametersValueMap.clear();
-  _userParametersValueMap.clear();
-
-  // file exist, not first boot
-  const bool internalParameterFileExists = __internal::read_file_content(FILENAME_INTERNAL, _systemParametersValueMap);
-
-  //  dont really care if user parameters failed to load
-  const bool isSuccess = __internal::read_file_content(FILENAME_USER, _userParametersValueMap);
-
-  return internalParameterFileExists;
-}
 
 namespace system {
 
@@ -268,6 +255,23 @@ void write_to_file()
     // TODO: handle error
     lampda_print("could not save system parameters");
   }
+}
+
+bool load_from_file()
+{
+  if (!isSetup)
+  {
+    setup();
+  }
+
+  // failure case: TODO: something ?
+  if (!isSetup)
+  {
+    return false;
+  }
+
+  _systemParametersValueMap.clear();
+  return __internal::read_file_content(FILENAME_INTERNAL, _systemParametersValueMap);
 }
 
 } // namespace system
@@ -356,6 +360,23 @@ void write_to_file()
     // TODO: handle error
     lampda_print("could not save user parameters");
   }
+}
+
+bool load_from_file()
+{
+  if (!isSetup)
+  {
+    setup();
+  }
+
+  // failure case: TODO: something ?
+  if (!isSetup)
+  {
+    return false;
+  }
+
+  _userParametersValueMap.clear();
+  return __internal::read_file_content(FILENAME_USER, _userParametersValueMap);
 }
 
 } // namespace user

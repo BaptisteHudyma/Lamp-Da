@@ -103,7 +103,9 @@ static inline void LMBD_INLINE migrateIfNeeded()
     fileSystem::user::set_value(storeUid, storeUid);
     fileSystem::user::write_to_file();
     fileSystem::system::write_to_file();
-    fileSystem::load_initial_values();
+
+    fileSystem::system::load_from_file();
+    fileSystem::user::load_from_file();
   }
 }
 
