@@ -7,6 +7,7 @@
 
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/inputs.h"
+#include "src/system/logic/statistics_handler.h"
 
 #include "src/system/power/charger.h"
 #include "src/system/power/power_handler.h"
@@ -37,6 +38,7 @@
 #include "src/system/platform/print.h"
 
 #include "src/user/functions.h"
+#include "statistics_handler.h"
 
 namespace behavior {
 
@@ -123,6 +125,9 @@ bool read_parameters()
   if (!isFileLoaded)
     return false;
 
+  // load statistics first
+  statistics::load_from_memory();
+
   uint32_t brightness = 0;
   if (fileSystem::get_value(brightnessKey, brightness))
   {
@@ -150,6 +155,9 @@ bool read_parameters()
 void write_parameters()
 {
   fileSystem::clear();
+
+  // write updated statistics
+  statistics::write_to_memory();
 
   // only save saved brightness, not current
   fileSystem::set_value(brightnessKey, brightness::get_saved_brightness());
@@ -223,6 +231,9 @@ std::string get_error_state_message()
 
 void go_to_error_state(const std::string& errorMsg)
 {
+  statistics::signal_battery_charging_off();
+  statistics::signal_output_off();
+
   // signal to the system we dont want to turn off until user asked
   // thats better to debug an error
   set_power_on();
@@ -309,6 +320,7 @@ void handle_pre_charger_operation_state()
   }
 
   power::go_to_charger_mode();
+  statistics::signal_battery_charging_on();
   mainMachine.set_state(BehaviorStates::CHARGER_OPERATIONS);
 }
 
@@ -328,6 +340,7 @@ void handle_charger_operation_state()
     yield_this_thread();
 
     // switch to output mode after the post charge operations
+    statistics::signal_battery_charging_off();
     mainMachine.set_state(BehaviorStates::PRE_OUTPUT_LIGHT);
     return;
   }
@@ -468,7 +481,8 @@ void handle_pre_output_light_state()
 
   lastOutputLightValidTime = time_ms();
 
-  // this function is executed OUNCE
+  // this function is executed ONCE
+  statistics::signal_output_on();
   mainMachine.set_state(BehaviorStates::OUTPUT_LIGHT);
 }
 
@@ -535,6 +549,7 @@ void handle_post_output_light_state()
   delay_ms(1);
   outputPower::write_voltage(0); // power down
 
+  statistics::signal_output_off();
   mainMachine.skip_timeout();
 }
 
@@ -575,6 +590,9 @@ void handle_shutdown_state()
 #ifdef USE_BLUETOOTH
   bluetooth::stop_bluetooth_advertising();
 #endif
+
+  statistics::signal_battery_charging_off();
+  statistics::signal_output_off();
 
   // save the current config to a file
   // (takes some time so call it when the lamp appear to be shutdown already)
