@@ -35,6 +35,8 @@ enum Type : uint32_t
   SYSTEM_IN_LOCKOUT = 1 << 13, // system lockout, the lamp should not output any light
 
   SUNSET_TIMER_ENABLED = 1 << 14, // active sunset timer, system will auto turn off
+
+  SYSTEM_SLEEP_SKIPPED = 1 << 15, // the system skipped the sleep clean phase (crash ? new flash ?)
 };
 
 class AlertManager_t

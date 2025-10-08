@@ -21,6 +21,7 @@
 #include "src/system/utils/utils.h"
 
 #include "src/system/logic/alerts.h"
+#include "src/system/logic/statistics_handler.h"
 
 namespace serial {
 
@@ -42,6 +43,7 @@ void handleCommand(const std::string& command)
                 "v: hardware & software version\n"
                 "t: return the lamp type\n"
                 "id: return the board serial number\n"
+                "stats: display the system use statistics"
                 "bat: battery info/levels\n"
                 "cinfo: charger infos\n"
                 "ADC: values from the charger ADC\n"
@@ -95,6 +97,12 @@ void handleCommand(const std::string& command)
     case utils::hash("id"):
       {
         lampda_print("Serial number: %lu", get_device_serial_number());
+        break;
+      }
+
+    case utils::hash("stats"):
+      {
+        statistics::show();
         break;
       }
 

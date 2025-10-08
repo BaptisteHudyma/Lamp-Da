@@ -7,6 +7,8 @@
 #include "PDlib/power_delivery.h"
 
 #include "src/system/logic/alerts.h"
+#include "src/system/logic/statistics_handler.h"
+
 #include "src/system/physical/battery.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
@@ -355,8 +357,12 @@ void loop()
   // fast fail in case of errors
   if (is_status_error())
   {
-    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
     drivers::enable_charge(false);
+
+    // allow some start time to prevent wrong error display
+    if (time_ms() >= 500)
+      alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+
     // do NOT run charge functions
     return;
   }
@@ -368,6 +374,8 @@ void loop()
   // if needed, enable charge
   if (isChargerOk and should_charge())
   {
+    statistics::signal_battery_charging_on();
+
     drivers::set_input_current_limit(
             // set the max input current for this source
             powerDelivery::get_max_input_current(),
@@ -378,6 +386,8 @@ void loop()
   }
   else
   {
+    statistics::signal_battery_charging_off();
+
     // disable current
     drivers::set_input_current_limit(0, false);
     // disable charge

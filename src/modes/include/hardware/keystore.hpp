@@ -51,7 +51,7 @@ template<int16_t N> static constexpr uint32_t LMBD_INLINE hash(const char (&s)[N
 template<int16_t N> static inline void LMBD_INLINE setValue(const char (&key)[N], uint32_t value)
 {
   static_assert(N - 1 <= 14, "Please use keys shorter than 14 bytes!");
-  fileSystem::set_value(hash(key), value);
+  fileSystem::user::set_value(hash(key), value);
 }
 
 /** \brief Get value for named \p key and write it in \p out
@@ -63,7 +63,7 @@ template<int16_t N> static inline void LMBD_INLINE setValue(const char (&key)[N]
 template<int16_t N> static inline bool LMBD_INLINE getValue(const char (&key)[N], uint32_t& out)
 {
   static_assert(N - 1 <= 14, "Please use keys shorter than 14 bytes!");
-  return fileSystem::get_value(hash(key), out);
+  return fileSystem::user::get_value(hash(key), out);
 }
 
 /** \brief Check if value for \p key exists
@@ -74,31 +74,41 @@ template<int16_t N> static inline bool LMBD_INLINE getValue(const char (&key)[N]
 template<int16_t N> static inline bool LMBD_INLINE hasValue(const char (&key)[N], uint32_t& out)
 {
   static_assert(N - 1 <= 14, "Please use keys shorter than 14 bytes!");
-  return fileSystem::doKeyExists(hash(key), out);
+  return fileSystem::user::doKeyExists(hash(key), out);
 }
 
-/// \private Check for migration and erase all values if needed
+/// Force clear the stored parameters
+static inline void clear_stored() { fileSystem::clear(); }
+
+/**
+ * \brief  Check for migration and erase all values if needed
+ * IT WILL ERASE THE WHOLE MEMORY, EVENT STATISTICS
+ */
+
 static inline void LMBD_INLINE migrateIfNeeded()
 {
-  if (not fileSystem::doKeyExists(storeUid))
+  if (not fileSystem::user::doKeyExists(storeUid))
   {
-    fileSystem::set_value(storeUid, storeUid);
+    fileSystem::user::set_value(storeUid, storeUid);
   }
 
   uint32_t out = storeUid ^ 0xff;
-  if (not fileSystem::get_value(storeUid, out))
+  if (not fileSystem::user::get_value(storeUid, out))
   {
-    fileSystem::set_value(storeUid, storeUid);
-    fileSystem::get_value(storeUid, out);
+    fileSystem::user::set_value(storeUid, storeUid);
+    fileSystem::user::get_value(storeUid, out);
   }
 
   if (out != storeUid)
   {
     fileSystem::clear_internal_fs();
     fileSystem::clear();
-    fileSystem::set_value(storeUid, storeUid);
-    fileSystem::write_state();
-    fileSystem::load_initial_values();
+    fileSystem::user::set_value(storeUid, storeUid);
+    fileSystem::user::write_to_file();
+    fileSystem::system::write_to_file();
+
+    fileSystem::system::load_from_file();
+    fileSystem::user::load_from_file();
   }
 }
 
@@ -184,7 +194,7 @@ template<typename _EnumTy, int _groupId, int _modeId, PrefixValues _prefix = Pre
     if constexpr (std::is_same_v<valueTy, uint32_t>)
     {
       constexpr auto idx = indexKeyFor(prefix, groupId, modeId, 0, rawKey);
-      fileSystem::set_value(idx, value);
+      fileSystem::user::set_value(idx, value);
 
       // small case: value is smaller than uint32_t, store it on a uint32_t
     }
@@ -204,7 +214,7 @@ template<typename _EnumTy, int _groupId, int _modeId, PrefixValues _prefix = Pre
       for (uint8_t I = 0; I < N; ++I)
       {
         uint32_t off = indexKeyFor(prefix, groupId, modeId, I, rawKey);
-        fileSystem::set_value(off, storage[I]);
+        fileSystem::user::set_value(off, storage[I]);
       }
     }
     else
@@ -224,7 +234,7 @@ template<typename _EnumTy, int _groupId, int _modeId, PrefixValues _prefix = Pre
     if constexpr (std::is_same_v<T, uint32_t>)
     {
       constexpr auto idx = indexKeyFor(prefix, groupId, modeId, 0, rawKey);
-      return fileSystem::get_value(idx, output);
+      return fileSystem::user::get_value(idx, output);
 
       // small case: value is smaller than uint32_t, get it on a uint32_t
     }
@@ -248,7 +258,7 @@ template<typename _EnumTy, int _groupId, int _modeId, PrefixValues _prefix = Pre
       for (uint8_t I = 0; I < N; ++I)
       {
         uint32_t off = indexKeyFor(prefix, groupId, modeId, I, rawKey);
-        if (not fileSystem::get_value(off, storage[I]))
+        if (not fileSystem::user::get_value(off, storage[I]))
         {
           return false;
         }
@@ -287,10 +297,10 @@ template<typename _EnumTy, int _groupId, int _modeId, PrefixValues _prefix = Pre
 
     // retrieve storeId from storage
     uint32_t otherId = 0;
-    if (not fileSystem::get_value(idx, otherId))
+    if (not fileSystem::user::get_value(idx, otherId))
     {
       otherId = storeId;
-      fileSystem::set_value(idx, storeId);
+      fileSystem::user::set_value(idx, storeId);
     }
 
     // if it don't match our storeId, clean storage from our old keys
@@ -298,8 +308,8 @@ template<typename _EnumTy, int _groupId, int _modeId, PrefixValues _prefix = Pre
     {
       constexpr uint32_t select = 0xfff00000; // all but offset
       constexpr uint32_t masked = idx & select;
-      fileSystem::dropMatchingKeys(masked, select);
-      fileSystem::set_value(idx, storeId);
+      fileSystem::user::dropMatchingKeys(masked, select);
+      fileSystem::user::set_value(idx, storeId);
     }
   }
 };

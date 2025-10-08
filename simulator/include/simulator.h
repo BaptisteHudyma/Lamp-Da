@@ -99,6 +99,8 @@ template<typename T> struct simulator
     // start electrical simulation,
     start_electrical_mock();
 
+    // force init of time clock
+    time_ms();
     // Main program setup
     global::main_setup();
 

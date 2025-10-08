@@ -7,6 +7,7 @@
 
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/inputs.h"
+#include "src/system/logic/statistics_handler.h"
 
 #include "src/system/power/charger.h"
 #include "src/system/power/power_handler.h"
@@ -40,6 +41,7 @@
 
 namespace behavior {
 
+static constexpr uint32_t cleanSleepKey = utils::hash("cleanSleep");
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
 static constexpr uint32_t indicatorLevelKey = utils::hash("indLvl");
 static constexpr uint32_t isLockoutModeKey = utils::hash("lckMode");
@@ -48,11 +50,11 @@ static constexpr uint32_t isLockoutModeKey = utils::hash("lckMode");
 static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 500;
 
 // timestamp of the system wake up
-static uint32_t wakeUpTime = time_ms();
+static uint32_t wakeUpTime = 0;
 
 // pre output light call timing (lamp output starts)
 // Starts at system start time
-static uint32_t preOutputLightCalled = time_ms();
+static uint32_t preOutputLightCalled = 0;
 
 // Define the state for the main prog state machine
 typedef enum
@@ -118,48 +120,82 @@ bool is_charger_powered() { return charger::is_vbus_powered(); }
 
 bool read_parameters()
 {
-  // load values in memory
-  const bool isFileLoaded = fileSystem::load_initial_values();
-  if (!isFileLoaded)
-    return false;
-
-  uint32_t brightness = 0;
-  if (fileSystem::get_value(brightnessKey, brightness))
+  bool isSuccess = false;
+  // load system values in memory
+  if (not fileSystem::system::load_from_file())
   {
-    brightness::update_brightness(brightness, true);
-    brightness::update_saved_brightness();
+    alerts::manager.raise(alerts::Type::SYSTEM_SLEEP_SKIPPED);
+  }
+  else
+  {
+    isSuccess = true;
+    // load statistics first
+    statistics::load_from_memory();
+
+    uint32_t wasPutToSleepCleanly = 0;
+    const bool isCleanFlagFound = fileSystem::system::get_value(cleanSleepKey, wasPutToSleepCleanly);
+    if (not isCleanFlagFound or wasPutToSleepCleanly != 0xDEADBEEF)
+    {
+      // dirty sleep alert
+      alerts::manager.raise(alerts::Type::SYSTEM_SLEEP_SKIPPED);
+    }
+
+    uint32_t brightness = 0;
+    if (fileSystem::system::get_value(brightnessKey, brightness))
+    {
+      brightness::update_brightness(brightness, true);
+      brightness::update_saved_brightness();
+    }
+
+    uint32_t indicatorLevel = 0;
+    if (fileSystem::system::get_value(indicatorLevelKey, indicatorLevel))
+    {
+      indicator::set_brightness_level(indicatorLevel);
+    }
+
+    uint32_t isInLockoutMode = 0;
+    if (fileSystem::system::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
+    {
+      // system in lockout, raise the alert
+      alerts::manager.raise(alerts::Type::SYSTEM_IN_LOCKOUT);
+    }
   }
 
-  uint32_t indicatorLevel = 0;
-  if (fileSystem::get_value(indicatorLevelKey, indicatorLevel))
+  if (fileSystem::user::load_from_file())
   {
-    indicator::set_brightness_level(indicatorLevel);
+    user::read_parameters();
   }
+  // else: we can live without the user parameters
 
-  uint32_t isInLockoutMode = 0;
-  if (fileSystem::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
-  {
-    // system in lockout, raise the alert
-    alerts::manager.raise(alerts::Type::SYSTEM_IN_LOCKOUT);
-  }
+  return isSuccess;
+}
 
-  user::read_parameters();
-  return true;
+void setup_clean_sleep_flag()
+{
+  // clear clean sleep flag
+  fileSystem::system::set_value(cleanSleepKey, 0);
+  // write parameters, if a crash happens, we will notice a dirty flag
+  fileSystem::system::write_to_file();
 }
 
 void write_parameters()
 {
   fileSystem::clear();
 
+  // write updated statistics
+  statistics::write_to_memory();
+
+  fileSystem::system::set_value(cleanSleepKey, 0xDEADBEEF);
   // only save saved brightness, not current
-  fileSystem::set_value(brightnessKey, brightness::get_saved_brightness());
-  fileSystem::set_value(indicatorLevelKey, indicator::get_brightness_level());
+  fileSystem::system::set_value(brightnessKey, brightness::get_saved_brightness());
+  fileSystem::system::set_value(indicatorLevelKey, indicator::get_brightness_level());
   // lockout mode always kept, if not deactivated by system
-  fileSystem::set_value(isLockoutModeKey, alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT));
+  fileSystem::system::set_value(isLockoutModeKey, alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT));
 
   user::write_parameters();
 
-  fileSystem::write_state();
+  fileSystem::user::write_to_file();
+  fileSystem::system::write_to_file();
 }
 
 // user code is running when state is output
@@ -223,6 +259,8 @@ std::string get_error_state_message()
 
 void go_to_error_state(const std::string& errorMsg)
 {
+  statistics::signal_output_off();
+
   // signal to the system we dont want to turn off until user asked
   // thats better to debug an error
   set_power_on();
@@ -287,6 +325,9 @@ void handle_start_logic_state()
     // start the system normally
     mainMachine.set_state(BehaviorStates::PRE_OUTPUT_LIGHT);
   }
+
+  // set clean flag early on
+  setup_clean_sleep_flag();
 }
 
 static uint32_t preChargeCalled = 0;
@@ -468,7 +509,8 @@ void handle_pre_output_light_state()
 
   lastOutputLightValidTime = time_ms();
 
-  // this function is executed OUNCE
+  // this function is executed ONCE
+  statistics::signal_output_on();
   mainMachine.set_state(BehaviorStates::OUTPUT_LIGHT);
 }
 
@@ -535,6 +577,7 @@ void handle_post_output_light_state()
   delay_ms(1);
   outputPower::write_voltage(0); // power down
 
+  statistics::signal_output_off();
   mainMachine.skip_timeout();
 }
 
@@ -575,6 +618,8 @@ void handle_shutdown_state()
 #ifdef USE_BLUETOOTH
   bluetooth::stop_bluetooth_advertising();
 #endif
+
+  statistics::signal_output_off();
 
   // save the current config to a file
   // (takes some time so call it when the lamp appear to be shutdown already)

@@ -79,12 +79,12 @@ void brightness_update(const brightness_t brightness)
   set_color(currentColor);
 }
 
-void write_parameters() { fileSystem::set_value(colorKey, currentColor); }
+void write_parameters() { fileSystem::user::set_value(colorKey, currentColor); }
 
 void read_parameters()
 {
   uint32_t mode = 0;
-  if (fileSystem::get_value(colorKey, mode))
+  if (fileSystem::user::get_value(colorKey, mode))
   {
     currentColor = mode;
     lastColor = currentColor;

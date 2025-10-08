@@ -1,5 +1,7 @@
 #include "alerts.h"
 
+#include "src/system/logic/statistics_handler.h"
+
 #include "src/system/platform/time.h"
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/registers.h"
@@ -71,6 +73,8 @@ inline const char* AlertsToText(const Type type)
       return "SYSTEM_IN_LOCKOUT";
     case SUNSET_TIMER_ENABLED:
       return "SUNSET_TIMER_ENABLED";
+    case SYSTEM_SLEEP_SKIPPED:
+      return "SYSTEM_SLEEP_SKIPPED";
     default:
       return "UNSUPPORTED TYPE";
   }
@@ -446,10 +450,24 @@ struct Alert_SunsetTimerSet : public AlertBase
   Type get_type() const override { return Type::SUNSET_TIMER_ENABLED; }
 };
 
+struct Alert_SkippedCleanSleep : public AlertBase
+{
+  bool show() const override { return indicator::blink(250, 250, utils::ColorSpace::PINK); }
+
+  Type get_type() const override { return Type::SYSTEM_SLEEP_SKIPPED; }
+
+  bool should_be_cleared() const override
+  {
+    // cleared after a delay
+    return (raisedTime > 0 and (time_ms() - raisedTime) > 3000);
+  }
+};
+
 // Alerts must be sorted by importance, only the first activated one will be shown
 AlertBase* allAlerts[] = {new Alert_SystemShutdownFailed,
                           new Alert_HardwareAlert,
                           new Alert_TempCritical,
+                          new Alert_SkippedCleanSleep,
                           new Alert_TempTooHigh,
                           new Alert_BatteryReadingIncoherent,
                           new Alert_BatteryCritical,
@@ -630,6 +648,10 @@ void AlertManager_t::raise(const Type type)
       }
     }
     return;
+  }
+  else
+  {
+    statistics::signal_alert_raised(type);
   }
 
   lampda_print("ALERT raised: %s", AlertsToText(type));

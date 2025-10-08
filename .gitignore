@@ -1,5 +1,6 @@
 venv
 _build
+.internal.par
 .lampda.par
 arduino-cli
 .vagrant
