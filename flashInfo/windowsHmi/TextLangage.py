@@ -23,6 +23,7 @@ CLOSE_PORT_ID = "closePort"
 GET_RELEASES_FAILED_ID = "failedRelease"
 VALIDATE = "valid"
 SEND = "Envoyer"
+MAJ_FAILED = "majFailed"
 
 class LangageHandle():
     def __init__(self):
@@ -69,7 +70,8 @@ French = {
     CLOSE_PORT_ID: "Fermer port",
     GET_RELEASES_FAILED_ID: "Echec de récupération des mises à jour. Reessayez aprés au moins 1H",
     VALIDATE: "Valider",
-    SEND: "Envoyer"
+    SEND: "Envoyer",
+    MAJ_FAILED: "Problème lors de la mise a jour, veuillez la mettre à jour manuellement"
 }
 
 English = {
@@ -95,5 +97,6 @@ English = {
     CLOSE_PORT_ID: "Close port",
     GET_RELEASES_FAILED_ID: "Failed to recover the updates, try again in at least 1 hour",
     VALIDATE: "Valider",
-    SEND: "Send"
+    SEND: "Send",
+    MAJ_FAILED: "Update failed, please try manually"
 }

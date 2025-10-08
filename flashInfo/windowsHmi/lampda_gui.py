@@ -6,10 +6,20 @@ import serial.tools.list_ports
 import threading
 import lampda_serial
 import os
+import time
 
 # used to translate text strings
 import TextLangage as tx
 
+def enable_hierachy(panel, enable:bool):
+    panel.active = enable
+
+    for widget in panel.winfo_children():
+        # only change the state if "state" exists in config and the widget is not Label
+        if(widget.config().get("state")):
+            widget["state"] = {True:"normal", False:"disabled"}[enable]
+
+        enable_hierachy(widget, enable)
 
 # -------------------
 # Onglet 1 : Mise à jour depuis GitHub
@@ -20,11 +30,12 @@ class TabOfficialUpdate(ttk.Frame):
     si la version de la lampe est trop vielle, il faudra choisir manuellement le type de la lampe
     """
 
-    def __init__(self, parent, lamp_releases):
+    def __init__(self, parent, main_window, lamp_releases):
         """
         :param parent: frame parent pour placer l'onglet
         """
         super().__init__(parent)
+        self.main_window = main_window
         ttk.Button(
             self,
             text=tx.get_text_translation(tx.FIND_CONNECTED_DRIVE_ID),
@@ -66,6 +77,7 @@ class TabOfficialUpdate(ttk.Frame):
             return
 
         # Création d'un bouton pour chaque port détecté
+        self.buttonList = []
         for port, lampda in self.list_lampda:
             if lampda.type == "unflashed":
                 label_text=tx.get_text_translation(tx.LAMP_NO_PROGRAM_ID)%port
@@ -84,6 +96,7 @@ class TabOfficialUpdate(ttk.Frame):
                 state=etat,
             )
             port_button.pack(pady=5, fill="x")
+            self.buttonList.append(port_button)
 
             if etat != tk.NORMAL:
                 port_force_button = ttk.Button(
@@ -94,8 +107,22 @@ class TabOfficialUpdate(ttk.Frame):
                 )
                 port_force_button.pack(padx=5, fill="x")
 
+    def flash_lampda(self, port, lampda):
+        # start a work thread
+        self.flash_thread = threading.Thread(target=lambda p=port, t=lampda: self.flash_lampda_action(p, t), args=())
 
-    def flash_lampda(self, port, lampda: lampda_serial.LampDa):
+        self.load_bar = ttk.Progressbar(self)
+        self.load_bar.pack(padx = 10, pady = (0,10))
+        # the load_bar needs to be configured for indeterminate amount of bouncing
+        self.load_bar.config(mode='indeterminate', maximum=100, value=0, length = None)
+        # here is for speed of bounce
+        self.load_bar.start(8)
+
+        enable_hierachy(self.main_window, False)
+        # wait for flash
+        self.flash_thread.start()
+
+    def flash_lampda_action(self, port, lampda: lampda_serial.LampDa):
         """
 
         :param port: port de la lamp-da a mettre a jour
@@ -108,18 +135,28 @@ class TabOfficialUpdate(ttk.Frame):
                 tx.get_text_translation(tx.WHAT_LAMP_TYPE_ID), ["simple", "indexable"]
             )
             lampda.type = self.manual_lamp_type
+
         try:
             result = lampda_serial.flash_lampda(
                 port, lampda, asset=self.latest_release.asset_url, skip_reset=True
             )
             print("[FLASH RESULT] ", result)
-            tk.messagebox.showinfo("Mise à jour", message="Mise à jour réussie")
+
+            tk.messagebox.showinfo("Info", message=tx.get_text_translation(tx.LAMP_UPDATE_SUCCESS_ID))
             self.search_lampda(True)
+
+            self.load_bar.stop()
+            self.load_bar.destroy()
+            enable_hierachy(self.main_window, True)
+
         except Exception as e:
             tk.messagebox.showinfo(
-                "Problème lors de la mise a jour, veuillez la mettre à jour manuellement",
+                tx.get_text_translation(tx.MAJ_FAILED),
                 message=e,
             )
+            self.load_bar.stop()
+            self.load_bar.destroy()
+            enable_hierachy(self.main_window, True)
 
     def ask_user_manual(self, prompt, options):
         """
@@ -176,12 +213,14 @@ class TabLocalFlash(ttk.Frame):
 
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent, main_window):
         """
 
         :param parent:
         """
         super().__init__(parent)
+
+        self.main_window = main_window
         self.uf2_path_var = tk.StringVar()
         ttk.Button(
             self, text=tx.get_text_translation(tx.SELECT_UF2), command=self.browse_uf2_file
@@ -227,6 +266,7 @@ class TabLocalFlash(ttk.Frame):
             return
 
         # Création d'un bouton pour chaque port détecté
+        self.buttonList = []
         for port, lampda in list_lampda:
             port_button = ttk.Button(
                 self.lampda_container,
@@ -235,7 +275,24 @@ class TabLocalFlash(ttk.Frame):
             )
             port_button.pack(pady=5, fill="x")
 
+            self.buttonList.append(port_button)
+
     def flash_lampda(self, port, lampda):
+        # start a work thread
+        flash_thread = threading.Thread(target=lambda p=port, t=lampda: self.flash_lampda_action(p, t), args=())
+
+        self.load_bar = ttk.Progressbar(self)
+        self.load_bar.pack(padx = 10, pady = (0,10))
+        # the load_bar needs to be configured for indeterminate amount of bouncing
+        self.load_bar.config(mode='indeterminate', maximum=100, value=0, length = None)
+        # here is for speed of bounce
+        self.load_bar.start(8)
+
+        enable_hierachy(self.main_window, False)
+        # wait for flash
+        flash_thread.start()
+
+    def flash_lampda_action(self, port, lampda: lampda_serial.LampDa):
         """
         flash la lamp-da si le fichier UF2 existe
         :param port: port de communication avec la lamp-da
@@ -252,8 +309,16 @@ class TabLocalFlash(ttk.Frame):
             else:
                 tk.messagebox.showinfo("Status", tx.get_text_translation(tx.UF2_FILE_NOT_FOUND_ID))
 
+            self.load_bar.stop()
+            self.load_bar.destroy()
+            enable_hierachy(self.main_window, True)
+
         except Exception as e:
             tk.messagebox.showinfo(title="Error", message="Error: " + str(e))
+
+            self.load_bar.stop()
+            self.load_bar.destroy()
+            enable_hierachy(self.main_window, True)
 
 
 # -------------------
@@ -446,15 +511,15 @@ class FirmwareApp(tk.Tk):
         self.notebook.pack(fill="both", expand=True)
 
         self.debug_com = TabSerialComm(self.notebook)
-        self.local_flash = TabLocalFlash(self.notebook)
-
+        self.local_flash = TabLocalFlash(self.notebook, self)
+        self.parameters = TabParameters(self.notebook, self, self.lamp_releases)
         if len(self.lamp_releases) > 0:
-            self.official_updates = TabOfficialUpdate(self.notebook, self.lamp_releases)
+            self.official_updates = TabOfficialUpdate(self.notebook, self, self.lamp_releases)
             self.notebook.add(self.official_updates, text=tx.get_text_translation(tx.OFFICIAL_MAJ))
 
         self.notebook.add(self.local_flash, text=tx.get_text_translation(tx.MANUAL_MAJ))
         self.notebook.add(self.debug_com, text="Debug")
-        self.notebook.add(TabParameters(self, self.notebook, self.lamp_releases), text="Params")
+        self.notebook.add(self.parameters, text="Params")
 
         self.notebook.bind("<<NotebookTabChanged>>", self.on_tab_changed)
 
