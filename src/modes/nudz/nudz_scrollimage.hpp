@@ -57,9 +57,11 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
     int32_t ydecal = 0;
     if (ctx.state.randomScroll)
     {
-      xdecal = int32_t(ctx.state.xdecal) + int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed) * ctx.state.xdirection;
+      xdecal =
+              int32_t(ctx.state.xdecal) + int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed) * ctx.state.xdirection;
       if (ctx.state.ydirection != 0)
-        ydecal = int32_t(ctx.state.ydecal) + int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed) * ctx.state.ydirection;
+        ydecal = int32_t(ctx.state.ydecal) +
+                 int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed) * ctx.state.ydirection;
       if (xdecal < 0)
       {
         xdecal = 0;
@@ -105,13 +107,16 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
     if (ImageType::colormapSize == 0)
       for (uint32_t y = 0; y < h; ++y)
         for (uint32_t x = 0; x < w; ++x)
-          ctx.lamp.setPixelColorXY(x, y, ImageType::rgbData[((y + ydecal) % imHeight) * imWidth + (x + xdecal) % imWidth]);
+          ctx.lamp.setPixelColorXY(
+                  x, y, ImageType::rgbData[((y + ydecal) % imHeight) * imWidth + (x + xdecal) % imWidth]);
     else
       // indexed colormap
       for (uint32_t y = 0; y < h; ++y)
         for (uint32_t x = 0; x < w; ++x)
-          ctx.lamp.setPixelColorXY(
-                  x, y, ImageType::colormap[ImageType::indexData[((y + ydecal) % imHeight) * imWidth + (x + xdecal) % imWidth]]);
+          ctx.lamp.setPixelColorXY(x,
+                                   y,
+                                   ImageType::colormap[ImageType::indexData[((y + ydecal) % imHeight) * imWidth +
+                                                                            (x + xdecal) % imWidth]]);
   }
 
   static constexpr bool hasCustomRamp = true;
