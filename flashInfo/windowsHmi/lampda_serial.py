@@ -183,14 +183,15 @@ def resetLampda(ser):
     DFU_COMMAND = b"DFU\n"
     ser.write(DFU_COMMAND)
 
+def flash_lampda(port, lampda:LampDa, asset=None, local=False, skip_reset=False):
+    if not skip_reset:
+        try:
+            with serial.Serial(port, baudrate=115200, timeout=0.1, write_timeout=0.2) as ser:
+                resetLampda(ser)
+        except Exception as e:
+            raise e
+        time.sleep(5)
 
-def flash_lampda(port, lampda:LampDa, asset=None, local=False):
-    try:
-        with serial.Serial(port, baudrate=115200, timeout=0.1, write_timeout=0.2) as ser:
-            resetLampda(ser)
-    except Exception as e:
-        raise e
-    time.sleep(5)
     disk = find_drive_by_label()
     if disk == None:
         raise Exception(tx.get_text_translation(tx.USB_DRIVE_NOT_FOUND_ID))

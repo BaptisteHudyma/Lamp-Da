@@ -20,7 +20,7 @@ class TabOfficialUpdate(ttk.Frame):
     si la version de la lampe est trop vielle, il faudra choisir manuellement le type de la lampe
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent, lamp_releases):
         """
         :param parent: frame parent pour placer l'onglet
         """
@@ -36,7 +36,7 @@ class TabOfficialUpdate(ttk.Frame):
         self.lampda_container = tk.Frame(self)
         self.lampda_container.pack(fill="both", expand=True, pady=10)
 
-        self.all_release = lampda_serial.get_releases()
+        self.all_release = lamp_releases
         self.latest_release = lampda_serial.get_most_recent_version(self.all_release)
 
         self.manual_lamp_type = None
@@ -111,7 +111,7 @@ class TabOfficialUpdate(ttk.Frame):
             lampda.type = self.manual_lamp_type
         try:
             result = lampda_serial.flash_lampda(
-                port, lampda, asset=self.latest_release.asset_url
+                port, lampda, asset=self.latest_release.asset_url, skip_reset=True
             )
             print("[FLASH RESULT] ", result)
             tk.messagebox.showinfo("Mise à jour", message="Mise à jour réussie")
@@ -278,14 +278,14 @@ class TabSerialComm(ttk.Frame):
         self.baud_combo.current(4)
         self.baud_combo.pack(pady=5)
 
-        ttk.Button(self, text="Rafraîchir Ports", command=self.refresh_ports).pack(
+        ttk.Button(self, text=tx.get_text_translation(tx.RERESH_PORTS_ID), command=self.refresh_ports).pack(
             pady=5
         )
-        ttk.Button(self, text="Ouvrir Port", command=self.open_serial).pack(pady=5)
-        ttk.Button(self, text="Fermer Port", command=self.close_serial).pack(pady=5)
+        ttk.Button(self, text=tx.get_text_translation(tx.OPEN_PORT_ID), command=self.open_serial).pack(pady=5)
 
         self.com_output_text = tk.Text(self, height=10)
         self.com_output_text.pack(pady=10, fill="both", expand=True)
+        self.com_output_text.config(state=tk.DISABLED)
 
         self.com_input_var = tk.StringVar()
         ttk.Entry(self, textvariable=self.com_input_var).pack(
@@ -316,11 +316,12 @@ class TabSerialComm(ttk.Frame):
             self.ser = serial.Serial(
                 self.port_combo.get(), int(self.baud_combo.get()), timeout=1
             )
-            messagebox.showinfo("Succès", f"Connecté à {self.port_combo.get()}")
             threading.Thread(target=self.read_serial, daemon=True).start()
 
             self.ser.write("h\n".encode())
             self.com_input_var.set("")
+
+            print("opened a serial connection")
         except Exception as e:
             messagebox.showerror("Erreur", f"Impossible d'ouvrir le port : {e}")
 
@@ -333,8 +334,10 @@ class TabSerialComm(ttk.Frame):
             try:
                 line = self.ser.readline().decode(errors="ignore").strip()
                 if line:
+                    self.com_output_text.config(state=tk.NORMAL)
                     self.com_output_text.insert(tk.END, f"{line}\n")
                     self.com_output_text.see(tk.END)
+                    self.com_output_text.config(state=tk.DISABLED)
             except serial.SerialException:
                 break
             except TypeError:
@@ -350,15 +353,53 @@ class TabSerialComm(ttk.Frame):
             self.ser.write(data.encode())
             self.com_input_var.set("")
 
-    def close_serial(self, verbose=True):
+    def close_serial(self):
         """
         ferme le port de communication
         :return:
         """
         if self.ser and self.ser.is_open:
             self.ser.close()
-            if verbose:
-                messagebox.showinfo("Info", "Port série fermé.")
+
+        self.com_output_text.config(state=tk.NORMAL)
+        self.com_output_text.delete('1.0', tk.END)
+        self.com_output_text.config(state=tk.DISABLED)
+
+class TabParameters(ttk.Frame):
+    """
+    onglet permettant de regler les parametres
+    """
+
+    def __init__(self, parent, notebook: ttk.Notebook, lamp_releases):
+        super().__init__(parent)
+
+        self.notebook = notebook
+        self.parent = parent
+        self.langage_button = ttk.Button(
+                self,
+                text=tx.get_text_translation(tx.SWITCH_LANGAGE_ID),
+                command=self.change_langage,
+            ).pack(pady=20)
+
+        self.maj_display_text = tk.Text(self, height=10)
+        self.maj_display_text.pack(pady=10, fill="both", expand=True)
+        self.maj_display_text.config(state=tk.NORMAL)
+        for release in lamp_releases:
+            # display each release changes
+            self.maj_display_text.insert(tk.END, f"{release.tag}:\n\n{release.creation_date}\n\n")
+            self.maj_display_text.insert(tk.END, f"{release.description}\n")
+            self.maj_display_text.insert(tk.END, f"\n\n")
+            self.maj_display_text.insert(tk.END, f"---------------------\n")
+        if len(lamp_releases) <= 0:
+            self.maj_display_text.insert(tk.END, tx.get_text_translation(tx.GET_RELEASES_FAILED_ID))
+
+        self.maj_display_text.config(state=tk.DISABLED)
+
+    def change_langage(self):
+        tx.handle.change_langage()
+        self.notebook.destroy()
+        self.parent.init_notebook()
+
 
 
 # -------------------
@@ -368,18 +409,37 @@ class FirmwareApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title(tx.get_text_translation(tx.WINDOW_TITLE_ID))
-        self.geometry("600x600")
+        self.geometry("850x600")
 
-        notebook = ttk.Notebook(self)
-        notebook.pack(fill="both", expand=True)
+        # CALL ONCE to avoid behing rejected
+        try :
+            self.lamp_releases = lampda_serial.get_releases()
+        except:
+            tk.messagebox.showinfo(
+                "Alert",
+                message=tx.get_text_translation(tx.GET_RELEASES_FAILED_ID),
+            )
+            self.lamp_releases = []
+            pass
 
-        self.debug_com = TabSerialComm(notebook)
+        self.init_notebook()
 
-        notebook.add(TabOfficialUpdate(notebook), text=tx.get_text_translation(tx.OFFICIAL_MAJ))
-        notebook.add(TabLocalFlash(notebook), text=tx.get_text_translation(tx.MANUAL_MAJ))
-        notebook.add(self.debug_com, text="Debug")
+    def init_notebook(self):
+        self.notebook = ttk.Notebook(self)
+        self.notebook.pack(fill="both", expand=True)
 
-        notebook.bind("<<NotebookTabChanged>>", self.on_tab_changed)
+        self.debug_com = TabSerialComm(self.notebook)
+        self.local_flash = TabLocalFlash(self.notebook)
+
+        if len(self.lamp_releases) > 0:
+            self.official_updates = TabOfficialUpdate(self.notebook, self.lamp_releases)
+            self.notebook.add(self.official_updates, text=tx.get_text_translation(tx.OFFICIAL_MAJ))
+
+        self.notebook.add(self.local_flash, text=tx.get_text_translation(tx.MANUAL_MAJ))
+        self.notebook.add(self.debug_com, text="Debug")
+        self.notebook.add(TabParameters(self, self.notebook, self.lamp_releases), text="Params")
+
+        self.notebook.bind("<<NotebookTabChanged>>", self.on_tab_changed)
 
     def on_tab_changed(self, event):
         """
@@ -390,8 +450,7 @@ class FirmwareApp(tk.Tk):
 
         # Fermer le port série si on quitte l'onglet "Debug"
         if tab_text != "Debug":
-            self.debug_com.close_serial(verbose=False)
-
+            self.debug_com.close_serial()
 
 if __name__ == "__main__":
 

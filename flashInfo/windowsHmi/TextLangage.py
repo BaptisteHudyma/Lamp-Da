@@ -15,15 +15,29 @@ LAMP_UPDATE_SUCCESS_ID = "updateSuccess"
 UF2_FILE_NOT_FOUND_ID = "uf2NotFound"
 WHAT_LAMP_TYPE_ID = "whatLampType"
 WHAT_LAMP_TYPE_SELECT_ID = "whatlampTypeSelect"
+SWITCH_LANGAGE_ID = "langage"
+RERESH_PORTS_ID = "refreshPorts"
+OPEN_PORT_ID = "openPort"
+CLOSE_PORT_ID = "closePort"
+GET_RELEASES_FAILED_ID = "failedRelease"
 
-lang = "Francais"
-# lang = "English"
+class LangageHandle():
+    def __init__(self):
+        self.lang = "Francais"
+
+    def change_langage(self):
+        if self.lang == "Francais":
+            self.lang = "English"
+        elif self.lang == "English":
+            self.lang = "Francais"
+
+handle = LangageHandle()
 
 def get_text_translation(text_id):
     try:
-        if lang == "Francais":
+        if handle.lang == "Francais":
             return French[text_id]
-        if lang == "English":
+        if handle.lang == "English":
             return English[text_id]
     except:
         pass
@@ -44,7 +58,12 @@ French = {
     LAMP_UPDATE_SUCCESS_ID: "La lampe a bien été mise a jour",
     UF2_FILE_NOT_FOUND_ID: "Le fichier UF2 n'existe pas",
     WHAT_LAMP_TYPE_ID: "Indiquez le type de lampe :",
-    WHAT_LAMP_TYPE_SELECT_ID: "Veuillez sélectionner un type de lampe avant de continuer."
+    WHAT_LAMP_TYPE_SELECT_ID: "Veuillez sélectionner un type de lampe avant de continuer.",
+    SWITCH_LANGAGE_ID: "Changer la langue: English",
+    RERESH_PORTS_ID: "Rafraîchir Ports",
+    OPEN_PORT_ID: "Ouvrir port",
+    CLOSE_PORT_ID: "Fermer port",
+    GET_RELEASES_FAILED_ID: "Echec de récupération des mises à jour"
 }
 
 English = {
@@ -62,5 +81,10 @@ English = {
     LAMP_UPDATE_SUCCESS_ID: "The lamp was successfully updated",
     UF2_FILE_NOT_FOUND_ID: "The UF2 file do not exist",
     WHAT_LAMP_TYPE_ID: "Specify the lamp type :",
-    WHAT_LAMP_TYPE_SELECT_ID: "Please select a lamp type before proceeding."
+    WHAT_LAMP_TYPE_SELECT_ID: "Please select a lamp type before proceeding.",
+    SWITCH_LANGAGE_ID: "Switch to langage: Francais",
+    RERESH_PORTS_ID: "Refresh Ports",
+    OPEN_PORT_ID: "Open port",
+    CLOSE_PORT_ID: "Close port",
+    GET_RELEASES_FAILED_ID: "Failed to recover the updates"
 }
