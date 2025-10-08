@@ -12,6 +12,7 @@ FORCE_UPDATE_ID = "forceUpdate"
 LAMP_NO_PROGRAM_ID = "noProg"
 USB_DRIVE_NOT_FOUND_ID = "driveNotFound"
 LAMP_UPDATE_SUCCESS_ID = "updateSuccess"
+SELECT_UF2 = "selectUf2"
 UF2_FILE_NOT_FOUND_ID = "uf2NotFound"
 WHAT_LAMP_TYPE_ID = "whatLampType"
 WHAT_LAMP_TYPE_SELECT_ID = "whatlampTypeSelect"
@@ -20,6 +21,8 @@ RERESH_PORTS_ID = "refreshPorts"
 OPEN_PORT_ID = "openPort"
 CLOSE_PORT_ID = "closePort"
 GET_RELEASES_FAILED_ID = "failedRelease"
+VALIDATE = "valid"
+SEND = "Envoyer"
 
 class LangageHandle():
     def __init__(self):
@@ -45,7 +48,7 @@ def get_text_translation(text_id):
 
 French = {
     WINDOW_TITLE_ID: "FlashApp: Mise à jours de votre Lamp-da",
-    FIND_CONNECTED_DRIVE_ID: "Rechercher les Lamp-da connectées",
+    FIND_CONNECTED_DRIVE_ID: "Rechercher les lampes connectées",
     OFFICIAL_MAJ: "Mise à jour officiel",
     MANUAL_MAJ: "Mise à jour manuelle",
     LAMP_ALREADY_UPDATED_ID : "La lampe \'%s\' est déjà à jour",
@@ -56,6 +59,7 @@ French = {
     LAMP_NO_PROGRAM_ID: "Lampe sans programme: %s",
     USB_DRIVE_NOT_FOUND_ID: "Lecteur USB non trouvé",
     LAMP_UPDATE_SUCCESS_ID: "La lampe a bien été mise a jour",
+    SELECT_UF2: "Sélectionner un fichier UF2",
     UF2_FILE_NOT_FOUND_ID: "Le fichier UF2 n'existe pas",
     WHAT_LAMP_TYPE_ID: "Indiquez le type de lampe :",
     WHAT_LAMP_TYPE_SELECT_ID: "Veuillez sélectionner un type de lampe avant de continuer.",
@@ -63,7 +67,9 @@ French = {
     RERESH_PORTS_ID: "Rafraîchir Ports",
     OPEN_PORT_ID: "Ouvrir port",
     CLOSE_PORT_ID: "Fermer port",
-    GET_RELEASES_FAILED_ID: "Echec de récupération des mises à jour"
+    GET_RELEASES_FAILED_ID: "Echec de récupération des mises à jour. Reessayez aprés au moins 1H",
+    VALIDATE: "Valider",
+    SEND: "Envoyer"
 }
 
 English = {
@@ -79,6 +85,7 @@ English = {
     LAMP_NO_PROGRAM_ID: "Lamp without a software %s",
     USB_DRIVE_NOT_FOUND_ID: "USB drive not found",
     LAMP_UPDATE_SUCCESS_ID: "The lamp was successfully updated",
+    SELECT_UF2: "Select the UF2 file",
     UF2_FILE_NOT_FOUND_ID: "The UF2 file do not exist",
     WHAT_LAMP_TYPE_ID: "Specify the lamp type :",
     WHAT_LAMP_TYPE_SELECT_ID: "Please select a lamp type before proceeding.",
@@ -86,5 +93,7 @@ English = {
     RERESH_PORTS_ID: "Refresh Ports",
     OPEN_PORT_ID: "Open port",
     CLOSE_PORT_ID: "Close port",
-    GET_RELEASES_FAILED_ID: "Failed to recover the updates"
+    GET_RELEASES_FAILED_ID: "Failed to recover the updates, try again in at least 1 hour",
+    VALIDATE: "Valider",
+    SEND: "Send"
 }

@@ -152,10 +152,18 @@ def get_lampda_version(ser):
 
 
 def get_releases(url="https://api.github.com/repos/BaptisteHudyma/Lamp-Da/releases"):
-    response = requests.get(url)
-    response.raise_for_status()  # lève une erreur si problème réseau ou API
-    releases = response.json()
-    return [Release(r) for r in releases]
+    response = requests.get("https://api.github.com/rate_limit")
+    if response.status_code == 200:
+        rate_limit_data = response.json()["rate"]
+
+        # keep a bit of margin
+        if rate_limit_data['remaining'] > 10:
+            response = requests.get(url)
+            response.raise_for_status()  # lève une erreur si problème réseau ou API
+            releases = response.json()
+            return [Release(r) for r in releases]
+
+    return []
 
 
 def get_most_recent_version(releases: list[Release]):

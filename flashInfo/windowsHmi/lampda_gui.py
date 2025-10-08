@@ -30,7 +30,6 @@ class TabOfficialUpdate(ttk.Frame):
             text=tx.get_text_translation(tx.FIND_CONNECTED_DRIVE_ID),
             command=self.search_lampda,
         ).pack(pady=20)
-        # ttk.Button(self, text="Télécharger le firmware officiel", command=self.download_latest_firmware).pack(pady=20)
 
         # Zone où on va afficher les boutons des ports détectés
         self.lampda_container = tk.Frame(self)
@@ -157,7 +156,7 @@ class TabOfficialUpdate(ttk.Frame):
 
         tk.Button(
             modal,
-            text="Valider",
+            text=tx.get_text_translation(tx.SELECT_UF2),
             command=valider,
             bg="#4CAF50",
             fg="white",
@@ -185,11 +184,11 @@ class TabLocalFlash(ttk.Frame):
         super().__init__(parent)
         self.uf2_path_var = tk.StringVar()
         ttk.Button(
-            self, text="Sélectionner un fichier UF2", command=self.browse_uf2_file
+            self, text=tx.get_text_translation(tx.SELECT_UF2), command=self.browse_uf2_file
         ).pack(pady=10)
         ttk.Button(
             self,
-            text="Rechercher les Lamp-da connecté à l'ordinateur",
+            text=tx.get_text_translation(tx.FIND_CONNECTED_DRIVE_ID),
             command=self.search_lampda,
         ).pack(pady=20)
 
@@ -205,7 +204,7 @@ class TabLocalFlash(ttk.Frame):
         :return:
         """
         file_path = filedialog.askopenfilename(
-            title="Sélectionnez un fichier UF2", filetypes=[("Fichier UF2", "*.uf2")]
+            title=tx.get_text_translation(tx.SELECT_UF2), filetypes=[("Fichier UF2", "*.uf2")]
         )
         if file_path:
             self.uf2_path_var.set(file_path)
@@ -291,7 +290,7 @@ class TabSerialComm(ttk.Frame):
         ttk.Entry(self, textvariable=self.com_input_var).pack(
             side=tk.LEFT, fill="x", expand=True, padx=5
         )
-        ttk.Button(self, text="Envoyer", command=self.send_serial).pack(
+        ttk.Button(self, text=tx.get_text_translation(tx.SEND), command=self.send_serial).pack(
             side=tk.LEFT, padx=5
         )
 
@@ -302,10 +301,24 @@ class TabSerialComm(ttk.Frame):
         regarde si il y a des nouveaux port accessible
         :return:
         """
-        ports = [port.device for port in serial.tools.list_ports.comports()]
+        self.close_serial()
+
+        ports = [port.device for port in serial.tools.list_ports.comports() if self.is_port_a_lampda(port.device)]
         self.port_combo["values"] = ports
         if ports:
             self.port_combo.current(0)
+
+    def is_port_a_lampda(self, port):
+        """Send a test command to detect if the serial port is a lampda system"""
+        try:
+            with serial.Serial(port, int(self.baud_combo.get()), timeout=0.3) as serialP :
+                serialP.write("h\n".encode())
+                line = serialP.readline().decode(errors="ignore").strip()
+                if line:
+                    return True
+        except:
+            pass
+        return False
 
     def open_serial(self):
         """
@@ -414,13 +427,17 @@ class FirmwareApp(tk.Tk):
         # CALL ONCE to avoid behing rejected
         try :
             self.lamp_releases = lampda_serial.get_releases()
-        except:
+        except Exception as e:
+            print(e)
+            pass
+
+        # if no release, respond with the error
+        if len(self.lamp_releases) <= 0:
             tk.messagebox.showinfo(
                 "Alert",
                 message=tx.get_text_translation(tx.GET_RELEASES_FAILED_ID),
             )
             self.lamp_releases = []
-            pass
 
         self.init_notebook()
 
