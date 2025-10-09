@@ -273,7 +273,10 @@ void handle_otg_mode()
     // if no current use since a timing, stop otg
     const uint32_t otgNonuseTimeout = isAutoOTGMode ? otgNoUseTimeToDisconnect_ms : otgNoUseExtBatTimeToDisconnect_ms;
     if (time_ms() - timeSinceOTGNoCurrentUse > otgNonuseTimeout)
+    {
       otgNoActivity = true;
+      lampda_print("no OTG activity, shutdown");
+    }
   }
   else
   {
@@ -311,6 +314,9 @@ void handle_otg_mode()
     // resume PD state machine
     powerDelivery::allow_otg(true);
     powerDelivery::resume_pd_state_machine();
+
+    balancer::enable_balancing(false);
+    charger::set_enable_charge(false);
   }
 
   if (not isAutoOTGMode)
@@ -323,21 +329,18 @@ void handle_otg_mode()
     }
   }
 
-  const auto requested =
-          isAutoOTGMode ? powerDelivery::get_otg_parameters() : powerDelivery::OTGParameters::get_default();
-  // const auto requested = powerDelivery::OTGParameters::get_default();
-  //  we do not have the parameters yet
-  if (not requested.is_otg_requested())
-  {
+  static const auto& defaultOTG = powerDelivery::OTGParameters::get_default();
+  // requested by system
+  auto requestedOtg = powerDelivery::get_otg_parameters();
+  requestedOtg.requestedVoltage_mV = max(requestedOtg.requestedVoltage_mV, defaultOTG.requestedVoltage_mV);
+  requestedOtg.requestedCurrent_mA = max(requestedOtg.requestedCurrent_mA, defaultOTG.requestedCurrent_mA);
+  // should never be true
+  if (not requestedOtg.is_otg_requested())
     return;
-  }
-
-  balancer::enable_balancing(false);
-  charger::set_enable_charge(false);
 
   // ramp up output voltage
   // then unlock the vbus gate
-  set_otg_parameters(requested.requestedVoltage_mV, requested.requestedCurrent_mA);
+  set_otg_parameters(requestedOtg.requestedVoltage_mV, requestedOtg.requestedCurrent_mA);
 
   // allow reverse current flow
   __private::vbusDirection.set_high(true);
@@ -468,6 +471,7 @@ bool go_to_otg_mode()
       alerts::manager.can_use_usb_port())
   {
     timeSinceOTGNoCurrentUse = time_ms();
+    powerDelivery::allow_otg(true);
     _hasAutoSwitchedToOTG = false;
     __private::switch_state(PowerStates::OTG_MODE);
     return true;

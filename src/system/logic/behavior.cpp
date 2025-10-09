@@ -385,8 +385,14 @@ void handle_charger_operation_state()
   const bool vbusDebounced = charger::can_use_vbus_power() or (time_ms() - preChargeCalled) > 5000;
   if (vbusDebounced)
   {
-    // otg mode
+    static uint32_t otgDebounce_time = 0;
     if (charger::get_state().isInOtg)
+    {
+      otgDebounce_time = time_ms();
+    }
+
+    // otg mode
+    if ((otgDebounce_time != 0) and (time_ms() - otgDebounce_time) <= 500)
     {
       // do nothing (for now !)
     }
