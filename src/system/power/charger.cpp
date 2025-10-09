@@ -176,6 +176,10 @@ void control_OTG(const uint16_t mv, const uint16_t ma)
     drivers::set_OTG_targets(mv, ma);
     drivers::enable_OTG();
   }
+
+  const auto& measurments = drivers::get_measurments();
+  if (measurments.vbus_mV < mv - 1000 or measurments.vbus_mV > mv + 1000)
+    lampda_print("Wait for voltage climb: current %dmV, target %dmV", measurments.vbus_mV, mv);
 }
 
 bool is_status_error()

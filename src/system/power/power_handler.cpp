@@ -289,7 +289,7 @@ void handle_otg_mode()
   }
 
   // if we just switched manually, powerDelivery amy nnot have followed yet
-  const bool canUseOtg = (not isAutoOTGMode) or powerDelivery::is_switching_to_otg();
+  const bool canUseOtg = true; //(not isAutoOTGMode) or powerDelivery::is_switching_to_otg();
 
   // end of OTG, switch to charger
   if (otgNoActivity or not canUseOtg or

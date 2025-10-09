@@ -260,6 +260,9 @@ void pd_transition_voltage(int idx)
 
   otgParameters.requestedVoltage_mV = mv;
   otgParameters.requestedCurrent_mA = ma;
+
+  lampda_print(
+          "sink requested a source %dmv %dmA", otgParameters.requestedVoltage_mV, otgParameters.requestedCurrent_mA);
 }
 
 void pd_check_dr_role(int dr_role, int flags)

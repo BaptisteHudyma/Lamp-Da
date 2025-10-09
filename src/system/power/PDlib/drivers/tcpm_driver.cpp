@@ -9,8 +9,6 @@
 
 extern const struct tcpc_config_t tcpc_config;
 
-constexpr uint8_t i2cDeviceIndex = 0;
-
 /* I2C wrapper functions - get I2C port / slave addr from config struct. */
 int tcpc_write(int reg, int val)
 {
