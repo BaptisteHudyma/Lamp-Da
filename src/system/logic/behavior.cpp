@@ -348,6 +348,11 @@ void handle_pre_charger_operation_state()
     // battery cannot be charged
     return;
   }
+  if (not alerts::manager.can_use_usb_port())
+  {
+    // USB port use is locked
+    return;
+  }
 
   power::go_to_charger_mode();
   mainMachine.set_state(BehaviorStates::CHARGER_OPERATIONS);
@@ -420,7 +425,7 @@ bool check_handle_exit_output_mode()
     return true;
   }
 #ifndef LMBD_SIMULATION
-  else if (not alerts::manager.can_use_output_power())
+  else if (not battery::is_battery_usable_as_power_source())
   {
     // wait a bit then shutdown
     if (time_ms() - preOutputLightCalled > 3000)
@@ -446,7 +451,7 @@ void handle_pre_output_light_state()
     return;
   }
   // power usage is forbidden
-  if (not alerts::manager.can_use_output_power())
+  if (not battery::is_battery_usable_as_power_source())
   {
     if (not isMessageDisplayed)
     {
