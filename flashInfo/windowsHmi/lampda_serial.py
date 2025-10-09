@@ -2,10 +2,17 @@ import time
 import serial
 import serial.tools.list_ports
 import requests
-import psutil
 import shutil
 import os
 import re, subprocess
+
+#read usb devices
+import sys, platform
+
+try:
+    import win32file
+except ImportError:
+    win32file = None
 
 # used to translate text strings
 import TextLangage as tx
@@ -31,42 +38,80 @@ class LampDa:
         self.base_v = ""
         self.user_v = ""
 
+def update_devices_linux(label):
+    devices = []
+    # detect all parameters
+    device_re = re.compile(r"(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s*(\S*)+\s*(\S*)\s*(\S*)", re.I)
+    df = subprocess.check_output(['lsblk', '-f'])
+    id_list = ["NAME", "FSTYPE", "FSVER", "LABEL", "UUID", "FSAVAIL", "FSUSE%", "MOUNTPOINTS"]
+    for i in df.split(b'\n'):
+        if i:
+            info = device_re.match(i.decode('utf-8'))
+            if info:
+                dinfo = dict(zip(id_list, info.group(1,2,3,4,5,6,7,8)))
+                # dinfo['device'] = '/dev/bus/usb/%s/%s' % (dinfo.pop('bus'), dinfo.pop('device'))
+                devices.append(dinfo)
+
+    # keep only the lamps
+    final_devices = []
+    for device in devices:
+        if label in device['LABEL']:
+            # check if we can mount it
+            if device['MOUNTPOINTS'] == '':
+                df = subprocess.check_output(["udisksctl", "mount", "-b", "/dev/"+device['NAME']])
+                splitted = df.strip().split(b' ')
+                device['MOUNTPOINTS'] = splitted[-1].decode('utf-8')
+
+            if device['MOUNTPOINTS'] != '':
+                final_devices.append(device['MOUNTPOINTS'])
+                # we only care about one lamp anyway
+                break;
+    return final_devices
+
+def update_device_windows(label):
+    import psutil
+    for part in psutil.disk_partitions(all=False):
+        try:
+            psutil.disk_usage(part.mountpoint)  # test si accessible
+            # Récupérer le volume label via Windows
+            import ctypes
+
+            vol_name_buf = ctypes.create_unicode_buffer(1024)
+            fs_name_buf = ctypes.create_unicode_buffer(1024)
+            serial = ctypes.c_uint32()
+            max_component_len = ctypes.c_uint32()
+            file_sys_flags = ctypes.c_uint32()
+
+            ctypes.windll.kernel32.GetVolumeInformationW(
+                ctypes.c_wchar_p(part.device),
+                vol_name_buf,
+                ctypes.sizeof(vol_name_buf),
+                ctypes.byref(serial),
+                ctypes.byref(max_component_len),
+                ctypes.byref(file_sys_flags),
+                fs_name_buf,
+                ctypes.sizeof(fs_name_buf),
+            )
+            print("Lampda module name on windows", vol_name_buf.value)
+            if vol_name_buf.value == label:
+                return part.mountpoint
+        except Exception:
+            continue
 
 def find_drive_by_label(label="LMBDROOT"):
+    try:
+        import platform
+        system = platform.system()
+        if system == 'Windows':
+            return update_device_windows(label)
+        else:
+            devices = update_devices_linux(label)
+            if(len(devices) > 0):
+                print("Lampda module name on Linux", devices[0])
+                return devices[0]
 
-    import platform
-    system = platform.system()
-    if system == 'Windows':
-        for part in psutil.disk_partitions(all=False):
-            try:
-                psutil.disk_usage(part.mountpoint)  # test si accessible
-                # Récupérer le volume label via Windows
-                import ctypes
-
-                vol_name_buf = ctypes.create_unicode_buffer(1024)
-                fs_name_buf = ctypes.create_unicode_buffer(1024)
-                serial = ctypes.c_uint32()
-                max_component_len = ctypes.c_uint32()
-                file_sys_flags = ctypes.c_uint32()
-
-                ctypes.windll.kernel32.GetVolumeInformationW(
-                    ctypes.c_wchar_p(part.device),
-                    vol_name_buf,
-                    ctypes.sizeof(vol_name_buf),
-                    ctypes.byref(serial),
-                    ctypes.byref(max_component_len),
-                    ctypes.byref(file_sys_flags),
-                    fs_name_buf,
-                    ctypes.sizeof(fs_name_buf),
-                )
-                print(vol_name_buf.value)
-                if vol_name_buf.value == label:
-                    return part.mountpoint
-            except Exception:
-                continue
-    else:
-        print("UNSUPPORTED OS")
-    return None
+    except Exception as e:
+        print("Could not check drives: ", e)
 
 
 
@@ -88,7 +133,7 @@ def find_lampda(sublist=None):
                         lampdas.append((port, get_lampda_version(ser)))
 
             except Exception as e:
-                print(e)
+                print("Port search Exception", e)
 
     drive = find_drive_by_label()
     if drive is not None:
@@ -214,9 +259,10 @@ def flash_lampda(port, lampda:LampDa, asset=None, local=False, skip_reset=False)
                 file_to_flash = lampda.type + ".uf2"
                 download_release(uf2[0], file_to_flash)
         try:
-            print(file_to_flash)
-            shutil.copy(file_to_flash, os.path.join(disk, file_to_flash))
+            print("flashing ", file_to_flash, " to ", disk)
+            shutil.copy(file_to_flash, os.path.join(disk, os.path.basename(file_to_flash).split('/')[-1]))
         except Exception as e:
+            print("Exeption while flashing !", e)
             disk = find_drive_by_label()
             if disk is not None:
                 raise e
@@ -224,10 +270,18 @@ def flash_lampda(port, lampda:LampDa, asset=None, local=False, skip_reset=False)
 
 def download_release(http_path, file_name):
     """download the file {http_path] as {file_name}"""
-    response = requests.get(http_path)
+    response = requests.get("https://api.github.com/rate_limit")
+    if response.status_code == 200:
+        rate_limit_data = response.json()["rate"]
 
-    with open(file_name, "wb") as f:
-        f.write(response.content)
+        # keep a bit of margin
+        if rate_limit_data['remaining'] > 10:
+            response = requests.get(http_path)
+
+            with open(file_name, "wb") as f:
+                f.write(response.content)
+                return
+    raise Exception("Download limit exeeded")
 
 
 if __name__ == "__main__":

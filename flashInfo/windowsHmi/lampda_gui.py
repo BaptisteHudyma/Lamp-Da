@@ -11,14 +11,20 @@ import time
 # used to translate text strings
 import TextLangage as tx
 
+storedState = {}
 def enable_hierachy(panel, enable:bool):
     panel.active = enable
 
-    for widget in panel.winfo_children():
-        # only change the state if "state" exists in config and the widget is not Label
-        if(widget.config().get("state")):
-            widget["state"] = {True:"normal", False:"disabled"}[enable]
+    if(panel.config().get("state")):
+        widgetName = id(panel)
+        if not enable:
+            if widgetName:
+                storedState[widgetName] = panel["state"]
+            panel["state"] = "disabled"
+        elif widgetName != None and widgetName in storedState:
+            panel["state"] = storedState[widgetName]
 
+    for widget in panel.winfo_children():
         enable_hierachy(widget, enable)
 
 # -------------------
@@ -63,7 +69,7 @@ class TabOfficialUpdate(ttk.Frame):
             widget.pack_forget()
             widget.destroy()
 
-        if only_update is False:
+        if self.list_lampda is None or only_update is False:
             self.list_lampda = lampda_serial.find_lampda()
         else:
             self.list_lampda = lampda_serial.find_lampda(
@@ -108,8 +114,20 @@ class TabOfficialUpdate(ttk.Frame):
                 port_force_button.pack(padx=5, fill="x")
 
     def flash_lampda(self, port, lampda):
+        #unspecified lamp type
+        shouldSkipReset = False
+        if lampda.type not in ["simple", "indexable"]:
+            self.ask_user_manual(
+                tx.get_text_translation(tx.WHAT_LAMP_TYPE_ID), ["simple", "indexable"]
+            )
+            if self.manual_lamp_type == None:
+                return
+
+            lampda.type = self.manual_lamp_type
+            shouldSkipReset = True
+
         # start a work thread
-        self.flash_thread = threading.Thread(target=lambda p=port, t=lampda: self.flash_lampda_action(p, t), args=())
+        self.flash_thread = threading.Thread(target=lambda p=port, t=lampda, b=shouldSkipReset: self.flash_lampda_action(p, t, b), args=())
 
         self.load_bar = ttk.Progressbar(self)
         self.load_bar.pack(padx = 10, pady = (0,10))
@@ -122,7 +140,7 @@ class TabOfficialUpdate(ttk.Frame):
         # wait for flash
         self.flash_thread.start()
 
-    def flash_lampda_action(self, port, lampda: lampda_serial.LampDa):
+    def flash_lampda_action(self, port, lampda: lampda_serial.LampDa, skip_reset):
         """
 
         :param port: port de la lamp-da a mettre a jour
@@ -130,17 +148,10 @@ class TabOfficialUpdate(ttk.Frame):
 
         """
         print("on flash ", port, lampda)
-        if lampda.type not in ["simple", "indexable"]:
-            self.ask_user_manual(
-                tx.get_text_translation(tx.WHAT_LAMP_TYPE_ID), ["simple", "indexable"]
-            )
-            lampda.type = self.manual_lamp_type
-
         try:
-            result = lampda_serial.flash_lampda(
-                port, lampda, asset=self.latest_release.asset_url, skip_reset=True
+            lampda_serial.flash_lampda(
+                port, lampda, asset=self.latest_release.asset_url, skip_reset=skip_reset
             )
-            print("[FLASH RESULT] ", result)
 
             tk.messagebox.showinfo("Info", message=tx.get_text_translation(tx.LAMP_UPDATE_SUCCESS_ID))
             self.search_lampda(True)
@@ -148,6 +159,7 @@ class TabOfficialUpdate(ttk.Frame):
             self.load_bar.stop()
             self.load_bar.destroy()
             enable_hierachy(self.main_window, True)
+            self.main_window.update_connected_devices()
 
         except Exception as e:
             tk.messagebox.showinfo(
@@ -157,6 +169,7 @@ class TabOfficialUpdate(ttk.Frame):
             self.load_bar.stop()
             self.load_bar.destroy()
             enable_hierachy(self.main_window, True)
+            self.main_window.update_connected_devices()
 
     def ask_user_manual(self, prompt, options):
         """
@@ -278,8 +291,11 @@ class TabLocalFlash(ttk.Frame):
             self.buttonList.append(port_button)
 
     def flash_lampda(self, port, lampda):
+        shouldSkipReset = False
+        if lampda.type not in ["simple", "indexable"]:
+            shouldSkipReset = True
         # start a work thread
-        flash_thread = threading.Thread(target=lambda p=port, t=lampda: self.flash_lampda_action(p, t), args=())
+        flash_thread = threading.Thread(target=lambda p=port, t=lampda, b=shouldSkipReset: self.flash_lampda_action(p, t, b), args=())
 
         self.load_bar = ttk.Progressbar(self)
         self.load_bar.pack(padx = 10, pady = (0,10))
@@ -292,7 +308,7 @@ class TabLocalFlash(ttk.Frame):
         # wait for flash
         flash_thread.start()
 
-    def flash_lampda_action(self, port, lampda: lampda_serial.LampDa):
+    def flash_lampda_action(self, port, lampda: lampda_serial.LampDa, skip_reset):
         """
         flash la lamp-da si le fichier UF2 existe
         :param port: port de communication avec la lamp-da
@@ -303,7 +319,7 @@ class TabLocalFlash(ttk.Frame):
         try:
             if os.path.exists(self.uf2_path_var.get()):
                 lampda_serial.flash_lampda(
-                    port, lampda, asset=[self.uf2_path_var.get()], local=True
+                    port, lampda, asset=[self.uf2_path_var.get()], local=True, skip_reset=skip_reset
                 )
                 tk.messagebox.showinfo("Status", tx.get_text_translation(tx.LAMP_UPDATE_SUCCESS_ID))
             else:
@@ -312,6 +328,7 @@ class TabLocalFlash(ttk.Frame):
             self.load_bar.stop()
             self.load_bar.destroy()
             enable_hierachy(self.main_window, True)
+            self.main_window.update_connected_devices()
 
         except Exception as e:
             tk.messagebox.showinfo(title="Error", message="Error: " + str(e))
@@ -319,6 +336,7 @@ class TabLocalFlash(ttk.Frame):
             self.load_bar.stop()
             self.load_bar.destroy()
             enable_hierachy(self.main_window, True)
+            self.main_window.update_connected_devices()
 
 
 # -------------------
@@ -367,11 +385,14 @@ class TabSerialComm(ttk.Frame):
         :return:
         """
         self.close_serial()
+        self.baud_combo.state = "disabled"
 
         ports = [port.device for port in serial.tools.list_ports.comports() if self.is_port_a_lampda(port.device)]
-        self.port_combo["values"] = ports
         if ports:
+            self.port_combo["values"] = ports
             self.port_combo.current(0)
+        else:
+            self.port_combo.set("")
 
     def is_port_a_lampda(self, port):
         """Send a test command to detect if the serial port is a lampda system"""
@@ -401,6 +422,7 @@ class TabSerialComm(ttk.Frame):
 
             print("opened a serial connection")
         except Exception as e:
+            self.refresh_ports()
             messagebox.showerror("Erreur", f"Impossible d'ouvrir le port : {e}")
 
     def read_serial(self):
@@ -423,13 +445,16 @@ class TabSerialComm(ttk.Frame):
 
     def send_serial(self):
         """
-        envoie les caractères sur la liaison séri
+        envoie les caractères sur la liaison série
         :return:
         """
-        if self.ser and self.ser.is_open:
-            data = self.com_input_var.get() + "\n"
-            self.ser.write(data.encode())
-            self.com_input_var.set("")
+        try:
+            if self.ser and self.ser.is_open:
+                data = self.com_input_var.get() + "\n"
+                self.ser.write(data.encode())
+                self.com_input_var.set("")
+        except:
+            self.refresh_ports()
 
     def close_serial(self):
         """
@@ -448,11 +473,11 @@ class TabParameters(ttk.Frame):
     onglet permettant de regler les parametres
     """
 
-    def __init__(self, parent, notebook: ttk.Notebook, lamp_releases):
-        super().__init__(parent)
+    def __init__(self, notebook: ttk.Notebook, main_windows, lamp_releases):
+        super().__init__(notebook)
 
         self.notebook = notebook
-        self.parent = parent
+        self.main_windows = main_windows
         self.langage_button = ttk.Button(
                 self,
                 text=tx.get_text_translation(tx.SWITCH_LANGAGE_ID),
@@ -476,7 +501,7 @@ class TabParameters(ttk.Frame):
     def change_langage(self):
         tx.handle.change_langage()
         self.notebook.destroy()
-        self.parent.init_notebook()
+        self.main_windows.init_notebook()
 
 
 
@@ -493,7 +518,7 @@ class FirmwareApp(tk.Tk):
         try :
             self.lamp_releases = lampda_serial.get_releases()
         except Exception as e:
-            print(e)
+            print("Get realse exception:", e)
             pass
 
         # if no release, respond with the error
@@ -522,6 +547,14 @@ class FirmwareApp(tk.Tk):
         self.notebook.add(self.parameters, text="Params")
 
         self.notebook.bind("<<NotebookTabChanged>>", self.on_tab_changed)
+
+    def update_connected_devices(self):
+        if self.official_updates:
+            self.official_updates.search_lampda(only_update=True)
+        if self.local_flash:
+            self.local_flash.search_lampda()
+        if self.debug_com:
+            self.debug_com.refresh_ports()
 
     def on_tab_changed(self, event):
         """
