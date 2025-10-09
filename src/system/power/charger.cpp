@@ -10,6 +10,7 @@
 #include "src/system/logic/statistics_handler.h"
 
 #include "src/system/physical/battery.h"
+
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 
@@ -84,8 +85,8 @@ bool should_charge()
     return false;
   }
 
-  // temperature too high, stop charge
-  if (not alerts::manager.can_charge_battery())
+  // blocking alert, stop charge
+  if (not battery::can_battery_be_charged() or not alerts::manager.can_use_usb_port())
   {
     return false;
   }
