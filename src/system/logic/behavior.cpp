@@ -109,6 +109,8 @@ void set_power_off()
   isTargetPoweredOn_s = false;
 }
 
+void go_to_external_battery_mode() { power::go_to_otg_mode(); }
+
 // allow system to be powered if no hardware alert and power is setup
 bool can_system_allowed_to_be_powered()
 {
@@ -354,7 +356,9 @@ void handle_pre_charger_operation_state()
     return;
   }
 
-  power::go_to_charger_mode();
+  // force OTG
+  if (not power::is_in_otg_mode())
+    power::go_to_charger_mode();
   mainMachine.set_state(BehaviorStates::CHARGER_OPERATIONS);
 }
 
@@ -385,7 +389,6 @@ void handle_charger_operation_state()
     if (charger::get_state().isInOtg)
     {
       // do nothing (for now !)
-      // TODO issue #133, stop if battery gets low, or temperature high
     }
     // no power, shutdown everything
     else if (not is_charger_powered())
@@ -524,6 +527,15 @@ void handle_output_light_state()
   if (power::is_in_error_state())
   {
     go_to_error_state("power system in error state in output light state");
+    return;
+  }
+
+  // shortcut to external battery mode
+  if (power::is_in_otg_mode())
+  {
+    // ignore timing, special case
+    isTargetPoweredOn_s = false;
+    mainMachine.set_state(BehaviorStates::POST_OUTPUT_LIGHT, 100, BehaviorStates::PRE_CHARGER_OPERATION);
     return;
   }
 

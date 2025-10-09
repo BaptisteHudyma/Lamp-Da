@@ -64,6 +64,9 @@ extern "C" {
 
   void pd_loop();
 
+  /// force the power to source mode if force != 0
+  void force_set_to_source(int force);
+
   /**
    * \brief allow or forbid power sourcing from this device
    * \param[in] allowPowerSourcing If 0, this device will only charge. Else, if negociated via usb, this device will

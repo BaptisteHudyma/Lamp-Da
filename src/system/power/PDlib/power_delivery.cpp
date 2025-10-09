@@ -419,6 +419,8 @@ bool is_power_available() { return isPowerSourceDetected_s; }
 
 bool can_use_power() { return canUseSourcePower_s; }
 
+void force_set_to_source_mode(const bool force) { force_set_to_source(force ? 1 : 0); }
+
 OTGParameters get_otg_parameters()
 {
   const auto& otg = get_OTG_requested_parameters();
