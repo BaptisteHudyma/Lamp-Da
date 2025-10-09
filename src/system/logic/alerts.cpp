@@ -173,6 +173,7 @@ struct AlertBase
   // override to prevent lamp actions on alerts
   virtual bool should_prevent_lamp_output() const { return false; }
   virtual bool should_prevent_battery_charge() const { return false; }
+  virtual bool should_prevent_usb_port_use() const { return false; }
 
   // private:
   //
@@ -203,6 +204,7 @@ struct Alert_BatteryReadingIncoherent : public AlertBase
 
   bool should_prevent_lamp_output() const override { return true; }
   bool should_prevent_battery_charge() const override { return true; }
+  bool should_prevent_usb_port_use() const override { return true; }
 };
 
 struct Alert_BatteryCritical : public AlertBase
@@ -330,14 +332,16 @@ struct Alert_TempCritical : public AlertBase
   uint32_t alert_shutdown_timeout() const
   {
     // shutdown, critical temp is the absolute limit
-    return 0;
+    return 5000;
   }
 
   bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::DARK_ORANGE); }
 
   Type get_type() const override { return Type::TEMP_CRITICAL; }
 
+  bool should_prevent_lamp_output() const override { return true; }
   bool should_prevent_battery_charge() const override { return true; }
+  bool should_prevent_usb_port_use() const override { return true; }
 };
 
 struct Alert_BluetoothAdvertisement : public AlertBase
@@ -358,6 +362,7 @@ struct Alert_HardwareAlert : public AlertBase
 
   bool should_prevent_lamp_output() const override { return true; }
   bool should_prevent_battery_charge() const override { return true; }
+  bool should_prevent_usb_port_use() const override { return true; }
 };
 
 struct Alert_FavoriteSet : public AlertBase
@@ -408,6 +413,7 @@ struct Alert_SystemShutdownFailed : public AlertBase
 
   bool should_prevent_lamp_output() const override { return true; }
   bool should_prevent_battery_charge() const override { return true; }
+  bool should_prevent_usb_port_use() const override { return true; }
 };
 
 struct Alert_SystemInErrorState : public AlertBase
@@ -421,6 +427,7 @@ struct Alert_SystemInErrorState : public AlertBase
 
   bool should_prevent_lamp_output() const override { return true; }
   bool should_prevent_battery_charge() const override { return true; }
+  bool should_prevent_usb_port_use() const override { return true; }
 };
 
 struct Alert_SystemInLockout : public AlertBase
@@ -479,6 +486,7 @@ struct Alert_UsbPortShort : public AlertBase
 
   // prevent charge
   bool should_prevent_battery_charge() const override { return true; }
+  bool should_prevent_usb_port_use() const override { return true; }
 };
 
 // Alerts must be sorted by importance, only the first activated one will be shown
@@ -728,6 +736,21 @@ bool AlertManager_t::can_charge_battery() const
   for (auto alert: allAlerts)
   {
     if (alert->_isRaisedHandled && alert->should_prevent_battery_charge())
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool AlertManager_t::can_use_usb_port() const
+{
+  if (is_clear())
+    return true;
+
+  for (auto alert: allAlerts)
+  {
+    if (alert->_isRaisedHandled && alert->should_prevent_usb_port_use())
     {
       return false;
     }

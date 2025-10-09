@@ -73,6 +73,11 @@ public:
    */
   bool can_charge_battery() const;
 
+  /**
+   * \brief can use power through USB port
+   */
+  bool can_use_usb_port() const;
+
 private:
   uint32_t _current;
 };
