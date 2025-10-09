@@ -37,6 +37,8 @@ enum Type : uint32_t
   SUNSET_TIMER_ENABLED = 1 << 14, // active sunset timer, system will auto turn off
 
   SYSTEM_SLEEP_SKIPPED = 1 << 15, // the system skipped the sleep clean phase (crash ? new flash ?)
+
+  USB_PORT_SHORT = 1 << 16, // the usb port is dirty, or wet
 };
 
 class AlertManager_t

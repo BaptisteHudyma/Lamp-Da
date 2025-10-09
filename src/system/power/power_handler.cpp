@@ -101,6 +101,9 @@ StateMachine<PowerStates> powerMachine(PowerStates::ERROR);
 DigitalPin dischargeVbus(DigitalPin::GPIO::Output_DischargeVbus);
 DigitalPin vbusDirection(DigitalPin::GPIO::Output_VbusDirection);
 DigitalPin fastRoleSwap(DigitalPin::GPIO::Output_VbusFastRoleSwap);
+
+// if high, signal an USB fault
+DigitalPin usbFault(DigitalPin::GPIO::Signal_UsbProtectionFault);
 } // namespace __private
 
 uint32_t get_vbus_rail_voltage() { return powerDelivery::get_vbus_voltage(); }
@@ -518,6 +521,15 @@ bool is_setup() { return isSetup; }
 
 void init()
 {
+  // detect shorts in the USB port
+  __private::usbFault.attach_callback(
+          []() {
+            // usb port alert detected
+            alerts::manager.raise(alerts::Type::USB_PORT_SHORT);
+          },
+          DigitalPin::Interrupt::kFallingEdge);
+
+  // init power gates
   powergates::init();
 
   // switch without a timing

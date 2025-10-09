@@ -75,6 +75,8 @@ inline const char* AlertsToText(const Type type)
       return "SUNSET_TIMER_ENABLED";
     case SYSTEM_SLEEP_SKIPPED:
       return "SYSTEM_SLEEP_SKIPPED";
+    case USB_PORT_SHORT:
+      return "USB_PORT_SHORT";
     default:
       return "UNSUPPORTED TYPE";
   }
@@ -463,21 +465,42 @@ struct Alert_SkippedCleanSleep : public AlertBase
   }
 };
 
+struct Alert_UsbPortShort : public AlertBase
+{
+  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::BLUE); }
+
+  Type get_type() const override { return Type::USB_PORT_SHORT; }
+
+  bool should_be_cleared() const override
+  {
+    // auto cleared after a delay
+    return (raisedTime > 0 and (time_ms() - raisedTime) > 5000);
+  }
+
+  // prevent charge
+  bool should_prevent_battery_charge() const override { return true; }
+};
+
 // Alerts must be sorted by importance, only the first activated one will be shown
 AlertBase* allAlerts[] = {new Alert_SystemShutdownFailed,
                           new Alert_HardwareAlert,
                           new Alert_TempCritical,
+                          new Alert_UsbPortShort,
+                          //
                           new Alert_SkippedCleanSleep,
-                          new Alert_TempTooHigh,
                           new Alert_BatteryReadingIncoherent,
+                          // battery and temp related
+                          new Alert_TempTooHigh,
                           new Alert_BatteryCritical,
                           new Alert_BatteryLow,
-                          new Alert_LongLoopUpdate,
-                          new Alert_BluetoothAdvertisement,
-                          new Alert_FavoriteSet,
+                          //
                           new Alert_OtgFailed,
                           new Alert_SystemInErrorState,
                           new Alert_SystemInLockout,
+                          // user side low priority alerts
+                          new Alert_LongLoopUpdate,
+                          new Alert_BluetoothAdvertisement,
+                          new Alert_FavoriteSet,
                           new Alert_SunsetTimerSet};
 
 void update_alerts()
