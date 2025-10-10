@@ -18,6 +18,7 @@
 
 #include <cstdint>
 #include <cassert>
+#include <stdint.h>
 
 namespace power {
 
@@ -264,18 +265,35 @@ void handle_otg_mode()
   bool otgNoActivity = false;
   const bool isAutoOTGMode = _hasAutoSwitchedToOTG;
 
+  static uint32_t voltageHighRaisedTime = UINT32_MAX;
+  // control vbus rail voltage
+  const uint32_t vbusVoltage_mv = get_vbus_rail_voltage();
+
   // shutdown OTG if no current consumption for X seconds
   const auto& state = charger::get_state();
   // no current since a timing
   if (state.inputCurrent_mA <= 10)
   {
     timeSinceOTGCurrentUse = time_ms();
+
+    if (vbusVoltage_mv > 5500 and voltageHighRaisedTime == UINT32_MAX)
+    {
+      voltageHighRaisedTime = time_ms();
+    }
+
     // if no current use since a timing, stop otg
     const uint32_t otgNonuseTimeout = isAutoOTGMode ? otgNoUseTimeToDisconnect_ms : otgNoUseExtBatTimeToDisconnect_ms;
     if (time_ms() - timeSinceOTGNoCurrentUse > otgNonuseTimeout)
     {
       otgNoActivity = true;
       lampda_print("no OTG activity, shutdown");
+    }
+
+    // voltage negociated but not used
+    if (voltageHighRaisedTime != UINT32_MAX and time_ms() - voltageHighRaisedTime > 1000)
+    {
+      otgNoActivity = true;
+      lampda_print("no OTG activity and voltage high, shutdown");
     }
   }
   else
@@ -284,6 +302,10 @@ void handle_otg_mode()
     if ((not _hasAutoSwitchedToOTG) and time_ms() - timeSinceOTGCurrentUse >= 1000)
     {
       _hasAutoSwitchedToOTG = true;
+    }
+    if (vbusVoltage_mv > 5500)
+    {
+      voltageHighRaisedTime = time_ms();
     }
     timeSinceOTGNoCurrentUse = time_ms();
   }
