@@ -22,17 +22,25 @@
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/legacy/legacy_modes.hpp"
 
+#include "src/modes/nudz/nudz_scrollimage.hpp"
+
 namespace user {
 
 //
 // list your groups & modes here
 //
 
+using NudzModes = modes::GroupFor<modes::nudz::NudzHeinekenMode,
+                                  modes::nudz::NudzHuitSixMode,
+                                  modes::nudz::NudzViolonsaoulsMode,
+                                  modes::nudz::NudzBeerGlassMode>;
+
 using ManagerTy = modes::ManagerFor<modes::FixedModes,
                                     // modes::MiscFixedModes,
                                     modes::legacy::CalmModes,
                                     modes::legacy::PartyModes,
-                                    modes::legacy::SoundModes>;
+                                    modes::legacy::SoundModes,
+                                    NudzModes>;
 
 //
 // implementation details
