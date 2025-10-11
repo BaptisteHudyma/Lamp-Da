@@ -390,7 +390,7 @@ extern "C" {
      *
      * @return EC_SUCCESS or error
      */
-    int (*get_message)(uint32_t* payload, int* head);
+    int (*get_message)(uint32_t* payload, uint32_t* head);
 
     /**
      * Transmit PD message

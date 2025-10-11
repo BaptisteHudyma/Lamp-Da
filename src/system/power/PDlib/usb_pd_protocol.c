@@ -3116,7 +3116,7 @@ void pd_run_state_machine()
 
   if (evt & PD_EVENT_RX_HARD_RESET)
   {
-    CPRINTF("HARD RST event\n", pd.last_state);
+    CPRINTF("HARD RST event, last state %s\n", pd.last_state);
     pd_execute_hard_reset();
   }
 

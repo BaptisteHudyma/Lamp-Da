@@ -24,3 +24,17 @@ int tcpc_xfer(const uint8_t* out, int out_size, uint8_t* in, int in_size, int fl
 {
   return i2c_xfer(tcpc_config.i2c_host_port, tcpc_config.i2c_slave_addr, out_size, out, in_size, in, flags);
 }
+
+int tcpc_xfer_unlocked(const uint8_t* out, int out_size, uint8_t* in, int in_size, int flags)
+{
+  return i2c_xfer_unlocked(tcpc_config.i2c_host_port, tcpc_config.i2c_slave_addr, out_size, out, in_size, in, flags);
+}
+
+void tcpc_lock(int lock)
+{
+  // TODO check result ?
+  if (lock == 0)
+    unlock_i2c();
+  else
+    lock_i2c();
+}
