@@ -114,6 +114,18 @@ uint32_t get_available_pd_voltage_mV() { return availableVoltage; }
 
 void supsend_usb_pd(int shouldSuspend) { pd_set_suspend(shouldSuspend); }
 
+// force transition to source mode
+void force_set_to_source(int force)
+{
+  if (force == 0)
+    pd_set_dual_role(CONFIG_USB_PD_INITIAL_DRP_STATE);
+  else
+  {
+    // force to source
+    pd_set_dual_role(PD_DRP_FORCE_SOURCE);
+  }
+}
+
 void reset_cache()
 {
   pdSources = 0;
@@ -248,6 +260,9 @@ void pd_transition_voltage(int idx)
 
   otgParameters.requestedVoltage_mV = mv;
   otgParameters.requestedCurrent_mA = ma;
+
+  lampda_print(
+          "sink requested a source %dmv %dmA", otgParameters.requestedVoltage_mV, otgParameters.requestedCurrent_mA);
 }
 
 void pd_check_dr_role(int dr_role, int flags)

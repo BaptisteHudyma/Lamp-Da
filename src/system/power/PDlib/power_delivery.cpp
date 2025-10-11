@@ -242,16 +242,18 @@ void pd_run()
     powergates::disable_gates();
     return;
   }
-
+#if 0
   static bool isFastRoleSwap = false;
   // ignore source activity if we are otg (prevent spurious reset)
   if (is_switching_to_otg())
   {
+
     if (not isFastRoleSwap)
     {
       isFastRoleSwap = true;
 
       // prepare fast role swap
+      lampda_print("prepare fast role swap");
       powergates::disable_gates();
 
       // force otg on, and prep vbus gate, all in this loop iteration (skip all safety steps !!!)
@@ -286,6 +288,7 @@ void pd_run()
     // after the activation turn, disable the flag
     else
       isPowerSourceDetected_s = false;
+
     return;
   }
   else if (isFastRoleSwap)
@@ -297,6 +300,7 @@ void pd_run()
     powergates::disable_gates();
   }
   isFastRoleSwap = false;
+#endif
 }
 
 static bool isSetup = false;
@@ -418,6 +422,8 @@ uint16_t get_max_input_current()
 bool is_power_available() { return isPowerSourceDetected_s; }
 
 bool can_use_power() { return canUseSourcePower_s; }
+
+void force_set_to_source_mode(const bool force) { force_set_to_source(force ? 1 : 0); }
 
 OTGParameters get_otg_parameters()
 {

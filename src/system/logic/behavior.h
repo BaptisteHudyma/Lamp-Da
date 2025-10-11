@@ -44,6 +44,9 @@ void set_power_on();
 /// set system state to "output off". Can be ignored
 void set_power_off();
 
+//
+void go_to_external_battery_mode();
+
 } // namespace behavior
 
 /// \private Internal symbol used to signify which LMBD_LAMP_TYPE was specified

@@ -29,6 +29,8 @@ extern "C" {
   int tcpc_write(int reg, int val);
   int tcpc_read(int reg, int* val);
   int tcpc_xfer(const uint8_t* out, int out_size, uint8_t* in, int in_size, int flags);
+  int tcpc_xfer_unlocked(const uint8_t* out, int out_size, uint8_t* in, int in_size, int flags);
+  void tcpc_lock(int lock);
 
   /* TCPM driver wrapper function */
   static inline int tcpm_init()
@@ -98,7 +100,7 @@ extern "C" {
       tcpc->tcpc_enable_auto_discharge_disconnect(enable);
   }
 
-  static inline int tcpm_get_message(uint32_t* payload, int* head)
+  static inline int tcpm_get_message(uint32_t* payload, uint32_t* head)
   {
     return tcpc_config.drv->get_message(payload, head);
   }

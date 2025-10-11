@@ -11,6 +11,8 @@
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/time.h"
 
+#include "src/system/power/power_handler.h"
+
 #include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/time_utils.h"
 #include "src/system/utils/sunset_timer.h"
@@ -146,6 +148,16 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
 
   switch (consecutiveButtonCheck)
   {
+    // external battery mode
+    case 2:
+      {
+        if (buttonHoldDuration > 1000)
+        {
+          if (not power::is_in_otg_mode())
+            behavior::go_to_external_battery_mode();
+        }
+        break;
+      }
     case 3:
       {
         // 3+hold (2s): turn it on, with button usermode enabled
