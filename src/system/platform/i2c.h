@@ -45,6 +45,9 @@ extern "C" {
    */
   extern int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr);
 
+  int lock_i2c();
+  int unlock_i2c();
+
   /**
    * \brief Write data to the two wire interface
    * \param[in] i2cIndex The index of the i2c interface (from 0 to WIRE_INTERFACES_COUNT - 1)
@@ -79,13 +82,37 @@ extern "C" {
    * \param[in] in The buffer that contains the write data
    * \param[in] flags Flags to set the stop bit, start/stop info, etc
    */
-  extern int i2c_xfer(uint8_t i2cIndex,
+  extern int i2c_xfer_unlocked(uint8_t i2cIndex,
+                               uint8_t deviceAddr,
+                               int out_size,
+                               const uint8_t* out,
+                               int in_size,
+                               uint8_t* in,
+                               uint8_t flags);
+
+  /**
+   * \brief Does a range read/write
+   * \param[in] i2cIndex The index of the i2c interface (from 0 to WIRE_INTERFACES_COUNT - 1)
+   * \param[in] deviceAddr the address of the target device
+   * \param[in] out_size Size of the \ref out buffer to read
+   * \param[out] out The buffer that will contain the read data
+   * \param[in] in_size Size of the \ref in buffer to write
+   * \param[in] in The buffer that contains the write data
+   * \param[in] flags Flags to set the stop bit, start/stop info, etc
+   */
+  inline int i2c_xfer(uint8_t i2cIndex,
                       uint8_t deviceAddr,
                       int out_size,
                       const uint8_t* out,
                       int in_size,
                       uint8_t* in,
-                      uint8_t flags);
+                      uint8_t flags)
+  {
+    lock_i2c();
+    const int res = i2c_xfer_unlocked(i2cIndex, deviceAddr, out_size, out, in_size, in, flags);
+    unlock_i2c();
+    return res;
+  }
 
   // define simple low weight handler
 

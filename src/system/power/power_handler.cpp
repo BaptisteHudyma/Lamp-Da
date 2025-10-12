@@ -18,6 +18,7 @@
 
 #include <cstdint>
 #include <cassert>
+#include <stdint.h>
 
 namespace power {
 
@@ -26,6 +27,9 @@ bool _isShutdownCompleted = false;
 static constexpr uint32_t clearPowerRailMinDelay_ms = 10;
 static constexpr uint32_t clearPowerRailFailureDelay_ms = 1000;
 static constexpr uint32_t otgNoUseTimeToDisconnect_ms = 1000;
+// timeout in external battery mode
+static constexpr uint8_t otgTurnOffTimeMinutes = 5;
+static constexpr uint32_t otgNoUseExtBatTimeToDisconnect_ms = 1000 * 60 * otgTurnOffTimeMinutes;
 
 static_assert(clearPowerRailMinDelay_ms < clearPowerRailFailureDelay_ms,
               "clear power rail min activation is less than min unlock delay");
@@ -41,6 +45,7 @@ static uint32_t _temporaryOutputTimeOut = 0;
 
 static bool _isChargeEnabled = false;
 static std::string _errorStr = "";
+static bool _hasAutoSwitchedToOTG = false;
 
 std::string get_error_string()
 {
@@ -101,6 +106,9 @@ StateMachine<PowerStates> powerMachine(PowerStates::ERROR);
 DigitalPin dischargeVbus(DigitalPin::GPIO::Output_DischargeVbus);
 DigitalPin vbusDirection(DigitalPin::GPIO::Output_VbusDirection);
 DigitalPin fastRoleSwap(DigitalPin::GPIO::Output_VbusFastRoleSwap);
+
+// if high, signal an USB fault
+DigitalPin usbFault(DigitalPin::GPIO::Signal_UsbProtectionFault);
 } // namespace __private
 
 uint32_t get_vbus_rail_voltage() { return powerDelivery::get_vbus_voltage(); }
@@ -178,6 +186,7 @@ void handle_clear_power_rails()
 
 // keep track of current consumption
 static uint32_t timeSinceOTGNoCurrentUse;
+static uint32_t timeSinceOTGCurrentUse;
 
 void handle_charging_mode()
 {
@@ -193,6 +202,7 @@ void handle_charging_mode()
     balancer::enable_balancing(false);
     timeSinceOTGNoCurrentUse = time_ms();
     // start otg
+    _hasAutoSwitchedToOTG = true;
     __private::powerMachine.set_state(PowerStates::OTG_MODE);
     return;
   }
@@ -253,25 +263,63 @@ void handle_output_voltage_mode()
 void handle_otg_mode()
 {
   bool otgNoActivity = false;
+  const bool isAutoOTGMode = _hasAutoSwitchedToOTG;
+
+  static uint32_t voltageHighRaisedTime = UINT32_MAX;
+  // control vbus rail voltage
+  const uint32_t vbusVoltage_mv = get_vbus_rail_voltage();
 
   // shutdown OTG if no current consumption for X seconds
   const auto& state = charger::get_state();
   // no current since a timing
   if (state.inputCurrent_mA <= 10)
   {
+    timeSinceOTGCurrentUse = time_ms();
+
+    if (vbusVoltage_mv > 5500 and voltageHighRaisedTime == UINT32_MAX)
+    {
+      voltageHighRaisedTime = time_ms();
+    }
+
     // if no current use since a timing, stop otg
-    if (time_ms() - timeSinceOTGNoCurrentUse > otgNoUseTimeToDisconnect_ms)
+    const uint32_t otgNonuseTimeout = isAutoOTGMode ? otgNoUseTimeToDisconnect_ms : otgNoUseExtBatTimeToDisconnect_ms;
+    if (time_ms() - timeSinceOTGNoCurrentUse > otgNonuseTimeout)
+    {
       otgNoActivity = true;
+      lampda_print("no OTG activity, shutdown");
+    }
+
+    // voltage negociated but not used
+    if (voltageHighRaisedTime != UINT32_MAX and time_ms() - voltageHighRaisedTime > 1000)
+    {
+      otgNoActivity = true;
+      lampda_print("no OTG activity and voltage high, shutdown");
+    }
   }
   else
   {
+    // enable auto mode when power has been used for a time
+    if ((not _hasAutoSwitchedToOTG) and time_ms() - timeSinceOTGCurrentUse >= 1000)
+    {
+      _hasAutoSwitchedToOTG = true;
+    }
+    if (vbusVoltage_mv > 5500)
+    {
+      voltageHighRaisedTime = time_ms();
+    }
     timeSinceOTGNoCurrentUse = time_ms();
   }
 
+  // if we just switched manually, powerDelivery amy nnot have followed yet
+  const bool canUseOtg = true; //(not isAutoOTGMode) or powerDelivery::is_switching_to_otg();
+
   // end of OTG, switch to charger
-  if (otgNoActivity or !powerDelivery::is_switching_to_otg() or !battery::is_battery_usable_as_power_source())
+  if (otgNoActivity or not canUseOtg or
+      // blocking alerts for OTG use
+      not battery::is_battery_usable_as_power_source() or not alerts::manager.can_use_usb_port())
   {
     // reset pd machine
+    powerDelivery::force_set_to_source_mode(0);
     powerDelivery::suspend_pd_state_machine();
     powerDelivery::resume_pd_state_machine();
 
@@ -283,22 +331,38 @@ void handle_otg_mode()
     __private::powerMachine.set_state(PowerStates::CHARGING_MODE);
     return;
   }
-
-  // resume PD state machine
-  powerDelivery::resume_pd_state_machine();
-
-  const auto requested = powerDelivery::get_otg_parameters();
-  // we do not have the parameters yet
-  if (not requested.is_otg_requested())
+  else
   {
-    return;
+    // resume PD state machine
+    powerDelivery::allow_otg(true);
+    powerDelivery::resume_pd_state_machine();
+
+    balancer::enable_balancing(false);
+    charger::set_enable_charge(false);
   }
 
-  charger::set_enable_charge(false);
+  if (not isAutoOTGMode)
+  {
+    static bool isInOtgModeForce = false;
+    if (not isInOtgModeForce)
+    {
+      powerDelivery::force_set_to_source_mode(1);
+      isInOtgModeForce = true;
+    }
+  }
+
+  static const auto& defaultOTG = powerDelivery::OTGParameters::get_default();
+  // requested by system
+  auto requestedOtg = powerDelivery::get_otg_parameters();
+  requestedOtg.requestedVoltage_mV = max(requestedOtg.requestedVoltage_mV, defaultOTG.requestedVoltage_mV);
+  requestedOtg.requestedCurrent_mA = max(requestedOtg.requestedCurrent_mA, defaultOTG.requestedCurrent_mA);
+  // should never be true
+  if (not requestedOtg.is_otg_requested())
+    return;
 
   // ramp up output voltage
   // then unlock the vbus gate
-  set_otg_parameters(requested.requestedVoltage_mV, requested.requestedCurrent_mA);
+  set_otg_parameters(requestedOtg.requestedVoltage_mV, requestedOtg.requestedCurrent_mA);
 
   // allow reverse current flow
   __private::vbusDirection.set_high(true);
@@ -400,6 +464,7 @@ bool go_to_output_mode()
   if (__private::can_switch_states())
   {
     powerDelivery::suspend_pd_state_machine();
+    powerDelivery::force_set_to_source_mode(0);
     powerDelivery::allow_otg(false);
     set_otg_parameters(0, 0);
 
@@ -414,6 +479,7 @@ bool go_to_charger_mode()
   // TODO: and other checks
   if (__private::can_switch_states())
   {
+    powerDelivery::force_set_to_source_mode(0);
     __private::switch_state(PowerStates::CHARGING_MODE);
     return true;
   }
@@ -423,9 +489,12 @@ bool go_to_charger_mode()
 
 bool go_to_otg_mode()
 {
-  if (__private::can_switch_states() and battery::is_battery_usable_as_power_source())
+  if (__private::can_switch_states() and battery::is_battery_usable_as_power_source() and
+      alerts::manager.can_use_usb_port())
   {
     timeSinceOTGNoCurrentUse = time_ms();
+    powerDelivery::allow_otg(true);
+    _hasAutoSwitchedToOTG = false;
     __private::switch_state(PowerStates::OTG_MODE);
     return true;
   }
@@ -518,6 +587,15 @@ bool is_setup() { return isSetup; }
 
 void init()
 {
+  // detect shorts in the USB port
+  __private::usbFault.attach_callback(
+          []() {
+            // usb port alert detected
+            alerts::manager.raise(alerts::Type::USB_PORT_SHORT);
+          },
+          DigitalPin::Interrupt::kFallingEdge);
+
+  // init power gates
   powergates::init();
 
   // switch without a timing

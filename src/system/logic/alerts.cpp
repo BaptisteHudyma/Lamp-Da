@@ -1,5 +1,7 @@
 #include "alerts.h"
 
+#include "src/system/logic/statistics_handler.h"
+
 #include "src/system/platform/time.h"
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/registers.h"
@@ -71,6 +73,10 @@ inline const char* AlertsToText(const Type type)
       return "SYSTEM_IN_LOCKOUT";
     case SUNSET_TIMER_ENABLED:
       return "SUNSET_TIMER_ENABLED";
+    case SYSTEM_SLEEP_SKIPPED:
+      return "SYSTEM_SLEEP_SKIPPED";
+    case USB_PORT_SHORT:
+      return "USB_PORT_SHORT";
     default:
       return "UNSUPPORTED TYPE";
   }
@@ -167,6 +173,7 @@ struct AlertBase
   // override to prevent lamp actions on alerts
   virtual bool should_prevent_lamp_output() const { return false; }
   virtual bool should_prevent_battery_charge() const { return false; }
+  virtual bool should_prevent_usb_port_use() const { return false; }
 
   // private:
   //
@@ -197,6 +204,7 @@ struct Alert_BatteryReadingIncoherent : public AlertBase
 
   bool should_prevent_lamp_output() const override { return true; }
   bool should_prevent_battery_charge() const override { return true; }
+  bool should_prevent_usb_port_use() const override { return true; }
 };
 
 struct Alert_BatteryCritical : public AlertBase
@@ -324,14 +332,16 @@ struct Alert_TempCritical : public AlertBase
   uint32_t alert_shutdown_timeout() const
   {
     // shutdown, critical temp is the absolute limit
-    return 0;
+    return 5000;
   }
 
   bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::DARK_ORANGE); }
 
   Type get_type() const override { return Type::TEMP_CRITICAL; }
 
+  bool should_prevent_lamp_output() const override { return true; }
   bool should_prevent_battery_charge() const override { return true; }
+  bool should_prevent_usb_port_use() const override { return true; }
 };
 
 struct Alert_BluetoothAdvertisement : public AlertBase
@@ -352,6 +362,7 @@ struct Alert_HardwareAlert : public AlertBase
 
   bool should_prevent_lamp_output() const override { return true; }
   bool should_prevent_battery_charge() const override { return true; }
+  bool should_prevent_usb_port_use() const override { return true; }
 };
 
 struct Alert_FavoriteSet : public AlertBase
@@ -402,6 +413,7 @@ struct Alert_SystemShutdownFailed : public AlertBase
 
   bool should_prevent_lamp_output() const override { return true; }
   bool should_prevent_battery_charge() const override { return true; }
+  bool should_prevent_usb_port_use() const override { return true; }
 };
 
 struct Alert_SystemInErrorState : public AlertBase
@@ -415,6 +427,7 @@ struct Alert_SystemInErrorState : public AlertBase
 
   bool should_prevent_lamp_output() const override { return true; }
   bool should_prevent_battery_charge() const override { return true; }
+  bool should_prevent_usb_port_use() const override { return true; }
 };
 
 struct Alert_SystemInLockout : public AlertBase
@@ -446,20 +459,56 @@ struct Alert_SunsetTimerSet : public AlertBase
   Type get_type() const override { return Type::SUNSET_TIMER_ENABLED; }
 };
 
+struct Alert_SkippedCleanSleep : public AlertBase
+{
+  bool show() const override { return indicator::blink(250, 250, utils::ColorSpace::PINK); }
+
+  Type get_type() const override { return Type::SYSTEM_SLEEP_SKIPPED; }
+
+  bool should_be_cleared() const override
+  {
+    // cleared after a delay
+    return (raisedTime > 0 and (time_ms() - raisedTime) > 3000);
+  }
+};
+
+struct Alert_UsbPortShort : public AlertBase
+{
+  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::BLUE); }
+
+  Type get_type() const override { return Type::USB_PORT_SHORT; }
+
+  bool should_be_cleared() const override
+  {
+    // auto cleared after a delay
+    return (raisedTime > 0 and (time_ms() - raisedTime) > 5000);
+  }
+
+  // prevent charge
+  bool should_prevent_battery_charge() const override { return true; }
+  bool should_prevent_usb_port_use() const override { return true; }
+};
+
 // Alerts must be sorted by importance, only the first activated one will be shown
 AlertBase* allAlerts[] = {new Alert_SystemShutdownFailed,
                           new Alert_HardwareAlert,
                           new Alert_TempCritical,
-                          new Alert_TempTooHigh,
+                          new Alert_UsbPortShort,
+                          //
+                          new Alert_SkippedCleanSleep,
                           new Alert_BatteryReadingIncoherent,
+                          // battery and temp related
+                          new Alert_TempTooHigh,
                           new Alert_BatteryCritical,
                           new Alert_BatteryLow,
-                          new Alert_LongLoopUpdate,
-                          new Alert_BluetoothAdvertisement,
-                          new Alert_FavoriteSet,
+                          //
                           new Alert_OtgFailed,
                           new Alert_SystemInErrorState,
                           new Alert_SystemInLockout,
+                          // user side low priority alerts
+                          new Alert_LongLoopUpdate,
+                          new Alert_BluetoothAdvertisement,
+                          new Alert_FavoriteSet,
                           new Alert_SunsetTimerSet};
 
 void update_alerts()
@@ -631,6 +680,10 @@ void AlertManager_t::raise(const Type type)
     }
     return;
   }
+  else
+  {
+    statistics::signal_alert_raised(type);
+  }
 
   lampda_print("ALERT raised: %s", AlertsToText(type));
   _current |= type;
@@ -683,6 +736,21 @@ bool AlertManager_t::can_charge_battery() const
   for (auto alert: allAlerts)
   {
     if (alert->_isRaisedHandled && alert->should_prevent_battery_charge())
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool AlertManager_t::can_use_usb_port() const
+{
+  if (is_clear())
+    return true;
+
+  for (auto alert: allAlerts)
+  {
+    if (alert->_isRaisedHandled && alert->should_prevent_usb_port_use())
     {
       return false;
     }

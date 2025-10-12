@@ -1,6 +1,9 @@
 #ifndef USB_PD_CONFIG
 #define USB_PD_CONFIG
 
+// 1 - 3. 0 is disabled
+#define PD_DEBUG_LEVEL 0
+
 /*
  * Provide common runtime layer code (tasks, hooks ...)
  * You want this unless you are doing a really tiny firmware.

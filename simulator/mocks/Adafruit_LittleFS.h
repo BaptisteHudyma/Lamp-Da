@@ -115,6 +115,25 @@ struct File
     return 0;
   }
 
+  void seek(uint8_t sz)
+  {
+    if (file != nullptr)
+    {
+      if (filemode != nullptr)
+      {
+        ::fseek(file, sz, 0);
+      }
+      else
+      {
+        fprintf(stderr, "error: invalid seek filename\n");
+      }
+    }
+    else
+    {
+      fprintf(stderr, "error: seek closed file\n");
+    }
+  }
+
   void truncate(uint8_t sz)
   {
     if (file != nullptr)

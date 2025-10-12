@@ -123,7 +123,7 @@ bool can_battery_be_charged()
   // TODO: implement: return false if
   // - first or last battery of the stack are disconected
   // - ?
-  return true;
+  return alerts::manager.can_charge_battery();
 }
 
 uint16_t get_battery_minimum_cell_level()

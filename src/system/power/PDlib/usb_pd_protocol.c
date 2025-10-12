@@ -6,6 +6,8 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "../../../../src/system/utils/print.h"
+
 #include "usb_pd.h"
 #include "task.h"
 #include "tcpm/usb_pd_tcpm.h"
@@ -52,9 +54,16 @@ static int debug_level;
  */
 static uint8_t pd_comm_enabled;
 #else /* CONFIG_COMMON_RUNTIME */
+
+#if PD_DEBUG_LEVEL > 0
+#define CPRINTF(format, args...) lampda_print(format, ##args)
+#define CPRINTS(format, args...) lampda_print(format, ##args)
+#else
 #define CPRINTF(format, args...)
 #define CPRINTS(format, args...)
-static const int debug_level = 0;
+#endif
+static const int debug_level = PD_DEBUG_LEVEL;
+
 #endif
 
 #ifdef CONFIG_USB_PD_DUAL_ROLE
@@ -826,7 +835,7 @@ static int pd_transmit(enum tcpm_transmit_type type, uint16_t header, const uint
    * all RX messages.
    */
   if (tcpm_has_pending_message())
-    return 0; // not an error
+    return -1; // not an error
 
 #ifdef CONFIG_USB_PD_REV30
   /* Source-coordinated collision avoidance */
@@ -928,7 +937,7 @@ int is_sourcing() { return pd.task_state == PD_STATE_SRC_READY; }
 int send_control(int type)
 {
   int bit_len;
-  uint16_t header = PD_HEADER(type, pd.power_role, pd.data_role, pd.msg_id, 0, pd_get_rev(), 0);
+  uint16_t header = PD_HEADER(type, pd.power_role, pd.data_role, pd.msg_id, 0, pd_get_rev(TCPC_TX_SOP), 0);
 
   /*
    * For PD 3.0, collision avoidance logic needs to know if this message
@@ -957,13 +966,14 @@ static int send_source_cap(enum ams_seq ams)
 
   if (src_pdo_cnt == 0)
     /* No source capabilities defined, sink only */
-    header = PD_HEADER(PD_CTRL_REJECT, pd.power_role, pd.data_role, pd.msg_id, 0, pd_get_rev(), 0);
+    header = PD_HEADER(PD_CTRL_REJECT, pd.power_role, pd.data_role, pd.msg_id, 0, pd_get_rev(TCPC_TX_SOP), 0);
   else
-    header = PD_HEADER(PD_DATA_SOURCE_CAP, pd.power_role, pd.data_role, pd.msg_id, src_pdo_cnt, pd_get_rev(), 0);
+    header = PD_HEADER(
+            PD_DATA_SOURCE_CAP, pd.power_role, pd.data_role, pd.msg_id, src_pdo_cnt, pd_get_rev(TCPC_TX_SOP), 0);
 
   bit_len = pd_transmit(TCPC_TX_SOP, header, src_pdo, ams);
   if (debug_level >= 2)
-    CPRINTF("srcCAP>%d\n", bit_len);
+    CPRINTF("C srcCAP>%d\n", bit_len);
 
   return bit_len;
 }
@@ -1142,8 +1152,8 @@ static int send_battery_status(uint32_t* payload)
 static void send_sink_cap()
 {
   int bit_len;
-  uint16_t header =
-          PD_HEADER(PD_DATA_SINK_CAP, pd.power_role, pd.data_role, pd.msg_id, pd_snk_pdo_cnt, pd_get_rev(), 0);
+  uint16_t header = PD_HEADER(
+          PD_DATA_SINK_CAP, pd.power_role, pd.data_role, pd.msg_id, pd_snk_pdo_cnt, pd_get_rev(TCPC_TX_SOP), 0);
 
   bit_len = pd_transmit(TCPC_TX_SOP, header, pd_snk_pdo, AMS_RESPONSE);
   if (debug_level >= 2)
@@ -1153,7 +1163,7 @@ static void send_sink_cap()
 static int send_request(uint32_t rdo)
 {
   int bit_len;
-  uint16_t header = PD_HEADER(PD_DATA_REQUEST, pd.power_role, pd.data_role, pd.msg_id, 1, pd_get_rev(), 0);
+  uint16_t header = PD_HEADER(PD_DATA_REQUEST, pd.power_role, pd.data_role, pd.msg_id, 1, pd_get_rev(TCPC_TX_SOP), 0);
 
   bit_len = pd_transmit(TCPC_TX_SOP, header, &rdo, AMS_RESPONSE);
   if (debug_level >= 2)
@@ -1188,7 +1198,7 @@ static int send_bist_cmd()
   /* currently only support sending bist carrier 2 */
   uint32_t bdo = BDO(BDO_MODE_CARRIER2, 0);
   int bit_len;
-  uint16_t header = PD_HEADER(PD_DATA_BIST, pd.power_role, pd.data_role, pd.msg_id, 1, pd_get_rev(), 0);
+  uint16_t header = PD_HEADER(PD_DATA_BIST, pd.power_role, pd.data_role, pd.msg_id, 1, pd_get_rev(TCPC_TX_SOP), 0);
 
   bit_len = pd_transmit(TCPC_TX_SOP, header, &bdo);
   CPRINTF("BIST>%d\n", bit_len);
@@ -1268,7 +1278,7 @@ void pd_execute_hard_reset()
 {
   int hard_rst_tx = pd.last_state == PD_STATE_HARD_RESET_SEND;
 
-  CPRINTF("HARD RST %cX\n", hard_rst_tx ? 'T' : 'R');
+  CPRINTF("HARD RST %cX %d\n", hard_rst_tx ? 'T' : 'R', pd.last_state);
 
   pd.msg_id = 0;
   invalidate_last_message_id();
@@ -2972,6 +2982,7 @@ void pd_run_state_machine()
   res = pd_board_checks();
   if (res != EC_SUCCESS)
   {
+    CPRINTF("HARD RST board not success\n", pd.last_state);
     /* cut the power */
     pd_execute_hard_reset();
     /* notify the other side of the issue */
@@ -3104,7 +3115,10 @@ void pd_run_state_machine()
 #endif /* defined(CONFIG_USBC_PPC) */
 
   if (evt & PD_EVENT_RX_HARD_RESET)
+  {
+    CPRINTF("HARD RST event, last state %s\n", pd.last_state);
     pd_execute_hard_reset();
+  }
 
   /* process any potential incoming message */
   incoming_packet = tcpm_has_pending_message();
@@ -3470,9 +3484,13 @@ void pd_run_state_machine()
         }
         else
         { /* failed, retry later */
+          invalidate_last_message_id();
           timeout = PD_T_SEND_SOURCE_CAP;
           next_src_cap = now.val + PD_T_SEND_SOURCE_CAP;
+#if 0
+          // TODO : this is not in specks, but allows for negociations
           caps_count++;
+#endif
         }
       }
       else if (caps_count < PD_CAPS_COUNT)
@@ -4431,6 +4449,7 @@ void pd_run_state_machine()
       if (pd.last_state == PD_STATE_SNK_SWAP_STANDBY)
         tcpm_set_cc(TYPEC_CC_RD);
 #endif
+      CPRINTF("HARD RST execute\n", pd.last_state);
 
       /* reset our own state machine */
       pd_execute_hard_reset();

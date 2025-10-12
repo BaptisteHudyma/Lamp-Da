@@ -37,6 +37,9 @@ bool is_power_available();
 // can use this source as power entry
 bool can_use_power();
 
+/// force the system to source mode
+void force_set_to_source_mode(const bool force);
+
 /**
  * \brief Call to allow or forbid OTG mode
  */
@@ -66,6 +69,14 @@ struct OTGParameters
   uint16_t requestedCurrent_mA = 0;
 
   bool is_otg_requested() const { return requestedVoltage_mV != 0 && requestedCurrent_mA != 0; }
+
+  static OTGParameters get_default()
+  {
+    OTGParameters def;
+    def.requestedCurrent_mA = 3000;
+    def.requestedVoltage_mV = 5000;
+    return def;
+  }
 };
 OTGParameters get_otg_parameters();
 

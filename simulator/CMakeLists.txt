@@ -121,6 +121,7 @@ set(SRC_SYSTEM_LOGIC
     ${LMBD_ROOT_DIR}/src/system/logic/alerts.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/behavior.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/inputs.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/statistics_handler.cpp
 )
 
 set(SIMULATOR_MOCKS

@@ -7,6 +7,8 @@
 #include "src/system/utils/utils.h"
 #include "src/system/utils/input_output.h"
 
+#include "src/system/logic/statistics_handler.h"
+
 #include "src/system/platform/time.h"
 #include "src/system/platform/print.h"
 
@@ -39,6 +41,9 @@ void button_state_interrupt()
       {
         buttonState.nbClicksCounted += 1;
         buttonState.firstHoldTime = currentTime;
+
+        // stat update
+        statistics::signal_button_press();
       }
     }
     // update trigger flags
@@ -72,6 +77,8 @@ void init(const bool isSystemStartedFromButton)
     buttonState.firstHoldTime = time_ms();
     buttonState.wasTriggered = true;
     buttonState.isPressed = true;
+
+    statistics::signal_button_press();
   }
   else
   {

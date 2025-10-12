@@ -16,12 +16,7 @@ extern "C" {
 #include "../config.h"
 #include <stdint.h>
 
-/* board specific type-C power constants */
-/*
- * delay to turn on the power supply max is ~16ms.
- * delay to turn off the power supply max is about ~180ms.
- */
-#define PD_POWER_SUPPLY_TURN_ON_DELAY  30 * MSEC_US  /* us */
+#define PD_POWER_SUPPLY_TURN_ON_DELAY  250 * MSEC_US /* us */
 #define PD_POWER_SUPPLY_TURN_OFF_DELAY 100 * MSEC_US /* us */
 
 /* Define typical operating power and max power */
@@ -63,6 +58,9 @@ extern "C" {
   void pd_turn_off();
 
   void pd_loop();
+
+  /// force the power to source mode if force != 0
+  void force_set_to_source(int force);
 
   /**
    * \brief allow or forbid power sourcing from this device
