@@ -59,7 +59,7 @@ float get_sound_level_Db(const PdmData& data)
   }
   const float average = sumOfAll / (float)samples;
 
-  lastValue = 20.0 * log10f(sqrtf(average));
+  lastValue = 20.0f * log10f(sqrtf(average));
   // convert to decibels
   return lastValue;
 }

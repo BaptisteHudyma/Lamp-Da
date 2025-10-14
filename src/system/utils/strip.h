@@ -23,8 +23,8 @@
 #include "src/user/constants.h"
 
 static constexpr size_t stripNbBuffers = 2;
-static constexpr float baseCurrentConsumption = 0.4;
-static constexpr float maxCurrentConsumption = 2.7 - baseCurrentConsumption;
+static constexpr float baseCurrentConsumption = 0.4f;
+static constexpr float maxCurrentConsumption = 2.7f - baseCurrentConsumption;
 static constexpr float ampPerLed = maxCurrentConsumption / (float)LED_COUNT;
 
 namespace modes::hardware {

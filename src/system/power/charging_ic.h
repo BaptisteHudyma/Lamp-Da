@@ -7,7 +7,7 @@
 namespace charger {
 namespace drivers {
 
-enum Status_t
+enum class Status_t
 {
   // not initialized
   UNINITIALIZED,
@@ -22,7 +22,7 @@ enum Status_t
   ERROR_HAS_FAULTS,
 };
 
-enum ChargeStatus_t
+enum class ChargeStatus_t
 {
   // no charging
   OFF,

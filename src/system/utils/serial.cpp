@@ -28,7 +28,7 @@ namespace serial {
 constexpr uint8_t maxReadLinePerLoop = 5;
 constexpr uint8_t maxLineLenght = 200;
 
-inline const char* const boolToString(bool b) { return b ? "true" : "false"; }
+inline const char* boolToString(bool b) { return b ? "true" : "false"; }
 
 void handleCommand(const std::string& command)
 {

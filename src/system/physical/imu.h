@@ -12,7 +12,7 @@ extern void init();
 
 extern void shutdown();
 
-enum EventType
+enum class EventType
 {
   FreeFall,  // raised during a free fall event
   BigMotion, // raised during a big acceleration

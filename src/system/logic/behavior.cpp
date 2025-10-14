@@ -56,8 +56,19 @@ static uint32_t wakeUpTime = 0;
 // Starts at system start time
 static uint32_t preOutputLightCalled = 0;
 
+// indicates that the system was waken up by voltage on vbus
+static bool wokeUpFromVbus_s = false;
+// indicates that the output should be turned on/off
+static bool isTargetPoweredOn_s = false;
+// indicates the error that started the error state
+static std::string errorStateRaisedStr = "";
+// indicates the time at which the pre-charge state started
+static uint32_t preChargeCalled = 0;
+// indicates the  time at which the output state is enabled
+static uint32_t lastOutputLightValidTime = 0;
+
 // Define the state for the main prog state machine
-typedef enum
+using BehaviorStates = enum class behavior_t
 {
   // handle the start logic
   START_LOGIC,
@@ -78,7 +89,7 @@ typedef enum
 
   // Should never happen, default state
   ERROR,
-} BehaviorStates;
+};
 const char* BehaviorStatesStr[] = {
         "START_LOGIC",
         "PRE_CHARGER_OPERATION",
@@ -93,11 +104,9 @@ const char* BehaviorStatesStr[] = {
 StateMachine<BehaviorStates> mainMachine(BehaviorStates::START_LOGIC);
 
 // system was powered from vbus power event
-static bool wokeUpFromVbus_s = false;
 bool did_woke_up_from_power() { return wokeUpFromVbus_s; }
 
 // target power on state (not actual state)
-static bool isTargetPoweredOn_s = false;
 bool is_system_should_be_powered() { return isTargetPoweredOn_s; }
 void set_power_on() { isTargetPoweredOn_s = true; }
 void set_power_off()
@@ -244,7 +253,6 @@ void true_power_off()
   alerts::manager.raise(alerts::Type::SYSTEM_OFF_FAILED);
 }
 
-static std::string errorStateRaisedStr = "";
 void set_error_state_message(const std::string& errorMsg)
 {
   if (errorStateRaisedStr.empty())
@@ -332,7 +340,6 @@ void handle_start_logic_state()
   setup_clean_sleep_flag();
 }
 
-static uint32_t preChargeCalled = 0;
 void handle_pre_charger_operation_state()
 {
   if (power::is_in_error_state())
@@ -449,7 +456,6 @@ bool check_handle_exit_output_mode()
   return false;
 }
 
-static uint32_t lastOutputLightValidTime = 0;
 void handle_pre_output_light_state()
 {
   static bool isMessageDisplayed = false;
@@ -659,7 +665,8 @@ void state_machine_behavior()
   // if state changed, display the new state
   if (mainMachine.state_just_changed())
   {
-    lampda_print("BEHAVIOR_S_MACH > switched to state %s", BehaviorStatesStr[mainMachine.get_state()]);
+    lampda_print("BEHAVIOR_S_MACH > switched to state %s",
+                 BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]);
   }
 
   switch (mainMachine.get_state())
@@ -740,7 +747,7 @@ void loop()
   }
 }
 
-std::string get_state() { return std::string(BehaviorStatesStr[mainMachine.get_state()]); }
+std::string get_state() { return std::string(BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]); }
 
 } // namespace behavior
 

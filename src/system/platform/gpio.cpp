@@ -28,7 +28,7 @@
 
 #if EXPECTED_FIRMWARE_VERSION_MAJOR != LAMPDA_FIRMWARE_VERSION_MAJOR || \
         EXPECTED_FIRMWARE_VERSION_MINOR != LAMPDA_FIRMWARE_VERSION_MINOR
-#error "Firmware version missmatch"
+#error "Firmware version missmatch, please update the base repository"
 #endif
 
 // Register function to disconnect gpios
@@ -47,50 +47,50 @@ public:
   DigitalPinImpl(int pin) : mDigitalPin(pin) {}
   ~DigitalPinImpl() = default;
 
-  void set_pin_mode(DigitalPin::Mode mode)
+  void set_pin_mode(DigitalPin::Mode mode) const
   {
     switch (mode)
     {
-      case DigitalPin::kDefault:
+      case DigitalPin::Mode::kDefault:
         // trust the system, the pin mode is already set
         break;
-      case DigitalPin::kInput:
+      case DigitalPin::Mode::kInput:
         pinMode(mDigitalPin, INPUT);
         break;
-      case DigitalPin::kOutput:
+      case DigitalPin::Mode::kOutput:
         pinMode(mDigitalPin, OUTPUT);
         // prevent brief flash at startup
         set_high(false);
         break;
-      case DigitalPin::kInputPullUp:
+      case DigitalPin::Mode::kInputPullUp:
         pinMode(mDigitalPin, INPUT_PULLUP);
         break;
-      case DigitalPin::kInputPullUpSense:
+      case DigitalPin::Mode::kInputPullUpSense:
         pinMode(mDigitalPin, INPUT_PULLUP_SENSE);
         break;
-      case DigitalPin::kOutputHighCurrent:
+      case DigitalPin::Mode::kOutputHighCurrent:
         pinMode(mDigitalPin, OUTPUT_H0H1);
         break;
     }
   }
-  bool is_high() { return HIGH == digitalRead(mDigitalPin); }
-  void set_high(bool value) { digitalWrite(mDigitalPin, value ? HIGH : LOW); }
+  bool is_high() const { return HIGH == digitalRead(mDigitalPin); }
+  void set_high(bool value) const { digitalWrite(mDigitalPin, value ? HIGH : LOW); }
 
-  uint16_t read() { return analogRead(mDigitalPin); }
-  void write(uint16_t value) { analogWrite(mDigitalPin, value); }
+  uint16_t read() const { return analogRead(mDigitalPin); }
+  void write(uint16_t value) const { analogWrite(mDigitalPin, value); }
 
-  void attach_callback(voidFuncPtr func, DigitalPin::Interrupt mode)
+  void attach_callback(DigitalPin::voidFuncPtr func, DigitalPin::Interrupt mode) const
   {
     const auto pinInterr = digitalPinToInterrupt(mDigitalPin);
     switch (mode)
     {
-      case DigitalPin::kChange:
+      case DigitalPin::Interrupt::kChange:
         attachInterrupt(pinInterr, func, CHANGE);
         break;
-      case DigitalPin::kRisingEdge:
+      case DigitalPin::Interrupt::kRisingEdge:
         attachInterrupt(pinInterr, func, RISING);
         break;
-      case DigitalPin::kFallingEdge:
+      case DigitalPin::Interrupt::kFallingEdge:
         attachInterrupt(pinInterr, func, FALLING);
         break;
       default:
@@ -189,35 +189,31 @@ DigitalPin::DigitalPin(GPIO pin) : mGpio(pin)
       break;
   }
 }
-DigitalPin::~DigitalPin() = default;
-DigitalPin::DigitalPin(const DigitalPin& other) = default;
 
-DigitalPin& DigitalPin::operator=(const DigitalPin& other) = default;
-
-void DigitalPin::set_pin_mode(Mode mode) { mImpl->set_pin_mode(mode); }
+void DigitalPin::set_pin_mode(Mode mode) const { mImpl->set_pin_mode(mode); }
 
 bool DigitalPin::is_high() const { return mImpl->is_high(); }
 
-void DigitalPin::set_high(bool isHigh) { mImpl->set_high(isHigh); }
+void DigitalPin::set_high(bool isHigh) const { mImpl->set_high(isHigh); }
 
-void DigitalPin::write(uint16_t value) { mImpl->write(value); }
+void DigitalPin::write(uint16_t value) const { mImpl->write(value); }
 
 uint16_t DigitalPin::read() const { return mImpl->read(); }
 
 int DigitalPin::pin() const { return mImpl->mDigitalPin; }
 
-void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode)
+void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode) const
 {
   DigitalPin::s_gpiosWithInterrupts.emplace(mGpio);
   mImpl->attach_callback(func, mode);
 }
 
-void DigitalPin::detach_callbacks()
+void DigitalPin::detach_callbacks() const
 {
   DigitalPin::s_gpiosWithInterrupts.erase(mGpio);
   mImpl->detach_callbacks();
 }
 
-void DigitalPin::disconnect() { disconnect_pin(mImpl->mDigitalPin); }
+void DigitalPin::disconnect() const { disconnect_pin(mImpl->mDigitalPin); }
 
 #endif

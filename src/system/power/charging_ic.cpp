@@ -19,11 +19,13 @@
 namespace charger {
 namespace drivers {
 
+using charger_ic = bq25713::BQ25713;
+
 // Initialise the device and library
-bq25713::BQ25713 chargerIc;
+charger_ic chargerIc;
 
 // Create instance of registers data structure
-bq25713::BQ25713::Regt chargerIcRegisters;
+charger_ic::Regt chargerIcRegisters;
 
 // store the ADC measurments
 static Measurments measurments_s;
@@ -146,13 +148,13 @@ void control_charge()
           not isInOtg_s;
   // inhibit charging
   chargerIc.readRegEx(chargerIcRegisters.chargeOption0);
-  const int shouldInihibit = shouldCharge ? 0 : 1;
+  const char shouldInihibit = shouldCharge ? 0 : 1;
 
   // if charge status changed, write it
   if (chargerIcRegisters.chargeOption0.CHRG_INHIBIT() != shouldInihibit)
   {
     chargerIcRegisters.chargeOption0.set_CHRG_INHIBIT(shouldInihibit);
-    chargerIc.writeRegEx(chargerIcRegisters.chargeOption0);
+    charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
   }
 }
 
@@ -180,7 +182,7 @@ void control_OTG()
       // TODO test and debug LOW RANGE
       chargerIcRegisters.chargeOption3.set_OTG_RANGE_LOW(0);
       chargerIcRegisters.chargeOption3.set_EN_OTG(1);
-      chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
+      charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
       chargerIc.readRegEx(chargerIcRegisters.chargerStatus);
       if (not chargerIcRegisters.chargerStatus.IN_OTG())
@@ -214,7 +216,7 @@ void control_OTG()
       DigitalPin(DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
       chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
       chargerIcRegisters.chargeOption3.set_EN_OTG(1);
-      chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
+      charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
     }
   }
   else
@@ -261,13 +263,13 @@ void enable_ico(const bool enable)
     // enable ICO
     chargerIcRegisters.chargeOption3.set_EN_ICO_MODE(1);
     chargerIcRegisters.chargeOption3.set_RESET_VINDPM(1);
-    chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
+    charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
   }
   else
   {
     // disable ICO
     chargerIcRegisters.chargeOption3.set_EN_ICO_MODE(0);
-    chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
+    charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
   }
 }
 
@@ -345,7 +347,7 @@ void run_ADC()
     chargerIcRegisters.aDCOption.set_EN_ADC_VSYS(1);
     chargerIcRegisters.aDCOption.set_EN_ADC_VBAT(1);
     // write the register
-    chargerIc.writeRegEx(chargerIcRegisters.aDCOption);
+    charger_ic::writeRegEx(chargerIcRegisters.aDCOption);
 
     isAdcTriggered = true;
   }
@@ -387,7 +389,7 @@ void program_input_current_limit()
 
   // enable IDPM
   chargerIcRegisters.chargeOption0.set_EN_IDPM(1);
-  chargerIc.writeRegEx(chargerIcRegisters.chargeOption0);
+  charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
 
   if (isChargeOk_s and inputCurrentLimit_mA > 0)
   {
@@ -415,7 +417,7 @@ void program_input_current_limit()
 
     // force disable ILIM pin hardware input current limit
     chargerIcRegisters.chargeOption2.set_EN_EXTILIM(0);
-    chargerIc.writeRegEx(chargerIcRegisters.chargeOption2);
+    charger_ic::writeRegEx(chargerIcRegisters.chargeOption2);
   }
   // set in current to 0
   else
@@ -428,7 +430,7 @@ void program_input_current_limit()
 
     // enable hardware limit check
     chargerIcRegisters.chargeOption2.set_EN_EXTILIM(1);
-    chargerIc.writeRegEx(chargerIcRegisters.chargeOption2);
+    charger_ic::writeRegEx(chargerIcRegisters.chargeOption2);
   }
 
   // read IDPM status (should be enabled)
@@ -464,7 +466,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
     return false;
   }
 
-  if (chargerIc.isFlagRaised or chargerIcRegisters.manufacturerID.get_manufacturerID() != bq25713::MANUFACTURER_ID or
+  if (charger_ic::isFlagRaised or chargerIcRegisters.manufacturerID.get_manufacturerID() != bq25713::MANUFACTURER_ID or
       chargerIcRegisters.deviceID.get_deviceID() != bq25713::DEVICE_ID)
   {
     // error: those constants do not indicate a BQ25713
@@ -480,7 +482,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
     // write the reset flag
     chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
     chargerIcRegisters.chargeOption3.set_RESET_REG(1);
-    chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
+    charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
     // wait until the flag is lowered
     uint32_t timeout = time_ms() + 500;
@@ -501,14 +503,14 @@ bool enable(const uint16_t minSystemVoltage_mV,
   chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
   // disable high impedance mode
   chargerIcRegisters.chargeOption3.set_EN_HIZ(0);
-  chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
+  charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
   // disable low power mode
   chargerIcRegisters.chargeOption0.set_EN_LWPWR(0);
-  chargerIc.writeRegEx(chargerIcRegisters.chargeOption0);
+  charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
 
   chargerIcRegisters.prochotOption1.set_IDCHG_VTH(128 + (maxDichargingCurrent_mA / 512));
-  chargerIc.writeRegEx(chargerIcRegisters.prochotOption1);
+  charger_ic::writeRegEx(chargerIcRegisters.prochotOption1);
 
   // disable ICO
   enable_ico(false);
@@ -520,12 +522,12 @@ bool enable(const uint16_t minSystemVoltage_mV,
   chargerIcRegisters.chargeOption0.set_EN_IDPM(1);
   // set watchog timer to 5 seconds (lowest)
   chargerIcRegisters.chargeOption0.set_WDTMR_ADJ(1);
-  chargerIc.writeRegEx(chargerIcRegisters.chargeOption0);
+  charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
 
   chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
   // set 6A inductor (TODO issue #131: change with system constants)
   chargerIcRegisters.chargeOption3.set_IL_AVG(0b0);
-  chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
+  charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
   // disable charge
   enable_charge(false);
@@ -535,18 +537,18 @@ bool enable(const uint16_t minSystemVoltage_mV,
   chargerIcRegisters.chargeOption1.set_EN_IBAT(1);
   // enable PSYS
   chargerIcRegisters.chargeOption1.set_EN_PSYS(1);
-  chargerIc.writeRegEx(chargerIcRegisters.chargeOption1);
+  charger_ic::writeRegEx(chargerIcRegisters.chargeOption1);
 
   // set the nominal voltage values
   const auto maxBatteryVoltage_mV_read = chargerIcRegisters.maxChargeVoltage.set(maxBatteryVoltage_mV);
   const auto minSystemVoltage_mV_read = chargerIcRegisters.minSystemVoltage.set(minSystemVoltage_mV);
-  const auto minInputVoltage_mV_read = chargerIcRegisters.inputVoltage.set(4200);
+  chargerIcRegisters.inputVoltage.set(4200);
 
   std::string startErrorMessage = "";
   bool isSuccessful = true;
 
   // a write failed at some point
-  if (chargerIc.isFlagRaised)
+  if (charger_ic::isFlagRaised)
   {
     isSuccessful = false;
     startErrorMessage += "\n\t- i2c failed flag raised";
@@ -623,7 +625,7 @@ void loop(const bool isChargeOk)
       // below 40 degrees, no reduction of charge current is made
       const float reducer = lmpd_constrain(lmpd_map<float, float>(coreTemp, 40.0, 70.0, 1.0, 0.0), 0.0, 1.0);
       // write the reduced current
-      chargerIcRegisters.chargeCurrent.set(reducer * powerLimits_s.maxChargingCurrent_mA);
+      chargerIcRegisters.chargeCurrent.set(static_cast<uint16_t>(reducer * powerLimits_s.maxChargingCurrent_mA));
     }
   }
 }
@@ -646,12 +648,12 @@ void shutdown()
   // enable low power mode
   chargerIc.readRegEx(chargerIcRegisters.chargeOption0);
   chargerIcRegisters.chargeOption0.set_EN_LWPWR(1);
-  chargerIc.writeRegEx(chargerIcRegisters.chargeOption0);
+  charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
 
   chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
   // disable high impedance mode
   chargerIcRegisters.chargeOption3.set_EN_HIZ(0);
-  chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
+  charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 }
 
 void set_input_current_limit(const uint16_t maxInputCurrent_mA, const bool shouldUseICO)
@@ -660,11 +662,7 @@ void set_input_current_limit(const uint16_t maxInputCurrent_mA, const bool shoul
   powerLimits_s.shoulduseICO = shouldUseICO;
 }
 
-uint16_t get_charge_current()
-{
-  return measurments_s.batChargeCurrent_mA;
-  // return chargerIcRegisters.chargeCurrent.get();
-}
+uint16_t get_charge_current() { return measurments_s.batChargeCurrent_mA; }
 
 bool is_input_source_present()
 {
@@ -679,7 +677,7 @@ void try_clear_faults()
   if (chargerIcRegisters.chargerStatus.SYSOVP_STAT())
   {
     chargerIcRegisters.chargerStatus.set_SYSOVP_STAT(0);
-    chargerIc.writeRegEx(chargerIcRegisters.chargerStatus);
+    charger_ic::writeRegEx(chargerIcRegisters.chargerStatus);
   }
 }
 
@@ -700,7 +698,7 @@ void disable_OTG()
 {
   chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
   chargerIcRegisters.chargeOption3.set_EN_OTG(0);
-  chargerIc.writeRegEx(chargerIcRegisters.chargeOption3);
+  charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
   alerts::manager.clear(alerts::Type::OTG_FAILED);
 

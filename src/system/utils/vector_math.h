@@ -14,7 +14,7 @@ struct vec2d
   float y;
 
   vec2d() : x(0), y(0) {}
-  vec2d(const vec2d& other) : x(other.x), y(other.y) {}
+  vec2d(const vec2d& other) = default;
   vec2d(const float _x, const float _y) : x(_x), y(_y) {}
 
   float dot(const vec2d& other) const { return this->x * other.x + this->y * other.y; }

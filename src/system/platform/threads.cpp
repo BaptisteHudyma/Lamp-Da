@@ -12,11 +12,11 @@
 std::map<const char* const, TaskHandle_t> handles;
 
 // loop task
-static void _redirect_task(void* arg)
+[[noreturn]] static void _redirect_task(void* arg)
 {
   SchedulerRTOS::taskfunc_t taskfunc = (SchedulerRTOS::taskfunc_t)arg;
 
-  while (1)
+  while (true)
   {
     taskfunc();
     yield();
@@ -24,11 +24,11 @@ static void _redirect_task(void* arg)
 }
 
 // loop task
-static void _redirect_suspend_task(void* arg)
+[[noreturn]] static void _redirect_suspend_task(void* arg)
 {
   vTaskSuspend(NULL);
   SchedulerRTOS::taskfunc_t taskfunc = (SchedulerRTOS::taskfunc_t)arg;
-  while (1)
+  while (true)
   {
     taskfunc();
     yield();

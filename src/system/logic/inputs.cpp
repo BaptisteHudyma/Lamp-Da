@@ -87,6 +87,8 @@ bool always_button_click_callback(const uint8_t consecutiveButtonCheck)
         indicator::set_brightness_level(indicator::get_brightness_level() + 1);
         return false;
       }
+    default:
+      break;
   }
   return true;
 }
@@ -183,6 +185,8 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
         return false;
 #endif
       }
+    default:
+      break;
   }
 
   return true;
@@ -239,6 +243,8 @@ bool always_button_hold_callback(const uint8_t consecutiveButtonCheck,
         EVERY_N_MILLIS(1000) { indicator::set_brightness_level(indicator::get_brightness_level() + 1); }
         return false;
       }
+    default:
+      break;
   }
 
   return true;
@@ -319,7 +325,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
               // min level
               brightness::update_brightness(1);
             else
-              brightness::update_brightness(brightness - brightnessUpdateStepSize);
+              brightness::update_brightness(static_cast<brightness_t>(brightness - brightnessUpdateStepSize));
           }
           /// go up
           else
@@ -331,7 +337,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
               // min level
               brightness::update_brightness(maxBrightness);
             else
-              brightness::update_brightness(brightness + brightnessUpdateStepSize);
+              brightness::update_brightness(static_cast<brightness_t>(brightness + brightnessUpdateStepSize));
           }
 
           // update saved brightness

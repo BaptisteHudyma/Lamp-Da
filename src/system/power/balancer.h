@@ -1,6 +1,7 @@
 #ifndef POWER_BALANCER_H
 #define POWER_BALANCER_H
 
+#include <array>
 #include <cstdint>
 
 #include "src/system/utils/constants.h"
@@ -10,9 +11,9 @@ namespace balancer {
 struct Status
 {
   // cells voltages, in order
-  uint16_t batteryVoltages_mV[batteryCount];
+  std::array<uint16_t, batteryCount> batteryVoltages_mV;
   // true if the cell is currently balancing
-  bool isBalancing[batteryCount];
+  std::array<bool, batteryCount> isBalancing;
   // voltage of the battery pack
   uint16_t stackVoltage_mV;
   // temperature of the component

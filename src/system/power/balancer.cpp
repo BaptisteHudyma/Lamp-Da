@@ -33,10 +33,14 @@ bool Status::is_valid() const
 
 Status _status;
 
-bq76905::BQ76905 balancer;
-bq76905::BQ76905::Regt balancerRegisters;
+using balancer_t = bq76905::BQ76905;
+balancer_t balancer;
+balancer_t::Regt balancerRegisters;
 
 bool isBalancingEnabled = false;
+
+bool isInit = false;
+bool isInitFirstFullScanDone = false;
 
 uint16_t get_battery_voltage_mv(const uint8_t index)
 {
@@ -56,6 +60,8 @@ uint16_t get_battery_voltage_mv(const uint8_t index)
       return balancerRegisters.cell4Voltage.get();
     case 4:
       return balancerRegisters.cell5Voltage.get();
+    default:
+      break;
   }
 
   // never reachable
@@ -108,6 +114,8 @@ void set_balancing(uint8_t cellIndex, bool shouldBalance)
     case 4:
       balancerRegisters.cbActiveCells.set_CBCELLS_4(shouldBalance ? 1 : 0);
       break;
+    default:
+      break;
   }
 
   // never reachable
@@ -134,6 +142,8 @@ bool is_balancing(uint8_t cellIndex)
       return balancerRegisters.cbActiveCells.CBCELLS_3() != 0;
     case 4:
       return balancerRegisters.cbActiveCells.CBCELLS_4() != 0;
+    default:
+      break;
   }
 
   // never reachable
@@ -210,14 +220,13 @@ void disable_battery_balancing()
   // turn off all balancing
   for (uint8_t i = 0; i < batteryCount; i++)
   {
-    set_balancing(i, 0);
+    set_balancing(i, false);
   }
   balancerRegisters.cbActiveCells.write();
 }
 
 Status get_status() { return _status; }
 
-bool isInit = false;
 bool init()
 {
   if (i2c_check_existence(bq76905::i2cObjectIndex, bq76905::BQ76905::BQ76905addr) != 0)
@@ -250,7 +259,7 @@ bool init()
   balancerRegisters.alarmEnable.set_ADSCAN(1);   // signal value scan
   balancerRegisters.alarmEnable.set_FULLSCAN(1); // signal value scan
   balancerRegisters.alarmEnable.set_CB(1);       // signal cell balancing
-  balancer.writeRegEx(balancerRegisters.alarmEnable);
+  balancer_t::writeRegEx(balancerRegisters.alarmEnable);
 
   // deactivate external temperature sensing and pullup on TS
   balancerRegisters.settingConfiguration_DA.read_reg();
@@ -273,7 +282,6 @@ bool init()
   return true;
 }
 
-bool isInitFirstFullScanDone = false;
 void loop()
 {
   if (not isInit)

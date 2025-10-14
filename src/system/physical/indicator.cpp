@@ -18,9 +18,9 @@ static_assert(greenColorCorrection * 255 > 32, "green correction is too small to
 static_assert(blueColorCorrection * 255 > 32, "blue correction is too small to be visible");
 
 // Pins for the led on the button
-static DigitalPin ButtonRedPin(RedIndicator);
-static DigitalPin ButtonGreenPin(GreenIndicator);
-static DigitalPin ButtonBluePin(BlueIndicator);
+static const DigitalPin ButtonRedPin(RedIndicator);
+static const DigitalPin ButtonGreenPin(GreenIndicator);
+static const DigitalPin ButtonBluePin(BlueIndicator);
 
 static inline float brigthnessMultiplier = 1.0f;
 
@@ -41,7 +41,7 @@ void set_color(const utils::ColorSpace::RGB& c)
   ButtonBluePin.write(std::ceil(col.blue * blueColorCorrection * brigthnessMultiplier));
 }
 
-void set_brightness(const uint8_t brightness) { brigthnessMultiplier = brightness / 255.0; }
+void set_brightness(const uint8_t brightness) { brigthnessMultiplier = brightness / 255.0f; }
 uint8_t get_brightness() { return brigthnessMultiplier * 255; }
 
 bool breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::ColorSpace::RGB& color)
@@ -64,13 +64,13 @@ bool breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::Colo
     if (progression <= 0.5)
     {
       // map from [0.0; 0.5] to [0.0; 1.0]
-      set_color(utils::ColorSpace::RGB(utils::get_gradient(0, color.get_rgb().color, 2.0 * progression)));
+      set_color(utils::ColorSpace::RGB(utils::get_gradient(0, color.get_rgb().color, 2.0f * progression)));
     }
     // falling edge
     else
     {
       // map from ]0.5; 1.0] to [0.0; 1.0]
-      set_color(utils::ColorSpace::RGB(utils::get_gradient(0, color.get_rgb().color, 2.0 * (1.0 - progression))));
+      set_color(utils::ColorSpace::RGB(utils::get_gradient(0, color.get_rgb().color, 2.0f * (1.0f - progression))));
     }
   }
   // breeze off

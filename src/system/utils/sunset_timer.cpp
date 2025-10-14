@@ -1,7 +1,6 @@
 #include "sunset_timer.h"
 
 #include "brightness_handle.h"
-#include "constants.h"
 #include "utils.h"
 
 #include "src/system/logic/alerts.h"

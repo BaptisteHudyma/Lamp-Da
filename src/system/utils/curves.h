@@ -4,6 +4,7 @@
 #include "src/system/utils/utils.h"
 
 #include <algorithm>
+#include <cmath>
 #include <vector>
 
 namespace curves {
