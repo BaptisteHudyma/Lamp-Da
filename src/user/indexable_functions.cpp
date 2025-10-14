@@ -1,6 +1,10 @@
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #ifndef LMBD_SIMPLE_EMULATOR
 
+// #ifndef NUDZ_MODES_ENABLED
+// #define NUDZ_MODES_ENABLED
+// #endif
+
 #include <cstdint>
 
 #include "src/system/logic/behavior.h"
@@ -22,17 +26,35 @@
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/legacy/legacy_modes.hpp"
 
+#ifdef NUDZ_MODES_ENABLED
+#include "src/modes/nudz/nudz_scrollimage.hpp"
+#endif
+
 namespace user {
 
 //
 // list your groups & modes here
 //
 
+#ifdef NUDZ_MODES_ENABLED
+using NudzModes = modes::GroupFor<modes::nudz::NudzHeinekenMode,
+                                  modes::nudz::NudzHuitSixMode,
+                                  modes::nudz::NudzViolonsaoulsMode,
+                                  modes::nudz::NudzBeerGlassMode>;
+
+using ManagerTy = modes::ManagerFor<modes::FixedModes,
+                                    // modes::MiscFixedModes,
+                                    modes::legacy::CalmModes,
+                                    modes::legacy::PartyModes,
+                                    modes::legacy::SoundModes,
+                                    NudzModes>;
+#else
 using ManagerTy = modes::ManagerFor<modes::FixedModes,
                                     // modes::MiscFixedModes,
                                     modes::legacy::CalmModes,
                                     modes::legacy::PartyModes,
                                     modes::legacy::SoundModes>;
+#endif
 
 //
 // implementation details
