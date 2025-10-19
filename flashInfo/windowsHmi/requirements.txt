@@ -1,0 +1,7 @@
+requests
+pyserial
+serial-tool
+pyinstaller
+
+psutil
+pyudev
