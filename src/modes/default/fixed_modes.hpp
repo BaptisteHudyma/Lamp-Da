@@ -40,7 +40,7 @@ struct RainbowMode : public modes::BasicMode
 
   static void loop(auto& ctx)
   {
-    const float index = ctx.get_active_custom_ramp();
+    const uint8_t index = ctx.get_active_custom_ramp();
     const float hue = (index / 256.f) * 360.f;
     uint32_t color = colors::fromAngleHue(hue);
 

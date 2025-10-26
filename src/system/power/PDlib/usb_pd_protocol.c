@@ -2798,7 +2798,7 @@ void pd_init()
 #endif
 
   CPRINTS("TCPC init %s", res ? "failed" : "ready");
-  this_state = PD_STATE_SUSPENDED;
+  this_state = res ? PD_STATE_SUSPENDED : PD_DEFAULT_STATE();
 #ifndef CONFIG_USB_PD_TCPC
   if (!res)
   {
