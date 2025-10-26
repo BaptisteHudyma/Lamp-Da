@@ -910,10 +910,7 @@ public:
   }
 
   /// \brief (physical) Return current sound level in decibels
-  microphone::PdmData LMBD_INLINE get_sound_data()
-  {
-    return microphone::get_data();
-  }
+  microphone::PdmData LMBD_INLINE get_sound_data() { return microphone::get_data(); }
 
   /** \brief (physical) The "now" on milliseconds, updated just before loop.
    *
