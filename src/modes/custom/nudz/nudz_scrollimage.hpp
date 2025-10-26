@@ -1,7 +1,7 @@
 
 #include "src/system/physical/imu.h"
 
-namespace modes::nudz {
+namespace modes::custom::nudz {
 
 //   struct ImageTy {
 //     static constexpr uint16_t width = 26;
@@ -455,4 +455,4 @@ struct NudzBeerGlassMode : public BasicMode
   static constexpr bool hasCustomRamp = true;
 };
 
-} // namespace modes::nudz
+} // namespace modes::custom::nudz
