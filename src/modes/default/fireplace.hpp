@@ -47,7 +47,7 @@ struct FireMode : public BasicMode
     const int16_t ySpeed = zSpeed * ctx.lamp.frameDurationMs;
 
     // measure custom ramp for fire sound sensitivity
-    const float index = ctx.get_active_custom_ramp();
+    const uint8_t index = ctx.get_active_custom_ramp();
     if (index > 16)
     {
       ctx.state.soundEvent.update(ctx);
