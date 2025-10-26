@@ -29,7 +29,7 @@ static bool enableCharge_s = true;
 struct BatteryStatus_t
 {
   // is battery detected
-  bool isPresent = 0;
+  bool isPresent = false;
   // current voltage, in millivolts
   uint16_t voltage_mV = 0;
   // current usage, in milliamps
@@ -348,7 +348,7 @@ bool setup()
   return true;
 }
 
-DigitalPin chargeOkPin(DigitalPin::GPIO::Input_isChargeOk);
+const DigitalPin chargeOkPin(DigitalPin::GPIO::Input_isChargeOk);
 
 void loop()
 {

@@ -58,7 +58,7 @@ extern "C" {
    * \param[in] stopBit if > 0, will add a stopBit after message
    */
   extern int i2c_writeData(
-          uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t* buf, int stopBit);
+          uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, const uint8_t* buf, int stopBit);
 
   /**
    * \brief Read data from the two wire interface

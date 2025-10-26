@@ -1,15 +1,16 @@
 #include "utils.h"
 
-#include <math.h>
-#include <stdlib.h>
-
-#include <cstdint>
-
 #include "src/system/ext/math8.h"
 #include "src/system/ext/scale8.h"
 #include "src/system/ext/random8.h"
 
 #include "colorspace.h"
+
+#include <math.h>
+#include <stdlib.h>
+
+#include <cstdint>
+#include <array>
 
 namespace utils {
 
@@ -46,7 +47,7 @@ uint32_t get_random_color()
 {
   static uint8_t count;
 
-  uint8_t color[3];
+  std::array<uint8_t, 3> color;
   color[count] = random8(255);
   uint8_t a0 = random8(1);
   uint8_t a1 = ((!a0) + count + 1) % 3;
@@ -81,9 +82,10 @@ uint32_t get_random_complementary_color(const uint32_t color, const float tolera
   const float hue = ColorSpace::HSV(c).h;
 
   // add random offset
-  const float comp = 360.0 * (0.1 + lmpd_map<uint32_t, float>(rand(), 0, RAND_MAX, -tolerance / 2.0, tolerance / 2.0));
+  const float comp =
+          360.0f * (0.1f + lmpd_map<uint32_t, float>(rand(), 0, RAND_MAX, -tolerance / 2.0f, tolerance / 2.0f));
 
-  const uint16_t finalHue = fmod(hue + 360.0 / 2.0 + comp, 360.0f); // add offset to the hue
+  const uint16_t finalHue = fmod(hue + 360.0f / 2.0f + comp, 360.0f); // add offset to the hue
   return utils::hue_to_rgb_sinus(finalHue);
 }
 
@@ -107,7 +109,8 @@ COLOR color_blend(COLOR color1, COLOR color2, uint16_t blend, bool b16)
 
 uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const float level)
 {
-  union COLOR colorStartArray, colorEndArray;
+  union COLOR colorStartArray;
+  union COLOR colorEndArray;
   colorStartArray.color = colorStart;
   colorEndArray.color = colorEnd;
 
@@ -184,7 +187,7 @@ COLOR color_add(COLOR c1, COLOR c2, bool fast)
 
 uint32_t hue_to_rgb_sinus(const uint16_t angle)
 {
-  static const uint8_t lights[360] = {
+  static const std::array<uint8_t, 360> lights = {
           0,   0,   0,   0,   0,   1,   1,   2,   2,   3,   4,   5,   6,   7,   8,   9,   11,  12,  13,  15,  17,  18,
           20,  22,  24,  26,  28,  30,  32,  35,  37,  39,  42,  44,  47,  49,  52,  55,  58,  60,  63,  66,  69,  72,
           75,  78,  81,  85,  88,  91,  94,  97,  101, 104, 107, 111, 114, 117, 121, 124, 127, 131, 134, 137, 141, 144,

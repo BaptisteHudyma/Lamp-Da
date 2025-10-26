@@ -26,11 +26,11 @@ public:
     setPeriod(period);
   };
   void setPeriod(uint32_t period) { mPeriod = period; };
-  uint32_t getTime() { return (uint32_t)(time_ms()); };
-  uint32_t getPeriod() { return mPeriod; };
-  uint32_t getElapsed() { return getTime() - mPrevTrigger; }
-  uint32_t getRemaining() { return mPeriod - getElapsed(); }
-  uint32_t getLastTriggerTime() { return mPrevTrigger; }
+  uint32_t getTime() const { return time_ms(); };
+  uint32_t getPeriod() const { return mPeriod; };
+  uint32_t getElapsed() const { return getTime() - mPrevTrigger; }
+  uint32_t getRemaining() const { return mPeriod - getElapsed(); }
+  uint32_t getLastTriggerTime() const { return mPrevTrigger; }
   bool ready()
   {
     bool isReady = not isInit or (getElapsed() >= mPeriod);

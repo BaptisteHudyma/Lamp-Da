@@ -105,8 +105,6 @@ void ic_interrupt()
 
 bool is_vbus_powered()
 {
-  // isVbusPresent = pd_is_vbus_present(devicePort);
-
   // more reliable when vbus is under load from battery charging
   const auto& measurments = charger::drivers::get_measurments();
   if (measurments.isChargeOk and measurments.vbus_mA >= 100)
@@ -121,10 +119,10 @@ struct UsbPDData
   bool isVbusPowered;
   bool isPowerSourceDetected;
   bool isUsbPd;
-  uint16_t vbusVoltage;
+  int vbusVoltage;
 
-  uint16_t maxInputCurrent;
-  uint16_t maxInputVoltage;
+  uint32_t maxInputCurrent;
+  uint32_t maxInputVoltage;
 
   std::string pdAlgoStatus;
 
@@ -154,21 +152,21 @@ struct UsbPDData
       isUsbPd = newisUsbPd;
     }
 
-    uint16_t newvbusVoltage = get_vbus_voltage();
+    const auto newvbusVoltage = get_vbus_voltage();
     if (newvbusVoltage != vbusVoltage)
     {
       // hasChanged = true;
       vbusVoltage = newvbusVoltage;
     }
 
-    uint16_t newmaxInputCurrent = get_available_pd_current_mA();
+    const auto newmaxInputCurrent = get_available_pd_current_mA();
     if (newmaxInputCurrent != maxInputCurrent)
     {
       hasChanged = true;
       maxInputCurrent = newmaxInputCurrent;
     }
 
-    uint16_t newmaxInputVoltage = get_available_pd_voltage_mV();
+    const auto newmaxInputVoltage = get_available_pd_voltage_mV();
     if (newmaxInputVoltage != maxInputVoltage)
     {
       hasChanged = true;
@@ -343,7 +341,7 @@ void loop()
   data.update();
 
   // update battery level
-  set_battery_level(battery::get_battery_level() / 100);
+  set_battery_level(static_cast<uint8_t>(battery::get_battery_level() / 100));
 
   // ignore source activity if we are otg (prevent spurious reset)
   if (is_switching_to_otg())
@@ -406,7 +404,7 @@ uint16_t get_max_input_current()
     if (can_use_PD_full_power())
     {
       // do not use the whole current capabilities, or the source will cut us off
-      return get_available_pd_current_mA() * 0.90;
+      return static_cast<uint16_t>(get_available_pd_current_mA() * 0.90);
     }
   }
   // no usb pd since some time, and vbus seems stable so try to use it

@@ -10,4 +10,4 @@ constexpr DigitalPin::GPIO RedIndicator = DigitalPin::GPIO::gpio0;
 constexpr DigitalPin::GPIO GreenIndicator = DigitalPin::GPIO::gpio1;
 constexpr DigitalPin::GPIO BlueIndicator = DigitalPin::GPIO::gpio2;
 
-static DigitalPin ButtonPin(buttonPin);
+static const DigitalPin ButtonPin(buttonPin);

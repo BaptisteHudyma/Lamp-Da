@@ -8,6 +8,7 @@ namespace utils::ColorSpace {
 class Base
 {
 public:
+  virtual ~Base() = default;
   virtual COLOR get_rgb() const = 0;
 };
 
@@ -76,7 +77,7 @@ public:
 
   void from_rgb(const COLOR& rgb);
 
-  uint16_t get_scaled_hue() const { return h / 360.0 * UINT16_MAX; }
+  uint16_t get_scaled_hue() const { return static_cast<uint16_t>(h / 360.0 * UINT16_MAX); }
 
   double h;
   double s;
@@ -110,7 +111,7 @@ public:
 
   void from_rgb(const COLOR& rgb);
 
-  uint16_t get_scaled_hue() const { return h / 360.0 * UINT16_MAX; }
+  uint16_t get_scaled_hue() const { return static_cast<uint16_t>(h / 360.0 * UINT16_MAX); }
 
   double l;
   double c;
@@ -144,7 +145,7 @@ public:
 
   void from_rgb(const COLOR& rgb);
 
-  uint16_t get_scaled_hue() const { return h / 360.0 * UINT16_MAX; }
+  uint16_t get_scaled_hue() const { return static_cast<uint16_t>(h / 360.0 * UINT16_MAX); }
 
   double l;
   double c;

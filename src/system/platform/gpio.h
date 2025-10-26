@@ -10,7 +10,7 @@ class DigitalPinImpl;
 class DigitalPin
 {
 public:
-  enum GPIO
+  enum class GPIO
   {
     gpio0,
     gpio1,
@@ -41,7 +41,7 @@ public:
     Output_EnableVbusGate,
     Output_EnableOutputGate
   };
-  enum Mode
+  enum class Mode
   {
     kDefault = 0,
     kInput,
@@ -51,7 +51,7 @@ public:
     kInputPullUpSense,
     kOutputHighCurrent,
   };
-  enum Interrupt
+  enum class Interrupt
   {
     kChange,
     kRisingEdge,
@@ -59,28 +59,25 @@ public:
   };
 
   DigitalPin(GPIO pin);
-  ~DigitalPin();
-  DigitalPin(const DigitalPin& other);
-  DigitalPin& operator=(const DigitalPin& other);
 
   DigitalPin(DigitalPin&& other) = delete;
 
-  void set_pin_mode(Mode mode);
+  void set_pin_mode(Mode mode) const;
   bool is_high() const; // true if high, false if low
-  void set_high(bool isHigh);
+  void set_high(bool isHigh) const;
 
-  void write(uint16_t value);
+  void write(uint16_t value) const;
   uint16_t read() const;
 
   int pin() const; // get the raw pin id
 
-  typedef void (*voidFuncPtr)(void);
-  void attach_callback(voidFuncPtr func, Interrupt mode);
-  void detach_callbacks();
+  using voidFuncPtr = void (*)(void);
+  void attach_callback(voidFuncPtr func, Interrupt mode) const;
+  void detach_callbacks() const;
 
   // if called, this pin will be physically disconnected from any power/gnd
   // if will need to be reinitialized
-  void disconnect();
+  void disconnect() const;
 
   static void detach_all()
   {
@@ -96,7 +93,8 @@ public:
   static void deactivate_gpios()
   {
     // loop though all gpios, deactivate them all
-    for (int pin = GPIO::gpio0; pin != GPIO::Output_EnableOutputGate; ++pin)
+    for (uint32_t pin = static_cast<uint32_t>(GPIO::gpio0); pin != static_cast<uint32_t>(GPIO::Output_EnableOutputGate);
+         ++pin)
     {
       DigitalPin((GPIO)pin).disconnect();
     }

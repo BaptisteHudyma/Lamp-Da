@@ -12,7 +12,7 @@ extern "C" {
 
   struct emu_task_t
   {
-    volatile uint32_t timeout_us;
+    volatile uint64_t timeout_us;
     volatile uint32_t event;
   };
 
@@ -76,7 +76,7 @@ extern "C" {
   {
     uint64_t deadline = get_time().val + timeout_us;
     uint32_t events = 0;
-    int time_remaining_us = timeout_us;
+    uint64_t time_remaining_us = timeout_us;
 
     /* Add the timer event to the mask so we can indicate a timeout */
     event_mask |= TASK_EVENT_TIMER;

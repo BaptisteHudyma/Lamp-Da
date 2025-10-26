@@ -6,7 +6,7 @@
 namespace alerts {
 
 // 31 errors max
-enum Type : uint32_t
+enum class Type : uint32_t
 {
   // 0 means no errors
 
@@ -51,7 +51,7 @@ public:
   /**
    * \brief Return true if an alert is raised
    */
-  bool is_raised(const Type type) const { return (_current & type) != 0x00; }
+  bool is_raised(const Type type) const { return (_current & static_cast<uint32_t>(type)) != 0x00; }
 
   /**
    * \brief Return true if no alerts are raised
@@ -61,7 +61,7 @@ public:
   /**
    * \return the time since this alert was raised, or zero if it's not
    */
-  uint32_t get_time_since_raised(const Type type);
+  uint32_t get_time_since_raised(const Type type) const;
 
   /**
    * \brief an alert is raised that prevent power output

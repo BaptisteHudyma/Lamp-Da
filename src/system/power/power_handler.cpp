@@ -62,7 +62,7 @@ void set_error_state_message(const std::string& errorMsg)
 }
 
 // Define the state for the main prog state machine
-typedef enum
+using PowerStates = enum class power_states_t
 {
   // idle, default mode
   IDLE,
@@ -84,8 +84,8 @@ typedef enum
 
   // Should never happen, default state
   ERROR,
-} PowerStates;
-const char* PowerStatesStr[] = {
+};
+const char* const PowerStatesStr[] = {
         "IDLE",
         "CLEAR_POWER_RAILS",
         "CHARGING_MODE",
@@ -103,12 +103,12 @@ namespace __private {
 // main state machine (start in error to force user to init)
 StateMachine<PowerStates> powerMachine(PowerStates::ERROR);
 
-DigitalPin dischargeVbus(DigitalPin::GPIO::Output_DischargeVbus);
-DigitalPin vbusDirection(DigitalPin::GPIO::Output_VbusDirection);
-DigitalPin fastRoleSwap(DigitalPin::GPIO::Output_VbusFastRoleSwap);
+const DigitalPin dischargeVbus(DigitalPin::GPIO::Output_DischargeVbus);
+const DigitalPin vbusDirection(DigitalPin::GPIO::Output_VbusDirection);
+const DigitalPin fastRoleSwap(DigitalPin::GPIO::Output_VbusFastRoleSwap);
 
 // if high, signal an USB fault
-DigitalPin usbFault(DigitalPin::GPIO::Signal_UsbProtectionFault);
+const DigitalPin usbFault(DigitalPin::GPIO::Signal_UsbProtectionFault);
 } // namespace __private
 
 uint32_t get_vbus_rail_voltage() { return powerDelivery::get_vbus_voltage(); }
@@ -235,15 +235,15 @@ void handle_output_voltage_mode()
   if (time_ms() < _temporaryOutputTimeOut)
   {
     set_otg_parameters(_temporaryOutputVoltage_mV, _temporaryOutputCurrent_mA);
-    isVbusVoltageOk = (vbusVoltage >= _temporaryOutputVoltage_mV * voltageGateLowerMultiplier and
-                       vbusVoltage <= _temporaryOutputVoltage_mV * voltageGateHigherMultiplier);
+    isVbusVoltageOk = (vbusVoltage >= static_cast<uint32_t>(_temporaryOutputVoltage_mV * voltageGateLowerMultiplier) and
+                       vbusVoltage <= static_cast<uint32_t>(_temporaryOutputVoltage_mV * voltageGateHigherMultiplier));
   }
   else
   {
     _temporaryOutputTimeOut = 0;
     set_otg_parameters(_outputVoltage_mV, _outputCurrent_mA);
-    isVbusVoltageOk = (vbusVoltage >= _outputVoltage_mV * voltageGateLowerMultiplier and
-                       vbusVoltage <= _outputVoltage_mV * voltageGateHigherMultiplier);
+    isVbusVoltageOk = (vbusVoltage >= static_cast<uint32_t>(_outputVoltage_mV * voltageGateLowerMultiplier) and
+                       vbusVoltage <= static_cast<uint32_t>(_outputVoltage_mV * voltageGateHigherMultiplier));
   }
 
   // enable power gate when voltage matches expected voltage
@@ -319,7 +319,7 @@ void handle_otg_mode()
       not battery::is_battery_usable_as_power_source() or not alerts::manager.can_use_usb_port())
   {
     // reset pd machine
-    powerDelivery::force_set_to_source_mode(0);
+    powerDelivery::force_set_to_source_mode(false);
     powerDelivery::suspend_pd_state_machine();
     powerDelivery::resume_pd_state_machine();
 
@@ -346,7 +346,7 @@ void handle_otg_mode()
     static bool isInOtgModeForce = false;
     if (not isInOtgModeForce)
     {
-      powerDelivery::force_set_to_source_mode(1);
+      powerDelivery::force_set_to_source_mode(true);
       isInOtgModeForce = true;
     }
   }
@@ -405,7 +405,7 @@ void state_machine_behavior()
   // if state changed, display the new state
   if (powerMachine.state_just_changed())
   {
-    lampda_print("POWER_S_MACH > switched to state %s", PowerStatesStr[powerMachine.get_state()]);
+    lampda_print("POWER_S_MACH > switched to state %s", PowerStatesStr[static_cast<size_t>(powerMachine.get_state())]);
   }
 
   switch (powerMachine.get_state())
@@ -449,7 +449,8 @@ void state_machine_behavior()
 
 void switch_state(const PowerStates newState)
 {
-  powerMachine.set_state(PowerStates::CLEAR_POWER_RAILS, clearPowerRailFailureDelay_ms * 1.5, newState);
+  powerMachine.set_state(
+          PowerStates::CLEAR_POWER_RAILS, static_cast<uint32_t>(clearPowerRailFailureDelay_ms * 1.5f), newState);
 }
 
 bool can_switch_states() { return powerMachine.get_state() != PowerStates::ERROR; }
@@ -464,7 +465,7 @@ bool go_to_output_mode()
   if (__private::can_switch_states())
   {
     powerDelivery::suspend_pd_state_machine();
-    powerDelivery::force_set_to_source_mode(0);
+    powerDelivery::force_set_to_source_mode(false);
     powerDelivery::allow_otg(false);
     set_otg_parameters(0, 0);
 
@@ -479,7 +480,7 @@ bool go_to_charger_mode()
   // TODO: and other checks
   if (__private::can_switch_states())
   {
-    powerDelivery::force_set_to_source_mode(0);
+    powerDelivery::force_set_to_source_mode(false);
     __private::switch_state(PowerStates::CHARGING_MODE);
     return true;
   }
@@ -576,7 +577,10 @@ bool enable_charge(const bool enable)
   return true;
 }
 
-std::string get_state() { return std::string(PowerStatesStr[__private::powerMachine.get_state()]); }
+std::string get_state()
+{
+  return std::string(PowerStatesStr[static_cast<size_t>(__private::powerMachine.get_state())]);
+}
 
 bool is_in_output_mode() { return __private::powerMachine.get_state() == PowerStates::OUTPUT_VOLTAGE_MODE; }
 bool is_in_otg_mode() { return __private::powerMachine.get_state() == PowerStates::OTG_MODE; }

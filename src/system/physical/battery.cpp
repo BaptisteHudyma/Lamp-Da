@@ -85,14 +85,12 @@ bool check_charger_battery_voltage()
  */
 uint16_t get_raw_battery_voltage_mv()
 {
-  uint16_t batteryVoltage_mV = 0;
-
   // WILL UPDATE s_batteryVoltage_mV VALUE if they return true
   if (not check_balancer_battery_voltage() and not check_charger_battery_voltage())
   {
     // else: not ready yet ? error, return max voltage for now
     // TODO: after a set time, return an error, the system should not be used without batteries
-    return batteryMaxVoltage_mV;
+    return 0;
   }
 
   // absolute minimum/maximum battery pack voltage
@@ -103,7 +101,7 @@ uint16_t get_raw_battery_voltage_mv()
   {
     alerts::manager.raise(alerts::Type::BATTERY_READINGS_INCOHERENT);
     // return a default value
-    return batteryMaxVoltage_mV;
+    return 0;
   }
   // return the true battery voltage
   return s_batteryVoltage_mV;

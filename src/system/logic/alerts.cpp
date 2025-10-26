@@ -43,39 +43,39 @@ inline const char* AlertsToText(const Type type)
 {
   switch (type)
   {
-    case MAIN_LOOP_FREEZE:
+    case Type::MAIN_LOOP_FREEZE:
       return "MAIN_LOOP_FREEZE";
-    case BATTERY_READINGS_INCOHERENT:
+    case Type::BATTERY_READINGS_INCOHERENT:
       return "BATTERY_READINGS_INCOHERENT";
-    case BATTERY_CRITICAL:
+    case Type::BATTERY_CRITICAL:
       return "BATTERY_CRITICAL";
-    case BATTERY_LOW:
+    case Type::BATTERY_LOW:
       return "BATTERY_LOW";
-    case LONG_LOOP_UPDATE:
+    case Type::LONG_LOOP_UPDATE:
       return "LONG_LOOP_UPDATE";
-    case TEMP_TOO_HIGH:
+    case Type::TEMP_TOO_HIGH:
       return "TEMP_TOO_HIGH";
-    case TEMP_CRITICAL:
+    case Type::TEMP_CRITICAL:
       return "TEMP_CRITICAL";
-    case BLUETOOTH_ADVERT:
+    case Type::BLUETOOTH_ADVERT:
       return "BLUETOOTH_ADVERT";
-    case HARDWARE_ALERT:
+    case Type::HARDWARE_ALERT:
       return "HARDWARE_ALERT";
-    case FAVORITE_SET:
+    case Type::FAVORITE_SET:
       return "FAVORITE_SET";
-    case OTG_FAILED:
+    case Type::OTG_FAILED:
       return "OTG_FAILED";
-    case SYSTEM_OFF_FAILED:
+    case Type::SYSTEM_OFF_FAILED:
       return "SYSTEM_OFF_FAILED";
-    case SYSTEM_IN_ERROR_STATE:
+    case Type::SYSTEM_IN_ERROR_STATE:
       return "SYSTEM_IN_ERROR_STATE";
-    case SYSTEM_IN_LOCKOUT:
+    case Type::SYSTEM_IN_LOCKOUT:
       return "SYSTEM_IN_LOCKOUT";
-    case SUNSET_TIMER_ENABLED:
+    case Type::SUNSET_TIMER_ENABLED:
       return "SUNSET_TIMER_ENABLED";
-    case SYSTEM_SLEEP_SKIPPED:
+    case Type::SYSTEM_SLEEP_SKIPPED:
       return "SYSTEM_SLEEP_SKIPPED";
-    case USB_PORT_SHORT:
+    case Type::USB_PORT_SHORT:
       return "USB_PORT_SHORT";
     default:
       return "UNSUPPORTED TYPE";
@@ -94,7 +94,7 @@ uint16_t get_battery_level()
     const uint16_t newPercent = battery::get_battery_minimum_cell_level();
     if ((lastPercent / 100) != (newPercent / 100))
     {
-      bluetooth::write_battery_level(newPercent / 100);
+      bluetooth::write_battery_level(static_cast<uint8_t>(newPercent / 100));
     }
     lastPercent = newPercent;
   }
@@ -105,6 +105,8 @@ uint16_t get_battery_level()
 
 struct AlertBase
 {
+  virtual ~AlertBase() = default;
+
   /**
    * \brief Return the timeout after which an alert will make the system auto-shutdown
    */
@@ -117,7 +119,9 @@ struct AlertBase
   /**
    * \brief function executed when this alert is raised
    */
-  virtual void execute() const {};
+  virtual void execute() const {
+    //
+  };
 
   /**
    * \brief return true if this alert type should be raised
@@ -251,7 +255,7 @@ struct Alert_BatteryLow : public AlertBase
     const bool isBatteryLow = not chargerState.is_effectivly_charging() and batteryLevel < batteryLow;
     // battery low will be raise, notify bluetooth
     if (isBatteryLow)
-      bluetooth::notify_battery_level(batteryLevel / 100);
+      bluetooth::notify_battery_level(static_cast<uint8_t>(batteryLevel / 100));
     return isBatteryLow;
   }
 
@@ -265,7 +269,7 @@ struct Alert_BatteryLow : public AlertBase
   void execute() const override
   {
     // limit brightness to quarter of the max value
-    constexpr brightness_t clampedBrightness = 0.25 * maxBrightness;
+    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.25 * maxBrightness);
 
     // save some battery
     bluetooth::stop_bluetooth_advertising();
@@ -307,7 +311,7 @@ struct Alert_TempTooHigh : public AlertBase
   void execute() const override
   {
     // limit brightness to half the max value
-    constexpr brightness_t clampedBrightness = 0.5 * maxBrightness;
+    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.5 * maxBrightness);
 
     brightness::set_max_brightness(clampedBrightness);
     brightness::update_brightness(brightness::get_brightness());
@@ -329,7 +333,7 @@ struct Alert_TempCritical : public AlertBase
   // never need to clear this alert, temp too high will always be a complete shutdown
   // bool should_be_cleared() const;
 
-  uint32_t alert_shutdown_timeout() const
+  uint32_t alert_shutdown_timeout() const override
   {
     // shutdown, critical temp is the absolute limit
     return 5000;
@@ -451,7 +455,7 @@ struct Alert_SunsetTimerSet : public AlertBase
     const auto buttonColor =
             utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
                                                        utils::ColorSpace::GREEN.get_rgb().color,
-                                                       battery::get_battery_minimum_cell_level() / 10000.0));
+                                                       battery::get_battery_minimum_cell_level() / 10000.0f));
 
     return indicator::breeze(5000, 5000, buttonColor);
   }
@@ -577,7 +581,7 @@ void handle_all(const bool shouldIgnoreAlerts)
     const auto buttonColor =
             utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
                                                        utils::ColorSpace::GREEN.get_rgb().color,
-                                                       battery::get_battery_minimum_cell_level() / 10000.0));
+                                                       battery::get_battery_minimum_cell_level() / 10000.0f));
 
     // display battery level
     const auto& chargerStatus = charger::get_state();
@@ -610,13 +614,6 @@ void handle_all(const bool shouldIgnoreAlerts)
     else
     {
       // we can handup here when starting/shutting down the system
-
-      // red to green
-      const auto buttonColor =
-              utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
-                                                         utils::ColorSpace::GREEN.get_rgb().color,
-                                                         battery::get_battery_minimum_cell_level() / 10000.0));
-
       // no charger operation, no output mode
       indicator::blink(1000, 1000, buttonColor);
     }
@@ -682,11 +679,11 @@ void AlertManager_t::raise(const Type type)
   }
   else
   {
-    statistics::signal_alert_raised(type);
+    statistics::signal_alert_raised(static_cast<uint32_t>(type));
   }
 
   lampda_print("ALERT raised: %s", AlertsToText(type));
-  _current |= type;
+  _current |= static_cast<uint32_t>(type);
 }
 
 void AlertManager_t::clear(const Type type)
@@ -694,10 +691,10 @@ void AlertManager_t::clear(const Type type)
   if (not is_raised(type))
     return;
   lampda_print("ALERT cleared: %s", AlertsToText(type));
-  _current ^= type;
+  _current ^= static_cast<uint32_t>(type);
 }
 
-uint32_t AlertManager_t::get_time_since_raised(const Type type)
+uint32_t AlertManager_t::get_time_since_raised(const Type type) const
 {
   for (auto alert: allAlerts)
   {
@@ -767,7 +764,6 @@ static inline uint8_t _level = 0;
 void set_brightness_level(const uint8_t level)
 {
   static constexpr uint8_t lowBrightness = 64;
-  static constexpr uint8_t midBrightness = 128;
   switch (level)
   {
     case 1:

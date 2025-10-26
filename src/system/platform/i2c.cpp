@@ -102,7 +102,8 @@ int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
 int lock_i2c() { return _lockI2CMutex() ? 0 : 1; }
 int unlock_i2c() { return _unlockI2CMutex() ? 0 : 1; }
 
-int i2c_writeData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t* buf, int stopBit)
+int i2c_writeData(
+        uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, const uint8_t* buf, int stopBit)
 {
   if (i2cIndex >= WIRE_INTERFACES_COUNT or not isInit[i2cIndex])
   {
