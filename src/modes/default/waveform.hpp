@@ -20,29 +20,39 @@ struct WaveformMode : public BasicMode
     const uint16_t rows = ctx.lamp.maxHeight - 1;
     auto& state = ctx.state;
     state.soundEvent.update(ctx);
-    state.currentColumn = (state.currentColumn + 1) % cols;
 
     constexpr uint32_t ledColorBlack = 0x00;
     uint32_t ledColor = ledColorBlack;
 
-    const float decibels = state.soundEvent.level;
-
-    const float soundLevel = lmpd_constrain(
-            lmpd_map<float, float>(decibels, microphone::silenceLevelDb, maxLevelDb_threshold, 0.f, 1.f), 0.f, 1.f);
-
-    const uint8_t mappedY = lmpd_constrain(lmpd_map<float, uint8_t>(soundLevel, 0.f, 1.f, 0, rows), 0, rows);
-    ledColor = utils::get_gradient(
-            utils::ColorSpace::GREEN.get_rgb().color, utils::ColorSpace::RED.get_rgb().color, soundLevel);
-
-    for (int y = 0; y < rows; y++)
+    microphone::PdmData sound_data = ctx.lamp.get_sound_data();
+    for (int x = 0; x < cols; x++)
     {
-      if (y == mappedY)
+      float sampleDb = microphone::silenceLevelDb;
+      if (sound_data.is_valid())
       {
-        ctx.lamp.setPixelColorXY(state.currentColumn, rows - y, ledColor);
+        const uint8_t mappedX = lmpd_map<uint8_t, uint8_t>(x, 0, cols, 0, sound_data.sampleRead - 1);
+        sampleDb = 20.0 * log10f(sound_data.data[mappedX] / 1024.f);
+        sampleDb = lmpd_constrain(sampleDb, microphone::silenceLevelDb, microphone::highLevelDb);
       }
-      else
+      const uint8_t mappedY = lmpd_constrain(
+              lmpd_map<float, uint8_t>(sampleDb, microphone::silenceLevelDb, microphone::highLevelDb, 0, rows / 2),
+              0,
+              rows / 2);
+      for (int y = 0; y < rows; y++)
       {
-        ctx.lamp.setPixelColorXY(state.currentColumn, rows - y, ledColorBlack);
+        if (y < mappedY)
+        {
+          ledColor = utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
+                                          utils::ColorSpace::GREEN.get_rgb().color,
+                                          abs(((float)rows / 2.f - y) / ((float)rows / 2.f)));
+          ctx.lamp.setPixelColorXY(x, rows / 2 - y, ledColor);
+          ctx.lamp.setPixelColorXY(x, rows / 2 + y, ledColor);
+        }
+        else
+        {
+          ctx.lamp.setPixelColorXY(x, rows / 2 - y, ledColorBlack);
+          ctx.lamp.setPixelColorXY(x, rows / 2 + y, ledColorBlack);
+        }
       }
     }
   }
@@ -56,7 +66,6 @@ struct WaveformMode : public BasicMode
   struct StateTy
   {
     audio::SoundEventTy<> soundEvent;
-    uint16_t currentColumn = 0;
   };
 };
 
