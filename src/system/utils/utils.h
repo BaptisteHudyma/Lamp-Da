@@ -22,7 +22,7 @@ template<typename T, typename V, typename U> static constexpr T lmpd_constrain(c
 template<typename T, typename U> static constexpr U lmpd_map(T x, T in_min, T in_max, U out_min, U out_max)
 {
   return static_cast<U>(
-    static_cast<double>(out_max - out_min) * (static_cast<double>(x) - static_cast<double>(in_min)) / static_cast<double>(in_max - in_min)
+    static_cast<float>(out_max - out_min) * (static_cast<float>(x) - static_cast<float>(in_min)) / static_cast<float>(in_max - in_min)
   ) + out_min;
 }
 
