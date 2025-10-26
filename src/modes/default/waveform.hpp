@@ -2,6 +2,8 @@
 #define WAVEFORM_MODE_H
 
 /// @file waveform
+#include <limits>
+
 #include "src/modes/include/colors/palettes.hpp"
 #include "src/modes/include/audio/utils.hpp"
 
@@ -19,29 +21,34 @@ struct WaveformMode : public BasicMode
     const uint16_t rows = ctx.lamp.maxHeight - 1;
     auto& state = ctx.state;
     ctx.soundEvent.update(ctx);
-    state.currentColumn = (state.currentColumn + 1) % cols;
 
     constexpr uint32_t ledColorBlack = 0x00;
     uint32_t ledColor = ledColorBlack;
 
-    const float decibels = ctx.soundEvent.level;
+    static constexpr size_t dataRead = ctx.soundEvent._dataLenght;
+    const auto& soundData = ctx.soundEvent.data;
 
-    const float soundLevel = lmpd_constrain<float>(
-            lmpd_map<float>(decibels, microphone::silenceLevelDb, microphone::highLevelDb, 0.f, 1.f), 0.f, 1.f);
-
-    const uint8_t mappedY = lmpd_constrain<uint8_t>(lmpd_map<uint8_t>(soundLevel, 0.f, 1.f, 0, rows), 0, rows);
-    ledColor = utils::get_gradient(
-            utils::ColorSpace::GREEN.get_rgb().color, utils::ColorSpace::RED.get_rgb().color, soundLevel);
-
-    for (int y = 0; y < rows; y++)
+    ctx.lamp.clear();
+    for (int x = 0; x < cols; x++)
     {
-      if (y == mappedY)
+      const uint16_t mappedX = lmpd_map<uint16_t>(x, 0, cols, 0, dataRead - 1);
+      const uint16_t mappedY = lmpd_constrain<uint16_t>(lmpd_map<uint16_t>(soundData[mappedX],
+                                                                           std::numeric_limits<int16_t>::min(),
+                                                                           std::numeric_limits<int16_t>::max(),
+                                                                           0,
+                                                                           rows),
+                                                        0,
+                                                        rows);
+
+      for (int y = 0; y < rows; y++)
       {
-        ctx.lamp.setPixelColorXY(state.currentColumn, rows - y, ledColor);
-      }
-      else
-      {
-        ctx.lamp.setPixelColorXY(state.currentColumn, rows - y, ledColorBlack);
+        if (((y >= rows / 2) && (y <= mappedY)) || ((y < rows / 2) && (y >= mappedY)))
+        {
+          float colorLevel = lmpd_map<float>(y, 0, rows, -1.f, 1.f);
+          ledColor = utils::get_gradient(
+                  utils::ColorSpace::GREEN.get_rgb().color, utils::ColorSpace::RED.get_rgb().color, abs(colorLevel));
+          ctx.lamp.setPixelColorXY(x, rows - y, ledColor);
+        }
       }
     }
   }
@@ -54,7 +61,6 @@ struct WaveformMode : public BasicMode
 
   struct StateTy
   {
-    uint16_t currentColumn = 0;
   };
 };
 
