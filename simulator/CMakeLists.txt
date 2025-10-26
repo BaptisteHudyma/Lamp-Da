@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.16)
 project(LampSimulator CXX C)
 
 set(LMBD_ROOT_DIR $ENV{LMBD_ROOT_DIR} CACHE PATH "Root directory for the project")

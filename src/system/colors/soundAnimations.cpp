@@ -12,7 +12,7 @@ void vu_meter(const Color& vuColor, const uint8_t fadeOut, LedStrip& strip)
 {
   const float decibels = microphone::get_sound_level_Db();
   // convert to 0 - 1
-  const float vuLevel = (decibels + abs(microphone::silenceLevelDb)) / microphone::highLevelDb;
+  const float vuLevel = lmpd_map<float, float>(decibels, microphone::silenceLevelDb, microphone::highLevelDb, 0.f, 1.f);
 
   // display the gradient
   animations::fill(vuColor, strip, vuLevel);
