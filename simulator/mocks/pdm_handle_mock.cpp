@@ -1,9 +1,12 @@
+#include <cstdint>
 #include <memory>
 
 #include "src/system/platform/pdm_handle.h"
 
 #include "src/system/utils/utils.h"
 #include "src/system/platform/time.h"
+
+#include "src/system/utils/fft.h"
 
 #include <SFML/Graphics/PrimitiveType.hpp>
 
@@ -14,26 +17,53 @@
 // to hook microphone & measure levelDb
 class LevelRecorder : public sf::SoundRecorder
 {
-  virtual bool onStart() { return true; }
+  virtual bool onStart()
+  {
+    buffers.reserve(32);
+    return true;
+  }
 
   virtual bool onProcessSamples(const std::int16_t* samples, std::size_t sampleCount)
   {
-    data.sampleRead = 0;
-    data.sampleDuration_us = 0; // TODO issue #132
-    const size_t readCnt = min<size_t>(sampleCount, microphone::PdmData::SAMPLE_SIZE);
-    for (std::size_t i = 0; i < readCnt; i++)
+    // safety to prevent data accumulation
+    if (buffers.size() > 32)
+      buffers.clear();
+
+    const size_t samplePerIteration = sampleCount / microphone::PdmData::SAMPLE_SIZE;
+    const uint64_t newTime = time_us();
+    const uint64_t sampleDuration = (newTime - sampleTime_us) / samplePerIteration;
+    sampleTime_us = newTime;
+
+    for (size_t I = 0; I < samplePerIteration; I++)
     {
-      data.data[i] = samples[i];
+      microphone::PdmData newData;
+      newData.sampleTime_us = newTime + sampleDuration * I;
+      newData.sampleDuration_us = sampleDuration;
+
+      newData.sampleRead = 0;
+      size_t i = 0;
+      for (; i < microphone::PdmData::SAMPLE_SIZE; i++)
+      {
+        size_t index = I * microphone::PdmData::SAMPLE_SIZE + i;
+        if (index >= sampleCount)
+          break;
+
+        newData.data[i] = samples[index];
+      }
+      newData.sampleRead = i;
+
+      buffers.emplace_back(newData);
     }
-    data.sampleTime_us = time_us();
-    data.sampleRead = readCnt;
     return true;
   }
 
   virtual void onStop() {}
 
 public:
-  microphone::PdmData data;
+  // sound goes out slowly
+  std::vector<microphone::PdmData> buffers;
+  uint64_t sampleTime_us;
+
   ~LevelRecorder() { stop(); }
 };
 std::unique_ptr<LevelRecorder> recorder;
@@ -43,9 +73,13 @@ namespace _private {
 
 PdmData get()
 {
-  if (recorder)
+  // safety
+  if (recorder->buffers.size() > 32)
+    recorder->buffers.clear();
+
+  if (recorder && !recorder->buffers.empty())
   {
-    return recorder->data;
+    return *(recorder->buffers.erase(recorder->buffers.begin()));
   }
   else
   {
@@ -61,7 +95,7 @@ bool start()
   if (!recorder)
     recorder = std::make_unique<LevelRecorder>();
 
-  return recorder->start(16000);
+  return recorder->start(SAMPLE_RATE);
 }
 
 void stop()
@@ -72,10 +106,6 @@ void stop()
     recorder = nullptr;
   }
 }
-
-// TODO issue #132 (mock sound input parameters)
-SoundStruct soundStruct;
-SoundStruct process_fft(const PdmData& data) { return soundStruct; }
 
 } // namespace _private
 } // namespace microphone

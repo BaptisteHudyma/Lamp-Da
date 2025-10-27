@@ -62,5 +62,5 @@
   },
   "files.eol": "\n",
   "files.insertFinalNewline": true,
-  "sonarlint.pathToCompileCommands": "${workspaceFolder}/_build/objs/compile_commands.json",
+  "sonarlint.pathToCompileCommands": "${workspaceFolder}/_build/objs/compile_commands.json"
 }

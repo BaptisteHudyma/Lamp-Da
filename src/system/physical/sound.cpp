@@ -3,12 +3,15 @@
 #include <cstdint>
 
 #include "src/system/utils/utils.h"
+#include "src/system/utils/fft.h"
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/print.h"
 
 namespace microphone {
+
+FftAnalyzer<PdmData::SAMPLE_SIZE, SoundStruct::numberOfFFtChanels> fftAnalyzer;
 
 bool isStarted = false;
 uint32_t lastMicFunctionCall = 0;
@@ -19,7 +22,6 @@ bool enable()
   if (isStarted)
     return true;
 
-  DigitalPin(DigitalPin::GPIO::Output_EnableMicrophone).set_high(true);
   isStarted = _private::start();
   return isStarted;
 }
@@ -30,7 +32,7 @@ void disable()
     return;
 
   _private::stop();
-  DigitalPin(DigitalPin::GPIO::Output_EnableMicrophone).set_high(false);
+  fftAnalyzer.reset();
   isStarted = false;
 }
 
@@ -44,44 +46,63 @@ void disable_after_non_use()
   }
 }
 
-float get_sound_level_Db(const PdmData& data)
+static SoundStruct soundStruct;
+
+SoundStruct process_sound_data(const PdmData& data)
 {
-  static float lastValue = 0;
+  soundStruct.isDataValid = false;
+  soundStruct.isFFTValid = false;
+  // validity checks
+  if (not data.is_valid() or data.sampleRead <= 0 or data.sampleRead > PdmData::SAMPLE_SIZE)
+  {
+    return soundStruct;
+  }
 
-  if (!data.is_valid())
-    return lastValue;
-
+  // process the sound input as FFT
   float sumOfAll = 0.0;
-  const uint16_t samples = min<uint16_t>(PdmData::SAMPLE_SIZE, data.sampleRead);
-  for (uint16_t i = 0; i < samples; i++)
+  for (uint16_t i = 0; i < data.sampleRead; i++)
   {
-    sumOfAll += powf(data.data[i] / 1024.0f, 2.0f);
-  }
-  const float average = sumOfAll / static_cast<float>(samples);
+    const int16_t dataP = data.data[i];
+    sumOfAll += abs(dataP);
 
-  lastValue = 20.0f * log10f(sqrtf(average));
-  // convert to decibels
-  return lastValue;
+    fftAnalyzer.set_data(dataP, i);
+
+    soundStruct.data[i] = dataP;
+  }
+  const float dataAverage = sumOfAll / static_cast<float>(data.sampleRead);
+  soundStruct.sound_level_Db = 20.0f * log10f(sqrtf(dataAverage));
+  soundStruct.isDataValid = true;
+
+  // fill the rest with zeros in FFT
+  for (uint16_t i = data.sampleRead; i < PdmData::SAMPLE_SIZE; i++)
+  {
+    fftAnalyzer.set_data(0, i);
+  }
+
+  fftAnalyzer.FFTcode();
+
+  // copy the FFT buffer
+  soundStruct.isFFTValid = true;
+  soundStruct.fftMajorPeakFrequency_Hz = fftAnalyzer.get_major_peak();
+  soundStruct.strongestPeakMagnitude = fftAnalyzer.get_magnitude();
+  // copy the fft results
+  for (uint8_t bandIndex = 0; bandIndex < SoundStruct::numberOfFFtChanels; ++bandIndex)
+  {
+    soundStruct.fft[bandIndex] = fftAnalyzer.get_fft(bandIndex);
+  }
+  // we return a static object here...
+  return soundStruct;
 }
 
-float get_sound_level_Db()
-{
-  if (!enable())
-  {
-    // ERROR
-    return 0.0;
-  }
-  return get_sound_level_Db(_private::get());
-}
-
-SoundStruct get_fft()
+SoundStruct get_sound_characteristics()
 {
   if (!enable())
   {
     // ERROR
     return SoundStruct();
   }
-  return _private::process_fft(_private::get());
+
+  return process_sound_data(_private::get());
 }
 
 } // namespace microphone

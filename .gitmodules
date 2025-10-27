@@ -1,6 +1,9 @@
-[submodule "depends/BQ76905"]
-	path = depends/BQ76905
+[submodule "src/depends/BQ76905"]
+	path = src/depends/BQ76905
 	url = https://github.com/BaptisteHudyma/BQ76905.git
-[submodule "depends/BQ25713"]
-	path = depends/BQ25713
+[submodule "src/depends/BQ25713"]
+	path = src/depends/BQ25713
 	url = https://github.com/BaptisteHudyma/BQ25713.git
+[submodule "src/depends/arduinoFFT"]
+	path = src/depends/arduinoFFT
+	url = https://github.com/kosme/arduinoFFT.git
