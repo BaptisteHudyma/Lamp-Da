@@ -109,6 +109,7 @@ with open(out_src, 'w') as of:
                     current |= index << (8 - bpp - cbits)
                     cbits += bpp
         if cbits < 8:
+            towrite = current & 0xff
             prefix = '     ' if end == '\n' else ''
             count += 1
             print('%s0x%02x,' % (prefix, towrite), file=of)
