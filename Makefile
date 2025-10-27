@@ -193,7 +193,7 @@ $(BUILD_DIR)/.deps-ok:
 	@echo " --- $@"
 	@mkdir -p $(BUILD_DIR)
 	@test -f $(BUILD_DIR)/.deps-ok \
-		|| (make has-board-installed check-compiler-cmd 'has-libs-installed(Adafruit\ NeoPixel)' 'has-libs-installed(arduinoFFT)' \
+		|| (make has-board-installed check-compiler-cmd 'has-libs-installed(Adafruit\ NeoPixel)' \
 			&& touch $(BUILD_DIR)/.deps-ok)
 
 check-arduino-deps: install-venv $(BUILD_DIR)/.deps-ok
@@ -268,8 +268,6 @@ unsafe-install-libs: install-venv
 	@echo " --- $@"
 	# installing Adafruit NeoPixel
 	@$(ARDUINO_CLI) lib install "Adafruit NeoPixel"
-	# installing arduinoFFT
-	@$(ARDUINO_CLI) lib install "arduinoFFT"
 
 local-arduino-cli:
 	@echo " --- $@"
@@ -446,10 +444,10 @@ build: has-lamp-type process $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 
 format:
 	find $(PROJECT_INO) | xargs clang-format --style=file -i
-	find src/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' -o -iname '*.c' | xargs clang-format --style=file -i
+	find src/modes src/system src/user -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' -o -iname '*.c' | xargs clang-format --style=file -i
 	find simulator/include simulator/src simulator/mocks -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file -i
 	(which dos2unix > /dev/null) && \
-		find src simulator -type f -regex '.*.[hc]p?p?' -exec dos2unix -q -e '{}' \; || echo "(dos2unix not found/failed)"
+		find src/modes src/system src/user simulator -type f -regex '.*.[hc]p?p?' -exec dos2unix -q -e '{}' \; || echo "(dos2unix not found/failed)"
 
 format-hook:
 	cp .pre-commit .git/hooks/pre-commit
@@ -458,9 +456,9 @@ format-verify:
 	@which clang-format > /dev/null \
 		|| (echo; echo Install clang / clang-format to verify format!)
 	@find $(PROJECT_INO)| xargs clang-format --style=file --dry-run --Werror
-	@find src/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' -o -iname '*.c' | xargs clang-format --style=file --dry-run -Werror
+	@find src/modes src/system src/user -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' -o -iname '*.c' | xargs clang-format --style=file --dry-run -Werror
 	@find simulator/ -iname '*.h' -o -iname '*.cpp' -o -iname '*.hpp' | xargs clang-format --style=file --dry-run -Werror
-	@if ! grep -IUr "$$(printf '\r')" src; then true; else echo 'You are using CRLF (\\r\\n) in a POSIX project :('; false; fi
+	@if ! grep -IUr "$$(printf '\r')" src/modes src/system src/user; then true; else echo 'You are using CRLF (\\r\\n) in a POSIX project :('; false; fi
 	# format is ok :)
 
 #

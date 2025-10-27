@@ -26,11 +26,11 @@
 #include <array>
 #include <cmath>
 
-#include "arduinoFFT.h"
+#include "src/depends/arduinoFFT/src/arduinoFFT.h"
 
 #include "src/system/utils/utils.h"
 
-constexpr int SAMPLE_RATE = 16000; // Base sample rate in Hz - standard.
+constexpr int SAMPLE_RATE = 41667; // Base sample rate in Hz - standard.
                                    // Physical sample time -> 50ms
 // constexpr int SAMPLE_RATE = 20480;            // Base sample rate in Hz -
 // 20Khz is experimental.    Physical sample time -> 25ms constexpr int
