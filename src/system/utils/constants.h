@@ -27,7 +27,7 @@
 // expected firmware version, will not compile if missmatch
 // Update your dependencies : adafruit lampda_nrf52840
 #define EXPECTED_FIRMWARE_VERSION_MAJOR 1
-#define EXPECTED_FIRMWARE_VERSION_MINOR 1
+#define EXPECTED_FIRMWARE_VERSION_MINOR 2
 
 // Base software version, common to all systems
 // increment for every  release

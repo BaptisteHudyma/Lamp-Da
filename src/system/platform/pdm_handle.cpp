@@ -4,12 +4,11 @@
 #include "pdm_handle.h"
 #include "src/system/platform/time.h"
 
+#include "src/system/utils/fft.h"
+
 #include <PDM.h>
-#include "fft.h"
 
 namespace microphone {
-
-FftAnalyzer<PdmData::SAMPLE_SIZE, SoundStruct::numberOfFFtChanels> fftAnalyzer;
 
 PdmData lastData;
 
@@ -17,18 +16,16 @@ PdmData lastData;
 void on_PDM_data()
 {
   lastData.sampleRead = 0;
-  const uint32_t newTime = time_us();
+  const auto newTime = time_us();
 
   lastData.sampleDuration_us = newTime - lastData.sampleTime_us;
   lastData.sampleTime_us = newTime;
-  // query the number of bytes available
-  const uint16_t bytesAvailable = min(PDM.available(), PdmData::SAMPLE_SIZE * 2);
 
-  // read into the sample buffer
-  PDM.read((char*)&lastData.data[0], bytesAvailable);
+  // read into the sample buffer. We cast cast our array as an 8bit array of twice the size
+  const int bytesRead = PDM.read((char*)&lastData.data[0], PDM.available());
 
   // number of samples read
-  lastData.sampleRead = bytesAvailable / 2;
+  lastData.sampleRead = bytesRead / 2;
 }
 
 namespace _private {
@@ -37,73 +34,32 @@ PdmData get() { return lastData; }
 
 bool start()
 {
-  PDM.setBufferSize(PdmData::SAMPLE_SIZE);
+  // PDM handle is created using the pin constants defined in library
+
+  // buffer size shall be 2x the data size
+  static_assert((PdmData::SAMPLE_SIZE & (PdmData::SAMPLE_SIZE - 1)) == 0,
+                "PdmData::SAMPLE_SIZE must be a power of two");
+  static_assert(SAMPLE_RATE == 41667 || SAMPLE_RATE == 16000, "PDM application only allow values 41667 or 16000");
+
+  PDM.setBufferSize(PdmData::SAMPLE_SIZE * 2);
   PDM.onReceive(on_PDM_data);
 
   // initialize PDM with:
   // - one channel (mono mode)
-  // - a sample rate
+  // - a sample rate (allowed values are 16000 or 41667)
   if (!PDM.begin(1, SAMPLE_RATE))
   {
     return false;
   }
 
-  // optionally set the gain, defaults to 20
-  PDM.setGain(30);
+  // optionally set the gain
+  // allowed values between 0x00 (-20dB) and 0x50 (+20dB)
+  PDM.setGain(0x40);
 
-  fftAnalyzer.reset();
   return true;
 }
 
 void stop() { PDM.end(); }
-
-bool processFFT(const PdmData& data, const bool runFFT = true)
-{
-  if (not data.is_valid())
-  {
-    return false;
-  }
-
-  // get data
-  const uint16_t samples = min(PdmData::SAMPLE_SIZE, data.sampleRead);
-  for (uint16_t i = 0; i < samples; i++)
-  {
-    fftAnalyzer.set_data(data.data[i], i);
-  }
-  // fill the rest with zeros
-  for (uint16_t i = data.sampleRead; i < PdmData::SAMPLE_SIZE; i++)
-  {
-    fftAnalyzer.set_data(0, i);
-  }
-
-  if (runFFT)
-    fftAnalyzer.FFTcode();
-
-  return true;
-}
-
-static SoundStruct soundStruct;
-
-SoundStruct process_fft(const PdmData& data)
-{
-  // process the sound input
-  if (!processFFT(data, true))
-  {
-    soundStruct.isValid = false;
-    return soundStruct;
-  }
-
-  // copy the FFT buffer
-  soundStruct.isValid = true;
-  soundStruct.fftMajorPeakFrequency_Hz = fftAnalyzer.get_major_peak();
-  soundStruct.strongestPeakMagnitude = fftAnalyzer.get_magnitude();
-  // copy the fft results
-  for (uint8_t bandIndex = 0; bandIndex < SoundStruct::numberOfFFtChanels; ++bandIndex)
-  {
-    soundStruct.fft[bandIndex] = fftAnalyzer.get_fft(bandIndex);
-  }
-  return soundStruct;
-}
 
 } // namespace _private
 
