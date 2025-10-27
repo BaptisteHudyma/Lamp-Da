@@ -3,6 +3,7 @@
 import sys
 from PIL import Image
 import os
+import numpy as np
 
 in_img = sys.argv[1]
 out_src = sys.argv[2]
@@ -44,8 +45,15 @@ for y in range(sz[1]):
     if cancel:
         break
 
+bpp = 32
+if cmap:
+    ncol = len(cmap) - 1
+    # bits per pixel
+    bpp = len([1 for i in range(8) if ncol >> i])
+blen = int(np.ceil(len(btes) * bpp / 32))
+
 print('cmap:', len(cmap), 'comp:', len(btes), '->',
-      len(cmap) * 4 + len(btes) // 4)
+      len(cmap) * 4 + blen, ', bpp:', bpp)
 if cmap:
     cmap_i = {v: k for k, v in cmap.items()}
     # print(cmap)
@@ -56,7 +64,8 @@ with open(out_src, 'w') as of:
     print(f'''struct {out_cls}
 {{
   static constexpr uint16_t width = {image.width};
-  static constexpr uint16_t height = {image.height};''', file=of)
+  static constexpr uint16_t height = {image.height};
+  static constexpr uint16_t bitsPerPixel = {bpp};''', file=of)
     if cmap:
         print(f'  static constexpr uint32_t colormapSize = {len(cmap)};',
               file=of)
@@ -73,6 +82,9 @@ with open(out_src, 'w') as of:
         print('  static constexpr uint8_t indexData[] = {', file=of)
         i = 0
         end = '\n'
+        current = 0
+        cbits = 0
+        count = 0
         for y in range(sz[1]):
             for x in range(sz[0]):
                 if image.mode == 'RGBA':
@@ -82,9 +94,24 @@ with open(out_src, 'w') as of:
                     r, g, b = btes[i: i+3]
                     i += 3
                 rgb = (r << 16) | (g << 8) | b
-                prefix = '     ' if end == '\n' else ''
-                end = '\n' if (x == sz[0] - 1 or x % 16 == 15) else ' '
-                print('%s0x%02x,' % (prefix, cmap[rgb]), file=of, end=end)
+                index = cmap[rgb]
+                towrite = None
+                if cbits + bpp > 8:
+                    current = (current << 8) | (index << (16 - bpp - cbits))
+                    towrite = (current >> 8)
+                    current = current & 0xff
+                    cbits += bpp - 8
+                    prefix = '     ' if end == '\n' else ''
+                    end = '\n' if (count % 16 == 15) else ' '
+                    count += 1
+                    print('%s0x%02x,' % (prefix, towrite), file=of, end=end)
+                else:
+                    current |= index << (8 - bpp - cbits)
+                    cbits += bpp
+        if cbits < 8:
+            prefix = '     ' if end == '\n' else ''
+            count += 1
+            print('%s0x%02x,' % (prefix, towrite), file=of)
         print('  };', file=of)
 
         print('  // clang-format on\n  static constexpr uint32_t rgbData[] = {};', file=of)
