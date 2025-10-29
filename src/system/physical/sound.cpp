@@ -15,6 +15,13 @@ FftAnalyzer<PdmData::SAMPLE_SIZE, SoundStruct::numberOfFFtChanels> fftAnalyzer;
 
 bool isStarted = false;
 uint32_t lastMicFunctionCall = 0;
+float autoGain = 1.0f;
+
+static constexpr float minAutoGain = 0.01f;
+static constexpr float maxAutoGain = 2.5f;
+
+static constexpr float distortionFactor = 0.0001; //[0, 1]
+static constexpr float desiredoutputRMS = 0.001f;
 
 bool enable()
 {
@@ -22,6 +29,7 @@ bool enable()
   if (isStarted)
     return true;
 
+  autoGain = 1.0f;
   isStarted = _private::start();
   return isStarted;
 }
@@ -31,6 +39,7 @@ void disable()
   if (!isStarted)
     return;
 
+  autoGain = 1.0f;
   _private::stop();
   fftAnalyzer.reset();
   isStarted = false;
@@ -46,7 +55,7 @@ void disable_after_non_use()
   }
 }
 
-static SoundStruct soundStruct;
+SoundStruct soundStruct;
 
 SoundStruct process_sound_data(const PdmData& data)
 {
@@ -59,18 +68,47 @@ SoundStruct process_sound_data(const PdmData& data)
   }
 
   // process the sound input as FFT
-  float sumOfAll = 0.0;
+  float dataMedian = 0.0;
   for (uint16_t i = 0; i < data.sampleRead; i++)
   {
+    // data is always at zero median, so use absolute
     const int16_t dataP = data.data[i];
-    sumOfAll += abs(dataP);
-
-    fftAnalyzer.set_data(dataP, i);
-
+    dataMedian += abs(dataP);
     soundStruct.data[i] = dataP;
   }
-  const float dataAverage = sumOfAll / static_cast<float>(data.sampleRead);
-  soundStruct.sound_level_Db = 20.0f * log10f(sqrtf(dataAverage));
+  const float dataAverage = dataMedian / static_cast<float>(data.sampleRead);
+
+  // if average is greater than sound baseline, update the gain
+  const bool shouldUpdateGain = (dataAverage > silenceSoundBaseline);
+
+  // decay gain to 1.0
+  if (not shouldUpdateGain)
+  {
+    static constexpr float restoreGain = 0.1f;
+    const float newGain = autoGain - restoreGain * (autoGain - 1.0);
+    if (newGain > minAutoGain && newGain < maxAutoGain)
+      autoGain = newGain;
+  }
+
+  for (uint16_t i = 0; i < data.sampleRead; i++)
+  {
+    // use auto gain on data
+    const float autoGainedData = (soundStruct.data[i] / static_cast<float>(INT16_MAX)) * autoGain;
+    if (shouldUpdateGain)
+    {
+      const float autoGainB = (autoGainedData * autoGainedData) / desiredoutputRMS;
+      const float autoGainAA = 1.0f + (distortionFactor * (1.0f - autoGainB));
+      autoGain *= autoGainAA;
+    }
+
+    soundStruct.rectifiedData[i] = autoGainedData * static_cast<float>(INT16_MAX);
+    // FFT on the auto gained data
+    fftAnalyzer.set_data(soundStruct.rectifiedData[i], i);
+  }
+  // keep the gain in bounds
+  autoGain = lmpd_constrain(autoGain, minAutoGain, maxAutoGain);
+
+  soundStruct.sound_level_Db = 20.0f * log10f(dataAverage);
   soundStruct.isDataValid = true;
 
   // fill the rest with zeros in FFT

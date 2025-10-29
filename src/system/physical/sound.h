@@ -20,6 +20,9 @@ struct SoundStruct
   static constexpr size_t SAMPLE_SIZE = PdmData::SAMPLE_SIZE;
   std::array<int16_t, SAMPLE_SIZE> data;
 
+  // data with auto gain enabled
+  std::array<int16_t, SAMPLE_SIZE> rectifiedData;
+
   float sound_level_Db = 0.0f;
 
   /**
