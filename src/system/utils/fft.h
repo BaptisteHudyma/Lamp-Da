@@ -85,7 +85,7 @@ private:
   // Try and normalize fftBin values to a max of 4096, so that 4096/16 = 256.
   // Oh, and bins 0,1,2 are no good, so we'll zero them out.
   std::array<float, fftResCount> fftCalc;
-  std::array<uint8_t, fftResCount> fftResult;  // Our calculated result table
+  std::array<float, fftResCount> fftResult;    // Our calculated result table
   std::array<float, fftResCount> fftResultMax; // A table used for testing to determine how
                                                // our post-processing is working.
   std::array<float, fftResCount> fftAvg;
@@ -299,7 +299,7 @@ public:
     return maxFrequenciesPerBin[index];
   }
 
-  uint8_t get_fft(uint16_t channel)
+  float get_fft(uint16_t channel)
   {
     channel = lmpd_constrain<uint16_t>(channel, 0, fftResCount);
     return fftResult[channel];
@@ -398,8 +398,6 @@ public:
 
     FFT.majorPeak(&FFT_MajorPeak,
                   &FFT_Magnitude); // let the effects know which freq was most dominant
-    FFT_MajorPeak = lmpd_constrain<float>(FFT_MajorPeak, 1.0f,
-                                          5120.0f); // restrict value to range expected by effects
     FFT_Magnitude = fabsf(FFT_Magnitude);
 
     for (int i = 0; i < samplesFFT; i++)
@@ -439,9 +437,7 @@ public:
       // Now, let's dump it all into fftResult. Need to do this, otherwise other
       // routines might grab fftResult values prematurely.
       // fftResult[i] = (int)fftCalc[i];
-      fftResult[i] = lmpd_constrain<uint8_t>((int)fftCalc[i],
-                                             0,
-                                             255); // question: why do we constrain values to 8bit here ???
+      fftResult[i] = fftCalc[i];
       fftAvg[i] = (float)fftResult[i] * .05 + (1 - .05) * fftAvg[i];
     }
 

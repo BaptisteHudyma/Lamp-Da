@@ -8,7 +8,6 @@
 #include "src/system/colors/animations.h"
 #include "src/system/colors/colors.h"
 #include "src/system/colors/palettes.h"
-#include "src/system/colors/soundAnimations.h"
 #include "src/system/colors/imuAnimations.h"
 #include "src/system/colors/wipes.h"
 
@@ -22,6 +21,7 @@
 #include "src/modes/default/sine_mode.hpp"
 #include "src/modes/default/spiral.hpp"
 #include "src/modes/default/vu_meter.hpp"
+#include "src/modes/default/fastFourrierTransform.hpp"
 
 namespace modes::legacy {
 
@@ -169,21 +169,6 @@ struct PingPongMode : public LegacyMode
 
 } // namespace party
 
-namespace sound {
-
-struct FftMode : public LegacyMode
-{
-  static void loop(auto& ctx) { animations::fft_display(64, 64, PalettePartyColors, ctx.lamp.getLegacyStrip()); }
-
-  static void on_enter_mode(auto& ctx) {}
-
-  struct StateTy
-  {
-  };
-};
-
-} // namespace sound
-
 namespace imu {
 
 struct LiquideMode : public LegacyMode
@@ -298,7 +283,7 @@ using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
 
 using PartyModes = modes::GroupFor<party::ColorWipeMode, party::RandomFillMode, party::PingPongMode>;
 
-using SoundModes = modes::GroupFor<default_modes::VuMeterMode, sound::FftMode>;
+using SoundModes = modes::GroupFor<default_modes::VuMeterMode, default_modes::FastFourrierTransformMode>;
 
 } // namespace modes::legacy
 

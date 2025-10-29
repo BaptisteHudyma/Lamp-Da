@@ -8,7 +8,7 @@
 namespace microphone {
 
 // CALIBRATED value
-static constexpr int16_t silenceSoundBaseline = 800;
+static constexpr int16_t gainUpdateBaseline = 80;
 
 struct PdmData
 {
