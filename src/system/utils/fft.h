@@ -1,7 +1,8 @@
 #pragma once
 
 /**
- * Based on the sound reactive fork to WLED.
+ * Based on the sound reactive fork to WLED:
+ * https://github.com/atuline/WLED
  * Modified to be more flexible with different frequency bin sizes
  */
 
@@ -26,11 +27,11 @@
 #include <array>
 #include <cmath>
 
-#include "arduinoFFT.h"
+#include "src/depends/arduinoFFT/src/arduinoFFT.h"
 
 #include "src/system/utils/utils.h"
 
-constexpr int SAMPLE_RATE = 16000; // Base sample rate in Hz - standard.
+constexpr int SAMPLE_RATE = 41667; // Base sample rate in Hz - standard.
                                    // Physical sample time -> 50ms
 // constexpr int SAMPLE_RATE = 20480;            // Base sample rate in Hz -
 // 20Khz is experimental.    Physical sample time -> 25ms constexpr int
@@ -84,7 +85,7 @@ private:
   // Try and normalize fftBin values to a max of 4096, so that 4096/16 = 256.
   // Oh, and bins 0,1,2 are no good, so we'll zero them out.
   std::array<float, fftResCount> fftCalc;
-  std::array<uint8_t, fftResCount> fftResult;  // Our calculated result table
+  std::array<float, fftResCount> fftResult;    // Our calculated result table
   std::array<float, fftResCount> fftResultMax; // A table used for testing to determine how
                                                // our post-processing is working.
   std::array<float, fftResCount> fftAvg;
@@ -298,7 +299,7 @@ public:
     return maxFrequenciesPerBin[index];
   }
 
-  uint8_t get_fft(uint16_t channel)
+  float get_fft(uint16_t channel)
   {
     channel = lmpd_constrain(channel, 0, fftResCount);
     return fftResult[channel];
@@ -397,8 +398,6 @@ public:
 
     FFT.majorPeak(&FFT_MajorPeak,
                   &FFT_Magnitude); // let the effects know which freq was most dominant
-    FFT_MajorPeak = lmpd_constrain(FFT_MajorPeak, 1.0f,
-                                   5120.0f); // restrict value to range expected by effects
     FFT_Magnitude = fabsf(FFT_Magnitude);
 
     for (int i = 0; i < samplesFFT; i++)
@@ -438,8 +437,7 @@ public:
       // Now, let's dump it all into fftResult. Need to do this, otherwise other
       // routines might grab fftResult values prematurely.
       // fftResult[i] = (int)fftCalc[i];
-      fftResult[i] = lmpd_constrain((int)fftCalc[i], 0,
-                                    254); // question: why do we constrain values to 8bit here ???
+      fftResult[i] = fftCalc[i];
       fftAvg[i] = (float)fftResult[i] * .05 + (1 - .05) * fftAvg[i];
     }
 
