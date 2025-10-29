@@ -902,12 +902,10 @@ public:
     }
   }
 
-  /// \brief (physical) Return current sound level in decibels
-  float LMBD_INLINE get_sound_level()
-  {
-    const float level = microphone::get_sound_characteristics().sound_level_Db;
-    return (not std::isinf(level) and not std::isnan(level) and level > -70) ? level : -70; // avoid -inf or NaN
-  }
+  /**
+   * \brief Return the an object containing sound analysis data
+   */
+  microphone::SoundStruct LMBD_INLINE get_sound_struct() { return microphone::get_sound_characteristics(); }
 
   /** \brief (physical) The "now" on milliseconds, updated just before loop.
    *
