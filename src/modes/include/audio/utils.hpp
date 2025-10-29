@@ -83,6 +83,11 @@ struct SoundEventTy
   /// Window size used for ``avgDelta``
   static constexpr float _windowShort = windowShort / 4.0;
 
+  /// number of sample in a microphone run
+  static constexpr size_t _dataLenght = microphone::SoundStruct::SAMPLE_SIZE;
+  /// target value reached by the auto gain
+  static constexpr int16_t autoGainTargetValue = microphone::gainedSignalTarget;
+
   /// Call this once inside the mode on_enter_mode callback
   void reset(auto& ctx)
   {
@@ -95,12 +100,25 @@ struct SoundEventTy
     eventScale = 0;
     _eventCount = 0;
     _eventScale = 0;
+
+    data.fill(0);
+    dataAutoGained.fill(0);
+    fft.fill(0);
+    strongestPeakMagnitude = 0.0f;
+    fftMajorPeakFrequency_Hz = 0.0f;
   }
 
   /// Call this once every tick inside the mode loop callback
   void update(auto& ctx)
   {
     const microphone::SoundStruct& soundObject = ctx.lamp.get_sound_struct();
+
+    // copy microphone data
+    data = soundObject.data;
+    dataAutoGained = soundObject.rectifiedData;
+    fft = soundObject.fft;
+    strongestPeakMagnitude = soundObject.strongestPeakMagnitude;
+    fftMajorPeakFrequency_Hz = soundObject.fftMajorPeakFrequency_Hz;
 
     // average input sound over a second-long window (approx)
     const auto soundLevel = soundObject.sound_level_Db;
@@ -154,6 +172,12 @@ struct SoundEventTy
   float avgDelta = 0;  ///< Rolling sound "contrast" average (squared)
   bool hasEvent;       ///< Did an event happened last tick? (reset each loop)
   uint8_t eventScale;  ///< Event scale (0-255)
+
+  std::array<int16_t, _dataLenght> data;           ///< raw microphone data
+  std::array<int16_t, _dataLenght> dataAutoGained; ///< dynamically sound adjusted data
+  std::array<float, microphone::SoundStruct::numberOfFFtChanels> fft;
+  float strongestPeakMagnitude;   ///< strongest peak of the FFT
+  float fftMajorPeakFrequency_Hz; ///< most proeminent frequency
 
 private:
   uint8_t _eventCount = 0;

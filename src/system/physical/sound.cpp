@@ -17,11 +17,12 @@ bool isStarted = false;
 uint32_t lastMicFunctionCall = 0;
 float autoGain = 1.0f;
 
-static constexpr float minAutoGain = 0.01f;
-static constexpr float maxAutoGain = 2.5f;
+static constexpr float minAutoGain = 0.0001f;
+static constexpr float maxAutoGain = 30.0f;
 
-static constexpr float distortionFactor = 0.0001; //[0, 1]
-static constexpr float desiredoutputRMS = 0.001f;
+// reactivity of the filter
+static constexpr float distortionFactor = 0.00005; //[0, 1]
+static constexpr float desiredoutputRMS = desiredoutput * desiredoutput;
 
 bool enable()
 {
@@ -75,11 +76,14 @@ SoundStruct process_sound_data(const PdmData& data)
     const int16_t dataP = data.data[i];
     dataMedian += abs(dataP);
     soundStruct.data[i] = dataP;
+
+    // FFT on the raw data
+    fftAnalyzer.set_data(dataP, i);
   }
   const float dataAverage = dataMedian / static_cast<float>(data.sampleRead);
 
   // if average is greater than sound baseline, update the gain
-  const bool shouldUpdateGain = (dataAverage > silenceSoundBaseline);
+  const bool shouldUpdateGain = (dataAverage > gainUpdateBaseline);
 
   // decay gain to 1.0
   if (not shouldUpdateGain)
@@ -102,8 +106,6 @@ SoundStruct process_sound_data(const PdmData& data)
     }
 
     soundStruct.rectifiedData[i] = autoGainedData * static_cast<float>(INT16_MAX);
-    // FFT on the auto gained data
-    fftAnalyzer.set_data(soundStruct.rectifiedData[i], i);
   }
   // keep the gain in bounds
   autoGain = lmpd_constrain(autoGain, minAutoGain, maxAutoGain);

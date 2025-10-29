@@ -2,6 +2,7 @@
 #define PHYSICAL_SOUND_H
 
 #include "src/system/platform/pdm_handle.h"
+#include <cstdint>
 
 namespace microphone {
 
@@ -9,6 +10,10 @@ namespace microphone {
 constexpr float silenceLevelDb = -10.0;
 // microphone is not good enough at after this
 constexpr float highLevelDb = 80.0;
+
+// desired output of the auto gain (0-1)
+constexpr float desiredoutput = 0.5f;
+constexpr int16_t gainedSignalTarget = INT16_MAX * desiredoutput;
 
 struct SoundStruct
 {
@@ -36,7 +41,7 @@ struct SoundStruct
   // FFT results
   float fftMajorPeakFrequency_Hz = 0.0;
   float strongestPeakMagnitude = 0.0;
-  std::array<uint8_t, numberOfFFtChanels> fft;
+  std::array<float, numberOfFFtChanels> fft;
 };
 
 bool enable();
