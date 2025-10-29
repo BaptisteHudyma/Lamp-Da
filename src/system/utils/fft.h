@@ -1,7 +1,8 @@
 #pragma once
 
 /**
- * Based on the sound reactive fork to WLED.
+ * Based on the sound reactive fork to WLED:
+ * https://github.com/atuline/WLED
  * Modified to be more flexible with different frequency bin sizes
  */
 
@@ -440,7 +441,7 @@ public:
       // fftResult[i] = (int)fftCalc[i];
       fftResult[i] = lmpd_constrain<uint8_t>((int)fftCalc[i],
                                              0,
-                                             254); // question: why do we constrain values to 8bit here ???
+                                             255); // question: why do we constrain values to 8bit here ???
       fftAvg[i] = (float)fftResult[i] * .05 + (1 - .05) * fftAvg[i];
     }
 

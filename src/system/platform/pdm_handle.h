@@ -7,6 +7,9 @@
 
 namespace microphone {
 
+// CALIBRATED value
+static constexpr int16_t silenceSoundBaseline = 800;
+
 struct PdmData
 {
   static constexpr size_t SAMPLE_SIZE = 512; // same has samplesFFT;
