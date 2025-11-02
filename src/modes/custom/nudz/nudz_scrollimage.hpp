@@ -116,8 +116,7 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
       for (uint32_t y = 0; y < h; ++y)
         for (uint32_t x = 0; x < w; ++x)
         {
-          uint32_t offset = ((y + ydecal) % imHeight) * imWidth +
-                            (x + xdecal) % imWidth;
+          uint32_t offset = ((y + ydecal) % imHeight) * imWidth + (x + xdecal) % imWidth;
           uint32_t byteOffset = offset * ImageType::bitsPerPixel / 8;
           uint32_t bitOffset = (offset * ImageType::bitsPerPixel) % 8;
           uint8_t index = ImageType::indexData[byteOffset];
@@ -129,9 +128,7 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
           else
             index = (index >> (8 - bitOffset - ImageType::bitsPerPixel)) & bmask;
 
-          ctx.lamp.setPixelColorXY(x,
-                                   y,
-                                   ImageType::colormap[index]);
+          ctx.lamp.setPixelColorXY(x, y, ImageType::colormap[index]);
         }
     }
   }
