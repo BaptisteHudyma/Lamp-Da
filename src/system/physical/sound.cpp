@@ -13,6 +13,12 @@ namespace microphone {
 
 FftAnalyzer<PdmData::SAMPLE_SIZE, SoundStruct::numberOfFFtChanels> fftAnalyzer;
 
+float SoundStruct::get_fft_resolution_Hz() const
+{
+  static constexpr float fftResolutionHz = SAMPLE_RATE / static_cast<float>(SAMPLE_SIZE);
+  return fftResolutionHz;
+}
+
 bool isStarted = false;
 uint32_t lastMicFunctionCall = 0;
 float autoGain = 1.0f;
@@ -58,7 +64,7 @@ void disable_after_non_use()
 
 SoundStruct soundStruct;
 
-SoundStruct process_sound_data(const PdmData& data)
+SoundStruct& process_sound_data(const PdmData& data)
 {
   soundStruct.isDataValid = false;
   soundStruct.isFFTValid = false;
@@ -80,6 +86,9 @@ SoundStruct process_sound_data(const PdmData& data)
     // FFT on the raw data
     fftAnalyzer.set_data(dataP, i);
   }
+  // fill the rest with zeros in FFT
+  for (uint16_t i = data.sampleRead; i < PdmData::SAMPLE_SIZE; i++)
+    fftAnalyzer.set_data(0, i);
   const float dataAverage = dataMedian / static_cast<float>(data.sampleRead);
 
   // if average is greater than sound baseline, update the gain
@@ -89,7 +98,7 @@ SoundStruct process_sound_data(const PdmData& data)
   if (not shouldUpdateGain)
   {
     static constexpr float restoreGain = 0.1f;
-    const float newGain = autoGain - restoreGain * (autoGain - 1.0);
+    const float newGain = autoGain - restoreGain * (autoGain - 1.0f);
     if (newGain > minAutoGain && newGain < maxAutoGain)
       autoGain = newGain;
   }
@@ -113,33 +122,27 @@ SoundStruct process_sound_data(const PdmData& data)
   soundStruct.sound_level_Db = 20.0f * log10f(dataAverage);
   soundStruct.isDataValid = true;
 
-  // fill the rest with zeros in FFT
-  for (uint16_t i = data.sampleRead; i < PdmData::SAMPLE_SIZE; i++)
-  {
-    fftAnalyzer.set_data(0, i);
-  }
-
+  // run FFT detection
   fftAnalyzer.FFTcode();
 
   // copy the FFT buffer
   soundStruct.isFFTValid = true;
-  soundStruct.fftMajorPeakFrequency_Hz = fftAnalyzer.get_major_peak();
-  soundStruct.strongestPeakMagnitude = fftAnalyzer.get_magnitude();
+  soundStruct.fftMajorPeakFrequency_Hz = fftAnalyzer.FFT_MajorPeak;
+  soundStruct.strongestPeakMagnitude = fftAnalyzer.FFT_Magnitude;
   // copy the fft results
-  for (uint8_t bandIndex = 0; bandIndex < SoundStruct::numberOfFFtChanels; ++bandIndex)
-  {
-    soundStruct.fft[bandIndex] = fftAnalyzer.get_fft(bandIndex);
-  }
+  soundStruct.fft_log = fftAnalyzer.fftLog;
+  soundStruct.fft_raw = fftAnalyzer.fftBin;
+
   // we return a static object here...
   return soundStruct;
 }
 
-SoundStruct get_sound_characteristics()
+SoundStruct& get_sound_characteristics()
 {
   if (!enable())
   {
     // ERROR
-    return SoundStruct();
+    return soundStruct;
   }
 
   return process_sound_data(_private::get());

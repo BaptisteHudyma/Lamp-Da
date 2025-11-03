@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <cmath>
 #include <cstdint>
 
 #include "constants.h"
@@ -16,7 +17,12 @@
 
 template<typename T, typename V, typename U> static constexpr T lmpd_constrain(const T& a, const V& mini, const U& maxi)
 {
-  return (a <= mini) ? mini : (a >= maxi) ? maxi : a;
+  // prevent invalid values
+  return (std::isnan(a) || std::isinf(a)) ? static_cast<T>(mini) :
+                                            // constrain the value
+                 (a <= static_cast<T>(mini)) ? static_cast<T>(mini) :
+         (a >= static_cast<T>(maxi))         ? static_cast<T>(maxi) :
+                                               static_cast<T>(a);
 }
 
 template<typename T, typename U> static constexpr U lmpd_map(T x, T in_min, T in_max, U out_min, U out_max)
