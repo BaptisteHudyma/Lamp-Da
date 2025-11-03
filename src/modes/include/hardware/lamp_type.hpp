@@ -905,7 +905,7 @@ public:
   /**
    * \brief Return the an object containing sound analysis data
    */
-  microphone::SoundStruct LMBD_INLINE get_sound_struct() { return microphone::get_sound_characteristics(); }
+  microphone::SoundStruct& LMBD_INLINE get_sound_struct() { return microphone::get_sound_characteristics(); }
 
   /** \brief (physical) The "now" on milliseconds, updated just before loop.
    *

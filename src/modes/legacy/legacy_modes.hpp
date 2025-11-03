@@ -16,12 +16,12 @@
 #include "src/modes/default/aurora.hpp"
 #include "src/modes/default/automaton.hpp"
 #include "src/modes/default/distortion_waves.hpp"
+#include "src/modes/default/fastFourrierTransform.hpp"
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/default/perlin_noise.hpp"
 #include "src/modes/default/sine_mode.hpp"
 #include "src/modes/default/spiral.hpp"
 #include "src/modes/default/vu_meter.hpp"
-#include "src/modes/default/fastFourrierTransform.hpp"
 
 namespace modes::legacy {
 

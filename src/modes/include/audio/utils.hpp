@@ -103,7 +103,8 @@ struct SoundEventTy
 
     data.fill(0);
     dataAutoGained.fill(0);
-    fft.fill(0);
+    fft_log.fill(0);
+    fft_raw.fill(0);
     strongestPeakMagnitude = 0.0f;
     fftMajorPeakFrequency_Hz = 0.0f;
   }
@@ -112,11 +113,13 @@ struct SoundEventTy
   void update(auto& ctx)
   {
     const microphone::SoundStruct& soundObject = ctx.lamp.get_sound_struct();
+    fftResolutionHz = soundObject.get_fft_resolution_Hz();
 
     // copy microphone data
     data = soundObject.data;
     dataAutoGained = soundObject.rectifiedData;
-    fft = soundObject.fft;
+    fft_log = soundObject.fft_log;
+    fft_raw = soundObject.fft_raw;
     strongestPeakMagnitude = soundObject.strongestPeakMagnitude;
     fftMajorPeakFrequency_Hz = soundObject.fftMajorPeakFrequency_Hz;
 
@@ -173,9 +176,12 @@ struct SoundEventTy
   bool hasEvent;       ///< Did an event happened last tick? (reset each loop)
   uint8_t eventScale;  ///< Event scale (0-255)
 
+  float fftResolutionHz;
+
   std::array<int16_t, _dataLenght> data;           ///< raw microphone data
   std::array<int16_t, _dataLenght> dataAutoGained; ///< dynamically sound adjusted data
-  std::array<float, microphone::SoundStruct::numberOfFFtChanels> fft;
+  std::array<float, microphone::SoundStruct::numberOfFFtChanels> fft_log;
+  std::array<float, microphone::SoundStruct::SAMPLE_SIZE / 2> fft_raw;
   float strongestPeakMagnitude;   ///< strongest peak of the FFT
   float fftMajorPeakFrequency_Hz; ///< most proeminent frequency
 

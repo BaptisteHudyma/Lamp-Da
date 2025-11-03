@@ -18,9 +18,9 @@ struct FastFourrierTransformMode : public BasicMode
     auto& state = ctx.state;
     state.soundEvent.update(ctx);
 
-    const auto& fft = state.soundEvent.fft;
+    const auto& fft_log = state.soundEvent.fft_log;
     float maxFftVal = 0.0;
-    for (const float val: fft)
+    for (const float val: fft_log)
       maxFftVal = max(maxFftVal, val);
 
     // adjust for volume
@@ -32,7 +32,7 @@ struct FastFourrierTransformMode : public BasicMode
     {
       const uint8_t mappedX = lmpd_map<uint8_t>(x, 0, cols, 0, microphone::SoundStruct::numberOfFFtChanels - 1);
       const uint8_t mappedY = lmpd_constrain<uint8_t>(
-              lmpd_map<uint8_t>(fft[mappedX], 0, maxFftVal, 2, maxDisplaylevel), 2, maxDisplaylevel);
+              lmpd_map<uint8_t>(fft_log[mappedX], 0, maxFftVal, 2, maxDisplaylevel), 2, maxDisplaylevel);
       for (uint8_t y = 0; y <= mappedY; y++)
       {
         uint8_t colorIndex = lmpd_map<uint8_t>(y, 0, rows - 1, 0, 255);

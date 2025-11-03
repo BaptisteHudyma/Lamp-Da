@@ -22,7 +22,7 @@ struct SoundStruct
    */
 
   bool isDataValid = false;
-  static constexpr size_t SAMPLE_SIZE = PdmData::SAMPLE_SIZE;
+  static constexpr auto SAMPLE_SIZE = PdmData::SAMPLE_SIZE;
   std::array<int16_t, SAMPLE_SIZE> data;
 
   // data with auto gain enabled
@@ -36,12 +36,15 @@ struct SoundStruct
 
   bool isFFTValid = false;
   // make this number close to the lamp max x coordinates
-  static constexpr uint8_t numberOfFFtChanels = 25;
+  static constexpr uint8_t numberOfFFtChanels = 24;
+
+  float get_fft_resolution_Hz() const;
 
   // FFT results
   float fftMajorPeakFrequency_Hz = 0.0;
   float strongestPeakMagnitude = 0.0;
-  std::array<float, numberOfFFtChanels> fft;
+  std::array<float, SAMPLE_SIZE / 2> fft_raw;
+  std::array<float, numberOfFFtChanels> fft_log;
 };
 
 bool enable();
@@ -54,7 +57,7 @@ void disable_after_non_use();
  * \brief Compute and process sound data
  * \return the last sound data
  */
-SoundStruct get_sound_characteristics();
+SoundStruct& get_sound_characteristics();
 
 } // namespace microphone
 
