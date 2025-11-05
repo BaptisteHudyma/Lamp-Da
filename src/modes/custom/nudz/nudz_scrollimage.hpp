@@ -112,11 +112,13 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
     else
     {
       // indexed colormap
-      uint8_t bmask = (1 << ImageType::bitsPerPixel) - 1;
+      constexpr uint8_t bmask = (1 << ImageType::bitsPerPixel) - 1;
       for (uint32_t y = 0; y < h; ++y)
+      {
+        uint32_t yoffset = ((y + ydecal) % imHeight) * imWidth;
         for (uint32_t x = 0; x < w; ++x)
         {
-          uint32_t offset = ((y + ydecal) % imHeight) * imWidth + (x + xdecal) % imWidth;
+          uint32_t offset = yoffset + (x + xdecal) % imWidth;
           uint32_t byteOffset = offset * ImageType::bitsPerPixel / 8;
           uint32_t bitOffset = (offset * ImageType::bitsPerPixel) % 8;
           uint8_t index = ImageType::indexData[byteOffset];
@@ -130,6 +132,7 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
 
           ctx.lamp.setPixelColorXY(x, y, ImageType::colormap[index]);
         }
+      }
     }
   }
 
