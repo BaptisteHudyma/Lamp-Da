@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <deque>
 #include <memory>
 
 #include "src/system/platform/pdm_handle.h"
@@ -17,11 +18,7 @@
 // to hook microphone & measure levelDb
 class LevelRecorder : public sf::SoundRecorder
 {
-  virtual bool onStart()
-  {
-    buffers.reserve(32);
-    return true;
-  }
+  virtual bool onStart() { return true; }
 
   virtual bool onProcessSamples(const std::int16_t* samples, std::size_t sampleCount)
   {
@@ -61,7 +58,7 @@ class LevelRecorder : public sf::SoundRecorder
 
 public:
   // sound goes out slowly
-  std::vector<microphone::PdmData> buffers;
+  std::deque<microphone::PdmData> buffers;
   uint64_t sampleTime_us;
 
   ~LevelRecorder() { stop(); }
@@ -75,11 +72,13 @@ PdmData get()
 {
   // safety
   if (recorder->buffers.size() > 32)
-    recorder->buffers.clear();
+    recorder->buffers.pop_back();
 
-  if (recorder && !recorder->buffers.empty())
+  if (recorder && recorder->buffers.size() > 0)
   {
-    return *(recorder->buffers.erase(recorder->buffers.begin()));
+    const auto buff = recorder->buffers.front();
+    recorder->buffers.pop_front();
+    return buff;
   }
   else
   {

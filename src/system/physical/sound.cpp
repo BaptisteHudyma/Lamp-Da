@@ -13,11 +13,7 @@ namespace microphone {
 
 FftAnalyzer<PdmData::SAMPLE_SIZE, SoundStruct::numberOfFFtChanels> fftAnalyzer;
 
-float SoundStruct::get_fft_resolution_Hz() const
-{
-  static constexpr float fftResolutionHz = SAMPLE_RATE / static_cast<float>(SAMPLE_SIZE);
-  return fftResolutionHz;
-}
+float SoundStruct::get_fft_resolution_Hz() { return SAMPLE_RATE / static_cast<float>(SAMPLE_SIZE); }
 
 bool isStarted = false;
 uint32_t lastMicFunctionCall = 0;
@@ -27,7 +23,7 @@ static constexpr float minAutoGain = 0.0001f;
 static constexpr float maxAutoGain = 30.0f;
 
 // reactivity of the filter
-static constexpr float distortionFactor = 0.00005; //[0, 1]
+static constexpr float distortionFactor = 0.00005f; //[0, 1]
 static constexpr float desiredoutputRMS = desiredoutput * desiredoutput;
 
 bool enable()
@@ -132,6 +128,11 @@ SoundStruct& process_sound_data(const PdmData& data)
   // copy the fft results
   soundStruct.fft_log = fftAnalyzer.fftLog;
   soundStruct.fft_raw = fftAnalyzer.fftBin;
+
+  for (uint16_t i = 0; i < soundStruct.fft_log_end_frequencies.size(); ++i)
+  {
+    soundStruct.fft_log_end_frequencies[i] = fftAnalyzer.get_log_bin_max_frequency(i);
+  }
 
   // we return a static object here...
   return soundStruct;

@@ -7,7 +7,7 @@
 
 namespace modes::default_modes {
 
-/// Emulate a vu-meter, optionally sound-sensitive
+/// Emulate a vu-meter
 struct VuMeterMode : public BasicMode
 {
   static constexpr auto palette = colors::PaletteGradient<colors::Green, colors::Red>;

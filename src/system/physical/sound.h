@@ -38,13 +38,14 @@ struct SoundStruct
   // make this number close to the lamp max x coordinates
   static constexpr uint8_t numberOfFFtChanels = 24;
 
-  float get_fft_resolution_Hz() const;
+  static float get_fft_resolution_Hz();
 
   // FFT results
   float fftMajorPeakFrequency_Hz = 0.0;
   float strongestPeakMagnitude = 0.0;
   std::array<float, SAMPLE_SIZE / 2> fft_raw;
   std::array<float, numberOfFFtChanels> fft_log;
+  std::array<uint16_t, numberOfFFtChanels> fft_log_end_frequencies;
 };
 
 bool enable();
