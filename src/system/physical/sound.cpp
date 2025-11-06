@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "src/system/utils/utils.h"
+#include "src/system/utils/fft.h"
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
@@ -10,8 +11,20 @@
 
 namespace microphone {
 
+FftAnalyzer<PdmData::SAMPLE_SIZE, SoundStruct::numberOfFFtChanels> fftAnalyzer;
+
+float SoundStruct::get_fft_resolution_Hz() { return SAMPLE_RATE / static_cast<float>(SAMPLE_SIZE); }
+
 bool isStarted = false;
 uint32_t lastMicFunctionCall = 0;
+float autoGain = 1.0f;
+
+static constexpr float minAutoGain = 0.0001f;
+static constexpr float maxAutoGain = 30.0f;
+
+// reactivity of the filter
+static constexpr float distortionFactor = 0.00005f; //[0, 1]
+static constexpr float desiredoutputRMS = desiredoutput * desiredoutput;
 
 bool enable()
 {
@@ -19,7 +32,7 @@ bool enable()
   if (isStarted)
     return true;
 
-  DigitalPin(DigitalPin::GPIO::Output_EnableMicrophone).set_high(true);
+  autoGain = 1.0f;
   isStarted = _private::start();
   return isStarted;
 }
@@ -29,8 +42,9 @@ void disable()
   if (!isStarted)
     return;
 
+  autoGain = 1.0f;
   _private::stop();
-  DigitalPin(DigitalPin::GPIO::Output_EnableMicrophone).set_high(false);
+  fftAnalyzer.reset();
   isStarted = false;
 }
 
@@ -44,44 +58,95 @@ void disable_after_non_use()
   }
 }
 
-float get_sound_level_Db(const PdmData& data)
+SoundStruct soundStruct;
+
+SoundStruct& process_sound_data(const PdmData& data)
 {
-  static float lastValue = 0;
-
-  if (!data.is_valid())
-    return lastValue;
-
-  float sumOfAll = 0.0;
-  const uint16_t samples = min(PdmData::SAMPLE_SIZE, data.sampleRead);
-  for (uint16_t i = 0; i < samples; i++)
+  soundStruct.isDataValid = false;
+  soundStruct.isFFTValid = false;
+  // validity checks
+  if (not data.is_valid() or data.sampleRead <= 0 or data.sampleRead > PdmData::SAMPLE_SIZE)
   {
-    sumOfAll += powf(data.data[i] / 1024.0f, 2.0f);
+    return soundStruct;
   }
-  const float average = sumOfAll / static_cast<float>(samples);
 
-  lastValue = 20.0f * log10f(sqrtf(average));
-  // convert to decibels
-  return lastValue;
+  // process the sound input as FFT
+  float dataMedian = 0.0;
+  for (uint16_t i = 0; i < data.sampleRead; i++)
+  {
+    // data is always at zero median, so use absolute
+    const int16_t dataP = data.data[i];
+    dataMedian += abs(dataP);
+    soundStruct.data[i] = dataP;
+
+    // FFT on the raw data
+    fftAnalyzer.set_data(dataP, i);
+  }
+  // fill the rest with zeros in FFT
+  for (uint16_t i = data.sampleRead; i < PdmData::SAMPLE_SIZE; i++)
+    fftAnalyzer.set_data(0, i);
+  const float dataAverage = dataMedian / static_cast<float>(data.sampleRead);
+
+  // if average is greater than sound baseline, update the gain
+  const bool shouldUpdateGain = (dataAverage > gainUpdateBaseline);
+
+  // decay gain to 1.0
+  if (not shouldUpdateGain)
+  {
+    static constexpr float restoreGain = 0.1f;
+    const float newGain = autoGain - restoreGain * (autoGain - 1.0f);
+    if (newGain > minAutoGain && newGain < maxAutoGain)
+      autoGain = newGain;
+  }
+
+  for (uint16_t i = 0; i < data.sampleRead; i++)
+  {
+    // use auto gain on data
+    const float autoGainedData = (soundStruct.data[i] / static_cast<float>(INT16_MAX)) * autoGain;
+    if (shouldUpdateGain)
+    {
+      const float autoGainB = (autoGainedData * autoGainedData) / desiredoutputRMS;
+      const float autoGainAA = 1.0f + (distortionFactor * (1.0f - autoGainB));
+      autoGain *= autoGainAA;
+    }
+
+    soundStruct.rectifiedData[i] = autoGainedData * static_cast<float>(INT16_MAX);
+  }
+  // keep the gain in bounds
+  autoGain = lmpd_constrain(autoGain, minAutoGain, maxAutoGain);
+
+  soundStruct.sound_level_Db = 20.0f * log10f(dataAverage);
+  soundStruct.isDataValid = true;
+
+  // run FFT detection
+  fftAnalyzer.FFTcode();
+
+  // copy the FFT buffer
+  soundStruct.isFFTValid = true;
+  soundStruct.fftMajorPeakFrequency_Hz = fftAnalyzer.FFT_MajorPeak;
+  soundStruct.strongestPeakMagnitude = fftAnalyzer.FFT_Magnitude;
+  // copy the fft results
+  soundStruct.fft_log = fftAnalyzer.fftLog;
+  soundStruct.fft_raw = fftAnalyzer.fftBin;
+
+  for (uint16_t i = 0; i < soundStruct.fft_log_end_frequencies.size(); ++i)
+  {
+    soundStruct.fft_log_end_frequencies[i] = fftAnalyzer.get_log_bin_max_frequency(i);
+  }
+
+  // we return a static object here...
+  return soundStruct;
 }
 
-float get_sound_level_Db()
+SoundStruct& get_sound_characteristics()
 {
   if (!enable())
   {
     // ERROR
-    return 0.0;
+    return soundStruct;
   }
-  return get_sound_level_Db(_private::get());
-}
 
-SoundStruct get_fft()
-{
-  if (!enable())
-  {
-    // ERROR
-    return SoundStruct();
-  }
-  return _private::process_fft(_private::get());
+  return process_sound_data(_private::get());
 }
 
 } // namespace microphone

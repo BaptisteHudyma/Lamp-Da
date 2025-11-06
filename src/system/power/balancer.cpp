@@ -11,7 +11,7 @@
 #include <cstdint>
 
 // use depend of component
-#include "depends/BQ76905/BQ76905.h"
+#include "src/depends/BQ76905/BQ76905.h"
 
 namespace balancer {
 
