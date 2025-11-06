@@ -74,7 +74,7 @@ public:
       const float freqOctave = (SAMPLE_RATE / 2.0) / powf(logMultiplier, resultSize - octave);
 
       const uint16_t indexHigh = freqOctave * multiplier;
-      minFrequenciesPerBin_log[octave] = freqOctave;
+      minFrequenciesPerBin_log[octave] = floor(freqOctave);
 
       const uint16_t range = indexHigh - indexLow;
       for (int16_t i = indexLow; i < indexHigh; ++i)
@@ -95,7 +95,7 @@ public:
    * \param[index] index of the fft bin
    * \return the min frequency of the bin
    */
-  uint16_t get_log_bin_min_frequency(uint16_t index)
+  uint16_t get_log_bin_min_frequency(uint16_t index) const noexcept
   {
     if (index >= resultSize)
       index = resultSize - 1;
@@ -106,7 +106,7 @@ public:
    * \param[index] index of the fft bin
    * \return the max frequency of the bin
    */
-  uint16_t get_log_bin_max_frequency(uint16_t index)
+  uint16_t get_log_bin_max_frequency(uint16_t index) const noexcept
   {
     // get next bin min, it will be this bin max
     index += 1;
