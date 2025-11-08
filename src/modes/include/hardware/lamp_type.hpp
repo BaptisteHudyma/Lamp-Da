@@ -909,6 +909,9 @@ public:
     return (level > -70) ? level : -70; // avoid -inf or NaN
   }
 
+  /// \brief (physical) Return current sound level in decibels
+  microphone::PdmData LMBD_INLINE get_sound_data() { return microphone::get_data(); }
+
   /** \brief (physical) The "now" on milliseconds, updated just before loop.
    *
    * This value is \p get_time_ms() called once and used as basis for \p tick
