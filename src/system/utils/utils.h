@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <cassert>
+#include <cmath>
 #include <cstdint>
 
 #include "constants.h"
@@ -14,34 +16,63 @@
 #define FADE16(x)   scale16(x, x)
 #define FADE8(x)    scale8(x, x)
 
-template<typename T, typename V, typename U> static constexpr T lmpd_constrain(const T& a, const V& mini, const U& maxi)
-{
-  return (a <= mini) ? mini : (a >= maxi) ? maxi : a;
-}
-
-template<typename T, typename U> static constexpr U lmpd_map(T x, T in_min, T in_max, U out_min, U out_max)
-{
-  return static_cast<U>(static_cast<float>(out_max - out_min) * (static_cast<float>(x) - static_cast<float>(in_min)) /
-                        static_cast<float>(in_max - in_min)) +
-         out_min;
-}
-
 #ifndef Arduino_h
 
-template<typename N, typename M> static constexpr N min(const N a, const M b) { return a < b ? a : b; }
-template<typename N, typename M> static constexpr N max(const N a, const M b) { return a > b ? a : b; }
+template<typename N> static constexpr N min(const N a, const N b)
+{
+  assert(not std::isnan(a) && "invalid param a");
+  assert(not std::isnan(b) && "invalid param b");
+  return a < b ? a : b;
+}
+template<typename N> static constexpr N max(const N a, const N b)
+{
+  assert(not std::isnan(a) && "invalid param a");
+  assert(not std::isnan(b) && "invalid param b");
+  return a > b ? a : b;
+}
 
 template<typename N> static constexpr N abs(const N a) { return std::abs(N(a)); }
 
 #endif
 
-template<typename N> static constexpr N to_radians(N degrees) { return degrees * M_PI / 180.f; }
-
-inline float wrap_angle(const float angle)
+template<typename T, typename V, typename U> static constexpr T lmpd_constrain(const T& a, const V& mini, const U& maxi)
 {
-  if (angle >= 0 and angle <= c_TWO_PI)
-    return angle;
-  return angle - c_TWO_PI * floor(angle / c_TWO_PI);
+  assert(mini < maxi);
+  // prevent invalid values
+  return std::isnan(a) ? static_cast<T>(mini) :
+                         // constrain the value
+                 (static_cast<float>(a) <= static_cast<float>(mini)) ? static_cast<T>(mini) :
+         (static_cast<float>(a) >= static_cast<float>(maxi))         ? static_cast<T>(maxi) :
+                                                                       static_cast<T>(a);
+}
+
+template<typename T, typename U> static constexpr U lmpd_map(T x, T in_min, T in_max, U out_min, U out_max)
+{
+  assert(not(std::isnan(in_min) or std::isinf(in_min)) && "in_min invalid");
+  assert(not(std::isnan(in_max) or std::isinf(in_max)) && "in_max invalid");
+  assert(not(std::isnan(out_min) or std::isinf(out_min)) && "out_min invalid");
+  assert(not(std::isnan(out_max) or std::isinf(out_max)) && "out_max invalid");
+
+  return (std::isnan(x)          ? out_min :
+          x > 0 && std::isinf(x) ? out_max :
+          std::isinf(x)          ? out_min :
+                                   static_cast<U>(static_cast<float>(out_max - out_min) *
+                                         (static_cast<float>(x) - static_cast<float>(in_min)) /
+                                         static_cast<float>(in_max - in_min)) +
+                                  out_min);
+}
+
+static constexpr float to_radians(float degrees)
+{
+  assert(not(std::isnan(degrees) or std::isinf(degrees)) && "invalid value");
+  return degrees * M_PI / 180.f;
+}
+
+inline float wrap_angle(const float angle_rad)
+{
+  if (angle_rad >= 0 and angle_rad < c_TWO_PI)
+    return angle_rad;
+  return angle_rad - c_TWO_PI * floor(angle_rad / c_TWO_PI);
 }
 
 /**
