@@ -20,14 +20,18 @@
 
 template<typename N> static constexpr N min(const N a, const N b)
 {
+#ifdef LMBD_CPP17
   assert(not std::isnan(a) && "invalid param a");
   assert(not std::isnan(b) && "invalid param b");
+#endif
   return a < b ? a : b;
 }
 template<typename N> static constexpr N max(const N a, const N b)
 {
+#ifdef LMBD_CPP17
   assert(not std::isnan(a) && "invalid param a");
   assert(not std::isnan(b) && "invalid param b");
+#endif
   return a > b ? a : b;
 }
 
@@ -37,7 +41,9 @@ template<typename N> static constexpr N abs(const N a) { return std::abs(N(a)); 
 
 template<typename T, typename V, typename U> static constexpr T lmpd_constrain(const T& a, const V& mini, const U& maxi)
 {
-  assert(mini < maxi);
+#ifdef LMBD_CPP17
+  assert(static_cast<float>(mini) < static_cast<float>(maxi) && "invalid parameters");
+#endif
   // prevent invalid values
   return std::isnan(a) ? static_cast<T>(mini) :
                          // constrain the value
@@ -48,11 +54,12 @@ template<typename T, typename V, typename U> static constexpr T lmpd_constrain(c
 
 template<typename T, typename U> static constexpr U lmpd_map(T x, T in_min, T in_max, U out_min, U out_max)
 {
+#ifdef LMBD_CPP17
   assert(not(std::isnan(in_min) or std::isinf(in_min)) && "in_min invalid");
   assert(not(std::isnan(in_max) or std::isinf(in_max)) && "in_max invalid");
   assert(not(std::isnan(out_min) or std::isinf(out_min)) && "out_min invalid");
   assert(not(std::isnan(out_max) or std::isinf(out_max)) && "out_max invalid");
-
+#endif
   return (std::isnan(x)          ? out_min :
           x > 0 && std::isinf(x) ? out_max :
           std::isinf(x)          ? out_min :
@@ -64,7 +71,9 @@ template<typename T, typename U> static constexpr U lmpd_map(T x, T in_min, T in
 
 static constexpr float to_radians(float degrees)
 {
+#ifdef LMBD_CPP17
   assert(not(std::isnan(degrees) or std::isinf(degrees)) && "invalid value");
+#endif
   return degrees * M_PI / 180.f;
 }
 

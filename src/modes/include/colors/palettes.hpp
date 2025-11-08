@@ -489,7 +489,7 @@ static constexpr uint32_t from_palette(UIntTy index, const PaletteTy& palette, u
   if constexpr (sizeof(UIntTy) > 1)
   {
     const float remapedIndex = (index / static_cast<float>(UINT16_MAX)) * 16.f;
-    renormIndex = min(floor(remapedIndex), 15);
+    renormIndex = min(static_cast<uint8_t>(floorf(remapedIndex)), static_cast<uint8_t>(15));
     blendIndex = remapedIndex - renormIndex;
     static_assert(std::is_same_v<UIntTy, uint16_t>, "u8 or u16 allowed only");
   }

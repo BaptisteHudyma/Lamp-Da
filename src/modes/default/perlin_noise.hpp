@@ -75,7 +75,8 @@ struct PerlinNoiseMode : public BasicMode
   {
     auto& state = ctx.state;
 
-    const uint8_t rampIndex = min(floor(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1);
+    const uint8_t rampIndex =
+            min(floorf(rampValue / 255.0f * state.maxPalettesCount), static_cast<float>(state.maxPalettesCount - 1));
     state.selectedPalette = state._palettes[rampIndex];
   }
 

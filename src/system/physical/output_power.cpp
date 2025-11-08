@@ -29,7 +29,7 @@ void write_voltage(const uint16_t voltage_mv)
 
 void write_temporary_output_limits(const uint16_t voltage_mv, const uint16_t current_ma, const uint32_t timeout_ms)
 {
-  const uint32_t realTimeout_ms = min(5000, timeout_ms);
+  const uint32_t realTimeout_ms = min(static_cast<uint32_t>(5000), timeout_ms);
   //
   power::set_temporary_output(voltage_mv, current_ma, realTimeout_ms);
 }

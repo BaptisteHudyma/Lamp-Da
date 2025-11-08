@@ -403,9 +403,9 @@ template<typename T> struct simulator
           float r = ((color >> 16) & 0xff);
 
           const auto brightness = state.brightness;
-          r = min(r, brightness);
-          g = min(g, brightness);
-          b = min(b, brightness);
+          r = min(static_cast<uint8_t>(r), static_cast<uint8_t>(brightness));
+          g = min(static_cast<uint8_t>(g), static_cast<uint8_t>(brightness));
+          b = min(static_cast<uint8_t>(b), static_cast<uint8_t>(brightness));
 
           shape.setFillColor(sf::Color(r, g, b));
           window.draw(shape);

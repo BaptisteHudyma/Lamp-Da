@@ -26,13 +26,15 @@ TEST(test_min_max, invalid_values)
 
 TEST(test_min_max, normal_use)
 {
-  for (size_t i = 1; i < 300; i++)
+  int minVal = -100;
+  int maxVal = -100;
+  for (int i = minVal; i < maxVal; i++)
   {
-    ASSERT_EQ(min(i, 0), 0);
-    ASSERT_EQ(min(0, i), 0);
+    ASSERT_EQ(min(i, minVal), minVal);
+    ASSERT_EQ(min(minVal, i), minVal);
 
-    ASSERT_EQ(max(0, i), i);
-    ASSERT_EQ(max(i, 0), i);
+    ASSERT_EQ(max(maxVal, i), maxVal);
+    ASSERT_EQ(max(i, maxVal), maxVal);
   }
 }
 
@@ -48,7 +50,7 @@ TEST(test_constrain, invalidBorns)
             const int maxA = 1000;
             const auto resInt = lmpd_constrain(15.0, maxA, minA);
           },
-          "Assertion `mini < maxi' failed");
+          ".*invalid parameters.*");
 
   ASSERT_DEATH(
           {
@@ -56,7 +58,7 @@ TEST(test_constrain, invalidBorns)
             const int maxA = 1000;
             const auto resInt = lmpd_constrain(15.0, maxA, minA);
           },
-          "Assertion `mini < maxi' failed");
+          ".*invalid parameters.*");
 }
 
 TEST(test_constrain, same_type)
@@ -70,6 +72,14 @@ TEST(test_constrain, same_type)
     ASSERT_EQ(resInt, a);
     ASSERT_EQ(typeid(resInt), typeid(a));
   }
+}
+
+TEST(test_constrain, check_uint8)
+{
+  uint16_t B = 300;
+  int minB = -15;
+  uint8_t maxB = 255;
+  ASSERT_EQ(lmpd_constrain(B, minB, maxB), maxB);
 }
 
 TEST(test_constrain, negative_size)

@@ -600,7 +600,8 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     if (which_one != ctx.state.maxFavoriteCount && which_one == ctx.state.usedFavoriteCount)
     {
       // augment favorite count until we reach the max
-      ctx.state.usedFavoriteCount = min(ctx.state.usedFavoriteCount + 1, ctx.state.maxFavoriteCount);
+      ctx.state.usedFavoriteCount =
+              min(static_cast<uint8_t>(ctx.state.usedFavoriteCount + 1), ctx.state.maxFavoriteCount);
     }
 
     if (which_one < ctx.state.maxFavoriteCount)
