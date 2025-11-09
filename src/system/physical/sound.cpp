@@ -52,7 +52,7 @@ float get_sound_level_Db(const PdmData& data)
     return lastValue;
 
   float sumOfAll = 0.0;
-  const uint16_t samples = min(PdmData::SAMPLE_SIZE, data.sampleRead);
+  const uint16_t samples = min<uint16_t>(PdmData::SAMPLE_SIZE, data.sampleRead);
   for (uint16_t i = 0; i < samples; i++)
   {
     sumOfAll += powf(data.data[i] / 1024.0f, 2.0f);

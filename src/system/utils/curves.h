@@ -111,7 +111,7 @@ public:
   float sample(const T x) const
   {
     const float res = pow(static_cast<double>(x) + _a, _exp) * _b;
-    return lmpd_constrain(res, lowerBound, upperBound);
+    return lmpd_constrain<float>(res, lowerBound, upperBound);
   }
 
 private:

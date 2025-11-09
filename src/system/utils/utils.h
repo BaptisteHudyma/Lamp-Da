@@ -39,7 +39,7 @@ template<typename N> static constexpr N abs(const N a) { return std::abs(N(a)); 
 
 #endif
 
-template<typename T, typename V, typename U> static constexpr T lmpd_constrain(const T& a, const V& mini, const U& maxi)
+template<typename T> static constexpr T lmpd_constrain(const T& a, const T& mini, const T& maxi)
 {
 #ifdef LMBD_CPP17
   assert(static_cast<float>(mini) < static_cast<float>(maxi) && "invalid parameters");
@@ -180,7 +180,7 @@ constexpr double analogReadToVoltage(const uint16_t analogVal)
 }
 constexpr uint16_t voltageToAnalogRead(const float voltage)
 {
-  return lmpd_constrain(voltage, 0, internalReferenceVoltage) * ADC_MAX_VALUE / internalReferenceVoltage;
+  return lmpd_constrain<uint16_t>(voltage, 0, internalReferenceVoltage) * ADC_MAX_VALUE / internalReferenceVoltage;
 }
 
 }; // namespace utils

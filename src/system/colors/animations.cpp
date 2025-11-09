@@ -25,8 +25,8 @@ namespace animations {
 
 void fill(const Color& color, LedStrip& strip, const float cutOff)
 {
-  const float adaptedCutoff = lmpd_constrain(cutOff, 0.0f, 1.0f);
-  const uint16_t maxCutOff = lmpd_constrain(adaptedCutoff * LED_COUNT, 1.0, LED_COUNT);
+  const float adaptedCutoff = lmpd_constrain<float>(cutOff, 0.0f, 1.0f);
+  const uint16_t maxCutOff = lmpd_constrain<uint16_t>(adaptedCutoff * LED_COUNT, 1.0, LED_COUNT);
   for (uint16_t i = 0; i < LED_COUNT; ++i)
   {
     const uint32_t c = color.get_color(i, LED_COUNT);
@@ -275,7 +275,8 @@ bool fade_out(const uint32_t duration, const bool restart, LedStrip& strip)
   }
 
   // get a fade level between 0 and max level
-  const uint8_t newFadeLevel = lmpd_constrain((time_ms() - startMillis) / (float)duration, 0.0f, 1.0f) * maxFadeLevel;
+  const uint8_t newFadeLevel =
+          lmpd_constrain<uint8_t>((time_ms() - startMillis) / (float)duration, 0.0f, 1.0f) * maxFadeLevel;
   if (newFadeLevel != fadeLevel)
   {
     fadeLevel = newFadeLevel;
@@ -327,7 +328,8 @@ bool fade_in(const Color& color,
   }
 
   // get a fade level between 0 and maxFadeLevel
-  const uint32_t newFadeLevel = lmpd_constrain((time_ms() - startMillis) / (float)duration, 0.0f, 1.0f) * maxFadeLevel;
+  const uint32_t newFadeLevel =
+          lmpd_constrain<uint32_t>((time_ms() - startMillis) / (float)duration, 0.0f, 1.0f) * maxFadeLevel;
   if (newFadeLevel != fadeLevel)
   {
     fadeLevel = newFadeLevel;
@@ -395,14 +397,13 @@ void candle(const palette_t& palette, LedStrip& strip)
     // sequence update
     sequenceTime = currentMillis;
 
-    const float endStrengthRatio = (double)sequenceIndex / (double)sequencePerPhase;
+    const float endStrengthRatio = (float)sequenceIndex / (float)sequencePerPhase;
     const float oldStrengthRatio = 1.0 - endStrengthRatio;
 
     currentStrenght = (lastStrenght * oldStrengthRatio) + (targetPhaseStrength * endStrengthRatio);
 
-    const uint8_t minBrighness = currentStrenght - min(currentStrenght, static_cast<uint8_t>(targetPhaseAmplitude / 2));
-    const uint8_t maxBrighness = currentStrenght + min(static_cast<uint8_t>(UINT8_MAX - currentStrenght),
-                                                       static_cast<uint8_t>(targetPhaseAmplitude / 2));
+    const uint8_t minBrighness = currentStrenght - min<uint8_t>(currentStrenght, targetPhaseAmplitude / 2);
+    const uint8_t maxBrighness = currentStrenght + min<uint8_t>(UINT8_MAX - currentStrenght, targetPhaseAmplitude / 2);
 
     uint8_t brightness = random8(minBrighness, maxBrighness);
     for (uint16_t i = 0; i < LED_COUNT; ++i)

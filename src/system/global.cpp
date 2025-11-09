@@ -48,7 +48,7 @@ void check_loop_runtime(const uint32_t runTime)
   static uint8_t isOnSlowLoopCount = 0;
   if (runTime > MAIN_LOOP_UPDATE_PERIOD_MS + 1)
   {
-    isOnSlowLoopCount = min(static_cast<uint8_t>(isOnSlowLoopCount + 1), maxAlerts);
+    isOnSlowLoopCount = min<uint8_t>(isOnSlowLoopCount + 1, maxAlerts);
 
     if (runTime > 500)
     {

@@ -15,7 +15,7 @@ uint32_t GenerateSolidColor::get_color_internal(const uint16_t index, const uint
 
 uint32_t GenerateRainbowColor::get_color_internal(const uint16_t index, const uint16_t maxIndex) const
 {
-  const uint16_t hue = lmpd_map<uint16_t, uint16_t>(lmpd_constrain(index, 0, maxIndex), 0, maxIndex, 0, 360);
+  const uint16_t hue = lmpd_map<uint16_t, uint16_t>(lmpd_constrain<uint16_t>(index, 0, maxIndex), 0, maxIndex, 0, 360);
   return utils::hue_to_rgb_sinus(hue);
 }
 
