@@ -205,7 +205,8 @@ struct LiquideMode : public LegacyMode
     auto& state = ctx.state;
 
     // get color from ramp
-    const uint8_t rampIndex = min(floor(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1);
+    const uint8_t rampIndex =
+            min<uint8_t>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1);
     state._color = state._colors[rampIndex];
   }
 

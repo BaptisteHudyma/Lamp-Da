@@ -587,6 +587,19 @@ clean-simulator:
 simulator: indexable-simulator simple-simulator
 	@echo " --- ok: $@"
 
+
+clean-tests:
+	@echo; echo " --- $@"
+	@test -e $(BUILD_DIR)/tests/Makefile \
+		&& (cd $(BUILD_DIR)/tests && make clean) \
+		|| (rm -rf $(BUILD_DIR)/tests)
+
+test:
+	@echo; echo " --- $@"
+	@mkdir -p $(BUILD_DIR)/tests
+	@cd $(SRC_DIR)/tests && \
+		LMBD_ROOT_DIR=$(SRC_DIR) TEST_BUILD_DIR=$(BUILD_DIR)/tests make $(shell basename "tests")
+
 #
 # remove
 #

@@ -23,7 +23,7 @@ uint16_t to_strip(uint16_t screenX, uint16_t screenY)
   if (screenY > stripYCoordinates)
     screenY = stripYCoordinates;
 
-  return lmpd_constrain(screenX + screenY * stripXCoordinates, 0, LED_COUNT - 1);
+  return lmpd_constrain<uint16_t>(screenX + screenY * stripXCoordinates, 0, LED_COUNT - 1);
 }
 
 vec3d to_lamp(const uint16_t ledIndex)

@@ -59,7 +59,7 @@ void display_favorite_number_ramp(auto& ctx,
                                   const bool display = false)
 {
   ctx.skipFirstLedsForFrames(0);
-  const uint8_t maxPixelDisplay = min(ctx.state.maxFavoriteCount, maxFavoriteIndex);
+  const uint8_t maxPixelDisplay = min<uint8_t>(ctx.state.maxFavoriteCount, maxFavoriteIndex);
   for (uint8_t i = 0; i < maxPixelDisplay; ++i)
   {
     if (display and i <= favoriteIndex)
@@ -600,7 +600,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     if (which_one != ctx.state.maxFavoriteCount && which_one == ctx.state.usedFavoriteCount)
     {
       // augment favorite count until we reach the max
-      ctx.state.usedFavoriteCount = min(ctx.state.usedFavoriteCount + 1, ctx.state.maxFavoriteCount);
+      ctx.state.usedFavoriteCount = min<uint8_t>(ctx.state.usedFavoriteCount + 1, ctx.state.maxFavoriteCount);
     }
 
     if (which_one < ctx.state.maxFavoriteCount)

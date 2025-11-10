@@ -67,7 +67,8 @@ template<typename T> struct simulator
 
     // init font
     sf::Font font;
-    bool enableFont = false, enableText = false;
+    bool enableFont = false;
+    bool enableText = false;
     if (font.loadFromFile("simulator/resources/DejaVuSansMono.ttf"))
     {
       enableFont = true;
@@ -204,17 +205,17 @@ template<typename T> struct simulator
           // slower simulation
           if (state.lastKeyPressed == 'g')
           {
-            if (state.slowTimeFactor > 1.50)
+            if (state.slowTimeFactor > 1.50f)
             {
-              state.slowTimeFactor *= 0.95;
+              state.slowTimeFactor *= 0.95f;
             }
-            else if (state.slowTimeFactor > 1.0)
+            else if (state.slowTimeFactor > 1.0f)
             {
               state.slowTimeFactor = ceil(state.slowTimeFactor * 20 - 1) / 20;
             }
             else
             {
-              state.slowTimeFactor = max(0.1, state.slowTimeFactor - 0.05);
+              state.slowTimeFactor = max<float>(0.1f, state.slowTimeFactor - 0.05f);
             }
             fprintf(stderr, "slower %f\n", state.slowTimeFactor);
           }
@@ -222,17 +223,17 @@ template<typename T> struct simulator
           // faster simulation
           if (state.lastKeyPressed == 'h')
           {
-            if (state.slowTimeFactor > 1.20)
+            if (state.slowTimeFactor > 1.20f)
             {
-              state.slowTimeFactor *= 1.05;
+              state.slowTimeFactor *= 1.05f;
             }
-            else if (state.slowTimeFactor > 1.0)
+            else if (state.slowTimeFactor > 1.0f)
             {
               state.slowTimeFactor = ceil(state.slowTimeFactor * 20 + 1) / 20;
             }
             else
             {
-              state.slowTimeFactor += 0.05;
+              state.slowTimeFactor += 0.05f;
             }
             fprintf(stderr, "faster %f\n", state.slowTimeFactor);
           }
@@ -243,7 +244,7 @@ template<typename T> struct simulator
             fakeXorigin += 1;
             if (fakeXorigin > ledW - 1)
               fakeXorigin = 0;
-            fakeXend = max(fakeXorigin - min(4, ledW - 1 - fakeXorigin), 0);
+            fakeXend = max<int>(fakeXorigin - min<int>(4, ledW - 1 - fakeXorigin), 0);
           }
 
           // shift backward XY display
@@ -252,7 +253,7 @@ template<typename T> struct simulator
             fakeXorigin -= 1;
             if (fakeXorigin < 0)
               fakeXorigin = ledW - 1;
-            fakeXend = max(fakeXorigin - min(4, ledW - 1 - fakeXorigin), 0);
+            fakeXend = max<int>(fakeXorigin - min<int>(4, ledW - 1 - fakeXorigin), 0);
           }
 
           // reset key pressed
@@ -355,7 +356,8 @@ template<typename T> struct simulator
 
         for (int fXpos = -fakeXorigin; fXpos < realRowSize - fakeXend; ++fXpos)
         {
-          int Yoff = 0, Xoff = 0;
+          int Yoff = 0;
+          int Xoff = 0;
 
           int Xpos = fXpos;
           if (fXpos < 0)
@@ -403,9 +405,9 @@ template<typename T> struct simulator
           float r = ((color >> 16) & 0xff);
 
           const auto brightness = state.brightness;
-          r = min(r, brightness);
-          g = min(g, brightness);
-          b = min(b, brightness);
+          r = min<float>(r, brightness);
+          g = min<float>(g, brightness);
+          b = min<float>(b, brightness);
 
           shape.setFillColor(sf::Color(r, g, b));
           window.draw(shape);

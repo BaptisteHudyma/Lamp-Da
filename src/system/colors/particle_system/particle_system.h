@@ -39,7 +39,7 @@ public:
    */
   void set_max_particle_count(const uint16_t _particleCount)
   {
-    particuleCount = min(ParticleSystem::maxParticuleCount, _particleCount);
+    particuleCount = min<uint16_t>(ParticleSystem::maxParticuleCount, _particleCount);
     reset();
   }
 

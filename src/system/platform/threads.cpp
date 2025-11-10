@@ -50,9 +50,12 @@ void start_thread(taskfunc_t taskFunction, const char* const taskName, const int
     prio = TASK_PRIO_LOW;
 
   TaskHandle_t handle;
-  if (pdPASS ==
-      xTaskCreate(
-              _redirect_task, taskName, max(configMINIMAL_STACK_SIZE, stackSize), (void*)taskFunction, prio, &handle))
+  if (pdPASS == xTaskCreate(_redirect_task,
+                            taskName,
+                            max<int>(configMINIMAL_STACK_SIZE, stackSize),
+                            (void*)taskFunction,
+                            prio,
+                            &handle))
   {
     handles[taskName] = handle;
   }
@@ -82,7 +85,7 @@ void start_suspended_thread(taskfunc_t taskFunction,
   TaskHandle_t handle;
   if (pdPASS == xTaskCreate(_redirect_suspend_task,
                             taskName,
-                            max(configMINIMAL_STACK_SIZE, stackSize),
+                            max<int>(configMINIMAL_STACK_SIZE, stackSize),
                             (void*)taskFunction,
                             prio,
                             &handle))

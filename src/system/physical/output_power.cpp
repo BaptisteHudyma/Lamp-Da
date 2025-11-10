@@ -23,13 +23,13 @@ void write_voltage(const uint16_t voltage_mv)
     return;
   }
 
-  power::set_output_voltage_mv(lmpd_constrain(voltage_mv, 0, 20000));
+  power::set_output_voltage_mv(lmpd_constrain<uint32_t>(voltage_mv, 0, 20000));
   power::set_output_max_current_mA(3000);
 }
 
 void write_temporary_output_limits(const uint16_t voltage_mv, const uint16_t current_ma, const uint32_t timeout_ms)
 {
-  const uint32_t realTimeout_ms = min(5000, timeout_ms);
+  const uint32_t realTimeout_ms = min<uint32_t>(5000, timeout_ms);
   //
   power::set_temporary_output(voltage_mv, current_ma, realTimeout_ms);
 }

@@ -32,7 +32,7 @@ bool dot_wipe_down(const Color& color,
   const uint16_t endIndex = (cutOff <= 0.0 or cutOff >= 1.0) ? LED_COUNT : ceil(LED_COUNT * cutOff);
 
   // convert duration in delay for each segment
-  const unsigned long delay = max(MAIN_LOOP_UPDATE_PERIOD_MS, duration / (float)LED_COUNT);
+  const uint32_t delay = max<uint32_t>(MAIN_LOOP_UPDATE_PERIOD_MS, duration / (float)LED_COUNT);
 
   if (targetIndex < LED_COUNT)
   {
@@ -70,7 +70,7 @@ bool dot_wipe_up(const Color& color,
   const uint16_t endIndex = (cutOff <= 0.0 or cutOff >= 1.0) ? 0 : floor((1.0 - cutOff) * LED_COUNT);
 
   // convert duration in delay for each segment
-  const unsigned long delay = max(MAIN_LOOP_UPDATE_PERIOD_MS, duration / (float)LED_COUNT);
+  const uint32_t delay = max<uint32_t>(MAIN_LOOP_UPDATE_PERIOD_MS, duration / (float)LED_COUNT);
 
   if (targetIndex < LED_COUNT)
   {
@@ -108,7 +108,7 @@ bool color_vertical_wipe_right(const Color& color, const uint32_t duration, cons
   }
 
   // convert duration in delay for each segment
-  const unsigned long delay = max(MAIN_LOOP_UPDATE_PERIOD_MS, duration / stripXCoordinates);
+  const uint32_t delay = max<uint32_t>(MAIN_LOOP_UPDATE_PERIOD_MS, duration / stripXCoordinates);
   if (duration / stripXCoordinates <= MAIN_LOOP_UPDATE_PERIOD_MS)
   {
     for (uint16_t increment = stripXCoordinates / ceil(duration / delay); increment > 0; increment--)

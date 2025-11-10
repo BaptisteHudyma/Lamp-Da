@@ -9,6 +9,8 @@
 // hardwaree influencer simulator
 #include "simulator/include/hardware_influencer.h"
 
+#include "src/system/utils/utils.h"
+
 #include "src/system/platform/print.h"
 #include "src/system/platform/gpio.h"
 
@@ -94,7 +96,7 @@ private:
   static uint16_t encode_to_base_read_register(const uint16_t val, const bq25713::BQ25713::IBaseReadRegister* reg)
   {
     // constraint
-    uint16_t valC = (std::min(std::max(val, reg->minVal()), reg->maxVal()) - reg->minVal()) / reg->resolution();
+    uint16_t valC = (lmpd_constrain<uint16_t>(val, reg->minVal(), reg->maxVal()) - reg->minVal()) / reg->resolution();
     // rectified
     uint16_t valR = (valC & reg->mask()) << reg->offset();
     return valR;
@@ -114,8 +116,8 @@ private:
                                             const bq25713::BQ25713::IDoubleRegister* reg)
   {
     // rectified vals
-    uint8_t val0R = (std::max(val0, reg->minVal0()) - reg->minVal0()) / reg->resolutionVal0();
-    uint8_t val1R = (std::max(val1, reg->minVal1()) - reg->minVal1()) / reg->resolutionVal1();
+    uint8_t val0R = (max<uint16_t>(val0, reg->minVal0()) - reg->minVal0()) / reg->resolutionVal0();
+    uint8_t val1R = (max<uint16_t>(val1, reg->minVal1()) - reg->minVal1()) / reg->resolutionVal1();
 
     uint16_t result = (val1R & reg->maskVal1()) << 8 | (val0R & reg->maskVal0());
     return result;

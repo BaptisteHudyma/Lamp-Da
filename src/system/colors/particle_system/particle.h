@@ -81,15 +81,17 @@ struct Particle
     dampen_speed(speedDampening);
 
     // update speed
-    thetaSpeed_radS = lmpd_constrain(thetaSpeed_radS + speedIncrement.x, -maxAngularSpeed_radS, maxAngularSpeed_radS);
-    zSpeed_mS = lmpd_constrain(zSpeed_mS + speedIncrement.y, -maxVerticalSpeed_mmS, maxVerticalSpeed_mmS);
+    thetaSpeed_radS =
+            lmpd_constrain<float>(thetaSpeed_radS + speedIncrement.x, -maxAngularSpeed_radS, maxAngularSpeed_radS);
+    zSpeed_mS = lmpd_constrain<float>(zSpeed_mS + speedIncrement.y, -maxVerticalSpeed_mmS, maxVerticalSpeed_mmS);
 
     static constexpr float angularUnit = stripXCoordinates / c_TWO_PI;
     static constexpr float verticalUnit = ledStripWidth_mm * 1.5;
 
     // update position (limit speed to pixel unit per dt)
-    const float angularPositionIncrement = lmpd_constrain(thetaSpeed_radS * delaTime, -angularUnit, angularUnit);
-    const float verticalPositionIncrement = lmpd_constrain(zSpeed_mS * delaTime, -verticalUnit, verticalUnit) * 1000.0;
+    const float angularPositionIncrement = lmpd_constrain<float>(thetaSpeed_radS * delaTime, -angularUnit, angularUnit);
+    const float verticalPositionIncrement =
+            lmpd_constrain<float>(zSpeed_mS * delaTime, -verticalUnit, verticalUnit) * 1000.0;
 
     // update particle position
     z_mm += verticalPositionIncrement;

@@ -76,7 +76,7 @@ void add_time_minutes(const uint8_t time_minutes)
   if (time_minutes < 1)
     return;
 
-  const uint32_t timeToAdd_s = min(10, time_minutes) * 60;
+  const uint32_t timeToAdd_s = min<uint8_t>(10, time_minutes) * 60;
   if (sunsetTimerEndTime_s == 0)
   {
     lampda_print("sunset timer set");

@@ -354,8 +354,8 @@ void handle_otg_mode()
   static const auto& defaultOTG = powerDelivery::OTGParameters::get_default();
   // requested by system
   auto requestedOtg = powerDelivery::get_otg_parameters();
-  requestedOtg.requestedVoltage_mV = max(requestedOtg.requestedVoltage_mV, defaultOTG.requestedVoltage_mV);
-  requestedOtg.requestedCurrent_mA = max(requestedOtg.requestedCurrent_mA, defaultOTG.requestedCurrent_mA);
+  requestedOtg.requestedVoltage_mV = max<uint16_t>(requestedOtg.requestedVoltage_mV, defaultOTG.requestedVoltage_mV);
+  requestedOtg.requestedCurrent_mA = max<uint16_t>(requestedOtg.requestedCurrent_mA, defaultOTG.requestedCurrent_mA);
   // should never be true
   if (not requestedOtg.is_otg_requested())
     return;

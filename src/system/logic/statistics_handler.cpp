@@ -53,7 +53,7 @@ static constexpr uint32_t chargeOnTimeSKey = utils::hash("chrgOn");
 uint32_t get_alert_storage_key(uint8_t alertIndex) { return 0xFFFFFF00 | alertIndex; }
 
 // system on time is easy: system always starts with time zero
-uint32_t get_system_on_time() { return statistics.system_on_minutes + max(1, time_s() / 60); }
+uint32_t get_system_on_time() { return statistics.system_on_minutes + max<uint32_t>(1, time_s() / 60); }
 
 /**
  */
@@ -111,7 +111,7 @@ uint32_t get_output_on_time()
   {
     const uint32_t currentTime_s = time_s();
     if (currentTime_s >= outputOn_time_s)
-      return statistics.output_on_minutes + max(1, (currentTime_s - outputOn_time_s) / 60);
+      return statistics.output_on_minutes + max<uint32_t>(1, (currentTime_s - outputOn_time_s) / 60);
     else
       // round up to the minute
       return statistics.output_on_minutes + 1;
@@ -140,7 +140,7 @@ uint32_t get_battery_charging_time()
   {
     const uint32_t currentTime_s = time_s();
     if (currentTime_s >= batteryCharge_time_s)
-      return statistics.battery_charge_minutes + max(1, (currentTime_s - batteryCharge_time_s) / 60);
+      return statistics.battery_charge_minutes + max<uint32_t>(1, (currentTime_s - batteryCharge_time_s) / 60);
     else
       // round up to the next minute
       return statistics.battery_charge_minutes + 1;

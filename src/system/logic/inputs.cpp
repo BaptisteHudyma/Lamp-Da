@@ -268,7 +268,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
       {
         // number of steps to update brightness
         static constexpr uint32_t brightnessUpdateSteps = BRIGHTNESS_RAMP_DURATION_MS / BRIGHTNESS_LOOP_UPDATE_EVERY;
-        static uint32_t brightnessUpdateStepSize = max(1u, maxBrightness / brightnessUpdateSteps);
+        static uint32_t brightnessUpdateStepSize = max<uint32_t>(1, maxBrightness / brightnessUpdateSteps);
 
         // negative go low, positive go high
         static int rampSide = 1;

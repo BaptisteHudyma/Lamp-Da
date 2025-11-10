@@ -58,7 +58,7 @@ bool breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::Colo
   {
     isOn = true;
     const float progression =
-            lmpd_constrain(lmpd_map<uint32_t, float>(timeSinceStart, 0, periodOn, 0.0f, 1.0f), 0.0f, 1.0f);
+            lmpd_constrain<float>(lmpd_map<float>(timeSinceStart, 0, periodOn, 0.0f, 1.0f), 0.0f, 1.0f);
 
     // rising edge
     if (progression <= 0.5)

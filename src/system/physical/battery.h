@@ -69,8 +69,8 @@ inline uint16_t get_level_safe(const uint16_t battery_mv, const uint8_t cellCoun
 
   // get the result of the total battery life, map it to the safe battery level
   // indicated by user
-  return lmpd_constrain(
-          lmpd_map<uint16_t, uint16_t>(
+  return lmpd_constrain<uint16_t>(
+          lmpd_map<uint16_t>(
                   get_level_percent(battery_mv, cellCount), minSafeLevel_percent, maxSafeLevel_percent, 0, 10000),
           0,
           10000);

@@ -24,7 +24,7 @@ public:
   uint32_t get_color(const uint16_t index = 0, const uint16_t maxIndex = 0) const
   {
     // prevent the user to break the system
-    return get_color_internal(lmpd_constrain(index, 0, maxIndex), maxIndex);
+    return get_color_internal(lmpd_constrain<uint16_t>(index, 0, maxIndex), maxIndex);
   }
 
   /**
@@ -234,7 +234,7 @@ class GenerateRainbowPulse : public DynamicColor
 public:
   GenerateRainbowPulse(const uint8_t colorDivisions) : _currentPixelHue(0)
   {
-    _increment = max(float(UINT16_MAX) / float(colorDivisions), 1);
+    _increment = max<float>(UINT16_MAX / static_cast<float>(colorDivisions), 1.0f);
   }
 
   uint32_t get_color_internal(const uint16_t index, const uint16_t maxIndex) const override;
@@ -255,7 +255,7 @@ class GenerateRainbowIndex : public IndexedColor
 {
 public:
   GenerateRainbowIndex(const uint8_t colorDivisions) :
-    _increment(UINT16_MAX / float(colorDivisions)),
+    _increment(UINT16_MAX / static_cast<float>(colorDivisions)),
     _currentPixelHue(0)
   {
   }
@@ -277,7 +277,7 @@ class GeneratePastelPulse : public DynamicColor
 public:
   GeneratePastelPulse(const uint8_t colorDivisions) : _currentPixelHue(0)
   {
-    _increment = max(float(UINT16_MAX) / float(colorDivisions), 1);
+    _increment = max<float>(UINT16_MAX / static_cast<float>(colorDivisions), 1.0f);
   }
 
   uint32_t get_color_internal(const uint16_t index, const uint16_t maxIndex) const override;

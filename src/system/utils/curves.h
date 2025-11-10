@@ -54,7 +54,7 @@ public:
       // in this segment bound
       if (x >= lastPt.x and x <= pt.x)
       {
-        return lmpd_map<T, U>(x, lastPt.x, pt.x, lastPt.y, pt.y);
+        return lmpd_map<U>(x, lastPt.x, pt.x, lastPt.y, pt.y);
       }
       // update last point
       lastPt = pt;
@@ -111,7 +111,7 @@ public:
   float sample(const T x) const
   {
     const float res = pow(static_cast<double>(x) + _a, _exp) * _b;
-    return lmpd_constrain(res, lowerBound, upperBound);
+    return lmpd_constrain<float>(res, lowerBound, upperBound);
   }
 
 private:

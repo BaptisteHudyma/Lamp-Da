@@ -102,8 +102,8 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
       ctx.state.last_tick = ctx.lamp.tick;
     }
 
-    uint32_t w = std::min(uint32_t(ctx.lamp.maxWidth + 1), uint32_t(imWidth));
-    uint32_t h = std::min(uint32_t(ctx.lamp.maxHeight), uint32_t(imHeight));
+    uint32_t w = min<uint32_t>(ctx.lamp.maxWidth + 1, imWidth);
+    uint32_t h = min<uint32_t>(ctx.lamp.maxHeight, imHeight);
     if (ImageType::colormapSize == 0)
       for (uint32_t y = 0; y < h; ++y)
         for (uint32_t x = 0; x < w; ++x)
@@ -345,9 +345,9 @@ struct NudzBeerGlassMode : public BasicMode
       float ld = levels[x1] - levels[x];
       float diff = 0;
       if (ld > 0)
-        diff = std::min(ld, ctx.state.fall_ampl);
+        diff = min<float>(ld, ctx.state.fall_ampl);
       else if (ld < 0)
-        diff = std::max(ld, -ctx.state.fall_ampl);
+        diff = max<float>(ld, -ctx.state.fall_ampl);
       if (diff > 0 && diff > ld * ctx.state.bounce_ratio)
         diff = ld * ctx.state.bounce_ratio;
       else if (diff < 0 && diff < ld * ctx.state.bounce_ratio)

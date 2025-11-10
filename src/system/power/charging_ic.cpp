@@ -623,7 +623,7 @@ void loop(const bool isChargeOk)
       const float coreTemp = read_CPU_temperature_degreesC();
       // will be 0 when temp reaches 70 degrees, stopping the charge
       // below 40 degrees, no reduction of charge current is made
-      const float reducer = lmpd_constrain(lmpd_map<float, float>(coreTemp, 40.0, 70.0, 1.0, 0.0), 0.0, 1.0);
+      const float reducer = lmpd_constrain<float>(lmpd_map<float>(coreTemp, 40.0, 70.0, 1.0, 0.0), 0.0, 1.0);
       // write the reduced current
       chargerIcRegisters.chargeCurrent.set(static_cast<uint16_t>(reducer * powerLimits_s.maxChargingCurrent_mA));
     }

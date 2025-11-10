@@ -70,14 +70,14 @@ public:
     float estimatedCurrentDraw = 0.0;
 
     const uint8_t b = getBrightness();
-    const float currentPerLed = lmpd_map<uint8_t, float>(b, 0, 255, 0.0f, ampPerLed);
+    const float currentPerLed = lmpd_map<float>(b, 0, 255, 0.0f, ampPerLed);
 
     for (uint16_t i = 0; i < LED_COUNT; ++i)
     {
       COLOR c;
       c.color = getRawPixelColor(i);
 
-      const float res = max(c.blue, max(c.red, c.green));
+      const float res = max<float>(c.blue, max<float>(c.red, c.green));
       if (res <= 0)
       {
         continue;
@@ -85,12 +85,12 @@ public:
 
       estimatedCurrentDraw += currentPerLed;
     }
-    return max(baseCurrentConsumption, estimatedCurrentDraw);
+    return max<float>(baseCurrentConsumption, estimatedCurrentDraw);
   }
 
   void setPixelColor(uint16_t n, COLOR c)
   {
-    n = lmpd_constrain(n, 0, LED_COUNT - 1);
+    n = lmpd_constrain<uint16_t>(n, 0, LED_COUNT - 1);
     _colors[n] = c;
     Adafruit_NeoPixel::setPixelColor(n, c.color);
   }
@@ -190,10 +190,10 @@ public:
     }
   }
 
-  uint32_t getPixelColor(uint16_t n) const { return _colors[lmpd_constrain(n, 0, LED_COUNT - 1)].color; }
+  uint32_t getPixelColor(uint16_t n) const { return _colors[lmpd_constrain<uint16_t>(n, 0, LED_COUNT - 1)].color; }
   uint32_t getPixelColorXY(int16_t x, int16_t y) const
   {
-    return _colors[lmpd_constrain(to_strip(x, y), 0, LED_COUNT - 1)].color;
+    return _colors[lmpd_constrain<uint16_t>(to_strip(x, y), 0, LED_COUNT - 1)].color;
   }
 
   // Blends the specified color with the existing pixel color.
@@ -241,7 +241,7 @@ public:
 
   inline vec3d get_lamp_coordinates(const uint16_t n) const
   {
-    return lampCoordinates[lmpd_constrain(n, 0, LED_COUNT - 1)];
+    return lampCoordinates[lmpd_constrain<uint16_t>(n, 0, LED_COUNT - 1)];
   }
   inline uint16_t get_strip_index_from_lamp_cylindrical_coordinates(const float theta, const float z) const
   {
