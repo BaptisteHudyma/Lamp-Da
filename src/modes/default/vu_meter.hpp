@@ -25,8 +25,7 @@ struct VuMeterMode : public BasicMode
 
     // convert the sound level in the height lamp level
     const uint16_t vuLevel = lmpd_constrain<uint16_t>(
-            lmpd_map<float, float>(
-                    decibels, microphone::silenceLevelDb, microphone::highLevelDb, 0, ctx.lamp.ledCount - 1),
+            lmpd_map<float>(decibels, microphone::silenceLevelDb, microphone::highLevelDb, 0, ctx.lamp.ledCount - 1),
             0,
             ctx.lamp.ledCount - 1);
 

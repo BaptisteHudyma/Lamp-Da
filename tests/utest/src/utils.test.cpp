@@ -115,10 +115,10 @@ TEST(test_map, valid)
   const int maxA = 1000;
   for (int a = minA; a < maxA; a++)
   {
-    const auto resA = lmpd_map<int, int>(a, minA, maxA, minA, maxA);
+    const auto resA = lmpd_map<int>(a, minA, maxA, minA, maxA);
     ASSERT_EQ(resA, a);
 
-    const auto resB = lmpd_map<int, int>(a, minA, maxA, maxA, minA);
+    const auto resB = lmpd_map<int>(a, minA, maxA, maxA, minA);
     ASSERT_EQ(resB, -a);
   }
 
@@ -126,10 +126,10 @@ TEST(test_map, valid)
   const float maxB = 1000.0f;
   for (float a = minB; a < maxB; a += 0.5f)
   {
-    const auto resA = lmpd_map<float, float>(a, minB, maxB, minB, maxB);
+    const auto resA = lmpd_map<float>(a, minB, maxB, minB, maxB);
     ASSERT_EQ(resA, a);
 
-    const auto resB = lmpd_map<float, float>(a, minB, maxB, maxB, minB);
+    const auto resB = lmpd_map<float>(a, minB, maxB, maxB, minB);
     ASSERT_EQ(resB, -a);
   }
 }
@@ -139,7 +139,7 @@ TEST(test_map, positive_to_negative)
   size_t i = 0;
   size_t minA = 0;
   size_t minB = 100;
-  const auto resA = lmpd_map<size_t, float>(i, minA, minB, -1.0f, 1.0f);
+  const auto resA = lmpd_map<float>(i, minA, minB, -1.0f, 1.0f);
   ASSERT_EQ(resA, -1.0f);
   ASSERT_EQ(typeid(resA), typeid(float));
 }
@@ -163,6 +163,12 @@ TEST(test_map, invalid_borns)
 
   ASSERT_DEATH({ lmpd_map(0.0f, 0.0f, 1.0f, 0.0f, NAN); }, ".*out_max invalid.*");
   ASSERT_DEATH({ lmpd_map(0.0f, 0.0f, 1.0f, 0.0f, Inf); }, ".*out_max invalid.*");
+
+  ASSERT_DEATH({ lmpd_map<uint8_t>(0.0f, 0.0f, 1.0f, -1.0f, 1.0f); }, ".*out_min invalid.*");
+  ASSERT_DEATH({ lmpd_map<uint8_t>(0.0f, 0.0f, 1.0f, 257, 1.0f); }, ".*out_min invalid.*");
+
+  ASSERT_DEATH({ lmpd_map<uint8_t>(0.0f, 0.0f, 1.0f, 0.0f, -1); }, ".*out_max invalid.*");
+  ASSERT_DEATH({ lmpd_map<uint8_t>(0.0f, 0.0f, 1.0f, 0.0f, 257); }, ".*out_max invalid.*");
 }
 
 TEST(test_map, type_change)
@@ -171,14 +177,33 @@ TEST(test_map, type_change)
   int maxA = 200;
   for (int i = 0; i < maxA; i++)
   {
-    const auto resA = lmpd_map<float, int>(0.0f, 0.0f, 1.0f, i, maxA);
+    const auto resA = lmpd_map<int>(0.0f, 0.0f, 1.0f, i, maxA);
     ASSERT_EQ(resA, i);
     ASSERT_EQ(typeid(resA), typeid(i));
     //
-    const auto resB = lmpd_map<float, int>(1.0f, 0.0f, 1.0f, minA, i);
+    const auto resB = lmpd_map<int>(1.0f, 0.0f, 1.0f, minA, i);
     ASSERT_EQ(resB, i);
     ASSERT_EQ(typeid(resB), typeid(i));
   }
+}
+
+TEST(test_map, uint_reversed_borns)
+{
+  // check the case where both units are uint, and borns are inverted
+  const auto resA = lmpd_map<uint32_t>(1, 0, 255, 142, 33);
+  ASSERT_EQ(resA, 141);
+  const auto resB = lmpd_map<uint32_t>(60, 0, 255, 142, 33);
+  ASSERT_EQ(resB, 116);
+}
+
+TEST(test_map, uint8_overflow)
+{
+  // overflow clamps the result
+  const auto resA = lmpd_map<uint8_t>(2000, 0, 1024, 0, 255);
+  ASSERT_EQ(resA, 255);
+
+  const auto resB = lmpd_map<uint8_t>(-150, 0, 1024, 0, 255);
+  ASSERT_EQ(resB, 0);
 }
 
 /**

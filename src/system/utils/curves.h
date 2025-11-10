@@ -54,7 +54,7 @@ public:
       // in this segment bound
       if (x >= lastPt.x and x <= pt.x)
       {
-        return lmpd_map<T, U>(x, lastPt.x, pt.x, lastPt.y, pt.y);
+        return lmpd_map<U>(x, lastPt.x, pt.x, lastPt.y, pt.y);
       }
       // update last point
       lastPt = pt;

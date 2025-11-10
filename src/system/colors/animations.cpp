@@ -544,7 +544,7 @@ void running_base(
       }
       else
       {
-        a = lmpd_map<uint16_t, uint16_t>(a, 16, 255, 64, 192);
+        a = lmpd_map<uint16_t>(a, 16, 255, 64, 192);
       }
       a = 255 - a;
     }

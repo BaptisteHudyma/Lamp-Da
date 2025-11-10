@@ -59,7 +59,7 @@ void display_favorite_number_ramp(auto& ctx,
                                   const bool display = false)
 {
   ctx.skipFirstLedsForFrames(0);
-  const uint8_t maxPixelDisplay = min(ctx.state.maxFavoriteCount, maxFavoriteIndex);
+  const uint8_t maxPixelDisplay = min<uint8_t>(ctx.state.maxFavoriteCount, maxFavoriteIndex);
   for (uint8_t i = 0; i < maxPixelDisplay; ++i)
   {
     if (display and i <= favoriteIndex)

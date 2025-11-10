@@ -491,7 +491,7 @@ public:
 
     if constexpr (flavor == LampTypes::simple)
     {
-      const brightness_t constraintBrightness = min(brightness, maxBrightness);
+      const brightness_t constraintBrightness = min<brightness_t>(brightness, maxBrightness);
       if (constraintBrightness >= maxBrightness)
         outputPower::blip(50); // blip
 

@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <limits>
 
 #include "constants.h"
 
@@ -52,21 +53,30 @@ template<typename T> static constexpr T lmpd_constrain(const T& a, const T& mini
                                                                        static_cast<T>(a);
 }
 
-template<typename T, typename U> static constexpr U lmpd_map(T x, T in_min, T in_max, U out_min, U out_max)
+template<typename T = float>
+static inline T lmpd_map(float x, const float in_min, const float in_max, const float out_min, const float out_max)
 {
-#ifdef LMBD_CPP17
+  using numeric_limits_T = std::numeric_limits<T>;
   assert(not(std::isnan(in_min) or std::isinf(in_min)) && "in_min invalid");
   assert(not(std::isnan(in_max) or std::isinf(in_max)) && "in_max invalid");
+  assert(out_min >= numeric_limits_T::lowest() && out_min <= numeric_limits_T::max() && "out_min invalid");
   assert(not(std::isnan(out_min) or std::isinf(out_min)) && "out_min invalid");
+  assert(out_max >= numeric_limits_T::lowest() && out_max <= numeric_limits_T::max() && "out_max invalid");
   assert(not(std::isnan(out_max) or std::isinf(out_max)) && "out_max invalid");
-#endif
-  return (std::isnan(x)          ? out_min :
-          x > 0 && std::isinf(x) ? out_max :
-          std::isinf(x)          ? out_min :
-                                   static_cast<U>(static_cast<float>(out_max - out_min) *
-                                         (static_cast<float>(x) - static_cast<float>(in_min)) /
-                                         static_cast<float>(in_max - in_min)) +
-                                  out_min);
+
+  if (std::isnan(x))
+    return out_min;
+  if (x > 0 && std::isinf(x))
+    return out_max;
+  if (std::isinf(x))
+    return out_min;
+  const float res = (out_max - out_min) * (x - in_min) / (in_max - in_min) + out_min;
+  if (res > numeric_limits_T::max())
+    return numeric_limits_T::max();
+  if (res < numeric_limits_T::lowest())
+    return numeric_limits_T::lowest();
+
+  return static_cast<T>(res);
 }
 
 static constexpr float to_radians(float degrees)

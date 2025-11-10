@@ -20,7 +20,7 @@ class LevelRecorder : public sf::SoundRecorder
   {
     data.sampleRead = 0;
     data.sampleDuration_us = 0; // TODO issue #132
-    const size_t readCnt = min(sampleCount, microphone::PdmData::SAMPLE_SIZE);
+    const size_t readCnt = min<size_t>(sampleCount, microphone::PdmData::SAMPLE_SIZE);
     for (std::size_t i = 0; i < readCnt; i++)
     {
       data.data[i] = samples[i];

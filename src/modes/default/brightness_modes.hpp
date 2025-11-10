@@ -170,8 +170,8 @@ struct StroboscopeMode : public BasicMode
   /// regulate stroboscopic speed
   static constexpr bool hasCustomRamp = true;
 
-  static constexpr uint32_t stroboMaxFreq = 1000 * (1 / 30.0);
-  static constexpr uint32_t stroboMinFreq = 1000 * (1 / 7.0);
+  static constexpr uint32_t stroboMaxFreq = 1000 * (1 / 30.0f);
+  static constexpr uint32_t stroboMinFreq = 1000 * (1 / 7.0f);
 
   struct StateTy
   {
@@ -190,7 +190,7 @@ struct StroboscopeMode : public BasicMode
 
   static void custom_ramp_update(auto& ctx, uint8_t rampValue)
   {
-    ctx.state.pulseDuration = lmpd_map<uint8_t, uint32_t>(rampValue, 0, 255, stroboMinFreq, stroboMaxFreq);
+    ctx.state.pulseDuration = lmpd_map<uint32_t>(rampValue, 0, 255, stroboMinFreq, stroboMaxFreq);
   }
 
   static void loop(auto& ctx)

@@ -70,14 +70,14 @@ public:
     float estimatedCurrentDraw = 0.0;
 
     const uint8_t b = getBrightness();
-    const float currentPerLed = lmpd_map<uint8_t, float>(b, 0, 255, 0.0f, ampPerLed);
+    const float currentPerLed = lmpd_map<float>(b, 0, 255, 0.0f, ampPerLed);
 
     for (uint16_t i = 0; i < LED_COUNT; ++i)
     {
       COLOR c;
       c.color = getRawPixelColor(i);
 
-      const float res = max(c.blue, max(c.red, c.green));
+      const float res = max<float>(c.blue, max<float>(c.red, c.green));
       if (res <= 0)
       {
         continue;
@@ -85,7 +85,7 @@ public:
 
       estimatedCurrentDraw += currentPerLed;
     }
-    return max(baseCurrentConsumption, estimatedCurrentDraw);
+    return max<float>(baseCurrentConsumption, estimatedCurrentDraw);
   }
 
   void setPixelColor(uint16_t n, COLOR c)
