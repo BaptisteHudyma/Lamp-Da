@@ -1,10 +1,6 @@
 #include <cmath>
-#include <cstdint>
 #include <gtest/gtest.h>
-#include <limits>
 #include "src/system/utils/vector_math.h"
-
-static constexpr float Inf = std::numeric_limits<float>::infinity();
 
 TEST(test_vector2d, init)
 {
