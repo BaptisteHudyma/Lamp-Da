@@ -23,6 +23,29 @@ jobs:
     - name: verify format
       run : make format-verify
 
+  run-tests:
+    runs-on: ubuntu-latest
+    needs: [format]
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        path: LampColorControler
+        submodules: 'true'
+
+    - name: setup
+      run :
+         sudo apt update &&
+         sudo apt install libsfml-dev -y &&
+         sudo apt install libx11-dev libxrandr-dev libxcursor-dev libxi-dev libudev-dev libfreetype-dev libvorbis-dev libflac-dev libgl1-mesa-dev libopenal-dev libalut-dev -y &&
+         sudo apt install libgtest-dev libgmock-dev -y
+    - name: build
+      run:
+        make test
+    - name: test
+      run:
+        ./_build/tests/utest/tests_utest
+
   documentation:
     runs-on: ubuntu-latest
 
@@ -43,7 +66,7 @@ jobs:
   
   build-lamp:
     runs-on: ubuntu-latest
-    needs: [format]
+    needs: [format, run-tests]
 
     defaults:
       run:
@@ -68,7 +91,7 @@ jobs:
  
   build-simulator:
     runs-on: ubuntu-latest
-    needs: [format]
+    needs: [format, run-tests]
 
     steps:
     - uses: actions/checkout@v4

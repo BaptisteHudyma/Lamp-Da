@@ -292,8 +292,8 @@ uint32_t get_color_from_palette(const uint16_t index, const palette_t& palette, 
 {
   const float ramp = (index / (float)UINT16_MAX) * PALETTE_SIZE;
 
-  const uint8_t renormIndex = min(floor(ramp), PALETTE_SIZE - 1);        // convert to [0; 15] (divide by 16)
-  const float blendIndex = lmpd_constrain(ramp - renormIndex, 0.0, 1.0); // get the fractional part
+  const uint8_t renormIndex = min<uint8_t>(floorf(ramp), PALETTE_SIZE - 1);     // convert to [0; 15] (divide by 16)
+  const float blendIndex = lmpd_constrain<float>(ramp - renormIndex, 0.0, 1.0); // get the fractional part
 
   const uint32_t entry = palette[renormIndex];
 

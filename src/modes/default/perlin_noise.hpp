@@ -75,7 +75,8 @@ struct PerlinNoiseMode : public BasicMode
   {
     auto& state = ctx.state;
 
-    const uint8_t rampIndex = min(floor(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1);
+    const uint8_t rampIndex =
+            min<float>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1.0f);
     state.selectedPalette = state._palettes[rampIndex];
   }
 
@@ -92,8 +93,8 @@ struct PerlinNoiseMode : public BasicMode
       if (speed < 0)
         speed += speedBleedof;
       else
-        speed = lmpd_constrain(
-                speed + lmpd_map<uint8_t, int16_t>(random8(), 0, 255, 0, acceleration * 2), 0, ctx.state.maxSpeed);
+        speed = lmpd_constrain<int16_t>(
+                speed + lmpd_map<int16_t>(random8(), 0, 255, 0, acceleration * 2), 0, ctx.state.maxSpeed);
     }
     else if (position > (UINT32_MAX - confortZone))
     {
@@ -101,15 +102,15 @@ struct PerlinNoiseMode : public BasicMode
       if (speed > 0)
         speed -= speedBleedof;
       else
-        speed = lmpd_constrain(
-                speed + lmpd_map<uint8_t, int16_t>(random8(), 0, 255, -acceleration * 2, 0), -ctx.state.maxSpeed, 0);
+        speed = lmpd_constrain<int16_t>(
+                speed + lmpd_map<int16_t>(random8(), 0, 255, -acceleration * 2, 0), -ctx.state.maxSpeed, 0);
     }
     else
     {
       // free range x speed
-      speed = lmpd_constrain(speed + lmpd_map<uint8_t, int16_t>(random8(), 0, 255, -acceleration, acceleration),
-                             -ctx.state.maxSpeed,
-                             ctx.state.maxSpeed);
+      speed = lmpd_constrain<int16_t>(speed + lmpd_map<int16_t>(random8(), 0, 255, -acceleration, acceleration),
+                                      -ctx.state.maxSpeed,
+                                      ctx.state.maxSpeed);
       // prevent too slow speed
       if (speed < 0 and speed > -ctx.state.minSpeed)
         speed = -ctx.state.minSpeed;

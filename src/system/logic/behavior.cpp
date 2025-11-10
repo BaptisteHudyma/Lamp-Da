@@ -7,6 +7,7 @@
 
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/inputs.h"
+#include "src/system/logic/statistics_handler.h"
 
 #include "src/system/power/charger.h"
 #include "src/system/power/power_handler.h"
@@ -40,6 +41,7 @@
 
 namespace behavior {
 
+static constexpr uint32_t cleanSleepKey = utils::hash("cleanSleep");
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
 static constexpr uint32_t indicatorLevelKey = utils::hash("indLvl");
 static constexpr uint32_t isLockoutModeKey = utils::hash("lckMode");
@@ -48,14 +50,25 @@ static constexpr uint32_t isLockoutModeKey = utils::hash("lckMode");
 static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 500;
 
 // timestamp of the system wake up
-static uint32_t wakeUpTime = time_ms();
+static uint32_t wakeUpTime = 0;
 
 // pre output light call timing (lamp output starts)
 // Starts at system start time
-static uint32_t preOutputLightCalled = time_ms();
+static uint32_t preOutputLightCalled = 0;
+
+// indicates that the system was waken up by voltage on vbus
+static bool wokeUpFromVbus_s = false;
+// indicates that the output should be turned on/off
+static bool isTargetPoweredOn_s = false;
+// indicates the error that started the error state
+static std::string errorStateRaisedStr = "";
+// indicates the time at which the pre-charge state started
+static uint32_t preChargeCalled = 0;
+// indicates the  time at which the output state is enabled
+static uint32_t lastOutputLightValidTime = 0;
 
 // Define the state for the main prog state machine
-typedef enum
+using BehaviorStates = enum class behavior_t
 {
   // handle the start logic
   START_LOGIC,
@@ -76,7 +89,7 @@ typedef enum
 
   // Should never happen, default state
   ERROR,
-} BehaviorStates;
+};
 const char* BehaviorStatesStr[] = {
         "START_LOGIC",
         "PRE_CHARGER_OPERATION",
@@ -91,11 +104,9 @@ const char* BehaviorStatesStr[] = {
 StateMachine<BehaviorStates> mainMachine(BehaviorStates::START_LOGIC);
 
 // system was powered from vbus power event
-static bool wokeUpFromVbus_s = false;
 bool did_woke_up_from_power() { return wokeUpFromVbus_s; }
 
 // target power on state (not actual state)
-static bool isTargetPoweredOn_s = false;
 bool is_system_should_be_powered() { return isTargetPoweredOn_s; }
 void set_power_on() { isTargetPoweredOn_s = true; }
 void set_power_off()
@@ -106,6 +117,8 @@ void set_power_off()
 
   isTargetPoweredOn_s = false;
 }
+
+void go_to_external_battery_mode() { power::go_to_otg_mode(); }
 
 // allow system to be powered if no hardware alert and power is setup
 bool can_system_allowed_to_be_powered()
@@ -118,48 +131,82 @@ bool is_charger_powered() { return charger::is_vbus_powered(); }
 
 bool read_parameters()
 {
-  // load values in memory
-  const bool isFileLoaded = fileSystem::load_initial_values();
-  if (!isFileLoaded)
-    return false;
-
-  uint32_t brightness = 0;
-  if (fileSystem::get_value(brightnessKey, brightness))
+  bool isSuccess = false;
+  // load system values in memory
+  if (not fileSystem::system::load_from_file())
   {
-    brightness::update_brightness(brightness, true);
-    brightness::update_saved_brightness();
+    alerts::manager.raise(alerts::Type::SYSTEM_SLEEP_SKIPPED);
+  }
+  else
+  {
+    isSuccess = true;
+    // load statistics first
+    statistics::load_from_memory();
+
+    uint32_t wasPutToSleepCleanly = 0;
+    const bool isCleanFlagFound = fileSystem::system::get_value(cleanSleepKey, wasPutToSleepCleanly);
+    if (not isCleanFlagFound or wasPutToSleepCleanly != 0xDEADBEEF)
+    {
+      // dirty sleep alert
+      alerts::manager.raise(alerts::Type::SYSTEM_SLEEP_SKIPPED);
+    }
+
+    uint32_t brightness = 0;
+    if (fileSystem::system::get_value(brightnessKey, brightness))
+    {
+      brightness::update_brightness(brightness, true);
+      brightness::update_saved_brightness();
+    }
+
+    uint32_t indicatorLevel = 0;
+    if (fileSystem::system::get_value(indicatorLevelKey, indicatorLevel))
+    {
+      indicator::set_brightness_level(indicatorLevel);
+    }
+
+    uint32_t isInLockoutMode = 0;
+    if (fileSystem::system::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
+    {
+      // system in lockout, raise the alert
+      alerts::manager.raise(alerts::Type::SYSTEM_IN_LOCKOUT);
+    }
   }
 
-  uint32_t indicatorLevel = 0;
-  if (fileSystem::get_value(indicatorLevelKey, indicatorLevel))
+  if (fileSystem::user::load_from_file())
   {
-    indicator::set_brightness_level(indicatorLevel);
+    user::read_parameters();
   }
+  // else: we can live without the user parameters
 
-  uint32_t isInLockoutMode = 0;
-  if (fileSystem::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
-  {
-    // system in lockout, raise the alert
-    alerts::manager.raise(alerts::Type::SYSTEM_IN_LOCKOUT);
-  }
+  return isSuccess;
+}
 
-  user::read_parameters();
-  return true;
+void setup_clean_sleep_flag()
+{
+  // clear clean sleep flag
+  fileSystem::system::set_value(cleanSleepKey, 0);
+  // write parameters, if a crash happens, we will notice a dirty flag
+  fileSystem::system::write_to_file();
 }
 
 void write_parameters()
 {
   fileSystem::clear();
 
+  // write updated statistics
+  statistics::write_to_memory();
+
+  fileSystem::system::set_value(cleanSleepKey, 0xDEADBEEF);
   // only save saved brightness, not current
-  fileSystem::set_value(brightnessKey, brightness::get_saved_brightness());
-  fileSystem::set_value(indicatorLevelKey, indicator::get_brightness_level());
+  fileSystem::system::set_value(brightnessKey, brightness::get_saved_brightness());
+  fileSystem::system::set_value(indicatorLevelKey, indicator::get_brightness_level());
   // lockout mode always kept, if not deactivated by system
-  fileSystem::set_value(isLockoutModeKey, alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT));
+  fileSystem::system::set_value(isLockoutModeKey, alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT));
 
   user::write_parameters();
 
-  fileSystem::write_state();
+  fileSystem::user::write_to_file();
+  fileSystem::system::write_to_file();
 }
 
 // user code is running when state is output
@@ -206,7 +253,6 @@ void true_power_off()
   alerts::manager.raise(alerts::Type::SYSTEM_OFF_FAILED);
 }
 
-static std::string errorStateRaisedStr = "";
 void set_error_state_message(const std::string& errorMsg)
 {
   if (errorStateRaisedStr.empty())
@@ -223,6 +269,8 @@ std::string get_error_state_message()
 
 void go_to_error_state(const std::string& errorMsg)
 {
+  statistics::signal_output_off();
+
   // signal to the system we dont want to turn off until user asked
   // thats better to debug an error
   set_power_on();
@@ -287,9 +335,11 @@ void handle_start_logic_state()
     // start the system normally
     mainMachine.set_state(BehaviorStates::PRE_OUTPUT_LIGHT);
   }
+
+  // set clean flag early on
+  setup_clean_sleep_flag();
 }
 
-static uint32_t preChargeCalled = 0;
 void handle_pre_charger_operation_state()
 {
   if (power::is_in_error_state())
@@ -307,8 +357,15 @@ void handle_pre_charger_operation_state()
     // battery cannot be charged
     return;
   }
+  if (not alerts::manager.can_use_usb_port())
+  {
+    // USB port use is locked
+    return;
+  }
 
-  power::go_to_charger_mode();
+  // force OTG
+  if (not power::is_in_otg_mode())
+    power::go_to_charger_mode();
   mainMachine.set_state(BehaviorStates::CHARGER_OPERATIONS);
 }
 
@@ -335,11 +392,16 @@ void handle_charger_operation_state()
   const bool vbusDebounced = charger::can_use_vbus_power() or (time_ms() - preChargeCalled) > 5000;
   if (vbusDebounced)
   {
-    // otg mode
+    static uint32_t otgDebounce_time = 0;
     if (charger::get_state().isInOtg)
     {
+      otgDebounce_time = time_ms();
+    }
+
+    // otg mode
+    if ((otgDebounce_time != 0) and (time_ms() - otgDebounce_time) <= 500)
+    {
       // do nothing (for now !)
-      // TODO issue #133, stop if battery gets low, or temperature high
     }
     // no power, shutdown everything
     else if (not is_charger_powered())
@@ -379,7 +441,7 @@ bool check_handle_exit_output_mode()
     return true;
   }
 #ifndef LMBD_SIMULATION
-  else if (not alerts::manager.can_use_output_power())
+  else if (not battery::is_battery_usable_as_power_source())
   {
     // wait a bit then shutdown
     if (time_ms() - preOutputLightCalled > 3000)
@@ -394,7 +456,6 @@ bool check_handle_exit_output_mode()
   return false;
 }
 
-static uint32_t lastOutputLightValidTime = 0;
 void handle_pre_output_light_state()
 {
   static bool isMessageDisplayed = false;
@@ -405,7 +466,7 @@ void handle_pre_output_light_state()
     return;
   }
   // power usage is forbidden
-  if (not alerts::manager.can_use_output_power())
+  if (not battery::is_battery_usable_as_power_source())
   {
     if (not isMessageDisplayed)
     {
@@ -468,7 +529,8 @@ void handle_pre_output_light_state()
 
   lastOutputLightValidTime = time_ms();
 
-  // this function is executed OUNCE
+  // this function is executed ONCE
+  statistics::signal_output_on();
   mainMachine.set_state(BehaviorStates::OUTPUT_LIGHT);
 }
 
@@ -477,6 +539,15 @@ void handle_output_light_state()
   if (power::is_in_error_state())
   {
     go_to_error_state("power system in error state in output light state");
+    return;
+  }
+
+  // shortcut to external battery mode
+  if (power::is_in_otg_mode())
+  {
+    // ignore timing, special case
+    isTargetPoweredOn_s = false;
+    mainMachine.set_state(BehaviorStates::POST_OUTPUT_LIGHT, 100, BehaviorStates::PRE_CHARGER_OPERATION);
     return;
   }
 
@@ -535,6 +606,7 @@ void handle_post_output_light_state()
   delay_ms(1);
   outputPower::write_voltage(0); // power down
 
+  statistics::signal_output_off();
   mainMachine.skip_timeout();
 }
 
@@ -576,6 +648,8 @@ void handle_shutdown_state()
   bluetooth::stop_bluetooth_advertising();
 #endif
 
+  statistics::signal_output_off();
+
   // save the current config to a file
   // (takes some time so call it when the lamp appear to be shutdown already)
   write_parameters();
@@ -591,7 +665,8 @@ void state_machine_behavior()
   // if state changed, display the new state
   if (mainMachine.state_just_changed())
   {
-    lampda_print("BEHAVIOR_S_MACH > switched to state %s", BehaviorStatesStr[mainMachine.get_state()]);
+    lampda_print("BEHAVIOR_S_MACH > switched to state %s",
+                 BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]);
   }
 
   switch (mainMachine.get_state())
@@ -672,7 +747,7 @@ void loop()
   }
 }
 
-std::string get_state() { return std::string(BehaviorStatesStr[mainMachine.get_state()]); }
+std::string get_state() { return std::string(BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]); }
 
 } // namespace behavior
 

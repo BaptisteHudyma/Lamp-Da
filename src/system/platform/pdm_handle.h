@@ -1,6 +1,7 @@
 #ifndef PLATFORM_PDM_HANDLE_H
 #define PLATFORM_PDM_HANDLE_H
 
+#include <array>
 #include <stdint.h>
 #include <cstddef>
 
@@ -9,7 +10,7 @@ namespace microphone {
 struct PdmData
 {
   static constexpr size_t SAMPLE_SIZE = 512; // same has samplesFFT;
-  int16_t data[SAMPLE_SIZE];
+  std::array<int16_t, SAMPLE_SIZE> data;
 
   uint32_t sampleDuration_us;
   uint32_t sampleTime_us;
@@ -29,7 +30,7 @@ struct SoundStruct
 
   float fftMajorPeakFrequency_Hz = 0.0;
   float strongestPeakMagnitude = 0.0;
-  uint8_t fft[numberOfFFtChanels];
+  std::array<uint8_t, numberOfFFtChanels> fft;
 };
 
 namespace _private {

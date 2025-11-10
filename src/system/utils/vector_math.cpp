@@ -35,13 +35,13 @@ void RotationMatrix::from_angles(const float roll_rad, const float pitch_rad, co
 
 void RotationMatrix::from_angles(const vec3d& angles_rad)
 {
-  auto si = sin(angles_rad.x);
-  auto sj = sin(angles_rad.y);
-  auto sk = sin(angles_rad.z);
+  auto si = sinf(angles_rad.x);
+  auto sj = sinf(angles_rad.y);
+  auto sk = sinf(angles_rad.z);
 
-  auto ci = cos(angles_rad.x);
-  auto cj = cos(angles_rad.y);
-  auto ck = cos(angles_rad.z);
+  auto ci = cosf(angles_rad.x);
+  auto cj = cosf(angles_rad.y);
+  auto ck = cosf(angles_rad.z);
 
   auto cc = ci * ck;
   auto cs = ci * sk;

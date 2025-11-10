@@ -13,7 +13,7 @@ namespace __internal {
 LSM6DS3 IMU(I2C_MODE, imuI2cAddress); // I2C device address
 } // namespace __internal
 
-bool Wrapper::init()
+bool Wrapper::init() const
 {
   // start with a reset & reboot
   __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_CTRL3_C,
@@ -42,13 +42,13 @@ bool Wrapper::init()
   return error == status_t::IMU_SUCCESS;
 }
 
-bool Wrapper::shutdown()
+bool Wrapper::shutdown() const
 {
   // TODO
   return false;
 }
 
-Reading Wrapper::get_reading()
+Reading Wrapper::get_reading() const
 {
   Reading reads;
   // coordinate change to the lamp body
@@ -62,7 +62,7 @@ Reading Wrapper::get_reading()
   return reads;
 }
 
-bool Wrapper::enable_free_fall_detection()
+bool Wrapper::enable_free_fall_detection() const
 {
   uint8_t error = status_t::IMU_SUCCESS;
 
@@ -75,7 +75,7 @@ bool Wrapper::enable_free_fall_detection()
   return error == status_t::IMU_SUCCESS;
 }
 
-bool Wrapper::disable_free_fall_detection()
+bool Wrapper::disable_free_fall_detection() const
 {
   uint8_t error = status_t::IMU_SUCCESS;
 
@@ -88,7 +88,7 @@ bool Wrapper::disable_free_fall_detection()
   return error == status_t::IMU_SUCCESS;
 }
 
-bool Wrapper::enable_big_motion_detection()
+bool Wrapper::enable_big_motion_detection() const
 {
   uint8_t error = status_t::IMU_SUCCESS;
 
@@ -102,7 +102,7 @@ bool Wrapper::enable_big_motion_detection()
   return error == status_t::IMU_SUCCESS;
 }
 
-bool Wrapper::disable_big_motion_detection()
+bool Wrapper::disable_big_motion_detection() const
 {
   uint8_t error = status_t::IMU_SUCCESS;
 
@@ -115,7 +115,7 @@ bool Wrapper::disable_big_motion_detection()
   return error == status_t::IMU_SUCCESS;
 }
 
-bool Wrapper::enable_step_detection()
+bool Wrapper::enable_step_detection() const
 {
   uint8_t error = status_t::IMU_SUCCESS;
 
@@ -135,7 +135,7 @@ bool Wrapper::enable_step_detection()
   return error == status_t::IMU_SUCCESS;
 }
 
-bool Wrapper::disable_step_detection()
+bool Wrapper::disable_step_detection() const
 {
   uint8_t error = status_t::IMU_SUCCESS;
 
@@ -148,7 +148,7 @@ bool Wrapper::disable_step_detection()
   return error == status_t::IMU_SUCCESS;
 }
 
-bool Wrapper::enable_tilt_detection()
+bool Wrapper::enable_tilt_detection() const
 {
   uint8_t error = status_t::IMU_SUCCESS;
 
@@ -167,7 +167,7 @@ bool Wrapper::enable_tilt_detection()
   return error == status_t::IMU_SUCCESS;
 }
 
-bool Wrapper::disable_tilt_detection()
+bool Wrapper::disable_tilt_detection() const
 {
   uint8_t error = status_t::IMU_SUCCESS;
 
@@ -180,7 +180,7 @@ bool Wrapper::disable_tilt_detection()
   return error == status_t::IMU_SUCCESS;
 }
 
-void Wrapper::disable_detection(const InterruptType interr)
+void Wrapper::disable_detection(const InterruptType interr) const
 {
   switch (interr)
   {
@@ -206,7 +206,7 @@ void Wrapper::disable_detection(const InterruptType interr)
   }
 }
 
-bool Wrapper::enable_interrupt1(const InterruptType interr)
+bool Wrapper::enable_interrupt1(const InterruptType interr) const
 {
   switch (interr)
   {
@@ -262,7 +262,7 @@ bool Wrapper::enable_interrupt1(const InterruptType interr)
   return false;
 }
 
-void Wrapper::disable_interrupt1()
+void Wrapper::disable_interrupt1() const
 {
   const uint8_t int1Flag = LSM6DS3_ACC_GYRO_INT1_TIMER_t::LSM6DS3_ACC_GYRO_INT1_TIMER_DISABLED |
                            LSM6DS3_ACC_GYRO_INT1_TILT_t::LSM6DS3_ACC_GYRO_INT1_TILT_DISABLED |
@@ -285,7 +285,7 @@ void Wrapper::disable_interrupt1()
   __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_INT1_CTRL, int1Flag2);
 }
 
-bool Wrapper::enable_interrupt2(const InterruptType interr)
+bool Wrapper::enable_interrupt2(const InterruptType interr) const
 {
   switch (interr)
   {
@@ -331,7 +331,7 @@ bool Wrapper::enable_interrupt2(const InterruptType interr)
   return false;
 }
 
-void Wrapper::disable_interrupt2()
+void Wrapper::disable_interrupt2() const
 {
   const uint8_t int2Flag = LSM6DS3_ACC_GYRO_INT2_IRON_t::LSM6DS3_ACC_GYRO_INT2_IRON_DISABLED |
                            LSM6DS3_ACC_GYRO_INT2_TILT_t::LSM6DS3_ACC_GYRO_INT2_TILT_DISABLED |
@@ -354,7 +354,7 @@ void Wrapper::disable_interrupt2()
   __internal::IMU.writeRegister(LSM6DS3_ACC_GYRO_INT2_CTRL, int2Flag2);
 }
 
-uint16_t Wrapper::get_step_count()
+uint16_t Wrapper::get_step_count() const
 {
   uint8_t data1 = 0;
   __internal::IMU.readRegister(&data1, LSM6DS3_ACC_GYRO_STEP_COUNTER_H);
@@ -362,11 +362,11 @@ uint16_t Wrapper::get_step_count()
   __internal::IMU.readRegister(&data2, LSM6DS3_ACC_GYRO_STEP_COUNTER_L);
 
   uint16_t res = 0;
-  res = data1 << 8 | data2;
+  res = static_cast<uint16_t>(data1 << 8 | data2);
   return res;
 }
 
-bool Wrapper::is_event_detected(const InterruptType interr)
+bool Wrapper::is_event_detected(const InterruptType interr) const
 {
   switch (interr)
   {

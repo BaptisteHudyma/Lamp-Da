@@ -37,7 +37,7 @@ struct Charger_t
   // battery current (> 0 charging, < 0 discharging)
   int16_t batteryCurrent_mA = 0;
 
-  enum ChargerStatus_t
+  enum class ChargerStatus_t
   {
     // not initialized yet
     UNINITIALIZED,

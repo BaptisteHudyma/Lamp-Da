@@ -33,7 +33,7 @@ struct OnePulse : public BasicMode
     auto& lamp = ctx.lamp;
 
     brightness_t base = lamp.getSavedBrightness();
-    brightness_t scaled = max(base * scaleFactor, base + minScaling);
+    brightness_t scaled = max<brightness_t>(base * scaleFactor, base + minScaling);
 
     if (scaled > lamp.maxBrightness)
       lamp.jumpBrightness(lamp.maxBrightness / scaleFactor);
@@ -59,7 +59,7 @@ template<size_t N> struct ManyPulse : public BasicMode
     auto& lamp = ctx.lamp;
 
     brightness_t base = lamp.getSavedBrightness();
-    brightness_t scaled = max(base * scaleFactor, base + minScaling);
+    brightness_t scaled = max<brightness_t>(base * scaleFactor, base + minScaling);
 
     if (scaled > lamp.maxBrightness)
       lamp.jumpBrightness(lamp.maxBrightness / scaleFactor);
@@ -120,8 +120,8 @@ struct Candle : public BasicMode
     auto& lamp = ctx.lamp;
 
     // limit max brightness
-    const brightness_t base =
-            min(lamp.getSavedBrightness(), maxBrightness - (CANDLE_AMPLITUDE + 15) * brightnessCorrection);
+    const brightness_t base = min<brightness_t>(lamp.getSavedBrightness(),
+                                                maxBrightness - (CANDLE_AMPLITUDE + 15) * brightnessCorrection);
 
     // 3-oscillator synth for a relatively organic pattern
     const uint8_t add = ((triwave8(ctx.state.candle_wave1) * ctx.state.candle_wave1_depth) >> 8) +
@@ -170,8 +170,8 @@ struct StroboscopeMode : public BasicMode
   /// regulate stroboscopic speed
   static constexpr bool hasCustomRamp = true;
 
-  static constexpr uint32_t stroboMaxFreq = 1000 * (1 / 30.0);
-  static constexpr uint32_t stroboMinFreq = 1000 * (1 / 7.0);
+  static constexpr uint32_t stroboMaxFreq = 1000 * (1 / 30.0f);
+  static constexpr uint32_t stroboMinFreq = 1000 * (1 / 7.0f);
 
   struct StateTy
   {
@@ -190,7 +190,7 @@ struct StroboscopeMode : public BasicMode
 
   static void custom_ramp_update(auto& ctx, uint8_t rampValue)
   {
-    ctx.state.pulseDuration = lmpd_map<uint8_t, uint32_t>(rampValue, 0, 255, stroboMinFreq, stroboMaxFreq);
+    ctx.state.pulseDuration = lmpd_map<uint32_t>(rampValue, 0, 255, stroboMinFreq, stroboMaxFreq);
   }
 
   static void loop(auto& ctx)

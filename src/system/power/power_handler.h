@@ -42,6 +42,8 @@ bool is_output_mode_ready();
 bool is_in_output_mode();
 bool is_in_otg_mode();
 
+bool is_in_external_battery_mode();
+
 } // namespace power
 
 #endif

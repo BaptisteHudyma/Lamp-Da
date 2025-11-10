@@ -1,4 +1,5 @@
 #include "src/system/platform/i2c.h"
+#include <array>
 
 #define PLATFORM_I2C_CPP
 
@@ -14,7 +15,7 @@
 #include "simulator/mocks/electrical/BQ25713_mock.h"
 
 static constexpr size_t numberOfMocks = 1;
-const std::unique_ptr<IntegratedCircuitMock_I> icMocks[numberOfMocks] = {
+const std::array<std::unique_ptr<IntegratedCircuitMock_I>, numberOfMocks> icMocks = {
         // charger component
         std::make_unique<BQ25713Mock>(),
         // other
@@ -80,7 +81,11 @@ int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
   return 1;
 }
 
-int i2c_writeData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t* buf, int stopBit)
+int lock_i2c() { return 0; }
+int unlock_i2c() { return 0; }
+
+int i2c_writeData(
+        uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, const uint8_t* buf, int stopBit)
 {
   if (i2cIndex != 0 or !isI2cAvailable)
     return 1;
@@ -108,7 +113,7 @@ int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint
   return 1;
 }
 
-int i2c_xfer(
+int i2c_xfer_unlocked(
         uint8_t i2cIndex, uint8_t deviceAddr, int out_size, const uint8_t* out, int in_size, uint8_t* in, uint8_t flags)
 {
   if (i2cIndex != 0 or !isI2cAvailable)

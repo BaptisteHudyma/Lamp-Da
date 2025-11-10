@@ -835,6 +835,7 @@ extern "C" {
     PD_DATA_ALERT = 6,
     PD_DATA_GET_COUNTRY_INFO = 7,
     /* 8-14 Reserved for REV 3.0 */
+    PD_DATA_ENTER_USB = 8,
     PD_DATA_VENDOR_DEF = 15,
   };
 
@@ -907,10 +908,15 @@ extern "C" {
   ((type) | ((rev) << 6) | ((drole) << 5) | ((prole) << 8) | ((id) << 9) | ((cnt) << 12) | ((ext) << 15))
 
 /* Used for processing pd header */
-#define PD_HEADER_EXT(header)   (((header) >> 15) & 1)
-#define PD_HEADER_CNT(header)   (((header) >> 12) & 7)
-#define PD_HEADER_TYPE(header)  ((header) & 0xF)
+#define PD_HEADER_EXT(header) (((header) >> 15) & 1)
+#define PD_HEADER_CNT(header) (((header) >> 12) & 7)
+/*
+ * NOTE: bit 4 was added in PD 3.0, and should be reserved and set to 0 in PD
+ * 2.0 messages
+ */
+#define PD_HEADER_TYPE(header)  ((header) & 0x1F)
 #define PD_HEADER_ID(header)    (((header) >> 9) & 7)
+#define PD_HEADER_PROLE(header) (((header) >> 8) & 1)
 #define PD_HEADER_REV(header)   (((header) >> 6) & 3)
 #define PD_HEADER_DROLE(header) (((header) >> 5) & 1)
 

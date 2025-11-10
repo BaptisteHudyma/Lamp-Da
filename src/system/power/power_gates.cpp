@@ -21,8 +21,8 @@ static uint32_t blipWakeUpTime = 0;
 bool isPowerGateReallyEnabled = false;
 
 namespace __private {
-DigitalPin enableVbusGate(DigitalPin::GPIO::Output_EnableVbusGate);
-DigitalPin enablePowerGate(DigitalPin::GPIO::Output_EnableOutputGate);
+const DigitalPin enableVbusGate(DigitalPin::GPIO::Output_EnableVbusGate);
+const DigitalPin enablePowerGate(DigitalPin::GPIO::Output_EnableOutputGate);
 } // namespace __private
 
 void enable_gate(bool isVbusGate)

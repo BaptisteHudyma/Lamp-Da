@@ -7,9 +7,9 @@
 namespace indicator {
 
 // Red green and blue leds of this indicators do not have the same power
-static constexpr float redColorCorrection = 1.0;
-static constexpr float greenColorCorrection = 1.0 / 3.0;
-static constexpr float blueColorCorrection = 1.0 / 4.0;
+static constexpr float redColorCorrection = 1.0f;
+static constexpr float greenColorCorrection = 1.0f / 3.0f;
+static constexpr float blueColorCorrection = 1.0f / 4.0f;
 
 extern void init();
 
@@ -53,7 +53,7 @@ extern bool blink(const uint32_t offFreq, const uint32_t onFreq, std::initialize
  * \param[in] color The color of the animation
  * \return true when the animation finished. It loops automatically if called again
  */
-inline bool blink(const uint32_t offFreq, const uint32_t onFreq, const utils::ColorSpace::RGB color)
+inline bool blink(const uint32_t offFreq, const uint32_t onFreq, const utils::ColorSpace::RGB& color)
 {
   return blink(offFreq, onFreq, {color});
 }

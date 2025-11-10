@@ -8,17 +8,6 @@
 
 namespace animations {
 
-void vu_meter(const Color& vuColor, const uint8_t fadeOut, LedStrip& strip)
-{
-  const float decibels = microphone::get_sound_level_Db();
-  // convert to 0 - 1
-  const float vuLevel = (decibels + abs(microphone::silenceLevelDb)) / microphone::highLevelDb;
-
-  // display the gradient
-  animations::fill(vuColor, strip, vuLevel);
-  strip.fadeToBlackBy(fadeOut);
-}
-
 void fft_display(const uint8_t speed, const uint8_t scale, const palette_t& palette, LedStrip& strip)
 {
   static constexpr uint8_t bufferIndexToUse = 0;
@@ -57,8 +46,8 @@ void fft_display(const uint8_t speed, const uint8_t scale, const palette_t& pale
 
   for (uint8_t x = 0; x < cols; ++x)
   {
-    const uint8_t mappedX = lmpd_map<uint8_t, uint8_t>(x, 0, cols, 0, microphone::SoundStruct::numberOfFFtChanels - 1);
-    const uint8_t mappedY = lmpd_map<uint8_t, uint8_t>(fftRes.fft[mappedX], 0, 255, 0, rows);
+    const uint8_t mappedX = lmpd_map<uint8_t>(x, 0, cols, 0, microphone::SoundStruct::numberOfFFtChanels - 1);
+    const uint8_t mappedY = lmpd_map<uint8_t>(fftRes.fft[mappedX], 0, 255, 0, rows);
 
     if (mappedY > previousBarHeight[x])
       previousBarHeight[x] = mappedY; // drive the peak up
@@ -66,7 +55,7 @@ void fft_display(const uint8_t speed, const uint8_t scale, const palette_t& pale
     uint32_t ledColor = 0; // black
     for (int y = 0; y < mappedY; y++)
     {
-      uint8_t colorIndex = lmpd_map<uint8_t, uint8_t>(y, 0, rows - 1, 0, 255);
+      uint8_t colorIndex = lmpd_map<uint8_t>(y, 0, rows - 1, 0, 255);
 
       ledColor = get_color_from_palette(colorIndex, palette);
       strip.setPixelColorXY(x, rows - y, ledColor);

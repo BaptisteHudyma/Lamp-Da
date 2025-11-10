@@ -5,6 +5,7 @@
  */
 
 #include "src/system/platform/time.h"
+#include <cstdint>
 
 template<typename State> class StateMachine
 {
@@ -17,15 +18,10 @@ public:
   void run()
   {
     // there is a timeout set for this state
-    if (isTimeoutSet)
+    if (isTimeoutSet and time_ms() >= timeout_ms)
     {
       // timeout reached
-      if (time_ms() >= timeout_ms)
-      {
-        const bool hasChanged = set_state(afterTimeoutState);
-        // should never have a state timeout go to itself
-        // TODO? assert(hasChanged);
-      }
+      set_state(afterTimeoutState);
     }
   }
 

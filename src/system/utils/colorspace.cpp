@@ -90,8 +90,8 @@ void HSV::from_rgb(const COLOR& rgb)
   double g = rgb.green / 255.0;
   double b = rgb.blue / 255.0;
 
-  double _min = min(r, min(g, b));
-  double _max = max(r, max(g, b));
+  double _min = min<double>(r, min<double>(g, b));
+  double _max = max<double>(r, max<double>(g, b));
   double delta = _max - _min;
 
   this->v = _max;

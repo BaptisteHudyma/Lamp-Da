@@ -18,13 +18,13 @@ struct Reading
 class Wrapper
 {
 public:
-  bool init();
-  bool shutdown();
+  bool init() const;
+  bool shutdown() const;
 
   // get the accelerometer/gyroscope measurment
-  Reading get_reading();
+  Reading get_reading() const;
 
-  enum InterruptType
+  enum class InterruptType
   {
     FreeFall,    // raised during a free fall event
     BigMotion,   // raised with a >6g acceleration
@@ -33,36 +33,34 @@ public:
   };
 
   // free fall events
-  bool enable_free_fall_detection();
-  bool disable_free_fall_detection();
+  bool enable_free_fall_detection() const;
+  bool disable_free_fall_detection() const;
 
   // big motion
-  bool enable_big_motion_detection();
-  bool disable_big_motion_detection();
+  bool enable_big_motion_detection() const;
+  bool disable_big_motion_detection() const;
 
   // step motion
-  bool enable_step_detection();
-  bool disable_step_detection();
+  bool enable_step_detection() const;
+  bool disable_step_detection() const;
 
   // step motion
-  bool enable_tilt_detection();
-  bool disable_tilt_detection();
+  bool enable_tilt_detection() const;
+  bool disable_tilt_detection() const;
 
   // disable event detection. WILL ALSO DISABLE ASSOCIATED INTERRUPTS
-  void disable_detection(const InterruptType interr);
+  void disable_detection(const InterruptType interr) const;
 
-  bool enable_interrupt1(const InterruptType interr);
-  void disable_interrupt1();
+  bool enable_interrupt1(const InterruptType interr) const;
+  void disable_interrupt1() const;
 
-  bool enable_interrupt2(const InterruptType interr);
-  void disable_interrupt2();
+  bool enable_interrupt2(const InterruptType interr) const;
+  void disable_interrupt2() const;
 
-  uint16_t get_step_count();
+  uint16_t get_step_count() const;
 
   // return true if the interrupt is raised, do not depend on physical interrupt pins
-  bool is_event_detected(const InterruptType interr);
-
-private:
+  bool is_event_detected(const InterruptType interr) const;
 };
 
 } // namespace imu

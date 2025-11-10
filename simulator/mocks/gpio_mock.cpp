@@ -81,7 +81,7 @@ float voltage;
 } // namespace mock_battery
 
 // store output values
-uint8_t pinOutputValue[255];
+std::array<uint8_t, 255> pinOutputValue;
 
 class DigitalPinImpl
 {
@@ -89,7 +89,7 @@ public:
   DigitalPinImpl(DigitalPin::GPIO pin) : _pin(pin) {}
   ~DigitalPinImpl() = default;
 
-  bool is_high()
+  bool is_high() const
   {
     // button pin
     if (_pin == buttonPin)
@@ -97,14 +97,14 @@ public:
       return !mock_gpios::isButtonPressed;
     }
 
-    return pinOutputValue[_pin] >= 128;
+    return pinOutputValue[static_cast<uint8_t>(_pin)] >= 128;
   }
 
-  void set_high(bool isHigh) { pinOutputValue[_pin] = isHigh ? 255 : 0; }
+  void set_high(bool isHigh) const { pinOutputValue[static_cast<uint8_t>(_pin)] = isHigh ? 255 : 0; }
 
-  void write(uint16_t value)
+  void write(uint16_t value) const
   {
-    pinOutputValue[_pin] = value;
+    pinOutputValue[static_cast<uint8_t>(_pin)] = value;
 
     switch (_pin)
     {
@@ -127,9 +127,9 @@ public:
     }
   }
 
-  uint16_t read() { return pinOutputValue[_pin]; }
+  uint16_t read() const { return pinOutputValue[static_cast<uint8_t>(_pin)]; }
 
-  void attach_callback(voidFuncPtr cllbk, DigitalPin::Interrupt mode)
+  void attach_callback(voidFuncPtr cllbk, DigitalPin::Interrupt mode) const
   {
     // cannot have two interrupt callback types
     mock_gpios::callbacksChange.erase(_pin);
@@ -155,7 +155,7 @@ public:
     }
   }
 
-  void detach_callbacks()
+  void detach_callbacks() const
   {
     mock_gpios::callbacksChange.erase(_pin);
     mock_gpios::callbacksRisingEdge.erase(_pin);
@@ -167,36 +167,32 @@ public:
 };
 
 DigitalPin::DigitalPin(DigitalPin::GPIO pin) : mGpio(pin) { mImpl = std::make_shared<DigitalPinImpl>(pin); }
-DigitalPin::~DigitalPin() = default;
-DigitalPin::DigitalPin(const DigitalPin& other) = default;
 
-DigitalPin& DigitalPin::operator=(const DigitalPin& other) = default;
-
-void DigitalPin::set_pin_mode(Mode mode) {}
+void DigitalPin::set_pin_mode(Mode mode) const {}
 
 bool DigitalPin::is_high() const { return mImpl->is_high(); }
 
-void DigitalPin::set_high(bool is_high) { return mImpl->set_high(is_high); }
+void DigitalPin::set_high(bool is_high) const { return mImpl->set_high(is_high); }
 
-void DigitalPin::write(uint16_t value) { mImpl->write(value); }
+void DigitalPin::write(uint16_t value) const { mImpl->write(value); }
 
 uint16_t DigitalPin::read() const { return mImpl->read(); }
 
 int DigitalPin::pin() const { return 0; }
 
-void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode)
+void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode) const
 {
   DigitalPin::s_gpiosWithInterrupts.emplace(mGpio);
   mImpl->attach_callback(func, mode);
 }
 
-void DigitalPin::detach_callbacks()
+void DigitalPin::detach_callbacks() const
 {
   DigitalPin::s_gpiosWithInterrupts.erase(mGpio);
   mImpl->detach_callbacks();
 }
 
-void DigitalPin::disconnect()
+void DigitalPin::disconnect() const
 {
   // do nothing ?
   // TODO issue #132

@@ -21,6 +21,7 @@
 #include "src/modes/default/perlin_noise.hpp"
 #include "src/modes/default/sine_mode.hpp"
 #include "src/modes/default/spiral.hpp"
+#include "src/modes/default/vu_meter.hpp"
 
 namespace modes::legacy {
 
@@ -170,27 +171,6 @@ struct PingPongMode : public LegacyMode
 
 namespace sound {
 
-struct VuMeterMode : public LegacyMode
-{
-  static void loop(auto& ctx)
-  {
-    auto& state = ctx.state;
-    animations::vu_meter(state.redToGreenGradient, 128, ctx.lamp.getLegacyStrip());
-  }
-
-  static void on_enter_mode(auto& ctx)
-  {
-    auto& state = ctx.state;
-    state.redToGreenGradient.reset();
-  }
-
-  struct StateTy
-  {
-    GenerateGradientColor redToGreenGradient = GenerateGradientColor(
-            LedStrip::Color(0, 255, 0), LedStrip::Color(255, 0, 0)); // gradient from red to green};
-  };
-};
-
 struct FftMode : public LegacyMode
 {
   static void loop(auto& ctx) { animations::fft_display(64, 64, PalettePartyColors, ctx.lamp.getLegacyStrip()); }
@@ -225,7 +205,8 @@ struct LiquideMode : public LegacyMode
     auto& state = ctx.state;
 
     // get color from ramp
-    const uint8_t rampIndex = min(floor(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1);
+    const uint8_t rampIndex =
+            min<uint8_t>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1);
     state._color = state._colors[rampIndex];
   }
 
@@ -317,7 +298,7 @@ using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
 
 using PartyModes = modes::GroupFor<party::ColorWipeMode, party::RandomFillMode, party::PingPongMode>;
 
-using SoundModes = modes::GroupFor<sound::VuMeterMode, sound::FftMode>;
+using SoundModes = modes::GroupFor<default_modes::VuMeterMode, sound::FftMode>;
 
 } // namespace modes::legacy
 

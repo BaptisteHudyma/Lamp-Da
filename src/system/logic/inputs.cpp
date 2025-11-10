@@ -11,6 +11,8 @@
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/time.h"
 
+#include "src/system/power/power_handler.h"
+
 #include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/time_utils.h"
 #include "src/system/utils/sunset_timer.h"
@@ -85,6 +87,8 @@ bool always_button_click_callback(const uint8_t consecutiveButtonCheck)
         indicator::set_brightness_level(indicator::get_brightness_level() + 1);
         return false;
       }
+    default:
+      break;
   }
   return true;
 }
@@ -146,6 +150,16 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
 
   switch (consecutiveButtonCheck)
   {
+    // external battery mode
+    case 2:
+      {
+        if (buttonHoldDuration > 1000)
+        {
+          if (not power::is_in_otg_mode())
+            behavior::go_to_external_battery_mode();
+        }
+        break;
+      }
     case 3:
       {
         // 3+hold (2s): turn it on, with button usermode enabled
@@ -171,6 +185,8 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
         return false;
 #endif
       }
+    default:
+      break;
   }
 
   return true;
@@ -227,6 +243,8 @@ bool always_button_hold_callback(const uint8_t consecutiveButtonCheck,
         EVERY_N_MILLIS(1000) { indicator::set_brightness_level(indicator::get_brightness_level() + 1); }
         return false;
       }
+    default:
+      break;
   }
 
   return true;
@@ -250,7 +268,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
       {
         // number of steps to update brightness
         static constexpr uint32_t brightnessUpdateSteps = BRIGHTNESS_RAMP_DURATION_MS / BRIGHTNESS_LOOP_UPDATE_EVERY;
-        static uint32_t brightnessUpdateStepSize = max(1u, maxBrightness / brightnessUpdateSteps);
+        static uint32_t brightnessUpdateStepSize = max<uint32_t>(1, maxBrightness / brightnessUpdateSteps);
 
         // negative go low, positive go high
         static int rampSide = 1;
@@ -307,7 +325,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
               // min level
               brightness::update_brightness(1);
             else
-              brightness::update_brightness(brightness - brightnessUpdateStepSize);
+              brightness::update_brightness(static_cast<brightness_t>(brightness - brightnessUpdateStepSize));
           }
           /// go up
           else
@@ -319,7 +337,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
               // min level
               brightness::update_brightness(maxBrightness);
             else
-              brightness::update_brightness(brightness + brightnessUpdateStepSize);
+              brightness::update_brightness(static_cast<brightness_t>(brightness + brightnessUpdateStepSize));
           }
 
           // update saved brightness

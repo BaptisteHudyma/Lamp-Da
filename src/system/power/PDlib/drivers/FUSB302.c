@@ -747,7 +747,7 @@ static int fusb302_rx_fifo_is_empty()
   return ret;
 }
 
-static int fusb302_tcpm_get_message(uint32_t* payload, int* head)
+static int fusb302_tcpm_get_message(uint32_t* payload, uint32_t* head)
 {
   /*
    * This is the buffer that will get the burst-read data
@@ -764,14 +764,13 @@ static int fusb302_tcpm_get_message(uint32_t* payload, int* head)
   do
   {
     buf[0] = TCPC_REG_FIFOS;
-    // tcpc_lock(1);
+    tcpc_lock(1);
 
     /*
      * PART 1 OF BURST READ: Write in register address.
      * Issue a START, no STOP.
      */
-    // rv = tcpc_xfer_unlocked(buf, 1, 0, 0, I2C_XFER_START);
-    rv = tcpc_xfer(buf, 1, 0, 0, I2C_XFER_START);
+    rv = tcpc_xfer_unlocked(buf, 1, 0, 0, I2C_XFER_START);
 
     /*
      * PART 2 OF BURST READ: Read up to the header.
@@ -780,8 +779,7 @@ static int fusb302_tcpm_get_message(uint32_t* payload, int* head)
      * and determine how many more bytes we need to read.
      * TODO: Check token to ensure valid packet.
      */
-    // rv |= tcpc_xfer_unlocked(0, 0, buf, 3, I2C_XFER_START);
-    rv |= tcpc_xfer(0, 0, buf, 3, I2C_XFER_START);
+    rv |= tcpc_xfer_unlocked(0, 0, buf, 3, I2C_XFER_START);
 
     /* Grab the header */
     *head = (buf[1] & 0xFF);
@@ -795,10 +793,9 @@ static int fusb302_tcpm_get_message(uint32_t* payload, int* head)
      * No START, but do issue a STOP at the end.
      * add 4 to len to read CRC out
      */
-    // rv |= tcpc_xfer_unlocked(0, 0, buf, len+4, I2C_XFER_STOP);
-    rv |= tcpc_xfer(0, 0, buf, len + 4, I2C_XFER_STOP);
+    rv |= tcpc_xfer_unlocked(0, 0, buf, len + 4, I2C_XFER_STOP);
 
-    // tcpc_lock(0);
+    tcpc_lock(0);
   } while (!rv && PACKET_IS_GOOD_CRC(*head) && !fusb302_rx_fifo_is_empty());
 
   if (!rv)

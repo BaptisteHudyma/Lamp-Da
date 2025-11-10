@@ -491,7 +491,7 @@ public:
 
     if constexpr (flavor == LampTypes::simple)
     {
-      const brightness_t constraintBrightness = min(brightness, maxBrightness);
+      const brightness_t constraintBrightness = min<brightness_t>(brightness, maxBrightness);
       if (constraintBrightness >= maxBrightness)
         outputPower::blip(50); // blip
 
@@ -674,25 +674,6 @@ public:
     return strip;
   }
 
-  /** \brief (indexable) Fill lamp with target color
-   *
-   * See modes::colors::fromRGB() to set \p color
-   */
-  void LMBD_INLINE fill(uint32_t color)
-  {
-    if constexpr (flavor == LampTypes::indexable)
-    {
-      for (uint16_t I = 0; I < ledCount; ++I)
-      {
-        strip.setPixelColor(I, color);
-      }
-    }
-    else
-    {
-      assert(false && "unsupported");
-    }
-  }
-
   /** \brief (indexable) Fill lamp with target color, from start to end
    *
    * - See toLedCount() to set \p start and \p end
@@ -703,7 +684,7 @@ public:
     if constexpr (flavor == LampTypes::indexable)
     {
       assert(start < ledCount && "invalid start parameter");
-      assert(end < ledCount && "invalid end parameter");
+      assert(end <= ledCount && "invalid end parameter");
 
       for (uint16_t I = start; I < end; ++I)
       {
@@ -715,6 +696,42 @@ public:
       assert(false && "unsupported");
     }
   }
+
+  /** \brief (indexable) Fill lamp with target color
+   *
+   * See modes::colors::fromRGB() to set \p color
+   */
+  void LMBD_INLINE fill(uint32_t color) { fill(color, 0, ledCount); }
+
+  /** \brief (indexable) Fill lamp with target palette, from start to end
+   *
+   * - See toLedCount() to set \p start and \p end
+   * - See modes::colors::PaletteTy to set \p palette
+   */
+  void LMBD_INLINE fill(const colors::PaletteTy& palette, uint16_t start, uint16_t end)
+  {
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      assert(start < ledCount && "invalid start parameter");
+      assert(end <= ledCount && "invalid end parameter");
+
+      for (uint16_t I = start; I < end; ++I)
+      {
+        // map index to [0; 255]
+        const auto color = colors::from_palette<false, uint8_t>(I / static_cast<float>(ledCount) * 255, palette);
+        strip.setPixelColor(I, color);
+      }
+    }
+    else
+    {
+      assert(false && "unsupported");
+    }
+  }
+
+  /** \brief (indexable) Fill lamp with target palette
+   * - See modes::colors::PaletteTy to set \p palette
+   */
+  void LMBD_INLINE fill(const colors::PaletteTy& palette) { fill(palette, 0, ledCount); }
 
   /** \brief (indexable) Set the n-th LED color
    *

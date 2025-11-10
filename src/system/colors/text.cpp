@@ -353,7 +353,7 @@ static const BigFont bigFont;
 
 IFont const* font_from_scale(float& scale)
 {
-  scale = min(max(scale, 0.2), 1.0);
+  scale = lmpd_constrain<float>(scale, 0.2f, 1.0f);
   if (scale <= 0.5)
   {
     scale = 1 - (0.5 - scale);

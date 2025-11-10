@@ -52,14 +52,14 @@ float get_sound_level_Db(const PdmData& data)
     return lastValue;
 
   float sumOfAll = 0.0;
-  const uint16_t samples = min(PdmData::SAMPLE_SIZE, data.sampleRead);
+  const uint16_t samples = min<uint16_t>(PdmData::SAMPLE_SIZE, data.sampleRead);
   for (uint16_t i = 0; i < samples; i++)
   {
-    sumOfAll += powf(data.data[i] / (float)1024.0, 2.0);
+    sumOfAll += powf(data.data[i] / 1024.0f, 2.0f);
   }
-  const float average = sumOfAll / (float)samples;
+  const float average = sumOfAll / static_cast<float>(samples);
 
-  lastValue = 20.0 * log10f(sqrtf(average));
+  lastValue = 20.0f * log10f(sqrtf(average));
   // convert to decibels
   return lastValue;
 }

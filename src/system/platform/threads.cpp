@@ -12,11 +12,11 @@
 std::map<const char* const, TaskHandle_t> handles;
 
 // loop task
-static void _redirect_task(void* arg)
+[[noreturn]] static void _redirect_task(void* arg)
 {
   SchedulerRTOS::taskfunc_t taskfunc = (SchedulerRTOS::taskfunc_t)arg;
 
-  while (1)
+  while (true)
   {
     taskfunc();
     yield();
@@ -24,11 +24,11 @@ static void _redirect_task(void* arg)
 }
 
 // loop task
-static void _redirect_suspend_task(void* arg)
+[[noreturn]] static void _redirect_suspend_task(void* arg)
 {
   vTaskSuspend(NULL);
   SchedulerRTOS::taskfunc_t taskfunc = (SchedulerRTOS::taskfunc_t)arg;
-  while (1)
+  while (true)
   {
     taskfunc();
     yield();
@@ -50,9 +50,12 @@ void start_thread(taskfunc_t taskFunction, const char* const taskName, const int
     prio = TASK_PRIO_LOW;
 
   TaskHandle_t handle;
-  if (pdPASS ==
-      xTaskCreate(
-              _redirect_task, taskName, max(configMINIMAL_STACK_SIZE, stackSize), (void*)taskFunction, prio, &handle))
+  if (pdPASS == xTaskCreate(_redirect_task,
+                            taskName,
+                            max<int>(configMINIMAL_STACK_SIZE, stackSize),
+                            (void*)taskFunction,
+                            prio,
+                            &handle))
   {
     handles[taskName] = handle;
   }
@@ -82,7 +85,7 @@ void start_suspended_thread(taskfunc_t taskFunction,
   TaskHandle_t handle;
   if (pdPASS == xTaskCreate(_redirect_suspend_task,
                             taskName,
-                            max(configMINIMAL_STACK_SIZE, stackSize),
+                            max<int>(configMINIMAL_STACK_SIZE, stackSize),
                             (void*)taskFunction,
                             prio,
                             &handle))

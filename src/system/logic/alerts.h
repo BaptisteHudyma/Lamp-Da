@@ -6,7 +6,7 @@
 namespace alerts {
 
 // 31 errors max
-enum Type : uint32_t
+enum class Type : uint32_t
 {
   // 0 means no errors
 
@@ -35,6 +35,10 @@ enum Type : uint32_t
   SYSTEM_IN_LOCKOUT = 1 << 13, // system lockout, the lamp should not output any light
 
   SUNSET_TIMER_ENABLED = 1 << 14, // active sunset timer, system will auto turn off
+
+  SYSTEM_SLEEP_SKIPPED = 1 << 15, // the system skipped the sleep clean phase (crash ? new flash ?)
+
+  USB_PORT_SHORT = 1 << 16, // the usb port is dirty, or wet
 };
 
 class AlertManager_t
@@ -47,7 +51,7 @@ public:
   /**
    * \brief Return true if an alert is raised
    */
-  bool is_raised(const Type type) const { return (_current & type) != 0x00; }
+  bool is_raised(const Type type) const { return (_current & static_cast<uint32_t>(type)) != 0x00; }
 
   /**
    * \brief Return true if no alerts are raised
@@ -57,7 +61,7 @@ public:
   /**
    * \return the time since this alert was raised, or zero if it's not
    */
-  uint32_t get_time_since_raised(const Type type);
+  uint32_t get_time_since_raised(const Type type) const;
 
   /**
    * \brief an alert is raised that prevent power output
@@ -68,6 +72,11 @@ public:
    * \brief an alert is raised that prevent battery charging
    */
   bool can_charge_battery() const;
+
+  /**
+   * \brief can use power through USB port
+   */
+  bool can_use_usb_port() const;
 
 private:
   uint32_t _current;

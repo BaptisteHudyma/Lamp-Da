@@ -40,17 +40,18 @@ void start_electrical_mock()
         // power can flow from output to vbus
         if (__private::vbusDirection.is_high())
         {
-          mock_electrical::vbusVoltage = max(mock_electrical::powerRailVoltage, mock_electrical::inputVbusVoltage);
+          mock_electrical::vbusVoltage =
+                  max<float>(mock_electrical::powerRailVoltage, mock_electrical::inputVbusVoltage);
         }
 
         // max of the two voltages
         mock_electrical::powerRailVoltage =
-                std::max(mock_electrical::chargeOtgOutput, mock_electrical::inputVbusVoltage);
+                std::max<float>(mock_electrical::chargeOtgOutput, mock_electrical::inputVbusVoltage);
       }
       else
       {
         // gate open, no flow
-        mock_electrical::vbusVoltage = max(0.0f, mock_electrical::inputVbusVoltage);
+        mock_electrical::vbusVoltage = max<float>(0.0f, mock_electrical::inputVbusVoltage);
         mock_electrical::powerRailVoltage = mock_electrical::chargeOtgOutput;
       }
 
@@ -58,7 +59,7 @@ void start_electrical_mock()
       if (__private::enablePowerGate.is_high())
       {
         // power can go to output
-        mock_electrical::outputVoltage = max(0.0f, mock_electrical::powerRailVoltage);
+        mock_electrical::outputVoltage = max<float>(0.0f, mock_electrical::powerRailVoltage);
       }
       else
       {
