@@ -40,6 +40,16 @@ struct ButtonStateTy
   uint8_t nbClicksCounted = 0; // nb of counted clicks
 
   bool wasTriggered = false; // was button action detected
+
+  // reset this object
+  void reset()
+  {
+    isPressed = false;
+    isLongPressed = false;
+    lastPressTime = 0;
+    firstHoldTime = 0;
+    nbClicksCounted = 0;
+  }
 };
 
 /**

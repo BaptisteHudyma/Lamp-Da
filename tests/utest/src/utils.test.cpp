@@ -12,17 +12,17 @@ static constexpr float Inf = std::numeric_limits<float>::infinity();
 
 TEST(test_min_max, invalid_values)
 {
-  ASSERT_DEATH({ min(NAN, 0.0f); }, ".*invalid param a.*");
-  ASSERT_DEATH({ max(NAN, 0.0f); }, ".*invalid param a.*");
+  ASSERT_DEATH({ min<float>(NAN, 0.0f); }, ".*invalid param a.*");
+  ASSERT_DEATH({ max<float>(NAN, 0.0f); }, ".*invalid param a.*");
 
-  ASSERT_DEATH({ min(0.0f, NAN); }, ".*invalid param b.*");
-  ASSERT_DEATH({ max(0.0f, NAN); }, ".*invalid param b.*");
+  ASSERT_DEATH({ min<float>(0.0f, NAN); }, ".*invalid param b.*");
+  ASSERT_DEATH({ max<float>(0.0f, NAN); }, ".*invalid param b.*");
 
-  ASSERT_EQ(min(Inf, 0.0f), 0.0f);
-  ASSERT_EQ(min(-Inf, 0.0f), -Inf);
+  ASSERT_EQ(min<float>(Inf, 0.0f), 0.0f);
+  ASSERT_EQ(min<float>(-Inf, 0.0f), -Inf);
 
-  ASSERT_EQ(max(Inf, 0.0f), Inf);
-  ASSERT_EQ(max(-Inf, 0.0f), 0.0);
+  ASSERT_EQ(max<float>(Inf, 0.0f), Inf);
+  ASSERT_EQ(max<float>(-Inf, 0.0f), 0.0);
 }
 
 TEST(test_min_max, normal_use)
@@ -31,11 +31,11 @@ TEST(test_min_max, normal_use)
   int maxVal = -100;
   for (int i = minVal; i < maxVal; i++)
   {
-    ASSERT_EQ(min(i, minVal), minVal);
-    ASSERT_EQ(min(minVal, i), minVal);
+    ASSERT_EQ(min<int>(i, minVal), minVal);
+    ASSERT_EQ(min<int>(minVal, i), minVal);
 
-    ASSERT_EQ(max(maxVal, i), maxVal);
-    ASSERT_EQ(max(i, maxVal), maxVal);
+    ASSERT_EQ(max<int>(maxVal, i), maxVal);
+    ASSERT_EQ(max<int>(i, maxVal), maxVal);
   }
 }
 

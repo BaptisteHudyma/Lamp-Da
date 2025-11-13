@@ -14,6 +14,10 @@ static sf::Clock s_clock;
 // HACK to start the system on time zero
 static bool isClockReset = false;
 
+namespace time_mocks {
+void reset() { isClockReset = false; }
+} // namespace time_mocks
+
 uint32_t time_ms(void)
 {
   if (!isClockReset)
