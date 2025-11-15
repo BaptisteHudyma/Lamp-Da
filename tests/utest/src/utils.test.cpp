@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cstdint>
 #include <gtest/gtest.h>
 #include <limits>
 #include "src/system/utils/utils.h"
@@ -11,17 +12,17 @@ static constexpr float Inf = std::numeric_limits<float>::infinity();
 
 TEST(test_min_max, invalid_values)
 {
-  ASSERT_DEATH({ min(NAN, 0.0f); }, ".*invalid param a.*");
-  ASSERT_DEATH({ max(NAN, 0.0f); }, ".*invalid param a.*");
+  ASSERT_DEATH({ min<float>(NAN, 0.0f); }, ".*invalid param a.*");
+  ASSERT_DEATH({ max<float>(NAN, 0.0f); }, ".*invalid param a.*");
 
-  ASSERT_DEATH({ min(0.0f, NAN); }, ".*invalid param b.*");
-  ASSERT_DEATH({ max(0.0f, NAN); }, ".*invalid param b.*");
+  ASSERT_DEATH({ min<float>(0.0f, NAN); }, ".*invalid param b.*");
+  ASSERT_DEATH({ max<float>(0.0f, NAN); }, ".*invalid param b.*");
 
-  ASSERT_EQ(min(Inf, 0.0f), 0.0f);
-  ASSERT_EQ(min(-Inf, 0.0f), -Inf);
+  ASSERT_EQ(min<float>(Inf, 0.0f), 0.0f);
+  ASSERT_EQ(min<float>(-Inf, 0.0f), -Inf);
 
-  ASSERT_EQ(max(Inf, 0.0f), Inf);
-  ASSERT_EQ(max(-Inf, 0.0f), 0.0);
+  ASSERT_EQ(max<float>(Inf, 0.0f), Inf);
+  ASSERT_EQ(max<float>(-Inf, 0.0f), 0.0);
 }
 
 TEST(test_min_max, normal_use)
@@ -30,11 +31,11 @@ TEST(test_min_max, normal_use)
   int maxVal = -100;
   for (int i = minVal; i < maxVal; i++)
   {
-    ASSERT_EQ(min(i, minVal), minVal);
-    ASSERT_EQ(min(minVal, i), minVal);
+    ASSERT_EQ(min<int>(i, minVal), minVal);
+    ASSERT_EQ(min<int>(minVal, i), minVal);
 
-    ASSERT_EQ(max(maxVal, i), maxVal);
-    ASSERT_EQ(max(i, maxVal), maxVal);
+    ASSERT_EQ(max<int>(maxVal, i), maxVal);
+    ASSERT_EQ(max<int>(i, maxVal), maxVal);
   }
 }
 
@@ -233,4 +234,137 @@ TEST(test_angles, wrap)
 
   ASSERT_EQ(wrap_angle(M_PIf * 2), 0.0f);
   ASSERT_EQ(wrap_angle(-M_PIf * 2), 0.0f);
+}
+
+/**
+ * tets colors
+ */
+
+TEST(test_colors, color_union)
+{
+  // check that the union color has the correct order
+
+  COLOR c;
+  c.blue = 0x05;
+  c.green = 0x03;
+  c.red = 0x01;
+  c.white = 0x07;
+
+  ASSERT_EQ(c.color, 0x07010305);
+}
+
+TEST(test_colors, color_gradient)
+{
+  //
+  ASSERT_EQ(utils::get_gradient(0x00000000, 0x000000FF, 0.0f), 0x00000000);
+  ASSERT_EQ(utils::get_gradient(0x00000000, 0x000000FF, 0.5f), 0x0000007F);
+  ASSERT_EQ(utils::get_gradient(0x00000000, 0x000000FF, 1.0f), 0x000000FF);
+  //
+  ASSERT_EQ(utils::get_gradient(0x00000000, 0x0000FF00, 0.0f), 0x00000000);
+  ASSERT_EQ(utils::get_gradient(0x00000000, 0x0000FF00, 0.5f), 0x00007F00);
+  ASSERT_EQ(utils::get_gradient(0x00000000, 0x0000FF00, 1.0f), 0x0000FF00);
+  //
+  ASSERT_EQ(utils::get_gradient(0x00000000, 0x00FF0000, 0.0f), 0x00000000);
+  ASSERT_EQ(utils::get_gradient(0x00000000, 0x00FF0000, 0.5f), 0x007F0000);
+  ASSERT_EQ(utils::get_gradient(0x00000000, 0x00FF0000, 1.0f), 0x00FF0000);
+  // no whuite level gradient
+  ASSERT_EQ(utils::get_gradient(0x00000000, 0xFF000000, 0.0f), 0x00);
+  ASSERT_EQ(utils::get_gradient(0x00000000, 0xFF000000, 0.5f), 0x00);
+  ASSERT_EQ(utils::get_gradient(0x00000000, 0xFF000000, 1.0f), 0x00);
+
+  // reverse scale gradient
+  ASSERT_EQ(utils::get_gradient(0xFFFFFF, 0x000000, 0.0f), 0xFFFFFF);
+  ASSERT_EQ(utils::get_gradient(0xFFFFFF, 0x000000, 0.5f), 0x7F7F7F);
+  ASSERT_EQ(utils::get_gradient(0xFFFFFF, 0x000000, 1.0f), 0x000000);
+  // reverse scale gradient
+  ASSERT_EQ(utils::get_gradient(0x222222, 0x888888, 0.0f), 0x222222);
+  ASSERT_EQ(utils::get_gradient(0x222222, 0x888888, 0.5f), 0x555555);
+  ASSERT_EQ(utils::get_gradient(0x222222, 0x888888, 1.0f), 0x888888);
+}
+
+TEST(test_colors, color_blend16)
+{
+  COLOR c1, c2;
+  c1.color = 0x000000;
+  c2.color = 0xFFFFFF;
+  uint16_t blend = 0;
+  ASSERT_EQ(utils::color_blend(c1, c2, blend, true).color, 0x000000);
+  blend = UINT16_MAX / 2;
+  ASSERT_EQ(utils::color_blend(c1, c2, blend, true).color, 0x7F7F7F);
+  blend = UINT16_MAX;
+  ASSERT_EQ(utils::color_blend(c1, c2, blend, true).color, 0xFFFFFF);
+}
+
+TEST(test_colors, color_blend8)
+{
+  COLOR c1, c2;
+  c1.color = 0x00000000;
+  c2.color = 0xFFFFFFFF;
+  uint8_t blend = 0;
+  ASSERT_EQ(utils::color_blend(c1, c2, blend, false).color, 0x00000000);
+  blend = UINT8_MAX / 2;
+  ASSERT_EQ(utils::color_blend(c1, c2, blend, false).color, 0x7E7E7E7E);
+  blend = UINT8_MAX;
+  ASSERT_EQ(utils::color_blend(c1, c2, blend, false).color, 0xFFFFFFFF);
+}
+
+TEST(test_colors, color_fade)
+{
+  COLOR c1;
+  c1.color = 0xFFFFFFFF;
+  uint8_t amount = 0;
+  ASSERT_EQ(utils::color_fade(c1, amount, false).color, 0x00000000);
+  amount = UINT8_MAX / 2;
+  ASSERT_EQ(utils::color_fade(c1, amount, false).color, 0x7F7F7F7F);
+  amount = UINT8_MAX;
+  ASSERT_EQ(utils::color_fade(c1, amount, false).color, c1.color);
+
+  c1.color = 0x88888888;
+  amount = 0;
+  ASSERT_EQ(utils::color_fade(c1, amount, false).color, 0x00000000);
+  amount = UINT8_MAX / 2;
+  ASSERT_EQ(utils::color_fade(c1, amount, false).color, 0x44444444);
+  amount = UINT8_MAX;
+  ASSERT_EQ(utils::color_fade(c1, amount, false).color, c1.color);
+}
+
+TEST(test_colors, color_add)
+{
+  COLOR c1, c2;
+  c1.color = 0x00000000;
+  c2.color = 0x00000000;
+  ASSERT_EQ(utils::color_add(c1, c2).color, 0x00000000);
+  c2.color = 0x44444444;
+  ASSERT_EQ(utils::color_add(c1, c2).color, 0x44444444);
+  c2.color = 0xFFFFFFFF;
+  ASSERT_EQ(utils::color_add(c1, c2).color, 0xFFFFFFFF);
+
+  //
+  c1.color = 0x00000000;
+  c2.color = 0x00000000;
+  ASSERT_EQ(utils::color_add(c1, c2).color, 0x00000000);
+  c1.color = 0x44444444;
+  ASSERT_EQ(utils::color_add(c1, c2).color, 0x44444444);
+  c1.color = 0xFFFFFFFF;
+  ASSERT_EQ(utils::color_add(c1, c2).color, 0xFFFFFFFF);
+
+  //
+  c1.color = 0x44444444;
+  c2.color = 0x44444444;
+  ASSERT_EQ(utils::color_add(c1, c2).color, 0x88888888);
+  c1.color = 0x88888888;
+  ASSERT_EQ(utils::color_add(c1, c2).color, 0xCCCCCCCC);
+  c1.color = 0xFFFFFFFF;
+  ASSERT_EQ(utils::color_add(c1, c2).color, 0xFFFFFFFF);
+}
+
+TEST(test_colors, rgb_to_hue)
+{
+  ASSERT_EQ(utils::hue_to_rgb_sinus(0), 0xFF0000);
+  ASSERT_EQ(utils::hue_to_rgb_sinus(200), 0x003FBF);
+  ASSERT_EQ(utils::hue_to_rgb_sinus(300), 0x7F007F);
+  // overflow
+  ASSERT_EQ(utils::hue_to_rgb_sinus(360), 0xFF0000);
+  ASSERT_EQ(utils::hue_to_rgb_sinus(360 * 2), 0xFF0000);
+  ASSERT_EQ(utils::hue_to_rgb_sinus(560), 0x003FBF);
 }

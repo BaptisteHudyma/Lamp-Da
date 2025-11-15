@@ -73,7 +73,7 @@ struct vec4d : public vec3d
   float w;
 
   vec4d() : vec3d(), w(0) {}
-  vec4d(const float _x, const float _y, const float _z, const float _w) : vec3d(_x, _y, _z) {}
+  vec4d(const float _x, const float _y, const float _z, const float _w) : vec3d(_x, _y, _z), w(_w) {}
   vec4d(const vec3d& res, const float _w) : vec3d(res), w(_w) {}
 
   float dot(const vec4d& other) const { return vec3d::dot(other) + this->w * other.w; }
@@ -137,12 +137,14 @@ struct RotationMatrix
   /**
    * \brief create a rotation matrix from three angles in radian (XYZ)
    */
-  void from_angles(const float roll_rad, const float pitch_rad, const float yaw_rad);
+  void from_angles_XYZ(const float x_rad, const float y_rad, const float z_rad);
+  void from_angles_XYZ(const vec3d& angles_rad);
 
+private:
   /**
-   * \brief create a rotation matrix from three angles in radian (XYZ)
+   * \brief create a rotation matrix from three angles in radian (ZYX)
    */
-  void from_angles(const vec3d& angles_rad);
+  void from_angles_ZYX(const vec3d& angles_rad);
 };
 
 /**

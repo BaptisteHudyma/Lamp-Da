@@ -51,6 +51,7 @@ static constexpr float imuToCircuitRotationZ_rad = -9.0f * c_degreesToRadians;
 #else
 static constexpr float imuToCircuitRotationZ_rad = -4 * c_degreesToRadians;
 #endif
+
 static constexpr float imuToCircuitPositionX_m = 8.915f / 1000.0f;
 static constexpr float imuToCircuitPositionY_m = -5.769f / 1000.0f;
 static constexpr float imuToCircuitPositionZ_m = 0.0f / 1000.0f;

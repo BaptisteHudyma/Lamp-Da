@@ -62,6 +62,9 @@ void init(const bool isSystemStartedFromButton)
                 "release debounce should always be less than release timing");
   static_assert((RELEASE_BETWEEN_CLICKS + RELEASE_TIMING_MS) < HOLD_BUTTON_MIN_MS,
                 "button release timing should always be less then the button hold timing");
+  // force reset
+  isSystemStartClick = true;
+  buttonState.reset();
 
   // attach the button interrupt
   ButtonPin.set_pin_mode(DigitalPin::Mode::kInputPullUpSense);

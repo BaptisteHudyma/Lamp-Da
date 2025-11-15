@@ -133,7 +133,7 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
   return false;
 }
 
-bool write_file(const char* filePath, std::map<uint32_t, uint32_t>& paramMap, const bool shouldEraseFirst = false)
+bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramMap, const bool shouldEraseFirst = false)
 {
   // check if it exists
   if (paramFile.open(filePath, FILE_O_WRITE) and paramFile.isOpen())

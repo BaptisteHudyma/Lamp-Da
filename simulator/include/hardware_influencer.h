@@ -8,6 +8,10 @@ namespace mock_gpios {
 void update_callbacks();
 } // namespace mock_gpios
 
+namespace time_mocks {
+void reset();
+}
+
 namespace mock_registers {
 extern bool isDeepSleep;
 extern float cpuTemperature;

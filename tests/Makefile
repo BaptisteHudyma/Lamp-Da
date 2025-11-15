@@ -29,6 +29,7 @@ tests: check-dirs $(BUILD_DIR)/tests
 
 clean:
 	rm -f $(BUILD_DIR)/utest/tests_utest
+	rm -f $(BUILD_DIR)/itest/tests_itest
 	cd $(ROOT_DIR) && make clean
 
 mr_proper:
