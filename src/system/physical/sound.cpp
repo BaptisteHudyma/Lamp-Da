@@ -84,4 +84,14 @@ SoundStruct get_fft()
   return _private::process_fft(_private::get());
 }
 
+PdmData get_data()
+{
+  if (!enable())
+  {
+    // ERROR
+    return PdmData();
+  }
+  return _private::get();
+}
+
 } // namespace microphone

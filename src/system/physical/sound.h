@@ -27,6 +27,8 @@ float get_sound_level_Db();
  */
 SoundStruct get_fft();
 
+PdmData get_data();
+
 } // namespace microphone
 
 #endif
