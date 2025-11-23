@@ -55,9 +55,9 @@ TEST(test_constrain, invalidBorns)
 
   ASSERT_DEATH(
           {
-            const int minA = 1000;
-            const int maxA = 1000;
-            const auto resInt = lmpd_constrain<int>(15, maxA, minA);
+            const float minA = 1000.0f;
+            const float maxA = 1000.1f;
+            const auto resInt = lmpd_constrain<float>(15, maxA, minA);
           },
           ".*invalid parameters.*");
 }
@@ -67,7 +67,7 @@ TEST(test_constrain, same_type)
   const int minA = -1000;
   const int maxA = 1000;
   int a;
-  for (a = minA; a < maxA; a++)
+  for (a = minA; a <= maxA; a++)
   {
     const auto resInt = lmpd_constrain<int>(a, minA, maxA);
     ASSERT_EQ(resInt, a);

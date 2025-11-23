@@ -26,7 +26,7 @@ struct FastFourrierTransformMode : public BasicMode
     // adjust for volume
     const float maxLevel =
             lmpd_map<float>(ctx.state.soundEvent.level, microphone::silenceLevelDb, microphone::highLevelDb, 0.0, 1.0);
-    const float maxDisplaylevel = lmpd_constrain<float>(maxLevel * rows, 2, rows);
+    const float maxDisplaylevel = max<float>(2, lmpd_constrain<float>(maxLevel * rows, 2, rows));
 
     for (uint8_t x = 0; x < cols; ++x)
     {

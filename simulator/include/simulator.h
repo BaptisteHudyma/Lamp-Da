@@ -101,7 +101,8 @@ template<typename T> struct simulator
     start_electrical_mock();
 
     // force init of time clock
-    time_ms();
+    time_mocks::reset();
+
     // Main program setup
     global::main_setup();
 
