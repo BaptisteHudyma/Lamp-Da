@@ -42,9 +42,12 @@ jobs:
     - name: build
       run:
         make test
-    - name: test
+    - name: utest
       run:
         ./_build/tests/utest/tests_utest
+    - name: itest
+      run:
+        ./_build/tests/itest/tests_itest
 
   documentation:
     runs-on: ubuntu-latest

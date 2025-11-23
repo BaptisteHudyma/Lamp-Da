@@ -27,13 +27,18 @@ RotationMatrix RotationMatrix::compose(const RotationMatrix& other) const
   return res;
 }
 
-void RotationMatrix::from_angles(const float roll_rad, const float pitch_rad, const float yaw_rad)
+void RotationMatrix::from_angles_XYZ(const float x_rad, const float y_rad, const float z_rad)
 {
-  //                                X             Y           Z
-  from_angles(vec3d(pitch_rad, roll_rad, yaw_rad));
+  //                               Z         Y        X
+  from_angles_ZYX(vec3d(z_rad, y_rad, x_rad));
+}
+void RotationMatrix::from_angles_XYZ(const vec3d& angles_rad)
+{
+  //                               Z         Y        X
+  from_angles_ZYX(vec3d(angles_rad.z, angles_rad.y, angles_rad.x));
 }
 
-void RotationMatrix::from_angles(const vec3d& angles_rad)
+void RotationMatrix::from_angles_ZYX(const vec3d& angles_rad)
 {
   auto si = sinf(angles_rad.x);
   auto sj = sinf(angles_rad.y);
@@ -43,22 +48,17 @@ void RotationMatrix::from_angles(const vec3d& angles_rad)
   auto cj = cosf(angles_rad.y);
   auto ck = cosf(angles_rad.z);
 
-  auto cc = ci * ck;
-  auto cs = ci * sk;
-  auto sc = si * ck;
-  auto ss = si * sk;
+  R11 = cj * cj;
+  R12 = ci * sj * sk - si * ck;
+  R13 = ci * sj * ck + si * sk;
 
-  R11 = cj * ck;
-  R12 = sj * sc - cs;
-  R13 = sj * cc + ss;
-
-  R21 = cj * sk;
-  R22 = sj * ss + cc;
-  R23 = sj * cs - sc;
+  R21 = sj * ck;
+  R22 = si * sj * sk + ci * ck;
+  R23 = si * sj * ck - ci * sk;
 
   R31 = -sj;
-  R32 = cj * si;
-  R33 = cj * ci;
+  R32 = cj * sj;
+  R33 = cj * ck;
 }
 
 TransformationMatrix::TransformationMatrix(const RotationMatrix& rot, const vec3d& trans) :
@@ -68,6 +68,6 @@ TransformationMatrix::TransformationMatrix(const RotationMatrix& rot, const vec3
 }
 TransformationMatrix::TransformationMatrix(const vec3d& euler, const vec3d& trans) : translation(trans)
 {
-  rotation.from_angles(euler);
+  rotation.from_angles_XYZ(euler);
 }
 vec3d TransformationMatrix::transform(const vec3d& vec) const { return rotation.transform(vec).add(translation); }
