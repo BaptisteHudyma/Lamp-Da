@@ -7,9 +7,9 @@
 namespace microphone {
 
 // decibel level for a silent room
-constexpr float silenceLevelDb = -10.0;
+constexpr float silenceLevelDb = 30.0;
 // microphone is not good enough at after this
-constexpr float highLevelDb = 80.0;
+constexpr float highLevelDb = 120.0;
 
 // desired output of the auto gain (0-1)
 constexpr float desiredoutput = 0.5f;
@@ -41,11 +41,9 @@ struct SoundStruct
   static float get_fft_resolution_Hz();
 
   // FFT results
-  float fftMajorPeakFrequency_Hz = 0.0;
-  float strongestPeakMagnitude = 0.0;
   std::array<float, SAMPLE_SIZE / 2> fft_raw;
   std::array<float, numberOfFFtChanels> fft_log;
-  std::array<uint16_t, numberOfFFtChanels> fft_log_end_frequencies;
+  std::array<float, numberOfFFtChanels> fft_log_end_frequencies;
 };
 
 bool enable();

@@ -115,8 +115,6 @@ struct SoundEventTy
     dataAutoGained.fill(0);
     fft_log.fill(0);
     fft_raw.fill(0);
-    strongestPeakMagnitude = 0.0f;
-    fftMajorPeakFrequency_Hz = 0.0f;
   }
 
   /// Call this once every tick inside the mode loop callback
@@ -130,8 +128,6 @@ struct SoundEventTy
     fft_log = soundObject.fft_log;
     fft_raw = soundObject.fft_raw;
     fft_log_end_frequencies = soundObject.fft_log_end_frequencies;
-    strongestPeakMagnitude = soundObject.strongestPeakMagnitude;
-    fftMajorPeakFrequency_Hz = soundObject.fftMajorPeakFrequency_Hz;
 
     // average input sound over a second-long window (approx)
     const auto soundLevel = soundObject.sound_level_Db;
@@ -187,7 +183,7 @@ struct SoundEventTy
   }
 
   /// After the update, given a range, will return a boolean for beat detection
-  bool is_beat_on_freq_range(const uint16_t minFreq, const uint16_t maxFreq)
+  bool is_beat_on_freq_range(const float minFreq, const float maxFreq)
   {
     size_t nbDataPoints = 0;
     size_t beatCnt = 0;
@@ -196,7 +192,7 @@ struct SoundEventTy
     // climb to min freq bin
     for (; i < fft_log_end_frequencies.size(); ++i)
     {
-      const uint16_t maxFrequencyForBin = fft_log_end_frequencies[i];
+      const float maxFrequencyForBin = fft_log_end_frequencies[i];
       if (minFreq < maxFrequencyForBin)
         break;
     }
@@ -207,7 +203,7 @@ struct SoundEventTy
       if (beatDetected[i])
         beatCnt++;
 
-      const uint16_t maxFrequencyForBin = fft_log_end_frequencies[i];
+      const float maxFrequencyForBin = fft_log_end_frequencies[i];
       if (maxFrequencyForBin >= maxFreq)
         break;
     }
@@ -236,10 +232,6 @@ struct SoundEventTy
   std::array<bool, _fftChannels> beatDetected;
   ///< fast fourrier transform raw results
   std::array<float, _dataLenght / 2> fft_raw;
-  ///< strongest peak of the FFT
-  float strongestPeakMagnitude;
-  ///< most proeminent frequency
-  float fftMajorPeakFrequency_Hz;
 
 private:
   uint8_t _eventCount = 0;
@@ -247,7 +239,7 @@ private:
 
   ///< store the history of the fft, on a few successiv samples
   FFTHistoryContainer _FFTHistory_beatDetector;
-  std::array<uint16_t, _fftChannels> fft_log_end_frequencies;
+  std::array<float, _fftChannels> fft_log_end_frequencies;
 
   /// track the beat events using the FFT
   template<size_t T>

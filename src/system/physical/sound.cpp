@@ -11,9 +11,30 @@
 
 namespace microphone {
 
-FftAnalyzer<PdmData::SAMPLE_SIZE, SoundStruct::numberOfFFtChanels> fftAnalyzer;
+FftAnalyzer<PdmData::SAMPLE_SIZE, SoundStruct::numberOfFFtChanels, float> fftAnalyzer;
 
 float SoundStruct::get_fft_resolution_Hz() { return SAMPLE_RATE / static_cast<float>(SAMPLE_SIZE); }
+
+inline float square(const float v) { return v * v; }
+
+float decibel_A_scaling(const float frequency)
+{
+  return square(12194.0f) * powf(frequency, 4) /
+         ((square(frequency) + square(20.6f)) *
+          sqrtf((square(frequency) + square(107.7f)) * (square(frequency) + square(737.9f))) *
+          (square(frequency) + square(12194.0f)));
+}
+float decibel_B_scaling(const float frequency)
+{
+  return square(12194.0f) * powf(frequency, 3) /
+         ((square(frequency) + square(20.6f)) * sqrtf((square(frequency) + square(158.5f))) *
+          (square(frequency) + square(12194.0f)));
+}
+float decibel_C_scaling(const float frequency)
+{
+  return square(12194.0f) * powf(frequency, 2) /
+         ((square(frequency) + square(20.6f)) * (square(frequency) + square(12194.0f)));
+}
 
 bool isStarted = false;
 uint32_t lastMicFunctionCall = 0;
@@ -115,21 +136,24 @@ SoundStruct& process_sound_data(const PdmData& data)
   // keep the gain in bounds
   autoGain = lmpd_constrain(autoGain, minAutoGain, maxAutoGain);
 
-  soundStruct.sound_level_Db = 20.0f * log10f(dataAverage);
-  soundStruct.isDataValid = true;
-
   // run FFT detection
-  fftAnalyzer.FFTcode();
+  fftAnalyzer.run_fast_fourrier_transform();
 
   // copy the FFT buffer
   soundStruct.isFFTValid = true;
-  soundStruct.fftMajorPeakFrequency_Hz = fftAnalyzer.FFT_MajorPeak;
-  soundStruct.strongestPeakMagnitude = fftAnalyzer.FFT_Magnitude;
   // copy the fft results
   soundStruct.fft_log = fftAnalyzer.fftLog;
   soundStruct.fft_raw = fftAnalyzer.fftBin;
 
-  for (uint16_t i = 0; i < soundStruct.fft_log_end_frequencies.size(); ++i)
+  const float decibelScaling = decibel_A_scaling(fftAnalyzer.maxFrequency);
+  // max sound level is actual sound level
+  soundStruct.sound_level_Db =
+          20.0f * log10f(decibelScaling * fftAnalyzer.maxMagnitude / static_cast<float>(INT16_MAX)) + 110.0f;
+  soundStruct.isDataValid = true;
+
+  lampda_print_raw("%f\n", soundStruct.sound_level_Db);
+
+  for (uint16_t i = 0; i < SoundStruct::numberOfFFtChanels; ++i)
   {
     soundStruct.fft_log_end_frequencies[i] = fftAnalyzer.get_log_bin_max_frequency(i);
   }
