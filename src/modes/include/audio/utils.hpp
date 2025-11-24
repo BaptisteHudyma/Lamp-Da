@@ -18,18 +18,12 @@ namespace modes::audio {
  *
  * @code{.cpp}
  *
- *
- *    struct StateTy
- *    {
- *      modes::audio::SoundEventTy<> soundEvent;
- *    };
- *
  *    static void on_enter_mode(auto& ctx) {
- *      ctx.state.soundEvent.reset(ctx);
+ *      ctx.soundEvent.reset(ctx);
  *    }
  *
  *    static void loop(auto& ctx) {
- *      auto& snd = ctx.state.soundEvent;
+ *      auto& snd = ctx.soundEvent;
  *
  *      // update SoundEvent internal variables
  *      snd.update(ctx);
@@ -128,6 +122,8 @@ struct SoundEventTy
     fft_log = soundObject.fft_log;
     fft_raw = soundObject.fft_raw;
     fft_log_end_frequencies = soundObject.fft_log_end_frequencies;
+    maxAmplitude = soundObject.maxAmplitude;
+    maxAmplitudeFrequency = soundObject.maxAmplitudeFrequency;
 
     // average input sound over a second-long window (approx)
     const auto soundLevel = soundObject.sound_level_Db;
@@ -217,6 +213,8 @@ struct SoundEventTy
   float avgDelta = 0;  ///< Rolling sound "contrast" average (squared)
   bool hasEvent;       ///< Did an event happened last tick? (reset each loop)
   uint8_t eventScale;  ///< Event scale (0-255)
+  float maxAmplitude;
+  float maxAmplitudeFrequency;
 
   ///< frequency resolution of the raw fft result
   const float fftResolutionHz = microphone::SoundStruct::get_fft_resolution_Hz();

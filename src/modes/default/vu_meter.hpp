@@ -3,7 +3,6 @@
 
 /// @file vumeter
 #include "src/modes/include/colors/palettes.hpp"
-#include "src/modes/include/audio/utils.hpp"
 
 namespace modes::default_modes {
 
@@ -15,9 +14,9 @@ struct VuMeterMode : public BasicMode
   static void loop(auto& ctx)
   {
     auto& state = ctx.state;
-    ctx.state.soundEvent.update(ctx);
+    ctx.soundEvent.update(ctx);
 
-    const float decibels = ctx.state.soundEvent.level;
+    const float decibels = ctx.soundEvent.level;
 
     ctx.lamp.fadeToBlackBy(state.fade);
 
@@ -33,12 +32,11 @@ struct VuMeterMode : public BasicMode
   static void on_enter_mode(auto& ctx)
   {
     ctx.state.fade = 128;
-    ctx.state.soundEvent.reset(ctx);
+    ctx.soundEvent.reset(ctx);
   }
 
   struct StateTy
   {
-    audio::SoundEventTy<> soundEvent;
     uint8_t fade;
   };
 };

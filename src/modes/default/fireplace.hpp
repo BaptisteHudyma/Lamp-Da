@@ -8,7 +8,6 @@
 
 #include "src/modes/include/colors/palettes.hpp"
 #include "src/modes/include/anims/ramp_update.hpp"
-#include "src/modes/include/audio/utils.hpp"
 
 /// Basic "default" modes included with the hardware
 namespace modes::default_modes {
@@ -30,12 +29,11 @@ struct FireMode : public BasicMode
 
   struct StateTy
   {
-    audio::SoundEventTy<> soundEvent;
   };
 
   static void on_enter_mode(auto& ctx)
   {
-    ctx.state.soundEvent.reset(ctx);
+    ctx.soundEvent.reset(ctx);
 
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
   }
@@ -50,11 +48,11 @@ struct FireMode : public BasicMode
     const uint8_t index = ctx.get_active_custom_ramp();
     if (index > 16)
     {
-      ctx.state.soundEvent.update(ctx);
+      ctx.soundEvent.update(ctx);
     }
 
     // measure sound level for sound-sensitive fire
-    float shakeness = 1.0 + (index * ctx.state.soundEvent.avgDelta) / 255.0;
+    float shakeness = 1.0 + (index * ctx.soundEvent.avgDelta) / 255.0;
     float intensity = 128 + 256 / (1 + shakeness) - 1;
 
     // precompute "fire intensity" line per line

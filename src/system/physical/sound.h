@@ -29,6 +29,8 @@ struct SoundStruct
   std::array<int16_t, SAMPLE_SIZE> rectifiedData;
 
   float sound_level_Db = 0.0f;
+  float maxAmplitude = 0.0f;
+  float maxAmplitudeFrequency = 0.0f;
 
   /**
    * FFT

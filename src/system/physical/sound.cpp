@@ -149,9 +149,9 @@ SoundStruct& process_sound_data(const PdmData& data)
   // max sound level is actual sound level
   soundStruct.sound_level_Db =
           20.0f * log10f(decibelScaling * fftAnalyzer.maxMagnitude / static_cast<float>(INT16_MAX)) + 110.0f;
+  soundStruct.maxAmplitude = fftAnalyzer.maxMagnitude;
+  soundStruct.maxAmplitudeFrequency = fftAnalyzer.maxFrequency;
   soundStruct.isDataValid = true;
-
-  lampda_print_raw("%f\n", soundStruct.sound_level_Db);
 
   for (uint16_t i = 0; i < SoundStruct::numberOfFFtChanels; ++i)
   {
