@@ -14,7 +14,7 @@
 #include "src/system/utils/time_utils.h"
 
 // use depend of component
-#include "depends/BQ25713/BQ25713.h"
+#include "src/depends/BQ25713/BQ25713.h"
 
 namespace charger {
 namespace drivers {

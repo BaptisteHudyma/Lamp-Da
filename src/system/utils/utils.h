@@ -43,7 +43,7 @@ template<typename N> static constexpr N abs(const N a) { return std::abs(N(a)); 
 template<typename T> static constexpr T lmpd_constrain(const T& a, const T& mini, const T& maxi)
 {
 #ifdef LMBD_CPP17
-  assert(static_cast<float>(mini) < static_cast<float>(maxi) && "invalid parameters");
+  assert(static_cast<float>(mini) <= static_cast<float>(maxi) && "invalid parameters");
 #endif
   // prevent invalid values
   return std::isnan(a) ? static_cast<T>(mini) :

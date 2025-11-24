@@ -4,7 +4,7 @@
 #include "i_ic.h"
 
 // use depend of real component (to have the registers)
-#include "depends/BQ25713/BQ25713.h"
+#include "src/depends/BQ25713/BQ25713.h"
 
 // hardwaree influencer simulator
 #include "simulator/include/hardware_influencer.h"

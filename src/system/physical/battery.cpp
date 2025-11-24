@@ -85,17 +85,18 @@ bool check_charger_battery_voltage()
  */
 uint16_t get_raw_battery_voltage_mv()
 {
+  // absolute minimum/maximum battery pack voltage
+  static constexpr uint16_t minBatteryVoltage_mV = minSingularBatteryVoltage_mV * batteryCount;
+  static constexpr uint16_t maxBatteryVoltage_mV = maxSingularBatteryVoltage_mV * batteryCount;
+
   // WILL UPDATE s_batteryVoltage_mV VALUE if they return true
   if (not check_balancer_battery_voltage() and not check_charger_battery_voltage())
   {
     // else: not ready yet ? error, return max voltage for now
-    // TODO: after a set time, return an error, the system should not be used without batteries
-    return 0;
+    // TODO #344: after a set time, return an error, the system should not be used without batteries
+    return maxBatteryVoltage_mV;
   }
 
-  // absolute minimum/maximum battery pack voltage
-  static constexpr uint16_t minBatteryVoltage_mV = minSingularBatteryVoltage_mV * batteryCount;
-  static constexpr uint16_t maxBatteryVoltage_mV = maxSingularBatteryVoltage_mV * batteryCount;
   // check battery pack validity (in bounds with some margin)
   if (s_batteryVoltage_mV < minBatteryVoltage_mV or s_batteryVoltage_mV > maxBatteryVoltage_mV)
   {
