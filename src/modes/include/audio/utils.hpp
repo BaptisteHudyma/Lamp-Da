@@ -127,7 +127,7 @@ struct SoundEventTy
 
     // average input sound over a second-long window (approx)
     const auto soundLevel = soundObject.sound_level_Db;
-    level = (not std::isinf(soundLevel) and not std::isnan(soundLevel) and soundLevel > -70) ? soundLevel : -70;
+    level = (not std::isinf(soundLevel) and not std::isnan(soundLevel) and soundLevel > 0.0) ? soundLevel : 0.0;
     avgLevel = (level + avgLevel * _windowSize) / (_windowSize + 1);
 
     // average maximum over the same long window (approx)

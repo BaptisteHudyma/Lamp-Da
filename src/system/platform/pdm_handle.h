@@ -7,9 +7,6 @@
 
 namespace microphone {
 
-// CALIBRATED value
-static constexpr int16_t gainUpdateBaseline = 80;
-
 struct PdmData
 {
   static constexpr uint16_t SAMPLE_SIZE = 512;
