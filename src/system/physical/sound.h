@@ -9,7 +9,7 @@ namespace microphone {
 // decibel level for a silent room
 constexpr float silenceLevelDb = 30.0;
 // microphone is not good enough at after this
-constexpr float highLevelDb = 120.0;
+constexpr float highLevelDb = 80.0;
 
 // desired output of the auto gain (0-1)
 constexpr float desiredoutput = 0.5f;
