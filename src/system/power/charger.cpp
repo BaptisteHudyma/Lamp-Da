@@ -57,27 +57,40 @@ bool should_charge()
   if (isOtgEnabled_s)
     return false;
 
-  // wait for balancer
-  const auto& balancerStatus = balancer::get_status();
-  if (not balancerStatus.is_valid())
-    return false;
-
-  static uint32_t batteryTooHighLatchTime = 0;
-  for (uint8_t i = 0; i < batteryCount; ++i)
+  // no valid measurments from system yet
+  const auto& measurments = drivers::get_measurments();
+  if (not measurments.is_measurment_valid())
   {
-    // do not charge if a battery voltage goes over the max voltage
-    if (balancerStatus.batteryVoltages_mV[i] >= maxLiionVoltage_mV)
+    return false;
+  }
+
+  // turn on voltage for balancer
+  const bool isVoltageEnoughForBalancer = measurments.battery_mV >= 3500;
+
+  if (isVoltageEnoughForBalancer)
+  {
+    // wait for balancer
+    const auto& balancerStatus = balancer::get_status();
+    if (not balancerStatus.is_valid())
+      return false;
+
+    static uint32_t batteryTooHighLatchTime = 0;
+    for (uint8_t i = 0; i < batteryCount; ++i)
     {
-      batteryTooHighLatchTime = time_ms();
+      // do not charge if a battery voltage goes over the max voltage
+      if (balancerStatus.batteryVoltages_mV[i] >= maxLiionVoltage_mV)
+      {
+        batteryTooHighLatchTime = time_ms();
+        return false;
+      }
+    }
+    // latch the status of battery too high for a time, to let the balancer work
+    if (batteryTooHighLatchTime > 0 and (time_ms() - batteryTooHighLatchTime) < 20000)
+    {
       return false;
     }
+    batteryTooHighLatchTime = 0;
   }
-  // latch the status of battery too high for a time, to let the balancer work
-  if (batteryTooHighLatchTime > 0 and (time_ms() - batteryTooHighLatchTime) < 20000)
-  {
-    return false;
-  }
-  batteryTooHighLatchTime = 0;
 
   // our power source cannot give power
   if (not powerDelivery::can_use_power())
@@ -98,12 +111,6 @@ bool should_charge()
     return false;
   }
 
-  // no valid measurments from system yet
-  const auto& measurments = drivers::get_measurments();
-  if (not measurments.is_measurment_valid())
-  {
-    return false;
-  }
   // get the battery
   const auto& battery = drivers::get_battery();
 
@@ -315,8 +322,12 @@ void update_state()
  *
  */
 
+bool isSetup = false;
 bool setup()
 {
+  if (isSetup)
+    return true;
+
   // start with default parameters
   const bool isChargerEnabled = drivers::enable(batteryMinVoltageSafe_mV,
                                                 batteryMaxVoltageSafe_mV,
@@ -345,6 +356,7 @@ bool setup()
   // else: init is ok
 
   charger.status = Charger_t::ChargerStatus_t::INACTIVE;
+  isSetup = true;
   return true;
 }
 
@@ -352,6 +364,9 @@ const DigitalPin chargeOkPin(DigitalPin::GPIO::Input_isChargeOk);
 
 void loop()
 {
+  if (not isSetup)
+    return;
+
   // run charger loop
   const bool isChargerOk = chargeOkPin.is_high();
   drivers::loop(isChargerOk);
@@ -360,20 +375,26 @@ void loop()
   update_state();
 
   // fast fail in case of errors
+  static bool isHardwareErrorRaiser = false;
   if (is_status_error())
   {
     drivers::enable_charge(false);
 
     // allow some start time to prevent wrong error display
     if (time_ms() >= 500)
+    {
+      // prevent shadowing of another alert
+      if (not alerts::manager.is_raised(alerts::Type::HARDWARE_ALERT))
+        isHardwareErrorRaiser = true;
       alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
-
+    }
     // do NOT run charge functions
     return;
   }
-  else
+  else if (isHardwareErrorRaiser)
   {
     alerts::manager.clear(alerts::Type::HARDWARE_ALERT);
+    isHardwareErrorRaiser = false;
   }
 
   // if needed, enable charge

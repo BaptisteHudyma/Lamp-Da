@@ -18,6 +18,7 @@
 #include "src/system/utils/time_utils.h"
 
 #include "src/system/power/charger.h"
+#include "src/system/power/balancer.h"
 
 namespace alerts {
 
@@ -217,7 +218,14 @@ struct Alert_BatteryCritical : public AlertBase
   {
     if (not is_battery_alert_ready())
       return false;
+    if (power::is_in_error_state())
+      return false;
     const auto& chargerState = charger::get_state();
+    if (not chargerState.areMeasuresOk)
+      return false;
+    if (not balancer::get_status().is_valid())
+      return false;
+
     return not chargerState.is_effectivly_charging() and __internal::get_battery_level() < batteryCritical;
   }
 
@@ -249,8 +257,14 @@ struct Alert_BatteryLow : public AlertBase
   {
     if (not is_battery_alert_ready())
       return false;
-
+    if (power::is_in_error_state())
+      return false;
+    if (not balancer::get_status().is_valid())
+      return false;
     const auto& chargerState = charger::get_state();
+    if (not chargerState.areMeasuresOk)
+      return false;
+
     const auto& batteryLevel = __internal::get_battery_level();
     const bool isBatteryLow = not chargerState.is_effectivly_charging() and batteryLevel < batteryLow;
     // battery low will be raise, notify bluetooth
@@ -452,10 +466,9 @@ struct Alert_SunsetTimerSet : public AlertBase
   bool show() const override
   {
     // red to green
-    const auto buttonColor =
-            utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
-                                                       utils::ColorSpace::GREEN.get_rgb().color,
-                                                       battery::get_battery_minimum_cell_level() / 10000.0f));
+    const auto& batteryLevel = __internal::get_battery_level();
+    const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(
+            utils::ColorSpace::RED.get_rgb().color, utils::ColorSpace::GREEN.get_rgb().color, batteryLevel / 10000.0f));
 
     return indicator::breeze(5000, 5000, buttonColor);
   }
@@ -578,10 +591,9 @@ void handle_all(const bool shouldIgnoreAlerts)
     }
 
     // red to green
-    const auto buttonColor =
-            utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
-                                                       utils::ColorSpace::GREEN.get_rgb().color,
-                                                       battery::get_battery_minimum_cell_level() / 10000.0f));
+    const auto& batteryLevel = __internal::get_battery_level();
+    const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(
+            utils::ColorSpace::RED.get_rgb().color, utils::ColorSpace::GREEN.get_rgb().color, batteryLevel / 10000.0f));
 
     // display battery level
     const auto& chargerStatus = charger::get_state();

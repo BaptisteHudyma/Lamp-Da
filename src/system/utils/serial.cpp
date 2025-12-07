@@ -161,7 +161,7 @@ void handleCommand(const std::string& command)
 
         lampda_print(
                 "is charge signal ok:%s\n"
-                "voltage on vbus:%dmV\n"
+                "voltage on power rail:%dmV\n"
                 "input current:%dmA\n"
                 "battery voltage:%dmV\n"
                 "charge current:%dmA\n"

@@ -305,6 +305,9 @@ void handle_error_state()
 
 void handle_start_logic_state()
 {
+  // set clean flag early on
+  setup_clean_sleep_flag();
+
   // prevent early charging
   power::enable_charge(false);
 
@@ -319,7 +322,14 @@ void handle_start_logic_state()
     go_to_error_state("power system in error state in start logic state");
     return;
   }
+  if (not power::is_started())
+  {
+    // wait until power is started
+    delay_ms(1);
+    return;
+  }
 
+  //
   if (did_woke_up_from_power())
   {
     // signal to the alert manager that we started by power input
@@ -335,9 +345,6 @@ void handle_start_logic_state()
     // start the system normally
     mainMachine.set_state(BehaviorStates::PRE_OUTPUT_LIGHT);
   }
-
-  // set clean flag early on
-  setup_clean_sleep_flag();
 }
 
 void handle_pre_charger_operation_state()
@@ -470,7 +477,7 @@ void handle_pre_output_light_state()
   {
     if (not isMessageDisplayed)
     {
-      lampda_print("not output allowed");
+      lampda_print("no output allowed");
       isMessageDisplayed = true;
     }
     // check if we may go to sleep

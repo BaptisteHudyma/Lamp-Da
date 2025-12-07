@@ -121,7 +121,10 @@ static constexpr uint32_t batteryTypicalPower_mWH = batteryCapacity_mAH * batter
  */
 inline bool is_cell_voltage_valid(const uint16_t cellVoltage_mv)
 {
-  return cellVoltage_mv > minSingularBatteryVoltage_mV && cellVoltage_mv < maxSingularBatteryVoltage_mV;
+  return
+          // minimum limit is not a hard stop, battery can be deeply discharged
+          // cellVoltage_mv > minSingularBatteryVoltage_mV &&
+          cellVoltage_mv < maxSingularBatteryVoltage_mV;
 }
 
 using brightness_t = uint16_t;

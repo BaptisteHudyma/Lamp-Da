@@ -173,8 +173,6 @@ void main_setup()
   // let the user start in unpowered mode
   user::power_off_sequence();
 
-  // start all power threads
-  power::start_threads();
   // start sunset timer thread
   sunset::init();
 
