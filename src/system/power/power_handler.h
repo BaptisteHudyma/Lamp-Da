@@ -7,9 +7,10 @@ namespace power {
 
 // call before all
 void init();
-void start_threads();
 bool is_setup();
 
+// set to true when power machine finally exits the start phase
+bool is_started();
 // if this returns true, do nothing
 bool is_in_error_state();
 
@@ -25,6 +26,7 @@ bool go_to_error();
 // output mode
 void set_output_voltage_mv(const uint16_t);
 void set_output_max_current_mA(const uint16_t);
+
 /**
  * \brief Set a new output with a time limit, after wich the output will go back to the original values
  * It is canceled at any point by a call to set_output_voltage_mv

@@ -10,7 +10,25 @@
 template<typename State> class StateMachine
 {
 public:
-  StateMachine(const State s) : current(s), lastState(s), timeout_ms(0), afterTimeoutState(s) {}
+  StateMachine(const State s) :
+    current(s),
+    lastState(s),
+    stateSetTime(time_ms()),
+    timeout_ms(0),
+    afterTimeoutState(s),
+    changedWithTimeout(false)
+  {
+  }
+  StateMachine(const State s, const uint32_t timeout, const State stateOnTimeout) :
+    current(s),
+    lastState(s),
+    stateSetTime(time_ms()),
+    timeout_ms(0),
+    afterTimeoutState(s),
+    changedWithTimeout(false)
+  {
+    set_state(s, timeout, stateOnTimeout);
+  }
 
   /**
    * \brief timeout check, and such, call it often
@@ -22,6 +40,7 @@ public:
     {
       // timeout reached
       set_state(afterTimeoutState);
+      changedWithTimeout = true;
     }
   }
 
@@ -45,6 +64,7 @@ public:
     timeout_ms = 0;
     stateSetTime = time_ms();
 
+    changedWithTimeout = false;
     didStateJustChanged = true;
     return true;
   }
@@ -95,6 +115,9 @@ public:
     return temp;
   }
 
+  // return true if this state was reached with a timeout
+  bool state_changed_with_timeout() { return changedWithTimeout; }
+
   /// Return the actual state
   State get_state() const { return current; }
 
@@ -130,4 +153,6 @@ private:
 
   /// indicates that the state just changed, reseted on read
   bool didStateJustChanged;
+  // indicates that this state was reched with a timeout
+  bool changedWithTimeout;
 };

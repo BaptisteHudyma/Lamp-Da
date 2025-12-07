@@ -98,7 +98,10 @@ uint16_t get_raw_battery_voltage_mv()
   }
 
   // check battery pack validity (in bounds with some margin)
-  if (s_batteryVoltage_mV < minBatteryVoltage_mV or s_batteryVoltage_mV > maxBatteryVoltage_mV)
+  if (
+          // minimum limit is not a hard stop, battery can be deeply discharged
+          // s_batteryVoltage_mV < minBatteryVoltage_mV or
+          s_batteryVoltage_mV > maxBatteryVoltage_mV)
   {
     alerts::manager.raise(alerts::Type::BATTERY_READINGS_INCOHERENT);
     // return a default value

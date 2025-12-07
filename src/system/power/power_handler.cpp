@@ -8,6 +8,7 @@
 
 #include "src/system/platform/print.h"
 #include "src/system/platform/gpio.h"
+#include "src/system/platform/i2c.h"
 #include "src/system/platform/threads.h"
 #include "src/system/platform/registers.h"
 
@@ -22,6 +23,10 @@
 
 namespace power {
 
+// references
+void power_loop();
+// \references
+
 bool _isShutdownCompleted = false;
 
 static constexpr uint32_t clearPowerRailMinDelay_ms = 10;
@@ -30,6 +35,8 @@ static constexpr uint32_t otgNoUseTimeToDisconnect_ms = 1000;
 // timeout in external battery mode
 static constexpr uint8_t otgTurnOffTimeMinutes = 5;
 static constexpr uint32_t otgNoUseExtBatTimeToDisconnect_ms = 1000 * 60 * otgTurnOffTimeMinutes;
+
+static constexpr uint32_t startupFailTimeout_ms = 3000;
 
 static_assert(clearPowerRailMinDelay_ms < clearPowerRailFailureDelay_ms,
               "clear power rail min activation is less than min unlock delay");
@@ -46,6 +53,10 @@ static uint32_t _temporaryOutputTimeOut = 0;
 static bool _isChargeEnabled = false;
 static std::string _errorStr = "";
 static bool _hasAutoSwitchedToOTG = false;
+
+// in this mode, the battery is too low to power the components
+// they rely on the vbus gate
+static bool _isInBatteryRecoveryMode = false;
 
 std::string get_error_string()
 {
@@ -64,6 +75,9 @@ void set_error_state_message(const std::string& errorMsg)
 // Define the state for the main prog state machine
 using PowerStates = enum class power_states_t
 {
+  // start phase
+  STARTUP,
+
   // idle, default mode
   IDLE,
 
@@ -86,6 +100,7 @@ using PowerStates = enum class power_states_t
   ERROR,
 };
 const char* const PowerStatesStr[] = {
+        "STARTUP",
         "IDLE",
         "CLEAR_POWER_RAILS",
         "CHARGING_MODE",
@@ -100,8 +115,8 @@ bool is_output_mode_ready() { return s_isOutputModeReady; }
 
 namespace __private {
 
-// main state machine (start in error to force user to init)
-StateMachine<PowerStates> powerMachine(PowerStates::ERROR);
+// main state machine (start with timeout, go to error on timeout)
+StateMachine<PowerStates> powerMachine(PowerStates::STARTUP, startupFailTimeout_ms, PowerStates::ERROR);
 
 const DigitalPin dischargeVbus(DigitalPin::GPIO::Output_DischargeVbus);
 const DigitalPin vbusDirection(DigitalPin::GPIO::Output_VbusDirection);
@@ -144,6 +159,12 @@ void set_otg_parameters(uint16_t voltage_mV, uint16_t current_mA)
 void handle_clear_power_rails()
 {
   s_isOutputModeReady = false;
+  if (_isInBatteryRecoveryMode)
+  {
+    // all is clear, skip to next step
+    __private::powerMachine.skip_timeout();
+    return;
+  }
 
   powerDelivery::suspend_pd_state_machine();
 
@@ -387,13 +408,109 @@ void handle_shutdown()
   _isShutdownCompleted = true;
 }
 
+void handle_startup()
+{
+  // no user setup (yet ?)
+  if (not is_setup())
+    return;
+
+  // if this is false, it's a special case where battery voltage is too low to power the components
+  // or the components are dead...
+  if (i2c_check_existence(0, chargeI2cAddress) != 0)
+  {
+    const uint32_t timeSinceStateSwitch = time_ms() - __private::powerMachine.get_state_raised_time();
+    const bool isVbusUnpowered = timeSinceStateSwitch > 200 and not powerDelivery::is_power_available();
+
+    // no vbus, or
+    if (timeSinceStateSwitch > startupFailTimeout_ms * 0.3 or isVbusUnpowered)
+    {
+      alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+      if (isVbusUnpowered)
+      {
+        set_error_state_message("no i2c response from charger");
+      }
+      else
+      {
+        set_error_state_message("no i2c response from charger with power enabled");
+      }
+      __private::powerMachine.set_state(PowerStates::ERROR);
+      _isInBatteryRecoveryMode = false;
+      return;
+    }
+
+    if (not isVbusUnpowered)
+    {
+      // Recover strategy :
+      // unlock the power gate and check that charger and balancer are detected.
+      powergates::enable_vbus_gate();
+    }
+    _isInBatteryRecoveryMode = true;
+
+    // hold the state
+    return;
+  }
+
+  /**
+   * Component initialization
+   */
+
+  // charging component, setup first
+  const bool chargerSuccess = charger::setup();
+  if (!chargerSuccess)
+  {
+    set_error_state_message("\n\t- Init charger component failed");
+    __private::powerMachine.set_state(PowerStates::ERROR);
+    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+    // failed initialisation, skip
+    return;
+  }
+
+  // battery in recovery : charger must start a charge cycle to power the balancer
+  if (_isInBatteryRecoveryMode)
+  {
+    charger::set_enable_charge(true);
+
+    // wait a bit
+    if (time_ms() - __private::powerMachine.get_state_raised_time() < startupFailTimeout_ms * 0.8)
+      return;
+  }
+
+// TODO issue #132 remove when the mock components will be running
+#ifndef LMBD_SIMULATION
+  if (not balancer::init())
+  {
+    set_error_state_message("\n\t- Init balancer component failed");
+    __private::powerMachine.set_state(PowerStates::ERROR);
+    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+    // failed initialisation, skip
+    return;
+  }
+#endif
+
+  /*
+   * All good !
+   */
+
+  // switch without a timing
+  __private::powerMachine.set_state(PowerStates::IDLE);
+}
+
 void handle_error_state()
 {
+  _isInBatteryRecoveryMode = false;
+
   // disable all gates
   powergates::disable_gates();
 
   // disable OTG
   set_otg_parameters(0, 0);
+
+  // previous state was startup, and timeout
+  if (__private::powerMachine.get_last_state() == PowerStates::STARTUP and
+      __private::powerMachine.state_changed_with_timeout())
+  {
+    set_error_state_message("startup state timeout");
+  }
 }
 
 namespace __private {
@@ -410,6 +527,9 @@ void state_machine_behavior()
 
   switch (powerMachine.get_state())
   {
+    case PowerStates::STARTUP:
+      handle_startup();
+      break;
     // error state
     case PowerStates::ERROR:
       handle_error_state();
@@ -462,6 +582,9 @@ bool is_in_error_state() { return __private::powerMachine.get_state() == PowerSt
 // control parameters
 bool go_to_output_mode()
 {
+  if (_isInBatteryRecoveryMode)
+    return false;
+
   if (__private::can_switch_states())
   {
     powerDelivery::suspend_pd_state_machine();
@@ -490,6 +613,9 @@ bool go_to_charger_mode()
 
 bool go_to_otg_mode()
 {
+  if (_isInBatteryRecoveryMode)
+    return false;
+
   if (__private::can_switch_states() and battery::is_battery_usable_as_power_source() and
       alerts::manager.can_use_usb_port())
   {
@@ -589,6 +715,8 @@ static bool isSetup = false;
 
 bool is_setup() { return isSetup; }
 
+bool is_started() { return __private::powerMachine.get_state() != PowerStates::STARTUP; }
+
 void init()
 {
   // detect shorts in the USB port
@@ -602,31 +730,11 @@ void init()
   // init power gates
   powergates::init();
 
-  // switch without a timing
-  __private::powerMachine.set_state(PowerStates::IDLE);
-
+// TODO issue #132 remove when the mock components will be running
+#ifndef LMBD_SIMULATION
   bool isSuccessful = true;
   std::string errorStr = "";
 
-// TODO issue #132 remove when the mock components will be running
-#ifndef LMBD_SIMULATION
-  if (not balancer::init())
-  {
-    errorStr += "\n\t- Init balancer component failed";
-    isSuccessful = false;
-  }
-#endif
-
-  // charging component, setup first
-  const bool chargerSuccess = charger::setup();
-  if (!chargerSuccess)
-  {
-    errorStr += "\n\t- Init charger component failed";
-    isSuccessful = false;
-  }
-
-// TODO issue #132 remove when the mock components will be running
-#ifndef LMBD_SIMULATION
   // at the very last, power delivery
   const bool pdSuccess = powerDelivery::setup();
   if (!pdSuccess)
@@ -634,7 +742,6 @@ void init()
     errorStr += "\n\t- Init power delivery component failed";
     isSuccessful = false;
   }
-#endif
 
   if (not isSuccessful)
   {
@@ -646,9 +753,17 @@ void init()
     return;
   }
 
+  // start power delivery
+  powerDelivery::start_threads();
+#endif
+
+  // start main loop
+  start_thread(power_loop, power_taskName, 0, 1024);
+
   isSetup = true;
 }
 
+// main loop of the power
 void power_loop()
 {
   // kick power watchdog
@@ -669,18 +784,20 @@ void power_loop()
   // run the balancer loop (all the time)
   balancer::loop();
 
+  // after charge update, check status
+  if (_isInBatteryRecoveryMode and is_started())
+  {
+    // remove flag when battery level is greater than zero
+    const auto chargerState = charger::get_state();
+    if (time_ms() > startupFailTimeout_ms * 5 and chargerState.areMeasuresOk and
+        chargerState.batteryVoltage_mV > batteryMinVoltageSafe_mV)
+    {
+      lampda_print("Cleared battery recovery mode");
+      _isInBatteryRecoveryMode = false;
+    }
+  }
+
   delay_ms(1);
-}
-
-void start_threads()
-{
-  if (!is_setup())
-    return;
-
-  //   use the charging thread !
-  start_thread(power_loop, power_taskName, 0, 1024);
-
-  powerDelivery::start_threads();
 }
 
 } // namespace power
