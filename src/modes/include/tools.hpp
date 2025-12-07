@@ -19,23 +19,6 @@ namespace modes {
 /// \private True iff Mode is a BasicMode
 template<typename Mode> static constexpr bool is_mode = std::is_base_of_v<BasicMode, Mode>;
 
-/**
- * \brief Compute a linear scale interpolation between bounds. approximation is unconstrained, and if the input is not
- * between bounds, the outputs will not respect them eiher
- *
- * \param[in] x Value to interpolate
- * \param[in] in_min Min bound of value to interpolate
- * \param[in] in_max Max bound of value to interpolate
- * \param[in] out_min Min bound of result
- * \param[in] out_max Max bound of result
- *
- */
-template<typename T, typename U>
-static constexpr U LMBD_INLINE linear_scale(T x, T in_min, T in_max, U out_min, U out_max)
-{
-  return (out_max - out_min) * ((x - in_min) / float(in_max - in_min)) + out_min;
-}
-
 //
 // StateTyOf
 //  - returns StateTy if defined

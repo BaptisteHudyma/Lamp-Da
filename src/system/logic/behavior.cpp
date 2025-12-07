@@ -587,14 +587,11 @@ void handle_output_light_state()
     // user loop call
     user::loop();
 
-// TODO issue #136
-#if 0
     const auto& chargerState = charger::get_state();
     if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)
     {
-      // TODO: alert that the battery is missing
+      alerts::manager.raise(alerts::Type::BATTERY_MISSING);
     }
-#endif
   }
 }
 

@@ -3,11 +3,15 @@
 #include "src/system/logic/alerts.h"
 
 #include "src/system/utils/constants.h"
+#include "src/system/utils/time_utils.h"
 
 #include "src/system/power/charger.h"
 #include "src/system/power/balancer.h"
 
 namespace battery {
+
+// no battery present after this timing will raise the alert
+static constexpr uint32_t noBatteryAlertRaiseTiming_ms = 1500;
 
 static uint16_t s_batteryVoltage_mV = 0;
 
@@ -93,7 +97,11 @@ uint16_t get_raw_battery_voltage_mv()
   if (not check_balancer_battery_voltage() and not check_charger_battery_voltage())
   {
     // else: not ready yet ? error, return max voltage for now
-    // TODO #344: after a set time, return an error, the system should not be used without batteries
+    // after a set time, return an error, the system should not be used without batteries
+    if (time_ms() > noBatteryAlertRaiseTiming_ms)
+    {
+      alerts::manager.raise(alerts::Type::BATTERY_MISSING);
+    }
     return maxBatteryVoltage_mV;
   }
 
