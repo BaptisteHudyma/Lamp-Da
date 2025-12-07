@@ -78,6 +78,8 @@ inline const char* AlertsToText(const Type type)
       return "SYSTEM_SLEEP_SKIPPED";
     case Type::USB_PORT_SHORT:
       return "USB_PORT_SHORT";
+    case Type::BATTERY_MISSING:
+      return "BATTERY_MISSING";
     default:
       return "UNSUPPORTED TYPE";
   }
@@ -225,12 +227,17 @@ struct Alert_BatteryCritical : public AlertBase
       return false;
     if (not balancer::get_status().is_valid())
       return false;
+    if (manager.is_raised(Type::BATTERY_MISSING) or manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
+      return false;
 
     return not chargerState.is_effectivly_charging() and __internal::get_battery_level() < batteryCritical;
   }
 
   bool should_be_cleared() const override
   {
+    // incoherent means no other battery alerts
+    if (manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
+      return true;
     // battery low can only be cleared on charging operations
     const auto& chargerState = charger::get_state();
     return chargerState.is_effectivly_charging();
@@ -264,6 +271,8 @@ struct Alert_BatteryLow : public AlertBase
     const auto& chargerState = charger::get_state();
     if (not chargerState.areMeasuresOk)
       return false;
+    if (manager.is_raised(Type::BATTERY_MISSING) or manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
+      return false;
 
     const auto& batteryLevel = __internal::get_battery_level();
     const bool isBatteryLow = not chargerState.is_effectivly_charging() and batteryLevel < batteryLow;
@@ -275,6 +284,10 @@ struct Alert_BatteryLow : public AlertBase
 
   bool should_be_cleared() const override
   {
+    // incoherent means no other battery alerts
+    if (manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
+      return true;
+
     // battery low can only be cleared on charging operations
     const auto& chargerState = charger::get_state();
     return chargerState.is_effectivly_charging();
@@ -299,6 +312,21 @@ struct Alert_BatteryLow : public AlertBase
   }
 
   Type get_type() const override { return Type::BATTERY_LOW; }
+};
+
+struct Alert_BatteryMissing : public AlertBase
+{
+  bool show() const override
+  {
+    //
+    return indicator::blink(100, 100, {utils::ColorSpace::GREEN, utils::ColorSpace::RED});
+  }
+
+  Type get_type() const override { return Type::BATTERY_MISSING; }
+
+  bool should_prevent_lamp_output() const override { return true; }
+  bool should_prevent_battery_charge() const override { return true; }
+  bool should_prevent_usb_port_use() const override { return true; }
 };
 
 struct Alert_LongLoopUpdate : public AlertBase
@@ -513,10 +541,11 @@ AlertBase* allAlerts[] = {new Alert_SystemShutdownFailed,
                           new Alert_UsbPortShort,
                           //
                           new Alert_SkippedCleanSleep,
-                          new Alert_BatteryReadingIncoherent,
                           // battery and temp related
-                          new Alert_TempTooHigh,
                           new Alert_BatteryCritical,
+                          new Alert_TempTooHigh,
+                          new Alert_BatteryMissing,
+                          new Alert_BatteryReadingIncoherent,
                           new Alert_BatteryLow,
                           //
                           new Alert_OtgFailed,

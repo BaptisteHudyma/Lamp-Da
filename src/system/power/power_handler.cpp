@@ -471,7 +471,13 @@ void handle_startup()
     charger::set_enable_charge(true);
 
     // wait a bit
-    if (time_ms() - __private::powerMachine.get_state_raised_time() < startupFailTimeout_ms * 0.8)
+    const auto& state = charger::get_state();
+    // wait for charge
+    const bool isCharging = state.areMeasuresOk && state.is_charging();
+    if (not isCharging)
+      return;
+    const uint32_t timeSinceStateSwitch = time_ms() - __private::powerMachine.get_state_raised_time();
+    if (timeSinceStateSwitch < startupFailTimeout_ms * 0.8)
       return;
   }
 

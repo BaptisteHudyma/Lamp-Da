@@ -28,20 +28,20 @@ struct AuroraMode : public BasicMode
 
   static void on_enter_mode(auto& ctx)
   {
-    static constexpr uint16_t adjScale = linear_scale<uint32_t, uint16_t>(ctx.lamp.maxWidth + 1, 8, 64, 310, 63);
+    static const uint16_t adjScale = lmpd_map<uint16_t>(ctx.lamp.maxWidth + 1, 8, 64, 310, 63);
 
     static constexpr uint8_t scale = 255;
     static constexpr uint8_t speed = 128;
 
-    ctx.state.scale = linear_scale<uint8_t, uint16_t>(scale, 0, 255, 30, adjScale);
-    ctx.state.speed = linear_scale<byte, byte>(speed, 0, 255, 128, 16);
+    ctx.state.scale = lmpd_map<uint16_t>(scale, 0, 255, 30, adjScale);
+    ctx.state.speed = lmpd_map<byte>(speed, 0, 255, 128, 16);
     ctx.state.step = 0;
     ctx.state.palette = colors::PaletteAuroraColors;
   }
 
   static void loop(auto& ctx)
   {
-    static constexpr float adjustHeight = linear_scale<uint32_t, float>(ctx.lamp.maxHeight, 8, 32, 28, 12);
+    static const float adjustHeight = lmpd_map<float>(ctx.lamp.maxHeight, 8, 32, 28, 12);
     static constexpr float halfHeight = (float)ctx.lamp.maxHeight / 2.0f;
 
     const float _speedDivider = 1.0f / static_cast<float>(ctx.state.speed);
