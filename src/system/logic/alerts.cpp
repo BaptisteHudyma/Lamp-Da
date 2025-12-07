@@ -225,12 +225,17 @@ struct Alert_BatteryCritical : public AlertBase
       return false;
     if (not balancer::get_status().is_valid())
       return false;
+    if (manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
+      return false;
 
     return not chargerState.is_effectivly_charging() and __internal::get_battery_level() < batteryCritical;
   }
 
   bool should_be_cleared() const override
   {
+    // incoherent means no other battery alerts
+    if (manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
+      return true;
     // battery low can only be cleared on charging operations
     const auto& chargerState = charger::get_state();
     return chargerState.is_effectivly_charging();
@@ -264,6 +269,8 @@ struct Alert_BatteryLow : public AlertBase
     const auto& chargerState = charger::get_state();
     if (not chargerState.areMeasuresOk)
       return false;
+    if (manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
+      return false;
 
     const auto& batteryLevel = __internal::get_battery_level();
     const bool isBatteryLow = not chargerState.is_effectivly_charging() and batteryLevel < batteryLow;
@@ -275,6 +282,10 @@ struct Alert_BatteryLow : public AlertBase
 
   bool should_be_cleared() const override
   {
+    // incoherent means no other battery alerts
+    if (manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
+      return true;
+
     // battery low can only be cleared on charging operations
     const auto& chargerState = charger::get_state();
     return chargerState.is_effectivly_charging();
