@@ -546,8 +546,6 @@ public:
    *
    * If \p readPreviousBrightness is true, return the internally saved
    * brightness state, used for user navigation of brightness.
-   *
-   * TODO: determine if we should keep 0-255 or have minBrightness-maxBrightness
    */
   brightness_t LMBD_INLINE getBrightness(const bool readPreviousBrightness = false)
   {

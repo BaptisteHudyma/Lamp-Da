@@ -80,6 +80,8 @@ inline const char* AlertsToText(const Type type)
       return "USB_PORT_SHORT";
     case Type::BATTERY_MISSING:
       return "BATTERY_MISSING";
+    case Type::CHARGER_ERROR:
+      return "CHARGER_ERROR";
     default:
       return "UNSUPPORTED TYPE";
   }
@@ -411,6 +413,16 @@ struct Alert_HardwareAlert : public AlertBase
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+struct Alert_ChargerError : public AlertBase
+{
+  bool show() const override
+  {
+    return indicator::blink(100, 100, {utils::ColorSpace::WHITE, utils::ColorSpace::BLACK});
+  }
+
+  Type get_type() const override { return Type::CHARGER_ERROR; }
+};
+
 struct Alert_FavoriteSet : public AlertBase
 {
   bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::TEAL); }
@@ -535,27 +547,30 @@ struct Alert_UsbPortShort : public AlertBase
 };
 
 // Alerts must be sorted by importance, only the first activated one will be shown
-AlertBase* allAlerts[] = {new Alert_SystemShutdownFailed,
-                          new Alert_HardwareAlert,
-                          new Alert_TempCritical,
-                          new Alert_UsbPortShort,
-                          //
-                          new Alert_SkippedCleanSleep,
-                          // battery and temp related
-                          new Alert_BatteryCritical,
-                          new Alert_TempTooHigh,
-                          new Alert_BatteryMissing,
-                          new Alert_BatteryReadingIncoherent,
-                          new Alert_BatteryLow,
-                          //
-                          new Alert_OtgFailed,
-                          new Alert_SystemInErrorState,
-                          new Alert_SystemInLockout,
-                          // user side low priority alerts
-                          new Alert_LongLoopUpdate,
-                          new Alert_BluetoothAdvertisement,
-                          new Alert_FavoriteSet,
-                          new Alert_SunsetTimerSet};
+AlertBase* allAlerts[] = {
+        new Alert_SystemShutdownFailed,
+        new Alert_BatteryMissing, // if battery is missing, the system will also have the hardware alert
+        new Alert_HardwareAlert,
+        new Alert_TempCritical,
+        new Alert_UsbPortShort,
+        //
+        new Alert_SkippedCleanSleep,
+        // battery and temp related
+        new Alert_BatteryCritical,
+        new Alert_TempTooHigh,
+        new Alert_BatteryReadingIncoherent,
+        new Alert_BatteryLow,
+        //
+        new Alert_OtgFailed,
+        new Alert_SystemInErrorState,
+        new Alert_SystemInLockout,
+        // user side low priority alerts
+        new Alert_LongLoopUpdate,
+        new Alert_BluetoothAdvertisement,
+        new Alert_FavoriteSet,
+        new Alert_SunsetTimerSet,
+
+        new Alert_ChargerError};
 
 void update_alerts()
 {

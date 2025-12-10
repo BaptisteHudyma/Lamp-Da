@@ -6,7 +6,8 @@
 
 namespace fileSystem {
 
-void setup();
+// call once on program stop
+void shutdown();
 
 // clear the stored values in the currently loaded file system
 void clear();
