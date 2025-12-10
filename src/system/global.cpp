@@ -109,6 +109,13 @@ void main_setup()
   // start the file system
   fileSystem::setup();
 
+  if (is_started_from_watchdog())
+  {
+    // try to start fresh: the system can get stuck with a broken filesystem
+    // TODO: find why !!!!
+    fileSystem::clear_internal_fs();
+  }
+
   // check if we are in first boot mode (read parameters fails)
   const bool isFirstBoot = not behavior::read_parameters();
 #ifdef LMBD_SIMULATION

@@ -77,8 +77,16 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
   paramMap.clear();
   if (paramFile.open(fileName, FILE_O_READ) and paramFile.isOpen() and paramFile.available())
   {
-    std::vector<char> vecRead(paramFile.size());
-    const int retVal = paramFile.read(vecRead.data(), vecRead.size());
+    const auto fileSize = paramFile.size();
+    if (fileSize <= 0)
+      return false;
+    if (not paramFile.seek(0))
+      return false;
+
+    std::vector<uint8_t> vecRead(fileSize);
+    // THE FILESYSTEM CAN GET CORRUPTED, AND THE LINE BELOW WILL RUN FOREVER
+    const int retVal = paramFile.read((uint8_t*)vecRead.data(), vecRead.size());
+
     if (retVal < 0)
     {
       // error case

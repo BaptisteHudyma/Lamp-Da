@@ -535,27 +535,28 @@ struct Alert_UsbPortShort : public AlertBase
 };
 
 // Alerts must be sorted by importance, only the first activated one will be shown
-AlertBase* allAlerts[] = {new Alert_SystemShutdownFailed,
-                          new Alert_HardwareAlert,
-                          new Alert_TempCritical,
-                          new Alert_UsbPortShort,
-                          //
-                          new Alert_SkippedCleanSleep,
-                          // battery and temp related
-                          new Alert_BatteryCritical,
-                          new Alert_TempTooHigh,
-                          new Alert_BatteryMissing,
-                          new Alert_BatteryReadingIncoherent,
-                          new Alert_BatteryLow,
-                          //
-                          new Alert_OtgFailed,
-                          new Alert_SystemInErrorState,
-                          new Alert_SystemInLockout,
-                          // user side low priority alerts
-                          new Alert_LongLoopUpdate,
-                          new Alert_BluetoothAdvertisement,
-                          new Alert_FavoriteSet,
-                          new Alert_SunsetTimerSet};
+AlertBase* allAlerts[] = {
+        new Alert_SystemShutdownFailed,
+        new Alert_BatteryMissing, // if battery is missing, the system will also have the hardware alert
+        new Alert_HardwareAlert,
+        new Alert_TempCritical,
+        new Alert_UsbPortShort,
+        //
+        new Alert_SkippedCleanSleep,
+        // battery and temp related
+        new Alert_BatteryCritical,
+        new Alert_TempTooHigh,
+        new Alert_BatteryReadingIncoherent,
+        new Alert_BatteryLow,
+        //
+        new Alert_OtgFailed,
+        new Alert_SystemInErrorState,
+        new Alert_SystemInLockout,
+        // user side low priority alerts
+        new Alert_LongLoopUpdate,
+        new Alert_BluetoothAdvertisement,
+        new Alert_FavoriteSet,
+        new Alert_SunsetTimerSet};
 
 void update_alerts()
 {
