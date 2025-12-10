@@ -104,11 +104,7 @@ void main_setup()
   // set random seed
   random16_set_seed(get_device_serial_number() & 0xffff);
 
-  // do some stuff before starting the peripherals
-
-  // start the file system
-  fileSystem::setup();
-
+  //
   if (is_started_from_watchdog())
   {
     // try to start fresh: the system can get stuck with a broken filesystem

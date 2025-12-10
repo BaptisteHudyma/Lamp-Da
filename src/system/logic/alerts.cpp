@@ -80,6 +80,8 @@ inline const char* AlertsToText(const Type type)
       return "USB_PORT_SHORT";
     case Type::BATTERY_MISSING:
       return "BATTERY_MISSING";
+    case Type::CHARGER_ERROR:
+      return "CHARGER_ERROR";
     default:
       return "UNSUPPORTED TYPE";
   }
@@ -411,6 +413,16 @@ struct Alert_HardwareAlert : public AlertBase
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+struct Alert_ChargerError : public AlertBase
+{
+  bool show() const override
+  {
+    return indicator::blink(100, 100, {utils::ColorSpace::WHITE, utils::ColorSpace::BLACK});
+  }
+
+  Type get_type() const override { return Type::CHARGER_ERROR; }
+};
+
 struct Alert_FavoriteSet : public AlertBase
 {
   bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::TEAL); }
@@ -556,7 +568,9 @@ AlertBase* allAlerts[] = {
         new Alert_LongLoopUpdate,
         new Alert_BluetoothAdvertisement,
         new Alert_FavoriteSet,
-        new Alert_SunsetTimerSet};
+        new Alert_SunsetTimerSet,
+
+        new Alert_ChargerError};
 
 void update_alerts()
 {

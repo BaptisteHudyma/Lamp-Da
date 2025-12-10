@@ -193,8 +193,7 @@ bool is_status_error()
 {
   return charger.status == Charger_t::ChargerStatus_t::UNINITIALIZED or
          charger.status == Charger_t::ChargerStatus_t::ERROR_HARDWARE or
-         charger.status == Charger_t::ChargerStatus_t::ERROR_SOFTWARE or
-         charger.status == Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING;
+         charger.status == Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
 }
 
 // update the charger status state
@@ -383,18 +382,14 @@ void loop()
     // allow some start time to prevent wrong error display
     if (time_ms() >= 500)
     {
-      // prevent shadowing of another alert
-      if (not alerts::manager.is_raised(alerts::Type::HARDWARE_ALERT))
-        isHardwareErrorRaiser = true;
-      alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+      alerts::manager.raise(alerts::Type::CHARGER_ERROR);
     }
     // do NOT run charge functions
     return;
   }
-  else if (isHardwareErrorRaiser)
+  else
   {
-    alerts::manager.clear(alerts::Type::HARDWARE_ALERT);
-    isHardwareErrorRaiser = false;
+    alerts::manager.clear(alerts::Type::CHARGER_ERROR);
   }
 
   // if needed, enable charge

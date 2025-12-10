@@ -187,6 +187,8 @@ void setup_clean_sleep_flag()
   fileSystem::system::set_value(cleanSleepKey, 0);
   // write parameters, if a crash happens, we will notice a dirty flag
   fileSystem::system::write_to_file();
+  // temp shutdown
+  fileSystem::shutdown();
 }
 
 void write_parameters()
@@ -205,8 +207,11 @@ void write_parameters()
 
   user::write_parameters();
 
+  // write all
   fileSystem::user::write_to_file();
   fileSystem::system::write_to_file();
+  // close filesystem
+  fileSystem::shutdown();
 }
 
 // user code is running when state is output
@@ -218,6 +223,9 @@ bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::
  */
 void true_power_off()
 {
+  // unmount filesystem
+  fileSystem::shutdown();
+
   // stop i2c interfaces
   for (uint8_t i = 0; i < get_wire_interface_count(); ++i)
   {

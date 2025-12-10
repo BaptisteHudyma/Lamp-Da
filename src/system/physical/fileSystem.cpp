@@ -47,6 +47,9 @@ union KeyValToByteArray
 static bool isSetup = false;
 void setup()
 {
+  if (isSetup)
+    return;
+
   if (!InternalFS.begin())
   {
     lampda_print("Failed to start file system");
@@ -55,6 +58,15 @@ void setup()
   {
     isSetup = true;
   }
+}
+
+void shutdown()
+{
+  if (!isSetup)
+    return;
+
+  isSetup = false;
+  InternalFS.end();
 }
 
 void clear()
@@ -66,6 +78,8 @@ void clear()
 
 void clear_internal_fs()
 {
+  setup();
+
   // hardcore, format the entire file system
   InternalFS.format();
 }
@@ -74,6 +88,8 @@ namespace __internal {
 
 bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& paramMap)
 {
+  setup();
+
   paramMap.clear();
   if (paramFile.open(fileName, FILE_O_READ) and paramFile.isOpen() and paramFile.available())
   {
@@ -143,6 +159,8 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
 
 bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramMap, const bool shouldEraseFirst = false)
 {
+  setup();
+
   // check if it exists
   if (paramFile.open(filePath, FILE_O_WRITE) and paramFile.isOpen())
   {
