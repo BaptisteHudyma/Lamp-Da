@@ -207,7 +207,111 @@ struct StroboscopeMode : public BasicMode
   }
 };
 
-using CalmGroup = GroupFor<Candle>;
+struct LightningMode : public BasicMode
+{
+  /// regulate stroboscopic speed
+  static constexpr bool hasBrightCallback = true;
+
+  struct StateTy
+  {
+    uint32_t lastBrightnessHandleCall;
+    bool isWaitingTurnOn;
+    brightness_t lastBrightness;
+    uint32_t stepdown;
+  };
+
+  static void on_enter_mode(auto& ctx)
+  { //
+    ctx.state.lastBrightnessHandleCall = 0;
+    ctx.state.isWaitingTurnOn = true;
+    ctx.state.lastBrightness = ctx.lamp.getSavedBrightness();
+    ctx.state.stepdown = 0;
+  }
+
+  static void brightness_update(auto& ctx, brightness_t brightness)
+  {
+    auto& lamp = ctx.lamp;
+    lamp.cancel_blip();
+    ctx.state.lastBrightnessHandleCall = lamp.now;
+  }
+
+  static void loop(auto& ctx)
+  {
+    // update brightness
+    auto& lamp = ctx.lamp;
+
+    // no update when ramp is active
+    if (lamp.now - ctx.state.lastBrightnessHandleCall < 100)
+      return;
+
+    // decrease brightness
+
+    if (not ctx.is_bliping())
+    {
+      brightness_t currentBrightness = ctx.state.lastBrightness;
+
+      // lampe is still on, decrease brightess
+      if (ctx.state.isWaitingTurnOn)
+      {
+        const brightness_t savedBrightness = lamp.getSavedBrightness();
+
+        // from anduril
+        uint8_t n_brightness = 1 << (random8() % 7); // 1, 2, 4, 8, 16, 32, 64
+        n_brightness += 1 << (random8() % 5);        // 2 to 80 now
+        n_brightness += random8() % n_brightness;    // 2 to 159 now (w/ low bias)
+
+        const brightness_t newBrightness =
+                min<brightness_t>(savedBrightness, lmpd_map<brightness_t>(n_brightness, 2, 159, 0, savedBrightness));
+        // prepare next brightness
+        lamp.tempBrightness(newBrightness);
+        ctx.state.lastBrightness = newBrightness;
+
+        ctx.state.stepdown = max<uint32_t>(1, newBrightness >> 4);
+
+        ctx.state.isWaitingTurnOn = false;
+      }
+      else if (currentBrightness > ctx.state.stepdown)
+      {
+        // bleed flash down
+        if (ctx.state.stepdown > 0)
+        {
+          if (random8() & 0x11 != 0)
+          {
+            currentBrightness >>= 1;
+          }
+          else
+          {
+            currentBrightness -= ctx.state.stepdown;
+            ctx.state.lastBrightness = currentBrightness;
+          }
+        }
+        else
+        {
+          currentBrightness = 0;
+          ctx.state.lastBrightness = 0;
+        }
+
+        lamp.tempBrightness(currentBrightness);
+      }
+      else
+      {
+        currentBrightness = 0;
+
+        // from anduril
+        // for a random amount of time between 1ms and 8192ms
+        uint32_t rand_time = 1 << (random8() % 13);
+        rand_time += random8() % rand_time;
+
+        // turn off for a time
+        ctx.blip(rand_time);
+        ctx.state.isWaitingTurnOn = true;
+      }
+    }
+    // else: we are in a waiting time
+  }
+};
+
+using CalmGroup = GroupFor<Candle, LightningMode>;
 using FlashesGroup = GroupFor<StroboscopeMode, OnePulse, ManyPulse<2>>;
 
 } // namespace modes::brightness

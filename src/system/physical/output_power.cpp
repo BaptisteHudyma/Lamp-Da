@@ -35,6 +35,10 @@ void write_temporary_output_limits(const uint16_t voltage_mv, const uint16_t cur
 
 void blip(const uint32_t timing) { powergates::power::blip(timing); }
 
+void cancel_blip() { powergates::power::cancel_blip(); }
+
+bool is_bliping() { return powergates::power::is_bliping(); }
+
 void disable_power_gates() { powergates::disable_gates(); }
 
 } // namespace outputPower

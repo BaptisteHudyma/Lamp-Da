@@ -453,6 +453,16 @@ public:
     }
   }
 
+  /**
+   * \brief Cancel the ongoing blip, if any
+   */
+  void LMBD_INLINE cancel_blip() const { return outputPower::cancel_blip(); }
+
+  /**
+   * \brief return true if the output is in a blip state
+   */
+  bool LMBD_INLINE is_bliping() const { return outputPower::is_bliping(); }
+
   /** \brief Set brightness of the lamp
    *
    * Several behaviors:
@@ -570,8 +580,8 @@ public:
   /// Reset brightness to internal saved brightness, skip callbacks
   void LMBD_INLINE restoreBrightness()
   {
-    brightness_t current = getBrightness();
-    brightness_t saved = getBrightness(true);
+    const brightness_t current = getBrightness();
+    const brightness_t saved = getSavedBrightness();
 
     if (current != saved)
       setBrightness(saved, true, false, false);

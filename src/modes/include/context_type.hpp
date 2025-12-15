@@ -232,6 +232,9 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
       // blip to indicate a mode change to the same mode
       manager.blip(100);
     }
+    // cancel any blip
+    // TODO: this should be in quit_mode
+    manager.cancel_blip();
 
     // signal that we are quitting the mode
     modeManager.quit_mode(manager);
@@ -485,6 +488,20 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     ctx.state.skipNextFrameEffect = ceil(duration / static_cast<float>(ctx.lamp.frameDurationMs));
     // turn off the output
     ctx.lamp.blip(duration);
+  }
+
+  void cancel_blip() const
+  {
+    auto ctx = modeManager.get_context();
+    // cancel skip
+    ctx.state.skipNextFrameEffect = 0;
+    ctx.lamp.cancel_blip();
+  }
+
+  bool is_bliping() const
+  {
+    auto ctx = modeManager.get_context();
+    return ctx.lamp.is_bliping();
   }
 
   /** \brief Skip the first few LEDs update during several frames
