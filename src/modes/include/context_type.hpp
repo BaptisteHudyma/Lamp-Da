@@ -43,6 +43,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   static constexpr bool isManager = std::is_same_v<LocalModeTy, ModeManagerTy>;
 
   // useful proxies (exposes mode properties)
+  static constexpr bool hasSunsetAnimation = LocalModeTy::hasSunsetAnimation; ///< \private
   static constexpr bool hasBrightCallback = LocalModeTy::hasBrightCallback;   ///< \private
   static constexpr bool hasSystemCallbacks = LocalModeTy::hasSystemCallbacks; ///< \private
   static constexpr bool requireUserThread = LocalModeTy::requireUserThread;   ///< \private
@@ -50,6 +51,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   static constexpr bool hasButtonCustomUI = LocalModeTy::hasButtonCustomUI;   ///< \private
 
   // more proxies (exposes tables of mode properties)
+  static constexpr auto everySunsetCallback = LocalModeTy::everySunsetCallback;       ///< \private
   static constexpr auto everyBrightCallback = LocalModeTy::everyBrightCallback;       ///< \private
   static constexpr auto everySystemCallbacks = LocalModeTy::everySystemCallbacks;     ///< \private
   static constexpr auto everyRequireUserThread = LocalModeTy::everyRequireUserThread; ///< \private
@@ -601,6 +603,15 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   {
     //
     LocalModeTy::on_exit_mode(*this);
+  }
+
+  /// Binds to local BasicMode::sunset_update()
+  void LMBD_INLINE sunset_update(LMBD_USED float progress)
+  {
+    if constexpr (LocalModeTy::hasSunsetAnimation)
+    {
+      LocalModeTy::sunset_update(*this, progress);
+    }
   }
 
   /// Binds to local BasicMode::brightness_update()

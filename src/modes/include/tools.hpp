@@ -187,6 +187,11 @@ template<typename TupleTy, uint8_t TupleSz = std::tuple_size_v<TupleTy>> struct 
 /// \private Defined boolean is True if any \p TupleTy item has boolean True
 template<typename TupleTy, bool hasError = false> struct anyOf
 {
+  template<typename Ty> struct QHasSunset
+  {
+    static constexpr bool value = Ty::hasSunsetAnimation;
+  };
+
   template<typename Ty> struct QHasBright
   {
     static constexpr bool value = Ty::hasBrightCallback;
@@ -213,6 +218,7 @@ template<typename TupleTy, bool hasError = false> struct anyOf
   };
 
   // booleans we need
+  static constexpr bool hasSunsetAnimation = forEach<TupleTy>::template any<QHasSunset, hasError>();
   static constexpr bool hasBrightCallback = forEach<TupleTy>::template any<QHasBright, hasError>();
   static constexpr bool hasCustomRamp = forEach<TupleTy>::template any<QCustomRamp, hasError>();
   static constexpr bool hasButtonCustomUI = forEach<TupleTy>::template any<QButtonUI, hasError>();
@@ -220,6 +226,7 @@ template<typename TupleTy, bool hasError = false> struct anyOf
   static constexpr bool requireUserThread = forEach<TupleTy>::template any<QUserThread, hasError>();
 
   // as table
+  static constexpr auto everySunsetCallback = forEach<TupleTy>::template asTable<QHasSunset, hasError>();
   static constexpr auto everyBrightCallback = forEach<TupleTy>::template asTable<QHasBright, hasError>();
   static constexpr auto everyCustomRamp = forEach<TupleTy>::template asTable<QCustomRamp, hasError>();
   static constexpr auto everyButtonCustomUI = forEach<TupleTy>::template asTable<QButtonUI, hasError>();
@@ -230,6 +237,11 @@ template<typename TupleTy, bool hasError = false> struct anyOf
 /// \private As 2D table for all important booleans we need
 template<typename TupleTy, bool hasError = false> struct asTableFor
 {
+  template<typename Ty> struct QHasSunset
+  {
+    static constexpr auto value = Ty::everySunsetCallback;
+  };
+
   template<typename Ty> struct QHasBright
   {
     static constexpr auto value = Ty::everyBrightCallback;
@@ -257,6 +269,7 @@ template<typename TupleTy, bool hasError = false> struct asTableFor
 
   static constexpr size_t maxTableSz = forEach<TupleTy>::template getMaxTableSize<QHasBright, hasError>();
 
+  static constexpr auto everySunsetCallback = forEach<TupleTy>::template asTable2D<QHasSunset, maxTableSz, hasError>();
   static constexpr auto everyBrightCallback = forEach<TupleTy>::template asTable2D<QHasBright, maxTableSz, hasError>();
   static constexpr auto everyCustomRamp = forEach<TupleTy>::template asTable2D<QCustomRamp, maxTableSz, hasError>();
   static constexpr auto everyButtonCustomUI = forEach<TupleTy>::template asTable2D<QButtonUI, maxTableSz, hasError>();

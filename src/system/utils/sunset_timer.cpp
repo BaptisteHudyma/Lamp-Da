@@ -16,9 +16,27 @@ uint32_t sunsetTimerEndTime_s = 0;
 
 static constexpr uint32_t brightnessRampDownTime_min = 3;
 static constexpr uint32_t brightnessRampDownTime_s = brightnessRampDownTime_min * 60;
+static constexpr uint32_t brightnessRampDownTime_ms = brightnessRampDownTime_s * 1000;
 static constexpr uint16_t brightnessDecreasePerLoop = 1;
 
+// minimum calls to the update sunset function that will be made
+static constexpr uint16_t minimalSunsetUpdateCalls = 50;
+
 const char* const sunset_taskName = "sunset";
+
+void signal_sunset_update()
+{
+  if (time_s() > sunsetTimerEndTime_s)
+  {
+    behavior::sunset::progress_update(1.0f);
+    return;
+  }
+
+  // signal the progress change
+  const float progress = lmpd_constrain<float>(
+          (sunsetTimerEndTime_s - time_s()) / static_cast<float>(brightnessRampDownTime_s), 0.0f, 1.0f);
+  behavior::sunset::progress_update(1.0f - progress);
+}
 
 // sunset loop time to reduce brightness gradually
 uint32_t get_sunset_loop_timing_ms()
@@ -26,11 +44,11 @@ uint32_t get_sunset_loop_timing_ms()
   const auto& maxBrightnessStep = brightness::get_saved_brightness() / brightnessDecreasePerLoop;
   if (maxBrightnessStep <= 0)
     return 100;
-  const uint32_t res = ((brightnessRampDownTime_s * 1000) / maxBrightnessStep) + 1;
+  const uint32_t res = (brightnessRampDownTime_ms / maxBrightnessStep) + 1;
   if (res <= 5)
     return 5;
   // minimum turn off delay, to prevent too slow turn off at low luminosities
-  return res;
+  return min<uint32_t>(res, brightnessRampDownTime_ms / minimalSunsetUpdateCalls);
 }
 
 void sunset_process_loop()
@@ -48,9 +66,12 @@ void sunset_process_loop()
     // less than N minutes, start to decrease brightness
     if (time_s() + brightnessRampDownTime_s >= sunsetTimerEndTime_s)
     {
+      // signal the progress change
+      signal_sunset_update();
+
       // decrease brightness every N seconds left
       const auto currentBrightness = brightness::get_brightness();
-      if (currentBrightness <= brightnessDecreasePerLoop)
+      if (time_s() >= sunsetTimerEndTime_s)
       {
         brightness::update_brightness(0);
         lampda_print("Shutdown with sunset timer");
@@ -58,8 +79,12 @@ void sunset_process_loop()
         cancel_timer();
         return;
       }
-      else
+      else if (currentBrightness >= brightnessDecreasePerLoop)
+      {
+        // slowly decrease brighntess
         brightness::update_brightness(currentBrightness - brightnessDecreasePerLoop);
+      }
+      // else: casual loop update
     }
   }
 }
@@ -90,6 +115,9 @@ void add_time_minutes(const uint8_t time_minutes)
   {
     lampda_print("sunset timer add %d minutes", (timeToAdd_s / 60));
     sunsetTimerEndTime_s += timeToAdd_s;
+
+    // added some time, so signal update
+    signal_sunset_update();
   }
 }
 

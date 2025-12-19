@@ -5,6 +5,10 @@ struct MyCustomMode : public modes::BasicMode
 {
   static void loop(auto& ctx) {}
   static void on_enter_mode(auto& ctx) {}
+  static void on_exit_mode(auto& ctx) {}
+
+  // only if hasSunsetAnimation
+  static void sunset_update(auto& ctx, float progress) {}
 
   // only if hasBrightCallback
   static void brightness_update(auto& ctx, brightness_t brightness) {}

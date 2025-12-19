@@ -120,6 +120,13 @@ void set_power_off()
 
 void go_to_external_battery_mode() { power::go_to_otg_mode(); }
 
+namespace sunset {
+
+// signal update to user
+void progress_update(const float progress) { user::sunset_timer_update(progress); }
+
+} // namespace sunset
+
 // allow system to be powered if no hardware alert and power is setup
 bool can_system_allowed_to_be_powered()
 {
