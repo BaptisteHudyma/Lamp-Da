@@ -720,8 +720,8 @@ void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA)
   const auto realVal = chargerIcRegisters.oTGVoltage.set(voltage_mV, isVoltageRangeLow);
   chargerIcRegisters.oTGCurrent.set(maxCurrent_mA);
 
-  if (realVal != prevVal)
-    lampda_print("new OTG targets : %dmV %dmA", realVal, maxCurrent_mA);
+  // if (realVal != prevVal)
+  //   lampda_print("new OTG targets : %dmV %dmA", realVal, maxCurrent_mA);
 }
 
 bool is_in_OTG() { return isInOtg_s; }

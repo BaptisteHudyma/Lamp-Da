@@ -16,6 +16,12 @@ namespace power {
  */
 void blip(const uint32_t timing);
 
+// call to cancel an blip
+void cancel_blip();
+
+// indicates that the gate is in a blip
+bool is_bliping();
+
 } // namespace power
 
 /**

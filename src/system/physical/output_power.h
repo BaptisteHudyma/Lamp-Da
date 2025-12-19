@@ -22,9 +22,13 @@ extern void write_temporary_output_limits(const uint16_t voltage_mv,
                                           const uint32_t timeout_ms);
 
 /**
- * \brief Very short interruption of output voltage
+ * \brief short interruption of output voltage
  */
 extern void blip(const uint32_t timing);
+/// stop an ongoing blip
+extern void cancel_blip();
+/// indicates that the gate is in a blip
+extern bool is_bliping();
 
 /**
  * \brief close all external voltage path

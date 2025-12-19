@@ -272,11 +272,17 @@ void handle_output_voltage_mode()
   {
     // enable power gate
     powergates::enable_power_gate();
+
+    if (not s_isOutputModeReady)
+      lampda_print("voltage ready on output gate");
     s_isOutputModeReady = true;
   }
   else
   {
+    if (s_isOutputModeReady)
+      lampda_print("voltage is not in required range, disabling output");
     s_isOutputModeReady = false;
+
     powergates::disable_gates();
   }
 }
