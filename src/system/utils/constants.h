@@ -128,8 +128,10 @@ inline bool is_cell_voltage_valid(const uint16_t cellVoltage_mv)
 }
 
 using brightness_t = uint16_t;
-static constexpr brightness_t maxBrightness = 1024;
+namespace brightness {
+static constexpr brightness_t absoluteMaximumBrightness = 1024;
 // min brightness is always zero
+} // namespace brightness
 
 // asserts
 static_assert(maxSystemTemp_c < criticalSystemTemp_c, "max system temp must be less than critical temp");

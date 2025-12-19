@@ -26,7 +26,7 @@ static const DigitalPin ButtonRedPin(RedIndicator);
 static const DigitalPin ButtonGreenPin(GreenIndicator);
 static const DigitalPin ButtonBluePin(BlueIndicator);
 
-static inline float brigthnessMultiplier = 1.0f;
+static inline float brightnessMultiplier = 1.0f;
 
 void init()
 {
@@ -40,20 +40,20 @@ void init()
 void set_color(const utils::ColorSpace::RGB& c)
 {
   const COLOR& col = c.get_rgb();
-  ButtonRedPin.write(static_cast<uint16_t>(std::ceil(col.red * redColorCorrection * brigthnessMultiplier)));
-  ButtonGreenPin.write(static_cast<uint16_t>(std::ceil(col.green * greenColorCorrection * brigthnessMultiplier)));
-  ButtonBluePin.write(static_cast<uint16_t>(std::ceil(col.blue * blueColorCorrection * brigthnessMultiplier)));
+  ButtonRedPin.write(static_cast<uint16_t>(std::ceil(col.red * redColorCorrection * brightnessMultiplier)));
+  ButtonGreenPin.write(static_cast<uint16_t>(std::ceil(col.green * greenColorCorrection * brightnessMultiplier)));
+  ButtonBluePin.write(static_cast<uint16_t>(std::ceil(col.blue * blueColorCorrection * brightnessMultiplier)));
 }
 
 void set_brightness(const uint8_t brightness)
 {
-  brigthnessMultiplier = brightness / 255.0f;
-  assert(brigthnessMultiplier >= 0.0f && brigthnessMultiplier <= 1.0f);
+  brightnessMultiplier = brightness / 255.0f;
+  assert(brightnessMultiplier >= 0.0f && brightnessMultiplier <= 1.0f);
 }
 uint8_t get_brightness()
 {
-  assert(brigthnessMultiplier >= 0.0f && brigthnessMultiplier <= 1.0f);
-  return static_cast<uint8_t>(brigthnessMultiplier * 255);
+  assert(brightnessMultiplier >= 0.0f && brightnessMultiplier <= 1.0f);
+  return static_cast<uint8_t>(brightnessMultiplier * 255);
 }
 
 bool breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::ColorSpace::RGB& color)

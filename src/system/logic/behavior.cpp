@@ -536,7 +536,7 @@ void handle_pre_output_light_state()
 
   power::go_to_output_mode();
 
-  // update brigthness with saved brightness
+  // update brightness with saved brightness
   brightness::update_brightness(brightness::get_saved_brightness());
 
   // let the user power on the system
