@@ -475,7 +475,7 @@ public:
    *  - if \p skipCallbacks is false, do call user callbacks w/ re-entry risks
    *  - if \p skipUpdateBrightness is true, only set strip object brightness,
    *    or do nothing if LampTy::flavor is not LampTypes::indexable
-   *  - if \p updatePreviousBrightess is true, save brightness and next time
+   *  - if \p updateSavedBrightess is true, save brightness and next time
    *    user navigate brightness, use it as starting point (see tempBrightness)
    *
    * Note that calls to `brightness::update_brightness` are throttled to once
@@ -483,12 +483,26 @@ public:
    *
    * Note that \p skipUpdateBrightness implies \p skipCallbacks implicitly
    */
-  void LMBD_INLINE setBrightness(const brightness_t brightness,
+  void LMBD_INLINE setBrightness(const brightness_t newBrightness,
                                  const bool skipCallbacks = true,
                                  const bool skipUpdateBrightness = false,
-                                 const bool updatePreviousBrightess = false)
+                                 const bool updateSavedBrightess = false)
   {
     assert((skipCallbacks || !skipUpdateBrightness) && "implicit callback skip!");
+
+    if (!skipUpdateBrightness)
+    {
+      uint32_t last = brightness::when_last_update_brightness();
+      if ((this->now - last) > brightnessDurationMs)
+        brightness::update_brightness(newBrightness, skipCallbacks);
+    }
+    if (updateSavedBrightess)
+      brightness::update_saved_brightness();
+
+    // USE THE BRIGHTNESS VALUE AFTER THE UPDATE
+    // brightness can be limited by the system, so do not use the raw brightness
+    const auto trueNewBrightness = brightness::get_brightness();
+    const auto trueMaxBrightness = brightness::get_max_brightness();
 
     if constexpr (flavor == LampTypes::indexable)
     {
@@ -496,13 +510,13 @@ public:
       using curve_t = curves::LinearCurve<brightness_t, uint8_t>;
       static curve_t brightnessCurve({curve_t::point_t {0, minBrightness}, curve_t::point_t {maxBrightness, 255}});
 
-      strip.setBrightness(brightnessCurve.sample(brightness));
+      strip.setBrightness(brightnessCurve.sample(trueNewBrightness));
     }
 
     if constexpr (flavor == LampTypes::simple)
     {
-      const brightness_t constraintBrightness = min<brightness_t>(brightness, maxBrightness);
-      if (constraintBrightness >= maxBrightness)
+      const brightness_t constraintBrightness = min<brightness_t>(trueNewBrightness, maxBrightness);
+      if (constraintBrightness >= trueMaxBrightness)
         outputPower::blip(50); // blip
 
       constexpr uint16_t maxOutputVoltage_mV = stripInputVoltage_mV;
@@ -512,15 +526,6 @@ public:
 
       outputPower::write_voltage(round(brightnessCurve.sample(constraintBrightness)));
     }
-
-    if (!skipUpdateBrightness)
-    {
-      uint32_t last = brightness::when_last_update_brightness();
-      if ((this->now - last) > brightnessDurationMs)
-        brightness::update_brightness(brightness, skipCallbacks);
-    }
-    if (updatePreviousBrightess)
-      brightness::update_saved_brightness();
   }
 
   /* \brief Temporarily set brightness, without affecting brightness navigation

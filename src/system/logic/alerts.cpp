@@ -227,8 +227,13 @@ struct Alert_BatteryCritical : public AlertBase
     const auto& chargerState = charger::get_state();
     if (not chargerState.areMeasuresOk)
       return false;
+
+// TODO issue #132 remove when the mock components will be running
+#ifndef LMBD_SIMULATION
     if (not balancer::get_status().is_valid())
       return false;
+#endif
+
     if (manager.is_raised(Type::BATTERY_MISSING) or manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
       return false;
 
@@ -268,8 +273,13 @@ struct Alert_BatteryLow : public AlertBase
       return false;
     if (power::is_in_error_state())
       return false;
+
+// TODO issue #132 remove when the mock components will be running
+#ifndef LMBD_SIMULATION
     if (not balancer::get_status().is_valid())
       return false;
+#endif
+
     const auto& chargerState = charger::get_state();
     if (not chargerState.areMeasuresOk)
       return false;
@@ -622,11 +632,18 @@ void handle_all(const bool shouldIgnoreAlerts)
   // update all alerts
   update_alerts();
 
-  if (shouldIgnoreAlerts or manager.is_clear())
-  {
-    // no alerts: reset the max brightness
-    brightness::set_max_brightness(maxBrightness);
+  const bool isNoAlertsRaised = manager.is_clear();
 
+  // no alerts: reset the max brightness
+  if (isNoAlertsRaised)
+  {
+    // This should be called on no alerts only, not ignore alerts
+    brightness::set_max_brightness(maxBrightness);
+  }
+
+  //
+  if (shouldIgnoreAlerts or isNoAlertsRaised)
+  {
     // do nothing to display anything
     if (skipIndicator)
     {

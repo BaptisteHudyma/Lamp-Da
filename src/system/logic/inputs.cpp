@@ -268,7 +268,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
       {
         // number of steps to update brightness
         static constexpr uint32_t brightnessUpdateSteps = BRIGHTNESS_RAMP_DURATION_MS / BRIGHTNESS_LOOP_UPDATE_EVERY;
-        static uint32_t brightnessUpdateStepSize = max<uint32_t>(1, maxBrightness / brightnessUpdateSteps);
+        static const uint32_t brightnessUpdateStepSize = max<uint32_t>(1, maxBrightness / brightnessUpdateSteps);
 
         // negative go low, positive go high
         static int rampSide = 1;
@@ -295,7 +295,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
             if (consecutiveButtonCheck == 2)
               rampSide = -1;
             // ramp at maximum, go low
-            else if (brightness >= maxBrightness)
+            else if (brightness >= brightness::get_max_brightness())
               rampSide = -1;
             // if more than 1 second elapsed, fall back to raise ramp
             else if (lastBrightnessUpdateTime_ms == 0 or time_ms() - lastBrightnessUpdateTime_ms >= 1000)
