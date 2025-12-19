@@ -40,25 +40,25 @@ void RotationMatrix::from_angles_XYZ(const vec3d& angles_rad)
 
 void RotationMatrix::from_angles_ZYX(const vec3d& angles_rad)
 {
-  auto si = sinf(angles_rad.x);
-  auto sj = sinf(angles_rad.y);
-  auto sk = sinf(angles_rad.z);
+  auto sinAlpha = sinf(angles_rad.x);
+  auto sinBeta = sinf(angles_rad.y);
+  auto sinGamma = sinf(angles_rad.z);
 
-  auto ci = cosf(angles_rad.x);
-  auto cj = cosf(angles_rad.y);
-  auto ck = cosf(angles_rad.z);
+  auto cosAlpha = cosf(angles_rad.x);
+  auto cosBeta = cosf(angles_rad.y);
+  auto cosGamma = cosf(angles_rad.z);
 
-  R11 = cj * cj;
-  R12 = ci * sj * sk - si * ck;
-  R13 = ci * sj * ck + si * sk;
+  R11 = cosAlpha * cosBeta;
+  R12 = cosAlpha * sinBeta * sinGamma - sinAlpha * cosGamma;
+  R13 = cosAlpha * sinBeta * cosGamma + sinAlpha * sinGamma;
 
-  R21 = sj * ck;
-  R22 = si * sj * sk + ci * ck;
-  R23 = si * sj * ck - ci * sk;
+  R21 = sinAlpha * cosBeta;
+  R22 = sinAlpha * sinBeta * sinGamma + cosAlpha * cosGamma;
+  R23 = sinAlpha * sinBeta * cosGamma - cosAlpha * sinGamma;
 
-  R31 = -sj;
-  R32 = cj * sj;
-  R33 = cj * ck;
+  R31 = -sinBeta;
+  R32 = cosBeta * sinGamma;
+  R33 = cosBeta * cosGamma;
 }
 
 TransformationMatrix::TransformationMatrix(const RotationMatrix& rot, const vec3d& trans) :
