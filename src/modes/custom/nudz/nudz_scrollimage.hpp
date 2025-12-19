@@ -36,9 +36,6 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
 
   static void loop(auto& ctx)
   {
-    // ctx.lamp.fill(colors::Green);
-    // ctx.lamp.setBrightness(ctx.lamp.tick % ctx.lamp.maxBrightness);
-
     float spdRange = ctx.state.maxSpeed - ctx.state.minSpeed;
     float speed = ctx.state.minSpeed + (float(ctx.get_active_custom_ramp()) / 255) * spdRange;
     // ease stop at 0

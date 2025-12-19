@@ -35,8 +35,8 @@ struct OnePulse : public BasicMode
     brightness_t base = lamp.getSavedBrightness();
     brightness_t scaled = max<brightness_t>(base * scaleFactor, base + minScaling);
 
-    if (scaled > lamp.maxBrightness)
-      lamp.jumpBrightness(lamp.maxBrightness / scaleFactor);
+    if (scaled > lamp.getMaxBrightness())
+      lamp.jumpBrightness(lamp.getMaxBrightness() / scaleFactor);
 
     auto period = lamp.now % periodMs;
     if (period < pulseSizeMs)
@@ -61,8 +61,8 @@ template<size_t N> struct ManyPulse : public BasicMode
     brightness_t base = lamp.getSavedBrightness();
     brightness_t scaled = max<brightness_t>(base * scaleFactor, base + minScaling);
 
-    if (scaled > lamp.maxBrightness)
-      lamp.jumpBrightness(lamp.maxBrightness / scaleFactor);
+    if (scaled > lamp.getMaxBrightness())
+      lamp.jumpBrightness(lamp.getMaxBrightness() / scaleFactor);
 
     auto period = lamp.now % periodMs;
     if (period < pulseSizeMs * N * 2)
@@ -115,13 +115,15 @@ struct Candle : public BasicMode
 
   static void loop(auto& ctx)
   {
-    static constexpr float brightnessCorrection = maxBrightness / 255.0;
-
     auto& lamp = ctx.lamp;
 
+    const auto maxBrightness = lamp.getMaxBrightness();
+    const float brightnessCorrection = maxBrightness / 255.0;
+
     // limit max brightness
-    const brightness_t base = min<brightness_t>(lamp.getSavedBrightness(),
-                                                maxBrightness - (CANDLE_AMPLITUDE + 15) * brightnessCorrection);
+    const brightness_t base = min<brightness_t>(
+            lamp.getSavedBrightness(),
+            maxBrightness - std::min<int>(maxBrightness, (CANDLE_AMPLITUDE + 15) * brightnessCorrection));
 
     // 3-oscillator synth for a relatively organic pattern
     const uint8_t add = ((triwave8(ctx.state.candle_wave1) * ctx.state.candle_wave1_depth) >> 8) +

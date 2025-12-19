@@ -288,9 +288,6 @@ public:
   /// Which lamp flavor is currently used by the implementation?
   static constexpr LampTypes flavor = lampType;
 
-  /// What is the maximal brightness for that lamp?
-  static constexpr brightness_t maxBrightness = ::maxBrightness;
-
   /// Hardward try to call .loop() every frameDurationMs (12ms for 83.3fps)
   static constexpr uint32_t frameDurationMs = MAIN_LOOP_UPDATE_PERIOD_MS;
 
@@ -508,25 +505,31 @@ public:
     {
       constexpr uint8_t minBrightness = 5;
       using curve_t = curves::LinearCurve<brightness_t, uint8_t>;
-      static curve_t brightnessCurve({curve_t::point_t {0, minBrightness}, curve_t::point_t {maxBrightness, 255}});
+      static curve_t brightnessCurve(
+              {curve_t::point_t {0, minBrightness}, curve_t::point_t {brightness::absoluteMaximumBrightness, 255}});
 
       strip.setBrightness(brightnessCurve.sample(trueNewBrightness));
     }
 
     if constexpr (flavor == LampTypes::simple)
     {
-      const brightness_t constraintBrightness = min<brightness_t>(trueNewBrightness, maxBrightness);
-      if (constraintBrightness >= trueMaxBrightness)
+      if (trueNewBrightness >= trueMaxBrightness)
         outputPower::blip(50); // blip
 
       constexpr uint16_t maxOutputVoltage_mV = stripInputVoltage_mV;
       using curve_t = curves::ExponentialCurve<brightness_t, uint16_t>;
-      static curve_t brightnessCurve(
-              curve_t::point_t {0, 9400}, curve_t::point_t {maxBrightness, maxOutputVoltage_mV}, 1.0);
+      static curve_t brightnessCurve(curve_t::point_t {0, 9400},
+                                     curve_t::point_t {brightness::absoluteMaximumBrightness, maxOutputVoltage_mV},
+                                     1.0);
 
-      outputPower::write_voltage(round(brightnessCurve.sample(constraintBrightness)));
+      outputPower::write_voltage(round(brightnessCurve.sample(trueNewBrightness)));
     }
   }
+
+  /**
+   * \brief Return the actual allowed maximum brightness
+   */
+  brightness_t LMBD_INLINE getMaxBrightness() const { return brightness::get_max_brightness(); }
 
   /* \brief Temporarily set brightness, without affecting brightness navigation
    *

@@ -333,7 +333,7 @@ template<typename T> struct simulator
       {
         for (size_t I = 0; I < _LampTy::ledCount; ++I)
           state.colorBuffer[I] = isOutputEnabled ? 0xffff00 : 0;
-        state.brightness = (brightness::get_brightness() * 255) / maxBrightness;
+        state.brightness = (brightness::get_brightness() * 255) / brightness::absoluteMaximumBrightness;
       }
 
       state.indicatorColor = mock_indicator::get_color();

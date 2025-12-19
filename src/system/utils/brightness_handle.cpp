@@ -10,7 +10,7 @@ namespace brightness {
 struct BrightnessParameters
 {
   // temporary upper bound for the brightness
-  brightness_t MaxBrightnessLimit = maxBrightness;
+  brightness_t MaxBrightnessLimit = brightness::absoluteMaximumBrightness;
 
   // hold the current level of brightness out of the raise/lower animation
   brightness_t BRIGHTNESS = 200; // default start value
@@ -26,7 +26,7 @@ brightness_t get_brightness() { return __internal.BRIGHTNESS; }
 brightness_t get_max_brightness() { return __internal.MaxBrightnessLimit; }
 void set_max_brightness(const brightness_t brg)
 {
-  __internal.MaxBrightnessLimit = min<brightness_t>(brg, maxBrightness);
+  __internal.MaxBrightnessLimit = min<brightness_t>(brg, brightness::absoluteMaximumBrightness);
 }
 
 void update_saved_brightness() { __internal.savedBrightness = __internal.BRIGHTNESS; }

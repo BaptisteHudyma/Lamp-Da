@@ -308,13 +308,14 @@ struct Alert_BatteryLow : public AlertBase
   void execute() const override
   {
     // limit brightness to quarter of the max value
-    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.25 * maxBrightness);
+    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.25 * brightness::absoluteMaximumBrightness);
 
     // save some battery
     bluetooth::stop_bluetooth_advertising();
 
     brightness::set_max_brightness(clampedBrightness);
     brightness::update_brightness(brightness::get_brightness());
+    brightness::update_saved_brightness();
   }
 
   bool show() const override
@@ -365,10 +366,11 @@ struct Alert_TempTooHigh : public AlertBase
   void execute() const override
   {
     // limit brightness to half the max value
-    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.5 * maxBrightness);
+    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.5 * brightness::absoluteMaximumBrightness);
 
     brightness::set_max_brightness(clampedBrightness);
     brightness::update_brightness(brightness::get_brightness());
+    brightness::update_saved_brightness();
   }
 
   bool show() const override { return indicator::blink(300, 300, utils::ColorSpace::DARK_ORANGE); }
@@ -638,7 +640,7 @@ void handle_all(const bool shouldIgnoreAlerts)
   if (isNoAlertsRaised)
   {
     // This should be called on no alerts only, not ignore alerts
-    brightness::set_max_brightness(maxBrightness);
+    brightness::set_max_brightness(brightness::absoluteMaximumBrightness);
   }
 
   //
