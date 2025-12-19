@@ -539,7 +539,7 @@ TEST(test_vector4d, multiply)
 
 // Rotation matrix
 
-TEST(test_rotation_matrix, create_zero_rot)
+TEST(test_rotation_matrix_XYZ, create_zero_rot)
 {
   RotationMatrix mat;
   mat.from_angles_XYZ(0.0f, 0.0f, 0.0f);
@@ -606,203 +606,367 @@ TEST(test_rotation_matrix, create_zero_rot)
   ASSERT_EQ(res2.z, vecA.z);
 }
 
-TEST(test_rotation_matrix, create_360_rot)
+TEST(test_rotation_matrix_XYZ, create_360_rot)
 {
   RotationMatrix mat;
   mat.from_angles_XYZ(2.0f * M_PIf, 2.0f * M_PIf, 2.0f * M_PIf);
 
-  ASSERT_NEAR(mat.R11, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.R12, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.R13, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R11, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.R12, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R13, 0.0f, 0.00001);
 
-  ASSERT_NEAR(mat.R21, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.R22, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.R23, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R21, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R22, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.R23, 0.0f, 0.00001);
 
-  ASSERT_NEAR(mat.R31, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.R32, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.R33, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.R31, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R32, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R33, 1.0f, 0.00001);
 
   // check accessors
-  ASSERT_NEAR(mat.col1().x, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.col1().y, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.col1().z, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row1().x, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.row1().y, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row1().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col1().x, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.col1().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col1().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().x, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().z, 0.0f, 0.00001);
 
-  ASSERT_NEAR(mat.col2().x, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.col2().y, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.col2().z, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row2().x, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row2().y, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.row2().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col2().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col2().y, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.col2().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().y, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().z, 0.0f, 0.00001);
 
-  ASSERT_NEAR(mat.col3().x, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.col3().y, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.col3().z, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.row3().x, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row3().y, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row3().z, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.col3().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col3().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col3().z, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().z, 1.0f, 0.00001);
 
   // compose
   RotationMatrix res1 = mat.compose(mat);
-  ASSERT_NEAR(res1.R11, 1.0f, 0.00001);
-  ASSERT_NEAR(res1.R12, 0.0f, 0.00001);
-  ASSERT_NEAR(res1.R13, 0.0f, 0.00001);
+  EXPECT_NEAR(res1.R11, 1.0f, 0.00001);
+  EXPECT_NEAR(res1.R12, 0.0f, 0.00001);
+  EXPECT_NEAR(res1.R13, 0.0f, 0.00001);
 
-  ASSERT_NEAR(res1.R21, 0.0f, 0.00001);
-  ASSERT_NEAR(res1.R22, 1.0f, 0.00001);
-  ASSERT_NEAR(res1.R23, 0.0f, 0.00001);
+  EXPECT_NEAR(res1.R21, 0.0f, 0.00001);
+  EXPECT_NEAR(res1.R22, 1.0f, 0.00001);
+  EXPECT_NEAR(res1.R23, 0.0f, 0.00001);
 
-  ASSERT_NEAR(res1.R31, 0.0f, 0.00001);
-  ASSERT_NEAR(res1.R32, 0.0f, 0.00001);
-  ASSERT_NEAR(res1.R33, 1.0f, 0.00001);
+  EXPECT_NEAR(res1.R31, 0.0f, 0.00001);
+  EXPECT_NEAR(res1.R32, 0.0f, 0.00001);
+  EXPECT_NEAR(res1.R33, 1.0f, 0.00001);
 
   // rotate vector
   vec3d vecA(2.0f, 5.0f, 11.0f);
   vec3d res2 = mat.transform(vecA);
-  ASSERT_NEAR(res2.x, vecA.x, 0.00001);
-  ASSERT_NEAR(res2.y, vecA.y, 0.00001);
-  ASSERT_NEAR(res2.z, vecA.z, 0.00001);
+  EXPECT_NEAR(res2.x, vecA.x, 0.00001);
+  EXPECT_NEAR(res2.y, vecA.y, 0.00001);
+  EXPECT_NEAR(res2.z, vecA.z, 0.00001);
 
   vecA = vec3d(-2.0f, -5.0f, -11.0f);
   res2 = mat.transform(vecA);
-  ASSERT_NEAR(res2.x, vecA.x, 0.00001);
-  ASSERT_NEAR(res2.y, vecA.y, 0.00001);
-  ASSERT_NEAR(res2.z, vecA.z, 0.00001);
+  EXPECT_NEAR(res2.x, vecA.x, 0.00001);
+  EXPECT_NEAR(res2.y, vecA.y, 0.00001);
+  EXPECT_NEAR(res2.z, vecA.z, 0.00001);
 }
 
-TEST(test_rotation_matrix, create_180_rot)
+TEST(test_rotation_matrix_XYZ, create_180_rot)
 {
   RotationMatrix mat;
   mat.from_angles_XYZ(M_PIf, M_PIf, M_PIf);
 
-  ASSERT_NEAR(mat.R11, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.R12, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.R13, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R11, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.R12, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R13, 0.0f, 0.00001);
 
-  ASSERT_NEAR(mat.R21, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.R22, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.R23, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R21, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R22, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.R23, 0.0f, 0.00001);
 
-  ASSERT_NEAR(mat.R31, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.R32, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.R33, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.R31, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R32, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R33, 1.0f, 0.00001);
 
   // check accessors
-  ASSERT_NEAR(mat.col1().x, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.col1().y, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.col1().z, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row1().x, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.row1().y, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row1().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col1().x, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.col1().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col1().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().x, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().z, 0.0f, 0.00001);
 
-  ASSERT_NEAR(mat.col2().x, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.col2().y, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.col2().z, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row2().x, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row2().y, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.row2().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col2().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col2().y, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.col2().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().y, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().z, 0.0f, 0.00001);
 
-  ASSERT_NEAR(mat.col3().x, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.col3().y, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.col3().z, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.row3().x, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row3().y, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row3().z, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.col3().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col3().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col3().z, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().z, 1.0f, 0.00001);
 
   // compose
   RotationMatrix res1 = mat.compose(mat);
-  ASSERT_NEAR(res1.R11, 1.0f, 0.00001);
-  ASSERT_NEAR(res1.R12, 0.0f, 0.00001);
-  ASSERT_NEAR(res1.R13, 0.0f, 0.00001);
+  EXPECT_NEAR(res1.R11, 1.0f, 0.00001);
+  EXPECT_NEAR(res1.R12, 0.0f, 0.00001);
+  EXPECT_NEAR(res1.R13, 0.0f, 0.00001);
 
-  ASSERT_NEAR(res1.R21, 0.0f, 0.00001);
-  ASSERT_NEAR(res1.R22, 1.0f, 0.00001);
-  ASSERT_NEAR(res1.R23, 0.0f, 0.00001);
+  EXPECT_NEAR(res1.R21, 0.0f, 0.00001);
+  EXPECT_NEAR(res1.R22, 1.0f, 0.00001);
+  EXPECT_NEAR(res1.R23, 0.0f, 0.00001);
 
-  ASSERT_NEAR(res1.R31, 0.0f, 0.00001);
-  ASSERT_NEAR(res1.R32, 0.0f, 0.00001);
-  ASSERT_NEAR(res1.R33, 1.0f, 0.00001);
+  EXPECT_NEAR(res1.R31, 0.0f, 0.00001);
+  EXPECT_NEAR(res1.R32, 0.0f, 0.00001);
+  EXPECT_NEAR(res1.R33, 1.0f, 0.00001);
 
   // rotate vector
   vec3d vecA(2.0f, 5.0f, 11.0f);
   vec3d res2 = mat.transform(vecA);
-  ASSERT_NEAR(res2.x, vecA.x, 0.00001);
-  ASSERT_NEAR(res2.y, vecA.y, 0.00001);
-  ASSERT_NEAR(res2.z, vecA.z, 0.00001);
+  EXPECT_NEAR(res2.x, vecA.x, 0.00001);
+  EXPECT_NEAR(res2.y, vecA.y, 0.00001);
+  EXPECT_NEAR(res2.z, vecA.z, 0.00001);
 
   vecA = vec3d(-2.0f, -5.0f, -11.0f);
   res2 = mat.transform(vecA);
-  ASSERT_NEAR(res2.x, vecA.x, 0.00001);
-  ASSERT_NEAR(res2.y, vecA.y, 0.00001);
-  ASSERT_NEAR(res2.z, vecA.z, 0.00001);
+  EXPECT_NEAR(res2.x, vecA.x, 0.00001);
+  EXPECT_NEAR(res2.y, vecA.y, 0.00001);
+  EXPECT_NEAR(res2.z, vecA.z, 0.00001);
 }
 
-TEST(test_rotation_matrix, create_90_rot)
+TEST(test_rotation_matrix_XYZ, create_90_rot_X)
 {
   RotationMatrix mat;
-  mat.from_angles_XYZ(M_PIf / 2.0f, M_PIf / 2.0f, M_PIf / 2.0f);
+  mat.from_angles_XYZ(M_PIf / 2.0f, 0.0f, 0.0f);
 
-  ASSERT_NEAR(mat.R11, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.R12, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.R13, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.R11, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.R12, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R13, 0.0f, 0.00001);
 
-  ASSERT_NEAR(mat.R21, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.R22, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.R23, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R21, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R22, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R23, -1.0f, 0.00001);
 
-  ASSERT_NEAR(mat.R31, -1.0f, 0.00001);
-  ASSERT_NEAR(mat.R32, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.R33, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R31, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R32, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.R33, 0.0f, 0.00001);
 
   // check accessors
-  ASSERT_NEAR(mat.col1().x, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.col1().y, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.col1().z, -1.0f, 0.00001);
-  ASSERT_NEAR(mat.row1().x, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row1().y, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row1().z, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.col1().x, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.col1().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col1().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().x, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().z, 0.0f, 0.00001);
 
-  ASSERT_NEAR(mat.col2().x, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.col2().y, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.col2().z, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row2().x, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row2().y, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.row2().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col2().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col2().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col2().z, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().z, -1.0f, 0.00001);
 
-  ASSERT_NEAR(mat.col3().x, 1.0f, 0.00001);
-  ASSERT_NEAR(mat.col3().y, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.col3().z, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row3().x, -1.0f, 0.00001);
-  ASSERT_NEAR(mat.row3().y, 0.0f, 0.00001);
-  ASSERT_NEAR(mat.row3().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col3().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col3().y, -1.0f, 0.00001);
+  EXPECT_NEAR(mat.col3().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().y, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().z, 0.0f, 0.00001);
 
-  // compose
-  RotationMatrix res1 = mat.compose(mat);
-  ASSERT_NEAR(res1.R11, -1.0f, 0.00001);
-  ASSERT_NEAR(res1.R12, 0.0f, 0.00001);
-  ASSERT_NEAR(res1.R13, 0.0f, 0.00001);
+  RotationMatrix mat2;
+  mat2.from_angles_XYZ(-M_PIf / 2.0f, 0.0f, 0.0f);
 
-  ASSERT_NEAR(res1.R21, 0.0f, 0.00001);
-  ASSERT_NEAR(res1.R22, 1.0f, 0.00001);
-  ASSERT_NEAR(res1.R23, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.R11, 1.0f, 0.00001);
+  EXPECT_NEAR(mat2.R12, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.R13, 0.0f, 0.00001);
 
-  ASSERT_NEAR(res1.R31, 0.0f, 0.00001);
-  ASSERT_NEAR(res1.R32, 0.0f, 0.00001);
-  ASSERT_NEAR(res1.R33, -1.0f, 0.00001);
+  EXPECT_NEAR(mat2.R21, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.R22, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.R23, 1.0f, 0.00001);
 
-  // rotate vector
-  vec3d vecA(2.0f, 5.0f, 11.0f);
-  vec3d res2 = mat.transform(vecA);
-  ASSERT_NEAR(res2.x, vecA.z, 0.00001);
-  ASSERT_NEAR(res2.y, vecA.y, 0.00001);
-  ASSERT_NEAR(res2.z, -vecA.x, 0.00001);
+  EXPECT_NEAR(mat2.R31, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.R32, -1.0f, 0.00001);
+  EXPECT_NEAR(mat2.R33, 0.0f, 0.00001);
 
-  vecA = vec3d(-2.0f, -5.0f, -11.0f);
-  res2 = mat.transform(vecA);
-  ASSERT_NEAR(res2.x, vecA.z, 0.00001);
-  ASSERT_NEAR(res2.y, vecA.y, 0.00001);
-  ASSERT_NEAR(res2.z, -vecA.x, 0.00001);
+  // check accessors
+  EXPECT_NEAR(mat2.col1().x, 1.0f, 0.00001);
+  EXPECT_NEAR(mat2.col1().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.col1().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row1().x, 1.0f, 0.00001);
+  EXPECT_NEAR(mat2.row1().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row1().z, 0.0f, 0.00001);
+
+  EXPECT_NEAR(mat2.col2().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.col2().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.col2().z, -1.0f, 0.00001);
+  EXPECT_NEAR(mat2.row2().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row2().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row2().z, 1.0f, 0.00001);
+
+  EXPECT_NEAR(mat2.col3().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.col3().y, 1.0f, 0.00001);
+  EXPECT_NEAR(mat2.col3().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row3().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row3().y, -1.0f, 0.00001);
+  EXPECT_NEAR(mat2.row3().z, 0.0f, 0.00001);
+}
+
+TEST(test_rotation_matrix_XYZ, create_90_rot_Y)
+{
+  RotationMatrix mat;
+  mat.from_angles_XYZ(0.0, M_PIf / 2.0f, 0.0f);
+
+  EXPECT_NEAR(mat.R11, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R12, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R13, 1.0f, 0.00001);
+
+  EXPECT_NEAR(mat.R21, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R22, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.R23, 0.0f, 0.00001);
+
+  EXPECT_NEAR(mat.R31, -1.0f, 0.00001);
+  EXPECT_NEAR(mat.R32, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R33, 0.0f, 0.00001);
+
+  // check accessors
+  EXPECT_NEAR(mat.col1().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col1().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col1().z, -1.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().z, 1.0f, 0.00001);
+
+  EXPECT_NEAR(mat.col2().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col2().y, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.col2().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().y, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().z, 0.0f, 0.00001);
+
+  EXPECT_NEAR(mat.col3().x, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.col3().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col3().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().x, -1.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().z, 0.0f, 0.00001);
+
+  RotationMatrix mat2;
+  mat2.from_angles_XYZ(0.0, -M_PIf / 2.0f, 0.0f);
+
+  EXPECT_NEAR(mat2.R11, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.R12, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.R13, -1.0f, 0.00001);
+
+  EXPECT_NEAR(mat2.R21, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.R22, 1.0f, 0.00001);
+  EXPECT_NEAR(mat2.R23, 0.0f, 0.00001);
+
+  EXPECT_NEAR(mat2.R31, 1.0f, 0.00001);
+  EXPECT_NEAR(mat2.R32, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.R33, 0.0f, 0.00001);
+
+  // check accessors
+  EXPECT_NEAR(mat2.col1().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.col1().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.col1().z, 1.0f, 0.00001);
+  EXPECT_NEAR(mat2.row1().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row1().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row1().z, -1.0f, 0.00001);
+
+  EXPECT_NEAR(mat2.col2().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.col2().y, 1.0f, 0.00001);
+  EXPECT_NEAR(mat2.col2().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row2().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row2().y, 1.0f, 0.00001);
+  EXPECT_NEAR(mat2.row2().z, 0.0f, 0.00001);
+
+  EXPECT_NEAR(mat2.col3().x, -1.0f, 0.00001);
+  EXPECT_NEAR(mat2.col3().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.col3().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row3().x, 1.0f, 0.00001);
+  EXPECT_NEAR(mat2.row3().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row3().z, 0.0f, 0.00001);
+}
+
+TEST(test_rotation_matrix_XYZ, create_90_rot_Z)
+{
+  RotationMatrix mat;
+  mat.from_angles_XYZ(0.0, 0.0, M_PIf / 2.0f);
+
+  EXPECT_NEAR(mat.R11, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R12, -1.0f, 0.00001);
+  EXPECT_NEAR(mat.R13, 0.0f, 0.00001);
+
+  EXPECT_NEAR(mat.R21, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.R22, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R23, 0.0f, 0.00001);
+
+  EXPECT_NEAR(mat.R31, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R32, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.R33, 1.0f, 0.00001);
+
+  // check accessors
+  EXPECT_NEAR(mat.col1().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col1().y, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.col1().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().y, -1.0f, 0.00001);
+  EXPECT_NEAR(mat.row1().z, 0.0f, 0.00001);
+
+  EXPECT_NEAR(mat.col2().x, -1.0f, 0.00001);
+  EXPECT_NEAR(mat.col2().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col2().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().x, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row2().z, 0.0f, 0.00001);
+
+  EXPECT_NEAR(mat.col3().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col3().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.col3().z, 1.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat.row3().z, 1.0f, 0.00001);
+
+  RotationMatrix mat2;
+  mat2.from_angles_XYZ(0.0, 0.0, -M_PIf / 2.0f);
+
+  EXPECT_NEAR(mat2.R11, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.R12, 1.0f, 0.00001);
+  EXPECT_NEAR(mat2.R13, 0.0f, 0.00001);
+
+  EXPECT_NEAR(mat2.R21, -1.0f, 0.00001);
+  EXPECT_NEAR(mat2.R22, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.R23, 0.0f, 0.00001);
+
+  EXPECT_NEAR(mat2.R31, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.R32, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.R33, 1.0f, 0.00001);
+
+  // check accessors
+  EXPECT_NEAR(mat2.col1().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.col1().y, -1.0f, 0.00001);
+  EXPECT_NEAR(mat2.col1().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row1().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row1().y, 1.0f, 0.00001);
+  EXPECT_NEAR(mat2.row1().z, 0.0f, 0.00001);
+
+  EXPECT_NEAR(mat2.col2().x, 1.0f, 0.00001);
+  EXPECT_NEAR(mat2.col2().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.col2().z, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row2().x, -1.0f, 0.00001);
+  EXPECT_NEAR(mat2.row2().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row2().z, 0.0f, 0.00001);
+
+  EXPECT_NEAR(mat2.col3().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.col3().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.col3().z, 1.0f, 0.00001);
+  EXPECT_NEAR(mat2.row3().x, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row3().y, 0.0f, 0.00001);
+  EXPECT_NEAR(mat2.row3().z, 1.0f, 0.00001);
 }
