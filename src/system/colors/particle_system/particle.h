@@ -10,6 +10,8 @@
 
 #include "src/system/platform/print.h"
 
+#include "src/system/ext/math8.h"
+
 /**
  * \brief Define a particle in cylindrical space, and movement equations on the cylinder surface
  */
@@ -57,7 +59,7 @@ struct Particle
   vec2d compute_speed_increment(const vec3d& accelerationCartesian_m, const float delaTime) const
   {
     // speed vector on radial (derivative of cartesian to cylinder coordinates for theta)
-    const vec3d e_theta(-sin(theta_rad) * cylinderRadius_m, cos(theta_rad) * cylinderRadius_m, 0);
+    const vec3d e_theta(-sin_t(theta_rad) * cylinderRadius_m, cos_t(theta_rad) * cylinderRadius_m, 0);
     // speed vector on z (derivative of cartesian to cylinder coordinates for z)
     const vec3d e_z(0, 0, 1);
     // ignore the radius derivative, as we want to stay on the cylinder surface

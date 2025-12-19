@@ -596,6 +596,13 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     LocalModeTy::on_enter_mode(*this);
   }
 
+  /// Binds to local BasicMode::on_exit_mode()
+  void LMBD_INLINE on_exit_mode()
+  {
+    //
+    LocalModeTy::on_exit_mode(*this);
+  }
+
   /// Binds to local BasicMode::brightness_update()
   void LMBD_INLINE brightness_update(LMBD_USED brightness_t brightness)
   {

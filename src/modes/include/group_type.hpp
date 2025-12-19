@@ -210,6 +210,11 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     uint8_t modeIdBefore = ctx.get_active_mode(nbModes);
     // save ramps if they exist
     ctx.state.save_ramps(ctx, modeIdBefore);
+
+    // start new mode we switched to
+    dispatch_mode(ctx, [](auto mode) {
+      mode.on_exit_mode();
+    });
   }
 
   //

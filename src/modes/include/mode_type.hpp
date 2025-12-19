@@ -68,11 +68,15 @@ struct BasicMode
 
   /** \brief Custom callback when mode gains focus (optional)
    *
-   * Reset function is called once whenever mode is picked as the active mode
-   *
    * \param[in] ctx The current context
    */
   static void on_enter_mode(auto& ctx) { return; }
+
+  /** \brief Custom callback when mode goes outside of focus (optional)
+   *
+   * \param[in] ctx The current context
+   */
+  static void on_exit_mode(auto& ctx) { return; }
 
   /// Toggles the use of custom BasicMode::brightness_update() callback
   static constexpr bool hasBrightCallback = false;
