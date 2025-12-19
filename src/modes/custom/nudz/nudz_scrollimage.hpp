@@ -282,7 +282,7 @@ struct NudzBeerGlassMode : public BasicMode
       // angular coords of the pixel
       float angle = float(x) / nx * M_PI * 2;
       // normal and tangent to the lamp
-      vec2d norm(cos(angle), sin(angle));
+      vec2d norm(cos_t(angle), sin_t(angle));
       vec2d tan(-norm.y, norm.x);
       // we consider the accel will push pixels away from the wall
       // in the direction opposite to the force (if we consider the lamp

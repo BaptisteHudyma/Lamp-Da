@@ -57,6 +57,14 @@ void brightness_update(const brightness_t brightness)
   manager.brightness_update(brightness);
 }
 
+void sunset_timer_update(const float progress)
+{
+  auto manager = get_context();
+
+  // callbacks
+  manager.sunset_update(progress);
+}
+
 void write_parameters()
 {
   auto manager = get_context();

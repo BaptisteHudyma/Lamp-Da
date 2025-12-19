@@ -47,6 +47,11 @@ void set_power_off();
 //
 void go_to_external_battery_mode();
 
+namespace sunset {
+/// signal to behavior the advance of the sunset timer
+void progress_update(const float progress);
+} // namespace sunset
+
 } // namespace behavior
 
 /// \private Internal symbol used to signify which LMBD_LAMP_TYPE was specified

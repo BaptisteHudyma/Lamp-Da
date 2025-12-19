@@ -53,6 +53,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
 
   // required to support group-level context
   using HasAnyMode = details::anyOf<AllModesTy, earlyFail>;
+  static constexpr bool hasSunsetAnimation = HasAnyMode::hasSunsetAnimation;
   static constexpr bool hasBrightCallback = HasAnyMode::hasBrightCallback;
   static constexpr bool hasSystemCallbacks = HasAnyMode::hasSystemCallbacks;
   static constexpr bool requireUserThread = HasAnyMode::requireUserThread;
@@ -60,6 +61,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   static constexpr bool hasButtonCustomUI = HasAnyMode::hasButtonCustomUI;
 
   // useful for runtime tests of mode properties
+  static constexpr auto everySunsetCallback = HasAnyMode::everySunsetCallback;
   static constexpr auto everyBrightCallback = HasAnyMode::everyBrightCallback;
   static constexpr auto everySystemCallbacks = HasAnyMode::everySystemCallbacks;
   static constexpr auto everyRequireUserThread = HasAnyMode::everyRequireUserThread;
@@ -210,6 +212,11 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     uint8_t modeIdBefore = ctx.get_active_mode(nbModes);
     // save ramps if they exist
     ctx.state.save_ramps(ctx, modeIdBefore);
+
+    // start new mode we switched to
+    dispatch_mode(ctx, [](auto mode) {
+      mode.on_exit_mode();
+    });
   }
 
   //
@@ -220,6 +227,13 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   {
     dispatch_mode(ctx, [](auto mode) {
       mode.loop();
+    });
+  }
+
+  static void sunset_update(auto& ctx, float progress)
+  {
+    dispatch_mode(ctx, [&](auto mode) {
+      mode.sunset_update(progress);
     });
   }
 

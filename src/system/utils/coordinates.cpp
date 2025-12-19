@@ -9,9 +9,9 @@
 #include "src/system/ext/math8.h"
 #include "src/system/utils/utils.h"
 
-float to_helix_x(const int16_t ledIndex) { return stripXCoordinates * cos(ledIndex / ledPerTurn * c_TWO_PI); }
+float to_helix_x(const int16_t ledIndex) { return stripXCoordinates * cos_t(ledIndex / ledPerTurn * c_TWO_PI); }
 
-float to_helix_y(const int16_t ledIndex) { return stripXCoordinates * sin(ledIndex / ledPerTurn * c_TWO_PI); }
+float to_helix_y(const int16_t ledIndex) { return stripXCoordinates * sin_t(ledIndex / ledPerTurn * c_TWO_PI); }
 
 // the minus is for inverse helix
 float to_helix_z(const int16_t ledIndex) { return -ledStripWidth_mm * ledIndex / ledPerTurn; }

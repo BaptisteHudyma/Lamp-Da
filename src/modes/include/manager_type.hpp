@@ -305,6 +305,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   // required to support manager-level context
   using HasAnyGroup = details::anyOf<AllGroupsTy>;
+  static constexpr bool hasSunsetAnimation = HasAnyGroup::hasSunsetAnimation;
   static constexpr bool hasBrightCallback = HasAnyGroup::hasBrightCallback;
   static constexpr bool requireUserThread = HasAnyGroup::requireUserThread;
   static constexpr bool hasCustomRamp = HasAnyGroup::hasCustomRamp;
@@ -313,6 +314,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   // useful for runtime tests of mode properties
   using EveryModeBool = details::asTableFor<AllGroupsTy>;
+  static constexpr auto everySunsetCallback = EveryModeBool::everySunsetCallback;
   static constexpr auto everyBrightCallback = EveryModeBool::everyBrightCallback;
   static constexpr auto everyRequireUserThread = EveryModeBool::everyRequireUserThread;
   static constexpr auto everyCustomRamp = EveryModeBool::everyCustomRamp;
@@ -862,6 +864,13 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
     dispatch_group(ctx, [](auto group) {
       group.loop();
+    });
+  }
+
+  static void sunset_update(auto& ctx, float progress)
+  {
+    dispatch_group(ctx, [&](auto group) {
+      group.sunset_update(progress);
     });
   }
 

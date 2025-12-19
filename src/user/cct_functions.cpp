@@ -81,6 +81,8 @@ void brightness_update(const brightness_t brightness)
   set_color(currentColor);
 }
 
+void sunset_timer_update(const float progress) {}
+
 void write_parameters() { fileSystem::user::set_value(colorKey, currentColor); }
 
 void read_parameters()
