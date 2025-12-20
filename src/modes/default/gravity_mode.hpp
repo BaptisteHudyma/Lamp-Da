@@ -47,6 +47,8 @@ struct GravityMode : public BasicMode
     if (!state.selectedPalette)
       return;
 
+    const uint8_t paletteWrap = ctx.lamp.tick % UINT8_MAX;
+
     ctx.imuEvent.update(ctx);
 
     auto& particleSystem = ctx.imuEvent.particuleSystem;
@@ -56,7 +58,8 @@ struct GravityMode : public BasicMode
     ctx.lamp.fadeToBlackBy(255 - ctx.state.persistance);
 
     auto colorFunction = [&](int16_t n, const Particle& particle) {
-      return colors::from_palette(static_cast<uint8_t>(n / static_cast<float>(particleCount) * UINT8_MAX),
+      const auto wrapIndex = (n + paletteWrap) % particleCount;
+      return colors::from_palette(static_cast<uint8_t>(wrapIndex / static_cast<float>(particleCount) * UINT8_MAX),
                                   *state.selectedPalette);
     };
     particleSystem.show(colorFunction, ctx.lamp);

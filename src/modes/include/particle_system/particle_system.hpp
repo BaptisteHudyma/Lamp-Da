@@ -101,7 +101,7 @@ public:
       const int16_t ledIndex = p._savedLampIndex;
 
       // simulate instead of updating directly
-      Particle newP = p.simulate_after_acceleration(accelerationCartesian, deltaTime_s, shouldContrain);
+      const Particle& newP = p.simulate_after_acceleration(accelerationCartesian, deltaTime_s, shouldContrain);
 
       // update particle position in occupation set
       const int16_t newLedIndex = newP._savedLampIndex;

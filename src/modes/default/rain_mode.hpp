@@ -14,6 +14,8 @@ struct RainMode : public BasicMode
 {
   // hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
+  // sunset animation on the rain
+  static constexpr bool hasSunsetAnimation = true;
 
   static constexpr float lightRainDropsPerSecond = 1;
   static constexpr float heavyRainDropsPerSecond = 700;
@@ -29,13 +31,25 @@ struct RainMode : public BasicMode
 
     ctx.state.rainDropSpawn = 0.0;
     ctx.state.persistance = 100;
-    ctx.state.rainDensity = 1;
 
     // set default value
     custom_ramp_update(ctx, ctx.get_active_custom_ramp());
   }
 
-  static void custom_ramp_update(auto& ctx, uint8_t rampValue) { ctx.state.rainDensity = rampValue; }
+  static void custom_ramp_update(auto& ctx, uint8_t rampValue)
+  {
+    ctx.state.rainDensityCommand = rampValue;
+    ctx.state.rainDensity = ctx.state.rainDensityCommand;
+  }
+
+  static void sunset_update(auto& ctx, float progress)
+  {
+    // progress goes from 0 to 1
+    // lamp turns off when 1 is reached
+
+    // rain will turn off slowly
+    ctx.state.rainDensity = ctx.state.rainDensityCommand * (1.0 - progress);
+  }
 
   static void loop(auto& ctx)
   {
@@ -61,19 +75,23 @@ struct RainMode : public BasicMode
     particleSystem.iterate_no_collisions(
             ctx.imuEvent.lastReading.accel, ctx.lamp.frameDurationMs / 1000.0, shouldKeepInLampBounds);
     // depop particules that fell too far
-    particleSystem.depop_particules(recycle_particules_if_too_far);
+    const uint16_t activeParticles = particleSystem.depop_particules(recycle_particules_if_too_far);
 
     ctx.lamp.fadeToBlackBy(255 - ctx.state.persistance);
 
     // break palette size to display more colors per drops
     auto colorFunction = [&](int16_t n, const Particle& particle) {
-      return colors::from_palette(static_cast<uint8_t>(n % 16), ctx.state.palette);
+      const uint16_t wrapIndex = (n * 5) / static_cast<float>(activeParticles) * 255;
+      return colors::from_palette(static_cast<uint8_t>(wrapIndex % 255), ctx.state.palette);
     };
     particleSystem.show(colorFunction, ctx.lamp);
   }
 
   struct StateTy
   {
+    // save the requested rain density
+    uint8_t rainDensityCommand;
+
     uint8_t rainDensity;
     uint8_t persistance;
     float rainDropSpawn;
