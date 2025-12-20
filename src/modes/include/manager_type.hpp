@@ -22,6 +22,8 @@
 #include "src/modes/include/hardware/lamp_type.hpp"
 
 #include "src/modes/include/audio/utils.hpp"
+#include "src/modes/include/imu/utils.hpp"
+
 #include "src/modes/include/anims/ramp_update.hpp"
 
 namespace modes::details {
@@ -1009,8 +1011,12 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   //
 
   ActiveIndexTy activeIndex;
-  audio::SoundEventTy<> soundEvent; ///< store the sound analysis parameters
 
+  // sensor events
+  audio::SoundEventTy<> soundEvent; ///< store the sound analysis parameters
+  imu::ImuEventTy<> imuEvent;       ///< store the IMU events & parameters
+
+  // display object
   hardware::LampTy& lamp;
 
   //

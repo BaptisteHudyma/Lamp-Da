@@ -34,7 +34,7 @@ static constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = static_cast<uint32_t>(100
 // parameters of the led strip used
 static constexpr float consWattByMeter = 12;              // power consumption (in Watt/meters)
 static constexpr uint16_t stripInputVoltage_mV = 12000;   // voltage
-static constexpr float ledStripLenght_mm = 91.0f * 25.0f; // 91 sections of 25 mm
+static constexpr float ledStripLength_mm = 91.0f * 25.0f; // 91 sections of 25 mm
 
 // define position of led 0 to the circuit center
 static constexpr float circuitToLedZeroRotationX_degrees = 0.0f;
@@ -56,7 +56,7 @@ static constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = static_cast<uint32_t>(100
 // parameters of the led strip used
 static constexpr float consWattByMeter = 10;              // power consumption (in Watt/meters)
 static constexpr uint16_t stripInputVoltage_mV = 12000;   // voltage
-static constexpr float ledStripLenght_mm = 67.0f * 27.0f; // 67 sections of 27 mm
+static constexpr float ledStripLength_mm = 67.0f * 27.0f; // 67 sections of 27 mm
 
 // define position of led 0 to the circuit center
 static constexpr float circuitToLedZeroRotationX_degrees = 0.0f;
@@ -102,7 +102,7 @@ static constexpr uint32_t MAIN_LOOP_UPDATE_PERIOD_MS = static_cast<uint32_t>(100
 // physical parameters computations
 static constexpr float ledSize_mm = 1000.0f / ledByMeter;                        // size of the individual led
 static constexpr float lampBodyCircumpherence_mm = c_TWO_PI * lampBodyRadius_mm; // external circumpherence
-static constexpr float ledStripLenght_mm = LED_COUNT * ledSize_mm;
+static constexpr float ledStripLength_mm = LED_COUNT * ledSize_mm;
 
 // led per tube circumpherence
 static constexpr float ledPerTurn = lampBodyCircumpherence_mm / ledSize_mm;
@@ -110,7 +110,7 @@ static constexpr float ledPerTurn = lampBodyCircumpherence_mm / ledSize_mm;
 static constexpr float lampHeight = ledStripWidth_mm * LED_COUNT / ledPerTurn;
 
 static constexpr float stripXCoordinates = lampBodyCircumpherence_mm / ledSize_mm;
-static constexpr float stripYCoordinates = ledStripLenght_mm / lampBodyCircumpherence_mm;
+static constexpr float stripYCoordinates = ledStripLength_mm / lampBodyCircumpherence_mm;
 static constexpr float lampBodyHeight_mm = stripYCoordinates * ledStripWidth_mm;
 
 constexpr uint16_t stripMatrixWidth = ceil(stripXCoordinates);

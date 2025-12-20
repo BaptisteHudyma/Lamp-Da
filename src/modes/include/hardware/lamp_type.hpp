@@ -1,6 +1,7 @@
 #ifndef MODES_HARDWARE_LAMP_TYPE_HPP
 #define MODES_HARDWARE_LAMP_TYPE_HPP
 
+#include <cstdint>
 #include <cstring>
 
 #include "src/compile.h"
@@ -37,6 +38,30 @@ struct XYTy
 
 static constexpr uint16_t to_strip(uint16_t, uint16_t);
 static constexpr XYTy strip_to_XY(uint16_t n);
+
+struct HelixXYZTy
+{
+  float x, y, z;
+};
+
+static constexpr HelixXYZTy strip_to_helix(int16_t n);
+
+static constexpr HelixXYZTy strip_to_helix_unconstraint(const int16_t n);
+
+static constexpr bool is_led_index_valid(const int16_t ledIndex);
+
+static constexpr bool is_lamp_coordinate_out_of_bounds(const float angle_rad, const float z);
+
+/**
+ * \brief convert a lamp coordinate to a led index
+ */
+static constexpr uint16_t to_led_index(const float angle_rad, const float z);
+
+/**
+ * \brief convert a lamp coordinate to a led index, the result can be an index out of the lamp body
+ */
+static constexpr int16_t to_led_index_no_bounds(const float angle_rad, const float z);
+
 } // namespace modes
 
 /// Provide interface to the physical hardware and other facilities
@@ -92,13 +117,17 @@ struct LampTy
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 private:
-  static constexpr float _fwidth = stripXCoordinates;    ///< \private
-  static constexpr float _fheight = stripYCoordinates;   ///< \private
-  static constexpr uint16_t _width = floor(_fwidth);     ///< \private
-  static constexpr uint16_t _height = floor(_fheight);   ///< \private
-  static constexpr uint16_t _ledCount = LED_COUNT;       ///< \private
-  static constexpr uint16_t _nbBuffers = stripNbBuffers; ///< \private
-  LedStrip& strip;                                       ///< \private
+  static constexpr float _fwidth = stripXCoordinates;              ///< \private
+  static constexpr float _fheight = stripYCoordinates;             ///< \private
+  static constexpr uint16_t _width = floor(_fwidth);               ///< \private
+  static constexpr uint16_t _height = floor(_fheight);             ///< \private
+  static constexpr uint16_t _ledCount = LED_COUNT;                 ///< \private
+  static constexpr uint16_t _nbBuffers = stripNbBuffers;           ///< \private
+  static constexpr float _lampBodyRadius_mm = ::lampBodyRadius_mm; ///< \private
+  static constexpr float _ledStripWidth_mm = ::ledStripWidth_mm;   ///< \private
+  static constexpr float _ledStripLength_mm = ::ledStripLength_mm; ///< \private
+  static constexpr float _ledByMeter = ::ledByMeter;               ///< \private
+  LedStrip& strip;                                                 ///< \private
 
   /// \private oversized buffer size to account for "overflowing" LEDs
   static constexpr uint16_t _safeBufSize = (_width + 1) * (_height + 1);
@@ -117,12 +146,16 @@ public:
 #else
 private:
   // (placeholder values to avoid bad fails on misuse)
-  static constexpr float _fwidth = 23.5451;  ///< \private
-  static constexpr float _fheight = 22.51;   ///< \private
-  static constexpr uint16_t _width = 23;     ///< \private
-  static constexpr uint16_t _height = 22;    ///< \private
-  static constexpr uint16_t _ledCount = 530; ///< \private
-  static constexpr uint16_t _nbBuffers = 2;  ///< \private
+  static constexpr float _fwidth = 23.5451;          ///< \private
+  static constexpr float _fheight = 22.51;           ///< \private
+  static constexpr uint16_t _width = 23;             ///< \private
+  static constexpr uint16_t _height = 22;            ///< \private
+  static constexpr uint16_t _ledCount = 530;         ///< \private
+  static constexpr uint16_t _nbBuffers = 2;          ///< \private
+  static constexpr float _lampBodyRadius_mm = 25.0f; ///< \private
+  static constexpr float _ledStripWidth_mm = 5.2f;   ///< \private
+  static constexpr float _ledStripLength_mm = 25.0f; ///< \private
+  static constexpr float _ledByMeter = 160.0f;       ///< \private
 
   /// \private oversized buffer size to account for "overflowing" LEDs
   static constexpr uint16_t _safeBufSize = (_width + 1) * (_height + 1);
@@ -368,6 +401,22 @@ public:
 
   /// \private Last (final) total X-shift at the end, all row shifts together
   static constexpr int extraShiftTotal = extraShiftResiduesY[maxOverflowHeight - 1];
+
+  /// real radius of the lamp body
+  static constexpr float lampBodyRadius_mm = _lampBodyRadius_mm;
+
+  /// real size of the led strip in use
+  static constexpr float ledStripWidth_mm = _ledStripWidth_mm;
+  static constexpr float ledStripLength_mm = _ledStripLength_mm;
+
+  /// number of led per meters of strip used
+  static constexpr float ledByMeter = _ledByMeter;
+
+  /// number of leds per one turn of led strip
+  static constexpr float ledSize_mm = 1000.0f / ledByMeter;
+  static constexpr float lampBodyCircumpherence_mm = c_TWO_PI * lampBodyRadius_mm;
+  static constexpr float ledPerTurns = lampBodyCircumpherence_mm / ledSize_mm;
+  static constexpr float lampHeight_mm = ledStripWidth_mm * ledCount / ledPerTurns;
 
   /** \brief (indexable) Number of color buffers available for direct access
    *
@@ -1001,6 +1050,77 @@ static constexpr XYTy strip_to_XY(uint16_t n)
 
   uint16_t x = n - y * hardware::LampTy::maxWidth - hardware::LampTy::allResiduesY[y];
   return {x, y};
+}
+
+/**
+ * \brief X is the vertical axis, starting at zero and ending at maxWidthFloat
+ */
+static constexpr HelixXYZTy strip_to_helix(int16_t n)
+{
+  if (n > hardware::LampTy::ledCount)
+    return HelixXYZTy {0.0, 0.0, 0.0};
+
+  return strip_to_helix_unconstraint(n);
+}
+
+// the minus is for inverse helix
+static constexpr float to_helix_z(const int16_t n)
+{
+  return -hardware::LampTy::ledStripWidth_mm * n / hardware::LampTy::ledPerTurns;
+}
+
+static constexpr HelixXYZTy strip_to_helix_unconstraint(const int16_t n)
+{
+  return HelixXYZTy {hardware::LampTy::maxWidthFloat * cos_t(n / hardware::LampTy::ledPerTurns * c_TWO_PI),
+                     hardware::LampTy::maxWidthFloat * sin_t(n / hardware::LampTy::ledPerTurns * c_TWO_PI),
+                     to_helix_z(n)};
+}
+
+static constexpr bool is_led_index_valid(const int16_t n) { return n >= 0 and n < hardware::LampTy::ledCount; }
+
+static constexpr bool is_lamp_coordinate_out_of_bounds(const float angle_rad, const float z_mm)
+{
+  return not is_led_index_valid(to_led_index_no_bounds(angle_rad, z_mm));
+}
+
+static constexpr uint16_t to_led_index(const float angle_rad, const float z_mm)
+{
+  constexpr uint16_t maxZCoordinate =
+          floor(-to_helix_z(hardware::LampTy::ledCount) / hardware::LampTy::ledStripWidth_mm);
+
+  // snip Z per possible lines
+  uint16_t zIndex = floor(-z_mm / hardware::LampTy::ledStripWidth_mm);
+  if (zIndex < 0.0)
+    zIndex = 0.0;
+  if (zIndex > maxZCoordinate)
+    zIndex = maxZCoordinate;
+
+  // indexing around the led turn
+  const float angularPosition = wrap_angle(angle_rad) / c_TWO_PI * hardware::LampTy::maxWidthFloat;
+
+  // convert to led index (approx)
+  int16_t ledIndex = round(angularPosition + zIndex * hardware::LampTy::maxWidthFloat);
+  if (ledIndex < 0)
+    ledIndex = round(angularPosition + (zIndex + 1) * hardware::LampTy::maxWidthFloat);
+  if (ledIndex >= hardware::LampTy::ledCount)
+    ledIndex = round(angularPosition + (zIndex - 1) * hardware::LampTy::maxWidthFloat);
+
+  if (ledIndex < 0)
+    return 0;
+  if (ledIndex >= hardware::LampTy::ledCount)
+    return hardware::LampTy::ledCount - 1;
+  return ledIndex;
+}
+
+static constexpr int16_t to_led_index_no_bounds(const float angle_rad, const float z_mm)
+{
+  // snip Z per possible lines
+  const int16_t zIndex = floor(-z_mm / hardware::LampTy::ledStripWidth_mm);
+  // indexing around the led turn
+  const float angularPosition = wrap_angle(angle_rad) / c_TWO_PI * hardware::LampTy::maxWidthFloat;
+
+  // convert to led index (approx)
+  return round(angularPosition + zIndex * hardware::LampTy::maxWidthFloat);
 }
 
 } // namespace modes

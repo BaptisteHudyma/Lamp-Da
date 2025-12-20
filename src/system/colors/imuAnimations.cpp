@@ -1,4 +1,4 @@
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
+#ifdef _______LMBD_LAMP_TYPE__INDEXABLE
 
 #include "imuAnimations.h"
 

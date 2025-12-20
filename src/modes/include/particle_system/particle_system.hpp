@@ -1,5 +1,3 @@
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
-
 #ifndef PARTICLE_SYSTEM_H
 #define PARTICLE_SYSTEM_H
 
@@ -8,9 +6,14 @@
 #include <set>
 
 #include "src/system/ext/random8.h"
-#include "src/system/colors/colors.h"
 
-#include "src/system/colors/particle_system/particle.h"
+#include "src/modes/include/hardware/lamp_type.hpp"
+
+#include "particle.hpp"
+
+namespace modes {
+
+using LampTy = hardware::LampTy;
 
 /**
  * \brief Define a particle system
@@ -69,7 +72,7 @@ public:
   }
 
   void iterate_no_collisions(const vec3d& accelerationCartesian,
-                             const float deltaTime,
+                             const float deltaTime_s,
                              const bool shouldContrain = true)
   {
     for (size_t i = 0; i < particuleCount; ++i)
@@ -80,12 +83,12 @@ public:
 
       Particle& p = particules[i];
       // apply force and constrain
-      p.apply_acceleration(accelerationCartesian, deltaTime, shouldContrain);
+      p.apply_acceleration(accelerationCartesian, deltaTime_s, shouldContrain);
     }
   }
 
   void iterate_with_collisions(const vec3d& accelerationCartesian,
-                               const float deltaTime,
+                               const float deltaTime_s,
                                const bool shouldContrain = true)
   {
     for (size_t i = 0; i < particuleCount; ++i)
@@ -98,7 +101,7 @@ public:
       const int16_t ledIndex = p._savedLampIndex;
 
       // simulate instead of updating directly
-      Particle newP = p.simulate_after_acceleration(accelerationCartesian, deltaTime, shouldContrain);
+      Particle newP = p.simulate_after_acceleration(accelerationCartesian, deltaTime_s, shouldContrain);
 
       // update particle position in occupation set
       const int16_t newLedIndex = newP._savedLampIndex;
@@ -128,8 +131,9 @@ public:
   /**
    * \brief Filter particles depending on condition
    */
-  void depop_particules(const std::function<bool(const Particle&)>& positionGeneratorFunction)
+  uint16_t depop_particules(const std::function<bool(const Particle&)>& shouldDepopFunction)
   {
+    uint16_t particleCount = 0;
     for (size_t i = 0; i < particuleCount; ++i)
     {
       // do not depop non allocated particles
@@ -137,26 +141,39 @@ public:
         continue;
 
       auto& parti = particules[i];
-      if (positionGeneratorFunction(parti))
+      if (shouldDepopFunction(parti))
       {
         isAllocated[i] = false;
         occupiedSpacesSet.erase(parti._savedLampIndex);
       }
+      else
+      {
+        particleCount += 1;
+      }
     }
+    return particleCount;
   }
 
-  void show(const Color& color, const uint16_t maxColorIndex, LedStrip& strip)
+  /**
+   * \brief Display this particle system
+   * \param[in] sample_color sampling function for the particle color
+   */
+  uint16_t show(const std::function<uint32_t(int16_t, const Particle&)> sample_color, LampTy& lamp)
   {
+    uint16_t particleCount = 0;
     for (size_t i = 0; i < particuleCount; ++i)
     {
       // do not show non allocated particles
       if (not isAllocated[i])
         continue;
-
-      const auto& index = particules[i]._savedLampIndex;
-      if (is_led_index_valid(index))
-        strip.setPixelColor(index, color.get_color(i % maxColorIndex, maxColorIndex));
+      const auto& particle = particules[i];
+      const auto& index = particle._savedLampIndex;
+      if (modes::is_led_index_valid(index))
+        lamp.setPixelColor(index, sample_color(i, particle));
+      else
+        particleCount += 1;
     }
+    return particleCount;
   }
 
 protected:
@@ -172,7 +189,8 @@ protected:
       maxTries--;
     }
     // generate start position from user function
-    particules[index] = Particle(to_lamp_unconstraint(pos));
+    const auto& helixCoordinates = modes::strip_to_helix_unconstraint(pos);
+    particules[index] = Particle(vec3d {helixCoordinates.x, helixCoordinates.y, helixCoordinates.z});
     occupiedSpacesSet.insert(pos);
     isAllocated[index] = true;
   }
@@ -181,12 +199,13 @@ private:
   static constexpr uint16_t maxParticuleCount = 512;
   Particle particules[maxParticuleCount];
   bool isAllocated[maxParticuleCount]; // store the allocated particules flag
+
   std::set<int16_t> occupiedSpacesSet; // store the occupied spaces
 
   // forced to be less than maxParticuleCount
   uint16_t particuleCount;
 };
 
-#endif
+} // namespace modes
 
 #endif

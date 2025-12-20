@@ -8,7 +8,6 @@
 #include "src/system/colors/animations.h"
 #include "src/system/colors/colors.h"
 #include "src/system/colors/palettes.h"
-#include "src/system/colors/imuAnimations.h"
 #include "src/system/colors/wipes.h"
 
 #include "src/system/physical/fileSystem.h"
@@ -19,6 +18,7 @@
 #include "src/modes/default/fastFourrierTransform.hpp"
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/default/perlin_noise.hpp"
+#include "src/modes/default/rain_mode.hpp"
 #include "src/modes/default/sine_mode.hpp"
 #include "src/modes/default/spiral.hpp"
 #include "src/modes/default/vu_meter.hpp"
@@ -276,8 +276,7 @@ using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
                                   default_modes::SineMode,
                                   default_modes::SpiralMode,
                                   default_modes::DistortionWaveMode,
-                                  imu::LiquideMode,
-                                  imu::LiquideRainMode,
+                                  default_modes::RainMode,
                                   automaton::BubbleMode,
                                   automaton::SierpinskiMode>;
 

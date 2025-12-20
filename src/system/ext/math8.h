@@ -857,7 +857,11 @@ LIB8STATIC_ALWAYS_INLINE uint8_t cubicwave8(uint8_t in) { return ease8InOutCubic
 
 #define modd(x, y) ((x) - (int)((x) / (y)) * (y))
 
-LIB8STATIC_ALWAYS_INLINE float cos_t(float phi)
+LIB8STATIC_ALWAYS_INLINE
+#ifdef LMBD_CPP17
+constexpr
+#endif
+        float cos_t(float phi)
 {
   float x = modd(phi, c_TWO_PI);
   if (x < 0)
@@ -879,7 +883,11 @@ LIB8STATIC_ALWAYS_INLINE float cos_t(float phi)
   return res;
 }
 
-LIB8STATIC_ALWAYS_INLINE float sin_t(float x)
+LIB8STATIC_ALWAYS_INLINE
+#ifdef LMBD_CPP17
+constexpr
+#endif
+        float sin_t(float x)
 {
   float res = cos_t(c_HALF_PI - x);
 #ifdef WLED_DEBUG_MATH

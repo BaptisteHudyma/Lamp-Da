@@ -48,7 +48,6 @@ set(SRC_SYSTEM_UTILS
     )
 
 set(SRC_SYSTEM_COLORS
-    ${LMBD_ROOT_DIR}/src/system/colors/imuAnimations.cpp
     ${LMBD_ROOT_DIR}/src/system/colors/animations.cpp
     ${LMBD_ROOT_DIR}/src/system/colors/wipes.cpp
     ${LMBD_ROOT_DIR}/src/system/colors/colors.cpp
