@@ -138,9 +138,9 @@ struct Particle
       _savedLampIndex = to_lamp_index_no_bounds();
     }
 
-    if (z_mm < -LampTy::maxHeight)
+    if (z_mm < -LampTy::lampHeight_mm)
     {
-      z_mm = -LampTy::maxHeight;
+      z_mm = -LampTy::lampHeight_mm;
       zSpeed_mS = -zSpeed_mS * reboundCoeff;
       _savedLampIndex = to_lamp_index_no_bounds();
     }
@@ -158,7 +158,7 @@ struct Particle
       else
       {
         // go one unit above
-        z_mm = -LampTy::maxHeight + LampTy::ledStripWidth_mm * 1.5;
+        z_mm = -LampTy::lampHeight_mm + LampTy::ledStripWidth_mm * 1.5;
         zSpeed_mS = -zSpeed_mS * reboundCoeff;
       }
       // udpate index

@@ -1,84 +1,78 @@
-#ifndef RAIN_MODE_H
-#define RAIN_MODE_H
+#ifndef GRAVITY_MODE_H
+#define GRAVITY_MODE_H
 
-/// @file rain_mode.hpp
+/// @file gravity_mode.hpp
 
 #include "src/modes/include/colors/palettes.hpp"
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 
 namespace modes::default_modes {
 
 /// Emulate a beat sync
-struct RainMode : public BasicMode
+struct GravityMode : public BasicMode
 {
   // hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
 
-  static constexpr float lightRainDropsPerSecond = 1;
-  static constexpr float heavyRainDropsPerSecond = 700;
+  static constexpr uint16_t particleCount = 255;
 
   static void on_enter_mode(auto& ctx)
   {
     ctx.imuEvent.reset(ctx);
     // set particle count
-    ctx.imuEvent.particuleSystem.set_max_particle_count(512);
+    ctx.imuEvent.particuleSystem.set_max_particle_count(particleCount);
+    ctx.imuEvent.particuleSystem.init_particules(generate_random_particule_position);
 
-    // ramp saturates
-    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
-
-    ctx.state.rainDropSpawn = 0.0;
-    ctx.state.persistance = 100;
-    ctx.state.rainDensity = 1;
+    ctx.state.persistance = 210;
 
     // set default value
     custom_ramp_update(ctx, ctx.get_active_custom_ramp());
   }
 
-  static void custom_ramp_update(auto& ctx, uint8_t rampValue) { ctx.state.rainDensity = rampValue; }
+  static void custom_ramp_update(auto& ctx, uint8_t rampValue)
+  {
+    auto& state = ctx.state;
+
+    const uint8_t rampIndex =
+            min<uint8_t>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1.0f);
+
+    state.selectedPalette = state._palettes[rampIndex];
+  }
 
   static void loop(auto& ctx)
   {
     auto& state = ctx.state;
+    if (!state.selectedPalette)
+      return;
+
     ctx.imuEvent.update(ctx);
 
     auto& particleSystem = ctx.imuEvent.particuleSystem;
 
-    // multiply by 2 because we rain on both sides of the lamp, half of the drops are not seen
-    const float expectedDropPerSecond =
-            ctx.state.rainDensity / 255.0 * heavyRainDropsPerSecond + lightRainDropsPerSecond;
-    ctx.state.rainDropSpawn += expectedDropPerSecond * ctx.lamp.frameDurationMs / 1000.0;
-
-    if (ctx.state.rainDropSpawn > 1.0)
-    {
-      // initialize particules in a deffered way, when free spots are available
-      particleSystem.init_deferred_particules(2 * ctx.state.rainDropSpawn, generate_particule_at_extremes);
-      ctx.state.rainDropSpawn = 0.0;
-    }
-
-    // no collisions between particles, and with no lamp limits
-    static constexpr bool shouldKeepInLampBounds = false;
-    particleSystem.iterate_no_collisions(
-            ctx.imuEvent.lastReading.accel, ctx.lamp.frameDurationMs / 1000.0, shouldKeepInLampBounds);
-    // depop particules that fell too far
-    particleSystem.depop_particules(recycle_particules_if_too_far);
+    particleSystem.iterate_with_collisions(ctx.imuEvent.lastReading.accel, ctx.lamp.frameDurationMs / 1000.0);
 
     ctx.lamp.fadeToBlackBy(255 - ctx.state.persistance);
 
-    // break palette size to display more colors per drops
     auto colorFunction = [&](int16_t n, const Particle& particle) {
-      return colors::from_palette(static_cast<uint8_t>(n % 16), ctx.state.palette);
+      return colors::from_palette(static_cast<uint8_t>(n / static_cast<float>(particleCount) * UINT8_MAX),
+                                  *state.selectedPalette);
     };
     particleSystem.show(colorFunction, ctx.lamp);
   }
 
   struct StateTy
   {
-    uint8_t rainDensity;
     uint8_t persistance;
-    float rainDropSpawn;
 
-    const palette_t& palette = colors::PaletteWaterColors;
+    // store references to palettes
+    static constexpr uint8_t maxPalettesCount = 3;
+    const palette_t* _palettes[maxPalettesCount] = {
+            &colors::PaletteAuroraColors, &colors::PaletteForestColors, &colors::PaletteOceanColors};
+
+    // store selected palette
+    palette_t const* selectedPalette;
   };
 
 private:
