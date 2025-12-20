@@ -8,6 +8,8 @@
 #include "src/system/platform/registers.h"
 #include "src/system/platform/print.h"
 
+#include "src/system/physical/battery.h"
+
 #include "src/system/logic/alerts.h"
 
 #include "src/system/utils/utils.h"
@@ -285,7 +287,8 @@ void update_battery()
   battery_s.current_mA = (int16_t)chargingCurrent - (int16_t)measurments_s.batDischargeCurrent_mA;
 
   const uint16_t batteryMaxVoltage = chargerIcRegisters.maxChargeVoltage.get();
-  const bool isAlmostFullyCharged = battery_s.voltage_mV > (batteryMaxVoltage * 0.99);
+  // above 90%
+  const bool isAlmostFullyCharged = battery::get_level_safe(battery_s.voltage_mV) > 9000;
 
   // charge voltage saturated : battery is not here
   if (chargingCurrent > 0)
@@ -303,15 +306,15 @@ void update_battery()
   {
     chargeStatus_s = ChargeStatus_t::FASTCHARGE;
   }
-  // charging current gets low
-  else if (chargingCurrent <= powerLimits_s.maxChargingCurrent_mA * 0.1)
-  {
-    chargeStatus_s = ChargeStatus_t::SLOW_CHARGE;
-  }
   // pre charge
   else if (chargerIcRegisters.chargerStatus.IN_PCHRG() != 0)
   {
     chargeStatus_s = ChargeStatus_t::PRECHARGE;
+  }
+  // charging current gets low
+  else if (chargingCurrent <= powerLimits_s.maxChargingCurrent_mA * 0.1)
+  {
+    chargeStatus_s = ChargeStatus_t::SLOW_CHARGE;
   }
   // normal charge
   else if (chargerIcRegisters.chargerStatus.IN_FCHRG() != 0)

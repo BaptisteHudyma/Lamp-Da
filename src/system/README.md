@@ -4,7 +4,6 @@
     - animations.h: define some generic animations, for RGB lamp type
     - colors.h: define color modes classes, for RGB lamp type
     - palettes.h: define some color palettes, for RGB lamp type
-    - soundAnimations.h: define some animations related to microphones, for RGB lamp type
     - wipes.h: define some moving animations, for RGB lamp type
 - ext: external libraries
 - logic: handle high level system logic (Input actions, button presses, main state machine...)

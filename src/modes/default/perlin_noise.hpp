@@ -146,8 +146,7 @@ struct PerlinNoiseMode : public BasicMode
     // update noise values
     for (size_t i = firstIndex; i < lamp.ledCount; i += everyNIndex)
     {
-      // TODO #150: use new strip interface coordinates
-      const auto res = lamp.getLegacyStrip().get_lamp_coordinates(i);
+      const auto res = modes::strip_to_helix_unconstraint(i);
       uint16_t data = noise16::inoise(x + scale * res.x, y + scale * res.y, z + scale * res.z);
 
       // smooth over time to prevent suddent jumps

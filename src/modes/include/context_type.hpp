@@ -15,6 +15,7 @@
 #include "src/modes/include/default_config.hpp"
 
 #include "src/modes/include/audio/utils.hpp"
+#include "src/modes/include/imu/utils.hpp"
 
 #include "src/system/platform/print.h"
 
@@ -73,6 +74,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     state {modeManager.template getStateOf<LocalModeTy>()},
     lamp {modeManager.lamp},
     soundEvent {modeManager.soundEvent},
+    imuEvent {modeManager.imuEvent},
     modeManager {modeManager}
   {
   }
@@ -712,6 +714,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   StateTy& state;         ///< Interact with the current active mode state
 
   audio::SoundEventTy<>& soundEvent; ///< Interact with the sound system
+  imu::ImuEventTy<>& imuEvent;       ///< Interact with the imu system
 
 private:
   ModeManagerTy& modeManager;

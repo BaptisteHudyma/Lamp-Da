@@ -44,8 +44,6 @@ public:
     for (uint16_t i = 0; i < LED_COUNT; ++i)
     {
       _colors[i] = c;
-
-      lampCoordinates[i] = to_lamp(i);
     }
   }
 
@@ -239,15 +237,6 @@ public:
   // signal the strip that it can display the update
   void signal_display() { hasSomeChanges = true; }
 
-  inline vec3d get_lamp_coordinates(const uint16_t n) const
-  {
-    return lampCoordinates[lmpd_constrain<uint16_t>(n, 0, LED_COUNT - 1)];
-  }
-  inline uint16_t get_strip_index_from_lamp_cylindrical_coordinates(const float theta, const float z) const
-  {
-    return to_led_index(theta, z);
-  }
-
   uint32_t* get_buffer_ptr(const uint8_t index) { return _buffers[index].data(); }
 
   void buffer_current_colors(const uint8_t index)
@@ -266,9 +255,6 @@ private:
 
   // buffers for computations
   BufferTy _buffers[stripNbBuffers];
-
-  // save the expensive computation on world coordinates
-  vec3d lampCoordinates[LED_COUNT];
 
 private:
   volatile bool hasSomeChanges;

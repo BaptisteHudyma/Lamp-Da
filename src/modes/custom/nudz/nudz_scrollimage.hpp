@@ -1,6 +1,4 @@
 
-#include "src/system/physical/imu.h"
-
 namespace modes::custom::nudz {
 
 //   struct ImageTy {
@@ -195,6 +193,8 @@ struct NudzBeerGlassMode : public BasicMode
 
   static void on_enter_mode(auto& ctx)
   {
+    ctx.imuEvent.reset(ctx);
+
     // reset stateful events
     ctx.state.level = 10.f;
     ctx.state.ampl = 0.02f;
@@ -210,11 +210,12 @@ struct NudzBeerGlassMode : public BasicMode
     ctx.state.speeds = std::vector<float>(ctx.lamp.maxWidth, 0.f);
     ctx.state.nbubbles = 20;
     ctx.state.bubbles = std::vector<BubbleTy>(ctx.state.nbubbles, BubbleTy());
-    imu::get_filtered_reading(true);
   }
 
   static void loop(auto& ctx)
   {
+    ctx.imuEvent.update(ctx);
+
     updateLevels(ctx);
 
     // display
@@ -233,7 +234,7 @@ struct NudzBeerGlassMode : public BasicMode
     uint32_t nx = ctx.lamp.maxWidth;
     uint32_t ny = ctx.lamp.maxHeight;
 
-    const auto& reading = imu::get_filtered_reading(false);
+    const auto& reading = ctx.imuEvent.lastReading;
     const auto accel = reading.accel;
 
     auto& levels = ctx.state.levels;
@@ -430,7 +431,7 @@ struct NudzBeerGlassMode : public BasicMode
 
   static void drawAccel(auto& ctx)
   {
-    const auto& reading = imu::get_filtered_reading(false);
+    const auto& reading = ctx.imuEvent.lastReading;
     const auto accel = reading.accel;
 
     int32_t ax = int32_t(accel.x);

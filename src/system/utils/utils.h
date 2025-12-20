@@ -79,7 +79,7 @@ static inline T lmpd_map(float x, const float in_min, const float in_max, const 
   return static_cast<T>(res);
 }
 
-static constexpr float to_radians(float degrees)
+static constexpr inline float to_radians(float degrees)
 {
 #ifdef LMBD_CPP17
   assert(not(std::isnan(degrees) or std::isinf(degrees)) && "invalid value");
@@ -87,10 +87,12 @@ static constexpr float to_radians(float degrees)
   return degrees * M_PI / 180.f;
 }
 
-inline float wrap_angle(const float angle_rad)
+static constexpr inline float wrap_angle(const float angle_rad)
 {
+#ifdef LMBD_CPP17
   if (angle_rad >= 0 and angle_rad < c_TWO_PI)
     return angle_rad;
+#endif
   return angle_rad - c_TWO_PI * floor(angle_rad / c_TWO_PI);
 }
 

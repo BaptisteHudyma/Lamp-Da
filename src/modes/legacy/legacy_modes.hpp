@@ -8,7 +8,6 @@
 #include "src/system/colors/animations.h"
 #include "src/system/colors/colors.h"
 #include "src/system/colors/palettes.h"
-#include "src/system/colors/imuAnimations.h"
 #include "src/system/colors/wipes.h"
 
 #include "src/system/physical/fileSystem.h"
@@ -18,7 +17,9 @@
 #include "src/modes/default/distortion_waves.hpp"
 #include "src/modes/default/fastFourrierTransform.hpp"
 #include "src/modes/default/fireplace.hpp"
+#include "src/modes/default/gravity_mode.hpp"
 #include "src/modes/default/perlin_noise.hpp"
+#include "src/modes/default/rain_mode.hpp"
 #include "src/modes/default/sine_mode.hpp"
 #include "src/modes/default/spiral.hpp"
 #include "src/modes/default/vu_meter.hpp"
@@ -169,101 +170,6 @@ struct PingPongMode : public LegacyMode
 
 } // namespace party
 
-namespace imu {
-
-struct LiquideMode : public LegacyMode
-{
-  static void loop(auto& ctx)
-  {
-    auto& state = ctx.state;
-
-    if (state._color)
-    {
-      animations::liquid(state.persistance, *state._color, ctx.lamp.getLegacyStrip(), state.categoryChange);
-      state._color->update();
-      state.categoryChange = false;
-    }
-  }
-
-  static void custom_ramp_update(auto& ctx, uint8_t rampValue)
-  {
-    auto& state = ctx.state;
-
-    // get color from ramp
-    const uint8_t rampIndex =
-            min<uint8_t>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1);
-    state._color = state._colors[rampIndex];
-  }
-
-  static void on_enter_mode(auto& ctx)
-  {
-    auto& state = ctx.state;
-    for (DynamicColor* color: state._colors)
-    {
-      color->reset();
-    }
-    ctx.template set_config_bool<ConfigKeys::rampSaturates>(false);
-    custom_ramp_update(ctx, ctx.get_active_custom_ramp());
-    state.categoryChange = true;
-  }
-
-  static constexpr bool hasCustomRamp = true;
-
-  struct StateTy
-  {
-    // store references to palettes
-    DynamicColor* _colors[4] = {new GeneratePalette(2, PaletteOceanColors),
-                                new GenerateRainbowSwirl(5000),
-                                new GeneratePalette(2, PaletteAuroraColors),
-                                new GeneratePalette(2, PaletteForestColors)};
-    const uint8_t maxPalettesCount = 4;
-
-    DynamicColor* _color;
-
-    uint8_t persistance = 210;
-    bool categoryChange = false;
-  };
-};
-
-struct LiquideRainMode : public LegacyMode
-{
-  static void loop(auto& ctx)
-  {
-    auto& state = ctx.state;
-    // rain is density mapped to the button ramp
-    animations::rain(state.density, state.persistance, state.color, ctx.lamp.getLegacyStrip(), state.categoryChange);
-    // using the update will change de color of the drops at each iteration
-    state.color.update();
-    state.categoryChange = false;
-  }
-
-  static void custom_ramp_update(auto& ctx, uint8_t rampValue) { ctx.state.density = rampValue; }
-
-  static void on_enter_mode(auto& ctx)
-  {
-    auto& state = ctx.state;
-    state.color.reset();
-    state.categoryChange = true;
-    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
-
-    // set default value
-    custom_ramp_update(ctx, ctx.get_active_custom_ramp());
-  }
-
-  // hint manager to save our custom ramp
-  static constexpr bool hasCustomRamp = true;
-
-  struct StateTy
-  {
-    GeneratePalette color = GeneratePalette(2, PaletteWaterColors);
-    uint8_t persistance = 100;
-    uint8_t density;
-    bool categoryChange = false;
-  };
-};
-
-} // namespace imu
-
 //
 // Legacy modes groups
 //
@@ -276,8 +182,8 @@ using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
                                   default_modes::SineMode,
                                   default_modes::SpiralMode,
                                   default_modes::DistortionWaveMode,
-                                  imu::LiquideMode,
-                                  imu::LiquideRainMode,
+                                  default_modes::GravityMode,
+                                  default_modes::RainMode,
                                   automaton::BubbleMode,
                                   automaton::SierpinskiMode>;
 

@@ -1,22 +1,23 @@
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
-
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
+#include "src/user/constants.h"
+
 #include "src/system/utils/vector_math.h"
-#include "src/system/utils/coordinates.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 
-#include "src/system/platform/print.h"
-
 #include "src/system/ext/math8.h"
+#include <cstdint>
+
+namespace modes {
 
 /**
  * \brief Define a particle in cylindrical space, and movement equations on the cylinder surface
  */
+using LampTy = hardware::LampTy;
 
-static constexpr float cylinderRadius_m = lampBodyRadius_mm / 1000.0;
+static constexpr float cylinderRadius_m = LampTy::lampBodyRadius_mm / 1000.0;
 static constexpr float angularSpeedGain = 50000; // this gain compensate the angular acceleration for better display
 static constexpr float linearSpeedGain = 1.0;
 static constexpr float reboundCoeff = 0.1;    // low rebound [0 - 1] on walls
@@ -56,7 +57,7 @@ struct Particle
   {
   }
 
-  vec2d compute_speed_increment(const vec3d& accelerationCartesian_m, const float delaTime) const
+  vec2d compute_speed_increment(const vec3d& accelerationCartesian_m, const float deltaTime_s) const
   {
     // speed vector on radial (derivative of cartesian to cylinder coordinates for theta)
     const vec3d e_theta(-sin_t(theta_rad) * cylinderRadius_m, cos_t(theta_rad) * cylinderRadius_m, 0);
@@ -69,16 +70,19 @@ struct Particle
     const vec3d& directVector = e_z.multiply(accelerationCartesian_m.dot(e_z));
     const vec3d& accelerationVector = tangantialVector.add(directVector);
 
-    return vec2d(angularSpeedGain * accelerationVector.dot(e_theta) / static_cast<float>(cylinderRadius_m) * delaTime,
-                 linearSpeedGain * accelerationVector.dot(e_z) * delaTime);
+    return vec2d(angularSpeedGain * accelerationVector.dot(e_theta) / static_cast<float>(cylinderRadius_m) *
+                         deltaTime_s,
+                 linearSpeedGain * accelerationVector.dot(e_z) * deltaTime_s);
   }
 
   /**
    * \brief apply a cartesian acceleration to this particulate
    */
-  void apply_acceleration(const vec3d& accelerationCartesian_m, const float delaTime, const bool shouldContrain = true)
+  void apply_acceleration(const vec3d& accelerationCartesian_m,
+                          const float deltaTime_s,
+                          const bool shouldContrain = true)
   {
-    const auto& speedIncrement = compute_speed_increment(accelerationCartesian_m, delaTime);
+    const auto& speedIncrement = compute_speed_increment(accelerationCartesian_m, deltaTime_s);
     // start by dampening the speed
     dampen_speed(speedDampening);
 
@@ -87,13 +91,14 @@ struct Particle
             lmpd_constrain<float>(thetaSpeed_radS + speedIncrement.x, -maxAngularSpeed_radS, maxAngularSpeed_radS);
     zSpeed_mS = lmpd_constrain<float>(zSpeed_mS + speedIncrement.y, -maxVerticalSpeed_mmS, maxVerticalSpeed_mmS);
 
-    static constexpr float angularUnit = stripXCoordinates / c_TWO_PI;
-    static constexpr float verticalUnit = ledStripWidth_mm * 1.5;
+    static constexpr float angularUnit = LampTy::maxWidthFloat / c_TWO_PI;
+    static constexpr float verticalUnit = LampTy::ledStripWidth_mm * 1.5f;
 
     // update position (limit speed to pixel unit per dt)
-    const float angularPositionIncrement = lmpd_constrain<float>(thetaSpeed_radS * delaTime, -angularUnit, angularUnit);
+    const float angularPositionIncrement =
+            lmpd_constrain<float>(thetaSpeed_radS * deltaTime_s, -angularUnit, angularUnit);
     const float verticalPositionIncrement =
-            lmpd_constrain<float>(zSpeed_mS * delaTime, -verticalUnit, verticalUnit) * 1000.0;
+            lmpd_constrain<float>(zSpeed_mS * deltaTime_s, -verticalUnit, verticalUnit) * 1000.0;
 
     // update particle position
     z_mm += verticalPositionIncrement;
@@ -110,11 +115,11 @@ struct Particle
   }
 
   Particle simulate_after_acceleration(const vec3d& accelerationCartesian_m,
-                                       const float delaTime,
+                                       const float deltaTime_s,
                                        const bool shouldContrain = true) const
   {
     Particle simulated(*this);
-    simulated.apply_acceleration(accelerationCartesian_m, delaTime, shouldContrain);
+    simulated.apply_acceleration(accelerationCartesian_m, deltaTime_s, shouldContrain);
     return simulated;
   }
 
@@ -133,9 +138,9 @@ struct Particle
       _savedLampIndex = to_lamp_index_no_bounds();
     }
 
-    if (z_mm < -lampHeight)
+    if (z_mm < -LampTy::lampHeight_mm)
     {
-      z_mm = -lampHeight;
+      z_mm = -LampTy::lampHeight_mm;
       zSpeed_mS = -zSpeed_mS * reboundCoeff;
       _savedLampIndex = to_lamp_index_no_bounds();
     }
@@ -147,13 +152,13 @@ struct Particle
       if (z_mm >= 0)
       {
         // go one unit lower
-        z_mm = ledStripWidth_mm * 1.5;
+        z_mm = LampTy::ledStripWidth_mm * 1.5;
         zSpeed_mS = -zSpeed_mS * reboundCoeff;
       }
       else
       {
         // go one unit above
-        z_mm = -lampHeight + ledStripWidth_mm * 1.5;
+        z_mm = -LampTy::lampHeight_mm + LampTy::ledStripWidth_mm * 1.5;
         zSpeed_mS = -zSpeed_mS * reboundCoeff;
       }
       // udpate index
@@ -180,6 +185,6 @@ struct Particle
   int16_t _savedLampIndex;
 };
 
-#endif
+} // namespace modes
 
 #endif

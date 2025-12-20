@@ -39,6 +39,12 @@
 /// Define a LIB8TION member function as always static inline
 #define LIB8STATIC_ALWAYS_INLINE __attribute__((always_inline)) static inline
 
+#ifdef LMBD_CPP17
+#define LIB8STATIC_ALWAYS_INLINE_CONSTEXPR __attribute__((always_inline)) static constexpr inline
+#else
+#define LIB8STATIC_ALWAYS_INLINE_CONSTEXPR __attribute__((always_inline)) static inline
+#endif
+
 typedef uint8_t fract8;
 
 /// ANSI: signed short _Fract.

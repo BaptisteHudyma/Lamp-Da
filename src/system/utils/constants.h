@@ -105,7 +105,7 @@ static constexpr uint16_t batteryMinVoltage_mV = minLiionVoltage_mV * batteryCou
 static constexpr uint16_t batteryMinVoltageSafe_mV = minSafeLiionVoltage_mV * batteryCount;
 
 // physical parameters computations
-static constexpr float totalCons_Watt = consWattByMeter * ledStripLenght_mm / 1000.0f;
+static constexpr float totalCons_Watt = consWattByMeter * ledStripLength_mm / 1000.0f;
 static constexpr float maxStripConsumption_A = 1000.0f * totalCons_Watt / stripInputVoltage_mV;
 
 // compute battery limits from c-rates
