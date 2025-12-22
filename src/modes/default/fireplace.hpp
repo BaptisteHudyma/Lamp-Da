@@ -8,6 +8,7 @@
 
 #include "src/modes/include/colors/palettes.hpp"
 #include "src/modes/include/anims/ramp_update.hpp"
+#include <cstdint>
 
 /// Basic "default" modes included with the hardware
 namespace modes::default_modes {
@@ -46,20 +47,26 @@ struct FireMode : public BasicMode
 
     // measure custom ramp for fire sound sensitivity
     const uint8_t index = ctx.get_active_custom_ramp();
+    float soundAvgDelta = 0.0;
     if (index > 16)
     {
       ctx.soundEvent.update(ctx);
+      soundAvgDelta = ctx.soundEvent.avgDelta;
     }
 
     // measure sound level for sound-sensitive fire
-    float shakeness = 1.0 + (index * ctx.soundEvent.avgDelta) / 255.0;
+    float shakeness = 1.0 + (index * soundAvgDelta) / 255.0;
     float intensity = 128 + 256 / (1 + shakeness) - 1;
 
     // precompute "fire intensity" line per line
     intensity *= ctx.lamp.maxHeight;
 
+    // this is too heavy to run at full, speed, display every other pixels instead of refreshing amm
+    static constexpr size_t everyNIndex = 2;
+    const size_t firstIndex = ctx.lamp.tick % everyNIndex;
+
     // for each line, generate noise & set pixels
-    for (uint16_t j = 0; j <= ctx.lamp.maxHeight; ++j)
+    for (uint16_t j = firstIndex; j <= ctx.lamp.maxHeight; j += everyNIndex)
     {
       const float here = MAX(intensity - j * 255.0, 0.0);
       const uint8_t decay = MIN(here / ctx.lamp.maxHeight, 255.0);

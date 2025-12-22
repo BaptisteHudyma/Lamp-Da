@@ -3,7 +3,6 @@
 #include <cstdint>
 
 #include "src/system/utils/utils.h"
-#include "src/system/utils/fft.h"
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
@@ -12,8 +11,6 @@
 namespace microphone {
 
 FftAnalyzer<PdmData::SAMPLE_SIZE, SoundStruct::numberOfFFtChanels, float> fftAnalyzer;
-
-float SoundStruct::get_fft_resolution_Hz() { return SAMPLE_RATE / static_cast<float>(SAMPLE_SIZE); }
 
 inline float square(const float v) { return v * v; }
 

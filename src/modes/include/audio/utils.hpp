@@ -88,13 +88,20 @@ struct SoundEventTy
   /// number of channels in the log fft
   static constexpr size_t _fftChannels = microphone::SoundStruct::numberOfFFtChanels;
 
+  ///< frequency resolution of the raw fft result
+  static constexpr float fftResolutionHz = microphone::SoundStruct::get_fft_resolution_Hz();
+  static constexpr size_t _FFThistory_MaxSize = round(fftResolutionHz);
+
   using FFTContainer = std::array<float, _dataLenght / 2>;
   using FFTLogContainer = std::array<float, _fftChannels>;
-  using FFTHistoryContainer = std::deque<FFTLogContainer>;
+  using FFTHistoryContainer = std::array<FFTLogContainer, _FFThistory_MaxSize>;
 
   /// Call this once inside the mode on_enter_mode callback
   void reset(auto& ctx)
   {
+    historyIndex = 0;
+    historyIndexSize = 0;
+
     level = 10.0;
     avgLevel = level;
     avgMax = level;
@@ -112,7 +119,7 @@ struct SoundEventTy
   }
 
   /// Call this once every tick inside the mode loop callback
-  void update(auto& ctx)
+  void update(auto& ctx, const bool shouldComputeBeats = false)
   {
     const microphone::SoundStruct& soundObject = ctx.lamp.get_sound_struct();
 
@@ -169,13 +176,21 @@ struct SoundEventTy
       hasEvent = true;
     }
 
-    // add sample to history
-    if (_FFTHistory_beatDetector.size() >= _FFThistory_MaxSize)
-      _FFTHistory_beatDetector.pop_front();
-    _FFTHistory_beatDetector.push_back(fft_log);
+    if (shouldComputeBeats)
+    {
+      // add sample to history
+      _FFTHistory_beatDetector[historyIndex] = fft_log;
 
-    // detect beats
-    beatDetected = track_beat_events(fft_log, _FFTHistory_beatDetector, _FFThistory_MaxSize);
+      historyIndex++;
+      if (historyIndex >= _FFThistory_MaxSize)
+        historyIndex = 0;
+
+      // detect beats if we have enough samples
+      if (historyIndexSize < _FFThistory_MaxSize)
+        historyIndexSize++;
+
+      beatDetected = track_beat_events(fft_log, _FFTHistory_beatDetector, historyIndexSize);
+    }
   }
 
   /// After the update, given a range, will return a boolean for beat detection
@@ -216,10 +231,6 @@ struct SoundEventTy
   float maxAmplitude;
   float maxAmplitudeFrequency;
 
-  ///< frequency resolution of the raw fft result
-  const float fftResolutionHz = microphone::SoundStruct::get_fft_resolution_Hz();
-  const size_t _FFThistory_MaxSize = round(microphone::SoundStruct::get_fft_resolution_Hz());
-
   ///< raw microphone data
   std::array<int16_t, _dataLenght> data;
   ///< dynamically sound adjusted data
@@ -236,14 +247,15 @@ private:
   uint8_t _eventScale = 0;
 
   ///< store the history of the fft, on a few successiv samples
+  size_t historyIndex = 0;
+  size_t historyIndexSize = 0;
   FFTHistoryContainer _FFTHistory_beatDetector;
   std::array<float, _fftChannels> fft_log_end_frequencies;
 
   /// track the beat events using the FFT
-  template<size_t T>
-  static inline std::array<bool, T> track_beat_events(const std::array<float, T>& data,
-                                                      const std::deque<std::array<float, T>> dataHistory,
-                                                      const size_t historySizeForBeatDetection)
+  template<size_t T> static inline std::array<bool, T> track_beat_events(const std::array<float, T>& data,
+                                                                         const FFTHistoryContainer& dataHistory,
+                                                                         const size_t historySizeForBeatDetection)
   {
     std::array<bool, T> beats;
     beats.fill(false);
