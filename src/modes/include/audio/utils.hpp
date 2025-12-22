@@ -169,13 +169,15 @@ struct SoundEventTy
       hasEvent = true;
     }
 
-    // add sample to history
-    if (_FFTHistory_beatDetector.size() >= _FFThistory_MaxSize)
-      _FFTHistory_beatDetector.pop_front();
-    _FFTHistory_beatDetector.push_back(fft_log);
+#if 0 // BE CAREFUL: RAM IS AT IT'S LIMIT WHEN USING THIS
+      // add sample to history
+      if (_FFTHistory_beatDetector.size() >= _FFThistory_MaxSize)
+        _FFTHistory_beatDetector.pop_front();
+      _FFTHistory_beatDetector.push_back(fft_log);
 
-    // detect beats
-    beatDetected = track_beat_events(fft_log, _FFTHistory_beatDetector, _FFThistory_MaxSize);
+      // detect beats
+      beatDetected = track_beat_events(fft_log, _FFTHistory_beatDetector, _FFThistory_MaxSize);
+#endif
   }
 
   /// After the update, given a range, will return a boolean for beat detection
@@ -240,10 +242,9 @@ private:
   std::array<float, _fftChannels> fft_log_end_frequencies;
 
   /// track the beat events using the FFT
-  template<size_t T>
-  static inline std::array<bool, T> track_beat_events(const std::array<float, T>& data,
-                                                      const std::deque<std::array<float, T>> dataHistory,
-                                                      const size_t historySizeForBeatDetection)
+  template<size_t T> static inline std::array<bool, T> track_beat_events(const std::array<float, T>& data,
+                                                                         const FFTHistoryContainer& dataHistory,
+                                                                         const size_t historySizeForBeatDetection)
   {
     std::array<bool, T> beats;
     beats.fill(false);

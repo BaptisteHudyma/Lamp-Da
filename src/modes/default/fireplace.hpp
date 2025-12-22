@@ -58,8 +58,12 @@ struct FireMode : public BasicMode
     // precompute "fire intensity" line per line
     intensity *= ctx.lamp.maxHeight;
 
+    // this is too heavy to run at full, speed, display every other pixels instead of refreshing amm
+    static constexpr size_t everyNIndex = 2;
+    const size_t firstIndex = ctx.lamp.tick % everyNIndex;
+
     // for each line, generate noise & set pixels
-    for (uint16_t j = 0; j <= ctx.lamp.maxHeight; ++j)
+    for (uint16_t j = firstIndex; j <= ctx.lamp.maxHeight; j += everyNIndex)
     {
       const float here = MAX(intensity - j * 255.0, 0.0);
       const uint8_t decay = MIN(here / ctx.lamp.maxHeight, 255.0);
