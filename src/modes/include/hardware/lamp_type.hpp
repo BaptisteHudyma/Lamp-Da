@@ -656,7 +656,14 @@ public:
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      strip.fadeToBlackBy(fadeBy);
+      if (fadeBy == 0)
+        return; // optimization - no scaling to apply
+
+      for (uint16_t i = 0; i < ledCount; ++i)
+      {
+        const uint32_t c = strip.getPixelColor(i);
+        setPixelColor(i, colors::fade(c, 255 - fadeBy));
+      }
     }
     else
     {
@@ -692,9 +699,9 @@ public:
       if (i > 0)
       {
         c = strip.getPixelColor(i - 1);
-        strip.setPixelColor(i - 1, colors::add<true>(c, part));
+        setPixelColor(i - 1, colors::add<true>(c, part));
       }
-      strip.setPixelColor(i, cur);
+      setPixelColor(i, cur);
       carryover = part;
     }
   }
@@ -753,7 +760,7 @@ public:
 
       for (uint16_t I = start; I < end; ++I)
       {
-        strip.setPixelColor(I, color);
+        setPixelColor(I, color);
       }
     }
     else
@@ -784,7 +791,7 @@ public:
       {
         // map index to [0; 255]
         const auto color = colors::from_palette<false, uint8_t>(I / static_cast<float>(ledCount) * 255, palette);
-        strip.setPixelColor(I, color);
+        setPixelColor(I, color);
       }
     }
     else
