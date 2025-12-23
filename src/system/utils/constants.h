@@ -32,7 +32,7 @@
 // Base software version, common to all systems
 // increment for every  release
 static constexpr uint8_t BASE_SOFTWARE_VERSION_MAJOR = 1;
-static constexpr uint8_t BASE_SOFTWARE_VERSION_MINOR = 5;
+static constexpr uint8_t BASE_SOFTWARE_VERSION_MINOR = 6;
 
 using byte = uint8_t;
 

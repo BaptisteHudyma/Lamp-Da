@@ -1,3 +1,4 @@
+#include "src/modes/include/imu/utils.hpp"
 
 namespace modes::custom::nudz {
 
@@ -22,6 +23,8 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
     uint32_t last_tick;
     int8_t xdirection = 1;
     int8_t ydirection = 0;
+
+    imu::ImuEventTy<> imuEvent;
   };
 
   static void on_enter_mode(auto& ctx)
@@ -193,7 +196,7 @@ struct NudzBeerGlassMode : public BasicMode
 
   static void on_enter_mode(auto& ctx)
   {
-    ctx.imuEvent.reset(ctx);
+    ctx.state.imuEvent.reset(ctx);
 
     // reset stateful events
     ctx.state.level = 10.f;
@@ -214,7 +217,7 @@ struct NudzBeerGlassMode : public BasicMode
 
   static void loop(auto& ctx)
   {
-    ctx.imuEvent.update(ctx);
+    ctx.state.imuEvent.update(ctx);
 
     updateLevels(ctx);
 
@@ -234,7 +237,7 @@ struct NudzBeerGlassMode : public BasicMode
     uint32_t nx = ctx.lamp.maxWidth;
     uint32_t ny = ctx.lamp.maxHeight;
 
-    const auto& reading = ctx.imuEvent.lastReading;
+    const auto& reading = ctx.state.imuEvent.lastReading;
     const auto accel = reading.accel;
 
     auto& levels = ctx.state.levels;
@@ -431,7 +434,7 @@ struct NudzBeerGlassMode : public BasicMode
 
   static void drawAccel(auto& ctx)
   {
-    const auto& reading = ctx.imuEvent.lastReading;
+    const auto& reading = ctx.state.imuEvent.lastReading;
     const auto accel = reading.accel;
 
     int32_t ax = int32_t(accel.x);

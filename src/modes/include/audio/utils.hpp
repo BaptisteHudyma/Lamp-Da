@@ -12,18 +12,31 @@
 /// User modes audio utilities
 namespace modes::audio {
 
+/**
+ * \brief Specific configuration for the sound object
+ */
+struct MicrophoneConfig
+{
+  static constexpr bool useBeatTracking = false;
+};
+
 /** \brief Sound processor able to detect sound level events
  *
  * For example, it can be used as follows:
  *
  * @code{.cpp}
  *
+ *    struct StateTy
+ *    {
+ *      modes::audio::SoundEventTy<> soundEvent;
+ *    };
+ *
  *    static void on_enter_mode(auto& ctx) {
- *      ctx.soundEvent.reset(ctx);
+ *      ctx.state.soundEvent.reset(ctx);
  *    }
  *
  *    static void loop(auto& ctx) {
- *      auto& snd = ctx.soundEvent;
+ *      auto& snd = ctx.state.soundEvent;
  *
  *      // update SoundEvent internal variables
  *      snd.update(ctx);
@@ -62,10 +75,12 @@ namespace modes::audio {
  *
  * Note that the algorithm implemented is simple and produces false positives.
  */
-template<int eventCutoff = 500,
+
+template<typename ConfigTy = MicrophoneConfig,
+         int eventCutoff = 500,
          int eventNorm = 500,
          int nbEventSample = 10,
-         int windowSize = 1024,
+         int windowSize = 100,
          int windowShort = 64>
 struct SoundEventTy
 {
@@ -88,9 +103,13 @@ struct SoundEventTy
   /// number of channels in the log fft
   static constexpr size_t _fftChannels = microphone::SoundStruct::numberOfFFtChanels;
 
+  ///< frequency resolution of the raw fft result
+  static constexpr float fftResolutionHz = microphone::SoundStruct::get_fft_resolution_Hz();
+  static constexpr size_t _FFThistory_MaxSize = round(fftResolutionHz);
+
   using FFTContainer = std::array<float, _dataLenght / 2>;
   using FFTLogContainer = std::array<float, _fftChannels>;
-  using FFTHistoryContainer = std::deque<FFTLogContainer>;
+  using FFTHistoryContainer = std::array<FFTLogContainer, _FFThistory_MaxSize>;
 
   /// Call this once inside the mode on_enter_mode callback
   void reset(auto& ctx)
@@ -105,10 +124,14 @@ struct SoundEventTy
     _eventCount = 0;
     _eventScale = 0;
 
+    historyIndex = 0;
+    historySize = 0;
+
     data.fill(0);
     dataAutoGained.fill(0);
     fft_log.fill(0);
     fft_raw.fill(0);
+    beatDetected.fill(false);
   }
 
   /// Call this once every tick inside the mode loop callback
@@ -131,26 +154,26 @@ struct SoundEventTy
     avgLevel = (level + avgLevel * _windowSize) / (_windowSize + 1);
 
     // average maximum over the same long window (approx)
-    avgMax = (avgLevel + MAX(level, avgMax) * _windowSize) / (_windowSize + 1);
-    avgMax = MAX(_eventCutoff, avgMax);
+    avgMax = (avgLevel + max<float>(level, avgMax) * _windowSize) / (_windowSize + 1.0);
+    avgMax = max<float>(_eventCutoff, avgMax);
 
     // delta between instantaneous level & average, squashed by its max
-    delta = MAX(level - avgLevel, 0) / avgMax;
+    delta = max<float>(level - avgLevel, 0) / avgMax;
 
     // average of delta square (1.0 split around _eventCutoff)
-    avgDelta = (delta * delta + avgDelta * _windowShort) / (_windowShort + 1);
+    avgDelta = (delta * delta + avgDelta * _windowShort) / (_windowShort + 1.0);
 
     // if avgDelta looks triggered, start sampling event
     if (avgDelta > 1.0)
     {
       _eventCount += 1;
-      _eventScale = MAX(_eventScale, 256.0 * (avgMax / _eventNorm) * (1.0 + delta));
+      _eventScale = max<float>(_eventScale, 256.0 * (avgMax / _eventNorm) * (1.0 + delta));
 
       // if no trigger, decay event
     }
     else
     {
-      _eventCount = MAX(1, _eventCount - 1);
+      _eventCount = max<float>(1, _eventCount - 1);
     }
 
     // if event is active, and event decayed, reset eventScale & hasEvent
@@ -169,18 +192,31 @@ struct SoundEventTy
       hasEvent = true;
     }
 
-    // add sample to history
-    if (_FFTHistory_beatDetector.size() >= _FFThistory_MaxSize)
-      _FFTHistory_beatDetector.pop_front();
-    _FFTHistory_beatDetector.push_back(fft_log);
+    // beat tracking is heavy on performances
+    if constexpr (ConfigTy::useBeatTracking)
+    {
+      // update history size
+      if (historySize < _FFThistory_MaxSize)
+        historySize++;
+      else
+        beatDetected = track_beat_events(_FFTHistory_beatDetector, fft_log);
 
-    // detect beats
-    beatDetected = track_beat_events(fft_log, _FFTHistory_beatDetector, _FFThistory_MaxSize);
+      // add sample to history
+      _FFTHistory_beatDetector[historyIndex] = fft_log;
+      historyIndex++;
+      if (historyIndex >= _FFThistory_MaxSize)
+        historyIndex = 0;
+    }
   }
 
   /// After the update, given a range, will return a boolean for beat detection
   bool is_beat_on_freq_range(const float minFreq, const float maxFreq)
   {
+    if constexpr (not ConfigTy::useBeatTracking)
+    {
+      return false;
+    }
+
     size_t nbDataPoints = 0;
     size_t beatCnt = 0;
 
@@ -216,10 +252,6 @@ struct SoundEventTy
   float maxAmplitude;
   float maxAmplitudeFrequency;
 
-  ///< frequency resolution of the raw fft result
-  const float fftResolutionHz = microphone::SoundStruct::get_fft_resolution_Hz();
-  const size_t _FFThistory_MaxSize = round(microphone::SoundStruct::get_fft_resolution_Hz());
-
   ///< raw microphone data
   std::array<int16_t, _dataLenght> data;
   ///< dynamically sound adjusted data
@@ -237,13 +269,14 @@ private:
 
   ///< store the history of the fft, on a few successiv samples
   FFTHistoryContainer _FFTHistory_beatDetector;
+  size_t historyIndex;
+  size_t historySize;
+
   std::array<float, _fftChannels> fft_log_end_frequencies;
 
   /// track the beat events using the FFT
-  template<size_t T>
-  static inline std::array<bool, T> track_beat_events(const std::array<float, T>& data,
-                                                      const std::deque<std::array<float, T>> dataHistory,
-                                                      const size_t historySizeForBeatDetection)
+  template<size_t T> static inline std::array<bool, T> track_beat_events(const FFTHistoryContainer& dataHistory,
+                                                                         const std::array<float, T>& data)
   {
     std::array<bool, T> beats;
     beats.fill(false);
@@ -251,40 +284,39 @@ private:
     // beat detection starts after a bit
     const size_t dataHistoryCnt = dataHistory.size();
     const float oneOverdataHistory = 1.0f / dataHistoryCnt;
-    if (dataHistoryCnt == historySizeForBeatDetection)
+
+    std::array<float, T> averageFft;
+    averageFft.fill(0.0f);
+    for (const auto& fft: dataHistory)
     {
-      std::array<float, T> averageFft;
-      averageFft.fill(0.0f);
-      for (const auto& fft: dataHistory)
-      {
-        for (size_t i = 0; i < T; i++)
-          averageFft[i] += fft[i] * oneOverdataHistory;
-      }
+      for (size_t i = 0; i < T; i++)
+        averageFft[i] += fft[i] * oneOverdataHistory;
+    }
 
-      std::array<float, T> varianceFft;
-      varianceFft.fill(0.0f);
-      for (const auto& fft: dataHistory)
-      {
-        for (size_t i = 0; i < T; i++)
-        {
-          const float val = fft[i] - averageFft[i];
-          varianceFft[i] += val * val;
-        }
-      }
-
+    std::array<float, T> varianceFft;
+    varianceFft.fill(0.0f);
+    for (const auto& fft: dataHistory)
+    {
       for (size_t i = 0; i < T; i++)
       {
-        varianceFft[i] *= oneOverdataHistory;
-        const float stdDev = sqrtf(varianceFft[i]);
-        static constexpr float N = 1.5f;
-        // beat if > med + N * variance
-        // N=1 : greater than 68.0% of values
-        // N=2 : greater than 95.4% of values
-        // N=3 : greater than 99.6% of values
-        // N=4 : greater than 99.8% of values
-        beats[i] = data[i] > (averageFft[i] + N * stdDev);
+        const float val = fft[i] - averageFft[i];
+        varianceFft[i] += val * val;
       }
     }
+
+    for (size_t i = 0; i < T; i++)
+    {
+      varianceFft[i] *= oneOverdataHistory;
+      const float stdDev = sqrtf(varianceFft[i]);
+      static constexpr float N = 1.5f;
+      // beat if > med + N * variance
+      // N=1 : greater than 68.0% of values
+      // N=2 : greater than 95.4% of values
+      // N=3 : greater than 99.6% of values
+      // N=4 : greater than 99.8% of values
+      beats[i] = data[i] > (averageFft[i] + N * stdDev);
+    }
+
     return beats;
   }
 };

@@ -6,7 +6,10 @@
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 
+#include "src/modes/include/audio/utils.hpp"
+
 #include "src/modes/include/colors/palettes.hpp"
+
 #include "src/modes/include/anims/ramp_update.hpp"
 
 /// Basic "default" modes included with the hardware
@@ -29,11 +32,12 @@ struct FireMode : public BasicMode
 
   struct StateTy
   {
+    audio::SoundEventTy<> soundEvent;
   };
 
   static void on_enter_mode(auto& ctx)
   {
-    ctx.soundEvent.reset(ctx);
+    ctx.state.soundEvent.reset(ctx);
 
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
   }
@@ -45,29 +49,35 @@ struct FireMode : public BasicMode
     const int16_t ySpeed = zSpeed * ctx.lamp.frameDurationMs;
 
     // measure custom ramp for fire sound sensitivity
+    float soundAverageDelta = 0.0;
     const uint8_t index = ctx.get_active_custom_ramp();
     if (index > 16)
     {
-      ctx.soundEvent.update(ctx);
+      ctx.state.soundEvent.update(ctx);
+      soundAverageDelta = ctx.state.soundEvent.avgDelta * 100.0;
     }
 
     // measure sound level for sound-sensitive fire
-    float shakeness = 1.0 + (index * ctx.soundEvent.avgDelta) / 255.0;
+    float shakeness = 1.0 + (index * soundAverageDelta) / 255.0;
     float intensity = 128 + 256 / (1 + shakeness) - 1;
 
     // precompute "fire intensity" line per line
     intensity *= ctx.lamp.maxHeight;
 
+    // this is too heavy to run at full, speed, display every other pixels instead of refreshing amm
+    static constexpr size_t everyNIndex = 2;
+    const size_t firstIndex = ctx.lamp.tick % everyNIndex;
+
     // for each line, generate noise & set pixels
-    for (uint16_t j = 0; j <= ctx.lamp.maxHeight; ++j)
+    for (uint16_t j = firstIndex; j <= ctx.lamp.maxHeight; j += everyNIndex)
     {
-      const float here = MAX(intensity - j * 255.0, 0.0);
-      const uint8_t decay = MIN(here / ctx.lamp.maxHeight, 255.0);
+      const float here = max<float>(intensity - j * 255.0, 0.0);
+      const uint8_t decay = min<uint8_t>(here / ctx.lamp.maxHeight, 255.0);
 
       for (uint16_t i = 0; i <= ctx.lamp.maxWidth; ++i)
       {
         const auto flame = noise8::inoise(i * xScale, j * yScale + ySpeed, zSpeed);
-        const auto pixel = MIN(223, qsub8(flame, decay));
+        const auto pixel = min<uint8_t>(223, qsub8(flame, decay));
         const auto color = modes::colors::from_palette<false, uint8_t>(pixel, palette);
 
         ctx.lamp.setPixelColorXY(i, j, color);

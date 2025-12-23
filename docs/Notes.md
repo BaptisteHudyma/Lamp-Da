@@ -25,3 +25,13 @@ Then, on all subsequent builds:
 
 This is a hack and sanity checks are in place to verify that the sketch have
 been properly build (see `make verify-canary`)
+
+## Check heap & stack
+
+The system is still a low power microcontroller, so ram and flash are limited.
+The program flash size is checked at compile time, but the heap/stack are not checked yet.
+
+To analyze those, you can use the tool stackAnalyser.py, in the tools folder.
+It should be used as so:
+`python tools/stackAnalyser.py _build/simulator/indexable-simulator _build/simulator/CMakeFiles/simulator_indexable.dir/youPathToProject/src > stack.txt`
+the generated file can be used to check the program running size.

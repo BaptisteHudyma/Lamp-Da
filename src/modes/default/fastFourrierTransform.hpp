@@ -2,12 +2,12 @@
 #define FFT_MODE_H
 
 #include "src/modes/include/colors/palettes.hpp"
+#include "src/modes/include/audio/utils.hpp"
 
 namespace modes::default_modes {
 
 struct FastFourrierTransformMode : public BasicMode
 {
-  static constexpr bool hasCustomRamp = true;
   static constexpr auto palette = colors::PalettePartyColors;
 
   static void loop(auto& ctx)
@@ -15,14 +15,14 @@ struct FastFourrierTransformMode : public BasicMode
     const uint16_t cols = ctx.lamp.maxWidth - 1;
     const uint16_t rows = ctx.lamp.maxHeight;
     auto& state = ctx.state;
-    ctx.soundEvent.update(ctx);
+    state.soundEvent.update(ctx);
 
-    const auto& fft_log = ctx.soundEvent.fft_log;
-    const float maxFftVal = ctx.soundEvent.maxAmplitude;
+    const auto& fft_log = state.soundEvent.fft_log;
+    const float maxFftVal = state.soundEvent.maxAmplitude;
 
     // adjust for volume
-    const float maxLevel =
-            lmpd_map<float>(ctx.soundEvent.level, microphone::silenceLevelDb * 0.4, microphone::highLevelDb, 0.0, 1.0);
+    const float maxLevel = lmpd_map<float>(
+            state.soundEvent.level, microphone::silenceLevelDb * 0.4, microphone::highLevelDb, 0.0, 1.0);
     const float maxDisplaylevel = max<float>(2, lmpd_constrain<float>(maxLevel * rows, 2, rows));
 
     for (uint8_t x = 0; x < cols; ++x)
@@ -43,10 +43,11 @@ struct FastFourrierTransformMode : public BasicMode
     }
   }
 
-  static void on_enter_mode(auto& ctx) { ctx.soundEvent.reset(ctx); }
+  static void on_enter_mode(auto& ctx) { ctx.state.soundEvent.reset(ctx); }
 
   struct StateTy
   {
+    audio::SoundEventTy<> soundEvent;
   };
 };
 
