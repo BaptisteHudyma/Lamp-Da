@@ -28,7 +28,7 @@
 
 #if EXPECTED_FIRMWARE_VERSION_MAJOR != LAMPDA_FIRMWARE_VERSION_MAJOR || \
         EXPECTED_FIRMWARE_VERSION_MINOR != LAMPDA_FIRMWARE_VERSION_MINOR
-#error "Firmware version missmatch, please update the base repository"
+#error "Firmware version missmatch, please update the base lampda_nrf52840 repository using the command 'make safe-install' "
 #endif
 
 // Register function to disconnect gpios
