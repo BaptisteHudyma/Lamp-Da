@@ -80,7 +80,7 @@ template<typename ConfigTy = MicrophoneConfig,
          int eventCutoff = 500,
          int eventNorm = 500,
          int nbEventSample = 10,
-         int windowSize = 1024,
+         int windowSize = 100,
          int windowShort = 64>
 struct SoundEventTy
 {
@@ -154,26 +154,26 @@ struct SoundEventTy
     avgLevel = (level + avgLevel * _windowSize) / (_windowSize + 1);
 
     // average maximum over the same long window (approx)
-    avgMax = (avgLevel + MAX(level, avgMax) * _windowSize) / (_windowSize + 1);
-    avgMax = MAX(_eventCutoff, avgMax);
+    avgMax = (avgLevel + max<float>(level, avgMax) * _windowSize) / (_windowSize + 1.0);
+    avgMax = max<float>(_eventCutoff, avgMax);
 
     // delta between instantaneous level & average, squashed by its max
-    delta = MAX(level - avgLevel, 0) / avgMax;
+    delta = max<float>(level - avgLevel, 0) / avgMax;
 
     // average of delta square (1.0 split around _eventCutoff)
-    avgDelta = (delta * delta + avgDelta * _windowShort) / (_windowShort + 1);
+    avgDelta = (delta * delta + avgDelta * _windowShort) / (_windowShort + 1.0);
 
     // if avgDelta looks triggered, start sampling event
     if (avgDelta > 1.0)
     {
       _eventCount += 1;
-      _eventScale = MAX(_eventScale, 256.0 * (avgMax / _eventNorm) * (1.0 + delta));
+      _eventScale = max<float>(_eventScale, 256.0 * (avgMax / _eventNorm) * (1.0 + delta));
 
       // if no trigger, decay event
     }
     else
     {
-      _eventCount = MAX(1, _eventCount - 1);
+      _eventCount = max<float>(1, _eventCount - 1);
     }
 
     // if event is active, and event decayed, reset eventScale & hasEvent

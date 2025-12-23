@@ -8,7 +8,6 @@ namespace modes::default_modes {
 
 struct FastFourrierTransformMode : public BasicMode
 {
-  static constexpr bool hasCustomRamp = true;
   static constexpr auto palette = colors::PalettePartyColors;
 
   static void loop(auto& ctx)
