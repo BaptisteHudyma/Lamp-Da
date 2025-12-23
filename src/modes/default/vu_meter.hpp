@@ -4,6 +4,8 @@
 /// @file vumeter
 #include "src/modes/include/colors/palettes.hpp"
 
+#include "src/modes/include/audio/utils.hpp"
+
 namespace modes::default_modes {
 
 /// Emulate a vu-meter
@@ -14,9 +16,9 @@ struct VuMeterMode : public BasicMode
   static void loop(auto& ctx)
   {
     auto& state = ctx.state;
-    ctx.soundEvent.update(ctx);
+    state.soundEvent.update(ctx);
 
-    const float decibels = ctx.soundEvent.level;
+    const float decibels = state.soundEvent.level;
 
     ctx.lamp.fadeToBlackBy(state.fade);
     const uint16_t maxLedIndex = ctx.lamp.ledCount - 1;
@@ -33,12 +35,13 @@ struct VuMeterMode : public BasicMode
   static void on_enter_mode(auto& ctx)
   {
     ctx.state.fade = 128;
-    ctx.soundEvent.reset(ctx);
+    ctx.state.soundEvent.reset(ctx);
   }
 
   struct StateTy
   {
     uint8_t fade;
+    audio::SoundEventTy<> soundEvent;
   };
 };
 

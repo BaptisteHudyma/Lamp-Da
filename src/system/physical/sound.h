@@ -3,6 +3,7 @@
 
 #include "src/system/platform/pdm_handle.h"
 #include <cstdint>
+#include "src/system/utils/fft.h"
 
 namespace microphone {
 
@@ -40,7 +41,7 @@ struct SoundStruct
   // make this number close to the lamp max x coordinates
   static constexpr uint8_t numberOfFFtChanels = 24;
 
-  static float get_fft_resolution_Hz();
+  static constexpr float get_fft_resolution_Hz() { return SAMPLE_RATE / static_cast<float>(SAMPLE_SIZE); }
 
   // FFT results
   std::array<float, SAMPLE_SIZE / 2> fft_raw;
