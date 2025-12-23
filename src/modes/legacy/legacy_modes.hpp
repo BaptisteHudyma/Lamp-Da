@@ -56,10 +56,15 @@ struct RainbowSwirlMode : public LegacyMode
 /// Fade slowly between PalettePartyColors
 struct PartyFadeMode : public LegacyMode
 {
+  static constexpr bool hasCustomRamp = true;
+
   static void loop(auto& ctx)
   {
+    const uint32_t rampIndex = lmpd_map<float>(ctx.get_active_custom_ramp(), 0, 255, 30.0, 500.0);
+
     auto& state = ctx.state;
-    state.isFinished = animations::fade_in(state.palettePartyColor, 100, state.isFinished, ctx.lamp.getLegacyStrip());
+    state.isFinished =
+            animations::fade_in(state.palettePartyColor, rampIndex, state.isFinished, ctx.lamp.getLegacyStrip());
 
     if (state.isFinished)
     {
@@ -69,6 +74,8 @@ struct PartyFadeMode : public LegacyMode
 
   static void on_enter_mode(auto& ctx)
   {
+    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
+
     auto& state = ctx.state;
     state.currentIndex = 0;
     state.palettePartyColor.reset();
