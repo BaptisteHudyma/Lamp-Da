@@ -90,6 +90,7 @@ struct SoundEventTy
 
   using FFTContainer = std::array<float, _dataLenght / 2>;
   using FFTLogContainer = std::array<float, _fftChannels>;
+  // TODO: this should be a fixed size array
   using FFTHistoryContainer = std::deque<FFTLogContainer>;
 
   /// Call this once inside the mode on_enter_mode callback
@@ -171,12 +172,12 @@ struct SoundEventTy
 
 #if 0 // BE CAREFUL: RAM IS AT IT'S LIMIT WHEN USING THIS
       // add sample to history
-      if (_FFTHistory_beatDetector.size() >= _FFThistory_MaxSize)
-        _FFTHistory_beatDetector.pop_front();
-      _FFTHistory_beatDetector.push_back(fft_log);
+    if (_FFTHistory_beatDetector.size() >= _FFThistory_MaxSize)
+      _FFTHistory_beatDetector.pop_front();
+    _FFTHistory_beatDetector.push_back(fft_log);
 
-      // detect beats
-      beatDetected = track_beat_events(fft_log, _FFTHistory_beatDetector, _FFThistory_MaxSize);
+    // detect beats
+    beatDetected = track_beat_events(fft_log, _FFTHistory_beatDetector, _FFThistory_MaxSize);
 #endif
   }
 
