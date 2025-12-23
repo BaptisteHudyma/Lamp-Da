@@ -14,8 +14,6 @@
 #include "src/modes/include/tools.hpp"
 #include "src/modes/include/default_config.hpp"
 
-#include "src/modes/include/imu/utils.hpp"
-
 #include "src/system/platform/print.h"
 
 namespace modes {
@@ -72,7 +70,6 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   ContextTy(ModeManagerTy& modeManager) :
     state {modeManager.template getStateOf<LocalModeTy>()},
     lamp {modeManager.lamp},
-    imuEvent {modeManager.imuEvent},
     modeManager {modeManager}
   {
   }
@@ -711,8 +708,6 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
 
   hardware::LampTy& lamp; ///< Interact with the lamp hardware
   StateTy& state;         ///< Interact with the current active mode state
-
-  imu::ImuEventTy<>& imuEvent; ///< Interact with the imu system
 
 private:
   ModeManagerTy& modeManager;

@@ -3,6 +3,8 @@
 
 /// @file gravity_mode.hpp
 
+#include "src/modes/include/imu/utils.hpp"
+
 #include "src/modes/include/colors/palettes.hpp"
 #include <cstddef>
 #include <cstdint>
@@ -20,12 +22,14 @@ struct GravityMode : public BasicMode
 
   static void on_enter_mode(auto& ctx)
   {
-    ctx.imuEvent.reset(ctx);
-    // set particle count
-    ctx.imuEvent.particuleSystem.set_max_particle_count(particleCount);
-    ctx.imuEvent.particuleSystem.init_particules(generate_random_particule_position);
+    auto& state = ctx.state;
 
-    ctx.state.persistance = 210;
+    state.imuEvent.reset(ctx);
+    // set particle count
+    state.imuEvent.particuleSystem.set_max_particle_count(particleCount);
+    state.imuEvent.particuleSystem.init_particules(generate_random_particule_position);
+
+    state.persistance = 210;
 
     // set default value
     custom_ramp_update(ctx, ctx.get_active_custom_ramp());
@@ -49,11 +53,11 @@ struct GravityMode : public BasicMode
 
     const uint8_t paletteWrap = ctx.lamp.tick % UINT8_MAX;
 
-    ctx.imuEvent.update(ctx);
+    state.imuEvent.update(ctx);
 
-    auto& particleSystem = ctx.imuEvent.particuleSystem;
+    auto& particleSystem = state.imuEvent.particuleSystem;
 
-    particleSystem.iterate_with_collisions(ctx.imuEvent.lastReading.accel, ctx.lamp.frameDurationMs / 1000.0);
+    particleSystem.iterate_with_collisions(state.imuEvent.lastReading.accel, ctx.lamp.frameDurationMs / 1000.0);
 
     ctx.lamp.fadeToBlackBy(255 - ctx.state.persistance);
 
@@ -68,6 +72,7 @@ struct GravityMode : public BasicMode
   struct StateTy
   {
     uint8_t persistance;
+    imu::ImuEventTy<> imuEvent;
 
     // store references to palettes
     static constexpr uint8_t maxPalettesCount = 3;

@@ -3,6 +3,8 @@
 
 /// @file rain_mode.hpp
 
+#include "src/modes/include/imu/utils.hpp"
+
 #include "src/modes/include/colors/palettes.hpp"
 #include <cstddef>
 #include <cstdint>
@@ -22,15 +24,17 @@ struct RainMode : public BasicMode
 
   static void on_enter_mode(auto& ctx)
   {
-    ctx.imuEvent.reset(ctx);
+    auto& state = ctx.state;
+
+    state.imuEvent.reset(ctx);
     // set particle count
-    ctx.imuEvent.particuleSystem.set_max_particle_count(512);
+    state.imuEvent.particuleSystem.set_max_particle_count(512);
 
     // ramp saturates
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
 
-    ctx.state.rainDropSpawn = 0.0;
-    ctx.state.persistance = 100;
+    state.rainDropSpawn = 0.0;
+    state.persistance = 100;
 
     // set default value
     custom_ramp_update(ctx, ctx.get_active_custom_ramp());
@@ -54,9 +58,9 @@ struct RainMode : public BasicMode
   static void loop(auto& ctx)
   {
     auto& state = ctx.state;
-    ctx.imuEvent.update(ctx);
+    state.imuEvent.update(ctx);
 
-    auto& particleSystem = ctx.imuEvent.particuleSystem;
+    auto& particleSystem = state.imuEvent.particuleSystem;
 
     // multiply by 2 because we rain on both sides of the lamp, half of the drops are not seen
     const float expectedDropPerSecond =
@@ -73,7 +77,7 @@ struct RainMode : public BasicMode
     // no collisions between particles, and with no lamp limits
     static constexpr bool shouldKeepInLampBounds = false;
     particleSystem.iterate_no_collisions(
-            ctx.imuEvent.lastReading.accel, ctx.lamp.frameDurationMs / 1000.0, shouldKeepInLampBounds);
+            state.imuEvent.lastReading.accel, ctx.lamp.frameDurationMs / 1000.0, shouldKeepInLampBounds);
     // depop particules that fell too far
     const uint16_t activeParticles = particleSystem.depop_particules(recycle_particules_if_too_far);
 
@@ -89,6 +93,8 @@ struct RainMode : public BasicMode
 
   struct StateTy
   {
+    imu::ImuEventTy<> imuEvent;
+
     // save the requested rain density
     uint8_t rainDensityCommand;
 
