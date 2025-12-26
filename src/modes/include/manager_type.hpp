@@ -90,7 +90,16 @@ template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ct
   if (stepCount >= numberOfFavoriteSet)
   {
     // cancel action
-    _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::White, colors::Cyan>);
+    ctx.state.isFavoritePending = 0;
+
+    // display ramp for the first time to allow the user to cancel the action
+    if (holdDuration <= 2 * stepSize)
+    {
+      _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::White, colors::Cyan>);
+
+      // TODO: #153 remove this freeze, after migrating legacy modes :)
+      ctx.skipNextFrames(10);
+    }
   }
   else
   {
@@ -110,21 +119,21 @@ template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ct
         _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Purple, colors::White>);
         break;
     }
+
+    // extra display on the first pixels (count pixels to know fav no)
+    if constexpr (displayFavoriteNumber)
+    {
+      // display ramp
+      display_favorite_number_ramp(ctx, stepCount, numberOfFavoriteSet, stepCount < numberOfFavoriteSet);
+    }
+
+    // set this, after a while upon no longer holding button, favorite is set
+    ctx.state.isFavoritePending = 10;
+    ctx.state.whichFavoritePending = stepCount;
+
+    // TODO: #153 remove this freeze, after migrating legacy modes :)
+    ctx.skipNextFrames(10);
   }
-
-  // extra display on the first pixels (count pixels to know fav no)
-  if constexpr (displayFavoriteNumber)
-  {
-    // display ramp
-    display_favorite_number_ramp(ctx, stepCount, numberOfFavoriteSet, stepCount < numberOfFavoriteSet);
-  }
-
-  // set this, after a while upon no longer holding button, favorite is set
-  ctx.state.isFavoritePending = 10;
-  ctx.state.whichFavoritePending = stepCount;
-
-  // TODO: #153 remove this freeze, after migrating legacy modes :)
-  ctx.skipNextFrames(10);
 }
 
 template<bool displayFavoriteNumber = true> void _animate_favorite_delete(auto& ctx, float holdDuration, float stepSize)
@@ -655,7 +664,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     auto& scrollHandler = ctx.state.scrollHandler;
     scrollHandler.isForward = false; // (always scroll modes backward)
 
-    static constexpr uint32_t scrollActivationTiming = 1200;
+    static constexpr uint32_t scrollActivationTiming = 750;
     if (holdDuration <= scrollActivationTiming)
     {
       // display the ramp and do nothing else
