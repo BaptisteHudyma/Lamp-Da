@@ -664,7 +664,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     auto& scrollHandler = ctx.state.scrollHandler;
     scrollHandler.isForward = false; // (always scroll modes backward)
 
-    static constexpr uint32_t scrollActivationTiming = 1200;
+    static constexpr uint32_t scrollActivationTiming = 750;
     if (holdDuration <= scrollActivationTiming)
     {
       // display the ramp and do nothing else
