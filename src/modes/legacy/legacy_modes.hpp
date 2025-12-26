@@ -20,6 +20,7 @@
 #include "src/modes/default/gravity_mode.hpp"
 #include "src/modes/default/perlin_noise.hpp"
 #include "src/modes/default/rain_mode.hpp"
+#include "src/modes/default/rainbow_swirl_mode.hpp"
 #include "src/modes/default/sine_mode.hpp"
 #include "src/modes/default/spiral.hpp"
 #include "src/modes/default/vu_meter.hpp"
@@ -34,24 +35,6 @@ using LegacyMode = BasicMode;
 //
 
 namespace calm {
-
-/// Do a rainbow swirl!
-struct RainbowSwirlMode : public LegacyMode
-{
-  static void loop(auto& ctx)
-  {
-    auto& state = ctx.state;
-    animations::fill(state.rainbowSwirl, ctx.lamp.getLegacyStrip());
-    state.rainbowSwirl.update();
-  }
-
-  static void on_enter_mode(auto& ctx) { ctx.state.rainbowSwirl.reset(); }
-
-  struct StateTy
-  {
-    GenerateRainbowSwirl rainbowSwirl = GenerateRainbowSwirl(5000);
-  };
-};
 
 /// Fade slowly between PalettePartyColors
 struct PartyFadeMode : public LegacyMode
@@ -181,7 +164,7 @@ struct PingPongMode : public LegacyMode
 // Legacy modes groups
 //
 
-using CalmModes = modes::GroupFor<calm::RainbowSwirlMode,
+using CalmModes = modes::GroupFor<default_modes::RainbowSwirlMode,
                                   calm::PartyFadeMode,
                                   default_modes::PerlinNoiseMode,
                                   default_modes::AuroraMode,
