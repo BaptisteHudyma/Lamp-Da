@@ -14,6 +14,7 @@
 
 #include "src/modes/default/aurora.hpp"
 #include "src/modes/default/automaton.hpp"
+#include "src/modes/default/color_wipe_mode.hpp"
 #include "src/modes/default/distortion_waves.hpp"
 #include "src/modes/default/fastFourrierTransform.hpp"
 #include "src/modes/default/fireplace.hpp"
@@ -36,36 +37,6 @@ using LegacyMode = BasicMode;
 //
 
 namespace party {
-
-/// Wipe up and down complementary colors
-struct ColorWipeMode : public LegacyMode
-{
-  static void loop(auto& ctx)
-  {
-    auto& state = ctx.state;
-    auto& legacyStrip = ctx.lamp.getLegacyStrip();
-
-    state.isFinished =
-            state.switchMode ?
-                    (animations::color_wipe_up(state.complementaryColor, 500, state.isFinished, legacyStrip)) :
-                    (animations::color_wipe_down(state.complementaryColor, 500, state.isFinished, legacyStrip));
-
-    if (state.isFinished)
-    {
-      state.switchMode = !state.switchMode;
-      state.complementaryColor.update();
-    }
-  }
-
-  static void on_enter_mode(auto& ctx) { ctx.state.complementaryColor.reset(); }
-
-  struct StateTy
-  {
-    GenerateComplementaryColor complementaryColor = GenerateComplementaryColor(0.3);
-    bool switchMode = false;
-    bool isFinished = false;
-  };
-};
 
 /// Animated random color fill from each side
 struct RandomFillMode : public LegacyMode
@@ -134,7 +105,7 @@ using CalmModes = modes::GroupFor<default_modes::RainbowSwirlMode,
                                   automaton::BubbleMode,
                                   automaton::SierpinskiMode>;
 
-using PartyModes = modes::GroupFor<party::ColorWipeMode, party::RandomFillMode, party::PingPongMode>;
+using PartyModes = modes::GroupFor<default_modes::ColorWipeMode, party::RandomFillMode, party::PingPongMode>;
 
 using SoundModes = modes::GroupFor<default_modes::VuMeterMode, default_modes::FastFourrierTransformMode>;
 

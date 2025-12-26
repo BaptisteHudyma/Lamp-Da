@@ -755,7 +755,7 @@ public:
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      assert(start < ledCount && "invalid start parameter");
+      assert(start <= ledCount && "invalid start parameter");
       assert(end <= ledCount && "invalid end parameter");
 
       for (uint16_t I = start; I < end; ++I)
