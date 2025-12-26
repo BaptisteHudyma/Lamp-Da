@@ -43,38 +43,6 @@ static uint32_t Color(uint8_t r, uint8_t g, uint8_t b, uint8_t w)
   return ((uint32_t)w << 24) | ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
 }
 
-uint32_t get_random_color()
-{
-  static uint8_t count;
-
-  std::array<uint8_t, 3> color;
-  color[count] = random8(255);
-  uint8_t a0 = random8(1);
-  uint8_t a1 = ((!a0) + count + 1) % 3;
-  a0 = (count + a0 + 1) % 3;
-  color[a0] = 255 - color[count];
-  color[a1] = 0;
-  count += random8(15); // to avoid repeating patterns
-  count %= 3;
-
-  union COLOR colorArray;
-  colorArray.red = color[0];
-  colorArray.green = color[1];
-  colorArray.blue = color[2];
-  return colorArray.color;
-}
-
-uint32_t get_complementary_color(const uint32_t color)
-{
-  COLOR c;
-  c.color = color;
-  const uint16_t hue = ColorSpace::HSV(c).get_scaled_hue();
-
-  const uint16_t finalHue = (uint32_t)(hue + UINT16_MAX / 2.0) % UINT16_MAX;
-  // add a cardan shift to the hue, to opbtain the symetrical color
-  return utils::hue_to_rgb_sinus(lmpd_map<uint16_t>(finalHue, 0, UINT16_MAX, 0, 360));
-}
-
 uint32_t get_random_complementary_color(const uint32_t color, const float tolerance)
 {
   COLOR c;

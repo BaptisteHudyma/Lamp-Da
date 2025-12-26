@@ -23,7 +23,7 @@ struct AuroraMode : public BasicMode
     uint8_t scale;
     uint8_t speed;
     uint32_t step;
-    palette_t palette;
+    colors::PaletteTy palette;
   };
 
   static void on_enter_mode(auto& ctx)

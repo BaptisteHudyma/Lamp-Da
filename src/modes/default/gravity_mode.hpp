@@ -76,11 +76,11 @@ struct GravityMode : public BasicMode
 
     // store references to palettes
     static constexpr uint8_t maxPalettesCount = 3;
-    const palette_t* _palettes[maxPalettesCount] = {
+    const colors::PaletteTy* _palettes[maxPalettesCount] = {
             &colors::PaletteAuroraColors, &colors::PaletteForestColors, &colors::PaletteOceanColors};
 
     // store selected palette
-    palette_t const* selectedPalette;
+    colors::PaletteTy const* selectedPalette;
   };
 
 private:
