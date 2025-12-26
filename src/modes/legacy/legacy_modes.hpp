@@ -16,6 +16,7 @@
 #include "src/modes/default/automaton.hpp"
 #include "src/modes/default/color_wipe_mode.hpp"
 #include "src/modes/default/distortion_waves.hpp"
+#include "src/modes/default/double_side_fill_mode.hpp"
 #include "src/modes/default/fastFourrierTransform.hpp"
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/default/gravity_mode.hpp"
@@ -37,30 +38,6 @@ using LegacyMode = BasicMode;
 //
 
 namespace party {
-
-/// Animated random color fill from each side
-struct RandomFillMode : public LegacyMode
-{
-  static void loop(auto& ctx)
-  {
-    auto& state = ctx.state;
-    state.isFinished =
-            animations::double_side_fill(state.randomColor, 500, state.isFinished, ctx.lamp.getLegacyStrip());
-
-    if (state.isFinished)
-    {
-      state.randomColor.update();
-    }
-  }
-
-  static void on_enter_mode(auto& ctx) { ctx.state.randomColor.reset(); }
-
-  struct StateTy
-  {
-    GenerateRandomColor randomColor = GenerateRandomColor();
-    bool isFinished = false;
-  };
-};
 
 /// Animated back-and-forth with random complementary color
 struct PingPongMode : public LegacyMode
@@ -105,7 +82,8 @@ using CalmModes = modes::GroupFor<default_modes::RainbowSwirlMode,
                                   automaton::BubbleMode,
                                   automaton::SierpinskiMode>;
 
-using PartyModes = modes::GroupFor<default_modes::ColorWipeMode, party::RandomFillMode, party::PingPongMode>;
+using PartyModes =
+        modes::GroupFor<default_modes::ColorWipeMode, default_modes::DoubleSideFillMode, party::PingPongMode>;
 
 using SoundModes = modes::GroupFor<default_modes::VuMeterMode, default_modes::FastFourrierTransformMode>;
 
