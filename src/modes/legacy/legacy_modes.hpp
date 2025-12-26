@@ -18,6 +18,7 @@
 #include "src/modes/default/fastFourrierTransform.hpp"
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/default/gravity_mode.hpp"
+#include "src/modes/default/palette_fade_mode.hpp"
 #include "src/modes/default/perlin_noise.hpp"
 #include "src/modes/default/rain_mode.hpp"
 #include "src/modes/default/rainbow_swirl_mode.hpp"
@@ -29,50 +30,6 @@ namespace modes::legacy {
 
 /// Just a way to highlight which modes still uses src/system
 using LegacyMode = BasicMode;
-
-//
-// legacy calm modes
-//
-
-namespace calm {
-
-/// Fade slowly between PalettePartyColors
-struct PartyFadeMode : public LegacyMode
-{
-  static constexpr bool hasCustomRamp = true;
-
-  static void loop(auto& ctx)
-  {
-    const uint32_t rampIndex = lmpd_map<float>(ctx.get_active_custom_ramp(), 0, 255, 30.0, 500.0);
-
-    auto& state = ctx.state;
-    state.isFinished =
-            animations::fade_in(state.palettePartyColor, rampIndex, state.isFinished, ctx.lamp.getLegacyStrip());
-
-    if (state.isFinished)
-    {
-      state.palettePartyColor.update(++state.currentIndex);
-    }
-  }
-
-  static void on_enter_mode(auto& ctx)
-  {
-    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
-
-    auto& state = ctx.state;
-    state.currentIndex = 0;
-    state.palettePartyColor.reset();
-  }
-
-  struct StateTy
-  {
-    GeneratePaletteIndexed palettePartyColor = GeneratePaletteIndexed(PalettePartyColors);
-    uint8_t currentIndex = 0;
-    bool isFinished = false;
-  };
-};
-
-} // namespace calm
 
 //
 // legacy party modes
@@ -165,7 +122,7 @@ struct PingPongMode : public LegacyMode
 //
 
 using CalmModes = modes::GroupFor<default_modes::RainbowSwirlMode,
-                                  calm::PartyFadeMode,
+                                  default_modes::RainbowFadePaletteMode,
                                   default_modes::PerlinNoiseMode,
                                   default_modes::AuroraMode,
                                   default_modes::FireMode,
