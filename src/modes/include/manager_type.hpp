@@ -96,9 +96,6 @@ template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ct
     if (holdDuration <= 2 * stepSize)
     {
       _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::White, colors::Cyan>);
-
-      // TODO: #153 remove this freeze, after migrating legacy modes :)
-      ctx.skipNextFrames(10);
     }
   }
   else
@@ -130,9 +127,6 @@ template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ct
     // set this, after a while upon no longer holding button, favorite is set
     ctx.state.isFavoritePending = 10;
     ctx.state.whichFavoritePending = stepCount;
-
-    // TODO: #153 remove this freeze, after migrating legacy modes :)
-    ctx.skipNextFrames(10);
   }
 }
 
@@ -166,9 +160,6 @@ template<bool displayFavoriteNumber = true> void _animate_favorite_delete(auto& 
       // display ramp
       display_favorite_number_ramp(ctx, ctx.state.lastFavoriteStep, ctx.state.usedFavoriteCount, true);
     }
-
-    // TODO: #153 remove this freeze, after migrating legacy modes :)
-    ctx.skipNextFrames(10);
   }
   // else: do nothing
 }
@@ -180,11 +171,7 @@ void _animate_sunset_timer(auto& ctx, uint32_t holdDuration, float stepSize)
   {
     ctx.state.isSunsetTimingPending = 2;
   }
-  else
-  {
-    // TODO: #153 remove this freeze, after migrating legacy modes :)
-    ctx.skipNextFrames(10);
-  }
+  // else
 }
 
 } // namespace modes::details
@@ -670,9 +657,6 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       // display the ramp and do nothing else
       modes::details::_animate_ramp(
               ctx, holdDuration, scrollActivationTiming, colors::PaletteGradient<colors::White, colors::Cyan>);
-
-      // TODO: #153 remove this freeze, after migrating legacy modes :)
-      ctx.skipNextFrames(1);
       return;
     }
 
