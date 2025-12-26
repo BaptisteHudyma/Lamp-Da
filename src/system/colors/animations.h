@@ -37,23 +37,6 @@ bool dot_ping_pong(const Color& color,
                    const float cutOff = 1);
 
 /**
- * \brief Do color pulse
- * \param[in] color class that returns a color to display
- * \param[in] durationPulseUp The duration of the color fill up animation, in
- * milliseconds \param[in] durationPulseDown The duration of the pong animation,
- * in milliseconds \param[in] restart If true, the animation will restart
- * \param[in, out] strip The led strip to control
- * \param[in] cutOff between 0 and 1, how much this color will fill the display
- * before suddently cutting of \return True if the animation is finished
- */
-bool color_pulse(const Color& color,
-                 const uint32_t durationPulseUp,
-                 const uint32_t durationPulseDown,
-                 const bool restart,
-                 LedStrip& strip,
-                 const float cutOff = 1);
-
-/**
  * \brief Fill the display from both side simultaneously
  * \param[in] color class that returns a color to display
  * \param[in] duration The duration of the animation, in milliseconds
@@ -71,47 +54,6 @@ bool double_side_fill(const Color& color, const uint32_t duration, const bool re
  * \return True if the animation is finished
  */
 bool police(const uint32_t duration, const bool restart, LedStrip& strip);
-
-/**
- * \brief Do a fade out of the colors currently displayed
- * \param[in] duration The duration of the animation, in milliseconds
- * \param[in] restart If true, the animation will restart
- * \param[in, out] strip The led strip to control
- * \return True if the animation is finished
- */
-bool fade_out(const uint32_t duration, const bool restart, LedStrip& strip);
-
-/**
- * \brief Do a fade in of a color
- * \param[in] color class that returns a color to display
- * \param[in] duration The duration of the animation, in milliseconds
- * \param[in] restart If true, the animation will restart
- * \param[in, out] strip The led strip to contro
- * \param[in] firstCutOff between 0 and 1, how much this color will fill the
- * display before suddently cutting of \param[in] secondCutOff between 0 and 1,
- * how much this color will fill the display before suddently cutting of \return
- * True if the animation is finished
- */
-bool fade_in(const Color& color,
-             const uint32_t duration,
-             const bool restart,
-             LedStrip& strip,
-             const float firstCutOff = 0.0,
-             const float secondCutOff = 1.0);
-
-void candle(const palette_t& palette, LedStrip& strip);
-
-/**
- * \brief Display some sinewave of colors, going back and forth
- * \param[in] moder: add some random noise
- */
-void phases(const bool moder, const uint8_t speed, const palette_t& palette, LedStrip& strip);
-void hiphotic(const uint8_t speed, LedStrip& strip);
-
-void mode_lake(const uint8_t speed, const palette_t& palette, LedStrip& strip);
-
-void running_base(
-        bool saw, bool dual, const uint8_t speed, const uint8_t intensity, const palette_t& palette, LedStrip& strip);
 
 void show_text(const Color& color, const std::string& text, LedStrip& strip);
 
