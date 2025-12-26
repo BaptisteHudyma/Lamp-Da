@@ -102,7 +102,7 @@ struct RainMode : public BasicMode
     uint8_t persistance;
     float rainDropSpawn;
 
-    const palette_t& palette = colors::PaletteWaterColors;
+    const colors::PaletteTy& palette = colors::PaletteWaterColors;
   };
 
 private:

@@ -1,10 +1,5 @@
 # File details
 - global.h: main entry point for the program
-- colors: Define color & color operations, as well as some animations for RGB lamp type
-    - animations.h: define some generic animations, for RGB lamp type
-    - colors.h: define color modes classes, for RGB lamp type
-    - palettes.h: define some color palettes, for RGB lamp type
-    - wipes.h: define some moving animations, for RGB lamp type
 - ext: external libraries
 - logic: handle high level system logic (Input actions, button presses, main state machine...)
     - alert.h: Handle the diffferent alerts raised by the program

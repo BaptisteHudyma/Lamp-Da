@@ -1,4 +1,7 @@
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
+
+// LEGACY : migrate this one way or another
+// TODO #369
+#if 0
 
 #ifndef TEXT_H
 #define TEXT_H

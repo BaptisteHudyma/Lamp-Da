@@ -47,14 +47,6 @@ set(SRC_SYSTEM_UTILS
     ${LMBD_ROOT_DIR}/src/system/utils/vector_math.cpp
     )
 
-set(SRC_SYSTEM_COLORS
-    ${LMBD_ROOT_DIR}/src/system/colors/animations.cpp
-    ${LMBD_ROOT_DIR}/src/system/colors/wipes.cpp
-    ${LMBD_ROOT_DIR}/src/system/colors/colors.cpp
-    ${LMBD_ROOT_DIR}/src/system/colors/text.cpp
-    ${LMBD_ROOT_DIR}/src/system/colors/palettes.cpp
-)
-
 set(SRC_SYSTEM_POWER
     ${LMBD_ROOT_DIR}/src/system/power/power_handler.cpp
     ${LMBD_ROOT_DIR}/src/system/power/power_gates.cpp
@@ -128,7 +120,6 @@ function(create_simulator_target SIM_NAME)
     add_library(simulator_${SIM_NAME} OBJECT
         ${SRC_SYSTEM_DEPENDS}
         ${SRC_SYSTEM_UTILS}
-        ${SRC_SYSTEM_COLORS}
         ${SRC_SYSTEM_POWER}
         ${SRC_SYSTEM_PHYSICAL}
         ${SRC_SYSTEM_PDLIB_C}

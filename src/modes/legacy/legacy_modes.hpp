@@ -5,11 +5,6 @@
 
 #include "src/system/utils/utils.h"
 
-#include "src/system/colors/animations.h"
-#include "src/system/colors/colors.h"
-#include "src/system/colors/palettes.h"
-#include "src/system/colors/wipes.h"
-
 #include "src/system/physical/fileSystem.h"
 
 #include "src/modes/default/aurora.hpp"

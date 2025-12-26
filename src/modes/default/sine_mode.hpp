@@ -18,13 +18,13 @@ struct SineMode : public modes::BasicMode
   struct StateTy
   {
     uint16_t step;
-    palette_t palette;
+    colors::PaletteTy palette;
   };
 
   static void on_enter_mode(auto& ctx)
   {
     ctx.state.step = 0;
-    ctx.state.palette = PaletteRainbowColors;
+    ctx.state.palette = colors::PaletteRainbowColors;
 
     // the ramp will not return to 0 after reach 255 (and the oposite)
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
