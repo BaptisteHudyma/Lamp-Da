@@ -19,9 +19,9 @@ struct ColorWipeMode : public modes::BasicMode
 
   static void on_enter_mode(auto& ctx)
   {
-    ctx.state.step = false;
-    ctx.state.progress = 1.0;
-    ctx.state.color = 0;
+    ctx.state.step = true;
+    ctx.state.progress = 0.0;
+    ctx.state.color = utils::get_random_complementary_color(ctx.state.color, randomVariation);
   }
 
   static void loop(auto& ctx)

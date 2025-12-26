@@ -22,6 +22,7 @@
 #include "src/modes/default/gravity_mode.hpp"
 #include "src/modes/default/palette_fade_mode.hpp"
 #include "src/modes/default/perlin_noise.hpp"
+#include "src/modes/default/ping_pong_mode.hpp"
 #include "src/modes/default/rain_mode.hpp"
 #include "src/modes/default/rainbow_swirl_mode.hpp"
 #include "src/modes/default/sine_mode.hpp"
@@ -29,41 +30,6 @@
 #include "src/modes/default/vu_meter.hpp"
 
 namespace modes::legacy {
-
-/// Just a way to highlight which modes still uses src/system
-using LegacyMode = BasicMode;
-
-//
-// legacy party modes
-//
-
-namespace party {
-
-/// Animated back-and-forth with random complementary color
-struct PingPongMode : public LegacyMode
-{
-  static void loop(auto& ctx)
-  {
-    auto& state = ctx.state;
-    state.isFinished = animations::dot_ping_pong(
-            state.complementaryPingPongColor, 1000, 128, state.isFinished, ctx.lamp.getLegacyStrip());
-
-    if (state.isFinished)
-    {
-      state.complementaryPingPongColor.update();
-    }
-  }
-
-  static void on_enter_mode(auto& ctx) { ctx.state.complementaryPingPongColor.reset(); }
-
-  struct StateTy
-  {
-    GenerateComplementaryColor complementaryPingPongColor = GenerateComplementaryColor(0.4);
-    bool isFinished = false;
-  };
-};
-
-} // namespace party
 
 //
 // Legacy modes groups
@@ -83,7 +49,7 @@ using CalmModes = modes::GroupFor<default_modes::RainbowSwirlMode,
                                   automaton::SierpinskiMode>;
 
 using PartyModes =
-        modes::GroupFor<default_modes::ColorWipeMode, default_modes::DoubleSideFillMode, party::PingPongMode>;
+        modes::GroupFor<default_modes::ColorWipeMode, default_modes::DoubleSideFillMode, default_modes::PingPongMode>;
 
 using SoundModes = modes::GroupFor<default_modes::VuMeterMode, default_modes::FastFourrierTransformMode>;
 

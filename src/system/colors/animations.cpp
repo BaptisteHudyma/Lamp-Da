@@ -47,48 +47,6 @@ void fill(const Color& color, LedStrip& strip, const float cutOff)
   }
 }
 
-bool dot_ping_pong(const Color& color,
-                   const uint32_t duration,
-                   const uint8_t fadeOut,
-                   const bool restart,
-                   LedStrip& strip,
-                   const float cutOff)
-{
-  static bool isPongMode = false; // true: animation is climbing back the display
-
-  // reset condition
-  if (restart)
-  {
-    isPongMode = false;
-    dot_wipe_up(color, duration / 2, fadeOut, true, strip);
-    dot_wipe_down(color, duration / 2, fadeOut, true, strip);
-  }
-
-  if (isPongMode)
-  {
-    return dot_wipe_up(color, duration / 2, fadeOut, false, strip, cutOff);
-  }
-  else
-  {
-    // set pong mode to true when first animation is finished
-    isPongMode = dot_wipe_down(color, duration / 2, fadeOut, false, strip, cutOff);
-  }
-
-  // finished if the target index is over the led limit
-  return false;
-}
-
-bool double_side_fill(const Color& color, const uint32_t duration, const bool restart, LedStrip& strip)
-{
-  if (restart)
-  {
-    color_wipe_up(color, duration, true, strip, 0.51);
-    color_wipe_down(color, duration, true, strip, 0.51);
-  }
-
-  return color_wipe_down(color, duration, false, strip, 0.51) or color_wipe_up(color, duration, false, strip, 0.51);
-}
-
 bool police(const uint32_t duration, const bool restart, LedStrip& strip)
 {
   static unsigned long previousMillis = 0;
@@ -217,21 +175,6 @@ bool police(const uint32_t duration, const bool restart, LedStrip& strip)
 
   // never ends
   return false;
-}
-
-// effect utility functions
-uint8_t sin_gap(uint16_t in)
-{
-  if (in & 0x100)
-    return 0;
-  return sin8(in + 192); // correct phase shift of sine so that it starts and stops at 0
-}
-
-void show_text(const Color& color, const std::string& text, LedStrip& strip)
-{
-  static bool isOver = true;
-
-  isOver = text::display_scrolling_text(color, text, 4, 1, 2000, isOver, true, 200, strip);
 }
 
 } // namespace animations
