@@ -23,6 +23,7 @@
 #include "src/modes/default/sine_mode.hpp"
 #include "src/modes/default/spiral.hpp"
 #include "src/modes/default/vu_meter.hpp"
+#include "src/modes/default/waveform.hpp"
 
 namespace modes::legacy {
 
@@ -46,7 +47,8 @@ using CalmModes = modes::GroupFor<default_modes::RainbowSwirlMode,
 using PartyModes =
         modes::GroupFor<default_modes::ColorWipeMode, default_modes::DoubleSideFillMode, default_modes::PingPongMode>;
 
-using SoundModes = modes::GroupFor<default_modes::VuMeterMode, default_modes::FastFourrierTransformMode>;
+using SoundModes = modes::
+        GroupFor<default_modes::VuMeterMode, default_modes::WaveformMode, default_modes::FastFourrierTransformMode>;
 
 } // namespace modes::legacy
 
