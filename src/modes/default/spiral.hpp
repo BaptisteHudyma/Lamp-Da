@@ -21,7 +21,7 @@ struct SpiralMode : public BasicMode
     uint8_t fade;
     uint8_t intensity;
     uint8_t speed;
-    palette_t palette;
+    colors::PaletteTy palette;
   };
 
   static void on_enter_mode(auto& ctx)

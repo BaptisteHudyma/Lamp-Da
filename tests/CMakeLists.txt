@@ -38,3 +38,6 @@ create_simulator_target(indexable)
 
 # Unit tests
 add_subdirectory("utest")
+
+# Integration test
+add_subdirectory("itest")

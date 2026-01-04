@@ -1,4 +1,4 @@
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
+#if 0
 
 #include <sys/types.h>
 

@@ -22,6 +22,21 @@ void _unlockPrintMutex(void) { xSemaphoreGive(printMutex); }
 
 void init_prints() { Serial.begin(115200); }
 
+void lampda_print_raw(const char* format, ...)
+{
+  _lockPrintMutex();
+
+  static char buffer[1024];
+  va_list argptr;
+  va_start(argptr, format);
+  vsprintf(buffer, format, argptr);
+  va_end(argptr);
+
+  Serial.print(buffer);
+
+  _unlockPrintMutex();
+}
+
 void lampda_print(const char* format, ...)
 {
   _lockPrintMutex();

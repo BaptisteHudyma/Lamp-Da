@@ -30,7 +30,7 @@ extern "C" {
    *
    * \note There are 1,000 microseconds in a millisecond and 1,000,000 microseconds in a second.
    */
-  extern uint32_t time_us(void);
+  extern uint64_t time_us(void);
 
   /**
    * \brief Pauses the program for the amount of time (in miliseconds) specified as parameter.
@@ -45,7 +45,7 @@ extern "C" {
    *
    * \param dwUs the number of microseconds to pause (uint32_t)
    */
-  extern void delay_us(uint32_t dwUs);
+  extern void delay_us(uint64_t dwUs);
 
   // help functions
   inline uint32_t time_s() { return time_ms() / 1000; }

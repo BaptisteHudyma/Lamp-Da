@@ -2,6 +2,8 @@
 
 #include "utils.h"
 
+#include "src/system/ext/math8.h"
+
 namespace utils::ColorSpace {
 
 COLOR XYZ::get_rgb() const
@@ -165,7 +167,7 @@ COLOR LCH::get_rgb() const
 {
   const double newH = this->h * c_PI / 180;
 
-  LAB lab(this->l, std::cos(newH) * this->c, std::sin(newH) * this->c);
+  LAB lab(this->l, cos_t(newH) * this->c, sin_t(newH) * this->c);
   return lab.get_rgb();
 }
 
@@ -241,7 +243,7 @@ COLOR OKLCH::get_rgb() const
 {
   const double newH = this->h * c_PI / 180.0;
 
-  OKLAB lab(this->l, std::cos(newH) * this->c, std::sin(newH) * this->c);
+  OKLAB lab(this->l, cos_t(newH) * this->c, sin_t(newH) * this->c);
   return lab.get_rgb();
 }
 

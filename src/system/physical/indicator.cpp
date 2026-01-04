@@ -13,6 +13,10 @@
 
 namespace indicator {
 
+static_assert(redColorCorrection >= 0.0f && redColorCorrection <= 1.0f, "invalid red correction_factor");
+static_assert(greenColorCorrection >= 0.0f && greenColorCorrection <= 1.0f, "invalid green correction_factor");
+static_assert(blueColorCorrection >= 0.0f && blueColorCorrection <= 1.0f, "invalid blue correction_factor");
+
 static_assert(redColorCorrection * 255 > 32, "red correction is too small to be visible");
 static_assert(greenColorCorrection * 255 > 32, "green correction is too small to be visible");
 static_assert(blueColorCorrection * 255 > 32, "blue correction is too small to be visible");
@@ -22,7 +26,7 @@ static const DigitalPin ButtonRedPin(RedIndicator);
 static const DigitalPin ButtonGreenPin(GreenIndicator);
 static const DigitalPin ButtonBluePin(BlueIndicator);
 
-static inline float brigthnessMultiplier = 1.0f;
+static inline float brightnessMultiplier = 1.0f;
 
 void init()
 {
@@ -36,13 +40,21 @@ void init()
 void set_color(const utils::ColorSpace::RGB& c)
 {
   const COLOR& col = c.get_rgb();
-  ButtonRedPin.write(std::ceil(col.red * redColorCorrection * brigthnessMultiplier));
-  ButtonGreenPin.write(std::ceil(col.green * greenColorCorrection * brigthnessMultiplier));
-  ButtonBluePin.write(std::ceil(col.blue * blueColorCorrection * brigthnessMultiplier));
+  ButtonRedPin.write(static_cast<uint16_t>(std::ceil(col.red * redColorCorrection * brightnessMultiplier)));
+  ButtonGreenPin.write(static_cast<uint16_t>(std::ceil(col.green * greenColorCorrection * brightnessMultiplier)));
+  ButtonBluePin.write(static_cast<uint16_t>(std::ceil(col.blue * blueColorCorrection * brightnessMultiplier)));
 }
 
-void set_brightness(const uint8_t brightness) { brigthnessMultiplier = brightness / 255.0f; }
-uint8_t get_brightness() { return brigthnessMultiplier * 255; }
+void set_brightness(const uint8_t brightness)
+{
+  brightnessMultiplier = brightness / 255.0f;
+  assert(brightnessMultiplier >= 0.0f && brightnessMultiplier <= 1.0f);
+}
+uint8_t get_brightness()
+{
+  assert(brightnessMultiplier >= 0.0f && brightnessMultiplier <= 1.0f);
+  return static_cast<uint8_t>(brightnessMultiplier * 255);
+}
 
 bool breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::ColorSpace::RGB& color)
 {
@@ -57,8 +69,10 @@ bool breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::Colo
   if (timeSinceStart < periodOn)
   {
     isOn = true;
-    const float progression =
-            lmpd_constrain<float>(lmpd_map<float>(timeSinceStart, 0, periodOn, 0.0f, 1.0f), 0.0f, 1.0f);
+    const float progression = lmpd_constrain<float>(
+            lmpd_map<float>(static_cast<float>(timeSinceStart), 0, static_cast<float>(periodOn), 0.0f, 1.0f),
+            0.0f,
+            1.0f);
 
     // rising edge
     if (progression <= 0.5)

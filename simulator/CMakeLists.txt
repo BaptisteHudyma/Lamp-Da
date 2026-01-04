@@ -22,7 +22,7 @@ add_compile_definitions(
     LMBD_CPP17
 )
 
-set(SIM_BUILD_FLAGS "-O3 -g -fsanitize=address -fno-omit-frame-pointer")
+set(SIM_BUILD_FLAGS "-O3 -g -fdump-rtl-expand -fstack-usage -fsanitize=address -fno-omit-frame-pointer")
 set(SIM_LINK_FLAGS "-fsanitize=address")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SIM_BUILD_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SIM_BUILD_FLAGS} -fconcepts --template-backtrace-limit=1")

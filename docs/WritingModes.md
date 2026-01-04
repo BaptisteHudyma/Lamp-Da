@@ -24,7 +24,7 @@ struct IntroMode : public BasicMode
 {
   static void loop(auto& ctx) {
     ctx.lamp.fill(colors::Chartreuse);
-    ctx.lamp.setBrightness(ctx.lamp.tick % ctx.lamp.maxBrightness);
+    ctx.lamp.setBrightness(ctx.lamp.tick % ctx.lamp.getMaxBrightness());
   }
 };
 
@@ -138,7 +138,7 @@ Coming back at `00_intro_mode.hpp` we see that it implements it as follows:
 ```cpp
   static void loop(auto& ctx) {
     ctx.lamp.fill(colors::Chartreuse);
-    ctx.lamp.setBrightness(ctx.lamp.tick % ctx.lamp.maxBrightness);
+    ctx.lamp.setBrightness(ctx.lamp.tick % ctx.lamp.getMaxBrightness());
   }
 ```
 
@@ -183,7 +183,7 @@ struct IntroMode : public BasicMode
       ctx.lamp.fill(colors::Chartreuse);
     }
 
-    ctx.lamp.setBrightness(ctx.lamp.tick % ctx.lamp.maxBrightness);
+    ctx.lamp.setBrightness(ctx.lamp.tick % ctx.lamp.getMaxBrightness());
   }
 };
 ```

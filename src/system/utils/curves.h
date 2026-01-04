@@ -26,27 +26,54 @@ public:
 
   LinearCurve(const std::vector<point_t>& points)
   {
+    // first fail fast
+    assert(points.size() >= 2 && "Linear curve must have more than 1 points");
+
     pts = points;
+
+    for (const auto& p: pts)
+    {
+      // check A
+      assert(not std::isnan(p.x) && "invalid value in curve parameters");
+      assert(std::isfinite(p.x) && "invalid value in curve parameters");
+      assert(not std::isnan(p.y) && "invalid value in curve parameters");
+      assert(std::isfinite(p.y) && "invalid value in curve parameters");
+    }
 
     // sort the vector by the x coordinate
     auto lbd = [](const point_t& a, const point_t& b) {
       return a.x < b.x;
     };
     std::sort(pts.begin(), pts.end(), lbd);
+
+    // remove duplicates (after sorting)
+    std::vector<point_t> nPoints;
+    nPoints.reserve(pts.size());
+
+    point_t lastPt = pts[0];
+    nPoints.emplace_back(lastPt);
+    for (size_t i = 1; i < pts.size(); i++)
+    {
+      const auto& p = pts[i];
+      if (lastPt.x != p.x and lastPt.y != p.y)
+        nPoints.emplace_back(p);
+      lastPt = p;
+    }
+    // last check
+    pts = nPoints;
+    assert(pts.size() >= 2 && "Linear curve must have more than 1 points");
   }
 
   U sample(const T x) const
   {
-    // error
-    if (pts.size() < 2)
-      return 0;
-
     point_t lastPt = pts[0];
-    // low bound failure
-    if (x < lastPt.x)
-    {
+    // bounds failure
+    if (std::isnan(x))
       return lastPt.y;
-    }
+    if (x <= lastPt.x)
+      return lastPt.y;
+    if (x >= pts.back().x)
+      return pts.back().y;
 
     for (size_t i = 1; i < pts.size(); ++i)
     {

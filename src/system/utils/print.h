@@ -13,6 +13,9 @@
 
 EXTERNC void lampda_print(const char* format, ...);
 
+/// raw print, no system additional logs
+EXTERNC void lampda_print_raw(const char* format, ...);
+
 #undef EXTERNC
 
 #endif

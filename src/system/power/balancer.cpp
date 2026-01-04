@@ -11,7 +11,7 @@
 #include <cstdint>
 
 // use depend of component
-#include "depends/BQ76905/BQ76905.h"
+#include "src/depends/BQ76905/BQ76905.h"
 
 namespace balancer {
 
@@ -312,6 +312,9 @@ void loop()
       _status.batteryVoltages_mV[i] = get_battery_voltage_mv(i);
       _status.isBalancing[i] = is_balancing(i);
 
+      // do not balance outside of the voltage limits
+      // this voltage limit is high enough to detect disconnected cell, but low enough to keep full cells.
+      // Full cells MUST be balanced in priority
       if (not is_cell_voltage_valid(_status.batteryVoltages_mV[i]))
       {
         isBalancingAllowed = false;

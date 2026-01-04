@@ -319,6 +319,24 @@ static constexpr PaletteTy PaletteOceanColors = {MidnightBlue,
                                                  Aqua,
                                                  LightSkyBlue};
 
+/// Water colors, blues
+static constexpr PaletteTy PaletteWaterColors = {MidnightBlue,
+                                                 DarkBlue,
+                                                 MidnightBlue,
+                                                 Navy,
+                                                 DarkBlue,
+                                                 MediumBlue,
+                                                 MediumBlue,
+                                                 Teal,
+                                                 CadetBlue,
+                                                 Blue,
+                                                 DarkCyan,
+                                                 CornflowerBlue,
+                                                 Aquamarine,
+                                                 MediumBlue,
+                                                 Aqua,
+                                                 LightSkyBlue};
+
 /// Forest colors, greens
 static constexpr PaletteTy PaletteForestColors = {DarkGreen,
                                                   DarkGreen,

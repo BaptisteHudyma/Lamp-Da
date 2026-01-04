@@ -16,14 +16,14 @@ void button_clicked_default(const uint8_t clicks)
       if (manager.get_active_group() == 0)
       {
         // if at max brightness, go to saved brightness
-        if (manager.lamp.getBrightness() == maxBrightness)
+        if (manager.lamp.getBrightness() == manager.lamp.getMaxBrightness())
         {
           manager.lamp.restoreBrightness();
         }
         // else set max brightness
         else
         {
-          manager.lamp.tempBrightness(maxBrightness);
+          manager.lamp.tempBrightness(manager.lamp.getMaxBrightness());
         }
       }
       else
@@ -32,7 +32,9 @@ void button_clicked_default(const uint8_t clicks)
 
     case 3:
       // 3C at max brightness will produce a light boost (dangerous for the strip if held for a long time)
-      if (manager.get_active_group() == 0 and manager.lamp.getBrightness() == maxBrightness)
+      if (manager.get_active_group() == 0 and
+          // check that brightness is at the absolute maximum level
+          manager.lamp.getBrightness() == brightness::absoluteMaximumBrightness)
       {
         // write a power boost (dangerous) for a limited time
         outputPower::write_temporary_output_limits(stripInputVoltage_mV * 1.2f, 5000, 5000);

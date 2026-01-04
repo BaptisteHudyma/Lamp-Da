@@ -98,6 +98,7 @@ void power_on_sequence() {}
 void power_off_sequence() {}
 
 void brightness_update(const brightness_t) {}
+void sunset_timer_update(const float progress) {}
 void write_parameters() {}
 void read_parameters() {}
 void button_clicked_default(const uint8_t) {}

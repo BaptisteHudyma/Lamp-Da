@@ -120,6 +120,13 @@ void set_power_off()
 
 void go_to_external_battery_mode() { power::go_to_otg_mode(); }
 
+namespace sunset {
+
+// signal update to user
+void progress_update(const float progress) { user::sunset_timer_update(progress); }
+
+} // namespace sunset
+
 // allow system to be powered if no hardware alert and power is setup
 bool can_system_allowed_to_be_powered()
 {
@@ -187,6 +194,8 @@ void setup_clean_sleep_flag()
   fileSystem::system::set_value(cleanSleepKey, 0);
   // write parameters, if a crash happens, we will notice a dirty flag
   fileSystem::system::write_to_file();
+  // temp shutdown
+  fileSystem::shutdown();
 }
 
 void write_parameters()
@@ -205,8 +214,11 @@ void write_parameters()
 
   user::write_parameters();
 
+  // write all
   fileSystem::user::write_to_file();
   fileSystem::system::write_to_file();
+  // close filesystem
+  fileSystem::shutdown();
 }
 
 // user code is running when state is output
@@ -218,6 +230,9 @@ bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::
  */
 void true_power_off()
 {
+  // unmount filesystem
+  fileSystem::shutdown();
+
   // stop i2c interfaces
   for (uint8_t i = 0; i < get_wire_interface_count(); ++i)
   {
@@ -305,6 +320,9 @@ void handle_error_state()
 
 void handle_start_logic_state()
 {
+  // set clean flag early on
+  setup_clean_sleep_flag();
+
   // prevent early charging
   power::enable_charge(false);
 
@@ -319,7 +337,14 @@ void handle_start_logic_state()
     go_to_error_state("power system in error state in start logic state");
     return;
   }
+  if (not power::is_started())
+  {
+    // wait until power is started
+    delay_ms(1);
+    return;
+  }
 
+  //
   if (did_woke_up_from_power())
   {
     // signal to the alert manager that we started by power input
@@ -335,9 +360,6 @@ void handle_start_logic_state()
     // start the system normally
     mainMachine.set_state(BehaviorStates::PRE_OUTPUT_LIGHT);
   }
-
-  // set clean flag early on
-  setup_clean_sleep_flag();
 }
 
 void handle_pre_charger_operation_state()
@@ -470,7 +492,7 @@ void handle_pre_output_light_state()
   {
     if (not isMessageDisplayed)
     {
-      lampda_print("not output allowed");
+      lampda_print("no output allowed");
       isMessageDisplayed = true;
     }
     // check if we may go to sleep
@@ -521,7 +543,7 @@ void handle_pre_output_light_state()
 
   power::go_to_output_mode();
 
-  // update brigthness with saved brightness
+  // update brightness with saved brightness
   brightness::update_brightness(brightness::get_saved_brightness());
 
   // let the user power on the system
@@ -580,14 +602,11 @@ void handle_output_light_state()
     // user loop call
     user::loop();
 
-// TODO issue #136
-#if 0
     const auto& chargerState = charger::get_state();
     if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)
     {
-      // TODO: alert that the battery is missing
+      alerts::manager.raise(alerts::Type::BATTERY_MISSING);
     }
-#endif
   }
 }
 

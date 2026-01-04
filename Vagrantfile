@@ -48,7 +48,6 @@ Vagrant.configure("2") do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   config.vm.synced_folder "./src", "/LampColorControler/src"
-  config.vm.synced_folder "./depends", "/LampColorControler/depends"
   config.vm.synced_folder "./flashInfo", "/LampColorControler/flashInfo"
   config.vm.synced_folder "./scripts", "/LampColorControler/scripts"
   config.vm.synced_folder "./simulator", "/LampColorControler/simulator"
@@ -57,7 +56,7 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder ".", "/LampColorControler", type: "rsync",
     rsync__auto: false,
     rsync__exclude: [".vagrant", "_build", "_vagrant_build", "venv",
-                     "docs", "src", "depends", "flashInfo", "scripts", "simulator", "tools",
+                     "docs", "src", "flashInfo", "scripts", "simulator", "tools",
                      "objects", "electrical", "Medias"]
 
   # Disable the default share of the current code directory. Doing this

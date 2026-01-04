@@ -41,6 +41,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   static constexpr bool isManager = std::is_same_v<LocalModeTy, ModeManagerTy>;
 
   // useful proxies (exposes mode properties)
+  static constexpr bool hasSunsetAnimation = LocalModeTy::hasSunsetAnimation; ///< \private
   static constexpr bool hasBrightCallback = LocalModeTy::hasBrightCallback;   ///< \private
   static constexpr bool hasSystemCallbacks = LocalModeTy::hasSystemCallbacks; ///< \private
   static constexpr bool requireUserThread = LocalModeTy::requireUserThread;   ///< \private
@@ -48,6 +49,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   static constexpr bool hasButtonCustomUI = LocalModeTy::hasButtonCustomUI;   ///< \private
 
   // more proxies (exposes tables of mode properties)
+  static constexpr auto everySunsetCallback = LocalModeTy::everySunsetCallback;       ///< \private
   static constexpr auto everyBrightCallback = LocalModeTy::everyBrightCallback;       ///< \private
   static constexpr auto everySystemCallbacks = LocalModeTy::everySystemCallbacks;     ///< \private
   static constexpr auto everyRequireUserThread = LocalModeTy::everyRequireUserThread; ///< \private
@@ -219,6 +221,10 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
       value = 0;
 
     auto manager = modeManager.get_context();
+
+    // cancel any blip
+    // TODO: this should be in quit_mode
+    manager.cancel_blip();
 
     // if next mode is the same as current one, add a blip to help user differenciate
     if (modeManager.activeIndex.modeIndex == value)
@@ -484,6 +490,20 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     ctx.lamp.blip(duration);
   }
 
+  void cancel_blip() const
+  {
+    auto ctx = modeManager.get_context();
+    // cancel skip
+    ctx.state.skipNextFrameEffect = 0;
+    ctx.lamp.cancel_blip();
+  }
+
+  bool is_bliping() const
+  {
+    auto ctx = modeManager.get_context();
+    return ctx.lamp.is_bliping();
+  }
+
   /** \brief Skip the first few LEDs update during several frames
    *
    * Next calls to @ref modes::hardware::LampTy.setPixelColor() no longer write
@@ -574,6 +594,22 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
       LocalStore::template migrateStoreIfNeeded<LocalModeTy::storeId>();
     }
     LocalModeTy::on_enter_mode(*this);
+  }
+
+  /// Binds to local BasicMode::on_exit_mode()
+  void LMBD_INLINE on_exit_mode()
+  {
+    //
+    LocalModeTy::on_exit_mode(*this);
+  }
+
+  /// Binds to local BasicMode::sunset_update()
+  void LMBD_INLINE sunset_update(LMBD_USED float progress)
+  {
+    if constexpr (LocalModeTy::hasSunsetAnimation)
+    {
+      LocalModeTy::sunset_update(*this, progress);
+    }
   }
 
   /// Binds to local BasicMode::brightness_update()

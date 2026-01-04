@@ -39,6 +39,10 @@ enum class Type : uint32_t
   SYSTEM_SLEEP_SKIPPED = 1 << 15, // the system skipped the sleep clean phase (crash ? new flash ?)
 
   USB_PORT_SHORT = 1 << 16, // the usb port is dirty, or wet
+
+  BATTERY_MISSING = 1 << 17, // no battery plugged in the system
+
+  CHARGER_ERROR = 1 << 18, // the charger signaled an error
 };
 
 class AlertManager_t

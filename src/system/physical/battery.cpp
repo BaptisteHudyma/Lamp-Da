@@ -3,11 +3,15 @@
 #include "src/system/logic/alerts.h"
 
 #include "src/system/utils/constants.h"
+#include "src/system/utils/time_utils.h"
 
 #include "src/system/power/charger.h"
 #include "src/system/power/balancer.h"
 
 namespace battery {
+
+// no battery present after this timing will raise the alert
+static constexpr uint32_t noBatteryAlertRaiseTiming_ms = 1500;
 
 static uint16_t s_batteryVoltage_mV = 0;
 
@@ -85,19 +89,27 @@ bool check_charger_battery_voltage()
  */
 uint16_t get_raw_battery_voltage_mv()
 {
+  // absolute minimum/maximum battery pack voltage
+  static constexpr uint16_t minBatteryVoltage_mV = minSingularBatteryVoltage_mV * batteryCount;
+  static constexpr uint16_t maxBatteryVoltage_mV = maxSingularBatteryVoltage_mV * batteryCount;
+
   // WILL UPDATE s_batteryVoltage_mV VALUE if they return true
   if (not check_balancer_battery_voltage() and not check_charger_battery_voltage())
   {
     // else: not ready yet ? error, return max voltage for now
-    // TODO: after a set time, return an error, the system should not be used without batteries
-    return 0;
+    // after a set time, return an error, the system should not be used without batteries
+    if (time_ms() > noBatteryAlertRaiseTiming_ms)
+    {
+      alerts::manager.raise(alerts::Type::BATTERY_MISSING);
+    }
+    return maxBatteryVoltage_mV;
   }
 
-  // absolute minimum/maximum battery pack voltage
-  static constexpr uint16_t minBatteryVoltage_mV = minSingularBatteryVoltage_mV * batteryCount;
-  static constexpr uint16_t maxBatteryVoltage_mV = maxSingularBatteryVoltage_mV * batteryCount;
   // check battery pack validity (in bounds with some margin)
-  if (s_batteryVoltage_mV < minBatteryVoltage_mV or s_batteryVoltage_mV > maxBatteryVoltage_mV)
+  if (
+          // minimum limit is not a hard stop, battery can be deeply discharged
+          // s_batteryVoltage_mV < minBatteryVoltage_mV or
+          s_batteryVoltage_mV > maxBatteryVoltage_mV)
   {
     alerts::manager.raise(alerts::Type::BATTERY_READINGS_INCOHERENT);
     // return a default value

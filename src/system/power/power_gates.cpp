@@ -12,8 +12,10 @@ bool isInit = false;
 
 // if this is too low, there is a risk that both gate can be active at the same time
 // potentially destructive behavior
-constexpr uint32_t gateSwitchDelay_ms = 50;
+static constexpr uint32_t gateSwitchDelay_ms = 50;
 
+/// max off delay of the gate blip
+static constexpr uint32_t BLIP_MAX_TIME = 10000;
 // wake up time for a blip output gate. DANGER
 static uint32_t blipWakeUpTime = 0;
 
@@ -24,6 +26,23 @@ namespace __private {
 const DigitalPin enableVbusGate(DigitalPin::GPIO::Output_EnableVbusGate);
 const DigitalPin enablePowerGate(DigitalPin::GPIO::Output_EnableOutputGate);
 } // namespace __private
+
+bool isVbusGateEnabled = false;
+bool isVbusGateSwitching = false;
+uint32_t vbusGateStartSwitchingTime = 0;
+
+bool isPowerGateEnabled = false;
+bool isPowerGateSwitching = false;
+uint32_t powerGateStartSwitchingTime = 0;
+
+///
+bool is_power_gate_switched() { return time_ms() - powerGateStartSwitchingTime > gateSwitchDelay_ms; }
+bool is_vbus_gate_switched() { return time_ms() - vbusGateStartSwitchingTime > gateSwitchDelay_ms; }
+
+bool is_power_gate_enabled() { return isPowerGateReallyEnabled; }
+
+/// check if power gate is enabled
+bool __is_power_gate_enabled() { return isPowerGateEnabled and is_power_gate_switched(); }
 
 void enable_gate(bool isVbusGate)
 {
@@ -44,14 +63,6 @@ void enable_gate(bool isVbusGate)
     lampda_print("vbus gate enabled");
 }
 
-bool isVbusGateEnabled = false;
-bool isVbusGateSwitching = false;
-uint32_t vbusGateStartSwitchingTime = 0;
-
-bool isPowerGateEnabled = false;
-bool isPowerGateSwitching = false;
-uint32_t powerGateStartSwitchingTime = 0;
-
 void disable_vbus_gate()
 {
   if (__private::enableVbusGate.is_high())
@@ -64,6 +75,9 @@ void disable_vbus_gate()
 
 void disable_power_gate()
 {
+  // reset blip time
+  blipWakeUpTime = 0;
+
   if (__private::enablePowerGate.is_high())
     lampda_print("power gate disabled");
 
@@ -91,11 +105,6 @@ void switch_delayed_power_gate(bool enable)
     isPowerGateEnabled = enable;
   }
 }
-
-bool is_power_gate_switched() { return time_ms() - powerGateStartSwitchingTime > gateSwitchDelay_ms; }
-bool is_vbus_gate_switched() { return time_ms() - vbusGateStartSwitchingTime > gateSwitchDelay_ms; }
-
-bool is_power_gate_enabled() { return isPowerGateReallyEnabled; }
 
 void init()
 {
@@ -127,10 +136,7 @@ void loop()
     // prepare blip wake up
     if (blipWakeUpTime != 0 && time_ms() >= blipWakeUpTime)
     {
-      // REALLY DANGEROUS STUFF : enable power gate without checks
-      __private::enablePowerGate.set_high(true);
-      // reset time
-      blipWakeUpTime = 0;
+      power::cancel_blip();
     }
   }
   else
@@ -150,7 +156,7 @@ void blip(const uint32_t timing)
 #endif
 
   // hard limit on blip
-  if (timing <= 0 or timing > 1000 or not isPowerGateReallyEnabled)
+  if (timing <= 0 or timing > BLIP_MAX_TIME or not isPowerGateReallyEnabled)
   {
     blipWakeUpTime = 0;
     return;
@@ -162,9 +168,22 @@ void blip(const uint32_t timing)
   __private::enablePowerGate.set_high(false);
 }
 
-} // namespace power
+void cancel_blip()
+{
+  // This is dangerous for the hardware, dont touch if you dont know how
 
-bool __is_power_gate_enabled() { return isPowerGateEnabled and is_power_gate_switched(); }
+  if (is_bliping() && isPowerGateReallyEnabled)
+  {
+    // REALLY DANGEROUS STUFF : enable power gate without checks
+    __private::enablePowerGate.set_high(true);
+  }
+  // reset time
+  blipWakeUpTime = 0;
+}
+
+bool is_bliping() { return blipWakeUpTime > 0; }
+
+} // namespace power
 
 void enable_power_gate()
 {

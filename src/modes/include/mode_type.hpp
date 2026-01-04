@@ -68,11 +68,27 @@ struct BasicMode
 
   /** \brief Custom callback when mode gains focus (optional)
    *
-   * Reset function is called once whenever mode is picked as the active mode
-   *
    * \param[in] ctx The current context
    */
   static void on_enter_mode(auto& ctx) { return; }
+
+  /** \brief Custom callback when mode goes outside of focus (optional)
+   *
+   * \param[in] ctx The current context
+   */
+  static void on_exit_mode(auto& ctx) { return; }
+
+  /// Toggles the use of custom BasicMode::sunset_update() callback
+  static constexpr bool hasSunsetAnimation = false;
+
+  /** \brief Custom callback when sunset mode is updated (optional)
+   *
+   * Callback active only if BasicMode::hasSunsetAnimation is True
+   *
+   * \param[in] ctx The current context
+   * \param[in] progress Between 0 and 1, progress of the sunset. At 1, the system turns off
+   */
+  static void sunset_update(auto& ctx, float progress) { return; }
 
   /// Toggles the use of custom BasicMode::brightness_update() callback
   static constexpr bool hasBrightCallback = false;
@@ -250,6 +266,7 @@ struct BasicMode
   BasicMode& operator=(const BasicMode&) = delete; ///< \private
 
   // polyfill (to be ignored in this context)
+  static constexpr bool everySunsetCallback = false;    ///< \private
   static constexpr bool everyBrightCallback = false;    ///< \private
   static constexpr bool everySystemCallbacks = false;   ///< \private
   static constexpr bool everyRequireUserThread = false; ///< \private

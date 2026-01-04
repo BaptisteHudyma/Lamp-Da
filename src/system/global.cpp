@@ -104,10 +104,13 @@ void main_setup()
   // set random seed
   random16_set_seed(get_device_serial_number() & 0xffff);
 
-  // do some stuff before starting the peripherals
-
-  // start the file system
-  fileSystem::setup();
+  //
+  if (is_started_from_watchdog())
+  {
+    // try to start fresh: the system can get stuck with a broken filesystem
+    // TODO: find why !!!!
+    fileSystem::clear_internal_fs();
+  }
 
   // check if we are in first boot mode (read parameters fails)
   const bool isFirstBoot = not behavior::read_parameters();
@@ -173,8 +176,6 @@ void main_setup()
   // let the user start in unpowered mode
   user::power_off_sequence();
 
-  // start all power threads
-  power::start_threads();
   // start sunset timer thread
   sunset::init();
 

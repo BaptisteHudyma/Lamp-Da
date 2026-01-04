@@ -27,12 +27,12 @@
 // expected firmware version, will not compile if missmatch
 // Update your dependencies : adafruit lampda_nrf52840
 #define EXPECTED_FIRMWARE_VERSION_MAJOR 1
-#define EXPECTED_FIRMWARE_VERSION_MINOR 2
+#define EXPECTED_FIRMWARE_VERSION_MINOR 3
 
 // Base software version, common to all systems
 // increment for every  release
 static constexpr uint8_t BASE_SOFTWARE_VERSION_MAJOR = 1;
-static constexpr uint8_t BASE_SOFTWARE_VERSION_MINOR = 5;
+static constexpr uint8_t BASE_SOFTWARE_VERSION_MINOR = 6;
 
 using byte = uint8_t;
 
@@ -51,6 +51,7 @@ static constexpr float imuToCircuitRotationZ_rad = -9.0f * c_degreesToRadians;
 #else
 static constexpr float imuToCircuitRotationZ_rad = -4 * c_degreesToRadians;
 #endif
+
 static constexpr float imuToCircuitPositionX_m = 8.915f / 1000.0f;
 static constexpr float imuToCircuitPositionY_m = -5.769f / 1000.0f;
 static constexpr float imuToCircuitPositionZ_m = 0.0f / 1000.0f;
@@ -104,7 +105,7 @@ static constexpr uint16_t batteryMinVoltage_mV = minLiionVoltage_mV * batteryCou
 static constexpr uint16_t batteryMinVoltageSafe_mV = minSafeLiionVoltage_mV * batteryCount;
 
 // physical parameters computations
-static constexpr float totalCons_Watt = consWattByMeter * ledStripLenght_mm / 1000.0f;
+static constexpr float totalCons_Watt = consWattByMeter * ledStripLength_mm / 1000.0f;
 static constexpr float maxStripConsumption_A = 1000.0f * totalCons_Watt / stripInputVoltage_mV;
 
 // compute battery limits from c-rates
@@ -120,12 +121,17 @@ static constexpr uint32_t batteryTypicalPower_mWH = batteryCapacity_mAH * batter
  */
 inline bool is_cell_voltage_valid(const uint16_t cellVoltage_mv)
 {
-  return cellVoltage_mv > minSingularBatteryVoltage_mV && cellVoltage_mv < maxSingularBatteryVoltage_mV;
+  return
+          // minimum limit is not a hard stop, battery can be deeply discharged
+          // cellVoltage_mv > minSingularBatteryVoltage_mV &&
+          cellVoltage_mv < maxSingularBatteryVoltage_mV;
 }
 
 using brightness_t = uint16_t;
-static constexpr brightness_t maxBrightness = 1024;
+namespace brightness {
+static constexpr brightness_t absoluteMaximumBrightness = 1024;
 // min brightness is always zero
+} // namespace brightness
 
 // asserts
 static_assert(maxSystemTemp_c < criticalSystemTemp_c, "max system temp must be less than critical temp");

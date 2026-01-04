@@ -250,6 +250,18 @@ Reading get_filtered_reading(const bool resetFilter)
 
   constexpr float oneG = 9.80665f;
 
+// TODO issue #132 remove when the mock components will be running
+#ifdef LMBD_SIMULATION
+  filtered.accel.x = 0.0;
+  filtered.accel.y = 0.0;
+  filtered.accel.z = -oneG;
+
+  filtered.gyro.x = 0.0;
+  filtered.gyro.y = 0.0;
+  filtered.gyro.z = 0.0;
+  return filtered;
+#else
+
   const Reading& read = imuInstance.get_reading();
   if (resetFilter)
   {
@@ -269,6 +281,7 @@ Reading get_filtered_reading(const bool resetFilter)
     filtered.gyro.y += 0.1f * (read.gyro.y - filtered.gyro.y);
     filtered.gyro.z += 0.1f * (read.gyro.z - filtered.gyro.z);
   }
+#endif
 
   // transform to lamp body space
   // this new object is necessary or the computation returns garbage. TODO: WHY

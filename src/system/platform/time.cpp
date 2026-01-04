@@ -8,10 +8,10 @@
 
 uint32_t time_ms(void) { return millis(); }
 
-uint32_t time_us(void) { return micros(); }
+uint64_t time_us(void) { return micros(); }
 
 void delay_ms(uint32_t dwMs) { delay(dwMs); }
 
-void delay_us(uint32_t dwUs) { delayMicroseconds(dwUs); }
+void delay_us(uint64_t dwUs) { delayMicroseconds(dwUs); }
 
 #endif

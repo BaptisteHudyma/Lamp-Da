@@ -1,5 +1,4 @@
-
-#include "src/system/physical/imu.h"
+#include "src/modes/include/imu/utils.hpp"
 
 namespace modes::custom::nudz {
 
@@ -24,6 +23,8 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
     uint32_t last_tick;
     int8_t xdirection = 1;
     int8_t ydirection = 0;
+
+    imu::ImuEventTy<> imuEvent;
   };
 
   static void on_enter_mode(auto& ctx)
@@ -36,9 +37,6 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
 
   static void loop(auto& ctx)
   {
-    // ctx.lamp.fill(colors::Green);
-    // ctx.lamp.setBrightness(ctx.lamp.tick % ctx.lamp.maxBrightness);
-
     float spdRange = ctx.state.maxSpeed - ctx.state.minSpeed;
     float speed = ctx.state.minSpeed + (float(ctx.get_active_custom_ramp()) / 255) * spdRange;
     // ease stop at 0
@@ -198,6 +196,8 @@ struct NudzBeerGlassMode : public BasicMode
 
   static void on_enter_mode(auto& ctx)
   {
+    ctx.state.imuEvent.reset(ctx);
+
     // reset stateful events
     ctx.state.level = 10.f;
     ctx.state.ampl = 0.02f;
@@ -213,11 +213,12 @@ struct NudzBeerGlassMode : public BasicMode
     ctx.state.speeds = std::vector<float>(ctx.lamp.maxWidth, 0.f);
     ctx.state.nbubbles = 20;
     ctx.state.bubbles = std::vector<BubbleTy>(ctx.state.nbubbles, BubbleTy());
-    imu::get_filtered_reading(true);
   }
 
   static void loop(auto& ctx)
   {
+    ctx.state.imuEvent.update(ctx);
+
     updateLevels(ctx);
 
     // display
@@ -236,7 +237,7 @@ struct NudzBeerGlassMode : public BasicMode
     uint32_t nx = ctx.lamp.maxWidth;
     uint32_t ny = ctx.lamp.maxHeight;
 
-    const auto& reading = imu::get_filtered_reading(false);
+    const auto& reading = ctx.state.imuEvent.lastReading;
     const auto accel = reading.accel;
 
     auto& levels = ctx.state.levels;
@@ -285,7 +286,7 @@ struct NudzBeerGlassMode : public BasicMode
       // angular coords of the pixel
       float angle = float(x) / nx * M_PI * 2;
       // normal and tangent to the lamp
-      vec2d norm(cos(angle), sin(angle));
+      vec2d norm(cos_t(angle), sin_t(angle));
       vec2d tan(-norm.y, norm.x);
       // we consider the accel will push pixels away from the wall
       // in the direction opposite to the force (if we consider the lamp
@@ -433,7 +434,7 @@ struct NudzBeerGlassMode : public BasicMode
 
   static void drawAccel(auto& ctx)
   {
-    const auto& reading = imu::get_filtered_reading(false);
+    const auto& reading = ctx.state.imuEvent.lastReading;
     const auto accel = reading.accel;
 
     int32_t ax = int32_t(accel.x);

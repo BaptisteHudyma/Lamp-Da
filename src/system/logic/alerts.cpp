@@ -18,6 +18,7 @@
 #include "src/system/utils/time_utils.h"
 
 #include "src/system/power/charger.h"
+#include "src/system/power/balancer.h"
 
 namespace alerts {
 
@@ -77,6 +78,10 @@ inline const char* AlertsToText(const Type type)
       return "SYSTEM_SLEEP_SKIPPED";
     case Type::USB_PORT_SHORT:
       return "USB_PORT_SHORT";
+    case Type::BATTERY_MISSING:
+      return "BATTERY_MISSING";
+    case Type::CHARGER_ERROR:
+      return "CHARGER_ERROR";
     default:
       return "UNSUPPORTED TYPE";
   }
@@ -217,12 +222,29 @@ struct Alert_BatteryCritical : public AlertBase
   {
     if (not is_battery_alert_ready())
       return false;
+    if (power::is_in_error_state())
+      return false;
     const auto& chargerState = charger::get_state();
+    if (not chargerState.areMeasuresOk)
+      return false;
+
+// TODO issue #132 remove when the mock components will be running
+#ifndef LMBD_SIMULATION
+    if (not balancer::get_status().is_valid())
+      return false;
+#endif
+
+    if (manager.is_raised(Type::BATTERY_MISSING) or manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
+      return false;
+
     return not chargerState.is_effectivly_charging() and __internal::get_battery_level() < batteryCritical;
   }
 
   bool should_be_cleared() const override
   {
+    // incoherent means no other battery alerts
+    if (manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
+      return true;
     // battery low can only be cleared on charging operations
     const auto& chargerState = charger::get_state();
     return chargerState.is_effectivly_charging();
@@ -249,8 +271,21 @@ struct Alert_BatteryLow : public AlertBase
   {
     if (not is_battery_alert_ready())
       return false;
+    if (power::is_in_error_state())
+      return false;
+
+// TODO issue #132 remove when the mock components will be running
+#ifndef LMBD_SIMULATION
+    if (not balancer::get_status().is_valid())
+      return false;
+#endif
 
     const auto& chargerState = charger::get_state();
+    if (not chargerState.areMeasuresOk)
+      return false;
+    if (manager.is_raised(Type::BATTERY_MISSING) or manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
+      return false;
+
     const auto& batteryLevel = __internal::get_battery_level();
     const bool isBatteryLow = not chargerState.is_effectivly_charging() and batteryLevel < batteryLow;
     // battery low will be raise, notify bluetooth
@@ -261,6 +296,10 @@ struct Alert_BatteryLow : public AlertBase
 
   bool should_be_cleared() const override
   {
+    // incoherent means no other battery alerts
+    if (manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
+      return true;
+
     // battery low can only be cleared on charging operations
     const auto& chargerState = charger::get_state();
     return chargerState.is_effectivly_charging();
@@ -269,13 +308,14 @@ struct Alert_BatteryLow : public AlertBase
   void execute() const override
   {
     // limit brightness to quarter of the max value
-    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.25 * maxBrightness);
+    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.25 * brightness::absoluteMaximumBrightness);
 
     // save some battery
     bluetooth::stop_bluetooth_advertising();
 
     brightness::set_max_brightness(clampedBrightness);
     brightness::update_brightness(brightness::get_brightness());
+    brightness::update_saved_brightness();
   }
 
   bool show() const override
@@ -285,6 +325,21 @@ struct Alert_BatteryLow : public AlertBase
   }
 
   Type get_type() const override { return Type::BATTERY_LOW; }
+};
+
+struct Alert_BatteryMissing : public AlertBase
+{
+  bool show() const override
+  {
+    //
+    return indicator::blink(100, 100, {utils::ColorSpace::GREEN, utils::ColorSpace::RED});
+  }
+
+  Type get_type() const override { return Type::BATTERY_MISSING; }
+
+  bool should_prevent_lamp_output() const override { return true; }
+  bool should_prevent_battery_charge() const override { return true; }
+  bool should_prevent_usb_port_use() const override { return true; }
 };
 
 struct Alert_LongLoopUpdate : public AlertBase
@@ -311,10 +366,11 @@ struct Alert_TempTooHigh : public AlertBase
   void execute() const override
   {
     // limit brightness to half the max value
-    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.5 * maxBrightness);
+    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.5 * brightness::absoluteMaximumBrightness);
 
     brightness::set_max_brightness(clampedBrightness);
     brightness::update_brightness(brightness::get_brightness());
+    brightness::update_saved_brightness();
   }
 
   bool show() const override { return indicator::blink(300, 300, utils::ColorSpace::DARK_ORANGE); }
@@ -367,6 +423,16 @@ struct Alert_HardwareAlert : public AlertBase
   bool should_prevent_lamp_output() const override { return true; }
   bool should_prevent_battery_charge() const override { return true; }
   bool should_prevent_usb_port_use() const override { return true; }
+};
+
+struct Alert_ChargerError : public AlertBase
+{
+  bool show() const override
+  {
+    return indicator::blink(100, 100, {utils::ColorSpace::WHITE, utils::ColorSpace::BLACK});
+  }
+
+  Type get_type() const override { return Type::CHARGER_ERROR; }
 };
 
 struct Alert_FavoriteSet : public AlertBase
@@ -452,10 +518,9 @@ struct Alert_SunsetTimerSet : public AlertBase
   bool show() const override
   {
     // red to green
-    const auto buttonColor =
-            utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
-                                                       utils::ColorSpace::GREEN.get_rgb().color,
-                                                       battery::get_battery_minimum_cell_level() / 10000.0f));
+    const auto& batteryLevel = __internal::get_battery_level();
+    const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(
+            utils::ColorSpace::RED.get_rgb().color, utils::ColorSpace::GREEN.get_rgb().color, batteryLevel / 10000.0f));
 
     return indicator::breeze(5000, 5000, buttonColor);
   }
@@ -494,26 +559,30 @@ struct Alert_UsbPortShort : public AlertBase
 };
 
 // Alerts must be sorted by importance, only the first activated one will be shown
-AlertBase* allAlerts[] = {new Alert_SystemShutdownFailed,
-                          new Alert_HardwareAlert,
-                          new Alert_TempCritical,
-                          new Alert_UsbPortShort,
-                          //
-                          new Alert_SkippedCleanSleep,
-                          new Alert_BatteryReadingIncoherent,
-                          // battery and temp related
-                          new Alert_TempTooHigh,
-                          new Alert_BatteryCritical,
-                          new Alert_BatteryLow,
-                          //
-                          new Alert_OtgFailed,
-                          new Alert_SystemInErrorState,
-                          new Alert_SystemInLockout,
-                          // user side low priority alerts
-                          new Alert_LongLoopUpdate,
-                          new Alert_BluetoothAdvertisement,
-                          new Alert_FavoriteSet,
-                          new Alert_SunsetTimerSet};
+AlertBase* allAlerts[] = {
+        new Alert_SystemShutdownFailed,
+        new Alert_BatteryMissing, // if battery is missing, the system will also have the hardware alert
+        new Alert_HardwareAlert,
+        new Alert_TempCritical,
+        new Alert_UsbPortShort,
+        //
+        new Alert_SkippedCleanSleep,
+        // battery and temp related
+        new Alert_BatteryCritical,
+        new Alert_TempTooHigh,
+        new Alert_BatteryReadingIncoherent,
+        new Alert_BatteryLow,
+        //
+        new Alert_OtgFailed,
+        new Alert_SystemInErrorState,
+        new Alert_SystemInLockout,
+        // user side low priority alerts
+        new Alert_LongLoopUpdate,
+        new Alert_BluetoothAdvertisement,
+        new Alert_FavoriteSet,
+        new Alert_SunsetTimerSet,
+
+        new Alert_ChargerError};
 
 void update_alerts()
 {
@@ -565,11 +634,18 @@ void handle_all(const bool shouldIgnoreAlerts)
   // update all alerts
   update_alerts();
 
-  if (shouldIgnoreAlerts or manager.is_clear())
-  {
-    // no alerts: reset the max brightness
-    brightness::set_max_brightness(maxBrightness);
+  const bool isNoAlertsRaised = manager.is_clear();
 
+  // no alerts: reset the max brightness
+  if (isNoAlertsRaised)
+  {
+    // This should be called on no alerts only, not ignore alerts
+    brightness::set_max_brightness(brightness::absoluteMaximumBrightness);
+  }
+
+  //
+  if (shouldIgnoreAlerts or isNoAlertsRaised)
+  {
     // do nothing to display anything
     if (skipIndicator)
     {
@@ -578,10 +654,9 @@ void handle_all(const bool shouldIgnoreAlerts)
     }
 
     // red to green
-    const auto buttonColor =
-            utils::ColorSpace::RGB(utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
-                                                       utils::ColorSpace::GREEN.get_rgb().color,
-                                                       battery::get_battery_minimum_cell_level() / 10000.0f));
+    const auto& batteryLevel = __internal::get_battery_level();
+    const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(
+            utils::ColorSpace::RED.get_rgb().color, utils::ColorSpace::GREEN.get_rgb().color, batteryLevel / 10000.0f));
 
     // display battery level
     const auto& chargerStatus = charger::get_state();

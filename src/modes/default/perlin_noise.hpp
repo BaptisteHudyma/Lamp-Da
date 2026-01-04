@@ -40,13 +40,13 @@ struct PerlinNoiseMode : public BasicMode
 
     // store references to palettes
     static constexpr uint8_t maxPalettesCount = 4;
-    const palette_t* _palettes[maxPalettesCount] = {&colors::PaletteRainbowColors,
-                                                    &colors::PaletteLavaColors,
-                                                    &colors::PaletteForestColors,
-                                                    &colors::PaletteOceanColors};
+    const colors::PaletteTy* _palettes[maxPalettesCount] = {&colors::PaletteRainbowColors,
+                                                            &colors::PaletteLavaColors,
+                                                            &colors::PaletteForestColors,
+                                                            &colors::PaletteOceanColors};
 
     // store selected palette
-    palette_t const* selectedPalette;
+    colors::PaletteTy const* selectedPalette;
   };
 
   static void on_enter_mode(auto& ctx)
@@ -132,7 +132,7 @@ struct PerlinNoiseMode : public BasicMode
     static auto noiseBuffer = lamp.template getTempBuffer<bufferIndexToUse>();
 
     // copy to prevent a ramp update mid animation
-    const palette_t palette = *(state.selectedPalette);
+    const colors::PaletteTy palette = *(state.selectedPalette);
 
     const auto x = state.positionX;
     const auto y = state.positionY;
@@ -146,8 +146,7 @@ struct PerlinNoiseMode : public BasicMode
     // update noise values
     for (size_t i = firstIndex; i < lamp.ledCount; i += everyNIndex)
     {
-      // TODO #150: use new strip interface coordinates
-      const auto res = lamp.getLegacyStrip().get_lamp_coordinates(i);
+      const auto res = modes::strip_to_helix_unconstraint(i);
       uint16_t data = noise16::inoise(x + scale * res.x, y + scale * res.y, z + scale * res.z);
 
       // smooth over time to prevent suddent jumps

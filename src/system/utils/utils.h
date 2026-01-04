@@ -43,7 +43,7 @@ template<typename N> static constexpr N abs(const N a) { return std::abs(N(a)); 
 template<typename T> static constexpr T lmpd_constrain(const T& a, const T& mini, const T& maxi)
 {
 #ifdef LMBD_CPP17
-  assert(static_cast<float>(mini) < static_cast<float>(maxi) && "invalid parameters");
+  assert(static_cast<float>(mini) <= static_cast<float>(maxi) && "invalid parameters");
 #endif
   // prevent invalid values
   return std::isnan(a) ? static_cast<T>(mini) :
@@ -79,7 +79,7 @@ static inline T lmpd_map(float x, const float in_min, const float in_max, const 
   return static_cast<T>(res);
 }
 
-static constexpr float to_radians(float degrees)
+static constexpr inline float to_radians(float degrees)
 {
 #ifdef LMBD_CPP17
   assert(not(std::isnan(degrees) or std::isinf(degrees)) && "invalid value");
@@ -87,10 +87,12 @@ static constexpr float to_radians(float degrees)
   return degrees * M_PI / 180.f;
 }
 
-inline float wrap_angle(const float angle_rad)
+static constexpr inline float wrap_angle(const float angle_rad)
 {
+#ifdef LMBD_CPP17
   if (angle_rad >= 0 and angle_rad < c_TWO_PI)
     return angle_rad;
+#endif
   return angle_rad - c_TWO_PI * floor(angle_rad / c_TWO_PI);
 }
 
@@ -111,18 +113,6 @@ union COLOR
 };
 
 namespace utils {
-
-/**
- * \brief Compute a random color
- */
-uint32_t get_random_color();
-
-/**
- * \brief Compute the complementary color of the given color
- * \param[in] color The color to find a complement for
- * \return the complementary color
- */
-uint32_t get_complementary_color(const uint32_t color);
 
 /**
  * \brief Compute the complementary color of the given color, with a random

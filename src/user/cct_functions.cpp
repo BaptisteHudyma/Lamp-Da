@@ -61,9 +61,10 @@ void power_off_sequence()
 
 void brightness_update(const brightness_t brightness)
 {
-  const brightness_t constraintBrightness = min<brightness_t>(brightness, maxBrightness);
+  const auto _maxBrightness = brightness::get_max_brightness();
+  const brightness_t constraintBrightness = min<brightness_t>(brightness, _maxBrightness);
 
-  if (constraintBrightness == maxBrightness)
+  if (constraintBrightness == _maxBrightness)
   {
     // blip
     outputPower::blip(50);
@@ -71,13 +72,16 @@ void brightness_update(const brightness_t brightness)
 
   // map to a new curve, favorising low levels
   using curve_t = curves::ExponentialCurve<brightness_t, uint8_t>;
-  static curve_t brightnessCurve(curve_t::point_t {0, minBrightness}, curve_t::point_t {maxBrightness, 255}, 50.0);
+  static curve_t brightnessCurve(
+          curve_t::point_t {0, minBrightness}, curve_t::point_t {brightness::absoluteMaximumBrightness, 255}, 50.0);
 
   currentBrightness = round(brightnessCurve.sample(constraintBrightness));
 
   outputPower::write_voltage(stripInputVoltage_mV);
   set_color(currentColor);
 }
+
+void sunset_timer_update(const float progress) {}
 
 void write_parameters() { fileSystem::user::set_value(colorKey, currentColor); }
 
@@ -106,7 +110,7 @@ void button_clicked_default(const uint8_t clicks)
   {
     // put luminosity to maximum
     case 2:
-      brightness::update_brightness(maxBrightness);
+      brightness::update_brightness(brightness::get_max_brightness());
       break;
 
     default:

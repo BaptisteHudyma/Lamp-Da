@@ -1,6 +1,5 @@
 #include "output_power.h"
 
-#include <cmath>
 #include <cstdint>
 
 #include "src/system/utils/constants.h"
@@ -23,18 +22,22 @@ void write_voltage(const uint16_t voltage_mv)
     return;
   }
 
-  power::set_output_voltage_mv(lmpd_constrain<uint32_t>(voltage_mv, 0, 20000));
+  power::set_output_voltage_mv(lmpd_constrain<uint16_t>(voltage_mv, 0, 20000));
   power::set_output_max_current_mA(3000);
 }
 
 void write_temporary_output_limits(const uint16_t voltage_mv, const uint16_t current_ma, const uint32_t timeout_ms)
 {
-  const uint32_t realTimeout_ms = min<uint32_t>(5000, timeout_ms);
+  const uint16_t realTimeout_ms = min<uint16_t>(5000, static_cast<uint16_t>(timeout_ms));
   //
   power::set_temporary_output(voltage_mv, current_ma, realTimeout_ms);
 }
 
 void blip(const uint32_t timing) { powergates::power::blip(timing); }
+
+void cancel_blip() { powergates::power::cancel_blip(); }
+
+bool is_bliping() { return powergates::power::is_bliping(); }
 
 void disable_power_gates() { powergates::disable_gates(); }
 

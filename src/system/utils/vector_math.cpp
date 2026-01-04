@@ -27,38 +27,38 @@ RotationMatrix RotationMatrix::compose(const RotationMatrix& other) const
   return res;
 }
 
-void RotationMatrix::from_angles(const float roll_rad, const float pitch_rad, const float yaw_rad)
+void RotationMatrix::from_angles_XYZ(const float x_rad, const float y_rad, const float z_rad)
 {
-  //                                X             Y           Z
-  from_angles(vec3d(pitch_rad, roll_rad, yaw_rad));
+  //                               Z         Y        X
+  from_angles_ZYX(vec3d(z_rad, y_rad, x_rad));
+}
+void RotationMatrix::from_angles_XYZ(const vec3d& angles_rad)
+{
+  //                               Z         Y        X
+  from_angles_ZYX(vec3d(angles_rad.z, angles_rad.y, angles_rad.x));
 }
 
-void RotationMatrix::from_angles(const vec3d& angles_rad)
+void RotationMatrix::from_angles_ZYX(const vec3d& angles_rad)
 {
-  auto si = sinf(angles_rad.x);
-  auto sj = sinf(angles_rad.y);
-  auto sk = sinf(angles_rad.z);
+  auto sinAlpha = sinf(angles_rad.x);
+  auto sinBeta = sinf(angles_rad.y);
+  auto sinGamma = sinf(angles_rad.z);
 
-  auto ci = cosf(angles_rad.x);
-  auto cj = cosf(angles_rad.y);
-  auto ck = cosf(angles_rad.z);
+  auto cosAlpha = cosf(angles_rad.x);
+  auto cosBeta = cosf(angles_rad.y);
+  auto cosGamma = cosf(angles_rad.z);
 
-  auto cc = ci * ck;
-  auto cs = ci * sk;
-  auto sc = si * ck;
-  auto ss = si * sk;
+  R11 = cosAlpha * cosBeta;
+  R12 = cosAlpha * sinBeta * sinGamma - sinAlpha * cosGamma;
+  R13 = cosAlpha * sinBeta * cosGamma + sinAlpha * sinGamma;
 
-  R11 = cj * ck;
-  R12 = sj * sc - cs;
-  R13 = sj * cc + ss;
+  R21 = sinAlpha * cosBeta;
+  R22 = sinAlpha * sinBeta * sinGamma + cosAlpha * cosGamma;
+  R23 = sinAlpha * sinBeta * cosGamma - cosAlpha * sinGamma;
 
-  R21 = cj * sk;
-  R22 = sj * ss + cc;
-  R23 = sj * cs - sc;
-
-  R31 = -sj;
-  R32 = cj * si;
-  R33 = cj * ci;
+  R31 = -sinBeta;
+  R32 = cosBeta * sinGamma;
+  R33 = cosBeta * cosGamma;
 }
 
 TransformationMatrix::TransformationMatrix(const RotationMatrix& rot, const vec3d& trans) :
@@ -68,6 +68,6 @@ TransformationMatrix::TransformationMatrix(const RotationMatrix& rot, const vec3
 }
 TransformationMatrix::TransformationMatrix(const vec3d& euler, const vec3d& trans) : translation(trans)
 {
-  rotation.from_angles(euler);
+  rotation.from_angles_XYZ(euler);
 }
 vec3d TransformationMatrix::transform(const vec3d& vec) const { return rotation.transform(vec).add(translation); }

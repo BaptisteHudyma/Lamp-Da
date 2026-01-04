@@ -81,6 +81,8 @@ void button_clicked_default(const uint8_t clicks)
     int _groupId = manager.get_active_group();
     int _modeId = manager.get_active_mode();
     fprintf(stderr, "group %d *mode %d\n", _groupId, _modeId);
+    if (manager.everySunsetCallback[_groupId][_modeId])
+      fprintf(stderr, " - hasSunsetAnimation\n");
     if (manager.everyBrightCallback[_groupId][_modeId])
       fprintf(stderr, " - hasBrightCallback\n");
     if (manager.everyCustomRamp[_groupId][_modeId])

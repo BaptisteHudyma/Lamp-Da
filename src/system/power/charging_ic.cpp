@@ -8,13 +8,15 @@
 #include "src/system/platform/registers.h"
 #include "src/system/platform/print.h"
 
+#include "src/system/physical/battery.h"
+
 #include "src/system/logic/alerts.h"
 
 #include "src/system/utils/utils.h"
 #include "src/system/utils/time_utils.h"
 
 // use depend of component
-#include "depends/BQ25713/BQ25713.h"
+#include "src/depends/BQ25713/BQ25713.h"
 
 namespace charger {
 namespace drivers {
@@ -285,10 +287,14 @@ void update_battery()
   battery_s.current_mA = (int16_t)chargingCurrent - (int16_t)measurments_s.batDischargeCurrent_mA;
 
   const uint16_t batteryMaxVoltage = chargerIcRegisters.maxChargeVoltage.get();
-  const bool isAlmostFullyCharged = battery_s.voltage_mV > (batteryMaxVoltage * 0.99);
+  // above 90%
+  const bool isAlmostFullyCharged = battery::get_level_safe(battery_s.voltage_mV) > 9000;
 
-  // output voltage saturated, battery is not here
-  battery_s.isPresent = battery_s.voltage_mV <= (batteryMaxVoltage + chargerIcRegisters.aDCVSYSVBAT.resolutionVal0());
+  // charge voltage saturated : battery is not here
+  if (chargingCurrent > 0)
+    battery_s.isPresent = battery_s.voltage_mV <= (batteryMaxVoltage + chargerIcRegisters.aDCVSYSVBAT.resolutionVal0());
+  else
+    battery_s.isPresent = true;
 
   // check the charging status
   if (not isInputSourcePresent or (not isAlmostFullyCharged and chargingCurrent <= 0))
@@ -300,15 +306,15 @@ void update_battery()
   {
     chargeStatus_s = ChargeStatus_t::FASTCHARGE;
   }
-  // charging current gets low
-  else if (chargingCurrent <= powerLimits_s.maxChargingCurrent_mA * 0.1)
-  {
-    chargeStatus_s = ChargeStatus_t::SLOW_CHARGE;
-  }
   // pre charge
   else if (chargerIcRegisters.chargerStatus.IN_PCHRG() != 0)
   {
     chargeStatus_s = ChargeStatus_t::PRECHARGE;
+  }
+  // charging current gets low
+  else if (chargingCurrent <= powerLimits_s.maxChargingCurrent_mA * 0.1)
+  {
+    chargeStatus_s = ChargeStatus_t::SLOW_CHARGE;
   }
   // normal charge
   else if (chargerIcRegisters.chargerStatus.IN_FCHRG() != 0)
@@ -717,8 +723,8 @@ void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA)
   const auto realVal = chargerIcRegisters.oTGVoltage.set(voltage_mV, isVoltageRangeLow);
   chargerIcRegisters.oTGCurrent.set(maxCurrent_mA);
 
-  if (realVal != prevVal)
-    lampda_print("new OTG targets : %dmV %dmA", realVal, maxCurrent_mA);
+  // if (realVal != prevVal)
+  //   lampda_print("new OTG targets : %dmV %dmA", realVal, maxCurrent_mA);
 }
 
 bool is_in_OTG() { return isInOtg_s; }

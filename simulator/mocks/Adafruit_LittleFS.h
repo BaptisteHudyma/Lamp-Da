@@ -17,6 +17,8 @@ struct InternalFSTy
     return true;
   }
 
+  void end() {}
+
   void format() { fprintf(stderr, "warning: InternalFS.format called\n"); }
 };
 
@@ -104,24 +106,25 @@ struct File
     return 0;
   }
 
-  size_t read(char* out, size_t sz)
+  size_t read(uint8_t* out, size_t sz)
   {
     if (file != nullptr)
     {
-      return fread(out, sizeof(char), sz, file);
+      return fread(out, sizeof(uint8_t), sz, file);
     }
 
     fprintf(stderr, "error: reading a closed file!\n");
     return 0;
   }
 
-  void seek(uint8_t sz)
+  bool seek(uint8_t sz)
   {
     if (file != nullptr)
     {
       if (filemode != nullptr)
       {
         ::fseek(file, sz, 0);
+        return true;
       }
       else
       {
@@ -132,6 +135,7 @@ struct File
     {
       fprintf(stderr, "error: seek closed file\n");
     }
+    return false;
   }
 
   void truncate(uint8_t sz)
