@@ -23,8 +23,6 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
     uint32_t last_tick;
     int8_t xdirection = 1;
     int8_t ydirection = 0;
-
-    imu::ImuEventTy<> imuEvent;
   };
 
   static void on_enter_mode(auto& ctx)
@@ -192,6 +190,8 @@ struct NudzBeerGlassMode : public BasicMode
     std::vector<float> speeds;
     uint32_t nbubbles;
     std::vector<BubbleTy> bubbles;
+
+    imu::ImuEventTy<> imuEvent;
   };
 
   static void on_enter_mode(auto& ctx)
