@@ -353,9 +353,14 @@ void run_ADC()
     chargerIcRegisters.aDCOption.set_EN_ADC_VSYS(1);
     chargerIcRegisters.aDCOption.set_EN_ADC_VBAT(1);
     // write the register
-    charger_ic::writeRegEx(chargerIcRegisters.aDCOption);
-
-    isAdcTriggered = true;
+    const bool writeSuccess = charger_ic::writeRegEx(chargerIcRegisters.aDCOption);
+    if (writeSuccess)
+      isAdcTriggered = true;
+    else
+    {
+      status_s = Status_t::ERROR;
+      set_software_error_message("Failed to write ADC command");
+    }
   }
   else
   {
@@ -457,6 +462,7 @@ void program_input_current_limit()
  *
  */
 
+bool isInit = false;
 bool enable(const uint16_t minSystemVoltage_mV,
             const uint16_t maxBatteryVoltage_mV,
             const uint16_t maxChargingCurrent_mA,
@@ -488,7 +494,13 @@ bool enable(const uint16_t minSystemVoltage_mV,
     // write the reset flag
     chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
     chargerIcRegisters.chargeOption3.set_RESET_REG(1);
-    charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
+    const bool resetSuccess = charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
+    if (not resetSuccess)
+    {
+      status_s = Status_t::ERROR;
+      set_software_error_message("Failed reset the memory");
+      return false;
+    }
 
     // wait until the flag is lowered
     uint32_t timeout = time_ms() + 500;
@@ -506,17 +518,19 @@ bool enable(const uint16_t minSystemVoltage_mV,
 
   status_s = Status_t::NOMINAL;
 
+  bool success = true;
+
   chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
   // disable high impedance mode
   chargerIcRegisters.chargeOption3.set_EN_HIZ(0);
-  charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
+  success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
   // disable low power mode
   chargerIcRegisters.chargeOption0.set_EN_LWPWR(0);
-  charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
+  success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
 
   chargerIcRegisters.prochotOption1.set_IDCHG_VTH(128 + (maxDichargingCurrent_mA / 512));
-  charger_ic::writeRegEx(chargerIcRegisters.prochotOption1);
+  success &= charger_ic::writeRegEx(chargerIcRegisters.prochotOption1);
 
   // disable ICO
   enable_ico(false);
@@ -528,12 +542,12 @@ bool enable(const uint16_t minSystemVoltage_mV,
   chargerIcRegisters.chargeOption0.set_EN_IDPM(1);
   // set watchog timer to 5 seconds (lowest)
   chargerIcRegisters.chargeOption0.set_WDTMR_ADJ(1);
-  charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
+  success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
 
   chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
   // set 6A inductor (TODO issue #131: change with system constants)
   chargerIcRegisters.chargeOption3.set_IL_AVG(0b0);
-  charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
+  success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
   // disable charge
   enable_charge(false);
@@ -543,7 +557,14 @@ bool enable(const uint16_t minSystemVoltage_mV,
   chargerIcRegisters.chargeOption1.set_EN_IBAT(1);
   // enable PSYS
   chargerIcRegisters.chargeOption1.set_EN_PSYS(1);
-  charger_ic::writeRegEx(chargerIcRegisters.chargeOption1);
+  success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption1);
+
+  if (not success)
+  {
+    status_s = Status_t::ERROR;
+    set_software_error_message("Failed set start registers");
+    return false;
+  }
 
   // set the nominal voltage values
   const auto maxBatteryVoltage_mV_read = chargerIcRegisters.maxChargeVoltage.set(maxBatteryVoltage_mV);
@@ -581,11 +602,20 @@ bool enable(const uint16_t minSystemVoltage_mV,
   // initial status update
   powerLimits_s.maxChargingCurrent_mA = maxChargingCurrent_mA;
   run_status_update();
+
+  isInit = true;
   return true;
 }
 
 void loop(const bool isChargeOk)
 {
+  if (not isInit)
+  {
+    status_s = Status_t::ERROR;
+    set_software_error_message("charger_ic loop called but never init");
+    return;
+  }
+
   static bool isInOtg = false;
 
   // instant update if the state changed

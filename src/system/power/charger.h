@@ -24,6 +24,9 @@ struct Charger_t
   bool isChargeOkSignalHigh;
   bool isInOtg;
 
+  // time of the last update of this struct
+  uint32_t lastUpdateTime_ms = 0;
+
   // input current in VBUS side
   uint16_t inputCurrent_mA = 0;
   // charge current of the battery
