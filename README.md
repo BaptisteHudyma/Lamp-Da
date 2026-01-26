@@ -113,7 +113,6 @@ Note that after building documentation, it will be in `docs/html/index.html`
 You will find a guide on how to update the system via USB
  - [Update DFU](docs/Update.md)
 
-
 You will find a guide on how to setup a virtual machine to build the project:
 
  - [Virtual Machine](docs/VirtualMachine.md) -- experimental, work-in-progress

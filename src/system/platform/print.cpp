@@ -57,18 +57,15 @@ void lampda_print(const char* format, ...)
 constexpr uint8_t maxReadLinePerLoop = 5;
 constexpr uint8_t maxLineLenght = 200;
 
-std::vector<std::string> read_inputs()
+Inputs read_inputs()
 {
   _lockPrintMutex();
 
-  std::vector<std::string> ret;
+  Inputs ret;
 
   if (Serial.available())
   {
-    uint8_t lineRead = 0;
     uint8_t charRead = 0;
-
-    std::string inputString = "";
 
     // read available serial data
     do
@@ -79,17 +76,19 @@ std::vector<std::string> read_inputs()
       if (inChar == '\n')
       {
         // do not add empty strings and null terminated only strings
-        if (inputString.size() != 0)
+        if (charRead != 0)
         {
           // add null termination if needed
-          if (inputString[inputString.size() - 1] != '\0')
-            inputString += '\0';
-
-          ret.push_back(inputString);
+          if (ret.commandList[ret.commandCount][charRead] != '\0')
+            ret.commandList[ret.commandCount][charRead] = ' \0';
+          ret.commandCount += 1;
+        }
+        else
+        {
+          for (size_t i = 0; i < Inputs::maxCommandSize; i++)
+            ret.commandList[ret.commandCount][i] = '\0';
         }
 
-        inputString = "";
-        lineRead += 1;
         charRead = 0;
       }
       else
@@ -97,11 +96,11 @@ std::vector<std::string> read_inputs()
         // add it to the inputString:
         if (not is_ignore_char(inChar))
         {
-          inputString += inChar;
+          ret.commandList[ret.commandCount][charRead] = inChar;
+          charRead += 1;
         }
-        charRead += 1;
       }
-    } while (Serial.available() && lineRead < maxReadLinePerLoop && charRead < maxLineLenght);
+    } while (Serial.available() && ret.commandCount < Inputs::maxCommands && charRead < Inputs::maxCommandSize);
   }
 
   _unlockPrintMutex();

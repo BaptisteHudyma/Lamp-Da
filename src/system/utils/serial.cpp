@@ -30,9 +30,9 @@ constexpr uint8_t maxLineLenght = 200;
 
 inline const char* boolToString(bool b) { return b ? "true" : "false"; }
 
-void handleCommand(const std::string& command)
+void handleCommand(const Inputs::Command& command)
 {
-  switch (utils::hash(command.c_str()))
+  switch (utils::hash(command.data()))
   {
     case utils::hash("h"):
     case utils::hash("help"):
@@ -305,7 +305,7 @@ void handleCommand(const std::string& command)
       break;
 
     default:
-      lampda_print("unknown command: \'%s\'", command.c_str());
+      lampda_print("unknown command: \'%s\'", command.data());
       lampda_print("type h for available commands");
       break;
   }
@@ -316,8 +316,9 @@ void setup() { init_prints(); }
 void handleSerialEvents()
 {
   const auto& inputs = read_inputs();
-  for (const std::string& input: inputs)
+  for (size_t i = 0; i < inputs.commandCount; i++)
   {
+    const Inputs::Command& input = inputs.commandList[i];
     handleCommand(input);
   }
 }
