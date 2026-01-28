@@ -79,8 +79,15 @@ Inputs read_inputs()
         if (charRead != 0)
         {
           // add null termination if needed
-          if (ret.commandList[ret.commandCount][charRead] != '\0')
-            ret.commandList[ret.commandCount][charRead] = ' \0';
+          if (charRead < Inputs::maxCommandSize)
+          {
+            if (ret.commandList[ret.commandCount][charRead] != '\0')
+              ret.commandList[ret.commandCount][charRead] = ' \0';
+          }
+          else
+          {
+            ret.commandList[ret.commandCount][Inputs::maxCommandSize - 1] = ' \0';
+          }
           ret.commandCount += 1;
         }
         else
@@ -91,7 +98,7 @@ Inputs read_inputs()
 
         charRead = 0;
       }
-      else
+      else if (charRead < Inputs::maxCommandSize)
       {
         // add it to the inputString:
         if (not is_ignore_char(inChar))
@@ -100,7 +107,7 @@ Inputs read_inputs()
           charRead += 1;
         }
       }
-    } while (Serial.available() && ret.commandCount < Inputs::maxCommands && charRead < Inputs::maxCommandSize);
+    } while (Serial.available() && ret.commandCount < Inputs::maxCommands);
   }
 
   _unlockPrintMutex();

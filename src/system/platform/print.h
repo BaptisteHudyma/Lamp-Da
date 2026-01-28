@@ -20,10 +20,10 @@ extern void init_prints();
 
 struct Inputs
 {
-  static constexpr size_t maxCommandSize = 32;
+  static constexpr size_t maxCommandSize = 15;
   typedef std::array<char, maxCommandSize> Command;
 
-  static constexpr size_t maxCommands = 2;
+  static constexpr uint8_t maxCommands = 2;
   std::array<Command, maxCommands> commandList;
   uint8_t commandCount = 0;
 };

@@ -538,6 +538,9 @@ bool enable(const uint16_t minSystemVoltage_mV,
   chargerIc.readRegEx(chargerIcRegisters.chargeOption0);
   // disable DPM auto
   chargerIcRegisters.chargeOption0.set_IDPM_AUTO_DISABLE(0);
+  // prevent some visible led flickering, and audio ringing
+  chargerIcRegisters.chargeOption0.set_EN_OOA(1);
+  chargerIcRegisters.chargeOption0.set_LOW_PTM_RIPPLE(1);
   // enable IDPM
   chargerIcRegisters.chargeOption0.set_EN_IDPM(1);
   // set watchog timer to 5 seconds (lowest)

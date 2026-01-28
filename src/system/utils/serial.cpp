@@ -316,7 +316,7 @@ void setup() { init_prints(); }
 void handleSerialEvents()
 {
   const auto& inputs = read_inputs();
-  for (size_t i = 0; i < inputs.commandCount; i++)
+  for (size_t i = 0; i < min<uint8_t>(Inputs::maxCommands, inputs.commandCount); i++)
   {
     const Inputs::Command& input = inputs.commandList[i];
     handleCommand(input);
