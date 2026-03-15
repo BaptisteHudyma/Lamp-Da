@@ -8,6 +8,7 @@
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/utils.h"
 
+#include "src/system/physical/button.h"
 #include "src/system/physical/indicator.h"
 
 #include "simulator/include/hardware_influencer.h"
@@ -34,6 +35,7 @@ void update_callbacks()
   // event on change
   if (isButtonPressed != wasButtonPressed)
   {
+    const DigitalPin::GPIO buttonPin = button::get_button_pin();
     // change always called
     for (const auto& [pin, callback]: callbacksChange)
     {
@@ -92,7 +94,7 @@ public:
   bool is_high() const
   {
     // button pin
-    if (_pin == buttonPin)
+    if (_pin == button::get_button_pin())
     {
       return !mock_gpios::isButtonPressed;
     }
@@ -166,7 +168,13 @@ public:
   DigitalPin::GPIO _pin;
 };
 
-DigitalPin::DigitalPin(DigitalPin::GPIO pin) : mGpio(pin) { mImpl = std::make_shared<DigitalPinImpl>(pin); }
+DigitalPin::DigitalPin(DigitalPin::GPIO pin) : mGpio(pin) { set(pin); }
+
+void DigitalPin::set(DigitalPin::GPIO pin)
+{
+  mGpio = pin;
+  mImpl = std::make_shared<DigitalPinImpl>(pin);
+}
 
 void DigitalPin::set_pin_mode(Mode mode) const {}
 

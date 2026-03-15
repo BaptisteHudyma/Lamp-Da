@@ -15,6 +15,7 @@
 #include "src/system/platform/print.h"
 
 #include "src/system/physical/battery.h"
+#include "src/system/physical/button.h"
 #include "src/system/physical/fileSystem.h"
 
 #include "src/system/utils/constants.h"
@@ -53,6 +54,8 @@ void handleCommand(const Inputs::Command& command)
                 "i2c: start an i2c present check\n"
                 "format-fs: format the whole file system (dangerous)\n"
                 "DFU: clear this program from memory, enter update mode\n"
+                "buttonTogg: change the button pin number for the next boot\n"
+                "shutdown: force shutdown the lamp\n"
                 "tasks: display a debug of task usages\n"
                 "-----------------");
         break;
@@ -296,6 +299,25 @@ void handleCommand(const Inputs::Command& command)
 
     case utils::hash("DFU"):
       enter_serial_dfu();
+      break;
+
+    case utils::hash("buttonTogg"):
+      {
+        if (button::get_button_pin() == DigitalPin::GPIO::gpio3)
+        {
+          button::set_button_pin(DigitalPin::GPIO::gpio4);
+          lampda_print("Set button pin to gpio4");
+        }
+        else
+        {
+          button::set_button_pin(DigitalPin::GPIO::gpio3);
+          lampda_print("Set button pin to gpio3");
+        }
+        break;
+      }
+
+    case utils::hash("shutdown"):
+      behavior::internal::handle_shutdown_state();
       break;
 
     case utils::hash("tasks"):

@@ -107,8 +107,11 @@ public:
   int mDigitalPin;
 };
 
-DigitalPin::DigitalPin(GPIO pin) : mGpio(pin)
+DigitalPin::DigitalPin(GPIO pin) : mGpio(pin) { set(pin); }
+
+void DigitalPin::set(DigitalPin::GPIO pin)
 {
+  mGpio = pin;
   switch (pin)
   {
     case GPIO::gpio0:

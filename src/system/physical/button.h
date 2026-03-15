@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <functional>
+#include "src/system/platform/gpio.h"
 
 namespace button {
 
@@ -56,6 +57,21 @@ struct ButtonStateTy
  * \brief Get a copy of the raw internal button state
  */
 extern ButtonStateTy get_button_state();
+
+/**
+ * \brief Return the pin used for the button
+ */
+extern DigitalPin::GPIO get_button_pin();
+
+/**
+ * \brief Only on system start, set the pin where the button is wired
+ */
+extern void set_button_pin(const DigitalPin::GPIO buttonPin);
+
+/**
+ * \brief get the button pin index in system. USE WITH CAUTION
+ */
+extern int get_button_pin_RAW();
 
 } // namespace button
 

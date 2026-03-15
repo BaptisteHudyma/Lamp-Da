@@ -14,13 +14,22 @@
 
 namespace button {
 
+// The button pullup pin (one button pin to GND, the other to this pin)
+DigitalPin::GPIO _buttonPin = DigitalPin::GPIO::gpio3;
+DigitalPin _buttonGpio(_buttonPin);
+
+DigitalPin::GPIO get_button_pin() { return _buttonPin; }
+int get_button_pin_RAW() { return _buttonGpio.pin(); }
+void set_button_pin(const DigitalPin::GPIO buttonPin) { _buttonPin = buttonPin; }
+
+// button pressed states
 static ButtonStateTy buttonState = ButtonStateTy();
 ButtonStateTy get_button_state() { return buttonState; }
 
 bool is_button_pressed()
 {
   // this is a pullup, so high means no button press
-  return not ButtonPin.is_high();
+  return not _buttonGpio.is_high();
 }
 
 static bool isSystemStartClick = true;
@@ -67,8 +76,9 @@ void init(const bool isSystemStartedFromButton)
   buttonState.reset();
 
   // attach the button interrupt
-  ButtonPin.set_pin_mode(DigitalPin::Mode::kInputPullUpSense);
-  ButtonPin.attach_callback(button_state_interrupt, DigitalPin::Interrupt::kChange);
+  _buttonGpio.set(_buttonPin);
+  _buttonGpio.set_pin_mode(DigitalPin::Mode::kInputPullUpSense);
+  _buttonGpio.attach_callback(button_state_interrupt, DigitalPin::Interrupt::kChange);
 
   // prevent multiple clicks on start
   if (isSystemStartedFromButton and buttonState.nbClicksCounted == 0)

@@ -45,6 +45,7 @@ static constexpr uint32_t cleanSleepKey = utils::hash("cleanSleep");
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
 static constexpr uint32_t indicatorLevelKey = utils::hash("indLvl");
 static constexpr uint32_t isLockoutModeKey = utils::hash("lckMode");
+static constexpr uint32_t buttonPinKey = utils::hash("bttPin");
 
 // time to block turn off since turn on
 static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 500;
@@ -177,6 +178,12 @@ bool read_parameters()
       // system in lockout, raise the alert
       alerts::manager.raise(alerts::Type::SYSTEM_IN_LOCKOUT);
     }
+
+    uint32_t buttonPin = 0;
+    if (fileSystem::system::get_value(buttonPinKey, buttonPin) and buttonPin > 0)
+    {
+      button::set_button_pin(static_cast<DigitalPin::GPIO>(buttonPin));
+    }
   }
 
   if (fileSystem::user::load_from_file())
@@ -211,6 +218,7 @@ void write_parameters()
   fileSystem::system::set_value(indicatorLevelKey, indicator::get_brightness_level());
   // lockout mode always kept, if not deactivated by system
   fileSystem::system::set_value(isLockoutModeKey, alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT));
+  fileSystem::system::set_value(buttonPinKey, static_cast<uint32_t>(button::get_button_pin()));
 
   user::write_parameters();
 
@@ -258,7 +266,7 @@ void true_power_off()
 
   // power down nrf52.
   // on wake up, it'll start back from the setup phase
-  go_to_sleep(ButtonPin.pin());
+  go_to_sleep(button::get_button_pin_RAW());
 
   /*
    * Nothing after this, system is off !
@@ -294,6 +302,8 @@ void go_to_error_state(const std::string& errorMsg)
   // got to error state
   mainMachine.set_state(BehaviorStates::ERROR);
 }
+
+namespace internal {
 
 void handle_error_state()
 {
@@ -677,6 +687,8 @@ void handle_shutdown_state()
   true_power_off();
 }
 
+} // namespace internal
+
 /// Handle the behavior states
 void state_machine_behavior()
 {
@@ -692,33 +704,33 @@ void state_machine_behavior()
   {
     // strange error state
     case BehaviorStates::ERROR:
-      handle_error_state();
+      internal::handle_error_state();
       break;
     // called when system starts
     case BehaviorStates::START_LOGIC:
-      handle_start_logic_state();
+      internal::handle_start_logic_state();
       break;
     // prepare the charger operation
     case BehaviorStates::PRE_CHARGER_OPERATION:
-      handle_pre_charger_operation_state();
+      internal::handle_pre_charger_operation_state();
       break;
     // charge batteries, or power OTG on USB-port
     case BehaviorStates::CHARGER_OPERATIONS:
-      handle_charger_operation_state();
+      internal::handle_charger_operation_state();
       break;
     // prepare the output light
     case BehaviorStates::PRE_OUTPUT_LIGHT:
-      handle_pre_output_light_state();
+      internal::handle_pre_output_light_state();
       break;
     // output current to system, handle user inputs
     case BehaviorStates::OUTPUT_LIGHT:
-      handle_output_light_state();
+      internal::handle_output_light_state();
       break;
     case BehaviorStates::POST_OUTPUT_LIGHT:
-      handle_post_output_light_state();
+      internal::handle_post_output_light_state();
       break;
     case BehaviorStates::SHUTDOWN:
-      handle_shutdown_state();
+      internal::handle_shutdown_state();
       break;
     default:
       {
@@ -744,9 +756,9 @@ void loop()
   {
     lampda_print("emergency shutdown from alert");
     // just in case, turn off eventual states
-    handle_post_output_light_state();
+    internal::handle_post_output_light_state();
     // shutdown normally
-    handle_shutdown_state();
+    internal::handle_shutdown_state();
   }
 
   // only handle those when system is not in alert state

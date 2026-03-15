@@ -47,6 +47,15 @@ void set_power_off();
 //
 void go_to_external_battery_mode();
 
+namespace internal {
+
+/**
+ * \brief DO NOT USE: shutdown the lamp immediatly. only for emmergency/special cases
+ */
+void handle_shutdown_state();
+
+} // namespace internal
+
 namespace sunset {
 /// signal to behavior the advance of the sunset timer
 void progress_update(const float progress);

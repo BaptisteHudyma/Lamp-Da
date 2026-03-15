@@ -82,11 +82,11 @@ Inputs read_inputs()
           if (charRead < Inputs::maxCommandSize)
           {
             if (ret.commandList[ret.commandCount][charRead] != '\0')
-              ret.commandList[ret.commandCount][charRead] = ' \0';
+              ret.commandList[ret.commandCount][charRead] = '\0';
           }
           else
           {
-            ret.commandList[ret.commandCount][Inputs::maxCommandSize - 1] = ' \0';
+            ret.commandList[ret.commandCount][Inputs::maxCommandSize - 1] = '\0';
           }
           ret.commandCount += 1;
         }
