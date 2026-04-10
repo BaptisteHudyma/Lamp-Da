@@ -7,8 +7,9 @@ var searchData=
   ['reg18voltaget_4',['Reg18Voltaget',['../structbq76905_1_1BQ76905_1_1Regt_1_1Reg18Voltaget.html',1,'bq76905::BQ76905::Regt']]],
   ['regoutcontrolt_5',['RegoutControlt',['../structbq76905_1_1BQ76905_1_1Regt_1_1RegoutControlt.html',1,'bq76905::BQ76905::Regt']]],
   ['regt_6',['Regt',['../structbq25713_1_1BQ25713_1_1Regt.html',1,'bq25713::BQ25713::Regt'],['../structbq76905_1_1BQ76905_1_1Regt.html',1,'bq76905::BQ76905::Regt']]],
-  ['resetpassqt_7',['ResetPassQt',['../structbq76905_1_1BQ76905_1_1Regt_1_1ResetPassQt.html',1,'bq76905::BQ76905::Regt']]],
-  ['resett_8',['Resett',['../structbq76905_1_1BQ76905_1_1Regt_1_1Resett.html',1,'bq76905::BQ76905::Regt']]],
-  ['rgb_9',['RGB',['../classutils_1_1ColorSpace_1_1RGB.html',1,'utils::ColorSpace']]],
-  ['rotationmatrix_10',['RotationMatrix',['../structRotationMatrix.html',1,'']]]
+  ['release_7',['Release',['../classlampda__serial_1_1Release.html',1,'lampda_serial']]],
+  ['resetpassqt_8',['ResetPassQt',['../structbq76905_1_1BQ76905_1_1Regt_1_1ResetPassQt.html',1,'bq76905::BQ76905::Regt']]],
+  ['resett_9',['Resett',['../structbq76905_1_1BQ76905_1_1Regt_1_1Resett.html',1,'bq76905::BQ76905::Regt']]],
+  ['rgb_10',['RGB',['../classutils_1_1ColorSpace_1_1RGB.html',1,'utils::ColorSpace']]],
+  ['rotationmatrix_11',['RotationMatrix',['../structRotationMatrix.html',1,'']]]
 ];

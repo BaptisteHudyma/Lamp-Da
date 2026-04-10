@@ -19,11 +19,12 @@ var searchData=
   ['is_5fbeat_5fon_5ffreq_5frange_16',['is_beat_on_freq_range',['../structmodes_1_1audio_1_1SoundEventTy.html#a18de12086e16f0be299861fb59d43832',1,'modes::audio::SoundEventTy']]],
   ['is_5fbliping_17',['is_bliping',['../structmodes_1_1hardware_1_1LampTy.html#aa02d96b9409332c7972d7249d5e91427',1,'modes::hardware::LampTy']]],
   ['is_5fclear_18',['is_clear',['../classalerts_1_1AlertManager__t.html#a248da7d7468d448c1201ca301aab39e6',1,'alerts::AlertManager_t']]],
-  ['is_5fraised_19',['is_raised',['../classalerts_1_1AlertManager__t.html#a28718bfa93478b5b1c1f92bc8a95f54c',1,'alerts::AlertManager_t']]],
-  ['isdatavalid_20',['isDataValid',['../structmicrophone_1_1SoundStruct.html#a2ed79999e1babe453b5a08760ef47c5c',1,'microphone::SoundStruct']]],
-  ['isfftvalid_21',['isFFTValid',['../structmicrophone_1_1SoundStruct.html#ae18e8544f99bd87f8cd0e7cbfde8bb7f',1,'microphone::SoundStruct']]],
-  ['isubcommandmanyregisters_22',['ISubCommandManyRegisters',['../structbq76905_1_1BQ76905_1_1ISubCommandManyRegisters.html',1,'bq76905::BQ76905']]],
-  ['isubcommandreadregister_23',['ISubcommandReadRegister',['../structbq76905_1_1BQ76905_1_1ISubcommandReadRegister.html',1,'bq76905::BQ76905']]],
-  ['isubcommandregister_24',['ISubcommandRegister',['../structbq76905_1_1BQ76905_1_1ISubcommandRegister.html',1,'bq76905::BQ76905']]],
-  ['ivory_25',['Ivory',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caa70676b9caf63574e20047622102ee0f',1,'modes::colors']]]
+  ['is_5fport_5fa_5flampda_19',['is_port_a_lampda',['../classlampda__gui_1_1TabSerialComm.html#a996635855e99f078890c82308a0b5814',1,'lampda_gui::TabSerialComm']]],
+  ['is_5fraised_20',['is_raised',['../classalerts_1_1AlertManager__t.html#a28718bfa93478b5b1c1f92bc8a95f54c',1,'alerts::AlertManager_t']]],
+  ['isdatavalid_21',['isDataValid',['../structmicrophone_1_1SoundStruct.html#a2ed79999e1babe453b5a08760ef47c5c',1,'microphone::SoundStruct']]],
+  ['isfftvalid_22',['isFFTValid',['../structmicrophone_1_1SoundStruct.html#ae18e8544f99bd87f8cd0e7cbfde8bb7f',1,'microphone::SoundStruct']]],
+  ['isubcommandmanyregisters_23',['ISubCommandManyRegisters',['../structbq76905_1_1BQ76905_1_1ISubCommandManyRegisters.html',1,'bq76905::BQ76905']]],
+  ['isubcommandreadregister_24',['ISubcommandReadRegister',['../structbq76905_1_1BQ76905_1_1ISubcommandReadRegister.html',1,'bq76905::BQ76905']]],
+  ['isubcommandregister_25',['ISubcommandRegister',['../structbq76905_1_1BQ76905_1_1ISubcommandRegister.html',1,'bq76905::BQ76905']]],
+  ['ivory_26',['Ivory',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caa70676b9caf63574e20047622102ee0f',1,'modes::colors']]]
 ];

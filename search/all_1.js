@@ -41,10 +41,11 @@ var searchData=
   ['arduinofft_38',['ArduinoFFT',['../classArduinoFFT.html',1,'']]],
   ['arduinofft_20_3ca_20href_3d_22https_3a_2f_2fdoi_2eorg_2f10_2e5281_2fzenodo_2e14195818_22_20_3e_3cimg_20src_3d_22https_3a_2f_2fzenodo_2eorg_2fbadge_2fdoi_2f10_2e5281_2fzenodo_2e14195818_2esvg_22_20alt_3d_22doi_22_2f_3e_3c_2fa_3e_39',['arduinoFFT &lt;a href=&quot;https://doi.org/10.5281/zenodo.14195818&quot; &gt;&lt;img src=&quot;https://zenodo.org/badge/DOI/10.5281/zenodo.14195818.svg&quot; alt=&quot;DOI&quot;/&gt;&lt;/a&gt;',['../index.html',1,'']]],
   ['arduinofft_3c_20float_20_3e_40',['ArduinoFFT&lt; float &gt;',['../classArduinoFFT.html',1,'']]],
-  ['aurora_2ehpp_41',['aurora.hpp',['../aurora_8hpp.html',1,'']]],
-  ['auroramode_42',['AuroraMode',['../structmodes_1_1default__modes_1_1AuroraMode.html',1,'modes::default_modes']]],
-  ['avgdelta_43',['avgDelta',['../structmodes_1_1audio_1_1SoundEventTy.html#add9b3a6ef7d8783ce69ff05922090a5f',1,'modes::audio::SoundEventTy']]],
-  ['avglevel_44',['avgLevel',['../structmodes_1_1audio_1_1SoundEventTy.html#a5125d74ae9978660c1b6052e47cdba2c',1,'modes::audio::SoundEventTy']]],
-  ['avgmax_45',['avgMax',['../structmodes_1_1audio_1_1SoundEventTy.html#ad19e598864ee43bcdb474ff1487b220e',1,'modes::audio::SoundEventTy']]],
-  ['azure_46',['Azure',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caff10b940a45210d0b3b2d0b43f0c7e69',1,'modes::colors']]]
+  ['ask_5fuser_5fmanual_41',['ask_user_manual',['../classlampda__gui_1_1TabOfficialUpdate.html#a0c5e6339f2dc87e10dcc7b28f484d20b',1,'lampda_gui::TabOfficialUpdate']]],
+  ['aurora_2ehpp_42',['aurora.hpp',['../aurora_8hpp.html',1,'']]],
+  ['auroramode_43',['AuroraMode',['../structmodes_1_1default__modes_1_1AuroraMode.html',1,'modes::default_modes']]],
+  ['avgdelta_44',['avgDelta',['../structmodes_1_1audio_1_1SoundEventTy.html#add9b3a6ef7d8783ce69ff05922090a5f',1,'modes::audio::SoundEventTy']]],
+  ['avglevel_45',['avgLevel',['../structmodes_1_1audio_1_1SoundEventTy.html#a5125d74ae9978660c1b6052e47cdba2c',1,'modes::audio::SoundEventTy']]],
+  ['avgmax_46',['avgMax',['../structmodes_1_1audio_1_1SoundEventTy.html#ad19e598864ee43bcdb474ff1487b220e',1,'modes::audio::SoundEventTy']]],
+  ['azure_47',['Azure',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caff10b940a45210d0b3b2d0b43f0c7e69',1,'modes::colors']]]
 ];
