@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: arduinoFFT &lt;a href=&quot;https://doi.org/10.5281/zenodo.14195818&quot; &gt;&lt;img src=&quot;https://zenodo.org/badge/DOI/10.5281/zenodo.14195818.svg&quot; alt=&quot;DOI&quot;/&gt;&lt;/a&gt;</title>
+<title>Lamp-Da: Lamp-Da</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,29 +70,129 @@ $(function() {
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">arduinoFFT <a href="https://doi.org/10.5281/zenodo.14195818"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.14195818.svg" alt="DOI" style="pointer-events: none;" class="inline"/></a> </div></div>
+  <div class="headertitle"><div class="title">Lamp-Da </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md_src_depends_arduinoFFT_README"></a></p>
-<h1><a class="anchor" id="autotoc_md0"></a>
-Fast Fourier Transform for Arduino</h1>
-<p>This is a fork from <a href="https://code.google.com/p/makefurt/">https://code.google.com/p/makefurt/</a> which has been abandoned since 2011.</p>
-<p>This is version 2.0 of the library, which has a different API.</p>
-<p>Tested on Arduino 1.8.19 and 2.3.2.</p>
-<h2><a class="anchor" id="autotoc_md1"></a>
-Installation on Arduino</h2>
-<p>Use the Arduino Library Manager to install and keep it updated. Just look for arduinoFFT. Only for Arduino 1.5+</p>
-<h2><a class="anchor" id="autotoc_md2"></a>
-Manual installation on Arduino</h2>
-<p>To install this library, just place this entire folder as a subfolder in your Arduino installation. When installed, this library should look like:</p>
-<p><code>Arduino\libraries\arduinoFFT</code> (this library's folder) <code>Arduino\libraries\arduinoFFT\src\<a class="el" href="arduinoFFT_8h_source.html">arduinoFFT.h</a></code> (the library header file. include this in your project) <code>Arduino\libraries\arduinoFFT\keywords.txt</code> (the syntax coloring file) <code>Arduino\libraries\arduinoFFT\Examples</code> (the examples in the "open" menu) <code>Arduino\libraries\arduinoFFT\LICENSE</code> (GPL license file) <code>Arduino\libraries\arduinoFFT\README.md</code> (this file)</p>
-<h2><a class="anchor" id="autotoc_md3"></a>
-Building on Arduino</h2>
-<p>After this library is installed, you just have to start the Arduino application. You may see a few warning messages as it's built. To use this library in a sketch, go to the Sketch | Import Library menu and select arduinoFFT. This will add a corresponding line to the top of your sketch:</p>
-<p><code>#include &lt;<a class="el" href="arduinoFFT_8h_source.html">arduinoFFT.h</a>&gt;</code></p>
-<h2><a class="anchor" id="autotoc_md4"></a>
-API</h2>
-<p>Documentation was moved to the project's <a href="https://github.com/kosme/arduinoFFT/wiki">wiki</a>. </p>
+<div class="textblock"><p><a class="anchor" id="md_README"></a> A programmable board integrated with a liion battery charger, battery balancer, multiple sensors and gpios (with 3 analog inputs).</p>
+<p>This repository contains the bootloader, software and hardware files to create and program the board.</p>
+<p>The system supports programming and charge throught the same USB-C port.</p>
+<p>The board is made to fit into a 50mm tube.</p>
+<h1><a class="anchor" id="autotoc_md38"></a>
+File details</h1>
+<ul>
+<li>LampColorControler.ino: main class of the program, containing the setup and loop functions</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md39"></a>
+Physical build and architecture :</h1>
+<p>The electrical circuit and build files can be found in the <b>electrical</b> folder.</p>
+<div class="image">
+<img src="circuit.jpg" alt=""/>
+<div class="caption">
+electrical circuit</div></div>
+    <p>The PCB can be ordered directly assembled from JLC PCB, for a total cost of around 270$ for the minimal 5 pieces command (price drops with a more commands, until around 22$/circuit).</p>
+<p>The circuit is 3 cells li-ion USB C charger &amp; balancer &amp; power source, that is also programmable via the same USB port.</p>
+<p>The circuit features:</p><ul>
+<li>USB-C 3S li-ion charger, based on BQ25713 ic.</li>
+<li>Battery balancing, based on BQ76905 ic.</li>
+<li>USB short circuit and EC protection, based on TPD8S300 ic.</li>
+<li>USB-C power negotiation, base on FUSB302B ic.</li>
+<li>Programable voltage source, from 3V to 20V, up to 3A, using the charge component</li>
+<li>8 programmable IO pins (3 of which can be analog inputs, 4 can be pwm outputs). Based on nRF52840 ic.</li>
+<li>MEMS Microphone, placed away from parasitic ringing components.</li>
+<li>LSM6DS3TR IMU</li>
+<li>Bluetooth 5.1 low power, with 5/10m range.</li>
+<li>Multiple protection features (ESD spikes protection, USB voltage snubber, USB voltage limitation, ...)</li>
+</ul>
+<p>Be careful:</p><ul>
+<li><b>NO REVERSE VOLTAGE PROTECTION FOR BATTERY</b>: it will blow the circuit right up</li>
+<li><b>IO are 3.3V max</b>, any voltage greater will destroy the system</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md40"></a>
+Update the system</h1>
+<p>You can update the program without any tools :</p>
+<p>Open a serial connection to the lamp, and use the "DFU" command to reset the system. The system will appear on a computer as a USB file device.</p>
+<p>You just need to copy the .uf2 file matching your lamp type into this USB device. It will then reboot and update the system itself.</p>
+<h1><a class="anchor" id="autotoc_md41"></a>
+Behavior</h1>
+<p>The code in this repo is made to be used as compact lanterns.</p>
+<p>base behavior:</p><ul>
+<li>The lamp starts and stops with one click.</li>
+<li>The luminosity can be raised by clicking than holding, and diminished by double-clicking than holding.</li>
+</ul>
+<p>The battery level is displayed as a color gradient from green (high) to red (low).</p>
+<div class="image">
+<img src="lamp_top.jpg" alt=""/>
+<div class="caption">
+battery levels</div></div>
+    <p>Error and alerts are displayed as blinking animations:</p><ul>
+<li>low battery: slow red blinks</li>
+<li>critical battery: fast red blinks, emergency shutdown after short delay</li>
+<li>charging: breeze animation, changing color to indicate battery level</li>
+<li>incoherent battery readings: fast green/red blinks (battery reading do not match the set battery type)</li>
+<li>main loop too slow: fast fushia blinks</li>
+<li>temperature too high: fast orange blinks</li>
+<li>temperature extreme: emergency shutdown</li>
+<li>OTG failed: pink/yellow fast blink (failed to start the output power)</li>
+<li>bluetooth advertising: blue breeze animation</li>
+<li>hardware alert: fast purple/cyan blinks: generic alert to indicate the failure of a component, without recovery</li>
+<li>system off failed : fast purple/white blinks : system failed ot go to sleep, it will reset to default program and will need to be reflashed</li>
+<li>system in error state : fast pink/orange, then shutdown : reached an error state and is stuck here. Shutdown after five seconds</li>
+<li>unhandled: fast white blinks</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md42"></a>
+User defined behaviors</h2>
+<p>The user MUST define the target behavior for the target uses.</p>
+<p>Some functions are defined in <a class="el" href="functions_8h_source.html">functions.h</a> files, and must be implemented in functions.cpp They allow the user to program the exact desired behavior.</p>
+<p>Some user types are available for base models, in the user folder:</p><ul>
+<li>cct: Program designed for a constant color temperature led strip.</li>
+<li>indexable: program designed for an indexable led strip wrapped around the lamp body</li>
+<li>simple: Program designed for a constant color led strip</li>
+</ul>
+<p><img src="lamp_types.jpg" alt="" class="inline" title="The different lamps"/>     Above: simple, cct, indexable</p>
+<h3><a class="anchor" id="autotoc_md43"></a>
+Bootloader flash</h3>
+<p>Out of factory, the board will miss a bootloader.</p>
+<ul>
+<li>Use a raspberry of any other linux system with gpios</li>
+<li>Use the open source program <b>openocd</b> as described in the <b>flashInfo</b> folder of this repository.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md44"></a>
+Building the project</h1>
+<h2><a class="anchor" id="autotoc_md45"></a>
+Quick Setup</h2>
+<p>The supported platform to work with the project is:</p>
+<ul>
+<li>Linux (Debian/Ubuntu/Archlinux/etc)</li>
+</ul>
+<p>You will find a full guide on how to build the project here:</p>
+<ul>
+<li><a class="el" href="md_docs_QuickSetup.html">Quick Setup</a> &ndash; also lists all required dependencies</li>
+</ul>
+<p>Note that after building documentation, it will be in <code>docs/html/index.html</code></p>
+<h2><a class="anchor" id="autotoc_md46"></a>
+Other Guides</h2>
+<p>You will find a guide on how to update the system via USB</p>
+<ul>
+<li><a class="el" href="md_docs_Update.html">Update DFU</a></li>
+</ul>
+<p>You will find a guide on how to setup a virtual machine to build the project:</p>
+<ul>
+<li><a class="el" href="md_docs_VirtualMachine.html">Virtual Machine</a> &ndash; experimental, work-in-progress</li>
+</ul>
+<p>You will find contribution guidelines to the project here:</p>
+<ul>
+<li><a class="el" href="md_docs_Contributing.html">Contributing</a> &ndash; <b>required to read for contributors</b></li>
+</ul>
+<p>As a beginner, you will find a guide to develop your own lighting mode here:</p>
+<ul>
+<li><a class="el" href="md_docs_WritingModes.html">Writing Modes</a></li>
+</ul>
+<p>And a big thanks to all the people that helped !</p>
+<ul>
+<li><a class="el" href="md_docs_Thanks.html">Thanks</a></li>
+</ul>
+<hr  />
+<p>Feel free to open an issue to ask your questions or give your ideas! </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->

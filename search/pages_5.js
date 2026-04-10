@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['thanks_20_21_0',['Thanks !',['../md_docs_Thanks.html',1,'']]]
+  ['lamp_2dda_0',['Lamp-Da',['../index.html',1,'']]]
 ];

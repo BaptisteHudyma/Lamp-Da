@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['quick_20setup_0',['Quick Setup',['../md_docs_QuickSetup.html',1,'']]]
+  ['file_20details_0',['File details',['../md_src_system_README.html',1,'']]],
+  ['flash_20process_1',['Flash process',['../md_flashInfo_README.html',1,'']]],
+  ['flashapp_2',['FlashApp',['../md_flashInfo_windowsHmi_README.html',1,'']]]
 ];

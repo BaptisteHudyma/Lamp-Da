@@ -39,7 +39,7 @@ var searchData=
   ['aqua_36',['Aqua',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caab00cd3292ed32d4a3be11104bb22480',1,'modes::colors']]],
   ['aquamarine_37',['Aquamarine',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca8a9359c4fcfddabcaa29a34257470f2f',1,'modes::colors']]],
   ['arduinofft_38',['ArduinoFFT',['../classArduinoFFT.html',1,'']]],
-  ['arduinofft_20_3ca_20href_3d_22https_3a_2f_2fdoi_2eorg_2f10_2e5281_2fzenodo_2e14195818_22_20_3e_3cimg_20src_3d_22https_3a_2f_2fzenodo_2eorg_2fbadge_2fdoi_2f10_2e5281_2fzenodo_2e14195818_2esvg_22_20alt_3d_22doi_22_2f_3e_3c_2fa_3e_39',['arduinoFFT &lt;a href=&quot;https://doi.org/10.5281/zenodo.14195818&quot; &gt;&lt;img src=&quot;https://zenodo.org/badge/DOI/10.5281/zenodo.14195818.svg&quot; alt=&quot;DOI&quot;/&gt;&lt;/a&gt;',['../index.html',1,'']]],
+  ['arduinofft_20_3ca_20href_3d_22https_3a_2f_2fdoi_2eorg_2f10_2e5281_2fzenodo_2e14195818_22_20_3e_3cimg_20src_3d_22https_3a_2f_2fzenodo_2eorg_2fbadge_2fdoi_2f10_2e5281_2fzenodo_2e14195818_2esvg_22_20alt_3d_22doi_22_2f_3e_3c_2fa_3e_39',['arduinoFFT &lt;a href=&quot;https://doi.org/10.5281/zenodo.14195818&quot; &gt;&lt;img src=&quot;https://zenodo.org/badge/DOI/10.5281/zenodo.14195818.svg&quot; alt=&quot;DOI&quot;/&gt;&lt;/a&gt;',['../md_src_depends_arduinoFFT_README.html',1,'']]],
   ['arduinofft_3c_20float_20_3e_40',['ArduinoFFT&lt; float &gt;',['../classArduinoFFT.html',1,'']]],
   ['ask_5fuser_5fmanual_41',['ask_user_manual',['../classlampda__gui_1_1TabOfficialUpdate.html#a0c5e6339f2dc87e10dcc7b28f484d20b',1,'lampda_gui::TabOfficialUpdate']]],
   ['aurora_2ehpp_42',['aurora.hpp',['../aurora_8hpp.html',1,'']]],

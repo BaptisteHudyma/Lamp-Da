@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['notes_0',['Notes',['../md_docs_Notes.html',1,'']]]
+  ['electrical_20manufacturing_0',['Electrical manufacturing',['../md_electrical_README.html',1,'']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['memoryusage_0',['MemoryUsage',['../md_docs_MemoryUsage.html',1,'']]]
+  ['contributing_20code_0',['Contributing code',['../md_docs_Contributing.html',1,'']]]
 ];
