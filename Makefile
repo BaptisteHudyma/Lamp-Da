@@ -551,7 +551,7 @@ clean-artifacts:
 
 clean-doc:
 	@echo; echo " --- $@"
-	rm -f docs/html/index.html
+	rm -rf docs/html/
 
 clean: clean-artifacts clean-simulator clean-doc
 	@echo; echo " --- $@"
