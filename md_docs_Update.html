@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: BQ76905</title>
+<title>Lamp-Da: Updating the system</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,15 +70,36 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">BQ76905 </div></div>
+  <div class="headertitle"><div class="title">Updating the system </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Define all the registers for the <a href="https://www.ti.com/product/BQ76905">BQ76905 component</a>.</p>
-<p>This repository is platform independant code.</p>
-<p>You must declare an implementation of the I2C functions :</p><ul>
-<li>i2c_readDatam: read some data from the I2C line</li>
-<li>i2c_writeData: write some data to the I2C line </li>
+<div class="textblock"><p>The system is packed with a DFU compatible bootloader, accessible by USB. The DFU update is accessible by putting the system in update mode, using the following procedure :</p><ul>
+<li>plug the system to a USB master device (eg: computer)</li>
+<li>Open a serial port at 115200 bauds</li>
+<li>test the connection by sending "v" to get system version, and "t" to get system type (simple, indexable, ...)</li>
+<li>type "DFU" to enter device firmware update</li>
+<li>The system reboots and appears has a mass storage device</li>
+<li>Put the .utf2 file corresponding to your system type into the mass storage device</li>
+<li><b>touch nothing ! wait for the system to disconnect on its own</b>. it should take a minute at most.</li>
+<li>The system reboots with the updated firmware</li>
 </ul>
+<p>Note : DFU stands for Device Firware Update</p>
+<h1><a class="anchor" id="autotoc_md23"></a>
+Using a terminal</h1>
+<p>In a first terminal : Listen to output on the serial port <code>cat -v &lt; /dev/ttyACM0</code></p>
+<p>On another terminal : Open the serial port <code>sudo chmod o+rw /dev/ttyACM0</code> Send the "t" command : &lsquo;echo -e 't\0&rsquo; &gt; /dev/ttyACM0`</p>
+<p>You should see the type of the lamp on the first terminal.</p>
+<p>Then send the "DFU" command : &lsquo;echo -e 'DFU\0&rsquo; &gt; /dev/ttyACM0` to make the system enter the DFU mode.</p>
+<h1><a class="anchor" id="autotoc_md24"></a>
+Using the Arduino IDE</h1>
+<p>In <em>Tools</em> tab, select the port where the system is connected. It will often be "/dev/ttyACM0" in linux.</p>
+<p>Open the <em>Serial Monitor</em>, in the <em>Tools</em> tab. Set the speed to 115200 bauds.</p>
+<p>You can now send commands and receive answers from the system CLI.</p>
+<p>On Linux, you have to check that the Arduino IDE can access the serial port.</p>
+<h1><a class="anchor" id="autotoc_md25"></a>
+Using the repository</h1>
+<p>This repository has some built in tools to debug and update the system. The command <code>make monitor</code> will open a serial monitor to the system on /dev/ttyACM0.</p>
+<p>When using the <code>make upload-</code> commands, the upload of nexw code is automatic if the compilation succeeds. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

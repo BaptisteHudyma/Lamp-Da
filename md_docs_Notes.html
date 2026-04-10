@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: README</title>
+<title>Lamp-Da: Notes</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,40 +70,26 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">README </div></div>
+  <div class="headertitle"><div class="title">Notes </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>USB pd is complicated.</p>
-<p>This whole lib is a mess to understand, as much as it was to make work, so have some pity for yourself and do not step in.</p>
-<p>The board can only be used as a data URP (USB slave, if you dont speak USB "nomenclature"), but can act as a power source (provider) or sink (consummer). By default it should be used as a sink, but do whatever.</p>
-<p>This lib handles power profile selection (as SINK) or power profile selection handling (as source), and power role swap. The power role swap allows the system to go from sink to source, if requested by the plugged in device.</p>
-<p>Here is an indicative map if you really really need to get going, or maybe just curious:</p><ul>
-<li>the <b>drivers</b> folder contains the drivers for certain PD negociation chips. This project uses the FUSB302B for now, but this could change in the future.</li>
-<li>All files that starts with <b>tcpm</b> are the abstraction layer to the hardware. They link the drivers to the usb-PD algorithms.</li>
-<li>All the rest is a complex mess of the USB-pd algorithms, defined in the norm... It as been adapted to remove the unused functions (makes it lighter to compile/run), and prevent the reader from experiencing heavy nausea.</li>
-</ul>
-<p>Some definitions to help in your quest:</p><ul>
-<li>DFP: Downward facing port: USB host</li>
-<li>UFP: Upfront facing port: USB slave</li>
-<li>DRP: Dural role port: Can be host or slave, depending on context ! (an negociations)</li>
-<li>tcpm: Type C port management: interface between the hardware and software specific code</li>
-<li>tcpc: Type C port controler: generic usb type c controls</li>
-<li>PPS: Programmable Power Supply (from 3.3 to 20V in steps of 20mV)</li>
-<li>SPR: Standard power range (5V, 9V, 15V, 20V, PPS, to maximum 3/5A)</li>
-<li>EPR: Extended power range (up to 45V)</li>
-<li>GoodCRC: acknowledge message</li>
-<li>VCONN: special USB c line, used to power emarker chips. Not used in this program</li>
-</ul>
-<p>USB pd message types</p><ul>
-<li>DO: data object, prefix</li>
-<li>BDO: BIST DO, physical layer compliance testing</li>
-<li>PDO: Power DO, source power capabilities, or sink power requirements</li>
-<li>RDO: Request DO, used by a sink to require a target source PDO</li>
-<li>VDO: vendor DO, vendor specific informations</li>
-<li>BSDO: Battery Status DO, battery status informations</li>
-<li>ADO, Alert DO, to detail incidents that happened on the line</li>
-</ul>
-<p>A standard cable should support 20V 3A. To get more, you need to program something to speak to a marker chip in the cable. We do not need it in this project, so you wont find code for it. </p>
+<div class="textblock"><p>This is miscellaneous documentation around the project and its setup.</p>
+<h1><a class="anchor" id="autotoc_md10"></a>
+How the build system works?</h1>
+<p>We are relying on Arduino and Adafruit's integrations to do a lot of things. We want to use modern compiler features and some customization to our setup, while we don't want to modify how Adafruit's platform core and libraries are build.</p>
+<p>On first build, we will thus first:</p>
+<p>0. compile a "clean" <code>build-clean</code> target later used to detect how Arduino builds our sketch</p>
+<p>Then, on all subsequent builds:</p>
+<ol type="1">
+<li>compile a "dry" <code>build-dry</code> target which will build core+libraries with the default setup</li>
+<li>rebuild the sketch objects using our own custom setup (C++17, other flags)</li>
+<li>compile a "final" <code>build</code> target which will let the <code>arduino-cli</code> reuse all the already-build objects, to produce a final artifact</li>
+</ol>
+<p>This is a hack and sanity checks are in place to verify that the sketch have been properly build (see <code>make verify-canary</code>)</p>
+<h1><a class="anchor" id="autotoc_md11"></a>
+Check heap &amp; stack</h1>
+<p>The system is still a low power microcontroller, so ram and flash are limited. The program flash size is checked at compile time, but the heap/stack are not checked yet.</p>
+<p>To analyze those, you can use the tool stackAnalyser.py, in the tools folder. It should be used as so: <code>python tools/stackAnalyser.py _build/simulator/indexable-simulator _build/simulator/CMakeFiles/simulator_indexable.dir/youPathToProject/src &gt; stack.txt</code> the generated file can be used to check the program running size. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

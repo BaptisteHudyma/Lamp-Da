@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: BQ25713</title>
+<title>Lamp-Da: Contributing code</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,15 +70,27 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">BQ25713 </div></div>
+  <div class="headertitle"><div class="title">Contributing code </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Define all the registers for the <a href="https://www.ti.com/product/BQ25713">BQ25713 component</a>.</p>
-<p>This repository is platform independant code.</p>
-<p>You must declare an implementation of the I2C functions :</p><ul>
-<li>i2c_readDatam: read some data from the I2C line</li>
-<li>i2c_writeData: write some data to the I2C line </li>
-</ul>
+<div class="textblock"><p>If <code>clang</code> is installed on your platform, automatic format will be available:</p>
+<div class="fragment"><div class="line"># this format all files using clang-format</div>
+<div class="line">cd LampColorControler</div>
+<div class="line">make format</div>
+</div><!-- fragment --><p>You can verify that all files are properly formatted with:</p>
+<div class="fragment"><div class="line"># this fails if some files are not properly formatted</div>
+<div class="line">cd LampColorControler</div>
+<div class="line">make format-verify</div>
+</div><!-- fragment --><p>You can add this verification as a <a href="https://git-scm.com/book/ms/v2/Customizing-Git-Git-Hooks">git pre-commit hook</a> with:</p>
+<div class="fragment"><div class="line"># before every &quot;git commit&quot; checks if formatting is good</div>
+<div class="line">cd LampColorControler</div>
+<div class="line">make format-hook</div>
+<div class="line">git commit # will implictly run &quot;make format-verify&quot;</div>
+</div><!-- fragment --><p>You can check that all files still build after your change using:</p>
+<div class="fragment"><div class="line"># clean then build everything, including all lamp type</div>
+<div class="line">cd LampColorControler</div>
+<div class="line">make verify-all</div>
+</div><!-- fragment --><p>Note that simulator files are build only if all dependencies are available. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

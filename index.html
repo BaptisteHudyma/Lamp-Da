@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: Main Page</title>
+<title>Lamp-Da: arduinoFFT &lt;a href=&quot;https://doi.org/10.5281/zenodo.14195818&quot; &gt;&lt;img src=&quot;https://zenodo.org/badge/DOI/10.5281/zenodo.14195818.svg&quot; alt=&quot;DOI&quot;/&gt;&lt;/a&gt;</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,10 +69,31 @@ $(function() {
 </div>
 </div>
 
-<div class="header">
-  <div class="headertitle"><div class="title">Lamp-Da Documentation</div></div>
+<div><div class="header">
+  <div class="headertitle"><div class="title">arduinoFFT <a href="https://doi.org/10.5281/zenodo.14195818"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.14195818.svg" alt="DOI" style="pointer-events: none;" class="inline"/></a> </div></div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><p><a class="anchor" id="md_src_depends_arduinoFFT_README"></a></p>
+<h1><a class="anchor" id="autotoc_md0"></a>
+Fast Fourier Transform for Arduino</h1>
+<p>This is a fork from <a href="https://code.google.com/p/makefurt/">https://code.google.com/p/makefurt/</a> which has been abandoned since 2011.</p>
+<p>This is version 2.0 of the library, which has a different API.</p>
+<p>Tested on Arduino 1.8.19 and 2.3.2.</p>
+<h2><a class="anchor" id="autotoc_md1"></a>
+Installation on Arduino</h2>
+<p>Use the Arduino Library Manager to install and keep it updated. Just look for arduinoFFT. Only for Arduino 1.5+</p>
+<h2><a class="anchor" id="autotoc_md2"></a>
+Manual installation on Arduino</h2>
+<p>To install this library, just place this entire folder as a subfolder in your Arduino installation. When installed, this library should look like:</p>
+<p><code>Arduino\libraries\arduinoFFT</code> (this library's folder) <code>Arduino\libraries\arduinoFFT\src\<a class="el" href="arduinoFFT_8h_source.html">arduinoFFT.h</a></code> (the library header file. include this in your project) <code>Arduino\libraries\arduinoFFT\keywords.txt</code> (the syntax coloring file) <code>Arduino\libraries\arduinoFFT\Examples</code> (the examples in the "open" menu) <code>Arduino\libraries\arduinoFFT\LICENSE</code> (GPL license file) <code>Arduino\libraries\arduinoFFT\README.md</code> (this file)</p>
+<h2><a class="anchor" id="autotoc_md3"></a>
+Building on Arduino</h2>
+<p>After this library is installed, you just have to start the Arduino application. You may see a few warning messages as it's built. To use this library in a sketch, go to the Sketch | Import Library menu and select arduinoFFT. This will add a corresponding line to the top of your sketch:</p>
+<p><code>#include &lt;<a class="el" href="arduinoFFT_8h_source.html">arduinoFFT.h</a>&gt;</code></p>
+<h2><a class="anchor" id="autotoc_md4"></a>
+API</h2>
+<p>Documentation was moved to the project's <a href="https://github.com/kosme/arduinoFFT/wiki">wiki</a>. </p>
+</div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

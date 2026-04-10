@@ -5,5 +5,6 @@ var searchData=
   ['white_2',['White',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caa9350f07c956be56464b31c73b7cb043',1,'modes::colors']]],
   ['whitesmoke_3',['WhiteSmoke',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca6f3346d6a056546a91b69f21fe998056',1,'modes::colors']]],
   ['write_5fparameters_4',['write_parameters',['../structmodes_1_1ContextTy.html#a640e067c0a6c24bc19c7d7baff6fd7aa',1,'modes::ContextTy::write_parameters()'],['../structmodes_1_1BasicMode.html#a236039ce6cd71c62c82ee97757b44a7b',1,'modes::BasicMode::write_parameters()'],['../namespaceuser.html#a42eba66fe130830c3d5371d349d11764',1,'user::write_parameters()']]],
-  ['write_5fto_5fmemory_5',['write_to_memory',['../namespacestatistics.html#a5ecc922f8b863953f7eb72dd0caae4a9',1,'statistics']]]
+  ['write_5fto_5fmemory_5',['write_to_memory',['../namespacestatistics.html#a5ecc922f8b863953f7eb72dd0caae4a9',1,'statistics']]],
+  ['writing_20your_20own_20lighting_20mode_6',['Writing your own lighting mode',['../md_docs_WritingModes.html',1,'']]]
 ];
