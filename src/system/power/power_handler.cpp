@@ -186,7 +186,7 @@ void handle_clear_power_rails()
   // wait at least a little bit
   if (time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailMinDelay_ms and
       // power rail below min measurment voltage
-      get_power_rail_voltage() <= 3200)
+      (_isInBatteryRecoveryMode or get_power_rail_voltage() <= 3200))
   {
     __private::dischargeVbus.set_high(false);
     // all is clear, skip to next step
@@ -448,7 +448,7 @@ void handle_startup()
     {
       // Recover strategy :
       // unlock the power gate and check that charger and balancer are detected.
-      powergates::enable_vbus_gate();
+      powergates::enable_vbus_gate_DIRECT();
     }
     _isInBatteryRecoveryMode = true;
 

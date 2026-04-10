@@ -81,9 +81,35 @@ void lampda_print(const char* format, ...)
 /**
  * \brief read external inputs (may take some time)
  */
-std::vector<std::string> read_inputs()
+Inputs read_inputs()
 {
-  std::vector<std::string> res = inputCommands;
+  Inputs res;
+  res.commandCount = 0;
+
+  for (const auto& command: inputCommands)
+  {
+    if (res.commandCount >= Inputs::maxCommands)
+    {
+      std::cerr << "Command count exceeded max commands, ignoring following commands" << std::endl;
+      break;
+    }
+    if (command.size() >= Inputs::maxCommandSize)
+    {
+      std::cerr << "Command exceeded max command lenght" << std::endl;
+      continue;
+    }
+
+    size_t cnt = 0;
+    for (const char& c: command)
+    {
+      res.commandList[res.commandCount][cnt] = c;
+      cnt += 1;
+    }
+    res.commandList[res.commandCount][cnt] = '\0';
+    res.commandCount += 1;
+  }
+
+  // clear
   inputCommands.clear();
   return res;
 }

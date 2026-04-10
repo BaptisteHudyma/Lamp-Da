@@ -15,6 +15,7 @@
 #include "src/system/platform/print.h"
 
 #include "src/system/physical/battery.h"
+#include "src/system/physical/button.h"
 #include "src/system/physical/fileSystem.h"
 
 #include "src/system/utils/constants.h"
@@ -30,9 +31,9 @@ constexpr uint8_t maxLineLenght = 200;
 
 inline const char* boolToString(bool b) { return b ? "true" : "false"; }
 
-void handleCommand(const std::string& command)
+void handleCommand(const Inputs::Command& command)
 {
-  switch (utils::hash(command.c_str()))
+  switch (utils::hash(command.data()))
   {
     case utils::hash("h"):
     case utils::hash("help"):
@@ -43,7 +44,7 @@ void handleCommand(const std::string& command)
                 "v: hardware & software version\n"
                 "t: return the lamp type\n"
                 "id: return the board serial number\n"
-                "stats: display the system use statistics"
+                "stats: display the system use statistics\n"
                 "bat: battery info/levels\n"
                 "cinfo: charger infos\n"
                 "ADC: values from the charger ADC\n"
@@ -53,6 +54,8 @@ void handleCommand(const std::string& command)
                 "i2c: start an i2c present check\n"
                 "format-fs: format the whole file system (dangerous)\n"
                 "DFU: clear this program from memory, enter update mode\n"
+                "buttonTogg: change the button pin number for the next boot\n"
+                "shutdown: force shutdown the lamp\n"
                 "tasks: display a debug of task usages\n"
                 "-----------------");
         break;
@@ -158,28 +161,44 @@ void handleCommand(const std::string& command)
     case utils::hash("cinfo"):
       {
         const auto& chargerState = charger::get_state();
+        if (chargerState.areMeasuresOk)
+        {
+          lampda_print(
+                  "is charge signal ok:%s\n"
+                  "voltage on power rail:%dmV\n"
+                  "input current:%dmA\n"
+                  "battery voltage:%dmV\n"
+                  "charge current:%dmA\n"
+                  "is usb serial connected:%s\n"
+                  "is charging:%s\n"
+                  "is effec charging:%s\n"
+                  "battery level:%.2f%%\n"
+                  "-> charger status: %s",
+                  boolToString(chargerState.isChargeOkSignalHigh),
+                  chargerState.powerRail_mV,
+                  chargerState.inputCurrent_mA,
+                  chargerState.batteryVoltage_mV,
+                  chargerState.chargeCurrent_mA,
+                  boolToString(charger::is_vbus_signal_detected()),
+                  boolToString(chargerState.is_charging()),
+                  boolToString(chargerState.is_effectivly_charging()),
+                  battery::get_battery_level() / 100.0,
+                  chargerState.get_status_str().c_str());
+        }
+        else
+        {
+          lampda_print(
+                  "is charge signal ok:%s\n"
+                  "Charger measurments are invalid !!\n"
+                  "is usb serial connected:%s\n"
+                  "battery level:%.2f%%\n"
+                  "-> charger status: %s",
+                  boolToString(chargerState.isChargeOkSignalHigh),
+                  boolToString(charger::is_vbus_signal_detected()),
+                  battery::get_battery_level() / 100.0,
+                  chargerState.get_status_str().c_str());
+        }
 
-        lampda_print(
-                "is charge signal ok:%s\n"
-                "voltage on power rail:%dmV\n"
-                "input current:%dmA\n"
-                "battery voltage:%dmV\n"
-                "charge current:%dmA\n"
-                "is usb serial connected:%s\n"
-                "is charging:%s\n"
-                "is effec charging:%s\n"
-                "battery level:%.2f%%\n"
-                "-> charger status: %s",
-                boolToString(chargerState.isChargeOkSignalHigh),
-                chargerState.powerRail_mV,
-                chargerState.inputCurrent_mA,
-                chargerState.batteryVoltage_mV,
-                chargerState.chargeCurrent_mA,
-                boolToString(charger::is_vbus_signal_detected()),
-                boolToString(chargerState.is_charging()),
-                boolToString(chargerState.is_effectivly_charging()),
-                battery::get_battery_level() / 100.0,
-                chargerState.get_status_str().c_str());
         // in case there is a software error, display it
         if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_HARDWARE)
         {
@@ -213,19 +232,35 @@ void handleCommand(const std::string& command)
     case utils::hash("ADC"):
       {
         const auto& chargerState = charger::get_state();
-        lampda_print(
-                "PowerRail voltage:%dmV\n"
-                "PowerRail current:%dmA\n"
-                "VBUS voltage:%dmA\n"
-                "Bat voltage:%dmV\n"
-                "Bat current:%dmA\n"
-                "Temperature:%.2fC",
-                chargerState.powerRail_mV,
-                chargerState.inputCurrent_mA,
-                powerDelivery::get_vbus_voltage(),
-                chargerState.batteryVoltage_mV,
-                chargerState.batteryCurrent_mA,
-                read_CPU_temperature_degreesC());
+        if (chargerState.areMeasuresOk)
+        {
+          lampda_print(
+                  "Last update %dms\n"
+                  "PowerRail voltage:%dmV\n"
+                  "PowerRail current:%dmA\n"
+                  "VBUS voltage:%dmA\n"
+                  "Bat voltage:%dmV\n"
+                  "Bat current:%dmA\n"
+                  "Temperature:%.2fC",
+                  chargerState.lastUpdateTime_ms,
+                  chargerState.powerRail_mV,
+                  chargerState.inputCurrent_mA,
+                  powerDelivery::get_vbus_voltage(),
+                  chargerState.batteryVoltage_mV,
+                  chargerState.batteryCurrent_mA,
+                  read_CPU_temperature_degreesC());
+        }
+        else
+        {
+          lampda_print(
+                  "Charger measurment are invalid !\n"
+                  "Last update %dms\n"
+                  "VBUS voltage:%dmA\n"
+                  "Temperature:%.2fC",
+                  chargerState.lastUpdateTime_ms,
+                  powerDelivery::get_vbus_voltage(),
+                  read_CPU_temperature_degreesC());
+        }
         break;
       }
 
@@ -266,6 +301,25 @@ void handleCommand(const std::string& command)
       enter_serial_dfu();
       break;
 
+    case utils::hash("buttonTogg"):
+      {
+        if (button::get_button_pin() == DigitalPin::GPIO::gpio3)
+        {
+          button::set_button_pin(DigitalPin::GPIO::gpio4);
+          lampda_print("Set button pin to gpio4");
+        }
+        else
+        {
+          button::set_button_pin(DigitalPin::GPIO::gpio3);
+          lampda_print("Set button pin to gpio3");
+        }
+        break;
+      }
+
+    case utils::hash("shutdown"):
+      behavior::internal::handle_shutdown_state();
+      break;
+
     case utils::hash("tasks"):
       char buff[512];
       get_thread_debug(buff);
@@ -273,7 +327,7 @@ void handleCommand(const std::string& command)
       break;
 
     default:
-      lampda_print("unknown command: \'%s\'", command.c_str());
+      lampda_print("unknown command: \'%s\'", command.data());
       lampda_print("type h for available commands");
       break;
   }
@@ -284,8 +338,9 @@ void setup() { init_prints(); }
 void handleSerialEvents()
 {
   const auto& inputs = read_inputs();
-  for (const std::string& input: inputs)
+  for (size_t i = 0; i < min<uint8_t>(Inputs::maxCommands, inputs.commandCount); i++)
   {
+    const Inputs::Command& input = inputs.commandList[i];
     handleCommand(input);
   }
 }

@@ -1,6 +1,8 @@
 #ifndef PLATFORM_PRINT_H
 #define PLATFORM_PRINT_H
 
+#include <array>
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <stdarg.h>
@@ -15,6 +17,17 @@ extern void init_prints();
 /**
  * \brief read external inputs (may take some time)
  */
-extern std::vector<std::string> read_inputs();
+
+struct Inputs
+{
+  static constexpr size_t maxCommandSize = 15;
+  typedef std::array<char, maxCommandSize> Command;
+
+  static constexpr uint8_t maxCommands = 2;
+  std::array<Command, maxCommands> commandList;
+  uint8_t commandCount = 0;
+};
+
+extern Inputs read_inputs();
 
 #endif

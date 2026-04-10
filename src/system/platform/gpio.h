@@ -62,6 +62,9 @@ public:
 
   DigitalPin(DigitalPin&& other) = delete;
 
+  // reinit
+  void set(GPIO pin);
+
   void set_pin_mode(Mode mode) const;
   bool is_high() const; // true if high, false if low
   void set_high(bool isHigh) const;

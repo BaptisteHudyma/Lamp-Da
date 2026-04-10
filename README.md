@@ -111,6 +111,10 @@ Note that after building documentation, it will be in `docs/html/index.html`
 
 ## Other Guides
 
+You will find a guide on how to update the system via USB
+
+ - [Update DFU](docs/Update.md)
+
 You will find a guide on how to setup a virtual machine to build the project:
 
  - [Virtual Machine](docs/VirtualMachine.md) -- experimental, work-in-progress
@@ -121,7 +125,11 @@ You will find contribution guidelines to the project here:
 
 As a beginner, you will find a guide to develop your own lighting mode here:
 
- - [Writing Modes](docs/WritingModes.md) -- not done yet :)
+ - [Writing Modes](docs/WritingModes.md)
+
+And a big thanks to all the people that helped !
+
+ - [Thanks](docs/Thanks.md)
 
 --------------------------------------------
 

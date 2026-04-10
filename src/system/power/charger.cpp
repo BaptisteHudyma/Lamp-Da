@@ -312,7 +312,11 @@ void update_state()
     charger.areMeasuresOk = false;
   }
 
+  // update charger status
   update_state_status();
+
+  // set update time
+  charger.lastUpdateTime_ms = time_ms();
 }
 
 /**
