@@ -1,10 +1,13 @@
 name: Lamp-Da main branch CI
 
 on:
-  pull_request:
+  pull_request: # on pull request changes to the folders below, run CI
     paths:
       - "src/**"
       - "simulator/**"
+  push: # on merge to main, run CI
+    branches:
+      - main
 
 defaults: 
   run:

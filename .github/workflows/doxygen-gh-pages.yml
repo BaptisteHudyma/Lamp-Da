@@ -6,12 +6,20 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./LampColorControler
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          path: LampColorControler
+          submodules: 'true'
       - uses: DenverCoder1/doxygen-github-pages-action@v2.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
