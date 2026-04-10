@@ -14,6 +14,7 @@ FftAnalyzer<PdmData::SAMPLE_SIZE, SoundStruct::numberOfFFtChanels, float> fftAna
 
 inline float square(const float v) { return v * v; }
 
+/// Scaling for the DecibelA model
 float decibel_A_scaling(const float frequency)
 {
   return square(12194.0f) * powf(frequency, 4) /
@@ -21,12 +22,14 @@ float decibel_A_scaling(const float frequency)
           sqrtf((square(frequency) + square(107.7f)) * (square(frequency) + square(737.9f))) *
           (square(frequency) + square(12194.0f)));
 }
+/// Scaling for the DecibelB model
 float decibel_B_scaling(const float frequency)
 {
   return square(12194.0f) * powf(frequency, 3) /
          ((square(frequency) + square(20.6f)) * sqrtf((square(frequency) + square(158.5f))) *
           (square(frequency) + square(12194.0f)));
 }
+/// Scaling for the DecibelC model
 float decibel_C_scaling(const float frequency)
 {
   return square(12194.0f) * powf(frequency, 2) /

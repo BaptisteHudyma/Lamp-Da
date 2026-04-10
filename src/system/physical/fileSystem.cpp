@@ -30,6 +30,9 @@ size_t lastUserParameterSize = 0;
 std::map<uint32_t, uint32_t> _userParametersValueMap;
 std::map<uint32_t, uint32_t> _systemParametersValueMap;
 
+/**
+ * \brief Store a key and a value
+ */
 struct keyValue
 {
   uint32_t key;
@@ -37,7 +40,9 @@ struct keyValue
 };
 constexpr size_t sizeOfData = sizeof(keyValue);
 
-// used to convert this struct to an array of bytes
+/**
+ * \brief Used to convert a KeyValues to an array of bytes
+ */
 union KeyValToByteArray
 {
   uint8_t data[sizeOfData];

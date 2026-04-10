@@ -82,46 +82,53 @@ ChargeStatus_t get_charge_status();
 // contains details on software error if any
 std::string get_software_error_message();
 
-// store the DAC values
+/**
+ * \brief Store the DAC values mesured by some system sensors, relative to the battery and power.
+ */
 struct Measurments
 {
-  // the time those measurments were made
+  /// The time those measurments were made
   uint32_t time = 0;
-  // do not use the values if they are invalid
+  /// Return False if you should not use the values in this struct
   bool is_measurment_valid() const;
 
-  // indicates if the charge signal from charger is high
+  /// Indicates if the chargeOk signal from charger is high
   bool isChargeOk;
 
-  // voltage on vbus
+  /// voltage on vbus
   uint16_t vbus_mV;
-  // power on vsys ??
+  /// power on vsys ??
+  /// The values here are always weird
   uint16_t psys_mV;
-  // battery charging current
+  /// battery charging current
   uint16_t batChargeCurrent_mA;
-  // battery discharge current
+  /// battery discharge current
   uint16_t batDischargeCurrent_mA;
-  // vbus current
+  /// vbus current
   uint16_t vbus_mA;
-  //
+  ///
   uint16_t cmpin_mA;
-  // VSYS voltage
+  /// VSYS voltage
   uint16_t vsys_mV;
-  // battery voltage
+  /// battery voltage
   uint16_t battery_mV;
 };
 Measurments get_measurments();
 
+/**
+ * \brief Store the battery specific measurments ans status.
+ * It is a refined data version of the Measurments class
+ */
 struct Battery
 {
-  // if false, the other infos are useless
+  /// if false, the other infos are useless
   bool isPresent = false;
 
-  // voltage of the battery
+  /// voltage of the battery
   uint16_t voltage_mV;
-  // actual current use
-  // positive: charging
-  // negative: discharging
+  /// Actual current use.
+  /// Positive is charging current.
+  /// Negative is discharging current.
   int16_t current_mA;
 };
 Battery get_battery();

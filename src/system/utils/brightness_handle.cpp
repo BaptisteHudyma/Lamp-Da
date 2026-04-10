@@ -7,16 +7,22 @@
 
 namespace brightness {
 
+/**
+ * \brief Store the brigthness characteristics
+ */
 struct BrightnessParameters
 {
-  // temporary upper bound for the brightness
+  /// Upper bound for the brightness
+  /// Can be updated to limit the max birghtness, but should never ecxeed absoluteMaximumBrightness
   brightness_t MaxBrightnessLimit = brightness::absoluteMaximumBrightness;
 
-  // hold the current level of brightness out of the raise/lower animation
-  brightness_t BRIGHTNESS = 200; // default start value
+  /// Hold the current level of brightness.
+  /// This is the true reference value that is stored in memory at system shutdown
+  brightness_t BRIGHTNESS = 200;
+  /// Temporary output, that can differ from BRIGHTNESS. Not save between modes
   brightness_t savedBrightness = 200;
 
-  // hold when update_brightness() was last called
+  /// Store when update_brightness() was last called, in milliseconds
   uint32_t lastBrightnessUpdate = 0;
 };
 BrightnessParameters __internal;

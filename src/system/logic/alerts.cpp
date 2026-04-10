@@ -22,16 +22,20 @@
 
 namespace alerts {
 
+/// Instanciation of the AlertManager
 AlertManager_t manager;
+
+/// Set to true if an alert requested an emmergency shutdown
 bool _request_shutdown = false;
 
-// if true, do not display the indicator in normal mode
+/// If true, do not display the indicator in normal mode
 bool skipIndicator = false;
 
-// stay at zero in normal operation
-// set to the real startup time to ignore the battery alerts while the system starts
+/// Stay at zero in normal operation.
+/// Set to the real startup time to ignore the battery alerts while the system starts
 uint32_t _startupChargerTime = 0;
-// ready to display battery alerts
+
+/// Return true if we are ready to display battery alerts
 bool is_battery_alert_ready()
 {
   const bool isReady = _startupChargerTime == 0 or (time_ms() - _startupChargerTime) > 5000;
@@ -40,6 +44,7 @@ bool is_battery_alert_ready()
   return isReady;
 }
 
+/// Convert alerts enums to text
 inline const char* AlertsToText(const Type type)
 {
   switch (type)
@@ -89,7 +94,7 @@ inline const char* AlertsToText(const Type type)
 
 namespace __internal {
 
-// only sample battery level every N steps
+/// only sample battery level every N steps
 uint16_t get_battery_level()
 {
   static uint16_t lastPercent = 0;
@@ -108,46 +113,48 @@ uint16_t get_battery_level()
 
 } // namespace __internal
 
+/**
+ * \brief Base class for all alerts.
+ * Must be overloaded to define an alert.
+ */
 struct AlertBase
 {
+  /// virtual destructor for a pure virtual class
   virtual ~AlertBase() = default;
 
-  /**
-   * \brief Return the timeout after which an alert will make the system auto-shutdown
-   */
+  /// Return the timeout after which an alert will make the system auto-shutdown
   virtual uint32_t alert_shutdown_timeout() const
   {
     // max timeout, will never be exeeded
     return UINT32_MAX;
   }
 
-  /**
-   * \brief function executed when this alert is raised
-   */
-  virtual void execute() const {
-    //
-  };
+  /// function executed when this alert is raised
+  virtual void execute() const {};
 
-  /**
-   * \brief return true if this alert type should be raised
-   */
+  /// return true if this alert type should be raised
   virtual bool should_be_raised() const { return false; }
 
-  /**
-   * \brief return true if this alert type should be cleared
-   */
+  /// return true if this alert type should be cleared
   virtual bool should_be_cleared() const { return false; }
 
-  // display this alert
+  /// display this alert on the indicator
   virtual bool show() const { return indicator::blink(300, 300, utils::ColorSpace::WHITE); }
 
+  /// return the Defined type of this alert
   virtual Type get_type() const = 0;
 
+  /// Return true if the system should shutdown from this alert
   virtual bool should_shutdown_system(const uint32_t time) final
   {
     return (time - raisedTime) > alert_shutdown_timeout();
   }
 
+  /**
+   * \brief Handler for the raised state of the alert.
+   * If the alert is not raised, raise the alert.
+   * \return True if the alert was raised by this function call
+   */
   virtual bool handle_raised_state(const uint32_t time)
   {
     if (not _isRaisedHandled)
@@ -163,9 +170,15 @@ struct AlertBase
     return false;
   }
 
-  // an alert continuously firing as to be updated
+  /// Update the raised time of this alert.
+  /// An alert continuously firing as to be updated
   void update_raise_time(const uint32_t time) { raisedTime = time; }
 
+  /**
+   * \brief Handler for the lowered state of the alert.
+   * If the alert is raised, lower the alert.
+   * \return True if the alert was lowered by this function call
+   */
   virtual bool handle_lowered_state(const uint32_t time)
   {
     if (not _isLoweredHandled)
@@ -179,26 +192,36 @@ struct AlertBase
     return false;
   }
 
-  // override to prevent lamp actions on alerts
+  /// override to prevent lamp output power if this alert if raised. Default to False
   virtual bool should_prevent_lamp_output() const { return false; }
+  /// override to prevent battery charge if this alert if raised. Default to False
   virtual bool should_prevent_battery_charge() const { return false; }
+  /// override to prevent USB port usage if this alert if raised. Default to False
   virtual bool should_prevent_usb_port_use() const { return false; }
 
   // private:
   //
+  /// Alert raise signal has been handled
   bool _isRaisedHandled = false;
-  //
+  /// Alert lower signal has been handled
   bool _isLoweredHandled = false;
-  //
+  /// Store the latest time at which this alert raise() was called
   uint32_t raisedTime = 0;
+  /// Store the latest time at which this alert lower() was called
   uint32_t loweredTime = 0;
 };
 
+/**
+ * \brief This alert is raised when the main loop becomes unresponsive
+ */
 struct Alert_MainLoopFreeze : public AlertBase
 {
   Type get_type() const override { return Type::MAIN_LOOP_FREEZE; }
 };
 
+/**
+ * \brief This alert is raised when the battery readings do not fit the battery physical model
+ */
 struct Alert_BatteryReadingIncoherent : public AlertBase
 {
   bool show() const override { return indicator::blink(100, 100, {utils::ColorSpace::GREEN, utils::ColorSpace::RED}); }
@@ -216,6 +239,10 @@ struct Alert_BatteryReadingIncoherent : public AlertBase
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the battery level falls below a critical threshold. Falling further will dammage the
+ * battery
+ */
 struct Alert_BatteryCritical : public AlertBase
 {
   bool should_be_raised() const override
@@ -250,6 +277,7 @@ struct Alert_BatteryCritical : public AlertBase
     return chargerState.is_effectivly_charging();
   }
 
+  /// If this alert is raised, system should turn off fast
   uint32_t alert_shutdown_timeout() const override
   {
     // shutdown after 2 seconds
@@ -265,6 +293,9 @@ struct Alert_BatteryCritical : public AlertBase
   Type get_type() const override { return Type::BATTERY_CRITICAL; }
 };
 
+/**
+ * \brief This alert is raised when the battery level gets low.
+ */
 struct Alert_BatteryLow : public AlertBase
 {
   bool should_be_raised() const override
@@ -305,6 +336,7 @@ struct Alert_BatteryLow : public AlertBase
     return chargerState.is_effectivly_charging();
   }
 
+  /// Execution will lower the brigthness output
   void execute() const override
   {
     // limit brightness to quarter of the max value
@@ -327,6 +359,9 @@ struct Alert_BatteryLow : public AlertBase
   Type get_type() const override { return Type::BATTERY_LOW; }
 };
 
+/**
+ * \brief This alert is raised when no connected battery is detected.
+ */
 struct Alert_BatteryMissing : public AlertBase
 {
   bool show() const override
@@ -337,11 +372,18 @@ struct Alert_BatteryMissing : public AlertBase
 
   Type get_type() const override { return Type::BATTERY_MISSING; }
 
+  /// Prevent lamp output
   bool should_prevent_lamp_output() const override { return true; }
+  /// Prevent battery charge
   bool should_prevent_battery_charge() const override { return true; }
+  /// Prevent USB port use
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the main loop becomes slower than the defined behavior.
+ * This is not a critical alert, but it sually indicates that the user mode in use is too slow.
+ */
 struct Alert_LongLoopUpdate : public AlertBase
 {
   bool show() const override { return indicator::blink(400, 400, utils::ColorSpace::FUSHIA); }
@@ -349,6 +391,10 @@ struct Alert_LongLoopUpdate : public AlertBase
   Type get_type() const override { return Type::LONG_LOOP_UPDATE; }
 };
 
+/**
+ * \brief This alert is raised when the internal temperature gets high.
+ * If it keeps rising, the battery may get dammaged.
+ */
 struct Alert_TempTooHigh : public AlertBase
 {
   bool should_be_raised() const override
@@ -363,6 +409,7 @@ struct Alert_TempTooHigh : public AlertBase
     return read_CPU_temperature_degreesC() <= maxSystemTemp_c * 0.75;
   }
 
+  /// Execution will lower the max brightness of the output
   void execute() const override
   {
     // limit brightness to half the max value
@@ -378,6 +425,10 @@ struct Alert_TempTooHigh : public AlertBase
   Type get_type() const override { return Type::TEMP_TOO_HIGH; }
 };
 
+/**
+ * \brief This alert is raised when the temperature gets too high.
+ * If it keeps climbing, the components will get dammaged.
+ */
 struct Alert_TempCritical : public AlertBase
 {
   bool should_be_raised() const override
@@ -386,9 +437,7 @@ struct Alert_TempCritical : public AlertBase
     return read_CPU_temperature_degreesC() >= criticalSystemTemp_c;
   }
 
-  // never need to clear this alert, temp too high will always be a complete shutdown
-  // bool should_be_cleared() const;
-
+  /// Shutdown fast
   uint32_t alert_shutdown_timeout() const override
   {
     // shutdown, critical temp is the absolute limit
@@ -399,11 +448,18 @@ struct Alert_TempCritical : public AlertBase
 
   Type get_type() const override { return Type::TEMP_CRITICAL; }
 
+  /// Prevent lamp output
   bool should_prevent_lamp_output() const override { return true; }
+  /// prevent battery charging
   bool should_prevent_battery_charge() const override { return true; }
+  /// prevent USB port use
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the Bluetooth advertising is turned on.
+ * It is just an informative alert.
+ */
 struct Alert_BluetoothAdvertisement : public AlertBase
 {
   bool show() const override { return indicator::breeze(1000, 500, utils::ColorSpace::BLUE); }
@@ -411,6 +467,10 @@ struct Alert_BluetoothAdvertisement : public AlertBase
   Type get_type() const override { return Type::BLUETOOTH_ADVERT; }
 };
 
+/**
+ * \brief This alert is raised when a problem is detected in the hardware.
+ * Usually, it means that an electrical component may have become unresponsive.
+ */
 struct Alert_HardwareAlert : public AlertBase
 {
   bool show() const override
@@ -420,11 +480,18 @@ struct Alert_HardwareAlert : public AlertBase
 
   Type get_type() const override { return Type::HARDWARE_ALERT; }
 
+  /// prevent usage of the output
   bool should_prevent_lamp_output() const override { return true; }
+  /// prevent battery charge
   bool should_prevent_battery_charge() const override { return true; }
+  /// prevent USB use
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the battery charger signals an error.
+ * It is not well handled at the moment, so it does not block anything.
+ */
 struct Alert_ChargerError : public AlertBase
 {
   bool show() const override
@@ -435,12 +502,16 @@ struct Alert_ChargerError : public AlertBase
   Type get_type() const override { return Type::CHARGER_ERROR; }
 };
 
+/**
+ * \brief This alert is raised when new favorite mode is added.
+ */
 struct Alert_FavoriteSet : public AlertBase
 {
   bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::TEAL); }
 
   Type get_type() const override { return Type::FAVORITE_SET; }
 
+  /// It is automatically cleared after a delay
   bool should_be_cleared() const override
   {
     // cleared after a delay
@@ -448,6 +519,10 @@ struct Alert_FavoriteSet : public AlertBase
   }
 };
 
+/**
+ * \brief This alert is raised when the output power fails to start.
+ * It can happen with logic bugs, or if the output rail is shorted.
+ */
 struct Alert_OtgFailed : public AlertBase
 {
   bool show() const override
@@ -457,9 +532,14 @@ struct Alert_OtgFailed : public AlertBase
 
   Type get_type() const override { return Type::OTG_FAILED; }
 
+  /// Block power output
   bool should_prevent_lamp_output() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the system fails to go to sleep.
+ * There is no way to recover from this, as we depend on the low level handlers for this functionality.
+ */
 struct Alert_SystemShutdownFailed : public AlertBase
 {
   bool show() const override
@@ -469,9 +549,9 @@ struct Alert_SystemShutdownFailed : public AlertBase
 
   Type get_type() const override { return Type::SYSTEM_OFF_FAILED; }
 
+  /// Cleared after a delay
   bool should_be_cleared() const override
   {
-    // cleared after a delay
     if (raisedTime > 0 and (time_ms() - raisedTime) > 2000)
     {
       // is this fails, the system is just too broken to be repaired
@@ -481,11 +561,18 @@ struct Alert_SystemShutdownFailed : public AlertBase
     return false;
   }
 
+  /// Prevent output usage
   bool should_prevent_lamp_output() const override { return true; }
+  /// Prevent battery charge
   bool should_prevent_battery_charge() const override { return true; }
+  /// Prevent USB use
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the system falls into an unrecoverable state.
+ * It can be raised by logic error, or detected bugs at program start
+ */
 struct Alert_SystemInErrorState : public AlertBase
 {
   bool show() const override
@@ -495,11 +582,17 @@ struct Alert_SystemInErrorState : public AlertBase
 
   Type get_type() const override { return Type::SYSTEM_IN_ERROR_STATE; }
 
+  /// Prevent output usage
   bool should_prevent_lamp_output() const override { return true; }
+  /// Prevent battery usage
   bool should_prevent_battery_charge() const override { return true; }
+  /// prevent USB usage
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the user tries to power the system as it is in lockout mode.
+ */
 struct Alert_SystemInLockout : public AlertBase
 {
   bool show() const override
@@ -513,6 +606,10 @@ struct Alert_SystemInLockout : public AlertBase
   Type get_type() const override { return Type::SYSTEM_IN_LOCKOUT; }
 };
 
+/**
+ * \brief This alert is raised when the sunset timer is active.
+ * It means that the system will turn off on it's own after a delay.
+ */
 struct Alert_SunsetTimerSet : public AlertBase
 {
   bool show() const override
@@ -528,12 +625,17 @@ struct Alert_SunsetTimerSet : public AlertBase
   Type get_type() const override { return Type::SUNSET_TIMER_ENABLED; }
 };
 
+/**
+ * \brief This alert is raised when the system starts without sleeping cleanly first.
+ * It appears after updates, crashes, power failures, ...
+ */
 struct Alert_SkippedCleanSleep : public AlertBase
 {
   bool show() const override { return indicator::blink(250, 250, utils::ColorSpace::PINK); }
 
   Type get_type() const override { return Type::SYSTEM_SLEEP_SKIPPED; }
 
+  /// Auto cleared after a delay
   bool should_be_cleared() const override
   {
     // cleared after a delay
@@ -541,24 +643,26 @@ struct Alert_SkippedCleanSleep : public AlertBase
   }
 };
 
+/**
+ * \brief This alert is raised when a short circuit is detected in the USB lines.
+ * The port should be cleaned before using it again.
+ */
 struct Alert_UsbPortShort : public AlertBase
 {
   bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::BLUE); }
 
   Type get_type() const override { return Type::USB_PORT_SHORT; }
 
-  bool should_be_cleared() const override
-  {
-    // auto cleared after a delay
-    return (raisedTime > 0 and (time_ms() - raisedTime) > 5000);
-  }
+  /// auto cleared after a delay
+  bool should_be_cleared() const override { return (raisedTime > 0 and (time_ms() - raisedTime) > 5000); }
 
-  // prevent charge
+  /// Prevent charge
   bool should_prevent_battery_charge() const override { return true; }
+  /// Prevent USB use
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
-// Alerts must be sorted by importance, only the first activated one will be shown
+/// Alerts must be sorted by importance, only the first activated one will be shown
 AlertBase* allAlerts[] = {
         new Alert_SystemShutdownFailed,
         new Alert_BatteryMissing, // if battery is missing, the system will also have the hardware alert

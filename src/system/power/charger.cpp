@@ -26,19 +26,18 @@ static bool isBatteryFullLatched_s = false;
 // used to stop the charge on user demand (debug behavior)
 static bool enableCharge_s = true;
 
+/**
+ * \brief Raw battery status measurments
+ */
 struct BatteryStatus_t
 {
-  // is battery detected
+  /// is battery detected
   bool isPresent = false;
-  // current voltage, in millivolts
+  /// current voltage, in millivolts
   uint16_t voltage_mV = 0;
-  // current usage, in milliamps
-  // positive is charging, negative is discharging
+  /// current usage, in milliamps.
+  /// positive is charging, negative is discharging
   int16_t current_mA = 0;
-
-  // minimum & maximum voltage
-  uint16_t minVoltage_mV = 0;
-  uint16_t maxVoltage_mV = 0;
 };
 static BatteryStatus_t batteryStatus;
 
