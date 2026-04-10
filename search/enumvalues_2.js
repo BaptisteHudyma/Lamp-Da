@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['cadetblue_0',['CadetBlue',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca6ebc8a828a71d16db5f0e4b864ac74d9',1,'modes::colors']]],
+  ['candle_1',['Candle',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a2653d578c08fb73a5bd86453a17d7367',1,'modes::colors']]],
+  ['carbonarc_2',['CarbonArc',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a0e18026e4bec00c1237a9c3396e97759',1,'modes::colors']]],
+  ['cct_3',['cct',['../namespacemodes_1_1hardware.html#a9ce05c0c227ab520c116fa72d23d4383ad4c9fa26976902c7c4cc2e3326e7e07a',1,'modes::hardware']]],
+  ['chartreuse_4',['Chartreuse',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca07e6de8a39255eecbc855b637c1e15bb',1,'modes::colors']]],
+  ['chocolate_5',['Chocolate',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca96dcee5265b7f68a876e70435655b975',1,'modes::colors']]],
+  ['clearbluesky_6',['ClearBlueSky',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3ae0d473ea44a3dec9d1b57cd5c4474ab4',1,'modes::colors']]],
+  ['clearstriponmodechange_7',['clearStripOnModeChange',['../namespacemodes.html#a02369f603301370bb1acf9b85e46183ca898e4f49ee4e2805cdd45baf627a3b7c',1,'modes']]],
+  ['coolwhitefluorescent_8',['CoolWhiteFluorescent',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a6965b3f8059619d457c6d369091cd3c4',1,'modes::colors']]],
+  ['coral_9',['Coral',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cab775922e98d034072df0b3df24291958',1,'modes::colors']]],
+  ['cornflowerblue_10',['CornflowerBlue',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca804967a15bb94a4804880dd28dd9209a',1,'modes::colors']]],
+  ['cornsilk_11',['Cornsilk',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca78a4022f5c1cf96c966244ff8a18e61f',1,'modes::colors']]],
+  ['crimson_12',['Crimson',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca4f277a531f302c146710bf35b82c3e3f',1,'modes::colors']]],
+  ['customrampanimchoice_13',['customRampAnimChoice',['../namespacemodes.html#a02369f603301370bb1acf9b85e46183cabdb0fca8269674f487f8806c9aeccbab',1,'modes']]],
+  ['customrampanimeffect_14',['customRampAnimEffect',['../namespacemodes.html#a02369f603301370bb1acf9b85e46183ca1b792c24c47faa2a26f6bb829df1dc52',1,'modes']]],
+  ['customrampstepspeedms_15',['customRampStepSpeedMs',['../namespacemodes.html#a02369f603301370bb1acf9b85e46183caa15ae9cf165a628be7458981d0831395',1,'modes']]],
+  ['cyan_16',['Cyan',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca6ab542d6b47fa8c8f7702c01c57293c6',1,'modes::colors']]]
+];

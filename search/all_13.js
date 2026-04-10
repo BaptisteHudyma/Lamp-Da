@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['tan_0',['Tan',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca60594ea21d385901e49bc881ee90f9c8',1,'modes::colors']]],
+  ['tcpc_5falert_1',['tcpc_alert',['../structtcpm__drv.html#a74510a1dc4f222fa274c156c1b5fcb54',1,'tcpm_drv']]],
+  ['tcpc_5fconfig_5ft_2',['tcpc_config_t',['../structtcpc__config__t.html',1,'']]],
+  ['tcpc_5fdischarge_5fvbus_3',['tcpc_discharge_vbus',['../structtcpm__drv.html#a9aba0bc165fac7323e99837f6806bb1c',1,'tcpm_drv']]],
+  ['tcpc_5fenable_5fauto_5fdischarge_5fdisconnect_4',['tcpc_enable_auto_discharge_disconnect',['../structtcpm__drv.html#a6fc416f85f11bc95d634c3106846e196',1,'tcpm_drv']]],
+  ['tcpm_5fdrv_5',['tcpm_drv',['../structtcpm__drv.html',1,'']]],
+  ['teal_6',['Teal',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca781a3e0d8cda61f9c3a49cdde2205655',1,'modes::colors']]],
+  ['thistle_7',['Thistle',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cac3549d50abbb3c75d094be0357478084',1,'modes::colors']]],
+  ['tick_8',['tick',['../structmodes_1_1hardware_1_1LampTy.html#aa591e54758ea3cc526069d72aa38d4c0',1,'modes::hardware::LampTy']]],
+  ['timestamp_5ft_9',['timestamp_t',['../uniontimestamp__t.html',1,'']]],
+  ['to_5fled_5findex_10',['to_led_index',['../namespacemodes.html#a1e975bce6deab750ef53cc3359c08e48',1,'modes']]],
+  ['to_5fled_5findex_5fno_5fbounds_11',['to_led_index_no_bounds',['../namespacemodes.html#a76da093521d10c1a1c4cc78a86c0c571',1,'modes']]],
+  ['to_5fstrip_12',['to_strip',['../namespacemodes.html#ab1743b85a858b051f39d8e1904057677',1,'modes']]],
+  ['toledcount_13',['toLedCount',['../structmodes_1_1hardware_1_1LampTy.html#a835af027f6432e15d2ea3ae33f5eb499',1,'modes::hardware::LampTy']]],
+  ['tomato_14',['Tomato',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca706fe3666cdc2819202579862ceb1ede',1,'modes::colors']]],
+  ['torgb_15',['ToRGB',['../structmodes_1_1colors_1_1ToRGB.html',1,'modes::colors']]],
+  ['transform_16',['transform',['../structRotationMatrix.html#a825fb7333417a764ae2a65ebddf8cf7e',1,'RotationMatrix']]],
+  ['transformationmatrix_17',['TransformationMatrix',['../structTransformationMatrix.html',1,'']]],
+  ['transmit_18',['transmit',['../structtcpm__drv.html#a6b503778ad8dbbca6cc67e46d7363694',1,'tcpm_drv']]],
+  ['tsmeasurmentvoltaget_19',['TsMeasurmentVoltaget',['../structbq76905_1_1BQ76905_1_1Regt_1_1TsMeasurmentVoltaget.html',1,'bq76905::BQ76905::Regt']]],
+  ['tsoffsett_20',['TsOffsett',['../structbq76905_1_1BQ76905_1_1Regt_1_1TsOffsett.html',1,'bq76905::BQ76905::Regt']]],
+  ['tungsten100w_21',['Tungsten100W',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3ab0528ede44f8fb1076e02017b19c9521',1,'modes::colors']]],
+  ['tungsten40w_22',['Tungsten40W',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a96903a5b465e0426a6bf754f7f493636',1,'modes::colors']]],
+  ['turquoise_23',['Turquoise',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca81bbd0d1950a3ea9077eaa3ae1edd580',1,'modes::colors']]]
+];

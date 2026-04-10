@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['saddlebrown_0',['SaddleBrown',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cabdc3abaaffbfdb83758124797ec12625',1,'modes::colors']]],
+  ['salmon_1',['Salmon',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cab944e54ee886c3301c1656232eed5b07',1,'modes::colors']]],
+  ['sandybrown_2',['SandyBrown',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caa496bc13a1197c20b644e954d219bca3',1,'modes::colors']]],
+  ['seagreen_3',['SeaGreen',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cad3d89d7d76804e4289f4c65d9d6dbde8',1,'modes::colors']]],
+  ['seashell_4',['Seashell',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca20660a87852ff4eba0b0903546660638',1,'modes::colors']]],
+  ['sienna_5',['Sienna',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cacefcf49d3888192fcc3c01236dd9bb79',1,'modes::colors']]],
+  ['silver_6',['Silver',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cae6690ac7d227661ceb9fe451388a2de6',1,'modes::colors']]],
+  ['simple_7',['simple',['../namespacemodes_1_1hardware.html#a9ce05c0c227ab520c116fa72d23d4383a8dbdda48fb8748d6746f1965824e966a',1,'modes::hardware']]],
+  ['skyblue_8',['SkyBlue',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca442fb406039fe0077a5507e97a694151',1,'modes::colors']]],
+  ['slateblue_9',['SlateBlue',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca3ac9c348c3f414404e6ddfe94f5866f1',1,'modes::colors']]],
+  ['slategray_10',['SlateGray',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cad17e4812de4a0904a87607f250e154e6',1,'modes::colors']]],
+  ['slategrey_11',['SlateGrey',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caaf7a7a5780cbd39a2200070f4cc02e37',1,'modes::colors']]],
+  ['snow_12',['Snow',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caad4fc73573fba39d644fa8f1900786da',1,'modes::colors']]],
+  ['sodiumvapor_13',['SodiumVapor',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a21fd134cd5e088fd13fda44a5f2183b5',1,'modes::colors']]],
+  ['springgreen_14',['SpringGreen',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca6399b2d1a9d772e9358455a41d765134',1,'modes::colors']]],
+  ['standardfluorescent_15',['StandardFluorescent',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a542064cd11d181e695a96f6a1049fe58',1,'modes::colors']]],
+  ['steelblue_16',['SteelBlue',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca76e91561dbe31084585aa5b1009efa38',1,'modes::colors']]]
+];
