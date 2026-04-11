@@ -35,7 +35,7 @@ void calcGammaTable(float gamma)
 
 } // namespace __internal
 
-// used for color gamma correction
+/// used for color gamma correction
 static constexpr uint8_t gamma8(uint8_t value) { return __internal::gammaT[value]; }
 
 } // namespace modes::colors

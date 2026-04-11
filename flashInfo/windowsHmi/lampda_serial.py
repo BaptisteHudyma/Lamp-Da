@@ -17,27 +17,32 @@ except ImportError:
 # used to translate text strings
 import TextLangage as tx
 
+## Store a release and all associated details
 class Release:
+    ## Constructor
     def __init__(self, api_response):
         r = api_response
-        self.tag = r.get("tag_name")
-        self.name = r.get("name")   # revision
-        self.creation_date = r.get("created_at")
-        self.updated_date = r.get("updated_at")
-        self.published_date = r.get("published_at")
-        self.asset_url = [asset["browser_download_url"] for asset in r.get("assets", [])]
-        self.description = r.get("body")
+        self.tag = r.get("tag_name")    ## Name of the tag
+        self.name = r.get("name")       ## revision
+        self.creation_date = r.get("created_at")    ## Create date
+        self.updated_date = r.get("updated_at")     ## Update date
+        self.published_date = r.get("published_at") ## Published date
+        self.asset_url = [asset["browser_download_url"] for asset in r.get("assets", [])]   ## URL of the download
+        self.description = r.get("body")    ## Body of the request, in JSON
 
+## Store a lamp reference
 class LampDa:
+    ## Constructor
     def __init__(self):
-        # signal a board without a program
+        ## signal a board without a program
         self.type = "unflashed"
 
-        self.hardware_v = ""
-        self.firmware_v = ""
-        self.base_v = ""
-        self.user_v = ""
+        self.hardware_v = ""    ## Version of the hardware
+        self.firmware_v = ""    ## Version of the firmware
+        self.base_v = ""        ## Base firmware version
+        self.user_v = ""        ## Version of the user layer
 
+## Update a device from a linux based ssystem
 def update_devices_linux(label):
     devices = []
     # detect all parameters
@@ -68,6 +73,7 @@ def update_devices_linux(label):
                 break;
     return final_devices
 
+## Update the detected devices
 def update_device_windows(label):
     import psutil
     for part in psutil.disk_partitions(all=False):
@@ -98,6 +104,7 @@ def update_device_windows(label):
         except Exception:
             continue
 
+## Search a target drive from a target label
 def find_drive_by_label(label="LMBDROOT"):
     try:
         import platform
@@ -113,8 +120,7 @@ def find_drive_by_label(label="LMBDROOT"):
     except Exception as e:
         print("Could not check drives: ", e)
 
-
-
+## Try to find all connected lamps
 def find_lampda(sublist=None):
     lampdas = []
     text = "Lamp-da"
@@ -141,7 +147,7 @@ def find_lampda(sublist=None):
 
     return lampdas
 
-
+## Parse the lamp to extract the versions
 def get_lampda_version(ser):
     """search all version in the lampda"""
     info = {
@@ -195,7 +201,7 @@ def get_lampda_version(ser):
 
     return lampd
 
-
+## Parse github to find the latest releases
 def get_releases(url="https://api.github.com/repos/BaptisteHudyma/Lamp-Da/releases"):
     response = requests.get("https://api.github.com/rate_limit")
     if response.status_code == 200:
@@ -210,16 +216,13 @@ def get_releases(url="https://api.github.com/repos/BaptisteHudyma/Lamp-Da/releas
 
     return []
 
-
+## sort all releases version passed on argument and return the higher version number
 def get_most_recent_version(releases: list[Release]):
-    """sort all releases version passed on argument and return the higher version number"""
     releases.sort(key=compare_version, reverse=True)
     return releases[0]
 
-
+## return a value that correspond to a version number xwrote as vx.y.z with max 7 digit
 def compare_version(version: Release):
-    """return a value that correspond to a version number
-    xwrote as vx.y.z with max 7 digit"""
     base_puissance = 1000000
     ret = 0
     for i, c in enumerate(version.tag):
@@ -232,10 +235,12 @@ def compare_version(version: Release):
         base_puissance /= 2
     return ret
 
+## Send a reset command to the lamp
 def resetLampda(ser):
     DFU_COMMAND = b"DFU\n"
     ser.write(DFU_COMMAND)
 
+## Flash the lamp with a new release
 def flash_lampda(port, lampda:LampDa, asset=None, local=False, skip_reset=False):
     if not skip_reset:
         try:
@@ -267,9 +272,8 @@ def flash_lampda(port, lampda:LampDa, asset=None, local=False, skip_reset=False)
             if disk is not None:
                 raise e
 
-
+## download the file {http_path] as {file_name}
 def download_release(http_path, file_name):
-    """download the file {http_path] as {file_name}"""
     response = requests.get("https://api.github.com/rate_limit")
     if response.status_code == 200:
         rate_limit_data = response.json()["rate"]

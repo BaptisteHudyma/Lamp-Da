@@ -44,12 +44,14 @@ struct RainMode : public BasicMode
     custom_ramp_update(ctx, ctx.get_active_custom_ramp());
   }
 
+  /// Custom ramp controls the rain density
   static void custom_ramp_update(auto& ctx, uint8_t rampValue)
   {
     ctx.state.rainDensityCommand = rampValue;
     ctx.state.rainDensity = ctx.state.rainDensityCommand;
   }
 
+  /// Sunset timer will fade out the rain to zero
   static void sunset_update(auto& ctx, float progress)
   {
     // progress goes from 0 to 1
@@ -97,7 +99,7 @@ struct RainMode : public BasicMode
 
   struct StateTy
   {
-    // track imu events
+    /// track imu events
     imu::ImuEventTy<> imuEvent;
 
     /// save the requested rain density by the user

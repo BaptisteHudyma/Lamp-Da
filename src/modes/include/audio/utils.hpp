@@ -17,10 +17,12 @@ namespace modes::audio {
  */
 struct MicrophoneConfig
 {
+  /// Set to true to activate the beat tracking algorithm
   static constexpr bool useBeatTracking = false;
 };
 
-/** \brief Sound processor able to detect sound level events
+/**
+ * \brief Sound processor able to detect sound level events
  *
  * For example, it can be used as follows:
  *
@@ -103,13 +105,14 @@ struct SoundEventTy
   /// number of channels in the log fft
   static constexpr size_t _fftChannels = microphone::SoundStruct::numberOfFFtChanels;
 
-  ///< frequency resolution of the raw fft result
+  /// Frequency resolution of the raw fft result
   static constexpr float fftResolutionHz = microphone::SoundStruct::get_fft_resolution_Hz();
+  /// Size of the fourrier transform history
   static constexpr size_t _FFThistory_MaxSize = round(fftResolutionHz);
 
-  using FFTContainer = std::array<float, _dataLenght / 2>;
-  using FFTLogContainer = std::array<float, _fftChannels>;
-  using FFTHistoryContainer = std::array<FFTLogContainer, _FFThistory_MaxSize>;
+  using FFTContainer = std::array<float, _dataLenght / 2>; ///<  Container for the fast fourrier linear results
+  using FFTLogContainer = std::array<float, _fftChannels>; ///< Container for the fast fourrier logarithmic results
+  using FFTHistoryContainer = std::array<FFTLogContainer, _FFThistory_MaxSize>; ///< history of the FFT
 
   /// Call this once inside the mode on_enter_mode callback
   void reset(auto& ctx)
@@ -242,35 +245,35 @@ struct SoundEventTy
     return beatCnt > 0 && beatCnt >= ceil(0.5f * nbDataPoints);
   }
 
-  float level = 10;    ///< Last sound level measured
-  float avgLevel = 10; ///< Rolling sound level average
-  float avgMax = 10;   ///< Decaying sound "peak" level average
-  float delta = 0;     ///< Last sound "contrast" computed (centered around 1.0)
-  float avgDelta = 0;  ///< Rolling sound "contrast" average (squared)
-  bool hasEvent;       ///< Did an event happened last tick? (reset each loop)
-  uint8_t eventScale;  ///< Event scale (0-255)
-  float maxAmplitude;
-  float maxAmplitudeFrequency;
+  float level = 10;            ///< Last sound level measured
+  float avgLevel = 10;         ///< Rolling sound level average
+  float avgMax = 10;           ///< Decaying sound "peak" level average
+  float delta = 0;             ///< Last sound "contrast" computed (centered around 1.0)
+  float avgDelta = 0;          ///< Rolling sound "contrast" average (squared)
+  bool hasEvent;               ///< Did an event happened last tick? (reset each loop)
+  uint8_t eventScale;          ///< Event scale (0-255)
+  float maxAmplitude;          ///< max detected frequency amplitude
+  float maxAmplitudeFrequency; ///< max amplitude frequency, in Hertz
 
-  ///< raw microphone data
+  /// raw microphone data
   std::array<int16_t, _dataLenght> data;
-  ///< dynamically sound adjusted data
+  /// dynamically sound adjusted data
   std::array<int16_t, _dataLenght> dataAutoGained;
-  ///< fast fourrier transform as a log scale (closer to human perception)
+  /// fast fourrier transform as a log scale (closer to human perception)
   FFTLogContainer fft_log;
-  ///< set to true when the corresponding frequency range registers a beat
+  /// set to true when the corresponding frequency range registers a beat
   std::array<bool, _fftChannels> beatDetected;
-  ///< fast fourrier transform raw results
+  /// fast fourrier transform raw results
   std::array<float, _dataLenght / 2> fft_raw;
 
 private:
-  uint8_t _eventCount = 0;
-  uint8_t _eventScale = 0;
+  uint8_t _eventCount = 0; ///< count the beat events
+  uint8_t _eventScale = 0; ///< indicates the scale event
 
   ///< store the history of the fft, on a few successiv samples
   FFTHistoryContainer _FFTHistory_beatDetector;
-  size_t historyIndex;
-  size_t historySize;
+  size_t historyIndex; ///< Actual history index
+  size_t historySize;  ///< Actual history size
 
   std::array<float, _fftChannels> fft_log_end_frequencies;
 

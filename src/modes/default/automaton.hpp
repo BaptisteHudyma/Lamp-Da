@@ -10,9 +10,11 @@ namespace modes::automaton {
 
 /**
  * \brief Bubbles rising in the sea.
+ * The user ramp control the random generation.
  */
 struct BubbleMode : public BasicMode
 {
+  /// Cellular automaton type
   using GridTy = draw::grid::LineRule<>;
 
   struct StateTy
@@ -45,9 +47,9 @@ struct BubbleMode : public BasicMode
   static constexpr int starFreq = 3;
 
   // colors
-  static constexpr auto waterColor = colors::DarkBlue;
-  static constexpr auto algeaColor = colors::ForestGreen;
-  static constexpr auto starColor = colors::Gold;
+  static constexpr auto waterColor = colors::DarkBlue;    ///< color of the water
+  static constexpr auto algeaColor = colors::ForestGreen; ///< color of the algea
+  static constexpr auto starColor = colors::Gold;         ///< color of ???
 
   static void on_enter_mode(auto& ctx)
   {
@@ -60,6 +62,9 @@ struct BubbleMode : public BasicMode
 
     // reset stateful events
     ctx.state.algeaStart = 0;
+
+    /// prevent the ramp from looping around
+    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
   }
 
   static void loop(auto& ctx)
@@ -137,7 +142,7 @@ struct BubbleMode : public BasicMode
     // default grid loop
     ctx.state.grid.template loop<false>(ctx, cb);
   }
-
+  /// hint manager that we have a custom ramp
   static constexpr bool hasCustomRamp = true;
 };
 
@@ -153,6 +158,7 @@ struct SierpinskiMode : public BasicMode
     /// add more blur
     static constexpr uint8_t renderBlurAmount = 128;
   };
+  /// Cellular automaton grid type
   using GridTy = draw::grid::LineRule<ConfigTy>;
 
   struct StateTy
@@ -189,9 +195,11 @@ struct SierpinskiMode : public BasicMode
     ctx.state.grid.template loop<hasCustomRamp>(ctx, cb);
   }
 
+  /// Hint manager that we have a custom ramp
   static constexpr bool hasCustomRamp = true;
 };
 
+/// Storage for the Automaton modes
 using AutomatonModes = modes::GroupFor<BubbleMode, SierpinskiMode>;
 
 } // namespace modes::automaton

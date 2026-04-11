@@ -37,6 +37,7 @@ struct GravityMode : public BasicMode
     custom_ramp_update(ctx, ctx.get_active_custom_ramp());
   }
 
+  /// User ramp changes the color palette
   static void custom_ramp_update(auto& ctx, uint8_t rampValue)
   {
     auto& state = ctx.state;
@@ -84,7 +85,7 @@ struct GravityMode : public BasicMode
     const colors::PaletteTy* _palettes[maxPalettesCount] = {
             &colors::PaletteAuroraColors, &colors::PaletteForestColors, &colors::PaletteOceanColors};
 
-    // store selected palette
+    /// store selected palette
     colors::PaletteTy const* selectedPalette;
   };
 

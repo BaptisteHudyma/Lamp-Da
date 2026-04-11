@@ -12,7 +12,7 @@ struct PingPongMode : public modes::BasicMode
 {
   /// color random variation
   static constexpr float randomVariation = 0.3;
-  /// back and forth timing
+  /// back and forth timing in milliseconds
   static constexpr uint32_t animationTiming = 1000;
 
   struct StateTy

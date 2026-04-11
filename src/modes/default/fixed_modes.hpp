@@ -21,7 +21,7 @@ struct KelvinMode : public modes::BasicMode
     ctx.template set_config_bool<ConfigKeys::customRampAnimEffect>(false);
   }
 
-  // hint manager to save our custom ramp
+  /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
 };
 
@@ -47,7 +47,7 @@ struct RainbowMode : public modes::BasicMode
     ctx.lamp.fill(color);
   }
 
-  // hint manager to save our custom ramp
+  /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
 };
 

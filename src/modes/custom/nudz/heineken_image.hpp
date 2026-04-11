@@ -1,13 +1,18 @@
+// GENERATED FILE, DO NOT MODIFY
+/// Compressed image storage class
 struct HeinekenImageTy
 {
-  static constexpr uint16_t width = 26;
-  static constexpr uint16_t height = 22;
-  static constexpr uint16_t bitsPerPixel = 3;
-  static constexpr uint32_t colormapSize = 7;
+  static constexpr uint16_t width = 0026;        ///< width of the image
+  static constexpr uint16_t height = 0022;       ///< height of the image
+  static constexpr uint16_t bitsPerPixel = 0003; ///< used bits per pixel
+  static constexpr uint32_t colormapSize = 0007; ///< size of the color
   // clang-format off
+
+  /// map index to color
   static constexpr uint32_t colormap[] = {
      0x0db100, 0xffffff, 0xd80000, 0x3bbe43, 0xa2b1a4, 0x013200, 0x718472, 
   };
+  /// bit packed image
   static constexpr uint8_t indexData[] = {
      0x00, 0x00, 0x00, 0x00, 0x92, 0x49, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x00, 0x04,
      0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x00, 0x00, 0x02, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -25,5 +30,7 @@ struct HeinekenImageTy
      0x12, 0x49, 0x24, 0x00, 0x00, 0x00, 0x00,
   };
   // clang-format on
+
+  /// Store the RGB data
   static constexpr uint32_t rgbData[] = {};
 };

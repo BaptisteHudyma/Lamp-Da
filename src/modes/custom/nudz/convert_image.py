@@ -5,6 +5,9 @@ from PIL import Image
 import os
 import numpy as np
 
+# Convert an image to a generated c++ file containing an exploitable image file
+# First parameter is the image, second one is the file name
+
 in_img = sys.argv[1]
 out_src = sys.argv[2]
 if len(sys.argv) >= 4:
@@ -61,15 +64,18 @@ if cmap:
 
 with open(out_src, 'w') as of:
 
+    print(  '// GENERATED FILE, DO NOT MODIFY\n'
+            '/// Compressed image storage class', file=of)
     print(f'''struct {out_cls}
 {{
-  static constexpr uint16_t width = {image.width};
-  static constexpr uint16_t height = {image.height};
-  static constexpr uint16_t bitsPerPixel = {bpp};''', file=of)
+  static constexpr uint16_t width = {image.width:04d};        ///< width of the image
+  static constexpr uint16_t height = {image.height:04d};       ///< height of the image
+  static constexpr uint16_t bitsPerPixel = {bpp:04d}; ///< used bits per pixel''', file=of)
     if cmap:
-        print(f'  static constexpr uint32_t colormapSize = {len(cmap)};',
+        print(f'  static constexpr uint32_t colormapSize = {len(cmap):04d}; ///< size of the color',
               file=of)
-        print('  // clang-format off\n'
+        print('  // clang-format off\n\n'
+              '  /// map index to color\n'
               '  static constexpr uint32_t colormap[] = {', file=of)
         end = '\n'
         for i in sorted(cmap_i.keys()):
@@ -79,6 +85,7 @@ with open(out_src, 'w') as of:
             print('%s0x%06x,' % (prefix, rgb), end=end, file=of)
         print('\n  };', file=of)
 
+        print('  /// bit packed image', file=of)
         print('  static constexpr uint8_t indexData[] = {', file=of)
         i = 0
         end = '\n'
@@ -115,7 +122,9 @@ with open(out_src, 'w') as of:
             print('%s0x%02x,' % (prefix, towrite), file=of)
         print('  };', file=of)
 
-        print('  // clang-format on\n  static constexpr uint32_t rgbData[] = {};', file=of)
+        print(  '  // clang-format on\n\n'
+                '  /// Store the RGB data\n'
+                '  static constexpr uint32_t rgbData[] = {};', file=of)
         print('};', file=of)
     else:
         print('''  static constexpr uint32_t colormapSize = 0;

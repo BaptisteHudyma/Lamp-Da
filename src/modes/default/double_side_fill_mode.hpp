@@ -10,7 +10,9 @@ namespace modes::default_modes {
  */
 struct DoubleSideFillMode : public modes::BasicMode
 {
+  /// random color variation between fills
   static constexpr float randomVariation = 0.3;
+  /// Lenght of the animation
   static constexpr uint32_t animationTiming = 250;
 
   struct StateTy

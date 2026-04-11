@@ -33,23 +33,31 @@ namespace modes {
 
 struct XYTy
 {
-  uint16_t x, y;
+  uint16_t x; ///< x 2D led grid coordinates
+  uint16_t y; ///< y 2D led grid coordinates
 };
 
+/// convert grid coordinates to strip index
 static constexpr uint16_t to_strip(uint16_t, uint16_t);
+/// convert strip index to grid coordinates
 static constexpr XYTy strip_to_XY(uint16_t n);
 
 struct HelixXYZTy
 {
-  float x, y, z;
+  float x; ///< x 3D mm coordinates
+  float y; ///< y 3D mm coordinates
+  float z; ///< z 3D mm coordinates
 };
 
+/// convert strip index to 3D coordinates
 static constexpr HelixXYZTy strip_to_helix(int16_t n);
 
+/// convert strip index to 3D coordinates, without checks on led index.
+/// This allows to use 3D coordinates out of the lamp body
 static constexpr HelixXYZTy strip_to_helix_unconstraint(const int16_t n);
-
+/// True if the given strip index is a valid one
 static constexpr bool is_led_index_valid(const int16_t ledIndex);
-
+/// True if the given led index is out of bounds
 static constexpr bool is_lamp_coordinate_out_of_bounds(const float angle_rad, const float z);
 
 /**

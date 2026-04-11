@@ -15,16 +15,14 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
 {
   struct StateTy
   {
-    float minSpeed = -0.5f;
-    float maxSpeed = 0.5f;
-    bool randomScroll = false;
-    uint32_t xdecal;
-    uint32_t ydecal;
-    uint32_t last_tick;
-    int8_t xdirection = 1;
-    int8_t ydirection = 0;
-
-    imu::ImuEventTy<> imuEvent;
+    float minSpeed = -0.5f;    ///< minimum allowed speed
+    float maxSpeed = 0.5f;     ///< maximum allowed speed
+    bool randomScroll = false; ///< random variation of the scroll
+    uint32_t xdecal;           ///< start x coordinates
+    uint32_t ydecal;           ///< start y coordinates
+    uint32_t last_tick;        ///< last called time in microseconds
+    int8_t xdirection = 1;     ///< x scroll direction
+    int8_t ydirection = 0;     ///< y scroll direction
   };
 
   static void on_enter_mode(auto& ctx)
@@ -33,6 +31,9 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
     ctx.state.xdecal = 0;
     ctx.state.ydecal = 0;
     ctx.state.last_tick = 0;
+
+    /// prevent the ramp from looping around
+    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
   }
 
   static void loop(auto& ctx)
@@ -134,6 +135,7 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
     }
   }
 
+  /// Hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
 };
 
@@ -147,51 +149,60 @@ typedef NudzScrollImageMode<Huit_sixImageTy> NudzHuitSixMode;
 
 #include "violonsaouls_image.hpp"
 
+/**
+ * \brief Display an image "Violon saoul" scrolling around.
+ * User ramp changes scroll speed and direction
+ */
 struct NudzViolonsaoulsMode : public NudzScrollImageMode<ViolonsaoulsImageTy>
 {
   struct StateTy
   {
-    float minSpeed = 0.f;
-    float maxSpeed = 0.5f;
-    bool randomScroll = false;
-    uint32_t xdecal;
-    uint32_t ydecal;
-    uint32_t last_tick;
-    int8_t xdirection = 1;
-    int8_t ydirection = 0;
+    float minSpeed = 0.f;      ///< minimum allowed speed
+    float maxSpeed = 0.5f;     ///< maximum allowed speed
+    bool randomScroll = false; ///< random variation of the scroll
+    uint32_t xdecal;           ///< start x coordinates
+    uint32_t ydecal;           ///< start y coordinates
+    uint32_t last_tick;        ///< last called time in microseconds
+    int8_t xdirection = 1;     ///< x scroll direction
+    int8_t ydirection = 0;     ///< y scroll direction
   };
 };
 
+/**
+ * \brief Display a glass of beer, reactive to gravity.
+ * The user ramp changes the beer level
+ */
 struct NudzBeerGlassMode : public BasicMode
 {
   struct BubbleTy
   {
     BubbleTy() : x(-1.f), y(0.f), speed(0.f), color(0x706050), color_fade(0.9) {}
-    int x;
-    float y;
-    float speed;
-    uint32_t color;
-    float color_fade;
+    int x;            ///< x coordinate
+    float y;          ///< y coordinate
+    float speed;      ///< speed in px/second
+    uint32_t color;   ///< color of this buble
+    float color_fade; ///< fade rate
   };
 
   struct StateTy
   {
-    float level;        // average level of beer
-    float ampl;         // accel amplitude factor
-    float accmax;       // clamp accel to avoid too large changes
-    float fall_ampl;    // height a wave will go down at each step
-    float wave_ampl;    // wave speed
-    float decay;        // speed decay factor
-    float bounce_ratio; // if ratio > 0.5 a wave dropping can increae
-                        // its neighbours height over its new height,
-                        // thus produce a new wave
-    uint32_t beer_color;
-    uint32_t foam_color;
-    uint32_t background_color;
-    std::vector<float> levels;
-    std::vector<float> speeds;
-    uint32_t nbubbles;
-    std::vector<BubbleTy> bubbles;
+    float level;         ///< average level of beer
+    float ampl;          ///< accel amplitude factor
+    float accmax;        ///< clamp accel to avoid too large changes
+    float fall_ampl;     ///< height a wave will go down at each step
+    float wave_ampl;     ///< wave speed
+    float decay;         ///< speed decay factor
+    float bounce_ratio;  ///< if ratio > 0.5 a wave dropping can increase. Its neighbours height over its new height,
+                         ///< thus produce a new wave
+    uint32_t beer_color; ///< color of the beer :)
+    uint32_t foam_color; ///< color of the foam of the beer
+    uint32_t background_color;     ///< color background
+    std::vector<float> levels;     ///< level of every matrix columns
+    std::vector<float> speeds;     ///< spped of every matric columns
+    uint32_t nbubbles;             ///< number of bubbles
+    std::vector<BubbleTy> bubbles; ///< store the bubbles
+
+    imu::ImuEventTy<> imuEvent; ///< Handle imu events
   };
 
   static void on_enter_mode(auto& ctx)
@@ -213,6 +224,9 @@ struct NudzBeerGlassMode : public BasicMode
     ctx.state.speeds = std::vector<float>(ctx.lamp.maxWidth, 0.f);
     ctx.state.nbubbles = 20;
     ctx.state.bubbles = std::vector<BubbleTy>(ctx.state.nbubbles, BubbleTy());
+
+    /// prevent the ramp from looping around
+    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
   }
 
   static void loop(auto& ctx)
@@ -232,6 +246,7 @@ struct NudzBeerGlassMode : public BasicMode
       drawAccel(ctx);
   }
 
+  /// update the level of the liquide using IMU events
   static void updateLevels(auto& ctx)
   {
     uint32_t nx = ctx.lamp.maxWidth;
@@ -360,6 +375,7 @@ struct NudzBeerGlassMode : public BasicMode
     }
   }
 
+  /// Display the liquide level on the strip
   static void displayLevels(auto& ctx)
   {
     auto& levels = ctx.state.levels;
@@ -384,6 +400,7 @@ struct NudzBeerGlassMode : public BasicMode
     }
   }
 
+  /// Invoque new bulbes !
   static void makeBubbles(auto& ctx)
   {
     auto& bubbles = ctx.state.bubbles;
@@ -432,6 +449,7 @@ struct NudzBeerGlassMode : public BasicMode
     }
   }
 
+  /// Draw the acceleration vector from the IMU
   static void drawAccel(auto& ctx)
   {
     const auto& reading = ctx.state.imuEvent.lastReading;
@@ -470,6 +488,7 @@ struct NudzBeerGlassMode : public BasicMode
       ctx.lamp.setPixelColorXY(x, 2, 0x008000);
   }
 
+  /// hint manager that we have a custom ramp
   static constexpr bool hasCustomRamp = true;
 };
 

@@ -12,7 +12,7 @@ namespace modes::default_modes {
  */
 struct PaletteFadeMode : public modes::BasicMode
 {
-  // hint manager to save our custom ramp
+  /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
 
   static void on_enter_mode(auto& ctx)

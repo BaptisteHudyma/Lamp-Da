@@ -11,6 +11,7 @@ namespace modes::default_modes {
  */
 struct FastFourrierTransformMode : public BasicMode
 {
+  /// color palette to use for this mode
   static constexpr auto palette = colors::PalettePartyColors;
 
   static void loop(auto& ctx)
