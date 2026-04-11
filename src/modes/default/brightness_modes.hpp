@@ -78,10 +78,10 @@ template<size_t N> struct ManyPulse : public BasicMode
   }
 };
 
-// Based on the candle animation from Anduril
-// candle-mode.c: Candle mode for Anduril.
-// Copyright (C) 2017-2023 Selene ToyKeeper
-// SPDX-License-Identifier: GPL-3.0-or-later
+/// Based on the candle animation from Anduril.
+/// candle-mode.c: Candle mode for Anduril.
+/// Copyright (C) 2017-2023 Selene ToyKeeper.
+/// SPDX-License-Identifier: GPL-3.0-or-later.
 struct Candle : public BasicMode
 {
   static const uint8_t CANDLE_AMPLITUDE = 33;
@@ -167,17 +167,23 @@ struct Candle : public BasicMode
   }
 };
 
+/**
+ * \brief Very fast on pulse followed by longer off pulses. Make a stroboscopic effect.
+ */
 struct StroboscopeMode : public BasicMode
 {
   /// regulate stroboscopic speed
   static constexpr bool hasCustomRamp = true;
-
+  /// maximum allowed stroboscopic frequency in Hertz
   static constexpr uint32_t stroboMaxFreq = 1000 * (1 / 30.0f);
+  /// minimum allowed stroboscopic frequency in hertz
   static constexpr uint32_t stroboMinFreq = 1000 * (1 / 7.0f);
 
   struct StateTy
   {
+    /// last off pulse set
     uint32_t lastCall;
+    /// duration of the off pulse
     uint32_t pulseDuration;
   };
 
@@ -199,7 +205,7 @@ struct StroboscopeMode : public BasicMode
   {
     const auto pulseDuration = ctx.state.pulseDuration;
 
-    // no stroboscope for indexable strip
+    /// max time of the on pulse, in milliseconds
     static constexpr uint32_t onTime = 5;
     if (ctx.lamp.now - ctx.state.lastCall >= pulseDuration)
     {
@@ -209,16 +215,23 @@ struct StroboscopeMode : public BasicMode
   }
 };
 
+/**
+ * \brief Emulate lightning in the distance
+ * Inspired by Anduril implementation
+ */
 struct LightningMode : public BasicMode
 {
-  /// regulate stroboscopic speed
   static constexpr bool hasBrightCallback = true;
 
   struct StateTy
   {
+    /// prevent updates when the user ramp is rolling
     uint32_t lastBrightnessHandleCall;
+    /// Is off and waiting to turn on
     bool isWaitingTurnOn;
+    /// last brigthness before going dark
     brightness_t lastBrightness;
+    /// Brigthness ramp down index
     uint32_t stepdown;
   };
 
@@ -313,7 +326,9 @@ struct LightningMode : public BasicMode
   }
 };
 
+/// Group for calm modes
 using CalmGroup = GroupFor<Candle, LightningMode>;
+/// Group for flashing modes
 using FlashesGroup = GroupFor<StroboscopeMode, OnePulse, ManyPulse<2>>;
 
 } // namespace modes::brightness

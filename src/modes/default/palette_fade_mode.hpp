@@ -7,6 +7,9 @@ namespace modes::default_modes {
 #include <cstdint>
 #include "src/modes/include/colors/palettes.hpp"
 
+/**
+ * \brief Fade between colors of a palette.
+ */
 struct PaletteFadeMode : public modes::BasicMode
 {
   // hint manager to save our custom ramp
@@ -38,7 +41,9 @@ struct PaletteFadeMode : public modes::BasicMode
   }
 };
 
-/// Party fixed colors ramp mode
+/**
+ * \brief Fade between the colors of the PartyColor palette
+ */
 struct RainbowFadePaletteMode : public PaletteFadeMode
 {
   struct StateTy

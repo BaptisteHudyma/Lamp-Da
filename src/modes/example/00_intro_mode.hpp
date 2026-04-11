@@ -1,6 +1,9 @@
 
 namespace modes::examples {
 
+/**
+ * \brief Extremly basic mode, shown has an exemple
+ */
 struct IntroMode : public BasicMode
 {
   static void loop(auto& ctx)

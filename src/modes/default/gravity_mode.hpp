@@ -12,12 +12,14 @@
 
 namespace modes::default_modes {
 
-/// Emulate a beat sync
+/**
+ * \brief Sand particle simulation, synched with the board IMU
+ */
 struct GravityMode : public BasicMode
 {
-  // hint manager to save our custom ramp
+  /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
-
+  /// set the maximum particle count
   static constexpr uint16_t particleCount = 255;
 
   static void on_enter_mode(auto& ctx)
@@ -71,11 +73,14 @@ struct GravityMode : public BasicMode
 
   struct StateTy
   {
+    /// make particles leave a trace
     uint8_t persistance;
+    /// handle IMU events
     imu::ImuEventTy<> imuEvent;
 
-    // store references to palettes
+    /// Usable palettes count
     static constexpr uint8_t maxPalettesCount = 3;
+    /// store references to palettes
     const colors::PaletteTy* _palettes[maxPalettesCount] = {
             &colors::PaletteAuroraColors, &colors::PaletteForestColors, &colors::PaletteOceanColors};
 

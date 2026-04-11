@@ -5,6 +5,9 @@ namespace modes::default_modes {
 
 #include <cstdint>
 
+/**
+ * \brief Wipe a color from one side to the other, with random color variations
+ */
 struct ColorWipeMode : public modes::BasicMode
 {
   static constexpr float randomVariation = 0.3;
@@ -12,8 +15,11 @@ struct ColorWipeMode : public modes::BasicMode
 
   struct StateTy
   {
+    /// Between 0 and 1, progress
     float progress;
+    /// true wipe up, false wipe down
     bool step;
+    /// actual color to display
     uint32_t color;
   };
 

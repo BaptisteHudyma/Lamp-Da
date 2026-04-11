@@ -8,24 +8,41 @@
 /// Modes implementing cellular automaton using "grid" tools
 namespace modes::automaton {
 
+/**
+ * \brief Bubbles rising in the sea.
+ */
 struct BubbleMode : public BasicMode
 {
   using GridTy = draw::grid::LineRule<>;
 
   struct StateTy
   {
+    /// cellular automaton
     GridTy grid;
-    uint32_t algeaStart, algeaLifetime, algeaPos;
+    /// time of the latest algae start
+    uint32_t algeaStart;
+    /// duration of the algae
+    uint32_t algeaLifetime;
+    /// X index of the algae
+    uint32_t algeaPos;
   };
 
-  static constexpr int nbBubbles = 4;      // 0-10 max number of bubble per turn
-  static constexpr int bubbleFreq = 70;    // 0-255 the more the less bubbles
-  static constexpr int minBubbleDist = 4;  // 0-5 min distance of bubbles?
-  static constexpr int eventFreq = 70;     // 0-255 how likely are events?
-  static constexpr int algeaFreq = 60;     // 0-255 how likely event is algea?
-  static constexpr int algeaLength = 3000; // (ms) +/- 1s average algea size
-  static constexpr int algeaSwims = 400;   // (ms) how fast algea ondulates
-  static constexpr int starFreq = 3;       // 0-255 how likely event is star?
+  /// 0-10 max number of bubble per turn
+  static constexpr int nbBubbles = 4;
+  /// 0-255 the more the less bubbles
+  static constexpr int bubbleFreq = 70;
+  /// 0-5 min distance of bubbles?
+  static constexpr int minBubbleDist = 4;
+  /// 0-255 how likely are events?
+  static constexpr int eventFreq = 70;
+  /// 0-255 how likely event is algea?
+  static constexpr int algeaFreq = 60;
+  /// (ms) +/- 1s average algea size
+  static constexpr int algeaLength = 3000;
+  /// (ms) how fast algea ondulates
+  static constexpr int algeaSwims = 400;
+  /// 0-255 how likely event is star?
+  static constexpr int starFreq = 3;
 
   // colors
   static constexpr auto waterColor = colors::DarkBlue;
@@ -124,19 +141,23 @@ struct BubbleMode : public BasicMode
   static constexpr bool hasCustomRamp = true;
 };
 
+/**
+ * \brief Draw the famous Sierpinski triangle, with an old CCTV effect.
+ */
 struct SierpinskiMode : public BasicMode
 {
   struct ConfigTy : public draw::grid::LineRuleConfig
   {
-    // scroll the grid skewed (no "bubble" effect
+    /// scroll the grid skewed (no "bubble" effect
     static constexpr bool scrollSkewed = true;
-    // add more blur
+    /// add more blur
     static constexpr uint8_t renderBlurAmount = 128;
   };
   using GridTy = draw::grid::LineRule<ConfigTy>;
 
   struct StateTy
   {
+    /// celullar automaton
     GridTy grid;
   };
 

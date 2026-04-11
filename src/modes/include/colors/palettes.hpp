@@ -34,51 +34,51 @@ typedef enum
   // Black Body Radiators
   // @{
   /// 1900 Kelvin
-  Candle = 0xFF9329 /* 1900 K, 255, 147, 41 */,
+  Candle = 0xFF9329, ///< @htmlcolorblock{FF9329}
   /// 2600 Kelvin
-  Tungsten40W = 0xFFC58F /* 2600 K, 255, 197, 143 */,
+  Tungsten40W = 0xFFC58F, ///< @htmlcolorblock{FFC58F}
   /// 2850 Kelvin
-  Tungsten100W = 0xFFD6AA /* 2850 K, 255, 214, 170 */,
+  Tungsten100W = 0xFFD6AA, ///< @htmlcolorblock{FFD6AA}
   /// 3200 Kelvin
-  Halogen = 0xFFF1E0 /* 3200 K, 255, 241, 224 */,
+  Halogen = 0xFFF1E0, ///< @htmlcolorblock{FFF1E0}
   /// 5200 Kelvin
-  CarbonArc = 0xFFFAF4 /* 5200 K, 255, 250, 244 */,
+  CarbonArc = 0xFFFAF4, ///< @htmlcolorblock{FFFAF4}
   /// 5400 Kelvin
-  HighNoonSun = 0xFFFFFB /* 5400 K, 255, 255, 251 */,
+  HighNoonSun = 0xFFFFFB, ///< @htmlcolorblock{FFFFFB}
   /// 6000 Kelvin
-  DirectSunlight = 0xFFFFFF /* 6000 K, 255, 255, 255 */,
+  DirectSunlight = 0xFFFFFF, ///< @htmlcolorblock{FFFFFF}
   /// 7000 Kelvin
-  OvercastSky = 0xC9E2FF /* 7000 K, 201, 226, 255 */,
+  OvercastSky = 0xC9E2FF, ///< @htmlcolorblock{C9E2FF}
   /// 20000 Kelvin
-  ClearBlueSky = 0x409CFF /* 20000 K, 64, 156, 255 */,
+  ClearBlueSky = 0x409CFF, ///< @htmlcolorblock{409CFF}
   // @}
 
   // Gaseous Light Sources
   // @{
   /// Warm (yellower) flourescent light bulbs
-  WarmFluorescent = 0xFFF4E5 /* 0 K, 255, 244, 229 */,
+  WarmFluorescent = 0xFFF4E5, ///< @htmlcolorblock{FFF4E5}
   /// Standard flourescent light bulbs
-  StandardFluorescent = 0xF4FFFA /* 0 K, 244, 255, 250 */,
+  StandardFluorescent = 0xF4FFFA, ///< @htmlcolorblock{F4FFFA}
   /// Cool white (bluer) flourescent light bulbs
-  CoolWhiteFluorescent = 0xD4EBFF /* 0 K, 212, 235, 255 */,
+  CoolWhiteFluorescent = 0xD4EBFF, ///< @htmlcolorblock{D4EBFF}
   /// Full spectrum flourescent light bulbs
-  FullSpectrumFluorescent = 0xFFF4F2 /* 0 K, 255, 244, 242 */,
+  FullSpectrumFluorescent = 0xFFF4F2, ///< @htmlcolorblock{FFF4F2}
   /// Grow light flourescent light bulbs
-  GrowLightFluorescent = 0xFFEFF7 /* 0 K, 255, 239, 247 */,
+  GrowLightFluorescent = 0xFFEFF7, ///< @htmlcolorblock{FFEFF7}
   /// Black light flourescent light bulbs
-  BlackLightFluorescent = 0xA700FF /* 0 K, 167, 0, 255 */,
+  BlackLightFluorescent = 0xA700FF, ///< @htmlcolorblock{A700FF}
   /// Mercury vapor light bulbs
-  MercuryVapor = 0xD8F7FF /* 0 K, 216, 247, 255 */,
+  MercuryVapor = 0xD8F7FF, ///< @htmlcolorblock{D8F7FF}
   /// Sodium vapor light bulbs
-  SodiumVapor = 0xFFD1B2 /* 0 K, 255, 209, 178 */,
+  SodiumVapor = 0xFFD1B2, ///< @htmlcolorblock{FFD1B2}
   /// Metal-halide light bulbs
-  MetalHalide = 0xF2FCFF /* 0 K, 242, 252, 255 */,
+  MetalHalide = 0xF2FCFF, ///< @htmlcolorblock{F2FCFF}
   /// High-pressure sodium light bulbs
-  HighPressureSodium = 0xFFB74C /* 0 K, 255, 183, 76 */,
+  HighPressureSodium = 0xFFB74C, ///< @htmlcolorblock{FFB74C}
   // @}
 
   /// Uncorrected temperature (0xFFFFFF)
-  UncorrectedTemperature = 0xFFFFFF /* 255, 255, 255 */
+  UncorrectedTemperature = 0xFFFFFF, ///< @htmlcolorblock{FFFFFF}
 } ColorTemperature;
 
 typedef enum

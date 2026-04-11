@@ -14,6 +14,9 @@
 /// Basic "default" modes included with the hardware
 namespace modes::default_modes {
 
+/**
+ * \brief 3D perlin noise on the lamp surface.
+ */
 struct PerlinNoiseMode : public BasicMode
 {
   // hint manager to save our custom ramp

@@ -8,6 +8,9 @@
 
 namespace modes::default_modes {
 
+/**
+ * \brief Barber shop sign looking animation, with nice swirl effect.
+ */
 struct SineMode : public modes::BasicMode
 {
   static constexpr uint8_t speed = 128;

@@ -7,7 +7,7 @@ namespace modes::colors {
 
 namespace __internal {
 
-// gamma 2.8 lookup table used for color correction
+/// gamma 2.8 lookup table used for color correction
 static constexpr uint8_t gammaT[256] = {
         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
         0,   0,   0,   0,   0,   0,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   2,   2,   2,

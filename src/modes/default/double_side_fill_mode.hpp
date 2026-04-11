@@ -5,6 +5,9 @@ namespace modes::default_modes {
 
 #include <cstdint>
 
+/**
+ * \brief Flll the lamp from both sides at the same time, with random colors
+ */
 struct DoubleSideFillMode : public modes::BasicMode
 {
   static constexpr float randomVariation = 0.3;
@@ -12,7 +15,9 @@ struct DoubleSideFillMode : public modes::BasicMode
 
   struct StateTy
   {
+    /// animation progress, between 0 and 1
     float progress;
+    /// actual display color
     uint32_t color;
   };
 

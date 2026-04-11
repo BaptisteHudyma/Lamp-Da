@@ -11,15 +11,19 @@
 
 namespace modes::default_modes {
 
-/// Emulate a beat sync
+/**
+ * \brief Emulate falling rain using the IMU.
+ * Interaction with the susnet timer to fade out the rain and make it stop at the same time then the lamp.
+ */
 struct RainMode : public BasicMode
 {
-  // hint manager to save our custom ramp
+  /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
-  // sunset animation on the rain
+  /// sunset animation on the rain
   static constexpr bool hasSunsetAnimation = true;
-
+  /// average drops per seconds for a light rain
   static constexpr float lightRainDropsPerSecond = 1;
+  /// average drops per seconds for heavy rain
   static constexpr float heavyRainDropsPerSecond = 700;
 
   static void on_enter_mode(auto& ctx)
@@ -95,7 +99,7 @@ struct RainMode : public BasicMode
   {
     imu::ImuEventTy<> imuEvent;
 
-    // save the requested rain density
+    /// save the requested rain density
     uint8_t rainDensityCommand;
 
     uint8_t rainDensity;

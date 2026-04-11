@@ -6,6 +6,9 @@ namespace modes::default_modes {
 #include <cstdint>
 #include "src/modes/include/colors/palettes.hpp"
 
+/**
+ * \brief Display a rainbow that moves
+ */
 struct RainbowSwirlMode : public BasicMode
 {
   struct StateTy

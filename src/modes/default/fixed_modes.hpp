@@ -7,11 +7,9 @@ namespace modes {
 
 namespace fixed {
 
-//
-// main lightning modes
-//
-
-/// Black-body fixed colors ramp mode
+/**
+ * \brief Black-body fixed colors ramp mode
+ */
 struct KelvinMode : public modes::BasicMode
 {
   static void loop(auto& ctx) { ctx.lamp.setLightTemp(ctx.get_active_custom_ramp()); }
@@ -27,7 +25,9 @@ struct KelvinMode : public modes::BasicMode
   static constexpr bool hasCustomRamp = true;
 };
 
-/// Rainbow fixed colors ramp mode
+/**
+ * \brief Rainbow fixed colors ramp mode
+ */
 struct RainbowMode : public modes::BasicMode
 {
   // configure custom ramp
@@ -51,11 +51,11 @@ struct RainbowMode : public modes::BasicMode
   static constexpr bool hasCustomRamp = true;
 };
 
-//
-// optional "miscellaneous" group of other gradients
-//
-
-/// Single-color mode for indexable strips with palette ramp
+/**
+ * \brief Single-color mode for indexable strips with palette ramp
+ * \param[in] isStep Set to false, the palette will be interpolated. Set to true, the colors will step through the
+ * palette.
+ */
 template<bool isStep = false> struct PaletteMode : public modes::BasicMode
 {
   static void on_enter_mode(auto& ctx)
@@ -80,7 +80,9 @@ template<bool isStep = false> struct PaletteMode : public modes::BasicMode
   static constexpr bool hasCustomRamp = true;
 };
 
-/// Party fixed colors ramp mode
+/**
+ * \brief Party fixed colors ramp mode
+ */
 struct PalettePartyMode : public PaletteMode<false>
 {
   struct StateTy
@@ -89,7 +91,9 @@ struct PalettePartyMode : public PaletteMode<false>
   };
 };
 
-/// Forest fixed colors ramp mode
+/**
+ * \brief Forest fixed colors ramp mode
+ */
 struct PaletteForestMode : public PaletteMode<false>
 {
   struct StateTy
@@ -98,7 +102,9 @@ struct PaletteForestMode : public PaletteMode<false>
   };
 };
 
-/// Ocean fixed colors ramp mode
+/**
+ * \brief Ocean fixed colors ramp mode
+ */
 struct PaletteOceanMode : public PaletteMode<false>
 {
   struct StateTy
@@ -107,6 +113,9 @@ struct PaletteOceanMode : public PaletteMode<false>
   };
 };
 
+/**
+ * \brief Special colored palette step mode. Ideal to set a target prefered color
+ */
 struct PalettePapiMode : public PaletteMode<true>
 {
   struct StateTy
@@ -117,12 +126,9 @@ struct PalettePapiMode : public PaletteMode<true>
 
 } // namespace fixed
 
-//
-// Fixed modes groups
-//
-
+/// Fixed modes groups
 using FixedModes = modes::GroupFor<fixed::KelvinMode, fixed::RainbowMode, fixed::PalettePapiMode>;
-
+///
 using MiscFixedModes = modes::GroupFor<fixed::PalettePartyMode, fixed::PaletteForestMode, fixed::PaletteOceanMode>;
 
 } // namespace modes
