@@ -97,15 +97,20 @@ struct RainMode : public BasicMode
 
   struct StateTy
   {
+    // track imu events
     imu::ImuEventTy<> imuEvent;
 
-    /// save the requested rain density
+    /// save the requested rain density by the user
     uint8_t rainDensityCommand;
 
+    /// effective rain density
     uint8_t rainDensity;
+    /// trails of drops
     uint8_t persistance;
+    /// rate of rain drops, per frame
     float rainDropSpawn;
 
+    /// color palette to display
     const colors::PaletteTy& palette = colors::PaletteWaterColors;
   };
 

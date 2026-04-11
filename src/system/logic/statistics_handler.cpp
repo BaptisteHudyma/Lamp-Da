@@ -11,7 +11,7 @@
 
 namespace statistics {
 
-/**
+/*
  *
  * Keep track of lamp use statistics
  * - button press
@@ -23,40 +23,51 @@ namespace statistics {
  * Fill more as needed
  */
 
+/// Size of the alert array. It should be egal to the maximum alert count
 static constexpr uint8_t alertArraySize = 32;
 
+/**
+ * \brief Store the statistics of the system.
+ */
 struct Statistics_t
 {
-  //
+  /// number of timed powered on
   uint32_t boot_count = 0;
+  /// Number of button presses
   uint32_t button_press_count = 0;
+
   // About 136 years can be used here, ok :)
   // UINT32_MAX / M  / H  / D  / Y
   // 4294967295 / 60 / 60 / 24 / 365 = 136.1925 years
   // in seconds, it would be 2.2 years, which may be short for this system
+
+  /// Count the total minutes that the circuit was powered on.
+  /// Should comparable to output_on_minutes + battery_charge_minutes
   uint32_t system_on_minutes = 0;
+  /// Count the total minutes that the output has been on
   uint32_t output_on_minutes = 0;
+  /// Count the total minutes that the battery has been charging
   uint32_t battery_charge_minutes = 0;
 
+  /// Keep track of the number of times a target alert was raised
   std::array<uint32_t, alertArraySize> alertRaisedCnt = {};
 };
 
+/// Statistics holder
 Statistics_t statistics;
 
-static constexpr uint32_t bootCountKey = utils::hash("bootCnt");
-static constexpr uint32_t buttonPressCountKey = utils::hash("buttonP");
-static constexpr uint32_t systemOnTimeSKey = utils::hash("sysOn");
-static constexpr uint32_t outputOnTimeSKey = utils::hash("outOn");
-static constexpr uint32_t chargeOnTimeSKey = utils::hash("chrgOn");
+static constexpr uint32_t bootCountKey = utils::hash("bootCnt");        ///< hash key of the bootCount statistic
+static constexpr uint32_t buttonPressCountKey = utils::hash("buttonP"); ///< hash key of the button press count
+static constexpr uint32_t systemOnTimeSKey = utils::hash("sysOn");      ///< hash key of the system on time
+static constexpr uint32_t outputOnTimeSKey = utils::hash("outOn");      ///< hash key of the output on time
+static constexpr uint32_t chargeOnTimeSKey = utils::hash("chrgOn");     ///< hash key of the charging time
 
-// compute a key for each alert
+/// compute a key for each alert
 uint32_t get_alert_storage_key(uint8_t alertIndex) { return 0xFFFFFF00 | alertIndex; }
 
-// system on time is easy: system always starts with time zero
+/// system on time is easy: system always starts with time zero
 uint32_t get_system_on_time() { return statistics.system_on_minutes + max<uint32_t>(1, time_s() / 60); }
 
-/**
- */
 void load_from_memory()
 {
   fileSystem::system::get_value(bootCountKey, statistics.boot_count);
@@ -79,8 +90,6 @@ void load_from_memory()
   }
 }
 
-/**
- */
 void write_to_memory()
 {
   fileSystem::system::set_value(bootCountKey, statistics.boot_count);
@@ -98,13 +107,15 @@ void write_to_memory()
   }
 }
 
-/**
- */
 void signal_button_press() { statistics.button_press_count += 1; }
 
-/**
- */
+/// Keep track of the output on start time
 inline static uint32_t outputOn_time_s = UINT32_MAX;
+
+/**
+ * \brief Return the sum of the output on time.
+ * Depend on outputOn_time_s correct initialization.
+ */
 uint32_t get_output_on_time()
 {
   if (outputOn_time_s != UINT32_MAX)
@@ -131,9 +142,12 @@ void signal_output_off()
   outputOn_time_s = UINT32_MAX;
 }
 
-/**
- */
+/// store the battery charge time sum
 inline static uint32_t batteryCharge_time_s = UINT32_MAX;
+/**
+ * \brief Get the total battery charge time.
+ * Uses internally the batteryCharge_time_s to track when the charge started.
+ */
 uint32_t get_battery_charging_time()
 {
   if (batteryCharge_time_s != UINT32_MAX)
@@ -153,6 +167,7 @@ void signal_battery_charging_on()
   if (batteryCharge_time_s == UINT32_MAX)
     batteryCharge_time_s = time_s();
 }
+
 void signal_battery_charging_off()
 {
   //

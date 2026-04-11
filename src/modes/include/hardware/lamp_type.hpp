@@ -103,12 +103,14 @@ struct LampTy
   // state managed by manager
   //
 
+  /// Store a display config
   struct LampConfig
   {
-    uint16_t skipFirstLedsForEffect = 0;
-    uint16_t skipFirstLedsForAmount = 0;
+    uint16_t skipFirstLedsForEffect = 0; ///< Skip duration
+    uint16_t skipFirstLedsForAmount = 0; ///< Skip the first N leds
   };
 
+  /// store a display configuration
   LampConfig config;
 
   //
@@ -384,7 +386,7 @@ public:
   /// \private Fixed "period" of the (X,Y) shift for each row (set at 2)
   static constexpr uint16_t shiftPeriod = 2;
 
-  // (while shifting every shiftPeriod, we have a residue accumulating)
+  /// (while shifting every shiftPeriod, we have a residue accumulating)
   static constexpr float _invShiftResidue = shiftPeriod * (_fwidth - floor(_fwidth - 0.0001));
 
   /// \private Approximate (broken) visual coordinate X-shift every \p shiftResidue rows
@@ -407,15 +409,19 @@ public:
 
   /// real size of the led strip in use
   static constexpr float ledStripWidth_mm = _ledStripWidth_mm;
+  /// Copy the led strip lenght
   static constexpr float ledStripLength_mm = _ledStripLength_mm;
 
   /// number of led per meters of strip used
   static constexpr float ledByMeter = _ledByMeter;
 
-  /// number of leds per one turn of led strip
+  /// Number of leds per one turn of led strip
   static constexpr float ledSize_mm = 1000.0f / ledByMeter;
+  /// Computation of the lamp body circumpherence
   static constexpr float lampBodyCircumpherence_mm = c_TWO_PI * lampBodyRadius_mm;
+  /// Computation of the led count per turns
   static constexpr float ledPerTurns = lampBodyCircumpherence_mm / ledSize_mm;
+  /// Computation of the lamp height
   static constexpr float lampHeight_mm = ledStripWidth_mm * ledCount / ledPerTurns;
 
   /** \brief (indexable) Number of color buffers available for direct access
@@ -580,7 +586,8 @@ public:
    */
   brightness_t LMBD_INLINE getMaxBrightness() const { return brightness::get_max_brightness(); }
 
-  /* \brief Temporarily set brightness, without affecting brightness navigation
+  /**
+   * \brief Temporarily set brightness, without affecting brightness navigation
    *
    * Skip callbacks.
    *
@@ -597,7 +604,8 @@ public:
       setBrightness(brightness, true, false, false);
   }
 
-  /* \brief Jump to brightness, affecting the next brightness navigation
+  /**
+   * \brief Jump to brightness, affecting the next brightness navigation
    *
    * Skip callbacks.
    *
@@ -609,7 +617,8 @@ public:
    */
   void LMBD_INLINE jumpBrightness(const brightness_t brightness) { setBrightness(brightness, true, false, true); }
 
-  /* \brief Get brightness of the lamp
+  /**
+   * \brief Get brightness of the lamp
    *
    * If \p readPreviousBrightness is true, return the internally saved
    * brightness state, used for user navigation of brightness.
@@ -906,6 +915,10 @@ public:
     }
   }
 
+  /**
+   * \brief Mix two colors from a buffer
+   * \param[in] phase Between 0 and 1, the gradient to apply
+   */
   template<uint8_t dstBufIdx = 0, uint8_t srcBufIdx = 1> void setColorsFromMixedBuffers(float phase)
   {
     static_assert(sizeof(BufferTy) == sizeof(strip._colors));
@@ -1060,7 +1073,9 @@ static constexpr XYTy strip_to_XY(uint16_t n)
 }
 
 /**
- * \brief X is the vertical axis, starting at zero and ending at maxWidthFloat
+ * \brief Convert a strip led index to a 3D helix coordinate.
+ * \param[in] n Index of the led in the strip. If will be constraint to the lamp body
+ * \return Coordinates of the led in the 3D world (mm)
  */
 static constexpr HelixXYZTy strip_to_helix(int16_t n)
 {
@@ -1070,12 +1085,21 @@ static constexpr HelixXYZTy strip_to_helix(int16_t n)
   return strip_to_helix_unconstraint(n);
 }
 
-// the minus is for inverse helix
+/**
+ * \brief Convert a led index to an helix height coordinate.
+ * \param[in] n Index of the led in the strip, unconstraint to the lamp body.
+ * \return The height if the pixel, in mm.
+ */
 static constexpr float to_helix_z(const int16_t n)
 {
   return -hardware::LampTy::ledStripWidth_mm * n / hardware::LampTy::ledPerTurns;
 }
 
+/**
+ * \brief Convert a strip led index to a 3D helix coordinate.
+ * \param[in] n Index of the led in the strip, unconstraint to the lamp body.
+ * \return Coordinates of the led in the 3D world (mm)
+ */
 static constexpr HelixXYZTy strip_to_helix_unconstraint(const int16_t n)
 {
   return HelixXYZTy {hardware::LampTy::maxWidthFloat * cos_t(n / hardware::LampTy::ledPerTurns * c_TWO_PI),
@@ -1083,13 +1107,29 @@ static constexpr HelixXYZTy strip_to_helix_unconstraint(const int16_t n)
                      to_helix_z(n)};
 }
 
+/**
+ * \brief Return true id the given led index exists on the strip.
+ * \param[in] n Index of the led in the strip.
+ */
 static constexpr bool is_led_index_valid(const int16_t n) { return n >= 0 and n < hardware::LampTy::ledCount; }
 
+/**
+ * \brief Return true id the given coordinates exists on the strip.
+ * This function also checks the bounds using the observation angle, as the strip is an helix.
+ * \param[in] angle_rad Angle in radians of the pixel.
+ * \param[in] z_mm height, in mm. Height in this coordinate system is negative.
+ */
 static constexpr bool is_lamp_coordinate_out_of_bounds(const float angle_rad, const float z_mm)
 {
   return not is_led_index_valid(to_led_index_no_bounds(angle_rad, z_mm));
 }
 
+/**
+ * \brief Convert a cylindrical world coordinate to a led index
+ * \param[in] angle_rad Angle in radians of the pixel.
+ * \param[in] z_mm height, in mm. Height in this coordinate system is negative.
+ * \return The index of the led, constrained to a valid index in the strip.
+ */
 static constexpr uint16_t to_led_index(const float angle_rad, const float z_mm)
 {
   constexpr uint16_t maxZCoordinate =
@@ -1119,6 +1159,12 @@ static constexpr uint16_t to_led_index(const float angle_rad, const float z_mm)
   return ledIndex;
 }
 
+/**
+ * \brief Convert a cylindrical world coordinate to a led index
+ * \param[in] angle_rad Angle in radians of the pixel.
+ * \param[in] z_mm height, in mm. Height in this coordinate system is negative.
+ * \return The index of the led. It is not necessarly a valid index.
+ */
 static constexpr int16_t to_led_index_no_bounds(const float angle_rad, const float z_mm)
 {
   // snip Z per possible lines

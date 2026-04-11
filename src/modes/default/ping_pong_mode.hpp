@@ -19,7 +19,7 @@ struct PingPongMode : public modes::BasicMode
   {
     /// actual dot index
     size_t lastIndex;
-    // progress between 0 and 1
+    /// progress between 0 and 1
     float progress;
     /// back of forth
     bool step;

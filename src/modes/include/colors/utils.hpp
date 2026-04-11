@@ -27,6 +27,7 @@ static constexpr LMBD_INLINE uint32_t fromRGB(uint8_t r, uint8_t g, uint8_t b)
 /// Exposes (r, g, b) as uint8_t in struct from a single uint32_t color
 struct ToRGB
 {
+  /// convert color bytes to rgb struct
   constexpr LMBD_INLINE ToRGB(uint32_t color) :
     r {(uint8_t)((color >> 16) & 0xff)},
     g {(uint8_t)((color >> 8) & 0xff)},
@@ -34,7 +35,9 @@ struct ToRGB
   {
   }
 
-  uint8_t r, g, b;
+  uint8_t r; ///< red
+  uint8_t g; ///< green
+  uint8_t b; ///< blue
 };
 
 /// Return color (w, w, w) as a single uint32_t integer
@@ -140,6 +143,7 @@ template<bool isVideoMode = false> static uint32_t fade(uint32_t inputColor, uin
   return res;
 }
 
+/// Add two colors together
 template<bool isFast = false> uint32_t add(uint32_t c1, uint32_t c2)
 {
   ToRGB input1_rgb(c1);

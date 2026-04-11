@@ -16,8 +16,8 @@ namespace curves {
  */
 template<typename T, typename U> struct Point
 {
-  T x;
-  U y;
+  T x; ///< X coordinate of the point
+  U y; ///< Y coordinate of the point
 };
 
 /**
@@ -28,6 +28,7 @@ template<typename T, typename U> struct Point
 template<typename T, typename U> class LinearCurve
 {
 public:
+  /// point in the linear curve
   using point_t = Point<T, U>;
 
   /// Build a curve from a set of points
@@ -112,6 +113,7 @@ private:
 template<typename T, typename U> class ExponentialCurve
 {
 public:
+  /// point in the exponential curve
   using point_t = Point<T, U>;
 
   /**

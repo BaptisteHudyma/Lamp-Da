@@ -27,11 +27,16 @@ template<typename NewLocalMode> static auto context_as(auto& ctx) { return ctx.t
 /// Local context exposing system features to active BasicMode
 template<typename LocalBasicMode, typename ModeManager> struct ContextTy
 {
+  /// Friend class
   friend ModeManager;
 
+  /// Type of the Context of a local mode
   using SelfTy = ContextTy<LocalBasicMode, ModeManager>;
+  /// Type of the mode manager
   using ModeManagerTy = ModeManager;
+  /// Type of a local mode
   using LocalModeTy = LocalBasicMode;
+  /// Type of the State of a local mode
   using StateTy = StateTyOf<LocalModeTy>;
 
   /// \private True if LocalModeTy is a BasicMode
@@ -469,7 +474,8 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   // special effects
   //
 
-  /** \brief Skip the few next calls to active mode ``.loop``
+  /**
+   *\brief Skip the few next calls to active mode ``.loop``
    */
   void LMBD_INLINE skipNextFrames(uint8_t count = 1)
   {
@@ -490,6 +496,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     ctx.lamp.blip(duration);
   }
 
+  /// Cancel an ongoing blip of the ouput
   void cancel_blip() const
   {
     auto ctx = modeManager.get_context();
@@ -498,6 +505,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     ctx.lamp.cancel_blip();
   }
 
+  /// Return true if the systems is currently bliping the output
   bool is_bliping() const
   {
     auto ctx = modeManager.get_context();

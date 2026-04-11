@@ -48,7 +48,9 @@ struct RainbowFadePaletteMode : public PaletteFadeMode
 {
   struct StateTy
   {
+    /// Color palette to display
     static constexpr modes::colors::PaletteTy palette = modes::colors::PaletteRainbowColors;
+    /// actual palette index
     float paletteIndex;
   };
 };

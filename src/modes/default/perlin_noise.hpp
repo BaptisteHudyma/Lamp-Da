@@ -27,22 +27,25 @@ struct PerlinNoiseMode : public BasicMode
 
   struct StateTy
   {
-    uint32_t positionX;
-    uint32_t positionY;
-    uint32_t positionZ;
+    uint32_t positionX; ///< position of the noise in X
+    uint32_t positionY; ///< position of the noise in X
+    uint32_t positionZ; ///< position of the noise in X
 
-    int16_t speedX;
-    int16_t speedY;
-    int16_t speedZ;
+    int16_t speedX; ///< Speed of the noise in X
+    int16_t speedY; ///< Speed of the noise in Y
+    int16_t speedZ; ///< Speed of the noise in Z
+    /// minimal speed of movement
     static constexpr uint16_t minSpeed = 25;
+    /// maximal speed of movement
     static constexpr uint16_t maxSpeed = 400;
-
+    /// Scale of the noise
     uint16_t scale;
-
+    /// Color grading
     uint16_t ihue;
 
-    // store references to palettes
+    /// count of palette used
     static constexpr uint8_t maxPalettesCount = 4;
+    /// store references to palettes
     const colors::PaletteTy* _palettes[maxPalettesCount] = {&colors::PaletteRainbowColors,
                                                             &colors::PaletteLavaColors,
                                                             &colors::PaletteForestColors,

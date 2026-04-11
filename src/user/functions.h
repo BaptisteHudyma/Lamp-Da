@@ -51,14 +51,14 @@ void read_parameters();
 /**
  * \brief Called to handle button click on lamp start
  *
- * \param[in] nbClick The number of clicks made by the user
+ * \param[in] clicks The number of clicks made by the user
  */
 bool button_start_click_default(const uint8_t clicks);
 
 /**
  * \brief Called to handle button hold on lamp start
  *
- * \param[in] nbClickAndHold The number of clicks made by the user
+ * \param[in] clicks The number of clicks made by the user
  * \param[in] isEndOfHoldEvent True if the user just released the button
  * \param[in] holdDuration The duration of the on-going held event
  * \remark When \p isEndOfHoldEvent is True, then \p holdDuration is zero
@@ -67,7 +67,7 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
 
 /** \brief Called to handle button click events for default user mode behaviors
  *
- * \param[in] nbClick The number of clicks made by the user
+ * \param[in] clicks The number of clicks made by the user
  */
 void button_clicked_default(const uint8_t clicks);
 

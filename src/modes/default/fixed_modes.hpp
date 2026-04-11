@@ -76,7 +76,7 @@ template<bool isStep = false> struct PaletteMode : public modes::BasicMode
     ctx.lamp.fill(color);
   }
 
-  // hint manager to save our custom ramp
+  /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
 };
 
@@ -87,6 +87,7 @@ struct PalettePartyMode : public PaletteMode<false>
 {
   struct StateTy
   {
+    /// Color palette to use
     static constexpr modes::colors::PaletteTy palette = modes::colors::PalettePartyColors;
   };
 };
@@ -98,6 +99,7 @@ struct PaletteForestMode : public PaletteMode<false>
 {
   struct StateTy
   {
+    /// Color palette to use
     static constexpr modes::colors::PaletteTy palette = modes::colors::PaletteForestColors;
   };
 };
@@ -109,6 +111,7 @@ struct PaletteOceanMode : public PaletteMode<false>
 {
   struct StateTy
   {
+    /// Color palette to use
     static constexpr modes::colors::PaletteTy palette = modes::colors::PaletteOceanColors;
   };
 };
@@ -120,6 +123,7 @@ struct PalettePapiMode : public PaletteMode<true>
 {
   struct StateTy
   {
+    /// Color palette to use
     static constexpr modes::colors::PaletteTy palette = modes::colors::PalettePapiColors;
   };
 };
@@ -128,7 +132,7 @@ struct PalettePapiMode : public PaletteMode<true>
 
 /// Fixed modes groups
 using FixedModes = modes::GroupFor<fixed::KelvinMode, fixed::RainbowMode, fixed::PalettePapiMode>;
-///
+/// Fixed palette colors modes
 using MiscFixedModes = modes::GroupFor<fixed::PalettePartyMode, fixed::PaletteForestMode, fixed::PaletteOceanMode>;
 
 } // namespace modes

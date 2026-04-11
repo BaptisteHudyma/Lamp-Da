@@ -21,9 +21,13 @@ struct SpiralMode : public BasicMode
 {
   struct StateTy
   {
+    /// fade rate
     uint8_t fade;
+    /// blue intensity
     uint8_t intensity;
+    /// rotation speed
     uint8_t speed;
+    /// color to use
     colors::PaletteTy palette;
   };
 

@@ -46,6 +46,10 @@ public:
     reset();
   }
 
+  /**
+   * \brief Init the particles from a initialization function
+   * \param[in] positionGeneratorFunction Function that takes an index and return a ledstrip index
+   */
   void init_particules(const std::function<int16_t(size_t)>& positionGeneratorFunction)
   {
     occupiedSpacesSet.clear();
@@ -56,6 +60,11 @@ public:
     }
   }
 
+  /**
+   * \brief Init the particles from a initialization function, in a timed defered way.
+   * \param[in] maxParticlesToPop Maximum particles to spawn at this call
+   * \param[in] positionGeneratorFunction Function that takes an index and return a led strip index
+   */
   void init_deferred_particules(uint8_t maxParticlesToPop,
                                 const std::function<int16_t(size_t)>& positionGeneratorFunction)
   {
@@ -71,6 +80,12 @@ public:
     }
   }
 
+  /**
+   * \brief Advance the particle simulation, ignoring collisions
+   * \param[in] accelerationCartesian 3d acceleration vector to apply to particles
+   * \param[in] deltaTime_s Time since last update, in seconds
+   * \param[in] shouldContrain If true, will constrain the particles to the lamp body.
+   */
   void iterate_no_collisions(const vec3d& accelerationCartesian,
                              const float deltaTime_s,
                              const bool shouldContrain = true)
@@ -87,6 +102,12 @@ public:
     }
   }
 
+  /**
+   * \brief Advance the particle simulation, taking collisions in account.
+   * \param[in] accelerationCartesian 3d acceleration vector to apply to particles
+   * \param[in] deltaTime_s Time since last update, in seconds
+   * \param[in] shouldContrain If true, will constrain the particles to the lamp body.
+   */
   void iterate_with_collisions(const vec3d& accelerationCartesian,
                                const float deltaTime_s,
                                const bool shouldContrain = true)
@@ -130,6 +151,9 @@ public:
 
   /**
    * \brief Filter particles depending on condition
+   * \param[in] shouldDepopFunction A function, that given a particle, will return true if it needs to be removed from
+   * the simulation.
+   * \return The number of particles left in the simulation.
    */
   uint16_t depop_particules(const std::function<bool(const Particle&)>& shouldDepopFunction)
   {
@@ -157,6 +181,7 @@ public:
   /**
    * \brief Display this particle system
    * \param[in] sample_color sampling function for the particle color
+   * \param[in, out] lamp The lamp object to write to
    */
   uint16_t show(const std::function<uint32_t(int16_t, const Particle&)> sample_color, LampTy& lamp)
   {
@@ -177,8 +202,14 @@ public:
   }
 
 protected:
+  /// Return True if the position is already occupied
   bool is_position_taken(const int16_t pos) const { return occupiedSpacesSet.find(pos) != occupiedSpacesSet.cend(); }
 
+  /**
+   * \brief Spawn a particle
+   * \param[in] index Index of this particle
+   * \param[in] positionGeneratorFunction Spawn function
+   */
   void spawn_particule(const size_t index, const std::function<int16_t(size_t)>& positionGeneratorFunction)
   {
     int16_t pos = positionGeneratorFunction(index);
@@ -196,13 +227,13 @@ protected:
   }
 
 private:
-  static constexpr uint16_t maxParticuleCount = 512;
-  Particle particules[maxParticuleCount];
-  bool isAllocated[maxParticuleCount]; // store the allocated particules flag
+  static constexpr uint16_t maxParticuleCount = 512; ///< maximum particles allowed in a simulation
+  Particle particules[maxParticuleCount];            ///< Array of all particles
+  bool isAllocated[maxParticuleCount];               ///< store the allocated particules flag
 
-  std::set<int16_t> occupiedSpacesSet; // store the occupied spaces
+  std::set<int16_t> occupiedSpacesSet; ///< store the occupied spaces
 
-  // forced to be less than maxParticuleCount
+  /// forced to be less than maxParticuleCount
   uint16_t particuleCount;
 };
 

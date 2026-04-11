@@ -11,6 +11,7 @@ namespace modes::default_modes {
 /// Emulate a vu-sound meter
 struct VuMeterMode : public BasicMode
 {
+  /// color to display
   static constexpr auto palette = colors::PaletteGradient<colors::Red, colors::Green>;
 
   static void loop(auto& ctx)
@@ -40,7 +41,9 @@ struct VuMeterMode : public BasicMode
 
   struct StateTy
   {
+    /// fade rate
     uint8_t fade;
+    /// sound event tracker
     audio::SoundEventTy<> soundEvent;
   };
 };

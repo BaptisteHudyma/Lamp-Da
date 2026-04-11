@@ -35,8 +35,8 @@ std::map<uint32_t, uint32_t> _systemParametersValueMap;
  */
 struct keyValue
 {
-  uint32_t key;
-  uint32_t value;
+  uint32_t key;   ///< key to match this value
+  uint32_t value; ///< value associated with the key
 };
 constexpr size_t sizeOfData = sizeof(keyValue);
 
@@ -45,8 +45,8 @@ constexpr size_t sizeOfData = sizeof(keyValue);
  */
 union KeyValToByteArray
 {
-  uint8_t data[sizeOfData];
-  keyValue kv;
+  uint8_t data[sizeOfData]; ///< object as an array of bytes
+  keyValue kv;              ///< original object
 };
 
 static bool isSetup = false;
