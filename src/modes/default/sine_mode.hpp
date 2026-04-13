@@ -8,16 +8,22 @@
 
 namespace modes::default_modes {
 
+/**
+ * \brief Barber shop sign looking animation, with nice swirl effect.
+ */
 struct SineMode : public modes::BasicMode
 {
+  /// speed of the animation
   static constexpr uint8_t speed = 128;
 
-  // change the frequency of the mode
+  /// User ramp change the frequency of the mode
   static constexpr bool hasCustomRamp = true;
 
   struct StateTy
   {
+    /// step of the animation
     uint16_t step;
+    /// color palette to use
     colors::PaletteTy palette;
   };
 

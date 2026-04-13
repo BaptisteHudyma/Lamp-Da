@@ -11,16 +11,19 @@
 /// Basic "default" modes included with the hardware
 namespace modes::default_modes {
 
-/// Emulate color circle waves propagating
-
-// Distortion waves - ldirko
-// https://editor.soulmatelights.com/gallery/1089-distorsion-waves
-// adapted for WLED by @blazoncek
+/**
+ * \brief Emulate color circle waves propagating.
+ * Distortion waves - ldirko.
+ * https://editor.soulmatelights.com/gallery/1089-distorsion-waves.
+ * adapted for WLED by @blazoncek
+ */
 struct DistortionWaveMode : public BasicMode
 {
   struct StateTy
   {
+    /// animation speed
     uint16_t speed;
+    /// animation scale
     uint16_t scale;
   };
 

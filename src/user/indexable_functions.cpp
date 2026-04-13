@@ -1,6 +1,7 @@
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #ifndef LMBD_SIMPLE_EMULATOR
 
+/// Add the nudz mode the compilation
 // #ifndef NUDZ_MODES_ENABLED
 // #define NUDZ_MODES_ENABLED
 // #endif

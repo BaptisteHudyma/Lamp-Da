@@ -6,11 +6,16 @@ namespace modes::default_modes {
 #include <cstdint>
 #include "src/modes/include/colors/palettes.hpp"
 
+/**
+ * \brief Display a rainbow that moves
+ */
 struct RainbowSwirlMode : public BasicMode
 {
   struct StateTy
   {
+    /// per loop increment
     uint32_t increment;
+    /// hue of the first pixel of the strip
     uint16_t firstPixelHue;
   };
 

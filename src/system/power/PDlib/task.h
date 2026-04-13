@@ -14,14 +14,15 @@
  */
 #define TASK_EVENT_TIMER (1U << 31)
 
+/// Convert a 64 bits to little endian encoding
 typedef union
 {
-  uint64_t val;
+  uint64_t val; ///< value to store the binary
   struct
   {
-    uint32_t lo;
-    uint32_t hi;
-  } le /* little endian words */;
+    uint32_t lo; ///< low side of the binary
+    uint32_t hi; ///< low side of the binary
+  } le;          ///< little endian words
 } timestamp_t;
 
 // Get the current timestamp from the system timer (in uS).

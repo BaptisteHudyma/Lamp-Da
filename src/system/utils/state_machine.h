@@ -7,9 +7,13 @@
 #include "src/system/platform/time.h"
 #include <cstdint>
 
+/**
+ * \brief Define a state machine
+ */
 template<typename State> class StateMachine
 {
 public:
+  /// Construct a state machine from the first given state
   StateMachine(const State s) :
     current(s),
     lastState(s),
@@ -19,6 +23,12 @@ public:
     changedWithTimeout(false)
   {
   }
+  /**
+   * \brief Construct a state machine from the first given state, with a timeout to another
+   * \param[in] s The initial state
+   * \param[in] timeout The timeout after which we switch to the fallback state
+   * \param[in] stateOnTimeout Falback state, reached on timeout
+   */
   StateMachine(const State s, const uint32_t timeout, const State stateOnTimeout) :
     current(s),
     lastState(s),
@@ -47,6 +57,7 @@ public:
   /**
    * \brief Set the machine state.
    * \param[in] s The new state to set
+   * \param[in] forceUpdate Force the state update, even if the state is already active
    * \return True if the state was updated
    */
   bool set_state(const State s, bool forceUpdate = false)
@@ -72,8 +83,8 @@ public:
   /**
    * \brief set the new current state, with a timeout
    * \param[in] s the new state
-   * \param[in] timeout The time out delay after which the state will switch automatically to \ref stateOnTimeout
-   * \param[in] stateOnTimeout
+   * \param[in] timeout The time out delay after which the state will switch automatically to stateOnTimeout
+   * \param[in] stateOnTimeout State to reach after the timeout
    * \return true is the state changed
    */
   bool set_state(const State s, const uint32_t timeout, const State stateOnTimeout)
@@ -108,6 +119,7 @@ public:
     }
   }
 
+  /// Return true if the current state just changed. Resetted on read
   bool state_just_changed()
   {
     const bool temp = didStateJustChanged;
@@ -115,7 +127,7 @@ public:
     return temp;
   }
 
-  // return true if this state was reached with a timeout
+  /// return true if this state was reached with a timeout
   bool state_changed_with_timeout() { return changedWithTimeout; }
 
   /// Return the actual state
@@ -133,7 +145,7 @@ public:
     }
   }
 
-  // return the time at which this state was raised
+  /// Return the time at which this state was raised
   uint32_t get_state_raised_time() const { return stateSetTime; }
 
 private:

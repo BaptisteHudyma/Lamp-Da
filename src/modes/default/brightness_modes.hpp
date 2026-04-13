@@ -23,10 +23,10 @@ using StaticLightOnly = GroupFor<StaticLightMode>;
 /// Simple pulse every second
 struct OnePulse : public BasicMode
 {
-  static constexpr uint32_t periodMs = 1000;
-  static constexpr uint32_t pulseSizeMs = 100;
-  static constexpr brightness_t minScaling = 50;
-  static constexpr float scaleFactor = 1.40;
+  static constexpr uint32_t periodMs = 1000;     ///< lenght of a pulse, in milliseconds
+  static constexpr uint32_t pulseSizeMs = 100;   ///< period of the animation, in milliseconds
+  static constexpr brightness_t minScaling = 50; ///< scaling of the brightness of a pulse
+  static constexpr float scaleFactor = 1.40;     ///< scale of the brigthness
 
   static constexpr void loop(auto& ctx)
   {
@@ -49,10 +49,10 @@ struct OnePulse : public BasicMode
 /// Pulse N times then pause one second
 template<size_t N> struct ManyPulse : public BasicMode
 {
-  static constexpr uint32_t pulseSizeMs = 100;
-  static constexpr uint32_t periodMs = 1000 + N * pulseSizeMs * 2;
-  static constexpr brightness_t minScaling = 50;
-  static constexpr float scaleFactor = 1.40;
+  static constexpr uint32_t pulseSizeMs = 100;                     ///< lenght of a pulse, in milliseconds
+  static constexpr uint32_t periodMs = 1000 + N * pulseSizeMs * 2; ///< period of the animation, in milliseconds
+  static constexpr brightness_t minScaling = 50;                   ///< scaling of the brightness of a pulse
+  static constexpr float scaleFactor = 1.40;                       ///< scale of the brigthness
 
   static constexpr void loop(auto& ctx)
   {
@@ -78,27 +78,27 @@ template<size_t N> struct ManyPulse : public BasicMode
   }
 };
 
-// Based on the candle animation from Anduril
-// candle-mode.c: Candle mode for Anduril.
-// Copyright (C) 2017-2023 Selene ToyKeeper
-// SPDX-License-Identifier: GPL-3.0-or-later
+/// Based on the candle animation from Anduril.
+/// candle-mode.c: Candle mode for Anduril.
+/// Copyright (C) 2017-2023 Selene ToyKeeper.
+/// SPDX-License-Identifier: GPL-3.0-or-later.
 struct Candle : public BasicMode
 {
-  static const uint8_t CANDLE_AMPLITUDE = 33;
-  static const uint8_t CANDLE_WAVE1_MAXDEPTH = 30;
-  static const uint8_t CANDLE_WAVE2_MAXDEPTH = 45;
-  static const uint8_t CANDLE_WAVE3_MAXDEPTH = 25;
+  static const uint8_t CANDLE_AMPLITUDE = 33;      ///< amplitude of the candle light
+  static const uint8_t CANDLE_WAVE1_MAXDEPTH = 30; ///< Wave depth parameters
+  static const uint8_t CANDLE_WAVE2_MAXDEPTH = 45; ///< Wave depth parameters
+  static const uint8_t CANDLE_WAVE3_MAXDEPTH = 25; ///< Wave depth parameters
 
   struct StateTy
   {
-    uint8_t candle_wave1;
-    uint8_t candle_wave2;
-    uint8_t candle_wave3;
-    uint8_t candle_wave2_speed;
+    uint8_t candle_wave1;       ///< triangular wave 1 amplitude
+    uint8_t candle_wave2;       ///< triangular wave 2 amplitude
+    uint8_t candle_wave3;       ///< triangular wave 3 amplitude
+    uint8_t candle_wave2_speed; ///< second wave speed (candle flicker)
 
-    uint8_t candle_wave1_depth;
-    uint8_t candle_wave2_depth;
-    uint8_t candle_wave3_depth;
+    uint8_t candle_wave1_depth; ///< Control the wave 1 depth
+    uint8_t candle_wave2_depth; ///< Control the wave 2 depth
+    uint8_t candle_wave3_depth; ///< Control the wave 3 depth
   };
 
   static void on_enter_mode(auto& ctx)
@@ -167,17 +167,23 @@ struct Candle : public BasicMode
   }
 };
 
+/**
+ * \brief Very fast on pulse followed by longer off pulses. Make a stroboscopic effect.
+ */
 struct StroboscopeMode : public BasicMode
 {
   /// regulate stroboscopic speed
   static constexpr bool hasCustomRamp = true;
-
+  /// maximum allowed stroboscopic frequency in Hertz
   static constexpr uint32_t stroboMaxFreq = 1000 * (1 / 30.0f);
+  /// minimum allowed stroboscopic frequency in hertz
   static constexpr uint32_t stroboMinFreq = 1000 * (1 / 7.0f);
 
   struct StateTy
   {
+    /// last off pulse set
     uint32_t lastCall;
+    /// duration of the off pulse
     uint32_t pulseDuration;
   };
 
@@ -190,6 +196,7 @@ struct StroboscopeMode : public BasicMode
     custom_ramp_update(ctx, ctx.get_active_custom_ramp());
   }
 
+  /// User ramp controls the strob frequency
   static void custom_ramp_update(auto& ctx, uint8_t rampValue)
   {
     ctx.state.pulseDuration = lmpd_map<uint32_t>(rampValue, 0, 255, stroboMinFreq, stroboMaxFreq);
@@ -199,7 +206,7 @@ struct StroboscopeMode : public BasicMode
   {
     const auto pulseDuration = ctx.state.pulseDuration;
 
-    // no stroboscope for indexable strip
+    /// max time of the on pulse, in milliseconds
     static constexpr uint32_t onTime = 5;
     if (ctx.lamp.now - ctx.state.lastCall >= pulseDuration)
     {
@@ -209,16 +216,24 @@ struct StroboscopeMode : public BasicMode
   }
 };
 
+/**
+ * \brief Emulate lightning in the distance
+ * Inspired by Anduril implementation
+ */
 struct LightningMode : public BasicMode
 {
-  /// regulate stroboscopic speed
+  /// Hint manager that we need a brightness callback
   static constexpr bool hasBrightCallback = true;
 
   struct StateTy
   {
+    /// prevent updates when the user ramp is rolling
     uint32_t lastBrightnessHandleCall;
+    /// Is off and waiting to turn on
     bool isWaitingTurnOn;
+    /// last brigthness before going dark
     brightness_t lastBrightness;
+    /// Brigthness ramp down index
     uint32_t stepdown;
   };
 
@@ -230,6 +245,7 @@ struct LightningMode : public BasicMode
     ctx.state.stepdown = 0;
   }
 
+  /// If user update the brighness, do not update the animation
   static void brightness_update(auto& ctx, brightness_t brightness)
   {
     auto& lamp = ctx.lamp;
@@ -313,7 +329,9 @@ struct LightningMode : public BasicMode
   }
 };
 
+/// Group for calm modes
 using CalmGroup = GroupFor<Candle, LightningMode>;
+/// Group for flashing modes
 using FlashesGroup = GroupFor<StroboscopeMode, OnePulse, ManyPulse<2>>;
 
 } // namespace modes::brightness

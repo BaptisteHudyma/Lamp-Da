@@ -18,6 +18,9 @@ I'm grateful to all of you for the help and support during this absolute madness
 **Epsilon** for his capability to destroy anything, you figured every way something can break. I designed a sturdy creation thanks to you.
 
 
+**Orvus** for the update application. A necessary functionality that we missed for a long time.
+
+
 **M.Besson** for the in depth electronic technical review. I would have made at least 2 more prototypes without your help.
 
 

@@ -16,6 +16,8 @@ template<int temp = 0> struct ImuEventTy
   /// last reading of the IMU
   ::imu::Reading lastReading;
 
+  /// Reset the IMU events.
+  /// Should be called before any use
   void reset(auto& ctx)
   {
     // reset filter
@@ -33,8 +35,8 @@ template<int temp = 0> struct ImuEventTy
     lastReading = ::imu::get_filtered_reading(false);
   }
 
-  // ALL IMU ANIMATIONS SHARE THIS PARTICLE SYSTEM
-  // Spawn another if multiple systems should run in parralel
+  /// ALL IMU ANIMATIONS SHARE THIS PARTICLE SYSTEM.
+  /// Spawn another if multiple systems should run in parralel
   modes::ParticleSystem particuleSystem;
 
 private:

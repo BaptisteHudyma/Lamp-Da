@@ -11,16 +11,23 @@
 /// Basic "default" modes included with the hardware
 namespace modes::default_modes {
 
-// By: Stepko
-// https://editor.soulmatelights.com/gallery/884-drift
-// Modified by: Andrew Tuline
+/**
+ * \brief Display a 2D rotating spiral.
+ * By: Stepko.
+ * https://editor.soulmatelights.com/gallery/884-drift.
+ * Modified by: Andrew Tuline.
+ */
 struct SpiralMode : public BasicMode
 {
   struct StateTy
   {
+    /// fade rate
     uint8_t fade;
+    /// blue intensity
     uint8_t intensity;
+    /// rotation speed
     uint8_t speed;
+    /// color to use
     colors::PaletteTy palette;
   };
 

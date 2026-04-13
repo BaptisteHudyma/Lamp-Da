@@ -374,9 +374,7 @@ extern "C" {
 
     /**
      * Set RX enable flag
-     *
-     * @enable true for enable, false for disable
-     *
+     * \param[in] true for enable, false for disable
      * @return EC_SUCCESS or error
      */
     int (*set_rx_enable)(int enable);

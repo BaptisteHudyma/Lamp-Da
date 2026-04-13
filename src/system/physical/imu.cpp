@@ -12,21 +12,22 @@
 
 namespace imu {
 
-// instance of the IMU controler
+/// instance of the IMU controler
 Wrapper imuInstance;
 
-// interrupt 1
+/// interrupt 1 pin
 DigitalPin interrupt1Pin(DigitalPin::GPIO::Signal_ImuInterrupt1);
+/// interrupt 2 pin
 DigitalPin interrupt2Pin(DigitalPin::GPIO::Signal_ImuInterrupt2);
-
+/// indicates if the driver is initialized
 bool isInitialized = false;
 
-// transform imu coordinates to board coordinates
+/// Transform imu coordinates to board coordinates
 const TransformationMatrix imuToBoardTransformation(
         vec3d(imuToCircuitRotationX_rad, imuToCircuitRotationY_rad, imuToCircuitRotationZ_rad),
         vec3d(imuToCircuitPositionX_m, imuToCircuitPositionY_m, imuToCircuitPositionZ_m));
 
-// transform board coordinates to first pixel
+/// Transform board coordinates to first pixel
 const TransformationMatrix boardToFirstPixelTransformation(vec3d(circuitToLedZeroRotationX_degrees* c_degreesToRadians,
                                                                  circuitToLedZeroRotationY_degrees* c_degreesToRadians,
                                                                  circuitToLedZeroRotationZ_degrees* c_degreesToRadians),
@@ -127,9 +128,11 @@ bool is_event_detected(const EventType eventType)
   }
 }
 
-// interrupt 1 result
+/// interrupt 1 result
 bool isInterrupt1Enabled = false;
+/// callback for the interrupt1 signal
 void interrupt1_callback() { isInterrupt1Enabled = true; }
+
 bool is_interrupt1_enabled()
 {
   const bool temp = isInterrupt1Enabled;
@@ -137,9 +140,11 @@ bool is_interrupt1_enabled()
   return temp;
 }
 
-// interrupt 2 result
+/// interrupt 2 result
 bool isInterrupt2Enabled = false;
+/// callback for the interrupt1 signal
 void interrupt2_callback() { isInterrupt2Enabled = true; }
+
 bool is_interrupt2_enabled()
 {
   const bool temp = isInterrupt2Enabled;

@@ -6,8 +6,12 @@
 
 namespace modes::default_modes {
 
+/**
+ * \brief Display the Fourrier Transform of the current room sound.
+ */
 struct FastFourrierTransformMode : public BasicMode
 {
+  /// color palette to use for this mode
   static constexpr auto palette = colors::PalettePartyColors;
 
   static void loop(auto& ctx)
@@ -47,6 +51,7 @@ struct FastFourrierTransformMode : public BasicMode
 
   struct StateTy
   {
+    /// handle sound events
     audio::SoundEventTy<> soundEvent;
   };
 };

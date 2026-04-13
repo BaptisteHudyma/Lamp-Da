@@ -66,17 +66,6 @@ template<int16_t N> static inline bool LMBD_INLINE getValue(const char (&key)[N]
   return fileSystem::user::get_value(hash(key), out);
 }
 
-/** \brief Check if value for \p key exists
- *
- * \param[in] key Key string to be hashed as 31 bit integer
- * \return Returns True if key exists
- */
-template<int16_t N> static inline bool LMBD_INLINE hasValue(const char (&key)[N], uint32_t& out)
-{
-  static_assert(N - 1 <= 14, "Please use keys shorter than 14 bytes!");
-  return fileSystem::user::doKeyExists(hash(key), out);
-}
-
 /// Force clear the stored parameters
 static inline void clear_stored() { fileSystem::clear(); }
 

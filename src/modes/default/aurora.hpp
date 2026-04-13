@@ -11,18 +11,23 @@
 /// Basic "default" modes included with the hardware
 namespace modes::default_modes {
 
-/// Aurora borealis effect
-
-// By: Kostyantyn Matviyevskyy
-// https://editor.soulmatelights.com/gallery/762-polar-lights
-// , Modified by: Andrew Tuline
+/**
+ * \brief Aurora borealis effect.
+ * By: Kostyantyn Matviyevskyy.
+ * https://editor.soulmatelights.com/gallery/762-polar-lights
+ * Modified by: Andrew Tuline.
+ */
 struct AuroraMode : public BasicMode
 {
   struct StateTy
   {
+    /// sclae of the aurora
     uint8_t scale;
+    /// speed of change
     uint8_t speed;
+    /// step of the animation
     uint32_t step;
+    /// color palette used
     colors::PaletteTy palette;
   };
 

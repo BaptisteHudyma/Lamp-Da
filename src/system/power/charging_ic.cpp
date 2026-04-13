@@ -61,19 +61,27 @@ void set_software_error_message(const std::string& msg)
     softwareError_detail = msg;
 }
 
+/**
+ * \brief Store the power limits for the battery charge protocol
+ */
 struct PowerLimits
 {
+  /// Absolute maximum battery charging current
   uint16_t maxChargingCurrent_mA = 0;
+  /// Actual allowed charging current
   uint16_t current_mA = 0;
+  /// If true, enabled the Input Current Optimization algorithm.
+  /// It will calibrate the inpute current to respect a target threshold
   bool shoulduseICO = false;
 
+  /// set the default values of this structure
   void set_default()
   {
     current_mA = 100; // default to 100mA (standard USB)
     shoulduseICO = false;
   }
 };
-// define the power limits for input power
+/// define the power limits for input power
 static PowerLimits powerLimits_s;
 
 // detect the faults on the status

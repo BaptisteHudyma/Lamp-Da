@@ -34,53 +34,54 @@ typedef enum
   // Black Body Radiators
   // @{
   /// 1900 Kelvin
-  Candle = 0xFF9329 /* 1900 K, 255, 147, 41 */,
+  Candle = 0xFF9329, ///< @htmlcolorblock{FF9329}
   /// 2600 Kelvin
-  Tungsten40W = 0xFFC58F /* 2600 K, 255, 197, 143 */,
+  Tungsten40W = 0xFFC58F, ///< @htmlcolorblock{FFC58F}
   /// 2850 Kelvin
-  Tungsten100W = 0xFFD6AA /* 2850 K, 255, 214, 170 */,
+  Tungsten100W = 0xFFD6AA, ///< @htmlcolorblock{FFD6AA}
   /// 3200 Kelvin
-  Halogen = 0xFFF1E0 /* 3200 K, 255, 241, 224 */,
+  Halogen = 0xFFF1E0, ///< @htmlcolorblock{FFF1E0}
   /// 5200 Kelvin
-  CarbonArc = 0xFFFAF4 /* 5200 K, 255, 250, 244 */,
+  CarbonArc = 0xFFFAF4, ///< @htmlcolorblock{FFFAF4}
   /// 5400 Kelvin
-  HighNoonSun = 0xFFFFFB /* 5400 K, 255, 255, 251 */,
+  HighNoonSun = 0xFFFFFB, ///< @htmlcolorblock{FFFFFB}
   /// 6000 Kelvin
-  DirectSunlight = 0xFFFFFF /* 6000 K, 255, 255, 255 */,
+  DirectSunlight = 0xFFFFFF, ///< @htmlcolorblock{FFFFFF}
   /// 7000 Kelvin
-  OvercastSky = 0xC9E2FF /* 7000 K, 201, 226, 255 */,
+  OvercastSky = 0xC9E2FF, ///< @htmlcolorblock{C9E2FF}
   /// 20000 Kelvin
-  ClearBlueSky = 0x409CFF /* 20000 K, 64, 156, 255 */,
+  ClearBlueSky = 0x409CFF, ///< @htmlcolorblock{409CFF}
   // @}
 
   // Gaseous Light Sources
   // @{
   /// Warm (yellower) flourescent light bulbs
-  WarmFluorescent = 0xFFF4E5 /* 0 K, 255, 244, 229 */,
+  WarmFluorescent = 0xFFF4E5, ///< @htmlcolorblock{FFF4E5}
   /// Standard flourescent light bulbs
-  StandardFluorescent = 0xF4FFFA /* 0 K, 244, 255, 250 */,
+  StandardFluorescent = 0xF4FFFA, ///< @htmlcolorblock{F4FFFA}
   /// Cool white (bluer) flourescent light bulbs
-  CoolWhiteFluorescent = 0xD4EBFF /* 0 K, 212, 235, 255 */,
+  CoolWhiteFluorescent = 0xD4EBFF, ///< @htmlcolorblock{D4EBFF}
   /// Full spectrum flourescent light bulbs
-  FullSpectrumFluorescent = 0xFFF4F2 /* 0 K, 255, 244, 242 */,
+  FullSpectrumFluorescent = 0xFFF4F2, ///< @htmlcolorblock{FFF4F2}
   /// Grow light flourescent light bulbs
-  GrowLightFluorescent = 0xFFEFF7 /* 0 K, 255, 239, 247 */,
+  GrowLightFluorescent = 0xFFEFF7, ///< @htmlcolorblock{FFEFF7}
   /// Black light flourescent light bulbs
-  BlackLightFluorescent = 0xA700FF /* 0 K, 167, 0, 255 */,
+  BlackLightFluorescent = 0xA700FF, ///< @htmlcolorblock{A700FF}
   /// Mercury vapor light bulbs
-  MercuryVapor = 0xD8F7FF /* 0 K, 216, 247, 255 */,
+  MercuryVapor = 0xD8F7FF, ///< @htmlcolorblock{D8F7FF}
   /// Sodium vapor light bulbs
-  SodiumVapor = 0xFFD1B2 /* 0 K, 255, 209, 178 */,
+  SodiumVapor = 0xFFD1B2, ///< @htmlcolorblock{FFD1B2}
   /// Metal-halide light bulbs
-  MetalHalide = 0xF2FCFF /* 0 K, 242, 252, 255 */,
+  MetalHalide = 0xF2FCFF, ///< @htmlcolorblock{F2FCFF}
   /// High-pressure sodium light bulbs
-  HighPressureSodium = 0xFFB74C /* 0 K, 255, 183, 76 */,
+  HighPressureSodium = 0xFFB74C, ///< @htmlcolorblock{FFB74C}
   // @}
 
   /// Uncorrected temperature (0xFFFFFF)
-  UncorrectedTemperature = 0xFFFFFF /* 255, 255, 255 */
+  UncorrectedTemperature = 0xFFFFFF, ///< @htmlcolorblock{FFFFFF}
 } ColorTemperature;
 
+/// Define common HTML colors
 typedef enum
 {
   AliceBlue = 0xF0F8FF,            ///< @htmlcolorblock{F0F8FF}
@@ -132,7 +133,6 @@ typedef enum
   FireBrick = 0xB22222,            ///< @htmlcolorblock{B22222}
   FloralWhite = 0xFFFAF0,          ///< @htmlcolorblock{FFFAF0}
   ForestGreen = 0x228B22,          ///< @htmlcolorblock{228B22}
-  Fuchsia = 0xFF00FF,              ///< @htmlcolorblock{FF00FF}
   Gainsboro = 0xDCDCDC,            ///< @htmlcolorblock{DCDCDC}
   GhostWhite = 0xF8F8FF,           ///< @htmlcolorblock{F8F8FF}
   Gold = 0xFFD700,                 ///< @htmlcolorblock{FFD700}
@@ -356,24 +356,24 @@ static constexpr PaletteTy PaletteForestColors = {DarkGreen,
                                                   ForestGreen};
 
 /// HSV Rainbow
-static constexpr PaletteTy PaletteRainbowColors = {0xFF0000,
+static constexpr PaletteTy PaletteRainbowColors = {Red,
                                                    0xD52A00,
                                                    0xAB5500,
                                                    0xAB7F00,
                                                    0xABAB00,
                                                    0x56D500,
-                                                   0x00FF00,
+                                                   Lime,
                                                    0x00D52A,
                                                    0x00AB55,
                                                    0x0056AA,
-                                                   0x0000FF,
+                                                   Blue,
                                                    0x2A00D5,
                                                    0x5500AB,
                                                    0x7F0081,
                                                    0xAB0055,
                                                    0xD5002B};
 
-// basically, HSV with no green. looks better when lighing people
+/// basically, HSV with no green. looks better when lighing people
 static constexpr PaletteTy PalettePartyColors = {0x5500AB,
                                                  0x84007C,
                                                  0xB5004B,
@@ -391,7 +391,7 @@ static constexpr PaletteTy PalettePartyColors = {0x5500AB,
                                                  0x2F00D0,
                                                  0x0007F9};
 
-// Black body radiation
+/// Black body radiation
 static constexpr PaletteTy PaletteBlackBodyColors = {0xff3800,
                                                      0xff5300,
                                                      0xff6500,
@@ -409,56 +409,59 @@ static constexpr PaletteTy PaletteBlackBodyColors = {0xff3800,
                                                      0xffcc99,
                                                      0xffd1a3};
 
-static constexpr PaletteTy PaletteHeatColors = {0x000000,
+/// Heat black body
+static constexpr PaletteTy PaletteHeatColors = {Black,
                                                 0x330000,
                                                 0x660000,
                                                 0x990000,
                                                 0xCC0000,
-                                                0xFF0000,
+                                                Red,
                                                 0xFF3300,
                                                 0xFF6600,
                                                 0xFF9900,
                                                 0xFFCC00,
-                                                0xFFFF00,
+                                                Yellow,
                                                 0xFFFF33,
                                                 0xFFFF66,
                                                 0xFFFF99,
                                                 0xFFFFCC};
 
+/// Palette of green yellow colors
 static constexpr PaletteTy PaletteAuroraColors = {0x000000,
                                                   0x003300,
                                                   0x006600,
                                                   0x009900,
                                                   0x00cc00,
-                                                  0x00ff00,
+                                                  Lime,
                                                   0x33ff00,
                                                   0x66ff00,
                                                   0x99ff00,
                                                   0xccff00,
-                                                  0xffff00,
+                                                  Yellow,
                                                   0xffcc00,
                                                   0xff9900,
                                                   0xff6600,
                                                   0xff3300,
-                                                  0xff0000};
+                                                  Red};
 
+/// Palette of nice handpicked colors
 static constexpr PaletteTy PalettePapiColors = {
-        0x0000FF, // deep blue
+        Blue,     // deep blue
         0x0F9DE8, // cerulien blue
         0x2BFAFA, // cyan
         0x791CF8, // indigo
         0x9683EC, // lavander
-        0xFF0000, // red
-        0xFFFF00, // yellow
+        Red,      // red
+        Yellow,   // yellow
         0xFF7F00, // orange
         0xE73E05, // corail
-        0xFF00FF, // magenta
-        0x00FF00, // green
+        Magenta,  // magenta
+        Lime,     // green
         0x87E990, // jade
         0x058E8E, // teal
         0x660099, // violet
         0xFF007F, // pink
-        0xFFFFFF  // white
+        White     // white
 };
 
 /// \private return a palette from two colors
@@ -529,9 +532,9 @@ static constexpr uint32_t from_palette(UIntTy index, const PaletteTy& palette, u
   const uint32_t entry = palette[renormIndex];
 
   // convert to rgb
-  uint8_t red1 = (entry & 0xff0000) >> 16;
-  uint8_t green1 = (entry & 0x00ff00) >> 8;
-  uint8_t blue1 = entry & 0x0000ff;
+  uint8_t red1 = (entry & Red) >> 16;
+  uint8_t green1 = (entry & Lime) >> 8;
+  uint8_t blue1 = entry & Blue;
 
   // need to blend the palette
   if (blendIndex > 0)

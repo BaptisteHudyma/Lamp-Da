@@ -30,18 +30,23 @@ size_t lastUserParameterSize = 0;
 std::map<uint32_t, uint32_t> _userParametersValueMap;
 std::map<uint32_t, uint32_t> _systemParametersValueMap;
 
+/**
+ * \brief Store a key and a value
+ */
 struct keyValue
 {
-  uint32_t key;
-  uint32_t value;
+  uint32_t key;   ///< key to match this value
+  uint32_t value; ///< value associated with the key
 };
 constexpr size_t sizeOfData = sizeof(keyValue);
 
-// used to convert this struct to an array of bytes
+/**
+ * \brief Used to convert a KeyValues to an array of bytes
+ */
 union KeyValToByteArray
 {
-  uint8_t data[sizeOfData];
-  keyValue kv;
+  uint8_t data[sizeOfData]; ///< object as an array of bytes
+  keyValue kv;              ///< original object
 };
 
 static bool isSetup = false;

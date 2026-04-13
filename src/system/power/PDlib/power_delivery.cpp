@@ -114,21 +114,32 @@ bool is_vbus_powered()
     return get_vbus_voltage() >= 4300;
 }
 
+/**
+ * \brief USB power delivery status storage
+ */
 struct UsbPDData
 {
+  /// True if some voltage is detected on VBUS
   bool isVbusPowered;
+  /// True if the cable is plugged to a power source
   bool isPowerSourceDetected;
+  /// True if the cable is identifies as PD compatible
   bool isUsbPd;
+  /// Actual VBUS voltage, in millivolts
   int vbusVoltage;
 
+  /// max current input voltage, in milliamps
   uint32_t maxInputCurrent;
+  /// max input voltage, in millivolts
   uint32_t maxInputVoltage;
 
+  /// Debug status for the algorithm
   std::string pdAlgoStatus;
 
-  // when true, this struct has changed !
+  /// when true, this struct has changed !
   bool hasChanged = false;
 
+  /// Update the values and update status
   void update()
   {
     const bool newisVbusPowered = is_vbus_powered();
@@ -186,6 +197,7 @@ struct UsbPDData
     }
   }
 
+  /// Debug to serial output
   void serial_show()
   {
     lampda_print("PD algo: %d %d%d%d: [PDO %.2fV %.2fA] %.2fV | %s",

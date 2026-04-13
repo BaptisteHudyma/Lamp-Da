@@ -5,17 +5,27 @@ namespace modes::default_modes {
 
 #include <cstdint>
 
+/**
+ * \brief Ping pong of a light dot between the lampe sides
+ */
 struct PingPongMode : public modes::BasicMode
 {
+  /// color random variation
   static constexpr float randomVariation = 0.3;
+  /// back and forth timing in milliseconds
   static constexpr uint32_t animationTiming = 1000;
 
   struct StateTy
   {
+    /// actual dot index
     size_t lastIndex;
+    /// progress between 0 and 1
     float progress;
+    /// back of forth
     bool step;
+    /// color of the dot
     uint32_t color;
+    /// make the dot leave a trail
     uint8_t persistance;
   };
 

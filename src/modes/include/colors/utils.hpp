@@ -27,6 +27,7 @@ static constexpr LMBD_INLINE uint32_t fromRGB(uint8_t r, uint8_t g, uint8_t b)
 /// Exposes (r, g, b) as uint8_t in struct from a single uint32_t color
 struct ToRGB
 {
+  /// convert color bytes to rgb struct
   constexpr LMBD_INLINE ToRGB(uint32_t color) :
     r {(uint8_t)((color >> 16) & 0xff)},
     g {(uint8_t)((color >> 8) & 0xff)},
@@ -34,12 +35,15 @@ struct ToRGB
   {
   }
 
-  uint8_t r, g, b;
+  uint8_t r; ///< red
+  uint8_t g; ///< green
+  uint8_t b; ///< blue
 };
 
 /// Return color (w, w, w) as a single uint32_t integer
 static constexpr LMBD_INLINE uint32_t fromGrey(uint32_t w) { return fromRGB(w, w, w); }
 
+/// precompiled table for Hue
 static constexpr uint8_t colorRotation[360] = {
         0,   0,   0,   0,   0,   1,   1,   2,   2,   3,   4,   5,   6,   7,   8,   9,   11,  12,  13,  15,  17,  18,
         20,  22,  24,  26,  28,  30,  32,  35,  37,  39,  42,  44,  47,  49,  52,  55,  58,  60,  63,  66,  69,  72,
@@ -139,6 +143,7 @@ template<bool isVideoMode = false> static uint32_t fade(uint32_t inputColor, uin
   return res;
 }
 
+/// Add two colors together
 template<bool isFast = false> uint32_t add(uint32_t c1, uint32_t c2)
 {
   ToRGB input1_rgb(c1);

@@ -14,38 +14,44 @@
 /// Basic "default" modes included with the hardware
 namespace modes::default_modes {
 
+/**
+ * \brief 3D perlin noise on the lamp surface.
+ */
 struct PerlinNoiseMode : public BasicMode
 {
-  // hint manager to save our custom ramp
+  /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
 
-  // index of the buffer used in this mode
+  /// index of the buffer used in this mode
   static constexpr uint8_t bufferIndexToUse = 0;
 
   struct StateTy
   {
-    uint32_t positionX;
-    uint32_t positionY;
-    uint32_t positionZ;
+    uint32_t positionX; ///< position of the noise in X
+    uint32_t positionY; ///< position of the noise in X
+    uint32_t positionZ; ///< position of the noise in X
 
-    int16_t speedX;
-    int16_t speedY;
-    int16_t speedZ;
+    int16_t speedX; ///< Speed of the noise in X
+    int16_t speedY; ///< Speed of the noise in Y
+    int16_t speedZ; ///< Speed of the noise in Z
+    /// Minimal speed of movement
     static constexpr uint16_t minSpeed = 25;
+    /// Maximal speed of movement
     static constexpr uint16_t maxSpeed = 400;
-
+    /// Scale of the noise
     uint16_t scale;
-
+    /// Color grading
     uint16_t ihue;
 
-    // store references to palettes
+    /// count of palette used
     static constexpr uint8_t maxPalettesCount = 4;
+    /// store references to palettes
     const colors::PaletteTy* _palettes[maxPalettesCount] = {&colors::PaletteRainbowColors,
                                                             &colors::PaletteLavaColors,
                                                             &colors::PaletteForestColors,
                                                             &colors::PaletteOceanColors};
 
-    // store selected palette
+    /// store selected palette
     colors::PaletteTy const* selectedPalette;
   };
 
@@ -71,6 +77,7 @@ struct PerlinNoiseMode : public BasicMode
     custom_ramp_update(ctx, ctx.get_active_custom_ramp());
   }
 
+  /// User ramp changes the color palette
   static void custom_ramp_update(auto& ctx, uint8_t rampValue)
   {
     auto& state = ctx.state;
@@ -80,6 +87,14 @@ struct PerlinNoiseMode : public BasicMode
     state.selectedPalette = state._palettes[rampIndex];
   }
 
+  /**
+   * \brief compute the next speed from the current parameters. This function prevent overflow by controling the speed
+   * between two bounds.
+   * \param[in] ctx Contrext object of the mode
+   * \param[in] position Actual position of the noise
+   * \param[in] speed Actual speed of the noise
+   * \return The nex speed
+   */
   static int16_t get_next_speed(auto& ctx, const uint32_t position, int16_t speed)
   {
     static constexpr int16_t speedBleedof = 25;

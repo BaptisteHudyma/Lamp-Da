@@ -189,31 +189,37 @@ template<typename TupleTy, bool hasError = false> struct anyOf
 {
   template<typename Ty> struct QHasSunset
   {
+    /// Set to true if Ty asks for a sunset mode callback
     static constexpr bool value = Ty::hasSunsetAnimation;
   };
 
   template<typename Ty> struct QHasBright
   {
+    /// Set to true if Ty asks for custom brightness control
     static constexpr bool value = Ty::hasBrightCallback;
   };
 
   template<typename Ty> struct QCustomRamp
   {
+    /// Set to true if Ty asks for a custom ramp
     static constexpr bool value = Ty::hasCustomRamp;
   };
 
   template<typename Ty> struct QButtonUI
   {
+    /// Set to true if Ty asks for custom button handling
     static constexpr bool value = Ty::hasButtonCustomUI;
   };
 
   template<typename Ty> struct QHasSystem
   {
+    /// Set to true if Ty asks for system callbacks
     static constexpr bool value = Ty::hasSystemCallbacks;
   };
 
   template<typename Ty> struct QUserThread
   {
+    /// Set to true if Ty asks for a separate user thread
     static constexpr bool value = Ty::requireUserThread;
   };
 
@@ -239,41 +245,53 @@ template<typename TupleTy, bool hasError = false> struct asTableFor
 {
   template<typename Ty> struct QHasSunset
   {
+    /// Set to true if Ty asks for a sunset mode callback
     static constexpr auto value = Ty::everySunsetCallback;
   };
 
   template<typename Ty> struct QHasBright
   {
+    /// Set to true if Ty asks for custom brightness control
     static constexpr auto value = Ty::everyBrightCallback;
   };
 
   template<typename Ty> struct QCustomRamp
   {
+    /// Set to true if Ty asks for a custom ramp
     static constexpr auto value = Ty::everyCustomRamp;
   };
 
   template<typename Ty> struct QButtonUI
   {
+    /// Set to true if Ty asks for custom button handling
     static constexpr auto value = Ty::everyButtonCustomUI;
   };
 
   template<typename Ty> struct QHasSystem
   {
+    /// Set to true if Ty asks for system callbacks
     static constexpr auto value = Ty::everySystemCallbacks;
   };
 
   template<typename Ty> struct QUserThread
   {
+    /// Set to true if Ty asks for a separate user thread
     static constexpr auto value = Ty::everyRequireUserThread;
   };
 
   static constexpr size_t maxTableSz = forEach<TupleTy>::template getMaxTableSize<QHasBright, hasError>();
 
+  /// Set to true if Ty asks for a sunset mode callback
   static constexpr auto everySunsetCallback = forEach<TupleTy>::template asTable2D<QHasSunset, maxTableSz, hasError>();
+  /// Set to true if Ty asks for custom brightness control
   static constexpr auto everyBrightCallback = forEach<TupleTy>::template asTable2D<QHasBright, maxTableSz, hasError>();
+  /// Set to true if Ty asks for a custom ramp
   static constexpr auto everyCustomRamp = forEach<TupleTy>::template asTable2D<QCustomRamp, maxTableSz, hasError>();
+  /// Set to true if Ty asks for custom button handling
   static constexpr auto everyButtonCustomUI = forEach<TupleTy>::template asTable2D<QButtonUI, maxTableSz, hasError>();
+  /// Set to true if Ty asks for system callbacks
   static constexpr auto everySystemCallbacks = forEach<TupleTy>::template asTable2D<QHasSystem, maxTableSz, hasError>();
+  /// Set to true if Ty asks for a separate user thread
   static constexpr auto everyRequireUserThread =
           forEach<TupleTy>::template asTable2D<QUserThread, maxTableSz, hasError>();
 };
@@ -283,15 +301,19 @@ template<typename TupleTy, bool hasError = false> struct allOf
 {
   template<typename Ty> struct QIsMode
   {
+    /// True if Ty is a Mode
     static constexpr bool value = is_mode<Ty>;
   };
 
   template<typename Ty> struct QStateOk
   {
+    /// True if the state of Ty is default constructible
     static constexpr bool value = std::is_default_constructible_v<StateTyOf<Ty>>;
   };
 
+  /// True if all members of a tuple are Modes
   static constexpr bool inheritsFromBasicMode = forEach<TupleTy>::template all<QIsMode, hasError>();
+  /// True if all members of a tuple states are default constructible
   static constexpr bool stateDefaultConstructible = forEach<TupleTy>::template all<QStateOk, hasError>();
 };
 
@@ -302,6 +324,7 @@ template<typename TupleTy, bool hasError = false> struct allOf
 /// \private Get std::tuple<Modes::StateTy...> from Modes...
 template<typename... Modes> using StateTyFor = std::tuple<std::optional<StateTyOf<Modes>>...>;
 
+///
 template<typename... Modes> static constexpr auto stateTyFromImpl(std::tuple<Modes...>*) -> StateTyFor<Modes...>;
 
 /// \private Get std::tuple<Mode::StateTy...> from std::tuple<Mode...>
