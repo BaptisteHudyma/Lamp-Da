@@ -82,79 +82,148 @@ $(function() {
   <div class="headertitle"><div class="title">charger::Charger_t Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Store the charger characteristics.  
+ <a href="structcharger_1_1Charger__t.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="charger_8h_source.html">charger.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a31c5f8c29b6835fa838924f2b4e78c26"><td class="memItemLeft" align="right" valign="top"><a id="a31c5f8c29b6835fa838924f2b4e78c26" name="a31c5f8c29b6835fa838924f2b4e78c26"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>ChargerStatus_t</b> { <br />
-&#160;&#160;<b>UNINITIALIZED</b>
-, <b>INACTIVE</b>
-, <b>POWER_DETECTED</b>
-, <b>SLOW_CHARGING</b>
+<tr class="memitem:a31c5f8c29b6835fa838924f2b4e78c26"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26">ChargerStatus_t</a> { <br />
+&#160;&#160;<a class="el" href="structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26add652546039b18970b8dcf2cff824268">UNINITIALIZED</a>
+, <a class="el" href="structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26a6b273343c454f9c53dcfc9c4ccf171d2">INACTIVE</a>
+, <a class="el" href="structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26a3efab4f337138bce05d0896cce27509c">POWER_DETECTED</a>
+, <a class="el" href="structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26a4df66799a23c0df6ce43a7eb0fe39268">SLOW_CHARGING</a>
 , <br />
-&#160;&#160;<b>CHARGING</b>
-, <b>CHARGE_FINISHED</b>
-, <b>ERROR_BATTERY_MISSING</b>
-, <b>ERROR_SOFTWARE</b>
+&#160;&#160;<a class="el" href="structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26a3a8ea4a62d0682faf83d7372669b5e9b">CHARGING</a>
+, <a class="el" href="structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26a9569d140fbd0bfd0a866f0c505499848">CHARGE_FINISHED</a>
+, <a class="el" href="structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26ad87e504c51adefb5d0071668c908b819">ERROR_BATTERY_MISSING</a>
+, <a class="el" href="structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26a810d5fa038aa37d94fcaee7f97198b54">ERROR_SOFTWARE</a>
 , <br />
-&#160;&#160;<b>ERROR_HARDWARE</b>
+&#160;&#160;<a class="el" href="structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26a9610de85bbfadb4730d8ba33e2712ab5">ERROR_HARDWARE</a>
 <br />
  }</td></tr>
+<tr class="memdesc:a31c5f8c29b6835fa838924f2b4e78c26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates a charger status soecific states.  <a href="structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26">More...</a><br /></td></tr>
 <tr class="separator:a31c5f8c29b6835fa838924f2b4e78c26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a10cce324537ffe1c0fe15ba081f7fc9f"><td class="memItemLeft" align="right" valign="top"><a id="a10cce324537ffe1c0fe15ba081f7fc9f" name="a10cce324537ffe1c0fe15ba081f7fc9f"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_charging</b> () const</td></tr>
+<tr class="memdesc:a10cce324537ffe1c0fe15ba081f7fc9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true when the status is charging or powered. <br /></td></tr>
 <tr class="separator:a10cce324537ffe1c0fe15ba081f7fc9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ff0e6f999651c69dd6fef9a9963cbc5"><td class="memItemLeft" align="right" valign="top"><a id="a6ff0e6f999651c69dd6fef9a9963cbc5" name="a6ff0e6f999651c69dd6fef9a9963cbc5"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_effectivly_charging</b> () const</td></tr>
+<tr class="memdesc:a6ff0e6f999651c69dd6fef9a9963cbc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true when the battery is truly charging. <br /></td></tr>
 <tr class="separator:a6ff0e6f999651c69dd6fef9a9963cbc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a541519c44ed49cbfaea6e65438131c0e"><td class="memItemLeft" align="right" valign="top"><a id="a541519c44ed49cbfaea6e65438131c0e" name="a541519c44ed49cbfaea6e65438131c0e"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_charge_finished</b> () const</td></tr>
+<tr class="memdesc:a541519c44ed49cbfaea6e65438131c0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the charge is finished. <br /></td></tr>
 <tr class="separator:a541519c44ed49cbfaea6e65438131c0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a803f0399eed8920c2e5e2a7ef1accc77"><td class="memItemLeft" align="right" valign="top"><a id="a803f0399eed8920c2e5e2a7ef1accc77" name="a803f0399eed8920c2e5e2a7ef1accc77"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>get_status_str</b> () const</td></tr>
+<tr class="memdesc:a803f0399eed8920c2e5e2a7ef1accc77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the status as a string. <br /></td></tr>
 <tr class="separator:a803f0399eed8920c2e5e2a7ef1accc77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a5de46a9888a4b01210412435bc9dd9f7"><td class="memItemLeft" align="right" valign="top"><a id="a5de46a9888a4b01210412435bc9dd9f7" name="a5de46a9888a4b01210412435bc9dd9f7"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>areMeasuresOk</b> = false</td></tr>
+<tr class="memdesc:a5de46a9888a4b01210412435bc9dd9f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">everything below makes no sense if this is false <br /></td></tr>
 <tr class="separator:a5de46a9888a4b01210412435bc9dd9f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23ac67485285bc098e907c2dbbe2c232"><td class="memItemLeft" align="right" valign="top"><a id="a23ac67485285bc098e907c2dbbe2c232" name="a23ac67485285bc098e907c2dbbe2c232"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isChargeOkSignalHigh</b></td></tr>
+<tr class="memdesc:a23ac67485285bc098e907c2dbbe2c232"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if we have a valid chargeOk signal from the component. <br /></td></tr>
 <tr class="separator:a23ac67485285bc098e907c2dbbe2c232"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9438ba90d6b556daa5d865a7d1919c3d"><td class="memItemLeft" align="right" valign="top"><a id="a9438ba90d6b556daa5d865a7d1919c3d" name="a9438ba90d6b556daa5d865a7d1919c3d"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInOtg</b></td></tr>
+<tr class="memdesc:a9438ba90d6b556daa5d865a7d1919c3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if OTG is activated. <br /></td></tr>
 <tr class="separator:a9438ba90d6b556daa5d865a7d1919c3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca20d49aabd976567850835bd5bb38fc"><td class="memItemLeft" align="right" valign="top"><a id="aca20d49aabd976567850835bd5bb38fc" name="aca20d49aabd976567850835bd5bb38fc"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lastUpdateTime_ms</b> = 0</td></tr>
+<tr class="memdesc:aca20d49aabd976567850835bd5bb38fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">time of the last update of this struct <br /></td></tr>
 <tr class="separator:aca20d49aabd976567850835bd5bb38fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad45829ff15cd599d2ea2401a41942a24"><td class="memItemLeft" align="right" valign="top"><a id="ad45829ff15cd599d2ea2401a41942a24" name="ad45829ff15cd599d2ea2401a41942a24"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>inputCurrent_mA</b> = 0</td></tr>
+<tr class="memdesc:ad45829ff15cd599d2ea2401a41942a24"><td class="mdescLeft">&#160;</td><td class="mdescRight">input current in VBUS side <br /></td></tr>
 <tr class="separator:ad45829ff15cd599d2ea2401a41942a24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac73cce1ee96074192b687a5862964c92"><td class="memItemLeft" align="right" valign="top"><a id="ac73cce1ee96074192b687a5862964c92" name="ac73cce1ee96074192b687a5862964c92"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>chargeCurrent_mA</b> = 0</td></tr>
+<tr class="memdesc:ac73cce1ee96074192b687a5862964c92"><td class="mdescLeft">&#160;</td><td class="mdescRight">charge current of the battery <br /></td></tr>
 <tr class="separator:ac73cce1ee96074192b687a5862964c92"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a382665f9c710c3467e550010365b86d9"><td class="memItemLeft" align="right" valign="top"><a id="a382665f9c710c3467e550010365b86d9" name="a382665f9c710c3467e550010365b86d9"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>powerRail_mV</b> = 0</td></tr>
+<tr class="memdesc:a382665f9c710c3467e550010365b86d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">powerRail voltage (can be the same as VBUS in charge &amp; OTG mode). Min value at 3200mV <br /></td></tr>
 <tr class="separator:a382665f9c710c3467e550010365b86d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7dac9594d29e682fd85a4392e1686b64"><td class="memItemLeft" align="right" valign="top"><a id="a7dac9594d29e682fd85a4392e1686b64" name="a7dac9594d29e682fd85a4392e1686b64"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>batteryVoltage_mV</b> = 0</td></tr>
+<tr class="memdesc:a7dac9594d29e682fd85a4392e1686b64"><td class="mdescLeft">&#160;</td><td class="mdescRight">battery voltage <br /></td></tr>
 <tr class="separator:a7dac9594d29e682fd85a4392e1686b64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa254abfd42d5bb6ce4c7fc6534bf3528"><td class="memItemLeft" align="right" valign="top"><a id="aa254abfd42d5bb6ce4c7fc6534bf3528" name="aa254abfd42d5bb6ce4c7fc6534bf3528"></a>
 int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>batteryCurrent_mA</b> = 0</td></tr>
+<tr class="memdesc:aa254abfd42d5bb6ce4c7fc6534bf3528"><td class="mdescLeft">&#160;</td><td class="mdescRight">battery current (&gt; 0 charging, &lt; 0 discharging) <br /></td></tr>
 <tr class="separator:aa254abfd42d5bb6ce4c7fc6534bf3528"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3bc982f8bbe7c8bbd454bbd36d5d2a89"><td class="memItemLeft" align="right" valign="top"><a id="a3bc982f8bbe7c8bbd454bbd36d5d2a89" name="a3bc982f8bbe7c8bbd454bbd36d5d2a89"></a>
-ChargerStatus_t&#160;</td><td class="memItemRight" valign="bottom"><b>status</b> = ChargerStatus_t::UNINITIALIZED</td></tr>
+<a class="el" href="structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26">ChargerStatus_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>status</b> = <a class="el" href="structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26add652546039b18970b8dcf2cff824268">ChargerStatus_t::UNINITIALIZED</a></td></tr>
+<tr class="memdesc:a3bc982f8bbe7c8bbd454bbd36d5d2a89"><td class="mdescLeft">&#160;</td><td class="mdescRight">global high level charger status <br /></td></tr>
 <tr class="separator:a3bc982f8bbe7c8bbd454bbd36d5d2a89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeddb95b3559aefad01a2db092fda34f9"><td class="memItemLeft" align="right" valign="top"><a id="aeddb95b3559aefad01a2db092fda34f9" name="aeddb95b3559aefad01a2db092fda34f9"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>hardwareErrorMessage</b> = &quot;&quot;</td></tr>
+<tr class="memdesc:aeddb95b3559aefad01a2db092fda34f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contain a more detailed error of an hardware error. <br /></td></tr>
 <tr class="separator:aeddb95b3559aefad01a2db092fda34f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a512427caccaaff12bcc5ba6dd34fffc4"><td class="memItemLeft" align="right" valign="top"><a id="a512427caccaaff12bcc5ba6dd34fffc4" name="a512427caccaaff12bcc5ba6dd34fffc4"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>softwareErrorMessage</b> = &quot;&quot;</td></tr>
+<tr class="memdesc:a512427caccaaff12bcc5ba6dd34fffc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contain a more detailed error of a software error. <br /></td></tr>
 <tr class="separator:a512427caccaaff12bcc5ba6dd34fffc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Store the charger characteristics. </p>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a31c5f8c29b6835fa838924f2b4e78c26" name="a31c5f8c29b6835fa838924f2b4e78c26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31c5f8c29b6835fa838924f2b4e78c26">&#9670;&#160;</a></span>ChargerStatus_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26">charger::Charger_t::ChargerStatus_t</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Indicates a charger status soecific states. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a31c5f8c29b6835fa838924f2b4e78c26add652546039b18970b8dcf2cff824268" name="a31c5f8c29b6835fa838924f2b4e78c26add652546039b18970b8dcf2cff824268"></a>UNINITIALIZED&#160;</td><td class="fielddoc"><p>not initialized yet </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a31c5f8c29b6835fa838924f2b4e78c26a6b273343c454f9c53dcfc9c4ccf171d2" name="a31c5f8c29b6835fa838924f2b4e78c26a6b273343c454f9c53dcfc9c4ccf171d2"></a>INACTIVE&#160;</td><td class="fielddoc"><p>no input power, charger is down </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a31c5f8c29b6835fa838924f2b4e78c26a3efab4f337138bce05d0896cce27509c" name="a31c5f8c29b6835fa838924f2b4e78c26a3efab4f337138bce05d0896cce27509c"></a>POWER_DETECTED&#160;</td><td class="fielddoc"><p>charger detects power on the input </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a31c5f8c29b6835fa838924f2b4e78c26a4df66799a23c0df6ce43a7eb0fe39268" name="a31c5f8c29b6835fa838924f2b4e78c26a4df66799a23c0df6ce43a7eb0fe39268"></a>SLOW_CHARGING&#160;</td><td class="fielddoc"><p>charging but very slowly </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a31c5f8c29b6835fa838924f2b4e78c26a3a8ea4a62d0682faf83d7372669b5e9b" name="a31c5f8c29b6835fa838924f2b4e78c26a3a8ea4a62d0682faf83d7372669b5e9b"></a>CHARGING&#160;</td><td class="fielddoc"><p>currently charging the batteries </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a31c5f8c29b6835fa838924f2b4e78c26a9569d140fbd0bfd0a866f0c505499848" name="a31c5f8c29b6835fa838924f2b4e78c26a9569d140fbd0bfd0a866f0c505499848"></a>CHARGE_FINISHED&#160;</td><td class="fielddoc"><p>charging process is done </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a31c5f8c29b6835fa838924f2b4e78c26ad87e504c51adefb5d0071668c908b819" name="a31c5f8c29b6835fa838924f2b4e78c26ad87e504c51adefb5d0071668c908b819"></a>ERROR_BATTERY_MISSING&#160;</td><td class="fielddoc"><p>battery not detected </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a31c5f8c29b6835fa838924f2b4e78c26a810d5fa038aa37d94fcaee7f97198b54" name="a31c5f8c29b6835fa838924f2b4e78c26a810d5fa038aa37d94fcaee7f97198b54"></a>ERROR_SOFTWARE&#160;</td><td class="fielddoc"><p>a software error was detected </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a31c5f8c29b6835fa838924f2b4e78c26a9610de85bbfadb4730d8ba33e2712ab5" name="a31c5f8c29b6835fa838924f2b4e78c26a9610de85bbfadb4730d8ba33e2712ab5"></a>ERROR_HARDWARE&#160;</td><td class="fielddoc"><p>critical: some hardware is faulty </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
 <li>src/system/power/<a class="el" href="charger_8h_source.html">charger.h</a></li>
 <li>src/system/power/charger.cpp</li>

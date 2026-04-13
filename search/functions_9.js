@@ -1,8 +1,28 @@
 var searchData=
 [
-  ['is_5fbeat_5fon_5ffreq_5frange_0',['is_beat_on_freq_range',['../structmodes_1_1audio_1_1SoundEventTy.html#a18de12086e16f0be299861fb59d43832',1,'modes::audio::SoundEventTy']]],
-  ['is_5fbliping_1',['is_bliping',['../structmodes_1_1hardware_1_1LampTy.html#aa02d96b9409332c7972d7249d5e91427',1,'modes::hardware::LampTy']]],
-  ['is_5fclear_2',['is_clear',['../classalerts_1_1AlertManager__t.html#a248da7d7468d448c1201ca301aab39e6',1,'alerts::AlertManager_t']]],
-  ['is_5fport_5fa_5flampda_3',['is_port_a_lampda',['../classlampda__gui_1_1TabSerialComm.html#a996635855e99f078890c82308a0b5814',1,'lampda_gui::TabSerialComm']]],
-  ['is_5fraised_4',['is_raised',['../classalerts_1_1AlertManager__t.html#a28718bfa93478b5b1c1f92bc8a95f54c',1,'alerts::AlertManager_t']]]
+  ['init_0',['init',['../namespaceimu.html#a8c2c60bf9232e042a19dd54eb0f0d94e',1,'imu']]],
+  ['init_5fdeferred_5fparticules_1',['init_deferred_particules',['../classmodes_1_1ParticleSystem.html#a1d35567c63db3953d2479f7575d5a6cd',1,'modes::ParticleSystem']]],
+  ['init_5fnotebook_2',['init_notebook',['../classlampda__gui_1_1FirmwareApp.html#a1e5f6fc9b66ee79b5116ef60a119cc3b',1,'lampda_gui::FirmwareApp']]],
+  ['init_5fparticules_3',['init_particules',['../classmodes_1_1ParticleSystem.html#a73d8fc001d58a5723d48d611972669ef',1,'modes::ParticleSystem']]],
+  ['interrupt1_5fcallback_4',['interrupt1_callback',['../namespaceimu.html#aa5e56b29eff32ac17d38cc2b8483819b',1,'imu']]],
+  ['interrupt2_5fcallback_5',['interrupt2_callback',['../namespaceimu.html#a4bfb0e3ce2d5a95d6184785d261bdb04',1,'imu']]],
+  ['is_5fbeat_5fon_5ffreq_5frange_6',['is_beat_on_freq_range',['../structmodes_1_1audio_1_1SoundEventTy.html#a18de12086e16f0be299861fb59d43832',1,'modes::audio::SoundEventTy']]],
+  ['is_5fbliping_7',['is_bliping',['../structmodes_1_1ContextTy.html#a21bd572211d33b9dc00bd1c9bfe58859',1,'modes::ContextTy::is_bliping()'],['../structmodes_1_1hardware_1_1LampTy.html#aa02d96b9409332c7972d7249d5e91427',1,'modes::hardware::LampTy::is_bliping()']]],
+  ['is_5fcharge_5ffinished_8',['is_charge_finished',['../structcharger_1_1Charger__t.html#a541519c44ed49cbfaea6e65438131c0e',1,'charger::Charger_t']]],
+  ['is_5fcharging_9',['is_charging',['../structcharger_1_1Charger__t.html#a10cce324537ffe1c0fe15ba081f7fc9f',1,'charger::Charger_t']]],
+  ['is_5fclear_10',['is_clear',['../classalerts_1_1AlertManager__t.html#a248da7d7468d448c1201ca301aab39e6',1,'alerts::AlertManager_t']]],
+  ['is_5feffectivly_5fcharging_11',['is_effectivly_charging',['../structcharger_1_1Charger__t.html#a6ff0e6f999651c69dd6fef9a9963cbc5',1,'charger::Charger_t']]],
+  ['is_5fevent_5fdetected_12',['is_event_detected',['../namespaceimu.html#a124c25d6c711c58790726bdade3d0a25',1,'imu']]],
+  ['is_5finterrupt1_5fenabled_13',['is_interrupt1_enabled',['../namespaceimu.html#a51b4a1a9de11d2a63e255e17e6064e90',1,'imu']]],
+  ['is_5finterrupt2_5fenabled_14',['is_interrupt2_enabled',['../namespaceimu.html#afae90d9de3d812079945a5a44c6150fe',1,'imu']]],
+  ['is_5flamp_5fcoordinate_5fout_5fof_5fbounds_15',['is_lamp_coordinate_out_of_bounds',['../namespacemodes.html#aa119566ec8eb9d2595e47f13a1a79764',1,'modes']]],
+  ['is_5fled_5findex_5fvalid_16',['is_led_index_valid',['../namespacemodes.html#acfcb1117d99d5da9d29fe216d79019f3',1,'modes']]],
+  ['is_5fmeasurment_5fvalid_17',['is_measurment_valid',['../structcharger_1_1drivers_1_1Measurments.html#ab079725ec0346dcd627557e40df1d870',1,'charger::drivers::Measurments']]],
+  ['is_5fotg_5frequested_18',['is_otg_requested',['../structpowerDelivery_1_1OTGParameters.html#a4939f77d8923d9f0bbdc50090d56a725',1,'powerDelivery::OTGParameters']]],
+  ['is_5fport_5fa_5flampda_19',['is_port_a_lampda',['../classlampda__gui_1_1TabSerialComm.html#a996635855e99f078890c82308a0b5814',1,'lampda_gui::TabSerialComm']]],
+  ['is_5fposition_5ftaken_20',['is_position_taken',['../classmodes_1_1ParticleSystem.html#a3c19532c3ec308a5a1e429b16000b735',1,'modes::ParticleSystem']]],
+  ['is_5fraised_21',['is_raised',['../classalerts_1_1AlertManager__t.html#a28718bfa93478b5b1c1f92bc8a95f54c',1,'alerts::AlertManager_t']]],
+  ['is_5fvalid_22',['is_valid',['../structbalancer_1_1Status.html#afc4ca25d8e7e636fddae58046fc4bb26',1,'balancer::Status::is_valid()'],['../structmicrophone_1_1PdmData.html#aac9050a9ce580959f88d561623b98c9d',1,'microphone::PdmData::is_valid()']]],
+  ['iterate_5fno_5fcollisions_23',['iterate_no_collisions',['../classmodes_1_1ParticleSystem.html#a2c22f84ed77afecce20e0bd39538e7be',1,'modes::ParticleSystem']]],
+  ['iterate_5fwith_5fcollisions_24',['iterate_with_collisions',['../classmodes_1_1ParticleSystem.html#af7ce1584edddc457f26a864d44603f72',1,'modes::ParticleSystem']]]
 ];

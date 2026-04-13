@@ -108,7 +108,7 @@ $(function() {
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                                                   curve_t::point_t {4180, 10000}});</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  <span class="comment">// sample the curve</span></div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keywordflow">return</span> liionVoltagePercentToRealPercent.sample(liionLevel_mv / batteryCountSerie);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keywordflow">return</span> liionVoltagePercentToRealPercent.<a class="code hl_function" href="classcurves_1_1LinearCurve.html#a935d650fb3a071f57781ec4619209a28">sample</a>(liionLevel_mv / batteryCountSerie);</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keyword">inline</span> uint16_t get_level_percent(<span class="keyword">const</span> uint16_t batteryVoltage_mV, <span class="keyword">const</span> uint8_t cellCount = batteryCount)</div>
@@ -146,7 +146,8 @@ $(function() {
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>} <span class="comment">// namespace battery</span></div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclasscurves_1_1LinearCurve_html"><div class="ttname"><a href="classcurves_1_1LinearCurve.html">curves::LinearCurve</a></div><div class="ttdef"><b>Definition:</b> curves.h:23</div></div>
+<div class="ttc" id="aclasscurves_1_1LinearCurve_html"><div class="ttname"><a href="classcurves_1_1LinearCurve.html">curves::LinearCurve</a></div><div class="ttdoc">Given a set of points, will fit multiple linear segments to it.</div><div class="ttdef"><b>Definition:</b> curves.h:29</div></div>
+<div class="ttc" id="aclasscurves_1_1LinearCurve_html_a935d650fb3a071f57781ec4619209a28"><div class="ttname"><a href="classcurves_1_1LinearCurve.html#a935d650fb3a071f57781ec4619209a28">curves::LinearCurve::sample</a></div><div class="ttdeci">U sample(const T x) const</div><div class="ttdoc">Sample a point Y from a given x.</div><div class="ttdef"><b>Definition:</b> curves.h:76</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -81,35 +81,49 @@ $(function() {
   <div class="headertitle"><div class="title">button::ButtonStateTy Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Store the button status and characteristics.  
+ <a href="structbutton_1_1ButtonStateTy.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="button_8h_source.html">button.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a97fbfff81453db717726fb8b8db944b5"><td class="memItemLeft" align="right" valign="top"><a id="a97fbfff81453db717726fb8b8db944b5" name="a97fbfff81453db717726fb8b8db944b5"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
+<tr class="memdesc:a97fbfff81453db717726fb8b8db944b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset this object. <br /></td></tr>
 <tr class="separator:a97fbfff81453db717726fb8b8db944b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:aafa59a75381417d4adf318dc7114534d"><td class="memItemLeft" align="right" valign="top"><a id="aafa59a75381417d4adf318dc7114534d" name="aafa59a75381417d4adf318dc7114534d"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isPressed</b> = false</td></tr>
+<tr class="memdesc:aafa59a75381417d4adf318dc7114534d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Is the button pressed? <br /></td></tr>
 <tr class="separator:aafa59a75381417d4adf318dc7114534d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e8714e5efcbf13f29aa4cce953c7da5"><td class="memItemLeft" align="right" valign="top"><a id="a5e8714e5efcbf13f29aa4cce953c7da5" name="a5e8714e5efcbf13f29aa4cce953c7da5"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isLongPressed</b> = false</td></tr>
+<tr class="memdesc:a5e8714e5efcbf13f29aa4cce953c7da5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Is button in long press? <br /></td></tr>
 <tr class="separator:a5e8714e5efcbf13f29aa4cce953c7da5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78694b006f18e0406a6dae443db015d0"><td class="memItemLeft" align="right" valign="top"><a id="a78694b006f18e0406a6dae443db015d0" name="a78694b006f18e0406a6dae443db015d0"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lastPressTime</b> = 0</td></tr>
+<tr class="memdesc:a78694b006f18e0406a6dae443db015d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timestamp (millis) of last press. <br /></td></tr>
 <tr class="separator:a78694b006f18e0406a6dae443db015d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1708d4c38859b5b05c3ac31072516f4"><td class="memItemLeft" align="right" valign="top"><a id="aa1708d4c38859b5b05c3ac31072516f4" name="aa1708d4c38859b5b05c3ac31072516f4"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>firstHoldTime</b> = 0</td></tr>
+<tr class="memdesc:aa1708d4c38859b5b05c3ac31072516f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timestamp (millis) of first press (hold) <br /></td></tr>
 <tr class="separator:aa1708d4c38859b5b05c3ac31072516f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5efe01c75cd6c1fb516c07d769eb6c5"><td class="memItemLeft" align="right" valign="top"><a id="ab5efe01c75cd6c1fb516c07d769eb6c5" name="ab5efe01c75cd6c1fb516c07d769eb6c5"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>nbClicksCounted</b> = 0</td></tr>
+<tr class="memdesc:ab5efe01c75cd6c1fb516c07d769eb6c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nb of counted clicks. <br /></td></tr>
 <tr class="separator:ab5efe01c75cd6c1fb516c07d769eb6c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1473cf68fbbd5eaafc18f0a13ba4c387"><td class="memItemLeft" align="right" valign="top"><a id="a1473cf68fbbd5eaafc18f0a13ba4c387" name="a1473cf68fbbd5eaafc18f0a13ba4c387"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>wasTriggered</b> = false</td></tr>
+<tr class="memdesc:a1473cf68fbbd5eaafc18f0a13ba4c387"><td class="mdescLeft">&#160;</td><td class="mdescRight">Was a button action detected. <br /></td></tr>
 <tr class="separator:a1473cf68fbbd5eaafc18f0a13ba4c387"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Store the button status and characteristics. </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>src/system/physical/<a class="el" href="button_8h_source.html">button.h</a></li>
 </ul>
 </div><!-- contents -->

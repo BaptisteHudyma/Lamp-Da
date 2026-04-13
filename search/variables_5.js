@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['fft_5flog_0',['fft_log',['../structmodes_1_1audio_1_1SoundEventTy.html#aee023e8930156b81283c7dded9b9ed3b',1,'modes::audio::SoundEventTy']]],
-  ['fftbin_1',['fftBin',['../classFftAnalyzer.html#af1d2fafaa7b33126ef3848b60d4eb002',1,'FftAnalyzer']]],
-  ['flavor_2',['flavor',['../structmodes_1_1hardware_1_1LampTy.html#ab3670f0b0aab604741805a0f4f26bf52',1,'modes::hardware::LampTy']]],
-  ['framedurationms_3',['frameDurationMs',['../structmodes_1_1hardware_1_1LampTy.html#a9392f67002f251fc9024b35e14924282',1,'modes::hardware::LampTy']]]
+  ['eventfreq_0',['eventFreq',['../structmodes_1_1automaton_1_1BubbleMode.html#a76ea73537f7dc848e98d5f91f6feeae6',1,'modes::automaton::BubbleMode']]],
+  ['eventscale_1',['eventScale',['../structmodes_1_1audio_1_1SoundEventTy.html#a8eb7df4110f10b5a760a40ef3d439597',1,'modes::audio::SoundEventTy']]]
 ];

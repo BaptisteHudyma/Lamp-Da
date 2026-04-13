@@ -81,6 +81,11 @@ $(function() {
   <div class="headertitle"><div class="title">modes::default_modes::PaletteFadeMode Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Fade between colors of a palette.  
+ <a href="structmodes_1_1default__modes_1_1PaletteFadeMode.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="palette__fade__mode_8hpp_source.html">palette_fade_mode.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for modes::default_modes::PaletteFadeMode:</div>
 <div class="dyncontent">
@@ -88,7 +93,7 @@ Inheritance diagram for modes::default_modes::PaletteFadeMode:</div>
   <img src="structmodes_1_1default__modes_1_1PaletteFadeMode.png" usemap="#modes::default_5Fmodes::PaletteFadeMode_map" alt=""/>
   <map id="modes::default_5Fmodes::PaletteFadeMode_map" name="modes::default_5Fmodes::PaletteFadeMode_map">
 <area href="structmodes_1_1BasicMode.html" title="Parent object for all custom user modes." alt="modes::BasicMode" shape="rect" coords="0,0,288,24"/>
-<area href="structmodes_1_1default__modes_1_1RainbowFadePaletteMode.html" title="Party fixed colors ramp mode." alt="modes::default_modes::RainbowFadePaletteMode" shape="rect" coords="0,112,288,136"/>
+<area href="structmodes_1_1default__modes_1_1RainbowFadePaletteMode.html" title="Fade between the colors of the PartyColor palette." alt="modes::default_modes::RainbowFadePaletteMode" shape="rect" coords="0,112,288,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -138,6 +143,7 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a27688fc8ea832f67cff0643fa014560a"><td class="memItemLeft" align="right" valign="top"><a id="a27688fc8ea832f67cff0643fa014560a" name="a27688fc8ea832f67cff0643fa014560a"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasCustomRamp</b> = true</td></tr>
+<tr class="memdesc:a27688fc8ea832f67cff0643fa014560a"><td class="mdescLeft">&#160;</td><td class="mdescRight">hint manager to save our custom ramp <br /></td></tr>
 <tr class="separator:a27688fc8ea832f67cff0643fa014560a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84e8fe859e3cab35c52c1cb5535a31fa"><td class="memItemLeft" align="right" valign="top"><a id="a84e8fe859e3cab35c52c1cb5535a31fa" name="a84e8fe859e3cab35c52c1cb5535a31fa"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
@@ -161,7 +167,9 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <tr class="memdesc:ac60ff94998743c88b0463e25235e2244"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store identifier for persistent storage (optional)  <br /></td></tr>
 <tr class="separator:ac60ff94998743c88b0463e25235e2244"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Fade between colors of a palette. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a869b044a34d61d2803bd59c59a39f630" name="a869b044a34d61d2803bd59c59a39f630"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a869b044a34d61d2803bd59c59a39f630">&#9670;&#160;</a></span>brightness_update()</h2>
 
@@ -707,7 +715,8 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// ... (use rampValue to pick a color or something) ...</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1default__modes_1_1PaletteFadeMode.html#a27688fc8ea832f67cff0643fa014560a">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1PaletteFadeMode_html_a27688fc8ea832f67cff0643fa014560a"><div class="ttname"><a href="structmodes_1_1default__modes_1_1PaletteFadeMode.html#a27688fc8ea832f67cff0643fa014560a">modes::default_modes::PaletteFadeMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">hint manager to save our custom ramp</div><div class="ttdef"><b>Definition:</b> palette_fade_mode.hpp:16</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
 <div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>
@@ -721,7 +730,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// values (rampValue, indexValue) are remembered by default</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1default__modes_1_1PaletteFadeMode.html#a27688fc8ea832f67cff0643fa014560a">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
 </div><!-- fragment --><p>These are the two always-available persistent state that a mode can configure by default. However, for more advanced modes (like games, with a list of high-scores, for example) more flexibility can be required.</p>
 <p>If you need such extended storage, see <a class="el" href="structmodes_1_1ContextTy_1_1KeyProxy.html" title="(store) Binds a local variable of type T to key in storage (with automatic read &amp; save)">ContextTy::KeyProxy</a> for usage.</p>
 <p>If you don't need these capabilities, just ignore this identifier :) </p>

@@ -81,30 +81,38 @@ $(function() {
   <div class="headertitle"><div class="title">alerts::Alert_SystemShutdownFailed Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>This alert is raised when the system fails to go to sleep. There is no way to recover from this, as we depend on the low level handlers for this functionality.  
+ <a href="structalerts_1_1Alert__SystemShutdownFailed.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for alerts::Alert_SystemShutdownFailed:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="structalerts_1_1Alert__SystemShutdownFailed.png" usemap="#alerts::Alert_5FSystemShutdownFailed_map" alt=""/>
   <map id="alerts::Alert_5FSystemShutdownFailed_map" name="alerts::Alert_5FSystemShutdownFailed_map">
-<area href="structalerts_1_1AlertBase.html" alt="alerts::AlertBase" shape="rect" coords="0,0,213,24"/>
+<area href="structalerts_1_1AlertBase.html" title="Base class for all alerts. Must be overloaded to define an alert." alt="alerts::AlertBase" shape="rect" coords="0,0,213,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:abee0c23bcb1e51c518e896e1a679a9c1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1Alert__SystemShutdownFailed.html#abee0c23bcb1e51c518e896e1a679a9c1">show</a> () const override</td></tr>
+<tr class="memdesc:abee0c23bcb1e51c518e896e1a679a9c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">display this alert on the indicator  <br /></td></tr>
 <tr class="separator:abee0c23bcb1e51c518e896e1a679a9c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a441b98ec3e12c8909ac89269f1be119e"><td class="memItemLeft" align="right" valign="top">Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1Alert__SystemShutdownFailed.html#a441b98ec3e12c8909ac89269f1be119e">get_type</a> () const override</td></tr>
+<tr class="memdesc:a441b98ec3e12c8909ac89269f1be119e"><td class="mdescLeft">&#160;</td><td class="mdescRight">return the Defined type of this alert  <br /></td></tr>
 <tr class="separator:a441b98ec3e12c8909ac89269f1be119e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac42bd4fcb78a55e3f4687668b30b5140"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1Alert__SystemShutdownFailed.html#ac42bd4fcb78a55e3f4687668b30b5140">should_be_cleared</a> () const override</td></tr>
-<tr class="memdesc:ac42bd4fcb78a55e3f4687668b30b5140"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if this alert type should be cleared  <br /></td></tr>
+<tr class="memdesc:ac42bd4fcb78a55e3f4687668b30b5140"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleared after a delay.  <br /></td></tr>
 <tr class="separator:ac42bd4fcb78a55e3f4687668b30b5140"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa693c5ad026667360d599b193bd94a3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1Alert__SystemShutdownFailed.html#afa693c5ad026667360d599b193bd94a3">should_prevent_lamp_output</a> () const override</td></tr>
+<tr class="memdesc:afa693c5ad026667360d599b193bd94a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prevent output usage.  <br /></td></tr>
 <tr class="separator:afa693c5ad026667360d599b193bd94a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80b9349d844e494ce86e6a36ac06b3fe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1Alert__SystemShutdownFailed.html#a80b9349d844e494ce86e6a36ac06b3fe">should_prevent_battery_charge</a> () const override</td></tr>
+<tr class="memdesc:a80b9349d844e494ce86e6a36ac06b3fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prevent battery charge.  <br /></td></tr>
 <tr class="separator:a80b9349d844e494ce86e6a36ac06b3fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2613d2c0cd63e53df00750f3f0c0ae2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1Alert__SystemShutdownFailed.html#ab2613d2c0cd63e53df00750f3f0c0ae2">should_prevent_usb_port_use</a> () const override</td></tr>
+<tr class="memdesc:ab2613d2c0cd63e53df00750f3f0c0ae2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prevent USB use.  <br /></td></tr>
 <tr class="separator:ab2613d2c0cd63e53df00750f3f0c0ae2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe8f76e1b188336734d357e1d864bff5"><td class="memItemLeft" align="right" valign="top">virtual uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1AlertBase.html#afe8f76e1b188336734d357e1d864bff5">alert_shutdown_timeout</a> () const</td></tr>
 <tr class="memdesc:afe8f76e1b188336734d357e1d864bff5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the timeout after which an alert will make the system auto-shutdown.  <br /></td></tr>
@@ -117,33 +125,41 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:afe729afbc50a232f6f7429878e381de4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3029dcab0a1bc6abc9b9a32dacb83d82"><td class="memItemLeft" align="right" valign="top"><a id="a3029dcab0a1bc6abc9b9a32dacb83d82" name="a3029dcab0a1bc6abc9b9a32dacb83d82"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>should_shutdown_system</b> (const uint32_t time) final</td></tr>
+<tr class="memdesc:a3029dcab0a1bc6abc9b9a32dacb83d82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the system should shutdown from this alert. <br /></td></tr>
 <tr class="separator:a3029dcab0a1bc6abc9b9a32dacb83d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad432aed407bf935eca8f9de567839e67"><td class="memItemLeft" align="right" valign="top"><a id="ad432aed407bf935eca8f9de567839e67" name="ad432aed407bf935eca8f9de567839e67"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>handle_raised_state</b> (const uint32_t time)</td></tr>
+<tr class="memitem:ad432aed407bf935eca8f9de567839e67"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1AlertBase.html#ad432aed407bf935eca8f9de567839e67">handle_raised_state</a> (const uint32_t time)</td></tr>
+<tr class="memdesc:ad432aed407bf935eca8f9de567839e67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handler for the raised state of the alert. If the alert is not raised, raise the alert.  <br /></td></tr>
 <tr class="separator:ad432aed407bf935eca8f9de567839e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af62c5d90a2e0fb51967a38fa006fa726"><td class="memItemLeft" align="right" valign="top"><a id="af62c5d90a2e0fb51967a38fa006fa726" name="af62c5d90a2e0fb51967a38fa006fa726"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>update_raise_time</b> (const uint32_t time)</td></tr>
+<tr class="memdesc:af62c5d90a2e0fb51967a38fa006fa726"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the raised time of this alert. An alert continuously firing as to be updated. <br /></td></tr>
 <tr class="separator:af62c5d90a2e0fb51967a38fa006fa726"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18c18a3fe21684798739165c6aa01505"><td class="memItemLeft" align="right" valign="top"><a id="a18c18a3fe21684798739165c6aa01505" name="a18c18a3fe21684798739165c6aa01505"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>handle_lowered_state</b> (const uint32_t time)</td></tr>
+<tr class="memitem:a18c18a3fe21684798739165c6aa01505"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1AlertBase.html#a18c18a3fe21684798739165c6aa01505">handle_lowered_state</a> (const uint32_t time)</td></tr>
+<tr class="memdesc:a18c18a3fe21684798739165c6aa01505"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handler for the lowered state of the alert. If the alert is raised, lower the alert.  <br /></td></tr>
 <tr class="separator:a18c18a3fe21684798739165c6aa01505"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:adef744c428bdd08799e3b02c7e9084ef"><td class="memItemLeft" align="right" valign="top"><a id="adef744c428bdd08799e3b02c7e9084ef" name="adef744c428bdd08799e3b02c7e9084ef"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>_isRaisedHandled</b> = false</td></tr>
+<tr class="memdesc:adef744c428bdd08799e3b02c7e9084ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alert raise signal has been handled. <br /></td></tr>
 <tr class="separator:adef744c428bdd08799e3b02c7e9084ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc13c9a9eff920d1f9d9956eb717991a"><td class="memItemLeft" align="right" valign="top"><a id="adc13c9a9eff920d1f9d9956eb717991a" name="adc13c9a9eff920d1f9d9956eb717991a"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>_isLoweredHandled</b> = false</td></tr>
+<tr class="memdesc:adc13c9a9eff920d1f9d9956eb717991a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alert lower signal has been handled. <br /></td></tr>
 <tr class="separator:adc13c9a9eff920d1f9d9956eb717991a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3cb33230f30160241b9af12a8c42958"><td class="memItemLeft" align="right" valign="top"><a id="aa3cb33230f30160241b9af12a8c42958" name="aa3cb33230f30160241b9af12a8c42958"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>raisedTime</b> = 0</td></tr>
+<tr class="memdesc:aa3cb33230f30160241b9af12a8c42958"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the latest time at which this alert raise() was called. <br /></td></tr>
 <tr class="separator:aa3cb33230f30160241b9af12a8c42958"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ae6fe26696a9360ffd4b2d8c46d528c"><td class="memItemLeft" align="right" valign="top"><a id="a4ae6fe26696a9360ffd4b2d8c46d528c" name="a4ae6fe26696a9360ffd4b2d8c46d528c"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> = 0</td></tr>
+<tr class="memdesc:a4ae6fe26696a9360ffd4b2d8c46d528c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the latest time at which this alert lower() was called. <br /></td></tr>
 <tr class="separator:a4ae6fe26696a9360ffd4b2d8c46d528c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>This alert is raised when the system fails to go to sleep. There is no way to recover from this, as we depend on the low level handlers for this functionality. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="afe8f76e1b188336734d357e1d864bff5" name="afe8f76e1b188336734d357e1d864bff5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afe8f76e1b188336734d357e1d864bff5">&#9670;&#160;</a></span>alert_shutdown_timeout()</h2>
 
@@ -225,7 +241,67 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="structalerts_1_1AlertBase.html">alerts::AlertBase</a>.</p>
+<p>return the Defined type of this alert </p>
+
+<p>Implements <a class="el" href="structalerts_1_1AlertBase.html#a0c779e418fcaf9e4c647523fce04f0d2">alerts::AlertBase</a>.</p>
+
+</div>
+</div>
+<a id="a18c18a3fe21684798739165c6aa01505" name="a18c18a3fe21684798739165c6aa01505"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18c18a3fe21684798739165c6aa01505">&#9670;&#160;</a></span>handle_lowered_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool alerts::AlertBase::handle_lowered_state </td>
+          <td>(</td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Handler for the lowered state of the alert. If the alert is raised, lower the alert. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the alert was lowered by this function call </dd></dl>
+
+</div>
+</div>
+<a id="ad432aed407bf935eca8f9de567839e67" name="ad432aed407bf935eca8f9de567839e67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad432aed407bf935eca8f9de567839e67">&#9670;&#160;</a></span>handle_raised_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool alerts::AlertBase::handle_raised_state </td>
+          <td>(</td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Handler for the raised state of the alert. If the alert is not raised, raise the alert. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the alert was raised by this function call </dd></dl>
 
 </div>
 </div>
@@ -252,7 +328,7 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
 </table>
 </div><div class="memdoc">
 
-<p>return true if this alert type should be cleared </p>
+<p>Cleared after a delay. </p>
 
 <p>Reimplemented from <a class="el" href="structalerts_1_1AlertBase.html#a4927deb88541673642a2e159cce4747d">alerts::AlertBase</a>.</p>
 
@@ -310,7 +386,9 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="structalerts_1_1AlertBase.html">alerts::AlertBase</a>.</p>
+<p>Prevent battery charge. </p>
+
+<p>Reimplemented from <a class="el" href="structalerts_1_1AlertBase.html#a253b552a6d346415ef47b9bd067d722b">alerts::AlertBase</a>.</p>
 
 </div>
 </div>
@@ -337,7 +415,9 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="structalerts_1_1AlertBase.html">alerts::AlertBase</a>.</p>
+<p>Prevent output usage. </p>
+
+<p>Reimplemented from <a class="el" href="structalerts_1_1AlertBase.html#af3b075b2e2070bee2abfad0bd1f9e63c">alerts::AlertBase</a>.</p>
 
 </div>
 </div>
@@ -364,7 +444,9 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="structalerts_1_1AlertBase.html">alerts::AlertBase</a>.</p>
+<p>Prevent USB use. </p>
+
+<p>Reimplemented from <a class="el" href="structalerts_1_1AlertBase.html#afaa5f2144bc7813b1a15254139b38f4d">alerts::AlertBase</a>.</p>
 
 </div>
 </div>
@@ -391,7 +473,9 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="structalerts_1_1AlertBase.html">alerts::AlertBase</a>.</p>
+<p>display this alert on the indicator </p>
+
+<p>Reimplemented from <a class="el" href="structalerts_1_1AlertBase.html#a125508ddb6f8a85dc15d4449805b10a0">alerts::AlertBase</a>.</p>
 
 </div>
 </div>

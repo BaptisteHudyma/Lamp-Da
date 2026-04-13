@@ -82,6 +82,11 @@ $(function() {
   <div class="headertitle"><div class="title">modes::custom::nudz::NudzViolonsaoulsMode Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Display an image "Violon saoul" scrolling around. User ramp changes scroll speed and direction.  
+ <a href="structmodes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="nudz__scrollimage_8hpp_source.html">nudz_scrollimage.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for modes::custom::nudz::NudzViolonsaoulsMode:</div>
 <div class="dyncontent">
@@ -100,8 +105,7 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aded60b0e0e920dbe41d35d34e0c3f177"><td class="memItemLeft" align="right" valign="top"><a id="aded60b0e0e920dbe41d35d34e0c3f177" name="aded60b0e0e920dbe41d35d34e0c3f177"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>on_enter_mode</b> (auto &amp;ctx)</td></tr>
+<tr class="memitem:aded60b0e0e920dbe41d35d34e0c3f177"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode.html#aded60b0e0e920dbe41d35d34e0c3f177">on_enter_mode</a> (auto &amp;ctx)</td></tr>
 <tr class="separator:aded60b0e0e920dbe41d35d34e0c3f177"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0e63884ad2ba5dfbab13a5189d7917e"><td class="memItemLeft" align="right" valign="top"><a id="aa0e63884ad2ba5dfbab13a5189d7917e" name="aa0e63884ad2ba5dfbab13a5189d7917e"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto &amp;ctx)</td></tr>
@@ -144,6 +148,7 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a6ed83faab05dadd84d378999048965fe"><td class="memItemLeft" align="right" valign="top"><a id="a6ed83faab05dadd84d378999048965fe" name="a6ed83faab05dadd84d378999048965fe"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasCustomRamp</b></td></tr>
+<tr class="memdesc:a6ed83faab05dadd84d378999048965fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hint manager to save our custom ramp. <br /></td></tr>
 <tr class="separator:a6ed83faab05dadd84d378999048965fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84e8fe859e3cab35c52c1cb5535a31fa"><td class="memItemLeft" align="right" valign="top"><a id="a84e8fe859e3cab35c52c1cb5535a31fa" name="a84e8fe859e3cab35c52c1cb5535a31fa"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
@@ -167,7 +172,9 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <tr class="memdesc:ac60ff94998743c88b0463e25235e2244"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store identifier for persistent storage (optional)  <br /></td></tr>
 <tr class="separator:ac60ff94998743c88b0463e25235e2244"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Display an image "Violon saoul" scrolling around. User ramp changes scroll speed and direction. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a869b044a34d61d2803bd59c59a39f630" name="a869b044a34d61d2803bd59c59a39f630"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a869b044a34d61d2803bd59c59a39f630">&#9670;&#160;</a></span>brightness_update()</h2>
 
@@ -368,6 +375,33 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
   </dd>
 </dl>
 <dl class="section remark"><dt>Remarks</dt><dd>This behavior is in <a class="el" href="namespaceuser.html#a7a51b617074db42ba10f0695729750de" title="Called to handle button click+hold events for user mode behaviors.">user::button_hold_default()</a> and may be prevented if custom "usermode UI" via <a class="el" href="structmodes_1_1BasicMode.html#a8b5c0461a4a09475303dc4fb1e9cc494" title="Custom &quot;usermode&quot; button UI for &quot;click+hold&quot; action (optional)">custom_hold()</a> is enabled </dd></dl>
+
+</div>
+</div>
+<a id="aded60b0e0e920dbe41d35d34e0c3f177" name="aded60b0e0e920dbe41d35d34e0c3f177"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aded60b0e0e920dbe41d35d34e0c3f177">&#9670;&#160;</a></span>on_enter_mode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void <a class="el" href="structmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode.html">modes::custom::nudz::NudzScrollImageMode</a>&lt; <a class="el" href="structViolonsaoulsImageTy.html">ViolonsaoulsImageTy</a>  &gt;::on_enter_mode </td>
+          <td>(</td>
+          <td class="paramtype">auto &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>prevent the ramp from looping around</p>
 
 </div>
 </div>
@@ -713,7 +747,8 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// ... (use rampValue to pick a color or something) ...</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode.html#a6ed83faab05dadd84d378999048965fe">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="ttc" id="astructmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode_html_a6ed83faab05dadd84d378999048965fe"><div class="ttname"><a href="structmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode.html#a6ed83faab05dadd84d378999048965fe">modes::custom::nudz::NudzScrollImageMode&lt; ViolonsaoulsImageTy &gt;::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">Hint manager to save our custom ramp.</div><div class="ttdef"><b>Definition:</b> nudz_scrollimage.hpp:139</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
 <div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>
@@ -727,7 +762,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// values (rampValue, indexValue) are remembered by default</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode.html#a6ed83faab05dadd84d378999048965fe">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
 </div><!-- fragment --><p>These are the two always-available persistent state that a mode can configure by default. However, for more advanced modes (like games, with a list of high-scores, for example) more flexibility can be required.</p>
 <p>If you need such extended storage, see <a class="el" href="structmodes_1_1ContextTy_1_1KeyProxy.html" title="(store) Binds a local variable of type T to key in storage (with automatic read &amp; save)">ContextTy::KeyProxy</a> for usage.</p>
 <p>If you don't need these capabilities, just ignore this identifier :) </p>

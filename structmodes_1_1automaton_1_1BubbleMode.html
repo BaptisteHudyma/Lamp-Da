@@ -83,6 +83,11 @@ $(function() {
   <div class="headertitle"><div class="title">modes::automaton::BubbleMode Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Bubbles rising in the sea. The user ramp control the random generation.  
+ <a href="structmodes_1_1automaton_1_1BubbleMode.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="automaton_8hpp_source.html">automaton.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for modes::automaton::BubbleMode:</div>
 <div class="dyncontent">
@@ -102,12 +107,12 @@ Classes</h2></td></tr>
 Public Types</h2></td></tr>
 <tr class="memitem:a088c09633de2e6973067b8e0dbc146a6"><td class="memItemLeft" align="right" valign="top"><a id="a088c09633de2e6973067b8e0dbc146a6" name="a088c09633de2e6973067b8e0dbc146a6"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>GridTy</b> = <a class="el" href="structmodes_1_1draw_1_1grid_1_1LineRule.html">draw::grid::LineRule</a>&lt;&gt;</td></tr>
+<tr class="memdesc:a088c09633de2e6973067b8e0dbc146a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cellular automaton type. <br /></td></tr>
 <tr class="separator:a088c09633de2e6973067b8e0dbc146a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a4af828b534620cf4677fdb6b7a1e6852"><td class="memItemLeft" align="right" valign="top"><a id="a4af828b534620cf4677fdb6b7a1e6852" name="a4af828b534620cf4677fdb6b7a1e6852"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>on_enter_mode</b> (auto &amp;ctx)</td></tr>
+<tr class="memitem:a4af828b534620cf4677fdb6b7a1e6852"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1automaton_1_1BubbleMode.html#a4af828b534620cf4677fdb6b7a1e6852">on_enter_mode</a> (auto &amp;ctx)</td></tr>
 <tr class="separator:a4af828b534620cf4677fdb6b7a1e6852"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae49c5271c54f62cac872891860ca07d4"><td class="memItemLeft" align="right" valign="top"><a id="ae49c5271c54f62cac872891860ca07d4" name="ae49c5271c54f62cac872891860ca07d4"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto &amp;ctx)</td></tr>
@@ -150,39 +155,51 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a983bc4b859e3dd842082a70da7e25eef"><td class="memItemLeft" align="right" valign="top"><a id="a983bc4b859e3dd842082a70da7e25eef" name="a983bc4b859e3dd842082a70da7e25eef"></a>
 static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>nbBubbles</b> = 4</td></tr>
+<tr class="memdesc:a983bc4b859e3dd842082a70da7e25eef"><td class="mdescLeft">&#160;</td><td class="mdescRight">0-10 max number of bubble per turn <br /></td></tr>
 <tr class="separator:a983bc4b859e3dd842082a70da7e25eef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19e72f1f47d10f644f4eef3ca9a91c84"><td class="memItemLeft" align="right" valign="top"><a id="a19e72f1f47d10f644f4eef3ca9a91c84" name="a19e72f1f47d10f644f4eef3ca9a91c84"></a>
 static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>bubbleFreq</b> = 70</td></tr>
+<tr class="memdesc:a19e72f1f47d10f644f4eef3ca9a91c84"><td class="mdescLeft">&#160;</td><td class="mdescRight">0-255 the more the less bubbles <br /></td></tr>
 <tr class="separator:a19e72f1f47d10f644f4eef3ca9a91c84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a222479d1e563793ce7ba3ccbff515624"><td class="memItemLeft" align="right" valign="top"><a id="a222479d1e563793ce7ba3ccbff515624" name="a222479d1e563793ce7ba3ccbff515624"></a>
 static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>minBubbleDist</b> = 4</td></tr>
+<tr class="memdesc:a222479d1e563793ce7ba3ccbff515624"><td class="mdescLeft">&#160;</td><td class="mdescRight">0-5 min distance of bubbles? <br /></td></tr>
 <tr class="separator:a222479d1e563793ce7ba3ccbff515624"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76ea73537f7dc848e98d5f91f6feeae6"><td class="memItemLeft" align="right" valign="top"><a id="a76ea73537f7dc848e98d5f91f6feeae6" name="a76ea73537f7dc848e98d5f91f6feeae6"></a>
 static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>eventFreq</b> = 70</td></tr>
+<tr class="memdesc:a76ea73537f7dc848e98d5f91f6feeae6"><td class="mdescLeft">&#160;</td><td class="mdescRight">0-255 how likely are events? <br /></td></tr>
 <tr class="separator:a76ea73537f7dc848e98d5f91f6feeae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c79d01267b7830ca56a3ab765c5f682"><td class="memItemLeft" align="right" valign="top"><a id="a2c79d01267b7830ca56a3ab765c5f682" name="a2c79d01267b7830ca56a3ab765c5f682"></a>
 static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>algeaFreq</b> = 60</td></tr>
+<tr class="memdesc:a2c79d01267b7830ca56a3ab765c5f682"><td class="mdescLeft">&#160;</td><td class="mdescRight">0-255 how likely event is algea? <br /></td></tr>
 <tr class="separator:a2c79d01267b7830ca56a3ab765c5f682"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28f8bd8e758af667303338d1550e005c"><td class="memItemLeft" align="right" valign="top"><a id="a28f8bd8e758af667303338d1550e005c" name="a28f8bd8e758af667303338d1550e005c"></a>
 static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>algeaLength</b> = 3000</td></tr>
+<tr class="memdesc:a28f8bd8e758af667303338d1550e005c"><td class="mdescLeft">&#160;</td><td class="mdescRight">(ms) +/- 1s average algea size <br /></td></tr>
 <tr class="separator:a28f8bd8e758af667303338d1550e005c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2cd16f73608347159c2e40c6999f5258"><td class="memItemLeft" align="right" valign="top"><a id="a2cd16f73608347159c2e40c6999f5258" name="a2cd16f73608347159c2e40c6999f5258"></a>
 static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>algeaSwims</b> = 400</td></tr>
+<tr class="memdesc:a2cd16f73608347159c2e40c6999f5258"><td class="mdescLeft">&#160;</td><td class="mdescRight">(ms) how fast algea ondulates <br /></td></tr>
 <tr class="separator:a2cd16f73608347159c2e40c6999f5258"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2dc469947c91e841f6cddba596ca621f"><td class="memItemLeft" align="right" valign="top"><a id="a2dc469947c91e841f6cddba596ca621f" name="a2dc469947c91e841f6cddba596ca621f"></a>
 static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>starFreq</b> = 3</td></tr>
+<tr class="memdesc:a2dc469947c91e841f6cddba596ca621f"><td class="mdescLeft">&#160;</td><td class="mdescRight">0-255 how likely event is star? <br /></td></tr>
 <tr class="separator:a2dc469947c91e841f6cddba596ca621f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6cbf25b87204710daab85b153c6b9831"><td class="memItemLeft" align="right" valign="top"><a id="a6cbf25b87204710daab85b153c6b9831" name="a6cbf25b87204710daab85b153c6b9831"></a>
 static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>waterColor</b> = <a class="el" href="namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caac2865a0b76f3e0feebfadfdee661f40">colors::DarkBlue</a></td></tr>
+<tr class="memdesc:a6cbf25b87204710daab85b153c6b9831"><td class="mdescLeft">&#160;</td><td class="mdescRight">color of the water <br /></td></tr>
 <tr class="separator:a6cbf25b87204710daab85b153c6b9831"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9504a38557ebadc78753440fd6b836de"><td class="memItemLeft" align="right" valign="top"><a id="a9504a38557ebadc78753440fd6b836de" name="a9504a38557ebadc78753440fd6b836de"></a>
 static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>algeaColor</b> = <a class="el" href="namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca0e055da20587c8df9d9fba30b052482a">colors::ForestGreen</a></td></tr>
+<tr class="memdesc:a9504a38557ebadc78753440fd6b836de"><td class="mdescLeft">&#160;</td><td class="mdescRight">color of the algea <br /></td></tr>
 <tr class="separator:a9504a38557ebadc78753440fd6b836de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a610a72c503e2365380414204ecb4a3fc"><td class="memItemLeft" align="right" valign="top"><a id="a610a72c503e2365380414204ecb4a3fc" name="a610a72c503e2365380414204ecb4a3fc"></a>
 static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>starColor</b> = <a class="el" href="namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca37d2a716457bc1f468fd084e8e5bff43">colors::Gold</a></td></tr>
+<tr class="memdesc:a610a72c503e2365380414204ecb4a3fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">color of ??? <br /></td></tr>
 <tr class="separator:a610a72c503e2365380414204ecb4a3fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f08b4d0e23a0b8026e248923f6b6d4b"><td class="memItemLeft" align="right" valign="top"><a id="a3f08b4d0e23a0b8026e248923f6b6d4b" name="a3f08b4d0e23a0b8026e248923f6b6d4b"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasCustomRamp</b> = true</td></tr>
+<tr class="memdesc:a3f08b4d0e23a0b8026e248923f6b6d4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">hint manager that we have a custom ramp <br /></td></tr>
 <tr class="separator:a3f08b4d0e23a0b8026e248923f6b6d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84e8fe859e3cab35c52c1cb5535a31fa"><td class="memItemLeft" align="right" valign="top"><a id="a84e8fe859e3cab35c52c1cb5535a31fa" name="a84e8fe859e3cab35c52c1cb5535a31fa"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
@@ -206,7 +223,9 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <tr class="memdesc:ac60ff94998743c88b0463e25235e2244"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store identifier for persistent storage (optional)  <br /></td></tr>
 <tr class="separator:ac60ff94998743c88b0463e25235e2244"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Bubbles rising in the sea. The user ramp control the random generation. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a869b044a34d61d2803bd59c59a39f630" name="a869b044a34d61d2803bd59c59a39f630"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a869b044a34d61d2803bd59c59a39f630">&#9670;&#160;</a></span>brightness_update()</h2>
 
@@ -407,6 +426,33 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
   </dd>
 </dl>
 <dl class="section remark"><dt>Remarks</dt><dd>This behavior is in <a class="el" href="namespaceuser.html#a7a51b617074db42ba10f0695729750de" title="Called to handle button click+hold events for user mode behaviors.">user::button_hold_default()</a> and may be prevented if custom "usermode UI" via <a class="el" href="structmodes_1_1BasicMode.html#a8b5c0461a4a09475303dc4fb1e9cc494" title="Custom &quot;usermode&quot; button UI for &quot;click+hold&quot; action (optional)">custom_hold()</a> is enabled </dd></dl>
+
+</div>
+</div>
+<a id="a4af828b534620cf4677fdb6b7a1e6852" name="a4af828b534620cf4677fdb6b7a1e6852"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4af828b534620cf4677fdb6b7a1e6852">&#9670;&#160;</a></span>on_enter_mode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void modes::automaton::BubbleMode::on_enter_mode </td>
+          <td>(</td>
+          <td class="paramtype">auto &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>prevent the ramp from looping around</p>
 
 </div>
 </div>
@@ -752,7 +798,8 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// ... (use rampValue to pick a color or something) ...</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1automaton_1_1BubbleMode.html#a3f08b4d0e23a0b8026e248923f6b6d4b">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="ttc" id="astructmodes_1_1automaton_1_1BubbleMode_html_a3f08b4d0e23a0b8026e248923f6b6d4b"><div class="ttname"><a href="structmodes_1_1automaton_1_1BubbleMode.html#a3f08b4d0e23a0b8026e248923f6b6d4b">modes::automaton::BubbleMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">hint manager that we have a custom ramp</div><div class="ttdef"><b>Definition:</b> automaton.hpp:146</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
 <div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>
@@ -766,7 +813,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// values (rampValue, indexValue) are remembered by default</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1automaton_1_1BubbleMode.html#a3f08b4d0e23a0b8026e248923f6b6d4b">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
 </div><!-- fragment --><p>These are the two always-available persistent state that a mode can configure by default. However, for more advanced modes (like games, with a list of high-scores, for example) more flexibility can be required.</p>
 <p>If you need such extended storage, see <a class="el" href="structmodes_1_1ContextTy_1_1KeyProxy.html" title="(store) Binds a local variable of type T to key in storage (with automatic read &amp; save)">ContextTy::KeyProxy</a> for usage.</p>
 <p>If you don't need these capabilities, just ignore this identifier :) </p>

@@ -82,6 +82,11 @@ $(function() {
   <div class="headertitle"><div class="title">modes::custom::nudz::NudzBeerGlassMode Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Display a glass of beer, reactive to gravity. The user ramp changes the beer level.  
+ <a href="structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="nudz__scrollimage_8hpp_source.html">nudz_scrollimage.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for modes::custom::nudz::NudzBeerGlassMode:</div>
 <div class="dyncontent">
@@ -101,23 +106,26 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ac3fed090e5e6f2d2b48d7e227f3e532f"><td class="memItemLeft" align="right" valign="top"><a id="ac3fed090e5e6f2d2b48d7e227f3e532f" name="ac3fed090e5e6f2d2b48d7e227f3e532f"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>on_enter_mode</b> (auto &amp;ctx)</td></tr>
+<tr class="memitem:ac3fed090e5e6f2d2b48d7e227f3e532f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode.html#ac3fed090e5e6f2d2b48d7e227f3e532f">on_enter_mode</a> (auto &amp;ctx)</td></tr>
 <tr class="separator:ac3fed090e5e6f2d2b48d7e227f3e532f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb9a93b4f7c2d43dbbe31afde77f1ab5"><td class="memItemLeft" align="right" valign="top"><a id="abb9a93b4f7c2d43dbbe31afde77f1ab5" name="abb9a93b4f7c2d43dbbe31afde77f1ab5"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto &amp;ctx)</td></tr>
 <tr class="separator:abb9a93b4f7c2d43dbbe31afde77f1ab5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43f27c1de91b4d008360a59de09fb76f"><td class="memItemLeft" align="right" valign="top"><a id="a43f27c1de91b4d008360a59de09fb76f" name="a43f27c1de91b4d008360a59de09fb76f"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>updateLevels</b> (auto &amp;ctx)</td></tr>
+<tr class="memdesc:a43f27c1de91b4d008360a59de09fb76f"><td class="mdescLeft">&#160;</td><td class="mdescRight">update the level of the liquide using IMU events <br /></td></tr>
 <tr class="separator:a43f27c1de91b4d008360a59de09fb76f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a0f6b3676fda1e1304edfe50f403386"><td class="memItemLeft" align="right" valign="top"><a id="a1a0f6b3676fda1e1304edfe50f403386" name="a1a0f6b3676fda1e1304edfe50f403386"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>displayLevels</b> (auto &amp;ctx)</td></tr>
+<tr class="memdesc:a1a0f6b3676fda1e1304edfe50f403386"><td class="mdescLeft">&#160;</td><td class="mdescRight">Display the liquide level on the strip. <br /></td></tr>
 <tr class="separator:a1a0f6b3676fda1e1304edfe50f403386"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a45ee6d1758f12409621c98b34438235e"><td class="memItemLeft" align="right" valign="top"><a id="a45ee6d1758f12409621c98b34438235e" name="a45ee6d1758f12409621c98b34438235e"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>makeBubbles</b> (auto &amp;ctx)</td></tr>
+<tr class="memdesc:a45ee6d1758f12409621c98b34438235e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invoque new bulbes ! <br /></td></tr>
 <tr class="separator:a45ee6d1758f12409621c98b34438235e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f1ea57d10eb1d048b133ed5a201d6b7"><td class="memItemLeft" align="right" valign="top"><a id="a7f1ea57d10eb1d048b133ed5a201d6b7" name="a7f1ea57d10eb1d048b133ed5a201d6b7"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>drawAccel</b> (auto &amp;ctx)</td></tr>
+<tr class="memdesc:a7f1ea57d10eb1d048b133ed5a201d6b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the acceleration vector from the IMU. <br /></td></tr>
 <tr class="separator:a7f1ea57d10eb1d048b133ed5a201d6b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c63f5b9ac20c889608ee9b618954068"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1BasicMode.html#a3c63f5b9ac20c889608ee9b618954068">on_exit_mode</a> (auto &amp;ctx)</td></tr>
 <tr class="memdesc:a3c63f5b9ac20c889608ee9b618954068"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when mode goes outside of focus (optional)  <br /></td></tr>
@@ -157,6 +165,7 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>drawAccel</b> 
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a064b45c2ee94499a4ccff8e2f9192b52"><td class="memItemLeft" align="right" valign="top"><a id="a064b45c2ee94499a4ccff8e2f9192b52" name="a064b45c2ee94499a4ccff8e2f9192b52"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasCustomRamp</b> = true</td></tr>
+<tr class="memdesc:a064b45c2ee94499a4ccff8e2f9192b52"><td class="mdescLeft">&#160;</td><td class="mdescRight">hint manager that we have a custom ramp <br /></td></tr>
 <tr class="separator:a064b45c2ee94499a4ccff8e2f9192b52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84e8fe859e3cab35c52c1cb5535a31fa"><td class="memItemLeft" align="right" valign="top"><a id="a84e8fe859e3cab35c52c1cb5535a31fa" name="a84e8fe859e3cab35c52c1cb5535a31fa"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
@@ -180,7 +189,9 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <tr class="memdesc:ac60ff94998743c88b0463e25235e2244"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store identifier for persistent storage (optional)  <br /></td></tr>
 <tr class="separator:ac60ff94998743c88b0463e25235e2244"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Display a glass of beer, reactive to gravity. The user ramp changes the beer level. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a869b044a34d61d2803bd59c59a39f630" name="a869b044a34d61d2803bd59c59a39f630"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a869b044a34d61d2803bd59c59a39f630">&#9670;&#160;</a></span>brightness_update()</h2>
 
@@ -381,6 +392,33 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
   </dd>
 </dl>
 <dl class="section remark"><dt>Remarks</dt><dd>This behavior is in <a class="el" href="namespaceuser.html#a7a51b617074db42ba10f0695729750de" title="Called to handle button click+hold events for user mode behaviors.">user::button_hold_default()</a> and may be prevented if custom "usermode UI" via <a class="el" href="structmodes_1_1BasicMode.html#a8b5c0461a4a09475303dc4fb1e9cc494" title="Custom &quot;usermode&quot; button UI for &quot;click+hold&quot; action (optional)">custom_hold()</a> is enabled </dd></dl>
+
+</div>
+</div>
+<a id="ac3fed090e5e6f2d2b48d7e227f3e532f" name="ac3fed090e5e6f2d2b48d7e227f3e532f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3fed090e5e6f2d2b48d7e227f3e532f">&#9670;&#160;</a></span>on_enter_mode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void modes::custom::nudz::NudzBeerGlassMode::on_enter_mode </td>
+          <td>(</td>
+          <td class="paramtype">auto &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>prevent the ramp from looping around</p>
 
 </div>
 </div>
@@ -726,7 +764,8 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// ... (use rampValue to pick a color or something) ...</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode.html#a064b45c2ee94499a4ccff8e2f9192b52">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="ttc" id="astructmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_html_a064b45c2ee94499a4ccff8e2f9192b52"><div class="ttname"><a href="structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode.html#a064b45c2ee94499a4ccff8e2f9192b52">modes::custom::nudz::NudzBeerGlassMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">hint manager that we have a custom ramp</div><div class="ttdef"><b>Definition:</b> nudz_scrollimage.hpp:492</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
 <div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>
@@ -740,7 +779,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// values (rampValue, indexValue) are remembered by default</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode.html#a064b45c2ee94499a4ccff8e2f9192b52">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
 </div><!-- fragment --><p>These are the two always-available persistent state that a mode can configure by default. However, for more advanced modes (like games, with a list of high-scores, for example) more flexibility can be required.</p>
 <p>If you need such extended storage, see <a class="el" href="structmodes_1_1ContextTy_1_1KeyProxy.html" title="(store) Binds a local variable of type T to key in storage (with automatic read &amp; save)">ContextTy::KeyProxy</a> for usage.</p>
 <p>If you don't need these capabilities, just ignore this identifier :) </p>

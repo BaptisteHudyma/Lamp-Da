@@ -77,15 +77,19 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Define a state machine.  
+ <a href="classStateMachine.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="state__machine_8h_source.html">state_machine.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6177d8bd72cd216515a64dc6918091f2"><td class="memItemLeft" align="right" valign="top"><a id="a6177d8bd72cd216515a64dc6918091f2" name="a6177d8bd72cd216515a64dc6918091f2"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>StateMachine</b> (const State s)</td></tr>
+<tr class="memdesc:a6177d8bd72cd216515a64dc6918091f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a state machine from the first given state. <br /></td></tr>
 <tr class="separator:a6177d8bd72cd216515a64dc6918091f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a05f0a99d2ae8fc0a0eb8c3eb28d0f1d9"><td class="memItemLeft" align="right" valign="top"><a id="a05f0a99d2ae8fc0a0eb8c3eb28d0f1d9" name="a05f0a99d2ae8fc0a0eb8c3eb28d0f1d9"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>StateMachine</b> (const State s, const uint32_t timeout, const State stateOnTimeout)</td></tr>
+<tr class="memitem:a05f0a99d2ae8fc0a0eb8c3eb28d0f1d9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classStateMachine.html#a05f0a99d2ae8fc0a0eb8c3eb28d0f1d9">StateMachine</a> (const State s, const uint32_t timeout, const State stateOnTimeout)</td></tr>
+<tr class="memdesc:a05f0a99d2ae8fc0a0eb8c3eb28d0f1d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a state machine from the first given state, with a timeout to another.  <br /></td></tr>
 <tr class="separator:a05f0a99d2ae8fc0a0eb8c3eb28d0f1d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1660d1d04d9ce76df37aa995e88773de"><td class="memItemLeft" align="right" valign="top"><a id="a1660d1d04d9ce76df37aa995e88773de" name="a1660d1d04d9ce76df37aa995e88773de"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>run</b> ()</td></tr>
@@ -103,9 +107,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>update_timeout</b> (c
 <tr class="separator:a45459e99ecbbd4a8a0851496ca43fc7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe39b002c8a3bc5696a43a05031fffa6"><td class="memItemLeft" align="right" valign="top"><a id="abe39b002c8a3bc5696a43a05031fffa6" name="abe39b002c8a3bc5696a43a05031fffa6"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>state_just_changed</b> ()</td></tr>
+<tr class="memdesc:abe39b002c8a3bc5696a43a05031fffa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the current state just changed. Resetted on read. <br /></td></tr>
 <tr class="separator:abe39b002c8a3bc5696a43a05031fffa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67efe2db7bdaa7df5a24849c8ab7aef0"><td class="memItemLeft" align="right" valign="top"><a id="a67efe2db7bdaa7df5a24849c8ab7aef0" name="a67efe2db7bdaa7df5a24849c8ab7aef0"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>state_changed_with_timeout</b> ()</td></tr>
+<tr class="memdesc:a67efe2db7bdaa7df5a24849c8ab7aef0"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if this state was reached with a timeout <br /></td></tr>
 <tr class="separator:a67efe2db7bdaa7df5a24849c8ab7aef0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1162716e1fd3a110b1c221334fb7d056"><td class="memItemLeft" align="right" valign="top"><a id="a1162716e1fd3a110b1c221334fb7d056" name="a1162716e1fd3a110b1c221334fb7d056"></a>
 State&#160;</td><td class="memItemRight" valign="bottom"><b>get_state</b> () const</td></tr>
@@ -121,12 +127,69 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>skip_timeout</b> ()</
 <tr class="separator:aa60465a6260a497a1119daa989a3e716"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34d334f67a4c65c8e378d31140e1d95f"><td class="memItemLeft" align="right" valign="top"><a id="a34d334f67a4c65c8e378d31140e1d95f" name="a34d334f67a4c65c8e378d31140e1d95f"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_state_raised_time</b> () const</td></tr>
+<tr class="memdesc:a34d334f67a4c65c8e378d31140e1d95f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the time at which this state was raised. <br /></td></tr>
 <tr class="separator:a34d334f67a4c65c8e378d31140e1d95f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename State&gt;<br />
-class StateMachine&lt; State &gt;</div><p>Define a generic state machina logic </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+class StateMachine&lt; State &gt;</div><p>Define a state machine. </p>
+<p>Define a generic state machina logic </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a05f0a99d2ae8fc0a0eb8c3eb28d0f1d9" name="a05f0a99d2ae8fc0a0eb8c3eb28d0f1d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05f0a99d2ae8fc0a0eb8c3eb28d0f1d9">&#9670;&#160;</a></span>StateMachine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename State &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classStateMachine.html">StateMachine</a>&lt; State &gt;<a class="el" href="classStateMachine.html">::StateMachine</a> </td>
+          <td>(</td>
+          <td class="paramtype">const State&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>timeout</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const State&#160;</td>
+          <td class="paramname"><em>stateOnTimeout</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a state machine from the first given state, with a timeout to another. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>The initial state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">timeout</td><td>The timeout after which we switch to the fallback state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stateOnTimeout</td><td>Falback state, reached on timeout </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="a7b59fe366a1a78f6e1e02fbf619e414a" name="a7b59fe366a1a78f6e1e02fbf619e414a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7b59fe366a1a78f6e1e02fbf619e414a">&#9670;&#160;</a></span>set_state() <span class="overload">[1/2]</span></h2>
 
@@ -167,6 +230,7 @@ template&lt;typename State &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>The new state to set </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">forceUpdate</td><td>Force the state update, even if the state is already active </td></tr>
   </table>
   </dd>
 </dl>
@@ -221,7 +285,7 @@ template&lt;typename State &gt; </div>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>the new state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">timeout</td><td>The time out delay after which the state will switch automatically to stateOnTimeout </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">stateOnTimeout</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stateOnTimeout</td><td>State to reach after the timeout </td></tr>
   </table>
   </dd>
 </dl>

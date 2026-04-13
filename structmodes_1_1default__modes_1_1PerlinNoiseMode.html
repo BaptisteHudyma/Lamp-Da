@@ -82,6 +82,11 @@ $(function() {
   <div class="headertitle"><div class="title">modes::default_modes::PerlinNoiseMode Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>3D perlin noise on the lamp surface.  
+ <a href="structmodes_1_1default__modes_1_1PerlinNoiseMode.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="perlin__noise_8hpp_source.html">perlin_noise.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for modes::default_modes::PerlinNoiseMode:</div>
 <div class="dyncontent">
@@ -104,9 +109,10 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>on_enter_mode<
 <tr class="separator:a3c6076b9abaa56b15bc9a94e8fd7e178"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af4524cc4a5f6df92d580e7fc12c36346"><td class="memItemLeft" align="right" valign="top"><a id="af4524cc4a5f6df92d580e7fc12c36346" name="af4524cc4a5f6df92d580e7fc12c36346"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>custom_ramp_update</b> (auto &amp;ctx, uint8_t rampValue)</td></tr>
+<tr class="memdesc:af4524cc4a5f6df92d580e7fc12c36346"><td class="mdescLeft">&#160;</td><td class="mdescRight">User ramp changes the color palette. <br /></td></tr>
 <tr class="separator:af4524cc4a5f6df92d580e7fc12c36346"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4ce7fdd69c684d13a24a696b0e241c2"><td class="memItemLeft" align="right" valign="top"><a id="ae4ce7fdd69c684d13a24a696b0e241c2" name="ae4ce7fdd69c684d13a24a696b0e241c2"></a>
-static int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_next_speed</b> (auto &amp;ctx, const uint32_t position, int16_t speed)</td></tr>
+<tr class="memitem:ae4ce7fdd69c684d13a24a696b0e241c2"><td class="memItemLeft" align="right" valign="top">static int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1default__modes_1_1PerlinNoiseMode.html#ae4ce7fdd69c684d13a24a696b0e241c2">get_next_speed</a> (auto &amp;ctx, const uint32_t position, int16_t speed)</td></tr>
+<tr class="memdesc:ae4ce7fdd69c684d13a24a696b0e241c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute the next speed from the current parameters. This function prevent overflow by controling the speed between two bounds.  <br /></td></tr>
 <tr class="separator:ae4ce7fdd69c684d13a24a696b0e241c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a969e4e98be975333ab610d05adbf7513"><td class="memItemLeft" align="right" valign="top"><a id="a969e4e98be975333ab610d05adbf7513" name="a969e4e98be975333ab610d05adbf7513"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto &amp;ctx)</td></tr>
@@ -146,9 +152,11 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a5da02a718fcb7fa494ff70a748d1bec4"><td class="memItemLeft" align="right" valign="top"><a id="a5da02a718fcb7fa494ff70a748d1bec4" name="a5da02a718fcb7fa494ff70a748d1bec4"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasCustomRamp</b> = true</td></tr>
+<tr class="memdesc:a5da02a718fcb7fa494ff70a748d1bec4"><td class="mdescLeft">&#160;</td><td class="mdescRight">hint manager to save our custom ramp <br /></td></tr>
 <tr class="separator:a5da02a718fcb7fa494ff70a748d1bec4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe572fe07a4ff27e88cf14257809990c"><td class="memItemLeft" align="right" valign="top"><a id="abe572fe07a4ff27e88cf14257809990c" name="abe572fe07a4ff27e88cf14257809990c"></a>
 static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>bufferIndexToUse</b> = 0</td></tr>
+<tr class="memdesc:abe572fe07a4ff27e88cf14257809990c"><td class="mdescLeft">&#160;</td><td class="mdescRight">index of the buffer used in this mode <br /></td></tr>
 <tr class="separator:abe572fe07a4ff27e88cf14257809990c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84e8fe859e3cab35c52c1cb5535a31fa"><td class="memItemLeft" align="right" valign="top"><a id="a84e8fe859e3cab35c52c1cb5535a31fa" name="a84e8fe859e3cab35c52c1cb5535a31fa"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
@@ -172,7 +180,9 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <tr class="memdesc:ac60ff94998743c88b0463e25235e2244"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store identifier for persistent storage (optional)  <br /></td></tr>
 <tr class="separator:ac60ff94998743c88b0463e25235e2244"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>3D perlin noise on the lamp surface. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a869b044a34d61d2803bd59c59a39f630" name="a869b044a34d61d2803bd59c59a39f630"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a869b044a34d61d2803bd59c59a39f630">&#9670;&#160;</a></span>brightness_update()</h2>
 
@@ -326,6 +336,59 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Returns True if default action must be prevented </dd></dl>
 <dl class="section remark"><dt>Remarks</dt><dd>When <code>isEndOfHoldEvent</code> is True, then <code>holdDuration</code> is zero </dd></dl>
+
+</div>
+</div>
+<a id="ae4ce7fdd69c684d13a24a696b0e241c2" name="ae4ce7fdd69c684d13a24a696b0e241c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4ce7fdd69c684d13a24a696b0e241c2">&#9670;&#160;</a></span>get_next_speed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int16_t modes::default_modes::PerlinNoiseMode::get_next_speed </td>
+          <td>(</td>
+          <td class="paramtype">auto &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>speed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>compute the next speed from the current parameters. This function prevent overflow by controling the speed between two bounds. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">ctx</td><td>Contrext object of the mode </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">position</td><td>Actual position of the noise </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">speed</td><td>Actual speed of the noise </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The nex speed </dd></dl>
 
 </div>
 </div>
@@ -671,7 +734,8 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// ... (use rampValue to pick a color or something) ...</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1default__modes_1_1PerlinNoiseMode.html#a5da02a718fcb7fa494ff70a748d1bec4">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1PerlinNoiseMode_html_a5da02a718fcb7fa494ff70a748d1bec4"><div class="ttname"><a href="structmodes_1_1default__modes_1_1PerlinNoiseMode.html#a5da02a718fcb7fa494ff70a748d1bec4">modes::default_modes::PerlinNoiseMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">hint manager to save our custom ramp</div><div class="ttdef"><b>Definition:</b> perlin_noise.hpp:23</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
 <div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>
@@ -685,7 +749,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// values (rampValue, indexValue) are remembered by default</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1default__modes_1_1PerlinNoiseMode.html#a5da02a718fcb7fa494ff70a748d1bec4">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
 </div><!-- fragment --><p>These are the two always-available persistent state that a mode can configure by default. However, for more advanced modes (like games, with a list of high-scores, for example) more flexibility can be required.</p>
 <p>If you need such extended storage, see <a class="el" href="structmodes_1_1ContextTy_1_1KeyProxy.html" title="(store) Binds a local variable of type T to key in storage (with automatic read &amp; save)">ContextTy::KeyProxy</a> for usage.</p>
 <p>If you don't need these capabilities, just ignore this identifier :) </p>

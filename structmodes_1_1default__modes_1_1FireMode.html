@@ -83,7 +83,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Emulate a fireplace, optionally sound-sensitive.  
+<p>Emulate a fireplace, optionally sound-sensitive. Based on "Perlin noise fire procedure" - ldirko. <a href="https://editor.soulmatelights.com/gallery/234-fire">https://editor.soulmatelights.com/gallery/234-fire</a>.  
  <a href="structmodes_1_1default__modes_1_1FireMode.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="fireplace_8hpp_source.html">fireplace.hpp</a>&gt;</code></p>
@@ -159,7 +159,7 @@ static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 <tr class="memdesc:adc903171413879ab7adb62f454a5dbd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Noise scaling (Y direction) <br /></td></tr>
 <tr class="separator:adc903171413879ab7adb62f454a5dbd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae5a00cbab884f967055096ef81fe7301"><td class="memItemLeft" align="right" valign="top"><a id="ae5a00cbab884f967055096ef81fe7301" name="ae5a00cbab884f967055096ef81fe7301"></a>
-static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>palette</b> = colors::PaletteHeatColors</td></tr>
+static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>palette</b> = <a class="el" href="namespacemodes_1_1colors.html#a5d6b28d58b8a144bfae6657fe847c5ae">colors::PaletteHeatColors</a></td></tr>
 <tr class="memdesc:ae5a00cbab884f967055096ef81fe7301"><td class="mdescLeft">&#160;</td><td class="mdescRight">Palette used for fire colors. <br /></td></tr>
 <tr class="separator:ae5a00cbab884f967055096ef81fe7301"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84e8fe859e3cab35c52c1cb5535a31fa"><td class="memItemLeft" align="right" valign="top"><a id="a84e8fe859e3cab35c52c1cb5535a31fa" name="a84e8fe859e3cab35c52c1cb5535a31fa"></a>
@@ -185,7 +185,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <tr class="separator:ac60ff94998743c88b0463e25235e2244"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Emulate a fireplace, optionally sound-sensitive. </p>
+<div class="textblock"><p>Emulate a fireplace, optionally sound-sensitive. Based on "Perlin noise fire procedure" - ldirko. <a href="https://editor.soulmatelights.com/gallery/234-fire">https://editor.soulmatelights.com/gallery/234-fire</a>. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a869b044a34d61d2803bd59c59a39f630" name="a869b044a34d61d2803bd59c59a39f630"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a869b044a34d61d2803bd59c59a39f630">&#9670;&#160;</a></span>brightness_update()</h2>
@@ -733,7 +733,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1default__modes_1_1FireMode.html#a14824444c1151454be759b8e3bf626b9">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
-<div class="ttc" id="astructmodes_1_1default__modes_1_1FireMode_html_a14824444c1151454be759b8e3bf626b9"><div class="ttname"><a href="structmodes_1_1default__modes_1_1FireMode.html#a14824444c1151454be759b8e3bf626b9">modes::default_modes::FireMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">Fire custom ramp sets how sensitive it is to ambiant sound.</div><div class="ttdef"><b>Definition:</b> fireplace.hpp:25</div></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1FireMode_html_a14824444c1151454be759b8e3bf626b9"><div class="ttname"><a href="structmodes_1_1default__modes_1_1FireMode.html#a14824444c1151454be759b8e3bf626b9">modes::default_modes::FireMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">Fire custom ramp sets how sensitive it is to ambiant sound.</div><div class="ttdef"><b>Definition:</b> fireplace.hpp:26</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
 <div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>

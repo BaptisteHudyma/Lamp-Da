@@ -88,59 +88,60 @@ $(function() {
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacemodes_1_1default__modes.html">modes::default_modes</a> {</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">// By: Stepko</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">// https://editor.soulmatelights.com/gallery/884-drift</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">// Modified by: Andrew Tuline</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structmodes_1_1default__modes_1_1SpiralMode.html">   17</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structmodes_1_1default__modes_1_1SpiralMode.html">SpiralMode</a> : <span class="keyword">public</span> <a class="code hl_struct" href="structmodes_1_1BasicMode.html">BasicMode</a></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html">   19</a></span>  <span class="keyword">struct </span><a class="code hl_struct" href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html">StateTy</a></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  {</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    uint8_t fade;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    uint8_t intensity;</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    uint8_t speed;</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_typedef" href="namespacemodes_1_1colors.html#afd20597be58f023b88be9b2215322db8">colors::PaletteTy</a> palette;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  };</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> on_enter_mode(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  {</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    ctx.state.fade = 64;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    ctx.state.intensity = 64;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    ctx.state.speed = 250;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    ctx.state.palette = <a class="code hl_variable" href="namespacemodes_1_1colors.html#a77f0734d192ade7074380f9c5d97b7a6">colors::PaletteRainbowColors</a>;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  }</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  {</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> uint16_t colsCenter = (ctx.lamp.maxWidth &gt;&gt; 1) + ctx.lamp.maxWidth % 2;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> uint16_t rowsCenter = (ctx.lamp.maxHeight &gt;&gt; 1) + ctx.lamp.maxHeight % 2;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> uint16_t maxDim = MAX(ctx.lamp.maxWidth, ctx.lamp.maxHeight) / 2;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    ctx.lamp.fadeToBlackBy(ctx.state.fade);</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> t = 4 * ctx.lamp.tick / (256 - ctx.state.speed);</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> t_20 = t / 20; <span class="comment">// softhack007: pre-calculating this gives about 10% speedup</span></div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">for</span> (<span class="keywordtype">float</span> i = 1; i &lt; maxDim; i += 0.25)</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    {</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>      <span class="keywordtype">float</span> angle = to_radians(t * (maxDim - i));</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>      uint16_t myX = colsCenter + (sin_t(angle) * i);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>      uint16_t myY = rowsCenter + (cos_t(angle) * i);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>      ctx.lamp.setPixelColorXY(myX, myY, <a class="code hl_function" href="namespacemodes_1_1colors.html#aff685262613563f6f0dd282361dde406">colors::from_palette</a>((uint8_t)((i * 20) + t_20), ctx.state.palette));</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    ctx.lamp.blur(ctx.state.intensity &gt;&gt; 3);</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  }</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>} <span class="comment">// namespace modes::default_modes</span></div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structmodes_1_1default__modes_1_1SpiralMode.html">   20</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structmodes_1_1default__modes_1_1SpiralMode.html">SpiralMode</a> : <span class="keyword">public</span> <a class="code hl_struct" href="structmodes_1_1BasicMode.html">BasicMode</a></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>{</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html">   22</a></span>  <span class="keyword">struct </span><a class="code hl_struct" href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html">StateTy</a></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>  {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html#a9e5ad1a3255e3094daf494b747a21c00">   25</a></span>    uint8_t <a class="code hl_variable" href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html#a9e5ad1a3255e3094daf494b747a21c00">fade</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html#a90ee7343f5185f45b8a09a4ca1e7b865">   27</a></span>    uint8_t <a class="code hl_variable" href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html#a90ee7343f5185f45b8a09a4ca1e7b865">intensity</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html#a4795e7774439477670859f8ce9968d99">   29</a></span>    uint8_t <a class="code hl_variable" href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html#a4795e7774439477670859f8ce9968d99">speed</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html#a9d5187978b1747ad70275122ea7236cd">   31</a></span>    <a class="code hl_typedef" href="namespacemodes_1_1colors.html#afd20597be58f023b88be9b2215322db8">colors::PaletteTy</a> <a class="code hl_variable" href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html#a9d5187978b1747ad70275122ea7236cd">palette</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  };</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> on_enter_mode(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    ctx.state.fade = 64;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    ctx.state.intensity = 64;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    ctx.state.speed = 250;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    ctx.state.palette = <a class="code hl_variable" href="namespacemodes_1_1colors.html#a77f0734d192ade7074380f9c5d97b7a6">colors::PaletteRainbowColors</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> uint16_t colsCenter = (ctx.lamp.maxWidth &gt;&gt; 1) + ctx.lamp.maxWidth % 2;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> uint16_t rowsCenter = (ctx.lamp.maxHeight &gt;&gt; 1) + ctx.lamp.maxHeight % 2;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> uint16_t maxDim = MAX(ctx.lamp.maxWidth, ctx.lamp.maxHeight) / 2;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    ctx.lamp.fadeToBlackBy(ctx.state.fade);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> t = 4 * ctx.lamp.tick / (256 - ctx.state.speed);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> t_20 = t / 20; <span class="comment">// softhack007: pre-calculating this gives about 10% speedup</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">for</span> (<span class="keywordtype">float</span> i = 1; i &lt; maxDim; i += 0.25)</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>      <span class="keywordtype">float</span> angle = to_radians(t * (maxDim - i));</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>      uint16_t myX = colsCenter + (sin_t(angle) * i);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>      uint16_t myY = rowsCenter + (cos_t(angle) * i);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>      ctx.lamp.setPixelColorXY(myX, myY, <a class="code hl_function" href="namespacemodes_1_1colors.html#aff685262613563f6f0dd282361dde406">colors::from_palette</a>((uint8_t)((i * 20) + t_20), ctx.state.palette));</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    ctx.lamp.blur(ctx.state.intensity &gt;&gt; 3);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>};</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>} <span class="comment">// namespace modes::default_modes</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="anamespacemodes_1_1colors_html_a77f0734d192ade7074380f9c5d97b7a6"><div class="ttname"><a href="namespacemodes_1_1colors.html#a77f0734d192ade7074380f9c5d97b7a6">modes::colors::PaletteRainbowColors</a></div><div class="ttdeci">static constexpr PaletteTy PaletteRainbowColors</div><div class="ttdoc">HSV Rainbow.</div><div class="ttdef"><b>Definition:</b> palettes.hpp:359</div></div>
 <div class="ttc" id="anamespacemodes_1_1colors_html_afd20597be58f023b88be9b2215322db8"><div class="ttname"><a href="namespacemodes_1_1colors.html#afd20597be58f023b88be9b2215322db8">modes::colors::PaletteTy</a></div><div class="ttdeci">std::array&lt; uint32_t, 16 &gt; PaletteTy</div><div class="ttdoc">Palette types.</div><div class="ttdef"><b>Definition:</b> palettes.hpp:17</div></div>
-<div class="ttc" id="anamespacemodes_1_1colors_html_aff685262613563f6f0dd282361dde406"><div class="ttname"><a href="namespacemodes_1_1colors.html#aff685262613563f6f0dd282361dde406">modes::colors::from_palette</a></div><div class="ttdeci">static constexpr uint32_t from_palette(UIntTy index, const PaletteTy &amp;palette, uint8_t brightness=255)</div><div class="ttdoc">Return a color from a palette.</div><div class="ttdef"><b>Definition:</b> palettes.hpp:499</div></div>
+<div class="ttc" id="anamespacemodes_1_1colors_html_aff685262613563f6f0dd282361dde406"><div class="ttname"><a href="namespacemodes_1_1colors.html#aff685262613563f6f0dd282361dde406">modes::colors::from_palette</a></div><div class="ttdeci">static constexpr uint32_t from_palette(UIntTy index, const PaletteTy &amp;palette, uint8_t brightness=255)</div><div class="ttdoc">Return a color from a palette.</div><div class="ttdef"><b>Definition:</b> palettes.hpp:502</div></div>
 <div class="ttc" id="anamespacemodes_1_1default__modes_html"><div class="ttname"><a href="namespacemodes_1_1default__modes.html">modes::default_modes</a></div><div class="ttdoc">Basic &quot;default&quot; modes included with the hardware.</div><div class="ttdef"><b>Definition:</b> aurora.hpp:12</div></div>
 <div class="ttc" id="apalettes_8hpp_html"><div class="ttname"><a href="palettes_8hpp.html">palettes.hpp</a></div><div class="ttdoc">Manipulate color palettes.</div></div>
 <div class="ttc" id="astructmodes_1_1BasicMode_html"><div class="ttname"><a href="structmodes_1_1BasicMode.html">modes::BasicMode</a></div><div class="ttdoc">Parent object for all custom user modes.</div><div class="ttdef"><b>Definition:</b> mode_type.hpp:53</div></div>
-<div class="ttc" id="astructmodes_1_1default__modes_1_1SpiralMode_1_1StateTy_html"><div class="ttname"><a href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html">modes::default_modes::SpiralMode::StateTy</a></div><div class="ttdef"><b>Definition:</b> spiral.hpp:20</div></div>
-<div class="ttc" id="astructmodes_1_1default__modes_1_1SpiralMode_html"><div class="ttname"><a href="structmodes_1_1default__modes_1_1SpiralMode.html">modes::default_modes::SpiralMode</a></div><div class="ttdef"><b>Definition:</b> spiral.hpp:18</div></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1SpiralMode_1_1StateTy_html"><div class="ttname"><a href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html">modes::default_modes::SpiralMode::StateTy</a></div><div class="ttdef"><b>Definition:</b> spiral.hpp:23</div></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1SpiralMode_1_1StateTy_html_a4795e7774439477670859f8ce9968d99"><div class="ttname"><a href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html#a4795e7774439477670859f8ce9968d99">modes::default_modes::SpiralMode::StateTy::speed</a></div><div class="ttdeci">uint8_t speed</div><div class="ttdoc">rotation speed</div><div class="ttdef"><b>Definition:</b> spiral.hpp:29</div></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1SpiralMode_1_1StateTy_html_a90ee7343f5185f45b8a09a4ca1e7b865"><div class="ttname"><a href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html#a90ee7343f5185f45b8a09a4ca1e7b865">modes::default_modes::SpiralMode::StateTy::intensity</a></div><div class="ttdeci">uint8_t intensity</div><div class="ttdoc">blue intensity</div><div class="ttdef"><b>Definition:</b> spiral.hpp:27</div></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1SpiralMode_1_1StateTy_html_a9d5187978b1747ad70275122ea7236cd"><div class="ttname"><a href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html#a9d5187978b1747ad70275122ea7236cd">modes::default_modes::SpiralMode::StateTy::palette</a></div><div class="ttdeci">colors::PaletteTy palette</div><div class="ttdoc">color to use</div><div class="ttdef"><b>Definition:</b> spiral.hpp:31</div></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1SpiralMode_1_1StateTy_html_a9e5ad1a3255e3094daf494b747a21c00"><div class="ttname"><a href="structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html#a9e5ad1a3255e3094daf494b747a21c00">modes::default_modes::SpiralMode::StateTy::fade</a></div><div class="ttdeci">uint8_t fade</div><div class="ttdoc">fade rate</div><div class="ttdef"><b>Definition:</b> spiral.hpp:25</div></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1SpiralMode_html"><div class="ttname"><a href="structmodes_1_1default__modes_1_1SpiralMode.html">modes::default_modes::SpiralMode</a></div><div class="ttdoc">Display a 2D rotating spiral. By: Stepko. https://editor.soulmatelights.com/gallery/884-drift....</div><div class="ttdef"><b>Definition:</b> spiral.hpp:21</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['on_5fenter_5fmode_0',['on_enter_mode',['../structmodes_1_1ContextTy.html#acd071319d68ddc7bec94291dfc320013',1,'modes::ContextTy::on_enter_mode()'],['../structmodes_1_1BasicMode.html#a8a8fa107d17ae356ce19dfbfa777479c',1,'modes::BasicMode::on_enter_mode()']]],
-  ['on_5fexit_5fmode_1',['on_exit_mode',['../structmodes_1_1ContextTy.html#aad245bd4dde3982bd5691860dad7d09b',1,'modes::ContextTy::on_exit_mode()'],['../structmodes_1_1BasicMode.html#a3c63f5b9ac20c889608ee9b618954068',1,'modes::BasicMode::on_exit_mode()']]],
-  ['on_5ftab_5fchanged_2',['on_tab_changed',['../classlampda__gui_1_1FirmwareApp.html#aa782bed00adfbf9500846b49afa7af45',1,'lampda_gui::FirmwareApp']]],
-  ['open_5fserial_3',['open_serial',['../classlampda__gui_1_1TabSerialComm.html#aad15c7a71223c2186d8f9cafe20e1e8e',1,'lampda_gui::TabSerialComm']]]
+  ['makebubbles_0',['makeBubbles',['../structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode.html#a45ee6d1758f12409621c98b34438235e',1,'modes::custom::nudz::NudzBeerGlassMode']]],
+  ['max_5fbin_5ffrequency_1',['max_bin_frequency',['../classFftAnalyzer.html#a7af01b8b7c31a865bf97994620247ad6',1,'FftAnalyzer']]],
+  ['medium_5fbin_5ffrequency_2',['medium_bin_frequency',['../classFftAnalyzer.html#a0ef3b200b89e38533a0ed652c48069c1',1,'FftAnalyzer']]],
+  ['migrateifneeded_3',['migrateIfNeeded',['../namespacemodes_1_1store.html#af5ceb2911462f4e462a30ab650bd7a4f',1,'modes::store']]],
+  ['min_5fbin_5ffrequency_4',['min_bin_frequency',['../classFftAnalyzer.html#a12b734a2681bfcfc3685d151ef6bfb38',1,'FftAnalyzer']]],
+  ['multiply_5',['multiply',['../structvec2d.html#abd6ed22f15940f10bceb76fcb36d0de1',1,'vec2d::multiply(const vec2d &amp;other) const'],['../structvec2d.html#aadc34f2901573caf63a0f27a0ab0805c',1,'vec2d::multiply(const float mult) const'],['../structvec3d.html#a138c537c61571650f6d0c826d54cf9ab',1,'vec3d::multiply(const vec3d &amp;other) const'],['../structvec3d.html#a9d3f2cf6cb8450a40e4327149ba25eae',1,'vec3d::multiply(const float mult) const'],['../structvec4d.html#a057a9fc075bcaca20d13cf2df4356254',1,'vec4d::multiply(const vec4d &amp;other) const'],['../structvec4d.html#a3fb3b840d7091e63d9776dc777dcbbdf',1,'vec4d::multiply(const float mult) const']]]
 ];

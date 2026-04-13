@@ -83,7 +83,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Emulate a beat sync.  
+<p>Emulate falling rain using the IMU. Interaction with the susnet timer to fade out the rain and make it stop at the same time then the lamp.  
  <a href="structmodes_1_1default__modes_1_1RainMode.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="rain__mode_8hpp_source.html">rain_mode.hpp</a>&gt;</code></p>
@@ -109,9 +109,11 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>on_enter_mode<
 <tr class="separator:a60e6516ddbce7f768a08d7553273c8a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab34ae8310b1a0fd334289d8c056aca3f"><td class="memItemLeft" align="right" valign="top"><a id="ab34ae8310b1a0fd334289d8c056aca3f" name="ab34ae8310b1a0fd334289d8c056aca3f"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>custom_ramp_update</b> (auto &amp;ctx, uint8_t rampValue)</td></tr>
+<tr class="memdesc:ab34ae8310b1a0fd334289d8c056aca3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom ramp controls the rain density. <br /></td></tr>
 <tr class="separator:ab34ae8310b1a0fd334289d8c056aca3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00e1cd78f04b895967352a516aaa69ce"><td class="memItemLeft" align="right" valign="top"><a id="a00e1cd78f04b895967352a516aaa69ce" name="a00e1cd78f04b895967352a516aaa69ce"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>sunset_update</b> (auto &amp;ctx, float progress)</td></tr>
+<tr class="memdesc:a00e1cd78f04b895967352a516aaa69ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sunset timer will fade out the rain to zero. <br /></td></tr>
 <tr class="separator:a00e1cd78f04b895967352a516aaa69ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0c86fe85dc9be93a8bf7b1c4f5131b2"><td class="memItemLeft" align="right" valign="top"><a id="ab0c86fe85dc9be93a8bf7b1c4f5131b2" name="ab0c86fe85dc9be93a8bf7b1c4f5131b2"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto &amp;ctx)</td></tr>
@@ -148,15 +150,19 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a5f8b2a33f38925aae8a673be32d19399"><td class="memItemLeft" align="right" valign="top"><a id="a5f8b2a33f38925aae8a673be32d19399" name="a5f8b2a33f38925aae8a673be32d19399"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasCustomRamp</b> = true</td></tr>
+<tr class="memdesc:a5f8b2a33f38925aae8a673be32d19399"><td class="mdescLeft">&#160;</td><td class="mdescRight">hint manager to save our custom ramp <br /></td></tr>
 <tr class="separator:a5f8b2a33f38925aae8a673be32d19399"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa64354d4599e6de49312f5358bf287b7"><td class="memItemLeft" align="right" valign="top"><a id="aa64354d4599e6de49312f5358bf287b7" name="aa64354d4599e6de49312f5358bf287b7"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = true</td></tr>
+<tr class="memdesc:aa64354d4599e6de49312f5358bf287b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">sunset animation on the rain <br /></td></tr>
 <tr class="separator:aa64354d4599e6de49312f5358bf287b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70f24103a0ce08378237574b47b1a29c"><td class="memItemLeft" align="right" valign="top"><a id="a70f24103a0ce08378237574b47b1a29c" name="a70f24103a0ce08378237574b47b1a29c"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lightRainDropsPerSecond</b> = 1</td></tr>
+<tr class="memdesc:a70f24103a0ce08378237574b47b1a29c"><td class="mdescLeft">&#160;</td><td class="mdescRight">average drops per seconds for a light rain <br /></td></tr>
 <tr class="separator:a70f24103a0ce08378237574b47b1a29c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2f41051c0d69a546290e33bf20815de"><td class="memItemLeft" align="right" valign="top"><a id="ab2f41051c0d69a546290e33bf20815de" name="ab2f41051c0d69a546290e33bf20815de"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>heavyRainDropsPerSecond</b> = 700</td></tr>
+<tr class="memdesc:ab2f41051c0d69a546290e33bf20815de"><td class="mdescLeft">&#160;</td><td class="mdescRight">average drops per seconds for heavy rain <br /></td></tr>
 <tr class="separator:ab2f41051c0d69a546290e33bf20815de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad395b58d7d152bee5953ed6223eee854"><td class="memItemLeft" align="right" valign="top"><a id="ad395b58d7d152bee5953ed6223eee854" name="ad395b58d7d152bee5953ed6223eee854"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasBrightCallback</b> = false</td></tr>
@@ -177,7 +183,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <tr class="separator:ac60ff94998743c88b0463e25235e2244"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Emulate a beat sync. </p>
+<div class="textblock"><p>Emulate falling rain using the IMU. Interaction with the susnet timer to fade out the rain and make it stop at the same time then the lamp. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a869b044a34d61d2803bd59c59a39f630" name="a869b044a34d61d2803bd59c59a39f630"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a869b044a34d61d2803bd59c59a39f630">&#9670;&#160;</a></span>brightness_update()</h2>
@@ -631,7 +637,8 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// ... (use rampValue to pick a color or something) ...</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1default__modes_1_1RainMode.html#a5f8b2a33f38925aae8a673be32d19399">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1RainMode_html_a5f8b2a33f38925aae8a673be32d19399"><div class="ttname"><a href="structmodes_1_1default__modes_1_1RainMode.html#a5f8b2a33f38925aae8a673be32d19399">modes::default_modes::RainMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">hint manager to save our custom ramp</div><div class="ttdef"><b>Definition:</b> rain_mode.hpp:21</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
 <div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>
@@ -645,7 +652,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// values (rampValue, indexValue) are remembered by default</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1default__modes_1_1RainMode.html#a5f8b2a33f38925aae8a673be32d19399">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
 </div><!-- fragment --><p>These are the two always-available persistent state that a mode can configure by default. However, for more advanced modes (like games, with a list of high-scores, for example) more flexibility can be required.</p>
 <p>If you need such extended storage, see <a class="el" href="structmodes_1_1ContextTy_1_1KeyProxy.html" title="(store) Binds a local variable of type T to key in storage (with automatic read &amp; save)">ContextTy::KeyProxy</a> for usage.</p>
 <p>If you don't need these capabilities, just ignore this identifier :) </p>

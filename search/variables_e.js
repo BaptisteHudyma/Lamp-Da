@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['rampstartperiodms_0',['rampStartPeriodMs',['../structmodes_1_1DefaultManagerConfig.html#ae073e60e3d4fcfe51a66dece6848a114',1,'modes::DefaultManagerConfig']]],
-  ['raw_5fframe_5fcount_1',['raw_frame_count',['../structmodes_1_1hardware_1_1LampTy.html#acfb2ca0b6a9de9a16fab277de4d67313',1,'modes::hardware::LampTy']]],
-  ['release_2',['release',['../structtcpm__drv.html#aa7a24eba0a979ec4d70f63cb9d430757',1,'tcpm_drv']]],
-  ['renderbluramount_3',['renderBlurAmount',['../structmodes_1_1draw_1_1grid_1_1LineRuleConfig.html#acd0f3712335c11341ccb788d9d5882dd',1,'modes::draw::grid::LineRuleConfig']]],
-  ['requireuserthread_4',['requireUserThread',['../structmodes_1_1BasicMode.html#a3e5ecded9fab3e09fa36ef5c333e0773',1,'modes::BasicMode']]]
+  ['official_5fupdates_0',['official_updates',['../classlampda__gui_1_1FirmwareApp.html#acc092fb7b454c18bc3c79e0666491e75',1,'lampda_gui::FirmwareApp']]],
+  ['output_5fon_5fminutes_1',['output_on_minutes',['../structstatistics_1_1Statistics__t.html#aaa90d3e2f98a7895e0228761c77392fc',1,'statistics::Statistics_t']]],
+  ['outputon_5ftime_5fs_2',['outputOn_time_s',['../namespacestatistics.html#a8d5682b8eb395ce7f3fc4fe09cdbee54',1,'statistics']]],
+  ['outputontimeskey_3',['outputOnTimeSKey',['../namespacestatistics.html#a4effcd2088a30905ae93e0965237c39e',1,'statistics']]]
 ];

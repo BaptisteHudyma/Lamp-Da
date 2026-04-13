@@ -80,29 +80,40 @@ $(function() {
   <div class="headertitle"><div class="title">statistics::Statistics_t Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Store the statistics of the system.  
+ <a href="structstatistics_1_1Statistics__t.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a79678e99a1d3ee697e8bdca55e8355c0"><td class="memItemLeft" align="right" valign="top"><a id="a79678e99a1d3ee697e8bdca55e8355c0" name="a79678e99a1d3ee697e8bdca55e8355c0"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>boot_count</b> = 0</td></tr>
+<tr class="memdesc:a79678e99a1d3ee697e8bdca55e8355c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of timed powered on <br /></td></tr>
 <tr class="separator:a79678e99a1d3ee697e8bdca55e8355c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0578ad6ec4603b3a95b00c5c6675cd3b"><td class="memItemLeft" align="right" valign="top"><a id="a0578ad6ec4603b3a95b00c5c6675cd3b" name="a0578ad6ec4603b3a95b00c5c6675cd3b"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>button_press_count</b> = 0</td></tr>
+<tr class="memdesc:a0578ad6ec4603b3a95b00c5c6675cd3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of button presses. <br /></td></tr>
 <tr class="separator:a0578ad6ec4603b3a95b00c5c6675cd3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28085bf6787b1ef6468c4a37ed014b88"><td class="memItemLeft" align="right" valign="top"><a id="a28085bf6787b1ef6468c4a37ed014b88" name="a28085bf6787b1ef6468c4a37ed014b88"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>system_on_minutes</b> = 0</td></tr>
+<tr class="memdesc:a28085bf6787b1ef6468c4a37ed014b88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the total minutes that the circuit was powered on. Should comparable to output_on_minutes + battery_charge_minutes. <br /></td></tr>
 <tr class="separator:a28085bf6787b1ef6468c4a37ed014b88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa90d3e2f98a7895e0228761c77392fc"><td class="memItemLeft" align="right" valign="top"><a id="aaa90d3e2f98a7895e0228761c77392fc" name="aaa90d3e2f98a7895e0228761c77392fc"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>output_on_minutes</b> = 0</td></tr>
+<tr class="memdesc:aaa90d3e2f98a7895e0228761c77392fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the total minutes that the output has been on. <br /></td></tr>
 <tr class="separator:aaa90d3e2f98a7895e0228761c77392fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace74e111d02d89c8f24f98e1e79b8ff3"><td class="memItemLeft" align="right" valign="top"><a id="ace74e111d02d89c8f24f98e1e79b8ff3" name="ace74e111d02d89c8f24f98e1e79b8ff3"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>battery_charge_minutes</b> = 0</td></tr>
+<tr class="memdesc:ace74e111d02d89c8f24f98e1e79b8ff3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the total minutes that the battery has been charging. <br /></td></tr>
 <tr class="separator:ace74e111d02d89c8f24f98e1e79b8ff3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a92ae08af34c8519cad7e502d11af9cb3"><td class="memItemLeft" align="right" valign="top"><a id="a92ae08af34c8519cad7e502d11af9cb3" name="a92ae08af34c8519cad7e502d11af9cb3"></a>
 std::array&lt; uint32_t, <a class="el" href="namespacestatistics.html#ad39ad0096c9ff2ec84ff7cec66e1a034">alertArraySize</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>alertRaisedCnt</b> = {}</td></tr>
+<tr class="memdesc:a92ae08af34c8519cad7e502d11af9cb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Keep track of the number of times a target alert was raised. <br /></td></tr>
 <tr class="separator:a92ae08af34c8519cad7e502d11af9cb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Store the statistics of the system. </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>src/system/logic/statistics_handler.cpp</li>
 </ul>
 </div><!-- contents -->

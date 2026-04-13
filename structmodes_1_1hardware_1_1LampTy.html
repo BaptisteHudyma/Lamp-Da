@@ -93,6 +93,7 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1hardware_1_1LampTy_1_1LampConfig.html">LampConfig</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store a display config.  <a href="structmodes_1_1hardware_1_1LampTy_1_1LampConfig.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -118,14 +119,14 @@ bool LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>is_blipin
 brightness_t LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>getMaxBrightness</b> () const</td></tr>
 <tr class="memdesc:a1142190804bd195684beee2f83ae9c7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the actual allowed maximum brightness. <br /></td></tr>
 <tr class="separator:a1142190804bd195684beee2f83ae9c7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a055e10c18e345b5d321f198ec65bd236"><td class="memItemLeft" align="right" valign="top"><a id="a055e10c18e345b5d321f198ec65bd236" name="a055e10c18e345b5d321f198ec65bd236"></a>
-void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>tempBrightness</b> (const brightness_t brightness)</td></tr>
+<tr class="memitem:a055e10c18e345b5d321f198ec65bd236"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1hardware_1_1LampTy.html#a055e10c18e345b5d321f198ec65bd236">tempBrightness</a> (const brightness_t brightness)</td></tr>
+<tr class="memdesc:a055e10c18e345b5d321f198ec65bd236"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temporarily set brightness, without affecting brightness navigation.  <br /></td></tr>
 <tr class="separator:a055e10c18e345b5d321f198ec65bd236"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91d30cf18fe4a10850a7d03111254a91"><td class="memItemLeft" align="right" valign="top"><a id="a91d30cf18fe4a10850a7d03111254a91" name="a91d30cf18fe4a10850a7d03111254a91"></a>
-void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>jumpBrightness</b> (const brightness_t brightness)</td></tr>
+<tr class="memitem:a91d30cf18fe4a10850a7d03111254a91"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1hardware_1_1LampTy.html#a91d30cf18fe4a10850a7d03111254a91">jumpBrightness</a> (const brightness_t brightness)</td></tr>
+<tr class="memdesc:a91d30cf18fe4a10850a7d03111254a91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Jump to brightness, affecting the next brightness navigation.  <br /></td></tr>
 <tr class="separator:a91d30cf18fe4a10850a7d03111254a91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec405c31670e7152627035873590c768"><td class="memItemLeft" align="right" valign="top"><a id="aec405c31670e7152627035873590c768" name="aec405c31670e7152627035873590c768"></a>
-brightness_t LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>getBrightness</b> (const bool readPreviousBrightness=false)</td></tr>
+<tr class="memitem:aec405c31670e7152627035873590c768"><td class="memItemLeft" align="right" valign="top">brightness_t LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1hardware_1_1LampTy.html#aec405c31670e7152627035873590c768">getBrightness</a> (const bool readPreviousBrightness=false)</td></tr>
+<tr class="memdesc:aec405c31670e7152627035873590c768"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get brightness of the lamp.  <br /></td></tr>
 <tr class="separator:aec405c31670e7152627035873590c768"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf5a5fe9a0f609a3110f73815445703a"><td class="memItemLeft" align="right" valign="top"><a id="adf5a5fe9a0f609a3110f73815445703a" name="adf5a5fe9a0f609a3110f73815445703a"></a>
 brightness_t LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>getSavedBrightness</b> ()</td></tr>
@@ -182,9 +183,9 @@ uint32_t LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>getPi
 <tr class="memitem:ade08dd5945fc5c9b911ee4eacffbf072"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structmodes_1_1hardware_1_1LampTy.html#ade08dd5945fc5c9b911ee4eacffbf072">setColorsFromBuffer</a> ()</td></tr>
 <tr class="memdesc:ade08dd5945fc5c9b911ee4eacffbf072"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Display <code>bufIdx</code> temporary buffer as LED colors  <br /></td></tr>
 <tr class="separator:ade08dd5945fc5c9b911ee4eacffbf072"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc932843f62590eaff44a32b509aa488"><td class="memTemplParams" colspan="2"><a id="abc932843f62590eaff44a32b509aa488" name="abc932843f62590eaff44a32b509aa488"></a>
-template&lt;uint8_t dstBufIdx = 0, uint8_t srcBufIdx = 1&gt; </td></tr>
-<tr class="memitem:abc932843f62590eaff44a32b509aa488"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>setColorsFromMixedBuffers</b> (float phase)</td></tr>
+<tr class="memitem:abc932843f62590eaff44a32b509aa488"><td class="memTemplParams" colspan="2">template&lt;uint8_t dstBufIdx = 0, uint8_t srcBufIdx = 1&gt; </td></tr>
+<tr class="memitem:abc932843f62590eaff44a32b509aa488"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structmodes_1_1hardware_1_1LampTy.html#abc932843f62590eaff44a32b509aa488">setColorsFromMixedBuffers</a> (float phase)</td></tr>
+<tr class="memdesc:abc932843f62590eaff44a32b509aa488"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mix two colors from a buffer.  <br /></td></tr>
 <tr class="separator:abc932843f62590eaff44a32b509aa488"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab63e2617cde56223a58e97afa444d563"><td class="memTemplParams" colspan="2"><a id="ab63e2617cde56223a58e97afa444d563" name="ab63e2617cde56223a58e97afa444d563"></a>
 template&lt;uint8_t bufIdx = 0&gt; </td></tr>
@@ -217,6 +218,7 @@ Static Public Member Functions</h2></td></tr>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a368507d04cc49cad59a3d4561174af38"><td class="memItemLeft" align="right" valign="top"><a id="a368507d04cc49cad59a3d4561174af38" name="a368507d04cc49cad59a3d4561174af38"></a>
 <a class="el" href="structmodes_1_1hardware_1_1LampTy_1_1LampConfig.html">LampConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><b>config</b></td></tr>
+<tr class="memdesc:a368507d04cc49cad59a3d4561174af38"><td class="mdescLeft">&#160;</td><td class="mdescRight">store a display configuration <br /></td></tr>
 <tr class="separator:a368507d04cc49cad59a3d4561174af38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9361ae0f9e01b5b26bd637c9836ccf8"><td class="memItemLeft" align="right" valign="top">volatile const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1hardware_1_1LampTy.html#ad9361ae0f9e01b5b26bd637c9836ccf8">now</a></td></tr>
 <tr class="memdesc:ad9361ae0f9e01b5b26bd637c9836ccf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">(physical) The "now" on milliseconds, updated just before loop.  <br /></td></tr>
@@ -269,6 +271,7 @@ static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 <tr class="separator:a37180c8cca4575d51fa0ee45e70dd6a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0537e53b0332dcea607cce97c2383d18"><td class="memItemLeft" align="right" valign="top"><a id="a0537e53b0332dcea607cce97c2383d18" name="a0537e53b0332dcea607cce97c2383d18"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>_invShiftResidue</b> = shiftPeriod * (_fwidth - floor(_fwidth - 0.0001))</td></tr>
+<tr class="memdesc:a0537e53b0332dcea607cce97c2383d18"><td class="mdescLeft">&#160;</td><td class="mdescRight">(while shifting every shiftPeriod, we have a residue accumulating) <br /></td></tr>
 <tr class="separator:a0537e53b0332dcea607cce97c2383d18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42a31acca11f6a5d9fc0c96d1d436cd4"><td class="memItemLeft" align="right" valign="top"><a id="a42a31acca11f6a5d9fc0c96d1d436cd4" name="a42a31acca11f6a5d9fc0c96d1d436cd4"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampBodyRadius_mm</b> = _lampBodyRadius_mm</td></tr>
@@ -280,6 +283,7 @@ static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>led
 <tr class="separator:ac66c55cd52aef1b29681a56877bdd836"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d9d8b68401149a3c2488c64d097d890"><td class="memItemLeft" align="right" valign="top"><a id="a8d9d8b68401149a3c2488c64d097d890" name="a8d9d8b68401149a3c2488c64d097d890"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>ledStripLength_mm</b> = _ledStripLength_mm</td></tr>
+<tr class="memdesc:a8d9d8b68401149a3c2488c64d097d890"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy the led strip lenght. <br /></td></tr>
 <tr class="separator:a8d9d8b68401149a3c2488c64d097d890"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b0bc028aaed5bac9d586a71f514a819"><td class="memItemLeft" align="right" valign="top"><a id="a0b0bc028aaed5bac9d586a71f514a819" name="a0b0bc028aaed5bac9d586a71f514a819"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>ledByMeter</b> = _ledByMeter</td></tr>
@@ -287,16 +291,19 @@ static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>led
 <tr class="separator:a0b0bc028aaed5bac9d586a71f514a819"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13734ef91e24c842b669b1b7fc04f38a"><td class="memItemLeft" align="right" valign="top"><a id="a13734ef91e24c842b669b1b7fc04f38a" name="a13734ef91e24c842b669b1b7fc04f38a"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>ledSize_mm</b> = 1000.0f / <a class="el" href="structmodes_1_1hardware_1_1LampTy.html#a0b0bc028aaed5bac9d586a71f514a819">ledByMeter</a></td></tr>
-<tr class="memdesc:a13734ef91e24c842b669b1b7fc04f38a"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of leds per one turn of led strip <br /></td></tr>
+<tr class="memdesc:a13734ef91e24c842b669b1b7fc04f38a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of leds per one turn of led strip. <br /></td></tr>
 <tr class="separator:a13734ef91e24c842b669b1b7fc04f38a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a4de32820048e86614287cfb3c90a63"><td class="memItemLeft" align="right" valign="top"><a id="a4a4de32820048e86614287cfb3c90a63" name="a4a4de32820048e86614287cfb3c90a63"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampBodyCircumpherence_mm</b> = c_TWO_PI * <a class="el" href="structmodes_1_1hardware_1_1LampTy.html#a42a31acca11f6a5d9fc0c96d1d436cd4">lampBodyRadius_mm</a></td></tr>
+<tr class="memdesc:a4a4de32820048e86614287cfb3c90a63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computation of the lamp body circumpherence. <br /></td></tr>
 <tr class="separator:a4a4de32820048e86614287cfb3c90a63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42ce72bc623d6c4e1deac086a5c099e4"><td class="memItemLeft" align="right" valign="top"><a id="a42ce72bc623d6c4e1deac086a5c099e4" name="a42ce72bc623d6c4e1deac086a5c099e4"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>ledPerTurns</b> = lampBodyCircumpherence_mm / <a class="el" href="structmodes_1_1hardware_1_1LampTy.html#a13734ef91e24c842b669b1b7fc04f38a">ledSize_mm</a></td></tr>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>ledPerTurns</b> = <a class="el" href="structmodes_1_1hardware_1_1LampTy.html#a4a4de32820048e86614287cfb3c90a63">lampBodyCircumpherence_mm</a> / <a class="el" href="structmodes_1_1hardware_1_1LampTy.html#a13734ef91e24c842b669b1b7fc04f38a">ledSize_mm</a></td></tr>
+<tr class="memdesc:a42ce72bc623d6c4e1deac086a5c099e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computation of the led count per turns. <br /></td></tr>
 <tr class="separator:a42ce72bc623d6c4e1deac086a5c099e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a194037d5ca0809509aceb89f5a9b1d70"><td class="memItemLeft" align="right" valign="top"><a id="a194037d5ca0809509aceb89f5a9b1d70" name="a194037d5ca0809509aceb89f5a9b1d70"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampHeight_mm</b> = <a class="el" href="structmodes_1_1hardware_1_1LampTy.html#ac66c55cd52aef1b29681a56877bdd836">ledStripWidth_mm</a> * <a class="el" href="structmodes_1_1hardware_1_1LampTy.html#a1ae6c2066d0599fed5b86b878d0e0651">ledCount</a> / ledPerTurns</td></tr>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampHeight_mm</b> = <a class="el" href="structmodes_1_1hardware_1_1LampTy.html#ac66c55cd52aef1b29681a56877bdd836">ledStripWidth_mm</a> * <a class="el" href="structmodes_1_1hardware_1_1LampTy.html#a1ae6c2066d0599fed5b86b878d0e0651">ledCount</a> / <a class="el" href="structmodes_1_1hardware_1_1LampTy.html#a42ce72bc623d6c4e1deac086a5c099e4">ledPerTurns</a></td></tr>
+<tr class="memdesc:a194037d5ca0809509aceb89f5a9b1d70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computation of the lamp height. <br /></td></tr>
 <tr class="separator:a194037d5ca0809509aceb89f5a9b1d70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa29e0ad1ba11776d288e42910d5f85fe"><td class="memItemLeft" align="right" valign="top">static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1hardware_1_1LampTy.html#aa29e0ad1ba11776d288e42910d5f85fe">nbBuffers</a> = _nbBuffers</td></tr>
 <tr class="memdesc:aa29e0ad1ba11776d288e42910d5f85fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Number of color buffers available for direct access  <br /></td></tr>
@@ -651,7 +658,7 @@ template&lt;uint8_t bufIdx = 0, typename T &gt; </div>
 </div><div class="memdoc">
 
 <p>(indexable) Given a LED index, return a corresponding X,Y value </p>
-<p>Uses <a class="el" href="namespacemodes.html#a8bb0fa8b8f080a21f268b050d217bb9b" title="Convert a n index on the LED strip to a matching XY coordinate.">modes::strip_to_XY</a> as implementation (both function are equivalent) </p>
+<p>Uses <a class="el" href="namespacemodes.html#a8bb0fa8b8f080a21f268b050d217bb9b" title="convert strip index to grid coordinates">modes::strip_to_XY</a> as implementation (both function are equivalent) </p>
 
 </div>
 </div>
@@ -690,7 +697,36 @@ template&lt;uint8_t bufIdx = 0, typename T &gt; </div>
 </div><div class="memdoc">
 
 <p>(indexable) Given X,Y coordinate, return a corresponding LED index </p>
-<p>Uses <a class="el" href="namespacemodes.html#ab1743b85a858b051f39d8e1904057677" title="Convert x and y coordinates to a linear position on strip.">modes::to_strip</a> as implementation (both function are equivalent) </p>
+<p>Uses <a class="el" href="namespacemodes.html#a2a24998b4d07653b2dba4d88267a3edb" title="convert grid coordinates to strip index">modes::to_strip</a> as implementation (both function are equivalent) </p>
+
+</div>
+</div>
+<a id="aec405c31670e7152627035873590c768" name="aec405c31670e7152627035873590c768"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec405c31670e7152627035873590c768">&#9670;&#160;</a></span>getBrightness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">brightness_t LMBD_INLINE modes::hardware::LampTy::getBrightness </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>readPreviousBrightness</em> = <code>false</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get brightness of the lamp. </p>
+<p>If <code>readPreviousBrightness</code> is true, return the internally saved brightness state, used for user navigation of brightness. </p>
 
 </div>
 </div>
@@ -751,6 +787,37 @@ template&lt;uint8_t bufIdx = 0&gt; </div>
 
 <p>Get a reference to the <code>bufIdx</code> temporary buffer. </p>
 <p>These buffers can be used for computations by the active mode, but their content may be erased if the mode is reset or if used elsewhere in code. </p>
+
+</div>
+</div>
+<a id="a91d30cf18fe4a10850a7d03111254a91" name="a91d30cf18fe4a10850a7d03111254a91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91d30cf18fe4a10850a7d03111254a91">&#9670;&#160;</a></span>jumpBrightness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LMBD_INLINE modes::hardware::LampTy::jumpBrightness </td>
+          <td>(</td>
+          <td class="paramtype">const brightness_t&#160;</td>
+          <td class="paramname"><em>brightness</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Jump to brightness, affecting the next brightness navigation. </p>
+<p>Skip callbacks.</p>
+<p>Set brightness, affecting internal brightness navigation state, which imply that next time an user increases / lowers brightness, it starts again from the provided brightness.</p>
+<p>Equivalent to <code>setBrightness(true, false, true)</code> </p>
 
 </div>
 </div>
@@ -844,6 +911,42 @@ template&lt;uint8_t bufIdx = 0&gt; </div>
 
 <p>(indexable) Display <code>bufIdx</code> temporary buffer as LED colors </p>
 <p>This <code>memcpy</code> the selected buffer to the internal strip color buffer. </p>
+
+</div>
+</div>
+<a id="abc932843f62590eaff44a32b509aa488" name="abc932843f62590eaff44a32b509aa488"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc932843f62590eaff44a32b509aa488">&#9670;&#160;</a></span>setColorsFromMixedBuffers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;uint8_t dstBufIdx = 0, uint8_t srcBufIdx = 1&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void modes::hardware::LampTy::setColorsFromMixedBuffers </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>phase</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mix two colors from a buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">phase</td><td>Between 0 and 1, the gradient to apply </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -965,6 +1068,37 @@ template&lt;uint8_t bufIdx = 0&gt; </div>
 
 <p>(indexable) Set the X,Y-th LED color </p>
 <p>See modes::fromRGB() to set <code>color</code> </p>
+
+</div>
+</div>
+<a id="a055e10c18e345b5d321f198ec65bd236" name="a055e10c18e345b5d321f198ec65bd236"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a055e10c18e345b5d321f198ec65bd236">&#9670;&#160;</a></span>tempBrightness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LMBD_INLINE modes::hardware::LampTy::tempBrightness </td>
+          <td>(</td>
+          <td class="paramtype">const brightness_t&#160;</td>
+          <td class="paramname"><em>brightness</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Temporarily set brightness, without affecting brightness navigation. </p>
+<p>Skip callbacks.</p>
+<p>Set brightness, without affecting internal brightness navigation state, which imply that next time an user increases / lowers brightness, it starts again from another internal "previously saved" brightness.</p>
+<p>Equivalent to <code>setBrightness(true, false, false)</code> </p>
 
 </div>
 </div>

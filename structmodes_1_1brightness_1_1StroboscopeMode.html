@@ -82,6 +82,11 @@ $(function() {
   <div class="headertitle"><div class="title">modes::brightness::StroboscopeMode Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Very fast on pulse followed by longer off pulses. Make a stroboscopic effect.  
+ <a href="structmodes_1_1brightness_1_1StroboscopeMode.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="brightness__modes_8hpp_source.html">brightness_modes.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for modes::brightness::StroboscopeMode:</div>
 <div class="dyncontent">
@@ -104,9 +109,9 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>on_enter_mode<
 <tr class="separator:a59f5fad9e36fbc94d672bc219f46b51e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a14e067dc39515776d214ef1c8505f3d2"><td class="memItemLeft" align="right" valign="top"><a id="a14e067dc39515776d214ef1c8505f3d2" name="a14e067dc39515776d214ef1c8505f3d2"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>custom_ramp_update</b> (auto &amp;ctx, uint8_t rampValue)</td></tr>
+<tr class="memdesc:a14e067dc39515776d214ef1c8505f3d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">User ramp controls the strob frequency. <br /></td></tr>
 <tr class="separator:a14e067dc39515776d214ef1c8505f3d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a907fffd26791b2653b7b00918a9c6119"><td class="memItemLeft" align="right" valign="top"><a id="a907fffd26791b2653b7b00918a9c6119" name="a907fffd26791b2653b7b00918a9c6119"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto &amp;ctx)</td></tr>
+<tr class="memitem:a907fffd26791b2653b7b00918a9c6119"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1brightness_1_1StroboscopeMode.html#a907fffd26791b2653b7b00918a9c6119">loop</a> (auto &amp;ctx)</td></tr>
 <tr class="separator:a907fffd26791b2653b7b00918a9c6119"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c63f5b9ac20c889608ee9b618954068"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1BasicMode.html#a3c63f5b9ac20c889608ee9b618954068">on_exit_mode</a> (auto &amp;ctx)</td></tr>
 <tr class="memdesc:a3c63f5b9ac20c889608ee9b618954068"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when mode goes outside of focus (optional)  <br /></td></tr>
@@ -147,9 +152,11 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasC
 <tr class="separator:a1a49c0d407e329a1a96fdf0924af2531"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a973c4606b86e72f6e7081830baebc4a5"><td class="memItemLeft" align="right" valign="top"><a id="a973c4606b86e72f6e7081830baebc4a5" name="a973c4606b86e72f6e7081830baebc4a5"></a>
 static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>stroboMaxFreq</b> = 1000 * (1 / 30.0f)</td></tr>
+<tr class="memdesc:a973c4606b86e72f6e7081830baebc4a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">maximum allowed stroboscopic frequency in Hertz <br /></td></tr>
 <tr class="separator:a973c4606b86e72f6e7081830baebc4a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a686b175ba152daf07a6605fd6bcc450e"><td class="memItemLeft" align="right" valign="top"><a id="a686b175ba152daf07a6605fd6bcc450e" name="a686b175ba152daf07a6605fd6bcc450e"></a>
 static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>stroboMinFreq</b> = 1000 * (1 / 7.0f)</td></tr>
+<tr class="memdesc:a686b175ba152daf07a6605fd6bcc450e"><td class="mdescLeft">&#160;</td><td class="mdescRight">minimum allowed stroboscopic frequency in hertz <br /></td></tr>
 <tr class="separator:a686b175ba152daf07a6605fd6bcc450e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84e8fe859e3cab35c52c1cb5535a31fa"><td class="memItemLeft" align="right" valign="top"><a id="a84e8fe859e3cab35c52c1cb5535a31fa" name="a84e8fe859e3cab35c52c1cb5535a31fa"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
@@ -173,7 +180,9 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <tr class="memdesc:ac60ff94998743c88b0463e25235e2244"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store identifier for persistent storage (optional)  <br /></td></tr>
 <tr class="separator:ac60ff94998743c88b0463e25235e2244"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Very fast on pulse followed by longer off pulses. Make a stroboscopic effect. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a869b044a34d61d2803bd59c59a39f630" name="a869b044a34d61d2803bd59c59a39f630"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a869b044a34d61d2803bd59c59a39f630">&#9670;&#160;</a></span>brightness_update()</h2>
 
@@ -327,6 +336,33 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Returns True if default action must be prevented </dd></dl>
 <dl class="section remark"><dt>Remarks</dt><dd>When <code>isEndOfHoldEvent</code> is True, then <code>holdDuration</code> is zero </dd></dl>
+
+</div>
+</div>
+<a id="a907fffd26791b2653b7b00918a9c6119" name="a907fffd26791b2653b7b00918a9c6119"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a907fffd26791b2653b7b00918a9c6119">&#9670;&#160;</a></span>loop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void modes::brightness::StroboscopeMode::loop </td>
+          <td>(</td>
+          <td class="paramtype">auto &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>max time of the on pulse, in milliseconds</p>
 
 </div>
 </div>
@@ -667,15 +703,16 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 
 <p>Store identifier for persistent storage (optional) </p>
 <p>By default, all modes are reset upon a shutdown, providing no persistence of their state across several on/off cycles. To expose to the user a way to configure your mode in a persistent fashion, you can use:</p>
-<div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
+<div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="structmodes_1_1brightness_1_1StroboscopeMode.html#a907fffd26791b2653b7b00918a9c6119">loop</a>(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t rampValue = ctx.get_active_custom_ramp();</div>
 <div class="line">  <span class="comment">// ... (use rampValue to pick a color or something) ...</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1brightness_1_1StroboscopeMode.html#a1a49c0d407e329a1a96fdf0924af2531">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
-<div class="ttc" id="astructmodes_1_1brightness_1_1StroboscopeMode_html_a1a49c0d407e329a1a96fdf0924af2531"><div class="ttname"><a href="structmodes_1_1brightness_1_1StroboscopeMode.html#a1a49c0d407e329a1a96fdf0924af2531">modes::brightness::StroboscopeMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">regulate stroboscopic speed</div><div class="ttdef"><b>Definition:</b> brightness_modes.hpp:173</div></div>
+<div class="ttc" id="astructmodes_1_1brightness_1_1StroboscopeMode_html_a1a49c0d407e329a1a96fdf0924af2531"><div class="ttname"><a href="structmodes_1_1brightness_1_1StroboscopeMode.html#a1a49c0d407e329a1a96fdf0924af2531">modes::brightness::StroboscopeMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">regulate stroboscopic speed</div><div class="ttdef"><b>Definition:</b> brightness_modes.hpp:176</div></div>
+<div class="ttc" id="astructmodes_1_1brightness_1_1StroboscopeMode_html_a907fffd26791b2653b7b00918a9c6119"><div class="ttname"><a href="structmodes_1_1brightness_1_1StroboscopeMode.html#a907fffd26791b2653b7b00918a9c6119">modes::brightness::StroboscopeMode::loop</a></div><div class="ttdeci">static void loop(auto &amp;ctx)</div><div class="ttdef"><b>Definition:</b> brightness_modes.hpp:205</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
-<div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
+<div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="structmodes_1_1brightness_1_1StroboscopeMode.html#a907fffd26791b2653b7b00918a9c6119">loop</a>(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>
 <div class="line">  <span class="comment">// ... (use indexValue to change how something works) ...</span></div>
 <div class="line"> </div>

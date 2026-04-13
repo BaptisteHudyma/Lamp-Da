@@ -83,6 +83,11 @@ $(function() {
   <div class="headertitle"><div class="title">modes::automaton::SierpinskiMode Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Draw the famous Sierpinski triangle, with an old CCTV effect.  
+ <a href="structmodes_1_1automaton_1_1SierpinskiMode.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="automaton_8hpp_source.html">automaton.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for modes::automaton::SierpinskiMode:</div>
 <div class="dyncontent">
@@ -104,6 +109,7 @@ Classes</h2></td></tr>
 Public Types</h2></td></tr>
 <tr class="memitem:a42380ad646c48c795548ce2466706f51"><td class="memItemLeft" align="right" valign="top"><a id="a42380ad646c48c795548ce2466706f51" name="a42380ad646c48c795548ce2466706f51"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>GridTy</b> = <a class="el" href="structmodes_1_1draw_1_1grid_1_1LineRule.html">draw::grid::LineRule</a>&lt; <a class="el" href="structmodes_1_1automaton_1_1SierpinskiMode_1_1ConfigTy.html">ConfigTy</a> &gt;</td></tr>
+<tr class="memdesc:a42380ad646c48c795548ce2466706f51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cellular automaton grid type. <br /></td></tr>
 <tr class="separator:a42380ad646c48c795548ce2466706f51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
@@ -152,6 +158,7 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a54240a8cac531931faa200b823c2a525"><td class="memItemLeft" align="right" valign="top"><a id="a54240a8cac531931faa200b823c2a525" name="a54240a8cac531931faa200b823c2a525"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasCustomRamp</b> = true</td></tr>
+<tr class="memdesc:a54240a8cac531931faa200b823c2a525"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hint manager that we have a custom ramp. <br /></td></tr>
 <tr class="separator:a54240a8cac531931faa200b823c2a525"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84e8fe859e3cab35c52c1cb5535a31fa"><td class="memItemLeft" align="right" valign="top"><a id="a84e8fe859e3cab35c52c1cb5535a31fa" name="a84e8fe859e3cab35c52c1cb5535a31fa"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
@@ -175,7 +182,9 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <tr class="memdesc:ac60ff94998743c88b0463e25235e2244"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store identifier for persistent storage (optional)  <br /></td></tr>
 <tr class="separator:ac60ff94998743c88b0463e25235e2244"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Draw the famous Sierpinski triangle, with an old CCTV effect. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a869b044a34d61d2803bd59c59a39f630" name="a869b044a34d61d2803bd59c59a39f630"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a869b044a34d61d2803bd59c59a39f630">&#9670;&#160;</a></span>brightness_update()</h2>
 
@@ -721,7 +730,8 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// ... (use rampValue to pick a color or something) ...</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1automaton_1_1SierpinskiMode.html#a54240a8cac531931faa200b823c2a525">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="ttc" id="astructmodes_1_1automaton_1_1SierpinskiMode_html_a54240a8cac531931faa200b823c2a525"><div class="ttname"><a href="structmodes_1_1automaton_1_1SierpinskiMode.html#a54240a8cac531931faa200b823c2a525">modes::automaton::SierpinskiMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">Hint manager that we have a custom ramp.</div><div class="ttdef"><b>Definition:</b> automaton.hpp:199</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
 <div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>
@@ -735,7 +745,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// values (rampValue, indexValue) are remembered by default</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1automaton_1_1SierpinskiMode.html#a54240a8cac531931faa200b823c2a525">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
 </div><!-- fragment --><p>These are the two always-available persistent state that a mode can configure by default. However, for more advanced modes (like games, with a list of high-scores, for example) more flexibility can be required.</p>
 <p>If you need such extended storage, see <a class="el" href="structmodes_1_1ContextTy_1_1KeyProxy.html" title="(store) Binds a local variable of type T to key in storage (with automatic read &amp; save)">ContextTy::KeyProxy</a> for usage.</p>
 <p>If you don't need these capabilities, just ignore this identifier :) </p>

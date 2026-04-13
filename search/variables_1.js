@@ -1,7 +1,23 @@
 var searchData=
 [
-  ['alertarraysize_0',['alertArraySize',['../namespacestatistics.html#ad39ad0096c9ff2ec84ff7cec66e1a034',1,'statistics']]],
-  ['avgdelta_1',['avgDelta',['../structmodes_1_1audio_1_1SoundEventTy.html#add9b3a6ef7d8783ce69ff05922090a5f',1,'modes::audio::SoundEventTy']]],
-  ['avglevel_2',['avgLevel',['../structmodes_1_1audio_1_1SoundEventTy.html#a5125d74ae9978660c1b6052e47cdba2c',1,'modes::audio::SoundEventTy']]],
-  ['avgmax_3',['avgMax',['../structmodes_1_1audio_1_1SoundEventTy.html#ad19e598864ee43bcdb474ff1487b220e',1,'modes::audio::SoundEventTy']]]
+  ['a_0',['a',['../classutils_1_1ColorSpace_1_1OKLAB.html#a9c63ecf69959a4ab538c4621ca3a8dd4',1,'utils::ColorSpace::OKLAB::a()'],['../classutils_1_1ColorSpace_1_1LAB.html#a52ab9042d3eda36e1dcdfed294d6e91a',1,'utils::ColorSpace::LAB::a()']]],
+  ['accmax_1',['accmax',['../structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#a2829125a215bd4a0370e8ddc59e81d5e',1,'modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
+  ['alertarraysize_2',['alertArraySize',['../namespacestatistics.html#ad39ad0096c9ff2ec84ff7cec66e1a034',1,'statistics']]],
+  ['alertraisedcnt_3',['alertRaisedCnt',['../structstatistics_1_1Statistics__t.html#a92ae08af34c8519cad7e502d11af9cb3',1,'statistics::Statistics_t']]],
+  ['algeacolor_4',['algeaColor',['../structmodes_1_1automaton_1_1BubbleMode.html#a9504a38557ebadc78753440fd6b836de',1,'modes::automaton::BubbleMode']]],
+  ['algeafreq_5',['algeaFreq',['../structmodes_1_1automaton_1_1BubbleMode.html#a2c79d01267b7830ca56a3ab765c5f682',1,'modes::automaton::BubbleMode']]],
+  ['algealength_6',['algeaLength',['../structmodes_1_1automaton_1_1BubbleMode.html#a28f8bd8e758af667303338d1550e005c',1,'modes::automaton::BubbleMode']]],
+  ['algealifetime_7',['algeaLifetime',['../structmodes_1_1automaton_1_1BubbleMode_1_1StateTy.html#a47033f405984641c1b1eeaaaed5d8f89',1,'modes::automaton::BubbleMode::StateTy']]],
+  ['algeapos_8',['algeaPos',['../structmodes_1_1automaton_1_1BubbleMode_1_1StateTy.html#a6f2e25ae348d1201675cf054b986fbc2',1,'modes::automaton::BubbleMode::StateTy']]],
+  ['algeastart_9',['algeaStart',['../structmodes_1_1automaton_1_1BubbleMode_1_1StateTy.html#a322fe96381b210cae338c9d927c2d822',1,'modes::automaton::BubbleMode::StateTy']]],
+  ['algeaswims_10',['algeaSwims',['../structmodes_1_1automaton_1_1BubbleMode.html#a2cd16f73608347159c2e40c6999f5258',1,'modes::automaton::BubbleMode']]],
+  ['all_5frelease_11',['all_release',['../classlampda__gui_1_1TabOfficialUpdate.html#a5f4f53ad5665e536b793db6894f33233',1,'lampda_gui::TabOfficialUpdate']]],
+  ['ampl_12',['ampl',['../structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#a17e587248b89816104516116e5da62e2',1,'modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
+  ['angularspeedgain_13',['angularSpeedGain',['../namespacemodes.html#a9a81a30175c2bda08fa88027c8b8b875',1,'modes']]],
+  ['animationtiming_14',['animationTiming',['../structmodes_1_1default__modes_1_1ColorWipeMode.html#a6393abba16124c8d4e4898cd4360b50e',1,'modes::default_modes::ColorWipeMode::animationTiming()'],['../structmodes_1_1default__modes_1_1DoubleSideFillMode.html#aee7595e9d0c4063ede3b7638a4cab5f4',1,'modes::default_modes::DoubleSideFillMode::animationTiming()'],['../structmodes_1_1default__modes_1_1PingPongMode.html#aca2d1d1a4e208ef1350c6de876b24ea2',1,'modes::default_modes::PingPongMode::animationTiming()']]],
+  ['aremeasuresok_15',['areMeasuresOk',['../structcharger_1_1Charger__t.html#a5de46a9888a4b01210412435bc9dd9f7',1,'charger::Charger_t']]],
+  ['asset_5furl_16',['asset_url',['../classlampda__serial_1_1Release.html#ae7754497aae4a3e8a156338d4a38cfeb',1,'lampda_serial::Release']]],
+  ['avgdelta_17',['avgDelta',['../structmodes_1_1audio_1_1SoundEventTy.html#add9b3a6ef7d8783ce69ff05922090a5f',1,'modes::audio::SoundEventTy']]],
+  ['avglevel_18',['avgLevel',['../structmodes_1_1audio_1_1SoundEventTy.html#a5125d74ae9978660c1b6052e47cdba2c',1,'modes::audio::SoundEventTy']]],
+  ['avgmax_19',['avgMax',['../structmodes_1_1audio_1_1SoundEventTy.html#ad19e598864ee43bcdb474ff1487b220e',1,'modes::audio::SoundEventTy']]]
 ];

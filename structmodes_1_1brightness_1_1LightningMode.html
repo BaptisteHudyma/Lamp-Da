@@ -82,6 +82,11 @@ $(function() {
   <div class="headertitle"><div class="title">modes::brightness::LightningMode Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Emulate lightning in the distance Inspired by Anduril implementation.  
+ <a href="structmodes_1_1brightness_1_1LightningMode.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="brightness__modes_8hpp_source.html">brightness_modes.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for modes::brightness::LightningMode:</div>
 <div class="dyncontent">
@@ -104,6 +109,7 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>on_enter_mode<
 <tr class="separator:a95fa3c9e322f0d2809d04cd6eb555c76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad4887e3ab47d1e4b4b8be57136624707"><td class="memItemLeft" align="right" valign="top"><a id="ad4887e3ab47d1e4b4b8be57136624707" name="ad4887e3ab47d1e4b4b8be57136624707"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>brightness_update</b> (auto &amp;ctx, brightness_t brightness)</td></tr>
+<tr class="memdesc:ad4887e3ab47d1e4b4b8be57136624707"><td class="mdescLeft">&#160;</td><td class="mdescRight">If user update the brighness, do not update the animation. <br /></td></tr>
 <tr class="separator:ad4887e3ab47d1e4b4b8be57136624707"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5aa13bedae7cc2dd0b987f86cef76931"><td class="memItemLeft" align="right" valign="top"><a id="a5aa13bedae7cc2dd0b987f86cef76931" name="a5aa13bedae7cc2dd0b987f86cef76931"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto &amp;ctx)</td></tr>
@@ -143,7 +149,7 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a24f1079bb742187190484534f923eb4d"><td class="memItemLeft" align="right" valign="top"><a id="a24f1079bb742187190484534f923eb4d" name="a24f1079bb742187190484534f923eb4d"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasBrightCallback</b> = true</td></tr>
-<tr class="memdesc:a24f1079bb742187190484534f923eb4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">regulate stroboscopic speed <br /></td></tr>
+<tr class="memdesc:a24f1079bb742187190484534f923eb4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hint manager that we need a brightness callback. <br /></td></tr>
 <tr class="separator:a24f1079bb742187190484534f923eb4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84e8fe859e3cab35c52c1cb5535a31fa"><td class="memItemLeft" align="right" valign="top"><a id="a84e8fe859e3cab35c52c1cb5535a31fa" name="a84e8fe859e3cab35c52c1cb5535a31fa"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
@@ -166,7 +172,9 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <tr class="memdesc:ac60ff94998743c88b0463e25235e2244"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store identifier for persistent storage (optional)  <br /></td></tr>
 <tr class="separator:ac60ff94998743c88b0463e25235e2244"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Emulate lightning in the distance Inspired by Anduril implementation. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="aa0edbfa51e704d9326c14cfd58e65883" name="aa0edbfa51e704d9326c14cfd58e65883"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa0edbfa51e704d9326c14cfd58e65883">&#9670;&#160;</a></span>custom_click()</h2>
 

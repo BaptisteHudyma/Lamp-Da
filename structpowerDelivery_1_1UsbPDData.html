@@ -81,44 +81,59 @@ $(function() {
   <div class="headertitle"><div class="title">powerDelivery::UsbPDData Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>USB power delivery status storage.  
+ <a href="structpowerDelivery_1_1UsbPDData.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a0236fa0bd89b9e343149830636b49c3f"><td class="memItemLeft" align="right" valign="top"><a id="a0236fa0bd89b9e343149830636b49c3f" name="a0236fa0bd89b9e343149830636b49c3f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> ()</td></tr>
+<tr class="memdesc:a0236fa0bd89b9e343149830636b49c3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the values and update status. <br /></td></tr>
 <tr class="separator:a0236fa0bd89b9e343149830636b49c3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf2827e64c68dc63a922b1377bb4e532"><td class="memItemLeft" align="right" valign="top"><a id="aaf2827e64c68dc63a922b1377bb4e532" name="aaf2827e64c68dc63a922b1377bb4e532"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>serial_show</b> ()</td></tr>
+<tr class="memdesc:aaf2827e64c68dc63a922b1377bb4e532"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug to serial output. <br /></td></tr>
 <tr class="separator:aaf2827e64c68dc63a922b1377bb4e532"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a7b31f0acbe3de823181e8dd5f67bd155"><td class="memItemLeft" align="right" valign="top"><a id="a7b31f0acbe3de823181e8dd5f67bd155" name="a7b31f0acbe3de823181e8dd5f67bd155"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isVbusPowered</b></td></tr>
+<tr class="memdesc:a7b31f0acbe3de823181e8dd5f67bd155"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if some voltage is detected on VBUS. <br /></td></tr>
 <tr class="separator:a7b31f0acbe3de823181e8dd5f67bd155"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b538da5d56fbae07ce370a0050b9490"><td class="memItemLeft" align="right" valign="top"><a id="a9b538da5d56fbae07ce370a0050b9490" name="a9b538da5d56fbae07ce370a0050b9490"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isPowerSourceDetected</b></td></tr>
+<tr class="memdesc:a9b538da5d56fbae07ce370a0050b9490"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the cable is plugged to a power source. <br /></td></tr>
 <tr class="separator:a9b538da5d56fbae07ce370a0050b9490"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31741262590175bd5e4163a9d1d0935d"><td class="memItemLeft" align="right" valign="top"><a id="a31741262590175bd5e4163a9d1d0935d" name="a31741262590175bd5e4163a9d1d0935d"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isUsbPd</b></td></tr>
+<tr class="memdesc:a31741262590175bd5e4163a9d1d0935d"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the cable is identifies as PD compatible. <br /></td></tr>
 <tr class="separator:a31741262590175bd5e4163a9d1d0935d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa818f988370dc2e437703ca56fb24fd8"><td class="memItemLeft" align="right" valign="top"><a id="aa818f988370dc2e437703ca56fb24fd8" name="aa818f988370dc2e437703ca56fb24fd8"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>vbusVoltage</b></td></tr>
+<tr class="memdesc:aa818f988370dc2e437703ca56fb24fd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Actual VBUS voltage, in millivolts. <br /></td></tr>
 <tr class="separator:aa818f988370dc2e437703ca56fb24fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a154ea9764c3d5cfd50f69835eaf95d6d"><td class="memItemLeft" align="right" valign="top"><a id="a154ea9764c3d5cfd50f69835eaf95d6d" name="a154ea9764c3d5cfd50f69835eaf95d6d"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxInputCurrent</b></td></tr>
+<tr class="memdesc:a154ea9764c3d5cfd50f69835eaf95d6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">max current input voltage, in milliamps <br /></td></tr>
 <tr class="separator:a154ea9764c3d5cfd50f69835eaf95d6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6d1f51e39afd3bddb9b57f6f8e33911"><td class="memItemLeft" align="right" valign="top"><a id="ab6d1f51e39afd3bddb9b57f6f8e33911" name="ab6d1f51e39afd3bddb9b57f6f8e33911"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxInputVoltage</b></td></tr>
+<tr class="memdesc:ab6d1f51e39afd3bddb9b57f6f8e33911"><td class="mdescLeft">&#160;</td><td class="mdescRight">max input voltage, in millivolts <br /></td></tr>
 <tr class="separator:ab6d1f51e39afd3bddb9b57f6f8e33911"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21312f0e785cdccc9ce126202248ab5d"><td class="memItemLeft" align="right" valign="top"><a id="a21312f0e785cdccc9ce126202248ab5d" name="a21312f0e785cdccc9ce126202248ab5d"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>pdAlgoStatus</b></td></tr>
+<tr class="memdesc:a21312f0e785cdccc9ce126202248ab5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug status for the algorithm. <br /></td></tr>
 <tr class="separator:a21312f0e785cdccc9ce126202248ab5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1e0b1bef8120ba40f504c0a5e55d1ac"><td class="memItemLeft" align="right" valign="top"><a id="ad1e0b1bef8120ba40f504c0a5e55d1ac" name="ad1e0b1bef8120ba40f504c0a5e55d1ac"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasChanged</b> = false</td></tr>
+<tr class="memdesc:ad1e0b1bef8120ba40f504c0a5e55d1ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">when true, this struct has changed ! <br /></td></tr>
 <tr class="separator:ad1e0b1bef8120ba40f504c0a5e55d1ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>USB power delivery status storage. </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>src/system/power/PDlib/power_delivery.cpp</li>
 </ul>
 </div><!-- contents -->

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['groupfor_0',['GroupFor',['../namespacemodes.html#ab78bece6ea407f3a7b5b922d619d2b97',1,'modes']]]
+  ['automatonmodes_0',['AutomatonModes',['../namespacemodes_1_1automaton.html#a398c9e16f21b41b6bf0596cd8980132a',1,'modes::automaton']]]
 ];

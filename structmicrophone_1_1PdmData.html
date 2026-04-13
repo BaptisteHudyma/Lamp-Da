@@ -82,35 +82,48 @@ $(function() {
   <div class="headertitle"><div class="title">microphone::PdmData Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Store the audio data obtained from the microphone.  
+ <a href="structmicrophone_1_1PdmData.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="pdm__handle_8h_source.html">pdm_handle.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aac9050a9ce580959f88d561623b98c9d"><td class="memItemLeft" align="right" valign="top"><a id="aac9050a9ce580959f88d561623b98c9d" name="aac9050a9ce580959f88d561623b98c9d"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_valid</b> () const</td></tr>
+<tr class="memdesc:aac9050a9ce580959f88d561623b98c9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">if this is false, all the data are garbage <br /></td></tr>
 <tr class="separator:aac9050a9ce580959f88d561623b98c9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a5d29f46a0c689602dd2f5428d5c61ef9"><td class="memItemLeft" align="right" valign="top"><a id="a5d29f46a0c689602dd2f5428d5c61ef9" name="a5d29f46a0c689602dd2f5428d5c61ef9"></a>
-std::array&lt; int16_t, SAMPLE_SIZE &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>data</b></td></tr>
+std::array&lt; int16_t, <a class="el" href="structmicrophone_1_1PdmData.html#a99ea71f47fc4995bdf7fdf4a81fe94a0">SAMPLE_SIZE</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>data</b></td></tr>
+<tr class="memdesc:a5d29f46a0c689602dd2f5428d5c61ef9"><td class="mdescLeft">&#160;</td><td class="mdescRight">raw audio data buffer <br /></td></tr>
 <tr class="separator:a5d29f46a0c689602dd2f5428d5c61ef9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3f12ddfbb65249d023332f5896098aa"><td class="memItemLeft" align="right" valign="top"><a id="ae3f12ddfbb65249d023332f5896098aa" name="ae3f12ddfbb65249d023332f5896098aa"></a>
 uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>sampleDuration_us</b></td></tr>
+<tr class="memdesc:ae3f12ddfbb65249d023332f5896098aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">duration of the sample in microseconds <br /></td></tr>
 <tr class="separator:ae3f12ddfbb65249d023332f5896098aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3aa8a1f19021fbf622afe21eb223780a"><td class="memItemLeft" align="right" valign="top"><a id="a3aa8a1f19021fbf622afe21eb223780a" name="a3aa8a1f19021fbf622afe21eb223780a"></a>
 uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>sampleTime_us</b></td></tr>
+<tr class="memdesc:a3aa8a1f19021fbf622afe21eb223780a"><td class="mdescLeft">&#160;</td><td class="mdescRight">time at the start of the sample in microseconds <br /></td></tr>
 <tr class="separator:a3aa8a1f19021fbf622afe21eb223780a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1be0c3b49c86304f2c65c8d7f65309df"><td class="memItemLeft" align="right" valign="top"><a id="a1be0c3b49c86304f2c65c8d7f65309df" name="a1be0c3b49c86304f2c65c8d7f65309df"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>sampleRead</b> = 0</td></tr>
+<tr class="memdesc:a1be0c3b49c86304f2c65c8d7f65309df"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of sound sample in array. Will be &lt;= SAMPLE_SIZE <br /></td></tr>
 <tr class="separator:a1be0c3b49c86304f2c65c8d7f65309df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a99ea71f47fc4995bdf7fdf4a81fe94a0"><td class="memItemLeft" align="right" valign="top"><a id="a99ea71f47fc4995bdf7fdf4a81fe94a0" name="a99ea71f47fc4995bdf7fdf4a81fe94a0"></a>
 static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>SAMPLE_SIZE</b> = 512</td></tr>
+<tr class="memdesc:a99ea71f47fc4995bdf7fdf4a81fe94a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the sound sample. <br /></td></tr>
 <tr class="separator:a99ea71f47fc4995bdf7fdf4a81fe94a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Store the audio data obtained from the microphone. </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>src/system/platform/<a class="el" href="pdm__handle_8h_source.html">pdm_handle.h</a></li>
 </ul>
 </div><!-- contents -->

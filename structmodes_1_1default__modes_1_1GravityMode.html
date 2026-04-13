@@ -83,7 +83,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Emulate a beat sync.  
+<p>Sand particle simulation, synched with the board IMU.  
  <a href="structmodes_1_1default__modes_1_1GravityMode.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="gravity__mode_8hpp_source.html">gravity_mode.hpp</a>&gt;</code></p>
@@ -109,6 +109,7 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>on_enter_mode<
 <tr class="separator:abe3e76f36038f0156c8f35308f16c8aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2bbae292d875a6173a6acfe11909ae9f"><td class="memItemLeft" align="right" valign="top"><a id="a2bbae292d875a6173a6acfe11909ae9f" name="a2bbae292d875a6173a6acfe11909ae9f"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>custom_ramp_update</b> (auto &amp;ctx, uint8_t rampValue)</td></tr>
+<tr class="memdesc:a2bbae292d875a6173a6acfe11909ae9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">User ramp changes the color palette. <br /></td></tr>
 <tr class="separator:a2bbae292d875a6173a6acfe11909ae9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26f6093dd08aa49d8da47a28ae52cfb2"><td class="memItemLeft" align="right" valign="top"><a id="a26f6093dd08aa49d8da47a28ae52cfb2" name="a26f6093dd08aa49d8da47a28ae52cfb2"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto &amp;ctx)</td></tr>
@@ -148,9 +149,11 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a39b066098196795c61433d494e0a6601"><td class="memItemLeft" align="right" valign="top"><a id="a39b066098196795c61433d494e0a6601" name="a39b066098196795c61433d494e0a6601"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasCustomRamp</b> = true</td></tr>
+<tr class="memdesc:a39b066098196795c61433d494e0a6601"><td class="mdescLeft">&#160;</td><td class="mdescRight">hint manager to save our custom ramp <br /></td></tr>
 <tr class="separator:a39b066098196795c61433d494e0a6601"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9764aed786fb38868b01525c2bbca72"><td class="memItemLeft" align="right" valign="top"><a id="af9764aed786fb38868b01525c2bbca72" name="af9764aed786fb38868b01525c2bbca72"></a>
 static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>particleCount</b> = 255</td></tr>
+<tr class="memdesc:af9764aed786fb38868b01525c2bbca72"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the maximum particle count <br /></td></tr>
 <tr class="separator:af9764aed786fb38868b01525c2bbca72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84e8fe859e3cab35c52c1cb5535a31fa"><td class="memItemLeft" align="right" valign="top"><a id="a84e8fe859e3cab35c52c1cb5535a31fa" name="a84e8fe859e3cab35c52c1cb5535a31fa"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
@@ -175,7 +178,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <tr class="separator:ac60ff94998743c88b0463e25235e2244"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Emulate a beat sync. </p>
+<div class="textblock"><p>Sand particle simulation, synched with the board IMU. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a869b044a34d61d2803bd59c59a39f630" name="a869b044a34d61d2803bd59c59a39f630"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a869b044a34d61d2803bd59c59a39f630">&#9670;&#160;</a></span>brightness_update()</h2>
@@ -675,7 +678,8 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// ... (use rampValue to pick a color or something) ...</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1default__modes_1_1GravityMode.html#a39b066098196795c61433d494e0a6601">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1GravityMode_html_a39b066098196795c61433d494e0a6601"><div class="ttname"><a href="structmodes_1_1default__modes_1_1GravityMode.html#a39b066098196795c61433d494e0a6601">modes::default_modes::GravityMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">hint manager to save our custom ramp</div><div class="ttdef"><b>Definition:</b> gravity_mode.hpp:21</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
 <div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>
@@ -689,7 +693,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="comment">// values (rampValue, indexValue) are remembered by default</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> hasCustomRamp = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1default__modes_1_1GravityMode.html#a39b066098196795c61433d494e0a6601">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// also required</span></div>
 </div><!-- fragment --><p>These are the two always-available persistent state that a mode can configure by default. However, for more advanced modes (like games, with a list of high-scores, for example) more flexibility can be required.</p>
 <p>If you need such extended storage, see <a class="el" href="structmodes_1_1ContextTy_1_1KeyProxy.html" title="(store) Binds a local variable of type T to key in storage (with automatic read &amp; save)">ContextTy::KeyProxy</a> for usage.</p>
 <p>If you don't need these capabilities, just ignore this identifier :) </p>

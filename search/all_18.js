@@ -1,6 +1,9 @@
 var searchData=
 [
-  ['yellow_0',['Yellow',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cac8926c9c81aa07c230669c219b31c1b9',1,'modes::colors']]],
-  ['yellowgreen_1',['YellowGreen',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cae4fc8589f27d4bbfd2087c1d205a591e',1,'modes::colors']]],
-  ['yscale_2',['yScale',['../structmodes_1_1default__modes_1_1FireMode.html#adc903171413879ab7adb62f454a5dbd6',1,'modes::default_modes::FireMode']]]
+  ['x_0',['x',['../structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1BubbleTy.html#a4946d0dec93633c1e4d20ad6e9207f65',1,'modes::custom::nudz::NudzBeerGlassMode::BubbleTy::x()'],['../structmodes_1_1XYTy.html#adacf0fd2eef8f36b9993e1c1f96b4d53',1,'modes::XYTy::x()'],['../structmodes_1_1HelixXYZTy.html#ac1ded3acb76d34ead46399b3016c716a',1,'modes::HelixXYZTy::x()'],['../classutils_1_1ColorSpace_1_1XYZ.html#a0c8dbea033ebbb3d900737984456f4c5',1,'utils::ColorSpace::XYZ::x()'],['../structcurves_1_1Point.html#a87a6e1aea99749f2ece388d196c93cbf',1,'curves::Point::x()'],['../structvec2d.html#ab11d7ba36d911a9bc066e337b767b411',1,'vec2d::x()']]],
+  ['xdecal_1',['xdecal',['../structmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode_1_1StateTy.html#a88058d425f07a503e87f8be96be8c309',1,'modes::custom::nudz::NudzScrollImageMode::StateTy::xdecal()'],['../structmodes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode_1_1StateTy.html#a12df0731c3e6a6898c51dc54f8e7ee97',1,'modes::custom::nudz::NudzViolonsaoulsMode::StateTy::xdecal()']]],
+  ['xdirection_2',['xdirection',['../structmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode_1_1StateTy.html#ac871fb053d76fc5cbcbf2c06d9891191',1,'modes::custom::nudz::NudzScrollImageMode::StateTy::xdirection()'],['../structmodes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode_1_1StateTy.html#a3a2f150fbadd5bba7a2055808c7ff5f0',1,'modes::custom::nudz::NudzViolonsaoulsMode::StateTy::xdirection()']]],
+  ['xscale_3',['xScale',['../structmodes_1_1default__modes_1_1FireMode.html#a65f6a981e15cabf42ab1d1ad85aa592b',1,'modes::default_modes::FireMode']]],
+  ['xyty_4',['XYTy',['../structmodes_1_1XYTy.html',1,'modes']]],
+  ['xyz_5',['XYZ',['../classutils_1_1ColorSpace_1_1XYZ.html',1,'utils::ColorSpace::XYZ'],['../classutils_1_1ColorSpace_1_1XYZ.html#a1259c3f7d7431d8f6726f4d628edb3db',1,'utils::ColorSpace::XYZ::XYZ(const COLOR &amp;c)'],['../classutils_1_1ColorSpace_1_1XYZ.html#af8b1769be7efa7b5afd03d60cb89e3de',1,'utils::ColorSpace::XYZ::XYZ(double x, double y, double z)']]]
 ];

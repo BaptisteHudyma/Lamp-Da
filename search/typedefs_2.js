@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['managerfor_0',['ManagerFor',['../namespacemodes.html#a469684dd84784a282f3e39c8b7240bf2',1,'modes']]],
-  ['managerforconfig_1',['ManagerForConfig',['../namespacemodes.html#aba2cd0b73e3a765652a216a7c95d2b19',1,'modes']]]
+  ['gridty_0',['GridTy',['../structmodes_1_1automaton_1_1BubbleMode.html#a088c09633de2e6973067b8e0dbc146a6',1,'modes::automaton::BubbleMode::GridTy()'],['../structmodes_1_1automaton_1_1SierpinskiMode.html#a42380ad646c48c795548ce2466706f51',1,'modes::automaton::SierpinskiMode::GridTy()']]],
+  ['groupfor_1',['GroupFor',['../namespacemodes.html#ab78bece6ea407f3a7b5b922d619d2b97',1,'modes']]]
 ];

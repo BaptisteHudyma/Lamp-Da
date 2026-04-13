@@ -1,12 +1,11 @@
 var searchData=
 [
-  ['palette_0',['palette',['../structmodes_1_1default__modes_1_1FireMode.html#ae5a00cbab884f967055096ef81fe7301',1,'modes::default_modes::FireMode']]],
-  ['palettecloudcolors_1',['PaletteCloudColors',['../namespacemodes_1_1colors.html#ac9976ba6cf57d22eb298b62260e35cda',1,'modes::colors']]],
-  ['paletteflamecolors_2',['PaletteFlameColors',['../namespacemodes_1_1colors.html#a1e654ea7bac9f205232a6faac7c0d8a0',1,'modes::colors']]],
-  ['paletteforestcolors_3',['PaletteForestColors',['../namespacemodes_1_1colors.html#a4b986330c2fae02c1a63253d2767e5ab',1,'modes::colors']]],
-  ['palettegradient_4',['PaletteGradient',['../namespacemodes_1_1colors.html#a9fc9c31194e097b5b0f0e691ecb6ba07',1,'modes::colors']]],
-  ['palettelavacolors_5',['PaletteLavaColors',['../namespacemodes_1_1colors.html#a4cd7d5c362eb8cc4938c50da54bf2152',1,'modes::colors']]],
-  ['paletteoceancolors_6',['PaletteOceanColors',['../namespacemodes_1_1colors.html#a86db0926e74b3e0191d8cc8d77074708',1,'modes::colors']]],
-  ['paletterainbowcolors_7',['PaletteRainbowColors',['../namespacemodes_1_1colors.html#a77f0734d192ade7074380f9c5d97b7a6',1,'modes::colors']]],
-  ['palettewatercolors_8',['PaletteWaterColors',['../namespacemodes_1_1colors.html#ab66484564b56323424daaa6c94820542',1,'modes::colors']]]
+  ['name_0',['name',['../classlampda__serial_1_1Release.html#a115a84094c2287c397fe0c3bc85128d8',1,'lampda_serial::Release']]],
+  ['nbbubbles_1',['nbBubbles',['../structmodes_1_1automaton_1_1BubbleMode.html#a983bc4b859e3dd842082a70da7e25eef',1,'modes::automaton::BubbleMode']]],
+  ['nbbuffers_2',['nbBuffers',['../structmodes_1_1hardware_1_1LampTy.html#aa29e0ad1ba11776d288e42910d5f85fe',1,'modes::hardware::LampTy']]],
+  ['nbclickscounted_3',['nbClicksCounted',['../structbutton_1_1ButtonStateTy.html#ab5efe01c75cd6c1fb516c07d769eb6c5',1,'button::ButtonStateTy']]],
+  ['nblines_4',['nbLines',['../structmodes_1_1draw_1_1grid_1_1LineRule.html#a2771a78b3e65b1e5cce7fc12c26458c7',1,'modes::draw::grid::LineRule']]],
+  ['nbubbles_5',['nbubbles',['../structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#a68aa48f50d63fdc59e1bc5c92d2e5491',1,'modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
+  ['now_6',['now',['../structmodes_1_1hardware_1_1LampTy.html#ad9361ae0f9e01b5b26bd637c9836ccf8',1,'modes::hardware::LampTy']]],
+  ['numberoffftchanels_7',['numberOfFFtChanels',['../structmicrophone_1_1SoundStruct.html#a0c2eceab52dfee8aaf553540e3915b8f',1,'microphone::SoundStruct']]]
 ];

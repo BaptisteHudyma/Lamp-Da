@@ -82,27 +82,38 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Given two points and an exponent, fit an exponential function.  
+ <a href="classcurves_1_1ExponentialCurve.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="curves_8h_source.html">curves.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a404fac249122bfa85f0b79d12e139e66"><td class="memItemLeft" align="right" valign="top"><a id="a404fac249122bfa85f0b79d12e139e66" name="a404fac249122bfa85f0b79d12e139e66"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>point_t</b> = <a class="el" href="structcurves_1_1Point.html">Point</a>&lt; T, U &gt;</td></tr>
+<tr class="memdesc:a404fac249122bfa85f0b79d12e139e66"><td class="mdescLeft">&#160;</td><td class="mdescRight">point in the exponential curve <br /></td></tr>
 <tr class="separator:a404fac249122bfa85f0b79d12e139e66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6c3c77cead0b307061e26ca668ab5c64"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcurves_1_1ExponentialCurve.html#a6c3c77cead0b307061e26ca668ab5c64">ExponentialCurve</a> (const <a class="el" href="structcurves_1_1Point.html">point_t</a> &amp;pointA, const <a class="el" href="structcurves_1_1Point.html">point_t</a> &amp;pointB, const double exponent=15.0)</td></tr>
+<tr class="memitem:a6c3c77cead0b307061e26ca668ab5c64"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcurves_1_1ExponentialCurve.html#a6c3c77cead0b307061e26ca668ab5c64">ExponentialCurve</a> (const <a class="el" href="classcurves_1_1ExponentialCurve.html#a404fac249122bfa85f0b79d12e139e66">point_t</a> &amp;pointA, const <a class="el" href="classcurves_1_1ExponentialCurve.html#a404fac249122bfa85f0b79d12e139e66">point_t</a> &amp;pointB, const double exponent=15.0)</td></tr>
 <tr class="memdesc:a6c3c77cead0b307061e26ca668ab5c64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exponential curve fitting to two points.  <br /></td></tr>
 <tr class="separator:a6c3c77cead0b307061e26ca668ab5c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab17482450996421db396dcc5d4e9799b"><td class="memItemLeft" align="right" valign="top"><a id="ab17482450996421db396dcc5d4e9799b" name="ab17482450996421db396dcc5d4e9799b"></a>
 float&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const T x) const</td></tr>
-<tr class="memdesc:ab17482450996421db396dcc5d4e9799b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample the exponential curve Be aware that the result is always casted from a floating point !! -&gt; for integer types, it will be the same as calling "floor()" on the result. <br /></td></tr>
+<tr class="memdesc:ab17482450996421db396dcc5d4e9799b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample the exponential curve. Be aware that the result is always casted from a floating point !! -&gt; for integer types, it will be the same as calling "floor()" on the result. <br /></td></tr>
 <tr class="separator:ab17482450996421db396dcc5d4e9799b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename T, typename U&gt;<br />
-class curves::ExponentialCurve&lt; T, U &gt;</div><p>Given two points and an exponent, fit an exponential function </p>
+class curves::ExponentialCurve&lt; T, U &gt;</div><p>Given two points and an exponent, fit an exponential function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">T</td><td>Type of X coordinates </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">U</td><td>type of Y coordinates </td></tr>
+  </table>
+  </dd>
+</dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6c3c77cead0b307061e26ca668ab5c64" name="a6c3c77cead0b307061e26ca668ab5c64"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6c3c77cead0b307061e26ca668ab5c64">&#9670;&#160;</a></span>ExponentialCurve()</h2>
@@ -118,13 +129,13 @@ template&lt;typename T , typename U &gt; </div>
         <tr>
           <td class="memname"><a class="el" href="classcurves_1_1ExponentialCurve.html">curves::ExponentialCurve</a>&lt; T, U &gt;::ExponentialCurve </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="structcurves_1_1Point.html">point_t</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classcurves_1_1ExponentialCurve.html#a404fac249122bfa85f0b79d12e139e66">point_t</a> &amp;&#160;</td>
           <td class="paramname"><em>pointA</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structcurves_1_1Point.html">point_t</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classcurves_1_1ExponentialCurve.html#a404fac249122bfa85f0b79d12e139e66">point_t</a> &amp;&#160;</td>
           <td class="paramname"><em>pointB</em>, </td>
         </tr>
         <tr>
@@ -149,8 +160,8 @@ template&lt;typename T , typename U &gt; </div>
 <p>Exponential curve fitting to two points. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">pointA</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">pointB</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pointA</td><td>Start point of the curve </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pointB</td><td>End point of the curve </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">exponent</td><td>The strenght factor of this exponential. Set to 1 for a linear curve, &gt; 1 gives strong exponential, &lt; 1 gives log curves </td></tr>
   </table>
   </dd>

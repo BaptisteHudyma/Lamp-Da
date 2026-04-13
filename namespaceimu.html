@@ -83,88 +83,146 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:ad94385060b2a2c55efb4d919576d86e3"><td class="memItemLeft" align="right" valign="top"><a id="ad94385060b2a2c55efb4d919576d86e3" name="ad94385060b2a2c55efb4d919576d86e3"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>EventType</b> { <b>FreeFall</b>
-, <b>BigMotion</b>
-, <b>Step</b>
-, <b>Tilt</b>
+<tr class="memitem:ad94385060b2a2c55efb4d919576d86e3"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3">EventType</a> { <a class="el" href="namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3a8a14b37d83a08a971c91b7ce9e09ef5a">FreeFall</a>
+, <a class="el" href="namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3a3ab84073bcc7600125bee41b6658c39f">BigMotion</a>
+, <a class="el" href="namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3a48c7c41b72e1d678923ce3571aa65b2d">Step</a>
+, <a class="el" href="namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3a686319a93c35facda5c3da08875fb394">Tilt</a>
  }</td></tr>
+<tr class="memdesc:ad94385060b2a2c55efb4d919576d86e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe an IMU detection event.  <a href="namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3">More...</a><br /></td></tr>
 <tr class="separator:ad94385060b2a2c55efb4d919576d86e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a8c2c60bf9232e042a19dd54eb0f0d94e"><td class="memItemLeft" align="right" valign="top"><a id="a8c2c60bf9232e042a19dd54eb0f0d94e" name="a8c2c60bf9232e042a19dd54eb0f0d94e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> ()</td></tr>
+<tr class="memdesc:a8c2c60bf9232e042a19dd54eb0f0d94e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once on program start, initialize the driver. <br /></td></tr>
 <tr class="separator:a8c2c60bf9232e042a19dd54eb0f0d94e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7abcd484c10d7ee427fd8574239d063"><td class="memItemLeft" align="right" valign="top"><a id="ad7abcd484c10d7ee427fd8574239d063" name="ad7abcd484c10d7ee427fd8574239d063"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>shutdown</b> ()</td></tr>
+<tr class="memdesc:ad7abcd484c10d7ee427fd8574239d063"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once on program shutdown, to gracefully close the driver. <br /></td></tr>
 <tr class="separator:ad7abcd484c10d7ee427fd8574239d063"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03257b2c456a2dc279cfb91ac97a2c63"><td class="memItemLeft" align="right" valign="top"><a id="a03257b2c456a2dc279cfb91ac97a2c63" name="a03257b2c456a2dc279cfb91ac97a2c63"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>enable_event_detection</b> (const EventType eventType)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>enable_event_detection</b> (const <a class="el" href="namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3">EventType</a> eventType)</td></tr>
+<tr class="memdesc:a03257b2c456a2dc279cfb91ac97a2c63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable a specific event. <br /></td></tr>
 <tr class="separator:a03257b2c456a2dc279cfb91ac97a2c63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34f4aad8afa63e98fcdfa7792c33fdfe"><td class="memItemLeft" align="right" valign="top"><a id="a34f4aad8afa63e98fcdfa7792c33fdfe" name="a34f4aad8afa63e98fcdfa7792c33fdfe"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>disable_event_detection</b> (const EventType eventType)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>disable_event_detection</b> (const <a class="el" href="namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3">EventType</a> eventType)</td></tr>
+<tr class="memdesc:a34f4aad8afa63e98fcdfa7792c33fdfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable a specific event. <br /></td></tr>
 <tr class="separator:a34f4aad8afa63e98fcdfa7792c33fdfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a124c25d6c711c58790726bdade3d0a25"><td class="memItemLeft" align="right" valign="top"><a id="a124c25d6c711c58790726bdade3d0a25" name="a124c25d6c711c58790726bdade3d0a25"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_event_detected</b> (const EventType eventType)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_event_detected</b> (const <a class="el" href="namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3">EventType</a> eventType)</td></tr>
+<tr class="memdesc:a124c25d6c711c58790726bdade3d0a25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the event bit. <br /></td></tr>
 <tr class="separator:a124c25d6c711c58790726bdade3d0a25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5e56b29eff32ac17d38cc2b8483819b"><td class="memItemLeft" align="right" valign="top"><a id="aa5e56b29eff32ac17d38cc2b8483819b" name="aa5e56b29eff32ac17d38cc2b8483819b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>interrupt1_callback</b> ()</td></tr>
+<tr class="memdesc:aa5e56b29eff32ac17d38cc2b8483819b"><td class="mdescLeft">&#160;</td><td class="mdescRight">callback for the interrupt1 signal <br /></td></tr>
 <tr class="separator:aa5e56b29eff32ac17d38cc2b8483819b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51b4a1a9de11d2a63e255e17e6064e90"><td class="memItemLeft" align="right" valign="top"><a id="a51b4a1a9de11d2a63e255e17e6064e90" name="a51b4a1a9de11d2a63e255e17e6064e90"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_interrupt1_enabled</b> ()</td></tr>
+<tr class="memdesc:a51b4a1a9de11d2a63e255e17e6064e90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read and reset the interrupt1 bit. <br /></td></tr>
 <tr class="separator:a51b4a1a9de11d2a63e255e17e6064e90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4bfb0e3ce2d5a95d6184785d261bdb04"><td class="memItemLeft" align="right" valign="top"><a id="a4bfb0e3ce2d5a95d6184785d261bdb04" name="a4bfb0e3ce2d5a95d6184785d261bdb04"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>interrupt2_callback</b> ()</td></tr>
+<tr class="memdesc:a4bfb0e3ce2d5a95d6184785d261bdb04"><td class="mdescLeft">&#160;</td><td class="mdescRight">callback for the interrupt1 signal <br /></td></tr>
 <tr class="separator:a4bfb0e3ce2d5a95d6184785d261bdb04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afae90d9de3d812079945a5a44c6150fe"><td class="memItemLeft" align="right" valign="top"><a id="afae90d9de3d812079945a5a44c6150fe" name="afae90d9de3d812079945a5a44c6150fe"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_interrupt2_enabled</b> ()</td></tr>
+<tr class="memdesc:afae90d9de3d812079945a5a44c6150fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read and reset the interrupt2 bit. <br /></td></tr>
 <tr class="separator:afae90d9de3d812079945a5a44c6150fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d417929768e6b350c9fe556168fffcb"><td class="memItemLeft" align="right" valign="top"><a id="a3d417929768e6b350c9fe556168fffcb" name="a3d417929768e6b350c9fe556168fffcb"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>link_event_to_interrupt1</b> (const EventType eventType)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>link_event_to_interrupt1</b> (const <a class="el" href="namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3">EventType</a> eventType)</td></tr>
+<tr class="memdesc:a3d417929768e6b350c9fe556168fffcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable the interrupt 1 with an event type, wired to the interrupt pin 1 of IMU. <br /></td></tr>
 <tr class="separator:a3d417929768e6b350c9fe556168fffcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55e00ce6b0f7b75b6bde71529e2a98a9"><td class="memItemLeft" align="right" valign="top"><a id="a55e00ce6b0f7b75b6bde71529e2a98a9" name="a55e00ce6b0f7b75b6bde71529e2a98a9"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>unlink_interrupt_1</b> ()</td></tr>
+<tr class="memdesc:a55e00ce6b0f7b75b6bde71529e2a98a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable the interrupts 1. <br /></td></tr>
 <tr class="separator:a55e00ce6b0f7b75b6bde71529e2a98a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a566ffc6e7aa4d8be8071010be4e3bd7e"><td class="memItemLeft" align="right" valign="top"><a id="a566ffc6e7aa4d8be8071010be4e3bd7e" name="a566ffc6e7aa4d8be8071010be4e3bd7e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>link_event_to_interrupt2</b> (const EventType eventType)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>link_event_to_interrupt2</b> (const <a class="el" href="namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3">EventType</a> eventType)</td></tr>
+<tr class="memdesc:a566ffc6e7aa4d8be8071010be4e3bd7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable the interrupt 2 with an event type, wired to the interrupt pin 2 of IMU EVENT BigMotion &amp; Step NOT SUPPORTED ON INTERRUPT 2. <br /></td></tr>
 <tr class="separator:a566ffc6e7aa4d8be8071010be4e3bd7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a227d985a3d5c0d97ab09b559fa31c082"><td class="memItemLeft" align="right" valign="top"><a id="a227d985a3d5c0d97ab09b559fa31c082" name="a227d985a3d5c0d97ab09b559fa31c082"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>unlink_interrupt_2</b> ()</td></tr>
+<tr class="memdesc:a227d985a3d5c0d97ab09b559fa31c082"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable the interrupts 2. <br /></td></tr>
 <tr class="separator:a227d985a3d5c0d97ab09b559fa31c082"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae584442f30f1a3082566f55b95b69dda"><td class="memItemLeft" align="right" valign="top"><a id="ae584442f30f1a3082566f55b95b69dda" name="ae584442f30f1a3082566f55b95b69dda"></a>
 Reading&#160;</td><td class="memItemRight" valign="bottom"><b>get_filtered_reading</b> (const bool resetFilter)</td></tr>
+<tr class="memdesc:ae584442f30f1a3082566f55b95b69dda"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the filtered IMU readings <br /></td></tr>
 <tr class="separator:ae584442f30f1a3082566f55b95b69dda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a7cb0e44caa2801c27f3d952c31615a14"><td class="memItemLeft" align="right" valign="top"><a id="a7cb0e44caa2801c27f3d952c31615a14" name="a7cb0e44caa2801c27f3d952c31615a14"></a>
 Wrapper&#160;</td><td class="memItemRight" valign="bottom"><b>imuInstance</b></td></tr>
+<tr class="memdesc:a7cb0e44caa2801c27f3d952c31615a14"><td class="mdescLeft">&#160;</td><td class="mdescRight">instance of the IMU controler <br /></td></tr>
 <tr class="separator:a7cb0e44caa2801c27f3d952c31615a14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada05ee6fcb2483adf1250078527beb03"><td class="memItemLeft" align="right" valign="top"><a id="ada05ee6fcb2483adf1250078527beb03" name="ada05ee6fcb2483adf1250078527beb03"></a>
 <a class="el" href="classDigitalPin.html">DigitalPin</a>&#160;</td><td class="memItemRight" valign="bottom"><b>interrupt1Pin</b> (DigitalPin::GPIO::Signal_ImuInterrupt1)</td></tr>
+<tr class="memdesc:ada05ee6fcb2483adf1250078527beb03"><td class="mdescLeft">&#160;</td><td class="mdescRight">interrupt 1 pin <br /></td></tr>
 <tr class="separator:ada05ee6fcb2483adf1250078527beb03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf5842836a8cdd4cc9e4ff79112d7005"><td class="memItemLeft" align="right" valign="top"><a id="acf5842836a8cdd4cc9e4ff79112d7005" name="acf5842836a8cdd4cc9e4ff79112d7005"></a>
 <a class="el" href="classDigitalPin.html">DigitalPin</a>&#160;</td><td class="memItemRight" valign="bottom"><b>interrupt2Pin</b> (DigitalPin::GPIO::Signal_ImuInterrupt2)</td></tr>
+<tr class="memdesc:acf5842836a8cdd4cc9e4ff79112d7005"><td class="mdescLeft">&#160;</td><td class="mdescRight">interrupt 2 pin <br /></td></tr>
 <tr class="separator:acf5842836a8cdd4cc9e4ff79112d7005"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1d860abe01a3a22e9cb853312452cc7"><td class="memItemLeft" align="right" valign="top"><a id="af1d860abe01a3a22e9cb853312452cc7" name="af1d860abe01a3a22e9cb853312452cc7"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInitialized</b> = false</td></tr>
+<tr class="memdesc:af1d860abe01a3a22e9cb853312452cc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">indicates if the driver is initialized <br /></td></tr>
 <tr class="separator:af1d860abe01a3a22e9cb853312452cc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79694c3079fc17204212589f805269e1"><td class="memItemLeft" align="right" valign="top"><a id="a79694c3079fc17204212589f805269e1" name="a79694c3079fc17204212589f805269e1"></a>
 const <a class="el" href="structTransformationMatrix.html">TransformationMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><b>imuToBoardTransformation</b> (<a class="el" href="structvec3d.html">vec3d</a>(imuToCircuitRotationX_rad, imuToCircuitRotationY_rad, imuToCircuitRotationZ_rad), <a class="el" href="structvec3d.html">vec3d</a>(imuToCircuitPositionX_m, imuToCircuitPositionY_m, imuToCircuitPositionZ_m))</td></tr>
+<tr class="memdesc:a79694c3079fc17204212589f805269e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transform imu coordinates to board coordinates. <br /></td></tr>
 <tr class="separator:a79694c3079fc17204212589f805269e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad6becfffdb27a5738ff3cf6115015b5"><td class="memItemLeft" align="right" valign="top"><a id="aad6becfffdb27a5738ff3cf6115015b5" name="aad6becfffdb27a5738ff3cf6115015b5"></a>
 const <a class="el" href="structTransformationMatrix.html">TransformationMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><b>boardToFirstPixelTransformation</b> (<a class="el" href="structvec3d.html">vec3d</a>(circuitToLedZeroRotationX_degrees *c_degreesToRadians, circuitToLedZeroRotationY_degrees *c_degreesToRadians, circuitToLedZeroRotationZ_degrees *c_degreesToRadians), <a class="el" href="structvec3d.html">vec3d</a>(0, 0, 0))</td></tr>
+<tr class="memdesc:aad6becfffdb27a5738ff3cf6115015b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transform board coordinates to first pixel. <br /></td></tr>
 <tr class="separator:aad6becfffdb27a5738ff3cf6115015b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6a8050a2125e988499305479ec04b01"><td class="memItemLeft" align="right" valign="top"><a id="ab6a8050a2125e988499305479ec04b01" name="ab6a8050a2125e988499305479ec04b01"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInterrupt1Enabled</b> = false</td></tr>
+<tr class="memdesc:ab6a8050a2125e988499305479ec04b01"><td class="mdescLeft">&#160;</td><td class="mdescRight">interrupt 1 result <br /></td></tr>
 <tr class="separator:ab6a8050a2125e988499305479ec04b01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25ee3ea22920a778b5f00a769628e538"><td class="memItemLeft" align="right" valign="top"><a id="a25ee3ea22920a778b5f00a769628e538" name="a25ee3ea22920a778b5f00a769628e538"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInterrupt2Enabled</b> = false</td></tr>
+<tr class="memdesc:a25ee3ea22920a778b5f00a769628e538"><td class="mdescLeft">&#160;</td><td class="mdescRight">interrupt 2 result <br /></td></tr>
 <tr class="separator:a25ee3ea22920a778b5f00a769628e538"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains the handling of the gyroscope and accelerometer. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="ad94385060b2a2c55efb4d919576d86e3" name="ad94385060b2a2c55efb4d919576d86e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad94385060b2a2c55efb4d919576d86e3">&#9670;&#160;</a></span>EventType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3">imu::EventType</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Describe an IMU detection event. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ad94385060b2a2c55efb4d919576d86e3a8a14b37d83a08a971c91b7ce9e09ef5a" name="ad94385060b2a2c55efb4d919576d86e3a8a14b37d83a08a971c91b7ce9e09ef5a"></a>FreeFall&#160;</td><td class="fielddoc"><p>raised during a free fall event </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad94385060b2a2c55efb4d919576d86e3a3ab84073bcc7600125bee41b6658c39f" name="ad94385060b2a2c55efb4d919576d86e3a3ab84073bcc7600125bee41b6658c39f"></a>BigMotion&#160;</td><td class="fielddoc"><p>raised during a big acceleration </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad94385060b2a2c55efb4d919576d86e3a48c7c41b72e1d678923ce3571aa65b2d" name="ad94385060b2a2c55efb4d919576d86e3a48c7c41b72e1d678923ce3571aa65b2d"></a>Step&#160;</td><td class="fielddoc"><p>raised during step detection </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad94385060b2a2c55efb4d919576d86e3a686319a93c35facda5c3da08875fb394" name="ad94385060b2a2c55efb4d919576d86e3a686319a93c35facda5c3da08875fb394"></a>Tilt&#160;</td><td class="fielddoc"><p>raised event during orientation flip </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6

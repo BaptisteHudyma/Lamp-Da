@@ -81,26 +81,35 @@ $(function() {
   <div class="headertitle"><div class="title">charger::drivers::PowerLimits Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Store the power limits for the battery charge protocol.  
+ <a href="structcharger_1_1drivers_1_1PowerLimits.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aa05b8a747255b6fa2fae523cdc59ec18"><td class="memItemLeft" align="right" valign="top"><a id="aa05b8a747255b6fa2fae523cdc59ec18" name="aa05b8a747255b6fa2fae523cdc59ec18"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_default</b> ()</td></tr>
+<tr class="memdesc:aa05b8a747255b6fa2fae523cdc59ec18"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the default values of this structure <br /></td></tr>
 <tr class="separator:aa05b8a747255b6fa2fae523cdc59ec18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ae4e1cd391b350cc462e9f1722bfd7f09"><td class="memItemLeft" align="right" valign="top"><a id="ae4e1cd391b350cc462e9f1722bfd7f09" name="ae4e1cd391b350cc462e9f1722bfd7f09"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxChargingCurrent_mA</b> = 0</td></tr>
+<tr class="memdesc:ae4e1cd391b350cc462e9f1722bfd7f09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Absolute maximum battery charging current. <br /></td></tr>
 <tr class="separator:ae4e1cd391b350cc462e9f1722bfd7f09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a610718e0421dd357618ec1d94b530d61"><td class="memItemLeft" align="right" valign="top"><a id="a610718e0421dd357618ec1d94b530d61" name="a610718e0421dd357618ec1d94b530d61"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>current_mA</b> = 0</td></tr>
+<tr class="memdesc:a610718e0421dd357618ec1d94b530d61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Actual allowed charging current. <br /></td></tr>
 <tr class="separator:a610718e0421dd357618ec1d94b530d61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a110d4fb019f642692bc45ffe436920b9"><td class="memItemLeft" align="right" valign="top"><a id="a110d4fb019f642692bc45ffe436920b9" name="a110d4fb019f642692bc45ffe436920b9"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>shoulduseICO</b> = false</td></tr>
+<tr class="memdesc:a110d4fb019f642692bc45ffe436920b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">If true, enabled the Input Current Optimization algorithm. It will calibrate the inpute current to respect a target threshold. <br /></td></tr>
 <tr class="separator:a110d4fb019f642692bc45ffe436920b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Store the power limits for the battery charge protocol. </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>src/system/power/charging_ic.cpp</li>
 </ul>
 </div><!-- contents -->

@@ -87,75 +87,97 @@ $(function() {
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a0f04babcec1c08c9256e93ef6c8f844f"><td class="memItemLeft" align="right" valign="top"><a id="a0f04babcec1c08c9256e93ef6c8f844f" name="a0f04babcec1c08c9256e93ef6c8f844f"></a>
 static void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>before_enter_mode</b> (auto &amp;ctx)</td></tr>
+<tr class="memdesc:a0f04babcec1c08c9256e93ef6c8f844f"><td class="mdescLeft">&#160;</td><td class="mdescRight">configuration-related actions done before entering mode <br /></td></tr>
 <tr class="separator:a0f04babcec1c08c9256e93ef6c8f844f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a253f700342d0d388a0eec95acd2f1609"><td class="memItemLeft" align="right" valign="top"><a id="a253f700342d0d388a0eec95acd2f1609" name="a253f700342d0d388a0eec95acd2f1609"></a>
 static void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>after_enter_mode</b> (auto &amp;ctx)</td></tr>
+<tr class="memdesc:a253f700342d0d388a0eec95acd2f1609"><td class="mdescLeft">&#160;</td><td class="mdescRight">configuration-related actions done after mode entering <br /></td></tr>
 <tr class="separator:a253f700342d0d388a0eec95acd2f1609"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ac85740bb1293c0c534b4bbc185ce49f6"><td class="memItemLeft" align="right" valign="top"><a id="ac85740bb1293c0c534b4bbc185ce49f6" name="ac85740bb1293c0c534b4bbc185ce49f6"></a>
 AllStatesTy&#160;</td><td class="memItemRight" valign="bottom"><b>groupStates</b></td></tr>
+<tr class="memdesc:ac85740bb1293c0c534b4bbc185ce49f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">All group states, containing all modes individual states. <br /></td></tr>
 <tr class="separator:ac85740bb1293c0c534b4bbc185ce49f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade15f3fb75593377f90fda5bfef3a2b0"><td class="memItemLeft" align="right" valign="top"><a id="ade15f3fb75593377f90fda5bfef3a2b0" name="ade15f3fb75593377f90fda5bfef3a2b0"></a>
 std::array&lt; uint8_t, nbGroups &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>lastModeMemory</b> = {}</td></tr>
+<tr class="memdesc:ade15f3fb75593377f90fda5bfef3a2b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">When switching group, remember which mode was on last time we visited it. <br /></td></tr>
 <tr class="separator:ade15f3fb75593377f90fda5bfef3a2b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed390209d22db80340f5dc4070c9a4af"><td class="memItemLeft" align="right" valign="top"><a id="aed390209d22db80340f5dc4070c9a4af" name="aed390209d22db80340f5dc4070c9a4af"></a>
-std::array&lt; ActiveIndexTy, maxFavoriteCount &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>favorites</b> = {}</td></tr>
+std::array&lt; ActiveIndexTy, <a class="el" href="structmodes_1_1ModeManagerTy_1_1StateTy.html#aba32fdd6395a7d3309daa41c5697f8f9">maxFavoriteCount</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>favorites</b> = {}</td></tr>
+<tr class="memdesc:aed390209d22db80340f5dc4070c9a4af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the active index of every favorite. <br /></td></tr>
 <tr class="separator:aed390209d22db80340f5dc4070c9a4af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51632f5c83ddb96c8af05e1479f2b8f5"><td class="memItemLeft" align="right" valign="top"><a id="a51632f5c83ddb96c8af05e1479f2b8f5" name="a51632f5c83ddb96c8af05e1479f2b8f5"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>usedFavoriteCount</b> = 0</td></tr>
+<tr class="memdesc:a51632f5c83ddb96c8af05e1479f2b8f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of favorite set by user [0, maxFavoriteCount] <br /></td></tr>
 <tr class="separator:a51632f5c83ddb96c8af05e1479f2b8f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1849e2202f22573ff86550f66b611b2d"><td class="memItemLeft" align="right" valign="top"><a id="a1849e2202f22573ff86550f66b611b2d" name="a1849e2202f22573ff86550f66b611b2d"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>isFavoritePending</b> = 0</td></tr>
+<tr class="memdesc:a1849e2202f22573ff86550f66b611b2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">indicate that the addition of a favorite in in process <br /></td></tr>
 <tr class="separator:a1849e2202f22573ff86550f66b611b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aada03d554d2b4b984f5ac0eeac7be8c6"><td class="memItemLeft" align="right" valign="top"><a id="aada03d554d2b4b984f5ac0eeac7be8c6" name="aada03d554d2b4b984f5ac0eeac7be8c6"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>whichFavoritePending</b> = 0</td></tr>
+<tr class="memdesc:aada03d554d2b4b984f5ac0eeac7be8c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">indicates the favorite currently selected <br /></td></tr>
 <tr class="separator:aada03d554d2b4b984f5ac0eeac7be8c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f95b3318c084d9e661d9023b09ad7fe"><td class="memItemLeft" align="right" valign="top"><a id="a5f95b3318c084d9e661d9023b09ad7fe" name="a5f95b3318c084d9e661d9023b09ad7fe"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInDeleteFavorite</b> = false</td></tr>
+<tr class="memdesc:a5f95b3318c084d9e661d9023b09ad7fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">indicates that we are in a favorite deletion process <br /></td></tr>
 <tr class="separator:a5f95b3318c084d9e661d9023b09ad7fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aef91a46d4cee1b576012ffcaba34223c"><td class="memItemLeft" align="right" valign="top"><a id="aef91a46d4cee1b576012ffcaba34223c" name="aef91a46d4cee1b576012ffcaba34223c"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>isFavoriteDeletePending</b> = 0</td></tr>
+<tr class="memdesc:aef91a46d4cee1b576012ffcaba34223c"><td class="mdescLeft">&#160;</td><td class="mdescRight">indicate that the deletion of a favorite in in process <br /></td></tr>
 <tr class="separator:aef91a46d4cee1b576012ffcaba34223c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03f36297a544a7fab7d811abc7dd8d8a"><td class="memItemLeft" align="right" valign="top"><a id="a03f36297a544a7fab7d811abc7dd8d8a" name="a03f36297a544a7fab7d811abc7dd8d8a"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>lastFavoriteStep</b> = 0</td></tr>
+<tr class="memdesc:a03f36297a544a7fab7d811abc7dd8d8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">last used favorite index <br /></td></tr>
 <tr class="separator:a03f36297a544a7fab7d811abc7dd8d8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb5e1593623a0246469c3afd721124a5"><td class="memItemLeft" align="right" valign="top"><a id="afb5e1593623a0246469c3afd721124a5" name="afb5e1593623a0246469c3afd721124a5"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInFavoriteMockGroup</b> = false</td></tr>
+<tr class="memdesc:afb5e1593623a0246469c3afd721124a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates that we are in the fake favorite page. <br /></td></tr>
 <tr class="separator:afb5e1593623a0246469c3afd721124a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ba914b6ec4d4bc3aadefba632cb3d91"><td class="memItemLeft" align="right" valign="top"><a id="a8ba914b6ec4d4bc3aadefba632cb3d91" name="a8ba914b6ec4d4bc3aadefba632cb3d91"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>beforeFavoriteGroupIndex</b> = 0</td></tr>
+<tr class="memdesc:a8ba914b6ec4d4bc3aadefba632cb3d91"><td class="mdescLeft">&#160;</td><td class="mdescRight">store the group index we need to go to when quitting the favorite page <br /></td></tr>
 <tr class="separator:a8ba914b6ec4d4bc3aadefba632cb3d91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a723354e7665a93b99c8c00e3a2595f74"><td class="memItemLeft" align="right" valign="top"><a id="a723354e7665a93b99c8c00e3a2595f74" name="a723354e7665a93b99c8c00e3a2595f74"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>beforeFavoriteModeIndex</b> = 0</td></tr>
+<tr class="memdesc:a723354e7665a93b99c8c00e3a2595f74"><td class="mdescLeft">&#160;</td><td class="mdescRight">store the mode index we need to go to when quitting the favorite page <br /></td></tr>
 <tr class="separator:a723354e7665a93b99c8c00e3a2595f74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca6a89b1d5f0c49e5c21b06712523ca0"><td class="memItemLeft" align="right" valign="top"><a id="aca6a89b1d5f0c49e5c21b06712523ca0" name="aca6a89b1d5f0c49e5c21b06712523ca0"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>isSunsetTimingPending</b> = 0</td></tr>
+<tr class="memdesc:aca6a89b1d5f0c49e5c21b06712523ca0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates that a sunset timer ramp is active. <br /></td></tr>
 <tr class="separator:aca6a89b1d5f0c49e5c21b06712523ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c423fd179a1c81c8adb777ce521f568"><td class="memItemLeft" align="right" valign="top"><a id="a2c423fd179a1c81c8adb777ce521f568" name="a2c423fd179a1c81c8adb777ce521f568"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isLastScrollAGroupChange</b> = false</td></tr>
+<tr class="memdesc:a2c423fd179a1c81c8adb777ce521f568"><td class="mdescLeft">&#160;</td><td class="mdescRight">last mode change in scroll changed group <br /></td></tr>
 <tr class="separator:a2c423fd179a1c81c8adb777ce521f568"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6155176b7585021e925a8e47f0d89c2b"><td class="memItemLeft" align="right" valign="top"><a id="a6155176b7585021e925a8e47f0d89c2b" name="a6155176b7585021e925a8e47f0d89c2b"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lastScrollStopped</b> = 0</td></tr>
+<tr class="memdesc:a6155176b7585021e925a8e47f0d89c2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">keep track of the last scrool release time <br /></td></tr>
 <tr class="separator:a6155176b7585021e925a8e47f0d89c2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea12194a6007c17f8c9c095eaaac2db9"><td class="memItemLeft" align="right" valign="top"><a id="aea12194a6007c17f8c9c095eaaac2db9" name="aea12194a6007c17f8c9c095eaaac2db9"></a>
 RampHandlerTy&lt; Config &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>rampHandler</b> = {Config::defaultCustomRampStepSpeedMs}</td></tr>
+<tr class="memdesc:aea12194a6007c17f8c9c095eaaac2db9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ramp handlers: custom ramp (or "color ramp") <br /></td></tr>
 <tr class="separator:aea12194a6007c17f8c9c095eaaac2db9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5556e6d5698ab649220058f506f1d680"><td class="memItemLeft" align="right" valign="top"><a id="a5556e6d5698ab649220058f506f1d680" name="a5556e6d5698ab649220058f506f1d680"></a>
 RampHandlerTy&lt; Config &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>scrollHandler</b> = {Config::scrollRampStepSpeedMs}</td></tr>
+<tr class="memdesc:a5556e6d5698ab649220058f506f1d680"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ramp handlers: mode scroll ramp. <br /></td></tr>
 <tr class="separator:a5556e6d5698ab649220058f506f1d680"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4bb5c8f2e502994c9996ca08d2965ce3"><td class="memItemLeft" align="right" valign="top"><a id="a4bb5c8f2e502994c9996ca08d2965ce3" name="a4bb5c8f2e502994c9996ca08d2965ce3"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>clearStripOnModeChange</b> = Config::defaultClearStripOnModeChange</td></tr>
+<tr class="memdesc:a4bb5c8f2e502994c9996ca08d2965ce3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Should clear the strip before switching mode. <br /></td></tr>
 <tr class="separator:a4bb5c8f2e502994c9996ca08d2965ce3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc48228d3a7cf0a9b08b1c7264a524d0"><td class="memItemLeft" align="right" valign="top"><a id="acc48228d3a7cf0a9b08b1c7264a524d0" name="acc48228d3a7cf0a9b08b1c7264a524d0"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>skipNextFrameEffect</b> = 0</td></tr>
+<tr class="memdesc:acc48228d3a7cf0a9b08b1c7264a524d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">should the next .loop() mode be skipped? <br /></td></tr>
 <tr class="separator:acc48228d3a7cf0a9b08b1c7264a524d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:aba32fdd6395a7d3309daa41c5697f8f9"><td class="memItemLeft" align="right" valign="top"><a id="aba32fdd6395a7d3309daa41c5697f8f9" name="aba32fdd6395a7d3309daa41c5697f8f9"></a>
 static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxFavoriteCount</b> = 8</td></tr>
+<tr class="memdesc:aba32fdd6395a7d3309daa41c5697f8f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum allowed favorite count. <br /></td></tr>
 <tr class="separator:aba32fdd6395a7d3309daa41c5697f8f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>

@@ -1,8 +1,18 @@
 var searchData=
 [
-  ['get_5fcc_0',['get_cc',['../structtcpm__drv.html#aa0f935755d3d9d6ebc7b06acfa616805',1,'tcpm_drv']]],
-  ['get_5fchip_5finfo_1',['get_chip_info',['../structtcpm__drv.html#a0e223c6ff299fe0063690a5aef96cc4f',1,'tcpm_drv']]],
-  ['get_5fmessage_2',['get_message',['../structtcpm__drv.html#aaf37a6a299b79fca643e1fa812b471a3',1,'tcpm_drv']]],
-  ['get_5fvbus_5flevel_3',['get_vbus_level',['../structtcpm__drv.html#a32f5bb5ee6c1c75a64ae3790fe401565',1,'tcpm_drv']]],
-  ['get_5fvbus_5fvoltage_4',['get_vbus_voltage',['../structtcpm__drv.html#aa3417798be3a50d15ebdced37f6e7ac2',1,'tcpm_drv']]]
+  ['fade_0',['fade',['../structmodes_1_1default__modes_1_1VuMeterMode_1_1StateTy.html#a51388d38aab0d471c3e8704f7693039f',1,'modes::default_modes::VuMeterMode::StateTy::fade()'],['../structmodes_1_1default__modes_1_1SpiralMode_1_1StateTy.html#a9e5ad1a3255e3094daf494b747a21c00',1,'modes::default_modes::SpiralMode::StateTy::fade()']]],
+  ['fall_5fampl_1',['fall_ampl',['../structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#a37d62eb7b9ec8b3c59c32607c6961b20',1,'modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
+  ['favorites_2',['favorites',['../structmodes_1_1ModeManagerTy_1_1StateTy.html#aed390209d22db80340f5dc4070c9a4af',1,'modes::ModeManagerTy::StateTy']]],
+  ['fft_5flog_3',['fft_log',['../structmodes_1_1audio_1_1SoundEventTy.html#aee023e8930156b81283c7dded9b9ed3b',1,'modes::audio::SoundEventTy::fft_log()'],['../structmicrophone_1_1SoundStruct.html#ab561b9d9c5b301c5e33b49a543e9f120',1,'microphone::SoundStruct::fft_log()']]],
+  ['fft_5flog_5fend_5ffrequencies_4',['fft_log_end_frequencies',['../structmicrophone_1_1SoundStruct.html#a457a51b14fd9176c741434b89cc47f7b',1,'microphone::SoundStruct']]],
+  ['fft_5fraw_5',['fft_raw',['../structmodes_1_1audio_1_1SoundEventTy.html#a2d684760408f2bb65bdd4717784bd5c0',1,'modes::audio::SoundEventTy::fft_raw()'],['../structmicrophone_1_1SoundStruct.html#a61774b051e6d0fb9ee71f502fb876698',1,'microphone::SoundStruct::fft_raw()']]],
+  ['fftbin_6',['fftBin',['../classFftAnalyzer.html#af1d2fafaa7b33126ef3848b60d4eb002',1,'FftAnalyzer']]],
+  ['fftresolutionhz_7',['fftResolutionHz',['../structmodes_1_1audio_1_1SoundEventTy.html#a95aaa9291e6996ded548913ed91e151d',1,'modes::audio::SoundEventTy']]],
+  ['firmware_5fv_8',['firmware_v',['../classlampda__serial_1_1LampDa.html#a25c439a6bb86cf3c549c279b4e5962ee',1,'lampda_serial::LampDa']]],
+  ['firstholdtime_9',['firstHoldTime',['../structbutton_1_1ButtonStateTy.html#aa1708d4c38859b5b05c3ac31072516f4',1,'button::ButtonStateTy']]],
+  ['firstpixelhue_10',['firstPixelHue',['../structmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html#a825d4810384a606fdd0ee154f19f4807',1,'modes::default_modes::RainbowSwirlMode::StateTy']]],
+  ['flash_5fthread_11',['flash_thread',['../classlampda__gui_1_1TabOfficialUpdate.html#a04d79e90bb7f9c6e2e0dd4e9c7d02f46',1,'lampda_gui::TabOfficialUpdate']]],
+  ['flavor_12',['flavor',['../structmodes_1_1hardware_1_1LampTy.html#ab3670f0b0aab604741805a0f4f26bf52',1,'modes::hardware::LampTy']]],
+  ['foam_5fcolor_13',['foam_color',['../structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#a586104e2ed1de81d649d4ee970aa468a',1,'modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
+  ['framedurationms_14',['frameDurationMs',['../structmodes_1_1hardware_1_1LampTy.html#a9392f67002f251fc9024b35e14924282',1,'modes::hardware::LampTy']]]
 ];

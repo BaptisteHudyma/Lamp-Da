@@ -1,6 +1,29 @@
 var searchData=
 [
-  ['nbbuffers_0',['nbBuffers',['../structmodes_1_1hardware_1_1LampTy.html#aa29e0ad1ba11776d288e42910d5f85fe',1,'modes::hardware::LampTy']]],
-  ['nblines_1',['nbLines',['../structmodes_1_1draw_1_1grid_1_1LineRule.html#a2771a78b3e65b1e5cce7fc12c26458c7',1,'modes::draw::grid::LineRule']]],
-  ['now_2',['now',['../structmodes_1_1hardware_1_1LampTy.html#ad9361ae0f9e01b5b26bd637c9836ccf8',1,'modes::hardware::LampTy']]]
+  ['main_5fwindows_0',['main_windows',['../classlampda__gui_1_1TabParameters.html#a475dbe2d181dfa58aa342a2646015d02',1,'lampda_gui::TabParameters']]],
+  ['maj_5fdisplay_5ftext_1',['maj_display_text',['../classlampda__gui_1_1TabParameters.html#ac6b8481f3605f9b09e8a6fd1fc8d9973',1,'lampda_gui::TabParameters']]],
+  ['manual_5flamp_5ftype_2',['manual_lamp_type',['../classlampda__gui_1_1TabOfficialUpdate.html#a5087bda3af5537d8c557f417c7b6fab9',1,'lampda_gui::TabOfficialUpdate']]],
+  ['maxamplitude_3',['maxAmplitude',['../structmodes_1_1audio_1_1SoundEventTy.html#ae9dab38b162c8baa5470196a39b7866c',1,'modes::audio::SoundEventTy::maxAmplitude()'],['../structmicrophone_1_1SoundStruct.html#adf90549c599d71b69f82791056ff3a2b',1,'microphone::SoundStruct::maxAmplitude()']]],
+  ['maxamplitudefrequency_4',['maxAmplitudeFrequency',['../structmodes_1_1audio_1_1SoundEventTy.html#acffad57fab859de79425cd1306c3877e',1,'modes::audio::SoundEventTy::maxAmplitudeFrequency()'],['../structmicrophone_1_1SoundStruct.html#a90e59e20a9abfc468a849c6504f7f186',1,'microphone::SoundStruct::maxAmplitudeFrequency()']]],
+  ['maxangularspeed_5frads_5',['maxAngularSpeed_radS',['../namespacemodes.html#a3f7c5b4c76b7e0de419ae2c0481368ea',1,'modes']]],
+  ['maxbrightnesslimit_6',['MaxBrightnessLimit',['../structbrightness_1_1BrightnessParameters.html#a24db4e06290fc2776945797b32692b05',1,'brightness::BrightnessParameters']]],
+  ['maxchargingcurrent_5fma_7',['maxChargingCurrent_mA',['../structcharger_1_1drivers_1_1PowerLimits.html#ae4e1cd391b350cc462e9f1722bfd7f09',1,'charger::drivers::PowerLimits']]],
+  ['maxcurrent_5fma_8',['maxCurrent_mA',['../structpowerDelivery_1_1PDOTypes.html#a2441a94ebdc8d08ea02b1d9f2555a5ed',1,'powerDelivery::PDOTypes']]],
+  ['maxfavoritecount_9',['maxFavoriteCount',['../structmodes_1_1ModeManagerTy_1_1StateTy.html#aba32fdd6395a7d3309daa41c5697f8f9',1,'modes::ModeManagerTy::StateTy']]],
+  ['maxheight_10',['maxHeight',['../structmodes_1_1hardware_1_1LampTy.html#adb2d07ee3ec1cee075584c42bde5ded2',1,'modes::hardware::LampTy']]],
+  ['maxheightfloat_11',['maxHeightFloat',['../structmodes_1_1hardware_1_1LampTy.html#ae37598c744d4cfb3035fdc9119af7b2d',1,'modes::hardware::LampTy']]],
+  ['maxinputcurrent_12',['maxInputCurrent',['../structpowerDelivery_1_1UsbPDData.html#a154ea9764c3d5cfd50f69835eaf95d6d',1,'powerDelivery::UsbPDData']]],
+  ['maxinputvoltage_13',['maxInputVoltage',['../structpowerDelivery_1_1UsbPDData.html#ab6d1f51e39afd3bddb9b57f6f8e33911',1,'powerDelivery::UsbPDData']]],
+  ['maxoverflowheight_14',['maxOverflowHeight',['../structmodes_1_1hardware_1_1LampTy.html#a37180c8cca4575d51fa0ee45e70dd6a4',1,'modes::hardware::LampTy']]],
+  ['maxoverflowwidth_15',['maxOverflowWidth',['../structmodes_1_1hardware_1_1LampTy.html#adfb77df365e443d4f71c3d9806b9d56e',1,'modes::hardware::LampTy']]],
+  ['maxpalettescount_16',['maxPalettesCount',['../structmodes_1_1default__modes_1_1PerlinNoiseMode_1_1StateTy.html#a70940cf0452df37cf78b39f694c20b94',1,'modes::default_modes::PerlinNoiseMode::StateTy::maxPalettesCount()'],['../structmodes_1_1default__modes_1_1GravityMode_1_1StateTy.html#a26ddee689f71cf2a4017c0e64870aec2',1,'modes::default_modes::GravityMode::StateTy::maxPalettesCount()']]],
+  ['maxspeed_17',['maxSpeed',['../structmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode_1_1StateTy.html#a65a37ad7522b50457e8a9a17e1242496',1,'modes::custom::nudz::NudzScrollImageMode::StateTy::maxSpeed()'],['../structmodes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode_1_1StateTy.html#acf5f0c3315ed85266217dfc56323c1a7',1,'modes::custom::nudz::NudzViolonsaoulsMode::StateTy::maxSpeed()'],['../structmodes_1_1default__modes_1_1PerlinNoiseMode_1_1StateTy.html#af76f4d0f46bc0a62c923f94fbed49efd',1,'modes::default_modes::PerlinNoiseMode::StateTy::maxSpeed()']]],
+  ['maxverticalspeed_5fmms_18',['maxVerticalSpeed_mmS',['../namespacemodes.html#a462d64c807d4cc5cd9a161bfaa87dca6',1,'modes']]],
+  ['maxwidth_19',['maxWidth',['../structmodes_1_1hardware_1_1LampTy.html#a99f822e1fbafe6518b076e46f8efde98',1,'modes::hardware::LampTy']]],
+  ['maxwidthfloat_20',['maxWidthFloat',['../structmodes_1_1hardware_1_1LampTy.html#a9ab42c82bf015cdc44a3d3f6a4262b81',1,'modes::hardware::LampTy']]],
+  ['minbubbledist_21',['minBubbleDist',['../structmodes_1_1automaton_1_1BubbleMode.html#a222479d1e563793ce7ba3ccbff515624',1,'modes::automaton::BubbleMode']]],
+  ['minscaling_22',['minScaling',['../structmodes_1_1brightness_1_1OnePulse.html#ac040146f373bf7b5a120dcf58d7be739',1,'modes::brightness::OnePulse::minScaling()'],['../structmodes_1_1brightness_1_1ManyPulse.html#ae769bd404fa9137e644c748d643021b8',1,'modes::brightness::ManyPulse::minScaling()']]],
+  ['minspeed_23',['minSpeed',['../structmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode_1_1StateTy.html#a863858bf8a020ae82dd0a41047b78d2d',1,'modes::custom::nudz::NudzScrollImageMode::StateTy::minSpeed()'],['../structmodes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode_1_1StateTy.html#a3857445d08db831aa87373047da30b87',1,'modes::custom::nudz::NudzViolonsaoulsMode::StateTy::minSpeed()']]],
+  ['modemanager_24',['ModeManager',['../structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b',1,'modes::ContextTy']]],
+  ['modestates_25',['modeStates',['../structmodes_1_1GroupTy_1_1StateTy.html#af545a66a1c8c87a18bf3ff02c30ad39d',1,'modes::GroupTy::StateTy']]]
 ];

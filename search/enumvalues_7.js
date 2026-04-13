@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['indexable_0',['indexable',['../namespacemodes_1_1hardware.html#a9ce05c0c227ab520c116fa72d23d4383a3e9616f66ee9536fe327116244382f86',1,'modes::hardware']]],
-  ['indianred_1',['IndianRed',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca4875bcb4f19f552604f6a2542b3eb57e',1,'modes::colors']]],
-  ['indigo_2',['Indigo',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cab7a0b0efb915127f9b87367e703c2cb2',1,'modes::colors']]],
-  ['ivory_3',['Ivory',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caa70676b9caf63574e20047622102ee0f',1,'modes::colors']]]
+  ['halogen_0',['Halogen',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3aff1551bb543ca7123c95227ef0bc622f',1,'modes::colors']]],
+  ['highnoonsun_1',['HighNoonSun',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a9dd693bc0b9656dab6a33b44e8596a3b',1,'modes::colors']]],
+  ['highpressuresodium_2',['HighPressureSodium',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a6c601ec711497976ae3db84f0ca2cb5c',1,'modes::colors']]],
+  ['honeydew_3',['Honeydew',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caa50b94f68125e3145c97f240ab95f4b3',1,'modes::colors']]],
+  ['hotpink_4',['HotPink',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cacccd6fead83207194b1b8a3e21849d2a',1,'modes::colors']]]
 ];

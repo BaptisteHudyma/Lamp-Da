@@ -82,26 +82,39 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Given a set of points, will fit multiple linear segments to it.  
+ <a href="classcurves_1_1LinearCurve.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="curves_8h_source.html">curves.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a96384f55ad0c676f2d6e131708f1e4c8"><td class="memItemLeft" align="right" valign="top"><a id="a96384f55ad0c676f2d6e131708f1e4c8" name="a96384f55ad0c676f2d6e131708f1e4c8"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>point_t</b> = <a class="el" href="structcurves_1_1Point.html">Point</a>&lt; T, U &gt;</td></tr>
+<tr class="memdesc:a96384f55ad0c676f2d6e131708f1e4c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">point in the linear curve <br /></td></tr>
 <tr class="separator:a96384f55ad0c676f2d6e131708f1e4c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a535f2e978e424d81374b81f71940b31b"><td class="memItemLeft" align="right" valign="top"><a id="a535f2e978e424d81374b81f71940b31b" name="a535f2e978e424d81374b81f71940b31b"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>LinearCurve</b> (const std::vector&lt; <a class="el" href="structcurves_1_1Point.html">point_t</a> &gt; &amp;points)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><b>LinearCurve</b> (const std::vector&lt; <a class="el" href="classcurves_1_1LinearCurve.html#a96384f55ad0c676f2d6e131708f1e4c8">point_t</a> &gt; &amp;points)</td></tr>
+<tr class="memdesc:a535f2e978e424d81374b81f71940b31b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a curve from a set of points. <br /></td></tr>
 <tr class="separator:a535f2e978e424d81374b81f71940b31b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a935d650fb3a071f57781ec4619209a28"><td class="memItemLeft" align="right" valign="top"><a id="a935d650fb3a071f57781ec4619209a28" name="a935d650fb3a071f57781ec4619209a28"></a>
 U&#160;</td><td class="memItemRight" valign="bottom"><b>sample</b> (const T x) const</td></tr>
+<tr class="memdesc:a935d650fb3a071f57781ec4619209a28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample a point Y from a given x. <br /></td></tr>
 <tr class="separator:a935d650fb3a071f57781ec4619209a28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename T, typename U&gt;<br />
 class curves::LinearCurve&lt; T, U &gt;</div><p>Given a set of points, will fit multiple linear segments to it. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">T</td><td>Type of X coordinates </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">U</td><td>type of Y coordinates </td></tr>
+  </table>
+  </dd>
+</dl>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>src/system/utils/<a class="el" href="curves_8h_source.html">curves.h</a></li>
 </ul>

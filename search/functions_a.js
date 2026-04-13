@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['keyproxy_0',['KeyProxy',['../structmodes_1_1ContextTy_1_1KeyProxy.html#a89f95e44b141a12f472fa8905a8c25de',1,'modes::ContextTy::KeyProxy']]]
+  ['jumpbrightness_0',['jumpBrightness',['../structmodes_1_1hardware_1_1LampTy.html#a91d30cf18fe4a10850a7d03111254a91',1,'modes::hardware::LampTy']]]
 ];

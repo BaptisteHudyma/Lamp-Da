@@ -122,6 +122,7 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1HelixXYZTy.html">HelixXYZTy</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1Particle.html">Particle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define a particle in 3D space. it has a position and speed.  <a href="structmodes_1_1Particle.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmodes_1_1ParticleSystem.html">ParticleSystem</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define a particle system ALL PARTICLE SYSTEM SHARE THE SAME PÄRTICLE SUBSET.  <a href="classmodes_1_1ParticleSystem.html#details">More...</a><br /></td></tr>
@@ -133,9 +134,11 @@ Classes</h2></td></tr>
 Typedefs</h2></td></tr>
 <tr class="memitem:a059f527e29c76994187c007c978d2c32"><td class="memItemLeft" align="right" valign="top"><a id="a059f527e29c76994187c007c978d2c32" name="a059f527e29c76994187c007c978d2c32"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>FixedModes</b> = <a class="el" href="namespacemodes.html#ab78bece6ea407f3a7b5b922d619d2b97">modes::GroupFor</a>&lt; <a class="el" href="structmodes_1_1fixed_1_1KelvinMode.html">fixed::KelvinMode</a>, <a class="el" href="structmodes_1_1fixed_1_1RainbowMode.html">fixed::RainbowMode</a>, <a class="el" href="structmodes_1_1fixed_1_1PalettePapiMode.html">fixed::PalettePapiMode</a> &gt;</td></tr>
+<tr class="memdesc:a059f527e29c76994187c007c978d2c32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed modes groups. <br /></td></tr>
 <tr class="separator:a059f527e29c76994187c007c978d2c32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01019b2cefe423d0bbe7b34c4083050b"><td class="memItemLeft" align="right" valign="top"><a id="a01019b2cefe423d0bbe7b34c4083050b" name="a01019b2cefe423d0bbe7b34c4083050b"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>MiscFixedModes</b> = <a class="el" href="namespacemodes.html#ab78bece6ea407f3a7b5b922d619d2b97">modes::GroupFor</a>&lt; <a class="el" href="structmodes_1_1fixed_1_1PalettePartyMode.html">fixed::PalettePartyMode</a>, <a class="el" href="structmodes_1_1fixed_1_1PaletteForestMode.html">fixed::PaletteForestMode</a>, <a class="el" href="structmodes_1_1fixed_1_1PaletteOceanMode.html">fixed::PaletteOceanMode</a> &gt;</td></tr>
+<tr class="memdesc:a01019b2cefe423d0bbe7b34c4083050b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed palette colors modes. <br /></td></tr>
 <tr class="separator:a01019b2cefe423d0bbe7b34c4083050b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab78bece6ea407f3a7b5b922d619d2b97"><td class="memTemplParams" colspan="2">template&lt;typename... Modes&gt; </td></tr>
 <tr class="memitem:ab78bece6ea407f3a7b5b922d619d2b97"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemodes.html#ab78bece6ea407f3a7b5b922d619d2b97">GroupFor</a> = GroupTy&lt; std::tuple&lt; Modes... &gt; &gt;</td></tr>
@@ -174,61 +177,63 @@ Functions</h2></td></tr>
 <tr class="memitem:a67194c2ad5b4cddeddb899c360583d3f"><td class="memTemplItemLeft" align="right" valign="top">static auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemodes.html#a67194c2ad5b4cddeddb899c360583d3f">context_as</a> (auto &amp;ctx)</td></tr>
 <tr class="memdesc:a67194c2ad5b4cddeddb899c360583d3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind provided context to another <a class="el" href="structmodes_1_1BasicMode.html" title="Parent object for all custom user modes.">modes::BasicMode</a>.  <br /></td></tr>
 <tr class="separator:a67194c2ad5b4cddeddb899c360583d3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1743b85a858b051f39d8e1904057677"><td class="memItemLeft" align="right" valign="top"><a id="ab1743b85a858b051f39d8e1904057677" name="ab1743b85a858b051f39d8e1904057677"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>to_strip</b> (uint16_t x, uint16_t y)</td></tr>
-<tr class="memdesc:ab1743b85a858b051f39d8e1904057677"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert <code>x</code> and <code>y</code> coordinates to a linear position on strip. <br /></td></tr>
-<tr class="separator:ab1743b85a858b051f39d8e1904057677"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8bb0fa8b8f080a21f268b050d217bb9b"><td class="memItemLeft" align="right" valign="top"><a id="a8bb0fa8b8f080a21f268b050d217bb9b" name="a8bb0fa8b8f080a21f268b050d217bb9b"></a>
-static constexpr <a class="el" href="structmodes_1_1XYTy.html">XYTy</a>&#160;</td><td class="memItemRight" valign="bottom"><b>strip_to_XY</b> (uint16_t n)</td></tr>
-<tr class="memdesc:a8bb0fa8b8f080a21f268b050d217bb9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a <code>n</code> index on the LED strip to a matching XY coordinate. <br /></td></tr>
+<tr class="memitem:a2a24998b4d07653b2dba4d88267a3edb"><td class="memItemLeft" align="right" valign="top">static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes.html#a2a24998b4d07653b2dba4d88267a3edb">to_strip</a> (uint16_t, uint16_t)</td></tr>
+<tr class="memdesc:a2a24998b4d07653b2dba4d88267a3edb"><td class="mdescLeft">&#160;</td><td class="mdescRight">convert grid coordinates to strip index  <br /></td></tr>
+<tr class="separator:a2a24998b4d07653b2dba4d88267a3edb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bb0fa8b8f080a21f268b050d217bb9b"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="structmodes_1_1XYTy.html">XYTy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes.html#a8bb0fa8b8f080a21f268b050d217bb9b">strip_to_XY</a> (uint16_t n)</td></tr>
+<tr class="memdesc:a8bb0fa8b8f080a21f268b050d217bb9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">convert strip index to grid coordinates  <br /></td></tr>
 <tr class="separator:a8bb0fa8b8f080a21f268b050d217bb9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af76c48990a9c9843b7adbdf52382540a"><td class="memItemLeft" align="right" valign="top"><a id="af76c48990a9c9843b7adbdf52382540a" name="af76c48990a9c9843b7adbdf52382540a"></a>
-static constexpr <a class="el" href="structmodes_1_1HelixXYZTy.html">HelixXYZTy</a>&#160;</td><td class="memItemRight" valign="bottom"><b>strip_to_helix</b> (int16_t n)</td></tr>
-<tr class="memdesc:af76c48990a9c9843b7adbdf52382540a"><td class="mdescLeft">&#160;</td><td class="mdescRight">X is the vertical axis, starting at zero and ending at maxWidthFloat. <br /></td></tr>
+<tr class="memitem:af76c48990a9c9843b7adbdf52382540a"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="structmodes_1_1HelixXYZTy.html">HelixXYZTy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes.html#af76c48990a9c9843b7adbdf52382540a">strip_to_helix</a> (int16_t n)</td></tr>
+<tr class="memdesc:af76c48990a9c9843b7adbdf52382540a"><td class="mdescLeft">&#160;</td><td class="mdescRight">convert strip index to 3D coordinates  <br /></td></tr>
 <tr class="separator:af76c48990a9c9843b7adbdf52382540a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a1c5ae75f1370f04816ad356698be71"><td class="memItemLeft" align="right" valign="top"><a id="a7a1c5ae75f1370f04816ad356698be71" name="a7a1c5ae75f1370f04816ad356698be71"></a>
-static constexpr <a class="el" href="structmodes_1_1HelixXYZTy.html">HelixXYZTy</a>&#160;</td><td class="memItemRight" valign="bottom"><b>strip_to_helix_unconstraint</b> (const int16_t n)</td></tr>
+<tr class="memitem:a7a1c5ae75f1370f04816ad356698be71"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="structmodes_1_1HelixXYZTy.html">HelixXYZTy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes.html#a7a1c5ae75f1370f04816ad356698be71">strip_to_helix_unconstraint</a> (const int16_t n)</td></tr>
+<tr class="memdesc:a7a1c5ae75f1370f04816ad356698be71"><td class="mdescLeft">&#160;</td><td class="mdescRight">convert strip index to 3D coordinates, without checks on led index. This allows to use 3D coordinates out of the lamp body  <br /></td></tr>
 <tr class="separator:a7a1c5ae75f1370f04816ad356698be71"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acfcb1117d99d5da9d29fe216d79019f3"><td class="memItemLeft" align="right" valign="top"><a id="acfcb1117d99d5da9d29fe216d79019f3" name="acfcb1117d99d5da9d29fe216d79019f3"></a>
-static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_led_index_valid</b> (const int16_t ledIndex)</td></tr>
+<tr class="memitem:acfcb1117d99d5da9d29fe216d79019f3"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes.html#acfcb1117d99d5da9d29fe216d79019f3">is_led_index_valid</a> (const int16_t ledIndex)</td></tr>
+<tr class="memdesc:acfcb1117d99d5da9d29fe216d79019f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the given strip index is a valid one.  <br /></td></tr>
 <tr class="separator:acfcb1117d99d5da9d29fe216d79019f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa119566ec8eb9d2595e47f13a1a79764"><td class="memItemLeft" align="right" valign="top"><a id="aa119566ec8eb9d2595e47f13a1a79764" name="aa119566ec8eb9d2595e47f13a1a79764"></a>
-static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_lamp_coordinate_out_of_bounds</b> (const float angle_rad, const float z)</td></tr>
+<tr class="memitem:aa119566ec8eb9d2595e47f13a1a79764"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes.html#aa119566ec8eb9d2595e47f13a1a79764">is_lamp_coordinate_out_of_bounds</a> (const float angle_rad, const float z)</td></tr>
+<tr class="memdesc:aa119566ec8eb9d2595e47f13a1a79764"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the given led index is out of bounds.  <br /></td></tr>
 <tr class="separator:aa119566ec8eb9d2595e47f13a1a79764"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1e975bce6deab750ef53cc3359c08e48"><td class="memItemLeft" align="right" valign="top"><a id="a1e975bce6deab750ef53cc3359c08e48" name="a1e975bce6deab750ef53cc3359c08e48"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>to_led_index</b> (const float angle_rad, const float z)</td></tr>
-<tr class="memdesc:a1e975bce6deab750ef53cc3359c08e48"><td class="mdescLeft">&#160;</td><td class="mdescRight">convert a lamp coordinate to a led index <br /></td></tr>
+<tr class="memitem:a1e975bce6deab750ef53cc3359c08e48"><td class="memItemLeft" align="right" valign="top">static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes.html#a1e975bce6deab750ef53cc3359c08e48">to_led_index</a> (const float angle_rad, const float z)</td></tr>
+<tr class="memdesc:a1e975bce6deab750ef53cc3359c08e48"><td class="mdescLeft">&#160;</td><td class="mdescRight">convert a lamp coordinate to a led index  <br /></td></tr>
 <tr class="separator:a1e975bce6deab750ef53cc3359c08e48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76da093521d10c1a1c4cc78a86c0c571"><td class="memItemLeft" align="right" valign="top"><a id="a76da093521d10c1a1c4cc78a86c0c571" name="a76da093521d10c1a1c4cc78a86c0c571"></a>
-static constexpr int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>to_led_index_no_bounds</b> (const float angle_rad, const float z)</td></tr>
-<tr class="memdesc:a76da093521d10c1a1c4cc78a86c0c571"><td class="mdescLeft">&#160;</td><td class="mdescRight">convert a lamp coordinate to a led index, the result can be an index out of the lamp body <br /></td></tr>
+<tr class="memitem:a76da093521d10c1a1c4cc78a86c0c571"><td class="memItemLeft" align="right" valign="top">static constexpr int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes.html#a76da093521d10c1a1c4cc78a86c0c571">to_led_index_no_bounds</a> (const float angle_rad, const float z)</td></tr>
+<tr class="memdesc:a76da093521d10c1a1c4cc78a86c0c571"><td class="mdescLeft">&#160;</td><td class="mdescRight">convert a lamp coordinate to a led index, the result can be an index out of the lamp body  <br /></td></tr>
 <tr class="separator:a76da093521d10c1a1c4cc78a86c0c571"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88ad7ff71c793102e8208801501a8b03"><td class="memItemLeft" align="right" valign="top"><a id="a88ad7ff71c793102e8208801501a8b03" name="a88ad7ff71c793102e8208801501a8b03"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>to_helix_z</b> (const int16_t n)</td></tr>
+<tr class="memitem:a88ad7ff71c793102e8208801501a8b03"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes.html#a88ad7ff71c793102e8208801501a8b03">to_helix_z</a> (const int16_t n)</td></tr>
+<tr class="memdesc:a88ad7ff71c793102e8208801501a8b03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a led index to an helix height coordinate.  <br /></td></tr>
 <tr class="separator:a88ad7ff71c793102e8208801501a8b03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:ac1d736426003ee4c26ae9fa28aa03b17"><td class="memItemLeft" align="right" valign="top"><a id="ac1d736426003ee4c26ae9fa28aa03b17" name="ac1d736426003ee4c26ae9fa28aa03b17"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>cylinderRadius_m</b> = <a class="el" href="structmodes_1_1hardware_1_1LampTy.html#a42a31acca11f6a5d9fc0c96d1d436cd4">LampTy::lampBodyRadius_mm</a> / 1000.0</td></tr>
+<tr class="memdesc:ac1d736426003ee4c26ae9fa28aa03b17"><td class="mdescLeft">&#160;</td><td class="mdescRight">radius of the cylinder, in meters <br /></td></tr>
 <tr class="separator:ac1d736426003ee4c26ae9fa28aa03b17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a81a30175c2bda08fa88027c8b8b875"><td class="memItemLeft" align="right" valign="top"><a id="a9a81a30175c2bda08fa88027c8b8b875" name="a9a81a30175c2bda08fa88027c8b8b875"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>angularSpeedGain</b> = 50000</td></tr>
+<tr class="memdesc:a9a81a30175c2bda08fa88027c8b8b875"><td class="mdescLeft">&#160;</td><td class="mdescRight">this gain compensate the angular acceleration for better display <br /></td></tr>
 <tr class="separator:a9a81a30175c2bda08fa88027c8b8b875"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb5111880e7d21bf4ff5480098fcd94c"><td class="memItemLeft" align="right" valign="top"><a id="afb5111880e7d21bf4ff5480098fcd94c" name="afb5111880e7d21bf4ff5480098fcd94c"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>linearSpeedGain</b> = 1.0</td></tr>
+<tr class="memdesc:afb5111880e7d21bf4ff5480098fcd94c"><td class="mdescLeft">&#160;</td><td class="mdescRight">gain for the linear speeds <br /></td></tr>
 <tr class="separator:afb5111880e7d21bf4ff5480098fcd94c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04b993952a4d748e7cf4a30e5f6766fe"><td class="memItemLeft" align="right" valign="top"><a id="a04b993952a4d748e7cf4a30e5f6766fe" name="a04b993952a4d748e7cf4a30e5f6766fe"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>reboundCoeff</b> = 0.1</td></tr>
+<tr class="memdesc:a04b993952a4d748e7cf4a30e5f6766fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">low rebound [0 - 1] on walls <br /></td></tr>
 <tr class="separator:a04b993952a4d748e7cf4a30e5f6766fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe48a6ac176a82dec0c8ff4edbf08fd9"><td class="memItemLeft" align="right" valign="top"><a id="abe48a6ac176a82dec0c8ff4edbf08fd9" name="abe48a6ac176a82dec0c8ff4edbf08fd9"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>speedDampening</b> = 0.92</td></tr>
+<tr class="memdesc:abe48a6ac176a82dec0c8ff4edbf08fd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">low speed dampening [0-0.99] at every steps (viscosity) <br /></td></tr>
 <tr class="separator:abe48a6ac176a82dec0c8ff4edbf08fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f7c5b4c76b7e0de419ae2c0481368ea"><td class="memItemLeft" align="right" valign="top"><a id="a3f7c5b4c76b7e0de419ae2c0481368ea" name="a3f7c5b4c76b7e0de419ae2c0481368ea"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>maxAngularSpeed_radS</b> = 4 * c_TWO_PI</td></tr>
+<tr class="memdesc:a3f7c5b4c76b7e0de419ae2c0481368ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">max angular speed in radians/s <br /></td></tr>
 <tr class="separator:a3f7c5b4c76b7e0de419ae2c0481368ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a462d64c807d4cc5cd9a161bfaa87dca6"><td class="memItemLeft" align="right" valign="top"><a id="a462d64c807d4cc5cd9a161bfaa87dca6" name="a462d64c807d4cc5cd9a161bfaa87dca6"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>maxVerticalSpeed_mmS</b> = 50</td></tr>
+<tr class="memdesc:a462d64c807d4cc5cd9a161bfaa87dca6"><td class="mdescLeft">&#160;</td><td class="mdescRight">max vertical speed in mm/S <br /></td></tr>
 <tr class="separator:a462d64c807d4cc5cd9a161bfaa87dca6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -376,6 +381,356 @@ template&lt;typename NewLocalMode &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A new context instance bound to the provided <a class="el" href="structmodes_1_1BasicMode.html" title="Parent object for all custom user modes.">modes::BasicMode</a> </dd></dl>
+
+</div>
+</div>
+<a id="aa119566ec8eb9d2595e47f13a1a79764" name="aa119566ec8eb9d2595e47f13a1a79764"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa119566ec8eb9d2595e47f13a1a79764">&#9670;&#160;</a></span>is_lamp_coordinate_out_of_bounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr bool modes::is_lamp_coordinate_out_of_bounds </td>
+          <td>(</td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>angle_rad</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>z_mm</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True if the given led index is out of bounds. </p>
+<p>Return true id the given coordinates exists on the strip. This function also checks the bounds using the observation angle, as the strip is an helix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">angle_rad</td><td>Angle in radians of the pixel. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">z_mm</td><td>height, in mm. Height in this coordinate system is negative. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="acfcb1117d99d5da9d29fe216d79019f3" name="acfcb1117d99d5da9d29fe216d79019f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfcb1117d99d5da9d29fe216d79019f3">&#9670;&#160;</a></span>is_led_index_valid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr bool modes::is_led_index_valid </td>
+          <td>(</td>
+          <td class="paramtype">const int16_t&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True if the given strip index is a valid one. </p>
+<p>Return true id the given led index exists on the strip.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Index of the led in the strip. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="af76c48990a9c9843b7adbdf52382540a" name="af76c48990a9c9843b7adbdf52382540a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af76c48990a9c9843b7adbdf52382540a">&#9670;&#160;</a></span>strip_to_helix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structmodes_1_1HelixXYZTy.html">HelixXYZTy</a> modes::strip_to_helix </td>
+          <td>(</td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>convert strip index to 3D coordinates </p>
+<p>Convert a strip led index to a 3D helix coordinate.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Index of the led in the strip. If will be constraint to the lamp body </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Coordinates of the led in the 3D world (mm) </dd></dl>
+
+</div>
+</div>
+<a id="a7a1c5ae75f1370f04816ad356698be71" name="a7a1c5ae75f1370f04816ad356698be71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a1c5ae75f1370f04816ad356698be71">&#9670;&#160;</a></span>strip_to_helix_unconstraint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structmodes_1_1HelixXYZTy.html">HelixXYZTy</a> modes::strip_to_helix_unconstraint </td>
+          <td>(</td>
+          <td class="paramtype">const int16_t&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>convert strip index to 3D coordinates, without checks on led index. This allows to use 3D coordinates out of the lamp body </p>
+<p>Convert a strip led index to a 3D helix coordinate.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Index of the led in the strip, unconstraint to the lamp body. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Coordinates of the led in the 3D world (mm) </dd></dl>
+
+</div>
+</div>
+<a id="a8bb0fa8b8f080a21f268b050d217bb9b" name="a8bb0fa8b8f080a21f268b050d217bb9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bb0fa8b8f080a21f268b050d217bb9b">&#9670;&#160;</a></span>strip_to_XY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structmodes_1_1XYTy.html">XYTy</a> modes::strip_to_XY </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>convert strip index to grid coordinates </p>
+<p>Convert a <code>n</code> index on the LED strip to a matching XY coordinate. </p>
+
+</div>
+</div>
+<a id="a88ad7ff71c793102e8208801501a8b03" name="a88ad7ff71c793102e8208801501a8b03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88ad7ff71c793102e8208801501a8b03">&#9670;&#160;</a></span>to_helix_z()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr float modes::to_helix_z </td>
+          <td>(</td>
+          <td class="paramtype">const int16_t&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert a led index to an helix height coordinate. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Index of the led in the strip, unconstraint to the lamp body. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The height if the pixel, in mm. </dd></dl>
+
+</div>
+</div>
+<a id="a1e975bce6deab750ef53cc3359c08e48" name="a1e975bce6deab750ef53cc3359c08e48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e975bce6deab750ef53cc3359c08e48">&#9670;&#160;</a></span>to_led_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr uint16_t modes::to_led_index </td>
+          <td>(</td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>angle_rad</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>z_mm</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>convert a lamp coordinate to a led index </p>
+<p>Convert a cylindrical world coordinate to a led index.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">angle_rad</td><td>Angle in radians of the pixel. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">z_mm</td><td>height, in mm. Height in this coordinate system is negative. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The index of the led, constrained to a valid index in the strip. </dd></dl>
+
+</div>
+</div>
+<a id="a76da093521d10c1a1c4cc78a86c0c571" name="a76da093521d10c1a1c4cc78a86c0c571"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76da093521d10c1a1c4cc78a86c0c571">&#9670;&#160;</a></span>to_led_index_no_bounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr int16_t modes::to_led_index_no_bounds </td>
+          <td>(</td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>angle_rad</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>z_mm</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>convert a lamp coordinate to a led index, the result can be an index out of the lamp body </p>
+<p>Convert a cylindrical world coordinate to a led index.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">angle_rad</td><td>Angle in radians of the pixel. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">z_mm</td><td>height, in mm. Height in this coordinate system is negative. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The index of the led. It is not necessarly a valid index. </dd></dl>
+
+</div>
+</div>
+<a id="a2a24998b4d07653b2dba4d88267a3edb" name="a2a24998b4d07653b2dba4d88267a3edb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a24998b4d07653b2dba4d88267a3edb">&#9670;&#160;</a></span>to_strip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr uint16_t modes::to_strip </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>convert grid coordinates to strip index </p>
+<p>Convert <code>x</code> and <code>y</code> coordinates to a linear position on strip. </p>
 
 </div>
 </div>

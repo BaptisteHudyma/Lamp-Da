@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['lamptypes_0',['LampTypes',['../namespacemodes_1_1hardware.html#a9ce05c0c227ab520c116fa72d23d4383',1,'modes::hardware']]]
+  ['htmlcolorcode_0',['HTMLColorCode',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3c',1,'modes::colors']]]
 ];

@@ -81,27 +81,38 @@ $(function() {
   <div class="headertitle"><div class="title">modes::Particle Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Define a particle in 3D space. it has a position and speed.  
+ <a href="structmodes_1_1Particle.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="particle_8hpp_source.html">particle.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a29a59630f8081417dd78dacedf739413"><td class="memItemLeft" align="right" valign="top"><a id="a29a59630f8081417dd78dacedf739413" name="a29a59630f8081417dd78dacedf739413"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Particle</b> ()</td></tr>
+<tr class="memdesc:a29a59630f8081417dd78dacedf739413"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default particle init. <br /></td></tr>
+<tr class="separator:a29a59630f8081417dd78dacedf739413"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b6ea84caa05770437d0ba0ca48229b2"><td class="memItemLeft" align="right" valign="top"><a id="a2b6ea84caa05770437d0ba0ca48229b2" name="a2b6ea84caa05770437d0ba0ca48229b2"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Particle</b> (const <a class="el" href="structvec3d.html">vec3d</a> &amp;positionCartesian)</td></tr>
+<tr class="memdesc:a2b6ea84caa05770437d0ba0ca48229b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <a class="el" href="structmodes_1_1Particle.html" title="Define a particle in 3D space. it has a position and speed.">Particle</a> from a 3D cartesian position. <br /></td></tr>
 <tr class="separator:a2b6ea84caa05770437d0ba0ca48229b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa666b599944a8ac6088d2b1c03459f3c"><td class="memItemLeft" align="right" valign="top"><a id="aa666b599944a8ac6088d2b1c03459f3c" name="aa666b599944a8ac6088d2b1c03459f3c"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Particle</b> (const float positionTheta_rad, const float positionZ_mm)</td></tr>
+<tr class="memdesc:aa666b599944a8ac6088d2b1c03459f3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a particle from an angle and height. <br /></td></tr>
 <tr class="separator:aa666b599944a8ac6088d2b1c03459f3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36355ff9f0cd9a29960573b7c7a4a9b3"><td class="memItemLeft" align="right" valign="top"><a id="a36355ff9f0cd9a29960573b7c7a4a9b3" name="a36355ff9f0cd9a29960573b7c7a4a9b3"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Particle</b> (const <a class="el" href="structmodes_1_1Particle.html">Particle</a> &amp;other)</td></tr>
-<tr class="separator:a36355ff9f0cd9a29960573b7c7a4a9b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f8d9ae24ce02363e3b173af7f35e1ff"><td class="memItemLeft" align="right" valign="top"><a id="a7f8d9ae24ce02363e3b173af7f35e1ff" name="a7f8d9ae24ce02363e3b173af7f35e1ff"></a>
-<a class="el" href="structvec2d.html">vec2d</a>&#160;</td><td class="memItemRight" valign="bottom"><b>compute_speed_increment</b> (const <a class="el" href="structvec3d.html">vec3d</a> &amp;accelerationCartesian_m, const float deltaTime_s) const</td></tr>
+<tr class="memitem:a215bb91785e521eeb165f80bf9a6be82"><td class="memItemLeft" align="right" valign="top"><a id="a215bb91785e521eeb165f80bf9a6be82" name="a215bb91785e521eeb165f80bf9a6be82"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Particle</b> (const <a class="el" href="structmodes_1_1Particle.html">Particle</a> &amp;other)=default</td></tr>
+<tr class="memdesc:a215bb91785e521eeb165f80bf9a6be82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor for a particle. <br /></td></tr>
+<tr class="separator:a215bb91785e521eeb165f80bf9a6be82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f8d9ae24ce02363e3b173af7f35e1ff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structvec2d.html">vec2d</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1Particle.html#a7f8d9ae24ce02363e3b173af7f35e1ff">compute_speed_increment</a> (const <a class="el" href="structvec3d.html">vec3d</a> &amp;accelerationCartesian_m, const float deltaTime_s) const</td></tr>
+<tr class="memdesc:a7f8d9ae24ce02363e3b173af7f35e1ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the speed increment in the constraint lamp body.  <br /></td></tr>
 <tr class="separator:a7f8d9ae24ce02363e3b173af7f35e1ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58d8d7a6bda5f9d037de1cf65149d94c"><td class="memItemLeft" align="right" valign="top"><a id="a58d8d7a6bda5f9d037de1cf65149d94c" name="a58d8d7a6bda5f9d037de1cf65149d94c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>apply_acceleration</b> (const <a class="el" href="structvec3d.html">vec3d</a> &amp;accelerationCartesian_m, const float deltaTime_s, const bool shouldContrain=true)</td></tr>
-<tr class="memdesc:a58d8d7a6bda5f9d037de1cf65149d94c"><td class="mdescLeft">&#160;</td><td class="mdescRight">apply a cartesian acceleration to this particulate <br /></td></tr>
+<tr class="memitem:a58d8d7a6bda5f9d037de1cf65149d94c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1Particle.html#a58d8d7a6bda5f9d037de1cf65149d94c">apply_acceleration</a> (const <a class="el" href="structvec3d.html">vec3d</a> &amp;accelerationCartesian_m, const float deltaTime_s, const bool shouldContrain=true)</td></tr>
+<tr class="memdesc:a58d8d7a6bda5f9d037de1cf65149d94c"><td class="mdescLeft">&#160;</td><td class="mdescRight">apply a cartesian acceleration to this particulate  <br /></td></tr>
 <tr class="separator:a58d8d7a6bda5f9d037de1cf65149d94c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af1c7c450e0fb2a3070a1cc28cb8bbe3a"><td class="memItemLeft" align="right" valign="top"><a id="af1c7c450e0fb2a3070a1cc28cb8bbe3a" name="af1c7c450e0fb2a3070a1cc28cb8bbe3a"></a>
-<a class="el" href="structmodes_1_1Particle.html">Particle</a>&#160;</td><td class="memItemRight" valign="bottom"><b>simulate_after_acceleration</b> (const <a class="el" href="structvec3d.html">vec3d</a> &amp;accelerationCartesian_m, const float deltaTime_s, const bool shouldContrain=true) const</td></tr>
+<tr class="memitem:af1c7c450e0fb2a3070a1cc28cb8bbe3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmodes_1_1Particle.html">Particle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1Particle.html#af1c7c450e0fb2a3070a1cc28cb8bbe3a">simulate_after_acceleration</a> (const <a class="el" href="structvec3d.html">vec3d</a> &amp;accelerationCartesian_m, const float deltaTime_s, const bool shouldContrain=true) const</td></tr>
+<tr class="memdesc:af1c7c450e0fb2a3070a1cc28cb8bbe3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simulate this particle movement as a new particle.  <br /></td></tr>
 <tr class="separator:af1c7c450e0fb2a3070a1cc28cb8bbe3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f790522fc4368c9a140b5af1cd750fb"><td class="memItemLeft" align="right" valign="top"><a id="a4f790522fc4368c9a140b5af1cd750fb" name="a4f790522fc4368c9a140b5af1cd750fb"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>constraint_into_lamp_body</b> ()</td></tr>
@@ -109,32 +120,193 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>constraint_into_lamp_
 <tr class="separator:a4f790522fc4368c9a140b5af1cd750fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b161aa2e55370dd06b32403df549687"><td class="memItemLeft" align="right" valign="top"><a id="a6b161aa2e55370dd06b32403df549687" name="a6b161aa2e55370dd06b32403df549687"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>dampen_speed</b> (const float dampenFactor)</td></tr>
+<tr class="memdesc:a6b161aa2e55370dd06b32403df549687"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bleed off some speed. Simulate a dampening factor (like friction loss) <br /></td></tr>
 <tr class="separator:a6b161aa2e55370dd06b32403df549687"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a143d1fc13dbd0cd0af3aac05847ac05f"><td class="memItemLeft" align="right" valign="top"><a id="a143d1fc13dbd0cd0af3aac05847ac05f" name="a143d1fc13dbd0cd0af3aac05847ac05f"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>to_lamp_index</b> () const</td></tr>
+<tr class="memdesc:a143d1fc13dbd0cd0af3aac05847ac05f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert this particle coordinates to a constraint lamp index. <br /></td></tr>
 <tr class="separator:a143d1fc13dbd0cd0af3aac05847ac05f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0198ce9a3c508f48533cba05e8da088"><td class="memItemLeft" align="right" valign="top"><a id="af0198ce9a3c508f48533cba05e8da088" name="af0198ce9a3c508f48533cba05e8da088"></a>
 int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>to_lamp_index_no_bounds</b> () const</td></tr>
+<tr class="memdesc:af0198ce9a3c508f48533cba05e8da088"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert this particle coordinates to an unconstraint lamp index. <br /></td></tr>
 <tr class="separator:af0198ce9a3c508f48533cba05e8da088"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ab3825c94e0bdbbb17fed3c47acc115fa"><td class="memItemLeft" align="right" valign="top"><a id="ab3825c94e0bdbbb17fed3c47acc115fa" name="ab3825c94e0bdbbb17fed3c47acc115fa"></a>
 float&#160;</td><td class="memItemRight" valign="bottom"><b>thetaSpeed_radS</b></td></tr>
+<tr class="memdesc:ab3825c94e0bdbbb17fed3c47acc115fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">angular speed, in radian/seconds <br /></td></tr>
 <tr class="separator:ab3825c94e0bdbbb17fed3c47acc115fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab026e8b8fca5df549afdcd11ae068cbb"><td class="memItemLeft" align="right" valign="top"><a id="ab026e8b8fca5df549afdcd11ae068cbb" name="ab026e8b8fca5df549afdcd11ae068cbb"></a>
 float&#160;</td><td class="memItemRight" valign="bottom"><b>zSpeed_mS</b></td></tr>
+<tr class="memdesc:ab026e8b8fca5df549afdcd11ae068cbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">linear speed, in meter/seconds <br /></td></tr>
 <tr class="separator:ab026e8b8fca5df549afdcd11ae068cbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20a372f46feb86b6788d3883d5b09ef4"><td class="memItemLeft" align="right" valign="top"><a id="a20a372f46feb86b6788d3883d5b09ef4" name="a20a372f46feb86b6788d3883d5b09ef4"></a>
 float&#160;</td><td class="memItemRight" valign="bottom"><b>theta_rad</b></td></tr>
+<tr class="memdesc:a20a372f46feb86b6788d3883d5b09ef4"><td class="mdescLeft">&#160;</td><td class="mdescRight">position, in radians <br /></td></tr>
 <tr class="separator:a20a372f46feb86b6788d3883d5b09ef4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96bb134fb5aac4b05fd1f500b8cc8cf2"><td class="memItemLeft" align="right" valign="top"><a id="a96bb134fb5aac4b05fd1f500b8cc8cf2" name="a96bb134fb5aac4b05fd1f500b8cc8cf2"></a>
 float&#160;</td><td class="memItemRight" valign="bottom"><b>z_mm</b></td></tr>
+<tr class="memdesc:a96bb134fb5aac4b05fd1f500b8cc8cf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">height, in millimeters. <br /></td></tr>
 <tr class="separator:a96bb134fb5aac4b05fd1f500b8cc8cf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80b4f44b356ec871dbf0ddd623e1484c"><td class="memItemLeft" align="right" valign="top"><a id="a80b4f44b356ec871dbf0ddd623e1484c" name="a80b4f44b356ec871dbf0ddd623e1484c"></a>
 int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>_savedLampIndex</b></td></tr>
+<tr class="memdesc:a80b4f44b356ec871dbf0ddd623e1484c"><td class="mdescLeft">&#160;</td><td class="mdescRight">optimization <br /></td></tr>
 <tr class="separator:a80b4f44b356ec871dbf0ddd623e1484c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Define a particle in 3D space. it has a position and speed. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a58d8d7a6bda5f9d037de1cf65149d94c" name="a58d8d7a6bda5f9d037de1cf65149d94c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58d8d7a6bda5f9d037de1cf65149d94c">&#9670;&#160;</a></span>apply_acceleration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void modes::Particle::apply_acceleration </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structvec3d.html">vec3d</a> &amp;&#160;</td>
+          <td class="paramname"><em>accelerationCartesian_m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>deltaTime_s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>shouldContrain</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>apply a cartesian acceleration to this particulate </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">accelerationCartesian_m</td><td>Acceleration applied at this update </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">deltaTime_s</td><td>Time since the latest update </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">shouldContrain</td><td>If true, will constrain the movement into the lamp body. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a7f8d9ae24ce02363e3b173af7f35e1ff" name="a7f8d9ae24ce02363e3b173af7f35e1ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f8d9ae24ce02363e3b173af7f35e1ff">&#9670;&#160;</a></span>compute_speed_increment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structvec2d.html">vec2d</a> modes::Particle::compute_speed_increment </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structvec3d.html">vec3d</a> &amp;&#160;</td>
+          <td class="paramname"><em>accelerationCartesian_m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>deltaTime_s</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the speed increment in the constraint lamp body. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">accelerationCartesian_m</td><td>Acceleration applied at this update </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">deltaTime_s</td><td>Time since the latest update </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The speed in angle and heigh. </dd></dl>
+
+</div>
+</div>
+<a id="af1c7c450e0fb2a3070a1cc28cb8bbe3a" name="af1c7c450e0fb2a3070a1cc28cb8bbe3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1c7c450e0fb2a3070a1cc28cb8bbe3a">&#9670;&#160;</a></span>simulate_after_acceleration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structmodes_1_1Particle.html">Particle</a> modes::Particle::simulate_after_acceleration </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structvec3d.html">vec3d</a> &amp;&#160;</td>
+          <td class="paramname"><em>accelerationCartesian_m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>deltaTime_s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>shouldContrain</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Simulate this particle movement as a new particle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">accelerationCartesian_m</td><td>Acceleration applied at this update </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">deltaTime_s</td><td>Time since the latest update </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">shouldContrain</td><td>If true, will constrain the movement into the lamp body. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>src/modes/include/particle_system/<a class="el" href="particle_8hpp_source.html">particle.hpp</a></li>
 </ul>

@@ -85,47 +85,49 @@ $(function() {
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="palettes_8hpp.html">src/modes/include/colors/palettes.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structmodes_1_1default__modes_1_1RainbowSwirlMode.html">    9</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structmodes_1_1default__modes_1_1RainbowSwirlMode.html">RainbowSwirlMode</a> : <span class="keyword">public</span> <a class="code hl_struct" href="structmodes_1_1BasicMode.html">BasicMode</a></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>{</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html">   11</a></span>  <span class="keyword">struct </span><a class="code hl_struct" href="structmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html">StateTy</a></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>  {</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    uint32_t increment;</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    uint16_t firstPixelHue;</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>  };</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> on_enter_mode(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>  {</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="comment">//</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> uint32_t animationPeriod_ms = 5000;</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    ctx.state.increment = (UINT16_MAX / (animationPeriod_ms / ctx.lamp.frameDurationMs));</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    ctx.state.firstPixelHue = 0;</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>  }</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>  {</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">const</span> uint16_t firstPixelColor = ctx.state.firstPixelHue;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> multiplier = UINT16_MAX / <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(ctx.lamp.ledCount);</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ctx.lamp.ledCount; i++)</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    {</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>      <span class="keyword">const</span> uint16_t pixelHue = firstPixelColor + i * multiplier;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>      uint32_t color = <a class="code hl_function" href="namespacemodes_1_1colors.html#ad0ad1c138630cfabc7710a4b1a424fbc">colors::fromAngleHue</a>(lmpd_map&lt;uint16_t&gt;(pixelHue, 0, UINT16_MAX, 0, 360));</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>      ctx.lamp.setPixelColor(i, color);</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="comment">// update first led color</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    ctx.state.firstPixelHue += ctx.state.increment;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  }</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structmodes_1_1default__modes_1_1RainbowSwirlMode.html">   12</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structmodes_1_1default__modes_1_1RainbowSwirlMode.html">RainbowSwirlMode</a> : <span class="keyword">public</span> <a class="code hl_struct" href="structmodes_1_1BasicMode.html">BasicMode</a></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>{</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html">   14</a></span>  <span class="keyword">struct </span><a class="code hl_struct" href="structmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html">StateTy</a></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>  {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html#a3c24c5dc247d289bd59e8a3d95945a9c">   17</a></span>    uint32_t <a class="code hl_variable" href="structmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html#a3c24c5dc247d289bd59e8a3d95945a9c">increment</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html#a825d4810384a606fdd0ee154f19f4807">   19</a></span>    uint16_t <a class="code hl_variable" href="structmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html#a825d4810384a606fdd0ee154f19f4807">firstPixelHue</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  };</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> on_enter_mode(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>  {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="comment">//</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> uint32_t animationPeriod_ms = 5000;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    ctx.state.increment = (UINT16_MAX / (animationPeriod_ms / ctx.lamp.frameDurationMs));</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    ctx.state.firstPixelHue = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">const</span> uint16_t firstPixelColor = ctx.state.firstPixelHue;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> multiplier = UINT16_MAX / <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(ctx.lamp.ledCount);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ctx.lamp.ledCount; i++)</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>      <span class="keyword">const</span> uint16_t pixelHue = firstPixelColor + i * multiplier;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>      uint32_t color = <a class="code hl_function" href="namespacemodes_1_1colors.html#ad0ad1c138630cfabc7710a4b1a424fbc">colors::fromAngleHue</a>(lmpd_map&lt;uint16_t&gt;(pixelHue, 0, UINT16_MAX, 0, 360));</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>      ctx.lamp.setPixelColor(i, color);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    }</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>} <span class="comment">// namespace modes::default_modes</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="anamespacemodes_1_1colors_html_ad0ad1c138630cfabc7710a4b1a424fbc"><div class="ttname"><a href="namespacemodes_1_1colors.html#ad0ad1c138630cfabc7710a4b1a424fbc">modes::colors::fromAngleHue</a></div><div class="ttdeci">static constexpr LMBD_INLINE uint32_t fromAngleHue(uint16_t angleDegrees)</div><div class="ttdoc">Given a 360 degrees angle, return a corresponding color as an integer.</div><div class="ttdef"><b>Definition:</b> utils.hpp:63</div></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="comment">// update first led color</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    ctx.state.firstPixelHue += ctx.state.increment;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>} <span class="comment">// namespace modes::default_modes</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="anamespacemodes_1_1colors_html_ad0ad1c138630cfabc7710a4b1a424fbc"><div class="ttname"><a href="namespacemodes_1_1colors.html#ad0ad1c138630cfabc7710a4b1a424fbc">modes::colors::fromAngleHue</a></div><div class="ttdeci">static constexpr LMBD_INLINE uint32_t fromAngleHue(uint16_t angleDegrees)</div><div class="ttdoc">Given a 360 degrees angle, return a corresponding color as an integer.</div><div class="ttdef"><b>Definition:</b> utils.hpp:67</div></div>
 <div class="ttc" id="anamespacemodes_1_1default__modes_html"><div class="ttname"><a href="namespacemodes_1_1default__modes.html">modes::default_modes</a></div><div class="ttdoc">Basic &quot;default&quot; modes included with the hardware.</div><div class="ttdef"><b>Definition:</b> aurora.hpp:12</div></div>
 <div class="ttc" id="apalettes_8hpp_html"><div class="ttname"><a href="palettes_8hpp.html">palettes.hpp</a></div><div class="ttdoc">Manipulate color palettes.</div></div>
 <div class="ttc" id="astructmodes_1_1BasicMode_html"><div class="ttname"><a href="structmodes_1_1BasicMode.html">modes::BasicMode</a></div><div class="ttdoc">Parent object for all custom user modes.</div><div class="ttdef"><b>Definition:</b> mode_type.hpp:53</div></div>
-<div class="ttc" id="astructmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy_html"><div class="ttname"><a href="structmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html">modes::default_modes::RainbowSwirlMode::StateTy</a></div><div class="ttdef"><b>Definition:</b> rainbow_swirl_mode.hpp:12</div></div>
-<div class="ttc" id="astructmodes_1_1default__modes_1_1RainbowSwirlMode_html"><div class="ttname"><a href="structmodes_1_1default__modes_1_1RainbowSwirlMode.html">modes::default_modes::RainbowSwirlMode</a></div><div class="ttdef"><b>Definition:</b> rainbow_swirl_mode.hpp:10</div></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy_html"><div class="ttname"><a href="structmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html">modes::default_modes::RainbowSwirlMode::StateTy</a></div><div class="ttdef"><b>Definition:</b> rainbow_swirl_mode.hpp:15</div></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy_html_a3c24c5dc247d289bd59e8a3d95945a9c"><div class="ttname"><a href="structmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html#a3c24c5dc247d289bd59e8a3d95945a9c">modes::default_modes::RainbowSwirlMode::StateTy::increment</a></div><div class="ttdeci">uint32_t increment</div><div class="ttdoc">per loop increment</div><div class="ttdef"><b>Definition:</b> rainbow_swirl_mode.hpp:17</div></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy_html_a825d4810384a606fdd0ee154f19f4807"><div class="ttname"><a href="structmodes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html#a825d4810384a606fdd0ee154f19f4807">modes::default_modes::RainbowSwirlMode::StateTy::firstPixelHue</a></div><div class="ttdeci">uint16_t firstPixelHue</div><div class="ttdoc">hue of the first pixel of the strip</div><div class="ttdef"><b>Definition:</b> rainbow_swirl_mode.hpp:19</div></div>
+<div class="ttc" id="astructmodes_1_1default__modes_1_1RainbowSwirlMode_html"><div class="ttname"><a href="structmodes_1_1default__modes_1_1RainbowSwirlMode.html">modes::default_modes::RainbowSwirlMode</a></div><div class="ttdoc">Display a rainbow that moves.</div><div class="ttdef"><b>Definition:</b> rainbow_swirl_mode.hpp:13</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

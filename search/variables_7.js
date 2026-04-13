@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['handle_5ffault_0',['handle_fault',['../structtcpm__drv.html#acfa42c0eaaab428636e30bbf9e962b54',1,'tcpm_drv']]],
-  ['hasbrightcallback_1',['hasBrightCallback',['../structmodes_1_1brightness_1_1LightningMode.html#a24f1079bb742187190484534f923eb4d',1,'modes::brightness::LightningMode::hasBrightCallback()'],['../structmodes_1_1BasicMode.html#ad395b58d7d152bee5953ed6223eee854',1,'modes::BasicMode::hasBrightCallback()']]],
-  ['hasbuttoncustomui_2',['hasButtonCustomUI',['../structmodes_1_1BasicMode.html#a7f0fb8a5229f7fe40eaab17ac521dc9b',1,'modes::BasicMode']]],
-  ['hascustomramp_3',['hasCustomRamp',['../structmodes_1_1brightness_1_1StroboscopeMode.html#a1a49c0d407e329a1a96fdf0924af2531',1,'modes::brightness::StroboscopeMode::hasCustomRamp()'],['../structmodes_1_1default__modes_1_1FireMode.html#a14824444c1151454be759b8e3bf626b9',1,'modes::default_modes::FireMode::hasCustomRamp()'],['../structmodes_1_1BasicMode.html#a64252bcf7e60baca4973ec9a2105cc54',1,'modes::BasicMode::hasCustomRamp()']]],
-  ['hasevent_4',['hasEvent',['../structmodes_1_1audio_1_1SoundEventTy.html#a890b1269360ceb5266f90a0980cafd21',1,'modes::audio::SoundEventTy']]],
-  ['hasstore_5',['hasStore',['../structmodes_1_1ContextTy.html#ad34f86c0ca0076eca3a4a75c7d7ccdfc',1,'modes::ContextTy']]],
-  ['hassunsetanimation_6',['hasSunsetAnimation',['../structmodes_1_1BasicMode.html#a84e8fe859e3cab35c52c1cb5535a31fa',1,'modes::BasicMode']]],
-  ['hassystemcallbacks_7',['hasSystemCallbacks',['../structmodes_1_1BasicMode.html#a1701b710c69ea74f997e601af69f80d3',1,'modes::BasicMode']]]
+  ['g_0',['g',['../structmodes_1_1colors_1_1ToRGB.html#a7f1ac55c866e67ac8dbc809820a6da59',1,'modes::colors::ToRGB']]],
+  ['get_5fcc_1',['get_cc',['../structtcpm__drv.html#aa0f935755d3d9d6ebc7b06acfa616805',1,'tcpm_drv']]],
+  ['get_5fchip_5finfo_2',['get_chip_info',['../structtcpm__drv.html#a0e223c6ff299fe0063690a5aef96cc4f',1,'tcpm_drv']]],
+  ['get_5fmessage_3',['get_message',['../structtcpm__drv.html#aaf37a6a299b79fca643e1fa812b471a3',1,'tcpm_drv']]],
+  ['get_5fvbus_5flevel_4',['get_vbus_level',['../structtcpm__drv.html#a32f5bb5ee6c1c75a64ae3790fe401565',1,'tcpm_drv']]],
+  ['get_5fvbus_5fvoltage_5',['get_vbus_voltage',['../structtcpm__drv.html#aa3417798be3a50d15ebdced37f6e7ac2',1,'tcpm_drv']]],
+  ['grid_6',['grid',['../structmodes_1_1automaton_1_1BubbleMode_1_1StateTy.html#ab97f2e03a7134ad500db155221827f19',1,'modes::automaton::BubbleMode::StateTy::grid()'],['../structmodes_1_1automaton_1_1SierpinskiMode_1_1StateTy.html#af4209dd0095831a68b746e3e1f4b30c5',1,'modes::automaton::SierpinskiMode::StateTy::grid()']]],
+  ['groupstates_7',['groupStates',['../structmodes_1_1ModeManagerTy_1_1StateTy.html#ac85740bb1293c0c534b4bbc185ce49f6',1,'modes::ModeManagerTy::StateTy']]]
 ];

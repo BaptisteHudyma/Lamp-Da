@@ -81,36 +81,43 @@ $(function() {
   <div class="headertitle"><div class="title">alerts::AlertBase Struct Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Base class for all alerts. Must be overloaded to define an alert.  
+ <a href="structalerts_1_1AlertBase.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for alerts::AlertBase:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="structalerts_1_1AlertBase.png" usemap="#alerts::AlertBase_map" alt=""/>
   <map id="alerts::AlertBase_map" name="alerts::AlertBase_map">
-<area href="structalerts_1_1Alert__BatteryCritical.html" alt="alerts::Alert_BatteryCritical" shape="rect" coords="239,56,468,80"/>
-<area href="structalerts_1_1Alert__BatteryLow.html" alt="alerts::Alert_BatteryLow" shape="rect" coords="239,112,468,136"/>
-<area href="structalerts_1_1Alert__BatteryMissing.html" alt="alerts::Alert_BatteryMissing" shape="rect" coords="239,168,468,192"/>
-<area href="structalerts_1_1Alert__BatteryReadingIncoherent.html" alt="alerts::Alert_BatteryReadingIncoherent" shape="rect" coords="239,224,468,248"/>
-<area href="structalerts_1_1Alert__BluetoothAdvertisement.html" alt="alerts::Alert_BluetoothAdvertisement" shape="rect" coords="239,280,468,304"/>
-<area href="structalerts_1_1Alert__ChargerError.html" alt="alerts::Alert_ChargerError" shape="rect" coords="239,336,468,360"/>
-<area href="structalerts_1_1Alert__FavoriteSet.html" alt="alerts::Alert_FavoriteSet" shape="rect" coords="239,392,468,416"/>
-<area href="structalerts_1_1Alert__HardwareAlert.html" alt="alerts::Alert_HardwareAlert" shape="rect" coords="239,448,468,472"/>
-<area href="structalerts_1_1Alert__LongLoopUpdate.html" alt="alerts::Alert_LongLoopUpdate" shape="rect" coords="239,504,468,528"/>
-<area href="structalerts_1_1Alert__MainLoopFreeze.html" alt="alerts::Alert_MainLoopFreeze" shape="rect" coords="239,560,468,584"/>
-<area href="structalerts_1_1Alert__OtgFailed.html" alt="alerts::Alert_OtgFailed" shape="rect" coords="239,616,468,640"/>
-<area href="structalerts_1_1Alert__SkippedCleanSleep.html" alt="alerts::Alert_SkippedCleanSleep" shape="rect" coords="239,672,468,696"/>
-<area href="structalerts_1_1Alert__SunsetTimerSet.html" alt="alerts::Alert_SunsetTimerSet" shape="rect" coords="239,728,468,752"/>
-<area href="structalerts_1_1Alert__SystemInErrorState.html" alt="alerts::Alert_SystemInErrorState" shape="rect" coords="239,784,468,808"/>
-<area href="structalerts_1_1Alert__SystemInLockout.html" alt="alerts::Alert_SystemInLockout" shape="rect" coords="239,840,468,864"/>
-<area href="structalerts_1_1Alert__SystemShutdownFailed.html" alt="alerts::Alert_SystemShutdownFailed" shape="rect" coords="239,896,468,920"/>
-<area href="structalerts_1_1Alert__TempCritical.html" alt="alerts::Alert_TempCritical" shape="rect" coords="239,952,468,976"/>
-<area href="structalerts_1_1Alert__TempTooHigh.html" alt="alerts::Alert_TempTooHigh" shape="rect" coords="239,1008,468,1032"/>
-<area href="structalerts_1_1Alert__UsbPortShort.html" alt="alerts::Alert_UsbPortShort" shape="rect" coords="239,1064,468,1088"/>
+<area href="structalerts_1_1Alert__BatteryCritical.html" title="This alert is raised when the battery level falls below a critical threshold. Falling further will da..." alt="alerts::Alert_BatteryCritical" shape="rect" coords="239,56,468,80"/>
+<area href="structalerts_1_1Alert__BatteryLow.html" title="This alert is raised when the battery level gets low." alt="alerts::Alert_BatteryLow" shape="rect" coords="239,112,468,136"/>
+<area href="structalerts_1_1Alert__BatteryMissing.html" title="This alert is raised when no connected battery is detected." alt="alerts::Alert_BatteryMissing" shape="rect" coords="239,168,468,192"/>
+<area href="structalerts_1_1Alert__BatteryReadingIncoherent.html" title="This alert is raised when the battery readings do not fit the battery physical model." alt="alerts::Alert_BatteryReadingIncoherent" shape="rect" coords="239,224,468,248"/>
+<area href="structalerts_1_1Alert__BluetoothAdvertisement.html" title="This alert is raised when the Bluetooth advertising is turned on. It is just an informative alert." alt="alerts::Alert_BluetoothAdvertisement" shape="rect" coords="239,280,468,304"/>
+<area href="structalerts_1_1Alert__ChargerError.html" title="This alert is raised when the battery charger signals an error. It is not well handled at the moment,..." alt="alerts::Alert_ChargerError" shape="rect" coords="239,336,468,360"/>
+<area href="structalerts_1_1Alert__FavoriteSet.html" title="This alert is raised when new favorite mode is added." alt="alerts::Alert_FavoriteSet" shape="rect" coords="239,392,468,416"/>
+<area href="structalerts_1_1Alert__HardwareAlert.html" title="This alert is raised when a problem is detected in the hardware. Usually, it means that an electrical..." alt="alerts::Alert_HardwareAlert" shape="rect" coords="239,448,468,472"/>
+<area href="structalerts_1_1Alert__LongLoopUpdate.html" title="This alert is raised when the main loop becomes slower than the defined behavior. This is not a criti..." alt="alerts::Alert_LongLoopUpdate" shape="rect" coords="239,504,468,528"/>
+<area href="structalerts_1_1Alert__MainLoopFreeze.html" title="This alert is raised when the main loop becomes unresponsive." alt="alerts::Alert_MainLoopFreeze" shape="rect" coords="239,560,468,584"/>
+<area href="structalerts_1_1Alert__OtgFailed.html" title="This alert is raised when the output power fails to start. It can happen with logic bugs,..." alt="alerts::Alert_OtgFailed" shape="rect" coords="239,616,468,640"/>
+<area href="structalerts_1_1Alert__SkippedCleanSleep.html" title="This alert is raised when the system starts without sleeping cleanly first. It appears after updates,..." alt="alerts::Alert_SkippedCleanSleep" shape="rect" coords="239,672,468,696"/>
+<area href="structalerts_1_1Alert__SunsetTimerSet.html" title="This alert is raised when the sunset timer is active. It means that the system will turn off on it&#39;s ..." alt="alerts::Alert_SunsetTimerSet" shape="rect" coords="239,728,468,752"/>
+<area href="structalerts_1_1Alert__SystemInErrorState.html" title="This alert is raised when the system falls into an unrecoverable state. It can be raised by logic err..." alt="alerts::Alert_SystemInErrorState" shape="rect" coords="239,784,468,808"/>
+<area href="structalerts_1_1Alert__SystemInLockout.html" title="This alert is raised when the user tries to power the system as it is in lockout mode." alt="alerts::Alert_SystemInLockout" shape="rect" coords="239,840,468,864"/>
+<area href="structalerts_1_1Alert__SystemShutdownFailed.html" title="This alert is raised when the system fails to go to sleep. There is no way to recover from this,..." alt="alerts::Alert_SystemShutdownFailed" shape="rect" coords="239,896,468,920"/>
+<area href="structalerts_1_1Alert__TempCritical.html" title="This alert is raised when the temperature gets too high. If it keeps climbing, the components will ge..." alt="alerts::Alert_TempCritical" shape="rect" coords="239,952,468,976"/>
+<area href="structalerts_1_1Alert__TempTooHigh.html" title="This alert is raised when the internal temperature gets high. If it keeps rising, the battery may get..." alt="alerts::Alert_TempTooHigh" shape="rect" coords="239,1008,468,1032"/>
+<area href="structalerts_1_1Alert__UsbPortShort.html" title="This alert is raised when a short circuit is detected in the USB lines. The port should be cleaned be..." alt="alerts::Alert_UsbPortShort" shape="rect" coords="239,1064,468,1088"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a1f694e53d70db2c5898709d52683e5c0"><td class="memItemLeft" align="right" valign="top"><a id="a1f694e53d70db2c5898709d52683e5c0" name="a1f694e53d70db2c5898709d52683e5c0"></a>
+virtual&#160;</td><td class="memItemRight" valign="bottom"><b>~AlertBase</b> ()=default</td></tr>
+<tr class="memdesc:a1f694e53d70db2c5898709d52683e5c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">virtual destructor for a pure virtual class <br /></td></tr>
+<tr class="separator:a1f694e53d70db2c5898709d52683e5c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe8f76e1b188336734d357e1d864bff5"><td class="memItemLeft" align="right" valign="top">virtual uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1AlertBase.html#afe8f76e1b188336734d357e1d864bff5">alert_shutdown_timeout</a> () const</td></tr>
 <tr class="memdesc:afe8f76e1b188336734d357e1d864bff5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the timeout after which an alert will make the system auto-shutdown.  <br /></td></tr>
 <tr class="separator:afe8f76e1b188336734d357e1d864bff5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -123,50 +130,58 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4927deb88541673642a2e159cce4747d"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1AlertBase.html#a4927deb88541673642a2e159cce4747d">should_be_cleared</a> () const</td></tr>
 <tr class="memdesc:a4927deb88541673642a2e159cce4747d"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if this alert type should be cleared  <br /></td></tr>
 <tr class="separator:a4927deb88541673642a2e159cce4747d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a125508ddb6f8a85dc15d4449805b10a0"><td class="memItemLeft" align="right" valign="top"><a id="a125508ddb6f8a85dc15d4449805b10a0" name="a125508ddb6f8a85dc15d4449805b10a0"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>show</b> () const</td></tr>
+<tr class="memitem:a125508ddb6f8a85dc15d4449805b10a0"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1AlertBase.html#a125508ddb6f8a85dc15d4449805b10a0">show</a> () const</td></tr>
+<tr class="memdesc:a125508ddb6f8a85dc15d4449805b10a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">display this alert on the indicator  <br /></td></tr>
 <tr class="separator:a125508ddb6f8a85dc15d4449805b10a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c779e418fcaf9e4c647523fce04f0d2"><td class="memItemLeft" align="right" valign="top"><a id="a0c779e418fcaf9e4c647523fce04f0d2" name="a0c779e418fcaf9e4c647523fce04f0d2"></a>
-virtual Type&#160;</td><td class="memItemRight" valign="bottom"><b>get_type</b> () const =0</td></tr>
+<tr class="memitem:a0c779e418fcaf9e4c647523fce04f0d2"><td class="memItemLeft" align="right" valign="top">virtual Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1AlertBase.html#a0c779e418fcaf9e4c647523fce04f0d2">get_type</a> () const =0</td></tr>
+<tr class="memdesc:a0c779e418fcaf9e4c647523fce04f0d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">return the Defined type of this alert  <br /></td></tr>
 <tr class="separator:a0c779e418fcaf9e4c647523fce04f0d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3029dcab0a1bc6abc9b9a32dacb83d82"><td class="memItemLeft" align="right" valign="top"><a id="a3029dcab0a1bc6abc9b9a32dacb83d82" name="a3029dcab0a1bc6abc9b9a32dacb83d82"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>should_shutdown_system</b> (const uint32_t time) final</td></tr>
+<tr class="memdesc:a3029dcab0a1bc6abc9b9a32dacb83d82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the system should shutdown from this alert. <br /></td></tr>
 <tr class="separator:a3029dcab0a1bc6abc9b9a32dacb83d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad432aed407bf935eca8f9de567839e67"><td class="memItemLeft" align="right" valign="top"><a id="ad432aed407bf935eca8f9de567839e67" name="ad432aed407bf935eca8f9de567839e67"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>handle_raised_state</b> (const uint32_t time)</td></tr>
+<tr class="memitem:ad432aed407bf935eca8f9de567839e67"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1AlertBase.html#ad432aed407bf935eca8f9de567839e67">handle_raised_state</a> (const uint32_t time)</td></tr>
+<tr class="memdesc:ad432aed407bf935eca8f9de567839e67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handler for the raised state of the alert. If the alert is not raised, raise the alert.  <br /></td></tr>
 <tr class="separator:ad432aed407bf935eca8f9de567839e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af62c5d90a2e0fb51967a38fa006fa726"><td class="memItemLeft" align="right" valign="top"><a id="af62c5d90a2e0fb51967a38fa006fa726" name="af62c5d90a2e0fb51967a38fa006fa726"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>update_raise_time</b> (const uint32_t time)</td></tr>
+<tr class="memdesc:af62c5d90a2e0fb51967a38fa006fa726"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the raised time of this alert. An alert continuously firing as to be updated. <br /></td></tr>
 <tr class="separator:af62c5d90a2e0fb51967a38fa006fa726"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18c18a3fe21684798739165c6aa01505"><td class="memItemLeft" align="right" valign="top"><a id="a18c18a3fe21684798739165c6aa01505" name="a18c18a3fe21684798739165c6aa01505"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>handle_lowered_state</b> (const uint32_t time)</td></tr>
+<tr class="memitem:a18c18a3fe21684798739165c6aa01505"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1AlertBase.html#a18c18a3fe21684798739165c6aa01505">handle_lowered_state</a> (const uint32_t time)</td></tr>
+<tr class="memdesc:a18c18a3fe21684798739165c6aa01505"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handler for the lowered state of the alert. If the alert is raised, lower the alert.  <br /></td></tr>
 <tr class="separator:a18c18a3fe21684798739165c6aa01505"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af3b075b2e2070bee2abfad0bd1f9e63c"><td class="memItemLeft" align="right" valign="top"><a id="af3b075b2e2070bee2abfad0bd1f9e63c" name="af3b075b2e2070bee2abfad0bd1f9e63c"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>should_prevent_lamp_output</b> () const</td></tr>
+<tr class="memitem:af3b075b2e2070bee2abfad0bd1f9e63c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1AlertBase.html#af3b075b2e2070bee2abfad0bd1f9e63c">should_prevent_lamp_output</a> () const</td></tr>
+<tr class="memdesc:af3b075b2e2070bee2abfad0bd1f9e63c"><td class="mdescLeft">&#160;</td><td class="mdescRight">override to prevent lamp output power if this alert if raised. Default to False  <br /></td></tr>
 <tr class="separator:af3b075b2e2070bee2abfad0bd1f9e63c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a253b552a6d346415ef47b9bd067d722b"><td class="memItemLeft" align="right" valign="top"><a id="a253b552a6d346415ef47b9bd067d722b" name="a253b552a6d346415ef47b9bd067d722b"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>should_prevent_battery_charge</b> () const</td></tr>
+<tr class="memitem:a253b552a6d346415ef47b9bd067d722b"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1AlertBase.html#a253b552a6d346415ef47b9bd067d722b">should_prevent_battery_charge</a> () const</td></tr>
+<tr class="memdesc:a253b552a6d346415ef47b9bd067d722b"><td class="mdescLeft">&#160;</td><td class="mdescRight">override to prevent battery charge if this alert if raised. Default to False  <br /></td></tr>
 <tr class="separator:a253b552a6d346415ef47b9bd067d722b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afaa5f2144bc7813b1a15254139b38f4d"><td class="memItemLeft" align="right" valign="top"><a id="afaa5f2144bc7813b1a15254139b38f4d" name="afaa5f2144bc7813b1a15254139b38f4d"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>should_prevent_usb_port_use</b> () const</td></tr>
+<tr class="memitem:afaa5f2144bc7813b1a15254139b38f4d"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structalerts_1_1AlertBase.html#afaa5f2144bc7813b1a15254139b38f4d">should_prevent_usb_port_use</a> () const</td></tr>
+<tr class="memdesc:afaa5f2144bc7813b1a15254139b38f4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">override to prevent USB port usage if this alert if raised. Default to False  <br /></td></tr>
 <tr class="separator:afaa5f2144bc7813b1a15254139b38f4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:adef744c428bdd08799e3b02c7e9084ef"><td class="memItemLeft" align="right" valign="top"><a id="adef744c428bdd08799e3b02c7e9084ef" name="adef744c428bdd08799e3b02c7e9084ef"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>_isRaisedHandled</b> = false</td></tr>
+<tr class="memdesc:adef744c428bdd08799e3b02c7e9084ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alert raise signal has been handled. <br /></td></tr>
 <tr class="separator:adef744c428bdd08799e3b02c7e9084ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc13c9a9eff920d1f9d9956eb717991a"><td class="memItemLeft" align="right" valign="top"><a id="adc13c9a9eff920d1f9d9956eb717991a" name="adc13c9a9eff920d1f9d9956eb717991a"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>_isLoweredHandled</b> = false</td></tr>
+<tr class="memdesc:adc13c9a9eff920d1f9d9956eb717991a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alert lower signal has been handled. <br /></td></tr>
 <tr class="separator:adc13c9a9eff920d1f9d9956eb717991a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3cb33230f30160241b9af12a8c42958"><td class="memItemLeft" align="right" valign="top"><a id="aa3cb33230f30160241b9af12a8c42958" name="aa3cb33230f30160241b9af12a8c42958"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>raisedTime</b> = 0</td></tr>
+<tr class="memdesc:aa3cb33230f30160241b9af12a8c42958"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the latest time at which this alert raise() was called. <br /></td></tr>
 <tr class="separator:aa3cb33230f30160241b9af12a8c42958"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ae6fe26696a9360ffd4b2d8c46d528c"><td class="memItemLeft" align="right" valign="top"><a id="a4ae6fe26696a9360ffd4b2d8c46d528c" name="a4ae6fe26696a9360ffd4b2d8c46d528c"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> = 0</td></tr>
+<tr class="memdesc:a4ae6fe26696a9360ffd4b2d8c46d528c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the latest time at which this alert lower() was called. <br /></td></tr>
 <tr class="separator:a4ae6fe26696a9360ffd4b2d8c46d528c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Base class for all alerts. Must be overloaded to define an alert. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="afe8f76e1b188336734d357e1d864bff5" name="afe8f76e1b188336734d357e1d864bff5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afe8f76e1b188336734d357e1d864bff5">&#9670;&#160;</a></span>alert_shutdown_timeout()</h2>
 
@@ -225,6 +240,93 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
 
 </div>
 </div>
+<a id="a0c779e418fcaf9e4c647523fce04f0d2" name="a0c779e418fcaf9e4c647523fce04f0d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c779e418fcaf9e4c647523fce04f0d2">&#9670;&#160;</a></span>get_type()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual Type alerts::AlertBase::get_type </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>return the Defined type of this alert </p>
+
+<p>Implemented in <a class="el" href="structalerts_1_1Alert__MainLoopFreeze.html#ae7f8ad453821484278b6998728cfb916">alerts::Alert_MainLoopFreeze</a>, <a class="el" href="structalerts_1_1Alert__BatteryReadingIncoherent.html#ae444e771ea1a1d00d7ff413413683dd1">alerts::Alert_BatteryReadingIncoherent</a>, <a class="el" href="structalerts_1_1Alert__BatteryCritical.html#add4ebbb86e604c2a8522c6ee737df39f">alerts::Alert_BatteryCritical</a>, <a class="el" href="structalerts_1_1Alert__BatteryLow.html#a0aceb1fb3a3f430f630b76a0570360d1">alerts::Alert_BatteryLow</a>, <a class="el" href="structalerts_1_1Alert__BatteryMissing.html#a85325aa14476a78166bfc516eea59937">alerts::Alert_BatteryMissing</a>, <a class="el" href="structalerts_1_1Alert__LongLoopUpdate.html#abe0196ce5267a14b8b843f0b96a94bdf">alerts::Alert_LongLoopUpdate</a>, <a class="el" href="structalerts_1_1Alert__TempTooHigh.html#a2cc45eafb69cfd77241ae3ed91e0ba10">alerts::Alert_TempTooHigh</a>, <a class="el" href="structalerts_1_1Alert__TempCritical.html#a26c85c8997f71d55c9cce9105e4ebeff">alerts::Alert_TempCritical</a>, <a class="el" href="structalerts_1_1Alert__BluetoothAdvertisement.html#ac35ee23f5f4704c4a70d71d51b160c1d">alerts::Alert_BluetoothAdvertisement</a>, <a class="el" href="structalerts_1_1Alert__HardwareAlert.html#af33c060d092dc45177dff99375a3f710">alerts::Alert_HardwareAlert</a>, <a class="el" href="structalerts_1_1Alert__ChargerError.html#a0956ac5cef64667e215652ea7b9d9d7a">alerts::Alert_ChargerError</a>, <a class="el" href="structalerts_1_1Alert__FavoriteSet.html#aedcb78069e691787cb6197e30600c6f7">alerts::Alert_FavoriteSet</a>, <a class="el" href="structalerts_1_1Alert__OtgFailed.html#a4b3c56e791ef9082fb00bfade1e734be">alerts::Alert_OtgFailed</a>, <a class="el" href="structalerts_1_1Alert__SystemShutdownFailed.html#a441b98ec3e12c8909ac89269f1be119e">alerts::Alert_SystemShutdownFailed</a>, <a class="el" href="structalerts_1_1Alert__SystemInErrorState.html#a5563d3e3d915d2acf7e6df3030610e9d">alerts::Alert_SystemInErrorState</a>, <a class="el" href="structalerts_1_1Alert__SystemInLockout.html#a31923154b8734d86e018a7a3f4d75c8e">alerts::Alert_SystemInLockout</a>, <a class="el" href="structalerts_1_1Alert__SunsetTimerSet.html#a3a03cef11971f94dc9daef8bf6cb8548">alerts::Alert_SunsetTimerSet</a>, <a class="el" href="structalerts_1_1Alert__SkippedCleanSleep.html#ae7586766106f8330b769d31e925e4e46">alerts::Alert_SkippedCleanSleep</a>, and <a class="el" href="structalerts_1_1Alert__UsbPortShort.html#a05225205e4e89e44d41257331caf9a1e">alerts::Alert_UsbPortShort</a>.</p>
+
+</div>
+</div>
+<a id="a18c18a3fe21684798739165c6aa01505" name="a18c18a3fe21684798739165c6aa01505"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18c18a3fe21684798739165c6aa01505">&#9670;&#160;</a></span>handle_lowered_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool alerts::AlertBase::handle_lowered_state </td>
+          <td>(</td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Handler for the lowered state of the alert. If the alert is raised, lower the alert. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the alert was lowered by this function call </dd></dl>
+
+</div>
+</div>
+<a id="ad432aed407bf935eca8f9de567839e67" name="ad432aed407bf935eca8f9de567839e67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad432aed407bf935eca8f9de567839e67">&#9670;&#160;</a></span>handle_raised_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool alerts::AlertBase::handle_raised_state </td>
+          <td>(</td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Handler for the raised state of the alert. If the alert is not raised, raise the alert. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the alert was raised by this function call </dd></dl>
+
+</div>
+</div>
 <a id="a4927deb88541673642a2e159cce4747d" name="a4927deb88541673642a2e159cce4747d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4927deb88541673642a2e159cce4747d">&#9670;&#160;</a></span>should_be_cleared()</h2>
 
@@ -280,6 +382,122 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
 <p>return true if this alert type should be raised </p>
 
 <p>Reimplemented in <a class="el" href="structalerts_1_1Alert__BatteryCritical.html#a2b4944604dccae56488076624abbcf9e">alerts::Alert_BatteryCritical</a>, <a class="el" href="structalerts_1_1Alert__BatteryLow.html#a3a0ca55e9f55686e5743b7284f15b171">alerts::Alert_BatteryLow</a>, <a class="el" href="structalerts_1_1Alert__TempTooHigh.html#ad696c4a04f7d82b99a40332a224f9297">alerts::Alert_TempTooHigh</a>, and <a class="el" href="structalerts_1_1Alert__TempCritical.html#a7052e293ce8045f9d08ee64df394d668">alerts::Alert_TempCritical</a>.</p>
+
+</div>
+</div>
+<a id="a253b552a6d346415ef47b9bd067d722b" name="a253b552a6d346415ef47b9bd067d722b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a253b552a6d346415ef47b9bd067d722b">&#9670;&#160;</a></span>should_prevent_battery_charge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool alerts::AlertBase::should_prevent_battery_charge </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>override to prevent battery charge if this alert if raised. Default to False </p>
+
+<p>Reimplemented in <a class="el" href="structalerts_1_1Alert__BatteryReadingIncoherent.html#afc03cf2e13da00b94ad66c8cf85a0e96">alerts::Alert_BatteryReadingIncoherent</a>, <a class="el" href="structalerts_1_1Alert__BatteryMissing.html#ac6187274c3280bb89d44ea5fa49b05f8">alerts::Alert_BatteryMissing</a>, <a class="el" href="structalerts_1_1Alert__TempCritical.html#aac2e7542d0afe3e2fe1b8387309188d7">alerts::Alert_TempCritical</a>, <a class="el" href="structalerts_1_1Alert__HardwareAlert.html#a858c4d07fa79332211df196fe16b2871">alerts::Alert_HardwareAlert</a>, <a class="el" href="structalerts_1_1Alert__SystemShutdownFailed.html#a80b9349d844e494ce86e6a36ac06b3fe">alerts::Alert_SystemShutdownFailed</a>, <a class="el" href="structalerts_1_1Alert__SystemInErrorState.html#a9c5e3f9c57785427dde8c867b43150b1">alerts::Alert_SystemInErrorState</a>, and <a class="el" href="structalerts_1_1Alert__UsbPortShort.html#a79d6323e544a4fd211b274b348f8e6b8">alerts::Alert_UsbPortShort</a>.</p>
+
+</div>
+</div>
+<a id="af3b075b2e2070bee2abfad0bd1f9e63c" name="af3b075b2e2070bee2abfad0bd1f9e63c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3b075b2e2070bee2abfad0bd1f9e63c">&#9670;&#160;</a></span>should_prevent_lamp_output()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool alerts::AlertBase::should_prevent_lamp_output </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>override to prevent lamp output power if this alert if raised. Default to False </p>
+
+<p>Reimplemented in <a class="el" href="structalerts_1_1Alert__BatteryReadingIncoherent.html#aa86831edfdd7045af5f5057459301521">alerts::Alert_BatteryReadingIncoherent</a>, <a class="el" href="structalerts_1_1Alert__BatteryMissing.html#a623fa9db3c63cfb06b2ad7375cce8e2b">alerts::Alert_BatteryMissing</a>, <a class="el" href="structalerts_1_1Alert__TempCritical.html#a56f4ba3413dd6dee2effddd222e71246">alerts::Alert_TempCritical</a>, <a class="el" href="structalerts_1_1Alert__HardwareAlert.html#a3968b104a9ccf542eb8cbdbcdeab437b">alerts::Alert_HardwareAlert</a>, <a class="el" href="structalerts_1_1Alert__OtgFailed.html#a40e887f4cd800dc20390e6021decf2d6">alerts::Alert_OtgFailed</a>, <a class="el" href="structalerts_1_1Alert__SystemShutdownFailed.html#afa693c5ad026667360d599b193bd94a3">alerts::Alert_SystemShutdownFailed</a>, and <a class="el" href="structalerts_1_1Alert__SystemInErrorState.html#a5d4630e257c31b7559f847dc619c323f">alerts::Alert_SystemInErrorState</a>.</p>
+
+</div>
+</div>
+<a id="afaa5f2144bc7813b1a15254139b38f4d" name="afaa5f2144bc7813b1a15254139b38f4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afaa5f2144bc7813b1a15254139b38f4d">&#9670;&#160;</a></span>should_prevent_usb_port_use()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool alerts::AlertBase::should_prevent_usb_port_use </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>override to prevent USB port usage if this alert if raised. Default to False </p>
+
+<p>Reimplemented in <a class="el" href="structalerts_1_1Alert__BatteryReadingIncoherent.html#a1cea70c5d8ec1c6024623537251a34c1">alerts::Alert_BatteryReadingIncoherent</a>, <a class="el" href="structalerts_1_1Alert__BatteryMissing.html#ab9e655ff5206f1d824b2c6ee6619a612">alerts::Alert_BatteryMissing</a>, <a class="el" href="structalerts_1_1Alert__TempCritical.html#a1b51fd61abd9870536689bf8f1d2d9f6">alerts::Alert_TempCritical</a>, <a class="el" href="structalerts_1_1Alert__HardwareAlert.html#a6a7942e6712308f7c4bb4146edc95e9d">alerts::Alert_HardwareAlert</a>, <a class="el" href="structalerts_1_1Alert__SystemShutdownFailed.html#ab2613d2c0cd63e53df00750f3f0c0ae2">alerts::Alert_SystemShutdownFailed</a>, <a class="el" href="structalerts_1_1Alert__SystemInErrorState.html#ac17b8a01f1b3f224f5a2ba8291f410a4">alerts::Alert_SystemInErrorState</a>, and <a class="el" href="structalerts_1_1Alert__UsbPortShort.html#a9d52634adbcc3a25180d365afe2e2afb">alerts::Alert_UsbPortShort</a>.</p>
+
+</div>
+</div>
+<a id="a125508ddb6f8a85dc15d4449805b10a0" name="a125508ddb6f8a85dc15d4449805b10a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a125508ddb6f8a85dc15d4449805b10a0">&#9670;&#160;</a></span>show()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool alerts::AlertBase::show </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>display this alert on the indicator </p>
+
+<p>Reimplemented in <a class="el" href="structalerts_1_1Alert__BatteryReadingIncoherent.html#a95182cf503aeca75362e8fb6dad8198e">alerts::Alert_BatteryReadingIncoherent</a>, <a class="el" href="structalerts_1_1Alert__BatteryCritical.html#af29add483becc8f33c0e370372b55184">alerts::Alert_BatteryCritical</a>, <a class="el" href="structalerts_1_1Alert__BatteryLow.html#a0a68c9468dd34dce06c4440505b0841d">alerts::Alert_BatteryLow</a>, <a class="el" href="structalerts_1_1Alert__BatteryMissing.html#ad78366a95faa3d75f7a1e2bc9073f7ec">alerts::Alert_BatteryMissing</a>, <a class="el" href="structalerts_1_1Alert__LongLoopUpdate.html#a4029dddfbd964830720a842f4e91647b">alerts::Alert_LongLoopUpdate</a>, <a class="el" href="structalerts_1_1Alert__TempTooHigh.html#a931c2ad06de4ea8f3ce1e54e25ccc091">alerts::Alert_TempTooHigh</a>, <a class="el" href="structalerts_1_1Alert__TempCritical.html#aa44c7e261b76eda05b9498b9d3c59185">alerts::Alert_TempCritical</a>, <a class="el" href="structalerts_1_1Alert__BluetoothAdvertisement.html#a62ec66ccf3f005cfebf801324699b03f">alerts::Alert_BluetoothAdvertisement</a>, <a class="el" href="structalerts_1_1Alert__HardwareAlert.html#a5e409e2d4d73c6a925ab5143790953e6">alerts::Alert_HardwareAlert</a>, <a class="el" href="structalerts_1_1Alert__ChargerError.html#a643967c60271a399634d9d98bfa5b59d">alerts::Alert_ChargerError</a>, <a class="el" href="structalerts_1_1Alert__FavoriteSet.html#a43e697c4973214ff666ef80834252577">alerts::Alert_FavoriteSet</a>, <a class="el" href="structalerts_1_1Alert__OtgFailed.html#a900a211c82e3a53b411baf9d4481585e">alerts::Alert_OtgFailed</a>, <a class="el" href="structalerts_1_1Alert__SystemShutdownFailed.html#abee0c23bcb1e51c518e896e1a679a9c1">alerts::Alert_SystemShutdownFailed</a>, <a class="el" href="structalerts_1_1Alert__SystemInErrorState.html#a5d0b4bab65b169d6b517d1f10390241e">alerts::Alert_SystemInErrorState</a>, <a class="el" href="structalerts_1_1Alert__SystemInLockout.html#adb4a16d4eba7b6cb6c03a82794ce0f57">alerts::Alert_SystemInLockout</a>, <a class="el" href="structalerts_1_1Alert__SunsetTimerSet.html#a8c494f9083c2b34625b1e56f84f2aaec">alerts::Alert_SunsetTimerSet</a>, <a class="el" href="structalerts_1_1Alert__SkippedCleanSleep.html#a58481abf18746b7d04ae91e3cfe50359">alerts::Alert_SkippedCleanSleep</a>, and <a class="el" href="structalerts_1_1Alert__UsbPortShort.html#a126e73fc4cf562a0d6c4a58af9582f08">alerts::Alert_UsbPortShort</a>.</p>
 
 </div>
 </div>

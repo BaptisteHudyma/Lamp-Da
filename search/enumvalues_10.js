@@ -1,10 +1,22 @@
 var searchData=
 [
-  ['tan_0',['Tan',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca60594ea21d385901e49bc881ee90f9c8',1,'modes::colors']]],
-  ['teal_1',['Teal',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca781a3e0d8cda61f9c3a49cdde2205655',1,'modes::colors']]],
-  ['thistle_2',['Thistle',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cac3549d50abbb3c75d094be0357478084',1,'modes::colors']]],
-  ['tomato_3',['Tomato',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca706fe3666cdc2819202579862ceb1ede',1,'modes::colors']]],
-  ['tungsten100w_4',['Tungsten100W',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3ab0528ede44f8fb1076e02017b19c9521',1,'modes::colors']]],
-  ['tungsten40w_5',['Tungsten40W',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a96903a5b465e0426a6bf754f7f493636',1,'modes::colors']]],
-  ['turquoise_6',['Turquoise',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca81bbd0d1950a3ea9077eaa3ae1edd580',1,'modes::colors']]]
+  ['saddlebrown_0',['SaddleBrown',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cabdc3abaaffbfdb83758124797ec12625',1,'modes::colors']]],
+  ['salmon_1',['Salmon',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cab944e54ee886c3301c1656232eed5b07',1,'modes::colors']]],
+  ['sandybrown_2',['SandyBrown',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caa496bc13a1197c20b644e954d219bca3',1,'modes::colors']]],
+  ['seagreen_3',['SeaGreen',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cad3d89d7d76804e4289f4c65d9d6dbde8',1,'modes::colors']]],
+  ['seashell_4',['Seashell',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca20660a87852ff4eba0b0903546660638',1,'modes::colors']]],
+  ['sienna_5',['Sienna',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cacefcf49d3888192fcc3c01236dd9bb79',1,'modes::colors']]],
+  ['silver_6',['Silver',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cae6690ac7d227661ceb9fe451388a2de6',1,'modes::colors']]],
+  ['simple_7',['simple',['../namespacemodes_1_1hardware.html#a9ce05c0c227ab520c116fa72d23d4383a8dbdda48fb8748d6746f1965824e966a',1,'modes::hardware']]],
+  ['skyblue_8',['SkyBlue',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca442fb406039fe0077a5507e97a694151',1,'modes::colors']]],
+  ['slateblue_9',['SlateBlue',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca3ac9c348c3f414404e6ddfe94f5866f1',1,'modes::colors']]],
+  ['slategray_10',['SlateGray',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cad17e4812de4a0904a87607f250e154e6',1,'modes::colors']]],
+  ['slategrey_11',['SlateGrey',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caaf7a7a5780cbd39a2200070f4cc02e37',1,'modes::colors']]],
+  ['slow_5fcharging_12',['SLOW_CHARGING',['../structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26a4df66799a23c0df6ce43a7eb0fe39268',1,'charger::Charger_t']]],
+  ['snow_13',['Snow',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caad4fc73573fba39d644fa8f1900786da',1,'modes::colors']]],
+  ['sodiumvapor_14',['SodiumVapor',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a21fd134cd5e088fd13fda44a5f2183b5',1,'modes::colors']]],
+  ['springgreen_15',['SpringGreen',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca6399b2d1a9d772e9358455a41d765134',1,'modes::colors']]],
+  ['standardfluorescent_16',['StandardFluorescent',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a542064cd11d181e695a96f6a1049fe58',1,'modes::colors']]],
+  ['steelblue_17',['SteelBlue',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca76e91561dbe31084585aa5b1009efa38',1,'modes::colors']]],
+  ['step_18',['Step',['../namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3a48c7c41b72e1d678923ce3571aa65b2d',1,'imu']]]
 ];

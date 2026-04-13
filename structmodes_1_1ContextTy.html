@@ -100,16 +100,20 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a412853e2b78cb9d4ef1a4828003c6695"><td class="memItemLeft" align="right" valign="top"><a id="a412853e2b78cb9d4ef1a4828003c6695" name="a412853e2b78cb9d4ef1a4828003c6695"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>SelfTy</b> = <a class="el" href="structmodes_1_1ContextTy.html">ContextTy</a>&lt; LocalBasicMode, ModeManager &gt;</td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>SelfTy</b> = <a class="el" href="structmodes_1_1ContextTy.html">ContextTy</a>&lt; LocalBasicMode, <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a> &gt;</td></tr>
+<tr class="memdesc:a412853e2b78cb9d4ef1a4828003c6695"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the Context of a local mode. <br /></td></tr>
 <tr class="separator:a412853e2b78cb9d4ef1a4828003c6695"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa27c02553dd7c5a02f23b89ac814b25d"><td class="memItemLeft" align="right" valign="top"><a id="aa27c02553dd7c5a02f23b89ac814b25d" name="aa27c02553dd7c5a02f23b89ac814b25d"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>ModeManagerTy</b> = ModeManager</td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ModeManagerTy</b> = <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a></td></tr>
+<tr class="memdesc:aa27c02553dd7c5a02f23b89ac814b25d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the mode manager. <br /></td></tr>
 <tr class="separator:aa27c02553dd7c5a02f23b89ac814b25d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f1ecd20efe757bf1b620dbabfff024e"><td class="memItemLeft" align="right" valign="top"><a id="a3f1ecd20efe757bf1b620dbabfff024e" name="a3f1ecd20efe757bf1b620dbabfff024e"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>LocalModeTy</b> = LocalBasicMode</td></tr>
+<tr class="memdesc:a3f1ecd20efe757bf1b620dbabfff024e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of a local mode. <br /></td></tr>
 <tr class="separator:a3f1ecd20efe757bf1b620dbabfff024e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9dbb80770a58240eb629900cb501b03a"><td class="memItemLeft" align="right" valign="top"><a id="a9dbb80770a58240eb629900cb501b03a" name="a9dbb80770a58240eb629900cb501b03a"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>StateTy</b> = StateTyOf&lt; LocalModeTy &gt;</td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>StateTy</b> = StateTyOf&lt; <a class="el" href="structmodes_1_1ContextTy.html#a3f1ecd20efe757bf1b620dbabfff024e">LocalModeTy</a> &gt;</td></tr>
+<tr class="memdesc:a9dbb80770a58240eb629900cb501b03a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of the State of a local mode. <br /></td></tr>
 <tr class="separator:a9dbb80770a58240eb629900cb501b03a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -170,9 +174,11 @@ void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>skipNextF
 <tr class="separator:a9f37ae0e926e89449aefc6c420dbd460"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb57a53db61ce2fa93d0f907041fb357"><td class="memItemLeft" align="right" valign="top"><a id="acb57a53db61ce2fa93d0f907041fb357" name="acb57a53db61ce2fa93d0f907041fb357"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>cancel_blip</b> () const</td></tr>
+<tr class="memdesc:acb57a53db61ce2fa93d0f907041fb357"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel an ongoing blip of the ouput. <br /></td></tr>
 <tr class="separator:acb57a53db61ce2fa93d0f907041fb357"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21bd572211d33b9dc00bd1c9bfe58859"><td class="memItemLeft" align="right" valign="top"><a id="a21bd572211d33b9dc00bd1c9bfe58859" name="a21bd572211d33b9dc00bd1c9bfe58859"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_bliping</b> () const</td></tr>
+<tr class="memdesc:a21bd572211d33b9dc00bd1c9bfe58859"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the systems is currently bliping the output. <br /></td></tr>
 <tr class="separator:a21bd572211d33b9dc00bd1c9bfe58859"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab70832129c850d64d878efac055c7e09"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1ContextTy.html#ab70832129c850d64d878efac055c7e09">skipFirstLedsForFrames</a> (uint8_t amount, uint8_t count=1)</td></tr>
 <tr class="memdesc:ab70832129c850d64d878efac055c7e09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skip the first few LEDs update during several frames.  <br /></td></tr>
@@ -272,13 +278,14 @@ template&lt;StoreEnum key, typename T  = uint32_t&gt; </td></tr>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ac56f2849e7d2456fd0657a8680b2799b"><td class="memItemLeft" align="right" valign="top"><a id="ac56f2849e7d2456fd0657a8680b2799b" name="ac56f2849e7d2456fd0657a8680b2799b"></a>
 friend&#160;</td><td class="memItemRight" valign="bottom"><b>ModeManager</b></td></tr>
+<tr class="memdesc:ac56f2849e7d2456fd0657a8680b2799b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Friend class. <br /></td></tr>
 <tr class="separator:ac56f2849e7d2456fd0657a8680b2799b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77ef582119fa5b1ca7d93baf02461864"><td class="memItemLeft" align="right" valign="top"><a id="a77ef582119fa5b1ca7d93baf02461864" name="a77ef582119fa5b1ca7d93baf02461864"></a>
 <a class="el" href="structmodes_1_1hardware_1_1LampTy.html">hardware::LampTy</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>lamp</b></td></tr>
 <tr class="memdesc:a77ef582119fa5b1ca7d93baf02461864"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interact with the lamp hardware. <br /></td></tr>
 <tr class="separator:a77ef582119fa5b1ca7d93baf02461864"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95f41f2d668a1c5498b9012f1f2b1aea"><td class="memItemLeft" align="right" valign="top"><a id="a95f41f2d668a1c5498b9012f1f2b1aea" name="a95f41f2d668a1c5498b9012f1f2b1aea"></a>
-StateTy &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>state</b></td></tr>
+<a class="el" href="structmodes_1_1ContextTy.html#a9dbb80770a58240eb629900cb501b03a">StateTy</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>state</b></td></tr>
 <tr class="memdesc:a95f41f2d668a1c5498b9012f1f2b1aea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interact with the current active mode state. <br /></td></tr>
 <tr class="separator:a95f41f2d668a1c5498b9012f1f2b1aea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -290,7 +297,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasS
 <tr class="separator:ad34f86c0ca0076eca3a4a75c7d7ccdfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;typename LocalBasicMode, typename ModeManager&gt;<br />
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename LocalBasicMode, typename <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a>&gt;<br />
 struct modes::ContextTy&lt; LocalBasicMode, ModeManager &gt;</div><p>Local context exposing system features to active <a class="el" href="structmodes_1_1BasicMode.html" title="Parent object for all custom user modes.">BasicMode</a>. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a9f37ae0e926e89449aefc6c420dbd460" name="a9f37ae0e926e89449aefc6c420dbd460"></a>
@@ -299,13 +306,13 @@ struct modes::ContextTy&lt; LocalBasicMode, ModeManager &gt;</div><p>Local conte
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename LocalBasicMode , typename ModeManager &gt; </div>
+template&lt;typename LocalBasicMode , typename <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a> &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structmodes_1_1ContextTy.html">modes::ContextTy</a>&lt; LocalBasicMode, ModeManager &gt;::blip </td>
+          <td class="memname">void <a class="el" href="structmodes_1_1ContextTy.html">modes::ContextTy</a>&lt; LocalBasicMode, <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a> &gt;::blip </td>
           <td>(</td>
           <td class="paramtype">const uint32_t&#160;</td>
           <td class="paramname"><em>duration</em></td><td>)</td>
@@ -335,13 +342,13 @@ template&lt;typename LocalBasicMode , typename ModeManager &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename LocalBasicMode , typename ModeManager &gt; </div>
+template&lt;typename LocalBasicMode , typename <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a> &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t LMBD_INLINE <a class="el" href="structmodes_1_1ContextTy.html">modes::ContextTy</a>&lt; LocalBasicMode, ModeManager &gt;::get_active_custom_ramp </td>
+          <td class="memname">uint8_t LMBD_INLINE <a class="el" href="structmodes_1_1ContextTy.html">modes::ContextTy</a>&lt; LocalBasicMode, <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a> &gt;::get_active_custom_ramp </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -365,13 +372,13 @@ template&lt;typename LocalBasicMode , typename ModeManager &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename LocalBasicMode , typename ModeManager &gt; </div>
+template&lt;typename LocalBasicMode , typename <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a> &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t LMBD_INLINE <a class="el" href="structmodes_1_1ContextTy.html">modes::ContextTy</a>&lt; LocalBasicMode, ModeManager &gt;::set_active_custom_ramp </td>
+          <td class="memname">uint8_t LMBD_INLINE <a class="el" href="structmodes_1_1ContextTy.html">modes::ContextTy</a>&lt; LocalBasicMode, <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a> &gt;::set_active_custom_ramp </td>
           <td>(</td>
           <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>value</em></td><td>)</td>
@@ -396,7 +403,7 @@ template&lt;typename LocalBasicMode , typename ModeManager &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename LocalBasicMode , typename ModeManager &gt; </div>
+template&lt;typename LocalBasicMode , typename <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a> &gt; </div>
 <div class="memtemplate">
 template&lt;<a class="el" href="namespacemodes.html#a02369f603301370bb1acf9b85e46183c">ConfigKeys</a> key&gt; </div>
 <table class="mlabels">
@@ -404,7 +411,7 @@ template&lt;<a class="el" href="namespacemodes.html#a02369f603301370bb1acf9b85e4
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void LMBD_INLINE <a class="el" href="structmodes_1_1ContextTy.html">modes::ContextTy</a>&lt; LocalBasicMode, ModeManager &gt;::set_config_bool </td>
+          <td class="memname">void LMBD_INLINE <a class="el" href="structmodes_1_1ContextTy.html">modes::ContextTy</a>&lt; LocalBasicMode, <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a> &gt;::set_config_bool </td>
           <td>(</td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>value</em></td><td>)</td>
@@ -429,7 +436,7 @@ template&lt;<a class="el" href="namespacemodes.html#a02369f603301370bb1acf9b85e4
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename LocalBasicMode , typename ModeManager &gt; </div>
+template&lt;typename LocalBasicMode , typename <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a> &gt; </div>
 <div class="memtemplate">
 template&lt;<a class="el" href="namespacemodes.html#a02369f603301370bb1acf9b85e46183c">ConfigKeys</a> key&gt; </div>
 <table class="mlabels">
@@ -437,7 +444,7 @@ template&lt;<a class="el" href="namespacemodes.html#a02369f603301370bb1acf9b85e4
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void LMBD_INLINE <a class="el" href="structmodes_1_1ContextTy.html">modes::ContextTy</a>&lt; LocalBasicMode, ModeManager &gt;::set_config_u32 </td>
+          <td class="memname">void LMBD_INLINE <a class="el" href="structmodes_1_1ContextTy.html">modes::ContextTy</a>&lt; LocalBasicMode, <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a> &gt;::set_config_u32 </td>
           <td>(</td>
           <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>value</em></td><td>)</td>
@@ -462,13 +469,13 @@ template&lt;<a class="el" href="namespacemodes.html#a02369f603301370bb1acf9b85e4
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename LocalBasicMode , typename ModeManager &gt; </div>
+template&lt;typename LocalBasicMode , typename <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a> &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void LMBD_INLINE <a class="el" href="structmodes_1_1ContextTy.html">modes::ContextTy</a>&lt; LocalBasicMode, ModeManager &gt;::skipFirstLedsForFrames </td>
+          <td class="memname">void LMBD_INLINE <a class="el" href="structmodes_1_1ContextTy.html">modes::ContextTy</a>&lt; LocalBasicMode, <a class="el" href="structmodes_1_1ContextTy.html#ac56f2849e7d2456fd0657a8680b2799b">ModeManager</a> &gt;::skipFirstLedsForFrames </td>
           <td>(</td>
           <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>amount</em>, </td>
