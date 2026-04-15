@@ -1,19 +1,27 @@
+/*! \file charger.h
+    \brief High level layer of the battery charging and balancer algorithms.
+    The charger can be in charge or OTG mode.
+    Charge transfers power from the power rail to the battery, and OTG transfers power from the battery to the power
+   rail.
+*/
+
 #ifndef CHARGER_H
 #define CHARGER_H
 
 #include <cstdint>
 #include <string>
 
+/// Handles the battery charging processes, and power output control.
 namespace charger {
 
-// call once at program startup
+/// call once at program startup
 bool setup();
-// call at every loop runs
+/// call at every loop runs
 void loop();
-
+/// Call when system goes to sleep
 void shutdown();
 
-// debug feature: disable the charging process
+/// debug feature: enable/disable the charging process
 void set_enable_charge(const bool shouldCharge);
 
 /**
@@ -25,15 +33,15 @@ struct Charger_t
   bool areMeasuresOk = false;
   /// True if we have a valid chargeOk signal from the component
   bool isChargeOkSignalHigh;
-  /// True if OTG is activated
+  /// True if OTG is activated.
   bool isInOtg;
 
-  /// time of the last update of this struct
+  /// time of the last update of this struct.
   uint32_t lastUpdateTime_ms = 0;
 
-  /// input current in VBUS side
+  /// input current in VBUS side, in milliamps.
   uint16_t inputCurrent_mA = 0;
-  /// charge current of the battery
+  /// charge current of the battery, in milliamps.
   uint16_t chargeCurrent_mA = 0;
   /// powerRail voltage (can be the same as VBUS in charge & OTG mode).
   /// Min value at 3200mV
@@ -88,16 +96,23 @@ struct Charger_t
   std::string softwareErrorMessage = "";
 };
 
+/// Return true if voltage is detected on VBUS.
 bool is_vbus_powered();
+
+/// Return true if we are allowed to use the VBUS power.
 bool can_use_vbus_power();
 
-// set the otg parameters
-// set to 0 to deactivate
+/**
+ * \brief Set the OTG control parameters. Set the parameters to zero to disable OTG mode.
+ * \param[in] mv Desired output voltage in millivolts
+ * \param[in] ma Desired maximum output current in milliamps
+ */
 void control_OTG(const uint16_t mv, const uint16_t ma);
 
-// the microcontroler is detecting a vbus input voltage
+/// Return true if the USB VBUS presence signal is active.
 bool is_vbus_signal_detected();
 
+/// Return the latest known state of the charger.
 Charger_t get_state();
 
 } // namespace charger

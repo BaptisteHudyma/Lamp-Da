@@ -1,3 +1,8 @@
+/*! \file coordinates.h
+    \brief For RGB lamp, convert a 2D screen coordinates to a a led strip index
+    \warning Will be removed when the mode transition is over
+*/
+
 #ifndef UTILS_COORDINATES_H
 #define UTILS_COORDINATES_H
 

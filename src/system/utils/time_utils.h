@@ -1,3 +1,7 @@
+/*! \file time_utils.h
+    \brief Define some tools and macros to handle timed events
+*/
+
 #ifndef TIME_UTILS_HPP
 #define TIME_UTILS_HPP
 
@@ -5,7 +9,7 @@
 
 #include "src/system/platform/time.h"
 
-// define time routines
+/// define time routines
 class CEveryNMillis
 {
 public:

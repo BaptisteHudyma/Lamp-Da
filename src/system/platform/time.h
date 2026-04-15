@@ -1,3 +1,7 @@
+/*! \file time.h
+    \brief Interface for the platform specific time handling.
+*/
+
 // do not use pragma once here, has this can be mocked
 #ifndef PLATFORM_TIME
 #define PLATFORM_TIME
@@ -47,10 +51,11 @@ extern "C" {
    */
   extern void delay_us(uint64_t dwUs);
 
-  // help functions
+  /// Get the current time, in seconds
   inline uint32_t time_s() { return time_ms() / 1000; }
+  /// Get the current time, in minutes
   inline uint32_t time_min() { return time_s() / 60; }
-
+  /// pause the current task for the given number of seconds
   inline void delay_s(uint32_t s) { delay_ms(s * 1000); }
 
 #ifdef __cplusplus

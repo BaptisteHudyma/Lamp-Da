@@ -1,3 +1,7 @@
+/*! \file bluetooth.h
+    \brief Interface for the platform specific bluetooth.
+*/
+
 #ifndef BLUETOOTH_HPP
 #define BLUETOOTH_HPP
 
@@ -6,6 +10,7 @@
 #include "src/compile.h"
 // - contains #define USE_BLUETOOTH
 
+/// Handle the plateform specific bluetooth operations
 namespace bluetooth {
 
 // start the advertising sequence (with a timeout)

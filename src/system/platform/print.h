@@ -1,3 +1,7 @@
+/*! \file print.h
+    \brief Interface for the platform specific debug and prints.
+*/
+
 #ifndef PLATFORM_PRINT_H
 #define PLATFORM_PRINT_H
 

@@ -1,3 +1,7 @@
+/*! \file pdm_handle.h
+    \brief Interface for the platform specific microphone.
+*/
+
 #ifndef PLATFORM_PDM_HANDLE_H
 #define PLATFORM_PDM_HANDLE_H
 
@@ -5,6 +9,7 @@
 #include <stdint.h>
 #include <cstddef>
 
+/// Handle the plateform specific microphone operations
 namespace microphone {
 
 /// CALIBRATED value of a gain baseline

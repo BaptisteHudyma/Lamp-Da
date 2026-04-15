@@ -27,43 +27,59 @@ namespace power {
 void power_loop();
 // \references
 
+/// Set to true if the shutdown process is finished cleanly.
 bool _isShutdownCompleted = false;
 
+/// Minimum allowed power rail clear delay.
 static constexpr uint32_t clearPowerRailMinDelay_ms = 10;
+/// Minimum power rail clear delay after which a failure is signaled.
 static constexpr uint32_t clearPowerRailFailureDelay_ms = 1000;
+/// Delay after which the OTG_MODE will auto disable if a disconnection is detected.
 static constexpr uint32_t otgNoUseTimeToDisconnect_ms = 1000;
-// timeout in external battery mode
+/// Delay after which the OTG_MODE will auto disable if not used.
 static constexpr uint8_t otgTurnOffTimeMinutes = 5;
+/// Delay after which the OTG_MODE will auto disable if not used, in milliseconds.
 static constexpr uint32_t otgNoUseExtBatTimeToDisconnect_ms = 1000 * 60 * otgTurnOffTimeMinutes;
-
+/// Delay after which the STARTUP state will auto switch to error.
 static constexpr uint32_t startupFailTimeout_ms = 3000;
 
 static_assert(clearPowerRailMinDelay_ms < clearPowerRailFailureDelay_ms,
               "clear power rail min activation is less than min unlock delay");
 
-// true voltage/current output limits
+/// true voltage output
 static uint16_t _outputVoltage_mV = 0;
+/// true current output limit
 static uint16_t _outputCurrent_mA = 0;
 
-// temporary voltage/current limits
+/// temporary voltage
 static uint16_t _temporaryOutputVoltage_mV = 0;
+/// temporary current limits
 static uint16_t _temporaryOutputCurrent_mA = 0;
+/// temporary output timeout time
 static uint32_t _temporaryOutputTimeOut = 0;
 
+/// True if battery charging is allowed
 static bool _isChargeEnabled = false;
+
+/// Store the state error description
 static std::string _errorStr = "";
+
+/// True if the state changed to OTG_MODE on it's own (via USB-PD requests).
 static bool _hasAutoSwitchedToOTG = false;
 
-// in this mode, the battery is too low to power the components
-// they rely on the vbus gate
+/// in this mode, the battery is too low to power the components.
+/// They will be powered through the vbus gate.
 static bool _isInBatteryRecoveryMode = false;
 
+/// Return the error string if set, or "x"
 std::string get_error_string()
 {
   if (_errorStr.empty())
     return "x";
   return _errorStr;
 }
+
+/// Set the error message, if not already set.
 void set_error_state_message(const std::string& errorMsg)
 {
   if (_errorStr.empty())
@@ -72,33 +88,35 @@ void set_error_state_message(const std::string& errorMsg)
   }
 }
 
-// Define the state for the main prog state machine
+/// Define the state for the power state machine
 using PowerStates = enum class power_states_t
 {
-  // start phase
+  /// Start phase, initialization and checks.
   STARTUP,
 
-  // idle, default mode
+  /// Idle, default mode. No power output.
   IDLE,
 
-  // prepare any power operation, by wlosing all path and discharging the rails
+  /// Prepare any power operation, by closing all power path and discharging the power rails.
   CLEAR_POWER_RAILS,
 
-  // Charging
+  /// Charge the batteries. Send power from the USB port to the batteries.
   CHARGING_MODE,
 
-  // output voltage on
+  /// Output voltage on. Send voltage from the batteries to the board Output.
   OUTPUT_VOLTAGE_MODE,
 
-  // OnTheGo
+  /// External battery mode (OnTheGo). Send power from the battery to the USB port.
   OTG_MODE,
 
-  // effectuate the shutdown
+  /// Shutdown the system and components gracefully.
   SHUTDOWN,
 
-  // Should never happen, default state
+  /// Default safety state. if reached, no power will be sent.
   ERROR,
 };
+
+/// Name of the states as strings
 const char* const PowerStatesStr[] = {
         "STARTUP",
         "IDLE",
@@ -110,9 +128,12 @@ const char* const PowerStatesStr[] = {
         "ERROR",
 };
 
+/// True if the OUTPUT_MODE state is ready, ie if the mode is active, the power is as requested and the output gate is
+/// enabled.
 static bool s_isOutputModeReady = false;
 bool is_output_mode_ready() { return s_isOutputModeReady; }
 
+/// Internal implementations
 namespace __private {
 
 // main state machine (start with timeout, go to error on timeout)
@@ -652,8 +673,6 @@ bool go_to_idle()
   return false;
 }
 
-bool is_state_shutdown_effected() { return _isShutdownCompleted; }
-
 bool go_to_shutdown()
 {
   // no need to check if we can switch case in this case
@@ -661,7 +680,7 @@ bool go_to_shutdown()
 
   handle_shutdown();
 
-  return is_state_shutdown_effected();
+  return _isShutdownCompleted;
 }
 
 bool go_to_error()
@@ -775,7 +794,7 @@ void init()
   isSetup = true;
 }
 
-// main loop of the power
+/// main loop of the power, running in another thread.
 void power_loop()
 {
   // kick power watchdog
