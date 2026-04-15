@@ -8,11 +8,12 @@
 #ifndef fusb302_H
 #define fusb302_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdint.h>
 #include "../tcpm/usb_pd_tcpm.h"
 #include "../usb_pd.h"
 

@@ -36,7 +36,7 @@ struct DoubleSideFillMode : public modes::BasicMode
     static constexpr float iteration = ctx.lamp.frameDurationMs / static_cast<float>(animationTiming);
     ctx.state.progress += iteration;
 
-    const float prog = min<float>(ctx.state.progress, 1.0);
+    const float prog = std::min<float>(ctx.state.progress, 1.0);
 
     const size_t endIndex = prog * (ctx.lamp.ledCount / 2.0);
     ctx.lamp.fill(ctx.state.color, 0, endIndex);
@@ -47,7 +47,7 @@ struct DoubleSideFillMode : public modes::BasicMode
     if (ctx.state.progress >= 1.0)
     {
       ctx.state.progress = 0.0;
-      ctx.state.color = utils::get_random_complementary_color(ctx.state.color, randomVariation);
+      ctx.state.color = lampda::utils::get_random_complementary_color(ctx.state.color, randomVariation);
     }
   }
 };

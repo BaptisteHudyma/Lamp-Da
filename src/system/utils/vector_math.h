@@ -5,6 +5,9 @@
 #ifndef UTILS_VECTOR_MATH_H
 #define UTILS_VECTOR_MATH_H
 
+namespace lampda {
+namespace utils {
+
 /**
  * \brief 2d vector in any space
  */
@@ -201,5 +204,8 @@ struct TransformationMatrix
    */
   vec3d transform(const vec3d& vec) const;
 };
+
+} // namespace utils
+} // namespace lampda
 
 #endif

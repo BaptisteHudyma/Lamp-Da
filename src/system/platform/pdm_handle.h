@@ -9,7 +9,9 @@
 #include <stdint.h>
 #include <cstddef>
 
-/// Handle the plateform specific microphone operations
+namespace lampda {
+namespace platform {
+/// Handle the platform specific microphone operations
 namespace microphone {
 
 /// CALIBRATED value of a gain baseline
@@ -47,5 +49,7 @@ void stop();
 } // namespace _private
 
 } // namespace microphone
+} // namespace platform
+} // namespace lampda
 
 #endif

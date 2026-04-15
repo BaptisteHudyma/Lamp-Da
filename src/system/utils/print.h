@@ -6,6 +6,9 @@
 #define C_LOGGER_H
 
 #ifdef __cplusplus
+namespace lampda {
+namespace platform {
+
 #define EXTERNC extern "C"
 #else
 #define EXTERNC
@@ -21,5 +24,10 @@ EXTERNC void lampda_print(const char* format, ...);
 EXTERNC void lampda_print_raw(const char* format, ...);
 
 #undef EXTERNC
+
+#ifdef __cplusplus
+} // namespace platform
+} // namespace lampda
+#endif
 
 #endif

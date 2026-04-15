@@ -7,6 +7,10 @@
 #include <vector>
 #include <thread>
 
+namespace lampda {
+namespace platform {
+namespace threads {
+
 typedef void (*taskfunc_t)(void);
 std::vector<std::thread> threadPool;
 
@@ -20,7 +24,7 @@ void start_thread(taskfunc_t taskFunction, const char* const taskName, const int
     {
       if (not isSuspended)
         taskFunction();
-      delay_ms(1);
+      platform::delay_ms(1);
     }
   }));
 }
@@ -35,7 +39,7 @@ void start_suspended_thread(taskfunc_t taskFunction,
     {
       if (not isSuspended)
         taskFunction();
-      delay_ms(1);
+      platform::delay_ms(1);
     }
   }));
 }
@@ -60,3 +64,7 @@ void notify_thread(const char* const taskName, int wakeUpEvent) {};
 int wait_notification(const int timeout_ms) { return 0; }
 
 void get_thread_debug(char* textBuff) {}
+
+} // namespace threads
+} // namespace platform
+} // namespace lampda

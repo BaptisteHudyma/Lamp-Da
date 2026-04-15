@@ -8,6 +8,10 @@
 #include <Arduino.h>
 #include <map>
 
+namespace lampda {
+namespace platform {
+namespace threads {
+
 // store all handles
 std::map<const char* const, TaskHandle_t> handles;
 
@@ -61,7 +65,7 @@ void start_thread(taskfunc_t taskFunction, const char* const taskName, const int
   }
   else
   {
-    lampda_print("task creation failed");
+    platform::lampda_print("task creation failed");
   }
 }
 
@@ -94,7 +98,7 @@ void start_suspended_thread(taskfunc_t taskFunction,
   }
   else
   {
-    lampda_print("task %s creation failed", taskName);
+    platform::lampda_print("task %s creation failed", taskName);
   }
 }
 
@@ -130,7 +134,7 @@ void resume_thread(const char* const taskName)
   auto handle = handles.find(taskName);
   if (handle == handles.cend())
   {
-    lampda_print("ERROR: task handle %s do not exist", taskName);
+    platform::lampda_print("ERROR: task handle %s do not exist", taskName);
     return;
   }
 
@@ -149,7 +153,7 @@ void notify_thread(const char* const taskName, int wakeUpEvent)
   auto handle = handles.find(taskName);
   if (handle == handles.cend())
   {
-    lampda_print("ERROR: task handle %s do not exist", taskName);
+    platform::lampda_print("ERROR: task handle %s do not exist", taskName);
     return;
   }
   if (isInISR())
@@ -191,5 +195,9 @@ int wait_notification(const int timeout_ms)
 }
 
 void get_thread_debug(char* textBuff) { vTaskList(textBuff); }
+
+} // namespace threads
+} // namespace platform
+} // namespace lampda
 
 #endif

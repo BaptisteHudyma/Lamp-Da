@@ -8,6 +8,8 @@
 #include "src/system/platform/print.h"
 #include "src/system/platform/time.h"
 
+namespace lampda {
+namespace platform {
 namespace bluetooth {
 
 #define ADV_TIMEOUT 30 // seconds. Set this higher to automatically stop advertising after a time
@@ -38,19 +40,19 @@ void byte_to_str(char* buff, uint8_t val)
 void connect_callback(uint16_t conn_hdl)
 {
   stop_bluetooth_advertising();
-  lampda_print("Bluetooth connected");
+  platform::lampda_print("Bluetooth connected");
 }
 
 void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
 {
   stop_bluetooth_advertising();
-  lampda_print("Bluetooth disconnected");
+  platform::lampda_print("Bluetooth disconnected");
 }
 
 void adv_stop_callback(void)
 {
   stop_bluetooth_advertising();
-  lampda_print("Advertising time passed, advertising will now stop.");
+  platform::lampda_print("Advertising time passed, advertising will now stop.");
 }
 
 void set_device_informations()
@@ -109,7 +111,7 @@ void startup_sequence()
   Bluefruit.setAppearance(BLE_APPEARANCE_LIGHT_SOURCE_MULTICOLOR_ARRAY);
 
   // Configure and start the BLE Uart service
-  lampda_print("Blutooth started under the name:%s", ble_name);
+  platform::lampda_print("Blutooth started under the name:%s", ble_name);
 
   // Advertising packet
   Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
@@ -145,7 +147,7 @@ void start_advertising()
   Bluefruit.printInfo();
   Bluefruit.Advertising.start(ADV_TIMEOUT); // Stop advertising entirely after ADV_TIMEOUT seconds
 
-  alerts::manager.raise(alerts::Type::BLUETOOTH_ADVERT);
+  logic::alerts::manager.raise(logic::alerts::Type::BLUETOOTH_ADVERT);
 }
 
 void stop_bluetooth_advertising()
@@ -153,7 +155,7 @@ void stop_bluetooth_advertising()
   if (!isInitialized)
     return;
 
-  alerts::manager.clear(alerts::Type::BLUETOOTH_ADVERT);
+  logic::alerts::manager.clear(logic::alerts::Type::BLUETOOTH_ADVERT);
 
   Bluefruit.Advertising.stop();
 }
@@ -173,3 +175,5 @@ void notify_battery_level(const uint8_t batteryLevel)
 }
 
 } // namespace bluetooth
+} // namespace platform
+} // namespace lampda

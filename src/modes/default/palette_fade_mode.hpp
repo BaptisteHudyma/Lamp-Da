@@ -32,7 +32,7 @@ struct PaletteFadeMode : public modes::BasicMode
     static constexpr uint32_t highestTiming = 3000;
     // map ramp to period
     const float wholePaletteLoopTiming =
-            lmpd_map<float>(ctx.get_active_custom_ramp(), 0, 255, lowestTiming, highestTiming);
+            lampda::lmpd_map<float>(ctx.get_active_custom_ramp(), 0, 255, lowestTiming, highestTiming);
 
     // 1/80
     const float adding = wholePaletteLoopTiming / static_cast<float>(ctx.lamp.frameDurationMs);

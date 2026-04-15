@@ -40,6 +40,10 @@ float chargeOtgOutput;
 std::atomic<bool> canRunComponentUpdateThread = false;
 std::thread componentUpdateThread;
 
+namespace lampda {
+namespace platform {
+namespace i2c {
+
 void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
 {
   if (i2cIndex != 0)
@@ -53,7 +57,7 @@ void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
       {
         icMock->run_electrical_update();
       }
-      delay_ms(1);
+      platform::delay_ms(1);
     }
   });
   isI2cAvailable = true;
@@ -127,3 +131,7 @@ int i2c_xfer_unlocked(
 
   return 1;
 }
+
+} // namespace i2c
+} // namespace platform
+} // namespace lampda

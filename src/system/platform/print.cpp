@@ -6,9 +6,12 @@
 #include <Arduino.h>
 
 extern "C" {
-  // hack to use prints in c files
+// hack to use prints in c files
 #include "src/system/utils/print.h"
 }
+
+namespace lampda {
+namespace platform {
 
 // mutex to prevent lockups
 StaticSemaphore_t _PrintMutex;
@@ -113,5 +116,8 @@ Inputs read_inputs()
   _unlockPrintMutex();
   return ret;
 }
+
+} // namespace platform
+} // namespace lampda
 
 #endif

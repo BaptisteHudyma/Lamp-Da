@@ -57,13 +57,13 @@ struct PerlinNoiseMode : public BasicMode
 
   static void on_enter_mode(auto& ctx)
   {
-    ctx.state.positionX = UINT32_MAX / 2 + random16() / 2;
-    ctx.state.positionY = UINT32_MAX / 2 + random16() / 2;
-    ctx.state.positionZ = UINT32_MAX / 2 + random16() / 2;
+    ctx.state.positionX = UINT32_MAX / 2 + lampda::random16() / 2;
+    ctx.state.positionY = UINT32_MAX / 2 + lampda::random16() / 2;
+    ctx.state.positionZ = UINT32_MAX / 2 + lampda::random16() / 2;
 
-    ctx.state.speedX = random8();
-    ctx.state.speedY = random8();
-    ctx.state.speedZ = random8();
+    ctx.state.speedX = lampda::random8();
+    ctx.state.speedY = lampda::random8();
+    ctx.state.speedZ = lampda::random8();
     ctx.state.scale = 600;
 
     ctx.state.ihue = 0;
@@ -83,7 +83,7 @@ struct PerlinNoiseMode : public BasicMode
     auto& state = ctx.state;
 
     const uint8_t rampIndex =
-            min<float>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1.0f);
+            std::min<float>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1.0f);
     state.selectedPalette = state._palettes[rampIndex];
   }
 
@@ -108,8 +108,10 @@ struct PerlinNoiseMode : public BasicMode
       if (speed < 0)
         speed += speedBleedof;
       else
-        speed = lmpd_constrain<int16_t>(
-                speed + lmpd_map<int16_t>(random8(), 0, 255, 0, acceleration * 2), 0, ctx.state.maxSpeed);
+        speed = lampda::lmpd_constrain<int16_t>(
+                speed + lampda::lmpd_map<int16_t>(lampda::random8(), 0, 255, 0, acceleration * 2),
+                0,
+                ctx.state.maxSpeed);
     }
     else if (position > (UINT32_MAX - confortZone))
     {
@@ -117,15 +119,18 @@ struct PerlinNoiseMode : public BasicMode
       if (speed > 0)
         speed -= speedBleedof;
       else
-        speed = lmpd_constrain<int16_t>(
-                speed + lmpd_map<int16_t>(random8(), 0, 255, -acceleration * 2, 0), -ctx.state.maxSpeed, 0);
+        speed = lampda::lmpd_constrain<int16_t>(
+                speed + lampda::lmpd_map<int16_t>(lampda::random8(), 0, 255, -acceleration * 2, 0),
+                -ctx.state.maxSpeed,
+                0);
     }
     else
     {
       // free range x speed
-      speed = lmpd_constrain<int16_t>(speed + lmpd_map<int16_t>(random8(), 0, 255, -acceleration, acceleration),
-                                      -ctx.state.maxSpeed,
-                                      ctx.state.maxSpeed);
+      speed = lampda::lmpd_constrain<int16_t>(
+              speed + lampda::lmpd_map<int16_t>(lampda::random8(), 0, 255, -acceleration, acceleration),
+              -ctx.state.maxSpeed,
+              ctx.state.maxSpeed);
       // prevent too slow speed
       if (speed < 0 and speed > -ctx.state.minSpeed)
         speed = -ctx.state.minSpeed;
@@ -162,7 +167,7 @@ struct PerlinNoiseMode : public BasicMode
     for (size_t i = firstIndex; i < lamp.ledCount; i += everyNIndex)
     {
       const auto res = modes::strip_to_helix_unconstraint(i);
-      uint16_t data = noise16::inoise(x + scale * res.x, y + scale * res.y, z + scale * res.z);
+      uint16_t data = lampda::noise16::inoise(x + scale * res.x, y + scale * res.y, z + scale * res.z);
 
       // smooth over time to prevent suddent jumps
       noiseBuffer[i] = data;
@@ -194,7 +199,7 @@ struct PerlinNoiseMode : public BasicMode
       }
       else
       {
-        bri = dim8_raw(bri * 2);
+        bri = lampda::dim8_raw(bri * 2);
       }
 
       lamp.setPixelColor(i, colors::from_palette(index, palette, bri));

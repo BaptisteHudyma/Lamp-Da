@@ -18,7 +18,7 @@
 
 // (extern declarations)
 namespace user::_private {
-extern LedStrip strip;
+extern lampda::LedStrip strip;
 }
 #endif
 
@@ -41,7 +41,7 @@ void power_off_sequence();
  * \remark Use update_brightness() to change brightness in order for
  * brightness_update() to be correctly called on brightness change
  */
-void brightness_update(const brightness_t brightness);
+void brightness_update(const lampda::brightness_t brightness);
 
 /// Called when the sunset timer progresses [0; 1]
 void sunset_timer_update(const float progress);

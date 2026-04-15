@@ -4,6 +4,8 @@
 #include <limits>
 #include "src/system/utils/utils.h"
 
+namespace lampda::utils {
+
 static constexpr float Inf = std::numeric_limits<float>::infinity();
 
 /**
@@ -368,3 +370,5 @@ TEST(test_colors, rgb_to_hue)
   ASSERT_EQ(utils::hue_to_rgb_sinus(360 * 2), 0xFF0000);
   ASSERT_EQ(utils::hue_to_rgb_sinus(560), 0x003FBF);
 }
+
+} // namespace lampda::utils

@@ -7,6 +7,9 @@
 #include "src/system/platform/time.h"
 #include <cstdint>
 
+namespace lampda {
+namespace utils {
+
 /**
  * \brief Define a state machine
  */
@@ -17,7 +20,7 @@ public:
   StateMachine(const State s) :
     current(s),
     lastState(s),
-    stateSetTime(time_ms()),
+    stateSetTime(platform::time_ms()),
     timeout_ms(0),
     afterTimeoutState(s),
     changedWithTimeout(false)
@@ -32,7 +35,7 @@ public:
   StateMachine(const State s, const uint32_t timeout, const State stateOnTimeout) :
     current(s),
     lastState(s),
-    stateSetTime(time_ms()),
+    stateSetTime(platform::time_ms()),
     timeout_ms(0),
     afterTimeoutState(s),
     changedWithTimeout(false)
@@ -46,7 +49,7 @@ public:
   void run()
   {
     // there is a timeout set for this state
-    if (isTimeoutSet and time_ms() >= timeout_ms)
+    if (isTimeoutSet and platform::time_ms() >= timeout_ms)
     {
       // timeout reached
       set_state(afterTimeoutState);
@@ -73,7 +76,7 @@ public:
     // reset the timeout time
     isTimeoutSet = false;
     timeout_ms = 0;
-    stateSetTime = time_ms();
+    stateSetTime = platform::time_ms();
 
     changedWithTimeout = false;
     didStateJustChanged = true;
@@ -115,7 +118,7 @@ public:
     if (isTimeoutSet)
     {
       // potential clock overflow, be careful
-      timeout_ms = time_ms() + timeout;
+      timeout_ms = platform::time_ms() + timeout;
     }
   }
 
@@ -168,3 +171,6 @@ private:
   // indicates that this state was reched with a timeout
   bool changedWithTimeout;
 };
+
+} // namespace utils
+} // namespace lampda

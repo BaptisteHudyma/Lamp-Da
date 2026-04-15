@@ -13,10 +13,16 @@
 #include "src/system/utils/vector_math.h"
 #include "src/system/utils/constants.h"
 
+namespace lampda {
+namespace utils {
+
 /**
  * \brief Given the x and y, return the led index
  */
 uint16_t to_strip(const uint16_t screenX, const uint16_t screenY);
+
+} // namespace utils
+} // namespace lampda
 
 #endif
 

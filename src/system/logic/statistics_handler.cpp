@@ -9,6 +9,8 @@
 #include <array>
 #include <cstdint>
 
+namespace lampda {
+namespace logic {
 namespace statistics {
 
 /*
@@ -66,22 +68,22 @@ static constexpr uint32_t chargeOnTimeSKey = utils::hash("chrgOn");     ///< has
 uint32_t get_alert_storage_key(uint8_t alertIndex) { return 0xFFFFFF00 | alertIndex; }
 
 /// system on time is easy: system always starts with time zero
-uint32_t get_system_on_time() { return statistics.system_on_minutes + max<uint32_t>(1, time_s() / 60); }
+uint32_t get_system_on_time() { return statistics.system_on_minutes + max<uint32_t>(1, platform::time_s() / 60); }
 
 void load_from_memory()
 {
-  fileSystem::system::get_value(bootCountKey, statistics.boot_count);
+  physical::fileSystem::system::get_value(bootCountKey, statistics.boot_count);
   statistics.boot_count += 1;
 
-  fileSystem::system::get_value(buttonPressCountKey, statistics.button_press_count);
-  fileSystem::system::get_value(systemOnTimeSKey, statistics.system_on_minutes);
-  fileSystem::system::get_value(outputOnTimeSKey, statistics.output_on_minutes);
-  fileSystem::system::get_value(chargeOnTimeSKey, statistics.battery_charge_minutes);
+  physical::fileSystem::system::get_value(buttonPressCountKey, statistics.button_press_count);
+  physical::fileSystem::system::get_value(systemOnTimeSKey, statistics.system_on_minutes);
+  physical::fileSystem::system::get_value(outputOnTimeSKey, statistics.output_on_minutes);
+  physical::fileSystem::system::get_value(chargeOnTimeSKey, statistics.battery_charge_minutes);
 
   for (uint8_t alertIndex = 0; alertIndex < alertArraySize; alertIndex++)
   {
     const uint32_t alertCntBefore = statistics.alertRaisedCnt[alertIndex];
-    fileSystem::system::get_value(get_alert_storage_key(alertIndex), statistics.alertRaisedCnt[alertIndex]);
+    physical::fileSystem::system::get_value(get_alert_storage_key(alertIndex), statistics.alertRaisedCnt[alertIndex]);
     if (alertCntBefore > statistics.alertRaisedCnt[alertIndex])
     {
       // fallback to prevent early alert crush
@@ -92,18 +94,18 @@ void load_from_memory()
 
 void write_to_memory()
 {
-  fileSystem::system::set_value(bootCountKey, statistics.boot_count);
-  fileSystem::system::set_value(buttonPressCountKey, statistics.button_press_count);
-  fileSystem::system::set_value(outputOnTimeSKey, statistics.output_on_minutes);
-  fileSystem::system::set_value(chargeOnTimeSKey, statistics.battery_charge_minutes);
+  physical::fileSystem::system::set_value(bootCountKey, statistics.boot_count);
+  physical::fileSystem::system::set_value(buttonPressCountKey, statistics.button_press_count);
+  physical::fileSystem::system::set_value(outputOnTimeSKey, statistics.output_on_minutes);
+  physical::fileSystem::system::set_value(chargeOnTimeSKey, statistics.battery_charge_minutes);
 
   // system time starts at zero
-  fileSystem::system::set_value(systemOnTimeSKey, get_system_on_time());
+  physical::fileSystem::system::set_value(systemOnTimeSKey, get_system_on_time());
 
   // store alerts
   for (uint8_t alertIndex = 0; alertIndex < alertArraySize; alertIndex++)
   {
-    fileSystem::system::set_value(get_alert_storage_key(alertIndex), statistics.alertRaisedCnt[alertIndex]);
+    physical::fileSystem::system::set_value(get_alert_storage_key(alertIndex), statistics.alertRaisedCnt[alertIndex]);
   }
 }
 
@@ -120,7 +122,7 @@ uint32_t get_output_on_time()
 {
   if (outputOn_time_s != UINT32_MAX)
   {
-    const uint32_t currentTime_s = time_s();
+    const uint32_t currentTime_s = platform::time_s();
     if (currentTime_s >= outputOn_time_s)
       return statistics.output_on_minutes + max<uint32_t>(1, (currentTime_s - outputOn_time_s) / 60);
     else
@@ -133,7 +135,7 @@ uint32_t get_output_on_time()
 void signal_output_on()
 {
   if (outputOn_time_s == UINT32_MAX)
-    outputOn_time_s = time_s();
+    outputOn_time_s = platform::time_s();
 }
 
 void signal_output_off()
@@ -152,7 +154,7 @@ uint32_t get_battery_charging_time()
 {
   if (batteryCharge_time_s != UINT32_MAX)
   {
-    const uint32_t currentTime_s = time_s();
+    const uint32_t currentTime_s = platform::time_s();
     if (currentTime_s >= batteryCharge_time_s)
       return statistics.battery_charge_minutes + max<uint32_t>(1, (currentTime_s - batteryCharge_time_s) / 60);
     else
@@ -165,7 +167,7 @@ uint32_t get_battery_charging_time()
 void signal_battery_charging_on()
 {
   if (batteryCharge_time_s == UINT32_MAX)
-    batteryCharge_time_s = time_s();
+    batteryCharge_time_s = platform::time_s();
 }
 
 void signal_battery_charging_off()
@@ -189,7 +191,7 @@ void signal_alert_raised(uint32_t alertMask)
 
 void show(const bool shouldShowAlerts)
 {
-  lampda_print(
+  platform::lampda_print(
           "stats:\n"
           "boot cnt: %u\n"
           "button clicks: %u\n"
@@ -204,7 +206,7 @@ void show(const bool shouldShowAlerts)
 
   if (shouldShowAlerts)
   {
-    lampda_print("alert raised cnt stats :");
+    platform::lampda_print("alert raised cnt stats :");
     bool anyAlertToDisplay = false;
     // store alerts
     for (uint8_t alertIndex = 0; alertIndex < alertArraySize; alertIndex++)
@@ -212,12 +214,14 @@ void show(const bool shouldShowAlerts)
       if (statistics.alertRaisedCnt[alertIndex] > 0)
       {
         anyAlertToDisplay = true;
-        lampda_print("- %u : %u", alertIndex, statistics.alertRaisedCnt[alertIndex]);
+        platform::lampda_print("- %u : %u", alertIndex, statistics.alertRaisedCnt[alertIndex]);
       }
     }
     if (not anyAlertToDisplay)
-      lampda_print("no alerts registered");
+      platform::lampda_print("no alerts registered");
   }
 }
 
 } // namespace statistics
+} // namespace logic
+} // namespace lampda

@@ -27,8 +27,8 @@ static constexpr float linearSpeedGain = 1.0;    ///< gain for the linear speeds
 static constexpr float reboundCoeff = 0.1;       ///< low rebound [0 - 1] on walls
 static constexpr float speedDampening = 0.92;    ///< low speed dampening [0-0.99] at every steps (viscosity)
 
-static constexpr float maxAngularSpeed_radS = 4 * c_TWO_PI; ///< max angular speed in radians/s
-static constexpr float maxVerticalSpeed_mmS = 50;           ///< max vertical speed in mm/S
+static constexpr float maxAngularSpeed_radS = 4 * lampda::c_TWO_PI; ///< max angular speed in radians/s
+static constexpr float maxVerticalSpeed_mmS = 50;                   ///< max vertical speed in mm/S
 
 /**
  * \brief Define a particle in 3D space. it has a position and speed
@@ -39,7 +39,7 @@ struct Particle
   Particle() : thetaSpeed_radS(0.0), zSpeed_mS(0.0), theta_rad(0.0), z_mm(0.0) {}
 
   /// Construct a Particle from a 3D cartesian position.
-  Particle(const vec3d& positionCartesian) :
+  Particle(const lampda::utils::vec3d& positionCartesian) :
     thetaSpeed_radS(0.0),
     zSpeed_mS(0.0),
     theta_rad(atan2(positionCartesian.y, positionCartesian.x)),
@@ -67,22 +67,24 @@ struct Particle
    * \param[in] deltaTime_s Time since the latest update
    * \return The speed in angle and heigh.
    */
-  vec2d compute_speed_increment(const vec3d& accelerationCartesian_m, const float deltaTime_s) const
+  lampda::utils::vec2d compute_speed_increment(const lampda::utils::vec3d& accelerationCartesian_m,
+                                               const float deltaTime_s) const
   {
     // speed vector on radial (derivative of cartesian to cylinder coordinates for theta)
-    const vec3d e_theta(-sin_t(theta_rad) * cylinderRadius_m, cos_t(theta_rad) * cylinderRadius_m, 0);
+    const lampda::utils::vec3d e_theta(
+            -lampda::sin_t(theta_rad) * cylinderRadius_m, lampda::cos_t(theta_rad) * cylinderRadius_m, 0);
     // speed vector on z (derivative of cartesian to cylinder coordinates for z)
-    const vec3d e_z(0, 0, 1);
+    const lampda::utils::vec3d e_z(0, 0, 1);
     // ignore the radius derivative, as we want to stay on the cylinder surface
 
     // compute the speed vector on cylinder surface
-    const vec3d& tangantialVector = e_theta.multiply(accelerationCartesian_m.dot(e_theta));
-    const vec3d& directVector = e_z.multiply(accelerationCartesian_m.dot(e_z));
-    const vec3d& accelerationVector = tangantialVector.add(directVector);
+    const lampda::utils::vec3d& tangantialVector = e_theta.multiply(accelerationCartesian_m.dot(e_theta));
+    const lampda::utils::vec3d& directVector = e_z.multiply(accelerationCartesian_m.dot(e_z));
+    const lampda::utils::vec3d& accelerationVector = tangantialVector.add(directVector);
 
-    return vec2d(angularSpeedGain * accelerationVector.dot(e_theta) / static_cast<float>(cylinderRadius_m) *
-                         deltaTime_s,
-                 linearSpeedGain * accelerationVector.dot(e_z) * deltaTime_s);
+    return lampda::utils::vec2d(angularSpeedGain * accelerationVector.dot(e_theta) /
+                                        static_cast<float>(cylinderRadius_m) * deltaTime_s,
+                                linearSpeedGain * accelerationVector.dot(e_z) * deltaTime_s);
   }
 
   /**
@@ -91,7 +93,7 @@ struct Particle
    * \param[in] deltaTime_s Time since the latest update
    * \param[in] shouldContrain If true, will constrain the movement into the lamp body.
    */
-  void apply_acceleration(const vec3d& accelerationCartesian_m,
+  void apply_acceleration(const lampda::utils::vec3d& accelerationCartesian_m,
                           const float deltaTime_s,
                           const bool shouldContrain = true)
   {
@@ -100,25 +102,26 @@ struct Particle
     dampen_speed(speedDampening);
 
     // update speed
-    thetaSpeed_radS =
-            lmpd_constrain<float>(thetaSpeed_radS + speedIncrement.x, -maxAngularSpeed_radS, maxAngularSpeed_radS);
-    zSpeed_mS = lmpd_constrain<float>(zSpeed_mS + speedIncrement.y, -maxVerticalSpeed_mmS, maxVerticalSpeed_mmS);
+    thetaSpeed_radS = lampda::lmpd_constrain<float>(
+            thetaSpeed_radS + speedIncrement.x, -maxAngularSpeed_radS, maxAngularSpeed_radS);
+    zSpeed_mS =
+            lampda::lmpd_constrain<float>(zSpeed_mS + speedIncrement.y, -maxVerticalSpeed_mmS, maxVerticalSpeed_mmS);
 
-    static constexpr float angularUnit = LampTy::maxWidthFloat / c_TWO_PI;
+    static constexpr float angularUnit = LampTy::maxWidthFloat / lampda::c_TWO_PI;
     static constexpr float verticalUnit = LampTy::ledStripWidth_mm * 1.5f;
 
     // update position (limit speed to pixel unit per dt)
     const float angularPositionIncrement =
-            lmpd_constrain<float>(thetaSpeed_radS * deltaTime_s, -angularUnit, angularUnit);
+            lampda::lmpd_constrain<float>(thetaSpeed_radS * deltaTime_s, -angularUnit, angularUnit);
     const float verticalPositionIncrement =
-            lmpd_constrain<float>(zSpeed_mS * deltaTime_s, -verticalUnit, verticalUnit) * 1000.0;
+            lampda::lmpd_constrain<float>(zSpeed_mS * deltaTime_s, -verticalUnit, verticalUnit) * 1000.0;
 
     // update particle position
     z_mm += verticalPositionIncrement;
     theta_rad += angularPositionIncrement;
 
     // limit the derivation of the angle
-    theta_rad = wrap_angle(theta_rad);
+    theta_rad = lampda::wrap_angle(theta_rad);
 
     // constrain to the lamp body
     if (shouldContrain)
@@ -133,7 +136,7 @@ struct Particle
    * \param[in] deltaTime_s Time since the latest update
    * \param[in] shouldContrain If true, will constrain the movement into the lamp body.
    */
-  Particle simulate_after_acceleration(const vec3d& accelerationCartesian_m,
+  Particle simulate_after_acceleration(const lampda::utils::vec3d& accelerationCartesian_m,
                                        const float deltaTime_s,
                                        const bool shouldContrain = true) const
   {

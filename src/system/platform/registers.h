@@ -8,6 +8,11 @@
 
 #include <cstdint>
 
+namespace lampda {
+namespace platform {
+/// Define the interaction layer with the system specific registers
+namespace registers {
+
 /**
  * \brief Setup the software watchedog
  * \param[in] timeoutDelaySecond Delay after which the watchdog will reset the whole system.
@@ -52,5 +57,9 @@ extern float read_CPU_temperature_degreesC();
  * \param[in] wakeUpPin Pin id, defined by the system, that will be used to wake up again
  */
 extern void go_to_sleep(const int wakeUpPin);
+
+} // namespace registers
+} // namespace platform
+} // namespace lampda
 
 #endif

@@ -8,14 +8,14 @@
 #ifndef TCPM_DRIVER_H_
 #define TCPM_DRIVER_H_
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "../../../platform/i2c.h"
 #include "../../../platform/time.h"
-
-#include <stdint.h>
 
 // USB-C Stuff
 #include "../tcpm/tcpm.h"

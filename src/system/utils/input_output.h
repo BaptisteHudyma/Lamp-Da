@@ -6,7 +6,13 @@
 
 #include "src/system/platform/gpio.h"
 
+namespace lampda {
+namespace utils {
+
 // RGB indicator details
-constexpr DigitalPin::GPIO RedIndicator = DigitalPin::GPIO::gpio0;
-constexpr DigitalPin::GPIO GreenIndicator = DigitalPin::GPIO::gpio1;
-constexpr DigitalPin::GPIO BlueIndicator = DigitalPin::GPIO::gpio2;
+constexpr platform::gpio::DigitalPin::GPIO RedIndicator = platform::gpio::DigitalPin::GPIO::gpio0;
+constexpr platform::gpio::DigitalPin::GPIO GreenIndicator = platform::gpio::DigitalPin::GPIO::gpio1;
+constexpr platform::gpio::DigitalPin::GPIO BlueIndicator = platform::gpio::DigitalPin::GPIO::gpio2;
+
+} // namespace utils
+} // namespace lampda

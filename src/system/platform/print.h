@@ -13,6 +13,10 @@
 
 #include "src/system/utils/print.h"
 
+namespace lampda {
+namespace platform {
+/// Print and debug function to serial port
+
 /**
  * \brief call once at program start
  */
@@ -33,5 +37,8 @@ struct Inputs
 };
 
 extern Inputs read_inputs();
+
+} // namespace platform
+} // namespace lampda
 
 #endif

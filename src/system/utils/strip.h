@@ -26,6 +26,8 @@
 
 #include "src/user/constants.h"
 
+namespace lampda {
+
 static constexpr size_t stripNbBuffers = 2;
 static constexpr float baseCurrentConsumption = 0.4f;
 static constexpr float maxCurrentConsumption = 2.7f - baseCurrentConsumption;
@@ -126,9 +128,9 @@ public:
     setPixelColor(n, co);
   }
 
-  void setPixelColorXY(uint16_t x, uint16_t y, COLOR c) { setPixelColor(to_strip(x, y), c); }
+  void setPixelColorXY(uint16_t x, uint16_t y, COLOR c) { setPixelColor(lampda::utils::to_strip(x, y), c); }
 
-  void setPixelColorXY(uint16_t x, uint16_t y, uint32_t c) { setPixelColor(to_strip(x, y), c); }
+  void setPixelColorXY(uint16_t x, uint16_t y, uint32_t c) { setPixelColor(lampda::utils::to_strip(x, y), c); }
 
   void fadeToBlackBy(const uint8_t fadeBy)
   {
@@ -195,7 +197,7 @@ public:
   uint32_t getPixelColor(uint16_t n) const { return _colors[lmpd_constrain<uint16_t>(n, 0, LED_COUNT - 1)].color; }
   uint32_t getPixelColorXY(int16_t x, int16_t y) const
   {
-    return _colors[lmpd_constrain<uint16_t>(to_strip(x, y), 0, LED_COUNT - 1)].color;
+    return _colors[lmpd_constrain<uint16_t>(lampda::utils::to_strip(x, y), 0, LED_COUNT - 1)].color;
   }
 
   // Blends the specified color with the existing pixel color.
@@ -222,7 +224,7 @@ public:
 
   void addPixelColorXY(uint16_t x, uint16_t y, uint32_t color, bool fast = false)
   {
-    addPixelColor(to_strip(x, y), color, fast);
+    addPixelColor(lampda::utils::to_strip(x, y), color, fast);
   }
 
   uint32_t getRawPixelColor(uint16_t n) const { return Adafruit_NeoPixel::getPixelColor(n); }
@@ -254,7 +256,6 @@ public:
     memset(_buffers[index].data(), value, sizeof(BufferTy));
   }
 
-private:
   COLOR _colors[LED_COUNT];
 
   // buffers for computations
@@ -263,6 +264,8 @@ private:
 private:
   volatile bool hasSomeChanges;
 };
+
+} // namespace lampda
 
 #endif
 

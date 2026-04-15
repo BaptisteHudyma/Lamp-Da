@@ -17,6 +17,8 @@
 #include "src/system/platform/print.h"
 #include "src/system/platform/time.h"
 
+namespace lampda {
+namespace physical {
 namespace fileSystem {
 
 static constexpr auto FILENAME_USER = "/.lampda.par";
@@ -57,7 +59,7 @@ void setup()
 
   if (!InternalFS.begin())
   {
-    lampda_print("Failed to start file system");
+    platform::lampda_print("Failed to start file system");
   }
   else
   {
@@ -181,11 +183,11 @@ bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramM
   else
   {
     // error. the file should have been opened
-    lampda_print("file system error, reseting file format");
+    platform::lampda_print("file system error, reseting file format");
 
     // hardcore, format the entire file system
     InternalFS.format();
-    delay_ms(10);
+    platform::delay_ms(10);
   }
 
   if (not paramFile.isOpen())
@@ -205,7 +207,7 @@ bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramM
   else
   {
     // error. the file should have been opened
-    lampda_print("file creation failed, system parameters wont be stored");
+    platform::lampda_print("file creation failed, system parameters wont be stored");
     return false;
   }
 
@@ -296,7 +298,7 @@ void write_to_file()
   if (not systemParameterWriteSuccess)
   {
     // TODO: handle error
-    lampda_print("could not save system parameters");
+    platform::lampda_print("could not save system parameters");
   }
 }
 
@@ -402,7 +404,7 @@ void write_to_file()
   if (not userParameterWriteSuccess)
   {
     // TODO: handle error
-    lampda_print("could not save user parameters");
+    platform::lampda_print("could not save user parameters");
   }
 }
 
@@ -425,3 +427,5 @@ bool load_from_file()
 } // namespace user
 
 } // namespace fileSystem
+} // namespace physical
+} // namespace lampda

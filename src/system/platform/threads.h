@@ -7,6 +7,11 @@
 #define PLATFORM_THREADS_H
 
 #ifdef __cplusplus
+namespace lampda {
+namespace platform {
+/// Define tasks and threads specifics.
+namespace threads {
+
 extern "C" {
 #endif
 
@@ -93,6 +98,10 @@ extern "C" {
 
 #ifdef __cplusplus
 }
+
+} // namespace: threads
+} // namespace: platform
+} // namespace: lampda
 #endif
 
 #endif

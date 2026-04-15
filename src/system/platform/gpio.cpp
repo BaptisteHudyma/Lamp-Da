@@ -31,6 +31,10 @@
 #error "Firmware version missmatch, please update the base lampda_nrf52840 repository using the command 'make safe-install' "
 #endif
 
+namespace lampda {
+namespace platform {
+namespace gpio {
+
 // Register function to disconnect gpios
 void disconnect_pin(uint32_t ulPin)
 {
@@ -218,5 +222,9 @@ void DigitalPin::detach_callbacks() const
 }
 
 void DigitalPin::disconnect() const { disconnect_pin(mImpl->mDigitalPin); }
+
+} // namespace gpio
+} // namespace platform
+} // namespace lampda
 
 #endif

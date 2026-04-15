@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <cmath>
 
+namespace lampda {
+
 //
 // common to all lamp type
 //
@@ -129,5 +131,7 @@ static constexpr float circuitToLedZeroRotationZ_degrees = 88.0f;
 //
 // add your own lamp type below :)
 //
+
+} // namespace lampda
 
 #endif

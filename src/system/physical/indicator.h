@@ -8,6 +8,8 @@
 #include "src/system/utils/colorspace.h"
 #include <initializer_list>
 
+namespace lampda {
+namespace physical {
 /// Handle the RGB indicator display.
 namespace indicator {
 
@@ -69,5 +71,7 @@ inline bool blink(const uint32_t offFreq, const uint32_t onFreq, const utils::Co
 }
 
 } // namespace indicator
+} // namespace physical
+} // namespace lampda
 
 #endif

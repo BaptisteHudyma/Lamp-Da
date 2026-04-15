@@ -8,13 +8,14 @@
 #ifndef USB_PD_DRIVER_H_
 #define USB_PD_DRIVER_H_
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "../usb_pd.h"
 #include "../config.h"
-#include <stdint.h>
 
 #define PD_POWER_SUPPLY_TURN_ON_DELAY  250 * MSEC_US /* us */
 #define PD_POWER_SUPPLY_TURN_OFF_DELAY 100 * MSEC_US /* us */

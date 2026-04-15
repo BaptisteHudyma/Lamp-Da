@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <string>
 
+namespace lampda {
+namespace physical {
 /// Handle the interaction with the file system.
 namespace fileSystem {
 
@@ -107,5 +109,7 @@ bool load_from_file();
 } // namespace user
 
 } // namespace fileSystem
+} // namespace physical
+} // namespace lampda
 
 #endif

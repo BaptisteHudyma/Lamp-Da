@@ -10,6 +10,8 @@
 #include "src/system/platform/print.h"
 #include "src/system/platform/time.h"
 
+namespace lampda {
+namespace utils {
 namespace sunset {
 
 uint32_t sunsetTimerEndTime_s = 0;
@@ -26,16 +28,16 @@ const char* const sunset_taskName = "sunset";
 
 void signal_sunset_update()
 {
-  if (time_s() > sunsetTimerEndTime_s)
+  if (platform::time_s() > sunsetTimerEndTime_s)
   {
-    behavior::sunset::progress_update(1.0f);
+    logic::behavior::sunset::progress_update(1.0f);
     return;
   }
 
   // signal the progress change
   const float progress = lmpd_constrain<float>(
-          (sunsetTimerEndTime_s - time_s()) / static_cast<float>(brightnessRampDownTime_s), 0.0f, 1.0f);
-  behavior::sunset::progress_update(1.0f - progress);
+          (sunsetTimerEndTime_s - platform::time_s()) / static_cast<float>(brightnessRampDownTime_s), 0.0f, 1.0f);
+  logic::behavior::sunset::progress_update(1.0f - progress);
 }
 
 // sunset loop time to reduce brightness gradually
@@ -54,28 +56,28 @@ uint32_t get_sunset_loop_timing_ms()
 void sunset_process_loop()
 {
   // this thread runs very slowly
-  delay_ms(get_sunset_loop_timing_ms());
+  platform::delay_ms(get_sunset_loop_timing_ms());
 
   if (sunsetTimerEndTime_s == 0)
   {
     // sunset time not set, auto suspend
-    suspend_this_thread();
+    platform::threads::suspend_this_thread();
   }
   else
   {
     // less than N minutes, start to decrease brightness
-    if (time_s() + brightnessRampDownTime_s >= sunsetTimerEndTime_s)
+    if (platform::time_s() + brightnessRampDownTime_s >= sunsetTimerEndTime_s)
     {
       // signal the progress change
       signal_sunset_update();
 
       // decrease brightness every N seconds left
       const auto currentBrightness = brightness::get_brightness();
-      if (time_s() >= sunsetTimerEndTime_s)
+      if (platform::time_s() >= sunsetTimerEndTime_s)
       {
         brightness::update_brightness(0);
-        lampda_print("Shutdown with sunset timer");
-        behavior::set_power_off();
+        platform::lampda_print("Shutdown with sunset timer");
+        logic::behavior::set_power_off();
         cancel_timer();
         return;
       }
@@ -92,7 +94,7 @@ void sunset_process_loop()
 void init()
 {
   // start in suspended mode
-  start_suspended_thread(sunset_process_loop, sunset_taskName, 0, 1024);
+  platform::threads::start_suspended_thread(sunset_process_loop, sunset_taskName, 0, 1024);
 }
 
 void add_time_minutes(const uint8_t time_minutes)
@@ -104,16 +106,16 @@ void add_time_minutes(const uint8_t time_minutes)
   const uint32_t timeToAdd_s = min<uint8_t>(10, time_minutes) * 60;
   if (sunsetTimerEndTime_s == 0)
   {
-    lampda_print("sunset timer set");
-    sunsetTimerEndTime_s = time_s() + timeToAdd_s;
-    alerts::manager.raise(alerts::Type::SUNSET_TIMER_ENABLED);
+    platform::lampda_print("sunset timer set");
+    sunsetTimerEndTime_s = platform::time_s() + timeToAdd_s;
+    logic::alerts::manager.raise(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 
     // resume
-    resume_thread(sunset_taskName);
+    platform::threads::resume_thread(sunset_taskName);
   }
   else
   {
-    lampda_print("sunset timer add %d minutes", (timeToAdd_s / 60));
+    platform::lampda_print("sunset timer add %d minutes", (timeToAdd_s / 60));
     sunsetTimerEndTime_s += timeToAdd_s;
 
     // added some time, so signal update
@@ -124,13 +126,13 @@ void add_time_minutes(const uint8_t time_minutes)
 /// signal to the timer that some time must be added. Limited to 10 minutes
 void bump_timer()
 {
-  if (sunsetTimerEndTime_s == 0 or sunsetTimerEndTime_s < time_s())
+  if (sunsetTimerEndTime_s == 0 or sunsetTimerEndTime_s < platform::time_s())
     return;
 
   // if less than 3 minutes left, bump timer to N minutes
-  if (sunsetTimerEndTime_s - time_s() < brightnessRampDownTime_s)
+  if (sunsetTimerEndTime_s - platform::time_s() < brightnessRampDownTime_s)
   {
-    sunsetTimerEndTime_s = time_s() + (brightnessRampDownTime_min + 1) * 60;
+    sunsetTimerEndTime_s = platform::time_s() + (brightnessRampDownTime_min + 1) * 60;
   }
 }
 
@@ -139,10 +141,12 @@ void cancel_timer()
 {
   // release timer
   sunsetTimerEndTime_s = 0;
-  lampda_print("sunset timer cleared");
-  alerts::manager.clear(alerts::Type::SUNSET_TIMER_ENABLED);
+  platform::lampda_print("sunset timer cleared");
+  logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 }
 
 bool is_enabled() { return sunsetTimerEndTime_s > 0; }
 
 } // namespace sunset
+} // namespace utils
+} // namespace lampda

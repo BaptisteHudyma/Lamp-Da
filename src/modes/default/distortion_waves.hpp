@@ -44,12 +44,12 @@ struct DistortionWaveMode : public BasicMode
     const uint16_t a2 = a / 2;
     const uint16_t a3 = a / 3;
 
-    const uint16_t cx = beatsin8(10 - _speed, 0, ctx.lamp.maxWidth) * _scale;
-    const uint16_t cy = beatsin8(12 - _speed, 0, ctx.lamp.maxHeight - 1) * _scale;
-    const uint16_t cx1 = beatsin8(13 - _speed, 0, ctx.lamp.maxWidth) * _scale;
-    const uint16_t cy1 = beatsin8(15 - _speed, 0, ctx.lamp.maxHeight - 1) * _scale;
-    const uint16_t cx2 = beatsin8(17 - _speed, 0, ctx.lamp.maxWidth) * _scale;
-    const uint16_t cy2 = beatsin8(14 - _speed, 0, ctx.lamp.maxHeight - 1) * _scale;
+    const uint16_t cx = lampda::beatsin8(10 - _speed, 0, ctx.lamp.maxWidth) * _scale;
+    const uint16_t cy = lampda::beatsin8(12 - _speed, 0, ctx.lamp.maxHeight - 1) * _scale;
+    const uint16_t cx1 = lampda::beatsin8(13 - _speed, 0, ctx.lamp.maxWidth) * _scale;
+    const uint16_t cy1 = lampda::beatsin8(15 - _speed, 0, ctx.lamp.maxHeight - 1) * _scale;
+    const uint16_t cx2 = lampda::beatsin8(17 - _speed, 0, ctx.lamp.maxWidth) * _scale;
+    const uint16_t cy2 = lampda::beatsin8(14 - _speed, 0, ctx.lamp.maxHeight - 1) * _scale;
 
     uint16_t xoffs = 0;
     for (int x = 0; x <= ctx.lamp.maxWidth; x++)
@@ -61,9 +61,17 @@ struct DistortionWaveMode : public BasicMode
       {
         yoffs += _scale;
 
-        const uint8_t rdistort = cos8((cos8(((x << 3) + a) & 255) + cos8(((y << 3) - a2) & 255) + a3) & 255) >> 1;
-        const uint8_t gdistort = cos8((cos8(((x << 3) - a2) & 255) + cos8(((y << 3) + a3) & 255) + a + 32) & 255) >> 1;
-        const uint8_t bdistort = cos8((cos8(((x << 3) + a3) & 255) + cos8(((y << 3) - a) & 255) + a2 + 64) & 255) >> 1;
+        const uint8_t rdistort =
+                lampda::cos8((lampda::cos8(((x << 3) + a) & 255) + lampda::cos8(((y << 3) - a2) & 255) + a3) & 255) >>
+                1;
+        const uint8_t gdistort =
+                lampda::cos8((lampda::cos8(((x << 3) - a2) & 255) + lampda::cos8(((y << 3) + a3) & 255) + a + 32) &
+                             255) >>
+                1;
+        const uint8_t bdistort =
+                lampda::cos8((lampda::cos8(((x << 3) + a3) & 255) + lampda::cos8(((y << 3) - a) & 255) + a2 + 64) &
+                             255) >>
+                1;
 
         const uint8_t red = rdistort + w * (a - (((xoffs - cx) * (xoffs - cx) + (yoffs - cy) * (yoffs - cy)) >> 7));
         const uint8_t green =
@@ -75,11 +83,11 @@ struct DistortionWaveMode : public BasicMode
                                  y,
                                  colors::fromRGB(
                                          //
-                                         colors::gamma8(cos8(red)),
+                                         colors::gamma8(lampda::cos8(red)),
                                          //
-                                         colors::gamma8(cos8(green)),
+                                         colors::gamma8(lampda::cos8(green)),
                                          //
-                                         colors::gamma8(cos8(blue))
+                                         colors::gamma8(lampda::cos8(blue))
                                          //
                                          ));
       }

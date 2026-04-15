@@ -14,6 +14,11 @@ bool shouldStopThreads = false;
 
 } // namespace mock_registers
 
+namespace lampda {
+namespace platform {
+/// Define the interaction layer with the system specific registers
+namespace registers {
+
 // setup the software watchedog
 void setup_watchdog(const uint32_t timeoutDelaySecond) {}
 
@@ -47,3 +52,7 @@ bool is_started_from_interrupt() { return true; }
 float read_CPU_temperature_degreesC() { return mock_registers::cpuTemperature; }
 
 void go_to_sleep(const int wakeUpPin) { mock_registers::isDeepSleep = true; };
+
+} // namespace registers
+} // namespace platform
+} // namespace lampda

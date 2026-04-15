@@ -18,14 +18,14 @@ namespace modes::imu {
 template<int temp = 0> struct ImuEventTy
 {
   /// last reading of the IMU
-  ::imu::Reading lastReading;
+  lampda::physical::imu::Reading lastReading;
 
   /// Reset the IMU events.
   /// Should be called before any use
   void reset(auto& ctx)
   {
     // reset filter
-    ::imu::get_filtered_reading(true);
+    lampda::physical::imu::get_filtered_reading(true);
 
     // reset particles
     particuleSystem.reset();
@@ -36,7 +36,7 @@ template<int temp = 0> struct ImuEventTy
   void update(auto& ctx)
   {
     //
-    lastReading = ::imu::get_filtered_reading(false);
+    lastReading = lampda::physical::imu::get_filtered_reading(false);
   }
 
   /// ALL IMU ANIMATIONS SHARE THIS PARTICLE SYSTEM.

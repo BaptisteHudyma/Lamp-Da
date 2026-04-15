@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <array>
 
+namespace lampda {
 namespace utils {
 
 /*!
@@ -180,4 +181,5 @@ uint32_t hue_to_rgb_sinus(const uint16_t angle)
   return colorArray.color;
 }
 
-}; // namespace utils
+} // namespace utils
+} // namespace lampda

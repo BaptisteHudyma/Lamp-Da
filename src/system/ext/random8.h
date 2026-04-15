@@ -1,6 +1,8 @@
 #ifndef __INC_LIB8TION_RANDOM_H
 #define __INC_LIB8TION_RANDOM_H
 
+namespace lampda {
+
 /// Define a LIB8TION member function as static inline with an "unused"
 /// attribute
 #define LIB8STATIC __attribute__((unused)) static inline
@@ -109,5 +111,7 @@ LIB8STATIC_ALWAYS_INLINE void random16_add_entropy(uint16_t entropy) { rand16see
 
 /// @} Random
 /// @} lib8tion
+
+} // namespace lampda
 
 #endif

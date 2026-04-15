@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+namespace lampda {
+namespace utils {
 /// Sunset timer handler
 namespace sunset {
 
@@ -26,5 +28,7 @@ void cancel_timer();
 bool is_enabled();
 
 } // namespace sunset
+} // namespace utils
+} // namespace lampda
 
 #endif

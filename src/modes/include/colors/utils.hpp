@@ -131,13 +131,15 @@ template<bool isVideoMode = false> static uint32_t fade(uint32_t inputColor, uin
 
   if (isVideoMode)
   {
-    res = fromRGB(scale8_video(input_rgb.r, fadeAmount),
-                  scale8_video(input_rgb.g, fadeAmount),
-                  scale8_video(input_rgb.b, fadeAmount));
+    res = fromRGB(lampda::scale8_video(input_rgb.r, fadeAmount),
+                  lampda::scale8_video(input_rgb.g, fadeAmount),
+                  lampda::scale8_video(input_rgb.b, fadeAmount));
   }
   else
   {
-    res = fromRGB(scale8(input_rgb.r, fadeAmount), scale8(input_rgb.g, fadeAmount), scale8(input_rgb.b, fadeAmount));
+    res = fromRGB(lampda::scale8(input_rgb.r, fadeAmount),
+                  lampda::scale8(input_rgb.g, fadeAmount),
+                  lampda::scale8(input_rgb.b, fadeAmount));
   }
   return res;
 }
@@ -150,8 +152,9 @@ template<bool isFast = false> uint32_t add(uint32_t c1, uint32_t c2)
 
   if (isFast)
   {
-    return fromRGB(
-            qadd8(input1_rgb.r, input2_rgb.r), qadd8(input1_rgb.g, input2_rgb.g), qadd8(input1_rgb.b, input2_rgb.b));
+    return fromRGB(lampda::qadd8(input1_rgb.r, input2_rgb.r),
+                   lampda::qadd8(input1_rgb.g, input2_rgb.g),
+                   lampda::qadd8(input1_rgb.b, input2_rgb.b));
   }
   else
   {

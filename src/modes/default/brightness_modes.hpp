@@ -25,17 +25,17 @@ using StaticLightOnly = GroupFor<StaticLightMode>;
 /// Simple pulse every second
 struct OnePulse : public BasicMode
 {
-  static constexpr uint32_t periodMs = 1000;     ///< lenght of a pulse, in milliseconds
-  static constexpr uint32_t pulseSizeMs = 100;   ///< period of the animation, in milliseconds
-  static constexpr brightness_t minScaling = 50; ///< scaling of the brightness of a pulse
-  static constexpr float scaleFactor = 1.40;     ///< scale of the brigthness
+  static constexpr uint32_t periodMs = 1000;             ///< lenght of a pulse, in milliseconds
+  static constexpr uint32_t pulseSizeMs = 100;           ///< period of the animation, in milliseconds
+  static constexpr lampda::brightness_t minScaling = 50; ///< scaling of the brightness of a pulse
+  static constexpr float scaleFactor = 1.40;             ///< scale of the brigthness
 
   static constexpr void loop(auto& ctx)
   {
     auto& lamp = ctx.lamp;
 
-    brightness_t base = lamp.getSavedBrightness();
-    brightness_t scaled = max<brightness_t>(base * scaleFactor, base + minScaling);
+    lampda::brightness_t base = lamp.getSavedBrightness();
+    lampda::brightness_t scaled = std::max<lampda::brightness_t>(base * scaleFactor, base + minScaling);
 
     if (scaled > lamp.getMaxBrightness())
       lamp.jumpBrightness(lamp.getMaxBrightness() / scaleFactor);
@@ -53,15 +53,15 @@ template<size_t N> struct ManyPulse : public BasicMode
 {
   static constexpr uint32_t pulseSizeMs = 100;                     ///< lenght of a pulse, in milliseconds
   static constexpr uint32_t periodMs = 1000 + N * pulseSizeMs * 2; ///< period of the animation, in milliseconds
-  static constexpr brightness_t minScaling = 50;                   ///< scaling of the brightness of a pulse
+  static constexpr lampda::brightness_t minScaling = 50;           ///< scaling of the brightness of a pulse
   static constexpr float scaleFactor = 1.40;                       ///< scale of the brigthness
 
   static constexpr void loop(auto& ctx)
   {
     auto& lamp = ctx.lamp;
 
-    brightness_t base = lamp.getSavedBrightness();
-    brightness_t scaled = max<brightness_t>(base * scaleFactor, base + minScaling);
+    lampda::brightness_t base = lamp.getSavedBrightness();
+    lampda::brightness_t scaled = std::max<lampda::brightness_t>(base * scaleFactor, base + minScaling);
 
     if (scaled > lamp.getMaxBrightness())
       lamp.jumpBrightness(lamp.getMaxBrightness() / scaleFactor);
@@ -123,15 +123,15 @@ struct Candle : public BasicMode
     const float brightnessCorrection = maxBrightness / 255.0;
 
     // limit max brightness
-    const brightness_t base = min<brightness_t>(
+    const lampda::brightness_t base = std::min<lampda::brightness_t>(
             lamp.getSavedBrightness(),
             maxBrightness - std::min<int>(maxBrightness, (CANDLE_AMPLITUDE + 15) * brightnessCorrection));
 
     // 3-oscillator synth for a relatively organic pattern
-    const uint8_t add = ((triwave8(ctx.state.candle_wave1) * ctx.state.candle_wave1_depth) >> 8) +
-                        ((triwave8(ctx.state.candle_wave2) * ctx.state.candle_wave2_depth) >> 8) +
-                        ((triwave8(ctx.state.candle_wave3) * ctx.state.candle_wave3_depth) >> 8);
-    const brightness_t brightness = base + add * brightnessCorrection;
+    const uint8_t add = ((lampda::triwave8(ctx.state.candle_wave1) * ctx.state.candle_wave1_depth) >> 8) +
+                        ((lampda::triwave8(ctx.state.candle_wave2) * ctx.state.candle_wave2_depth) >> 8) +
+                        ((lampda::triwave8(ctx.state.candle_wave3) * ctx.state.candle_wave3_depth) >> 8);
+    const lampda::brightness_t brightness = base + add * brightnessCorrection;
 
     // update brightness
     lamp.setBrightness(brightness);
@@ -139,33 +139,33 @@ struct Candle : public BasicMode
     // update candle parameters
     // wave1: slow random LFO
     // TODO: make wave slower and more erratic?
-    ctx.state.candle_wave1 += random8() & 1;
+    ctx.state.candle_wave1 += lampda::random8() & 1;
     // wave2: medium-speed erratic LFO
     ctx.state.candle_wave2 += ctx.state.candle_wave2_speed;
     // wave3: erratic fast wave
-    ctx.state.candle_wave3 += random8() % 37;
+    ctx.state.candle_wave3 += lampda::random8() % 37;
     // S&H on wave2 frequency to make it more erratic
-    if ((random8() & 0b00111111) == 0)
-      ctx.state.candle_wave2_speed = random8() % 13;
+    if ((lampda::random8() & 0b00111111) == 0)
+      ctx.state.candle_wave2_speed = lampda::random8() % 13;
     // downward sawtooth on wave2 depth to simulate stabilizing
-    if ((ctx.state.candle_wave2_depth > 0) && ((random8() & 0b00111111) == 0))
+    if ((ctx.state.candle_wave2_depth > 0) && ((lampda::random8() & 0b00111111) == 0))
       ctx.state.candle_wave2_depth--;
     // random sawtooth retrigger
-    if (random8() == 0)
+    if (lampda::random8() == 0)
     {
       // random amplitude
-      // candle_wave2_depth = 2 + (random8() % ((CANDLE_WAVE2_MAXDEPTH * CANDLE_AMPLITUDE / 100) - 2));
-      ctx.state.candle_wave2_depth = random8() % (CANDLE_WAVE2_MAXDEPTH * CANDLE_AMPLITUDE / 100);
+      // candle_wave2_depth = 2 + (lampda::random8() % ((CANDLE_WAVE2_MAXDEPTH * CANDLE_AMPLITUDE / 100) - 2));
+      ctx.state.candle_wave2_depth = lampda::random8() % (CANDLE_WAVE2_MAXDEPTH * CANDLE_AMPLITUDE / 100);
       // candle_wave3_depth = 5;
       ctx.state.candle_wave2 = 0;
     }
     // downward sawtooth on wave3 depth to simulate stabilizing
-    if ((ctx.state.candle_wave3_depth > 2) && ((random8() & 0b00011111) == 0))
+    if ((ctx.state.candle_wave3_depth > 2) && ((lampda::random8() & 0b00011111) == 0))
       ctx.state.candle_wave3_depth--;
-    if ((random8() & 0b01111111) == 0)
+    if ((lampda::random8() & 0b01111111) == 0)
       // random amplitude
-      // candle_wave3_depth = 2 + (random8() % ((CANDLE_WAVE3_MAXDEPTH * CANDLE_AMPLITUDE / 100) - 2));
-      ctx.state.candle_wave3_depth = random8() % (CANDLE_WAVE3_MAXDEPTH * CANDLE_AMPLITUDE / 100);
+      // candle_wave3_depth = 2 + (lampda::random8() % ((CANDLE_WAVE3_MAXDEPTH * CANDLE_AMPLITUDE / 100) - 2));
+      ctx.state.candle_wave3_depth = lampda::random8() % (CANDLE_WAVE3_MAXDEPTH * CANDLE_AMPLITUDE / 100);
   }
 };
 
@@ -201,7 +201,7 @@ struct StroboscopeMode : public BasicMode
   /// User ramp controls the strob frequency
   static void custom_ramp_update(auto& ctx, uint8_t rampValue)
   {
-    ctx.state.pulseDuration = lmpd_map<uint32_t>(rampValue, 0, 255, stroboMinFreq, stroboMaxFreq);
+    ctx.state.pulseDuration = lampda::lmpd_map<uint32_t>(rampValue, 0, 255, stroboMinFreq, stroboMaxFreq);
   }
 
   static void loop(auto& ctx)
@@ -234,7 +234,7 @@ struct LightningMode : public BasicMode
     /// Is off and waiting to turn on
     bool isWaitingTurnOn;
     /// last brigthness before going dark
-    brightness_t lastBrightness;
+    lampda::brightness_t lastBrightness;
     /// Brigthness ramp down index
     uint32_t stepdown;
   };
@@ -248,7 +248,7 @@ struct LightningMode : public BasicMode
   }
 
   /// If user update the brighness, do not update the animation
-  static void brightness_update(auto& ctx, brightness_t brightness)
+  static void brightness_update(auto& ctx, lampda::brightness_t brightness)
   {
     auto& lamp = ctx.lamp;
     lamp.cancel_blip();
@@ -268,25 +268,25 @@ struct LightningMode : public BasicMode
 
     if (not ctx.is_bliping())
     {
-      brightness_t currentBrightness = ctx.state.lastBrightness;
+      lampda::brightness_t currentBrightness = ctx.state.lastBrightness;
 
       // lampe is still on, decrease brightess
       if (ctx.state.isWaitingTurnOn)
       {
-        const brightness_t savedBrightness = lamp.getSavedBrightness();
+        const lampda::brightness_t savedBrightness = lamp.getSavedBrightness();
 
         // from anduril
-        uint8_t n_brightness = 1 << (random8() % 7); // 1, 2, 4, 8, 16, 32, 64
-        n_brightness += 1 << (random8() % 5);        // 2 to 80 now
-        n_brightness += random8() % n_brightness;    // 2 to 159 now (w/ low bias)
+        uint8_t n_brightness = 1 << (lampda::random8() % 7); // 1, 2, 4, 8, 16, 32, 64
+        n_brightness += 1 << (lampda::random8() % 5);        // 2 to 80 now
+        n_brightness += lampda::random8() % n_brightness;    // 2 to 159 now (w/ low bias)
 
-        const brightness_t newBrightness =
-                min<brightness_t>(savedBrightness, lmpd_map<brightness_t>(n_brightness, 2, 159, 0, savedBrightness));
+        const lampda::brightness_t newBrightness = std::min<lampda::brightness_t>(
+                savedBrightness, lampda::lmpd_map<lampda::brightness_t>(n_brightness, 2, 159, 0, savedBrightness));
         // prepare next brightness
         lamp.tempBrightness(newBrightness);
         ctx.state.lastBrightness = newBrightness;
 
-        ctx.state.stepdown = max<uint32_t>(1, newBrightness >> 4);
+        ctx.state.stepdown = std::max<uint32_t>(1, newBrightness >> 4);
 
         ctx.state.isWaitingTurnOn = false;
       }
@@ -295,7 +295,7 @@ struct LightningMode : public BasicMode
         // bleed flash down
         if (ctx.state.stepdown > 0)
         {
-          if (random8() & 0x11 != 0)
+          if (lampda::random8() & 0x11 != 0)
           {
             currentBrightness >>= 1;
           }
@@ -319,8 +319,8 @@ struct LightningMode : public BasicMode
 
         // from anduril
         // for a random amount of time between 1ms and 8192ms
-        uint32_t rand_time = 1 << (random8() % 13);
-        rand_time += random8() % rand_time;
+        uint32_t rand_time = 1 << (lampda::random8() % 13);
+        rand_time += lampda::random8() % rand_time;
 
         // turn off for a time
         ctx.blip(rand_time);

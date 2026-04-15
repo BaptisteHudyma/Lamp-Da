@@ -6,9 +6,12 @@
 #define PHYSICAL_SOUND_H
 
 #include "src/system/platform/pdm_handle.h"
+
 #include <cstdint>
 #include "src/system/utils/fft.h"
 
+namespace lampda {
+namespace physical {
 /// Handle the microphone physical interface
 namespace microphone {
 
@@ -36,7 +39,7 @@ struct SoundStruct
   bool isDataValid = false;
 
   /// Size fo the audio sample
-  static constexpr auto SAMPLE_SIZE = PdmData::SAMPLE_SIZE;
+  static constexpr auto SAMPLE_SIZE = platform::microphone::PdmData::SAMPLE_SIZE;
 
   /// raw audio data
   std::array<int16_t, SAMPLE_SIZE> data;
@@ -61,7 +64,7 @@ struct SoundStruct
   static constexpr uint8_t numberOfFFtChanels = 24;
 
   /// Return the FFT resolution of a single FFT bin in Hertz
-  static constexpr float get_fft_resolution_Hz() { return SAMPLE_RATE / static_cast<float>(SAMPLE_SIZE); }
+  static constexpr float get_fft_resolution_Hz() { return utils::fft::SAMPLE_RATE / static_cast<float>(SAMPLE_SIZE); }
 
   // FFT results
 
@@ -96,5 +99,7 @@ void disable_after_non_use();
 SoundStruct& get_sound_characteristics();
 
 } // namespace microphone
+} // namespace physical
+} // namespace lampda
 
 #endif

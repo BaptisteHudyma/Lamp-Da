@@ -8,6 +8,8 @@
 
 #include <PDM.h>
 
+namespace lampda {
+namespace platform {
 namespace microphone {
 
 PdmData lastData;
@@ -17,7 +19,7 @@ PdmData lastData;
 void on_PDM_data()
 {
   lastData.sampleRead = 0;
-  const auto newTime = time_us();
+  const auto newTime = platform::time_us();
 
   lastData.sampleDuration_us = newTime - lastData.sampleTime_us;
   lastData.sampleTime_us = newTime;
@@ -70,7 +72,8 @@ bool start()
   // buffer size shall be 2x the data size
   static_assert(PdmData::SAMPLE_SIZE >= 128 && (PdmData::SAMPLE_SIZE & (PdmData::SAMPLE_SIZE - 1)) == 0,
                 "PdmData::SAMPLE_SIZE must be a power of two");
-  static_assert(SAMPLE_RATE == 41667 || SAMPLE_RATE == 16000, "PDM application only allow values 41667 or 16000");
+  static_assert(utils::fft::SAMPLE_RATE == 41667 || utils::fft::SAMPLE_RATE == 16000,
+                "PDM application only allow values 41667 or 16000");
 
   PDM.setBufferSize(PdmData::SAMPLE_SIZE * 2);
   PDM.onReceive(on_PDM_data);
@@ -78,7 +81,7 @@ bool start()
   // initialize PDM with:
   // - one channel (mono mode)
   // - a sample rate (allowed values are 16000 or 41667)
-  if (!PDM.begin(1, SAMPLE_RATE))
+  if (!PDM.begin(1, utils::fft::SAMPLE_RATE))
   {
     return false;
   }
@@ -95,4 +98,7 @@ void stop() { PDM.end(); }
 } // namespace _private
 
 } // namespace microphone
+} // namespace platform
+} // namespace lampda
+
 #endif

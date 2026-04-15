@@ -3,10 +3,9 @@
 #include <memory>
 
 #include "src/system/platform/pdm_handle.h"
-
-#include "src/system/utils/utils.h"
 #include "src/system/platform/time.h"
 
+#include "src/system/utils/utils.h"
 #include "src/system/utils/fft.h"
 
 #include <SFML/Graphics/PrimitiveType.hpp>
@@ -26,22 +25,22 @@ class LevelRecorder : public sf::SoundRecorder
     if (buffers.size() > 32)
       buffers.clear();
 
-    const size_t samplePerIteration = sampleCount / microphone::PdmData::SAMPLE_SIZE;
-    const uint64_t newTime = time_us();
+    const size_t samplePerIteration = sampleCount / lampda::platform::microphone::PdmData::SAMPLE_SIZE;
+    const uint64_t newTime = lampda::platform::time_us();
     const uint64_t sampleDuration = (newTime - sampleTime_us) / samplePerIteration;
     sampleTime_us = newTime;
 
     for (size_t I = 0; I < samplePerIteration; I++)
     {
-      microphone::PdmData newData;
+      lampda::platform::microphone::PdmData newData;
       newData.sampleTime_us = newTime + sampleDuration * I;
       newData.sampleDuration_us = sampleDuration;
 
       newData.sampleRead = 0;
       size_t i = 0;
-      for (; i < microphone::PdmData::SAMPLE_SIZE; i++)
+      for (; i < lampda::platform::microphone::PdmData::SAMPLE_SIZE; i++)
       {
-        size_t index = I * microphone::PdmData::SAMPLE_SIZE + i;
+        size_t index = I * lampda::platform::microphone::PdmData::SAMPLE_SIZE + i;
         if (index >= sampleCount)
           break;
 
@@ -58,17 +57,20 @@ class LevelRecorder : public sf::SoundRecorder
 
 public:
   // sound goes out slowly
-  std::deque<microphone::PdmData> buffers;
+  std::deque<::lampda::platform::microphone::PdmData> buffers;
   uint64_t sampleTime_us;
 
   ~LevelRecorder() { stop(); }
 };
 std::unique_ptr<LevelRecorder> recorder;
 
+namespace lampda {
+
+namespace platform {
 namespace microphone {
 namespace _private {
 
-PdmData get()
+platform::microphone::PdmData get()
 {
   // safety
   if (recorder->buffers.size() > 32)
@@ -94,7 +96,7 @@ bool start()
   if (!recorder)
     recorder = std::make_unique<LevelRecorder>();
 
-  return recorder->start(SAMPLE_RATE);
+  return recorder->start(utils::fft::SAMPLE_RATE);
 }
 
 void stop()
@@ -108,3 +110,5 @@ void stop()
 
 } // namespace _private
 } // namespace microphone
+} // namespace platform
+} // namespace lampda

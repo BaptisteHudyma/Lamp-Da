@@ -2,6 +2,8 @@
 #include <gtest/gtest.h>
 #include "src/system/utils/vector_math.h"
 
+namespace lampda::utils {
+
 TEST(test_vector2d, init)
 {
   vec2d vec1;
@@ -970,3 +972,5 @@ TEST(test_rotation_matrix_XYZ, create_90_rot_Z)
   EXPECT_NEAR(mat2.row3().y, 0.0f, 0.00001);
   EXPECT_NEAR(mat2.row3().z, 1.0f, 0.00001);
 }
+
+} // namespace lampda::utils

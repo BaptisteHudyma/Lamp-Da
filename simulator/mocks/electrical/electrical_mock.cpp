@@ -11,12 +11,12 @@
 #include <atomic>
 
 namespace __private {
-DigitalPin enableVbusGate(DigitalPin::GPIO::Output_EnableVbusGate);
-DigitalPin enablePowerGate(DigitalPin::GPIO::Output_EnableOutputGate);
+lampda::platform::gpio::DigitalPin enableVbusGate(lampda::platform::gpio::DigitalPin::GPIO::Output_EnableVbusGate);
+lampda::platform::gpio::DigitalPin enablePowerGate(lampda::platform::gpio::DigitalPin::GPIO::Output_EnableOutputGate);
 
-DigitalPin dischargeVbus(DigitalPin::GPIO::Output_DischargeVbus);
-DigitalPin vbusDirection(DigitalPin::GPIO::Output_VbusDirection);
-DigitalPin fastRoleSwap(DigitalPin::GPIO::Output_VbusFastRoleSwap);
+lampda::platform::gpio::DigitalPin dischargeVbus(lampda::platform::gpio::DigitalPin::GPIO::Output_DischargeVbus);
+lampda::platform::gpio::DigitalPin vbusDirection(lampda::platform::gpio::DigitalPin::GPIO::Output_VbusDirection);
+lampda::platform::gpio::DigitalPin fastRoleSwap(lampda::platform::gpio::DigitalPin::GPIO::Output_VbusFastRoleSwap);
 } // namespace __private
 
 std::atomic<bool> canRunElectricalSimuThread = false;
@@ -41,17 +41,17 @@ void start_electrical_mock()
         if (__private::vbusDirection.is_high())
         {
           mock_electrical::vbusVoltage =
-                  max<float>(mock_electrical::powerRailVoltage, mock_electrical::inputVbusVoltage);
+                  lampda::max<float>(mock_electrical::powerRailVoltage, mock_electrical::inputVbusVoltage);
         }
 
         // max of the two voltages
         mock_electrical::powerRailVoltage =
-                std::max<float>(mock_electrical::chargeOtgOutput, mock_electrical::inputVbusVoltage);
+                lampda::max<float>(mock_electrical::chargeOtgOutput, mock_electrical::inputVbusVoltage);
       }
       else
       {
         // gate open, no flow
-        mock_electrical::vbusVoltage = max<float>(0.0f, mock_electrical::inputVbusVoltage);
+        mock_electrical::vbusVoltage = lampda::max<float>(0.0f, mock_electrical::inputVbusVoltage);
         mock_electrical::powerRailVoltage = mock_electrical::chargeOtgOutput;
       }
 
@@ -59,14 +59,14 @@ void start_electrical_mock()
       if (__private::enablePowerGate.is_high())
       {
         // power can go to output
-        mock_electrical::outputVoltage = max<float>(0.0f, mock_electrical::powerRailVoltage);
+        mock_electrical::outputVoltage = lampda::max<float>(0.0f, mock_electrical::powerRailVoltage);
       }
       else
       {
         mock_electrical::outputVoltage = 0;
       }
 
-      delay_ms(1);
+      lampda::platform::delay_ms(1);
     }
   });
 }

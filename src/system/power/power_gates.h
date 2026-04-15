@@ -10,6 +10,8 @@
 
 #include <cstdint>
 
+namespace lampda {
+namespace power {
 /// Handle the two main power gates : Output and USB.
 namespace powergates {
 
@@ -72,5 +74,7 @@ void disable_gates();
 bool are_gate_disabled();
 
 } // namespace powergates
+} // namespace power
+} // namespace lampda
 
 #endif

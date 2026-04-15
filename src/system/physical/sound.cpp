@@ -6,11 +6,14 @@
 
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
+#include "src/system/platform/pdm_handle.h"
 #include "src/system/platform/print.h"
 
+namespace lampda {
+namespace physical {
 namespace microphone {
 
-FftAnalyzer<PdmData::SAMPLE_SIZE, SoundStruct::numberOfFFtChanels, float> fftAnalyzer;
+utils::fft::FftAnalyzer<platform::microphone::PdmData::SAMPLE_SIZE, SoundStruct::numberOfFFtChanels, float> fftAnalyzer;
 
 inline float square(const float v) { return v * v; }
 
@@ -49,12 +52,12 @@ static constexpr float desiredoutputRMS = desiredoutput * desiredoutput;
 
 bool enable()
 {
-  lastMicFunctionCall = time_ms();
+  lastMicFunctionCall = platform::time_ms();
   if (isStarted)
     return true;
 
   autoGain = 1.0f;
-  isStarted = _private::start();
+  isStarted = platform::microphone::_private::start();
   return isStarted;
 }
 
@@ -64,29 +67,29 @@ void disable()
     return;
 
   autoGain = 1.0f;
-  _private::stop();
+  platform::microphone::_private::stop();
   fftAnalyzer.reset();
   isStarted = false;
 }
 
 void disable_after_non_use()
 {
-  if (isStarted and (time_ms() - lastMicFunctionCall > 1000.0))
+  if (isStarted and (platform::time_ms() - lastMicFunctionCall > 1000.0))
   {
     // disable microphone if last reading is old
     disable();
-    lampda_print("mic stop: non use");
+    platform::lampda_print("mic stop: non use");
   }
 }
 
 SoundStruct soundStruct;
 
-SoundStruct& process_sound_data(const PdmData& data)
+SoundStruct& process_sound_data(const platform::microphone::PdmData& data)
 {
   soundStruct.isDataValid = false;
   soundStruct.isFFTValid = false;
   // validity checks
-  if (not data.is_valid() or data.sampleRead <= 0 or data.sampleRead > PdmData::SAMPLE_SIZE)
+  if (not data.is_valid() or data.sampleRead <= 0 or data.sampleRead > platform::microphone::PdmData::SAMPLE_SIZE)
   {
     return soundStruct;
   }
@@ -104,12 +107,12 @@ SoundStruct& process_sound_data(const PdmData& data)
     fftAnalyzer.set_data(dataP, i);
   }
   // fill the rest with zeros in FFT
-  for (uint16_t i = data.sampleRead; i < PdmData::SAMPLE_SIZE; i++)
+  for (uint16_t i = data.sampleRead; i < platform::microphone::PdmData::SAMPLE_SIZE; i++)
     fftAnalyzer.set_data(0, i);
   const float dataAverage = dataMedian / static_cast<float>(data.sampleRead);
 
   // if average is greater than sound baseline, update the gain
-  const bool shouldUpdateGain = (dataAverage > gainUpdateBaseline);
+  const bool shouldUpdateGain = (dataAverage > platform::microphone::gainUpdateBaseline);
 
   // decay gain to 1.0
   if (not shouldUpdateGain)
@@ -170,7 +173,9 @@ SoundStruct& get_sound_characteristics()
     return soundStruct;
   }
 
-  return process_sound_data(_private::get());
+  return process_sound_data(platform::microphone::_private::get());
 }
 
 } // namespace microphone
+} // namespace physical
+} // namespace lampda

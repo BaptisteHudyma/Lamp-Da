@@ -14,6 +14,10 @@
 
 #include "src/system/utils/utils.h"
 
+namespace lampda {
+namespace utils {
+namespace fft {
+
 constexpr int SAMPLE_RATE = 16000; ///< Base sample rate in Hz - standard.
 
 /**
@@ -186,3 +190,7 @@ public:
     }
   } // run_fast_fourrier_transform()
 };
+
+} // namespace fft
+} // namespace utils
+} // namespace lampda

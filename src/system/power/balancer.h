@@ -10,6 +10,9 @@
 
 #include "src/system/utils/constants.h"
 
+namespace lampda {
+namespace power {
+
 /// Handles the battery balancing process
 namespace balancer {
 
@@ -59,5 +62,7 @@ void enable_balancing(bool enable);
 void go_to_sleep();
 
 } // namespace balancer
+} // namespace power
+} // namespace lampda
 
 #endif

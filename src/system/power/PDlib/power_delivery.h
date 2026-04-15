@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <vector>
 
+namespace lampda {
+namespace power {
 /// Handles the power delivery capabilities (USB-PD).
 namespace powerDelivery {
 
@@ -104,5 +106,7 @@ struct OTGParameters
 OTGParameters get_otg_parameters();
 
 } // namespace powerDelivery
+} // namespace power
+} // namespace lampda
 
 #endif

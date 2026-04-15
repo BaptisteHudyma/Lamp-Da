@@ -11,6 +11,8 @@
 #include <cstdint>
 #include <string>
 
+namespace lampda {
+namespace power {
 /// Handles the battery charging processes, and power output control.
 namespace charger {
 
@@ -116,5 +118,7 @@ bool is_vbus_signal_detected();
 Charger_t get_state();
 
 } // namespace charger
+} // namespace power
+} // namespace lampda
 
 #endif // CHARGER_H

@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <string>
 
+namespace lampda {
+namespace power {
 /// Handles the battery charging processes.
 namespace charger {
 
@@ -159,5 +161,7 @@ Battery get_battery();
 
 } // namespace drivers
 } // namespace charger
+} // namespace power
+} // namespace lampda
 
 #endif

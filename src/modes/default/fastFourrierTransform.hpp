@@ -27,18 +27,22 @@ struct FastFourrierTransformMode : public BasicMode
     const float maxFftVal = state.soundEvent.maxAmplitude;
 
     // adjust for volume
-    const float maxLevel = lmpd_map<float>(
-            state.soundEvent.level, microphone::silenceLevelDb * 0.4, microphone::highLevelDb, 0.0, 1.0);
-    const float maxDisplaylevel = max<float>(2, lmpd_constrain<float>(maxLevel * rows, 2, rows));
+    const float maxLevel = lampda::lmpd_map<float>(state.soundEvent.level,
+                                                   lampda::physical::microphone::silenceLevelDb * 0.4,
+                                                   lampda::physical::microphone::highLevelDb,
+                                                   0.0,
+                                                   1.0);
+    const float maxDisplaylevel = std::max<float>(2, lampda::lmpd_constrain<float>(maxLevel * rows, 2, rows));
 
     for (uint8_t x = 0; x < cols; ++x)
     {
-      const uint8_t mappedX = lmpd_map<uint8_t>(x, 0, cols, 0, microphone::SoundStruct::numberOfFFtChanels - 1);
-      const uint8_t mappedY = lmpd_constrain<uint8_t>(
-              lmpd_map<uint8_t>(fft_log[mappedX], 0, maxFftVal, 2, maxDisplaylevel), 2, maxDisplaylevel);
+      const uint8_t mappedX = lampda::lmpd_map<uint8_t>(
+              x, 0, cols, 0, lampda::physical::microphone::SoundStruct::numberOfFFtChanels - 1);
+      const uint8_t mappedY = lampda::lmpd_constrain<uint8_t>(
+              lampda::lmpd_map<uint8_t>(fft_log[mappedX], 0, maxFftVal, 2, maxDisplaylevel), 2, maxDisplaylevel);
       for (uint8_t y = 0; y <= mappedY; y++)
       {
-        uint8_t colorIndex = lmpd_map<uint8_t>(y, 0, rows - 1, 0, 255);
+        uint8_t colorIndex = lampda::lmpd_map<uint8_t>(y, 0, rows - 1, 0, 255);
 
         const auto& ledColor = colors::from_palette<false, uint8_t>(colorIndex, palette);
         ctx.lamp.setPixelColorXY(x, rows - y, ledColor);

@@ -36,7 +36,7 @@ struct RainbowSwirlMode : public BasicMode
     for (size_t i = 0; i < ctx.lamp.ledCount; i++)
     {
       const uint16_t pixelHue = firstPixelColor + i * multiplier;
-      uint32_t color = colors::fromAngleHue(lmpd_map<uint16_t>(pixelHue, 0, UINT16_MAX, 0, 360));
+      uint32_t color = colors::fromAngleHue(lampda::lmpd_map<uint16_t>(pixelHue, 0, UINT16_MAX, 0, 360));
       ctx.lamp.setPixelColor(i, color);
     }
 

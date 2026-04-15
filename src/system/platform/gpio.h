@@ -9,6 +9,11 @@
 #include <memory>
 #include <stdint.h>
 
+namespace lampda {
+namespace platform {
+/// handler for the GeneralPurposeInputOutputs
+namespace gpio {
+
 class DigitalPinImpl;
 
 class DigitalPin
@@ -113,5 +118,9 @@ private:
   GPIO mGpio;
   std::shared_ptr<DigitalPinImpl> mImpl;
 };
+
+} // namespace gpio
+} // namespace platform
+} // namespace lampda
 
 #endif

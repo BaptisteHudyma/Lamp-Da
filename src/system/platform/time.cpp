@@ -6,12 +6,25 @@
 // Use the Arduino defined functions
 #include "delay.h"
 
-uint32_t time_ms(void) { return millis(); }
+#ifdef __cplusplus
+namespace lampda {
+namespace platform {
 
-uint64_t time_us(void) { return micros(); }
+extern "C" {
+#endif
 
-void delay_ms(uint32_t dwMs) { delay(dwMs); }
+  uint32_t time_ms(void) { return millis(); }
 
-void delay_us(uint64_t dwUs) { delayMicroseconds(dwUs); }
+  uint64_t time_us(void) { return micros(); }
+
+  void delay_ms(uint32_t dwMs) { delay(dwMs); }
+
+  void delay_us(uint64_t dwUs) { delayMicroseconds(dwUs); }
+
+#ifdef __cplusplus
+}
+} // namespace platform
+} // namespace lampda
+#endif
 
 #endif

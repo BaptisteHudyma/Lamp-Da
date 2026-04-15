@@ -11,6 +11,8 @@
 #include <cmath>
 #include <vector>
 
+namespace lampda {
+namespace utils {
 /// Curves classes to sample values from predefined custom parameters.
 namespace curves {
 
@@ -173,5 +175,7 @@ private:
 };
 
 } // namespace curves
+} // namespace utils
+} // namespace lampda
 
 #endif

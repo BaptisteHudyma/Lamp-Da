@@ -24,6 +24,9 @@ std::vector<std::string> inputCommands;
 std::atomic<bool> canRunInputThread = false; // TODO kill
 std::thread inputThread;
 
+namespace lampda {
+namespace platform {
+
 /**
  * \brief call once at program start
  */
@@ -75,7 +78,7 @@ void lampda_print(const char* format, ...)
   vsprintf(buffer, format, argptr);
   va_end(argptr);
 
-  std::cout << time_ms() << "> " << buffer << std::endl;
+  std::cout << platform::time_ms() << "> " << buffer << std::endl;
 }
 
 /**
@@ -113,3 +116,6 @@ Inputs read_inputs()
   inputCommands.clear();
   return res;
 }
+
+} // namespace platform
+} // namespace lampda

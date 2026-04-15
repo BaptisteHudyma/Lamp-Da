@@ -37,7 +37,7 @@ struct PingPongMode : public modes::BasicMode
     ctx.state.persistance = 128;
     ctx.state.progress = 0.0;
     ctx.state.step = true;
-    ctx.state.color = utils::get_random_complementary_color(ctx.state.color, randomVariation);
+    ctx.state.color = lampda::utils::get_random_complementary_color(ctx.state.color, randomVariation);
   }
 
   static void loop(auto& ctx)
@@ -46,7 +46,7 @@ struct PingPongMode : public modes::BasicMode
     static constexpr auto maxLedIndex = ctx.lamp.ledCount - 1;
     ctx.state.progress += iteration;
 
-    const float prog = min<float>(ctx.state.progress, 1.0);
+    const float prog = std::min<float>(ctx.state.progress, 1.0);
 
     // fade leds
     ctx.lamp.fadeToBlackBy(255 - ctx.state.persistance);
@@ -61,7 +61,7 @@ struct PingPongMode : public modes::BasicMode
     }
     else
     {
-      const size_t newIndex = max<float>(0.0, (1.0f - prog) * maxLedIndex);
+      const size_t newIndex = std::max<float>(0.0, (1.0f - prog) * maxLedIndex);
       for (size_t i = newIndex; i < ctx.state.lastIndex; i++)
         ctx.lamp.setPixelColor(i, ctx.state.color);
       ctx.state.lastIndex = newIndex;
@@ -74,7 +74,7 @@ struct PingPongMode : public modes::BasicMode
       ctx.state.step = not ctx.state.step;
 
       if (ctx.state.step)
-        ctx.state.color = utils::get_random_complementary_color(ctx.state.color, randomVariation);
+        ctx.state.color = lampda::utils::get_random_complementary_color(ctx.state.color, randomVariation);
     }
   }
 };
