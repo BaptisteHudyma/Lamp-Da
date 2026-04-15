@@ -1,3 +1,7 @@
+/*! \file particle_system.hpp
+    \brief Define a particle system, with particle based logic.
+*/
+
 #ifndef PARTICLE_SYSTEM_H
 #define PARTICLE_SYSTEM_H
 

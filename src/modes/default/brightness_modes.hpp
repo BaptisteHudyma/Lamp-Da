@@ -1,6 +1,8 @@
 #ifndef BRIGHTNESS_MODES_H
 #define BRIGHTNESS_MODES_H
 
+/// @file brightness_modes.hpp
+
 #include "src/system/ext/random8.h"
 #include "src/system/ext/math8.h"
 

@@ -1,10 +1,9 @@
+/*! \file palettes.hpp
+    \brief Define some useful color palettes, and tools to use them.
+*/
+
 #ifndef MODES_PALETTES_H
 #define MODES_PALETTES_H
-
-/** \file
- *
- *  \brief Manipulate color palettes
- */
 
 #include <cstdint>
 #include <array>

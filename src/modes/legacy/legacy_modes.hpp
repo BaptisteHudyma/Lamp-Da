@@ -1,3 +1,7 @@
+/*! \file legacy_modes.hpp
+    \brief Legacy implementation of the Indexable modes.
+*/
+
 #ifndef LEGACY_MODES_H
 #define LEGACY_MODES_H
 

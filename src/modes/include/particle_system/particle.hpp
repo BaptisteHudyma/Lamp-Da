@@ -1,3 +1,7 @@
+/*! \file particle.hpp
+    \brief Define a single particle for a particle system.
+*/
+
 #ifndef PARTICLE_H
 #define PARTICLE_H
 

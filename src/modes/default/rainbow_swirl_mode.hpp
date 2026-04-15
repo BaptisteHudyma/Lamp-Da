@@ -1,6 +1,8 @@
 #ifndef RAINBOW_SWIRL_MODE_HPP
 #define RAINBOW_SWIRL_MODE_HPP
 
+/// @file rainbow_swirl_mode.hpp
+
 namespace modes::default_modes {
 
 #include <cstdint>

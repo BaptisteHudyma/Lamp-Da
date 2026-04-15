@@ -1,11 +1,16 @@
+/*! \file alerts.h
+    \brief Handle the main alerts behavior.
+*/
+
 #ifndef ALERTS_H
 #define ALERTS_H
 
 #include <cstdint>
 
+/// Handle the system alerts, that are displayed on the RGB indicator
 namespace alerts {
 
-// 31 errors max
+/// Alert types :  31 errors max
 enum class Type : uint32_t
 {
   // 0 means no errors

@@ -1,7 +1,7 @@
 #ifndef DISTORTION_WAVE_MODE_H
 #define DISTORTION_WAVE_MODE_H
 
-/// @file distortion_wave.hpp
+/// @file distortion_waves.hpp
 
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"

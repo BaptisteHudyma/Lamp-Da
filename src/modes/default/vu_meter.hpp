@@ -1,7 +1,8 @@
 #ifndef VUMETER_MODE_H
 #define VUMETER_MODE_H
 
-/// @file vumeter
+/// @file vu_meter.hpp
+
 #include "src/modes/include/colors/palettes.hpp"
 
 #include "src/modes/include/audio/utils.hpp"

@@ -1,6 +1,10 @@
+/*! \file text.h
+    \brief Display text on the RGB lamp.
 
-// LEGACY : migrate this one way or another
-// TODO #369
+    LEGACY : migrate this one way or another.
+    TODO #369
+*/
+
 #if 0
 
 #ifndef TEXT_H

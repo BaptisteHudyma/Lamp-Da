@@ -1,3 +1,7 @@
+/*! \file keystore.hpp
+    \brief Filesystem interaction tools.
+*/
+
 #ifndef MODES_HARDWARD_KEYSTORE_HPP
 #define MODES_HARDWARD_KEYSTORE_HPP
 

@@ -1,7 +1,8 @@
 #ifndef SINE_MODE_H
 #define SINE_MODE_H
 
-// Base on the Adjustable sinewave. By Andrew Tuline
+/// @file sine_mode.hpp
+/// Based on the Adjustable sinewave. By Andrew Tuline
 
 #include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/colors/palettes.hpp"

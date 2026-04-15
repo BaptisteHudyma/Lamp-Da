@@ -1,6 +1,8 @@
 #ifndef DOUBLE_SIDE_FILL_MODE_HPP
 #define DOUBLE_SIDE_FILL_MODE_HPP
 
+/// @file double_side_fill_mode.hpp
+
 namespace modes::default_modes {
 
 #include <cstdint>

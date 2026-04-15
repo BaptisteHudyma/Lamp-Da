@@ -1,6 +1,8 @@
 #ifndef AUTOMATON_MODE_HPP
 #define AUTOMATON_MODE_HPP
 
+/// @file automaton.hpp
+
 #include "src/modes/include/draw/grid_rule.hpp"
 
 #include "src/system/ext/random8.h"

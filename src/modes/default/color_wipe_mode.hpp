@@ -1,6 +1,8 @@
 #ifndef COLOR_WIPE_MODE_HPP
 #define COLOR_WIPE_MODE_HPP
 
+/// @file color_wipe_mode.hpp
+
 namespace modes::default_modes {
 
 #include <cstdint>

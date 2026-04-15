@@ -1,3 +1,7 @@
+/*! \file indexable_behavior.hpp
+    \brief Define the behavior of an indexable lamp.
+*/
+
 #ifndef INDEXABLE_BEHAVIOR_MANAGER_H
 #define INDEXABLE_BEHAVIOR_MANAGER_H
 
