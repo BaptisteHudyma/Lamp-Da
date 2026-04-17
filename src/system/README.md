@@ -7,6 +7,8 @@
     - brightness_handle.h: handle the brightness logic
     - command_line_interface.h: handle serial communication. Location of the CLI capabilities
     - inputs.h: what button actions does what
+    - sunset_timer.h: Logic of the sunset timer
+    - statistics_handler.h: Keep track of the system use statistics
 - physical: stuf related to the physical components: button, bluetooth, IMU, ...
     - LSM6DS3: library to talk to the IMU. Adapted to this architecture
     - battery.h: handle the battery readings, for battery level
@@ -41,7 +43,6 @@
     - print.h: access to the print/debug interface with string composing
     - state_machine.h: generic state machine class, used for all main logic
     - strip.h: define the strip object (for now, only used in RGB lamp type)
-    - sunset_time.h: Logic of the sunset timer
     - time_utils.h: Useful time handling function
     - utils.h: useful functions to make colors
     - vector_math.h: Handle 2D 3D and 4D vector math

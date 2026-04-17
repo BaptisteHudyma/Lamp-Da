@@ -1,7 +1,5 @@
 #include "sunset_timer.h"
 
-#include "utils.h"
-
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
@@ -10,8 +8,10 @@
 #include "src/system/platform/threads.h"
 #include "src/system/platform/time.h"
 
+#include "src/system/utils/utils.h"
+
 namespace lampda {
-namespace utils {
+namespace logic {
 namespace sunset {
 
 uint32_t sunsetTimerEndTime_s = 0;
@@ -148,5 +148,5 @@ void cancel_timer()
 bool is_enabled() { return sunsetTimerEndTime_s > 0; }
 
 } // namespace sunset
-} // namespace utils
+} // namespace logic
 } // namespace lampda

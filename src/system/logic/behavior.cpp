@@ -8,6 +8,7 @@
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/inputs.h"
 #include "src/system/logic/statistics_handler.h"
+#include "src/system/logic/sunset_timer.h"
 
 #include "src/system/power/charger.h"
 #include "src/system/power/power_handler.h"
@@ -26,7 +27,6 @@
 #include "src/system/utils/utils.h"
 #include "src/system/utils/state_machine.h"
 #include "src/system/utils/input_output.h"
-#include "src/system/utils/sunset_timer.h"
 #include "src/system/utils/time_utils.h"
 
 #include "src/system/platform/bluetooth.h"

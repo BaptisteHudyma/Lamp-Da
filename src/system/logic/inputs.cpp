@@ -5,6 +5,7 @@
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
+#include "src/system/logic/sunset_timer.h"
 
 #include "src/system/physical/button.h"
 #include "src/system/physical/indicator.h"
@@ -16,7 +17,6 @@
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/time_utils.h"
-#include "src/system/utils/sunset_timer.h"
 
 #include <cstdint>
 namespace lampda {
@@ -334,7 +334,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
           else
           {
             // alert of sunset update
-            utils::sunset::bump_timer();
+            logic::sunset::bump_timer();
 
             // limit max brightness
             const auto _maxBrightness = logic::brightness::get_max_brightness();
