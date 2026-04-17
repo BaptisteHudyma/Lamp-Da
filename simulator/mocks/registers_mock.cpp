@@ -1,3 +1,7 @@
+/*! \file register_mock.cpp
+    \brief Mock of the board internal registers
+*/
+
 #include "src/system/platform/registers.h"
 
 #include "simulator/include/hardware_influencer.h"
@@ -5,7 +9,7 @@
 
 #define PLATFORM_REGISTER_CPP
 
-namespace lampda {
+namespace simulator {
 
 namespace mock_registers {
 bool isDeepSleep = false;
@@ -16,6 +20,9 @@ bool shouldStopThreads = false;
 
 } // namespace mock_registers
 
+} // namespace simulator
+
+namespace lampda {
 namespace platform {
 /// Define the interaction layer with the system specific registers
 namespace registers {
@@ -50,9 +57,9 @@ bool is_started_from_watchdog() { return false; }
 // started by user interrupt
 bool is_started_from_interrupt() { return true; }
 
-float read_CPU_temperature_degreesC() { return mock_registers::cpuTemperature; }
+float read_CPU_temperature_degreesC() { return simulator::mock_registers::cpuTemperature; }
 
-void go_to_sleep(const int wakeUpPin) { mock_registers::isDeepSleep = true; };
+void go_to_sleep(const int wakeUpPin) { simulator::mock_registers::isDeepSleep = true; };
 
 } // namespace registers
 } // namespace platform

@@ -1,3 +1,7 @@
+/*! \file Adafruit_NeoPixel.h
+    \brief Mock of the Adafruit NeoPixel library
+*/
+
 #ifndef ADAFRUIT_NEOPIXEL_MOCK_H
 #define ADAFRUIT_NEOPIXEL_MOCK_H
 

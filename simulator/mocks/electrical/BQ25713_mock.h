@@ -1,3 +1,7 @@
+/*! \file BQ25713_mock.h
+    \brief Define a mock of the BQ25713 electrical component.
+*/
+
 #ifndef BQ25713_MOCK_H
 #define BQ25713_MOCK_H
 
@@ -16,10 +20,12 @@
 
 #include <map>
 
+namespace simulator {
+
 // independant of enabl/disable
 float targetOTGVoltage = 0.0;
 namespace __private {
-lampda::platform::gpio::DigitalPin enableOTG(lampda::platform::gpio::DigitalPin::GPIO::Output_EnableOnTheGo);
+::lampda::platform::gpio::DigitalPin enableOTG(::lampda::platform::gpio::DigitalPin::GPIO::Output_EnableOnTheGo);
 }
 
 class BQ25713Mock : public IntegratedCircuitMock_I
@@ -76,11 +82,11 @@ public:
       // EN_OTG
       if ((val1 & (1 << 0x04)) != 0 && __private::enableOTG.is_high())
       {
-        lampda::mock_electrical::chargeOtgOutput = targetOTGVoltage;
+        mock_electrical::chargeOtgOutput = targetOTGVoltage;
       }
       else
       {
-        lampda::mock_electrical::chargeOtgOutput = 0;
+        mock_electrical::chargeOtgOutput = 0;
       }
     }
   }
@@ -97,7 +103,7 @@ private:
   {
     // constraint
     uint16_t valC =
-            (lampda::lmpd_constrain<uint16_t>(val, reg->minVal(), reg->maxVal()) - reg->minVal()) / reg->resolution();
+            (::lampda::lmpd_constrain<uint16_t>(val, reg->minVal(), reg->maxVal()) - reg->minVal()) / reg->resolution();
     // rectified
     uint16_t valR = (valC & reg->mask()) << reg->offset();
     return valR;
@@ -117,8 +123,8 @@ private:
                                             const bq25713::BQ25713::IDoubleRegister* reg)
   {
     // rectified vals
-    uint8_t val0R = (lampda::max<uint16_t>(val0, reg->minVal0()) - reg->minVal0()) / reg->resolutionVal0();
-    uint8_t val1R = (lampda::max<uint16_t>(val1, reg->minVal1()) - reg->minVal1()) / reg->resolutionVal1();
+    uint8_t val0R = (std::max<uint16_t>(val0, reg->minVal0()) - reg->minVal0()) / reg->resolutionVal0();
+    uint8_t val1R = (std::max<uint16_t>(val1, reg->minVal1()) - reg->minVal1()) / reg->resolutionVal1();
 
     uint16_t result = (val1R & reg->maskVal1()) << 8 | (val0R & reg->maskVal0());
     return result;
@@ -170,9 +176,8 @@ private:
   {
     uint16_t read() override
     {
-      return encode_to_double_register(lampda::mock_battery::voltage * 1000.0,
-                                       lampda::mock_electrical::powerRailVoltage * 1000.0,
-                                       &IcRegisters.aDCVBUSPSYS);
+      return encode_to_double_register(
+              mock_battery::voltage * 1000.0, mock_electrical::powerRailVoltage * 1000.0, &IcRegisters.aDCVBUSPSYS);
     }
   };
 
@@ -182,7 +187,7 @@ private:
     uint16_t read() override
     {
       return encode_to_double_register(
-              lampda::mock_battery::voltage * 1000.0, lampda::mock_battery::voltage * 1000.0, &IcRegisters.aDCVSYSVBAT);
+              mock_battery::voltage * 1000.0, mock_battery::voltage * 1000.0, &IcRegisters.aDCVSYSVBAT);
     }
   };
 
@@ -196,5 +201,7 @@ private:
     uint16_t read() override { return bq25713::DEVICE_ID; }
   };
 };
+
+} // namespace simulator
 
 #endif

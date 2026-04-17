@@ -1,3 +1,7 @@
+/*! \file i_ic.h
+    \brief Electrical simulation interface with the electrical simulator
+*/
+
 #ifndef MOCK_I_IC_HPP
 #define MOCK_I_IC_HPP
 
@@ -9,6 +13,8 @@
 #include <cstdint>
 
 #include <memory>
+
+namespace simulator {
 
 class IntegratedCircuitMock_I
 {
@@ -76,5 +82,7 @@ protected:
 
 private:
 };
+
+} // namespace simulator
 
 #endif

@@ -1,25 +1,29 @@
+/*! \file default_simulation.h
+    \brief Contain the default simulation parameters.
+*/
+
 #ifndef LMBD_DEFAULT_SIMULATION_H
 #define LMBD_DEFAULT_SIMULATION_H
 
-namespace lampda {
+namespace simulator {
 
 struct defaultSimulation
 {
-  float fps = 80.f; // how fast animation is
+  float fps = 80.f; ///< how fast animation is
 
-  float ledSizePx = 24.f;   // square size to represent one LED (in pixels)
-  float ledPaddingPx = 4.f; // padding between two LEDs (in pixels)
+  float ledSizePx = 24.f;   ///< square size to represent one LED (in pixels)
+  float ledPaddingPx = 4.f; ///< padding between two LEDs (in pixels)
 
-  float buttonSize = 40.f;    // draw a lamp button of 40 pixels
-  float buttonMargin = 15.f;  // draw a button color indicator 10 pixels larger
-  float buttonLeftPos = 80.f; // draw a lamp button 80 pixels from the left
+  float buttonSize = 40.f;    ///< draw a lamp button of 40 pixels
+  float buttonMargin = 15.f;  ///< draw a button color indicator 10 pixels larger
+  float buttonLeftPos = 80.f; ///< draw a lamp button 80 pixels from the left
 
-  float brightnessRate = 4.f;    // record brightness every n-th frame
-  float brightnessScale = 120.f; // how tall is the brightness graph
+  float brightnessRate = 4.f;    ///< record brightness every n-th frame
+  float brightnessScale = 120.f; ///< how tall is the brightness graph
 
   defaultSimulation() {}
 };
 
-} // namespace lampda
+} // namespace simulator
 
 #endif

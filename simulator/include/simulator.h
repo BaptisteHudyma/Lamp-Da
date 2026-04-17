@@ -1,3 +1,7 @@
+/*! \file simulator.h
+    \brief Implementation of the actual simulator
+*/
+
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 
@@ -20,7 +24,7 @@
 
 #define LMBD_SIMU_REALCOLORS
 
-namespace lampda {
+namespace simulator {
 // (_LampTy from simulator_state.h)
 constexpr int ledW = _LampTy::maxWidth;
 constexpr int ledH = _LampTy::maxOverflowHeight;
@@ -28,7 +32,7 @@ constexpr int ledCount = _LampTy::ledCount;
 
 constexpr float fLedW = _LampTy::maxWidthFloat;
 constexpr float fResidueW = 1 / (2 * fLedW - 2 * floor(fLedW) - 1);
-} // namespace lampda
+} // namespace simulator
 
 #include "src/user/functions.h"
 #include "src/system/utils/utils.h"
@@ -39,7 +43,7 @@ constexpr float fResidueW = 1 / (2 * fLedW - 2 * floor(fLedW) - 1);
 
 #include <thread>
 
-namespace lampda {
+namespace simulator {
 
 //
 // simulator core loop
@@ -108,12 +112,12 @@ template<typename T> struct simulator
     time_mocks::reset();
 
     // Main program setup
-    main_setup();
+    ::lampda::main_setup();
 
     // =================================================
 
     // reference to global state
-    auto& state = sim::globals::state;
+    auto& state = globals::state;
 
     uint64_t skipframe = 0;
     while (window.isOpen())
@@ -220,7 +224,7 @@ template<typename T> struct simulator
             }
             else
             {
-              state.slowTimeFactor = max<float>(0.1f, state.slowTimeFactor - 0.05f);
+              state.slowTimeFactor = std::max<float>(0.1f, state.slowTimeFactor - 0.05f);
             }
             fprintf(stderr, "slower %f\n", state.slowTimeFactor);
           }
@@ -249,7 +253,7 @@ template<typename T> struct simulator
             fakeXorigin += 1;
             if (fakeXorigin > ledW - 1)
               fakeXorigin = 0;
-            fakeXend = max<int>(fakeXorigin - min<int>(4, ledW - 1 - fakeXorigin), 0);
+            fakeXend = std::max<int>(fakeXorigin - std::min<int>(4, ledW - 1 - fakeXorigin), 0);
           }
 
           // shift backward XY display
@@ -258,7 +262,7 @@ template<typename T> struct simulator
             fakeXorigin -= 1;
             if (fakeXorigin < 0)
               fakeXorigin = ledW - 1;
-            fakeXend = max<int>(fakeXorigin - min<int>(4, ledW - 1 - fakeXorigin), 0);
+            fakeXend = std::max<int>(fakeXorigin - std::min<int>(4, ledW - 1 - fakeXorigin), 0);
           }
 
           // reset key pressed
@@ -317,19 +321,21 @@ template<typename T> struct simulator
         mock_gpios::update_callbacks();
 
         // main program loop
-        main_loop(mock_registers::addedAlgoDelay);
+        ::lampda::main_loop(mock_registers::addedAlgoDelay);
       }
 
       const bool isOutputEnabled = is_output_enabled();
-      if constexpr (_LampTy::flavor == modes::hardware::LampTypes::indexable)
+      if constexpr (_LampTy::flavor == ::lampda::modes::hardware::LampTypes::indexable)
       {
         const bool isVoltageHighEnough = mock_electrical::outputVoltage > 11.5;
         for (size_t I = 0; I < _LampTy::ledCount; ++I)
         {
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
           state.colorBuffer[I] =
-                  isOutputEnabled ? (isVoltageHighEnough ? user::_private::strip.getPixelColor(I) : 0xffffff) : 0;
-          state.brightness = user::_private::strip.getBrightness();
+                  isOutputEnabled ?
+                          (isVoltageHighEnough ? ::lampda::user::_private::strip.getPixelColor(I) : 0xffffff) :
+                          0;
+          state.brightness = ::lampda::user::_private::strip.getBrightness();
 #endif
         }
       }
@@ -337,7 +343,8 @@ template<typename T> struct simulator
       {
         for (size_t I = 0; I < _LampTy::ledCount; ++I)
           state.colorBuffer[I] = isOutputEnabled ? 0xffff00 : 0;
-        state.brightness = (utils::brightness::get_brightness() * 255) / brightness::absoluteMaximumBrightness;
+        state.brightness =
+                (::lampda::utils::brightness::get_brightness() * 255) / ::lampda::brightness::absoluteMaximumBrightness;
       }
 
       state.indicatorColor = mock_indicator::get_color();
@@ -374,10 +381,10 @@ template<typename T> struct simulator
               Xoff = 1;
           }
 
-          size_t I = modes::to_strip(Xpos, Ypos);
+          size_t I = ::lampda::modes::to_strip(Xpos, Ypos);
           auto& shape = shapes[I];
 
-          auto realPos = modes::strip_to_XY(I);
+          auto realPos = ::lampda::modes::strip_to_XY(I);
           if (realPos.x != Xpos || realPos.y != Ypos)
             continue;
 
@@ -410,9 +417,9 @@ template<typename T> struct simulator
           float r = ((color >> 16) & 0xff);
 
           const auto brightness = state.brightness;
-          r = min<float>(r, brightness);
-          g = min<float>(g, brightness);
-          b = min<float>(b, brightness);
+          r = std::min<float>(r, brightness);
+          g = std::min<float>(g, brightness);
+          b = std::min<float>(b, brightness);
 
           shape.setFillColor(sf::Color(r, g, b));
           window.draw(shape);
@@ -531,6 +538,6 @@ template<typename T> struct simulator
   }
 };
 
-} // namespace lampda
+} // namespace simulator
 
 #endif

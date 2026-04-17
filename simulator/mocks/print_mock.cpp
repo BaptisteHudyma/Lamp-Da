@@ -1,3 +1,7 @@
+/*! \file print_mock.cpp
+    \brief Mock of the board print and debugs
+*/
+
 #include "src/system/platform/print.h"
 
 #include <cstdio>
@@ -19,13 +23,16 @@ extern "C" {
 #include "src/system/utils/print.h"
 }
 
-namespace lampda {
+namespace simulator {
 
 std::vector<std::string> inputCommands;
 
 std::atomic<bool> canRunInputThread = false; // TODO kill
 std::thread inputThread;
 
+} // namespace simulator
+
+namespace lampda {
 namespace platform {
 
 /**
@@ -34,9 +41,9 @@ namespace platform {
 void init_prints()
 {
   // spawn cin read thread
-  canRunInputThread = true;
-  inputThread = std::thread([&]() {
-    while (canRunInputThread)
+  simulator::canRunInputThread = true;
+  simulator::inputThread = std::thread([&]() {
+    while (simulator::canRunInputThread)
     {
       std::string s;
       // blocking call
@@ -45,7 +52,7 @@ void init_prints()
       if (not s.empty())
       {
         std::scoped_lock(mut);
-        inputCommands.push_back(s);
+        simulator::inputCommands.push_back(s);
       }
     }
   });
@@ -90,7 +97,7 @@ Inputs read_inputs()
   Inputs res;
   res.commandCount = 0;
 
-  for (const auto& command: inputCommands)
+  for (const auto& command: simulator::inputCommands)
   {
     if (res.commandCount >= Inputs::maxCommands)
     {
@@ -114,7 +121,7 @@ Inputs read_inputs()
   }
 
   // clear
-  inputCommands.clear();
+  simulator::inputCommands.clear();
   return res;
 }
 

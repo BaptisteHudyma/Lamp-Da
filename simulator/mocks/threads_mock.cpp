@@ -1,3 +1,7 @@
+/*! \file threads_mock.cpp
+    \brief Mock of the board threads and tasks
+*/
+
 #define PLATFORM_THREADS_CPP
 
 #include "src/system/platform/threads.h"
@@ -7,22 +11,25 @@
 #include <vector>
 #include <thread>
 
+namespace simulator {
+std::vector<std::thread> threadPool;
+
+bool isSuspended = false;
+} // namespace simulator
+
 namespace lampda {
 namespace platform {
 namespace threads {
 
 typedef void (*taskfunc_t)(void);
-std::vector<std::thread> threadPool;
-
-bool isSuspended = false;
 
 void start_thread(taskfunc_t taskFunction, const char* const taskName, const int priority, const int stackSize)
 {
   // ALWAYS CAPTURE taskFunction EXPLICITLY
-  threadPool.emplace_back(std::thread([taskFunction]() {
-    while (taskFunction and not mock_registers::shouldStopThreads)
+  simulator::threadPool.emplace_back(std::thread([taskFunction]() {
+    while (taskFunction and not simulator::mock_registers::shouldStopThreads)
     {
-      if (not isSuspended)
+      if (not simulator::isSuspended)
         taskFunction();
       platform::delay_ms(1);
     }
@@ -34,10 +41,10 @@ void start_suspended_thread(taskfunc_t taskFunction,
                             const int stackSize)
 {
   // ALWAYS CAPTURE taskFunction EXPLICITLY
-  threadPool.emplace_back(std::thread([taskFunction]() {
-    while (taskFunction and not mock_registers::shouldStopThreads)
+  simulator::threadPool.emplace_back(std::thread([taskFunction]() {
+    while (taskFunction and not simulator::mock_registers::shouldStopThreads)
     {
-      if (not isSuspended)
+      if (not simulator::isSuspended)
         taskFunction();
       platform::delay_ms(1);
     }
@@ -54,9 +61,9 @@ void suspend_this_thread()
   // TODO issue #132
 }
 
-void suspend_all_threads() { isSuspended = true; }
+void suspend_all_threads() { simulator::isSuspended = true; }
 
-int is_all_suspended() { return isSuspended ? 1 : 0; }
+int is_all_suspended() { return simulator::isSuspended ? 1 : 0; }
 
 void resume_thread(const char* const taskName) {}
 

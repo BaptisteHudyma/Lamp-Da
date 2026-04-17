@@ -24,7 +24,7 @@ protected:
   {
     //
     killThread = false;
-    time_mocks::reset();
+    ::simulator::time_mocks::reset();
   }
 
   void TearDown() override
@@ -51,12 +51,12 @@ protected:
 
       while (remainingClicks > 0 && not killThread)
       {
-        sim::globals::state.isButtonPressed = true;
-        mock_gpios::update_callbacks();
+        ::simulator::globals::state.isButtonPressed = true;
+        ::simulator::mock_gpios::update_callbacks();
         std::this_thread::sleep_for(holdPress);
 
-        sim::globals::state.isButtonPressed = false;
-        mock_gpios::update_callbacks();
+        ::simulator::globals::state.isButtonPressed = false;
+        ::simulator::mock_gpios::update_callbacks();
         std::this_thread::sleep_for(releasePress);
 
         remainingClicks--;
@@ -64,12 +64,12 @@ protected:
 
       if (not killThread && lastClickPressDelay > 0ms)
       {
-        sim::globals::state.isButtonPressed = true;
-        mock_gpios::update_callbacks();
+        ::simulator::globals::state.isButtonPressed = true;
+        ::simulator::mock_gpios::update_callbacks();
         std::this_thread::sleep_for(lastClickPressDelay);
 
-        sim::globals::state.isButtonPressed = false;
-        mock_gpios::update_callbacks();
+        ::simulator::globals::state.isButtonPressed = false;
+        ::simulator::mock_gpios::update_callbacks();
       }
     });
   }
@@ -87,7 +87,7 @@ private:
 TEST_F(ButtonFixture, turn_on_start_click_early_release)
 {
   // initial state is turn on
-  sim::globals::state.isButtonPressed = false;
+  ::simulator::globals::state.isButtonPressed = false;
   bool isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount) {
@@ -101,12 +101,12 @@ TEST_F(ButtonFixture, turn_on_start_click_early_release)
   };
 
   // signal button on
-  mock_gpios::update_callbacks();
+  ::simulator::mock_gpios::update_callbacks();
   physical::button::init(true);
 
   while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    mock_gpios::update_callbacks();
+    ::simulator::mock_gpios::update_callbacks();
     std::this_thread::sleep_for(10ms);
     physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
   }
@@ -117,7 +117,7 @@ TEST_F(ButtonFixture, turn_on_start_click_early_release)
 TEST_F(ButtonFixture, turn_on_start_click)
 {
   // initial state is turn on
-  sim::globals::state.isButtonPressed = true;
+  ::simulator::globals::state.isButtonPressed = true;
   bool isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount) {
@@ -131,19 +131,19 @@ TEST_F(ButtonFixture, turn_on_start_click)
   };
 
   // signal button on
-  mock_gpios::update_callbacks();
+  ::simulator::mock_gpios::update_callbacks();
   physical::button::init(true);
 
   // simulate clicks
   auto buttonThread = std::thread([]() {
     std::this_thread::sleep_for(150ms);
-    sim::globals::state.isButtonPressed = false;
-    mock_gpios::update_callbacks();
+    ::simulator::globals::state.isButtonPressed = false;
+    ::simulator::mock_gpios::update_callbacks();
   });
 
   while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    mock_gpios::update_callbacks();
+    ::simulator::mock_gpios::update_callbacks();
     std::this_thread::sleep_for(10ms);
     physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
   }
@@ -157,7 +157,7 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
   static const int desiredClicks = 4;
 
   // initial state is turn on
-  sim::globals::state.isButtonPressed = true;
+  ::simulator::globals::state.isButtonPressed = true;
   std::atomic<bool> isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount) {
@@ -171,14 +171,14 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
   };
 
   // signal button on
-  mock_gpios::update_callbacks();
+  ::simulator::mock_gpios::update_callbacks();
   physical::button::init(true);
 
   // simulate click release
   auto buttonThread = std::thread([&]() {
     std::this_thread::sleep_for(50ms);
-    sim::globals::state.isButtonPressed = false;
-    mock_gpios::update_callbacks();
+    ::simulator::globals::state.isButtonPressed = false;
+    ::simulator::mock_gpios::update_callbacks();
   });
 
   // simulate a few clicks
@@ -197,7 +197,7 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
 TEST_F(ButtonFixture, turn_on_start_long_click)
 {
   // initial state is turn on
-  sim::globals::state.isButtonPressed = true;
+  ::simulator::globals::state.isButtonPressed = true;
   bool isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount) {
@@ -222,19 +222,19 @@ TEST_F(ButtonFixture, turn_on_start_long_click)
   };
 
   // signal button on
-  mock_gpios::update_callbacks();
+  ::simulator::mock_gpios::update_callbacks();
   physical::button::init(true);
 
   // simulate click release after a long time
   auto buttonThread = std::thread([]() {
     std::this_thread::sleep_for(1000ms);
-    sim::globals::state.isButtonPressed = false;
-    mock_gpios::update_callbacks();
+    ::simulator::globals::state.isButtonPressed = false;
+    ::simulator::mock_gpios::update_callbacks();
   });
 
   while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    mock_gpios::update_callbacks();
+    ::simulator::mock_gpios::update_callbacks();
     std::this_thread::sleep_for(10ms);
     physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
   }
@@ -248,7 +248,7 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
   static const int desiredClicks = 4;
 
   // initial state is turn on
-  sim::globals::state.isButtonPressed = true;
+  ::simulator::globals::state.isButtonPressed = true;
   bool isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount) {
@@ -273,14 +273,14 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
   };
 
   // signal button on
-  mock_gpios::update_callbacks();
+  ::simulator::mock_gpios::update_callbacks();
   physical::button::init(true);
 
   // simulate click release after a long time
   auto buttonThread = std::thread([&]() {
     std::this_thread::sleep_for(50ms);
-    sim::globals::state.isButtonPressed = false;
-    mock_gpios::update_callbacks();
+    ::simulator::globals::state.isButtonPressed = false;
+    ::simulator::mock_gpios::update_callbacks();
   });
 
   // simulate a few clicks
@@ -288,7 +288,7 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
 
   while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    mock_gpios::update_callbacks();
+    ::simulator::mock_gpios::update_callbacks();
     std::this_thread::sleep_for(10ms);
     physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
   }
@@ -306,7 +306,7 @@ TEST_F(ButtonFixture, debounce)
   static const int desiredClicks = 50;
 
   // initial state is turn on
-  sim::globals::state.isButtonPressed = false;
+  ::simulator::globals::state.isButtonPressed = false;
   std::atomic<bool> isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount) {
@@ -324,7 +324,7 @@ TEST_F(ButtonFixture, debounce)
   };
 
   // signal button on
-  mock_gpios::update_callbacks();
+  ::simulator::mock_gpios::update_callbacks();
   physical::button::init(true);
 
   // simulate a clicks
@@ -343,7 +343,7 @@ TEST_F(ButtonFixture, standard_multiple_click)
   static const int desiredClicks = 4;
 
   // initial state is turn on
-  sim::globals::state.isButtonPressed = true;
+  ::simulator::globals::state.isButtonPressed = true;
   std::atomic<bool> isTestDone = false;
 
   bool isFirstClick = true;
@@ -368,14 +368,14 @@ TEST_F(ButtonFixture, standard_multiple_click)
   };
 
   // signal button on
-  mock_gpios::update_callbacks();
+  ::simulator::mock_gpios::update_callbacks();
   physical::button::init(true);
 
   // simulate click release
   auto buttonThread = std::thread([&]() {
     std::this_thread::sleep_for(50ms);
-    sim::globals::state.isButtonPressed = false;
-    mock_gpios::update_callbacks();
+    ::simulator::globals::state.isButtonPressed = false;
+    ::simulator::mock_gpios::update_callbacks();
   });
 
   // simulate a few clicks

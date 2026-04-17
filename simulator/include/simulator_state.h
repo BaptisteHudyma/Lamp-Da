@@ -1,3 +1,7 @@
+/*! \file simulator_state.h
+    \brief Contain some simulation state
+*/
+
 #ifndef SIMULATOR_STATE_H
 #define SIMULATOR_STATE_H
 
@@ -5,14 +9,14 @@
 
 #include "src/modes/include/hardware/lamp_type.hpp"
 
-namespace lampda {
+namespace simulator {
 
-using _LampTy = modes::hardware::LampTy;
+using _LampTy = ::lampda::modes::hardware::LampTy;
 
-namespace sim {
-
+/// Define the global scope of the simulator
 namespace globals {
 
+/// Define the the global simulation state
 struct GlobalSimStateTy
 {
   bool paused = false;
@@ -26,12 +30,11 @@ struct GlobalSimStateTy
   float slowTimeFactor = 1.0;
 };
 
+/// Store the global simulation state
 extern GlobalSimStateTy state;
 
 } // namespace globals
 
-} // namespace sim
-
-} // namespace lampda
+} // namespace simulator
 
 #endif

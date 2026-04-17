@@ -1,3 +1,7 @@
+/*! \file i2c_mock.cpp
+    \brief Mock of the board i2c
+*/
+
 #include "src/system/platform/i2c.h"
 #include <array>
 
@@ -14,7 +18,7 @@
 #include "simulator/mocks/electrical/i_ic.h"
 #include "simulator/mocks/electrical/BQ25713_mock.h"
 
-namespace lampda {
+namespace simulator {
 
 static constexpr size_t numberOfMocks = 1;
 const std::array<std::unique_ptr<IntegratedCircuitMock_I>, numberOfMocks> icMocks = {
@@ -42,6 +46,9 @@ float chargeOtgOutput;
 std::atomic<bool> canRunComponentUpdateThread = false;
 std::thread componentUpdateThread;
 
+} // namespace simulator
+
+namespace lampda {
 namespace platform {
 namespace i2c {
 
@@ -50,18 +57,18 @@ void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
   if (i2cIndex != 0)
     return;
 
-  canRunComponentUpdateThread = true;
-  componentUpdateThread = std::thread([&]() {
-    while (canRunComponentUpdateThread)
+  simulator::canRunComponentUpdateThread = true;
+  simulator::componentUpdateThread = std::thread([&]() {
+    while (simulator::canRunComponentUpdateThread)
     {
-      for (const auto& icMock: icMocks)
+      for (const auto& icMock: simulator::icMocks)
       {
         icMock->run_electrical_update();
       }
       platform::delay_ms(1);
     }
   });
-  isI2cAvailable = true;
+  simulator::isI2cAvailable = true;
 }
 
 void i2c_turn_off(uint8_t i2cIndex)
@@ -69,16 +76,16 @@ void i2c_turn_off(uint8_t i2cIndex)
   if (i2cIndex != 0)
     return;
 
-  canRunComponentUpdateThread = false;
-  isI2cAvailable = false;
+  simulator::canRunComponentUpdateThread = false;
+  simulator::isI2cAvailable = false;
 }
 
 int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
 {
-  if (i2cIndex != 0 or !isI2cAvailable)
+  if (i2cIndex != 0 or !simulator::isI2cAvailable)
     return 1;
 
-  for (const auto& icMock: icMocks)
+  for (const auto& icMock: simulator::icMocks)
   {
     if (icMock->get_i2c_address() == deviceAddr)
       return 0; // success
@@ -92,10 +99,10 @@ int unlock_i2c() { return 0; }
 int i2c_writeData(
         uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, const uint8_t* buf, int stopBit)
 {
-  if (i2cIndex != 0 or !isI2cAvailable)
+  if (i2cIndex != 0 or !simulator::isI2cAvailable)
     return 1;
 
-  for (auto& icMock: icMocks)
+  for (auto& icMock: simulator::icMocks)
   {
     if (icMock->get_i2c_address() == deviceAddr)
       return icMock->i2c_write_data(registerAdd, size, buf);
@@ -105,10 +112,10 @@ int i2c_writeData(
 
 int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t* buf, int stopBit)
 {
-  if (i2cIndex != 0 or !isI2cAvailable)
+  if (i2cIndex != 0 or !simulator::isI2cAvailable)
     return 1;
 
-  for (auto& icMock: icMocks)
+  for (auto& icMock: simulator::icMocks)
   {
     if (icMock->get_i2c_address() == deviceAddr)
       return icMock->i2c_read_data(registerAdd, size, buf);
@@ -121,10 +128,10 @@ int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint
 int i2c_xfer_unlocked(
         uint8_t i2cIndex, uint8_t deviceAddr, int out_size, const uint8_t* out, int in_size, uint8_t* in, uint8_t flags)
 {
-  if (i2cIndex != 0 or !isI2cAvailable)
+  if (i2cIndex != 0 or !simulator::isI2cAvailable)
     return 1;
 
-  for (auto& icMock: icMocks)
+  for (auto& icMock: simulator::icMocks)
   {
     if (icMock->get_i2c_address() == deviceAddr)
       return icMock->i2c_xfer_data(out_size, out, in_size, in);

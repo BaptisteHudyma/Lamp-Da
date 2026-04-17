@@ -1,3 +1,7 @@
+/*! \file bluetooth_mock.cpp
+    \brief Mock of the board bluetooth
+*/
+
 #include "src/system/platform/bluetooth.h"
 
 namespace lampda {

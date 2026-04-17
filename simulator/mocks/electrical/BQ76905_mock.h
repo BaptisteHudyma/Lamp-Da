@@ -1,3 +1,7 @@
+/*! \file BQ76905_mock.h
+    \brief Define a mock of the BQ76905 electrical component.
+*/
+
 #ifndef BQ76905_MOCK_H
 #define BQ76905_MOCK_H
 
@@ -11,6 +15,8 @@
 
 #include <map>
 #include <memory>
+
+namespace simulator {
 
 class BQ76905Mock : public IntegratedCircuitMock_I
 {
@@ -33,5 +39,7 @@ private:
   // Create instance of registers data structure
   inline static bq76905::BQ76905::Regt IcRegisters;
 };
+
+} // namespace simulator
 
 #endif
