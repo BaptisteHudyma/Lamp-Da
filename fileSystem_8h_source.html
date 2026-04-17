@@ -77,57 +77,69 @@ $(function() {
   <div class="headertitle"><div class="title">fileSystem.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef FILESYSTEM_H</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define FILESYSTEM_H</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>fileSystem {</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// call once on program stop</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keywordtype">void</span> shutdown();</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">// clear the stored values in the currently loaded file system</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keywordtype">void</span> clear();</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">// hard clean of the whole filesystem, you will loose all stored data</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keywordtype">void</span> clear_internal_fs();</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">// internal system file space</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span>system {</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keywordtype">bool</span> doKeyExists(<span class="keyword">const</span> uint32_t key);</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keywordtype">bool</span> get_value(<span class="keyword">const</span> uint32_t key, uint32_t&amp; value);</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keywordtype">void</span> set_value(<span class="keyword">const</span> uint32_t key, <span class="keyword">const</span> uint32_t value);</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>uint32_t dropMatchingKeys(<span class="keyword">const</span> uint32_t bitMatch, <span class="keyword">const</span> uint32_t bitSelect = 0xffffffff);</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keywordtype">void</span> write_to_file();</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keywordtype">bool</span> load_from_file();</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>} <span class="comment">// namespace system</span></div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="comment">// user file space</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceuser.html">user</a> {</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keywordtype">bool</span> doKeyExists(<span class="keyword">const</span> uint32_t key);</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keywordtype">bool</span> get_value(<span class="keyword">const</span> uint32_t key, uint32_t&amp; value);</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keywordtype">void</span> set_value(<span class="keyword">const</span> uint32_t key, <span class="keyword">const</span> uint32_t value);</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>uint32_t dropMatchingKeys(<span class="keyword">const</span> uint32_t bitMatch, <span class="keyword">const</span> uint32_t bitSelect = 0xffffffff);</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="keywordtype">void</span> write_to_file();</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keywordtype">bool</span> load_from_file();</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>} <span class="comment">// namespace user</span></div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>} <span class="comment">// namespace fileSystem</span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="anamespaceuser_html"><div class="ttname"><a href="namespaceuser.html">user</a></div><div class="ttdoc">Contains code handling custom user mode functions for indexable strips.</div><div class="ttdef"><b>Definition:</b> functions.h:26</div></div>
+<a href="fileSystem_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#ifndef FILESYSTEM_H</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#define FILESYSTEM_H</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespacefileSystem.html">   12</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacefileSystem.html">fileSystem</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="namespacefileSystem.html#a914e05035f6279bcf4a06b6a0ce6d59d">   15</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacefileSystem.html#a914e05035f6279bcf4a06b6a0ce6d59d">shutdown</a>();</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespacefileSystem.html#a794ed01a6746be8801dfd981c1e0b91a">   18</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacefileSystem.html#a794ed01a6746be8801dfd981c1e0b91a">clear</a>();</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="namespacefileSystem.html#ae7d2c57c1123964513ac25bbf5272110">   21</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacefileSystem.html#ae7d2c57c1123964513ac25bbf5272110">clear_internal_fs</a>();</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespacefileSystem_1_1system.html">   24</a></span><span class="keyword">namespace </span>system {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="namespacefileSystem_1_1system.html#af185ccb71059adf72fa176a8e35e82a5">   27</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacefileSystem_1_1system.html#af185ccb71059adf72fa176a8e35e82a5">doKeyExists</a>(<span class="keyword">const</span> uint32_t key);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="namespacefileSystem_1_1system.html#a60e737c30ef97554745b80894718b966">   34</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacefileSystem_1_1system.html#a60e737c30ef97554745b80894718b966">get_value</a>(<span class="keyword">const</span> uint32_t key, uint32_t&amp; value);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="namespacefileSystem_1_1system.html#ab53873763942f2ed8c0eea786d024738">   40</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacefileSystem_1_1system.html#ab53873763942f2ed8c0eea786d024738">set_value</a>(<span class="keyword">const</span> uint32_t key, <span class="keyword">const</span> uint32_t value);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="namespacefileSystem_1_1system.html#a1a0475edf548b1fb2b7c3278581c91e0">   50</a></span>uint32_t <a class="code hl_function" href="namespacefileSystem_1_1system.html#a1a0475edf548b1fb2b7c3278581c91e0">dropMatchingKeys</a>(<span class="keyword">const</span> uint32_t bitMatch, <span class="keyword">const</span> uint32_t bitSelect = 0xffffffff);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="namespacefileSystem_1_1system.html#ae93b9a054508e5db5ec6d9d9334a0ea7">   56</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacefileSystem_1_1system.html#ae93b9a054508e5db5ec6d9d9334a0ea7">write_to_file</a>();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="namespacefileSystem_1_1system.html#a6dd1acfb3549cc52fe75963363b373f0">   62</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacefileSystem_1_1system.html#a6dd1acfb3549cc52fe75963363b373f0">load_from_file</a>();</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>} <span class="comment">// namespace system</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="namespacefileSystem_1_1user.html">   67</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceuser.html">user</a> {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="namespacefileSystem_1_1user.html#ab47d7b159019c979f7caf76fd8e666dd">   70</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacefileSystem_1_1user.html#ab47d7b159019c979f7caf76fd8e666dd">doKeyExists</a>(<span class="keyword">const</span> uint32_t key);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="namespacefileSystem_1_1user.html#a83dd002cf120eec226891cadc6f06dd7">   77</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacefileSystem_1_1user.html#a83dd002cf120eec226891cadc6f06dd7">get_value</a>(<span class="keyword">const</span> uint32_t key, uint32_t&amp; value);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="namespacefileSystem_1_1user.html#a697058cfcf4e34434c3a7499b5be07d3">   83</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacefileSystem_1_1user.html#a697058cfcf4e34434c3a7499b5be07d3">set_value</a>(<span class="keyword">const</span> uint32_t key, <span class="keyword">const</span> uint32_t value);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="namespacefileSystem_1_1user.html#a846f120194aa4bbbcd153c43b29562b7">   93</a></span>uint32_t <a class="code hl_function" href="namespacefileSystem_1_1user.html#a846f120194aa4bbbcd153c43b29562b7">dropMatchingKeys</a>(<span class="keyword">const</span> uint32_t bitMatch, <span class="keyword">const</span> uint32_t bitSelect = 0xffffffff);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="namespacefileSystem_1_1user.html#a0a454f1c3c95997e5e722ce9b2b901af">   99</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacefileSystem_1_1user.html#a0a454f1c3c95997e5e722ce9b2b901af">write_to_file</a>();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="namespacefileSystem_1_1user.html#a5d8d5eabae44c8e7cda3cab6647a99c1">  105</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacefileSystem_1_1user.html#a5d8d5eabae44c8e7cda3cab6647a99c1">load_from_file</a>();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>} <span class="comment">// namespace user</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>} <span class="comment">// namespace fileSystem</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="anamespacefileSystem_1_1system_html_a1a0475edf548b1fb2b7c3278581c91e0"><div class="ttname"><a href="namespacefileSystem_1_1system.html#a1a0475edf548b1fb2b7c3278581c91e0">fileSystem::system::dropMatchingKeys</a></div><div class="ttdeci">uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect=0xffffffff)</div><div class="ttdoc">Drop all keys using the given bit prefix.</div></div>
+<div class="ttc" id="anamespacefileSystem_1_1system_html_a60e737c30ef97554745b80894718b966"><div class="ttname"><a href="namespacefileSystem_1_1system.html#a60e737c30ef97554745b80894718b966">fileSystem::system::get_value</a></div><div class="ttdeci">bool get_value(const uint32_t key, uint32_t &amp;value)</div><div class="ttdoc">Check and return a value stored in a filesystem.</div></div>
+<div class="ttc" id="anamespacefileSystem_1_1system_html_a6dd1acfb3549cc52fe75963363b373f0"><div class="ttname"><a href="namespacefileSystem_1_1system.html#a6dd1acfb3549cc52fe75963363b373f0">fileSystem::system::load_from_file</a></div><div class="ttdeci">bool load_from_file()</div><div class="ttdoc">Load system values from memory.</div></div>
+<div class="ttc" id="anamespacefileSystem_1_1system_html_ab53873763942f2ed8c0eea786d024738"><div class="ttname"><a href="namespacefileSystem_1_1system.html#ab53873763942f2ed8c0eea786d024738">fileSystem::system::set_value</a></div><div class="ttdeci">void set_value(const uint32_t key, const uint32_t value)</div><div class="ttdoc">Store a key/value in the filesystem.</div></div>
+<div class="ttc" id="anamespacefileSystem_1_1system_html_ae93b9a054508e5db5ec6d9d9334a0ea7"><div class="ttname"><a href="namespacefileSystem_1_1system.html#ae93b9a054508e5db5ec6d9d9334a0ea7">fileSystem::system::write_to_file</a></div><div class="ttdeci">void write_to_file()</div><div class="ttdoc">Write the system parameters to a file.</div></div>
+<div class="ttc" id="anamespacefileSystem_1_1system_html_af185ccb71059adf72fa176a8e35e82a5"><div class="ttname"><a href="namespacefileSystem_1_1system.html#af185ccb71059adf72fa176a8e35e82a5">fileSystem::system::doKeyExists</a></div><div class="ttdeci">bool doKeyExists(const uint32_t key)</div><div class="ttdoc">Return true if the given key exists in the filesystem.</div></div>
+<div class="ttc" id="anamespacefileSystem_1_1user_html_a0a454f1c3c95997e5e722ce9b2b901af"><div class="ttname"><a href="namespacefileSystem_1_1user.html#a0a454f1c3c95997e5e722ce9b2b901af">fileSystem::user::write_to_file</a></div><div class="ttdeci">void write_to_file()</div><div class="ttdoc">Write the user parameters to a file.</div></div>
+<div class="ttc" id="anamespacefileSystem_1_1user_html_a5d8d5eabae44c8e7cda3cab6647a99c1"><div class="ttname"><a href="namespacefileSystem_1_1user.html#a5d8d5eabae44c8e7cda3cab6647a99c1">fileSystem::user::load_from_file</a></div><div class="ttdeci">bool load_from_file()</div><div class="ttdoc">Load user values from memory.</div></div>
+<div class="ttc" id="anamespacefileSystem_1_1user_html_a697058cfcf4e34434c3a7499b5be07d3"><div class="ttname"><a href="namespacefileSystem_1_1user.html#a697058cfcf4e34434c3a7499b5be07d3">fileSystem::user::set_value</a></div><div class="ttdeci">void set_value(const uint32_t key, const uint32_t value)</div><div class="ttdoc">Store a key/value in the filesystem.</div></div>
+<div class="ttc" id="anamespacefileSystem_1_1user_html_a83dd002cf120eec226891cadc6f06dd7"><div class="ttname"><a href="namespacefileSystem_1_1user.html#a83dd002cf120eec226891cadc6f06dd7">fileSystem::user::get_value</a></div><div class="ttdeci">bool get_value(const uint32_t key, uint32_t &amp;value)</div><div class="ttdoc">Check and return a value stored in a filesystem.</div></div>
+<div class="ttc" id="anamespacefileSystem_1_1user_html_a846f120194aa4bbbcd153c43b29562b7"><div class="ttname"><a href="namespacefileSystem_1_1user.html#a846f120194aa4bbbcd153c43b29562b7">fileSystem::user::dropMatchingKeys</a></div><div class="ttdeci">uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect=0xffffffff)</div><div class="ttdoc">Drop all keys using the given bit prefix.</div></div>
+<div class="ttc" id="anamespacefileSystem_1_1user_html_ab47d7b159019c979f7caf76fd8e666dd"><div class="ttname"><a href="namespacefileSystem_1_1user.html#ab47d7b159019c979f7caf76fd8e666dd">fileSystem::user::doKeyExists</a></div><div class="ttdeci">bool doKeyExists(const uint32_t key)</div><div class="ttdoc">Return true if the given key exists in the filesystem.</div></div>
+<div class="ttc" id="anamespacefileSystem_html"><div class="ttname"><a href="namespacefileSystem.html">fileSystem</a></div><div class="ttdoc">Handle the interaction with the file system.</div><div class="ttdef"><b>Definition:</b> fileSystem.h:12</div></div>
+<div class="ttc" id="anamespacefileSystem_html_a794ed01a6746be8801dfd981c1e0b91a"><div class="ttname"><a href="namespacefileSystem.html#a794ed01a6746be8801dfd981c1e0b91a">fileSystem::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">clear the stored values in the currently loaded file system.</div></div>
+<div class="ttc" id="anamespacefileSystem_html_a914e05035f6279bcf4a06b6a0ce6d59d"><div class="ttname"><a href="namespacefileSystem.html#a914e05035f6279bcf4a06b6a0ce6d59d">fileSystem::shutdown</a></div><div class="ttdeci">void shutdown()</div><div class="ttdoc">call once on program stop.</div></div>
+<div class="ttc" id="anamespacefileSystem_html_ae7d2c57c1123964513ac25bbf5272110"><div class="ttname"><a href="namespacefileSystem.html#ae7d2c57c1123964513ac25bbf5272110">fileSystem::clear_internal_fs</a></div><div class="ttdeci">void clear_internal_fs()</div><div class="ttdoc">hard clean of the whole filesystem, you will loose all stored data.</div></div>
+<div class="ttc" id="anamespaceuser_html"><div class="ttname"><a href="namespaceuser.html">user</a></div><div class="ttdoc">Contains code handling custom user mode functions for indexable strips.</div><div class="ttdef"><b>Definition:</b> functions.h:20</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

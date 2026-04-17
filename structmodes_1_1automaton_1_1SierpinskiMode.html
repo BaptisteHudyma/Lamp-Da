@@ -126,7 +126,7 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto
 <tr class="memitem:a8208ea04921b3b18de54387ec1efcb09"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1BasicMode.html#a8208ea04921b3b18de54387ec1efcb09">sunset_update</a> (auto &amp;ctx, float progress)</td></tr>
 <tr class="memdesc:a8208ea04921b3b18de54387ec1efcb09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when sunset mode is updated (optional)  <br /></td></tr>
 <tr class="separator:a8208ea04921b3b18de54387ec1efcb09"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a869b044a34d61d2803bd59c59a39f630"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1BasicMode.html#a869b044a34d61d2803bd59c59a39f630">brightness_update</a> (auto &amp;ctx, brightness_t brightness)</td></tr>
+<tr class="memitem:a869b044a34d61d2803bd59c59a39f630"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1BasicMode.html#a869b044a34d61d2803bd59c59a39f630">brightness_update</a> (auto &amp;ctx, <a class="el" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> brightness)</td></tr>
 <tr class="memdesc:a869b044a34d61d2803bd59c59a39f630"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when brightness changes (optional)  <br /></td></tr>
 <tr class="separator:a869b044a34d61d2803bd59c59a39f630"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2d4f8858445985a21ee78e0e347d38d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1BasicMode.html#ac2d4f8858445985a21ee78e0e347d38d">custom_ramp_update</a> (auto &amp;ctx, uint8_t rampValue)</td></tr>
@@ -203,7 +203,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">brightness_t&#160;</td>
+          <td class="paramtype"><a class="el" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a>&#160;</td>
           <td class="paramname"><em>brightness</em>&#160;</td>
         </tr>
         <tr>
@@ -731,7 +731,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structmodes_1_1automaton_1_1SierpinskiMode.html#a54240a8cac531931faa200b823c2a525">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
-<div class="ttc" id="astructmodes_1_1automaton_1_1SierpinskiMode_html_a54240a8cac531931faa200b823c2a525"><div class="ttname"><a href="structmodes_1_1automaton_1_1SierpinskiMode.html#a54240a8cac531931faa200b823c2a525">modes::automaton::SierpinskiMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">Hint manager that we have a custom ramp.</div><div class="ttdef"><b>Definition:</b> automaton.hpp:199</div></div>
+<div class="ttc" id="astructmodes_1_1automaton_1_1SierpinskiMode_html_a54240a8cac531931faa200b823c2a525"><div class="ttname"><a href="structmodes_1_1automaton_1_1SierpinskiMode.html#a54240a8cac531931faa200b823c2a525">modes::automaton::SierpinskiMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">Hint manager that we have a custom ramp.</div><div class="ttdef"><b>Definition:</b> automaton.hpp:201</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
 <div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>

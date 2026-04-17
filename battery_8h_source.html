@@ -77,77 +77,91 @@ $(function() {
   <div class="headertitle"><div class="title">battery.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef BATTERY_H</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define BATTERY_H</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;src/system/utils/curves.h&quot;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;src/system/utils/utils.h&quot;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span>battery {</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">// get the battery voltage, untreated</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">extern</span> uint16_t get_raw_battery_voltage_mv();</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">extern</span> <span class="keywordtype">bool</span> is_battery_usable_as_power_source();</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">extern</span> <span class="keywordtype">bool</span> can_battery_be_charged();</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">inline</span> uint16_t liion_mv_to_battery_percent(<span class="keyword">const</span> uint16_t liionLevel_mv, <span class="keyword">const</span> uint8_t batteryCountSerie)</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>{</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  <span class="keyword">using </span>curve_t = <a class="code hl_class" href="classcurves_1_1LinearCurve.html">curves::LinearCurve&lt;uint16_t, uint16_t&gt;</a>;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  <span class="keyword">static</span> curve_t liionVoltagePercentToRealPercent({<span class="comment">// low end of the curve, sharp drop</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                                                   curve_t::point_t {3000, 0},</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                                                   curve_t::point_t {3210, 500},</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                                                   curve_t::point_t {3350, 1000},</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                                   curve_t::point_t {3430, 1500},</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                                                   curve_t::point_t {3470, 2000},</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                                                   <span class="comment">// linear approximation works well enough in range 20-90%</span></div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                                                   curve_t::point_t {4080, 9000},</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                                                   curve_t::point_t {4110, 9500},</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                                                   curve_t::point_t {4180, 10000}});</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  <span class="comment">// sample the curve</span></div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keywordflow">return</span> liionVoltagePercentToRealPercent.<a class="code hl_function" href="classcurves_1_1LinearCurve.html#a935d650fb3a071f57781ec4619209a28">sample</a>(liionLevel_mv / batteryCountSerie);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keyword">inline</span> uint16_t get_level_percent(<span class="keyword">const</span> uint16_t batteryVoltage_mV, <span class="keyword">const</span> uint8_t cellCount = batteryCount)</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>{</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  <span class="keywordflow">return</span> liion_mv_to_battery_percent(batteryVoltage_mV, cellCount);</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="keyword">inline</span> uint16_t get_level_safe(<span class="keyword">const</span> uint16_t battery_mv, <span class="keyword">const</span> uint8_t cellCount = batteryCount)</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>{</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  <span class="comment">// save the init values</span></div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>  <span class="keyword">static</span> <span class="keyword">const</span> uint16_t minSafeLevel_percent = get_level_percent(batteryMinVoltageSafe_mV);</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  <span class="keyword">static</span> <span class="keyword">const</span> uint16_t maxSafeLevel_percent = get_level_percent(batteryMaxVoltageSafe_mV);</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  <span class="comment">// get the result of the total battery life, map it to the safe battery level</span></div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  <span class="comment">// indicated by user</span></div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  <span class="keywordflow">return</span> lmpd_constrain&lt;uint16_t&gt;(</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>          lmpd_map&lt;uint16_t&gt;(</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                  get_level_percent(battery_mv, cellCount), minSafeLevel_percent, maxSafeLevel_percent, 0, 10000),</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>          0,</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>          10000);</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="comment">// returns the battery level, corresponding to user safe choice (0-10000)</span></div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">inline</span> uint16_t get_battery_level()</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>{</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  <span class="comment">// get the result of the total battery life, map it to the safe battery level</span></div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  <span class="comment">// indicated by user</span></div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  <span class="keywordflow">return</span> get_level_safe(get_raw_battery_voltage_mv());</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>uint16_t get_battery_minimum_cell_level();</div>
+<a href="battery_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#ifndef BATTERY_H</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#define BATTERY_H</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="curves_8h.html">src/system/utils/curves.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="utils_8h.html">src/system/utils/utils.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="namespacebattery.html">   14</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacebattery.html">battery</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespacebattery.html#a0234df80d5a926def6591c193c74a2d0">   17</a></span><span class="keyword">extern</span> uint16_t <a class="code hl_function" href="namespacebattery.html#a0234df80d5a926def6591c193c74a2d0">get_raw_battery_voltage_mv</a>();</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespacebattery.html#a5a2f5b10662f5e7c08355dd93cc0f7cc">   23</a></span><span class="keyword">extern</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacebattery.html#a5a2f5b10662f5e7c08355dd93cc0f7cc">is_battery_usable_as_power_source</a>();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="namespacebattery.html#ab14432179fa6a13e86aa329410faeab4">   30</a></span><span class="keyword">extern</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacebattery.html#ab14432179fa6a13e86aa329410faeab4">can_battery_be_charged</a>();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespacebattery.html#af87d68eab4c78d4d45a2b7b4b2c53637">   38</a></span><span class="keyword">inline</span> uint16_t <a class="code hl_function" href="namespacebattery.html#af87d68eab4c78d4d45a2b7b4b2c53637">liion_mv_to_battery_percent</a>(<span class="keyword">const</span> uint16_t liionLevel_mv, <span class="keyword">const</span> uint8_t batteryCountSerie)</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>{</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  <span class="keyword">using </span>curve_t = <a class="code hl_class" href="classcurves_1_1LinearCurve.html">curves::LinearCurve&lt;uint16_t, uint16_t&gt;</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="keyword">static</span> curve_t liionVoltagePercentToRealPercent({<span class="comment">// low end of the curve, sharp drop</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                                                   curve_t::point_t {3000, 0},</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                                                   curve_t::point_t {3210, 500},</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                                                   curve_t::point_t {3350, 1000},</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                                                   curve_t::point_t {3430, 1500},</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                                   curve_t::point_t {3470, 2000},</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                                                   <span class="comment">// linear approximation works well enough in range 20-90%</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                                                   curve_t::point_t {4080, 9000},</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                                                   curve_t::point_t {4110, 9500},</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                                                   curve_t::point_t {4180, 10000}});</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  <span class="comment">// sample the curve</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  <span class="keywordflow">return</span> liionVoltagePercentToRealPercent.<a class="code hl_function" href="classcurves_1_1LinearCurve.html#a935d650fb3a071f57781ec4619209a28">sample</a>(liionLevel_mv / batteryCountSerie);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="namespacebattery.html#abd177b401a7a31b7b727b156991a6472">   61</a></span><span class="keyword">inline</span> uint16_t <a class="code hl_function" href="namespacebattery.html#abd177b401a7a31b7b727b156991a6472">get_level_percent</a>(<span class="keyword">const</span> uint16_t batteryVoltage_mV, <span class="keyword">const</span> uint8_t cellCount = <a class="code hl_variable" href="system_2utils_2constants_8h.html#a824e99459fdc4ee8627b3b7722af62a3">batteryCount</a>)</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>{</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespacebattery.html#af87d68eab4c78d4d45a2b7b4b2c53637">liion_mv_to_battery_percent</a>(batteryVoltage_mV, cellCount);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="namespacebattery.html#abf65ac6cd3198a794e7d53e1acff6768">   69</a></span><span class="keyword">inline</span> uint16_t <a class="code hl_function" href="namespacebattery.html#abf65ac6cd3198a794e7d53e1acff6768">get_level_safe</a>(<span class="keyword">const</span> uint16_t battery_mv, <span class="keyword">const</span> uint8_t cellCount = <a class="code hl_variable" href="system_2utils_2constants_8h.html#a824e99459fdc4ee8627b3b7722af62a3">batteryCount</a>)</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>{</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  <span class="comment">// save the init values</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  <span class="keyword">static</span> <span class="keyword">const</span> uint16_t minSafeLevel_percent = <a class="code hl_function" href="namespacebattery.html#abd177b401a7a31b7b727b156991a6472">get_level_percent</a>(<a class="code hl_variable" href="system_2utils_2constants_8h.html#a99f377936eaa857d1f7993d7ef8ff0c3">batteryMinVoltageSafe_mV</a>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  <span class="keyword">static</span> <span class="keyword">const</span> uint16_t maxSafeLevel_percent = <a class="code hl_function" href="namespacebattery.html#abd177b401a7a31b7b727b156991a6472">get_level_percent</a>(<a class="code hl_variable" href="system_2utils_2constants_8h.html#a4a9569a840b4830b9fd108d475104157">batteryMaxVoltageSafe_mV</a>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>  <span class="comment">// get the result of the total battery life, map it to the safe battery level</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>  <span class="comment">// indicated by user</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  <span class="keywordflow">return</span> lmpd_constrain&lt;uint16_t&gt;(</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>          lmpd_map&lt;uint16_t&gt;(</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                  <a class="code hl_function" href="namespacebattery.html#abd177b401a7a31b7b727b156991a6472">get_level_percent</a>(battery_mv, cellCount), minSafeLevel_percent, maxSafeLevel_percent, 0, 10000),</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>          0,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>          10000);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="namespacebattery.html#a8260511d01ce8d657b767f00ef15c55e">   85</a></span><span class="keyword">inline</span> uint16_t <a class="code hl_function" href="namespacebattery.html#a8260511d01ce8d657b767f00ef15c55e">get_battery_level</a>()</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>{</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>  <span class="comment">// get the result of the total battery life, map it to the safe battery level</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>  <span class="comment">// indicated by user</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespacebattery.html#abf65ac6cd3198a794e7d53e1acff6768">get_level_safe</a>(<a class="code hl_function" href="namespacebattery.html#a0234df80d5a926def6591c193c74a2d0">get_raw_battery_voltage_mv</a>());</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>uint16_t get_battery_maximum_cell_level();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="namespacebattery.html#a67982d7a65f528300e9bbe2d430781be">   95</a></span>uint16_t <a class="code hl_function" href="namespacebattery.html#a67982d7a65f528300e9bbe2d430781be">get_battery_minimum_cell_level</a>();</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>} <span class="comment">// namespace battery</span></div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclasscurves_1_1LinearCurve_html"><div class="ttname"><a href="classcurves_1_1LinearCurve.html">curves::LinearCurve</a></div><div class="ttdoc">Given a set of points, will fit multiple linear segments to it.</div><div class="ttdef"><b>Definition:</b> curves.h:29</div></div>
-<div class="ttc" id="aclasscurves_1_1LinearCurve_html_a935d650fb3a071f57781ec4619209a28"><div class="ttname"><a href="classcurves_1_1LinearCurve.html#a935d650fb3a071f57781ec4619209a28">curves::LinearCurve::sample</a></div><div class="ttdeci">U sample(const T x) const</div><div class="ttdoc">Sample a point Y from a given x.</div><div class="ttdef"><b>Definition:</b> curves.h:76</div></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="namespacebattery.html#a7a9552f75609eb01bd78c88b28eabe54">  100</a></span>uint16_t <a class="code hl_function" href="namespacebattery.html#a7a9552f75609eb01bd78c88b28eabe54">get_battery_maximum_cell_level</a>();</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>} <span class="comment">// namespace battery</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclasscurves_1_1LinearCurve_html"><div class="ttname"><a href="classcurves_1_1LinearCurve.html">curves::LinearCurve</a></div><div class="ttdoc">Given a set of points, will fit multiple linear segments to it.</div><div class="ttdef"><b>Definition:</b> curves.h:34</div></div>
+<div class="ttc" id="aclasscurves_1_1LinearCurve_html_a935d650fb3a071f57781ec4619209a28"><div class="ttname"><a href="classcurves_1_1LinearCurve.html#a935d650fb3a071f57781ec4619209a28">curves::LinearCurve::sample</a></div><div class="ttdeci">U sample(const T x) const</div><div class="ttdoc">Sample a point Y from a given x.</div><div class="ttdef"><b>Definition:</b> curves.h:81</div></div>
+<div class="ttc" id="acurves_8h_html"><div class="ttname"><a href="curves_8h.html">curves.h</a></div><div class="ttdoc">Define curves types, that can be sampled.</div></div>
+<div class="ttc" id="anamespacebattery_html"><div class="ttname"><a href="namespacebattery.html">battery</a></div><div class="ttdoc">Handle the battery measurments and gestion.</div><div class="ttdef"><b>Definition:</b> battery.h:14</div></div>
+<div class="ttc" id="anamespacebattery_html_a0234df80d5a926def6591c193c74a2d0"><div class="ttname"><a href="namespacebattery.html#a0234df80d5a926def6591c193c74a2d0">battery::get_raw_battery_voltage_mv</a></div><div class="ttdeci">uint16_t get_raw_battery_voltage_mv()</div><div class="ttdoc">get the battery voltage, untreated</div></div>
+<div class="ttc" id="anamespacebattery_html_a5a2f5b10662f5e7c08355dd93cc0f7cc"><div class="ttname"><a href="namespacebattery.html#a5a2f5b10662f5e7c08355dd93cc0f7cc">battery::is_battery_usable_as_power_source</a></div><div class="ttdeci">bool is_battery_usable_as_power_source()</div><div class="ttdoc">return true if the battery pack can be used as a energy source This status is updated after calling g...</div></div>
+<div class="ttc" id="anamespacebattery_html_a67982d7a65f528300e9bbe2d430781be"><div class="ttname"><a href="namespacebattery.html#a67982d7a65f528300e9bbe2d430781be">battery::get_battery_minimum_cell_level</a></div><div class="ttdeci">uint16_t get_battery_minimum_cell_level()</div><div class="ttdoc">Return the level of the cell of the stack with the minimum battery.</div></div>
+<div class="ttc" id="anamespacebattery_html_a7a9552f75609eb01bd78c88b28eabe54"><div class="ttname"><a href="namespacebattery.html#a7a9552f75609eb01bd78c88b28eabe54">battery::get_battery_maximum_cell_level</a></div><div class="ttdeci">uint16_t get_battery_maximum_cell_level()</div><div class="ttdoc">Return the level of the cell of the stack with the maximum battery.</div></div>
+<div class="ttc" id="anamespacebattery_html_a8260511d01ce8d657b767f00ef15c55e"><div class="ttname"><a href="namespacebattery.html#a8260511d01ce8d657b767f00ef15c55e">battery::get_battery_level</a></div><div class="ttdeci">uint16_t get_battery_level()</div><div class="ttdoc">returns the battery level, corresponding to user safe choice (0-10000)</div><div class="ttdef"><b>Definition:</b> battery.h:85</div></div>
+<div class="ttc" id="anamespacebattery_html_ab14432179fa6a13e86aa329410faeab4"><div class="ttname"><a href="namespacebattery.html#ab14432179fa6a13e86aa329410faeab4">battery::can_battery_be_charged</a></div><div class="ttdeci">bool can_battery_be_charged()</div><div class="ttdoc">Return true if this battery can be charged Check only for validity, not voltage. If this is false,...</div></div>
+<div class="ttc" id="anamespacebattery_html_abd177b401a7a31b7b727b156991a6472"><div class="ttname"><a href="namespacebattery.html#abd177b401a7a31b7b727b156991a6472">battery::get_level_percent</a></div><div class="ttdeci">uint16_t get_level_percent(const uint16_t batteryVoltage_mV, const uint8_t cellCount=batteryCount)</div><div class="ttdoc">transform a battery voltage measurment to a percent * 100 estimate</div><div class="ttdef"><b>Definition:</b> battery.h:61</div></div>
+<div class="ttc" id="anamespacebattery_html_abf65ac6cd3198a794e7d53e1acff6768"><div class="ttname"><a href="namespacebattery.html#abf65ac6cd3198a794e7d53e1acff6768">battery::get_level_safe</a></div><div class="ttdeci">uint16_t get_level_safe(const uint16_t battery_mv, const uint8_t cellCount=batteryCount)</div><div class="ttdoc">returns the battery level, mapped to the desired safe battery level</div><div class="ttdef"><b>Definition:</b> battery.h:69</div></div>
+<div class="ttc" id="anamespacebattery_html_af87d68eab4c78d4d45a2b7b4b2c53637"><div class="ttname"><a href="namespacebattery.html#af87d68eab4c78d4d45a2b7b4b2c53637">battery::liion_mv_to_battery_percent</a></div><div class="ttdeci">uint16_t liion_mv_to_battery_percent(const uint16_t liionLevel_mv, const uint8_t batteryCountSerie)</div><div class="ttdoc">convert a single liion battery voltage to a percent level model</div><div class="ttdef"><b>Definition:</b> battery.h:38</div></div>
+<div class="ttc" id="asystem_2utils_2constants_8h_html_a4a9569a840b4830b9fd108d475104157"><div class="ttname"><a href="system_2utils_2constants_8h.html#a4a9569a840b4830b9fd108d475104157">batteryMaxVoltageSafe_mV</a></div><div class="ttdeci">static constexpr uint16_t batteryMaxVoltageSafe_mV</div><div class="ttdoc">max voltage of a li-ion cell to maximise lifetime</div><div class="ttdef"><b>Definition:</b> constants.h:109</div></div>
+<div class="ttc" id="asystem_2utils_2constants_8h_html_a824e99459fdc4ee8627b3b7722af62a3"><div class="ttname"><a href="system_2utils_2constants_8h.html#a824e99459fdc4ee8627b3b7722af62a3">batteryCount</a></div><div class="ttdeci">static constexpr uint8_t batteryCount</div><div class="ttdoc">number of batteries for this model</div><div class="ttdef"><b>Definition:</b> constants.h:52</div></div>
+<div class="ttc" id="asystem_2utils_2constants_8h_html_a99f377936eaa857d1f7993d7ef8ff0c3"><div class="ttname"><a href="system_2utils_2constants_8h.html#a99f377936eaa857d1f7993d7ef8ff0c3">batteryMinVoltageSafe_mV</a></div><div class="ttdeci">static constexpr uint16_t batteryMinVoltageSafe_mV</div><div class="ttdoc">min voltage of a li-ion cell to maximise lifetime</div><div class="ttdef"><b>Definition:</b> constants.h:115</div></div>
+<div class="ttc" id="autils_8h_html"><div class="ttname"><a href="utils_8h.html">utils.h</a></div><div class="ttdoc">Define useful functions.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['behavior_2eh_0',['behavior.h',['../behavior_8h.html',1,'']]],
-  ['bq25713_2eh_1',['BQ25713.h',['../BQ25713_8h.html',1,'']]],
-  ['bq76905_2eh_2',['BQ76905.h',['../BQ76905_8h.html',1,'']]]
+  ['alerts_2eh_0',['alerts.h',['../alerts_8h.html',1,'']]],
+  ['assert_2eh_1',['assert.h',['../assert_8h.html',1,'']]],
+  ['aurora_2ehpp_2',['aurora.hpp',['../aurora_8hpp.html',1,'']]],
+  ['automaton_2ehpp_3',['automaton.hpp',['../automaton_8hpp.html',1,'']]]
 ];

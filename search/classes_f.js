@@ -7,6 +7,5 @@ var searchData=
   ['qhassystem_4',['QHasSystem',['../structmodes_1_1details_1_1anyOf_1_1QHasSystem.html',1,'modes::details::anyOf&lt; TupleTy, hasError &gt;::QHasSystem&lt; Ty &gt;'],['../structmodes_1_1details_1_1asTableFor_1_1QHasSystem.html',1,'modes::details::asTableFor&lt; TupleTy, hasError &gt;::QHasSystem&lt; Ty &gt;']]],
   ['qismode_5',['QIsMode',['../structmodes_1_1details_1_1allOf_1_1QIsMode.html',1,'modes::details::allOf']]],
   ['qstateok_6',['QStateOk',['../structmodes_1_1details_1_1allOf_1_1QStateOk.html',1,'modes::details::allOf']]],
-  ['queue_7',['queue',['../structqueue.html',1,'']]],
-  ['quserthread_8',['QUserThread',['../structmodes_1_1details_1_1anyOf_1_1QUserThread.html',1,'modes::details::anyOf&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;'],['../structmodes_1_1details_1_1asTableFor_1_1QUserThread.html',1,'modes::details::asTableFor&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;']]]
+  ['quserthread_7',['QUserThread',['../structmodes_1_1details_1_1anyOf_1_1QUserThread.html',1,'modes::details::anyOf&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;'],['../structmodes_1_1details_1_1asTableFor_1_1QUserThread.html',1,'modes::details::asTableFor&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;']]]
 ];

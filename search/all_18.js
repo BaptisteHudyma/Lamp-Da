@@ -1,9 +1,23 @@
 var searchData=
 [
-  ['x_0',['x',['../structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1BubbleTy.html#a4946d0dec93633c1e4d20ad6e9207f65',1,'modes::custom::nudz::NudzBeerGlassMode::BubbleTy::x()'],['../structmodes_1_1XYTy.html#adacf0fd2eef8f36b9993e1c1f96b4d53',1,'modes::XYTy::x()'],['../structmodes_1_1HelixXYZTy.html#ac1ded3acb76d34ead46399b3016c716a',1,'modes::HelixXYZTy::x()'],['../classutils_1_1ColorSpace_1_1XYZ.html#a0c8dbea033ebbb3d900737984456f4c5',1,'utils::ColorSpace::XYZ::x()'],['../structcurves_1_1Point.html#a87a6e1aea99749f2ece388d196c93cbf',1,'curves::Point::x()'],['../structvec2d.html#ab11d7ba36d911a9bc066e337b767b411',1,'vec2d::x()']]],
-  ['xdecal_1',['xdecal',['../structmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode_1_1StateTy.html#a88058d425f07a503e87f8be96be8c309',1,'modes::custom::nudz::NudzScrollImageMode::StateTy::xdecal()'],['../structmodes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode_1_1StateTy.html#a12df0731c3e6a6898c51dc54f8e7ee97',1,'modes::custom::nudz::NudzViolonsaoulsMode::StateTy::xdecal()']]],
-  ['xdirection_2',['xdirection',['../structmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode_1_1StateTy.html#ac871fb053d76fc5cbcbf2c06d9891191',1,'modes::custom::nudz::NudzScrollImageMode::StateTy::xdirection()'],['../structmodes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode_1_1StateTy.html#a3a2f150fbadd5bba7a2055808c7ff5f0',1,'modes::custom::nudz::NudzViolonsaoulsMode::StateTy::xdirection()']]],
-  ['xscale_3',['xScale',['../structmodes_1_1default__modes_1_1FireMode.html#a65f6a981e15cabf42ab1d1ad85aa592b',1,'modes::default_modes::FireMode']]],
-  ['xyty_4',['XYTy',['../structmodes_1_1XYTy.html',1,'modes']]],
-  ['xyz_5',['XYZ',['../classutils_1_1ColorSpace_1_1XYZ.html',1,'utils::ColorSpace::XYZ'],['../classutils_1_1ColorSpace_1_1XYZ.html#a1259c3f7d7431d8f6726f4d628edb3db',1,'utils::ColorSpace::XYZ::XYZ(const COLOR &amp;c)'],['../classutils_1_1ColorSpace_1_1XYZ.html#af8b1769be7efa7b5afd03d60cb89e3de',1,'utils::ColorSpace::XYZ::XYZ(double x, double y, double z)']]]
+  ['w_0',['w',['../structvec4d.html#a180b57f78d97b027c24853c3c384e2f6',1,'vec4d']]],
+  ['wait_5fnotification_1',['wait_notification',['../threads_8h.html#a817881adcfb249783085040e5abc5352',1,'threads.h']]],
+  ['warmfluorescent_2',['WarmFluorescent',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a9edb7631bfd8f02b59f7c5d4d192ae2b',1,'modes::colors']]],
+  ['wastriggered_3',['wasTriggered',['../structbutton_1_1ButtonStateTy.html#a1473cf68fbbd5eaafc18f0a13ba4c387',1,'button::ButtonStateTy']]],
+  ['watercolor_4',['waterColor',['../structmodes_1_1automaton_1_1BubbleMode.html#a6cbf25b87204710daab85b153c6b9831',1,'modes::automaton::BubbleMode']]],
+  ['wave_5fampl_5',['wave_ampl',['../structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#a1a281829945744f1ad94afcb4088321c',1,'modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
+  ['wheat_6',['Wheat',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca957a3694a82989814870bfc55365abc4',1,'modes::colors']]],
+  ['when_5flast_5fupdate_5fbrightness_7',['when_last_update_brightness',['../namespacebrightness.html#a7b78f89f8721bb5057e010a44bce3af8',1,'brightness']]],
+  ['whichfavoritepending_8',['whichFavoritePending',['../structmodes_1_1ModeManagerTy_1_1StateTy.html#aada03d554d2b4b984f5ac0eeac7be8c6',1,'modes::ModeManagerTy::StateTy']]],
+  ['white_9',['White',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caa9350f07c956be56464b31c73b7cb043',1,'modes::colors']]],
+  ['whitesmoke_10',['WhiteSmoke',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca6f3346d6a056546a91b69f21fe998056',1,'modes::colors']]],
+  ['width_11',['width',['../structViolonsaoulsImageTy.html#a76a0b2110e6775ad52baa826302ab98a',1,'ViolonsaoulsImageTy::width()'],['../structHuit__sixImageTy.html#a11cae317fbd1690e9625767bec352cc1',1,'Huit_sixImageTy::width()'],['../structHeinekenImageTy.html#adcf2362607b093c6df30af0abacfc35e',1,'HeinekenImageTy::width()']]],
+  ['wrap_5fangle_12',['wrap_angle',['../utils_8h.html#a503b25a2fffce4404c956c7b3320e340',1,'utils.h']]],
+  ['wrapper_13',['Wrapper',['../classimu_1_1Wrapper.html',1,'imu']]],
+  ['write_5fparameters_14',['write_parameters',['../structmodes_1_1ContextTy.html#a640e067c0a6c24bc19c7d7baff6fd7aa',1,'modes::ContextTy::write_parameters()'],['../namespaceuser.html#a42eba66fe130830c3d5371d349d11764',1,'user::write_parameters()'],['../structmodes_1_1BasicMode.html#a236039ce6cd71c62c82ee97757b44a7b',1,'modes::BasicMode::write_parameters()']]],
+  ['write_5ftemporary_5foutput_5flimits_15',['write_temporary_output_limits',['../namespaceoutputPower.html#a395998707d1c385298ff0fcb433cb132',1,'outputPower']]],
+  ['write_5fto_5ffile_16',['write_to_file',['../namespacefileSystem_1_1system.html#ae93b9a054508e5db5ec6d9d9334a0ea7',1,'fileSystem::system::write_to_file()'],['../namespacefileSystem_1_1user.html#a0a454f1c3c95997e5e722ce9b2b901af',1,'fileSystem::user::write_to_file()']]],
+  ['write_5fto_5fmemory_17',['write_to_memory',['../namespacestatistics.html#a5ecc922f8b863953f7eb72dd0caae4a9',1,'statistics']]],
+  ['write_5fvoltage_18',['write_voltage',['../namespaceoutputPower.html#a3b0d85ec8e378db5e668b3cf1af64bd8',1,'outputPower']]],
+  ['writing_20your_20own_20lighting_20mode_19',['Writing your own lighting mode',['../md_docs_WritingModes.html',1,'']]]
 ];

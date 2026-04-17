@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['utils_2ehpp_0',['utils.hpp',['../audio_2utils_8hpp.html',1,'(Global Namespace)'],['../colors_2utils_8hpp.html',1,'(Global Namespace)'],['../imu_2utils_8hpp.html',1,'(Global Namespace)']]]
+  ['lamp_5ftype_2ehpp_0',['lamp_type.hpp',['../lamp__type_8hpp.html',1,'']]],
+  ['legacy_5fmodes_2ehpp_1',['legacy_modes.hpp',['../legacy__modes_8hpp.html',1,'']]]
 ];

@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>alerts</b></li><li class="navelem"><a class="el" href="classalerts_1_1AlertManager__t.html">AlertManager_t</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacealerts.html">alerts</a></li><li class="navelem"><a class="el" href="classalerts_1_1AlertManager__t.html">AlertManager_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -89,15 +89,15 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6dcfacd07ffe8a37bbc3f56c1e799971"><td class="memItemLeft" align="right" valign="top"><a id="a6dcfacd07ffe8a37bbc3f56c1e799971" name="a6dcfacd07ffe8a37bbc3f56c1e799971"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>raise</b> (const Type type)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>raise</b> (const <a class="el" href="namespacealerts.html#a67e294d99af221b50b86ff2156aa91a3">Type</a> type)</td></tr>
 <tr class="memdesc:a6dcfacd07ffe8a37bbc3f56c1e799971"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raise an alert. <br /></td></tr>
 <tr class="separator:a6dcfacd07ffe8a37bbc3f56c1e799971"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9df44b46ff892423bfc88351ff4228b"><td class="memItemLeft" align="right" valign="top"><a id="af9df44b46ff892423bfc88351ff4228b" name="af9df44b46ff892423bfc88351ff4228b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> (const Type type)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> (const <a class="el" href="namespacealerts.html#a67e294d99af221b50b86ff2156aa91a3">Type</a> type)</td></tr>
 <tr class="memdesc:af9df44b46ff892423bfc88351ff4228b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear an alert. <br /></td></tr>
 <tr class="separator:af9df44b46ff892423bfc88351ff4228b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28718bfa93478b5b1c1f92bc8a95f54c"><td class="memItemLeft" align="right" valign="top"><a id="a28718bfa93478b5b1c1f92bc8a95f54c" name="a28718bfa93478b5b1c1f92bc8a95f54c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_raised</b> (const Type type) const</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_raised</b> (const <a class="el" href="namespacealerts.html#a67e294d99af221b50b86ff2156aa91a3">Type</a> type) const</td></tr>
 <tr class="memdesc:a28718bfa93478b5b1c1f92bc8a95f54c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the target alert is raised. <br /></td></tr>
 <tr class="separator:a28718bfa93478b5b1c1f92bc8a95f54c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a248da7d7468d448c1201ca301aab39e6"><td class="memItemLeft" align="right" valign="top"><a id="a248da7d7468d448c1201ca301aab39e6" name="a248da7d7468d448c1201ca301aab39e6"></a>
@@ -105,7 +105,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_clear</b> () const
 <tr class="memdesc:a248da7d7468d448c1201ca301aab39e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if no alerts are raised. <br /></td></tr>
 <tr class="separator:a248da7d7468d448c1201ca301aab39e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a106358f98a103461d41b0e409d9a3fc8"><td class="memItemLeft" align="right" valign="top"><a id="a106358f98a103461d41b0e409d9a3fc8" name="a106358f98a103461d41b0e409d9a3fc8"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_time_since_raised</b> (const Type type) const</td></tr>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_time_since_raised</b> (const <a class="el" href="namespacealerts.html#a67e294d99af221b50b86ff2156aa91a3">Type</a> type) const</td></tr>
 <tr class="memdesc:a106358f98a103461d41b0e409d9a3fc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">the time in milliseconds since this alert was raised, or zero if it's not. This raise time is updated by a <a class="el" href="classalerts_1_1AlertManager__t.html#a6dcfacd07ffe8a37bbc3f56c1e799971" title="Raise an alert.">raise()</a> function call. <br /></td></tr>
 <tr class="separator:a106358f98a103461d41b0e409d9a3fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c761182fc95c2f54f1686a81ca1b56a"><td class="memItemLeft" align="right" valign="top"><a id="a4c761182fc95c2f54f1686a81ca1b56a" name="a4c761182fc95c2f54f1686a81ca1b56a"></a>
@@ -123,9 +123,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>can_use_usb_port</b> 
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the whole alerts logic. Use this to raise and clear alerts, and make decisions based on those alerts. Alerts can be raised and cleared on their own. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>src/system/logic/<a class="el" href="alerts_8h_source.html">alerts.h</a></li>
-<li>src/system/logic/alerts.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

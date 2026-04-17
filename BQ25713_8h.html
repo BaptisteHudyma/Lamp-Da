@@ -76,15 +76,12 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">BQ25713.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;cmath&gt;</code><br />
-<code>#include &lt;cstdint&gt;</code><br />
-</div>
+
 <p><a href="BQ25713_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -145,23 +142,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbq25713_1_1BQ25713_1_1Regt_1_1DeviceID.html">bq25713::BQ25713::Regt::DeviceID</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:ac53f25ffb384c817aa47772fff2ee63e"><td class="memItemLeft" align="right" valign="top"><a id="ac53f25ffb384c817aa47772fff2ee63e" name="ac53f25ffb384c817aa47772fff2ee63e"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>GETMASK</b>(index,  size)&#160;&#160;&#160;(((1 &lt;&lt; (size)) - 1) &lt;&lt; (index))</td></tr>
-<tr class="separator:ac53f25ffb384c817aa47772fff2ee63e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a313c096e8acd01970ca4b732f6feb099"><td class="memItemLeft" align="right" valign="top"><a id="a313c096e8acd01970ca4b732f6feb099" name="a313c096e8acd01970ca4b732f6feb099"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>READFROM</b>(data,  index,  size)&#160;&#160;&#160;(((data) &amp; GETMASK((index), (size))) &gt;&gt; (index))</td></tr>
-<tr class="separator:a313c096e8acd01970ca4b732f6feb099"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af1e7ae2afb5fba6fe89bf838b009704e"><td class="memItemLeft" align="right" valign="top"><a id="af1e7ae2afb5fba6fe89bf838b009704e" name="af1e7ae2afb5fba6fe89bf838b009704e"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>WRITETO</b>(data,  index,  size,  value)&#160;&#160;&#160;((data) = ((data) &amp; (~GETMASK((index), (size)))) | ((value) &lt;&lt; (index)))</td></tr>
-<tr class="separator:af1e7ae2afb5fba6fe89bf838b009704e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7dbb8f4b94cb56257c5f12a9db9a6f0d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="BQ25713_8h.html#a7dbb8f4b94cb56257c5f12a9db9a6f0d">FIELD</a>(data,  name,  index,  size)</td></tr>
-<tr class="separator:a7dbb8f4b94cb56257c5f12a9db9a6f0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1829cd9726b5b685d7ba47bee7dda117"><td class="memItemLeft" align="right" valign="top"><a id="a1829cd9726b5b685d7ba47bee7dda117" name="a1829cd9726b5b685d7ba47bee7dda117"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>FIELD_RO</b>(data,  name,  index,  size)&#160;&#160;&#160;  inline decltype(data) name() { return READFROM(data, index, size); }</td></tr>
-<tr class="separator:a1829cd9726b5b685d7ba47bee7dda117"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -259,50 +239,7 @@ constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>bq25713
 <div class="textblock"><dl class="section author"><dt>Author</dt><dd>Baptiste Hudyma</dd></dl>
 <p>Library for basic interfacing with BQ25713 battery management IC from TI</p>
 <p>Based on Lorro's implementation for BQ25703A driver </p>
-</div><h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="a7dbb8f4b94cb56257c5f12a9db9a6f0d" name="a7dbb8f4b94cb56257c5f12a9db9a6f0d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7dbb8f4b94cb56257c5f12a9db9a6f0d">&#9670;&#160;</a></span>FIELD</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define FIELD</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">data, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">name, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">index, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">size&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">  <span class="keyword">inline</span> <span class="keyword">decltype</span>(data) name() { <span class="keywordflow">return</span> READFROM(data, index, size); } \</div>
-<div class="line">  <span class="keyword">inline</span> <span class="keywordtype">void</span> set_##name(<span class="keyword">decltype</span>(data) value) { WRITETO(data, index, size, value); }</div>
-</div><!-- fragment -->
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
+</div><h2 class="groupheader">Variable Documentation</h2>
 <a id="a0226f52a2433d1aa1553bc94d0028cd6" name="a0226f52a2433d1aa1553bc94d0028cd6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0226f52a2433d1aa1553bc94d0028cd6">&#9670;&#160;</a></span>OTG_ENABLE_CELL_LOW_VOLTAGE</h2>
 

@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>balancer</b></li><li class="navelem"><a class="el" href="structbalancer_1_1Status.html">Status</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacebalancer.html">balancer</a></li><li class="navelem"><a class="el" href="structbalancer_1_1Status.html">Status</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -97,31 +97,30 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_valid</b> () const
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a8fb278407ce2c719853ea8b742119780"><td class="memItemLeft" align="right" valign="top"><a id="a8fb278407ce2c719853ea8b742119780" name="a8fb278407ce2c719853ea8b742119780"></a>
-std::array&lt; uint16_t, batteryCount &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>batteryVoltages_mV</b></td></tr>
+std::array&lt; uint16_t, <a class="el" href="system_2utils_2constants_8h.html#a824e99459fdc4ee8627b3b7722af62a3">batteryCount</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>batteryVoltages_mV</b></td></tr>
 <tr class="memdesc:a8fb278407ce2c719853ea8b742119780"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cells voltages, in order. <br /></td></tr>
 <tr class="separator:a8fb278407ce2c719853ea8b742119780"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38269a653d4b172bb928e871799b918d"><td class="memItemLeft" align="right" valign="top"><a id="a38269a653d4b172bb928e871799b918d" name="a38269a653d4b172bb928e871799b918d"></a>
-std::array&lt; bool, batteryCount &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>isBalancing</b></td></tr>
+std::array&lt; bool, <a class="el" href="system_2utils_2constants_8h.html#a824e99459fdc4ee8627b3b7722af62a3">batteryCount</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>isBalancing</b></td></tr>
 <tr class="memdesc:a38269a653d4b172bb928e871799b918d"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the cell is currently balancing. <br /></td></tr>
 <tr class="separator:a38269a653d4b172bb928e871799b918d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ec63e5e86e8db0fe054e871fe7fa238"><td class="memItemLeft" align="right" valign="top"><a id="a7ec63e5e86e8db0fe054e871fe7fa238" name="a7ec63e5e86e8db0fe054e871fe7fa238"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>stackVoltage_mV</b></td></tr>
-<tr class="memdesc:a7ec63e5e86e8db0fe054e871fe7fa238"><td class="mdescLeft">&#160;</td><td class="mdescRight">Voltage of the battery pack. <br /></td></tr>
+<tr class="memdesc:a7ec63e5e86e8db0fe054e871fe7fa238"><td class="mdescLeft">&#160;</td><td class="mdescRight">Voltage of the battery pack, in millivolts. <br /></td></tr>
 <tr class="separator:a7ec63e5e86e8db0fe054e871fe7fa238"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd0eabbf11ce8ce7353074ab5c77dc9e"><td class="memItemLeft" align="right" valign="top"><a id="afd0eabbf11ce8ce7353074ab5c77dc9e" name="afd0eabbf11ce8ce7353074ab5c77dc9e"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>temperature_degrees</b></td></tr>
-<tr class="memdesc:afd0eabbf11ce8ce7353074ab5c77dc9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temperature of the component. <br /></td></tr>
+<tr class="memdesc:afd0eabbf11ce8ce7353074ab5c77dc9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temperature of the component, in degrees. <br /></td></tr>
 <tr class="separator:afd0eabbf11ce8ce7353074ab5c77dc9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5082375cf4a86a49ddf15a725a7c64cc"><td class="memItemLeft" align="right" valign="top"><a id="a5082375cf4a86a49ddf15a725a7c64cc" name="a5082375cf4a86a49ddf15a725a7c64cc"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lastMeasurmentUpdate</b> = 0</td></tr>
-<tr class="memdesc:a5082375cf4a86a49ddf15a725a7c64cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last time the measurment was updated. <br /></td></tr>
+<tr class="memdesc:a5082375cf4a86a49ddf15a725a7c64cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last time the measurment was updated, in milliseconds. <br /></td></tr>
 <tr class="separator:a5082375cf4a86a49ddf15a725a7c64cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Store the balancer component status. </p>
-</div><hr/>The documentation for this struct was generated from the following files:<ul>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>src/system/power/<a class="el" href="balancer_8h_source.html">balancer.h</a></li>
-<li>src/system/power/balancer.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -201,7 +201,7 @@ static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>_d
 <tr class="memdesc:ab2149ac0206a504c90343eb063265df9"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of sample in a microphone run <br /></td></tr>
 <tr class="separator:ab2149ac0206a504c90343eb063265df9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae548fbe7334e25ef8d2cfcf13d612c50"><td class="memItemLeft" align="right" valign="top"><a id="ae548fbe7334e25ef8d2cfcf13d612c50" name="ae548fbe7334e25ef8d2cfcf13d612c50"></a>
-static constexpr int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>_autoGainTargetValue</b> = microphone::gainedSignalTarget</td></tr>
+static constexpr int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>_autoGainTargetValue</b> = <a class="el" href="namespacemicrophone.html#a6870e5b303aabcb4fadcba49157d847f">microphone::gainedSignalTarget</a></td></tr>
 <tr class="memdesc:ae548fbe7334e25ef8d2cfcf13d612c50"><td class="mdescLeft">&#160;</td><td class="mdescRight">target value reached by the auto gain <br /></td></tr>
 <tr class="separator:ae548fbe7334e25ef8d2cfcf13d612c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae94606018640af991b6df47caeebeed8"><td class="memItemLeft" align="right" valign="top"><a id="ae94606018640af991b6df47caeebeed8" name="ae94606018640af991b6df47caeebeed8"></a>
@@ -240,8 +240,8 @@ struct modes::audio::SoundEventTy&lt; ConfigTy, eventCutoff, eventNorm, nbEventS
 <div class="line">  <span class="comment">// code that uses avgDelta / hasEvent / eventScale / etc</span></div>
 <div class="line">  <span class="comment">// ...</span></div>
 <div class="line">}</div>
-<div class="ttc" id="astructmodes_1_1audio_1_1SoundEventTy_html"><div class="ttname"><a href="structmodes_1_1audio_1_1SoundEventTy.html">modes::audio::SoundEventTy</a></div><div class="ttdoc">Sound processor able to detect sound level events.</div><div class="ttdef"><b>Definition:</b> utils.hpp:88</div></div>
-<div class="ttc" id="astructmodes_1_1audio_1_1SoundEventTy_html_aa91c9767aa98be92f8034c229f76620f"><div class="ttname"><a href="structmodes_1_1audio_1_1SoundEventTy.html#aa91c9767aa98be92f8034c229f76620f">modes::audio::SoundEventTy::reset</a></div><div class="ttdeci">void reset(auto &amp;ctx)</div><div class="ttdoc">Call this once inside the mode on_enter_mode callback.</div><div class="ttdef"><b>Definition:</b> utils.hpp:118</div></div>
+<div class="ttc" id="astructmodes_1_1audio_1_1SoundEventTy_html"><div class="ttname"><a href="structmodes_1_1audio_1_1SoundEventTy.html">modes::audio::SoundEventTy</a></div><div class="ttdoc">Sound processor able to detect sound level events.</div><div class="ttdef"><b>Definition:</b> utils.hpp:92</div></div>
+<div class="ttc" id="astructmodes_1_1audio_1_1SoundEventTy_html_aa91c9767aa98be92f8034c229f76620f"><div class="ttname"><a href="structmodes_1_1audio_1_1SoundEventTy.html#aa91c9767aa98be92f8034c229f76620f">modes::audio::SoundEventTy::reset</a></div><div class="ttdeci">void reset(auto &amp;ctx)</div><div class="ttdoc">Call this once inside the mode on_enter_mode callback.</div><div class="ttdef"><b>Definition:</b> utils.hpp:122</div></div>
 </div><!-- fragment --><p>Every time this class is updated, it will:</p>
 <ul>
 <li>measure the sound level using <code>ctx.lamp.get_sound_level()</code></li>

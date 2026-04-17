@@ -83,12 +83,12 @@ $(function() {
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;src/modes/include/hardware/keystore.hpp&quot;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;src/modes/include/hardware/lamp_type.hpp&quot;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;src/modes/include/tools.hpp&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="keystore_8hpp.html">src/modes/include/hardware/keystore.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="lamp__type_8hpp.html">src/modes/include/hardware/lamp_type.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="tools_8hpp.html">src/modes/include/tools.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;src/modes/include/default_config.hpp&quot;</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;src/system/platform/print.h&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="platform_2print_8h.html">src/system/platform/print.h</a>&quot;</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacemodes.html">modes</a> {</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
@@ -155,8 +155,8 @@ $(function() {
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    }</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    {</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>      <span class="keyword">auto</span>&amp; manager = modeManager.get_context();</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>      <span class="keywordflow">return</span> manager.next_group();</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>      <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">manager</a> = modeManager.get_context();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>      <span class="keywordflow">return</span> <a class="code hl_variable" href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">manager</a>.next_group();</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    }</div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>  }</div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
@@ -168,8 +168,8 @@ $(function() {
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    }</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    {</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>      <span class="keyword">auto</span>&amp; manager = modeManager.get_context();</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>      <span class="keywordflow">return</span> manager.next_mode();</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>      <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">manager</a> = modeManager.get_context();</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>      <span class="keywordflow">return</span> <a class="code hl_variable" href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">manager</a>.next_mode();</div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    }</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  }</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
@@ -181,8 +181,8 @@ $(function() {
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    }</div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    {</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>      <span class="keyword">auto</span>&amp; manager = modeManager.get_context();</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>      <span class="keywordflow">return</span> manager.jump_to_favorite(which_one, shouldSaveLastActiveIndex);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>      <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">manager</a> = modeManager.get_context();</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>      <span class="keywordflow">return</span> <a class="code hl_variable" href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">manager</a>.jump_to_favorite(which_one, shouldSaveLastActiveIndex);</div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    }</div>
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>  }</div>
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
@@ -194,8 +194,8 @@ $(function() {
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    }</div>
 <div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    {</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>      <span class="keyword">auto</span>&amp; manager = modeManager.get_context();</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>      <span class="keywordflow">return</span> manager.set_favorite_now(which_one);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>      <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">manager</a> = modeManager.get_context();</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>      <span class="keywordflow">return</span> <a class="code hl_variable" href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">manager</a>.set_favorite_now(which_one);</div>
 <div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    }</div>
 <div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>  }</div>
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
@@ -207,8 +207,8 @@ $(function() {
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    }</div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    {</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>      <span class="keyword">auto</span>&amp; manager = modeManager.get_context();</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>      <span class="keywordflow">return</span> manager.delete_favorite_now();</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>      <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">manager</a> = modeManager.get_context();</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>      <span class="keywordflow">return</span> <a class="code hl_variable" href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">manager</a>.delete_favorite_now();</div>
 <div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    }</div>
 <div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>  }</div>
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
@@ -220,8 +220,8 @@ $(function() {
 <div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    }</div>
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    {</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>      <span class="keyword">auto</span>&amp; manager = modeManager.get_context();</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>      <span class="keywordflow">return</span> manager.handle_scroll_modes(holdDuration);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>      <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">manager</a> = modeManager.get_context();</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>      <span class="keywordflow">return</span> <a class="code hl_variable" href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">manager</a>.handle_scroll_modes(holdDuration);</div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    }</div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>  }</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
@@ -235,8 +235,8 @@ $(function() {
 <div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    }</div>
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    {</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>      <span class="keyword">auto</span>&amp; manager = modeManager.get_context();</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>      <span class="keywordflow">return</span> manager.get_modes_count();</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>      <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">manager</a> = modeManager.get_context();</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>      <span class="keywordflow">return</span> <a class="code hl_variable" href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">manager</a>.get_modes_count();</div>
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    }</div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>  }</div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
@@ -318,7 +318,7 @@ $(function() {
 <div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>  <span class="comment">// getters / setters for other properties</span></div>
 <div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>  <span class="comment">//</span></div>
 <div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span> </div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno"><a class="line" href="structmodes_1_1ContextTy.html#a12e3b7ad54a03f4d47c00b8f16896ad0">  284</a></span>  brightness_t LMBD_INLINE <a class="code hl_function" href="structmodes_1_1ContextTy.html#a12e3b7ad54a03f4d47c00b8f16896ad0">get_brightness</a>() { <span class="keywordflow">return</span> brightness::get_brightness(); }</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno"><a class="line" href="structmodes_1_1ContextTy.html#a12e3b7ad54a03f4d47c00b8f16896ad0">  284</a></span>  <a class="code hl_typedef" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> LMBD_INLINE <a class="code hl_function" href="structmodes_1_1ContextTy.html#a12e3b7ad54a03f4d47c00b8f16896ad0">get_brightness</a>() { <span class="keywordflow">return</span> <a class="code hl_function" href="namespacebrightness.html#ae30a3b2c2d6215979bf3f52fdc15db59">brightness::get_brightness</a>(); }</div>
 <div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span> </div>
 <div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>  <span class="comment">//</span></div>
 <div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>  <span class="comment">// store</span></div>
@@ -567,11 +567,11 @@ $(function() {
 <div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span>    }</div>
 <div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span>  }</div>
 <div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span> </div>
-<div class="line"><a id="l00624" name="l00624"></a><span class="lineno"><a class="line" href="structmodes_1_1ContextTy.html#a9d0f4569f3a6653dac60832838acafcc">  624</a></span>  <span class="keywordtype">void</span> LMBD_INLINE <a class="code hl_function" href="structmodes_1_1ContextTy.html#a9d0f4569f3a6653dac60832838acafcc">brightness_update</a>(LMBD_USED brightness_t brightness)</div>
+<div class="line"><a id="l00624" name="l00624"></a><span class="lineno"><a class="line" href="structmodes_1_1ContextTy.html#a9d0f4569f3a6653dac60832838acafcc">  624</a></span>  <span class="keywordtype">void</span> LMBD_INLINE <a class="code hl_function" href="structmodes_1_1ContextTy.html#a9d0f4569f3a6653dac60832838acafcc">brightness_update</a>(LMBD_USED <a class="code hl_typedef" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> <a class="code hl_namespace" href="namespacebrightness.html">brightness</a>)</div>
 <div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>  {</div>
 <div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (LocalModeTy::hasBrightCallback)</div>
 <div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span>    {</div>
-<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>      LocalModeTy::brightness_update(*<span class="keyword">this</span>, brightness);</div>
+<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>      LocalModeTy::brightness_update(*<span class="keyword">this</span>, <a class="code hl_namespace" href="namespacebrightness.html">brightness</a>);</div>
 <div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span>    }</div>
 <div class="line"><a id="l00630" name="l00630"></a><span class="lineno">  630</span>  }</div>
 <div class="line"><a id="l00631" name="l00631"></a><span class="lineno">  631</span> </div>
@@ -661,6 +661,11 @@ $(function() {
 <div class="line"><a id="l00724" name="l00724"></a><span class="lineno">  724</span>} <span class="comment">// namespace modes</span></div>
 <div class="line"><a id="l00725" name="l00725"></a><span class="lineno">  725</span> </div>
 <div class="line"><a id="l00726" name="l00726"></a><span class="lineno">  726</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="akeystore_8hpp_html"><div class="ttname"><a href="keystore_8hpp.html">keystore.hpp</a></div><div class="ttdoc">Filesystem interaction tools.</div></div>
+<div class="ttc" id="alamp__type_8hpp_html"><div class="ttname"><a href="lamp__type_8hpp.html">lamp_type.hpp</a></div><div class="ttdoc">Define the main led strip interaction object.</div></div>
+<div class="ttc" id="anamespacealerts_html_afbd8ab6e4e323bed4fc49b43f671e728"><div class="ttname"><a href="namespacealerts.html#afbd8ab6e4e323bed4fc49b43f671e728">alerts::manager</a></div><div class="ttdeci">AlertManager_t manager</div><div class="ttdoc">external global reference to the AlertManager</div></div>
+<div class="ttc" id="anamespacebrightness_html"><div class="ttname"><a href="namespacebrightness.html">brightness</a></div><div class="ttdoc">Handle the LED output brightness.</div><div class="ttdef"><b>Definition:</b> brightness_handle.h:11</div></div>
+<div class="ttc" id="anamespacebrightness_html_ae30a3b2c2d6215979bf3f52fdc15db59"><div class="ttname"><a href="namespacebrightness.html#ae30a3b2c2d6215979bf3f52fdc15db59">brightness::get_brightness</a></div><div class="ttdeci">brightness_t get_brightness()</div><div class="ttdoc">Return the current brightness value (in range 0 - brightness::absoluteMaximumBrightness)</div></div>
 <div class="ttc" id="anamespacemodes_html"><div class="ttname"><a href="namespacemodes.html">modes</a></div><div class="ttdoc">Contains basic interface types to implement custom user modes.</div><div class="ttdef"><b>Definition:</b> nudz_scrollimage.hpp:3</div></div>
 <div class="ttc" id="anamespacemodes_html_a02369f603301370bb1acf9b85e46183ca1b792c24c47faa2a26f6bb829df1dc52"><div class="ttname"><a href="namespacemodes.html#a02369f603301370bb1acf9b85e46183ca1b792c24c47faa2a26f6bb829df1dc52">modes::ConfigKeys::customRampAnimEffect</a></div><div class="ttdeci">@ customRampAnimEffect</div><div class="ttdoc">(bool) Mode uses custom ramp anim. or not?</div></div>
 <div class="ttc" id="anamespacemodes_html_a02369f603301370bb1acf9b85e46183ca30df249f3c4cbced2ae40d969fd9019a"><div class="ttname"><a href="namespacemodes.html#a02369f603301370bb1acf9b85e46183ca30df249f3c4cbced2ae40d969fd9019a">modes::ConfigKeys::rampSaturates</a></div><div class="ttdeci">@ rampSaturates</div><div class="ttdoc">(bool) Mode saturates on custom ramp, or else wrap?</div></div>
@@ -668,6 +673,7 @@ $(function() {
 <div class="ttc" id="anamespacemodes_html_a02369f603301370bb1acf9b85e46183caa15ae9cf165a628be7458981d0831395"><div class="ttname"><a href="namespacemodes.html#a02369f603301370bb1acf9b85e46183caa15ae9cf165a628be7458981d0831395">modes::ConfigKeys::customRampStepSpeedMs</a></div><div class="ttdeci">@ customRampStepSpeedMs</div><div class="ttdoc">(u32) Mode time step for incrementing custom ramp (ms)</div></div>
 <div class="ttc" id="anamespacemodes_html_a02369f603301370bb1acf9b85e46183cabdb0fca8269674f487f8806c9aeccbab"><div class="ttname"><a href="namespacemodes.html#a02369f603301370bb1acf9b85e46183cabdb0fca8269674f487f8806c9aeccbab">modes::ConfigKeys::customRampAnimChoice</a></div><div class="ttdeci">@ customRampAnimChoice</div><div class="ttdoc">(u32) Which custom ramp anim. to use (rainbow, etc)</div></div>
 <div class="ttc" id="anamespacemodes_html_a67194c2ad5b4cddeddb899c360583d3f"><div class="ttname"><a href="namespacemodes.html#a67194c2ad5b4cddeddb899c360583d3f">modes::context_as</a></div><div class="ttdeci">static auto context_as(auto &amp;ctx)</div><div class="ttdoc">Bind provided context to another modes::BasicMode.</div><div class="ttdef"><b>Definition:</b> context_type.hpp:25</div></div>
+<div class="ttc" id="aplatform_2print_8h_html"><div class="ttname"><a href="platform_2print_8h.html">print.h</a></div><div class="ttdoc">Interface for the platform specific debug and prints.</div></div>
 <div class="ttc" id="astructmodes_1_1ContextTy_1_1KeyProxy_html"><div class="ttname"><a href="structmodes_1_1ContextTy_1_1KeyProxy.html">modes::ContextTy::KeyProxy</a></div><div class="ttdoc">(store) Binds a local variable of type T to key in storage (with automatic read &amp; save)</div><div class="ttdef"><b>Definition:</b> context_type.hpp:350</div></div>
 <div class="ttc" id="astructmodes_1_1ContextTy_1_1KeyProxy_html_a2c8ff325d7b3d6c3b59c6320e397e4b2"><div class="ttname"><a href="structmodes_1_1ContextTy_1_1KeyProxy.html#a2c8ff325d7b3d6c3b59c6320e397e4b2">modes::ContextTy::KeyProxy::hasValue</a></div><div class="ttdeci">bool LMBD_INLINE hasValue()</div><div class="ttdoc">(optional) Return True if key is set in store, False if unknown</div><div class="ttdef"><b>Definition:</b> context_type.hpp:374</div></div>
 <div class="ttc" id="astructmodes_1_1ContextTy_1_1KeyProxy_html_a58fe40b7c136caf69f62cb7ab9ea1b54"><div class="ttname"><a href="structmodes_1_1ContextTy_1_1KeyProxy.html#a58fe40b7c136caf69f62cb7ab9ea1b54">modes::ContextTy::KeyProxy::key</a></div><div class="ttdeci">static constexpr StoreEnum key</div><div class="ttdoc">Enumeration value uniquely identifying where local will be stored.</div><div class="ttdef"><b>Definition:</b> context_type.hpp:355</div></div>
@@ -722,7 +728,9 @@ $(function() {
 <div class="ttc" id="astructmodes_1_1ContextTy_html_aebe547b0629c95a772acef8dcb523451"><div class="ttname"><a href="structmodes_1_1ContextTy.html#aebe547b0629c95a772acef8dcb523451">modes::ContextTy::power_on_sequence</a></div><div class="ttdeci">void LMBD_INLINE power_on_sequence()</div><div class="ttdoc">Binds to local BasicMode::power_on_sequence()</div><div class="ttdef"><b>Definition:</b> context_type.hpp:666</div></div>
 <div class="ttc" id="astructmodes_1_1ContextTy_html_aee56c9fd0e5fc40ba7e44833c5b9cdef"><div class="ttname"><a href="structmodes_1_1ContextTy.html#aee56c9fd0e5fc40ba7e44833c5b9cdef">modes::ContextTy::quit_mode</a></div><div class="ttdeci">void LMBD_INLINE quit_mode()</div><div class="ttdoc">Call when quitting a mode.</div><div class="ttdef"><b>Definition:</b> context_type.hpp:577</div></div>
 <div class="ttc" id="astructmodes_1_1ContextTy_html_afe4fcbd957712c41b32e0d3a8e588997"><div class="ttname"><a href="structmodes_1_1ContextTy.html#afe4fcbd957712c41b32e0d3a8e588997">modes::ContextTy::storageSaveOnly</a></div><div class="ttdeci">static void LMBD_INLINE storageSaveOnly(LMBD_USED T &amp;local)</div><div class="ttdoc">(store) Save local into key storage (single-shot)</div><div class="ttdef"><b>Definition:</b> context_type.hpp:419</div></div>
-<div class="ttc" id="astructmodes_1_1hardware_1_1LampTy_html"><div class="ttname"><a href="structmodes_1_1hardware_1_1LampTy.html">modes::hardware::LampTy</a></div><div class="ttdoc">Main interface between the user and the hardware of the lamp.</div><div class="ttdef"><b>Definition:</b> lamp_type.hpp:109</div></div>
+<div class="ttc" id="astructmodes_1_1hardware_1_1LampTy_html"><div class="ttname"><a href="structmodes_1_1hardware_1_1LampTy.html">modes::hardware::LampTy</a></div><div class="ttdoc">Main interface between the user and the hardware of the lamp.</div><div class="ttdef"><b>Definition:</b> lamp_type.hpp:113</div></div>
+<div class="ttc" id="asystem_2utils_2constants_8h_html_aa87af64c7db4c82d3374823aff4f72f4"><div class="ttname"><a href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a></div><div class="ttdeci">uint16_t brightness_t</div><div class="ttdoc">Define the type of the brightness parameters.</div><div class="ttdef"><b>Definition:</b> constants.h:145</div></div>
+<div class="ttc" id="atools_8hpp_html"><div class="ttname"><a href="tools_8hpp.html">tools.hpp</a></div><div class="ttdoc">Define templated tools to analyze the manager objects.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

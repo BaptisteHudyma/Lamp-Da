@@ -77,168 +77,180 @@ $(function() {
   <div class="headertitle"><div class="title">utils.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef UTILS_H</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define UTILS_H</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cassert&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;constants.h&quot;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#define SQR(x)      ((x) * (x))</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#define POW2(x)     SQR(x)</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#define POW3(x)     ((x) * (x) * (x))</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#define POW4(x)     (POW2(x) * POW2(x))</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#define POW7(x)     (POW3(x) * POW3(x) * (x))</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#define DegToRad(x) ((x) * c_PI / 180)</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#define FADE16(x)   scale16(x, x)</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#define FADE8(x)    scale8(x, x)</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#ifndef Arduino_h</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> N&gt; <span class="keyword">static</span> <span class="keyword">constexpr</span> N min(<span class="keyword">const</span> N a, <span class="keyword">const</span> N b)</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>{</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#ifdef LMBD_CPP17</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  assert(not std::isnan(a) &amp;&amp; <span class="stringliteral">&quot;invalid param a&quot;</span>);</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>  assert(not std::isnan(b) &amp;&amp; <span class="stringliteral">&quot;invalid param b&quot;</span>);</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  <span class="keywordflow">return</span> a &lt; b ? a : b;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> N&gt; <span class="keyword">static</span> <span class="keyword">constexpr</span> N max(<span class="keyword">const</span> N a, <span class="keyword">const</span> N b)</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>{</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#ifdef LMBD_CPP17</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  assert(not std::isnan(a) &amp;&amp; <span class="stringliteral">&quot;invalid param a&quot;</span>);</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  assert(not std::isnan(b) &amp;&amp; <span class="stringliteral">&quot;invalid param b&quot;</span>);</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  <span class="keywordflow">return</span> a &gt; b ? a : b;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> N&gt; <span class="keyword">static</span> <span class="keyword">constexpr</span> N abs(<span class="keyword">const</span> N a) { <span class="keywordflow">return</span> std::abs(N(a)); }</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="keyword">static</span> <span class="keyword">constexpr</span> T lmpd_constrain(<span class="keyword">const</span> T&amp; a, <span class="keyword">const</span> T&amp; mini, <span class="keyword">const</span> T&amp; maxi)</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>{</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="preprocessor">#ifdef LMBD_CPP17</span></div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  assert(<span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(mini) &lt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(maxi) &amp;&amp; <span class="stringliteral">&quot;invalid parameters&quot;</span>);</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="comment">// prevent invalid values</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  <span class="keywordflow">return</span> std::isnan(a) ? <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(mini) :</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                         <span class="comment">// constrain the value</span></div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                 (<span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(a) &lt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(mini)) ? <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(mini) :</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>         (<span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(a) &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(maxi))         ? <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(maxi) :</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                                                       <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(a);</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T = <span class="keywordtype">float</span>&gt;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">static</span> <span class="keyword">inline</span> T lmpd_map(<span class="keywordtype">float</span> x, <span class="keyword">const</span> <span class="keywordtype">float</span> in_min, <span class="keyword">const</span> <span class="keywordtype">float</span> in_max, <span class="keyword">const</span> <span class="keywordtype">float</span> out_min, <span class="keyword">const</span> <span class="keywordtype">float</span> out_max)</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>{</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>  <span class="keyword">using </span>numeric_limits_T = std::numeric_limits&lt;T&gt;;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  assert(not(std::isnan(in_min) or std::isinf(in_min)) &amp;&amp; <span class="stringliteral">&quot;in_min invalid&quot;</span>);</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  assert(not(std::isnan(in_max) or std::isinf(in_max)) &amp;&amp; <span class="stringliteral">&quot;in_max invalid&quot;</span>);</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>  assert(out_min &gt;= numeric_limits_T::lowest() &amp;&amp; out_min &lt;= numeric_limits_T::max() &amp;&amp; <span class="stringliteral">&quot;out_min invalid&quot;</span>);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  assert(not(std::isnan(out_min) or std::isinf(out_min)) &amp;&amp; <span class="stringliteral">&quot;out_min invalid&quot;</span>);</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>  assert(out_max &gt;= numeric_limits_T::lowest() &amp;&amp; out_max &lt;= numeric_limits_T::max() &amp;&amp; <span class="stringliteral">&quot;out_max invalid&quot;</span>);</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>  assert(not(std::isnan(out_max) or std::isinf(out_max)) &amp;&amp; <span class="stringliteral">&quot;out_max invalid&quot;</span>);</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>  <span class="keywordflow">if</span> (std::isnan(x))</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">return</span> out_min;</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  <span class="keywordflow">if</span> (x &gt; 0 &amp;&amp; std::isinf(x))</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">return</span> out_max;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  <span class="keywordflow">if</span> (std::isinf(x))</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">return</span> out_min;</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  <span class="keyword">const</span> <span class="keywordtype">float</span> res = (out_max - out_min) * (x - in_min) / (in_max - in_min) + out_min;</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <span class="keywordflow">if</span> (res &gt; numeric_limits_T::max())</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">return</span> numeric_limits_T::max();</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>  <span class="keywordflow">if</span> (res &lt; numeric_limits_T::lowest())</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">return</span> numeric_limits_T::lowest();</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(res);</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>}</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">inline</span> <span class="keywordtype">float</span> to_radians(<span class="keywordtype">float</span> degrees)</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>{</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="preprocessor">#ifdef LMBD_CPP17</span></div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>  assert(not(std::isnan(degrees) or std::isinf(degrees)) &amp;&amp; <span class="stringliteral">&quot;invalid value&quot;</span>);</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>  <span class="keywordflow">return</span> degrees * M_PI / 180.f;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">inline</span> <span class="keywordtype">float</span> wrap_angle(<span class="keyword">const</span> <span class="keywordtype">float</span> angle_rad)</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>{</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="preprocessor">#ifdef LMBD_CPP17</span></div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>  <span class="keywordflow">if</span> (angle_rad &gt;= 0 and angle_rad &lt; c_TWO_PI)</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">return</span> angle_rad;</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>  <span class="keywordflow">return</span> angle_rad - c_TWO_PI * floor(angle_rad / c_TWO_PI);</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>}</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="unionCOLOR.html">  102</a></span><span class="keyword">union </span><a class="code hl_union" href="unionCOLOR.html">COLOR</a></div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>{</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  uint32_t color;</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  <span class="keyword">struct</span></div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>  {</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    uint8_t blue;</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    uint8_t green;</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    uint8_t red;</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    uint8_t white;</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>  };</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>};</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="keyword">namespace </span>utils {</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>uint32_t get_random_complementary_color(<span class="keyword">const</span> uint32_t color, <span class="keyword">const</span> <span class="keywordtype">float</span> tolerance);</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>uint32_t get_gradient(<span class="keyword">const</span> uint32_t colorStart, <span class="keyword">const</span> uint32_t colorEnd, <span class="keyword">const</span> <span class="keywordtype">float</span> level);</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><a class="code hl_union" href="unionCOLOR.html">COLOR</a> color_blend(<a class="code hl_union" href="unionCOLOR.html">COLOR</a> color1, <a class="code hl_union" href="unionCOLOR.html">COLOR</a> color2, uint16_t blend, <span class="keywordtype">bool</span> b16 = <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><a class="code hl_union" href="unionCOLOR.html">COLOR</a> color_fade(<a class="code hl_union" href="unionCOLOR.html">COLOR</a> c1, uint8_t amount, <span class="keywordtype">bool</span> video = <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><a class="code hl_union" href="unionCOLOR.html">COLOR</a> color_add(<a class="code hl_union" href="unionCOLOR.html">COLOR</a> c1, <a class="code hl_union" href="unionCOLOR.html">COLOR</a> c2, <span class="keywordtype">bool</span> fast = <span class="keyword">false</span>);</div>
+<a href="utils_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#ifndef UTILS_H</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#define UTILS_H</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cassert&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;constants.h&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#define SQR(x)    ((x) * (x))               </span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#define POW2(x)   SQR(x)                    </span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#define POW3(x)   ((x) * (x) * (x))         </span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#define POW4(x)   (POW2(x) * POW2(x))       </span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#define POW7(x)   (POW3(x) * POW3(x) * (x)) </span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#define FADE16(x) scale16(x, x)             </span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#define FADE8(x)  scale8(x, x)              </span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#ifndef Arduino_h</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="utils_8h.html#a2ac4de63ae44d0b785cc34e2bea905c8">   26</a></span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> N&gt; <span class="keyword">static</span> <span class="keyword">constexpr</span> N <a class="code hl_function" href="utils_8h.html#a2ac4de63ae44d0b785cc34e2bea905c8">min</a>(<span class="keyword">const</span> N a, <span class="keyword">const</span> N b)</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>{</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#ifdef LMBD_CPP17</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  assert(not std::isnan(a) &amp;&amp; <span class="stringliteral">&quot;invalid param a&quot;</span>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  assert(not std::isnan(b) &amp;&amp; <span class="stringliteral">&quot;invalid param b&quot;</span>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  <span class="keywordflow">return</span> a &lt; b ? a : b;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="utils_8h.html#a4399f24d35b2792f7b1d093af55fb60d">   35</a></span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> N&gt; <span class="keyword">static</span> <span class="keyword">constexpr</span> N <a class="code hl_function" href="utils_8h.html#a4399f24d35b2792f7b1d093af55fb60d">max</a>(<span class="keyword">const</span> N a, <span class="keyword">const</span> N b)</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>{</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#ifdef LMBD_CPP17</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  assert(not std::isnan(a) &amp;&amp; <span class="stringliteral">&quot;invalid param a&quot;</span>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  assert(not std::isnan(b) &amp;&amp; <span class="stringliteral">&quot;invalid param b&quot;</span>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="keywordflow">return</span> a &gt; b ? a : b;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="utils_8h.html#ae8655ff9f2908d91dcd06eae76a4a024">   44</a></span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> N&gt; <span class="keyword">static</span> <span class="keyword">constexpr</span> N <a class="code hl_function" href="utils_8h.html#ae8655ff9f2908d91dcd06eae76a4a024">abs</a>(<span class="keyword">const</span> N a) { <span class="keywordflow">return</span> std::abs(N(a)); }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="utils_8h.html#a4f1b20af8072f9ed515532ed3aaa37c1">   55</a></span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="keyword">static</span> <span class="keyword">constexpr</span> T <a class="code hl_function" href="utils_8h.html#a4f1b20af8072f9ed515532ed3aaa37c1">lmpd_constrain</a>(<span class="keyword">const</span> T&amp; a, <span class="keyword">const</span> T&amp; mini, <span class="keyword">const</span> T&amp; maxi)</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>{</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="preprocessor">#ifdef LMBD_CPP17</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  assert(<span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(mini) &lt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(maxi) &amp;&amp; <span class="stringliteral">&quot;invalid parameters&quot;</span>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  <span class="comment">// prevent invalid values</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  <span class="keywordflow">return</span> std::isnan(a) ? <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(mini) :</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                         <span class="comment">// constrain the value</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                 (<span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(a) &lt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(mini)) ? <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(mini) :</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>         (<span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(a) &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(maxi))         ? <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(maxi) :</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                                                                       <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(a);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>}</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T = <span class="keywordtype">float</span>&gt;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="utils_8h.html#af6a3f75ead3d729c60c9089c23e6e0ba">   78</a></span><span class="keyword">static</span> <span class="keyword">inline</span> T <a class="code hl_function" href="utils_8h.html#af6a3f75ead3d729c60c9089c23e6e0ba">lmpd_map</a>(<span class="keywordtype">float</span> x, <span class="keyword">const</span> <span class="keywordtype">float</span> in_min, <span class="keyword">const</span> <span class="keywordtype">float</span> in_max, <span class="keyword">const</span> <span class="keywordtype">float</span> out_min, <span class="keyword">const</span> <span class="keywordtype">float</span> out_max)</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>{</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  <span class="keyword">using </span>numeric_limits_T = std::numeric_limits&lt;T&gt;;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>  assert(not(std::isnan(in_min) or std::isinf(in_min)) &amp;&amp; <span class="stringliteral">&quot;in_min invalid&quot;</span>);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  assert(not(std::isnan(in_max) or std::isinf(in_max)) &amp;&amp; <span class="stringliteral">&quot;in_max invalid&quot;</span>);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  assert(out_min &gt;= numeric_limits_T::lowest() &amp;&amp; out_min &lt;= numeric_limits_T::max() &amp;&amp; <span class="stringliteral">&quot;out_min invalid&quot;</span>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  assert(not(std::isnan(out_min) or std::isinf(out_min)) &amp;&amp; <span class="stringliteral">&quot;out_min invalid&quot;</span>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>  assert(out_max &gt;= numeric_limits_T::lowest() &amp;&amp; out_max &lt;= numeric_limits_T::max() &amp;&amp; <span class="stringliteral">&quot;out_max invalid&quot;</span>);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>  assert(not(std::isnan(out_max) or std::isinf(out_max)) &amp;&amp; <span class="stringliteral">&quot;out_max invalid&quot;</span>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>  <span class="keywordflow">if</span> (std::isnan(x))</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">return</span> out_min;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>  <span class="keywordflow">if</span> (x &gt; 0 &amp;&amp; std::isinf(x))</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">return</span> out_max;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>  <span class="keywordflow">if</span> (std::isinf(x))</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">return</span> out_min;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>  <span class="keyword">const</span> <span class="keywordtype">float</span> res = (out_max - out_min) * (x - in_min) / (in_max - in_min) + out_min;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>  <span class="keywordflow">if</span> (res &gt; numeric_limits_T::max())</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">return</span> numeric_limits_T::max();</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  <span class="keywordflow">if</span> (res &lt; numeric_limits_T::lowest())</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">return</span> numeric_limits_T::lowest();</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(res);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="utils_8h.html#ab1caa61bbe57662daba4b16f0444296b">  104</a></span><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">inline</span> <span class="keywordtype">float</span> <a class="code hl_function" href="utils_8h.html#ab1caa61bbe57662daba4b16f0444296b">to_radians</a>(<span class="keywordtype">float</span> degrees)</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>{</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="preprocessor">#ifdef LMBD_CPP17</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>  assert(not(std::isnan(degrees) or std::isinf(degrees)) &amp;&amp; <span class="stringliteral">&quot;invalid value&quot;</span>);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>  <span class="keywordflow">return</span> degrees * M_PI / 180.f;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="utils_8h.html#a503b25a2fffce4404c956c7b3320e340">  113</a></span><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">inline</span> <span class="keywordtype">float</span> <a class="code hl_function" href="utils_8h.html#a503b25a2fffce4404c956c7b3320e340">wrap_angle</a>(<span class="keyword">const</span> <span class="keywordtype">float</span> angle_rad)</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>{</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="preprocessor">#ifdef LMBD_CPP17</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  <span class="keywordflow">if</span> (angle_rad &gt;= 0 and angle_rad &lt; <a class="code hl_variable" href="user_2constants_8h.html#a26638c09f822f8628ebd370bf74c3b7f">c_TWO_PI</a>)</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">return</span> angle_rad;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>  <span class="keywordflow">return</span> angle_rad - <a class="code hl_variable" href="user_2constants_8h.html#a26638c09f822f8628ebd370bf74c3b7f">c_TWO_PI</a> * floor(angle_rad / <a class="code hl_variable" href="user_2constants_8h.html#a26638c09f822f8628ebd370bf74c3b7f">c_TWO_PI</a>);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>}</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="unionCOLOR.html">  125</a></span><span class="keyword">union </span><a class="code hl_union" href="unionCOLOR.html">COLOR</a></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>{</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>  uint32_t color;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>  <span class="keyword">struct</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>  {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    uint8_t blue;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    uint8_t green;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    uint8_t red;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    uint8_t white;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>  };</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>};</div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>uint32_t hue_to_rgb_sinus(<span class="keyword">const</span> uint16_t angle);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span><span class="keyword">namespace </span>utils {</div>
 <div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="keyword">static</span> <span class="keyword">constexpr</span> uint32_t hash(<span class="keyword">const</span> T s, <span class="keyword">const</span> uint16_t maxSize = 14, <span class="keyword">const</span> uint16_t off = 0)</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>{</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span><span class="preprocessor">#ifdef LMBD_CPP17</span></div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>  uint32_t hashAcc = 5381;</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>  <span class="keywordflow">for</span> (uint16_t I = 0; I &lt; maxSize; ++I)</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>  {</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordflow">if</span> (s[I + off] == <span class="charliteral">&#39;\0&#39;</span>)</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    {</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>      <span class="keywordflow">return</span> hashAcc;</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="utils_8h.html#ad0bf464c8d2b31fd2e9812aecbb2be40">  147</a></span>uint32_t <a class="code hl_function" href="utils_8h.html#ad0bf464c8d2b31fd2e9812aecbb2be40">get_random_complementary_color</a>(<span class="keyword">const</span> uint32_t color, <span class="keyword">const</span> <span class="keywordtype">float</span> tolerance);</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="utils_8h.html#a375aa4de47bddd8ea2e62c37bc783728">  155</a></span>uint32_t <a class="code hl_function" href="utils_8h.html#a375aa4de47bddd8ea2e62c37bc783728">get_gradient</a>(<span class="keyword">const</span> uint32_t colorStart, <span class="keyword">const</span> uint32_t colorEnd, <span class="keyword">const</span> <span class="keywordtype">float</span> level);</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span><a class="code hl_union" href="unionCOLOR.html">COLOR</a> color_blend(<a class="code hl_union" href="unionCOLOR.html">COLOR</a> color1, <a class="code hl_union" href="unionCOLOR.html">COLOR</a> color2, uint16_t blend, <span class="keywordtype">bool</span> b16 = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><a class="code hl_union" href="unionCOLOR.html">COLOR</a> color_fade(<a class="code hl_union" href="unionCOLOR.html">COLOR</a> c1, uint8_t amount, <span class="keywordtype">bool</span> video = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span><a class="code hl_union" href="unionCOLOR.html">COLOR</a> color_add(<a class="code hl_union" href="unionCOLOR.html">COLOR</a> c1, <a class="code hl_union" href="unionCOLOR.html">COLOR</a> c2, <span class="keywordtype">bool</span> fast = <span class="keyword">false</span>);</div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    hashAcc = ((hashAcc &lt;&lt; 5) + hashAcc) ^ s[I + off];</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>  }</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>  <span class="keywordflow">return</span> hashAcc;</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>  <span class="keywordflow">return</span> !s[off] ? 5381 : (hash(s, maxSize, off + 1) * 33) ^ s[off];</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>}</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span>16_t N&gt; <span class="keyword">static</span> <span class="keyword">constexpr</span> uint32_t hash(<span class="keyword">const</span> <span class="keywordtype">char</span> (&amp;s)[N])</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>{</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>  <span class="keyword">static_assert</span>((N - 1 &lt;= 14) &amp;&amp; <span class="stringliteral">&quot;Use hash(s, maxSize) to hash strings longer than 14 bytes!&quot;</span>);</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>  <span class="keywordflow">return</span> hash(s, 14);</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>}</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span><span class="comment">// Convert a read on an analog pin to a voltage value</span></div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span><span class="keyword">constexpr</span> <span class="keywordtype">double</span> analogReadToVoltage(<span class="keyword">const</span> uint16_t analogVal)</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>{</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>  <span class="keywordflow">return</span> analogVal * internalReferenceVoltage / (float)ADC_MAX_VALUE;</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>}</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span><span class="keyword">constexpr</span> uint16_t voltageToAnalogRead(<span class="keyword">const</span> <span class="keywordtype">float</span> voltage)</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>{</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>  <span class="keywordflow">return</span> lmpd_constrain&lt;uint16_t&gt;(voltage, 0, internalReferenceVoltage) * ADC_MAX_VALUE / internalReferenceVoltage;</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>}</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>}; <span class="comment">// namespace utils</span></div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aunionCOLOR_html"><div class="ttname"><a href="unionCOLOR.html">COLOR</a></div><div class="ttdoc">Use this to convert color to bytes.</div><div class="ttdef"><b>Definition:</b> utils.h:103</div></div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>uint32_t hue_to_rgb_sinus(<span class="keyword">const</span> uint16_t angle);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="utils_8h.html#abdb31e7026ea0cdc9c8c6f942a164354">  173</a></span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="keyword">static</span> <span class="keyword">constexpr</span> uint32_t <a class="code hl_function" href="utils_8h.html#abdb31e7026ea0cdc9c8c6f942a164354">hash</a>(<span class="keyword">const</span> T s, <span class="keyword">const</span> uint16_t maxSize = 14, <span class="keyword">const</span> uint16_t off = 0)</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>{</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span><span class="preprocessor">#ifdef LMBD_CPP17</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>  uint32_t hashAcc = 5381;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>  <span class="keywordflow">for</span> (uint16_t I = 0; I &lt; maxSize; ++I)</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>  {</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordflow">if</span> (s[I + off] == <span class="charliteral">&#39;\0&#39;</span>)</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    {</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>      <span class="keywordflow">return</span> hashAcc;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    }</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    hashAcc = ((hashAcc &lt;&lt; 5) + hashAcc) ^ s[I + off];</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>  }</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>  <span class="keywordflow">return</span> hashAcc;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>  <span class="keywordflow">return</span> !s[off] ? 5381 : (<a class="code hl_function" href="utils_8h.html#abdb31e7026ea0cdc9c8c6f942a164354">hash</a>(s, maxSize, off + 1) * 33) ^ s[off];</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>}</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span>16_t N&gt; <span class="keyword">static</span> <span class="keyword">constexpr</span> uint32_t hash(<span class="keyword">const</span> <span class="keywordtype">char</span> (&amp;s)[N])</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>{</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>  <span class="keyword">static_assert</span>((N - 1 &lt;= 14) &amp;&amp; <span class="stringliteral">&quot;Use hash(s, maxSize) to hash strings longer than 14 bytes!&quot;</span>);</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>  <span class="keywordflow">return</span> hash(s, 14);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>}</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span><span class="comment">// Convert a read on an analog pin to a voltage value</span></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span><span class="keyword">constexpr</span> <span class="keywordtype">double</span> analogReadToVoltage(<span class="keyword">const</span> uint16_t analogVal)</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>{</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>  <span class="keywordflow">return</span> analogVal * <a class="code hl_variable" href="system_2utils_2constants_8h.html#a3ce913b5fb35225fc52d2386dc8d407c">internalReferenceVoltage</a> / (float)<a class="code hl_variable" href="system_2utils_2constants_8h.html#a320dc9c04534c6b1721f2ca6be547900">ADC_MAX_VALUE</a>;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>}</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span><span class="keyword">constexpr</span> uint16_t voltageToAnalogRead(<span class="keyword">const</span> <span class="keywordtype">float</span> voltage)</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>{</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>  <span class="keywordflow">return</span> lmpd_constrain&lt;uint16_t&gt;(voltage, 0, <a class="code hl_variable" href="system_2utils_2constants_8h.html#a3ce913b5fb35225fc52d2386dc8d407c">internalReferenceVoltage</a>) * <a class="code hl_variable" href="system_2utils_2constants_8h.html#a320dc9c04534c6b1721f2ca6be547900">ADC_MAX_VALUE</a> / <a class="code hl_variable" href="system_2utils_2constants_8h.html#a3ce913b5fb35225fc52d2386dc8d407c">internalReferenceVoltage</a>;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>}</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>}; <span class="comment">// namespace utils</span></div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="asystem_2utils_2constants_8h_html_a320dc9c04534c6b1721f2ca6be547900"><div class="ttname"><a href="system_2utils_2constants_8h.html#a320dc9c04534c6b1721f2ca6be547900">ADC_MAX_VALUE</a></div><div class="ttdeci">static const uint32_t ADC_MAX_VALUE</div><div class="ttdoc">corresponding ADC max value</div><div class="ttdef"><b>Definition:</b> constants.h:48</div></div>
+<div class="ttc" id="asystem_2utils_2constants_8h_html_a3ce913b5fb35225fc52d2386dc8d407c"><div class="ttname"><a href="system_2utils_2constants_8h.html#a3ce913b5fb35225fc52d2386dc8d407c">internalReferenceVoltage</a></div><div class="ttdeci">static constexpr float internalReferenceVoltage</div><div class="ttdoc">internal voltage reference</div><div class="ttdef"><b>Definition:</b> constants.h:49</div></div>
+<div class="ttc" id="aunionCOLOR_html"><div class="ttname"><a href="unionCOLOR.html">COLOR</a></div><div class="ttdoc">Use this to convert color to bytes.</div><div class="ttdef"><b>Definition:</b> utils.h:126</div></div>
+<div class="ttc" id="auser_2constants_8h_html_a26638c09f822f8628ebd370bf74c3b7f"><div class="ttname"><a href="user_2constants_8h.html#a26638c09f822f8628ebd370bf74c3b7f">c_TWO_PI</a></div><div class="ttdeci">static constexpr float c_TWO_PI</div><div class="ttdoc">2*PI constant</div><div class="ttdef"><b>Definition:</b> constants.h:19</div></div>
+<div class="ttc" id="autils_8h_html_a2ac4de63ae44d0b785cc34e2bea905c8"><div class="ttname"><a href="utils_8h.html#a2ac4de63ae44d0b785cc34e2bea905c8">min</a></div><div class="ttdeci">static constexpr N min(const N a, const N b)</div><div class="ttdoc">Minimum of two numbers.</div><div class="ttdef"><b>Definition:</b> utils.h:26</div></div>
+<div class="ttc" id="autils_8h_html_a375aa4de47bddd8ea2e62c37bc783728"><div class="ttname"><a href="utils_8h.html#a375aa4de47bddd8ea2e62c37bc783728">utils::get_gradient</a></div><div class="ttdeci">uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const float level)</div><div class="ttdoc">Return the color gradient between colorStart to colorEnd.</div></div>
+<div class="ttc" id="autils_8h_html_a4399f24d35b2792f7b1d093af55fb60d"><div class="ttname"><a href="utils_8h.html#a4399f24d35b2792f7b1d093af55fb60d">max</a></div><div class="ttdeci">static constexpr N max(const N a, const N b)</div><div class="ttdoc">Maximum of two numbers.</div><div class="ttdef"><b>Definition:</b> utils.h:35</div></div>
+<div class="ttc" id="autils_8h_html_a4f1b20af8072f9ed515532ed3aaa37c1"><div class="ttname"><a href="utils_8h.html#a4f1b20af8072f9ed515532ed3aaa37c1">lmpd_constrain</a></div><div class="ttdeci">static constexpr T lmpd_constrain(const T &amp;a, const T &amp;mini, const T &amp;maxi)</div><div class="ttdoc">Constrain a number between two numbers.</div><div class="ttdef"><b>Definition:</b> utils.h:55</div></div>
+<div class="ttc" id="autils_8h_html_a503b25a2fffce4404c956c7b3320e340"><div class="ttname"><a href="utils_8h.html#a503b25a2fffce4404c956c7b3320e340">wrap_angle</a></div><div class="ttdeci">static constexpr float wrap_angle(const float angle_rad)</div><div class="ttdoc">Wrap an angle in radians between 0 and 2*PI.</div><div class="ttdef"><b>Definition:</b> utils.h:113</div></div>
+<div class="ttc" id="autils_8h_html_ab1caa61bbe57662daba4b16f0444296b"><div class="ttname"><a href="utils_8h.html#ab1caa61bbe57662daba4b16f0444296b">to_radians</a></div><div class="ttdeci">static constexpr float to_radians(float degrees)</div><div class="ttdoc">Convert an angle in degrees to an angle in radians.</div><div class="ttdef"><b>Definition:</b> utils.h:104</div></div>
+<div class="ttc" id="autils_8h_html_abdb31e7026ea0cdc9c8c6f942a164354"><div class="ttname"><a href="utils_8h.html#abdb31e7026ea0cdc9c8c6f942a164354">utils::hash</a></div><div class="ttdeci">static constexpr uint32_t hash(const T s, const uint16_t maxSize=14, const uint16_t off=0)</div><div class="ttdoc">Hash input string into a 32-bit unsigned integer.</div><div class="ttdef"><b>Definition:</b> utils.h:173</div></div>
+<div class="ttc" id="autils_8h_html_ad0bf464c8d2b31fd2e9812aecbb2be40"><div class="ttname"><a href="utils_8h.html#ad0bf464c8d2b31fd2e9812aecbb2be40">utils::get_random_complementary_color</a></div><div class="ttdeci">uint32_t get_random_complementary_color(const uint32_t color, const float tolerance)</div><div class="ttdoc">Compute the complementary color of the given color, with a random variation.</div></div>
+<div class="ttc" id="autils_8h_html_ae8655ff9f2908d91dcd06eae76a4a024"><div class="ttname"><a href="utils_8h.html#ae8655ff9f2908d91dcd06eae76a4a024">abs</a></div><div class="ttdeci">static constexpr N abs(const N a)</div><div class="ttdoc">absolute of a number</div><div class="ttdef"><b>Definition:</b> utils.h:44</div></div>
+<div class="ttc" id="autils_8h_html_af6a3f75ead3d729c60c9089c23e6e0ba"><div class="ttname"><a href="utils_8h.html#af6a3f75ead3d729c60c9089c23e6e0ba">lmpd_map</a></div><div class="ttdeci">static T lmpd_map(float x, const float in_min, const float in_max, const float out_min, const float out_max)</div><div class="ttdoc">Linearly interpolate a number between two numbers.</div><div class="ttdef"><b>Definition:</b> utils.h:78</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

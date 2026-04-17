@@ -1,6 +1,10 @@
 var searchData=
 [
-  ['z_0',['z',['../structmodes_1_1HelixXYZTy.html#a8ca638fa762c21820124c5321e36da98',1,'modes::HelixXYZTy::z()'],['../classutils_1_1ColorSpace_1_1XYZ.html#af172afc96d32dda87618c70b159ae89d',1,'utils::ColorSpace::XYZ::z()'],['../structvec3d.html#a9d4389a56b8e552275a5b95868d32992',1,'vec3d::z()']]],
-  ['z_5fmm_1',['z_mm',['../structmodes_1_1Particle.html#a96bb134fb5aac4b05fd1f500b8cc8cf2',1,'modes::Particle']]],
-  ['zspeed_5fms_2',['zSpeed_mS',['../structmodes_1_1Particle.html#ab026e8b8fca5df549afdcd11ae068cbb',1,'modes::Particle']]]
+  ['y_0',['y',['../structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1BubbleTy.html#a79e7cec2a75c299380e4954fdfb309f2',1,'modes::custom::nudz::NudzBeerGlassMode::BubbleTy::y()'],['../structmodes_1_1XYTy.html#ad0657dcd5fa31bc311e0c9ca61cb16f4',1,'modes::XYTy::y()'],['../structmodes_1_1HelixXYZTy.html#af369ca102da60b657cb4142fa0273477',1,'modes::HelixXYZTy::y()'],['../classutils_1_1ColorSpace_1_1XYZ.html#ad1b280cba4bdb6f213b802fd86b5c5a4',1,'utils::ColorSpace::XYZ::y()'],['../structcurves_1_1Point.html#a473562a71f27dbd4fc2fd9bbf8c91002',1,'curves::Point::y()'],['../structvec2d.html#a92429826fb07255c09461e35ba395a10',1,'vec2d::y()']]],
+  ['ydecal_1',['ydecal',['../structmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode_1_1StateTy.html#a2b1193020141ca8457e1908a4c106f2a',1,'modes::custom::nudz::NudzScrollImageMode::StateTy::ydecal()'],['../structmodes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode_1_1StateTy.html#a84d2964ec6c7d1a388f1b51b61970a77',1,'modes::custom::nudz::NudzViolonsaoulsMode::StateTy::ydecal()']]],
+  ['ydirection_2',['ydirection',['../structmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode_1_1StateTy.html#aa09d03a3800d7758698027375e0015b3',1,'modes::custom::nudz::NudzScrollImageMode::StateTy::ydirection()'],['../structmodes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode_1_1StateTy.html#a8282da77cf4a305f88464509e537a9fc',1,'modes::custom::nudz::NudzViolonsaoulsMode::StateTy::ydirection()']]],
+  ['yellow_3',['Yellow',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cac8926c9c81aa07c230669c219b31c1b9',1,'modes::colors']]],
+  ['yellowgreen_4',['YellowGreen',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cae4fc8589f27d4bbfd2087c1d205a591e',1,'modes::colors']]],
+  ['yield_5fthis_5fthread_5',['yield_this_thread',['../threads_8h.html#a929d8d98ddec91c496c6c7bd8bbe65c7',1,'threads.h']]],
+  ['yscale_6',['yScale',['../structmodes_1_1default__modes_1_1FireMode.html#adc903171413879ab7adb62f454a5dbd6',1,'modes::default_modes::FireMode']]]
 ];

@@ -1,10 +1,4 @@
 var searchData=
 [
-  ['oklab_0',['OKLAB',['../classutils_1_1ColorSpace_1_1OKLAB.html#ad92d4c523db15df8e42f3513b5db204c',1,'utils::ColorSpace::OKLAB::OKLAB(const COLOR &amp;c)'],['../classutils_1_1ColorSpace_1_1OKLAB.html#a8e82345004d705c4503bc0103379b7b5',1,'utils::ColorSpace::OKLAB::OKLAB(const double l, const double a, const double b)']]],
-  ['oklch_1',['OKLCH',['../classutils_1_1ColorSpace_1_1OKLCH.html#addb9db0335bd152149e9125ab1b43a70',1,'utils::ColorSpace::OKLCH::OKLCH(const COLOR &amp;c)'],['../classutils_1_1ColorSpace_1_1OKLCH.html#a1b6529f783c239a14f8082d6594787ad',1,'utils::ColorSpace::OKLCH::OKLCH(const double l, const double c, const double h)']]],
-  ['on_5fenter_5fmode_2',['on_enter_mode',['../structmodes_1_1custom_1_1nudz_1_1NudzScrollImageMode.html#aded60b0e0e920dbe41d35d34e0c3f177',1,'modes::custom::nudz::NudzScrollImageMode::on_enter_mode()'],['../structmodes_1_1custom_1_1nudz_1_1NudzBeerGlassMode.html#ac3fed090e5e6f2d2b48d7e227f3e532f',1,'modes::custom::nudz::NudzBeerGlassMode::on_enter_mode()'],['../structmodes_1_1automaton_1_1BubbleMode.html#a4af828b534620cf4677fdb6b7a1e6852',1,'modes::automaton::BubbleMode::on_enter_mode()'],['../structmodes_1_1ContextTy.html#acd071319d68ddc7bec94291dfc320013',1,'modes::ContextTy::on_enter_mode()'],['../structmodes_1_1BasicMode.html#a8a8fa107d17ae356ce19dfbfa777479c',1,'modes::BasicMode::on_enter_mode()']]],
-  ['on_5fexit_5fmode_3',['on_exit_mode',['../structmodes_1_1ContextTy.html#aad245bd4dde3982bd5691860dad7d09b',1,'modes::ContextTy::on_exit_mode()'],['../structmodes_1_1BasicMode.html#a3c63f5b9ac20c889608ee9b618954068',1,'modes::BasicMode::on_exit_mode()']]],
-  ['on_5ftab_5fchanged_4',['on_tab_changed',['../classlampda__gui_1_1FirmwareApp.html#aa782bed00adfbf9500846b49afa7af45',1,'lampda_gui::FirmwareApp']]],
-  ['open_5fserial_5',['open_serial',['../classlampda__gui_1_1TabSerialComm.html#aad15c7a71223c2186d8f9cafe20e1e8e',1,'lampda_gui::TabSerialComm']]],
-  ['operator_3d_6',['operator=',['../structvec2d.html#aca36b524f2e3ca026de65ba5b6ef605a',1,'vec2d::operator=()'],['../structvec3d.html#a71814812f543cdeeb58b0a3a4c6a9c02',1,'vec3d::operator=()'],['../structvec4d.html#ac8f0824c0cdcfce407b09e4d4b17440d',1,'vec4d::operator=()']]]
+  ['notify_5fthread_0',['notify_thread',['../threads_8h.html#a5dba733ccc7ca918dbce3312a0d3df4d',1,'threads.h']]]
 ];

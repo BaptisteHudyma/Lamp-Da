@@ -77,21 +77,25 @@ $(function() {
   <div class="headertitle"><div class="title">coordinates.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef UTILS_COORDINATES_H</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define UTILS_COORDINATES_H</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// this file is active only if LMBD_LAMP_TYPE=indexable</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#ifdef LMBD_LAMP_TYPE__INDEXABLE</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;src/system/utils/vector_math.h&quot;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;src/system/utils/constants.h&quot;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>uint16_t to_strip(<span class="keyword">const</span> uint16_t screenX, <span class="keyword">const</span> uint16_t screenY);</div>
+<a href="coordinates_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifndef UTILS_COORDINATES_H</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define UTILS_COORDINATES_H</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// this file is active only if LMBD_LAMP_TYPE=indexable</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#ifdef LMBD_LAMP_TYPE__INDEXABLE</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="vector__math_8h.html">src/system/utils/vector_math.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="system_2utils_2constants_8h.html">src/system/utils/constants.h</a>&quot;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="coordinates_8h.html#a07efe40f94d5b3d4505a56bf6b443412">   19</a></span>uint16_t <a class="code hl_function" href="coordinates_8h.html#a07efe40f94d5b3d4505a56bf6b443412">to_strip</a>(<span class="keyword">const</span> uint16_t screenX, <span class="keyword">const</span> uint16_t screenY);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="acoordinates_8h_html_a07efe40f94d5b3d4505a56bf6b443412"><div class="ttname"><a href="coordinates_8h.html#a07efe40f94d5b3d4505a56bf6b443412">to_strip</a></div><div class="ttdeci">uint16_t to_strip(const uint16_t screenX, const uint16_t screenY)</div><div class="ttdoc">Given the x and y, return the led index.</div></div>
+<div class="ttc" id="asystem_2utils_2constants_8h_html"><div class="ttname"><a href="system_2utils_2constants_8h.html">constants.h</a></div><div class="ttdoc">Define the system hardware constants.</div></div>
+<div class="ttc" id="avector__math_8h_html"><div class="ttname"><a href="vector__math_8h.html">vector_math.h</a></div><div class="ttdoc">Define vectors and rotation matrices, and the possibility to rotate vectors.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

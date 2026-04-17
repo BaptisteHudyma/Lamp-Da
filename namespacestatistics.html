@@ -71,29 +71,16 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">statistics Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Handle update and tracking of user use statistics.  
+<a href="namespacestatistics.html#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstatistics_1_1Statistics__t.html">Statistics_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the statistics of the system.  <a href="structstatistics_1_1Statistics__t.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aa47552767b3b801448b97cfb839cdada"><td class="memItemLeft" align="right" valign="top"><a id="aa47552767b3b801448b97cfb839cdada" name="aa47552767b3b801448b97cfb839cdada"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_alert_storage_key</b> (uint8_t alertIndex)</td></tr>
-<tr class="memdesc:aa47552767b3b801448b97cfb839cdada"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute a key for each alert <br /></td></tr>
-<tr class="separator:aa47552767b3b801448b97cfb839cdada"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a532a17fe199e622e23e13b010e9722af"><td class="memItemLeft" align="right" valign="top"><a id="a532a17fe199e622e23e13b010e9722af" name="a532a17fe199e622e23e13b010e9722af"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_system_on_time</b> ()</td></tr>
-<tr class="memdesc:a532a17fe199e622e23e13b010e9722af"><td class="mdescLeft">&#160;</td><td class="mdescRight">system on time is easy: system always starts with time zero <br /></td></tr>
-<tr class="separator:a532a17fe199e622e23e13b010e9722af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75ad218388d98e816a030c13e28fc04e"><td class="memItemLeft" align="right" valign="top"><a id="a75ad218388d98e816a030c13e28fc04e" name="a75ad218388d98e816a030c13e28fc04e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>load_from_memory</b> ()</td></tr>
 <tr class="memdesc:a75ad218388d98e816a030c13e28fc04e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the statistics from the slash memeory. <br /></td></tr>
@@ -106,10 +93,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>write_to_memory</b> (
 void&#160;</td><td class="memItemRight" valign="bottom"><b>signal_button_press</b> ()</td></tr>
 <tr class="memdesc:a82ed72f388621e0acdca1093a1fc4adb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal that a button press was detected. <br /></td></tr>
 <tr class="separator:a82ed72f388621e0acdca1093a1fc4adb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a481c829cd74784473b7194bbf6cad9"><td class="memItemLeft" align="right" valign="top"><a id="a8a481c829cd74784473b7194bbf6cad9" name="a8a481c829cd74784473b7194bbf6cad9"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_output_on_time</b> ()</td></tr>
-<tr class="memdesc:a8a481c829cd74784473b7194bbf6cad9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the sum of the output on time. Depend on outputOn_time_s correct initialization. <br /></td></tr>
-<tr class="separator:a8a481c829cd74784473b7194bbf6cad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5cc9a2f16147531b3aa6174a2bcaa92a"><td class="memItemLeft" align="right" valign="top"><a id="a5cc9a2f16147531b3aa6174a2bcaa92a" name="a5cc9a2f16147531b3aa6174a2bcaa92a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>signal_output_on</b> ()</td></tr>
 <tr class="memdesc:a5cc9a2f16147531b3aa6174a2bcaa92a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal that the output just turned on. <br /></td></tr>
@@ -118,10 +101,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>signal_output_on</b> 
 void&#160;</td><td class="memItemRight" valign="bottom"><b>signal_output_off</b> ()</td></tr>
 <tr class="memdesc:ab33601be4e7fc83412569de98efe10f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal that the output just turned off. <br /></td></tr>
 <tr class="separator:ab33601be4e7fc83412569de98efe10f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5dc54e6b46f75768142979181ea7c0eb"><td class="memItemLeft" align="right" valign="top"><a id="a5dc54e6b46f75768142979181ea7c0eb" name="a5dc54e6b46f75768142979181ea7c0eb"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_battery_charging_time</b> ()</td></tr>
-<tr class="memdesc:a5dc54e6b46f75768142979181ea7c0eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the total battery charge time. Uses internally the batteryCharge_time_s to track when the charge started. <br /></td></tr>
-<tr class="separator:a5dc54e6b46f75768142979181ea7c0eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f0b3873524c63dba4e4d86851de010f"><td class="memItemLeft" align="right" valign="top"><a id="a6f0b3873524c63dba4e4d86851de010f" name="a6f0b3873524c63dba4e4d86851de010f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>signal_battery_charging_on</b> ()</td></tr>
 <tr class="memdesc:a6f0b3873524c63dba4e4d86851de010f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal that the battery is charging. <br /></td></tr>
@@ -130,57 +109,69 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>signal_battery_chargi
 void&#160;</td><td class="memItemRight" valign="bottom"><b>signal_battery_charging_off</b> ()</td></tr>
 <tr class="memdesc:ac1bd972bb02ed27a1b76dd7edc4c6ebb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal that the battery is not charging. <br /></td></tr>
 <tr class="separator:ac1bd972bb02ed27a1b76dd7edc4c6ebb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaed9bc848a785abe11c8173b6c05485f"><td class="memItemLeft" align="right" valign="top"><a id="aaed9bc848a785abe11c8173b6c05485f" name="aaed9bc848a785abe11c8173b6c05485f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>signal_alert_raised</b> (uint32_t alertMask)</td></tr>
-<tr class="memdesc:aaed9bc848a785abe11c8173b6c05485f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal that an alert of any type was raised. <br /></td></tr>
+<tr class="memitem:aaed9bc848a785abe11c8173b6c05485f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestatistics.html#aaed9bc848a785abe11c8173b6c05485f">signal_alert_raised</a> (uint32_t alertMask)</td></tr>
+<tr class="memdesc:aaed9bc848a785abe11c8173b6c05485f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal that an alert of any type was raised.  <br /></td></tr>
 <tr class="separator:aaed9bc848a785abe11c8173b6c05485f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf4ec41a461058f824f1370cebe5685b"><td class="memItemLeft" align="right" valign="top"><a id="adf4ec41a461058f824f1370cebe5685b" name="adf4ec41a461058f824f1370cebe5685b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>show</b> (const bool shouldShowAlerts=true)</td></tr>
-<tr class="memdesc:adf4ec41a461058f824f1370cebe5685b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug the statistics to serial output. <br /></td></tr>
+<tr class="memitem:adf4ec41a461058f824f1370cebe5685b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestatistics.html#adf4ec41a461058f824f1370cebe5685b">show</a> (const bool shouldShowAlerts=true)</td></tr>
+<tr class="memdesc:adf4ec41a461058f824f1370cebe5685b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug the statistics to serial output.  <br /></td></tr>
 <tr class="separator:adf4ec41a461058f824f1370cebe5685b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:ad39ad0096c9ff2ec84ff7cec66e1a034"><td class="memItemLeft" align="right" valign="top"><a id="ad39ad0096c9ff2ec84ff7cec66e1a034" name="ad39ad0096c9ff2ec84ff7cec66e1a034"></a>
-static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>alertArraySize</b> = 32</td></tr>
-<tr class="memdesc:ad39ad0096c9ff2ec84ff7cec66e1a034"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the alert array. It should be egal to the maximum alert count. <br /></td></tr>
-<tr class="separator:ad39ad0096c9ff2ec84ff7cec66e1a034"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0682a82cf4147b9a36a68efc30032baa"><td class="memItemLeft" align="right" valign="top"><a id="a0682a82cf4147b9a36a68efc30032baa" name="a0682a82cf4147b9a36a68efc30032baa"></a>
-<a class="el" href="structstatistics_1_1Statistics__t.html">Statistics_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>statistics</b></td></tr>
-<tr class="memdesc:a0682a82cf4147b9a36a68efc30032baa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Statistics holder. <br /></td></tr>
-<tr class="separator:a0682a82cf4147b9a36a68efc30032baa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68b62c2c529c7cd7a136165c9552ca0c"><td class="memItemLeft" align="right" valign="top"><a id="a68b62c2c529c7cd7a136165c9552ca0c" name="a68b62c2c529c7cd7a136165c9552ca0c"></a>
-static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>bootCountKey</b> = utils::hash(&quot;bootCnt&quot;)</td></tr>
-<tr class="memdesc:a68b62c2c529c7cd7a136165c9552ca0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">hash key of the bootCount statistic <br /></td></tr>
-<tr class="separator:a68b62c2c529c7cd7a136165c9552ca0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d385781b605596fa305a4d385a32e90"><td class="memItemLeft" align="right" valign="top"><a id="a1d385781b605596fa305a4d385a32e90" name="a1d385781b605596fa305a4d385a32e90"></a>
-static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>buttonPressCountKey</b> = utils::hash(&quot;buttonP&quot;)</td></tr>
-<tr class="memdesc:a1d385781b605596fa305a4d385a32e90"><td class="mdescLeft">&#160;</td><td class="mdescRight">hash key of the button press count <br /></td></tr>
-<tr class="separator:a1d385781b605596fa305a4d385a32e90"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa08bb189f7078cf5af4c80f87a01fee"><td class="memItemLeft" align="right" valign="top"><a id="aaa08bb189f7078cf5af4c80f87a01fee" name="aaa08bb189f7078cf5af4c80f87a01fee"></a>
-static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>systemOnTimeSKey</b> = utils::hash(&quot;sysOn&quot;)</td></tr>
-<tr class="memdesc:aaa08bb189f7078cf5af4c80f87a01fee"><td class="mdescLeft">&#160;</td><td class="mdescRight">hash key of the system on time <br /></td></tr>
-<tr class="separator:aaa08bb189f7078cf5af4c80f87a01fee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4effcd2088a30905ae93e0965237c39e"><td class="memItemLeft" align="right" valign="top"><a id="a4effcd2088a30905ae93e0965237c39e" name="a4effcd2088a30905ae93e0965237c39e"></a>
-static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>outputOnTimeSKey</b> = utils::hash(&quot;outOn&quot;)</td></tr>
-<tr class="memdesc:a4effcd2088a30905ae93e0965237c39e"><td class="mdescLeft">&#160;</td><td class="mdescRight">hash key of the output on time <br /></td></tr>
-<tr class="separator:a4effcd2088a30905ae93e0965237c39e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2bad0de1ae111f6590c8b96e71ed36f0"><td class="memItemLeft" align="right" valign="top"><a id="a2bad0de1ae111f6590c8b96e71ed36f0" name="a2bad0de1ae111f6590c8b96e71ed36f0"></a>
-static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>chargeOnTimeSKey</b> = utils::hash(&quot;chrgOn&quot;)</td></tr>
-<tr class="memdesc:a2bad0de1ae111f6590c8b96e71ed36f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">hash key of the charging time <br /></td></tr>
-<tr class="separator:a2bad0de1ae111f6590c8b96e71ed36f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d5682b8eb395ce7f3fc4fe09cdbee54"><td class="memItemLeft" align="right" valign="top"><a id="a8d5682b8eb395ce7f3fc4fe09cdbee54" name="a8d5682b8eb395ce7f3fc4fe09cdbee54"></a>
-static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>outputOn_time_s</b> = UINT32_MAX</td></tr>
-<tr class="memdesc:a8d5682b8eb395ce7f3fc4fe09cdbee54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Keep track of the output on start time. <br /></td></tr>
-<tr class="separator:a8d5682b8eb395ce7f3fc4fe09cdbee54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9abf60d633c9644530f9230707eb5528"><td class="memItemLeft" align="right" valign="top"><a id="a9abf60d633c9644530f9230707eb5528" name="a9abf60d633c9644530f9230707eb5528"></a>
-static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>batteryCharge_time_s</b> = UINT32_MAX</td></tr>
-<tr class="memdesc:a9abf60d633c9644530f9230707eb5528"><td class="mdescLeft">&#160;</td><td class="mdescRight">store the battery charge time sum <br /></td></tr>
-<tr class="separator:a9abf60d633c9644530f9230707eb5528"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Handle update and tracking of user use statistics </p>
-</div></div><!-- contents -->
+<div class="textblock"><p>Handle update and tracking of user use statistics. </p>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="adf4ec41a461058f824f1370cebe5685b" name="adf4ec41a461058f824f1370cebe5685b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf4ec41a461058f824f1370cebe5685b">&#9670;&#160;</a></span>show()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void statistics::show </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>shouldShowAlerts</em> = <code>true</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Debug the statistics to serial output. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">shouldShowAlerts</td><td>If true, the alerts statistics will be displayed. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aaed9bc848a785abe11c8173b6c05485f" name="aaed9bc848a785abe11c8173b6c05485f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaed9bc848a785abe11c8173b6c05485f">&#9670;&#160;</a></span>signal_alert_raised()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void statistics::signal_alert_raised </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>alertMask</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Signal that an alert of any type was raised. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">alertMask</td><td>bitwise mask of raised alerts </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6

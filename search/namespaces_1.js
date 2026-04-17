@@ -1,11 +1,9 @@
 var searchData=
 [
-  ['audio_0',['audio',['../namespacemodes_1_1audio.html',1,'modes']]],
-  ['automaton_1',['automaton',['../namespacemodes_1_1automaton.html',1,'modes']]],
-  ['colors_2',['colors',['../namespacemodes_1_1colors.html',1,'modes']]],
-  ['default_5fmodes_3',['default_modes',['../namespacemodes_1_1default__modes.html',1,'modes']]],
-  ['hardware_4',['hardware',['../namespacemodes_1_1hardware.html',1,'modes']]],
-  ['imu_5',['imu',['../namespacemodes_1_1imu.html',1,'modes']]],
-  ['modes_6',['modes',['../namespacemodes.html',1,'']]],
-  ['store_7',['store',['../namespacemodes_1_1store.html',1,'modes']]]
+  ['balancer_0',['balancer',['../namespacebalancer.html',1,'']]],
+  ['battery_1',['battery',['../namespacebattery.html',1,'']]],
+  ['behavior_2',['behavior',['../namespacebehavior.html',1,'']]],
+  ['bluetooth_3',['bluetooth',['../namespacebluetooth.html',1,'']]],
+  ['brightness_4',['brightness',['../namespacebrightness.html',1,'']]],
+  ['button_5',['button',['../namespacebutton.html',1,'']]]
 ];

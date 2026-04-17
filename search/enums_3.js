@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['lamptypes_0',['LampTypes',['../namespacemodes_1_1hardware.html#a9ce05c0c227ab520c116fa72d23d4383',1,'modes::hardware']]]
+  ['interrupttype_0',['InterruptType',['../classimu_1_1Wrapper.html#a28e79cc284fa30a10295208d35f760a9',1,'imu::Wrapper']]]
 ];

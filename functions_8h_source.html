@@ -77,66 +77,70 @@ $(function() {
   <div class="headertitle"><div class="title">functions.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef USER_FUNCTIONS_H</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define USER_FUNCTIONS_H</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">//</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// code specific to LMBD_LAMP_TYPE=indexable</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">//</span></div>
+<a href="functions_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#ifndef USER_FUNCTIONS_H</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#define USER_FUNCTIONS_H</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;src/system/utils/brightness_handle.h&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">//</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// code specific to LMBD_LAMP_TYPE=indexable</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">//</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#ifdef LMBD_LAMP_TYPE__INDEXABLE</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;src/system/utils/strip.h&quot;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">// (extern declarations)</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span>user::_private {</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">extern</span> LedStrip strip;</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">//</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">// code common to all lamp types</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">//</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="brightness__handle_8h.html">src/system/utils/brightness_handle.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#ifdef LMBD_LAMP_TYPE__INDEXABLE</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="strip_8h.html">src/system/utils/strip.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">// (extern declarations)</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceuser.html">   20</a></span><span class="keyword">namespace </span>user::_private {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">extern</span> <a class="code hl_class" href="classLedStrip.html">LedStrip</a> strip;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespaceuser.html">   26</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceuser.html">user</a> {</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="namespaceuser.html#a7a0ebaabbbf904db895b7774124c9dd5">   29</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#a7a0ebaabbbf904db895b7774124c9dd5">power_on_sequence</a>();</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespaceuser.html#aba772a87b17a5e499b2912950fb3b6ab">   32</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#aba772a87b17a5e499b2912950fb3b6ab">power_off_sequence</a>();</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="namespaceuser.html#abd6f6627dc7e0f84db3e771ec9c7d1f0">   40</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#abd6f6627dc7e0f84db3e771ec9c7d1f0">brightness_update</a>(<span class="keyword">const</span> brightness_t brightness);</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="namespaceuser.html#a34dd3930e6a7801b1278e8ebd396e3db">   43</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#a34dd3930e6a7801b1278e8ebd396e3db">sunset_timer_update</a>(<span class="keyword">const</span> <span class="keywordtype">float</span> progress);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="namespaceuser.html#a42eba66fe130830c3d5371d349d11764">   46</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#a42eba66fe130830c3d5371d349d11764">write_parameters</a>();</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="namespaceuser.html#a4e7b0d9acc74b81e4e1b1de0d91924c4">   49</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#a4e7b0d9acc74b81e4e1b1de0d91924c4">read_parameters</a>();</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="namespaceuser.html#ab73a094ee531e11bd21f5c9aa0e31066">   56</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceuser.html#ab73a094ee531e11bd21f5c9aa0e31066">button_start_click_default</a>(<span class="keyword">const</span> uint8_t clicks);</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="namespaceuser.html#a0b029e201deb9cc62793d0c93a0a78e2">   66</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceuser.html#a0b029e201deb9cc62793d0c93a0a78e2">button_start_hold_default</a>(<span class="keyword">const</span> uint8_t clicks, <span class="keyword">const</span> <span class="keywordtype">bool</span> isEndOfHoldEvent, <span class="keyword">const</span> uint32_t holdDuration);</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="namespaceuser.html#ad48987af099efca3bc668b541d653e7d">   72</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#ad48987af099efca3bc668b541d653e7d">button_clicked_default</a>(<span class="keyword">const</span> uint8_t clicks);</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="namespaceuser.html#a7a51b617074db42ba10f0695729750de">   89</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#a7a51b617074db42ba10f0695729750de">button_hold_default</a>(<span class="keyword">const</span> uint8_t nbClickAndHold, <span class="keyword">const</span> <span class="keywordtype">bool</span> isEndOfHoldEvent, <span class="keyword">const</span> uint32_t holdDuration);</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="namespaceuser.html#aec059103a24452793c9fc3795acfaf36">   98</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceuser.html#aec059103a24452793c9fc3795acfaf36">button_clicked_usermode</a>(<span class="keyword">const</span> uint8_t nbClick);</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="namespaceuser.html#a3225119950682ccdc69e1e6b1e0e0fbf">  108</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceuser.html#a3225119950682ccdc69e1e6b1e0e0fbf">button_hold_usermode</a>(<span class="keyword">const</span> uint8_t nbClickAndHold, <span class="keyword">const</span> <span class="keywordtype">bool</span> isEndOfHoldEvent, <span class="keyword">const</span> uint32_t holdDuration);</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="namespaceuser.html#ad74b10e3215c632d45a66c165cbd5579">  114</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#ad74b10e3215c632d45a66c165cbd5579">loop</a>();</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="namespaceuser.html#a7fe4437c57167aa4da7cb323c2d93b4f">  120</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceuser.html#a7fe4437c57167aa4da7cb323c2d93b4f">should_spawn_thread</a>();</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="namespaceuser.html#a51213cb731999005697b1f29d1f3a11e">  127</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#a51213cb731999005697b1f29d1f3a11e">user_thread</a>();</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>} <span class="comment">// namespace user</span></div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="anamespaceuser_html"><div class="ttname"><a href="namespaceuser.html">user</a></div><div class="ttdoc">Contains code handling custom user mode functions for indexable strips.</div><div class="ttdef"><b>Definition:</b> functions.h:26</div></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">//</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">// code common to all lamp types</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment">//</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceuser.html">user</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="namespaceuser.html#a7a0ebaabbbf904db895b7774124c9dd5">   33</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#a7a0ebaabbbf904db895b7774124c9dd5">power_on_sequence</a>();</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="namespaceuser.html#aba772a87b17a5e499b2912950fb3b6ab">   36</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#aba772a87b17a5e499b2912950fb3b6ab">power_off_sequence</a>();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="namespaceuser.html#abd6f6627dc7e0f84db3e771ec9c7d1f0">   44</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#abd6f6627dc7e0f84db3e771ec9c7d1f0">brightness_update</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> <a class="code hl_namespace" href="namespacebrightness.html">brightness</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="namespaceuser.html#a34dd3930e6a7801b1278e8ebd396e3db">   47</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#a34dd3930e6a7801b1278e8ebd396e3db">sunset_timer_update</a>(<span class="keyword">const</span> <span class="keywordtype">float</span> progress);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="namespaceuser.html#a42eba66fe130830c3d5371d349d11764">   50</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#a42eba66fe130830c3d5371d349d11764">write_parameters</a>();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="namespaceuser.html#a4e7b0d9acc74b81e4e1b1de0d91924c4">   53</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#a4e7b0d9acc74b81e4e1b1de0d91924c4">read_parameters</a>();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="namespaceuser.html#ab73a094ee531e11bd21f5c9aa0e31066">   60</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceuser.html#ab73a094ee531e11bd21f5c9aa0e31066">button_start_click_default</a>(<span class="keyword">const</span> uint8_t clicks);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="namespaceuser.html#a0b029e201deb9cc62793d0c93a0a78e2">   70</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceuser.html#a0b029e201deb9cc62793d0c93a0a78e2">button_start_hold_default</a>(<span class="keyword">const</span> uint8_t clicks, <span class="keyword">const</span> <span class="keywordtype">bool</span> isEndOfHoldEvent, <span class="keyword">const</span> uint32_t holdDuration);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="namespaceuser.html#ad48987af099efca3bc668b541d653e7d">   76</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#ad48987af099efca3bc668b541d653e7d">button_clicked_default</a>(<span class="keyword">const</span> uint8_t clicks);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="namespaceuser.html#a7a51b617074db42ba10f0695729750de">   93</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#a7a51b617074db42ba10f0695729750de">button_hold_default</a>(<span class="keyword">const</span> uint8_t nbClickAndHold, <span class="keyword">const</span> <span class="keywordtype">bool</span> isEndOfHoldEvent, <span class="keyword">const</span> uint32_t holdDuration);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="namespaceuser.html#aec059103a24452793c9fc3795acfaf36">  102</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceuser.html#aec059103a24452793c9fc3795acfaf36">button_clicked_usermode</a>(<span class="keyword">const</span> uint8_t nbClick);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="namespaceuser.html#a3225119950682ccdc69e1e6b1e0e0fbf">  112</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceuser.html#a3225119950682ccdc69e1e6b1e0e0fbf">button_hold_usermode</a>(<span class="keyword">const</span> uint8_t nbClickAndHold, <span class="keyword">const</span> <span class="keywordtype">bool</span> isEndOfHoldEvent, <span class="keyword">const</span> uint32_t holdDuration);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="namespaceuser.html#ad74b10e3215c632d45a66c165cbd5579">  118</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#ad74b10e3215c632d45a66c165cbd5579">loop</a>();</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="namespaceuser.html#a7fe4437c57167aa4da7cb323c2d93b4f">  124</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceuser.html#a7fe4437c57167aa4da7cb323c2d93b4f">should_spawn_thread</a>();</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="namespaceuser.html#a51213cb731999005697b1f29d1f3a11e">  131</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceuser.html#a51213cb731999005697b1f29d1f3a11e">user_thread</a>();</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>} <span class="comment">// namespace user</span></div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="abrightness__handle_8h_html"><div class="ttname"><a href="brightness__handle_8h.html">brightness_handle.h</a></div><div class="ttdoc">Handle the output LED strip brightness.</div></div>
+<div class="ttc" id="aclassLedStrip_html"><div class="ttname"><a href="classLedStrip.html">LedStrip</a></div><div class="ttdef"><b>Definition:</b> strip.h:39</div></div>
+<div class="ttc" id="anamespacebrightness_html"><div class="ttname"><a href="namespacebrightness.html">brightness</a></div><div class="ttdoc">Handle the LED output brightness.</div><div class="ttdef"><b>Definition:</b> brightness_handle.h:11</div></div>
+<div class="ttc" id="anamespaceuser_html"><div class="ttname"><a href="namespaceuser.html">user</a></div><div class="ttdoc">Contains code handling custom user mode functions for indexable strips.</div><div class="ttdef"><b>Definition:</b> functions.h:20</div></div>
 <div class="ttc" id="anamespaceuser_html_a0b029e201deb9cc62793d0c93a0a78e2"><div class="ttname"><a href="namespaceuser.html#a0b029e201deb9cc62793d0c93a0a78e2">user::button_start_hold_default</a></div><div class="ttdeci">bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)</div><div class="ttdoc">Called to handle button hold on lamp start.</div></div>
 <div class="ttc" id="anamespaceuser_html_a3225119950682ccdc69e1e6b1e0e0fbf"><div class="ttname"><a href="namespaceuser.html#a3225119950682ccdc69e1e6b1e0e0fbf">user::button_hold_usermode</a></div><div class="ttdeci">bool button_hold_usermode(const uint8_t nbClickAndHold, const bool isEndOfHoldEvent, const uint32_t holdDuration)</div><div class="ttdoc">Called to handle button click+hold events if &quot;usermode UI&quot; is on.</div></div>
 <div class="ttc" id="anamespaceuser_html_a34dd3930e6a7801b1278e8ebd396e3db"><div class="ttname"><a href="namespaceuser.html#a34dd3930e6a7801b1278e8ebd396e3db">user::sunset_timer_update</a></div><div class="ttdeci">void sunset_timer_update(const float progress)</div><div class="ttdoc">Called when the sunset timer progresses [0; 1].</div></div>
@@ -152,6 +156,8 @@ $(function() {
 <div class="ttc" id="anamespaceuser_html_ad48987af099efca3bc668b541d653e7d"><div class="ttname"><a href="namespaceuser.html#ad48987af099efca3bc668b541d653e7d">user::button_clicked_default</a></div><div class="ttdeci">void button_clicked_default(const uint8_t clicks)</div><div class="ttdoc">Called to handle button click events for default user mode behaviors.</div></div>
 <div class="ttc" id="anamespaceuser_html_ad74b10e3215c632d45a66c165cbd5579"><div class="ttname"><a href="namespaceuser.html#ad74b10e3215c632d45a66c165cbd5579">user::loop</a></div><div class="ttdeci">void loop()</div><div class="ttdoc">Called at each tick of the main loop.</div></div>
 <div class="ttc" id="anamespaceuser_html_aec059103a24452793c9fc3795acfaf36"><div class="ttname"><a href="namespaceuser.html#aec059103a24452793c9fc3795acfaf36">user::button_clicked_usermode</a></div><div class="ttdeci">bool button_clicked_usermode(const uint8_t nbClick)</div><div class="ttdoc">Called to handle button click events if &quot;usermode UI&quot; is active.</div></div>
+<div class="ttc" id="astrip_8h_html"><div class="ttname"><a href="strip_8h.html">strip.h</a></div><div class="ttdoc">Interface of the indexable strip object. Only used for RGB lamp type.</div></div>
+<div class="ttc" id="asystem_2utils_2constants_8h_html_aa87af64c7db4c82d3374823aff4f72f4"><div class="ttname"><a href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a></div><div class="ttdeci">uint16_t brightness_t</div><div class="ttdoc">Define the type of the brightness parameters.</div><div class="ttdef"><b>Definition:</b> constants.h:145</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

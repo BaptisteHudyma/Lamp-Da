@@ -77,45 +77,48 @@ $(function() {
   <div class="headertitle"><div class="title">registers.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// do not use pragma once here, has this can be mocked</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#ifndef PLATFORM_REGISTERS_H</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#define PLATFORM_REGISTERS_H</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// settup the software watchedog</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">extern</span> <span class="keywordtype">void</span> setup_watchdog(<span class="keyword">const</span> uint32_t timeoutDelaySecond);</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">extern</span> <span class="keywordtype">void</span> kick_watchdog(<span class="keyword">const</span> uint8_t registerId);</div>
+<a href="registers_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// do not use pragma once here, has this can be mocked</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifndef PLATFORM_REGISTERS_H</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define PLATFORM_REGISTERS_H</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">// get serial number 1 and 2 part</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">extern</span> uint64_t get_device_serial_number();</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">// setup the ADC</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">extern</span> <span class="keywordtype">void</span> setup_adc(<span class="keyword">const</span> uint8_t resolution);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="registers_8h.html#ac2366fb58b806b19f9134fa66fd38606">   15</a></span><span class="keyword">extern</span> <span class="keywordtype">void</span> <a class="code hl_function" href="registers_8h.html#ac2366fb58b806b19f9134fa66fd38606">setup_watchdog</a>(<span class="keyword">const</span> uint32_t timeoutDelaySecond);</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment">// get the number of wire com interfaces</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">extern</span> uint8_t get_wire_interface_count();</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">// enter the dfu program mode (/!\ remove this program /!\&zwj;)</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">extern</span> <span class="keywordtype">void</span> enter_serial_dfu();</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="registers_8h.html#a9c907f3559265e008752f4ca94176d7a">   21</a></span><span class="keyword">extern</span> <span class="keywordtype">void</span> <a class="code hl_function" href="registers_8h.html#a9c907f3559265e008752f4ca94176d7a">kick_watchdog</a>(<span class="keyword">const</span> uint8_t registerId);</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">// voltage is detected on VBUS line</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">extern</span> <span class="keywordtype">bool</span> is_voltage_detected_on_vbus();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="registers_8h.html#ae72b779dd87cd2654441afbb32c8ecaf">   24</a></span><span class="keyword">extern</span> uint64_t <a class="code hl_function" href="registers_8h.html#ae72b779dd87cd2654441afbb32c8ecaf">get_device_serial_number</a>();</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">// microcontroler restarted after a reset</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">extern</span> <span class="keywordtype">bool</span> is_started_from_reset();</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment">// reset after a watchdog timeout</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">extern</span> <span class="keywordtype">bool</span> is_started_from_watchdog();</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment">// started by user interrupt</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">extern</span> <span class="keywordtype">bool</span> is_started_from_interrupt();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="registers_8h.html#a6da8d4855edbfc59731e40e5e86e4500">   28</a></span><span class="keyword">extern</span> <span class="keywordtype">void</span> <a class="code hl_function" href="registers_8h.html#a6da8d4855edbfc59731e40e5e86e4500">setup_adc</a>(<span class="keyword">const</span> uint8_t resolution);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="registers_8h.html#a4082e099d6b18de1bf1bed4a0b3da5c3">   31</a></span><span class="keyword">extern</span> uint8_t <a class="code hl_function" href="registers_8h.html#a4082e099d6b18de1bf1bed4a0b3da5c3">get_wire_interface_count</a>();</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment">// make a read of the CPU temp</span></div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">extern</span> <span class="keywordtype">float</span> read_CPU_temperature_degreesC();</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment">// Put the system to sleep, with a wake up pin</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">extern</span> <span class="keywordtype">void</span> go_to_sleep(<span class="keyword">const</span> <span class="keywordtype">int</span> wakeUpPin);</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="registers_8h.html#a8236a09b78dee29f0903729f4873711d">   35</a></span><span class="keyword">extern</span> <span class="keywordtype">void</span> <a class="code hl_function" href="registers_8h.html#a8236a09b78dee29f0903729f4873711d">enter_serial_dfu</a>();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="registers_8h.html#af9fa52a7595bbd6587809423725860b1">   38</a></span><span class="keyword">extern</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="registers_8h.html#af9fa52a7595bbd6587809423725860b1">is_voltage_detected_on_vbus</a>();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="registers_8h.html#abd661b776be1dbdb7e6f0478c22ebe6e">   41</a></span><span class="keyword">extern</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="registers_8h.html#abd661b776be1dbdb7e6f0478c22ebe6e">is_started_from_reset</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="registers_8h.html#a6a1049d56501715d6b62a5c95287d4f0">   43</a></span><span class="keyword">extern</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="registers_8h.html#a6a1049d56501715d6b62a5c95287d4f0">is_started_from_watchdog</a>();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="registers_8h.html#a637626ad8884c3e26a0b41f3e0d13ed9">   45</a></span><span class="keyword">extern</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="registers_8h.html#a637626ad8884c3e26a0b41f3e0d13ed9">is_started_from_interrupt</a>();</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="registers_8h.html#ae4168d397d5ca40d3ec19f367ace669b">   48</a></span><span class="keyword">extern</span> <span class="keywordtype">float</span> <a class="code hl_function" href="registers_8h.html#ae4168d397d5ca40d3ec19f367ace669b">read_CPU_temperature_degreesC</a>();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="registers_8h.html#acc346c7576aa9e2e6ed730e3241d8be7">   54</a></span><span class="keyword">extern</span> <span class="keywordtype">void</span> <a class="code hl_function" href="registers_8h.html#acc346c7576aa9e2e6ed730e3241d8be7">go_to_sleep</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> wakeUpPin);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aregisters_8h_html_a4082e099d6b18de1bf1bed4a0b3da5c3"><div class="ttname"><a href="registers_8h.html#a4082e099d6b18de1bf1bed4a0b3da5c3">get_wire_interface_count</a></div><div class="ttdeci">uint8_t get_wire_interface_count()</div><div class="ttdoc">get the number of wire com interfaces</div></div>
+<div class="ttc" id="aregisters_8h_html_a637626ad8884c3e26a0b41f3e0d13ed9"><div class="ttname"><a href="registers_8h.html#a637626ad8884c3e26a0b41f3e0d13ed9">is_started_from_interrupt</a></div><div class="ttdeci">bool is_started_from_interrupt()</div><div class="ttdoc">started by user interrupt</div></div>
+<div class="ttc" id="aregisters_8h_html_a6a1049d56501715d6b62a5c95287d4f0"><div class="ttname"><a href="registers_8h.html#a6a1049d56501715d6b62a5c95287d4f0">is_started_from_watchdog</a></div><div class="ttdeci">bool is_started_from_watchdog()</div><div class="ttdoc">reset after a watchdog timeout</div></div>
+<div class="ttc" id="aregisters_8h_html_a6da8d4855edbfc59731e40e5e86e4500"><div class="ttname"><a href="registers_8h.html#a6da8d4855edbfc59731e40e5e86e4500">setup_adc</a></div><div class="ttdeci">void setup_adc(const uint8_t resolution)</div><div class="ttdoc">setup the ADC</div></div>
+<div class="ttc" id="aregisters_8h_html_a8236a09b78dee29f0903729f4873711d"><div class="ttname"><a href="registers_8h.html#a8236a09b78dee29f0903729f4873711d">enter_serial_dfu</a></div><div class="ttdeci">void enter_serial_dfu()</div><div class="ttdoc">enter the dfu program mode</div></div>
+<div class="ttc" id="aregisters_8h_html_a9c907f3559265e008752f4ca94176d7a"><div class="ttname"><a href="registers_8h.html#a9c907f3559265e008752f4ca94176d7a">kick_watchdog</a></div><div class="ttdeci">void kick_watchdog(const uint8_t registerId)</div><div class="ttdoc">Notify the software watchedog that we are alive.</div></div>
+<div class="ttc" id="aregisters_8h_html_abd661b776be1dbdb7e6f0478c22ebe6e"><div class="ttname"><a href="registers_8h.html#abd661b776be1dbdb7e6f0478c22ebe6e">is_started_from_reset</a></div><div class="ttdeci">bool is_started_from_reset()</div><div class="ttdoc">microcontroler restarted after a reset</div></div>
+<div class="ttc" id="aregisters_8h_html_ac2366fb58b806b19f9134fa66fd38606"><div class="ttname"><a href="registers_8h.html#ac2366fb58b806b19f9134fa66fd38606">setup_watchdog</a></div><div class="ttdeci">void setup_watchdog(const uint32_t timeoutDelaySecond)</div><div class="ttdoc">Setup the software watchedog.</div></div>
+<div class="ttc" id="aregisters_8h_html_acc346c7576aa9e2e6ed730e3241d8be7"><div class="ttname"><a href="registers_8h.html#acc346c7576aa9e2e6ed730e3241d8be7">go_to_sleep</a></div><div class="ttdeci">void go_to_sleep(const int wakeUpPin)</div><div class="ttdoc">Put the system to sleep, with a wake up pin.</div></div>
+<div class="ttc" id="aregisters_8h_html_ae4168d397d5ca40d3ec19f367ace669b"><div class="ttname"><a href="registers_8h.html#ae4168d397d5ca40d3ec19f367ace669b">read_CPU_temperature_degreesC</a></div><div class="ttdeci">float read_CPU_temperature_degreesC()</div><div class="ttdoc">make a read of the CPU temp</div></div>
+<div class="ttc" id="aregisters_8h_html_ae72b779dd87cd2654441afbb32c8ecaf"><div class="ttname"><a href="registers_8h.html#ae72b779dd87cd2654441afbb32c8ecaf">get_device_serial_number</a></div><div class="ttdeci">uint64_t get_device_serial_number()</div><div class="ttdoc">get serial number</div></div>
+<div class="ttc" id="aregisters_8h_html_af9fa52a7595bbd6587809423725860b1"><div class="ttname"><a href="registers_8h.html#af9fa52a7595bbd6587809423725860b1">is_voltage_detected_on_vbus</a></div><div class="ttdeci">bool is_voltage_detected_on_vbus()</div><div class="ttdoc">voltage is detected on VBUS line</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -77,49 +77,51 @@ $(function() {
   <div class="headertitle"><div class="title">gamma.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef MODES_GAMMA8_H</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define MODES_GAMMA8_H</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno"><a class="line" href="namespacemodes_1_1colors.html">    6</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacemodes_1_1colors.html">modes::colors</a> {</div>
+<a href="gamma_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#ifndef MODES_GAMMA8_H</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#define MODES_GAMMA8_H</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>__internal {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">static</span> <span class="keyword">constexpr</span> uint8_t gammaT[256] = {</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        0,   0,   0,   0,   0,   0,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   2,   2,   2,</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        2,   2,   2,   2,   2,   3,   3,   3,   3,   3,   3,   3,   4,   4,   4,   4,   4,   5,   5,   5,   5,   6,</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        6,   6,   6,   7,   7,   7,   7,   8,   8,   8,   9,   9,   9,   10,  10,  10,  11,  11,  11,  12,  12,  13,</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        13,  13,  14,  14,  15,  15,  16,  16,  17,  17,  18,  18,  19,  19,  20,  20,  21,  21,  22,  22,  23,  24,</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        24,  25,  25,  26,  27,  27,  28,  29,  29,  30,  31,  32,  32,  33,  34,  35,  35,  36,  37,  38,  39,  39,</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        40,  41,  42,  43,  44,  45,  46,  47,  48,  49,  50,  50,  51,  52,  54,  55,  56,  57,  58,  59,  60,  61,</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        62,  63,  64,  66,  67,  68,  69,  70,  72,  73,  74,  75,  77,  78,  79,  81,  82,  83,  85,  86,  87,  89,</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        90,  92,  93,  95,  96,  98,  99,  101, 102, 104, 105, 107, 109, 110, 112, 114, 115, 117, 119, 120, 122, 124,</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        126, 127, 129, 131, 133, 135, 137, 138, 140, 142, 144, 146, 148, 150, 152, 154, 156, 158, 160, 162, 164, 167,</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        169, 171, 173, 175, 177, 180, 182, 184, 186, 189, 191, 193, 196, 198, 200, 203, 205, 208, 210, 213, 215, 218,</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        220, 223, 225, 228, 231, 233, 236, 239, 241, 244, 247, 249, 252, 255};</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#if 0</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">// re-calculates &amp; fills gamma table</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keywordtype">void</span> calcGammaTable(<span class="keywordtype">float</span> gamma)</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>{</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; 256; i++)</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  {</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    __internal::gammaT[i] = (int)(powf((<span class="keywordtype">float</span>)i / 255.0f, gamma) * 255.0f + 0.5f);</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  }</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>} <span class="comment">// namespace __internal</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="namespacemodes_1_1colors.html#ad6501437e7e0ac070a61a244b0e97661">   39</a></span><span class="keyword">static</span> <span class="keyword">constexpr</span> uint8_t <a class="code hl_function" href="namespacemodes_1_1colors.html#ad6501437e7e0ac070a61a244b0e97661">gamma8</a>(uint8_t value) { <span class="keywordflow">return</span> __internal::gammaT[value]; }</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>} <span class="comment">// namespace modes::colors</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="anamespacemodes_1_1colors_html"><div class="ttname"><a href="namespacemodes_1_1colors.html">modes::colors</a></div><div class="ttdoc">Tools to manipulate colors and their representation.</div><div class="ttdef"><b>Definition:</b> gamma.hpp:6</div></div>
-<div class="ttc" id="anamespacemodes_1_1colors_html_ad6501437e7e0ac070a61a244b0e97661"><div class="ttname"><a href="namespacemodes_1_1colors.html#ad6501437e7e0ac070a61a244b0e97661">modes::colors::gamma8</a></div><div class="ttdeci">static constexpr uint8_t gamma8(uint8_t value)</div><div class="ttdoc">used for color gamma correction</div><div class="ttdef"><b>Definition:</b> gamma.hpp:39</div></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="namespacemodes_1_1colors.html">   10</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacemodes_1_1colors.html">modes::colors</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>__internal {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="gamma_8hpp.html#ac02a3ac3c661033429f394ec93fb4467">   15</a></span><span class="keyword">static</span> <span class="keyword">constexpr</span> uint8_t <a class="code hl_variable" href="gamma_8hpp.html#ac02a3ac3c661033429f394ec93fb4467">gammaT</a>[256] = {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        0,   0,   0,   0,   0,   0,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   2,   2,   2,</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        2,   2,   2,   2,   2,   3,   3,   3,   3,   3,   3,   3,   4,   4,   4,   4,   4,   5,   5,   5,   5,   6,</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        6,   6,   6,   7,   7,   7,   7,   8,   8,   8,   9,   9,   9,   10,  10,  10,  11,  11,  11,  12,  12,  13,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        13,  13,  14,  14,  15,  15,  16,  16,  17,  17,  18,  18,  19,  19,  20,  20,  21,  21,  22,  22,  23,  24,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        24,  25,  25,  26,  27,  27,  28,  29,  29,  30,  31,  32,  32,  33,  34,  35,  35,  36,  37,  38,  39,  39,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        40,  41,  42,  43,  44,  45,  46,  47,  48,  49,  50,  50,  51,  52,  54,  55,  56,  57,  58,  59,  60,  61,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        62,  63,  64,  66,  67,  68,  69,  70,  72,  73,  74,  75,  77,  78,  79,  81,  82,  83,  85,  86,  87,  89,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        90,  92,  93,  95,  96,  98,  99,  101, 102, 104, 105, 107, 109, 110, 112, 114, 115, 117, 119, 120, 122, 124,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        126, 127, 129, 131, 133, 135, 137, 138, 140, 142, 144, 146, 148, 150, 152, 154, 156, 158, 160, 162, 164, 167,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        169, 171, 173, 175, 177, 180, 182, 184, 186, 189, 191, 193, 196, 198, 200, 203, 205, 208, 210, 213, 215, 218,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        220, 223, 225, 228, 231, 233, 236, 239, 241, 244, 247, 249, 252, 255};</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#if 0</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment">// re-calculates &amp; fills gamma table</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keywordtype">void</span> calcGammaTable(<span class="keywordtype">float</span> gamma)</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>{</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; 256; i++)</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    __internal::gammaT[i] = (int)(powf((<span class="keywordtype">float</span>)i / 255.0f, gamma) * 255.0f + 0.5f);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>} <span class="comment">// namespace __internal</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="namespacemodes_1_1colors.html#ad6501437e7e0ac070a61a244b0e97661">   43</a></span><span class="keyword">static</span> <span class="keyword">constexpr</span> uint8_t <a class="code hl_function" href="namespacemodes_1_1colors.html#ad6501437e7e0ac070a61a244b0e97661">gamma8</a>(uint8_t value) { <span class="keywordflow">return</span> __internal::gammaT[value]; }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>} <span class="comment">// namespace modes::colors</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="agamma_8hpp_html_ac02a3ac3c661033429f394ec93fb4467"><div class="ttname"><a href="gamma_8hpp.html#ac02a3ac3c661033429f394ec93fb4467">modes::colors::__internal::gammaT</a></div><div class="ttdeci">static constexpr uint8_t gammaT[256]</div><div class="ttdoc">gamma 2.8 lookup table used for color correction</div><div class="ttdef"><b>Definition:</b> gamma.hpp:15</div></div>
+<div class="ttc" id="anamespacemodes_1_1colors_html"><div class="ttname"><a href="namespacemodes_1_1colors.html">modes::colors</a></div><div class="ttdoc">Tools to manipulate colors and their representation.</div><div class="ttdef"><b>Definition:</b> gamma.hpp:10</div></div>
+<div class="ttc" id="anamespacemodes_1_1colors_html_ad6501437e7e0ac070a61a244b0e97661"><div class="ttname"><a href="namespacemodes_1_1colors.html#ad6501437e7e0ac070a61a244b0e97661">modes::colors::gamma8</a></div><div class="ttdeci">static constexpr uint8_t gamma8(uint8_t value)</div><div class="ttdoc">used for color gamma correction</div><div class="ttdef"><b>Definition:</b> gamma.hpp:43</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

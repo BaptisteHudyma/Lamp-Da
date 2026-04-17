@@ -881,13 +881,13 @@ $(function() {
 <div class="line"><a id="l00811" name="l00811"></a><span class="lineno">  811</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> readDataReg(<span class="keyword">const</span> <span class="keywordtype">byte</span> regAddress, <span class="keywordtype">byte</span>* dataVal, <span class="keyword">const</span> uint8_t arrLen)</div>
 <div class="line"><a id="l00812" name="l00812"></a><span class="lineno">  812</span>  {</div>
 <div class="line"><a id="l00813" name="l00813"></a><span class="lineno">  813</span>    <span class="comment">// IMPLEMENT THIS FUNCTION</span></div>
-<div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>    <span class="keywordflow">return</span> i2c_readData(i2cObjectIndex, BQ25713addr, regAddress, arrLen, dataVal, usesStopBit ? 1 : 0) == 0;</div>
+<div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="i2c_8h.html#adf180cbd3e5155e1cfd5a1061dfe6d0e">i2c_readData</a>(i2cObjectIndex, BQ25713addr, regAddress, arrLen, dataVal, usesStopBit ? 1 : 0) == 0;</div>
 <div class="line"><a id="l00815" name="l00815"></a><span class="lineno">  815</span>  }</div>
 <div class="line"><a id="l00816" name="l00816"></a><span class="lineno">  816</span> </div>
 <div class="line"><a id="l00817" name="l00817"></a><span class="lineno">  817</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> writeData(<span class="keyword">const</span> <span class="keywordtype">byte</span> regAddress, uint8_t lenght, uint8_t* data)</div>
 <div class="line"><a id="l00818" name="l00818"></a><span class="lineno">  818</span>  {</div>
 <div class="line"><a id="l00819" name="l00819"></a><span class="lineno">  819</span>    <span class="comment">// IMPLEMENT THIS FUNCTION</span></div>
-<div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span>    <span class="keywordflow">return</span> i2c_writeData(i2cObjectIndex, BQ25713addr, regAddress, lenght, data, usesStopBit ? 1 : 0) == 0;</div>
+<div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="i2c_8h.html#a6b645405f3d038fcb287c7273c54c8db">i2c_writeData</a>(i2cObjectIndex, BQ25713addr, regAddress, lenght, data, usesStopBit ? 1 : 0) == 0;</div>
 <div class="line"><a id="l00821" name="l00821"></a><span class="lineno">  821</span>  }</div>
 <div class="line"><a id="l00822" name="l00822"></a><span class="lineno">  822</span> </div>
 <div class="line"><a id="l00823" name="l00823"></a><span class="lineno">  823</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> writeData16(<span class="keyword">const</span> <span class="keywordtype">byte</span> regAddress, uint16_t val)</div>
@@ -905,6 +905,8 @@ $(function() {
 <div class="line"><a id="l00835" name="l00835"></a><span class="lineno">  835</span> </div>
 <div class="line"><a id="l00836" name="l00836"></a><span class="lineno">  836</span><span class="preprocessor">#endif </span><span class="comment">// BQ25713_H</span></div>
 <div class="ttc" id="aclassbq25713_1_1BQ25713_html"><div class="ttname"><a href="classbq25713_1_1BQ25713.html">bq25713::BQ25713</a></div><div class="ttdef"><b>Definition:</b> BQ25713.h:66</div></div>
+<div class="ttc" id="ai2c_8h_html_a6b645405f3d038fcb287c7273c54c8db"><div class="ttname"><a href="i2c_8h.html#a6b645405f3d038fcb287c7273c54c8db">i2c_writeData</a></div><div class="ttdeci">int i2c_writeData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, const uint8_t *buf, int stopBit)</div><div class="ttdoc">Write data to the two wire interface.</div></div>
+<div class="ttc" id="ai2c_8h_html_adf180cbd3e5155e1cfd5a1061dfe6d0e"><div class="ttname"><a href="i2c_8h.html#adf180cbd3e5155e1cfd5a1061dfe6d0e">i2c_readData</a></div><div class="ttdeci">int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t *buf, int stopBit)</div><div class="ttdoc">Read data from the two wire interface.</div></div>
 <div class="ttc" id="astructbq25713_1_1BQ25713_1_1IBaseReadRegister_html"><div class="ttname"><a href="structbq25713_1_1BQ25713_1_1IBaseReadRegister.html">bq25713::BQ25713::IBaseReadRegister</a></div><div class="ttdef"><b>Definition:</b> BQ25713.h:121</div></div>
 <div class="ttc" id="astructbq25713_1_1BQ25713_1_1IBaseRegister_html"><div class="ttname"><a href="structbq25713_1_1BQ25713_1_1IBaseRegister.html">bq25713::BQ25713::IBaseRegister</a></div><div class="ttdef"><b>Definition:</b> BQ25713.h:165</div></div>
 <div class="ttc" id="astructbq25713_1_1BQ25713_1_1IDoubleRegister_html"><div class="ttname"><a href="structbq25713_1_1BQ25713_1_1IDoubleRegister.html">bq25713::BQ25713::IDoubleRegister</a></div><div class="ttdef"><b>Definition:</b> BQ25713.h:195</div></div>

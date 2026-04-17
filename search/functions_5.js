@@ -1,8 +1,21 @@
 var searchData=
 [
-  ['enable_5fevent_5fdetection_0',['enable_event_detection',['../namespaceimu.html#a03257b2c456a2dc279cfb91ac97a2c63',1,'imu']]],
-  ['enter_5fgroup_1',['enter_group',['../structmodes_1_1ContextTy.html#ac5c0211535cad0c2bc7d273bfa27a118',1,'modes::ContextTy']]],
-  ['enter_5fmode_2',['enter_mode',['../structmodes_1_1ContextTy.html#aeb53a621319fa2d29c6542d7348eb47c',1,'modes::ContextTy']]],
-  ['execute_3',['execute',['../structalerts_1_1AlertBase.html#adc768c7da8339ad7b3008d3cb0a92d23',1,'alerts::AlertBase::execute()'],['../structalerts_1_1Alert__BatteryLow.html#aee964ca99934d2ca94b73f33f409e5e5',1,'alerts::Alert_BatteryLow::execute()'],['../structalerts_1_1Alert__TempTooHigh.html#af00f0e81267bd4e5d833b480afed636a',1,'alerts::Alert_TempTooHigh::execute()']]],
-  ['exponentialcurve_4',['ExponentialCurve',['../classcurves_1_1ExponentialCurve.html#a6c3c77cead0b307061e26ca668ab5c64',1,'curves::ExponentialCurve']]]
+  ['enable_0',['enable',['../namespacecharger_1_1drivers.html#af5312704cf05190dd004d7484fe74788',1,'charger::drivers::enable()'],['../namespacemicrophone.html#aab80d8aa4809bb2dcda6f6a0057ca447',1,'microphone::enable()']]],
+  ['enable_5fbalancing_1',['enable_balancing',['../namespacebalancer.html#a2aff023c748a80881dc0e7ea6ea6d0f5',1,'balancer']]],
+  ['enable_5fbig_5fmotion_5fdetection_2',['enable_big_motion_detection',['../classimu_1_1Wrapper.html#a65a082f0c063678b3906c307a245369e',1,'imu::Wrapper']]],
+  ['enable_5fcharge_3',['enable_charge',['../namespacepower.html#a66dd0ec1311f0199b073823c906563ff',1,'power::enable_charge()'],['../namespacecharger_1_1drivers.html#a0ac283168c96eb86f08c66259d372569',1,'charger::drivers::enable_charge()']]],
+  ['enable_5fevent_5fdetection_4',['enable_event_detection',['../namespaceimu.html#a03257b2c456a2dc279cfb91ac97a2c63',1,'imu']]],
+  ['enable_5ffree_5ffall_5fdetection_5',['enable_free_fall_detection',['../classimu_1_1Wrapper.html#ad3ebb429354ffe47d33f329eaa3b4396',1,'imu::Wrapper']]],
+  ['enable_5finterrupt1_6',['enable_interrupt1',['../classimu_1_1Wrapper.html#a3b6e4dcd1349f62e6a18b92b28533d11',1,'imu::Wrapper']]],
+  ['enable_5finterrupt2_7',['enable_interrupt2',['../classimu_1_1Wrapper.html#abc5e2bd6086f55d45952cd40b3b0e627',1,'imu::Wrapper']]],
+  ['enable_5fotg_8',['enable_OTG',['../namespacecharger_1_1drivers.html#a126ad2f0f8dc78e74891d1986018be6d',1,'charger::drivers']]],
+  ['enable_5fpower_5fgate_9',['enable_power_gate',['../namespacepowergates.html#a65f144ff00713aa5301f14be9d47dce4',1,'powergates']]],
+  ['enable_5fstep_5fdetection_10',['enable_step_detection',['../classimu_1_1Wrapper.html#ae631a8b0b04e8984ecbc84be9675a81f',1,'imu::Wrapper']]],
+  ['enable_5ftilt_5fdetection_11',['enable_tilt_detection',['../classimu_1_1Wrapper.html#a324f4dfe2a5840b07607530dd99e705c',1,'imu::Wrapper']]],
+  ['enable_5fvbus_5fgate_12',['enable_vbus_gate',['../namespacepowergates.html#a7586b97bac7beb90fb441c48db289833',1,'powergates']]],
+  ['enable_5fvbus_5fgate_5fdirect_13',['enable_vbus_gate_DIRECT',['../namespacepowergates.html#aace976e74beb93e21a057766af6357ac',1,'powergates']]],
+  ['enter_5fgroup_14',['enter_group',['../structmodes_1_1ContextTy.html#ac5c0211535cad0c2bc7d273bfa27a118',1,'modes::ContextTy']]],
+  ['enter_5fmode_15',['enter_mode',['../structmodes_1_1ContextTy.html#aeb53a621319fa2d29c6542d7348eb47c',1,'modes::ContextTy']]],
+  ['enter_5fserial_5fdfu_16',['enter_serial_dfu',['../registers_8h.html#a8236a09b78dee29f0903729f4873711d',1,'registers.h']]],
+  ['exponentialcurve_17',['ExponentialCurve',['../classcurves_1_1ExponentialCurve.html#a6c3c77cead0b307061e26ca668ab5c64',1,'curves::ExponentialCurve']]]
 ];

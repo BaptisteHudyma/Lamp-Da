@@ -12,11 +12,12 @@ var searchData=
   ['slateblue_9',['SlateBlue',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca3ac9c348c3f414404e6ddfe94f5866f1',1,'modes::colors']]],
   ['slategray_10',['SlateGray',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cad17e4812de4a0904a87607f250e154e6',1,'modes::colors']]],
   ['slategrey_11',['SlateGrey',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caaf7a7a5780cbd39a2200070f4cc02e37',1,'modes::colors']]],
-  ['slow_5fcharging_12',['SLOW_CHARGING',['../structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26a4df66799a23c0df6ce43a7eb0fe39268',1,'charger::Charger_t']]],
-  ['snow_13',['Snow',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caad4fc73573fba39d644fa8f1900786da',1,'modes::colors']]],
-  ['sodiumvapor_14',['SodiumVapor',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a21fd134cd5e088fd13fda44a5f2183b5',1,'modes::colors']]],
-  ['springgreen_15',['SpringGreen',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca6399b2d1a9d772e9358455a41d765134',1,'modes::colors']]],
-  ['standardfluorescent_16',['StandardFluorescent',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a542064cd11d181e695a96f6a1049fe58',1,'modes::colors']]],
-  ['steelblue_17',['SteelBlue',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca76e91561dbe31084585aa5b1009efa38',1,'modes::colors']]],
-  ['step_18',['Step',['../namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3a48c7c41b72e1d678923ce3571aa65b2d',1,'imu']]]
+  ['slow_5fcharge_12',['SLOW_CHARGE',['../namespacecharger_1_1drivers.html#a078feabad5a6501dcb48cc8a8d4cdce1ac9eb6ca622a6b460b5c00fe89151a708',1,'charger::drivers']]],
+  ['slow_5fcharging_13',['SLOW_CHARGING',['../structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26a4df66799a23c0df6ce43a7eb0fe39268',1,'charger::Charger_t']]],
+  ['snow_14',['Snow',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caad4fc73573fba39d644fa8f1900786da',1,'modes::colors']]],
+  ['sodiumvapor_15',['SodiumVapor',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a21fd134cd5e088fd13fda44a5f2183b5',1,'modes::colors']]],
+  ['springgreen_16',['SpringGreen',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca6399b2d1a9d772e9358455a41d765134',1,'modes::colors']]],
+  ['standardfluorescent_17',['StandardFluorescent',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a542064cd11d181e695a96f6a1049fe58',1,'modes::colors']]],
+  ['steelblue_18',['SteelBlue',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca76e91561dbe31084585aa5b1009efa38',1,'modes::colors']]],
+  ['step_19',['Step',['../namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3a48c7c41b72e1d678923ce3571aa65b2d',1,'imu::Step()'],['../classimu_1_1Wrapper.html#a28e79cc284fa30a10295208d35f760a9a48c7c41b72e1d678923ce3571aa65b2d',1,'imu::Wrapper::Step()']]]
 ];

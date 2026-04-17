@@ -77,30 +77,40 @@ $(function() {
   <div class="headertitle"><div class="title">brightness_handle.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef BRIGHTNESS_HANDLE_H</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define BRIGHTNESS_HANDLE_H</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;constants.h&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>brightness {</div>
+<a href="brightness__handle_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#ifndef BRIGHTNESS_HANDLE_H</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#define BRIGHTNESS_HANDLE_H</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>brightness_t get_brightness();</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>brightness_t get_saved_brightness();</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>brightness_t get_max_brightness();</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keywordtype">void</span> set_max_brightness(<span class="keyword">const</span> brightness_t brg);</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keywordtype">void</span> update_saved_brightness();</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keywordtype">void</span> update_brightness(<span class="keyword">const</span> brightness_t newBrightness, <span class="keyword">const</span> <span class="keywordtype">bool</span> isInitialRead = <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>uint32_t when_last_update_brightness();</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>} <span class="comment">// namespace brightness</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;constants.h&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespacebrightness.html">   11</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacebrightness.html">brightness</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="namespacebrightness.html#ae30a3b2c2d6215979bf3f52fdc15db59">   14</a></span><a class="code hl_typedef" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> <a class="code hl_function" href="namespacebrightness.html#ae30a3b2c2d6215979bf3f52fdc15db59">get_brightness</a>();</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespacebrightness.html#a00f9177ffe8dd50b0169e8490e0f0382">   17</a></span><a class="code hl_typedef" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> <a class="code hl_function" href="namespacebrightness.html#a00f9177ffe8dd50b0169e8490e0f0382">get_saved_brightness</a>();</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespacebrightness.html#ace9a179d7248f80646b08830a0a076dc">   20</a></span><a class="code hl_typedef" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> <a class="code hl_function" href="namespacebrightness.html#ace9a179d7248f80646b08830a0a076dc">get_max_brightness</a>();</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespacebrightness.html#a090e572e98c747d3cb64cb7e387aa487">   24</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacebrightness.html#a090e572e98c747d3cb64cb7e387aa487">set_max_brightness</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> brg);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="namespacebrightness.html#aa6b5623b6240632b6be9ffba69c45e9a">   27</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacebrightness.html#aa6b5623b6240632b6be9ffba69c45e9a">update_saved_brightness</a>();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="namespacebrightness.html#a2980cfdfd34a8ade5bfdf510f9c178bd">   34</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacebrightness.html#a2980cfdfd34a8ade5bfdf510f9c178bd">update_brightness</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> newBrightness, <span class="keyword">const</span> <span class="keywordtype">bool</span> isInitialRead = <span class="keyword">false</span>);</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="namespacebrightness.html#a7b78f89f8721bb5057e010a44bce3af8">   37</a></span>uint32_t <a class="code hl_function" href="namespacebrightness.html#a7b78f89f8721bb5057e010a44bce3af8">when_last_update_brightness</a>();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>} <span class="comment">// namespace brightness</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="anamespacebrightness_html"><div class="ttname"><a href="namespacebrightness.html">brightness</a></div><div class="ttdoc">Handle the LED output brightness.</div><div class="ttdef"><b>Definition:</b> brightness_handle.h:11</div></div>
+<div class="ttc" id="anamespacebrightness_html_a00f9177ffe8dd50b0169e8490e0f0382"><div class="ttname"><a href="namespacebrightness.html#a00f9177ffe8dd50b0169e8490e0f0382">brightness::get_saved_brightness</a></div><div class="ttdeci">brightness_t get_saved_brightness()</div><div class="ttdoc">Return the saved brightness level.</div></div>
+<div class="ttc" id="anamespacebrightness_html_a090e572e98c747d3cb64cb7e387aa487"><div class="ttname"><a href="namespacebrightness.html#a090e572e98c747d3cb64cb7e387aa487">brightness::set_max_brightness</a></div><div class="ttdeci">void set_max_brightness(const brightness_t brg)</div><div class="ttdoc">Set the new max brightness.</div></div>
+<div class="ttc" id="anamespacebrightness_html_a2980cfdfd34a8ade5bfdf510f9c178bd"><div class="ttname"><a href="namespacebrightness.html#a2980cfdfd34a8ade5bfdf510f9c178bd">brightness::update_brightness</a></div><div class="ttdeci">void update_brightness(const brightness_t newBrightness, const bool isInitialRead=false)</div><div class="ttdoc">update the internal brightness values</div></div>
+<div class="ttc" id="anamespacebrightness_html_a7b78f89f8721bb5057e010a44bce3af8"><div class="ttname"><a href="namespacebrightness.html#a7b78f89f8721bb5057e010a44bce3af8">brightness::when_last_update_brightness</a></div><div class="ttdeci">uint32_t when_last_update_brightness()</div><div class="ttdoc">Get time in milliseconds when brightness was last updated.</div></div>
+<div class="ttc" id="anamespacebrightness_html_aa6b5623b6240632b6be9ffba69c45e9a"><div class="ttname"><a href="namespacebrightness.html#aa6b5623b6240632b6be9ffba69c45e9a">brightness::update_saved_brightness</a></div><div class="ttdeci">void update_saved_brightness()</div><div class="ttdoc">Update the saved brightness value with the current brightness.</div></div>
+<div class="ttc" id="anamespacebrightness_html_ace9a179d7248f80646b08830a0a076dc"><div class="ttname"><a href="namespacebrightness.html#ace9a179d7248f80646b08830a0a076dc">brightness::get_max_brightness</a></div><div class="ttdeci">brightness_t get_max_brightness()</div><div class="ttdoc">Return the maximum allowed brightness.</div></div>
+<div class="ttc" id="anamespacebrightness_html_ae30a3b2c2d6215979bf3f52fdc15db59"><div class="ttname"><a href="namespacebrightness.html#ae30a3b2c2d6215979bf3f52fdc15db59">brightness::get_brightness</a></div><div class="ttdeci">brightness_t get_brightness()</div><div class="ttdoc">Return the current brightness value (in range 0 - brightness::absoluteMaximumBrightness)</div></div>
+<div class="ttc" id="asystem_2utils_2constants_8h_html_aa87af64c7db4c82d3374823aff4f72f4"><div class="ttname"><a href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a></div><div class="ttdeci">uint16_t brightness_t</div><div class="ttdoc">Define the type of the brightness parameters.</div><div class="ttdef"><b>Definition:</b> constants.h:145</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -78,6 +78,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Wrapper class for the FFT implementation.  
+ <a href="classFftAnalyzer.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="fft_8h_source.html">fft.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -87,6 +90,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr
 <tr class="separator:a429e8cb926180383685f71ca5d211693"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54b690540afa5d8454948be4ee55db29"><td class="memItemLeft" align="right" valign="top"><a id="a54b690540afa5d8454948be4ee55db29" name="a54b690540afa5d8454948be4ee55db29"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>to_bin_index</b> (const T frequency) const noexcept</td></tr>
+<tr class="memdesc:a54b690540afa5d8454948be4ee55db29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map frequency to bin index. <br /></td></tr>
 <tr class="separator:a54b690540afa5d8454948be4ee55db29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ef3b200b89e38533a0ed652c48069c1"><td class="memItemLeft" align="right" valign="top"><a id="a0ef3b200b89e38533a0ed652c48069c1" name="a0ef3b200b89e38533a0ed652c48069c1"></a>
 T&#160;</td><td class="memItemRight" valign="bottom"><b>medium_bin_frequency</b> (uint16_t index) const noexcept</td></tr>
@@ -108,9 +112,11 @@ T&#160;</td><td class="memItemRight" valign="bottom"><b>max_bin_frequency</b> (u
 <tr class="separator:a848b1114451958f1df4d4b519034272f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf7c5e925afa35138fe9f7dfe211e39e"><td class="memItemLeft" align="right" valign="top"><a id="aaf7c5e925afa35138fe9f7dfe211e39e" name="aaf7c5e925afa35138fe9f7dfe211e39e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_data</b> (const T data, uint16_t index)</td></tr>
+<tr class="memdesc:aaf7c5e925afa35138fe9f7dfe211e39e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the microphone data at the target index. <br /></td></tr>
 <tr class="separator:aaf7c5e925afa35138fe9f7dfe211e39e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a838135c8133595c65767755a03159066"><td class="memItemLeft" align="right" valign="top"><a id="a838135c8133595c65767755a03159066" name="a838135c8133595c65767755a03159066"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>run_fast_fourrier_transform</b> ()</td></tr>
+<tr class="memdesc:a838135c8133595c65767755a03159066"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run FFT main code. <br /></td></tr>
 <tr class="separator:a838135c8133595c65767755a03159066"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -121,17 +127,27 @@ std::array&lt; T, samplesFFTRes &gt;&#160;</td><td class="memItemRight" valign="
 <tr class="separator:af1d2fafaa7b33126ef3848b60d4eb002"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cf6d9f1c0da1623dce82091a58c3547"><td class="memItemLeft" align="right" valign="top"><a id="a3cf6d9f1c0da1623dce82091a58c3547" name="a3cf6d9f1c0da1623dce82091a58c3547"></a>
 std::array&lt; T, resultSize &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>fftLog</b></td></tr>
+<tr class="memdesc:a3cf6d9f1c0da1623dce82091a58c3547"><td class="mdescLeft">&#160;</td><td class="mdescRight">fft result as a log scale <br /></td></tr>
 <tr class="separator:a3cf6d9f1c0da1623dce82091a58c3547"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e37f95af141e00723dda340e373fd07"><td class="memItemLeft" align="right" valign="top"><a id="a8e37f95af141e00723dda340e373fd07" name="a8e37f95af141e00723dda340e373fd07"></a>
 T&#160;</td><td class="memItemRight" valign="bottom"><b>maxMagnitude</b></td></tr>
+<tr class="memdesc:a8e37f95af141e00723dda340e373fd07"><td class="mdescLeft">&#160;</td><td class="mdescRight">maximum detected frequency magnitude <br /></td></tr>
 <tr class="separator:a8e37f95af141e00723dda340e373fd07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90b6063f86640d564d6730635d70ee27"><td class="memItemLeft" align="right" valign="top"><a id="a90b6063f86640d564d6730635d70ee27" name="a90b6063f86640d564d6730635d70ee27"></a>
 T&#160;</td><td class="memItemRight" valign="bottom"><b>maxFrequency</b></td></tr>
+<tr class="memdesc:a90b6063f86640d564d6730635d70ee27"><td class="mdescLeft">&#160;</td><td class="mdescRight">maximum detected frequency, in Hertz <br /></td></tr>
 <tr class="separator:a90b6063f86640d564d6730635d70ee27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;uint16_t samplesFFT, uint16_t resultSize, typename T = float&gt;<br />
-class FftAnalyzer&lt; samplesFFT, resultSize, T &gt;</div><p>samplesFFT Is the input frequency bins before analysis resultSize Is the resulting frequency bins after analysis </p>
+class FftAnalyzer&lt; samplesFFT, resultSize, T &gt;</div><p>Wrapper class for the FFT implementation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">samplesFFT</td><td>Is the input frequency bins before analysis </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">resultSize</td><td>Is the resulting frequency bins after analysis </td></tr>
+  </table>
+  </dd>
+</dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a848b1114451958f1df4d4b519034272f" name="a848b1114451958f1df4d4b519034272f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a848b1114451958f1df4d4b519034272f">&#9670;&#160;</a></span>get_log_bin_max_frequency()</h2>

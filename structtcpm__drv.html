@@ -95,6 +95,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:ab33733d74d4d7410636d0fd62d08a0dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac32d3890e9609a3f67b97e9de10745e2"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#ac32d3890e9609a3f67b97e9de10745e2">set_polarity</a> )(enum tcpc_cc_polarity polarity)</td></tr>
 <tr class="separator:ac32d3890e9609a3f67b97e9de10745e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90911b968aaf514129d82bc05ce4cfda"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#a90911b968aaf514129d82bc05ce4cfda">sop_prime_enable</a> )(int enable)</td></tr>
+<tr class="separator:a90911b968aaf514129d82bc05ce4cfda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a217d0ebb80908350f90eb868f32765a4"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#a217d0ebb80908350f90eb868f32765a4">set_vconn</a> )(int enable)</td></tr>
 <tr class="separator:a217d0ebb80908350f90eb868f32765a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53938a6b43ccb7837c0c66d325783fef"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#a53938a6b43ccb7837c0c66d325783fef">set_msg_header</a> )(int power_role, int data_role)</td></tr>
@@ -115,10 +117,26 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a6364fc5199a8fa7151b7995427b4bdf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4311e425ddfa12a496f4101b5c33430"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#ac4311e425ddfa12a496f4101b5c33430">debug_detach</a> )()</td></tr>
 <tr class="separator:ac4311e425ddfa12a496f4101b5c33430"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac65618e00dc3d5620f0c7b1de2e9dfba"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#ac65618e00dc3d5620f0c7b1de2e9dfba">drp_toggle</a> )()</td></tr>
+<tr class="separator:ac65618e00dc3d5620f0c7b1de2e9dfba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e223c6ff299fe0063690a5aef96cc4f"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#a0e223c6ff299fe0063690a5aef96cc4f">get_chip_info</a> )(int live, struct <a class="el" href="structec__response__pd__chip__info.html">ec_response_pd_chip_info</a> **info)</td></tr>
 <tr class="separator:a0e223c6ff299fe0063690a5aef96cc4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33be1de4694416c8dcfd56e77ddc3b53"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#a33be1de4694416c8dcfd56e77ddc3b53">get_snk_ctrl</a> )(int *sinking)</td></tr>
+<tr class="separator:a33be1de4694416c8dcfd56e77ddc3b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b5ef6dd42f9a34f43366c1997ee66a9"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#a3b5ef6dd42f9a34f43366c1997ee66a9">set_snk_ctrl</a> )(int enable)</td></tr>
+<tr class="separator:a3b5ef6dd42f9a34f43366c1997ee66a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd3c15884d2bcef30b712a979b50480a"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#abd3c15884d2bcef30b712a979b50480a">get_src_ctrl</a> )(int *sourcing)</td></tr>
+<tr class="separator:abd3c15884d2bcef30b712a979b50480a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c88df2919d74785185734bbbb0ec025"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#a6c88df2919d74785185734bbbb0ec025">set_src_ctrl</a> )(int enable)</td></tr>
+<tr class="separator:a6c88df2919d74785185734bbbb0ec025"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2e5e1d67bb4d5a517f3054615a3bca3"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#aa2e5e1d67bb4d5a517f3054615a3bca3">enter_low_power_mode</a> )()</td></tr>
+<tr class="separator:aa2e5e1d67bb4d5a517f3054615a3bca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae636980fa8c875e3b369b3f6079cde04"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#ae636980fa8c875e3b369b3f6079cde04">set_frs_enable</a> )(int enable)</td></tr>
+<tr class="separator:ae636980fa8c875e3b369b3f6079cde04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acfa42c0eaaab428636e30bbf9e962b54"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#acfa42c0eaaab428636e30bbf9e962b54">handle_fault</a> )(int fault)</td></tr>
 <tr class="separator:acfa42c0eaaab428636e30bbf9e962b54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4962a6eebb64125f21f695ef898ae0d6"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtcpm__drv.html#a4962a6eebb64125f21f695ef898ae0d6">dump_registers</a> )()</td></tr>
+<tr class="separator:a4962a6eebb64125f21f695ef898ae0d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a6364fc5199a8fa7151b7995427b4bdf4" name="a6364fc5199a8fa7151b7995427b4bdf4"></a>
@@ -154,6 +172,54 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Break debug connection, if TCPC requires specific commands to be run in order to correctly exit a debug connection. </p>
+
+</div>
+</div>
+<a id="ac65618e00dc3d5620f0c7b1de2e9dfba" name="ac65618e00dc3d5620f0c7b1de2e9dfba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac65618e00dc3d5620f0c7b1de2e9dfba">&#9670;&#160;</a></span>drp_toggle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int(* tcpm_drv::drp_toggle) ()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Enable TCPC auto DRP toggling.</p>
+<dl class="section return"><dt>Returns</dt><dd>EC_SUCCESS or error </dd></dl>
+
+</div>
+</div>
+<a id="a4962a6eebb64125f21f695ef898ae0d6" name="a4962a6eebb64125f21f695ef898ae0d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4962a6eebb64125f21f695ef898ae0d6">&#9670;&#160;</a></span>dump_registers</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void(* tcpm_drv::dump_registers) ()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Dump TCPC registers </p>
+
+</div>
+</div>
+<a id="aa2e5e1d67bb4d5a517f3054615a3bca3" name="aa2e5e1d67bb4d5a517f3054615a3bca3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2e5e1d67bb4d5a517f3054615a3bca3">&#9670;&#160;</a></span>enter_low_power_mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int(* tcpm_drv::enter_low_power_mode) ()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Instructs the TCPC to enter into low power mode.</p>
+<p>NOTE: Do no use tcpc_(read|write) style helper methods in this function. You must use i2c_(read|write) directly.</p>
+<dl class="section return"><dt>Returns</dt><dd>EC_SUCCESS or error </dd></dl>
 
 </div>
 </div>
@@ -224,6 +290,50 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>EC_SUCCESS or error </dd></dl>
+
+</div>
+</div>
+<a id="a33be1de4694416c8dcfd56e77ddc3b53" name="a33be1de4694416c8dcfd56e77ddc3b53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33be1de4694416c8dcfd56e77ddc3b53">&#9670;&#160;</a></span>get_snk_ctrl</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int(* tcpm_drv::get_snk_ctrl) (int *sinking)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Request current sinking state of the TCPC NOTE: this is most useful for PPCs that can not tell on their own</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">is_sinking</td><td>true for sinking, false for not</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>EC_SUCCESS, EC_ERROR_UNIMPLEMENTED or error </dd></dl>
+
+</div>
+</div>
+<a id="abd3c15884d2bcef30b712a979b50480a" name="abd3c15884d2bcef30b712a979b50480a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd3c15884d2bcef30b712a979b50480a">&#9670;&#160;</a></span>get_src_ctrl</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int(* tcpm_drv::get_src_ctrl) (int *sourcing)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Request current sourcing state of the TCPC NOTE: this is most useful for PPCs that can not tell on their own</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">is_sourcing</td><td>true for sourcing, false for not</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>EC_SUCCESS, EC_ERROR_UNIMPLEMENTED or error </dd></dl>
 
 </div>
 </div>
@@ -377,6 +487,28 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="ae636980fa8c875e3b369b3f6079cde04" name="ae636980fa8c875e3b369b3f6079cde04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae636980fa8c875e3b369b3f6079cde04">&#9670;&#160;</a></span>set_frs_enable</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int(* tcpm_drv::set_frs_enable) (int enable)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Enable/Disable TCPC FRS detection</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enable</td><td>FRS enable (true) disable (false)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>EC_SUCCESS or error </dd></dl>
+
+</div>
+</div>
 <a id="a53938a6b43ccb7837c0c66d325783fef" name="a53938a6b43ccb7837c0c66d325783fef"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a53938a6b43ccb7837c0c66d325783fef">&#9670;&#160;</a></span>set_msg_header</h2>
 
@@ -443,6 +575,40 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a3b5ef6dd42f9a34f43366c1997ee66a9" name="a3b5ef6dd42f9a34f43366c1997ee66a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b5ef6dd42f9a34f43366c1997ee66a9">&#9670;&#160;</a></span>set_snk_ctrl</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int(* tcpm_drv::set_snk_ctrl) (int enable)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Send SinkVBUS or DisableSinkVBUS command</p>
+<p>@enable true for enable, false for disable</p>
+<dl class="section return"><dt>Returns</dt><dd>EC_SUCCESS or error </dd></dl>
+
+</div>
+</div>
+<a id="a6c88df2919d74785185734bbbb0ec025" name="a6c88df2919d74785185734bbbb0ec025"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c88df2919d74785185734bbbb0ec025">&#9670;&#160;</a></span>set_src_ctrl</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int(* tcpm_drv::set_src_ctrl) (int enable)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Send SourceVBUS or DisableSourceVBUS command</p>
+<p>@enable true for enable, false for disable</p>
+<dl class="section return"><dt>Returns</dt><dd>EC_SUCCESS or error </dd></dl>
+
+</div>
+</div>
 <a id="a217d0ebb80908350f90eb868f32765a4" name="a217d0ebb80908350f90eb868f32765a4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a217d0ebb80908350f90eb868f32765a4">&#9670;&#160;</a></span>set_vconn</h2>
 
@@ -458,6 +624,28 @@ Public Attributes</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">enable</td><td>Enable/Disable Vconn</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>EC_SUCCESS or error </dd></dl>
+
+</div>
+</div>
+<a id="a90911b968aaf514129d82bc05ce4cfda" name="a90911b968aaf514129d82bc05ce4cfda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90911b968aaf514129d82bc05ce4cfda">&#9670;&#160;</a></span>sop_prime_enable</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int(* tcpm_drv::sop_prime_enable) (int enable)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Control receive of SOP' and SOP'' messages. This is provided separately from set_vconn so that we can preemptively disable receipt of SOP' messages during a VCONN swap, or disable during spans when port partners may erroneously be sending cable messages.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enable</td><td>Enable SOP' and SOP'' messages</td></tr>
   </table>
   </dd>
 </dl>

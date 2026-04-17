@@ -12,5 +12,6 @@ var searchData=
   ['plum_9',['Plum',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca0c1fe766ce7f562dd68f9808a0096d37',1,'modes::colors']]],
   ['powderblue_10',['PowderBlue',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca410fba4afaee29193174e2f0743b2598',1,'modes::colors']]],
   ['power_5fdetected_11',['POWER_DETECTED',['../structcharger_1_1Charger__t.html#a31c5f8c29b6835fa838924f2b4e78c26a3efab4f337138bce05d0896cce27509c',1,'charger::Charger_t']]],
-  ['purple_12',['Purple',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca4697ef72ad89ccca93859e6f81277662',1,'modes::colors']]]
+  ['precharge_12',['PRECHARGE',['../namespacecharger_1_1drivers.html#a078feabad5a6501dcb48cc8a8d4cdce1a81e169bd2828972d93dfbc47389a9667',1,'charger::drivers']]],
+  ['purple_13',['Purple',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca4697ef72ad89ccca93859e6f81277662',1,'modes::colors']]]
 ];

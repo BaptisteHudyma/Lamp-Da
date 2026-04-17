@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['_7ealertbase_0',['~AlertBase',['../structalerts_1_1AlertBase.html#a1f694e53d70db2c5898709d52683e5c0',1,'alerts::AlertBase']]],
-  ['_7ebase_1',['~Base',['../classutils_1_1ColorSpace_1_1Base.html#a6cf0bd9f12b21ac794a7352d35d79ed2',1,'utils::ColorSpace::Base']]]
+  ['xyz_0',['XYZ',['../classutils_1_1ColorSpace_1_1XYZ.html#a1259c3f7d7431d8f6726f4d628edb3db',1,'utils::ColorSpace::XYZ::XYZ(const COLOR &amp;c)'],['../classutils_1_1ColorSpace_1_1XYZ.html#af8b1769be7efa7b5afd03d60cb89e3de',1,'utils::ColorSpace::XYZ::XYZ(double x, double y, double z)']]]
 ];

@@ -149,7 +149,7 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a8208ea04921b3b18de54387ec1efcb09"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1BasicMode.html#a8208ea04921b3b18de54387ec1efcb09">sunset_update</a> (auto &amp;ctx, float progress)</td></tr>
 <tr class="memdesc:a8208ea04921b3b18de54387ec1efcb09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when sunset mode is updated (optional)  <br /></td></tr>
 <tr class="separator:a8208ea04921b3b18de54387ec1efcb09"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a869b044a34d61d2803bd59c59a39f630"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1BasicMode.html#a869b044a34d61d2803bd59c59a39f630">brightness_update</a> (auto &amp;ctx, brightness_t brightness)</td></tr>
+<tr class="memitem:a869b044a34d61d2803bd59c59a39f630"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1BasicMode.html#a869b044a34d61d2803bd59c59a39f630">brightness_update</a> (auto &amp;ctx, <a class="el" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> brightness)</td></tr>
 <tr class="memdesc:a869b044a34d61d2803bd59c59a39f630"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when brightness changes (optional)  <br /></td></tr>
 <tr class="separator:a869b044a34d61d2803bd59c59a39f630"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2d4f8858445985a21ee78e0e347d38d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1BasicMode.html#ac2d4f8858445985a21ee78e0e347d38d">custom_ramp_update</a> (auto &amp;ctx, uint8_t rampValue)</td></tr>
@@ -242,7 +242,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">  <span class="keyword">static</span> <span class="keywordtype">void</span> sunset_update(<span class="keyword">auto</span>&amp; ctx, <span class="keywordtype">float</span> progress) {}</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">// only if hasBrightCallback</span></div>
-<div class="line">  <span class="keyword">static</span> <span class="keywordtype">void</span> brightness_update(<span class="keyword">auto</span>&amp; ctx, brightness_t brightness) {}</div>
+<div class="line">  <span class="keyword">static</span> <span class="keywordtype">void</span> brightness_update(<span class="keyword">auto</span>&amp; ctx, <a class="code hl_typedef" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> <a class="code hl_namespace" href="namespacebrightness.html">brightness</a>) {}</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">// only if hasCustomRamp</span></div>
 <div class="line">  <span class="keyword">static</span> <span class="keywordtype">void</span> custom_ramp_update(<span class="keyword">auto</span>&amp; ctx, uint8_t rampValue) {}</div>
@@ -278,6 +278,8 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="anamespacebrightness_html"><div class="ttname"><a href="namespacebrightness.html">brightness</a></div><div class="ttdoc">Handle the LED output brightness.</div><div class="ttdef"><b>Definition:</b> brightness_handle.h:11</div></div>
+<div class="ttc" id="asystem_2utils_2constants_8h_html_aa87af64c7db4c82d3374823aff4f72f4"><div class="ttname"><a href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a></div><div class="ttdeci">uint16_t brightness_t</div><div class="ttdoc">Define the type of the brightness parameters.</div><div class="ttdef"><b>Definition:</b> constants.h:145</div></div>
 </div><!-- fragment --><p>Further examples of modes are available in <code>src/modes/default</code></p>
 <dl class="section remark"><dt>Remarks</dt><dd><a class="el" href="structmodes_1_1BasicMode.html" title="Parent object for all custom user modes.">BasicMode</a> and all derived user modes should never be constructed, use custom <a class="el" href="structmodes_1_1BasicMode_1_1StateTy.html" title="Mode custom static state, made available through context (optional)">StateTy</a> to implement stateful modes </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
@@ -299,7 +301,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">brightness_t&#160;</td>
+          <td class="paramtype"><a class="el" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a>&#160;</td>
           <td class="paramname"><em>brightness</em>&#160;</td>
         </tr>
         <tr>

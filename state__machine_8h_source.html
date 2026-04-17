@@ -77,9 +77,10 @@ $(function() {
   <div class="headertitle"><div class="title">state_machine.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;src/system/platform/time.h&quot;</span></div>
+<a href="state__machine_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="time_8h.html">src/system/platform/time.h</a>&quot;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="classStateMachine.html">   13</a></span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> State&gt; <span class="keyword">class </span><a class="code hl_class" href="classStateMachine.html">StateMachine</a></div>
@@ -88,7 +89,7 @@ $(function() {
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classStateMachine.html#a6177d8bd72cd216515a64dc6918091f2">   17</a></span>  <a class="code hl_function" href="classStateMachine.html#a6177d8bd72cd216515a64dc6918091f2">StateMachine</a>(<span class="keyword">const</span> State s) :</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    current(s),</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    lastState(s),</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    stateSetTime(time_ms()),</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    stateSetTime(<a class="code hl_function" href="time_8h.html#a9c4a18b1127470d7dc900f7744c7646c">time_ms</a>()),</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    timeout_ms(0),</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    afterTimeoutState(s),</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    changedWithTimeout(false)</div>
@@ -97,7 +98,7 @@ $(function() {
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classStateMachine.html#a05f0a99d2ae8fc0a0eb8c3eb28d0f1d9">   32</a></span>  <a class="code hl_function" href="classStateMachine.html#a05f0a99d2ae8fc0a0eb8c3eb28d0f1d9">StateMachine</a>(<span class="keyword">const</span> State s, <span class="keyword">const</span> uint32_t timeout, <span class="keyword">const</span> State stateOnTimeout) :</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    current(s),</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    lastState(s),</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    stateSetTime(time_ms()),</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    stateSetTime(<a class="code hl_function" href="time_8h.html#a9c4a18b1127470d7dc900f7744c7646c">time_ms</a>()),</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    timeout_ms(0),</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    afterTimeoutState(s),</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    changedWithTimeout(false)</div>
@@ -108,7 +109,7 @@ $(function() {
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classStateMachine.html#a1660d1d04d9ce76df37aa995e88773de">   46</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classStateMachine.html#a1660d1d04d9ce76df37aa995e88773de">run</a>()</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  {</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="comment">// there is a timeout set for this state</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (isTimeoutSet and time_ms() &gt;= timeout_ms)</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (isTimeoutSet and <a class="code hl_function" href="time_8h.html#a9c4a18b1127470d7dc900f7744c7646c">time_ms</a>() &gt;= timeout_ms)</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    {</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>      <span class="comment">// timeout reached</span></div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>      <a class="code hl_function" href="classStateMachine.html#a7b59fe366a1a78f6e1e02fbf619e414a">set_state</a>(afterTimeoutState);</div>
@@ -129,7 +130,7 @@ $(function() {
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="comment">// reset the timeout time</span></div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    isTimeoutSet = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    timeout_ms = 0;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    stateSetTime = time_ms();</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    stateSetTime = <a class="code hl_function" href="time_8h.html#a9c4a18b1127470d7dc900f7744c7646c">time_ms</a>();</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    changedWithTimeout = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    didStateJustChanged = <span class="keyword">true</span>;</div>
@@ -161,7 +162,7 @@ $(function() {
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">if</span> (isTimeoutSet)</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    {</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>      <span class="comment">// potential clock overflow, be careful</span></div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>      timeout_ms = time_ms() + timeout;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>      timeout_ms = <a class="code hl_function" href="time_8h.html#a9c4a18b1127470d7dc900f7744c7646c">time_ms</a>() + timeout;</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    }</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>  }</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
@@ -217,6 +218,8 @@ $(function() {
 <div class="ttc" id="aclassStateMachine_html_a926f3e36e90a4ab168dda9cb340915a1"><div class="ttname"><a href="classStateMachine.html#a926f3e36e90a4ab168dda9cb340915a1">StateMachine::get_last_state</a></div><div class="ttdeci">State get_last_state() const</div><div class="ttdoc">Return the state before this one.</div><div class="ttdef"><b>Definition:</b> state_machine.h:137</div></div>
 <div class="ttc" id="aclassStateMachine_html_aa60465a6260a497a1119daa989a3e716"><div class="ttname"><a href="classStateMachine.html#aa60465a6260a497a1119daa989a3e716">StateMachine::skip_timeout</a></div><div class="ttdeci">void skip_timeout()</div><div class="ttdoc">use this in a state with a timeout set to skip to the next state directly</div><div class="ttdef"><b>Definition:</b> state_machine.h:140</div></div>
 <div class="ttc" id="aclassStateMachine_html_abe39b002c8a3bc5696a43a05031fffa6"><div class="ttname"><a href="classStateMachine.html#abe39b002c8a3bc5696a43a05031fffa6">StateMachine::state_just_changed</a></div><div class="ttdeci">bool state_just_changed()</div><div class="ttdoc">Return true if the current state just changed. Resetted on read.</div><div class="ttdef"><b>Definition:</b> state_machine.h:123</div></div>
+<div class="ttc" id="atime_8h_html"><div class="ttname"><a href="time_8h.html">time.h</a></div><div class="ttdoc">Interface for the platform specific time handling.</div></div>
+<div class="ttc" id="atime_8h_html_a9c4a18b1127470d7dc900f7744c7646c"><div class="ttname"><a href="time_8h.html#a9c4a18b1127470d7dc900f7744c7646c">time_ms</a></div><div class="ttdeci">uint32_t time_ms(void)</div><div class="ttdoc">Returns the number of milliseconds since the Arduino board began running the current program....</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

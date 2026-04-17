@@ -86,12 +86,12 @@ $(function() {
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;tuple&gt;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;array&gt;</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;src/system/utils/assert.h&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;<a class="code" href="assert_8h.html">src/system/utils/assert.h</a>&gt;</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="context__type_8hpp.html">src/modes/include/context_type.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="manager__type_8hpp.html">src/modes/include/manager_type.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="mode__type_8hpp.html">src/modes/include/mode_type.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;src/modes/include/tools.hpp&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;<a class="code" href="tools_8hpp.html">src/modes/include/tools.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacemodes.html">modes</a> {</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
@@ -307,10 +307,10 @@ $(function() {
 <div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    });</div>
 <div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>  }</div>
 <div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> brightness_update(<span class="keyword">auto</span>&amp; ctx, brightness_t brightness)</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> brightness_update(<span class="keyword">auto</span>&amp; ctx, <a class="code hl_typedef" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> <a class="code hl_namespace" href="namespacebrightness.html">brightness</a>)</div>
 <div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>  {</div>
 <div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    dispatch_mode(ctx, [&amp;](<span class="keyword">auto</span> mode) {</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>      mode.brightness_update(brightness);</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>      mode.brightness_update(<a class="code hl_namespace" href="namespacebrightness.html">brightness</a>);</div>
 <div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    });</div>
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>  }</div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
@@ -380,9 +380,11 @@ $(function() {
 <div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>} <span class="comment">// namespace modes</span></div>
 <div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span> </div>
 <div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aassert_8h_html"><div class="ttname"><a href="assert_8h.html">assert.h</a></div><div class="ttdoc">Define assertions helpers.</div></div>
 <div class="ttc" id="acontext__type_8hpp_html"><div class="ttname"><a href="context__type_8hpp.html">context_type.hpp</a></div><div class="ttdoc">ContextTy and associated definitions.</div></div>
 <div class="ttc" id="amanager__type_8hpp_html"><div class="ttname"><a href="manager__type_8hpp.html">manager_type.hpp</a></div><div class="ttdoc">modes::ManagerFor and associated definitions</div></div>
 <div class="ttc" id="amode__type_8hpp_html"><div class="ttname"><a href="mode__type_8hpp.html">mode_type.hpp</a></div><div class="ttdoc">Basic interface types to implement custom user modes.</div></div>
+<div class="ttc" id="anamespacebrightness_html"><div class="ttname"><a href="namespacebrightness.html">brightness</a></div><div class="ttdoc">Handle the LED output brightness.</div><div class="ttdef"><b>Definition:</b> brightness_handle.h:11</div></div>
 <div class="ttc" id="anamespacemodes_html"><div class="ttname"><a href="namespacemodes.html">modes</a></div><div class="ttdoc">Contains basic interface types to implement custom user modes.</div><div class="ttdef"><b>Definition:</b> nudz_scrollimage.hpp:3</div></div>
 <div class="ttc" id="anamespacemodes_html_a67194c2ad5b4cddeddb899c360583d3f"><div class="ttname"><a href="namespacemodes.html#a67194c2ad5b4cddeddb899c360583d3f">modes::context_as</a></div><div class="ttdeci">static auto context_as(auto &amp;ctx)</div><div class="ttdoc">Bind provided context to another modes::BasicMode.</div><div class="ttdef"><b>Definition:</b> context_type.hpp:25</div></div>
 <div class="ttc" id="anamespacemodes_html_ab78bece6ea407f3a7b5b922d619d2b97"><div class="ttname"><a href="namespacemodes.html#ab78bece6ea407f3a7b5b922d619d2b97">modes::GroupFor</a></div><div class="ttdeci">GroupTy&lt; std::tuple&lt; Modes... &gt; &gt; GroupFor</div><div class="ttdoc">Group together many different modes::BasicMode.</div><div class="ttdef"><b>Definition:</b> group_type.hpp:332</div></div>
@@ -392,6 +394,8 @@ $(function() {
 <div class="ttc" id="astructmodes_1_1GroupTy_1_1StateTy_html_adae28674505964c04953402cf9a895eb"><div class="ttname"><a href="structmodes_1_1GroupTy_1_1StateTy.html#adae28674505964c04953402cf9a895eb">modes::GroupTy::StateTy::customRampMemory</a></div><div class="ttdeci">std::array&lt; uint8_t, nbModes &gt; customRampMemory</div><div class="ttdoc">Store the ramp value for each mode.</div><div class="ttdef"><b>Definition:</b> group_type.hpp:129</div></div>
 <div class="ttc" id="astructmodes_1_1GroupTy_1_1StateTy_html_af545a66a1c8c87a18bf3ff02c30ad39d"><div class="ttname"><a href="structmodes_1_1GroupTy_1_1StateTy.html#af545a66a1c8c87a18bf3ff02c30ad39d">modes::GroupTy::StateTy::modeStates</a></div><div class="ttdeci">AllStatesTy modeStates</div><div class="ttdoc">Store the current group state.</div><div class="ttdef"><b>Definition:</b> group_type.hpp:128</div></div>
 <div class="ttc" id="astructmodes_1_1GroupTy_1_1StateTy_html_afca44cd71926016ed841c9de4dfdba01"><div class="ttname"><a href="structmodes_1_1GroupTy_1_1StateTy.html#afca44cd71926016ed841c9de4dfdba01">modes::GroupTy::StateTy::save_ramps</a></div><div class="ttdeci">void LMBD_INLINE save_ramps(auto &amp;ctx, uint8_t modeId)</div><div class="ttdoc">If a mode signaled that it has a ramp, save it.</div><div class="ttdef"><b>Definition:</b> group_type.hpp:133</div></div>
+<div class="ttc" id="asystem_2utils_2constants_8h_html_aa87af64c7db4c82d3374823aff4f72f4"><div class="ttname"><a href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a></div><div class="ttdeci">uint16_t brightness_t</div><div class="ttdoc">Define the type of the brightness parameters.</div><div class="ttdef"><b>Definition:</b> constants.h:145</div></div>
+<div class="ttc" id="atools_8hpp_html"><div class="ttname"><a href="tools_8hpp.html">tools.hpp</a></div><div class="ttdoc">Define templated tools to analyze the manager objects.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

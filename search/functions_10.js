@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['quit_5fgroup_0',['quit_group',['../structmodes_1_1ContextTy.html#a84d4dc691e8235ce72101f5272b1e626',1,'modes::ContextTy']]],
-  ['quit_5fmode_1',['quit_mode',['../structmodes_1_1ContextTy.html#aee56c9fd0e5fc40ba7e44833c5b9cdef',1,'modes::ContextTy']]]
+  ['particle_0',['Particle',['../structmodes_1_1Particle.html#a29a59630f8081417dd78dacedf739413',1,'modes::Particle::Particle()'],['../structmodes_1_1Particle.html#a2b6ea84caa05770437d0ba0ca48229b2',1,'modes::Particle::Particle(const vec3d &amp;positionCartesian)'],['../structmodes_1_1Particle.html#aa666b599944a8ac6088d2b1c03459f3c',1,'modes::Particle::Particle(const float positionTheta_rad, const float positionZ_mm)'],['../structmodes_1_1Particle.html#a215bb91785e521eeb165f80bf9a6be82',1,'modes::Particle::Particle(const Particle &amp;other)=default']]],
+  ['power_5foff_5fsequence_1',['power_off_sequence',['../structmodes_1_1ContextTy.html#a55b895420c75265d225a45e2ae197ac2',1,'modes::ContextTy::power_off_sequence()'],['../structmodes_1_1BasicMode.html#a6b379b4c13bdd0cd55fa4fb97e805d8d',1,'modes::BasicMode::power_off_sequence()'],['../namespaceuser.html#aba772a87b17a5e499b2912950fb3b6ab',1,'user::power_off_sequence()']]],
+  ['power_5fon_5fsequence_2',['power_on_sequence',['../structmodes_1_1ContextTy.html#aebe547b0629c95a772acef8dcb523451',1,'modes::ContextTy::power_on_sequence()'],['../structmodes_1_1BasicMode.html#a768845dcba9b74208651d654daaf091c',1,'modes::BasicMode::power_on_sequence()'],['../namespaceuser.html#a7a0ebaabbbf904db895b7774124c9dd5',1,'user::power_on_sequence()']]],
+  ['progress_5fupdate_3',['progress_update',['../behavior_8h.html#a612e9a78a23f924bc028c68091041756',1,'behavior::sunset']]]
 ];
