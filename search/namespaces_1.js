@@ -1,9 +1,11 @@
 var searchData=
 [
-  ['balancer_0',['balancer',['../namespacebalancer.html',1,'']]],
-  ['battery_1',['battery',['../namespacebattery.html',1,'']]],
-  ['behavior_2',['behavior',['../namespacebehavior.html',1,'']]],
-  ['bluetooth_3',['bluetooth',['../namespacebluetooth.html',1,'']]],
-  ['brightness_4',['brightness',['../namespacebrightness.html',1,'']]],
-  ['button_5',['button',['../namespacebutton.html',1,'']]]
+  ['globals_0',['globals',['../namespacesimulator_1_1globals.html',1,'simulator']]],
+  ['mock_5fbattery_1',['mock_battery',['../namespacesimulator_1_1mock__battery.html',1,'simulator']]],
+  ['mock_5felectrical_2',['mock_electrical',['../namespacesimulator_1_1mock__electrical.html',1,'simulator']]],
+  ['mock_5fgpios_3',['mock_gpios',['../namespacesimulator_1_1mock__gpios.html',1,'simulator']]],
+  ['mock_5findicator_4',['mock_indicator',['../namespacesimulator_1_1mock__indicator.html',1,'simulator']]],
+  ['mock_5fregisters_5',['mock_registers',['../namespacesimulator_1_1mock__registers.html',1,'simulator']]],
+  ['simulator_6',['simulator',['../namespacesimulator.html',1,'']]],
+  ['time_5fmocks_7',['time_mocks',['../namespacesimulator_1_1time__mocks.html',1,'simulator']]]
 ];

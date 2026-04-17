@@ -82,11 +82,18 @@ $(function() {
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="gpio_8h.html">src/system/platform/gpio.h</a>&quot;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// RGB indicator details</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">constexpr</span> DigitalPin::GPIO RedIndicator = DigitalPin::GPIO::gpio0;</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">constexpr</span> DigitalPin::GPIO GreenIndicator = DigitalPin::GPIO::gpio1;</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">constexpr</span> DigitalPin::GPIO BlueIndicator = DigitalPin::GPIO::gpio2;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacelampda.html">lampda</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span>utils {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">// RGB indicator details</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">constexpr</span> platform::gpio::DigitalPin::GPIO RedIndicator = platform::gpio::DigitalPin::GPIO::gpio0;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">constexpr</span> platform::gpio::DigitalPin::GPIO GreenIndicator = platform::gpio::DigitalPin::GPIO::gpio1;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">constexpr</span> platform::gpio::DigitalPin::GPIO BlueIndicator = platform::gpio::DigitalPin::GPIO::gpio2;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>} <span class="comment">// namespace utils</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>} <span class="comment">// namespace lampda</span></div>
 <div class="ttc" id="agpio_8h_html"><div class="ttname"><a href="gpio_8h.html">gpio.h</a></div><div class="ttdoc">Interface for the platform specific GeneralPurposeInputOutputs.</div></div>
+<div class="ttc" id="anamespacelampda_html"><div class="ttname"><a href="namespacelampda.html">lampda</a></div><div class="ttdoc">Program scope.</div><div class="ttdef"><b>Definition:</b> nudz_scrollimage.hpp:3</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

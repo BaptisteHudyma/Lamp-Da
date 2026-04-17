@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['managerfor_0',['ManagerFor',['../namespacemodes.html#a469684dd84784a282f3e39c8b7240bf2',1,'modes']]],
-  ['managerforconfig_1',['ManagerForConfig',['../namespacemodes.html#aba2cd0b73e3a765652a216a7c95d2b19',1,'modes']]],
-  ['miscfixedmodes_2',['MiscFixedModes',['../namespacemodes.html#a01019b2cefe423d0bbe7b34c4083050b',1,'modes']]],
-  ['modemanagerty_3',['ModeManagerTy',['../structmodes_1_1ContextTy.html#aa27c02553dd7c5a02f23b89ac814b25d',1,'modes::ContextTy']]]
+  ['managerfor_0',['ManagerFor',['../namespacelampda_1_1modes.html#aca64ec3c980c7af33938631f9d941122',1,'lampda::modes']]],
+  ['managerforconfig_1',['ManagerForConfig',['../namespacelampda_1_1modes.html#abb0165c17355dc47a4cdd283f1f910b1',1,'lampda::modes']]],
+  ['miscfixedmodes_2',['MiscFixedModes',['../namespacelampda_1_1modes.html#a43ba7c99682a92d1e8fb5ea39794aa50',1,'lampda::modes']]],
+  ['modemanagerty_3',['ModeManagerTy',['../structlampda_1_1modes_1_1ContextTy.html#a717da369dd0d21944bcc418ed964f64e',1,'lampda::modes::ContextTy']]]
 ];

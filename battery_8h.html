@@ -88,46 +88,51 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacebattery"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacebattery.html">battery</a></td></tr>
-<tr class="memdesc:namespacebattery"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the battery measurments and gestion. <br /></td></tr>
+<tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
+<tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1physical"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical.html">lampda::physical</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1physical"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the physical modules drivers. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1physical_1_1battery"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1battery.html">lampda::physical::battery</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1physical_1_1battery"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the battery measurments and gestion. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a0234df80d5a926def6591c193c74a2d0"><td class="memItemLeft" align="right" valign="top"><a id="a0234df80d5a926def6591c193c74a2d0" name="a0234df80d5a926def6591c193c74a2d0"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>battery::get_raw_battery_voltage_mv</b> ()</td></tr>
-<tr class="memdesc:a0234df80d5a926def6591c193c74a2d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the battery voltage, untreated <br /></td></tr>
-<tr class="separator:a0234df80d5a926def6591c193c74a2d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a2f5b10662f5e7c08355dd93cc0f7cc"><td class="memItemLeft" align="right" valign="top"><a id="a5a2f5b10662f5e7c08355dd93cc0f7cc" name="a5a2f5b10662f5e7c08355dd93cc0f7cc"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>battery::is_battery_usable_as_power_source</b> ()</td></tr>
-<tr class="memdesc:a5a2f5b10662f5e7c08355dd93cc0f7cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if the battery pack can be used as a energy source This status is updated after calling <a class="el" href="namespacebattery.html#a0234df80d5a926def6591c193c74a2d0">get_raw_battery_voltage_mv</a> <br /></td></tr>
-<tr class="separator:a5a2f5b10662f5e7c08355dd93cc0f7cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab14432179fa6a13e86aa329410faeab4"><td class="memItemLeft" align="right" valign="top"><a id="ab14432179fa6a13e86aa329410faeab4" name="ab14432179fa6a13e86aa329410faeab4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>battery::can_battery_be_charged</b> ()</td></tr>
-<tr class="memdesc:ab14432179fa6a13e86aa329410faeab4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if this battery can be charged Check only for validity, not voltage. If this is false, starting a charge process can break the system This status is updated after calling <a class="el" href="namespacebattery.html#a0234df80d5a926def6591c193c74a2d0">get_raw_battery_voltage_mv</a>. <br /></td></tr>
-<tr class="separator:ab14432179fa6a13e86aa329410faeab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af87d68eab4c78d4d45a2b7b4b2c53637"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacebattery.html#af87d68eab4c78d4d45a2b7b4b2c53637">battery::liion_mv_to_battery_percent</a> (const uint16_t liionLevel_mv, const uint8_t batteryCountSerie)</td></tr>
-<tr class="memdesc:af87d68eab4c78d4d45a2b7b4b2c53637"><td class="mdescLeft">&#160;</td><td class="mdescRight">convert a single liion battery voltage to a percent level model  <br /></td></tr>
-<tr class="separator:af87d68eab4c78d4d45a2b7b4b2c53637"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd177b401a7a31b7b727b156991a6472"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacebattery.html#abd177b401a7a31b7b727b156991a6472">battery::get_level_percent</a> (const uint16_t batteryVoltage_mV, const uint8_t cellCount=<a class="el" href="system_2utils_2constants_8h.html#a824e99459fdc4ee8627b3b7722af62a3">batteryCount</a>)</td></tr>
-<tr class="memdesc:abd177b401a7a31b7b727b156991a6472"><td class="mdescLeft">&#160;</td><td class="mdescRight">transform a battery voltage measurment to a percent * 100 estimate  <br /></td></tr>
-<tr class="separator:abd177b401a7a31b7b727b156991a6472"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf65ac6cd3198a794e7d53e1acff6768"><td class="memItemLeft" align="right" valign="top"><a id="abf65ac6cd3198a794e7d53e1acff6768" name="abf65ac6cd3198a794e7d53e1acff6768"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>battery::get_level_safe</b> (const uint16_t battery_mv, const uint8_t cellCount=<a class="el" href="system_2utils_2constants_8h.html#a824e99459fdc4ee8627b3b7722af62a3">batteryCount</a>)</td></tr>
-<tr class="memdesc:abf65ac6cd3198a794e7d53e1acff6768"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the battery level, mapped to the desired safe battery level <br /></td></tr>
-<tr class="separator:abf65ac6cd3198a794e7d53e1acff6768"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8260511d01ce8d657b767f00ef15c55e"><td class="memItemLeft" align="right" valign="top"><a id="a8260511d01ce8d657b767f00ef15c55e" name="a8260511d01ce8d657b767f00ef15c55e"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>battery::get_battery_level</b> ()</td></tr>
-<tr class="memdesc:a8260511d01ce8d657b767f00ef15c55e"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the battery level, corresponding to user safe choice (0-10000) <br /></td></tr>
-<tr class="separator:a8260511d01ce8d657b767f00ef15c55e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67982d7a65f528300e9bbe2d430781be"><td class="memItemLeft" align="right" valign="top"><a id="a67982d7a65f528300e9bbe2d430781be" name="a67982d7a65f528300e9bbe2d430781be"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>battery::get_battery_minimum_cell_level</b> ()</td></tr>
-<tr class="memdesc:a67982d7a65f528300e9bbe2d430781be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the level of the cell of the stack with the minimum battery. <br /></td></tr>
-<tr class="separator:a67982d7a65f528300e9bbe2d430781be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a9552f75609eb01bd78c88b28eabe54"><td class="memItemLeft" align="right" valign="top"><a id="a7a9552f75609eb01bd78c88b28eabe54" name="a7a9552f75609eb01bd78c88b28eabe54"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>battery::get_battery_maximum_cell_level</b> ()</td></tr>
-<tr class="memdesc:a7a9552f75609eb01bd78c88b28eabe54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the level of the cell of the stack with the maximum battery. <br /></td></tr>
-<tr class="separator:a7a9552f75609eb01bd78c88b28eabe54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a230ce3fc5d9cb2247ca766461fc930d8"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1battery.html#a230ce3fc5d9cb2247ca766461fc930d8">lampda::physical::battery::get_raw_battery_voltage_mv</a> ()</td></tr>
+<tr class="memdesc:a230ce3fc5d9cb2247ca766461fc930d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the battery voltage and raise the battery incoherent alert if needed.  <br /></td></tr>
+<tr class="separator:a230ce3fc5d9cb2247ca766461fc930d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab2bc1bc7232bb8bb5438eb8d00f4c86"><td class="memItemLeft" align="right" valign="top"><a id="aab2bc1bc7232bb8bb5438eb8d00f4c86" name="aab2bc1bc7232bb8bb5438eb8d00f4c86"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::battery::is_battery_usable_as_power_source</b> ()</td></tr>
+<tr class="memdesc:aab2bc1bc7232bb8bb5438eb8d00f4c86"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if the battery pack can be used as a energy source This status is updated after calling <a class="el" href="namespacelampda_1_1physical_1_1battery.html#a230ce3fc5d9cb2247ca766461fc930d8">get_raw_battery_voltage_mv</a> <br /></td></tr>
+<tr class="separator:aab2bc1bc7232bb8bb5438eb8d00f4c86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af44e196621256f86d0adf749126dd7fa"><td class="memItemLeft" align="right" valign="top"><a id="af44e196621256f86d0adf749126dd7fa" name="af44e196621256f86d0adf749126dd7fa"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::battery::can_battery_be_charged</b> ()</td></tr>
+<tr class="memdesc:af44e196621256f86d0adf749126dd7fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if this battery can be charged Check only for validity, not voltage. If this is false, starting a charge process can break the system This status is updated after calling <a class="el" href="namespacelampda_1_1physical_1_1battery.html#a230ce3fc5d9cb2247ca766461fc930d8">get_raw_battery_voltage_mv</a>. <br /></td></tr>
+<tr class="separator:af44e196621256f86d0adf749126dd7fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a725b84c71648b7f18b54a99fc31998ee"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1battery.html#a725b84c71648b7f18b54a99fc31998ee">lampda::physical::battery::liion_mv_to_battery_percent</a> (const uint16_t liionLevel_mv, const uint8_t batteryCountSerie)</td></tr>
+<tr class="memdesc:a725b84c71648b7f18b54a99fc31998ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">convert a single liion battery voltage to a percent level model  <br /></td></tr>
+<tr class="separator:a725b84c71648b7f18b54a99fc31998ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af95f36ddb4b191c4af8b69f1cc712a67"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1battery.html#af95f36ddb4b191c4af8b69f1cc712a67">lampda::physical::battery::get_level_percent</a> (const uint16_t batteryVoltage_mV, const uint8_t cellCount=batteryCount)</td></tr>
+<tr class="memdesc:af95f36ddb4b191c4af8b69f1cc712a67"><td class="mdescLeft">&#160;</td><td class="mdescRight">transform a battery voltage measurment to a percent * 100 estimate  <br /></td></tr>
+<tr class="separator:af95f36ddb4b191c4af8b69f1cc712a67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a61b50e2a1b7e632ac0b7a71e4daeb9"><td class="memItemLeft" align="right" valign="top"><a id="a0a61b50e2a1b7e632ac0b7a71e4daeb9" name="a0a61b50e2a1b7e632ac0b7a71e4daeb9"></a>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::battery::get_level_safe</b> (const uint16_t battery_mv, const uint8_t cellCount=batteryCount)</td></tr>
+<tr class="memdesc:a0a61b50e2a1b7e632ac0b7a71e4daeb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the battery level, mapped to the desired safe battery level <br /></td></tr>
+<tr class="separator:a0a61b50e2a1b7e632ac0b7a71e4daeb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d8fd41bd38d08a18c2d2d520d871925"><td class="memItemLeft" align="right" valign="top"><a id="a4d8fd41bd38d08a18c2d2d520d871925" name="a4d8fd41bd38d08a18c2d2d520d871925"></a>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::battery::get_battery_level</b> ()</td></tr>
+<tr class="memdesc:a4d8fd41bd38d08a18c2d2d520d871925"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the battery level, corresponding to user safe choice (0-10000) <br /></td></tr>
+<tr class="separator:a4d8fd41bd38d08a18c2d2d520d871925"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d7e56396b96379400bfc7f6a8cb9fd1"><td class="memItemLeft" align="right" valign="top"><a id="a4d7e56396b96379400bfc7f6a8cb9fd1" name="a4d7e56396b96379400bfc7f6a8cb9fd1"></a>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::battery::get_battery_minimum_cell_level</b> ()</td></tr>
+<tr class="memdesc:a4d7e56396b96379400bfc7f6a8cb9fd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the level of the cell of the stack with the minimum battery. <br /></td></tr>
+<tr class="separator:a4d7e56396b96379400bfc7f6a8cb9fd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9ffae96b06faac617e9b4f60ff341fe"><td class="memItemLeft" align="right" valign="top"><a id="ae9ffae96b06faac617e9b4f60ff341fe" name="ae9ffae96b06faac617e9b4f60ff341fe"></a>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::battery::get_battery_maximum_cell_level</b> ()</td></tr>
+<tr class="memdesc:ae9ffae96b06faac617e9b4f60ff341fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the level of the cell of the stack with the maximum battery. <br /></td></tr>
+<tr class="separator:ae9ffae96b06faac617e9b4f60ff341fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for the physical components of the battery. </p>

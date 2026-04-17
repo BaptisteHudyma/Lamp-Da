@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['interrupttype_0',['InterruptType',['../classimu_1_1Wrapper.html#a28e79cc284fa30a10295208d35f760a9',1,'imu::Wrapper']]]
+  ['interrupttype_0',['InterruptType',['../classlampda_1_1physical_1_1imu_1_1Wrapper.html#ae05b36ff8ad1f0f772502e712827f8d7',1,'lampda::physical::imu::Wrapper']]]
 ];

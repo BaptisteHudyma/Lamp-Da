@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['halogen_0',['Halogen',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3aff1551bb543ca7123c95227ef0bc622f',1,'modes::colors']]],
-  ['highnoonsun_1',['HighNoonSun',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a9dd693bc0b9656dab6a33b44e8596a3b',1,'modes::colors']]],
-  ['highpressuresodium_2',['HighPressureSodium',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a6c601ec711497976ae3db84f0ca2cb5c',1,'modes::colors']]],
-  ['honeydew_3',['Honeydew',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caa50b94f68125e3145c97f240ab95f4b3',1,'modes::colors']]],
-  ['hotpink_4',['HotPink',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cacccd6fead83207194b1b8a3e21849d2a',1,'modes::colors']]]
+  ['halogen_0',['Halogen',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a8b3f44596b9d3ecbe67c1347e70d7aac',1,'lampda::modes::colors']]],
+  ['highnoonsun_1',['HighNoonSun',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a16f7995f00a4f3f6199091df518cbdf8',1,'lampda::modes::colors']]],
+  ['highpressuresodium_2',['HighPressureSodium',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a173aa278f25229bacff9080f7e6367a8',1,'lampda::modes::colors']]],
+  ['honeydew_3',['Honeydew',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bad0da5fe36fbb7b9627a1b28bf6911c26',1,'lampda::modes::colors']]],
+  ['hotpink_4',['HotPink',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba2caf105026fa32a0e9b82b938c3eb539',1,'lampda::modes::colors']]]
 ];

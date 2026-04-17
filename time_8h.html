@@ -75,142 +75,56 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">time.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Interface for the platform specific time handling.  
+<p>Define all time related platform functions.  
 <a href="#details">More...</a></p>
 
 <p><a href="time_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
+<tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1platform"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html">lampda::platform</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1platform"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a9c4a18b1127470d7dc900f7744c7646c"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="time_8h.html#a9c4a18b1127470d7dc900f7744c7646c">time_ms</a> (void)</td></tr>
-<tr class="memdesc:a9c4a18b1127470d7dc900f7744c7646c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of milliseconds since the Arduino board began running the current program. This number will overflow (go back to zero), after approximately 50 days.  <br /></td></tr>
-<tr class="separator:a9c4a18b1127470d7dc900f7744c7646c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c9f5ba63aabadf914f5dc427e3c5e38"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="time_8h.html#a8c9f5ba63aabadf914f5dc427e3c5e38">time_us</a> (void)</td></tr>
-<tr class="memdesc:a8c9f5ba63aabadf914f5dc427e3c5e38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of microseconds since the Arduino board began running the current program.  <br /></td></tr>
-<tr class="separator:a8c9f5ba63aabadf914f5dc427e3c5e38"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1772814eac406eb7fbd9ec0e0ed10024"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="time_8h.html#a1772814eac406eb7fbd9ec0e0ed10024">delay_ms</a> (uint32_t dwMs)</td></tr>
-<tr class="memdesc:a1772814eac406eb7fbd9ec0e0ed10024"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses the program for the amount of time (in miliseconds) specified as parameter. (There are 1000 milliseconds in a second.)  <br /></td></tr>
-<tr class="separator:a1772814eac406eb7fbd9ec0e0ed10024"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0afc4f67c4a30b25cf6527ac589ec44a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="time_8h.html#a0afc4f67c4a30b25cf6527ac589ec44a">delay_us</a> (uint64_t dwUs)</td></tr>
-<tr class="memdesc:a0afc4f67c4a30b25cf6527ac589ec44a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses the program for the amount of time (in microseconds) specified as parameter.  <br /></td></tr>
-<tr class="separator:a0afc4f67c4a30b25cf6527ac589ec44a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab04f694a437dae12bf8dfdbf9d39863a"><td class="memItemLeft" align="right" valign="top"><a id="ab04f694a437dae12bf8dfdbf9d39863a" name="ab04f694a437dae12bf8dfdbf9d39863a"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>time_s</b> ()</td></tr>
-<tr class="memdesc:ab04f694a437dae12bf8dfdbf9d39863a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the current time, in seconds. <br /></td></tr>
-<tr class="separator:ab04f694a437dae12bf8dfdbf9d39863a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8e78feca9388ad8aad20d928637a9c9"><td class="memItemLeft" align="right" valign="top"><a id="ae8e78feca9388ad8aad20d928637a9c9" name="ae8e78feca9388ad8aad20d928637a9c9"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>time_min</b> ()</td></tr>
-<tr class="memdesc:ae8e78feca9388ad8aad20d928637a9c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the current time, in minutes. <br /></td></tr>
-<tr class="separator:ae8e78feca9388ad8aad20d928637a9c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04aac24a7284065eaed9489c2b6d0b88"><td class="memItemLeft" align="right" valign="top"><a id="a04aac24a7284065eaed9489c2b6d0b88" name="a04aac24a7284065eaed9489c2b6d0b88"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>delay_s</b> (uint32_t s)</td></tr>
-<tr class="memdesc:a04aac24a7284065eaed9489c2b6d0b88"><td class="mdescLeft">&#160;</td><td class="mdescRight">pause the current task for the given number of seconds <br /></td></tr>
-<tr class="separator:a04aac24a7284065eaed9489c2b6d0b88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a1d3396e01e3920a0ebde03b8b5e437"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#a5a1d3396e01e3920a0ebde03b8b5e437">lampda::platform::time_ms</a> (void)</td></tr>
+<tr class="memdesc:a5a1d3396e01e3920a0ebde03b8b5e437"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of milliseconds since the Arduino board began running the current program. This number will overflow (go back to zero), after approximately 50 days.  <br /></td></tr>
+<tr class="separator:a5a1d3396e01e3920a0ebde03b8b5e437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3c608c75c11131951b7175437cb1e13"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#ab3c608c75c11131951b7175437cb1e13">lampda::platform::time_us</a> (void)</td></tr>
+<tr class="memdesc:ab3c608c75c11131951b7175437cb1e13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of microseconds since the Arduino board began running the current program.  <br /></td></tr>
+<tr class="separator:ab3c608c75c11131951b7175437cb1e13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8675817a0cda15ecc74217468b71b7bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#a8675817a0cda15ecc74217468b71b7bf">lampda::platform::delay_ms</a> (uint32_t dwMs)</td></tr>
+<tr class="memdesc:a8675817a0cda15ecc74217468b71b7bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses the program for the amount of time (in miliseconds) specified as parameter. (There are 1000 milliseconds in a second.)  <br /></td></tr>
+<tr class="separator:a8675817a0cda15ecc74217468b71b7bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6efb3fe7fb56a8d60089b6a69acc27cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#a6efb3fe7fb56a8d60089b6a69acc27cf">lampda::platform::delay_us</a> (uint64_t dwUs)</td></tr>
+<tr class="memdesc:a6efb3fe7fb56a8d60089b6a69acc27cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses the program for the amount of time (in microseconds) specified as parameter.  <br /></td></tr>
+<tr class="separator:a6efb3fe7fb56a8d60089b6a69acc27cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea6bb8f57246e694eb8222286d2e831d"><td class="memItemLeft" align="right" valign="top"><a id="aea6bb8f57246e694eb8222286d2e831d" name="aea6bb8f57246e694eb8222286d2e831d"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::time_s</b> ()</td></tr>
+<tr class="memdesc:aea6bb8f57246e694eb8222286d2e831d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the current time, in seconds. <br /></td></tr>
+<tr class="separator:aea6bb8f57246e694eb8222286d2e831d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9c36b6957313ebb90129344d1d4f99d"><td class="memItemLeft" align="right" valign="top"><a id="ab9c36b6957313ebb90129344d1d4f99d" name="ab9c36b6957313ebb90129344d1d4f99d"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::time_min</b> ()</td></tr>
+<tr class="memdesc:ab9c36b6957313ebb90129344d1d4f99d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the current time, in minutes. <br /></td></tr>
+<tr class="separator:ab9c36b6957313ebb90129344d1d4f99d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ca143140bad3fa808593a556796675b"><td class="memItemLeft" align="right" valign="top"><a id="a9ca143140bad3fa808593a556796675b" name="a9ca143140bad3fa808593a556796675b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::delay_s</b> (uint32_t s)</td></tr>
+<tr class="memdesc:a9ca143140bad3fa808593a556796675b"><td class="mdescLeft">&#160;</td><td class="mdescRight">pause the current task for the given number of seconds <br /></td></tr>
+<tr class="separator:a9ca143140bad3fa808593a556796675b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Interface for the platform specific time handling. </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="a1772814eac406eb7fbd9ec0e0ed10024" name="a1772814eac406eb7fbd9ec0e0ed10024"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1772814eac406eb7fbd9ec0e0ed10024">&#9670;&#160;</a></span>delay_ms()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void delay_ms </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>dwMs</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Pauses the program for the amount of time (in miliseconds) specified as parameter. (There are 1000 milliseconds in a second.) </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">dwMs</td><td>the number of milliseconds to pause (uint32_t) </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a0afc4f67c4a30b25cf6527ac589ec44a" name="a0afc4f67c4a30b25cf6527ac589ec44a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0afc4f67c4a30b25cf6527ac589ec44a">&#9670;&#160;</a></span>delay_us()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void delay_us </td>
-          <td>(</td>
-          <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>dwUs</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Pauses the program for the amount of time (in microseconds) specified as parameter. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">dwUs</td><td>the number of microseconds to pause (uint32_t) </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a9c4a18b1127470d7dc900f7744c7646c" name="a9c4a18b1127470d7dc900f7744c7646c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9c4a18b1127470d7dc900f7744c7646c">&#9670;&#160;</a></span>time_ms()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t time_ms </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns the number of milliseconds since the Arduino board began running the current program. This number will overflow (go back to zero), after approximately 50 days. </p>
-<dl class="section return"><dt>Returns</dt><dd>Number of milliseconds since the program started (uint32_t) </dd></dl>
-
-</div>
-</div>
-<a id="a8c9f5ba63aabadf914f5dc427e3c5e38" name="a8c9f5ba63aabadf914f5dc427e3c5e38"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8c9f5ba63aabadf914f5dc427e3c5e38">&#9670;&#160;</a></span>time_us()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint64_t time_us </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns the number of microseconds since the Arduino board began running the current program. </p>
-<p>This number will overflow (go back to zero), after approximately 70 minutes. On 16 MHz Arduino boards (e.g. Duemilanove and Nano), this function has a resolution of four microseconds (i.e. the value returned is always a multiple of four). On 8 MHz Arduino boards (e.g. the LilyPad), this function has a resolution of eight microseconds.</p>
-<dl class="section note"><dt>Note</dt><dd>There are 1,000 microseconds in a millisecond and 1,000,000 microseconds in a second. </dd></dl>
-
-</div>
-</div>
-</div><!-- contents -->
+<div class="textblock"><p>Define all time related platform functions. </p>
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6

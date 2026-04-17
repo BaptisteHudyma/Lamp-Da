@@ -85,113 +85,122 @@ $(function() {
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>DigitalPinImpl;</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classDigitalPin.html">   14</a></span><span class="keyword">class </span><a class="code hl_class" href="classDigitalPin.html">DigitalPin</a></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>{</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>  <span class="keyword">enum class</span> GPIO</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>  {</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    gpio0,</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    gpio1,</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    gpio2,</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    gpio3,</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    gpio4,</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    gpio5,</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    gpio6,</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    gpio7,</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    Input_isChargeOk,</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    Signal_PowerDelivery,</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    Signal_UsbProtectionFault,</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    Signal_VbusGateFault,</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    Signal_ChargerProcHot,</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    Signal_BatteryBalancerAlert,</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    Signal_ImuInterrupt1,</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    Signal_ImuInterrupt2,</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    Output_EnableExternalPeripherals,</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    Output_EnableMicrophone,</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    Output_VbusFastRoleSwap,</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    Output_VbusDirection,</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    Output_EnableOnTheGo,</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="comment">// danger zone: only one of the next 3 signals should be active at a time</span></div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    Output_DischargeVbus,</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    Output_EnableVbusGate,</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    Output_EnableOutputGate</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  };</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keyword">enum class</span> Mode</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  {</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    kDefault = 0,</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    kInput,</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    kOutput,</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    kInputPullUp,</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    kInputPullUpSense,</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    kOutputHighCurrent,</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>  };</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  <span class="keyword">enum class</span> Interrupt</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>  {</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    kChange,</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    kRisingEdge,</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    kFallingEdge,</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  };</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>  <a class="code hl_class" href="classDigitalPin.html">DigitalPin</a>(GPIO pin);</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>  <a class="code hl_class" href="classDigitalPin.html">DigitalPin</a>(<a class="code hl_class" href="classDigitalPin.html">DigitalPin</a>&amp;&amp; other) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  <span class="comment">// reinit</span></div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  <span class="keywordtype">void</span> set(GPIO pin);</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacelampda.html">lampda</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>platform {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span>gpio {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span>DigitalPinImpl;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classlampda_1_1platform_1_1gpio_1_1DigitalPin.html">   19</a></span><span class="keyword">class </span><a class="code hl_class" href="classlampda_1_1platform_1_1gpio_1_1DigitalPin.html">DigitalPin</a></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>  <span class="keyword">enum class</span> GPIO</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>  {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    gpio0,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    gpio1,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    gpio2,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    gpio3,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    gpio4,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    gpio5,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    gpio6,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    gpio7,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    Input_isChargeOk,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    Signal_PowerDelivery,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    Signal_UsbProtectionFault,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    Signal_VbusGateFault,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    Signal_ChargerProcHot,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    Signal_BatteryBalancerAlert,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    Signal_ImuInterrupt1,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    Signal_ImuInterrupt2,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    Output_EnableExternalPeripherals,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    Output_EnableMicrophone,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    Output_VbusFastRoleSwap,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    Output_VbusDirection,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    Output_EnableOnTheGo,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="comment">// danger zone: only one of the next 3 signals should be active at a time</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    Output_DischargeVbus,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    Output_EnableVbusGate,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    Output_EnableOutputGate</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  };</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  <span class="keyword">enum class</span> Mode</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    kDefault = 0,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    kInput,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    kOutput,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    kInputPullUp,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    kInputPullUpSense,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    kOutputHighCurrent,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>  };</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  <span class="keyword">enum class</span> Interrupt</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>  {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    kChange,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    kRisingEdge,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    kFallingEdge,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  };</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  <a class="code hl_class" href="classlampda_1_1platform_1_1gpio_1_1DigitalPin.html">DigitalPin</a>(GPIO pin);</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  <span class="keywordtype">void</span> set_pin_mode(Mode mode) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  <span class="keywordtype">bool</span> is_high() <span class="keyword">const</span>; <span class="comment">// true if high, false if low</span></div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <span class="keywordtype">void</span> set_high(<span class="keywordtype">bool</span> isHigh) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>  <span class="keywordtype">void</span> write(uint16_t value) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  uint16_t read() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  <span class="keywordtype">int</span> pin() <span class="keyword">const</span>; <span class="comment">// get the raw pin id</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  <a class="code hl_class" href="classlampda_1_1platform_1_1gpio_1_1DigitalPin.html">DigitalPin</a>(<a class="code hl_class" href="classlampda_1_1platform_1_1gpio_1_1DigitalPin.html">DigitalPin</a>&amp;&amp; other) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <span class="comment">// reinit</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>  <span class="keywordtype">void</span> set(GPIO pin);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  <span class="keywordtype">void</span> set_pin_mode(Mode mode) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>  <span class="keywordtype">bool</span> is_high() <span class="keyword">const</span>; <span class="comment">// true if high, false if low</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  <span class="keywordtype">void</span> set_high(<span class="keywordtype">bool</span> isHigh) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>  <span class="keyword">using </span>voidFuncPtr = void (*)(void);</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  <span class="keywordtype">void</span> attach_callback(voidFuncPtr func, Interrupt mode) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  <span class="keywordtype">void</span> detach_callbacks() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>  <span class="comment">// if called, this pin will be physically disconnected from any power/gnd</span></div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>  <span class="comment">// if will need to be reinitialized</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>  <span class="keywordtype">void</span> disconnect() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> detach_all()</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>  {</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="comment">// detach all set interrupts</span></div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">for</span> (DigitalPin::GPIO pin: DigitalPin::s_gpiosWithInterrupts)</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    {</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>      <a class="code hl_class" href="classDigitalPin.html">DigitalPin</a>(pin).detach_callbacks();</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    DigitalPin::s_gpiosWithInterrupts.clear();</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  }</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  <span class="comment">// call this when the gpios needs to be deactivated</span></div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> deactivate_gpios()</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  {</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="comment">// loop though all gpios, deactivate them all</span></div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">for</span> (uint32_t pin = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(GPIO::gpio0); pin != <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(GPIO::Output_EnableOutputGate);</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>         ++pin)</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    {</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>      <a class="code hl_class" href="classDigitalPin.html">DigitalPin</a>((GPIO)pin).disconnect();</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    }</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>  }</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>  <span class="keyword">inline</span> <span class="keyword">static</span> std::set&lt;GPIO&gt; s_gpiosWithInterrupts;</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>  GPIO mGpio;</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>  std::shared_ptr&lt;DigitalPinImpl&gt; mImpl;</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>};</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassDigitalPin_html"><div class="ttname"><a href="classDigitalPin.html">DigitalPin</a></div><div class="ttdef"><b>Definition:</b> gpio.h:15</div></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>  <span class="keywordtype">void</span> write(uint16_t value) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  uint16_t read() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  <span class="keywordtype">int</span> pin() <span class="keyword">const</span>; <span class="comment">// get the raw pin id</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>  <span class="keyword">using </span>voidFuncPtr = void (*)(void);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>  <span class="keywordtype">void</span> attach_callback(voidFuncPtr func, Interrupt mode) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>  <span class="keywordtype">void</span> detach_callbacks() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>  <span class="comment">// if called, this pin will be physically disconnected from any power/gnd</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>  <span class="comment">// if will need to be reinitialized</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>  <span class="keywordtype">void</span> disconnect() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> detach_all()</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>  {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="comment">// detach all set interrupts</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">for</span> (DigitalPin::GPIO pin: DigitalPin::s_gpiosWithInterrupts)</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>      <a class="code hl_class" href="classlampda_1_1platform_1_1gpio_1_1DigitalPin.html">DigitalPin</a>(pin).detach_callbacks();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    DigitalPin::s_gpiosWithInterrupts.clear();</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>  }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  <span class="comment">// call this when the gpios needs to be deactivated</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> deactivate_gpios()</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="comment">// loop though all gpios, deactivate them all</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">for</span> (uint32_t pin = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(GPIO::gpio0); pin != <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(GPIO::Output_EnableOutputGate);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>         ++pin)</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>      <a class="code hl_class" href="classlampda_1_1platform_1_1gpio_1_1DigitalPin.html">DigitalPin</a>((GPIO)pin).disconnect();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    }</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>  }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  <span class="keyword">inline</span> <span class="keyword">static</span> std::set&lt;GPIO&gt; s_gpiosWithInterrupts;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>  GPIO mGpio;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>  std::shared_ptr&lt;DigitalPinImpl&gt; mImpl;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>};</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>} <span class="comment">// namespace gpio</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>} <span class="comment">// namespace platform</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>} <span class="comment">// namespace lampda</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclasslampda_1_1platform_1_1gpio_1_1DigitalPin_html"><div class="ttname"><a href="classlampda_1_1platform_1_1gpio_1_1DigitalPin.html">lampda::platform::gpio::DigitalPin</a></div><div class="ttdef"><b>Definition:</b> gpio.h:20</div></div>
+<div class="ttc" id="anamespacelampda_html"><div class="ttname"><a href="namespacelampda.html">lampda</a></div><div class="ttdoc">Program scope.</div><div class="ttdef"><b>Definition:</b> nudz_scrollimage.hpp:3</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

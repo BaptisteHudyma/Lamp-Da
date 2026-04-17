@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['khaki_0',['Khaki',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cab902a6aa5d073ab05b6a7418522e89de',1,'modes::colors']]]
+  ['khaki_0',['Khaki',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba1094feb7b706b631452b9e4e6b874951',1,'lampda::modes::colors']]]
 ];

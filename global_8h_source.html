@@ -83,18 +83,29 @@ $(function() {
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// global program scope</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>global {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacelampda.html">lampda</a> {</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="global_8h.html#af755229642c86f33438d0f9936d05a25">   15</a></span><span class="keyword">extern</span> <span class="keywordtype">void</span> <a class="code hl_function" href="global_8h.html#af755229642c86f33438d0f9936d05a25">main_loop</a>(<span class="keyword">const</span> uint32_t addedDelay = 0);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">extern</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda.html#a72740b9f2eaee6730b2e29c92c0777a3">main_loop</a>(<span class="keyword">const</span> uint32_t addedDelay = 0);</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="global_8h.html#a4bfe0e4ab8bfea2f4af3723efbf6a20e">   18</a></span><span class="keyword">extern</span> <span class="keywordtype">void</span> <a class="code hl_function" href="global_8h.html#a4bfe0e4ab8bfea2f4af3723efbf6a20e">main_setup</a>();</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">extern</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda.html#a446846bcf08c65528675e71206a20ba9">main_setup</a>();</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>} <span class="comment">// namespace global</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">// Document all main namespace of the project</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aglobal_8h_html_a4bfe0e4ab8bfea2f4af3723efbf6a20e"><div class="ttname"><a href="global_8h.html#a4bfe0e4ab8bfea2f4af3723efbf6a20e">global::main_setup</a></div><div class="ttdeci">void main_setup()</div><div class="ttdoc">Setup of the program, call once on systel start.</div></div>
-<div class="ttc" id="aglobal_8h_html_af755229642c86f33438d0f9936d05a25"><div class="ttname"><a href="global_8h.html#af755229642c86f33438d0f9936d05a25">global::main_loop</a></div><div class="ttdeci">void main_loop(const uint32_t addedDelay=0)</div><div class="ttdoc">Main loop of the program.</div></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">// clang-format off</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="namespacelampda_1_1logic.html">   25</a></span><span class="keyword">namespace </span>logic {};</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="namespacelampda_1_1physical.html">   27</a></span><span class="keyword">namespace </span>physical {};</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="namespacelampda_1_1platform.html">   29</a></span><span class="keyword">namespace </span>platform {};</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespacelampda_1_1utils.html">   31</a></span><span class="keyword">namespace </span>utils {};</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment">// clang-format on</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>} <span class="comment">// namespace lampda</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="anamespacelampda_html"><div class="ttname"><a href="namespacelampda.html">lampda</a></div><div class="ttdoc">Program scope.</div><div class="ttdef"><b>Definition:</b> nudz_scrollimage.hpp:3</div></div>
+<div class="ttc" id="anamespacelampda_html_a446846bcf08c65528675e71206a20ba9"><div class="ttname"><a href="namespacelampda.html#a446846bcf08c65528675e71206a20ba9">lampda::main_setup</a></div><div class="ttdeci">void main_setup()</div><div class="ttdoc">Setup of the program, call once on systel start.</div><div class="ttdef"><b>Definition:</b> global.cpp:76</div></div>
+<div class="ttc" id="anamespacelampda_html_a72740b9f2eaee6730b2e29c92c0777a3"><div class="ttname"><a href="namespacelampda.html#a72740b9f2eaee6730b2e29c92c0777a3">lampda::main_loop</a></div><div class="ttdeci">void main_loop(const uint32_t addedDelay)</div><div class="ttdoc">Run the main program loop.</div><div class="ttdef"><b>Definition:</b> global.cpp:222</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

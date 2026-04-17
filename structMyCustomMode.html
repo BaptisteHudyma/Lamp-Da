@@ -84,7 +84,7 @@ Inheritance diagram for MyCustomMode:</div>
  <div class="center">
   <img src="structMyCustomMode.png" usemap="#MyCustomMode_map" alt=""/>
   <map id="MyCustomMode_map" name="MyCustomMode_map">
-<area href="structmodes_1_1BasicMode.html" title="Parent object for all custom user modes." alt="modes::BasicMode" shape="rect" coords="0,0,117,24"/>
+<area href="structlampda_1_1modes_1_1BasicMode.html" title="Parent object for all custom user modes." alt="lampda::modes::BasicMode" shape="rect" coords="0,0,163,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -108,7 +108,7 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>on_exit_mode</
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>sunset_update</b> (auto &amp;ctx, float progress)</td></tr>
 <tr class="separator:ac701bf52f656f57a46938a66621a9a3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ea6dd780f9c4da592189d1db8fdfd7d"><td class="memItemLeft" align="right" valign="top"><a id="a1ea6dd780f9c4da592189d1db8fdfd7d" name="a1ea6dd780f9c4da592189d1db8fdfd7d"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>brightness_update</b> (auto &amp;ctx, <a class="el" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> brightness)</td></tr>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>brightness_update</b> (auto &amp;ctx, brightness_t brightness)</td></tr>
 <tr class="separator:a1ea6dd780f9c4da592189d1db8fdfd7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abab77db9d9005f85e4b301210893b547"><td class="memItemLeft" align="right" valign="top"><a id="abab77db9d9005f85e4b301210893b547" name="abab77db9d9005f85e4b301210893b547"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>custom_ramp_update</b> (auto &amp;ctx, uint8_t rampValue)</td></tr>
@@ -134,6 +134,9 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>write_paramete
 <tr class="memitem:a0fb1a4426b76c7670b0aa463b00177fd"><td class="memItemLeft" align="right" valign="top"><a id="a0fb1a4426b76c7670b0aa463b00177fd" name="a0fb1a4426b76c7670b0aa463b00177fd"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>user_thread</b> (auto &amp;ctx)</td></tr>
 <tr class="separator:a0fb1a4426b76c7670b0aa463b00177fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9622baec04f2dd7dc396e210551919b7"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a9622baec04f2dd7dc396e210551919b7">brightness_update</a> (auto &amp;ctx, brightness_t brightness)</td></tr>
+<tr class="memdesc:a9622baec04f2dd7dc396e210551919b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when brightness changes (optional)  <br /></td></tr>
+<tr class="separator:a9622baec04f2dd7dc396e210551919b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -152,17 +155,17 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasS
 <tr class="memitem:a51329099d7c912a16e8e3045686d2a26"><td class="memItemLeft" align="right" valign="top"><a id="a51329099d7c912a16e8e3045686d2a26" name="a51329099d7c912a16e8e3045686d2a26"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>requireUserThread</b> = false</td></tr>
 <tr class="separator:a51329099d7c912a16e8e3045686d2a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a84e8fe859e3cab35c52c1cb5535a31fa"><td class="memItemLeft" align="right" valign="top"><a id="a84e8fe859e3cab35c52c1cb5535a31fa" name="a84e8fe859e3cab35c52c1cb5535a31fa"></a>
+<tr class="memitem:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="memItemLeft" align="right" valign="top"><a id="ad879076f6462e4f274f5c4e12fc6c1f0" name="ad879076f6462e4f274f5c4e12fc6c1f0"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
-<tr class="memdesc:a84e8fe859e3cab35c52c1cb5535a31fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the use of custom <a class="el" href="structmodes_1_1BasicMode.html#a8208ea04921b3b18de54387ec1efcb09" title="Custom callback when sunset mode is updated (optional)">BasicMode::sunset_update()</a> callback. <br /></td></tr>
-<tr class="separator:a84e8fe859e3cab35c52c1cb5535a31fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac60ff94998743c88b0463e25235e2244"><td class="memItemLeft" align="right" valign="top">static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1BasicMode.html#ac60ff94998743c88b0463e25235e2244">storeId</a> = 0</td></tr>
-<tr class="memdesc:ac60ff94998743c88b0463e25235e2244"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store identifier for persistent storage (optional)  <br /></td></tr>
-<tr class="separator:ac60ff94998743c88b0463e25235e2244"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the use of custom <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#afaeae8fbc41264a3f75723f9a688da45" title="Custom callback when sunset mode is updated (optional)">BasicMode::sunset_update()</a> callback. <br /></td></tr>
+<tr class="separator:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d76bc8d1882571ab35a8f81fdf0ab9b"><td class="memItemLeft" align="right" valign="top">static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a8d76bc8d1882571ab35a8f81fdf0ab9b">storeId</a> = 0</td></tr>
+<tr class="memdesc:a8d76bc8d1882571ab35a8f81fdf0ab9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store identifier for persistent storage (optional)  <br /></td></tr>
+<tr class="separator:a8d76bc8d1882571ab35a8f81fdf0ab9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a id="ac60ff94998743c88b0463e25235e2244" name="ac60ff94998743c88b0463e25235e2244"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac60ff94998743c88b0463e25235e2244">&#9670;&#160;</a></span>storeId</h2>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a9622baec04f2dd7dc396e210551919b7" name="a9622baec04f2dd7dc396e210551919b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9622baec04f2dd7dc396e210551919b7">&#9670;&#160;</a></span>brightness_update()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -171,7 +174,55 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasS
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr uint32_t modes::BasicMode::storeId = 0</td>
+          <td class="memname">static void lampda::modes::BasicMode::brightness_update </td>
+          <td>(</td>
+          <td class="paramtype">auto &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td>
+          <td class="paramname"><em>brightness</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Custom callback when brightness changes (optional) </p>
+<p>Callback active only if BasicMode::hasBrightCallback is True</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">ctx</td><td>The current context </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">brightness</td><td>The brightness value set by the system </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>Remarks</dt><dd>Use update_brightness() to change brightness in order for this callback to be correctly handled at runtime </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a8d76bc8d1882571ab35a8f81fdf0ab9b" name="a8d76bc8d1882571ab35a8f81fdf0ab9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d76bc8d1882571ab35a8f81fdf0ab9b">&#9670;&#160;</a></span>storeId</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr uint32_t lampda::modes::BasicMode::storeId = 0</td>
         </tr>
       </table>
   </td>

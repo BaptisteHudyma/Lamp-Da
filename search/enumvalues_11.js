@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['tan_0',['Tan',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca60594ea21d385901e49bc881ee90f9c8',1,'modes::colors']]],
-  ['teal_1',['Teal',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca781a3e0d8cda61f9c3a49cdde2205655',1,'modes::colors']]],
-  ['thistle_2',['Thistle',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cac3549d50abbb3c75d094be0357478084',1,'modes::colors']]],
-  ['tilt_3',['Tilt',['../namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3a686319a93c35facda5c3da08875fb394',1,'imu']]],
-  ['tomato_4',['Tomato',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca706fe3666cdc2819202579862ceb1ede',1,'modes::colors']]],
-  ['tungsten100w_5',['Tungsten100W',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3ab0528ede44f8fb1076e02017b19c9521',1,'modes::colors']]],
-  ['tungsten40w_6',['Tungsten40W',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a96903a5b465e0426a6bf754f7f493636',1,'modes::colors']]],
-  ['turquoise_7',['Turquoise',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca81bbd0d1950a3ea9077eaa3ae1edd580',1,'modes::colors']]]
+  ['tan_0',['Tan',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba104654c9c5f1370af5dd5823ca3ce68e',1,'lampda::modes::colors']]],
+  ['teal_1',['Teal',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bac1a0d58e7d8de01455760820b0758b8f',1,'lampda::modes::colors']]],
+  ['thistle_2',['Thistle',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baa5cd1e5ee2366dc5686d93d24981e917',1,'lampda::modes::colors']]],
+  ['tilt_3',['Tilt',['../namespacelampda_1_1physical_1_1imu.html#a014f8201ff74e63bb213fe2aeca900b8a686319a93c35facda5c3da08875fb394',1,'lampda::physical::imu']]],
+  ['tomato_4',['Tomato',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba755d50de4be386aa634674f79611ba82',1,'lampda::modes::colors']]],
+  ['tungsten100w_5',['Tungsten100W',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5ac60fcc12a7cfd7382a307892f506cdf0',1,'lampda::modes::colors']]],
+  ['tungsten40w_6',['Tungsten40W',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5af218d4d49684d28bda0392e5b7989ffa',1,'lampda::modes::colors']]],
+  ['turquoise_7',['Turquoise',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba8120857511bb55ff52a2b73884ca429e',1,'lampda::modes::colors']]]
 ];

@@ -1,13 +1,13 @@
 var searchData=
 [
-  ['beige_0',['Beige',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca95998152bae2f187899ea7bc6b19e2ce',1,'modes::colors']]],
-  ['bigmotion_1',['BigMotion',['../classimu_1_1Wrapper.html#a28e79cc284fa30a10295208d35f760a9a3ab84073bcc7600125bee41b6658c39f',1,'imu::Wrapper::BigMotion()'],['../namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3a3ab84073bcc7600125bee41b6658c39f',1,'imu::BigMotion()']]],
-  ['bisque_2',['Bisque',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca9ce56709f7087ff878721e499baea6d7',1,'modes::colors']]],
-  ['black_3',['Black',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca082a21c947f36e54735b14165cb3fdeb',1,'modes::colors']]],
-  ['blacklightfluorescent_4',['BlackLightFluorescent',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a45e4b13f3bf25352af7b9e82408aea40',1,'modes::colors']]],
-  ['blanchedalmond_5',['BlanchedAlmond',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cacde61611fba09499fd31ad0b4a08989d',1,'modes::colors']]],
-  ['blue_6',['Blue',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caeda19d3ab4ebcbe91275922714cdfc01',1,'modes::colors']]],
-  ['blueviolet_7',['BlueViolet',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca22d89a000fc728e09051fc813fc926c2',1,'modes::colors']]],
-  ['brown_8',['Brown',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca0c6a162cd4c8e6c31a308e61bbe62ecd',1,'modes::colors']]],
-  ['burlywood_9',['BurlyWood',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca10f9e00896a20c80c9bb84cfde358f77',1,'modes::colors']]]
+  ['beige_0',['Beige',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba41ee976b3cc958c4bf9329f9f934d13c',1,'lampda::modes::colors']]],
+  ['bigmotion_1',['BigMotion',['../classlampda_1_1physical_1_1imu_1_1Wrapper.html#ae05b36ff8ad1f0f772502e712827f8d7a3ab84073bcc7600125bee41b6658c39f',1,'lampda::physical::imu::Wrapper::BigMotion()'],['../namespacelampda_1_1physical_1_1imu.html#a014f8201ff74e63bb213fe2aeca900b8a3ab84073bcc7600125bee41b6658c39f',1,'lampda::physical::imu::BigMotion()']]],
+  ['bisque_2',['Bisque',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bafda09e2dae4601efc9a4e45b4bf55565',1,'lampda::modes::colors']]],
+  ['black_3',['Black',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bad5555d785ceb02212e5eeea7a7571c37',1,'lampda::modes::colors']]],
+  ['blacklightfluorescent_4',['BlackLightFluorescent',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a2eb849abb35ef3c53407bbfd7d98797f',1,'lampda::modes::colors']]],
+  ['blanchedalmond_5',['BlanchedAlmond',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba273435f0bda08b8d847bd307eab8d993',1,'lampda::modes::colors']]],
+  ['blue_6',['Blue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bac5f101142f27e9104650f02b8f0748d7',1,'lampda::modes::colors']]],
+  ['blueviolet_7',['BlueViolet',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba5cd45ef1e6a8e198569f91d2b4e0fbcc',1,'lampda::modes::colors']]],
+  ['brown_8',['Brown',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba2c309bd421738c856c1c64ba85ea4082',1,'lampda::modes::colors']]],
+  ['burlywood_9',['BurlyWood',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba59e5a4a0f644c018d3c3279dd9a6fe82',1,'lampda::modes::colors']]]
 ];

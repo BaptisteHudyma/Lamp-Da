@@ -80,7 +80,7 @@ $(function() {
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef MY_CUSTOM_MODE_H</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define MY_CUSTOM_MODE_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno"><a class="line" href="structMyCustomMode.html">    4</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structMyCustomMode.html">MyCustomMode</a> : <span class="keyword">public</span> <a class="code hl_struct" href="structmodes_1_1BasicMode.html">modes::BasicMode</a></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno"><a class="line" href="structMyCustomMode.html">    4</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structMyCustomMode.html">MyCustomMode</a> : <span class="keyword">public</span> <a class="code hl_struct" href="structlampda_1_1modes_1_1BasicMode.html">lampda::modes::BasicMode</a></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span>{</div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {}</div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> on_enter_mode(<span class="keyword">auto</span>&amp; ctx) {}</div>
@@ -90,7 +90,7 @@ $(function() {
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> sunset_update(<span class="keyword">auto</span>&amp; ctx, <span class="keywordtype">float</span> progress) {}</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>  <span class="comment">// only if hasBrightCallback</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> brightness_update(<span class="keyword">auto</span>&amp; ctx, <a class="code hl_typedef" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> <a class="code hl_namespace" href="namespacebrightness.html">brightness</a>) {}</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> brightness_update(<span class="keyword">auto</span>&amp; ctx, brightness_t brightness) {}</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>  <span class="comment">// only if hasCustomRamp</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> custom_ramp_update(<span class="keyword">auto</span>&amp; ctx, uint8_t rampValue) {}</div>
@@ -126,11 +126,9 @@ $(function() {
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>};</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="anamespacebrightness_html"><div class="ttname"><a href="namespacebrightness.html">brightness</a></div><div class="ttdoc">Handle the LED output brightness.</div><div class="ttdef"><b>Definition:</b> brightness_handle.h:11</div></div>
 <div class="ttc" id="astructMyCustomMode_1_1StateTy_html"><div class="ttname"><a href="structMyCustomMode_1_1StateTy.html">MyCustomMode::StateTy</a></div><div class="ttdef"><b>Definition:</b> my_custom_mode.hpp:38</div></div>
 <div class="ttc" id="astructMyCustomMode_html"><div class="ttname"><a href="structMyCustomMode.html">MyCustomMode</a></div><div class="ttdef"><b>Definition:</b> my_custom_mode.hpp:5</div></div>
-<div class="ttc" id="astructmodes_1_1BasicMode_html"><div class="ttname"><a href="structmodes_1_1BasicMode.html">modes::BasicMode</a></div><div class="ttdoc">Parent object for all custom user modes.</div><div class="ttdef"><b>Definition:</b> mode_type.hpp:53</div></div>
-<div class="ttc" id="asystem_2utils_2constants_8h_html_aa87af64c7db4c82d3374823aff4f72f4"><div class="ttname"><a href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a></div><div class="ttdeci">uint16_t brightness_t</div><div class="ttdoc">Define the type of the brightness parameters.</div><div class="ttdef"><b>Definition:</b> constants.h:145</div></div>
+<div class="ttc" id="astructlampda_1_1modes_1_1BasicMode_html"><div class="ttname"><a href="structlampda_1_1modes_1_1BasicMode.html">lampda::modes::BasicMode</a></div><div class="ttdoc">Parent object for all custom user modes.</div><div class="ttdef"><b>Definition:</b> mode_type.hpp:53</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

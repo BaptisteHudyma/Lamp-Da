@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['xyz_0',['XYZ',['../classutils_1_1ColorSpace_1_1XYZ.html#a1259c3f7d7431d8f6726f4d628edb3db',1,'utils::ColorSpace::XYZ::XYZ(const COLOR &amp;c)'],['../classutils_1_1ColorSpace_1_1XYZ.html#af8b1769be7efa7b5afd03d60cb89e3de',1,'utils::ColorSpace::XYZ::XYZ(double x, double y, double z)']]]
+  ['xyz_0',['XYZ',['../classlampda_1_1utils_1_1ColorSpace_1_1XYZ.html#acb34da443b0b05847b7d89c7540a4a01',1,'lampda::utils::ColorSpace::XYZ::XYZ(const COLOR &amp;c)'],['../classlampda_1_1utils_1_1ColorSpace_1_1XYZ.html#a40c087c0d334b6fc31d526eccb7d7f4e',1,'lampda::utils::ColorSpace::XYZ::XYZ(double x, double y, double z)']]]
 ];

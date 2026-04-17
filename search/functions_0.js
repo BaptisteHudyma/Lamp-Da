@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['_5f_5finit_5f_5f_0',['__init__',['../classlampda__gui_1_1TabOfficialUpdate.html#a2b302d02563a43444b36c5fcbd12b241',1,'lampda_gui.TabOfficialUpdate.__init__()'],['../classlampda__gui_1_1TabLocalFlash.html#aa43f60c8f11f715dc7fc8e83753fa2a4',1,'lampda_gui.TabLocalFlash.__init__()'],['../classlampda__gui_1_1TabSerialComm.html#a61402c0a19748a45b00da4e831c00dd5',1,'lampda_gui.TabSerialComm.__init__()'],['../classlampda__gui_1_1TabParameters.html#a5374548f1b9375ca6d9500783b7a57cd',1,'lampda_gui.TabParameters.__init__()'],['../classlampda__gui_1_1FirmwareApp.html#a59f506260b55fc4530883b6ec96cd7a1',1,'lampda_gui.FirmwareApp.__init__()'],['../classlampda__serial_1_1Release.html#a7294a1de59c71475517514cf095bb297',1,'lampda_serial.Release.__init__()'],['../classlampda__serial_1_1LampDa.html#a338ecae0e6678bea6b76f4660ffcf3f5',1,'lampda_serial.LampDa.__init__()'],['../classTextLangage_1_1LangageHandle.html#a6b1afb30e04ddfd918c3e4aa0fe05ee7',1,'TextLangage.LangageHandle.__init__()']]],
-  ['_5fanimate_5framp_1',['_animate_ramp',['../manager__type_8hpp.html#abd752819fd71a204a337a108c2f97c9d',1,'modes::details']]]
+  ['_5f_5fis_5fpower_5fgate_5fenabled_0',['__is_power_gate_enabled',['../namespacelampda_1_1power_1_1powergates.html#aa200bfed2c47900896557b7893e1ced2',1,'lampda::power::powergates']]],
+  ['_5fanimate_5framp_1',['_animate_ramp',['../manager__type_8hpp.html#a23c26b53875a066a21dbb7e6b10be208',1,'lampda::modes::details']]]
 ];

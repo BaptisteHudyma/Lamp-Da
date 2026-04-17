@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['fairylight_0',['FairyLight',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cab37886073ed2a7940b4d5b3e01788a20',1,'modes::colors']]],
-  ['fairylightncc_1',['FairyLightNCC',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3caf591725e387ee8ed8a0b9cce91bfb874',1,'modes::colors']]],
-  ['fastcharge_2',['FASTCHARGE',['../namespacecharger_1_1drivers.html#a078feabad5a6501dcb48cc8a8d4cdce1a00134e04ab56bd5b2b4e96d7b0e8100c',1,'charger::drivers']]],
-  ['firebrick_3',['FireBrick',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cab61c98b8760657f188d6a500468e3435',1,'modes::colors']]],
-  ['floralwhite_4',['FloralWhite',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca48d60264dd7563d234ab5dd1c5bc7721',1,'modes::colors']]],
-  ['forestgreen_5',['ForestGreen',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca0e055da20587c8df9d9fba30b052482a',1,'modes::colors']]],
-  ['freefall_6',['FreeFall',['../classimu_1_1Wrapper.html#a28e79cc284fa30a10295208d35f760a9a8a14b37d83a08a971c91b7ce9e09ef5a',1,'imu::Wrapper::FreeFall()'],['../namespaceimu.html#ad94385060b2a2c55efb4d919576d86e3a8a14b37d83a08a971c91b7ce9e09ef5a',1,'imu::FreeFall()']]],
-  ['fullspectrumfluorescent_7',['FullSpectrumFluorescent',['../namespacemodes_1_1colors.html#a3bde29bc3b49d4c1461e0f60e2dbd6c3a82b34ae642193808f551ff6178535365',1,'modes::colors']]]
+  ['fairylight_0',['FairyLight',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baa3dacfdf2b9df7aeab833c49ed90de23',1,'lampda::modes::colors']]],
+  ['fairylightncc_1',['FairyLightNCC',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba0822ad56f204b32ea1edf7286fa2db4a',1,'lampda::modes::colors']]],
+  ['fastcharge_2',['FASTCHARGE',['../namespacelampda_1_1power_1_1charger_1_1drivers.html#a7b7c0894a6f9b4e019e1d19b00295f23a00134e04ab56bd5b2b4e96d7b0e8100c',1,'lampda::power::charger::drivers']]],
+  ['firebrick_3',['FireBrick',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba92dfe5fad686fc911d89c736a350a928',1,'lampda::modes::colors']]],
+  ['floralwhite_4',['FloralWhite',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bac828a52e77661deab75cc47798476b57',1,'lampda::modes::colors']]],
+  ['forestgreen_5',['ForestGreen',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba291b2d0e0bd1bed4541770de608480be',1,'lampda::modes::colors']]],
+  ['freefall_6',['FreeFall',['../classlampda_1_1physical_1_1imu_1_1Wrapper.html#ae05b36ff8ad1f0f772502e712827f8d7a8a14b37d83a08a971c91b7ce9e09ef5a',1,'lampda::physical::imu::Wrapper::FreeFall()'],['../namespacelampda_1_1physical_1_1imu.html#a014f8201ff74e63bb213fe2aeca900b8a8a14b37d83a08a971c91b7ce9e09ef5a',1,'lampda::physical::imu::FreeFall()']]],
+  ['fullspectrumfluorescent_7',['FullSpectrumFluorescent',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a86b2d61c47e32de23c6ff85e8e836ebf',1,'lampda::modes::colors']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['lamptypes_0',['LampTypes',['../namespacemodes_1_1hardware.html#a9ce05c0c227ab520c116fa72d23d4383',1,'modes::hardware']]]
+  ['lamptypes_0',['LampTypes',['../namespacelampda_1_1modes_1_1hardware.html#a4a59d53a8125e83721ba8b38597a3819',1,'lampda::modes::hardware']]]
 ];

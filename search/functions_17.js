@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['wait_5fnotification_0',['wait_notification',['../threads_8h.html#a817881adcfb249783085040e5abc5352',1,'threads.h']]],
-  ['when_5flast_5fupdate_5fbrightness_1',['when_last_update_brightness',['../namespacebrightness.html#a7b78f89f8721bb5057e010a44bce3af8',1,'brightness']]],
-  ['wrap_5fangle_2',['wrap_angle',['../utils_8h.html#a503b25a2fffce4404c956c7b3320e340',1,'utils.h']]],
-  ['write_5fparameters_3',['write_parameters',['../structmodes_1_1ContextTy.html#a640e067c0a6c24bc19c7d7baff6fd7aa',1,'modes::ContextTy::write_parameters()'],['../structmodes_1_1BasicMode.html#a236039ce6cd71c62c82ee97757b44a7b',1,'modes::BasicMode::write_parameters()'],['../namespaceuser.html#a42eba66fe130830c3d5371d349d11764',1,'user::write_parameters()']]],
-  ['write_5ftemporary_5foutput_5flimits_4',['write_temporary_output_limits',['../namespaceoutputPower.html#a395998707d1c385298ff0fcb433cb132',1,'outputPower']]],
-  ['write_5fto_5ffile_5',['write_to_file',['../namespacefileSystem_1_1system.html#ae93b9a054508e5db5ec6d9d9334a0ea7',1,'fileSystem::system::write_to_file()'],['../namespacefileSystem_1_1user.html#a0a454f1c3c95997e5e722ce9b2b901af',1,'fileSystem::user::write_to_file()']]],
-  ['write_5fto_5fmemory_6',['write_to_memory',['../namespacestatistics.html#a5ecc922f8b863953f7eb72dd0caae4a9',1,'statistics']]],
-  ['write_5fvoltage_7',['write_voltage',['../namespaceoutputPower.html#a3b0d85ec8e378db5e668b3cf1af64bd8',1,'outputPower']]]
+  ['wait_5fnotification_0',['wait_notification',['../namespacelampda_1_1platform_1_1threads.html#a9338f089e84cd489a043e021bbf01ddd',1,'lampda::platform::threads']]],
+  ['when_5flast_5fupdate_5fbrightness_1',['when_last_update_brightness',['../namespacelampda_1_1utils_1_1brightness.html#a6e576c03172d6d460f9fe4bcf3a689c5',1,'lampda::utils::brightness']]],
+  ['wrap_5fangle_2',['wrap_angle',['../namespacelampda.html#a4a451ce223644730414bf41bfe649b3a',1,'lampda']]],
+  ['write_5fparameters_3',['write_parameters',['../structlampda_1_1modes_1_1ContextTy.html#a6fbae47fcd69a85f9951cee40e64e156',1,'lampda::modes::ContextTy::write_parameters()'],['../structlampda_1_1modes_1_1BasicMode.html#a3934e147a242ba57b99a8fedb09dd6b3',1,'lampda::modes::BasicMode::write_parameters()'],['../namespacelampda_1_1user.html#acb9086987851371577be7407d39032c7',1,'lampda::user::write_parameters()']]],
+  ['write_5ftemporary_5foutput_5flimits_4',['write_temporary_output_limits',['../namespacelampda_1_1physical_1_1outputPower.html#a416be025c5ef48bfda9566d0996ee02e',1,'lampda::physical::outputPower']]],
+  ['write_5fto_5ffile_5',['write_to_file',['../namespacelampda_1_1physical_1_1fileSystem_1_1system.html#a3e7b7d7952a45324d9647c75a53c9445',1,'lampda::physical::fileSystem::system::write_to_file()'],['../namespacelampda_1_1physical_1_1fileSystem_1_1user.html#a65c8896061d5c6ca0bad80b23d30624f',1,'lampda::physical::fileSystem::user::write_to_file()']]],
+  ['write_5fto_5fmemory_6',['write_to_memory',['../namespacelampda_1_1logic_1_1statistics.html#a12735c6e3906a32c41384e0c59ac001a',1,'lampda::logic::statistics']]],
+  ['write_5fvoltage_7',['write_voltage',['../namespacelampda_1_1physical_1_1outputPower.html#a60869dc91bb9891fb8d2aa938ac5be07',1,'lampda::physical::outputPower']]]
 ];

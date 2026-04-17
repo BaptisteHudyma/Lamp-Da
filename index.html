@@ -77,12 +77,12 @@ $(function() {
 <p>This repository contains the bootloader, software and hardware files to create and program the board.</p>
 <p>The system supports programming and charge throught the same USB-C port.</p>
 <p>The board is made to fit into a 50mm tube.</p>
-<h1><a class="anchor" id="autotoc_md38"></a>
+<h1><a class="anchor" id="autotoc_md42"></a>
 File details</h1>
 <ul>
 <li>LampColorControler.ino: main class of the program, containing the setup and loop functions</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md39"></a>
+<h1><a class="anchor" id="autotoc_md43"></a>
 Physical build and architecture :</h1>
 <p>The electrical circuit and build files can be found in the <b>electrical</b> folder.</p>
 <div class="image">
@@ -107,12 +107,12 @@ electrical circuit</div></div>
 <li><b>NO REVERSE VOLTAGE PROTECTION FOR BATTERY</b>: it will blow the circuit right up</li>
 <li><b>IO are 3.3V max</b>, any voltage greater will destroy the system</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md40"></a>
+<h1><a class="anchor" id="autotoc_md44"></a>
 Update the system</h1>
 <p>You can update the program without any tools :</p>
 <p>Open a serial connection to the lamp, and use the "DFU" command to reset the system. The system will appear on a computer as a USB file device.</p>
 <p>You just need to copy the .uf2 file matching your lamp type into this USB device. It will then reboot and update the system itself.</p>
-<h1><a class="anchor" id="autotoc_md41"></a>
+<h1><a class="anchor" id="autotoc_md45"></a>
 Behavior</h1>
 <p>The code in this repo is made to be used as compact lanterns.</p>
 <p>base behavior:</p><ul>
@@ -139,7 +139,7 @@ battery levels</div></div>
 <li>system in error state : fast pink/orange, then shutdown : reached an error state and is stuck here. Shutdown after five seconds</li>
 <li>unhandled: fast white blinks</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md42"></a>
+<h2><a class="anchor" id="autotoc_md46"></a>
 User defined behaviors</h2>
 <p>The user MUST define the target behavior for the target uses.</p>
 <p>Some functions are defined in <a class="el" href="functions_8h.html" title="Define specific needed user functions.">functions.h</a> files, and must be implemented in functions.cpp They allow the user to program the exact desired behavior.</p>
@@ -149,16 +149,16 @@ User defined behaviors</h2>
 <li>simple: Program designed for a constant color led strip</li>
 </ul>
 <p><img src="lamp_types.jpg" alt="" class="inline" title="The different lamps"/>     Above: simple, cct, indexable</p>
-<h3><a class="anchor" id="autotoc_md43"></a>
+<h3><a class="anchor" id="autotoc_md47"></a>
 Bootloader flash</h3>
 <p>Out of factory, the board will miss a bootloader.</p>
 <ul>
 <li>Use a raspberry of any other linux system with gpios</li>
 <li>Use the open source program <b>openocd</b> as described in the <b>flashInfo</b> folder of this repository.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md44"></a>
+<h1><a class="anchor" id="autotoc_md48"></a>
 Building the project</h1>
-<h2><a class="anchor" id="autotoc_md45"></a>
+<h2><a class="anchor" id="autotoc_md49"></a>
 Quick Setup</h2>
 <p>The supported platform to work with the project is:</p>
 <ul>
@@ -169,7 +169,7 @@ Quick Setup</h2>
 <li><a class="el" href="md_docs_QuickSetup.html">Quick Setup</a> &ndash; also lists all required dependencies</li>
 </ul>
 <p>Note that after building documentation, it will be in <code>docs/html/index.html</code></p>
-<h2><a class="anchor" id="autotoc_md46"></a>
+<h2><a class="anchor" id="autotoc_md50"></a>
 Other Guides</h2>
 <p>You will find a guide on how to update the system via USB</p>
 <ul>

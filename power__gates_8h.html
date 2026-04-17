@@ -88,62 +88,68 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacepowergates"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepowergates.html">powergates</a></td></tr>
-<tr class="memdesc:namespacepowergates"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the two main power gates : Output and USB. <br /></td></tr>
+<tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
+<tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacepowergates_1_1power"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepowergates_1_1power.html">powergates::power</a></td></tr>
-<tr class="memdesc:namespacepowergates_1_1power"><td class="mdescLeft">&#160;</td><td class="mdescRight">specific power commands <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1power"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html">lampda::power</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1power"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main entry point of the power handling of the board. Responsible the main state of the power handling. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1power_1_1powergates"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power_1_1powergates.html">lampda::power::powergates</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1power_1_1powergates"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the two main power gates : Output and USB. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1power_1_1powergates_1_1power"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power_1_1powergates_1_1power.html">lampda::power::powergates::power</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1power_1_1powergates_1_1power"><td class="mdescLeft">&#160;</td><td class="mdescRight">specific power commands <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a7d1b8eaa4781058325aabcc056376a0b"><td class="memItemLeft" align="right" valign="top"><a id="a7d1b8eaa4781058325aabcc056376a0b" name="a7d1b8eaa4781058325aabcc056376a0b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>powergates::init</b> ()</td></tr>
-<tr class="memdesc:a7d1b8eaa4781058325aabcc056376a0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once on system startup. <br /></td></tr>
-<tr class="separator:a7d1b8eaa4781058325aabcc056376a0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaef820788ac8de47b4a52c512d938638"><td class="memItemLeft" align="right" valign="top"><a id="aaef820788ac8de47b4a52c512d938638" name="aaef820788ac8de47b4a52c512d938638"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>powergates::loop</b> ()</td></tr>
-<tr class="memdesc:aaef820788ac8de47b4a52c512d938638"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called often to refresh the status. <br /></td></tr>
-<tr class="separator:aaef820788ac8de47b4a52c512d938638"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3aa378a93aa1ab716c7d948fda779ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepowergates_1_1power.html#aa3aa378a93aa1ab716c7d948fda779ee">powergates::power::blip</a> (const uint32_t timing)</td></tr>
-<tr class="memdesc:aa3aa378a93aa1ab716c7d948fda779ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">blip output gate (very short power interruption)  <br /></td></tr>
-<tr class="separator:aa3aa378a93aa1ab716c7d948fda779ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb4cd5507f940f3d28f1bd20afc57984"><td class="memItemLeft" align="right" valign="top"><a id="aeb4cd5507f940f3d28f1bd20afc57984" name="aeb4cd5507f940f3d28f1bd20afc57984"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>powergates::power::cancel_blip</b> ()</td></tr>
-<tr class="memdesc:aeb4cd5507f940f3d28f1bd20afc57984"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel the current blip if any. <br /></td></tr>
-<tr class="separator:aeb4cd5507f940f3d28f1bd20afc57984"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74e521956d2bcf905838092e6c06b9f5"><td class="memItemLeft" align="right" valign="top"><a id="a74e521956d2bcf905838092e6c06b9f5" name="a74e521956d2bcf905838092e6c06b9f5"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>powergates::power::is_bliping</b> ()</td></tr>
-<tr class="memdesc:a74e521956d2bcf905838092e6c06b9f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the output gate is in a blip. <br /></td></tr>
-<tr class="separator:a74e521956d2bcf905838092e6c06b9f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65f144ff00713aa5301f14be9d47dce4"><td class="memItemLeft" align="right" valign="top"><a id="a65f144ff00713aa5301f14be9d47dce4" name="a65f144ff00713aa5301f14be9d47dce4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>powergates::enable_power_gate</b> ()</td></tr>
-<tr class="memdesc:a65f144ff00713aa5301f14be9d47dce4"><td class="mdescLeft">&#160;</td><td class="mdescRight">enable the power gate. This will first disable the vbus gate, then after a delay enable the power gate. <br /></td></tr>
-<tr class="separator:a65f144ff00713aa5301f14be9d47dce4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d658e34e005a8ec508ca9e2dcdd165f"><td class="memItemLeft" align="right" valign="top"><a id="a2d658e34e005a8ec508ca9e2dcdd165f" name="a2d658e34e005a8ec508ca9e2dcdd165f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>powergates::is_power_gate_enabled</b> ()</td></tr>
-<tr class="memdesc:a2d658e34e005a8ec508ca9e2dcdd165f"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true when the gate if enabled (after the delay). <br /></td></tr>
-<tr class="separator:a2d658e34e005a8ec508ca9e2dcdd165f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7586b97bac7beb90fb441c48db289833"><td class="memItemLeft" align="right" valign="top"><a id="a7586b97bac7beb90fb441c48db289833" name="a7586b97bac7beb90fb441c48db289833"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>powergates::enable_vbus_gate</b> ()</td></tr>
-<tr class="memdesc:a7586b97bac7beb90fb441c48db289833"><td class="mdescLeft">&#160;</td><td class="mdescRight">enable the vbus gate. This will first disable the power gate, then after a delay enable the vbus gate. <br /></td></tr>
-<tr class="separator:a7586b97bac7beb90fb441c48db289833"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aace976e74beb93e21a057766af6357ac"><td class="memItemLeft" align="right" valign="top"><a id="aace976e74beb93e21a057766af6357ac" name="aace976e74beb93e21a057766af6357ac"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>powergates::enable_vbus_gate_DIRECT</b> ()</td></tr>
-<tr class="memdesc:aace976e74beb93e21a057766af6357ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fast swap only: directly close output gate and enable vbus gate. <br /></td></tr>
-<tr class="separator:aace976e74beb93e21a057766af6357ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa6648c11b2387224ec995f737b5e448"><td class="memItemLeft" align="right" valign="top"><a id="aaa6648c11b2387224ec995f737b5e448" name="aaa6648c11b2387224ec995f737b5e448"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>powergates::is_vbus_gate_enabled</b> ()</td></tr>
-<tr class="memdesc:aaa6648c11b2387224ec995f737b5e448"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true when the gate if enabled (after the delay). <br /></td></tr>
-<tr class="separator:aaa6648c11b2387224ec995f737b5e448"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeeacb8ef0f98fba79c17cfee2ba0fd32"><td class="memItemLeft" align="right" valign="top"><a id="aeeacb8ef0f98fba79c17cfee2ba0fd32" name="aeeacb8ef0f98fba79c17cfee2ba0fd32"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>powergates::disable_gates</b> ()</td></tr>
-<tr class="memdesc:aeeacb8ef0f98fba79c17cfee2ba0fd32"><td class="mdescLeft">&#160;</td><td class="mdescRight">disable immediatly all gates, stop the unlocking processes. <br /></td></tr>
-<tr class="separator:aeeacb8ef0f98fba79c17cfee2ba0fd32"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa007220c5ab3599acfe944713bb4622a"><td class="memItemLeft" align="right" valign="top"><a id="aa007220c5ab3599acfe944713bb4622a" name="aa007220c5ab3599acfe944713bb4622a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>powergates::are_gate_disabled</b> ()</td></tr>
-<tr class="memdesc:aa007220c5ab3599acfe944713bb4622a"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if the gates are disabled. <br /></td></tr>
-<tr class="separator:aa007220c5ab3599acfe944713bb4622a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6497d800f706e17096bb2d99c435480"><td class="memItemLeft" align="right" valign="top"><a id="ac6497d800f706e17096bb2d99c435480" name="ac6497d800f706e17096bb2d99c435480"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::powergates::init</b> ()</td></tr>
+<tr class="memdesc:ac6497d800f706e17096bb2d99c435480"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once on system startup. <br /></td></tr>
+<tr class="separator:ac6497d800f706e17096bb2d99c435480"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dc42bda9a540be19c3000ee8153348b"><td class="memItemLeft" align="right" valign="top"><a id="a9dc42bda9a540be19c3000ee8153348b" name="a9dc42bda9a540be19c3000ee8153348b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::powergates::loop</b> ()</td></tr>
+<tr class="memdesc:a9dc42bda9a540be19c3000ee8153348b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called often to refresh the status. <br /></td></tr>
+<tr class="separator:a9dc42bda9a540be19c3000ee8153348b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d1be151a21ddf6b276686b56593bfa9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power_1_1powergates_1_1power.html#a0d1be151a21ddf6b276686b56593bfa9">lampda::power::powergates::power::blip</a> (const uint32_t timing)</td></tr>
+<tr class="memdesc:a0d1be151a21ddf6b276686b56593bfa9"><td class="mdescLeft">&#160;</td><td class="mdescRight">blip output gate (very short power interruption)  <br /></td></tr>
+<tr class="separator:a0d1be151a21ddf6b276686b56593bfa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef0ec8c757a1ff4fdb6960660c31f0ea"><td class="memItemLeft" align="right" valign="top"><a id="aef0ec8c757a1ff4fdb6960660c31f0ea" name="aef0ec8c757a1ff4fdb6960660c31f0ea"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::powergates::power::cancel_blip</b> ()</td></tr>
+<tr class="memdesc:aef0ec8c757a1ff4fdb6960660c31f0ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel the current blip if any. <br /></td></tr>
+<tr class="separator:aef0ec8c757a1ff4fdb6960660c31f0ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaaf76211a53f6ce2854bed75d5aa17da"><td class="memItemLeft" align="right" valign="top"><a id="aaaf76211a53f6ce2854bed75d5aa17da" name="aaaf76211a53f6ce2854bed75d5aa17da"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::powergates::power::is_bliping</b> ()</td></tr>
+<tr class="memdesc:aaaf76211a53f6ce2854bed75d5aa17da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the output gate is in a blip. <br /></td></tr>
+<tr class="separator:aaaf76211a53f6ce2854bed75d5aa17da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd9f55549ad52985a19944fb0eeb0d19"><td class="memItemLeft" align="right" valign="top"><a id="abd9f55549ad52985a19944fb0eeb0d19" name="abd9f55549ad52985a19944fb0eeb0d19"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::powergates::enable_power_gate</b> ()</td></tr>
+<tr class="memdesc:abd9f55549ad52985a19944fb0eeb0d19"><td class="mdescLeft">&#160;</td><td class="mdescRight">enable the power gate. This will first disable the vbus gate, then after a delay enable the power gate. <br /></td></tr>
+<tr class="separator:abd9f55549ad52985a19944fb0eeb0d19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55393552043640f4281699b74997ecc3"><td class="memItemLeft" align="right" valign="top"><a id="a55393552043640f4281699b74997ecc3" name="a55393552043640f4281699b74997ecc3"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::powergates::is_power_gate_enabled</b> ()</td></tr>
+<tr class="memdesc:a55393552043640f4281699b74997ecc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true when the gate if enabled (after the delay). <br /></td></tr>
+<tr class="separator:a55393552043640f4281699b74997ecc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac34909d621cae04b7a9fcafec26fd210"><td class="memItemLeft" align="right" valign="top"><a id="ac34909d621cae04b7a9fcafec26fd210" name="ac34909d621cae04b7a9fcafec26fd210"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::powergates::enable_vbus_gate</b> ()</td></tr>
+<tr class="memdesc:ac34909d621cae04b7a9fcafec26fd210"><td class="mdescLeft">&#160;</td><td class="mdescRight">enable the vbus gate. This will first disable the power gate, then after a delay enable the vbus gate. <br /></td></tr>
+<tr class="separator:ac34909d621cae04b7a9fcafec26fd210"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acce621a71a1d0e68b744f04e9fec43e9"><td class="memItemLeft" align="right" valign="top"><a id="acce621a71a1d0e68b744f04e9fec43e9" name="acce621a71a1d0e68b744f04e9fec43e9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::powergates::enable_vbus_gate_DIRECT</b> ()</td></tr>
+<tr class="memdesc:acce621a71a1d0e68b744f04e9fec43e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fast swap only: directly close output gate and enable vbus gate. <br /></td></tr>
+<tr class="separator:acce621a71a1d0e68b744f04e9fec43e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14e7a089141e3dcafe2d74c98ec02d1a"><td class="memItemLeft" align="right" valign="top"><a id="a14e7a089141e3dcafe2d74c98ec02d1a" name="a14e7a089141e3dcafe2d74c98ec02d1a"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::powergates::is_vbus_gate_enabled</b> ()</td></tr>
+<tr class="memdesc:a14e7a089141e3dcafe2d74c98ec02d1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true when the gate if enabled (after the delay). <br /></td></tr>
+<tr class="separator:a14e7a089141e3dcafe2d74c98ec02d1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea4e772e48b7b869f2b0ca185086b42e"><td class="memItemLeft" align="right" valign="top"><a id="aea4e772e48b7b869f2b0ca185086b42e" name="aea4e772e48b7b869f2b0ca185086b42e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::powergates::disable_gates</b> ()</td></tr>
+<tr class="memdesc:aea4e772e48b7b869f2b0ca185086b42e"><td class="mdescLeft">&#160;</td><td class="mdescRight">disable immediatly all gates, stop the unlocking processes. <br /></td></tr>
+<tr class="separator:aea4e772e48b7b869f2b0ca185086b42e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62049ae27ec5582c8d359d8720d7b102"><td class="memItemLeft" align="right" valign="top"><a id="a62049ae27ec5582c8d359d8720d7b102" name="a62049ae27ec5582c8d359d8720d7b102"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::powergates::are_gate_disabled</b> ()</td></tr>
+<tr class="memdesc:a62049ae27ec5582c8d359d8720d7b102"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if the gates are disabled. <br /></td></tr>
+<tr class="separator:a62049ae27ec5582c8d359d8720d7b102"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface layer that handles the safety of the power gaters of the system. </p>

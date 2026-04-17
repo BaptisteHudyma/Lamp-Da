@@ -90,53 +90,56 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1Particle.html">modes::Particle</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define a particle in 3D space. it has a position and speed.  <a href="structmodes_1_1Particle.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1Particle.html">lampda::modes::Particle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define a particle in 3D space. it has a position and speed.  <a href="structlampda_1_1modes_1_1Particle.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacemodes"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes.html">modes</a></td></tr>
-<tr class="memdesc:namespacemodes"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains basic interface types to implement custom user modes. <br /></td></tr>
+<tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
+<tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1modes"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes.html">lampda::modes</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1modes"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains basic interface types to implement custom user modes. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a4c233029d66d03912644368ebbc5b30e"><td class="memItemLeft" align="right" valign="top"><a id="a4c233029d66d03912644368ebbc5b30e" name="a4c233029d66d03912644368ebbc5b30e"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>modes::LampTy</b> = hardware::LampTy</td></tr>
-<tr class="memdesc:a4c233029d66d03912644368ebbc5b30e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define a particle in cylindrical space, and movement equations on the cylinder surface. <br /></td></tr>
-<tr class="separator:a4c233029d66d03912644368ebbc5b30e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a004b9060d738add7848e7e12f6a534a0"><td class="memItemLeft" align="right" valign="top"><a id="a004b9060d738add7848e7e12f6a534a0" name="a004b9060d738add7848e7e12f6a534a0"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::LampTy</b> = hardware::LampTy</td></tr>
+<tr class="memdesc:a004b9060d738add7848e7e12f6a534a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define a particle in cylindrical space, and movement equations on the cylinder surface. <br /></td></tr>
+<tr class="separator:a004b9060d738add7848e7e12f6a534a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:ac1d736426003ee4c26ae9fa28aa03b17"><td class="memItemLeft" align="right" valign="top"><a id="ac1d736426003ee4c26ae9fa28aa03b17" name="ac1d736426003ee4c26ae9fa28aa03b17"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>modes::cylinderRadius_m</b> = LampTy::lampBodyRadius_mm / 1000.0</td></tr>
-<tr class="memdesc:ac1d736426003ee4c26ae9fa28aa03b17"><td class="mdescLeft">&#160;</td><td class="mdescRight">radius of the cylinder, in meters <br /></td></tr>
-<tr class="separator:ac1d736426003ee4c26ae9fa28aa03b17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a81a30175c2bda08fa88027c8b8b875"><td class="memItemLeft" align="right" valign="top"><a id="a9a81a30175c2bda08fa88027c8b8b875" name="a9a81a30175c2bda08fa88027c8b8b875"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>modes::angularSpeedGain</b> = 50000</td></tr>
-<tr class="memdesc:a9a81a30175c2bda08fa88027c8b8b875"><td class="mdescLeft">&#160;</td><td class="mdescRight">this gain compensate the angular acceleration for better display <br /></td></tr>
-<tr class="separator:a9a81a30175c2bda08fa88027c8b8b875"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb5111880e7d21bf4ff5480098fcd94c"><td class="memItemLeft" align="right" valign="top"><a id="afb5111880e7d21bf4ff5480098fcd94c" name="afb5111880e7d21bf4ff5480098fcd94c"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>modes::linearSpeedGain</b> = 1.0</td></tr>
-<tr class="memdesc:afb5111880e7d21bf4ff5480098fcd94c"><td class="mdescLeft">&#160;</td><td class="mdescRight">gain for the linear speeds <br /></td></tr>
-<tr class="separator:afb5111880e7d21bf4ff5480098fcd94c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04b993952a4d748e7cf4a30e5f6766fe"><td class="memItemLeft" align="right" valign="top"><a id="a04b993952a4d748e7cf4a30e5f6766fe" name="a04b993952a4d748e7cf4a30e5f6766fe"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>modes::reboundCoeff</b> = 0.1</td></tr>
-<tr class="memdesc:a04b993952a4d748e7cf4a30e5f6766fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">low rebound [0 - 1] on walls <br /></td></tr>
-<tr class="separator:a04b993952a4d748e7cf4a30e5f6766fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe48a6ac176a82dec0c8ff4edbf08fd9"><td class="memItemLeft" align="right" valign="top"><a id="abe48a6ac176a82dec0c8ff4edbf08fd9" name="abe48a6ac176a82dec0c8ff4edbf08fd9"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>modes::speedDampening</b> = 0.92</td></tr>
-<tr class="memdesc:abe48a6ac176a82dec0c8ff4edbf08fd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">low speed dampening [0-0.99] at every steps (viscosity) <br /></td></tr>
-<tr class="separator:abe48a6ac176a82dec0c8ff4edbf08fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f7c5b4c76b7e0de419ae2c0481368ea"><td class="memItemLeft" align="right" valign="top"><a id="a3f7c5b4c76b7e0de419ae2c0481368ea" name="a3f7c5b4c76b7e0de419ae2c0481368ea"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>modes::maxAngularSpeed_radS</b> = 4 * <a class="el" href="user_2constants_8h.html#a26638c09f822f8628ebd370bf74c3b7f">c_TWO_PI</a></td></tr>
-<tr class="memdesc:a3f7c5b4c76b7e0de419ae2c0481368ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">max angular speed in radians/s <br /></td></tr>
-<tr class="separator:a3f7c5b4c76b7e0de419ae2c0481368ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a462d64c807d4cc5cd9a161bfaa87dca6"><td class="memItemLeft" align="right" valign="top"><a id="a462d64c807d4cc5cd9a161bfaa87dca6" name="a462d64c807d4cc5cd9a161bfaa87dca6"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>modes::maxVerticalSpeed_mmS</b> = 50</td></tr>
-<tr class="memdesc:a462d64c807d4cc5cd9a161bfaa87dca6"><td class="mdescLeft">&#160;</td><td class="mdescRight">max vertical speed in mm/S <br /></td></tr>
-<tr class="separator:a462d64c807d4cc5cd9a161bfaa87dca6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7498eab6ce83a5e34039bdb4ea38fd4"><td class="memItemLeft" align="right" valign="top"><a id="ac7498eab6ce83a5e34039bdb4ea38fd4" name="ac7498eab6ce83a5e34039bdb4ea38fd4"></a>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::cylinderRadius_m</b> = LampTy::lampBodyRadius_mm / 1000.0</td></tr>
+<tr class="memdesc:ac7498eab6ce83a5e34039bdb4ea38fd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">radius of the cylinder, in meters <br /></td></tr>
+<tr class="separator:ac7498eab6ce83a5e34039bdb4ea38fd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a044e21c899e6a7b1b11d64b113b475e8"><td class="memItemLeft" align="right" valign="top"><a id="a044e21c899e6a7b1b11d64b113b475e8" name="a044e21c899e6a7b1b11d64b113b475e8"></a>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::angularSpeedGain</b> = 50000</td></tr>
+<tr class="memdesc:a044e21c899e6a7b1b11d64b113b475e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">this gain compensate the angular acceleration for better display <br /></td></tr>
+<tr class="separator:a044e21c899e6a7b1b11d64b113b475e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73a4c20153a7046fbcc298cb4f834733"><td class="memItemLeft" align="right" valign="top"><a id="a73a4c20153a7046fbcc298cb4f834733" name="a73a4c20153a7046fbcc298cb4f834733"></a>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::linearSpeedGain</b> = 1.0</td></tr>
+<tr class="memdesc:a73a4c20153a7046fbcc298cb4f834733"><td class="mdescLeft">&#160;</td><td class="mdescRight">gain for the linear speeds <br /></td></tr>
+<tr class="separator:a73a4c20153a7046fbcc298cb4f834733"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae94cb9c42170ca6b5b76462da41440f8"><td class="memItemLeft" align="right" valign="top"><a id="ae94cb9c42170ca6b5b76462da41440f8" name="ae94cb9c42170ca6b5b76462da41440f8"></a>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::reboundCoeff</b> = 0.1</td></tr>
+<tr class="memdesc:ae94cb9c42170ca6b5b76462da41440f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">low rebound [0 - 1] on walls <br /></td></tr>
+<tr class="separator:ae94cb9c42170ca6b5b76462da41440f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32ed30c0358682872de82c09e7927b5d"><td class="memItemLeft" align="right" valign="top"><a id="a32ed30c0358682872de82c09e7927b5d" name="a32ed30c0358682872de82c09e7927b5d"></a>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::speedDampening</b> = 0.92</td></tr>
+<tr class="memdesc:a32ed30c0358682872de82c09e7927b5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">low speed dampening [0-0.99] at every steps (viscosity) <br /></td></tr>
+<tr class="separator:a32ed30c0358682872de82c09e7927b5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6942d49fe71244485ba6b0b24fea824"><td class="memItemLeft" align="right" valign="top"><a id="aa6942d49fe71244485ba6b0b24fea824" name="aa6942d49fe71244485ba6b0b24fea824"></a>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::maxAngularSpeed_radS</b> = 4 * c_TWO_PI</td></tr>
+<tr class="memdesc:aa6942d49fe71244485ba6b0b24fea824"><td class="mdescLeft">&#160;</td><td class="mdescRight">max angular speed in radians/s <br /></td></tr>
+<tr class="separator:aa6942d49fe71244485ba6b0b24fea824"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06f8e9c17ad8fb8209070484c85c930d"><td class="memItemLeft" align="right" valign="top"><a id="a06f8e9c17ad8fb8209070484c85c930d" name="a06f8e9c17ad8fb8209070484c85c930d"></a>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::maxVerticalSpeed_mmS</b> = 50</td></tr>
+<tr class="memdesc:a06f8e9c17ad8fb8209070484c85c930d"><td class="mdescLeft">&#160;</td><td class="mdescRight">max vertical speed in mm/S <br /></td></tr>
+<tr class="separator:a06f8e9c17ad8fb8209070484c85c930d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Define a single particle for a particle system. </p>

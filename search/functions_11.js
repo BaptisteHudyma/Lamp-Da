@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['quit_5fgroup_0',['quit_group',['../structmodes_1_1ContextTy.html#a84d4dc691e8235ce72101f5272b1e626',1,'modes::ContextTy']]],
-  ['quit_5fmode_1',['quit_mode',['../structmodes_1_1ContextTy.html#aee56c9fd0e5fc40ba7e44833c5b9cdef',1,'modes::ContextTy']]]
+  ['quit_5fgroup_0',['quit_group',['../structlampda_1_1modes_1_1ContextTy.html#a35cc9891995ff3100105365e63ef0e2d',1,'lampda::modes::ContextTy']]],
+  ['quit_5fmode_1',['quit_mode',['../structlampda_1_1modes_1_1ContextTy.html#a99759562d12984ebf4438ebc17a090ee',1,'lampda::modes::ContextTy']]]
 ];

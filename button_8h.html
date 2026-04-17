@@ -89,44 +89,50 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbutton_1_1ButtonStateTy.html">button::ButtonStateTy</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the button status and characteristics.  <a href="structbutton_1_1ButtonStateTy.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1physical_1_1button_1_1ButtonStateTy.html">lampda::physical::button::ButtonStateTy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the button status and characteristics.  <a href="structlampda_1_1physical_1_1button_1_1ButtonStateTy.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacebutton"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacebutton.html">button</a></td></tr>
-<tr class="memdesc:namespacebutton"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the button inputs and multiple click detection. <br /></td></tr>
+<tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
+<tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1physical"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical.html">lampda::physical</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1physical"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the physical modules drivers. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1physical_1_1button"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1button.html">lampda::physical::button</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1physical_1_1button"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the button inputs and multiple click detection. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ab1ebb91bc90365fe99507bb58ab16404"><td class="memItemLeft" align="right" valign="top"><a id="ab1ebb91bc90365fe99507bb58ab16404" name="ab1ebb91bc90365fe99507bb58ab16404"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>button::init</b> (const bool isSystemStartedFromButton)</td></tr>
-<tr class="separator:ab1ebb91bc90365fe99507bb58ab16404"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09d6885def5f1a8cb60ef4dc95494c5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacebutton.html#a09d6885def5f1a8cb60ef4dc95494c5b">button::handle_events</a> (const std::function&lt; void(uint8_t)&gt; &amp;clickSerieCallback, const std::function&lt; void(uint8_t, uint32_t)&gt; &amp;clickHoldSerieCallback)</td></tr>
-<tr class="memdesc:a09d6885def5f1a8cb60ef4dc95494c5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">handle the button clicked events  <br /></td></tr>
-<tr class="separator:a09d6885def5f1a8cb60ef4dc95494c5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0792fa1d8434ef0ea83591dd4ff44ff"><td class="memItemLeft" align="right" valign="top"><a id="ae0792fa1d8434ef0ea83591dd4ff44ff" name="ae0792fa1d8434ef0ea83591dd4ff44ff"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>button::is_system_start_click</b> ()</td></tr>
-<tr class="memdesc:ae0792fa1d8434ef0ea83591dd4ff44ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates that this click is the one triggered by the system start It is set to false after the click chain stops. <br /></td></tr>
-<tr class="separator:ae0792fa1d8434ef0ea83591dd4ff44ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a345f9a603c3b6a2ba2c13c1ab7305ce6"><td class="memItemLeft" align="right" valign="top"><a id="a345f9a603c3b6a2ba2c13c1ab7305ce6" name="a345f9a603c3b6a2ba2c13c1ab7305ce6"></a>
-ButtonStateTy&#160;</td><td class="memItemRight" valign="bottom"><b>button::get_button_state</b> ()</td></tr>
-<tr class="memdesc:a345f9a603c3b6a2ba2c13c1ab7305ce6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a copy of the raw internal button state. <br /></td></tr>
-<tr class="separator:a345f9a603c3b6a2ba2c13c1ab7305ce6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0dd7b27d503a19a76f6743ab968ea84f"><td class="memItemLeft" align="right" valign="top"><a id="a0dd7b27d503a19a76f6743ab968ea84f" name="a0dd7b27d503a19a76f6743ab968ea84f"></a>
-DigitalPin::GPIO&#160;</td><td class="memItemRight" valign="bottom"><b>button::get_button_pin</b> ()</td></tr>
-<tr class="memdesc:a0dd7b27d503a19a76f6743ab968ea84f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the pin used for the button. <br /></td></tr>
-<tr class="separator:a0dd7b27d503a19a76f6743ab968ea84f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a26a11090ad9b9720e10a9e61e16bfbe5"><td class="memItemLeft" align="right" valign="top"><a id="a26a11090ad9b9720e10a9e61e16bfbe5" name="a26a11090ad9b9720e10a9e61e16bfbe5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>button::set_button_pin</b> (const DigitalPin::GPIO buttonPin)</td></tr>
-<tr class="memdesc:a26a11090ad9b9720e10a9e61e16bfbe5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only on system start, set the pin where the button is wired. <br /></td></tr>
-<tr class="separator:a26a11090ad9b9720e10a9e61e16bfbe5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae576a5ca7edc5a0652d49117a151388a"><td class="memItemLeft" align="right" valign="top"><a id="ae576a5ca7edc5a0652d49117a151388a" name="ae576a5ca7edc5a0652d49117a151388a"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>button::get_button_pin_RAW</b> ()</td></tr>
-<tr class="memdesc:ae576a5ca7edc5a0652d49117a151388a"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the button pin index in system. USE WITH CAUTION <br /></td></tr>
-<tr class="separator:ae576a5ca7edc5a0652d49117a151388a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d19fda60c6d1bcf1b2d46fb279be0d5"><td class="memItemLeft" align="right" valign="top"><a id="a9d19fda60c6d1bcf1b2d46fb279be0d5" name="a9d19fda60c6d1bcf1b2d46fb279be0d5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::init</b> (const bool isSystemStartedFromButton)</td></tr>
+<tr class="separator:a9d19fda60c6d1bcf1b2d46fb279be0d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a291cd2c3049fe4022bf299f307f1cfec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1button.html#a291cd2c3049fe4022bf299f307f1cfec">lampda::physical::button::handle_events</a> (const std::function&lt; void(uint8_t)&gt; &amp;clickSerieCallback, const std::function&lt; void(uint8_t, uint32_t)&gt; &amp;clickHoldSerieCallback)</td></tr>
+<tr class="memdesc:a291cd2c3049fe4022bf299f307f1cfec"><td class="mdescLeft">&#160;</td><td class="mdescRight">handle the button clicked events  <br /></td></tr>
+<tr class="separator:a291cd2c3049fe4022bf299f307f1cfec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a003469f2d8152184bbe90728e011b3f4"><td class="memItemLeft" align="right" valign="top"><a id="a003469f2d8152184bbe90728e011b3f4" name="a003469f2d8152184bbe90728e011b3f4"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::is_system_start_click</b> ()</td></tr>
+<tr class="memdesc:a003469f2d8152184bbe90728e011b3f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates that this click is the one triggered by the system start It is set to false after the click chain stops. <br /></td></tr>
+<tr class="separator:a003469f2d8152184bbe90728e011b3f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad25340cb83eb713838695297b6aaa1f9"><td class="memItemLeft" align="right" valign="top"><a id="ad25340cb83eb713838695297b6aaa1f9" name="ad25340cb83eb713838695297b6aaa1f9"></a>
+ButtonStateTy&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::get_button_state</b> ()</td></tr>
+<tr class="memdesc:ad25340cb83eb713838695297b6aaa1f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a copy of the raw internal button state. <br /></td></tr>
+<tr class="separator:ad25340cb83eb713838695297b6aaa1f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16d1498bfe3fd0eb031ac74cbbfd7f74"><td class="memItemLeft" align="right" valign="top"><a id="a16d1498bfe3fd0eb031ac74cbbfd7f74" name="a16d1498bfe3fd0eb031ac74cbbfd7f74"></a>
+platform::gpio::DigitalPin::GPIO&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::get_button_pin</b> ()</td></tr>
+<tr class="memdesc:a16d1498bfe3fd0eb031ac74cbbfd7f74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the pin used for the button. <br /></td></tr>
+<tr class="separator:a16d1498bfe3fd0eb031ac74cbbfd7f74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34cbf4b0c59f5e6627efbe9ce5faa85d"><td class="memItemLeft" align="right" valign="top"><a id="a34cbf4b0c59f5e6627efbe9ce5faa85d" name="a34cbf4b0c59f5e6627efbe9ce5faa85d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::set_button_pin</b> (const platform::gpio::DigitalPin::GPIO buttonPin)</td></tr>
+<tr class="memdesc:a34cbf4b0c59f5e6627efbe9ce5faa85d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only on system start, set the pin where the button is wired. <br /></td></tr>
+<tr class="separator:a34cbf4b0c59f5e6627efbe9ce5faa85d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e00eefff71db4b1e1dcc70f2c9a9423"><td class="memItemLeft" align="right" valign="top"><a id="a9e00eefff71db4b1e1dcc70f2c9a9423" name="a9e00eefff71db4b1e1dcc70f2c9a9423"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::get_button_pin_RAW</b> ()</td></tr>
+<tr class="memdesc:a9e00eefff71db4b1e1dcc70f2c9a9423"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the button pin index in system. USE WITH CAUTION <br /></td></tr>
+<tr class="separator:a9e00eefff71db4b1e1dcc70f2c9a9423"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for the physical components of the push button. </p>

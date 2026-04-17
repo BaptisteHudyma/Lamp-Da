@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['violet_0',['Violet',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3cad3e2d6d1d2216f238c115b6c6f5beddb',1,'modes::colors']]]
+  ['violet_0',['Violet',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba21eb4f579c9a6f5a974ea3ae2d757245',1,'lampda::modes::colors']]]
 ];

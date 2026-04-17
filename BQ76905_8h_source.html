@@ -304,7 +304,7 @@ $(function() {
 <div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>      <span class="comment">// set command</span></div>
 <div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>      raw_send();</div>
 <div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>      <a class="code hl_function" href="time_8h.html#a0afc4f67c4a30b25cf6527ac589ec44a">delay_us</a>(2000);</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>      delay_us(2000);</div>
 <div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span> </div>
 <div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>      <span class="keywordflow">if</span> (!readDataReg(SUBCOMMAND_DATA_ADDR, valBytes, readDataSize))</div>
 <div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>      {</div>
@@ -317,7 +317,7 @@ $(function() {
 <div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>      <span class="comment">// set command</span></div>
 <div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>      raw_send();</div>
 <div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>      <a class="code hl_function" href="time_8h.html#a0afc4f67c4a30b25cf6527ac589ec44a">delay_us</a>(2000);</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>      delay_us(2000);</div>
 <div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
 <div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>      <span class="keywordtype">byte</span> tempValBytes[readDataSize];</div>
 <div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>      <span class="keywordflow">if</span> (readDataReg(SUBCOMMAND_DATA_ADDR, tempValBytes, 12))</div>
@@ -370,7 +370,7 @@ $(function() {
 <div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>        <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>      }</div>
 <div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span> </div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>      <a class="code hl_function" href="time_8h.html#a0afc4f67c4a30b25cf6527ac589ec44a">delay_us</a>(2000);</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>      delay_us(2000);</div>
 <div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span> </div>
 <div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>      <span class="keywordtype">byte</span> checkSumData[2];</div>
 <div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>      checkSumData[0] = checksum(lenght, data);</div>
@@ -1458,34 +1458,41 @@ $(function() {
 <div class="line"><a id="l01392" name="l01392"></a><span class="lineno"> 1392</span>  };</div>
 <div class="line"><a id="l01393" name="l01393"></a><span class="lineno"> 1393</span> </div>
 <div class="line"><a id="l01394" name="l01394"></a><span class="lineno"> 1394</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l01395" name="l01395"></a><span class="lineno"> 1395</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> readDataReg(<span class="keyword">const</span> <span class="keywordtype">byte</span> regAddress, <span class="keywordtype">byte</span>* dataVal, <span class="keyword">const</span> uint8_t arrLen)</div>
+<div class="line"><a id="l01395" name="l01395"></a><span class="lineno"> 1395</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> delay_us(uint64_t dwUs)</div>
 <div class="line"><a id="l01396" name="l01396"></a><span class="lineno"> 1396</span>  {</div>
 <div class="line"><a id="l01397" name="l01397"></a><span class="lineno"> 1397</span>    <span class="comment">// IMPLEMENT THIS FUNCTION</span></div>
-<div class="line"><a id="l01398" name="l01398"></a><span class="lineno"> 1398</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="i2c_8h.html#adf180cbd3e5155e1cfd5a1061dfe6d0e">i2c_readData</a>(i2cObjectIndex, BQ76905addr, regAddress, arrLen, dataVal, usesStopBit ? 1 : 0) == 0;</div>
+<div class="line"><a id="l01398" name="l01398"></a><span class="lineno"> 1398</span>    <a class="code hl_function" href="namespacelampda_1_1platform.html#a6efb3fe7fb56a8d60089b6a69acc27cf">lampda::platform::delay_us</a>(dwUs);</div>
 <div class="line"><a id="l01399" name="l01399"></a><span class="lineno"> 1399</span>  }</div>
 <div class="line"><a id="l01400" name="l01400"></a><span class="lineno"> 1400</span> </div>
-<div class="line"><a id="l01401" name="l01401"></a><span class="lineno"> 1401</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> writeData(<span class="keyword">const</span> <span class="keywordtype">byte</span> regAddress, uint8_t lenght, uint8_t* data)</div>
+<div class="line"><a id="l01401" name="l01401"></a><span class="lineno"> 1401</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> readDataReg(<span class="keyword">const</span> <span class="keywordtype">byte</span> regAddress, <span class="keywordtype">byte</span>* dataVal, <span class="keyword">const</span> uint8_t arrLen)</div>
 <div class="line"><a id="l01402" name="l01402"></a><span class="lineno"> 1402</span>  {</div>
 <div class="line"><a id="l01403" name="l01403"></a><span class="lineno"> 1403</span>    <span class="comment">// IMPLEMENT THIS FUNCTION</span></div>
-<div class="line"><a id="l01404" name="l01404"></a><span class="lineno"> 1404</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="i2c_8h.html#a6b645405f3d038fcb287c7273c54c8db">i2c_writeData</a>(i2cObjectIndex, BQ76905addr, regAddress, lenght, data, usesStopBit ? 1 : 0) == 0;</div>
-<div class="line"><a id="l01405" name="l01405"></a><span class="lineno"> 1405</span>  }</div>
-<div class="line"><a id="l01406" name="l01406"></a><span class="lineno"> 1406</span> </div>
-<div class="line"><a id="l01407" name="l01407"></a><span class="lineno"> 1407</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> writeData16(<span class="keyword">const</span> <span class="keywordtype">byte</span> regAddress, uint16_t val)</div>
-<div class="line"><a id="l01408" name="l01408"></a><span class="lineno"> 1408</span>  {</div>
-<div class="line"><a id="l01409" name="l01409"></a><span class="lineno"> 1409</span>    uint8_t data[2];</div>
-<div class="line"><a id="l01410" name="l01410"></a><span class="lineno"> 1410</span>    data[0] = val &amp; 0xFF;</div>
-<div class="line"><a id="l01411" name="l01411"></a><span class="lineno"> 1411</span>    data[1] = (val &gt;&gt; 8) &amp; 0xFF;</div>
-<div class="line"><a id="l01412" name="l01412"></a><span class="lineno"> 1412</span> </div>
-<div class="line"><a id="l01413" name="l01413"></a><span class="lineno"> 1413</span>    <span class="keywordflow">return</span> writeData(regAddress, 2, data);</div>
-<div class="line"><a id="l01414" name="l01414"></a><span class="lineno"> 1414</span>  }</div>
-<div class="line"><a id="l01415" name="l01415"></a><span class="lineno"> 1415</span>};</div>
-<div class="line"><a id="l01416" name="l01416"></a><span class="lineno"> 1416</span> </div>
-<div class="line"><a id="l01417" name="l01417"></a><span class="lineno"> 1417</span>} <span class="comment">// namespace bq76905</span></div>
-<div class="line"><a id="l01418" name="l01418"></a><span class="lineno"> 1418</span> </div>
-<div class="line"><a id="l01419" name="l01419"></a><span class="lineno"> 1419</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l01404" name="l01404"></a><span class="lineno"> 1404</span>    return ::lampda::platform::i2c::i2c_readData(</div>
+<div class="line"><a id="l01405" name="l01405"></a><span class="lineno"> 1405</span>                   i2cObjectIndex, BQ76905addr, regAddress, arrLen, dataVal, usesStopBit ? 1 : 0) == 0;</div>
+<div class="line"><a id="l01406" name="l01406"></a><span class="lineno"> 1406</span>  }</div>
+<div class="line"><a id="l01407" name="l01407"></a><span class="lineno"> 1407</span> </div>
+<div class="line"><a id="l01408" name="l01408"></a><span class="lineno"> 1408</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> writeData(<span class="keyword">const</span> <span class="keywordtype">byte</span> regAddress, uint8_t lenght, uint8_t* data)</div>
+<div class="line"><a id="l01409" name="l01409"></a><span class="lineno"> 1409</span>  {</div>
+<div class="line"><a id="l01410" name="l01410"></a><span class="lineno"> 1410</span>    <span class="comment">// IMPLEMENT THIS FUNCTION</span></div>
+<div class="line"><a id="l01411" name="l01411"></a><span class="lineno"> 1411</span>    return ::lampda::platform::i2c::i2c_writeData(</div>
+<div class="line"><a id="l01412" name="l01412"></a><span class="lineno"> 1412</span>                   i2cObjectIndex, BQ76905addr, regAddress, lenght, data, usesStopBit ? 1 : 0) == 0;</div>
+<div class="line"><a id="l01413" name="l01413"></a><span class="lineno"> 1413</span>  }</div>
+<div class="line"><a id="l01414" name="l01414"></a><span class="lineno"> 1414</span> </div>
+<div class="line"><a id="l01415" name="l01415"></a><span class="lineno"> 1415</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> writeData16(<span class="keyword">const</span> <span class="keywordtype">byte</span> regAddress, uint16_t val)</div>
+<div class="line"><a id="l01416" name="l01416"></a><span class="lineno"> 1416</span>  {</div>
+<div class="line"><a id="l01417" name="l01417"></a><span class="lineno"> 1417</span>    uint8_t data[2];</div>
+<div class="line"><a id="l01418" name="l01418"></a><span class="lineno"> 1418</span>    data[0] = val &amp; 0xFF;</div>
+<div class="line"><a id="l01419" name="l01419"></a><span class="lineno"> 1419</span>    data[1] = (val &gt;&gt; 8) &amp; 0xFF;</div>
+<div class="line"><a id="l01420" name="l01420"></a><span class="lineno"> 1420</span> </div>
+<div class="line"><a id="l01421" name="l01421"></a><span class="lineno"> 1421</span>    <span class="keywordflow">return</span> writeData(regAddress, 2, data);</div>
+<div class="line"><a id="l01422" name="l01422"></a><span class="lineno"> 1422</span>  }</div>
+<div class="line"><a id="l01423" name="l01423"></a><span class="lineno"> 1423</span>};</div>
+<div class="line"><a id="l01424" name="l01424"></a><span class="lineno"> 1424</span> </div>
+<div class="line"><a id="l01425" name="l01425"></a><span class="lineno"> 1425</span>} <span class="comment">// namespace bq76905</span></div>
+<div class="line"><a id="l01426" name="l01426"></a><span class="lineno"> 1426</span> </div>
+<div class="line"><a id="l01427" name="l01427"></a><span class="lineno"> 1427</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassbq76905_1_1BQ76905_html"><div class="ttname"><a href="classbq76905_1_1BQ76905.html">bq76905::BQ76905</a></div><div class="ttdef"><b>Definition:</b> BQ76905.h:118</div></div>
-<div class="ttc" id="ai2c_8h_html_a6b645405f3d038fcb287c7273c54c8db"><div class="ttname"><a href="i2c_8h.html#a6b645405f3d038fcb287c7273c54c8db">i2c_writeData</a></div><div class="ttdeci">int i2c_writeData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, const uint8_t *buf, int stopBit)</div><div class="ttdoc">Write data to the two wire interface.</div></div>
-<div class="ttc" id="ai2c_8h_html_adf180cbd3e5155e1cfd5a1061dfe6d0e"><div class="ttname"><a href="i2c_8h.html#adf180cbd3e5155e1cfd5a1061dfe6d0e">i2c_readData</a></div><div class="ttdeci">int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t *buf, int stopBit)</div><div class="ttdoc">Read data from the two wire interface.</div></div>
+<div class="ttc" id="anamespacelampda_1_1platform_html_a6efb3fe7fb56a8d60089b6a69acc27cf"><div class="ttname"><a href="namespacelampda_1_1platform.html#a6efb3fe7fb56a8d60089b6a69acc27cf">lampda::platform::delay_us</a></div><div class="ttdeci">void delay_us(uint64_t dwUs)</div><div class="ttdoc">Pauses the program for the amount of time (in microseconds) specified as parameter.</div><div class="ttdef"><b>Definition:</b> time.cpp:22</div></div>
 <div class="ttc" id="astructbq76905_1_1BQ76905_1_1IBaseReadRegister_html"><div class="ttname"><a href="structbq76905_1_1BQ76905_1_1IBaseReadRegister.html">bq76905::BQ76905::IBaseReadRegister</a></div><div class="ttdef"><b>Definition:</b> BQ76905.h:173</div></div>
 <div class="ttc" id="astructbq76905_1_1BQ76905_1_1ISubCommandManyRegisters_html"><div class="ttname"><a href="structbq76905_1_1BQ76905_1_1ISubCommandManyRegisters.html">bq76905::BQ76905::ISubCommandManyRegisters</a></div><div class="ttdef"><b>Definition:</b> BQ76905.h:317</div></div>
 <div class="ttc" id="astructbq76905_1_1BQ76905_1_1ISubcommandReadRegister_html"><div class="ttname"><a href="structbq76905_1_1BQ76905_1_1ISubcommandReadRegister.html">bq76905::BQ76905::ISubcommandReadRegister</a></div><div class="ttdef"><b>Definition:</b> BQ76905.h:217</div></div>
@@ -1532,7 +1539,6 @@ $(function() {
 <div class="ttc" id="astructbq76905_1_1BQ76905_1_1Regt_1_1TsOffsett_html"><div class="ttname"><a href="structbq76905_1_1BQ76905_1_1Regt_1_1TsOffsett.html">bq76905::BQ76905::Regt::TsOffsett</a></div><div class="ttdef"><b>Definition:</b> BQ76905.h:1386</div></div>
 <div class="ttc" id="astructbq76905_1_1BQ76905_1_1Regt_1_1VSSVoltaget_html"><div class="ttname"><a href="structbq76905_1_1BQ76905_1_1Regt_1_1VSSVoltaget.html">bq76905::BQ76905::Regt::VSSVoltaget</a></div><div class="ttdef"><b>Definition:</b> BQ76905.h:942</div></div>
 <div class="ttc" id="astructbq76905_1_1BQ76905_1_1Regt_html"><div class="ttname"><a href="structbq76905_1_1BQ76905_1_1Regt.html">bq76905::BQ76905::Regt</a></div><div class="ttdef"><b>Definition:</b> BQ76905.h:336</div></div>
-<div class="ttc" id="atime_8h_html_a0afc4f67c4a30b25cf6527ac589ec44a"><div class="ttname"><a href="time_8h.html#a0afc4f67c4a30b25cf6527ac589ec44a">delay_us</a></div><div class="ttdeci">void delay_us(uint64_t dwUs)</div><div class="ttdoc">Pauses the program for the amount of time (in microseconds) specified as parameter.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

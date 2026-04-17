@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['selfty_0',['SelfTy',['../structmodes_1_1ContextTy.html#a412853e2b78cb9d4ef1a4828003c6695',1,'modes::ContextTy']]],
-  ['statety_1',['StateTy',['../structmodes_1_1ContextTy.html#a9dbb80770a58240eb629900cb501b03a',1,'modes::ContextTy']]],
-  ['staticlightonly_2',['StaticLightOnly',['../brightness__modes_8hpp.html#a4446e70e1b0dcb80d66a465d3a565522',1,'modes::brightness']]]
+  ['selfty_0',['SelfTy',['../structlampda_1_1modes_1_1ContextTy.html#a7d23eab2c5b35c19e63fd4c5ffce6883',1,'lampda::modes::ContextTy']]],
+  ['statety_1',['StateTy',['../structlampda_1_1modes_1_1ContextTy.html#ac2e2513efea07e2a416f56a37d33fc0d',1,'lampda::modes::ContextTy']]],
+  ['staticlightonly_2',['StaticLightOnly',['../brightness__modes_8hpp.html#a672dbad2d7686609e1d02f483f98bf0d',1,'lampda::modes::brightness']]]
 ];

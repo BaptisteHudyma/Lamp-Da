@@ -75,6 +75,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">registers.h File Reference</div></div>
 </div><!--header-->
@@ -85,180 +86,67 @@ $(function() {
 
 <p><a href="registers_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
+<tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1platform"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html">lampda::platform</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1platform"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1platform_1_1registers"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1registers.html">lampda::platform::registers</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1platform_1_1registers"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the interaction layer with the system specific registers. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac2366fb58b806b19f9134fa66fd38606"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="registers_8h.html#ac2366fb58b806b19f9134fa66fd38606">setup_watchdog</a> (const uint32_t timeoutDelaySecond)</td></tr>
-<tr class="memdesc:ac2366fb58b806b19f9134fa66fd38606"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setup the software watchedog.  <br /></td></tr>
-<tr class="separator:ac2366fb58b806b19f9134fa66fd38606"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c907f3559265e008752f4ca94176d7a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="registers_8h.html#a9c907f3559265e008752f4ca94176d7a">kick_watchdog</a> (const uint8_t registerId)</td></tr>
-<tr class="memdesc:a9c907f3559265e008752f4ca94176d7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notify the software watchedog that we are alive.  <br /></td></tr>
-<tr class="separator:a9c907f3559265e008752f4ca94176d7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae72b779dd87cd2654441afbb32c8ecaf"><td class="memItemLeft" align="right" valign="top"><a id="ae72b779dd87cd2654441afbb32c8ecaf" name="ae72b779dd87cd2654441afbb32c8ecaf"></a>
-uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_device_serial_number</b> ()</td></tr>
-<tr class="memdesc:ae72b779dd87cd2654441afbb32c8ecaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">get serial number <br /></td></tr>
-<tr class="separator:ae72b779dd87cd2654441afbb32c8ecaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6da8d4855edbfc59731e40e5e86e4500"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="registers_8h.html#a6da8d4855edbfc59731e40e5e86e4500">setup_adc</a> (const uint8_t resolution)</td></tr>
-<tr class="memdesc:a6da8d4855edbfc59731e40e5e86e4500"><td class="mdescLeft">&#160;</td><td class="mdescRight">setup the ADC  <br /></td></tr>
-<tr class="separator:a6da8d4855edbfc59731e40e5e86e4500"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4082e099d6b18de1bf1bed4a0b3da5c3"><td class="memItemLeft" align="right" valign="top"><a id="a4082e099d6b18de1bf1bed4a0b3da5c3" name="a4082e099d6b18de1bf1bed4a0b3da5c3"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_wire_interface_count</b> ()</td></tr>
-<tr class="memdesc:a4082e099d6b18de1bf1bed4a0b3da5c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the number of wire com interfaces <br /></td></tr>
-<tr class="separator:a4082e099d6b18de1bf1bed4a0b3da5c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8236a09b78dee29f0903729f4873711d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="registers_8h.html#a8236a09b78dee29f0903729f4873711d">enter_serial_dfu</a> ()</td></tr>
-<tr class="memdesc:a8236a09b78dee29f0903729f4873711d"><td class="mdescLeft">&#160;</td><td class="mdescRight">enter the dfu program mode  <br /></td></tr>
-<tr class="separator:a8236a09b78dee29f0903729f4873711d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9fa52a7595bbd6587809423725860b1"><td class="memItemLeft" align="right" valign="top"><a id="af9fa52a7595bbd6587809423725860b1" name="af9fa52a7595bbd6587809423725860b1"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_voltage_detected_on_vbus</b> ()</td></tr>
-<tr class="memdesc:af9fa52a7595bbd6587809423725860b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">voltage is detected on VBUS line <br /></td></tr>
-<tr class="separator:af9fa52a7595bbd6587809423725860b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd661b776be1dbdb7e6f0478c22ebe6e"><td class="memItemLeft" align="right" valign="top"><a id="abd661b776be1dbdb7e6f0478c22ebe6e" name="abd661b776be1dbdb7e6f0478c22ebe6e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_started_from_reset</b> ()</td></tr>
-<tr class="memdesc:abd661b776be1dbdb7e6f0478c22ebe6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">microcontroler restarted after a reset <br /></td></tr>
-<tr class="separator:abd661b776be1dbdb7e6f0478c22ebe6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a1049d56501715d6b62a5c95287d4f0"><td class="memItemLeft" align="right" valign="top"><a id="a6a1049d56501715d6b62a5c95287d4f0" name="a6a1049d56501715d6b62a5c95287d4f0"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_started_from_watchdog</b> ()</td></tr>
-<tr class="memdesc:a6a1049d56501715d6b62a5c95287d4f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">reset after a watchdog timeout <br /></td></tr>
-<tr class="separator:a6a1049d56501715d6b62a5c95287d4f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a637626ad8884c3e26a0b41f3e0d13ed9"><td class="memItemLeft" align="right" valign="top"><a id="a637626ad8884c3e26a0b41f3e0d13ed9" name="a637626ad8884c3e26a0b41f3e0d13ed9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_started_from_interrupt</b> ()</td></tr>
-<tr class="memdesc:a637626ad8884c3e26a0b41f3e0d13ed9"><td class="mdescLeft">&#160;</td><td class="mdescRight">started by user interrupt <br /></td></tr>
-<tr class="separator:a637626ad8884c3e26a0b41f3e0d13ed9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4168d397d5ca40d3ec19f367ace669b"><td class="memItemLeft" align="right" valign="top"><a id="ae4168d397d5ca40d3ec19f367ace669b" name="ae4168d397d5ca40d3ec19f367ace669b"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>read_CPU_temperature_degreesC</b> ()</td></tr>
-<tr class="memdesc:ae4168d397d5ca40d3ec19f367ace669b"><td class="mdescLeft">&#160;</td><td class="mdescRight">make a read of the CPU temp <br /></td></tr>
-<tr class="separator:ae4168d397d5ca40d3ec19f367ace669b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc346c7576aa9e2e6ed730e3241d8be7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="registers_8h.html#acc346c7576aa9e2e6ed730e3241d8be7">go_to_sleep</a> (const int wakeUpPin)</td></tr>
-<tr class="memdesc:acc346c7576aa9e2e6ed730e3241d8be7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Put the system to sleep, with a wake up pin.  <br /></td></tr>
-<tr class="separator:acc346c7576aa9e2e6ed730e3241d8be7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac18f364b519cf9ff23424bfa476f4bf0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1registers.html#ac18f364b519cf9ff23424bfa476f4bf0">lampda::platform::registers::setup_watchdog</a> (const uint32_t timeoutDelaySecond)</td></tr>
+<tr class="memdesc:ac18f364b519cf9ff23424bfa476f4bf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setup the software watchedog.  <br /></td></tr>
+<tr class="separator:ac18f364b519cf9ff23424bfa476f4bf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a50984a45dac826420f7c44adf471c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1registers.html#a8a50984a45dac826420f7c44adf471c4">lampda::platform::registers::kick_watchdog</a> (const uint8_t registerId)</td></tr>
+<tr class="memdesc:a8a50984a45dac826420f7c44adf471c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notify the software watchedog that we are alive.  <br /></td></tr>
+<tr class="separator:a8a50984a45dac826420f7c44adf471c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdef8f7020c0b6c968939884f137ef0a"><td class="memItemLeft" align="right" valign="top"><a id="afdef8f7020c0b6c968939884f137ef0a" name="afdef8f7020c0b6c968939884f137ef0a"></a>
+uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::registers::get_device_serial_number</b> ()</td></tr>
+<tr class="memdesc:afdef8f7020c0b6c968939884f137ef0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">get serial number <br /></td></tr>
+<tr class="separator:afdef8f7020c0b6c968939884f137ef0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b6da756505be13f4b3e1e514d4ae763"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1registers.html#a7b6da756505be13f4b3e1e514d4ae763">lampda::platform::registers::setup_adc</a> (const uint8_t resolution)</td></tr>
+<tr class="memdesc:a7b6da756505be13f4b3e1e514d4ae763"><td class="mdescLeft">&#160;</td><td class="mdescRight">setup the ADC  <br /></td></tr>
+<tr class="separator:a7b6da756505be13f4b3e1e514d4ae763"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c5d3526d4baadbec178f7240dafbd57"><td class="memItemLeft" align="right" valign="top"><a id="a4c5d3526d4baadbec178f7240dafbd57" name="a4c5d3526d4baadbec178f7240dafbd57"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::registers::get_wire_interface_count</b> ()</td></tr>
+<tr class="memdesc:a4c5d3526d4baadbec178f7240dafbd57"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the number of wire com interfaces <br /></td></tr>
+<tr class="separator:a4c5d3526d4baadbec178f7240dafbd57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a610059f4a145815ced4ffc5685e5b691"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1registers.html#a610059f4a145815ced4ffc5685e5b691">lampda::platform::registers::enter_serial_dfu</a> ()</td></tr>
+<tr class="memdesc:a610059f4a145815ced4ffc5685e5b691"><td class="mdescLeft">&#160;</td><td class="mdescRight">enter the dfu program mode  <br /></td></tr>
+<tr class="separator:a610059f4a145815ced4ffc5685e5b691"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1342677fae42e938c180d3795c18c2de"><td class="memItemLeft" align="right" valign="top"><a id="a1342677fae42e938c180d3795c18c2de" name="a1342677fae42e938c180d3795c18c2de"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::registers::is_voltage_detected_on_vbus</b> ()</td></tr>
+<tr class="memdesc:a1342677fae42e938c180d3795c18c2de"><td class="mdescLeft">&#160;</td><td class="mdescRight">voltage is detected on VBUS line <br /></td></tr>
+<tr class="separator:a1342677fae42e938c180d3795c18c2de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7982f73e33e5c22df09da28b272e4b1f"><td class="memItemLeft" align="right" valign="top"><a id="a7982f73e33e5c22df09da28b272e4b1f" name="a7982f73e33e5c22df09da28b272e4b1f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::registers::is_started_from_reset</b> ()</td></tr>
+<tr class="memdesc:a7982f73e33e5c22df09da28b272e4b1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">microcontroler restarted after a reset <br /></td></tr>
+<tr class="separator:a7982f73e33e5c22df09da28b272e4b1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac60d31745850e2ce30c283ddc8e0bf65"><td class="memItemLeft" align="right" valign="top"><a id="ac60d31745850e2ce30c283ddc8e0bf65" name="ac60d31745850e2ce30c283ddc8e0bf65"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::registers::is_started_from_watchdog</b> ()</td></tr>
+<tr class="memdesc:ac60d31745850e2ce30c283ddc8e0bf65"><td class="mdescLeft">&#160;</td><td class="mdescRight">reset after a watchdog timeout <br /></td></tr>
+<tr class="separator:ac60d31745850e2ce30c283ddc8e0bf65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af52d2209a622bf3b0bd8206e3a1c8bb9"><td class="memItemLeft" align="right" valign="top"><a id="af52d2209a622bf3b0bd8206e3a1c8bb9" name="af52d2209a622bf3b0bd8206e3a1c8bb9"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::registers::is_started_from_interrupt</b> ()</td></tr>
+<tr class="memdesc:af52d2209a622bf3b0bd8206e3a1c8bb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">started by user interrupt <br /></td></tr>
+<tr class="separator:af52d2209a622bf3b0bd8206e3a1c8bb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4082fca655f5587b7eb05dca610cbd8"><td class="memItemLeft" align="right" valign="top"><a id="ad4082fca655f5587b7eb05dca610cbd8" name="ad4082fca655f5587b7eb05dca610cbd8"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::registers::read_CPU_temperature_degreesC</b> ()</td></tr>
+<tr class="memdesc:ad4082fca655f5587b7eb05dca610cbd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">make a read of the CPU temp <br /></td></tr>
+<tr class="separator:ad4082fca655f5587b7eb05dca610cbd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace6157c8d97ed1c4492249fbae3c575d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1registers.html#ace6157c8d97ed1c4492249fbae3c575d">lampda::platform::registers::go_to_sleep</a> (const int wakeUpPin)</td></tr>
+<tr class="memdesc:ace6157c8d97ed1c4492249fbae3c575d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Put the system to sleep, with a wake up pin.  <br /></td></tr>
+<tr class="separator:ace6157c8d97ed1c4492249fbae3c575d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for the platform specific microcontroler registers. </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="a8236a09b78dee29f0903729f4873711d" name="a8236a09b78dee29f0903729f4873711d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8236a09b78dee29f0903729f4873711d">&#9670;&#160;</a></span>enter_serial_dfu()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void enter_serial_dfu </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>enter the dfu program mode </p>
-<dl class="section warning"><dt>Warning</dt><dd>Remove the whole program, will need to flash again </dd></dl>
-
-</div>
-</div>
-<a id="acc346c7576aa9e2e6ed730e3241d8be7" name="acc346c7576aa9e2e6ed730e3241d8be7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc346c7576aa9e2e6ed730e3241d8be7">&#9670;&#160;</a></span>go_to_sleep()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void go_to_sleep </td>
-          <td>(</td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>wakeUpPin</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Put the system to sleep, with a wake up pin. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">wakeUpPin</td><td>Pin id, defined by the system, that will be used to wake up again </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a9c907f3559265e008752f4ca94176d7a" name="a9c907f3559265e008752f4ca94176d7a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9c907f3559265e008752f4ca94176d7a">&#9670;&#160;</a></span>kick_watchdog()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void kick_watchdog </td>
-          <td>(</td>
-          <td class="paramtype">const uint8_t&#160;</td>
-          <td class="paramname"><em>registerId</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Notify the software watchedog that we are alive. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">registerId</td><td>Watchdog index to kick </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a6da8d4855edbfc59731e40e5e86e4500" name="a6da8d4855edbfc59731e40e5e86e4500"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6da8d4855edbfc59731e40e5e86e4500">&#9670;&#160;</a></span>setup_adc()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void setup_adc </td>
-          <td>(</td>
-          <td class="paramtype">const uint8_t&#160;</td>
-          <td class="paramname"><em>resolution</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>setup the ADC </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">resolution</td><td>Power of 2 of the resolution (8, 10, 12 or 14). </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ac2366fb58b806b19f9134fa66fd38606" name="ac2366fb58b806b19f9134fa66fd38606"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac2366fb58b806b19f9134fa66fd38606">&#9670;&#160;</a></span>setup_watchdog()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void setup_watchdog </td>
-          <td>(</td>
-          <td class="paramtype">const uint32_t&#160;</td>
-          <td class="paramname"><em>timeoutDelaySecond</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Setup the software watchedog. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">timeoutDelaySecond</td><td>Delay after which the watchdog will reset the whole system. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6

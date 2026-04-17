@@ -89,53 +89,59 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcharger_1_1Charger__t.html">charger::Charger_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the charger characteristics.  <a href="structcharger_1_1Charger__t.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1power_1_1charger_1_1Charger__t.html">lampda::power::charger::Charger_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the charger characteristics.  <a href="structlampda_1_1power_1_1charger_1_1Charger__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacecharger"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecharger.html">charger</a></td></tr>
-<tr class="memdesc:namespacecharger"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles the battery charging processes, and power output control. <br /></td></tr>
+<tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
+<tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1power"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html">lampda::power</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1power"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main entry point of the power handling of the board. Responsible the main state of the power handling. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1power_1_1charger"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power_1_1charger.html">lampda::power::charger</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1power_1_1charger"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles the battery charging processes, and power output control. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a24d052dd4147384065df8df30dc08bd4"><td class="memItemLeft" align="right" valign="top"><a id="a24d052dd4147384065df8df30dc08bd4" name="a24d052dd4147384065df8df30dc08bd4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>charger::setup</b> ()</td></tr>
-<tr class="memdesc:a24d052dd4147384065df8df30dc08bd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">call once at program startup <br /></td></tr>
-<tr class="separator:a24d052dd4147384065df8df30dc08bd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81981f9f567deae19d8329b43778bc68"><td class="memItemLeft" align="right" valign="top"><a id="a81981f9f567deae19d8329b43778bc68" name="a81981f9f567deae19d8329b43778bc68"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>charger::loop</b> ()</td></tr>
-<tr class="memdesc:a81981f9f567deae19d8329b43778bc68"><td class="mdescLeft">&#160;</td><td class="mdescRight">call at every loop runs <br /></td></tr>
-<tr class="separator:a81981f9f567deae19d8329b43778bc68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a738e9d2d2456658fc2f68779ade41d03"><td class="memItemLeft" align="right" valign="top"><a id="a738e9d2d2456658fc2f68779ade41d03" name="a738e9d2d2456658fc2f68779ade41d03"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>charger::shutdown</b> ()</td></tr>
-<tr class="memdesc:a738e9d2d2456658fc2f68779ade41d03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call when system goes to sleep. <br /></td></tr>
-<tr class="separator:a738e9d2d2456658fc2f68779ade41d03"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7483652b557f3a2cdf9d38104db31fb"><td class="memItemLeft" align="right" valign="top"><a id="ac7483652b557f3a2cdf9d38104db31fb" name="ac7483652b557f3a2cdf9d38104db31fb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>charger::set_enable_charge</b> (const bool shouldCharge)</td></tr>
-<tr class="memdesc:ac7483652b557f3a2cdf9d38104db31fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">debug feature: enable/disable the charging process <br /></td></tr>
-<tr class="separator:ac7483652b557f3a2cdf9d38104db31fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3133d7b32dd2d08519f9f2fba333e07c"><td class="memItemLeft" align="right" valign="top"><a id="a3133d7b32dd2d08519f9f2fba333e07c" name="a3133d7b32dd2d08519f9f2fba333e07c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>charger::is_vbus_powered</b> ()</td></tr>
-<tr class="memdesc:a3133d7b32dd2d08519f9f2fba333e07c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if voltage is detected on VBUS. <br /></td></tr>
-<tr class="separator:a3133d7b32dd2d08519f9f2fba333e07c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff141980c67f5e40d7f2aa25323faebc"><td class="memItemLeft" align="right" valign="top"><a id="aff141980c67f5e40d7f2aa25323faebc" name="aff141980c67f5e40d7f2aa25323faebc"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>charger::can_use_vbus_power</b> ()</td></tr>
-<tr class="memdesc:aff141980c67f5e40d7f2aa25323faebc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if we are allowed to use the VBUS power. <br /></td></tr>
-<tr class="separator:aff141980c67f5e40d7f2aa25323faebc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a433a7226c598659bd276415ccc1d8f11"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecharger.html#a433a7226c598659bd276415ccc1d8f11">charger::control_OTG</a> (const uint16_t mv, const uint16_t ma)</td></tr>
-<tr class="memdesc:a433a7226c598659bd276415ccc1d8f11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the OTG control parameters. Set the parameters to zero to disable OTG mode.  <br /></td></tr>
-<tr class="separator:a433a7226c598659bd276415ccc1d8f11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1d07ea3707fd22b3d935e280f5a560b"><td class="memItemLeft" align="right" valign="top"><a id="aa1d07ea3707fd22b3d935e280f5a560b" name="aa1d07ea3707fd22b3d935e280f5a560b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>charger::is_vbus_signal_detected</b> ()</td></tr>
-<tr class="memdesc:aa1d07ea3707fd22b3d935e280f5a560b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the USB VBUS presence signal is active. <br /></td></tr>
-<tr class="separator:aa1d07ea3707fd22b3d935e280f5a560b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13200e6bb56755358ac3388609cf38e2"><td class="memItemLeft" align="right" valign="top"><a id="a13200e6bb56755358ac3388609cf38e2" name="a13200e6bb56755358ac3388609cf38e2"></a>
-Charger_t&#160;</td><td class="memItemRight" valign="bottom"><b>charger::get_state</b> ()</td></tr>
-<tr class="memdesc:a13200e6bb56755358ac3388609cf38e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the latest known state of the charger. <br /></td></tr>
-<tr class="separator:a13200e6bb56755358ac3388609cf38e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a888ac550058cf3298c3cee2bed8eb95f"><td class="memItemLeft" align="right" valign="top"><a id="a888ac550058cf3298c3cee2bed8eb95f" name="a888ac550058cf3298c3cee2bed8eb95f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::charger::setup</b> ()</td></tr>
+<tr class="memdesc:a888ac550058cf3298c3cee2bed8eb95f"><td class="mdescLeft">&#160;</td><td class="mdescRight">call once at program startup <br /></td></tr>
+<tr class="separator:a888ac550058cf3298c3cee2bed8eb95f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec6d15864623bb94cd7699b61192e2c1"><td class="memItemLeft" align="right" valign="top"><a id="aec6d15864623bb94cd7699b61192e2c1" name="aec6d15864623bb94cd7699b61192e2c1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::charger::loop</b> ()</td></tr>
+<tr class="memdesc:aec6d15864623bb94cd7699b61192e2c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">call at every loop runs <br /></td></tr>
+<tr class="separator:aec6d15864623bb94cd7699b61192e2c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab79e2a94fed890c748149dba72deb93d"><td class="memItemLeft" align="right" valign="top"><a id="ab79e2a94fed890c748149dba72deb93d" name="ab79e2a94fed890c748149dba72deb93d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::charger::shutdown</b> ()</td></tr>
+<tr class="memdesc:ab79e2a94fed890c748149dba72deb93d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call when system goes to sleep. <br /></td></tr>
+<tr class="separator:ab79e2a94fed890c748149dba72deb93d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2dad481591652c218fca03adc958427"><td class="memItemLeft" align="right" valign="top"><a id="ae2dad481591652c218fca03adc958427" name="ae2dad481591652c218fca03adc958427"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::charger::set_enable_charge</b> (const bool shouldCharge)</td></tr>
+<tr class="memdesc:ae2dad481591652c218fca03adc958427"><td class="mdescLeft">&#160;</td><td class="mdescRight">debug feature: enable/disable the charging process <br /></td></tr>
+<tr class="separator:ae2dad481591652c218fca03adc958427"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51474ecf9b489bfd8b74bffa261d732b"><td class="memItemLeft" align="right" valign="top"><a id="a51474ecf9b489bfd8b74bffa261d732b" name="a51474ecf9b489bfd8b74bffa261d732b"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::charger::is_vbus_powered</b> ()</td></tr>
+<tr class="memdesc:a51474ecf9b489bfd8b74bffa261d732b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if voltage is detected on VBUS. <br /></td></tr>
+<tr class="separator:a51474ecf9b489bfd8b74bffa261d732b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefa37f8787fde1a4155b0e3890963487"><td class="memItemLeft" align="right" valign="top"><a id="aefa37f8787fde1a4155b0e3890963487" name="aefa37f8787fde1a4155b0e3890963487"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::charger::can_use_vbus_power</b> ()</td></tr>
+<tr class="memdesc:aefa37f8787fde1a4155b0e3890963487"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if we are allowed to use the VBUS power. <br /></td></tr>
+<tr class="separator:aefa37f8787fde1a4155b0e3890963487"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59c9b08bd55d4966da27fcce86a9a495"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power_1_1charger.html#a59c9b08bd55d4966da27fcce86a9a495">lampda::power::charger::control_OTG</a> (const uint16_t mv, const uint16_t ma)</td></tr>
+<tr class="memdesc:a59c9b08bd55d4966da27fcce86a9a495"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the OTG control parameters. Set the parameters to zero to disable OTG mode.  <br /></td></tr>
+<tr class="separator:a59c9b08bd55d4966da27fcce86a9a495"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25bbdb00d78c226f399545ec312149b5"><td class="memItemLeft" align="right" valign="top"><a id="a25bbdb00d78c226f399545ec312149b5" name="a25bbdb00d78c226f399545ec312149b5"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::charger::is_vbus_signal_detected</b> ()</td></tr>
+<tr class="memdesc:a25bbdb00d78c226f399545ec312149b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the USB VBUS presence signal is active. <br /></td></tr>
+<tr class="separator:a25bbdb00d78c226f399545ec312149b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad281d45664bafcd7d7395325bf3749e1"><td class="memItemLeft" align="right" valign="top"><a id="ad281d45664bafcd7d7395325bf3749e1" name="ad281d45664bafcd7d7395325bf3749e1"></a>
+Charger_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::charger::get_state</b> ()</td></tr>
+<tr class="memdesc:ad281d45664bafcd7d7395325bf3749e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the latest known state of the charger. <br /></td></tr>
+<tr class="separator:ad281d45664bafcd7d7395325bf3749e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>High level layer of the battery charging and balancer algorithms. The charger can be in charge or OTG mode. Charge transfers power from the power rail to the battery, and OTG transfers power from the battery to the power rail. </p>

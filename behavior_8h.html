@@ -88,54 +88,60 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacebehavior"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacebehavior.html">behavior</a></td></tr>
-<tr class="memdesc:namespacebehavior"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main system behavior handle. <br /></td></tr>
+<tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
+<tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1logic"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic.html">lampda::logic</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1logic"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the main high level logics. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1logic_1_1behavior"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1behavior.html">lampda::logic::behavior</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1logic_1_1behavior"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main system behavior handle. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a3e33174ed69f443feb7be68f45818cb1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacebehavior.html#a3e33174ed69f443feb7be68f45818cb1">behavior::read_parameters</a> ()</td></tr>
-<tr class="memdesc:a3e33174ed69f443feb7be68f45818cb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the parameters from the filesystem.  <br /></td></tr>
-<tr class="separator:a3e33174ed69f443feb7be68f45818cb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae65ac55d98e35e6e9b5edbf0fcf89d68"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacebehavior.html#ae65ac55d98e35e6e9b5edbf0fcf89d68">behavior::is_user_code_running</a> ()</td></tr>
-<tr class="separator:ae65ac55d98e35e6e9b5edbf0fcf89d68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9834a2592a64f9cb3f57a6c368781e0b"><td class="memItemLeft" align="right" valign="top"><a id="a9834a2592a64f9cb3f57a6c368781e0b" name="a9834a2592a64f9cb3f57a6c368781e0b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>behavior::set_woke_up_from_vbus</b> (const bool wokeUp)</td></tr>
-<tr class="memdesc:a9834a2592a64f9cb3f57a6c368781e0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">call once at program start, before the first main loop runs The system was powered from a vbus powered event, not a user action <br /></td></tr>
-<tr class="separator:a9834a2592a64f9cb3f57a6c368781e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a340ea2c75ee0e919a1d854dfd74f48c2"><td class="memItemLeft" align="right" valign="top"><a id="a340ea2c75ee0e919a1d854dfd74f48c2" name="a340ea2c75ee0e919a1d854dfd74f48c2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>behavior::loop</b> ()</td></tr>
-<tr class="separator:a340ea2c75ee0e919a1d854dfd74f48c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1882ddfdde47ef212dfa4db4f68b709a"><td class="memItemLeft" align="right" valign="top"><a id="a1882ddfdde47ef212dfa4db4f68b709a" name="a1882ddfdde47ef212dfa4db4f68b709a"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>behavior::get_state</b> ()</td></tr>
-<tr class="separator:a1882ddfdde47ef212dfa4db4f68b709a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33b463c5bb594f6397211715540b315b"><td class="memItemLeft" align="right" valign="top"><a id="a33b463c5bb594f6397211715540b315b" name="a33b463c5bb594f6397211715540b315b"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>behavior::get_error_state_message</b> ()</td></tr>
-<tr class="memdesc:a33b463c5bb594f6397211715540b315b"><td class="mdescLeft">&#160;</td><td class="mdescRight">return the error message associated with the error state <br /></td></tr>
-<tr class="separator:a33b463c5bb594f6397211715540b315b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8b05cdb0449dd2036597aada04de689"><td class="memItemLeft" align="right" valign="top"><a id="aa8b05cdb0449dd2036597aada04de689" name="aa8b05cdb0449dd2036597aada04de689"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>behavior::can_system_allowed_to_be_powered</b> ()</td></tr>
-<tr class="memdesc:aa8b05cdb0449dd2036597aada04de689"><td class="mdescLeft">&#160;</td><td class="mdescRight">true if system can work at all (charger or output mode) <br /></td></tr>
-<tr class="separator:aa8b05cdb0449dd2036597aada04de689"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ea13dd1daa654aedfa745d7a7f89bb9"><td class="memItemLeft" align="right" valign="top"><a id="a6ea13dd1daa654aedfa745d7a7f89bb9" name="a6ea13dd1daa654aedfa745d7a7f89bb9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>behavior::set_power_on</b> ()</td></tr>
-<tr class="memdesc:a6ea13dd1daa654aedfa745d7a7f89bb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">set system state to "output on" <br /></td></tr>
-<tr class="separator:a6ea13dd1daa654aedfa745d7a7f89bb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d7eaec12d2c0c9b9a3011337db35d15"><td class="memItemLeft" align="right" valign="top"><a id="a8d7eaec12d2c0c9b9a3011337db35d15" name="a8d7eaec12d2c0c9b9a3011337db35d15"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>behavior::set_power_off</b> ()</td></tr>
-<tr class="memdesc:a8d7eaec12d2c0c9b9a3011337db35d15"><td class="mdescLeft">&#160;</td><td class="mdescRight">set system state to "output off". Can be ignored <br /></td></tr>
-<tr class="separator:a8d7eaec12d2c0c9b9a3011337db35d15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:affde2edfd3e9a3a291c37ba2d7b4bc81"><td class="memItemLeft" align="right" valign="top"><a id="affde2edfd3e9a3a291c37ba2d7b4bc81" name="affde2edfd3e9a3a291c37ba2d7b4bc81"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>behavior::go_to_external_battery_mode</b> ()</td></tr>
-<tr class="separator:affde2edfd3e9a3a291c37ba2d7b4bc81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acab1a32bc69f0af22ea6f38b5446c66e"><td class="memItemLeft" align="right" valign="top"><a id="acab1a32bc69f0af22ea6f38b5446c66e" name="acab1a32bc69f0af22ea6f38b5446c66e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>behavior::internal::handle_shutdown_state</b> ()</td></tr>
-<tr class="memdesc:acab1a32bc69f0af22ea6f38b5446c66e"><td class="mdescLeft">&#160;</td><td class="mdescRight">DO NOT USE: shutdown the lamp immediatly. only for emmergency/special cases. <br /></td></tr>
-<tr class="separator:acab1a32bc69f0af22ea6f38b5446c66e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a612e9a78a23f924bc028c68091041756"><td class="memItemLeft" align="right" valign="top"><a id="a612e9a78a23f924bc028c68091041756" name="a612e9a78a23f924bc028c68091041756"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>behavior::sunset::progress_update</b> (const float progress)</td></tr>
-<tr class="memdesc:a612e9a78a23f924bc028c68091041756"><td class="mdescLeft">&#160;</td><td class="mdescRight">signal to behavior the advance of the sunset timer <br /></td></tr>
-<tr class="separator:a612e9a78a23f924bc028c68091041756"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d0f295f43e9623d44e3140734bde7bf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1behavior.html#a5d0f295f43e9623d44e3140734bde7bf">lampda::logic::behavior::read_parameters</a> ()</td></tr>
+<tr class="memdesc:a5d0f295f43e9623d44e3140734bde7bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the parameters from the filesystem.  <br /></td></tr>
+<tr class="separator:a5d0f295f43e9623d44e3140734bde7bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a277a9f798b41d510a258473ae421e4b5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1behavior.html#a277a9f798b41d510a258473ae421e4b5">lampda::logic::behavior::is_user_code_running</a> ()</td></tr>
+<tr class="separator:a277a9f798b41d510a258473ae421e4b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50ed053988418afb816cbd2f06a686a4"><td class="memItemLeft" align="right" valign="top"><a id="a50ed053988418afb816cbd2f06a686a4" name="a50ed053988418afb816cbd2f06a686a4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::behavior::set_woke_up_from_vbus</b> (const bool wokeUp)</td></tr>
+<tr class="memdesc:a50ed053988418afb816cbd2f06a686a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">call once at program start, before the first main loop runs The system was powered from a vbus powered event, not a user action <br /></td></tr>
+<tr class="separator:a50ed053988418afb816cbd2f06a686a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee9b8c36734142d5cc0dfb918870e227"><td class="memItemLeft" align="right" valign="top"><a id="aee9b8c36734142d5cc0dfb918870e227" name="aee9b8c36734142d5cc0dfb918870e227"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::behavior::loop</b> ()</td></tr>
+<tr class="separator:aee9b8c36734142d5cc0dfb918870e227"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a535bce00076b00c278e05111567060c3"><td class="memItemLeft" align="right" valign="top"><a id="a535bce00076b00c278e05111567060c3" name="a535bce00076b00c278e05111567060c3"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::behavior::get_state</b> ()</td></tr>
+<tr class="separator:a535bce00076b00c278e05111567060c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cd64e89ee44206b2191bfd30d68a278"><td class="memItemLeft" align="right" valign="top"><a id="a6cd64e89ee44206b2191bfd30d68a278" name="a6cd64e89ee44206b2191bfd30d68a278"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::behavior::get_error_state_message</b> ()</td></tr>
+<tr class="memdesc:a6cd64e89ee44206b2191bfd30d68a278"><td class="mdescLeft">&#160;</td><td class="mdescRight">return the error message associated with the error state <br /></td></tr>
+<tr class="separator:a6cd64e89ee44206b2191bfd30d68a278"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fcd34fe970f9816db0acce7db1bca0d"><td class="memItemLeft" align="right" valign="top"><a id="a5fcd34fe970f9816db0acce7db1bca0d" name="a5fcd34fe970f9816db0acce7db1bca0d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::behavior::can_system_allowed_to_be_powered</b> ()</td></tr>
+<tr class="memdesc:a5fcd34fe970f9816db0acce7db1bca0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">true if system can work at all (charger or output mode) <br /></td></tr>
+<tr class="separator:a5fcd34fe970f9816db0acce7db1bca0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a245172421a3b862570f121c4a6a47a52"><td class="memItemLeft" align="right" valign="top"><a id="a245172421a3b862570f121c4a6a47a52" name="a245172421a3b862570f121c4a6a47a52"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::behavior::set_power_on</b> ()</td></tr>
+<tr class="memdesc:a245172421a3b862570f121c4a6a47a52"><td class="mdescLeft">&#160;</td><td class="mdescRight">set system state to "output on" <br /></td></tr>
+<tr class="separator:a245172421a3b862570f121c4a6a47a52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e2385a909f292c28585bcbbd987c3dd"><td class="memItemLeft" align="right" valign="top"><a id="a7e2385a909f292c28585bcbbd987c3dd" name="a7e2385a909f292c28585bcbbd987c3dd"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::behavior::set_power_off</b> ()</td></tr>
+<tr class="memdesc:a7e2385a909f292c28585bcbbd987c3dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">set system state to "output off". Can be ignored <br /></td></tr>
+<tr class="separator:a7e2385a909f292c28585bcbbd987c3dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab26d43f2a92ebcebae4528e21c86db2b"><td class="memItemLeft" align="right" valign="top"><a id="ab26d43f2a92ebcebae4528e21c86db2b" name="ab26d43f2a92ebcebae4528e21c86db2b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::behavior::go_to_external_battery_mode</b> ()</td></tr>
+<tr class="separator:ab26d43f2a92ebcebae4528e21c86db2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc78e0ccff3f7dd303e2ba0bb7697054"><td class="memItemLeft" align="right" valign="top"><a id="afc78e0ccff3f7dd303e2ba0bb7697054" name="afc78e0ccff3f7dd303e2ba0bb7697054"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::behavior::internal::handle_shutdown_state</b> ()</td></tr>
+<tr class="memdesc:afc78e0ccff3f7dd303e2ba0bb7697054"><td class="mdescLeft">&#160;</td><td class="mdescRight">DO NOT USE: shutdown the lamp immediatly. only for emmergency/special cases. <br /></td></tr>
+<tr class="separator:afc78e0ccff3f7dd303e2ba0bb7697054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7ae6f0fd1f052991a7e193e9816a681"><td class="memItemLeft" align="right" valign="top"><a id="af7ae6f0fd1f052991a7e193e9816a681" name="af7ae6f0fd1f052991a7e193e9816a681"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::behavior::sunset::progress_update</b> (const float progress)</td></tr>
+<tr class="memdesc:af7ae6f0fd1f052991a7e193e9816a681"><td class="mdescLeft">&#160;</td><td class="mdescRight">signal to behavior the advance of the sunset timer <br /></td></tr>
+<tr class="separator:af7ae6f0fd1f052991a7e193e9816a681"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Basic controller behavior, including alerts and user interactions. </p>

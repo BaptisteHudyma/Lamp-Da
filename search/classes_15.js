@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['xyty_0',['XYTy',['../structmodes_1_1XYTy.html',1,'modes']]],
-  ['xyz_1',['XYZ',['../classutils_1_1ColorSpace_1_1XYZ.html',1,'utils::ColorSpace']]]
+  ['wrapper_0',['Wrapper',['../classlampda_1_1physical_1_1imu_1_1Wrapper.html',1,'lampda::physical::imu']]]
 ];

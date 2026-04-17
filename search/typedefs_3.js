@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['fftcontainer_0',['FFTContainer',['../structmodes_1_1audio_1_1SoundEventTy.html#af8a9344e50934ba1a8f8846430da173e',1,'modes::audio::SoundEventTy']]],
-  ['ffthistorycontainer_1',['FFTHistoryContainer',['../structmodes_1_1audio_1_1SoundEventTy.html#a526d6012ea3d590ffc6658849ae1ab7f',1,'modes::audio::SoundEventTy']]],
-  ['fftlogcontainer_2',['FFTLogContainer',['../structmodes_1_1audio_1_1SoundEventTy.html#a24cc2e882e20f0591118e97670b2accc',1,'modes::audio::SoundEventTy']]],
-  ['fixedmodes_3',['FixedModes',['../namespacemodes.html#a059f527e29c76994187c007c978d2c32',1,'modes']]],
-  ['flashesgroup_4',['FlashesGroup',['../brightness__modes_8hpp.html#a418b13fad39a424bf2a526349f42c981',1,'modes::brightness']]]
+  ['fftcontainer_0',['FFTContainer',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#aac950f4f5330234dab40f4387ff2f100',1,'lampda::modes::audio::SoundEventTy']]],
+  ['ffthistorycontainer_1',['FFTHistoryContainer',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a2163eb76d32cea087843276a0a2aeea8',1,'lampda::modes::audio::SoundEventTy']]],
+  ['fftlogcontainer_2',['FFTLogContainer',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#afce2056111899dd8f5d4e06a9463217a',1,'lampda::modes::audio::SoundEventTy']]],
+  ['fixedmodes_3',['FixedModes',['../namespacelampda_1_1modes.html#a28e290207c7cb4a81cabe58dc57d34d6',1,'lampda::modes']]],
+  ['flashesgroup_4',['FlashesGroup',['../brightness__modes_8hpp.html#a6cd340a1c4b41f2f55ac6db873dc3902',1,'lampda::modes::brightness']]]
 ];

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['keyproxy_0',['KeyProxy',['../structmodes_1_1ContextTy_1_1KeyProxy.html#a89f95e44b141a12f472fa8905a8c25de',1,'modes::ContextTy::KeyProxy']]],
-  ['kick_5fwatchdog_1',['kick_watchdog',['../registers_8h.html#a9c907f3559265e008752f4ca94176d7a',1,'registers.h']]]
+  ['keyproxy_0',['KeyProxy',['../structlampda_1_1modes_1_1ContextTy_1_1KeyProxy.html#abd39aacfd4781e1caed92b15deb3c01a',1,'lampda::modes::ContextTy::KeyProxy']]],
+  ['kick_5fwatchdog_1',['kick_watchdog',['../namespacelampda_1_1platform_1_1registers.html#a8a50984a45dac826420f7c44adf471c4',1,'lampda::platform::registers']]]
 ];

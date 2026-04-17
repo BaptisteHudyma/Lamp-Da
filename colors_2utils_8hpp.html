@@ -90,54 +90,57 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmodes_1_1colors_1_1ToRGB.html">modes::colors::ToRGB</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exposes (r, g, b) as uint8_t in struct from a single uint32_t color.  <a href="structmodes_1_1colors_1_1ToRGB.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1colors_1_1ToRGB.html">lampda::modes::colors::ToRGB</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exposes (r, g, b) as uint8_t in struct from a single uint32_t color.  <a href="structlampda_1_1modes_1_1colors_1_1ToRGB.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacemodes"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes.html">modes</a></td></tr>
-<tr class="memdesc:namespacemodes"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains basic interface types to implement custom user modes. <br /></td></tr>
+<tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
+<tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacemodes_1_1colors"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes_1_1colors.html">modes::colors</a></td></tr>
-<tr class="memdesc:namespacemodes_1_1colors"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tools to manipulate colors and their representation. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1modes"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes.html">lampda::modes</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1modes"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains basic interface types to implement custom user modes. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1modes_1_1colors"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes_1_1colors.html">lampda::modes::colors</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1modes_1_1colors"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tools to manipulate colors and their representation. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a199e9be4607d42098990029e7c8de27d"><td class="memItemLeft" align="right" valign="top"><a id="a199e9be4607d42098990029e7c8de27d" name="a199e9be4607d42098990029e7c8de27d"></a>
-static constexpr LMBD_INLINE uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>modes::colors::fromRGB</b> (uint8_t r, uint8_t g, uint8_t b)</td></tr>
-<tr class="memdesc:a199e9be4607d42098990029e7c8de27d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return color (r, g, b) as a single uint32_t integer. <br /></td></tr>
-<tr class="separator:a199e9be4607d42098990029e7c8de27d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37475ed0978ca74ba49efa9c6624033e"><td class="memItemLeft" align="right" valign="top"><a id="a37475ed0978ca74ba49efa9c6624033e" name="a37475ed0978ca74ba49efa9c6624033e"></a>
-static constexpr LMBD_INLINE uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>modes::colors::fromGrey</b> (uint32_t w)</td></tr>
-<tr class="memdesc:a37475ed0978ca74ba49efa9c6624033e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return color (w, w, w) as a single uint32_t integer. <br /></td></tr>
-<tr class="separator:a37475ed0978ca74ba49efa9c6624033e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0ad1c138630cfabc7710a4b1a424fbc"><td class="memItemLeft" align="right" valign="top"><a id="ad0ad1c138630cfabc7710a4b1a424fbc" name="ad0ad1c138630cfabc7710a4b1a424fbc"></a>
-static constexpr LMBD_INLINE uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>modes::colors::fromAngleHue</b> (uint16_t angleDegrees)</td></tr>
-<tr class="memdesc:ad0ad1c138630cfabc7710a4b1a424fbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a 360 degrees angle, return a corresponding color as an integer. <br /></td></tr>
-<tr class="separator:ad0ad1c138630cfabc7710a4b1a424fbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a847c7b5d97b6683be6559988781c6bae"><td class="memItemLeft" align="right" valign="top">static constexpr LMBD_INLINE uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes_1_1colors.html#a847c7b5d97b6683be6559988781c6bae">modes::colors::fromTemp</a> (uint8_t temp)</td></tr>
-<tr class="memdesc:a847c7b5d97b6683be6559988781c6bae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a 0-255 value, return a color approximating a kelvin temperature.  <br /></td></tr>
-<tr class="separator:a847c7b5d97b6683be6559988781c6bae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a15618c6086020c617653603a0c0225"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes_1_1colors.html#a8a15618c6086020c617653603a0c0225">modes::colors::blend</a> (uint32_t leftColor, uint32_t rightColor, uint16_t blend, bool b16=false)</td></tr>
-<tr class="memdesc:a8a15618c6086020c617653603a0c0225"><td class="mdescLeft">&#160;</td><td class="mdescRight">blend to two colors  <br /></td></tr>
-<tr class="separator:a8a15618c6086020c617653603a0c0225"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a64ab64b7e02933fdb50cf293128e2d3c"><td class="memTemplParams" colspan="2">template&lt;bool isVideoMode = false&gt; </td></tr>
-<tr class="memitem:a64ab64b7e02933fdb50cf293128e2d3c"><td class="memTemplItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemodes_1_1colors.html#a64ab64b7e02933fdb50cf293128e2d3c">modes::colors::fade</a> (uint32_t inputColor, uint8_t fadeAmount)</td></tr>
-<tr class="memdesc:a64ab64b7e02933fdb50cf293128e2d3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">fade the color toward black  <br /></td></tr>
-<tr class="separator:a64ab64b7e02933fdb50cf293128e2d3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8990692bbe667fbc19a02bd9b998471c"><td class="memTemplParams" colspan="2"><a id="a8990692bbe667fbc19a02bd9b998471c" name="a8990692bbe667fbc19a02bd9b998471c"></a>
+<tr class="memitem:ac2bf35faa6f46fd27b3148dc508b18b5"><td class="memItemLeft" align="right" valign="top"><a id="ac2bf35faa6f46fd27b3148dc508b18b5" name="ac2bf35faa6f46fd27b3148dc508b18b5"></a>
+static constexpr LMBD_INLINE uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::colors::fromRGB</b> (uint8_t r, uint8_t g, uint8_t b)</td></tr>
+<tr class="memdesc:ac2bf35faa6f46fd27b3148dc508b18b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return color (r, g, b) as a single uint32_t integer. <br /></td></tr>
+<tr class="separator:ac2bf35faa6f46fd27b3148dc508b18b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28c39e86d893da680e178719c61605ee"><td class="memItemLeft" align="right" valign="top"><a id="a28c39e86d893da680e178719c61605ee" name="a28c39e86d893da680e178719c61605ee"></a>
+static constexpr LMBD_INLINE uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::colors::fromGrey</b> (uint32_t w)</td></tr>
+<tr class="memdesc:a28c39e86d893da680e178719c61605ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return color (w, w, w) as a single uint32_t integer. <br /></td></tr>
+<tr class="separator:a28c39e86d893da680e178719c61605ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7892b210703bf52cad910c9de3c19a56"><td class="memItemLeft" align="right" valign="top"><a id="a7892b210703bf52cad910c9de3c19a56" name="a7892b210703bf52cad910c9de3c19a56"></a>
+static constexpr LMBD_INLINE uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::colors::fromAngleHue</b> (uint16_t angleDegrees)</td></tr>
+<tr class="memdesc:a7892b210703bf52cad910c9de3c19a56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a 360 degrees angle, return a corresponding color as an integer. <br /></td></tr>
+<tr class="separator:a7892b210703bf52cad910c9de3c19a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67f7b3e701adbbb16d95f464963e7183"><td class="memItemLeft" align="right" valign="top">static constexpr LMBD_INLINE uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes_1_1colors.html#a67f7b3e701adbbb16d95f464963e7183">lampda::modes::colors::fromTemp</a> (uint8_t temp)</td></tr>
+<tr class="memdesc:a67f7b3e701adbbb16d95f464963e7183"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a 0-255 value, return a color approximating a kelvin temperature.  <br /></td></tr>
+<tr class="separator:a67f7b3e701adbbb16d95f464963e7183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ffd2a87cc35a4aeeb665c48c03b365a"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes_1_1colors.html#a6ffd2a87cc35a4aeeb665c48c03b365a">lampda::modes::colors::blend</a> (uint32_t leftColor, uint32_t rightColor, uint16_t blend, bool b16=false)</td></tr>
+<tr class="memdesc:a6ffd2a87cc35a4aeeb665c48c03b365a"><td class="mdescLeft">&#160;</td><td class="mdescRight">blend to two colors  <br /></td></tr>
+<tr class="separator:a6ffd2a87cc35a4aeeb665c48c03b365a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a045a9e82aa874cb4fdbf5c9d375f5ebf"><td class="memTemplParams" colspan="2">template&lt;bool isVideoMode = false&gt; </td></tr>
+<tr class="memitem:a045a9e82aa874cb4fdbf5c9d375f5ebf"><td class="memTemplItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes_1_1colors.html#a045a9e82aa874cb4fdbf5c9d375f5ebf">lampda::modes::colors::fade</a> (uint32_t inputColor, uint8_t fadeAmount)</td></tr>
+<tr class="memdesc:a045a9e82aa874cb4fdbf5c9d375f5ebf"><td class="mdescLeft">&#160;</td><td class="mdescRight">fade the color toward black  <br /></td></tr>
+<tr class="separator:a045a9e82aa874cb4fdbf5c9d375f5ebf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af62ea96081518e30eacbb81b898d585d"><td class="memTemplParams" colspan="2"><a id="af62ea96081518e30eacbb81b898d585d" name="af62ea96081518e30eacbb81b898d585d"></a>
 template&lt;bool isFast = false&gt; </td></tr>
-<tr class="memitem:a8990692bbe667fbc19a02bd9b998471c"><td class="memTemplItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>modes::colors::add</b> (uint32_t c1, uint32_t c2)</td></tr>
-<tr class="memdesc:a8990692bbe667fbc19a02bd9b998471c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add two colors together. <br /></td></tr>
-<tr class="separator:a8990692bbe667fbc19a02bd9b998471c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af62ea96081518e30eacbb81b898d585d"><td class="memTemplItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>lampda::modes::colors::add</b> (uint32_t c1, uint32_t c2)</td></tr>
+<tr class="memdesc:af62ea96081518e30eacbb81b898d585d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add two colors together. <br /></td></tr>
+<tr class="separator:af62ea96081518e30eacbb81b898d585d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:aac23fbde77e70a7770aa4516842ffcba"><td class="memItemLeft" align="right" valign="top">static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemodes_1_1colors.html#aac23fbde77e70a7770aa4516842ffcba">modes::colors::colorRotation</a> [360]</td></tr>
-<tr class="memdesc:aac23fbde77e70a7770aa4516842ffcba"><td class="mdescLeft">&#160;</td><td class="mdescRight">precompiled table for Hue  <br /></td></tr>
-<tr class="separator:aac23fbde77e70a7770aa4516842ffcba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1612b57667489eaa826a11a55635e3ae"><td class="memItemLeft" align="right" valign="top">static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes_1_1colors.html#a1612b57667489eaa826a11a55635e3ae">lampda::modes::colors::colorRotation</a> [360]</td></tr>
+<tr class="memdesc:a1612b57667489eaa826a11a55635e3ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">precompiled table for Hue  <br /></td></tr>
+<tr class="separator:a1612b57667489eaa826a11a55635e3ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manipulate color representations. </p>

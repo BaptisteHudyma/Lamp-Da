@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['gridty_0',['GridTy',['../structmodes_1_1automaton_1_1BubbleMode.html#a088c09633de2e6973067b8e0dbc146a6',1,'modes::automaton::BubbleMode::GridTy()'],['../structmodes_1_1automaton_1_1SierpinskiMode.html#a42380ad646c48c795548ce2466706f51',1,'modes::automaton::SierpinskiMode::GridTy()']]],
-  ['groupfor_1',['GroupFor',['../namespacemodes.html#ab78bece6ea407f3a7b5b922d619d2b97',1,'modes']]]
+  ['gridty_0',['GridTy',['../structlampda_1_1modes_1_1automaton_1_1BubbleMode.html#a3477ef3791aa72b228538658cfc3ab89',1,'lampda::modes::automaton::BubbleMode::GridTy()'],['../structlampda_1_1modes_1_1automaton_1_1SierpinskiMode.html#a672608c2e9adb2efe32cac5a0a21ba29',1,'lampda::modes::automaton::SierpinskiMode::GridTy()']]],
+  ['groupfor_1',['GroupFor',['../namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f',1,'lampda::modes']]]
 ];

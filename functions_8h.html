@@ -89,68 +89,71 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespaceuser"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceuser.html">user</a></td></tr>
-<tr class="memdesc:namespaceuser"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains code handling custom user mode functions for indexable strips. <br /></td></tr>
+<tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
+<tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1user"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html">lampda::user</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1user"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains code handling custom user mode functions for indexable strips. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a7a0ebaabbbf904db895b7774124c9dd5"><td class="memItemLeft" align="right" valign="top"><a id="a7a0ebaabbbf904db895b7774124c9dd5" name="a7a0ebaabbbf904db895b7774124c9dd5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>user::power_on_sequence</b> ()</td></tr>
-<tr class="memdesc:a7a0ebaabbbf904db895b7774124c9dd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the system powers on (must be non blocking function!) <br /></td></tr>
-<tr class="separator:a7a0ebaabbbf904db895b7774124c9dd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba772a87b17a5e499b2912950fb3b6ab"><td class="memItemLeft" align="right" valign="top"><a id="aba772a87b17a5e499b2912950fb3b6ab" name="aba772a87b17a5e499b2912950fb3b6ab"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>user::power_off_sequence</b> ()</td></tr>
-<tr class="memdesc:aba772a87b17a5e499b2912950fb3b6ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the system powers off (must be non blocking function!) <br /></td></tr>
-<tr class="separator:aba772a87b17a5e499b2912950fb3b6ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd6f6627dc7e0f84db3e771ec9c7d1f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceuser.html#abd6f6627dc7e0f84db3e771ec9c7d1f0">user::brightness_update</a> (const <a class="el" href="system_2utils_2constants_8h.html#aa87af64c7db4c82d3374823aff4f72f4">brightness_t</a> brightness)</td></tr>
-<tr class="memdesc:abd6f6627dc7e0f84db3e771ec9c7d1f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the system changes the LED strip brightness.  <br /></td></tr>
-<tr class="separator:abd6f6627dc7e0f84db3e771ec9c7d1f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34dd3930e6a7801b1278e8ebd396e3db"><td class="memItemLeft" align="right" valign="top"><a id="a34dd3930e6a7801b1278e8ebd396e3db" name="a34dd3930e6a7801b1278e8ebd396e3db"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>user::sunset_timer_update</b> (const float progress)</td></tr>
-<tr class="memdesc:a34dd3930e6a7801b1278e8ebd396e3db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the sunset timer progresses [0; 1]. <br /></td></tr>
-<tr class="separator:a34dd3930e6a7801b1278e8ebd396e3db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42eba66fe130830c3d5371d349d11764"><td class="memItemLeft" align="right" valign="top"><a id="a42eba66fe130830c3d5371d349d11764" name="a42eba66fe130830c3d5371d349d11764"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>user::write_parameters</b> ()</td></tr>
-<tr class="memdesc:a42eba66fe130830c3d5371d349d11764"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when system wants to write parameters to filesystem. <br /></td></tr>
-<tr class="separator:a42eba66fe130830c3d5371d349d11764"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e7b0d9acc74b81e4e1b1de0d91924c4"><td class="memItemLeft" align="right" valign="top"><a id="a4e7b0d9acc74b81e4e1b1de0d91924c4" name="a4e7b0d9acc74b81e4e1b1de0d91924c4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>user::read_parameters</b> ()</td></tr>
-<tr class="memdesc:a4e7b0d9acc74b81e4e1b1de0d91924c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when system wants to read parameters from filesystem. <br /></td></tr>
-<tr class="separator:a4e7b0d9acc74b81e4e1b1de0d91924c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab73a094ee531e11bd21f5c9aa0e31066"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceuser.html#ab73a094ee531e11bd21f5c9aa0e31066">user::button_start_click_default</a> (const uint8_t clicks)</td></tr>
-<tr class="memdesc:ab73a094ee531e11bd21f5c9aa0e31066"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button click on lamp start.  <br /></td></tr>
-<tr class="separator:ab73a094ee531e11bd21f5c9aa0e31066"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b029e201deb9cc62793d0c93a0a78e2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceuser.html#a0b029e201deb9cc62793d0c93a0a78e2">user::button_start_hold_default</a> (const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)</td></tr>
-<tr class="memdesc:a0b029e201deb9cc62793d0c93a0a78e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button hold on lamp start.  <br /></td></tr>
-<tr class="separator:a0b029e201deb9cc62793d0c93a0a78e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad48987af099efca3bc668b541d653e7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceuser.html#ad48987af099efca3bc668b541d653e7d">user::button_clicked_default</a> (const uint8_t clicks)</td></tr>
-<tr class="memdesc:ad48987af099efca3bc668b541d653e7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button click events for default user mode behaviors.  <br /></td></tr>
-<tr class="separator:ad48987af099efca3bc668b541d653e7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a51b617074db42ba10f0695729750de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceuser.html#a7a51b617074db42ba10f0695729750de">user::button_hold_default</a> (const uint8_t nbClickAndHold, const bool isEndOfHoldEvent, const uint32_t holdDuration)</td></tr>
-<tr class="memdesc:a7a51b617074db42ba10f0695729750de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button click+hold events for user mode behaviors.  <br /></td></tr>
-<tr class="separator:a7a51b617074db42ba10f0695729750de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec059103a24452793c9fc3795acfaf36"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceuser.html#aec059103a24452793c9fc3795acfaf36">user::button_clicked_usermode</a> (const uint8_t nbClick)</td></tr>
-<tr class="memdesc:aec059103a24452793c9fc3795acfaf36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button click events if "usermode UI" is active.  <br /></td></tr>
-<tr class="separator:aec059103a24452793c9fc3795acfaf36"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3225119950682ccdc69e1e6b1e0e0fbf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceuser.html#a3225119950682ccdc69e1e6b1e0e0fbf">user::button_hold_usermode</a> (const uint8_t nbClickAndHold, const bool isEndOfHoldEvent, const uint32_t holdDuration)</td></tr>
-<tr class="memdesc:a3225119950682ccdc69e1e6b1e0e0fbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button click+hold events if "usermode UI" is on.  <br /></td></tr>
-<tr class="separator:a3225119950682ccdc69e1e6b1e0e0fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad74b10e3215c632d45a66c165cbd5579"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceuser.html#ad74b10e3215c632d45a66c165cbd5579">user::loop</a> ()</td></tr>
-<tr class="memdesc:ad74b10e3215c632d45a66c165cbd5579"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called at each tick of the main loop.  <br /></td></tr>
-<tr class="separator:ad74b10e3215c632d45a66c165cbd5579"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fe4437c57167aa4da7cb323c2d93b4f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceuser.html#a7fe4437c57167aa4da7cb323c2d93b4f">user::should_spawn_thread</a> ()</td></tr>
-<tr class="memdesc:a7fe4437c57167aa4da7cb323c2d93b4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if a second <a class="el" href="namespaceuser.html#a51213cb731999005697b1f29d1f3a11e" title="Called at each tick of the secondary thread.">user_thread()</a> loop thread should be spawned.  <br /></td></tr>
-<tr class="separator:a7fe4437c57167aa4da7cb323c2d93b4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51213cb731999005697b1f29d1f3a11e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceuser.html#a51213cb731999005697b1f29d1f3a11e">user::user_thread</a> ()</td></tr>
-<tr class="memdesc:a51213cb731999005697b1f29d1f3a11e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called at each tick of the secondary thread.  <br /></td></tr>
-<tr class="separator:a51213cb731999005697b1f29d1f3a11e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f29be2c74dbd49d32347da761917642"><td class="memItemLeft" align="right" valign="top"><a id="a9f29be2c74dbd49d32347da761917642" name="a9f29be2c74dbd49d32347da761917642"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::power_on_sequence</b> ()</td></tr>
+<tr class="memdesc:a9f29be2c74dbd49d32347da761917642"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the system powers on (must be non blocking function!) <br /></td></tr>
+<tr class="separator:a9f29be2c74dbd49d32347da761917642"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade4b7ab83f3d61049be76abc02c986a5"><td class="memItemLeft" align="right" valign="top"><a id="ade4b7ab83f3d61049be76abc02c986a5" name="ade4b7ab83f3d61049be76abc02c986a5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::power_off_sequence</b> ()</td></tr>
+<tr class="memdesc:ade4b7ab83f3d61049be76abc02c986a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the system powers off (must be non blocking function!) <br /></td></tr>
+<tr class="separator:ade4b7ab83f3d61049be76abc02c986a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bed2303bf048e21a21fa2e6a8ebb8fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#a2bed2303bf048e21a21fa2e6a8ebb8fc">lampda::user::brightness_update</a> (const <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">lampda::brightness_t</a> brightness)</td></tr>
+<tr class="memdesc:a2bed2303bf048e21a21fa2e6a8ebb8fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the system changes the LED strip brightness.  <br /></td></tr>
+<tr class="separator:a2bed2303bf048e21a21fa2e6a8ebb8fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aade0579f627d11dc8eff8dc5b91d9afe"><td class="memItemLeft" align="right" valign="top"><a id="aade0579f627d11dc8eff8dc5b91d9afe" name="aade0579f627d11dc8eff8dc5b91d9afe"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::sunset_timer_update</b> (const float progress)</td></tr>
+<tr class="memdesc:aade0579f627d11dc8eff8dc5b91d9afe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the sunset timer progresses [0; 1]. <br /></td></tr>
+<tr class="separator:aade0579f627d11dc8eff8dc5b91d9afe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb9086987851371577be7407d39032c7"><td class="memItemLeft" align="right" valign="top"><a id="acb9086987851371577be7407d39032c7" name="acb9086987851371577be7407d39032c7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::write_parameters</b> ()</td></tr>
+<tr class="memdesc:acb9086987851371577be7407d39032c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when system wants to write parameters to filesystem. <br /></td></tr>
+<tr class="separator:acb9086987851371577be7407d39032c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d4d42999a9bb52d95ecaf7294c8c523"><td class="memItemLeft" align="right" valign="top"><a id="a4d4d42999a9bb52d95ecaf7294c8c523" name="a4d4d42999a9bb52d95ecaf7294c8c523"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::read_parameters</b> ()</td></tr>
+<tr class="memdesc:a4d4d42999a9bb52d95ecaf7294c8c523"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when system wants to read parameters from filesystem. <br /></td></tr>
+<tr class="separator:a4d4d42999a9bb52d95ecaf7294c8c523"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5fbc0b710f0f31f48d5adb0fe56c053"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#ab5fbc0b710f0f31f48d5adb0fe56c053">lampda::user::button_start_click_default</a> (const uint8_t clicks)</td></tr>
+<tr class="memdesc:ab5fbc0b710f0f31f48d5adb0fe56c053"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button click on lamp start.  <br /></td></tr>
+<tr class="separator:ab5fbc0b710f0f31f48d5adb0fe56c053"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4aa9eff8ba8c6de97563e5517380a024"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#a4aa9eff8ba8c6de97563e5517380a024">lampda::user::button_start_hold_default</a> (const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)</td></tr>
+<tr class="memdesc:a4aa9eff8ba8c6de97563e5517380a024"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button hold on lamp start.  <br /></td></tr>
+<tr class="separator:a4aa9eff8ba8c6de97563e5517380a024"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa70e2fe7b7f2470d212d4551247c460"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#afa70e2fe7b7f2470d212d4551247c460">lampda::user::button_clicked_default</a> (const uint8_t clicks)</td></tr>
+<tr class="memdesc:afa70e2fe7b7f2470d212d4551247c460"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button click events for default user mode behaviors.  <br /></td></tr>
+<tr class="separator:afa70e2fe7b7f2470d212d4551247c460"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9ec78b94698e19a2db3fe7acf9cc745"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#ad9ec78b94698e19a2db3fe7acf9cc745">lampda::user::button_hold_default</a> (const uint8_t nbClickAndHold, const bool isEndOfHoldEvent, const uint32_t holdDuration)</td></tr>
+<tr class="memdesc:ad9ec78b94698e19a2db3fe7acf9cc745"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button click+hold events for user mode behaviors.  <br /></td></tr>
+<tr class="separator:ad9ec78b94698e19a2db3fe7acf9cc745"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcb730073a278316019e03d326e34449"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#afcb730073a278316019e03d326e34449">lampda::user::button_clicked_usermode</a> (const uint8_t nbClick)</td></tr>
+<tr class="memdesc:afcb730073a278316019e03d326e34449"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button click events if "usermode UI" is active.  <br /></td></tr>
+<tr class="separator:afcb730073a278316019e03d326e34449"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45ff6dbf443695934c70d69df1da7e6a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#a45ff6dbf443695934c70d69df1da7e6a">lampda::user::button_hold_usermode</a> (const uint8_t nbClickAndHold, const bool isEndOfHoldEvent, const uint32_t holdDuration)</td></tr>
+<tr class="memdesc:a45ff6dbf443695934c70d69df1da7e6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button click+hold events if "usermode UI" is on.  <br /></td></tr>
+<tr class="separator:a45ff6dbf443695934c70d69df1da7e6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6204ded372bd76ecc695de1855f00bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#ae6204ded372bd76ecc695de1855f00bb">lampda::user::loop</a> ()</td></tr>
+<tr class="memdesc:ae6204ded372bd76ecc695de1855f00bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called at each tick of the main loop.  <br /></td></tr>
+<tr class="separator:ae6204ded372bd76ecc695de1855f00bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca81238a2ca820ae1ef20fe517e0b93d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#aca81238a2ca820ae1ef20fe517e0b93d">lampda::user::should_spawn_thread</a> ()</td></tr>
+<tr class="memdesc:aca81238a2ca820ae1ef20fe517e0b93d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if a second <a class="el" href="namespacelampda_1_1user.html#a42710cdf95b63e4a0d644c0e976b715a" title="Called at each tick of the secondary thread.">user_thread()</a> loop thread should be spawned.  <br /></td></tr>
+<tr class="separator:aca81238a2ca820ae1ef20fe517e0b93d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42710cdf95b63e4a0d644c0e976b715a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#a42710cdf95b63e4a0d644c0e976b715a">lampda::user::user_thread</a> ()</td></tr>
+<tr class="memdesc:a42710cdf95b63e4a0d644c0e976b715a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called at each tick of the secondary thread.  <br /></td></tr>
+<tr class="separator:a42710cdf95b63e4a0d644c0e976b715a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a5bee4e610baca10643ed13ffca921359"><td class="memItemLeft" align="right" valign="top"><a id="a5bee4e610baca10643ed13ffca921359" name="a5bee4e610baca10643ed13ffca921359"></a>
-<a class="el" href="classLedStrip.html">LedStrip</a>&#160;</td><td class="memItemRight" valign="bottom"><b>user::_private::strip</b></td></tr>
-<tr class="separator:a5bee4e610baca10643ed13ffca921359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0765f1f5cab3dff668d794bd09268ca"><td class="memItemLeft" align="right" valign="top"><a id="ae0765f1f5cab3dff668d794bd09268ca" name="ae0765f1f5cab3dff668d794bd09268ca"></a>
+<a class="el" href="classlampda_1_1LedStrip.html">lampda::LedStrip</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::_private::strip</b></td></tr>
+<tr class="separator:ae0765f1f5cab3dff668d794bd09268ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Define specific needed user functions. </p>

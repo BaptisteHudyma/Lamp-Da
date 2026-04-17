@@ -104,13 +104,13 @@ $(function() {
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &quot;<a class="code" href="spiral_8hpp.html">src/modes/default/spiral.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &quot;<a class="code" href="vu__meter_8hpp.html">src/modes/default/vu_meter.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">namespace </span>modes::legacy {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">namespace </span>lampda::modes::legacy {</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment">//</span></div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment">// Legacy modes groups</span></div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment">//</span></div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">using </span>CalmModes = <a class="code hl_typedef" href="namespacemodes.html#ab78bece6ea407f3a7b5b922d619d2b97">modes::GroupFor</a>&lt;default_modes::RainbowSwirlMode,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">using </span>CalmModes = <a class="code hl_typedef" href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f">modes::GroupFor</a>&lt;default_modes::RainbowSwirlMode,</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                                  default_modes::RainbowFadePaletteMode,</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                                  default_modes::PerlinNoiseMode,</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                  default_modes::AuroraMode,</div>
@@ -124,11 +124,11 @@ $(function() {
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                                  automaton::SierpinskiMode&gt;;</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">using </span>PartyModes =</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <a class="code hl_typedef" href="namespacemodes.html#ab78bece6ea407f3a7b5b922d619d2b97">modes::GroupFor&lt;default_modes::ColorWipeMode, default_modes::DoubleSideFillMode, default_modes::PingPongMode&gt;</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        modes::GroupFor&lt;default_modes::ColorWipeMode, default_modes::DoubleSideFillMode, default_modes::PingPongMode&gt;;</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">using </span>SoundModes = <a class="code hl_typedef" href="namespacemodes.html#ab78bece6ea407f3a7b5b922d619d2b97">modes::GroupFor&lt;default_modes::VuMeterMode, default_modes::FastFourrierTransformMode&gt;</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">using </span>SoundModes = modes::GroupFor&lt;default_modes::VuMeterMode, default_modes::FastFourrierTransformMode&gt;;</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>} <span class="comment">// namespace modes::legacy</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>} <span class="comment">// namespace lampda::modes::legacy</span></div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aaurora_8hpp_html"><div class="ttname"><a href="aurora_8hpp.html">aurora.hpp</a></div></div>
@@ -141,7 +141,7 @@ $(function() {
 <div class="ttc" id="afileSystem_8h_html"><div class="ttname"><a href="fileSystem_8h.html">fileSystem.h</a></div><div class="ttdoc">Interface for the physical components of the file system.</div></div>
 <div class="ttc" id="afireplace_8hpp_html"><div class="ttname"><a href="fireplace_8hpp.html">fireplace.hpp</a></div></div>
 <div class="ttc" id="agravity__mode_8hpp_html"><div class="ttname"><a href="gravity__mode_8hpp.html">gravity_mode.hpp</a></div></div>
-<div class="ttc" id="anamespacemodes_html_ab78bece6ea407f3a7b5b922d619d2b97"><div class="ttname"><a href="namespacemodes.html#ab78bece6ea407f3a7b5b922d619d2b97">modes::GroupFor</a></div><div class="ttdeci">GroupTy&lt; std::tuple&lt; Modes... &gt; &gt; GroupFor</div><div class="ttdoc">Group together many different modes::BasicMode.</div><div class="ttdef"><b>Definition:</b> group_type.hpp:332</div></div>
+<div class="ttc" id="anamespacelampda_1_1modes_html_aa8da2a265afb18b5429192c81127918f"><div class="ttname"><a href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f">lampda::modes::GroupFor</a></div><div class="ttdeci">GroupTy&lt; std::tuple&lt; Modes... &gt; &gt; GroupFor</div><div class="ttdoc">Group together many different modes::BasicMode.</div><div class="ttdef"><b>Definition:</b> group_type.hpp:332</div></div>
 <div class="ttc" id="apalette__fade__mode_8hpp_html"><div class="ttname"><a href="palette__fade__mode_8hpp.html">palette_fade_mode.hpp</a></div></div>
 <div class="ttc" id="aperlin__noise_8hpp_html"><div class="ttname"><a href="perlin__noise_8hpp.html">perlin_noise.hpp</a></div></div>
 <div class="ttc" id="aping__pong__mode_8hpp_html"><div class="ttname"><a href="ping__pong__mode_8hpp.html">ping_pong_mode.hpp</a></div></div>

@@ -78,8 +78,7 @@ $(function() {
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">alerts.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -91,22 +90,25 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classalerts_1_1AlertManager__t.html">alerts::AlertManager_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the whole alerts logic. Use this to raise and clear alerts, and make decisions based on those alerts. Alerts can be raised and cleared on their own.  <a href="classalerts_1_1AlertManager__t.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html">lampda::logic::alerts::AlertManager_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the whole alerts logic. Use this to raise and clear alerts, and make decisions based on those alerts. Alerts can be raised and cleared on their own.  <a href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespacealerts"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacealerts.html">alerts</a></td></tr>
-<tr class="memdesc:namespacealerts"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the system alerts, that are displayed on the RGB indicator. <br /></td></tr>
+<tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
+<tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespaceindicator"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceindicator.html">indicator</a></td></tr>
-<tr class="memdesc:namespaceindicator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the RGB indicator display. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1logic"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic.html">lampda::logic</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1logic"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the main high level logics. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1logic_1_1alerts"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1alerts.html">lampda::logic::alerts</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1logic_1_1alerts"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the system alerts, that are displayed on the RGB indicator. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a67e294d99af221b50b86ff2156aa91a3"><td class="memItemLeft" align="right" valign="top"><a id="a67e294d99af221b50b86ff2156aa91a3" name="a67e294d99af221b50b86ff2156aa91a3"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacealerts.html#a67e294d99af221b50b86ff2156aa91a3">alerts::Type</a> : uint32_t { <br />
+<tr class="memitem:a13b290ef7ec43fd80aa08e37a53b2bfa"><td class="memItemLeft" align="right" valign="top"><a id="a13b290ef7ec43fd80aa08e37a53b2bfa" name="a13b290ef7ec43fd80aa08e37a53b2bfa"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa">lampda::logic::alerts::Type</a> : uint32_t { <br />
 &#160;&#160;<b>MAIN_LOOP_FREEZE</b> = 1 &lt;&lt; 0
 , <b>BATTERY_READINGS_INCOHERENT</b> = 1 &lt;&lt; 1
 , <b>BATTERY_CRITICAL</b> = 1 &lt;&lt; 2
@@ -132,42 +134,35 @@ Enumerations</h2></td></tr>
 , <b>CHARGER_ERROR</b> = 1 &lt;&lt; 18
 <br />
  }</td></tr>
-<tr class="memdesc:a67e294d99af221b50b86ff2156aa91a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alert types : 31 errors max. <br /></td></tr>
-<tr class="separator:a67e294d99af221b50b86ff2156aa91a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:a13b290ef7ec43fd80aa08e37a53b2bfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alert types : 31 errors max. <br /></td></tr>
+<tr class="separator:a13b290ef7ec43fd80aa08e37a53b2bfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a2350efc5bdccf33a1870d4945ec00107"><td class="memItemLeft" align="right" valign="top"><a id="a2350efc5bdccf33a1870d4945ec00107" name="a2350efc5bdccf33a1870d4945ec00107"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>alerts::signal_wake_up_from_charger</b> ()</td></tr>
-<tr class="memdesc:a2350efc5bdccf33a1870d4945ec00107"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal slot that the system just powered up from charger. <br /></td></tr>
-<tr class="separator:a2350efc5bdccf33a1870d4945ec00107"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8d74ebe642cf277a92686e88ae42e41"><td class="memItemLeft" align="right" valign="top"><a id="aa8d74ebe642cf277a92686e88ae42e41" name="aa8d74ebe642cf277a92686e88ae42e41"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>alerts::handle_all</b> (const bool shouldIgnoreAlerts)</td></tr>
-<tr class="memdesc:aa8d74ebe642cf277a92686e88ae42e41"><td class="mdescLeft">&#160;</td><td class="mdescRight">handle the behavior for all alerts. Must be called often <br /></td></tr>
-<tr class="separator:aa8d74ebe642cf277a92686e88ae42e41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f02def0a1e6579f2df9be4cf78d72bc"><td class="memItemLeft" align="right" valign="top"><a id="a0f02def0a1e6579f2df9be4cf78d72bc" name="a0f02def0a1e6579f2df9be4cf78d72bc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>alerts::show_all</b> ()</td></tr>
-<tr class="memdesc:a0f02def0a1e6579f2df9be4cf78d72bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">show all the raised alerts in Serial debug <br /></td></tr>
-<tr class="separator:a0f02def0a1e6579f2df9be4cf78d72bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63780ce12c71115cf11428b7c63edd96"><td class="memItemLeft" align="right" valign="top"><a id="a63780ce12c71115cf11428b7c63edd96" name="a63780ce12c71115cf11428b7c63edd96"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>alerts::is_request_shutdown</b> ()</td></tr>
-<tr class="memdesc:a63780ce12c71115cf11428b7c63edd96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if an alert requested an immediate shutdown. Handling this is urgent or dammages can happen. <br /></td></tr>
-<tr class="separator:a63780ce12c71115cf11428b7c63edd96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a783c2325c41bdeab17875c042d928264"><td class="memItemLeft" align="right" valign="top"><a id="a783c2325c41bdeab17875c042d928264" name="a783c2325c41bdeab17875c042d928264"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>indicator::set_brightness_level</b> (const uint8_t level)</td></tr>
-<tr class="memdesc:a783c2325c41bdeab17875c042d928264"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the brightness of the RGB indicator. Indicator level can be 0 : indicator and alerts displayed as 100% brightness 1 : indicator off, alerts displayed as 25% brightness 2 : indicator and alerts displayed as 25% brightness. <br /></td></tr>
-<tr class="separator:a783c2325c41bdeab17875c042d928264"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e11a690375288d7ddf6b2629f66a7b0"><td class="memItemLeft" align="right" valign="top"><a id="a8e11a690375288d7ddf6b2629f66a7b0" name="a8e11a690375288d7ddf6b2629f66a7b0"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>indicator::get_brightness_level</b> ()</td></tr>
-<tr class="memdesc:a8e11a690375288d7ddf6b2629f66a7b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the brightness of the RGB indicator. Indicator level can be 0 : indicator and alerts displayed as 100% brightness 1 : indicator off, alerts displayed as 25% brightness 2 : indicator and alerts displayed as 25% brightness. <br /></td></tr>
-<tr class="separator:a8e11a690375288d7ddf6b2629f66a7b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:afbd8ab6e4e323bed4fc49b43f671e728"><td class="memItemLeft" align="right" valign="top"><a id="afbd8ab6e4e323bed4fc49b43f671e728" name="afbd8ab6e4e323bed4fc49b43f671e728"></a>
-AlertManager_t&#160;</td><td class="memItemRight" valign="bottom"><b>alerts::manager</b></td></tr>
-<tr class="memdesc:afbd8ab6e4e323bed4fc49b43f671e728"><td class="mdescLeft">&#160;</td><td class="mdescRight">external global reference to the AlertManager <br /></td></tr>
-<tr class="separator:afbd8ab6e4e323bed4fc49b43f671e728"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5303ff306969b36c085425eb26a5838b"><td class="memItemLeft" align="right" valign="top"><a id="a5303ff306969b36c085425eb26a5838b" name="a5303ff306969b36c085425eb26a5838b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::alerts::signal_wake_up_from_charger</b> ()</td></tr>
+<tr class="memdesc:a5303ff306969b36c085425eb26a5838b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal slot that the system just powered up from charger. <br /></td></tr>
+<tr class="separator:a5303ff306969b36c085425eb26a5838b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6f8e270ad87c32139571d749506da3a"><td class="memItemLeft" align="right" valign="top"><a id="ab6f8e270ad87c32139571d749506da3a" name="ab6f8e270ad87c32139571d749506da3a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::alerts::handle_all</b> (const bool shouldIgnoreAlerts)</td></tr>
+<tr class="memdesc:ab6f8e270ad87c32139571d749506da3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">handle the behavior for all alerts. Must be called often <br /></td></tr>
+<tr class="separator:ab6f8e270ad87c32139571d749506da3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af437e7d59fca14cc6f8942bb9b113d2b"><td class="memItemLeft" align="right" valign="top"><a id="af437e7d59fca14cc6f8942bb9b113d2b" name="af437e7d59fca14cc6f8942bb9b113d2b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::alerts::show_all</b> ()</td></tr>
+<tr class="memdesc:af437e7d59fca14cc6f8942bb9b113d2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">show all the raised alerts in Serial debug <br /></td></tr>
+<tr class="separator:af437e7d59fca14cc6f8942bb9b113d2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70b635793d42efa6e10cbdc71f53a3ad"><td class="memItemLeft" align="right" valign="top"><a id="a70b635793d42efa6e10cbdc71f53a3ad" name="a70b635793d42efa6e10cbdc71f53a3ad"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::alerts::is_request_shutdown</b> ()</td></tr>
+<tr class="memdesc:a70b635793d42efa6e10cbdc71f53a3ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if an alert requested an immediate shutdown. Handling this is urgent or dammages can happen. <br /></td></tr>
+<tr class="separator:a70b635793d42efa6e10cbdc71f53a3ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af22e2e96327cd504858075906341b98f"><td class="memItemLeft" align="right" valign="top"><a id="af22e2e96327cd504858075906341b98f" name="af22e2e96327cd504858075906341b98f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::indicator::set_brightness_level</b> (const uint8_t level)</td></tr>
+<tr class="memdesc:af22e2e96327cd504858075906341b98f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the brightness of the RGB indicator. Indicator level can be 0 : indicator and alerts displayed as 100% brightness 1 : indicator off, alerts displayed as 25% brightness 2 : indicator and alerts displayed as 25% brightness. <br /></td></tr>
+<tr class="separator:af22e2e96327cd504858075906341b98f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7449add31ef98c3eb79dd85d94a208b2"><td class="memItemLeft" align="right" valign="top"><a id="a7449add31ef98c3eb79dd85d94a208b2" name="a7449add31ef98c3eb79dd85d94a208b2"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::indicator::get_brightness_level</b> ()</td></tr>
+<tr class="memdesc:a7449add31ef98c3eb79dd85d94a208b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the brightness of the RGB indicator. Indicator level can be 0 : indicator and alerts displayed as 100% brightness 1 : indicator off, alerts displayed as 25% brightness 2 : indicator and alerts displayed as 25% brightness. <br /></td></tr>
+<tr class="separator:a7449add31ef98c3eb79dd85d94a208b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the main alerts behavior. </p>

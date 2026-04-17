@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['rampsaturates_0',['rampSaturates',['../namespacemodes.html#a02369f603301370bb1acf9b85e46183ca30df249f3c4cbced2ae40d969fd9019a',1,'modes']]],
-  ['red_1',['Red',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca290e62750c43ce18a1f1d4c055f5f6a1',1,'modes::colors']]],
-  ['rosybrown_2',['RosyBrown',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca792cb6ec666f9643099dc8079800b1da',1,'modes::colors']]],
-  ['royalblue_3',['RoyalBlue',['../namespacemodes_1_1colors.html#a87f1fdf3293bb61cc933289d19a0fb3ca4bfc2a8d469ce9dfa46226787141799a',1,'modes::colors']]]
+  ['rampsaturates_0',['rampSaturates',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17a30df249f3c4cbced2ae40d969fd9019a',1,'lampda::modes']]],
+  ['red_1',['Red',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba71bee33a217cba999ee8104d9587a79f',1,'lampda::modes::colors']]],
+  ['rosybrown_2',['RosyBrown',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba75ee8574e2cbd55742197e02e604f3a5',1,'lampda::modes::colors']]],
+  ['royalblue_3',['RoyalBlue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba915cfcefbe25e1e5f519e3ac81c7cee3',1,'lampda::modes::colors']]]
 ];

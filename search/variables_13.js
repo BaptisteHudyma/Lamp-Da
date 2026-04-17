@@ -1,10 +1,8 @@
 var searchData=
 [
-  ['uf2_5fpath_5fvar_0',['uf2_path_var',['../classlampda__gui_1_1TabLocalFlash.html#a9ff344d72ea1bfd053b62466326cf22c',1,'lampda_gui::TabLocalFlash']]],
-  ['updated_5fdate_1',['updated_date',['../classlampda__serial_1_1Release.html#addb69c669d45a5a558a9713de9c94555',1,'lampda_serial::Release']]],
-  ['usebeattracking_2',['useBeatTracking',['../structmodes_1_1audio_1_1MicrophoneConfig.html#a714c09213da449a7ac98a6762fa21db6',1,'modes::audio::MicrophoneConfig']]],
-  ['usedfavoritecount_3',['usedFavoriteCount',['../structmodes_1_1ModeManagerTy_1_1StateTy.html#a51632f5c83ddb96c8af05e1479f2b8f5',1,'modes::ModeManagerTy::StateTy']]],
-  ['user_5ftaskname_4',['user_taskName',['../threads_8h.html#a8dd2eda590e4d51934f86c854cfba096',1,'threads.h']]],
-  ['user_5fv_5',['user_v',['../classlampda__serial_1_1LampDa.html#a55d85b6e0728e75130ed58c91dc355e7',1,'lampda_serial::LampDa']]],
-  ['user_5fwatchdog_5fid_6',['USER_WATCHDOG_ID',['../system_2utils_2constants_8h.html#af35b646488ea15dd46449654e7865576',1,'constants.h']]]
+  ['unbalancedmv_0',['unbalancedMv',['../namespacelampda_1_1power_1_1balancer.html#a9b928872197627fc9a0bae06de56e9f4',1,'lampda::power::balancer']]],
+  ['usebeattracking_1',['useBeatTracking',['../structlampda_1_1modes_1_1audio_1_1MicrophoneConfig.html#a4f2c2b2b57d08124a9f663c897f786a6',1,'lampda::modes::audio::MicrophoneConfig']]],
+  ['usedfavoritecount_2',['usedFavoriteCount',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a1610874a3837a4d95bfc51e9199a44b6',1,'lampda::modes::ModeManagerTy::StateTy']]],
+  ['user_5ftaskname_3',['user_taskName',['../namespacelampda_1_1platform_1_1threads.html#a60bcfc0aea9cf88443454454b159ffef',1,'lampda::platform::threads']]],
+  ['user_5fwatchdog_5fid_4',['USER_WATCHDOG_ID',['../namespacelampda.html#a2308b911b4eb0e3a9d0d5373f90b1024',1,'lampda']]]
 ];
