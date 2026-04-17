@@ -1,6 +1,4 @@
-#include "serial.h"
-
-#include "constants.h"
+#include "command_line_interface.h"
 
 #include "src/system/logic/behavior.h"
 
@@ -25,8 +23,8 @@
 #include "src/system/logic/statistics_handler.h"
 
 namespace lampda {
-namespace utils {
-namespace serial {
+namespace logic {
+namespace cli {
 
 constexpr uint8_t maxReadLinePerLoop = 5;
 constexpr uint8_t maxLineLenght = 200;
@@ -347,6 +345,6 @@ void handleSerialEvents()
   }
 }
 
-} // namespace serial
-} // namespace utils
+} // namespace cli
+} // namespace logic
 } // namespace lampda

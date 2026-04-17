@@ -1,16 +1,16 @@
-/*! \file serial.h
-    \brief User CommandLineInterface.
+/*! \file command_line_interface.h
+    \brief User command line interface logic.
 */
 
 namespace lampda {
-namespace utils {
-namespace serial {
+namespace logic {
+namespace cli {
 
 /// Call once on system start
 void setup();
 /// Handle the user command line inputs.
 void handleSerialEvents();
 
-} // namespace serial
-} // namespace utils
+} // namespace cli
+} // namespace logic
 } // namespace lampda

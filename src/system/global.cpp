@@ -2,6 +2,7 @@
 
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
+#include "src/system/logic/command_line_interface.h"
 #include "src/system/logic/inputs.h"
 
 #include "src/system/physical/battery.h"
@@ -14,7 +15,6 @@
 #include "src/system/power/charger.h"
 #include "src/system/power/power_handler.h"
 
-#include "src/system/utils/serial.h"
 #include "src/system/utils/utils.h"
 #include "src/system/utils/sunset_timer.h"
 
@@ -122,8 +122,8 @@ void main_setup()
 
   // can start !
 
-  // setup serial
-  utils::serial::setup();
+  // setup command line interface
+  logic::cli::setup();
 
   // setup power components
   power::init();
@@ -235,7 +235,7 @@ void main_loop(const uint32_t addedDelay)
   logic::inputs::loop();
 
   // handle user serial events
-  utils::serial::handleSerialEvents();
+  logic::cli::handleSerialEvents();
 
   // loop the behavior
   logic::behavior::loop();
