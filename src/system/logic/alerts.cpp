@@ -1,7 +1,5 @@
 #include "alerts.h"
 
-#include "src/system/logic/statistics_handler.h"
-
 #include "src/system/platform/time.h"
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/registers.h"
@@ -10,15 +8,16 @@
 #include "src/system/physical/indicator.h"
 #include "src/system/physical/battery.h"
 
-#include "src/system/power/power_handler.h"
+#include "src/system/logic/statistics_handler.h"
+#include "src/system/logic/brightness_handle.h"
 
 #include "src/system/utils/utils.h"
 #include "src/system/utils/constants.h"
-#include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/time_utils.h"
 
 #include "src/system/power/charger.h"
 #include "src/system/power/balancer.h"
+#include "src/system/power/power_handler.h"
 
 namespace lampda {
 namespace logic {
@@ -345,14 +344,15 @@ struct Alert_BatteryLow : public AlertBase
   void execute() const override
   {
     // limit brightness to quarter of the max value
-    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.25 * brightness::absoluteMaximumBrightness);
+    constexpr brightness_t clampedBrightness =
+            static_cast<brightness_t>(0.25 * ::lampda::brightness::absoluteMaximumBrightness);
 
     // save some battery
     platform::bluetooth::stop_bluetooth_advertising();
 
-    utils::brightness::set_max_brightness(clampedBrightness);
-    utils::brightness::update_brightness(utils::brightness::get_brightness());
-    utils::brightness::update_saved_brightness();
+    logic::brightness::set_max_brightness(clampedBrightness);
+    logic::brightness::update_brightness(logic::brightness::get_brightness());
+    logic::brightness::update_saved_brightness();
   }
 
   bool show() const override
@@ -418,11 +418,12 @@ struct Alert_TempTooHigh : public AlertBase
   void execute() const override
   {
     // limit brightness to half the max value
-    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.5 * brightness::absoluteMaximumBrightness);
+    constexpr brightness_t clampedBrightness =
+            static_cast<brightness_t>(0.5 * ::lampda::brightness::absoluteMaximumBrightness);
 
-    utils::brightness::set_max_brightness(clampedBrightness);
-    utils::brightness::update_brightness(utils::brightness::get_brightness());
-    utils::brightness::update_saved_brightness();
+    logic::brightness::set_max_brightness(clampedBrightness);
+    logic::brightness::update_brightness(logic::brightness::get_brightness());
+    logic::brightness::update_saved_brightness();
   }
 
   bool show() const override { return physical::indicator::blink(300, 300, utils::ColorSpace::DARK_ORANGE); }
@@ -749,7 +750,7 @@ void handle_all(const bool shouldIgnoreAlerts)
   if (isNoAlertsRaised)
   {
     // This should be called on no alerts only, not ignore alerts
-    utils::brightness::set_max_brightness(brightness::absoluteMaximumBrightness);
+    logic::brightness::set_max_brightness(::lampda::brightness::absoluteMaximumBrightness);
   }
 
   //

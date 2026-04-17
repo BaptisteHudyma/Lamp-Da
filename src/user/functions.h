@@ -11,7 +11,7 @@
 
 #include <cstdint>
 
-#include "src/system/utils/brightness_handle.h"
+#include "src/system/logic/brightness_handle.h"
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #include "src/system/utils/strip.h"

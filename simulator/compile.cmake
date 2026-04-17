@@ -40,7 +40,6 @@ set(SRC_SYSTEM_DEPENDS
 set(SRC_SYSTEM_UTILS
     ${LMBD_ROOT_DIR}/src/system/utils/coordinates.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/colorspace.cpp
-    ${LMBD_ROOT_DIR}/src/system/utils/brightness_handle.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/serial.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/sunset_timer.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/utils.cpp
@@ -88,6 +87,7 @@ set(SRC_SYSTEM_GLOBAL
 set(SRC_SYSTEM_LOGIC
     ${LMBD_ROOT_DIR}/src/system/logic/alerts.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/behavior.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/brightness_handle.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/inputs.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/statistics_handler.cpp
 )

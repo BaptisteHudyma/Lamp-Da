@@ -2,8 +2,9 @@
 
 #include "src/user/functions.h"
 
-#include "src/system/logic/behavior.h"
 #include "src/system/logic/alerts.h"
+#include "src/system/logic/behavior.h"
+#include "src/system/logic/brightness_handle.h"
 
 #include "src/system/physical/button.h"
 #include "src/system/physical/indicator.h"
@@ -13,7 +14,6 @@
 
 #include "src/system/power/power_handler.h"
 
-#include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/time_utils.h"
 #include "src/system/utils/sunset_timer.h"
@@ -271,7 +271,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
         // number of steps to update brightness
         static constexpr uint32_t brightnessUpdateSteps = BRIGHTNESS_RAMP_DURATION_MS / BRIGHTNESS_LOOP_UPDATE_EVERY;
         static const uint32_t brightnessUpdateStepSize =
-                max<uint32_t>(1, brightness::absoluteMaximumBrightness / brightnessUpdateSteps);
+                max<uint32_t>(1, ::lampda::brightness::absoluteMaximumBrightness / brightnessUpdateSteps);
 
         // negative go low, positive go high
         static int rampSide = 1;
@@ -282,14 +282,14 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
           // reverse on release
           rampSide = -rampSide;
           lastBrightnessUpdateTime_ms = platform::time_ms();
-          utils::brightness::update_saved_brightness();
+          logic::brightness::update_saved_brightness();
           break;
         }
 
         // update brightness every N milliseconds (or end of hold)
         EVERY_N_MILLIS(BRIGHTNESS_LOOP_UPDATE_EVERY)
         {
-          const brightness_t brightness = utils::brightness::get_brightness();
+          const brightness_t brightness = logic::brightness::get_brightness();
 
           // first actions, set ramp side
           if (buttonHoldDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)
@@ -298,7 +298,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
             if (consecutiveButtonCheck == 2)
               rampSide = -1;
             // ramp at maximum, go low
-            else if (brightness >= utils::brightness::get_max_brightness())
+            else if (brightness >= logic::brightness::get_max_brightness())
               rampSide = -1;
             // if more than 1 second elapsed, fall back to raise ramp
             else if (lastBrightnessUpdateTime_ms == 0 or platform::time_ms() - lastBrightnessUpdateTime_ms >= 1000)
@@ -326,9 +326,9 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
           {
             if (brightness <= brightnessUpdateStepSize)
               // min level
-              utils::brightness::update_brightness(1);
+              logic::brightness::update_brightness(1);
             else
-              utils::brightness::update_brightness(static_cast<brightness_t>(brightness - brightnessUpdateStepSize));
+              logic::brightness::update_brightness(static_cast<brightness_t>(brightness - brightnessUpdateStepSize));
           }
           /// go up
           else
@@ -337,15 +337,15 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
             utils::sunset::bump_timer();
 
             // limit max brightness
-            const auto _maxBrightness = utils::brightness::get_max_brightness();
+            const auto _maxBrightness = logic::brightness::get_max_brightness();
             if (brightness + brightnessUpdateStepSize >= _maxBrightness)
-              utils::brightness::update_brightness(_maxBrightness);
+              logic::brightness::update_brightness(_maxBrightness);
             else
-              utils::brightness::update_brightness(static_cast<brightness_t>(brightness + brightnessUpdateStepSize));
+              logic::brightness::update_brightness(static_cast<brightness_t>(brightness + brightnessUpdateStepSize));
           }
 
           // update saved brightness
-          utils::brightness::update_saved_brightness();
+          logic::brightness::update_saved_brightness();
         }
       }
       break;

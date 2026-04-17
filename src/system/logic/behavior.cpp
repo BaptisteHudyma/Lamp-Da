@@ -164,8 +164,8 @@ bool read_parameters()
     uint32_t brightness = 0;
     if (physical::fileSystem::system::get_value(brightnessKey, brightness))
     {
-      utils::brightness::update_brightness(brightness, true);
-      utils::brightness::update_saved_brightness();
+      logic::brightness::update_brightness(brightness, true);
+      logic::brightness::update_saved_brightness();
     }
 
     uint32_t indicatorLevel = 0;
@@ -216,7 +216,7 @@ void write_parameters()
 
   physical::fileSystem::system::set_value(cleanSleepKey, 0xDEADBEEF);
   // only save saved brightness, not current
-  physical::fileSystem::system::set_value(brightnessKey, utils::brightness::get_saved_brightness());
+  physical::fileSystem::system::set_value(brightnessKey, logic::brightness::get_saved_brightness());
   physical::fileSystem::system::set_value(indicatorLevelKey, logic::indicator::get_brightness_level());
   // lockout mode always kept, if not deactivated by system
   physical::fileSystem::system::set_value(isLockoutModeKey,
@@ -559,7 +559,7 @@ void handle_pre_output_light_state()
   power::go_to_output_mode();
 
   // update brightness with saved brightness
-  utils::brightness::update_brightness(utils::brightness::get_saved_brightness());
+  logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
 
   // let the user power on the system
   user::power_on_sequence();

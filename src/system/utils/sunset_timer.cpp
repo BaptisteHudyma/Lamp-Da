@@ -1,13 +1,13 @@
 #include "sunset_timer.h"
 
-#include "brightness_handle.h"
 #include "utils.h"
 
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
+#include "src/system/logic/brightness_handle.h"
 
-#include "src/system/platform/threads.h"
 #include "src/system/platform/print.h"
+#include "src/system/platform/threads.h"
 #include "src/system/platform/time.h"
 
 namespace lampda {
@@ -43,7 +43,7 @@ void signal_sunset_update()
 // sunset loop time to reduce brightness gradually
 uint32_t get_sunset_loop_timing_ms()
 {
-  const auto& maxBrightnessStep = brightness::get_saved_brightness() / brightnessDecreasePerLoop;
+  const auto& maxBrightnessStep = logic::brightness::get_saved_brightness() / brightnessDecreasePerLoop;
   if (maxBrightnessStep <= 0)
     return 100;
   const uint32_t res = (brightnessRampDownTime_ms / maxBrightnessStep) + 1;
@@ -72,10 +72,10 @@ void sunset_process_loop()
       signal_sunset_update();
 
       // decrease brightness every N seconds left
-      const auto currentBrightness = brightness::get_brightness();
+      const auto currentBrightness = logic::brightness::get_brightness();
       if (platform::time_s() >= sunsetTimerEndTime_s)
       {
-        brightness::update_brightness(0);
+        logic::brightness::update_brightness(0);
         platform::lampda_print("Shutdown with sunset timer");
         logic::behavior::set_power_off();
         cancel_timer();
@@ -84,7 +84,7 @@ void sunset_process_loop()
       else if (currentBrightness >= brightnessDecreasePerLoop)
       {
         // slowly decrease brighntess
-        brightness::update_brightness(currentBrightness - brightnessDecreasePerLoop);
+        logic::brightness::update_brightness(currentBrightness - brightnessDecreasePerLoop);
       }
       // else: casual loop update
     }

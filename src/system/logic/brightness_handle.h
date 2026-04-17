@@ -5,10 +5,10 @@
 #ifndef BRIGHTNESS_HANDLE_H
 #define BRIGHTNESS_HANDLE_H
 
-#include "constants.h"
+#include "src/system/utils/constants.h"
 
 namespace lampda {
-namespace utils {
+namespace logic {
 /// Handle the LED output brightness
 namespace brightness {
 
@@ -39,7 +39,7 @@ void update_brightness(const brightness_t newBrightness, const bool isInitialRea
 uint32_t when_last_update_brightness();
 
 } // namespace brightness
-} // namespace utils
+} // namespace logic
 } // namespace lampda
 
 #endif
