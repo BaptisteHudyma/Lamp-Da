@@ -31,7 +31,7 @@
 #include "src/modes/custom/nudz/nudz_scrollimage.hpp"
 #endif
 
-namespace user {
+namespace lampda::user {
 
 //
 // list your groups & modes here
@@ -64,10 +64,10 @@ using ManagerTy = modes::ManagerFor<modes::FixedModes,
 namespace _private {
 
 // The button pin (one button pin to GND, the other to this pin)
-constexpr lampda::platform::gpio::DigitalPin::GPIO ledStripPinId = lampda::platform::gpio::DigitalPin::GPIO::gpio6;
-static lampda::platform::gpio::DigitalPin LedStripPin(ledStripPinId);
+constexpr platform::gpio::DigitalPin::GPIO ledStripPinId = platform::gpio::DigitalPin::GPIO::gpio6;
+static platform::gpio::DigitalPin LedStripPin(ledStripPinId);
 
-lampda::LedStrip strip(LedStripPin.pin());
+LedStrip strip(LedStripPin.pin());
 modes::hardware::LampTy lamp {strip};
 ManagerTy modeManager(lamp);
 
@@ -75,14 +75,14 @@ ManagerTy modeManager(lamp);
 
 static auto get_context() { return user::_private::modeManager.get_context(); }
 
+} // namespace lampda::user
+
 //
 // indexable lamp is implemented in another castle
 //
 
 #include "src/modes/user/default_behavior.hpp"   // default manager callbacks
 #include "src/modes/user/indexable_behavior.hpp" // custom RGB UI of the lamp
-
-} // namespace user
 
 #else
 #warning "This file requires --std=gnu++17 or higher to build!*"
@@ -93,12 +93,12 @@ static auto get_context() { return user::_private::modeManager.get_context(); }
 // no c++17 support -- placeholder implementation
 //
 
-namespace user {
+namespace lampda::user {
 
 void power_on_sequence() {}
 void power_off_sequence() {}
 
-void brightness_update(const lampda::brightness_t) {}
+void brightness_update(const brightness_t) {}
 void sunset_timer_update(const float progress) {}
 void write_parameters() {}
 void read_parameters() {}
@@ -118,7 +118,7 @@ void loop() {}
 bool should_spawn_thread() { return false; }
 void user_thread() {}
 
-} // namespace user
+} // namespace lampda::user
 
 #endif // LMBD_CPP17
 

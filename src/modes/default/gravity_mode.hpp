@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <functional>
 
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 /**
  * \brief Sand particle simulation, synched with the board IMU
@@ -93,16 +93,16 @@ private:
   using LampTy = hardware::LampTy;
 
   /// spawn random particles
-  static int16_t generate_random_particule_position(size_t) { return lampda::random16(LampTy::ledCount); }
+  static int16_t generate_random_particule_position(size_t) { return random16(LampTy::ledCount); }
   /// spawn particles at the bottom
   static int16_t generate_particule_at_top_random_position(size_t)
   {
-    return -static_cast<float>(lampda::random16(2.0 * LampTy::maxWidth));
+    return -static_cast<float>(random16(2.0 * LampTy::maxWidth));
   }
   /// spawn particles at the bottom
   static int16_t generate_particule_at_bottom_random_position(size_t)
   {
-    return LampTy::ledCount + static_cast<float>(lampda::random16(2.0 * LampTy::maxWidth));
+    return LampTy::ledCount + static_cast<float>(random16(2.0 * LampTy::maxWidth));
   }
 
   /// pair particules spwan at the top, odd at bottom
@@ -119,6 +119,6 @@ private:
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif // BEATSYNC_MODE_H

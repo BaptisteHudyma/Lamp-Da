@@ -15,7 +15,7 @@
 
 #include "particle.hpp"
 
-namespace modes {
+namespace lampda::modes {
 
 using LampTy = hardware::LampTy;
 
@@ -90,7 +90,7 @@ public:
    * \param[in] deltaTime_s Time since last update, in seconds
    * \param[in] shouldContrain If true, will constrain the particles to the lamp body.
    */
-  void iterate_no_collisions(const lampda::utils::vec3d& accelerationCartesian,
+  void iterate_no_collisions(const utils::vec3d& accelerationCartesian,
                              const float deltaTime_s,
                              const bool shouldContrain = true)
   {
@@ -112,7 +112,7 @@ public:
    * \param[in] deltaTime_s Time since last update, in seconds
    * \param[in] shouldContrain If true, will constrain the particles to the lamp body.
    */
-  void iterate_with_collisions(const lampda::utils::vec3d& accelerationCartesian,
+  void iterate_with_collisions(const utils::vec3d& accelerationCartesian,
                                const float deltaTime_s,
                                const bool shouldContrain = true)
   {
@@ -225,7 +225,7 @@ protected:
     }
     // generate start position from user function
     const auto& helixCoordinates = modes::strip_to_helix_unconstraint(pos);
-    particules[index] = Particle(lampda::utils::vec3d {helixCoordinates.x, helixCoordinates.y, helixCoordinates.z});
+    particules[index] = Particle(utils::vec3d {helixCoordinates.x, helixCoordinates.y, helixCoordinates.z});
     occupiedSpacesSet.insert(pos);
     isAllocated[index] = true;
   }
@@ -241,6 +241,6 @@ private:
   uint16_t particuleCount;
 };
 
-} // namespace modes
+} // namespace lampda::modes
 
 #endif

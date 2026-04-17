@@ -23,7 +23,7 @@
 
 #include "src/modes/include/anims/ramp_update.hpp"
 
-namespace modes::details {
+namespace lampda::modes::details {
 
 //
 // \private API
@@ -185,9 +185,9 @@ void _animate_sunset_timer(auto& ctx, uint32_t holdDuration, float stepSize)
   // else
 }
 
-} // namespace modes::details
+} // namespace lampda::modes::details
 
-namespace modes {
+namespace lampda::modes {
 
 /// \private Active state is designated by a 32-bit integer
 union ActiveIndexTy
@@ -850,7 +850,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       {
         if (ctx.set_favorite_now(ctx.state.whichFavoritePending))
         {
-          lampda::logic::alerts::manager.raise(lampda::logic::alerts::Type::FAVORITE_SET);
+          logic::alerts::manager.raise(logic::alerts::Type::FAVORITE_SET);
         }
       }
     }
@@ -874,7 +874,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       if (ctx.state.isSunsetTimingPending == 0)
       {
         // set and update sunset timer
-        lampda::utils::sunset::add_time_minutes(5);
+        utils::sunset::add_time_minutes(5);
         // blip AFTER the update
         ctx.blip(50);
       }
@@ -921,7 +921,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
    * \param[in, out] ctx Context
    * \param[in] brightness The new brightness
    */
-  static void brightness_update(auto& ctx, lampda::brightness_t brightness)
+  static void brightness_update(auto& ctx, brightness_t brightness)
   {
     dispatch_group(ctx, [&](auto group) {
       group.brightness_update(brightness);
@@ -1101,6 +1101,6 @@ template<typename ManagerConfig, typename... Groups> using ManagerForConfig =
  */
 template<typename... Groups> using ManagerFor = ModeManagerTy<DefaultManagerConfig, std::tuple<Groups...>>;
 
-} // namespace modes
+} // namespace lampda::modes
 
 #endif

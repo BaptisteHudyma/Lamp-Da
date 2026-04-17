@@ -11,6 +11,8 @@
 //  - src/modes/user/simple_behavior.hpp
 //
 
+namespace lampda::user {
+
 //
 // These are defined in src/modes/user/{flavor}_behavior.hpp
 //
@@ -50,7 +52,7 @@ void power_off_sequence()
   ensure_build_canary();
 }
 
-void brightness_update(const lampda::brightness_t brightness)
+void brightness_update(const brightness_t brightness)
 {
   auto manager = get_context();
 
@@ -139,5 +141,7 @@ void user_thread()
   if (manager.should_spawn_thread())
     manager.user_thread();
 }
+
+} // namespace lampda::user
 
 #endif

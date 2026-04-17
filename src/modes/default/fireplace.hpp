@@ -13,7 +13,7 @@
 #include "src/modes/include/anims/ramp_update.hpp"
 
 /// Basic "default" modes included with the hardware
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 /**
  * \brief Emulate a fireplace, optionally sound-sensitive.
@@ -78,8 +78,8 @@ struct FireMode : public BasicMode
 
       for (uint16_t i = 0; i <= ctx.lamp.maxWidth; ++i)
       {
-        const auto flame = lampda::noise8::inoise(i * xScale, j * yScale + ySpeed, zSpeed);
-        const auto pixel = std::min<uint8_t>(223, lampda::qsub8(flame, decay));
+        const auto flame = noise8::inoise(i * xScale, j * yScale + ySpeed, zSpeed);
+        const auto pixel = std::min<uint8_t>(223, qsub8(flame, decay));
         const auto color = modes::colors::from_palette<false, uint8_t>(pixel, palette);
 
         ctx.lamp.setPixelColorXY(i, j, color);
@@ -88,6 +88,6 @@ struct FireMode : public BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

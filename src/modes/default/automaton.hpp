@@ -8,7 +8,7 @@
 #include "src/system/ext/random8.h"
 
 /// Modes implementing cellular automaton using "grid" tools
-namespace modes::automaton {
+namespace lampda::modes::automaton {
 
 /**
  * \brief Bubbles rising in the sea.
@@ -75,7 +75,7 @@ struct BubbleMode : public BasicMode
     uint8_t mini = ctx.get_active_custom_ramp() / 4;
     uint8_t maxi = 255;
     auto rng = [&](auto p) LMBD_INLINE {
-      return lampda::random8(mini, maxi) < p;
+      return random8(mini, maxi) < p;
     };
 
     // st & lamp for brievty
@@ -90,7 +90,7 @@ struct BubbleMode : public BasicMode
       for (size_t I = 0; I < nbBubbles; ++I)
       {
         if (rng(bubbleFreq))
-          after[lampda::random8(0, after.size())] = colors::fromGrey(0xff);
+          after[random8(0, after.size())] = colors::fromGrey(0xff);
       }
 
       // one pass to remove too crowded stuff
@@ -118,14 +118,14 @@ struct BubbleMode : public BasicMode
       {
         if (rng(starFreq))
         {
-          after[lampda::random8(0, after.size())] = starColor;
+          after[random8(0, after.size())] = starColor;
         }
 
         if (st.algeaStart == 0 && rng(algeaFreq))
         {
-          st.algeaPos = lampda::random8(2, after.size() - 2);
+          st.algeaPos = random8(2, after.size() - 2);
           st.algeaStart = lamp.now;
-          st.algeaLifetime = lampda::random16(algeaLength - 1000, algeaLength + 1000);
+          st.algeaLifetime = random16(algeaLength - 1000, algeaLength + 1000);
         }
       }
 
@@ -204,6 +204,6 @@ struct SierpinskiMode : public BasicMode
 /// Storage for the Automaton modes
 using AutomatonModes = modes::GroupFor<BubbleMode, SierpinskiMode>;
 
-} // namespace modes::automaton
+} // namespace lampda::modes::automaton
 
 #endif

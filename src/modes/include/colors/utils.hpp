@@ -13,7 +13,7 @@
 //
 
 /// Tools to manipulate colors and their representation
-namespace modes::colors {
+namespace lampda::modes::colors {
 
 /// Return color (r, g, b) as a single uint32_t integer
 static constexpr LMBD_INLINE uint32_t fromRGB(uint8_t r, uint8_t g, uint8_t b)
@@ -71,11 +71,11 @@ static constexpr LMBD_INLINE uint32_t fromAngleHue(uint16_t angleDegrees)
   return fromRGB(r, g, b);
 }
 
-} // namespace modes::colors
+} // namespace lampda::modes::colors
 
 #include "src/modes/include/colors/palettes.hpp"
 
-namespace modes::colors {
+namespace lampda::modes::colors {
 
 /** \brief Given a 0-255 value, return a color approximating a kelvin temperature
  *
@@ -131,15 +131,13 @@ template<bool isVideoMode = false> static uint32_t fade(uint32_t inputColor, uin
 
   if (isVideoMode)
   {
-    res = fromRGB(lampda::scale8_video(input_rgb.r, fadeAmount),
-                  lampda::scale8_video(input_rgb.g, fadeAmount),
-                  lampda::scale8_video(input_rgb.b, fadeAmount));
+    res = fromRGB(scale8_video(input_rgb.r, fadeAmount),
+                  scale8_video(input_rgb.g, fadeAmount),
+                  scale8_video(input_rgb.b, fadeAmount));
   }
   else
   {
-    res = fromRGB(lampda::scale8(input_rgb.r, fadeAmount),
-                  lampda::scale8(input_rgb.g, fadeAmount),
-                  lampda::scale8(input_rgb.b, fadeAmount));
+    res = fromRGB(scale8(input_rgb.r, fadeAmount), scale8(input_rgb.g, fadeAmount), scale8(input_rgb.b, fadeAmount));
   }
   return res;
 }
@@ -152,9 +150,8 @@ template<bool isFast = false> uint32_t add(uint32_t c1, uint32_t c2)
 
   if (isFast)
   {
-    return fromRGB(lampda::qadd8(input1_rgb.r, input2_rgb.r),
-                   lampda::qadd8(input1_rgb.g, input2_rgb.g),
-                   lampda::qadd8(input1_rgb.b, input2_rgb.b));
+    return fromRGB(
+            qadd8(input1_rgb.r, input2_rgb.r), qadd8(input1_rgb.g, input2_rgb.g), qadd8(input1_rgb.b, input2_rgb.b));
   }
   else
   {
@@ -177,6 +174,6 @@ template<bool isFast = false> uint32_t add(uint32_t c1, uint32_t c2)
   }
 }
 
-} // namespace modes::colors
+} // namespace lampda::modes::colors
 
 #endif

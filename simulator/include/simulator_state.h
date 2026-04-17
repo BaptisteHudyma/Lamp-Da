@@ -4,6 +4,9 @@
 #include <SFML/Graphics.hpp>
 
 #include "src/modes/include/hardware/lamp_type.hpp"
+
+namespace lampda {
+
 using _LampTy = modes::hardware::LampTy;
 
 namespace sim {
@@ -28,5 +31,7 @@ extern GlobalSimStateTy state;
 } // namespace globals
 
 } // namespace sim
+
+} // namespace lampda
 
 #endif

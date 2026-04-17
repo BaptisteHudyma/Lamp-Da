@@ -7,7 +7,7 @@
 #include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/colors/palettes.hpp"
 
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 /**
  * \brief Barber shop sign looking animation, with nice swirl effect.
@@ -50,7 +50,7 @@ struct SineMode : public modes::BasicMode
     {
       // For each of the LED's in the strip, set a brightness based on a wave as follows:
       // cubicwave8 is 8 bits, so value will be truncated
-      const uint8_t pixBri = lampda::cubicwave8((i * freq) + ctx.state.step);
+      const uint8_t pixBri = cubicwave8((i * freq) + ctx.state.step);
 
       // get the pixel color from palette
       const auto pixColor = colors::from_palette((uint8_t)(i * colorIndexNormalised), ctx.state.palette);
@@ -60,5 +60,5 @@ struct SineMode : public modes::BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 #endif

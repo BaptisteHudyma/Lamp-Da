@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-namespace modes::colors {
+namespace lampda::modes::colors {
 
 namespace __internal {
 
@@ -42,6 +42,6 @@ void calcGammaTable(float gamma)
 /// used for color gamma correction
 static constexpr uint8_t gamma8(uint8_t value) { return __internal::gammaT[value]; }
 
-} // namespace modes::colors
+} // namespace lampda::modes::colors
 
 #endif

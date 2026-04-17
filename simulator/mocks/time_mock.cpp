@@ -6,10 +6,12 @@
 
 #include "simulator_state.h"
 
+#include <stdint.h>
+
+namespace lampda {
+
 // time
 static sf::Clock s_clock;
-
-#include <stdint.h>
 
 // HACK to start the system on time zero
 static bool isClockReset = false;
@@ -18,7 +20,6 @@ namespace time_mocks {
 void reset() { isClockReset = false; }
 } // namespace time_mocks
 
-namespace lampda {
 namespace platform {
 
 uint32_t time_ms(void)

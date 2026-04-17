@@ -9,7 +9,7 @@
 #include "src/modes/include/colors/palettes.hpp"
 
 /// Basic "default" modes included with the hardware
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 /**
  * \brief Aurora borealis effect.
@@ -33,20 +33,20 @@ struct AuroraMode : public BasicMode
 
   static void on_enter_mode(auto& ctx)
   {
-    static const uint16_t adjScale = lampda::lmpd_map<uint16_t>(ctx.lamp.maxWidth + 1, 8, 64, 310, 63);
+    static const uint16_t adjScale = lmpd_map<uint16_t>(ctx.lamp.maxWidth + 1, 8, 64, 310, 63);
 
     static constexpr uint8_t scale = 255;
     static constexpr uint8_t speed = 128;
 
-    ctx.state.scale = lampda::lmpd_map<uint16_t>(scale, 0, 255, 30, adjScale);
-    ctx.state.speed = lampda::lmpd_map<lampda::byte>(speed, 0, 255, 128, 16);
+    ctx.state.scale = lmpd_map<uint16_t>(scale, 0, 255, 30, adjScale);
+    ctx.state.speed = lmpd_map<byte>(speed, 0, 255, 128, 16);
     ctx.state.step = 0;
     ctx.state.palette = colors::PaletteAuroraColors;
   }
 
   static void loop(auto& ctx)
   {
-    static const float adjustHeight = lampda::lmpd_map<float>(ctx.lamp.maxHeight, 8, 32, 28, 12);
+    static const float adjustHeight = lmpd_map<float>(ctx.lamp.maxHeight, 8, 32, 28, 12);
     static constexpr float halfHeight = (float)ctx.lamp.maxHeight / 2.0f;
 
     const float _speedDivider = 1.0f / static_cast<float>(ctx.state.speed);
@@ -59,8 +59,8 @@ struct AuroraMode : public BasicMode
       for (int y = 0; y <= ctx.lamp.maxHeight; y++, step++)
       {
         const auto& color = colors::from_palette(
-                lampda::qsub8(lampda::noise8::inoise((step % 2) + scaledX, y * 16 + step % 16, step * _speedDivider),
-                              fabsf(halfHeight - (float)y) * adjustHeight),
+                qsub8(noise8::inoise((step % 2) + scaledX, y * 16 + step % 16, step * _speedDivider),
+                      fabsf(halfHeight - (float)y) * adjustHeight),
                 palette);
         ctx.lamp.setPixelColorXY(x, y, color);
       }
@@ -71,6 +71,6 @@ struct AuroraMode : public BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

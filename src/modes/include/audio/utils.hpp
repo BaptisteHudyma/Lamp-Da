@@ -14,7 +14,7 @@
 #include <string>
 
 /// User modes audio utilities
-namespace modes::audio {
+namespace lampda::modes::audio {
 
 /**
  * \brief Specific configuration for the sound object
@@ -103,14 +103,14 @@ struct SoundEventTy
   static constexpr float _windowShort = windowShort / 4.0;
 
   /// number of sample in a microphone run
-  static constexpr size_t _dataLenght = lampda::physical::microphone::SoundStruct::SAMPLE_SIZE;
+  static constexpr size_t _dataLenght = physical::microphone::SoundStruct::SAMPLE_SIZE;
   /// target value reached by the auto gain
-  static constexpr int16_t _autoGainTargetValue = lampda::physical::microphone::gainedSignalTarget;
+  static constexpr int16_t _autoGainTargetValue = physical::microphone::gainedSignalTarget;
   /// number of channels in the log fft
-  static constexpr size_t _fftChannels = lampda::physical::microphone::SoundStruct::numberOfFFtChanels;
+  static constexpr size_t _fftChannels = physical::microphone::SoundStruct::numberOfFFtChanels;
 
   /// Frequency resolution of the raw fft result
-  static constexpr float fftResolutionHz = lampda::physical::microphone::SoundStruct::get_fft_resolution_Hz();
+  static constexpr float fftResolutionHz = physical::microphone::SoundStruct::get_fft_resolution_Hz();
   /// Size of the fourrier transform history
   static constexpr size_t _FFThistory_MaxSize = round(fftResolutionHz);
 
@@ -144,7 +144,7 @@ struct SoundEventTy
   /// Call this once every tick inside the mode loop callback
   void update(auto& ctx)
   {
-    const lampda::physical::microphone::SoundStruct& soundObject = ctx.lamp.get_sound_struct();
+    const physical::microphone::SoundStruct& soundObject = ctx.lamp.get_sound_struct();
 
     // copy microphone data
     data = soundObject.data;
@@ -328,6 +328,6 @@ private:
   }
 };
 
-} // namespace modes::audio
+} // namespace lampda::modes::audio
 
 #endif

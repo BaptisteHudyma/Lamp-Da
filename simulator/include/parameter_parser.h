@@ -7,6 +7,8 @@
 
 #include "simulator/include/hardware_influencer.h"
 
+namespace lampda {
+
 static const char* fileName = "./simulator/resources/simulation_parameters.txt";
 
 static const char* batteryVoltageKey = "batt_V";
@@ -67,5 +69,7 @@ inline void read_and_update_parameters()
 
   file.close();
 }
+
+} // namespace lampda
 
 #endif

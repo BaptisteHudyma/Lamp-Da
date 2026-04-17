@@ -5,6 +5,8 @@
 
 #define PLATFORM_REGISTER_CPP
 
+namespace lampda {
+
 namespace mock_registers {
 bool isDeepSleep = false;
 float cpuTemperature;
@@ -14,7 +16,6 @@ bool shouldStopThreads = false;
 
 } // namespace mock_registers
 
-namespace lampda {
 namespace platform {
 /// Define the interaction layer with the system specific registers
 namespace registers {

@@ -3,7 +3,7 @@
 
 /// @file color_wipe_mode.hpp
 
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 #include <cstdint>
 
@@ -31,7 +31,7 @@ struct ColorWipeMode : public modes::BasicMode
   {
     ctx.state.step = true;
     ctx.state.progress = 0.0;
-    ctx.state.color = lampda::utils::get_random_complementary_color(ctx.state.color, randomVariation);
+    ctx.state.color = utils::get_random_complementary_color(ctx.state.color, randomVariation);
   }
 
   static void loop(auto& ctx)
@@ -58,11 +58,11 @@ struct ColorWipeMode : public modes::BasicMode
     {
       ctx.state.progress = 0.0;
       ctx.state.step = not ctx.state.step;
-      ctx.state.color = lampda::utils::get_random_complementary_color(ctx.state.color, randomVariation);
+      ctx.state.color = utils::get_random_complementary_color(ctx.state.color, randomVariation);
     }
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

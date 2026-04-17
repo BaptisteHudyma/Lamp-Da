@@ -1,7 +1,7 @@
 #ifndef MY_CUSTOM_MODE_H
 #define MY_CUSTOM_MODE_H
 
-struct MyCustomMode : public modes::BasicMode
+struct MyCustomMode : public lampda::modes::BasicMode
 {
   static void loop(auto& ctx) {}
   static void on_enter_mode(auto& ctx) {}
@@ -11,7 +11,7 @@ struct MyCustomMode : public modes::BasicMode
   static void sunset_update(auto& ctx, float progress) {}
 
   // only if hasBrightCallback
-  static void brightness_update(auto& ctx, lampda::brightness_t brightness) {}
+  static void brightness_update(auto& ctx, brightness_t brightness) {}
 
   // only if hasCustomRamp
   static void custom_ramp_update(auto& ctx, uint8_t rampValue) {}

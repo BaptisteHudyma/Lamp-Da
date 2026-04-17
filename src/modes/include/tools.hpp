@@ -18,7 +18,7 @@
 #error "File requires -DLMBD_CPP17 to explicitly enables C++17 features"
 #endif
 
-namespace modes {
+namespace lampda::modes {
 
 /// \private True iff Mode is a BasicMode
 template<typename Mode> static constexpr bool is_mode = std::is_base_of_v<BasicMode, Mode>;
@@ -461,6 +461,6 @@ static inline std::enable_if_t<NBytes <= sizeof(To) && NBytes <= sizeof(From) &&
 
 } // namespace details
 
-} // namespace modes
+} // namespace lampda::modes
 
 #endif

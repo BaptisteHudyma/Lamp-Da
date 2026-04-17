@@ -15,13 +15,15 @@
 
 #define PLATFORM_GPIO_CPP
 
+namespace lampda {
+
 typedef void (*voidFuncPtr)(void);
 
 namespace mock_gpios {
 
-inline static std::map<lampda::platform::gpio::DigitalPin::GPIO, voidFuncPtr> callbacksRisingEdge;
-inline static std::map<lampda::platform::gpio::DigitalPin::GPIO, voidFuncPtr> callbacksFallingEdge;
-inline static std::map<lampda::platform::gpio::DigitalPin::GPIO, voidFuncPtr> callbacksChange;
+inline static std::map<platform::gpio::DigitalPin::GPIO, voidFuncPtr> callbacksRisingEdge;
+inline static std::map<platform::gpio::DigitalPin::GPIO, voidFuncPtr> callbacksFallingEdge;
+inline static std::map<platform::gpio::DigitalPin::GPIO, voidFuncPtr> callbacksChange;
 
 static bool isButtonPressed = false;
 
@@ -35,7 +37,7 @@ void update_callbacks()
   // event on change
   if (isButtonPressed != wasButtonPressed)
   {
-    const lampda::platform::gpio::DigitalPin::GPIO buttonPin = lampda::physical::button::get_button_pin();
+    const platform::gpio::DigitalPin::GPIO buttonPin = physical::button::get_button_pin();
     // change always called
     for (const auto& [pin, callback]: callbacksChange)
     {
@@ -74,7 +76,7 @@ void update_callbacks()
 } // namespace mock_gpios
 
 namespace mock_indicator {
-lampda::COLOR idColor;
+COLOR idColor;
 uint32_t get_color() { return idColor.color; }
 } // namespace mock_indicator
 
@@ -85,7 +87,6 @@ float voltage;
 // store output values
 std::array<uint8_t, 255> pinOutputValue;
 
-namespace lampda {
 namespace platform {
 namespace gpio {
 

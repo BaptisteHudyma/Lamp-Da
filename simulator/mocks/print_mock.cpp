@@ -19,12 +19,13 @@ extern "C" {
 #include "src/system/utils/print.h"
 }
 
+namespace lampda {
+
 std::vector<std::string> inputCommands;
 
 std::atomic<bool> canRunInputThread = false; // TODO kill
 std::thread inputThread;
 
-namespace lampda {
 namespace platform {
 
 /**

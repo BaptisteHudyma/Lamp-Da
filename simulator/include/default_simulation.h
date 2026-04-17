@@ -1,6 +1,8 @@
 #ifndef LMBD_DEFAULT_SIMULATION_H
 #define LMBD_DEFAULT_SIMULATION_H
 
+namespace lampda {
+
 struct defaultSimulation
 {
   float fps = 80.f; // how fast animation is
@@ -17,5 +19,7 @@ struct defaultSimulation
 
   defaultSimulation() {}
 };
+
+} // namespace lampda
 
 #endif

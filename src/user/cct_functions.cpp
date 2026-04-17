@@ -16,14 +16,14 @@
 
 #include "src/user/functions.h"
 
-namespace user {
+namespace lampda::user {
 
 constexpr uint8_t minBrightness = 13;
 
-static lampda::platform::gpio::DigitalPin WhiteColorPin(lampda::platform::gpio::DigitalPin::GPIO::gpio6);
-static lampda::platform::gpio::DigitalPin YellowColorPin(lampda::platform::gpio::DigitalPin::GPIO::gpio7);
+static platform::gpio::DigitalPin WhiteColorPin(platform::gpio::DigitalPin::GPIO::gpio6);
+static platform::gpio::DigitalPin YellowColorPin(platform::gpio::DigitalPin::GPIO::gpio7);
 
-constexpr uint32_t colorKey = lampda::utils::hash("color");
+constexpr uint32_t colorKey = utils::hash("color");
 uint8_t currentColor = 0;
 uint8_t lastColor = 0;
 
@@ -42,10 +42,10 @@ void set_color(const uint8_t color)
 
 void power_on_sequence()
 {
-  YellowColorPin.set_pin_mode(lampda::platform::gpio::DigitalPin::Mode::kOutput);
-  WhiteColorPin.set_pin_mode(lampda::platform::gpio::DigitalPin::Mode::kOutput);
+  YellowColorPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
+  WhiteColorPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
 
-  brightness_update(lampda::utils::brightness::get_brightness());
+  brightness_update(utils::brightness::get_brightness());
 }
 
 void power_off_sequence()
@@ -59,43 +59,42 @@ void power_off_sequence()
 #endif
 }
 
-void brightness_update(const lampda::brightness_t brightness)
+void brightness_update(const brightness_t brightness)
 {
-  const auto _maxBrightness = lampda::utils::brightness::get_max_brightness();
-  const lampda::brightness_t constraintBrightness = std::min<lampda::brightness_t>(brightness, _maxBrightness);
+  const auto _maxBrightness = utils::brightness::get_max_brightness();
+  const brightness_t constraintBrightness = std::min<brightness_t>(brightness, _maxBrightness);
 
   if (constraintBrightness == _maxBrightness)
   {
     // blip
-    lampda::physical::outputPower::blip(50);
+    physical::outputPower::blip(50);
   }
 
   // map to a new curve, favorising low levels
-  using curve_t = lampda::utils::curves::ExponentialCurve<lampda::brightness_t, uint8_t>;
-  static curve_t brightnessCurve(curve_t::point_t {0, minBrightness},
-                                 curve_t::point_t {lampda::brightness::absoluteMaximumBrightness, 255},
-                                 50.0);
+  using curve_t = utils::curves::ExponentialCurve<brightness_t, uint8_t>;
+  static curve_t brightnessCurve(
+          curve_t::point_t {0, minBrightness}, curve_t::point_t {brightness::absoluteMaximumBrightness, 255}, 50.0);
 
   currentBrightness = round(brightnessCurve.sample(constraintBrightness));
 
-  lampda::physical::outputPower::write_voltage(lampda::stripInputVoltage_mV);
+  physical::outputPower::write_voltage(stripInputVoltage_mV);
   set_color(currentColor);
 }
 
 void sunset_timer_update(const float progress) {}
 
-void write_parameters() { lampda::physical::fileSystem::user::set_value(colorKey, currentColor); }
+void write_parameters() { physical::fileSystem::user::set_value(colorKey, currentColor); }
 
 void read_parameters()
 {
   uint32_t mode = 0;
-  if (lampda::physical::fileSystem::user::get_value(colorKey, mode))
+  if (physical::fileSystem::user::get_value(colorKey, mode))
   {
     currentColor = mode;
     lastColor = currentColor;
   }
 
-  currentBrightness = lampda::utils::brightness::get_brightness();
+  currentBrightness = utils::brightness::get_brightness();
 }
 
 bool button_start_click_default(const uint8_t clicks) { return false; }
@@ -111,7 +110,7 @@ void button_clicked_default(const uint8_t clicks)
   {
     // put luminosity to maximum
     case 2:
-      lampda::utils::brightness::update_brightness(lampda::utils::brightness::get_max_brightness());
+      utils::brightness::update_brightness(utils::brightness::get_max_brightness());
       break;
 
     default:
@@ -128,12 +127,11 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       if (!isEndOfHoldEvent)
       {
         const float percentOfTimeToGoUp = float(UINT8_MAX - lastColor) / (float)UINT8_MAX;
-        currentColor = lampda::lmpd_map<uint8_t>(
-                std::min<uint32_t>(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp),
-                0,
-                COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp,
-                lastColor,
-                UINT8_MAX);
+        currentColor = lmpd_map<uint8_t>(std::min<uint32_t>(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp),
+                                         0,
+                                         COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp,
+                                         lastColor,
+                                         UINT8_MAX);
       }
       else
       {
@@ -146,12 +144,12 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       {
         const double percentOfTimeToGoDown = float(lastColor) / (float)UINT8_MAX;
 
-        currentColor = lampda::lmpd_map<uint8_t>(
-                std::min<uint32_t>(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown),
-                0,
-                COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown,
-                lastColor,
-                0);
+        currentColor =
+                lmpd_map<uint8_t>(std::min<uint32_t>(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown),
+                                  0,
+                                  COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown,
+                                  lastColor,
+                                  0);
       }
       else
       {
@@ -161,9 +159,9 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   }
 }
 
-bool button_clicked_usermode(const uint8_t) { return lampda::usermodeDefaultsToLockdown; }
+bool button_clicked_usermode(const uint8_t) { return usermodeDefaultsToLockdown; }
 
-bool button_hold_usermode(const uint8_t, const bool, const uint32_t) { return lampda::usermodeDefaultsToLockdown; }
+bool button_hold_usermode(const uint8_t, const bool, const uint32_t) { return usermodeDefaultsToLockdown; }
 
 void loop() { set_color(currentColor); }
 
@@ -171,6 +169,6 @@ bool should_spawn_thread() { return false; }
 
 void user_thread() {}
 
-} // namespace user
+} // namespace lampda::user
 
 #endif

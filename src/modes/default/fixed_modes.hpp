@@ -5,6 +5,8 @@
 
 #include "src/modes/include/colors/palettes.hpp"
 
+namespace lampda {
+
 namespace modes {
 
 namespace fixed {
@@ -138,5 +140,6 @@ using FixedModes = modes::GroupFor<fixed::KelvinMode, fixed::RainbowMode, fixed:
 using MiscFixedModes = modes::GroupFor<fixed::PalettePartyMode, fixed::PaletteForestMode, fixed::PaletteOceanMode>;
 
 } // namespace modes
+} // namespace lampda
 
 #endif

@@ -16,7 +16,7 @@
 
 #include "src/system/platform/print.h"
 
-namespace modes {
+namespace lampda::modes {
 
 /// Bind provided context to another modes::BasicMode
 ///
@@ -281,7 +281,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   //
 
   /// (getter) Return current brightness value
-  lampda::brightness_t LMBD_INLINE get_brightness() { return lampda::utils::brightness::get_brightness(); }
+  brightness_t LMBD_INLINE get_brightness() { return utils::brightness::get_brightness(); }
 
   //
   // store
@@ -621,7 +621,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   }
 
   /// Binds to local BasicMode::brightness_update()
-  void LMBD_INLINE brightness_update(LMBD_USED lampda::brightness_t brightness)
+  void LMBD_INLINE brightness_update(LMBD_USED brightness_t brightness)
   {
     if constexpr (LocalModeTy::hasBrightCallback)
     {
@@ -721,6 +721,6 @@ private:
   ModeManagerTy& modeManager;
 };
 
-} // namespace modes
+} // namespace lampda::modes
 
 #endif

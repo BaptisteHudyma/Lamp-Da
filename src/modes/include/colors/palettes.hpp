@@ -10,7 +10,7 @@
 
 #include "src/modes/include/colors/utils.hpp"
 
-namespace modes::colors {
+namespace lampda::modes::colors {
 
 /// Palette types
 using PaletteTy = std::array<uint32_t, 16>;
@@ -603,6 +603,6 @@ static constexpr uint32_t from_palette(UIntTy index, const PaletteTy& palette, u
   return outputColor;
 }
 
-} // namespace modes::colors
+} // namespace lampda::modes::colors
 
 #endif

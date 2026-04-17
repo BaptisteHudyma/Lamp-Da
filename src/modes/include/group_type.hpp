@@ -19,7 +19,7 @@
 #include "src/modes/include/mode_type.hpp"
 #include "src/modes/include/tools.hpp"
 
-namespace modes {
+namespace lampda::modes {
 
 /// \private Return true if a mode failed verification to prevent extra errors
 template<typename AllModes> static constexpr bool verifyGroup()
@@ -248,7 +248,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   }
 
   /// Binds to local BasicMode::brightness_update()
-  static void brightness_update(auto& ctx, lampda::brightness_t brightness)
+  static void brightness_update(auto& ctx, brightness_t brightness)
   {
     dispatch_mode(ctx, [&](auto mode) {
       mode.brightness_update(brightness);
@@ -331,6 +331,6 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
  */
 template<typename... Modes> using GroupFor = GroupTy<std::tuple<Modes...>>;
 
-} // namespace modes
+} // namespace lampda::modes
 
 #endif

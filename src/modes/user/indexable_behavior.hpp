@@ -10,6 +10,8 @@
 //  - user/indexable_functions.h
 //
 
+namespace lampda::user {
+
 void button_clicked_default(const uint8_t clicks)
 {
   auto manager = get_context();
@@ -147,7 +149,7 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       {
         // sunset timer
         // this command is only active when the timer is enabled
-        if (not isEndOfHoldEvent and holdDuration > 0 and lampda::utils::sunset::is_enabled())
+        if (not isEndOfHoldEvent and holdDuration > 0 and utils::sunset::is_enabled())
         {
           modes::details::_animate_sunset_timer(manager, holdDuration, 1000);
         }
@@ -175,5 +177,7 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       break;
   }
 }
+
+} // namespace lampda::user
 
 #endif

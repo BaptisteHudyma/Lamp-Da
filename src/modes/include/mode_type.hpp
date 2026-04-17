@@ -9,7 +9,7 @@
 #include <cstdint>
 
 /// Contains basic interface types to implement custom user modes
-namespace modes {
+namespace lampda::modes {
 
 /** \brief Parent object for all custom user modes
  *
@@ -102,7 +102,7 @@ struct BasicMode
    * \remark Use update_brightness() to change brightness in order for this
    * callback to be correctly handled at runtime
    */
-  static void brightness_update(auto& ctx, lampda::brightness_t brightness) { return; }
+  static void brightness_update(auto& ctx, brightness_t brightness) { return; }
 
   /** \brief Toggles the use of custom ramps & BasicMode::custom_ramp_update()
    *
@@ -274,6 +274,6 @@ struct BasicMode
   static constexpr bool everyButtonCustomUI = false;    ///< \private
 };
 
-} // namespace modes
+} // namespace lampda::modes
 
 #endif

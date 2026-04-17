@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+namespace lampda {
+
 namespace mock_gpios {
 // update gpios callbacks
 void update_callbacks();
@@ -45,5 +47,7 @@ extern float chargeOtgOutput;
 namespace mock_battery {
 extern float voltage;
 }
+
+} // namespace lampda
 
 #endif

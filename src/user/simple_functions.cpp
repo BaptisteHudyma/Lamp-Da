@@ -16,7 +16,7 @@
 
 #include "src/modes/default/brightness_modes.hpp"
 
-namespace user {
+namespace lampda::user {
 //
 // list your groups & modes here
 //
@@ -37,14 +37,14 @@ ManagerTy modeManager(lamp);
 
 static auto get_context() { return user::_private::modeManager.get_context(); }
 
+} // namespace lampda::user
+
 //
 // simple lamp is implemented in another castle
 //
 
 #include "src/modes/user/default_behavior.hpp" // default manager callbacks
 #include "src/modes/user/simple_behavior.hpp"  // custom RGB UI of the lamp
-
-} // namespace user
 
 #else
 #warning "This file requires --std=gnu++17 or higher to build!*"
@@ -55,12 +55,12 @@ static auto get_context() { return user::_private::modeManager.get_context(); }
 // no c++17 support -- placeholder implementation
 //
 
-namespace user {
+namespace lampda::user {
 
 void power_on_sequence() {}
 void power_off_sequence() {}
 
-void brightness_update(const lampda::brightness_t) {}
+void brightness_update(const brightness_t) {}
 void sunset_timer_update(const float progress) {}
 void write_parameters() {}
 void read_parameters() {}
@@ -80,7 +80,7 @@ void loop() {}
 bool should_spawn_thread() { return false; }
 void user_thread() {}
 
-} // namespace user
+} // namespace lampda::user
 
 #endif // LMBD_CPP17
 

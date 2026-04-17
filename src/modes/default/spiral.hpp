@@ -9,7 +9,7 @@
 #include "src/modes/include/colors/palettes.hpp"
 
 /// Basic "default" modes included with the hardware
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 /**
  * \brief Display a 2D rotating spiral.
@@ -50,9 +50,9 @@ struct SpiralMode : public BasicMode
     unsigned long t_20 = t / 20; // softhack007: pre-calculating this gives about 10% speedup
     for (float i = 1; i < maxDim; i += 0.25)
     {
-      float angle = lampda::to_radians(t * (maxDim - i));
-      uint16_t myX = colsCenter + (lampda::sin_t(angle) * i);
-      uint16_t myY = rowsCenter + (lampda::cos_t(angle) * i);
+      float angle = to_radians(t * (maxDim - i));
+      uint16_t myX = colsCenter + (sin_t(angle) * i);
+      uint16_t myY = rowsCenter + (cos_t(angle) * i);
 
       ctx.lamp.setPixelColorXY(myX, myY, colors::from_palette((uint8_t)((i * 20) + t_20), ctx.state.palette));
     }
@@ -60,6 +60,6 @@ struct SpiralMode : public BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

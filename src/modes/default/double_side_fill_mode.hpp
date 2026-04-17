@@ -3,7 +3,7 @@
 
 /// @file double_side_fill_mode.hpp
 
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 #include <cstdint>
 
@@ -47,11 +47,11 @@ struct DoubleSideFillMode : public modes::BasicMode
     if (ctx.state.progress >= 1.0)
     {
       ctx.state.progress = 0.0;
-      ctx.state.color = lampda::utils::get_random_complementary_color(ctx.state.color, randomVariation);
+      ctx.state.color = utils::get_random_complementary_color(ctx.state.color, randomVariation);
     }
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

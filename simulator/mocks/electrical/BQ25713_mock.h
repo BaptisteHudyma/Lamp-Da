@@ -76,11 +76,11 @@ public:
       // EN_OTG
       if ((val1 & (1 << 0x04)) != 0 && __private::enableOTG.is_high())
       {
-        mock_electrical::chargeOtgOutput = targetOTGVoltage;
+        lampda::mock_electrical::chargeOtgOutput = targetOTGVoltage;
       }
       else
       {
-        mock_electrical::chargeOtgOutput = 0;
+        lampda::mock_electrical::chargeOtgOutput = 0;
       }
     }
   }
@@ -170,8 +170,9 @@ private:
   {
     uint16_t read() override
     {
-      return encode_to_double_register(
-              mock_battery::voltage * 1000.0, mock_electrical::powerRailVoltage * 1000.0, &IcRegisters.aDCVBUSPSYS);
+      return encode_to_double_register(lampda::mock_battery::voltage * 1000.0,
+                                       lampda::mock_electrical::powerRailVoltage * 1000.0,
+                                       &IcRegisters.aDCVBUSPSYS);
     }
   };
 
@@ -181,7 +182,7 @@ private:
     uint16_t read() override
     {
       return encode_to_double_register(
-              mock_battery::voltage * 1000.0, mock_battery::voltage * 1000.0, &IcRegisters.aDCVSYSVBAT);
+              lampda::mock_battery::voltage * 1000.0, lampda::mock_battery::voltage * 1000.0, &IcRegisters.aDCVSYSVBAT);
     }
   };
 

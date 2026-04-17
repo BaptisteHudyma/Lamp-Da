@@ -14,6 +14,8 @@
 #include "simulator/mocks/electrical/i_ic.h"
 #include "simulator/mocks/electrical/BQ25713_mock.h"
 
+namespace lampda {
+
 static constexpr size_t numberOfMocks = 1;
 const std::array<std::unique_ptr<IntegratedCircuitMock_I>, numberOfMocks> icMocks = {
         // charger component
@@ -40,7 +42,6 @@ float chargeOtgOutput;
 std::atomic<bool> canRunComponentUpdateThread = false;
 std::thread componentUpdateThread;
 
-namespace lampda {
 namespace platform {
 namespace i2c {
 

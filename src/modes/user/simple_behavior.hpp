@@ -10,6 +10,8 @@
 //  - user/simple_functions.h
 //
 
+namespace lampda::user {
+
 void button_clicked_default(const uint8_t clicks)
 {
   auto manager = get_context();
@@ -38,10 +40,10 @@ void button_clicked_default(const uint8_t clicks)
       // 3C at max brightness will produce a light boost (dangerous for the strip if held for a long time)
       if (manager.get_active_group() == 0 and
           // check that brightness is at the absolute maximum level
-          manager.lamp.getBrightness() == lampda::brightness::absoluteMaximumBrightness)
+          manager.lamp.getBrightness() == brightness::absoluteMaximumBrightness)
       {
         // write a power boost (dangerous) for a limited time
-        lampda::physical::outputPower::write_temporary_output_limits(lampda::stripInputVoltage_mV * 1.2f, 5000, 5000);
+        physical::outputPower::write_temporary_output_limits(stripInputVoltage_mV * 1.2f, 5000, 5000);
       }
       else
       {
@@ -76,7 +78,7 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       {
         // sunset timer
         // this command is only active when the timer is enabled
-        if (not isEndOfHoldEvent and holdDuration > 0 and lampda::utils::sunset::is_enabled())
+        if (not isEndOfHoldEvent and holdDuration > 0 and utils::sunset::is_enabled())
         {
           modes::details::_animate_sunset_timer(manager, holdDuration, 1000);
         }
@@ -87,5 +89,7 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       break;
   }
 }
+
+} // namespace lampda::user
 
 #endif

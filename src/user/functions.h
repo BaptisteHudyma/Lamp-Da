@@ -17,7 +17,7 @@
 #include "src/system/utils/strip.h"
 
 // (extern declarations)
-namespace user::_private {
+namespace lampda::user::_private {
 extern lampda::LedStrip strip;
 }
 #endif
@@ -27,7 +27,7 @@ extern lampda::LedStrip strip;
 //
 
 /// Contains code handling custom user mode functions for indexable strips
-namespace user {
+namespace lampda::user {
 
 /// Called when the system powers on (must be non blocking function!)
 void power_on_sequence();
@@ -130,6 +130,6 @@ bool should_spawn_thread();
  */
 void user_thread();
 
-} // namespace user
+} // namespace lampda::user
 
 #endif
