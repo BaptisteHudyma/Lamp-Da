@@ -38,7 +38,6 @@ set(SRC_SYSTEM_DEPENDS
 
 # Create simulator as library
 set(SRC_SYSTEM_UTILS
-    ${LMBD_ROOT_DIR}/src/system/utils/coordinates.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/colorspace.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/serial.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/sunset_timer.cpp

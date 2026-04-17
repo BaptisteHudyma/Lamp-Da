@@ -34,7 +34,6 @@
     - brightness_handle.h: handle the brightness passthrough
     - colorspace.h: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !
     - constants.h: global constants used all around the program
-    - coordinates.h: coordinate system for the lamp body (only used in RGB lamp type)
     - curves.h: define custom curve and curve sampling functions
     - input_output.h: define the gpio used for the button & indicator
     - print.h: access to the print/debug interface with string composing
