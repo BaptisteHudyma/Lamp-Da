@@ -17,8 +17,8 @@
 #include "src/system/utils/strip.h"
 
 // (extern declarations)
-namespace user::_private {
-extern LedStrip strip;
+namespace lampda::user::_private {
+extern lampda::LedStrip strip;
 }
 #endif
 
@@ -27,7 +27,7 @@ extern LedStrip strip;
 //
 
 /// Contains code handling custom user mode functions for indexable strips
-namespace user {
+namespace lampda::user {
 
 /// Called when the system powers on (must be non blocking function!)
 void power_on_sequence();
@@ -41,7 +41,7 @@ void power_off_sequence();
  * \remark Use update_brightness() to change brightness in order for
  * brightness_update() to be correctly called on brightness change
  */
-void brightness_update(const brightness_t brightness);
+void brightness_update(const lampda::brightness_t brightness);
 
 /// Called when the sunset timer progresses [0; 1]
 void sunset_timer_update(const float progress);
@@ -130,6 +130,6 @@ bool should_spawn_thread();
  */
 void user_thread();
 
-} // namespace user
+} // namespace lampda::user
 
 #endif

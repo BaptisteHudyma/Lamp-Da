@@ -7,7 +7,7 @@
 
 #include "src/modes/include/colors/utils.hpp"
 
-namespace modes::anims {
+namespace lampda::modes::anims {
 
 /** \brief Display a ramp animation while freezing the active mode
  *
@@ -112,6 +112,6 @@ void inline LMBD_INLINE _rampAnimDispatch(auto& ctx, uint32_t index, uint8_t ram
   }
 }
 
-} // namespace modes::anims
+} // namespace lampda::modes::anims
 
 #endif

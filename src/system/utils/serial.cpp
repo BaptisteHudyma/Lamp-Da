@@ -24,6 +24,8 @@
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/statistics_handler.h"
 
+namespace lampda {
+namespace utils {
 namespace serial {
 
 constexpr uint8_t maxReadLinePerLoop = 5;
@@ -31,14 +33,14 @@ constexpr uint8_t maxLineLenght = 200;
 
 inline const char* boolToString(bool b) { return b ? "true" : "false"; }
 
-void handleCommand(const Inputs::Command& command)
+void handleCommand(const platform::Inputs::Command& command)
 {
   switch (utils::hash(command.data()))
   {
     case utils::hash("h"):
     case utils::hash("help"):
       {
-        lampda_print(
+        platform::lampda_print(
                 "---Lamp-da CLI---\n"
                 "h: this page\n"
                 "v: hardware & software version\n"
@@ -63,7 +65,7 @@ void handleCommand(const Inputs::Command& command)
 
     case utils::hash("v"):
       {
-        lampda_print(
+        platform::lampda_print(
                 "hardware:%d.%d\n"
                 "firmware:%d.%d\n"
                 "base software:%d.%d\n"
@@ -82,13 +84,13 @@ void handleCommand(const Inputs::Command& command)
     case utils::hash("t"):
       {
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
-        lampda_print("indexable");
+        platform::lampda_print("indexable");
 #else
 #ifdef LMBD_LAMP_TYPE__SIMPLE
-        lampda_print("simple");
+        platform::lampda_print("simple");
 #else
 #ifdef LMBD_LAMP_TYPE__CCT
-        lampda_print("cct");
+        platform::lampda_print("cct");
 #else
 #error "Unspecified lamp type in CLI"
 #endif /* LMBD_LAMP_TYPE__CCT */
@@ -99,71 +101,71 @@ void handleCommand(const Inputs::Command& command)
 
     case utils::hash("id"):
       {
-        lampda_print("Serial number: %lu", get_device_serial_number());
+        platform::lampda_print("Serial number: %lu", platform::registers::get_device_serial_number());
         break;
       }
 
     case utils::hash("stats"):
       {
-        statistics::show();
+        logic::statistics::show();
         break;
       }
 
     case utils::hash("bat"):
       {
-        const auto& balancerStatus = balancer::get_status();
+        const auto& balancerStatus = power::balancer::get_status();
         const bool areBalancerValueValid = balancerStatus.is_valid();
 
         if (areBalancerValueValid)
         {
           // print individual battery voltages
           for (uint8_t i = 0; i < batteryCount; ++i)
-            lampda_print("cell %d: %d mV, is balancing: %s",
-                         i,
-                         balancerStatus.batteryVoltages_mV[i],
-                         boolToString(balancerStatus.isBalancing[i]));
-          lampda_print("total (from balancer) %dmv\n", balancerStatus.stackVoltage_mV);
+            platform::lampda_print("cell %d: %d mV, is balancing: %s",
+                                   i,
+                                   balancerStatus.batteryVoltages_mV[i],
+                                   boolToString(balancerStatus.isBalancing[i]));
+          platform::lampda_print("total (from balancer) %dmv\n", balancerStatus.stackVoltage_mV);
         }
         else
         {
-          lampda_print("balancer measurments not valid");
+          platform::lampda_print("balancer measurments not valid");
         }
 
-        const auto& chargerStatus = charger::get_state();
+        const auto& chargerStatus = power::charger::get_state();
         const bool areChargerValueValid = chargerStatus.areMeasuresOk;
         if (areChargerValueValid)
         {
-          lampda_print("total (from charger) %dmv", chargerStatus.batteryVoltage_mV);
+          platform::lampda_print("total (from charger) %dmv", chargerStatus.batteryVoltage_mV);
         }
         else
         {
-          lampda_print("charger measurments not valid");
+          platform::lampda_print("charger measurments not valid");
         }
 
         if (areChargerValueValid or areBalancerValueValid)
         {
           // print individual battery voltages
-          lampda_print(
+          platform::lampda_print(
                   "raw battery level:%.2f%%\n"
                   "battery level:%.2f%%\n"
                   "minimum cell level:%.2f%%",
-                  battery::get_level_percent(battery::get_raw_battery_voltage_mv()) / 100.0,
-                  battery::get_battery_level() / 100.0,
-                  battery::get_battery_minimum_cell_level() / 100.0);
+                  physical::battery::get_level_percent(physical::battery::get_raw_battery_voltage_mv()) / 100.0,
+                  physical::battery::get_battery_level() / 100.0,
+                  physical::battery::get_battery_minimum_cell_level() / 100.0);
         }
         else
         {
-          lampda_print("Battery measurments not valid");
+          platform::lampda_print("Battery measurments not valid");
         }
         break;
       }
 
     case utils::hash("cinfo"):
       {
-        const auto& chargerState = charger::get_state();
+        const auto& chargerState = power::charger::get_state();
         if (chargerState.areMeasuresOk)
         {
-          lampda_print(
+          platform::lampda_print(
                   "is charge signal ok:%s\n"
                   "voltage on power rail:%dmV\n"
                   "input current:%dmA\n"
@@ -179,62 +181,62 @@ void handleCommand(const Inputs::Command& command)
                   chargerState.inputCurrent_mA,
                   chargerState.batteryVoltage_mV,
                   chargerState.chargeCurrent_mA,
-                  boolToString(charger::is_vbus_signal_detected()),
+                  boolToString(power::charger::is_vbus_signal_detected()),
                   boolToString(chargerState.is_charging()),
                   boolToString(chargerState.is_effectivly_charging()),
-                  battery::get_battery_level() / 100.0,
+                  physical::battery::get_battery_level() / 100.0,
                   chargerState.get_status_str().c_str());
         }
         else
         {
-          lampda_print(
+          platform::lampda_print(
                   "is charge signal ok:%s\n"
                   "Charger measurments are invalid !!\n"
                   "is usb serial connected:%s\n"
                   "battery level:%.2f%%\n"
                   "-> charger status: %s",
                   boolToString(chargerState.isChargeOkSignalHigh),
-                  boolToString(charger::is_vbus_signal_detected()),
-                  battery::get_battery_level() / 100.0,
+                  boolToString(power::charger::is_vbus_signal_detected()),
+                  physical::battery::get_battery_level() / 100.0,
                   chargerState.get_status_str().c_str());
         }
 
         // in case there is a software error, display it
-        if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_HARDWARE)
+        if (chargerState.status == power::charger::Charger_t::ChargerStatus_t::ERROR_HARDWARE)
         {
-          lampda_print("\t hardware error detail: \"%s\"", chargerState.hardwareErrorMessage.c_str());
+          platform::lampda_print("\t hardware error detail: \"%s\"", chargerState.hardwareErrorMessage.c_str());
         }
-        if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
+        if (chargerState.status == power::charger::Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
-          lampda_print("\t software error detail: \"%s\"", chargerState.softwareErrorMessage.c_str());
+          platform::lampda_print("\t software error detail: \"%s\"", chargerState.softwareErrorMessage.c_str());
         }
         break;
       }
 
     case utils::hash("alerts"):
-      alerts::show_all();
+      logic::alerts::show_all();
       break;
 
     case utils::hash("i2c"):
       {
-        lampda_print(
+        platform::lampda_print(
                 "fusb detected : %d\n"
                 "imu detected: %d\n"
                 "balancer detected: %d\n"
                 "charger detected: %d",
-                i2c_check_existence(0, pdNegociationI2cAddress) == 0,
-                i2c_check_existence(0, imuI2cAddress) == 0,
-                i2c_check_existence(0, batteryBalancerI2cAddress) == 0,
-                i2c_check_existence(0, chargeI2cAddress) == 0);
+                platform::i2c::i2c_check_existence(0, platform::i2c::pdNegociationI2cAddress) == 0,
+                platform::i2c::i2c_check_existence(0, platform::i2c::imuI2cAddress) == 0,
+                platform::i2c::i2c_check_existence(0, platform::i2c::batteryBalancerI2cAddress) == 0,
+                platform::i2c::i2c_check_existence(0, platform::i2c::chargeI2cAddress) == 0);
         break;
       }
 
     case utils::hash("ADC"):
       {
-        const auto& chargerState = charger::get_state();
+        const auto& chargerState = power::charger::get_state();
         if (chargerState.areMeasuresOk)
         {
-          lampda_print(
+          platform::lampda_print(
                   "Last update %dms\n"
                   "PowerRail voltage:%dmV\n"
                   "PowerRail current:%dmA\n"
@@ -245,104 +247,106 @@ void handleCommand(const Inputs::Command& command)
                   chargerState.lastUpdateTime_ms,
                   chargerState.powerRail_mV,
                   chargerState.inputCurrent_mA,
-                  powerDelivery::get_vbus_voltage(),
+                  power::powerDelivery::get_vbus_voltage(),
                   chargerState.batteryVoltage_mV,
                   chargerState.batteryCurrent_mA,
-                  read_CPU_temperature_degreesC());
+                  platform::registers::read_CPU_temperature_degreesC());
         }
         else
         {
-          lampda_print(
+          platform::lampda_print(
                   "Charger measurment are invalid !\n"
                   "Last update %dms\n"
                   "VBUS voltage:%dmA\n"
                   "Temperature:%.2fC",
                   chargerState.lastUpdateTime_ms,
-                  powerDelivery::get_vbus_voltage(),
-                  read_CPU_temperature_degreesC());
+                  power::powerDelivery::get_vbus_voltage(),
+                  platform::registers::read_CPU_temperature_degreesC());
         }
         break;
       }
 
     case utils::hash("PD"):
       {
-        powerDelivery::show_pd_status();
-        const auto& pd = powerDelivery::get_available_pd();
+        power::powerDelivery::show_pd_status();
+        const auto& pd = power::powerDelivery::get_available_pd();
         if (pd.empty())
         {
-          lampda_print("No power delivery capabilities");
+          platform::lampda_print("No power delivery capabilities");
         }
         else
         {
-          lampda_print("Power delivery profiles :");
+          platform::lampda_print("Power delivery profiles :");
           for (const auto& pdo: pd)
-            lampda_print("- %dmV, %dmA", pdo.voltage_mv, pdo.maxCurrent_mA);
+            platform::lampda_print("- %dmV, %dmA", pdo.voltage_mv, pdo.maxCurrent_mA);
         }
         break;
       }
 
     case utils::hash("states"):
       {
-        lampda_print("behavior machine state:%s. error msgs: %s",
-                     behavior::get_state().c_str(),
-                     behavior::get_error_state_message().c_str());
-        lampda_print("power state machine state: %s. error msgs: %s",
-                     power::get_state().c_str(),
-                     power::get_error_string().c_str());
+        platform::lampda_print("behavior machine state:%s. error msgs: %s",
+                               logic::behavior::get_state().c_str(),
+                               logic::behavior::get_error_state_message().c_str());
+        platform::lampda_print("power state machine state: %s. error msgs: %s",
+                               power::get_state().c_str(),
+                               power::get_error_string().c_str());
         break;
       }
 
     case utils::hash("format-fs"):
-      lampda_print("clearing the whole file format");
-      fileSystem::clear_internal_fs();
+      platform::lampda_print("clearing the whole file format");
+      physical::fileSystem::clear_internal_fs();
       break;
 
     case utils::hash("DFU"):
-      enter_serial_dfu();
+      platform::registers::enter_serial_dfu();
       break;
 
     case utils::hash("buttonTogg"):
       {
-        if (button::get_button_pin() == DigitalPin::GPIO::gpio3)
+        if (physical::button::get_button_pin() == platform::gpio::DigitalPin::GPIO::gpio3)
         {
-          button::set_button_pin(DigitalPin::GPIO::gpio4);
-          lampda_print("Set button pin to gpio4");
+          physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio4);
+          platform::lampda_print("Set button pin to gpio4");
         }
         else
         {
-          button::set_button_pin(DigitalPin::GPIO::gpio3);
-          lampda_print("Set button pin to gpio3");
+          physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio3);
+          platform::lampda_print("Set button pin to gpio3");
         }
         break;
       }
 
     case utils::hash("shutdown"):
-      behavior::internal::handle_shutdown_state();
+      logic::behavior::internal::handle_shutdown_state();
       break;
 
     case utils::hash("tasks"):
       char buff[512];
-      get_thread_debug(buff);
-      lampda_print("%s", buff);
+      platform::threads::get_thread_debug(buff);
+      platform::lampda_print("%s", buff);
       break;
 
     default:
-      lampda_print("unknown command: \'%s\'", command.data());
-      lampda_print("type h for available commands");
+      platform::lampda_print("unknown command: \'%s\'", command.data());
+      platform::lampda_print("type h for available commands");
       break;
   }
 }
 
-void setup() { init_prints(); }
+void setup() { platform::init_prints(); }
 
 void handleSerialEvents()
 {
-  const auto& inputs = read_inputs();
-  for (size_t i = 0; i < min<uint8_t>(Inputs::maxCommands, inputs.commandCount); i++)
+  const auto& inputs = platform::read_inputs();
+  for (size_t i = 0; i < min<uint8_t>(platform::Inputs::maxCommands, inputs.commandCount); i++)
   {
-    const Inputs::Command& input = inputs.commandList[i];
+    const platform::Inputs::Command& input = inputs.commandList[i];
     handleCommand(input);
   }
 }
 
 } // namespace serial
+} // namespace utils
+} // namespace lampda

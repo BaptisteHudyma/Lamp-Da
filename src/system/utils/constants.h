@@ -16,6 +16,8 @@
 
 #include "src/user/constants.h"
 
+namespace lampda {
+
 /// current hardware major version
 #define HARDWARE_VERSION_MAJOR 1
 /// current hardware minor version
@@ -151,5 +153,7 @@ static constexpr brightness_t absoluteMaximumBrightness = 1024;
 
 // asserts
 static_assert(maxSystemTemp_c < criticalSystemTemp_c, "max system temp must be less than critical temp");
+
+} // namespace lampda
 
 #endif

@@ -1,3 +1,7 @@
+/*! \file Adafruit_NeoPixel.h
+    \brief Mock of the Adafruit NeoPixel library
+*/
+
 #ifndef ADAFRUIT_NEOPIXEL_MOCK_H
 #define ADAFRUIT_NEOPIXEL_MOCK_H
 
@@ -35,7 +39,7 @@ public:
 
   static uint32_t ColorHSV(double h, double s = 255, double v = 255)
   {
-    return utils::ColorSpace::HSV(h, s, v).get_rgb().color;
+    return lampda::utils::ColorSpace::HSV(h, s, v).get_rgb().color;
   }
 
   // vars

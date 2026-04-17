@@ -13,7 +13,7 @@
 //
 
 /// Tools to manipulate colors and their representation
-namespace modes::colors {
+namespace lampda::modes::colors {
 
 /// Return color (r, g, b) as a single uint32_t integer
 static constexpr LMBD_INLINE uint32_t fromRGB(uint8_t r, uint8_t g, uint8_t b)
@@ -71,11 +71,11 @@ static constexpr LMBD_INLINE uint32_t fromAngleHue(uint16_t angleDegrees)
   return fromRGB(r, g, b);
 }
 
-} // namespace modes::colors
+} // namespace lampda::modes::colors
 
 #include "src/modes/include/colors/palettes.hpp"
 
-namespace modes::colors {
+namespace lampda::modes::colors {
 
 /** \brief Given a 0-255 value, return a color approximating a kelvin temperature
  *
@@ -174,6 +174,6 @@ template<bool isFast = false> uint32_t add(uint32_t c1, uint32_t c2)
   }
 }
 
-} // namespace modes::colors
+} // namespace lampda::modes::colors
 
 #endif

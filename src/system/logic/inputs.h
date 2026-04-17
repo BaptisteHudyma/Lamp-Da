@@ -5,6 +5,8 @@
 #ifndef INPUTS_H
 #define INPUTS_H
 
+namespace lampda {
+namespace logic {
 /// Handle the system input, the behavior associated to the button inputs.
 namespace inputs {
 
@@ -22,5 +24,7 @@ void button_disable_usermode();
 bool is_button_usermode_enabled();
 
 } // namespace inputs
+} // namespace logic
+} // namespace lampda
 
 #endif

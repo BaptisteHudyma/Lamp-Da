@@ -12,7 +12,7 @@
 #include <cstdlib>
 
 /// Basic "default" modes included with the hardware
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 /**
  * \brief 3D perlin noise on the lamp surface.
@@ -83,7 +83,7 @@ struct PerlinNoiseMode : public BasicMode
     auto& state = ctx.state;
 
     const uint8_t rampIndex =
-            min<float>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1.0f);
+            std::min<float>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1.0f);
     state.selectedPalette = state._palettes[rampIndex];
   }
 
@@ -204,6 +204,6 @@ struct PerlinNoiseMode : public BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

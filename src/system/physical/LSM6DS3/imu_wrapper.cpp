@@ -6,11 +6,13 @@
 
 #include "LSM6DS3.h"
 
+namespace lampda {
+namespace physical {
 namespace imu {
 
 namespace __internal {
 // Create a instance of class LSM6DS3
-LSM6DS3 IMU(I2C_MODE, imuI2cAddress); // I2C device address
+LSM6DS3 IMU(I2C_MODE, platform::i2c::imuI2cAddress); // I2C device address
 } // namespace __internal
 
 bool Wrapper::init() const
@@ -20,7 +22,7 @@ bool Wrapper::init() const
                                 LSM6DS3_ACC_GYRO_BOOT_t::LSM6DS3_ACC_GYRO_BOOT_REBOOT_MODE |
                                         LSM6DS3_ACC_GYRO_SW_RESET_t::LSM6DS3_ACC_GYRO_SW_RESET_RESET_DEVICE);
   // let device reset
-  delay_ms(50);
+  platform::delay_ms(50);
 
   if (__internal::IMU.begin() != status_t::IMU_SUCCESS)
     return false;
@@ -258,7 +260,7 @@ bool Wrapper::enable_interrupt1(const InterruptType interr) const
         break;
       }
   }
-  lampda_print("enable_interrupt1: case not handled");
+  platform::lampda_print("enable_interrupt1: case not handled");
   return false;
 }
 
@@ -327,7 +329,7 @@ bool Wrapper::enable_interrupt2(const InterruptType interr) const
         break;
       }
   }
-  lampda_print("enable_interrupt2: case not handled");
+  platform::lampda_print("enable_interrupt2: case not handled");
   return false;
 }
 
@@ -411,8 +413,10 @@ bool Wrapper::is_event_detected(const InterruptType interr) const
         break;
       }
   }
-  lampda_print("is_event_detected: case not handled");
+  platform::lampda_print("is_event_detected: case not handled");
   return false;
 }
 
 } // namespace imu
+} // namespace physical
+} // namespace lampda

@@ -8,7 +8,7 @@
 #include "src/system/ext/random8.h"
 
 /// Modes implementing cellular automaton using "grid" tools
-namespace modes::automaton {
+namespace lampda::modes::automaton {
 
 /**
  * \brief Bubbles rising in the sea.
@@ -204,6 +204,6 @@ struct SierpinskiMode : public BasicMode
 /// Storage for the Automaton modes
 using AutomatonModes = modes::GroupFor<BubbleMode, SierpinskiMode>;
 
-} // namespace modes::automaton
+} // namespace lampda::modes::automaton
 
 #endif

@@ -9,6 +9,9 @@
 #include "src/system/ext/math8.h"
 #include "src/system/utils/utils.h"
 
+namespace lampda {
+namespace utils {
+
 uint16_t to_strip(uint16_t screenX, uint16_t screenY)
 {
   if (screenX > stripXCoordinates)
@@ -18,5 +21,8 @@ uint16_t to_strip(uint16_t screenX, uint16_t screenY)
 
   return lmpd_constrain<uint16_t>(screenX + screenY * stripXCoordinates, 0, LED_COUNT - 1);
 }
+
+} // namespace utils
+} // namespace lampda
 
 #endif

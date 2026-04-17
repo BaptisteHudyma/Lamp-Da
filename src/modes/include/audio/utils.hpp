@@ -14,7 +14,7 @@
 #include <string>
 
 /// User modes audio utilities
-namespace modes::audio {
+namespace lampda::modes::audio {
 
 /**
  * \brief Specific configuration for the sound object
@@ -103,14 +103,14 @@ struct SoundEventTy
   static constexpr float _windowShort = windowShort / 4.0;
 
   /// number of sample in a microphone run
-  static constexpr size_t _dataLenght = microphone::SoundStruct::SAMPLE_SIZE;
+  static constexpr size_t _dataLenght = physical::microphone::SoundStruct::SAMPLE_SIZE;
   /// target value reached by the auto gain
-  static constexpr int16_t _autoGainTargetValue = microphone::gainedSignalTarget;
+  static constexpr int16_t _autoGainTargetValue = physical::microphone::gainedSignalTarget;
   /// number of channels in the log fft
-  static constexpr size_t _fftChannels = microphone::SoundStruct::numberOfFFtChanels;
+  static constexpr size_t _fftChannels = physical::microphone::SoundStruct::numberOfFFtChanels;
 
   /// Frequency resolution of the raw fft result
-  static constexpr float fftResolutionHz = microphone::SoundStruct::get_fft_resolution_Hz();
+  static constexpr float fftResolutionHz = physical::microphone::SoundStruct::get_fft_resolution_Hz();
   /// Size of the fourrier transform history
   static constexpr size_t _FFThistory_MaxSize = round(fftResolutionHz);
 
@@ -144,7 +144,7 @@ struct SoundEventTy
   /// Call this once every tick inside the mode loop callback
   void update(auto& ctx)
   {
-    const microphone::SoundStruct& soundObject = ctx.lamp.get_sound_struct();
+    const physical::microphone::SoundStruct& soundObject = ctx.lamp.get_sound_struct();
 
     // copy microphone data
     data = soundObject.data;
@@ -161,11 +161,11 @@ struct SoundEventTy
     avgLevel = (level + avgLevel * _windowSize) / (_windowSize + 1);
 
     // average maximum over the same long window (approx)
-    avgMax = (avgLevel + max<float>(level, avgMax) * _windowSize) / (_windowSize + 1.0);
-    avgMax = max<float>(_eventCutoff, avgMax);
+    avgMax = (avgLevel + std::max<float>(level, avgMax) * _windowSize) / (_windowSize + 1.0);
+    avgMax = std::max<float>(_eventCutoff, avgMax);
 
     // delta between instantaneous level & average, squashed by its max
-    delta = max<float>(level - avgLevel, 0) / avgMax;
+    delta = std::max<float>(level - avgLevel, 0) / avgMax;
 
     // average of delta square (1.0 split around _eventCutoff)
     avgDelta = (delta * delta + avgDelta * _windowShort) / (_windowShort + 1.0);
@@ -174,13 +174,13 @@ struct SoundEventTy
     if (avgDelta > 1.0)
     {
       _eventCount += 1;
-      _eventScale = max<float>(_eventScale, 256.0 * (avgMax / _eventNorm) * (1.0 + delta));
+      _eventScale = std::max<float>(_eventScale, 256.0 * (avgMax / _eventNorm) * (1.0 + delta));
 
       // if no trigger, decay event
     }
     else
     {
-      _eventCount = max<float>(1, _eventCount - 1);
+      _eventCount = std::max<float>(1, _eventCount - 1);
     }
 
     // if event is active, and event decayed, reset eventScale & hasEvent
@@ -328,6 +328,6 @@ private:
   }
 };
 
-} // namespace modes::audio
+} // namespace lampda::modes::audio
 
 #endif

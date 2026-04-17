@@ -8,6 +8,8 @@
 #include "src/compile.h"
 #include <string>
 
+namespace lampda {
+namespace logic {
 /// Main system behavior handle
 namespace behavior {
 
@@ -62,6 +64,8 @@ void progress_update(const float progress);
 } // namespace sunset
 
 } // namespace behavior
+} // namespace logic
+} // namespace lampda
 
 /// \private Internal symbol used to signify which LMBD_LAMP_TYPE was specified
 #ifdef LMBD_CPP17

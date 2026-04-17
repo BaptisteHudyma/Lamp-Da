@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <string>
 
+namespace lampda {
 /**
  * \brief Main entry point of the power handling of the board.
  * Responsible the main state of the power handling.
@@ -123,5 +124,6 @@ bool is_in_output_mode();
 bool is_in_otg_mode();
 
 } // namespace power
+} // namespace lampda
 
 #endif

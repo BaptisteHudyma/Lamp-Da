@@ -9,6 +9,8 @@
 
 #include "src/system/platform/time.h"
 
+namespace lampda {
+
 /// define time routines
 class CEveryNMillis
 {
@@ -30,7 +32,7 @@ public:
     setPeriod(period);
   };
   void setPeriod(uint32_t period) { mPeriod = period; };
-  uint32_t getTime() const { return time_ms(); };
+  uint32_t getTime() const { return platform::time_ms(); };
   uint32_t getPeriod() const { return mPeriod; };
   uint32_t getElapsed() const { return getTime() - mPrevTrigger; }
   uint32_t getRemaining() const { return mPeriod - getElapsed(); }
@@ -70,5 +72,7 @@ public:
 #define EVERY_N_MILLIS_REFRESH(N) EVERY_N_MILLIS_REFRESH_I(PER##__COUNTER__, N)
 // call the following block of code every N milliseconds, with an alternative trigge boolean
 #define EVERY_N_MILLIS_COND(N, COND) EVERY_N_MILLIS_WITH_COND_I(PER##__COUNTER__, COND, N)
+
+} // namespace lampda
 
 #endif

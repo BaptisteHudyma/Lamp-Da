@@ -9,7 +9,7 @@
 #include "src/modes/include/colors/palettes.hpp"
 
 /// Basic "default" modes included with the hardware
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 /**
  * \brief Aurora borealis effect.
@@ -71,6 +71,6 @@ struct AuroraMode : public BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

@@ -8,6 +8,8 @@
 #include "src/system/power/power_handler.h"
 #include "src/system/power/power_gates.h"
 
+namespace lampda {
+namespace physical {
 namespace outputPower {
 
 /**
@@ -33,12 +35,14 @@ void write_temporary_output_limits(const uint16_t voltage_mv, const uint16_t cur
   power::set_temporary_output(voltage_mv, current_ma, realTimeout_ms);
 }
 
-void blip(const uint32_t timing) { powergates::power::blip(timing); }
+void blip(const uint32_t timing) { power::powergates::power::blip(timing); }
 
-void cancel_blip() { powergates::power::cancel_blip(); }
+void cancel_blip() { power::powergates::power::cancel_blip(); }
 
-bool is_bliping() { return powergates::power::is_bliping(); }
+bool is_bliping() { return power::powergates::power::is_bliping(); }
 
-void disable_power_gates() { powergates::disable_gates(); }
+void disable_power_gates() { power::powergates::disable_gates(); }
 
 } // namespace outputPower
+} // namespace physical
+} // namespace lampda

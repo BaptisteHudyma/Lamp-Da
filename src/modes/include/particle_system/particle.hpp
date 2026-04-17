@@ -14,7 +14,7 @@
 #include "src/system/ext/math8.h"
 #include <cstdint>
 
-namespace modes {
+namespace lampda::modes {
 
 /**
  * \brief Define a particle in cylindrical space, and movement equations on the cylinder surface
@@ -39,7 +39,7 @@ struct Particle
   Particle() : thetaSpeed_radS(0.0), zSpeed_mS(0.0), theta_rad(0.0), z_mm(0.0) {}
 
   /// Construct a Particle from a 3D cartesian position.
-  Particle(const vec3d& positionCartesian) :
+  Particle(const utils::vec3d& positionCartesian) :
     thetaSpeed_radS(0.0),
     zSpeed_mS(0.0),
     theta_rad(atan2(positionCartesian.y, positionCartesian.x)),
@@ -67,22 +67,22 @@ struct Particle
    * \param[in] deltaTime_s Time since the latest update
    * \return The speed in angle and heigh.
    */
-  vec2d compute_speed_increment(const vec3d& accelerationCartesian_m, const float deltaTime_s) const
+  utils::vec2d compute_speed_increment(const utils::vec3d& accelerationCartesian_m, const float deltaTime_s) const
   {
     // speed vector on radial (derivative of cartesian to cylinder coordinates for theta)
-    const vec3d e_theta(-sin_t(theta_rad) * cylinderRadius_m, cos_t(theta_rad) * cylinderRadius_m, 0);
+    const utils::vec3d e_theta(-sin_t(theta_rad) * cylinderRadius_m, cos_t(theta_rad) * cylinderRadius_m, 0);
     // speed vector on z (derivative of cartesian to cylinder coordinates for z)
-    const vec3d e_z(0, 0, 1);
+    const utils::vec3d e_z(0, 0, 1);
     // ignore the radius derivative, as we want to stay on the cylinder surface
 
     // compute the speed vector on cylinder surface
-    const vec3d& tangantialVector = e_theta.multiply(accelerationCartesian_m.dot(e_theta));
-    const vec3d& directVector = e_z.multiply(accelerationCartesian_m.dot(e_z));
-    const vec3d& accelerationVector = tangantialVector.add(directVector);
+    const utils::vec3d& tangantialVector = e_theta.multiply(accelerationCartesian_m.dot(e_theta));
+    const utils::vec3d& directVector = e_z.multiply(accelerationCartesian_m.dot(e_z));
+    const utils::vec3d& accelerationVector = tangantialVector.add(directVector);
 
-    return vec2d(angularSpeedGain * accelerationVector.dot(e_theta) / static_cast<float>(cylinderRadius_m) *
-                         deltaTime_s,
-                 linearSpeedGain * accelerationVector.dot(e_z) * deltaTime_s);
+    return utils::vec2d(angularSpeedGain * accelerationVector.dot(e_theta) / static_cast<float>(cylinderRadius_m) *
+                                deltaTime_s,
+                        linearSpeedGain * accelerationVector.dot(e_z) * deltaTime_s);
   }
 
   /**
@@ -91,7 +91,7 @@ struct Particle
    * \param[in] deltaTime_s Time since the latest update
    * \param[in] shouldContrain If true, will constrain the movement into the lamp body.
    */
-  void apply_acceleration(const vec3d& accelerationCartesian_m,
+  void apply_acceleration(const utils::vec3d& accelerationCartesian_m,
                           const float deltaTime_s,
                           const bool shouldContrain = true)
   {
@@ -133,7 +133,7 @@ struct Particle
    * \param[in] deltaTime_s Time since the latest update
    * \param[in] shouldContrain If true, will constrain the movement into the lamp body.
    */
-  Particle simulate_after_acceleration(const vec3d& accelerationCartesian_m,
+  Particle simulate_after_acceleration(const utils::vec3d& accelerationCartesian_m,
                                        const float deltaTime_s,
                                        const bool shouldContrain = true) const
   {
@@ -207,6 +207,6 @@ struct Particle
   int16_t _savedLampIndex;
 };
 
-} // namespace modes
+} // namespace lampda::modes
 
 #endif

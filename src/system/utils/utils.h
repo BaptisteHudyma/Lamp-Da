@@ -12,6 +12,8 @@
 
 #include "constants.h"
 
+namespace lampda {
+
 #define SQR(x)    ((x) * (x))               ///< square of a number
 #define POW2(x)   SQR(x)                    ///< number powered by 2
 #define POW3(x)   ((x) * (x) * (x))         ///< number powered by 3
@@ -206,6 +208,7 @@ constexpr uint16_t voltageToAnalogRead(const float voltage)
   return lmpd_constrain<uint16_t>(voltage, 0, internalReferenceVoltage) * ADC_MAX_VALUE / internalReferenceVoltage;
 }
 
-}; // namespace utils
+} // namespace utils
+} // namespace lampda
 
 #endif

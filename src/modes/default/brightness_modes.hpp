@@ -8,7 +8,7 @@
 
 #include "src/system/utils/utils.h"
 
-namespace modes::brightness {
+namespace lampda::modes::brightness {
 /// Basic lightning mode (does nothing, brightness may be adjusted)
 struct StaticLightMode : public BasicMode
 {
@@ -35,7 +35,7 @@ struct OnePulse : public BasicMode
     auto& lamp = ctx.lamp;
 
     brightness_t base = lamp.getSavedBrightness();
-    brightness_t scaled = max<brightness_t>(base * scaleFactor, base + minScaling);
+    brightness_t scaled = std::max<brightness_t>(base * scaleFactor, base + minScaling);
 
     if (scaled > lamp.getMaxBrightness())
       lamp.jumpBrightness(lamp.getMaxBrightness() / scaleFactor);
@@ -61,7 +61,7 @@ template<size_t N> struct ManyPulse : public BasicMode
     auto& lamp = ctx.lamp;
 
     brightness_t base = lamp.getSavedBrightness();
-    brightness_t scaled = max<brightness_t>(base * scaleFactor, base + minScaling);
+    brightness_t scaled = std::max<brightness_t>(base * scaleFactor, base + minScaling);
 
     if (scaled > lamp.getMaxBrightness())
       lamp.jumpBrightness(lamp.getMaxBrightness() / scaleFactor);
@@ -123,7 +123,7 @@ struct Candle : public BasicMode
     const float brightnessCorrection = maxBrightness / 255.0;
 
     // limit max brightness
-    const brightness_t base = min<brightness_t>(
+    const brightness_t base = std::min<brightness_t>(
             lamp.getSavedBrightness(),
             maxBrightness - std::min<int>(maxBrightness, (CANDLE_AMPLITUDE + 15) * brightnessCorrection));
 
@@ -280,13 +280,13 @@ struct LightningMode : public BasicMode
         n_brightness += 1 << (random8() % 5);        // 2 to 80 now
         n_brightness += random8() % n_brightness;    // 2 to 159 now (w/ low bias)
 
-        const brightness_t newBrightness =
-                min<brightness_t>(savedBrightness, lmpd_map<brightness_t>(n_brightness, 2, 159, 0, savedBrightness));
+        const brightness_t newBrightness = std::min<brightness_t>(
+                savedBrightness, lmpd_map<brightness_t>(n_brightness, 2, 159, 0, savedBrightness));
         // prepare next brightness
         lamp.tempBrightness(newBrightness);
         ctx.state.lastBrightness = newBrightness;
 
-        ctx.state.stepdown = max<uint32_t>(1, newBrightness >> 4);
+        ctx.state.stepdown = std::max<uint32_t>(1, newBrightness >> 4);
 
         ctx.state.isWaitingTurnOn = false;
       }
@@ -336,6 +336,6 @@ using CalmGroup = GroupFor<Candle, LightningMode>;
 /// Group for flashing modes
 using FlashesGroup = GroupFor<StroboscopeMode, OnePulse, ManyPulse<2>>;
 
-} // namespace modes::brightness
+} // namespace lampda::modes::brightness
 
 #endif

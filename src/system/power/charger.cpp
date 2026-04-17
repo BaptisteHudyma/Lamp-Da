@@ -19,6 +19,8 @@
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/registers.h"
 
+namespace lampda {
+namespace power {
 namespace charger {
 
 static bool isBatteryFullLatched_s = false;
@@ -69,7 +71,7 @@ bool should_charge()
   if (isVoltageEnoughForBalancer)
   {
     // wait for balancer
-    const auto& balancerStatus = balancer::get_status();
+    const auto& balancerStatus = power::balancer::get_status();
     if (not balancerStatus.is_valid())
       return false;
 
@@ -79,12 +81,12 @@ bool should_charge()
       // do not charge if a battery voltage goes over the max voltage
       if (balancerStatus.batteryVoltages_mV[i] >= maxLiionVoltage_mV)
       {
-        batteryTooHighLatchTime = time_ms();
+        batteryTooHighLatchTime = platform::time_ms();
         return false;
       }
     }
     // latch the status of battery too high for a time, to let the balancer work
-    if (batteryTooHighLatchTime > 0 and (time_ms() - batteryTooHighLatchTime) < 20000)
+    if (batteryTooHighLatchTime > 0 and (platform::time_ms() - batteryTooHighLatchTime) < 20000)
     {
       return false;
     }
@@ -98,7 +100,7 @@ bool should_charge()
   }
 
   // blocking alert, stop charge
-  if (not battery::can_battery_be_charged() or not alerts::manager.can_use_usb_port())
+  if (not physical::battery::can_battery_be_charged() or not logic::alerts::manager.can_use_usb_port())
   {
     return false;
   }
@@ -124,7 +126,7 @@ bool should_charge()
   if (isBatteryFullLatched_s)
   {
     // deactivate latch below a certain level
-    if (battery::get_level_safe(battery.voltage_mV) < 9500)
+    if (physical::battery::get_level_safe(battery.voltage_mV) < 9500)
     {
       isBatteryFullLatched_s = false;
     }
@@ -140,7 +142,7 @@ bool should_charge()
   // check battery full status
   if (isBatteryFullLatched_s or isEndOfCharge)
   {
-    const uint32_t time = time_ms();
+    const uint32_t time = platform::time_ms();
 
     if (batteryFullDeglitchTime == 0)
     {
@@ -185,7 +187,7 @@ void control_OTG(const uint16_t mv, const uint16_t ma)
 
   const auto& measurments = drivers::get_measurments();
   if (measurments.vbus_mV < mv - 1000 or measurments.vbus_mV > mv + 1000)
-    lampda_print("Wait for voltage climb: current %dmV, target %dmV", measurments.vbus_mV, mv);
+    platform::lampda_print("Wait for voltage climb: current %dmV, target %dmV", measurments.vbus_mV, mv);
 }
 
 bool is_status_error()
@@ -210,7 +212,7 @@ void update_state_status()
         {
           charger.softwareErrorMessage =
                   "ERROR: charger in UNINITIALIZED/ERROR state : " + drivers::get_software_error_message();
-          lampda_print(charger.softwareErrorMessage.c_str());
+          platform::lampda_print(charger.softwareErrorMessage.c_str());
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
         break;
@@ -221,7 +223,7 @@ void update_state_status()
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_HARDWARE)
         {
           charger.hardwareErrorMessage = "ERROR: charger in ERROR_COMPONENT state";
-          lampda_print(charger.hardwareErrorMessage.c_str());
+          platform::lampda_print(charger.hardwareErrorMessage.c_str());
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_HARDWARE;
         break;
@@ -231,7 +233,7 @@ void update_state_status()
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
           charger.softwareErrorMessage = "ERROR: charger in ERROR_HAS_FAULTS state";
-          lampda_print(charger.softwareErrorMessage.c_str());
+          platform::lampda_print(charger.softwareErrorMessage.c_str());
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
 
@@ -274,7 +276,7 @@ void update_state_status()
           default:
             {
               charger.hardwareErrorMessage = "ERROR: charger state reached default state";
-              lampda_print(charger.hardwareErrorMessage.c_str());
+              platform::lampda_print(charger.hardwareErrorMessage.c_str());
 
               charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
               break;
@@ -315,7 +317,7 @@ void update_state()
   update_state_status();
 
   // set update time
-  charger.lastUpdateTime_ms = time_ms();
+  charger.lastUpdateTime_ms = platform::time_ms();
 }
 
 /**
@@ -362,7 +364,7 @@ bool setup()
   return true;
 }
 
-const DigitalPin chargeOkPin(DigitalPin::GPIO::Input_isChargeOk);
+const platform::gpio::DigitalPin chargeOkPin(platform::gpio::DigitalPin::GPIO::Input_isChargeOk);
 
 void loop()
 {
@@ -383,22 +385,22 @@ void loop()
     drivers::enable_charge(false);
 
     // allow some start time to prevent wrong error display
-    if (time_ms() >= 500)
+    if (platform::time_ms() >= 500)
     {
-      alerts::manager.raise(alerts::Type::CHARGER_ERROR);
+      logic::alerts::manager.raise(logic::alerts::Type::CHARGER_ERROR);
     }
     // do NOT run charge functions
     return;
   }
   else
   {
-    alerts::manager.clear(alerts::Type::CHARGER_ERROR);
+    logic::alerts::manager.clear(logic::alerts::Type::CHARGER_ERROR);
   }
 
   // if needed, enable charge
   if (isChargerOk and should_charge())
   {
-    statistics::signal_battery_charging_on();
+    logic::statistics::signal_battery_charging_on();
 
     drivers::set_input_current_limit(
             // set the max input current for this source
@@ -410,7 +412,7 @@ void loop()
   }
   else
   {
-    statistics::signal_battery_charging_off();
+    logic::statistics::signal_battery_charging_off();
 
     // disable current
     drivers::set_input_current_limit(0, false);
@@ -431,7 +433,7 @@ bool is_vbus_powered() { return powerDelivery::is_power_available(); }
 
 bool can_use_vbus_power() { return powerDelivery::can_use_power(); }
 
-bool is_vbus_signal_detected() { return is_voltage_detected_on_vbus(); }
+bool is_vbus_signal_detected() { return platform::registers::is_voltage_detected_on_vbus(); }
 
 Charger_t get_state() { return charger; }
 
@@ -486,3 +488,5 @@ std::string Charger_t::get_status_str() const
 }
 
 } // namespace charger
+} // namespace power
+} // namespace lampda

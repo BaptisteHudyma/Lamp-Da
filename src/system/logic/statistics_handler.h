@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+namespace lampda {
+namespace logic {
 /// Handle update and tracking of user use statistics
 namespace statistics {
 
@@ -55,5 +57,7 @@ void signal_alert_raised(uint32_t alertMask);
 void show(const bool shouldShowAlerts = true);
 
 } // namespace statistics
+} // namespace logic
+} // namespace lampda
 
 #endif

@@ -9,6 +9,8 @@
 #include <functional>
 #include "src/system/platform/gpio.h"
 
+namespace lampda {
+namespace physical {
 /// Handle the button inputs and multiple click detection.
 namespace button {
 
@@ -73,12 +75,12 @@ extern ButtonStateTy get_button_state();
 /**
  * \brief Return the pin used for the button
  */
-extern DigitalPin::GPIO get_button_pin();
+extern platform::gpio::DigitalPin::GPIO get_button_pin();
 
 /**
  * \brief Only on system start, set the pin where the button is wired
  */
-extern void set_button_pin(const DigitalPin::GPIO buttonPin);
+extern void set_button_pin(const platform::gpio::DigitalPin::GPIO buttonPin);
 
 /**
  * \brief get the button pin index in system. USE WITH CAUTION
@@ -86,5 +88,7 @@ extern void set_button_pin(const DigitalPin::GPIO buttonPin);
 extern int get_button_pin_RAW();
 
 } // namespace button
+} // namespace physical
+} // namespace lampda
 
 #endif

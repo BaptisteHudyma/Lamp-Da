@@ -1,6 +1,8 @@
 #ifndef __INC_LIB8TION_SCALE_H
 #define __INC_LIB8TION_SCALE_H
 
+namespace lampda {
+
 #define QADD8_C 1
 #define QADD7_C 1
 
@@ -812,5 +814,6 @@ LIB8STATIC uint8_t brighten8_lin(uint8_t x)
 
 /// @} Dimming
 /// @} lib8tion
+} // namespace lampda
 
 #endif

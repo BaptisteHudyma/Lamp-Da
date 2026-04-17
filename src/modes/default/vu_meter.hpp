@@ -7,7 +7,7 @@
 
 #include "src/modes/include/audio/utils.hpp"
 
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 /// Emulate a vu-sound meter
 struct VuMeterMode : public BasicMode
@@ -27,7 +27,8 @@ struct VuMeterMode : public BasicMode
 
     // convert the sound level in the height lamp level
     const uint16_t vuLevel = lmpd_constrain<uint16_t>(
-            lmpd_map<uint16_t>(decibels, microphone::silenceLevelDb, microphone::highLevelDb, 0, maxLedIndex),
+            lmpd_map<uint16_t>(
+                    decibels, physical::microphone::silenceLevelDb, physical::microphone::highLevelDb, 0, maxLedIndex),
             ceilf(2.0 * ctx.lamp.maxWidthFloat),
             maxLedIndex);
 
@@ -49,6 +50,6 @@ struct VuMeterMode : public BasicMode
   };
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif // VUMETER_MODE_H

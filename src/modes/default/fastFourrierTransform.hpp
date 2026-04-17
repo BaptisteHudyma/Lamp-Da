@@ -6,7 +6,7 @@
 #include "src/modes/include/colors/palettes.hpp"
 #include "src/modes/include/audio/utils.hpp"
 
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 /**
  * \brief Display the Fourrier Transform of the current room sound.
@@ -27,13 +27,17 @@ struct FastFourrierTransformMode : public BasicMode
     const float maxFftVal = state.soundEvent.maxAmplitude;
 
     // adjust for volume
-    const float maxLevel = lmpd_map<float>(
-            state.soundEvent.level, microphone::silenceLevelDb * 0.4, microphone::highLevelDb, 0.0, 1.0);
-    const float maxDisplaylevel = max<float>(2, lmpd_constrain<float>(maxLevel * rows, 2, rows));
+    const float maxLevel = lmpd_map<float>(state.soundEvent.level,
+                                           physical::microphone::silenceLevelDb * 0.4,
+                                           physical::microphone::highLevelDb,
+                                           0.0,
+                                           1.0);
+    const float maxDisplaylevel = std::max<float>(2, lmpd_constrain<float>(maxLevel * rows, 2, rows));
 
     for (uint8_t x = 0; x < cols; ++x)
     {
-      const uint8_t mappedX = lmpd_map<uint8_t>(x, 0, cols, 0, microphone::SoundStruct::numberOfFFtChanels - 1);
+      const uint8_t mappedX =
+              lmpd_map<uint8_t>(x, 0, cols, 0, physical::microphone::SoundStruct::numberOfFFtChanels - 1);
       const uint8_t mappedY = lmpd_constrain<uint8_t>(
               lmpd_map<uint8_t>(fft_log[mappedX], 0, maxFftVal, 2, maxDisplaylevel), 2, maxDisplaylevel);
       for (uint8_t y = 0; y <= mappedY; y++)
@@ -58,6 +62,6 @@ struct FastFourrierTransformMode : public BasicMode
   };
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

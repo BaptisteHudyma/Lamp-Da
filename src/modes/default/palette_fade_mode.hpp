@@ -4,7 +4,7 @@
 /// @file palette_fade_mode.hpp
 
 #include <cmath>
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 #include <cstdint>
 #include "src/modes/include/colors/palettes.hpp"
@@ -57,6 +57,6 @@ struct RainbowFadePaletteMode : public PaletteFadeMode
   };
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

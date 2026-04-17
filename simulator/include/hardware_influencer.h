@@ -1,17 +1,27 @@
+/*! \file hardware_influencer.h
+    \brief Handle the physical simulation paremeters of a real lamp.
+*/
+
 #ifndef HARDWARE_INFLUENCER_H
 #define HARDWARE_INFLUENCER_H
 
 #include <cstdint>
 
+/// Simulator dedicated namespace
+namespace simulator {
+
+/// Encapsulate the mock GPIO signals
 namespace mock_gpios {
 // update gpios callbacks
 void update_callbacks();
 } // namespace mock_gpios
 
+/// Encapsulate the mock time signals
 namespace time_mocks {
 void reset();
 }
 
+/// Encapsulate the mock board registers signals
 namespace mock_registers {
 extern bool isDeepSleep;
 extern float cpuTemperature;
@@ -21,10 +31,12 @@ extern bool shouldStopThreads;
 void run_threads();
 } // namespace mock_registers
 
+/// Encapsulate the mock indicator signals
 namespace mock_indicator {
 uint32_t get_color();
 }
 
+/// Encapsulate the mock electrical simulation signals
 namespace mock_electrical {
 // output at the power rail
 extern float powerRailVoltage;
@@ -42,8 +54,11 @@ extern float inputVbusVoltage;
 extern float chargeOtgOutput;
 } // namespace mock_electrical
 
+/// Encapsulate the mock battery signals
 namespace mock_battery {
 extern float voltage;
 }
+
+} // namespace simulator
 
 #endif

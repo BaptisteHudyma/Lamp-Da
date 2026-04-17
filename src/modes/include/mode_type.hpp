@@ -9,7 +9,7 @@
 #include <cstdint>
 
 /// Contains basic interface types to implement custom user modes
-namespace modes {
+namespace lampda::modes {
 
 /** \brief Parent object for all custom user modes
  *
@@ -274,6 +274,6 @@ struct BasicMode
   static constexpr bool everyButtonCustomUI = false;    ///< \private
 };
 
-} // namespace modes
+} // namespace lampda::modes
 
 #endif

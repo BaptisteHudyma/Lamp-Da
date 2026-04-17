@@ -1,7 +1,7 @@
 #ifndef MY_CUSTOM_MODE_H
 #define MY_CUSTOM_MODE_H
 
-struct MyCustomMode : public modes::BasicMode
+struct MyCustomMode : public lampda::modes::BasicMode
 {
   static void loop(auto& ctx) {}
   static void on_enter_mode(auto& ctx) {}

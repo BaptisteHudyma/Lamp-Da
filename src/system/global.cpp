@@ -30,11 +30,11 @@
 #include "src/system/ext/random8.h"
 #include <cstdint>
 
-namespace global {
+namespace lampda {
 
 void secondary_thread()
 {
-  if (not behavior::is_user_code_running())
+  if (not logic::behavior::is_user_code_running())
     return;
 
   user::user_thread();
@@ -53,7 +53,7 @@ void check_loop_runtime(const uint32_t runTime)
     if (runTime > 500)
     {
       // if loop time is too long, go back to flash mode
-      enter_serial_dfu();
+      platform::registers::enter_serial_dfu();
     }
   }
   else if (isOnSlowLoopCount > 0)
@@ -63,13 +63,13 @@ void check_loop_runtime(const uint32_t runTime)
 
   if (isOnSlowLoopCount >= maxAlerts)
   {
-    alarmRaisedTime = time_ms();
-    alerts::manager.raise(alerts::Type::LONG_LOOP_UPDATE);
+    alarmRaisedTime = platform::time_ms();
+    logic::alerts::manager.raise(logic::alerts::Type::LONG_LOOP_UPDATE);
   }
   // lower the alert (after some time)
-  else if (isOnSlowLoopCount <= 1 and time_ms() - alarmRaisedTime > 1000)
+  else if (isOnSlowLoopCount <= 1 and platform::time_ms() - alarmRaisedTime > 1000)
   {
-    alerts::manager.clear(alerts::Type::LONG_LOOP_UPDATE);
+    logic::alerts::manager.clear(logic::alerts::Type::LONG_LOOP_UPDATE);
   };
 }
 
@@ -77,43 +77,45 @@ void main_setup()
 {
   // set watchdog (reset the soft when the program crashes)
   // Should be long enough to flash the microcontroler !!!
-  setup_watchdog(10); // second timeout
+  platform::registers::setup_watchdog(10); // second timeout
 
 #ifdef IS_HARDWARE_1_0
-  DigitalPin(DigitalPin::GPIO::Input_isChargeOk).set_pin_mode(DigitalPin::Mode::kInputPullUp);
-  DigitalPin(DigitalPin::GPIO::Signal_BatteryBalancerAlert).set_pin_mode(DigitalPin::Mode::kInputPullUp);
+  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Input_isChargeOk)
+          .set_pin_mode(platform::gpio::DigitalPin::Mode::kInputPullUp);
+  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Signal_BatteryBalancerAlert)
+          .set_pin_mode(platform::gpio::DigitalPin::Mode::kInputPullUp);
 #endif
 
   // enable peripherals (enable i2c lines)
-  DigitalPin(DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(true);
+  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(true);
 
   // start by resetting the led driver
-  outputPower::write_voltage(0);
+  physical::outputPower::write_voltage(0);
 
   // necessary for all i2c communications
   // 400KHz clock, 100mS timeout
-  for (uint8_t i = 0; i < get_wire_interface_count(); ++i)
+  for (uint8_t i = 0; i < platform::registers::get_wire_interface_count(); ++i)
   {
-    i2c_setup(i, 400000, 100);
+    platform::i2c::i2c_setup(i, 400000, 100);
   }
   // stability/turn on delay
-  delay_ms(10);
+  platform::delay_ms(10);
 
   // first step !
-  setup_adc(ADC_RES_EXP);
+  platform::registers::setup_adc(ADC_RES_EXP);
   // set random seed
-  random16_set_seed(get_device_serial_number() & 0xffff);
+  random16_set_seed(platform::registers::get_device_serial_number() & 0xffff);
 
   //
-  if (is_started_from_watchdog())
+  if (platform::registers::is_started_from_watchdog())
   {
     // try to start fresh: the system can get stuck with a broken filesystem
     // TODO: find why !!!!
-    fileSystem::clear_internal_fs();
+    physical::fileSystem::clear_internal_fs();
   }
 
   // check if we are in first boot mode (read parameters fails)
-  const bool isFirstBoot = not behavior::read_parameters();
+  const bool isFirstBoot = not logic::behavior::read_parameters();
 #ifdef LMBD_SIMULATION
   fprintf(stderr, "Is first time boot %d\n", isFirstBoot);
 #endif
@@ -121,7 +123,7 @@ void main_setup()
   // can start !
 
   // setup serial
-  serial::setup();
+  utils::serial::setup();
 
   // setup power components
   power::init();
@@ -131,18 +133,18 @@ void main_setup()
   if (!isFirstBoot)
   {
     // started after reset, clear all code and go to bootloader mode
-    if (is_started_from_reset())
+    if (platform::registers::is_started_from_reset())
     {
-      enter_serial_dfu();
+      platform::registers::enter_serial_dfu();
     }
 
-    if (is_started_from_watchdog())
+    if (platform::registers::is_started_from_watchdog())
     {
       // power detected on the USB, reset the program
-      if (is_voltage_detected_on_vbus())
+      if (platform::registers::is_voltage_detected_on_vbus())
       {
         // system will reset & shutdown after that
-        enter_serial_dfu();
+        platform::registers::enter_serial_dfu();
       }
       else
       {
@@ -152,38 +154,38 @@ void main_setup()
     }
   }
 
-  const bool wasPoweredByUserInterrupt = is_started_from_interrupt();
+  const bool wasPoweredByUserInterrupt = platform::registers::is_started_from_interrupt();
 
   // set up button colors and callbacks
-  inputs::init(wasPoweredByUserInterrupt);
-  imu::init();
+  logic::inputs::init(wasPoweredByUserInterrupt);
+  physical::imu::init();
 
   if (shouldAlertUser)
   {
     for (int i = 0; i < 5; i++)
     {
-      indicator::set_color(utils::ColorSpace::WHITE);
-      delay_ms(300);
-      indicator::set_color(utils::ColorSpace::BLACK);
-      delay_ms(300);
+      physical::indicator::set_color(utils::ColorSpace::WHITE);
+      platform::delay_ms(300);
+      physical::indicator::set_color(utils::ColorSpace::BLACK);
+      platform::delay_ms(300);
     }
-    indicator::set_color(utils::ColorSpace::BLACK);
+    physical::indicator::set_color(utils::ColorSpace::BLACK);
   }
 
   // any wake up from something that is not an interrupt should be considered as vbus voltage
-  behavior::set_woke_up_from_vbus(not wasPoweredByUserInterrupt);
+  logic::behavior::set_woke_up_from_vbus(not wasPoweredByUserInterrupt);
 
   // let the user start in unpowered mode
   user::power_off_sequence();
 
   // start sunset timer thread
-  sunset::init();
+  utils::sunset::init();
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread())
   {
     // give a high stack but low priority to user
-    start_thread(secondary_thread, user_taskName, 0, 1024);
+    platform::threads::start_thread(secondary_thread, platform::threads::user_taskName, 0, 1024);
   }
 }
 
@@ -191,9 +193,9 @@ void regulate_loop_runtime(const uint32_t addedDelay)
 {
   // add the required delay
   if (addedDelay > 0)
-    delay_ms(addedDelay);
+    platform::delay_ms(addedDelay);
 
-  const uint32_t loopStartTime = time_ms();
+  const uint32_t loopStartTime = platform::time_ms();
 
   // fix the initialization or long wait
   static uint32_t lastLoopEndTime;
@@ -204,14 +206,14 @@ void regulate_loop_runtime(const uint32_t addedDelay)
   const uint32_t loopDuration = loopStartTime - lastLoopEndTime;
   if (loopDuration < MAIN_LOOP_UPDATE_PERIOD_MS)
   {
-    delay_ms(MAIN_LOOP_UPDATE_PERIOD_MS - loopDuration);
+    platform::delay_ms(MAIN_LOOP_UPDATE_PERIOD_MS - loopDuration);
   }
   // else: run time normal or too long
 
   // raise alerts if computations are too long
   check_loop_runtime(loopDuration);
   // update loop end time
-  lastLoopEndTime = time_ms();
+  lastLoopEndTime = platform::time_ms();
 }
 
 /**
@@ -227,19 +229,19 @@ void main_loop(const uint32_t addedDelay)
    */
 
   // update watchdog (prevent crash)
-  kick_watchdog(USER_WATCHDOG_ID);
+  platform::registers::kick_watchdog(USER_WATCHDOG_ID);
 
   // handle inputs
-  inputs::loop();
+  logic::inputs::loop();
 
   // handle user serial events
-  serial::handleSerialEvents();
+  utils::serial::handleSerialEvents();
 
   // loop the behavior
-  behavior::loop();
+  logic::behavior::loop();
 
   // automatically deactivate sensors if they are not used for a time
-  microphone::disable_after_non_use();
+  physical::microphone::disable_after_non_use();
 }
 
-} // namespace global
+} // namespace lampda

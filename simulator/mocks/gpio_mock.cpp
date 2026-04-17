@@ -1,3 +1,7 @@
+/*! \file gpio_mock.cpp
+    \brief Mock of the board gpio
+*/
+
 #include <map>
 
 #include "simulator_state.h"
@@ -17,11 +21,13 @@
 
 typedef void (*voidFuncPtr)(void);
 
+namespace simulator {
+
 namespace mock_gpios {
 
-inline static std::map<DigitalPin::GPIO, voidFuncPtr> callbacksRisingEdge;
-inline static std::map<DigitalPin::GPIO, voidFuncPtr> callbacksFallingEdge;
-inline static std::map<DigitalPin::GPIO, voidFuncPtr> callbacksChange;
+inline static std::map<::lampda::platform::gpio::DigitalPin::GPIO, voidFuncPtr> callbacksRisingEdge;
+inline static std::map<::lampda::platform::gpio::DigitalPin::GPIO, voidFuncPtr> callbacksFallingEdge;
+inline static std::map<::lampda::platform::gpio::DigitalPin::GPIO, voidFuncPtr> callbacksChange;
 
 static bool isButtonPressed = false;
 
@@ -30,12 +36,12 @@ void update_callbacks()
 {
   static bool wasButtonPressed = false;
 
-  isButtonPressed = sim::globals::state.isButtonPressed;
+  isButtonPressed = simulator::globals::state.isButtonPressed;
 
   // event on change
   if (isButtonPressed != wasButtonPressed)
   {
-    const DigitalPin::GPIO buttonPin = button::get_button_pin();
+    const ::lampda::platform::gpio::DigitalPin::GPIO buttonPin = ::lampda::physical::button::get_button_pin();
     // change always called
     for (const auto& [pin, callback]: callbacksChange)
     {
@@ -74,7 +80,7 @@ void update_callbacks()
 } // namespace mock_gpios
 
 namespace mock_indicator {
-COLOR idColor;
+::lampda::COLOR idColor;
 uint32_t get_color() { return idColor.color; }
 } // namespace mock_indicator
 
@@ -85,71 +91,77 @@ float voltage;
 // store output values
 std::array<uint8_t, 255> pinOutputValue;
 
+} // namespace simulator
+
+namespace lampda {
+namespace platform {
+namespace gpio {
+
 class DigitalPinImpl
 {
 public:
-  DigitalPinImpl(DigitalPin::GPIO pin) : _pin(pin) {}
+  DigitalPinImpl(platform::gpio::DigitalPin::GPIO pin) : _pin(pin) {}
   ~DigitalPinImpl() = default;
 
   bool is_high() const
   {
     // button pin
-    if (_pin == button::get_button_pin())
+    if (_pin == physical::button::get_button_pin())
     {
-      return !mock_gpios::isButtonPressed;
+      return !simulator::mock_gpios::isButtonPressed;
     }
 
-    return pinOutputValue[static_cast<uint8_t>(_pin)] >= 128;
+    return simulator::pinOutputValue[static_cast<uint8_t>(_pin)] >= 128;
   }
 
-  void set_high(bool isHigh) const { pinOutputValue[static_cast<uint8_t>(_pin)] = isHigh ? 255 : 0; }
+  void set_high(bool isHigh) const { simulator::pinOutputValue[static_cast<uint8_t>(_pin)] = isHigh ? 255 : 0; }
 
   void write(uint16_t value) const
   {
-    pinOutputValue[static_cast<uint8_t>(_pin)] = value;
+    simulator::pinOutputValue[static_cast<uint8_t>(_pin)] = value;
 
     switch (_pin)
     {
-      case RedIndicator:
+      case utils::RedIndicator:
         {
-          mock_indicator::idColor.red = (value & 255) / indicator::redColorCorrection;
+          simulator::mock_indicator::idColor.red = (value & 255) / physical::indicator::redColorCorrection;
           break;
         }
-      case GreenIndicator:
+      case utils::GreenIndicator:
         {
           // correction value for the real luminosity
-          mock_indicator::idColor.green = (value & 255) / indicator::greenColorCorrection;
+          simulator::mock_indicator::idColor.green = (value & 255) / physical::indicator::greenColorCorrection;
           break;
         }
-      case BlueIndicator:
+      case utils::BlueIndicator:
         {
-          mock_indicator::idColor.blue = (value & 255) / indicator::blueColorCorrection;
+          simulator::mock_indicator::idColor.blue = (value & 255) / physical::indicator::blueColorCorrection;
           break;
         }
     }
   }
 
-  uint16_t read() const { return pinOutputValue[static_cast<uint8_t>(_pin)]; }
+  uint16_t read() const { return simulator::pinOutputValue[static_cast<uint8_t>(_pin)]; }
 
-  void attach_callback(voidFuncPtr cllbk, DigitalPin::Interrupt mode) const
+  void attach_callback(voidFuncPtr cllbk, platform::gpio::DigitalPin::Interrupt mode) const
   {
     // cannot have two interrupt callback types
-    mock_gpios::callbacksChange.erase(_pin);
-    mock_gpios::callbacksRisingEdge.erase(_pin);
-    mock_gpios::callbacksFallingEdge.erase(_pin);
+    simulator::mock_gpios::callbacksChange.erase(_pin);
+    simulator::mock_gpios::callbacksRisingEdge.erase(_pin);
+    simulator::mock_gpios::callbacksFallingEdge.erase(_pin);
 
     switch (mode)
     {
       case DigitalPin::Interrupt::kFallingEdge:
-        mock_gpios::callbacksFallingEdge[_pin] = cllbk;
+        simulator::mock_gpios::callbacksFallingEdge[_pin] = cllbk;
         break;
 
       case DigitalPin::Interrupt::kRisingEdge:
-        mock_gpios::callbacksRisingEdge[_pin] = cllbk;
+        simulator::mock_gpios::callbacksRisingEdge[_pin] = cllbk;
         break;
 
       case DigitalPin::Interrupt::kChange:
-        mock_gpios::callbacksChange[_pin] = cllbk;
+        simulator::mock_gpios::callbacksChange[_pin] = cllbk;
         break;
 
       default:
@@ -159,9 +171,9 @@ public:
 
   void detach_callbacks() const
   {
-    mock_gpios::callbacksChange.erase(_pin);
-    mock_gpios::callbacksRisingEdge.erase(_pin);
-    mock_gpios::callbacksFallingEdge.erase(_pin);
+    simulator::mock_gpios::callbacksChange.erase(_pin);
+    simulator::mock_gpios::callbacksRisingEdge.erase(_pin);
+    simulator::mock_gpios::callbacksFallingEdge.erase(_pin);
   }
 
 public:
@@ -200,8 +212,12 @@ void DigitalPin::detach_callbacks() const
   mImpl->detach_callbacks();
 }
 
-void DigitalPin::disconnect() const
+void platform::gpio::DigitalPin::disconnect() const
 {
   // do nothing ?
   // TODO issue #132
 }
+
+} // namespace gpio
+} // namespace platform
+} // namespace lampda

@@ -14,11 +14,13 @@
 #include "src/system/power/power_handler.h"
 
 #include "src/system/utils/brightness_handle.h"
+#include "src/system/utils/constants.h"
 #include "src/system/utils/time_utils.h"
 #include "src/system/utils/sunset_timer.h"
 
 #include <cstdint>
-
+namespace lampda {
+namespace logic {
 namespace inputs {
 
 // constants
@@ -40,11 +42,11 @@ namespace button_press_handles {
  */
 bool system_start_button_click_callback(const uint8_t consecutiveButtonCheck)
 {
-  const bool isStartedInLockout = alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT);
+  const bool isStartedInLockout = logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
   // if in lockout mode, unlock
   if (consecutiveButtonCheck >= 3)
   {
-    alerts::manager.clear(alerts::Type::SYSTEM_IN_LOCKOUT);
+    logic::alerts::manager.clear(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
   }
 
   switch (consecutiveButtonCheck)
@@ -52,7 +54,7 @@ bool system_start_button_click_callback(const uint8_t consecutiveButtonCheck)
     case 4:
       // activate lockout if not already in it
       if (not isStartedInLockout)
-        alerts::manager.raise(alerts::Type::SYSTEM_IN_LOCKOUT);
+        logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
       return false;
     default:
       break;
@@ -107,7 +109,7 @@ void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck)
     // 1 click: shutdown
     case 1:
       // do not turn off on first button press
-      if (not button::is_system_start_click())
+      if (not physical::button::is_system_start_click())
       {
         behavior::set_power_off();
       }
@@ -122,7 +124,7 @@ void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck)
         // disable charger and wait 5s to be killed by watchdog
         indicator::set_color(utils::ColorSpace::PINK);
         power::enable_charge(false);
-        delay_ms(20000); // crash the system
+        platform::delay_ms(20000); // crash the system
 #endif
         behavior::set_power_off();
         return;
@@ -145,7 +147,7 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
   // if in lockout mode, unlock
   if (consecutiveButtonCheck >= 3)
   {
-    alerts::manager.clear(alerts::Type::SYSTEM_IN_LOCKOUT);
+    logic::alerts::manager.clear(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
   }
 
   switch (consecutiveButtonCheck)
@@ -177,7 +179,7 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
         {
           if (!isBluetoothAdvertising)
           {
-            bluetooth::start_advertising();
+            platform::bluetooth::start_advertising();
           }
 
           isBluetoothAdvertising = true;
@@ -279,15 +281,15 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
         {
           // reverse on release
           rampSide = -rampSide;
-          lastBrightnessUpdateTime_ms = time_ms();
-          brightness::update_saved_brightness();
+          lastBrightnessUpdateTime_ms = platform::time_ms();
+          utils::brightness::update_saved_brightness();
           break;
         }
 
         // update brightness every N milliseconds (or end of hold)
         EVERY_N_MILLIS(BRIGHTNESS_LOOP_UPDATE_EVERY)
         {
-          const brightness_t brightness = brightness::get_brightness();
+          const brightness_t brightness = utils::brightness::get_brightness();
 
           // first actions, set ramp side
           if (buttonHoldDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)
@@ -296,10 +298,10 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
             if (consecutiveButtonCheck == 2)
               rampSide = -1;
             // ramp at maximum, go low
-            else if (brightness >= brightness::get_max_brightness())
+            else if (brightness >= utils::brightness::get_max_brightness())
               rampSide = -1;
             // if more than 1 second elapsed, fall back to raise ramp
-            else if (lastBrightnessUpdateTime_ms == 0 or time_ms() - lastBrightnessUpdateTime_ms >= 1000)
+            else if (lastBrightnessUpdateTime_ms == 0 or platform::time_ms() - lastBrightnessUpdateTime_ms >= 1000)
               rampSide = 1;
           }
           // press for too long, go down
@@ -324,26 +326,26 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
           {
             if (brightness <= brightnessUpdateStepSize)
               // min level
-              brightness::update_brightness(1);
+              utils::brightness::update_brightness(1);
             else
-              brightness::update_brightness(static_cast<brightness_t>(brightness - brightnessUpdateStepSize));
+              utils::brightness::update_brightness(static_cast<brightness_t>(brightness - brightnessUpdateStepSize));
           }
           /// go up
           else
           {
             // alert of sunset update
-            sunset::bump_timer();
+            utils::sunset::bump_timer();
 
             // limit max brightness
-            const auto _maxBrightness = brightness::get_max_brightness();
+            const auto _maxBrightness = utils::brightness::get_max_brightness();
             if (brightness + brightnessUpdateStepSize >= _maxBrightness)
-              brightness::update_brightness(_maxBrightness);
+              utils::brightness::update_brightness(_maxBrightness);
             else
-              brightness::update_brightness(static_cast<brightness_t>(brightness + brightnessUpdateStepSize));
+              utils::brightness::update_brightness(static_cast<brightness_t>(brightness + brightnessUpdateStepSize));
           }
 
           // update saved brightness
-          brightness::update_saved_brightness();
+          utils::brightness::update_saved_brightness();
         }
       }
       break;
@@ -364,7 +366,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
     return;
 
   // guard blocking other actions than "turn off", if not allowed to run
-  if (not behavior::can_system_allowed_to_be_powered() and not button::is_system_start_click())
+  if (not behavior::can_system_allowed_to_be_powered() and not physical::button::is_system_start_click())
   {
     if (consecutiveButtonCheck == 1)
     {
@@ -378,13 +380,13 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   //
   // Handle system start click
   //
-  if (button::is_system_start_click())
+  if (physical::button::is_system_start_click())
   {
     bool canContinue = button_press_handles::system_start_button_click_callback(consecutiveButtonCheck);
     if (not canContinue)
       return;
 
-    const bool isStartedInLockout = alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT);
+    const bool isStartedInLockout = logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
     if (not isStartedInLockout)
     {
       canContinue = user::button_start_click_default(consecutiveButtonCheck);
@@ -394,7 +396,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   }
 
   // no inputs allowed in lockout
-  if (alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT))
+  if (logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT))
     return;
 
   //
@@ -449,14 +451,14 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
   //
   // "start event" button
   //
-  if (button::is_system_start_click())
+  if (physical::button::is_system_start_click())
   {
     bool canContinue = button_press_handles::system_start_button_hold_callback(
             consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
     if (not canContinue)
       return;
 
-    const bool isStartedInLockout = alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT);
+    const bool isStartedInLockout = logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
     if (not isStartedInLockout)
     {
       canContinue = user::button_start_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
@@ -466,7 +468,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
   }
 
   // no inputs allowed in lockout
-  if (alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT))
+  if (logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT))
     return;
 
   //
@@ -501,14 +503,14 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
 
 void init(const bool wasPoweredByUserInterrupt)
 {
-  button::init(wasPoweredByUserInterrupt);
-  indicator::init();
+  physical::button::init(wasPoweredByUserInterrupt);
+  physical::indicator::init();
 }
 
 void loop()
 {
   // loop is not ran in shutdown mode
-  button::handle_events(button_clicked_callback, button_hold_callback);
+  physical::button::handle_events(button_clicked_callback, button_hold_callback);
 }
 
 void button_disable_usermode() { isButtonUsermodeEnabled = false; }
@@ -516,3 +518,5 @@ void button_disable_usermode() { isButtonUsermodeEnabled = false; }
 bool is_button_usermode_enabled() { return isButtonUsermodeEnabled; }
 
 } // namespace inputs
+} // namespace logic
+} // namespace lampda

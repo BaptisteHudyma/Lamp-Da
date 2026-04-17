@@ -19,7 +19,7 @@
 #include "src/modes/include/mode_type.hpp"
 #include "src/modes/include/tools.hpp"
 
-namespace modes {
+namespace lampda::modes {
 
 /// \private Return true if a mode failed verification to prevent extra errors
 template<typename AllModes> static constexpr bool verifyGroup()
@@ -331,6 +331,6 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
  */
 template<typename... Modes> using GroupFor = GroupTy<std::tuple<Modes...>>;
 
-} // namespace modes
+} // namespace lampda::modes
 
 #endif

@@ -10,6 +10,8 @@
 #include "simulator/include/simulator_state.h"
 #include "simulator/include/hardware_influencer.h"
 
+namespace lampda {
+
 using namespace std::chrono_literals;
 
 // 10 seconds timeout
@@ -22,7 +24,7 @@ protected:
   {
     //
     killThread = false;
-    time_mocks::reset();
+    ::simulator::time_mocks::reset();
   }
 
   void TearDown() override
@@ -49,12 +51,12 @@ protected:
 
       while (remainingClicks > 0 && not killThread)
       {
-        sim::globals::state.isButtonPressed = true;
-        mock_gpios::update_callbacks();
+        ::simulator::globals::state.isButtonPressed = true;
+        ::simulator::mock_gpios::update_callbacks();
         std::this_thread::sleep_for(holdPress);
 
-        sim::globals::state.isButtonPressed = false;
-        mock_gpios::update_callbacks();
+        ::simulator::globals::state.isButtonPressed = false;
+        ::simulator::mock_gpios::update_callbacks();
         std::this_thread::sleep_for(releasePress);
 
         remainingClicks--;
@@ -62,12 +64,12 @@ protected:
 
       if (not killThread && lastClickPressDelay > 0ms)
       {
-        sim::globals::state.isButtonPressed = true;
-        mock_gpios::update_callbacks();
+        ::simulator::globals::state.isButtonPressed = true;
+        ::simulator::mock_gpios::update_callbacks();
         std::this_thread::sleep_for(lastClickPressDelay);
 
-        sim::globals::state.isButtonPressed = false;
-        mock_gpios::update_callbacks();
+        ::simulator::globals::state.isButtonPressed = false;
+        ::simulator::mock_gpios::update_callbacks();
       }
     });
   }
@@ -85,13 +87,13 @@ private:
 TEST_F(ButtonFixture, turn_on_start_click_early_release)
 {
   // initial state is turn on
-  sim::globals::state.isButtonPressed = false;
+  ::simulator::globals::state.isButtonPressed = false;
   bool isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount) {
     isTestDone = true;
     ASSERT_EQ(clickCount, 1);
-    ASSERT_TRUE(button::is_system_start_click());
+    ASSERT_TRUE(physical::button::is_system_start_click());
   };
   auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration) {
     isTestDone = true;
@@ -99,14 +101,14 @@ TEST_F(ButtonFixture, turn_on_start_click_early_release)
   };
 
   // signal button on
-  mock_gpios::update_callbacks();
-  button::init(true);
+  ::simulator::mock_gpios::update_callbacks();
+  physical::button::init(true);
 
-  while (time_ms() < testTimeout_ms && not isTestDone)
+  while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    mock_gpios::update_callbacks();
+    ::simulator::mock_gpios::update_callbacks();
     std::this_thread::sleep_for(10ms);
-    button::handle_events(clickSerieCallback, clickHoldSerieCallback);
+    physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
   }
   ASSERT_TRUE(isTestDone);
 }
@@ -115,13 +117,13 @@ TEST_F(ButtonFixture, turn_on_start_click_early_release)
 TEST_F(ButtonFixture, turn_on_start_click)
 {
   // initial state is turn on
-  sim::globals::state.isButtonPressed = true;
+  ::simulator::globals::state.isButtonPressed = true;
   bool isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount) {
     isTestDone = true;
     ASSERT_EQ(clickCount, 1);
-    ASSERT_TRUE(button::is_system_start_click());
+    ASSERT_TRUE(physical::button::is_system_start_click());
   };
   auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration) {
     isTestDone = true;
@@ -129,21 +131,21 @@ TEST_F(ButtonFixture, turn_on_start_click)
   };
 
   // signal button on
-  mock_gpios::update_callbacks();
-  button::init(true);
+  ::simulator::mock_gpios::update_callbacks();
+  physical::button::init(true);
 
   // simulate clicks
   auto buttonThread = std::thread([]() {
     std::this_thread::sleep_for(150ms);
-    sim::globals::state.isButtonPressed = false;
-    mock_gpios::update_callbacks();
+    ::simulator::globals::state.isButtonPressed = false;
+    ::simulator::mock_gpios::update_callbacks();
   });
 
-  while (time_ms() < testTimeout_ms && not isTestDone)
+  while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    mock_gpios::update_callbacks();
+    ::simulator::mock_gpios::update_callbacks();
     std::this_thread::sleep_for(10ms);
-    button::handle_events(clickSerieCallback, clickHoldSerieCallback);
+    physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
   }
   ASSERT_TRUE(isTestDone);
   buttonThread.join();
@@ -155,13 +157,13 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
   static const int desiredClicks = 4;
 
   // initial state is turn on
-  sim::globals::state.isButtonPressed = true;
+  ::simulator::globals::state.isButtonPressed = true;
   std::atomic<bool> isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount) {
     isTestDone = true;
     ASSERT_EQ(clickCount, desiredClicks);
-    ASSERT_TRUE(button::is_system_start_click());
+    ASSERT_TRUE(physical::button::is_system_start_click());
   };
   auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration) {
     isTestDone = true;
@@ -169,23 +171,23 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
   };
 
   // signal button on
-  mock_gpios::update_callbacks();
-  button::init(true);
+  ::simulator::mock_gpios::update_callbacks();
+  physical::button::init(true);
 
   // simulate click release
   auto buttonThread = std::thread([&]() {
     std::this_thread::sleep_for(50ms);
-    sim::globals::state.isButtonPressed = false;
-    mock_gpios::update_callbacks();
+    ::simulator::globals::state.isButtonPressed = false;
+    ::simulator::mock_gpios::update_callbacks();
   });
 
   // simulate a few clicks
   simulate_clicks(desiredClicks - 1, 200ms, 100ms, 200ms);
 
-  while (time_ms() < testTimeout_ms && not isTestDone)
+  while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
     std::this_thread::sleep_for(10ms);
-    button::handle_events(clickSerieCallback, clickHoldSerieCallback);
+    physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
   }
   ASSERT_TRUE(isTestDone);
   buttonThread.join();
@@ -195,7 +197,7 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
 TEST_F(ButtonFixture, turn_on_start_long_click)
 {
   // initial state is turn on
-  sim::globals::state.isButtonPressed = true;
+  ::simulator::globals::state.isButtonPressed = true;
   bool isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount) {
@@ -207,34 +209,34 @@ TEST_F(ButtonFixture, turn_on_start_long_click)
     {
       EXPECT_EQ(clickCount, 1);
       EXPECT_LT(clickDuration, 1000 * 1.5);
-      EXPECT_TRUE(button::is_system_start_click());
+      EXPECT_TRUE(physical::button::is_system_start_click());
     }
     else
     {
       EXPECT_EQ(clickCount, 1);
       // end of long click is always zero duration
       EXPECT_EQ(clickDuration, 0);
-      EXPECT_TRUE(button::is_system_start_click());
+      EXPECT_TRUE(physical::button::is_system_start_click());
       isTestDone = true;
     }
   };
 
   // signal button on
-  mock_gpios::update_callbacks();
-  button::init(true);
+  ::simulator::mock_gpios::update_callbacks();
+  physical::button::init(true);
 
   // simulate click release after a long time
   auto buttonThread = std::thread([]() {
     std::this_thread::sleep_for(1000ms);
-    sim::globals::state.isButtonPressed = false;
-    mock_gpios::update_callbacks();
+    ::simulator::globals::state.isButtonPressed = false;
+    ::simulator::mock_gpios::update_callbacks();
   });
 
-  while (time_ms() < testTimeout_ms && not isTestDone)
+  while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    mock_gpios::update_callbacks();
+    ::simulator::mock_gpios::update_callbacks();
     std::this_thread::sleep_for(10ms);
-    button::handle_events(clickSerieCallback, clickHoldSerieCallback);
+    physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
   }
   ASSERT_TRUE(isTestDone);
   buttonThread.join();
@@ -246,7 +248,7 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
   static const int desiredClicks = 4;
 
   // initial state is turn on
-  sim::globals::state.isButtonPressed = true;
+  ::simulator::globals::state.isButtonPressed = true;
   bool isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount) {
@@ -258,37 +260,37 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
     {
       EXPECT_EQ(clickCount, desiredClicks);
       EXPECT_LT(clickDuration, 1000 * 1.5);
-      EXPECT_TRUE(button::is_system_start_click());
+      EXPECT_TRUE(physical::button::is_system_start_click());
     }
     else
     {
       EXPECT_EQ(clickCount, desiredClicks);
       // end of long click is always zero duration
       EXPECT_EQ(clickDuration, 0);
-      EXPECT_TRUE(button::is_system_start_click());
+      EXPECT_TRUE(physical::button::is_system_start_click());
       isTestDone = true;
     }
   };
 
   // signal button on
-  mock_gpios::update_callbacks();
-  button::init(true);
+  ::simulator::mock_gpios::update_callbacks();
+  physical::button::init(true);
 
   // simulate click release after a long time
   auto buttonThread = std::thread([&]() {
     std::this_thread::sleep_for(50ms);
-    sim::globals::state.isButtonPressed = false;
-    mock_gpios::update_callbacks();
+    ::simulator::globals::state.isButtonPressed = false;
+    ::simulator::mock_gpios::update_callbacks();
   });
 
   // simulate a few clicks
   simulate_clicks(desiredClicks - 1, 200ms, 100ms, 200ms, 1000ms);
 
-  while (time_ms() < testTimeout_ms && not isTestDone)
+  while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    mock_gpios::update_callbacks();
+    ::simulator::mock_gpios::update_callbacks();
     std::this_thread::sleep_for(10ms);
-    button::handle_events(clickSerieCallback, clickHoldSerieCallback);
+    physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
   }
   ASSERT_TRUE(isTestDone);
   buttonThread.join();
@@ -304,7 +306,7 @@ TEST_F(ButtonFixture, debounce)
   static const int desiredClicks = 50;
 
   // initial state is turn on
-  sim::globals::state.isButtonPressed = false;
+  ::simulator::globals::state.isButtonPressed = false;
   std::atomic<bool> isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount) {
@@ -314,7 +316,7 @@ TEST_F(ButtonFixture, debounce)
   auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration) {
     // only one click count, other are debounced
     ASSERT_EQ(clickCount, 1);
-    ASSERT_TRUE(button::is_system_start_click());
+    ASSERT_TRUE(physical::button::is_system_start_click());
 
     // test is done when all clicks are done
     if (clickDuration <= 0)
@@ -322,16 +324,16 @@ TEST_F(ButtonFixture, debounce)
   };
 
   // signal button on
-  mock_gpios::update_callbacks();
-  button::init(true);
+  ::simulator::mock_gpios::update_callbacks();
+  physical::button::init(true);
 
   // simulate a clicks
   simulate_clicks(desiredClicks, 15ms, 15ms);
 
-  while (time_ms() < testTimeout_ms && not isTestDone)
+  while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
     std::this_thread::sleep_for(10ms);
-    button::handle_events(clickSerieCallback, clickHoldSerieCallback);
+    physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
   }
   ASSERT_TRUE(isTestDone);
 }
@@ -341,7 +343,7 @@ TEST_F(ButtonFixture, standard_multiple_click)
   static const int desiredClicks = 4;
 
   // initial state is turn on
-  sim::globals::state.isButtonPressed = true;
+  ::simulator::globals::state.isButtonPressed = true;
   std::atomic<bool> isTestDone = false;
 
   bool isFirstClick = true;
@@ -349,13 +351,13 @@ TEST_F(ButtonFixture, standard_multiple_click)
   auto clickSerieCallback = [&](uint8_t clickCount) {
     if (isFirstClick)
     {
-      ASSERT_TRUE(button::is_system_start_click());
+      ASSERT_TRUE(physical::button::is_system_start_click());
       ASSERT_EQ(clickCount, 1);
       isFirstClick = false;
     }
     else
     {
-      ASSERT_FALSE(button::is_system_start_click());
+      ASSERT_FALSE(physical::button::is_system_start_click());
       ASSERT_EQ(clickCount, desiredClicks);
       isTestDone = true;
     }
@@ -366,23 +368,23 @@ TEST_F(ButtonFixture, standard_multiple_click)
   };
 
   // signal button on
-  mock_gpios::update_callbacks();
-  button::init(true);
+  ::simulator::mock_gpios::update_callbacks();
+  physical::button::init(true);
 
   // simulate click release
   auto buttonThread = std::thread([&]() {
     std::this_thread::sleep_for(50ms);
-    sim::globals::state.isButtonPressed = false;
-    mock_gpios::update_callbacks();
+    ::simulator::globals::state.isButtonPressed = false;
+    ::simulator::mock_gpios::update_callbacks();
   });
 
   // simulate a few clicks
   simulate_clicks(desiredClicks, 200ms, 100ms, 500ms);
 
-  while (time_ms() < testTimeout_ms && not isTestDone)
+  while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
     std::this_thread::sleep_for(10ms);
-    button::handle_events(clickSerieCallback, clickHoldSerieCallback);
+    physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
   }
   ASSERT_TRUE(isTestDone);
   buttonThread.join();
@@ -392,3 +394,5 @@ TEST_F(ButtonFixture, standard_multiple_click)
 // standard click than long click chain
 // long click start then click chain
 // start click chain, then multiple click chains
+
+} // namespace lampda

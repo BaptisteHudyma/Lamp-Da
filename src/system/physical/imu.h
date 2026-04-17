@@ -7,6 +7,8 @@
 
 #include "LSM6DS3/imu_wrapper.h"
 
+namespace lampda {
+namespace physical {
 /// Contains the handling of the gyroscope and accelerometer.
 /// IMU is auto activated when used
 namespace imu {
@@ -56,5 +58,7 @@ bool is_interrupt2_enabled();
 Reading get_filtered_reading(const bool resetFilter);
 
 } // namespace imu
+} // namespace physical
+} // namespace lampda
 
 #endif

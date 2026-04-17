@@ -39,6 +39,8 @@
 
 #include "src/user/functions.h"
 
+namespace lampda {
+namespace logic {
 namespace behavior {
 
 static constexpr uint32_t cleanSleepKey = utils::hash("cleanSleep");
@@ -102,7 +104,7 @@ const char* BehaviorStatesStr[] = {
         "ERROR",
 };
 // main state machine
-StateMachine<BehaviorStates> mainMachine(BehaviorStates::START_LOGIC);
+utils::StateMachine<BehaviorStates> mainMachine(BehaviorStates::START_LOGIC);
 
 // system was powered from vbus power event
 bool did_woke_up_from_power() { return wokeUpFromVbus_s; }
@@ -113,7 +115,7 @@ void set_power_on() { isTargetPoweredOn_s = true; }
 void set_power_off()
 {
   // prevent early shutdown when system is just booting, or lamp jst turns on
-  if (time_ms() - preOutputLightCalled < SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY)
+  if (platform::time_ms() - preOutputLightCalled < SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY)
     return;
 
   isTargetPoweredOn_s = false;
@@ -131,19 +133,19 @@ void progress_update(const float progress) { user::sunset_timer_update(progress)
 // allow system to be powered if no hardware alert and power is setup
 bool can_system_allowed_to_be_powered()
 {
-  return not(alerts::manager.is_raised(alerts::Type::SYSTEM_IN_ERROR_STATE) or not power::is_setup());
+  return not(logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_ERROR_STATE) or not power::is_setup());
 }
 
 // return true if vbus is high
-bool is_charger_powered() { return charger::is_vbus_powered(); }
+bool is_charger_powered() { return power::charger::is_vbus_powered(); }
 
 bool read_parameters()
 {
   bool isSuccess = false;
   // load system values in memory
-  if (not fileSystem::system::load_from_file())
+  if (not physical::fileSystem::system::load_from_file())
   {
-    alerts::manager.raise(alerts::Type::SYSTEM_SLEEP_SKIPPED);
+    logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_SLEEP_SKIPPED);
   }
   else
   {
@@ -152,41 +154,41 @@ bool read_parameters()
     statistics::load_from_memory();
 
     uint32_t wasPutToSleepCleanly = 0;
-    const bool isCleanFlagFound = fileSystem::system::get_value(cleanSleepKey, wasPutToSleepCleanly);
+    const bool isCleanFlagFound = physical::fileSystem::system::get_value(cleanSleepKey, wasPutToSleepCleanly);
     if (not isCleanFlagFound or wasPutToSleepCleanly != 0xDEADBEEF)
     {
       // dirty sleep alert
-      alerts::manager.raise(alerts::Type::SYSTEM_SLEEP_SKIPPED);
+      logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_SLEEP_SKIPPED);
     }
 
     uint32_t brightness = 0;
-    if (fileSystem::system::get_value(brightnessKey, brightness))
+    if (physical::fileSystem::system::get_value(brightnessKey, brightness))
     {
-      brightness::update_brightness(brightness, true);
-      brightness::update_saved_brightness();
+      utils::brightness::update_brightness(brightness, true);
+      utils::brightness::update_saved_brightness();
     }
 
     uint32_t indicatorLevel = 0;
-    if (fileSystem::system::get_value(indicatorLevelKey, indicatorLevel))
+    if (physical::fileSystem::system::get_value(indicatorLevelKey, indicatorLevel))
     {
-      indicator::set_brightness_level(indicatorLevel);
+      logic::indicator::set_brightness_level(indicatorLevel);
     }
 
     uint32_t isInLockoutMode = 0;
-    if (fileSystem::system::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
+    if (physical::fileSystem::system::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
     {
       // system in lockout, raise the alert
-      alerts::manager.raise(alerts::Type::SYSTEM_IN_LOCKOUT);
+      logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
     }
 
     uint32_t buttonPin = 0;
-    if (fileSystem::system::get_value(buttonPinKey, buttonPin) and buttonPin > 0)
+    if (physical::fileSystem::system::get_value(buttonPinKey, buttonPin) and buttonPin > 0)
     {
-      button::set_button_pin(static_cast<DigitalPin::GPIO>(buttonPin));
+      physical::button::set_button_pin(static_cast<platform::gpio::DigitalPin::GPIO>(buttonPin));
     }
   }
 
-  if (fileSystem::user::load_from_file())
+  if (physical::fileSystem::user::load_from_file())
   {
     user::read_parameters();
   }
@@ -198,35 +200,36 @@ bool read_parameters()
 void setup_clean_sleep_flag()
 {
   // clear clean sleep flag
-  fileSystem::system::set_value(cleanSleepKey, 0);
+  physical::fileSystem::system::set_value(cleanSleepKey, 0);
   // write parameters, if a crash happens, we will notice a dirty flag
-  fileSystem::system::write_to_file();
+  physical::fileSystem::system::write_to_file();
   // temp shutdown
-  fileSystem::shutdown();
+  physical::fileSystem::shutdown();
 }
 
 void write_parameters()
 {
-  fileSystem::clear();
+  physical::fileSystem::clear();
 
   // write updated statistics
   statistics::write_to_memory();
 
-  fileSystem::system::set_value(cleanSleepKey, 0xDEADBEEF);
+  physical::fileSystem::system::set_value(cleanSleepKey, 0xDEADBEEF);
   // only save saved brightness, not current
-  fileSystem::system::set_value(brightnessKey, brightness::get_saved_brightness());
-  fileSystem::system::set_value(indicatorLevelKey, indicator::get_brightness_level());
+  physical::fileSystem::system::set_value(brightnessKey, utils::brightness::get_saved_brightness());
+  physical::fileSystem::system::set_value(indicatorLevelKey, logic::indicator::get_brightness_level());
   // lockout mode always kept, if not deactivated by system
-  fileSystem::system::set_value(isLockoutModeKey, alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT));
-  fileSystem::system::set_value(buttonPinKey, static_cast<uint32_t>(button::get_button_pin()));
+  physical::fileSystem::system::set_value(isLockoutModeKey,
+                                          logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT));
+  physical::fileSystem::system::set_value(buttonPinKey, static_cast<uint32_t>(physical::button::get_button_pin()));
 
   user::write_parameters();
 
   // write all
-  fileSystem::user::write_to_file();
-  fileSystem::system::write_to_file();
+  physical::fileSystem::user::write_to_file();
+  physical::fileSystem::system::write_to_file();
   // close filesystem
-  fileSystem::shutdown();
+  physical::fileSystem::shutdown();
 }
 
 // user code is running when state is output
@@ -239,41 +242,43 @@ bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::
 void true_power_off()
 {
   // unmount filesystem
-  fileSystem::shutdown();
+  physical::fileSystem::shutdown();
 
   // stop i2c interfaces
-  for (uint8_t i = 0; i < get_wire_interface_count(); ++i)
+  for (uint8_t i = 0; i < platform::registers::get_wire_interface_count(); ++i)
   {
-    i2c_turn_off(i);
+    platform::i2c::i2c_turn_off(i);
   }
-  delay_ms(5);
+  platform::delay_ms(5);
 
   // disable peripherals
-  DigitalPin(DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(false);
+  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(false);
   // disable gates
 #ifdef IS_HARDWARE_1_0
   // disable pullup in sleep mode (in V>1.0, done electrically)
-  DigitalPin(DigitalPin::GPIO::Input_isChargeOk).set_pin_mode(DigitalPin::Mode::kInput);
-  DigitalPin(DigitalPin::GPIO::Signal_BatteryBalancerAlert).set_pin_mode(DigitalPin::Mode::kInput);
+  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Input_isChargeOk)
+          .set_pin_mode(platform::gpio::DigitalPin::Mode::kInput);
+  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Signal_BatteryBalancerAlert)
+          .set_pin_mode(platform::gpio::DigitalPin::Mode::kInput);
 #endif
-  DigitalPin(DigitalPin::GPIO::Output_EnableVbusGate).set_high(false);
-  DigitalPin(DigitalPin::GPIO::Output_EnableOutputGate).set_high(false);
+  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableVbusGate).set_high(false);
+  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableOutputGate).set_high(false);
 
   // deactivate indicators
-  indicator::set_color(utils::ColorSpace::BLACK);
-  DigitalPin::deactivate_gpios(); // physically disconnect gpios
-  delay_ms(1);
+  physical::indicator::set_color(utils::ColorSpace::BLACK);
+  platform::gpio::DigitalPin::deactivate_gpios(); // physically disconnect gpios
+  platform::delay_ms(1);
 
   // power down nrf52.
   // on wake up, it'll start back from the setup phase
-  go_to_sleep(button::get_button_pin_RAW());
+  platform::registers::go_to_sleep(physical::button::get_button_pin_RAW());
 
   /*
    * Nothing after this, system is off !
    */
 
   // if we reach this, the system failed to go to sleep, register may be broken
-  alerts::manager.raise(alerts::Type::SYSTEM_OFF_FAILED);
+  logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_OFF_FAILED);
 }
 
 void set_error_state_message(const std::string& errorMsg)
@@ -321,11 +326,11 @@ void handle_error_state()
   power::go_to_error();
 
   // kick power and user watchdog (prevent reset)
-  kick_watchdog(POWER_WATCHDOG_ID);
-  kick_watchdog(USER_WATCHDOG_ID);
+  platform::registers::kick_watchdog(POWER_WATCHDOG_ID);
+  platform::registers::kick_watchdog(USER_WATCHDOG_ID);
 
   // if error state, raise alert
-  alerts::manager.raise(alerts::Type::SYSTEM_IN_ERROR_STATE);
+  logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_IN_ERROR_STATE);
 }
 
 void handle_start_logic_state()
@@ -350,7 +355,7 @@ void handle_start_logic_state()
   if (not power::is_started())
   {
     // wait until power is started
-    delay_ms(1);
+    platform::delay_ms(1);
     return;
   }
 
@@ -358,7 +363,7 @@ void handle_start_logic_state()
   if (did_woke_up_from_power())
   {
     // signal to the alert manager that we started by power input
-    alerts::signal_wake_up_from_charger();
+    logic::alerts::signal_wake_up_from_charger();
 
     // start the charge operation
     mainMachine.set_state(BehaviorStates::PRE_CHARGER_OPERATION);
@@ -380,16 +385,16 @@ void handle_pre_charger_operation_state()
     return;
   }
   // clear lockout in charge mode
-  alerts::manager.clear(alerts::Type::SYSTEM_IN_LOCKOUT);
+  logic::alerts::manager.clear(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
 
-  preChargeCalled = time_ms();
+  preChargeCalled = platform::time_ms();
 
-  if (not battery::can_battery_be_charged())
+  if (not physical::battery::can_battery_be_charged())
   {
     // battery cannot be charged
     return;
   }
-  if (not alerts::manager.can_use_usb_port())
+  if (not logic::alerts::manager.can_use_usb_port())
   {
     // USB port use is locked
     return;
@@ -414,24 +419,24 @@ void handle_charger_operation_state()
   {
     // forbid charging
     power::enable_charge(false);
-    yield_this_thread();
+    platform::threads::yield_this_thread();
 
     // switch to output mode after the post charge operations
     mainMachine.set_state(BehaviorStates::PRE_OUTPUT_LIGHT);
     return;
   }
   // wait a bit after going to charger mode, maybe vbus is bouncing around
-  const bool vbusDebounced = charger::can_use_vbus_power() or (time_ms() - preChargeCalled) > 5000;
+  const bool vbusDebounced = power::charger::can_use_vbus_power() or (platform::time_ms() - preChargeCalled) > 5000;
   if (vbusDebounced)
   {
     static uint32_t otgDebounce_time = 0;
-    if (charger::get_state().isInOtg)
+    if (power::charger::get_state().isInOtg)
     {
-      otgDebounce_time = time_ms();
+      otgDebounce_time = platform::time_ms();
     }
 
     // otg mode
-    if ((otgDebounce_time != 0) and (time_ms() - otgDebounce_time) <= 500)
+    if ((otgDebounce_time != 0) and (platform::time_ms() - otgDebounce_time) <= 500)
     {
       // do nothing (for now !)
     }
@@ -440,7 +445,7 @@ void handle_charger_operation_state()
     {
       // forbbid charging
       power::enable_charge(false);
-      yield_this_thread();
+      platform::threads::yield_this_thread();
 
       // go to sleep after closing the charger
       mainMachine.set_state(BehaviorStates::SHUTDOWN);
@@ -473,10 +478,10 @@ bool check_handle_exit_output_mode()
     return true;
   }
 #ifndef LMBD_SIMULATION
-  else if (not battery::is_battery_usable_as_power_source())
+  else if (not physical::battery::is_battery_usable_as_power_source())
   {
     // wait a bit then shutdown
-    if (time_ms() - preOutputLightCalled > 3000)
+    if (platform::time_ms() - preOutputLightCalled > 3000)
     {
       // indicate we should power the systemm off
       set_power_off();
@@ -498,11 +503,11 @@ void handle_pre_output_light_state()
     return;
   }
   // power usage is forbidden
-  if (not battery::is_battery_usable_as_power_source())
+  if (not physical::battery::is_battery_usable_as_power_source())
   {
     if (not isMessageDisplayed)
     {
-      lampda_print("no output allowed");
+      platform::lampda_print("no output allowed");
       isMessageDisplayed = true;
     }
     // check if we may go to sleep
@@ -510,11 +515,11 @@ void handle_pre_output_light_state()
     return;
   }
 
-  if (alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT))
+  if (logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT))
   {
     if (not isMessageDisplayed)
     {
-      lampda_print("not output in lockout state");
+      platform::lampda_print("not output in lockout state");
       isMessageDisplayed = true;
     }
     // check if we may go to sleep
@@ -526,15 +531,15 @@ void handle_pre_output_light_state()
   isMessageDisplayed = false;
 
   // critical battery level, do not wake up
-  if (battery::get_battery_minimum_cell_level() <= batteryCritical + 1)
+  if (physical::battery::get_battery_minimum_cell_level() <= batteryCritical + 1)
   {
     // alert user of low battery
     for (uint8_t i = 0; i < 10; i++)
     {
-      indicator::set_color(utils::ColorSpace::RED);
-      delay_ms(100);
-      indicator::set_color(utils::ColorSpace::BLACK);
-      delay_ms(100);
+      physical::indicator::set_color(utils::ColorSpace::RED);
+      platform::delay_ms(100);
+      physical::indicator::set_color(utils::ColorSpace::BLACK);
+      platform::delay_ms(100);
     }
 
     if (is_charger_powered())
@@ -549,17 +554,17 @@ void handle_pre_output_light_state()
     }
     return;
   }
-  preOutputLightCalled = time_ms();
+  preOutputLightCalled = platform::time_ms();
 
   power::go_to_output_mode();
 
   // update brightness with saved brightness
-  brightness::update_brightness(brightness::get_saved_brightness());
+  utils::brightness::update_brightness(utils::brightness::get_saved_brightness());
 
   // let the user power on the system
   user::power_on_sequence();
 
-  lastOutputLightValidTime = time_ms();
+  lastOutputLightValidTime = platform::time_ms();
 
   // this function is executed ONCE
   statistics::signal_output_on();
@@ -586,25 +591,25 @@ void handle_output_light_state()
   static bool waitingForPowerGate_messageDisplayed = true;
 
   // wait for power gates (and display message when ready)
-  if (not powergates::is_power_gate_enabled() or not power::is_output_mode_ready())
+  if (not power::powergates::is_power_gate_enabled() or not power::is_output_mode_ready())
   {
     if (waitingForPowerGate_messageDisplayed)
     {
-      lampda_print("Behavior>Output mode: waiting for power gate");
+      platform::lampda_print("Behavior>Output mode: waiting for power gate");
       waitingForPowerGate_messageDisplayed = false;
     }
 
-    if (time_ms() - lastOutputLightValidTime > 1000)
+    if (platform::time_ms() - lastOutputLightValidTime > 1000)
     {
       go_to_error_state("power gate took too long to switch in output light state " +
-                        std::to_string(powergates::is_power_gate_enabled()) +
+                        std::to_string(power::powergates::is_power_gate_enabled()) +
                         std::to_string(power::is_output_mode_ready()));
     }
     return;
   }
   waitingForPowerGate_messageDisplayed = true;
 
-  lastOutputLightValidTime = time_ms();
+  lastOutputLightValidTime = platform::time_ms();
 
   // normal running loop
   if (not check_handle_exit_output_mode())
@@ -612,10 +617,10 @@ void handle_output_light_state()
     // user loop call
     user::loop();
 
-    const auto& chargerState = charger::get_state();
-    if (chargerState.status == charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)
+    const auto& chargerState = power::charger::get_state();
+    if (chargerState.status == power::charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)
     {
-      alerts::manager.raise(alerts::Type::BATTERY_MISSING);
+      logic::alerts::manager.raise(logic::alerts::Type::BATTERY_MISSING);
     }
   }
 }
@@ -628,12 +633,12 @@ void handle_post_output_light_state()
   // let the user power off the system
   user::power_off_sequence();
   // write/stability delay
-  delay_ms(10);
+  platform::delay_ms(10);
 
   // deactivate strip power
-  outputPower::disable_power_gates(); // close external voltage path
-  delay_ms(1);
-  outputPower::write_voltage(0); // power down
+  physical::outputPower::disable_power_gates(); // close external voltage path
+  platform::delay_ms(1);
+  physical::outputPower::write_voltage(0); // power down
 
   statistics::signal_output_off();
   mainMachine.skip_timeout();
@@ -642,8 +647,8 @@ void handle_post_output_light_state()
 void handle_shutdown_state()
 {
   // detach all interrupts, to prevent interruption of shutdown
-  DigitalPin::detach_all();
-  yield_this_thread();
+  platform::gpio::DigitalPin::detach_all();
+  platform::threads::yield_this_thread();
 
   // shutdown all external power
   if (not power::go_to_shutdown())
@@ -652,13 +657,13 @@ void handle_shutdown_state()
   }
 
   uint8_t maxChecks = 100;
-  while (is_all_suspended() != 1 and maxChecks > 0)
+  while (platform::threads::is_all_suspended() != 1 and maxChecks > 0)
   {
     maxChecks--;
     // block other threads
-    suspend_all_threads();
-    yield_this_thread();
-    delay_ms(5);
+    platform::threads::suspend_all_threads();
+    platform::threads::yield_this_thread();
+    platform::delay_ms(5);
   }
   if (maxChecks == 0)
   {
@@ -667,14 +672,14 @@ void handle_shutdown_state()
   }
 
   // deactivate strip power
-  outputPower::write_voltage(0); // power down
-  delay_ms(10);
+  physical::outputPower::write_voltage(0); // power down
+  platform::delay_ms(10);
 
   // disable bluetooth, imu and microphone
-  microphone::disable();
-  imu::shutdown();
+  physical::microphone::disable();
+  physical::imu::shutdown();
 #ifdef USE_BLUETOOTH
-  bluetooth::stop_bluetooth_advertising();
+  platform::bluetooth::stop_bluetooth_advertising();
 #endif
 
   statistics::signal_output_off();
@@ -696,8 +701,8 @@ void state_machine_behavior()
   // if state changed, display the new state
   if (mainMachine.state_just_changed())
   {
-    lampda_print("BEHAVIOR_S_MACH > switched to state %s",
-                 BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]);
+    platform::lampda_print("BEHAVIOR_S_MACH > switched to state %s",
+                           BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]);
   }
 
   switch (mainMachine.get_state())
@@ -749,12 +754,12 @@ void loop()
   state_machine_behavior();
 
   // do not display alerts for the first 500 ms
-  const bool shouldIgnoreAlerts = (time_ms() - wakeUpTime) < 500;
-  alerts::handle_all(shouldIgnoreAlerts);
+  const bool shouldIgnoreAlerts = (platform::time_ms() - wakeUpTime) < 500;
+  logic::alerts::handle_all(shouldIgnoreAlerts);
   // alert requested an emergency shutdown, do it
-  if (alerts::is_request_shutdown())
+  if (logic::alerts::is_request_shutdown())
   {
-    lampda_print("emergency shutdown from alert");
+    platform::lampda_print("emergency shutdown from alert");
     // just in case, turn off eventual states
     internal::handle_post_output_light_state();
     // shutdown normally
@@ -766,10 +771,10 @@ void loop()
       mainMachine.get_state() == BehaviorStates::OUTPUT_LIGHT)
   {
     // at any point when the alert is raised, got to power off
-    if (alerts::manager.is_raised(alerts::Type::SYSTEM_IN_LOCKOUT) and
-        alerts::manager.get_time_since_raised(alerts::Type::SYSTEM_IN_LOCKOUT) > 950)
+    if (logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT) and
+        logic::alerts::manager.get_time_since_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT) > 950)
     {
-      const auto& buttonState = button::get_button_state();
+      const auto& buttonState = physical::button::get_button_state();
       const bool isButtonPressed = buttonState.isPressed or buttonState.isLongPressed;
       // shutdown with button pressed starts right back up.
       if (not isButtonPressed)
@@ -781,6 +786,8 @@ void loop()
 std::string get_state() { return std::string(BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]); }
 
 } // namespace behavior
+} // namespace logic
+} // namespace lampda
 
 //
 // do not modify (if you do not understand it)

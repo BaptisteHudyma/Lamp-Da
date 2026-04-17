@@ -3,7 +3,7 @@
 
 /// @file double_side_fill_mode.hpp
 
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 #include <cstdint>
 
@@ -36,7 +36,7 @@ struct DoubleSideFillMode : public modes::BasicMode
     static constexpr float iteration = ctx.lamp.frameDurationMs / static_cast<float>(animationTiming);
     ctx.state.progress += iteration;
 
-    const float prog = min<float>(ctx.state.progress, 1.0);
+    const float prog = std::min<float>(ctx.state.progress, 1.0);
 
     const size_t endIndex = prog * (ctx.lamp.ledCount / 2.0);
     ctx.lamp.fill(ctx.state.color, 0, endIndex);
@@ -52,6 +52,6 @@ struct DoubleSideFillMode : public modes::BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

@@ -8,6 +8,8 @@
 #include "src/system/power/charger.h"
 #include "src/system/power/balancer.h"
 
+namespace lampda {
+namespace physical {
 namespace battery {
 
 // no battery present after this timing will raise the alert
@@ -15,7 +17,7 @@ static constexpr uint32_t noBatteryAlertRaiseTiming_ms = 1500;
 
 static uint16_t s_batteryVoltage_mV = 0;
 
-void check_individual_batteries(const balancer::Status& balancerStatus)
+void check_individual_batteries(const power::balancer::Status& balancerStatus)
 {
 #if 0 // TODO finish the cell check below
   // in bounds with some margin
@@ -57,7 +59,7 @@ void check_individual_batteries(const balancer::Status& balancerStatus)
  */
 bool check_balancer_battery_voltage()
 {
-  const auto& balancerStatus = balancer::get_status();
+  const auto& balancerStatus = power::balancer::get_status();
   if (balancerStatus.is_valid())
   {
     s_batteryVoltage_mV = balancerStatus.stackVoltage_mV;
@@ -74,7 +76,7 @@ bool check_balancer_battery_voltage()
  */
 bool check_charger_battery_voltage()
 {
-  const auto& chargerStates = charger::get_state();
+  const auto& chargerStates = power::charger::get_state();
   if (chargerStates.areMeasuresOk)
   {
     // values from the ADC in the charging component
@@ -98,9 +100,9 @@ uint16_t get_raw_battery_voltage_mv()
   {
     // else: not ready yet ? error, return max voltage for now
     // after a set time, return an error, the system should not be used without batteries
-    if (time_ms() > noBatteryAlertRaiseTiming_ms)
+    if (platform::time_ms() > noBatteryAlertRaiseTiming_ms)
     {
-      alerts::manager.raise(alerts::Type::BATTERY_MISSING);
+      logic::alerts::manager.raise(logic::alerts::Type::BATTERY_MISSING);
     }
     return maxBatteryVoltage_mV;
   }
@@ -111,7 +113,7 @@ uint16_t get_raw_battery_voltage_mv()
           // s_batteryVoltage_mV < minBatteryVoltage_mV or
           s_batteryVoltage_mV > maxBatteryVoltage_mV)
   {
-    alerts::manager.raise(alerts::Type::BATTERY_READINGS_INCOHERENT);
+    logic::alerts::manager.raise(logic::alerts::Type::BATTERY_READINGS_INCOHERENT);
     // return a default value
     return 0;
   }
@@ -125,7 +127,7 @@ bool is_battery_usable_as_power_source()
   // - stack reading incoherent
   // - first battery of the stack is disconnected
   // - a battery voltage is below the safety voltage
-  return alerts::manager.can_use_output_power();
+  return logic::alerts::manager.can_use_output_power();
 }
 
 bool can_battery_be_charged()
@@ -133,13 +135,13 @@ bool can_battery_be_charged()
   // TODO: implement: return false if
   // - first or last battery of the stack are disconected
   // - ?
-  return alerts::manager.can_charge_battery();
+  return logic::alerts::manager.can_charge_battery();
 }
 
 uint16_t get_battery_minimum_cell_level()
 {
   uint16_t minCellVoltage = maxSingularBatteryVoltage_mV;
-  const auto& balancerStatus = balancer::get_status();
+  const auto& balancerStatus = power::balancer::get_status();
   if (balancerStatus.is_valid())
   {
     for (uint8_t i = 0; i < batteryCount; ++i)
@@ -167,7 +169,7 @@ uint16_t get_battery_minimum_cell_level()
 uint16_t get_battery_maximum_cell_level()
 {
   uint16_t maxCellVoltage = minSingularBatteryVoltage_mV;
-  const auto& balancerStatus = balancer::get_status();
+  const auto& balancerStatus = power::balancer::get_status();
   if (balancerStatus.is_valid())
   {
     for (uint8_t i = 0; i < batteryCount; ++i)
@@ -193,3 +195,5 @@ uint16_t get_battery_maximum_cell_level()
 }
 
 } // namespace battery
+} // namespace physical
+} // namespace lampda

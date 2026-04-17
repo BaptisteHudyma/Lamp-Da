@@ -10,7 +10,9 @@
 #include "src/compile.h"
 // - contains #define USE_BLUETOOTH
 
-/// Handle the plateform specific bluetooth operations
+namespace lampda {
+namespace platform {
+/// Handle the platform specific bluetooth operations
 namespace bluetooth {
 
 // start the advertising sequence (with a timeout)
@@ -23,6 +25,8 @@ void stop_bluetooth_advertising();
 void write_battery_level(const uint8_t batteryLevel);
 void notify_battery_level(const uint8_t batteryLevel);
 
-}; // namespace bluetooth
+} // namespace bluetooth
+} // namespace platform
+} // namespace lampda
 
 #endif

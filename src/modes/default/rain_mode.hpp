@@ -9,7 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 /**
  * \brief Emulate falling rain using the IMU.
@@ -146,6 +146,6 @@ private:
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif // BEATSYNC_MODE_H

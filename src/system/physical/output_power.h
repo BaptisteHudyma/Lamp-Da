@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+namespace lampda {
+namespace physical {
 /// Handle the main board output power.
 namespace outputPower {
 
@@ -42,5 +44,7 @@ extern bool is_bliping();
 void disable_power_gates();
 
 } // namespace outputPower
+} // namespace physical
+} // namespace lampda
 
 #endif

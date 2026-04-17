@@ -9,6 +9,8 @@
 
 #include "src/system/utils/vector_math.h"
 
+namespace lampda {
+namespace physical {
 /// physical layer of the IMU.
 namespace imu {
 
@@ -16,9 +18,9 @@ namespace imu {
 struct Reading
 {
   /// accelerometer in G
-  vec3d accel;
+  utils::vec3d accel;
   /// gyroscopic speed in degree per second
-  vec3d gyro;
+  utils::vec3d gyro;
 };
 
 /// IMU wrapper class
@@ -98,5 +100,7 @@ public:
 };
 
 } // namespace imu
+} // namespace physical
+} // namespace lampda
 
 #endif

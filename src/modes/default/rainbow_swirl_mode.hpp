@@ -3,7 +3,7 @@
 
 /// @file rainbow_swirl_mode.hpp
 
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 #include <cstdint>
 #include "src/modes/include/colors/palettes.hpp"
@@ -45,6 +45,6 @@ struct RainbowSwirlMode : public BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

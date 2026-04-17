@@ -7,7 +7,7 @@
 
 #include <array>
 
-namespace modes::draw::grid {
+namespace lampda::modes::draw::grid {
 
 using LampTy = hardware::LampTy;
 
@@ -297,6 +297,6 @@ void wolframRule(const auto& before, auto& after)
   }
 }
 
-} // namespace modes::draw::grid
+} // namespace lampda::modes::draw::grid
 
 #endif

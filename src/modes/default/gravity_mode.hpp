@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <functional>
 
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 /**
  * \brief Sand particle simulation, synched with the board IMU
@@ -43,7 +43,7 @@ struct GravityMode : public BasicMode
     auto& state = ctx.state;
 
     const uint8_t rampIndex =
-            min<uint8_t>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1.0f);
+            std::min<uint8_t>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1.0f);
 
     state.selectedPalette = state._palettes[rampIndex];
   }
@@ -119,6 +119,6 @@ private:
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif // BEATSYNC_MODE_H

@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+namespace lampda {
+
 namespace noise8 {
 
 // 1D perlin noise
@@ -31,5 +33,6 @@ extern uint16_t inoise(uint32_t x, uint32_t y);
 extern uint16_t inoise(uint32_t x, uint32_t y, uint32_t z);
 
 } // namespace noise16
+} // namespace lampda
 
 #endif

@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+namespace lampda {
+namespace logic {
 /// Handle the system alerts, that are displayed on the RGB indicator
 namespace alerts {
 
@@ -124,5 +126,7 @@ void set_brightness_level(const uint8_t level);
 uint8_t get_brightness_level();
 
 } // namespace indicator
+} // namespace logic
+} // namespace lampda
 
 #endif

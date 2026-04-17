@@ -13,9 +13,11 @@
 // use depend of component
 #include "src/depends/BQ76905/BQ76905.h"
 
+namespace lampda {
+namespace power {
 namespace balancer {
 
-// threshold at which point a battery is considered unbalanced with another
+/// threshold at which point a battery is considered unbalanced with another
 constexpr uint16_t unbalancedMv = 3;
 
 //
@@ -24,7 +26,7 @@ static_assert(HARDWARE_VERSION_MAJOR == 1 and batteryCount == 3,
 
 bool Status::is_valid() const
 {
-  if (lastMeasurmentUpdate == 0 or time_ms() - lastMeasurmentUpdate >= 1000)
+  if (lastMeasurmentUpdate == 0 or platform::time_ms() - lastMeasurmentUpdate >= 1000)
   {
     return false;
   }
@@ -229,7 +231,7 @@ Status get_status() { return _status; }
 
 bool init()
 {
-  if (i2c_check_existence(bq76905::i2cObjectIndex, bq76905::BQ76905::BQ76905addr) != 0)
+  if (platform::i2c::i2c_check_existence(bq76905::i2cObjectIndex, bq76905::BQ76905::BQ76905addr) != 0)
   {
     // error: device not detected
     // charger
@@ -249,7 +251,7 @@ bool init()
 
   // reset registers
   balancerRegisters.reset.send();
-  delay_ms(5);
+  platform::delay_ms(5);
 
   // got to config mode
   balancerRegisters.setCfgUpdate.send();
@@ -323,12 +325,12 @@ void loop()
 
     if (not isBalancingAllowed)
     {
-      alerts::manager.raise(alerts::Type::BATTERY_READINGS_INCOHERENT);
+      logic::alerts::manager.raise(logic::alerts::Type::BATTERY_READINGS_INCOHERENT);
       disable_battery_balancing();
     }
 
     // update measurments
-    _status.lastMeasurmentUpdate = time_ms();
+    _status.lastMeasurmentUpdate = platform::time_ms();
   }
 
   // if the balancing process is enabled, balance batteries
@@ -359,8 +361,10 @@ void go_to_sleep()
 
   // send 3 times, with delay between each
   balancerRegisters.deepSleep.send();
-  delay_ms(10);
+  platform::delay_ms(10);
   balancerRegisters.deepSleep.send();
 }
 
 } // namespace balancer
+} // namespace power
+} // namespace lampda

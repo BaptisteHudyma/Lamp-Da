@@ -1,7 +1,7 @@
 #ifndef MODES_DEFAULT_CONFIG_H
 #define MODES_DEFAULT_CONFIG_H
 
-namespace modes {
+namespace lampda::modes {
 
 /** \brief Default manager configuration, enables you to customize defaults
  *
@@ -112,6 +112,6 @@ enum class ConfigKeys : uint8_t
   customRampAnimChoice,   ///< (u32) Which custom ramp anim. to use (rainbow, etc)
 };
 
-} // namespace modes
+} // namespace lampda::modes
 
 #endif

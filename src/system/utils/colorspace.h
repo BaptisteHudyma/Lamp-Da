@@ -7,6 +7,7 @@
 
 #include "utils.h"
 
+namespace lampda {
 namespace utils {
 
 /// Define commonly used color spaces
@@ -183,5 +184,6 @@ public:
 
 } // namespace ColorSpace
 } // namespace utils
+} // namespace lampda
 
 #endif

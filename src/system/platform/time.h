@@ -1,20 +1,19 @@
 /*! \file time.h
-    \brief Interface for the platform specific time handling.
+    \brief Define all time related platform functions
 */
 
 // do not use pragma once here, has this can be mocked
 #ifndef PLATFORM_TIME
 #define PLATFORM_TIME
 
+#include <stdint.h>
+
 #ifdef __cplusplus
+namespace lampda {
+namespace platform {
+
 extern "C" {
 #endif
-
-  /*
-   *  Define all time related platform functions
-   */
-
-#include <stdint.h>
 
   /**
    * \brief Returns the number of milliseconds since the Arduino board began running the current program.
@@ -60,6 +59,8 @@ extern "C" {
 
 #ifdef __cplusplus
 }
+} // namespace: platform
+} // namespace: lampda
 #endif
 
 #endif

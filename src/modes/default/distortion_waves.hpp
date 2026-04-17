@@ -9,7 +9,7 @@
 #include "src/modes/include/colors/gamma.hpp"
 
 /// Basic "default" modes included with the hardware
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 /**
  * \brief Emulate color circle waves propagating.
@@ -76,9 +76,7 @@ struct DistortionWaveMode : public BasicMode
                                  colors::fromRGB(
                                          //
                                          colors::gamma8(cos8(red)),
-                                         //
                                          colors::gamma8(cos8(green)),
-                                         //
                                          colors::gamma8(cos8(blue))
                                          //
                                          ));
@@ -87,6 +85,6 @@ struct DistortionWaveMode : public BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

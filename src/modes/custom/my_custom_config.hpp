@@ -3,7 +3,7 @@
 
 // uncomment only what you need to override
 //
-struct MyCustomConfig : public modes::DefaultManagerConfig
+struct MyCustomConfig : public lampda::modes::DefaultManagerConfig
 {
   // static constexpr bool defaultRampSaturates = true;
   // static constexpr bool defaultClearStripOnModeChange = false;
@@ -12,6 +12,6 @@ struct MyCustomConfig : public modes::DefaultManagerConfig
   // static constexpr uint32_t defaultCustomRampAnimChoice = 0;
 };
 
-template<typename... Groups> using CustomManagerFor = modes::ManagerForConfig<MyCustomConfig, Groups...>;
+template<typename... Groups> using CustomManagerFor = lampda::modes::ManagerForConfig<MyCustomConfig, Groups...>;
 
 #endif

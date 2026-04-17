@@ -3,8 +3,11 @@
 #include "src/user/functions.h"
 
 #include "src/system/platform/time.h"
-#include "utils.h"
 
+#include "src/system/utils/utils.h"
+
+namespace lampda {
+namespace utils {
 namespace brightness {
 
 /**
@@ -14,7 +17,7 @@ struct BrightnessParameters
 {
   /// Upper bound for the brightness
   /// Can be updated to limit the max birghtness, but should never ecxeed absoluteMaximumBrightness
-  brightness_t MaxBrightnessLimit = brightness::absoluteMaximumBrightness;
+  brightness_t MaxBrightnessLimit = ::lampda::brightness::absoluteMaximumBrightness;
 
   /// Hold the current level of brightness.
   /// This is the true reference value that is stored in memory at system shutdown
@@ -32,7 +35,7 @@ brightness_t get_brightness() { return __internal.BRIGHTNESS; }
 brightness_t get_max_brightness() { return __internal.MaxBrightnessLimit; }
 void set_max_brightness(const brightness_t brg)
 {
-  __internal.MaxBrightnessLimit = min<brightness_t>(brg, brightness::absoluteMaximumBrightness);
+  __internal.MaxBrightnessLimit = min<brightness_t>(brg, ::lampda::brightness::absoluteMaximumBrightness);
 }
 
 void update_saved_brightness() { __internal.savedBrightness = __internal.BRIGHTNESS; }
@@ -54,9 +57,11 @@ void update_brightness(const brightness_t newBrightness, const bool isInitialRea
     }
   }
 
-  __internal.lastBrightnessUpdate = time_ms();
+  __internal.lastBrightnessUpdate = ::lampda::platform::time_ms();
 }
 
 uint32_t when_last_update_brightness() { return __internal.lastBrightnessUpdate; }
 
 } // namespace brightness
+} // namespace utils
+} // namespace lampda
