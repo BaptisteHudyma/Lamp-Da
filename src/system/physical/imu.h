@@ -1,11 +1,14 @@
+/*! \file imu.h
+    \brief Interface for the physical components of the InertialMotionUnit.
+*/
+
 #ifndef IMU_H
 #define IMU_H
 
 #include "LSM6DS3/imu_wrapper.h"
 
-/// Contains the handling of the gyroscope and accelerometer
-
-// IMU is auto activated when used
+/// Contains the handling of the gyroscope and accelerometer.
+/// IMU is auto activated when used
 namespace imu {
 
 /// Called once on program start, initialize the driver

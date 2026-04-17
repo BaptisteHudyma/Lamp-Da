@@ -1,3 +1,7 @@
+/*! \file balancer.h
+    \brief Interface for the abstraction layer of the battery balancer component.
+*/
+
 #ifndef POWER_BALANCER_H
 #define POWER_BALANCER_H
 
@@ -6,6 +10,7 @@
 
 #include "src/system/utils/constants.h"
 
+/// Handles the battery balancing process
 namespace balancer {
 
 /**
@@ -17,12 +22,12 @@ struct Status
   std::array<uint16_t, batteryCount> batteryVoltages_mV;
   /// True if the cell is currently balancing
   std::array<bool, batteryCount> isBalancing;
-  /// Voltage of the battery pack
+  /// Voltage of the battery pack, in millivolts.
   uint16_t stackVoltage_mV;
-  /// Temperature of the component
+  /// Temperature of the component, in degrees.
   uint16_t temperature_degrees;
 
-  /// Last time the measurment was updated
+  /// Last time the measurment was updated, in milliseconds.
   uint32_t lastMeasurmentUpdate = 0;
 
   /// True if this structure contains valid data

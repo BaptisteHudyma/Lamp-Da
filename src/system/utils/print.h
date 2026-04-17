@@ -1,3 +1,7 @@
+/*! \file print.h
+    \brief Convertion header to use the print and debug functions from C code.
+*/
+
 #ifndef C_LOGGER_H
 #define C_LOGGER_H
 

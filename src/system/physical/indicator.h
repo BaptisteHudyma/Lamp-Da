@@ -1,9 +1,14 @@
+/*! \file indicator.h
+    \brief Interface for the physical components of the RGB user indicator.
+*/
+
 #ifndef PHYSICAL_INDICATOR_H
 #define PHYSICAL_INDICATOR_H
 
 #include "src/system/utils/colorspace.h"
 #include <initializer_list>
 
+/// Handle the RGB indicator display.
 namespace indicator {
 
 // RGB leds do not have the same output power per color

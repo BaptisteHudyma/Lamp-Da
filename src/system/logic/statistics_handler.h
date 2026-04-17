@@ -1,10 +1,13 @@
+/*! \file statistics_handler.h
+    \brief Handle the loading and storing of the system statistics.
+*/
+
 #ifndef LOGIC_STATISTICS_HANDLER_H
 #define LOGIC_STATISTICS_HANDLER_H
 
-/**
- * Handle update and tracking of user use statistics
- */
 #include <cstdint>
+
+/// Handle update and tracking of user use statistics
 namespace statistics {
 
 /**
@@ -41,11 +44,13 @@ void signal_battery_charging_off();
 
 /**
  * \brief Signal that an alert of any type was raised.
+ *\param[in] alertMask bitwise mask of raised alerts
  */
 void signal_alert_raised(uint32_t alertMask);
 
 /**
  * \brief Debug the statistics to serial output.
+ * \param[in] shouldShowAlerts If true, the alerts statistics will be displayed.
  */
 void show(const bool shouldShowAlerts = true);
 

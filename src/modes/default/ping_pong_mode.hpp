@@ -1,6 +1,8 @@
 #ifndef PING_PONG_MODE_HPP
 #define PING_PONG_MODE_HPP
 
+/// @file ping_pong_mode.hpp
+
 namespace modes::default_modes {
 
 #include <cstdint>

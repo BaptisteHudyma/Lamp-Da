@@ -1,10 +1,9 @@
-#ifndef MODES_COLORS_UTILS_HPP
-#define MODES_COLORS_UTILS_HPP
-
 /** \file
- *
  *  \brief Manipulate color representations
  */
+
+#ifndef MODES_COLORS_UTILS_HPP
+#define MODES_COLORS_UTILS_HPP
 
 #include "src/modes/include/compile.hpp"
 

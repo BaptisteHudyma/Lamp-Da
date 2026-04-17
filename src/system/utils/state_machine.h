@@ -1,8 +1,8 @@
-#pragma once
+/*! \file state_machine.h
+    \brief Define a generic state machine logic.
+*/
 
-/**
- * Define a generic state machina logic
- */
+#pragma once
 
 #include "src/system/platform/time.h"
 #include <cstdint>

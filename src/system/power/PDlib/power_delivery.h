@@ -1,8 +1,14 @@
+/*! \file power_delivery.h
+    \brief Interface for the abstraction layer of the USB-PD algorithm.
+*/
+
 #ifndef PD_POWER_DELIVERY_H
 #define PD_POWER_DELIVERY_H
 
 #include <cstdint>
 #include <vector>
+
+/// Handles the power delivery capabilities (USB-PD).
 namespace powerDelivery {
 
 /// call once at program start, attach interrupts and init
@@ -71,7 +77,7 @@ std::vector<PDOTypes> get_available_pd();
 /// Debug power delivery status
 void show_pd_status();
 
-// return the requested OTG parameters
+/// The requested OTG parameters
 struct OTGParameters
 {
   /// Requested voltage for the OTG

@@ -1,3 +1,7 @@
+/*! \file gamma.hpp
+    \brief Define the gamma color correction.
+*/
+
 #ifndef MODES_GAMMA8_H
 #define MODES_GAMMA8_H
 

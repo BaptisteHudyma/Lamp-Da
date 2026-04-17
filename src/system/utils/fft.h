@@ -1,3 +1,7 @@
+/*! \file fft.h
+    \brief Wrapper of the ArduinoFFT library.
+*/
+
 #pragma once
 
 #include <array>
@@ -10,11 +14,12 @@
 
 #include "src/system/utils/utils.h"
 
-constexpr int SAMPLE_RATE = 16000; // Base sample rate in Hz - standard.
+constexpr int SAMPLE_RATE = 16000; ///< Base sample rate in Hz - standard.
 
 /**
- * samplesFFT Is the input frequency bins before analysis
- * resultSize Is the resulting frequency bins after analysis
+ * \brief Wrapper class for the FFT implementation
+ * \param[in] samplesFFT Is the input frequency bins before analysis
+ * \param[in] resultSize Is the resulting frequency bins after analysis
  */
 template<uint16_t samplesFFT, uint16_t resultSize, typename T = float> class FftAnalyzer
 {
@@ -22,25 +27,26 @@ template<uint16_t samplesFFT, uint16_t resultSize, typename T = float> class Fft
   static constexpr uint16_t samplesFFTRes = samplesFFT >> 1;
   /// output variables
 public:
-  std::array<T, samplesFFTRes> fftBin; // raw fft results
-  std::array<T, resultSize> fftLog;    // fft result as a log scale
-  T maxMagnitude;
-  T maxFrequency;
-
-  ///
+  std::array<T, samplesFFTRes> fftBin; //.< raw fft results
+  std::array<T, resultSize> fftLog;    ///< fft result as a log scale
+  T maxMagnitude;                      ///< maximum detected frequency magnitude
+  T maxFrequency;                      ///< maximum detected frequency, in Hertz
 
 private:
-  // use this to convert bins to frequencies
+  /// use this to convert bins to frequencies
   std::array<T, resultSize + 1> minFrequenciesPerBin_log;
 
-  // map fft index to log index
+  /// map fft index to log index
   std::array<uint16_t, samplesFFTRes> _numSamplesPerBar_log;
+  /// Type of the FFT windows. Rectangle reduces frequency response distortion.
   const FFTWindow fftWindowing = FFTWindow::Rectangle;
-  T windowSum = 0.0; /// computed window sum
+  T windowSum = 0.0; ///< computed window sum
 
-  // FFT entry point
+  /// FFT entry/exit point: microphone raw values, and fft values
   T vReal[samplesFFT];
+  /// FFT exit point: imaginary part of the FFT.
   T vImag[samplesFFT];
+  /// ArduinoFFT object
   ArduinoFFT<T> FFT = ArduinoFFT<T>(vReal, vImag, samplesFFT, SAMPLE_RATE, true);
 
 public:
@@ -96,7 +102,7 @@ public:
     reset();
   }
 
-  // frequency to bin index
+  /// Map frequency to bin index
   int to_bin_index(const T frequency) const noexcept
   {
     return round(frequency / (static_cast<T>(SAMPLE_RATE) / samplesFFT));
@@ -138,6 +144,7 @@ public:
     return get_log_bin_min_frequency(index + 1);
   }
 
+  /// Set the microphone data at the target index
   inline void set_data(const T data, uint16_t index)
   {
     if (index >= samplesFFT)
@@ -147,7 +154,7 @@ public:
     vImag[index] = 0;
   }
 
-  // FFT main code
+  /// Run FFT main code
   void run_fast_fourrier_transform()
   {
     // recenter all data around zero

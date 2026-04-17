@@ -1,3 +1,7 @@
+/*! \file gpio.h
+    \brief Interface for the platform specific GeneralPurposeInputOutputs.
+*/
+
 #ifndef PLATFORM_GPIO_H
 #define PLATFORM_GPIO_H
 

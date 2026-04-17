@@ -1,9 +1,9 @@
+/*! \file vector_math.h
+    \brief Define vectors and rotation matrices, and the possibility to rotate vectors
+*/
+
 #ifndef UTILS_VECTOR_MATH_H
 #define UTILS_VECTOR_MATH_H
-
-/**
- * Define vectors and rotation matrices, and the possibility to rotate vectors
- */
 
 /**
  * \brief 2d vector in any space

@@ -1,3 +1,7 @@
+/*! \file utils.hpp
+    \brief Define the audio handle object.
+*/
+
 #ifndef MODES_INCLUDE_AUDIO_UTILS_HPP
 #define MODES_INCLUDE_AUDIO_UTILS_HPP
 

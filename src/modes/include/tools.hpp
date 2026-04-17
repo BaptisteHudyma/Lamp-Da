@@ -1,3 +1,7 @@
+/*! \file tools.hpp
+    \brief Define templated tools to analyze the manager objects.
+*/
+
 #ifndef USER_MODE_TOOLS_H
 #define USER_MODE_TOOLS_H
 

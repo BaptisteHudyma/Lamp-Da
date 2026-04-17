@@ -1,3 +1,7 @@
+/*! \file constants.h
+    \brief User defined constants, relative to specific lamp types.
+*/
+
 #ifndef USER_CONSTANTS_H
 #define USER_CONSTANTS_H
 
@@ -11,12 +15,11 @@
 // does button usermode defaults to "lockdown" mode?
 static constexpr bool usermodeDefaultsToLockdown = false;
 
-static constexpr float c_PI = 3.1415926535897f;
-static constexpr float c_TWO_PI = 6.2831853071795f;
-static constexpr float c_HALF_PI = 1.5707963267948f;
+static constexpr float c_PI = 3.1415926535897f;      ///< PI constant
+static constexpr float c_TWO_PI = 6.2831853071795f;  ///< 2*PI constant
+static constexpr float c_HALF_PI = 1.5707963267948f; ///< PI/2 constant
 
-static constexpr float c_degreesToRadians = c_PI / 180.0f;
-
+static constexpr float c_degreesToRadians = c_PI / 180.0f; ///< convert degrees to radians
 // Update when the soft changes version
 static constexpr uint8_t USER_SOFTWARE_VERSION_MAJOR = 1;
 static constexpr uint8_t USER_SOFTWARE_VERSION_MINOR = 7;

@@ -1,3 +1,7 @@
+/*! \file strip.h
+    \brief Interface of the indexable strip object. Only used for RGB lamp type
+*/
+
 #ifndef STRIP_H
 #define STRIP_H
 

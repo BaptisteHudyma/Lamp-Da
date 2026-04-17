@@ -1,3 +1,7 @@
+/*! \file button.h
+    \brief Interface for the physical components of the push button.
+*/
+
 #ifndef BUTTON_H
 #define BUTTON_H
 
@@ -5,11 +9,12 @@
 #include <functional>
 #include "src/system/platform/gpio.h"
 
+/// Handle the button inputs and multiple click detection.
 namespace button {
 
-#define RELEASE_BETWEEN_CLICKS 50  // minimum release timing (debounce)
-#define RELEASE_TIMING_MS      250 // time to release the button after no inputs
-#define HOLD_BUTTON_MIN_MS     500 // press and hold delay (ms)
+#define RELEASE_BETWEEN_CLICKS 50  ///< minimum release timing (debounce)
+#define RELEASE_TIMING_MS      250 ///< time to release the button after no inputs
+#define HOLD_BUTTON_MIN_MS     500 ///< press and hold delay (ms)
 
 void init(const bool isSystemStartedFromButton);
 

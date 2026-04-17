@@ -1,6 +1,8 @@
 #ifndef PALETTE_FADE_HPP
 #define PALETTE_FADE_HPP
 
+/// @file palette_fade_mode.hpp
+
 #include <cmath>
 namespace modes::default_modes {
 

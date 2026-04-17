@@ -1,6 +1,8 @@
 #ifndef FFT_MODE_H
 #define FFT_MODE_H
 
+/// @file fastFourrierTransform.hpp
+
 #include "src/modes/include/colors/palettes.hpp"
 #include "src/modes/include/audio/utils.hpp"
 

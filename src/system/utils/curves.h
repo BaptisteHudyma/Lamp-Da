@@ -1,3 +1,7 @@
+/*! \file curves.h
+    \brief Define curves types, that can be sampled.
+*/
+
 #ifndef UTILS_CURVES_H
 #define UTILS_CURVES_H
 
@@ -7,6 +11,7 @@
 #include <cmath>
 #include <vector>
 
+/// Curves classes to sample values from predefined custom parameters.
 namespace curves {
 
 /**

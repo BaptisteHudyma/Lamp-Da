@@ -1,9 +1,16 @@
+/*! \file colorspace.h
+    \brief Define commonly used color spaces.
+*/
+
 #ifndef COLOR_SPACE_H
 #define COLOR_SPACE_H
 
 #include "utils.h"
 
-namespace utils::ColorSpace {
+namespace utils {
+
+/// Define commonly used color spaces
+namespace ColorSpace {
 
 class Base
 {
@@ -174,6 +181,7 @@ public:
   double h; ///< Hue 0 - 360
 };
 
-} // namespace utils::ColorSpace
+} // namespace ColorSpace
+} // namespace utils
 
 #endif

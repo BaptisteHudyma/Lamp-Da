@@ -1,3 +1,7 @@
+/*! \file utils.hpp
+    \brief User mode IMU utilities.
+*/
+
 #ifndef MODES_INCLUDE_IMU_UTILS_HPP
 #define MODES_INCLUDE_IMU_UTILS_HPP
 

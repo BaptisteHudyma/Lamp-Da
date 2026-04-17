@@ -1,3 +1,7 @@
+/*! \file input_output.h
+    \brief Definition of the used pins of the RGB indicator.
+*/
+
 #pragma once
 
 #include "src/system/platform/gpio.h"

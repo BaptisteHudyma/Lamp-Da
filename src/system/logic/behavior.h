@@ -1,14 +1,14 @@
+/** \file
+ *  \brief Basic controller behavior, including alerts and user interactions
+ */
+
 #ifndef BEHAVIOR_HPP
 #define BEHAVIOR_HPP
-
-/** \file
- *
- *  \brief Basic controller behavior, including alerts and user interactions
- **/
 
 #include "src/compile.h"
 #include <string>
 
+/// Main system behavior handle
 namespace behavior {
 
 /**

@@ -1,3 +1,7 @@
+/*! \file grid_rules.hpp
+    \brief Define a line based state machine.
+*/
+
 #ifndef MODES_DRAW_GRID_RULE_HPP
 #define MODES_DRAW_GRID_RULE_HPP
 

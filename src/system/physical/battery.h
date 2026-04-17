@@ -1,3 +1,7 @@
+/*! \file battery.h
+    \brief Interface for the physical components of the battery.
+*/
+
 #ifndef BATTERY_H
 #define BATTERY_H
 
@@ -6,9 +10,10 @@
 #include "src/system/utils/curves.h"
 #include "src/system/utils/utils.h"
 
+/// Handle the battery measurments and gestion.
 namespace battery {
 
-// get the battery voltage, untreated
+/// get the battery voltage, untreated
 extern uint16_t get_raw_battery_voltage_mv();
 
 /**
@@ -76,7 +81,7 @@ inline uint16_t get_level_safe(const uint16_t battery_mv, const uint8_t cellCoun
           10000);
 }
 
-// returns the battery level, corresponding to user safe choice (0-10000)
+/// returns the battery level, corresponding to user safe choice (0-10000)
 inline uint16_t get_battery_level()
 {
   // get the result of the total battery life, map it to the safe battery level

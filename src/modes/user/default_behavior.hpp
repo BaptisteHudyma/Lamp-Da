@@ -1,3 +1,7 @@
+/*! \file default_behavior.hpp
+    \brief Define the default behavior of a lamp.
+*/
+
 #ifndef DEFAULT_BEHAVIOR_MANAGER_HPP
 #define DEFAULT_BEHAVIOR_MANAGER_HPP
 

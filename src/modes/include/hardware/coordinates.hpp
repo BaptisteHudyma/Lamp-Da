@@ -1,3 +1,7 @@
+/*! \file coordinates.hpp
+    \brief Define the lamps coordinates systems.
+*/
+
 #ifndef MODES_HARDWARE_COORDINATES_HPP
 #define MODES_HARDWARE_COORDINATES_HPP
 

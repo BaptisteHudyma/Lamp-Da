@@ -1,3 +1,7 @@
+/*! \file functions.h
+    \brief Define specific needed user functions.
+*/
+
 #ifndef USER_FUNCTIONS_H
 #define USER_FUNCTIONS_H
 

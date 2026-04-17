@@ -1,3 +1,6 @@
+/*! \file 00_intro_mode.hpp
+    \brief Example implementation of the simplest possible mode.
+*/
 
 namespace modes::examples {
 

@@ -1,3 +1,7 @@
+/*! \file sound.h
+    \brief Interface for the physical components of the microphone.
+*/
+
 #ifndef PHYSICAL_SOUND_H
 #define PHYSICAL_SOUND_H
 
@@ -5,6 +9,7 @@
 #include <cstdint>
 #include "src/system/utils/fft.h"
 
+/// Handle the microphone physical interface
 namespace microphone {
 
 /// Decibel level for a silent room

@@ -1,3 +1,7 @@
+/*! \file ramp_update.hpp
+    \brief Handle the ramps displayed on the lamp body on user actions.
+*/
+
 #ifndef MODES_INCLUDE_ANIMS_RAMP_UPDATE
 #define MODES_INCLUDE_ANIMS_RAMP_UPDATE
 

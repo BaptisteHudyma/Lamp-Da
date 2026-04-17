@@ -1,3 +1,7 @@
+/*! \file i2c.h
+    \brief Interface for the platform specific i2c protocols.
+*/
+
 // do not use pragma once here, has this can be mocked
 #ifndef PLATFORM_I2C
 #define PLATFORM_I2C

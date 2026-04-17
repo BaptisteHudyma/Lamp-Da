@@ -1,6 +1,8 @@
 #ifndef FIXED_MODES_H
 #define FIXED_MODES_H
 
+/// @file fixed_modes.hpp
+
 #include "src/modes/include/colors/palettes.hpp"
 
 namespace modes {

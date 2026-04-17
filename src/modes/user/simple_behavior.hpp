@@ -1,3 +1,7 @@
+/*! \file simple_behavior.hpp
+    \brief Define the behavior of an simple lamp.
+*/
+
 #ifndef SIMPLE_BEHAVIOR_MANAGER_H
 #define SIMPLE_BEHAVIOR_MANAGER_H
 

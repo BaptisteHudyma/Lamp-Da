@@ -1,3 +1,7 @@
+/*! \file lamp_type.hpp
+    \brief Define the main led strip interaction object.
+*/
+
 #ifndef MODES_HARDWARE_LAMP_TYPE_HPP
 #define MODES_HARDWARE_LAMP_TYPE_HPP
 
