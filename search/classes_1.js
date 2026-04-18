@@ -10,7 +10,7 @@ var searchData=
   ['bq25713mock_7',['BQ25713Mock',['../classsimulator_1_1BQ25713Mock.html',1,'simulator']]],
   ['bq76905_8',['BQ76905',['../classbq76905_1_1BQ76905.html',1,'bq76905']]],
   ['bq76905mock_9',['BQ76905Mock',['../classsimulator_1_1BQ76905Mock.html',1,'simulator']]],
-  ['brightnessparameters_10',['BrightnessParameters',['../structlampda_1_1utils_1_1brightness_1_1BrightnessParameters.html',1,'lampda::utils::brightness']]],
+  ['brightnessparameters_10',['BrightnessParameters',['../structlampda_1_1logic_1_1brightness_1_1BrightnessParameters.html',1,'lampda::logic::brightness']]],
   ['bubblemode_11',['BubbleMode',['../structlampda_1_1modes_1_1automaton_1_1BubbleMode.html',1,'lampda::modes::automaton']]],
   ['bubblety_12',['BubbleTy',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1BubbleTy.html',1,'lampda::modes::custom::nudz::NudzBeerGlassMode']]],
   ['buttonstatety_13',['ButtonStateTy',['../structlampda_1_1physical_1_1button_1_1ButtonStateTy.html',1,'lampda::physical::button']]]

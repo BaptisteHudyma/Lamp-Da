@@ -87,19 +87,19 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a6422e3bf70ad2f8ecda147f16cf35295"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="text_8cpp.html#a6422e3bf70ad2f8ecda147f16cf35295">text::display_text</a> (const Color &amp;color, const std::string &amp;text, const int16_t startXIndex, const int16_t startYIndex, float scale, const bool paddEnd, LedStrip &amp;strip)</td></tr>
-<tr class="memdesc:a6422e3bf70ad2f8ecda147f16cf35295"><td class="mdescLeft">&#160;</td><td class="mdescRight">Display a text.  <br /></td></tr>
-<tr class="separator:a6422e3bf70ad2f8ecda147f16cf35295"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7453b8d0ddfd9ea2680ac54fe4c3e2fd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="text_8cpp.html#a7453b8d0ddfd9ea2680ac54fe4c3e2fd">text::display_scrolling_text</a> (const Color &amp;color, const std::string &amp;text, const int16_t startYIndex, float scale, const uint32_t durationPerChar, const bool reset, const bool paddEnd, const uint8_t fadeOut, LedStrip &amp;strip)</td></tr>
-<tr class="memdesc:a7453b8d0ddfd9ea2680ac54fe4c3e2fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Display a text going around the lampe.  <br /></td></tr>
-<tr class="separator:a7453b8d0ddfd9ea2680ac54fe4c3e2fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0ba630565673980f99503c4f04e7e29"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="text_8cpp.html#af0ba630565673980f99503c4f04e7e29">text::display_text</a> (const Color &amp;color, const std::string &amp;text, const int16_t startXIndex, const int16_t startYIndex, float scale, const bool paddEnd, physical::LedStrip &amp;strip)</td></tr>
+<tr class="memdesc:af0ba630565673980f99503c4f04e7e29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Display a text.  <br /></td></tr>
+<tr class="separator:af0ba630565673980f99503c4f04e7e29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2003842b8b30a9f6497a6fdb7cb899c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="text_8cpp.html#aa2003842b8b30a9f6497a6fdb7cb899c">text::display_scrolling_text</a> (const Color &amp;color, const std::string &amp;text, const int16_t startYIndex, float scale, const uint32_t durationPerChar, const bool reset, const bool paddEnd, const uint8_t fadeOut, physical::LedStrip &amp;strip)</td></tr>
+<tr class="memdesc:aa2003842b8b30a9f6497a6fdb7cb899c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Display a text going around the lampe.  <br /></td></tr>
+<tr class="separator:aa2003842b8b30a9f6497a6fdb7cb899c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Display text on the RGB lamp. </p>
 <p>LEGACY : migrate this one way or another. TODO #369 </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a7453b8d0ddfd9ea2680ac54fe4c3e2fd" name="a7453b8d0ddfd9ea2680ac54fe4c3e2fd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7453b8d0ddfd9ea2680ac54fe4c3e2fd">&#9670;&#160;</a></span>display_scrolling_text()</h2>
+<a id="aa2003842b8b30a9f6497a6fdb7cb899c" name="aa2003842b8b30a9f6497a6fdb7cb899c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2003842b8b30a9f6497a6fdb7cb899c">&#9670;&#160;</a></span>display_scrolling_text()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -155,7 +155,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">LedStrip &amp;&#160;</td>
+          <td class="paramtype">physical::LedStrip &amp;&#160;</td>
           <td class="paramname"><em>strip</em>&#160;</td>
         </tr>
         <tr>
@@ -185,8 +185,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a6422e3bf70ad2f8ecda147f16cf35295" name="a6422e3bf70ad2f8ecda147f16cf35295"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6422e3bf70ad2f8ecda147f16cf35295">&#9670;&#160;</a></span>display_text()</h2>
+<a id="af0ba630565673980f99503c4f04e7e29" name="af0ba630565673980f99503c4f04e7e29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0ba630565673980f99503c4f04e7e29">&#9670;&#160;</a></span>display_text()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -230,7 +230,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">LedStrip &amp;&#160;</td>
+          <td class="paramtype">physical::LedStrip &amp;&#160;</td>
           <td class="paramname"><em>strip</em>&#160;</td>
         </tr>
         <tr>

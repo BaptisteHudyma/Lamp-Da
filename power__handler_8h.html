@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: src/system/power/power_handler.h File Reference</title>
+<title>Lamp-Da: src/system/logic/power_handler.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_a4e4f6473e9f5895192f8ab692a4c3f6.html">power</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_94b018f0d16875f781a1777b401eb2e6.html">logic</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -91,80 +91,358 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
 <tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1power"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html">lampda::power</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1power"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main entry point of the power handling of the board. Responsible the main state of the power handling. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1logic"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic.html">lampda::logic</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1logic"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the main high level logics. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a7ccd725cb2d26b3530853825e28e87d7"><td class="memItemLeft" align="right" valign="top"><a id="a7ccd725cb2d26b3530853825e28e87d7" name="a7ccd725cb2d26b3530853825e28e87d7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::init</b> ()</td></tr>
-<tr class="memdesc:a7ccd725cb2d26b3530853825e28e87d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call once at system startup. This can fail, and it would set the state to ERROR. <br /></td></tr>
-<tr class="separator:a7ccd725cb2d26b3530853825e28e87d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f68263537bcb2218d28311922bf7652"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html#a7f68263537bcb2218d28311922bf7652">lampda::power::is_setup</a> ()</td></tr>
-<tr class="memdesc:a7f68263537bcb2218d28311922bf7652"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the power handler system is effectivly started.  <br /></td></tr>
-<tr class="separator:a7f68263537bcb2218d28311922bf7652"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7cb1fce5e87a33c38175d6f55061617f"><td class="memItemLeft" align="right" valign="top"><a id="a7cb1fce5e87a33c38175d6f55061617f" name="a7cb1fce5e87a33c38175d6f55061617f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::is_started</b> ()</td></tr>
-<tr class="memdesc:a7cb1fce5e87a33c38175d6f55061617f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true when power machine finally exits the STARTUP. <br /></td></tr>
-<tr class="separator:a7cb1fce5e87a33c38175d6f55061617f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ad06512176f1a1ff08f314c4bedf35e"><td class="memItemLeft" align="right" valign="top"><a id="a3ad06512176f1a1ff08f314c4bedf35e" name="a3ad06512176f1a1ff08f314c4bedf35e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::is_in_error_state</b> ()</td></tr>
-<tr class="memdesc:a3ad06512176f1a1ff08f314c4bedf35e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the power handling is locked in an ERROR state. No power actions can be made. <br /></td></tr>
-<tr class="separator:a3ad06512176f1a1ff08f314c4bedf35e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c054e148c3217178aadeb15954f2279"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html#a1c054e148c3217178aadeb15954f2279">lampda::power::go_to_output_mode</a> ()</td></tr>
-<tr class="memdesc:a1c054e148c3217178aadeb15954f2279"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to main OUTPUT_VOLTAGE_MODE.  <br /></td></tr>
-<tr class="separator:a1c054e148c3217178aadeb15954f2279"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31efa9182823e6ffa6e91ed592003f83"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html#a31efa9182823e6ffa6e91ed592003f83">lampda::power::go_to_charger_mode</a> ()</td></tr>
-<tr class="memdesc:a31efa9182823e6ffa6e91ed592003f83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to battery CHARGING_MODE.  <br /></td></tr>
-<tr class="separator:a31efa9182823e6ffa6e91ed592003f83"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1a1e33fa4b39620761582a2ca415408"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html#ac1a1e33fa4b39620761582a2ca415408">lampda::power::go_to_otg_mode</a> ()</td></tr>
-<tr class="memdesc:ac1a1e33fa4b39620761582a2ca415408"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to OTG_MODE (eg: external battery mode)  <br /></td></tr>
-<tr class="separator:ac1a1e33fa4b39620761582a2ca415408"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab9b586dbc33169ea223d817acefdee5d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html#ab9b586dbc33169ea223d817acefdee5d">lampda::power::go_to_idle</a> ()</td></tr>
-<tr class="memdesc:ab9b586dbc33169ea223d817acefdee5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to IDLE mode (no power output/input)  <br /></td></tr>
-<tr class="separator:ab9b586dbc33169ea223d817acefdee5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e16fd4a4f5cc38bb3ede3d6f9b3a89f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html#a6e16fd4a4f5cc38bb3ede3d6f9b3a89f">lampda::power::go_to_shutdown</a> ()</td></tr>
-<tr class="memdesc:a6e16fd4a4f5cc38bb3ede3d6f9b3a89f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to SHUTDOWN mode (last mode before shuting system down)  <br /></td></tr>
-<tr class="separator:a6e16fd4a4f5cc38bb3ede3d6f9b3a89f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abcc56273ecc5f9530e4327062809fe05"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html#abcc56273ecc5f9530e4327062809fe05">lampda::power::go_to_error</a> ()</td></tr>
-<tr class="memdesc:abcc56273ecc5f9530e4327062809fe05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to ERROR mode (locked safety state)  <br /></td></tr>
-<tr class="separator:abcc56273ecc5f9530e4327062809fe05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace937fa64ee3befb01614ddc2b079536"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html#ace937fa64ee3befb01614ddc2b079536">lampda::power::set_output_voltage_mv</a> (const uint16_t outputVoltage_mV)</td></tr>
-<tr class="memdesc:ace937fa64ee3befb01614ddc2b079536"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired output voltage of the charger.  <br /></td></tr>
-<tr class="separator:ace937fa64ee3befb01614ddc2b079536"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a138081911492d8f1ae92efb9851a67cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html#a138081911492d8f1ae92efb9851a67cb">lampda::power::set_output_max_current_mA</a> (const uint16_t outputCurrent_mA)</td></tr>
-<tr class="memdesc:a138081911492d8f1ae92efb9851a67cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired maximum output current of the charger. This is just an information, that will be used when the state machine reaches the OUTPUT_VOLTAGE_MODE state.  <br /></td></tr>
-<tr class="separator:a138081911492d8f1ae92efb9851a67cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8cd3cded47dd36731f91ce5d556b432d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html#a8cd3cded47dd36731f91ce5d556b432d">lampda::power::set_temporary_output</a> (const uint16_t outputVoltage_mV, const uint16_t outputCurrent_mA, const uint16_t timeout_ms)</td></tr>
-<tr class="memdesc:a8cd3cded47dd36731f91ce5d556b432d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a new output with a time limit, after wich the output will go back to the original values. It is canceled at any point by a call to set_output_voltage_mv. This is just an information, that will be used when the state machine reaches the OUTPUT_VOLTAGE_MODE state.  <br /></td></tr>
-<tr class="separator:a8cd3cded47dd36731f91ce5d556b432d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9976ffa0e70197ce55949ade0f40480"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html#ad9976ffa0e70197ce55949ade0f40480">lampda::power::enable_charge</a> (const bool)</td></tr>
-<tr class="memdesc:ad9976ffa0e70197ce55949ade0f40480"><td class="mdescLeft">&#160;</td><td class="mdescRight">Block or allow the charging of the battery. Note that the system can still be in CHARGING_MODE mode if you set this to false, but the battery just wont charge.  <br /></td></tr>
-<tr class="separator:ad9976ffa0e70197ce55949ade0f40480"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af341c438538736d7ccbea3eb489e0daf"><td class="memItemLeft" align="right" valign="top"><a id="af341c438538736d7ccbea3eb489e0daf" name="af341c438538736d7ccbea3eb489e0daf"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::get_state</b> ()</td></tr>
-<tr class="memdesc:af341c438538736d7ccbea3eb489e0daf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current state, as a string. <br /></td></tr>
-<tr class="separator:af341c438538736d7ccbea3eb489e0daf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c83a881822c0808766f828bf4d4ff04"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power.html#a7c83a881822c0808766f828bf4d4ff04">lampda::power::get_error_string</a> ()</td></tr>
-<tr class="memdesc:a7c83a881822c0808766f828bf4d4ff04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the error string if set, or "x".  <br /></td></tr>
-<tr class="separator:a7c83a881822c0808766f828bf4d4ff04"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae421887a5738259af1f1f2a6946dda9c"><td class="memItemLeft" align="right" valign="top"><a id="ae421887a5738259af1f1f2a6946dda9c" name="ae421887a5738259af1f1f2a6946dda9c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::is_output_mode_ready</b> ()</td></tr>
-<tr class="memdesc:ae421887a5738259af1f1f2a6946dda9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true when the current state is OUTPUT_VOLTAGE_MODE, and the desired voltage are set and gates are ready. Basically, it returns true when the output is being powered. <br /></td></tr>
-<tr class="separator:ae421887a5738259af1f1f2a6946dda9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a916e3aac3270f670268153f90c97978f"><td class="memItemLeft" align="right" valign="top"><a id="a916e3aac3270f670268153f90c97978f" name="a916e3aac3270f670268153f90c97978f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::is_in_output_mode</b> ()</td></tr>
-<tr class="memdesc:a916e3aac3270f670268153f90c97978f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the current state is OUTPUT_VOLTAGE_MODE. <br /></td></tr>
-<tr class="separator:a916e3aac3270f670268153f90c97978f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa616d9fccc408117b164c9358c7dd036"><td class="memItemLeft" align="right" valign="top"><a id="aa616d9fccc408117b164c9358c7dd036" name="aa616d9fccc408117b164c9358c7dd036"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::power::is_in_otg_mode</b> ()</td></tr>
-<tr class="memdesc:aa616d9fccc408117b164c9358c7dd036"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the current state is OTG_MODE. <br /></td></tr>
-<tr class="separator:aa616d9fccc408117b164c9358c7dd036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbaa85a58930af5bac05cf3ce4cde3d7"><td class="memItemLeft" align="right" valign="top"><a id="adbaa85a58930af5bac05cf3ce4cde3d7" name="adbaa85a58930af5bac05cf3ce4cde3d7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power::init</b> ()</td></tr>
+<tr class="memdesc:adbaa85a58930af5bac05cf3ce4cde3d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call once at system startup. This can fail, and it would set the state to ERROR. <br /></td></tr>
+<tr class="separator:adbaa85a58930af5bac05cf3ce4cde3d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a857b8dc208003c36c370f134eccce2ad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="power__handler_8cpp.html#a857b8dc208003c36c370f134eccce2ad">lampda::logic::power::is_setup</a> ()</td></tr>
+<tr class="memdesc:a857b8dc208003c36c370f134eccce2ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the power handler system is effectivly started.  <br /></td></tr>
+<tr class="separator:a857b8dc208003c36c370f134eccce2ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d8eec7d5ce479a7606185f66266081b"><td class="memItemLeft" align="right" valign="top"><a id="a5d8eec7d5ce479a7606185f66266081b" name="a5d8eec7d5ce479a7606185f66266081b"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power::is_started</b> ()</td></tr>
+<tr class="memdesc:a5d8eec7d5ce479a7606185f66266081b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true when power machine finally exits the STARTUP. <br /></td></tr>
+<tr class="separator:a5d8eec7d5ce479a7606185f66266081b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fc068f8d3b73072a72661b16070e014"><td class="memItemLeft" align="right" valign="top"><a id="a9fc068f8d3b73072a72661b16070e014" name="a9fc068f8d3b73072a72661b16070e014"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power::is_in_error_state</b> ()</td></tr>
+<tr class="memdesc:a9fc068f8d3b73072a72661b16070e014"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the power handling is locked in an ERROR state. No power actions can be made. <br /></td></tr>
+<tr class="separator:a9fc068f8d3b73072a72661b16070e014"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a691f8e6d92c316cbb5f452550d8f7bf2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="power__handler_8cpp.html#a691f8e6d92c316cbb5f452550d8f7bf2">lampda::logic::power::go_to_output_mode</a> ()</td></tr>
+<tr class="memdesc:a691f8e6d92c316cbb5f452550d8f7bf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to main OUTPUT_VOLTAGE_MODE.  <br /></td></tr>
+<tr class="separator:a691f8e6d92c316cbb5f452550d8f7bf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a792e6e369220959a7966aaa318a1a4b7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="power__handler_8cpp.html#a792e6e369220959a7966aaa318a1a4b7">lampda::logic::power::go_to_charger_mode</a> ()</td></tr>
+<tr class="memdesc:a792e6e369220959a7966aaa318a1a4b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to battery CHARGING_MODE.  <br /></td></tr>
+<tr class="separator:a792e6e369220959a7966aaa318a1a4b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef44f8870442bf63d6cfc055b46ee805"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="power__handler_8cpp.html#aef44f8870442bf63d6cfc055b46ee805">lampda::logic::power::go_to_otg_mode</a> ()</td></tr>
+<tr class="memdesc:aef44f8870442bf63d6cfc055b46ee805"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to OTG_MODE (eg: external battery mode)  <br /></td></tr>
+<tr class="separator:aef44f8870442bf63d6cfc055b46ee805"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c325cc17afce1389c575b6759db4f97"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="power__handler_8cpp.html#a9c325cc17afce1389c575b6759db4f97">lampda::logic::power::go_to_idle</a> ()</td></tr>
+<tr class="memdesc:a9c325cc17afce1389c575b6759db4f97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to IDLE mode (no power output/input)  <br /></td></tr>
+<tr class="separator:a9c325cc17afce1389c575b6759db4f97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae22c358a69f172b32c864b818b44889c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="power__handler_8cpp.html#ae22c358a69f172b32c864b818b44889c">lampda::logic::power::go_to_shutdown</a> ()</td></tr>
+<tr class="memdesc:ae22c358a69f172b32c864b818b44889c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to SHUTDOWN mode (last mode before shuting system down)  <br /></td></tr>
+<tr class="separator:ae22c358a69f172b32c864b818b44889c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e73b3e950c9828d4a46522216aa43f1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="power__handler_8cpp.html#a0e73b3e950c9828d4a46522216aa43f1">lampda::logic::power::go_to_error</a> ()</td></tr>
+<tr class="memdesc:a0e73b3e950c9828d4a46522216aa43f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to ERROR mode (locked safety state)  <br /></td></tr>
+<tr class="separator:a0e73b3e950c9828d4a46522216aa43f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdf2543450eeeaad20fb6f0fc75d8aa7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="power__handler_8cpp.html#acdf2543450eeeaad20fb6f0fc75d8aa7">lampda::logic::power::set_output_voltage_mv</a> (const uint16_t outputVoltage_mV)</td></tr>
+<tr class="memdesc:acdf2543450eeeaad20fb6f0fc75d8aa7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired output voltage of the charger.  <br /></td></tr>
+<tr class="separator:acdf2543450eeeaad20fb6f0fc75d8aa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc9fae1b46a874a27ad6c4ca1de559d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="power__handler_8cpp.html#afc9fae1b46a874a27ad6c4ca1de559d0">lampda::logic::power::set_output_max_current_mA</a> (const uint16_t outputCurrent_mA)</td></tr>
+<tr class="memdesc:afc9fae1b46a874a27ad6c4ca1de559d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the desired maximum output current of the charger. This is just an information, that will be used when the state machine reaches the OUTPUT_VOLTAGE_MODE state.  <br /></td></tr>
+<tr class="separator:afc9fae1b46a874a27ad6c4ca1de559d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8cd460367940998e1b9099e460a0b67"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="power__handler_8cpp.html#aa8cd460367940998e1b9099e460a0b67">lampda::logic::power::set_temporary_output</a> (const uint16_t outputVoltage_mV, const uint16_t outputCurrent_mA, const uint16_t timeout_ms)</td></tr>
+<tr class="memdesc:aa8cd460367940998e1b9099e460a0b67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a new output with a time limit, after wich the output will go back to the original values. It is canceled at any point by a call to set_output_voltage_mv. This is just an information, that will be used when the state machine reaches the OUTPUT_VOLTAGE_MODE state.  <br /></td></tr>
+<tr class="separator:aa8cd460367940998e1b9099e460a0b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13a5015a6ec680d54aacf63ea0dfc492"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="power__handler_8cpp.html#a13a5015a6ec680d54aacf63ea0dfc492">lampda::logic::power::enable_charge</a> (const bool)</td></tr>
+<tr class="memdesc:a13a5015a6ec680d54aacf63ea0dfc492"><td class="mdescLeft">&#160;</td><td class="mdescRight">Block or allow the charging of the battery. Note that the system can still be in CHARGING_MODE mode if you set this to false, but the battery just wont charge.  <br /></td></tr>
+<tr class="separator:a13a5015a6ec680d54aacf63ea0dfc492"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdd18af2b36f7eb39e299aee3302e6a9"><td class="memItemLeft" align="right" valign="top"><a id="abdd18af2b36f7eb39e299aee3302e6a9" name="abdd18af2b36f7eb39e299aee3302e6a9"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power::get_state</b> ()</td></tr>
+<tr class="memdesc:abdd18af2b36f7eb39e299aee3302e6a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current state, as a string. <br /></td></tr>
+<tr class="separator:abdd18af2b36f7eb39e299aee3302e6a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c9c83c4a276d93e1b999cbb45629834"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="power__handler_8cpp.html#a7c9c83c4a276d93e1b999cbb45629834">lampda::logic::power::get_error_string</a> ()</td></tr>
+<tr class="memdesc:a7c9c83c4a276d93e1b999cbb45629834"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the error string if set, or "x".  <br /></td></tr>
+<tr class="separator:a7c9c83c4a276d93e1b999cbb45629834"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fa42c8fca6aa26289b044632fb9dbc4"><td class="memItemLeft" align="right" valign="top"><a id="a6fa42c8fca6aa26289b044632fb9dbc4" name="a6fa42c8fca6aa26289b044632fb9dbc4"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power::is_output_mode_ready</b> ()</td></tr>
+<tr class="memdesc:a6fa42c8fca6aa26289b044632fb9dbc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true when the current state is OUTPUT_VOLTAGE_MODE, and the desired voltage are set and gates are ready. Basically, it returns true when the output is being powered. <br /></td></tr>
+<tr class="separator:a6fa42c8fca6aa26289b044632fb9dbc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd1bbc5b2c3b90bec1d4dac3fd93bdef"><td class="memItemLeft" align="right" valign="top"><a id="abd1bbc5b2c3b90bec1d4dac3fd93bdef" name="abd1bbc5b2c3b90bec1d4dac3fd93bdef"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power::is_in_output_mode</b> ()</td></tr>
+<tr class="memdesc:abd1bbc5b2c3b90bec1d4dac3fd93bdef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the current state is OUTPUT_VOLTAGE_MODE. <br /></td></tr>
+<tr class="separator:abd1bbc5b2c3b90bec1d4dac3fd93bdef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb6dceddea1b9531e25ac8998958e21c"><td class="memItemLeft" align="right" valign="top"><a id="aeb6dceddea1b9531e25ac8998958e21c" name="aeb6dceddea1b9531e25ac8998958e21c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power::is_in_otg_mode</b> ()</td></tr>
+<tr class="memdesc:aeb6dceddea1b9531e25ac8998958e21c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the current state is OTG_MODE. <br /></td></tr>
+<tr class="separator:aeb6dceddea1b9531e25ac8998958e21c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Entry point of the battery charging and power gate behavior, implemented as a state machine. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a13a5015a6ec680d54aacf63ea0dfc492" name="a13a5015a6ec680d54aacf63ea0dfc492"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13a5015a6ec680d54aacf63ea0dfc492">&#9670;&#160;</a></span>enable_charge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::logic::power::enable_charge </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Block or allow the charging of the battery. Note that the system can still be in CHARGING_MODE mode if you set this to false, but the battery just wont charge. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if accepted </dd></dl>
+
+</div>
+</div>
+<a id="a7c9c83c4a276d93e1b999cbb45629834" name="a7c9c83c4a276d93e1b999cbb45629834"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c9c83c4a276d93e1b999cbb45629834">&#9670;&#160;</a></span>get_error_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string lampda::logic::power::get_error_string </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the error string if set, or "x". </p>
+<p>Return the current error message, as a string. If not errors are present, will return "x". </p>
+
+</div>
+</div>
+<a id="a792e6e369220959a7966aaa318a1a4b7" name="a792e6e369220959a7966aaa318a1a4b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a792e6e369220959a7966aaa318a1a4b7">&#9670;&#160;</a></span>go_to_charger_mode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::logic::power::go_to_charger_mode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the power handler to battery CHARGING_MODE. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if the mode switch is accepted </dd></dl>
+
+</div>
+</div>
+<a id="a0e73b3e950c9828d4a46522216aa43f1" name="a0e73b3e950c9828d4a46522216aa43f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e73b3e950c9828d4a46522216aa43f1">&#9670;&#160;</a></span>go_to_error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::logic::power::go_to_error </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the power handler to ERROR mode (locked safety state) </p>
+<dl class="section return"><dt>Returns</dt><dd>true if the mode switch is accepted </dd></dl>
+
+</div>
+</div>
+<a id="a9c325cc17afce1389c575b6759db4f97" name="a9c325cc17afce1389c575b6759db4f97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c325cc17afce1389c575b6759db4f97">&#9670;&#160;</a></span>go_to_idle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::logic::power::go_to_idle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the power handler to IDLE mode (no power output/input) </p>
+<dl class="section return"><dt>Returns</dt><dd>true if the mode switch is accepted </dd></dl>
+
+</div>
+</div>
+<a id="aef44f8870442bf63d6cfc055b46ee805" name="aef44f8870442bf63d6cfc055b46ee805"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef44f8870442bf63d6cfc055b46ee805">&#9670;&#160;</a></span>go_to_otg_mode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::logic::power::go_to_otg_mode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the power handler to OTG_MODE (eg: external battery mode) </p>
+<dl class="section return"><dt>Returns</dt><dd>true if the mode switch is accepted </dd></dl>
+
+</div>
+</div>
+<a id="a691f8e6d92c316cbb5f452550d8f7bf2" name="a691f8e6d92c316cbb5f452550d8f7bf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a691f8e6d92c316cbb5f452550d8f7bf2">&#9670;&#160;</a></span>go_to_output_mode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::logic::power::go_to_output_mode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the power handler to main OUTPUT_VOLTAGE_MODE. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if the mode switch is accepted </dd></dl>
+
+</div>
+</div>
+<a id="ae22c358a69f172b32c864b818b44889c" name="ae22c358a69f172b32c864b818b44889c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae22c358a69f172b32c864b818b44889c">&#9670;&#160;</a></span>go_to_shutdown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::logic::power::go_to_shutdown </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the power handler to SHUTDOWN mode (last mode before shuting system down) </p>
+<dl class="section return"><dt>Returns</dt><dd>true if the mode switch is accepted </dd></dl>
+
+</div>
+</div>
+<a id="a857b8dc208003c36c370f134eccce2ad" name="a857b8dc208003c36c370f134eccce2ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a857b8dc208003c36c370f134eccce2ad">&#9670;&#160;</a></span>is_setup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::logic::power::is_setup </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return true if the power handler system is effectivly started. </p>
+<dl class="section return"><dt>Returns</dt><dd>False if the init() call failed. </dd></dl>
+
+</div>
+</div>
+<a id="afc9fae1b46a874a27ad6c4ca1de559d0" name="afc9fae1b46a874a27ad6c4ca1de559d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc9fae1b46a874a27ad6c4ca1de559d0">&#9670;&#160;</a></span>set_output_max_current_mA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::logic::power::set_output_max_current_mA </td>
+          <td>(</td>
+          <td class="paramtype">const uint16_t&#160;</td>
+          <td class="paramname"><em>outputCurrent_mA</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the desired maximum output current of the charger. This is just an information, that will be used when the state machine reaches the OUTPUT_VOLTAGE_MODE state. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">outputCurrent_mA</td><td>Desired maximum allowed output current, in milliamps </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="acdf2543450eeeaad20fb6f0fc75d8aa7" name="acdf2543450eeeaad20fb6f0fc75d8aa7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdf2543450eeeaad20fb6f0fc75d8aa7">&#9670;&#160;</a></span>set_output_voltage_mv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::logic::power::set_output_voltage_mv </td>
+          <td>(</td>
+          <td class="paramtype">const uint16_t&#160;</td>
+          <td class="paramname"><em>outputVoltage_mV</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the desired output voltage of the charger. </p>
+<p>This is just an information, that will be used when the state machine reaches the OUTPUT_VOLTAGE_MODE state. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">outputVoltage_mV</td><td>Desired output voltage, in millivolts </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa8cd460367940998e1b9099e460a0b67" name="aa8cd460367940998e1b9099e460a0b67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8cd460367940998e1b9099e460a0b67">&#9670;&#160;</a></span>set_temporary_output()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::logic::power::set_temporary_output </td>
+          <td>(</td>
+          <td class="paramtype">const uint16_t&#160;</td>
+          <td class="paramname"><em>outputVoltage_mV</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint16_t&#160;</td>
+          <td class="paramname"><em>outputCurrent_mA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint16_t&#160;</td>
+          <td class="paramname"><em>timeout_ms</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a new output with a time limit, after wich the output will go back to the original values. It is canceled at any point by a call to set_output_voltage_mv. This is just an information, that will be used when the state machine reaches the OUTPUT_VOLTAGE_MODE state. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">outputVoltage_mV</td><td>desired temporary output voltage, in millivolts </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">outputCurrent_mA</td><td>desired temporary maximum output current, in milliamps </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">timeout_ms</td><td>Time delay after which the temporary mode will be disabled </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6

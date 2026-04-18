@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: src/system/utils/sunset_timer.h File Reference</title>
+<title>Lamp-Da: src/system/logic/sunset_timer.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_75b468b764ebaffef61c26d68b3f5733.html">utils</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_94b018f0d16875f781a1777b401eb2e6.html">logic</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -91,34 +91,34 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
 <tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1utils"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1utils.html">lampda::utils</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1utils"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utility function and classes. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1logic"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic.html">lampda::logic</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1logic"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the main high level logics. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1utils_1_1sunset"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1utils_1_1sunset.html">lampda::utils::sunset</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1utils_1_1sunset"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sunset timer handler. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1logic_1_1sunset"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1sunset.html">lampda::logic::sunset</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1logic_1_1sunset"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sunset timer handler. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a3dacb819c8c4d6aa3c34d86228acb171"><td class="memItemLeft" align="right" valign="top"><a id="a3dacb819c8c4d6aa3c34d86228acb171" name="a3dacb819c8c4d6aa3c34d86228acb171"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::utils::sunset::init</b> ()</td></tr>
-<tr class="memdesc:a3dacb819c8c4d6aa3c34d86228acb171"><td class="mdescLeft">&#160;</td><td class="mdescRight">call once on program start <br /></td></tr>
-<tr class="separator:a3dacb819c8c4d6aa3c34d86228acb171"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6698b079185de46906368bc30505b50"><td class="memItemLeft" align="right" valign="top"><a id="ac6698b079185de46906368bc30505b50" name="ac6698b079185de46906368bc30505b50"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::utils::sunset::add_time_minutes</b> (const uint8_t time_minutes)</td></tr>
-<tr class="memdesc:ac6698b079185de46906368bc30505b50"><td class="mdescLeft">&#160;</td><td class="mdescRight">add some time to the sunset timer. Limited to 10 minutes <br /></td></tr>
-<tr class="separator:ac6698b079185de46906368bc30505b50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae16ffec59f11a7d73c4f1f849acb4d93"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1utils_1_1sunset.html#ae16ffec59f11a7d73c4f1f849acb4d93">lampda::utils::sunset::bump_timer</a> ()</td></tr>
-<tr class="memdesc:ae16ffec59f11a7d73c4f1f849acb4d93"><td class="mdescLeft">&#160;</td><td class="mdescRight">signal to the timer that some time must be added. Limited to 10 minutes  <br /></td></tr>
-<tr class="separator:ae16ffec59f11a7d73c4f1f849acb4d93"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4dce60c75eaef5b3e36967e3ce3b657"><td class="memItemLeft" align="right" valign="top"><a id="af4dce60c75eaef5b3e36967e3ce3b657" name="af4dce60c75eaef5b3e36967e3ce3b657"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::utils::sunset::cancel_timer</b> ()</td></tr>
-<tr class="memdesc:af4dce60c75eaef5b3e36967e3ce3b657"><td class="mdescLeft">&#160;</td><td class="mdescRight">cancel the current active timer <br /></td></tr>
-<tr class="separator:af4dce60c75eaef5b3e36967e3ce3b657"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24a76bc03a6beaf39479d0f2871645bb"><td class="memItemLeft" align="right" valign="top"><a id="a24a76bc03a6beaf39479d0f2871645bb" name="a24a76bc03a6beaf39479d0f2871645bb"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::utils::sunset::is_enabled</b> ()</td></tr>
-<tr class="memdesc:a24a76bc03a6beaf39479d0f2871645bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if timer is running. <br /></td></tr>
-<tr class="separator:a24a76bc03a6beaf39479d0f2871645bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4f9922015f784f71aff1f6244f756a2"><td class="memItemLeft" align="right" valign="top"><a id="ad4f9922015f784f71aff1f6244f756a2" name="ad4f9922015f784f71aff1f6244f756a2"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::sunset::init</b> ()</td></tr>
+<tr class="memdesc:ad4f9922015f784f71aff1f6244f756a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">call once on program start <br /></td></tr>
+<tr class="separator:ad4f9922015f784f71aff1f6244f756a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4ec261bbc8fbdc7ed368a9e0ae5b98e"><td class="memItemLeft" align="right" valign="top"><a id="ab4ec261bbc8fbdc7ed368a9e0ae5b98e" name="ab4ec261bbc8fbdc7ed368a9e0ae5b98e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::sunset::add_time_minutes</b> (const uint8_t time_minutes)</td></tr>
+<tr class="memdesc:ab4ec261bbc8fbdc7ed368a9e0ae5b98e"><td class="mdescLeft">&#160;</td><td class="mdescRight">add some time to the sunset timer. Limited to 10 minutes <br /></td></tr>
+<tr class="separator:ab4ec261bbc8fbdc7ed368a9e0ae5b98e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fefd8a2ecb3d354f507dd60e7da1212"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1sunset.html#a8fefd8a2ecb3d354f507dd60e7da1212">lampda::logic::sunset::bump_timer</a> ()</td></tr>
+<tr class="memdesc:a8fefd8a2ecb3d354f507dd60e7da1212"><td class="mdescLeft">&#160;</td><td class="mdescRight">signal to the timer that some time must be added. Limited to 10 minutes  <br /></td></tr>
+<tr class="separator:a8fefd8a2ecb3d354f507dd60e7da1212"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdef388582c55693b4eacb07a7c8710b"><td class="memItemLeft" align="right" valign="top"><a id="acdef388582c55693b4eacb07a7c8710b" name="acdef388582c55693b4eacb07a7c8710b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::sunset::cancel_timer</b> ()</td></tr>
+<tr class="memdesc:acdef388582c55693b4eacb07a7c8710b"><td class="mdescLeft">&#160;</td><td class="mdescRight">cancel the current active timer <br /></td></tr>
+<tr class="separator:acdef388582c55693b4eacb07a7c8710b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbc8111ff1ded6a91542c671e0ecfd8c"><td class="memItemLeft" align="right" valign="top"><a id="adbc8111ff1ded6a91542c671e0ecfd8c" name="adbc8111ff1ded6a91542c671e0ecfd8c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::sunset::is_enabled</b> ()</td></tr>
+<tr class="memdesc:adbc8111ff1ded6a91542c671e0ecfd8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if timer is running. <br /></td></tr>
+<tr class="separator:adbc8111ff1ded6a91542c671e0ecfd8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Logic of the sunset time, eg the system auto stops after a set delay. </p>

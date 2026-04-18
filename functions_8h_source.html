@@ -87,14 +87,14 @@ $(function() {
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="brightness__handle_8h.html">src/system/utils/brightness_handle.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="brightness__handle_8h.html">src/system/logic/brightness_handle.h</a>&quot;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#ifdef LMBD_LAMP_TYPE__INDEXABLE</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="strip_8h.html">src/system/utils/strip.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="strip_8h.html">src/system/physical/strip.h</a>&quot;</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">// (extern declarations)</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span>lampda::user::_private {</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">extern</span> <a class="code hl_class" href="classlampda_1_1LedStrip.html">lampda::LedStrip</a> strip;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">extern</span> <a class="code hl_class" href="classlampda_1_1physical_1_1LedStrip.html">lampda::physical::LedStrip</a> strip;</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
@@ -138,7 +138,7 @@ $(function() {
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="abrightness__handle_8h_html"><div class="ttname"><a href="brightness__handle_8h.html">brightness_handle.h</a></div><div class="ttdoc">Handle the output LED strip brightness.</div></div>
-<div class="ttc" id="aclasslampda_1_1LedStrip_html"><div class="ttname"><a href="classlampda_1_1LedStrip.html">lampda::LedStrip</a></div><div class="ttdef"><b>Definition:</b> strip.h:41</div></div>
+<div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html">lampda::physical::LedStrip</a></div><div class="ttdef"><b>Definition:</b> strip.h:42</div></div>
 <div class="ttc" id="anamespacelampda_1_1user_html"><div class="ttname"><a href="namespacelampda_1_1user.html">lampda::user</a></div><div class="ttdoc">Contains code handling custom user mode functions for indexable strips.</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:14</div></div>
 <div class="ttc" id="anamespacelampda_1_1user_html_a2bed2303bf048e21a21fa2e6a8ebb8fc"><div class="ttname"><a href="namespacelampda_1_1user.html#a2bed2303bf048e21a21fa2e6a8ebb8fc">lampda::user::brightness_update</a></div><div class="ttdeci">void brightness_update(const brightness_t brightness)</div><div class="ttdoc">Called when the system changes the LED strip brightness.</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:55</div></div>
 <div class="ttc" id="anamespacelampda_1_1user_html_a42710cdf95b63e4a0d644c0e976b715a"><div class="ttname"><a href="namespacelampda_1_1user.html#a42710cdf95b63e4a0d644c0e976b715a">lampda::user::user_thread</a></div><div class="ttdeci">void user_thread()</div><div class="ttdoc">Called at each tick of the secondary thread.</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:136</div></div>

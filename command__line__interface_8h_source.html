@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: src/system/utils/coordinates.h File Reference</title>
+<title>Lamp-Da: src/system/logic/command_line_interface.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,42 +70,26 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_75b468b764ebaffef61c26d68b3f5733.html">utils</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_94b018f0d16875f781a1777b401eb2e6.html">logic</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
-  <div class="headertitle"><div class="title">coordinates.h File Reference</div></div>
+  <div class="headertitle"><div class="title">command_line_interface.h</div></div>
 </div><!--header-->
 <div class="contents">
-
-<p>For RGB lamp, convert a 2D screen coordinates to a a led strip index.  
-<a href="#details">More...</a></p>
-
-<p><a href="coordinates_8h_source.html">Go to the source code of this file.</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
-<tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1utils"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1utils.html">lampda::utils</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1utils"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utility function and classes. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a7056a1a2c0188264ced921353a521752"><td class="memItemLeft" align="right" valign="top"><a id="a7056a1a2c0188264ced921353a521752" name="a7056a1a2c0188264ced921353a521752"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::utils::to_strip</b> (const uint16_t screenX, const uint16_t screenY)</td></tr>
-<tr class="memdesc:a7056a1a2c0188264ced921353a521752"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given the x and y, return the led index. <br /></td></tr>
-<tr class="separator:a7056a1a2c0188264ced921353a521752"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>For RGB lamp, convert a 2D screen coordinates to a a led strip index. </p>
-<dl class="section warning"><dt>Warning</dt><dd>Will be removed when the mode transition is over </dd></dl>
-</div></div><!-- contents -->
+<a href="command__line__interface_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacelampda.html">lampda</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>logic {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>cli {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keywordtype">void</span> setup();</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keywordtype">void</span> handleSerialEvents();</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>} <span class="comment">// namespace cli</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>} <span class="comment">// namespace logic</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>} <span class="comment">// namespace lampda</span></div>
+<div class="ttc" id="anamespacelampda_html"><div class="ttname"><a href="namespacelampda.html">lampda</a></div><div class="ttdoc">Program scope.</div><div class="ttdef"><b>Definition:</b> nudz_scrollimage.hpp:3</div></div>
+</div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6

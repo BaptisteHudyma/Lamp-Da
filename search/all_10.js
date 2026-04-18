@@ -1,7 +1,7 @@
 var searchData=
 [
   ['off_0',['OFF',['../namespacelampda_1_1power_1_1charger_1_1drivers.html#a7b7c0894a6f9b4e019e1d19b00295f23a88559a0cfd8250c9d65970cc145c92d4',1,'lampda::power::charger::drivers']]],
-  ['oklab_1',['OKLAB',['../classlampda_1_1utils_1_1ColorSpace_1_1OKLAB.html',1,'lampda::utils::ColorSpace::OKLAB'],['../classlampda_1_1utils_1_1ColorSpace_1_1OKLAB.html#a5a1fb0b386dbf1c56c21b4d4b61f8085',1,'lampda::utils::ColorSpace::OKLAB::OKLAB(const COLOR &amp;c)'],['../classlampda_1_1utils_1_1ColorSpace_1_1OKLAB.html#ab92ea97410e19f98dfe998066e06b629',1,'lampda::utils::ColorSpace::OKLAB::OKLAB(const double l, const double a, const double b)']]],
+  ['oklab_1',['OKLAB',['../classlampda_1_1utils_1_1ColorSpace_1_1OKLAB.html',1,'lampda::utils::ColorSpace::OKLAB'],['../classlampda_1_1utils_1_1ColorSpace_1_1OKLAB.html#ab92ea97410e19f98dfe998066e06b629',1,'lampda::utils::ColorSpace::OKLAB::OKLAB(const double l, const double a, const double b)'],['../classlampda_1_1utils_1_1ColorSpace_1_1OKLAB.html#a5a1fb0b386dbf1c56c21b4d4b61f8085',1,'lampda::utils::ColorSpace::OKLAB::OKLAB(const COLOR &amp;c)']]],
   ['oklch_2',['OKLCH',['../classlampda_1_1utils_1_1ColorSpace_1_1OKLCH.html',1,'lampda::utils::ColorSpace::OKLCH'],['../classlampda_1_1utils_1_1ColorSpace_1_1OKLCH.html#a41bef645ff39bf154d5f8600479a6c90',1,'lampda::utils::ColorSpace::OKLCH::OKLCH(const COLOR &amp;c)'],['../classlampda_1_1utils_1_1ColorSpace_1_1OKLCH.html#ad6e9539b46f9eace65bb7ee7aee79301',1,'lampda::utils::ColorSpace::OKLCH::OKLCH(const double l, const double c, const double h)']]],
   ['oldlace_3',['OldLace',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba8790f86f15d4b45bbfd67384a5b37209',1,'lampda::modes::colors']]],
   ['olive_4',['Olive',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bad9164f872b9ad1bc403c2a2a939eb33e',1,'lampda::modes::colors']]],
@@ -14,14 +14,11 @@ var searchData=
   ['orangered_11',['OrangeRed',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bac2e5610c3c8bc6ea6b707e89fe2c7640',1,'lampda::modes::colors']]],
   ['orchid_12',['Orchid',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba1fc83f74e87bb2a14a63ed4ad7b58fe0',1,'lampda::modes::colors']]],
   ['otgcurrentt_13',['OTGCurrentt',['../structbq25713_1_1BQ25713_1_1Regt_1_1OTGCurrentt.html',1,'bq25713::BQ25713::Regt']]],
-  ['otgnouseextbattimetodisconnect_5fms_14',['otgNoUseExtBatTimeToDisconnect_ms',['../namespacelampda_1_1power.html#af25bb10cc9aca58dc2cfdd2f4b748665',1,'lampda::power']]],
-  ['otgnousetimetodisconnect_5fms_15',['otgNoUseTimeToDisconnect_ms',['../namespacelampda_1_1power.html#ae3db713427b55a94606cdb8c8744fd00',1,'lampda::power']]],
-  ['otgparameters_16',['OTGParameters',['../structlampda_1_1power_1_1powerDelivery_1_1OTGParameters.html',1,'lampda::power::powerDelivery']]],
-  ['otgturnofftimeminutes_17',['otgTurnOffTimeMinutes',['../namespacelampda_1_1power.html#a8ba724da3fef8d8b8237c300a6989e04',1,'lampda::power']]],
-  ['otgvoltaget_18',['OTGVoltaget',['../structbq25713_1_1BQ25713_1_1Regt_1_1OTGVoltaget.html',1,'bq25713::BQ25713::Regt']]],
-  ['output_5fon_5fminutes_19',['output_on_minutes',['../structlampda_1_1logic_1_1statistics_1_1Statistics__t.html#ae20e6f2932fcc17b13acb1573f945675',1,'lampda::logic::statistics::Statistics_t']]],
-  ['output_5fpower_2eh_20',['output_power.h',['../output__power_8h.html',1,'']]],
-  ['outputon_5ftime_5fs_21',['outputOn_time_s',['../namespacelampda_1_1logic_1_1statistics.html#a165f49a8141854af0bdf6155033dc88a',1,'lampda::logic::statistics']]],
-  ['outputontimeskey_22',['outputOnTimeSKey',['../namespacelampda_1_1logic_1_1statistics.html#a0615127ced1275eeb500d1103a2d65d8',1,'lampda::logic::statistics']]],
-  ['overcastsky_23',['OvercastSky',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5ae83a70a623090823f131d86c42cbec09',1,'lampda::modes::colors']]]
+  ['otgparameters_14',['OTGParameters',['../structlampda_1_1power_1_1powerDelivery_1_1OTGParameters.html',1,'lampda::power::powerDelivery']]],
+  ['otgvoltaget_15',['OTGVoltaget',['../structbq25713_1_1BQ25713_1_1Regt_1_1OTGVoltaget.html',1,'bq25713::BQ25713::Regt']]],
+  ['output_5fon_5fminutes_16',['output_on_minutes',['../structlampda_1_1logic_1_1statistics_1_1Statistics__t.html#ae20e6f2932fcc17b13acb1573f945675',1,'lampda::logic::statistics::Statistics_t']]],
+  ['output_5fpower_2eh_17',['output_power.h',['../output__power_8h.html',1,'']]],
+  ['outputon_5ftime_5fs_18',['outputOn_time_s',['../namespacelampda_1_1logic_1_1statistics.html#a165f49a8141854af0bdf6155033dc88a',1,'lampda::logic::statistics']]],
+  ['outputontimeskey_19',['outputOnTimeSKey',['../namespacelampda_1_1logic_1_1statistics.html#a0615127ced1275eeb500d1103a2d65d8',1,'lampda::logic::statistics']]],
+  ['overcastsky_20',['OvercastSky',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5ae83a70a623090823f131d86c42cbec09',1,'lampda::modes::colors']]]
 ];

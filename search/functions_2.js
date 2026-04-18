@@ -7,7 +7,7 @@ var searchData=
   ['blur_4',['blur',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a281bec1f9b610a2f15640f16fd123dbf',1,'lampda::modes::hardware::LampTy']]],
   ['breeze_5',['breeze',['../namespacelampda_1_1physical_1_1indicator.html#a41f1c849f0e9ae3b1b92995e425ebc60',1,'lampda::physical::indicator']]],
   ['brightness_5fupdate_6',['brightness_update',['../structlampda_1_1modes_1_1BasicMode.html#a9622baec04f2dd7dc396e210551919b7',1,'lampda::modes::BasicMode::brightness_update()'],['../structlampda_1_1modes_1_1ContextTy.html#a20eab60ade006184eeff55269cb2fb20',1,'lampda::modes::ContextTy::brightness_update()'],['../structlampda_1_1modes_1_1brightness_1_1LightningMode.html#a22bfd948469e8030f695b07a16c906fb',1,'lampda::modes::brightness::LightningMode::brightness_update()'],['../namespacelampda_1_1user.html#a2bed2303bf048e21a21fa2e6a8ebb8fc',1,'lampda::user::brightness_update()']]],
-  ['bump_5ftimer_7',['bump_timer',['../namespacelampda_1_1utils_1_1sunset.html#ae16ffec59f11a7d73c4f1f849acb4d93',1,'lampda::utils::sunset']]],
+  ['bump_5ftimer_7',['bump_timer',['../namespacelampda_1_1logic_1_1sunset.html#a8fefd8a2ecb3d354f507dd60e7da1212',1,'lampda::logic::sunset']]],
   ['button_5fclicked_5fdefault_8',['button_clicked_default',['../namespacelampda_1_1user.html#afa70e2fe7b7f2470d212d4551247c460',1,'lampda::user']]],
   ['button_5fclicked_5fusermode_9',['button_clicked_usermode',['../namespacelampda_1_1user.html#afcb730073a278316019e03d326e34449',1,'lampda::user']]],
   ['button_5fdisable_5fusermode_10',['button_disable_usermode',['../namespacelampda_1_1logic_1_1inputs.html#ac917bc55b4caddb110bf668018b59b77',1,'lampda::logic::inputs']]],

@@ -79,7 +79,12 @@ $(function() {
 <li>logic: handle high level system logic (Input actions, button presses, main state machine...)<ul>
 <li>alert.h: Handle the diffferent alerts raised by the program</li>
 <li><a class="el" href="behavior_8h.html" title="Basic controller behavior, including alerts and user interactions.">behavior.h</a>: controls the lamp behaviors: battery level, charger start and stops, ...</li>
+<li><a class="el" href="brightness__handle_8h.html" title="Handle the output LED strip brightness.">brightness_handle.h</a>: handle the brightness logic</li>
+<li><a class="el" href="command__line__interface_8h.html" title="User command line interface logic.">command_line_interface.h</a>: handle serial communication. Location of the CLI capabilities</li>
 <li><a class="el" href="inputs_8h.html" title="Handle the logic associated with the input button.">inputs.h</a>: what button actions does what</li>
+<li><a class="el" href="sunset__timer_8h.html" title="Logic of the sunset time, eg the system auto stops after a set delay.">sunset_timer.h</a>: Logic of the sunset timer</li>
+<li><a class="el" href="statistics__handler_8h.html" title="Handle the loading and storing of the system statistics.">statistics_handler.h</a>: Keep track of the system use statistics</li>
+<li><a class="el" href="power__handler_8h.html" title="Entry point of the battery charging and power gate behavior, implemented as a state machine.">power_handler.h</a>: High level handling of all power and battery related logic</li>
 </ul>
 </li>
 <li>physical: stuf related to the physical components: button, bluetooth, IMU, ...<ul>
@@ -91,40 +96,39 @@ $(function() {
 <li><a class="el" href="indicator_8h.html" title="Interface for the physical components of the RGB user indicator.">indicator.h</a>: visual indicator controler (led in the button)</li>
 <li><a class="el" href="output__power_8h.html" title="Interface for the physical components of the main power output (eg: LED strip output).">output_power.h</a>: interface of the output voltage driver</li>
 <li><a class="el" href="sound_8h.html" title="Interface for the physical components of the microphone.">sound.h</a>: microphone main input point. Compute FFT and auto disable</li>
+<li><a class="el" href="strip_8h.html" title="Interface of the indexable strip object. Only used for RGB lamp type.">strip.h</a>: define the strip object (for now, only used in RGB lamp type)</li>
 </ul>
 </li>
 <li>platform: Hardware drivers, implement the platform specific code<ul>
 <li><a class="el" href="bluetooth_8h.html" title="Interface for the platform specific bluetooth.">bluetooth.h</a>: bluetooth interfaces</li>
-<li><a class="el" href="fft_8h.html" title="Wrapper of the ArduinoFFT library.">fft.h</a>: implementation of the fft and assocated filtering</li>
 <li><a class="el" href="gpio_8h.html" title="Interface for the platform specific GeneralPurposeInputOutputs.">gpio.h</a>: programmable pins interface</li>
 <li><a class="el" href="i2c_8h.html" title="Interface for the platform specific i2c protocols.">i2c.h</a>; i2c interface</li>
 <li><a class="el" href="pdm__handle_8h.html" title="Interface for the platform specific microphone.">pdm_handle.h</a>: microphone interface (through PDM)</li>
 <li>print.h: display &amp; debug interface (through serial connection)</li>
 <li>register.h: NRF52840 specific register access</li>
+<li><a class="el" href="threads_8h.html" title="Interface for the platform specific tasks and threads.">threads.h</a>: Tasks and threads interface</li>
 <li><a class="el" href="time_8h.html" title="Define all time related platform functions.">time.h</a>: time &amp; chrono interface</li>
 </ul>
 </li>
 <li>power: Handler for the power components (charger, usb negociation, ...)<ul>
-<li>drivers: Folder to handler the charging processes with the target ic</li>
 <li>PDlib: folder that contains the library to talk to the PD negocation ic. Adapted to this architecture</li>
 <li><a class="el" href="balancer_8h.html" title="Interface for the abstraction layer of the battery balancer component.">balancer.h</a>: handle the battery balancing, and some battery measurments</li>
 <li><a class="el" href="charger_8h.html" title="High level layer of the battery charging and balancer algorithms. The charger can be in charge or OTG...">charger.h</a>: main high level logic to use the charger, as well as power switches</li>
+<li>charger_ic.h: hardware abstraction layer of the battery charging component</li>
 <li>power_gate.h: the electrical gates to isolate output &amp; vbus form each others</li>
-<li>power_source.h: handle pd negociation, cable detection, ...</li>
 </ul>
 </li>
 <li>utils: General functions and constants that everybody needs<ul>
-<li><a class="el" href="brightness__handle_8h.html" title="Handle the output LED strip brightness.">brightness_handle.h</a>: handle the brightness passthrough</li>
 <li><a class="el" href="colorspace_8h.html" title="Define commonly used color spaces.">colorspace.h</a>: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !</li>
 <li>constants.h: global constants used all around the program</li>
-<li><a class="el" href="coordinates_8h.html" title="For RGB lamp, convert a 2D screen coordinates to a a led strip index.">coordinates.h</a>: coordinate system for the lamp body (only used in RGB lamp type)</li>
 <li><a class="el" href="curves_8h.html" title="Define curves types, that can be sampled.">curves.h</a>: define custom curve and curve sampling functions</li>
+<li><a class="el" href="fft_8h.html" title="Wrapper of the ArduinoFFT library.">fft.h</a>: implementation of the fft and assocated filtering</li>
 <li><a class="el" href="input__output_8h.html" title="Definition of the used pins of the RGB indicator.">input_output.h</a>: define the gpio used for the button &amp; indicator</li>
 <li>print.h: access to the print/debug interface with string composing</li>
-<li><a class="el" href="serial_8h.html" title="User CommandLineInterface.">serial.h</a>: handle serial communication. Location of the CLI capabilities</li>
 <li><a class="el" href="state__machine_8h.html" title="Define a generic state machine logic.">state_machine.h</a>: generic state machine class, used for all main logic</li>
-<li><a class="el" href="strip_8h.html" title="Interface of the indexable strip object. Only used for RGB lamp type.">strip.h</a>: define the strip object (for now, only used in RGB lamp type)</li>
-<li><a class="el" href="utils_8h.html" title="Define useful functions.">utils.h</a>: useful functions to make colors </li>
+<li><a class="el" href="time__utils_8h.html" title="Define some tools and macros to handle timed events.">time_utils.h</a>: Useful time handling function</li>
+<li><a class="el" href="utils_8h.html" title="Define useful functions.">utils.h</a>: useful functions to make colors</li>
+<li><a class="el" href="vector__math_8h.html" title="Define vectors and rotation matrices, and the possibility to rotate vectors.">vector_math.h</a>: Handle 2D 3D and 4D vector math </li>
 </ul>
 </li>
 </ul>

@@ -36,7 +36,7 @@ var searchData=
   ['to_5fled_5findex_33',['to_led_index',['../namespacelampda_1_1modes.html#a0b8af47b42b587cb5c97c1867ea230d9',1,'lampda::modes']]],
   ['to_5fled_5findex_5fno_5fbounds_34',['to_led_index_no_bounds',['../namespacelampda_1_1modes.html#a57035f502d2668b1880295675eddc41a',1,'lampda::modes']]],
   ['to_5fradians_35',['to_radians',['../namespacelampda.html#a39d82c3b3a86c5e859d4304b01fbb0e7',1,'lampda']]],
-  ['to_5fstrip_36',['to_strip',['../namespacelampda_1_1utils.html#a7056a1a2c0188264ced921353a521752',1,'lampda::utils::to_strip()'],['../namespacelampda_1_1modes.html#a32647059b9d7036d6f5579db79a59dc3',1,'lampda::modes::to_strip()']]],
+  ['to_5fstrip_36',['to_strip',['../namespacelampda_1_1modes.html#a32647059b9d7036d6f5579db79a59dc3',1,'lampda::modes']]],
   ['toledcount_37',['toLedCount',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#abf31f9518c734ee79389ef1d92d6b8df',1,'lampda::modes::hardware::LampTy']]],
   ['tomato_38',['Tomato',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba755d50de4be386aa634674f79611ba82',1,'lampda::modes::colors']]],
   ['tools_2ehpp_39',['tools.hpp',['../tools_8hpp.html',1,'']]],

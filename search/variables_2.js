@@ -37,7 +37,7 @@ var searchData=
   ['boot_5fcount_34',['boot_count',['../structlampda_1_1logic_1_1statistics_1_1Statistics__t.html#ab5563623b882d6f1feb0ff6a92c64be2',1,'lampda::logic::statistics::Statistics_t']]],
   ['bootcountkey_35',['bootCountKey',['../namespacelampda_1_1logic_1_1statistics.html#aea2c331d1e1fa5f1cc79f2cd827bf7a6',1,'lampda::logic::statistics']]],
   ['bounce_5fratio_36',['bounce_ratio',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#a0a7efc9efe1d2266b6b5e89e1edfd943',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
-  ['brightness_37',['BRIGHTNESS',['../structlampda_1_1utils_1_1brightness_1_1BrightnessParameters.html#a378e12de9d50df4279f72797cd8f5f58',1,'lampda::utils::brightness::BrightnessParameters']]],
+  ['brightness_37',['BRIGHTNESS',['../structlampda_1_1logic_1_1brightness_1_1BrightnessParameters.html#ad9d3c79bd7e7314cd9c9b870a8abb756',1,'lampda::logic::brightness::BrightnessParameters']]],
   ['brightness_5floop_5fupdate_5fevery_38',['BRIGHTNESS_LOOP_UPDATE_EVERY',['../namespacelampda_1_1logic_1_1inputs.html#a7093b93e779bb7d819204933ae8e3242',1,'lampda::logic::inputs']]],
   ['brightnessdurationms_39',['brightnessDurationMs',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#af65689da0d92055b481081d0a081e02f',1,'lampda::modes::hardware::LampTy']]],
   ['brightnessrate_40',['brightnessRate',['../structsimulator_1_1defaultSimulation.html#ae5260d34441d9e199605590483e6c2de',1,'simulator::defaultSimulation']]],
