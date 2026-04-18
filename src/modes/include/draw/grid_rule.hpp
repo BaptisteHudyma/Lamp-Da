@@ -19,6 +19,8 @@ struct LineRuleConfig
   static constexpr uint8_t scrollAmount = 1;      ///< Scroll each update
   static constexpr uint8_t renderBlurAmount = 32; ///< Blur before display
   static constexpr bool scrollSkewed = false;     ///< Scroll skewed to the left
+  static constexpr bool loadFullOnReset =
+          true; ///< If true, the first call of loop will load the whole grid. False will load gradually
 };
 
 /**
@@ -47,6 +49,8 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
   static constexpr uint8_t dstBufIdx = ConfigTy::dstBufIdx; ///< \private
   static constexpr uint8_t srcBufIdx = ConfigTy::srcBufIdx; ///< \private
 
+  static constexpr bool loadFullOnReset = ConfigTy::loadFullOnReset; ///< \private
+
   static constexpr float fwidth = LampTy::maxWidthFloat; ///< \private
   static constexpr uint16_t width = LampTy::maxWidth;    ///< \private
   using LineTy = std::array<uint32_t, width>;            ///< Type of a line array
@@ -59,6 +63,7 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
   {
     lastLine = 0;
     currentLine = firstLine;
+    isResetted = true;
 
     lamp.template fillTempBuffer(0);
     auto& buffer = lamp.template getTempBuffer<dstBufIdx>();
@@ -206,6 +211,27 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
   void LMBD_INLINE loop(auto& ctx, auto& callback)
   {
     auto& lamp = ctx.lamp;
+
+    // first call since reset
+    if (isResetted)
+    {
+      isResetted = false;
+
+      // if the animation should load the full state on startup
+      if constexpr (loadFullOnReset)
+      {
+        // update the whole grid
+        for (size_t i = 0; i < nbLines; ++i)
+        {
+          update(lamp, callback);
+          display(lamp);
+        }
+        if constexpr (ConfigTy::renderBlurAmount)
+          lamp.blur(ConfigTy::renderBlurAmount);
+
+        return;
+      }
+    }
     uint8_t rampValue = (hasCustomRamp ? ctx.get_active_custom_ramp() : rampSubstitute);
 
     // by default, quickly run smoothly the grid scrolling
@@ -242,6 +268,7 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
   LineTy currentLine;      ///< Current line being processed
   uint16_t lastLine = 0;   ///< latest treated line
   uint32_t lastUpdate = 0; ///< latest update time, in milliseconds
+  bool isResetted = false; ///< flag to signal that the grid just been resetted
 };
 
 /** \brief Process 1-d cellular automata from \p before to \p after array

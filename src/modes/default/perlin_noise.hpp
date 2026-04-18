@@ -25,6 +25,9 @@ struct PerlinNoiseMode : public BasicMode
   /// index of the buffer used in this mode
   static constexpr uint8_t bufferIndexToUse = 0;
 
+  // this is too heavy to run at full, speed, display every other pixels instead of refreshing amm
+  static constexpr uint32_t everyNIndex = 2;
+
   struct StateTy
   {
     uint32_t positionX; ///< position of the noise in X
@@ -53,10 +56,15 @@ struct PerlinNoiseMode : public BasicMode
 
     /// store selected palette
     colors::PaletteTy const* selectedPalette;
+
+    // flag that we have just been reseted
+    bool isResetted = false;
   };
 
   static void on_enter_mode(auto& ctx)
   {
+    ctx.state.isResetted = true;
+
     ctx.state.positionX = UINT32_MAX / 2 + random16() / 2;
     ctx.state.positionY = UINT32_MAX / 2 + random16() / 2;
     ctx.state.positionZ = UINT32_MAX / 2 + random16() / 2;
@@ -138,6 +146,23 @@ struct PerlinNoiseMode : public BasicMode
 
   static void loop(auto& ctx)
   {
+    if (ctx.state.isResetted)
+    {
+      ctx.state.isResetted = false;
+
+      // load animation
+      for (uint32_t i = 0; i <= everyNIndex; ++i)
+      {
+        perlin_display(ctx, i);
+      }
+      return;
+    }
+
+    perlin_display(ctx, ctx.lamp.tick);
+  }
+
+  static void perlin_display(auto& ctx, const uint32_t tick)
+  {
     auto& state = ctx.state;
     auto& lamp = ctx.lamp;
     if (!state.selectedPalette)
@@ -154,9 +179,7 @@ struct PerlinNoiseMode : public BasicMode
     const auto z = state.positionZ;
     const auto scale = state.scale;
 
-    // this is too heavy to run at full, speed, display every other pixels instead of refreshing amm
-    static constexpr size_t everyNIndex = 2;
-    const size_t firstIndex = lamp.tick % everyNIndex;
+    const size_t firstIndex = tick % everyNIndex;
 
     // update noise values
     for (size_t i = firstIndex; i < lamp.ledCount; i += everyNIndex)
