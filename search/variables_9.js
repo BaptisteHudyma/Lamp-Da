@@ -33,9 +33,10 @@ var searchData=
   ['ispowersourcedetected_30',['isPowerSourceDetected',['../structlampda_1_1power_1_1powerDelivery_1_1UsbPDData.html#aa23630bf09cb539636dceaf3f0c2057b',1,'lampda::power::powerDelivery::UsbPDData']]],
   ['ispresent_31',['isPresent',['../structlampda_1_1power_1_1charger_1_1drivers_1_1Battery.html#a7a87c734431eb289a963927aa9d0100e',1,'lampda::power::charger::drivers::Battery::isPresent()'],['../structlampda_1_1power_1_1charger_1_1BatteryStatus__t.html#a697db3089909b8cefc8d3140938b5520',1,'lampda::power::charger::BatteryStatus_t::isPresent()']]],
   ['ispressed_32',['isPressed',['../structlampda_1_1physical_1_1button_1_1ButtonStateTy.html#adcb35988b86437bb889724418ac6d82b',1,'lampda::physical::button::ButtonStateTy']]],
-  ['issetup_33',['isSetup',['../namespacelampda_1_1power_1_1charger.html#a8c533f9c77045c4fb2a001bc56c524f1',1,'lampda::power::charger']]],
-  ['issunsettimingpending_34',['isSunsetTimingPending',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a843c97bdd15cb73c1308bfa5d3a88b16',1,'lampda::modes::ModeManagerTy::StateTy']]],
-  ['isusbpd_35',['isUsbPd',['../structlampda_1_1power_1_1powerDelivery_1_1UsbPDData.html#a3f4d4ddeaf40e38c485598a66e6f3ec9',1,'lampda::power::powerDelivery::UsbPDData']]],
-  ['isvbuspowered_36',['isVbusPowered',['../structlampda_1_1power_1_1powerDelivery_1_1UsbPDData.html#a993013ebe66b80c02347cbcb276f2d3f',1,'lampda::power::powerDelivery::UsbPDData']]],
-  ['iswaitingturnon_37',['isWaitingTurnOn',['../structlampda_1_1modes_1_1brightness_1_1LightningMode_1_1StateTy.html#adc09ee7fcce4d0bacee6214e03671f0b',1,'lampda::modes::brightness::LightningMode::StateTy']]]
+  ['isresetted_33',['isResetted',['../structlampda_1_1modes_1_1draw_1_1grid_1_1LineRule.html#a842128d5f15effa7a74c3a91dbf52ce6',1,'lampda::modes::draw::grid::LineRule']]],
+  ['issetup_34',['isSetup',['../namespacelampda_1_1power_1_1charger.html#a8c533f9c77045c4fb2a001bc56c524f1',1,'lampda::power::charger']]],
+  ['issunsettimingpending_35',['isSunsetTimingPending',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a843c97bdd15cb73c1308bfa5d3a88b16',1,'lampda::modes::ModeManagerTy::StateTy']]],
+  ['isusbpd_36',['isUsbPd',['../structlampda_1_1power_1_1powerDelivery_1_1UsbPDData.html#a3f4d4ddeaf40e38c485598a66e6f3ec9',1,'lampda::power::powerDelivery::UsbPDData']]],
+  ['isvbuspowered_37',['isVbusPowered',['../structlampda_1_1power_1_1powerDelivery_1_1UsbPDData.html#a993013ebe66b80c02347cbcb276f2d3f',1,'lampda::power::powerDelivery::UsbPDData']]],
+  ['iswaitingturnon_38',['isWaitingTurnOn',['../structlampda_1_1modes_1_1brightness_1_1LightningMode_1_1StateTy.html#adc09ee7fcce4d0bacee6214e03671f0b',1,'lampda::modes::brightness::LightningMode::StateTy']]]
 ];

@@ -30,12 +30,13 @@ var searchData=
   ['ledsizepx_27',['ledSizePx',['../structsimulator_1_1defaultSimulation.html#a8d73aa0ddce01e54a4d97ec2b847fee3',1,'simulator::defaultSimulation']]],
   ['ledstriplength_5fmm_28',['ledStripLength_mm',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#aad3f828a96fa37484881081fa806fc2f',1,'lampda::modes::hardware::LampTy']]],
   ['ledstripwidth_5fmm_29',['ledStripWidth_mm',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a58cfa09a40a3a1705644e57cec20471e',1,'lampda::modes::hardware::LampTy']]],
-  ['level_30',['level',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#a5a0f0990b7e535389d391a3caf3bb67d',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy::level()'],['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a73d6943685f7af2179240af02a0dcac9',1,'lampda::modes::audio::SoundEventTy::level()']]],
+  ['level_30',['level',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a73d6943685f7af2179240af02a0dcac9',1,'lampda::modes::audio::SoundEventTy::level()'],['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#a5a0f0990b7e535389d391a3caf3bb67d',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy::level()']]],
   ['levels_31',['levels',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#a2d051543a87af5193a64544e7d13e96f',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
   ['lightraindropspersecond_32',['lightRainDropsPerSecond',['../structlampda_1_1modes_1_1default__modes_1_1RainMode.html#af897646e23d8307bd8907605140d377e',1,'lampda::modes::default_modes::RainMode']]],
   ['linearspeedgain_33',['linearSpeedGain',['../namespacelampda_1_1modes.html#a73a4c20153a7046fbcc298cb4f834733',1,'lampda::modes']]],
   ['lo_34',['lo',['../uniontimestamp__t.html#a1439028ac9bf28000a9e2902d682b548',1,'timestamp_t']]],
-  ['local_35',['local',['../structlampda_1_1modes_1_1ContextTy_1_1KeyProxy.html#a7c2a96d79b056c084b86b197924e7247',1,'lampda::modes::ContextTy::KeyProxy']]],
-  ['loopdeltatime_36',['loopDeltaTime',['../namespacelampda.html#ac48518ede7690a325f8095306247750e',1,'lampda']]],
-  ['loweredtime_37',['loweredTime',['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a06020206f9ae99ffd48515c7daba02c1',1,'lampda::logic::alerts::AlertBase']]]
+  ['loadfullonreset_35',['loadFullOnReset',['../structlampda_1_1modes_1_1draw_1_1grid_1_1LineRuleConfig.html#afea7549a0f7d75e9ca1204233abc92a7',1,'lampda::modes::draw::grid::LineRuleConfig']]],
+  ['local_36',['local',['../structlampda_1_1modes_1_1ContextTy_1_1KeyProxy.html#a7c2a96d79b056c084b86b197924e7247',1,'lampda::modes::ContextTy::KeyProxy']]],
+  ['loopdeltatime_37',['loopDeltaTime',['../namespacelampda.html#ac48518ede7690a325f8095306247750e',1,'lampda']]],
+  ['loweredtime_38',['loweredTime',['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a06020206f9ae99ffd48515c7daba02c1',1,'lampda::logic::alerts::AlertBase']]]
 ];

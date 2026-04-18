@@ -110,6 +110,9 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>on_enter_mode<
 <tr class="memitem:a00057ee301cf7122787e858c40e3f541"><td class="memItemLeft" align="right" valign="top"><a id="a00057ee301cf7122787e858c40e3f541" name="a00057ee301cf7122787e858c40e3f541"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto &amp;ctx)</td></tr>
 <tr class="separator:a00057ee301cf7122787e858c40e3f541"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6cac914734d69f6fa4618eaf58ef9ed"><td class="memItemLeft" align="right" valign="top"><a id="af6cac914734d69f6fa4618eaf58ef9ed" name="af6cac914734d69f6fa4618eaf58ef9ed"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>fire_display</b> (auto &amp;ctx, const uint32_t tick)</td></tr>
+<tr class="separator:af6cac914734d69f6fa4618eaf58ef9ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63e1fe211242879a133538058c711b31"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a63e1fe211242879a133538058c711b31">on_exit_mode</a> (auto &amp;ctx)</td></tr>
 <tr class="memdesc:a63e1fe211242879a133538058c711b31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when mode goes outside of focus (optional)  <br /></td></tr>
 <tr class="separator:a63e1fe211242879a133538058c711b31"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -162,6 +165,9 @@ static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><b>palette</b> = <a class="el" href="namespacelampda_1_1modes_1_1colors.html#a2a26dfee11ad9c585b3a84b487cb55ba">colors::PaletteHeatColors</a></td></tr>
 <tr class="memdesc:aa8f124763c055b5c13538932eb00f5e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Palette used for fire colors. <br /></td></tr>
 <tr class="separator:aa8f124763c055b5c13538932eb00f5e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41840f8a0eeebfca6536cb2ac7ccd5bd"><td class="memItemLeft" align="right" valign="top"><a id="a41840f8a0eeebfca6536cb2ac7ccd5bd" name="a41840f8a0eeebfca6536cb2ac7ccd5bd"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>everyNIndex</b> = 2</td></tr>
+<tr class="separator:a41840f8a0eeebfca6536cb2ac7ccd5bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="memItemLeft" align="right" valign="top"><a id="ad879076f6462e4f274f5c4e12fc6c1f0" name="ad879076f6462e4f274f5c4e12fc6c1f0"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
 <tr class="memdesc:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the use of custom <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#afaeae8fbc41264a3f75723f9a688da45" title="Custom callback when sunset mode is updated (optional)">BasicMode::sunset_update()</a> callback. <br /></td></tr>
@@ -733,7 +739,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structlampda_1_1modes_1_1default__modes_1_1FireMode.html#ab85b3208bee96b5a994ecb910146c031">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
-<div class="ttc" id="astructlampda_1_1modes_1_1default__modes_1_1FireMode_html_ab85b3208bee96b5a994ecb910146c031"><div class="ttname"><a href="structlampda_1_1modes_1_1default__modes_1_1FireMode.html#ab85b3208bee96b5a994ecb910146c031">lampda::modes::default_modes::FireMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">Fire custom ramp sets how sensitive it is to ambiant sound.</div><div class="ttdef"><b>Definition:</b> fireplace.hpp:26</div></div>
+<div class="ttc" id="astructlampda_1_1modes_1_1default__modes_1_1FireMode_html_ab85b3208bee96b5a994ecb910146c031"><div class="ttname"><a href="structlampda_1_1modes_1_1default__modes_1_1FireMode.html#ab85b3208bee96b5a994ecb910146c031">lampda::modes::default_modes::FireMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">Fire custom ramp sets how sensitive it is to ambiant sound.</div><div class="ttdef"><b>Definition:</b> fireplace.hpp:28</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
 <div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>
