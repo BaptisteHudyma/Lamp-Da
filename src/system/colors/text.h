@@ -15,8 +15,9 @@
 #include <cstdint>
 #include <string>
 
+#include "src/system/physical/strip.h"
+
 #include "src/system/colors/colors.h"
-#include "src/system/utils/strip.h"
 
 namespace text {
 
@@ -37,7 +38,7 @@ bool display_text(const Color& color,
                   const int16_t startYIndex,
                   float scale,
                   const bool paddEnd,
-                  LedStrip& strip);
+                  physical::LedStrip& strip);
 
 /**
  * \brief Display a text going around the lampe
@@ -60,7 +61,7 @@ bool display_scrolling_text(const Color& color,
                             const bool reset,
                             const bool paddEnd,
                             const uint8_t fadeOut,
-                            LedStrip& strip);
+                            physical::LedStrip& strip);
 
 } // namespace text
 

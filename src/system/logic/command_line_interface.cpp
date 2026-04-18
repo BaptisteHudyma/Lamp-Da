@@ -1,13 +1,10 @@
-#include "serial.h"
-
-#include "constants.h"
+#include "command_line_interface.h"
 
 #include "src/system/logic/behavior.h"
 
-#include "src/system/power/power_handler.h"
-#include "src/system/power/PDlib/power_delivery.h"
 #include "src/system/power/charger.h"
 #include "src/system/power/balancer.h"
+#include "src/system/power/PDlib/power_delivery.h"
 
 #include "src/system/platform/registers.h"
 #include "src/system/platform/threads.h"
@@ -22,11 +19,12 @@
 #include "src/system/utils/utils.h"
 
 #include "src/system/logic/alerts.h"
+#include "src/system/logic/power_handler.h"
 #include "src/system/logic/statistics_handler.h"
 
 namespace lampda {
-namespace utils {
-namespace serial {
+namespace logic {
+namespace cli {
 
 constexpr uint8_t maxReadLinePerLoop = 5;
 constexpr uint8_t maxLineLenght = 200;
@@ -113,7 +111,7 @@ void handleCommand(const platform::Inputs::Command& command)
 
     case utils::hash("bat"):
       {
-        const auto& balancerStatus = power::balancer::get_status();
+        const auto& balancerStatus = ::lampda::power::balancer::get_status();
         const bool areBalancerValueValid = balancerStatus.is_valid();
 
         if (areBalancerValueValid)
@@ -131,7 +129,7 @@ void handleCommand(const platform::Inputs::Command& command)
           platform::lampda_print("balancer measurments not valid");
         }
 
-        const auto& chargerStatus = power::charger::get_state();
+        const auto& chargerStatus = ::lampda::power::charger::get_state();
         const bool areChargerValueValid = chargerStatus.areMeasuresOk;
         if (areChargerValueValid)
         {
@@ -162,7 +160,7 @@ void handleCommand(const platform::Inputs::Command& command)
 
     case utils::hash("cinfo"):
       {
-        const auto& chargerState = power::charger::get_state();
+        const auto& chargerState = ::lampda::power::charger::get_state();
         if (chargerState.areMeasuresOk)
         {
           platform::lampda_print(
@@ -181,7 +179,7 @@ void handleCommand(const platform::Inputs::Command& command)
                   chargerState.inputCurrent_mA,
                   chargerState.batteryVoltage_mV,
                   chargerState.chargeCurrent_mA,
-                  boolToString(power::charger::is_vbus_signal_detected()),
+                  boolToString(::lampda::power::charger::is_vbus_signal_detected()),
                   boolToString(chargerState.is_charging()),
                   boolToString(chargerState.is_effectivly_charging()),
                   physical::battery::get_battery_level() / 100.0,
@@ -196,17 +194,17 @@ void handleCommand(const platform::Inputs::Command& command)
                   "battery level:%.2f%%\n"
                   "-> charger status: %s",
                   boolToString(chargerState.isChargeOkSignalHigh),
-                  boolToString(power::charger::is_vbus_signal_detected()),
+                  boolToString(::lampda::power::charger::is_vbus_signal_detected()),
                   physical::battery::get_battery_level() / 100.0,
                   chargerState.get_status_str().c_str());
         }
 
         // in case there is a software error, display it
-        if (chargerState.status == power::charger::Charger_t::ChargerStatus_t::ERROR_HARDWARE)
+        if (chargerState.status == ::lampda::power::charger::Charger_t::ChargerStatus_t::ERROR_HARDWARE)
         {
           platform::lampda_print("\t hardware error detail: \"%s\"", chargerState.hardwareErrorMessage.c_str());
         }
-        if (chargerState.status == power::charger::Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
+        if (chargerState.status == ::lampda::power::charger::Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
           platform::lampda_print("\t software error detail: \"%s\"", chargerState.softwareErrorMessage.c_str());
         }
@@ -233,7 +231,7 @@ void handleCommand(const platform::Inputs::Command& command)
 
     case utils::hash("ADC"):
       {
-        const auto& chargerState = power::charger::get_state();
+        const auto& chargerState = ::lampda::power::charger::get_state();
         if (chargerState.areMeasuresOk)
         {
           platform::lampda_print(
@@ -247,7 +245,7 @@ void handleCommand(const platform::Inputs::Command& command)
                   chargerState.lastUpdateTime_ms,
                   chargerState.powerRail_mV,
                   chargerState.inputCurrent_mA,
-                  power::powerDelivery::get_vbus_voltage(),
+                  ::lampda::power::powerDelivery::get_vbus_voltage(),
                   chargerState.batteryVoltage_mV,
                   chargerState.batteryCurrent_mA,
                   platform::registers::read_CPU_temperature_degreesC());
@@ -260,7 +258,7 @@ void handleCommand(const platform::Inputs::Command& command)
                   "VBUS voltage:%dmA\n"
                   "Temperature:%.2fC",
                   chargerState.lastUpdateTime_ms,
-                  power::powerDelivery::get_vbus_voltage(),
+                  ::lampda::power::powerDelivery::get_vbus_voltage(),
                   platform::registers::read_CPU_temperature_degreesC());
         }
         break;
@@ -268,8 +266,8 @@ void handleCommand(const platform::Inputs::Command& command)
 
     case utils::hash("PD"):
       {
-        power::powerDelivery::show_pd_status();
-        const auto& pd = power::powerDelivery::get_available_pd();
+        ::lampda::power::powerDelivery::show_pd_status();
+        const auto& pd = ::lampda::power::powerDelivery::get_available_pd();
         if (pd.empty())
         {
           platform::lampda_print("No power delivery capabilities");
@@ -289,8 +287,8 @@ void handleCommand(const platform::Inputs::Command& command)
                                logic::behavior::get_state().c_str(),
                                logic::behavior::get_error_state_message().c_str());
         platform::lampda_print("power state machine state: %s. error msgs: %s",
-                               power::get_state().c_str(),
-                               power::get_error_string().c_str());
+                               logic::power::get_state().c_str(),
+                               logic::power::get_error_string().c_str());
         break;
       }
 
@@ -347,6 +345,6 @@ void handleSerialEvents()
   }
 }
 
-} // namespace serial
-} // namespace utils
+} // namespace cli
+} // namespace logic
 } // namespace lampda

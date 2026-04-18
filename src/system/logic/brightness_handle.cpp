@@ -7,7 +7,7 @@
 #include "src/system/utils/utils.h"
 
 namespace lampda {
-namespace utils {
+namespace logic {
 namespace brightness {
 
 /**
@@ -63,5 +63,5 @@ void update_brightness(const brightness_t newBrightness, const bool isInitialRea
 uint32_t when_last_update_brightness() { return __internal.lastBrightnessUpdate; }
 
 } // namespace brightness
-} // namespace utils
+} // namespace logic
 } // namespace lampda

@@ -12,8 +12,9 @@
 #include <array>
 
 #include <src/system/logic/alerts.h>
+#include <src/system/logic/sunset_timer.h>
+
 #include <src/system/utils/assert.h>
-#include <src/system/utils/sunset_timer.h>
 
 #include "src/modes/include/tools.hpp"
 #include "src/modes/include/context_type.hpp"
@@ -874,7 +875,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       if (ctx.state.isSunsetTimingPending == 0)
       {
         // set and update sunset timer
-        utils::sunset::add_time_minutes(5);
+        logic::sunset::add_time_minutes(5);
         // blip AFTER the update
         ctx.blip(50);
       }

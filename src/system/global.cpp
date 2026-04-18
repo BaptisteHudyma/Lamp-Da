@@ -2,7 +2,10 @@
 
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
+#include "src/system/logic/command_line_interface.h"
 #include "src/system/logic/inputs.h"
+#include "src/system/logic/power_handler.h"
+#include "src/system/logic/sunset_timer.h"
 
 #include "src/system/physical/battery.h"
 #include "src/system/physical/indicator.h"
@@ -12,11 +15,8 @@
 #include "src/system/physical/sound.h"
 
 #include "src/system/power/charger.h"
-#include "src/system/power/power_handler.h"
 
-#include "src/system/utils/serial.h"
 #include "src/system/utils/utils.h"
-#include "src/system/utils/sunset_timer.h"
 
 #include "src/user/functions.h"
 
@@ -122,11 +122,11 @@ void main_setup()
 
   // can start !
 
-  // setup serial
-  utils::serial::setup();
+  // setup command line interface
+  logic::cli::setup();
 
   // setup power components
-  power::init();
+  logic::power::init();
 
   bool shouldAlertUser = false;
   // handle start flags
@@ -179,7 +179,7 @@ void main_setup()
   user::power_off_sequence();
 
   // start sunset timer thread
-  utils::sunset::init();
+  logic::sunset::init();
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread())
@@ -235,7 +235,7 @@ void main_loop(const uint32_t addedDelay)
   logic::inputs::loop();
 
   // handle user serial events
-  utils::serial::handleSerialEvents();
+  logic::cli::handleSerialEvents();
 
   // loop the behavior
   logic::behavior::loop();

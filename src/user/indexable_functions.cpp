@@ -67,7 +67,7 @@ namespace _private {
 constexpr platform::gpio::DigitalPin::GPIO ledStripPinId = platform::gpio::DigitalPin::GPIO::gpio6;
 static platform::gpio::DigitalPin LedStripPin(ledStripPinId);
 
-LedStrip strip(LedStripPin.pin());
+physical::LedStrip strip(LedStripPin.pin());
 modes::hardware::LampTy lamp {strip};
 ManagerTy modeManager(lamp);
 

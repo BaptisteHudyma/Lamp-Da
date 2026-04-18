@@ -11,23 +11,24 @@
 #include "src/compile.h"
 #include "src/user/constants.h"
 
-#include "src/system/physical/sound.h"
 #include "src/system/physical/output_power.h"
+#include "src/system/physical/sound.h"
+
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+#include "src/system/physical/strip.h"
+#endif
 
 #include "src/system/platform/time.h"
+
+#include "src/system/logic/brightness_handle.h"
 
 #include "src/system/utils/assert.h"
 #include "src/system/utils/print.h"
 #include "src/system/utils/curves.h"
 #include "src/system/utils/constants.h"
-#include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/utils.h"
 
 #include "src/system/ext/math8.h"
-
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
-#include "src/system/utils/strip.h"
-#endif
 
 #include "src/modes/include/compile.hpp"
 #include "src/modes/include/colors/utils.hpp"
@@ -141,7 +142,7 @@ private:
   static constexpr float _ledStripWidth_mm = lampda::ledStripWidth_mm;   ///< \private
   static constexpr float _ledStripLength_mm = lampda::ledStripLength_mm; ///< \private
   static constexpr float _ledByMeter = lampda::ledByMeter;               ///< \private
-  LedStrip& strip;                                                       ///< \private
+  physical::LedStrip& strip;                                             ///< \private
 
   /// \private oversized buffer size to account for "overflowing" LEDs
   static constexpr uint16_t _safeBufSize = (_width + 1) * (_height + 1);
@@ -156,7 +157,7 @@ private:
 
 public:
   /// \private Constructor used to wrap strip if needed
-  LMBD_INLINE LampTy(LedStrip& strip) : config {}, strip {strip}, now {0}, tick {0}, raw_frame_count {0} {}
+  LMBD_INLINE LampTy(physical::LedStrip& strip) : config {}, strip {strip}, now {0}, tick {0}, raw_frame_count {0} {}
 #else
 private:
   // (placeholder values to avoid bad fails on misuse)
@@ -241,7 +242,7 @@ public:
     begin();
     clear();
     show_now();
-    setBrightness(utils::brightness::get_brightness(), true, true);
+    setBrightness(logic::brightness::get_brightness(), true, true);
   }
 
   /** \private Does necessary work to setup lamp from a powered-off state
@@ -542,7 +543,7 @@ public:
    *  - if \p updateSavedBrightess is true, save brightness and next time
    *    user navigate brightness, use it as starting point (see tempBrightness)
    *
-   * Note that calls to `utils::brightness::update_brightness` are throttled to once
+   * Note that calls to `logic::brightness::update_brightness` are throttled to once
    * in every 50ms to avoid freezing user brightness navigation.
    *
    * Note that \p skipUpdateBrightness implies \p skipCallbacks implicitly
@@ -556,24 +557,24 @@ public:
 
     if (!skipUpdateBrightness)
     {
-      uint32_t last = utils::brightness::when_last_update_brightness();
+      uint32_t last = logic::brightness::when_last_update_brightness();
       if ((this->now - last) > brightnessDurationMs)
-        utils::brightness::update_brightness(newBrightness, skipCallbacks);
+        logic::brightness::update_brightness(newBrightness, skipCallbacks);
     }
     if (updateSavedBrightess)
-      utils::brightness::update_saved_brightness();
+      logic::brightness::update_saved_brightness();
 
     // USE THE BRIGHTNESS VALUE AFTER THE UPDATE
     // brightness can be limited by the system, so do not use the raw brightness
-    const auto trueNewBrightness = utils::brightness::get_brightness();
-    const auto trueMaxBrightness = utils::brightness::get_max_brightness();
+    const auto trueNewBrightness = logic::brightness::get_brightness();
+    const auto trueMaxBrightness = logic::brightness::get_max_brightness();
 
     if constexpr (flavor == LampTypes::indexable)
     {
       constexpr uint8_t minBrightness = 5;
       using curve_t = utils::curves::LinearCurve<brightness_t, uint8_t>;
-      static curve_t brightnessCurve(
-              {curve_t::point_t {0, minBrightness}, curve_t::point_t {brightness::absoluteMaximumBrightness, 255}});
+      static curve_t brightnessCurve({curve_t::point_t {0, minBrightness},
+                                      curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255}});
 
       strip.setBrightness(brightnessCurve.sample(trueNewBrightness));
     }
@@ -585,9 +586,10 @@ public:
 
       constexpr uint16_t maxOutputVoltage_mV = stripInputVoltage_mV;
       using curve_t = utils::curves::ExponentialCurve<brightness_t, uint16_t>;
-      static curve_t brightnessCurve(curve_t::point_t {0, 9400},
-                                     curve_t::point_t {brightness::absoluteMaximumBrightness, maxOutputVoltage_mV},
-                                     1.0);
+      static curve_t brightnessCurve(
+              curve_t::point_t {0, 9400},
+              curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, maxOutputVoltage_mV},
+              1.0);
 
       physical::outputPower::write_voltage(round(brightnessCurve.sample(trueNewBrightness)));
     }
@@ -596,7 +598,7 @@ public:
   /**
    * \brief Return the actual allowed maximum brightness
    */
-  brightness_t LMBD_INLINE getMaxBrightness() const { return utils::brightness::get_max_brightness(); }
+  brightness_t LMBD_INLINE getMaxBrightness() const { return logic::brightness::get_max_brightness(); }
 
   /**
    * \brief Temporarily set brightness, without affecting brightness navigation
@@ -640,15 +642,15 @@ public:
     if constexpr (flavor == LampTypes::indexable)
     {
       if (readPreviousBrightness)
-        return utils::brightness::get_saved_brightness();
+        return logic::brightness::get_saved_brightness();
       return strip.getBrightness();
     }
     else
     {
       if (readPreviousBrightness)
-        return utils::brightness::get_saved_brightness();
+        return logic::brightness::get_saved_brightness();
       else
-        return utils::brightness::get_brightness();
+        return logic::brightness::get_brightness();
     }
   }
 

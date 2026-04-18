@@ -1,7 +1,5 @@
 #include "alerts.h"
 
-#include "src/system/logic/statistics_handler.h"
-
 #include "src/system/platform/time.h"
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/registers.h"
@@ -10,11 +8,12 @@
 #include "src/system/physical/indicator.h"
 #include "src/system/physical/battery.h"
 
-#include "src/system/power/power_handler.h"
+#include "src/system/logic/brightness_handle.h"
+#include "src/system/logic/power_handler.h"
+#include "src/system/logic/statistics_handler.h"
 
 #include "src/system/utils/utils.h"
 #include "src/system/utils/constants.h"
-#include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/time_utils.h"
 
 #include "src/system/power/charger.h"
@@ -254,15 +253,15 @@ struct Alert_BatteryCritical : public AlertBase
   {
     if (not is_battery_alert_ready())
       return false;
-    if (power::is_in_error_state())
+    if (logic::power::is_in_error_state())
       return false;
-    const auto& chargerState = power::charger::get_state();
+    const auto& chargerState = ::lampda::power::charger::get_state();
     if (not chargerState.areMeasuresOk)
       return false;
 
 // TODO issue #132 remove when the mock components will be running
 #ifndef LMBD_SIMULATION
-    if (not power::balancer::get_status().is_valid())
+    if (not ::lampda::power::balancer::get_status().is_valid())
       return false;
 #endif
 
@@ -278,7 +277,7 @@ struct Alert_BatteryCritical : public AlertBase
     if (manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
       return true;
     // battery low can only be cleared on charging operations
-    const auto& chargerState = power::charger::get_state();
+    const auto& chargerState = ::lampda::power::charger::get_state();
     return chargerState.is_effectivly_charging();
   }
 
@@ -307,16 +306,16 @@ struct Alert_BatteryLow : public AlertBase
   {
     if (not is_battery_alert_ready())
       return false;
-    if (power::is_in_error_state())
+    if (logic::power::is_in_error_state())
       return false;
 
 // TODO issue #132 remove when the mock components will be running
 #ifndef LMBD_SIMULATION
-    if (not power::balancer::get_status().is_valid())
+    if (not ::lampda::power::balancer::get_status().is_valid())
       return false;
 #endif
 
-    const auto& chargerState = power::charger::get_state();
+    const auto& chargerState = ::lampda::power::charger::get_state();
     if (not chargerState.areMeasuresOk)
       return false;
     if (manager.is_raised(Type::BATTERY_MISSING) or manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
@@ -337,7 +336,7 @@ struct Alert_BatteryLow : public AlertBase
       return true;
 
     // battery low can only be cleared on charging operations
-    const auto& chargerState = power::charger::get_state();
+    const auto& chargerState = ::lampda::power::charger::get_state();
     return chargerState.is_effectivly_charging();
   }
 
@@ -345,14 +344,15 @@ struct Alert_BatteryLow : public AlertBase
   void execute() const override
   {
     // limit brightness to quarter of the max value
-    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.25 * brightness::absoluteMaximumBrightness);
+    constexpr brightness_t clampedBrightness =
+            static_cast<brightness_t>(0.25 * ::lampda::brightness::absoluteMaximumBrightness);
 
     // save some battery
     platform::bluetooth::stop_bluetooth_advertising();
 
-    utils::brightness::set_max_brightness(clampedBrightness);
-    utils::brightness::update_brightness(utils::brightness::get_brightness());
-    utils::brightness::update_saved_brightness();
+    logic::brightness::set_max_brightness(clampedBrightness);
+    logic::brightness::update_brightness(logic::brightness::get_brightness());
+    logic::brightness::update_saved_brightness();
   }
 
   bool show() const override
@@ -418,11 +418,12 @@ struct Alert_TempTooHigh : public AlertBase
   void execute() const override
   {
     // limit brightness to half the max value
-    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.5 * brightness::absoluteMaximumBrightness);
+    constexpr brightness_t clampedBrightness =
+            static_cast<brightness_t>(0.5 * ::lampda::brightness::absoluteMaximumBrightness);
 
-    utils::brightness::set_max_brightness(clampedBrightness);
-    utils::brightness::update_brightness(utils::brightness::get_brightness());
-    utils::brightness::update_saved_brightness();
+    logic::brightness::set_max_brightness(clampedBrightness);
+    logic::brightness::update_brightness(logic::brightness::get_brightness());
+    logic::brightness::update_saved_brightness();
   }
 
   bool show() const override { return physical::indicator::blink(300, 300, utils::ColorSpace::DARK_ORANGE); }
@@ -749,7 +750,7 @@ void handle_all(const bool shouldIgnoreAlerts)
   if (isNoAlertsRaised)
   {
     // This should be called on no alerts only, not ignore alerts
-    utils::brightness::set_max_brightness(brightness::absoluteMaximumBrightness);
+    logic::brightness::set_max_brightness(::lampda::brightness::absoluteMaximumBrightness);
   }
 
   //
@@ -768,16 +769,16 @@ void handle_all(const bool shouldIgnoreAlerts)
             utils::ColorSpace::RED.get_rgb().color, utils::ColorSpace::GREEN.get_rgb().color, batteryLevel / 10000.0f));
 
     // display battery level
-    const auto& chargerStatus = power::charger::get_state();
-    if (!power::is_in_output_mode() and chargerStatus.isInOtg)
+    const auto& chargerStatus = ::lampda::power::charger::get_state();
+    if (!logic::power::is_in_output_mode() and chargerStatus.isInOtg)
     {
       physical::indicator::breeze(500, 500, buttonColor);
     }
     else if (chargerStatus.is_charging())
     {
       // power detected with no charge or slow charging raises a special animation
-      if (chargerStatus.status == power::charger::Charger_t::ChargerStatus_t::POWER_DETECTED or
-          chargerStatus.status == power::charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
+      if (chargerStatus.status == ::lampda::power::charger::Charger_t::ChargerStatus_t::POWER_DETECTED or
+          chargerStatus.status == ::lampda::power::charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
       {
         // fast blinking
         physical::indicator::blink(500, 500, buttonColor);
@@ -789,7 +790,7 @@ void handle_all(const bool shouldIgnoreAlerts)
       }
     }
     // output mode, or end of charge : standard display
-    else if (power::is_in_output_mode() or chargerStatus.is_charge_finished())
+    else if (logic::power::is_in_output_mode() or chargerStatus.is_charge_finished())
     {
       // normal output mode
       // chargerStatus.isInOtg should be true

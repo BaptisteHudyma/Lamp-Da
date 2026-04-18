@@ -13,6 +13,7 @@ namespace lampda {
  * \brief Main entry point of the power handling of the board.
  * Responsible the main state of the power handling.
  */
+namespace logic {
 namespace power {
 
 /**
@@ -124,6 +125,7 @@ bool is_in_output_mode();
 bool is_in_otg_mode();
 
 } // namespace power
+} // namespace logic
 } // namespace lampda
 
 #endif

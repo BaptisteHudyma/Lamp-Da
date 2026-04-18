@@ -4,7 +4,12 @@
 - logic: handle high level system logic (Input actions, button presses, main state machine...)
     - alert.h: Handle the diffferent alerts raised by the program
     - behavior.h: controls the lamp behaviors: battery level, charger start and stops, ...
+    - brightness_handle.h: handle the brightness logic
+    - command_line_interface.h: handle serial communication. Location of the CLI capabilities
     - inputs.h: what button actions does what
+    - sunset_timer.h: Logic of the sunset timer
+    - statistics_handler.h: Keep track of the system use statistics
+    - power_handler.h: High level handling of all power and battery related logic
 - physical: stuf related to the physical components: button, bluetooth, IMU, ...
     - LSM6DS3: library to talk to the IMU. Adapted to this architecture
     - battery.h: handle the battery readings, for battery level
@@ -14,31 +19,30 @@
     - indicator.h: visual indicator controler (led in the button)
     - output_power.h: interface of the output voltage driver
     - sound.h: microphone main input point. Compute FFT and auto disable
+    - strip.h: define the strip object (for now, only used in RGB lamp type)
 - platform: Hardware drivers, implement the platform specific code
     - bluetooth.h: bluetooth interfaces
-    - fft.h: implementation of the fft and assocated filtering
     - gpio.h: programmable pins interface
     - i2c.h; i2c interface
     - pdm_handle.h: microphone interface (through PDM)
     - print.h: display & debug interface (through serial connection)
     - register.h: NRF52840 specific register access
+    - threads.h: Tasks and threads interface
     - time.h: time & chrono interface
 - power: Handler for the power components (charger, usb negociation, ...)
-    - drivers: Folder to handler the charging processes with the target ic
     - PDlib: folder that contains the library to talk to the PD negocation ic. Adapted to this architecture
     - balancer.h: handle the battery balancing, and some battery measurments
     - charger.h: main high level logic to use the charger, as well as power switches
+    - charger_ic.h: hardware abstraction layer of the battery charging component
     - power_gate.h: the electrical gates to isolate output & vbus form each others
-    - power_source.h: handle pd negociation, cable detection, ...
 - utils: General functions and constants that everybody needs
-    - brightness_handle.h: handle the brightness passthrough
     - colorspace.h: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !
     - constants.h: global constants used all around the program
-    - coordinates.h: coordinate system for the lamp body (only used in RGB lamp type)
     - curves.h: define custom curve and curve sampling functions
+    - fft.h: implementation of the fft and assocated filtering
     - input_output.h: define the gpio used for the button & indicator
     - print.h: access to the print/debug interface with string composing
-    - serial.h: handle serial communication. Location of the CLI capabilities
     - state_machine.h: generic state machine class, used for all main logic
-    - strip.h: define the strip object (for now, only used in RGB lamp type)
+    - time_utils.h: Useful time handling function
     - utils.h: useful functions to make colors
+    - vector_math.h: Handle 2D 3D and 4D vector math

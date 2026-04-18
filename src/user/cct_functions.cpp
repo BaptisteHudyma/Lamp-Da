@@ -3,10 +3,10 @@
 #include <cstdint>
 
 #include "src/system/logic/behavior.h"
+#include "src/system/logic/brightness_handle.h"
 
 #include "src/system/utils/utils.h"
 #include "src/system/utils/curves.h"
-#include "src/system/utils/brightness_handle.h"
 
 #include "src/system/physical/fileSystem.h"
 #include "src/system/physical/output_power.h"
@@ -45,7 +45,7 @@ void power_on_sequence()
   YellowColorPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
   WhiteColorPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
 
-  brightness_update(utils::brightness::get_brightness());
+  brightness_update(logic::brightness::get_brightness());
 }
 
 void power_off_sequence()
@@ -61,7 +61,7 @@ void power_off_sequence()
 
 void brightness_update(const brightness_t brightness)
 {
-  const auto _maxBrightness = utils::brightness::get_max_brightness();
+  const auto _maxBrightness = logic::brightness::get_max_brightness();
   const brightness_t constraintBrightness = std::min<brightness_t>(brightness, _maxBrightness);
 
   if (constraintBrightness == _maxBrightness)
@@ -72,8 +72,9 @@ void brightness_update(const brightness_t brightness)
 
   // map to a new curve, favorising low levels
   using curve_t = utils::curves::ExponentialCurve<brightness_t, uint8_t>;
-  static curve_t brightnessCurve(
-          curve_t::point_t {0, minBrightness}, curve_t::point_t {brightness::absoluteMaximumBrightness, 255}, 50.0);
+  static curve_t brightnessCurve(curve_t::point_t {0, minBrightness},
+                                 curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255},
+                                 50.0);
 
   currentBrightness = round(brightnessCurve.sample(constraintBrightness));
 
@@ -94,7 +95,7 @@ void read_parameters()
     lastColor = currentColor;
   }
 
-  currentBrightness = utils::brightness::get_brightness();
+  currentBrightness = logic::brightness::get_brightness();
 }
 
 bool button_start_click_default(const uint8_t clicks) { return false; }
@@ -110,7 +111,7 @@ void button_clicked_default(const uint8_t clicks)
   {
     // put luminosity to maximum
     case 2:
-      utils::brightness::update_brightness(utils::brightness::get_max_brightness());
+      logic::brightness::update_brightness(logic::brightness::get_max_brightness());
       break;
 
     default:
