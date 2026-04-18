@@ -381,7 +381,7 @@ uint8_t display_letter(const u_char letter,
                        float scale,
                        const Color& color,
                        bool& isDisplayedOut,
-                       LedStrip& strip)
+                       physical::LedStrip& strip)
 {
   uint8_t xIndex = 0;
   uint8_t yIndex = 0;
@@ -446,7 +446,7 @@ bool display_text(const Color& color,
                   const int16_t startYIndex,
                   float scale,
                   const bool paddEnd,
-                  LedStrip& strip)
+                  physical::LedStrip& strip)
 {
   bool lastLetterDisappeared = true;
   int16_t displayColumn = startXIndex;
@@ -473,7 +473,7 @@ bool display_scrolling_text(const Color& color,
                             const bool reset,
                             const bool paddEnd,
                             const uint8_t fadeOut,
-                            LedStrip& strip)
+                            physical::LedStrip& strip)
 {
   static float xIndex = stripXCoordinates;
   if (reset)

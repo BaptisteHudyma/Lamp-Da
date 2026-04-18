@@ -11,8 +11,12 @@
 #include "src/compile.h"
 #include "src/user/constants.h"
 
-#include "src/system/physical/sound.h"
 #include "src/system/physical/output_power.h"
+#include "src/system/physical/sound.h"
+
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+#include "src/system/physical/strip.h"
+#endif
 
 #include "src/system/platform/time.h"
 
@@ -25,10 +29,6 @@
 #include "src/system/utils/utils.h"
 
 #include "src/system/ext/math8.h"
-
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
-#include "src/system/utils/strip.h"
-#endif
 
 #include "src/modes/include/compile.hpp"
 #include "src/modes/include/colors/utils.hpp"
@@ -142,7 +142,7 @@ private:
   static constexpr float _ledStripWidth_mm = lampda::ledStripWidth_mm;   ///< \private
   static constexpr float _ledStripLength_mm = lampda::ledStripLength_mm; ///< \private
   static constexpr float _ledByMeter = lampda::ledByMeter;               ///< \private
-  LedStrip& strip;                                                       ///< \private
+  physical::LedStrip& strip;                                             ///< \private
 
   /// \private oversized buffer size to account for "overflowing" LEDs
   static constexpr uint16_t _safeBufSize = (_width + 1) * (_height + 1);
@@ -157,7 +157,7 @@ private:
 
 public:
   /// \private Constructor used to wrap strip if needed
-  LMBD_INLINE LampTy(LedStrip& strip) : config {}, strip {strip}, now {0}, tick {0}, raw_frame_count {0} {}
+  LMBD_INLINE LampTy(physical::LedStrip& strip) : config {}, strip {strip}, now {0}, tick {0}, raw_frame_count {0} {}
 #else
 private:
   // (placeholder values to avoid bad fails on misuse)

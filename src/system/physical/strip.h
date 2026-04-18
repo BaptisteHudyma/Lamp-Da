@@ -36,6 +36,8 @@ namespace modes::hardware {
 struct LampTy;
 }
 
+namespace physical {
+
 class LedStrip : public Adafruit_NeoPixel
 {
   using BufferTy = std::array<uint32_t, LED_COUNT>;
@@ -274,6 +276,7 @@ private:
   volatile bool hasSomeChanges;
 };
 
+} // namespace physical
 } // namespace lampda
 
 #endif

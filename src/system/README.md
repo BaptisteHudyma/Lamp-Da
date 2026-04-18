@@ -18,6 +18,7 @@
     - indicator.h: visual indicator controler (led in the button)
     - output_power.h: interface of the output voltage driver
     - sound.h: microphone main input point. Compute FFT and auto disable
+    - strip.h: define the strip object (for now, only used in RGB lamp type)
 - platform: Hardware drivers, implement the platform specific code
     - bluetooth.h: bluetooth interfaces
     - gpio.h: programmable pins interface
@@ -42,7 +43,6 @@
     - input_output.h: define the gpio used for the button & indicator
     - print.h: access to the print/debug interface with string composing
     - state_machine.h: generic state machine class, used for all main logic
-    - strip.h: define the strip object (for now, only used in RGB lamp type)
     - time_utils.h: Useful time handling function
     - utils.h: useful functions to make colors
     - vector_math.h: Handle 2D 3D and 4D vector math
