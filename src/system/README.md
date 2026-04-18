@@ -9,6 +9,7 @@
     - inputs.h: what button actions does what
     - sunset_timer.h: Logic of the sunset timer
     - statistics_handler.h: Keep track of the system use statistics
+    - power_handler.h: High level handling of all power and battery related logic
 - physical: stuf related to the physical components: button, bluetooth, IMU, ...
     - LSM6DS3: library to talk to the IMU. Adapted to this architecture
     - battery.h: handle the battery readings, for battery level
@@ -34,7 +35,6 @@
     - charger.h: main high level logic to use the charger, as well as power switches
     - charger_ic.h: hardware abstraction layer of the battery charging component
     - power_gate.h: the electrical gates to isolate output & vbus form each others
-    - power_handler.h: High level handling of all power and battery related logic
 - utils: General functions and constants that everybody needs
     - colorspace.h: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !
     - constants.h: global constants used all around the program

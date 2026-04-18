@@ -5,6 +5,7 @@
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
+#include "src/system/logic/power_handler.h"
 #include "src/system/logic/sunset_timer.h"
 
 #include "src/system/physical/button.h"
@@ -12,8 +13,6 @@
 
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/time.h"
-
-#include "src/system/power/power_handler.h"
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/time_utils.h"
@@ -123,7 +122,7 @@ void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck)
 #ifdef DEBUG_MODE
         // disable charger and wait 5s to be killed by watchdog
         indicator::set_color(utils::ColorSpace::PINK);
-        power::enable_charge(false);
+        logic::power::enable_charge(false);
         platform::delay_ms(20000); // crash the system
 #endif
         behavior::set_power_off();
@@ -157,7 +156,7 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
       {
         if (buttonHoldDuration > 1000)
         {
-          if (not power::is_in_otg_mode())
+          if (not logic::power::is_in_otg_mode())
             behavior::go_to_external_battery_mode();
         }
         break;

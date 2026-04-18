@@ -71,7 +71,7 @@ bool should_charge()
   if (isVoltageEnoughForBalancer)
   {
     // wait for balancer
-    const auto& balancerStatus = power::balancer::get_status();
+    const auto& balancerStatus = balancer::get_status();
     if (not balancerStatus.is_valid())
       return false;
 

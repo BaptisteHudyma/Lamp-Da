@@ -4,6 +4,7 @@
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/command_line_interface.h"
 #include "src/system/logic/inputs.h"
+#include "src/system/logic/power_handler.h"
 #include "src/system/logic/sunset_timer.h"
 
 #include "src/system/physical/battery.h"
@@ -14,7 +15,6 @@
 #include "src/system/physical/sound.h"
 
 #include "src/system/power/charger.h"
-#include "src/system/power/power_handler.h"
 
 #include "src/system/utils/utils.h"
 
@@ -126,7 +126,7 @@ void main_setup()
   logic::cli::setup();
 
   // setup power components
-  power::init();
+  logic::power::init();
 
   bool shouldAlertUser = false;
   // handle start flags

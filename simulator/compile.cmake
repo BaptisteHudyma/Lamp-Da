@@ -44,7 +44,6 @@ set(SRC_SYSTEM_UTILS
     )
 
 set(SRC_SYSTEM_POWER
-    ${LMBD_ROOT_DIR}/src/system/power/power_handler.cpp
     ${LMBD_ROOT_DIR}/src/system/power/power_gates.cpp
     ${LMBD_ROOT_DIR}/src/system/power/balancer.cpp
     ${LMBD_ROOT_DIR}/src/system/power/PDlib/power_delivery.cpp
@@ -87,6 +86,7 @@ set(SRC_SYSTEM_LOGIC
     ${LMBD_ROOT_DIR}/src/system/logic/brightness_handle.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/command_line_interface.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/inputs.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/power_handler.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/statistics_handler.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/sunset_timer.cpp
 )

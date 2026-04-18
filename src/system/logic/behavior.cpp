@@ -8,10 +8,10 @@
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/inputs.h"
 #include "src/system/logic/statistics_handler.h"
+#include "src/system/logic/power_handler.h"
 #include "src/system/logic/sunset_timer.h"
 
 #include "src/system/power/charger.h"
-#include "src/system/power/power_handler.h"
 #include "src/system/power/power_gates.h"
 
 #include "src/system/physical/battery.h"
@@ -121,7 +121,7 @@ void set_power_off()
   isTargetPoweredOn_s = false;
 }
 
-void go_to_external_battery_mode() { power::go_to_otg_mode(); }
+void go_to_external_battery_mode() { logic::power::go_to_otg_mode(); }
 
 namespace sunset {
 
@@ -133,11 +133,12 @@ void progress_update(const float progress) { user::sunset_timer_update(progress)
 // allow system to be powered if no hardware alert and power is setup
 bool can_system_allowed_to_be_powered()
 {
-  return not(logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_ERROR_STATE) or not power::is_setup());
+  return not(logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_ERROR_STATE) or
+             not logic::power::is_setup());
 }
 
 // return true if vbus is high
-bool is_charger_powered() { return power::charger::is_vbus_powered(); }
+bool is_charger_powered() { return ::lampda::power::charger::is_vbus_powered(); }
 
 bool read_parameters()
 {
@@ -323,7 +324,7 @@ void handle_error_state()
   }
 
   // power states go to error too
-  power::go_to_error();
+  logic::power::go_to_error();
 
   // kick power and user watchdog (prevent reset)
   platform::registers::kick_watchdog(POWER_WATCHDOG_ID);
@@ -339,7 +340,7 @@ void handle_start_logic_state()
   setup_clean_sleep_flag();
 
   // prevent early charging
-  power::enable_charge(false);
+  logic::power::enable_charge(false);
 
   // safety for failure of components at startup
   if (not can_system_allowed_to_be_powered())
@@ -347,12 +348,12 @@ void handle_start_logic_state()
     go_to_error_state("system not allow to power on in start logic state");
     return;
   }
-  if (power::is_in_error_state())
+  if (logic::power::is_in_error_state())
   {
     go_to_error_state("power system in error state in start logic state");
     return;
   }
-  if (not power::is_started())
+  if (not logic::power::is_started())
   {
     // wait until power is started
     platform::delay_ms(1);
@@ -379,7 +380,7 @@ void handle_start_logic_state()
 
 void handle_pre_charger_operation_state()
 {
-  if (power::is_in_error_state())
+  if (logic::power::is_in_error_state())
   {
     go_to_error_state("power system in error state in pre charger operation state");
     return;
@@ -401,14 +402,14 @@ void handle_pre_charger_operation_state()
   }
 
   // force OTG
-  if (not power::is_in_otg_mode())
-    power::go_to_charger_mode();
+  if (not logic::power::is_in_otg_mode())
+    logic::power::go_to_charger_mode();
   mainMachine.set_state(BehaviorStates::CHARGER_OPERATIONS);
 }
 
 void handle_charger_operation_state()
 {
-  if (power::is_in_error_state())
+  if (logic::power::is_in_error_state())
   {
     go_to_error_state("power system in error state in charger operation state");
     return;
@@ -418,7 +419,7 @@ void handle_charger_operation_state()
   if (is_system_should_be_powered())
   {
     // forbid charging
-    power::enable_charge(false);
+    logic::power::enable_charge(false);
     platform::threads::yield_this_thread();
 
     // switch to output mode after the post charge operations
@@ -426,11 +427,12 @@ void handle_charger_operation_state()
     return;
   }
   // wait a bit after going to charger mode, maybe vbus is bouncing around
-  const bool vbusDebounced = power::charger::can_use_vbus_power() or (platform::time_ms() - preChargeCalled) > 5000;
+  const bool vbusDebounced =
+          ::lampda::power::charger::can_use_vbus_power() or (platform::time_ms() - preChargeCalled) > 5000;
   if (vbusDebounced)
   {
     static uint32_t otgDebounce_time = 0;
-    if (power::charger::get_state().isInOtg)
+    if (::lampda::power::charger::get_state().isInOtg)
     {
       otgDebounce_time = platform::time_ms();
     }
@@ -444,7 +446,7 @@ void handle_charger_operation_state()
     else if (not is_charger_powered())
     {
       // forbbid charging
-      power::enable_charge(false);
+      logic::power::enable_charge(false);
       platform::threads::yield_this_thread();
 
       // go to sleep after closing the charger
@@ -454,7 +456,7 @@ void handle_charger_operation_state()
     else
     {
       // enable charge after the debounce
-      power::enable_charge(true);
+      logic::power::enable_charge(true);
     }
   }
   // else: ignore all
@@ -497,7 +499,7 @@ void handle_pre_output_light_state()
 {
   static bool isMessageDisplayed = false;
 
-  if (power::is_in_error_state())
+  if (logic::power::is_in_error_state())
   {
     go_to_error_state("power system in error state in pre output light state");
     return;
@@ -556,7 +558,7 @@ void handle_pre_output_light_state()
   }
   preOutputLightCalled = platform::time_ms();
 
-  power::go_to_output_mode();
+  logic::power::go_to_output_mode();
 
   // update brightness with saved brightness
   logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
@@ -573,14 +575,14 @@ void handle_pre_output_light_state()
 
 void handle_output_light_state()
 {
-  if (power::is_in_error_state())
+  if (logic::power::is_in_error_state())
   {
     go_to_error_state("power system in error state in output light state");
     return;
   }
 
   // shortcut to external battery mode
-  if (power::is_in_otg_mode())
+  if (logic::power::is_in_otg_mode())
   {
     // ignore timing, special case
     isTargetPoweredOn_s = false;
@@ -591,7 +593,7 @@ void handle_output_light_state()
   static bool waitingForPowerGate_messageDisplayed = true;
 
   // wait for power gates (and display message when ready)
-  if (not power::powergates::is_power_gate_enabled() or not power::is_output_mode_ready())
+  if (not ::lampda::power::powergates::is_power_gate_enabled() or not logic::power::is_output_mode_ready())
   {
     if (waitingForPowerGate_messageDisplayed)
     {
@@ -602,8 +604,8 @@ void handle_output_light_state()
     if (platform::time_ms() - lastOutputLightValidTime > 1000)
     {
       go_to_error_state("power gate took too long to switch in output light state " +
-                        std::to_string(power::powergates::is_power_gate_enabled()) +
-                        std::to_string(power::is_output_mode_ready()));
+                        std::to_string(::lampda::power::powergates::is_power_gate_enabled()) +
+                        std::to_string(logic::power::is_output_mode_ready()));
     }
     return;
   }
@@ -617,8 +619,8 @@ void handle_output_light_state()
     // user loop call
     user::loop();
 
-    const auto& chargerState = power::charger::get_state();
-    if (chargerState.status == power::charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)
+    const auto& chargerState = ::lampda::power::charger::get_state();
+    if (chargerState.status == ::lampda::power::charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)
     {
       logic::alerts::manager.raise(logic::alerts::Type::BATTERY_MISSING);
     }
@@ -651,7 +653,7 @@ void handle_shutdown_state()
   platform::threads::yield_this_thread();
 
   // shutdown all external power
-  if (not power::go_to_shutdown())
+  if (not logic::power::go_to_shutdown())
   {
     // TODO: error ?
   }
