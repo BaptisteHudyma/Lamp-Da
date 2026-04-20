@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: src/system/logic/command_line_interface.h File Reference</title>
+<title>Lamp-Da: lampda::logic::cli Namespace Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,47 +70,48 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_94b018f0d16875f781a1777b401eb2e6.html">logic</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacelampda.html">lampda</a></li><li class="navelem"><a class="el" href="namespacelampda_1_1logic.html">logic</a></li><li class="navelem"><a class="el" href="namespacelampda_1_1logic_1_1cli.html">cli</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
-  <div class="headertitle"><div class="title">command_line_interface.h File Reference</div></div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
+  <div class="headertitle"><div class="title">lampda::logic::cli Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>User command line interface logic.  
-<a href="#details">More...</a></p>
-
-<p><a href="command__line__interface_8h_source.html">Go to the source code of this file.</a></p>
+<p>Handle the serial command line interface.  
+<a href="namespacelampda_1_1logic_1_1cli.html#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
-<tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1logic"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic.html">lampda::logic</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1logic"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the main high level logics. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1logic_1_1cli"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1cli.html">lampda::logic::cli</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1logic_1_1cli"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the serial command line interface. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a10303291e05b4146b5e036559b4ddb89"><td class="memItemLeft" align="right" valign="top"><a id="a10303291e05b4146b5e036559b4ddb89" name="a10303291e05b4146b5e036559b4ddb89"></a>
+const char *&#160;</td><td class="memItemRight" valign="bottom"><b>boolToString</b> (bool b)</td></tr>
+<tr class="separator:a10303291e05b4146b5e036559b4ddb89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad77ffff0075a2bd73ccee13b307b0e86"><td class="memItemLeft" align="right" valign="top"><a id="ad77ffff0075a2bd73ccee13b307b0e86" name="ad77ffff0075a2bd73ccee13b307b0e86"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>handleCommand</b> (const platform::Inputs::Command &amp;command)</td></tr>
+<tr class="separator:ad77ffff0075a2bd73ccee13b307b0e86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb6dc722d1073625d75777ddeafae8ea"><td class="memItemLeft" align="right" valign="top"><a id="acb6dc722d1073625d75777ddeafae8ea" name="acb6dc722d1073625d75777ddeafae8ea"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::cli::setup</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setup</b> ()</td></tr>
 <tr class="memdesc:acb6dc722d1073625d75777ddeafae8ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call once on system start. <br /></td></tr>
 <tr class="separator:acb6dc722d1073625d75777ddeafae8ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa39bb8398d46daa043c64a27b9b2ed5"><td class="memItemLeft" align="right" valign="top"><a id="aaa39bb8398d46daa043c64a27b9b2ed5" name="aaa39bb8398d46daa043c64a27b9b2ed5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::cli::handleSerialEvents</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>handleSerialEvents</b> ()</td></tr>
 <tr class="memdesc:aaa39bb8398d46daa043c64a27b9b2ed5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the user command line inputs. <br /></td></tr>
 <tr class="separator:aaa39bb8398d46daa043c64a27b9b2ed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ab3e3fb3726982030e19202e621a292e2"><td class="memItemLeft" align="right" valign="top"><a id="ab3e3fb3726982030e19202e621a292e2" name="ab3e3fb3726982030e19202e621a292e2"></a>
+constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxReadLinePerLoop</b> = 5</td></tr>
+<tr class="separator:ab3e3fb3726982030e19202e621a292e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac85cc69d9d1b20ace6219e7076d330a3"><td class="memItemLeft" align="right" valign="top"><a id="ac85cc69d9d1b20ace6219e7076d330a3" name="ac85cc69d9d1b20ace6219e7076d330a3"></a>
+constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxLineLenght</b> = 200</td></tr>
+<tr class="separator:ac85cc69d9d1b20ace6219e7076d330a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>User command line interface logic. </p>
+<div class="textblock"><p>Handle the serial command line interface. </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

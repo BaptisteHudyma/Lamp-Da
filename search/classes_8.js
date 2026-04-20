@@ -3,7 +3,7 @@ var searchData=
   ['ibasereadregister_0',['IBaseReadRegister',['../structbq25713_1_1BQ25713_1_1IBaseReadRegister.html',1,'bq25713::BQ25713::IBaseReadRegister'],['../structbq76905_1_1BQ76905_1_1IBaseReadRegister.html',1,'bq76905::BQ76905::IBaseReadRegister']]],
   ['ibaseregister_1',['IBaseRegister',['../structbq25713_1_1BQ25713_1_1IBaseRegister.html',1,'bq25713::BQ25713']]],
   ['idoubleregister_2',['IDoubleRegister',['../structbq25713_1_1BQ25713_1_1IDoubleRegister.html',1,'bq25713::BQ25713']]],
-  ['ifont_3',['IFont',['../structtext_1_1IFont.html',1,'text']]],
+  ['ifont_3',['IFont',['../structlampda_1_1modes_1_1draw_1_1text_1_1____private_1_1IFont.html',1,'lampda::modes::draw::text::__private']]],
   ['iin_5fdpmt_4',['IIN_DPMt',['../structbq25713_1_1BQ25713_1_1Regt_1_1IIN__DPMt.html',1,'bq25713::BQ25713::Regt']]],
   ['iin_5fhostt_5',['IIN_HOSTt',['../structbq25713_1_1BQ25713_1_1Regt_1_1IIN__HOSTt.html',1,'bq25713::BQ25713::Regt']]],
   ['imueventty_6',['ImuEventTy',['../structlampda_1_1modes_1_1imu_1_1ImuEventTy.html',1,'lampda::modes::imu']]],

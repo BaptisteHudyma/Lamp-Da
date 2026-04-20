@@ -5,7 +5,7 @@ var searchData=
   ['battery_2',['Battery',['../structlampda_1_1power_1_1charger_1_1drivers_1_1Battery.html',1,'lampda::power::charger::drivers']]],
   ['batterystatus_5ft_3',['BatteryStatus_t',['../structlampda_1_1power_1_1charger_1_1BatteryStatus__t.html',1,'lampda::power::charger']]],
   ['batterystatust_4',['BatteryStatust',['../structbq76905_1_1BQ76905_1_1Regt_1_1BatteryStatust.html',1,'bq76905::BQ76905::Regt']]],
-  ['bigfont_5',['BigFont',['../structtext_1_1BigFont.html',1,'text']]],
+  ['bigfont_5',['BigFont',['../structlampda_1_1modes_1_1draw_1_1text_1_1____private_1_1BigFont.html',1,'lampda::modes::draw::text::__private']]],
   ['bq25713_6',['BQ25713',['../classbq25713_1_1BQ25713.html',1,'bq25713']]],
   ['bq25713mock_7',['BQ25713Mock',['../classsimulator_1_1BQ25713Mock.html',1,'simulator']]],
   ['bq76905_8',['BQ76905',['../classbq76905_1_1BQ76905.html',1,'bq76905']]],

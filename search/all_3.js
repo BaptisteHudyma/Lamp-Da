@@ -40,7 +40,7 @@ var searchData=
   ['beforefavoritemodeindex_37',['beforeFavoriteModeIndex',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#ad28ea8417d3a7171a346508512d178d4',1,'lampda::modes::ModeManagerTy::StateTy']]],
   ['behavior_2eh_38',['behavior.h',['../behavior_8h.html',1,'']]],
   ['beige_39',['Beige',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba41ee976b3cc958c4bf9329f9f934d13c',1,'lampda::modes::colors']]],
-  ['bigfont_40',['BigFont',['../structtext_1_1BigFont.html',1,'text']]],
+  ['bigfont_40',['BigFont',['../structlampda_1_1modes_1_1draw_1_1text_1_1____private_1_1BigFont.html',1,'lampda::modes::draw::text::__private']]],
   ['bigmotion_41',['BigMotion',['../classlampda_1_1physical_1_1imu_1_1Wrapper.html#ae05b36ff8ad1f0f772502e712827f8d7a3ab84073bcc7600125bee41b6658c39f',1,'lampda::physical::imu::Wrapper::BigMotion()'],['../namespacelampda_1_1physical_1_1imu.html#a014f8201ff74e63bb213fe2aeca900b8a3ab84073bcc7600125bee41b6658c39f',1,'lampda::physical::imu::BigMotion()']]],
   ['bisque_42',['Bisque',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bafda09e2dae4601efc9a4e45b4bf55565',1,'lampda::modes::colors']]],
   ['bitsperpixel_43',['bitsPerPixel',['../structHeinekenImageTy.html#ad873cccd81ed4a21061508b06096a140',1,'HeinekenImageTy::bitsPerPixel()'],['../structHuit__sixImageTy.html#a8765ad629d3ef794992eaa32e8e47a09',1,'Huit_sixImageTy::bitsPerPixel()'],['../structViolonsaoulsImageTy.html#ac4645035ad3450d97864afc48524f5c1',1,'ViolonsaoulsImageTy::bitsPerPixel()']]],

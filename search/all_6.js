@@ -7,7 +7,7 @@ var searchData=
   ['enable_4',['enable',['../namespacelampda_1_1power_1_1charger_1_1drivers.html#aacc7b8fe7563648ecd47a781ddcf2499',1,'lampda::power::charger::drivers::enable()'],['../namespacelampda_1_1physical_1_1microphone.html#a9f8a2b1d84c733a66be91cbe81126dc5',1,'lampda::physical::microphone::enable()']]],
   ['enable_5fbalancing_5',['enable_balancing',['../namespacelampda_1_1power_1_1balancer.html#a96a8e1a3f90d106c886bafd2599f2188',1,'lampda::power::balancer']]],
   ['enable_5fbig_5fmotion_5fdetection_6',['enable_big_motion_detection',['../classlampda_1_1physical_1_1imu_1_1Wrapper.html#a6d5fe3d5f13512957ff9c5a49d8edda6',1,'lampda::physical::imu::Wrapper']]],
-  ['enable_5fcharge_7',['enable_charge',['../namespacelampda_1_1power_1_1charger_1_1drivers.html#afa2d1a696ead624885f1c4c9bfad243f',1,'lampda::power::charger::drivers']]],
+  ['enable_5fcharge_7',['enable_charge',['../namespacelampda_1_1logic_1_1power.html#a13a5015a6ec680d54aacf63ea0dfc492',1,'lampda::logic::power::enable_charge()'],['../namespacelampda_1_1power_1_1charger_1_1drivers.html#afa2d1a696ead624885f1c4c9bfad243f',1,'lampda::power::charger::drivers::enable_charge()']]],
   ['enable_5fevent_5fdetection_8',['enable_event_detection',['../namespacelampda_1_1physical_1_1imu.html#ac9444b9bd6e27571ec9c5e67780ec37e',1,'lampda::physical::imu']]],
   ['enable_5ffree_5ffall_5fdetection_9',['enable_free_fall_detection',['../classlampda_1_1physical_1_1imu_1_1Wrapper.html#a3be1e3b049338e5979459fc5d830d68b',1,'lampda::physical::imu::Wrapper']]],
   ['enable_5finterrupt1_10',['enable_interrupt1',['../classlampda_1_1physical_1_1imu_1_1Wrapper.html#a9b9bad2eb40e7113e4a5ff525d099b98',1,'lampda::physical::imu::Wrapper']]],

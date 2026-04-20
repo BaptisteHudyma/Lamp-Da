@@ -179,8 +179,8 @@ $(function() {
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>      ctx.state.last_tick = ctx.lamp.tick;</div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    }</div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    uint32_t w = lampda::min&lt;uint32_t&gt;(ctx.lamp.maxWidth + 1, imWidth);</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    uint32_t h = lampda::min&lt;uint32_t&gt;(ctx.lamp.maxHeight, imHeight);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    uint32_t w = min&lt;uint32_t&gt;(ctx.lamp.maxWidth + 1, imWidth);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    uint32_t h = min&lt;uint32_t&gt;(ctx.lamp.maxHeight, imHeight);</div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordflow">if</span> (ImageType::colormapSize == 0)</div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>      <span class="keywordflow">for</span> (uint32_t y = 0; y &lt; h; ++y)</div>
 <div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keywordflow">for</span> (uint32_t x = 0; x &lt; w; ++x)</div>
@@ -340,21 +340,21 @@ $(function() {
 <div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <span class="keywordflow">for</span> (uint32_t x = 0; x &lt; nx; ++x)</div>
 <div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>      levels[x] += diffLevel;</div>
 <div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span> </div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    vec2d acc(accel.x, accel.y);</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    <a class="code hl_struct" href="structlampda_1_1utils_1_1vec2d.html">utils::vec2d</a> acc(accel.x, accel.y);</div>
 <div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="comment">// threshold because there is a drift in the accel</span></div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <span class="keywordflow">if</span> (acc.x * acc.x + acc.y * acc.y &lt; 4.f)</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>      acc = vec2d(0.f, 0.f);</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    acc.x *= ctx.state.ampl;</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    acc.y *= ctx.state.ampl;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <span class="keywordflow">if</span> (acc.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad16e6423ebb39f51b5b0260bb977fba6">x</a> * acc.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad16e6423ebb39f51b5b0260bb977fba6">x</a> + acc.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad968f0ecd522a07d86e5127634da7e30">y</a> * acc.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad968f0ecd522a07d86e5127634da7e30">y</a> &lt; 4.f)</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>      acc = <a class="code hl_struct" href="structlampda_1_1utils_1_1vec2d.html">utils::vec2d</a>(0.f, 0.f);</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    acc.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad16e6423ebb39f51b5b0260bb977fba6">x</a> *= ctx.state.ampl;</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    acc.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad968f0ecd522a07d86e5127634da7e30">y</a> *= ctx.state.ampl;</div>
 <div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    <span class="keywordtype">float</span> accmax = ctx.state.accmax;</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    <span class="keywordflow">if</span> (acc.x &lt; -accmax)</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>      acc.x = -accmax;</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (acc.x &gt; accmax)</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>      acc.x = accmax;</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    <span class="keywordflow">if</span> (acc.y &lt; -accmax)</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>      acc.y = -accmax;</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (acc.y &gt; accmax)</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>      acc.y = accmax;</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    <span class="keywordflow">if</span> (acc.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad16e6423ebb39f51b5b0260bb977fba6">x</a> &lt; -accmax)</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>      acc.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad16e6423ebb39f51b5b0260bb977fba6">x</a> = -accmax;</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (acc.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad16e6423ebb39f51b5b0260bb977fba6">x</a> &gt; accmax)</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>      acc.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad16e6423ebb39f51b5b0260bb977fba6">x</a> = accmax;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    <span class="keywordflow">if</span> (acc.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad968f0ecd522a07d86e5127634da7e30">y</a> &lt; -accmax)</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>      acc.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad968f0ecd522a07d86e5127634da7e30">y</a> = -accmax;</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (acc.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad968f0ecd522a07d86e5127634da7e30">y</a> &gt; accmax)</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>      acc.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad968f0ecd522a07d86e5127634da7e30">y</a> = accmax;</div>
 <div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span> </div>
 <div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    std::vector&lt;float&gt; ospeeds = speeds;</div>
 <div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span> </div>
@@ -367,17 +367,17 @@ $(function() {
 <div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>      <span class="comment">// angular coords of the pixel</span></div>
 <div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>      <span class="keywordtype">float</span> angle = float(x) / nx * M_PI * 2;</div>
 <div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>      <span class="comment">// normal and tangent to the lamp</span></div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>      vec2d norm(cos_t(angle), sin_t(angle));</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>      vec2d tan(-norm.y, norm.x);</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>      <a class="code hl_struct" href="structlampda_1_1utils_1_1vec2d.html">utils::vec2d</a> norm(cos_t(angle), sin_t(angle));</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>      <a class="code hl_struct" href="structlampda_1_1utils_1_1vec2d.html">utils::vec2d</a> tan(-norm.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad968f0ecd522a07d86e5127634da7e30">y</a>, norm.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad16e6423ebb39f51b5b0260bb977fba6">x</a>);</div>
 <div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>      <span class="comment">// we consider the accel will push pixels away from the wall</span></div>
 <div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>      <span class="comment">// in the direction opposite to the force (if we consider the lamp</span></div>
 <div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>      <span class="comment">// as the reference coords</span></div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>      <span class="keywordtype">float</span> acc0 = norm.dot(acc);</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>      <span class="keywordtype">float</span> acc0 = norm.<a class="code hl_function" href="structlampda_1_1utils_1_1vec2d.html#a34f394c387b3df7eeb0a14eee7375597">dot</a>(acc);</div>
 <div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>      <span class="keywordflow">if</span> (acc0 &lt; 0.f) <span class="comment">// force and normal in the same direction:</span></div>
 <div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        acc0 = 0.f;   <span class="comment">// we cannot move because the lamp wall blocks it</span></div>
 <div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span> </div>
 <div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>      <span class="keywordtype">float</span> sign = 1.f;</div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>      <span class="keywordflow">if</span> (acc.dot(tan) &gt; 0) <span class="comment">// direction of the propagation</span></div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>      <span class="keywordflow">if</span> (acc.<a class="code hl_function" href="structlampda_1_1utils_1_1vec2d.html#a34f394c387b3df7eeb0a14eee7375597">dot</a>(tan) &gt; 0) <span class="comment">// direction of the propagation</span></div>
 <div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        sign = -1.f;</div>
 <div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>      speeds[x] -= levels[x] * acc0 * sign;</div>
 <div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>      ospeeds[x] -= levels[x] * acc0 * sign;</div>
@@ -427,9 +427,9 @@ $(function() {
 <div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>      <span class="keywordtype">float</span> ld = levels[x1] - levels[x];</div>
 <div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>      <span class="keywordtype">float</span> diff = 0;</div>
 <div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>      <span class="keywordflow">if</span> (ld &gt; 0)</div>
-<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        diff = lampda::min&lt;float&gt;(ld, ctx.state.fall_ampl);</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        diff = min&lt;float&gt;(ld, ctx.state.fall_ampl);</div>
 <div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ld &lt; 0)</div>
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        diff = lampda::max&lt;float&gt;(ld, -ctx.state.fall_ampl);</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        diff = max&lt;float&gt;(ld, -ctx.state.fall_ampl);</div>
 <div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>      <span class="keywordflow">if</span> (diff &gt; 0 &amp;&amp; diff &gt; ld * ctx.state.bounce_ratio)</div>
 <div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        diff = ld * ctx.state.bounce_ratio;</div>
 <div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (diff &lt; 0 &amp;&amp; diff &lt; ld * ctx.state.bounce_ratio)</div>
@@ -609,6 +609,10 @@ $(function() {
 <div class="ttc" id="astructlampda_1_1modes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode_1_1StateTy_html_aafa9cd97838f843bc60e5075d58917c2"><div class="ttname"><a href="structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode_1_1StateTy.html#aafa9cd97838f843bc60e5075d58917c2">lampda::modes::custom::nudz::NudzViolonsaoulsMode::StateTy::xdecal</a></div><div class="ttdeci">uint32_t xdecal</div><div class="ttdoc">start x coordinates</div><div class="ttdef"><b>Definition:</b> nudz_scrollimage.hpp:163</div></div>
 <div class="ttc" id="astructlampda_1_1modes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode_html"><div class="ttname"><a href="structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode.html">lampda::modes::custom::nudz::NudzViolonsaoulsMode</a></div><div class="ttdoc">Display an image &quot;Violon saoul&quot; scrolling around. User ramp changes scroll speed and direction.</div><div class="ttdef"><b>Definition:</b> nudz_scrollimage.hpp:157</div></div>
 <div class="ttc" id="astructlampda_1_1modes_1_1imu_1_1ImuEventTy_html"><div class="ttname"><a href="structlampda_1_1modes_1_1imu_1_1ImuEventTy.html">lampda::modes::imu::ImuEventTy</a></div><div class="ttdef"><b>Definition:</b> utils.hpp:19</div></div>
+<div class="ttc" id="astructlampda_1_1utils_1_1vec2d_html"><div class="ttname"><a href="structlampda_1_1utils_1_1vec2d.html">lampda::utils::vec2d</a></div><div class="ttdoc">2d vector in any space</div><div class="ttdef"><b>Definition:</b> vector_math.h:15</div></div>
+<div class="ttc" id="astructlampda_1_1utils_1_1vec2d_html_a34f394c387b3df7eeb0a14eee7375597"><div class="ttname"><a href="structlampda_1_1utils_1_1vec2d.html#a34f394c387b3df7eeb0a14eee7375597">lampda::utils::vec2d::dot</a></div><div class="ttdeci">float dot(const vec2d &amp;other) const</div><div class="ttdoc">Dot product in 2D, representing the arcos of the angle between this vector and another.</div><div class="ttdef"><b>Definition:</b> vector_math.h:27</div></div>
+<div class="ttc" id="astructlampda_1_1utils_1_1vec2d_html_ad16e6423ebb39f51b5b0260bb977fba6"><div class="ttname"><a href="structlampda_1_1utils_1_1vec2d.html#ad16e6423ebb39f51b5b0260bb977fba6">lampda::utils::vec2d::x</a></div><div class="ttdeci">float x</div><div class="ttdoc">x coordinate in 2D</div><div class="ttdef"><b>Definition:</b> vector_math.h:16</div></div>
+<div class="ttc" id="astructlampda_1_1utils_1_1vec2d_html_ad968f0ecd522a07d86e5127634da7e30"><div class="ttname"><a href="structlampda_1_1utils_1_1vec2d.html#ad968f0ecd522a07d86e5127634da7e30">lampda::utils::vec2d::y</a></div><div class="ttdeci">float y</div><div class="ttdoc">y coordinate in 2D</div><div class="ttdef"><b>Definition:</b> vector_math.h:17</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

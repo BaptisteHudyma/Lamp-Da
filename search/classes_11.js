@@ -13,7 +13,7 @@ var searchData=
   ['sinkusableparameters_10',['SinkUsableParameters',['../structSinkUsableParameters.html',1,'']]],
   ['sleepdisablet_11',['SleepDisablet',['../structbq76905_1_1BQ76905_1_1Regt_1_1SleepDisablet.html',1,'bq76905::BQ76905::Regt']]],
   ['sleepenablet_12',['SleepEnablet',['../structbq76905_1_1BQ76905_1_1Regt_1_1SleepEnablet.html',1,'bq76905::BQ76905::Regt']]],
-  ['smallfont_13',['SmallFont',['../structtext_1_1SmallFont.html',1,'text']]],
+  ['smallfont_13',['SmallFont',['../structlampda_1_1modes_1_1draw_1_1text_1_1____private_1_1SmallFont.html',1,'lampda::modes::draw::text::__private']]],
   ['soundeventty_14',['SoundEventTy',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html',1,'lampda::modes::audio']]],
   ['soundstruct_15',['SoundStruct',['../structlampda_1_1physical_1_1microphone_1_1SoundStruct.html',1,'lampda::physical::microphone']]],
   ['sourcepowerparameters_16',['SourcePowerParameters',['../structSourcePowerParameters.html',1,'']]],
