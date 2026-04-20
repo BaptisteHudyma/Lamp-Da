@@ -4,6 +4,7 @@
 
 namespace lampda {
 namespace logic {
+/// Handle the serial command line interface
 namespace cli {
 
 /// Call once on system start

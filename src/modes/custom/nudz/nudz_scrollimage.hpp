@@ -101,8 +101,8 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
       ctx.state.last_tick = ctx.lamp.tick;
     }
 
-    uint32_t w = lampda::min<uint32_t>(ctx.lamp.maxWidth + 1, imWidth);
-    uint32_t h = lampda::min<uint32_t>(ctx.lamp.maxHeight, imHeight);
+    uint32_t w = min<uint32_t>(ctx.lamp.maxWidth + 1, imWidth);
+    uint32_t h = min<uint32_t>(ctx.lamp.maxHeight, imHeight);
     if (ImageType::colormapSize == 0)
       for (uint32_t y = 0; y < h; ++y)
         for (uint32_t x = 0; x < w; ++x)
@@ -274,10 +274,10 @@ struct NudzBeerGlassMode : public BasicMode
     for (uint32_t x = 0; x < nx; ++x)
       levels[x] += diffLevel;
 
-    vec2d acc(accel.x, accel.y);
+    utils::vec2d acc(accel.x, accel.y);
     // threshold because there is a drift in the accel
     if (acc.x * acc.x + acc.y * acc.y < 4.f)
-      acc = vec2d(0.f, 0.f);
+      acc = utils::vec2d(0.f, 0.f);
     acc.x *= ctx.state.ampl;
     acc.y *= ctx.state.ampl;
     float accmax = ctx.state.accmax;
@@ -301,8 +301,8 @@ struct NudzBeerGlassMode : public BasicMode
       // angular coords of the pixel
       float angle = float(x) / nx * M_PI * 2;
       // normal and tangent to the lamp
-      vec2d norm(cos_t(angle), sin_t(angle));
-      vec2d tan(-norm.y, norm.x);
+      utils::vec2d norm(cos_t(angle), sin_t(angle));
+      utils::vec2d tan(-norm.y, norm.x);
       // we consider the accel will push pixels away from the wall
       // in the direction opposite to the force (if we consider the lamp
       // as the reference coords
@@ -361,9 +361,9 @@ struct NudzBeerGlassMode : public BasicMode
       float ld = levels[x1] - levels[x];
       float diff = 0;
       if (ld > 0)
-        diff = lampda::min<float>(ld, ctx.state.fall_ampl);
+        diff = min<float>(ld, ctx.state.fall_ampl);
       else if (ld < 0)
-        diff = lampda::max<float>(ld, -ctx.state.fall_ampl);
+        diff = max<float>(ld, -ctx.state.fall_ampl);
       if (diff > 0 && diff > ld * ctx.state.bounce_ratio)
         diff = ld * ctx.state.bounce_ratio;
       else if (diff < 0 && diff < ld * ctx.state.bounce_ratio)
