@@ -75,13 +75,13 @@ $(function() {
 <div class="contents">
 <div class="textblock"><p>When you receive the integrated circuit, the NRF52840 microcontroler will not have a bootloader.</p>
 <p>I used a custom bootloader, <a href="https://github.com/adafruit/Adafruit_nRF52_Bootloader">derived from adafruit</a>, that allow the user to program the microcontroler via USB, and update the bootloader itself.</p>
-<h1><a class="anchor" id="autotoc_md31"></a>
+<h1><a class="anchor" id="autotoc_md34"></a>
 Bootloader update</h1>
 <p>When pluging the usb cable, is the board is detected, a bootloader is already flashed.</p>
 <p>It can be updated by copying the <b>update-lampda_nrf52840_bootloader</b> file into the board. The board should appears as a usb drive, with the name <b>LMBDBOOT</b>.</p>
 <p>If the board do not appear on the usb board (but is detected on the peripherals), it may be running a program. The program as a Command Line Interface, that can put the board in update mode. Just connect to the board with a serial connection (command <code>make monitor</code> from this repo will open the connection) and send the command <code>DFU</code>.</p>
 <p>If the board is not detected after being pluged in, and do not appear as a peripheral, and cant be connected with serial, the board may be missing a bootloader. Follow the next section.</p>
-<h1><a class="anchor" id="autotoc_md32"></a>
+<h1><a class="anchor" id="autotoc_md35"></a>
 First time flash</h1>
 <p>To flash the bootloader for the first time, you must use a computer with GPIOs (I'm using a raspberry Pi) with openocd, or a JTAG connector.</p>
 <p>You need to get the <b>lampda_nrf52840_bootloader</b>, next to this file.</p>

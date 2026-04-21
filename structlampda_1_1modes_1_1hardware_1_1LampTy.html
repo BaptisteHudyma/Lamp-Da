@@ -175,6 +175,10 @@ uint32_t LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>getPi
 <tr class="memitem:a55d2dc49a1c34e92ed256ca84965da5f"><td class="memTemplItemLeft" align="right" valign="top">BufferTy &amp;LMBD_INLINE&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a55d2dc49a1c34e92ed256ca84965da5f">getTempBuffer</a> ()</td></tr>
 <tr class="memdesc:a55d2dc49a1c34e92ed256ca84965da5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a reference to the <code>bufIdx</code> temporary buffer.  <br /></td></tr>
 <tr class="separator:a55d2dc49a1c34e92ed256ca84965da5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5217a4fb0f965aae485e42cd9648b6e4"><td class="memTemplParams" colspan="2">template&lt;uint8_t dstBufIdx, uint8_t srcBufIdx&gt; </td></tr>
+<tr class="memitem:a5217a4fb0f965aae485e42cd9648b6e4"><td class="memTemplItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a5217a4fb0f965aae485e42cd9648b6e4">copyBuffer</a> ()</td></tr>
+<tr class="memdesc:a5217a4fb0f965aae485e42cd9648b6e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy a source buffer at <code>srcBufIdx</code> to another buffer at <code>dstBufIdx</code>.  <br /></td></tr>
+<tr class="separator:a5217a4fb0f965aae485e42cd9648b6e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7cca217a36506b941f6de967da51ffe9"><td class="memTemplParams" colspan="2">template&lt;uint8_t bufIdx = 0, typename T &gt; </td></tr>
 <tr class="memitem:a7cca217a36506b941f6de967da51ffe9"><td class="memTemplItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a7cca217a36506b941f6de967da51ffe9">fillTempBuffer</a> (const T &amp;value)</td></tr>
 <tr class="memdesc:a7cca217a36506b941f6de967da51ffe9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill temporary buffer <code>bufIdx</code> with given <code>value</code>.  <br /></td></tr>
@@ -409,6 +413,36 @@ static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lam
 <p>Or else, for interoperability:</p><ul>
 <li>does nothing </li>
 </ul>
+
+</div>
+</div>
+<a id="a5217a4fb0f965aae485e42cd9648b6e4" name="a5217a4fb0f965aae485e42cd9648b6e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5217a4fb0f965aae485e42cd9648b6e4">&#9670;&#160;</a></span>copyBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;uint8_t dstBufIdx, uint8_t srcBufIdx&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LMBD_INLINE lampda::modes::hardware::LampTy::copyBuffer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Copy a source buffer at <code>srcBufIdx</code> to another buffer at <code>dstBufIdx</code>. </p>
+<p>These buffers can be used for computations by the active mode, but their content may be erased if the mode is reset or if used elsewhere in code. </p>
 
 </div>
 </div>

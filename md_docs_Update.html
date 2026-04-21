@@ -84,19 +84,19 @@ $(function() {
 <li>The system reboots with the updated firmware</li>
 </ul>
 <p>Note : DFU stands for Device Firware Update</p>
-<h1><a class="anchor" id="autotoc_md23"></a>
+<h1><a class="anchor" id="autotoc_md26"></a>
 Using a terminal</h1>
 <p>In a first terminal : Listen to output on the serial port <code>cat -v &lt; /dev/ttyACM0</code></p>
 <p>On another terminal : Open the serial port <code>sudo chmod o+rw /dev/ttyACM0</code> Send the "t" command : &lsquo;echo -e 't\0&rsquo; &gt; /dev/ttyACM0`</p>
 <p>You should see the type of the lamp on the first terminal.</p>
 <p>Then send the "DFU" command : &lsquo;echo -e 'DFU\0&rsquo; &gt; /dev/ttyACM0` to make the system enter the DFU mode.</p>
-<h1><a class="anchor" id="autotoc_md24"></a>
+<h1><a class="anchor" id="autotoc_md27"></a>
 Using the Arduino IDE</h1>
 <p>In <em>Tools</em> tab, select the port where the system is connected. It will often be "/dev/ttyACM0" in linux.</p>
 <p>Open the <em>Serial Monitor</em>, in the <em>Tools</em> tab. Set the speed to 115200 bauds.</p>
 <p>You can now send commands and receive answers from the system CLI.</p>
 <p>On Linux, you have to check that the Arduino IDE can access the serial port.</p>
-<h1><a class="anchor" id="autotoc_md25"></a>
+<h1><a class="anchor" id="autotoc_md28"></a>
 Using the repository</h1>
 <p>This repository has some built in tools to debug and update the system. The command <code>make monitor</code> will open a serial monitor to the system on /dev/ttyACM0.</p>
 <p>When using the <code>make upload-</code> commands, the upload of nexw code is automatic if the compilation succeeds. </p>

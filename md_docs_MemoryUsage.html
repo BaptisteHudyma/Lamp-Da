@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: MemoryUsage</title>
+<title>Lamp-Da: Memory usage</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,11 +70,16 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">MemoryUsage </div></div>
+  <div class="headertitle"><div class="title">Memory usage </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><code>python tools/stackAnalyser.py _build/simulator/indexable-simulator _build/simulator/CMakeFiles/simulator_indexable.dir/path_to_your_project/LampColorControler/src &gt; stack.txt</code></p>
-<p><code>python tools/stackAnalyser.py _build/artifacts/lampColorControler.elf _build/objs/sketch/src &gt; stack.txt</code> </p>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md10"></a>
+Flash usage</h1>
+<p>Statically checked after compilation, displayed as a percentage of the total available flash.</p>
+<h2><a class="anchor" id="autotoc_md11"></a>
+Stack and RAM usage</h2>
+<p>Compile the project, than run : <code>python tools/ramAnalyser.py --elf _build/objs/LampColorControler.ino.elf --sudir ./_build/objs/</code></p>
+<p>This program will fail on a stack budget overflow. It shows if the program uses dynamic memory allocations, and the path of most stack use. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

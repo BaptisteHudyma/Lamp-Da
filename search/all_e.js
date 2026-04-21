@@ -50,7 +50,7 @@ var searchData=
   ['mediumspringgreen_47',['MediumSpringGreen',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baf4a3722bd3191ade956686b4c1c1a7c9',1,'lampda::modes::colors']]],
   ['mediumturquoise_48',['MediumTurquoise',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baabeed842e644ebdd31f5cac183de2a0c',1,'lampda::modes::colors']]],
   ['mediumvioletred_49',['MediumVioletRed',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba3bacc39706e6dcb8b3f2ed53067f6929',1,'lampda::modes::colors']]],
-  ['memoryusage_50',['MemoryUsage',['../md_docs_MemoryUsage.html',1,'']]],
+  ['memory_20usage_50',['Memory usage',['../md_docs_MemoryUsage.html',1,'']]],
   ['mercuryvapor_51',['MercuryVapor',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5abbfdae3aaafdf19088c7cec704d9193f',1,'lampda::modes::colors']]],
   ['metalhalide_52',['MetalHalide',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a4afb7bcd05f3ec6b90ce86b18038c23b',1,'lampda::modes::colors']]],
   ['microphoneconfig_53',['MicrophoneConfig',['../structlampda_1_1modes_1_1audio_1_1MicrophoneConfig.html',1,'lampda::modes::audio']]],

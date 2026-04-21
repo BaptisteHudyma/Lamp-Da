@@ -78,7 +78,7 @@ $(function() {
 <div class="line">cd LampColorControler</div>
 <div class="line">git submodule update --init</div>
 </div><!-- fragment --><p>This project uses the Arduino SDK, you will need to install several dependencies before being able to build the project and upload your firmware.</p>
-<h1><a class="anchor" id="autotoc_md13"></a>
+<h1><a class="anchor" id="autotoc_md16"></a>
 Useful Linux packages</h1>
 <p>For reference, if you are on a <code>Debian/Linux (debian12,bookworm)</code> system, here is a list of packages that you may need to use this project:</p>
 <ul>
@@ -91,7 +91,7 @@ Useful Linux packages</h1>
 </li>
 </ul>
 <p>Depending on your setup (Ubuntu, WSL, Fedora, Archlinux, …) you may need to install other packages, such as <code>arduino-cli</code> or <code>arduino-ide</code> as described below.</p>
-<h1><a class="anchor" id="autotoc_md14"></a>
+<h1><a class="anchor" id="autotoc_md17"></a>
 Arduino Setup</h1>
 <p>You will need to:</p>
 <ul>
@@ -111,7 +111,7 @@ Arduino Setup</h1>
 <div class="fragment"><div class="line"># download+install all dependencies (~1.4Go) in $SRC_DIR/_build/arduino-cli/</div>
 <div class="line">cd LampColorControler</div>
 <div class="line">make safe-install</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md15"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md18"></a>
 Building the project</h1>
 <p>Once all dependencies are set up, you will be able to build the project as follows:</p>
 <div class="fragment"><div class="line"># build project assuming simple lamp type</div>
@@ -129,7 +129,7 @@ Building the project</h1>
 <div class="fragment"><div class="line"># remove build artifacts &amp; rebuild the project</div>
 <div class="line">cd LampColorControler</div>
 <div class="line">make clean-artifacts {simple,cct,indexable} # pick one</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md16"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md19"></a>
 Uploading to board</h1>
 <p>After plugging your board, you should be able to upload as follows:</p>
 <div class="fragment"><div class="line"># use upload-indexable if you are working with indexable</div>
@@ -149,7 +149,7 @@ Uploading to board</h1>
 <div class="line">cd LampColorControler</div>
 <div class="line">ln -s venv path/to/other/virtualenv</div>
 <div class="line">make clean-artifacts upload-indexable</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md17"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md20"></a>
 Building the documentation</h1>
 <p>To build the documentation, you must have <code>doxygen</code> installed:</p>
 <div class="fragment"><div class="line"># use &quot;make clean-doc doc&quot; to force documentation rebuild</div>
@@ -157,7 +157,7 @@ Building the documentation</h1>
 <div class="line">make doc</div>
 </div><!-- fragment --><p>You will be able to preview the documentation as follows:</p>
 <div class="fragment"><div class="line">$(BROWSER) ./docs/html/index.html</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md18"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md21"></a>
 Building the simulator</h1>
 <p>If you want simulate a view of an "indexable mode" animation and have the <a href="https://www.sfml-dev.org/">SFML</a> installed:</p>
 <div class="fragment"><div class="line">cd LampColorControler</div>
@@ -165,7 +165,7 @@ Building the simulator</h1>
 <div class="line">./_build/simulator/indexable-simulator</div>
 </div><!-- fragment --><p>This may build the SFML library if <code>SFML 3.0.1</code> is not available locally, and it will fail if some of the required dependencies are missing.</p>
 <p>Note that the compiler used is <code>/usr/bin/c++</code> by default, and as we are using modern C++17 features as well as things like <code>-fconcepts</code> you will require an up-to-date local compiler &ndash; here "up-to-date" typically means something from 2020 :)</p>
-<h1><a class="anchor" id="autotoc_md19"></a>
+<h1><a class="anchor" id="autotoc_md22"></a>
 Cleaning up</h1>
 <p>There are several <code>clean-*</code> recipes available:</p>
 <div class="fragment"><div class="line"># &quot;quick&quot; clean recipes</div>

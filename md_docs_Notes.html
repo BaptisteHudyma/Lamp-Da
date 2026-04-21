@@ -74,7 +74,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>This is miscellaneous documentation around the project and its setup.</p>
-<h1><a class="anchor" id="autotoc_md10"></a>
+<h1><a class="anchor" id="autotoc_md13"></a>
 How the build system works?</h1>
 <p>We are relying on Arduino and Adafruit's integrations to do a lot of things. We want to use modern compiler features and some customization to our setup, while we don't want to modify how Adafruit's platform core and libraries are build.</p>
 <p>On first build, we will thus first:</p>
@@ -86,7 +86,7 @@ How the build system works?</h1>
 <li>compile a "final" <code>build</code> target which will let the <code>arduino-cli</code> reuse all the already-build objects, to produce a final artifact</li>
 </ol>
 <p>This is a hack and sanity checks are in place to verify that the sketch have been properly build (see <code>make verify-canary</code>)</p>
-<h1><a class="anchor" id="autotoc_md11"></a>
+<h1><a class="anchor" id="autotoc_md14"></a>
 Check heap &amp; stack</h1>
 <p>The system is still a low power microcontroller, so ram and flash are limited. The program flash size is checked at compile time, but the heap/stack are not checked yet.</p>
 <p>To analyze those, you can use the tool stackAnalyser.py, in the tools folder. It should be used as so: <code>python tools/stackAnalyser.py _build/simulator/indexable-simulator _build/simulator/CMakeFiles/simulator_indexable.dir/youPathToProject/src &gt; stack.txt</code> the generated file can be used to check the program running size. </p>
