@@ -467,6 +467,8 @@ bool check_handle_exit_output_mode()
   // should go to sleep
   if (not is_system_should_be_powered())
   {
+    logic::sunset::cancel_timer();
+
     if (is_charger_powered())
     {
       // charger is plugged, go to charger state
@@ -482,6 +484,8 @@ bool check_handle_exit_output_mode()
 #ifndef LMBD_SIMULATION
   else if (not physical::battery::is_battery_usable_as_power_source())
   {
+    logic::sunset::cancel_timer();
+
     // wait a bit then shutdown
     if (platform::time_ms() - preOutputLightCalled > 3000)
     {

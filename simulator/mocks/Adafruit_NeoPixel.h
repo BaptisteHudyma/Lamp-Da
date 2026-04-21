@@ -33,8 +33,6 @@ public:
 
   uint32_t getPixelColor(uint16_t n) const { return 0; }
 
-  void clear() {};
-
   static uint32_t Color(uint8_t r, uint8_t g, uint8_t b) { return (r << 16) | (g << 8) | b; }
 
   static uint32_t ColorHSV(double h, double s = 255, double v = 255)

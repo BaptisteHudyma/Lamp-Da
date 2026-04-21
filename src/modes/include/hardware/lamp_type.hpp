@@ -191,10 +191,8 @@ private:
     void show();
     void show_now();
     void signal_display();
-    void clear();
     void setBrightness(brightness_t);
     uint8_t getBrightness();
-    void fadeToBlackBy(uint8_t);
     void setPixelColor(uint16_t, uint32_t);
     uint32_t getPixelColor(uint16_t);
   };
@@ -488,7 +486,10 @@ public:
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      strip.clear();
+      for (uint16_t i = 0; i < ledCount; ++i)
+      {
+        setPixelColor(i, colors::Black);
+      }
     }
     else
     {
@@ -792,11 +793,41 @@ public:
     }
   }
 
+  /** \brief (indexable) Fill lamp with target color, from start to end. Apply a mask to display leds
+   *
+   * - See toLedCount() to set \p start and \p end
+   * - See modes::colors::fromRGB() to set \p color
+   */
+  void LMBD_INLINE fill(uint32_t color, uint16_t start, uint16_t end, const BufferTy& shouldDisplay)
+  {
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      assert(start <= ledCount && "invalid start parameter");
+      assert(end <= ledCount && "invalid end parameter");
+
+      for (uint16_t I = start; I < end; ++I)
+      {
+        if (shouldDisplay[I] != 0)
+          setPixelColor(I, color);
+      }
+    }
+    else
+    {
+      assert(false && "unsupported");
+    }
+  }
+
   /** \brief (indexable) Fill lamp with target color
    *
    * See modes::colors::fromRGB() to set \p color
    */
   void LMBD_INLINE fill(uint32_t color) { fill(color, 0, ledCount); }
+
+  /** \brief (indexable) Fill lamp with target color, with a mask
+   *
+   * See modes::colors::fromRGB() to set \p color
+   */
+  void LMBD_INLINE fill(uint32_t color, const BufferTy& shouldDisplay) { fill(color, 0, ledCount, shouldDisplay); }
 
   /** \brief (indexable) Fill lamp with target palette, from start to end
    *
