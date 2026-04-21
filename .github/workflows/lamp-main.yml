@@ -5,6 +5,8 @@ on:
     paths:
       - "src/**"
       - "simulator/**"
+      - "tests/**"
+      - "tools/**"
   push: # on merge to main, run CI
     branches:
       - main
@@ -94,6 +96,10 @@ jobs:
       run : make cct
     - name: indexable led strip build
       run : make indexable
+    - name: stack use check
+      run :
+        sudo apt install elfutils -y &&
+        python tools/ramAnalyser.py --elf _build/objs/LampColorControler.ino.elf --sudir ./_build/objs/
  
   build-simulator:
     runs-on: ubuntu-latest
