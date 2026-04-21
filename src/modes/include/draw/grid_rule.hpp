@@ -16,6 +16,7 @@ struct LineRuleConfig
 {
   static constexpr uint8_t dstBufIdx = 0;         ///< Main buf. used for the grid
   static constexpr uint8_t srcBufIdx = 1;         ///< Sec. buf. used for smooth grid
+  static constexpr uint8_t tempBufIdx = 2;        ///< Temporary buffer for copies
   static constexpr uint8_t scrollAmount = 1;      ///< Scroll each update
   static constexpr uint8_t renderBlurAmount = 32; ///< Blur before display
   static constexpr bool scrollSkewed = false;     ///< Scroll skewed to the left
@@ -46,8 +47,9 @@ struct LineRuleConfig
  */
 template<typename ConfigTy = LineRuleConfig> struct LineRule
 {
-  static constexpr uint8_t dstBufIdx = ConfigTy::dstBufIdx; ///< \private
-  static constexpr uint8_t srcBufIdx = ConfigTy::srcBufIdx; ///< \private
+  static constexpr uint8_t dstBufIdx = ConfigTy::dstBufIdx;   ///< \private
+  static constexpr uint8_t srcBufIdx = ConfigTy::srcBufIdx;   ///< \private
+  static constexpr uint8_t tempBufIdx = ConfigTy::tempBufIdx; ///< \private
 
   static constexpr bool loadFullOnReset = ConfigTy::loadFullOnReset; ///< \private
 
@@ -131,9 +133,9 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
   /// Same as \p .update() but uses two buffers, required for \p smoothDisplay()
   void LMBD_INLINE smoothUpdate(LampTy& lamp, auto& callback)
   {
-    auto bufCopy = lamp.template getTempBuffer<dstBufIdx>();
+    lamp.template copyBuffer<tempBufIdx, dstBufIdx>();
     update(lamp, callback);
-    lamp.template getTempBuffer<srcBufIdx>() = bufCopy;
+    lamp.template copyBuffer<srcBufIdx, tempBufIdx>();
   }
 
   /// Display grid buffers as an in-between frame, at \p phasis (from 0 to 1)

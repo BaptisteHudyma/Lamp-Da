@@ -166,7 +166,7 @@ private:
   static constexpr uint16_t _width = 23;             ///< \private
   static constexpr uint16_t _height = 22;            ///< \private
   static constexpr uint16_t _ledCount = 530;         ///< \private
-  static constexpr uint16_t _nbBuffers = 2;          ///< \private
+  static constexpr uint16_t _nbBuffers = 3;          ///< \private
   static constexpr float _lampBodyRadius_mm = 25.0f; ///< \private
   static constexpr float _ledStripWidth_mm = 5.2f;   ///< \private
   static constexpr float _ledStripLength_mm = 25.0f; ///< \private
@@ -898,6 +898,20 @@ public:
     static_assert(bufIdx < nbBuffers, "bufIdx must be lower than nbBuffers");
     BufferTy& buffer = strip._buffers[bufIdx];
     return buffer;
+  }
+
+  /**
+   * \brief Copy a source buffer at \p srcBufIdx to another buffer at \p dstBufIdx
+   *
+   * These buffers can be used for computations by the active mode, but their
+   * content may be erased if the mode is reset or if used elsewhere in code.
+   */
+  template<uint8_t dstBufIdx, uint8_t srcBufIdx> void LMBD_INLINE copyBuffer()
+  {
+    static_assert(srcBufIdx < nbBuffers, "srcBufIdx must be lower than nbBuffers");
+    static_assert(dstBufIdx < nbBuffers, "dstBufIdx must be lower than nbBuffers");
+
+    strip._buffers[dstBufIdx] = strip._buffers[srcBufIdx];
   }
 
   /** \brief Fill temporary buffer \p bufIdx with given \p value

@@ -27,7 +27,7 @@
 
 namespace lampda {
 
-static constexpr size_t stripNbBuffers = 2;
+static constexpr size_t stripNbBuffers = 3;
 static constexpr float baseCurrentConsumption = 0.4f;
 static constexpr float maxCurrentConsumption = 2.7f - baseCurrentConsumption;
 static constexpr float ampPerLed = maxCurrentConsumption / (float)LED_COUNT;

@@ -2,6 +2,7 @@
 """
 static_ram_check.py  —  compile-time RAM budget verifier
 Reads GCC .su files + ELF map to verify static + stack RAM fits in budget.
+BASED ON GENERATED CODE, by Claude.
 
 Usage:
     python static_ram_check.py \
@@ -106,38 +107,6 @@ def resolve_nm_symbol(sym: str, enum_map: dict) -> str:
 
 # ── Symbol set from ELF ───────────────────────────────────────────────
 
-def normalise(name: str) -> str:
-    """Strip return type, collapse whitespace, lowercase."""
-    name = re.sub(r'^(?:[\w:*&<>]+\s+)+(?=\w)', '', name.strip())
-    name = re.sub(r'\s+', '', name).lower()
-    return name
-
-
-def build_elf_symbol_set(elf: Path) -> set[str]:
-    """
-    Return normalised symbol names from the final ELF,
-    with enum template params resolved via DWARF debug info.
-    """
-    out = subprocess.check_output(
-        ["nm", "--defined-only", "--demangle", str(elf)],
-        text=True
-    )
-    enum_map = build_enum_map(elf)
-    symbols = set()
-    for line in out.splitlines():
-        parts = line.strip().split(None, 3)
-        if len(parts) >= 3 and parts[-2].lower() in ('t', 'w'):
-            symbols.add(normalise(resolve_nm_symbol(parts[-1], enum_map)))
-    return symbols
-
-def filter_live_entries(entries: list, elf: Path):
-    elf_symbols = build_elf_symbol_set(elf)
-    live, dead = [], []
-    for e in entries:
-        (live if normalise(e.name) in elf_symbols else dead).append(e)
-    return live, dead
-
-
 SU_RE = re.compile(
     r'^(?P<file>.+?):(?P<line>\d+):\d+:(?P<fullname>(?P<name>.+?)(\[.+\])?)\t(?P<size>\d+)\t(?P<kind>\w+)$'
 )
@@ -212,13 +181,6 @@ def worst_case_stack(entries: list[FunctionStack], top_n: int = 8) -> tuple[int,
 
 def analyse(elf: Path, sudir: Path, total_ram: int, stack_budget: int) -> RamReport:
     entries   = parse_su_files(sudir)
-    # entries, dead    = filter_live_entries(entries, elf)
-    dead = None
-    if dead:
-        print(f"  ℹ  Excluded {len(dead)} dead template instantiation(s):")
-        for e in dead:
-            print(f"       {e.name}")
-
     static    = get_static_ram(elf)
     depth, chain = worst_case_stack(entries)
     dynamic_fns  = [e.name for e in entries if e.kind == "dynamic"]
