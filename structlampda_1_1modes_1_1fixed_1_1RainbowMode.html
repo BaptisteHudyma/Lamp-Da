@@ -104,12 +104,13 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>on_enter_mode<
 <tr class="memitem:acdd50274b507530a08df9a751e115766"><td class="memItemLeft" align="right" valign="top"><a id="acdd50274b507530a08df9a751e115766" name="acdd50274b507530a08df9a751e115766"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto &amp;ctx)</td></tr>
 <tr class="separator:acdd50274b507530a08df9a751e115766"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ccdea541442814cb5308dd2a6e65cac"><td class="memItemLeft" align="right" valign="top"><a id="a5ccdea541442814cb5308dd2a6e65cac" name="a5ccdea541442814cb5308dd2a6e65cac"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>sunset_update</b> (auto &amp;ctx, float progress)</td></tr>
+<tr class="memdesc:a5ccdea541442814cb5308dd2a6e65cac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sunset timer will drop pixels downward, and never display them again. <br /></td></tr>
+<tr class="separator:a5ccdea541442814cb5308dd2a6e65cac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63e1fe211242879a133538058c711b31"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a63e1fe211242879a133538058c711b31">on_exit_mode</a> (auto &amp;ctx)</td></tr>
 <tr class="memdesc:a63e1fe211242879a133538058c711b31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when mode goes outside of focus (optional)  <br /></td></tr>
 <tr class="separator:a63e1fe211242879a133538058c711b31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afaeae8fbc41264a3f75723f9a688da45"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1BasicMode.html#afaeae8fbc41264a3f75723f9a688da45">sunset_update</a> (auto &amp;ctx, float progress)</td></tr>
-<tr class="memdesc:afaeae8fbc41264a3f75723f9a688da45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when sunset mode is updated (optional)  <br /></td></tr>
-<tr class="separator:afaeae8fbc41264a3f75723f9a688da45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9622baec04f2dd7dc396e210551919b7"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a9622baec04f2dd7dc396e210551919b7">brightness_update</a> (auto &amp;ctx, <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> brightness)</td></tr>
 <tr class="memdesc:a9622baec04f2dd7dc396e210551919b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when brightness changes (optional)  <br /></td></tr>
 <tr class="separator:a9622baec04f2dd7dc396e210551919b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -140,14 +141,19 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
+<tr class="memitem:ac55bd073d61851b49356dca830bf7257"><td class="memItemLeft" align="right" valign="top"><a id="ac55bd073d61851b49356dca830bf7257" name="ac55bd073d61851b49356dca830bf7257"></a>
+static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>dissolveBufferId</b> = 0</td></tr>
+<tr class="separator:ac55bd073d61851b49356dca830bf7257"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c0be9d56cb439440177739bfbe26fbb"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structlampda_1_1modes_1_1anims_1_1fadeout_1_1GravityDissolve.html">anims::fadeout::GravityDissolve</a>&lt; dissolveBufferId &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1fixed_1_1RainbowMode.html#a4c0be9d56cb439440177739bfbe26fbb">sunsetAnimation</a></td></tr>
+<tr class="separator:a4c0be9d56cb439440177739bfbe26fbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3661c9e19b741532e627da6ece353e7e"><td class="memItemLeft" align="right" valign="top"><a id="a3661c9e19b741532e627da6ece353e7e" name="a3661c9e19b741532e627da6ece353e7e"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasCustomRamp</b> = true</td></tr>
 <tr class="memdesc:a3661c9e19b741532e627da6ece353e7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">hint manager to save our custom ramp <br /></td></tr>
 <tr class="separator:a3661c9e19b741532e627da6ece353e7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="memItemLeft" align="right" valign="top"><a id="ad879076f6462e4f274f5c4e12fc6c1f0" name="ad879076f6462e4f274f5c4e12fc6c1f0"></a>
-static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
-<tr class="memdesc:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the use of custom <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#afaeae8fbc41264a3f75723f9a688da45" title="Custom callback when sunset mode is updated (optional)">BasicMode::sunset_update()</a> callback. <br /></td></tr>
-<tr class="separator:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7590454cfa932c06622a0271215fb356"><td class="memItemLeft" align="right" valign="top"><a id="a7590454cfa932c06622a0271215fb356" name="a7590454cfa932c06622a0271215fb356"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = true</td></tr>
+<tr class="memdesc:a7590454cfa932c06622a0271215fb356"><td class="mdescLeft">&#160;</td><td class="mdescRight">sunset animation on the fixed modes <br /></td></tr>
+<tr class="separator:a7590454cfa932c06622a0271215fb356"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2df3e9f204ee899bd972b6ca4b0a2e8"><td class="memItemLeft" align="right" valign="top"><a id="ae2df3e9f204ee899bd972b6ca4b0a2e8" name="ae2df3e9f204ee899bd972b6ca4b0a2e8"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasBrightCallback</b> = false</td></tr>
 <tr class="memdesc:ae2df3e9f204ee899bd972b6ca4b0a2e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the use of custom <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a9622baec04f2dd7dc396e210551919b7" title="Custom callback when brightness changes (optional)">BasicMode::brightness_update()</a> callback. <br /></td></tr>
@@ -513,52 +519,6 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 
 </div>
 </div>
-<a id="afaeae8fbc41264a3f75723f9a688da45" name="afaeae8fbc41264a3f75723f9a688da45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afaeae8fbc41264a3f75723f9a688da45">&#9670;&#160;</a></span>sunset_update()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static void lampda::modes::BasicMode::sunset_update </td>
-          <td>(</td>
-          <td class="paramtype">auto &amp;&#160;</td>
-          <td class="paramname"><em>ctx</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>progress</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Custom callback when sunset mode is updated (optional) </p>
-<p>Callback active only if <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#ad879076f6462e4f274f5c4e12fc6c1f0" title="Toggles the use of custom BasicMode::sunset_update() callback.">BasicMode::hasSunsetAnimation</a> is True</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">ctx</td><td>The current context </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">progress</td><td>Between 0 and 1, progress of the sunset. At 1, the system turns off </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="a537a90e25848e88d60d7192ca87cf01b" name="a537a90e25848e88d60d7192ca87cf01b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a537a90e25848e88d60d7192ca87cf01b">&#9670;&#160;</a></span>user_thread()</h2>
 
@@ -715,7 +675,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structlampda_1_1modes_1_1fixed_1_1RainbowMode.html#a3661c9e19b741532e627da6ece353e7e">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
-<div class="ttc" id="astructlampda_1_1modes_1_1fixed_1_1RainbowMode_html_a3661c9e19b741532e627da6ece353e7e"><div class="ttname"><a href="structlampda_1_1modes_1_1fixed_1_1RainbowMode.html#a3661c9e19b741532e627da6ece353e7e">lampda::modes::fixed::RainbowMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">hint manager to save our custom ramp</div><div class="ttdef"><b>Definition:</b> fixed_modes.hpp:55</div></div>
+<div class="ttc" id="astructlampda_1_1modes_1_1fixed_1_1RainbowMode_html_a3661c9e19b741532e627da6ece353e7e"><div class="ttname"><a href="structlampda_1_1modes_1_1fixed_1_1RainbowMode.html#a3661c9e19b741532e627da6ece353e7e">lampda::modes::fixed::RainbowMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">hint manager to save our custom ramp</div><div class="ttdef"><b>Definition:</b> fixed_modes.hpp:93</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
 <div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>
@@ -734,6 +694,30 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <p>If you need such extended storage, see <a class="el" href="structlampda_1_1modes_1_1ContextTy_1_1KeyProxy.html" title="(store) Binds a local variable of type T to key in storage (with automatic read &amp; save)">ContextTy::KeyProxy</a> for usage.</p>
 <p>If you don't need these capabilities, just ignore this identifier :) </p>
 
+</div>
+</div>
+<a id="a4c0be9d56cb439440177739bfbe26fbb" name="a4c0be9d56cb439440177739bfbe26fbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c0be9d56cb439440177739bfbe26fbb">&#9670;&#160;</a></span>sunsetAnimation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structlampda_1_1modes_1_1anims_1_1fadeout_1_1GravityDissolve.html">anims::fadeout::GravityDissolve</a>&lt;dissolveBufferId&gt; lampda::modes::fixed::RainbowMode::sunsetAnimation</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">          anims::fadeout::GravityDissolve&lt;dissolveBufferId&gt;()</div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>

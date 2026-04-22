@@ -142,19 +142,18 @@ void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>restoreBr
 <tr class="memitem:a281bec1f9b610a2f15640f16fd123dbf"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a281bec1f9b610a2f15640f16fd123dbf">blur</a> (uint8_t blurBy)</td></tr>
 <tr class="memdesc:a281bec1f9b610a2f15640f16fd123dbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blur currently displayed content by <code>blurBy</code> units /!\ Only applied along the strip, not in 2D /!.  <br /></td></tr>
 <tr class="separator:a281bec1f9b610a2f15640f16fd123dbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7597e523ac5a6e13d40418e03ffc6a60"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a7597e523ac5a6e13d40418e03ffc6a60">setLightTemp</a> (uint8_t temp)</td></tr>
-<tr class="memdesc:a7597e523ac5a6e13d40418e03ffc6a60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill lamp with target light temperature, if supported.  <br /></td></tr>
-<tr class="separator:a7597e523ac5a6e13d40418e03ffc6a60"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78469b8a03e059f54d85fe97eef735d8"><td class="memItemLeft" align="right" valign="top"><a id="a78469b8a03e059f54d85fe97eef735d8" name="a78469b8a03e059f54d85fe97eef735d8"></a>
-auto &amp;LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>getLegacyStrip</b> ()</td></tr>
-<tr class="memdesc:a78469b8a03e059f54d85fe97eef735d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Return raw underlying strip object <br /></td></tr>
-<tr class="separator:a78469b8a03e059f54d85fe97eef735d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04740441ed7eb7a5ec76057a85ba095c"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a04740441ed7eb7a5ec76057a85ba095c">fill</a> (uint32_t color, uint16_t start, uint16_t end)</td></tr>
 <tr class="memdesc:a04740441ed7eb7a5ec76057a85ba095c"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Fill lamp with target color, from start to end  <br /></td></tr>
 <tr class="separator:a04740441ed7eb7a5ec76057a85ba095c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a0cee140ba5208c2db1f824ed40791e"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a3a0cee140ba5208c2db1f824ed40791e">fill</a> (uint32_t color, uint16_t start, uint16_t end, const BufferTy &amp;shouldDisplay)</td></tr>
+<tr class="memdesc:a3a0cee140ba5208c2db1f824ed40791e"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Fill lamp with target color, from start to end. Apply a mask to display leds  <br /></td></tr>
+<tr class="separator:a3a0cee140ba5208c2db1f824ed40791e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae749b7b4fc849d97dd021a557d9e6f76"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#ae749b7b4fc849d97dd021a557d9e6f76">fill</a> (uint32_t color)</td></tr>
 <tr class="memdesc:ae749b7b4fc849d97dd021a557d9e6f76"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Fill lamp with target color  <br /></td></tr>
 <tr class="separator:ae749b7b4fc849d97dd021a557d9e6f76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c8f75915673505e0a193036fc79e302"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a4c8f75915673505e0a193036fc79e302">fill</a> (uint32_t color, const BufferTy &amp;shouldDisplay)</td></tr>
+<tr class="memdesc:a4c8f75915673505e0a193036fc79e302"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Fill lamp with target color, with a mask  <br /></td></tr>
+<tr class="separator:a4c8f75915673505e0a193036fc79e302"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf7fba22afc60e9f0e3e75bfcef38135"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#adf7fba22afc60e9f0e3e75bfcef38135">fill</a> (const <a class="el" href="namespacelampda_1_1modes_1_1colors.html#ab0b738b7bd4c80ccb2a8f444bba12dd4">colors::PaletteTy</a> &amp;palette, uint16_t start, uint16_t end)</td></tr>
 <tr class="memdesc:adf7fba22afc60e9f0e3e75bfcef38135"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Fill lamp with target palette, from start to end  <br /></td></tr>
 <tr class="separator:adf7fba22afc60e9f0e3e75bfcef38135"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -481,7 +480,7 @@ template&lt;uint8_t dstBufIdx, uint8_t srcBufIdx&gt; </div>
 </div>
 </div>
 <a id="a4f4b5db5f920d7a4dab4d4d7e1bbd2b0" name="a4f4b5db5f920d7a4dab4d4d7e1bbd2b0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4f4b5db5f920d7a4dab4d4d7e1bbd2b0">&#9670;&#160;</a></span>fill() <span class="overload">[1/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f4b5db5f920d7a4dab4d4d7e1bbd2b0">&#9670;&#160;</a></span>fill() <span class="overload">[1/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -512,7 +511,7 @@ template&lt;uint8_t dstBufIdx, uint8_t srcBufIdx&gt; </div>
 </div>
 </div>
 <a id="adf7fba22afc60e9f0e3e75bfcef38135" name="adf7fba22afc60e9f0e3e75bfcef38135"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adf7fba22afc60e9f0e3e75bfcef38135">&#9670;&#160;</a></span>fill() <span class="overload">[2/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#adf7fba22afc60e9f0e3e75bfcef38135">&#9670;&#160;</a></span>fill() <span class="overload">[2/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -560,7 +559,7 @@ template&lt;uint8_t dstBufIdx, uint8_t srcBufIdx&gt; </div>
 </div>
 </div>
 <a id="ae749b7b4fc849d97dd021a557d9e6f76" name="ae749b7b4fc849d97dd021a557d9e6f76"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae749b7b4fc849d97dd021a557d9e6f76">&#9670;&#160;</a></span>fill() <span class="overload">[3/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae749b7b4fc849d97dd021a557d9e6f76">&#9670;&#160;</a></span>fill() <span class="overload">[3/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -588,8 +587,47 @@ template&lt;uint8_t dstBufIdx, uint8_t srcBufIdx&gt; </div>
 
 </div>
 </div>
+<a id="a4c8f75915673505e0a193036fc79e302" name="a4c8f75915673505e0a193036fc79e302"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c8f75915673505e0a193036fc79e302">&#9670;&#160;</a></span>fill() <span class="overload">[4/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LMBD_INLINE lampda::modes::hardware::LampTy::fill </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>color</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const BufferTy &amp;&#160;</td>
+          <td class="paramname"><em>shouldDisplay</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>(indexable) Fill lamp with target color, with a mask </p>
+<p>See <a class="el" href="namespacelampda_1_1modes_1_1colors.html#ac2bf35faa6f46fd27b3148dc508b18b5" title="Return color (r, g, b) as a single uint32_t integer.">modes::colors::fromRGB()</a> to set <code>color</code> </p>
+
+</div>
+</div>
 <a id="a04740441ed7eb7a5ec76057a85ba095c" name="a04740441ed7eb7a5ec76057a85ba095c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a04740441ed7eb7a5ec76057a85ba095c">&#9670;&#160;</a></span>fill() <span class="overload">[4/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a04740441ed7eb7a5ec76057a85ba095c">&#9670;&#160;</a></span>fill() <span class="overload">[5/6]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -629,6 +667,60 @@ template&lt;uint8_t dstBufIdx, uint8_t srcBufIdx&gt; </div>
 </div><div class="memdoc">
 
 <p>(indexable) Fill lamp with target color, from start to end </p>
+<ul>
+<li>See <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#abf31f9518c734ee79389ef1d92d6b8df" title="(indexable) Return a led count in 0-ledCount scaled by scale">toLedCount()</a> to set <code>start</code> and <code>end</code> </li>
+<li>See <a class="el" href="namespacelampda_1_1modes_1_1colors.html#ac2bf35faa6f46fd27b3148dc508b18b5" title="Return color (r, g, b) as a single uint32_t integer.">modes::colors::fromRGB()</a> to set <code>color</code> </li>
+</ul>
+
+</div>
+</div>
+<a id="a3a0cee140ba5208c2db1f824ed40791e" name="a3a0cee140ba5208c2db1f824ed40791e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a0cee140ba5208c2db1f824ed40791e">&#9670;&#160;</a></span>fill() <span class="overload">[6/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LMBD_INLINE lampda::modes::hardware::LampTy::fill </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>color</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>start</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>end</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const BufferTy &amp;&#160;</td>
+          <td class="paramname"><em>shouldDisplay</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>(indexable) Fill lamp with target color, from start to end. Apply a mask to display leds </p>
 <ul>
 <li>See <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#abf31f9518c734ee79389ef1d92d6b8df" title="(indexable) Return a led count in 0-ledCount scaled by scale">toLedCount()</a> to set <code>start</code> and <code>end</code> </li>
 <li>See <a class="el" href="namespacelampda_1_1modes_1_1colors.html#ac2bf35faa6f46fd27b3148dc508b18b5" title="Return color (r, g, b) as a single uint32_t integer.">modes::colors::fromRGB()</a> to set <code>color</code> </li>
@@ -981,43 +1073,6 @@ template&lt;uint8_t dstBufIdx = 0, uint8_t srcBufIdx = 1&gt; </div>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="a7597e523ac5a6e13d40418e03ffc6a60" name="a7597e523ac5a6e13d40418e03ffc6a60"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7597e523ac5a6e13d40418e03ffc6a60">&#9670;&#160;</a></span>setLightTemp()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void LMBD_INLINE lampda::modes::hardware::LampTy::setLightTemp </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>temp</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Fill lamp with target light temperature, if supported. </p>
-<p>If <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#acb37532c7a05baa05dbac7d0870c3958" title="Which lamp flavor is currently used by the implementation?">LampTy::flavor</a> is <a class="el" href="namespacelampda_1_1modes_1_1hardware.html#a4a59d53a8125e83721ba8b38597a3819a8dbdda48fb8748d6746f1965824e966a" title="Equivalent to LMBD_LAMP_TYPE__SIMPLE.">LampTypes::simple</a> then:</p><ul>
-<li>does nothing</li>
-</ul>
-<p>If <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#acb37532c7a05baa05dbac7d0870c3958" title="Which lamp flavor is currently used by the implementation?">LampTy::flavor</a> is <a class="el" href="namespacelampda_1_1modes_1_1hardware.html#a4a59d53a8125e83721ba8b38597a3819ad4c9fa26976902c7c4cc2e3326e7e07a" title="Equivalent to LMBD_LAMP_TYPE__CCT.">LampTypes::cct</a> then:</p><ul>
-<li>scale from one supported color to the the other one</li>
-</ul>
-<p>If <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#acb37532c7a05baa05dbac7d0870c3958" title="Which lamp flavor is currently used by the implementation?">LampTy::flavor</a> is <a class="el" href="namespacelampda_1_1modes_1_1hardware.html#a4a59d53a8125e83721ba8b38597a3819a3e9616f66ee9536fe327116244382f86" title="Equivalent to LMBD_LAMP_TYPE__INDEXABLE.">LampTypes::indexable</a> then:</p><ul>
-<li>use <a class="el" href="namespacelampda_1_1modes_1_1colors.html#a67f7b3e701adbbb16d95f464963e7183" title="Given a 0-255 value, return a color approximating a kelvin temperature.">modes::colors::fromTemp</a> to fill lamp with color </li>
-</ul>
 
 </div>
 </div>
