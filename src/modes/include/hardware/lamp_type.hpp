@@ -534,27 +534,24 @@ public:
    * Several behaviors:
    *  - by default, do not call user callbacks to avoid re-entry
    *  - by default, do call global brightness update handler (see brightness_handle.h)
-   *  - by default, do NOT save brightness using "previous_brightness_update"
-   *  - also set the brightness in underlying strip object, if necessary
    *
    * Thus:
    *  - if \p skipCallbacks is false, do call user callbacks w/ re-entry risks
    *  - if \p skipUpdateBrightness is true, only set strip object brightness,
    *    or do nothing if LampTy::flavor is not LampTypes::indexable
-   *  - if \p updateSavedBrightess is true, save brightness and next time
-   *    user navigate brightness, use it as starting point (see tempBrightness)
    *
    * Note that calls to `logic::brightness::update_brightness` are throttled to once
    * in every 50ms to avoid freezing user brightness navigation.
    *
    * Note that \p skipUpdateBrightness implies \p skipCallbacks implicitly
    */
-  void LMBD_INLINE setBrightness(const brightness_t newBrightness,
+  void LMBD_INLINE setBrightness(brightness_t newBrightness,
                                  const bool skipCallbacks = true,
-                                 const bool skipUpdateBrightness = false,
-                                 const bool updateSavedBrightess = false)
+                                 const bool skipUpdateBrightness = false)
   {
     assert((skipCallbacks || !skipUpdateBrightness) && "implicit callback skip!");
+    // limit to allowed user brightness
+    newBrightness = std::min<brightness_t>(newBrightness, getMaxBrightness());
 
     if (!skipUpdateBrightness)
     {
@@ -562,8 +559,6 @@ public:
       if ((this->now - last) > brightnessDurationMs)
         logic::brightness::update_brightness(newBrightness, skipCallbacks);
     }
-    if (updateSavedBrightess)
-      logic::brightness::update_saved_brightness();
 
     // USE THE BRIGHTNESS VALUE AFTER THE UPDATE
     // brightness can be limited by the system, so do not use the raw brightness
@@ -582,6 +577,7 @@ public:
 
     if constexpr (flavor == LampTypes::simple)
     {
+      // display an output blip on max brightness reached
       if (trueNewBrightness >= trueMaxBrightness)
         physical::outputPower::blip(50); // blip
 
@@ -597,7 +593,7 @@ public:
   }
 
   /**
-   * \brief Return the actual allowed maximum brightness
+   * \brief Return the actual allowed maximum brightness for the user
    */
   brightness_t LMBD_INLINE getMaxBrightness() const { return logic::brightness::get_max_brightness(); }
 
@@ -616,7 +612,7 @@ public:
   {
     brightness_t current = getBrightness();
     if (current != brightness)
-      setBrightness(brightness, true, false, false);
+      setBrightness(brightness, true, false);
   }
 
   /**
@@ -628,9 +624,9 @@ public:
    * which imply that next time an user increases / lowers brightness, it
    * starts again from the provided brightness.
    *
-   * Equivalent to ``setBrightness(true, false, true)``
+   * Equivalent to ``setBrightness(true, false)``
    */
-  void LMBD_INLINE jumpBrightness(const brightness_t brightness) { setBrightness(brightness, true, false, true); }
+  void LMBD_INLINE jumpBrightness(const brightness_t brightness) { setBrightness(brightness, true, false); }
 
   /**
    * \brief Get brightness of the lamp
@@ -643,13 +639,13 @@ public:
     if constexpr (flavor == LampTypes::indexable)
     {
       if (readPreviousBrightness)
-        return logic::brightness::get_saved_brightness();
+        return std::min<brightness_t>(logic::brightness::get_saved_brightness(), getMaxBrightness());
       return strip.getBrightness();
     }
     else
     {
       if (readPreviousBrightness)
-        return logic::brightness::get_saved_brightness();
+        return std::min<brightness_t>(logic::brightness::get_saved_brightness(), getMaxBrightness());
       else
         return logic::brightness::get_brightness();
     }
@@ -665,7 +661,7 @@ public:
     const brightness_t saved = getSavedBrightness();
 
     if (current != saved)
-      setBrightness(saved, true, false, false);
+      setBrightness(saved, true, false);
   }
 
   /** \brief Fade currently displayed content by \p fadeBy units

@@ -15,6 +15,7 @@ namespace logic {
 namespace sunset {
 
 uint32_t sunsetTimerEndTime_s = 0;
+bool isAllowedToControlBrightness = true;
 
 static constexpr uint32_t brightnessRampDownTime_min = 3;
 static constexpr uint32_t brightnessRampDownTime_s = brightnessRampDownTime_min * 60;
@@ -86,8 +87,12 @@ void sunset_process_loop()
       }
       else if (currentBrightness >= brightnessDecreasePerLoop)
       {
-        // slowly decrease brighntess
-        logic::brightness::update_brightness(currentBrightness - brightnessDecreasePerLoop);
+        if (isAllowedToControlBrightness)
+        {
+          const brightness_t newBrightness = currentBrightness - brightnessDecreasePerLoop;
+          // slowly decrease brighntess
+          logic::brightness::update_brightness(newBrightness);
+        }
       }
       // else: casual loop update
     }
@@ -129,14 +134,17 @@ void add_time_minutes(const uint8_t time_minutes)
 /// signal to the timer that some time must be added. Limited to 10 minutes
 void bump_timer()
 {
-  if (sunsetTimerEndTime_s == 0 or sunsetTimerEndTime_s < platform::time_s())
+  const auto timeS = platform::time_s();
+  if (sunsetTimerEndTime_s == 0 or sunsetTimerEndTime_s < timeS)
     return;
 
-  // if less than 3 minutes left, bump timer to N minutes
-  if (sunsetTimerEndTime_s - platform::time_s() < brightnessRampDownTime_s)
+  // if less than N minutes left, bump timer to N minutes
+  if (sunsetTimerEndTime_s - timeS < brightnessRampDownTime_s)
   {
-    sunsetTimerEndTime_s = platform::time_s() + (brightnessRampDownTime_min + 1) * 60;
-    signal_sunset_update();
+    // add 1 minute + time left
+    const uint16_t timeLeft_min = round((sunsetTimerEndTime_s - timeS) / 60.0);
+    // add some time to the sunset
+    add_time_minutes(1 + (brightnessRampDownTime_min - timeLeft_min));
   }
 }
 
@@ -145,12 +153,18 @@ void cancel_timer()
 {
   // release timer
   sunsetTimerEndTime_s = 0;
+  lock_brightness_update(false);
+
+  // signal change
   signal_sunset_update();
+
   platform::lampda_print("sunset timer cleared");
   logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 }
 
 bool is_enabled() { return sunsetTimerEndTime_s > 0; }
+
+void lock_brightness_update(bool shouldLock) { isAllowedToControlBrightness = not shouldLock; }
 
 } // namespace sunset
 } // namespace logic

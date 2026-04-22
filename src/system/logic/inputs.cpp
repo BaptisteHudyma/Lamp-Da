@@ -276,12 +276,21 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
         static int rampSide = 1;
         static uint32_t lastBrightnessUpdateTime_ms = 0;
 
+        // prevent sunset updates when we are updating it ourself
+        logic::sunset::lock_brightness_update(not isEndOfHoldEvent);
+
         if (isEndOfHoldEvent)
         {
-          // reverse on release
-          rampSide = -rampSide;
+          // update logic
           lastBrightnessUpdateTime_ms = platform::time_ms();
           logic::brightness::update_saved_brightness();
+
+          // if user set the brightness up, alert of sunset update
+          if (rampSide > 0)
+            logic::sunset::bump_timer();
+
+          // reverse ramp on release
+          rampSide = -rampSide;
           break;
         }
 
@@ -332,9 +341,6 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
           /// go up
           else
           {
-            // alert of sunset update
-            logic::sunset::bump_timer();
-
             // limit max brightness
             const auto _maxBrightness = logic::brightness::get_max_brightness();
             if (brightness + brightnessUpdateStepSize >= _maxBrightness)

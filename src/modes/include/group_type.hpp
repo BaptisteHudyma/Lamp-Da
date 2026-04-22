@@ -203,6 +203,9 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   /// Callback for a mode entry point
   static void enter_mode(auto& ctx)
   {
+    // restore brigthness before entering a mode
+    ctx.lamp.restoreBrightness();
+
     // set ramps if they exist
     uint8_t modeIdAfter = ctx.get_active_mode(nbModes);
     ctx.state.load_ramps(ctx, modeIdAfter);
