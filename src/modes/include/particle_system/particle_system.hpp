@@ -205,6 +205,20 @@ public:
     return particleCount;
   }
 
+  /// Return the number of active particles
+  uint16_t get_number_of_active() const
+  {
+    uint16_t particleCount = 0;
+    for (size_t i = 0; i < particuleCount; ++i)
+    {
+      // do not show non allocated particles
+      if (not isAllocated[i])
+        continue;
+      particleCount += 1;
+    }
+    return particleCount;
+  }
+
 protected:
   /// Return True if the position is already occupied
   bool is_position_taken(const int16_t pos) const { return occupiedSpacesSet.find(pos) != occupiedSpacesSet.cend(); }
