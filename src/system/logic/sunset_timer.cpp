@@ -136,6 +136,7 @@ void bump_timer()
   if (sunsetTimerEndTime_s - platform::time_s() < brightnessRampDownTime_s)
   {
     sunsetTimerEndTime_s = platform::time_s() + (brightnessRampDownTime_min + 1) * 60;
+    signal_sunset_update();
   }
 }
 
@@ -144,6 +145,7 @@ void cancel_timer()
 {
   // release timer
   sunsetTimerEndTime_s = 0;
+  signal_sunset_update();
   platform::lampda_print("sunset timer cleared");
   logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 }

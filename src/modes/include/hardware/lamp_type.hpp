@@ -730,45 +730,9 @@ public:
     }
   }
 
-  /** \brief Fill lamp with target light temperature, if supported
-   *
-   * If LampTy::flavor is LampTypes::simple then:
-   *  - does nothing
-   *
-   * If LampTy::flavor is LampTypes::cct then:
-   *  - scale from one supported color to the the other one
-   *
-   * If LampTy::flavor is LampTypes::indexable then:
-   *  - use modes::colors::fromTemp to fill lamp with color
-   */
-  void LMBD_INLINE setLightTemp(uint8_t temp)
-  {
-    if constexpr (flavor == LampTypes::indexable)
-    {
-      fill(colors::fromTemp(temp));
-    }
-    else if constexpr (flavor == LampTypes::cct)
-    {
-      // TODO: implement
-      assert(false && "not yet implemented :(");
-    }
-    else
-    {
-      // -> intentionally do not trigger as error, for interoperability
-      assert(true);
-    }
-  }
-
   //
   // public API (indexable-only)
   //
-
-  /// (indexable) Return raw underlying strip object
-  auto& LMBD_INLINE getLegacyStrip()
-  {
-    assert(flavor == LampTypes::indexable && "current lamp is not indexable");
-    return strip;
-  }
 
   /** \brief (indexable) Fill lamp with target color, from start to end
    *

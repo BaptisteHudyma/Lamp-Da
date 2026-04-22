@@ -74,14 +74,23 @@ template<uint8_t MaskBuffId> struct GravityDissolve
     const float progressPerSecond = (progress - latestProgress) / updateDuration;
 
     bool isValidCall = latestProgress >= 0 and updateDuration > 0;
+
+    // cancel the particle spawn
+    if (progress <= 0.0)
+    {
+      particlesToDepopPerIteration = 0.0;
+      latestProgress = -1;
+      isValidCall = false;
+    }
     // update progress
-    if (latestProgress != progress)
+    else if (latestProgress != progress)
     {
       latestProgress = progress;
       latestProgressTime = ctx.lamp.now;
     }
     else
       isValidCall = false;
+
     // not valid call, skip update
     if (not isValidCall)
     {
@@ -108,7 +117,7 @@ protected:
     return p.z_mm > LampTy::maxWidth * bounds or p.z_mm < -(LampTy::lampHeight_mm + LampTy::maxWidth * bounds);
   }
 
-  void depop_one_particles(auto& ctx)
+  bool depop_one_particles(auto& ctx)
   {
     bool isDepoped = false;
     // progress goes from 0 to 1
@@ -161,7 +170,9 @@ protected:
     if (not isDepoped)
     {
       platform::lampda_print("Error: Could not depop particle");
+      return false;
     }
+    return true;
   }
 
 private:
