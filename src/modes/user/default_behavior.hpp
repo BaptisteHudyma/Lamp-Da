@@ -56,6 +56,9 @@ void brightness_update(const brightness_t brightness)
 {
   auto manager = get_context();
 
+  // force update of the internal references
+  manager.lamp.update_internal_brightness();
+
   // set brightness for underlying object (w/o re-entry in update_brightness)
   manager.lamp.setBrightness(brightness, true, true);
 

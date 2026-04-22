@@ -22,34 +22,8 @@ struct StaticLightMode : public BasicMode
 /// One mode, alone in its group, for static lightning
 using StaticLightOnly = GroupFor<StaticLightMode>;
 
-/// Simple pulse every second
-struct OnePulse : public BasicMode
-{
-  static constexpr uint32_t periodMs = 1000;     ///< lenght of a pulse, in milliseconds
-  static constexpr uint32_t pulseSizeMs = 100;   ///< period of the animation, in milliseconds
-  static constexpr brightness_t minScaling = 50; ///< scaling of the brightness of a pulse
-  static constexpr float scaleFactor = 1.40;     ///< scale of the brigthness
-
-  static constexpr void loop(auto& ctx)
-  {
-    auto& lamp = ctx.lamp;
-
-    brightness_t base = lamp.getSavedBrightness();
-    brightness_t scaled = std::max<brightness_t>(base * scaleFactor, base + minScaling);
-
-    if (scaled > lamp.getMaxBrightness())
-      lamp.jumpBrightness(lamp.getMaxBrightness() / scaleFactor);
-
-    auto period = lamp.now % periodMs;
-    if (period < pulseSizeMs)
-      lamp.tempBrightness(scaled);
-    else
-      lamp.restoreBrightness();
-  }
-};
-
 /// Pulse N times then pause one second
-template<size_t N> struct ManyPulse : public BasicMode
+template<size_t N> struct Pulses : public BasicMode
 {
   static constexpr uint32_t pulseSizeMs = 100;                     ///< lenght of a pulse, in milliseconds
   static constexpr uint32_t periodMs = 1000 + N * pulseSizeMs * 2; ///< period of the animation, in milliseconds
@@ -63,10 +37,12 @@ template<size_t N> struct ManyPulse : public BasicMode
     brightness_t base = lamp.getSavedBrightness();
     brightness_t scaled = std::max<brightness_t>(base * scaleFactor, base + minScaling);
 
+    // overflow check
     if (scaled > lamp.getMaxBrightness())
       lamp.jumpBrightness(lamp.getMaxBrightness() / scaleFactor);
 
     auto period = lamp.now % periodMs;
+    // first part of the anim : pulse
     if (period < pulseSizeMs * N * 2)
     {
       uint32_t flipflop = period / pulseSizeMs;
@@ -75,6 +51,7 @@ template<size_t N> struct ManyPulse : public BasicMode
       else
         lamp.tempBrightness(scaled);
     }
+    // second part: just stay at the saved brightness level
     else
       lamp.restoreBrightness();
   }
@@ -334,7 +311,7 @@ struct LightningMode : public BasicMode
 /// Group for calm modes
 using CalmGroup = GroupFor<Candle, LightningMode>;
 /// Group for flashing modes
-using FlashesGroup = GroupFor<StroboscopeMode, OnePulse, ManyPulse<2>>;
+using FlashesGroup = GroupFor<StroboscopeMode, Pulses<1>, Pulses<2>>;
 
 } // namespace lampda::modes::brightness
 

@@ -41,7 +41,7 @@ void set_max_brightness(const brightness_t brg)
 void update_saved_brightness() { __internal.savedBrightness = __internal.BRIGHTNESS; }
 brightness_t get_saved_brightness() { return __internal.savedBrightness; }
 
-void update_brightness(const brightness_t newBrightness, const bool isInitialRead)
+void update_brightness(const brightness_t newBrightness, const bool shouldCallUserBrightnessCallback)
 {
   // set to the user max limit (limit can be changed by system)
   const brightness_t trueNewBrightness = min<brightness_t>(newBrightness, get_max_brightness());
@@ -51,7 +51,7 @@ void update_brightness(const brightness_t newBrightness, const bool isInitialRea
     __internal.BRIGHTNESS = trueNewBrightness;
 
     // do not call user functions when reading parameters
-    if (!isInitialRead)
+    if (!shouldCallUserBrightnessCallback)
     {
       user::brightness_update(trueNewBrightness);
     }

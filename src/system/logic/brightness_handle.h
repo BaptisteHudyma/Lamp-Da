@@ -12,10 +12,12 @@ namespace logic {
 /// Handle the LED output brightness
 namespace brightness {
 
-/// Return the current brightness value (in range 0 - brightness::absoluteMaximumBrightness)
+/// Return the current brightness value (in range 0 - brightness::absoluteMaximumBrightness).
+/// It's value depends on a lot of factors and can be cantrolled by any actors.
 brightness_t get_brightness();
 
-/// Return the saved brightness level
+/// Return the saved brightness level.
+/// This shoudl be the prefered option in all computations.
 brightness_t get_saved_brightness();
 
 /// Return the maximum allowed brightness
@@ -31,9 +33,9 @@ void update_saved_brightness();
 /**
  * \brief update the internal brightness values
  * \param[in] newBrightness the new brightness value
- * \param[in] isInitialRead first call of this function when starting
+ * \param[in] shouldCallUserBrightnessCallback True if this will call the user callback call
  */
-void update_brightness(const brightness_t newBrightness, const bool isInitialRead = false);
+void update_brightness(const brightness_t newBrightness, const bool shouldCallUserBrightnessCallback = false);
 
 /// \brief Get time in milliseconds when brightness was last updated
 uint32_t when_last_update_brightness();

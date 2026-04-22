@@ -45,7 +45,7 @@ void power_on_sequence()
   YellowColorPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
   WhiteColorPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
 
-  brightness_update(logic::brightness::get_brightness());
+  brightness_update(logic::brightness::get_saved_brightness());
 }
 
 void power_off_sequence()
@@ -95,7 +95,7 @@ void read_parameters()
     lastColor = currentColor;
   }
 
-  currentBrightness = logic::brightness::get_brightness();
+  currentBrightness = logic::brightness::get_saved_brightness();
 }
 
 bool button_start_click_default(const uint8_t clicks) { return false; }

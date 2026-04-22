@@ -351,7 +351,7 @@ struct Alert_BatteryLow : public AlertBase
     platform::bluetooth::stop_bluetooth_advertising();
 
     logic::brightness::set_max_brightness(clampedBrightness);
-    logic::brightness::update_brightness(logic::brightness::get_brightness());
+    logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
     logic::brightness::update_saved_brightness();
   }
 
@@ -422,7 +422,7 @@ struct Alert_TempTooHigh : public AlertBase
             static_cast<brightness_t>(0.5 * ::lampda::brightness::absoluteMaximumBrightness);
 
     logic::brightness::set_max_brightness(clampedBrightness);
-    logic::brightness::update_brightness(logic::brightness::get_brightness());
+    logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
     logic::brightness::update_saved_brightness();
   }
 
