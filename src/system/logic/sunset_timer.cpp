@@ -26,20 +26,6 @@ static constexpr uint16_t minimalSunsetUpdateCalls = 50;
 
 const char* const sunset_taskName = "sunset";
 
-void signal_sunset_update()
-{
-  if (platform::time_s() > sunsetTimerEndTime_s)
-  {
-    logic::behavior::sunset::progress_update(1.0f);
-    return;
-  }
-
-  // signal the progress change
-  const float progress = lmpd_constrain<float>(
-          (sunsetTimerEndTime_s - platform::time_s()) / static_cast<float>(brightnessRampDownTime_s), 0.0f, 1.0f);
-  logic::behavior::sunset::progress_update(1.0f - progress);
-}
-
 // sunset loop time to reduce brightness gradually
 uint32_t get_sunset_loop_timing_ms()
 {
@@ -53,9 +39,26 @@ uint32_t get_sunset_loop_timing_ms()
   return min<uint32_t>(res, brightnessRampDownTime_ms / minimalSunsetUpdateCalls);
 }
 
+void signal_sunset_update()
+{
+  if (platform::time_s() >= sunsetTimerEndTime_s)
+  {
+    logic::behavior::sunset::progress_update(1.0f);
+    return;
+  }
+  const uint32_t finishline = get_sunset_loop_timing_ms();
+
+  // signal the progress change
+  const float progress = lmpd_constrain<float>(((sunsetTimerEndTime_s * 1000.0 - finishline) - platform::time_ms()) /
+                                                       static_cast<float>(brightnessRampDownTime_s * 1000.0),
+                                               0.0f,
+                                               1.0f);
+  logic::behavior::sunset::progress_update(1.0f - progress);
+}
+
 void sunset_process_loop()
 {
-  // this thread runs very slowly
+  // this thread runs slowly
   platform::delay_ms(get_sunset_loop_timing_ms());
 
   if (sunsetTimerEndTime_s == 0)
@@ -133,6 +136,7 @@ void bump_timer()
   if (sunsetTimerEndTime_s - platform::time_s() < brightnessRampDownTime_s)
   {
     sunsetTimerEndTime_s = platform::time_s() + (brightnessRampDownTime_min + 1) * 60;
+    signal_sunset_update();
   }
 }
 
@@ -141,6 +145,7 @@ void cancel_timer()
 {
   // release timer
   sunsetTimerEndTime_s = 0;
+  signal_sunset_update();
   platform::lampda_print("sunset timer cleared");
   logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 }

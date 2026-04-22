@@ -143,19 +143,6 @@ public:
 
   void setPixelColorXY(uint16_t x, uint16_t y, uint32_t c) { setPixelColor(LedStrip::to_strip(x, y), c); }
 
-  void fadeToBlackBy(const uint8_t fadeBy)
-  {
-    if (fadeBy == 0)
-      return; // optimization - no scaling to apply
-
-    for (uint16_t i = 0; i < LED_COUNT; ++i)
-    {
-      COLOR c;
-      c.color = getPixelColor(i);
-      setPixelColor(i, utils::color_fade(c, 255 - fadeBy));
-    }
-  }
-
   /*
    * Put a value 0 to 255 in to get a color value.
    * The colours are a transition r -> g -> b -> back to r
@@ -239,17 +226,6 @@ public:
   }
 
   uint32_t getRawPixelColor(uint16_t n) const { return Adafruit_NeoPixel::getPixelColor(n); }
-
-  void clear()
-  {
-    COLOR c;
-    c.color = 0;
-    for (uint16_t i = 0; i < LED_COUNT; ++i)
-    {
-      _colors[i] = c;
-    }
-    Adafruit_NeoPixel::clear();
-  }
 
   // signal the strip that it can display the update
   void signal_display() { hasSomeChanges = true; }
