@@ -641,8 +641,8 @@ void loop(const bool isChargeOk)
   // update the OTG functionalities
   control_OTG();
 
-  // only update every 100ms
-  EVERY_N_MILLIS_COND(isChargeChanged, 100)
+  // only update every 10ms, ADC needs to update fairly quickly
+  EVERY_N_MILLIS_COND(isChargeChanged, 10)
   {
     measurments_s.isChargeOk = isChargeOk;
 

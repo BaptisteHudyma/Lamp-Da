@@ -233,9 +233,9 @@ public:
    */
   void LMBD_INLINE startup()
   {
-    // set output voltage for indexable
-    if constexpr (flavor == LampTypes::indexable)
-      physical::outputPower::write_voltage(stripInputVoltage_mV);
+    // set output voltage for leds that will not change voltage
+    if (stripInputMinVoltage_mV == stripInputMaxVoltage_mV)
+      physical::outputPower::write_voltage(stripInputMaxVoltage_mV);
 
     begin();
     clear();
@@ -600,11 +600,10 @@ public:
         physical::outputPower::blip(50); // blip
       }
 
-      constexpr uint16_t maxOutputVoltage_mV = stripInputVoltage_mV;
       using curve_t = utils::curves::ExponentialCurve<brightness_t, uint16_t>;
       static curve_t brightnessCurve(
-              curve_t::point_t {0, 9400},
-              curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, maxOutputVoltage_mV},
+              curve_t::point_t {0, stripInputMinVoltage_mV},
+              curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, stripInputMaxVoltage_mV},
               1.0);
 
       physical::outputPower::write_voltage(round(brightnessCurve.sample(trueNewBrightness)));

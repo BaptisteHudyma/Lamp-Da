@@ -120,7 +120,7 @@ static constexpr uint16_t batteryMinVoltageSafe_mV = minSafeLiionVoltage_mV * ba
 /// Total maximum power usage of the led strip
 static constexpr float totalCons_Watt = consWattByMeter * ledStripLength_mm / 1000.0f;
 /// Maximum led strip current usage, in Amps
-static constexpr float maxStripConsumption_A = 1000.0f * totalCons_Watt / stripInputVoltage_mV;
+static constexpr float maxStripConsumption_A = 1000.0f * totalCons_Watt / stripInputMaxVoltage_mV;
 
 /// Battery maximum charge current, in milliAmps
 static constexpr uint32_t batteryMaxChargeCurrent_mA =

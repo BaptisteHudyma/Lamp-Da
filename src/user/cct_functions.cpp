@@ -72,13 +72,14 @@ void brightness_update(const brightness_t brightness)
 
   // map to a new curve, favorising low levels
   using curve_t = utils::curves::ExponentialCurve<brightness_t, uint8_t>;
-  static curve_t brightnessCurve(curve_t::point_t {0, minBrightness},
-                                 curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255},
-                                 50.0);
+  static curve_t brightnessCurve(
+          curve_t::point_t {0, stripInputMinVoltage_mV},
+          curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, stripInputMaxVoltage_mV},
+          50.0);
 
   currentBrightness = round(brightnessCurve.sample(constraintBrightness));
 
-  physical::outputPower::write_voltage(stripInputVoltage_mV);
+  physical::outputPower::write_voltage(currentBrightness);
   set_color(currentColor);
 }
 
