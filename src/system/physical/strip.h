@@ -100,6 +100,15 @@ public:
     return brightness;
   }
 
+  // Accessor to set a color
+  void setPixelColor(uint16_t n, COLOR c)
+  {
+    if (n >= LED_COUNT)
+      return;
+
+    _colors[n] = c;
+  }
+
   /**
    * EXPLICIT CALLS TO THE LIBRARY
    */
@@ -111,23 +120,8 @@ public:
     Adafruit_NeoPixel::setBrightness(255);
   }
 
-  void setPixelColor(uint16_t n, COLOR c)
-  {
-    if (n >= LED_COUNT)
-      return;
-
-    if (brightness != UINT8_MAX)
-    {
-      const uint8_t trueBrightness = brightness + 1;
-      c.blue = static_cast<uint8_t>((c.blue * trueBrightness) >> 8);
-      c.green = static_cast<uint8_t>((c.green * trueBrightness) >> 8);
-      c.red = static_cast<uint8_t>((c.red * trueBrightness) >> 8);
-    }
-
-    _colors[n] = c;
-    Adafruit_NeoPixel::setPixelColor(n, c.color);
-  }
-
+  /// Return the raw color value stored in the send buffer.
+  /// \warning Should not be used except for debug
   uint32_t getRawPixelColor(uint16_t n) const
   {
     // ,o colors outside of strip
@@ -137,9 +131,10 @@ public:
     COLOR c;
     c.color = Adafruit_NeoPixel::getPixelColor(n);
 
-    if (brightness != UINT8_MAX)
+    // We use brightnessAtShowTime here, our the colors can break when brightness changed
+    if (brightnessAtShowTime != UINT8_MAX)
     {
-      const uint8_t trueBrightness = brightness + 1;
+      const uint8_t trueBrightness = brightnessAtShowTime + 1;
       c.blue = static_cast<uint8_t>((uint32_t)(c.blue << 8) / trueBrightness);
       c.green = static_cast<uint8_t>((uint32_t)(c.green << 8) / trueBrightness);
       c.red = static_cast<uint8_t>((uint32_t)(c.red << 8) / trueBrightness);
@@ -148,9 +143,46 @@ public:
     return c.color;
   }
 
+  /// \private: write the buffered colors to the led driver
+  void write_to_led_driver(const uint8_t writeBrightness)
+  {
+    // store all pixels for display
+    const bool isNotMaxBrightness = writeBrightness != UINT8_MAX;
+
+    if (writeBrightness == UINT8_MAX)
+    {
+      // brightness at maxium, change nothing
+      for (uint16_t i = 0; i < LED_COUNT; ++i)
+      {
+        Adafruit_NeoPixel::setPixelColor(i, _colors[i].color);
+      }
+    }
+    else
+    {
+      // brightness should be adjusted, do it
+      const uint8_t trueBrightness = writeBrightness + 1;
+      for (uint16_t i = 0; i < LED_COUNT; ++i)
+      {
+        // indirection by copy
+        COLOR c;
+        c.color = _colors[i].color;
+
+        c.blue = static_cast<uint8_t>((c.blue * trueBrightness) >> 8);
+        c.green = static_cast<uint8_t>((c.green * trueBrightness) >> 8);
+        c.red = static_cast<uint8_t>((c.red * trueBrightness) >> 8);
+
+        // set strip color
+        Adafruit_NeoPixel::setPixelColor(i, c.color);
+      }
+    }
+  }
+
   /// Show the current data, independant of changes
   void show_now()
   {
+    brightnessAtShowTime = brightness;
+    write_to_led_driver(brightnessAtShowTime);
+
     Adafruit_NeoPixel::show();
     hasSomeChanges = false;
   }
@@ -307,7 +339,12 @@ public:
 
 private:
   volatile bool hasSomeChanges;
+
+  /// Out strip brightness
   volatile uint8_t brightness;
+
+  /// Store a reference to the brightness value from the last show() call
+  volatile uint8_t brightnessAtShowTime;
 };
 
 } // namespace physical
