@@ -88,24 +88,65 @@ public:
     return max<float>(baseCurrentConsumption, estimatedCurrentDraw);
   }
 
+  /// Brightness is an internal counter
+  void setBrightness(uint8_t b) { brightness = b; }
+
+  /// Brightness is an internal flag
+  uint8_t getBrightness() const
+  {
+    // check that this never changes
+    assert(Adafruit_NeoPixel::getBrightness() == 255);
+
+    return brightness;
+  }
+
   /**
    * EXPLICIT CALLS TO THE LIBRARY
    */
 
-  void setBrightness(uint8_t b) { Adafruit_NeoPixel::setBrightness(b); }
-
-  uint8_t getBrightness() const { return Adafruit_NeoPixel::getBrightness(); }
-
-  void begin() { Adafruit_NeoPixel::begin(); }
+  void begin()
+  {
+    Adafruit_NeoPixel::begin();
+    // brightness always at the maximum level
+    Adafruit_NeoPixel::setBrightness(255);
+  }
 
   void setPixelColor(uint16_t n, COLOR c)
   {
-    n = lmpd_constrain<uint16_t>(n, 0, LED_COUNT - 1);
+    if (n >= LED_COUNT)
+      return;
+
+    if (brightness != UINT8_MAX)
+    {
+      const uint8_t trueBrightness = brightness + 1;
+      c.blue = static_cast<uint8_t>((c.blue * trueBrightness) >> 8);
+      c.green = static_cast<uint8_t>((c.green * trueBrightness) >> 8);
+      c.red = static_cast<uint8_t>((c.red * trueBrightness) >> 8);
+    }
+
     _colors[n] = c;
     Adafruit_NeoPixel::setPixelColor(n, c.color);
   }
 
-  uint32_t getRawPixelColor(uint16_t n) const { return Adafruit_NeoPixel::getPixelColor(n); }
+  uint32_t getRawPixelColor(uint16_t n) const
+  {
+    // ,o colors outside of strip
+    if (n >= LED_COUNT)
+      return 0;
+
+    COLOR c;
+    c.color = Adafruit_NeoPixel::getPixelColor(n);
+
+    if (brightness != UINT8_MAX)
+    {
+      const uint8_t trueBrightness = brightness + 1;
+      c.blue = static_cast<uint8_t>((uint32_t)(c.blue << 8) / trueBrightness);
+      c.green = static_cast<uint8_t>((uint32_t)(c.green << 8) / trueBrightness);
+      c.red = static_cast<uint8_t>((uint32_t)(c.red << 8) / trueBrightness);
+    }
+
+    return c.color;
+  }
 
   /// Show the current data, independant of changes
   void show_now()
@@ -266,6 +307,7 @@ public:
 
 private:
   volatile bool hasSomeChanges;
+  volatile uint8_t brightness;
 };
 
 } // namespace physical
