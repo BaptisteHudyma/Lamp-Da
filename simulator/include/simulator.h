@@ -22,7 +22,8 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Keyboard.hpp>
 
-#define LMBD_SIMU_REALCOLORS
+/// if defined, will display colors with the same brigthness to debug the color bending
+// #define LMBD_DEBUG_SIMU_REALCOLORS
 
 namespace simulator {
 // (_LampTy from simulator_state.h)
@@ -333,7 +334,7 @@ template<typename T> struct simulator
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
           state.colorBuffer[I] =
                   isOutputEnabled ?
-                          (isVoltageHighEnough ? ::lampda::user::_private::strip.getPixelColor(I) : 0xffffff) :
+                          (isVoltageHighEnough ? ::lampda::user::_private::strip.getRawPixelColor(I) : 0xffffff) :
                           0;
           state.brightness = ::lampda::user::_private::strip.getBrightness();
 #endif
@@ -416,10 +417,16 @@ template<typename T> struct simulator
           float g = ((color >> 8) & 0xff);
           float r = ((color >> 16) & 0xff);
 
-          const auto brightness = state.brightness;
-          r = std::min<float>(r, brightness);
-          g = std::min<float>(g, brightness);
-          b = std::min<float>(b, brightness);
+#ifndef LMBD_DEBUG_SIMU_REALCOLORS
+          // break color representation, like the real strip
+          const uint8_t brigthness = state.brightness;
+
+          // scale by brightness
+          const float brightnessDivider = static_cast<float>(brigthness) / 255.0;
+          r = static_cast<uint8_t>(r * brightnessDivider);
+          g = static_cast<uint8_t>(g * brightnessDivider);
+          b = static_cast<uint8_t>(b * brightnessDivider);
+#endif
 
           shape.setFillColor(sf::Color(r, g, b));
           window.draw(shape);

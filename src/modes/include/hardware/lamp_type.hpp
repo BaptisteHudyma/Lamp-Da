@@ -592,6 +592,7 @@ public:
       static curve_t brightnessCurve({curve_t::point_t {0, minBrightness},
                                       curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255}});
 
+      /// @warning: this is actually heavy to run
       strip.setBrightness(brightnessCurve.sample(trueNewBrightness));
     }
 
