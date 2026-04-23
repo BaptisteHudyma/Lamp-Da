@@ -557,19 +557,20 @@ public:
   {
     assert((skipCallbacks || !skipUpdateBrightness) && "implicit callback skip!");
 
-    if (!skipUpdateBrightness)
+    // force update if we are getting lower and lower
+    if (!skipUpdateBrightness or newBrightness > getMaxBrightness())
     {
+      // store the new temporary
+      temporary_brightness = min<brightness_t>(newBrightness, getMaxBrightness());
+
       uint32_t last = logic::brightness::when_last_update_brightness();
       if ((this->now - last) > brightnessDurationMs)
-        logic::brightness::update_brightness(newBrightness, skipCallbacks);
-
-      // store the new temporary
-      temporary_brightness = newBrightness;
+        logic::brightness::update_brightness(temporary_brightness, skipCallbacks);
     }
     // if necessary, update the saved version
     if (updateSavedBrightess)
     {
-      saved_brightness = temporary_brightness;
+      saved_brightness = min<brightness_t>(static_cast<brightness_t>(temporary_brightness), getMaxBrightness());
     }
 
     // USE THE BRIGHTNESS VALUE AFTER THE UPDATE
@@ -590,7 +591,7 @@ public:
     if constexpr (flavor == LampTypes::simple)
     {
       // display an output blip on max brightness reached
-      if (trueNewBrightness >= trueMaxBrightness)
+      if (trueNewBrightness > saved_brightness and trueNewBrightness >= trueMaxBrightness)
         physical::outputPower::blip(50); // blip
 
       constexpr uint16_t maxOutputVoltage_mV = stripInputVoltage_mV;
@@ -607,14 +608,14 @@ public:
   /// Special call to update the internal brightness values
   void update_internal_brightness()
   {
-    saved_brightness = logic::brightness::get_saved_brightness();
+    saved_brightness = min<brightness_t>(logic::brightness::get_saved_brightness(), getMaxBrightness());
     temporary_brightness = saved_brightness;
   }
 
   /**
    * \brief Return the actual allowed maximum brightness
    */
-  brightness_t LMBD_INLINE getMaxBrightness() const { return logic::brightness::get_max_brightness(); }
+  brightness_t LMBD_INLINE getMaxBrightness() const { return logic::brightness::get_max_user_brightness(); }
 
   /**
    * \brief Temporarily set brightness, without affecting brightness navigation

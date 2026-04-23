@@ -40,21 +40,35 @@ uint32_t get_sunset_loop_timing_ms()
   return min<uint32_t>(res, brightnessRampDownTime_ms / minimalSunsetUpdateCalls);
 }
 
-void signal_sunset_update()
+/// Return the percent of advance of the sunset timer, from 0 to 1. 1 is end of process.
+float get_percent_of_advance()
 {
   if (platform::time_s() >= sunsetTimerEndTime_s)
-  {
-    logic::behavior::sunset::progress_update(1.0f);
-    return;
-  }
+    return 1.0;
+
   const uint32_t finishline = get_sunset_loop_timing_ms();
 
   // signal the progress change
   const float progress = lmpd_constrain<float>(((sunsetTimerEndTime_s * 1000.0 - finishline) - platform::time_ms()) /
-                                                       static_cast<float>(brightnessRampDownTime_s * 1000.0),
+                                                       static_cast<float>(brightnessRampDownTime_ms),
                                                0.0f,
                                                1.0f);
-  logic::behavior::sunset::progress_update(1.0f - progress);
+  return 1.0 - progress;
+}
+
+/// Send the timer update signal to consummers
+/// Returns the progress
+float signal_sunset_update()
+{
+  if (platform::time_s() >= sunsetTimerEndTime_s)
+  {
+    logic::behavior::sunset::progress_update(1.0f);
+    return 1.0;
+  }
+
+  const float progress = get_percent_of_advance();
+  logic::behavior::sunset::progress_update(progress);
+  return progress;
 }
 
 void sunset_process_loop()
@@ -73,28 +87,30 @@ void sunset_process_loop()
     if (platform::time_s() + brightnessRampDownTime_s >= sunsetTimerEndTime_s)
     {
       // signal the progress change
-      signal_sunset_update();
-
-      // decrease brightness every N seconds left
-      const auto currentBrightness = logic::brightness::get_brightness();
-      if (platform::time_s() >= sunsetTimerEndTime_s)
+      const float progress = signal_sunset_update();
+      if (progress >= 1.0)
       {
-        logic::brightness::update_brightness(0);
+        logic::brightness::set_max_user_brightness(0);
+        logic::brightness::force_brightness_user_callback();
         platform::lampda_print("Shutdown with sunset timer");
         logic::behavior::set_power_off();
         cancel_timer();
         return;
       }
-      else if (currentBrightness >= brightnessDecreasePerLoop)
+      else
       {
         if (isAllowedToControlBrightness)
         {
-          const brightness_t newBrightness = currentBrightness - brightnessDecreasePerLoop;
+          // new brightness to use
+          const brightness_t newBrightness =
+                  lmpd_constrain<float>(1.0 - progress, 0.0, 1.0) * logic::brightness::get_saved_brightness();
+
           // slowly decrease brighntess
-          logic::brightness::update_brightness(newBrightness);
+          logic::brightness::set_max_user_brightness(newBrightness);
+          // force an update of the brightness, with user callback
+          logic::brightness::force_brightness_user_callback();
         }
       }
-      // else: casual loop update
     }
   }
 }
@@ -129,6 +145,9 @@ void add_time_minutes(const uint8_t time_minutes)
     // added some time, so signal update
     signal_sunset_update();
   }
+
+  // restore stored brightness as the user limit
+  logic::brightness::set_max_user_brightness(logic::brightness::get_saved_brightness());
 }
 
 /// signal to the timer that some time must be added. Limited to 10 minutes
@@ -151,14 +170,19 @@ void bump_timer()
 /// cancel the current active timer
 void cancel_timer()
 {
+  const bool isSunsetActive = sunsetTimerEndTime_s != 0;
   // release timer
   sunsetTimerEndTime_s = 0;
   lock_brightness_update(false);
 
+  logic::brightness::set_max_user_brightness(logic::brightness::get_max_brightness());
   // signal change
-  signal_sunset_update();
+  if (isSunsetActive)
+  {
+    signal_sunset_update();
+    platform::lampda_print("sunset timer cleared");
+  }
 
-  platform::lampda_print("sunset timer cleared");
   logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 }
 

@@ -297,7 +297,9 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
         // update brightness every N milliseconds (or end of hold)
         EVERY_N_MILLIS(BRIGHTNESS_LOOP_UPDATE_EVERY)
         {
-          const brightness_t brightness = logic::brightness::get_saved_brightness();
+          // use minimum of saved vs max user brightness
+          const brightness_t brightness = std::min<brightness_t>(logic::brightness::get_saved_brightness(),
+                                                                 logic::brightness::get_max_user_brightness());
 
           // first actions, set ramp side
           if (buttonHoldDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)

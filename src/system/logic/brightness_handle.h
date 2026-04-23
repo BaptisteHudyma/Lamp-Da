@@ -23,9 +23,15 @@ brightness_t get_saved_brightness();
 /// Return the maximum allowed brightness
 brightness_t get_max_brightness();
 
+/// Return the maximum allowed brightness for the user modes
+brightness_t get_max_user_brightness();
+
 /// Set the new max brightness
 /// \param[in] brg New brightness, limited to brightness::absoluteMaximumBrightness
 void set_max_brightness(const brightness_t brg);
+
+/// Set the maximum allowed brightness for the user modes
+void set_max_user_brightness(const brightness_t brg);
 
 /// Update the saved brightness value with the current brightness
 void update_saved_brightness();
@@ -36,6 +42,9 @@ void update_saved_brightness();
  * \param[in] shouldCallUserBrightnessCallback True if this will call the user callback call
  */
 void update_brightness(const brightness_t newBrightness, const bool shouldCallUserBrightnessCallback = false);
+
+/// force an update call to the user brightness callback
+void force_brightness_user_callback();
 
 /// \brief Get time in milliseconds when brightness was last updated
 uint32_t when_last_update_brightness();

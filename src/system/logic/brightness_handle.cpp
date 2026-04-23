@@ -16,8 +16,10 @@ namespace brightness {
 struct BrightnessParameters
 {
   /// Upper bound for the brightness
-  /// Can be updated to limit the max birghtness, but should never ecxeed absoluteMaximumBrightness
+  /// Can be updated to limit the max brightness, but should never ecxeed absoluteMaximumBrightness
   brightness_t MaxBrightnessLimit = ::lampda::brightness::absoluteMaximumBrightness;
+  /// Upper bound of the brightness, limited to MaxBrightnessLimit. This only locks user uses.
+  brightness_t MaxUserBrightnessLimit = ::lampda::brightness::absoluteMaximumBrightness;
 
   /// Hold the current level of brightness.
   /// This is the true reference value that is stored in memory at system shutdown
@@ -33,12 +35,28 @@ BrightnessParameters __internal;
 brightness_t get_brightness() { return __internal.BRIGHTNESS; }
 
 brightness_t get_max_brightness() { return __internal.MaxBrightnessLimit; }
+
+brightness_t get_max_user_brightness() { return __internal.MaxUserBrightnessLimit; }
+
 void set_max_brightness(const brightness_t brg)
 {
   __internal.MaxBrightnessLimit = min<brightness_t>(brg, ::lampda::brightness::absoluteMaximumBrightness);
+  // update saved user brightness
+  set_max_user_brightness(__internal.MaxUserBrightnessLimit);
 }
 
-void update_saved_brightness() { __internal.savedBrightness = __internal.BRIGHTNESS; }
+void set_max_user_brightness(const brightness_t brg)
+{
+  // limited to the max system brightness
+  __internal.MaxUserBrightnessLimit = min<brightness_t>(brg, get_max_brightness());
+}
+
+void update_saved_brightness()
+{
+  __internal.savedBrightness = __internal.BRIGHTNESS;
+  __internal.MaxUserBrightnessLimit = __internal.MaxBrightnessLimit;
+}
+
 brightness_t get_saved_brightness() { return __internal.savedBrightness; }
 
 void update_brightness(const brightness_t newBrightness, const bool shouldCallUserBrightnessCallback)
@@ -59,6 +77,8 @@ void update_brightness(const brightness_t newBrightness, const bool shouldCallUs
 
   __internal.lastBrightnessUpdate = ::lampda::platform::time_ms();
 }
+
+void force_brightness_user_callback() { user::brightness_update(get_brightness()); }
 
 uint32_t when_last_update_brightness() { return __internal.lastBrightnessUpdate; }
 
