@@ -14,9 +14,10 @@ var searchData=
   ['enable_5ftilt_5fdetection_11',['enable_tilt_detection',['../classlampda_1_1physical_1_1imu_1_1Wrapper.html#a4661e72b790f2eb29490b2aedaa654b3',1,'lampda::physical::imu::Wrapper']]],
   ['enable_5fvbus_5fgate_12',['enable_vbus_gate',['../namespacelampda_1_1power_1_1powergates.html#ac34909d621cae04b7a9fcafec26fd210',1,'lampda::power::powergates']]],
   ['enable_5fvbus_5fgate_5fdirect_13',['enable_vbus_gate_DIRECT',['../namespacelampda_1_1power_1_1powergates.html#acce621a71a1d0e68b744f04e9fec43e9',1,'lampda::power::powergates']]],
-  ['enter_5fgroup_14',['enter_group',['../structlampda_1_1modes_1_1ContextTy.html#a26928fa653e23d803a2b22ab2a1b8c09',1,'lampda::modes::ContextTy']]],
-  ['enter_5fmode_15',['enter_mode',['../structlampda_1_1modes_1_1ContextTy.html#acff871b99b6ef452ac527e0b39d4aa9b',1,'lampda::modes::ContextTy']]],
-  ['enter_5fserial_5fdfu_16',['enter_serial_dfu',['../namespacelampda_1_1platform_1_1registers.html#a610059f4a145815ced4ffc5685e5b691',1,'lampda::platform::registers']]],
-  ['execute_17',['execute',['../structlampda_1_1logic_1_1alerts_1_1Alert__TempTooHigh.html#a28362d1a1cc1169ce8840f8d31612ab3',1,'lampda::logic::alerts::Alert_TempTooHigh::execute()'],['../structlampda_1_1logic_1_1alerts_1_1Alert__BatteryLow.html#a2dba41202f1697e9b423df1a7b468392',1,'lampda::logic::alerts::Alert_BatteryLow::execute()'],['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#ae86cc759ac02aaa5c656859233317b32',1,'lampda::logic::alerts::AlertBase::execute()']]],
-  ['exponentialcurve_18',['ExponentialCurve',['../classlampda_1_1utils_1_1curves_1_1ExponentialCurve.html#a46c3fa4d2fb845b8c88f969ed84a7372',1,'lampda::utils::curves::ExponentialCurve']]]
+  ['enforce_5finternal_5fbrightness_5flimits_14',['enforce_internal_brightness_limits',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a5ee901eec1ea481cb226366f1f165254',1,'lampda::modes::hardware::LampTy']]],
+  ['enter_5fgroup_15',['enter_group',['../structlampda_1_1modes_1_1ContextTy.html#a26928fa653e23d803a2b22ab2a1b8c09',1,'lampda::modes::ContextTy']]],
+  ['enter_5fmode_16',['enter_mode',['../structlampda_1_1modes_1_1ContextTy.html#acff871b99b6ef452ac527e0b39d4aa9b',1,'lampda::modes::ContextTy']]],
+  ['enter_5fserial_5fdfu_17',['enter_serial_dfu',['../namespacelampda_1_1platform_1_1registers.html#a610059f4a145815ced4ffc5685e5b691',1,'lampda::platform::registers']]],
+  ['execute_18',['execute',['../structlampda_1_1logic_1_1alerts_1_1Alert__TempTooHigh.html#a28362d1a1cc1169ce8840f8d31612ab3',1,'lampda::logic::alerts::Alert_TempTooHigh::execute()'],['../structlampda_1_1logic_1_1alerts_1_1Alert__BatteryLow.html#a2dba41202f1697e9b423df1a7b468392',1,'lampda::logic::alerts::Alert_BatteryLow::execute()'],['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#ae86cc759ac02aaa5c656859233317b32',1,'lampda::logic::alerts::AlertBase::execute()']]],
+  ['exponentialcurve_19',['ExponentialCurve',['../classlampda_1_1utils_1_1curves_1_1ExponentialCurve.html#a46c3fa4d2fb845b8c88f969ed84a7372',1,'lampda::utils::curves::ExponentialCurve']]]
 ];

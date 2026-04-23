@@ -115,6 +115,14 @@ bool LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>is_blipin
 <tr class="memitem:a4cbed8ac88edf6e6e31001ffb41de330"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a4cbed8ac88edf6e6e31001ffb41de330">setBrightness</a> (const <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> newBrightness, const bool skipCallbacks=true, const bool skipUpdateBrightness=false, const bool updateSavedBrightess=false)</td></tr>
 <tr class="memdesc:a4cbed8ac88edf6e6e31001ffb41de330"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set brightness of the lamp.  <br /></td></tr>
 <tr class="separator:a4cbed8ac88edf6e6e31001ffb41de330"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a055e192ef1ba2830f59e193acd6aae96"><td class="memItemLeft" align="right" valign="top"><a id="a055e192ef1ba2830f59e193acd6aae96" name="a055e192ef1ba2830f59e193acd6aae96"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>align_internal_to_system_brightness</b> ()</td></tr>
+<tr class="memdesc:a055e192ef1ba2830f59e193acd6aae96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Special call to update the internal brightness values to the system brightness. <br /></td></tr>
+<tr class="separator:a055e192ef1ba2830f59e193acd6aae96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ee901eec1ea481cb226366f1f165254"><td class="memItemLeft" align="right" valign="top"><a id="a5ee901eec1ea481cb226366f1f165254" name="a5ee901eec1ea481cb226366f1f165254"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>enforce_internal_brightness_limits</b> ()</td></tr>
+<tr class="memdesc:a5ee901eec1ea481cb226366f1f165254"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enforce the brightness limits, if getMaxBrightness changed. Will call <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a4cbed8ac88edf6e6e31001ffb41de330">setBrightness</a>. <br /></td></tr>
+<tr class="separator:a5ee901eec1ea481cb226366f1f165254"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b6801130ec81a68e43f10160647c3bd"><td class="memItemLeft" align="right" valign="top"><a id="a1b6801130ec81a68e43f10160647c3bd" name="a1b6801130ec81a68e43f10160647c3bd"></a>
 <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>getMaxBrightness</b> () const</td></tr>
 <tr class="memdesc:a1b6801130ec81a68e43f10160647c3bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the actual allowed maximum brightness. <br /></td></tr>
@@ -223,6 +231,14 @@ Public Attributes</h2></td></tr>
 <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy_1_1LampConfig.html">LampConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><b>config</b></td></tr>
 <tr class="memdesc:a67255e57c453f433808eceaf1f319272"><td class="mdescLeft">&#160;</td><td class="mdescRight">store a display configuration <br /></td></tr>
 <tr class="separator:a67255e57c453f433808eceaf1f319272"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa245325f6572325c9025fadf39407c41"><td class="memItemLeft" align="right" valign="top"><a id="aa245325f6572325c9025fadf39407c41" name="aa245325f6572325c9025fadf39407c41"></a>
+volatile <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>saved_brightness</b></td></tr>
+<tr class="memdesc:aa245325f6572325c9025fadf39407c41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define a localy consistant saved brightness. Should be similar. <br /></td></tr>
+<tr class="separator:aa245325f6572325c9025fadf39407c41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a504379130fb65007fef50ce4a665c2a8"><td class="memItemLeft" align="right" valign="top"><a id="a504379130fb65007fef50ce4a665c2a8" name="a504379130fb65007fef50ce4a665c2a8"></a>
+volatile <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>temporary_brightness</b></td></tr>
+<tr class="memdesc:a504379130fb65007fef50ce4a665c2a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define a localy consistant temporary brightness. <br /></td></tr>
+<tr class="separator:a504379130fb65007fef50ce4a665c2a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7bafa7f06c8a03fb2bbfba53b8830b5a"><td class="memItemLeft" align="right" valign="top">volatile const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a7bafa7f06c8a03fb2bbfba53b8830b5a">now</a></td></tr>
 <tr class="memdesc:a7bafa7f06c8a03fb2bbfba53b8830b5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">(physical) The "now" on milliseconds, updated just before loop.  <br /></td></tr>
 <tr class="separator:a7bafa7f06c8a03fb2bbfba53b8830b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1005,7 +1021,7 @@ template&lt;uint8_t bufIdx = 0&gt; </div>
 <li>if <code>skipUpdateBrightness</code> is true, only set strip object brightness, or do nothing if <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#acb37532c7a05baa05dbac7d0870c3958" title="Which lamp flavor is currently used by the implementation?">LampTy::flavor</a> is not <a class="el" href="namespacelampda_1_1modes_1_1hardware.html#a4a59d53a8125e83721ba8b38597a3819a3e9616f66ee9536fe327116244382f86" title="Equivalent to LMBD_LAMP_TYPE__INDEXABLE.">LampTypes::indexable</a></li>
 <li>if <code>updateSavedBrightess</code> is true, save brightness and next time user navigate brightness, use it as starting point (see tempBrightness)</li>
 </ul>
-<p>Note that calls to <code><a class="el" href="namespacelampda_1_1logic_1_1brightness.html#a52a4218b42b2f75d0046a612c550bb24" title="update the internal brightness values">logic::brightness::update_brightness</a></code> are throttled to once in every 50ms to avoid freezing user brightness navigation.</p>
+<p>Note that calls to <code><a class="el" href="namespacelampda_1_1logic_1_1brightness.html#a155cf705c29fd57d1c543fefc7a419ba" title="update the internal brightness values">logic::brightness::update_brightness</a></code> are throttled to once in every 50ms to avoid freezing user brightness navigation.</p>
 <p>Note that <code>skipUpdateBrightness</code> implies <code>skipCallbacks</code> implicitly </p>
 
 </div>

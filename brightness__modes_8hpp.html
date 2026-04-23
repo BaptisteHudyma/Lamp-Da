@@ -89,11 +89,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1brightness_1_1StaticLightMode.html">lampda::modes::brightness::StaticLightMode</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Basic lightning mode (does nothing, brightness may be adjusted)  <a href="structlampda_1_1modes_1_1brightness_1_1StaticLightMode.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1brightness_1_1OnePulse.html">lampda::modes::brightness::OnePulse</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple pulse every second.  <a href="structlampda_1_1modes_1_1brightness_1_1OnePulse.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1brightness_1_1ManyPulse.html">lampda::modes::brightness::ManyPulse&lt; N &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pulse N times then pause one second.  <a href="structlampda_1_1modes_1_1brightness_1_1ManyPulse.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1brightness_1_1Pulses.html">lampda::modes::brightness::Pulses&lt; N &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pulse N times then pause one second.  <a href="structlampda_1_1modes_1_1brightness_1_1Pulses.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1brightness_1_1Candle.html">lampda::modes::brightness::Candle</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Based on the candle animation from Anduril. candle-mode.c: <a class="el" href="structlampda_1_1modes_1_1brightness_1_1Candle.html" title="Based on the candle animation from Anduril. candle-mode.c: Candle mode for Anduril....">Candle</a> mode for Anduril. Copyright (C) 2017-2023 Selene ToyKeeper. SPDX-License-Identifier: GPL-3.0-or-later.  <a href="structlampda_1_1modes_1_1brightness_1_1Candle.html#details">More...</a><br /></td></tr>
@@ -130,10 +127,10 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::brigh
 using&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::brightness::CalmGroup</b> = GroupFor&lt; Candle, LightningMode &gt;</td></tr>
 <tr class="memdesc:ad95615ae2c8f0e1d39e29840b3ade120"><td class="mdescLeft">&#160;</td><td class="mdescRight">Group for calm modes. <br /></td></tr>
 <tr class="separator:ad95615ae2c8f0e1d39e29840b3ade120"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6cd340a1c4b41f2f55ac6db873dc3902"><td class="memItemLeft" align="right" valign="top"><a id="a6cd340a1c4b41f2f55ac6db873dc3902" name="a6cd340a1c4b41f2f55ac6db873dc3902"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::brightness::FlashesGroup</b> = GroupFor&lt; StroboscopeMode, OnePulse, ManyPulse&lt; 2 &gt; &gt;</td></tr>
-<tr class="memdesc:a6cd340a1c4b41f2f55ac6db873dc3902"><td class="mdescLeft">&#160;</td><td class="mdescRight">Group for flashing modes. <br /></td></tr>
-<tr class="separator:a6cd340a1c4b41f2f55ac6db873dc3902"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf0faa9e1601ccba39a4b291c38d8e1f"><td class="memItemLeft" align="right" valign="top"><a id="adf0faa9e1601ccba39a4b291c38d8e1f" name="adf0faa9e1601ccba39a4b291c38d8e1f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::brightness::FlashesGroup</b> = GroupFor&lt; StroboscopeMode, Pulses&lt; 1 &gt;, Pulses&lt; 2 &gt; &gt;</td></tr>
+<tr class="memdesc:adf0faa9e1601ccba39a4b291c38d8e1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Group for flashing modes. <br /></td></tr>
+<tr class="separator:adf0faa9e1601ccba39a4b291c38d8e1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -24,5 +24,6 @@ var searchData=
   ['prochotoption1t_21',['ProchotOption1t',['../structbq25713_1_1BQ25713_1_1Regt_1_1ProchotOption1t.html',1,'bq25713::BQ25713::Regt']]],
   ['prochotstatust_22',['ProchotStatust',['../structbq25713_1_1BQ25713_1_1Regt_1_1ProchotStatust.html',1,'bq25713::BQ25713::Regt']]],
   ['progtimert_23',['ProgTimert',['../structbq76905_1_1BQ76905_1_1Regt_1_1ProgTimert.html',1,'bq76905::BQ76905::Regt']]],
-  ['protrecoveryt_24',['ProtRecoveryt',['../structbq76905_1_1BQ76905_1_1Regt_1_1ProtRecoveryt.html',1,'bq76905::BQ76905::Regt']]]
+  ['protrecoveryt_24',['ProtRecoveryt',['../structbq76905_1_1BQ76905_1_1Regt_1_1ProtRecoveryt.html',1,'bq76905::BQ76905::Regt']]],
+  ['pulses_25',['Pulses',['../structlampda_1_1modes_1_1brightness_1_1Pulses.html',1,'lampda::modes::brightness']]]
 ];

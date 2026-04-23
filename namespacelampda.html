@@ -322,7 +322,7 @@ static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>tot
 <tr class="memdesc:ad043cec810b8319390f8802a87197a15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total maximum power usage of the led strip. <br /></td></tr>
 <tr class="separator:ad043cec810b8319390f8802a87197a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada03a8ee8348bacb6713c27534ad4f58"><td class="memItemLeft" align="right" valign="top"><a id="ada03a8ee8348bacb6713c27534ad4f58" name="ada03a8ee8348bacb6713c27534ad4f58"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>maxStripConsumption_A</b> = 1000.0f * <a class="el" href="namespacelampda.html#ad043cec810b8319390f8802a87197a15">totalCons_Watt</a> / stripInputVoltage_mV</td></tr>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>maxStripConsumption_A</b> = 1000.0f * <a class="el" href="namespacelampda.html#ad043cec810b8319390f8802a87197a15">totalCons_Watt</a> / stripInputMaxVoltage_mV</td></tr>
 <tr class="memdesc:ada03a8ee8348bacb6713c27534ad4f58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum led strip current usage, in Amps. <br /></td></tr>
 <tr class="separator:ada03a8ee8348bacb6713c27534ad4f58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0e694c7a9580bdbde12b0f02aac9a3f"><td class="memItemLeft" align="right" valign="top">static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html#ad0e694c7a9580bdbde12b0f02aac9a3f">batteryMaxChargeCurrent_mA</a></td></tr>
@@ -366,9 +366,12 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 <tr class="memitem:ab4a9ae80ec8483b66360503fd9ad4918"><td class="memItemLeft" align="right" valign="top"><a id="ab4a9ae80ec8483b66360503fd9ad4918" name="ab4a9ae80ec8483b66360503fd9ad4918"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>consWattByMeter</b> = 12</td></tr>
 <tr class="separator:ab4a9ae80ec8483b66360503fd9ad4918"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab37ae662be655e067571e63dc78ea607"><td class="memItemLeft" align="right" valign="top"><a id="ab37ae662be655e067571e63dc78ea607" name="ab37ae662be655e067571e63dc78ea607"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>stripInputVoltage_mV</b> = 12000</td></tr>
-<tr class="separator:ab37ae662be655e067571e63dc78ea607"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ae2ee8c5125721a8a77c814c6867d02"><td class="memItemLeft" align="right" valign="top"><a id="a7ae2ee8c5125721a8a77c814c6867d02" name="a7ae2ee8c5125721a8a77c814c6867d02"></a>
+static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>stripInputMinVoltage_mV</b> = 9400</td></tr>
+<tr class="separator:a7ae2ee8c5125721a8a77c814c6867d02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59aa3cf36c645f4b24d0a97f749c692c"><td class="memItemLeft" align="right" valign="top"><a id="a59aa3cf36c645f4b24d0a97f749c692c" name="a59aa3cf36c645f4b24d0a97f749c692c"></a>
+static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>stripInputMaxVoltage_mV</b> = 12000</td></tr>
+<tr class="separator:a59aa3cf36c645f4b24d0a97f749c692c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4cc1b83079b6cbaa91e8dcdb87c0e1b7"><td class="memItemLeft" align="right" valign="top"><a id="a4cc1b83079b6cbaa91e8dcdb87c0e1b7" name="a4cc1b83079b6cbaa91e8dcdb87c0e1b7"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>ledStripLength_mm</b> = 91.0f * 25.0f</td></tr>
 <tr class="separator:a4cc1b83079b6cbaa91e8dcdb87c0e1b7"><td class="memSeparator" colspan="2">&#160;</td></tr>

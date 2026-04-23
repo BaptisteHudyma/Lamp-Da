@@ -88,8 +88,12 @@ $(function() {
 Public Attributes</h2></td></tr>
 <tr class="memitem:ae5373f0c28240f250daade0220d46a12"><td class="memItemLeft" align="right" valign="top"><a id="ae5373f0c28240f250daade0220d46a12" name="ae5373f0c28240f250daade0220d46a12"></a>
 <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>MaxBrightnessLimit</b> = <a class="el" href="system_2utils_2constants_8h.html#a9faf7ba42a120f449494e8222aa0562c">::lampda::brightness::absoluteMaximumBrightness</a></td></tr>
-<tr class="memdesc:ae5373f0c28240f250daade0220d46a12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upper bound for the brightness Can be updated to limit the max birghtness, but should never ecxeed absoluteMaximumBrightness. <br /></td></tr>
+<tr class="memdesc:ae5373f0c28240f250daade0220d46a12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upper bound for the brightness Can be updated to limit the max brightness, but should never ecxeed absoluteMaximumBrightness. <br /></td></tr>
 <tr class="separator:ae5373f0c28240f250daade0220d46a12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52b99031fa249e7983f375ce90efea95"><td class="memItemLeft" align="right" valign="top"><a id="a52b99031fa249e7983f375ce90efea95" name="a52b99031fa249e7983f375ce90efea95"></a>
+<a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>MaxUserBrightnessLimit</b> = <a class="el" href="system_2utils_2constants_8h.html#a9faf7ba42a120f449494e8222aa0562c">::lampda::brightness::absoluteMaximumBrightness</a></td></tr>
+<tr class="memdesc:a52b99031fa249e7983f375ce90efea95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upper bound of the brightness, limited to MaxBrightnessLimit. This only locks user uses. <br /></td></tr>
+<tr class="separator:a52b99031fa249e7983f375ce90efea95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9d3c79bd7e7314cd9c9b870a8abb756"><td class="memItemLeft" align="right" valign="top"><a id="ad9d3c79bd7e7314cd9c9b870a8abb756" name="ad9d3c79bd7e7314cd9c9b870a8abb756"></a>
 <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>BRIGHTNESS</b> = 200</td></tr>
 <tr class="memdesc:ad9d3c79bd7e7314cd9c9b870a8abb756"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hold the current level of brightness. This is the true reference value that is stored in memory at system shutdown. <br /></td></tr>
@@ -100,7 +104,7 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a7bd1abee6ea2c7f70b82201999f6e3b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a695304b9289615b96c78b2f63f0203dd"><td class="memItemLeft" align="right" valign="top"><a id="a695304b9289615b96c78b2f63f0203dd" name="a695304b9289615b96c78b2f63f0203dd"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lastBrightnessUpdate</b> = 0</td></tr>
-<tr class="memdesc:a695304b9289615b96c78b2f63f0203dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store when <a class="el" href="namespacelampda_1_1logic_1_1brightness.html#a52a4218b42b2f75d0046a612c550bb24" title="update the internal brightness values">update_brightness()</a> was last called, in milliseconds. <br /></td></tr>
+<tr class="memdesc:a695304b9289615b96c78b2f63f0203dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store when <a class="el" href="namespacelampda_1_1logic_1_1brightness.html#a155cf705c29fd57d1c543fefc7a419ba" title="update the internal brightness values">update_brightness()</a> was last called, in milliseconds. <br /></td></tr>
 <tr class="separator:a695304b9289615b96c78b2f63f0203dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>

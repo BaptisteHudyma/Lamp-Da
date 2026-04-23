@@ -102,26 +102,38 @@ Namespaces</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a00d40f9c0f3fa96a607035327d5ebdb9"><td class="memItemLeft" align="right" valign="top"><a id="a00d40f9c0f3fa96a607035327d5ebdb9" name="a00d40f9c0f3fa96a607035327d5ebdb9"></a>
 brightness_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::brightness::get_brightness</b> ()</td></tr>
-<tr class="memdesc:a00d40f9c0f3fa96a607035327d5ebdb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current brightness value (in range 0 - <a class="el" href="system_2utils_2constants_8h.html#a9faf7ba42a120f449494e8222aa0562c" title="Maximum brigthness value.">brightness::absoluteMaximumBrightness</a>) <br /></td></tr>
+<tr class="memdesc:a00d40f9c0f3fa96a607035327d5ebdb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current brightness value (in range 0 - <a class="el" href="system_2utils_2constants_8h.html#a9faf7ba42a120f449494e8222aa0562c" title="Maximum brigthness value.">brightness::absoluteMaximumBrightness</a>). It's value depends on a lot of factors and can be cantrolled by any actors. <br /></td></tr>
 <tr class="separator:a00d40f9c0f3fa96a607035327d5ebdb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a344a0b2be33eeb345469fa4fc20d7b76"><td class="memItemLeft" align="right" valign="top"><a id="a344a0b2be33eeb345469fa4fc20d7b76" name="a344a0b2be33eeb345469fa4fc20d7b76"></a>
 brightness_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::brightness::get_saved_brightness</b> ()</td></tr>
-<tr class="memdesc:a344a0b2be33eeb345469fa4fc20d7b76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the saved brightness level. <br /></td></tr>
+<tr class="memdesc:a344a0b2be33eeb345469fa4fc20d7b76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the saved brightness level. This shoudl be the prefered option in all computations. <br /></td></tr>
 <tr class="separator:a344a0b2be33eeb345469fa4fc20d7b76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe49f2d4c76155c6a176bdc1014b9c0e"><td class="memItemLeft" align="right" valign="top"><a id="abe49f2d4c76155c6a176bdc1014b9c0e" name="abe49f2d4c76155c6a176bdc1014b9c0e"></a>
 brightness_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::brightness::get_max_brightness</b> ()</td></tr>
 <tr class="memdesc:abe49f2d4c76155c6a176bdc1014b9c0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the maximum allowed brightness. <br /></td></tr>
 <tr class="separator:abe49f2d4c76155c6a176bdc1014b9c0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47de6a32aefa342a66ab842e6b7966c2"><td class="memItemLeft" align="right" valign="top"><a id="a47de6a32aefa342a66ab842e6b7966c2" name="a47de6a32aefa342a66ab842e6b7966c2"></a>
+brightness_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::brightness::get_max_user_brightness</b> ()</td></tr>
+<tr class="memdesc:a47de6a32aefa342a66ab842e6b7966c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the maximum allowed brightness for the user modes. <br /></td></tr>
+<tr class="separator:a47de6a32aefa342a66ab842e6b7966c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a467277619e86efce55db64b649dc7799"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1brightness.html#a467277619e86efce55db64b649dc7799">lampda::logic::brightness::set_max_brightness</a> (const brightness_t brg)</td></tr>
 <tr class="memdesc:a467277619e86efce55db64b649dc7799"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the new max brightness.  <br /></td></tr>
 <tr class="separator:a467277619e86efce55db64b649dc7799"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab147451debf20e06aa43687837aa70e"><td class="memItemLeft" align="right" valign="top"><a id="aab147451debf20e06aa43687837aa70e" name="aab147451debf20e06aa43687837aa70e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::brightness::set_max_user_brightness</b> (const brightness_t brg)</td></tr>
+<tr class="memdesc:aab147451debf20e06aa43687837aa70e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the maximum allowed brightness for the user modes. <br /></td></tr>
+<tr class="separator:aab147451debf20e06aa43687837aa70e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af28d5a302b15c8de69597f1f74e69ac8"><td class="memItemLeft" align="right" valign="top"><a id="af28d5a302b15c8de69597f1f74e69ac8" name="af28d5a302b15c8de69597f1f74e69ac8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::brightness::update_saved_brightness</b> ()</td></tr>
 <tr class="memdesc:af28d5a302b15c8de69597f1f74e69ac8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the saved brightness value with the current brightness. <br /></td></tr>
 <tr class="separator:af28d5a302b15c8de69597f1f74e69ac8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52a4218b42b2f75d0046a612c550bb24"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1brightness.html#a52a4218b42b2f75d0046a612c550bb24">lampda::logic::brightness::update_brightness</a> (const brightness_t newBrightness, const bool isInitialRead=false)</td></tr>
-<tr class="memdesc:a52a4218b42b2f75d0046a612c550bb24"><td class="mdescLeft">&#160;</td><td class="mdescRight">update the internal brightness values  <br /></td></tr>
-<tr class="separator:a52a4218b42b2f75d0046a612c550bb24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a155cf705c29fd57d1c543fefc7a419ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1brightness.html#a155cf705c29fd57d1c543fefc7a419ba">lampda::logic::brightness::update_brightness</a> (const brightness_t newBrightness, const bool shouldCallUserBrightnessCallback=false)</td></tr>
+<tr class="memdesc:a155cf705c29fd57d1c543fefc7a419ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">update the internal brightness values  <br /></td></tr>
+<tr class="separator:a155cf705c29fd57d1c543fefc7a419ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c7170ca51cb8f0255cabc9d83d1bab0"><td class="memItemLeft" align="right" valign="top"><a id="a4c7170ca51cb8f0255cabc9d83d1bab0" name="a4c7170ca51cb8f0255cabc9d83d1bab0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::brightness::force_brightness_user_callback</b> ()</td></tr>
+<tr class="memdesc:a4c7170ca51cb8f0255cabc9d83d1bab0"><td class="mdescLeft">&#160;</td><td class="mdescRight">force an update call to the user brightness callback <br /></td></tr>
+<tr class="separator:a4c7170ca51cb8f0255cabc9d83d1bab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ebc1a296fd81cb735a6002fcca3eb9d"><td class="memItemLeft" align="right" valign="top"><a id="a0ebc1a296fd81cb735a6002fcca3eb9d" name="a0ebc1a296fd81cb735a6002fcca3eb9d"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::brightness::when_last_update_brightness</b> ()</td></tr>
 <tr class="memdesc:a0ebc1a296fd81cb735a6002fcca3eb9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get time in milliseconds when brightness was last updated. <br /></td></tr>

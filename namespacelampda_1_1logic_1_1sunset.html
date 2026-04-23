@@ -89,9 +89,14 @@ Functions</h2></td></tr>
 <tr class="memitem:af3544cfc23a26d917bf1a7999cb506b5"><td class="memItemLeft" align="right" valign="top"><a id="af3544cfc23a26d917bf1a7999cb506b5" name="af3544cfc23a26d917bf1a7999cb506b5"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_sunset_loop_timing_ms</b> ()</td></tr>
 <tr class="separator:af3544cfc23a26d917bf1a7999cb506b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57c04189e4c7ad22a06e4f8d8f3c3ee9"><td class="memItemLeft" align="right" valign="top"><a id="a57c04189e4c7ad22a06e4f8d8f3c3ee9" name="a57c04189e4c7ad22a06e4f8d8f3c3ee9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>signal_sunset_update</b> ()</td></tr>
-<tr class="separator:a57c04189e4c7ad22a06e4f8d8f3c3ee9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b990f6c99b138b22985726990cf8db1"><td class="memItemLeft" align="right" valign="top"><a id="a1b990f6c99b138b22985726990cf8db1" name="a1b990f6c99b138b22985726990cf8db1"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>get_percent_of_advance</b> ()</td></tr>
+<tr class="memdesc:a1b990f6c99b138b22985726990cf8db1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the percent of advance of the sunset timer, from 0 to 1. 1 is end of process. <br /></td></tr>
+<tr class="separator:a1b990f6c99b138b22985726990cf8db1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a576d734fe3af3ed7e0be6c2f708837ee"><td class="memItemLeft" align="right" valign="top"><a id="a576d734fe3af3ed7e0be6c2f708837ee" name="a576d734fe3af3ed7e0be6c2f708837ee"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>signal_sunset_update</b> ()</td></tr>
+<tr class="memdesc:a576d734fe3af3ed7e0be6c2f708837ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send the timer update signal to consummers Returns the progress. <br /></td></tr>
+<tr class="separator:a576d734fe3af3ed7e0be6c2f708837ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2d43e0f2bb6375092fadbec14ebb170"><td class="memItemLeft" align="right" valign="top"><a id="ae2d43e0f2bb6375092fadbec14ebb170" name="ae2d43e0f2bb6375092fadbec14ebb170"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>sunset_process_loop</b> ()</td></tr>
 <tr class="separator:ae2d43e0f2bb6375092fadbec14ebb170"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -114,12 +119,19 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>cancel_timer</b> ()</
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_enabled</b> ()</td></tr>
 <tr class="memdesc:adbc8111ff1ded6a91542c671e0ecfd8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if timer is running. <br /></td></tr>
 <tr class="separator:adbc8111ff1ded6a91542c671e0ecfd8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a799caa09b595aa58a9922367f6c031aa"><td class="memItemLeft" align="right" valign="top"><a id="a799caa09b595aa58a9922367f6c031aa" name="a799caa09b595aa58a9922367f6c031aa"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lock_brightness_update</b> (bool shouldLock)</td></tr>
+<tr class="memdesc:a799caa09b595aa58a9922367f6c031aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lock the hability of the sunset timer to control the brightness. <br /></td></tr>
+<tr class="separator:a799caa09b595aa58a9922367f6c031aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:adf90c0e6f934cf00933bf8ec5f4b67e7"><td class="memItemLeft" align="right" valign="top"><a id="adf90c0e6f934cf00933bf8ec5f4b67e7" name="adf90c0e6f934cf00933bf8ec5f4b67e7"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>sunsetTimerEndTime_s</b> = 0</td></tr>
 <tr class="separator:adf90c0e6f934cf00933bf8ec5f4b67e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1addb6b09012be8184ea6fd15789433c"><td class="memItemLeft" align="right" valign="top"><a id="a1addb6b09012be8184ea6fd15789433c" name="a1addb6b09012be8184ea6fd15789433c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isAllowedToControlBrightness</b> = true</td></tr>
+<tr class="separator:a1addb6b09012be8184ea6fd15789433c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ded2730824ba27c17b7578448603197"><td class="memItemLeft" align="right" valign="top"><a id="a9ded2730824ba27c17b7578448603197" name="a9ded2730824ba27c17b7578448603197"></a>
 static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>brightnessRampDownTime_min</b> = 3</td></tr>
 <tr class="separator:a9ded2730824ba27c17b7578448603197"><td class="memSeparator" colspan="2">&#160;</td></tr>

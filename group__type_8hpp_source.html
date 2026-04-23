@@ -266,134 +266,138 @@ $(function() {
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> enter_mode(<span class="keyword">auto</span>&amp; ctx)</div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>  {</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="comment">// set ramps if they exist</span></div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    uint8_t modeIdAfter = ctx.get_active_mode(nbModes);</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    ctx.state.load_ramps(ctx, modeIdAfter);</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="comment">// start new mode we switched to</span></div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    dispatch_mode(ctx, [](<span class="keyword">auto</span> mode) {</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>      mode.on_enter_mode();</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    });</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>  }</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> quit_mode(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>  {</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="comment">// save ramps if they exist</span></div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    uint8_t modeIdBefore = ctx.get_active_mode(nbModes);</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="comment">// save ramps if they exist</span></div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    ctx.state.save_ramps(ctx, modeIdBefore);</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="comment">// start new mode we switched to</span></div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    dispatch_mode(ctx, [](<span class="keyword">auto</span> mode) {</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>      mode.on_exit_mode();</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    });</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>  }</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>  <span class="comment">//</span></div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>  <span class="comment">// all the callbacks</span></div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>  <span class="comment">//</span></div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#ae6204ded372bd76ecc695de1855f00bb">loop</a>(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>  {</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    dispatch_mode(ctx, [](<span class="keyword">auto</span> mode) {</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>      mode.loop();</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    });</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>  }</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> sunset_update(<span class="keyword">auto</span>&amp; ctx, <span class="keywordtype">float</span> progress)</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>  {</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    dispatch_mode(ctx, [&amp;](<span class="keyword">auto</span> mode) {</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>      mode.sunset_update(progress);</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    });</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>  }</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a2bed2303bf048e21a21fa2e6a8ebb8fc">brightness_update</a>(<span class="keyword">auto</span>&amp; ctx, <a class="code hl_typedef" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> brightness)</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>  {</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    dispatch_mode(ctx, [&amp;](<span class="keyword">auto</span> mode) {</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>      mode.brightness_update(brightness);</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    });</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>  }</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> custom_ramp_update(<span class="keyword">auto</span>&amp; ctx, uint8_t rampValue)</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>  {</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    dispatch_mode(ctx, [&amp;](<span class="keyword">auto</span> mode) {</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>      mode.custom_ramp_update(rampValue);</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    });</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>  }</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> custom_click(<span class="keyword">auto</span>&amp; ctx, uint8_t nbClick)</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>  {</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    <span class="keywordtype">bool</span> retVal = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    dispatch_mode(ctx, [&amp;](<span class="keyword">auto</span> mode) {</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>      retVal = mode.custom_click(nbClick);</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    });</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <span class="keywordflow">return</span> retVal;</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>  }</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> custom_hold(<span class="keyword">auto</span>&amp; ctx, uint8_t nbClickAndHold, <span class="keywordtype">bool</span> isEndOfHoldEvent, uint32_t holdDuration)</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>  {</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <span class="keywordtype">bool</span> retVal = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    dispatch_mode(ctx, [&amp;](<span class="keyword">auto</span> mode) {</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>      retVal = mode.custom_hold(nbClickAndHold, isEndOfHoldEvent, holdDuration);</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    });</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    <span class="keywordflow">return</span> retVal;</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>  }</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span> </div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a9f29be2c74dbd49d32347da761917642">power_on_sequence</a>(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>  {</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    foreach_mode&lt;true&gt;(ctx, [](<span class="keyword">auto</span> mode) {</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>      mode.power_on_sequence();</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    });</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>  }</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span> </div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#ade4b7ab83f3d61049be76abc02c986a5">power_off_sequence</a>(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>  {</div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    foreach_mode&lt;true&gt;(ctx, [](<span class="keyword">auto</span> mode) {</div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>      mode.power_off_sequence();</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    });</div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>  }</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#acb9086987851371577be7407d39032c7">write_parameters</a>(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>  {</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    foreach_mode&lt;true&gt;(ctx, [](<span class="keyword">auto</span> mode) {</div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>      mode.write_parameters();</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    });</div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>  }</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span> </div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a4d4d42999a9bb52d95ecaf7294c8c523">read_parameters</a>(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>  {</div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    foreach_mode&lt;true&gt;(ctx, [](<span class="keyword">auto</span> mode) {</div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>      mode.read_parameters();</div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    });</div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>  }</div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span> </div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a42710cdf95b63e4a0d644c0e976b715a">user_thread</a>(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>  {</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    dispatch_mode(ctx, [](<span class="keyword">auto</span> mode) {</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>      mode.user_thread();</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    });</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>  }</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>};</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span> </div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno"><a class="line" href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f">  332</a></span><span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Modes&gt; <span class="keyword">using </span><a class="code hl_typedef" href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f">GroupFor</a> = GroupTy&lt;std::tuple&lt;Modes...&gt;&gt;;</div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span> </div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>} <span class="comment">// namespace lampda::modes</span></div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span> </div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="comment">// restore brigthness before entering a mode</span></div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    ctx.lamp.setBrightness(<a class="code hl_function" href="namespacelampda_1_1logic_1_1brightness.html#a344a0b2be33eeb345469fa4fc20d7b76">logic::brightness::get_saved_brightness</a>(), <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="comment">// set ramps if they exist</span></div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    uint8_t modeIdAfter = ctx.get_active_mode(nbModes);</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    ctx.state.load_ramps(ctx, modeIdAfter);</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="comment">// start new mode we switched to</span></div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    dispatch_mode(ctx, [](<span class="keyword">auto</span> mode) {</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>      mode.on_enter_mode();</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    });</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>  }</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span> </div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> quit_mode(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>  {</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="comment">// save ramps if they exist</span></div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    uint8_t modeIdBefore = ctx.get_active_mode(nbModes);</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="comment">// save ramps if they exist</span></div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    ctx.state.save_ramps(ctx, modeIdBefore);</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span> </div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="comment">// start new mode we switched to</span></div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    dispatch_mode(ctx, [](<span class="keyword">auto</span> mode) {</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>      mode.on_exit_mode();</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    });</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>  }</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span> </div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>  <span class="comment">//</span></div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>  <span class="comment">// all the callbacks</span></div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>  <span class="comment">//</span></div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span> </div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#ae6204ded372bd76ecc695de1855f00bb">loop</a>(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>  {</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    dispatch_mode(ctx, [](<span class="keyword">auto</span> mode) {</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>      mode.loop();</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    });</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>  }</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> sunset_update(<span class="keyword">auto</span>&amp; ctx, <span class="keywordtype">float</span> progress)</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>  {</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    dispatch_mode(ctx, [&amp;](<span class="keyword">auto</span> mode) {</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>      mode.sunset_update(progress);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    });</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>  }</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span> </div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a2bed2303bf048e21a21fa2e6a8ebb8fc">brightness_update</a>(<span class="keyword">auto</span>&amp; ctx, <a class="code hl_typedef" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> brightness)</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>  {</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    dispatch_mode(ctx, [&amp;](<span class="keyword">auto</span> mode) {</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>      mode.brightness_update(brightness);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    });</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>  }</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> custom_ramp_update(<span class="keyword">auto</span>&amp; ctx, uint8_t rampValue)</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>  {</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    dispatch_mode(ctx, [&amp;](<span class="keyword">auto</span> mode) {</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>      mode.custom_ramp_update(rampValue);</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    });</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>  }</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span> </div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> custom_click(<span class="keyword">auto</span>&amp; ctx, uint8_t nbClick)</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>  {</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    <span class="keywordtype">bool</span> retVal = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    dispatch_mode(ctx, [&amp;](<span class="keyword">auto</span> mode) {</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>      retVal = mode.custom_click(nbClick);</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    });</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <span class="keywordflow">return</span> retVal;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>  }</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> custom_hold(<span class="keyword">auto</span>&amp; ctx, uint8_t nbClickAndHold, <span class="keywordtype">bool</span> isEndOfHoldEvent, uint32_t holdDuration)</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>  {</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    <span class="keywordtype">bool</span> retVal = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    dispatch_mode(ctx, [&amp;](<span class="keyword">auto</span> mode) {</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>      retVal = mode.custom_hold(nbClickAndHold, isEndOfHoldEvent, holdDuration);</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    });</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    <span class="keywordflow">return</span> retVal;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>  }</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span> </div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a9f29be2c74dbd49d32347da761917642">power_on_sequence</a>(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>  {</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    foreach_mode&lt;true&gt;(ctx, [](<span class="keyword">auto</span> mode) {</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>      mode.power_on_sequence();</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    });</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>  }</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#ade4b7ab83f3d61049be76abc02c986a5">power_off_sequence</a>(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>  {</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    foreach_mode&lt;true&gt;(ctx, [](<span class="keyword">auto</span> mode) {</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>      mode.power_off_sequence();</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    });</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>  }</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span> </div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#acb9086987851371577be7407d39032c7">write_parameters</a>(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>  {</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    foreach_mode&lt;true&gt;(ctx, [](<span class="keyword">auto</span> mode) {</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>      mode.write_parameters();</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    });</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>  }</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span> </div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a4d4d42999a9bb52d95ecaf7294c8c523">read_parameters</a>(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>  {</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>    foreach_mode&lt;true&gt;(ctx, [](<span class="keyword">auto</span> mode) {</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>      mode.read_parameters();</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    });</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>  }</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span> </div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a42710cdf95b63e4a0d644c0e976b715a">user_thread</a>(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>  {</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    dispatch_mode(ctx, [](<span class="keyword">auto</span> mode) {</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>      mode.user_thread();</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    });</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>  }</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>};</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span> </div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno"><a class="line" href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f">  335</a></span><span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Modes&gt; <span class="keyword">using </span><a class="code hl_typedef" href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f">GroupFor</a> = GroupTy&lt;std::tuple&lt;Modes...&gt;&gt;;</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span> </div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>} <span class="comment">// namespace lampda::modes</span></div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span> </div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aassert_8h_html"><div class="ttname"><a href="assert_8h.html">assert.h</a></div><div class="ttdoc">Define assertions helpers.</div></div>
 <div class="ttc" id="acontext__type_8hpp_html"><div class="ttname"><a href="context__type_8hpp.html">context_type.hpp</a></div><div class="ttdoc">ContextTy and associated definitions.</div></div>
 <div class="ttc" id="amanager__type_8hpp_html"><div class="ttname"><a href="manager__type_8hpp.html">manager_type.hpp</a></div><div class="ttdoc">modes::ManagerFor and associated definitions</div></div>
 <div class="ttc" id="amode__type_8hpp_html"><div class="ttname"><a href="mode__type_8hpp.html">mode_type.hpp</a></div><div class="ttdoc">Basic interface types to implement custom user modes.</div></div>
+<div class="ttc" id="anamespacelampda_1_1logic_1_1brightness_html_a344a0b2be33eeb345469fa4fc20d7b76"><div class="ttname"><a href="namespacelampda_1_1logic_1_1brightness.html#a344a0b2be33eeb345469fa4fc20d7b76">lampda::logic::brightness::get_saved_brightness</a></div><div class="ttdeci">brightness_t get_saved_brightness()</div><div class="ttdoc">Return the saved brightness level. This shoudl be the prefered option in all computations.</div><div class="ttdef"><b>Definition:</b> brightness_handle.cpp:61</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_html"><div class="ttname"><a href="namespacelampda_1_1modes.html">lampda::modes</a></div><div class="ttdoc">Contains basic interface types to implement custom user modes.</div><div class="ttdef"><b>Definition:</b> nudz_scrollimage.hpp:3</div></div>
-<div class="ttc" id="anamespacelampda_1_1modes_html_aa8da2a265afb18b5429192c81127918f"><div class="ttname"><a href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f">lampda::modes::GroupFor</a></div><div class="ttdeci">GroupTy&lt; std::tuple&lt; Modes... &gt; &gt; GroupFor</div><div class="ttdoc">Group together many different modes::BasicMode.</div><div class="ttdef"><b>Definition:</b> group_type.hpp:332</div></div>
+<div class="ttc" id="anamespacelampda_1_1modes_html_aa8da2a265afb18b5429192c81127918f"><div class="ttname"><a href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f">lampda::modes::GroupFor</a></div><div class="ttdeci">GroupTy&lt; std::tuple&lt; Modes... &gt; &gt; GroupFor</div><div class="ttdoc">Group together many different modes::BasicMode.</div><div class="ttdef"><b>Definition:</b> group_type.hpp:335</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_html_ab874c161b8d6abdb230f01b569c3238f"><div class="ttname"><a href="namespacelampda_1_1modes.html#ab874c161b8d6abdb230f01b569c3238f">lampda::modes::context_as</a></div><div class="ttdeci">static auto context_as(auto &amp;ctx)</div><div class="ttdoc">Bind provided context to another modes::BasicMode.</div><div class="ttdef"><b>Definition:</b> context_type.hpp:25</div></div>
 <div class="ttc" id="anamespacelampda_1_1user_html_a2bed2303bf048e21a21fa2e6a8ebb8fc"><div class="ttname"><a href="namespacelampda_1_1user.html#a2bed2303bf048e21a21fa2e6a8ebb8fc">lampda::user::brightness_update</a></div><div class="ttdeci">void brightness_update(const brightness_t brightness)</div><div class="ttdoc">Called when the system changes the LED strip brightness.</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:55</div></div>
-<div class="ttc" id="anamespacelampda_1_1user_html_a42710cdf95b63e4a0d644c0e976b715a"><div class="ttname"><a href="namespacelampda_1_1user.html#a42710cdf95b63e4a0d644c0e976b715a">lampda::user::user_thread</a></div><div class="ttdeci">void user_thread()</div><div class="ttdoc">Called at each tick of the secondary thread.</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:136</div></div>
-<div class="ttc" id="anamespacelampda_1_1user_html_a4d4d42999a9bb52d95ecaf7294c8c523"><div class="ttname"><a href="namespacelampda_1_1user.html#a4d4d42999a9bb52d95ecaf7294c8c523">lampda::user::read_parameters</a></div><div class="ttdeci">void read_parameters()</div><div class="ttdoc">Called when system wants to read parameters from filesystem.</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:80</div></div>
+<div class="ttc" id="anamespacelampda_1_1user_html_a42710cdf95b63e4a0d644c0e976b715a"><div class="ttname"><a href="namespacelampda_1_1user.html#a42710cdf95b63e4a0d644c0e976b715a">lampda::user::user_thread</a></div><div class="ttdeci">void user_thread()</div><div class="ttdoc">Called at each tick of the secondary thread.</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:149</div></div>
+<div class="ttc" id="anamespacelampda_1_1user_html_a4d4d42999a9bb52d95ecaf7294c8c523"><div class="ttname"><a href="namespacelampda_1_1user.html#a4d4d42999a9bb52d95ecaf7294c8c523">lampda::user::read_parameters</a></div><div class="ttdeci">void read_parameters()</div><div class="ttdoc">Called when system wants to read parameters from filesystem.</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:92</div></div>
 <div class="ttc" id="anamespacelampda_1_1user_html_a9f29be2c74dbd49d32347da761917642"><div class="ttname"><a href="namespacelampda_1_1user.html#a9f29be2c74dbd49d32347da761917642">lampda::user::power_on_sequence</a></div><div class="ttdeci">void power_on_sequence()</div><div class="ttdoc">Called when the system powers on (must be non blocking function!)</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:30</div></div>
-<div class="ttc" id="anamespacelampda_1_1user_html_acb9086987851371577be7407d39032c7"><div class="ttname"><a href="namespacelampda_1_1user.html#acb9086987851371577be7407d39032c7">lampda::user::write_parameters</a></div><div class="ttdeci">void write_parameters()</div><div class="ttdoc">Called when system wants to write parameters to filesystem.</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:74</div></div>
+<div class="ttc" id="anamespacelampda_1_1user_html_acb9086987851371577be7407d39032c7"><div class="ttname"><a href="namespacelampda_1_1user.html#acb9086987851371577be7407d39032c7">lampda::user::write_parameters</a></div><div class="ttdeci">void write_parameters()</div><div class="ttdoc">Called when system wants to write parameters to filesystem.</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:86</div></div>
 <div class="ttc" id="anamespacelampda_1_1user_html_ade4b7ab83f3d61049be76abc02c986a5"><div class="ttname"><a href="namespacelampda_1_1user.html#ade4b7ab83f3d61049be76abc02c986a5">lampda::user::power_off_sequence</a></div><div class="ttdeci">void power_off_sequence()</div><div class="ttdoc">Called when the system powers off (must be non blocking function!)</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:41</div></div>
-<div class="ttc" id="anamespacelampda_1_1user_html_ae6204ded372bd76ecc695de1855f00bb"><div class="ttname"><a href="namespacelampda_1_1user.html#ae6204ded372bd76ecc695de1855f00bb">lampda::user::loop</a></div><div class="ttdeci">void loop()</div><div class="ttdoc">Called at each tick of the main loop.</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:117</div></div>
+<div class="ttc" id="anamespacelampda_1_1user_html_ae6204ded372bd76ecc695de1855f00bb"><div class="ttname"><a href="namespacelampda_1_1user.html#ae6204ded372bd76ecc695de1855f00bb">lampda::user::loop</a></div><div class="ttdeci">void loop()</div><div class="ttdoc">Called at each tick of the main loop.</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:129</div></div>
 <div class="ttc" id="anamespacelampda_html_ad34e2e456962094642d880a33818962f"><div class="ttname"><a href="namespacelampda.html#ad34e2e456962094642d880a33818962f">lampda::brightness_t</a></div><div class="ttdeci">uint16_t brightness_t</div><div class="ttdoc">Define the type of the brightness parameters.</div><div class="ttdef"><b>Definition:</b> constants.h:147</div></div>
 <div class="ttc" id="astructlampda_1_1modes_1_1GroupTy_1_1StateTy_html"><div class="ttname"><a href="structlampda_1_1modes_1_1GroupTy_1_1StateTy.html">lampda::modes::GroupTy::StateTy</a></div><div class="ttdef"><b>Definition:</b> group_type.hpp:127</div></div>
 <div class="ttc" id="astructlampda_1_1modes_1_1GroupTy_1_1StateTy_html_a7355c7cc39e6f8e15b220e12f70e4d29"><div class="ttname"><a href="structlampda_1_1modes_1_1GroupTy_1_1StateTy.html#a7355c7cc39e6f8e15b220e12f70e4d29">lampda::modes::GroupTy::StateTy::customIndexMemory</a></div><div class="ttdeci">std::array&lt; uint8_t, nbModes &gt; customIndexMemory</div><div class="ttdoc">Store the active index for each mode.</div><div class="ttdef"><b>Definition:</b> group_type.hpp:130</div></div>
