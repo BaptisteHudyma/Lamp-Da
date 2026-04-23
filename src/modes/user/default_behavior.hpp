@@ -56,14 +56,23 @@ void brightness_update(const brightness_t brightness)
 {
   auto manager = get_context();
 
-  // force update of the internal references
-  manager.lamp.update_internal_brightness();
+  // dont handle invalid commands
+  if (brightness <= ::lampda::brightness::absoluteMaximumBrightness)
+  {
+    // force update of the internal references
+    manager.lamp.align_internal_to_system_brightness();
 
-  // set brightness for underlying object (w/o re-entry in update_brightness)
-  manager.lamp.setBrightness(brightness, true, true);
+    // set brightness for underlying object (w/o re-entry in update_brightness)
+    manager.lamp.setBrightness(brightness, true, true);
 
-  // callbacks
-  manager.brightness_update(brightness);
+    // callbacks
+    manager.brightness_update(brightness);
+  }
+  else
+  {
+    // this call could be just a max brigthness update
+    manager.lamp.enforce_internal_brightness_limits();
+  }
 }
 
 void sunset_timer_update(const float progress)
@@ -129,6 +138,7 @@ void loop()
 bool should_spawn_thread()
 {
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
+  /// The thread is needed to update the strip, so non negociable.
   return true;
 #else
   auto manager = get_context();

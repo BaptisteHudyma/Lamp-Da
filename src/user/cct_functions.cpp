@@ -71,7 +71,7 @@ void brightness_update(const brightness_t brightness)
   }
 
   // map to a new curve, favorising low levels
-  using curve_t = utils::curves::ExponentialCurve<brightness_t, uint8_t>;
+  using curve_t = utils::curves::ExponentialCurve<brightness_t, brightness_t>;
   static curve_t brightnessCurve(
           curve_t::point_t {0, stripInputMinVoltage_mV},
           curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, stripInputMaxVoltage_mV},

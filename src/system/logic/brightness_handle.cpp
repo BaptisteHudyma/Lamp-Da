@@ -5,6 +5,7 @@
 #include "src/system/platform/time.h"
 
 #include "src/system/utils/utils.h"
+#include <limits>
 
 namespace lampda {
 namespace logic {
@@ -78,7 +79,14 @@ void update_brightness(const brightness_t newBrightness, const bool shouldCallUs
   __internal.lastBrightnessUpdate = ::lampda::platform::time_ms();
 }
 
-void force_brightness_user_callback() { user::brightness_update(get_brightness()); }
+void force_brightness_user_callback()
+{
+  // special check that maximum brightness is not maximum of the type
+  static_assert(::lampda::brightness::absoluteMaximumBrightness < std::numeric_limits<brightness_t>::max());
+
+  // send an invalid command, to avoid updating the brightness
+  user::brightness_update(::lampda::brightness::absoluteMaximumBrightness + 1);
+}
 
 uint32_t when_last_update_brightness() { return __internal.lastBrightnessUpdate; }
 

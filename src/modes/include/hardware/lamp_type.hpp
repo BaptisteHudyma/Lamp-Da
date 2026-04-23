@@ -241,7 +241,7 @@ public:
     clear();
     show_now();
     setBrightness(logic::brightness::get_saved_brightness(), true, true);
-    update_internal_brightness();
+    align_internal_to_system_brightness();
   }
 
   /** \private Does necessary work to setup lamp from a powered-off state
@@ -557,6 +557,13 @@ public:
   {
     assert((skipCallbacks || !skipUpdateBrightness) && "implicit callback skip!");
 
+    // invalid call, fallback to enforcing
+    if (newBrightness > ::lampda::brightness::absoluteMaximumBrightness)
+    {
+      enforce_internal_brightness_limits();
+      return;
+    }
+
     // force update if we are getting lower and lower
     if (!skipUpdateBrightness or newBrightness > getMaxBrightness())
     {
@@ -610,11 +617,30 @@ public:
     }
   }
 
-  /// Special call to update the internal brightness values
-  void update_internal_brightness()
+  /// Special call to update the internal brightness values to the system brightness
+  void align_internal_to_system_brightness()
   {
     saved_brightness = min<brightness_t>(logic::brightness::get_saved_brightness(), getMaxBrightness());
     temporary_brightness = saved_brightness;
+  }
+
+  /// Enforce the brightness limits, if getMaxBrightness changed. Will call \ref setBrightness
+  void enforce_internal_brightness_limits()
+  {
+    const auto maxAllowedBrightness = getMaxBrightness();
+    const brightness_t new_saved_brightness =
+            min<brightness_t>(static_cast<brightness_t>(saved_brightness), maxAllowedBrightness);
+    const brightness_t new_temporary_brightness =
+            min<brightness_t>(static_cast<brightness_t>(temporary_brightness), maxAllowedBrightness);
+
+    const bool isChanged = new_saved_brightness != saved_brightness or new_temporary_brightness != temporary_brightness;
+    if (isChanged)
+    {
+      saved_brightness = new_saved_brightness;
+      temporary_brightness = new_temporary_brightness;
+
+      setBrightness(temporary_brightness);
+    }
   }
 
   /**

@@ -155,6 +155,7 @@ void blip(const uint32_t timing)
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
   // NEVER EVER BLIP THE INDEXABLE, the strip is too weak
   assert(false);
+  return;
 #endif
 
   // hard limit on blip
