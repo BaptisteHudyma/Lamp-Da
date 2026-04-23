@@ -38,7 +38,8 @@ struct LampTy;
 
 namespace physical {
 
-class LedStrip : public Adafruit_NeoPixel
+/// protected inheritence to avoid uncontroled hardware calls
+class LedStrip : private Adafruit_NeoPixel
 {
   using BufferTy = std::array<uint32_t, LED_COUNT>;
   friend struct modes::hardware::LampTy;
@@ -59,14 +60,8 @@ public:
     if (hasSomeChanges)
     {
       // only show if some changes were made
-      Adafruit_NeoPixel::show();
+      show_now();
     }
-    hasSomeChanges = false;
-  }
-
-  void show_now()
-  {
-    Adafruit_NeoPixel::show();
     hasSomeChanges = false;
   }
 
@@ -93,12 +88,35 @@ public:
     return max<float>(baseCurrentConsumption, estimatedCurrentDraw);
   }
 
+  /**
+   * EXPLICIT CALLS TO THE LIBRARY
+   */
+
+  void setBrightness(uint8_t b) { Adafruit_NeoPixel::setBrightness(b); }
+
+  uint8_t getBrightness() const { return Adafruit_NeoPixel::getBrightness(); }
+
+  void begin() { Adafruit_NeoPixel::begin(); }
+
   void setPixelColor(uint16_t n, COLOR c)
   {
     n = lmpd_constrain<uint16_t>(n, 0, LED_COUNT - 1);
     _colors[n] = c;
     Adafruit_NeoPixel::setPixelColor(n, c.color);
   }
+
+  uint32_t getRawPixelColor(uint16_t n) const { return Adafruit_NeoPixel::getPixelColor(n); }
+
+  /// Show the current data, independant of changes
+  void show_now()
+  {
+    Adafruit_NeoPixel::show();
+    hasSomeChanges = false;
+  }
+
+  /**
+   * END OF EXPLICIT CALLS
+   */
 
   void setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b)
   {
@@ -224,8 +242,6 @@ public:
   {
     addPixelColor(LedStrip::to_strip(x, y), color, fast);
   }
-
-  uint32_t getRawPixelColor(uint16_t n) const { return Adafruit_NeoPixel::getPixelColor(n); }
 
   // signal the strip that it can display the update
   void signal_display() { hasSomeChanges = true; }
