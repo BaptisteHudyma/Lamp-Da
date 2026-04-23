@@ -590,9 +590,15 @@ public:
 
     if constexpr (flavor == LampTypes::simple)
     {
+      // This is kind of a hack to detect that the user did this call
+      // using the known user call signature
+      const bool isUserCall = skipCallbacks and skipUpdateBrightness and not updateSavedBrightess;
+
       // display an output blip on max brightness reached
-      if (trueNewBrightness > saved_brightness and trueNewBrightness >= trueMaxBrightness)
+      if (isUserCall and trueNewBrightness >= trueMaxBrightness)
+      {
         physical::outputPower::blip(50); // blip
+      }
 
       constexpr uint16_t maxOutputVoltage_mV = stripInputVoltage_mV;
       using curve_t = utils::curves::ExponentialCurve<brightness_t, uint16_t>;
