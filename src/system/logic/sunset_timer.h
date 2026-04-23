@@ -27,6 +27,9 @@ void cancel_timer();
 /// True if timer is running
 bool is_enabled();
 
+/// Lock the hability of the sunset timer to control the brightness
+void lock_brightness_update(bool shouldLock);
+
 } // namespace sunset
 } // namespace logic
 } // namespace lampda

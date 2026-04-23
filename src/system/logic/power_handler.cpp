@@ -279,15 +279,16 @@ void handle_output_voltage_mode()
   if (platform::time_ms() < _temporaryOutputTimeOut)
   {
     set_otg_parameters(_temporaryOutputVoltage_mV, _temporaryOutputCurrent_mA);
-    isVbusVoltageOk = (vbusVoltage >= static_cast<uint32_t>(_temporaryOutputVoltage_mV * voltageGateLowerMultiplier) and
+    isVbusVoltageOk = (vbusVoltage >= static_cast<uint32_t>(stripInputMinVoltage_mV * voltageGateLowerMultiplier) and
+                       // do not check the upper bound, this is a special DANGEROUS case
                        vbusVoltage <= static_cast<uint32_t>(_temporaryOutputVoltage_mV * voltageGateHigherMultiplier));
   }
   else
   {
     _temporaryOutputTimeOut = 0;
     set_otg_parameters(_outputVoltage_mV, _outputCurrent_mA);
-    isVbusVoltageOk = (vbusVoltage >= static_cast<uint32_t>(_outputVoltage_mV * voltageGateLowerMultiplier) and
-                       vbusVoltage <= static_cast<uint32_t>(_outputVoltage_mV * voltageGateHigherMultiplier));
+    isVbusVoltageOk = (vbusVoltage >= static_cast<uint32_t>(stripInputMinVoltage_mV * voltageGateLowerMultiplier) and
+                       vbusVoltage <= static_cast<uint32_t>(stripInputMaxVoltage_mV * voltageGateHigherMultiplier));
   }
 
   // enable power gate when voltage matches expected voltage
@@ -303,7 +304,9 @@ void handle_output_voltage_mode()
   else
   {
     if (s_isOutputModeReady)
-      platform::lampda_print("voltage is not in required range, disabling output");
+      platform::lampda_print("voltage is not in required range, disabling output. Actual %dmV. Required %dmV",
+                             vbusVoltage,
+                             _outputVoltage_mV);
     s_isOutputModeReady = false;
 
     ::lampda::power::powergates::disable_gates();
@@ -698,14 +701,16 @@ bool go_to_error()
 
 void set_output_voltage_mv(const uint16_t outputVoltage_mV)
 {
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
-  // NEVER EVER CHANGE INDEXABLE VOLTAGE
-  const bool isInRange = (outputVoltage_mV == 0) or (outputVoltage_mV == stripInputVoltage_mV);
-  if (not isInRange)
+  if (stripInputMinVoltage_mV == stripInputMaxVoltage_mV)
   {
-    assert(false);
+    // NEVER EVER CHANGE fixed output VOLTAGE
+    const bool isInRange = (outputVoltage_mV == 0) or (outputVoltage_mV == stripInputMaxVoltage_mV);
+    if (not isInRange)
+    {
+      assert(false);
+    }
   }
-#endif
+
   _temporaryOutputTimeOut = 0;
   _outputVoltage_mV = outputVoltage_mV;
 }
@@ -718,13 +723,15 @@ void set_output_max_current_mA(const uint16_t outputCurrent_mA)
 
 void set_temporary_output(const uint16_t outputVoltage_mV, const uint16_t outputCurrent_mA, const uint16_t timeout)
 {
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
-  // NEVER EVER CHANGE INDEXABLE VOLTAGE
-  if (outputVoltage_mV != stripInputVoltage_mV)
+  if (stripInputMinVoltage_mV == stripInputMaxVoltage_mV)
   {
-    assert(false);
+    // NEVER EVER CHANGE FIXED OUTPUT VOLTAGE
+    if (outputVoltage_mV != stripInputMaxVoltage_mV)
+    {
+      assert(false);
+    }
   }
-#endif
+
   // set output timeout
   _temporaryOutputTimeOut = platform::time_ms() + timeout;
   _temporaryOutputVoltage_mV = outputVoltage_mV;

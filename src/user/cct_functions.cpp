@@ -45,7 +45,7 @@ void power_on_sequence()
   YellowColorPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
   WhiteColorPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
 
-  brightness_update(logic::brightness::get_brightness());
+  brightness_update(logic::brightness::get_saved_brightness());
 }
 
 void power_off_sequence()
@@ -71,14 +71,15 @@ void brightness_update(const brightness_t brightness)
   }
 
   // map to a new curve, favorising low levels
-  using curve_t = utils::curves::ExponentialCurve<brightness_t, uint8_t>;
-  static curve_t brightnessCurve(curve_t::point_t {0, minBrightness},
-                                 curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255},
-                                 50.0);
+  using curve_t = utils::curves::ExponentialCurve<brightness_t, brightness_t>;
+  static curve_t brightnessCurve(
+          curve_t::point_t {0, stripInputMinVoltage_mV},
+          curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, stripInputMaxVoltage_mV},
+          50.0);
 
   currentBrightness = round(brightnessCurve.sample(constraintBrightness));
 
-  physical::outputPower::write_voltage(stripInputVoltage_mV);
+  physical::outputPower::write_voltage(currentBrightness);
   set_color(currentColor);
 }
 
@@ -95,7 +96,7 @@ void read_parameters()
     lastColor = currentColor;
   }
 
-  currentBrightness = logic::brightness::get_brightness();
+  currentBrightness = logic::brightness::get_saved_brightness();
 }
 
 bool button_start_click_default(const uint8_t clicks) { return false; }

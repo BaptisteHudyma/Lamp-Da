@@ -43,7 +43,7 @@ void button_clicked_default(const uint8_t clicks)
           manager.lamp.getBrightness() == ::lampda::brightness::absoluteMaximumBrightness)
       {
         // write a power boost (dangerous) for a limited time
-        physical::outputPower::write_temporary_output_limits(stripInputVoltage_mV * 1.2f, 5000, 5000);
+        physical::outputPower::write_temporary_output_limits(::lampda::stripInputMaxVoltage_mV * 1.2f, 5000, 5000);
       }
       else
       {

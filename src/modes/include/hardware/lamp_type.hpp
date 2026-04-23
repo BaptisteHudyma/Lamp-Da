@@ -233,14 +233,15 @@ public:
    */
   void LMBD_INLINE startup()
   {
-    // set output voltage for indexable
-    if constexpr (flavor == LampTypes::indexable)
-      physical::outputPower::write_voltage(stripInputVoltage_mV);
+    // set output voltage for leds that will not change voltage
+    if (stripInputMinVoltage_mV == stripInputMaxVoltage_mV)
+      physical::outputPower::write_voltage(stripInputMaxVoltage_mV);
 
     begin();
     clear();
     show_now();
-    setBrightness(logic::brightness::get_brightness(), true, true);
+    setBrightness(logic::brightness::get_saved_brightness(), true, true);
+    align_internal_to_system_brightness();
   }
 
   /** \private Does necessary work to setup lamp from a powered-off state
@@ -556,14 +557,28 @@ public:
   {
     assert((skipCallbacks || !skipUpdateBrightness) && "implicit callback skip!");
 
-    if (!skipUpdateBrightness)
+    // invalid call, fallback to enforcing
+    if (newBrightness > ::lampda::brightness::absoluteMaximumBrightness)
     {
+      enforce_internal_brightness_limits();
+      return;
+    }
+
+    // force update if we are getting lower and lower
+    if (!skipUpdateBrightness or newBrightness > getMaxBrightness())
+    {
+      // store the new temporary
+      temporary_brightness = min<brightness_t>(newBrightness, getMaxBrightness());
+
       uint32_t last = logic::brightness::when_last_update_brightness();
       if ((this->now - last) > brightnessDurationMs)
-        logic::brightness::update_brightness(newBrightness, skipCallbacks);
+        logic::brightness::update_brightness(temporary_brightness, skipCallbacks);
     }
+    // if necessary, update the saved version
     if (updateSavedBrightess)
-      logic::brightness::update_saved_brightness();
+    {
+      saved_brightness = min<brightness_t>(static_cast<brightness_t>(temporary_brightness), getMaxBrightness());
+    }
 
     // USE THE BRIGHTNESS VALUE AFTER THE UPDATE
     // brightness can be limited by the system, so do not use the raw brightness
@@ -582,24 +597,56 @@ public:
 
     if constexpr (flavor == LampTypes::simple)
     {
-      if (trueNewBrightness >= trueMaxBrightness)
-        physical::outputPower::blip(50); // blip
+      // This is kind of a hack to detect that the user did this call
+      // using the known user call signature
+      const bool isUserCall = skipCallbacks and skipUpdateBrightness and not updateSavedBrightess;
 
-      constexpr uint16_t maxOutputVoltage_mV = stripInputVoltage_mV;
+      // display an output blip on max brightness reached
+      if (isUserCall and trueNewBrightness >= trueMaxBrightness)
+      {
+        physical::outputPower::blip(50); // blip
+      }
+
       using curve_t = utils::curves::ExponentialCurve<brightness_t, uint16_t>;
       static curve_t brightnessCurve(
-              curve_t::point_t {0, 9400},
-              curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, maxOutputVoltage_mV},
+              curve_t::point_t {0, stripInputMinVoltage_mV},
+              curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, stripInputMaxVoltage_mV},
               1.0);
 
       physical::outputPower::write_voltage(round(brightnessCurve.sample(trueNewBrightness)));
     }
   }
 
+  /// Special call to update the internal brightness values to the system brightness
+  void align_internal_to_system_brightness()
+  {
+    saved_brightness = min<brightness_t>(logic::brightness::get_saved_brightness(), getMaxBrightness());
+    temporary_brightness = saved_brightness;
+  }
+
+  /// Enforce the brightness limits, if getMaxBrightness changed. Will call \ref setBrightness
+  void enforce_internal_brightness_limits()
+  {
+    const auto maxAllowedBrightness = getMaxBrightness();
+    const brightness_t new_saved_brightness =
+            min<brightness_t>(static_cast<brightness_t>(saved_brightness), maxAllowedBrightness);
+    const brightness_t new_temporary_brightness =
+            min<brightness_t>(static_cast<brightness_t>(temporary_brightness), maxAllowedBrightness);
+
+    const bool isChanged = new_saved_brightness != saved_brightness or new_temporary_brightness != temporary_brightness;
+    if (isChanged)
+    {
+      saved_brightness = new_saved_brightness;
+      temporary_brightness = new_temporary_brightness;
+
+      setBrightness(temporary_brightness);
+    }
+  }
+
   /**
    * \brief Return the actual allowed maximum brightness
    */
-  brightness_t LMBD_INLINE getMaxBrightness() const { return logic::brightness::get_max_brightness(); }
+  brightness_t LMBD_INLINE getMaxBrightness() const { return logic::brightness::get_max_user_brightness(); }
 
   /**
    * \brief Temporarily set brightness, without affecting brightness navigation
@@ -640,19 +687,10 @@ public:
    */
   brightness_t LMBD_INLINE getBrightness(const bool readPreviousBrightness = false)
   {
-    if constexpr (flavor == LampTypes::indexable)
-    {
-      if (readPreviousBrightness)
-        return logic::brightness::get_saved_brightness();
-      return strip.getBrightness();
-    }
+    if (readPreviousBrightness)
+      return saved_brightness;
     else
-    {
-      if (readPreviousBrightness)
-        return logic::brightness::get_saved_brightness();
-      else
-        return logic::brightness::get_brightness();
-    }
+      return temporary_brightness;
   }
 
   /// Alias for ``getBrightness(true)``
@@ -685,7 +723,7 @@ public:
 
       for (uint16_t i = 0; i < ledCount; ++i)
       {
-        const uint32_t c = strip.getPixelColor(i);
+        const uint32_t c = getPixelColor(i);
         setPixelColor(i, colors::fade(c, 255 - fadeBy));
       }
     }
@@ -716,13 +754,13 @@ public:
     uint32_t carryover = 0;
     for (unsigned i = 0; i < ledCount; i++)
     {
-      uint32_t cur = strip.getPixelColor(i);
+      uint32_t cur = getPixelColor(i);
       uint32_t c = cur;
       uint32_t part = colors::fade<false>(c, seep);
       cur = colors::add<true>(colors::fade<false>(c, keep), carryover);
       if (i > 0)
       {
-        c = strip.getPixelColor(i - 1);
+        c = getPixelColor(i - 1);
         setPixelColor(i - 1, colors::add<true>(c, part));
       }
       setPixelColor(i, cur);
@@ -1017,6 +1055,11 @@ public:
   {
     return physical::microphone::get_sound_characteristics();
   }
+
+  /// Define a localy consistant saved brightness. Should be similar
+  volatile brightness_t saved_brightness;
+  /// Define a localy consistant temporary brightness
+  volatile brightness_t temporary_brightness;
 
   /** \brief (physical) The "now" on milliseconds, updated just before loop.
    *
