@@ -38,6 +38,9 @@ void secondary_thread()
     return;
 
   user::user_thread();
+
+  // prevent infinite loop
+  platform::delay_ms(1);
 }
 
 void check_loop_runtime(const uint32_t runTime)

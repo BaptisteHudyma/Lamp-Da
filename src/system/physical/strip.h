@@ -19,6 +19,9 @@
 #endif
 
 #include "src/system/ext/scale8.h"
+
+#include "src/system/ext/random8.h"
+
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 #include "src/system/utils/vector_math.h"
@@ -44,6 +47,10 @@ class LedStrip : private Adafruit_NeoPixel
   using BufferTy = std::array<uint32_t, LED_COUNT>;
   friend struct modes::hardware::LampTy;
 
+  // need AT LEAST 2*30 FPS for a smooth animation
+  static constexpr bool useTemporalDithering = MAIN_LOOP_UPDATE_PERIOD_MS < static_cast<uint32_t>(1000 / 60.0f);
+  static constexpr bool randomizeErrorDistributionsInTemporalDithering = true;
+
 public:
   LedStrip(int16_t pin, neoPixelType type = NEO_RGB + NEO_KHZ800) : Adafruit_NeoPixel(LED_COUNT, pin, type)
   {
@@ -51,6 +58,12 @@ public:
     c.color = 0;
     for (uint16_t i = 0; i < LED_COUNT; ++i)
     {
+      if constexpr (useTemporalDithering)
+      {
+        COLOR initialError;
+        _colorErrors[i] = initialError;
+      }
+
       _colors[i] = c;
     }
   }
@@ -131,14 +144,10 @@ public:
     COLOR c;
     c.color = Adafruit_NeoPixel::getPixelColor(n);
 
-    // We use brightnessAtShowTime here, our the colors can break when brightness changed
-    if (brightnessAtShowTime != UINT8_MAX)
-    {
-      const uint8_t trueBrightness = brightnessAtShowTime + 1;
-      c.blue = static_cast<uint8_t>((uint32_t)(c.blue << 8) / trueBrightness);
-      c.green = static_cast<uint8_t>((uint32_t)(c.green << 8) / trueBrightness);
-      c.red = static_cast<uint8_t>((uint32_t)(c.red << 8) / trueBrightness);
-    }
+    // We use brightnessAtShowTime here, or the colors can break when brightness changed
+    c.blue = restore_color_with_brightness(c.blue, brightnessAtShowTime);
+    c.green = restore_color_with_brightness(c.green, brightnessAtShowTime);
+    c.red = restore_color_with_brightness(c.red, brightnessAtShowTime);
 
     return c.color;
   }
@@ -146,34 +155,13 @@ public:
   /// \private: write the buffered colors to the led driver
   void write_to_led_driver(const uint8_t writeBrightness)
   {
-    // store all pixels for display
-    const bool isNotMaxBrightness = writeBrightness != UINT8_MAX;
-
-    if (writeBrightness == UINT8_MAX)
+    // Adjust brightness to the desired output
+    for (uint16_t i = 0; i < LED_COUNT; ++i)
     {
-      // brightness at maxium, change nothing
-      for (uint16_t i = 0; i < LED_COUNT; ++i)
-      {
-        Adafruit_NeoPixel::setPixelColor(i, _colors[i].color);
-      }
-    }
-    else
-    {
-      // brightness should be adjusted, do it
-      const uint8_t trueBrightness = writeBrightness + 1;
-      for (uint16_t i = 0; i < LED_COUNT; ++i)
-      {
-        // indirection by copy
-        COLOR c;
-        c.color = _colors[i].color;
-
-        c.blue = static_cast<uint8_t>((c.blue * trueBrightness) >> 8);
-        c.green = static_cast<uint8_t>((c.green * trueBrightness) >> 8);
-        c.red = static_cast<uint8_t>((c.red * trueBrightness) >> 8);
-
-        // set strip color
-        Adafruit_NeoPixel::setPixelColor(i, c.color);
-      }
+      COLOR& error = _colorErrors[i];
+      const COLOR c = convert_color_with_brigthness(_colors[i], writeBrightness, error);
+      // set strip color
+      Adafruit_NeoPixel::setPixelColor(i, c.color);
     }
   }
 
@@ -190,6 +178,89 @@ public:
   /**
    * END OF EXPLICIT CALLS
    */
+
+  /**
+   * \brief Convert a color to the standard range, assuming it starts as brightness level.
+   * \warning This breaks the color resolution, on purpose !
+   *\param[in] colorIn Raw color data to convert
+   *\param[in] brightness Desired brightness level (0 - 255)
+   * \return converted color
+   */
+  static uint8_t restore_color_with_brightness(uint8_t colorIn, const uint8_t brightness)
+  {
+    // only special case
+    const uint16_t colorShifted = (uint16_t)colorIn << 8;
+    if (colorShifted <= brightness or brightness == 0)
+      return 0;
+
+    uint8_t fullColor = (colorShifted - brightness) / brightness;
+    return fullColor;
+  }
+
+  /**
+   * \brief Convert a color to the desired brightness level, with an error adjustment
+   *\param[in] colorIn Raw color data to convert
+   *\param[in] errorIn Additive color error from last run
+   *\param[in] brightness Desired brightness level (0 - 255)
+   * \return Pair of converted color and new error component
+   */
+  static std::pair<uint8_t, uint8_t> get_brightness_color_and_error(uint8_t colorIn,
+                                                                    uint8_t errorIn,
+                                                                    const uint8_t brightness)
+  {
+    // only special case
+    if (colorIn == 0)
+      return {0, 0};
+
+    uint16_t fullColor = colorIn * brightness + brightness;
+    if ((fullColor >> 8) == 0)
+    {
+      return {0, 0};
+    }
+    fullColor += errorIn;
+    return {fullColor >> 8, fullColor & 0xFF};
+  }
+
+  /**
+   * \brief Convert a color to the correct brightness, with temporal dithering.
+   * \warning The given brightness should be 0-255
+   * \param[in] c Color to convert, in the full scale 0-255, unadjusted to brightness
+   * \param[in] brightness The brightness to apply (0 - 255).
+   * \param[in, out] error Error components of the current colors
+   */
+  COLOR convert_color_with_brigthness(const COLOR& c, const uint8_t brightness, COLOR& error)
+  {
+    // no temporal dithering: no error propagation
+    if constexpr (not useTemporalDithering)
+    {
+      error.red = 0;
+      error.green = 0;
+      error.blue = 0;
+    }
+    // convert colors and errors
+    const auto& [red, redError] = get_brightness_color_and_error(c.red, error.red, brightness);
+    const auto& [green, greenError] = get_brightness_color_and_error(c.green, error.green, brightness);
+    const auto& [blue, blueError] = get_brightness_color_and_error(c.blue, error.blue, brightness);
+
+    // store error components
+    error.red = redError;
+    error.green = greenError;
+    error.blue = blueError;
+
+    if constexpr (useTemporalDithering && randomizeErrorDistributionsInTemporalDithering)
+    {
+      // error scaled
+      error.red += (error.red == 0 or error.red == 255 ? 0 : random8() % error.red);
+      error.green += (error.green == 0 or error.green == 255 ? 0 : random8() % error.green);
+      error.blue += (error.blue == 0 or error.blue == 255 ? 0 : random8() % error.blue);
+    }
+
+    COLOR result;
+    result.red = red;
+    result.green = green;
+    result.blue = blue;
+    return result;
+  }
 
   void setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b)
   {
@@ -284,10 +355,7 @@ public:
   }
 
   uint32_t getPixelColor(uint16_t n) const { return _colors[lmpd_constrain<uint16_t>(n, 0, LED_COUNT - 1)].color; }
-  uint32_t getPixelColorXY(int16_t x, int16_t y) const
-  {
-    return _colors[lmpd_constrain<uint16_t>(LedStrip::to_strip(x, y), 0, LED_COUNT - 1)].color;
-  }
+  uint32_t getPixelColorXY(int16_t x, int16_t y) const { return getPixelColor(LedStrip::to_strip(x, y)); }
 
   // Blends the specified color with the existing pixel color.
   void blendPixelColor(uint16_t n, uint32_t color, uint8_t blend)
@@ -333,6 +401,7 @@ public:
   }
 
   COLOR _colors[LED_COUNT];
+  COLOR _colorErrors[LED_COUNT]; ///< used for temporal dithering
 
   // buffers for computations
   BufferTy _buffers[stripNbBuffers];
