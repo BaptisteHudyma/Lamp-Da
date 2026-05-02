@@ -83,6 +83,11 @@ $(function() {
   <div class="headertitle"><div class="title">lampda::physical::LedStrip Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>protected inheritence to avoid uncontroled hardware calls  
+ <a href="classlampda_1_1physical_1_1LedStrip.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="strip_8h_source.html">strip.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for lampda::physical::LedStrip:</div>
 <div class="dyncontent">
@@ -101,15 +106,29 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8846f48592f53ac517166f9046d62114"><td class="memItemLeft" align="right" valign="top"><a id="a8846f48592f53ac517166f9046d62114" name="a8846f48592f53ac517166f9046d62114"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>show</b> ()</td></tr>
 <tr class="separator:a8846f48592f53ac517166f9046d62114"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5177ef5f3a6b7edb9dac7ace7db9463e"><td class="memItemLeft" align="right" valign="top"><a id="a5177ef5f3a6b7edb9dac7ace7db9463e" name="a5177ef5f3a6b7edb9dac7ace7db9463e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>show_now</b> ()</td></tr>
-<tr class="separator:a5177ef5f3a6b7edb9dac7ace7db9463e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5e4ed36665a987c0bc0079e2520feb2"><td class="memItemLeft" align="right" valign="top"><a id="ad5e4ed36665a987c0bc0079e2520feb2" name="ad5e4ed36665a987c0bc0079e2520feb2"></a>
 float&#160;</td><td class="memItemRight" valign="bottom"><b>estimateCurrentDraw</b> ()</td></tr>
 <tr class="separator:ad5e4ed36665a987c0bc0079e2520feb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04c6f159d304a291e71ed593a4ed7528"><td class="memItemLeft" align="right" valign="top"><a id="a04c6f159d304a291e71ed593a4ed7528" name="a04c6f159d304a291e71ed593a4ed7528"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setBrightness</b> (uint8_t b)</td></tr>
+<tr class="memdesc:a04c6f159d304a291e71ed593a4ed7528"><td class="mdescLeft">&#160;</td><td class="mdescRight">Brightness is an internal counter. <br /></td></tr>
+<tr class="separator:a04c6f159d304a291e71ed593a4ed7528"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aa6344f14d303fb2e5ab8e7a0bba037"><td class="memItemLeft" align="right" valign="top"><a id="a2aa6344f14d303fb2e5ab8e7a0bba037" name="a2aa6344f14d303fb2e5ab8e7a0bba037"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>getBrightness</b> () const</td></tr>
+<tr class="memdesc:a2aa6344f14d303fb2e5ab8e7a0bba037"><td class="mdescLeft">&#160;</td><td class="mdescRight">Brightness is an internal flag. <br /></td></tr>
+<tr class="separator:a2aa6344f14d303fb2e5ab8e7a0bba037"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acbfb15a9038b97b1decca1fbd23aebff"><td class="memItemLeft" align="right" valign="top"><a id="acbfb15a9038b97b1decca1fbd23aebff" name="acbfb15a9038b97b1decca1fbd23aebff"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setPixelColor</b> (uint16_t n, <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a> c)</td></tr>
 <tr class="separator:acbfb15a9038b97b1decca1fbd23aebff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9efce73b2c943aad7752742895af484"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1physical_1_1LedStrip.html#af9efce73b2c943aad7752742895af484">begin</a> ()</td></tr>
+<tr class="separator:af9efce73b2c943aad7752742895af484"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c65e996f07535336b18fba75c60bdcc"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1physical_1_1LedStrip.html#a7c65e996f07535336b18fba75c60bdcc">getRawPixelColor</a> (uint16_t n) const</td></tr>
+<tr class="memdesc:a7c65e996f07535336b18fba75c60bdcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the raw color value stored in the send buffer.  <br /></td></tr>
+<tr class="separator:a7c65e996f07535336b18fba75c60bdcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5177ef5f3a6b7edb9dac7ace7db9463e"><td class="memItemLeft" align="right" valign="top"><a id="a5177ef5f3a6b7edb9dac7ace7db9463e" name="a5177ef5f3a6b7edb9dac7ace7db9463e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>show_now</b> ()</td></tr>
+<tr class="memdesc:a5177ef5f3a6b7edb9dac7ace7db9463e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Show the current data, independant of changes. <br /></td></tr>
+<tr class="separator:a5177ef5f3a6b7edb9dac7ace7db9463e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad09f45ca369ded9e131f67f5a7b7be0b"><td class="memItemLeft" align="right" valign="top"><a id="ad09f45ca369ded9e131f67f5a7b7be0b" name="ad09f45ca369ded9e131f67f5a7b7be0b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setPixelColor</b> (uint16_t n, uint8_t r, uint8_t g, uint8_t b)</td></tr>
 <tr class="separator:ad09f45ca369ded9e131f67f5a7b7be0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,9 +165,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addPixelColor</b> (ui
 <tr class="memitem:af40d8a7a43f4dbe26c0aa6b7b79a0a15"><td class="memItemLeft" align="right" valign="top"><a id="af40d8a7a43f4dbe26c0aa6b7b79a0a15" name="af40d8a7a43f4dbe26c0aa6b7b79a0a15"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addPixelColorXY</b> (uint16_t x, uint16_t y, uint32_t color, bool fast=false)</td></tr>
 <tr class="separator:af40d8a7a43f4dbe26c0aa6b7b79a0a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c65e996f07535336b18fba75c60bdcc"><td class="memItemLeft" align="right" valign="top"><a id="a7c65e996f07535336b18fba75c60bdcc" name="a7c65e996f07535336b18fba75c60bdcc"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>getRawPixelColor</b> (uint16_t n) const</td></tr>
-<tr class="separator:a7c65e996f07535336b18fba75c60bdcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a007754b7b1b19d42c2accc153caad9fe"><td class="memItemLeft" align="right" valign="top"><a id="a007754b7b1b19d42c2accc153caad9fe" name="a007754b7b1b19d42c2accc153caad9fe"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>signal_display</b> ()</td></tr>
 <tr class="separator:a007754b7b1b19d42c2accc153caad9fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -161,42 +177,36 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>buffer_current_colors
 <tr class="memitem:a85fb39089d8a19123ae6848142298168"><td class="memItemLeft" align="right" valign="top"><a id="a85fb39089d8a19123ae6848142298168" name="a85fb39089d8a19123ae6848142298168"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>fill_buffer</b> (const uint8_t index, const uint32_t value)</td></tr>
 <tr class="separator:a85fb39089d8a19123ae6848142298168"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1e67f36494c71fe5b2dfe6dea98b1dae"><td class="memItemLeft" align="right" valign="top"><a id="a1e67f36494c71fe5b2dfe6dea98b1dae" name="a1e67f36494c71fe5b2dfe6dea98b1dae"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> ()</td></tr>
-<tr class="separator:a1e67f36494c71fe5b2dfe6dea98b1dae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae702a8418106e93493c3612f0b7a8203"><td class="memItemLeft" align="right" valign="top"><a id="ae702a8418106e93493c3612f0b7a8203" name="ae702a8418106e93493c3612f0b7a8203"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>getBrightness</b> () const</td></tr>
-<tr class="separator:ae702a8418106e93493c3612f0b7a8203"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06915c54a2cc307763b3c44a601229ba"><td class="memItemLeft" align="right" valign="top"><a id="a06915c54a2cc307763b3c44a601229ba" name="a06915c54a2cc307763b3c44a601229ba"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setBrightness</b> (uint8_t bright)</td></tr>
-<tr class="separator:a06915c54a2cc307763b3c44a601229ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a235857e6628d340cd5dfbc58e38ef1"><td class="memItemLeft" align="right" valign="top"><a id="a1a235857e6628d340cd5dfbc58e38ef1" name="a1a235857e6628d340cd5dfbc58e38ef1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>fill</b> (uint32_t c, int a, int b)</td></tr>
-<tr class="separator:a1a235857e6628d340cd5dfbc58e38ef1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a0231ef3923c8739ddeb4de16655789f1"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1physical_1_1LedStrip.html#a0231ef3923c8739ddeb4de16655789f1">restore_color_with_brightness</a> (uint8_t colorIn, const uint8_t brightness)</td></tr>
+<tr class="memdesc:a0231ef3923c8739ddeb4de16655789f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a color to the standard range, assuming it starts as brightness level.  <br /></td></tr>
+<tr class="separator:a0231ef3923c8739ddeb4de16655789f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac65de33f03d95b750ae625591f7a8efa"><td class="memItemLeft" align="right" valign="top">static std::pair&lt; uint8_t, uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1physical_1_1LedStrip.html#ac65de33f03d95b750ae625591f7a8efa">get_brightness_color_and_error</a> (const uint8_t colorIn, uint16_t errorIn, const uint8_t brightness, const uint16_t index)</td></tr>
+<tr class="memdesc:ac65de33f03d95b750ae625591f7a8efa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a color to the desired brightness level, with an error adjustment.  <br /></td></tr>
+<tr class="separator:ac65de33f03d95b750ae625591f7a8efa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7154427b18ec1850a6f2d7eb11206506"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1physical_1_1LedStrip.html#a7154427b18ec1850a6f2d7eb11206506">convert_color_with_brigthness</a> (const <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a> &amp;c, const uint8_t brightness, const uint16_t index, <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a> &amp;error)</td></tr>
+<tr class="memdesc:a7154427b18ec1850a6f2d7eb11206506"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a color to the correct brightness, with temporal dithering.  <br /></td></tr>
+<tr class="separator:a7154427b18ec1850a6f2d7eb11206506"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38588c073c5647a4275ae01dbad28568"><td class="memItemLeft" align="right" valign="top"><a id="a38588c073c5647a4275ae01dbad28568" name="a38588c073c5647a4275ae01dbad28568"></a>
 static uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>to_strip</b> (uint16_t screenX, uint16_t screenY)</td></tr>
 <tr class="separator:a38588c073c5647a4275ae01dbad28568"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7c444138dd0e6ac1008621d0a67048b"><td class="memItemLeft" align="right" valign="top"><a id="ae7c444138dd0e6ac1008621d0a67048b" name="ae7c444138dd0e6ac1008621d0a67048b"></a>
-static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>Color</b> (uint8_t r, uint8_t g, uint8_t b)</td></tr>
-<tr class="separator:ae7c444138dd0e6ac1008621d0a67048b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44433a09109e032eb871bbc8e7313022"><td class="memItemLeft" align="right" valign="top"><a id="a44433a09109e032eb871bbc8e7313022" name="a44433a09109e032eb871bbc8e7313022"></a>
-static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>ColorHSV</b> (double h, double s=255, double v=255)</td></tr>
-<tr class="separator:a44433a09109e032eb871bbc8e7313022"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a6f2311cc8ed8b6987660ef57636230f7"><td class="memItemLeft" align="right" valign="top"><a id="a6f2311cc8ed8b6987660ef57636230f7" name="a6f2311cc8ed8b6987660ef57636230f7"></a>
 <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_colors</b> [LED_COUNT]</td></tr>
+<tr class="memdesc:a6f2311cc8ed8b6987660ef57636230f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">store the display colors, with no brightness scaling <br /></td></tr>
 <tr class="separator:a6f2311cc8ed8b6987660ef57636230f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64f2a00c2b1917c7a8e13dbd1ada76ed"><td class="memItemLeft" align="right" valign="top"><a id="a64f2a00c2b1917c7a8e13dbd1ada76ed" name="a64f2a00c2b1917c7a8e13dbd1ada76ed"></a>
+std::array&lt; <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a>, useTemporalDithering ? LED_COUNT :1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_colorErrors</b></td></tr>
+<tr class="memdesc:a64f2a00c2b1917c7a8e13dbd1ada76ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">used for temporal dithering <br /></td></tr>
+<tr class="separator:a64f2a00c2b1917c7a8e13dbd1ada76ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02636deb8230090e9b4d4d7f9a96448c"><td class="memItemLeft" align="right" valign="top"><a id="a02636deb8230090e9b4d4d7f9a96448c" name="a02636deb8230090e9b4d4d7f9a96448c"></a>
 BufferTy&#160;</td><td class="memItemRight" valign="bottom"><b>_buffers</b> [stripNbBuffers]</td></tr>
+<tr class="memdesc:a02636deb8230090e9b4d4d7f9a96448c"><td class="mdescLeft">&#160;</td><td class="mdescRight">buffers for computations <br /></td></tr>
 <tr class="separator:a02636deb8230090e9b4d4d7f9a96448c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a983265c34a4008d2c7a9eeb12eebea84"><td class="memItemLeft" align="right" valign="top"><a id="a983265c34a4008d2c7a9eeb12eebea84" name="a983265c34a4008d2c7a9eeb12eebea84"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>brightness</b></td></tr>
-<tr class="separator:a983265c34a4008d2c7a9eeb12eebea84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -204,6 +214,231 @@ Friends</h2></td></tr>
 struct&#160;</td><td class="memItemRight" valign="bottom"><b>modes::hardware::LampTy</b></td></tr>
 <tr class="separator:a7a1b92d6dd4dcf1229d0f9df1760be1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>protected inheritence to avoid uncontroled hardware calls </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="af9efce73b2c943aad7752742895af484" name="af9efce73b2c943aad7752742895af484"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9efce73b2c943aad7752742895af484">&#9670;&#160;</a></span>begin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::physical::LedStrip::begin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>EXPLICIT CALLS TO THE LIBRARY </p>
+
+</div>
+</div>
+<a id="a7154427b18ec1850a6f2d7eb11206506" name="a7154427b18ec1850a6f2d7eb11206506"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7154427b18ec1850a6f2d7eb11206506">&#9670;&#160;</a></span>convert_color_with_brigthness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a> lampda::physical::LedStrip::convert_color_with_brigthness </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a> &amp;&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>brightness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint16_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="unionlampda_1_1COLOR.html">COLOR</a> &amp;&#160;</td>
+          <td class="paramname"><em>error</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert a color to the correct brightness, with temporal dithering. </p>
+<dl class="section warning"><dt>Warning</dt><dd>The given brightness should be 0-255 </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">c</td><td>Color to convert, in the full scale 0-255, unadjusted to brightness </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">brightness</td><td>The brightness to apply (0 - 255). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>Index of the noise to use </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">error</td><td>Error components of the current colors </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac65de33f03d95b750ae625591f7a8efa" name="ac65de33f03d95b750ae625591f7a8efa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac65de33f03d95b750ae625591f7a8efa">&#9670;&#160;</a></span>get_brightness_color_and_error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::pair&lt; uint8_t, uint8_t &gt; lampda::physical::LedStrip::get_brightness_color_and_error </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>colorIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>errorIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>brightness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint16_t&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert a color to the desired brightness level, with an error adjustment. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">colorIn</td><td>Raw color data to convert </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">errorIn</td><td>Additive color error from last run </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">brightness</td><td>Desired brightness level (0 - 255) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>Index of the noise to use </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pair of converted color and new error component </dd></dl>
+
+</div>
+</div>
+<a id="a7c65e996f07535336b18fba75c60bdcc" name="a7c65e996f07535336b18fba75c60bdcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c65e996f07535336b18fba75c60bdcc">&#9670;&#160;</a></span>getRawPixelColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t lampda::physical::LedStrip::getRawPixelColor </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the raw color value stored in the send buffer. </p>
+<dl class="section warning"><dt>Warning</dt><dd>Should not be used except for debug </dd></dl>
+
+</div>
+</div>
+<a id="a0231ef3923c8739ddeb4de16655789f1" name="a0231ef3923c8739ddeb4de16655789f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0231ef3923c8739ddeb4de16655789f1">&#9670;&#160;</a></span>restore_color_with_brightness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static uint8_t lampda::physical::LedStrip::restore_color_with_brightness </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>colorIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>brightness</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert a color to the standard range, assuming it starts as brightness level. </p>
+<p>END OF EXPLICIT CALLS </p><dl class="section warning"><dt>Warning</dt><dd>This breaks the color resolution, on purpose ! </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">colorIn</td><td>Raw color data to convert </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">brightness</td><td>Desired brightness level (0 - 255) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>converted color </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>src/system/physical/<a class="el" href="strip_8h_source.html">strip.h</a></li>
 </ul>

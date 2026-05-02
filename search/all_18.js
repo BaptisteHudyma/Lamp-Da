@@ -11,13 +11,14 @@ var searchData=
   ['whichfavoritepending_8',['whichFavoritePending',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a7a9b9b1075855a0604e432be79d1ea56',1,'lampda::modes::ModeManagerTy::StateTy']]],
   ['white_9',['White',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba7093234e9bd942a79336133614685fa3',1,'lampda::modes::colors']]],
   ['whitesmoke_10',['WhiteSmoke',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba77c5e632a87a17424cc54819adefdabc',1,'lampda::modes::colors']]],
-  ['width_11',['width',['../structViolonsaoulsImageTy.html#a76a0b2110e6775ad52baa826302ab98a',1,'ViolonsaoulsImageTy::width()'],['../structHuit__sixImageTy.html#a11cae317fbd1690e9625767bec352cc1',1,'Huit_sixImageTy::width()'],['../structHeinekenImageTy.html#adcf2362607b093c6df30af0abacfc35e',1,'HeinekenImageTy::width()']]],
-  ['wrap_5fangle_12',['wrap_angle',['../namespacelampda.html#a4a451ce223644730414bf41bfe649b3a',1,'lampda']]],
-  ['wrapper_13',['Wrapper',['../classlampda_1_1physical_1_1imu_1_1Wrapper.html',1,'lampda::physical::imu']]],
-  ['write_5fparameters_14',['write_parameters',['../structlampda_1_1modes_1_1ContextTy.html#a6fbae47fcd69a85f9951cee40e64e156',1,'lampda::modes::ContextTy::write_parameters()'],['../namespacelampda_1_1user.html#acb9086987851371577be7407d39032c7',1,'lampda::user::write_parameters()'],['../structlampda_1_1modes_1_1BasicMode.html#a3934e147a242ba57b99a8fedb09dd6b3',1,'lampda::modes::BasicMode::write_parameters()']]],
-  ['write_5ftemporary_5foutput_5flimits_15',['write_temporary_output_limits',['../namespacelampda_1_1physical_1_1outputPower.html#a416be025c5ef48bfda9566d0996ee02e',1,'lampda::physical::outputPower']]],
-  ['write_5fto_5ffile_16',['write_to_file',['../namespacelampda_1_1physical_1_1fileSystem_1_1system.html#a3e7b7d7952a45324d9647c75a53c9445',1,'lampda::physical::fileSystem::system::write_to_file()'],['../namespacelampda_1_1physical_1_1fileSystem_1_1user.html#a65c8896061d5c6ca0bad80b23d30624f',1,'lampda::physical::fileSystem::user::write_to_file()']]],
-  ['write_5fto_5fmemory_17',['write_to_memory',['../namespacelampda_1_1logic_1_1statistics.html#a12735c6e3906a32c41384e0c59ac001a',1,'lampda::logic::statistics']]],
-  ['write_5fvoltage_18',['write_voltage',['../namespacelampda_1_1physical_1_1outputPower.html#a60869dc91bb9891fb8d2aa938ac5be07',1,'lampda::physical::outputPower']]],
-  ['writing_20your_20own_20lighting_20mode_19',['Writing your own lighting mode',['../md_docs_WritingModes.html',1,'']]]
+  ['width_11',['width',['../structViolonsaoulsImageTy.html#a76a0b2110e6775ad52baa826302ab98a',1,'ViolonsaoulsImageTy::width()'],['../structHeinekenImageTy.html#adcf2362607b093c6df30af0abacfc35e',1,'HeinekenImageTy::width()'],['../structHuit__sixImageTy.html#a11cae317fbd1690e9625767bec352cc1',1,'Huit_sixImageTy::width()']]],
+  ['woffset_12',['wOffset',['../classAdafruit__NeoPixel.html#abb82afb6bb4c4e365561f18c6ff6b6a8',1,'Adafruit_NeoPixel']]],
+  ['wrap_5fangle_13',['wrap_angle',['../namespacelampda.html#a4a451ce223644730414bf41bfe649b3a',1,'lampda']]],
+  ['wrapper_14',['Wrapper',['../classlampda_1_1physical_1_1imu_1_1Wrapper.html',1,'lampda::physical::imu']]],
+  ['write_5fparameters_15',['write_parameters',['../structlampda_1_1modes_1_1BasicMode.html#a3934e147a242ba57b99a8fedb09dd6b3',1,'lampda::modes::BasicMode::write_parameters()'],['../structlampda_1_1modes_1_1ContextTy.html#a6fbae47fcd69a85f9951cee40e64e156',1,'lampda::modes::ContextTy::write_parameters()'],['../namespacelampda_1_1user.html#acb9086987851371577be7407d39032c7',1,'lampda::user::write_parameters()']]],
+  ['write_5ftemporary_5foutput_5flimits_16',['write_temporary_output_limits',['../namespacelampda_1_1physical_1_1outputPower.html#a416be025c5ef48bfda9566d0996ee02e',1,'lampda::physical::outputPower']]],
+  ['write_5fto_5ffile_17',['write_to_file',['../namespacelampda_1_1physical_1_1fileSystem_1_1system.html#a3e7b7d7952a45324d9647c75a53c9445',1,'lampda::physical::fileSystem::system::write_to_file()'],['../namespacelampda_1_1physical_1_1fileSystem_1_1user.html#a65c8896061d5c6ca0bad80b23d30624f',1,'lampda::physical::fileSystem::user::write_to_file()']]],
+  ['write_5fto_5fmemory_18',['write_to_memory',['../namespacelampda_1_1logic_1_1statistics.html#a12735c6e3906a32c41384e0c59ac001a',1,'lampda::logic::statistics']]],
+  ['write_5fvoltage_19',['write_voltage',['../namespacelampda_1_1physical_1_1outputPower.html#a60869dc91bb9891fb8d2aa938ac5be07',1,'lampda::physical::outputPower']]],
+  ['writing_20your_20own_20lighting_20mode_20',['Writing your own lighting mode',['../md_docs_WritingModes.html',1,'']]]
 ];

@@ -15,5 +15,7 @@ var searchData=
   ['nudzscrollimagemode_12',['NudzScrollImageMode',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzScrollImageMode.html',1,'lampda::modes::custom::nudz']]],
   ['nudzscrollimagemode_3c_20violonsaoulsimagety_20_3e_13',['NudzScrollImageMode&lt; ViolonsaoulsImageTy &gt;',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzScrollImageMode.html',1,'lampda::modes::custom::nudz']]],
   ['nudzviolonsaoulsmode_14',['NudzViolonsaoulsMode',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode.html',1,'lampda::modes::custom::nudz']]],
-  ['numberoffftchanels_15',['numberOfFFtChanels',['../structlampda_1_1physical_1_1microphone_1_1SoundStruct.html#ad8b362d58e28ec7beb2b8cf294f54634',1,'lampda::physical::microphone::SoundStruct']]]
+  ['numberoffftchanels_15',['numberOfFFtChanels',['../structlampda_1_1physical_1_1microphone_1_1SoundStruct.html#ad8b362d58e28ec7beb2b8cf294f54634',1,'lampda::physical::microphone::SoundStruct']]],
+  ['numbytes_16',['numBytes',['../classAdafruit__NeoPixel.html#a89a4a144941744dc01c6e0072ad0f05d',1,'Adafruit_NeoPixel']]],
+  ['numleds_17',['numLEDs',['../classAdafruit__NeoPixel.html#ad8218520ee2ad574f805985ea2c2b0b6',1,'Adafruit_NeoPixel']]]
 ];
