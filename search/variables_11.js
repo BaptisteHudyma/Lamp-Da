@@ -25,7 +25,7 @@ var searchData=
   ['set_5fsnk_5fctrl_22',['set_snk_ctrl',['../structtcpm__drv.html#a3b5ef6dd42f9a34f43366c1997ee66a9',1,'tcpm_drv']]],
   ['set_5fsrc_5fctrl_23',['set_src_ctrl',['../structtcpm__drv.html#a6c88df2919d74785185734bbbb0ec025',1,'tcpm_drv']]],
   ['set_5fvconn_24',['set_vconn',['../structtcpm__drv.html#a217d0ebb80908350f90eb868f32765a4',1,'tcpm_drv']]],
-  ['shoulduseico_25',['shoulduseICO',['../structlampda_1_1power_1_1charger_1_1drivers_1_1PowerLimits.html#a5a685079e033d24444496f70e2644069',1,'lampda::power::charger::drivers::PowerLimits']]],
+  ['shoulduseico_25',['shouldUseICO',['../structlampda_1_1power_1_1charger_1_1drivers_1_1PowerLimits.html#a3e354523f141aa965930cf604fac294d',1,'lampda::power::charger::drivers::PowerLimits']]],
   ['silenceleveldb_26',['silenceLevelDb',['../namespacelampda_1_1physical_1_1microphone.html#ad4841532548de5e04f2466458ccb39e1',1,'lampda::physical::microphone']]],
   ['skipfirstledsforamount_27',['skipFirstLedsForAmount',['../structlampda_1_1modes_1_1hardware_1_1LampTy_1_1LampConfig.html#a8cc1260ecce02571e287f5c7337a77ac',1,'lampda::modes::hardware::LampTy::LampConfig']]],
   ['skipfirstledsforeffect_28',['skipFirstLedsForEffect',['../structlampda_1_1modes_1_1hardware_1_1LampTy_1_1LampConfig.html#ad2b3343ed6f35e3fe5418adc4d0e55f8',1,'lampda::modes::hardware::LampTy::LampConfig']]],

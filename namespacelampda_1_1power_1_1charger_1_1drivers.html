@@ -151,9 +151,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>control_OTG</b> ()</t
 void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_charge</b> (const bool <a class="el" href="namespacelampda_1_1power_1_1charger_1_1drivers.html#aacc7b8fe7563648ecd47a781ddcf2499">enable</a>)</td></tr>
 <tr class="memdesc:afa2d1a696ead624885f1c4c9bfad243f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable the charge process. this will start the charge only if the conditions are right. <br /></td></tr>
 <tr class="separator:afa2d1a696ead624885f1c4c9bfad243f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2df01db41cbde8202e3a277392cb5fcb"><td class="memItemLeft" align="right" valign="top"><a id="a2df01db41cbde8202e3a277392cb5fcb" name="a2df01db41cbde8202e3a277392cb5fcb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>enable_ico</b> (const bool <a class="el" href="namespacelampda_1_1power_1_1charger_1_1drivers.html#aacc7b8fe7563648ecd47a781ddcf2499">enable</a>)</td></tr>
-<tr class="separator:a2df01db41cbde8202e3a277392cb5fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1846fd29165c9653f135cb17313ace3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1power_1_1charger_1_1drivers.html#a1846fd29165c9653f135cb17313ace3f">enable_input_current_optimization</a> (const bool <a class="el" href="namespacelampda_1_1power_1_1charger_1_1drivers.html#aacc7b8fe7563648ecd47a781ddcf2499">enable</a>)</td></tr>
+<tr class="memdesc:a1846fd29165c9653f135cb17313ace3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">enable/disable the Input Current Optimizer algorithm  <br /></td></tr>
+<tr class="separator:a1846fd29165c9653f135cb17313ace3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adab091958b1082ba38be9907e5bb9674"><td class="memItemLeft" align="right" valign="top"><a id="adab091958b1082ba38be9907e5bb9674" name="adab091958b1082ba38be9907e5bb9674"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>update_battery</b> ()</td></tr>
 <tr class="separator:adab091958b1082ba38be9907e5bb9674"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -395,6 +395,32 @@ static <a class="el" href="structlampda_1_1power_1_1charger_1_1drivers_1_1PowerL
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the initialization suceeded. </dd></dl>
+
+</div>
+</div>
+<a id="a1846fd29165c9653f135cb17313ace3f" name="a1846fd29165c9653f135cb17313ace3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1846fd29165c9653f135cb17313ace3f">&#9670;&#160;</a></span>enable_input_current_optimization()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::power::charger::drivers::enable_input_current_optimization </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>enable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>enable/disable the Input Current Optimizer algorithm </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">enable</td><td>If true, the InputCurrentOptimization algorithm will be activated and the VBUS charge current will be optimized to reach a target droop voltage </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
