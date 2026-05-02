@@ -22,7 +22,8 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Keyboard.hpp>
 
-#define LMBD_SIMU_REALCOLORS
+/// if defined, will display colors with the same brigthness to debug the color bending
+// #define LMBD_DEBUG_SIMU_REALCOLORS
 
 namespace simulator {
 // (_LampTy from simulator_state.h)
@@ -327,24 +328,30 @@ template<typename T> struct simulator
       const bool isOutputEnabled = is_output_enabled();
       if constexpr (_LampTy::flavor == ::lampda::modes::hardware::LampTypes::indexable)
       {
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+        // brightness on the indexale lamp
+        using curve_t = ::lampda::utils::curves::LinearCurve<::lampda::brightness_t, uint8_t>;
+        static curve_t brightnessCurve({curve_t::point_t {0, ::lampda::minimumAllowedBrightness_8},
+                                        curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255}});
+        state.brightness = brightnessCurve.sample(::lampda::logic::brightness::get_brightness());
+
         const bool isVoltageHighEnough = mock_electrical::outputVoltage > 11.5;
         for (size_t I = 0; I < _LampTy::ledCount; ++I)
         {
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
           state.colorBuffer[I] =
                   isOutputEnabled ?
-                          (isVoltageHighEnough ? ::lampda::user::_private::strip.getPixelColor(I) : 0xffffff) :
+                          (isVoltageHighEnough ? ::lampda::user::_private::strip.getRawPixelColor(I) : 0xffffff) :
                           0;
-          state.brightness = ::lampda::user::_private::strip.getBrightness();
-#endif
         }
+#endif
       }
       else
       {
-        for (size_t I = 0; I < _LampTy::ledCount; ++I)
-          state.colorBuffer[I] = isOutputEnabled ? 0xffff00 : 0;
         state.brightness =
                 (::lampda::logic::brightness::get_brightness() * 255) / ::lampda::brightness::absoluteMaximumBrightness;
+
+        for (size_t I = 0; I < _LampTy::ledCount; ++I)
+          state.colorBuffer[I] = isOutputEnabled ? 0xffff00 : 0;
       }
 
       state.indicatorColor = mock_indicator::get_color();
@@ -416,10 +423,15 @@ template<typename T> struct simulator
           float g = ((color >> 8) & 0xff);
           float r = ((color >> 16) & 0xff);
 
-          const auto brightness = state.brightness;
-          r = std::min<float>(r, brightness);
-          g = std::min<float>(g, brightness);
-          b = std::min<float>(b, brightness);
+#ifndef LMBD_DEBUG_SIMU_REALCOLORS
+          if (state.brightness != 255)
+          {
+            // scale by brightness
+            r = (uint16_t(r) * state.brightness + state.brightness) >> 8;
+            g = (uint16_t(g) * state.brightness + state.brightness) >> 8;
+            b = (uint16_t(b) * state.brightness + state.brightness) >> 8;
+          }
+#endif
 
           shape.setFillColor(sf::Color(r, g, b));
           window.draw(shape);

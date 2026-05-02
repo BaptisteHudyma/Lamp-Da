@@ -19,6 +19,9 @@
 #endif
 
 #include "src/system/ext/scale8.h"
+
+#include "src/system/ext/random8.h"
+
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 #include "src/system/utils/vector_math.h"
@@ -38,18 +41,34 @@ struct LampTy;
 
 namespace physical {
 
-class LedStrip : public Adafruit_NeoPixel
+/// protected inheritence to avoid uncontroled hardware calls
+class LedStrip : private Adafruit_NeoPixel
 {
   using BufferTy = std::array<uint32_t, LED_COUNT>;
   friend struct modes::hardware::LampTy;
 
+  /// Use a blue noise pattern to dither the colors
+  static constexpr bool useColorDithering = true;
+  /// Use time to dither the colors using error diffusion. It needs AT LEAST 2*30 FPS for a smooth animation
+  static constexpr bool useTemporalDithering = false;
+  static constexpr uint16_t refreshFramesCount = 10; ///< blue noise refresh rate speed
+
 public:
-  LedStrip(int16_t pin, neoPixelType type = NEO_RGB + NEO_KHZ800) : Adafruit_NeoPixel(LED_COUNT, pin, type)
+  LedStrip(int16_t pin, neoPixelType type = NEO_RGB + NEO_KHZ800) :
+    Adafruit_NeoPixel(LED_COUNT, pin, type),
+    shownCount(0)
   {
+    assert(_colorErrors.size() > 0);
+
     COLOR c;
     c.color = 0;
     for (uint16_t i = 0; i < LED_COUNT; ++i)
     {
+      if constexpr (useTemporalDithering)
+      {
+        _colorErrors[i] = c;
+      }
+
       _colors[i] = c;
     }
   }
@@ -59,14 +78,8 @@ public:
     if (hasSomeChanges)
     {
       // only show if some changes were made
-      Adafruit_NeoPixel::show();
+      show_now();
     }
-    hasSomeChanges = false;
-  }
-
-  void show_now()
-  {
-    Adafruit_NeoPixel::show();
     hasSomeChanges = false;
   }
 
@@ -93,11 +106,192 @@ public:
     return max<float>(baseCurrentConsumption, estimatedCurrentDraw);
   }
 
+  /// Brightness is an internal counter
+  void setBrightness(uint8_t b) { brightness = b; }
+
+  /// Brightness is an internal flag
+  uint8_t getBrightness() const
+  {
+    // check that this never changes
+    assert(Adafruit_NeoPixel::getBrightness() == 255);
+
+    return brightness;
+  }
+
+  // Accessor to set a color
   void setPixelColor(uint16_t n, COLOR c)
   {
-    n = lmpd_constrain<uint16_t>(n, 0, LED_COUNT - 1);
+    if (n >= LED_COUNT)
+      return;
+
     _colors[n] = c;
-    Adafruit_NeoPixel::setPixelColor(n, c.color);
+  }
+
+  /**
+   * EXPLICIT CALLS TO THE LIBRARY
+   */
+
+  void begin()
+  {
+    Adafruit_NeoPixel::begin();
+    // brightness always at the maximum level
+    Adafruit_NeoPixel::setBrightness(255);
+  }
+
+  /// Return the raw color value stored in the send buffer.
+  /// \warning Should not be used except for debug
+  uint32_t getRawPixelColor(uint16_t n) const
+  {
+    // ,o colors outside of strip
+    if (n >= LED_COUNT)
+      return 0;
+
+    COLOR c;
+    c.color = Adafruit_NeoPixel::getPixelColor(n);
+
+    // We use brightnessAtShowTime here, or the colors can break when brightness changed
+    c.blue = restore_color_with_brightness(c.blue, brightnessAtShowTime);
+    c.green = restore_color_with_brightness(c.green, brightnessAtShowTime);
+    c.red = restore_color_with_brightness(c.red, brightnessAtShowTime);
+
+    return c.color;
+  }
+
+  /// \private: write the buffered colors to the led driver
+  void write_to_led_driver(const uint8_t writeBrightness)
+  {
+    // Adjust brightness to the desired output
+    for (uint16_t i = 0; i < LED_COUNT; ++i)
+    {
+      const COLOR c = convert_color_with_brigthness(_colors[i],
+                                                    writeBrightness,
+                                                    i + shownCount % refreshFramesCount,
+                                                    _colorErrors[useTemporalDithering ? i : 0]);
+      // set strip color
+      Adafruit_NeoPixel::setPixelColor(i, c.color);
+    }
+  }
+
+  /// Show the current data, independant of changes
+  void show_now()
+  {
+    // copy the pattern to show to the display buffer
+    brightnessAtShowTime = brightness;
+    write_to_led_driver(brightnessAtShowTime);
+    // show on hardware
+    Adafruit_NeoPixel::show();
+    hasSomeChanges = false;
+    // increment show count
+    shownCount += 1;
+  }
+
+  /**
+   * END OF EXPLICIT CALLS
+   */
+
+  /**
+   * \brief Convert a color to the standard range, assuming it starts as brightness level.
+   * \warning This breaks the color resolution, on purpose !
+   *\param[in] colorIn Raw color data to convert
+   *\param[in] brightness Desired brightness level (0 - 255)
+   * \return converted color
+   */
+  static uint8_t restore_color_with_brightness(uint8_t colorIn, const uint8_t brightness)
+  {
+    // only special case
+    const uint16_t colorShifted = (uint16_t)colorIn << 8;
+    if (colorShifted <= brightness or brightness == 0)
+      return 0;
+
+    uint8_t fullColor = (colorShifted - brightness) / brightness;
+    return fullColor;
+  }
+
+  /**
+   * \brief Convert a color to the desired brightness level, with an error adjustment
+   * \param[in] colorIn Raw color data to convert
+   * \param[in] errorIn Additive color error from last run
+   * \param[in] brightness Desired brightness level (0 - 255)
+   * \param[in] index Index of the noise to use
+   * \return Pair of converted color and new error component
+   */
+  static std::pair<uint8_t, uint8_t> get_brightness_color_and_error(const uint8_t colorIn,
+                                                                    uint16_t errorIn,
+                                                                    const uint8_t brightness,
+                                                                    const uint16_t index)
+  {
+    // blue noise look up table
+    static constexpr std::array<uint8_t, 64> BLUE_NOISE_LUT = {
+            0,  32, 8,  40, 2,  34, 10, 42, 48, 16, 56, 24, 50, 18, 58, 26, 12, 44, 4,  36, 14, 46,
+            6,  38, 60, 28, 52, 20, 62, 30, 54, 22, 3,  35, 11, 43, 1,  33, 9,  41, 51, 19, 59, 27,
+            49, 17, 57, 25, 15, 47, 7,  39, 13, 45, 5,  37, 63, 31, 55, 23, 61, 29, 53, 21};
+
+    // only special case
+    if (colorIn == 0)
+      return {0, 0};
+
+    // scale color by brightness
+    const uint16_t scaledColor = colorIn * brightness + brightness;
+
+    // When using standard and temporal dithering, shift the pattern
+    if constexpr (useColorDithering and useTemporalDithering)
+    {
+      const uint8_t allowedError = UINT8_MAX - (scaledColor & 0xFF);
+      errorIn += min<uint16_t>(allowedError, BLUE_NOISE_LUT[index % BLUE_NOISE_LUT.size()]);
+    }
+
+    // add error
+    const uint32_t fullColor = min<uint32_t>(scaledColor + errorIn, 0xFF00);
+
+    // compute final color and new error
+    uint32_t finalColorRaw = fullColor >> 8;
+    const uint8_t finalError = fullColor & 0xFF;
+
+    // When using only color dithering, add a blue noise error to the final color
+    if constexpr (useColorDithering and not useTemporalDithering)
+    {
+      finalColorRaw += (finalError > BLUE_NOISE_LUT[index % BLUE_NOISE_LUT.size()] ? 1 : 0);
+    }
+
+    const uint8_t finalColor = (finalColorRaw > 255) ? 255 : finalColorRaw;
+    return {finalColor, finalError};
+  }
+
+  /**
+   * \brief Convert a color to the correct brightness, with temporal dithering.
+   * \warning The given brightness should be 0-255
+   * \param[in] c Color to convert, in the full scale 0-255, unadjusted to brightness
+   * \param[in] brightness The brightness to apply (0 - 255).
+   * \param[in] index Index of the noise to use
+   * \param[in, out] error Error components of the current colors
+   */
+  static COLOR convert_color_with_brigthness(const COLOR& c,
+                                             const uint8_t brightness,
+                                             const uint16_t index,
+                                             COLOR& error)
+  {
+    // no temporal dithering: no error propagation
+    if constexpr (not useTemporalDithering)
+    {
+      error.red = 0;
+      error.green = 0;
+      error.blue = 0;
+    }
+    // convert colors and errors, with small offsets for the different chanels
+    const auto& [red, redError] = get_brightness_color_and_error(c.red, error.red, brightness, index);
+    const auto& [green, greenError] = get_brightness_color_and_error(c.green, error.green, brightness, index + 1);
+    const auto& [blue, blueError] = get_brightness_color_and_error(c.blue, error.blue, brightness, index + 2);
+
+    // store error components
+    error.red = redError;
+    error.green = greenError;
+    error.blue = blueError;
+
+    COLOR result;
+    result.red = red;
+    result.green = green;
+    result.blue = blue;
+    return result;
   }
 
   void setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b)
@@ -193,10 +387,7 @@ public:
   }
 
   uint32_t getPixelColor(uint16_t n) const { return _colors[lmpd_constrain<uint16_t>(n, 0, LED_COUNT - 1)].color; }
-  uint32_t getPixelColorXY(int16_t x, int16_t y) const
-  {
-    return _colors[lmpd_constrain<uint16_t>(LedStrip::to_strip(x, y), 0, LED_COUNT - 1)].color;
-  }
+  uint32_t getPixelColorXY(int16_t x, int16_t y) const { return getPixelColor(LedStrip::to_strip(x, y)); }
 
   // Blends the specified color with the existing pixel color.
   void blendPixelColor(uint16_t n, uint32_t color, uint8_t blend)
@@ -225,8 +416,6 @@ public:
     addPixelColor(LedStrip::to_strip(x, y), color, fast);
   }
 
-  uint32_t getRawPixelColor(uint16_t n) const { return Adafruit_NeoPixel::getPixelColor(n); }
-
   // signal the strip that it can display the update
   void signal_display() { hasSomeChanges = true; }
 
@@ -243,13 +432,26 @@ public:
     memset(_buffers[index].data(), value, sizeof(BufferTy));
   }
 
+  /// store the display colors, with no brightness scaling
   COLOR _colors[LED_COUNT];
 
-  // buffers for computations
+  /// used for temporal dithering
+  std::array<COLOR, useTemporalDithering ? LED_COUNT : 1> _colorErrors;
+
+  /// buffers for computations
   BufferTy _buffers[stripNbBuffers];
 
 private:
   volatile bool hasSomeChanges;
+
+  /// Out strip brightness
+  volatile uint8_t brightness;
+
+  /// Store a reference to the brightness value from the last show() call
+  volatile uint8_t brightnessAtShowTime;
+
+  /// keep track of the show call count. Allowed to circle back to 0
+  volatile uint8_t shownCount;
 };
 
 } // namespace physical
