@@ -73,14 +73,14 @@ struct PowerLimits
   /// Actual allowed charging current
   uint16_t current_mA = 0;
   /// If true, enabled the Input Current Optimization algorithm.
-  /// It will calibrate the inpute current to respect a target threshold
-  bool shoulduseICO = false;
+  /// It will calibrate the input current to respect a target threshold
+  bool shouldUseICO = false;
 
   /// set the default values of this structure
   void set_default()
   {
     current_mA = 100; // default to 100mA (standard USB)
-    shoulduseICO = false;
+    shouldUseICO = false;
   }
 };
 /// define the power limits for input power
@@ -262,8 +262,12 @@ void enable_charge(const bool enable)
     control_charge();
 }
 
-// enable/disable the Input Current Optimizer algorithm
-void enable_ico(const bool enable)
+/**
+ * \brief enable/disable the Input Current Optimizer algorithm
+ * \param[in] enable If true, the InputCurrentOptimization algorithm will be activated and the VBUS charge current will
+ * be optimized to reach a target droop voltage
+ */
+void enable_input_current_optimization(const bool enable)
 {
   if (enable)
   {
@@ -406,7 +410,7 @@ void run_ADC()
 void program_input_current_limit()
 {
   const uint16_t inputCurrentLimit_mA = powerLimits_s.current_mA;
-  const bool shouldUseICO = powerLimits_s.shoulduseICO;
+  const bool shouldUseICO = powerLimits_s.shouldUseICO;
 
   // enable IDPM
   chargerIcRegisters.chargeOption0.set_EN_IDPM(1);
@@ -414,9 +418,12 @@ void program_input_current_limit()
 
   if (isChargeOk_s and inputCurrentLimit_mA > 0)
   {
-    enable_ico(shouldUseICO);
+    enable_input_current_optimization(shouldUseICO);
 
     const uint16_t writtenCurrent_mA = chargerIcRegisters.iIN_HOST.set(inputCurrentLimit_mA);
+    // limit input current use to 4.5V
+    // THIS MUST BE AFTER THE CURRENT WRITE ABOVE TO AVOID WRONG USAGE
+    chargerIcRegisters.inputVoltage.set(4500);
 
     // the checks below can produce a rare software error when plugging the system
     // It it not that important, so it can stay deactivated to prevent this pesky error
@@ -444,7 +451,7 @@ void program_input_current_limit()
   else
   {
     // disable ico
-    enable_ico(false);
+    enable_input_current_optimization(false);
 
     // input current to 0
     chargerIcRegisters.iIN_HOST.set(0);
@@ -543,7 +550,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
   success &= charger_ic::writeRegEx(chargerIcRegisters.prochotOption1);
 
   // disable ICO
-  enable_ico(false);
+  enable_input_current_optimization(false);
 
   chargerIc.readRegEx(chargerIcRegisters.chargeOption0);
   // disable DPM auto
@@ -582,7 +589,6 @@ bool enable(const uint16_t minSystemVoltage_mV,
   // set the nominal voltage values
   const auto maxBatteryVoltage_mV_read = chargerIcRegisters.maxChargeVoltage.set(maxBatteryVoltage_mV);
   const auto minSystemVoltage_mV_read = chargerIcRegisters.minSystemVoltage.set(minSystemVoltage_mV);
-  chargerIcRegisters.inputVoltage.set(4200);
 
   std::string startErrorMessage = "";
   bool isSuccessful = true;
@@ -708,7 +714,7 @@ void shutdown()
 void set_input_current_limit(const uint16_t maxInputCurrent_mA, const bool shouldUseICO)
 {
   powerLimits_s.current_mA = maxInputCurrent_mA;
-  powerLimits_s.shoulduseICO = shouldUseICO;
+  powerLimits_s.shouldUseICO = shouldUseICO;
 }
 
 uint16_t get_charge_current() { return measurments_s.batChargeCurrent_mA; }
