@@ -390,8 +390,9 @@ static constexpr PaletteTy PalettePartyColors = {0x5500AB,
                                                  0x2F00D0,
                                                  0x0007F9};
 
-/// Black body radiation
-static constexpr PaletteTy PaletteBlackBodyColors = {0xff3800,
+/// Black body radiation, with the high end changed to be nicer
+static constexpr PaletteTy PaletteBlackBodyColors = {0xE73E05,
+                                                     // 0xff3800, true black body
                                                      0xff5300,
                                                      0xff6500,
                                                      0xff7300,

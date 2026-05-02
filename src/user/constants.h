@@ -89,7 +89,7 @@ static constexpr uint16_t stripInputMaxVoltage_mV = 12000; // max allowed voltag
 static constexpr float ledByMeter = 244;                   // the REAL indexable led by meters (for a 240Led/m)
 static constexpr float ledStripWidth_mm = 5.2f;            // width of the led strip
 static constexpr float ledStripHeigh_mm = 0.7f;            // heigh of the led strip (calibrated for this strip)
-static constexpr uint8_t minimumAllowedBrightness_8 = 5;   // minium allowed brightnes level,0-255
+static constexpr uint8_t minimumAllowedBrightness_8 = 3;   // minium allowed brightnes level,0-255
 
 // compute the expected average loop runtime (in ms)
 // defined as milliseconds / FPS
@@ -103,7 +103,7 @@ static constexpr uint16_t stripInputMaxVoltage_mV = 12000; // max allowed voltag
 static constexpr float ledByMeter = 162.6f;                // the REAL indexable led by meters (for a 160Led/m)
 static constexpr float ledStripWidth_mm = 5.2f;            // width of the led strip
 static constexpr float ledStripHeigh_mm = 0.7f;            // heigh of the led strip (calibrated for this strip)
-static constexpr uint8_t minimumAllowedBrightness_8 = 5;   // minium allowed brightnes level,0-255
+static constexpr uint8_t minimumAllowedBrightness_8 = 3;   // minium allowed brightnes level,0-255
 
 // compute the expected average loop runtime (in ms)
 // defined as milliseconds / FPS
