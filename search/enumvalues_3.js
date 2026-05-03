@@ -24,5 +24,6 @@ var searchData=
   ['dimgray_21',['DimGray',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bae4baccfa61dc0b3cd410356c33ceed16',1,'lampda::modes::colors']]],
   ['dimgrey_22',['DimGrey',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baf0933b5c2afe79a016d8c74930e9b3ef',1,'lampda::modes::colors']]],
   ['directsunlight_23',['DirectSunlight',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a25fd921718e138df3c6617fb3504d237',1,'lampda::modes::colors']]],
-  ['dodgerblue_24',['DodgerBlue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bacd9500f84b161c335384d2eae037bf8c',1,'lampda::modes::colors']]]
+  ['dodgerblue_24',['DodgerBlue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bacd9500f84b161c335384d2eae037bf8c',1,'lampda::modes::colors']]],
+  ['dot_25',['DOT',['../namespacelampda_1_1modes_1_1draw_1_1overlay.html#a3764bbf557f255131391e4f8713e81eea40679521b5da0954b705341a2859f782',1,'lampda::modes::draw::overlay']]]
 ];

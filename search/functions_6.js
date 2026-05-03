@@ -14,6 +14,5 @@ var searchData=
   ['fromgrey_11',['fromGrey',['../namespacelampda_1_1modes_1_1colors.html#a28c39e86d893da680e178719c61605ee',1,'lampda::modes::colors']]],
   ['fromrgb_12',['fromRGB',['../namespacelampda_1_1modes_1_1colors.html#ac2bf35faa6f46fd27b3148dc508b18b5',1,'lampda::modes::colors']]],
   ['fromstripindextoxy_13',['fromStripIndexToXY',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a1921663071760bcf525255219a9ae671',1,'lampda::modes::hardware::LampTy']]],
-  ['fromtemp_14',['fromTemp',['../namespacelampda_1_1modes_1_1colors.html#a67f7b3e701adbbb16d95f464963e7183',1,'lampda::modes::colors']]],
-  ['fromxytostripindex_15',['fromXYtoStripIndex',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a5c265094efa13d3513bcb83e5f31385d',1,'lampda::modes::hardware::LampTy']]]
+  ['fromxytostripindex_14',['fromXYtoStripIndex',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a5c265094efa13d3513bcb83e5f31385d',1,'lampda::modes::hardware::LampTy']]]
 ];

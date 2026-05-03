@@ -35,7 +35,7 @@ var searchData=
   ['firstholdtime_32',['firstHoldTime',['../structlampda_1_1physical_1_1button_1_1ButtonStateTy.html#aecee7f4028f53c00ee84654b107b6147',1,'lampda::physical::button::ButtonStateTy']]],
   ['firstpixelhue_33',['firstPixelHue',['../structlampda_1_1modes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html#aaac10fc578f9642c667376672745a759',1,'lampda::modes::default_modes::RainbowSwirlMode::StateTy']]],
   ['fixed_5fmodes_2ehpp_34',['fixed_modes.hpp',['../fixed__modes_8hpp.html',1,'']]],
-  ['fixedmodes_35',['FixedModes',['../namespacelampda_1_1modes.html#a28e290207c7cb4a81cabe58dc57d34d6',1,'lampda::modes']]],
+  ['fixedmodes_35',['FixedModes',['../namespacelampda_1_1modes.html#a46525de2fd2c89da941695bda8efade4',1,'lampda::modes']]],
   ['flash_20process_36',['Flash process',['../md_flashInfo_README.html',1,'']]],
   ['flashapp_37',['FlashApp',['../md_flashInfo_windowsHmi_README.html',1,'']]],
   ['flashesgroup_38',['FlashesGroup',['../brightness__modes_8hpp.html#adf0faa9e1601ccba39a4b291c38d8e1f',1,'lampda::modes::brightness']]],
@@ -56,9 +56,8 @@ var searchData=
   ['fromgrey_53',['fromGrey',['../namespacelampda_1_1modes_1_1colors.html#a28c39e86d893da680e178719c61605ee',1,'lampda::modes::colors']]],
   ['fromrgb_54',['fromRGB',['../namespacelampda_1_1modes_1_1colors.html#ac2bf35faa6f46fd27b3148dc508b18b5',1,'lampda::modes::colors']]],
   ['fromstripindextoxy_55',['fromStripIndexToXY',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a1921663071760bcf525255219a9ae671',1,'lampda::modes::hardware::LampTy']]],
-  ['fromtemp_56',['fromTemp',['../namespacelampda_1_1modes_1_1colors.html#a67f7b3e701adbbb16d95f464963e7183',1,'lampda::modes::colors']]],
-  ['fromxytostripindex_57',['fromXYtoStripIndex',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a5c265094efa13d3513bcb83e5f31385d',1,'lampda::modes::hardware::LampTy']]],
-  ['fullspectrumfluorescent_58',['FullSpectrumFluorescent',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a86b2d61c47e32de23c6ff85e8e836ebf',1,'lampda::modes::colors']]],
-  ['functions_2eh_59',['functions.h',['../functions_8h.html',1,'']]],
-  ['fusb302_5fchip_5fstate_60',['fusb302_chip_state',['../structfusb302__chip__state.html',1,'']]]
+  ['fromxytostripindex_56',['fromXYtoStripIndex',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a5c265094efa13d3513bcb83e5f31385d',1,'lampda::modes::hardware::LampTy']]],
+  ['fullspectrumfluorescent_57',['FullSpectrumFluorescent',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a86b2d61c47e32de23c6ff85e8e836ebf',1,'lampda::modes::colors']]],
+  ['functions_2eh_58',['functions.h',['../functions_8h.html',1,'']]],
+  ['fusb302_5fchip_5fstate_59',['fusb302_chip_state',['../structfusb302__chip__state.html',1,'']]]
 ];

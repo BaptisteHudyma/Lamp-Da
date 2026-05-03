@@ -345,9 +345,6 @@ static constexpr LMBD_INLINE uint32_t&#160;</td><td class="memItemRight" valign=
 static constexpr LMBD_INLINE uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>fromAngleHue</b> (uint16_t angleDegrees)</td></tr>
 <tr class="memdesc:a7892b210703bf52cad910c9de3c19a56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a 360 degrees angle, return a corresponding color as an integer. <br /></td></tr>
 <tr class="separator:a7892b210703bf52cad910c9de3c19a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67f7b3e701adbbb16d95f464963e7183"><td class="memItemLeft" align="right" valign="top">static constexpr LMBD_INLINE uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes_1_1colors.html#a67f7b3e701adbbb16d95f464963e7183">fromTemp</a> (uint8_t temp)</td></tr>
-<tr class="memdesc:a67f7b3e701adbbb16d95f464963e7183"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a 0-255 value, return a color approximating a kelvin temperature.  <br /></td></tr>
-<tr class="separator:a67f7b3e701adbbb16d95f464963e7183"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ffd2a87cc35a4aeeb665c48c03b365a"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes_1_1colors.html#a6ffd2a87cc35a4aeeb665c48c03b365a">blend</a> (uint32_t leftColor, uint32_t rightColor, uint16_t blend, bool b16=false)</td></tr>
 <tr class="memdesc:a6ffd2a87cc35a4aeeb665c48c03b365a"><td class="mdescLeft">&#160;</td><td class="mdescRight">blend to two colors  <br /></td></tr>
 <tr class="separator:a6ffd2a87cc35a4aeeb665c48c03b365a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -801,35 +798,6 @@ template&lt;bool PaletteLoops = true, typename UIntTy  = uint8_t&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The desired color </dd></dl>
-
-</div>
-</div>
-<a id="a67f7b3e701adbbb16d95f464963e7183" name="a67f7b3e701adbbb16d95f464963e7183"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a67f7b3e701adbbb16d95f464963e7183">&#9670;&#160;</a></span>fromTemp()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static constexpr LMBD_INLINE uint32_t lampda::modes::colors::fromTemp </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>temp</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Given a 0-255 value, return a color approximating a kelvin temperature. </p>
-<p>See <a class="el" href="namespacelampda_1_1modes_1_1colors.html#a0951e7968bad6de261a8a3030c67c580" title="Black body radiation, with the high end changed to be nicer.">modes::colors::PaletteBlackBodyColors</a> </p>
 
 </div>
 </div>

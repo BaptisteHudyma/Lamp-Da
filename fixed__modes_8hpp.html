@@ -86,14 +86,18 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1fixed_1_1KelvinMode.html">lampda::modes::fixed::KelvinMode</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Black-body fixed colors ramp mode.  <a href="structlampda_1_1modes_1_1fixed_1_1KelvinMode.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1fixed_1_1RainbowMode.html">lampda::modes::fixed::RainbowMode</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rainbow fixed colors ramp mode.  <a href="structlampda_1_1modes_1_1fixed_1_1RainbowMode.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1fixed_1_1PaletteMode.html">lampda::modes::fixed::PaletteMode&lt; isStep &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1fixed_1_1PaletteMode.html">lampda::modes::fixed::PaletteMode&lt; isStep, rampUpdateLenght_ms, shouldSaturateRamp &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Single-color mode for indexable strips with palette ramp.  <a href="structlampda_1_1modes_1_1fixed_1_1PaletteMode.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1fixed_1_1PaletteRainbowMode.html">lampda::modes::fixed::PaletteRainbowMode</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rainbow fixed colors ramp mode.  <a href="structlampda_1_1modes_1_1fixed_1_1PaletteRainbowMode.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1fixed_1_1PaletteRainbowMode_1_1StateTy.html">lampda::modes::fixed::PaletteRainbowMode::StateTy</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1fixed_1_1PaletteBlackBodyMode.html">lampda::modes::fixed::PaletteBlackBodyMode</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">BlackBody temperature fixed colors ramp mode.  <a href="structlampda_1_1modes_1_1fixed_1_1PaletteBlackBodyMode.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1fixed_1_1PaletteBlackBodyMode_1_1StateTy.html">lampda::modes::fixed::PaletteBlackBodyMode::StateTy</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1fixed_1_1PalettePartyMode.html">lampda::modes::fixed::PalettePartyMode</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Party fixed colors ramp mode.  <a href="structlampda_1_1modes_1_1fixed_1_1PalettePartyMode.html#details">More...</a><br /></td></tr>
@@ -127,10 +131,10 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a28e290207c7cb4a81cabe58dc57d34d6"><td class="memItemLeft" align="right" valign="top"><a id="a28e290207c7cb4a81cabe58dc57d34d6" name="a28e290207c7cb4a81cabe58dc57d34d6"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::FixedModes</b> = modes::GroupFor&lt; fixed::KelvinMode, fixed::RainbowMode, fixed::PalettePapiMode &gt;</td></tr>
-<tr class="memdesc:a28e290207c7cb4a81cabe58dc57d34d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed modes groups. <br /></td></tr>
-<tr class="separator:a28e290207c7cb4a81cabe58dc57d34d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46525de2fd2c89da941695bda8efade4"><td class="memItemLeft" align="right" valign="top"><a id="a46525de2fd2c89da941695bda8efade4" name="a46525de2fd2c89da941695bda8efade4"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::FixedModes</b> = modes::GroupFor&lt; fixed::PaletteBlackBodyMode, fixed::PaletteRainbowMode, fixed::PalettePapiMode &gt;</td></tr>
+<tr class="memdesc:a46525de2fd2c89da941695bda8efade4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed modes groups. <br /></td></tr>
+<tr class="separator:a46525de2fd2c89da941695bda8efade4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43ba7c99682a92d1e8fb5ea39794aa50"><td class="memItemLeft" align="right" valign="top"><a id="a43ba7c99682a92d1e8fb5ea39794aa50" name="a43ba7c99682a92d1e8fb5ea39794aa50"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::MiscFixedModes</b> = modes::GroupFor&lt; fixed::PalettePartyMode, fixed::PaletteForestMode, fixed::PaletteOceanMode &gt;</td></tr>
 <tr class="memdesc:a43ba7c99682a92d1e8fb5ea39794aa50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed palette colors modes. <br /></td></tr>
