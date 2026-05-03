@@ -622,10 +622,10 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     if constexpr (ctx.lamp.flavor == hardware::LampTypes::indexable)
     {
       // if first display failed, add a new ramp and try again
-      if (not overlay.update_type_progress(draw::overlay::ElementType::RAMP, 0, progress))
+      if (not overlay.update_type_progress(ctx, draw::overlay::ElementType::RAMP, 0, progress))
       {
         // add new ramp element
-        overlay.add_ui_element(draw::overlay::ElementType::RAMP, palette, 0, 0, progress);
+        overlay.add_ui_element(ctx, draw::overlay::ElementType::RAMP, palette, 0, 0, progress);
       }
     }
     return (progress >= 250);
@@ -638,10 +638,10 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     if constexpr (ctx.lamp.flavor == hardware::LampTypes::indexable)
     {
       // if first display failed, add a new ramp and try again
-      if (not overlay.update_type_progress(draw::overlay::ElementType::DOT, index, progress))
+      if (not overlay.update_type_progress(ctx, draw::overlay::ElementType::DOT, index, progress))
       {
         // add new ramp element
-        overlay.add_ui_element(draw::overlay::ElementType::DOT, palette, positionX, 0, progress);
+        overlay.add_ui_element(ctx, draw::overlay::ElementType::DOT, palette, positionX, 0, progress);
       }
     }
   }

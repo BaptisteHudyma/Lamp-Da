@@ -40,6 +40,8 @@ struct UIElement
   uint16_t coordinateY; ///< start Y coordinates
 
   colors::PaletteTy color; ///< color palette to display
+
+  int32_t timeout_ms = -1; ///< If set to a positive number, this element will delete itself at the set time.
 };
 
 } // namespace __private
@@ -59,10 +61,6 @@ public:
     // restore first led skip to be able to draw
     ctx.skipFirstLedsForFrames(0);
 
-    skipedFrames++;
-    if (skipedFrames >= freezeSize)
-      clear();
-
     if (activeUiElements == 0)
       return;
 
@@ -72,29 +70,60 @@ public:
       ctx.lamp.setPixelColor(i, 0);
     }
 
+    // keep track of the last active element index
+    size_t lastActiveElementIndex = 0;
+    const auto timeNow = ctx.lamp.now;
+    const size_t activeUiElementsToDisplay = activeUiElements;
     // display all elements
-    for (uint8_t i = 0; i < activeUiElements; ++i)
+    for (uint8_t i = 0; i < activeUiElementsToDisplay; ++i)
     {
-      drawElement(elements[i], ctx);
+      const auto elementTimeout = elements[i].timeout_ms;
+      // auto deletion of element
+      if (elementTimeout > 0 and timeNow > elementTimeout)
+      {
+        // remove one active element
+        if (activeUiElements > 0)
+          --activeUiElements;
+        platform::lampda_print("delete element %d", i);
+      }
+      else
+      {
+        drawElement(elements[i], ctx);
+
+        // if an element before this was delete, shift this element index
+        if (i != lastActiveElementIndex)
+        {
+          // shift the saved elements
+          elements[lastActiveElementIndex] = elements[i];
+        }
+        ++lastActiveElementIndex;
+      }
     }
 
-    // relock the display capabilities for the remaning time
-    ctx.skipFirstLedsForFrames(ctx.lamp.maxWidth * nbBlackLines, freezeSize - skipedFrames);
+    // relock the display capabilities for the remaining time
+    ctx.skipFirstLedsForFrames(ctx.lamp.maxWidth * nbBlackLines, freezeSize);
   }
 
   /// Clear all UI elements
-  void clear()
-  {
-    activeUiElements = 0;
-    skipedFrames = 0;
-  }
+  void clear() { activeUiElements = 0; }
 
-  /// Add a new UI element
-  bool add_ui_element(const ElementType type,
+  /**
+   * \brief Add a new UI element to the overlay
+   * \param[in] type Type of the element. Depending on the type, some parameters may be ignored
+   * \param[in] palette Color palette to apply, controled by the progress parameter
+   * \param[in] coordinateX Start x coordinate
+   * \param[in] coordinateY Start y coordinate
+   * \param[in] progress Progress of the element, controls the color and other aspects
+   * \param[in] activityDelay_ms Longevity delay affected to this element, after which it destroys itselfs
+   * \return True if the element was successfully added
+   */
+  bool add_ui_element(const auto& ctx,
+                      const ElementType type,
                       const colors::PaletteTy& palette,
                       const uint16_t coordinateX = 0,
                       const uint16_t coordinateY = 0,
-                      const uint8_t progress = 0)
+                      const uint8_t progress = 0,
+                      const uint32_t activityDelay_ms = 50)
   {
     if (activeUiElements >= UIElementSize - 1)
       return false;
@@ -106,10 +135,12 @@ public:
     element.coordinateX = coordinateX;
     element.coordinateY = coordinateY;
     element.color = palette;
+    // set optionnal auto destroy
+    if (activityDelay_ms > 0)
+      element.timeout_ms = ctx.lamp.now + activityDelay_ms;
 
     // increase element count
     activeUiElements++;
-    skipedFrames = 0;
     return true;
   }
 
@@ -120,13 +151,21 @@ public:
    * \param[in] progress Progress value to update
    * \return True if the element was found and updated
    */
-  bool update_type_progress(const ElementType type, uint16_t desiredIndex, const uint8_t progress)
+  template<bool shouldUpdateTimeout = true>
+  bool update_type_progress(const auto& ctx, const ElementType type, uint16_t desiredIndex, const uint8_t progress)
   {
     size_t index;
     if (get_N_of_type(type, desiredIndex, index))
     {
-      skipedFrames = 0;
       elements[index].progress = progress;
+
+      // if requested, update timeout
+      const uint32_t newTimeout = ctx.lamp.now + freezeSize * ctx.lamp.frameDurationMs;
+      if (shouldUpdateTimeout and elements[index].timeout_ms <= newTimeout)
+      {
+        // add two frames of breathing room
+        elements[index].timeout_ms = newTimeout;
+      }
       return true;
     }
     return false;
@@ -139,13 +178,23 @@ public:
    * \param[in] palette Color value to update
    * \return True if the element was found and updated
    */
-  bool update_type_color(const ElementType type, uint16_t desiredIndex, const colors::PaletteTy& palette)
+  template<bool shouldUpdateTimeout = true> bool update_type_color(const auto& ctx,
+                                                                   const ElementType type,
+                                                                   uint16_t desiredIndex,
+                                                                   const colors::PaletteTy& palette)
   {
     size_t index;
     if (get_N_of_type(type, desiredIndex, index))
     {
-      skipedFrames = 0;
       elements[index].color = palette;
+
+      // if requested, update timeout
+      const uint32_t newTimeout = ctx.lamp.now + freezeSize * ctx.lamp.frameDurationMs;
+      if (shouldUpdateTimeout and elements[index].timeout_ms <= newTimeout)
+      {
+        // add two frames of breathing room
+        elements[index].timeout_ms = newTimeout;
+      }
       return true;
     }
     return false;
@@ -206,7 +255,7 @@ protected:
     const uint16_t rampScale = (progress / 255.0) * ctx.lamp.maxWidth;
     for (uint16_t i = 0; i < rampScale; ++i)
     {
-      const auto color = modes::colors::from_palette(lmpd_map<uint8_t>(i, 0, rampScale, 0, 255), palette);
+      const auto color = modes::colors::from_palette<false>(lmpd_map<uint8_t>(i, 0, rampScale, 0, 255), palette);
       ctx.lamp.setPixelColorXY(i, startCoordinateY, color);
     }
   }
@@ -223,8 +272,6 @@ protected:
   }
 
 private:
-  /// keep track of skiped frames since the last update
-  volatile size_t skipedFrames = 0;
   /// ordered storage for UI elements: higher priority are stored at lower indices
   std::array<__private::UIElement, UIElementSize> elements;
   /// stored UI elements
