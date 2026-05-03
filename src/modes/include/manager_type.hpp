@@ -447,12 +447,14 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     if (which_one >= ctx.state.maxFavoriteCount)
       return false;
 
-    // show which favorite is currently set
-    display_favorite_number_ramp(ctx, which_one, ctx.state.usedFavoriteCount, true, 1000);
-
     const auto targetFavorite = ctx.state.favorites[which_one];
     // reset once with the right mode
     jump_to_new_active_index(ctx, targetFavorite);
+
+    // show which favorite is currently set
+    overlay.clear();
+    display_favorite_number_ramp(ctx, which_one, ctx.state.usedFavoriteCount, true, 1000);
+
     return true;
   }
 
@@ -613,23 +615,31 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   }
 
   /// Create and animate a ramp
-  static bool overlay_animate_ramp(auto& ctx, float holdDuration, float stepSize, const auto& palette)
+  static bool overlay_animate_ramp(
+          auto& ctx, float holdDuration, float stepSize, const colors::PaletteTy& palette, const uint32_t timeout = 0)
   {
     // where we are: 0-255 rampColorRing
     const uint32_t stepProgress = floor((holdDuration * 256.0) / stepSize);
     return overlay_animate_ramp(ctx, stepProgress % 256, palette);
   }
-  static bool overlay_animate_ramp(auto& ctx, uint8_t progress, const auto& palette)
+  static bool overlay_animate_ramp(auto& ctx,
+                                   uint8_t progress,
+                                   const colors::PaletteTy& palette,
+                                   const uint32_t timeout = 0)
   {
     // only display on indexable
     if constexpr (ctx.lamp.flavor == hardware::LampTypes::indexable)
     {
       // if first display failed, add a new ramp and try again
-      if (not overlay.update_type_progress(ctx, draw::overlay::ElementType::RAMP, 0, progress))
+      if (not overlay.update_type(ctx, draw::overlay::ElementType::RAMP, 0, progress, palette))
       {
         // add new ramp element
         overlay.add_ui_element(ctx, draw::overlay::ElementType::RAMP, palette, 0, 0, progress);
       }
+
+      // if timeout is requested, update it
+      if (timeout > 0)
+        overlay.update_type_timeout(ctx, draw::overlay::ElementType::RAMP, 0, timeout);
     }
     return (progress >= 250);
   }
@@ -646,7 +656,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     if constexpr (ctx.lamp.flavor == hardware::LampTypes::indexable)
     {
       // if first display failed, add a new ramp and try again
-      if (not overlay.update_type_progress(ctx, draw::overlay::ElementType::DOT, index, progress))
+      if (not overlay.update_type(ctx, draw::overlay::ElementType::DOT, index, progress, palette))
       {
         // add new element
         overlay.add_ui_element(ctx, draw::overlay::ElementType::DOT, palette, positionX, 0, progress);

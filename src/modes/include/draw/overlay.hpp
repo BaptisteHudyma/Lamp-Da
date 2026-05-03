@@ -107,6 +107,21 @@ public:
   /// Clear all UI elements
   void clear() { activeUiElements = 0; }
 
+  /// Return the count of elements of a target type
+  uint8_t get_element_count(const ElementType type) const
+  {
+    uint8_t cnt = 0;
+    for (uint8_t i = 0; i < activeUiElements; ++i)
+    {
+      // find elements of a type
+      if (elements[i].type == type)
+      {
+        cnt++;
+      }
+    }
+    return cnt;
+  }
+
   /**
    * \brief Add a new UI element to the overlay
    * \param[in] type Type of the element. Depending on the type, some parameters may be ignored
@@ -212,9 +227,41 @@ public:
     return false;
   }
 
+  /**
+   * \brief Update the target UI element
+   * \param[in] type Type of the element to update
+   * \param[in] desiredIndex Nth element of the target type to select
+   * \param[in] progress Progress value to update
+   * \param[in] palette Colors to update
+   * \return True if the element was found and updated
+   */
+  template<bool shouldUpdateTimeout = true> bool update_type(const auto& ctx,
+                                                             const ElementType type,
+                                                             uint16_t desiredIndex,
+                                                             const uint8_t progress,
+                                                             const colors::PaletteTy& palette)
+  {
+    size_t index;
+    if (get_N_of_type(type, desiredIndex, index))
+    {
+      elements[index].progress = progress;
+      elements[index].color = palette;
+
+      // if requested, update timeout
+      const uint32_t newTimeout = ctx.lamp.now + freezeSize * ctx.lamp.frameDurationMs;
+      if (shouldUpdateTimeout and elements[index].timeout_ms <= newTimeout)
+      {
+        // add two frames of breathing room
+        elements[index].timeout_ms = newTimeout;
+      }
+      return true;
+    }
+    return false;
+  }
+
 protected:
   /// Find and return the Nth element of a given type
-  bool get_N_of_type(const ElementType type, uint16_t desiredIndex, size_t& elementId)
+  bool get_N_of_type(const ElementType type, uint16_t desiredIndex, size_t& elementId) const
   {
     // display all elements
     for (uint8_t i = 0; i < activeUiElements; ++i)
@@ -235,7 +282,7 @@ protected:
     return false;
   }
 
-  void drawElement(const __private::UIElement& e, auto& ctx)
+  void drawElement(const __private::UIElement& e, auto& ctx) const
   {
     switch (e.type)
     {
@@ -262,7 +309,7 @@ protected:
   void display_ramp(auto& ctx,
                     const uint8_t progress,
                     const colors::PaletteTy& palette,
-                    const uint16_t startCoordinateY)
+                    const uint16_t startCoordinateY) const
   {
     const uint16_t rampScale = (progress / 255.0) * ctx.lamp.maxWidth;
     for (uint16_t i = 0; i < rampScale; ++i)
@@ -277,7 +324,7 @@ protected:
                    const uint8_t progress,
                    const colors::PaletteTy& palette,
                    const uint16_t coordinateX,
-                   const uint16_t coordinateY)
+                   const uint16_t coordinateY) const
   {
     const auto color = modes::colors::from_palette<false>(progress, palette);
     ctx.lamp.setPixelColorXY(coordinateX, coordinateY, color);

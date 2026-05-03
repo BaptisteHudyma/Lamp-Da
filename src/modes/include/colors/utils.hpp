@@ -77,15 +77,6 @@ static constexpr LMBD_INLINE uint32_t fromAngleHue(uint16_t angleDegrees)
 
 namespace lampda::modes::colors {
 
-/** \brief Given a 0-255 value, return a color approximating a kelvin temperature
- *
- * See modes::colors::PaletteBlackBodyColors
- */
-static constexpr LMBD_INLINE uint32_t fromTemp(uint8_t temp)
-{
-  return from_palette<false>(temp, PaletteBlackBodyColors);
-}
-
 /**
  * \brief blend to two colors
  *
