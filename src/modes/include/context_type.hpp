@@ -43,7 +43,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   static constexpr bool isMode = is_mode<LocalModeTy>;
 
   /// \private True if context is root "manager" context
-  static constexpr bool isManager = std::is_same_v<LocalModeTy, ModeManagerTy>;
+  static constexpr bool isModeManager = std::is_same_v<LocalModeTy, ModeManagerTy>;
 
   // useful proxies (exposes mode properties)
   static constexpr bool hasSunsetAnimation = LocalModeTy::hasSunsetAnimation; ///< \private
@@ -96,7 +96,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
     else
     {
-      auto& manager = modeManager.get_context();
+      auto manager = modeManager.get_context();
       return manager.next_group();
     }
   }
@@ -110,7 +110,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
     else
     {
-      auto& manager = modeManager.get_context();
+      auto manager = modeManager.get_context();
       return manager.next_mode();
     }
   }
@@ -124,7 +124,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
     else
     {
-      auto& manager = modeManager.get_context();
+      auto manager = modeManager.get_context();
       return manager.jump_to_favorite(which_one, shouldSaveLastActiveIndex);
     }
   }
@@ -138,7 +138,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
     else
     {
-      auto& manager = modeManager.get_context();
+      auto manager = modeManager.get_context();
       return manager.set_favorite_now(which_one);
     }
   }
@@ -152,7 +152,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
     else
     {
-      auto& manager = modeManager.get_context();
+      auto manager = modeManager.get_context();
       return manager.delete_favorite_now();
     }
   }
@@ -166,8 +166,39 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
     else
     {
-      auto& manager = modeManager.get_context();
+      auto manager = modeManager.get_context();
       return manager.handle_scroll_modes(holdDuration);
+    }
+  }
+
+  /// \private Animate a ramp
+  auto LMBD_INLINE overlay_animate_ramp(float holdDuration,
+                                        float stepSize,
+                                        const colors::PaletteTy& palette,
+                                        const uint32_t timeout = 0)
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      return modeManager.overlay_animate_ramp(*this, holdDuration, stepSize, palette, timeout);
+    }
+    else
+    {
+      auto manager = modeManager.get_context();
+      return manager.overlay_animate_ramp(holdDuration, stepSize, palette, timeout);
+    }
+  }
+
+  /// \private Animate a ramp
+  auto LMBD_INLINE overlay_animate_ramp(uint8_t progress, const colors::PaletteTy& palette, const uint32_t timeout = 0)
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      return modeManager.overlay_animate_ramp(*this, progress, palette, timeout);
+    }
+    else
+    {
+      auto manager = modeManager.get_context();
+      return manager.overlay_animate_ramp(progress, palette, timeout);
     }
   }
 
@@ -183,7 +214,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
     else
     {
-      auto& manager = modeManager.get_context();
+      auto manager = modeManager.get_context();
       return manager.get_modes_count();
     }
   }
@@ -288,8 +319,8 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
 
   /// \private Local store will be in general, manager, or private key space ?
   static constexpr auto prefix =
-          (isManager ? store::PrefixValues::managerKeys :
-                       (isMode ? store::PrefixValues::generalKeys : store::PrefixValues::privateKeys));
+          (isModeManager ? store::PrefixValues::managerKeys :
+                           (isMode ? store::PrefixValues::generalKeys : store::PrefixValues::privateKeys));
 
   /// \private Store enumeration used by \p LocalModeTy to index its storage
   using StoreEnum = StoreEnumOf<LocalModeTy>;
@@ -468,15 +499,6 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   //
 
   /**
-   *\brief Skip the few next calls to active mode ``.loop``
-   */
-  void LMBD_INLINE skipNextFrames(uint8_t count = 1)
-  {
-    auto ctx = modeManager.get_context();
-    ctx.state.skipNextFrameEffect = count;
-  }
-
-  /**
    * \brief Turn off the output for a duration
    * \param[in] duration in milliseconds
    */
@@ -653,6 +675,33 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
 
     return false;
+  }
+
+  template<bool displayFavoriteNumber = true> auto LMBD_INLINE animate_favorite_pick(float holdDuration, float stepSize)
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      return modeManager.template animate_favorite_pick<displayFavoriteNumber>(*this, holdDuration, stepSize);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      return manager.template animate_favorite_pick<displayFavoriteNumber>(holdDuration, stepSize);
+    }
+  }
+
+  template<bool displayFavoriteNumber = true>
+  auto LMBD_INLINE animate_favorite_delete(float holdDuration, float stepSize)
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      return modeManager.template animate_favorite_delete<displayFavoriteNumber>(*this, holdDuration, stepSize);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      return manager.template animate_favorite_delete<displayFavoriteNumber>(holdDuration, stepSize);
+    }
   }
 
   /// Binds to local BasicMode::power_on_sequence()

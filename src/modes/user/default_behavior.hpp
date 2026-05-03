@@ -102,12 +102,21 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
   switch (clicks)
   {
     case 5:
-      if (not isEndOfHoldEvent and holdDuration > 0)
       {
-        // sunset timer !
-        auto manager = get_context();
-        modes::details::_animate_sunset_timer(manager, holdDuration, 1000);
-        return true;
+        if (not isEndOfHoldEvent and holdDuration > 0)
+        {
+          // sunset timer !
+          auto manager = get_context();
+          if (manager.overlay_animate_ramp(
+                      holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
+          {
+            // update the sunset timing
+            manager.state.isSunsetTimingPending = 2;
+          }
+
+          return true;
+        }
+        break;
       }
   }
 
@@ -154,6 +163,59 @@ void user_thread()
   if (manager.should_spawn_thread())
     manager.user_thread();
 }
+
+/// Define default behavior that are shared between system types
+namespace default_behaviors {
+
+/// must be called by the lampda::user::button_clicked_default
+bool button_clicked(const uint8_t clicks)
+{
+  // nothing
+  return false;
+}
+
+/// must be called by the lampda::user::button_hold_default
+bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)
+{
+  auto manager = get_context();
+  auto& rampHandler = manager.state.rampHandler;
+
+  switch (clicks)
+  {
+    case 3: // 3 click+hold: configure custom ramp
+            // no ramps in favorite group
+      if (not manager.state.isInFavoriteMockGroup)
+      {
+        rampHandler.update_ramp(manager.get_active_custom_ramp(), holdDuration, [&](uint8_t rampValue) {
+          manager.custom_ramp_update(rampValue);
+          manager.set_active_custom_ramp(rampValue);
+        });
+        return true;
+      }
+      break;
+
+      // 5 click+hold: Add 5 minutes to sunset timer
+    case 5:
+      {
+        if (not isEndOfHoldEvent and holdDuration > 0 and logic::sunset::is_enabled())
+        {
+          // sunset timer !
+          auto manager = get_context();
+          if (manager.overlay_animate_ramp(
+                      holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
+          {
+            // update the sunset timing
+            manager.state.isSunsetTimingPending = 2;
+          }
+        }
+        break;
+      }
+  }
+
+  return false;
+}
+
+} // namespace default_behaviors
 
 } // namespace lampda::user
 
