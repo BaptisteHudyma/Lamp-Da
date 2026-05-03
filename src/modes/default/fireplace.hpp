@@ -10,8 +10,6 @@
 
 #include "src/modes/include/colors/palettes.hpp"
 
-#include "src/modes/include/anims/ramp_update.hpp"
-
 #include <cstdint>
 
 /// Basic "default" modes included with the hardware

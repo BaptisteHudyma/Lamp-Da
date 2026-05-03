@@ -171,6 +171,20 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
   }
 
+  /// \private Animate a ramp
+  auto LMBD_INLINE overlay_animate_ramp(float holdDuration, float stepSize, const auto& palette)
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      return modeManager.overlay_animate_ramp(*this, holdDuration, stepSize, palette);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      return manager.overlay_animate_ramp(holdDuration, stepSize, palette);
+    }
+  }
+
   /// \private Get number of groups available
   auto LMBD_INLINE get_groups_count() { return modeManager.nbGroups; }
 
@@ -468,15 +482,6 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   //
 
   /**
-   *\brief Skip the few next calls to active mode ``.loop``
-   */
-  void LMBD_INLINE skipNextFrames(uint8_t count = 1)
-  {
-    auto ctx = modeManager.get_context();
-    ctx.state.skipNextFrameEffect = count;
-  }
-
-  /**
    * \brief Turn off the output for a duration
    * \param[in] duration in milliseconds
    */
@@ -653,6 +658,33 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
 
     return false;
+  }
+
+  template<bool displayFavoriteNumber = true> auto LMBD_INLINE animate_favorite_pick(float holdDuration, float stepSize)
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      return modeManager.template animate_favorite_pick<displayFavoriteNumber>(*this, holdDuration, stepSize);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      return manager.template animate_favorite_pick<displayFavoriteNumber>(holdDuration, stepSize);
+    }
+  }
+
+  template<bool displayFavoriteNumber = true>
+  auto LMBD_INLINE animate_favorite_delete(float holdDuration, float stepSize)
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      return modeManager.template animate_favorite_delete<displayFavoriteNumber>(*this, holdDuration, stepSize);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      return manager.template animate_favorite_delete<displayFavoriteNumber>(holdDuration, stepSize);
+    }
   }
 
   /// Binds to local BasicMode::power_on_sequence()

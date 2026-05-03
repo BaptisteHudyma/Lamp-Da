@@ -102,12 +102,21 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
   switch (clicks)
   {
     case 5:
-      if (not isEndOfHoldEvent and holdDuration > 0)
       {
-        // sunset timer !
-        auto manager = get_context();
-        modes::details::_animate_sunset_timer(manager, holdDuration, 1000);
-        return true;
+        if (not isEndOfHoldEvent and holdDuration > 0)
+        {
+          // sunset timer !
+          auto manager = get_context();
+          if (manager.overlay_animate_ramp(
+                      holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
+          {
+            // update the sunset timing
+            manager.state.isSunsetTimingPending = 2;
+          }
+
+          return true;
+        }
+        break;
       }
   }
 

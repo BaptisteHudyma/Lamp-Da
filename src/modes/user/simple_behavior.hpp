@@ -76,11 +76,16 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
 
     case 5:
       {
-        // sunset timer
-        // this command is only active when the timer is enabled
         if (not isEndOfHoldEvent and holdDuration > 0 and logic::sunset::is_enabled())
         {
-          modes::details::_animate_sunset_timer(manager, holdDuration, 1000);
+          // sunset timer !
+          auto manager = get_context();
+          if (manager.overlay_animate_ramp(
+                      holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
+          {
+            // update the sunset timing
+            manager.state.isSunsetTimingPending = 2;
+          }
         }
         break;
       }
