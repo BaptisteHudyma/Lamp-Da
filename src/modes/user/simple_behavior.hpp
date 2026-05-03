@@ -14,6 +14,13 @@ namespace lampda::user {
 
 void button_clicked_default(const uint8_t clicks)
 {
+  // Handle default common behavior
+  if (default_behaviors::button_clicked(clicks))
+  {
+    // some event is already handled
+    return;
+  }
+
   auto manager = get_context();
 
   switch (clicks)
@@ -62,34 +69,19 @@ void button_clicked_default(const uint8_t clicks)
 
 void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)
 {
+  // Handle default common behavior
+  if (default_behaviors::button_hold(clicks, isEndOfHoldEvent, holdDuration))
+  {
+    // some event is already handled
+    return;
+  }
+
   auto manager = get_context();
   auto& rampHandler = manager.state.rampHandler;
 
   switch (clicks)
   {
-    case 3: // 3 click+hold: configure custom ramp
-      rampHandler.update_ramp(manager.get_active_custom_ramp(), holdDuration, [&](uint8_t rampValue) {
-        manager.custom_ramp_update(rampValue);
-        manager.set_active_custom_ramp(rampValue);
-      });
-      break;
-
-    case 5:
-      {
-        if (not isEndOfHoldEvent and holdDuration > 0 and logic::sunset::is_enabled())
-        {
-          // sunset timer !
-          auto manager = get_context();
-          if (manager.overlay_animate_ramp(
-                      holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
-          {
-            // update the sunset timing
-            manager.state.isSunsetTimingPending = 2;
-          }
-        }
-        break;
-      }
-
+    // No special behavior
     default:
       break;
   }
