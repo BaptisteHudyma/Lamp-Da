@@ -200,6 +200,18 @@ public:
     return false;
   }
 
+  bool update_type_timeout(const auto& ctx, const ElementType type, uint16_t desiredIndex, const uint32_t timeout_ms)
+  {
+    size_t index;
+    if (get_N_of_type(type, desiredIndex, index))
+    {
+      // add two frames of breathing room
+      elements[index].timeout_ms = ctx.lamp.now + timeout_ms;
+      return true;
+    }
+    return false;
+  }
+
 protected:
   /// Find and return the Nth element of a given type
   bool get_N_of_type(const ElementType type, uint16_t desiredIndex, size_t& elementId)

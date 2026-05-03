@@ -447,6 +447,9 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     if (which_one >= ctx.state.maxFavoriteCount)
       return false;
 
+    // show which favorite is currently set
+    display_favorite_number_ramp(ctx, which_one, ctx.state.usedFavoriteCount, true, 1000);
+
     const auto targetFavorite = ctx.state.favorites[which_one];
     // reset once with the right mode
     jump_to_new_active_index(ctx, targetFavorite);
@@ -632,7 +635,12 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   }
 
   /// Animate an overlay dot
-  static void overlay_animate_dot(auto& ctx, uint16_t index, uint16_t positionX, uint8_t progress, const auto& palette)
+  static void overlay_animate_dot(auto& ctx,
+                                  uint16_t index,
+                                  uint16_t positionX,
+                                  uint8_t progress,
+                                  const auto& palette,
+                                  const uint32_t timeout = 0)
   {
     // only display on indexable
     if constexpr (ctx.lamp.flavor == hardware::LampTypes::indexable)
@@ -640,9 +648,13 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       // if first display failed, add a new ramp and try again
       if (not overlay.update_type_progress(ctx, draw::overlay::ElementType::DOT, index, progress))
       {
-        // add new ramp element
+        // add new element
         overlay.add_ui_element(ctx, draw::overlay::ElementType::DOT, palette, positionX, 0, progress);
       }
+
+      // if timeout is requested, update it
+      if (timeout > 0)
+        overlay.update_type_timeout(ctx, draw::overlay::ElementType::DOT, index, timeout);
     }
   }
 
@@ -956,17 +968,26 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   // Private action functions
   //
 
-  /// \private display a lit pixel per given favorite index
+  /**
+   * \brief display a lit pixel per given favorite index
+   * \param[in, out] ctx
+   * \param[in] favoriteIndex Actually used favorite count
+   * \param[in] maxFavoriteIndex Maximum allowed favorite index to display
+   * \param[in] display If false, do not display the dots
+   * \param[in] timeout Tiemout after which they will disapear
+   */
   static void display_favorite_number_ramp(auto& ctx,
                                            const uint8_t favoriteIndex,
                                            const uint8_t maxFavoriteIndex,
-                                           const bool display = false)
+                                           const bool display = false,
+                                           const uint32_t timeout = 0)
   {
     const uint8_t maxPixelDisplay = std::min<uint8_t>(ctx.state.maxFavoriteCount, maxFavoriteIndex);
     for (uint8_t i = 0; i < maxPixelDisplay; ++i)
     {
       const bool shouldDisplay = (display and i <= favoriteIndex);
-      overlay_animate_dot(ctx, i, i, shouldDisplay ? 255 : 0, colors::PaletteGradient<colors::Black, colors::Cyan>);
+      overlay_animate_dot(
+              ctx, i, i, shouldDisplay ? 255 : 0, colors::PaletteGradient<colors::Black, colors::Cyan>, timeout);
     }
   }
 
@@ -1002,27 +1023,13 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     }
     else
     {
-      // animate with different colors
-      switch (stepCount % 4)
-      {
-        case 0:
-          overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Green, colors::White>);
-          break;
-        case 1:
-          overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Blue, colors::White>);
-          break;
-        case 2:
-          overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Orange, colors::White>);
-          break;
-        case 3:
-          overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Purple, colors::White>);
-          break;
-      }
+      // green ramp : favorites
+      overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Green, colors::White>);
 
       // extra display on the first pixels (count pixels to know fav no)
       if constexpr (displayFavoriteNumber)
       {
-        // display ramp
+        // display the set favorite ramp
         display_favorite_number_ramp(ctx, stepCount, numberOfFavoriteSet, stepCount < numberOfFavoriteSet);
       }
 
