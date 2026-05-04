@@ -99,10 +99,12 @@ namespace indicator {
 
 /// Internal indicator brightness level (1-3)
 static inline uint8_t _level = 0;
+static inline uint32_t levelUpdateTime = 0;
 
 void set_brightness_level(const uint8_t level)
 {
   static constexpr uint8_t lowBrightness = 64;
+
   switch (level)
   {
     case 1:
@@ -121,12 +123,20 @@ void set_brightness_level(const uint8_t level)
       physical::indicator::set_brightness(255);
       break;
   }
+
+  // update the level timer
+  levelUpdateTime = platform::time_ms();
 }
 
 uint8_t get_brightness_level() { return _level; }
 
 bool should_indicator_be_visible()
 {
+  static constexpr uint32_t blipLenght_ms = 100;
+  const bool shouldBlip = levelUpdateTime != 0 and (platform::time_ms() - levelUpdateTime) < blipLenght_ms;
+  if (shouldBlip)
+    return false;
+
   return _level != 2 or logic::behavior::is_in_output_state() or logic::behavior::is_in_start_logic_state();
 }
 
