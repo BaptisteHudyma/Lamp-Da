@@ -29,9 +29,6 @@ AlertManager_t manager;
 /// Set to true if an alert requested an emmergency shutdown
 bool _request_shutdown = false;
 
-/// If true, do not display the indicator in normal mode
-bool skipIndicator = false;
-
 /// Stay at zero in normal operation.
 /// Set to the real startup time to ignore the battery alerts while the system starts
 uint32_t _startupChargerTime = 0;
@@ -757,7 +754,7 @@ void handle_all(const bool shouldIgnoreAlerts)
   if (shouldIgnoreAlerts or isNoAlertsRaised)
   {
     // do nothing to display anything
-    if (skipIndicator)
+    if (not logic::indicator::should_indicator_be_visible())
     {
       physical::indicator::set_color(utils::ColorSpace::BLACK);
       return;
@@ -941,38 +938,5 @@ bool AlertManager_t::can_use_usb_port() const
 }
 
 } // namespace alerts
-
-namespace indicator {
-
-static inline uint8_t _level = 0;
-
-void set_brightness_level(const uint8_t level)
-{
-  static constexpr uint8_t lowBrightness = 64;
-  switch (level)
-  {
-    case 1:
-      _level = 1;
-      logic::alerts::skipIndicator = true;
-      physical::indicator::set_brightness(lowBrightness);
-      break;
-    case 2:
-      _level = 2;
-      logic::alerts::skipIndicator = false;
-      physical::indicator::set_brightness(lowBrightness);
-      break;
-    // 0 and default are the same : level too high should loop back
-    case 0:
-    default:
-      _level = 0;
-      logic::alerts::skipIndicator = false;
-      physical::indicator::set_brightness(255);
-      break;
-  }
-}
-
-uint8_t get_brightness_level() { return _level; }
-
-} // namespace indicator
 } // namespace logic
 } // namespace lampda

@@ -85,7 +85,7 @@ bool always_button_click_callback(const uint8_t consecutiveButtonCheck)
   {
     case 7:
       {
-        indicator::set_brightness_level(indicator::get_brightness_level() + 1);
+        indicator::set_brightness_level(logic::indicator::get_brightness_level() + 1);
         return false;
       }
     default:
@@ -241,7 +241,7 @@ bool always_button_hold_callback(const uint8_t consecutiveButtonCheck,
     case 7:
       {
         // every seconds, update the indicator
-        EVERY_N_MILLIS(1000) { indicator::set_brightness_level(indicator::get_brightness_level() + 1); }
+        EVERY_N_MILLIS(1000) { indicator::set_brightness_level(logic::indicator::get_brightness_level() + 1); }
         return false;
       }
     default:

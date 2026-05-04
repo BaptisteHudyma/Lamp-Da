@@ -4,8 +4,11 @@
 
 #include "src/system/platform/time.h"
 
+#include "src/system/physical/indicator.h"
+
+#include "src/system/logic/behavior.h"
+
 #include "src/system/utils/utils.h"
-#include <limits>
 
 namespace lampda {
 namespace logic {
@@ -91,5 +94,65 @@ void force_brightness_user_callback()
 uint32_t when_last_update_brightness() { return __internal.lastBrightnessUpdate; }
 
 } // namespace brightness
+
+namespace indicator {
+
+/// Internal indicator brightness level (1-3)
+static inline uint8_t _level = 0;
+static inline uint32_t levelUpdateTime = 0;
+
+void set_brightness_level(const uint8_t level)
+{
+  static constexpr uint8_t lowBrightness = 64;
+
+  switch (level)
+  {
+    case 1:
+      _level = 1;
+      physical::indicator::set_brightness(lowBrightness);
+      break;
+    case 2:
+      // level 2 will also disable the indicator when in charge mode
+      _level = 2;
+      physical::indicator::set_brightness(lowBrightness);
+      break;
+    // 0 and default are the same : level too high should loop back
+    case 0:
+    default:
+      _level = 0;
+      physical::indicator::set_brightness(255);
+      break;
+  }
+
+  // update the level timer
+  levelUpdateTime = platform::time_ms();
+}
+
+uint8_t get_brightness_level() { return _level; }
+
+bool should_indicator_be_visible()
+{
+  // do not display indicator when level is 2 AND lamp is in charging state
+  const bool shouldDisplay = not(_level == 2 and logic::behavior::is_in_charge_state());
+
+  // force display for a duration before turning off
+  if (not shouldDisplay)
+  {
+    static constexpr uint32_t forceDisplayTime_ms = 5000;
+    return (platform::time_ms() - levelUpdateTime) < forceDisplayTime_ms;
+  }
+  else
+  {
+    // if we will show the indicator, do the blip
+    static constexpr uint32_t blipLenght_ms = 100;
+    const bool shouldBlip = levelUpdateTime != 0 and (platform::time_ms() - levelUpdateTime) < blipLenght_ms;
+    if (shouldBlip)
+      return false;
+  }
+  // default is true
+  return true;
+}
+
+} // namespace indicator
 } // namespace logic
 } // namespace lampda

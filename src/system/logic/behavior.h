@@ -46,8 +46,15 @@ void set_power_on();
 /// set system state to "output off". Can be ignored
 void set_power_off();
 
-//
+/// Try to switch to external battery mode
 void go_to_external_battery_mode();
+
+/// return true if the system is in start mode
+bool is_in_start_logic_state();
+/// return true if the system is in output mode
+bool is_in_output_state();
+/// return true if the system is in charge mode
+bool is_in_charge_state();
 
 namespace internal {
 

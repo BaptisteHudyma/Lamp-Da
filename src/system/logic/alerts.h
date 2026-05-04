@@ -105,27 +105,6 @@ void show_all();
 bool is_request_shutdown();
 
 } // namespace alerts
-
-namespace indicator {
-
-/**
- * \brief Set the brightness of the RGB indicator.
- * Indicator level can be
- * 0 : indicator and alerts displayed as 100% brightness
- * 1 : indicator off, alerts displayed as 25% brightness
- * 2 : indicator and alerts displayed as 25% brightness
- */
-void set_brightness_level(const uint8_t level);
-/**
- * \brief Get the brightness of the RGB indicator.
- * Indicator level can be
- * 0 : indicator and alerts displayed as 100% brightness
- * 1 : indicator off, alerts displayed as 25% brightness
- * 2 : indicator and alerts displayed as 25% brightness
- */
-uint8_t get_brightness_level();
-
-} // namespace indicator
 } // namespace logic
 } // namespace lampda
 
