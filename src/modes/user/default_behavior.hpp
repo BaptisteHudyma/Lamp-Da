@@ -228,6 +228,25 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
         }
         break;
       }
+
+    case 20: // 20 clicks + hold: reset the whole system and stored parameters
+      {
+        if (not isEndOfHoldEvent and holdDuration > 0)
+        {
+          auto manager = get_context();
+          if (manager.overlay_animate_ramp(
+                      holdDuration, 5000, modes::colors::PaletteGradient<modes::colors::Red, modes::colors::Red>))
+          {
+            // reset the file system and memory
+            platform::lampda_print("clearing the whole file format");
+            physical::fileSystem::clear_internal_fs();
+
+            // shutdown the lamp
+            const bool shouldSkipMemoryWrite = true;
+            logic::behavior::internal::handle_shutdown_state(shouldSkipMemoryWrite);
+          }
+        }
+      }
   }
 
   return false;

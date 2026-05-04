@@ -655,7 +655,7 @@ void handle_post_output_light_state()
   mainMachine.skip_timeout();
 }
 
-void handle_shutdown_state()
+void handle_shutdown_state(const bool shouldSaveParameters)
 {
   // detach all interrupts, to prevent interruption of shutdown
   platform::gpio::DigitalPin::detach_all();
@@ -695,9 +695,12 @@ void handle_shutdown_state()
 
   statistics::signal_output_off();
 
-  // save the current config to a file
-  // (takes some time so call it when the lamp appear to be shutdown already)
-  write_parameters();
+  if (shouldSaveParameters)
+  {
+    // save the current config to a file
+    // (takes some time so call it when the lamp appear to be shutdown already)
+    write_parameters();
+  }
 
   // power the system off
   true_power_off();
