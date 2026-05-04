@@ -24,7 +24,7 @@ static constexpr float c_HALF_PI = 1.5707963267948f; ///< PI/2 constant
 static constexpr float c_degreesToRadians = c_PI / 180.0f; ///< convert degrees to radians
 // Update when the soft changes version
 static constexpr uint8_t USER_SOFTWARE_VERSION_MAJOR = 1;
-static constexpr uint8_t USER_SOFTWARE_VERSION_MINOR = 7;
+static constexpr uint8_t USER_SOFTWARE_VERSION_MINOR = 8;
 
 //
 // simple lamp type
