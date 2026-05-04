@@ -23,7 +23,7 @@ var searchData=
   ['gpio_20',['gpio',['../namespacelampda_1_1platform_1_1gpio.html',1,'lampda::platform']]],
   ['hardware_21',['hardware',['../namespacelampda_1_1modes_1_1hardware.html',1,'lampda::modes']]],
   ['imu_22',['imu',['../namespacelampda_1_1modes_1_1imu.html',1,'lampda::modes::imu'],['../namespacelampda_1_1physical_1_1imu.html',1,'lampda::physical::imu']]],
-  ['indicator_23',['indicator',['../namespacelampda_1_1physical_1_1indicator.html',1,'lampda::physical']]],
+  ['indicator_23',['indicator',['../namespacelampda_1_1logic_1_1indicator.html',1,'lampda::logic::indicator'],['../namespacelampda_1_1physical_1_1indicator.html',1,'lampda::physical::indicator']]],
   ['inputs_24',['inputs',['../namespacelampda_1_1logic_1_1inputs.html',1,'lampda::logic']]],
   ['lampda_25',['lampda',['../namespacelampda.html',1,'']]],
   ['logic_26',['logic',['../namespacelampda_1_1logic.html',1,'lampda']]],

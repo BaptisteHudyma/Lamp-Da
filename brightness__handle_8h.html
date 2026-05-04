@@ -97,6 +97,9 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda_1_1logic_1_1brightness"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1brightness.html">lampda::logic::brightness</a></td></tr>
 <tr class="memdesc:namespacelampda_1_1logic_1_1brightness"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the LED output brightness. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1logic_1_1indicator"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1indicator.html">lampda::logic::indicator</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1logic_1_1indicator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the indicator brightness. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -138,6 +141,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::bright
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::brightness::when_last_update_brightness</b> ()</td></tr>
 <tr class="memdesc:a0ebc1a296fd81cb735a6002fcca3eb9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get time in milliseconds when brightness was last updated. <br /></td></tr>
 <tr class="separator:a0ebc1a296fd81cb735a6002fcca3eb9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af22e2e96327cd504858075906341b98f"><td class="memItemLeft" align="right" valign="top"><a id="af22e2e96327cd504858075906341b98f" name="af22e2e96327cd504858075906341b98f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::indicator::set_brightness_level</b> (const uint8_t level)</td></tr>
+<tr class="memdesc:af22e2e96327cd504858075906341b98f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the brightness of the RGB indicator. Indicator level can be 0 : indicator and alerts displayed as 100% brightness 1 : indicator off, alerts displayed as 25% brightness 2 : indicator and alerts displayed as 25% brightness. <br /></td></tr>
+<tr class="separator:af22e2e96327cd504858075906341b98f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7449add31ef98c3eb79dd85d94a208b2"><td class="memItemLeft" align="right" valign="top"><a id="a7449add31ef98c3eb79dd85d94a208b2" name="a7449add31ef98c3eb79dd85d94a208b2"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::indicator::get_brightness_level</b> ()</td></tr>
+<tr class="memdesc:a7449add31ef98c3eb79dd85d94a208b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the brightness of the RGB indicator. Indicator level can be 0 : indicator and alerts displayed as 100% brightness 1 : indicator off, alerts displayed as 25% brightness 2 : indicator and alerts displayed as 25% brightness. <br /></td></tr>
+<tr class="separator:a7449add31ef98c3eb79dd85d94a208b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f42c711ddeb5535f6b7d01ca290c99c"><td class="memItemLeft" align="right" valign="top"><a id="a6f42c711ddeb5535f6b7d01ca290c99c" name="a6f42c711ddeb5535f6b7d01ca290c99c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::indicator::should_indicator_be_visible</b> ()</td></tr>
+<tr class="memdesc:a6f42c711ddeb5535f6b7d01ca290c99c"><td class="mdescLeft">&#160;</td><td class="mdescRight">indicates if the indicator should be visible or not <br /></td></tr>
+<tr class="separator:a6f42c711ddeb5535f6b7d01ca290c99c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the output LED strip brightness. </p>

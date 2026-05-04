@@ -23,7 +23,7 @@ var searchData=
   ['gpio_20',['gpio',['../namespacelampda_1_1platform_1_1gpio.html',1,'lampda::platform']]],
   ['hardware_21',['hardware',['../namespacelampda_1_1modes_1_1hardware.html',1,'lampda::modes']]],
   ['imu_22',['imu',['../namespacelampda_1_1modes_1_1imu.html',1,'lampda::modes::imu'],['../namespacelampda_1_1physical_1_1imu.html',1,'lampda::physical::imu']]],
-  ['indicator_23',['indicator',['../namespacelampda_1_1physical_1_1indicator.html',1,'lampda::physical']]],
+  ['indicator_23',['indicator',['../namespacelampda_1_1logic_1_1indicator.html',1,'lampda::logic::indicator'],['../namespacelampda_1_1physical_1_1indicator.html',1,'lampda::physical::indicator']]],
   ['inputs_24',['inputs',['../namespacelampda_1_1logic_1_1inputs.html',1,'lampda::logic']]],
   ['l_25',['l',['../classlampda_1_1utils_1_1ColorSpace_1_1LAB.html#a5ffcaf270ff74e11afe3fae574c20f30',1,'lampda::utils::ColorSpace::LAB::l()'],['../classlampda_1_1utils_1_1ColorSpace_1_1LCH.html#ab5a2a0770df77cbf2942c45ea9058593',1,'lampda::utils::ColorSpace::LCH::l()'],['../classlampda_1_1utils_1_1ColorSpace_1_1OKLAB.html#a27004769e47bf4b5d43147a42fcb90f8',1,'lampda::utils::ColorSpace::OKLAB::l()'],['../classlampda_1_1utils_1_1ColorSpace_1_1OKLCH.html#a176568aa8720154dac5575489f3cdcde',1,'lampda::utils::ColorSpace::OKLCH::l()']]],
   ['lab_26',['LAB',['../classlampda_1_1utils_1_1ColorSpace_1_1LAB.html#a14ed327d86e2e71a4c63c51a49aca75d',1,'lampda::utils::ColorSpace::LAB::LAB(const COLOR &amp;c)'],['../classlampda_1_1utils_1_1ColorSpace_1_1LAB.html#a917ea6c391f6179845bce0e77d1de91b',1,'lampda::utils::ColorSpace::LAB::LAB(const double l, const double a, const double b)'],['../classlampda_1_1utils_1_1ColorSpace_1_1LAB.html',1,'lampda::utils::ColorSpace::LAB']]],
