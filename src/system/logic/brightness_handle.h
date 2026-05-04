@@ -50,6 +50,32 @@ void force_brightness_user_callback();
 uint32_t when_last_update_brightness();
 
 } // namespace brightness
+
+/// Handle the indicator brightness
+namespace indicator {
+
+/**
+ * \brief Set the brightness of the RGB indicator.
+ * Indicator level can be
+ * 0 : indicator and alerts displayed as 100% brightness
+ * 1 : indicator off, alerts displayed as 25% brightness
+ * 2 : indicator and alerts displayed as 25% brightness
+ */
+void set_brightness_level(const uint8_t level);
+/**
+ * \brief Get the brightness of the RGB indicator.
+ * Indicator level can be
+ * 0 : indicator and alerts displayed as 100% brightness
+ * 1 : indicator off, alerts displayed as 25% brightness
+ * 2 : indicator and alerts displayed as 25% brightness
+ */
+uint8_t get_brightness_level();
+
+/// indicates if the indicator should be visible or not
+bool should_indicator_be_visible();
+
+} // namespace indicator
+
 } // namespace logic
 } // namespace lampda
 

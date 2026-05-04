@@ -123,6 +123,11 @@ void set_power_off()
 
 void go_to_external_battery_mode() { logic::power::go_to_otg_mode(); }
 
+//
+bool is_in_start_logic_state() { return mainMachine.get_state() == BehaviorStates::START_LOGIC; }
+bool is_in_output_state() { return mainMachine.get_state() == BehaviorStates::OUTPUT_LIGHT; }
+bool is_in_charge_state() { return mainMachine.get_state() == BehaviorStates::CHARGER_OPERATIONS; }
+
 namespace sunset {
 
 // signal update to user

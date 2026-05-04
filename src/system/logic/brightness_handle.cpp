@@ -4,8 +4,11 @@
 
 #include "src/system/platform/time.h"
 
+#include "src/system/physical/indicator.h"
+
+#include "src/system/logic/behavior.h"
+
 #include "src/system/utils/utils.h"
-#include <limits>
 
 namespace lampda {
 namespace logic {
@@ -91,5 +94,42 @@ void force_brightness_user_callback()
 uint32_t when_last_update_brightness() { return __internal.lastBrightnessUpdate; }
 
 } // namespace brightness
+
+namespace indicator {
+
+/// Internal indicator brightness level (1-3)
+static inline uint8_t _level = 0;
+
+void set_brightness_level(const uint8_t level)
+{
+  static constexpr uint8_t lowBrightness = 64;
+  switch (level)
+  {
+    case 1:
+      _level = 1;
+      physical::indicator::set_brightness(lowBrightness);
+      break;
+    case 2:
+      // level 2 will also disable the indicator when in charge mode
+      _level = 2;
+      physical::indicator::set_brightness(lowBrightness);
+      break;
+    // 0 and default are the same : level too high should loop back
+    case 0:
+    default:
+      _level = 0;
+      physical::indicator::set_brightness(255);
+      break;
+  }
+}
+
+uint8_t get_brightness_level() { return _level; }
+
+bool should_indicator_be_visible()
+{
+  return _level != 2 or logic::behavior::is_in_output_state() or logic::behavior::is_in_start_logic_state();
+}
+
+} // namespace indicator
 } // namespace logic
 } // namespace lampda
