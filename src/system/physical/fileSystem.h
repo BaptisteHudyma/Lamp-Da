@@ -19,6 +19,9 @@ void shutdown();
 /// clear the stored values in the currently loaded file system.
 void clear();
 
+/// Clear the system parameters. \warning Should never be used except for a full reset
+void clear_system_parameters();
+
 /// hard clean of the whole filesystem, you will loose all stored data.
 void clear_internal_fs();
 
