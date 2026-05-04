@@ -132,12 +132,25 @@ uint8_t get_brightness_level() { return _level; }
 
 bool should_indicator_be_visible()
 {
-  static constexpr uint32_t blipLenght_ms = 100;
-  const bool shouldBlip = levelUpdateTime != 0 and (platform::time_ms() - levelUpdateTime) < blipLenght_ms;
-  if (shouldBlip)
-    return false;
+  // do not display indicator when level is 2 AND lamp is in charging state
+  const bool shouldDisplay = not(_level == 2 and logic::behavior::is_in_charge_state());
 
-  return _level != 2 or logic::behavior::is_in_output_state() or logic::behavior::is_in_start_logic_state();
+  // force display for a duration before turning off
+  if (not shouldDisplay)
+  {
+    static constexpr uint32_t forceDisplayTime_ms = 5000;
+    return (platform::time_ms() - levelUpdateTime) < forceDisplayTime_ms;
+  }
+  else
+  {
+    // if we will show the indicator, do the blip
+    static constexpr uint32_t blipLenght_ms = 100;
+    const bool shouldBlip = levelUpdateTime != 0 and (platform::time_ms() - levelUpdateTime) < blipLenght_ms;
+    if (shouldBlip)
+      return false;
+  }
+  // default is true
+  return true;
 }
 
 } // namespace indicator
