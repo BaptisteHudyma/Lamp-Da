@@ -60,8 +60,10 @@ namespace internal {
 
 /**
  * \brief DO NOT USE: shutdown the lamp immediatly. only for emmergency/special cases
+ * \param[in] shouldSaveUserParameters If False, no user parameters will be written to memory
+ * \param[in] shouldSaveSystemParameters If False, no system parameters will be written to memory
  */
-void handle_shutdown_state();
+void handle_shutdown_state(const bool shouldSaveUserParameters = true, const bool shouldSaveSystemParameters = true);
 
 } // namespace internal
 

@@ -213,23 +213,31 @@ void setup_clean_sleep_flag()
   physical::fileSystem::shutdown();
 }
 
-void write_parameters()
+void write_parameters(const bool shouldSaveUserParameters = true, const bool shouldSaveSystemParameters = true)
 {
   physical::fileSystem::clear();
 
-  // write updated statistics
-  statistics::write_to_memory();
+  if (shouldSaveSystemParameters)
+  {
+    // write updated statistics
+    statistics::write_to_memory();
 
-  physical::fileSystem::system::set_value(cleanSleepKey, 0xDEADBEEF);
-  // only save saved brightness, not current
-  physical::fileSystem::system::set_value(brightnessKey, logic::brightness::get_saved_brightness());
-  physical::fileSystem::system::set_value(indicatorLevelKey, logic::indicator::get_brightness_level());
-  // lockout mode always kept, if not deactivated by system
-  physical::fileSystem::system::set_value(isLockoutModeKey,
-                                          logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT));
-  physical::fileSystem::system::set_value(buttonPinKey, static_cast<uint32_t>(physical::button::get_button_pin()));
+    physical::fileSystem::system::set_value(cleanSleepKey, 0xDEADBEEF);
+    // only save saved brightness, not current
+    physical::fileSystem::system::set_value(brightnessKey, logic::brightness::get_saved_brightness());
+    physical::fileSystem::system::set_value(indicatorLevelKey, logic::indicator::get_brightness_level());
+    // lockout mode always kept, if not deactivated by system
+    physical::fileSystem::system::set_value(isLockoutModeKey,
+                                            logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT));
+    physical::fileSystem::system::set_value(buttonPinKey, static_cast<uint32_t>(physical::button::get_button_pin()));
+  }
+  else
+  {
+    physical::fileSystem::clear_system_parameters();
+  }
 
-  user::write_parameters();
+  if (shouldSaveUserParameters)
+    user::write_parameters();
 
   // write all
   physical::fileSystem::user::write_to_file();
@@ -655,7 +663,7 @@ void handle_post_output_light_state()
   mainMachine.skip_timeout();
 }
 
-void handle_shutdown_state()
+void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shouldSaveSystemParameters)
 {
   // detach all interrupts, to prevent interruption of shutdown
   platform::gpio::DigitalPin::detach_all();
@@ -697,7 +705,7 @@ void handle_shutdown_state()
 
   // save the current config to a file
   // (takes some time so call it when the lamp appear to be shutdown already)
-  write_parameters();
+  write_parameters(shouldSaveUserParameters, shouldSaveSystemParameters);
 
   // power the system off
   true_power_off();

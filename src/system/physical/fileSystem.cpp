@@ -83,6 +83,9 @@ void clear()
   // never clear lamp prameters
 }
 
+// Should never be used
+void clear_system_parameters() { _systemParametersValueMap.clear(); }
+
 void clear_internal_fs()
 {
   setup();

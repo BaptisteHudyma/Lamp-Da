@@ -170,6 +170,24 @@ namespace default_behaviors {
 /// must be called by the lampda::user::button_clicked_default
 bool button_clicked(const uint8_t clicks)
 {
+  auto manager = get_context();
+
+  switch (clicks)
+  {
+    case 6: // 6 clicks:  jump to first mode of first category
+      {
+        if (manager.state.isInFavoriteMockGroup)
+        { // reset favorite indicator
+          manager.state.isInFavoriteMockGroup = false;
+        }
+        // return to first state
+        manager.set_active_group(0);
+        manager.set_active_mode(0);
+        manager.blip(250);
+        return true;
+      }
+  }
+
   // nothing
   return false;
 }
@@ -206,6 +224,47 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
           {
             // update the sunset timing
             manager.state.isSunsetTimingPending = 2;
+          }
+        }
+        break;
+      }
+
+    case 13: // 13 clicks + hold: reset the whole system and stored parameters
+      {
+        if (not isEndOfHoldEvent and holdDuration > 0)
+        {
+          auto manager = get_context();
+          if (manager.overlay_animate_ramp(
+                      holdDuration, 5000, modes::colors::PaletteGradient<modes::colors::Red, modes::colors::Red>))
+          {
+            // reset the file system and memory
+            platform::lampda_print("clearing the whole file format");
+            physical::fileSystem::clear_internal_fs();
+
+            // shutdown the lamp
+            const bool shouldSaveUserParameters = false;
+            logic::behavior::internal::handle_shutdown_state(shouldSaveUserParameters);
+          }
+        }
+        break;
+      }
+
+    case 20: // 20 clicks + hold: reset the whole system and stored parameters
+      {
+        if (not isEndOfHoldEvent and holdDuration > 0)
+        {
+          auto manager = get_context();
+          if (manager.overlay_animate_ramp(
+                      holdDuration, 5000, modes::colors::PaletteGradient<modes::colors::Red, modes::colors::Red>))
+          {
+            // reset the file system and memory
+            platform::lampda_print("clearing the whole file format");
+            physical::fileSystem::clear_internal_fs();
+
+            // shutdown the lamp
+            const bool shouldSaveUserParameters = false;
+            const bool shouldSaveSystemParameters = false;
+            logic::behavior::internal::handle_shutdown_state(shouldSaveUserParameters, shouldSaveSystemParameters);
           }
         }
         break;
