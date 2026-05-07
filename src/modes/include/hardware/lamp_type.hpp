@@ -1,3 +1,7 @@
+/*! \file lamp_type.hpp
+    \brief Define the main led strip interaction object.
+*/
+
 #ifndef MODES_HARDWARE_LAMP_TYPE_HPP
 #define MODES_HARDWARE_LAMP_TYPE_HPP
 
@@ -7,49 +11,58 @@
 #include "src/compile.h"
 #include "src/user/constants.h"
 
-#include "src/system/physical/sound.h"
 #include "src/system/physical/output_power.h"
+#include "src/system/physical/sound.h"
+
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+#include "src/system/physical/strip.h"
+#endif
 
 #include "src/system/platform/time.h"
+
+#include "src/system/logic/brightness_handle.h"
 
 #include "src/system/utils/assert.h"
 #include "src/system/utils/print.h"
 #include "src/system/utils/curves.h"
 #include "src/system/utils/constants.h"
-#include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/utils.h"
 
 #include "src/system/ext/math8.h"
-
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
-#include "src/system/utils/strip.h"
-#endif
 
 #include "src/modes/include/compile.hpp"
 #include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/hardware/coordinates.hpp"
 
-namespace modes {
+namespace lampda::modes {
 
 struct XYTy
 {
-  uint16_t x, y;
+  uint16_t x; ///< x 2D led grid coordinates
+  uint16_t y; ///< y 2D led grid coordinates
 };
 
+/// convert grid coordinates to strip index
 static constexpr uint16_t to_strip(uint16_t, uint16_t);
+/// convert strip index to grid coordinates
 static constexpr XYTy strip_to_XY(uint16_t n);
 
 struct HelixXYZTy
 {
-  float x, y, z;
+  float x; ///< x 3D mm coordinates
+  float y; ///< y 3D mm coordinates
+  float z; ///< z 3D mm coordinates
 };
 
+/// convert strip index to 3D coordinates
 static constexpr HelixXYZTy strip_to_helix(int16_t n);
 
+/// convert strip index to 3D coordinates, without checks on led index.
+/// This allows to use 3D coordinates out of the lamp body
 static constexpr HelixXYZTy strip_to_helix_unconstraint(const int16_t n);
-
+/// True if the given strip index is a valid one
 static constexpr bool is_led_index_valid(const int16_t ledIndex);
-
+/// True if the given led index is out of bounds
 static constexpr bool is_lamp_coordinate_out_of_bounds(const float angle_rad, const float z);
 
 /**
@@ -62,10 +75,10 @@ static constexpr uint16_t to_led_index(const float angle_rad, const float z);
  */
 static constexpr int16_t to_led_index_no_bounds(const float angle_rad, const float z);
 
-} // namespace modes
+} // namespace lampda::modes
 
 /// Provide interface to the physical hardware and other facilities
-namespace modes::hardware {
+namespace lampda::modes::hardware {
 
 /** \brief Enumeration to write code working with all lamp types
  *
@@ -103,12 +116,14 @@ struct LampTy
   // state managed by manager
   //
 
+  /// Store a display config
   struct LampConfig
   {
-    uint16_t skipFirstLedsForEffect = 0;
-    uint16_t skipFirstLedsForAmount = 0;
+    uint16_t skipFirstLedsForEffect = 0; ///< Skip duration
+    uint16_t skipFirstLedsForAmount = 0; ///< Skip the first N leds
   };
 
+  /// store a display configuration
   LampConfig config;
 
   //
@@ -117,17 +132,17 @@ struct LampTy
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 private:
-  static constexpr float _fwidth = stripXCoordinates;              ///< \private
-  static constexpr float _fheight = stripYCoordinates;             ///< \private
-  static constexpr uint16_t _width = floor(_fwidth);               ///< \private
-  static constexpr uint16_t _height = floor(_fheight);             ///< \private
-  static constexpr uint16_t _ledCount = LED_COUNT;                 ///< \private
-  static constexpr uint16_t _nbBuffers = stripNbBuffers;           ///< \private
-  static constexpr float _lampBodyRadius_mm = ::lampBodyRadius_mm; ///< \private
-  static constexpr float _ledStripWidth_mm = ::ledStripWidth_mm;   ///< \private
-  static constexpr float _ledStripLength_mm = ::ledStripLength_mm; ///< \private
-  static constexpr float _ledByMeter = ::ledByMeter;               ///< \private
-  LedStrip& strip;                                                 ///< \private
+  static constexpr float _fwidth = stripXCoordinates;                    ///< \private
+  static constexpr float _fheight = stripYCoordinates;                   ///< \private
+  static constexpr uint16_t _width = floor(_fwidth);                     ///< \private
+  static constexpr uint16_t _height = floor(_fheight);                   ///< \private
+  static constexpr uint16_t _ledCount = LED_COUNT;                       ///< \private
+  static constexpr uint16_t _nbBuffers = stripNbBuffers;                 ///< \private
+  static constexpr float _lampBodyRadius_mm = lampda::lampBodyRadius_mm; ///< \private
+  static constexpr float _ledStripWidth_mm = lampda::ledStripWidth_mm;   ///< \private
+  static constexpr float _ledStripLength_mm = lampda::ledStripLength_mm; ///< \private
+  static constexpr float _ledByMeter = lampda::ledByMeter;               ///< \private
+  physical::LedStrip& strip;                                             ///< \private
 
   /// \private oversized buffer size to account for "overflowing" LEDs
   static constexpr uint16_t _safeBufSize = (_width + 1) * (_height + 1);
@@ -142,7 +157,7 @@ private:
 
 public:
   /// \private Constructor used to wrap strip if needed
-  LMBD_INLINE LampTy(LedStrip& strip) : config {}, strip {strip}, now {0}, tick {0}, raw_frame_count {0} {}
+  LMBD_INLINE LampTy(physical::LedStrip& strip) : config {}, strip {strip}, now {0}, tick {0}, raw_frame_count {0} {}
 #else
 private:
   // (placeholder values to avoid bad fails on misuse)
@@ -151,7 +166,7 @@ private:
   static constexpr uint16_t _width = 23;             ///< \private
   static constexpr uint16_t _height = 22;            ///< \private
   static constexpr uint16_t _ledCount = 530;         ///< \private
-  static constexpr uint16_t _nbBuffers = 2;          ///< \private
+  static constexpr uint16_t _nbBuffers = 3;          ///< \private
   static constexpr float _lampBodyRadius_mm = 25.0f; ///< \private
   static constexpr float _ledStripWidth_mm = 5.2f;   ///< \private
   static constexpr float _ledStripLength_mm = 25.0f; ///< \private
@@ -176,10 +191,8 @@ private:
     void show();
     void show_now();
     void signal_display();
-    void clear();
     void setBrightness(brightness_t);
     uint8_t getBrightness();
-    void fadeToBlackBy(uint8_t);
     void setPixelColor(uint16_t, uint32_t);
     uint32_t getPixelColor(uint16_t);
   };
@@ -199,7 +212,7 @@ public:
   void LMBD_INLINE refresh_tick_value()
   {
     uint32_t* writeable_now = const_cast<uint32_t*>(&now);
-    *writeable_now = time_ms();
+    *writeable_now = platform::time_ms();
 
     uint32_t* writable_tick = const_cast<uint32_t*>(&tick);
     *writable_tick = now / frameDurationMs;
@@ -220,14 +233,15 @@ public:
    */
   void LMBD_INLINE startup()
   {
-    // set output voltage for indexable
-    if constexpr (flavor == LampTypes::indexable)
-      outputPower::write_voltage(stripInputVoltage_mV);
+    // set output voltage for leds that will not change voltage
+    if (stripInputMinVoltage_mV == stripInputMaxVoltage_mV)
+      physical::outputPower::write_voltage(stripInputMaxVoltage_mV);
 
     begin();
     clear();
     show_now();
-    setBrightness(brightness::get_brightness(), true, true);
+    setBrightness(logic::brightness::get_saved_brightness(), true, true);
+    align_internal_to_system_brightness();
   }
 
   /** \private Does necessary work to setup lamp from a powered-off state
@@ -384,7 +398,7 @@ public:
   /// \private Fixed "period" of the (X,Y) shift for each row (set at 2)
   static constexpr uint16_t shiftPeriod = 2;
 
-  // (while shifting every shiftPeriod, we have a residue accumulating)
+  /// (while shifting every shiftPeriod, we have a residue accumulating)
   static constexpr float _invShiftResidue = shiftPeriod * (_fwidth - floor(_fwidth - 0.0001));
 
   /// \private Approximate (broken) visual coordinate X-shift every \p shiftResidue rows
@@ -407,15 +421,19 @@ public:
 
   /// real size of the led strip in use
   static constexpr float ledStripWidth_mm = _ledStripWidth_mm;
+  /// Copy the led strip lenght
   static constexpr float ledStripLength_mm = _ledStripLength_mm;
 
   /// number of led per meters of strip used
   static constexpr float ledByMeter = _ledByMeter;
 
-  /// number of leds per one turn of led strip
+  /// Number of leds per one turn of led strip
   static constexpr float ledSize_mm = 1000.0f / ledByMeter;
+  /// Computation of the lamp body circumpherence
   static constexpr float lampBodyCircumpherence_mm = c_TWO_PI * lampBodyRadius_mm;
+  /// Computation of the led count per turns
   static constexpr float ledPerTurns = lampBodyCircumpherence_mm / ledSize_mm;
+  /// Computation of the lamp height
   static constexpr float lampHeight_mm = ledStripWidth_mm * ledCount / ledPerTurns;
 
   /** \brief (indexable) Number of color buffers available for direct access
@@ -469,7 +487,10 @@ public:
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      strip.clear();
+      for (uint16_t i = 0; i < ledCount; ++i)
+      {
+        setPixelColor(i, colors::Black);
+      }
     }
     else
     {
@@ -495,19 +516,19 @@ public:
     }
     else
     {
-      outputPower::blip(duration);
+      physical::outputPower::blip(duration);
     }
   }
 
   /**
    * \brief Cancel the ongoing blip, if any
    */
-  void LMBD_INLINE cancel_blip() const { return outputPower::cancel_blip(); }
+  void LMBD_INLINE cancel_blip() const { return physical::outputPower::cancel_blip(); }
 
   /**
    * \brief return true if the output is in a blip state
    */
-  bool LMBD_INLINE is_bliping() const { return outputPower::is_bliping(); }
+  bool LMBD_INLINE is_bliping() const { return physical::outputPower::is_bliping(); }
 
   /** \brief Set brightness of the lamp
    *
@@ -524,7 +545,7 @@ public:
    *  - if \p updateSavedBrightess is true, save brightness and next time
    *    user navigate brightness, use it as starting point (see tempBrightness)
    *
-   * Note that calls to `brightness::update_brightness` are throttled to once
+   * Note that calls to `logic::brightness::update_brightness` are throttled to once
    * in every 50ms to avoid freezing user brightness navigation.
    *
    * Note that \p skipUpdateBrightness implies \p skipCallbacks implicitly
@@ -536,51 +557,104 @@ public:
   {
     assert((skipCallbacks || !skipUpdateBrightness) && "implicit callback skip!");
 
-    if (!skipUpdateBrightness)
+    // invalid call, fallback to enforcing
+    if (newBrightness > ::lampda::brightness::absoluteMaximumBrightness)
     {
-      uint32_t last = brightness::when_last_update_brightness();
-      if ((this->now - last) > brightnessDurationMs)
-        brightness::update_brightness(newBrightness, skipCallbacks);
+      enforce_internal_brightness_limits();
+      return;
     }
+
+    // force update if we are getting lower and lower
+    if (!skipUpdateBrightness or newBrightness > getMaxBrightness())
+    {
+      // store the new temporary
+      temporary_brightness = min<brightness_t>(newBrightness, getMaxBrightness());
+
+      uint32_t last = logic::brightness::when_last_update_brightness();
+      if ((this->now - last) > brightnessDurationMs)
+        logic::brightness::update_brightness(temporary_brightness, skipCallbacks);
+    }
+    // if necessary, update the saved version
     if (updateSavedBrightess)
-      brightness::update_saved_brightness();
+    {
+      saved_brightness = min<brightness_t>(static_cast<brightness_t>(temporary_brightness), getMaxBrightness());
+    }
 
     // USE THE BRIGHTNESS VALUE AFTER THE UPDATE
     // brightness can be limited by the system, so do not use the raw brightness
-    const auto trueNewBrightness = brightness::get_brightness();
-    const auto trueMaxBrightness = brightness::get_max_brightness();
+    const auto trueNewBrightness = logic::brightness::get_brightness();
+    const auto trueMaxBrightness = logic::brightness::get_max_brightness();
 
     if constexpr (flavor == LampTypes::indexable)
     {
-      constexpr uint8_t minBrightness = 5;
-      using curve_t = curves::LinearCurve<brightness_t, uint8_t>;
-      static curve_t brightnessCurve(
-              {curve_t::point_t {0, minBrightness}, curve_t::point_t {brightness::absoluteMaximumBrightness, 255}});
+#ifndef LMBD_LAMP_TYPE__INDEXABLE
+      static constexpr uint8_t minimumAllowedBrightness = 5;
+#else
+      static constexpr uint8_t minimumAllowedBrightness = ::lampda::minimumAllowedBrightness_8;
+#endif
+      using curve_t = utils::curves::LinearCurve<brightness_t, uint8_t>;
+      static curve_t brightnessCurve({curve_t::point_t {0, minimumAllowedBrightness},
+                                      curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255}});
 
+      /// @warning: this is actually heavy to run
       strip.setBrightness(brightnessCurve.sample(trueNewBrightness));
     }
 
     if constexpr (flavor == LampTypes::simple)
     {
-      if (trueNewBrightness >= trueMaxBrightness)
-        outputPower::blip(50); // blip
+      // This is kind of a hack to detect that the user did this call
+      // using the known user call signature
+      const bool isUserCall = skipCallbacks and skipUpdateBrightness and not updateSavedBrightess;
 
-      constexpr uint16_t maxOutputVoltage_mV = stripInputVoltage_mV;
-      using curve_t = curves::ExponentialCurve<brightness_t, uint16_t>;
-      static curve_t brightnessCurve(curve_t::point_t {0, 9400},
-                                     curve_t::point_t {brightness::absoluteMaximumBrightness, maxOutputVoltage_mV},
-                                     1.0);
+      // display an output blip on max brightness reached
+      if (isUserCall and trueNewBrightness >= trueMaxBrightness)
+      {
+        physical::outputPower::blip(50); // blip
+      }
 
-      outputPower::write_voltage(round(brightnessCurve.sample(trueNewBrightness)));
+      using curve_t = utils::curves::ExponentialCurve<brightness_t, uint16_t>;
+      static curve_t brightnessCurve(
+              curve_t::point_t {0, stripInputMinVoltage_mV},
+              curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, stripInputMaxVoltage_mV},
+              1.0);
+
+      physical::outputPower::write_voltage(round(brightnessCurve.sample(trueNewBrightness)));
+    }
+  }
+
+  /// Special call to update the internal brightness values to the system brightness
+  void align_internal_to_system_brightness()
+  {
+    saved_brightness = min<brightness_t>(logic::brightness::get_saved_brightness(), getMaxBrightness());
+    temporary_brightness = saved_brightness;
+  }
+
+  /// Enforce the brightness limits, if getMaxBrightness changed. Will call \ref setBrightness
+  void enforce_internal_brightness_limits()
+  {
+    const auto maxAllowedBrightness = getMaxBrightness();
+    const brightness_t new_saved_brightness =
+            min<brightness_t>(static_cast<brightness_t>(saved_brightness), maxAllowedBrightness);
+    const brightness_t new_temporary_brightness =
+            min<brightness_t>(static_cast<brightness_t>(temporary_brightness), maxAllowedBrightness);
+
+    const bool isChanged = new_saved_brightness != saved_brightness or new_temporary_brightness != temporary_brightness;
+    if (isChanged)
+    {
+      saved_brightness = new_saved_brightness;
+      temporary_brightness = new_temporary_brightness;
+
+      setBrightness(temporary_brightness);
     }
   }
 
   /**
    * \brief Return the actual allowed maximum brightness
    */
-  brightness_t LMBD_INLINE getMaxBrightness() const { return brightness::get_max_brightness(); }
+  brightness_t LMBD_INLINE getMaxBrightness() const { return logic::brightness::get_max_user_brightness(); }
 
-  /* \brief Temporarily set brightness, without affecting brightness navigation
+  /**
+   * \brief Temporarily set brightness, without affecting brightness navigation
    *
    * Skip callbacks.
    *
@@ -597,7 +671,8 @@ public:
       setBrightness(brightness, true, false, false);
   }
 
-  /* \brief Jump to brightness, affecting the next brightness navigation
+  /**
+   * \brief Jump to brightness, affecting the next brightness navigation
    *
    * Skip callbacks.
    *
@@ -609,26 +684,18 @@ public:
    */
   void LMBD_INLINE jumpBrightness(const brightness_t brightness) { setBrightness(brightness, true, false, true); }
 
-  /* \brief Get brightness of the lamp
+  /**
+   * \brief Get brightness of the lamp
    *
    * If \p readPreviousBrightness is true, return the internally saved
    * brightness state, used for user navigation of brightness.
    */
   brightness_t LMBD_INLINE getBrightness(const bool readPreviousBrightness = false)
   {
-    if constexpr (flavor == LampTypes::indexable)
-    {
-      if (readPreviousBrightness)
-        return brightness::get_saved_brightness();
-      return strip.getBrightness();
-    }
+    if (readPreviousBrightness)
+      return saved_brightness;
     else
-    {
-      if (readPreviousBrightness)
-        return brightness::get_saved_brightness();
-      else
-        return brightness::get_brightness();
-    }
+      return temporary_brightness;
   }
 
   /// Alias for ``getBrightness(true)``
@@ -661,7 +728,7 @@ public:
 
       for (uint16_t i = 0; i < ledCount; ++i)
       {
-        const uint32_t c = strip.getPixelColor(i);
+        const uint32_t c = getPixelColor(i);
         setPixelColor(i, colors::fade(c, 255 - fadeBy));
       }
     }
@@ -692,13 +759,13 @@ public:
     uint32_t carryover = 0;
     for (unsigned i = 0; i < ledCount; i++)
     {
-      uint32_t cur = strip.getPixelColor(i);
+      uint32_t cur = getPixelColor(i);
       uint32_t c = cur;
       uint32_t part = colors::fade<false>(c, seep);
       cur = colors::add<true>(colors::fade<false>(c, keep), carryover);
       if (i > 0)
       {
-        c = strip.getPixelColor(i - 1);
+        c = getPixelColor(i - 1);
         setPixelColor(i - 1, colors::add<true>(c, part));
       }
       setPixelColor(i, cur);
@@ -706,45 +773,9 @@ public:
     }
   }
 
-  /** \brief Fill lamp with target light temperature, if supported
-   *
-   * If LampTy::flavor is LampTypes::simple then:
-   *  - does nothing
-   *
-   * If LampTy::flavor is LampTypes::cct then:
-   *  - scale from one supported color to the the other one
-   *
-   * If LampTy::flavor is LampTypes::indexable then:
-   *  - use modes::colors::fromTemp to fill lamp with color
-   */
-  void LMBD_INLINE setLightTemp(uint8_t temp)
-  {
-    if constexpr (flavor == LampTypes::indexable)
-    {
-      fill(colors::fromTemp(temp));
-    }
-    else if constexpr (flavor == LampTypes::cct)
-    {
-      // TODO: implement
-      assert(false && "not yet implemented :(");
-    }
-    else
-    {
-      // -> intentionally do not trigger as error, for interoperability
-      assert(true);
-    }
-  }
-
   //
   // public API (indexable-only)
   //
-
-  /// (indexable) Return raw underlying strip object
-  auto& LMBD_INLINE getLegacyStrip()
-  {
-    assert(flavor == LampTypes::indexable && "current lamp is not indexable");
-    return strip;
-  }
 
   /** \brief (indexable) Fill lamp with target color, from start to end
    *
@@ -769,11 +800,41 @@ public:
     }
   }
 
+  /** \brief (indexable) Fill lamp with target color, from start to end. Apply a mask to display leds
+   *
+   * - See toLedCount() to set \p start and \p end
+   * - See modes::colors::fromRGB() to set \p color
+   */
+  void LMBD_INLINE fill(uint32_t color, uint16_t start, uint16_t end, const BufferTy& shouldDisplay)
+  {
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      assert(start <= ledCount && "invalid start parameter");
+      assert(end <= ledCount && "invalid end parameter");
+
+      for (uint16_t I = start; I < end; ++I)
+      {
+        if (shouldDisplay[I] != 0)
+          setPixelColor(I, color);
+      }
+    }
+    else
+    {
+      assert(false && "unsupported");
+    }
+  }
+
   /** \brief (indexable) Fill lamp with target color
    *
    * See modes::colors::fromRGB() to set \p color
    */
   void LMBD_INLINE fill(uint32_t color) { fill(color, 0, ledCount); }
+
+  /** \brief (indexable) Fill lamp with target color, with a mask
+   *
+   * See modes::colors::fromRGB() to set \p color
+   */
+  void LMBD_INLINE fill(uint32_t color, const BufferTy& shouldDisplay) { fill(color, 0, ledCount, shouldDisplay); }
 
   /** \brief (indexable) Fill lamp with target palette, from start to end
    *
@@ -877,6 +938,20 @@ public:
     return buffer;
   }
 
+  /**
+   * \brief Copy a source buffer at \p srcBufIdx to another buffer at \p dstBufIdx
+   *
+   * These buffers can be used for computations by the active mode, but their
+   * content may be erased if the mode is reset or if used elsewhere in code.
+   */
+  template<uint8_t dstBufIdx, uint8_t srcBufIdx> void LMBD_INLINE copyBuffer()
+  {
+    static_assert(srcBufIdx < nbBuffers, "srcBufIdx must be lower than nbBuffers");
+    static_assert(dstBufIdx < nbBuffers, "dstBufIdx must be lower than nbBuffers");
+
+    strip._buffers[dstBufIdx] = strip._buffers[srcBufIdx];
+  }
+
   /** \brief Fill temporary buffer \p bufIdx with given \p value
    *
    * Equivalent to ``getTempBuffer().fill(value)``
@@ -906,6 +981,10 @@ public:
     }
   }
 
+  /**
+   * \brief Mix two colors from a buffer
+   * \param[in] phase Between 0 and 1, the gradient to apply
+   */
   template<uint8_t dstBufIdx = 0, uint8_t srcBufIdx = 1> void setColorsFromMixedBuffers(float phase)
   {
     static_assert(sizeof(BufferTy) == sizeof(strip._colors));
@@ -977,7 +1056,15 @@ public:
   /**
    * \brief Return the an object containing sound analysis data
    */
-  microphone::SoundStruct& LMBD_INLINE get_sound_struct() { return microphone::get_sound_characteristics(); }
+  physical::microphone::SoundStruct& LMBD_INLINE get_sound_struct()
+  {
+    return physical::microphone::get_sound_characteristics();
+  }
+
+  /// Define a localy consistant saved brightness. Should be similar
+  volatile brightness_t saved_brightness;
+  /// Define a localy consistant temporary brightness
+  volatile brightness_t temporary_brightness;
 
   /** \brief (physical) The "now" on milliseconds, updated just before loop.
    *
@@ -1004,9 +1091,9 @@ public:
   volatile const uint32_t raw_frame_count;
 };
 
-} // namespace modes::hardware
+} // namespace lampda::modes::hardware
 
-namespace modes {
+namespace lampda::modes {
 
 /// \brief Convert \p x and \p y coordinates to a linear position on strip
 static constexpr uint16_t to_strip(uint16_t x, uint16_t y)
@@ -1060,7 +1147,9 @@ static constexpr XYTy strip_to_XY(uint16_t n)
 }
 
 /**
- * \brief X is the vertical axis, starting at zero and ending at maxWidthFloat
+ * \brief Convert a strip led index to a 3D helix coordinate.
+ * \param[in] n Index of the led in the strip. If will be constraint to the lamp body
+ * \return Coordinates of the led in the 3D world (mm)
  */
 static constexpr HelixXYZTy strip_to_helix(int16_t n)
 {
@@ -1070,12 +1159,21 @@ static constexpr HelixXYZTy strip_to_helix(int16_t n)
   return strip_to_helix_unconstraint(n);
 }
 
-// the minus is for inverse helix
+/**
+ * \brief Convert a led index to an helix height coordinate.
+ * \param[in] n Index of the led in the strip, unconstraint to the lamp body.
+ * \return The height if the pixel, in mm.
+ */
 static constexpr float to_helix_z(const int16_t n)
 {
   return -hardware::LampTy::ledStripWidth_mm * n / hardware::LampTy::ledPerTurns;
 }
 
+/**
+ * \brief Convert a strip led index to a 3D helix coordinate.
+ * \param[in] n Index of the led in the strip, unconstraint to the lamp body.
+ * \return Coordinates of the led in the 3D world (mm)
+ */
 static constexpr HelixXYZTy strip_to_helix_unconstraint(const int16_t n)
 {
   return HelixXYZTy {hardware::LampTy::maxWidthFloat * cos_t(n / hardware::LampTy::ledPerTurns * c_TWO_PI),
@@ -1083,13 +1181,29 @@ static constexpr HelixXYZTy strip_to_helix_unconstraint(const int16_t n)
                      to_helix_z(n)};
 }
 
+/**
+ * \brief Return true id the given led index exists on the strip.
+ * \param[in] n Index of the led in the strip.
+ */
 static constexpr bool is_led_index_valid(const int16_t n) { return n >= 0 and n < hardware::LampTy::ledCount; }
 
+/**
+ * \brief Return true id the given coordinates exists on the strip.
+ * This function also checks the bounds using the observation angle, as the strip is an helix.
+ * \param[in] angle_rad Angle in radians of the pixel.
+ * \param[in] z_mm height, in mm. Height in this coordinate system is negative.
+ */
 static constexpr bool is_lamp_coordinate_out_of_bounds(const float angle_rad, const float z_mm)
 {
   return not is_led_index_valid(to_led_index_no_bounds(angle_rad, z_mm));
 }
 
+/**
+ * \brief Convert a cylindrical world coordinate to a led index
+ * \param[in] angle_rad Angle in radians of the pixel.
+ * \param[in] z_mm height, in mm. Height in this coordinate system is negative.
+ * \return The index of the led, constrained to a valid index in the strip.
+ */
 static constexpr uint16_t to_led_index(const float angle_rad, const float z_mm)
 {
   constexpr uint16_t maxZCoordinate =
@@ -1119,6 +1233,12 @@ static constexpr uint16_t to_led_index(const float angle_rad, const float z_mm)
   return ledIndex;
 }
 
+/**
+ * \brief Convert a cylindrical world coordinate to a led index
+ * \param[in] angle_rad Angle in radians of the pixel.
+ * \param[in] z_mm height, in mm. Height in this coordinate system is negative.
+ * \return The index of the led. It is not necessarly a valid index.
+ */
 static constexpr int16_t to_led_index_no_bounds(const float angle_rad, const float z_mm)
 {
   // snip Z per possible lines
@@ -1130,6 +1250,6 @@ static constexpr int16_t to_led_index_no_bounds(const float angle_rad, const flo
   return round(angularPosition + zIndex * hardware::LampTy::maxWidthFloat);
 }
 
-} // namespace modes
+} // namespace lampda::modes
 
 #endif

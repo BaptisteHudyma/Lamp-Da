@@ -1,16 +1,23 @@
 #ifndef RAINBOW_SWIRL_MODE_HPP
 #define RAINBOW_SWIRL_MODE_HPP
 
-namespace modes::default_modes {
+/// @file rainbow_swirl_mode.hpp
+
+namespace lampda::modes::default_modes {
 
 #include <cstdint>
 #include "src/modes/include/colors/palettes.hpp"
 
+/**
+ * \brief Display a rainbow that moves
+ */
 struct RainbowSwirlMode : public BasicMode
 {
   struct StateTy
   {
+    /// per loop increment
     uint32_t increment;
+    /// hue of the first pixel of the strip
     uint16_t firstPixelHue;
   };
 
@@ -38,6 +45,6 @@ struct RainbowSwirlMode : public BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

@@ -3,10 +3,10 @@
 #include <cstdint>
 
 #include "src/system/logic/behavior.h"
+#include "src/system/logic/brightness_handle.h"
 
 #include "src/system/utils/utils.h"
 #include "src/system/utils/curves.h"
-#include "src/system/utils/brightness_handle.h"
 
 #include "src/system/physical/fileSystem.h"
 #include "src/system/physical/output_power.h"
@@ -16,12 +16,12 @@
 
 #include "src/user/functions.h"
 
-namespace user {
+namespace lampda::user {
 
 constexpr uint8_t minBrightness = 13;
 
-static DigitalPin WhiteColorPin(DigitalPin::GPIO::gpio6);
-static DigitalPin YellowColorPin(DigitalPin::GPIO::gpio7);
+static platform::gpio::DigitalPin WhiteColorPin(platform::gpio::DigitalPin::GPIO::gpio6);
+static platform::gpio::DigitalPin YellowColorPin(platform::gpio::DigitalPin::GPIO::gpio7);
 
 constexpr uint32_t colorKey = utils::hash("color");
 uint8_t currentColor = 0;
@@ -42,10 +42,10 @@ void set_color(const uint8_t color)
 
 void power_on_sequence()
 {
-  YellowColorPin.set_pin_mode(DigitalPin::Mode::kOutput);
-  WhiteColorPin.set_pin_mode(DigitalPin::Mode::kOutput);
+  YellowColorPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
+  WhiteColorPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
 
-  brightness_update(brightness::get_brightness());
+  brightness_update(logic::brightness::get_saved_brightness());
 }
 
 void power_off_sequence()
@@ -61,40 +61,42 @@ void power_off_sequence()
 
 void brightness_update(const brightness_t brightness)
 {
-  const auto _maxBrightness = brightness::get_max_brightness();
-  const brightness_t constraintBrightness = min<brightness_t>(brightness, _maxBrightness);
+  const auto _maxBrightness = logic::brightness::get_max_brightness();
+  const brightness_t constraintBrightness = std::min<brightness_t>(brightness, _maxBrightness);
 
   if (constraintBrightness == _maxBrightness)
   {
     // blip
-    outputPower::blip(50);
+    physical::outputPower::blip(50);
   }
 
   // map to a new curve, favorising low levels
-  using curve_t = curves::ExponentialCurve<brightness_t, uint8_t>;
+  using curve_t = utils::curves::ExponentialCurve<brightness_t, brightness_t>;
   static curve_t brightnessCurve(
-          curve_t::point_t {0, minBrightness}, curve_t::point_t {brightness::absoluteMaximumBrightness, 255}, 50.0);
+          curve_t::point_t {0, stripInputMinVoltage_mV},
+          curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, stripInputMaxVoltage_mV},
+          50.0);
 
   currentBrightness = round(brightnessCurve.sample(constraintBrightness));
 
-  outputPower::write_voltage(stripInputVoltage_mV);
+  physical::outputPower::write_voltage(currentBrightness);
   set_color(currentColor);
 }
 
 void sunset_timer_update(const float progress) {}
 
-void write_parameters() { fileSystem::user::set_value(colorKey, currentColor); }
+void write_parameters() { physical::fileSystem::user::set_value(colorKey, currentColor); }
 
 void read_parameters()
 {
   uint32_t mode = 0;
-  if (fileSystem::user::get_value(colorKey, mode))
+  if (physical::fileSystem::user::get_value(colorKey, mode))
   {
     currentColor = mode;
     lastColor = currentColor;
   }
 
-  currentBrightness = brightness::get_brightness();
+  currentBrightness = logic::brightness::get_saved_brightness();
 }
 
 bool button_start_click_default(const uint8_t clicks) { return false; }
@@ -110,7 +112,7 @@ void button_clicked_default(const uint8_t clicks)
   {
     // put luminosity to maximum
     case 2:
-      brightness::update_brightness(brightness::get_max_brightness());
+      logic::brightness::update_brightness(logic::brightness::get_max_brightness());
       break;
 
     default:
@@ -127,7 +129,7 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       if (!isEndOfHoldEvent)
       {
         const float percentOfTimeToGoUp = float(UINT8_MAX - lastColor) / (float)UINT8_MAX;
-        currentColor = lmpd_map<uint8_t>(min<uint32_t>(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp),
+        currentColor = lmpd_map<uint8_t>(std::min<uint32_t>(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp),
                                          0,
                                          COLOR_RAMP_DURATION_MS * percentOfTimeToGoUp,
                                          lastColor,
@@ -144,11 +146,12 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       {
         const double percentOfTimeToGoDown = float(lastColor) / (float)UINT8_MAX;
 
-        currentColor = lmpd_map<uint8_t>(min<uint32_t>(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown),
-                                         0,
-                                         COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown,
-                                         lastColor,
-                                         0);
+        currentColor =
+                lmpd_map<uint8_t>(std::min<uint32_t>(holdDuration, COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown),
+                                  0,
+                                  COLOR_RAMP_DURATION_MS * percentOfTimeToGoDown,
+                                  lastColor,
+                                  0);
       }
       else
       {
@@ -168,6 +171,6 @@ bool should_spawn_thread() { return false; }
 
 void user_thread() {}
 
-} // namespace user
+} // namespace lampda::user
 
 #endif

@@ -1,14 +1,16 @@
+/** \file
+ *  \brief Basic controller behavior, including alerts and user interactions
+ */
+
 #ifndef BEHAVIOR_HPP
 #define BEHAVIOR_HPP
-
-/** \file
- *
- *  \brief Basic controller behavior, including alerts and user interactions
- **/
 
 #include "src/compile.h"
 #include <string>
 
+namespace lampda {
+namespace logic {
+/// Main system behavior handle
 namespace behavior {
 
 /**
@@ -44,8 +46,26 @@ void set_power_on();
 /// set system state to "output off". Can be ignored
 void set_power_off();
 
-//
+/// Try to switch to external battery mode
 void go_to_external_battery_mode();
+
+/// return true if the system is in start mode
+bool is_in_start_logic_state();
+/// return true if the system is in output mode
+bool is_in_output_state();
+/// return true if the system is in charge mode
+bool is_in_charge_state();
+
+namespace internal {
+
+/**
+ * \brief DO NOT USE: shutdown the lamp immediatly. only for emmergency/special cases
+ * \param[in] shouldSaveUserParameters If False, no user parameters will be written to memory
+ * \param[in] shouldSaveSystemParameters If False, no system parameters will be written to memory
+ */
+void handle_shutdown_state(const bool shouldSaveUserParameters = true, const bool shouldSaveSystemParameters = true);
+
+} // namespace internal
 
 namespace sunset {
 /// signal to behavior the advance of the sunset timer
@@ -53,6 +73,8 @@ void progress_update(const float progress);
 } // namespace sunset
 
 } // namespace behavior
+} // namespace logic
+} // namespace lampda
 
 /// \private Internal symbol used to signify which LMBD_LAMP_TYPE was specified
 #ifdef LMBD_CPP17

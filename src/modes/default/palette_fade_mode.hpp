@@ -1,15 +1,20 @@
 #ifndef PALETTE_FADE_HPP
 #define PALETTE_FADE_HPP
 
+/// @file palette_fade_mode.hpp
+
 #include <cmath>
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
 #include <cstdint>
 #include "src/modes/include/colors/palettes.hpp"
 
+/**
+ * \brief Fade between colors of a palette.
+ */
 struct PaletteFadeMode : public modes::BasicMode
 {
-  // hint manager to save our custom ramp
+  /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
 
   static void on_enter_mode(auto& ctx)
@@ -38,16 +43,20 @@ struct PaletteFadeMode : public modes::BasicMode
   }
 };
 
-/// Party fixed colors ramp mode
+/**
+ * \brief Fade between the colors of the PartyColor palette
+ */
 struct RainbowFadePaletteMode : public PaletteFadeMode
 {
   struct StateTy
   {
+    /// Color palette to display
     static constexpr modes::colors::PaletteTy palette = modes::colors::PaletteRainbowColors;
+    /// actual palette index
     float paletteIndex;
   };
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

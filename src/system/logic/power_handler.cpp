@@ -12,58 +12,76 @@
 #include "src/system/platform/threads.h"
 #include "src/system/platform/registers.h"
 
-#include "PDlib/power_delivery.h"
-#include "balancer.h"
-#include "charger.h"
-#include "power_gates.h"
+#include "src/system/power/balancer.h"
+#include "src/system/power/charger.h"
+#include "src/system/power/PDlib/power_delivery.h"
+#include "src/system/power/power_gates.h"
 
 #include <cstdint>
 #include <cassert>
 #include <stdint.h>
 
+namespace lampda {
+namespace logic {
 namespace power {
 
 // references
 void power_loop();
 // \references
 
+/// Set to true if the shutdown process is finished cleanly.
 bool _isShutdownCompleted = false;
 
+/// Minimum allowed power rail clear delay.
 static constexpr uint32_t clearPowerRailMinDelay_ms = 10;
+/// Minimum power rail clear delay after which a failure is signaled.
 static constexpr uint32_t clearPowerRailFailureDelay_ms = 1000;
+/// Delay after which the OTG_MODE will auto disable if a disconnection is detected.
 static constexpr uint32_t otgNoUseTimeToDisconnect_ms = 1000;
-// timeout in external battery mode
+/// Delay after which the OTG_MODE will auto disable if not used.
 static constexpr uint8_t otgTurnOffTimeMinutes = 5;
+/// Delay after which the OTG_MODE will auto disable if not used, in milliseconds.
 static constexpr uint32_t otgNoUseExtBatTimeToDisconnect_ms = 1000 * 60 * otgTurnOffTimeMinutes;
-
+/// Delay after which the STARTUP state will auto switch to error.
 static constexpr uint32_t startupFailTimeout_ms = 3000;
 
 static_assert(clearPowerRailMinDelay_ms < clearPowerRailFailureDelay_ms,
               "clear power rail min activation is less than min unlock delay");
 
-// true voltage/current output limits
+/// true voltage output
 static uint16_t _outputVoltage_mV = 0;
+/// true current output limit
 static uint16_t _outputCurrent_mA = 0;
 
-// temporary voltage/current limits
+/// temporary voltage
 static uint16_t _temporaryOutputVoltage_mV = 0;
+/// temporary current limits
 static uint16_t _temporaryOutputCurrent_mA = 0;
+/// temporary output timeout time
 static uint32_t _temporaryOutputTimeOut = 0;
 
+/// True if battery charging is allowed
 static bool _isChargeEnabled = false;
+
+/// Store the state error description
 static std::string _errorStr = "";
+
+/// True if the state changed to OTG_MODE on it's own (via USB-PD requests).
 static bool _hasAutoSwitchedToOTG = false;
 
-// in this mode, the battery is too low to power the components
-// they rely on the vbus gate
+/// in this mode, the battery is too low to power the components.
+/// They will be powered through the vbus gate.
 static bool _isInBatteryRecoveryMode = false;
 
+/// Return the error string if set, or "x"
 std::string get_error_string()
 {
   if (_errorStr.empty())
     return "x";
   return _errorStr;
 }
+
+/// Set the error message, if not already set.
 void set_error_state_message(const std::string& errorMsg)
 {
   if (_errorStr.empty())
@@ -72,33 +90,35 @@ void set_error_state_message(const std::string& errorMsg)
   }
 }
 
-// Define the state for the main prog state machine
+/// Define the state for the power state machine
 using PowerStates = enum class power_states_t
 {
-  // start phase
+  /// Start phase, initialization and checks.
   STARTUP,
 
-  // idle, default mode
+  /// Idle, default mode. No power output.
   IDLE,
 
-  // prepare any power operation, by wlosing all path and discharging the rails
+  /// Prepare any power operation, by closing all power path and discharging the power rails.
   CLEAR_POWER_RAILS,
 
-  // Charging
+  /// Charge the batteries. Send power from the USB port to the batteries.
   CHARGING_MODE,
 
-  // output voltage on
+  /// Output voltage on. Send voltage from the batteries to the board Output.
   OUTPUT_VOLTAGE_MODE,
 
-  // OnTheGo
+  /// External battery mode (OnTheGo). Send power from the battery to the USB port.
   OTG_MODE,
 
-  // effectuate the shutdown
+  /// Shutdown the system and components gracefully.
   SHUTDOWN,
 
-  // Should never happen, default state
+  /// Default safety state. if reached, no power will be sent.
   ERROR,
 };
+
+/// Name of the states as strings
 const char* const PowerStatesStr[] = {
         "STARTUP",
         "IDLE",
@@ -110,27 +130,30 @@ const char* const PowerStatesStr[] = {
         "ERROR",
 };
 
+/// True if the OUTPUT_MODE state is ready, ie if the mode is active, the power is as requested and the output gate is
+/// enabled.
 static bool s_isOutputModeReady = false;
 bool is_output_mode_ready() { return s_isOutputModeReady; }
 
+/// Internal implementations
 namespace __private {
 
 // main state machine (start with timeout, go to error on timeout)
-StateMachine<PowerStates> powerMachine(PowerStates::STARTUP, startupFailTimeout_ms, PowerStates::ERROR);
+utils::StateMachine<PowerStates> powerMachine(PowerStates::STARTUP, startupFailTimeout_ms, PowerStates::ERROR);
 
-const DigitalPin dischargeVbus(DigitalPin::GPIO::Output_DischargeVbus);
-const DigitalPin vbusDirection(DigitalPin::GPIO::Output_VbusDirection);
-const DigitalPin fastRoleSwap(DigitalPin::GPIO::Output_VbusFastRoleSwap);
+const platform::gpio::DigitalPin dischargeVbus(platform::gpio::DigitalPin::GPIO::Output_DischargeVbus);
+const platform::gpio::DigitalPin vbusDirection(platform::gpio::DigitalPin::GPIO::Output_VbusDirection);
+const platform::gpio::DigitalPin fastRoleSwap(platform::gpio::DigitalPin::GPIO::Output_VbusFastRoleSwap);
 
 // if high, signal an USB fault
-const DigitalPin usbFault(DigitalPin::GPIO::Signal_UsbProtectionFault);
+const platform::gpio::DigitalPin usbFault(platform::gpio::DigitalPin::GPIO::Signal_UsbProtectionFault);
 } // namespace __private
 
-uint32_t get_vbus_rail_voltage() { return powerDelivery::get_vbus_voltage(); }
+uint32_t get_vbus_rail_voltage() { return ::lampda::power::powerDelivery::get_vbus_voltage(); }
 
 uint32_t get_power_rail_voltage()
 {
-  const auto& state = charger::get_state();
+  const auto& state = ::lampda::power::charger::get_state();
   if (state.areMeasuresOk)
   {
     return state.powerRail_mV;
@@ -152,7 +175,7 @@ void set_otg_parameters(uint16_t voltage_mV, uint16_t current_mA)
     lastOtgCurrent_mA = current_mA;
 
     // ramp up output voltage
-    charger::control_OTG(voltage_mV, current_mA);
+    ::lampda::power::charger::control_OTG(voltage_mV, current_mA);
   }
 }
 
@@ -166,27 +189,27 @@ void handle_clear_power_rails()
     return;
   }
 
-  powerDelivery::suspend_pd_state_machine();
+  ::lampda::power::powerDelivery::suspend_pd_state_machine();
 
   // disable all gates
-  powergates::disable_gates();
+  ::lampda::power::powergates::disable_gates();
   // prevent reverse current flow
   __private::vbusDirection.set_high(false);
   __private::fastRoleSwap.set_high(false);
 
   // disable charge & balancing if needed
-  charger::set_enable_charge(false);
-  balancer::enable_balancing(false);
+  ::lampda::power::charger::set_enable_charge(false);
+  ::lampda::power::balancer::enable_balancing(false);
   // disable eventual OTG
-  powerDelivery::allow_otg(false);
+  ::lampda::power::powerDelivery::allow_otg(false);
 
   // disable OTG if needed
   set_otg_parameters(0, 0);
 
   // wait at least a little bit
-  if (time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailMinDelay_ms and
+  if (platform::time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailMinDelay_ms and
       // power rail below min measurment voltage
-      get_power_rail_voltage() <= 3200)
+      (_isInBatteryRecoveryMode or get_power_rail_voltage() <= 3200))
   {
     __private::dischargeVbus.set_high(false);
     // all is clear, skip to next step
@@ -197,7 +220,7 @@ void handle_clear_power_rails()
     __private::dischargeVbus.set_high(true);
 
     // timeout after which we go to error ?
-    if (time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailFailureDelay_ms)
+    if (platform::time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailFailureDelay_ms)
     {
       set_error_state_message("CLEAR_POWER_RAILS: discharge VBUS failed");
       __private::powerMachine.set_state(PowerStates::ERROR);
@@ -212,31 +235,31 @@ static uint32_t timeSinceOTGCurrentUse;
 void handle_charging_mode()
 {
   // resume PD state machine
-  powerDelivery::resume_pd_state_machine();
+  ::lampda::power::powerDelivery::resume_pd_state_machine();
   // enable vbus path
-  powergates::enable_vbus_gate();
+  ::lampda::power::powergates::enable_vbus_gate();
 
   // OTG requested, switch to OTG mode
-  if (powerDelivery::is_switching_to_otg() and battery::is_battery_usable_as_power_source())
+  if (::lampda::power::powerDelivery::is_switching_to_otg() and physical::battery::is_battery_usable_as_power_source())
   {
     // disable balancing
-    balancer::enable_balancing(false);
-    timeSinceOTGNoCurrentUse = time_ms();
+    ::lampda::power::balancer::enable_balancing(false);
+    timeSinceOTGNoCurrentUse = platform::time_ms();
     // start otg
     _hasAutoSwitchedToOTG = true;
     __private::powerMachine.set_state(PowerStates::OTG_MODE);
     return;
   }
 
-  if (powergates::is_vbus_gate_enabled())
+  if (::lampda::power::powergates::is_vbus_gate_enabled())
   {
-    charger::set_enable_charge(_isChargeEnabled);
+    ::lampda::power::charger::set_enable_charge(_isChargeEnabled);
     // balance while we have power on vbus
-    balancer::enable_balancing(true);
+    ::lampda::power::balancer::enable_balancing(true);
   }
 
   // allow OTG in charge mode only
-  powerDelivery::allow_otg(true);
+  ::lampda::power::powerDelivery::allow_otg(true);
 
   // charge OR idle and do nothing (end of charge)
 }
@@ -247,43 +270,46 @@ void handle_output_voltage_mode()
   static constexpr float voltageGateHigherMultiplier = 1.1f;
 
   // never run PD in output mode !
-  powerDelivery::suspend_pd_state_machine();
+  ::lampda::power::powerDelivery::suspend_pd_state_machine();
 
   const uint32_t vbusVoltage = get_power_rail_voltage();
 
   bool isVbusVoltageOk = false;
   // if we are in temporary output mode, use temporary limits
-  if (time_ms() < _temporaryOutputTimeOut)
+  if (platform::time_ms() < _temporaryOutputTimeOut)
   {
     set_otg_parameters(_temporaryOutputVoltage_mV, _temporaryOutputCurrent_mA);
-    isVbusVoltageOk = (vbusVoltage >= static_cast<uint32_t>(_temporaryOutputVoltage_mV * voltageGateLowerMultiplier) and
+    isVbusVoltageOk = (vbusVoltage >= static_cast<uint32_t>(stripInputMinVoltage_mV * voltageGateLowerMultiplier) and
+                       // do not check the upper bound, this is a special DANGEROUS case
                        vbusVoltage <= static_cast<uint32_t>(_temporaryOutputVoltage_mV * voltageGateHigherMultiplier));
   }
   else
   {
     _temporaryOutputTimeOut = 0;
     set_otg_parameters(_outputVoltage_mV, _outputCurrent_mA);
-    isVbusVoltageOk = (vbusVoltage >= static_cast<uint32_t>(_outputVoltage_mV * voltageGateLowerMultiplier) and
-                       vbusVoltage <= static_cast<uint32_t>(_outputVoltage_mV * voltageGateHigherMultiplier));
+    isVbusVoltageOk = (vbusVoltage >= static_cast<uint32_t>(stripInputMinVoltage_mV * voltageGateLowerMultiplier) and
+                       vbusVoltage <= static_cast<uint32_t>(stripInputMaxVoltage_mV * voltageGateHigherMultiplier));
   }
 
   // enable power gate when voltage matches expected voltage
   if (isVbusVoltageOk)
   {
     // enable power gate
-    powergates::enable_power_gate();
+    ::lampda::power::powergates::enable_power_gate();
 
     if (not s_isOutputModeReady)
-      lampda_print("voltage ready on output gate");
+      platform::lampda_print("voltage ready on output gate");
     s_isOutputModeReady = true;
   }
   else
   {
     if (s_isOutputModeReady)
-      lampda_print("voltage is not in required range, disabling output");
+      platform::lampda_print("voltage is not in required range, disabling output. Actual %dmV. Required %dmV",
+                             vbusVoltage,
+                             _outputVoltage_mV);
     s_isOutputModeReady = false;
 
-    powergates::disable_gates();
+    ::lampda::power::powergates::disable_gates();
   }
 }
 
@@ -297,44 +323,44 @@ void handle_otg_mode()
   const uint32_t vbusVoltage_mv = get_vbus_rail_voltage();
 
   // shutdown OTG if no current consumption for X seconds
-  const auto& state = charger::get_state();
+  const auto& state = ::lampda::power::charger::get_state();
   // no current since a timing
   if (state.inputCurrent_mA <= 10)
   {
-    timeSinceOTGCurrentUse = time_ms();
+    timeSinceOTGCurrentUse = platform::time_ms();
 
     if (vbusVoltage_mv > 5500 and voltageHighRaisedTime == UINT32_MAX)
     {
-      voltageHighRaisedTime = time_ms();
+      voltageHighRaisedTime = platform::time_ms();
     }
 
     // if no current use since a timing, stop otg
     const uint32_t otgNonuseTimeout = isAutoOTGMode ? otgNoUseTimeToDisconnect_ms : otgNoUseExtBatTimeToDisconnect_ms;
-    if (time_ms() - timeSinceOTGNoCurrentUse > otgNonuseTimeout)
+    if (platform::time_ms() - timeSinceOTGNoCurrentUse > otgNonuseTimeout)
     {
       otgNoActivity = true;
-      lampda_print("no OTG activity, shutdown");
+      platform::lampda_print("no OTG activity, shutdown");
     }
 
     // voltage negociated but not used
-    if (voltageHighRaisedTime != UINT32_MAX and time_ms() - voltageHighRaisedTime > 1000)
+    if (voltageHighRaisedTime != UINT32_MAX and platform::time_ms() - voltageHighRaisedTime > 1000)
     {
       otgNoActivity = true;
-      lampda_print("no OTG activity and voltage high, shutdown");
+      platform::lampda_print("no OTG activity and voltage high, shutdown");
     }
   }
   else
   {
     // enable auto mode when power has been used for a time
-    if ((not _hasAutoSwitchedToOTG) and time_ms() - timeSinceOTGCurrentUse >= 1000)
+    if ((not _hasAutoSwitchedToOTG) and platform::time_ms() - timeSinceOTGCurrentUse >= 1000)
     {
       _hasAutoSwitchedToOTG = true;
     }
     if (vbusVoltage_mv > 5500)
     {
-      voltageHighRaisedTime = time_ms();
+      voltageHighRaisedTime = platform::time_ms();
     }
-    timeSinceOTGNoCurrentUse = time_ms();
+    timeSinceOTGNoCurrentUse = platform::time_ms();
   }
 
   // if we just switched manually, powerDelivery amy nnot have followed yet
@@ -343,15 +369,15 @@ void handle_otg_mode()
   // end of OTG, switch to charger
   if (otgNoActivity or not canUseOtg or
       // blocking alerts for OTG use
-      not battery::is_battery_usable_as_power_source() or not alerts::manager.can_use_usb_port())
+      not physical::battery::is_battery_usable_as_power_source() or not logic::alerts::manager.can_use_usb_port())
   {
     // reset pd machine
-    powerDelivery::force_set_to_source_mode(false);
-    powerDelivery::suspend_pd_state_machine();
-    powerDelivery::resume_pd_state_machine();
+    ::lampda::power::powerDelivery::force_set_to_source_mode(false);
+    ::lampda::power::powerDelivery::suspend_pd_state_machine();
+    ::lampda::power::powerDelivery::resume_pd_state_machine();
 
     // temporary suspend
-    powerDelivery::allow_otg(false);
+    ::lampda::power::powerDelivery::allow_otg(false);
     set_otg_parameters(0, 0);
 
     // no need for power gate, we are the one to push current
@@ -361,11 +387,11 @@ void handle_otg_mode()
   else
   {
     // resume PD state machine
-    powerDelivery::allow_otg(true);
-    powerDelivery::resume_pd_state_machine();
+    ::lampda::power::powerDelivery::allow_otg(true);
+    ::lampda::power::powerDelivery::resume_pd_state_machine();
 
-    balancer::enable_balancing(false);
-    charger::set_enable_charge(false);
+    ::lampda::power::balancer::enable_balancing(false);
+    ::lampda::power::charger::set_enable_charge(false);
   }
 
   if (not isAutoOTGMode)
@@ -373,14 +399,14 @@ void handle_otg_mode()
     static bool isInOtgModeForce = false;
     if (not isInOtgModeForce)
     {
-      powerDelivery::force_set_to_source_mode(true);
+      ::lampda::power::powerDelivery::force_set_to_source_mode(true);
       isInOtgModeForce = true;
     }
   }
 
-  static const auto& defaultOTG = powerDelivery::OTGParameters::get_default();
+  static const auto& defaultOTG = ::lampda::power::powerDelivery::OTGParameters::get_default();
   // requested by system
-  auto requestedOtg = powerDelivery::get_otg_parameters();
+  auto requestedOtg = ::lampda::power::powerDelivery::get_otg_parameters();
   requestedOtg.requestedVoltage_mV = max<uint16_t>(requestedOtg.requestedVoltage_mV, defaultOTG.requestedVoltage_mV);
   requestedOtg.requestedCurrent_mA = max<uint16_t>(requestedOtg.requestedCurrent_mA, defaultOTG.requestedCurrent_mA);
   // should never be true
@@ -395,21 +421,21 @@ void handle_otg_mode()
   __private::vbusDirection.set_high(true);
 
   // close vbus gate
-  powergates::enable_vbus_gate();
+  ::lampda::power::powergates::enable_vbus_gate();
 }
 
 void handle_shutdown()
 {
   // disable all gates
-  powergates::disable_gates();
+  ::lampda::power::powergates::disable_gates();
   set_otg_parameters(0, 0);
 
-  powerDelivery::shutdown();
+  ::lampda::power::powerDelivery::shutdown();
 
   // shutdown charger component
-  charger::shutdown();
+  ::lampda::power::charger::shutdown();
 
-  balancer::go_to_sleep();
+  ::lampda::power::balancer::go_to_sleep();
 
   _isShutdownCompleted = true;
 }
@@ -422,15 +448,16 @@ void handle_startup()
 
   // if this is false, it's a special case where battery voltage is too low to power the components
   // or the components are dead...
-  if (i2c_check_existence(0, chargeI2cAddress) != 0)
+  if (platform::i2c::i2c_check_existence(0, platform::i2c::chargeI2cAddress) != 0)
   {
-    const uint32_t timeSinceStateSwitch = time_ms() - __private::powerMachine.get_state_raised_time();
-    const bool isVbusUnpowered = timeSinceStateSwitch > 200 and not powerDelivery::is_power_available();
+    const uint32_t timeSinceStateSwitch = platform::time_ms() - __private::powerMachine.get_state_raised_time();
+    const bool isVbusUnpowered =
+            timeSinceStateSwitch > 200 and not ::lampda::power::powerDelivery::is_power_available();
 
     // no vbus, or
     if (timeSinceStateSwitch > startupFailTimeout_ms * 0.3 or isVbusUnpowered)
     {
-      alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+      logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
       if (isVbusUnpowered)
       {
         set_error_state_message("no i2c response from charger");
@@ -448,7 +475,7 @@ void handle_startup()
     {
       // Recover strategy :
       // unlock the power gate and check that charger and balancer are detected.
-      powergates::enable_vbus_gate();
+      ::lampda::power::powergates::enable_vbus_gate_DIRECT();
     }
     _isInBatteryRecoveryMode = true;
 
@@ -461,12 +488,12 @@ void handle_startup()
    */
 
   // charging component, setup first
-  const bool chargerSuccess = charger::setup();
+  const bool chargerSuccess = ::lampda::power::charger::setup();
   if (!chargerSuccess)
   {
     set_error_state_message("\n\t- Init charger component failed");
     __private::powerMachine.set_state(PowerStates::ERROR);
-    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+    logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
     // failed initialisation, skip
     return;
   }
@@ -474,26 +501,26 @@ void handle_startup()
   // battery in recovery : charger must start a charge cycle to power the balancer
   if (_isInBatteryRecoveryMode)
   {
-    charger::set_enable_charge(true);
+    ::lampda::power::charger::set_enable_charge(true);
 
     // wait a bit
-    const auto& state = charger::get_state();
+    const auto& state = ::lampda::power::charger::get_state();
     // wait for charge
     const bool isCharging = state.areMeasuresOk && state.is_charging();
     if (not isCharging)
       return;
-    const uint32_t timeSinceStateSwitch = time_ms() - __private::powerMachine.get_state_raised_time();
+    const uint32_t timeSinceStateSwitch = platform::time_ms() - __private::powerMachine.get_state_raised_time();
     if (timeSinceStateSwitch < startupFailTimeout_ms * 0.8)
       return;
   }
 
 // TODO issue #132 remove when the mock components will be running
 #ifndef LMBD_SIMULATION
-  if (not balancer::init())
+  if (not ::lampda::power::balancer::init())
   {
     set_error_state_message("\n\t- Init balancer component failed");
     __private::powerMachine.set_state(PowerStates::ERROR);
-    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+    logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
     // failed initialisation, skip
     return;
   }
@@ -512,7 +539,7 @@ void handle_error_state()
   _isInBatteryRecoveryMode = false;
 
   // disable all gates
-  powergates::disable_gates();
+  ::lampda::power::powergates::disable_gates();
 
   // disable OTG
   set_otg_parameters(0, 0);
@@ -534,7 +561,8 @@ void state_machine_behavior()
   // if state changed, display the new state
   if (powerMachine.state_just_changed())
   {
-    lampda_print("POWER_S_MACH > switched to state %s", PowerStatesStr[static_cast<size_t>(powerMachine.get_state())]);
+    platform::lampda_print("POWER_S_MACH > switched to state %s",
+                           PowerStatesStr[static_cast<size_t>(powerMachine.get_state())]);
   }
 
   switch (powerMachine.get_state())
@@ -599,9 +627,9 @@ bool go_to_output_mode()
 
   if (__private::can_switch_states())
   {
-    powerDelivery::suspend_pd_state_machine();
-    powerDelivery::force_set_to_source_mode(false);
-    powerDelivery::allow_otg(false);
+    ::lampda::power::powerDelivery::suspend_pd_state_machine();
+    ::lampda::power::powerDelivery::force_set_to_source_mode(false);
+    ::lampda::power::powerDelivery::allow_otg(false);
     set_otg_parameters(0, 0);
 
     __private::switch_state(PowerStates::OUTPUT_VOLTAGE_MODE);
@@ -615,7 +643,7 @@ bool go_to_charger_mode()
   // TODO: and other checks
   if (__private::can_switch_states())
   {
-    powerDelivery::force_set_to_source_mode(false);
+    ::lampda::power::powerDelivery::force_set_to_source_mode(false);
     __private::switch_state(PowerStates::CHARGING_MODE);
     return true;
   }
@@ -628,11 +656,11 @@ bool go_to_otg_mode()
   if (_isInBatteryRecoveryMode)
     return false;
 
-  if (__private::can_switch_states() and battery::is_battery_usable_as_power_source() and
-      alerts::manager.can_use_usb_port())
+  if (__private::can_switch_states() and physical::battery::is_battery_usable_as_power_source() and
+      logic::alerts::manager.can_use_usb_port())
   {
-    timeSinceOTGNoCurrentUse = time_ms();
-    powerDelivery::allow_otg(true);
+    timeSinceOTGNoCurrentUse = platform::time_ms();
+    ::lampda::power::powerDelivery::allow_otg(true);
     _hasAutoSwitchedToOTG = false;
     __private::switch_state(PowerStates::OTG_MODE);
     return true;
@@ -652,8 +680,6 @@ bool go_to_idle()
   return false;
 }
 
-bool is_state_shutdown_effected() { return _isShutdownCompleted; }
-
 bool go_to_shutdown()
 {
   // no need to check if we can switch case in this case
@@ -661,7 +687,7 @@ bool go_to_shutdown()
 
   handle_shutdown();
 
-  return is_state_shutdown_effected();
+  return _isShutdownCompleted;
 }
 
 bool go_to_error()
@@ -675,14 +701,16 @@ bool go_to_error()
 
 void set_output_voltage_mv(const uint16_t outputVoltage_mV)
 {
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
-  // NEVER EVER CHANGE INDEXABLE VOLTAGE
-  const bool isInRange = (outputVoltage_mV == 0) or (outputVoltage_mV == stripInputVoltage_mV);
-  if (not isInRange)
+  if (stripInputMinVoltage_mV == stripInputMaxVoltage_mV)
   {
-    assert(false);
+    // NEVER EVER CHANGE fixed output VOLTAGE
+    const bool isInRange = (outputVoltage_mV == 0) or (outputVoltage_mV == stripInputMaxVoltage_mV);
+    if (not isInRange)
+    {
+      assert(false);
+    }
   }
-#endif
+
   _temporaryOutputTimeOut = 0;
   _outputVoltage_mV = outputVoltage_mV;
 }
@@ -695,15 +723,17 @@ void set_output_max_current_mA(const uint16_t outputCurrent_mA)
 
 void set_temporary_output(const uint16_t outputVoltage_mV, const uint16_t outputCurrent_mA, const uint16_t timeout)
 {
-#ifdef LMBD_LAMP_TYPE__INDEXABLE
-  // NEVER EVER CHANGE INDEXABLE VOLTAGE
-  if (outputVoltage_mV != stripInputVoltage_mV)
+  if (stripInputMinVoltage_mV == stripInputMaxVoltage_mV)
   {
-    assert(false);
+    // NEVER EVER CHANGE FIXED OUTPUT VOLTAGE
+    if (outputVoltage_mV != stripInputMaxVoltage_mV)
+    {
+      assert(false);
+    }
   }
-#endif
+
   // set output timeout
-  _temporaryOutputTimeOut = time_ms() + timeout;
+  _temporaryOutputTimeOut = platform::time_ms() + timeout;
   _temporaryOutputVoltage_mV = outputVoltage_mV;
   _temporaryOutputCurrent_mA = outputCurrent_mA;
 }
@@ -735,12 +765,12 @@ void init()
   __private::usbFault.attach_callback(
           []() {
             // usb port alert detected
-            alerts::manager.raise(alerts::Type::USB_PORT_SHORT);
+            logic::alerts::manager.raise(logic::alerts::Type::USB_PORT_SHORT);
           },
-          DigitalPin::Interrupt::kFallingEdge);
+          platform::gpio::DigitalPin::Interrupt::kFallingEdge);
 
   // init power gates
-  powergates::init();
+  ::lampda::power::powergates::init();
 
 // TODO issue #132 remove when the mock components will be running
 #ifndef LMBD_SIMULATION
@@ -748,7 +778,7 @@ void init()
   std::string errorStr = "";
 
   // at the very last, power delivery
-  const bool pdSuccess = powerDelivery::setup();
+  const bool pdSuccess = ::lampda::power::powerDelivery::setup();
   if (!pdSuccess)
   {
     errorStr += "\n\t- Init power delivery component failed";
@@ -758,7 +788,7 @@ void init()
   if (not isSuccessful)
   {
     __private::powerMachine.set_state(PowerStates::ERROR);
-    alerts::manager.raise(alerts::Type::HARDWARE_ALERT);
+    logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
 
     set_error_state_message(errorStr);
     // failed initialisation, skip
@@ -766,50 +796,52 @@ void init()
   }
 
   // start power delivery
-  powerDelivery::start_threads();
+  ::lampda::power::powerDelivery::start_threads();
 #endif
 
   // start main loop
-  start_thread(power_loop, power_taskName, 0, 1024);
+  platform::threads::start_thread(power_loop, platform::threads::power_taskName, 0, 1024);
 
   isSetup = true;
 }
 
-// main loop of the power
+/// main loop of the power, running in another thread.
 void power_loop()
 {
   // kick power watchdog
-  kick_watchdog(POWER_WATCHDOG_ID);
+  platform::registers::kick_watchdog(POWER_WATCHDOG_ID);
 
   // fist action, update power gate status
-  powergates::loop();
+  ::lampda::power::powergates::loop();
 
   // run power module state machine
   __private::state_machine_behavior();
 
   // run the power delivery update loop
-  powerDelivery::loop();
+  ::lampda::power::powerDelivery::loop();
 
   // run the charger loop (all the time)
-  charger::loop();
+  ::lampda::power::charger::loop();
 
   // run the balancer loop (all the time)
-  balancer::loop();
+  ::lampda::power::balancer::loop();
 
   // after charge update, check status
   if (_isInBatteryRecoveryMode and is_started())
   {
     // remove flag when battery level is greater than zero
-    const auto chargerState = charger::get_state();
-    if (time_ms() > startupFailTimeout_ms * 5 and chargerState.areMeasuresOk and
+    const auto chargerState = ::lampda::power::charger::get_state();
+    if (platform::time_ms() > startupFailTimeout_ms * 5 and chargerState.areMeasuresOk and
         chargerState.batteryVoltage_mV > batteryMinVoltageSafe_mV)
     {
-      lampda_print("Cleared battery recovery mode");
+      platform::lampda_print("Cleared battery recovery mode");
       _isInBatteryRecoveryMode = false;
     }
   }
 
-  delay_ms(1);
+  platform::delay_ms(1);
 }
 
 } // namespace power
+} // namespace logic
+} // namespace lampda

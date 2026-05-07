@@ -1,7 +1,7 @@
 #ifndef DISTORTION_WAVE_MODE_H
 #define DISTORTION_WAVE_MODE_H
 
-/// @file distortion_wave.hpp
+/// @file distortion_waves.hpp
 
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
@@ -9,18 +9,21 @@
 #include "src/modes/include/colors/gamma.hpp"
 
 /// Basic "default" modes included with the hardware
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
-/// Emulate color circle waves propagating
-
-// Distortion waves - ldirko
-// https://editor.soulmatelights.com/gallery/1089-distorsion-waves
-// adapted for WLED by @blazoncek
+/**
+ * \brief Emulate color circle waves propagating.
+ * Distortion waves - ldirko.
+ * https://editor.soulmatelights.com/gallery/1089-distorsion-waves.
+ * adapted for WLED by @blazoncek
+ */
 struct DistortionWaveMode : public BasicMode
 {
   struct StateTy
   {
+    /// animation speed
     uint16_t speed;
+    /// animation scale
     uint16_t scale;
   };
 
@@ -73,9 +76,7 @@ struct DistortionWaveMode : public BasicMode
                                  colors::fromRGB(
                                          //
                                          colors::gamma8(cos8(red)),
-                                         //
                                          colors::gamma8(cos8(green)),
-                                         //
                                          colors::gamma8(cos8(blue))
                                          //
                                          ));
@@ -84,6 +85,6 @@ struct DistortionWaveMode : public BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

@@ -1,6 +1,9 @@
 #include "vector_math.h"
 #include <cmath>
 
+namespace lampda {
+namespace utils {
+
 vec3d RotationMatrix::transform(const vec3d& vec) const
 {
   vec3d res;
@@ -71,3 +74,6 @@ TransformationMatrix::TransformationMatrix(const vec3d& euler, const vec3d& tran
   rotation.from_angles_XYZ(euler);
 }
 vec3d TransformationMatrix::transform(const vec3d& vec) const { return rotation.transform(vec).add(translation); }
+
+} // namespace utils
+} // namespace lampda

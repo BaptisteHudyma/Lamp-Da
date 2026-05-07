@@ -1,3 +1,7 @@
+/*! \file compile.h
+    \brief Compile definitions and sanity checks.
+*/
+
 #ifndef COMPILE_H
 #define COMPILE_H
 

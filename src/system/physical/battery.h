@@ -1,3 +1,7 @@
+/*! \file battery.h
+    \brief Interface for the physical components of the battery.
+*/
+
 #ifndef BATTERY_H
 #define BATTERY_H
 
@@ -6,9 +10,13 @@
 #include "src/system/utils/curves.h"
 #include "src/system/utils/utils.h"
 
+namespace lampda {
+namespace physical {
+
+/// Handle the battery measurments and gestion.
 namespace battery {
 
-// get the battery voltage, untreated
+/// get the battery voltage, untreated
 extern uint16_t get_raw_battery_voltage_mv();
 
 /**
@@ -32,7 +40,7 @@ extern bool can_battery_be_charged();
  */
 inline uint16_t liion_mv_to_battery_percent(const uint16_t liionLevel_mv, const uint8_t batteryCountSerie)
 {
-  using curve_t = curves::LinearCurve<uint16_t, uint16_t>;
+  using curve_t = utils::curves::LinearCurve<uint16_t, uint16_t>;
   static curve_t liionVoltagePercentToRealPercent({// low end of the curve, sharp drop
                                                    curve_t::point_t {3000, 0},
                                                    curve_t::point_t {3210, 500},
@@ -76,7 +84,7 @@ inline uint16_t get_level_safe(const uint16_t battery_mv, const uint8_t cellCoun
           10000);
 }
 
-// returns the battery level, corresponding to user safe choice (0-10000)
+/// returns the battery level, corresponding to user safe choice (0-10000)
 inline uint16_t get_battery_level()
 {
   // get the result of the total battery life, map it to the safe battery level
@@ -95,5 +103,7 @@ uint16_t get_battery_minimum_cell_level();
 uint16_t get_battery_maximum_cell_level();
 
 } // namespace battery
+} // namespace physical
+} // namespace lampda
 
 #endif

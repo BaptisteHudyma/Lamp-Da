@@ -14,6 +14,10 @@
 // watchdog
 #include <hal/nrf_wdt.h>
 
+namespace lampda {
+namespace platform {
+namespace registers {
+
 // convert register id to watchdog register id
 nrf_wdt_rr_register_t registerId_to_register(const uint8_t registerId)
 {
@@ -102,5 +106,9 @@ float read_CPU_temperature_degreesC()
 }
 
 void go_to_sleep(const int wakeUpPin) { systemOff(wakeUpPin, 0); }
+
+} // namespace registers
+} // namespace platform
+} // namespace lampda
 
 #endif

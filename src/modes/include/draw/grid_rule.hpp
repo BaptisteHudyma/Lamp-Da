@@ -1,22 +1,31 @@
+/*! \file grid_rules.hpp
+    \brief Define a line based state machine.
+*/
+
 #ifndef MODES_DRAW_GRID_RULE_HPP
 #define MODES_DRAW_GRID_RULE_HPP
 
 #include <array>
 
-namespace modes::draw::grid {
+namespace lampda::modes::draw::grid {
 
 using LampTy = hardware::LampTy;
 
+/// Define the rules for a line
 struct LineRuleConfig
 {
-  static constexpr uint8_t dstBufIdx = 0;         /// Main buf. used for the grid
-  static constexpr uint8_t srcBufIdx = 1;         /// Sec. buf. used for smooth grid
-  static constexpr uint8_t scrollAmount = 1;      /// Scroll each update
-  static constexpr uint8_t renderBlurAmount = 32; /// Blur before display
-  static constexpr bool scrollSkewed = false;     /// Scroll skewed to the left
+  static constexpr uint8_t dstBufIdx = 0;         ///< Main buf. used for the grid
+  static constexpr uint8_t srcBufIdx = 1;         ///< Sec. buf. used for smooth grid
+  static constexpr uint8_t tempBufIdx = 2;        ///< Temporary buffer for copies
+  static constexpr uint8_t scrollAmount = 1;      ///< Scroll each update
+  static constexpr uint8_t renderBlurAmount = 32; ///< Blur before display
+  static constexpr bool scrollSkewed = false;     ///< Scroll skewed to the left
+  static constexpr bool loadFullOnReset =
+          true; ///< If true, the first call of loop will load the whole grid. False will load gradually
 };
 
-/* \brief Implement a line-based grid pattern, update line per line.
+/**
+ * \brief Implement a line-based grid pattern, update line per line.
  *
  * Typical usage is:
  *
@@ -38,12 +47,15 @@ struct LineRuleConfig
  */
 template<typename ConfigTy = LineRuleConfig> struct LineRule
 {
-  static constexpr uint8_t dstBufIdx = ConfigTy::dstBufIdx; /// \private
-  static constexpr uint8_t srcBufIdx = ConfigTy::srcBufIdx; /// \private
+  static constexpr uint8_t dstBufIdx = ConfigTy::dstBufIdx;   ///< \private
+  static constexpr uint8_t srcBufIdx = ConfigTy::srcBufIdx;   ///< \private
+  static constexpr uint8_t tempBufIdx = ConfigTy::tempBufIdx; ///< \private
 
-  static constexpr float fwidth = LampTy::maxWidthFloat; /// \private
-  static constexpr uint16_t width = LampTy::maxWidth;    /// \private
-  using LineTy = std::array<uint32_t, width>;            // Type of a line array
+  static constexpr bool loadFullOnReset = ConfigTy::loadFullOnReset; ///< \private
+
+  static constexpr float fwidth = LampTy::maxWidthFloat; ///< \private
+  static constexpr uint16_t width = LampTy::maxWidth;    ///< \private
+  using LineTy = std::array<uint32_t, width>;            ///< Type of a line array
 
   /// Number of lines in grid
   static constexpr uint16_t nbLines = LampTy::maxHeight;
@@ -53,6 +65,7 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
   {
     lastLine = 0;
     currentLine = firstLine;
+    isResetted = true;
 
     lamp.template fillTempBuffer(0);
     auto& buffer = lamp.template getTempBuffer<dstBufIdx>();
@@ -120,9 +133,9 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
   /// Same as \p .update() but uses two buffers, required for \p smoothDisplay()
   void LMBD_INLINE smoothUpdate(LampTy& lamp, auto& callback)
   {
-    auto bufCopy = lamp.template getTempBuffer<dstBufIdx>();
+    lamp.template copyBuffer<tempBufIdx, dstBufIdx>();
     update(lamp, callback);
-    lamp.template getTempBuffer<srcBufIdx>() = bufCopy;
+    lamp.template copyBuffer<srcBufIdx, tempBufIdx>();
   }
 
   /// Display grid buffers as an in-between frame, at \p phasis (from 0 to 1)
@@ -183,7 +196,8 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
     }
   }
 
-  /* \brief Default loop function, update and display, smooth display if fast
+  /**
+   * \brief Default loop function, update and display, smooth display if fast
    *
    * If \p hasCustomRamp is True, uses internally custom ramp to configure
    * update speed of the grid. If fast and high luminosity, try smoothing the
@@ -199,6 +213,27 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
   void LMBD_INLINE loop(auto& ctx, auto& callback)
   {
     auto& lamp = ctx.lamp;
+
+    // first call since reset
+    if (isResetted)
+    {
+      isResetted = false;
+
+      // if the animation should load the full state on startup
+      if constexpr (loadFullOnReset)
+      {
+        // update the whole grid
+        for (size_t i = 0; i < nbLines; ++i)
+        {
+          update(lamp, callback);
+          display(lamp);
+        }
+        if constexpr (ConfigTy::renderBlurAmount)
+          lamp.blur(ConfigTy::renderBlurAmount);
+
+        return;
+      }
+    }
     uint8_t rampValue = (hasCustomRamp ? ctx.get_active_custom_ramp() : rampSubstitute);
 
     // by default, quickly run smoothly the grid scrolling
@@ -232,9 +267,10 @@ template<typename ConfigTy = LineRuleConfig> struct LineRule
     }
   }
 
-  LineTy currentLine;
-  uint16_t lastLine = 0;
-  uint32_t lastUpdate = 0;
+  LineTy currentLine;      ///< Current line being processed
+  uint16_t lastLine = 0;   ///< latest treated line
+  uint32_t lastUpdate = 0; ///< latest update time, in milliseconds
+  bool isResetted = false; ///< flag to signal that the grid just been resetted
 };
 
 /** \brief Process 1-d cellular automata from \p before to \p after array
@@ -290,6 +326,6 @@ void wolframRule(const auto& before, auto& after)
   }
 }
 
-} // namespace modes::draw::grid
+} // namespace lampda::modes::draw::grid
 
 #endif

@@ -10,34 +10,38 @@
 #include "src/system/platform/gpio.h"
 #include "src/system/platform/print.h"
 
+namespace lampda {
+namespace physical {
 namespace imu {
 
-// instance of the IMU controler
+/// instance of the IMU controler
 Wrapper imuInstance;
 
-// interrupt 1
-DigitalPin interrupt1Pin(DigitalPin::GPIO::Signal_ImuInterrupt1);
-DigitalPin interrupt2Pin(DigitalPin::GPIO::Signal_ImuInterrupt2);
-
+/// interrupt 1 pin
+platform::gpio::DigitalPin interrupt1Pin(platform::gpio::DigitalPin::GPIO::Signal_ImuInterrupt1);
+/// interrupt 2 pin
+platform::gpio::DigitalPin interrupt2Pin(platform::gpio::DigitalPin::GPIO::Signal_ImuInterrupt2);
+/// indicates if the driver is initialized
 bool isInitialized = false;
 
-// transform imu coordinates to board coordinates
-const TransformationMatrix imuToBoardTransformation(
-        vec3d(imuToCircuitRotationX_rad, imuToCircuitRotationY_rad, imuToCircuitRotationZ_rad),
-        vec3d(imuToCircuitPositionX_m, imuToCircuitPositionY_m, imuToCircuitPositionZ_m));
+/// Transform imu coordinates to board coordinates
+const utils::TransformationMatrix imuToBoardTransformation(
+        utils::vec3d(imuToCircuitRotationX_rad, imuToCircuitRotationY_rad, imuToCircuitRotationZ_rad),
+        utils::vec3d(imuToCircuitPositionX_m, imuToCircuitPositionY_m, imuToCircuitPositionZ_m));
 
-// transform board coordinates to first pixel
-const TransformationMatrix boardToFirstPixelTransformation(vec3d(circuitToLedZeroRotationX_degrees* c_degreesToRadians,
-                                                                 circuitToLedZeroRotationY_degrees* c_degreesToRadians,
-                                                                 circuitToLedZeroRotationZ_degrees* c_degreesToRadians),
-                                                           vec3d(0, 0, 0));
+/// Transform board coordinates to first pixel
+const utils::TransformationMatrix boardToFirstPixelTransformation(
+        utils::vec3d(circuitToLedZeroRotationX_degrees* c_degreesToRadians,
+                     circuitToLedZeroRotationY_degrees* c_degreesToRadians,
+                     circuitToLedZeroRotationZ_degrees* c_degreesToRadians),
+        utils::vec3d(0, 0, 0));
 
 void init()
 {
   if (not imuInstance.init())
   {
     // TODO: something ?
-    lampda_print("IMU failed to start");
+    platform::lampda_print("IMU failed to start");
     isInitialized = false;
   }
   else
@@ -127,9 +131,11 @@ bool is_event_detected(const EventType eventType)
   }
 }
 
-// interrupt 1 result
+/// interrupt 1 result
 bool isInterrupt1Enabled = false;
+/// callback for the interrupt1 signal
 void interrupt1_callback() { isInterrupt1Enabled = true; }
+
 bool is_interrupt1_enabled()
 {
   const bool temp = isInterrupt1Enabled;
@@ -137,9 +143,11 @@ bool is_interrupt1_enabled()
   return temp;
 }
 
-// interrupt 2 result
+/// interrupt 2 result
 bool isInterrupt2Enabled = false;
+/// callback for the interrupt1 signal
 void interrupt2_callback() { isInterrupt2Enabled = true; }
+
 bool is_interrupt2_enabled()
 {
   const bool temp = isInterrupt2Enabled;
@@ -158,28 +166,28 @@ bool link_event_to_interrupt1(const EventType eventType)
     case EventType::FreeFall:
       if (not imuInstance.enable_interrupt1(Wrapper::InterruptType::FreeFall))
       {
-        lampda_print("link_event_to_interrupt1: enable freefall interrupt failed");
+        platform::lampda_print("link_event_to_interrupt1: enable freefall interrupt failed");
         return false;
       }
       break;
     case EventType::BigMotion:
       if (not imuInstance.enable_interrupt1(Wrapper::InterruptType::BigMotion))
       {
-        lampda_print("link_event_to_interrupt1: enable big motion interrupt failed");
+        platform::lampda_print("link_event_to_interrupt1: enable big motion interrupt failed");
         return false;
       }
       break;
     case EventType::Step:
       if (not imuInstance.enable_interrupt1(Wrapper::InterruptType::Step))
       {
-        lampda_print("link_event_to_interrupt1: enable step interrupt failed");
+        platform::lampda_print("link_event_to_interrupt1: enable step interrupt failed");
         return false;
       }
       break;
     case EventType::Tilt:
       if (not imuInstance.enable_interrupt1(Wrapper::InterruptType::AngleChange))
       {
-        lampda_print("link_event_to_interrupt1: enable tilt interrupt failed");
+        platform::lampda_print("link_event_to_interrupt1: enable tilt interrupt failed");
         return false;
       }
       break;
@@ -189,9 +197,9 @@ bool link_event_to_interrupt1(const EventType eventType)
   }
 
   // prevent shutdown when no events
-  interrupt1Pin.set_pin_mode(DigitalPin::Mode::kInput);
+  interrupt1Pin.set_pin_mode(platform::gpio::DigitalPin::Mode::kInput);
   interrupt1Pin.detach_callbacks();
-  interrupt1Pin.attach_callback(interrupt1_callback, DigitalPin::Interrupt::kChange);
+  interrupt1Pin.attach_callback(interrupt1_callback, platform::gpio::DigitalPin::Interrupt::kChange);
   return true;
 }
 
@@ -208,25 +216,25 @@ bool link_event_to_interrupt2(const EventType eventType)
     case EventType::FreeFall:
       if (not imuInstance.enable_interrupt2(Wrapper::InterruptType::FreeFall))
       {
-        lampda_print("link_event_to_interrupt2: enable freefall interrupt failed");
+        platform::lampda_print("link_event_to_interrupt2: enable freefall interrupt failed");
         return false;
       }
       break;
     case EventType::BigMotion:
       {
-        lampda_print("link_event_to_interrupt2: big motion interrupt not supported for pin2");
+        platform::lampda_print("link_event_to_interrupt2: big motion interrupt not supported for pin2");
         return false;
       }
     case EventType::Step:
 
       {
-        lampda_print("link_event_to_interrupt2: step interrupt not supported for pin2");
+        platform::lampda_print("link_event_to_interrupt2: step interrupt not supported for pin2");
         return false;
       }
     case EventType::Tilt:
       if (not imuInstance.enable_interrupt2(Wrapper::InterruptType::AngleChange))
       {
-        lampda_print("link_event_to_interrupt2: enable tilt interrupt failed");
+        platform::lampda_print("link_event_to_interrupt2: enable tilt interrupt failed");
         return false;
       }
       break;
@@ -236,9 +244,9 @@ bool link_event_to_interrupt2(const EventType eventType)
   }
 
   // prevent shutdown when no events
-  interrupt2Pin.set_pin_mode(DigitalPin::Mode::kInput);
+  interrupt2Pin.set_pin_mode(platform::gpio::DigitalPin::Mode::kInput);
   interrupt2Pin.detach_callbacks();
-  interrupt2Pin.attach_callback(interrupt2_callback, DigitalPin::Interrupt::kChange);
+  interrupt2Pin.attach_callback(interrupt2_callback, platform::gpio::DigitalPin::Interrupt::kChange);
   return true;
 }
 
@@ -296,3 +304,5 @@ Reading get_filtered_reading(const bool resetFilter)
 }
 
 } // namespace imu
+} // namespace physical
+} // namespace lampda

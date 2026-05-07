@@ -26,9 +26,12 @@ SEND = "Envoyer"
 MAJ_FAILED = "majFailed"
 
 class LangageHandle():
+    ## Default Constructor
     def __init__(self):
+        ## Default to French
         self.lang = "Francais"
 
+    ## Toggle between supported langages
     def change_langage(self):
         if self.lang == "Francais":
             self.lang = "English"
@@ -37,6 +40,7 @@ class LangageHandle():
 
 handle = LangageHandle()
 
+## Conpute the translation of a text id, Langage dependent
 def get_text_translation(text_id):
     try:
         if handle.lang == "Francais":

@@ -4,6 +4,8 @@
 
 #include "math8.h"
 
+namespace lampda {
+
 static uint8_t const p[] = {
         151, 160, 137, 91,  90,  15,  131, 13,  201, 95,  96,  53,  194, 233, 7,   225, 140, 36,  103, 30,  69,  142,
         8,   99,  37,  240, 21,  10,  23,  190, 6,   148, 247, 120, 234, 75,  0,   26,  197, 62,  94,  252, 219, 203,
@@ -534,3 +536,5 @@ uint16_t inoise(uint32_t x, uint32_t y, uint32_t z)
 }
 
 } // namespace noise16
+
+} // namespace lampda

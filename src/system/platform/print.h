@@ -1,11 +1,21 @@
+/*! \file print.h
+    \brief Interface for the platform specific debug and prints.
+*/
+
 #ifndef PLATFORM_PRINT_H
 #define PLATFORM_PRINT_H
 
+#include <array>
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <stdarg.h>
 
 #include "src/system/utils/print.h"
+
+namespace lampda {
+namespace platform {
+/// Print and debug function to serial port
 
 /**
  * \brief call once at program start
@@ -15,6 +25,20 @@ extern void init_prints();
 /**
  * \brief read external inputs (may take some time)
  */
-extern std::vector<std::string> read_inputs();
+
+struct Inputs
+{
+  static constexpr size_t maxCommandSize = 15;
+  typedef std::array<char, maxCommandSize> Command;
+
+  static constexpr uint8_t maxCommands = 2;
+  std::array<Command, maxCommands> commandList;
+  uint8_t commandCount = 0;
+};
+
+extern Inputs read_inputs();
+
+} // namespace platform
+} // namespace lampda
 
 #endif

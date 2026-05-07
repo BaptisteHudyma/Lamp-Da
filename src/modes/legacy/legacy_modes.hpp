@@ -1,3 +1,7 @@
+/*! \file legacy_modes.hpp
+    \brief Legacy implementation of the Indexable modes.
+*/
+
 #ifndef LEGACY_MODES_H
 #define LEGACY_MODES_H
 
@@ -24,7 +28,7 @@
 #include "src/modes/default/spiral.hpp"
 #include "src/modes/default/vu_meter.hpp"
 
-namespace modes::legacy {
+namespace lampda::modes::legacy {
 
 //
 // Legacy modes groups
@@ -48,6 +52,6 @@ using PartyModes =
 
 using SoundModes = modes::GroupFor<default_modes::VuMeterMode, default_modes::FastFourrierTransformMode>;
 
-} // namespace modes::legacy
+} // namespace lampda::modes::legacy
 
 #endif

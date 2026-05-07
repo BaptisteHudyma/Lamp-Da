@@ -19,7 +19,7 @@
 #include "src/modes/include/mode_type.hpp"
 #include "src/modes/include/tools.hpp"
 
-namespace modes {
+namespace lampda::modes {
 
 /// \private Return true if a mode failed verification to prevent extra errors
 template<typename AllModes> static constexpr bool verifyGroup()
@@ -125,10 +125,11 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
 
   struct StateTy
   {
-    AllStatesTy modeStates;
-    std::array<uint8_t, nbModes> customRampMemory;
-    std::array<uint8_t, nbModes> customIndexMemory;
+    AllStatesTy modeStates;                         ///< Store the current group state
+    std::array<uint8_t, nbModes> customRampMemory;  ///< Store the ramp value for each mode
+    std::array<uint8_t, nbModes> customIndexMemory; ///< Store the active index for each mode
 
+    /// If a mode signaled that it has a ramp, save it
     void LMBD_INLINE save_ramps(auto& ctx, uint8_t modeId)
     {
       assert(modeId < nbModes);
@@ -139,6 +140,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
       }
     }
 
+    /// If a mode signaled that it has a ramp, load it
     void LMBD_INLINE load_ramps(auto& ctx, uint8_t modeId)
     {
       assert(modeId < nbModes);
@@ -150,6 +152,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     }
   };
 
+  /// Return the state of a the current mode
   template<typename Mode> static auto* LMBD_INLINE getStateOf(auto& manager)
   {
     using StateTy = typename Mode::StateTy;
@@ -185,17 +188,24 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   // navigation
   //
 
+  /// True if this is a group manager
   static constexpr bool isGroupManager = false;
+  /// True if this is a mode manager
   static constexpr bool isModeManager = true;
 
+  /// Switch to the next mode
   static void next_mode(auto& ctx)
   {
     uint8_t modeIdBefore = ctx.get_active_mode(nbModes);
     ctx.set_active_mode(modeIdBefore + 1, nbModes);
   }
 
+  /// Callback for a mode entry point
   static void enter_mode(auto& ctx)
   {
+    // restore brigthness before entering a mode
+    ctx.lamp.setBrightness(logic::brightness::get_saved_brightness(), false, false, true);
+
     // set ramps if they exist
     uint8_t modeIdAfter = ctx.get_active_mode(nbModes);
     ctx.state.load_ramps(ctx, modeIdAfter);
@@ -206,6 +216,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     });
   }
 
+  /// Callback for a mode exit point
   static void quit_mode(auto& ctx)
   {
     // save ramps if they exist
@@ -223,6 +234,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   // all the callbacks
   //
 
+  /// Binds to local BasicMode::loop()
   static void loop(auto& ctx)
   {
     dispatch_mode(ctx, [](auto mode) {
@@ -230,6 +242,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     });
   }
 
+  /// Binds to local BasicMode::sunset_update()
   static void sunset_update(auto& ctx, float progress)
   {
     dispatch_mode(ctx, [&](auto mode) {
@@ -237,6 +250,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     });
   }
 
+  /// Binds to local BasicMode::brightness_update()
   static void brightness_update(auto& ctx, brightness_t brightness)
   {
     dispatch_mode(ctx, [&](auto mode) {
@@ -244,6 +258,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     });
   }
 
+  /// Binds to local BasicMode::custom_ramp_update()
   static void custom_ramp_update(auto& ctx, uint8_t rampValue)
   {
     dispatch_mode(ctx, [&](auto mode) {
@@ -251,6 +266,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     });
   }
 
+  /// Binds to local BasicMode::custom_click()
   static bool custom_click(auto& ctx, uint8_t nbClick)
   {
     bool retVal = false;
@@ -260,6 +276,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     return retVal;
   }
 
+  /// Binds to local BasicMode::custom_hold()
   static bool custom_hold(auto& ctx, uint8_t nbClickAndHold, bool isEndOfHoldEvent, uint32_t holdDuration)
   {
     bool retVal = false;
@@ -269,6 +286,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     return retVal;
   }
 
+  /// Binds to local BasicMode::power_on_sequence()
   static void power_on_sequence(auto& ctx)
   {
     foreach_mode<true>(ctx, [](auto mode) {
@@ -276,6 +294,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     });
   }
 
+  /// Binds to local BasicMode::power_off_sequence()
   static void power_off_sequence(auto& ctx)
   {
     foreach_mode<true>(ctx, [](auto mode) {
@@ -283,6 +302,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     });
   }
 
+  /// Binds to local BasicMode::write_parameters()
   static void write_parameters(auto& ctx)
   {
     foreach_mode<true>(ctx, [](auto mode) {
@@ -290,6 +310,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     });
   }
 
+  /// Binds to local BasicMode::read_parameters()
   static void read_parameters(auto& ctx)
   {
     foreach_mode<true>(ctx, [](auto mode) {
@@ -297,6 +318,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     });
   }
 
+  /// Binds to local BasicMode::user_thread()
   static void user_thread(auto& ctx)
   {
     dispatch_mode(ctx, [](auto mode) {
@@ -312,6 +334,6 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
  */
 template<typename... Modes> using GroupFor = GroupTy<std::tuple<Modes...>>;
 
-} // namespace modes
+} // namespace lampda::modes
 
 #endif

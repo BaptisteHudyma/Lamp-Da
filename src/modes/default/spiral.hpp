@@ -9,18 +9,25 @@
 #include "src/modes/include/colors/palettes.hpp"
 
 /// Basic "default" modes included with the hardware
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
-// By: Stepko
-// https://editor.soulmatelights.com/gallery/884-drift
-// Modified by: Andrew Tuline
+/**
+ * \brief Display a 2D rotating spiral.
+ * By: Stepko.
+ * https://editor.soulmatelights.com/gallery/884-drift.
+ * Modified by: Andrew Tuline.
+ */
 struct SpiralMode : public BasicMode
 {
   struct StateTy
   {
+    /// fade rate
     uint8_t fade;
+    /// blue intensity
     uint8_t intensity;
+    /// rotation speed
     uint8_t speed;
+    /// color to use
     colors::PaletteTy palette;
   };
 
@@ -36,7 +43,7 @@ struct SpiralMode : public BasicMode
   {
     static constexpr uint16_t colsCenter = (ctx.lamp.maxWidth >> 1) + ctx.lamp.maxWidth % 2;
     static constexpr uint16_t rowsCenter = (ctx.lamp.maxHeight >> 1) + ctx.lamp.maxHeight % 2;
-    static constexpr uint16_t maxDim = MAX(ctx.lamp.maxWidth, ctx.lamp.maxHeight) / 2;
+    static constexpr uint16_t maxDim = std::max(ctx.lamp.maxWidth, ctx.lamp.maxHeight) / 2;
 
     ctx.lamp.fadeToBlackBy(ctx.state.fade);
     unsigned long t = 4 * ctx.lamp.tick / (256 - ctx.state.speed);
@@ -53,6 +60,6 @@ struct SpiralMode : public BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

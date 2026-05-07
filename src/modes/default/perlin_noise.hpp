@@ -12,45 +12,59 @@
 #include <cstdlib>
 
 /// Basic "default" modes included with the hardware
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
+/**
+ * \brief 3D perlin noise on the lamp surface.
+ */
 struct PerlinNoiseMode : public BasicMode
 {
-  // hint manager to save our custom ramp
+  /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
 
-  // index of the buffer used in this mode
+  /// index of the buffer used in this mode
   static constexpr uint8_t bufferIndexToUse = 0;
+
+  // this is too heavy to run at full, speed, display every other pixels instead of refreshing amm
+  static constexpr uint32_t everyNIndex = 2;
 
   struct StateTy
   {
-    uint32_t positionX;
-    uint32_t positionY;
-    uint32_t positionZ;
+    uint32_t positionX; ///< position of the noise in X
+    uint32_t positionY; ///< position of the noise in X
+    uint32_t positionZ; ///< position of the noise in X
 
-    int16_t speedX;
-    int16_t speedY;
-    int16_t speedZ;
+    int16_t speedX; ///< Speed of the noise in X
+    int16_t speedY; ///< Speed of the noise in Y
+    int16_t speedZ; ///< Speed of the noise in Z
+    /// Minimal speed of movement
     static constexpr uint16_t minSpeed = 25;
+    /// Maximal speed of movement
     static constexpr uint16_t maxSpeed = 400;
-
+    /// Scale of the noise
     uint16_t scale;
-
+    /// Color grading
     uint16_t ihue;
 
-    // store references to palettes
+    /// count of palette used
     static constexpr uint8_t maxPalettesCount = 4;
+    /// store references to palettes
     const colors::PaletteTy* _palettes[maxPalettesCount] = {&colors::PaletteRainbowColors,
                                                             &colors::PaletteLavaColors,
                                                             &colors::PaletteForestColors,
                                                             &colors::PaletteOceanColors};
 
-    // store selected palette
+    /// store selected palette
     colors::PaletteTy const* selectedPalette;
+
+    // flag that we have just been reseted
+    bool isResetted = false;
   };
 
   static void on_enter_mode(auto& ctx)
   {
+    ctx.state.isResetted = true;
+
     ctx.state.positionX = UINT32_MAX / 2 + random16() / 2;
     ctx.state.positionY = UINT32_MAX / 2 + random16() / 2;
     ctx.state.positionZ = UINT32_MAX / 2 + random16() / 2;
@@ -71,15 +85,24 @@ struct PerlinNoiseMode : public BasicMode
     custom_ramp_update(ctx, ctx.get_active_custom_ramp());
   }
 
+  /// User ramp changes the color palette
   static void custom_ramp_update(auto& ctx, uint8_t rampValue)
   {
     auto& state = ctx.state;
 
     const uint8_t rampIndex =
-            min<float>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1.0f);
+            std::min<float>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1.0f);
     state.selectedPalette = state._palettes[rampIndex];
   }
 
+  /**
+   * \brief compute the next speed from the current parameters. This function prevent overflow by controling the speed
+   * between two bounds.
+   * \param[in] ctx Contrext object of the mode
+   * \param[in] position Actual position of the noise
+   * \param[in] speed Actual speed of the noise
+   * \return The nex speed
+   */
   static int16_t get_next_speed(auto& ctx, const uint32_t position, int16_t speed)
   {
     static constexpr int16_t speedBleedof = 25;
@@ -123,6 +146,23 @@ struct PerlinNoiseMode : public BasicMode
 
   static void loop(auto& ctx)
   {
+    if (ctx.state.isResetted)
+    {
+      ctx.state.isResetted = false;
+
+      // load animation
+      for (uint32_t i = 0; i <= everyNIndex; ++i)
+      {
+        perlin_display(ctx, i);
+      }
+      return;
+    }
+
+    perlin_display(ctx, ctx.lamp.tick);
+  }
+
+  static void perlin_display(auto& ctx, const uint32_t tick)
+  {
     auto& state = ctx.state;
     auto& lamp = ctx.lamp;
     if (!state.selectedPalette)
@@ -139,9 +179,7 @@ struct PerlinNoiseMode : public BasicMode
     const auto z = state.positionZ;
     const auto scale = state.scale;
 
-    // this is too heavy to run at full, speed, display every other pixels instead of refreshing amm
-    static constexpr size_t everyNIndex = 2;
-    const size_t firstIndex = lamp.tick % everyNIndex;
+    const size_t firstIndex = tick % everyNIndex;
 
     // update noise values
     for (size_t i = firstIndex; i < lamp.ledCount; i += everyNIndex)
@@ -189,6 +227,6 @@ struct PerlinNoiseMode : public BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

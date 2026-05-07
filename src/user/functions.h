@@ -1,3 +1,7 @@
+/*! \file functions.h
+    \brief Define specific needed user functions.
+*/
+
 #ifndef USER_FUNCTIONS_H
 #define USER_FUNCTIONS_H
 
@@ -7,14 +11,14 @@
 
 #include <cstdint>
 
-#include "src/system/utils/brightness_handle.h"
+#include "src/system/logic/brightness_handle.h"
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
-#include "src/system/utils/strip.h"
+#include "src/system/physical/strip.h"
 
 // (extern declarations)
-namespace user::_private {
-extern LedStrip strip;
+namespace lampda::user::_private {
+extern lampda::physical::LedStrip strip;
 }
 #endif
 
@@ -23,7 +27,7 @@ extern LedStrip strip;
 //
 
 /// Contains code handling custom user mode functions for indexable strips
-namespace user {
+namespace lampda::user {
 
 /// Called when the system powers on (must be non blocking function!)
 void power_on_sequence();
@@ -37,7 +41,7 @@ void power_off_sequence();
  * \remark Use update_brightness() to change brightness in order for
  * brightness_update() to be correctly called on brightness change
  */
-void brightness_update(const brightness_t brightness);
+void brightness_update(const lampda::brightness_t brightness);
 
 /// Called when the sunset timer progresses [0; 1]
 void sunset_timer_update(const float progress);
@@ -51,14 +55,14 @@ void read_parameters();
 /**
  * \brief Called to handle button click on lamp start
  *
- * \param[in] nbClick The number of clicks made by the user
+ * \param[in] clicks The number of clicks made by the user
  */
 bool button_start_click_default(const uint8_t clicks);
 
 /**
  * \brief Called to handle button hold on lamp start
  *
- * \param[in] nbClickAndHold The number of clicks made by the user
+ * \param[in] clicks The number of clicks made by the user
  * \param[in] isEndOfHoldEvent True if the user just released the button
  * \param[in] holdDuration The duration of the on-going held event
  * \remark When \p isEndOfHoldEvent is True, then \p holdDuration is zero
@@ -67,7 +71,7 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
 
 /** \brief Called to handle button click events for default user mode behaviors
  *
- * \param[in] nbClick The number of clicks made by the user
+ * \param[in] clicks The number of clicks made by the user
  */
 void button_clicked_default(const uint8_t clicks);
 
@@ -126,6 +130,6 @@ bool should_spawn_thread();
  */
 void user_thread();
 
-} // namespace user
+} // namespace lampda::user
 
 #endif

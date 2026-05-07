@@ -5,6 +5,8 @@
 #include <gtest/gtest.h>
 #include "src/system/utils/fft.h"
 
+namespace lampda::utils::fft {
+
 using namespace std::chrono_literals;
 static constexpr double samplingFrequency = static_cast<double>(SAMPLE_RATE);
 
@@ -195,3 +197,5 @@ TEST(fastFourrierTest, composedSignalAmplitudeSweep)
     }
   }
 }
+
+} // namespace lampda::utils::fft

@@ -11,6 +11,8 @@
 #include "src/system/platform/time.h"
 #include "src/system/platform/gpio.h"
 
+namespace lampda {
+namespace physical {
 namespace indicator {
 
 static_assert(redColorCorrection >= 0.0f && redColorCorrection <= 1.0f, "invalid red correction_factor");
@@ -22,17 +24,17 @@ static_assert(greenColorCorrection * 255 > 32, "green correction is too small to
 static_assert(blueColorCorrection * 255 > 32, "blue correction is too small to be visible");
 
 // Pins for the led on the button
-static const DigitalPin ButtonRedPin(RedIndicator);
-static const DigitalPin ButtonGreenPin(GreenIndicator);
-static const DigitalPin ButtonBluePin(BlueIndicator);
+static const platform::gpio::DigitalPin ButtonRedPin(utils::RedIndicator);
+static const platform::gpio::DigitalPin ButtonGreenPin(utils::GreenIndicator);
+static const platform::gpio::DigitalPin ButtonBluePin(utils::BlueIndicator);
 
 static inline float brightnessMultiplier = 1.0f;
 
 void init()
 {
-  ButtonRedPin.set_pin_mode(DigitalPin::Mode::kOutput);
-  ButtonBluePin.set_pin_mode(DigitalPin::Mode::kOutput);
-  ButtonGreenPin.set_pin_mode(DigitalPin::Mode::kOutput);
+  ButtonRedPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
+  ButtonBluePin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
+  ButtonGreenPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
 
   set_color(utils::ColorSpace::BLACK);
 }
@@ -58,7 +60,7 @@ uint8_t get_brightness()
 
 bool breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::ColorSpace::RGB& color)
 {
-  const uint32_t time = time_ms();
+  const uint32_t time = platform::time_ms();
 
   // store the start time of the animation
   static uint32_t startTime = time;
@@ -127,28 +129,30 @@ bool blink(const uint32_t offFreq, const uint32_t onFreq, std::initializer_list<
   static size_t currentColorIndex = 0;
 
   // led is off, and last call was some delay before
-  if (not ledState and time_ms() - lastCall > onFreq)
+  if (not ledState and platform::time_ms() - lastCall > onFreq)
   {
     // increase index, limit to colors size
     currentColorIndex = (currentColorIndex + 1) % colors.size();
 
     ledState = true;
     set_color(*(colors.begin() + currentColorIndex));
-    lastCall = time_ms();
+    lastCall = platform::time_ms();
   }
 
   // led is on, and last call was long ago
-  if (ledState and time_ms() - lastCall > offFreq)
+  if (ledState and platform::time_ms() - lastCall > offFreq)
   {
     ledState = false;
     // set black
     set_color(utils::ColorSpace::BLACK);
-    lastCall = time_ms();
+    lastCall = platform::time_ms();
   }
 
   return not ledState;
 }
 
 } // namespace indicator
+} // namespace physical
+} // namespace lampda
 
 #endif

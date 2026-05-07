@@ -1,7 +1,5 @@
 #include "alerts.h"
 
-#include "src/system/logic/statistics_handler.h"
-
 #include "src/system/platform/time.h"
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/registers.h"
@@ -10,36 +8,41 @@
 #include "src/system/physical/indicator.h"
 #include "src/system/physical/battery.h"
 
-#include "src/system/power/power_handler.h"
+#include "src/system/logic/brightness_handle.h"
+#include "src/system/logic/power_handler.h"
+#include "src/system/logic/statistics_handler.h"
 
 #include "src/system/utils/utils.h"
 #include "src/system/utils/constants.h"
-#include "src/system/utils/brightness_handle.h"
 #include "src/system/utils/time_utils.h"
 
 #include "src/system/power/charger.h"
 #include "src/system/power/balancer.h"
 
+namespace lampda {
+namespace logic {
 namespace alerts {
 
+/// Instanciation of the AlertManager
 AlertManager_t manager;
+
+/// Set to true if an alert requested an emmergency shutdown
 bool _request_shutdown = false;
 
-// if true, do not display the indicator in normal mode
-bool skipIndicator = false;
-
-// stay at zero in normal operation
-// set to the real startup time to ignore the battery alerts while the system starts
+/// Stay at zero in normal operation.
+/// Set to the real startup time to ignore the battery alerts while the system starts
 uint32_t _startupChargerTime = 0;
-// ready to display battery alerts
+
+/// Return true if we are ready to display battery alerts
 bool is_battery_alert_ready()
 {
-  const bool isReady = _startupChargerTime == 0 or (time_ms() - _startupChargerTime) > 5000;
+  const bool isReady = _startupChargerTime == 0 or (platform::time_ms() - _startupChargerTime) > 5000;
   if (isReady)
     _startupChargerTime = 0;
   return isReady;
 }
 
+/// Convert alerts enums to text
 inline const char* AlertsToText(const Type type)
 {
   switch (type)
@@ -89,17 +92,17 @@ inline const char* AlertsToText(const Type type)
 
 namespace __internal {
 
-// only sample battery level every N steps
+/// only sample battery level every N steps
 uint16_t get_battery_level()
 {
   static uint16_t lastPercent = 0;
 
   EVERY_N_MILLIS(1000.0)
   {
-    const uint16_t newPercent = battery::get_battery_minimum_cell_level();
+    const uint16_t newPercent = physical::battery::get_battery_minimum_cell_level();
     if ((lastPercent / 100) != (newPercent / 100))
     {
-      bluetooth::write_battery_level(static_cast<uint8_t>(newPercent / 100));
+      platform::bluetooth::write_battery_level(static_cast<uint8_t>(newPercent / 100));
     }
     lastPercent = newPercent;
   }
@@ -108,46 +111,48 @@ uint16_t get_battery_level()
 
 } // namespace __internal
 
+/**
+ * \brief Base class for all alerts.
+ * Must be overloaded to define an alert.
+ */
 struct AlertBase
 {
+  /// virtual destructor for a pure virtual class
   virtual ~AlertBase() = default;
 
-  /**
-   * \brief Return the timeout after which an alert will make the system auto-shutdown
-   */
+  /// Return the timeout after which an alert will make the system auto-shutdown
   virtual uint32_t alert_shutdown_timeout() const
   {
     // max timeout, will never be exeeded
     return UINT32_MAX;
   }
 
-  /**
-   * \brief function executed when this alert is raised
-   */
-  virtual void execute() const {
-    //
-  };
+  /// function executed when this alert is raised
+  virtual void execute() const {};
 
-  /**
-   * \brief return true if this alert type should be raised
-   */
+  /// return true if this alert type should be raised
   virtual bool should_be_raised() const { return false; }
 
-  /**
-   * \brief return true if this alert type should be cleared
-   */
+  /// return true if this alert type should be cleared
   virtual bool should_be_cleared() const { return false; }
 
-  // display this alert
-  virtual bool show() const { return indicator::blink(300, 300, utils::ColorSpace::WHITE); }
+  /// display this alert on the indicator
+  virtual bool show() const { return physical::indicator::blink(300, 300, utils::ColorSpace::WHITE); }
 
+  /// return the Defined type of this alert
   virtual Type get_type() const = 0;
 
+  /// Return true if the system should shutdown from this alert
   virtual bool should_shutdown_system(const uint32_t time) final
   {
     return (time - raisedTime) > alert_shutdown_timeout();
   }
 
+  /**
+   * \brief Handler for the raised state of the alert.
+   * If the alert is not raised, raise the alert.
+   * \return True if the alert was raised by this function call
+   */
   virtual bool handle_raised_state(const uint32_t time)
   {
     if (not _isRaisedHandled)
@@ -163,9 +168,15 @@ struct AlertBase
     return false;
   }
 
-  // an alert continuously firing as to be updated
+  /// Update the raised time of this alert.
+  /// An alert continuously firing as to be updated
   void update_raise_time(const uint32_t time) { raisedTime = time; }
 
+  /**
+   * \brief Handler for the lowered state of the alert.
+   * If the alert is raised, lower the alert.
+   * \return True if the alert was lowered by this function call
+   */
   virtual bool handle_lowered_state(const uint32_t time)
   {
     if (not _isLoweredHandled)
@@ -179,36 +190,49 @@ struct AlertBase
     return false;
   }
 
-  // override to prevent lamp actions on alerts
+  /// override to prevent lamp output power if this alert if raised. Default to False
   virtual bool should_prevent_lamp_output() const { return false; }
+  /// override to prevent battery charge if this alert if raised. Default to False
   virtual bool should_prevent_battery_charge() const { return false; }
+  /// override to prevent USB port usage if this alert if raised. Default to False
   virtual bool should_prevent_usb_port_use() const { return false; }
 
   // private:
   //
+  /// Alert raise signal has been handled
   bool _isRaisedHandled = false;
-  //
+  /// Alert lower signal has been handled
   bool _isLoweredHandled = false;
-  //
+  /// Store the latest time at which this alert raise() was called
   uint32_t raisedTime = 0;
+  /// Store the latest time at which this alert lower() was called
   uint32_t loweredTime = 0;
 };
 
+/**
+ * \brief This alert is raised when the main loop becomes unresponsive
+ */
 struct Alert_MainLoopFreeze : public AlertBase
 {
   Type get_type() const override { return Type::MAIN_LOOP_FREEZE; }
 };
 
+/**
+ * \brief This alert is raised when the battery readings do not fit the battery physical model
+ */
 struct Alert_BatteryReadingIncoherent : public AlertBase
 {
-  bool show() const override { return indicator::blink(100, 100, {utils::ColorSpace::GREEN, utils::ColorSpace::RED}); }
+  bool show() const override
+  {
+    return physical::indicator::blink(100, 100, {utils::ColorSpace::GREEN, utils::ColorSpace::RED});
+  }
 
   Type get_type() const override { return Type::BATTERY_READINGS_INCOHERENT; }
 
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    return raisedTime > 0 and (time_ms() - raisedTime) > 2000;
+    return raisedTime > 0 and (platform::time_ms() - raisedTime) > 2000;
   }
 
   bool should_prevent_lamp_output() const override { return true; }
@@ -216,21 +240,25 @@ struct Alert_BatteryReadingIncoherent : public AlertBase
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the battery level falls below a critical threshold. Falling further will dammage the
+ * battery
+ */
 struct Alert_BatteryCritical : public AlertBase
 {
   bool should_be_raised() const override
   {
     if (not is_battery_alert_ready())
       return false;
-    if (power::is_in_error_state())
+    if (logic::power::is_in_error_state())
       return false;
-    const auto& chargerState = charger::get_state();
+    const auto& chargerState = ::lampda::power::charger::get_state();
     if (not chargerState.areMeasuresOk)
       return false;
 
 // TODO issue #132 remove when the mock components will be running
 #ifndef LMBD_SIMULATION
-    if (not balancer::get_status().is_valid())
+    if (not ::lampda::power::balancer::get_status().is_valid())
       return false;
 #endif
 
@@ -246,10 +274,11 @@ struct Alert_BatteryCritical : public AlertBase
     if (manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
       return true;
     // battery low can only be cleared on charging operations
-    const auto& chargerState = charger::get_state();
+    const auto& chargerState = ::lampda::power::charger::get_state();
     return chargerState.is_effectivly_charging();
   }
 
+  /// If this alert is raised, system should turn off fast
   uint32_t alert_shutdown_timeout() const override
   {
     // shutdown after 2 seconds
@@ -259,28 +288,31 @@ struct Alert_BatteryCritical : public AlertBase
   bool show() const override
   {
     // fast blink red
-    return indicator::blink(100, 100, utils::ColorSpace::RED);
+    return physical::indicator::blink(100, 100, utils::ColorSpace::RED);
   }
 
   Type get_type() const override { return Type::BATTERY_CRITICAL; }
 };
 
+/**
+ * \brief This alert is raised when the battery level gets low.
+ */
 struct Alert_BatteryLow : public AlertBase
 {
   bool should_be_raised() const override
   {
     if (not is_battery_alert_ready())
       return false;
-    if (power::is_in_error_state())
+    if (logic::power::is_in_error_state())
       return false;
 
 // TODO issue #132 remove when the mock components will be running
 #ifndef LMBD_SIMULATION
-    if (not balancer::get_status().is_valid())
+    if (not ::lampda::power::balancer::get_status().is_valid())
       return false;
 #endif
 
-    const auto& chargerState = charger::get_state();
+    const auto& chargerState = ::lampda::power::charger::get_state();
     if (not chargerState.areMeasuresOk)
       return false;
     if (manager.is_raised(Type::BATTERY_MISSING) or manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
@@ -290,7 +322,7 @@ struct Alert_BatteryLow : public AlertBase
     const bool isBatteryLow = not chargerState.is_effectivly_charging() and batteryLevel < batteryLow;
     // battery low will be raise, notify bluetooth
     if (isBatteryLow)
-      bluetooth::notify_battery_level(static_cast<uint8_t>(batteryLevel / 100));
+      platform::bluetooth::notify_battery_level(static_cast<uint8_t>(batteryLevel / 100));
     return isBatteryLow;
   }
 
@@ -301,210 +333,274 @@ struct Alert_BatteryLow : public AlertBase
       return true;
 
     // battery low can only be cleared on charging operations
-    const auto& chargerState = charger::get_state();
+    const auto& chargerState = ::lampda::power::charger::get_state();
     return chargerState.is_effectivly_charging();
   }
 
+  /// Execution will lower the brigthness output
   void execute() const override
   {
     // limit brightness to quarter of the max value
-    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.25 * brightness::absoluteMaximumBrightness);
+    constexpr brightness_t clampedBrightness =
+            static_cast<brightness_t>(0.25 * ::lampda::brightness::absoluteMaximumBrightness);
 
     // save some battery
-    bluetooth::stop_bluetooth_advertising();
+    platform::bluetooth::stop_bluetooth_advertising();
 
-    brightness::set_max_brightness(clampedBrightness);
-    brightness::update_brightness(brightness::get_brightness());
-    brightness::update_saved_brightness();
+    logic::brightness::set_max_brightness(clampedBrightness);
+    logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
+    logic::brightness::update_saved_brightness();
   }
 
   bool show() const override
   {
     // fast blink red
-    return indicator::blink(300, 300, utils::ColorSpace::RED);
+    return physical::indicator::blink(300, 300, utils::ColorSpace::RED);
   }
 
   Type get_type() const override { return Type::BATTERY_LOW; }
 };
 
+/**
+ * \brief This alert is raised when no connected battery is detected.
+ */
 struct Alert_BatteryMissing : public AlertBase
 {
   bool show() const override
   {
     //
-    return indicator::blink(100, 100, {utils::ColorSpace::GREEN, utils::ColorSpace::RED});
+    return physical::indicator::blink(100, 100, {utils::ColorSpace::GREEN, utils::ColorSpace::RED});
   }
 
   Type get_type() const override { return Type::BATTERY_MISSING; }
 
+  /// Prevent lamp output
   bool should_prevent_lamp_output() const override { return true; }
+  /// Prevent battery charge
   bool should_prevent_battery_charge() const override { return true; }
+  /// Prevent USB port use
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the main loop becomes slower than the defined behavior.
+ * This is not a critical alert, but it sually indicates that the user mode in use is too slow.
+ */
 struct Alert_LongLoopUpdate : public AlertBase
 {
-  bool show() const override { return indicator::blink(400, 400, utils::ColorSpace::FUSHIA); }
+  bool show() const override { return physical::indicator::blink(400, 400, utils::ColorSpace::FUSHIA); }
 
   Type get_type() const override { return Type::LONG_LOOP_UPDATE; }
 };
 
+/**
+ * \brief This alert is raised when the internal temperature gets high.
+ * If it keeps rising, the battery may get dammaged.
+ */
 struct Alert_TempTooHigh : public AlertBase
 {
   bool should_be_raised() const override
   {
     // raised above a threshold
-    return read_CPU_temperature_degreesC() >= maxSystemTemp_c;
+    return platform::registers::read_CPU_temperature_degreesC() >= maxSystemTemp_c;
   }
 
   bool should_be_cleared() const override
   {
     // cleared below a threshold
-    return read_CPU_temperature_degreesC() <= maxSystemTemp_c * 0.75;
+    return platform::registers::read_CPU_temperature_degreesC() <= maxSystemTemp_c * 0.75;
   }
 
+  /// Execution will lower the max brightness of the output
   void execute() const override
   {
     // limit brightness to half the max value
-    constexpr brightness_t clampedBrightness = static_cast<brightness_t>(0.5 * brightness::absoluteMaximumBrightness);
+    constexpr brightness_t clampedBrightness =
+            static_cast<brightness_t>(0.5 * ::lampda::brightness::absoluteMaximumBrightness);
 
-    brightness::set_max_brightness(clampedBrightness);
-    brightness::update_brightness(brightness::get_brightness());
-    brightness::update_saved_brightness();
+    logic::brightness::set_max_brightness(clampedBrightness);
+    logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
+    logic::brightness::update_saved_brightness();
   }
 
-  bool show() const override { return indicator::blink(300, 300, utils::ColorSpace::DARK_ORANGE); }
+  bool show() const override { return physical::indicator::blink(300, 300, utils::ColorSpace::DARK_ORANGE); }
 
   Type get_type() const override { return Type::TEMP_TOO_HIGH; }
 };
 
+/**
+ * \brief This alert is raised when the temperature gets too high.
+ * If it keeps climbing, the components will get dammaged.
+ */
 struct Alert_TempCritical : public AlertBase
 {
   bool should_be_raised() const override
   {
     // raised above a threshold
-    return read_CPU_temperature_degreesC() >= criticalSystemTemp_c;
+    return platform::registers::read_CPU_temperature_degreesC() >= criticalSystemTemp_c;
   }
 
-  // never need to clear this alert, temp too high will always be a complete shutdown
-  // bool should_be_cleared() const;
-
+  /// Shutdown fast
   uint32_t alert_shutdown_timeout() const override
   {
     // shutdown, critical temp is the absolute limit
     return 5000;
   }
 
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::DARK_ORANGE); }
+  bool show() const override { return physical::indicator::blink(100, 100, utils::ColorSpace::DARK_ORANGE); }
 
   Type get_type() const override { return Type::TEMP_CRITICAL; }
 
+  /// Prevent lamp output
   bool should_prevent_lamp_output() const override { return true; }
+  /// prevent battery charging
   bool should_prevent_battery_charge() const override { return true; }
+  /// prevent USB port use
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the Bluetooth advertising is turned on.
+ * It is just an informative alert.
+ */
 struct Alert_BluetoothAdvertisement : public AlertBase
 {
-  bool show() const override { return indicator::breeze(1000, 500, utils::ColorSpace::BLUE); }
+  bool show() const override { return physical::indicator::breeze(1000, 500, utils::ColorSpace::BLUE); }
 
   Type get_type() const override { return Type::BLUETOOTH_ADVERT; }
 };
 
+/**
+ * \brief This alert is raised when a problem is detected in the hardware.
+ * Usually, it means that an electrical component may have become unresponsive.
+ */
 struct Alert_HardwareAlert : public AlertBase
 {
   bool show() const override
   {
-    return indicator::blink(100, 100, {utils::ColorSpace::PURPLE, utils::ColorSpace::TEAL});
+    return physical::indicator::blink(100, 100, {utils::ColorSpace::PURPLE, utils::ColorSpace::TEAL});
   }
 
   Type get_type() const override { return Type::HARDWARE_ALERT; }
 
+  /// prevent usage of the output
   bool should_prevent_lamp_output() const override { return true; }
+  /// prevent battery charge
   bool should_prevent_battery_charge() const override { return true; }
+  /// prevent USB use
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the battery charger signals an error.
+ * It is not well handled at the moment, so it does not block anything.
+ */
 struct Alert_ChargerError : public AlertBase
 {
   bool show() const override
   {
-    return indicator::blink(100, 100, {utils::ColorSpace::WHITE, utils::ColorSpace::BLACK});
+    return physical::indicator::blink(100, 100, {utils::ColorSpace::WHITE, utils::ColorSpace::BLACK});
   }
 
   Type get_type() const override { return Type::CHARGER_ERROR; }
 };
 
+/**
+ * \brief This alert is raised when new favorite mode is added.
+ */
 struct Alert_FavoriteSet : public AlertBase
 {
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::TEAL); }
+  bool show() const override { return physical::indicator::blink(100, 100, utils::ColorSpace::TEAL); }
 
   Type get_type() const override { return Type::FAVORITE_SET; }
 
+  /// It is automatically cleared after a delay
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    return raisedTime > 0 and (time_ms() - raisedTime) > 1000;
+    return raisedTime > 0 and (platform::time_ms() - raisedTime) > 1000;
   }
 };
 
+/**
+ * \brief This alert is raised when the output power fails to start.
+ * It can happen with logic bugs, or if the output rail is shorted.
+ */
 struct Alert_OtgFailed : public AlertBase
 {
   bool show() const override
   {
-    return indicator::blink(300, 200, {utils::ColorSpace::BLUE, utils::ColorSpace::YELLOW});
+    return physical::indicator::blink(300, 200, {utils::ColorSpace::BLUE, utils::ColorSpace::YELLOW});
   }
 
   Type get_type() const override { return Type::OTG_FAILED; }
 
+  /// Block power output
   bool should_prevent_lamp_output() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the system fails to go to sleep.
+ * There is no way to recover from this, as we depend on the low level handlers for this functionality.
+ */
 struct Alert_SystemShutdownFailed : public AlertBase
 {
   bool show() const override
   {
-    return indicator::blink(100, 100, {utils::ColorSpace::PURPLE, utils::ColorSpace::WHITE});
+    return physical::indicator::blink(100, 100, {utils::ColorSpace::PURPLE, utils::ColorSpace::WHITE});
   }
 
   Type get_type() const override { return Type::SYSTEM_OFF_FAILED; }
 
+  /// Cleared after a delay
   bool should_be_cleared() const override
   {
-    // cleared after a delay
-    if (raisedTime > 0 and (time_ms() - raisedTime) > 2000)
+    if (raisedTime > 0 and (platform::time_ms() - raisedTime) > 2000)
     {
       // is this fails, the system is just too broken to be repaired
-      enter_serial_dfu();
+      platform::registers::enter_serial_dfu();
       return true;
     }
     return false;
   }
 
+  /// Prevent output usage
   bool should_prevent_lamp_output() const override { return true; }
+  /// Prevent battery charge
   bool should_prevent_battery_charge() const override { return true; }
+  /// Prevent USB use
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the system falls into an unrecoverable state.
+ * It can be raised by logic error, or detected bugs at program start
+ */
 struct Alert_SystemInErrorState : public AlertBase
 {
   bool show() const override
   {
-    return indicator::blink(100, 100, {utils::ColorSpace::PINK, utils::ColorSpace::ORANGE});
+    return physical::indicator::blink(100, 100, {utils::ColorSpace::PINK, utils::ColorSpace::ORANGE});
   }
 
   Type get_type() const override { return Type::SYSTEM_IN_ERROR_STATE; }
 
+  /// Prevent output usage
   bool should_prevent_lamp_output() const override { return true; }
+  /// Prevent battery usage
   bool should_prevent_battery_charge() const override { return true; }
+  /// prevent USB usage
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the user tries to power the system as it is in lockout mode.
+ */
 struct Alert_SystemInLockout : public AlertBase
 {
   bool show() const override
   {
-    return indicator::blink(
+    return physical::indicator::blink(
             200,
             50,
             {utils::ColorSpace::BLACK, utils::ColorSpace::BLUE, utils::ColorSpace::WHITE, utils::ColorSpace::RED});
@@ -513,6 +609,10 @@ struct Alert_SystemInLockout : public AlertBase
   Type get_type() const override { return Type::SYSTEM_IN_LOCKOUT; }
 };
 
+/**
+ * \brief This alert is raised when the sunset timer is active.
+ * It means that the system will turn off on it's own after a delay.
+ */
 struct Alert_SunsetTimerSet : public AlertBase
 {
   bool show() const override
@@ -522,43 +622,50 @@ struct Alert_SunsetTimerSet : public AlertBase
     const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(
             utils::ColorSpace::RED.get_rgb().color, utils::ColorSpace::GREEN.get_rgb().color, batteryLevel / 10000.0f));
 
-    return indicator::breeze(5000, 5000, buttonColor);
+    return physical::indicator::breeze(5000, 5000, buttonColor);
   }
 
   Type get_type() const override { return Type::SUNSET_TIMER_ENABLED; }
 };
 
+/**
+ * \brief This alert is raised when the system starts without sleeping cleanly first.
+ * It appears after updates, crashes, power failures, ...
+ */
 struct Alert_SkippedCleanSleep : public AlertBase
 {
-  bool show() const override { return indicator::blink(250, 250, utils::ColorSpace::PINK); }
+  bool show() const override { return physical::indicator::blink(250, 250, utils::ColorSpace::PINK); }
 
   Type get_type() const override { return Type::SYSTEM_SLEEP_SKIPPED; }
 
+  /// Auto cleared after a delay
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    return (raisedTime > 0 and (time_ms() - raisedTime) > 3000);
+    return (raisedTime > 0 and (platform::time_ms() - raisedTime) > 3000);
   }
 };
 
+/**
+ * \brief This alert is raised when a short circuit is detected in the USB lines.
+ * The port should be cleaned before using it again.
+ */
 struct Alert_UsbPortShort : public AlertBase
 {
-  bool show() const override { return indicator::blink(100, 100, utils::ColorSpace::BLUE); }
+  bool show() const override { return physical::indicator::blink(100, 100, utils::ColorSpace::BLUE); }
 
   Type get_type() const override { return Type::USB_PORT_SHORT; }
 
-  bool should_be_cleared() const override
-  {
-    // auto cleared after a delay
-    return (raisedTime > 0 and (time_ms() - raisedTime) > 5000);
-  }
+  /// auto cleared after a delay
+  bool should_be_cleared() const override { return (raisedTime > 0 and (platform::time_ms() - raisedTime) > 5000); }
 
-  // prevent charge
+  /// Prevent charge
   bool should_prevent_battery_charge() const override { return true; }
+  /// Prevent USB use
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
-// Alerts must be sorted by importance, only the first activated one will be shown
+/// Alerts must be sorted by importance, only the first activated one will be shown
 AlertBase* allAlerts[] = {
         new Alert_SystemShutdownFailed,
         new Alert_BatteryMissing, // if battery is missing, the system will also have the hardware alert
@@ -586,7 +693,7 @@ AlertBase* allAlerts[] = {
 
 void update_alerts()
 {
-  const uint32_t currTime = time_ms();
+  const uint32_t currTime = platform::time_ms();
   for (auto alert: allAlerts)
   {
     if (manager.is_raised(alert->get_type()))
@@ -617,7 +724,7 @@ void update_alerts()
       if (alert->should_be_raised())
       {
         manager.raise(alert->get_type());
-        lampda_print("Raised alert %s", AlertsToText(alert->get_type()));
+        platform::lampda_print("Raised alert %s", AlertsToText(alert->get_type()));
       }
       else
       {
@@ -627,7 +734,7 @@ void update_alerts()
   }
 }
 
-void signal_wake_up_from_charger() { _startupChargerTime = time_ms(); }
+void signal_wake_up_from_charger() { _startupChargerTime = platform::time_ms(); }
 
 void handle_all(const bool shouldIgnoreAlerts)
 {
@@ -640,16 +747,16 @@ void handle_all(const bool shouldIgnoreAlerts)
   if (isNoAlertsRaised)
   {
     // This should be called on no alerts only, not ignore alerts
-    brightness::set_max_brightness(brightness::absoluteMaximumBrightness);
+    logic::brightness::set_max_brightness(::lampda::brightness::absoluteMaximumBrightness);
   }
 
   //
   if (shouldIgnoreAlerts or isNoAlertsRaised)
   {
     // do nothing to display anything
-    if (skipIndicator)
+    if (not logic::indicator::should_indicator_be_visible())
     {
-      indicator::set_color(utils::ColorSpace::BLACK);
+      physical::indicator::set_color(utils::ColorSpace::BLACK);
       return;
     }
 
@@ -659,38 +766,38 @@ void handle_all(const bool shouldIgnoreAlerts)
             utils::ColorSpace::RED.get_rgb().color, utils::ColorSpace::GREEN.get_rgb().color, batteryLevel / 10000.0f));
 
     // display battery level
-    const auto& chargerStatus = charger::get_state();
-    if (!power::is_in_output_mode() and chargerStatus.isInOtg)
+    const auto& chargerStatus = ::lampda::power::charger::get_state();
+    if (!logic::power::is_in_output_mode() and chargerStatus.isInOtg)
     {
-      indicator::breeze(500, 500, buttonColor);
+      physical::indicator::breeze(500, 500, buttonColor);
     }
     else if (chargerStatus.is_charging())
     {
       // power detected with no charge or slow charging raises a special animation
-      if (chargerStatus.status == charger::Charger_t::ChargerStatus_t::POWER_DETECTED or
-          chargerStatus.status == charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
+      if (chargerStatus.status == ::lampda::power::charger::Charger_t::ChargerStatus_t::POWER_DETECTED or
+          chargerStatus.status == ::lampda::power::charger::Charger_t::ChargerStatus_t::SLOW_CHARGING)
       {
         // fast blinking
-        indicator::blink(500, 500, buttonColor);
+        physical::indicator::blink(500, 500, buttonColor);
       }
       // standard charge mode
       else
       {
-        indicator::breeze(2000, 1000, buttonColor);
+        physical::indicator::breeze(2000, 1000, buttonColor);
       }
     }
     // output mode, or end of charge : standard display
-    else if (power::is_in_output_mode() or chargerStatus.is_charge_finished())
+    else if (logic::power::is_in_output_mode() or chargerStatus.is_charge_finished())
     {
       // normal output mode
       // chargerStatus.isInOtg should be true
-      indicator::set_color(buttonColor);
+      physical::indicator::set_color(buttonColor);
     }
     else
     {
       // we can handup here when starting/shutting down the system
       // no charger operation, no output mode
-      indicator::blink(1000, 1000, buttonColor);
+      physical::indicator::blink(1000, 1000, buttonColor);
     }
 
     // skip the other alerts
@@ -712,7 +819,7 @@ void handle_all(const bool shouldIgnoreAlerts)
   // unhandled case (white blink)
   if (not isFirstAlertShown)
   {
-    indicator::blink(300, 300, utils::ColorSpace::WHITE);
+    physical::indicator::blink(300, 300, utils::ColorSpace::WHITE);
   }
 }
 
@@ -720,16 +827,16 @@ void show_all()
 {
   if (manager.is_clear())
   {
-    lampda_print("No alerts raised");
+    platform::lampda_print("No alerts raised");
   }
   else
   {
-    lampda_print("Raised alerts:");
+    platform::lampda_print("Raised alerts:");
     for (auto alert: allAlerts)
     {
       if (manager.is_raised(alert->get_type()))
       {
-        lampda_print("- %s", AlertsToText(alert->get_type()));
+        platform::lampda_print("- %s", AlertsToText(alert->get_type()));
       }
     }
   }
@@ -746,7 +853,7 @@ void AlertManager_t::raise(const Type type)
     {
       if (type == alert->get_type())
       {
-        alert->update_raise_time(time_ms());
+        alert->update_raise_time(platform::time_ms());
         break;
       }
     }
@@ -757,7 +864,7 @@ void AlertManager_t::raise(const Type type)
     statistics::signal_alert_raised(static_cast<uint32_t>(type));
   }
 
-  lampda_print("ALERT raised: %s", AlertsToText(type));
+  platform::lampda_print("ALERT raised: %s", AlertsToText(type));
   _current |= static_cast<uint32_t>(type);
 }
 
@@ -765,7 +872,7 @@ void AlertManager_t::clear(const Type type)
 {
   if (not is_raised(type))
     return;
-  lampda_print("ALERT cleared: %s", AlertsToText(type));
+  platform::lampda_print("ALERT cleared: %s", AlertsToText(type));
   _current ^= static_cast<uint32_t>(type);
 }
 
@@ -779,7 +886,7 @@ uint32_t AlertManager_t::get_time_since_raised(const Type type) const
       if (not is_raised(type) or not alert->_isRaisedHandled)
         return 0;
       // compute raised time
-      return time_ms() - alert->raisedTime;
+      return platform::time_ms() - alert->raisedTime;
     }
   }
   return 0;
@@ -831,36 +938,5 @@ bool AlertManager_t::can_use_usb_port() const
 }
 
 } // namespace alerts
-
-namespace indicator {
-
-static inline uint8_t _level = 0;
-
-void set_brightness_level(const uint8_t level)
-{
-  static constexpr uint8_t lowBrightness = 64;
-  switch (level)
-  {
-    case 1:
-      _level = 1;
-      alerts::skipIndicator = true;
-      indicator::set_brightness(lowBrightness);
-      break;
-    case 2:
-      _level = 2;
-      alerts::skipIndicator = false;
-      indicator::set_brightness(lowBrightness);
-      break;
-    // 0 and default are the same : level too high should loop back
-    case 0:
-    default:
-      _level = 0;
-      alerts::skipIndicator = false;
-      indicator::set_brightness(255);
-      break;
-  }
-}
-
-uint8_t get_brightness_level() { return _level; }
-
-} // namespace indicator
+} // namespace logic
+} // namespace lampda

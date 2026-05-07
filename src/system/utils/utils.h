@@ -1,3 +1,7 @@
+/*! \file utils.h
+    \brief Define useful functions
+*/
+
 #ifndef UTILS_H
 #define UTILS_H
 
@@ -8,17 +12,19 @@
 
 #include "constants.h"
 
-#define SQR(x)      ((x) * (x))
-#define POW2(x)     SQR(x)
-#define POW3(x)     ((x) * (x) * (x))
-#define POW4(x)     (POW2(x) * POW2(x))
-#define POW7(x)     (POW3(x) * POW3(x) * (x))
-#define DegToRad(x) ((x) * c_PI / 180)
-#define FADE16(x)   scale16(x, x)
-#define FADE8(x)    scale8(x, x)
+namespace lampda {
+
+#define SQR(x)    ((x) * (x))               ///< square of a number
+#define POW2(x)   SQR(x)                    ///< number powered by 2
+#define POW3(x)   ((x) * (x) * (x))         ///< number powered by 3
+#define POW4(x)   (POW2(x) * POW2(x))       ///< number powered by 4
+#define POW7(x)   (POW3(x) * POW3(x) * (x)) ///< number powered by 7
+#define FADE16(x) scale16(x, x)             ///< Fade a 16 bits number by itself
+#define FADE8(x)  scale8(x, x)              ///< Fade a 8 bits number by itself
 
 #ifndef Arduino_h
 
+/// Minimum of two numbers
 template<typename N> static constexpr N min(const N a, const N b)
 {
 #ifdef LMBD_CPP17
@@ -27,6 +33,7 @@ template<typename N> static constexpr N min(const N a, const N b)
 #endif
   return a < b ? a : b;
 }
+/// Maximum of two numbers
 template<typename N> static constexpr N max(const N a, const N b)
 {
 #ifdef LMBD_CPP17
@@ -35,11 +42,18 @@ template<typename N> static constexpr N max(const N a, const N b)
 #endif
   return a > b ? a : b;
 }
-
+/// absolute of a number
 template<typename N> static constexpr N abs(const N a) { return std::abs(N(a)); }
 
 #endif
 
+/**
+ * \brief Constrain a number between two numbers
+ * \param[in] a Number to constrain
+ * \param[in] mini minimum bound
+ * \param[in] maxi maximum bound
+ * \return the input number, constraint between mini & maxi
+ */
 template<typename T> static constexpr T lmpd_constrain(const T& a, const T& mini, const T& maxi)
 {
 #ifdef LMBD_CPP17
@@ -53,6 +67,15 @@ template<typename T> static constexpr T lmpd_constrain(const T& a, const T& mini
                                                                        static_cast<T>(a);
 }
 
+/**
+ * \brief Linearly interpolate a number between two numbers
+ * \param[in] x Number to map
+ * \param[in] in_min lower bound of the input number
+ * \param[in] in_max higher bound of the input number
+ * \param[in] out_min lower bound of the output number
+ * \param[in] out_max higher bound of the output number
+ * \return the input number, mapped between out_min & out_max
+ */
 template<typename T = float>
 static inline T lmpd_map(float x, const float in_min, const float in_max, const float out_min, const float out_max)
 {
@@ -79,6 +102,7 @@ static inline T lmpd_map(float x, const float in_min, const float in_max, const 
   return static_cast<T>(res);
 }
 
+/// Convert an angle in degrees to an angle in radians
 static constexpr inline float to_radians(float degrees)
 {
 #ifdef LMBD_CPP17
@@ -87,6 +111,7 @@ static constexpr inline float to_radians(float degrees)
   return degrees * M_PI / 180.f;
 }
 
+/// Wrap an angle in radians between 0 and 2*PI
 static constexpr inline float wrap_angle(const float angle_rad)
 {
 #ifdef LMBD_CPP17
@@ -183,6 +208,7 @@ constexpr uint16_t voltageToAnalogRead(const float voltage)
   return lmpd_constrain<uint16_t>(voltage, 0, internalReferenceVoltage) * ADC_MAX_VALUE / internalReferenceVoltage;
 }
 
-}; // namespace utils
+} // namespace utils
+} // namespace lampda
 
 #endif

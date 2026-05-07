@@ -1,16 +1,18 @@
 #ifndef VUMETER_MODE_H
 #define VUMETER_MODE_H
 
-/// @file vumeter
+/// @file vu_meter.hpp
+
 #include "src/modes/include/colors/palettes.hpp"
 
 #include "src/modes/include/audio/utils.hpp"
 
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
-/// Emulate a vu-meter
+/// Emulate a vu-sound meter
 struct VuMeterMode : public BasicMode
 {
+  /// color to display
   static constexpr auto palette = colors::PaletteGradient<colors::Red, colors::Green>;
 
   static void loop(auto& ctx)
@@ -25,7 +27,8 @@ struct VuMeterMode : public BasicMode
 
     // convert the sound level in the height lamp level
     const uint16_t vuLevel = lmpd_constrain<uint16_t>(
-            lmpd_map<uint16_t>(decibels, microphone::silenceLevelDb, microphone::highLevelDb, 0, maxLedIndex),
+            lmpd_map<uint16_t>(
+                    decibels, physical::microphone::silenceLevelDb, physical::microphone::highLevelDb, 0, maxLedIndex),
             ceilf(2.0 * ctx.lamp.maxWidthFloat),
             maxLedIndex);
 
@@ -40,11 +43,13 @@ struct VuMeterMode : public BasicMode
 
   struct StateTy
   {
+    /// fade rate
     uint8_t fade;
+    /// sound event tracker
     audio::SoundEventTy<> soundEvent;
   };
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif // VUMETER_MODE_H

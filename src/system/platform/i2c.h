@@ -1,12 +1,20 @@
+/*! \file i2c.h
+    \brief Interface for the platform specific i2c protocols.
+*/
+
 // do not use pragma once here, has this can be mocked
 #ifndef PLATFORM_I2C
 #define PLATFORM_I2C
 
+#include <stdint.h>
+
 #ifdef __cplusplus
+namespace lampda {
+namespace platform {
+namespace i2c {
+
 extern "C" {
 #endif
-
-#include <stdint.h>
 
   static const uint8_t pdNegociationI2cAddress = 0x22;
   static const uint8_t chargeI2cAddress = 0x6B;
@@ -173,6 +181,10 @@ extern "C" {
 
 #ifdef __cplusplus
 }
+
+} // namespace: i2c
+} // namespace: platform
+} // namespace: lampda
 #endif
 
 #endif

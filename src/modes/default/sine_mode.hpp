@@ -1,23 +1,30 @@
 #ifndef SINE_MODE_H
 #define SINE_MODE_H
 
-// Base on the Adjustable sinewave. By Andrew Tuline
+/// @file sine_mode.hpp
+/// Based on the Adjustable sinewave. By Andrew Tuline
 
 #include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/colors/palettes.hpp"
 
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
+/**
+ * \brief Barber shop sign looking animation, with nice swirl effect.
+ */
 struct SineMode : public modes::BasicMode
 {
+  /// speed of the animation
   static constexpr uint8_t speed = 128;
 
-  // change the frequency of the mode
+  /// User ramp change the frequency of the mode
   static constexpr bool hasCustomRamp = true;
 
   struct StateTy
   {
+    /// step of the animation
     uint16_t step;
+    /// color palette to use
     colors::PaletteTy palette;
   };
 
@@ -53,5 +60,5 @@ struct SineMode : public modes::BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 #endif

@@ -1,6 +1,6 @@
 #include "simulator_state.h"
 
-namespace sim {
+namespace simulator {
 
 namespace globals {
 
@@ -8,4 +8,4 @@ GlobalSimStateTy state;
 
 } // namespace globals
 
-} // namespace sim
+} // namespace simulator

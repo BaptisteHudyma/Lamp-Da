@@ -1,3 +1,7 @@
+/*! \file assert.h
+    \brief Define assertions helpers
+*/
+
 #ifndef SRC_SYSTEM_ASSERT_H
 #define SRC_SYSTEM_ASSERT_H
 

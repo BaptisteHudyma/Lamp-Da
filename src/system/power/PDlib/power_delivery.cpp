@@ -28,6 +28,8 @@ const struct tcpc_config_t tcpc_config = {
 
 static bool canUseSourcePower_s = false;
 
+namespace lampda {
+namespace power {
 namespace powerDelivery {
 
 // set to true when a power source is detected
@@ -74,7 +76,7 @@ bool is_usb_pd()
   const bool isPd = is_pd_conector();
   if (isPd)
   {
-    lastPDdetected = time_ms();
+    lastPDdetected = platform::time_ms();
   }
   return isPd;
 }
@@ -92,15 +94,15 @@ bool is_standard_port()
 {
   return isPowerSourceDetected_s and
          // let some time pass after a new detection
-         time_ms() - powerSourceDetectedTime_s > 1500 and
+         platform::time_ms() - powerSourceDetectedTime_s > 1500 and
          // last pd detected was some time ago
-         time_ms() - lastPDdetected > 1000;
+         platform::time_ms() - lastPDdetected > 1000;
 }
 
 void ic_interrupt()
 {
   // wake up interrupt thread (cannot run code in the interrupt callback)
-  notify_thread(pdInterruptHandle_taskName, 2);
+  platform::threads::notify_thread(platform::threads::pdInterruptHandle_taskName, 2);
 }
 
 bool is_vbus_powered()
@@ -114,21 +116,32 @@ bool is_vbus_powered()
     return get_vbus_voltage() >= 4300;
 }
 
+/**
+ * \brief USB power delivery status storage
+ */
 struct UsbPDData
 {
+  /// True if some voltage is detected on VBUS
   bool isVbusPowered;
+  /// True if the cable is plugged to a power source
   bool isPowerSourceDetected;
+  /// True if the cable is identifies as PD compatible
   bool isUsbPd;
+  /// Actual VBUS voltage, in millivolts
   int vbusVoltage;
 
+  /// max current input voltage, in milliamps
   uint32_t maxInputCurrent;
+  /// max input voltage, in millivolts
   uint32_t maxInputVoltage;
 
+  /// Debug status for the algorithm
   std::string pdAlgoStatus;
 
-  // when true, this struct has changed !
+  /// when true, this struct has changed !
   bool hasChanged = false;
 
+  /// Update the values and update status
   void update()
   {
     const bool newisVbusPowered = is_vbus_powered();
@@ -186,19 +199,20 @@ struct UsbPDData
     }
   }
 
+  /// Debug to serial output
   void serial_show()
   {
-    lampda_print("PD algo: %d %d%d%d: [PDO %.2fV %.2fA] %.2fV | %s",
-                 should_run_pd_state_machine,
-                 isVbusPowered,
-                 isPowerSourceDetected,
-                 isUsbPd,
-                 maxInputVoltage / 1000.0,
-                 maxInputCurrent / 1000.0,
-                 vbusVoltage / 1000.0,
-                 pdAlgoStatus.c_str());
+    platform::lampda_print("PD algo: %d %d%d%d: [PDO %.2fV %.2fA] %.2fV | %s",
+                           should_run_pd_state_machine,
+                           isVbusPowered,
+                           isPowerSourceDetected,
+                           isUsbPd,
+                           maxInputVoltage / 1000.0,
+                           maxInputCurrent / 1000.0,
+                           vbusVoltage / 1000.0,
+                           pdAlgoStatus.c_str());
     hasChanged = false;
-    lampda_print(
+    platform::lampda_print(
             "allowed usage: %d mA, %d mV", get_allowed_consuption().current_mA, get_allowed_consuption().voltage_mV);
   }
 };
@@ -215,7 +229,7 @@ void show_pd_status() { data.serial_show(); }
 void interrupt_handle()
 {
   // this thread only runs when signal is sent
-  wait_notification(0);
+  platform::threads::wait_notification(0);
 
 #ifdef USE_PD_ALGO_LOOP
   // only waken up on thread update
@@ -231,7 +245,7 @@ void pd_run()
 #ifdef USE_PD_ALGO_LOOP
   pd_loop();
 #else
-  delay_ms(10);
+  platform::delay_ms(10);
 #endif
 
   // partner asked us to stop to pull current
@@ -251,15 +265,15 @@ void pd_run()
       isFastRoleSwap = true;
 
       // prepare fast role swap
-      lampda_print("prepare fast role swap");
+      platform::lampda_print("prepare fast role swap");
       powergates::disable_gates();
 
       // force otg on, and prep vbus gate, all in this loop iteration (skip all safety steps !!!)
       charger::drivers::set_OTG_targets(5000, 1000);
       charger::drivers::enable_OTG();
 
-      DigitalPin dischargeVbus(DigitalPin::GPIO::Output_DischargeVbus);
-      DigitalPin fastRoleSwap(DigitalPin::GPIO::Output_VbusFastRoleSwap);
+      platform::gpio::DigitalPin dischargeVbus(platform::gpio::DigitalPin::GPIO::Output_DischargeVbus);
+      platform::gpio::DigitalPin fastRoleSwap(platform::gpio::DigitalPin::GPIO::Output_VbusFastRoleSwap);
       dischargeVbus.set_high(true);
       fastRoleSwap.set_high(true);
 
@@ -278,7 +292,7 @@ void pd_run()
       }
 
       // enable gate direction
-      DigitalPin(DigitalPin::GPIO::Output_VbusDirection).set_high(true);
+      platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_VbusDirection).set_high(true);
       dischargeVbus.set_high(false);
       fastRoleSwap.set_high(false);
       powergates::enable_vbus_gate_DIRECT();
@@ -294,7 +308,7 @@ void pd_run()
     charger::drivers::disable_OTG();
 
     // enable gate direction
-    DigitalPin(DigitalPin::GPIO::Output_VbusDirection).set_high(false);
+    platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_VbusDirection).set_high(false);
     powergates::disable_gates();
   }
   isFastRoleSwap = false;
@@ -306,18 +320,19 @@ static bool isSetup = false;
 bool setup()
 {
   // 0 is success
-  if (i2c_check_existence(devicePort, fusb302_I2C_SLAVE_ADDR) != 0)
+  if (platform::i2c::i2c_check_existence(devicePort, fusb302_I2C_SLAVE_ADDR) != 0)
   {
     return false;
   }
 
   pd_init();
-  delay_ms(5);
+  platform::delay_ms(5);
   pd_startup();
 
-  DigitalPin chargerPin(DigitalPin::GPIO::Signal_PowerDelivery);
-  chargerPin.attach_callback(ic_interrupt,
-                             DigitalPin::Interrupt::kFallingEdge); // normal high, so focus on falling edge
+  platform::gpio::DigitalPin chargerPin(platform::gpio::DigitalPin::GPIO::Signal_PowerDelivery);
+  chargerPin.attach_callback(
+          ic_interrupt,
+          platform::gpio::DigitalPin::Interrupt::kFallingEdge); // normal high, so focus on falling edge
 
   isSetup = true;
   return true;
@@ -329,11 +344,11 @@ void start_threads()
     return;
 
   // start task scheduler, in suspended state
-  start_thread(task_scheduler, taskScheduler_taskName, 2, 255);
+  platform::threads::start_thread(task_scheduler, platform::threads::taskScheduler_taskName, 2, 255);
   // start interrupt handle, in suspended state
-  start_thread(interrupt_handle, pdInterruptHandle_taskName, 2, 255);
+  platform::threads::start_thread(interrupt_handle, platform::threads::pdInterruptHandle_taskName, 2, 255);
   // start pd handle loop
-  start_thread(pd_run, pd_taskName, 1, 1024);
+  platform::threads::start_thread(pd_run, platform::threads::pd_taskName, 1, 1024);
 }
 
 void loop()
@@ -341,7 +356,7 @@ void loop()
   data.update();
 
   // update battery level
-  set_battery_level(static_cast<uint8_t>(battery::get_battery_level() / 100));
+  set_battery_level(static_cast<uint8_t>(physical::battery::get_battery_level() / 100));
 
   // ignore source activity if we are otg (prevent spurious reset)
   if (is_switching_to_otg())
@@ -352,7 +367,7 @@ void loop()
   static uint32_t lastVbusValid = 0;
 
   // source detected
-  const uint32_t time = time_ms();
+  const uint32_t time = platform::time_ms();
   if (is_vbus_powered())
   {
     if (not isPowerSourceDetected_s)
@@ -450,3 +465,5 @@ std::vector<PDOTypes> get_available_pd()
 }
 
 } // namespace powerDelivery
+} // namespace power
+} // namespace lampda

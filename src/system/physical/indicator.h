@@ -1,23 +1,35 @@
+/*! \file indicator.h
+    \brief Interface for the physical components of the RGB user indicator.
+*/
+
 #ifndef PHYSICAL_INDICATOR_H
 #define PHYSICAL_INDICATOR_H
 
 #include "src/system/utils/colorspace.h"
 #include <initializer_list>
 
+namespace lampda {
+namespace physical {
+/// Handle the RGB indicator display.
 namespace indicator {
 
-// Red green and blue leds of this indicators do not have the same power
+// RGB leds do not have the same output power per color
+/// Scaling for the red color channel of an this RGB diode
 static constexpr float redColorCorrection = 1.0f;
+/// Scaling for the green color channel of an this RGB diode
 static constexpr float greenColorCorrection = 1.0f / 3.0f;
+/// Scaling for the blue color channel of an this RGB diode
 static constexpr float blueColorCorrection = 1.0f / 4.0f;
 
+/// Initialize the RGB indicator. Call once on program start
 extern void init();
 
-/// set the color of the indicator
+/// Set the color of the indicator
 extern void set_color(const utils::ColorSpace::RGB& c);
 
-/// set an indicator brightness
+/// Set an indicator brightness (0-255)
 extern void set_brightness(const uint8_t brightness);
+/// Return the brightness of the indicator (0-255)
 extern uint8_t get_brightness();
 
 /**
@@ -59,5 +71,7 @@ inline bool blink(const uint32_t offFreq, const uint32_t onFreq, const utils::Co
 }
 
 } // namespace indicator
+} // namespace physical
+} // namespace lampda
 
 #endif

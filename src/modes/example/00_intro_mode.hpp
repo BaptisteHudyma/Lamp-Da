@@ -1,6 +1,12 @@
+/*! \file 00_intro_mode.hpp
+    \brief Example implementation of the simplest possible mode.
+*/
 
-namespace modes::examples {
+namespace lampda::modes::examples {
 
+/**
+ * \brief Extremly basic mode, shown has an exemple
+ */
 struct IntroMode : public BasicMode
 {
   static void loop(auto& ctx)
@@ -10,4 +16,4 @@ struct IntroMode : public BasicMode
   }
 };
 
-} // namespace modes::examples
+} // namespace lampda::modes::examples

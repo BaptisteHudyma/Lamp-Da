@@ -1,7 +1,15 @@
+/*! \file output_power.h
+    \brief Interface for the physical components of the main power output (eg: LED strip output).
+*/
+
 #ifndef OUTPUT_POWER_HPP
 #define OUTPUT_POWER_HPP
 
 #include <cstdint>
+
+namespace lampda {
+namespace physical {
+/// Handle the main board output power.
 namespace outputPower {
 
 /**
@@ -11,9 +19,9 @@ namespace outputPower {
 extern void write_voltage(const uint16_t voltage_mv);
 
 /**
- * \brief overwrite the output characteristics for a given duration
+ * \brief overwrite the output characteristics for a given duration.
  * Gets back to the previous settings after the tiemout, or if write_voltage is called again
- * \param[in] voltage_mv: 0 to 20000 mV
+ * \param[in] voltage_mv: 0 to 20000mV
  * \param[in] current_ma: 0 to 6000mA
  * \param[in] timeout_ms: 0 to 5000mS
  */
@@ -36,5 +44,7 @@ extern bool is_bliping();
 void disable_power_gates();
 
 } // namespace outputPower
+} // namespace physical
+} // namespace lampda
 
 #endif

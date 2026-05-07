@@ -1,12 +1,15 @@
+/*! \file pdm_handle_mock.cpp
+    \brief Mock of the board PDM microphone interface
+*/
+
 #include <cstdint>
 #include <deque>
 #include <memory>
 
 #include "src/system/platform/pdm_handle.h"
-
-#include "src/system/utils/utils.h"
 #include "src/system/platform/time.h"
 
+#include "src/system/utils/utils.h"
 #include "src/system/utils/fft.h"
 
 #include <SFML/Graphics/PrimitiveType.hpp>
@@ -14,6 +17,8 @@
 #include <SFML/Audio/SoundRecorder.hpp>
 
 #define PDM_HANDLE_CPP
+
+namespace simulator {
 
 // to hook microphone & measure levelDb
 class LevelRecorder : public sf::SoundRecorder
@@ -26,22 +31,22 @@ class LevelRecorder : public sf::SoundRecorder
     if (buffers.size() > 32)
       buffers.clear();
 
-    const size_t samplePerIteration = sampleCount / microphone::PdmData::SAMPLE_SIZE;
-    const uint64_t newTime = time_us();
+    const size_t samplePerIteration = sampleCount / ::lampda::platform::microphone::PdmData::SAMPLE_SIZE;
+    const uint64_t newTime = ::lampda::platform::time_us();
     const uint64_t sampleDuration = (newTime - sampleTime_us) / samplePerIteration;
     sampleTime_us = newTime;
 
     for (size_t I = 0; I < samplePerIteration; I++)
     {
-      microphone::PdmData newData;
+      ::lampda::platform::microphone::PdmData newData;
       newData.sampleTime_us = newTime + sampleDuration * I;
       newData.sampleDuration_us = sampleDuration;
 
       newData.sampleRead = 0;
       size_t i = 0;
-      for (; i < microphone::PdmData::SAMPLE_SIZE; i++)
+      for (; i < ::lampda::platform::microphone::PdmData::SAMPLE_SIZE; i++)
       {
-        size_t index = I * microphone::PdmData::SAMPLE_SIZE + i;
+        size_t index = I * ::lampda::platform::microphone::PdmData::SAMPLE_SIZE + i;
         if (index >= sampleCount)
           break;
 
@@ -58,26 +63,30 @@ class LevelRecorder : public sf::SoundRecorder
 
 public:
   // sound goes out slowly
-  std::deque<microphone::PdmData> buffers;
+  std::deque<::lampda::platform::microphone::PdmData> buffers;
   uint64_t sampleTime_us;
 
   ~LevelRecorder() { stop(); }
 };
 std::unique_ptr<LevelRecorder> recorder;
 
+} // namespace simulator
+
+namespace lampda {
+namespace platform {
 namespace microphone {
 namespace _private {
 
-PdmData get()
+platform::microphone::PdmData get()
 {
   // safety
-  if (recorder->buffers.size() > 32)
-    recorder->buffers.pop_back();
+  if (simulator::recorder->buffers.size() > 32)
+    simulator::recorder->buffers.pop_back();
 
-  if (recorder && recorder->buffers.size() > 0)
+  if (simulator::recorder && simulator::recorder->buffers.size() > 0)
   {
-    const auto buff = recorder->buffers.front();
-    recorder->buffers.pop_front();
+    const auto buff = simulator::recorder->buffers.front();
+    simulator::recorder->buffers.pop_front();
     return buff;
   }
   else
@@ -91,20 +100,22 @@ bool start()
   fprintf(stderr, "mic started\n");
   fflush(stderr);
 
-  if (!recorder)
-    recorder = std::make_unique<LevelRecorder>();
+  if (!simulator::recorder)
+    simulator::recorder = std::make_unique<simulator::LevelRecorder>();
 
-  return recorder->start(SAMPLE_RATE);
+  return simulator::recorder->start(utils::fft::SAMPLE_RATE);
 }
 
 void stop()
 {
-  if (recorder)
+  if (simulator::recorder)
   {
-    recorder->stop();
-    recorder = nullptr;
+    simulator::recorder->stop();
+    simulator::recorder = nullptr;
   }
 }
 
 } // namespace _private
 } // namespace microphone
+} // namespace platform
+} // namespace lampda

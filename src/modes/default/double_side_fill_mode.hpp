@@ -1,18 +1,27 @@
 #ifndef DOUBLE_SIDE_FILL_MODE_HPP
 #define DOUBLE_SIDE_FILL_MODE_HPP
 
-namespace modes::default_modes {
+/// @file double_side_fill_mode.hpp
+
+namespace lampda::modes::default_modes {
 
 #include <cstdint>
 
+/**
+ * \brief Flll the lamp from both sides at the same time, with random colors
+ */
 struct DoubleSideFillMode : public modes::BasicMode
 {
+  /// random color variation between fills
   static constexpr float randomVariation = 0.3;
+  /// Lenght of the animation
   static constexpr uint32_t animationTiming = 250;
 
   struct StateTy
   {
+    /// animation progress, between 0 and 1
     float progress;
+    /// actual display color
     uint32_t color;
   };
 
@@ -27,7 +36,7 @@ struct DoubleSideFillMode : public modes::BasicMode
     static constexpr float iteration = ctx.lamp.frameDurationMs / static_cast<float>(animationTiming);
     ctx.state.progress += iteration;
 
-    const float prog = min<float>(ctx.state.progress, 1.0);
+    const float prog = std::min<float>(ctx.state.progress, 1.0);
 
     const size_t endIndex = prog * (ctx.lamp.ledCount / 2.0);
     ctx.lamp.fill(ctx.state.color, 0, endIndex);
@@ -43,6 +52,6 @@ struct DoubleSideFillMode : public modes::BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

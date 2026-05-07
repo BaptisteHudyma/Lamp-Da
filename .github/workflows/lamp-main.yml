@@ -1,10 +1,15 @@
 name: Lamp-Da main branch CI
 
 on:
-  pull_request:
+  pull_request: # on pull request changes to the folders below, run CI
     paths:
       - "src/**"
       - "simulator/**"
+      - "tests/**"
+      - "tools/**"
+  push: # on merge to main, run CI
+    branches:
+      - main
 
 defaults: 
   run:
@@ -91,6 +96,10 @@ jobs:
       run : make cct
     - name: indexable led strip build
       run : make indexable
+    - name: stack use check
+      run :
+        sudo apt install elfutils -y &&
+        python tools/ramAnalyser.py --elf _build/objs/LampColorControler.ino.elf --sudir ./_build/objs/
  
   build-simulator:
     runs-on: ubuntu-latest

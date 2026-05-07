@@ -38,17 +38,12 @@ set(SRC_SYSTEM_DEPENDS
 
 # Create simulator as library
 set(SRC_SYSTEM_UTILS
-    ${LMBD_ROOT_DIR}/src/system/utils/coordinates.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/colorspace.cpp
-    ${LMBD_ROOT_DIR}/src/system/utils/brightness_handle.cpp
-    ${LMBD_ROOT_DIR}/src/system/utils/serial.cpp
-    ${LMBD_ROOT_DIR}/src/system/utils/sunset_timer.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/utils.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/vector_math.cpp
     )
 
 set(SRC_SYSTEM_POWER
-    ${LMBD_ROOT_DIR}/src/system/power/power_handler.cpp
     ${LMBD_ROOT_DIR}/src/system/power/power_gates.cpp
     ${LMBD_ROOT_DIR}/src/system/power/balancer.cpp
     ${LMBD_ROOT_DIR}/src/system/power/PDlib/power_delivery.cpp
@@ -88,8 +83,12 @@ set(SRC_SYSTEM_GLOBAL
 set(SRC_SYSTEM_LOGIC
     ${LMBD_ROOT_DIR}/src/system/logic/alerts.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/behavior.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/brightness_handle.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/command_line_interface.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/inputs.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/power_handler.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/statistics_handler.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/sunset_timer.cpp
 )
 
 set(SIMULATOR_MOCKS
@@ -99,7 +98,7 @@ set(SIMULATOR_MOCKS
     ${LMBD_ROOT_DIR}/simulator/mocks/time_mock.cpp
     ${LMBD_ROOT_DIR}/simulator/mocks/i2c_mock.cpp
     ${LMBD_ROOT_DIR}/simulator/mocks/gpio_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/threads.cpp
+    ${LMBD_ROOT_DIR}/simulator/mocks/threads_mock.cpp
     ${LMBD_ROOT_DIR}/simulator/mocks/bluetooth_mock.cpp
 )
 

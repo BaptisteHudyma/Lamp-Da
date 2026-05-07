@@ -1,9 +1,18 @@
+/*! \file gpio.h
+    \brief Interface for the platform specific GeneralPurposeInputOutputs.
+*/
+
 #ifndef PLATFORM_GPIO_H
 #define PLATFORM_GPIO_H
 
 #include <set>
 #include <memory>
 #include <stdint.h>
+
+namespace lampda {
+namespace platform {
+/// handler for the GeneralPurposeInputOutputs
+namespace gpio {
 
 class DigitalPinImpl;
 
@@ -62,6 +71,9 @@ public:
 
   DigitalPin(DigitalPin&& other) = delete;
 
+  // reinit
+  void set(GPIO pin);
+
   void set_pin_mode(Mode mode) const;
   bool is_high() const; // true if high, false if low
   void set_high(bool isHigh) const;
@@ -106,5 +118,9 @@ private:
   GPIO mGpio;
   std::shared_ptr<DigitalPinImpl> mImpl;
 };
+
+} // namespace gpio
+} // namespace platform
+} // namespace lampda
 
 #endif

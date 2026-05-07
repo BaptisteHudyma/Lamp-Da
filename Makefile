@@ -30,8 +30,8 @@ COMPILER_PATH=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep c
 
 CPP_INCLUDES=-I$(OBJECTS_DIR)/sketch -DLMBD_MISSING_DEFINE
 CPP_BASIC_FLAGS=-std=gnu++17 -fconcepts -DNDEBUG -DLMBD_CPP17 -D$(FULL_LAMP_TYPE) $(CPP_INCLUDES) ${LMBD_EXTRA_FLAGS}
-CPP_BUILD_FLAGS=$(CPP_BASIC_FLAGS) -fdiagnostics-color=always -Wno-unused-parameter -ftemplate-backtrace-limit=1 # -fsanitize=undefined,address -fstack-protector-all
-ARDUINO_EXTRA_FLAGS="compiler.cpp.extra_flags='$(CPP_INCLUDES) -D$(FULL_LAMP_TYPE) ${LMBD_EXTRA_FLAGS}'"
+CPP_BUILD_FLAGS=$(CPP_BASIC_FLAGS) -fdiagnostics-color=always -Wno-unused-parameter -ftemplate-backtrace-limit=1 -fstack-usage -ffunction-sections -fdata-sections # -fsanitize=undefined,address -fstack-protector-all
+ARDUINO_EXTRA_FLAGS="compiler.cpp.extra_flags='$(CPP_INCLUDES) -fstack-usage -D$(FULL_LAMP_TYPE) ${LMBD_EXTRA_FLAGS}'"
 #
 # to enable warnings:
 # 	LMBD_CPP_EXTRA_FLAGS="-Wall -Wextra" make
@@ -551,7 +551,7 @@ clean-artifacts:
 
 clean-doc:
 	@echo; echo " --- $@"
-	rm -f docs/html/index.html
+	rm -rf docs/html/
 
 clean: clean-artifacts clean-simulator clean-doc
 	@echo; echo " --- $@"

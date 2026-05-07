@@ -25,7 +25,7 @@ BOM:
 - USB-C 6 pins RGB push button
 - JST connector for battery (JST XH2.54MM, 4P, wire length 15CM)
 
-![USBC 6 pins](/Medias/6pin_usb_c.png) ![RGB push button](/Medias/rgb_push_button.png) ![Clear shrink wrap](/Medias/clear_shrink_wrap.png)
+![USBC 6 pins](Medias/6pin_usb_c.png) ![RGB push button](Medias/rgb_push_button.png) ![Clear shrink wrap](Medias/clear_shrink_wrap.png)
 
 ## Led Strips
 
@@ -53,4 +53,4 @@ Place the battery in the tube, and the 3 poles around it, with 2 vertical 35mm c
 
 Place the PCB and close the assembly using the top part, and a final 50mm cylindrical pin. Do not forget to place the rope in the top part before pushing the cylindrical pin.
 
-![Printed assembly](/Medias/printed_assembly.png) ![Full assembly](/Medias/full_assembly.png)
+![Printed assembly](Medias/printed_assembly.png) ![Full assembly](Medias/full_assembly.png)

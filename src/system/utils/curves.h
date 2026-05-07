@@ -1,3 +1,7 @@
+/*! \file curves.h
+    \brief Define curves types, that can be sampled.
+*/
+
 #ifndef UTILS_CURVES_H
 #define UTILS_CURVES_H
 
@@ -7,23 +11,34 @@
 #include <cmath>
 #include <vector>
 
+namespace lampda {
+namespace utils {
+/// Curves classes to sample values from predefined custom parameters.
 namespace curves {
 
+/**
+ * \brief Define a 2D point
+ * \param[in] T Type of X coordinates
+ * \param[in] U type of Y coordinates
+ */
 template<typename T, typename U> struct Point
 {
-  T x;
-  U y;
+  T x; ///< X coordinate of the point
+  U y; ///< Y coordinate of the point
 };
 
 /**
- * Given a set of points, will fit multiple linear segments to it.
- *
+ * \brief Given a set of points, will fit multiple linear segments to it.
+ * \param[in] T Type of X coordinates
+ * \param[in] U type of Y coordinates
  */
 template<typename T, typename U> class LinearCurve
 {
 public:
+  /// point in the linear curve
   using point_t = Point<T, U>;
 
+  /// Build a curve from a set of points
   LinearCurve(const std::vector<point_t>& points)
   {
     // first fail fast
@@ -64,6 +79,7 @@ public:
     assert(pts.size() >= 2 && "Linear curve must have more than 1 points");
   }
 
+  /// Sample a point Y from a given x
   U sample(const T x) const
   {
     point_t lastPt = pts[0];
@@ -92,22 +108,25 @@ public:
   }
 
 private:
+  /// linear end points of the linear segments
   std::vector<point_t> pts;
 };
 
 /**
- * Given two points and an exponent, fit an exponential function
- *
+ * \brief Given two points and an exponent, fit an exponential function
+ * \param[in] T Type of X coordinates
+ * \param[in] U type of Y coordinates
  */
 template<typename T, typename U> class ExponentialCurve
 {
 public:
+  /// point in the exponential curve
   using point_t = Point<T, U>;
 
   /**
    * \brief Exponential curve fitting to two points
-   * \param[in] pointA
-   * \param[in] pointB
+   * \param[in] pointA Start point of the curve
+   * \param[in] pointB End point of the curve
    * \param[in] exponent The strenght factor of this exponential. Set to 1 for a linear curve, > 1 gives strong
    * exponential, < 1  gives log curves
    */
@@ -131,7 +150,7 @@ public:
   }
 
   /**
-   * \brief Sample the exponential curve
+   * \brief Sample the exponential curve.
    * Be aware that the result is always casted from a floating point !!
    * -> for integer types, it will be the same as calling "floor()" on the result
    */
@@ -142,14 +161,21 @@ public:
   }
 
 private:
+  /// lower bound of the X coordinates
   const T lowerBound;
+  /// upper bound of the X coordinates
   const T upperBound;
 
+  /// exponent parameters
   double _exp;
+  /// exponent added parameters
   double _a;
+  /// exponent multiplied parameters
   double _b;
 };
 
 } // namespace curves
+} // namespace utils
+} // namespace lampda
 
 #endif

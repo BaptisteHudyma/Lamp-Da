@@ -4,7 +4,9 @@
 
 #include "src/system/ext/math8.h"
 
-namespace utils::ColorSpace {
+namespace lampda {
+namespace utils {
+namespace ColorSpace {
 
 COLOR XYZ::get_rgb() const
 {
@@ -270,4 +272,6 @@ void OKLCH::from_rgb(const COLOR& rgb)
   this->h = h;
 }
 
-} // namespace utils::ColorSpace
+} // namespace ColorSpace
+} // namespace utils
+} // namespace lampda

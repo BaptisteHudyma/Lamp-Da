@@ -12,8 +12,11 @@
 #include <array>
 
 #include <src/system/logic/alerts.h>
+#include <src/system/logic/sunset_timer.h>
+
 #include <src/system/utils/assert.h>
-#include <src/system/utils/sunset_timer.h>
+
+#include "src/modes/include/draw/overlay.hpp"
 
 #include "src/modes/include/tools.hpp"
 #include "src/modes/include/context_type.hpp"
@@ -21,162 +24,7 @@
 #include "src/modes/include/hardware/keystore.hpp"
 #include "src/modes/include/hardware/lamp_type.hpp"
 
-#include "src/modes/include/anims/ramp_update.hpp"
-
-namespace modes::details {
-
-//
-// \private API
-//
-
-/**
- * \brief Animate a ramp
- * \param[in,out] ctx
- * \param[in] holdDuration duration since ramp start
- * \param[in] stepSize duration of the ramp
- * \param[in] palette palette to display on the ramp, as a gradient
- * \return true if ramp arrives at the end
- */
-template<bool displayFavoriteNumber = true>
-bool _animate_ramp(auto& ctx, float holdDuration, float stepSize, auto palette)
-{
-  // where we are: 0-255 rampColorRing
-  uint32_t stepProgress = floor((holdDuration * 256.0) / stepSize);
-  stepProgress = stepProgress % 256;
-
-  // only display on indexable
-  if constexpr (ctx.lamp.flavor == hardware::LampTypes::indexable)
-  {
-    anims::rampColorRing(ctx, stepProgress, palette);
-  }
-  return (stepProgress >= 250);
-}
-
-/// \private display a lit pixel per given favorite index
-void display_favorite_number_ramp(auto& ctx,
-                                  const uint8_t favoriteIndex,
-                                  const uint8_t maxFavoriteIndex,
-                                  const bool display = false)
-{
-  ctx.skipFirstLedsForFrames(0);
-  const uint8_t maxPixelDisplay = min<uint8_t>(ctx.state.maxFavoriteCount, maxFavoriteIndex);
-  for (uint8_t i = 0; i < maxPixelDisplay; ++i)
-  {
-    if (display and i <= favoriteIndex)
-    {
-      ctx.lamp.setPixelColor(i, colors::Cyan);
-    }
-    else
-    {
-      ctx.lamp.setPixelColor(i, colors::Black);
-    }
-  }
-  ctx.skipFirstLedsForFrames(ctx.lamp.maxWidth * 2, 10);
-}
-
-/// \private animate favorite picks
-template<bool displayFavoriteNumber = true> void _animate_favorite_pick(auto& ctx, float holdDuration, float stepSize)
-{
-  // user as a number of favorite set
-  // occasional +1 if not all favorite are set (allow a new favorite)
-  const uint8_t numberOfFavoriteSet =
-          ctx.state.usedFavoriteCount + ((ctx.state.usedFavoriteCount < ctx.state.maxFavoriteCount) ? 1 : 0);
-
-  // up to maxFavoriteCount step state: "which_one" is [0, 1, 2, 3, ...] and "do not set" is the max index + 1
-  uint32_t stepCount = numberOfFavoriteSet + floor(holdDuration / stepSize);
-  stepCount = stepCount % (numberOfFavoriteSet + 1);
-
-  // display ramp to show where user is standing
-  if (stepCount >= numberOfFavoriteSet)
-  {
-    // cancel action
-    ctx.state.isFavoritePending = 0;
-
-    // display ramp for the first time to allow the user to cancel the action
-    if (holdDuration <= 2 * stepSize)
-    {
-      _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::White, colors::Cyan>);
-    }
-  }
-  else
-  {
-    // animate with different colors
-    switch (stepCount % 4)
-    {
-      case 0:
-        _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Green, colors::White>);
-        break;
-      case 1:
-        _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Blue, colors::White>);
-        break;
-      case 2:
-        _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Orange, colors::White>);
-        break;
-      case 3:
-        _animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Purple, colors::White>);
-        break;
-    }
-
-    // extra display on the first pixels (count pixels to know fav no)
-    if constexpr (displayFavoriteNumber)
-    {
-      // display ramp
-      display_favorite_number_ramp(ctx, stepCount, numberOfFavoriteSet, stepCount < numberOfFavoriteSet);
-    }
-
-    // set this, after a while upon no longer holding button, favorite is set
-    ctx.state.isFavoritePending = 10;
-    ctx.state.whichFavoritePending = stepCount;
-  }
-}
-
-template<bool displayFavoriteNumber = true> void _animate_favorite_delete(auto& ctx, float holdDuration, float stepSize)
-{
-  // no favorite deletion if no favorites
-  if (ctx.state.usedFavoriteCount <= 0)
-    return;
-
-  ctx.state.isInDeleteFavorite = true;
-
-  uint32_t stepCount = floor(holdDuration / stepSize);
-  stepCount = stepCount % 2;
-
-  if (stepCount == 0)
-  {
-    if (_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Orange, colors::Red>))
-    {
-      // set this on ramp saturation. The favorite will be removed in 2 frames
-      ctx.state.isFavoriteDeletePending = 2;
-    }
-    else
-    {
-      // no deletion if release on ramp
-      ctx.state.isFavoriteDeletePending = 0;
-    }
-
-    // extra display on the first pixels (count pixels to know fav no)
-    if constexpr (displayFavoriteNumber)
-    {
-      // display ramp
-      display_favorite_number_ramp(ctx, ctx.state.lastFavoriteStep, ctx.state.usedFavoriteCount, true);
-    }
-  }
-  // else: do nothing
-}
-
-template<bool shouldDisplayRamp = true, bool shouldBlip = true>
-void _animate_sunset_timer(auto& ctx, uint32_t holdDuration, float stepSize)
-{
-  if (_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::White, colors::Red>))
-  {
-    ctx.state.isSunsetTimingPending = 2;
-  }
-  // else
-}
-
-} // namespace modes::details
-
-namespace modes {
+namespace lampda::modes {
 
 /// \private Active state is designated by a 32-bit integer
 union ActiveIndexTy
@@ -385,47 +233,49 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
   struct StateTy
   {
-    // All group states, containing all modes individual states
+    /// All group states, containing all modes individual states
     AllStatesTy groupStates;
 
-    // When switching group, remember which mode was on last time we visited it
+    /// When switching group, remember which mode was on last time we visited it
     std::array<uint8_t, nbGroups> lastModeMemory = {};
 
-    // Which mode was selected as favorite
+    /// Maximum allowed favorite count
     static constexpr uint8_t maxFavoriteCount = 8;
+    /// Store the active index of every favorite
     std::array<ActiveIndexTy, maxFavoriteCount> favorites = {};
-    uint8_t usedFavoriteCount = 0; // number of favorite set by user [0, maxFavoriteCount]
+    uint8_t usedFavoriteCount = 0; ///< number of favorite set by user [0, maxFavoriteCount]
 
     static_assert(maxFavoriteCount < 16, "Maximum of 15 favorite as been exceeded");
 
     // (variables for pending favorite state machine)
-    uint8_t isFavoritePending = 0;
-    uint8_t whichFavoritePending = 0;
-    bool isInDeleteFavorite = false;
-    uint8_t isFavoriteDeletePending = 0;
-    uint8_t lastFavoriteStep = 0;
-    bool isInFavoriteMockGroup = false;
-    uint8_t beforeFavoriteGroupIndex = 0;
-    uint8_t beforeFavoriteModeIndex = 0;
-    uint8_t isSunsetTimingPending = 0;
+    uint8_t isFavoritePending = 0;        ///< indicate that the addition of a favorite in in process
+    uint8_t whichFavoritePending = 0;     ///< indicates the favorite currently selected
+    bool isInDeleteFavorite = false;      ///< indicates that we are in a favorite deletion process
+    uint8_t isFavoriteDeletePending = 0;  ///< indicate that the deletion of a favorite in in process
+    uint8_t lastFavoriteStep = 0;         ///< last used favorite index
+    bool isInFavoriteMockGroup = false;   ///< Indicates that we are in the fake favorite page
+    uint8_t beforeFavoriteGroupIndex = 0; ///< store the group index we need to go to when quitting the favorite page
+    uint8_t beforeFavoriteModeIndex = 0;  ///< store the mode index we need to go to when quitting the favorite page
+    uint8_t isSunsetTimingPending = 0;    ///< Indicates that a sunset timer ramp is active
 
-    bool isLastScrollAGroupChange = false; // last mode change in scroll changed group
-    uint32_t lastScrollStopped = 0;        // keep track of the last scrool release time
+    bool isLastScrollAGroupChange = false; ///< last mode change in scroll changed group
+    uint32_t lastScrollStopped = 0;        ///< keep track of the last scrool release time
 
-    // Ramp handlers: custom ramp (or "color ramp") and mode scroll ramp
+    /// Ramp handlers: custom ramp (or "color ramp")
     RampHandlerTy<Config> rampHandler = {Config::defaultCustomRampStepSpeedMs};
+    /// Ramp handlers: mode scroll ramp
     RampHandlerTy<Config> scrollHandler = {Config::scrollRampStepSpeedMs};
-
+    /// Should clear the strip before switching mode
     bool clearStripOnModeChange = Config::defaultClearStripOnModeChange;
 
     // special effects
-    uint8_t skipNextFrameEffect = 0; // should the next .loop() mode be skipped?
+    uint8_t skipNextFrameEffect = 0; ///< should the next .loop() mode be skipped?
 
     // inside lamp.config
     //  - skipFirstLedsForEffect = 0; // should the loop skip some lower LEDs?
     //  - skipFirstLedsForAmount = 0; // how many pixels to shave from the top?
 
-    // configuration-related actions done before entering mode
+    /// configuration-related actions done before entering mode
     static void LMBD_INLINE before_enter_mode(auto& ctx)
     {
       auto& self = ctx.state;
@@ -433,7 +283,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       self.clearStripOnModeChange = Config::defaultClearStripOnModeChange;
     }
 
-    // configuration-related actions done after mode entering
+    /// configuration-related actions done after mode entering
     static void LMBD_INLINE after_enter_mode(auto& ctx)
     {
       auto& self = ctx.state;
@@ -444,6 +294,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     }
   };
 
+  /// Return the state of the current active group
   template<typename Group> StateTyOf<Group>* LMBD_INLINE getStateGroupOf()
   {
     using StateTy = StateTyOf<Group>;
@@ -472,6 +323,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     return substate;
   }
 
+  /// get the state of the active mode in active group
   template<typename Mode> StateTyOf<Mode>& LMBD_INLINE getStateOf()
   {
     using TargetStateTy = StateTyOf<Mode>;
@@ -532,9 +384,10 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   // navigation
   //
 
-  static constexpr bool isGroupManager = true;
-  static constexpr bool isModeManager = true;
+  static constexpr bool isGroupManager = true; ///< currently in a group manager
+  static constexpr bool isModeManager = true;  ///< currently in the mode manager
 
+  /// switch to the next group
   static void next_group(auto& ctx)
   {
     // change current group
@@ -542,6 +395,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.set_active_group(groupIdBefore + 1, nbGroups);
   }
 
+  /// switch to the next mode
   static void next_mode(auto& ctx)
   {
     dispatch_group(ctx, [](auto group) {
@@ -566,6 +420,13 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     }
   }
 
+  /**
+   * \brief Jump to the target favorite mode
+   * \param[in, out] ctx Context
+   * \param[in] which_one Target favorite index
+   * \param[in] shouldSaveLastActiveIndex Should store the last index before jumping
+   * \return true if the jump was made
+   */
   static bool jump_to_favorite(auto& ctx, uint8_t which_one, bool shouldSaveLastActiveIndex)
   {
     // sanity check
@@ -589,16 +450,27 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     const auto targetFavorite = ctx.state.favorites[which_one];
     // reset once with the right mode
     jump_to_new_active_index(ctx, targetFavorite);
+
+    // show which favorite is currently set
+    overlay.clear();
+    display_favorite_number_ramp(ctx, which_one, ctx.state.usedFavoriteCount, true, 1000);
+
     return true;
   }
 
+  /**
+   * \brief Add a new favorite to the target index
+   * \param[in, out] ctx Context
+   * \param[in] which_one Index of the favorite to add
+   * \return True if the process succeeded
+   */
   static bool set_favorite_now(auto& ctx, uint8_t which_one = 0)
   {
     // new favorite added
     if (which_one != ctx.state.maxFavoriteCount && which_one == ctx.state.usedFavoriteCount)
     {
       // augment favorite count until we reach the max
-      ctx.state.usedFavoriteCount = min<uint8_t>(ctx.state.usedFavoriteCount + 1, ctx.state.maxFavoriteCount);
+      ctx.state.usedFavoriteCount = std::min<uint8_t>(ctx.state.usedFavoriteCount + 1, ctx.state.maxFavoriteCount);
     }
 
     if (which_one < ctx.state.maxFavoriteCount)
@@ -609,6 +481,11 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     return false;
   }
 
+  /**
+   * \brief Delete the currently visible favorite
+   * \param[in, out] ctx Context
+   * \return True if the process succeeded
+   */
   static bool delete_favorite_now(auto& ctx)
   {
     // delete current
@@ -645,7 +522,11 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     return false;
   }
 
-  /// scroll through all modes
+  /**
+   * \brief Scroll through all modes
+   * \param[in, out] ctx Context
+   * \param[in] holdDuration Duration of the user button hold action
+   */
   static void handle_scroll_modes(auto& ctx, uint32_t holdDuration)
   {
     auto& scrollHandler = ctx.state.scrollHandler;
@@ -655,7 +536,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     if (holdDuration <= scrollActivationTiming)
     {
       // display the ramp and do nothing else
-      modes::details::_animate_ramp(
+      overlay_animate_ramp(
               ctx, holdDuration, scrollActivationTiming, colors::PaletteGradient<colors::White, colors::Cyan>);
       return;
     }
@@ -733,6 +614,61 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     });
   }
 
+  /// Create and animate a ramp
+  static bool overlay_animate_ramp(
+          auto& ctx, float holdDuration, float stepSize, const colors::PaletteTy& palette, const uint32_t timeout = 0)
+  {
+    // where we are: 0-255 rampColorRing
+    const uint32_t stepProgress = floor((holdDuration * 256.0) / stepSize);
+    return overlay_animate_ramp(ctx, stepProgress % 256, palette);
+  }
+  static bool overlay_animate_ramp(auto& ctx,
+                                   uint8_t progress,
+                                   const colors::PaletteTy& palette,
+                                   const uint32_t timeout = 0)
+  {
+    // only display on indexable
+    if constexpr (ctx.lamp.flavor == hardware::LampTypes::indexable)
+    {
+      // if first display failed, add a new ramp and try again
+      if (not overlay.update_type(ctx, draw::overlay::ElementType::RAMP, 0, progress, palette))
+      {
+        // add new ramp element
+        overlay.add_ui_element(ctx, draw::overlay::ElementType::RAMP, palette, 0, 0, progress);
+      }
+
+      // if timeout is requested, update it
+      if (timeout > 0)
+        overlay.update_type_timeout(ctx, draw::overlay::ElementType::RAMP, 0, timeout);
+    }
+    return (progress >= 250);
+  }
+
+  /// Animate an overlay dot
+  static void overlay_animate_dot(auto& ctx,
+                                  uint16_t index,
+                                  uint16_t positionX,
+                                  uint8_t progress,
+                                  const auto& palette,
+                                  const uint32_t timeout = 0)
+  {
+    // only display on indexable
+    if constexpr (ctx.lamp.flavor == hardware::LampTypes::indexable)
+    {
+      // if first display failed, add a new ramp and try again
+      if (not overlay.update_type(ctx, draw::overlay::ElementType::DOT, index, progress, palette))
+      {
+        // add new element
+        overlay.add_ui_element(ctx, draw::overlay::ElementType::DOT, palette, positionX, 0, progress);
+      }
+
+      // if timeout is requested, update it
+      if (timeout > 0)
+        overlay.update_type_timeout(ctx, draw::overlay::ElementType::DOT, index, timeout);
+    }
+  }
+
+  /// Return the mode count for this group
   static uint8_t get_modes_count(auto& ctx)
   {
     uint8_t value = 0;
@@ -742,6 +678,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     return value;
   }
 
+  /// Callback called on a group activation
   static void enter_group(auto& ctx, const uint8_t value)
   {
     auto manager = ctx.modeManager.get_context();
@@ -758,6 +695,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.modeManager.enter_mode(manager);
   }
 
+  /// Callback called on a group deactivation
   static void quit_group(auto& ctx)
   {
     //
@@ -771,6 +709,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.state.lastModeMemory[groupIdBefore] = modeIdBefore;
   }
 
+  /// Callback called on a mode activation
   static void enter_mode(auto& ctx)
   {
     ctx.state.before_enter_mode(ctx);
@@ -783,6 +722,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     ctx.state.after_enter_mode(ctx);
   }
 
+  /// Callback called on a mode deactivation
   static void quit_mode(auto& ctx)
   {
     dispatch_group(ctx, [](auto group) {
@@ -794,6 +734,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   // all the callbacks
   //
 
+  /// main action loop
   static void loop(auto& ctx)
   {
     // handle pending favorite
@@ -805,7 +746,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       {
         if (ctx.set_favorite_now(ctx.state.whichFavoritePending))
         {
-          alerts::manager.raise(alerts::Type::FAVORITE_SET);
+          logic::alerts::manager.raise(logic::alerts::Type::FAVORITE_SET);
         }
       }
     }
@@ -829,7 +770,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       if (ctx.state.isSunsetTimingPending == 0)
       {
         // set and update sunset timer
-        sunset::add_time_minutes(5);
+        logic::sunset::add_time_minutes(5);
         // blip AFTER the update
         ctx.blip(50);
       }
@@ -854,11 +795,20 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
 
     ctx.lamp.refresh_tick_value();
 
+    // udpate modes and groups
     dispatch_group(ctx, [](auto group) {
       group.loop();
     });
+
+    // display the overlay after the group update
+    overlay.display_update(ctx);
   }
 
+  /**
+   * \brief Callback of the sunset timer update
+   * \param[in, out] ctx Context
+   * \param[in] progress Between 0 and 1, progress of the sunset timer. Lamp will shutdown at 1
+   */
   static void sunset_update(auto& ctx, float progress)
   {
     dispatch_group(ctx, [&](auto group) {
@@ -866,6 +816,11 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     });
   }
 
+  /**
+   * \brief Callback of the brightness update
+   * \param[in, out] ctx Context
+   * \param[in] brightness The new brightness
+   */
   static void brightness_update(auto& ctx, brightness_t brightness)
   {
     dispatch_group(ctx, [&](auto group) {
@@ -873,6 +828,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     });
   }
 
+  /// Called on lamp output power on
   static void power_on_sequence(auto& ctx)
   {
     foreach_group<true>(ctx, [](auto group) {
@@ -892,6 +848,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     }
   }
 
+  /// Called on the output power off
   static void power_off_sequence(auto& ctx)
   {
     foreach_group<true>(ctx, [](auto group) {
@@ -899,6 +856,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     });
   }
 
+  /// Write the parameters to memory
   static void write_parameters(auto& ctx)
   {
     // clear the stored parameters, before storing ours.
@@ -926,6 +884,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     });
   }
 
+  /// Read the parameters from memory
   static void read_parameters(auto& ctx)
   {
     // remove old filesystem data if we detect obsolete "storeId" serial
@@ -958,6 +917,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     });
   }
 
+  /// Custom user thread, active if a mode requested a user thread
   static void user_thread(auto& ctx)
   {
     dispatch_group(ctx, [](auto group) {
@@ -965,19 +925,36 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     });
   }
 
+  /**
+   * \brief Callback of user ramp update
+   * \param[in, out] ctx Context
+   * \param[in] rampValue The new brightness
+   */
   static void custom_ramp_update(auto& ctx, uint8_t rampValue)
   {
     uint8_t groupId = ctx.get_active_group();
     uint8_t modeId = ctx.get_active_mode();
 
     if (ctx.everyCustomRamp[groupId][modeId] && ctx.state.rampHandler.animEffect)
-      modes::anims::_rampAnimDispatch(ctx, ctx.state.rampHandler.animChoice, rampValue);
+    {
+      switch (ctx.state.rampHandler.animChoice)
+      {
+        case 0:
+          overlay_animate_ramp(ctx, rampValue, modes::colors::PaletteBlackBodyColors);
+          break;
+
+        case 1:
+          overlay_animate_ramp(ctx, rampValue, modes::colors::PaletteRainbowColors);
+          break;
+      }
+    }
 
     dispatch_group(ctx, [&](auto group) {
       group.custom_ramp_update(rampValue);
     });
   }
 
+  /// Binds to local Group::custom_click()
   static bool custom_click(auto& ctx, uint8_t nbClick)
   {
     bool retVal = false;
@@ -987,6 +964,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     return retVal;
   }
 
+  /// Binds to local Group::custom_hold()
   static bool custom_hold(auto& ctx, uint8_t nbClickAndHold, bool isEndOfHoldEvent, uint32_t holdDuration)
   {
     bool retVal = false;
@@ -997,20 +975,142 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   }
 
   //
+  // Private action functions
+  //
+
+  /**
+   * \brief display a lit pixel per given favorite index
+   * \param[in, out] ctx
+   * \param[in] favoriteIndex Actually used favorite count
+   * \param[in] maxFavoriteIndex Maximum allowed favorite index to display
+   * \param[in] display If false, do not display the dots
+   * \param[in] timeout Tiemout after which they will disapear
+   */
+  static void display_favorite_number_ramp(auto& ctx,
+                                           const uint8_t favoriteIndex,
+                                           const uint8_t maxFavoriteIndex,
+                                           const bool display = false,
+                                           const uint32_t timeout = 0)
+  {
+    const uint8_t maxPixelDisplay = std::min<uint8_t>(ctx.state.maxFavoriteCount, maxFavoriteIndex);
+    for (uint8_t i = 0; i < maxPixelDisplay; ++i)
+    {
+      const bool shouldDisplay = (display and i <= favoriteIndex);
+      overlay_animate_dot(
+              ctx, i, i, shouldDisplay ? 255 : 0, colors::PaletteGradient<colors::Black, colors::Cyan>, timeout);
+    }
+  }
+
+  /** \private
+   * \brief Animate the favorite addition process. Called every frame while the action is ongoing
+   * \param[in, out] ctx
+   * \param[in] holdDuration User button hold duration
+   * \param[in] stepSize Desired lenght of the animation, in milliseconds
+   */
+  template<bool displayFavoriteNumber = true>
+  static void animate_favorite_pick(auto& ctx, float holdDuration, float stepSize)
+  {
+    // user as a number of favorite set
+    // occasional +1 if not all favorite are set (allow a new favorite)
+    const uint8_t numberOfFavoriteSet =
+            ctx.state.usedFavoriteCount + ((ctx.state.usedFavoriteCount < ctx.state.maxFavoriteCount) ? 1 : 0);
+
+    // up to maxFavoriteCount step state: "which_one" is [0, 1, 2, 3, ...] and "do not set" is the max index + 1
+    uint32_t stepCount = numberOfFavoriteSet + floor(holdDuration / stepSize);
+    stepCount = stepCount % (numberOfFavoriteSet + 1);
+
+    // display ramp to show where user is standing
+    if (stepCount >= numberOfFavoriteSet)
+    {
+      // cancel action
+      ctx.state.isFavoritePending = 0;
+
+      // display ramp for the first time to allow the user to cancel the action
+      if (holdDuration <= 2 * stepSize)
+      {
+        overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::White, colors::Cyan>);
+      }
+    }
+    else
+    {
+      // green ramp : favorites
+      overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Green, colors::White>);
+
+      // extra display on the first pixels (count pixels to know fav no)
+      if constexpr (displayFavoriteNumber)
+      {
+        // display the set favorite ramp
+        display_favorite_number_ramp(ctx, stepCount, numberOfFavoriteSet, stepCount < numberOfFavoriteSet);
+      }
+
+      // set this, after a while upon no longer holding button, favorite is set
+      ctx.state.isFavoritePending = 10;
+      ctx.state.whichFavoritePending = stepCount;
+    }
+  }
+
+  /** \private
+   * \brief Animate the favorite deletion process. Called every frame while the action is ongoing
+   * \param[in, out] ctx
+   * \param[in] holdDuration User button hold duration
+   * \param[in] stepSize Desired lenght of the animation, in milliseconds
+   */
+  template<bool displayFavoriteNumber = true>
+  static void animate_favorite_delete(auto& ctx, float holdDuration, float stepSize)
+  {
+    // no favorite deletion if no favorites
+    if (ctx.state.usedFavoriteCount <= 0)
+      return;
+
+    ctx.state.isInDeleteFavorite = true;
+
+    uint32_t stepCount = floor(holdDuration / stepSize);
+    stepCount = stepCount % 2;
+
+    if (stepCount == 0)
+    {
+      if (overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Orange, colors::Red>))
+      {
+        // set this on ramp saturation. The favorite will be removed in 2 frames
+        ctx.state.isFavoriteDeletePending = 2;
+      }
+      else
+      {
+        // no deletion if release on ramp
+        ctx.state.isFavoriteDeletePending = 0;
+      }
+
+      // extra display on the first pixels (count pixels to know fav no)
+      if constexpr (displayFavoriteNumber)
+      {
+        // display ramp
+        display_favorite_number_ramp(ctx, ctx.state.lastFavoriteStep, ctx.state.usedFavoriteCount, true);
+      }
+    }
+    // else: do nothing
+  }
+
+  //
   // members with direct access
   //
 
+  /// Currently active index of mode and group
   ActiveIndexTy activeIndex;
 
-  // display object
+  /// Lamp handler object
   hardware::LampTy& lamp;
+
+  /// Menu overlay object
+  inline static draw::overlay::Manager<> overlay;
 
   //
   // private members
   //
 
 private:
+  /// Error case handling with this placeholder
   NoState placeholder;
+  /// Current manager state
   StateTy state;
 };
 
@@ -1031,6 +1131,6 @@ template<typename ManagerConfig, typename... Groups> using ManagerForConfig =
  */
 template<typename... Groups> using ManagerFor = ModeManagerTy<DefaultManagerConfig, std::tuple<Groups...>>;
 
-} // namespace modes
+} // namespace lampda::modes
 
 #endif

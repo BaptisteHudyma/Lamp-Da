@@ -1,3 +1,7 @@
+/*! \file indexable_behavior.hpp
+    \brief Define the behavior of an indexable lamp.
+*/
+
 #ifndef INDEXABLE_BEHAVIOR_MANAGER_H
 #define INDEXABLE_BEHAVIOR_MANAGER_H
 
@@ -6,8 +10,17 @@
 //  - user/indexable_functions.h
 //
 
+namespace lampda::user {
+
 void button_clicked_default(const uint8_t clicks)
 {
+  // Handle default common behavior
+  if (default_behaviors::button_clicked(clicks))
+  {
+    // some event is already handled
+    return;
+  }
+
   auto manager = get_context();
 
   switch (clicks)
@@ -101,22 +114,18 @@ void button_clicked_default(const uint8_t clicks)
 
 void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)
 {
+  // Handle default common behavior
+  if (default_behaviors::button_hold(clicks, isEndOfHoldEvent, holdDuration))
+  {
+    // some event is already handled
+    return;
+  }
+
   auto manager = get_context();
   auto& rampHandler = manager.state.rampHandler;
 
   switch (clicks)
   {
-    case 3: // 3 click+hold: configure custom ramp
-            // no ramps in favorite group
-      if (not manager.state.isInFavoriteMockGroup)
-      {
-        rampHandler.update_ramp(manager.get_active_custom_ramp(), holdDuration, [&](uint8_t rampValue) {
-          manager.custom_ramp_update(rampValue);
-          manager.set_active_custom_ramp(rampValue);
-        });
-      }
-      break;
-
     case 4: // 4 click+hold: configure favorite
       if (not isEndOfHoldEvent)
       {
@@ -125,12 +134,12 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
         if (not manager.state.isInFavoriteMockGroup && not manager.state.isInDeleteFavorite)
         {
           // no new favorite in favorite
-          modes::details::_animate_favorite_pick(manager, holdDuration, 1500);
+          manager.animate_favorite_pick(holdDuration, 1500);
         }
         else
         {
           // remove current favorite
-          modes::details::_animate_favorite_delete(manager, holdDuration, 2000);
+          manager.animate_favorite_delete(holdDuration, 2000);
         }
       }
       else
@@ -138,17 +147,6 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
         manager.state.isInDeleteFavorite = false;
       }
       break;
-
-    case 5:
-      {
-        // sunset timer
-        // this command is only active when the timer is enabled
-        if (not isEndOfHoldEvent and holdDuration > 0 and sunset::is_enabled())
-        {
-          modes::details::_animate_sunset_timer(manager, holdDuration, 1000);
-        }
-        break;
-      }
 
     case 6: // 6 click+hold: scroll across modes and group
       // no scroll in favorite
@@ -171,5 +169,7 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       break;
   }
 }
+
+} // namespace lampda::user
 
 #endif

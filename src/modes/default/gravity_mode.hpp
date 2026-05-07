@@ -10,14 +10,16 @@
 #include <cstdint>
 #include <functional>
 
-namespace modes::default_modes {
+namespace lampda::modes::default_modes {
 
-/// Emulate a beat sync
+/**
+ * \brief Sand particle simulation, synched with the board IMU
+ */
 struct GravityMode : public BasicMode
 {
-  // hint manager to save our custom ramp
+  /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
-
+  /// set the maximum particle count
   static constexpr uint16_t particleCount = 255;
 
   static void on_enter_mode(auto& ctx)
@@ -35,12 +37,13 @@ struct GravityMode : public BasicMode
     custom_ramp_update(ctx, ctx.get_active_custom_ramp());
   }
 
+  /// User ramp changes the color palette
   static void custom_ramp_update(auto& ctx, uint8_t rampValue)
   {
     auto& state = ctx.state;
 
     const uint8_t rampIndex =
-            min<uint8_t>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1.0f);
+            std::min<uint8_t>(floorf(rampValue / 255.0f * state.maxPalettesCount), state.maxPalettesCount - 1.0f);
 
     state.selectedPalette = state._palettes[rampIndex];
   }
@@ -71,15 +74,18 @@ struct GravityMode : public BasicMode
 
   struct StateTy
   {
+    /// make particles leave a trace
     uint8_t persistance;
+    /// handle IMU events
     imu::ImuEventTy<> imuEvent;
 
-    // store references to palettes
+    /// Usable palettes count
     static constexpr uint8_t maxPalettesCount = 3;
+    /// store references to palettes
     const colors::PaletteTy* _palettes[maxPalettesCount] = {
             &colors::PaletteAuroraColors, &colors::PaletteForestColors, &colors::PaletteOceanColors};
 
-    // store selected palette
+    /// store selected palette
     colors::PaletteTy const* selectedPalette;
   };
 
@@ -113,6 +119,6 @@ private:
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif // BEATSYNC_MODE_H

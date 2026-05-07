@@ -27,7 +27,7 @@ To flash the bootloader for the first time, you must use a computer with GPIOs (
 
 You need to get the **lampda_nrf52840_bootloader**, next to this file.
 
-![Raspberry Pi pinout](../Medias/raspi_flasher.jpeg)
+![Raspberry Pi pinout](Medias/raspi_flasher.jpeg)
 
 Wire correspondance:
 
@@ -39,7 +39,7 @@ Wire correspondance:
 I use a TC2030 port, programable with a TC2030-MCP-NL cable.
 The cable is expensive, but it is only useful once.
 
-![Circuit flash pins](../Medias/circuit_flash_port.jpeg)
+![Circuit flash pins](Medias/circuit_flash_port.jpeg)
 
 You can run openocd next to the openocd.cfg to flash the board.
 

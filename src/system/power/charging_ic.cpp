@@ -18,6 +18,8 @@
 // use depend of component
 #include "src/depends/BQ25713/BQ25713.h"
 
+namespace lampda {
+namespace power {
 namespace charger {
 namespace drivers {
 
@@ -61,19 +63,27 @@ void set_software_error_message(const std::string& msg)
     softwareError_detail = msg;
 }
 
+/**
+ * \brief Store the power limits for the battery charge protocol
+ */
 struct PowerLimits
 {
+  /// Absolute maximum battery charging current
   uint16_t maxChargingCurrent_mA = 0;
+  /// Actual allowed charging current
   uint16_t current_mA = 0;
-  bool shoulduseICO = false;
+  /// If true, enabled the Input Current Optimization algorithm.
+  /// It will calibrate the input current to respect a target threshold
+  bool shouldUseICO = false;
 
+  /// set the default values of this structure
   void set_default()
   {
     current_mA = 100; // default to 100mA (standard USB)
-    shoulduseICO = false;
+    shouldUseICO = false;
   }
 };
-// define the power limits for input power
+/// define the power limits for input power
 static PowerLimits powerLimits_s;
 
 // detect the faults on the status
@@ -84,14 +94,14 @@ void run_fault_detection()
       chargerIcRegisters.chargerStatus.Fault_Latchoff() or chargerIcRegisters.chargerStatus.Fault_OTG_OVP() or
       chargerIcRegisters.chargerStatus.Fault_OTG_UVP())
   {
-    lampda_print("Charger ic faults: %d%d%d%d%d%d%d",
-                 chargerIcRegisters.chargerStatus.Fault_ACOV(),
-                 chargerIcRegisters.chargerStatus.Fault_BATOC(),
-                 chargerIcRegisters.chargerStatus.Fault_ACOC(),
-                 chargerIcRegisters.chargerStatus.SYSOVP_STAT(),
-                 chargerIcRegisters.chargerStatus.Fault_Latchoff(),
-                 chargerIcRegisters.chargerStatus.Fault_OTG_OVP(),
-                 chargerIcRegisters.chargerStatus.Fault_OTG_UVP());
+    platform::lampda_print("Charger ic faults: %d%d%d%d%d%d%d",
+                           chargerIcRegisters.chargerStatus.Fault_ACOV(),
+                           chargerIcRegisters.chargerStatus.Fault_BATOC(),
+                           chargerIcRegisters.chargerStatus.Fault_ACOC(),
+                           chargerIcRegisters.chargerStatus.SYSOVP_STAT(),
+                           chargerIcRegisters.chargerStatus.Fault_Latchoff(),
+                           chargerIcRegisters.chargerStatus.Fault_OTG_OVP(),
+                           chargerIcRegisters.chargerStatus.Fault_OTG_UVP());
     status_s = Status_t::ERROR_HAS_FAULTS;
   }
   // reset fault flag
@@ -121,11 +131,11 @@ void run_status_update()
   {
     if (chargerIcRegisters.chargerStatus.IN_OTG())
     {
-      alerts::manager.clear(alerts::Type::OTG_FAILED);
+      logic::alerts::manager.clear(logic::alerts::Type::OTG_FAILED);
     }
     else
     {
-      alerts::manager.raise(alerts::Type::OTG_FAILED);
+      logic::alerts::manager.raise(logic::alerts::Type::OTG_FAILED);
     }
   }
 }
@@ -175,10 +185,10 @@ void control_OTG()
       isOTGInitialized_s = true;
       isOTGReseted = false;
 
-      OTGStartTime_ms = time_ms();
-      lastOTGUsedTime_ms = time_ms();
+      OTGStartTime_ms = platform::time_ms();
+      lastOTGUsedTime_ms = platform::time_ms();
 
-      DigitalPin(DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
+      platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
 
       chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
       // TODO test and debug LOW RANGE
@@ -190,7 +200,7 @@ void control_OTG()
       if (not chargerIcRegisters.chargerStatus.IN_OTG())
       {
         // alert will be lowered on time
-        alerts::manager.raise(alerts::Type::OTG_FAILED);
+        logic::alerts::manager.raise(logic::alerts::Type::OTG_FAILED);
       }
     }
     else
@@ -211,11 +221,11 @@ void control_OTG()
       if (measurment.vbus_mA > 0)
       {
         // update the last used time
-        lastOTGUsedTime_ms = time_ms();
+        lastOTGUsedTime_ms = platform::time_ms();
       }
 
       // update the in OTG status to avoid deconnection
-      DigitalPin(DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
+      platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
       chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
       chargerIcRegisters.chargeOption3.set_EN_OTG(1);
       charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
@@ -231,12 +241,12 @@ void control_OTG()
 
       disable_OTG();
 
-      DigitalPin(DigitalPin::GPIO::Output_EnableOnTheGo).set_high(false);
-      delay_ms(1);
+      platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableOnTheGo).set_high(false);
+      platform::delay_ms(1);
       // 5V 0A for OTG (default)
       set_OTG_targets(5000, 0);
 
-      alerts::manager.clear(alerts::Type::OTG_FAILED);
+      logic::alerts::manager.clear(logic::alerts::Type::OTG_FAILED);
     }
   }
 }
@@ -252,8 +262,12 @@ void enable_charge(const bool enable)
     control_charge();
 }
 
-// enable/disable the Input Current Optimizer algorithm
-void enable_ico(const bool enable)
+/**
+ * \brief enable/disable the Input Current Optimizer algorithm
+ * \param[in] enable If true, the InputCurrentOptimization algorithm will be activated and the VBUS charge current will
+ * be optimized to reach a target droop voltage
+ */
+void enable_input_current_optimization(const bool enable)
 {
   if (enable)
   {
@@ -288,7 +302,7 @@ void update_battery()
 
   const uint16_t batteryMaxVoltage = chargerIcRegisters.maxChargeVoltage.get();
   // above 90%
-  const bool isAlmostFullyCharged = battery::get_level_safe(battery_s.voltage_mV) > 9000;
+  const bool isAlmostFullyCharged = physical::battery::get_level_safe(battery_s.voltage_mV) > 9000;
 
   // charge voltage saturated : battery is not here
   if (chargingCurrent > 0)
@@ -353,9 +367,14 @@ void run_ADC()
     chargerIcRegisters.aDCOption.set_EN_ADC_VSYS(1);
     chargerIcRegisters.aDCOption.set_EN_ADC_VBAT(1);
     // write the register
-    charger_ic::writeRegEx(chargerIcRegisters.aDCOption);
-
-    isAdcTriggered = true;
+    const bool writeSuccess = charger_ic::writeRegEx(chargerIcRegisters.aDCOption);
+    if (writeSuccess)
+      isAdcTriggered = true;
+    else
+    {
+      status_s = Status_t::ERROR;
+      set_software_error_message("Failed to write ADC command");
+    }
   }
   else
   {
@@ -371,7 +390,7 @@ void run_ADC()
     isAdcTriggered = false;
 
     // store everything in the measurment struct
-    measurments_s.time = time_ms();
+    measurments_s.time = platform::time_ms();
     measurments_s.vbus_mV = chargerIcRegisters.aDCVBUSPSYS.get_VBUS();
     measurments_s.psys_mV = chargerIcRegisters.aDCVBUSPSYS.get_PSYS();
     measurments_s.batChargeCurrent_mA = chargerIcRegisters.aDCIBAT.get_ICHG();
@@ -391,7 +410,7 @@ void run_ADC()
 void program_input_current_limit()
 {
   const uint16_t inputCurrentLimit_mA = powerLimits_s.current_mA;
-  const bool shouldUseICO = powerLimits_s.shoulduseICO;
+  const bool shouldUseICO = powerLimits_s.shouldUseICO;
 
   // enable IDPM
   chargerIcRegisters.chargeOption0.set_EN_IDPM(1);
@@ -399,9 +418,12 @@ void program_input_current_limit()
 
   if (isChargeOk_s and inputCurrentLimit_mA > 0)
   {
-    enable_ico(shouldUseICO);
+    enable_input_current_optimization(shouldUseICO);
 
     const uint16_t writtenCurrent_mA = chargerIcRegisters.iIN_HOST.set(inputCurrentLimit_mA);
+    // limit input current use to 4.5V
+    // THIS MUST BE AFTER THE CURRENT WRITE ABOVE TO AVOID WRONG USAGE
+    chargerIcRegisters.inputVoltage.set(4500);
 
     // the checks below can produce a rare software error when plugging the system
     // It it not that important, so it can stay deactivated to prevent this pesky error
@@ -429,7 +451,7 @@ void program_input_current_limit()
   else
   {
     // disable ico
-    enable_ico(false);
+    enable_input_current_optimization(false);
 
     // input current to 0
     chargerIcRegisters.iIN_HOST.set(0);
@@ -457,13 +479,14 @@ void program_input_current_limit()
  *
  */
 
+bool isInit = false;
 bool enable(const uint16_t minSystemVoltage_mV,
             const uint16_t maxBatteryVoltage_mV,
             const uint16_t maxChargingCurrent_mA,
             const uint16_t maxDichargingCurrent_mA,
             const bool forceReset)
 {
-  if (i2c_check_existence(bq25713::i2cObjectIndex, bq25713::BQ25713::BQ25713addr) != 0)
+  if (platform::i2c::i2c_check_existence(bq25713::i2cObjectIndex, bq25713::BQ25713::BQ25713addr) != 0)
   {
     // error: device not detected
     // charger
@@ -488,15 +511,21 @@ bool enable(const uint16_t minSystemVoltage_mV,
     // write the reset flag
     chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
     chargerIcRegisters.chargeOption3.set_RESET_REG(1);
-    charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
+    const bool resetSuccess = charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
+    if (not resetSuccess)
+    {
+      status_s = Status_t::ERROR;
+      set_software_error_message("Failed reset the memory");
+      return false;
+    }
 
     // wait until the flag is lowered
-    uint32_t timeout = time_ms() + 500;
+    uint32_t timeout = platform::time_ms() + 500;
     do
     {
-      delay_ms(5);
+      platform::delay_ms(5);
       chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
-    } while (time_ms() < timeout and chargerIcRegisters.chargeOption3.RESET_REG() == 1);
+    } while (platform::time_ms() < timeout and chargerIcRegisters.chargeOption3.RESET_REG() == 1);
   }
 
   // everything went fine (for now)
@@ -506,34 +535,39 @@ bool enable(const uint16_t minSystemVoltage_mV,
 
   status_s = Status_t::NOMINAL;
 
+  bool success = true;
+
   chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
   // disable high impedance mode
   chargerIcRegisters.chargeOption3.set_EN_HIZ(0);
-  charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
+  success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
   // disable low power mode
   chargerIcRegisters.chargeOption0.set_EN_LWPWR(0);
-  charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
+  success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
 
   chargerIcRegisters.prochotOption1.set_IDCHG_VTH(128 + (maxDichargingCurrent_mA / 512));
-  charger_ic::writeRegEx(chargerIcRegisters.prochotOption1);
+  success &= charger_ic::writeRegEx(chargerIcRegisters.prochotOption1);
 
   // disable ICO
-  enable_ico(false);
+  enable_input_current_optimization(false);
 
   chargerIc.readRegEx(chargerIcRegisters.chargeOption0);
   // disable DPM auto
   chargerIcRegisters.chargeOption0.set_IDPM_AUTO_DISABLE(0);
+  // prevent some visible led flickering, and audio ringing
+  chargerIcRegisters.chargeOption0.set_EN_OOA(1);
+  chargerIcRegisters.chargeOption0.set_LOW_PTM_RIPPLE(1);
   // enable IDPM
   chargerIcRegisters.chargeOption0.set_EN_IDPM(1);
   // set watchog timer to 5 seconds (lowest)
   chargerIcRegisters.chargeOption0.set_WDTMR_ADJ(1);
-  charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
+  success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
 
   chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
   // set 6A inductor (TODO issue #131: change with system constants)
   chargerIcRegisters.chargeOption3.set_IL_AVG(0b0);
-  charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
+  success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
   // disable charge
   enable_charge(false);
@@ -543,12 +577,18 @@ bool enable(const uint16_t minSystemVoltage_mV,
   chargerIcRegisters.chargeOption1.set_EN_IBAT(1);
   // enable PSYS
   chargerIcRegisters.chargeOption1.set_EN_PSYS(1);
-  charger_ic::writeRegEx(chargerIcRegisters.chargeOption1);
+  success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption1);
+
+  if (not success)
+  {
+    status_s = Status_t::ERROR;
+    set_software_error_message("Failed set start registers");
+    return false;
+  }
 
   // set the nominal voltage values
   const auto maxBatteryVoltage_mV_read = chargerIcRegisters.maxChargeVoltage.set(maxBatteryVoltage_mV);
   const auto minSystemVoltage_mV_read = chargerIcRegisters.minSystemVoltage.set(minSystemVoltage_mV);
-  chargerIcRegisters.inputVoltage.set(4200);
 
   std::string startErrorMessage = "";
   bool isSuccessful = true;
@@ -581,11 +621,20 @@ bool enable(const uint16_t minSystemVoltage_mV,
   // initial status update
   powerLimits_s.maxChargingCurrent_mA = maxChargingCurrent_mA;
   run_status_update();
+
+  isInit = true;
   return true;
 }
 
 void loop(const bool isChargeOk)
 {
+  if (not isInit)
+  {
+    status_s = Status_t::ERROR;
+    set_software_error_message("charger_ic loop called but never init");
+    return;
+  }
+
   static bool isInOtg = false;
 
   // instant update if the state changed
@@ -598,8 +647,8 @@ void loop(const bool isChargeOk)
   // update the OTG functionalities
   control_OTG();
 
-  // only update every 100ms
-  EVERY_N_MILLIS_COND(isChargeChanged, 100)
+  // only update every 10ms, ADC needs to update fairly quickly
+  EVERY_N_MILLIS_COND(isChargeChanged, 10)
   {
     measurments_s.isChargeOk = isChargeOk;
 
@@ -626,7 +675,7 @@ void loop(const bool isChargeOk)
     else
     {
       // set max charge current
-      const float coreTemp = read_CPU_temperature_degreesC();
+      const float coreTemp = platform::registers::read_CPU_temperature_degreesC();
       // will be 0 when temp reaches 70 degrees, stopping the charge
       // below 40 degrees, no reduction of charge current is made
       const float reducer = lmpd_constrain<float>(lmpd_map<float>(coreTemp, 40.0, 70.0, 1.0, 0.0), 0.0, 1.0);
@@ -665,7 +714,7 @@ void shutdown()
 void set_input_current_limit(const uint16_t maxInputCurrent_mA, const bool shouldUseICO)
 {
   powerLimits_s.current_mA = maxInputCurrent_mA;
-  powerLimits_s.shoulduseICO = shouldUseICO;
+  powerLimits_s.shouldUseICO = shouldUseICO;
 }
 
 uint16_t get_charge_current() { return measurments_s.batChargeCurrent_mA; }
@@ -706,7 +755,7 @@ void disable_OTG()
   chargerIcRegisters.chargeOption3.set_EN_OTG(0);
   charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
-  alerts::manager.clear(alerts::Type::OTG_FAILED);
+  logic::alerts::manager.clear(logic::alerts::Type::OTG_FAILED);
 
   // deactivate this state LAST
   isInOtg_s = false;
@@ -724,7 +773,7 @@ void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA)
   chargerIcRegisters.oTGCurrent.set(maxCurrent_mA);
 
   // if (realVal != prevVal)
-  //   lampda_print("new OTG targets : %dmV %dmA", realVal, maxCurrent_mA);
+  //   platform::lampda_print("new OTG targets : %dmV %dmA", realVal, maxCurrent_mA);
 }
 
 bool is_in_OTG() { return isInOtg_s; }
@@ -738,7 +787,7 @@ ChargeStatus_t get_charge_status() { return chargeStatus_s; }
 bool Measurments::is_measurment_valid() const
 {
   // initialized and recent
-  return this->time > 0 and (time_ms() - this->time) < 2000;
+  return this->time > 0 and (platform::time_ms() - this->time) < 2000;
 }
 
 Measurments get_measurments() { return measurments_s; };
@@ -747,3 +796,5 @@ Battery get_battery() { return battery_s; };
 
 } // namespace drivers
 } // namespace charger
+} // namespace power
+} // namespace lampda

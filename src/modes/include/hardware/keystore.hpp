@@ -1,3 +1,7 @@
+/*! \file keystore.hpp
+    \brief Filesystem interaction tools.
+*/
+
 #ifndef MODES_HARDWARD_KEYSTORE_HPP
 #define MODES_HARDWARD_KEYSTORE_HPP
 
@@ -11,7 +15,7 @@
 #include <array>
 
 /// Mode key store interface, see ContextTy::KeyProxy
-namespace modes::store {
+namespace lampda::modes::store {
 
 /** \private Store identifier (change to force cleanup of all values)
  *
@@ -51,7 +55,7 @@ template<int16_t N> static constexpr uint32_t LMBD_INLINE hash(const char (&s)[N
 template<int16_t N> static inline void LMBD_INLINE setValue(const char (&key)[N], uint32_t value)
 {
   static_assert(N - 1 <= 14, "Please use keys shorter than 14 bytes!");
-  fileSystem::user::set_value(hash(key), value);
+  physical::fileSystem::user::set_value(hash(key), value);
 }
 
 /** \brief Get value for named \p key and write it in \p out
@@ -63,22 +67,11 @@ template<int16_t N> static inline void LMBD_INLINE setValue(const char (&key)[N]
 template<int16_t N> static inline bool LMBD_INLINE getValue(const char (&key)[N], uint32_t& out)
 {
   static_assert(N - 1 <= 14, "Please use keys shorter than 14 bytes!");
-  return fileSystem::user::get_value(hash(key), out);
-}
-
-/** \brief Check if value for \p key exists
- *
- * \param[in] key Key string to be hashed as 31 bit integer
- * \return Returns True if key exists
- */
-template<int16_t N> static inline bool LMBD_INLINE hasValue(const char (&key)[N], uint32_t& out)
-{
-  static_assert(N - 1 <= 14, "Please use keys shorter than 14 bytes!");
-  return fileSystem::user::doKeyExists(hash(key), out);
+  return physical::fileSystem::user::get_value(hash(key), out);
 }
 
 /// Force clear the stored parameters
-static inline void clear_stored() { fileSystem::clear(); }
+static inline void clear_stored() { physical::fileSystem::clear(); }
 
 /**
  * \brief  Check for migration and erase all values if needed
@@ -87,28 +80,28 @@ static inline void clear_stored() { fileSystem::clear(); }
 
 static inline void LMBD_INLINE migrateIfNeeded()
 {
-  if (not fileSystem::user::doKeyExists(storeUid))
+  if (not physical::fileSystem::user::doKeyExists(storeUid))
   {
-    fileSystem::user::set_value(storeUid, storeUid);
+    physical::fileSystem::user::set_value(storeUid, storeUid);
   }
 
   uint32_t out = storeUid ^ 0xff;
-  if (not fileSystem::user::get_value(storeUid, out))
+  if (not physical::fileSystem::user::get_value(storeUid, out))
   {
-    fileSystem::user::set_value(storeUid, storeUid);
-    fileSystem::user::get_value(storeUid, out);
+    physical::fileSystem::user::set_value(storeUid, storeUid);
+    physical::fileSystem::user::get_value(storeUid, out);
   }
 
   if (out != storeUid)
   {
-    fileSystem::clear_internal_fs();
-    fileSystem::clear();
-    fileSystem::user::set_value(storeUid, storeUid);
-    fileSystem::user::write_to_file();
-    fileSystem::system::write_to_file();
+    physical::fileSystem::clear_internal_fs();
+    physical::fileSystem::clear();
+    physical::fileSystem::user::set_value(storeUid, storeUid);
+    physical::fileSystem::user::write_to_file();
+    physical::fileSystem::system::write_to_file();
 
-    fileSystem::system::load_from_file();
-    fileSystem::user::load_from_file();
+    physical::fileSystem::system::load_from_file();
+    physical::fileSystem::user::load_from_file();
   }
 }
 
@@ -194,7 +187,7 @@ template<typename _EnumTy, int _groupId, int _modeId, PrefixValues _prefix = Pre
     if constexpr (std::is_same_v<valueTy, uint32_t>)
     {
       constexpr auto idx = indexKeyFor(prefix, groupId, modeId, 0, rawKey);
-      fileSystem::user::set_value(idx, value);
+      physical::fileSystem::user::set_value(idx, value);
 
       // small case: value is smaller than uint32_t, store it on a uint32_t
     }
@@ -214,7 +207,7 @@ template<typename _EnumTy, int _groupId, int _modeId, PrefixValues _prefix = Pre
       for (uint8_t I = 0; I < N; ++I)
       {
         uint32_t off = indexKeyFor(prefix, groupId, modeId, I, rawKey);
-        fileSystem::user::set_value(off, storage[I]);
+        physical::fileSystem::user::set_value(off, storage[I]);
       }
     }
     else
@@ -234,7 +227,7 @@ template<typename _EnumTy, int _groupId, int _modeId, PrefixValues _prefix = Pre
     if constexpr (std::is_same_v<T, uint32_t>)
     {
       constexpr auto idx = indexKeyFor(prefix, groupId, modeId, 0, rawKey);
-      return fileSystem::user::get_value(idx, output);
+      return physical::fileSystem::user::get_value(idx, output);
 
       // small case: value is smaller than uint32_t, get it on a uint32_t
     }
@@ -258,7 +251,7 @@ template<typename _EnumTy, int _groupId, int _modeId, PrefixValues _prefix = Pre
       for (uint8_t I = 0; I < N; ++I)
       {
         uint32_t off = indexKeyFor(prefix, groupId, modeId, I, rawKey);
-        if (not fileSystem::user::get_value(off, storage[I]))
+        if (not physical::fileSystem::user::get_value(off, storage[I]))
         {
           return false;
         }
@@ -297,10 +290,10 @@ template<typename _EnumTy, int _groupId, int _modeId, PrefixValues _prefix = Pre
 
     // retrieve storeId from storage
     uint32_t otherId = 0;
-    if (not fileSystem::user::get_value(idx, otherId))
+    if (not physical::fileSystem::user::get_value(idx, otherId))
     {
       otherId = storeId;
-      fileSystem::user::set_value(idx, storeId);
+      physical::fileSystem::user::set_value(idx, storeId);
     }
 
     // if it don't match our storeId, clean storage from our old keys
@@ -308,8 +301,8 @@ template<typename _EnumTy, int _groupId, int _modeId, PrefixValues _prefix = Pre
     {
       constexpr uint32_t select = 0xfff00000; // all but offset
       constexpr uint32_t masked = idx & select;
-      fileSystem::user::dropMatchingKeys(masked, select);
-      fileSystem::user::set_value(idx, storeId);
+      physical::fileSystem::user::dropMatchingKeys(masked, select);
+      physical::fileSystem::user::set_value(idx, storeId);
     }
   }
 };
@@ -348,6 +341,6 @@ template<uint32_t baseId, typename AllModes> static constexpr uint32_t derivateS
 template<uint32_t baseId, typename AllModes> static constexpr uint32_t derivateStoreId =
         derivateStoreIdImpl<baseId, AllModes>();
 
-} // namespace modes::store
+} // namespace lampda::modes::store
 
 #endif

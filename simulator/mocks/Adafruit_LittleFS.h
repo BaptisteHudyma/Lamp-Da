@@ -1,3 +1,7 @@
+/*! \file Adafruit_LittleFS.h
+    \brief Mock of the Adafruit LittleFileSystem library
+*/
+
 #ifndef FAKE_LITTLEFS_H
 #define FAKE_LITTLEFS_H
 

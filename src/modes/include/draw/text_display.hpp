@@ -1,18 +1,19 @@
-#if 0
+/*! \file text_display.hpp
+    \brief Define a text display utility.
+*/
 
-#include <sys/types.h>
+#ifndef MODES_DRAW_TEXT_DISPLAY_HPP
+#define MODES_DRAW_TEXT_DISPLAY_HPP
 
-#include <cstdint>
-#include <string>
+#include <functional>
 
-#include "text.h"
-
-#include "src/system/utils/constants.h"
-#include "src/system/utils/utils.h"
-
-#include "src/system/platform/print.h"
-
+namespace lampda::modes::draw {
+/// Text display utility
 namespace text {
+
+using LampTy = hardware::LampTy;
+
+namespace __private {
 
 // fonts from:
 // http://www.piclist.com/techref/datafile/charset/extractor/charset_extractor.html
@@ -351,17 +352,24 @@ struct BigFont : public IFont
 };
 static const BigFont bigFont;
 
-IFont const* font_from_scale(float& scale)
+/// get a font from a [0; 1] scale
+std::pair<const IFont&, float> font_from_scale(const float scale)
 {
-  scale = lmpd_constrain<float>(scale, 0.2f, 1.0f);
-  if (scale <= 0.5)
+  static constexpr float minScale = 0.1;
+  static constexpr float switchScale = 0.5;
+
+  float trueScale = lmpd_constrain<float>(scale, 0.0f, 1.0f);
+  if (trueScale <= switchScale)
   {
-    scale = 1 - (0.5 - scale);
-    return &smallFont;
+    trueScale = lmpd_map(scale, 0.0, switchScale, minScale, 1.0);
+    return {smallFont, trueScale};
   }
   else
   {
-    return &bigFont;
+    // map small font size to big font size
+    trueScale =
+            lmpd_map(scale, switchScale, 1.0, smallFont.get_height() / static_cast<float>(bigFont.get_height()), 1.0);
+    return {bigFont, trueScale};
   }
 }
 
@@ -370,30 +378,28 @@ IFont const* font_from_scale(float& scale)
  * \param[in] letter
  * \param[in] startXIndex width at which the text starts, in lamp coordinates
  * \param[in] startYIndex height at which the text starts, in lamp coordinates
- * \param[in] scale Between 0 and 1, size of the characters
- * \param[in] color
- * \param[in, out] isDisplayedOut Indicates if this letter is completly out of bounds
- * \return the char font width
+ * \param[in] font The font to use to draw this character
+ * \param[in] scale Scale of the letter
+ * \param[in] color the color to draw the character in
+ * \return A bool that indictaes if the letter was drawn in a visible area, and the char font width in pixels
  */
-uint8_t display_letter(const u_char letter,
-                       const int16_t startXIndex,
-                       const int16_t startYIndex,
-                       float scale,
-                       const Color& color,
-                       bool& isDisplayedOut,
-                       LedStrip& strip)
+std::pair<bool, uint8_t> display_letter(const char letter,
+                                        const int16_t startXIndex,
+                                        const int16_t startYIndex,
+                                        const IFont& font,
+                                        const float scale,
+                                        const uint32_t color,
+                                        LampTy& lamp)
 {
   uint8_t xIndex = 0;
   uint8_t yIndex = 0;
 
-  IFont const* font = font_from_scale(scale);
+  bool hasCutoffX = false;    // letter was displayed out of screen, or cutout by
+                              // the screen (above zero)
+  bool isDisplayedOut = true; // letter was displayed completly out of screen, under zero
 
-  bool hasCutoffX = false; // letter was displayed out of screen, or cutout by
-                           // the screen (above zero)
-  isDisplayedOut = true;   // letter was displayed completly out of screen, under zero
-
-  const auto& letterArray = font->get_letter(letter);
-  const uint8_t arrayLen = font->get_arrayLenght();
+  const auto& letterArray = font.get_letter(letter);
+  const uint8_t arrayLen = font.get_arrayLenght();
   for (uint8_t i = 0; i < arrayLen; i++)
   {
     uint8_t letterPart = letterArray[i];
@@ -411,8 +417,7 @@ uint8_t display_letter(const u_char letter,
           if (targetX >= 0 and targetY >= 0)
           {
             isDisplayedOut = false;
-            const auto pixelIndex = to_strip(targetX, targetY);
-            strip.setPixelColor(pixelIndex, color.get_color(pixelIndex, LED_COUNT));
+            lamp.setPixelColorXY(targetX, targetY, color);
           }
         }
       }
@@ -427,7 +432,7 @@ uint8_t display_letter(const u_char letter,
       letterPart = letterPart << 1;
 
       xIndex++;
-      if (xIndex > font->get_width() - 1)
+      if (xIndex > font.get_width() - 1)
       {
         xIndex = 0;
         yIndex++;
@@ -436,74 +441,61 @@ uint8_t display_letter(const u_char letter,
   }
 
   if (hasCutoffX)
-    return 0;
-  return font->get_width();
+    return {isDisplayedOut, 0};
+  return {isDisplayedOut, font.get_width()};
 }
 
-bool display_text(const Color& color,
-                  const std::string& text,
-                  const int16_t startXIndex,
-                  const int16_t startYIndex,
-                  float scale,
-                  const bool paddEnd,
-                  LedStrip& strip)
+} // namespace __private
+
+struct TextDisplay
 {
-  bool lastLetterDisappeared = true;
-  int16_t displayColumn = startXIndex;
-  for (const char c: text)
+  static constexpr float fwidth = LampTy::maxWidthFloat; ///< \private
+  static constexpr uint16_t width = LampTy::maxWidth;    ///< \private
+  static constexpr uint16_t nbLines = LampTy::maxHeight;
+
+  /**
+   * \brief Display a given text string to the led
+   * \param[in] lamp
+   * \param[in] text Text to display
+   * \param[in] colorCallback user defined callback for
+   * \param[in] startXIndex Start X coordinate of the text
+   * \param[in] startYIndex Start Y coordinate of the text
+   * \param[in] scale Scale of the text to display, between 0 and 1
+   * \param[in] paddEnd If true, this function will consider that the text is displayed when the last letter disappears
+   * \return True when the text is fully displayed
+   */
+  static bool display(LampTy& lamp,
+                      const std::string& text,
+                      const std::function<uint32_t(char)>& colorCallback,
+                      const int16_t startXIndex = 0,
+                      const int16_t startYIndex = 0,
+                      float scale = 0.2,
+                      const bool paddEnd = false)
   {
-    const auto res = display_letter(c, displayColumn, startYIndex, scale, color, lastLetterDisappeared, strip);
-    if (res == 0) // still some letters to display
-      return false;
-    displayColumn += res;
-  }
+    const auto& [font, trueScale] = __private::font_from_scale(scale);
 
-  // animation with padding does not stop until the last letter is gone
-  if (paddEnd)
-    return lastLetterDisappeared;
+    bool lastLetterDisappeared = true;
+    int16_t displayColumn = startXIndex;
+    for (const char& c: text)
+    {
+      const auto& [isLetterDisplayed, charSize] =
+              __private::display_letter(c, displayColumn, startYIndex, font, trueScale, colorCallback(c), lamp);
+      lastLetterDisappeared = isLetterDisplayed;
+      if (charSize == 0) // still some letters to display
+        break;
+      // offset the remaining chars
+      displayColumn += charSize;
+    }
 
-  return true;
-}
+    // animation with padding does not stop until the last letter is gone
+    if (paddEnd)
+      return lastLetterDisappeared;
 
-bool display_scrolling_text(const Color& color,
-                            const std::string& text,
-                            const int16_t startYIndex,
-                            float scale,
-                            const uint32_t durationPerChar,
-                            const bool reset,
-                            const bool paddEnd,
-                            const uint8_t fadeOut,
-                            LedStrip& strip)
-{
-  static float xIndex = stripXCoordinates;
-  if (reset)
-  {
-    xIndex = stripXCoordinates;
-    return false;
-  }
-
-  strip.fadeToBlackBy(fadeOut);
-
-  // slow animation: blend
-  static uint32_t lastSubstep = 0;
-  const uint32_t maxSubstep = MAIN_LOOP_UPDATE_PERIOD_MS / durationPerChar;
-
-  if (display_text(color, text, xIndex, startYIndex, scale, paddEnd, strip))
-  {
     return true;
   }
-
-  const float fontSize = static_cast<float>(font_from_scale(scale)->get_width());
-
-  const float letterIterationsToCompleteTurn =
-          static_cast<float>(durationPerChar) / static_cast<float>(MAIN_LOOP_UPDATE_PERIOD_MS);
-  // here, the size of the letter is ignored
-  const float increment = (stripXCoordinates + fontSize) / letterIterationsToCompleteTurn;
-  xIndex -= increment;
-
-  return false;
-}
+};
 
 } // namespace text
+} // namespace lampda::modes::draw
 
 #endif

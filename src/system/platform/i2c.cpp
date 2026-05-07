@@ -6,12 +6,17 @@
 #include "time.h"
 
 #include <cassert>
+#include <stdint.h>
 
 // platform specific code
 #include <Arduino.h>
 #include "Wire.h"
 #include "rtos.h"   // tied to FreeRTOS for serialization
 #include "semphr.h" // tied to FreeRTOS for serialization
+
+namespace lampda {
+namespace platform {
+namespace i2c {
 
 // set the two interfaces
 TwoWire* PROGMEM interfaces[] = {&Wire};
@@ -181,5 +186,9 @@ int i2c_xfer_unlocked(
   }
   return 0;
 }
+
+} // namespace i2c
+} // namespace platform
+} // namespace lampda
 
 #endif

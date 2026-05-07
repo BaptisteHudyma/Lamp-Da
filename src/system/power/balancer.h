@@ -1,3 +1,7 @@
+/*! \file balancer.h
+    \brief Interface for the abstraction layer of the battery balancer component.
+*/
+
 #ifndef POWER_BALANCER_H
 #define POWER_BALANCER_H
 
@@ -6,25 +10,34 @@
 
 #include "src/system/utils/constants.h"
 
+namespace lampda {
+namespace power {
+
+/// Handles the battery balancing process
 namespace balancer {
 
+/**
+ * \brief Store the balancer component status
+ */
 struct Status
 {
-  // cells voltages, in order
+  /// Cells voltages, in order
   std::array<uint16_t, batteryCount> batteryVoltages_mV;
-  // true if the cell is currently balancing
+  /// True if the cell is currently balancing
   std::array<bool, batteryCount> isBalancing;
-  // voltage of the battery pack
+  /// Voltage of the battery pack, in millivolts.
   uint16_t stackVoltage_mV;
-  // temperature of the component
+  /// Temperature of the component, in degrees.
   uint16_t temperature_degrees;
 
-  // last time the measurment was updated
+  /// Last time the measurment was updated, in milliseconds.
   uint32_t lastMeasurmentUpdate = 0;
 
+  /// True if this structure contains valid data
   bool is_valid() const;
 };
 
+/// Return the status of the balancer
 Status get_status();
 
 /**
@@ -49,5 +62,7 @@ void enable_balancing(bool enable);
 void go_to_sleep();
 
 } // namespace balancer
+} // namespace power
+} // namespace lampda
 
 #endif

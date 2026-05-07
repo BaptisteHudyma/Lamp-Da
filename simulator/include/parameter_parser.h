@@ -1,3 +1,7 @@
+/*! \file parameter_parser.h
+    \brief Handle the modification of the simulation parameters by a file
+*/
+
 #ifndef PARAMETER_PARSER_H
 #define PARAMETER_PARSER_H
 
@@ -7,6 +11,8 @@
 
 #include "simulator/include/hardware_influencer.h"
 
+namespace simulator {
+
 static const char* fileName = "./simulator/resources/simulation_parameters.txt";
 
 static const char* batteryVoltageKey = "batt_V";
@@ -14,6 +20,7 @@ static const char* vbusVoltageKey = "vbus_V";
 static const char* cpuTemperatureKey = "cpu_temp";
 static const char* addedAlgoDelayKey = "algo_del";
 
+/// Read parameters from the parameter file, and update the simulation
 inline void read_and_update_parameters()
 {
   static bool fileNotDetectedCalled = false;
@@ -67,5 +74,7 @@ inline void read_and_update_parameters()
 
   file.close();
 }
+
+} // namespace simulator
 
 #endif

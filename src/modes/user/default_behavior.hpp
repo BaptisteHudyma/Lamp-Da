@@ -1,3 +1,7 @@
+/*! \file default_behavior.hpp
+    \brief Define the default behavior of a lamp.
+*/
+
 #ifndef DEFAULT_BEHAVIOR_MANAGER_HPP
 #define DEFAULT_BEHAVIOR_MANAGER_HPP
 
@@ -6,6 +10,8 @@
 //  - src/modes/user/indexable_behavior.hpp
 //  - src/modes/user/simple_behavior.hpp
 //
+
+namespace lampda::user {
 
 //
 // These are defined in src/modes/user/{flavor}_behavior.hpp
@@ -50,11 +56,23 @@ void brightness_update(const brightness_t brightness)
 {
   auto manager = get_context();
 
-  // set brightness for underlying object (w/o re-entry in update_brightness)
-  manager.lamp.setBrightness(brightness, true, true);
+  // dont handle invalid commands
+  if (brightness <= ::lampda::brightness::absoluteMaximumBrightness)
+  {
+    // force update of the internal references
+    manager.lamp.align_internal_to_system_brightness();
 
-  // callbacks
-  manager.brightness_update(brightness);
+    // set brightness for underlying object (w/o re-entry in update_brightness)
+    manager.lamp.setBrightness(brightness, true, true);
+
+    // callbacks
+    manager.brightness_update(brightness);
+  }
+  else
+  {
+    // this call could be just a max brigthness update
+    manager.lamp.enforce_internal_brightness_limits();
+  }
 }
 
 void sunset_timer_update(const float progress)
@@ -84,12 +102,21 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
   switch (clicks)
   {
     case 5:
-      if (not isEndOfHoldEvent and holdDuration > 0)
       {
-        // sunset timer !
-        auto manager = get_context();
-        modes::details::_animate_sunset_timer(manager, holdDuration, 1000);
-        return true;
+        if (not isEndOfHoldEvent and holdDuration > 0)
+        {
+          // sunset timer !
+          auto manager = get_context();
+          if (manager.overlay_animate_ramp(
+                      holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
+          {
+            // update the sunset timing
+            manager.state.isSunsetTimingPending = 2;
+          }
+
+          return true;
+        }
+        break;
       }
   }
 
@@ -120,6 +147,7 @@ void loop()
 bool should_spawn_thread()
 {
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
+  /// The thread is needed to update the strip, so non negociable.
   return true;
 #else
   auto manager = get_context();
@@ -135,5 +163,119 @@ void user_thread()
   if (manager.should_spawn_thread())
     manager.user_thread();
 }
+
+/// Define default behavior that are shared between system types
+namespace default_behaviors {
+
+/// must be called by the lampda::user::button_clicked_default
+bool button_clicked(const uint8_t clicks)
+{
+  auto manager = get_context();
+
+  switch (clicks)
+  {
+    case 6: // 6 clicks:  jump to first mode of first category
+      {
+        if (manager.state.isInFavoriteMockGroup)
+        { // reset favorite indicator
+          manager.state.isInFavoriteMockGroup = false;
+        }
+        // return to first state
+        manager.set_active_group(0);
+        manager.set_active_mode(0);
+        manager.blip(250);
+        return true;
+      }
+  }
+
+  // nothing
+  return false;
+}
+
+/// must be called by the lampda::user::button_hold_default
+bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)
+{
+  auto manager = get_context();
+  auto& rampHandler = manager.state.rampHandler;
+
+  switch (clicks)
+  {
+    case 3: // 3 click+hold: configure custom ramp
+            // no ramps in favorite group
+      if (not manager.state.isInFavoriteMockGroup)
+      {
+        rampHandler.update_ramp(manager.get_active_custom_ramp(), holdDuration, [&](uint8_t rampValue) {
+          manager.custom_ramp_update(rampValue);
+          manager.set_active_custom_ramp(rampValue);
+        });
+        return true;
+      }
+      break;
+
+      // 5 click+hold: Add 5 minutes to sunset timer
+    case 5:
+      {
+        if (not isEndOfHoldEvent and holdDuration > 0 and logic::sunset::is_enabled())
+        {
+          // sunset timer !
+          auto manager = get_context();
+          if (manager.overlay_animate_ramp(
+                      holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
+          {
+            // update the sunset timing
+            manager.state.isSunsetTimingPending = 2;
+          }
+        }
+        break;
+      }
+
+    case 13: // 13 clicks + hold: reset the whole system and stored parameters
+      {
+        if (not isEndOfHoldEvent and holdDuration > 0)
+        {
+          auto manager = get_context();
+          if (manager.overlay_animate_ramp(
+                      holdDuration, 5000, modes::colors::PaletteGradient<modes::colors::Red, modes::colors::Red>))
+          {
+            // reset the file system and memory
+            platform::lampda_print("clearing the whole file format");
+            physical::fileSystem::clear_internal_fs();
+
+            // shutdown the lamp
+            const bool shouldSaveUserParameters = false;
+            logic::behavior::internal::handle_shutdown_state(shouldSaveUserParameters);
+          }
+        }
+        break;
+      }
+
+    case 20: // 20 clicks + hold: reset the whole system and stored parameters
+      {
+        if (not isEndOfHoldEvent and holdDuration > 0)
+        {
+          auto manager = get_context();
+          if (manager.overlay_animate_ramp(
+                      holdDuration, 5000, modes::colors::PaletteGradient<modes::colors::Red, modes::colors::Red>))
+          {
+            // reset the file system and memory
+            platform::lampda_print("clearing the whole file format");
+            physical::fileSystem::clear_internal_fs();
+
+            // shutdown the lamp
+            const bool shouldSaveUserParameters = false;
+            const bool shouldSaveSystemParameters = false;
+            logic::behavior::internal::handle_shutdown_state(shouldSaveUserParameters, shouldSaveSystemParameters);
+          }
+        }
+        break;
+      }
+  }
+
+  return false;
+}
+
+} // namespace default_behaviors
+
+} // namespace lampda::user
 
 #endif

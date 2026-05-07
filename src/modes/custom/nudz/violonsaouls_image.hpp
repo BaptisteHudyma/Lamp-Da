@@ -1,10 +1,14 @@
+// GENERATED FILE, DO NOT MODIFY
+/// Compressed image storage class
 struct ViolonsaoulsImageTy
 {
-  static constexpr uint16_t width = 121;
-  static constexpr uint16_t height = 22;
-  static constexpr uint16_t bitsPerPixel = 6;
-  static constexpr uint32_t colormapSize = 39;
+  static constexpr uint16_t width = 0121;        ///< width of the image
+  static constexpr uint16_t height = 0022;       ///< height of the image
+  static constexpr uint16_t bitsPerPixel = 0006; ///< used bits per pixel
+  static constexpr uint32_t colormapSize = 0039; ///< size of the color
   // clang-format off
+
+  /// map index to color
   static constexpr uint32_t colormap[] = {
      0x000000, 0x902207, 0xf88000, 0x472003, 0x502400, 0x200b00, 0x472510, 0x9d4f00,
      0x0b0402, 0xe87900, 0xff8601, 0x762106, 0x884500, 0x31331c, 0xd36e00, 0xf0d8af,
@@ -12,6 +16,7 @@ struct ViolonsaoulsImageTy
      0xdbbb95, 0x1b1a0d, 0xb80000, 0x4b0000, 0x440101, 0x100100, 0xbe0000, 0x6b3114,
      0xbd8d6e, 0x340000, 0xb40002, 0x2c0000, 0x543216, 0xb20000, 0xa70002, 
   };
+  /// bit packed image
   static constexpr uint8_t indexData[] = {
      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -140,5 +145,7 @@ struct ViolonsaoulsImageTy
      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   };
   // clang-format on
+
+  /// Store the RGB data
   static constexpr uint32_t rgbData[] = {};
 };

@@ -1,13 +1,17 @@
+/*! \file gamma.hpp
+    \brief Define the gamma color correction.
+*/
+
 #ifndef MODES_GAMMA8_H
 #define MODES_GAMMA8_H
 
 #include <cstdint>
 
-namespace modes::colors {
+namespace lampda::modes::colors {
 
 namespace __internal {
 
-// gamma 2.8 lookup table used for color correction
+/// gamma 2.8 lookup table used for color correction
 static constexpr uint8_t gammaT[256] = {
         0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
         0,   0,   0,   0,   0,   0,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   2,   2,   2,
@@ -35,9 +39,9 @@ void calcGammaTable(float gamma)
 
 } // namespace __internal
 
-// used for color gamma correction
+/// used for color gamma correction
 static constexpr uint8_t gamma8(uint8_t value) { return __internal::gammaT[value]; }
 
-} // namespace modes::colors
+} // namespace lampda::modes::colors
 
 #endif

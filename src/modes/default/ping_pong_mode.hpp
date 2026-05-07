@@ -1,21 +1,33 @@
 #ifndef PING_PONG_MODE_HPP
 #define PING_PONG_MODE_HPP
 
-namespace modes::default_modes {
+/// @file ping_pong_mode.hpp
+
+namespace lampda::modes::default_modes {
 
 #include <cstdint>
 
+/**
+ * \brief Ping pong of a light dot between the lampe sides
+ */
 struct PingPongMode : public modes::BasicMode
 {
+  /// color random variation
   static constexpr float randomVariation = 0.3;
+  /// back and forth timing in milliseconds
   static constexpr uint32_t animationTiming = 1000;
 
   struct StateTy
   {
+    /// actual dot index
     size_t lastIndex;
+    /// progress between 0 and 1
     float progress;
+    /// back of forth
     bool step;
+    /// color of the dot
     uint32_t color;
+    /// make the dot leave a trail
     uint8_t persistance;
   };
 
@@ -34,7 +46,7 @@ struct PingPongMode : public modes::BasicMode
     static constexpr auto maxLedIndex = ctx.lamp.ledCount - 1;
     ctx.state.progress += iteration;
 
-    const float prog = min<float>(ctx.state.progress, 1.0);
+    const float prog = std::min<float>(ctx.state.progress, 1.0);
 
     // fade leds
     ctx.lamp.fadeToBlackBy(255 - ctx.state.persistance);
@@ -49,7 +61,7 @@ struct PingPongMode : public modes::BasicMode
     }
     else
     {
-      const size_t newIndex = max<float>(0.0, (1.0f - prog) * maxLedIndex);
+      const size_t newIndex = std::max<float>(0.0, (1.0f - prog) * maxLedIndex);
       for (size_t i = newIndex; i < ctx.state.lastIndex; i++)
         ctx.lamp.setPixelColor(i, ctx.state.color);
       ctx.state.lastIndex = newIndex;
@@ -67,6 +79,6 @@ struct PingPongMode : public modes::BasicMode
   }
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif

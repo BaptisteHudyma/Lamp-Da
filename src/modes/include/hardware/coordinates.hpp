@@ -1,9 +1,13 @@
+/*! \file coordinates.hpp
+    \brief Define the lamps coordinates systems.
+*/
+
 #ifndef MODES_HARDWARE_COORDINATES_HPP
 #define MODES_HARDWARE_COORDINATES_HPP
 
 #include <array>
 
-namespace modes::hardware::details {
+namespace lampda::modes::hardware::details {
 
 // For each Y coord, return the apparent "LED shift required" to align to grid
 template<size_t maxOverflowHeight, typename _OutTy = std::array<uint16_t, maxOverflowHeight + 1>>
@@ -59,6 +63,6 @@ static constexpr _OutTy computeExtraShiftResidues(float realExactWidth)
   return results;
 }
 
-} // namespace modes::hardware::details
+} // namespace lampda::modes::hardware::details
 
 #endif

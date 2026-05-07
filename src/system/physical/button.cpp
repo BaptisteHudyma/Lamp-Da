@@ -12,15 +12,26 @@
 #include "src/system/platform/time.h"
 #include "src/system/platform/print.h"
 
+namespace lampda {
+namespace physical {
 namespace button {
 
+// The button pullup pin (one button pin to GND, the other to this pin)
+platform::gpio::DigitalPin::GPIO _buttonPin = platform::gpio::DigitalPin::GPIO::gpio3;
+platform::gpio::DigitalPin _buttonGpio(_buttonPin);
+
+platform::gpio::DigitalPin::GPIO get_button_pin() { return _buttonPin; }
+int get_button_pin_RAW() { return _buttonGpio.pin(); }
+void set_button_pin(const platform::gpio::DigitalPin::GPIO buttonPin) { _buttonPin = buttonPin; }
+
+// button pressed states
 static ButtonStateTy buttonState = ButtonStateTy();
 ButtonStateTy get_button_state() { return buttonState; }
 
 bool is_button_pressed()
 {
   // this is a pullup, so high means no button press
-  return not ButtonPin.is_high();
+  return not _buttonGpio.is_high();
 }
 
 static bool isSystemStartClick = true;
@@ -33,7 +44,7 @@ void button_state_interrupt()
   const bool isbuttonStillpressed = is_button_pressed();
   if (isbuttonStillpressed)
   {
-    const uint32_t currentTime = time_ms();
+    const uint32_t currentTime = platform::time_ms();
     // small delay since button press, register a click
     if ((currentTime - buttonState.lastPressTime) > RELEASE_BETWEEN_CLICKS)
     {
@@ -43,7 +54,7 @@ void button_state_interrupt()
         buttonState.firstHoldTime = currentTime;
 
         // stat update
-        statistics::signal_button_press();
+        logic::statistics::signal_button_press();
       }
     }
     // update trigger flags
@@ -67,8 +78,9 @@ void init(const bool isSystemStartedFromButton)
   buttonState.reset();
 
   // attach the button interrupt
-  ButtonPin.set_pin_mode(DigitalPin::Mode::kInputPullUpSense);
-  ButtonPin.attach_callback(button_state_interrupt, DigitalPin::Interrupt::kChange);
+  _buttonGpio.set(_buttonPin);
+  _buttonGpio.set_pin_mode(platform::gpio::DigitalPin::Mode::kInputPullUpSense);
+  _buttonGpio.attach_callback(button_state_interrupt, platform::gpio::DigitalPin::Interrupt::kChange);
 
   // prevent multiple clicks on start
   if (isSystemStartedFromButton and buttonState.nbClicksCounted == 0)
@@ -76,12 +88,12 @@ void init(const bool isSystemStartedFromButton)
     // simulate a click
     wasButtonPressedDetected = true;
     buttonState.nbClicksCounted = 1;
-    buttonState.lastPressTime = time_ms();
-    buttonState.firstHoldTime = time_ms();
+    buttonState.lastPressTime = platform::time_ms();
+    buttonState.firstHoldTime = platform::time_ms();
     buttonState.wasTriggered = true;
     buttonState.isPressed = true;
 
-    statistics::signal_button_press();
+    logic::statistics::signal_button_press();
   }
   else
   {
@@ -93,7 +105,7 @@ void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
                    const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback)
 {
   const bool isButtonPressDetected = wasButtonPressedDetected;
-  const uint32_t currentTime = time_ms();
+  const uint32_t currentTime = platform::time_ms();
   const uint32_t sinceLastCall = currentTime - buttonState.lastPressTime;
   const uint32_t pressDuration = currentTime - buttonState.firstHoldTime;
 
@@ -144,12 +156,14 @@ void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
   if (isButtonPressDetected && not is_button_pressed() && pressDuration > RELEASE_BETWEEN_CLICKS)
   {
     button_state_interrupt();
-    lampda_print("Button interrupt shortcut due to state lock detected");
+    platform::lampda_print("Button interrupt shortcut due to state lock detected");
   }
 }
 
 bool is_system_start_click() { return isSystemStartClick; }
 
 } // namespace button
+} // namespace physical
+} // namespace lampda
 
 #endif
