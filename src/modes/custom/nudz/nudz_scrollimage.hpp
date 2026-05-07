@@ -203,7 +203,6 @@ struct NudzBeerGlassMode : public BasicMode
     std::vector<BubbleTy> bubbles; ///< store the bubbles
 
     imu::ImuEventTy<> imuEvent; ///< Handle imu events
-    imu::ImuEventTy<> imuEvent;
   };
 
   static void on_enter_mode(auto& ctx)

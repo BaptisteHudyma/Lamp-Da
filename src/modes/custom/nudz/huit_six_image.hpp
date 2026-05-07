@@ -2,10 +2,10 @@
 /// Compressed image storage class
 struct Huit_sixImageTy
 {
-  static constexpr uint16_t width = 0026;        ///< width of the image
-  static constexpr uint16_t height = 0022;       ///< height of the image
-  static constexpr uint16_t bitsPerPixel = 0004; ///< used bits per pixel
-  static constexpr uint32_t colormapSize = 0016; ///< size of the color
+  static constexpr uint16_t width = 26;        ///< width of the image
+  static constexpr uint16_t height = 22;       ///< height of the image
+  static constexpr uint16_t bitsPerPixel = 4;  ///< used bits per pixel
+  static constexpr uint32_t colormapSize = 16; ///< size of the color
   // clang-format off
 
   /// map index to color
