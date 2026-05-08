@@ -144,6 +144,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
   /// total number of groups, including accessible and hidden ones
   static constexpr uint8_t nbGroupsTotal {std::tuple_size_v<AllGroupsTy>};
+  static constexpr uint8_t hiddenGroupCount = hiddenGroupsCount;
 
   static_assert(nbGroupsTotal >= hiddenGroupsCount, "Manager cannot operate without accessible groups");
 

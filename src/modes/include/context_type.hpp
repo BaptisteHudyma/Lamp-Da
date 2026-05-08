@@ -218,6 +218,8 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
 
   /// \private Get number of groups available
   auto LMBD_INLINE get_accessible_groups_count() { return modeManager.nbAccessibleGroups; }
+  /// \private Get the number of hidden unaccessible groups
+  auto LMBD_INLINE get_hidden_groups_count() { return modeManager.hiddenGroupCount; }
 
   /// \private Get number of modes available
   auto LMBD_INLINE get_modes_count()

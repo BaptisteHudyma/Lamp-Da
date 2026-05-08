@@ -46,15 +46,16 @@ using NudzModes = modes::GroupFor<modes::custom::nudz::NudzHeinekenMode,
 
 using ManagerTy = modes::ManagerForHiddenGroups<
 #ifdef NUDZ_MODES_ENABLED
-        0,
+        1, // BluetoothModes is defined as an hidden group
 #else
-        1, // NudzModes is defined as an hidden group
+        2, // NudzModes and BluetoothModes are defined as an hidden groups
 #endif
         modes::FixedModes,
         modes::legacy::CalmModes,
         modes::legacy::PartyModes,
         modes::legacy::SoundModes,
-        custom::NudzModes>;
+        custom::NudzModes,
+        modes::bluetooth::BluetoothModes>;
 
 //
 // implementation details
