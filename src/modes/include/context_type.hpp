@@ -87,6 +87,8 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   // manager calls
   //
 
+  template<typename Mode> StateTyOf<Mode>& get_state_of_mode() { return modeManager.template getStateOf<Mode>(); }
+
   /// \private Jump to next group
   auto LMBD_INLINE next_group()
   {
@@ -217,6 +219,8 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   }
 
   /// \private Get number of groups available
+  auto LMBD_INLINE get_groups_count() { return modeManager.nbGroupsTotal; }
+  /// \private Get number of standard accessible groups available
   auto LMBD_INLINE get_accessible_groups_count() { return modeManager.nbAccessibleGroups; }
   /// \private Get the number of hidden unaccessible groups
   auto LMBD_INLINE get_hidden_groups_count() { return modeManager.hiddenGroupCount; }

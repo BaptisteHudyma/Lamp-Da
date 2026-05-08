@@ -164,6 +164,40 @@ void user_thread()
     manager.user_thread();
 }
 
+void bluetooth_switch_pattern(uint8_t index, uint32_t targetColor)
+{
+  // get manager and execute a mode or group change
+  auto manager = get_context();
+  if (manager.get_hidden_groups_count() <= 0)
+  {
+    platform::lampda_print("Cannot use bluetooth control without an hidden bluetooth group");
+    return;
+  }
+
+  const auto availableModes = manager.get_modes_count();
+  /// TODO: THERE IS A BIG ASSUMPTION HERE, THAT THE BLUETOOTH GROUP IS ALWAYS THE LAST ONE
+  const auto bluetoothGroup = manager.get_groups_count() - 1;
+
+  if (availableModes <= index)
+  {
+    platform::lampda_print("Unimplemented pattern id %d", index);
+    return;
+  }
+
+  /// \warning change this someway
+  manager.set_active_group(bluetoothGroup);
+  manager.set_active_mode(index);
+
+  /// TODO: BIG ASSUMPTION HERE : we consider that it is known that the Bluetooth group starts with the
+  /// controlable color mode, this would be WRONG
+  /// \warning
+  if (index == 0)
+  {
+    auto& modeState = manager.get_state_of_mode<modes::bluetooth::ColorControlMode>();
+    modeState.color = targetColor;
+  }
+}
+
 /// Define default behavior that are shared between system types
 namespace default_behaviors {
 

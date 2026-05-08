@@ -101,52 +101,6 @@ TEST(test_elf_decoder, invalid_message_END)
   }
 }
 
-// test all color chanels
-TEST(test_elf_decoder, color_messages_valid)
-{
-  for (uint8_t colorRed = 0; colorRed < UINT8_MAX; colorRed++)
-  {
-    std::array<uint8_t, 9> messageColor = {0x7E, 0x00, 0x05, 0x03, 0x00, 0x00, 0x00, 0x00, 0xEF};
-    messageColor[4] = colorRed;
-
-    Package package;
-    EXPECT_TRUE(decode_ELK_message(messageColor.data(), messageColor.size(), package));
-    EXPECT_EQ(package.type, Type::COLOR_SELECT);
-    EXPECT_EQ(package.dataSize, 3);
-    EXPECT_EQ(package.data[0], colorRed);
-    EXPECT_EQ(package.data[1], 0);
-    EXPECT_EQ(package.data[2], 0);
-  }
-
-  for (uint8_t colorGreen = 0; colorGreen < UINT8_MAX; colorGreen++)
-  {
-    std::array<uint8_t, 9> messageColor = {0x7E, 0x00, 0x05, 0x03, 0x00, 0x00, 0x00, 0x00, 0xEF};
-    messageColor[5] = colorGreen;
-
-    Package package;
-    EXPECT_TRUE(decode_ELK_message(messageColor.data(), messageColor.size(), package));
-    EXPECT_EQ(package.type, Type::COLOR_SELECT);
-    EXPECT_EQ(package.dataSize, 3);
-    EXPECT_EQ(package.data[0], 0);
-    EXPECT_EQ(package.data[1], colorGreen);
-    EXPECT_EQ(package.data[2], 0);
-  }
-
-  for (uint8_t colorBlue = 0; colorBlue < UINT8_MAX; colorBlue++)
-  {
-    std::array<uint8_t, 9> messageColor = {0x7E, 0x00, 0x05, 0x03, 0x00, 0x00, 0x00, 0x00, 0xEF};
-    messageColor[5] = colorBlue;
-
-    Package package;
-    EXPECT_TRUE(decode_ELK_message(messageColor.data(), messageColor.size(), package));
-    EXPECT_EQ(package.type, Type::COLOR_SELECT);
-    EXPECT_EQ(package.dataSize, 3);
-    EXPECT_EQ(package.data[0], 0);
-    EXPECT_EQ(package.data[1], colorBlue);
-    EXPECT_EQ(package.data[2], 0);
-  }
-}
-
 // Test all valid brightness commands
 TEST(test_elf_decoder, brightness_messages_valid)
 {
@@ -231,6 +185,117 @@ TEST(test_elf_decoder, onoff_messages_invalid)
     Package package;
     EXPECT_TRUE(decode_ELK_message(message.data(), message.size(), package));
     EXPECT_EQ(package.type, Type::ONOFF);
+    EXPECT_EQ(package.dataSize, 1);
+    EXPECT_EQ(package.data[0], 0);
+  }
+}
+
+// test all color chanels
+TEST(test_elf_decoder, color_messages_valid)
+{
+  for (uint8_t colorRed = 0; colorRed < UINT8_MAX; colorRed++)
+  {
+    std::array<uint8_t, 9> messageColor = {0x7E, 0x00, 0x05, 0x03, 0x00, 0x00, 0x00, 0x00, 0xEF};
+    messageColor[4] = colorRed;
+
+    Package package;
+    EXPECT_TRUE(decode_ELK_message(messageColor.data(), messageColor.size(), package));
+    EXPECT_EQ(package.type, Type::COLOR_SELECT);
+    EXPECT_EQ(package.dataSize, 3);
+    EXPECT_EQ(package.data[0], colorRed);
+    EXPECT_EQ(package.data[1], 0);
+    EXPECT_EQ(package.data[2], 0);
+  }
+
+  for (uint8_t colorGreen = 0; colorGreen < UINT8_MAX; colorGreen++)
+  {
+    std::array<uint8_t, 9> messageColor = {0x7E, 0x00, 0x05, 0x03, 0x00, 0x00, 0x00, 0x00, 0xEF};
+    messageColor[5] = colorGreen;
+
+    Package package;
+    EXPECT_TRUE(decode_ELK_message(messageColor.data(), messageColor.size(), package));
+    EXPECT_EQ(package.type, Type::COLOR_SELECT);
+    EXPECT_EQ(package.dataSize, 3);
+    EXPECT_EQ(package.data[0], 0);
+    EXPECT_EQ(package.data[1], colorGreen);
+    EXPECT_EQ(package.data[2], 0);
+  }
+
+  for (uint8_t colorBlue = 0; colorBlue < UINT8_MAX; colorBlue++)
+  {
+    std::array<uint8_t, 9> messageColor = {0x7E, 0x00, 0x05, 0x03, 0x00, 0x00, 0x00, 0x00, 0xEF};
+    messageColor[5] = colorBlue;
+
+    Package package;
+    EXPECT_TRUE(decode_ELK_message(messageColor.data(), messageColor.size(), package));
+    EXPECT_EQ(package.type, Type::COLOR_SELECT);
+    EXPECT_EQ(package.dataSize, 3);
+    EXPECT_EQ(package.data[0], 0);
+    EXPECT_EQ(package.data[1], colorBlue);
+    EXPECT_EQ(package.data[2], 0);
+  }
+}
+
+// Test all valid pattern commands
+TEST(test_elf_decoder, pattern_messages_valid)
+{
+  for (uint8_t pattern = 0; pattern <= 28; pattern++)
+  {
+    std::array<uint8_t, 9> message = {0x7E, 0x00, 0x03, pattern, 0x03, 0x00, 0x00, 0x00, 0xEF};
+    message[3] = pattern;
+
+    Package package;
+    EXPECT_TRUE(decode_ELK_message(message.data(), message.size(), package));
+    EXPECT_EQ(package.type, Type::PATTERN_SELECT);
+    EXPECT_EQ(package.dataSize, 1);
+    EXPECT_EQ(package.data[0], pattern);
+  }
+
+  for (uint8_t pattern = 128; pattern <= 128 + 28; pattern++)
+  {
+    std::array<uint8_t, 9> message = {0x7E, 0x00, 0x03, pattern, 0x03, 0x00, 0x00, 0x00, 0xEF};
+    message[3] = pattern;
+
+    Package package;
+    EXPECT_TRUE(decode_ELK_message(message.data(), message.size(), package));
+    EXPECT_EQ(package.type, Type::PATTERN_SELECT);
+    EXPECT_EQ(package.dataSize, 1);
+    EXPECT_EQ(package.data[0], pattern - 128);
+  }
+}
+
+TEST(test_elf_decoder, pattern_messages_invalid)
+{
+  // invalid values
+  for (uint8_t pattern = 29; pattern < 128; pattern++)
+  {
+    std::array<uint8_t, 9> message = {0x7E, 0x00, 0x03, 0x00, 0x03, 0x00, 0x00, 0x00, 0xEF};
+    message[3] = pattern;
+
+    Package package;
+    EXPECT_FALSE(decode_ELK_message(message.data(), message.size(), package));
+    EXPECT_EQ(package.type, Type::INVALID);
+    EXPECT_EQ(package.dataSize, 0);
+  }
+  for (uint8_t pattern = 128 + 29; pattern < UINT8_MAX; pattern++)
+  {
+    std::array<uint8_t, 9> message = {0x7E, 0x00, 0x03, 0x00, 0x03, 0x00, 0x00, 0x00, 0xEF};
+    message[3] = pattern;
+
+    Package package;
+    EXPECT_FALSE(decode_ELK_message(message.data(), message.size(), package));
+    EXPECT_EQ(package.type, Type::INVALID);
+    EXPECT_EQ(package.dataSize, 0);
+  }
+
+  // ignore other values
+  for (uint8_t pattern = 0; pattern < UINT8_MAX; pattern++)
+  {
+    std::array<uint8_t, 9> message = {0x7E, pattern, 0x03, 0x00, 0x03, pattern, pattern, pattern, 0xEF};
+
+    Package package;
+    EXPECT_TRUE(decode_ELK_message(message.data(), message.size(), package));
+    EXPECT_EQ(package.type, Type::PATTERN_SELECT);
     EXPECT_EQ(package.dataSize, 1);
     EXPECT_EQ(package.data[0], 0);
   }

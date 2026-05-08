@@ -17,28 +17,19 @@ struct ColorControlMode : public BasicMode
   struct StateTy
   {
     // color to display
-    uint8_t red;
-    uint8_t green;
-    uint8_t blue;
+    uint32_t color = 0xFFFFFF;
   };
 
   static void loop(auto& ctx)
   {
     //
-    uint32_t color = 0;
-    color = ctx.state.red << 16 | ctx.state.green << 8 | ctx.state.blue;
-    ctx.lamp.fill(color);
+    ctx.lamp.fill(ctx.state.color);
   }
 };
 
-template<uint8_t red, uint8_t green, uint8_t blue> struct FixedColorMode : public BasicMode
+template<modes::colors::HTMLColorCode color> struct FixedColorMode : public BasicMode
 {
-  static void loop(auto& ctx)
-  {
-    //
-    const uint32_t color = red << 16 | green << 8 | blue;
-    ctx.lamp.fill(color);
-  }
+  static void loop(auto& ctx) { ctx.lamp.fill(color); }
 };
 
 } // namespace bluetooth

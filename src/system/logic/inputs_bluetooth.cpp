@@ -1,5 +1,7 @@
 #include "inputs_bluetooth.h"
 
+#include "src/user/functions.h"
+
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
 #include "src/system/logic/sunset_timer.h"
@@ -43,13 +45,24 @@ void handle_on_off_command(const bool shouldBeOn)
   // turn on
   if (shouldBeOn)
   {
-    logic::behavior::set_power_on();
+    if (not logic::behavior::is_in_output_state())
+      logic::behavior::set_power_on();
   }
   // turn off
   else
   {
-    logic::behavior::set_power_off();
+    if (logic::behavior::is_in_output_state())
+      logic::behavior::set_power_off();
   }
+}
+
+void handle_pattern_select_command(const uint8_t patternIndex, const uint32_t requestedColor = 0)
+{
+  // ignore if not on
+  if (not logic::behavior::is_in_output_state())
+    return;
+
+  lampda::user::bluetooth_switch_pattern(patternIndex, requestedColor);
 }
 
 } // namespace __private
@@ -71,6 +84,23 @@ void handle_BLE_ELK_command(const utils::ELK::Package& elkControlCommand)
       {
         const bool shouldTurnOn = elkControlCommand.data[0] > 0;
         __private::handle_on_off_command(shouldTurnOn);
+        break;
+      }
+    case utils::ELK::Type::COLOR_SELECT:
+      {
+        /// TODO: BIG ASSUMPTION HERE : we consider that it is known that the Bluetooth group starts with the
+        /// controlable color mode, this would be WRONG
+        /// \warning
+        uint32_t color = elkControlCommand.data[0] << 16 | elkControlCommand.data[1] << 8 | elkControlCommand.data[2];
+        __private::handle_pattern_select_command(0, color);
+        break;
+      }
+    case utils::ELK::Type::PATTERN_SELECT:
+      {
+        /// TODO: BIG ASSUMPTION HERE : we consider that it is known that the Bluetooth group starts with the
+        /// controlable color mode, this would be WRONG
+        /// \warning
+        __private::handle_pattern_select_command(elkControlCommand.data[0] + 1);
         break;
       }
     // unhandled

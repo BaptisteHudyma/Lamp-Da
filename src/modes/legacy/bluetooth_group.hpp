@@ -44,11 +44,16 @@ namespace bluetooth {
 // 28: Purple Strobe Flash
 // 29: White Strobe Flash
 
-using BluetoothModes = modes::GroupFor<modes::bluetooth::ColorControlMode,          // controlable color
-                                       modes::bluetooth::FixedColorMode<255, 0, 0>, // fixed red color
-                                       modes::bluetooth::FixedColorMode<0, 0, 255>, // fixed blue color
-                                       modes::bluetooth::FixedColorMode<0, 255, 0>  // fixed green color
-                                       >;
+using BluetoothModes =
+        modes::GroupFor<modes::bluetooth::ColorControlMode,                              // 0: controlable color
+                        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Red>,    // 1: fixed Red color
+                        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Blue>,   // 2: fixed Blue color
+                        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Lime>,   // 3: fixed Green color
+                        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Cyan>,   // 4: fixed Cyan color
+                        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Yellow>, // 5: fixed Yellow color
+                        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Purple>, // 6: fixed Purple color
+                        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::White>   // 7: fixed White color
+                        >;
 
 } // namespace bluetooth
 } // namespace lampda::modes

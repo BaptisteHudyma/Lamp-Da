@@ -130,6 +130,13 @@ bool should_spawn_thread();
  */
 void user_thread();
 
+/**
+ * \brief Handle to switch the current mode to bluetooth requested index
+ * \param[in] index Pattern index, in [0, 29]
+ * \param[in] targetColor If the index is zero, the color is selectable
+ */
+void bluetooth_switch_pattern(uint8_t index, uint32_t targetColor);
+
 } // namespace lampda::user
 
 #endif
