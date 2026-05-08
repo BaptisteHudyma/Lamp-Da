@@ -12,7 +12,7 @@
 #include <cstdint>
 
 #include "src/system/logic/brightness_handle.h"
-#include "src/system/utils/elk_decoder.h"
+#include "src/system/logic/inputs_bluetooth.h"
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #include "src/system/physical/strip.h"

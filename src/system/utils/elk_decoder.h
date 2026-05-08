@@ -2,6 +2,7 @@
 #define UTILS_ELK_DECODER
 
 #include <array>
+#include <cstdint>
 
 namespace lampda {
 namespace utils {
