@@ -23,7 +23,7 @@ public:
 
 protected:
   /// callback for a received command
-  void elk_commmand_handle(uint16_t conn_hdl, uint8_t* data, uint16_t len) const;
+  void elk_commmand_handle(uint16_t conn_hdl, const uint8_t* data, uint16_t len) const;
 
 private:
   BLECharacteristic _writeCharac;

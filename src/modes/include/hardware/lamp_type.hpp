@@ -583,7 +583,6 @@ public:
     // USE THE BRIGHTNESS VALUE AFTER THE UPDATE
     // brightness can be limited by the system, so do not use the raw brightness
     const auto trueNewBrightness = logic::brightness::get_brightness();
-    const auto trueMaxBrightness = logic::brightness::get_max_brightness();
 
     if constexpr (flavor == LampTypes::indexable)
     {
@@ -602,6 +601,8 @@ public:
 
     if constexpr (flavor == LampTypes::simple)
     {
+      const auto trueMaxBrightness = logic::brightness::get_max_brightness();
+
       // This is kind of a hack to detect that the user did this call
       // using the known user call signature
       const bool isUserCall = skipCallbacks and skipUpdateBrightness and not updateSavedBrightess;

@@ -8,8 +8,9 @@ namespace utils {
 /// decode ELK control messages
 namespace ELK {
 
-enum class Type
+enum class Type : uint8_t
 {
+  INVALID = 0,     ///< invalid value
   ONOFF,           ///< turn output onand off
   BRIGHTNESS,      ///< set a brightness
   PATTERN_SELECT,  ///< select a display pattern in a list
@@ -25,10 +26,10 @@ enum class Type
 
 struct Package
 {
-  Type type;
+  Type type = Type::INVALID;
 
-  std::array<uint8_t, 5> data;
   uint8_t dataSize = 0;
+  std::array<uint8_t, 5> data;
 };
 
 /**
@@ -36,6 +37,9 @@ struct Package
  */
 inline bool decode_ELK_message(const uint8_t* msg, uint16_t len, Package& package)
 {
+  package.type = Type::INVALID;
+  package.dataSize = 0;
+
   // basic check: ELK messages are 9 char long
   if (len != 9)
     return false;
@@ -47,6 +51,9 @@ inline bool decode_ELK_message(const uint8_t* msg, uint16_t len, Package& packag
   {
     case 0x01: // BRIGHTNESS [0-100]
       {
+        if (msg[3] > 100)
+          return false;
+
         package.type = Type::BRIGHTNESS;
         package.data[0] = msg[3]; // [0; 100]
         package.dataSize = 1;
@@ -54,6 +61,9 @@ inline bool decode_ELK_message(const uint8_t* msg, uint16_t len, Package& packag
       }
     case 0x02: // PATTERN_SPEED [0-100]
       {
+        if (msg[3] > 100)
+          return false;
+
         package.type = Type::PATTERN_SPEED;
         package.data[0] = msg[3]; // [0; 100]
         package.dataSize = 1;
@@ -65,6 +75,8 @@ inline bool decode_ELK_message(const uint8_t* msg, uint16_t len, Package& packag
         if (msg[4] == 0x03)
         {
           const uint8_t patternId = (msg[3] >= 128) ? (msg[3] - 128) : msg[3];
+          if (patternId > 28)
+            return false;
 
           package.type = Type::PATTERN_SELECT;
           package.data[0] = patternId; // [0; 28]
@@ -75,6 +87,8 @@ inline bool decode_ELK_message(const uint8_t* msg, uint16_t len, Package& packag
         else if (msg[4] == 0x04)
         {
           const uint8_t micMode = (msg[3] >= 128) ? (msg[3] - 128) : msg[3];
+          if (micMode > 3)
+            return false;
 
           package.type = Type::MIC_MODE;
           package.data[0] = micMode; // [0; 3]
@@ -85,6 +99,9 @@ inline bool decode_ELK_message(const uint8_t* msg, uint16_t len, Package& packag
       }
     case 0x04: // ONOFF
       {
+        if (msg[3] > 0x01)
+          return false;
+
         package.type = Type::ONOFF;
         package.data[0] = msg[3];
         package.dataSize = 1;
@@ -105,6 +122,9 @@ inline bool decode_ELK_message(const uint8_t* msg, uint16_t len, Package& packag
       }
     case 0x06: // MIC_SENSITIVITY [0-100]
       {
+        if (msg[3] > 100)
+          return false;
+
         package.type = Type::MIC_SENSITIVITY;
         package.data[0] = msg[3]; // [0; 100]
         package.dataSize = 1;
@@ -112,6 +132,9 @@ inline bool decode_ELK_message(const uint8_t* msg, uint16_t len, Package& packag
       }
     case 0x07: // MIC_ONOFF
       {
+        if (msg[3] > 0x01)
+          return false;
+
         package.type = Type::MIC_ONOFF;
         package.data[0] = msg[3];
         package.dataSize = 1;
@@ -120,6 +143,17 @@ inline bool decode_ELK_message(const uint8_t* msg, uint16_t len, Package& packag
 
     case 0x81: // LED_ORDER
       {
+        if (msg[3] <= 0 or msg[3] > 3)
+          return false;
+        if (msg[4] <= 0 or msg[4] > 3)
+          return false;
+        if (msg[5] <= 0 or msg[5] > 3)
+          return false;
+        // should contain only one 1, one 2 and one 3
+        if (msg[3] + msg[4] + msg[5] != 1 + 2 + 3)
+          return false;
+        /// TODO: finish this check
+
         package.type = Type::LED_ORDER;
         package.data[0] = msg[3];
         package.data[1] = msg[4];

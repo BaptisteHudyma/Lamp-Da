@@ -35,15 +35,15 @@ err_t BLEElkService::begin(void)
   return ERROR_NONE;
 }
 
-void BLEElkService::elk_commmand_handle(uint16_t conn_hdl, uint8_t* data, uint16_t len) const
+void BLEElkService::elk_commmand_handle(uint16_t conn_hdl, const uint8_t* data, uint16_t len) const
 {
   std::ignore = conn_hdl;
 
-  utils::ELK::Package package;
-  if (utils::ELK::decode_ELK_message(data, len, package))
+  utils::ELK::Package elkPackage;
+  if (utils::ELK::decode_ELK_message(data, len, elkPackage))
   {
     // call user handle
-    user::handle_bluetooth_ELK_command(package);
+    user::handle_bluetooth_ELK_command(elkPackage);
   }
   else
   {

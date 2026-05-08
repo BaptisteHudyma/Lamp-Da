@@ -669,12 +669,33 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   }
 
   /**
-   * \brief Handle a bluetooth command
+   * \brief Handle a ELK bluetooth command
    */
   static void LMBD_INLINE handle_BLE_ELK_command(auto& ctx, const utils::ELK::Package& elkControlCommand)
   {
-    // elkControlCommand
-    platform::lampda_print("%d %d", elkControlCommand.type, elkControlCommand.dataSize);
+    switch (elkControlCommand.type)
+    {
+      case utils::ELK::Type::BRIGHTNESS:
+        {
+          // update brightness
+          static constexpr float brightnessMultiplier = ::lampda::brightness::absoluteMaximumBrightness / 100.0f;
+          const brightness_t desiredBrightness = min<brightness_t>(::lampda::brightness::absoluteMaximumBrightness,
+                                                                   elkControlCommand.data[0] * brightnessMultiplier);
+          // Update the system brightness for real, not the temporary. We want the changes to be saved
+          logic::brightness::update_brightness(desiredBrightness);
+          // update saved brightness
+          logic::brightness::update_saved_brightness();
+          // and change the sunset timer if needed
+          logic::sunset::bump_timer();
+          break;
+        }
+        // unhandled
+      default:
+        {
+          platform::lampda_print("Unsupported ELK message type");
+          break;
+        }
+    }
   }
 
   /// Return the mode count for this group
