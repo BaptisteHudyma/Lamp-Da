@@ -13,8 +13,11 @@ var searchData=
   ['mediumvioletred_10',['MediumVioletRed',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba3bacc39706e6dcb8b3f2ed53067f6929',1,'lampda::modes::colors']]],
   ['mercuryvapor_11',['MercuryVapor',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5abbfdae3aaafdf19088c7cec704d9193f',1,'lampda::modes::colors']]],
   ['metalhalide_12',['MetalHalide',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a4afb7bcd05f3ec6b90ce86b18038c23b',1,'lampda::modes::colors']]],
-  ['midnightblue_13',['MidnightBlue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baef4c1a1d2686f254bd9df217f7d4fc98',1,'lampda::modes::colors']]],
-  ['mintcream_14',['MintCream',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba63b4db35edbca005a73ab205d0c25b84',1,'lampda::modes::colors']]],
-  ['mistyrose_15',['MistyRose',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba42609e599db99281ded29fe75f107143',1,'lampda::modes::colors']]],
-  ['moccasin_16',['Moccasin',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baa38092cc3c9df05fdbce5ec61a0751c9',1,'lampda::modes::colors']]]
+  ['mic_5fmode_13',['MIC_MODE',['../namespacelampda_1_1utils_1_1ELK.html#af7d12aac75a6c8051398eaeed53676ecaae7d76ac9c4702acb9bb0808ad92e7c5',1,'lampda::utils::ELK']]],
+  ['mic_5fonoff_14',['MIC_ONOFF',['../namespacelampda_1_1utils_1_1ELK.html#af7d12aac75a6c8051398eaeed53676eca7d436e56ba6d750db43a8d8ab2189402',1,'lampda::utils::ELK']]],
+  ['mic_5fsensitivity_15',['MIC_SENSITIVITY',['../namespacelampda_1_1utils_1_1ELK.html#af7d12aac75a6c8051398eaeed53676eca627ad7b3ff651623b3c75bb5aa6806e5',1,'lampda::utils::ELK']]],
+  ['midnightblue_16',['MidnightBlue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baef4c1a1d2686f254bd9df217f7d4fc98',1,'lampda::modes::colors']]],
+  ['mintcream_17',['MintCream',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba63b4db35edbca005a73ab205d0c25b84',1,'lampda::modes::colors']]],
+  ['mistyrose_18',['MistyRose',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba42609e599db99281ded29fe75f107143',1,'lampda::modes::colors']]],
+  ['moccasin_19',['Moccasin',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baa38092cc3c9df05fdbce5ec61a0751c9',1,'lampda::modes::colors']]]
 ];

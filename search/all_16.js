@@ -3,7 +3,7 @@ var searchData=
   ['uielement_0',['UIElement',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html',1,'lampda::modes::draw::overlay::__private']]],
   ['unbalancedmv_1',['unbalancedMv',['../namespacelampda_1_1power_1_1balancer.html#a9b928872197627fc9a0bae06de56e9f4',1,'lampda::power::balancer']]],
   ['uncorrectedtemperature_2',['UncorrectedTemperature',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a92ebf5b9e3a6cb7eb7d20d4c649112ba',1,'lampda::modes::colors']]],
-  ['uninitialized_3',['UNINITIALIZED',['../structlampda_1_1power_1_1charger_1_1Charger__t.html#ab7bfa63969053a062f0773695ad7f566add652546039b18970b8dcf2cff824268',1,'lampda::power::charger::Charger_t::UNINITIALIZED()'],['../namespacelampda_1_1power_1_1charger_1_1drivers.html#a494e2bde9d922e129949b72a26386762add652546039b18970b8dcf2cff824268',1,'lampda::power::charger::drivers::UNINITIALIZED()']]],
+  ['uninitialized_3',['UNINITIALIZED',['../namespacelampda_1_1power_1_1charger_1_1drivers.html#a494e2bde9d922e129949b72a26386762add652546039b18970b8dcf2cff824268',1,'lampda::power::charger::drivers::UNINITIALIZED()'],['../structlampda_1_1power_1_1charger_1_1Charger__t.html#ab7bfa63969053a062f0773695ad7f566add652546039b18970b8dcf2cff824268',1,'lampda::power::charger::Charger_t::UNINITIALIZED()']]],
   ['unlink_5finterrupt_5f1_4',['unlink_interrupt_1',['../namespacelampda_1_1physical_1_1imu.html#a85c3e0e75c3ca0340d81cea686885d45',1,'lampda::physical::imu']]],
   ['unlink_5finterrupt_5f2_5',['unlink_interrupt_2',['../namespacelampda_1_1physical_1_1imu.html#a2b26c2d1e5b05aa0ff64ec1084ea580a',1,'lampda::physical::imu']]],
   ['update_6',['update',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#ab16f078f9c7fa4dd718ceb5d37d805cd',1,'lampda::modes::audio::SoundEventTy::update()'],['../structlampda_1_1modes_1_1draw_1_1grid_1_1LineRule.html#a40dc90da2898e887e50588e7f197d1af',1,'lampda::modes::draw::grid::LineRule::update()'],['../structlampda_1_1modes_1_1imu_1_1ImuEventTy.html#a93ec5c1de8dad6e42465f710ea765739',1,'lampda::modes::imu::ImuEventTy::update()'],['../structlampda_1_1power_1_1powerDelivery_1_1UsbPDData.html#aaa92895ff526ac20664cbd963e5d2efb',1,'lampda::power::powerDelivery::UsbPDData::update()']]],
@@ -25,5 +25,7 @@ var searchData=
   ['user_5fwatchdog_5fid_22',['USER_WATCHDOG_ID',['../namespacelampda.html#a2308b911b4eb0e3a9d0d5373f90b1024',1,'lampda']]],
   ['using_20a_20virtual_20machine_23',['Using a Virtual Machine',['../md_docs_VirtualMachine.html',1,'']]],
   ['utils_2eh_24',['utils.h',['../utils_8h.html',1,'']]],
-  ['utils_2ehpp_25',['utils.hpp',['../imu_2utils_8hpp.html',1,'(Global Namespace)'],['../colors_2utils_8hpp.html',1,'(Global Namespace)'],['../audio_2utils_8hpp.html',1,'(Global Namespace)']]]
+  ['utils_2ehpp_25',['utils.hpp',['../imu_2utils_8hpp.html',1,'(Global Namespace)'],['../colors_2utils_8hpp.html',1,'(Global Namespace)'],['../audio_2utils_8hpp.html',1,'(Global Namespace)']]],
+  ['uuid128_5fchr_5fwrite_26',['UUID128_CHR_WRITE',['../classlampda_1_1bluetooth_1_1BLEElkService.html#ac1bc550c095d0576c532ad9c8c5eedef',1,'lampda::bluetooth::BLEElkService']]],
+  ['uuid128_5fservice_27',['UUID128_SERVICE',['../classlampda_1_1bluetooth_1_1BLEElkService.html#accb2969af20c87f8c87210833eb84484',1,'lampda::bluetooth::BLEElkService']]]
 ];

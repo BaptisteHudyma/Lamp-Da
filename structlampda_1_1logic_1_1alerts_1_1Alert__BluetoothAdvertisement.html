@@ -77,6 +77,7 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="structlampda_1_1logic_1_1alerts_1_1Alert__BluetoothAdvertisement-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">lampda::logic::alerts::Alert_BluetoothAdvertisement Struct Reference</div></div>
 </div><!--header-->
@@ -102,6 +103,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a68cde46b48e8411a2aba76f59a91e897"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BluetoothAdvertisement.html#a68cde46b48e8411a2aba76f59a91e897">get_type</a> () const override</td></tr>
 <tr class="memdesc:a68cde46b48e8411a2aba76f59a91e897"><td class="mdescLeft">&#160;</td><td class="mdescRight">return the Defined type of this alert  <br /></td></tr>
 <tr class="separator:a68cde46b48e8411a2aba76f59a91e897"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca01630db408beb38b1458d228731689"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BluetoothAdvertisement.html#aca01630db408beb38b1458d228731689">should_be_cleared</a> () const override</td></tr>
+<tr class="memdesc:aca01630db408beb38b1458d228731689"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if this alert type should be cleared  <br /></td></tr>
+<tr class="separator:aca01630db408beb38b1458d228731689"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a158fbbecae2c46ce59fc8e6023f52fcd"><td class="memItemLeft" align="right" valign="top">virtual uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a158fbbecae2c46ce59fc8e6023f52fcd">alert_shutdown_timeout</a> () const</td></tr>
 <tr class="memdesc:a158fbbecae2c46ce59fc8e6023f52fcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the timeout after which an alert will make the system auto-shutdown.  <br /></td></tr>
 <tr class="separator:a158fbbecae2c46ce59fc8e6023f52fcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -111,9 +115,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abbea6de5d00deb35f06e5bb0459ff934"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#abbea6de5d00deb35f06e5bb0459ff934">should_be_raised</a> () const</td></tr>
 <tr class="memdesc:abbea6de5d00deb35f06e5bb0459ff934"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if this alert type should be raised  <br /></td></tr>
 <tr class="separator:abbea6de5d00deb35f06e5bb0459ff934"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad384deb112bc1fc5fe2d9ffe4cb3cb45"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#ad384deb112bc1fc5fe2d9ffe4cb3cb45">should_be_cleared</a> () const</td></tr>
-<tr class="memdesc:ad384deb112bc1fc5fe2d9ffe4cb3cb45"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if this alert type should be cleared  <br /></td></tr>
-<tr class="separator:ad384deb112bc1fc5fe2d9ffe4cb3cb45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8bb28416b6a40056026199ca2507f95e"><td class="memItemLeft" align="right" valign="top"><a id="a8bb28416b6a40056026199ca2507f95e" name="a8bb28416b6a40056026199ca2507f95e"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>should_shutdown_system</b> (const uint32_t time) final</td></tr>
 <tr class="memdesc:a8bb28416b6a40056026199ca2507f95e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the system should shutdown from this alert. <br /></td></tr>
@@ -156,6 +157,15 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>raisedTime</b> = 
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> = 0</td></tr>
 <tr class="memdesc:a06020206f9ae99ffd48515c7daba02c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the latest time at which this alert lower() was called. <br /></td></tr>
 <tr class="separator:a06020206f9ae99ffd48515c7daba02c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:ab62dccd752fbb04ece1bb3a7daa647e8"><td class="memItemLeft" align="right" valign="top"><a id="ab62dccd752fbb04ece1bb3a7daa647e8" name="ab62dccd752fbb04ece1bb3a7daa647e8"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>frequency_on_ms</b> = 1000</td></tr>
+<tr class="separator:ab62dccd752fbb04ece1bb3a7daa647e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c1ff908e33f99fb5dc5132e1a1187ec"><td class="memItemLeft" align="right" valign="top"><a id="a6c1ff908e33f99fb5dc5132e1a1187ec" name="a6c1ff908e33f99fb5dc5132e1a1187ec"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>frequency_off_ms</b> = 500</td></tr>
+<tr class="separator:a6c1ff908e33f99fb5dc5132e1a1187ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This alert is raised when the Bluetooth advertising is turned on. It is just an informative alert. </p>
@@ -305,8 +315,8 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
 
 </div>
 </div>
-<a id="ad384deb112bc1fc5fe2d9ffe4cb3cb45" name="ad384deb112bc1fc5fe2d9ffe4cb3cb45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad384deb112bc1fc5fe2d9ffe4cb3cb45">&#9670;&#160;</a></span>should_be_cleared()</h2>
+<a id="aca01630db408beb38b1458d228731689" name="aca01630db408beb38b1458d228731689"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca01630db408beb38b1458d228731689">&#9670;&#160;</a></span>should_be_cleared()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -315,7 +325,7 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual bool lampda::logic::alerts::AlertBase::should_be_cleared </td>
+          <td class="memname">bool lampda::logic::alerts::Alert_BluetoothAdvertisement::should_be_cleared </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -323,14 +333,14 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>return true if this alert type should be cleared </p>
 
-<p>Reimplemented in <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BatteryReadingIncoherent.html#a0dfa331d15c22303bbc5a87d59601051">lampda::logic::alerts::Alert_BatteryReadingIncoherent</a>, <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BatteryCritical.html#abe65906884fee68ccfa03c1d31ad2ead">lampda::logic::alerts::Alert_BatteryCritical</a>, <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BatteryLow.html#ac6682ba1660b9bc9d788afbb0ec63924">lampda::logic::alerts::Alert_BatteryLow</a>, <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__TempTooHigh.html#a7aef8ac6527a9ed165e553595f982af4">lampda::logic::alerts::Alert_TempTooHigh</a>, <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__FavoriteSet.html#ab87b5996b5d2684d024a1a362e40c3f4">lampda::logic::alerts::Alert_FavoriteSet</a>, <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__SystemShutdownFailed.html#a8331bd77ecac1b036d604419ea2b21b4">lampda::logic::alerts::Alert_SystemShutdownFailed</a>, <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__SkippedCleanSleep.html#aa9ccb5418e669d08e84986081bd29f9e">lampda::logic::alerts::Alert_SkippedCleanSleep</a>, and <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__UsbPortShort.html#a884510a587bbd229f7422f9079feea48">lampda::logic::alerts::Alert_UsbPortShort</a>.</p>
+<p>Reimplemented from <a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#ad384deb112bc1fc5fe2d9ffe4cb3cb45">lampda::logic::alerts::AlertBase</a>.</p>
 
 </div>
 </div>

@@ -10,13 +10,14 @@ var searchData=
   ['chocolate_7',['Chocolate',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bae4544842e6796ba2dd0bd96905d65a3a',1,'lampda::modes::colors']]],
   ['clearbluesky_8',['ClearBlueSky',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a15daa854f37a575d484c7062e205dda9',1,'lampda::modes::colors']]],
   ['clearstriponmodechange_9',['clearStripOnModeChange',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17a898e4f49ee4e2805cdd45baf627a3b7c',1,'lampda::modes']]],
-  ['coolwhitefluorescent_10',['CoolWhiteFluorescent',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5aa5b50ff013c7031afc5f96ee715f6d9c',1,'lampda::modes::colors']]],
-  ['coral_11',['Coral',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baf5f0ad0ea91f914df7f07f8729a1417e',1,'lampda::modes::colors']]],
-  ['cornflowerblue_12',['CornflowerBlue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bad3363e2e9ba7a6d941d3fd6ef8da5246',1,'lampda::modes::colors']]],
-  ['cornsilk_13',['Cornsilk',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba51707d0c997db62a6fdae4b6a8142adf',1,'lampda::modes::colors']]],
-  ['crimson_14',['Crimson',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baf8ca07edfa87f9a3427b2b4a5253d5f8',1,'lampda::modes::colors']]],
-  ['customrampanimchoice_15',['customRampAnimChoice',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17abdb0fca8269674f487f8806c9aeccbab',1,'lampda::modes']]],
-  ['customrampanimeffect_16',['customRampAnimEffect',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17a1b792c24c47faa2a26f6bb829df1dc52',1,'lampda::modes']]],
-  ['customrampstepspeedms_17',['customRampStepSpeedMs',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17aa15ae9cf165a628be7458981d0831395',1,'lampda::modes']]],
-  ['cyan_18',['Cyan',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba392e19cb99e5ec90db131d7b6b618799',1,'lampda::modes::colors']]]
+  ['color_5fselect_10',['COLOR_SELECT',['../namespacelampda_1_1utils_1_1ELK.html#af7d12aac75a6c8051398eaeed53676eca48c23937c624c7f645bfb320d5a059c4',1,'lampda::utils::ELK']]],
+  ['coolwhitefluorescent_11',['CoolWhiteFluorescent',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5aa5b50ff013c7031afc5f96ee715f6d9c',1,'lampda::modes::colors']]],
+  ['coral_12',['Coral',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baf5f0ad0ea91f914df7f07f8729a1417e',1,'lampda::modes::colors']]],
+  ['cornflowerblue_13',['CornflowerBlue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bad3363e2e9ba7a6d941d3fd6ef8da5246',1,'lampda::modes::colors']]],
+  ['cornsilk_14',['Cornsilk',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba51707d0c997db62a6fdae4b6a8142adf',1,'lampda::modes::colors']]],
+  ['crimson_15',['Crimson',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baf8ca07edfa87f9a3427b2b4a5253d5f8',1,'lampda::modes::colors']]],
+  ['customrampanimchoice_16',['customRampAnimChoice',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17abdb0fca8269674f487f8806c9aeccbab',1,'lampda::modes']]],
+  ['customrampanimeffect_17',['customRampAnimEffect',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17a1b792c24c47faa2a26f6bb829df1dc52',1,'lampda::modes']]],
+  ['customrampstepspeedms_18',['customRampStepSpeedMs',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17aa15ae9cf165a628be7458981d0831395',1,'lampda::modes']]],
+  ['cyan_19',['Cyan',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba392e19cb99e5ec90db131d7b6b618799',1,'lampda::modes::colors']]]
 ];
