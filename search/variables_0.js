@@ -27,6 +27,7 @@ var searchData=
   ['_5ftemporaryoutputcurrent_5fma_24',['_temporaryOutputCurrent_mA',['../namespacelampda_1_1logic_1_1power.html#ad153a236a1a5483ad34ca0a8d4eb21f3',1,'lampda::logic::power']]],
   ['_5ftemporaryoutputtimeout_25',['_temporaryOutputTimeOut',['../namespacelampda_1_1logic_1_1power.html#a039112ccea9c97874876f551e7074e43',1,'lampda::logic::power']]],
   ['_5ftemporaryoutputvoltage_5fmv_26',['_temporaryOutputVoltage_mV',['../namespacelampda_1_1logic_1_1power.html#ab17ac735931955691b855e386613d67d',1,'lampda::logic::power']]],
-  ['_5fwindowshort_27',['_windowShort',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a2df4854b3690eb29692f2978fa38210e',1,'lampda::modes::audio::SoundEventTy']]],
-  ['_5fwindowsize_28',['_windowSize',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a70cec90121e6c0cce08705718c3b6941',1,'lampda::modes::audio::SoundEventTy']]]
+  ['_5fwasbluetoothused_27',['_wasBluetoothUsed',['../namespacelampda_1_1logic_1_1inputs__bluetooth.html#ae12bb46ba0ca161f7f9d03d22984a09f',1,'lampda::logic::inputs_bluetooth']]],
+  ['_5fwindowshort_28',['_windowShort',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a2df4854b3690eb29692f2978fa38210e',1,'lampda::modes::audio::SoundEventTy']]],
+  ['_5fwindowsize_29',['_windowSize',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a70cec90121e6c0cce08705718c3b6941',1,'lampda::modes::audio::SoundEventTy']]]
 ];

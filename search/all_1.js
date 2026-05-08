@@ -21,13 +21,14 @@ var searchData=
   ['_5flevel_18',['_level',['../namespacelampda_1_1logic_1_1indicator.html#a932a700c806c5c4af36ca6d86cda35d1',1,'lampda::logic::indicator']]],
   ['_5foutputcurrent_5fma_19',['_outputCurrent_mA',['../namespacelampda_1_1logic_1_1power.html#a75cdaece5c8791a3b6a0509aab2b9529',1,'lampda::logic::power']]],
   ['_5foutputvoltage_5fmv_20',['_outputVoltage_mV',['../namespacelampda_1_1logic_1_1power.html#a80735a25030b02ccaa6d106a7dea8748',1,'lampda::logic::power']]],
-  ['_5fpalettes_21',['_palettes',['../structlampda_1_1modes_1_1default__modes_1_1PerlinNoiseMode_1_1StateTy.html#a884882e57b22af8d1b472be7e1f60ca2',1,'lampda::modes::default_modes::PerlinNoiseMode::StateTy::_palettes()'],['../structlampda_1_1modes_1_1default__modes_1_1GravityMode_1_1StateTy.html#aa0ad1783a0e1ce06a4da8a987d3dd507',1,'lampda::modes::default_modes::GravityMode::StateTy::_palettes()']]],
+  ['_5fpalettes_21',['_palettes',['../structlampda_1_1modes_1_1default__modes_1_1GravityMode_1_1StateTy.html#aa0ad1783a0e1ce06a4da8a987d3dd507',1,'lampda::modes::default_modes::GravityMode::StateTy::_palettes()'],['../structlampda_1_1modes_1_1default__modes_1_1PerlinNoiseMode_1_1StateTy.html#a884882e57b22af8d1b472be7e1f60ca2',1,'lampda::modes::default_modes::PerlinNoiseMode::StateTy::_palettes()']]],
   ['_5frequest_5fshutdown_22',['_request_shutdown',['../namespacelampda_1_1logic_1_1alerts.html#a36907b2779784580d933a4fe2c65b902',1,'lampda::logic::alerts']]],
   ['_5fsavedlampindex_23',['_savedLampIndex',['../structlampda_1_1modes_1_1Particle.html#a42d1c33e32498fb310e07a9dd6a27042',1,'lampda::modes::Particle']]],
   ['_5fstartupchargertime_24',['_startupChargerTime',['../namespacelampda_1_1logic_1_1alerts.html#a45b16b8bcdb077ab0d02552e339405fa',1,'lampda::logic::alerts']]],
   ['_5ftemporaryoutputcurrent_5fma_25',['_temporaryOutputCurrent_mA',['../namespacelampda_1_1logic_1_1power.html#ad153a236a1a5483ad34ca0a8d4eb21f3',1,'lampda::logic::power']]],
   ['_5ftemporaryoutputtimeout_26',['_temporaryOutputTimeOut',['../namespacelampda_1_1logic_1_1power.html#a039112ccea9c97874876f551e7074e43',1,'lampda::logic::power']]],
   ['_5ftemporaryoutputvoltage_5fmv_27',['_temporaryOutputVoltage_mV',['../namespacelampda_1_1logic_1_1power.html#ab17ac735931955691b855e386613d67d',1,'lampda::logic::power']]],
-  ['_5fwindowshort_28',['_windowShort',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a2df4854b3690eb29692f2978fa38210e',1,'lampda::modes::audio::SoundEventTy']]],
-  ['_5fwindowsize_29',['_windowSize',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a70cec90121e6c0cce08705718c3b6941',1,'lampda::modes::audio::SoundEventTy']]]
+  ['_5fwasbluetoothused_28',['_wasBluetoothUsed',['../namespacelampda_1_1logic_1_1inputs__bluetooth.html#ae12bb46ba0ca161f7f9d03d22984a09f',1,'lampda::logic::inputs_bluetooth']]],
+  ['_5fwindowshort_29',['_windowShort',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a2df4854b3690eb29692f2978fa38210e',1,'lampda::modes::audio::SoundEventTy']]],
+  ['_5fwindowsize_30',['_windowSize',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a70cec90121e6c0cce08705718c3b6941',1,'lampda::modes::audio::SoundEventTy']]]
 ];
