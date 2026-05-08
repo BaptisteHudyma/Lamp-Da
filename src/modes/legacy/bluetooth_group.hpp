@@ -45,7 +45,7 @@ namespace bluetooth {
 // 29: White Strobe Flash
 
 using BluetoothModes =
-        modes::GroupFor<modes::bluetooth::ColorControlMode,                              // 0: controlable color
+        modes::GroupFor<modes::bluetooth::ColorControlMode,                              // custom color controller
                         modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Red>,    // 1: fixed Red color
                         modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Blue>,   // 2: fixed Blue color
                         modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Lime>,   // 3: fixed Green color

@@ -87,8 +87,6 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   // manager calls
   //
 
-  template<typename Mode> StateTyOf<Mode>& get_state_of_mode() { return modeManager.template getStateOf<Mode>(); }
-
   /// \private Jump to next group
   auto LMBD_INLINE next_group()
   {
@@ -331,11 +329,26 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   // store
   //
 
+  /// Return the state of a given mode
+  template<typename Mode> StateTyOf<Mode>& get_state_of_mode() { return modeManager.template getStateOf<Mode>(); }
+
+  /// Return the id of the group containing a target mode, or -1 if it does not exist
+  template<typename Mode> static constexpr int get_group_id_of_mode()
+  {
+    return details::GroupIdFrom<Mode, typename ModeManagerTy::AllGroupsTy>;
+  }
+
+  /// Return the
+  template<typename Mode> static constexpr int get_mode_id()
+  {
+    return details::ModeIdFrom<Mode, typename ModeManagerTy::AllGroupsTy, get_group_id_of_mode<Mode>()>;
+  }
+
   /// \private Group number where \p LocalBasicMode belongs to (or -1 if absent)
-  static constexpr int groupId = details::GroupIdFrom<LocalModeTy, typename ModeManagerTy::AllGroupsTy>;
+  static constexpr int groupId = get_group_id_of_mode<LocalModeTy>();
 
   /// \private Mode position of \p LocalBasicMode in its group (or -1 if absent)
-  static constexpr int modeId = details::ModeIdFrom<LocalModeTy, typename ModeManagerTy::AllGroupsTy, groupId>;
+  static constexpr int modeId = get_mode_id<LocalModeTy>();
 
   /// \private Local store will be in general, manager, or private key space ?
   static constexpr auto prefix =

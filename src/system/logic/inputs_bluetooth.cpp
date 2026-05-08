@@ -9,6 +9,7 @@
 #include "src/system/platform/print.h"
 
 #include "src/system/utils/utils.h"
+#include <cstdint>
 
 namespace lampda {
 namespace logic {
@@ -88,18 +89,13 @@ void handle_BLE_ELK_command(const utils::ELK::Package& elkControlCommand)
       }
     case utils::ELK::Type::COLOR_SELECT:
       {
-        /// TODO: BIG ASSUMPTION HERE : we consider that it is known that the Bluetooth group starts with the
-        /// controlable color mode, this would be WRONG
-        /// \warning
-        uint32_t color = elkControlCommand.data[0] << 16 | elkControlCommand.data[1] << 8 | elkControlCommand.data[2];
+        const uint32_t color =
+                elkControlCommand.data[0] << 16 | elkControlCommand.data[1] << 8 | elkControlCommand.data[2];
         __private::handle_pattern_select_command(0, color);
         break;
       }
     case utils::ELK::Type::PATTERN_SELECT:
       {
-        /// TODO: BIG ASSUMPTION HERE : we consider that it is known that the Bluetooth group starts with the
-        /// controlable color mode, this would be WRONG
-        /// \warning
         __private::handle_pattern_select_command(elkControlCommand.data[0] + 1);
         break;
       }
