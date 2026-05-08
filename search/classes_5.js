@@ -7,5 +7,6 @@ var searchData=
   ['file_4',['File',['../structFile.html',1,'']]],
   ['firemode_5',['FireMode',['../structlampda_1_1modes_1_1default__modes_1_1FireMode.html',1,'lampda::modes::default_modes']]],
   ['firmwareversiont_6',['FirmwareVersiont',['../structbq76905_1_1BQ76905_1_1Regt_1_1FirmwareVersiont.html',1,'bq76905::BQ76905::Regt']]],
-  ['fusb302_5fchip_5fstate_7',['fusb302_chip_state',['../structfusb302__chip__state.html',1,'']]]
+  ['fixedcolormode_7',['FixedColorMode',['../structlampda_1_1modes_1_1bluetooth_1_1FixedColorMode.html',1,'lampda::modes::bluetooth']]],
+  ['fusb302_5fchip_5fstate_8',['fusb302_chip_state',['../structfusb302__chip__state.html',1,'']]]
 ];

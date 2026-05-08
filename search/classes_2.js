@@ -19,8 +19,9 @@ var searchData=
   ['chfetdriverpwmcontrolt_16',['ChFetDriverPwmControlt',['../structbq76905_1_1BQ76905_1_1Regt_1_1ChFetDriverPwmControlt.html',1,'bq76905::BQ76905::Regt']]],
   ['color_17',['COLOR',['../unionlampda_1_1COLOR.html',1,'lampda']]],
   ['color_18',['Color',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1Color.html',1,'lampda::modes::draw::overlay::__private']]],
-  ['colorwipemode_19',['ColorWipeMode',['../structlampda_1_1modes_1_1default__modes_1_1ColorWipeMode.html',1,'lampda::modes::default_modes']]],
-  ['configty_20',['ConfigTy',['../structlampda_1_1modes_1_1automaton_1_1SierpinskiMode_1_1ConfigTy.html',1,'lampda::modes::automaton::SierpinskiMode']]],
-  ['configuratevcellt_21',['ConfigurateVcellt',['../structbq76905_1_1BQ76905_1_1Regt_1_1ConfigurateVcellt.html',1,'bq76905::BQ76905::Regt']]],
-  ['contextty_22',['ContextTy',['../structlampda_1_1modes_1_1ContextTy.html',1,'lampda::modes']]]
+  ['colorcontrolmode_19',['ColorControlMode',['../structlampda_1_1modes_1_1bluetooth_1_1ColorControlMode.html',1,'lampda::modes::bluetooth']]],
+  ['colorwipemode_20',['ColorWipeMode',['../structlampda_1_1modes_1_1default__modes_1_1ColorWipeMode.html',1,'lampda::modes::default_modes']]],
+  ['configty_21',['ConfigTy',['../structlampda_1_1modes_1_1automaton_1_1SierpinskiMode_1_1ConfigTy.html',1,'lampda::modes::automaton::SierpinskiMode']]],
+  ['configuratevcellt_22',['ConfigurateVcellt',['../structbq76905_1_1BQ76905_1_1Regt_1_1ConfigurateVcellt.html',1,'bq76905::BQ76905::Regt']]],
+  ['contextty_23',['ContextTy',['../structlampda_1_1modes_1_1ContextTy.html',1,'lampda::modes']]]
 ];

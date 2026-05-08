@@ -224,8 +224,27 @@ $(function() {
 <div class="ttc" id="a00__intro__mode_8hpp_html"><div class="ttname"><a href="00__intro__mode_8hpp.html">00_intro_mode.hpp</a></div><div class="ttdoc">Example implementation of the simplest possible mode.</div></div>
 <div class="ttc" id="afixed__modes_8hpp_html"><div class="ttname"><a href="fixed__modes_8hpp.html">fixed_modes.hpp</a></div></div>
 <div class="ttc" id="alegacy__modes_8hpp_html"><div class="ttname"><a href="legacy__modes_8hpp.html">legacy_modes.hpp</a></div><div class="ttdoc">Legacy implementation of the Indexable modes.</div></div>
-</div><!-- fragment --><p>Here, we declare a <em>mode group</em> named <code>IntroGroup</code> that contains only one mode, our new <code>modes::examples::IntroMode</code> and nothing else. We are then able to pass a list to the manager of all the groups we want to include in our configuration, here our <code>IntroGroup</code> that only includes <code>IntroMode</code>. </p>
-</div></div><!-- contents -->
+</div><!-- fragment --><p>Here, we declare a <em>mode group</em> named <code>IntroGroup</code> that contains only one mode, our new <code>modes::examples::IntroMode</code> and nothing else. We are then able to pass a list to the manager of all the groups we want to include in our configuration, here our <code>IntroGroup</code> that only includes <code>IntroMode</code>.</p>
+<h1><a class="anchor" id="autotoc_md33"></a>
+Hidden groups</h1>
+<p>It can be needed to have extra groups not accessible by standard actions. The template option hiddenGroupCnt allows the programmer to add groups that wont be accessible by standard user inputs.</p>
+<p>Be aware that once entered, those groups can be circulated by standard user commands. Modes in thoses groups can also be saved as favorites and other standard actions. The only difference with the <em>standard</em> groups will be the way to go to those groups.</p>
+<p>A manager can only be created with at least one accessible group.</p>
+<p>Enter an hidden group simply using the <code>enter_group</code> method of the manager, with the id of the hidden group as a parameter.</p>
+<p>The types to use for managers with hidden groups is <code>ManagerFoHiddenConfig</code> and <code>ManagerForHiddenGroups</code>.</p>
+<p>Example: </p><div class="fragment"><div class="line"><span class="keyword">using </span>ManagerTy = modes::ManagerForHiddenGroups&lt;1,</div>
+<div class="line">                                                group1,</div>
+<div class="line">                                                group2,</div>
+<div class="line">                                                group3,</div>
+<div class="line">                                                group4  <span class="comment">// group 4 is an hidden group</span></div>
+<div class="line">                                                &gt;;</div>
+</div><!-- fragment --><div class="fragment"><div class="line"><span class="keyword">using </span>ManagerTy = modes::ManagerForHiddenGroups&lt;3,</div>
+<div class="line">                                                group1,</div>
+<div class="line">                                                group2, <span class="comment">// group 2 is an hidden group</span></div>
+<div class="line">                                                group3, <span class="comment">// group 3 is an hidden group</span></div>
+<div class="line">                                                group4  <span class="comment">// group 4 is an hidden group</span></div>
+<div class="line">                                                &gt;;</div>
+</div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

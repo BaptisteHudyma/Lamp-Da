@@ -8,7 +8,7 @@ var searchData=
   ['wave_5fampl_5',['wave_ampl',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#aadb9db3e0b8743714eb759e04a77f5af',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
   ['wheat_6',['Wheat',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba283775d3bceded20a34b5fdc2fee195a',1,'lampda::modes::colors']]],
   ['when_5flast_5fupdate_5fbrightness_7',['when_last_update_brightness',['../namespacelampda_1_1logic_1_1brightness.html#a0ebc1a296fd81cb735a6002fcca3eb9d',1,'lampda::logic::brightness']]],
-  ['whichfavoritepending_8',['whichFavoritePending',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a7a9b9b1075855a0604e432be79d1ea56',1,'lampda::modes::ModeManagerTy::StateTy']]],
+  ['whichfavoritepending_8',['whichFavoritePending',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#abb9e4534d844cfdc9c7dda1d0dfa0a80',1,'lampda::modes::ModeManagerTy::StateTy']]],
   ['white_9',['White',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba7093234e9bd942a79336133614685fa3',1,'lampda::modes::colors']]],
   ['whitesmoke_10',['WhiteSmoke',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba77c5e632a87a17424cc54819adefdabc',1,'lampda::modes::colors']]],
   ['width_11',['width',['../structViolonsaoulsImageTy.html#a76a0b2110e6775ad52baa826302ab98a',1,'ViolonsaoulsImageTy::width()'],['../structHeinekenImageTy.html#adcf2362607b093c6df30af0abacfc35e',1,'HeinekenImageTy::width()'],['../structHuit__sixImageTy.html#a11cae317fbd1690e9625767bec352cc1',1,'Huit_sixImageTy::width()']]],

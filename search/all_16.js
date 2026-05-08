@@ -19,7 +19,7 @@ var searchData=
   ['updating_20the_20system_16',['Updating the system',['../md_docs_Update.html',1,'']]],
   ['usbpddata_17',['UsbPDData',['../structlampda_1_1power_1_1powerDelivery_1_1UsbPDData.html',1,'lampda::power::powerDelivery']]],
   ['usebeattracking_18',['useBeatTracking',['../structlampda_1_1modes_1_1audio_1_1MicrophoneConfig.html#a4f2c2b2b57d08124a9f663c897f786a6',1,'lampda::modes::audio::MicrophoneConfig']]],
-  ['usedfavoritecount_19',['usedFavoriteCount',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a1610874a3837a4d95bfc51e9199a44b6',1,'lampda::modes::ModeManagerTy::StateTy']]],
+  ['usedfavoritecount_19',['usedFavoriteCount',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#ab73a19022c3ec9afc92d554e69080bca',1,'lampda::modes::ModeManagerTy::StateTy']]],
   ['user_5ftaskname_20',['user_taskName',['../namespacelampda_1_1platform_1_1threads.html#a60bcfc0aea9cf88443454454b159ffef',1,'lampda::platform::threads']]],
   ['user_5fthread_21',['user_thread',['../structlampda_1_1modes_1_1BasicMode.html#a537a90e25848e88d60d7192ca87cf01b',1,'lampda::modes::BasicMode::user_thread()'],['../structlampda_1_1modes_1_1ContextTy.html#aac3bf40baae8a1098180e08f6b0583f9',1,'lampda::modes::ContextTy::user_thread()'],['../namespacelampda_1_1user.html#a42710cdf95b63e4a0d644c0e976b715a',1,'lampda::user::user_thread()']]],
   ['user_5fwatchdog_5fid_22',['USER_WATCHDOG_ID',['../namespacelampda.html#a2308b911b4eb0e3a9d0d5373f90b1024',1,'lampda']]],

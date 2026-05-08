@@ -153,6 +153,11 @@ uint8_t LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>get_ac
 uint8_t LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>set_active_custom_index</b> (uint8_t value)</td></tr>
 <tr class="memdesc:a755641da7843ebb790095d09183b99d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">(setter) Set active custom index (recalled when jumping favorites) <br /></td></tr>
 <tr class="separator:a755641da7843ebb790095d09183b99d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5a39cee23a8f1a91c34431ae709f8ad"><td class="memTemplParams" colspan="2"><a id="aa5a39cee23a8f1a91c34431ae709f8ad" name="aa5a39cee23a8f1a91c34431ae709f8ad"></a>
+template&lt;typename Mode &gt; </td></tr>
+<tr class="memitem:aa5a39cee23a8f1a91c34431ae709f8ad"><td class="memTemplItemLeft" align="right" valign="top">StateTyOf&lt; Mode &gt; &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_state_of_mode</b> ()</td></tr>
+<tr class="memdesc:aa5a39cee23a8f1a91c34431ae709f8ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the state of a given mode. <br /></td></tr>
+<tr class="separator:aa5a39cee23a8f1a91c34431ae709f8ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09e7d0b8fba95a204aaaa33c3f8ec64d"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17">ConfigKeys</a> key&gt; </td></tr>
 <tr class="memitem:a09e7d0b8fba95a204aaaa33c3f8ec64d"><td class="memTemplItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1ContextTy.html#a09e7d0b8fba95a204aaaa33c3f8ec64d">set_config_bool</a> (bool value)</td></tr>
 <tr class="memdesc:a09e7d0b8fba95a204aaaa33c3f8ec64d"><td class="mdescLeft">&#160;</td><td class="mdescRight">(setter) Set a configurable boolean to target <code>value</code>  <br /></td></tr>
@@ -258,6 +263,16 @@ void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>user_thre
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
+<tr class="memitem:af2e1b7913dd98ea0bcaad84b94968ec1"><td class="memTemplParams" colspan="2"><a id="af2e1b7913dd98ea0bcaad84b94968ec1" name="af2e1b7913dd98ea0bcaad84b94968ec1"></a>
+template&lt;typename Mode &gt; </td></tr>
+<tr class="memitem:af2e1b7913dd98ea0bcaad84b94968ec1"><td class="memTemplItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_group_id_of_mode</b> ()</td></tr>
+<tr class="memdesc:af2e1b7913dd98ea0bcaad84b94968ec1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the id of the group containing a target mode, or -1 if it does not exist. <br /></td></tr>
+<tr class="separator:af2e1b7913dd98ea0bcaad84b94968ec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51a4734eed541c7b459500e18ea69ee1"><td class="memTemplParams" colspan="2"><a id="a51a4734eed541c7b459500e18ea69ee1" name="a51a4734eed541c7b459500e18ea69ee1"></a>
+template&lt;typename Mode &gt; </td></tr>
+<tr class="memitem:a51a4734eed541c7b459500e18ea69ee1"><td class="memTemplItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_mode_id</b> ()</td></tr>
+<tr class="memdesc:a51a4734eed541c7b459500e18ea69ee1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the. <br /></td></tr>
+<tr class="separator:a51a4734eed541c7b459500e18ea69ee1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa21f0cf285a728834b8c66c9f37975cf"><td class="memTemplParams" colspan="2"><a id="aa21f0cf285a728834b8c66c9f37975cf" name="aa21f0cf285a728834b8c66c9f37975cf"></a>
 template&lt;StoreEnum key, typename T  = uint32_t&gt; </td></tr>
 <tr class="memitem:aa21f0cf285a728834b8c66c9f37975cf"><td class="memTemplItemLeft" align="right" valign="top">static auto LMBD_INLINE&#160;</td><td class="memTemplItemRight" valign="bottom"><b>storageFor</b> (LMBD_USED T &amp;local)</td></tr>

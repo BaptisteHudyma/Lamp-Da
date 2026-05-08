@@ -8,7 +8,7 @@ var searchData=
   ['maxbrightnesslimit_5',['MaxBrightnessLimit',['../structlampda_1_1logic_1_1brightness_1_1BrightnessParameters.html#ae5373f0c28240f250daade0220d46a12',1,'lampda::logic::brightness::BrightnessParameters']]],
   ['maxchargingcurrent_5fma_6',['maxChargingCurrent_mA',['../structlampda_1_1power_1_1charger_1_1drivers_1_1PowerLimits.html#af6eca5c170f0f9cd17dc3e7f7ffb5558',1,'lampda::power::charger::drivers::PowerLimits']]],
   ['maxcurrent_5fma_7',['maxCurrent_mA',['../structlampda_1_1power_1_1powerDelivery_1_1PDOTypes.html#a34595c60ac2d1dcf8e8a1bcdb84093da',1,'lampda::power::powerDelivery::PDOTypes']]],
-  ['maxfavoritecount_8',['maxFavoriteCount',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a943a2026049ae7af928ad7edbe1f1689',1,'lampda::modes::ModeManagerTy::StateTy']]],
+  ['maxfavoritecount_8',['maxFavoriteCount',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#ae2476a8f1b64a6013305e24873bbe1e8',1,'lampda::modes::ModeManagerTy::StateTy']]],
   ['maxfrequency_9',['maxFrequency',['../classlampda_1_1utils_1_1fft_1_1FftAnalyzer.html#ac46aae925a0af5e97b4b650b5bba3f37',1,'lampda::utils::fft::FftAnalyzer']]],
   ['maxheight_10',['maxHeight',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a2f07490303385b47298f61f8f7293017',1,'lampda::modes::hardware::LampTy']]],
   ['maxheightfloat_11',['maxHeightFloat',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a4f8370dc25d361a9b09481ebccd79703',1,'lampda::modes::hardware::LampTy']]],

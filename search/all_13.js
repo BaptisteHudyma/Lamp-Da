@@ -21,7 +21,7 @@ var searchData=
   ['raise_18',['raise',['../classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html#ada19e3ad7735e286c3157e8d5b8652c4',1,'lampda::logic::alerts::AlertManager_t']]],
   ['raisedtime_19',['raisedTime',['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a7e56280bf66ac2966405d8eefaf58fe1',1,'lampda::logic::alerts::AlertBase']]],
   ['ramp_20',['RAMP',['../namespacelampda_1_1modes_1_1draw_1_1overlay.html#a3764bbf557f255131391e4f8713e81eeaf89e1aea17dcf73105f3c89a72d3df3c',1,'lampda::modes::draw::overlay']]],
-  ['ramphandler_21',['rampHandler',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a5068cbf7f6e41554e062d1f13eb644bc',1,'lampda::modes::ModeManagerTy::StateTy']]],
+  ['ramphandler_21',['rampHandler',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a3530e50c51d29cb793de19b88c8dc53d',1,'lampda::modes::ModeManagerTy::StateTy']]],
   ['rampsaturates_22',['rampSaturates',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17a30df249f3c4cbced2ae40d969fd9019a',1,'lampda::modes']]],
   ['rampstartperiodms_23',['rampStartPeriodMs',['../structlampda_1_1modes_1_1DefaultManagerConfig.html#aa38efa883b4a01c6328543e81f549340',1,'lampda::modes::DefaultManagerConfig']]],
   ['randomscroll_24',['randomScroll',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode_1_1StateTy.html#a0a5805b7d81f50b6aec94b83fb204b01',1,'lampda::modes::custom::nudz::NudzViolonsaoulsMode::StateTy::randomScroll()'],['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzScrollImageMode_1_1StateTy.html#a2140a3d3e1c1d6ecc562439d6ff6f9e3',1,'lampda::modes::custom::nudz::NudzScrollImageMode::StateTy::randomScroll()']]],

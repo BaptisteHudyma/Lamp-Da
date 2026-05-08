@@ -88,17 +88,17 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
+<tr class="memitem:namespacelampda_1_1user_1_1custom"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user_1_1custom.html">custom</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1user_1_1custom"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom user mode groups. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacelampda_1_1user_1_1default__behaviors"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user_1_1default__behaviors.html">default_behaviors</a></td></tr>
 <tr class="memdesc:namespacelampda_1_1user_1_1default__behaviors"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define default behavior that are shared between system types. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a5b00242ba7a4a722fae8626d5684be27"><td class="memItemLeft" align="right" valign="top"><a id="a5b00242ba7a4a722fae8626d5684be27" name="a5b00242ba7a4a722fae8626d5684be27"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>NudzModes</b> = <a class="el" href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f">modes::GroupFor</a>&lt; <a class="el" href="structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzScrollImageMode.html">modes::custom::nudz::NudzHeinekenMode</a>, <a class="el" href="structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzScrollImageMode.html">modes::custom::nudz::NudzHuitSixMode</a>, <a class="el" href="structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode.html">modes::custom::nudz::NudzViolonsaoulsMode</a>, <a class="el" href="structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode.html">modes::custom::nudz::NudzBeerGlassMode</a> &gt;</td></tr>
-<tr class="separator:a5b00242ba7a4a722fae8626d5684be27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7e3b0a74dd66bb3c3b061863909d7e3"><td class="memItemLeft" align="right" valign="top"><a id="ae7e3b0a74dd66bb3c3b061863909d7e3" name="ae7e3b0a74dd66bb3c3b061863909d7e3"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>ManagerTy</b> = <a class="el" href="namespacelampda_1_1modes.html#aca64ec3c980c7af33938631f9d941122">modes::ManagerFor</a>&lt; <a class="el" href="namespacelampda_1_1modes.html#a46525de2fd2c89da941695bda8efade4">modes::FixedModes</a>, modes::legacy::CalmModes, modes::legacy::PartyModes, modes::legacy::SoundModes, NudzModes &gt;</td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ManagerTy</b> = <a class="el" href="namespacelampda_1_1modes.html#a5b23c77d3d281b99db42b5e55df6dd62">modes::ManagerForHiddenGroups</a>&lt; #ifdef NUDZ_MODES_ENABLED 1, #else 2, #endif <a class="el" href="namespacelampda_1_1modes.html#a46525de2fd2c89da941695bda8efade4">modes::FixedModes</a>, modes::legacy::CalmModes, modes::legacy::PartyModes, modes::legacy::SoundModes, custom::NudzModes, modes::bluetooth::BluetoothModes &gt;</td></tr>
 <tr class="separator:ae7e3b0a74dd66bb3c3b061863909d7e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
@@ -153,6 +153,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>read_parameters</b> (
 <tr class="memitem:a42710cdf95b63e4a0d644c0e976b715a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#a42710cdf95b63e4a0d644c0e976b715a">user_thread</a> ()</td></tr>
 <tr class="memdesc:a42710cdf95b63e4a0d644c0e976b715a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called at each tick of the secondary thread.  <br /></td></tr>
 <tr class="separator:a42710cdf95b63e4a0d644c0e976b715a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68fa1e30ab54d55b8413fc06e1b39f97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#a68fa1e30ab54d55b8413fc06e1b39f97">bluetooth_switch_pattern</a> (uint8_t index, uint32_t targetColor)</td></tr>
+<tr class="memdesc:a68fa1e30ab54d55b8413fc06e1b39f97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle to switch the current mode to bluetooth requested index.  <br /></td></tr>
+<tr class="separator:a68fa1e30ab54d55b8413fc06e1b39f97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f610126f49c21bdf457936bc45a9b09"><td class="memItemLeft" align="right" valign="top"><a id="a9f610126f49c21bdf457936bc45a9b09" name="a9f610126f49c21bdf457936bc45a9b09"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_color</b> (const uint8_t color)</td></tr>
 <tr class="separator:a9f610126f49c21bdf457936bc45a9b09"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -191,6 +194,43 @@ static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>currentBrig
 <div class="textblock"><p>Contains code handling custom user mode functions for indexable strips. </p>
 <p>Add the nudz mode the compilation. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="a68fa1e30ab54d55b8413fc06e1b39f97" name="a68fa1e30ab54d55b8413fc06e1b39f97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68fa1e30ab54d55b8413fc06e1b39f97">&#9670;&#160;</a></span>bluetooth_switch_pattern()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::user::bluetooth_switch_pattern </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>targetColor</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Handle to switch the current mode to bluetooth requested index. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>Pattern index, in [0, 29] </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">targetColor</td><td>If the index is zero, the color is selectable </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a2bed2303bf048e21a21fa2e6a8ebb8fc" name="a2bed2303bf048e21a21fa2e6a8ebb8fc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2bed2303bf048e21a21fa2e6a8ebb8fc">&#9670;&#160;</a></span>brightness_update()</h2>
 

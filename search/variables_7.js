@@ -14,6 +14,6 @@ var searchData=
   ['goffset_11',['gOffset',['../classAdafruit__NeoPixel.html#a3db2bc3b72073fd9a86438128186fc98',1,'Adafruit_NeoPixel']]],
   ['greencolorcorrection_12',['greenColorCorrection',['../namespacelampda_1_1physical_1_1indicator.html#a43ff52e3774e9cd8b6162a97b850ef0b',1,'lampda::physical::indicator']]],
   ['grid_13',['grid',['../structlampda_1_1modes_1_1automaton_1_1SierpinskiMode_1_1StateTy.html#af0307b7f5b799e91b439296ea5aec4b8',1,'lampda::modes::automaton::SierpinskiMode::StateTy::grid()'],['../structlampda_1_1modes_1_1automaton_1_1BubbleMode_1_1StateTy.html#a95bd2740da3a8e389b1e41d11566d443',1,'lampda::modes::automaton::BubbleMode::StateTy::grid()']]],
-  ['groupstates_14',['groupStates',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#acc4238ba80647453208a19a4566e0a53',1,'lampda::modes::ModeManagerTy::StateTy']]],
+  ['groupstates_14',['groupStates',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a50a750edabaaeb9a97b61f961bf77e89',1,'lampda::modes::ModeManagerTy::StateTy']]],
   ['gyro_15',['gyro',['../structlampda_1_1physical_1_1imu_1_1Reading.html#a4d9e4179b75bd0f406cc4fe7f12beb7c',1,'lampda::physical::imu::Reading']]]
 ];

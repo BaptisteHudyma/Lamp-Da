@@ -89,7 +89,7 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html">lampda::modes::ModeManagerTy&lt; Config, AllGroups &gt;::StateTy</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html">lampda::modes::ModeManagerTy&lt; Config, AllGroups, hiddenGroupsCount &gt;::StateTy</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -103,14 +103,22 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:abb0165c17355dc47a4cdd283f1f910b1"><td class="memTemplParams" colspan="2">template&lt;typename ManagerConfig , typename... Groups&gt; </td></tr>
-<tr class="memitem:abb0165c17355dc47a4cdd283f1f910b1"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes.html#abb0165c17355dc47a4cdd283f1f910b1">lampda::modes::ManagerForConfig</a> = ModeManagerTy&lt; ManagerConfig, std::tuple&lt; Groups... &gt; &gt;</td></tr>
-<tr class="memdesc:abb0165c17355dc47a4cdd283f1f910b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="namespacelampda_1_1modes.html#aca64ec3c980c7af33938631f9d941122" title="Group together several mode groups defined through modes::GroupFor.">modes::ManagerFor</a> but with custom defaults.  <br /></td></tr>
-<tr class="separator:abb0165c17355dc47a4cdd283f1f910b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca64ec3c980c7af33938631f9d941122"><td class="memTemplParams" colspan="2">template&lt;typename... Groups&gt; </td></tr>
-<tr class="memitem:aca64ec3c980c7af33938631f9d941122"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes.html#aca64ec3c980c7af33938631f9d941122">lampda::modes::ManagerFor</a> = ModeManagerTy&lt; DefaultManagerConfig, std::tuple&lt; Groups... &gt; &gt;</td></tr>
-<tr class="memdesc:aca64ec3c980c7af33938631f9d941122"><td class="mdescLeft">&#160;</td><td class="mdescRight">Group together several mode groups defined through <a class="el" href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f" title="Group together many different modes::BasicMode.">modes::GroupFor</a>.  <br /></td></tr>
-<tr class="separator:aca64ec3c980c7af33938631f9d941122"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e6505e53bef96a328e82896560a826b"><td class="memTemplParams" colspan="2">template&lt;typename ManagerConfig , typename... Groups&gt; </td></tr>
+<tr class="memitem:a6e6505e53bef96a328e82896560a826b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes.html#a6e6505e53bef96a328e82896560a826b">lampda::modes::ManagerForConfig</a> = ModeManagerTy&lt; ManagerConfig, std::tuple&lt; Groups... &gt;, 0 &gt;</td></tr>
+<tr class="memdesc:a6e6505e53bef96a328e82896560a826b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="namespacelampda_1_1modes.html#ab032f9c9a9c0c0215869eea98ae31948" title="Group together several mode groups defined through modes::GroupFor.">modes::ManagerFor</a> but with custom defaults.  <br /></td></tr>
+<tr class="separator:a6e6505e53bef96a328e82896560a826b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab032f9c9a9c0c0215869eea98ae31948"><td class="memTemplParams" colspan="2">template&lt;typename... Groups&gt; </td></tr>
+<tr class="memitem:ab032f9c9a9c0c0215869eea98ae31948"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes.html#ab032f9c9a9c0c0215869eea98ae31948">lampda::modes::ManagerFor</a> = ModeManagerTy&lt; DefaultManagerConfig, std::tuple&lt; Groups... &gt;, 0 &gt;</td></tr>
+<tr class="memdesc:ab032f9c9a9c0c0215869eea98ae31948"><td class="mdescLeft">&#160;</td><td class="mdescRight">Group together several mode groups defined through <a class="el" href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f" title="Group together many different modes::BasicMode.">modes::GroupFor</a>.  <br /></td></tr>
+<tr class="separator:ab032f9c9a9c0c0215869eea98ae31948"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b23c77d3d281b99db42b5e55df6dd62"><td class="memTemplParams" colspan="2">template&lt;uint8_t hiddenGroupCnt, typename... Groups&gt; </td></tr>
+<tr class="memitem:a5b23c77d3d281b99db42b5e55df6dd62"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes.html#a5b23c77d3d281b99db42b5e55df6dd62">lampda::modes::ManagerForHiddenGroups</a> = ModeManagerTy&lt; DefaultManagerConfig, std::tuple&lt; Groups... &gt;, hiddenGroupCnt &gt;</td></tr>
+<tr class="memdesc:a5b23c77d3d281b99db42b5e55df6dd62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Group together several mode groups defined through <a class="el" href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f" title="Group together many different modes::BasicMode.">modes::GroupFor</a>. Will use the last hiddenGroupCnt as hidden groups, only accessible through certain action.  <br /></td></tr>
+<tr class="separator:a5b23c77d3d281b99db42b5e55df6dd62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a224b8832ea3d3dda8f01f766daafe89f"><td class="memTemplParams" colspan="2">template&lt;uint8_t hiddenGroupCnt, typename ManagerConfig , typename... Groups&gt; </td></tr>
+<tr class="memitem:a224b8832ea3d3dda8f01f766daafe89f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes.html#a224b8832ea3d3dda8f01f766daafe89f">lampda::modes::ManagerFoHiddenConfig</a> = ModeManagerTy&lt; ManagerConfig, std::tuple&lt; Groups... &gt;, hiddenGroupCnt &gt;</td></tr>
+<tr class="memdesc:a224b8832ea3d3dda8f01f766daafe89f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="namespacelampda_1_1modes.html#ab032f9c9a9c0c0215869eea98ae31948" title="Group together several mode groups defined through modes::GroupFor.">modes::ManagerFor</a> but with custom defaults, and additional hidden groups.  <br /></td></tr>
+<tr class="separator:a224b8832ea3d3dda8f01f766daafe89f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>modes::ManagerFor and associated definitions </p>

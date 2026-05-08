@@ -144,9 +144,9 @@ static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>d
 <div class="line">};</div>
 <div class="ttc" id="astructMyCustomConfig_html"><div class="ttname"><a href="structMyCustomConfig.html">MyCustomConfig</a></div><div class="ttdef"><b>Definition:</b> my_custom_config.hpp:7</div></div>
 <div class="ttc" id="astructlampda_1_1modes_1_1DefaultManagerConfig_html"><div class="ttname"><a href="structlampda_1_1modes_1_1DefaultManagerConfig.html">lampda::modes::DefaultManagerConfig</a></div><div class="ttdoc">Default manager configuration, enables you to customize defaults.</div><div class="ttdef"><b>Definition:</b> default_config.hpp:42</div></div>
-</div><!-- fragment --><p>Then use, instead of the <code><a class="el" href="namespacelampda_1_1modes.html#aca64ec3c980c7af33938631f9d941122" title="Group together several mode groups defined through modes::GroupFor.">modes::ManagerFor</a></code> helper, the following:</p>
+</div><!-- fragment --><p>Then use, instead of the <code><a class="el" href="namespacelampda_1_1modes.html#ab032f9c9a9c0c0215869eea98ae31948" title="Group together several mode groups defined through modes::GroupFor.">modes::ManagerFor</a></code> helper, the following:</p>
 <div class="fragment"><div class="line"><span class="comment">// using ManagerTy = modes::ManagerFor&lt;</span></div>
-<div class="line"><span class="keyword">using </span>ManagerTy = <a class="code hl_typedef" href="namespacelampda_1_1modes.html#abb0165c17355dc47a4cdd283f1f910b1">modes::ManagerForConfig</a>&lt;<a class="code hl_struct" href="structMyCustomConfig.html">MyCustomConfig</a>,</div>
+<div class="line"><span class="keyword">using </span>ManagerTy = <a class="code hl_typedef" href="namespacelampda_1_1modes.html#a6e6505e53bef96a328e82896560a826b">modes::ManagerForConfig</a>&lt;<a class="code hl_struct" href="structMyCustomConfig.html">MyCustomConfig</a>,</div>
 <div class="line">  <a class="code hl_typedef" href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f">modes::GroupFor</a>&lt;</div>
 <div class="line">    mode1,</div>
 <div class="line">    mode2&gt;,</div>
@@ -155,8 +155,8 @@ static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>d
 <div class="line">    <span class="comment">// ... other modes</span></div>
 <div class="line">    modeC&gt;</div>
 <div class="line">  &gt;;</div>
+<div class="ttc" id="anamespacelampda_1_1modes_html_a6e6505e53bef96a328e82896560a826b"><div class="ttname"><a href="namespacelampda_1_1modes.html#a6e6505e53bef96a328e82896560a826b">lampda::modes::ManagerForConfig</a></div><div class="ttdeci">ModeManagerTy&lt; ManagerConfig, std::tuple&lt; Groups... &gt;, 0 &gt; ManagerForConfig</div><div class="ttdoc">Same as modes::ManagerFor but with custom defaults.</div><div class="ttdef"><b>Definition:</b> manager_type.hpp:1148</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_html_aa8da2a265afb18b5429192c81127918f"><div class="ttname"><a href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f">lampda::modes::GroupFor</a></div><div class="ttdeci">GroupTy&lt; std::tuple&lt; Modes... &gt; &gt; GroupFor</div><div class="ttdoc">Group together many different modes::BasicMode.</div><div class="ttdef"><b>Definition:</b> group_type.hpp:335</div></div>
-<div class="ttc" id="anamespacelampda_1_1modes_html_abb0165c17355dc47a4cdd283f1f910b1"><div class="ttname"><a href="namespacelampda_1_1modes.html#abb0165c17355dc47a4cdd283f1f910b1">lampda::modes::ManagerForConfig</a></div><div class="ttdeci">ModeManagerTy&lt; ManagerConfig, std::tuple&lt; Groups... &gt; &gt; ManagerForConfig</div><div class="ttdoc">Same as modes::ManagerFor but with custom defaults.</div><div class="ttdef"><b>Definition:</b> manager_type.hpp:1122</div></div>
 </div><!-- fragment --><p>See <a class="el" href="my__custom__config_8hpp_source.html">configuration template </a> below where you will need to uncomment the values you want to override:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#ifndef MY_CUSTOM_CONFIG_H</span></div>
 <div class="line"><span class="preprocessor">#define MY_CUSTOM_CONFIG_H</span></div>
@@ -172,7 +172,7 @@ static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>d
 <div class="line">  <span class="comment">// static constexpr uint32_t defaultCustomRampAnimChoice = 0;</span></div>
 <div class="line">};</div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Groups&gt; <span class="keyword">using </span>CustomManagerFor = <a class="code hl_typedef" href="namespacelampda_1_1modes.html#abb0165c17355dc47a4cdd283f1f910b1">lampda::modes::ManagerForConfig</a>&lt;<a class="code hl_struct" href="structMyCustomConfig.html">MyCustomConfig</a>, Groups...&gt;;</div>
+<div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Groups&gt; <span class="keyword">using </span>CustomManagerFor = <a class="code hl_typedef" href="namespacelampda_1_1modes.html#a6e6505e53bef96a328e82896560a826b">lampda::modes::ManagerForConfig</a>&lt;<a class="code hl_struct" href="structMyCustomConfig.html">MyCustomConfig</a>, Groups...&gt;;</div>
 <div class="line"> </div>
 <div class="line"><span class="preprocessor">#endif</span></div>
 </div><!-- fragment --><p>See also <a class="el" href="namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17" title="Keys to enable modes to change configuration at runtime.">modes::ConfigKeys</a> for runtime configuration. </p>
