@@ -171,6 +171,20 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
   }
 
+  /// \private scrll through all modes
+  auto LMBD_INLINE enter_hidden_group(const uint8_t hiddenGroupIndex)
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      return LocalModeTy::enter_hidden_group(*this, hiddenGroupIndex);
+    }
+    else
+    {
+      auto manager = modeManager.get_context();
+      return manager.enter_hidden_group(hiddenGroupIndex);
+    }
+  }
+
   /// \private Animate a ramp
   auto LMBD_INLINE overlay_animate_ramp(float holdDuration,
                                         float stepSize,
@@ -203,7 +217,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   }
 
   /// \private Get number of groups available
-  auto LMBD_INLINE get_groups_count() { return modeManager.nbGroups; }
+  auto LMBD_INLINE get_accessible_groups_count() { return modeManager.nbAccessibleGroups; }
 
   /// \private Get number of modes available
   auto LMBD_INLINE get_modes_count()

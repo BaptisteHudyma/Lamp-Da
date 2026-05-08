@@ -26,10 +26,9 @@
 #include "src/modes/default/fixed_modes.hpp"
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/legacy/legacy_modes.hpp"
+#include "src/modes/legacy/bluetooth_group.hpp"
 
-#ifdef NUDZ_MODES_ENABLED
 #include "src/modes/custom/nudz/nudz_scrollimage.hpp"
-#endif
 
 namespace lampda::user {
 
@@ -37,25 +36,25 @@ namespace lampda::user {
 // list your groups & modes here
 //
 
-#ifdef NUDZ_MODES_ENABLED
+/// Custom user mode groups
+namespace custom {
 using NudzModes = modes::GroupFor<modes::custom::nudz::NudzHeinekenMode,
                                   modes::custom::nudz::NudzHuitSixMode,
                                   modes::custom::nudz::NudzViolonsaoulsMode,
                                   modes::custom::nudz::NudzBeerGlassMode>;
+}
 
-using ManagerTy = modes::ManagerFor<modes::FixedModes,
-                                    // modes::MiscFixedModes,
-                                    modes::legacy::CalmModes,
-                                    modes::legacy::PartyModes,
-                                    modes::legacy::SoundModes,
-                                    NudzModes>;
+using ManagerTy = modes::ManagerForHiddenGroups<
+#ifdef NUDZ_MODES_ENABLED
+        0,
 #else
-using ManagerTy = modes::ManagerFor<modes::FixedModes,
-                                    // modes::MiscFixedModes,
-                                    modes::legacy::CalmModes,
-                                    modes::legacy::PartyModes,
-                                    modes::legacy::SoundModes>;
+        1, // NudzModes is defined as an hidden group
 #endif
+        modes::FixedModes,
+        modes::legacy::CalmModes,
+        modes::legacy::PartyModes,
+        modes::legacy::SoundModes,
+        custom::NudzModes>;
 
 //
 // implementation details
