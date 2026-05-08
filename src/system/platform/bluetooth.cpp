@@ -1,6 +1,7 @@
 #include "bluetooth.h"
 
 #include <bluefruit.h>
+#include <cstdint>
 
 #include "src/system/logic/alerts.h"
 #include "src/system/utils/constants.h"
@@ -8,19 +9,30 @@
 #include "src/system/platform/print.h"
 #include "src/system/platform/time.h"
 
+#include "src/system/platform/bluetooth/elk_service.h"
+
 namespace lampda {
 namespace platform {
 namespace bluetooth {
 
-#define ADV_TIMEOUT 30 // seconds. Set this higher to automatically stop advertising after a time
+namespace __private {
+
+#define ADV_TIMEOUT_FAST 30 // seconds. Set this higher to automatically stop advertising after a time
+#define ADV_TIMEOUT      30 // seconds. Set this higher to automatically stop advertising after a time
 
 #define BLE_APPEARANCE_LIGHT_SOURCE_GENERIC          0x07C0 /**< Light fixture BLE appearance flag (official flags) */
 #define BLE_APPEARANCE_LIGHT_SOURCE_MULTICOLOR_ARRAY 0x07C6 /**< Light fixture BLE appearance flag (official flags) */
+
+/// Indicates if the last advertising cancel command was automatic or requested
+bool advertisingStoppedByRequest = false;
 
 // System Info Service
 BLEDis bleSystemInfo;
 // System battery service
 BLEBas bleBatteryService;
+
+/// led controler service
+::lampda::bluetooth::BLEElkService bleElkService;
 
 static bool isInitialized = false;
 
@@ -37,6 +49,15 @@ void byte_to_str(char* buff, uint8_t val)
   buff[1] = nibble_to_hex(val);
 }
 
+void stop_advertising()
+{
+  if (!isInitialized)
+    return;
+
+  logic::alerts::manager.clear(logic::alerts::Type::BLUETOOTH_ADVERT);
+  Bluefruit.Advertising.stop();
+}
+
 void connect_callback(uint16_t conn_hdl)
 {
   stop_bluetooth_advertising();
@@ -45,14 +66,26 @@ void connect_callback(uint16_t conn_hdl)
 
 void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
 {
-  stop_bluetooth_advertising();
+  // Dont stop advertising here, some BLE drivers can send one command by connections.
+  // Instead, restart the advertising
+  start_advertising();
   platform::lampda_print("Bluetooth disconnected");
 }
 
 void adv_stop_callback(void)
 {
-  stop_bluetooth_advertising();
-  platform::lampda_print("Advertising time passed, advertising will now stop.");
+  // auto turned off, start again !
+  if (not advertisingStoppedByRequest)
+  {
+    start_advertising();
+    platform::lampda_print("BLE Advertising timeout, advertising restarted.");
+  }
+  else
+  {
+    __private::stop_advertising();
+    platform::lampda_print("BLE Advertising stop requested.");
+  }
+  advertisingStoppedByRequest = false;
 }
 
 void set_device_informations()
@@ -96,17 +129,21 @@ void startup_sequence()
   // add services
   set_device_informations();
   bleBatteryService.begin();
+  bleElkService.begin();
 
   const uint32_t MAC_ADDRESS_0 = NRF_FICR->DEVICEADDR[0];
   const uint32_t MAC_ADDRESS_1 = NRF_FICR->DEVICEADDR[1];
 
-  char ble_name[17] = "Lampda-XXXX-XXXX"; // Null-terminated string must be 1 longer than you set it, for the null
+  /// ELK-BLE is necessary to be recognized as a led drivable bluetooth object
+  char ble_name[25] =
+          "ELK-BLE-Lampda-XXXX-XXXX"; // Null-terminated string must be 1 longer than you set it, for the null
   // Fill in the XXXX in ble_name
-  byte_to_str(&ble_name[7], (MAC_ADDRESS_0 >> 24) & 0xFF);
-  byte_to_str(&ble_name[9], (MAC_ADDRESS_0 >> 16) & 0xFF);
-  byte_to_str(&ble_name[12], (MAC_ADDRESS_0 >> 8) & 0xFF);
-  byte_to_str(&ble_name[14], (MAC_ADDRESS_0 >> 0) & 0xFF);
-  // Set the name we just made, and appearance
+  byte_to_str(&ble_name[15], (MAC_ADDRESS_0 >> 24) & 0xFF);
+  byte_to_str(&ble_name[17], (MAC_ADDRESS_0 >> 16) & 0xFF);
+  byte_to_str(&ble_name[20], (MAC_ADDRESS_0 >> 8) & 0xFF);
+  byte_to_str(&ble_name[22], (MAC_ADDRESS_0 >> 0) & 0xFF);
+
+  //  Set the name we just made, and appearance
   Bluefruit.setName(ble_name);
   Bluefruit.setAppearance(BLE_APPEARANCE_LIGHT_SOURCE_MULTICOLOR_ARRAY);
 
@@ -120,6 +157,7 @@ void startup_sequence()
   // Advertise services that we want to advertise only
   Bluefruit.Advertising.addService(bleSystemInfo);
   // Bluefruit.Advertising.addService(bleBatteryService);
+  Bluefruit.Advertising.addService(bleElkService);
 
   // Secondary Scan Response packet (optional)
   // Since there is no room for 'Name' in Advertising packet
@@ -127,8 +165,8 @@ void startup_sequence()
 
   Bluefruit.Advertising.setStopCallback(adv_stop_callback);
   Bluefruit.Advertising.restartOnDisconnect(true);
-  Bluefruit.Advertising.setInterval(32, 244); // in unit of 0.625 ms
-  Bluefruit.Advertising.setFastTimeout(30);   // number of seconds in fast mode
+  Bluefruit.Advertising.setInterval(32, 244);             // in unit of 0.625 ms
+  Bluefruit.Advertising.setFastTimeout(ADV_TIMEOUT_FAST); // advertisement timeout
 
   Bluefruit.Periph.setConnectCallback(connect_callback);
   Bluefruit.Periph.setDisconnectCallback(disconnect_callback);
@@ -136,42 +174,51 @@ void startup_sequence()
   isInitialized = true;
 }
 
+} // namespace __private
+
+/*
+ *
+ *
+ */
+
 void start_advertising()
 {
-  if (!isInitialized)
+  if (!__private::isInitialized)
   {
     // call once when the program starts
-    startup_sequence();
+    __private::startup_sequence();
   }
 
-  Bluefruit.printInfo();
+  __private::advertisingStoppedByRequest = false;
+
+  // Bluefruit.printInfo();
   Bluefruit.Advertising.start(ADV_TIMEOUT); // Stop advertising entirely after ADV_TIMEOUT seconds
 
+  // reraise the alert every minutes
   logic::alerts::manager.raise(logic::alerts::Type::BLUETOOTH_ADVERT);
 }
 
 void stop_bluetooth_advertising()
 {
-  if (!isInitialized)
+  if (!__private::isInitialized)
     return;
 
-  logic::alerts::manager.clear(logic::alerts::Type::BLUETOOTH_ADVERT);
-
-  Bluefruit.Advertising.stop();
+  __private::advertisingStoppedByRequest = true;
+  __private::stop_advertising();
 }
 
 void write_battery_level(const uint8_t batteryLevel)
 {
-  if (!isInitialized)
+  if (!__private::isInitialized)
     return;
-  bleBatteryService.write(batteryLevel);
+  __private::bleBatteryService.write(batteryLevel);
 }
 
 void notify_battery_level(const uint8_t batteryLevel)
 {
-  if (!isInitialized)
+  if (!__private::isInitialized)
     return;
-  bleBatteryService.notify(batteryLevel);
+  __private::bleBatteryService.notify(batteryLevel);
 }
 
 } // namespace bluetooth
