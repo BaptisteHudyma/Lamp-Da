@@ -12,7 +12,6 @@
 #include <cstdint>
 
 #include "src/system/logic/brightness_handle.h"
-#include "src/system/logic/inputs_bluetooth.h"
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #include "src/system/physical/strip.h"
@@ -130,9 +129,6 @@ bool should_spawn_thread();
  * True when the system probed it to check if it needed a secondary thread
  */
 void user_thread();
-
-/// Handle a received ELK control command
-void handle_bluetooth_ELK_command(const utils::ELK::Package& command);
 
 } // namespace lampda::user
 

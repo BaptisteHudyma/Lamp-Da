@@ -2,9 +2,7 @@
 
 #include "src/system/platform/print.h"
 
-#include "src/system/utils/elk_decoder.h"
-
-#include "src/user/functions.h"
+#include "src/system/logic/inputs_bluetooth.h"
 
 #include <tuple>
 #include <cassert>
@@ -42,8 +40,8 @@ void BLEElkService::elk_commmand_handle(uint16_t conn_hdl, const uint8_t* data, 
   utils::ELK::Package elkPackage;
   if (utils::ELK::decode_ELK_message(data, len, elkPackage))
   {
-    // call user handle
-    user::handle_bluetooth_ELK_command(elkPackage);
+    // call the logic handle
+    logic::inputs_bluetooth::handle_BLE_ELK_command(elkPackage);
   }
   else
   {
