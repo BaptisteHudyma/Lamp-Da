@@ -1,3 +1,7 @@
+/*! \file elk_decoder.h
+    \brief Decoder of the Bluetooth ELK messages
+*/
+
 #ifndef UTILS_ELK_DECODER
 #define UTILS_ELK_DECODER
 

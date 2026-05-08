@@ -8,6 +8,12 @@ namespace lampda {
 namespace platform {
 namespace bluetooth {
 
+bool is_activated() { return false; }
+
+bool is_advertising() { return false; }
+
+bool is_connected() { return false; }
+
 // start the advertising sequence (with a timeout)
 void start_advertising() {}
 

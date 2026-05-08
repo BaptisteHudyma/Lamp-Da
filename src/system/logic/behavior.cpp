@@ -6,6 +6,7 @@
 #include "src/system/ext/noise.h"
 
 #include "src/system/logic/alerts.h"
+#include "src/system/logic/inputs_bluetooth.h"
 #include "src/system/logic/inputs.h"
 #include "src/system/logic/statistics_handler.h"
 #include "src/system/logic/power_handler.h"
@@ -48,9 +49,12 @@ static constexpr uint32_t brightnessKey = utils::hash("brightness");
 static constexpr uint32_t indicatorLevelKey = utils::hash("indLvl");
 static constexpr uint32_t isLockoutModeKey = utils::hash("lckMode");
 static constexpr uint32_t buttonPinKey = utils::hash("bttPin");
+static constexpr uint32_t bluetoothAutoKey = utils::hash("ble");
 
 // time to block turn off since turn on
 static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 500;
+/// bluetooth will power up automatically this number of next boots if user used it
+static constexpr uint32_t maxBluetoothAutoActivations = 3;
 
 // timestamp of the system wake up
 static uint32_t wakeUpTime = 0;
@@ -69,6 +73,8 @@ static std::string errorStateRaisedStr = "";
 static uint32_t preChargeCalled = 0;
 // indicates the  time at which the output state is enabled
 static uint32_t lastOutputLightValidTime = 0;
+/// keep track of the number of auto bluetooth activation left
+static uint32_t bluetoothAutoActivationLeftCount = 0;
 
 // Define the state for the main prog state machine
 using BehaviorStates = enum class behavior_t
@@ -192,6 +198,20 @@ bool read_parameters()
     {
       physical::button::set_button_pin(static_cast<platform::gpio::DigitalPin::GPIO>(buttonPin));
     }
+
+    // Auto activate bluetooth is needed
+    uint32_t bluetoothAutoActivation = 0;
+    if (physical::fileSystem::system::get_value(bluetoothAutoKey, bluetoothAutoActivation) and
+        bluetoothAutoActivation > 0)
+    {
+      bluetoothAutoActivationLeftCount = min<uint32_t>(maxBluetoothAutoActivations, bluetoothAutoActivation - 1);
+
+      platform::bluetooth::start_advertising();
+    }
+    else
+    {
+      bluetoothAutoActivationLeftCount = 0;
+    }
   }
 
   if (physical::fileSystem::user::load_from_file())
@@ -230,6 +250,12 @@ void write_parameters(const bool shouldSaveUserParameters = true, const bool sho
     physical::fileSystem::system::set_value(isLockoutModeKey,
                                             logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT));
     physical::fileSystem::system::set_value(buttonPinKey, static_cast<uint32_t>(physical::button::get_button_pin()));
+
+    // if the user used the bluetooth, it will be written here for auto activation
+    const uint32_t nextWakeUpWithBluetooth = logic::inputs_bluetooth::is_bluetooth_used() ?
+                                                     maxBluetoothAutoActivations :
+                                                     bluetoothAutoActivationLeftCount;
+    physical::fileSystem::system::set_value(bluetoothAutoKey, nextWakeUpWithBluetooth);
   }
   else
   {
@@ -697,9 +723,7 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
   // disable bluetooth, imu and microphone
   physical::microphone::disable();
   physical::imu::shutdown();
-#ifdef USE_BLUETOOTH
   platform::bluetooth::stop_bluetooth_advertising();
-#endif
 
   statistics::signal_output_off();
 
@@ -710,6 +734,8 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
   // power the system off
   true_power_off();
 }
+
+uint32_t get_bluetooth_auto_activation_left() { return bluetoothAutoActivationLeftCount; }
 
 } // namespace internal
 

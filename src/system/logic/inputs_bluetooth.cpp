@@ -12,15 +12,19 @@ namespace lampda {
 namespace logic {
 namespace inputs_bluetooth {
 
-/**
- * \brief Handle an ELK bluetooth command
- */
+/// keep track of the bluetooth uses
+inline static bool _wasBluetoothUsed = false;
+
+bool is_bluetooth_used() { return _wasBluetoothUsed; }
+
 void handle_BLE_ELK_command(const utils::ELK::Package& elkControlCommand)
 {
   switch (elkControlCommand.type)
   {
     case utils::ELK::Type::BRIGHTNESS:
       {
+        _wasBluetoothUsed = true;
+
         // update brightness
         static constexpr float brightnessMultiplier = ::lampda::brightness::absoluteMaximumBrightness / 100.0f;
         const brightness_t desiredBrightness =
@@ -36,6 +40,8 @@ void handle_BLE_ELK_command(const utils::ELK::Package& elkControlCommand)
       }
     case utils::ELK::Type::ONOFF:
       {
+        _wasBluetoothUsed = true;
+
         const bool shouldTurnOn = elkControlCommand.data[0] > 0;
         // turn on if not already on
         if (shouldTurnOn and not logic::behavior::is_in_output_state())
