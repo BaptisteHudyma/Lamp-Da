@@ -34,6 +34,21 @@ void handle_BLE_ELK_command(const utils::ELK::Package& elkControlCommand)
         logic::sunset::bump_timer();
         break;
       }
+    case utils::ELK::Type::ONOFF:
+      {
+        const bool shouldTurnOn = elkControlCommand.data[0] > 0;
+        // turn on if not already on
+        if (shouldTurnOn and not logic::behavior::is_in_output_state())
+        {
+          logic::behavior::set_power_on();
+        }
+        // turn off if not already off
+        else if (not shouldTurnOn)
+        {
+          logic::behavior::set_power_off();
+        }
+        break;
+      }
       // unhandled
     default:
       {

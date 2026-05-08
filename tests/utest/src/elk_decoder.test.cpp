@@ -163,9 +163,21 @@ TEST(test_elf_decoder, brightness_messages_valid)
   }
 }
 
-// Test to change the header and other parameters
-TEST(test_elf_decoder, brightness_messages_header_valid)
+TEST(test_elf_decoder, brightness_messages_invalid)
 {
+  // invalid values
+  for (uint8_t brigthness = 101; brigthness < UINT8_MAX; brigthness++)
+  {
+    std::array<uint8_t, 9> messageBrightness = {0x7E, 0x00, 0x01, 0, 0x00, 0x00, 0x00, 0x00, 0xEF};
+    messageBrightness[3] = brigthness;
+
+    Package package;
+    EXPECT_FALSE(decode_ELK_message(messageBrightness.data(), messageBrightness.size(), package));
+    EXPECT_EQ(package.type, Type::INVALID);
+    EXPECT_EQ(package.dataSize, 0);
+  }
+
+  // ignored other values
   for (uint8_t header = 0; header < 255; header++)
   {
     std::array<uint8_t, 9> messageBrightness = {0x7E, header, 0x01, 0, header, header, header, header, 0xEF};
@@ -178,17 +190,49 @@ TEST(test_elf_decoder, brightness_messages_header_valid)
   }
 }
 
-TEST(test_elf_decoder, brightness_messages_invalid)
+// Test all valid on off commands
+TEST(test_elf_decoder, onoff_messages_valid)
 {
-  for (uint8_t brigthness = 101; brigthness < UINT8_MAX; brigthness++)
+  std::array<uint8_t, 9> message = {0x7E, 0x00, 0x04, 0, 0x00, 0x00, 0x00, 0x00, 0xEF};
+  message[3] = 0;
+
+  Package package;
+  EXPECT_TRUE(decode_ELK_message(message.data(), message.size(), package));
+  EXPECT_EQ(package.type, Type::ONOFF);
+  EXPECT_EQ(package.dataSize, 1);
+  EXPECT_EQ(package.data[0], 0);
+
+  message[3] = 1;
+  EXPECT_TRUE(decode_ELK_message(message.data(), message.size(), package));
+  EXPECT_EQ(package.type, Type::ONOFF);
+  EXPECT_EQ(package.dataSize, 1);
+  EXPECT_EQ(package.data[0], 1);
+}
+
+TEST(test_elf_decoder, onoff_messages_invalid)
+{
+  // invalid values
+  for (uint8_t onoff = 2; onoff < UINT8_MAX; onoff++)
   {
-    std::array<uint8_t, 9> messageBrightness = {0x7E, 0x00, 0x01, 0, 0x00, 0x00, 0x00, 0x00, 0xEF};
-    messageBrightness[3] = brigthness;
+    std::array<uint8_t, 9> message = {0x7E, 0x00, 0x04, 0, 0x00, 0x00, 0x00, 0x00, 0xEF};
+    message[3] = onoff;
 
     Package package;
-    EXPECT_FALSE(decode_ELK_message(messageBrightness.data(), messageBrightness.size(), package));
+    EXPECT_FALSE(decode_ELK_message(message.data(), message.size(), package));
     EXPECT_EQ(package.type, Type::INVALID);
     EXPECT_EQ(package.dataSize, 0);
+  }
+
+  // ignore other values
+  for (uint8_t header = 0; header < 255; header++)
+  {
+    std::array<uint8_t, 9> message = {0x7E, header, 0x04, 0, header, header, header, header, 0xEF};
+
+    Package package;
+    EXPECT_TRUE(decode_ELK_message(message.data(), message.size(), package));
+    EXPECT_EQ(package.type, Type::ONOFF);
+    EXPECT_EQ(package.dataSize, 1);
+    EXPECT_EQ(package.data[0], 0);
   }
 }
 
