@@ -310,10 +310,10 @@ void handleCommand(const platform::Inputs::Command& command)
             platform::lampda_print("Set button pin to gpio4");
             break;
           case platform::gpio::DigitalPin::GPIO::gpio4:
+#ifdef LMBD_LAMP_TYPE__SIMPLE
             physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio6);
             platform::lampda_print("Set button pin to gpio6");
             break;
-#ifdef LMBD_LAMP_TYPE__SIMPLE
             // The simple lamp can also use pin 6
           case platform::gpio::DigitalPin::GPIO::gpio6: // pass throught
 #endif
