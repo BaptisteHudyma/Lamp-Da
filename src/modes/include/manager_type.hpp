@@ -133,16 +133,26 @@ template<typename Config> struct RampHandlerTy
 };
 
 /// \private Implementation details of modes::ManagerFor
-template<typename Config, typename AllGroups> struct ModeManagerTy
+/// hiddenGroupsCount Sets the nmber of groups that we wish to be present but unaccessible by standard commands.
+/// The N last groups of AllGroups will be hidden
+template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct ModeManagerTy
 {
-  using SelfTy = ModeManagerTy<Config, AllGroups>;
+  using SelfTy = ModeManagerTy<Config, AllGroups, hiddenGroupsCount>;
   using ConfigTy = Config;
   using AllGroupsTy = AllGroups;
   using AllStatesTy = details::StateTyFrom<AllGroups>;
-  static constexpr uint8_t nbGroups {std::tuple_size_v<AllGroupsTy>};
+
+  /// total number of groups, including accessible and hidden ones
+  static constexpr uint8_t nbGroupsTotal {std::tuple_size_v<AllGroupsTy>};
+  static constexpr uint8_t hiddenGroupCount = hiddenGroupsCount;
+
+  static_assert(nbGroupsTotal >= hiddenGroupsCount, "Manager cannot operate without accessible groups");
+
+  /// Accessibles
+  static constexpr uint8_t nbAccessibleGroups = nbGroupsTotal - hiddenGroupsCount;
 
   // last group index must not collide with modes::store::noGroupIndex
-  static_assert(nbGroups < 16, "Maximum of 15 groups has been exceeded.");
+  static_assert(nbGroupsTotal <= 15, "Maximum of 15 groups has been exceeded.");
 
   template<uint8_t Idx> using GroupAt = std::tuple_element_t<Idx, AllGroupsTy>;
 
@@ -177,9 +187,9 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   /// \private Dispatch active group to callback
   template<typename CallBack> static void LMBD_INLINE dispatch_group(auto& ctx, CallBack&& cb)
   {
-    uint8_t groupId = ctx.get_active_group(nbGroups);
+    uint8_t groupId = ctx.get_active_group(nbGroupsTotal);
 
-    details::unroll<nbGroups>([&](auto Idx) LMBD_INLINE {
+    details::unroll<nbGroupsTotal>([&](auto Idx) LMBD_INLINE {
       if (Idx == groupId)
       {
         cb(context_as<GroupAt<Idx>>(ctx));
@@ -192,7 +202,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   {
     if constexpr (systemCallbacksOnly)
     {
-      details::unroll<nbGroups>([&](auto Idx) LMBD_INLINE {
+      details::unroll<nbGroupsTotal>([&](auto Idx) LMBD_INLINE {
         using GroupHere = GroupAt<Idx>;
         constexpr bool hasCallbacks = GroupHere::hasSystemCallbacks;
 
@@ -204,7 +214,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     }
     else
     {
-      details::unroll<nbGroups>([&](auto Idx) LMBD_INLINE {
+      details::unroll<nbGroupsTotal>([&](auto Idx) LMBD_INLINE {
         cb(context_as<GroupAt<Idx>>(ctx));
       });
     }
@@ -237,7 +247,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     AllStatesTy groupStates;
 
     /// When switching group, remember which mode was on last time we visited it
-    std::array<uint8_t, nbGroups> lastModeMemory = {};
+    std::array<uint8_t, nbGroupsTotal> lastModeMemory = {};
 
     /// Maximum allowed favorite count
     static constexpr uint8_t maxFavoriteCount = 8;
@@ -301,7 +311,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     using OptionalTy = std::optional<StateTy>;
 
     StateTy* substate = nullptr;
-    details::unroll<nbGroups>([&](auto Idx) LMBD_INLINE {
+    details::unroll<nbGroupsTotal>([&](auto Idx) LMBD_INLINE {
       using GroupHere = GroupAt<Idx>;
       constexpr bool IsHere = std::is_same_v<GroupHere, Group>;
 
@@ -360,7 +370,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       // Mode is somewhere in a group, search for it, return its state
       TargetStateTy* substate = nullptr;
 
-      details::unroll<nbGroups>([&](auto Idx) LMBD_INLINE {
+      details::unroll<nbGroupsTotal>([&](auto Idx) LMBD_INLINE {
         using Group = GroupAt<Idx>;
         using AllModes = typename Group::AllModesTy;
         if constexpr (details::ModeBelongsTo<Mode, AllModes>)
@@ -390,9 +400,9 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   /// switch to the next group
   static void next_group(auto& ctx)
   {
-    // change current group
-    uint8_t groupIdBefore = ctx.get_active_group(nbGroups);
-    ctx.set_active_group(groupIdBefore + 1, nbGroups);
+    // change current group: Limited to accessible groups
+    uint8_t groupIdBefore = ctx.get_active_group(nbAccessibleGroups);
+    ctx.set_active_group(groupIdBefore + 1, nbAccessibleGroups);
   }
 
   /// switch to the next mode
@@ -406,7 +416,8 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   /// jump to an active index cleanly
   static void jump_to_new_active_index(auto& ctx, const ActiveIndexTy& newActiveIndex)
   {
-    ctx.set_active_group(newActiveIndex.groupIndex, nbGroups);
+    // not limited to accessible groups
+    ctx.set_active_group(newActiveIndex.groupIndex, nbGroupsTotal);
     ctx.set_active_mode(newActiveIndex.modeIndex);
     // just copy the other values
     ctx.modeManager.activeIndex.customIndex = newActiveIndex.customIndex;
@@ -545,7 +556,6 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
       uint8_t modeIndex = ctx.get_active_mode();
       uint8_t groupIndex = ctx.get_active_group();
       uint8_t modeCount = ctx.get_modes_count();
-      uint8_t groupCount = ctx.get_groups_count();
 
       ctx.state.isLastScrollAGroupChange = false;
 
@@ -566,13 +576,15 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
           // if groupIndex is not the first, just decrement it
           if (groupIndex > 0)
           {
-            ctx.set_active_group(groupIndex - 1, groupCount);
+            // can only access visible modes
+            ctx.set_active_group(groupIndex - 1, nbAccessibleGroups);
 
             // else wrap to last group
           }
           else
           {
-            ctx.set_active_group(groupCount - 1, groupCount);
+            // can only access visible modes
+            ctx.set_active_group(nbAccessibleGroups - 1, nbAccessibleGroups);
           }
 
           // backward scroll: set mode to last one on group change
@@ -596,7 +608,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
         {
           ctx.state.isLastScrollAGroupChange = true;
           // if groupIndex is not the last, just increment it
-          if (groupIndex + 1 < groupCount)
+          if (groupIndex + 1 < nbAccessibleGroups)
           {
             ctx.next_group();
 
@@ -604,7 +616,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
           }
           else
           {
-            ctx.set_active_group(0, groupCount);
+            ctx.set_active_group(0, nbAccessibleGroups);
           }
 
           // forward scroll: set mode to first one on group change
@@ -612,6 +624,17 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
         }
       }
     });
+  }
+
+  /**
+   * \brief Enter a target hidden group, if any available
+   * \param[in, out] ctx Context
+   * \param[in] index of the hidden group to enter (0 to hiddenGroupsCount)
+   */
+  static void enter_hidden_group(auto& ctx, uint8_t index)
+  {
+    assert(index < hiddenGroupsCount);
+    ctx.set_active_group(nbAccessibleGroups + index, nbGroupsTotal);
   }
 
   /// Create and animate a ramp
@@ -681,6 +704,9 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
   /// Callback called on a group activation
   static void enter_group(auto& ctx, const uint8_t value)
   {
+    // prevent value overflow
+    assert(value < nbGroupsTotal);
+
     auto manager = ctx.modeManager.get_context();
 
     // signal that we are quitting the mode
@@ -705,7 +731,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     auto keyModeMemory = ctx.template storageFor<Store::modeMemory>(ctx.state.lastModeMemory);
 
     // save last mode used in group, before switching
-    uint8_t groupIdBefore = ctx.get_active_group(nbGroups);
+    uint8_t groupIdBefore = ctx.get_active_group(nbGroupsTotal);
     ctx.state.lastModeMemory[groupIdBefore] = modeIdBefore;
   }
 
@@ -843,7 +869,7 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     else
     {
       // activate current mode
-      uint8_t groupIdBefore = ctx.get_active_group(nbGroups);
+      uint8_t groupIdBefore = ctx.get_active_group(nbGroupsTotal);
       ctx.set_active_group(groupIdBefore);
     }
   }
@@ -1119,7 +1145,7 @@ private:
  * See modes::DefaultManagerConfig for guide on how to override configuration.
  */
 template<typename ManagerConfig, typename... Groups> using ManagerForConfig =
-        ModeManagerTy<ManagerConfig, std::tuple<Groups...>>;
+        ModeManagerTy<ManagerConfig, std::tuple<Groups...>, 0>;
 
 /** \brief Group together several mode groups defined through modes::GroupFor
  *
@@ -1129,7 +1155,26 @@ template<typename ManagerConfig, typename... Groups> using ManagerForConfig =
  * \remarks All enabled modes shall be enumerated in modes::GroupFor listed
  * as inside the modes::ManagerFor modes::ModeManagerTy singleton
  */
-template<typename... Groups> using ManagerFor = ModeManagerTy<DefaultManagerConfig, std::tuple<Groups...>>;
+template<typename... Groups> using ManagerFor = ModeManagerTy<DefaultManagerConfig, std::tuple<Groups...>, 0>;
+
+/** \brief Group together several mode groups defined through modes::GroupFor. Will use the last hiddenGroupCnt as
+ * hidden groups, only accessible through certain action
+ *
+ * Binds all methods of the provided list of \p Groups and dispatch events
+ * while managing all the modes::BasicMode::StateTy states & other behaviors
+ *
+ * \remarks All enabled modes shall be enumerated in modes::GroupFor listed
+ * as inside the modes::ManagerFor modes::ModeManagerTy singleton
+ */
+template<uint8_t hiddenGroupCnt, typename... Groups> using ManagerForHiddenGroups =
+        ModeManagerTy<DefaultManagerConfig, std::tuple<Groups...>, hiddenGroupCnt>;
+
+/** \brief Same as modes::ManagerFor but with custom defaults, and additional hidden groups.
+ *
+ * See modes::DefaultManagerConfig for guide on how to override configuration.
+ */
+template<uint8_t hiddenGroupCnt, typename ManagerConfig, typename... Groups> using ManagerFoHiddenConfig =
+        ModeManagerTy<ManagerConfig, std::tuple<Groups...>, hiddenGroupCnt>;
 
 } // namespace lampda::modes
 

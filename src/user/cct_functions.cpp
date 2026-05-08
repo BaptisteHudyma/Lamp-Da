@@ -171,6 +171,8 @@ bool should_spawn_thread() { return false; }
 
 void user_thread() {}
 
+void bluetooth_switch_pattern(uint8_t, uint32_t) {}
+
 } // namespace lampda::user
 
 #endif

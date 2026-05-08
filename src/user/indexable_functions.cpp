@@ -26,10 +26,9 @@
 #include "src/modes/default/fixed_modes.hpp"
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/legacy/legacy_modes.hpp"
+#include "src/modes/legacy/bluetooth_group.hpp"
 
-#ifdef NUDZ_MODES_ENABLED
 #include "src/modes/custom/nudz/nudz_scrollimage.hpp"
-#endif
 
 namespace lampda::user {
 
@@ -37,25 +36,26 @@ namespace lampda::user {
 // list your groups & modes here
 //
 
-#ifdef NUDZ_MODES_ENABLED
+/// Custom user mode groups
+namespace custom {
 using NudzModes = modes::GroupFor<modes::custom::nudz::NudzHeinekenMode,
                                   modes::custom::nudz::NudzHuitSixMode,
                                   modes::custom::nudz::NudzViolonsaoulsMode,
                                   modes::custom::nudz::NudzBeerGlassMode>;
+}
 
-using ManagerTy = modes::ManagerFor<modes::FixedModes,
-                                    // modes::MiscFixedModes,
-                                    modes::legacy::CalmModes,
-                                    modes::legacy::PartyModes,
-                                    modes::legacy::SoundModes,
-                                    NudzModes>;
+using ManagerTy = modes::ManagerForHiddenGroups<
+#ifdef NUDZ_MODES_ENABLED
+        1, // BluetoothModes is defined as an hidden group
 #else
-using ManagerTy = modes::ManagerFor<modes::FixedModes,
-                                    // modes::MiscFixedModes,
-                                    modes::legacy::CalmModes,
-                                    modes::legacy::PartyModes,
-                                    modes::legacy::SoundModes>;
+        2, // NudzModes and BluetoothModes are defined as an hidden groups
 #endif
+        modes::FixedModes,
+        modes::legacy::CalmModes,
+        modes::legacy::PartyModes,
+        modes::legacy::SoundModes,
+        custom::NudzModes,
+        modes::bluetooth::BluetoothModes>;
 
 //
 // implementation details
@@ -117,6 +117,8 @@ bool button_hold_usermode(const uint8_t, const bool, const uint32_t) { return fa
 void loop() {}
 bool should_spawn_thread() { return false; }
 void user_thread() {}
+
+void bluetooth_switch_pattern(uint8_t, uint32_t) {}
 
 } // namespace lampda::user
 

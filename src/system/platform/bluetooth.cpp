@@ -58,11 +58,7 @@ void stop_advertising()
   Bluefruit.Advertising.stop();
 }
 
-void connect_callback(uint16_t conn_hdl)
-{
-  stop_bluetooth_advertising();
-  platform::lampda_print("Bluetooth connected");
-}
+void connect_callback(uint16_t conn_hdl) { platform::lampda_print("Bluetooth connected"); }
 
 void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
 {

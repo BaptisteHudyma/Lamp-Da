@@ -79,6 +79,7 @@ bool button_hold_usermode(const uint8_t, const bool, const uint32_t) { return fa
 void loop() {}
 bool should_spawn_thread() { return false; }
 void user_thread() {}
+void bluetooth_switch_pattern(uint8_t, uint32_t) {}
 
 } // namespace lampda::user
 

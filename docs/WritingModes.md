@@ -222,3 +222,39 @@ Here, we declare a *mode group* named `IntroGroup` that contains only one mode,
 our new `modes::examples::IntroMode` and nothing else. We are then able to pass
 a list to the manager of all the groups we want to include in our
 configuration, here our `IntroGroup` that only includes `IntroMode`.
+
+
+## Hidden groups
+
+It can be needed to have extra groups not accessible by standard actions.
+The template option hiddenGroupCnt allows the programmer to add groups that wont be accessible by standard user inputs.
+
+Be aware that once entered, those groups can be circulated by standard user commands.
+Modes in thoses groups can also be saved as favorites and other standard actions.
+The only difference with the *standard* groups will be the way to go to those groups.
+
+A manager can only be created with at least one accessible group.
+
+Enter an hidden group simply using the `enter_group` method of the manager, with the id of the hidden group as a parameter.
+
+
+The types to use for managers with hidden groups is `ManagerFoHiddenConfig` and `ManagerForHiddenGroups`.
+
+Example:
+```cpp
+using ManagerTy = modes::ManagerForHiddenGroups<1,
+                                                group1,
+                                                group2,
+                                                group3,
+                                                group4  // group 4 is an hidden group
+                                                >;
+```
+
+```cpp
+using ManagerTy = modes::ManagerForHiddenGroups<3,
+                                                group1,
+                                                group2, // group 2 is an hidden group
+                                                group3, // group 3 is an hidden group
+                                                group4  // group 4 is an hidden group
+                                                >;
+```
