@@ -181,6 +181,16 @@ void startup_sequence()
  *
  */
 
+#ifdef USE_BLUETOOTH
+
+bool is_activated() { return __private::isInitialized; }
+
+bool is_advertising() { return Bluefruit.Advertising.isRunning(); }
+
+bool is_connected() { return Bluefruit.connected() != 0; }
+
+// void display_infos() { Bluefruit.printInfo(); }
+
 void start_advertising()
 {
   if (!__private::isInitialized)
@@ -188,10 +198,12 @@ void start_advertising()
     // call once when the program starts
     __private::startup_sequence();
   }
+  // no need to start again
+  if (is_advertising())
+    return;
 
   __private::advertisingStoppedByRequest = false;
 
-  // Bluefruit.printInfo();
   Bluefruit.Advertising.start(ADV_TIMEOUT); // Stop advertising entirely after ADV_TIMEOUT seconds
 
   // reraise the alert every minutes
@@ -220,6 +232,25 @@ void notify_battery_level(const uint8_t batteryLevel)
     return;
   __private::bleBatteryService.notify(batteryLevel);
 }
+
+// Bluetooth can also by disabled at the system level
+#else
+
+bool is_activated() { return false; }
+
+bool is_advertising() { return false; }
+
+bool is_connected() { return false; }
+
+void start_advertising() {}
+
+void stop_bluetooth_advertising() {}
+
+void write_battery_level(const uint8_t batteryLevel) {}
+
+void notify_battery_level(const uint8_t batteryLevel) {}
+
+#endif
 
 } // namespace bluetooth
 } // namespace platform
