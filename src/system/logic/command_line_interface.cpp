@@ -303,15 +303,24 @@ void handleCommand(const platform::Inputs::Command& command)
 
     case utils::hash("buttonTogg"):
       {
-        if (physical::button::get_button_pin() == platform::gpio::DigitalPin::GPIO::gpio3)
+        switch (physical::button::get_button_pin())
         {
-          physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio4);
-          platform::lampda_print("Set button pin to gpio4");
-        }
-        else
-        {
-          physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio3);
-          platform::lampda_print("Set button pin to gpio3");
+          case platform::gpio::DigitalPin::GPIO::gpio3:
+            physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio4);
+            platform::lampda_print("Set button pin to gpio4");
+            break;
+          case platform::gpio::DigitalPin::GPIO::gpio4:
+#ifdef LMBD_LAMP_TYPE__SIMPLE
+            physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio6);
+            platform::lampda_print("Set button pin to gpio6");
+            break;
+            // The simple lamp can also use pin 6
+          case platform::gpio::DigitalPin::GPIO::gpio6: // pass throught
+#endif
+          default:
+            physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio3);
+            platform::lampda_print("Set button pin to gpio3");
+            break;
         }
         break;
       }
