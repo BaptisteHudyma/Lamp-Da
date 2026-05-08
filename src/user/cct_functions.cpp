@@ -171,6 +171,8 @@ bool should_spawn_thread() { return false; }
 
 void user_thread() {}
 
+void handle_bluetooth_ELK_command(const utils::ELK::Package& command) {}
+
 } // namespace lampda::user
 
 #endif

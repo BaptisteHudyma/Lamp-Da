@@ -668,6 +668,15 @@ template<typename Config, typename AllGroups> struct ModeManagerTy
     }
   }
 
+  /**
+   * \brief Handle a bluetooth command
+   */
+  static void LMBD_INLINE handle_BLE_ELK_command(auto& ctx, const utils::ELK::Package& elkControlCommand)
+  {
+    // elkControlCommand
+    platform::lampda_print("%d %d", elkControlCommand.type, elkControlCommand.dataSize);
+  }
+
   /// Return the mode count for this group
   static uint8_t get_modes_count(auto& ctx)
   {

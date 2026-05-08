@@ -202,6 +202,20 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
   }
 
+  /// \private Pass an Bluetooth ELK control command to the manager
+  auto LMBD_INLINE handle_BLE_ELK_command(const utils::ELK::Package& elkControlCommand)
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      return modeManager.handle_BLE_ELK_command(*this, elkControlCommand);
+    }
+    else
+    {
+      auto manager = modeManager.get_context();
+      return manager.handle_BLE_ELK_command(elkControlCommand);
+    }
+  }
+
   /// \private Get number of groups available
   auto LMBD_INLINE get_groups_count() { return modeManager.nbGroups; }
 

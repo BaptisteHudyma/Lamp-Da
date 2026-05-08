@@ -8,6 +8,8 @@
 #include "src/system/platform/print.h"
 #include "src/system/platform/time.h"
 
+#include "src/system/platform/bluetooth/elk_service.h"
+
 namespace lampda {
 namespace platform {
 namespace bluetooth {
@@ -21,6 +23,9 @@ namespace bluetooth {
 BLEDis bleSystemInfo;
 // System battery service
 BLEBas bleBatteryService;
+
+/// led controler service
+::lampda::bluetooth::BLEElkService bleElkService;
 
 static bool isInitialized = false;
 
@@ -45,13 +50,13 @@ void connect_callback(uint16_t conn_hdl)
 
 void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
 {
-  stop_bluetooth_advertising();
+  // stop_bluetooth_advertising();
   platform::lampda_print("Bluetooth disconnected");
 }
 
 void adv_stop_callback(void)
 {
-  stop_bluetooth_advertising();
+  // stop_bluetooth_advertising();
   platform::lampda_print("Advertising time passed, advertising will now stop.");
 }
 
@@ -96,17 +101,21 @@ void startup_sequence()
   // add services
   set_device_informations();
   bleBatteryService.begin();
+  bleElkService.begin();
 
   const uint32_t MAC_ADDRESS_0 = NRF_FICR->DEVICEADDR[0];
   const uint32_t MAC_ADDRESS_1 = NRF_FICR->DEVICEADDR[1];
 
-  char ble_name[17] = "Lampda-XXXX-XXXX"; // Null-terminated string must be 1 longer than you set it, for the null
+  /// ELK-BLE is necessary to be recognized as a led drivable bluetooth object
+  char ble_name[25] =
+          "ELK-BLE-Lampda-XXXX-XXXX"; // Null-terminated string must be 1 longer than you set it, for the null
   // Fill in the XXXX in ble_name
-  byte_to_str(&ble_name[7], (MAC_ADDRESS_0 >> 24) & 0xFF);
-  byte_to_str(&ble_name[9], (MAC_ADDRESS_0 >> 16) & 0xFF);
-  byte_to_str(&ble_name[12], (MAC_ADDRESS_0 >> 8) & 0xFF);
-  byte_to_str(&ble_name[14], (MAC_ADDRESS_0 >> 0) & 0xFF);
-  // Set the name we just made, and appearance
+  byte_to_str(&ble_name[15], (MAC_ADDRESS_0 >> 24) & 0xFF);
+  byte_to_str(&ble_name[17], (MAC_ADDRESS_0 >> 16) & 0xFF);
+  byte_to_str(&ble_name[20], (MAC_ADDRESS_0 >> 8) & 0xFF);
+  byte_to_str(&ble_name[22], (MAC_ADDRESS_0 >> 0) & 0xFF);
+
+  //  Set the name we just made, and appearance
   Bluefruit.setName(ble_name);
   Bluefruit.setAppearance(BLE_APPEARANCE_LIGHT_SOURCE_MULTICOLOR_ARRAY);
 
@@ -120,6 +129,7 @@ void startup_sequence()
   // Advertise services that we want to advertise only
   Bluefruit.Advertising.addService(bleSystemInfo);
   // Bluefruit.Advertising.addService(bleBatteryService);
+  Bluefruit.Advertising.addService(bleElkService);
 
   // Secondary Scan Response packet (optional)
   // Since there is no room for 'Name' in Advertising packet
@@ -128,7 +138,7 @@ void startup_sequence()
   Bluefruit.Advertising.setStopCallback(adv_stop_callback);
   Bluefruit.Advertising.restartOnDisconnect(true);
   Bluefruit.Advertising.setInterval(32, 244); // in unit of 0.625 ms
-  Bluefruit.Advertising.setFastTimeout(30);   // number of seconds in fast mode
+  Bluefruit.Advertising.setFastTimeout(3000); // number of seconds in fast mode
 
   Bluefruit.Periph.setConnectCallback(connect_callback);
   Bluefruit.Periph.setDisconnectCallback(disconnect_callback);

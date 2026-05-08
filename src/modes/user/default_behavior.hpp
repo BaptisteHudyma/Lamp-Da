@@ -164,6 +164,13 @@ void user_thread()
     manager.user_thread();
 }
 
+/// Default handle for a bluetooth ELK command
+void handle_bluetooth_ELK_command(const utils::ELK::Package& command)
+{
+  auto manager = get_context();
+  manager.handle_BLE_ELK_command(command);
+}
+
 /// Define default behavior that are shared between system types
 namespace default_behaviors {
 
