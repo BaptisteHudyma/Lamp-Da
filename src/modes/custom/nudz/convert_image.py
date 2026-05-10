@@ -68,14 +68,14 @@ with open(out_src, 'w') as of:
             '/// Compressed image storage class', file=of)
     print(f'''struct {out_cls}
 {{
+  // clang-format off
   static constexpr uint16_t width = {image.width:4d};        ///< width of the image
   static constexpr uint16_t height = {image.height:4d};       ///< height of the image
   static constexpr uint16_t bitsPerPixel = {bpp:4d}; ///< used bits per pixel''', file=of)
     if cmap:
-        print(f'  static constexpr uint32_t colormapSize = {len(cmap):4d}; ///< size of the color',
+        print(f'  static constexpr uint32_t colormapSize = {len(cmap):4d}; ///< size of the colormap',
               file=of)
-        print('  // clang-format off\n\n'
-              '  /// map index to color\n'
+        print('  /// map index to color\n'
               '  static constexpr uint32_t colormap[] = {', file=of)
         end = '\n'
         for i in sorted(cmap_i.keys()):
@@ -130,7 +130,6 @@ with open(out_src, 'w') as of:
         print('''  static constexpr uint32_t colormapSize = 0;
   static constexpr uint32_t colormap[] = {};
   static constexpr uint8_t indexData[] = {};
-  // clang-format off
   static constexpr uint32_t rgbData[] = { ''', file=of)
         i = 0
         end = '\n'
