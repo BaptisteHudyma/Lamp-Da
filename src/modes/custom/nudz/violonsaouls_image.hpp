@@ -2,12 +2,11 @@
 /// Compressed image storage class
 struct ViolonsaoulsImageTy
 {
+  // clang-format off
   static constexpr uint16_t width =  121;        ///< width of the image
   static constexpr uint16_t height =   22;       ///< height of the image
   static constexpr uint16_t bitsPerPixel =    6; ///< used bits per pixel
-  static constexpr uint32_t colormapSize =   39; ///< size of the color
-  // clang-format off
-
+  static constexpr uint32_t colormapSize =   39; ///< size of the colormap
   /// map index to color
   static constexpr uint32_t colormap[] = {
      0x000000, 0x902207, 0xf88000, 0x472003, 0x502400, 0x200b00, 0x472510, 0x9d4f00,

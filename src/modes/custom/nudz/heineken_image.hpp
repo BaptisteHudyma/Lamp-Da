@@ -2,12 +2,11 @@
 /// Compressed image storage class
 struct HeinekenImageTy
 {
+  // clang-format off
   static constexpr uint16_t width =   26;        ///< width of the image
   static constexpr uint16_t height =   22;       ///< height of the image
   static constexpr uint16_t bitsPerPixel =    3; ///< used bits per pixel
-  static constexpr uint32_t colormapSize =    7; ///< size of the color
-  // clang-format off
-
+  static constexpr uint32_t colormapSize =    7; ///< size of the colormap
   /// map index to color
   static constexpr uint32_t colormap[] = {
      0x0db100, 0xffffff, 0xd80000, 0x3bbe43, 0xa2b1a4, 0x013200, 0x718472, 
