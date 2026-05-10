@@ -87,6 +87,12 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   }
 }
 
+void bluetooth_switch_pattern(uint8_t index, uint32_t targetColor)
+{
+  //
+  return;
+}
+
 } // namespace lampda::user
 
 #endif

@@ -5,11 +5,14 @@
 #ifndef INDEXABLE_BEHAVIOR_MANAGER_H
 #define INDEXABLE_BEHAVIOR_MANAGER_H
 
+#include <src/system/utils/assert.h>
+
 //
 // note: this code is included as-is by:
 //  - user/indexable_functions.h
 //
 
+#include <cstdint>
 namespace lampda::user {
 
 void button_clicked_default(const uint8_t clicks)
@@ -167,6 +170,45 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
 
     default:
       break;
+  }
+}
+
+void bluetooth_switch_pattern(uint8_t index, uint32_t targetColor)
+{
+  // get manager and execute a mode or group change
+  auto manager = get_context();
+  if (manager.get_hidden_groups_count() <= 0)
+  {
+    platform::lampda_print("Cannot use bluetooth control without an hidden bluetooth group");
+    return;
+  }
+
+  const auto bluetoothGroup = manager.template get_group_id_of_mode<modes::bluetooth::ColorControlMode>();
+  if (bluetoothGroup < 0)
+  {
+    platform::lampda_print("Cannot find the bluetooth group and modes");
+    return;
+  }
+
+  const auto availableModes = manager.get_modes_count();
+  if (availableModes <= index)
+  {
+    platform::lampda_print("Unimplemented pattern id %d", index);
+    return;
+  }
+
+  manager.set_active_group(bluetoothGroup);
+  manager.set_active_mode(index);
+
+  // sanity check
+  const int trueIndex = manager.template get_mode_id<modes::bluetooth::ColorControlMode>();
+  assert(trueIndex == 0 && "Bluetooth group should have the programmable color output as the first group index");
+
+  // handle special programmable group mode
+  if (index == 0)
+  {
+    auto& modeState = manager.template get_state_of_mode<modes::bluetooth::ColorControlMode>();
+    modeState.color = targetColor;
   }
 }
 

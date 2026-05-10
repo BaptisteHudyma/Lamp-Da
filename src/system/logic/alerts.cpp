@@ -465,9 +465,20 @@ struct Alert_TempCritical : public AlertBase
  */
 struct Alert_BluetoothAdvertisement : public AlertBase
 {
-  bool show() const override { return physical::indicator::breeze(1000, 500, utils::ColorSpace::BLUE); }
+  static constexpr uint32_t frequency_on_ms = 1000;
+  static constexpr uint32_t frequency_off_ms = 500;
+  bool show() const override
+  {
+    return physical::indicator::breeze(frequency_on_ms, frequency_off_ms, utils::ColorSpace::BLUE);
+  }
 
   Type get_type() const override { return Type::BLUETOOTH_ADVERT; }
+
+  bool should_be_cleared() const override
+  {
+    // cleared after two pulsations
+    return raisedTime > 0 and (platform::time_ms() - raisedTime) > (frequency_on_ms * 2 + frequency_off_ms);
+  }
 };
 
 /**

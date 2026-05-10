@@ -29,9 +29,6 @@ static constexpr uint32_t BRIGHTNESS_LOOP_UPDATE_EVERY = 20;  /// frequency upda
 // hold the boolean that configures if button's usermode UI is enabled
 bool isButtonUsermodeEnabled = false;
 
-// hold a boolean to avoid advertising several times in a row
-bool isBluetoothAdvertising = false;
-
 namespace button_press_handles {
 
 /**
@@ -172,19 +169,12 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
       }
     case 4:
       {
-#ifdef USE_BLUETOOTH
         // 4+hold (2s): turn on, with bluetooth advertising
         if (buttonHoldDuration > 2000)
         {
-          if (!isBluetoothAdvertising)
-          {
-            platform::bluetooth::start_advertising();
-          }
-
-          isBluetoothAdvertising = true;
+          platform::bluetooth::start_advertising();
         }
         return false;
-#endif
       }
     default:
       break;

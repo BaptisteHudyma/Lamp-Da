@@ -6,6 +6,7 @@
 #define BEHAVIOR_HPP
 
 #include "src/compile.h"
+#include <cstdint>
 #include <string>
 
 namespace lampda {
@@ -64,6 +65,9 @@ namespace internal {
  * \param[in] shouldSaveSystemParameters If False, no system parameters will be written to memory
  */
 void handle_shutdown_state(const bool shouldSaveUserParameters = true, const bool shouldSaveSystemParameters = true);
+
+/// return the remaining bluetooth auto activations
+uint32_t get_bluetooth_auto_activation_left();
 
 } // namespace internal
 

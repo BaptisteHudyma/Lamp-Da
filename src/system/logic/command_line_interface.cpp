@@ -6,10 +6,11 @@
 #include "src/system/power/balancer.h"
 #include "src/system/power/PDlib/power_delivery.h"
 
-#include "src/system/platform/registers.h"
-#include "src/system/platform/threads.h"
+#include "src/system/platform/bluetooth.h"
 #include "src/system/platform/i2c.h"
 #include "src/system/platform/print.h"
+#include "src/system/platform/registers.h"
+#include "src/system/platform/threads.h"
 
 #include "src/system/physical/battery.h"
 #include "src/system/physical/button.h"
@@ -19,6 +20,8 @@
 #include "src/system/utils/utils.h"
 
 #include "src/system/logic/alerts.h"
+#include "src/system/logic/behavior.h"
+#include "src/system/logic/inputs_bluetooth.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/statistics_handler.h"
 
@@ -57,6 +60,7 @@ void handleCommand(const platform::Inputs::Command& command)
                 "buttonTogg: change the button pin number for the next boot\n"
                 "shutdown: force shutdown the lamp\n"
                 "tasks: display a debug of task usages\n"
+                "ble: debug bluetooth informations"
                 "-----------------");
         break;
       }
@@ -303,15 +307,24 @@ void handleCommand(const platform::Inputs::Command& command)
 
     case utils::hash("buttonTogg"):
       {
-        if (physical::button::get_button_pin() == platform::gpio::DigitalPin::GPIO::gpio3)
+        switch (physical::button::get_button_pin())
         {
-          physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio4);
-          platform::lampda_print("Set button pin to gpio4");
-        }
-        else
-        {
-          physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio3);
-          platform::lampda_print("Set button pin to gpio3");
+          case platform::gpio::DigitalPin::GPIO::gpio3:
+            physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio4);
+            platform::lampda_print("Set button pin to gpio4");
+            break;
+          case platform::gpio::DigitalPin::GPIO::gpio4:
+#ifdef LMBD_LAMP_TYPE__SIMPLE
+            physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio6);
+            platform::lampda_print("Set button pin to gpio6");
+            break;
+            // The simple lamp can also use pin 6
+          case platform::gpio::DigitalPin::GPIO::gpio6: // pass throught
+#endif
+          default:
+            physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio3);
+            platform::lampda_print("Set button pin to gpio3");
+            break;
         }
         break;
       }
@@ -324,6 +337,20 @@ void handleCommand(const platform::Inputs::Command& command)
       char buff[512];
       platform::threads::get_thread_debug(buff);
       platform::lampda_print("%s", buff);
+      break;
+
+    case utils::hash("ble"):
+      platform::lampda_print(
+              "is activated: %d\n"
+              "is advertising: %d\n"
+              "is connected: %d\n"
+              "is msg received: %d\n"
+              "auto activations left: %d",
+              platform::bluetooth::is_activated(),
+              platform::bluetooth::is_advertising(),
+              platform::bluetooth::is_connected(),
+              logic::inputs_bluetooth::is_bluetooth_used(),
+              logic::behavior::internal::get_bluetooth_auto_activation_left());
       break;
 
     default:
