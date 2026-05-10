@@ -44,16 +44,92 @@ namespace bluetooth {
 // 28: Purple Strobe Flash
 // 29: White Strobe Flash
 
-using BluetoothModes =
-        modes::GroupFor<modes::bluetooth::ColorControlMode,                              // custom color controller
-                        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Red>,    // 1: fixed Red color
-                        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Blue>,   // 2: fixed Blue color
-                        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Lime>,   // 3: fixed Green color
-                        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Cyan>,   // 4: fixed Cyan color
-                        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Yellow>, // 5: fixed Yellow color
-                        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Purple>, // 6: fixed Purple color
-                        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::White>   // 7: fixed White color
-                        >;
+using BluetoothModes = modes::GroupFor<
+        modes::bluetooth::ColorControlMode,                              // custom color controller
+        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Red>,    // 1: fixed Red color
+        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Blue>,   // 2: fixed Blue color
+        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Lime>,   // 3: fixed Green color
+        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Cyan>,   // 4: fixed Cyan color
+        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Yellow>, // 5: fixed Yellow color
+        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::Purple>, // 6: fixed Purple color
+        modes::bluetooth::FixedColorMode<colors::HTMLColorCode::White>,  // 7: fixed White color
+        modes::bluetooth::JumpColorMode<colors::HTMLColorCode::Red,
+                                        colors::HTMLColorCode::Lime,
+                                        colors::HTMLColorCode::Blue>, // 8: Three Color Jumping Change
+        modes::bluetooth::JumpColorMode<colors::HTMLColorCode::Red,
+                                        colors::HTMLColorCode::Orange,
+                                        colors::HTMLColorCode::Yellow,
+                                        colors::HTMLColorCode::Lime,
+                                        colors::HTMLColorCode::Cyan,
+                                        colors::HTMLColorCode::Blue,
+                                        colors::HTMLColorCode::Purple>, // 9: Seven Color Jumping Change
+        modes::bluetooth::FadeColorMode<255,
+                                        colors::HTMLColorCode::Red,
+                                        colors::HTMLColorCode::Lime,
+                                        colors::HTMLColorCode::Blue>, // 10: Three Color Cross Fade
+        modes::bluetooth::FadeColorMode<255,
+                                        colors::HTMLColorCode::Red,
+                                        colors::HTMLColorCode::Orange,
+                                        colors::HTMLColorCode::Yellow,
+                                        colors::HTMLColorCode::Lime,
+                                        colors::HTMLColorCode::Cyan,
+                                        colors::HTMLColorCode::Blue,
+                                        colors::HTMLColorCode::Purple>, // 11: Seven Color Cross Fade
+        modes::bluetooth::FadeColorMode<255, colors::HTMLColorCode::Red, colors::HTMLColorCode::Black>,    // 12: Red
+                                                                                                           // Gradual
+                                                                                                           // Change
+        modes::bluetooth::FadeColorMode<255, colors::HTMLColorCode::Lime, colors::HTMLColorCode::Black>,   // 13: Green
+                                                                                                           // Gradual
+                                                                                                           // Change
+        modes::bluetooth::FadeColorMode<255, colors::HTMLColorCode::Blue, colors::HTMLColorCode::Black>,   // 14: Blue
+                                                                                                           // Gradual
+                                                                                                           // Change
+        modes::bluetooth::FadeColorMode<255, colors::HTMLColorCode::Yellow, colors::HTMLColorCode::Black>, // 15: Yellow
+                                                                                                           // Gradual
+                                                                                                           // Change
+        modes::bluetooth::FadeColorMode<255, colors::HTMLColorCode::Cyan, colors::HTMLColorCode::Black>,   // 16: Cyan
+                                                                                                           // Gradual
+                                                                                                           // Change
+        modes::bluetooth::FadeColorMode<255, colors::HTMLColorCode::Purple, colors::HTMLColorCode::Black>, // 17: Purple
+                                                                                                           // Gradual
+                                                                                                           // Change
+        modes::bluetooth::FadeColorMode<255, colors::HTMLColorCode::White, colors::HTMLColorCode::Black>,  // 18: White
+                                                                                                           // Gradual
+                                                                                                           // Change
+        modes::bluetooth::FadeColorMode<255, colors::HTMLColorCode::Red, colors::HTMLColorCode::Lime>,  // 19: Red Green
+                                                                                                        // Cross Fade
+        modes::bluetooth::FadeColorMode<255, colors::HTMLColorCode::Red, colors::HTMLColorCode::Blue>,  // 20: Red Blue
+                                                                                                        // Cross Fade
+        modes::bluetooth::FadeColorMode<255, colors::HTMLColorCode::Lime, colors::HTMLColorCode::Blue>, // 21: Green
+                                                                                                        // Blue Cross
+                                                                                                        // Fade
+        modes::bluetooth::FlashColorMode<colors::HTMLColorCode::Red,
+                                         colors::HTMLColorCode::Black,
+                                         colors::HTMLColorCode::Orange,
+                                         colors::HTMLColorCode::Black,
+                                         colors::HTMLColorCode::Yellow,
+                                         colors::HTMLColorCode::Black,
+                                         colors::HTMLColorCode::Lime,
+                                         colors::HTMLColorCode::Black,
+                                         colors::HTMLColorCode::Cyan,
+                                         colors::HTMLColorCode::Black,
+                                         colors::HTMLColorCode::Blue,
+                                         colors::HTMLColorCode::Black>, // 22: Seven color Strobe Flash
+        modes::bluetooth::FlashColorMode<colors::HTMLColorCode::Red,
+                                         colors::HTMLColorCode::Black>, // 23: Red Strobe Flash
+        modes::bluetooth::FlashColorMode<colors::HTMLColorCode::Lime,
+                                         colors::HTMLColorCode::Black>, // 24: Green Strobe Flash
+        modes::bluetooth::FlashColorMode<colors::HTMLColorCode::Blue,
+                                         colors::HTMLColorCode::Black>, // 25: Blue Strobe Flash
+        modes::bluetooth::FlashColorMode<colors::HTMLColorCode::Yellow,
+                                         colors::HTMLColorCode::Black>, // 26: Yellow Strobe Flash
+        modes::bluetooth::FlashColorMode<colors::HTMLColorCode::Cyan,
+                                         colors::HTMLColorCode::Black>, // 27: Cyan Strobe Flash
+        modes::bluetooth::FlashColorMode<colors::HTMLColorCode::Purple,
+                                         colors::HTMLColorCode::Black>, // 28: Purple Strobe Flash
+        modes::bluetooth::FlashColorMode<colors::HTMLColorCode::White,
+                                         colors::HTMLColorCode::Black> // 29: White Strobe Flash
+        >;
 
 } // namespace bluetooth
 } // namespace lampda::modes
