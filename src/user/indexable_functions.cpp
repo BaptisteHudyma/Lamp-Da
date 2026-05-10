@@ -2,9 +2,9 @@
 #ifndef LMBD_SIMPLE_EMULATOR
 
 /// Add the nudz mode the compilation
-#ifndef NUDZ_MODES_ENABLED
-#define NUDZ_MODES_ENABLED
-#endif
+// #ifndef NUDZ_MODES_ENABLED
+// #define NUDZ_MODES_ENABLED
+// #endif
 
 #include <cstdint>
 
