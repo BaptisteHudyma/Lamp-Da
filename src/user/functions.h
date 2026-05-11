@@ -12,6 +12,7 @@
 #include <cstdint>
 
 #include "src/system/logic/brightness_handle.h"
+#include "src/system/utils/elk_decoder.h"
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #include "src/system/physical/strip.h"
@@ -131,11 +132,10 @@ bool should_spawn_thread();
 void user_thread();
 
 /**
- * \brief Handle to switch the current mode to bluetooth requested index
- * \param[in] index Pattern index, in [0, 29]
- * \param[in] targetColor If the index is zero, the color is selectable
+ * \brief Handle a ELK BLE package
+ * \param[in] elkControlCommand
  */
-void bluetooth_switch_pattern(uint8_t index, uint32_t targetColor);
+void handle_elk_command(const utils::ELK::Package& elkControlCommand);
 
 } // namespace lampda::user
 

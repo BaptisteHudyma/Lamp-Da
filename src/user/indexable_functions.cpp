@@ -118,7 +118,7 @@ void loop() {}
 bool should_spawn_thread() { return false; }
 void user_thread() {}
 
-void bluetooth_switch_pattern(uint8_t, uint32_t) {}
+void handle_elk_command(const utils::ELK::Package&) {}
 
 } // namespace lampda::user
 
