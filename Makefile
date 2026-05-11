@@ -2,11 +2,15 @@ SRC_DIR=$(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 VENV_DIR=$(SRC_DIR)venv
 BUILD_DIR=$(SRC_DIR)_build
 TOOLS_DIR=$(SRC_DIR)tools
+MEDIAS_DIR=$(SRC_DIR)Medias
 CACHE_DIR=$(BUILD_DIR)/cache
 ARTIFACTS=$(BUILD_DIR)/artifacts
 OBJECTS_DIR=$(BUILD_DIR)/objs
 ARDUINO_LOC=$(BUILD_DIR)/arduino-cli
 COMPILED_UF2=$(BUILD_DIR)/uf2
+GEN_DIR=$(SRC_DIR)src/generated
+TOGENERATE_DIR=$(MEDIAS_DIR)/to_generate
+
 
 SHELL:=/bin/bash # required by python3 virtualenv
 PYTHON_EXE=/usr/bin/env python3
@@ -28,13 +32,19 @@ PROJECT_INO=$(PROJECT_NAME).ino
 COMPILER_CMD=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.cpp.cmd|cut -f2 -d=)
 COMPILER_PATH=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.path|cut -f2 -d=)
 
-CPP_INCLUDES=-I$(OBJECTS_DIR)/sketch -DLMBD_MISSING_DEFINE
+CPP_INCLUDES=-I$(OBJECTS_DIR)/sketch -I$(GEN_DIR) -DLMBD_MISSING_DEFINE
 CPP_BASIC_FLAGS=-std=gnu++17 -fconcepts -DNDEBUG -DLMBD_CPP17 -D$(FULL_LAMP_TYPE) $(CPP_INCLUDES) ${LMBD_EXTRA_FLAGS}
 CPP_BUILD_FLAGS=$(CPP_BASIC_FLAGS) -fdiagnostics-color=always -Wno-unused-parameter -ftemplate-backtrace-limit=1 -fstack-usage -ffunction-sections -fdata-sections # -fsanitize=undefined,address -fstack-protector-all
 ARDUINO_EXTRA_FLAGS="compiler.cpp.extra_flags='$(CPP_INCLUDES) -fstack-usage -D$(FULL_LAMP_TYPE) ${LMBD_EXTRA_FLAGS}'"
 #
 # to enable warnings:
 # 	LMBD_CPP_EXTRA_FLAGS="-Wall -Wextra" make
+
+TOOLS_GENERATE_IMAGE=python $(TOOLS_DIR)/convert_image.py
+IMG_EXTENSIONS := png jpg jpeg bmp svg
+IMAGES_TO_GENERATE:= $(foreach ext,$(IMG_EXTENSIONS),\
+                     $(shell find $(TOGENERATE_DIR) -name "*.$(ext)" 2>/dev/null))
+
 
 all: build
 
@@ -372,6 +382,12 @@ process-clear: has-lamp-type $(BUILD_DIR)/clear-${LMBD_LAMP_TYPE}.sh
 	# clearing previous builds...
 	@bash _build/clear-${LMBD_LAMP_TYPE}.sh > /dev/null 2>&1
 
+generate-images:
+	@echo
+	@mkdir -p $(GEN_DIR)
+	@$(foreach var,$(IMAGES_TO_GENERATE), $(TOOLS_GENERATE_IMAGE) $(var) $(GEN_DIR)/$(basename $(notdir $(var))).hpp;)
+	@echo " ok --- $@"
+
 #
 # build process
 #  - first do a "dry build" to inform adruino about which source files changed
@@ -379,7 +395,7 @@ process-clear: has-lamp-type $(BUILD_DIR)/clear-${LMBD_LAMP_TYPE}.sh
 #  - finally let arduino build the final artifact using our cached objects
 #
 
-build-dry: build-clean install-venv has-lamp-type
+build-dry: build-clean install-venv has-lamp-type generate-images
 	# refresh cache before processing...
 	@mkdir -p $(ARTIFACTS) $(OBJECTS_DIR) $(CACHE_DIR)
 	@$(ARDUINO_CLI) compile -b $(FQBN) \
@@ -388,7 +404,7 @@ build-dry: build-clean install-venv has-lamp-type
 			--build-property "$(ARDUINO_EXTRA_FLAGS)" \
 		> /dev/null 2>&1 || true
 
-process: has-lamp-type build-dry process-clear $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
+process: has-lamp-type build-dry process-clear generate-images $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@echo; echo " --- $@"
 	@test -e $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@find $(BUILD_DIR)/objs/sketch -iname '*.cpp.o' -exec rm '{}' \; \
@@ -555,7 +571,7 @@ clean-doc:
 
 clean: clean-artifacts clean-simulator clean-doc
 	@echo; echo " --- $@"
-	rm -rf $(OBJECTS_DIR) $(CACHE_DIR) $(BUILD_DIR)/*.txt
+	rm -rf $(OBJECTS_DIR) $(CACHE_DIR) $(BUILD_DIR)/*.txt $(GEN_DIR)
 	rm -rf $(BUILD_DIR)/.process-*-success $(BUILD_DIR)/.skip-*-clean
 
 #
@@ -564,11 +580,11 @@ clean: clean-artifacts clean-simulator clean-doc
 
 .PRECIOUS: $(BUILD_DIR)/simulator/%-simulator
 
-$(BUILD_DIR)/simulator/%-simulator:
+$(BUILD_DIR)/simulator/%-simulator: generate-images
 	@echo; echo " --- $@"
 	@mkdir -p $(BUILD_DIR) $(BUILD_DIR)/simulator
 	@cd $(SRC_DIR)/simulator && \
-		LMBD_ROOT_DIR=$(SRC_DIR) SIMU_BUILD_DIR=$(BUILD_DIR)/simulator make $(shell basename "$@")
+		LMBD_ROOT_DIR=$(SRC_DIR) GENERATED_DIR=$(GEN_DIR) SIMU_BUILD_DIR=$(BUILD_DIR)/simulator   make $(shell basename "$@")
 
 clean-simulator:
 	@echo; echo " --- $@"
@@ -590,9 +606,9 @@ clean-tests:
 	@echo; echo " --- $@"
 	@test -e $(BUILD_DIR)/tests/Makefile \
 		&& (cd $(BUILD_DIR)/tests && make clean) \
-		|| (rm -rf $(BUILD_DIR)/tests)
+		|| (rm -rf $(BUILD_DIR)/tests) || (rm -rf $(GEN_DIR))
 
-test:
+test: generate-images
 	@echo; echo " --- $@"
 	@mkdir -p $(BUILD_DIR)/tests
 	@cd $(SRC_DIR)/tests && \
@@ -610,3 +626,4 @@ mr_proper: has-correct-folder-name
 	rm -rf docs/html/*
 	rm -rf _build
 	rm -rf arduino-cli
+	rm -rf $(GEN_DIR)

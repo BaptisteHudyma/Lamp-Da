@@ -139,15 +139,15 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
   static constexpr bool hasCustomRamp = true;
 };
 
-#include "heineken_image.hpp"
+#include "src/generated/heineken.hpp"
 
 typedef NudzScrollImageMode<HeinekenImageTy> NudzHeinekenMode;
 
-#include "huit_six_image.hpp"
+#include "src/generated/huit_six.hpp"
 
 typedef NudzScrollImageMode<Huit_sixImageTy> NudzHuitSixMode;
 
-#include "violonsaouls_image.hpp"
+#include "src/generated/violonsaouls.hpp"
 
 /**
  * \brief Display an image "Violon saoul" scrolling around.

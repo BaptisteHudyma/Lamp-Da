@@ -1,2 +1,4 @@
 wheel
 adafruit-nrfutil
+pillow
+numpy
