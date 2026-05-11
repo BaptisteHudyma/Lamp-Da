@@ -216,10 +216,10 @@ void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>sunset_up
 void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>brightness_update</b> (LMBD_USED <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> brightness)</td></tr>
 <tr class="memdesc:a20eab60ade006184eeff55269cb2fb20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds to local <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a9622baec04f2dd7dc396e210551919b7" title="Custom callback when brightness changes (optional)">BasicMode::brightness_update()</a> <br /></td></tr>
 <tr class="separator:a20eab60ade006184eeff55269cb2fb20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac43423e080c0e54f82a055e04d63517a"><td class="memItemLeft" align="right" valign="top"><a id="ac43423e080c0e54f82a055e04d63517a" name="ac43423e080c0e54f82a055e04d63517a"></a>
-void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>custom_ramp_update</b> (LMBD_USED uint8_t rampValue)</td></tr>
-<tr class="memdesc:ac43423e080c0e54f82a055e04d63517a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds to local <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#aff550d0e24c7023040b77fbc386d29a7" title="Custom callback when system sets user ramp (optional)">BasicMode::custom_ramp_update()</a> <br /></td></tr>
-<tr class="separator:ac43423e080c0e54f82a055e04d63517a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4d15f8aa3d6297efcf7af135daf0251"><td class="memItemLeft" align="right" valign="top"><a id="af4d15f8aa3d6297efcf7af135daf0251" name="af4d15f8aa3d6297efcf7af135daf0251"></a>
+void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>custom_ramp_update</b> (LMBD_USED uint8_t rampValue, uint32_t timeout=0)</td></tr>
+<tr class="memdesc:af4d15f8aa3d6297efcf7af135daf0251"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds to local <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#aff550d0e24c7023040b77fbc386d29a7" title="Custom callback when system sets user ramp (optional)">BasicMode::custom_ramp_update()</a> <br /></td></tr>
+<tr class="separator:af4d15f8aa3d6297efcf7af135daf0251"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73382aed5e9851e740fa26b34c633ce0"><td class="memItemLeft" align="right" valign="top"><a id="a73382aed5e9851e740fa26b34c633ce0" name="a73382aed5e9851e740fa26b34c633ce0"></a>
 bool LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>custom_click</b> (LMBD_USED uint8_t nbClick)</td></tr>
 <tr class="memdesc:a73382aed5e9851e740fa26b34c633ce0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds to local <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a40f65427664b46015b699d883868d530" title="Custom &quot;usermode&quot; button UI for &quot;click&quot; action (optional)">BasicMode::custom_click()</a> <br /></td></tr>
@@ -306,6 +306,9 @@ friend&#160;</td><td class="memItemRight" valign="bottom"><b>ModeManager</b></td
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
+<tr class="memitem:ae3275299f34f7b176d0f6c7254f5eed1"><td class="memItemLeft" align="right" valign="top"><a id="ae3275299f34f7b176d0f6c7254f5eed1" name="ae3275299f34f7b176d0f6c7254f5eed1"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>isGroupManager</b> = false</td></tr>
+<tr class="separator:ae3275299f34f7b176d0f6c7254f5eed1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a425ed2df7f32db149aa65991f24ffe9c"><td class="memItemLeft" align="right" valign="top"><a id="a425ed2df7f32db149aa65991f24ffe9c" name="a425ed2df7f32db149aa65991f24ffe9c"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasStore</b> = not std::is_same_v&lt;StoreEnum, NoStoreHere&gt;</td></tr>
 <tr class="memdesc:a425ed2df7f32db149aa65991f24ffe9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">(store) True if <code>LocalBasicMode</code> has access to a local key store <br /></td></tr>

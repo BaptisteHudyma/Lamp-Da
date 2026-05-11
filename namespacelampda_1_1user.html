@@ -153,9 +153,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>read_parameters</b> (
 <tr class="memitem:a42710cdf95b63e4a0d644c0e976b715a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#a42710cdf95b63e4a0d644c0e976b715a">user_thread</a> ()</td></tr>
 <tr class="memdesc:a42710cdf95b63e4a0d644c0e976b715a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called at each tick of the secondary thread.  <br /></td></tr>
 <tr class="separator:a42710cdf95b63e4a0d644c0e976b715a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68fa1e30ab54d55b8413fc06e1b39f97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#a68fa1e30ab54d55b8413fc06e1b39f97">bluetooth_switch_pattern</a> (uint8_t index, uint32_t targetColor)</td></tr>
-<tr class="memdesc:a68fa1e30ab54d55b8413fc06e1b39f97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle to switch the current mode to bluetooth requested index.  <br /></td></tr>
-<tr class="separator:a68fa1e30ab54d55b8413fc06e1b39f97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c166aecd0393c3af7ee267edb78c9f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#a7c166aecd0393c3af7ee267edb78c9f4">handle_elk_command</a> (const <a class="el" href="structlampda_1_1utils_1_1ELK_1_1Package.html">utils::ELK::Package</a> &amp;elkControlCommand)</td></tr>
+<tr class="memdesc:a7c166aecd0393c3af7ee267edb78c9f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle a ELK BLE package.  <br /></td></tr>
+<tr class="separator:a7c166aecd0393c3af7ee267edb78c9f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f610126f49c21bdf457936bc45a9b09"><td class="memItemLeft" align="right" valign="top"><a id="a9f610126f49c21bdf457936bc45a9b09" name="a9f610126f49c21bdf457936bc45a9b09"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_color</b> (const uint8_t color)</td></tr>
 <tr class="separator:a9f610126f49c21bdf457936bc45a9b09"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -194,43 +194,6 @@ static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>currentBrig
 <div class="textblock"><p>Contains code handling custom user mode functions for indexable strips. </p>
 <p>Add the nudz mode the compilation. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a68fa1e30ab54d55b8413fc06e1b39f97" name="a68fa1e30ab54d55b8413fc06e1b39f97"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68fa1e30ab54d55b8413fc06e1b39f97">&#9670;&#160;</a></span>bluetooth_switch_pattern()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void lampda::user::bluetooth_switch_pattern </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>index</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>targetColor</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Handle to switch the current mode to bluetooth requested index. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>Pattern index, in [0, 29] </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">targetColor</td><td>If the index is zero, the color is selectable </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="a2bed2303bf048e21a21fa2e6a8ebb8fc" name="a2bed2303bf048e21a21fa2e6a8ebb8fc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2bed2303bf048e21a21fa2e6a8ebb8fc">&#9670;&#160;</a></span>brightness_update()</h2>
 
@@ -477,6 +440,32 @@ static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>currentBrig
   </dd>
 </dl>
 <dl class="section remark"><dt>Remarks</dt><dd>When <code>isEndOfHoldEvent</code> is True, then <code>holdDuration</code> is zero </dd></dl>
+
+</div>
+</div>
+<a id="a7c166aecd0393c3af7ee267edb78c9f4" name="a7c166aecd0393c3af7ee267edb78c9f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c166aecd0393c3af7ee267edb78c9f4">&#9670;&#160;</a></span>handle_elk_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::user::handle_elk_command </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structlampda_1_1utils_1_1ELK_1_1Package.html">utils::ELK::Package</a> &amp;&#160;</td>
+          <td class="paramname"><em>elkControlCommand</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Handle a ELK BLE package. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">elkControlCommand</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
