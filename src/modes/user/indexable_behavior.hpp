@@ -173,8 +173,19 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   }
 }
 
-void bluetooth_switch_pattern(uint8_t index, uint32_t targetColor)
+namespace __private_elk {
+
+/**
+ * \brief Handle a pattern change command
+ * \param[in] patternIndex Index of the pattern to use
+ * \param[in] requestedColor Color to display, valid if patternIndex == 0
+ */
+void handle_pattern_select_command(const uint8_t patternIndex, const uint32_t requestedColor = 0)
 {
+  // ignore if not on
+  if (not logic::behavior::is_in_output_state())
+    return;
+
   // get manager and execute a mode or group change
   auto manager = get_context();
   if (manager.get_hidden_groups_count() <= 0)
@@ -191,24 +202,58 @@ void bluetooth_switch_pattern(uint8_t index, uint32_t targetColor)
   }
 
   const auto availableModes = manager.get_modes_count();
-  if (availableModes <= index)
+  if (availableModes <= patternIndex)
   {
-    platform::lampda_print("Unimplemented pattern id %d", index);
+    platform::lampda_print("Unimplemented pattern id %d", patternIndex);
     return;
   }
 
   manager.set_active_group(bluetoothGroup);
-  manager.set_active_mode(index);
+  manager.set_active_mode(patternIndex);
 
   // sanity check
   const int trueIndex = manager.template get_mode_id<modes::bluetooth::ColorControlMode>();
   assert(trueIndex == 0 && "Bluetooth group should have the programmable color output as the first group index");
 
   // handle special programmable group mode
-  if (index == 0)
+  if (patternIndex == 0)
   {
     auto& modeState = manager.template get_state_of_mode<modes::bluetooth::ColorControlMode>();
-    modeState.color = targetColor;
+    modeState.color = requestedColor;
+  }
+}
+
+} // namespace __private_elk
+
+void handle_elk_command(const utils::ELK::Package& elkControlCommand)
+{
+  // Handle default common behavior
+  if (default_behaviors::handle_elk_command(elkControlCommand))
+  {
+    // some event is already handled
+    return;
+  }
+
+  switch (elkControlCommand.type)
+  {
+    case utils::ELK::Type::COLOR_SELECT:
+      {
+        const uint32_t color =
+                elkControlCommand.data[0] << 16 | elkControlCommand.data[1] << 8 | elkControlCommand.data[2];
+        __private_elk::handle_pattern_select_command(0, color);
+        break;
+      }
+    case utils::ELK::Type::PATTERN_SELECT:
+      {
+        __private_elk::handle_pattern_select_command(elkControlCommand.data[0] + 1);
+        break;
+      }
+    // unhandled
+    default:
+      {
+        platform::lampda_print("Unsupported ELK message type");
+        break;
+      }
   }
 }
 

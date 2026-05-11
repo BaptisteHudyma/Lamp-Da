@@ -11,6 +11,7 @@
 //  - src/modes/user/simple_behavior.hpp
 //
 
+#include <cstdint>
 namespace lampda::user {
 
 //
@@ -272,6 +273,91 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
   }
 
   return false;
+}
+
+namespace __private_elk {
+
+/// handle the brightness command
+void handle_brigthness_control(const uint8_t requiredBrigthness)
+{
+  // ignore if not on
+  if (not logic::behavior::is_in_output_state())
+    return;
+
+  // update brightness
+  static constexpr float brightnessMultiplier = ::lampda::brightness::absoluteMaximumBrightness / 100.0f;
+  const brightness_t desiredBrightness =
+          min<brightness_t>(::lampda::brightness::absoluteMaximumBrightness,
+                            static_cast<brightness_t>(requiredBrigthness * brightnessMultiplier));
+  // Update the system brightness for real, not the temporary. We want the changes to be saved
+  logic::brightness::update_brightness(desiredBrightness);
+  // update saved brightness
+  logic::brightness::update_saved_brightness();
+  // and change the sunset timer if needed
+  logic::sunset::bump_timer();
+}
+
+/// handle the On or Off command
+void handle_on_off_command(const bool shouldBeOn)
+{
+  // turn on
+  if (shouldBeOn)
+  {
+    if (not logic::behavior::is_in_output_state())
+      logic::behavior::set_power_on();
+  }
+  // turn off
+  else
+  {
+    if (logic::behavior::is_in_output_state())
+      logic::behavior::set_power_off();
+  }
+}
+
+/**
+ * \brief Handle the speed command
+ * \param[in] speed 0-255 speed
+ */
+void handle_speed_command(const uint8_t speed)
+{
+  // ignore if not on
+  if (not logic::behavior::is_in_output_state())
+    return;
+
+  auto manager = get_context();
+
+  // update ramp value in modes
+  manager.custom_ramp_update(speed, 1000);
+  // override user choice
+  manager.set_active_custom_ramp(speed);
+}
+
+} // namespace __private_elk
+
+bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
+{
+  switch (elkControlCommand.type)
+  {
+    case utils::ELK::Type::BRIGHTNESS:
+      {
+        __private_elk::handle_brigthness_control(elkControlCommand.data[0]);
+        return true;
+      }
+    case utils::ELK::Type::ONOFF:
+      {
+        const bool shouldTurnOn = elkControlCommand.data[0] > 0;
+        __private_elk::handle_on_off_command(shouldTurnOn);
+        return true;
+      }
+    case utils::ELK::Type::PATTERN_SPEED:
+      {
+        const uint8_t speed = (elkControlCommand.data[0] / 100.0) * UINT8_MAX;
+        __private_elk::handle_speed_command(speed);
+        return true;
+      }
+    default:
+      return false;
+  }
 }
 
 } // namespace default_behaviors

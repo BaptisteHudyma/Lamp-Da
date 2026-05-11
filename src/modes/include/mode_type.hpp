@@ -53,6 +53,7 @@ struct BasicMode
 {
   /// \private: Allow to disambiguate mode manager call
   static constexpr bool isModeManager = false;
+  static constexpr bool isGroupManager = false;
 
   /// Mode custom static state, made available through context (optional)
   struct StateTy
