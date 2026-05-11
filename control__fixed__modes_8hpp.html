@@ -76,7 +76,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">control_fixed_modes.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -89,7 +90,19 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1bluetooth_1_1ColorControlMode_1_1StateTy.html">lampda::modes::bluetooth::ColorControlMode::StateTy</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1bluetooth_1_1ColorSequenceMode.html">lampda::modes::bluetooth::ColorSequenceMode&lt; fastMode, fadeRateUint, fadeColors &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1bluetooth_1_1ColorSequenceMode_1_1StateTy.html">lampda::modes::bluetooth::ColorSequenceMode&lt; fastMode, fadeRateUint, fadeColors &gt;::StateTy</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1bluetooth_1_1FixedColorMode.html">lampda::modes::bluetooth::FixedColorMode&lt; color &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">fixed modes  <a href="structlampda_1_1modes_1_1bluetooth_1_1FixedColorMode.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1bluetooth_1_1JumpColorMode.html">lampda::modes::bluetooth::JumpColorMode&lt; Colors &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">jump color  <a href="structlampda_1_1modes_1_1bluetooth_1_1JumpColorMode.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1bluetooth_1_1FadeColorMode.html">lampda::modes::bluetooth::FadeColorMode&lt; fadeRate, Colors &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1bluetooth_1_1FlashColorMode.html">lampda::modes::bluetooth::FlashColorMode&lt; Colors &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -103,6 +116,16 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda_1_1modes_1_1bluetooth"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes_1_1bluetooth.html">lampda::modes::bluetooth</a></td></tr>
 <tr class="memdesc:namespacelampda_1_1modes_1_1bluetooth"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define bluetooth special modes. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:aa759d671ab20e4b51354b978d7c5ee2f"><td class="memItemLeft" align="right" valign="top"><a id="aa759d671ab20e4b51354b978d7c5ee2f" name="aa759d671ab20e4b51354b978d7c5ee2f"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::bluetooth::__private::get_color_at</b> (size_t index)</td></tr>
+<tr class="separator:aa759d671ab20e4b51354b978d7c5ee2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab69f01c53c15e7a20c6d67086e5c8af7"><td class="memTemplParams" colspan="2"><a id="ab69f01c53c15e7a20c6d67086e5c8af7" name="ab69f01c53c15e7a20c6d67086e5c8af7"></a>
+template&lt;typename Head , typename... Tail&gt; </td></tr>
+<tr class="memitem:ab69f01c53c15e7a20c6d67086e5c8af7"><td class="memTemplItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>lampda::modes::bluetooth::__private::get_color_at</b> (size_t index, Head head, Tail... tail)</td></tr>
+<tr class="separator:ab69f01c53c15e7a20c6d67086e5c8af7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
