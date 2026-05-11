@@ -327,7 +327,7 @@ void handle_speed_command(const uint8_t speed)
   auto manager = get_context();
 
   // update ramp value in modes
-  manager.custom_ramp_update(speed);
+  manager.custom_ramp_update(speed, 1000);
   // override user choice
   manager.set_active_custom_ramp(speed);
 }

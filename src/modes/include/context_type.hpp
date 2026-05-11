@@ -44,6 +44,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
 
   /// \private True if context is root "manager" context
   static constexpr bool isModeManager = std::is_same_v<LocalModeTy, ModeManagerTy>;
+  static constexpr bool isGroupManager = false;
 
   // useful proxies (exposes mode properties)
   static constexpr bool hasSunsetAnimation = LocalModeTy::hasSunsetAnimation; ///< \private
@@ -678,9 +679,13 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   }
 
   /// Binds to local BasicMode::custom_ramp_update()
-  void LMBD_INLINE custom_ramp_update(LMBD_USED uint8_t rampValue)
+  void LMBD_INLINE custom_ramp_update(LMBD_USED uint8_t rampValue, uint32_t timeout = 0)
   {
-    if constexpr (LocalModeTy::hasCustomRamp)
+    if constexpr (LocalModeTy::isGroupManager)
+    {
+      LocalModeTy::custom_ramp_update(*this, rampValue, timeout);
+    }
+    else if constexpr (LocalModeTy::hasCustomRamp)
     {
       LocalModeTy::custom_ramp_update(*this, rampValue);
     }
