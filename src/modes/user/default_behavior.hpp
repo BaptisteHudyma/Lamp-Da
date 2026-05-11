@@ -11,6 +11,7 @@
 //  - src/modes/user/simple_behavior.hpp
 //
 
+#include <cstdint>
 namespace lampda::user {
 
 //
@@ -274,7 +275,7 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
   return false;
 }
 
-namespace __private {
+namespace __private_elk {
 
 /// handle the brightness command
 void handle_brigthness_control(const uint8_t requiredBrigthness)
@@ -313,7 +314,25 @@ void handle_on_off_command(const bool shouldBeOn)
   }
 }
 
-} // namespace __private
+/**
+ * \brief Handle the speed command
+ * \param[in] speed 0-255 speed
+ */
+void handle_speed_command(const uint8_t speed)
+{
+  // ignore if not on
+  if (not logic::behavior::is_in_output_state())
+    return;
+
+  auto manager = get_context();
+
+  // update ramp value in modes
+  manager.custom_ramp_update(speed);
+  // override user choice
+  manager.set_active_custom_ramp(speed);
+}
+
+} // namespace __private_elk
 
 bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
 {
@@ -321,13 +340,19 @@ bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
   {
     case utils::ELK::Type::BRIGHTNESS:
       {
-        __private::handle_brigthness_control(elkControlCommand.data[0]);
+        __private_elk::handle_brigthness_control(elkControlCommand.data[0]);
         return true;
       }
     case utils::ELK::Type::ONOFF:
       {
         const bool shouldTurnOn = elkControlCommand.data[0] > 0;
-        __private::handle_on_off_command(shouldTurnOn);
+        __private_elk::handle_on_off_command(shouldTurnOn);
+        return true;
+      }
+    case utils::ELK::Type::PATTERN_SPEED:
+      {
+        const uint8_t speed = (elkControlCommand.data[0] / 100.0) * UINT8_MAX;
+        __private_elk::handle_speed_command(speed);
         return true;
       }
     default:

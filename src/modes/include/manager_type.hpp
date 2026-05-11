@@ -955,8 +955,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
    * \brief Callback of user ramp update
    * \param[in, out] ctx Context
    * \param[in] rampValue The new brightness
+   * \param[in] timeout Timeout of the ramp animation
    */
-  static void custom_ramp_update(auto& ctx, uint8_t rampValue)
+  static void custom_ramp_update(auto& ctx, uint8_t rampValue, uint32_t timeout = 0)
   {
     uint8_t groupId = ctx.get_active_group();
     uint8_t modeId = ctx.get_active_mode();
@@ -966,11 +967,11 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       switch (ctx.state.rampHandler.animChoice)
       {
         case 0:
-          overlay_animate_ramp(ctx, rampValue, modes::colors::PaletteBlackBodyColors);
+          overlay_animate_ramp(ctx, rampValue, modes::colors::PaletteBlackBodyColors, timeout);
           break;
 
         case 1:
-          overlay_animate_ramp(ctx, rampValue, modes::colors::PaletteRainbowColors);
+          overlay_animate_ramp(ctx, rampValue, modes::colors::PaletteRainbowColors, timeout);
           break;
       }
     }

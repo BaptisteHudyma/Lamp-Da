@@ -173,7 +173,7 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   }
 }
 
-namespace __private {
+namespace __private_elk {
 
 /**
  * \brief Handle a pattern change command
@@ -223,7 +223,7 @@ void handle_pattern_select_command(const uint8_t patternIndex, const uint32_t re
   }
 }
 
-} // namespace __private
+} // namespace __private_elk
 
 void handle_elk_command(const utils::ELK::Package& elkControlCommand)
 {
@@ -240,12 +240,12 @@ void handle_elk_command(const utils::ELK::Package& elkControlCommand)
       {
         const uint32_t color =
                 elkControlCommand.data[0] << 16 | elkControlCommand.data[1] << 8 | elkControlCommand.data[2];
-        __private::handle_pattern_select_command(0, color);
+        __private_elk::handle_pattern_select_command(0, color);
         break;
       }
     case utils::ELK::Type::PATTERN_SELECT:
       {
-        __private::handle_pattern_select_command(elkControlCommand.data[0] + 1);
+        __private_elk::handle_pattern_select_command(elkControlCommand.data[0] + 1);
         break;
       }
     // unhandled
