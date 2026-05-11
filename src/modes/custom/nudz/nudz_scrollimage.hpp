@@ -246,7 +246,7 @@ struct NudzBeerGlassMode : public BasicMode
       drawAccel(ctx);
   }
 
-  /// update the level of the liquide using IMU events
+  /// update the level of the liquid using IMU events
   static void updateLevels(auto& ctx)
   {
     uint32_t nx = ctx.lamp.maxWidth;
@@ -375,7 +375,7 @@ struct NudzBeerGlassMode : public BasicMode
     }
   }
 
-  /// Display the liquide level on the strip
+  /// Display the liquid level on the strip
   static void displayLevels(auto& ctx)
   {
     auto& levels = ctx.state.levels;
@@ -400,7 +400,7 @@ struct NudzBeerGlassMode : public BasicMode
     }
   }
 
-  /// Invoque new bulbes !
+  /// Invoque new bubbles !
   static void makeBubbles(auto& ctx)
   {
     auto& bubbles = ctx.state.bubbles;
