@@ -122,6 +122,9 @@ bool is_in_output_mode();
  */
 bool is_in_otg_mode();
 
+/// Indicates if the charger tried the battery recovery system
+bool was_started_in_battery_recovery();
+
 } // namespace power
 } // namespace logic
 } // namespace lampda

@@ -72,6 +72,8 @@ static bool _hasAutoSwitchedToOTG = false;
 /// in this mode, the battery is too low to power the components.
 /// They will be powered through the vbus gate.
 static bool _isInBatteryRecoveryMode = false;
+// This flag is never cleared and allows use to check this case
+static bool _wasStartedInBatteryRecoveryMode = false;
 
 /// Return the error string if set, or "x"
 std::string get_error_string()
@@ -478,6 +480,7 @@ void handle_startup()
       ::lampda::power::powergates::enable_vbus_gate_DIRECT();
     }
     _isInBatteryRecoveryMode = true;
+    _wasStartedInBatteryRecoveryMode = true;
 
     // hold the state
     return;
@@ -512,13 +515,29 @@ void handle_startup()
     const uint32_t timeSinceStateSwitch = platform::time_ms() - __private::powerMachine.get_state_raised_time();
     if (timeSinceStateSwitch < startupFailTimeout_ms * 0.8)
       return;
+
+    if (not ::lampda::power::powerDelivery::is_power_available())
+    {
+      set_error_state_message("\n\t- Battery recovery mode failed");
+      return;
+    }
+    // This delay is to let the time for the balancer to boot.
+    platform::delay_ms(250);
   }
+  // Final point: We will never pass through here again !
 
 // TODO issue #132 remove when the mock components will be running
 #ifndef LMBD_SIMULATION
   if (not ::lampda::power::balancer::init())
   {
-    set_error_state_message("\n\t- Init balancer component failed");
+    if (_isInBatteryRecoveryMode)
+    {
+      set_error_state_message(
+              "\n\t- Init balancer component failed in recovery mode: no battery or dead forever battery");
+    }
+    else
+      set_error_state_message("\n\t- Init balancer component failed");
+
     __private::powerMachine.set_state(PowerStates::ERROR);
     logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
     // failed initialisation, skip
@@ -752,6 +771,7 @@ std::string get_state()
 
 bool is_in_output_mode() { return __private::powerMachine.get_state() == PowerStates::OUTPUT_VOLTAGE_MODE; }
 bool is_in_otg_mode() { return __private::powerMachine.get_state() == PowerStates::OTG_MODE; }
+bool was_started_in_battery_recovery() { return _wasStartedInBatteryRecoveryMode; }
 
 static bool isSetup = false;
 

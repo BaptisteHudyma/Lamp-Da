@@ -176,6 +176,7 @@ void handleCommand(const platform::Inputs::Command& command)
                   "is usb serial connected:%s\n"
                   "is charging:%s\n"
                   "is effec charging:%s\n"
+                  "was battery recover: %d\n"
                   "battery level:%.2f%%\n"
                   "-> charger status: %s",
                   boolToString(chargerState.isChargeOkSignalHigh),
@@ -186,6 +187,7 @@ void handleCommand(const platform::Inputs::Command& command)
                   boolToString(::lampda::power::charger::is_vbus_signal_detected()),
                   boolToString(chargerState.is_charging()),
                   boolToString(chargerState.is_effectivly_charging()),
+                  ::lampda::logic::power::was_started_in_battery_recovery(),
                   physical::battery::get_battery_level() / 100.0,
                   chargerState.get_status_str().c_str());
         }
@@ -195,10 +197,12 @@ void handleCommand(const platform::Inputs::Command& command)
                   "is charge signal ok:%s\n"
                   "Charger measurments are invalid !!\n"
                   "is usb serial connected:%s\n"
+                  "was battery recover: %d\n"
                   "battery level:%.2f%%\n"
                   "-> charger status: %s",
                   boolToString(chargerState.isChargeOkSignalHigh),
                   boolToString(::lampda::power::charger::is_vbus_signal_detected()),
+                  ::lampda::logic::power::was_started_in_battery_recovery(),
                   physical::battery::get_battery_level() / 100.0,
                   chargerState.get_status_str().c_str());
         }
