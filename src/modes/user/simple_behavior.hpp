@@ -87,10 +87,14 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   }
 }
 
-void handle_elk_command(const utils::ELK::Package&)
+void handle_elk_command(const utils::ELK::Package& elkControlCommand)
 {
-  //
-  return;
+  // Handle default common behavior
+  if (default_behaviors::handle_elk_command(elkControlCommand))
+  {
+    // some event is already handled
+    return;
+  }
 }
 
 } // namespace lampda::user

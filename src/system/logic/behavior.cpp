@@ -53,6 +53,9 @@ static constexpr uint32_t bluetoothAutoKey = utils::hash("ble");
 
 // time to block turn off since turn on
 static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 500;
+static constexpr uint32_t PRE_CHARGE_STATE_TIMEOUT_ms = 1000;
+static constexpr uint32_t PRE_OUTPUT_STATE_TIMEOUT_ms = 1000;
+
 /// bluetooth will power up automatically this number of next boots if user used it
 static constexpr uint32_t maxBluetoothAutoActivations = 3;
 
@@ -424,6 +427,12 @@ void handle_pre_charger_operation_state()
     go_to_error_state("power system in error state in pre charger operation state");
     return;
   }
+  if (platform::time_ms() - mainMachine.get_state_raised_time() > PRE_CHARGE_STATE_TIMEOUT_ms)
+  {
+    go_to_error_state("pre charger operation failed to toggle to charge");
+    return;
+  }
+
   // clear lockout in charge mode
   logic::alerts::manager.clear(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
 
@@ -547,6 +556,12 @@ void handle_pre_output_light_state()
     go_to_error_state("power system in error state in pre output light state");
     return;
   }
+  if (platform::time_ms() - mainMachine.get_state_raised_time() > PRE_OUTPUT_STATE_TIMEOUT_ms)
+  {
+    go_to_error_state("pre output operation failed to toggle");
+    return;
+  }
+
   // power usage is forbidden
   if (not physical::battery::is_battery_usable_as_power_source())
   {
