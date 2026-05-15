@@ -191,6 +191,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_in_output_mode</b>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_in_otg_mode</b> ()</td></tr>
 <tr class="memdesc:aeb6dceddea1b9531e25ac8998958e21c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the current state is OTG_MODE. <br /></td></tr>
 <tr class="separator:aeb6dceddea1b9531e25ac8998958e21c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ba1dc5c51a39955558feffe629cf321"><td class="memItemLeft" align="right" valign="top"><a id="a0ba1dc5c51a39955558feffe629cf321" name="a0ba1dc5c51a39955558feffe629cf321"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>was_started_in_battery_recovery</b> ()</td></tr>
+<tr class="memdesc:a0ba1dc5c51a39955558feffe629cf321"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates if the charger tried the battery recovery system. <br /></td></tr>
+<tr class="separator:a0ba1dc5c51a39955558feffe629cf321"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a857b8dc208003c36c370f134eccce2ad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1power.html#a857b8dc208003c36c370f134eccce2ad">is_setup</a> ()</td></tr>
 <tr class="memdesc:a857b8dc208003c36c370f134eccce2ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the power handler system is effectivly started.  <br /></td></tr>
 <tr class="separator:a857b8dc208003c36c370f134eccce2ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -269,6 +273,9 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>_hasAutoSwitch
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>_isInBatteryRecoveryMode</b> = false</td></tr>
 <tr class="memdesc:ae995e20ca2c6339c8cf32b2045709483"><td class="mdescLeft">&#160;</td><td class="mdescRight">in this mode, the battery is too low to power the components. They will be powered through the vbus gate. <br /></td></tr>
 <tr class="separator:ae995e20ca2c6339c8cf32b2045709483"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade999846dcc380a5e7b44a8dbc2cce04"><td class="memItemLeft" align="right" valign="top"><a id="ade999846dcc380a5e7b44a8dbc2cce04" name="ade999846dcc380a5e7b44a8dbc2cce04"></a>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>_wasStartedInBatteryRecoveryMode</b> = false</td></tr>
+<tr class="separator:ade999846dcc380a5e7b44a8dbc2cce04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4ac8dfd543398e45d34c35852b1a060"><td class="memItemLeft" align="right" valign="top">const char *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1power.html#aa4ac8dfd543398e45d34c35852b1a060">PowerStatesStr</a> []</td></tr>
 <tr class="memdesc:aa4ac8dfd543398e45d34c35852b1a060"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the states as strings.  <br /></td></tr>
 <tr class="separator:aa4ac8dfd543398e45d34c35852b1a060"><td class="memSeparator" colspan="2">&#160;</td></tr>

@@ -163,15 +163,19 @@ $(function() {
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>  }</div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a7c166aecd0393c3af7ee267edb78c9f4">handle_elk_command</a>(<span class="keyword">const</span> utils::ELK::Package&amp;)</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a7c166aecd0393c3af7ee267edb78c9f4">handle_elk_command</a>(<span class="keyword">const</span> utils::ELK::Package&amp; elkControlCommand)</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>{</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>  <span class="comment">//</span></div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>  <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>} <span class="comment">// namespace lampda::user</span></div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>  <span class="comment">// Handle default common behavior</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>  <span class="keywordflow">if</span> (default_behaviors::handle_elk_command(elkControlCommand))</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>  {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="comment">// some event is already handled</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  }</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>}</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>} <span class="comment">// namespace lampda::user</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="anamespacelampda_1_1logic_1_1alerts_html_a628369d30766b929ca366137ee67919e"><div class="ttname"><a href="namespacelampda_1_1logic_1_1alerts.html#a628369d30766b929ca366137ee67919e">lampda::logic::alerts::manager</a></div><div class="ttdeci">AlertManager_t manager</div><div class="ttdoc">Instanciation of the AlertManager.</div><div class="ttdef"><b>Definition:</b> alerts.cpp:27</div></div>
 <div class="ttc" id="anamespacelampda_1_1physical_1_1outputPower_html_a416be025c5ef48bfda9566d0996ee02e"><div class="ttname"><a href="namespacelampda_1_1physical_1_1outputPower.html#a416be025c5ef48bfda9566d0996ee02e">lampda::physical::outputPower::write_temporary_output_limits</a></div><div class="ttdeci">void write_temporary_output_limits(const uint16_t voltage_mv, const uint16_t current_ma, const uint32_t timeout_ms)</div><div class="ttdoc">overwrite the output characteristics for a given duration. Gets back to the previous settings after t...</div><div class="ttdef"><b>Definition:</b> output_power.cpp:32</div></div>
 <div class="ttc" id="anamespacelampda_1_1user_1_1default__behaviors_html_a93738ec6c5952f143d486075ff170942"><div class="ttname"><a href="namespacelampda_1_1user_1_1default__behaviors.html#a93738ec6c5952f143d486075ff170942">lampda::user::default_behaviors::button_hold</a></div><div class="ttdeci">bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)</div><div class="ttdoc">must be called by the lampda::user::button_hold_default</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:197</div></div>
