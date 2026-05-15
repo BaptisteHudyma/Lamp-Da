@@ -155,7 +155,6 @@ uint32_t get_random_complementary_color(const uint32_t color, const float tolera
  * \param[in] level between 0 and 1, the gradient between the two colors
  */
 uint32_t get_gradient(const uint32_t colorStart, const uint32_t colorEnd, const float level);
-COLOR color_blend(COLOR color1, COLOR color2, uint16_t blend, bool b16 = false);
 
 COLOR color_fade(COLOR c1, uint8_t amount, bool video = false);
 COLOR color_add(COLOR c1, COLOR c2, bool fast = false);

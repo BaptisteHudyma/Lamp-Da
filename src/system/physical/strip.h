@@ -389,16 +389,6 @@ public:
   uint32_t getPixelColor(uint16_t n) const { return _colors[lmpd_constrain<uint16_t>(n, 0, LED_COUNT - 1)].color; }
   uint32_t getPixelColorXY(int16_t x, int16_t y) const { return getPixelColor(LedStrip::to_strip(x, y)); }
 
-  // Blends the specified color with the existing pixel color.
-  void blendPixelColor(uint16_t n, uint32_t color, uint8_t blend)
-  {
-    COLOR c1;
-    c1.color = getPixelColor(n);
-    COLOR c2;
-    c2.color = color;
-    setPixelColor(n, utils::color_blend(c1, c2, blend));
-  }
-
   // Adds the specified color with the existing pixel color perserving color
   // balance.
   void addPixelColor(uint16_t n, uint32_t color, bool fast = false)

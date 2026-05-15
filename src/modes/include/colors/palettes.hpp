@@ -5,6 +5,8 @@
 #ifndef MODES_PALETTES_H
 #define MODES_PALETTES_H
 
+#include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <array>
 

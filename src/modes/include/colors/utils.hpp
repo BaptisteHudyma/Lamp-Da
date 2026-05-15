@@ -7,6 +7,11 @@
 
 #include "src/modes/include/compile.hpp"
 
+#include "src/system/ext/scale8.h"
+#include "src/system/ext/math8.h"
+
+#include <cstdint>
+
 //
 // Color utilities likely already defined elsewhere
 //  (but this time in pure constexpr-able INLINE c++)
