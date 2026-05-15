@@ -1,5 +1,7 @@
 # Lamp-Da
 
+[![Latest release](https://badgen.net/github/release/BaptisteHudyma/Lamp-da)](https://github.com/BaptisteHudyma/Lamp-da/releases) [![Documentation Status](https://img.shields.io/badge/Documentation-blue)](https://baptistehudyma.github.io/Lamp-Da/?badge=latest) [![Latest build](https://img.shields.io/github/actions/workflow/status/BaptisteHudyma/Lamp-Da/lamp-main.yml)](https://github.com/BaptisteHudyma/Lamp-Da/actions/workflows/lamp-main.yml)
+
 A programmable board integrated with a liion battery charger, battery balancer, multiple sensors and gpios (with 3 analog inputs).
 
 This repository contains the bootloader, software and hardware files to create and program the board.
