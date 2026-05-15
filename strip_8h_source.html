@@ -425,83 +425,73 @@ $(function() {
 <div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>  uint32_t getPixelColor(uint16_t n)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a6f2311cc8ed8b6987660ef57636230f7">_colors</a>[lmpd_constrain&lt;uint16_t&gt;(n, 0, LED_COUNT - 1)].color; }</div>
 <div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>  uint32_t getPixelColorXY(int16_t x, int16_t y)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> getPixelColor(LedStrip::to_strip(x, y)); }</div>
 <div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span> </div>
-<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>  <span class="comment">// Blends the specified color with the existing pixel color.</span></div>
-<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>  <span class="keywordtype">void</span> blendPixelColor(uint16_t n, uint32_t color, uint8_t blend)</div>
-<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>  {</div>
-<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>    COLOR c1;</div>
-<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>    c1.color = getPixelColor(n);</div>
-<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>    COLOR c2;</div>
-<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>    c2.color = color;</div>
-<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>    setPixelColor(n, utils::color_blend(c1, c2, blend));</div>
-<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>  }</div>
-<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span> </div>
-<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>  <span class="comment">// Adds the specified color with the existing pixel color perserving color</span></div>
-<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>  <span class="comment">// balance.</span></div>
-<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>  <span class="keywordtype">void</span> addPixelColor(uint16_t n, uint32_t color, <span class="keywordtype">bool</span> fast = <span class="keyword">false</span>)</div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>  <span class="comment">// Adds the specified color with the existing pixel color perserving color</span></div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>  <span class="comment">// balance.</span></div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>  <span class="keywordtype">void</span> addPixelColor(uint16_t n, uint32_t color, <span class="keywordtype">bool</span> fast = <span class="keyword">false</span>)</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>  {</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>    COLOR c1;</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>    c1.color = getPixelColor(n);</div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>    COLOR c2;</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>    c2.color = color;</div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span> </div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>    setPixelColor(n, utils::color_add(c1, c2, fast));</div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>  }</div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span> </div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>  <span class="keywordtype">void</span> addPixelColorXY(uint16_t x, uint16_t y, uint32_t color, <span class="keywordtype">bool</span> fast = <span class="keyword">false</span>)</div>
 <div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>  {</div>
-<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>    COLOR c1;</div>
-<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>    c1.color = getPixelColor(n);</div>
-<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>    COLOR c2;</div>
-<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>    c2.color = color;</div>
-<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span> </div>
-<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>    setPixelColor(n, utils::color_add(c1, c2, fast));</div>
-<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>  }</div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>    addPixelColor(LedStrip::to_strip(x, y), color, fast);</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>  }</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span> </div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>  <span class="comment">// signal the strip that it can display the update</span></div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>  <span class="keywordtype">void</span> signal_display() { hasSomeChanges = <span class="keyword">true</span>; }</div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span> </div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>  uint32_t* get_buffer_ptr(<span class="keyword">const</span> uint8_t index) { <span class="keywordflow">return</span> <a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a02636deb8230090e9b4d4d7f9a96448c">_buffers</a>[index].data(); }</div>
 <div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span> </div>
-<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>  <span class="keywordtype">void</span> addPixelColorXY(uint16_t x, uint16_t y, uint32_t color, <span class="keywordtype">bool</span> fast = <span class="keyword">false</span>)</div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>  <span class="keywordtype">void</span> buffer_current_colors(<span class="keyword">const</span> uint8_t index)</div>
 <div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>  {</div>
-<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>    addPixelColor(LedStrip::to_strip(x, y), color, fast);</div>
-<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>  }</div>
-<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span> </div>
-<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>  <span class="comment">// signal the strip that it can display the update</span></div>
-<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>  <span class="keywordtype">void</span> signal_display() { hasSomeChanges = <span class="keyword">true</span>; }</div>
-<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span> </div>
-<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>  uint32_t* get_buffer_ptr(<span class="keyword">const</span> uint8_t index) { <span class="keywordflow">return</span> <a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a02636deb8230090e9b4d4d7f9a96448c">_buffers</a>[index].data(); }</div>
-<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span> </div>
-<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>  <span class="keywordtype">void</span> buffer_current_colors(<span class="keyword">const</span> uint8_t index)</div>
-<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span>  {</div>
-<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span>    <span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(BufferTy) == <span class="keyword">sizeof</span>(<a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a6f2311cc8ed8b6987660ef57636230f7">_colors</a>));</div>
-<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span>    memcpy(<a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a02636deb8230090e9b4d4d7f9a96448c">_buffers</a>[index].data(), <a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a6f2311cc8ed8b6987660ef57636230f7">_colors</a>, <span class="keyword">sizeof</span>(<a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a6f2311cc8ed8b6987660ef57636230f7">_colors</a>));</div>
-<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>  }</div>
-<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span> </div>
-<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>  <span class="keywordtype">void</span> fill_buffer(<span class="keyword">const</span> uint8_t index, <span class="keyword">const</span> uint32_t value)</div>
-<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span>  {</div>
-<div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span>    memset(<a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a02636deb8230090e9b4d4d7f9a96448c">_buffers</a>[index].data(), value, <span class="keyword">sizeof</span>(BufferTy));</div>
-<div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span>  }</div>
-<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span> </div>
-<div class="line"><a id="l00436" name="l00436"></a><span class="lineno"><a class="line" href="classlampda_1_1physical_1_1LedStrip.html#a6f2311cc8ed8b6987660ef57636230f7">  436</a></span>  <a class="code hl_union" href="unionlampda_1_1COLOR.html">COLOR</a> <a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a6f2311cc8ed8b6987660ef57636230f7">_colors</a>[LED_COUNT];</div>
-<div class="line"><a id="l00437" name="l00437"></a><span class="lineno">  437</span> </div>
-<div class="line"><a id="l00439" name="l00439"></a><span class="lineno"><a class="line" href="classlampda_1_1physical_1_1LedStrip.html#a64f2a00c2b1917c7a8e13dbd1ada76ed">  439</a></span>  std::array&lt;COLOR, useTemporalDithering ? LED_COUNT : 1&gt; <a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a64f2a00c2b1917c7a8e13dbd1ada76ed">_colorErrors</a>;</div>
-<div class="line"><a id="l00440" name="l00440"></a><span class="lineno">  440</span> </div>
-<div class="line"><a id="l00442" name="l00442"></a><span class="lineno"><a class="line" href="classlampda_1_1physical_1_1LedStrip.html#a02636deb8230090e9b4d4d7f9a96448c">  442</a></span>  BufferTy <a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a02636deb8230090e9b4d4d7f9a96448c">_buffers</a>[stripNbBuffers];</div>
-<div class="line"><a id="l00443" name="l00443"></a><span class="lineno">  443</span> </div>
-<div class="line"><a id="l00444" name="l00444"></a><span class="lineno">  444</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00445" name="l00445"></a><span class="lineno">  445</span>  <span class="keyword">volatile</span> <span class="keywordtype">bool</span> hasSomeChanges;</div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>    <span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(BufferTy) == <span class="keyword">sizeof</span>(<a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a6f2311cc8ed8b6987660ef57636230f7">_colors</a>));</div>
+<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>    memcpy(<a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a02636deb8230090e9b4d4d7f9a96448c">_buffers</a>[index].data(), <a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a6f2311cc8ed8b6987660ef57636230f7">_colors</a>, <span class="keyword">sizeof</span>(<a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a6f2311cc8ed8b6987660ef57636230f7">_colors</a>));</div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>  }</div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span> </div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>  <span class="keywordtype">void</span> fill_buffer(<span class="keyword">const</span> uint8_t index, <span class="keyword">const</span> uint32_t value)</div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>  {</div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>    memset(<a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a02636deb8230090e9b4d4d7f9a96448c">_buffers</a>[index].data(), value, <span class="keyword">sizeof</span>(BufferTy));</div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>  }</div>
+<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span> </div>
+<div class="line"><a id="l00426" name="l00426"></a><span class="lineno"><a class="line" href="classlampda_1_1physical_1_1LedStrip.html#a6f2311cc8ed8b6987660ef57636230f7">  426</a></span>  <a class="code hl_union" href="unionlampda_1_1COLOR.html">COLOR</a> <a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a6f2311cc8ed8b6987660ef57636230f7">_colors</a>[LED_COUNT];</div>
+<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span> </div>
+<div class="line"><a id="l00429" name="l00429"></a><span class="lineno"><a class="line" href="classlampda_1_1physical_1_1LedStrip.html#a64f2a00c2b1917c7a8e13dbd1ada76ed">  429</a></span>  std::array&lt;COLOR, useTemporalDithering ? LED_COUNT : 1&gt; <a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a64f2a00c2b1917c7a8e13dbd1ada76ed">_colorErrors</a>;</div>
+<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span> </div>
+<div class="line"><a id="l00432" name="l00432"></a><span class="lineno"><a class="line" href="classlampda_1_1physical_1_1LedStrip.html#a02636deb8230090e9b4d4d7f9a96448c">  432</a></span>  BufferTy <a class="code hl_variable" href="classlampda_1_1physical_1_1LedStrip.html#a02636deb8230090e9b4d4d7f9a96448c">_buffers</a>[stripNbBuffers];</div>
+<div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span> </div>
+<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00435" name="l00435"></a><span class="lineno">  435</span>  <span class="keyword">volatile</span> <span class="keywordtype">bool</span> hasSomeChanges;</div>
+<div class="line"><a id="l00436" name="l00436"></a><span class="lineno">  436</span> </div>
+<div class="line"><a id="l00438" name="l00438"></a><span class="lineno">  438</span>  <span class="keyword">volatile</span> uint8_t brightness;</div>
+<div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span> </div>
+<div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span>  <span class="keyword">volatile</span> uint8_t brightnessAtShowTime;</div>
+<div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span> </div>
+<div class="line"><a id="l00444" name="l00444"></a><span class="lineno">  444</span>  <span class="keyword">volatile</span> uint8_t shownCount;</div>
+<div class="line"><a id="l00445" name="l00445"></a><span class="lineno">  445</span>};</div>
 <div class="line"><a id="l00446" name="l00446"></a><span class="lineno">  446</span> </div>
-<div class="line"><a id="l00448" name="l00448"></a><span class="lineno">  448</span>  <span class="keyword">volatile</span> uint8_t brightness;</div>
+<div class="line"><a id="l00447" name="l00447"></a><span class="lineno">  447</span>} <span class="comment">// namespace physical</span></div>
+<div class="line"><a id="l00448" name="l00448"></a><span class="lineno">  448</span>} <span class="comment">// namespace lampda</span></div>
 <div class="line"><a id="l00449" name="l00449"></a><span class="lineno">  449</span> </div>
-<div class="line"><a id="l00451" name="l00451"></a><span class="lineno">  451</span>  <span class="keyword">volatile</span> uint8_t brightnessAtShowTime;</div>
-<div class="line"><a id="l00452" name="l00452"></a><span class="lineno">  452</span> </div>
-<div class="line"><a id="l00454" name="l00454"></a><span class="lineno">  454</span>  <span class="keyword">volatile</span> uint8_t shownCount;</div>
-<div class="line"><a id="l00455" name="l00455"></a><span class="lineno">  455</span>};</div>
-<div class="line"><a id="l00456" name="l00456"></a><span class="lineno">  456</span> </div>
-<div class="line"><a id="l00457" name="l00457"></a><span class="lineno">  457</span>} <span class="comment">// namespace physical</span></div>
-<div class="line"><a id="l00458" name="l00458"></a><span class="lineno">  458</span>} <span class="comment">// namespace lampda</span></div>
-<div class="line"><a id="l00459" name="l00459"></a><span class="lineno">  459</span> </div>
-<div class="line"><a id="l00460" name="l00460"></a><span class="lineno">  460</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00461" name="l00461"></a><span class="lineno">  461</span> </div>
-<div class="line"><a id="l00462" name="l00462"></a><span class="lineno">  462</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00450" name="l00450"></a><span class="lineno">  450</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00451" name="l00451"></a><span class="lineno">  451</span> </div>
+<div class="line"><a id="l00452" name="l00452"></a><span class="lineno">  452</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aAdafruit__NeoPixel_8h_html"><div class="ttname"><a href="Adafruit__NeoPixel_8h.html">Adafruit_NeoPixel.h</a></div><div class="ttdoc">Mock of the Adafruit NeoPixel library.</div></div>
 <div class="ttc" id="aclassAdafruit__NeoPixel_html"><div class="ttname"><a href="classAdafruit__NeoPixel.html">Adafruit_NeoPixel</a></div><div class="ttdef"><b>Definition:</b> Adafruit_NeoPixel.h:27</div></div>
 <div class="ttc" id="aclassAdafruit__NeoPixel_html_a21481e96ffe6ea91406f46c655d8e1aa"><div class="ttname"><a href="classAdafruit__NeoPixel.html#a21481e96ffe6ea91406f46c655d8e1aa">Adafruit_NeoPixel::setBrightness</a></div><div class="ttdeci">void setBrightness(uint8_t b)</div><div class="ttdoc">Implementation similar to Adafruit led strip.</div><div class="ttdef"><b>Definition:</b> Adafruit_NeoPixel.h:47</div></div>
 <div class="ttc" id="aclassAdafruit__NeoPixel_html_aa4b0659f1d9767f5980db581417cf1b5"><div class="ttname"><a href="classAdafruit__NeoPixel.html#aa4b0659f1d9767f5980db581417cf1b5">Adafruit_NeoPixel::show</a></div><div class="ttdeci">void show()</div><div class="ttdef"><b>Definition:</b> Adafruit_NeoPixel.h:39</div></div>
 <div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html">lampda::physical::LedStrip</a></div><div class="ttdoc">protected inheritence to avoid uncontroled hardware calls</div><div class="ttdef"><b>Definition:</b> strip.h:46</div></div>
 <div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html_a0231ef3923c8739ddeb4de16655789f1"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html#a0231ef3923c8739ddeb4de16655789f1">lampda::physical::LedStrip::restore_color_with_brightness</a></div><div class="ttdeci">static uint8_t restore_color_with_brightness(uint8_t colorIn, const uint8_t brightness)</div><div class="ttdoc">Convert a color to the standard range, assuming it starts as brightness level.</div><div class="ttdef"><b>Definition:</b> strip.h:199</div></div>
-<div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html_a02636deb8230090e9b4d4d7f9a96448c"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html#a02636deb8230090e9b4d4d7f9a96448c">lampda::physical::LedStrip::_buffers</a></div><div class="ttdeci">BufferTy _buffers[stripNbBuffers]</div><div class="ttdoc">buffers for computations</div><div class="ttdef"><b>Definition:</b> strip.h:442</div></div>
+<div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html_a02636deb8230090e9b4d4d7f9a96448c"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html#a02636deb8230090e9b4d4d7f9a96448c">lampda::physical::LedStrip::_buffers</a></div><div class="ttdeci">BufferTy _buffers[stripNbBuffers]</div><div class="ttdoc">buffers for computations</div><div class="ttdef"><b>Definition:</b> strip.h:432</div></div>
 <div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html_a04c6f159d304a291e71ed593a4ed7528"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html#a04c6f159d304a291e71ed593a4ed7528">lampda::physical::LedStrip::setBrightness</a></div><div class="ttdeci">void setBrightness(uint8_t b)</div><div class="ttdoc">Brightness is an internal counter.</div><div class="ttdef"><b>Definition:</b> strip.h:110</div></div>
 <div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html_a2aa6344f14d303fb2e5ab8e7a0bba037"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html#a2aa6344f14d303fb2e5ab8e7a0bba037">lampda::physical::LedStrip::getBrightness</a></div><div class="ttdeci">uint8_t getBrightness() const</div><div class="ttdoc">Brightness is an internal flag.</div><div class="ttdef"><b>Definition:</b> strip.h:113</div></div>
 <div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html_a5177ef5f3a6b7edb9dac7ace7db9463e"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html#a5177ef5f3a6b7edb9dac7ace7db9463e">lampda::physical::LedStrip::show_now</a></div><div class="ttdeci">void show_now()</div><div class="ttdoc">Show the current data, independant of changes.</div><div class="ttdef"><b>Definition:</b> strip.h:176</div></div>
-<div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html_a64f2a00c2b1917c7a8e13dbd1ada76ed"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html#a64f2a00c2b1917c7a8e13dbd1ada76ed">lampda::physical::LedStrip::_colorErrors</a></div><div class="ttdeci">std::array&lt; COLOR, useTemporalDithering ? LED_COUNT :1 &gt; _colorErrors</div><div class="ttdoc">used for temporal dithering</div><div class="ttdef"><b>Definition:</b> strip.h:439</div></div>
-<div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html_a6f2311cc8ed8b6987660ef57636230f7"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html#a6f2311cc8ed8b6987660ef57636230f7">lampda::physical::LedStrip::_colors</a></div><div class="ttdeci">COLOR _colors[LED_COUNT]</div><div class="ttdoc">store the display colors, with no brightness scaling</div><div class="ttdef"><b>Definition:</b> strip.h:436</div></div>
+<div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html_a64f2a00c2b1917c7a8e13dbd1ada76ed"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html#a64f2a00c2b1917c7a8e13dbd1ada76ed">lampda::physical::LedStrip::_colorErrors</a></div><div class="ttdeci">std::array&lt; COLOR, useTemporalDithering ? LED_COUNT :1 &gt; _colorErrors</div><div class="ttdoc">used for temporal dithering</div><div class="ttdef"><b>Definition:</b> strip.h:429</div></div>
+<div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html_a6f2311cc8ed8b6987660ef57636230f7"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html#a6f2311cc8ed8b6987660ef57636230f7">lampda::physical::LedStrip::_colors</a></div><div class="ttdeci">COLOR _colors[LED_COUNT]</div><div class="ttdoc">store the display colors, with no brightness scaling</div><div class="ttdef"><b>Definition:</b> strip.h:426</div></div>
 <div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html_a7154427b18ec1850a6f2d7eb11206506"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html#a7154427b18ec1850a6f2d7eb11206506">lampda::physical::LedStrip::convert_color_with_brigthness</a></div><div class="ttdeci">static COLOR convert_color_with_brigthness(const COLOR &amp;c, const uint8_t brightness, const uint16_t index, COLOR &amp;error)</div><div class="ttdoc">Convert a color to the correct brightness, with temporal dithering.</div><div class="ttdef"><b>Definition:</b> strip.h:268</div></div>
 <div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html_a7c65e996f07535336b18fba75c60bdcc"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html#a7c65e996f07535336b18fba75c60bdcc">lampda::physical::LedStrip::getRawPixelColor</a></div><div class="ttdeci">uint32_t getRawPixelColor(uint16_t n) const</div><div class="ttdoc">Return the raw color value stored in the send buffer.</div><div class="ttdef"><b>Definition:</b> strip.h:143</div></div>
 <div class="ttc" id="aclasslampda_1_1physical_1_1LedStrip_html_ac65de33f03d95b750ae625591f7a8efa"><div class="ttname"><a href="classlampda_1_1physical_1_1LedStrip.html#ac65de33f03d95b750ae625591f7a8efa">lampda::physical::LedStrip::get_brightness_color_and_error</a></div><div class="ttdeci">static std::pair&lt; uint8_t, uint8_t &gt; get_brightness_color_and_error(const uint8_t colorIn, uint16_t errorIn, const uint8_t brightness, const uint16_t index)</div><div class="ttdoc">Convert a color to the desired brightness level, with an error adjustment.</div><div class="ttdef"><b>Definition:</b> strip.h:218</div></div>
