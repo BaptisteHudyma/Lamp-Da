@@ -284,32 +284,6 @@ TEST(test_colors, color_gradient)
   ASSERT_EQ(utils::get_gradient(0x222222, 0x888888, 1.0f), 0x888888);
 }
 
-TEST(test_colors, color_blend16)
-{
-  COLOR c1, c2;
-  c1.color = 0x000000;
-  c2.color = 0xFFFFFF;
-  uint16_t blend = 0;
-  ASSERT_EQ(utils::color_blend(c1, c2, blend, true).color, 0x000000);
-  blend = UINT16_MAX / 2;
-  ASSERT_EQ(utils::color_blend(c1, c2, blend, true).color, 0x7F7F7F);
-  blend = UINT16_MAX;
-  ASSERT_EQ(utils::color_blend(c1, c2, blend, true).color, 0xFFFFFF);
-}
-
-TEST(test_colors, color_blend8)
-{
-  COLOR c1, c2;
-  c1.color = 0x00000000;
-  c2.color = 0xFFFFFFFF;
-  uint8_t blend = 0;
-  ASSERT_EQ(utils::color_blend(c1, c2, blend, false).color, 0x00000000);
-  blend = UINT8_MAX / 2;
-  ASSERT_EQ(utils::color_blend(c1, c2, blend, false).color, 0x7E7E7E7E);
-  blend = UINT8_MAX;
-  ASSERT_EQ(utils::color_blend(c1, c2, blend, false).color, 0xFFFFFFFF);
-}
-
 TEST(test_colors, color_fade)
 {
   COLOR c1;

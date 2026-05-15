@@ -815,8 +815,8 @@ public:
 
       for (uint16_t I = start; I < end; ++I)
       {
-        if (shouldDisplay[I] != 0)
-          setPixelColor(I, color);
+        const uint8_t blendValue = min<uint32_t>(shouldDisplay[I], UINT8_MAX);
+        setPixelColor(I, colors::blend(0, color, blendValue));
       }
     }
     else

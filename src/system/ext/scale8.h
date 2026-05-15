@@ -1,6 +1,7 @@
 #ifndef __INC_LIB8TION_SCALE_H
 #define __INC_LIB8TION_SCALE_H
 
+#include <cstdint>
 namespace lampda {
 
 #define QADD8_C 1

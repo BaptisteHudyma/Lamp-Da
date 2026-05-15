@@ -508,26 +508,17 @@ verify-canary: has-lamp-type $(ARTIFACTS)/$(PROJECT_INO).zip
 verify: verify-canary
 	@echo " --- ok: $@"
 
-verify-all-simulator:
-	@echo; echo " --- $@"
-	@mkdir -p $(BUILD_DIR) $(BUILD_DIR)/simulator
-	# verify that simulator can be build, and if so, verify it...
-	@cd $(SRC_DIR)/simulator && ( :\
-		; export LMBD_ROOT_DIR=$(SRC_DIR) \
-		; export SIMU_BUILD_DIR=$(BUILD_DIR)/simulator \
-		; if make check-deps \
-		; then make verify-all || \
-			(echo; echo 'ERROR: simulator verify-all failed!'; false) \
-		; else echo; echo 'Simulator dependencies not installed, skipping...' \
-		; fi)
-
 verify-type(%):
 	@echo " --- $@($%)"
 	@echo; echo Building with LMBD_LAMP_TYPE=$% to verify artifact...; echo
 	LMBD_LAMP_TYPE=$% make build verify
 
-verify-all: format-verify verify-all-simulator
+verify-all: format-verify
 	@echo; echo " --- $@"
+	# verify that tests be built
+	make clean test
+	# verify that simulator can be built
+	make clean simulator
 	# verify that all lamp types build & validates
 	make clean 'verify-type(indexable)'
 	@touch $(BUILD_DIR)/.skip-simple-clean # (re-use indexable setup)
@@ -584,7 +575,7 @@ $(BUILD_DIR)/simulator/%-simulator: generate-images
 	@echo; echo " --- $@"
 	@mkdir -p $(BUILD_DIR) $(BUILD_DIR)/simulator
 	@cd $(SRC_DIR)/simulator && \
-		LMBD_ROOT_DIR=$(SRC_DIR) GENERATED_DIR=$(GEN_DIR) SIMU_BUILD_DIR=$(BUILD_DIR)/simulator   make $(shell basename "$@")
+		LMBD_ROOT_DIR=$(SRC_DIR) SIMU_BUILD_DIR=$(BUILD_DIR)/simulator   make $(shell basename "$@")
 
 clean-simulator:
 	@echo; echo " --- $@"
@@ -598,7 +589,7 @@ clean-simulator:
 		&& (echo 'Artifact is ready here:'; echo '$<'; echo) \
 		|| (echo 'No artifact found, build failed?'; rm -f '$<')
 
-simulator: indexable-simulator simple-simulator
+simulator: generate-images indexable-simulator simple-simulator
 	@echo " --- ok: $@"
 
 

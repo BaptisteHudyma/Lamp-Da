@@ -14,13 +14,14 @@ namespace fadeout {
 /**
  * \brief Make an animation disapear with gravity
  * \param MaskBuffId Index of the buffer that will contain the mask values for the dropped leds
+ * \param minMaskValue Value to give to a pixel that gets droped
  */
-template<uint8_t MaskBuffId> struct GravityDissolve
+template<uint8_t MaskBuffId, uint8_t minMaskValue = 0> struct GravityDissolve
 {
   void reset(auto& ctx)
   {
-    // set all values to 1
-    ctx.lamp.template fillTempBuffer<MaskBuffId>(1);
+    // set all values to max: no masking
+    ctx.lamp.template fillTempBuffer<MaskBuffId>(UINT8_MAX);
     // reset particles
     particuleSystem.reset();
     particuleSystem.set_max_particle_count(20);
@@ -131,7 +132,7 @@ protected:
       uint8_t pixelSetCount = 0;
       for (size_t x = 0; x <= ctx.lamp.maxWidth; x++)
       {
-        const bool isPixelSet = buffer[modes::to_strip(x, y)] != 0;
+        const bool isPixelSet = buffer[modes::to_strip(x, y)] > minMaskValue;
         // check that at leat one pixel is still set
         if (isPixelSet)
           pixelSetCount += 1;
@@ -145,13 +146,13 @@ protected:
         for (size_t x = 0; x <= ctx.lamp.maxWidth; x++)
         {
           const auto& pixelId = modes::to_strip(x, y);
-          const bool isPixelSet = buffer[pixelId] != 0;
+          const bool isPixelSet = buffer[pixelId] > minMaskValue;
           if (isPixelSet)
           {
             if (selectedLed == 0)
             {
               // drop this pixel
-              buffer[pixelId] = 0;
+              buffer[pixelId] = minMaskValue;
               particlesDropped += 1;
               // spawn a new particle
               particuleSystem.init_deferred_particules(1, [pixelId](size_t) {

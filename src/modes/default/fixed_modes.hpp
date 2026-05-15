@@ -52,10 +52,11 @@ template<bool isStep = false, uint32_t rampUpdateLenght_ms = 55, bool shouldSatu
             // not stepped, allow interpolation
             ctx.state.palette);
 
-    // update animation
-    sunsetAnimation.loop(ctx, color);
     // fill, with mask
     ctx.lamp.fill(color, ctx.lamp.template getTempBuffer<dissolveBufferId>());
+
+    // update animation
+    sunsetAnimation.loop(ctx, color);
   }
 
   /// Sunset timer will drop pixels downward, and never display them again
