@@ -11,6 +11,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  pull-requests: read
+
 defaults: 
   run:
     shell: bash
@@ -21,8 +25,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
+        persist-credentials: false
         path: LampColorControler
         submodules: 'true'
     - name: verify format
@@ -33,8 +38,9 @@ jobs:
     needs: [format]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
+        persist-credentials: false
         path: LampColorControler
         submodules: 'true'
 
@@ -64,8 +70,9 @@ jobs:
         working-directory: ./LampColorControler
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
+        persist-credentials: false
         path: LampColorControler
         submodules: 'true'
     - name: Documentation
@@ -83,8 +90,9 @@ jobs:
         working-directory: ./LampColorControler
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
+        persist-credentials: false
         path: LampColorControler
         submodules: 'true'
 
@@ -108,8 +116,9 @@ jobs:
     needs: [format, run-tests]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
+        persist-credentials: false
         path: LampColorControler
         submodules: 'true'
 
