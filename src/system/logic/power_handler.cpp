@@ -35,7 +35,8 @@ bool _isShutdownCompleted = false;
 /// Minimum allowed power rail clear delay.
 static constexpr uint32_t clearPowerRailMinDelay_ms = 10;
 /// Minimum power rail clear delay after which a failure is signaled.
-static constexpr uint32_t clearPowerRailFailureDelay_ms = 1000;
+/// In some rare case the rail can take up to 2 seconds to clear itself.
+static constexpr uint32_t clearPowerRailFailureDelay_ms = 3000;
 /// Delay after which the OTG_MODE will auto disable if a disconnection is detected.
 static constexpr uint32_t otgNoUseTimeToDisconnect_ms = 1000;
 /// Delay after which the OTG_MODE will auto disable if not used.
@@ -149,6 +150,8 @@ const platform::gpio::DigitalPin fastRoleSwap(platform::gpio::DigitalPin::GPIO::
 
 // if high, signal an USB fault
 const platform::gpio::DigitalPin usbFault(platform::gpio::DigitalPin::GPIO::Signal_UsbProtectionFault);
+// if high, signal a vbus gate fault
+const platform::gpio::DigitalPin vbusFault(platform::gpio::DigitalPin::GPIO::Signal_VbusGateFault);
 } // namespace __private
 
 uint32_t get_vbus_rail_voltage() { return ::lampda::power::powerDelivery::get_vbus_voltage(); }
@@ -187,6 +190,7 @@ void handle_clear_power_rails()
   if (_isInBatteryRecoveryMode)
   {
     // all is clear, skip to next step
+    __private::dischargeVbus.set_high(false);
     __private::powerMachine.skip_timeout();
     return;
   }
@@ -198,6 +202,8 @@ void handle_clear_power_rails()
   // prevent reverse current flow
   __private::vbusDirection.set_high(false);
   __private::fastRoleSwap.set_high(false);
+  // discharge power rail
+  __private::dischargeVbus.set_high(true);
 
   // disable charge & balancing if needed
   ::lampda::power::charger::set_enable_charge(false);
@@ -209,13 +215,15 @@ void handle_clear_power_rails()
   set_otg_parameters(0, 0);
 
   // wait at least a little bit
+  const auto powerRailVoltage_mv = get_power_rail_voltage();
   if (platform::time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailMinDelay_ms and
       // power rail below min measurment voltage
-      (_isInBatteryRecoveryMode or get_power_rail_voltage() <= 3200))
+      (powerRailVoltage_mv <= 3200))
   {
     __private::dischargeVbus.set_high(false);
     // all is clear, skip to next step
     __private::powerMachine.skip_timeout();
+    return;
   }
   else // discharge power rail
   {
@@ -274,27 +282,29 @@ void handle_output_voltage_mode()
   // never run PD in output mode !
   ::lampda::power::powerDelivery::suspend_pd_state_machine();
 
-  const uint32_t vbusVoltage = get_power_rail_voltage();
+  const auto powerRailVoltage_mv = get_power_rail_voltage();
 
-  bool isVbusVoltageOk = false;
+  bool isVoltageOk = false;
   // if we are in temporary output mode, use temporary limits
   if (platform::time_ms() < _temporaryOutputTimeOut)
   {
     set_otg_parameters(_temporaryOutputVoltage_mV, _temporaryOutputCurrent_mA);
-    isVbusVoltageOk = (vbusVoltage >= static_cast<uint32_t>(stripInputMinVoltage_mV * voltageGateLowerMultiplier) and
-                       // do not check the upper bound, this is a special DANGEROUS case
-                       vbusVoltage <= static_cast<uint32_t>(_temporaryOutputVoltage_mV * voltageGateHigherMultiplier));
+    isVoltageOk =
+            (powerRailVoltage_mv >= static_cast<uint32_t>(stripInputMinVoltage_mV * voltageGateLowerMultiplier) and
+             // do not check the upper bound, this is a special DANGEROUS case
+             powerRailVoltage_mv <= static_cast<uint32_t>(_temporaryOutputVoltage_mV * voltageGateHigherMultiplier));
   }
   else
   {
     _temporaryOutputTimeOut = 0;
     set_otg_parameters(_outputVoltage_mV, _outputCurrent_mA);
-    isVbusVoltageOk = (vbusVoltage >= static_cast<uint32_t>(stripInputMinVoltage_mV * voltageGateLowerMultiplier) and
-                       vbusVoltage <= static_cast<uint32_t>(stripInputMaxVoltage_mV * voltageGateHigherMultiplier));
+    isVoltageOk =
+            (powerRailVoltage_mv >= static_cast<uint32_t>(stripInputMinVoltage_mV * voltageGateLowerMultiplier) and
+             powerRailVoltage_mv <= static_cast<uint32_t>(stripInputMaxVoltage_mV * voltageGateHigherMultiplier));
   }
 
   // enable power gate when voltage matches expected voltage
-  if (isVbusVoltageOk)
+  if (isVoltageOk)
   {
     // enable power gate
     ::lampda::power::powergates::enable_power_gate();
@@ -307,7 +317,7 @@ void handle_output_voltage_mode()
   {
     if (s_isOutputModeReady)
       platform::lampda_print("voltage is not in required range, disabling output. Actual %dmV. Required %dmV",
-                             vbusVoltage,
+                             powerRailVoltage_mv,
                              _outputVoltage_mV);
     s_isOutputModeReady = false;
 
@@ -720,7 +730,7 @@ bool go_to_error()
 
 void set_output_voltage_mv(const uint16_t outputVoltage_mV)
 {
-  if (stripInputMinVoltage_mV == stripInputMaxVoltage_mV)
+  if constexpr (stripInputMinVoltage_mV == stripInputMaxVoltage_mV)
   {
     // NEVER EVER CHANGE fixed output VOLTAGE
     const bool isInRange = (outputVoltage_mV == 0) or (outputVoltage_mV == stripInputMaxVoltage_mV);
@@ -742,7 +752,7 @@ void set_output_max_current_mA(const uint16_t outputCurrent_mA)
 
 void set_temporary_output(const uint16_t outputVoltage_mV, const uint16_t outputCurrent_mA, const uint16_t timeout)
 {
-  if (stripInputMinVoltage_mV == stripInputMaxVoltage_mV)
+  if constexpr (stripInputMinVoltage_mV == stripInputMaxVoltage_mV)
   {
     // NEVER EVER CHANGE FIXED OUTPUT VOLTAGE
     if (outputVoltage_mV != stripInputMaxVoltage_mV)
@@ -788,6 +798,17 @@ void init()
             logic::alerts::manager.raise(logic::alerts::Type::USB_PORT_SHORT);
           },
           platform::gpio::DigitalPin::Interrupt::kFallingEdge);
+
+  /// TODO: issue #326 handle the VBUS gate fault cleanly
+#ifdef LMBD_SIMULATION
+  __private::vbusFault.attach_callback(
+          []() {
+            platform::lampda_print("-----------------");
+            platform::lampda_print("VBUS FAULT RAISED");
+            platform::lampda_print("-----------------");
+          },
+          platform::gpio::DigitalPin::Interrupt::kFallingEdge);
+#endif
 
   // init power gates
   ::lampda::power::powergates::init();

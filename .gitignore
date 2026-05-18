@@ -8,3 +8,5 @@ arduino-cli
 _vagrant_build
 *.xcf
 generated
+
+.continue
