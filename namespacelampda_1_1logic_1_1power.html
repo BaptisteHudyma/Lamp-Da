@@ -202,9 +202,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>was_started_in_batter
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_started</b> ()</td></tr>
 <tr class="memdesc:a5d8eec7d5ce479a7606185f66266081b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true when power machine finally exits the STARTUP. <br /></td></tr>
 <tr class="separator:a5d8eec7d5ce479a7606185f66266081b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbaa85a58930af5bac05cf3ce4cde3d7"><td class="memItemLeft" align="right" valign="top"><a id="adbaa85a58930af5bac05cf3ce4cde3d7" name="adbaa85a58930af5bac05cf3ce4cde3d7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> ()</td></tr>
-<tr class="memdesc:adbaa85a58930af5bac05cf3ce4cde3d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call once at system startup. This can fail, and it would set the state to ERROR. <br /></td></tr>
+<tr class="memitem:adbaa85a58930af5bac05cf3ce4cde3d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1power.html#adbaa85a58930af5bac05cf3ce4cde3d7">init</a> ()</td></tr>
+<tr class="memdesc:adbaa85a58930af5bac05cf3ce4cde3d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call once at system startup. This can fail, and it would set the state to ERROR.  <br /></td></tr>
 <tr class="separator:adbaa85a58930af5bac05cf3ce4cde3d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
@@ -218,8 +217,8 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 <tr class="memdesc:ace917c303f39ef07eafbc05fb1f0bf34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum allowed power rail clear delay. <br /></td></tr>
 <tr class="separator:ace917c303f39ef07eafbc05fb1f0bf34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d836d778c9840d76f0feb3db893b6b0"><td class="memItemLeft" align="right" valign="top"><a id="a2d836d778c9840d76f0feb3db893b6b0" name="a2d836d778c9840d76f0feb3db893b6b0"></a>
-static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>clearPowerRailFailureDelay_ms</b> = 1000</td></tr>
-<tr class="memdesc:a2d836d778c9840d76f0feb3db893b6b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum power rail clear delay after which a failure is signaled. <br /></td></tr>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>clearPowerRailFailureDelay_ms</b> = 3000</td></tr>
+<tr class="memdesc:a2d836d778c9840d76f0feb3db893b6b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum power rail clear delay after which a failure is signaled. In some rare case the rail can take up to 2 seconds to clear itself. <br /></td></tr>
 <tr class="separator:a2d836d778c9840d76f0feb3db893b6b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2455e5290932b288dd3e1da54e4c92ee"><td class="memItemLeft" align="right" valign="top"><a id="a2455e5290932b288dd3e1da54e4c92ee" name="a2455e5290932b288dd3e1da54e4c92ee"></a>
 static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>otgNoUseTimeToDisconnect_ms</b> = 1000</td></tr>
@@ -472,6 +471,26 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isSetup</b> = 
       </table>
 </div><div class="memdoc">
 <p>Component initialization</p>
+
+</div>
+</div>
+<a id="adbaa85a58930af5bac05cf3ce4cde3d7" name="adbaa85a58930af5bac05cf3ce4cde3d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbaa85a58930af5bac05cf3ce4cde3d7">&#9670;&#160;</a></span>init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::logic::power::init </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Call once at system startup. This can fail, and it would set the state to ERROR. </p>
+<p>TODO: issue #326 handle the VBUS gate fault cleanly</p>
 
 </div>
 </div>
