@@ -2,44 +2,14 @@
 
 namespace lampda::modes::custom::nudz {
 
-//   struct ImageTy {
-//     static constexpr uint16_t width = 26;
-//     static constexpr uint16_t height = 22;
-//     static constexpr uint32_t colormapSize = 0;
-//     static constexpr uint32_t colormap[];
-//     static constexpr uint8_t indexData[] = {};
-//     static constexpr uint32_t rgbData[] = { 0x800000, 0x008000 };
-//   };
-
-template<typename ImageType> struct NudzScrollImageMode : public BasicMode
-{
-  struct StateTy
+  template <typename ImageType>
+  static void loop_image(auto& ctx,
+                         const ImageType & image,
+                         const uint32_t& istate)
   {
-    float minSpeed = -0.5f;    ///< minimum allowed speed
-    float maxSpeed = 0.5f;     ///< maximum allowed speed
-    bool randomScroll = false; ///< random variation of the scroll
-    uint32_t xdecal;           ///< start x coordinates
-    uint32_t ydecal;           ///< start y coordinates
-    uint32_t last_tick;        ///< last called time in microseconds
-    int8_t xdirection = 1;     ///< x scroll direction
-    int8_t ydirection = 0;     ///< y scroll direction
-  };
-
-  static void on_enter_mode(auto& ctx)
-  {
-    // reset stateful events
-    ctx.state.xdecal = 0;
-    ctx.state.ydecal = 0;
-    ctx.state.last_tick = 0;
-
-    /// prevent the ramp from looping around
-    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
-  }
-
-  static void loop(auto& ctx)
-  {
-    float spdRange = ctx.state.maxSpeed - ctx.state.minSpeed;
-    float speed = ctx.state.minSpeed + (float(ctx.get_active_custom_ramp()) / 255) * spdRange;
+    float spdRange = ctx.state.maxSpeed[istate] - ctx.state.minSpeed[istate];
+    float speed = ctx.state.minSpeed[istate]
+      + (float(ctx.get_active_custom_ramp()) / 255) * spdRange;
     // ease stop at 0
     if (speed < -spdRange * 0.1)
       speed += spdRange * 0.1;
@@ -48,91 +18,204 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
     else
       speed = 0.f;
 
-    uint16_t imWidth = ImageType::width;
-    uint16_t imHeight = ImageType::height;
+    uint32_t frame = uint32_t(abs(int32_t(ctx.lamp.tick * speed)));
+    if (!ctx.state.framesMirror[istate] || ImageType::frames <= 2)
+    {
+      frame = frame % ImageType::frames;
+    }
+    else
+    {
+      frame = frame % (ImageType::frames * 2 - 2);
+      if (frame >= ImageType::frames)
+        frame = ImageType::frames * 2 - frame - 2;
+    }
+    // frame = std::min(2, ImageType::frames - 1);  // DEBUG a fixed frame
+
+    uint16_t imWidth = ImageType::width[frame];
+    uint16_t imHeight = ImageType::height[frame];
 
     // decal needs a state to keep continuous while speed is changed
-    int32_t xdecal = ctx.state.xdecal + int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed * ctx.state.xdirection);
-    int32_t ydecal = ctx.state.ydecal + int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed * ctx.state.ydirection);
-    if (ctx.state.randomScroll)
+    int32_t xdecal = ctx.state.xdecal[istate]
+      + int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed
+                * ctx.state.xdirection[istate]);
+    int32_t ydecal = ctx.state.ydecal[istate]
+      + int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed
+                * ctx.state.ydirection[istate]);
+    if (ctx.state.randomScroll[istate])
     {
-      xdecal =
-              int32_t(ctx.state.xdecal) + int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed) * ctx.state.xdirection;
-      if (ctx.state.ydirection != 0)
-        ydecal = int32_t(ctx.state.ydecal) +
-                 int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed) * ctx.state.ydirection;
+      xdecal = int32_t(ctx.state.xdecal[istate]) +
+               int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed
+                       * ctx.state.xdirection[istate]);
+      if (ctx.state.ydirection[istate] != 0)
+        ydecal = int32_t(ctx.state.ydecal[istate]) +
+                 int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed
+                         * ctx.state.ydirection[istate]);
       if (xdecal < 0)
       {
         xdecal = 0;
-        ctx.state.xdirection *= -random8(2);
-        ctx.state.ydirection = random8(3) - 1;
-        if (ctx.state.xdirection == 0 && ctx.state.ydirection == 0)
-          ctx.state.ydirection = random8(2) * 2 - 1;
+        ctx.state.xdirection[istate] *= -random8(2);
+        ctx.state.ydirection[istate] = random8(3) - 1;
+        if (ctx.state.xdirection[istate] == 0
+            && ctx.state.ydirection[istate] == 0)
+          ctx.state.ydirection[istate] = random8(2) * 2 - 1;
       }
       else if (xdecal + ctx.lamp.maxWidth >= imWidth)
       {
         xdecal = imWidth - ctx.lamp.maxWidth - 1;
-        ctx.state.xdirection *= -random8(2);
-        ctx.state.ydirection = random8(3) - 1;
-        if (ctx.state.xdirection == 0 && ctx.state.ydirection == 0)
-          ctx.state.ydirection = random8(2) * 2 - 1;
+        ctx.state.xdirection[istate] *= -random8(2);
+        ctx.state.ydirection[istate] = random8(3) - 1;
+        if (ctx.state.xdirection[istate] == 0
+            && ctx.state.ydirection[istate] == 0)
+          ctx.state.ydirection[istate] = random8(2) * 2 - 1;
       }
       if (ydecal < 0)
       {
         ydecal = 0;
-        ctx.state.ydirection *= -random8(2);
-        ctx.state.xdirection = random8(3) - 1;
-        if (ctx.state.xdirection == 0 && ctx.state.ydirection == 0)
-          ctx.state.xdirection = random8(2) * 2 - 1;
+        ctx.state.ydirection[istate] *= -random8(2);
+        ctx.state.xdirection[istate] = random8(3) - 1;
+        if (ctx.state.xdirection[istate] == 0
+            && ctx.state.ydirection[istate] == 0)
+          ctx.state.xdirection[istate] = random8(2) * 2 - 1;
       }
       else if (ydecal + ctx.lamp.maxHeight >= imHeight)
       {
         ydecal = imHeight - ctx.lamp.maxHeight - 1;
-        ctx.state.ydirection *= -random8(2);
-        ctx.state.xdirection = random8(3) - 1;
-        if (ctx.state.xdirection == 0 && ctx.state.ydirection == 0)
-          ctx.state.xdirection = random8(2) * 2 - 1;
+        ctx.state.ydirection[istate] *= -random8(2);
+        ctx.state.xdirection[istate] = random8(3) - 1;
+        if (ctx.state.xdirection[istate] == 0
+            && ctx.state.ydirection[istate] == 0)
+          ctx.state.xdirection[istate] = random8(2) * 2 - 1;
       }
     }
-    if (xdecal != ctx.state.xdecal || ydecal != ctx.state.ydecal)
+    if (xdecal != ctx.state.xdecal[istate]
+        || ydecal != ctx.state.ydecal[istate])
     {
-      ctx.state.xdecal = xdecal;
-      ctx.state.ydecal = ydecal;
-      ctx.state.last_tick = ctx.lamp.tick;
+      ctx.state.xdecal[istate] = xdecal;
+      ctx.state.ydecal[istate] = ydecal;
+      ctx.state.last_tick[istate] = ctx.lamp.tick;
     }
 
     uint32_t w = min<uint32_t>(ctx.lamp.maxWidth + 1, imWidth);
     uint32_t h = min<uint32_t>(ctx.lamp.maxHeight, imHeight);
-    if (ImageType::colormapSize == 0)
+    if (ImageType::colormapSize[frame] == 0)
+    {
+      uint32_t frameOffset = 0;
+      for (auto i=0; i<frame; ++i )
+        frameOffset += ImageType::rgbFrameLength[i];
+
       for (uint32_t y = 0; y < h; ++y)
         for (uint32_t x = 0; x < w; ++x)
-          ctx.lamp.setPixelColorXY(
-                  x, y, ImageType::rgbData[((y + ydecal) % imHeight) * imWidth + (x + xdecal) % imWidth]);
+        {
+          uint32_t color = ImageType::rgbData[
+            ((y + ydecal) % imHeight) * imWidth + (x + xdecal) % imWidth
+            + frameOffset];
+          if (ImageType::hasAlpha)
+          {
+            float opacity = (color & 0xff) / 255;
+            uint32_t prev_color
+              = ctx.lamp.getPixelColor(ctx.lamp.fromXYtoStripIndex(x, y));
+            color = (uint32_t((color >> 24) * opacity
+                     + (prev_color >> 16) * (1.f - opacity)) << 16)
+              | (uint32_t(((color & 0xff0000) >> 16) * opacity
+                          + ((prev_color & 0xff00) >> 8) * (1.f - opacity))
+                 << 8)
+              | uint32_t(((color & 0xff00) >> 8) * opacity
+                         + (prev_color & 0xff) * (1.f - opacity));
+          }
+          else
+            color = color >> 8;
+          ctx.lamp.setPixelColorXY(x, y, color);
+        }
+    }
     else
     {
       // indexed colormap
-      constexpr uint8_t bmask = (1 << ImageType::bitsPerPixel) - 1;
+      uint32_t frameOffset = 0;
+      for (auto i=0; i<frame; ++i )
+        frameOffset += ImageType::indexFrameLength[i];
+
+      uint8_t bmask = (1 << ImageType::bitsPerPixel[frame]) - 1;
       for (uint32_t y = 0; y < h; ++y)
       {
         uint32_t yoffset = ((y + ydecal) % imHeight) * imWidth;
         for (uint32_t x = 0; x < w; ++x)
         {
           uint32_t offset = yoffset + (x + xdecal) % imWidth;
-          uint32_t byteOffset = offset * ImageType::bitsPerPixel / 8;
-          uint32_t bitOffset = (offset * ImageType::bitsPerPixel) % 8;
-          uint8_t index = ImageType::indexData[byteOffset];
-          if (bitOffset + ImageType::bitsPerPixel > 8)
+          uint32_t byteOffset = offset * ImageType::bitsPerPixel[frame] / 8;
+          uint32_t bitOffset = (offset * ImageType::bitsPerPixel[frame]) % 8;
+          uint8_t index = ImageType::indexData[byteOffset + frameOffset];
+          if (bitOffset + ImageType::bitsPerPixel[frame] > 8)
           {
-            uint16_t sindex = (index << 8) | ImageType::indexData[byteOffset + 1];
-            index = (sindex >> (16 - bitOffset - ImageType::bitsPerPixel)) & bmask;
+            uint16_t sindex = (index << 8)
+              | ImageType::indexData[byteOffset + 1 + frameOffset];
+            index = (sindex >>
+                     (16 - bitOffset - ImageType::bitsPerPixel[frame]))
+              & bmask;
           }
           else
-            index = (index >> (8 - bitOffset - ImageType::bitsPerPixel)) & bmask;
+            index = (index >> (8 - bitOffset - ImageType::bitsPerPixel[frame]))
+              & bmask;
 
-          ctx.lamp.setPixelColorXY(x, y, ImageType::colormap[index]);
+          uint32_t cmap_off = 0;
+          for (auto i=0; i<frame; ++i)
+            cmap_off += ImageType::colormapSize[i];
+          uint32_t color = ImageType::colormap[index + cmap_off];
+          if (ImageType::hasAlpha)
+          {
+            float opacity = (color & 0xff) / 255;
+            uint32_t prev_color
+              = ctx.lamp.getPixelColor(ctx.lamp.fromXYtoStripIndex(x, y));
+            color = (uint32_t((color >> 24) * opacity
+                     + (prev_color >> 16) * (1.f - opacity)) << 16)
+              | (uint32_t(((color & 0xff0000) >> 16) * opacity
+                          + ((prev_color & 0xff00) >> 8) * (1.f - opacity))
+                 << 8)
+              | uint32_t(((color & 0xff00) >> 8) * opacity
+                         + (prev_color & 0xff) * (1.f - opacity));
+          }
+          ctx.lamp.setPixelColorXY(x, y, color);
         }
       }
     }
+  }
+
+template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
+{
+
+  struct StateTy
+  {
+    std::vector<float> minSpeed = {-0.5f};    ///< minimum allowed speed
+    std::vector<float> maxSpeed = {0.5f};     ///< maximum allowed speed
+    std::vector<bool> randomScroll = {false}; ///< random variation of the scroll
+    std::vector<uint32_t> xdecal = {0};           ///< start x coordinates
+    std::vector<uint32_t> ydecal = {0};           ///< start y coordinates
+    std::vector<uint32_t> last_tick = {0};        ///< last called time in microseconds
+    std::vector<int8_t> xdirection = {1};     ///< x scroll direction
+    std::vector<int8_t> ydirection = {0};     ///< y scroll direction
+    std::vector<bool> framesMirror = {false}; ///< frames are mirrores at end of animation
+  };
+
+  static void on_enter_mode(auto& ctx)
+  {
+    // reset stateful events
+    uint32_t n = std::tuple_size<std::tuple<ImageTypes...> >::value;
+    for(uint32_t i=0; i<n; ++i)
+    {
+      ctx.state.xdecal[i] = 0;
+      ctx.state.ydecal[i] = 0;
+      ctx.state.last_tick[i] = 0;
+    }
+
+    /// prevent the ramp from looping around
+    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
+  }
+
+  static void loop(auto& ctx)
+  {
+    std::tuple<ImageTypes...> images;
+    uint32_t itstate = 0;
+    // std::apply([&](auto&&... arg) { ((loop_image<decltype(arg)>(ctx, arg)), ...); }, images);
+    std::apply([&](auto&&... arg) { ((loop_image(ctx, arg, itstate++)), ...); }, images);
   }
 
   /// Hint manager to save our custom ramp
@@ -157,14 +240,15 @@ struct NudzViolonsaoulsMode : public NudzScrollImageMode<ViolonsaoulsImageTy>
 {
   struct StateTy
   {
-    float minSpeed = 0.f;      ///< minimum allowed speed
-    float maxSpeed = 0.5f;     ///< maximum allowed speed
-    bool randomScroll = false; ///< random variation of the scroll
-    uint32_t xdecal;           ///< start x coordinates
-    uint32_t ydecal;           ///< start y coordinates
-    uint32_t last_tick;        ///< last called time in microseconds
-    int8_t xdirection = 1;     ///< x scroll direction
-    int8_t ydirection = 0;     ///< y scroll direction
+    std::vector<float> minSpeed = {0.f};      ///< minimum allowed speed
+    std::vector<float> maxSpeed = {0.5f};     ///< maximum allowed speed
+    std::vector<bool> randomScroll = {false}; ///< random variation of the scroll
+    std::vector<uint32_t> xdecal = {0};       ///< start x coordinates
+    std::vector<uint32_t> ydecal = {0};       ///< start y coordinates
+    std::vector<uint32_t> last_tick = {0};    ///< last called time in microseconds
+    std::vector<int8_t> xdirection = {1};     ///< x scroll direction
+    std::vector<int8_t> ydirection = {0};     ///< y scroll direction
+    std::vector<bool> framesMirror = {false}; ///< frames are mirrores at end of animation
   };
 };
 
