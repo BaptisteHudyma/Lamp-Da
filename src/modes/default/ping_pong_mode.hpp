@@ -13,7 +13,7 @@ namespace lampda::modes::default_modes {
 struct PingPongMode : public modes::BasicMode
 {
   /// color random variation
-  static constexpr float randomVariation = 0.3;
+  static constexpr float randomVariation = 0.3f;
   /// back and forth timing in milliseconds
   static constexpr uint32_t animationTiming = 1000;
 
@@ -42,7 +42,7 @@ struct PingPongMode : public modes::BasicMode
 
   static void loop(auto& ctx)
   {
-    static constexpr float iteration = ctx.lamp.frameDurationMs / static_cast<float>(animationTiming / 2.0f);
+    static constexpr float iteration = ctx.lamp.frameDurationMs / (animationTiming / 2.0f);
     static constexpr auto maxLedIndex = ctx.lamp.ledCount - 1;
     ctx.state.progress += iteration;
 

@@ -101,11 +101,11 @@ struct PerlinNoiseMode : public BasicMode
    * \param[in] ctx Contrext object of the mode
    * \param[in] position Actual position of the noise
    * \param[in] speed Actual speed of the noise
-   * \return The nex speed
+   * \return The next speed
    */
   static int16_t get_next_speed(auto& ctx, const uint32_t position, int16_t speed)
   {
-    static constexpr float speedDivider = ctx.lamp.frameDurationMs / (1000.0 / 40.0);
+    static constexpr float speedDivider = ctx.lamp.frameDurationMs / 25.0f;
     static constexpr int16_t speedBleedof = 25 * speedDivider;
     static constexpr int16_t acceleration = 25 * speedDivider;
     static constexpr uint16_t maxSpeed = ctx.state.maxSpeed * speedDivider;

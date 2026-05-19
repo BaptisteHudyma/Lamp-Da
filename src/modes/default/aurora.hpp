@@ -49,14 +49,15 @@ struct AuroraMode : public BasicMode
     static const float adjustHeight = lmpd_map<float>(ctx.lamp.maxHeight, 8, 32, 28, 12);
     static constexpr float halfHeight = (float)ctx.lamp.maxHeight / 2.0f;
 
-    const float _speedDivider = 1.0f / static_cast<float>(ctx.state.speed);
+    static constexpr float speedMultiplier = ctx.lamp.frameDurationMs / 12.5f;
+    const float _speedDivider = 1.0f / static_cast<float>(ctx.state.speed * speedMultiplier);
     const auto& palette = ctx.state.palette;
 
     uint32_t step = ctx.state.step;
-    for (int x = 0; x <= ctx.lamp.maxWidth; x++)
+    for (int x = 0; x <= ctx.lamp.maxWidth; ++x)
     {
       const int scaledX = x * ctx.state.scale;
-      for (int y = 0; y <= ctx.lamp.maxHeight; y++, step++)
+      for (int y = 0; y <= ctx.lamp.maxHeight; ++y, ++step)
       {
         const auto& color = colors::from_palette(
                 qsub8(noise8::inoise((step % 2) + scaledX, y * 16 + step % 16, step * _speedDivider),

@@ -13,7 +13,7 @@ namespace lampda::modes::default_modes {
 struct ColorWipeMode : public modes::BasicMode
 {
   /// Random variation of the color between animation loops
-  static constexpr float randomVariation = 0.3;
+  static constexpr float randomVariation = 0.3f;
   /// Lenght of the animation, in milliseconds
   static constexpr uint32_t animationTiming = 500;
 
@@ -30,7 +30,7 @@ struct ColorWipeMode : public modes::BasicMode
   static void on_enter_mode(auto& ctx)
   {
     ctx.state.step = true;
-    ctx.state.progress = 0.0;
+    ctx.state.progress = 0.0f;
     ctx.state.color = utils::get_random_complementary_color(ctx.state.color, randomVariation);
   }
 
@@ -39,7 +39,7 @@ struct ColorWipeMode : public modes::BasicMode
     static constexpr float iteration = ctx.lamp.frameDurationMs / static_cast<float>(animationTiming);
 
     ctx.state.progress += iteration;
-    const float prog = std::min<float>(ctx.state.progress, 1.0);
+    const float prog = std::min<float>(ctx.state.progress, 1.0f);
 
     // go up
     if (ctx.state.step)
@@ -54,9 +54,9 @@ struct ColorWipeMode : public modes::BasicMode
       ctx.lamp.fill(ctx.state.color, startIndex, ctx.lamp.ledCount);
     }
 
-    if (ctx.state.progress >= 1.0)
+    if (ctx.state.progress >= 1.0f)
     {
-      ctx.state.progress = 0.0;
+      ctx.state.progress = 0.0f;
       ctx.state.step = not ctx.state.step;
       ctx.state.color = utils::get_random_complementary_color(ctx.state.color, randomVariation);
     }
