@@ -37,7 +37,7 @@ struct SpiralMode : public BasicMode
 
     ctx.state.fade = 64;
     ctx.state.intensity = 64;
-    ctx.state.speed = 250 * speedMultiplier;
+    ctx.state.speed = min<float>(255, 250 * speedMultiplier);
     ctx.state.palette = colors::PaletteRainbowColors;
   }
 
@@ -50,7 +50,7 @@ struct SpiralMode : public BasicMode
     ctx.lamp.fadeToBlackBy(ctx.state.fade);
     unsigned long t = 4 * ctx.lamp.tick / (256 - ctx.state.speed);
     unsigned long t_20 = t / 20; // softhack007: pre-calculating this gives about 10% speedup
-    for (float i = 1; i < maxDim; i += 0.25)
+    for (float i = 1; i < maxDim; i += 0.25f)
     {
       float angle = to_radians(t * (maxDim - i));
       uint16_t myX = colsCenter + (sin_t(angle) * i);

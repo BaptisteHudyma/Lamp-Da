@@ -7,6 +7,9 @@
 #define PLATFORM_THREADS_H
 
 #ifdef __cplusplus
+
+#include <cstdint>
+
 namespace lampda {
 namespace platform {
 /// Define tasks and threads specifics.
@@ -19,15 +22,17 @@ extern "C" {
 
   // store tasks names here
   /// name of the USB power delivery task
-  const char* const pd_taskName = "usbpd";
+  extern const uint32_t pd_taskName;
   /// name of the USB power delivery interrupt handle task
-  const char* const pdInterruptHandle_taskName = "intpd";
+  extern const uint32_t pdInterruptHandle_taskName;
   /// name of the main power task
-  const char* const power_taskName = "power";
+  extern const uint32_t power_taskName;
   /// name of the optional user task
-  const char* const user_taskName = "user";
+  extern const uint32_t user_taskName;
   /// name of the task scheduling task
-  const char* const taskScheduler_taskName = "task_sched";
+  extern const uint32_t taskScheduler_taskName;
+  // name of the task t schedule sunset
+  extern const uint32_t sunset_taskName;
 
   /// model of a task function
   typedef void (*taskfunc_t)(void);
@@ -40,10 +45,7 @@ extern "C" {
    * \param[in] stackSize The size of the stack to allocate. can be ignored and checked while running using the command
    * line
    */
-  extern void start_thread(taskfunc_t taskFunction,
-                           const char* const taskName,
-                           const int priority,
-                           const int stackSize);
+  extern void start_thread(taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize);
   /**
    * \brief Start a separate thread, running until the system shuts off. Start in suspended state.
    * \param taskFunction the function to run
@@ -53,7 +55,7 @@ extern "C" {
    * line
    */
   extern void start_suspended_thread(taskfunc_t taskFunction,
-                                     const char* const taskName,
+                                     const uint32_t taskName,
                                      const int priority,
                                      const int stackSize);
 
@@ -77,14 +79,14 @@ extern "C" {
    * \brief resume a target thread
    * \param[in] taskName target task name
    */
-  extern void resume_thread(const char* const taskName);
+  extern void resume_thread(const uint32_t taskName);
 
   /**
    * \brief notify a thread to resume
    * \param[in] taskName target task name
    * \param[in] wakeUpEvent type of the event to send
    */
-  extern void notify_thread(const char* const taskName, int wakeUpEvent);
+  extern void notify_thread(const uint32_t taskName, int wakeUpEvent);
 
   /**
    * \brief block this thread until a timeout or notification is received

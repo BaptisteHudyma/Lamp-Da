@@ -19,7 +19,6 @@
 #endif
 
 #include "src/system/ext/scale8.h"
-
 #include "src/system/ext/random8.h"
 
 #include "src/system/utils/constants.h"
@@ -83,7 +82,7 @@ public:
     hasSomeChanges = false;
   }
 
-  float estimateCurrentDraw()
+  float estimateCurrentDraw() const
   {
     float estimatedCurrentDraw = 0.0;
 
@@ -161,14 +160,21 @@ public:
   void write_to_led_driver(const uint8_t writeBrightness)
   {
     // Adjust brightness to the desired output
+    const uint8_t capedShown = shownCount % refreshFramesCount;
     for (uint16_t i = 0; i < LED_COUNT; ++i)
     {
-      const COLOR c = convert_color_with_brigthness(_colors[i],
-                                                    writeBrightness,
-                                                    i + shownCount % refreshFramesCount,
-                                                    _colorErrors[useTemporalDithering ? i : 0]);
-      // set strip color
-      Adafruit_NeoPixel::setPixelColor(i, c.color);
+      if constexpr (useTemporalDithering)
+      {
+        const COLOR c = convert_color_with_brigthness(_colors[i], writeBrightness, i + capedShown, _colorErrors[i]);
+        // set strip color
+        Adafruit_NeoPixel::setPixelColor(i, c.color);
+      }
+      else
+      {
+        const COLOR c = convert_color_with_brigthness(_colors[i], writeBrightness, i + capedShown, _colorErrors[0]);
+        // set strip color
+        Adafruit_NeoPixel::setPixelColor(i, c.color);
+      }
     }
   }
 
@@ -182,7 +188,8 @@ public:
     Adafruit_NeoPixel::show();
     hasSomeChanges = false;
     // increment show count
-    shownCount += 1;
+    auto refCount = shownCount;
+    shownCount = refCount + 1;
   }
 
   /**

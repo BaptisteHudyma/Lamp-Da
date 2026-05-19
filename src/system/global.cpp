@@ -35,7 +35,10 @@ namespace lampda {
 void secondary_thread()
 {
   if (not logic::behavior::is_user_code_running())
+  {
+    platform::threads::suspend_this_thread();
     return;
+  }
 
   user::user_thread();
 
