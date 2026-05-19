@@ -273,16 +273,16 @@ static constexpr PaletteTy PaletteLavaColors = {Black,
                                                 Maroon,
                                                 DarkRed,
                                                 Maroon,
-                                                DarkRed,
-                                                DarkRed,
-                                                DarkRed,
+                                                Black,
+                                                Black,
+                                                Black,
+                                                Black,
+                                                Maroon,
                                                 Red,
                                                 Orange,
-                                                White,
-                                                Orange,
                                                 Red,
                                                 DarkRed,
-                                                Black};
+                                                White};
 
 /// Fire color palette
 static constexpr PaletteTy PaletteFlameColors = {Orange,
