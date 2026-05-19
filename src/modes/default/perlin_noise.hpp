@@ -105,8 +105,12 @@ struct PerlinNoiseMode : public BasicMode
    */
   static int16_t get_next_speed(auto& ctx, const uint32_t position, int16_t speed)
   {
-    static constexpr int16_t speedBleedof = 25;
-    static constexpr int16_t acceleration = 25;
+    static constexpr float speedDivider = ctx.lamp.frameDurationMs / (1000.0 / 40.0);
+    static constexpr int16_t speedBleedof = 25 * speedDivider;
+    static constexpr int16_t acceleration = 25 * speedDivider;
+    static constexpr uint16_t maxSpeed = ctx.state.maxSpeed * speedDivider;
+    static constexpr uint16_t minSpeed = ctx.state.minSpeed * speedDivider;
+
     static constexpr uint32_t confortZone = UINT32_MAX / 200000;
 
     // close to zero, set mostly positive speeds
@@ -116,8 +120,7 @@ struct PerlinNoiseMode : public BasicMode
       if (speed < 0)
         speed += speedBleedof;
       else
-        speed = lmpd_constrain<int16_t>(
-                speed + lmpd_map<int16_t>(random8(), 0, 255, 0, acceleration * 2), 0, ctx.state.maxSpeed);
+        speed = lmpd_constrain<int16_t>(speed + lmpd_map<int16_t>(random8(), 0, 255, 0, acceleration * 2), 0, maxSpeed);
     }
     else if (position > (UINT32_MAX - confortZone))
     {
@@ -126,19 +129,18 @@ struct PerlinNoiseMode : public BasicMode
         speed -= speedBleedof;
       else
         speed = lmpd_constrain<int16_t>(
-                speed + lmpd_map<int16_t>(random8(), 0, 255, -acceleration * 2, 0), -ctx.state.maxSpeed, 0);
+                speed + lmpd_map<int16_t>(random8(), 0, 255, -acceleration * 2, 0), -maxSpeed, 0);
     }
     else
     {
       // free range x speed
-      speed = lmpd_constrain<int16_t>(speed + lmpd_map<int16_t>(random8(), 0, 255, -acceleration, acceleration),
-                                      -ctx.state.maxSpeed,
-                                      ctx.state.maxSpeed);
+      speed = lmpd_constrain<int16_t>(
+              speed + lmpd_map<int16_t>(random8(), 0, 255, -acceleration, acceleration), -maxSpeed, maxSpeed);
       // prevent too slow speed
-      if (speed < 0 and speed > -ctx.state.minSpeed)
-        speed = -ctx.state.minSpeed;
-      else if (speed > 0 and speed < ctx.state.minSpeed)
-        speed = ctx.state.minSpeed;
+      if (speed < 0 and speed > -minSpeed)
+        speed = -minSpeed;
+      else if (speed > 0 and speed < minSpeed)
+        speed = minSpeed;
     }
 
     return speed;
