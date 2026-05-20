@@ -9,6 +9,8 @@
 
 #include "strip_impl.h"
 
+#include "src/system/platform/print.h"
+
 #include <Arduino.h>
 #include <cassert>
 
@@ -131,6 +133,8 @@ template<size_t LedCount, uint8_t ChannelCount> void LampdaStrip<LedCount, Chann
 
 template<size_t LedCount, uint8_t ChannelCount> void LampdaStrip<LedCount, ChannelCount>::show(void)
 {
+  // clang-format off
+
   // Data latch = 300+ microsecond pause in the output stream. Rather than
   // put a delay at the end of the function, the ending time is noted and
   // the function will simply hold off (if needed) on issuing the
@@ -144,21 +148,6 @@ template<size_t LedCount, uint8_t ChannelCount> void LampdaStrip<LedCount, Chann
   // instances on different pins can be quickly issued in succession (each
   // instance doesn't delay the next).
 
-  // In order to make this code runtime-configurable to work with any pin,
-  // SBI/CBI instructions are eschewed in favor of full PORT writes via the
-  // OUT or ST instructions. It relies on two facts: that peripheral
-  // functions (such as PWM) take precedence on output pins, so our PORT-
-  // wide writes won't interfere, and that interrupts are globally disabled
-  // while data is being issued to the LEDs, so no other code will be
-  // accessing the PORT. The code takes an initial 'snapshot' of the PORT
-  // state, computes 'pin high' and 'pin low' values, and writes these back
-  // to the PORT register as needed.
-
-  // NRF52 may use PWM + DMA (if available), may not need to disable interrupt
-  // ESP32 may not disable interrupts because espShow() uses RMT which tries to acquire locks
-#if !(defined(NRF52) || defined(NRF52_SERIES) || defined(ESP32))
-  noInterrupts(); // Need 100% focus on instruction timing
-#endif
 
 // [[[Begin of the Neopixel NRF52 EasyDMA implementation
 //                                    by the Hackerspace San Salvador]]]
@@ -198,24 +187,6 @@ template<size_t LedCount, uint8_t ChannelCount> void LampdaStrip<LedCount, Chann
 #define CTOPVAL_400KHz 40UL // 2.5us
 
 // ---------- END Constants for the EasyDMA implementation -------------
-//
-// If there is no device available an alternative cycle-counter
-// implementation is tried.
-// The nRF52 runs with a fixed clock of 64Mhz. The alternative
-// implementation is the same as the one used for the Teensy 3.0/1/2 but
-// with the Nordic SDK HAL & registers syntax.
-// The number of cycles was hand picked and is guaranteed to be 100%
-// organic to preserve freshness and high accuracy.
-// ---------- BEGIN Constants for cycle counter implementation ---------
-#define CYCLES_800_T0H 18 // ~0.36 uS
-#define CYCLES_800_T1H 41 // ~0.76 uS
-#define CYCLES_800     71 // ~1.25 uS
-
-#define CYCLES_400_T0H 26 // ~0.50 uS
-#define CYCLES_400_T1H 70 // ~1.26 uS
-#define CYCLES_400 \
-  156 // ~2.50 uS
-      // ---------- END of Constants for cycle counter implementation --------
 
   // To support both the SoftDevice + Neopixels we use the EasyDMA
   // feature from the NRF25. However this technique implies to
@@ -224,9 +195,6 @@ template<size_t LedCount, uint8_t ChannelCount> void LampdaStrip<LedCount, Chann
   //              totalMem = numBytes*8*2+(2*2)
   // The two additional bytes at the end are needed to reset the
   // sequence.
-  //
-  // If there is not enough memory, we will fall back to cycle counter
-  // using DWT
 
   NRF_PWM_Type* pwm = NULL;
 
@@ -366,104 +334,15 @@ template<size_t LedCount, uint8_t ChannelCount> void LampdaStrip<LedCount, Chann
   // ---------------------------------------------------------------------
   else
   {
-#ifndef ARDUINO_ARCH_NRF52840
-// Fall back to DWT
-#if defined(ARDUINO_NRF52_ADAFRUIT)
-    // Bluefruit Feather 52 uses freeRTOS
-    // Critical Section is used since it does not block SoftDevice execution
-    taskENTER_CRITICAL();
-#elif defined(NRF52_DISABLE_INT)
-    // If you are using the Bluetooth SoftDevice we advise you to not disable
-    // the interrupts. Disabling the interrupts even for short periods of time
-    // causes the SoftDevice to stop working.
-    // Disable the interrupts only in cases where you need high performance for
-    // the LEDs and if you are not using the EasyDMA feature.
-    __disable_irq();
-#endif
-
-    NRF_GPIO_Type* nrf_port = (NRF_GPIO_Type*)digitalPinToPort(pin);
-    uint32_t pinMask = digitalPinToBitMask(pin);
-
-    uint32_t CYCLES_X00 = CYCLES_800;
-    uint32_t CYCLES_X00_T1H = CYCLES_800_T1H;
-    uint32_t CYCLES_X00_T0H = CYCLES_800_T0H;
-
-#if defined(NEO_KHZ400)
-    if (!is800KHz)
-    {
-      CYCLES_X00 = CYCLES_400;
-      CYCLES_X00_T1H = CYCLES_400_T1H;
-      CYCLES_X00_T0H = CYCLES_400_T0H;
-    }
-#endif
-
-    // Enable DWT in debug core
-    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
-
-    // Tries to re-send the frame if is interrupted by the SoftDevice.
-    while (1)
-    {
-      uint8_t* p = pixels;
-
-      uint32_t cycStart = DWT->CYCCNT;
-      uint32_t cyc = 0;
-
-      for (uint16_t n = 0; n < numBytes; n++)
-      {
-        uint8_t pix = *p++;
-
-        for (uint8_t mask = 0x80; mask; mask >>= 1)
-        {
-          while (DWT->CYCCNT - cyc < CYCLES_X00)
-            ;
-          cyc = DWT->CYCCNT;
-
-          nrf_port->OUTSET |= pinMask;
-
-          if (pix & mask)
-          {
-            while (DWT->CYCCNT - cyc < CYCLES_X00_T1H)
-              ;
-          }
-          else
-          {
-            while (DWT->CYCCNT - cyc < CYCLES_X00_T0H)
-              ;
-          }
-
-          nrf_port->OUTCLR |= pinMask;
-        }
-      }
-      while (DWT->CYCCNT - cyc < CYCLES_X00)
-        ;
-
-      // If total time longer than 25%, resend the whole data.
-      // Since we are likely to be interrupted by SoftDevice
-      if ((DWT->CYCCNT - cycStart) < (8 * numBytes * ((CYCLES_X00 * 5) / 4)))
-      {
-        break;
-      }
-
-      // re-send need 300us delay
-      delayMicroseconds(300);
-    }
-
-// Enable interrupts again
-#if defined(ARDUINO_NRF52_ADAFRUIT)
-    taskEXIT_CRITICAL();
-#elif defined(NRF52_DISABLE_INT)
-    __enable_irq();
-#endif
-#endif
+    /// THIS SHOULD NEVER HAPPEN.
+    // If this case appears, it means that a register has gone very wrong.
+    platform::lampda_print("WRONG EXECUTION PATH FOR LAMPDA STRIP DISPLAY");
   }
   // END of NRF52 implementation
 
-#if !(defined(NRF52) || defined(NRF52_SERIES) || defined(ESP32))
-  interrupts();
-#endif
-
   endTime = micros(); // Save EOD time for latch on next call
+
+  // clang-format on
 }
 
 } // namespace strip

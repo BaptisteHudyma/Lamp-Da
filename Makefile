@@ -202,9 +202,8 @@ check-compiler-cmd: has-board-installed
 $(BUILD_DIR)/.deps-ok:
 	@echo " --- $@"
 	@mkdir -p $(BUILD_DIR)
-	# UNUSED ANYMORE but let as an example
-	# @test -f $(BUILD_DIR)/.deps-ok \
-		|| (make has-board-installed check-compiler-cmd 'has-libs-installed(Adafruit\ NeoPixel)' \
+	@test -f $(BUILD_DIR)/.deps-ok \
+		|| (make has-board-installed \
 			&& touch $(BUILD_DIR)/.deps-ok)
 
 check-arduino-deps: install-venv $(BUILD_DIR)/.deps-ok

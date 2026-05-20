@@ -66,7 +66,7 @@ private:
 
   static constexpr uint16_t numBytes = LedCount * ChannelCount;
 
-  static constexpr uint32_t pattern_size = (numBytes) * 8 + 2;
+  static constexpr uint32_t pattern_size = numBytes * 8 + 2;
   uint16_t pixels_pattern[pattern_size];
 
   /// Store the raw pixels values
