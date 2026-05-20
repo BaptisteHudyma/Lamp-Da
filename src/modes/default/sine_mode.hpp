@@ -39,7 +39,7 @@ struct SineMode : public modes::BasicMode
 
   static void loop(auto& ctx)
   {
-    static constexpr float speedMultiplier = ctx.lamp.frameDurationMs / 12.5f;
+    static constexpr float speedMultiplier = ctx.lamp.frameDurationMs / 12.0f;
 
     const uint16_t colorIndex = (ctx.lamp.tick / 4) * speedMultiplier; // Amount of colour change.
     const float rampIndex = ctx.get_active_custom_ramp() / 255.0f;

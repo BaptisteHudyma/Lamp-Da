@@ -49,7 +49,7 @@ struct AuroraMode : public BasicMode
     static const float adjustHeight = lmpd_map<float>(ctx.lamp.maxHeight, 8, 32, 28, 12);
     static constexpr float halfHeight = (float)ctx.lamp.maxHeight / 2.0f;
 
-    static constexpr float speedMultiplier = ctx.lamp.frameDurationMs / 12.5f;
+    static constexpr float speedMultiplier = ctx.lamp.frameDurationMs / 12.0f;
     const float _speedDivider = 1.0f / static_cast<float>(ctx.state.speed * speedMultiplier);
     const auto& palette = ctx.state.palette;
 
