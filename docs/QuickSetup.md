@@ -41,8 +41,7 @@ You will need to:
  - Install the Adafruit nRF52 board support (version 1.7.0) [as described here](https://github.com/BaptisteHudyma/LampDa_nRF52_Arduino?tab=readme-ov-file#recommended-adafruit-nrf52-bsp-via-the-arduino-board-manager)
  - Replace the content of the `$HOME/.arduino15/packages/adafruit/hardware/nrf52` by the content of the [above repository](https://github.com/BaptisteHudyma/LampDa_nRF52_Arduino)
  - Install [`adafruit-nrfutil`](https://github.com/adafruit/Adafruit_nRF52_nrfutil) from PyPI
- - Install the [`Adafruit Neopixel`](https://docs.arduino.cc/libraries/adafruit-neopixel) and
-   [`arduinofft`](https://docs.arduino.cc/libraries/arduinofft/) libraries
+ - Install the [`arduinofft`](https://docs.arduino.cc/libraries/arduinofft/) libraries
 
 To check that `arduino-cli` is available in path, you can run:
 
