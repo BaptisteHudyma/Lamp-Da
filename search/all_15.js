@@ -2,7 +2,7 @@ var searchData=
 [
   ['tan_0',['Tan',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba104654c9c5f1370af5dd5823ca3ce68e',1,'lampda::modes::colors']]],
   ['taskfunc_5ft_1',['taskfunc_t',['../namespacelampda_1_1platform_1_1threads.html#a2d43dab5c0860669219ae60a9a784abc',1,'lampda::platform::threads']]],
-  ['taskscheduler_5ftaskname_2',['taskScheduler_taskName',['../namespacelampda_1_1platform_1_1threads.html#a93203eec869e90fdc536d9f68f7ee814',1,'lampda::platform::threads']]],
+  ['taskscheduler_5ftaskname_2',['taskScheduler_taskName',['../namespacelampda_1_1platform_1_1threads.html#a28c4011a9645eea7f90a86b8a10f7967',1,'lampda::platform::threads']]],
   ['tcpc_5falert_3',['tcpc_alert',['../structtcpm__drv.html#a74510a1dc4f222fa274c156c1b5fcb54',1,'tcpm_drv']]],
   ['tcpc_5fconfig_5ft_4',['tcpc_config_t',['../structtcpc__config__t.html',1,'']]],
   ['tcpc_5fdischarge_5fvbus_5',['tcpc_discharge_vbus',['../structtcpm__drv.html#a9aba0bc165fac7323e99837f6806bb1c',1,'tcpm_drv']]],

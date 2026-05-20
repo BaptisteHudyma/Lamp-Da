@@ -9,7 +9,7 @@ var searchData=
   ['nbubbles_6',['nbubbles',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#a2edb409bfc6264332fe68545424b96bb',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
   ['nominal_7',['NOMINAL',['../namespacelampda_1_1power_1_1charger_1_1drivers.html#a494e2bde9d922e129949b72a26386762aaa2fa3fb4786079a4f8107ea393d609e',1,'lampda::power::charger::drivers']]],
   ['notes_8',['Notes',['../md_docs_Notes.html',1,'']]],
-  ['notify_5fthread_9',['notify_thread',['../namespacelampda_1_1platform_1_1threads.html#a63a78f26f59f4c1f10a6a4baf74bd68f',1,'lampda::platform::threads']]],
+  ['notify_5fthread_9',['notify_thread',['../namespacelampda_1_1platform_1_1threads.html#a5d82d5863190cf04804765fea6d25bc3',1,'lampda::platform::threads']]],
   ['now_10',['now',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a7bafa7f06c8a03fb2bbfba53b8830b5a',1,'lampda::modes::hardware::LampTy']]],
   ['nudzbeerglassmode_11',['NudzBeerGlassMode',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode.html',1,'lampda::modes::custom::nudz']]],
   ['nudzscrollimagemode_12',['NudzScrollImageMode',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzScrollImageMode.html',1,'lampda::modes::custom::nudz']]],
