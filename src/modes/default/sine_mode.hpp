@@ -39,12 +39,14 @@ struct SineMode : public modes::BasicMode
 
   static void loop(auto& ctx)
   {
-    const uint16_t colorIndex = ctx.lamp.tick / 4; // Amount of colour change.
-    const float rampIndex = ctx.get_active_custom_ramp() / 255.0;
-    const float freq = 128 / 4.0 + rampIndex * 16 / 4.0; // Frequency of the signal.
+    static constexpr float speedMultiplier = ctx.lamp.frameDurationMs / 12.0f;
 
-    ctx.state.step += speed / 16; // Speed of animation.
-    const float colorIndexNormalised = colorIndex / 255.0;
+    const uint16_t colorIndex = (ctx.lamp.tick / 4) * speedMultiplier; // Amount of colour change.
+    const float rampIndex = ctx.get_active_custom_ramp() / 255.0f;
+    const float freq = 128 / 4.0f + rampIndex * 16 / 4.0f; // Frequency of the signal.
+
+    ctx.state.step += (speed * speedMultiplier) / 16; // Speed of animation.
+    const float colorIndexNormalised = colorIndex / 255.0f;
 
     for (size_t i = 0; i < ctx.lamp.ledCount; i++)
     {

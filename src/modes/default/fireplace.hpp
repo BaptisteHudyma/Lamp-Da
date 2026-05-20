@@ -80,11 +80,11 @@ struct FireMode : public BasicMode
     if (index > 16)
     {
       ctx.state.soundEvent.update(ctx);
-      soundAverageDelta = ctx.state.soundEvent.avgDelta * 100.0;
+      soundAverageDelta = ctx.state.soundEvent.avgDelta * 100.0f;
     }
 
     // measure sound level for sound-sensitive fire
-    float shakeness = 1.0 + (index * soundAverageDelta) / 255.0;
+    float shakeness = 1.0f + (index * soundAverageDelta) / 255.0f;
     float intensity = 128 + 256 / (1 + shakeness) - 1;
 
     // precompute "fire intensity" line per line
@@ -95,8 +95,8 @@ struct FireMode : public BasicMode
     // for each line, generate noise & set pixels
     for (uint16_t j = firstIndex; j <= ctx.lamp.maxHeight; j += everyNIndex)
     {
-      const float here = std::max<float>(intensity - j * 255.0, 0.0);
-      const uint8_t decay = std::min<uint8_t>(here / ctx.lamp.maxHeight, 255.0);
+      const float here = std::max<float>(intensity - j * 255.0f, 0.0f);
+      const uint8_t decay = std::min<uint8_t>(here / ctx.lamp.maxHeight, 255.0f);
 
       for (uint16_t i = 0; i <= ctx.lamp.maxWidth; ++i)
       {

@@ -12,8 +12,6 @@ Usage:
         --stack 8192              # stack budget in bytes
 """
 
-"./_build/simulator/CMakeFiles/simulator_indexable.dir"
-
 import argparse
 import subprocess
 import re
@@ -47,64 +45,6 @@ class RamReport:
 # .su file parsing
 # ─────────────────────────────────────────────
 
-
-
-def get_elf_symbols(elf: Path) -> set[str]:
-    """Extract all defined function symbols from the final ELF."""
-    out = subprocess.check_output(
-        ["nm", "--defined-only", "--demangle", str(elf)],
-        text=True
-    )
-    symbols = set()
-    for line in out.splitlines():
-        # nm output: [address] [size] [type] [name]
-        # We only want code symbols (type = T or t = .text section)
-        parts = line.strip().split(None, 3)
-        if len(parts) >= 3 and parts[-2].lower() in ('t', 'w'):
-            symbols.add(parts[-1])
-    return symbols
-
-# ── Enum value resolver ───────────────────────────────────────────────
-
-def build_enum_map(elf: Path) -> dict[tuple[str, int], str]:
-    """
-    Parse DWARF info to build {(EnumTypeName, int_value): 'ENUMERATOR_NAME'}.
-    Lets us convert nm's  (DisplayMode)0  back to  DisplayMode::RAMP.
-    """
-    enum_map: dict[tuple[str, int], str] = {}
-    try:
-        out = subprocess.check_output(
-            ["readelf", "--debug-dump=info", str(elf)],
-            text=True, stderr=subprocess.DEVNULL
-        )
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return enum_map
-
-    current_enum: str | None = None
-    enumerator_name: str | None = None
-    for line in out.splitlines():
-        if re.search(r'DW_TAG_enumeration_type', line):
-            current_enum = None
-        m = re.search(r'DW_AT_name\s*:.*?:\s*(\w+)', line)
-        if m:
-            if current_enum is None:
-                current_enum = m.group(1)
-            else:
-                enumerator_name = m.group(1)
-        m = re.search(r'DW_AT_const_value\s*:\s*(\d+)', line)
-        if m and current_enum and enumerator_name:
-            enum_map[(current_enum, int(m.group(1)))] = enumerator_name
-    return enum_map
-
-
-def resolve_nm_symbol(sym: str, enum_map: dict) -> str:
-    """Convert nm's '(DisplayMode)0' back to 'DisplayMode::RAMP'."""
-    def replace_cast(m):
-        resolved = enum_map.get((m.group(1), int(m.group(2))))
-        return f"{m.group(1)}::{resolved}" if resolved else m.group(0)
-    return re.sub(r'\((\w+)\)(\d+)', replace_cast, sym)
-
-
 # ── Symbol set from ELF ───────────────────────────────────────────────
 
 SU_RE = re.compile(
@@ -121,11 +61,11 @@ def parse_su_files(sudir: Path) -> list[FunctionStack]:
             m = SU_RE.match(line)
             if m:
                 entries.append(FunctionStack(
-                    file  = m.group("file"),
-                    line  = int(m.group("line")),
-                    name  = m.group("name"),
-                    size  = int(m.group("size")),
-                    kind  = m.group("kind"),
+                    file  = m.group('file'),
+                    line  = int(m.group('line')),
+                    name  = f"{su_file.stem}:{m.group('line')}:{m.group('name')}",
+                    size  = int(m.group('size')),
+                    kind  = m.group('kind'),
                 ))
     return entries
 
@@ -134,23 +74,21 @@ def parse_su_files(sudir: Path) -> list[FunctionStack]:
 # ─────────────────────────────────────────────
 
 def get_static_ram(elf: Path) -> int:
-    """Sum the sizes of .data and .bss sections from the ELF."""
     out = subprocess.check_output(
         ["readelf", "-S", "--wide", str(elf)],
         text=True
     )
     total = 0
     for line in out.splitlines():
+        if not line.strip().startswith('['):
+            continue
         parts = line.split()
         # readelf -S columns: [Nr] Name Type Addr Off Size ES Flg ...
-        # We look for .data and .bss by name
-        for section in (".data", ".bss", ".noinit"):
-            if section in parts:
-                idx = parts.index(section)
+        for sec in (".data", ".bss", ".noinit"):
+            if parts[2] == sec: #name on 2
                 try:
-                    # Size is hex, 2 fields after the name
-                    total += int(parts[idx + 3], 16)
-                except (IndexError, ValueError):
+                    total += int(parts[6], 16)  # Size is always column 6 (0-indexed)
+                except ValueError:
                     pass
     return total
 
@@ -167,7 +105,7 @@ def worst_case_stack(entries: list[FunctionStack], top_n: int = 8) -> tuple[int,
     Real call depth is rarely > 8 on flat embedded code.
     For tighter analysis, replace with a proper call-graph walk.
     """
-    dynamic = [e for e in entries if e.kind != "static"]
+    # dynamic = [e for e in entries if e.kind != "static"]
     static  = sorted(
         [e for e in entries if e.kind == "static"],
         key=lambda e: e.size, reverse=True
@@ -180,9 +118,14 @@ def worst_case_stack(entries: list[FunctionStack], top_n: int = 8) -> tuple[int,
 # ─────────────────────────────────────────────
 
 def analyse(elf: Path, sudir: Path, total_ram: int, stack_budget: int) -> RamReport:
+    if not elf.exists():
+        raise FileNotFoundError(f"ELF not found: {elf}")
+    if not sudir.is_dir():
+        raise NotADirectoryError(f"SU dir not found: {sudir}")
+
     entries   = parse_su_files(sudir)
     static    = get_static_ram(elf)
-    depth, chain = worst_case_stack(entries)
+    depth, chain = worst_case_stack(entries, 8)
     dynamic_fns  = [e.name for e in entries if e.kind == "dynamic"]
 
     return RamReport(
@@ -194,20 +137,22 @@ def analyse(elf: Path, sudir: Path, total_ram: int, stack_budget: int) -> RamRep
         dynamic_fns    = dynamic_fns,
     )
 
-def report_and_assert(r: RamReport) -> bool:
-    print("=" * 52)
-    print("  Static RAM Analysis")
-    print("=" * 52)
-    print(f"  Static (.data+.bss) : {r.static_data:>8} bytes")
-    print(f"  Worst-case stack    : {r.max_call_stack:>8} bytes")
-    print(f"  ─────────────────────────────────────────")
-    total_used = r.static_data + r.max_call_stack
-    print(f"  Total estimated     : {total_used:>8} bytes")
-    print(f"  RAM available       : {r.total_ram:>8} bytes")
-    print(f"  Stack budget        : {r.stack_budget:>8} bytes")
-    print()
+def report_and_assert(r: RamReport, is_verbose) -> bool:
 
-    if r.worst_chain:
+    total_used = r.static_data + r.max_call_stack
+    if is_verbose:
+        print("=" * 52)
+        print("  Static RAM Analysis")
+        print("=" * 52)
+        print(f"  Static (.data+.bss) : {r.static_data:>8} bytes")
+        print(f"  Worst-case stack    : {r.max_call_stack:>8} bytes")
+        print(f"  ─────────────────────────────────────────")
+        print(f"  Total estimated     : {total_used:>8} bytes")
+        print(f"  RAM available       : {r.total_ram:>8} bytes")
+        print(f"  Stack budget        : {r.stack_budget:>8} bytes")
+        print()
+
+    if is_verbose and r.worst_chain:
         print("  Worst-case call chain (by frame size):")
         for fn in r.worst_chain:
             print(f"    → {fn}")
@@ -215,11 +160,13 @@ def report_and_assert(r: RamReport) -> bool:
 
     passed = True
 
-    if r.dynamic_fns:
-        print("  ⚠  WARNINGS — dynamic stack usage detected (VLAs / alloca):")
-        for fn in r.dynamic_fns:
-            print(f"    ! {fn}")
-        print()
+    # We dont really care about this, as it only display internal SDK code
+    if is_verbose:
+        if r.dynamic_fns:
+            print("  ⚠  WARNINGS — dynamic stack usage detected (VLAs / alloca):")
+            for fn in r.dynamic_fns:
+                print(f"    ! {fn}")
+            print()
 
     if r.max_call_stack > r.stack_budget:
         print(f"  ✗ FAIL — stack {r.max_call_stack} B exceeds budget {r.stack_budget} B")
@@ -227,17 +174,13 @@ def report_and_assert(r: RamReport) -> bool:
     else:
         print(f"  ✓ PASS — stack within budget "
               f"({r.max_call_stack}/{r.stack_budget} B, "
-              f"{r.stack_budget - r.max_call_stack} B headroom)")
+              f"{r.stack_budget - r.max_call_stack} B)")
 
-# Not working yet: RAM estimation
-#    if total_used > r.total_ram:
-#        print(f"  ✗ FAIL — total RAM {total_used} B exceeds device RAM {r.total_ram} B")
-#        passed = False
-#    else:
-#        print(f"  ✓ PASS — total RAM within device limit "
-#              f"({total_used}/{r.total_ram} B)")
-
-    print("=" * 52)
+    if total_used > r.total_ram:
+        print(f"  ✗ FAIL — estimated RAM {total_used} B exceeds device RAM {r.total_ram} B")
+        passed = False
+    else:
+        print(f"  ✓ PASS — total RAM within limit ({total_used}/{r.total_ram} B)")
     return passed
 
 # ─────────────────────────────────────────────
@@ -248,12 +191,13 @@ def main():
     ap = argparse.ArgumentParser(description="Static RAM budget checker for embedded ELF binaries.")
     ap.add_argument("--elf",    required=True,  type=Path, help="Path to compiled .elf")
     ap.add_argument("--sudir",  required=True,  type=Path, help="Directory containing .su files")
-    ap.add_argument("--ram",    required=False, type=int,  default='262144', help="Total device RAM in bytes")
-    ap.add_argument("--stack",  required=False, type=int,  default='8192', help="Stack budget in bytes")
+    ap.add_argument("--ram",    required=False, type=int,  default=262144, help="Total device RAM in bytes")
+    ap.add_argument("--stack",  required=False, type=int,  default=8192,   help="Stack budget in bytes")
+    ap.add_argument("-v",       required=False, type=bool,  default=False,   help="Verbose")
     args = ap.parse_args()
 
     r = analyse(args.elf, args.sudir, args.ram, args.stack)
-    ok = report_and_assert(r)
+    ok = report_and_assert(r, args.v)
     sys.exit(0 if ok else 1)
 
 if __name__ == "__main__":

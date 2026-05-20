@@ -674,6 +674,10 @@ void handle_output_light_state()
   // normal running loop
   if (not check_handle_exit_output_mode())
   {
+    // resume secondary thread
+    if (user::should_spawn_thread())
+      platform::threads::resume_thread(platform::threads::user_taskName);
+
     // user loop call
     user::loop();
 

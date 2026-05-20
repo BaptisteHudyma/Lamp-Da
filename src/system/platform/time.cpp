@@ -7,6 +7,8 @@
 #include "delay.h"
 
 #ifdef __cplusplus
+
+#include "src/system/utils/utils.h"
 namespace lampda {
 namespace platform {
 

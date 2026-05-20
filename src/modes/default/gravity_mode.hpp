@@ -60,7 +60,7 @@ struct GravityMode : public BasicMode
 
     auto& particleSystem = state.imuEvent.particuleSystem;
 
-    particleSystem.iterate_with_collisions(state.imuEvent.lastReading.accel, ctx.lamp.frameDurationMs / 1000.0);
+    particleSystem.iterate_with_collisions(state.imuEvent.lastReading.accel, ctx.lamp.frameDurationMs / 1000.0f);
 
     ctx.lamp.fadeToBlackBy(255 - ctx.state.persistance);
 

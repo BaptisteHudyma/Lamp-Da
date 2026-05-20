@@ -25,8 +25,6 @@ static constexpr uint16_t brightnessDecreasePerLoop = 1;
 // minimum calls to the update sunset function that will be made
 static constexpr uint16_t minimalSunsetUpdateCalls = 50;
 
-const char* const sunset_taskName = "sunset";
-
 // sunset loop time to reduce brightness gradually
 uint32_t get_sunset_loop_timing_ms()
 {
@@ -118,7 +116,7 @@ void sunset_process_loop()
 void init()
 {
   // start in suspended mode
-  platform::threads::start_suspended_thread(sunset_process_loop, sunset_taskName, 0, 1024);
+  platform::threads::start_suspended_thread(sunset_process_loop, platform::threads::sunset_taskName, 0, 1024);
 }
 
 void add_time_minutes(const uint8_t time_minutes)
@@ -135,7 +133,7 @@ void add_time_minutes(const uint8_t time_minutes)
     logic::alerts::manager.raise(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 
     // resume
-    platform::threads::resume_thread(sunset_taskName);
+    platform::threads::resume_thread(platform::threads::sunset_taskName);
   }
   else
   {

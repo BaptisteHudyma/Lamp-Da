@@ -5,6 +5,8 @@
 
 #include "src/system/platform/print.h"
 
+#include "src/system/utils/utils.h"
+
 #include <Arduino.h>
 #include <map>
 
@@ -12,8 +14,38 @@ namespace lampda {
 namespace platform {
 namespace threads {
 
+// extern defines
+const uint32_t pd_taskName = utils::hash("usbpd");
+const uint32_t pdInterruptHandle_taskName = utils::hash("intpd");
+const uint32_t power_taskName = utils::hash("power");
+const uint32_t user_taskName = utils::hash("user");
+const uint32_t taskScheduler_taskName = utils::hash("task_sched");
+const uint32_t sunset_taskName = utils::hash("sunset");
+
+const char* const get_name_from_hash(const uint32_t hash)
+{
+  switch (hash)
+  {
+    case pd_taskName:
+      return "usbpd";
+    case pdInterruptHandle_taskName:
+      return "intpd";
+    case power_taskName:
+      return "power";
+    case user_taskName:
+      return "user";
+    case taskScheduler_taskName:
+      return "task_sched";
+    case sunset_taskName:
+      return "sunset";
+    default:
+      break;
+  }
+  return "unknown";
+}
+
 // store all handles
-std::map<const char* const, TaskHandle_t> handles;
+std::map<uint32_t, TaskHandle_t> handles;
 
 // loop task
 [[noreturn]] static void _redirect_task(void* arg)
@@ -39,7 +71,7 @@ std::map<const char* const, TaskHandle_t> handles;
   }
 }
 
-void start_thread(taskfunc_t taskFunction, const char* const taskName, const int priority, const int stackSize)
+void start_thread(taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize)
 {
   // handle already exists
   if (handles.find(taskName) != handles.cend())
@@ -55,7 +87,7 @@ void start_thread(taskfunc_t taskFunction, const char* const taskName, const int
 
   TaskHandle_t handle;
   if (pdPASS == xTaskCreate(_redirect_task,
-                            taskName,
+                            get_name_from_hash(taskName),
                             max<int>(configMINIMAL_STACK_SIZE, stackSize),
                             (void*)taskFunction,
                             prio,
@@ -69,10 +101,7 @@ void start_thread(taskfunc_t taskFunction, const char* const taskName, const int
   }
 }
 
-void start_suspended_thread(taskfunc_t taskFunction,
-                            const char* const taskName,
-                            const int priority,
-                            const int stackSize)
+void start_suspended_thread(taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize)
 {
   // handle already exists
   if (handles.find(taskName) != handles.cend())
@@ -88,7 +117,7 @@ void start_suspended_thread(taskfunc_t taskFunction,
 
   TaskHandle_t handle;
   if (pdPASS == xTaskCreate(_redirect_suspend_task,
-                            taskName,
+                            get_name_from_hash(taskName),
                             max<int>(configMINIMAL_STACK_SIZE, stackSize),
                             (void*)taskFunction,
                             prio,
@@ -98,7 +127,7 @@ void start_suspended_thread(taskfunc_t taskFunction,
   }
   else
   {
-    platform::lampda_print("task %s creation failed", taskName);
+    platform::lampda_print("task %s (%d) creation failed", get_name_from_hash(taskName), taskName);
   }
 }
 
@@ -128,13 +157,13 @@ int is_all_suspended()
   return 1;
 }
 
-void resume_thread(const char* const taskName)
+void resume_thread(const uint32_t taskName)
 {
   // handle already exists
   auto handle = handles.find(taskName);
   if (handle == handles.cend())
   {
-    platform::lampda_print("ERROR: task handle %s do not exist", taskName);
+    platform::lampda_print("ERROR: task handle %s (%d) do not exist", get_name_from_hash(taskName), taskName);
     return;
   }
 
@@ -148,12 +177,12 @@ void resume_thread(const char* const taskName)
   }
 }
 
-void notify_thread(const char* const taskName, int wakeUpEvent)
+void notify_thread(const uint32_t taskName, int wakeUpEvent)
 {
   auto handle = handles.find(taskName);
   if (handle == handles.cend())
   {
-    platform::lampda_print("ERROR: task handle %s do not exist", taskName);
+    platform::lampda_print("ERROR: task handle %s (%d) do not exist", get_name_from_hash(taskName), taskName);
     return;
   }
   if (isInISR())

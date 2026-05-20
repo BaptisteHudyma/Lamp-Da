@@ -34,10 +34,9 @@ struct PaletteFadeMode : public modes::BasicMode
     const float wholePaletteLoopTiming =
             lmpd_map<float>(ctx.get_active_custom_ramp(), 0, 255, lowestTiming, highestTiming);
 
-    // 1/80
     const float adding = wholePaletteLoopTiming / static_cast<float>(ctx.lamp.frameDurationMs);
     ctx.state.paletteIndex += 255.0 / adding;
-    ctx.state.paletteIndex = std::fmod(ctx.state.paletteIndex, 255.0);
+    ctx.state.paletteIndex = std::fmod(ctx.state.paletteIndex, 255.0f);
 
     ctx.lamp.fill(modes::colors::from_palette(static_cast<uint8_t>(ctx.state.paletteIndex), ctx.state.palette));
   }

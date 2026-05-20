@@ -452,6 +452,8 @@ build: has-lamp-type process $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
 			; false))
 	@cp $(OBJECTS_DIR)/*.ino* $(ARTIFACTS)/
 
+	make check-stack
+
 	@python scripts/uf2conv.py $(ARTIFACTS)/$(PROJECT_INO).hex -c -f 0xADA52840 -o $(COMPILED_UF2)/${LMBD_LAMP_TYPE}.uf2
 
 #
@@ -526,6 +528,11 @@ verify-all: format-verify
 	@touch $(BUILD_DIR)/.skip-cct-clean # (re-use indexable setup)
 	make 'verify-type(cct)'
 	@echo; echo 'Everything went fine :)'
+
+
+check-stack:
+	@echo; echo " --- $@"
+	@python tools/ramAnalyser.py --elf $(OBJECTS_DIR)/$(PROJECT_INO).elf --sudir $(OBJECTS_DIR)
 
 #
 # to customize upload port:
