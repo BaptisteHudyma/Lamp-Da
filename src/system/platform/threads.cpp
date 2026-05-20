@@ -127,7 +127,7 @@ void start_suspended_thread(taskfunc_t taskFunction, const uint32_t taskName, co
   }
   else
   {
-    platform::lampda_print("task %s creation failed", taskName);
+    platform::lampda_print("task %s (%d) creation failed", get_name_from_hash(taskName), taskName);
   }
 }
 
@@ -163,7 +163,7 @@ void resume_thread(const uint32_t taskName)
   auto handle = handles.find(taskName);
   if (handle == handles.cend())
   {
-    platform::lampda_print("ERROR: task handle %s do not exist", taskName);
+    platform::lampda_print("ERROR: task handle %s (%d) do not exist", get_name_from_hash(taskName), taskName);
     return;
   }
 
@@ -182,7 +182,7 @@ void notify_thread(const uint32_t taskName, int wakeUpEvent)
   auto handle = handles.find(taskName);
   if (handle == handles.cend())
   {
-    platform::lampda_print("ERROR: task handle %s do not exist", get_name_from_hash(taskName));
+    platform::lampda_print("ERROR: task handle %s (%d) do not exist", get_name_from_hash(taskName), taskName);
     return;
   }
   if (isInISR())

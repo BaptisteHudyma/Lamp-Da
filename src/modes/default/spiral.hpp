@@ -33,11 +33,11 @@ struct SpiralMode : public BasicMode
 
   static void on_enter_mode(auto& ctx)
   {
-    static constexpr float speedMultiplier = ctx.lamp.frameDurationMs / 12.5f;
+    static constexpr float speedMultiplier = ctx.lamp.frameDurationMs / 12.0f;
 
     ctx.state.fade = 64;
     ctx.state.intensity = 64;
-    ctx.state.speed = min<float>(255, 250 * speedMultiplier);
+    ctx.state.speed = min<float>(250, 250 * speedMultiplier);
     ctx.state.palette = colors::PaletteRainbowColors;
   }
 

@@ -4,9 +4,12 @@
 
 #define PLATFORM_THREADS_CPP
 
+#include <set>
+
 #include "src/system/platform/threads.h"
 
 #include "src/system/platform/time.h"
+#include "src/system/platform/print.h"
 
 #include "src/system/utils/utils.h"
 
@@ -56,8 +59,14 @@ const char* const get_name_from_hash(const uint32_t hash)
 
 typedef void (*taskfunc_t)(void);
 
+std::set<uint32_t> handles;
+
 void start_thread(taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize)
 {
+  // handle already exists
+  if (handles.find(taskName) != handles.cend())
+    return;
+
   // ALWAYS CAPTURE taskFunction EXPLICITLY
   simulator::threadPool.emplace_back(std::thread([taskFunction]() {
     while (taskFunction and not simulator::mock_registers::shouldStopThreads)
@@ -67,9 +76,15 @@ void start_thread(taskfunc_t taskFunction, const uint32_t taskName, const int pr
       platform::delay_ms(1);
     }
   }));
+
+  handles.emplace(taskName);
 }
 void start_suspended_thread(taskfunc_t taskFunction, uint32_t taskName, const int priority, const int stackSize)
 {
+  // handle already exists
+  if (handles.find(taskName) != handles.cend())
+    return;
+
   // ALWAYS CAPTURE taskFunction EXPLICITLY
   simulator::threadPool.emplace_back(std::thread([taskFunction]() {
     while (taskFunction and not simulator::mock_registers::shouldStopThreads)
@@ -79,6 +94,8 @@ void start_suspended_thread(taskfunc_t taskFunction, uint32_t taskName, const in
       platform::delay_ms(1);
     }
   }));
+
+  handles.emplace(taskName);
 }
 
 void yield_this_thread()
@@ -95,7 +112,16 @@ void suspend_all_threads() { simulator::isSuspended = true; }
 
 int is_all_suspended() { return simulator::isSuspended ? 1 : 0; }
 
-void resume_thread(const uint32_t taskName) {}
+void resume_thread(const uint32_t taskName)
+{
+  // handle already exists
+  auto handle = handles.find(taskName);
+  if (handle == handles.cend())
+  {
+    platform::lampda_print("ERROR: task handle %s (%d) do not exist", get_name_from_hash(taskName), taskName);
+    return;
+  }
+}
 
 void notify_thread(const uint32_t, int wakeUpEvent) {};
 int wait_notification(const int timeout_ms) { return 0; }

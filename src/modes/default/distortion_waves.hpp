@@ -30,10 +30,10 @@ struct DistortionWaveMode : public BasicMode
   static void on_enter_mode(auto& ctx)
   {
     // make the animation the same speed for all frequencies
-    static constexpr float speedMultiplier = ctx.lamp.frameDurationMs / 12.5f;
+    static constexpr float speedMultiplier = ctx.lamp.frameDurationMs / 12.0f;
 
     ctx.state.speed = 128 * speedMultiplier;
-    ctx.state.scale = 128 * speedMultiplier;
+    ctx.state.scale = 128;
   }
 
   static void loop(auto& ctx)
