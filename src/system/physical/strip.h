@@ -12,10 +12,12 @@
 #include <cstring>
 #include <array>
 
+#include "src/system/platform/strip_impl.h"
+
 #ifndef LMBD_SIMULATION
-#include <Adafruit_NeoPixel.h>
+#include "src/system/platform/strip_impl.hpp"
 #else
-#include "simulator/mocks/Adafruit_NeoPixel.h"
+#include "simulator/mocks/strip_impl.hpp"
 #endif
 
 #include "src/system/ext/scale8.h"
@@ -40,8 +42,10 @@ struct LampTy;
 
 namespace physical {
 
+using StripImpl_t = platform::strip::LampdaStrip<LED_COUNT, 3>;
+
 /// protected inheritence to avoid uncontroled hardware calls
-class LedStrip : private Adafruit_NeoPixel
+class LedStrip : private StripImpl_t
 {
   using BufferTy = std::array<uint32_t, LED_COUNT>;
   friend struct modes::hardware::LampTy;
@@ -53,9 +57,7 @@ class LedStrip : private Adafruit_NeoPixel
   static constexpr uint16_t refreshFramesCount = 10; ///< blue noise refresh rate speed
 
 public:
-  LedStrip(int16_t pin, neoPixelType type = NEO_RGB + NEO_KHZ800) :
-    Adafruit_NeoPixel(LED_COUNT, pin, type),
-    shownCount(0)
+  LedStrip(int16_t pin, neoPixelType type = NEO_RGB + NEO_KHZ800) : StripImpl_t(pin, type), shownCount(0)
   {
     assert(_colorErrors.size() > 0);
 
@@ -109,13 +111,7 @@ public:
   void setBrightness(uint8_t b) { brightness = b; }
 
   /// Brightness is an internal flag
-  uint8_t getBrightness() const
-  {
-    // check that this never changes
-    assert(Adafruit_NeoPixel::getBrightness() == 255);
-
-    return brightness;
-  }
+  uint8_t getBrightness() const { return brightness; }
 
   // Accessor to set a color
   void setPixelColor(uint16_t n, COLOR c)
@@ -130,12 +126,7 @@ public:
    * EXPLICIT CALLS TO THE LIBRARY
    */
 
-  void begin()
-  {
-    Adafruit_NeoPixel::begin();
-    // brightness always at the maximum level
-    Adafruit_NeoPixel::setBrightness(255);
-  }
+  void begin() { StripImpl_t::begin(); }
 
   /// Return the raw color value stored in the send buffer.
   /// \warning Should not be used except for debug
@@ -146,7 +137,7 @@ public:
       return 0;
 
     COLOR c;
-    c.color = Adafruit_NeoPixel::getPixelColor(n);
+    c.color = StripImpl_t::getPixelColor(n);
 
     // We use brightnessAtShowTime here, or the colors can break when brightness changed
     c.blue = restore_color_with_brightness(c.blue, brightnessAtShowTime);
@@ -167,13 +158,13 @@ public:
       {
         const COLOR c = convert_color_with_brigthness(_colors[i], writeBrightness, i + capedShown, _colorErrors[i]);
         // set strip color
-        Adafruit_NeoPixel::setPixelColor(i, c.color);
+        StripImpl_t::setPixelColor(i, c.color);
       }
       else
       {
         const COLOR c = convert_color_with_brigthness(_colors[i], writeBrightness, i + capedShown, _colorErrors[0]);
         // set strip color
-        Adafruit_NeoPixel::setPixelColor(i, c.color);
+        StripImpl_t::setPixelColor(i, c.color);
       }
     }
   }
@@ -185,7 +176,7 @@ public:
     brightnessAtShowTime = brightness;
     write_to_led_driver(brightnessAtShowTime);
     // show on hardware
-    Adafruit_NeoPixel::show();
+    StripImpl_t::show();
     hasSomeChanges = false;
     // increment show count
     auto refCount = shownCount;

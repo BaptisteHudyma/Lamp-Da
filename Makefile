@@ -203,7 +203,7 @@ $(BUILD_DIR)/.deps-ok:
 	@echo " --- $@"
 	@mkdir -p $(BUILD_DIR)
 	@test -f $(BUILD_DIR)/.deps-ok \
-		|| (make has-board-installed check-compiler-cmd 'has-libs-installed(Adafruit\ NeoPixel)' \
+		|| (make has-board-installed \
 			&& touch $(BUILD_DIR)/.deps-ok)
 
 check-arduino-deps: install-venv $(BUILD_DIR)/.deps-ok
@@ -276,8 +276,8 @@ unsafe-board-install: clean-board-install install-venv
 # this target may break local IDE install!
 unsafe-install-libs: install-venv
 	@echo " --- $@"
-	# installing Adafruit NeoPixel
-	@$(ARDUINO_CLI) lib install "Adafruit NeoPixel"
+	# UNUSED BUT here for example:
+	# @$(ARDUINO_CLI) lib install "Adafruit NeoPixel"
 
 local-arduino-cli:
 	@echo " --- $@"
