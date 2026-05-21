@@ -27,6 +27,5 @@ var searchData=
   ['requestedcurrent_5fma_24',['requestedCurrent_mA',['../structlampda_1_1power_1_1powerDelivery_1_1OTGParameters.html#af2e2677335ce5ba4d14c0b9895d90ef8',1,'lampda::power::powerDelivery::OTGParameters']]],
   ['requestedvoltage_5fmv_25',['requestedVoltage_mV',['../structlampda_1_1power_1_1powerDelivery_1_1OTGParameters.html#a197cbd79b78fc89b882b02e48a5d420c',1,'lampda::power::powerDelivery::OTGParameters']]],
   ['requireuserthread_26',['requireUserThread',['../structlampda_1_1modes_1_1BasicMode.html#ae47d524a5432d984e47cdd3cda611cd4',1,'lampda::modes::BasicMode']]],
-  ['roffset_27',['rOffset',['../classAdafruit__NeoPixel.html#a8275f74399aea225b25aed014d740c99',1,'Adafruit_NeoPixel']]],
-  ['rotation_28',['rotation',['../structlampda_1_1utils_1_1TransformationMatrix.html#ad4cecadfee8a4d88270a6420de23087e',1,'lampda::utils::TransformationMatrix']]]
+  ['rotation_27',['rotation',['../structlampda_1_1utils_1_1TransformationMatrix.html#ad4cecadfee8a4d88270a6420de23087e',1,'lampda::utils::TransformationMatrix']]]
 ];

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['selfty_0',['SelfTy',['../structlampda_1_1modes_1_1ContextTy.html#a7d23eab2c5b35c19e63fd4c5ffce6883',1,'lampda::modes::ContextTy']]],
-  ['statety_1',['StateTy',['../structlampda_1_1modes_1_1ContextTy.html#ac2e2513efea07e2a416f56a37d33fc0d',1,'lampda::modes::ContextTy']]],
-  ['staticlightonly_2',['StaticLightOnly',['../brightness__modes_8hpp.html#a672dbad2d7686609e1d02f483f98bf0d',1,'lampda::modes::brightness']]]
+  ['palettety_0',['PaletteTy',['../namespacelampda_1_1modes_1_1colors.html#ab0b738b7bd4c80ccb2a8f444bba12dd4',1,'lampda::modes::colors']]],
+  ['point_5ft_1',['point_t',['../classlampda_1_1utils_1_1curves_1_1LinearCurve.html#afa6ab17d75385b065a4c9e56057355d7',1,'lampda::utils::curves::LinearCurve::point_t()'],['../classlampda_1_1utils_1_1curves_1_1ExponentialCurve.html#a779004fff98d91dd95005601d2cf746d',1,'lampda::utils::curves::ExponentialCurve::point_t()']]],
+  ['powerstates_2',['PowerStates',['../namespacelampda_1_1logic_1_1power.html#a114e1af148feef012e32712c53702dce',1,'lampda::logic::power']]]
 ];

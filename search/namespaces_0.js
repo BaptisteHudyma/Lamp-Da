@@ -42,10 +42,11 @@ var searchData=
   ['registers_39',['registers',['../namespacelampda_1_1platform_1_1registers.html',1,'lampda::platform']]],
   ['statistics_40',['statistics',['../namespacelampda_1_1logic_1_1statistics.html',1,'lampda::logic']]],
   ['store_41',['store',['../namespacelampda_1_1modes_1_1store.html',1,'lampda::modes']]],
-  ['sunset_42',['sunset',['../namespacelampda_1_1logic_1_1sunset.html',1,'lampda::logic']]],
-  ['system_43',['system',['../namespacelampda_1_1physical_1_1fileSystem_1_1system.html',1,'lampda::physical::fileSystem']]],
-  ['text_44',['text',['../namespacelampda_1_1modes_1_1draw_1_1text.html',1,'lampda::modes::draw']]],
-  ['threads_45',['threads',['../namespacelampda_1_1platform_1_1threads.html',1,'lampda::platform']]],
-  ['user_46',['user',['../namespacelampda_1_1physical_1_1fileSystem_1_1user.html',1,'lampda::physical::fileSystem::user'],['../namespacelampda_1_1user.html',1,'lampda::user']]],
-  ['utils_47',['utils',['../namespacelampda_1_1utils.html',1,'lampda']]]
+  ['strip_42',['strip',['../namespacelampda_1_1platform_1_1strip.html',1,'lampda::platform']]],
+  ['sunset_43',['sunset',['../namespacelampda_1_1logic_1_1sunset.html',1,'lampda::logic']]],
+  ['system_44',['system',['../namespacelampda_1_1physical_1_1fileSystem_1_1system.html',1,'lampda::physical::fileSystem']]],
+  ['text_45',['text',['../namespacelampda_1_1modes_1_1draw_1_1text.html',1,'lampda::modes::draw']]],
+  ['threads_46',['threads',['../namespacelampda_1_1platform_1_1threads.html',1,'lampda::platform']]],
+  ['user_47',['user',['../namespacelampda_1_1physical_1_1fileSystem_1_1user.html',1,'lampda::physical::fileSystem::user'],['../namespacelampda_1_1user.html',1,'lampda::user']]],
+  ['utils_48',['utils',['../namespacelampda_1_1utils.html',1,'lampda']]]
 ];

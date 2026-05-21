@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['taskfunc_5ft_0',['taskfunc_t',['../namespacelampda_1_1platform_1_1threads.html#a2d43dab5c0860669219ae60a9a784abc',1,'lampda::platform::threads']]]
+  ['selfty_0',['SelfTy',['../structlampda_1_1modes_1_1ContextTy.html#a7d23eab2c5b35c19e63fd4c5ffce6883',1,'lampda::modes::ContextTy']]],
+  ['statety_1',['StateTy',['../structlampda_1_1modes_1_1ContextTy.html#ac2e2513efea07e2a416f56a37d33fc0d',1,'lampda::modes::ContextTy']]],
+  ['staticlightonly_2',['StaticLightOnly',['../brightness__modes_8hpp.html#a672dbad2d7686609e1d02f483f98bf0d',1,'lampda::modes::brightness']]]
 ];

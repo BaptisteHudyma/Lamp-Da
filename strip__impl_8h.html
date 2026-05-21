@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: simulator/mocks/Adafruit_NeoPixel.h File Reference</title>
+<title>Lamp-Da: src/system/platform/strip_impl.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,35 +70,50 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_f56d48452e298091a290bc1200c44e7b.html">simulator</a></li><li class="navelem"><a class="el" href="dir_5228eb18f0223b66a9bcb7e4a6bd8042.html">mocks</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_2c722f0ee462dd0686098a5ca0274085.html">platform</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#typedef-members">Typedefs</a>  </div>
-  <div class="headertitle"><div class="title">Adafruit_NeoPixel.h File Reference</div></div>
+  <div class="headertitle"><div class="title">strip_impl.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Mock of the Adafruit NeoPixel library.  
+<p>Implement a led strip object.  
 <a href="#details">More...</a></p>
 
-<p><a href="Adafruit__NeoPixel_8h_source.html">Go to the source code of this file.</a></p>
+<p><a href="strip__impl_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAdafruit__NeoPixel.html">Adafruit_NeoPixel</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1platform_1_1strip_1_1LampdaStrip.html">lampda::platform::strip::LampdaStrip&lt; LedCount, ChannelCount &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class is a lightweight port of the Adafruit_Neopixel library, with compile time buffers to have a better memory handling.  <a href="classlampda_1_1platform_1_1strip_1_1LampdaStrip.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
+<tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1platform"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html">lampda::platform</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1platform"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1platform_1_1strip"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1strip.html">lampda::platform::strip</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1platform_1_1strip"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the interaction layer with an indexable strip. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a5aaa7a42f12169c436f0f0c8f9f97326"><td class="memItemLeft" align="right" valign="top"><a id="a5aaa7a42f12169c436f0f0c8f9f97326" name="a5aaa7a42f12169c436f0f0c8f9f97326"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>neoPixelType</b> = int</td></tr>
-<tr class="separator:a5aaa7a42f12169c436f0f0c8f9f97326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ff31bc7214a3ae338a80ed6142d69ff"><td class="memItemLeft" align="right" valign="top"><a id="a6ff31bc7214a3ae338a80ed6142d69ff" name="a6ff31bc7214a3ae338a80ed6142d69ff"></a>
+typedef uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>neoPixelType</b></td></tr>
+<tr class="memdesc:a6ff31bc7214a3ae338a80ed6142d69ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">3rd arg to Adafruit_NeoPixel constructor <br /></td></tr>
+<tr class="separator:a6ff31bc7214a3ae338a80ed6142d69ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Mock of the Adafruit NeoPixel library. </p>
+<div class="textblock"><p>Implement a led strip object. </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
