@@ -101,6 +101,7 @@ set(SIMULATOR_MOCKS
     ${LMBD_ROOT_DIR}/simulator/mocks/gpio_mock.cpp
     ${LMBD_ROOT_DIR}/simulator/mocks/threads_mock.cpp
     ${LMBD_ROOT_DIR}/simulator/mocks/bluetooth_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/mocks/strip_impl_mock.cpp
 )
 
 set(SIMULATOR_STATE

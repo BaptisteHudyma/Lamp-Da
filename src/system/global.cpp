@@ -191,7 +191,7 @@ void main_setup()
   if (user::should_spawn_thread())
   {
     // give a high stack but low priority to user
-    platform::threads::start_thread(secondary_thread, platform::threads::user_taskName, 0, 1024);
+    platform::threads::start_suspended_thread(secondary_thread, platform::threads::user_taskName, 0, 1024);
   }
 }
 

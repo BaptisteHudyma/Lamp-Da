@@ -14,12 +14,6 @@
 
 #include "src/system/platform/strip_impl.h"
 
-#ifndef LMBD_SIMULATION
-#include "src/system/platform/strip_impl.hpp"
-#else
-#include "simulator/mocks/strip_impl.hpp"
-#endif
-
 #include "src/system/ext/scale8.h"
 #include "src/system/ext/random8.h"
 
@@ -42,10 +36,7 @@ struct LampTy;
 
 namespace physical {
 
-using StripImpl_t = platform::strip::LampdaStrip<LED_COUNT, 3>;
-
-/// protected inheritence to avoid uncontroled hardware calls
-class LedStrip : private StripImpl_t
+class LedStrip
 {
   using BufferTy = std::array<uint32_t, LED_COUNT>;
   friend struct modes::hardware::LampTy;
@@ -57,9 +48,11 @@ class LedStrip : private StripImpl_t
   static constexpr uint16_t refreshFramesCount = 10; ///< blue noise refresh rate speed
 
 public:
-  LedStrip(int16_t pin, neoPixelType type = NEO_RGB + NEO_KHZ800) : StripImpl_t(pin, type), shownCount(0)
+  LedStrip(int16_t pin, neoPixelType type = NEO_RGB + NEO_KHZ800) : shownCount(0)
   {
     assert(_colorErrors.size() > 0);
+
+    platform::strip::stripHardwareObject.setup(pin, type);
 
     COLOR c;
     c.color = 0;
@@ -126,7 +119,7 @@ public:
    * EXPLICIT CALLS TO THE LIBRARY
    */
 
-  void begin() { StripImpl_t::begin(); }
+  void begin() { platform::strip::stripHardwareObject.begin(); }
 
   /// Return the raw color value stored in the send buffer.
   /// \warning Should not be used except for debug
@@ -137,7 +130,7 @@ public:
       return 0;
 
     COLOR c;
-    c.color = StripImpl_t::getPixelColor(n);
+    c.color = platform::strip::stripHardwareObject.getPixelColor(n);
 
     // We use brightnessAtShowTime here, or the colors can break when brightness changed
     c.blue = restore_color_with_brightness(c.blue, brightnessAtShowTime);
@@ -158,13 +151,13 @@ public:
       {
         const COLOR c = convert_color_with_brigthness(_colors[i], writeBrightness, i + capedShown, _colorErrors[i]);
         // set strip color
-        StripImpl_t::setPixelColor(i, c.color);
+        platform::strip::stripHardwareObject.setPixelColor(i, c.color);
       }
       else
       {
         const COLOR c = convert_color_with_brigthness(_colors[i], writeBrightness, i + capedShown, _colorErrors[0]);
         // set strip color
-        StripImpl_t::setPixelColor(i, c.color);
+        platform::strip::stripHardwareObject.setPixelColor(i, c.color);
       }
     }
   }
@@ -176,7 +169,7 @@ public:
     brightnessAtShowTime = brightness;
     write_to_led_driver(brightnessAtShowTime);
     // show on hardware
-    StripImpl_t::show();
+    platform::strip::stripHardwareObject.show();
     hasSomeChanges = false;
     // increment show count
     auto refCount = shownCount;

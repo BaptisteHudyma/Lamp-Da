@@ -1,15 +1,16 @@
-/*! \file strip_impl.hpp
+/*! \file strip_impl_mock.cpp
     \brief Mock of the indexable strip library
 */
 
-#ifndef PLATFORM_STRIPIMPL_HPP
-#define PLATFORM_STRIPIMPL_HPP
+#ifndef PLATFORM_STRIPIMPL_CPP
+#define PLATFORM_STRIPIMPL_CPP
 
 #include "src/system/platform/strip_impl.h"
 #include "src/system/platform/time.h"
 
 #include "src/system/utils/colorspace.h"
 #include "src/system/utils/utils.h"
+#include "src/user/constants.h"
 
 #include <memory>
 #include <cassert>
@@ -120,6 +121,14 @@ template<size_t LedCount, uint8_t ChannelCount> void LampdaStrip<LedCount, Chann
 {
   /// Cannot implement here, simulator handles this
 }
+
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+// Template instanciation to use a .cpp file
+template class LampdaStrip<LED_COUNT, 3>;
+
+// Define the strip object
+LampdaStrip<::lampda::LED_COUNT, 3> stripHardwareObject;
+#endif
 
 } // namespace strip
 } // namespace platform
