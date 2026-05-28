@@ -15,37 +15,35 @@ namespace lampda::modes::custom::nudz {
  */
 template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
 {
-
   /// anim frame sync mode
   enum FrameSyncMode
   {
-    X,     ///< sync with 1st image x scrolling
-    Y,     ///< sync with 1st image y scrolling
-    Time,  ///< sync with time, using speed (same as scroll speed)
+    X,    ///< sync with 1st image x scrolling
+    Y,    ///< sync with 1st image y scrolling
+    Time, ///< sync with time, using speed (same as scroll speed)
   };
 
   struct StateTy
   {
-    std::vector<float> minSpeed = {-0.5f};       ///< minimum allowed speed
-    std::vector<float> maxSpeed = {0.5f};        ///< maximum allowed speed
-    std::vector<bool> randomScroll = {false};    ///< random variation of the scroll
-    std::vector<uint32_t> xdecal = {0};          ///< start x coordinates
-    std::vector<uint32_t> ydecal = {0};          ///< start y coordinates
-    std::vector<uint32_t> last_tick = {0};       ///< last called time in microseconds
-    std::vector<int8_t> xdirection = {1};        ///< x scroll direction
-    std::vector<int8_t> ydirection = {0};        ///< y scroll direction
-    std::vector<bool> framesMirror = {false};    ///< frames are mirrored at end of animation
-    std::vector<NudzScrollImageMode::FrameSyncMode> syncFrame = {
-      NudzScrollImageMode::Y};                   /// frame sync on 1st image
-    std::vector<uint32_t> frame = {0};           /// current animation frame
+    std::vector<float> minSpeed = {-0.5f};    ///< minimum allowed speed
+    std::vector<float> maxSpeed = {0.5f};     ///< maximum allowed speed
+    std::vector<bool> randomScroll = {false}; ///< random variation of the scroll
+    std::vector<uint32_t> xdecal = {0};       ///< start x coordinates
+    std::vector<uint32_t> ydecal = {0};       ///< start y coordinates
+    std::vector<uint32_t> last_tick = {0};    ///< last called time in microseconds
+    std::vector<int8_t> xdirection = {1};     ///< x scroll direction
+    std::vector<int8_t> ydirection = {0};     ///< y scroll direction
+    std::vector<bool> framesMirror = {false}; ///< frames are mirrored at end of animation
+    std::vector<NudzScrollImageMode::FrameSyncMode> syncFrame = {NudzScrollImageMode::Y}; /// frame sync on 1st image
+    std::vector<uint32_t> frame = {0};                                                    /// current animation frame
     std::vector<uint32_t> last_frame_tick = {0}; ///< last time of frame change in microseconds
   };
 
   static void on_enter_mode(auto& ctx)
   {
     // reset stateful events
-    uint32_t n = std::tuple_size<std::tuple<ImageTypes...> >::value;
-    for(uint32_t i=0; i<n; ++i)
+    uint32_t n = std::tuple_size<std::tuple<ImageTypes...>>::value;
+    for (uint32_t i = 0; i < n; ++i)
     {
       ctx.state.xdecal[i] = 0;
       ctx.state.ydecal[i] = 0;
@@ -61,17 +59,17 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
     /// call loop_image for each image in the template
     std::tuple<ImageTypes...> images;
     uint32_t itstate = 0;
-    std::apply([&](auto&&... arg) { ((loop_image(ctx, arg, itstate++)), ...); }, images);
+    std::apply(
+            [&](auto&&... arg) {
+              ((loop_image(ctx, arg, itstate++)), ...);
+            },
+            images);
   }
 
-  template <typename ImageType>
-  static void loop_image(auto& ctx,
-                         const ImageType & image,
-                         const uint32_t& istate)
+  template<typename ImageType> static void loop_image(auto& ctx, const ImageType& image, const uint32_t& istate)
   {
     float spdRange = ctx.state.maxSpeed[istate] - ctx.state.minSpeed[istate];
-    float speed = ctx.state.minSpeed[istate]
-      + (float(ctx.get_active_custom_ramp()) / 255) * spdRange;
+    float speed = ctx.state.minSpeed[istate] + (float(ctx.get_active_custom_ramp()) / 255) * spdRange;
     // ease stop at 0
     if (speed < -spdRange * 0.1)
       speed += spdRange * 0.1;
@@ -91,12 +89,10 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
 
     if (!ctx.state.randomScroll[istate])
     {
-      xdecal = ctx.state.xdecal[istate]
-        + int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed
-                  * ctx.state.xdirection[istate]);
-      ydecal = ctx.state.ydecal[istate]
-        + int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed
-                  * ctx.state.ydirection[istate]);
+      xdecal = ctx.state.xdecal[istate] +
+               int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed * ctx.state.xdirection[istate]);
+      ydecal = ctx.state.ydecal[istate] +
+               int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed * ctx.state.ydirection[istate]);
 
       switch (ctx.state.syncFrame[istate])
       {
@@ -107,9 +103,7 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
           frame = istate == 0 ? ydecal : ctx.state.ydecal[0];
           break;
         default:
-          frame = ctx.state.frame[istate]
-            + int32_t((ctx.lamp.tick - ctx.state.last_frame_tick[istate])
-                      * speed);
+          frame = ctx.state.frame[istate] + int32_t((ctx.lamp.tick - ctx.state.last_frame_tick[istate]) * speed);
       }
       if (ctx.state.frame[istate] != frame)
       {
@@ -130,22 +124,19 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
       imWidth = ImageType::width[frame];
       imHeight = ImageType::height[frame];
     }
-    else  // random scroll
+    else // random scroll
     {
       xdecal = int32_t(ctx.state.xdecal[istate]) +
-               int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed
-                       * ctx.state.xdirection[istate]);
+               int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed * ctx.state.xdirection[istate]);
       if (ctx.state.ydirection[istate] != 0)
         ydecal = int32_t(ctx.state.ydecal[istate]) +
-                 int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed
-                         * ctx.state.ydirection[istate]);
+                 int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed * ctx.state.ydirection[istate]);
       if (xdecal < 0)
       {
         xdecal = 0;
         ctx.state.xdirection[istate] *= -random8(2);
         ctx.state.ydirection[istate] = random8(3) - 1;
-        if (ctx.state.xdirection[istate] == 0
-            && ctx.state.ydirection[istate] == 0)
+        if (ctx.state.xdirection[istate] == 0 && ctx.state.ydirection[istate] == 0)
           ctx.state.ydirection[istate] = random8(2) * 2 - 1;
       }
       if (ydecal < 0)
@@ -153,8 +144,7 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
         ydecal = 0;
         ctx.state.ydirection[istate] *= -random8(2);
         ctx.state.xdirection[istate] = random8(3) - 1;
-        if (ctx.state.xdirection[istate] == 0
-            && ctx.state.ydirection[istate] == 0)
+        if (ctx.state.xdirection[istate] == 0 && ctx.state.ydirection[istate] == 0)
           ctx.state.xdirection[istate] = random8(2) * 2 - 1;
       }
 
@@ -167,9 +157,7 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
           frame = istate == 0 ? ydecal : ctx.state.ydecal[0];
           break;
         default:
-          frame = ctx.state.frame[istate]
-            + int32_t((ctx.lamp.tick - ctx.state.last_frame_tick[istate])
-                      * speed);
+          frame = ctx.state.frame[istate] + int32_t((ctx.lamp.tick - ctx.state.last_frame_tick[istate]) * speed);
       }
       if (ctx.state.frame[istate] != frame)
       {
@@ -196,8 +184,7 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
         xdecal = imWidth - ctx.lamp.maxWidth - 1;
         ctx.state.xdirection[istate] *= -random8(2);
         ctx.state.ydirection[istate] = random8(3) - 1;
-        if (ctx.state.xdirection[istate] == 0
-            && ctx.state.ydirection[istate] == 0)
+        if (ctx.state.xdirection[istate] == 0 && ctx.state.ydirection[istate] == 0)
           ctx.state.ydirection[istate] = random8(2) * 2 - 1;
       }
       if (ydecal > 0 && ydecal + ctx.lamp.maxHeight >= imHeight)
@@ -205,14 +192,12 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
         ydecal = imHeight - ctx.lamp.maxHeight - 1;
         ctx.state.ydirection[istate] *= -random8(2);
         ctx.state.xdirection[istate] = random8(3) - 1;
-        if (ctx.state.xdirection[istate] == 0
-            && ctx.state.ydirection[istate] == 0)
+        if (ctx.state.xdirection[istate] == 0 && ctx.state.ydirection[istate] == 0)
           ctx.state.xdirection[istate] = random8(2) * 2 - 1;
       }
     }
 
-    if (xdecal != ctx.state.xdecal[istate]
-        || ydecal != ctx.state.ydecal[istate])
+    if (xdecal != ctx.state.xdecal[istate] || ydecal != ctx.state.ydecal[istate])
     {
       ctx.state.xdecal[istate] = xdecal;
       ctx.state.ydecal[istate] = ydecal;
@@ -224,27 +209,22 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
     if (ImageType::colormapSize[frame] == 0)
     {
       uint32_t frameOffset = 0;
-      for (auto i=0; i<frame; ++i )
+      for (auto i = 0; i < frame; ++i)
         frameOffset += ImageType::rgbFrameLength[i];
 
       for (uint32_t y = 0; y < h; ++y)
         for (uint32_t x = 0; x < w; ++x)
         {
-          uint32_t color = ImageType::rgbData[
-            ((y + ydecal) % imHeight) * imWidth + (x + xdecal) % imWidth
-            + frameOffset];
+          uint32_t color =
+                  ImageType::rgbData[((y + ydecal) % imHeight) * imWidth + (x + xdecal) % imWidth + frameOffset];
           if (ImageType::hasAlpha)
           {
             float opacity = (color & 0xff) / 255;
-            uint32_t prev_color
-              = ctx.lamp.getPixelColor(ctx.lamp.fromXYtoStripIndex(x, y));
-            color = (uint32_t((color >> 24) * opacity
-                     + (prev_color >> 16) * (1.f - opacity)) << 16)
-              | (uint32_t(((color & 0xff0000) >> 16) * opacity
-                          + ((prev_color & 0xff00) >> 8) * (1.f - opacity))
-                 << 8)
-              | uint32_t(((color & 0xff00) >> 8) * opacity
-                         + (prev_color & 0xff) * (1.f - opacity));
+            uint32_t prev_color = ctx.lamp.getPixelColor(ctx.lamp.fromXYtoStripIndex(x, y));
+            color = (uint32_t((color >> 24) * opacity + (prev_color >> 16) * (1.f - opacity)) << 16) |
+                    (uint32_t(((color & 0xff0000) >> 16) * opacity + ((prev_color & 0xff00) >> 8) * (1.f - opacity))
+                     << 8) |
+                    uint32_t(((color & 0xff00) >> 8) * opacity + (prev_color & 0xff) * (1.f - opacity));
           }
           else
             color = color >> 8;
@@ -255,7 +235,7 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
     {
       // indexed colormap
       uint32_t frameOffset = 0;
-      for (auto i=0; i<frame; ++i )
+      for (auto i = 0; i < frame; ++i)
         frameOffset += ImageType::indexFrameLength[i];
 
       uint8_t bmask = (1 << ImageType::bitsPerPixel[frame]) - 1;
@@ -270,32 +250,24 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
           uint8_t index = ImageType::indexData[byteOffset + frameOffset];
           if (bitOffset + ImageType::bitsPerPixel[frame] > 8)
           {
-            uint16_t sindex = (index << 8)
-              | ImageType::indexData[byteOffset + 1 + frameOffset];
-            index = (sindex >>
-                     (16 - bitOffset - ImageType::bitsPerPixel[frame]))
-              & bmask;
+            uint16_t sindex = (index << 8) | ImageType::indexData[byteOffset + 1 + frameOffset];
+            index = (sindex >> (16 - bitOffset - ImageType::bitsPerPixel[frame])) & bmask;
           }
           else
-            index = (index >> (8 - bitOffset - ImageType::bitsPerPixel[frame]))
-              & bmask;
+            index = (index >> (8 - bitOffset - ImageType::bitsPerPixel[frame])) & bmask;
 
           uint32_t cmap_off = 0;
-          for (auto i=0; i<frame; ++i)
+          for (auto i = 0; i < frame; ++i)
             cmap_off += ImageType::colormapSize[i];
           uint32_t color = ImageType::colormap[index + cmap_off];
           if (ImageType::hasAlpha)
           {
             float opacity = (color & 0xff) / 255;
-            uint32_t prev_color
-              = ctx.lamp.getPixelColor(ctx.lamp.fromXYtoStripIndex(x, y));
-            color = (uint32_t((color >> 24) * opacity
-                     + (prev_color >> 16) * (1.f - opacity)) << 16)
-              | (uint32_t(((color & 0xff0000) >> 16) * opacity
-                          + ((prev_color & 0xff00) >> 8) * (1.f - opacity))
-                 << 8)
-              | uint32_t(((color & 0xff00) >> 8) * opacity
-                         + (prev_color & 0xff) * (1.f - opacity));
+            uint32_t prev_color = ctx.lamp.getPixelColor(ctx.lamp.fromXYtoStripIndex(x, y));
+            color = (uint32_t((color >> 24) * opacity + (prev_color >> 16) * (1.f - opacity)) << 16) |
+                    (uint32_t(((color & 0xff0000) >> 16) * opacity + ((prev_color & 0xff00) >> 8) * (1.f - opacity))
+                     << 8) |
+                    uint32_t(((color & 0xff00) >> 8) * opacity + (prev_color & 0xff) * (1.f - opacity));
           }
           ctx.lamp.setPixelColorXY(x, y, color);
         }
@@ -306,7 +278,6 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
   /// Hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
 };
-
 
 #include "src/generated/heineken.hpp"
 
@@ -335,9 +306,8 @@ struct NudzViolonsaoulsMode : public NudzScrollImageMode<ViolonsaoulsImageTy>
     std::vector<int8_t> xdirection = {1};     ///< x scroll direction
     std::vector<int8_t> ydirection = {0};     ///< y scroll direction
     std::vector<bool> framesMirror = {false}; ///< frames are mirrores at end of animation
-    std::vector<NudzScrollImageMode::FrameSyncMode> syncFrame = {
-      NudzScrollImageMode::Y}; /// frame sync on 1st image
-    std::vector<uint32_t> frame = {0};          /// current animation frame
+    std::vector<NudzScrollImageMode::FrameSyncMode> syncFrame = {NudzScrollImageMode::Y}; /// frame sync on 1st image
+    std::vector<uint32_t> frame = {0};                                                    /// current animation frame
     std::vector<uint32_t> last_frame_tick = {0};
   };
 };
