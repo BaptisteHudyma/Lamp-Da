@@ -52,8 +52,8 @@ template<typename ImageType> struct NudzScrollImageMode : public BasicMode
     uint16_t imHeight = ImageType::height;
 
     // decal needs a state to keep continuous while speed is changed
-    int32_t xdecal = ctx.state.xdecal + int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed);
-    int32_t ydecal = 0;
+    int32_t xdecal = ctx.state.xdecal + int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed * ctx.state.xdirection);
+    int32_t ydecal = ctx.state.ydecal + int32_t((ctx.lamp.tick - ctx.state.last_tick) * speed * ctx.state.ydirection);
     if (ctx.state.randomScroll)
     {
       xdecal =
