@@ -2,6 +2,68 @@
 
 namespace lampda::modes::custom::nudz {
 
+/**
+ * \brief Display one or several overlaid scrolling images.
+ * User ramp changes scroll speed and direction.
+ *
+ * Templated with a list of images. When several images are used, they are all
+ * drawn in turn, so the 1st has better be opaque and the next ones have better
+ * be masked with a transparent background (sprites).
+ *
+ * Images may be "animated" (series of images), an animation is considered a
+ * singe image here.
+ */
+template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
+{
+
+  /// anim frame sync mode
+  enum FrameSyncMode
+  {
+    X,     ///< sync with 1st image x scrolling
+    Y,     ///< sync with 1st image y scrolling
+    Time,  ///< sync with time, using speed (same as scroll speed)
+  };
+
+  struct StateTy
+  {
+    std::vector<float> minSpeed = {-0.5f};       ///< minimum allowed speed
+    std::vector<float> maxSpeed = {0.5f};        ///< maximum allowed speed
+    std::vector<bool> randomScroll = {false};    ///< random variation of the scroll
+    std::vector<uint32_t> xdecal = {0};          ///< start x coordinates
+    std::vector<uint32_t> ydecal = {0};          ///< start y coordinates
+    std::vector<uint32_t> last_tick = {0};       ///< last called time in microseconds
+    std::vector<int8_t> xdirection = {1};        ///< x scroll direction
+    std::vector<int8_t> ydirection = {0};        ///< y scroll direction
+    std::vector<bool> framesMirror = {false};    ///< frames are mirrored at end of animation
+    std::vector<NudzScrollImageMode::FrameSyncMode> syncFrame = {
+      NudzScrollImageMode::Y};                   /// frame sync on 1st image
+    std::vector<uint32_t> frame = {0};           /// current animation frame
+    std::vector<uint32_t> last_frame_tick = {0}; ///< last time of frame change in microseconds
+  };
+
+  static void on_enter_mode(auto& ctx)
+  {
+    // reset stateful events
+    uint32_t n = std::tuple_size<std::tuple<ImageTypes...> >::value;
+    for(uint32_t i=0; i<n; ++i)
+    {
+      ctx.state.xdecal[i] = 0;
+      ctx.state.ydecal[i] = 0;
+      ctx.state.last_tick[i] = 0;
+    }
+
+    /// prevent the ramp from looping around
+    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
+  }
+
+  static void loop(auto& ctx)
+  {
+    /// call loop_image for each image in the template
+    std::tuple<ImageTypes...> images;
+    uint32_t itstate = 0;
+    std::apply([&](auto&&... arg) { ((loop_image(ctx, arg, itstate++)), ...); }, images);
+  }
+
   template <typename ImageType>
   static void loop_image(auto& ctx,
                          const ImageType & image,
@@ -18,30 +80,57 @@ namespace lampda::modes::custom::nudz {
     else
       speed = 0.f;
 
-    uint32_t frame = uint32_t(abs(int32_t(ctx.lamp.tick * speed)));
-    if (!ctx.state.framesMirror[istate] || ImageType::frames <= 2)
-    {
-      frame = frame % ImageType::frames;
-    }
-    else
-    {
-      frame = frame % (ImageType::frames * 2 - 2);
-      if (frame >= ImageType::frames)
-        frame = ImageType::frames * 2 - frame - 2;
-    }
-    // frame = std::min(2, ImageType::frames - 1);  // DEBUG a fixed frame
+    uint32_t frame = 0;
 
     uint16_t imWidth = ImageType::width[frame];
     uint16_t imHeight = ImageType::height[frame];
 
     // decal needs a state to keep continuous while speed is changed
-    int32_t xdecal = ctx.state.xdecal[istate]
-      + int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed
-                * ctx.state.xdirection[istate]);
-    int32_t ydecal = ctx.state.ydecal[istate]
-      + int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed
-                * ctx.state.ydirection[istate]);
-    if (ctx.state.randomScroll[istate])
+    int32_t xdecal;
+    int32_t ydecal;
+
+    if (!ctx.state.randomScroll[istate])
+    {
+      xdecal = ctx.state.xdecal[istate]
+        + int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed
+                  * ctx.state.xdirection[istate]);
+      ydecal = ctx.state.ydecal[istate]
+        + int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed
+                  * ctx.state.ydirection[istate]);
+
+      switch (ctx.state.syncFrame[istate])
+      {
+        case NudzScrollImageMode::X:
+          frame = istate == 0 ? xdecal : ctx.state.xdecal[0];
+          break;
+        case NudzScrollImageMode::Y:
+          frame = istate == 0 ? ydecal : ctx.state.ydecal[0];
+          break;
+        default:
+          frame = ctx.state.frame[istate]
+            + int32_t((ctx.lamp.tick - ctx.state.last_frame_tick[istate])
+                      * speed);
+      }
+      if (ctx.state.frame[istate] != frame)
+      {
+        ctx.state.frame[istate] = frame;
+        ctx.state.last_frame_tick[istate] = ctx.lamp.tick;
+      }
+      if (!ctx.state.framesMirror[istate] || ImageType::frames <= 2)
+      {
+        frame = frame % ImageType::frames;
+      }
+      else
+      {
+        frame = frame % (ImageType::frames * 2 - 2);
+        if (frame >= ImageType::frames)
+          frame = ImageType::frames * 2 - frame - 2;
+      }
+
+      imWidth = ImageType::width[frame];
+      imHeight = ImageType::height[frame];
+    }
+    else  // random scroll
     {
       xdecal = int32_t(ctx.state.xdecal[istate]) +
                int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed
@@ -59,15 +148,6 @@ namespace lampda::modes::custom::nudz {
             && ctx.state.ydirection[istate] == 0)
           ctx.state.ydirection[istate] = random8(2) * 2 - 1;
       }
-      else if (xdecal + ctx.lamp.maxWidth >= imWidth)
-      {
-        xdecal = imWidth - ctx.lamp.maxWidth - 1;
-        ctx.state.xdirection[istate] *= -random8(2);
-        ctx.state.ydirection[istate] = random8(3) - 1;
-        if (ctx.state.xdirection[istate] == 0
-            && ctx.state.ydirection[istate] == 0)
-          ctx.state.ydirection[istate] = random8(2) * 2 - 1;
-      }
       if (ydecal < 0)
       {
         ydecal = 0;
@@ -77,7 +157,50 @@ namespace lampda::modes::custom::nudz {
             && ctx.state.ydirection[istate] == 0)
           ctx.state.xdirection[istate] = random8(2) * 2 - 1;
       }
-      else if (ydecal + ctx.lamp.maxHeight >= imHeight)
+
+      switch (ctx.state.syncFrame[istate])
+      {
+        case NudzScrollImageMode::X:
+          frame = istate == 0 ? xdecal : ctx.state.xdecal[0];
+          break;
+        case NudzScrollImageMode::Y:
+          frame = istate == 0 ? ydecal : ctx.state.ydecal[0];
+          break;
+        default:
+          frame = ctx.state.frame[istate]
+            + int32_t((ctx.lamp.tick - ctx.state.last_frame_tick[istate])
+                      * speed);
+      }
+      if (ctx.state.frame[istate] != frame)
+      {
+        ctx.state.frame[istate] = frame;
+        ctx.state.last_frame_tick[istate] = ctx.lamp.tick;
+      }
+      if (!ctx.state.framesMirror[istate] || ImageType::frames <= 2)
+      {
+        frame = frame % ImageType::frames;
+      }
+      else
+      {
+        frame = frame % (ImageType::frames * 2 - 2);
+        if (frame >= ImageType::frames)
+          frame = ImageType::frames * 2 - frame - 2;
+      }
+      // frame = std::min(4, ImageType::frames - 1);  // DEBUG a fixed frame
+
+      imWidth = ImageType::width[frame];
+      imHeight = ImageType::height[frame];
+
+      if (xdecal > 0 && xdecal + ctx.lamp.maxWidth >= imWidth)
+      {
+        xdecal = imWidth - ctx.lamp.maxWidth - 1;
+        ctx.state.xdirection[istate] *= -random8(2);
+        ctx.state.ydirection[istate] = random8(3) - 1;
+        if (ctx.state.xdirection[istate] == 0
+            && ctx.state.ydirection[istate] == 0)
+          ctx.state.ydirection[istate] = random8(2) * 2 - 1;
+      }
+      if (ydecal > 0 && ydecal + ctx.lamp.maxHeight >= imHeight)
       {
         ydecal = imHeight - ctx.lamp.maxHeight - 1;
         ctx.state.ydirection[istate] *= -random8(2);
@@ -87,6 +210,7 @@ namespace lampda::modes::custom::nudz {
           ctx.state.xdirection[istate] = random8(2) * 2 - 1;
       }
     }
+
     if (xdecal != ctx.state.xdecal[istate]
         || ydecal != ctx.state.ydecal[istate])
     {
@@ -179,48 +303,10 @@ namespace lampda::modes::custom::nudz {
     }
   }
 
-template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
-{
-
-  struct StateTy
-  {
-    std::vector<float> minSpeed = {-0.5f};    ///< minimum allowed speed
-    std::vector<float> maxSpeed = {0.5f};     ///< maximum allowed speed
-    std::vector<bool> randomScroll = {false}; ///< random variation of the scroll
-    std::vector<uint32_t> xdecal = {0};           ///< start x coordinates
-    std::vector<uint32_t> ydecal = {0};           ///< start y coordinates
-    std::vector<uint32_t> last_tick = {0};        ///< last called time in microseconds
-    std::vector<int8_t> xdirection = {1};     ///< x scroll direction
-    std::vector<int8_t> ydirection = {0};     ///< y scroll direction
-    std::vector<bool> framesMirror = {false}; ///< frames are mirrores at end of animation
-  };
-
-  static void on_enter_mode(auto& ctx)
-  {
-    // reset stateful events
-    uint32_t n = std::tuple_size<std::tuple<ImageTypes...> >::value;
-    for(uint32_t i=0; i<n; ++i)
-    {
-      ctx.state.xdecal[i] = 0;
-      ctx.state.ydecal[i] = 0;
-      ctx.state.last_tick[i] = 0;
-    }
-
-    /// prevent the ramp from looping around
-    ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
-  }
-
-  static void loop(auto& ctx)
-  {
-    std::tuple<ImageTypes...> images;
-    uint32_t itstate = 0;
-    // std::apply([&](auto&&... arg) { ((loop_image<decltype(arg)>(ctx, arg)), ...); }, images);
-    std::apply([&](auto&&... arg) { ((loop_image(ctx, arg, itstate++)), ...); }, images);
-  }
-
   /// Hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
 };
+
 
 #include "src/generated/heineken.hpp"
 
@@ -233,7 +319,7 @@ typedef NudzScrollImageMode<Huit_sixImageTy> NudzHuitSixMode;
 #include "src/generated/violonsaouls.hpp"
 
 /**
- * \brief Display an image "Violon saoul" scrolling around.
+ * \brief Display an image "ViolonSaouls" scrolling around.
  * User ramp changes scroll speed and direction
  */
 struct NudzViolonsaoulsMode : public NudzScrollImageMode<ViolonsaoulsImageTy>
@@ -249,6 +335,10 @@ struct NudzViolonsaoulsMode : public NudzScrollImageMode<ViolonsaoulsImageTy>
     std::vector<int8_t> xdirection = {1};     ///< x scroll direction
     std::vector<int8_t> ydirection = {0};     ///< y scroll direction
     std::vector<bool> framesMirror = {false}; ///< frames are mirrores at end of animation
+    std::vector<NudzScrollImageMode::FrameSyncMode> syncFrame = {
+      NudzScrollImageMode::Y}; /// frame sync on 1st image
+    std::vector<uint32_t> frame = {0};          /// current animation frame
+    std::vector<uint32_t> last_frame_tick = {0};
   };
 };
 
