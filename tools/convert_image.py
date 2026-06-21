@@ -45,6 +45,8 @@ print('has_anim:', has_anim)
 print('out_cls:', out_cls)
 widths = []
 heights = []
+x_offsets = []
+y_offsets = []
 bpps = []
 cmlap_sizes = []
 cmaps = []
@@ -68,12 +70,21 @@ with open(out_src, 'w') as of:
         cmap = {}
         i = 0
         cancel = False
+        pmin = [None, None]
+        pmax = [None, None]
         for y in range(sz[1]):
             for x in range(sz[0]):
                 if image.mode == 'RGBA':
                     r, g, b = btes[i: i+3]
                     if has_alpha:
                         a = btes[i+3]
+                        if a != 0:
+                            if pmin[0] is None:
+                                pmin = [x, y]
+                                pmax = [x, y]
+                            else:
+                                pmin = [min(pmin[0], x), min(pmin[1], y)]
+                                pmax = [max(pmax[0], x), max(pmax[1], y)]
                     i += 4
                 else:
                     r, g, b = btes[i: i+3]
@@ -95,6 +106,12 @@ with open(out_src, 'w') as of:
             if cancel:
                 break
 
+        offset = [0, 0]
+        if has_alpha and pmin[0] is not None:
+            sz[0] = pmax[0] - pmin[0] + 1
+            sz[1] = pmax[1] - pmin[1] + 1
+            offset = pmin
+
         bpp = 32
         if cmap:
             ncol = len(cmap) - 1
@@ -109,8 +126,10 @@ with open(out_src, 'w') as of:
             # print(cmap)
             # print(cmap_i)
 
-        widths.append(image.width)
-        heights.append(image.height)
+        widths.append(sz[0])
+        heights.append(sz[1])
+        x_offsets.append(offset[0])
+        y_offsets.append(offset[1])
         bpps.append(bpp)
         bdata = []
 
@@ -129,8 +148,8 @@ with open(out_src, 'w') as of:
             i = 0
             current = 0
             cbits = 0
-            for y in range(sz[1]):
-                for x in range(sz[0]):
+            for y in range(image.height):
+                for x in range(image.width):
                     if image.mode == 'RGBA':
                         r, g, b = btes[i: i+3]
                         if has_alpha:
@@ -140,6 +159,9 @@ with open(out_src, 'w') as of:
                         r, g, b = btes[i: i+3]
                         a = 0xff
                         i += 3
+                    if x < offset[0] or x >= offset[0] + sz[0] \
+                            or y < offset[1] or y >= offset[1] + sz[1]:
+                        continue  # outside used part
                     if has_alpha:
                         rgb = (r << 24) | (g << 16) | (b << 8) | a
                     else:
@@ -161,7 +183,8 @@ with open(out_src, 'w') as of:
 
         else:
             print('''  static constexpr uint32_t colormapSize = 0;
-    static constexpr uint32_t colormap[] = {};
+    static constexpr uint32_t colorx_offsets = []
+map[] = {};
     static constexpr uint8_t indexData[] = {};
     static constexpr uint32_t rgbData[] = { ''', file=of)
             i = 0
@@ -194,6 +217,12 @@ with open(out_src, 'w') as of:
     print('  static constexpr uint16_t height[] = {        ///< height of the images',
           file=of)
     print('    ' + ', '.join([f'{h}' for h in heights]) + ' };', file=of)
+    print('  static constexpr uint16_t x_offset[] = {      ///< x offset of the images',
+          file=of)
+    print('    ' + ', '.join([f'{w}' for w in x_offsets]) + ' };', file=of)
+    print('  static constexpr uint16_t y_offset[] = {      ///< y offset of the images',
+          file=of)
+    print('    ' + ', '.join([f'{w}' for w in y_offsets]) + ' };', file=of)
     print('  static constexpr uint16_t bitsPerPixel[] = {  ///< used bits per pixel', file=of)
     print('    ' + ', '.join([f'{b}' for b in bpps]) + ' };', file=of)
 
