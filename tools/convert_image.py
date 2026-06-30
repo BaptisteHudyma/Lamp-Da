@@ -108,8 +108,7 @@ with open(out_src, 'w') as of:
 
         offset = [0, 0]
         if has_alpha and pmin[0] is not None:
-            sz[0] = pmax[0] - pmin[0] + 1
-            sz[1] = pmax[1] - pmin[1] + 1
+            sz = (pmax[0] - pmin[0] + 1, pmax[1] - pmin[1] + 1)
             offset = pmin
 
         bpp = 32

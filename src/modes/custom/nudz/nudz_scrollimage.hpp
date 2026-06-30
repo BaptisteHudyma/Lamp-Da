@@ -86,8 +86,6 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
     // decal needs a state to keep continuous while speed is changed
     int32_t xdecal = 0;
     int32_t ydecal = 0;
-    int32_t xdecalf;
-    int32_t ydecalf;
 
     if (!ctx.state.randomScroll[istate])
     {
@@ -123,8 +121,6 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
           frame = ImageType::frames * 2 - frame - 2;
       }
 
-      xdecalf = xdecal - ImageType::x_offset[frame];
-      ydecalf = ydecal - ImageType::y_offset[frame];
       imWidth = ImageType::width[frame];
       imHeight = ImageType::height[frame];
     }
@@ -136,12 +132,9 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
       if (ctx.state.ydirection[istate] != 0)
         ydecal = int32_t(ctx.state.ydecal[istate]) +
                  int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed * ctx.state.ydirection[istate]);
-      xdecalf = xdecal - ImageType::x_offset[frame];
-      ydecalf = ydecal - ImageType::y_offset[frame];
 
       if (xdecal < 0)
       {
-        xdecalf = -ImageType::x_offset[frame];
         xdecal = 0;
         ctx.state.xdirection[istate] *= -random8(2);
         ctx.state.ydirection[istate] = random8(3) - 1;
@@ -150,7 +143,6 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
       }
       if (ydecal < 0)
       {
-        ydecalf = -ImageType::y_offset[frame];
         ydecal = 0;
         ctx.state.ydirection[istate] *= -random8(2);
         ctx.state.xdirection[istate] = random8(3) - 1;
@@ -161,7 +153,7 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
       switch (ctx.state.syncFrame[istate])
       {
         case NudzScrollImageMode::X:
-          frame = istate == 0 ? xdecalf : ctx.state.xdecal[0];
+          frame = istate == 0 ? xdecal : ctx.state.xdecal[0];
           break;
         case NudzScrollImageMode::Y:
           frame = istate == 0 ? ydecal : ctx.state.ydecal[0];
@@ -197,7 +189,7 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
         if (ctx.state.xdirection[istate] == 0 && ctx.state.ydirection[istate] == 0)
           ctx.state.ydirection[istate] = random8(2) * 2 - 1;
       }
-      if (ydecal > 0 && ydecalf + ctx.lamp.maxHeight >= imHeight)
+      if (ydecal > 0 && ydecal + ctx.lamp.maxHeight >= imHeight)
       {
         ydecal = imHeight - ctx.lamp.maxHeight - 1;
         ctx.state.ydirection[istate] *= -random8(2);
@@ -216,6 +208,7 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
 
     uint32_t w = min<uint32_t>(ctx.lamp.maxWidth + 1, imWidth);
     uint32_t h = min<uint32_t>(ctx.lamp.maxHeight, imHeight);
+    uint32_t lx, ly;
     if (ImageType::colormapSize[frame] == 0)
     {
       uint32_t frameOffset = 0;
@@ -223,14 +216,17 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
         frameOffset += ImageType::rgbFrameLength[i];
 
       for (uint32_t y = 0; y < h; ++y)
+      {
+        ly = (y + ImageType::y_offset[frame]) % ctx.lamp.maxHeight;
         for (uint32_t x = 0; x < w; ++x)
         {
+          lx = (x + ImageType::x_offset[frame]) % (ctx.lamp.maxWidth + 1);
           uint32_t color =
-                  ImageType::rgbData[((y + ydecalf) % imHeight) * imWidth + (x + xdecalf) % imWidth + frameOffset];
+                  ImageType::rgbData[((y + ydecal) % imHeight) * imWidth + (x + xdecal) % imWidth + frameOffset];
           if (ImageType::hasAlpha)
           {
             float opacity = (color & 0xff) / 255;
-            uint32_t prev_color = ctx.lamp.getPixelColor(ctx.lamp.fromXYtoStripIndex(x, y));
+            uint32_t prev_color = ctx.lamp.getPixelColor(ctx.lamp.fromXYtoStripIndex(lx, ly));
             color = (uint32_t((color >> 24) * opacity + (prev_color >> 16) * (1.f - opacity)) << 16) |
                     (uint32_t(((color & 0xff0000) >> 16) * opacity + ((prev_color & 0xff00) >> 8) * (1.f - opacity))
                      << 8) |
@@ -238,8 +234,9 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
           }
           else
             color = color >> 8;
-          ctx.lamp.setPixelColorXY(x, y, color);
+          ctx.lamp.setPixelColorXY(lx, ly, color);
         }
+      }
     }
     else
     {
@@ -251,10 +248,12 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
       uint8_t bmask = (1 << ImageType::bitsPerPixel[frame]) - 1;
       for (uint32_t y = 0; y < h; ++y)
       {
-        uint32_t yoffset = ((y + ydecalf) % imHeight) * imWidth;
+        ly = (y + ImageType::y_offset[frame]) % ctx.lamp.maxHeight;
+        uint32_t yoffset = ((y + ydecal) % imHeight) * imWidth;
         for (uint32_t x = 0; x < w; ++x)
         {
-          uint32_t offset = yoffset + (x + xdecalf) % imWidth;
+          lx = (x + ImageType::x_offset[frame]) % (ctx.lamp.maxWidth + 1);
+          uint32_t offset = yoffset + (x + xdecal) % imWidth;
           uint32_t byteOffset = offset * ImageType::bitsPerPixel[frame] / 8;
           uint32_t bitOffset = (offset * ImageType::bitsPerPixel[frame]) % 8;
           uint8_t index = ImageType::indexData[byteOffset + frameOffset];
@@ -273,13 +272,13 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
           if (ImageType::hasAlpha)
           {
             float opacity = (color & 0xff) / 255;
-            uint32_t prev_color = ctx.lamp.getPixelColor(ctx.lamp.fromXYtoStripIndex(x, y));
+            uint32_t prev_color = ctx.lamp.getPixelColor(ctx.lamp.fromXYtoStripIndex(lx, ly));
             color = (uint32_t((color >> 24) * opacity + (prev_color >> 16) * (1.f - opacity)) << 16) |
                     (uint32_t(((color & 0xff0000) >> 16) * opacity + ((prev_color & 0xff00) >> 8) * (1.f - opacity))
                      << 8) |
                     uint32_t(((color & 0xff00) >> 8) * opacity + (prev_color & 0xff) * (1.f - opacity));
           }
-          ctx.lamp.setPixelColorXY(x, y, color);
+          ctx.lamp.setPixelColorXY(lx, ly, color);
         }
       }
     }
