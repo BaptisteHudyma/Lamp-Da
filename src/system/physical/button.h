@@ -14,29 +14,16 @@ namespace physical {
 /// Handle the button inputs and multiple click detection.
 namespace button {
 
-#define RELEASE_BETWEEN_CLICKS 50  ///< minimum release timing (debounce)
-#define RELEASE_TIMING_MS      250 ///< time to release the button after no inputs
-#define HOLD_BUTTON_MIN_MS     500 ///< press and hold delay (ms)
+static constexpr uint32_t thread_throttle_time_ms = 10; ///< thread run frequency timing
+static constexpr uint32_t RELEASE_BETWEEN_CLICKS = 50;  ///< minimum release timing (debounce)
+static constexpr uint32_t RELEASE_TIMING_MS = 250;      ///< time to release the button after no inputs
+static constexpr uint32_t HOLD_BUTTON_MIN_MS = 500;     ///< press and hold delay (ms)
 
+/**
+ * \brief Start the button handler
+ * \param[in] isSystemStartedFromButton Signal to the button that the system was started by a button click
+ */
 void init(const bool isSystemStartedFromButton);
-
-/**
- * \brief handle the button clicked events
- * \param[in] clickSerieCallback A callback for a seri of clicks. Parameter is
- * the number of consequtive clicks detected
- * \param[in] clickHoldSerieCallback A callback for a seri of clicks followed
- * by a long hold. Parameter is the number of consequtive clicks detected and
- * the time of the old event (in milliseconds). Called at until the button is
- * released
- */
-void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
-                   const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback);
-
-/**
- * \brief Indicates that this click is the one triggered by the system start
- * It is set to false after the click chain stops
- */
-bool is_system_start_click();
 
 /**
  * \brief Store the button status and characteristics

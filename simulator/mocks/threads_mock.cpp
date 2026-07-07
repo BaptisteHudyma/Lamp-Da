@@ -30,6 +30,7 @@ namespace threads {
 // extern defines
 const uint32_t pd_taskName = utils::hash("usbpd");
 const uint32_t pdInterruptHandle_taskName = utils::hash("intpd");
+const uint32_t button_taskName = utils::hash("button");
 const uint32_t power_taskName = utils::hash("power");
 const uint32_t user_taskName = utils::hash("user");
 const uint32_t taskScheduler_taskName = utils::hash("task_sched");
@@ -43,6 +44,8 @@ const char* const get_name_from_hash(const uint32_t hash)
       return "usbpd";
     case pdInterruptHandle_taskName:
       return "intpd";
+    case button_taskName:
+      return "button";
     case power_taskName:
       return "power";
     case user_taskName:

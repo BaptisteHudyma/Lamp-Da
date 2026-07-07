@@ -7,10 +7,12 @@
 #include "src/system/utils/utils.h"
 #include "src/system/utils/input_output.h"
 
+#include "src/system/logic/inputs.h"
 #include "src/system/logic/statistics_handler.h"
 
-#include "src/system/platform/time.h"
 #include "src/system/platform/print.h"
+#include "src/system/platform/threads.h"
+#include "src/system/platform/time.h"
 
 namespace lampda {
 namespace physical {
@@ -34,7 +36,7 @@ bool is_button_pressed()
   return not _buttonGpio.is_high();
 }
 
-static bool isSystemStartClick = true;
+static bool isSystemStartClick = true; ///< keep track of the first button click since waking up
 
 static volatile bool wasButtonPressedDetected = false;
 void button_state_interrupt()
@@ -67,42 +69,7 @@ void button_state_interrupt()
   wasButtonPressedDetected = isbuttonStillpressed;
 }
 
-void init(const bool isSystemStartedFromButton)
-{
-  static_assert(RELEASE_BETWEEN_CLICKS < RELEASE_TIMING_MS,
-                "release debounce should always be less than release timing");
-  static_assert((RELEASE_BETWEEN_CLICKS + RELEASE_TIMING_MS) < HOLD_BUTTON_MIN_MS,
-                "button release timing should always be less then the button hold timing");
-  // force reset
-  isSystemStartClick = true;
-  buttonState.reset();
-
-  // attach the button interrupt
-  _buttonGpio.set(_buttonPin);
-  _buttonGpio.set_pin_mode(platform::gpio::DigitalPin::Mode::kInputPullUpSense);
-  _buttonGpio.attach_callback(button_state_interrupt, platform::gpio::DigitalPin::Interrupt::kChange);
-
-  // prevent multiple clicks on start
-  if (isSystemStartedFromButton and buttonState.nbClicksCounted == 0)
-  {
-    // simulate a click
-    wasButtonPressedDetected = true;
-    buttonState.nbClicksCounted = 1;
-    buttonState.lastPressTime = platform::time_ms();
-    buttonState.firstHoldTime = platform::time_ms();
-    buttonState.wasTriggered = true;
-    buttonState.isPressed = true;
-
-    logic::statistics::signal_button_press();
-  }
-  else
-  {
-    isSystemStartClick = false;
-  }
-}
-
-void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
-                   const std::function<void(uint8_t, uint32_t)>& clickHoldSerieCallback)
+void handle_events()
 {
   const bool isButtonPressDetected = wasButtonPressedDetected;
   const uint32_t currentTime = platform::time_ms();
@@ -119,11 +86,19 @@ void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
     // end of button press, trigger callback (press-hold action, or press action)
     if (buttonState.isLongPressed)
     {
-      clickHoldSerieCallback(buttonState.nbClicksCounted, 0);
+      const bool isSuccess = logic::inputs::add_button_press_event(buttonState.nbClicksCounted, 0, isSystemStartClick);
+      if (not isSuccess)
+      {
+        platform::lampda_print("Button: Could not register end of hold event");
+      }
     }
     else
     {
-      clickSerieCallback(buttonState.nbClicksCounted);
+      const bool isSuccess = logic::inputs::add_button_click_event(buttonState.nbClicksCounted, isSystemStartClick);
+      if (not isSuccess)
+      {
+        platform::lampda_print("Button: Could not register end of click event, droping less important events");
+      }
     }
 
     // reset
@@ -149,7 +124,12 @@ void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
     // press detected, trigger
     buttonState.wasTriggered = true;
 
-    clickHoldSerieCallback(buttonState.nbClicksCounted, pressDuration);
+    const bool isSuccess =
+            logic::inputs::add_button_press_event(buttonState.nbClicksCounted, pressDuration, isSystemStartClick);
+    if (not isSuccess)
+    {
+      platform::lampda_print("Button: Could not register hold event");
+    }
   }
 
   // safety : an interrupt may have been missed, and the button is locked in a logic pressed state
@@ -160,7 +140,49 @@ void handle_events(const std::function<void(uint8_t)>& clickSerieCallback,
   }
 }
 
-bool is_system_start_click() { return isSystemStartClick; }
+void button_thread()
+{
+  handle_events();
+
+  platform::delay_ms(thread_throttle_time_ms);
+}
+
+void init(const bool isSystemStartedFromButton)
+{
+  static_assert(RELEASE_BETWEEN_CLICKS < RELEASE_TIMING_MS,
+                "release debounce should always be less than release timing");
+  static_assert((RELEASE_BETWEEN_CLICKS + RELEASE_TIMING_MS) < HOLD_BUTTON_MIN_MS,
+                "button release timing should always be less then the button hold timing");
+
+  // if button if already started, reset it
+  isSystemStartClick = true;
+  buttonState.reset();
+
+  // attach the button interrupt
+  _buttonGpio.set(_buttonPin);
+  _buttonGpio.set_pin_mode(platform::gpio::DigitalPin::Mode::kInputPullUpSense);
+  _buttonGpio.attach_callback(button_state_interrupt, platform::gpio::DigitalPin::Interrupt::kChange);
+
+  // prevent multiple clicks on start
+  if (isSystemStartedFromButton and buttonState.nbClicksCounted == 0)
+  {
+    // simulate a click
+    wasButtonPressedDetected = true;
+    buttonState.nbClicksCounted = 1;
+    buttonState.lastPressTime = platform::time_ms();
+    buttonState.firstHoldTime = platform::time_ms();
+    buttonState.wasTriggered = true;
+    buttonState.isPressed = true;
+
+    logic::statistics::signal_button_press();
+  }
+  else
+  {
+    isSystemStartClick = false;
+  }
+
+  platform::threads::start_thread(button_thread, platform::threads::button_taskName, 2, 255);
+}
 
 } // namespace button
 } // namespace physical

@@ -23,8 +23,12 @@ namespace logic {
 namespace inputs {
 
 // constants
-static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000; /// duration of the brightness ramp
-static constexpr uint32_t BRIGHTNESS_LOOP_UPDATE_EVERY = 20;  /// frequency update of the ramp
+static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000; ///< duration of the brightness ramp
+static constexpr uint32_t BRIGHTNESS_LOOP_UPDATE_EVERY = 20;  ///< frequency update of the ramp
+
+namespace __private {
+utils::Queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
+}
 
 // hold the boolean that configures if button's usermode UI is enabled
 bool isButtonUsermodeEnabled = false;
@@ -94,7 +98,7 @@ bool always_button_click_callback(const uint8_t consecutiveButtonCheck)
 /**
  * \brief Handle inputs when system is turned on
  */
-void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck)
+void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck, const bool isFirstClick)
 {
   // basic "default" UI:
   //  - 1 click: on/off
@@ -105,7 +109,7 @@ void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck)
     // 1 click: shutdown
     case 1:
       // do not turn off on first button press
-      if (not physical::button::is_system_start_click())
+      if (not isFirstClick)
       {
         behavior::set_power_off();
       }
@@ -357,13 +361,13 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
 } // namespace button_press_handles
 
 // call when the button is finally release after a chain of clicks
-void button_clicked_callback(const uint8_t consecutiveButtonCheck)
+void button_clicked_callback(const uint8_t consecutiveButtonCheck, const bool isFirstClick)
 {
   if (consecutiveButtonCheck == 0)
     return;
 
   // guard blocking other actions than "turn off", if not allowed to run
-  if (not behavior::can_system_allowed_to_be_powered() and not physical::button::is_system_start_click())
+  if (not behavior::can_system_allowed_to_be_powered() and not isFirstClick)
   {
     if (consecutiveButtonCheck == 1)
     {
@@ -377,7 +381,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   //
   // Handle system start click
   //
-  if (physical::button::is_system_start_click())
+  if (isFirstClick)
   {
     bool canContinue = button_press_handles::system_start_button_click_callback(consecutiveButtonCheck);
     if (not canContinue)
@@ -419,7 +423,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
   if (behavior::is_user_code_running())
   {
     // system is enabled, handle events
-    button_press_handles::system_enabled_button_click_callback(consecutiveButtonCheck);
+    button_press_handles::system_enabled_button_click_callback(consecutiveButtonCheck, isFirstClick);
   }
   else
   {
@@ -433,7 +437,9 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck)
 
 // call when the button in a chain of clicks with a long press
 // It is called every loop turn while button is pressed
-void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t buttonHoldDuration)
+void button_hold_callback(const uint8_t consecutiveButtonCheck,
+                          const uint32_t buttonHoldDuration,
+                          const bool isFirstClick)
 {
   if (consecutiveButtonCheck == 0)
     return;
@@ -442,13 +448,14 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck, const uint32_t b
   const bool isEndOfHoldEvent = (buttonHoldDuration <= 1);
 
   // rectify hold duration
-  const uint32_t holdDuration =
-          (buttonHoldDuration > HOLD_BUTTON_MIN_MS) ? (buttonHoldDuration - HOLD_BUTTON_MIN_MS) : 0;
+  const uint32_t holdDuration = (buttonHoldDuration > physical::button::HOLD_BUTTON_MIN_MS) ?
+                                        (buttonHoldDuration - physical::button::HOLD_BUTTON_MIN_MS) :
+                                        0;
 
   //
   // "start event" button
   //
-  if (physical::button::is_system_start_click())
+  if (isFirstClick)
   {
     bool canContinue = button_press_handles::system_start_button_hold_callback(
             consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
@@ -507,12 +514,50 @@ void init(const bool wasPoweredByUserInterrupt)
 void loop()
 {
   // loop is not ran in shutdown mode
-  physical::button::handle_events(button_clicked_callback, button_hold_callback);
+
+  // Check a maximum of events per loop turn, has events can be refilled by other threads
+  size_t maxEventsChecks = __private::maxButtonEventStore;
+  while (maxEventsChecks != 0 && __private::buttonEventQueue.has_elements())
+  {
+    maxEventsChecks--;
+    const auto& event = __private::buttonEventQueue.dequeue();
+    if (event.has_value())
+    {
+      const __private::ButtonEvent& buttonEvent = event.value();
+      if (not buttonEvent.isLongPress)
+      {
+        button_clicked_callback(buttonEvent.clickCount, buttonEvent.isStartClick);
+      }
+      else
+      {
+        button_hold_callback(buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isStartClick);
+      }
+    }
+  }
 }
 
 void button_disable_usermode() { isButtonUsermodeEnabled = false; }
 
 bool is_button_usermode_enabled() { return isButtonUsermodeEnabled; }
+
+bool add_button_click_event(uint32_t clickCount, bool isStartClick)
+{
+  __private::ButtonEvent event;
+  event.isStartClick = isStartClick;
+  event.isLongPress = false;
+  event.clickCount = clickCount;
+  return __private::buttonEventQueue.enqueue_element(event);
+}
+
+bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isStartClick)
+{
+  __private::ButtonEvent event;
+  event.isStartClick = isStartClick;
+  event.isLongPress = true;
+  event.clickCount = clickCount;
+  event.longPressDuration = pressDuration;
+  return __private::buttonEventQueue.enqueue_element(event);
+}
 
 } // namespace inputs
 } // namespace logic

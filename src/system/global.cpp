@@ -92,10 +92,14 @@ void main_setup()
           .set_pin_mode(platform::gpio::DigitalPin::Mode::kInputPullUp);
 #endif
 
+  // setup button colors and callbacks very early to catch start clics
+  const bool wasPoweredByUserInterrupt = platform::registers::is_started_from_interrupt();
+  logic::inputs::init(wasPoweredByUserInterrupt);
+
   // enable peripherals (enable i2c lines)
   platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(true);
 
-  // start by resetting the led driver
+  // reset the output driver
   physical::outputPower::write_voltage(0);
 
   // necessary for all i2c communications
@@ -160,10 +164,7 @@ void main_setup()
     }
   }
 
-  const bool wasPoweredByUserInterrupt = platform::registers::is_started_from_interrupt();
-
-  // set up button colors and callbacks
-  logic::inputs::init(wasPoweredByUserInterrupt);
+  // setup imu
   physical::imu::init();
 
   if (shouldAlertUser)
