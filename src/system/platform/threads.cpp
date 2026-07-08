@@ -228,6 +228,11 @@ int wait_notification(const int timeout_ms)
 
 void get_thread_debug(char* textBuff) { vTaskList(textBuff); }
 
+void shutdown()
+{
+  // nothing to do
+}
+
 } // namespace threads
 } // namespace platform
 } // namespace lampda

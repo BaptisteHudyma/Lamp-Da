@@ -311,7 +311,6 @@ template<typename T> struct simulator
         if (mock_registers::isDeepSleep)
         {
           // close all threads
-          mock_registers::shouldStopThreads = true;
           window.close();
           break;
         }

@@ -14,6 +14,7 @@
 
 #include "src/system/platform/i2c.h"
 #include "src/system/platform/time.h"
+#include "src/system/platform/threads.h"
 
 #include "simulator/mocks/electrical/i_ic.h"
 #include "simulator/mocks/electrical/BQ25713_mock.h"
@@ -43,8 +44,14 @@ float inputVbusVoltage;
 float chargeOtgOutput;
 } // namespace mock_electrical
 
-std::atomic<bool> canRunComponentUpdateThread = false;
-std::thread componentUpdateThread;
+void i2c_process_mock_loop()
+{
+  for (const auto& icMock: simulator::icMocks)
+  {
+    icMock->run_electrical_update();
+  }
+  ::lampda::platform::delay_ms(1);
+}
 
 } // namespace simulator
 
@@ -57,17 +64,8 @@ void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
   if (i2cIndex != 0)
     return;
 
-  simulator::canRunComponentUpdateThread = true;
-  simulator::componentUpdateThread = std::thread([&]() {
-    while (simulator::canRunComponentUpdateThread)
-    {
-      for (const auto& icMock: simulator::icMocks)
-      {
-        icMock->run_electrical_update();
-      }
-      platform::delay_ms(1);
-    }
-  });
+  platform::threads::start_thread(simulator::i2c_process_mock_loop, utils::hash("i2c_mock"), 0, 255);
+
   simulator::isI2cAvailable = true;
 }
 
@@ -76,7 +74,6 @@ void i2c_turn_off(uint8_t i2cIndex)
   if (i2cIndex != 0)
     return;
 
-  simulator::canRunComponentUpdateThread = false;
   simulator::isI2cAvailable = false;
 }
 

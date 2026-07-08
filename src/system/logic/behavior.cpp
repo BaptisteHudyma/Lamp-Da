@@ -284,6 +284,9 @@ bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::
  */
 void true_power_off()
 {
+  // shutdown all threads
+  platform::threads::shutdown();
+
   // unmount filesystem
   physical::fileSystem::shutdown();
 

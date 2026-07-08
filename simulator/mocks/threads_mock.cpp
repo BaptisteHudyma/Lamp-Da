@@ -101,10 +101,7 @@ void start_suspended_thread(taskfunc_t taskFunction, uint32_t taskName, const in
   handles.emplace(taskName);
 }
 
-void yield_this_thread()
-{
-  // TODO issue #132
-}
+void yield_this_thread() { std::this_thread::yield(); }
 
 void suspend_this_thread()
 {
@@ -130,6 +127,26 @@ void notify_thread(const uint32_t, int wakeUpEvent) {};
 int wait_notification(const int timeout_ms) { return 0; }
 
 void get_thread_debug(char* textBuff) {}
+
+void shutdown()
+{
+  platform::lampda_print("Initiating thread shutdown process...");
+
+  simulator::mock_registers::shouldStopThreads = true;
+  for (auto& thread: simulator::threadPool)
+  {
+    while (not thread.joinable())
+    {
+      platform::delay_ms(1);
+    }
+
+    thread.join();
+  }
+  simulator::threadPool.clear();
+  handles.clear();
+
+  platform::lampda_print("thread shutdown complete");
+}
 
 } // namespace threads
 } // namespace platform

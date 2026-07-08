@@ -100,6 +100,9 @@ extern "C" {
   // compute and return a debug for threads
   extern void get_thread_debug(char* textBuff);
 
+  /// Shutdown the task driver cleanly
+  extern void shutdown();
+
 #ifdef __cplusplus
 }
 

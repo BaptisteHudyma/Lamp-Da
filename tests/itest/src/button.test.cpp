@@ -31,7 +31,9 @@ protected:
 
   void TearDown() override
   {
-    simulator::mock_registers::shouldStopThreads = true;
+    // shutdown all threads
+    platform::threads::shutdown();
+
     killThread = true;
     if (clickThread.joinable())
       clickThread.join();
