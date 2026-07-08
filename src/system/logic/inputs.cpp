@@ -546,7 +546,7 @@ bool add_button_click_event(uint32_t clickCount, bool isStartClick)
   event.isStartClick = isStartClick;
   event.isLongPress = false;
   event.clickCount = clickCount;
-  return __private::buttonEventQueue.enqueue_element(event);
+  return __private::buttonEventQueue.enqueue(event);
 }
 
 bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isStartClick)
@@ -556,7 +556,7 @@ bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool is
   event.isLongPress = true;
   event.clickCount = clickCount;
   event.longPressDuration = pressDuration;
-  return __private::buttonEventQueue.enqueue_element(event);
+  return __private::buttonEventQueue.enqueue(event);
 }
 
 } // namespace inputs

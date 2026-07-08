@@ -153,6 +153,8 @@ void init(const bool isSystemStartedFromButton)
                 "release debounce should always be less than release timing");
   static_assert((RELEASE_BETWEEN_CLICKS + RELEASE_TIMING_MS) < HOLD_BUTTON_MIN_MS,
                 "button release timing should always be less then the button hold timing");
+  static_assert(thread_throttle_time_ms < RELEASE_BETWEEN_CLICKS,
+                "thread throttle should always be less than the release timing");
 
   // if button if already started, reset it
   isSystemStartClick = true;

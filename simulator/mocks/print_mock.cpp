@@ -38,7 +38,7 @@ class AsyncGetline
 public:
   // AsyncGetline is a class that allows for asynchronous CLI getline-style input
   //(with 0% CPU usage!), which normal iostream usage does not easily allow.
-  AsyncGetline()
+  void start()
   {
     input = "";
     sendOverNextLine = true;
@@ -110,7 +110,7 @@ public:
         // Signal that although this thread will read in the next line,
         // it will not send it over until the processing thread is ready.
         sendOverNextLine = false;
-      } while (continueGettingInput && input != "exit");
+      } while (continueGettingInput);
     }).detach();
   }
 
@@ -185,7 +185,11 @@ namespace platform {
 /**
  * \brief call once at program start
  */
-void init_prints() { platform::threads::start_thread(simulator::print_mock_loop, utils::hash("print_mock"), 0, 255); }
+void init_prints()
+{
+  simulator::get_line_async.start();
+  platform::threads::start_thread(simulator::print_mock_loop, utils::hash("print_mock"), 0, 255);
+}
 
 /**
  * \brief Print a screen to the external world

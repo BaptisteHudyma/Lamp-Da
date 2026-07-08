@@ -8,8 +8,6 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <mutex>
-#include <optional>
 
 namespace lampda {
 namespace utils {
@@ -30,11 +28,10 @@ template<typename T, size_t MaxElements = 10> struct Queue
    * \brief Add an element to the queue.
    * \return false if the element cannot be added
    */
-  bool enqueue_element(const T& element)
+  bool enqueue(const T& element)
   {
     if (currentStoredEvents >= MaxElements)
       return false;
-    std::scoped_lock lock(mut);
 
     Element e;
     e._data = element;
@@ -44,15 +41,26 @@ template<typename T, size_t MaxElements = 10> struct Queue
     return true;
   }
 
+  /// We need a fake optional, has the core is compiled in C++11
+  struct Optional
+  {
+    Optional() : _hasValue(false) {}
+    Optional(T val) : _hasValue(true), _value(val) {}
+    bool has_value() const { return _hasValue; }
+    T value() const { return _hasValue ? _value : T(); }
+
+  private:
+    bool _hasValue = false;
+    T _value;
+  };
+
   /**
    * \brief Remove and return the first element from the queue, or nothing
    */
-  std::optional<T> dequeue()
+  Optional dequeue()
   {
     if (currentStoredEvents <= 0)
-      return std::nullopt;
-
-    std::scoped_lock lock(mut);
+      return Optional();
 
     // store first element
     const Element toReturn = _queueData[0];
@@ -64,11 +72,10 @@ template<typename T, size_t MaxElements = 10> struct Queue
     }
     // remove the element
     currentStoredEvents -= 1;
-    return toReturn._data;
+    return Optional(toReturn._data);
   }
 
 private:
-  std::mutex mut;
   size_t currentStoredEvents = 0;
   std::array<Element, MaxElements> _queueData;
 };

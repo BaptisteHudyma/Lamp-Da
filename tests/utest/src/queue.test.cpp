@@ -17,11 +17,11 @@ TEST(test_queue, simple_value_queue)
   // can add up to N elements
   for (uint8_t i = 0; i < elementMaxCnt; i++)
   {
-    ASSERT_TRUE(queue.enqueue_element(i));
+    ASSERT_TRUE(queue.enqueue(i));
     ASSERT_TRUE(queue.has_elements());
   }
   // N+1 cannot be added
-  ASSERT_FALSE(queue.enqueue_element(elementMaxCnt));
+  ASSERT_FALSE(queue.enqueue(elementMaxCnt));
   ASSERT_TRUE(queue.has_elements());
 
   // can dequeue N elements, in order of insertion
@@ -50,7 +50,7 @@ TEST(test_queue, complex_enqueue_dequeue)
   // can add 10 elements
   for (uint8_t i = 0; i < 10; i++)
   {
-    ASSERT_TRUE(queue.enqueue_element(i));
+    ASSERT_TRUE(queue.enqueue(i));
     ASSERT_TRUE(queue.has_elements());
   }
 
@@ -66,7 +66,7 @@ TEST(test_queue, complex_enqueue_dequeue)
   // can add 7
   for (uint8_t i = 0; i < 7; i++)
   {
-    ASSERT_TRUE(queue.enqueue_element(i));
+    ASSERT_TRUE(queue.enqueue(i));
     ASSERT_TRUE(queue.has_elements());
   }
 

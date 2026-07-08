@@ -84,7 +84,6 @@ public:
         // remove one active element
         if (activeUiElements > 0)
           --activeUiElements;
-        platform::lampda_print("delete element %d", i);
       }
       else
       {

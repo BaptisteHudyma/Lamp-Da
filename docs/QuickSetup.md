@@ -33,7 +33,7 @@ Depending on your setup (Ubuntu, WSL, Fedora, Archlinux, …) you may need to
 install other packages, such as `arduino-cli` or `arduino-ide` as described
 below.
 
-## Arduino Setup
+## Other depencies
 
 You will need to:
 
@@ -55,7 +55,7 @@ you may try the following recipe to make it available locally:
 ```sh
 # also download+install arduino-cli in $SRC_DIR/_build/arduino-cli/
 cd LampColorControler
-make arduino-cli-download safe-install
+make arduino-cli-download
 ```
 
 Now that `arduino-cli` is available, if you find yourself in trouble
