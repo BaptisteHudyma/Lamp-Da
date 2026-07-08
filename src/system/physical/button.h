@@ -14,10 +14,11 @@ namespace physical {
 /// Handle the button inputs and multiple click detection.
 namespace button {
 
-static constexpr uint32_t thread_throttle_time_ms = 10; ///< thread run frequency timing
-static constexpr uint32_t RELEASE_BETWEEN_CLICKS = 50;  ///< minimum release timing (debounce)
-static constexpr uint32_t RELEASE_TIMING_MS = 250;      ///< time to release the button after no inputs
-static constexpr uint32_t HOLD_BUTTON_MIN_MS = 500;     ///< press and hold delay (ms)
+static constexpr uint32_t thread_throttle_time_ms = 10;   ///< thread run frequency timing
+static constexpr uint32_t RELEASE_BETWEEN_CLICKS = 50;    ///< minimum release timing (debounce)
+static constexpr uint32_t RELEASE_TIMING_CLICKS_MS = 250; ///< time to release the button after clicks stops
+static constexpr uint32_t RELEASE_TIMING_HOLDS_MS = 125;  ///< time to release the button after hold stops
+static constexpr uint32_t HOLD_BUTTON_MIN_MS = 500;       ///< press and hold delay (ms)
 
 /**
  * \brief Start the button handler

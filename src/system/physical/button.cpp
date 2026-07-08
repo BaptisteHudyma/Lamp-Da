@@ -48,16 +48,13 @@ void button_state_interrupt()
   {
     const uint32_t currentTime = platform::time_ms();
     // small delay since button press, register a click
-    if ((currentTime - buttonState.lastPressTime) > RELEASE_BETWEEN_CLICKS)
+    if (!buttonState.isLongPressed and (currentTime - buttonState.lastPressTime) > RELEASE_BETWEEN_CLICKS)
     {
-      if (!buttonState.isLongPressed)
-      {
-        buttonState.nbClicksCounted += 1;
-        buttonState.firstHoldTime = currentTime;
+      buttonState.nbClicksCounted += 1;
+      buttonState.firstHoldTime = currentTime;
 
-        // stat update
-        logic::statistics::signal_button_press();
-      }
+      // stat update
+      logic::statistics::signal_button_press();
     }
     // update trigger flags
     buttonState.lastPressTime = currentTime;
@@ -80,13 +77,14 @@ void handle_events()
   buttonState.isLongPressed = (buttonState.isPressed and pressDuration > HOLD_BUTTON_MIN_MS);
 
   // remove button clicked if last call was too long ago (and an action is currently handled)
-  if (buttonState.wasTriggered and
-      ((sinceLastCall > RELEASE_TIMING_MS) or (buttonState.isLongPressed and sinceLastCall > RELEASE_TIMING_MS / 2)))
+  if (buttonState.wasTriggered and ((not buttonState.isLongPressed and sinceLastCall > RELEASE_TIMING_CLICKS_MS) or
+                                    (buttonState.isLongPressed and sinceLastCall > RELEASE_TIMING_HOLDS_MS)))
   {
     // end of button press, trigger callback (press-hold action, or press action)
     if (buttonState.isLongPressed)
     {
-      const bool isSuccess = logic::inputs::add_button_press_event(buttonState.nbClicksCounted, 0, isSystemStartClick);
+      const bool isSuccess = logic::inputs::add_button_press_event(
+              buttonState.nbClicksCounted, pressDuration, true, isSystemStartClick);
       if (not isSuccess)
       {
         platform::lampda_print("Button: Could not register end of hold event");
@@ -124,8 +122,8 @@ void handle_events()
     // press detected, trigger
     buttonState.wasTriggered = true;
 
-    const bool isSuccess =
-            logic::inputs::add_button_press_event(buttonState.nbClicksCounted, pressDuration, isSystemStartClick);
+    const bool isSuccess = logic::inputs::add_button_press_event(
+            buttonState.nbClicksCounted, pressDuration, false, isSystemStartClick);
     if (not isSuccess)
     {
       platform::lampda_print("Button: Could not register hold event");
@@ -149,10 +147,14 @@ void button_thread()
 
 void init(const bool isSystemStartedFromButton)
 {
-  static_assert(RELEASE_BETWEEN_CLICKS < RELEASE_TIMING_MS,
-                "release debounce should always be less than release timing");
-  static_assert((RELEASE_BETWEEN_CLICKS + RELEASE_TIMING_MS) < HOLD_BUTTON_MIN_MS,
-                "button release timing should always be less then the button hold timing");
+  static_assert(RELEASE_BETWEEN_CLICKS < RELEASE_TIMING_CLICKS_MS,
+                "release debounce should always be less than click release timing");
+  static_assert((RELEASE_BETWEEN_CLICKS + RELEASE_TIMING_CLICKS_MS) < HOLD_BUTTON_MIN_MS,
+                "button click release timing should always be less then the button hold timing");
+  static_assert(RELEASE_BETWEEN_CLICKS < RELEASE_TIMING_HOLDS_MS,
+                "release debounce should always be less than hold release timing");
+  static_assert((RELEASE_BETWEEN_CLICKS + RELEASE_TIMING_HOLDS_MS) < HOLD_BUTTON_MIN_MS,
+                "button hold release timing should always be less then the button hold timing");
   static_assert(thread_throttle_time_ms < RELEASE_BETWEEN_CLICKS,
                 "thread throttle should always be less than the release timing");
 

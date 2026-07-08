@@ -18,10 +18,11 @@ namespace __private {
 
 struct ButtonEvent
 {
-  bool isStartClick = false;  ///< indicates if this click is the first of the system
-  bool isLongPress = false;   ///< indicates if this is a long press click
-  uint32_t longPressDuration; ///< during a long press click, this is the press time. It goes to zero on release
-  uint32_t clickCount;        ///< keep track of the number of clicks of the chain
+  bool isStartClick = false;     ///< indicates if this click is the first of the system
+  bool isLongPress = false;      ///< indicates if this is a long press click
+  uint32_t longPressDuration;    ///< during a long press click, this is the press time. It goes to zero on release
+  uint32_t clickCount;           ///< keep track of the number of clicks of the chain
+  bool isEndOfLongPress = false; ///< indicates if this is the end call of a long press click
 };
 
 static constexpr size_t maxButtonEventStore =
@@ -47,7 +48,7 @@ bool is_button_usermode_enabled();
 /// Signal a button click event
 bool add_button_click_event(uint32_t clickCount, bool isStartClick);
 /// Signal a button press event
-bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isStartClick);
+bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress, bool isStartClick);
 
 } // namespace inputs
 } // namespace logic

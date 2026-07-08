@@ -102,7 +102,7 @@ TEST_F(ButtonFixture, turn_on_start_click_early_release)
     ASSERT_EQ(clickCount, 1);
     ASSERT_TRUE(isFirstClick);
   };
-  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isFirstClick) {
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
     isTestDone = true;
     ADD_FAILURE() << "long click when a short click serie was expected";
   };
@@ -127,7 +127,10 @@ TEST_F(ButtonFixture, turn_on_start_click_early_release)
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isStartClick);
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
       }
     }
   }
@@ -146,7 +149,7 @@ TEST_F(ButtonFixture, turn_on_start_click)
     ASSERT_EQ(clickCount, 1);
     ASSERT_TRUE(isFirstClick);
   };
-  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isFirstClick) {
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
     isTestDone = true;
     ADD_FAILURE() << "long click when a short click serie was expected";
   };
@@ -178,7 +181,10 @@ TEST_F(ButtonFixture, turn_on_start_click)
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isStartClick);
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
       }
     }
   }
@@ -200,7 +206,7 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
     ASSERT_EQ(clickCount, desiredClicks);
     ASSERT_TRUE(isFirstClick);
   };
-  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isFirstClick) {
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
     isTestDone = true;
     ADD_FAILURE() << "long click when a short click serie was expected";
   };
@@ -234,7 +240,10 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isStartClick);
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
       }
     }
   }
@@ -253,21 +262,13 @@ TEST_F(ButtonFixture, turn_on_start_long_click)
     isTestDone = true;
     ADD_FAILURE() << "short click when a long click was expected";
   };
-  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isFirstClick) {
-    if (clickDuration > 0)
-    {
-      EXPECT_EQ(clickCount, 1);
-      EXPECT_LT(clickDuration, 1000 * 1.5);
-      EXPECT_TRUE(isFirstClick);
-    }
-    else
-    {
-      EXPECT_EQ(clickCount, 1);
-      // end of long click is always zero duration
-      EXPECT_EQ(clickDuration, 0);
-      EXPECT_TRUE(isFirstClick);
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
+    EXPECT_LT(clickDuration, 1000 * 1.5);
+    EXPECT_EQ(clickCount, 1);
+    EXPECT_TRUE(isFirstClick);
+
+    if (isEndOfPress)
       isTestDone = true;
-    }
   };
 
   // signal button on
@@ -297,7 +298,10 @@ TEST_F(ButtonFixture, turn_on_start_long_click)
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isStartClick);
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
       }
     }
   }
@@ -318,21 +322,13 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
     isTestDone = true;
     ADD_FAILURE() << "short click when a long click was expected";
   };
-  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isFirstClick) {
-    if (clickDuration > 0)
-    {
-      EXPECT_EQ(clickCount, desiredClicks);
-      EXPECT_LT(clickDuration, 1000 * 1.5);
-      EXPECT_TRUE(isFirstClick);
-    }
-    else
-    {
-      EXPECT_EQ(clickCount, desiredClicks);
-      // end of long click is always zero duration
-      EXPECT_EQ(clickDuration, 0);
-      EXPECT_TRUE(isFirstClick);
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
+    EXPECT_EQ(clickCount, desiredClicks);
+    EXPECT_LT(clickDuration, 1000 * 1.5);
+    EXPECT_TRUE(isFirstClick);
+
+    if (isEndOfPress)
       isTestDone = true;
-    }
   };
 
   // signal button on
@@ -365,7 +361,10 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isStartClick);
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
       }
     }
   }
@@ -390,13 +389,13 @@ TEST_F(ButtonFixture, debounce)
     ADD_FAILURE() << "short click when a long click serie was expected";
     isTestDone = true;
   };
-  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isFirstClick) {
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
     // only one click count, other are debounced
     ASSERT_EQ(clickCount, 1);
     ASSERT_TRUE(isFirstClick);
 
     // test is done when all clicks are done
-    if (clickDuration <= 0)
+    if (isEndOfPress)
       isTestDone = true;
   };
 
@@ -422,7 +421,10 @@ TEST_F(ButtonFixture, debounce)
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isStartClick);
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
       }
     }
   }
@@ -453,7 +455,7 @@ TEST_F(ButtonFixture, standard_multiple_click)
       isTestDone = true;
     }
   };
-  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isFirstClick) {
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
     isTestDone = true;
     ADD_FAILURE() << "long click when a short click serie was expected";
   };
@@ -487,7 +489,10 @@ TEST_F(ButtonFixture, standard_multiple_click)
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isStartClick);
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
       }
     }
   }

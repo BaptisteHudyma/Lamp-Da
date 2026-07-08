@@ -439,13 +439,11 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck, const bool is
 // It is called every loop turn while button is pressed
 void button_hold_callback(const uint8_t consecutiveButtonCheck,
                           const uint32_t buttonHoldDuration,
+                          const bool isEndOfPress,
                           const bool isFirstClick)
 {
   if (consecutiveButtonCheck == 0)
     return;
-
-  // compute parameters of the "press-hold" action
-  const bool isEndOfHoldEvent = (buttonHoldDuration <= 1);
 
   // rectify hold duration
   const uint32_t holdDuration = (buttonHoldDuration > physical::button::HOLD_BUTTON_MIN_MS) ?
@@ -457,15 +455,15 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
   //
   if (isFirstClick)
   {
-    bool canContinue = button_press_handles::system_start_button_hold_callback(
-            consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
+    bool canContinue =
+            button_press_handles::system_start_button_hold_callback(consecutiveButtonCheck, isEndOfPress, holdDuration);
     if (not canContinue)
       return;
 
     const bool isStartedInLockout = logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
     if (not isStartedInLockout)
     {
-      canContinue = user::button_start_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
+      canContinue = user::button_start_hold_default(consecutiveButtonCheck, isEndOfPress, holdDuration);
       if (not canContinue)
         return;
     }
@@ -481,7 +479,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
   if (isButtonUsermodeEnabled)
   {
     const bool canContinue =
-            button_press_handles::usermode_button_hold_callback(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
+            button_press_handles::usermode_button_hold_callback(consecutiveButtonCheck, isEndOfPress, holdDuration);
     if (not canContinue)
       return;
   }
@@ -490,7 +488,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
   // "button always handled" actions
   //
   const bool canContinue =
-          button_press_handles::always_button_hold_callback(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
+          button_press_handles::always_button_hold_callback(consecutiveButtonCheck, isEndOfPress, holdDuration);
   // dont handle events if false
   if (not canContinue)
     return;
@@ -501,7 +499,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
   if (behavior::is_user_code_running())
   {
     // handle user inputs
-    button_press_handles::system_enabled_button_hold_callback(consecutiveButtonCheck, isEndOfHoldEvent, holdDuration);
+    button_press_handles::system_enabled_button_hold_callback(consecutiveButtonCheck, isEndOfPress, holdDuration);
   }
 }
 
@@ -515,7 +513,7 @@ void loop()
 {
   // loop is not ran in shutdown mode
 
-  // Check a maximum of events per loop turn, has events can be refilled by other threads
+  // Check a maximum of events per loop turn, events can be refilled by other threads
   size_t maxEventsChecks = __private::maxButtonEventStore;
   while (maxEventsChecks != 0 && __private::buttonEventQueue.has_elements())
   {
@@ -530,7 +528,10 @@ void loop()
       }
       else
       {
-        button_hold_callback(buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isStartClick);
+        button_hold_callback(buttonEvent.clickCount,
+                             buttonEvent.longPressDuration,
+                             buttonEvent.isEndOfLongPress,
+                             buttonEvent.isStartClick);
       }
     }
   }
@@ -549,13 +550,14 @@ bool add_button_click_event(uint32_t clickCount, bool isStartClick)
   return __private::buttonEventQueue.enqueue(event);
 }
 
-bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isStartClick)
+bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress, bool isStartClick)
 {
   __private::ButtonEvent event;
-  event.isStartClick = isStartClick;
   event.isLongPress = true;
   event.clickCount = clickCount;
+  event.isEndOfLongPress = isEndOfPress;
   event.longPressDuration = pressDuration;
+  event.isStartClick = isStartClick;
   return __private::buttonEventQueue.enqueue(event);
 }
 
