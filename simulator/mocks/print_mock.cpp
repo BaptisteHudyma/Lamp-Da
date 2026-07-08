@@ -165,13 +165,14 @@ private:
 };
 
 AsyncGetline get_line_async;
+std::mutex mut;
 
 void print_mock_loop()
 {
   const std::string& s = get_line_async.GetLine();
   if (not s.empty())
   {
-    std::scoped_lock(mut);
+    std::scoped_lock lock(simulator::mut);
     inputCommands.push_back(s);
   }
 }
@@ -189,11 +190,10 @@ void init_prints() { platform::threads::start_thread(simulator::print_mock_loop,
 /**
  * \brief Print a screen to the external world
  */
-std::mutex mut;
 
 void lampda_print_raw(const char* format, ...)
 {
-  std::scoped_lock(mut);
+  std::scoped_lock lock(simulator::mut);
 
   static char buffer[1024];
   va_list argptr;
@@ -206,7 +206,7 @@ void lampda_print_raw(const char* format, ...)
 
 void lampda_print(const char* format, ...)
 {
-  std::scoped_lock(mut);
+  std::scoped_lock lock(simulator::mut);
 
   static char buffer[1024];
   va_list argptr;

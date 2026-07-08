@@ -26,6 +26,7 @@
 #include "src/system/platform/time.h"
 #include "src/system/platform/registers.h"
 #include "src/system/platform/threads.h"
+#include "src/system/platform/print.h"
 
 #include "src/system/ext/random8.h"
 #include <cstdint>
@@ -127,7 +128,7 @@ void main_setup()
   // check if we are in first boot mode (read parameters fails)
   const bool isFirstBoot = not logic::behavior::read_parameters();
 #ifdef LMBD_SIMULATION
-  fprintf(stderr, "Is first time boot %d\n", isFirstBoot);
+  platform::lampda_print("Is first time boot %d", isFirstBoot);
 #endif
 
   // can start !
