@@ -89,6 +89,9 @@ void handle_events()
       {
         platform::lampda_print("Button: Could not register end of hold event");
       }
+      else
+        platform::lampda_print(
+                "Button: Registered %d clicks and %d ms press", buttonState.nbClicksCounted, pressDuration);
     }
     else
     {
@@ -97,6 +100,8 @@ void handle_events()
       {
         platform::lampda_print("Button: Could not register end of click event, droping less important events");
       }
+      else
+        platform::lampda_print("Button: Registered %d clicks", buttonState.nbClicksCounted);
     }
 
     // reset
