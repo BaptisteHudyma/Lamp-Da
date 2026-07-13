@@ -36,8 +36,6 @@ bool is_button_pressed()
   return not _buttonGpio.is_high();
 }
 
-static bool isSystemStartClick = true; ///< keep track of the first button click since waking up
-
 static volatile bool wasButtonPressedDetected = false;
 void button_state_interrupt()
 {
@@ -83,8 +81,7 @@ void handle_events()
     // end of button press, trigger callback (press-hold action, or press action)
     if (buttonState.isLongPressed)
     {
-      const bool isSuccess = logic::inputs::add_button_press_event(
-              buttonState.nbClicksCounted, pressDuration, true, isSystemStartClick);
+      const bool isSuccess = logic::inputs::add_button_press_event(buttonState.nbClicksCounted, pressDuration, true);
       if (not isSuccess)
       {
         platform::lampda_print("Button: Could not register end of hold event");
@@ -95,7 +92,7 @@ void handle_events()
     }
     else
     {
-      const bool isSuccess = logic::inputs::add_button_click_event(buttonState.nbClicksCounted, isSystemStartClick);
+      const bool isSuccess = logic::inputs::add_button_click_event(buttonState.nbClicksCounted);
       if (not isSuccess)
       {
         platform::lampda_print("Button: Could not register end of click event, droping less important events");
@@ -105,8 +102,6 @@ void handle_events()
     }
 
     // reset
-    isSystemStartClick = false;
-
     buttonState.isPressed = false;
     buttonState.isLongPressed = false;
     buttonState.nbClicksCounted = 0;
@@ -127,8 +122,7 @@ void handle_events()
     // press detected, trigger
     buttonState.wasTriggered = true;
 
-    const bool isSuccess = logic::inputs::add_button_press_event(
-            buttonState.nbClicksCounted, pressDuration, false, isSystemStartClick);
+    const bool isSuccess = logic::inputs::add_button_press_event(buttonState.nbClicksCounted, pressDuration, false);
     if (not isSuccess)
     {
       // ok: just a ramp event miss can happen without a problem
@@ -165,7 +159,6 @@ void init(const bool isSystemStartedFromButton)
                 "thread throttle should always be less than the release timing");
 
   // if button if already started, reset it
-  reset_first_click();
   buttonState.reset();
 
   // attach the button interrupt
@@ -186,15 +179,9 @@ void init(const bool isSystemStartedFromButton)
 
     logic::statistics::signal_button_press();
   }
-  else
-  {
-    isSystemStartClick = false;
-  }
 
   platform::threads::start_thread(button_thread, platform::threads::button_taskName, 2, 255);
 }
-
-void reset_first_click() { isSystemStartClick = true; }
 
 } // namespace button
 } // namespace physical

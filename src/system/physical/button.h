@@ -26,9 +26,6 @@ static constexpr uint32_t HOLD_BUTTON_MIN_MS = 500;       ///< press and hold de
  */
 void init(const bool isSystemStartedFromButton);
 
-/// Call to reset the first click state
-void reset_first_click();
-
 /**
  * \brief Store the button status and characteristics
  */

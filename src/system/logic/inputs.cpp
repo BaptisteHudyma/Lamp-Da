@@ -30,7 +30,9 @@ namespace __private {
 utils::Queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
 }
 
-// hold the boolean that configures if button's usermode UI is enabled
+/// holds the state of system on
+bool isSystemOn = false;
+/// hold the boolean that configures if button's usermode UI is enabled
 bool isButtonUsermodeEnabled = false;
 
 namespace button_press_handles {
@@ -557,23 +559,18 @@ void loop()
       const __private::ButtonEvent& buttonEvent = event.value();
       if (not buttonEvent.isLongPress)
       {
-        button_clicked_callback(buttonEvent.clickCount, buttonEvent.isStartClick);
+        button_clicked_callback(buttonEvent.clickCount, not isSystemOn);
       }
       else
       {
-        button_hold_callback(buttonEvent.clickCount,
-                             buttonEvent.longPressDuration,
-                             buttonEvent.isEndOfLongPress,
-                             buttonEvent.isStartClick);
+        button_hold_callback(
+                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, not isSystemOn);
       }
-    }
-  }
 
-  // button pressed, lamp was off and lamp is still off: reset first click
-  if (not behavior::is_system_should_be_powered())
-  {
-    // enable start click again
-    physical::button::reset_first_click();
+      // update system on
+      if (not buttonEvent.isLongPress or buttonEvent.isEndOfLongPress)
+        isSystemOn = behavior::is_system_should_be_powered();
+    }
   }
 }
 
@@ -581,23 +578,21 @@ void button_disable_usermode() { isButtonUsermodeEnabled = false; }
 
 bool is_button_usermode_enabled() { return isButtonUsermodeEnabled; }
 
-bool add_button_click_event(uint32_t clickCount, bool isStartClick)
+bool add_button_click_event(uint32_t clickCount)
 {
   __private::ButtonEvent event;
-  event.isStartClick = isStartClick;
   event.isLongPress = false;
   event.clickCount = clickCount;
   return __private::buttonEventQueue.enqueue(event);
 }
 
-bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress, bool isStartClick)
+bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress)
 {
   __private::ButtonEvent event;
   event.isLongPress = true;
   event.clickCount = clickCount;
   event.isEndOfLongPress = isEndOfPress;
   event.longPressDuration = pressDuration;
-  event.isStartClick = isStartClick;
   return __private::buttonEventQueue.enqueue(event);
 }
 
