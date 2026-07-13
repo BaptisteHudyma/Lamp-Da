@@ -81,5 +81,5 @@ var searchData=
   ['go_5fto_5fotg_5fmode_78',['go_to_otg_mode',['../namespacelampda_1_1logic_1_1power.html#aef44f8870442bf63d6cfc055b46ee805',1,'lampda::logic::power']]],
   ['go_5fto_5foutput_5fmode_79',['go_to_output_mode',['../namespacelampda_1_1logic_1_1power.html#a691f8e6d92c316cbb5f452550d8f7bf2',1,'lampda::logic::power']]],
   ['go_5fto_5fshutdown_80',['go_to_shutdown',['../namespacelampda_1_1logic_1_1power.html#ae22c358a69f172b32c864b818b44889c',1,'lampda::logic::power']]],
-  ['go_5fto_5fsleep_81',['go_to_sleep',['../namespacelampda_1_1platform_1_1registers.html#ace6157c8d97ed1c4492249fbae3c575d',1,'lampda::platform::registers::go_to_sleep()'],['../namespacelampda_1_1power_1_1balancer.html#a5a4c7bef5ecb235cf01be7c08ea71b21',1,'lampda::power::balancer::go_to_sleep()']]]
+  ['go_5fto_5fsleep_81',['go_to_sleep',['../namespacelampda_1_1platform_1_1registers.html#a71d01e46f4892010a518a3ba30bc2aad',1,'lampda::platform::registers::go_to_sleep()'],['../namespacelampda_1_1power_1_1balancer.html#a5a4c7bef5ecb235cf01be7c08ea71b21',1,'lampda::power::balancer::go_to_sleep()']]]
 ];

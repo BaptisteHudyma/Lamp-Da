@@ -128,9 +128,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_started_from_inter
 float&#160;</td><td class="memItemRight" valign="bottom"><b>read_CPU_temperature_degreesC</b> ()</td></tr>
 <tr class="memdesc:ad4082fca655f5587b7eb05dca610cbd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">make a read of the CPU temp <br /></td></tr>
 <tr class="separator:ad4082fca655f5587b7eb05dca610cbd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace6157c8d97ed1c4492249fbae3c575d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1registers.html#ace6157c8d97ed1c4492249fbae3c575d">go_to_sleep</a> (const int wakeUpPin)</td></tr>
-<tr class="memdesc:ace6157c8d97ed1c4492249fbae3c575d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Put the system to sleep, with a wake up pin.  <br /></td></tr>
-<tr class="separator:ace6157c8d97ed1c4492249fbae3c575d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71d01e46f4892010a518a3ba30bc2aad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1registers.html#a71d01e46f4892010a518a3ba30bc2aad">go_to_sleep</a> (const int wakeUpPin, const bool wakeUpOnRelease)</td></tr>
+<tr class="memdesc:a71d01e46f4892010a518a3ba30bc2aad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Put the system to sleep, with a wake up pin.  <br /></td></tr>
+<tr class="separator:a71d01e46f4892010a518a3ba30bc2aad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Define the interaction layer with the system specific registers. </p>
@@ -155,8 +155,8 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>read_CPU_temperature
 
 </div>
 </div>
-<a id="ace6157c8d97ed1c4492249fbae3c575d" name="ace6157c8d97ed1c4492249fbae3c575d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ace6157c8d97ed1c4492249fbae3c575d">&#9670;&#160;</a></span>go_to_sleep()</h2>
+<a id="a71d01e46f4892010a518a3ba30bc2aad" name="a71d01e46f4892010a518a3ba30bc2aad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71d01e46f4892010a518a3ba30bc2aad">&#9670;&#160;</a></span>go_to_sleep()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -165,8 +165,18 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>read_CPU_temperature
           <td class="memname">void lampda::platform::registers::go_to_sleep </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>wakeUpPin</em></td><td>)</td>
+          <td class="paramname"><em>wakeUpPin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>wakeUpOnRelease</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -175,6 +185,7 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>read_CPU_temperature
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">wakeUpPin</td><td>Pin id, defined by the system, that will be used to wake up again </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">wakeUpOnRelease</td><td>If true, the system will power on whent the button pin is released. </td></tr>
   </table>
   </dd>
 </dl>
