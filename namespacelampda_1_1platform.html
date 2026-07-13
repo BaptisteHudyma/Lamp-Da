@@ -127,9 +127,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>_unlockPrintMutex</b>
 <tr class="memitem:a22cf4c37e937c1b345f33fb7de8a5762"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#a22cf4c37e937c1b345f33fb7de8a5762">init_prints</a> ()</td></tr>
 <tr class="memdesc:a22cf4c37e937c1b345f33fb7de8a5762"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print and debug function to serial port.  <br /></td></tr>
 <tr class="separator:a22cf4c37e937c1b345f33fb7de8a5762"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afac0cd0bf9072a0e6dd309da6b85ebcf"><td class="memItemLeft" align="right" valign="top"><a id="afac0cd0bf9072a0e6dd309da6b85ebcf" name="afac0cd0bf9072a0e6dd309da6b85ebcf"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda_print_raw</b> (const char *format,...)</td></tr>
-<tr class="memdesc:afac0cd0bf9072a0e6dd309da6b85ebcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">raw print, no system additional logs <br /></td></tr>
+<tr class="memitem:afac0cd0bf9072a0e6dd309da6b85ebcf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#afac0cd0bf9072a0e6dd309da6b85ebcf">lampda_print_raw</a> (const char *format,...)</td></tr>
+<tr class="memdesc:afac0cd0bf9072a0e6dd309da6b85ebcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">raw print, no system additional logs  <br /></td></tr>
 <tr class="separator:afac0cd0bf9072a0e6dd309da6b85ebcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f6bba8037b206187803f77e1717c367"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#a5f6bba8037b206187803f77e1717c367">lampda_print</a> (const char *format,...)</td></tr>
 <tr class="separator:a5f6bba8037b206187803f77e1717c367"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -176,10 +175,6 @@ constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxReadL
 <tr class="memitem:ae872ecc241511b6e953aff9e7534827c"><td class="memItemLeft" align="right" valign="top"><a id="ae872ecc241511b6e953aff9e7534827c" name="ae872ecc241511b6e953aff9e7534827c"></a>
 constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxLineLenght</b> = 200</td></tr>
 <tr class="separator:ae872ecc241511b6e953aff9e7534827c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3d456e4068025d4d2e6b3a3aaba5634"><td class="memItemLeft" align="right" valign="top"><a id="ae3d456e4068025d4d2e6b3a3aaba5634" name="ae3d456e4068025d4d2e6b3a3aaba5634"></a>
-std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>mut</b></td></tr>
-<tr class="memdesc:ae3d456e4068025d4d2e6b3a3aaba5634"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print a screen to the external world. <br /></td></tr>
-<tr class="separator:ae3d456e4068025d4d2e6b3a3aaba5634"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the platform specific interactions. </p>
@@ -282,6 +277,37 @@ std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>mut</b></td></t
       </table>
 </div><div class="memdoc">
 <p>This file should be used by .c files to access print functions </p>
+
+</div>
+</div>
+<a id="afac0cd0bf9072a0e6dd309da6b85ebcf" name="afac0cd0bf9072a0e6dd309da6b85ebcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afac0cd0bf9072a0e6dd309da6b85ebcf">&#9670;&#160;</a></span>lampda_print_raw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::platform::lampda_print_raw </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>raw print, no system additional logs </p>
+<p>Print a screen to the external world. </p>
 
 </div>
 </div>

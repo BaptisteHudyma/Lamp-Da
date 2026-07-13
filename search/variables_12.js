@@ -9,12 +9,13 @@ var searchData=
   ['temporary_5fbrightness_6',['temporary_brightness',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a504379130fb65007fef50ce4a665c2a8',1,'lampda::modes::hardware::LampTy']]],
   ['theta_5frad_7',['theta_rad',['../structlampda_1_1modes_1_1Particle.html#a187131775de9f8c31454b4a1ec865b28',1,'lampda::modes::Particle']]],
   ['thetaspeed_5frads_8',['thetaSpeed_radS',['../structlampda_1_1modes_1_1Particle.html#a6c4e2e7b92c33a5018cc325c10999a2a',1,'lampda::modes::Particle']]],
-  ['tick_9',['tick',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a6d5524a331c508bd77085ca10348c910',1,'lampda::modes::hardware::LampTy']]],
-  ['time_10',['time',['../structlampda_1_1power_1_1charger_1_1drivers_1_1Measurments.html#aea6f0d4e64cda33424c96c709fa74d5a',1,'lampda::power::charger::drivers::Measurments']]],
-  ['timeout_5fms_11',['timeout_ms',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a8ac6c2371e06e4a53bbfa23d4584e07c',1,'lampda::modes::draw::overlay::__private::UIElement']]],
-  ['totalcons_5fwatt_12',['totalCons_Watt',['../namespacelampda.html#ad043cec810b8319390f8802a87197a15',1,'lampda']]],
-  ['translation_13',['translation',['../structlampda_1_1utils_1_1TransformationMatrix.html#ad24fbc8a3543bfcd5d7bf92bd68aae2a',1,'lampda::utils::TransformationMatrix']]],
-  ['transmit_14',['transmit',['../structtcpm__drv.html#a6b503778ad8dbbca6cc67e46d7363694',1,'tcpm_drv']]],
-  ['type_15',['type',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a5c4790ffca306a285685889472e9e257',1,'lampda::modes::draw::overlay::__private::UIElement']]],
-  ['typicalliionvoltage_5fmv_16',['typicalLiionVoltage_mV',['../namespacelampda.html#ade87cbd4b1366e64f87e966d75f7922c',1,'lampda']]]
+  ['thread_5fthrottle_5ftime_5fms_9',['thread_throttle_time_ms',['../namespacelampda_1_1physical_1_1button.html#a7446245acfe0e2125d5dd6b5bb6de84c',1,'lampda::physical::button']]],
+  ['tick_10',['tick',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a6d5524a331c508bd77085ca10348c910',1,'lampda::modes::hardware::LampTy']]],
+  ['time_11',['time',['../structlampda_1_1power_1_1charger_1_1drivers_1_1Measurments.html#aea6f0d4e64cda33424c96c709fa74d5a',1,'lampda::power::charger::drivers::Measurments']]],
+  ['timeout_5fms_12',['timeout_ms',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a8ac6c2371e06e4a53bbfa23d4584e07c',1,'lampda::modes::draw::overlay::__private::UIElement']]],
+  ['totalcons_5fwatt_13',['totalCons_Watt',['../namespacelampda.html#ad043cec810b8319390f8802a87197a15',1,'lampda']]],
+  ['translation_14',['translation',['../structlampda_1_1utils_1_1TransformationMatrix.html#ad24fbc8a3543bfcd5d7bf92bd68aae2a',1,'lampda::utils::TransformationMatrix']]],
+  ['transmit_15',['transmit',['../structtcpm__drv.html#a6b503778ad8dbbca6cc67e46d7363694',1,'tcpm_drv']]],
+  ['type_16',['type',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a5c4790ffca306a285685889472e9e257',1,'lampda::modes::draw::overlay::__private::UIElement']]],
+  ['typicalliionvoltage_5fmv_17',['typicalLiionVoltage_mV',['../namespacelampda.html#ade87cbd4b1366e64f87e966d75f7922c',1,'lampda']]]
 ];

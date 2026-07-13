@@ -109,6 +109,8 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsimulator_1_1AsyncGetline.html">AsyncGetline</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsimulator_1_1BQ25713Mock.html">BQ25713Mock</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsimulator_1_1BQ76905Mock.html">BQ76905Mock</a></td></tr>
@@ -137,12 +139,21 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>read_and_update_param
 <tr class="memitem:a969a5f0a0637d0b8582d0b35fa56ac81"><td class="memItemLeft" align="right" valign="top"><a id="a969a5f0a0637d0b8582d0b35fa56ac81" name="a969a5f0a0637d0b8582d0b35fa56ac81"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_output_enabled</b> ()</td></tr>
 <tr class="separator:a969a5f0a0637d0b8582d0b35fa56ac81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68a825ead0ba9023a10cb0e0e0778303"><td class="memItemLeft" align="right" valign="top"><a id="a68a825ead0ba9023a10cb0e0e0778303" name="a68a825ead0ba9023a10cb0e0e0778303"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>elec_mock_loop</b> ()</td></tr>
+<tr class="separator:a68a825ead0ba9023a10cb0e0e0778303"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03e9effb9d362a207a2d0b3e35d98207"><td class="memItemLeft" align="right" valign="top"><a id="a03e9effb9d362a207a2d0b3e35d98207" name="a03e9effb9d362a207a2d0b3e35d98207"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>start_electrical_mock</b> ()</td></tr>
 <tr class="separator:a03e9effb9d362a207a2d0b3e35d98207"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed597cdc02b24a16a5f94fffa305dd95"><td class="memItemLeft" align="right" valign="top"><a id="aed597cdc02b24a16a5f94fffa305dd95" name="aed597cdc02b24a16a5f94fffa305dd95"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>stop_electrical_mock</b> ()</td></tr>
 <tr class="separator:aed597cdc02b24a16a5f94fffa305dd95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0820e8d111684ed7dcea728266727e67"><td class="memItemLeft" align="right" valign="top"><a id="a0820e8d111684ed7dcea728266727e67" name="a0820e8d111684ed7dcea728266727e67"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>i2c_process_mock_loop</b> ()</td></tr>
+<tr class="separator:a0820e8d111684ed7dcea728266727e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e4b041044cd70803048ea59439f8db5"><td class="memItemLeft" align="right" valign="top"><a id="a0e4b041044cd70803048ea59439f8db5" name="a0e4b041044cd70803048ea59439f8db5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>print_mock_loop</b> ()</td></tr>
+<tr class="separator:a0e4b041044cd70803048ea59439f8db5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -179,12 +190,6 @@ constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>fResidueW<
 <tr class="memitem:a22acce1c67ff0c1cee7679474ba29dce"><td class="memItemLeft" align="right" valign="top"><a id="a22acce1c67ff0c1cee7679474ba29dce" name="a22acce1c67ff0c1cee7679474ba29dce"></a>
 float&#160;</td><td class="memItemRight" valign="bottom"><b>targetOTGVoltage</b> = 0.0</td></tr>
 <tr class="separator:a22acce1c67ff0c1cee7679474ba29dce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68db9afa9616e8889ff05e10ac49f172"><td class="memItemLeft" align="right" valign="top"><a id="a68db9afa9616e8889ff05e10ac49f172" name="a68db9afa9616e8889ff05e10ac49f172"></a>
-std::atomic&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>canRunElectricalSimuThread</b> = false</td></tr>
-<tr class="separator:a68db9afa9616e8889ff05e10ac49f172"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a21cf0ecc95c645ad1e2229a08b38a63b"><td class="memItemLeft" align="right" valign="top"><a id="a21cf0ecc95c645ad1e2229a08b38a63b" name="a21cf0ecc95c645ad1e2229a08b38a63b"></a>
-std::thread&#160;</td><td class="memItemRight" valign="bottom"><b>electricalSimuThread</b></td></tr>
-<tr class="separator:a21cf0ecc95c645ad1e2229a08b38a63b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe75f337ae0c62c55e0bc210ac58d048"><td class="memItemLeft" align="right" valign="top"><a id="abe75f337ae0c62c55e0bc210ac58d048" name="abe75f337ae0c62c55e0bc210ac58d048"></a>
 std::array&lt; uint8_t, 255 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pinOutputValue</b></td></tr>
 <tr class="separator:abe75f337ae0c62c55e0bc210ac58d048"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -196,24 +201,18 @@ static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>nu
 <tr class="memitem:aca2be02f64b14ada1b1a8838f29bb065"><td class="memItemLeft" align="right" valign="top"><a id="aca2be02f64b14ada1b1a8838f29bb065" name="aca2be02f64b14ada1b1a8838f29bb065"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isI2cAvailable</b> = false</td></tr>
 <tr class="separator:aca2be02f64b14ada1b1a8838f29bb065"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee687e802a703f044afe1413d1833e7c"><td class="memItemLeft" align="right" valign="top"><a id="aee687e802a703f044afe1413d1833e7c" name="aee687e802a703f044afe1413d1833e7c"></a>
-std::atomic&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>canRunComponentUpdateThread</b> = false</td></tr>
-<tr class="separator:aee687e802a703f044afe1413d1833e7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97c1466c9ea035d045906d20f213faea"><td class="memItemLeft" align="right" valign="top"><a id="a97c1466c9ea035d045906d20f213faea" name="a97c1466c9ea035d045906d20f213faea"></a>
-std::thread&#160;</td><td class="memItemRight" valign="bottom"><b>componentUpdateThread</b></td></tr>
-<tr class="separator:a97c1466c9ea035d045906d20f213faea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93bcb369050c4ce0e204e92c5bf83e72"><td class="memItemLeft" align="right" valign="top"><a id="a93bcb369050c4ce0e204e92c5bf83e72" name="a93bcb369050c4ce0e204e92c5bf83e72"></a>
 std::unique_ptr&lt; <a class="el" href="classsimulator_1_1LevelRecorder.html">LevelRecorder</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>recorder</b></td></tr>
 <tr class="separator:a93bcb369050c4ce0e204e92c5bf83e72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8377d2aa1544919ed73c14e27b4f4502"><td class="memItemLeft" align="right" valign="top"><a id="a8377d2aa1544919ed73c14e27b4f4502" name="a8377d2aa1544919ed73c14e27b4f4502"></a>
 std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>inputCommands</b></td></tr>
 <tr class="separator:a8377d2aa1544919ed73c14e27b4f4502"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a397f645a33207a108c7fc445adeaccc2"><td class="memItemLeft" align="right" valign="top"><a id="a397f645a33207a108c7fc445adeaccc2" name="a397f645a33207a108c7fc445adeaccc2"></a>
-std::atomic&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>canRunInputThread</b> = false</td></tr>
-<tr class="separator:a397f645a33207a108c7fc445adeaccc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf27873ef254138dd271acc879f8e2fd"><td class="memItemLeft" align="right" valign="top"><a id="abf27873ef254138dd271acc879f8e2fd" name="abf27873ef254138dd271acc879f8e2fd"></a>
-std::thread&#160;</td><td class="memItemRight" valign="bottom"><b>inputThread</b></td></tr>
-<tr class="separator:abf27873ef254138dd271acc879f8e2fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aded00f528e82668ff67a02422fab2f44"><td class="memItemLeft" align="right" valign="top"><a id="aded00f528e82668ff67a02422fab2f44" name="aded00f528e82668ff67a02422fab2f44"></a>
+<a class="el" href="classsimulator_1_1AsyncGetline.html">AsyncGetline</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_line_async</b></td></tr>
+<tr class="separator:aded00f528e82668ff67a02422fab2f44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab8c1af19547852d5479852f530383b8"><td class="memItemLeft" align="right" valign="top"><a id="aab8c1af19547852d5479852f530383b8" name="aab8c1af19547852d5479852f530383b8"></a>
+std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>mut</b></td></tr>
+<tr class="separator:aab8c1af19547852d5479852f530383b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af683c4e36bdcb6c62b101c3cc7c73f0e"><td class="memItemLeft" align="right" valign="top"><a id="af683c4e36bdcb6c62b101c3cc7c73f0e" name="af683c4e36bdcb6c62b101c3cc7c73f0e"></a>
 std::vector&lt; std::thread &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>threadPool</b></td></tr>
 <tr class="separator:af683c4e36bdcb6c62b101c3cc7c73f0e"><td class="memSeparator" colspan="2">&#160;</td></tr>

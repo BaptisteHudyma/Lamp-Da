@@ -14,5 +14,6 @@ var searchData=
   ['brightnessparameters_11',['BrightnessParameters',['../structlampda_1_1logic_1_1brightness_1_1BrightnessParameters.html',1,'lampda::logic::brightness']]],
   ['bubblemode_12',['BubbleMode',['../structlampda_1_1modes_1_1automaton_1_1BubbleMode.html',1,'lampda::modes::automaton']]],
   ['bubblety_13',['BubbleTy',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1BubbleTy.html',1,'lampda::modes::custom::nudz::NudzBeerGlassMode']]],
-  ['buttonstatety_14',['ButtonStateTy',['../structlampda_1_1physical_1_1button_1_1ButtonStateTy.html',1,'lampda::physical::button']]]
+  ['buttonevent_14',['ButtonEvent',['../structlampda_1_1logic_1_1inputs_1_1____private_1_1ButtonEvent.html',1,'lampda::logic::inputs::__private']]],
+  ['buttonstatety_15',['ButtonStateTy',['../structlampda_1_1physical_1_1button_1_1ButtonStateTy.html',1,'lampda::physical::button']]]
 ];

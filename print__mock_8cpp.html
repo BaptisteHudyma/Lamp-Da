@@ -75,6 +75,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
@@ -85,6 +86,11 @@ $(function() {
 <p>Mock of the board print and debugs.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsimulator_1_1AsyncGetline.html">simulator::AsyncGetline</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacesimulator"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesimulator.html">simulator</a></td></tr>
@@ -99,12 +105,14 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a0e4b041044cd70803048ea59439f8db5"><td class="memItemLeft" align="right" valign="top"><a id="a0e4b041044cd70803048ea59439f8db5" name="a0e4b041044cd70803048ea59439f8db5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::print_mock_loop</b> ()</td></tr>
+<tr class="separator:a0e4b041044cd70803048ea59439f8db5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22cf4c37e937c1b345f33fb7de8a5762"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#a22cf4c37e937c1b345f33fb7de8a5762">lampda::platform::init_prints</a> ()</td></tr>
 <tr class="memdesc:a22cf4c37e937c1b345f33fb7de8a5762"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print and debug function to serial port.  <br /></td></tr>
 <tr class="separator:a22cf4c37e937c1b345f33fb7de8a5762"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afac0cd0bf9072a0e6dd309da6b85ebcf"><td class="memItemLeft" align="right" valign="top"><a id="afac0cd0bf9072a0e6dd309da6b85ebcf" name="afac0cd0bf9072a0e6dd309da6b85ebcf"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::lampda_print_raw</b> (const char *format,...)</td></tr>
-<tr class="memdesc:afac0cd0bf9072a0e6dd309da6b85ebcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">raw print, no system additional logs <br /></td></tr>
+<tr class="memitem:afac0cd0bf9072a0e6dd309da6b85ebcf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#afac0cd0bf9072a0e6dd309da6b85ebcf">lampda::platform::lampda_print_raw</a> (const char *format,...)</td></tr>
+<tr class="memdesc:afac0cd0bf9072a0e6dd309da6b85ebcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">raw print, no system additional logs  <br /></td></tr>
 <tr class="separator:afac0cd0bf9072a0e6dd309da6b85ebcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f6bba8037b206187803f77e1717c367"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#a5f6bba8037b206187803f77e1717c367">lampda::platform::lampda_print</a> (const char *format,...)</td></tr>
 <tr class="separator:a5f6bba8037b206187803f77e1717c367"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -118,16 +126,12 @@ Variables</h2></td></tr>
 <tr class="memitem:a8377d2aa1544919ed73c14e27b4f4502"><td class="memItemLeft" align="right" valign="top"><a id="a8377d2aa1544919ed73c14e27b4f4502" name="a8377d2aa1544919ed73c14e27b4f4502"></a>
 std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::inputCommands</b></td></tr>
 <tr class="separator:a8377d2aa1544919ed73c14e27b4f4502"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a397f645a33207a108c7fc445adeaccc2"><td class="memItemLeft" align="right" valign="top"><a id="a397f645a33207a108c7fc445adeaccc2" name="a397f645a33207a108c7fc445adeaccc2"></a>
-std::atomic&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::canRunInputThread</b> = false</td></tr>
-<tr class="separator:a397f645a33207a108c7fc445adeaccc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf27873ef254138dd271acc879f8e2fd"><td class="memItemLeft" align="right" valign="top"><a id="abf27873ef254138dd271acc879f8e2fd" name="abf27873ef254138dd271acc879f8e2fd"></a>
-std::thread&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::inputThread</b></td></tr>
-<tr class="separator:abf27873ef254138dd271acc879f8e2fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3d456e4068025d4d2e6b3a3aaba5634"><td class="memItemLeft" align="right" valign="top"><a id="ae3d456e4068025d4d2e6b3a3aaba5634" name="ae3d456e4068025d4d2e6b3a3aaba5634"></a>
-std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::mut</b></td></tr>
-<tr class="memdesc:ae3d456e4068025d4d2e6b3a3aaba5634"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print a screen to the external world. <br /></td></tr>
-<tr class="separator:ae3d456e4068025d4d2e6b3a3aaba5634"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aded00f528e82668ff67a02422fab2f44"><td class="memItemLeft" align="right" valign="top"><a id="aded00f528e82668ff67a02422fab2f44" name="aded00f528e82668ff67a02422fab2f44"></a>
+AsyncGetline&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::get_line_async</b></td></tr>
+<tr class="separator:aded00f528e82668ff67a02422fab2f44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab8c1af19547852d5479852f530383b8"><td class="memItemLeft" align="right" valign="top"><a id="aab8c1af19547852d5479852f530383b8" name="aab8c1af19547852d5479852f530383b8"></a>
+std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::mut</b></td></tr>
+<tr class="separator:aab8c1af19547852d5479852f530383b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Mock of the board print and debugs. </p>

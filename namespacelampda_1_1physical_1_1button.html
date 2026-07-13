@@ -115,16 +115,15 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_button_pressed</b>
 <tr class="memitem:a47056b8b3f53cffc7f106b08322118ae"><td class="memItemLeft" align="right" valign="top"><a id="a47056b8b3f53cffc7f106b08322118ae" name="a47056b8b3f53cffc7f106b08322118ae"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>button_state_interrupt</b> ()</td></tr>
 <tr class="separator:a47056b8b3f53cffc7f106b08322118ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d19fda60c6d1bcf1b2d46fb279be0d5"><td class="memItemLeft" align="right" valign="top"><a id="a9d19fda60c6d1bcf1b2d46fb279be0d5" name="a9d19fda60c6d1bcf1b2d46fb279be0d5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> (const bool isSystemStartedFromButton)</td></tr>
+<tr class="memitem:a8f9e1e2679c0158556cc9998ca60555d"><td class="memItemLeft" align="right" valign="top"><a id="a8f9e1e2679c0158556cc9998ca60555d" name="a8f9e1e2679c0158556cc9998ca60555d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>handle_events</b> ()</td></tr>
+<tr class="separator:a8f9e1e2679c0158556cc9998ca60555d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e33bdc1c4029546bed93e0fdd403758"><td class="memItemLeft" align="right" valign="top"><a id="a5e33bdc1c4029546bed93e0fdd403758" name="a5e33bdc1c4029546bed93e0fdd403758"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>button_thread</b> ()</td></tr>
+<tr class="separator:a5e33bdc1c4029546bed93e0fdd403758"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d19fda60c6d1bcf1b2d46fb279be0d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1button.html#a9d19fda60c6d1bcf1b2d46fb279be0d5">init</a> (const bool isSystemStartedFromButton)</td></tr>
+<tr class="memdesc:a9d19fda60c6d1bcf1b2d46fb279be0d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start the button handler.  <br /></td></tr>
 <tr class="separator:a9d19fda60c6d1bcf1b2d46fb279be0d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a291cd2c3049fe4022bf299f307f1cfec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1button.html#a291cd2c3049fe4022bf299f307f1cfec">handle_events</a> (const std::function&lt; void(uint8_t)&gt; &amp;clickSerieCallback, const std::function&lt; void(uint8_t, uint32_t)&gt; &amp;clickHoldSerieCallback)</td></tr>
-<tr class="memdesc:a291cd2c3049fe4022bf299f307f1cfec"><td class="mdescLeft">&#160;</td><td class="mdescRight">handle the button clicked events  <br /></td></tr>
-<tr class="separator:a291cd2c3049fe4022bf299f307f1cfec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a003469f2d8152184bbe90728e011b3f4"><td class="memItemLeft" align="right" valign="top"><a id="a003469f2d8152184bbe90728e011b3f4" name="a003469f2d8152184bbe90728e011b3f4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_system_start_click</b> ()</td></tr>
-<tr class="memdesc:a003469f2d8152184bbe90728e011b3f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates that this click is the one triggered by the system start It is set to false after the click chain stops. <br /></td></tr>
-<tr class="separator:a003469f2d8152184bbe90728e011b3f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -139,45 +138,55 @@ static <a class="el" href="structlampda_1_1physical_1_1button_1_1ButtonStateTy.h
 <tr class="separator:a0d6f6c4812cc6d4ab830fbf1e4de840c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69e59430acab3deb3749a77bc7ca506a"><td class="memItemLeft" align="right" valign="top"><a id="a69e59430acab3deb3749a77bc7ca506a" name="a69e59430acab3deb3749a77bc7ca506a"></a>
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isSystemStartClick</b> = true</td></tr>
+<tr class="memdesc:a69e59430acab3deb3749a77bc7ca506a"><td class="mdescLeft">&#160;</td><td class="mdescRight">keep track of the first button click since waking up <br /></td></tr>
 <tr class="separator:a69e59430acab3deb3749a77bc7ca506a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a232e432a4af41d68d3ecf0410b3934c4"><td class="memItemLeft" align="right" valign="top"><a id="a232e432a4af41d68d3ecf0410b3934c4" name="a232e432a4af41d68d3ecf0410b3934c4"></a>
 static volatile bool&#160;</td><td class="memItemRight" valign="bottom"><b>wasButtonPressedDetected</b> = false</td></tr>
 <tr class="separator:a232e432a4af41d68d3ecf0410b3934c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7446245acfe0e2125d5dd6b5bb6de84c"><td class="memItemLeft" align="right" valign="top"><a id="a7446245acfe0e2125d5dd6b5bb6de84c" name="a7446245acfe0e2125d5dd6b5bb6de84c"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>thread_throttle_time_ms</b> = 5</td></tr>
+<tr class="memdesc:a7446245acfe0e2125d5dd6b5bb6de84c"><td class="mdescLeft">&#160;</td><td class="mdescRight">thread run frequency timing <br /></td></tr>
+<tr class="separator:a7446245acfe0e2125d5dd6b5bb6de84c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78577ab42320b6be9f0bf751e5fc77b9"><td class="memItemLeft" align="right" valign="top"><a id="a78577ab42320b6be9f0bf751e5fc77b9" name="a78577ab42320b6be9f0bf751e5fc77b9"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>RELEASE_BETWEEN_CLICKS</b> = 50</td></tr>
+<tr class="memdesc:a78577ab42320b6be9f0bf751e5fc77b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">minimum release timing (debounce) <br /></td></tr>
+<tr class="separator:a78577ab42320b6be9f0bf751e5fc77b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2bf5db5c9590bd765f2b8a3de974ac4"><td class="memItemLeft" align="right" valign="top"><a id="ad2bf5db5c9590bd765f2b8a3de974ac4" name="ad2bf5db5c9590bd765f2b8a3de974ac4"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>RELEASE_TIMING_CLICKS_MS</b> = 250</td></tr>
+<tr class="memdesc:ad2bf5db5c9590bd765f2b8a3de974ac4"><td class="mdescLeft">&#160;</td><td class="mdescRight">time to release the button after clicks stops <br /></td></tr>
+<tr class="separator:ad2bf5db5c9590bd765f2b8a3de974ac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e811346feb0345e8110544d58f5e1dc"><td class="memItemLeft" align="right" valign="top"><a id="a2e811346feb0345e8110544d58f5e1dc" name="a2e811346feb0345e8110544d58f5e1dc"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>RELEASE_TIMING_HOLDS_MS</b> = 125</td></tr>
+<tr class="memdesc:a2e811346feb0345e8110544d58f5e1dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">time to release the button after hold stops <br /></td></tr>
+<tr class="separator:a2e811346feb0345e8110544d58f5e1dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad61b07c841ac64b8b80f766138f229e1"><td class="memItemLeft" align="right" valign="top"><a id="ad61b07c841ac64b8b80f766138f229e1" name="ad61b07c841ac64b8b80f766138f229e1"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>HOLD_BUTTON_MIN_MS</b> = 500</td></tr>
+<tr class="memdesc:ad61b07c841ac64b8b80f766138f229e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">press and hold delay (ms) <br /></td></tr>
+<tr class="separator:ad61b07c841ac64b8b80f766138f229e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the button inputs and multiple click detection. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a291cd2c3049fe4022bf299f307f1cfec" name="a291cd2c3049fe4022bf299f307f1cfec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a291cd2c3049fe4022bf299f307f1cfec">&#9670;&#160;</a></span>handle_events()</h2>
+<a id="a9d19fda60c6d1bcf1b2d46fb279be0d5" name="a9d19fda60c6d1bcf1b2d46fb279be0d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d19fda60c6d1bcf1b2d46fb279be0d5">&#9670;&#160;</a></span>init()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void lampda::physical::button::handle_events </td>
+          <td class="memname">void lampda::physical::button::init </td>
           <td>(</td>
-          <td class="paramtype">const std::function&lt; void(uint8_t)&gt; &amp;&#160;</td>
-          <td class="paramname"><em>clickSerieCallback</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>isSystemStartedFromButton</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">const std::function&lt; void(uint8_t, uint32_t)&gt; &amp;&#160;</td>
-          <td class="paramname"><em>clickHoldSerieCallback</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>handle the button clicked events </p>
+<p>Start the button handler. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">clickSerieCallback</td><td>A callback for a seri of clicks. Parameter is the number of consequtive clicks detected </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">clickHoldSerieCallback</td><td>A callback for a seri of clicks followed by a long hold. Parameter is the number of consequtive clicks detected and the time of the old event (in milliseconds). Called at until the button is released </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">isSystemStartedFromButton</td><td>Signal to the button that the system was started by a button click </td></tr>
   </table>
   </dd>
 </dl>

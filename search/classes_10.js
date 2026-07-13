@@ -7,6 +7,7 @@ var searchData=
   ['qhassystem_4',['QHasSystem',['../structlampda_1_1modes_1_1details_1_1anyOf_1_1QHasSystem.html',1,'lampda::modes::details::anyOf&lt; TupleTy, hasError &gt;::QHasSystem&lt; Ty &gt;'],['../structlampda_1_1modes_1_1details_1_1asTableFor_1_1QHasSystem.html',1,'lampda::modes::details::asTableFor&lt; TupleTy, hasError &gt;::QHasSystem&lt; Ty &gt;']]],
   ['qismode_5',['QIsMode',['../structlampda_1_1modes_1_1details_1_1allOf_1_1QIsMode.html',1,'lampda::modes::details::allOf']]],
   ['qstateok_6',['QStateOk',['../structlampda_1_1modes_1_1details_1_1allOf_1_1QStateOk.html',1,'lampda::modes::details::allOf']]],
-  ['queue_7',['queue',['../structqueue.html',1,'']]],
-  ['quserthread_8',['QUserThread',['../structlampda_1_1modes_1_1details_1_1anyOf_1_1QUserThread.html',1,'lampda::modes::details::anyOf&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;'],['../structlampda_1_1modes_1_1details_1_1asTableFor_1_1QUserThread.html',1,'lampda::modes::details::asTableFor&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;']]]
+  ['queue_7',['Queue',['../structlampda_1_1utils_1_1Queue.html',1,'lampda::utils']]],
+  ['queue_8',['queue',['../structqueue.html',1,'']]],
+  ['quserthread_9',['QUserThread',['../structlampda_1_1modes_1_1details_1_1anyOf_1_1QUserThread.html',1,'lampda::modes::details::anyOf&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;'],['../structlampda_1_1modes_1_1details_1_1asTableFor_1_1QUserThread.html',1,'lampda::modes::details::asTableFor&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;']]]
 ];

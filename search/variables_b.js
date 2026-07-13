@@ -37,6 +37,7 @@ var searchData=
   ['lo_34',['lo',['../uniontimestamp__t.html#a1439028ac9bf28000a9e2902d682b548',1,'timestamp_t']]],
   ['loadfullonreset_35',['loadFullOnReset',['../structlampda_1_1modes_1_1draw_1_1grid_1_1LineRuleConfig.html#afea7549a0f7d75e9ca1204233abc92a7',1,'lampda::modes::draw::grid::LineRuleConfig']]],
   ['local_36',['local',['../structlampda_1_1modes_1_1ContextTy_1_1KeyProxy.html#a7c2a96d79b056c084b86b197924e7247',1,'lampda::modes::ContextTy::KeyProxy']]],
-  ['loopdeltatime_37',['loopDeltaTime',['../namespacelampda.html#ac48518ede7690a325f8095306247750e',1,'lampda']]],
-  ['loweredtime_38',['loweredTime',['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a06020206f9ae99ffd48515c7daba02c1',1,'lampda::logic::alerts::AlertBase']]]
+  ['longpressduration_37',['longPressDuration',['../structlampda_1_1logic_1_1inputs_1_1____private_1_1ButtonEvent.html#ac84b50dcb6a34a68c644f84eb7629353',1,'lampda::logic::inputs::__private::ButtonEvent']]],
+  ['loopdeltatime_38',['loopDeltaTime',['../namespacelampda.html#ac48518ede7690a325f8095306247750e',1,'lampda']]],
+  ['loweredtime_39',['loweredTime',['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a06020206f9ae99ffd48515c7daba02c1',1,'lampda::logic::alerts::AlertBase']]]
 ];

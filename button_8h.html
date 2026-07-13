@@ -77,7 +77,8 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">button.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -107,16 +108,9 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a9d19fda60c6d1bcf1b2d46fb279be0d5"><td class="memItemLeft" align="right" valign="top"><a id="a9d19fda60c6d1bcf1b2d46fb279be0d5" name="a9d19fda60c6d1bcf1b2d46fb279be0d5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::init</b> (const bool isSystemStartedFromButton)</td></tr>
+<tr class="memitem:a9d19fda60c6d1bcf1b2d46fb279be0d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1button.html#a9d19fda60c6d1bcf1b2d46fb279be0d5">lampda::physical::button::init</a> (const bool isSystemStartedFromButton)</td></tr>
+<tr class="memdesc:a9d19fda60c6d1bcf1b2d46fb279be0d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start the button handler.  <br /></td></tr>
 <tr class="separator:a9d19fda60c6d1bcf1b2d46fb279be0d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a291cd2c3049fe4022bf299f307f1cfec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1button.html#a291cd2c3049fe4022bf299f307f1cfec">lampda::physical::button::handle_events</a> (const std::function&lt; void(uint8_t)&gt; &amp;clickSerieCallback, const std::function&lt; void(uint8_t, uint32_t)&gt; &amp;clickHoldSerieCallback)</td></tr>
-<tr class="memdesc:a291cd2c3049fe4022bf299f307f1cfec"><td class="mdescLeft">&#160;</td><td class="mdescRight">handle the button clicked events  <br /></td></tr>
-<tr class="separator:a291cd2c3049fe4022bf299f307f1cfec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a003469f2d8152184bbe90728e011b3f4"><td class="memItemLeft" align="right" valign="top"><a id="a003469f2d8152184bbe90728e011b3f4" name="a003469f2d8152184bbe90728e011b3f4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::is_system_start_click</b> ()</td></tr>
-<tr class="memdesc:a003469f2d8152184bbe90728e011b3f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates that this click is the one triggered by the system start It is set to false after the click chain stops. <br /></td></tr>
-<tr class="separator:a003469f2d8152184bbe90728e011b3f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad25340cb83eb713838695297b6aaa1f9"><td class="memItemLeft" align="right" valign="top"><a id="ad25340cb83eb713838695297b6aaa1f9" name="ad25340cb83eb713838695297b6aaa1f9"></a>
 ButtonStateTy&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::get_button_state</b> ()</td></tr>
 <tr class="memdesc:ad25340cb83eb713838695297b6aaa1f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a copy of the raw internal button state. <br /></td></tr>
@@ -133,6 +127,29 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::but
 int&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::get_button_pin_RAW</b> ()</td></tr>
 <tr class="memdesc:a9e00eefff71db4b1e1dcc70f2c9a9423"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the button pin index in system. USE WITH CAUTION <br /></td></tr>
 <tr class="separator:a9e00eefff71db4b1e1dcc70f2c9a9423"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a7446245acfe0e2125d5dd6b5bb6de84c"><td class="memItemLeft" align="right" valign="top"><a id="a7446245acfe0e2125d5dd6b5bb6de84c" name="a7446245acfe0e2125d5dd6b5bb6de84c"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::thread_throttle_time_ms</b> = 5</td></tr>
+<tr class="memdesc:a7446245acfe0e2125d5dd6b5bb6de84c"><td class="mdescLeft">&#160;</td><td class="mdescRight">thread run frequency timing <br /></td></tr>
+<tr class="separator:a7446245acfe0e2125d5dd6b5bb6de84c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78577ab42320b6be9f0bf751e5fc77b9"><td class="memItemLeft" align="right" valign="top"><a id="a78577ab42320b6be9f0bf751e5fc77b9" name="a78577ab42320b6be9f0bf751e5fc77b9"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::RELEASE_BETWEEN_CLICKS</b> = 50</td></tr>
+<tr class="memdesc:a78577ab42320b6be9f0bf751e5fc77b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">minimum release timing (debounce) <br /></td></tr>
+<tr class="separator:a78577ab42320b6be9f0bf751e5fc77b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2bf5db5c9590bd765f2b8a3de974ac4"><td class="memItemLeft" align="right" valign="top"><a id="ad2bf5db5c9590bd765f2b8a3de974ac4" name="ad2bf5db5c9590bd765f2b8a3de974ac4"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::RELEASE_TIMING_CLICKS_MS</b> = 250</td></tr>
+<tr class="memdesc:ad2bf5db5c9590bd765f2b8a3de974ac4"><td class="mdescLeft">&#160;</td><td class="mdescRight">time to release the button after clicks stops <br /></td></tr>
+<tr class="separator:ad2bf5db5c9590bd765f2b8a3de974ac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e811346feb0345e8110544d58f5e1dc"><td class="memItemLeft" align="right" valign="top"><a id="a2e811346feb0345e8110544d58f5e1dc" name="a2e811346feb0345e8110544d58f5e1dc"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::RELEASE_TIMING_HOLDS_MS</b> = 125</td></tr>
+<tr class="memdesc:a2e811346feb0345e8110544d58f5e1dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">time to release the button after hold stops <br /></td></tr>
+<tr class="separator:a2e811346feb0345e8110544d58f5e1dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad61b07c841ac64b8b80f766138f229e1"><td class="memItemLeft" align="right" valign="top"><a id="ad61b07c841ac64b8b80f766138f229e1" name="ad61b07c841ac64b8b80f766138f229e1"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::button::HOLD_BUTTON_MIN_MS</b> = 500</td></tr>
+<tr class="memdesc:ad61b07c841ac64b8b80f766138f229e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">press and hold delay (ms) <br /></td></tr>
+<tr class="separator:ad61b07c841ac64b8b80f766138f229e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for the physical components of the push button. </p>

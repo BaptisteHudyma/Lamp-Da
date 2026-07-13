@@ -75,6 +75,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">lampda::logic::inputs Namespace Reference</div></div>
@@ -84,14 +85,20 @@ $(function() {
 <p>Handle the system input, the behavior associated to the button inputs.  
 <a href="namespacelampda_1_1logic_1_1inputs.html#details">More...</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacelampda_1_1logic_1_1inputs_1_1____private"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1inputs_1_1____private.html">__private</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1logic_1_1inputs_1_1____private"><td class="mdescLeft">&#160;</td><td class="mdescRight">private handling namespace, used for unit testing <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a042ad2481e6fdc885a05acf86275f2da"><td class="memItemLeft" align="right" valign="top"><a id="a042ad2481e6fdc885a05acf86275f2da" name="a042ad2481e6fdc885a05acf86275f2da"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>button_clicked_callback</b> (const uint8_t consecutiveButtonCheck)</td></tr>
-<tr class="separator:a042ad2481e6fdc885a05acf86275f2da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd5029c15e905566d4fb8479eb34b87e"><td class="memItemLeft" align="right" valign="top"><a id="abd5029c15e905566d4fb8479eb34b87e" name="abd5029c15e905566d4fb8479eb34b87e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>button_hold_callback</b> (const uint8_t consecutiveButtonCheck, const uint32_t buttonHoldDuration)</td></tr>
-<tr class="separator:abd5029c15e905566d4fb8479eb34b87e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3d67f9fa19aad77643075f09cd9d331"><td class="memItemLeft" align="right" valign="top"><a id="ab3d67f9fa19aad77643075f09cd9d331" name="ab3d67f9fa19aad77643075f09cd9d331"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>button_clicked_callback</b> (const uint8_t consecutiveButtonCheck, const bool isFirstClick)</td></tr>
+<tr class="separator:ab3d67f9fa19aad77643075f09cd9d331"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cdfb24acb17abeb667d357ede0a6f0e"><td class="memItemLeft" align="right" valign="top"><a id="a1cdfb24acb17abeb667d357ede0a6f0e" name="a1cdfb24acb17abeb667d357ede0a6f0e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>button_hold_callback</b> (const uint8_t consecutiveButtonCheck, const uint32_t buttonHoldDuration, const bool isEndOfPress, const bool isFirstClick)</td></tr>
+<tr class="separator:a1cdfb24acb17abeb667d357ede0a6f0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8ff174bb6fdac784b4bc45901ddf868"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1inputs.html#af8ff174bb6fdac784b4bc45901ddf868">init</a> (const bool wasPoweredByUserInterrupt)</td></tr>
 <tr class="memdesc:af8ff174bb6fdac784b4bc45901ddf868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call once on system start.  <br /></td></tr>
 <tr class="separator:af8ff174bb6fdac784b4bc45901ddf868"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -107,19 +114,27 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>button_disable_usermo
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_button_usermode_enabled</b> ()</td></tr>
 <tr class="memdesc:a3f63f0a5c31e13142e3365879f23150c"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if custom user modes are enabled <br /></td></tr>
 <tr class="separator:a3f63f0a5c31e13142e3365879f23150c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d980e3a6d194089538e00028f642c2f"><td class="memItemLeft" align="right" valign="top"><a id="a1d980e3a6d194089538e00028f642c2f" name="a1d980e3a6d194089538e00028f642c2f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>add_button_click_event</b> (uint32_t clickCount, bool isStartClick)</td></tr>
+<tr class="memdesc:a1d980e3a6d194089538e00028f642c2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a button click event. <br /></td></tr>
+<tr class="separator:a1d980e3a6d194089538e00028f642c2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58006158a2831153f10609f6c1f25cb3"><td class="memItemLeft" align="right" valign="top"><a id="a58006158a2831153f10609f6c1f25cb3" name="a58006158a2831153f10609f6c1f25cb3"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>add_button_press_event</b> (uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress, bool isStartClick)</td></tr>
+<tr class="memdesc:a58006158a2831153f10609f6c1f25cb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a button press event. <br /></td></tr>
+<tr class="separator:a58006158a2831153f10609f6c1f25cb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a0a5d5b89cb3869bc1f6d31b5fdaa6a0f"><td class="memItemLeft" align="right" valign="top"><a id="a0a5d5b89cb3869bc1f6d31b5fdaa6a0f" name="a0a5d5b89cb3869bc1f6d31b5fdaa6a0f"></a>
 static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>BRIGHTNESS_RAMP_DURATION_MS</b> = 2000</td></tr>
+<tr class="memdesc:a0a5d5b89cb3869bc1f6d31b5fdaa6a0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">duration of the brightness ramp <br /></td></tr>
 <tr class="separator:a0a5d5b89cb3869bc1f6d31b5fdaa6a0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7093b93e779bb7d819204933ae8e3242"><td class="memItemLeft" align="right" valign="top"><a id="a7093b93e779bb7d819204933ae8e3242" name="a7093b93e779bb7d819204933ae8e3242"></a>
 static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>BRIGHTNESS_LOOP_UPDATE_EVERY</b> = 20</td></tr>
-<tr class="memdesc:a7093b93e779bb7d819204933ae8e3242"><td class="mdescLeft">&#160;</td><td class="mdescRight">duration of the brightness ramp <br /></td></tr>
+<tr class="memdesc:a7093b93e779bb7d819204933ae8e3242"><td class="mdescLeft">&#160;</td><td class="mdescRight">frequency update of the ramp <br /></td></tr>
 <tr class="separator:a7093b93e779bb7d819204933ae8e3242"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99a8b187b5a205765a0d9f99ffaf7760"><td class="memItemLeft" align="right" valign="top"><a id="a99a8b187b5a205765a0d9f99ffaf7760" name="a99a8b187b5a205765a0d9f99ffaf7760"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isButtonUsermodeEnabled</b> = false</td></tr>
-<tr class="memdesc:a99a8b187b5a205765a0d9f99ffaf7760"><td class="mdescLeft">&#160;</td><td class="mdescRight">frequency update of the ramp <br /></td></tr>
 <tr class="separator:a99a8b187b5a205765a0d9f99ffaf7760"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>

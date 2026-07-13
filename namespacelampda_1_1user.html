@@ -310,10 +310,9 @@ static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>currentBrig
 <p>Called to handle button click+hold events for user mode behaviors. </p>
 <p>Default behavior is the "default UI" navigation mode, that supports:</p><ul>
 <li>3 click+hold: configure custom user ramp</li>
-<li>4 click+hold: scroll across modes and groups</li>
-<li>5 click+hold (3s): configure favorite modes</li>
+<li>4 click+hold: configure favorite modes</li>
 </ul>
-<p>Event 1H/2H (brightness) is handled by button_hold_callback() in <a class="el" href="behavior_8h.html" title="Basic controller behavior, including alerts and user interactions.">behavior.h</a></p>
+<p>Event 1H/2H (brightness) is handled by button_hold_callback() in <a class="el" href="inputs_8h.html" title="Handle the logic associated with the input button.">inputs.h</a></p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">nbClickAndHold</td><td>The number of clicks made by the user </td></tr>

@@ -75,8 +75,10 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">inputs.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -86,6 +88,11 @@ $(function() {
 
 <p><a href="inputs_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1inputs_1_1____private_1_1ButtonEvent.html">lampda::logic::inputs::__private::ButtonEvent</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
@@ -96,6 +103,9 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacelampda_1_1logic_1_1inputs"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1inputs.html">lampda::logic::inputs</a></td></tr>
 <tr class="memdesc:namespacelampda_1_1logic_1_1inputs"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the system input, the behavior associated to the button inputs. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1logic_1_1inputs_1_1____private"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1inputs_1_1____private.html">lampda::logic::inputs::__private</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1logic_1_1inputs_1_1____private"><td class="mdescLeft">&#160;</td><td class="mdescRight">private handling namespace, used for unit testing <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
@@ -115,6 +125,20 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::inputs
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::inputs::is_button_usermode_enabled</b> ()</td></tr>
 <tr class="memdesc:a3f63f0a5c31e13142e3365879f23150c"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if custom user modes are enabled <br /></td></tr>
 <tr class="separator:a3f63f0a5c31e13142e3365879f23150c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d980e3a6d194089538e00028f642c2f"><td class="memItemLeft" align="right" valign="top"><a id="a1d980e3a6d194089538e00028f642c2f" name="a1d980e3a6d194089538e00028f642c2f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::inputs::add_button_click_event</b> (uint32_t clickCount, bool isStartClick)</td></tr>
+<tr class="memdesc:a1d980e3a6d194089538e00028f642c2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a button click event. <br /></td></tr>
+<tr class="separator:a1d980e3a6d194089538e00028f642c2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58006158a2831153f10609f6c1f25cb3"><td class="memItemLeft" align="right" valign="top"><a id="a58006158a2831153f10609f6c1f25cb3" name="a58006158a2831153f10609f6c1f25cb3"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::inputs::add_button_press_event</b> (uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress, bool isStartClick)</td></tr>
+<tr class="memdesc:a58006158a2831153f10609f6c1f25cb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a button press event. <br /></td></tr>
+<tr class="separator:a58006158a2831153f10609f6c1f25cb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ac157400120d9d5908190e0660644f089"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1inputs_1_1____private.html#ac157400120d9d5908190e0660644f089">lampda::logic::inputs::__private::maxButtonEventStore</a></td></tr>
+<tr class="memdesc:ac157400120d9d5908190e0660644f089"><td class="mdescLeft">&#160;</td><td class="mdescRight">this event count should be high enough to not miss clicks and ramp events  <br /></td></tr>
+<tr class="separator:ac157400120d9d5908190e0660644f089"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the logic associated with the input button. </p>

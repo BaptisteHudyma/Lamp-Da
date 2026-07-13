@@ -92,7 +92,7 @@ Useful Linux packages</h1>
 </ul>
 <p>Depending on your setup (Ubuntu, WSL, Fedora, Archlinux, …) you may need to install other packages, such as <code>arduino-cli</code> or <code>arduino-ide</code> as described below.</p>
 <h1><a class="anchor" id="autotoc_md17"></a>
-Arduino Setup</h1>
+Other depencies</h1>
 <p>You will need to:</p>
 <ul>
 <li>Install the Arduino IDE and verify that <code>arduino-cli</code> is accessible in path</li>
@@ -106,7 +106,7 @@ Arduino Setup</h1>
 </div><!-- fragment --><p>If your system does not package <code>arduino-cli</code> or if it's not working for you, you may try the following recipe to make it available locally:</p>
 <div class="fragment"><div class="line"># also download+install arduino-cli in $SRC_DIR/_build/arduino-cli/</div>
 <div class="line">cd LampColorControler</div>
-<div class="line">make arduino-cli-download safe-install</div>
+<div class="line">make arduino-cli-download</div>
 </div><!-- fragment --><p>Now that <code>arduino-cli</code> is available, if you find yourself in trouble installing the Arduino dependencies by hand, you can use the following to install everything locally:</p>
 <div class="fragment"><div class="line"># download+install all dependencies (~1.4Go) in $SRC_DIR/_build/arduino-cli/</div>
 <div class="line">cd LampColorControler</div>
