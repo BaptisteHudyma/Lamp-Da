@@ -131,6 +131,7 @@ void handle_events()
             buttonState.nbClicksCounted, pressDuration, false, isSystemStartClick);
     if (not isSuccess)
     {
+      // ok: just a ramp event miss can happen without a problem
       platform::lampda_print("Button: Could not register hold event");
     }
   }

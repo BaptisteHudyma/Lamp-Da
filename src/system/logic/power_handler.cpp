@@ -343,6 +343,7 @@ void handle_otg_mode()
 
     if (vbusVoltage_mv > 5500 and voltageHighRaisedTime == UINT32_MAX)
     {
+      platform::lampda_print("OTG mode: Voltage high registered: %dmv", vbusVoltage_mv);
       voltageHighRaisedTime = platform::time_ms();
     }
 
