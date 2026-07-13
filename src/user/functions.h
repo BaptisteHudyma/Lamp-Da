@@ -70,7 +70,7 @@ bool button_start_click_default(const uint8_t clicks);
  */
 bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration);
 
-/** \brief Called to handle button click events for default user mode behaviors
+/** \brief Called to handle button click events for default user mode behaviors.
  *
  * \param[in] clicks The number of clicks made by the user
  */
@@ -80,11 +80,10 @@ void button_clicked_default(const uint8_t clicks);
  *
  * Default behavior is the "default UI" navigation mode, that supports:
  *  - 3 click+hold: configure custom user ramp
- *  - 4 click+hold: scroll across modes and groups
- *  - 5 click+hold (3s): configure favorite modes
+ *  - 4 click+hold: configure favorite modes
  *
  * Event 1H/2H (brightness) is handled by
- * button_hold_callback() in behavior.h
+ * button_hold_callback() in inputs.h
  *
  * \param[in] nbClickAndHold The number of clicks made by the user
  * \param[in] isEndOfHoldEvent True if the user just released the button

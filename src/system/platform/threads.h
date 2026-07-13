@@ -25,13 +25,15 @@ extern "C" {
   extern const uint32_t pd_taskName;
   /// name of the USB power delivery interrupt handle task
   extern const uint32_t pdInterruptHandle_taskName;
+  // Name of the button handling task
+  extern const uint32_t button_taskName;
   /// name of the main power task
   extern const uint32_t power_taskName;
   /// name of the optional user task
   extern const uint32_t user_taskName;
   /// name of the task scheduling task
   extern const uint32_t taskScheduler_taskName;
-  // name of the task t schedule sunset
+  // name of the task schedule sunset
   extern const uint32_t sunset_taskName;
 
   /// model of a task function
@@ -97,6 +99,9 @@ extern "C" {
 
   // compute and return a debug for threads
   extern void get_thread_debug(char* textBuff);
+
+  /// Shutdown the task driver cleanly
+  extern void shutdown();
 
 #ifdef __cplusplus
 }

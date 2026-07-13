@@ -30,6 +30,7 @@ namespace threads {
 // extern defines
 const uint32_t pd_taskName = utils::hash("usbpd");
 const uint32_t pdInterruptHandle_taskName = utils::hash("intpd");
+const uint32_t button_taskName = utils::hash("button");
 const uint32_t power_taskName = utils::hash("power");
 const uint32_t user_taskName = utils::hash("user");
 const uint32_t taskScheduler_taskName = utils::hash("task_sched");
@@ -43,6 +44,8 @@ const char* const get_name_from_hash(const uint32_t hash)
       return "usbpd";
     case pdInterruptHandle_taskName:
       return "intpd";
+    case button_taskName:
+      return "button";
     case power_taskName:
       return "power";
     case user_taskName:
@@ -98,10 +101,7 @@ void start_suspended_thread(taskfunc_t taskFunction, uint32_t taskName, const in
   handles.emplace(taskName);
 }
 
-void yield_this_thread()
-{
-  // TODO issue #132
-}
+void yield_this_thread() { std::this_thread::yield(); }
 
 void suspend_this_thread()
 {
@@ -127,6 +127,26 @@ void notify_thread(const uint32_t, int wakeUpEvent) {};
 int wait_notification(const int timeout_ms) { return 0; }
 
 void get_thread_debug(char* textBuff) {}
+
+void shutdown()
+{
+  platform::lampda_print("Initiating thread shutdown process...");
+
+  simulator::mock_registers::shouldStopThreads = true;
+  for (auto& thread: simulator::threadPool)
+  {
+    while (not thread.joinable())
+    {
+      platform::delay_ms(1);
+    }
+
+    thread.join();
+  }
+  simulator::threadPool.clear();
+  handles.clear();
+
+  platform::lampda_print("thread shutdown complete");
+}
 
 } // namespace threads
 } // namespace platform

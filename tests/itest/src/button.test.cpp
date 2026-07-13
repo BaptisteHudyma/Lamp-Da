@@ -4,7 +4,10 @@
 
 #include "src/system/physical/button.h"
 
+#include "src/system/logic/inputs.h"
+
 #include "src/system/platform/gpio.h"
+#include "src/system/platform/threads.h"
 
 // access simulation states
 #include "simulator/include/simulator_state.h"
@@ -23,12 +26,16 @@ protected:
   void SetUp() override
   {
     //
+    simulator::mock_registers::shouldStopThreads = false;
     killThread = false;
     ::simulator::time_mocks::reset();
   }
 
   void TearDown() override
   {
+    // shutdown all threads
+    platform::threads::shutdown();
+
     killThread = true;
     if (clickThread.joinable())
       clickThread.join();
@@ -41,6 +48,9 @@ protected:
                        const std::chrono::milliseconds startDelay = 0ms,
                        const std::chrono::milliseconds lastClickPressDelay = 0ms)
   {
+    _isClickSimulationDone = false;
+    if (clickThread.joinable())
+      clickThread.join();
     clickThread = std::thread([&]() {
       int remainingClicks = clicks;
       if (lastClickPressDelay > 0ms)
@@ -71,11 +81,16 @@ protected:
         ::simulator::globals::state.isButtonPressed = false;
         ::simulator::mock_gpios::update_callbacks();
       }
+
+      _isClickSimulationDone = true;
     });
   }
 
+  bool is_click_simulation_done() const { return _isClickSimulationDone; }
+
 private:
   bool killThread = false;
+  bool _isClickSimulationDone = true;
   std::thread clickThread;
 };
 
@@ -90,12 +105,12 @@ TEST_F(ButtonFixture, turn_on_start_click_early_release)
   ::simulator::globals::state.isButtonPressed = false;
   bool isTestDone = false;
 
-  auto clickSerieCallback = [&](uint8_t clickCount) {
+  auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
     isTestDone = true;
     ASSERT_EQ(clickCount, 1);
-    ASSERT_TRUE(physical::button::is_system_start_click());
+    ASSERT_TRUE(isFirstClick);
   };
-  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration) {
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
     isTestDone = true;
     ADD_FAILURE() << "long click when a short click serie was expected";
   };
@@ -106,9 +121,25 @@ TEST_F(ButtonFixture, turn_on_start_click_early_release)
 
   while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    ::simulator::mock_gpios::update_callbacks();
-    std::this_thread::sleep_for(10ms);
-    physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
+    std::this_thread::sleep_for(1ms);
+
+    // poll events from the event queue
+    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
+    if (event.has_value())
+    {
+      const auto& buttonEvent = event.value();
+      if (not buttonEvent.isLongPress)
+      {
+        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+      }
+      else
+      {
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
+      }
+    }
   }
   ASSERT_TRUE(isTestDone);
 }
@@ -120,12 +151,12 @@ TEST_F(ButtonFixture, turn_on_start_click)
   ::simulator::globals::state.isButtonPressed = true;
   bool isTestDone = false;
 
-  auto clickSerieCallback = [&](uint8_t clickCount) {
+  auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
     isTestDone = true;
     ASSERT_EQ(clickCount, 1);
-    ASSERT_TRUE(physical::button::is_system_start_click());
+    ASSERT_TRUE(isFirstClick);
   };
-  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration) {
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
     isTestDone = true;
     ADD_FAILURE() << "long click when a short click serie was expected";
   };
@@ -143,9 +174,25 @@ TEST_F(ButtonFixture, turn_on_start_click)
 
   while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    ::simulator::mock_gpios::update_callbacks();
-    std::this_thread::sleep_for(10ms);
-    physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
+    std::this_thread::sleep_for(1ms);
+
+    // poll events from the event queue
+    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
+    if (event.has_value())
+    {
+      const auto& buttonEvent = event.value();
+      if (not buttonEvent.isLongPress)
+      {
+        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+      }
+      else
+      {
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
+      }
+    }
   }
   ASSERT_TRUE(isTestDone);
   buttonThread.join();
@@ -160,12 +207,12 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
   ::simulator::globals::state.isButtonPressed = true;
   std::atomic<bool> isTestDone = false;
 
-  auto clickSerieCallback = [&](uint8_t clickCount) {
+  auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
     isTestDone = true;
     ASSERT_EQ(clickCount, desiredClicks);
-    ASSERT_TRUE(physical::button::is_system_start_click());
+    ASSERT_TRUE(isFirstClick);
   };
-  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration) {
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
     isTestDone = true;
     ADD_FAILURE() << "long click when a short click serie was expected";
   };
@@ -186,8 +233,25 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
 
   while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    std::this_thread::sleep_for(10ms);
-    physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
+    std::this_thread::sleep_for(1ms);
+
+    // poll events from the event queue
+    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
+    if (event.has_value())
+    {
+      const auto& buttonEvent = event.value();
+      if (not buttonEvent.isLongPress)
+      {
+        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+      }
+      else
+      {
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
+      }
+    }
   }
   ASSERT_TRUE(isTestDone);
   buttonThread.join();
@@ -200,25 +264,17 @@ TEST_F(ButtonFixture, turn_on_start_long_click)
   ::simulator::globals::state.isButtonPressed = true;
   bool isTestDone = false;
 
-  auto clickSerieCallback = [&](uint8_t clickCount) {
+  auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
     isTestDone = true;
     ADD_FAILURE() << "short click when a long click was expected";
   };
-  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration) {
-    if (clickDuration > 0)
-    {
-      EXPECT_EQ(clickCount, 1);
-      EXPECT_LT(clickDuration, 1000 * 1.5);
-      EXPECT_TRUE(physical::button::is_system_start_click());
-    }
-    else
-    {
-      EXPECT_EQ(clickCount, 1);
-      // end of long click is always zero duration
-      EXPECT_EQ(clickDuration, 0);
-      EXPECT_TRUE(physical::button::is_system_start_click());
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
+    EXPECT_LT(clickDuration, 1000 * 1.5);
+    EXPECT_EQ(clickCount, 1);
+    EXPECT_TRUE(isFirstClick);
+
+    if (isEndOfPress)
       isTestDone = true;
-    }
   };
 
   // signal button on
@@ -234,9 +290,25 @@ TEST_F(ButtonFixture, turn_on_start_long_click)
 
   while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    ::simulator::mock_gpios::update_callbacks();
-    std::this_thread::sleep_for(10ms);
-    physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
+    std::this_thread::sleep_for(1ms);
+
+    // poll events from the event queue
+    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
+    if (event.has_value())
+    {
+      const auto& buttonEvent = event.value();
+      if (not buttonEvent.isLongPress)
+      {
+        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+      }
+      else
+      {
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
+      }
+    }
   }
   ASSERT_TRUE(isTestDone);
   buttonThread.join();
@@ -251,25 +323,17 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
   ::simulator::globals::state.isButtonPressed = true;
   bool isTestDone = false;
 
-  auto clickSerieCallback = [&](uint8_t clickCount) {
+  auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
     isTestDone = true;
     ADD_FAILURE() << "short click when a long click was expected";
   };
-  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration) {
-    if (clickDuration > 0)
-    {
-      EXPECT_EQ(clickCount, desiredClicks);
-      EXPECT_LT(clickDuration, 1000 * 1.5);
-      EXPECT_TRUE(physical::button::is_system_start_click());
-    }
-    else
-    {
-      EXPECT_EQ(clickCount, desiredClicks);
-      // end of long click is always zero duration
-      EXPECT_EQ(clickDuration, 0);
-      EXPECT_TRUE(physical::button::is_system_start_click());
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
+    EXPECT_EQ(clickCount, desiredClicks);
+    EXPECT_LT(clickDuration, 1000 * 1.5);
+    EXPECT_TRUE(isFirstClick);
+
+    if (isEndOfPress)
       isTestDone = true;
-    }
   };
 
   // signal button on
@@ -288,9 +352,25 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
 
   while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    ::simulator::mock_gpios::update_callbacks();
-    std::this_thread::sleep_for(10ms);
-    physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
+    std::this_thread::sleep_for(1ms);
+
+    // poll events from the event queue
+    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
+    if (event.has_value())
+    {
+      const auto& buttonEvent = event.value();
+      if (not buttonEvent.isLongPress)
+      {
+        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+      }
+      else
+      {
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
+      }
+    }
   }
   ASSERT_TRUE(isTestDone);
   buttonThread.join();
@@ -309,17 +389,17 @@ TEST_F(ButtonFixture, debounce)
   ::simulator::globals::state.isButtonPressed = false;
   std::atomic<bool> isTestDone = false;
 
-  auto clickSerieCallback = [&](uint8_t clickCount) {
+  auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
     ADD_FAILURE() << "short click when a long click serie was expected";
     isTestDone = true;
   };
-  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration) {
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
     // only one click count, other are debounced
     ASSERT_EQ(clickCount, 1);
-    ASSERT_TRUE(physical::button::is_system_start_click());
+    ASSERT_TRUE(isFirstClick);
 
     // test is done when all clicks are done
-    if (clickDuration <= 0)
+    if (isEndOfPress)
       isTestDone = true;
   };
 
@@ -332,13 +412,30 @@ TEST_F(ButtonFixture, debounce)
 
   while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    std::this_thread::sleep_for(10ms);
-    physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
+    std::this_thread::sleep_for(1ms);
+
+    // poll events from the event queue
+    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
+    if (event.has_value())
+    {
+      const auto& buttonEvent = event.value();
+      if (not buttonEvent.isLongPress)
+      {
+        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+      }
+      else
+      {
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
+      }
+    }
   }
   ASSERT_TRUE(isTestDone);
 }
 
-TEST_F(ButtonFixture, standard_multiple_click)
+TEST_F(ButtonFixture, start_click_then_4_clicks)
 {
   static const int desiredClicks = 4;
 
@@ -346,23 +443,23 @@ TEST_F(ButtonFixture, standard_multiple_click)
   ::simulator::globals::state.isButtonPressed = true;
   std::atomic<bool> isTestDone = false;
 
-  bool isFirstClick = true;
+  bool isFirstClickRegistered = true;
 
-  auto clickSerieCallback = [&](uint8_t clickCount) {
-    if (isFirstClick)
+  auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
+    if (isFirstClickRegistered)
     {
-      ASSERT_TRUE(physical::button::is_system_start_click());
+      ASSERT_TRUE(isFirstClick);
       ASSERT_EQ(clickCount, 1);
-      isFirstClick = false;
+      isFirstClickRegistered = false;
     }
     else
     {
-      ASSERT_FALSE(physical::button::is_system_start_click());
+      ASSERT_FALSE(isFirstClick);
       ASSERT_EQ(clickCount, desiredClicks);
       isTestDone = true;
     }
   };
-  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration) {
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
     isTestDone = true;
     ADD_FAILURE() << "long click when a short click serie was expected";
   };
@@ -383,16 +480,196 @@ TEST_F(ButtonFixture, standard_multiple_click)
 
   while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
-    std::this_thread::sleep_for(10ms);
-    physical::button::handle_events(clickSerieCallback, clickHoldSerieCallback);
+    std::this_thread::sleep_for(1ms);
+
+    // poll events from the event queue
+    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
+    if (event.has_value())
+    {
+      const auto& buttonEvent = event.value();
+      if (not buttonEvent.isLongPress)
+      {
+        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+      }
+      else
+      {
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
+      }
+    }
   }
   ASSERT_TRUE(isTestDone);
   buttonThread.join();
 }
 
+TEST_F(ButtonFixture, standard_4_clicks_)
+{
+  static const int desiredClicks = 4;
+
+  // initial state is turn on
+  ::simulator::globals::state.isButtonPressed = true;
+  std::atomic<bool> isTestDone = false;
+
+  bool isFirstClickRegistered = true;
+  size_t registeredClicks = 0;
+
+  auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
+    registeredClicks += 1;
+
+    if (isFirstClickRegistered)
+    {
+      ASSERT_TRUE(isFirstClick);
+      ASSERT_EQ(clickCount, 1);
+      isFirstClickRegistered = false;
+    }
+    else
+    {
+      ASSERT_FALSE(isFirstClick);
+      ASSERT_EQ(clickCount, 1);
+    }
+
+    // test is done when corret number of clicks is registered
+    isTestDone = (registeredClicks >= desiredClicks);
+  };
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
+    isTestDone = true;
+    ADD_FAILURE() << "long click when a short click serie was expected";
+  };
+
+  // signal button on
+  ::simulator::mock_gpios::update_callbacks();
+  physical::button::init(true);
+
+  // simulate click release
+  auto buttonThread = std::thread([&]() {
+    std::this_thread::sleep_for(10ms);
+    ::simulator::globals::state.isButtonPressed = false;
+    ::simulator::mock_gpios::update_callbacks();
+  });
+
+  // simulate a few clicks
+  simulate_clicks(desiredClicks, 200ms, 300ms, 500ms);
+
+  while (platform::time_ms() < testTimeout_ms && not isTestDone)
+  {
+    std::this_thread::sleep_for(1ms);
+
+    // poll events from the event queue
+    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
+    if (event.has_value())
+    {
+      const auto& buttonEvent = event.value();
+      if (not buttonEvent.isLongPress)
+      {
+        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+      }
+      else
+      {
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
+      }
+    }
+  }
+  ASSERT_TRUE(isTestDone);
+  ASSERT_EQ(registeredClicks, desiredClicks);
+
+  buttonThread.join();
+}
+
+TEST_F(ButtonFixture, standard_6_double_clicks)
+{
+  static const int desiredClicksPerMultiplePresses = 2;
+  static const int desiredClicks = desiredClicksPerMultiplePresses * 6;
+
+  // initial state is turn on
+  ::simulator::globals::state.isButtonPressed = true;
+  std::atomic<bool> isTestDone = false;
+
+  bool isFirstClickRegistered = true;
+  size_t registeredClicks = 0;
+
+  auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
+    registeredClicks += clickCount;
+
+    if (isFirstClickRegistered)
+    {
+      ASSERT_TRUE(isFirstClick);
+      ASSERT_EQ(clickCount, desiredClicksPerMultiplePresses);
+      isFirstClickRegistered = false;
+    }
+    else
+    {
+      ASSERT_FALSE(isFirstClick);
+      ASSERT_EQ(clickCount, desiredClicksPerMultiplePresses);
+    }
+
+    // test is done when corret number of clicks is registered
+    isTestDone = (registeredClicks >= desiredClicks);
+  };
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
+    isTestDone = true;
+    ADD_FAILURE() << "long click when a short click serie was expected";
+  };
+
+  // signal button on
+  ::simulator::mock_gpios::update_callbacks();
+  physical::button::init(true);
+
+  // simulate first double click
+  bool isStartClickDone = false;
+  auto buttonThread = std::thread([&]() {
+    std::this_thread::sleep_for(10ms);
+
+    ::simulator::globals::state.isButtonPressed = false;
+    ::simulator::mock_gpios::update_callbacks();
+    std::this_thread::sleep_for(70ms);
+
+    ::simulator::globals::state.isButtonPressed = true;
+    ::simulator::mock_gpios::update_callbacks();
+    std::this_thread::sleep_for(70ms);
+
+    ::simulator::globals::state.isButtonPressed = false;
+    ::simulator::mock_gpios::update_callbacks();
+    std::this_thread::sleep_for(500ms);
+    isStartClickDone = true;
+  });
+
+  while (platform::time_ms() < testTimeout_ms && not isTestDone)
+  {
+    if (isStartClickDone and is_click_simulation_done())
+      simulate_clicks(desiredClicksPerMultiplePresses, 200ms, 100ms, 500ms, 0ms);
+
+    std::this_thread::sleep_for(1ms);
+
+    // poll events from the event queue
+    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
+    if (event.has_value())
+    {
+      const auto& buttonEvent = event.value();
+      if (not buttonEvent.isLongPress)
+      {
+        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+      }
+      else
+      {
+        clickHoldSerieCallback(buttonEvent.clickCount,
+                               buttonEvent.longPressDuration,
+                               buttonEvent.isEndOfLongPress,
+                               buttonEvent.isStartClick);
+      }
+    }
+  }
+  ASSERT_TRUE(isTestDone);
+  ASSERT_EQ(registeredClicks, desiredClicks);
+
+  buttonThread.join();
+}
+
 // TODO:
-// standard click than long click chain
 // long click start then click chain
-// start click chain, then multiple click chains
 
 } // namespace lampda

@@ -225,24 +225,20 @@ bool doKeyExists(const uint32_t key) { return _systemParametersValueMap.find(key
 
 bool get_value(const uint32_t key, uint32_t& value)
 {
-#ifdef LMBD_SIMULATION
-  fprintf(stderr, "fsi: get_value %08x -> ", key);
-#endif
-
   const auto& res = _systemParametersValueMap.find(key);
   if (res != _systemParametersValueMap.end())
   {
     value = res->second;
 
 #ifdef LMBD_SIMULATION
-    fprintf(stderr, "%08x\n", value);
+    platform::lampda_print("fsi: get_value %08x -> %08x", key, value);
 #endif
 
     return true;
   }
 
 #ifdef LMBD_SIMULATION
-  fprintf(stderr, "not found\n");
+  platform::lampda_print("fsi: get_value %08x -> not found", key);
 #endif
 
   return false;
@@ -253,7 +249,7 @@ void set_value(const uint32_t key, const uint32_t value)
   _systemParametersValueMap[key] = value;
 
 #ifdef LMBD_SIMULATION
-  fprintf(stderr, "fsi: set_value %08x -> %08x\n", key, value);
+  platform::lampda_print("fsi: set_value %08x -> %08x", key, value);
 #endif
 }
 
@@ -272,7 +268,7 @@ uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
       first = c.erase(first);
 
 #ifdef LMBD_SIMULATION
-      fprintf(stderr, "fsi: key dropped %08x (matches %08x)\n", key, bitMatch & bitSelect);
+      platform::lampda_print("fsi: key dropped %08x (matches %08x)", key, bitMatch & bitSelect);
 #endif
     }
     else
@@ -329,24 +325,20 @@ bool doKeyExists(const uint32_t key) { return _userParametersValueMap.find(key) 
 
 bool get_value(const uint32_t key, uint32_t& value)
 {
-#ifdef LMBD_SIMULATION
-  fprintf(stderr, "fsu: get_value %08x -> ", key);
-#endif
-
   const auto& res = _userParametersValueMap.find(key);
   if (res != _userParametersValueMap.end())
   {
     value = res->second;
 
 #ifdef LMBD_SIMULATION
-    fprintf(stderr, "%08x\n", value);
+    platform::lampda_print("fsu: get_value %08x -> %08x", key, value);
 #endif
 
     return true;
   }
 
 #ifdef LMBD_SIMULATION
-  fprintf(stderr, "not found\n");
+  platform::lampda_print("fsu: get_value %08x -> not found", key);
 #endif
 
   return false;
@@ -357,7 +349,7 @@ void set_value(const uint32_t key, const uint32_t value)
   _userParametersValueMap[key] = value;
 
 #ifdef LMBD_SIMULATION
-  fprintf(stderr, "fsu: set_value %08x -> %08x\n", key, value);
+  platform::lampda_print("fsu: set_value %08x -> %08x", key, value);
 #endif
 }
 
@@ -376,7 +368,7 @@ uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
       first = c.erase(first);
 
 #ifdef LMBD_SIMULATION
-      fprintf(stderr, "fsu: key dropped %08x (matches %08x)\n", key, bitMatch & bitSelect);
+      platform::lampda_print("fsu: key dropped %08x (matches %08x)", key, bitMatch & bitSelect);
 #endif
     }
     else

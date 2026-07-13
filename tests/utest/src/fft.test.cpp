@@ -3,6 +3,8 @@
  */
 #include <cmath>
 #include <gtest/gtest.h>
+#include <chrono>
+
 #include "src/system/utils/fft.h"
 
 namespace lampda::utils::fft {
