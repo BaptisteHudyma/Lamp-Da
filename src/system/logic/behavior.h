@@ -42,6 +42,9 @@ std::string get_error_state_message();
 /// true if system can work at all (charger or output mode)
 bool can_system_allowed_to_be_powered();
 
+/// Return true if the system is expected to power on.
+bool is_system_should_be_powered();
+
 /// set system state to "output on"
 void set_power_on();
 /// set system state to "output off". Can be ignored

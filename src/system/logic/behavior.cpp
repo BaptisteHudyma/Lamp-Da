@@ -128,8 +128,6 @@ void set_power_off()
     return;
 
   isTargetPoweredOn_s = false;
-  // enable start click again
-  physical::button::reset_first_click();
 }
 
 void go_to_external_battery_mode() { logic::power::go_to_otg_mode(); }

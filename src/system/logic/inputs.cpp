@@ -546,9 +546,6 @@ void loop()
 {
   // loop is not ran in shutdown mode
 
-  const bool isUserCodeRunning = behavior::is_user_code_running();
-  const bool hasEvents = __private::buttonEventQueue.has_elements();
-
   // Check a maximum of events per loop turn, events can be refilled by other threads
   size_t maxEventsChecks = __private::maxButtonEventStore;
   while (maxEventsChecks != 0 && __private::buttonEventQueue.has_elements())
@@ -573,7 +570,7 @@ void loop()
   }
 
   // button pressed, lamp was off and lamp is still off: reset first click
-  if (hasEvents and not isUserCodeRunning and not behavior::is_user_code_running())
+  if (not behavior::is_system_should_be_powered())
   {
     // enable start click again
     physical::button::reset_first_click();
