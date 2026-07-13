@@ -128,6 +128,8 @@ void set_power_off()
     return;
 
   isTargetPoweredOn_s = false;
+  // enable start click again
+  physical::button::reset_first_click();
 }
 
 void go_to_external_battery_mode() { logic::power::go_to_otg_mode(); }
@@ -442,9 +444,6 @@ void handle_pre_charger_operation_state()
     return;
   }
 
-  // clear lockout in charge mode
-  logic::alerts::manager.clear(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
-
   preChargeCalled = platform::time_ms();
 
   if (not physical::battery::can_battery_be_charged())
@@ -483,6 +482,10 @@ void handle_charger_operation_state()
     mainMachine.set_state(BehaviorStates::PRE_OUTPUT_LIGHT);
     return;
   }
+
+  // clear lockout in charge mode
+  logic::alerts::manager.clear(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
+
   // wait a bit after going to charger mode, maybe vbus is bouncing around
   const bool vbusDebounced =
           ::lampda::power::charger::can_use_vbus_power() or (platform::time_ms() - preChargeCalled) > 5000;

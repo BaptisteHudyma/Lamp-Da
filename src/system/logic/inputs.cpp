@@ -52,10 +52,15 @@ bool system_start_button_click_callback(const uint8_t consecutiveButtonCheck)
   switch (consecutiveButtonCheck)
   {
     case 4:
-      // activate lockout if not already in it
-      if (not isStartedInLockout)
-        logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
-      return false;
+      {
+        // activate lockout if not already in it
+        if (not isStartedInLockout)
+        {
+          logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
+          return false;
+        }
+        break;
+      }
     default:
       break;
   }
@@ -68,8 +73,10 @@ bool system_start_button_click_callback(const uint8_t consecutiveButtonCheck)
 bool usermode_button_click_callback(const uint8_t consecutiveButtonCheck)
 {
   // user mode may return "True" to skip default action
-  if (user::button_clicked_usermode(consecutiveButtonCheck))
+  const bool canContinue = not user::button_clicked_usermode(consecutiveButtonCheck);
+  if (not canContinue)
   {
+    behavior::set_power_on();
     return false;
   }
   return true;
@@ -130,7 +137,12 @@ void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck, 
         return;
       }
 
-      user::button_clicked_default(consecutiveButtonCheck);
+      const bool canContinue = not user::button_clicked_default(consecutiveButtonCheck);
+      if (not canContinue)
+      {
+        // user returned a command handle, so we should start
+        behavior::set_power_on();
+      }
       break;
   }
 }
@@ -167,6 +179,7 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
         // 3+hold (2s): turn it on, with button usermode enabled
         if (buttonHoldDuration > 2000)
         {
+          behavior::set_power_on();
           isButtonUsermodeEnabled = true;
         }
         return false;
@@ -209,8 +222,11 @@ bool usermode_button_hold_callback(const uint8_t consecutiveButtonCheck,
     default:
       {
         // user mode may return "True" to skip default action
-        if (user::button_hold_usermode(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration))
+        const bool canContinue =
+                not user::button_hold_usermode(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
+        if (not canContinue)
         {
+          behavior::set_power_on();
           return false;
         }
         break;
@@ -353,7 +369,14 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
 
     // other behaviors
     default:
-      user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
+      const bool canContinue =
+              not user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
+      if (not canContinue)
+      {
+        // user returned a command handle, so we should start
+        behavior::set_power_on();
+        return;
+      }
       break;
   }
 }
@@ -390,9 +413,14 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck, const bool is
     const bool isStartedInLockout = logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
     if (not isStartedInLockout)
     {
-      canContinue = user::button_start_click_default(consecutiveButtonCheck);
+      // user mode may return "True" to skip default action
+      canContinue = not user::button_start_click_default(consecutiveButtonCheck);
       if (not canContinue)
+      {
+        // user returned a command handle, so we should start
+        behavior::set_power_on();
         return;
+      }
     }
   }
 
@@ -463,9 +491,14 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
     const bool isStartedInLockout = logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
     if (not isStartedInLockout)
     {
-      canContinue = user::button_start_hold_default(consecutiveButtonCheck, isEndOfPress, holdDuration);
+      // user mode may return "True" to skip default action
+      canContinue = not user::button_start_hold_default(consecutiveButtonCheck, isEndOfPress, holdDuration);
       if (not canContinue)
+      {
+        // user returned a command handle, so we should start
+        behavior::set_power_on();
         return;
+      }
     }
   }
 
@@ -513,6 +546,9 @@ void loop()
 {
   // loop is not ran in shutdown mode
 
+  const bool isUserCodeRunning = behavior::is_user_code_running();
+  const bool hasEvents = __private::buttonEventQueue.has_elements();
+
   // Check a maximum of events per loop turn, events can be refilled by other threads
   size_t maxEventsChecks = __private::maxButtonEventStore;
   while (maxEventsChecks != 0 && __private::buttonEventQueue.has_elements())
@@ -534,6 +570,13 @@ void loop()
                              buttonEvent.isStartClick);
       }
     }
+  }
+
+  // button pressed, lamp was off and lamp is still off: reset first click
+  if (hasEvents and not isUserCodeRunning and not behavior::is_user_code_running())
+  {
+    // enable start click again
+    physical::button::reset_first_click();
   }
 }
 

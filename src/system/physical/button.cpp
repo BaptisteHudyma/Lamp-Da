@@ -165,7 +165,7 @@ void init(const bool isSystemStartedFromButton)
                 "thread throttle should always be less than the release timing");
 
   // if button if already started, reset it
-  isSystemStartClick = true;
+  reset_first_click();
   buttonState.reset();
 
   // attach the button interrupt
@@ -193,6 +193,8 @@ void init(const bool isSystemStartedFromButton)
 
   platform::threads::start_thread(button_thread, platform::threads::button_taskName, 2, 255);
 }
+
+void reset_first_click() { isSystemStartClick = true; }
 
 } // namespace button
 } // namespace physical

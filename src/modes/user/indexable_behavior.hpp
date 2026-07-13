@@ -15,13 +15,13 @@
 #include <cstdint>
 namespace lampda::user {
 
-void button_clicked_default(const uint8_t clicks)
+bool button_clicked_default(const uint8_t clicks)
 {
   // Handle default common behavior
   if (default_behaviors::button_clicked(clicks))
   {
     // some event is already handled
-    return;
+    return true;
   }
 
   auto manager = get_context();
@@ -29,99 +29,149 @@ void button_clicked_default(const uint8_t clicks)
   switch (clicks)
   {
     case 2: // 2 clicks: next mode
-      if (manager.state.isInFavoriteMockGroup)
       {
-        // if in favorite, next favorite
-        manager.state.lastFavoriteStep += 1;
-        // sanity check, if it fails, quit favorites
-        manager.state.isInFavoriteMockGroup = manager.jump_to_favorite(manager.state.lastFavoriteStep, false);
-      }
-      else
-      {
-        if (manager.state.isLastScrollAGroupChange and manager.lamp.now - manager.state.lastScrollStopped < 2000)
+        if (manager.state.isInFavoriteMockGroup)
         {
-          // last action was a group change & timer did not run out yet:
-          // change group
-          manager.next_group();
-
-          // prevent further jumps
-          manager.state.isLastScrollAGroupChange = false;
+          // if in favorite, next favorite
+          manager.state.lastFavoriteStep += 1;
+          // sanity check, if it fails, quit favorites
+          manager.state.isInFavoriteMockGroup = manager.jump_to_favorite(manager.state.lastFavoriteStep, false);
         }
         else
         {
-          // else: just change mode
-          manager.next_mode();
+          if (manager.state.isLastScrollAGroupChange and manager.lamp.now - manager.state.lastScrollStopped < 2000)
+          {
+            // last action was a group change & timer did not run out yet:
+            // change group
+            manager.next_group();
+
+            // prevent further jumps
+            manager.state.isLastScrollAGroupChange = false;
+          }
+          else
+          {
+            // else: just change mode
+            manager.next_mode();
+          }
         }
+#ifdef LMBD_SIMULATION
+        {
+          int _groupId = manager.get_active_group();
+          int _modeId = manager.get_active_mode();
+          fprintf(stderr, "group %d *mode %d\n", _groupId, _modeId);
+          if (manager.everySunsetCallback[_groupId][_modeId])
+            fprintf(stderr, " - hasSunsetAnimation\n");
+          if (manager.everyBrightCallback[_groupId][_modeId])
+            fprintf(stderr, " - hasBrightCallback\n");
+          if (manager.everyCustomRamp[_groupId][_modeId])
+            fprintf(stderr, " - hasCustomRamp\n");
+          if (manager.state.rampHandler.animEffect)
+            fprintf(stderr, " - has anim effect\n");
+          if (manager.everyRequireUserThread[_groupId][_modeId])
+            fprintf(stderr, " - requireUserThread\n");
+          if (manager.everySystemCallbacks[_groupId][_modeId])
+            fprintf(stderr, " - hasSystemCallbacks\n");
+          if (manager.everyButtonCustomUI[_groupId][_modeId])
+            fprintf(stderr, " - hasButtonCustomUI\n");
+        }
+#endif
+
+        return true;
       }
-      break;
 
     case 3: // 3 clicks: next group or quit favorite group
-      if (manager.state.isInFavoriteMockGroup)
       {
-#ifdef LMBD_SIMULATION
-        fprintf(stderr, "Exit fake favorite group\n");
-#endif
-        // reset favorite indicator
-        manager.state.isInFavoriteMockGroup = false;
-        // return to previous state
-        manager.set_active_group(manager.state.beforeFavoriteGroupIndex);
-        manager.set_active_mode(manager.state.beforeFavoriteModeIndex);
-
-        // blip to indicate favorite mode exit
-        manager.blip(250);
-      }
-      else
-      {
-        // true next group
-        manager.next_group();
-      }
-      break;
-
-    case 4: // 4 clicks: jump to favorite
-
-      if (not manager.state.isInFavoriteMockGroup)
-      {
-        // jump and save last used mode
-        if (manager.jump_to_favorite(manager.state.lastFavoriteStep, true))
+        if (manager.state.isInFavoriteMockGroup)
         {
-          manager.state.isInFavoriteMockGroup = true;
-          // blip to indicate favorite mode enter
+#ifdef LMBD_SIMULATION
+          fprintf(stderr, "Exit fake favorite group\n");
+#endif
+          // reset favorite indicator
+          manager.state.isInFavoriteMockGroup = false;
+          // return to previous state
+          manager.set_active_group(manager.state.beforeFavoriteGroupIndex);
+          manager.set_active_mode(manager.state.beforeFavoriteModeIndex);
+
+          // blip to indicate favorite mode exit
           manager.blip(250);
         }
-      }
-      break;
-  }
+        else
+        {
+          // true next group
+          manager.next_group();
+        }
 
 #ifdef LMBD_SIMULATION
-  {
-    int _groupId = manager.get_active_group();
-    int _modeId = manager.get_active_mode();
-    fprintf(stderr, "group %d *mode %d\n", _groupId, _modeId);
-    if (manager.everySunsetCallback[_groupId][_modeId])
-      fprintf(stderr, " - hasSunsetAnimation\n");
-    if (manager.everyBrightCallback[_groupId][_modeId])
-      fprintf(stderr, " - hasBrightCallback\n");
-    if (manager.everyCustomRamp[_groupId][_modeId])
-      fprintf(stderr, " - hasCustomRamp\n");
-    if (manager.state.rampHandler.animEffect)
-      fprintf(stderr, " - has anim effect\n");
-    if (manager.everyRequireUserThread[_groupId][_modeId])
-      fprintf(stderr, " - requireUserThread\n");
-    if (manager.everySystemCallbacks[_groupId][_modeId])
-      fprintf(stderr, " - hasSystemCallbacks\n");
-    if (manager.everyButtonCustomUI[_groupId][_modeId])
-      fprintf(stderr, " - hasButtonCustomUI\n");
-  }
+        {
+          int _groupId = manager.get_active_group();
+          int _modeId = manager.get_active_mode();
+          fprintf(stderr, "group %d *mode %d\n", _groupId, _modeId);
+          if (manager.everySunsetCallback[_groupId][_modeId])
+            fprintf(stderr, " - hasSunsetAnimation\n");
+          if (manager.everyBrightCallback[_groupId][_modeId])
+            fprintf(stderr, " - hasBrightCallback\n");
+          if (manager.everyCustomRamp[_groupId][_modeId])
+            fprintf(stderr, " - hasCustomRamp\n");
+          if (manager.state.rampHandler.animEffect)
+            fprintf(stderr, " - has anim effect\n");
+          if (manager.everyRequireUserThread[_groupId][_modeId])
+            fprintf(stderr, " - requireUserThread\n");
+          if (manager.everySystemCallbacks[_groupId][_modeId])
+            fprintf(stderr, " - hasSystemCallbacks\n");
+          if (manager.everyButtonCustomUI[_groupId][_modeId])
+            fprintf(stderr, " - hasButtonCustomUI\n");
+        }
 #endif
+        return true;
+      }
+
+    case 4: // 4 clicks: jump to favorite
+      {
+        if (not manager.state.isInFavoriteMockGroup)
+        {
+          // jump and save last used mode
+          if (manager.jump_to_favorite(manager.state.lastFavoriteStep, true))
+          {
+            manager.state.isInFavoriteMockGroup = true;
+            // blip to indicate favorite mode enter
+            manager.blip(250);
+          }
+        }
+#ifdef LMBD_SIMULATION
+        {
+          int _groupId = manager.get_active_group();
+          int _modeId = manager.get_active_mode();
+          fprintf(stderr, "group %d *mode %d\n", _groupId, _modeId);
+          if (manager.everySunsetCallback[_groupId][_modeId])
+            fprintf(stderr, " - hasSunsetAnimation\n");
+          if (manager.everyBrightCallback[_groupId][_modeId])
+            fprintf(stderr, " - hasBrightCallback\n");
+          if (manager.everyCustomRamp[_groupId][_modeId])
+            fprintf(stderr, " - hasCustomRamp\n");
+          if (manager.state.rampHandler.animEffect)
+            fprintf(stderr, " - has anim effect\n");
+          if (manager.everyRequireUserThread[_groupId][_modeId])
+            fprintf(stderr, " - requireUserThread\n");
+          if (manager.everySystemCallbacks[_groupId][_modeId])
+            fprintf(stderr, " - hasSystemCallbacks\n");
+          if (manager.everyButtonCustomUI[_groupId][_modeId])
+            fprintf(stderr, " - hasButtonCustomUI\n");
+        }
+#endif
+        return true;
+      }
+  }
+
+  return false;
 }
 
-void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)
+bool button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)
 {
   // Handle default common behavior
   if (default_behaviors::button_hold(clicks, isEndOfHoldEvent, holdDuration))
   {
     // some event is already handled
-    return;
+    return true;
   }
 
   auto manager = get_context();
@@ -130,47 +180,52 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   switch (clicks)
   {
     case 4: // 4 click+hold: configure favorite
-      if (not isEndOfHoldEvent)
       {
-        // lock to prevent addition of favorite from favorite & if we are deleting favorites
-        // the second case can happen when the user delete all favorites
-        if (not manager.state.isInFavoriteMockGroup && not manager.state.isInDeleteFavorite)
+        if (not isEndOfHoldEvent)
         {
-          // no new favorite in favorite
-          manager.animate_favorite_pick(holdDuration, 1500);
+          // lock to prevent addition of favorite from favorite & if we are deleting favorites
+          // the second case can happen when the user delete all favorites
+          if (not manager.state.isInFavoriteMockGroup && not manager.state.isInDeleteFavorite)
+          {
+            // no new favorite in favorite
+            manager.animate_favorite_pick(holdDuration, 1500);
+          }
+          else
+          {
+            // remove current favorite
+            manager.animate_favorite_delete(holdDuration, 2000);
+          }
         }
         else
         {
-          // remove current favorite
-          manager.animate_favorite_delete(holdDuration, 2000);
+          manager.state.isInDeleteFavorite = false;
         }
+        return true;
       }
-      else
-      {
-        manager.state.isInDeleteFavorite = false;
-      }
-      break;
 
     case 6: // 6 click+hold: scroll across modes and group
-      // no scroll in favorite
-      if (not manager.state.isInFavoriteMockGroup)
       {
-        // register end of scroll
-        if (isEndOfHoldEvent)
+        // no scroll in favorite
+        if (not manager.state.isInFavoriteMockGroup)
         {
-          // update release time
-          manager.state.lastScrollStopped = manager.lamp.now;
+          // register end of scroll
+          if (isEndOfHoldEvent)
+          {
+            // update release time
+            manager.state.lastScrollStopped = manager.lamp.now;
+          }
+          else
+          {
+            manager.handle_scroll_modes(holdDuration);
+          }
         }
-        else
-        {
-          manager.handle_scroll_modes(holdDuration);
-        }
+        return true;
       }
-      break;
 
     default:
       break;
   }
+  return false;
 }
 
 namespace __private_elk {
