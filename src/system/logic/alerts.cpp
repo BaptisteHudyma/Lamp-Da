@@ -9,6 +9,7 @@
 #include "src/system/physical/battery.h"
 
 #include "src/system/logic/brightness_handle.h"
+#include "src/system/logic/behavior.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/statistics_handler.h"
 
@@ -145,7 +146,10 @@ struct AlertBase
   /// Return true if the system should shutdown from this alert
   virtual bool should_shutdown_system(const uint32_t time) final
   {
-    return (time - raisedTime) > alert_shutdown_timeout();
+    const auto shutdownTimeout = alert_shutdown_timeout();
+    if (shutdownTimeout == UINT32_MAX)
+      return false;
+    return (time - raisedTime) > shutdownTimeout;
   }
 
   /**
@@ -275,12 +279,16 @@ struct Alert_BatteryCritical : public AlertBase
       return true;
     // battery low can only be cleared on charging operations
     const auto& chargerState = ::lampda::power::charger::get_state();
+    // use the charging standard set to prevent the lamp to turn off while debugging
     return chargerState.is_effectivly_charging();
   }
 
   /// If this alert is raised, system should turn off fast
   uint32_t alert_shutdown_timeout() const override
   {
+    // never shutdown in charge state
+    if (logic::behavior::is_in_charge_state())
+      return UINT32_MAX;
     // shutdown after 2 seconds
     return 2000;
   }

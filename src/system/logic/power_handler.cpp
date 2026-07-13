@@ -460,7 +460,8 @@ void handle_startup()
 
   // if this is false, it's a special case where battery voltage is too low to power the components
   // or the components are dead...
-  if (platform::i2c::i2c_check_existence(0, platform::i2c::chargeI2cAddress) != 0)
+  if (platform::i2c::i2c_check_existence(0, platform::i2c::chargeI2cAddress) != 0 ||
+      platform::i2c::i2c_check_existence(0, platform::i2c::batteryBalancerI2cAddress) != 0)
   {
     const uint32_t timeSinceStateSwitch = platform::time_ms() - __private::powerMachine.get_state_raised_time();
     const bool isVbusUnpowered =
