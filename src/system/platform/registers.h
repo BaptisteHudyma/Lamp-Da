@@ -55,8 +55,9 @@ extern float read_CPU_temperature_degreesC();
 /**
  * \brief Put the system to sleep, with a wake up pin
  * \param[in] wakeUpPin Pin id, defined by the system, that will be used to wake up again
+ * \param[in] wakeUpOnRelease If true, the system will power on whent the button pin is released.
  */
-extern void go_to_sleep(const int wakeUpPin);
+extern void go_to_sleep(const int wakeUpPin, const bool wakeUpOnRelease);
 
 } // namespace registers
 } // namespace platform

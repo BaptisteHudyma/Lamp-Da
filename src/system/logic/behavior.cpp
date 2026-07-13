@@ -135,7 +135,11 @@ void go_to_external_battery_mode() { logic::power::go_to_otg_mode(); }
 //
 bool is_in_start_logic_state() { return mainMachine.get_state() == BehaviorStates::START_LOGIC; }
 bool is_in_output_state() { return mainMachine.get_state() == BehaviorStates::OUTPUT_LIGHT; }
-bool is_in_charge_state() { return mainMachine.get_state() == BehaviorStates::CHARGER_OPERATIONS; }
+bool is_in_charge_state()
+{
+  return mainMachine.get_state() == BehaviorStates::CHARGER_OPERATIONS or
+         mainMachine.get_state() == BehaviorStates::PRE_CHARGER_OPERATION;
+}
 
 namespace sunset {
 
@@ -315,9 +319,11 @@ void true_power_off()
   platform::gpio::DigitalPin::deactivate_gpios(); // physically disconnect gpios
   platform::delay_ms(1);
 
+  // If buttpon is still pressed at this point, we will assume it is stuck pressed and signal a wakeup on release.
+  const bool isButtonPressed = physical::button::get_button_state().isPressed;
   // power down nrf52.
   // on wake up, it'll start back from the setup phase
-  platform::registers::go_to_sleep(physical::button::get_button_pin_RAW());
+  platform::registers::go_to_sleep(physical::button::get_button_pin_RAW(), isButtonPressed);
 
   /*
    * Nothing after this, system is off !
@@ -608,6 +614,7 @@ void handle_pre_output_light_state()
     if (is_charger_powered())
     {
       // go to battery charge instead of shutdown
+      isTargetPoweredOn_s = false;
       mainMachine.set_state(BehaviorStates::PRE_CHARGER_OPERATION);
     }
     else
