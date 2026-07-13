@@ -105,7 +105,7 @@ float read_CPU_temperature_degreesC()
   return procTemp;
 }
 
-void go_to_sleep(const int wakeUpPin) { systemOff(wakeUpPin, 0); }
+void go_to_sleep(const int wakeUpPin, const bool wakeUpOnRelease) { systemOff(wakeUpPin, wakeUpOnRelease ? 1 : 0); }
 
 } // namespace registers
 } // namespace platform

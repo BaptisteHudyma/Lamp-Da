@@ -319,9 +319,11 @@ void true_power_off()
   platform::gpio::DigitalPin::deactivate_gpios(); // physically disconnect gpios
   platform::delay_ms(1);
 
+  // If buttpon is still pressed at this point, we will assume it is stuck pressed and signal a wakeup on release.
+  const bool isButtonPressed = physical::button::get_button_state().isPressed;
   // power down nrf52.
   // on wake up, it'll start back from the setup phase
-  platform::registers::go_to_sleep(physical::button::get_button_pin_RAW());
+  platform::registers::go_to_sleep(physical::button::get_button_pin_RAW(), isButtonPressed);
 
   /*
    * Nothing after this, system is off !

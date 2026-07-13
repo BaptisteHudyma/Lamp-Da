@@ -59,7 +59,7 @@ bool is_started_from_interrupt() { return true; }
 
 float read_CPU_temperature_degreesC() { return simulator::mock_registers::cpuTemperature; }
 
-void go_to_sleep(const int wakeUpPin) { simulator::mock_registers::isDeepSleep = true; };
+void go_to_sleep(const int, const bool) { simulator::mock_registers::isDeepSleep = true; };
 
 } // namespace registers
 } // namespace platform
