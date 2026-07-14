@@ -93,7 +93,7 @@ var searchData=
   ['burlywood_90',['BurlyWood',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba59e5a4a0f644c018d3c3279dd9a6fe82',1,'lampda::modes::colors']]],
   ['button_2eh_91',['button.h',['../button_8h.html',1,'']]],
   ['button_5fclicked_92',['button_clicked',['../namespacelampda_1_1user_1_1default__behaviors.html#abfa368e9f59597b5d14c664fd08f632f',1,'lampda::user::default_behaviors']]],
-  ['button_5fclicked_5fdefault_93',['button_clicked_default',['../namespacelampda_1_1user.html#afa70e2fe7b7f2470d212d4551247c460',1,'lampda::user']]],
+  ['button_5fclicked_5fdefault_93',['button_clicked_default',['../namespacelampda_1_1user.html#a16a4e2afee032d6dcb5918467d416972',1,'lampda::user']]],
   ['button_5fclicked_5fusermode_94',['button_clicked_usermode',['../namespacelampda_1_1user.html#afcb730073a278316019e03d326e34449',1,'lampda::user']]],
   ['button_5fdisable_5fusermode_95',['button_disable_usermode',['../namespacelampda_1_1logic_1_1inputs.html#ac917bc55b4caddb110bf668018b59b77',1,'lampda::logic::inputs']]],
   ['button_5fhold_96',['button_hold',['../namespacelampda_1_1user_1_1default__behaviors.html#a93738ec6c5952f143d486075ff170942',1,'lampda::user::default_behaviors']]],
