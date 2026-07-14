@@ -13,6 +13,7 @@
 
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/time.h"
+#include "src/system/platform/print.h"
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/time_utils.h"
@@ -78,7 +79,7 @@ bool usermode_button_click_callback(const uint8_t consecutiveButtonCheck)
   const bool canContinue = not user::button_clicked_usermode(consecutiveButtonCheck);
   if (not canContinue)
   {
-    behavior::set_power_on();
+    // nothing to do, in custom usermode, system is already on
     return false;
   }
   return true;
@@ -142,8 +143,8 @@ void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck, 
       const bool canContinue = not user::button_clicked_default(consecutiveButtonCheck);
       if (not canContinue)
       {
-        // user returned a command handle, so we should start
-        behavior::set_power_on();
+        // Nothing to do, system is already on
+        return;
       }
       break;
   }
@@ -169,20 +170,20 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
     // external battery mode
     case 2:
       {
-        if (buttonHoldDuration > 1000)
+        if (buttonHoldDuration > 1000 and not logic::power::is_in_otg_mode())
         {
-          if (not logic::power::is_in_otg_mode())
-            behavior::go_to_external_battery_mode();
+          behavior::go_to_external_battery_mode();
         }
         break;
       }
     case 3:
       {
         // 3+hold (2s): turn it on, with button usermode enabled
-        if (buttonHoldDuration > 2000)
+        if (not isButtonUsermodeEnabled and buttonHoldDuration > 2000)
         {
           behavior::set_power_on();
           isButtonUsermodeEnabled = true;
+          platform::lampda_print("Wake up from start usermode command");
         }
         return false;
       }
@@ -224,11 +225,11 @@ bool usermode_button_hold_callback(const uint8_t consecutiveButtonCheck,
     default:
       {
         // user mode may return "True" to skip default action
-        const bool canContinue =
-                not user::button_hold_usermode(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
-        if (not canContinue)
+        const bool hasUserHandledAction =
+                user::button_hold_usermode(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
+        if (hasUserHandledAction)
         {
-          behavior::set_power_on();
+          // user mode should be active when system is on, no need to start again
           return false;
         }
         break;
@@ -371,12 +372,11 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
 
     // other behaviors
     default:
-      const bool canContinue =
-              not user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
-      if (not canContinue)
+      const bool hasUserHandledAction =
+              user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
+      if (hasUserHandledAction)
       {
-        // user returned a command handle, so we should start
-        behavior::set_power_on();
+        // system is already on, no need to continue
         return;
       }
       break;
@@ -421,6 +421,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck, const bool is
       {
         // user returned a command handle, so we should start
         behavior::set_power_on();
+        platform::lampda_print("Wake up from start user::clicks %d", consecutiveButtonCheck);
         return;
       }
     }
@@ -461,6 +462,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck, const bool is
     if (consecutiveButtonCheck == 1)
     {
       behavior::set_power_on();
+      platform::lampda_print("Wake up from single press");
     }
   }
 }
@@ -497,8 +499,12 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
       canContinue = not user::button_start_hold_default(consecutiveButtonCheck, isEndOfPress, holdDuration);
       if (not canContinue)
       {
-        // user returned a command handle, so we should start
-        behavior::set_power_on();
+        if (not behavior::is_system_should_be_powered())
+        {
+          // user returned a command handle, so we should start
+          behavior::set_power_on();
+          platform::lampda_print("Wake up from start user::hold %d", consecutiveButtonCheck);
+        }
         return;
       }
     }
@@ -569,7 +575,12 @@ void loop()
 
       // update system on
       if (not buttonEvent.isLongPress or buttonEvent.isEndOfLongPress)
+      {
         isSystemOn = behavior::is_system_should_be_powered();
+        // deactivate custom user mode on turn off
+        if (not isSystemOn)
+          button_disable_usermode();
+      }
     }
   }
 }
