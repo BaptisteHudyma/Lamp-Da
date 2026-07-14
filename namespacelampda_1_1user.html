@@ -103,12 +103,12 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>ManagerTy</b> = <a c
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:afa70e2fe7b7f2470d212d4551247c460"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#afa70e2fe7b7f2470d212d4551247c460">button_clicked_default</a> (const uint8_t clicks)</td></tr>
+<tr class="memitem:afa70e2fe7b7f2470d212d4551247c460"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#afa70e2fe7b7f2470d212d4551247c460">button_clicked_default</a> (const uint8_t clicks)</td></tr>
 <tr class="memdesc:afa70e2fe7b7f2470d212d4551247c460"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button click events for default user mode behaviors.  <br /></td></tr>
 <tr class="separator:afa70e2fe7b7f2470d212d4551247c460"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9ec78b94698e19a2db3fe7acf9cc745"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#ad9ec78b94698e19a2db3fe7acf9cc745">button_hold_default</a> (const uint8_t nbClickAndHold, const bool isEndOfHoldEvent, const uint32_t holdDuration)</td></tr>
-<tr class="memdesc:ad9ec78b94698e19a2db3fe7acf9cc745"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button click+hold events for user mode behaviors.  <br /></td></tr>
-<tr class="separator:ad9ec78b94698e19a2db3fe7acf9cc745"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a287991443d66886cef109a3522c2621b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#a287991443d66886cef109a3522c2621b">button_hold_default</a> (const uint8_t nbClickAndHold, const bool isEndOfHoldEvent, const uint32_t holdDuration)</td></tr>
+<tr class="memdesc:a287991443d66886cef109a3522c2621b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called to handle button click+hold events for user mode behaviors.  <br /></td></tr>
+<tr class="separator:a287991443d66886cef109a3522c2621b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f29be2c74dbd49d32347da761917642"><td class="memItemLeft" align="right" valign="top"><a id="a9f29be2c74dbd49d32347da761917642" name="a9f29be2c74dbd49d32347da761917642"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>power_on_sequence</b> ()</td></tr>
 <tr class="memdesc:a9f29be2c74dbd49d32347da761917642"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called when the system powers on (must be non blocking function!) <br /></td></tr>
@@ -244,6 +244,7 @@ static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>currentBrig
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>True if an action was handled </dd></dl>
 
 </div>
 </div>
@@ -275,14 +276,14 @@ static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>currentBrig
 
 </div>
 </div>
-<a id="ad9ec78b94698e19a2db3fe7acf9cc745" name="ad9ec78b94698e19a2db3fe7acf9cc745"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad9ec78b94698e19a2db3fe7acf9cc745">&#9670;&#160;</a></span>button_hold_default()</h2>
+<a id="a287991443d66886cef109a3522c2621b" name="a287991443d66886cef109a3522c2621b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a287991443d66886cef109a3522c2621b">&#9670;&#160;</a></span>button_hold_default()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void lampda::user::button_hold_default </td>
+          <td class="memname">bool lampda::user::button_hold_default </td>
           <td>(</td>
           <td class="paramtype">const uint8_t&#160;</td>
           <td class="paramname"><em>nbClickAndHold</em>, </td>
@@ -322,6 +323,7 @@ static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>currentBrig
   </dd>
 </dl>
 <dl class="section remark"><dt>Remarks</dt><dd>When <code>isEndOfHoldEvent</code> is True, then <code>holdDuration</code> is zero </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>True if an action was handled </dd></dl>
 
 </div>
 </div>
