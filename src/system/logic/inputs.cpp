@@ -26,6 +26,8 @@ namespace inputs {
 // constants
 static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000; ///< duration of the brightness ramp
 static constexpr uint32_t BRIGHTNESS_LOOP_UPDATE_EVERY = 20;  ///< frequency update of the ramp
+static constexpr uint32_t BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS =
+        5000; ///< duration of the brightness ramp saturation before switching behavior
 
 namespace __private {
 utils::Queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
@@ -127,26 +129,30 @@ void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck, 
 
     // other behaviors
     default:
-      // 10+ clicks: force shutdown (or safety reset if DEBUG_MODE)
-      if (consecutiveButtonCheck >= 10)
       {
+        // 10+ clicks: force shutdown (or safety reset if DEBUG_MODE)
+        if (consecutiveButtonCheck >= 10)
+        {
 #ifdef DEBUG_MODE
-        // disable charger and wait 5s to be killed by watchdog
-        indicator::set_color(utils::ColorSpace::PINK);
-        logic::power::enable_charge(false);
-        platform::delay_ms(20000); // crash the system
+          // disable charger and wait 5s to be killed by watchdog
+          indicator::set_color(utils::ColorSpace::PINK);
+          logic::power::enable_charge(false);
+          platform::delay_ms(20000); // crash the system
 #endif
-        behavior::set_power_off();
-        return;
-      }
+          behavior::set_power_off();
+          return;
+        }
 
-      const bool canContinue = not user::button_clicked_default(consecutiveButtonCheck);
-      if (not canContinue)
-      {
-        // Nothing to do, system is already on
-        return;
+        const bool canContinue = not user::button_clicked_default(consecutiveButtonCheck);
+        if (not canContinue)
+        {
+          // Nothing to do, system is already on
+          return;
+        }
+
+        // other actions
+        break;
       }
-      break;
   }
 }
 
@@ -167,14 +173,14 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
 
   switch (consecutiveButtonCheck)
   {
-    // external battery mode
     case 2:
       {
+        // 2+hold (1s): external battery mode
         if (buttonHoldDuration > 1000 and not logic::power::is_in_otg_mode())
         {
           behavior::go_to_external_battery_mode();
         }
-        break;
+        return false;
       }
     case 3:
       {
@@ -329,19 +335,16 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
           }
           // press for too long, go down
           // TODO do this from level max, no start of ramp
-          else if (buttonHoldDuration >= 5000)
+          else if (buttonHoldDuration >= BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS)
           {
-// this do not work, because system starts right back up, because button is still pulled low...
-#if 0
-          // stayed pressed too long, turn off
-          if (buttonHoldDuration >= 10000)
-          {
-            behavior::set_power_off();
-            break;
-          }
-          else
-#endif
-            rampSide = -1;
+            // stayed pressed too long, turn off
+            if (buttonHoldDuration >= 2 * BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS)
+            {
+              behavior::set_power_off();
+              break;
+            }
+            else
+              rampSide = -1;
           }
 
           // go down
