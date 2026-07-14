@@ -13,6 +13,7 @@
 
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/time.h"
+#include "src/system/platform/print.h"
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/time_utils.h"
@@ -30,7 +31,9 @@ namespace __private {
 utils::Queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
 }
 
-// hold the boolean that configures if button's usermode UI is enabled
+/// holds the state of system on
+bool isSystemOn = false;
+/// hold the boolean that configures if button's usermode UI is enabled
 bool isButtonUsermodeEnabled = false;
 
 namespace button_press_handles {
@@ -52,10 +55,15 @@ bool system_start_button_click_callback(const uint8_t consecutiveButtonCheck)
   switch (consecutiveButtonCheck)
   {
     case 4:
-      // activate lockout if not already in it
-      if (not isStartedInLockout)
-        logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
-      return false;
+      {
+        // activate lockout if not already in it
+        if (not isStartedInLockout)
+        {
+          logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
+          return false;
+        }
+        break;
+      }
     default:
       break;
   }
@@ -68,8 +76,10 @@ bool system_start_button_click_callback(const uint8_t consecutiveButtonCheck)
 bool usermode_button_click_callback(const uint8_t consecutiveButtonCheck)
 {
   // user mode may return "True" to skip default action
-  if (user::button_clicked_usermode(consecutiveButtonCheck))
+  const bool canContinue = not user::button_clicked_usermode(consecutiveButtonCheck);
+  if (not canContinue)
   {
+    // nothing to do, in custom usermode, system is already on
     return false;
   }
   return true;
@@ -130,7 +140,12 @@ void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck, 
         return;
       }
 
-      user::button_clicked_default(consecutiveButtonCheck);
+      const bool canContinue = not user::button_clicked_default(consecutiveButtonCheck);
+      if (not canContinue)
+      {
+        // Nothing to do, system is already on
+        return;
+      }
       break;
   }
 }
@@ -155,19 +170,20 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
     // external battery mode
     case 2:
       {
-        if (buttonHoldDuration > 1000)
+        if (buttonHoldDuration > 1000 and not logic::power::is_in_otg_mode())
         {
-          if (not logic::power::is_in_otg_mode())
-            behavior::go_to_external_battery_mode();
+          behavior::go_to_external_battery_mode();
         }
         break;
       }
     case 3:
       {
         // 3+hold (2s): turn it on, with button usermode enabled
-        if (buttonHoldDuration > 2000)
+        if (not isButtonUsermodeEnabled and buttonHoldDuration > 2000)
         {
+          behavior::set_power_on();
           isButtonUsermodeEnabled = true;
+          platform::lampda_print("Wake up from start usermode command");
         }
         return false;
       }
@@ -209,8 +225,11 @@ bool usermode_button_hold_callback(const uint8_t consecutiveButtonCheck,
     default:
       {
         // user mode may return "True" to skip default action
-        if (user::button_hold_usermode(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration))
+        const bool hasUserHandledAction =
+                user::button_hold_usermode(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
+        if (hasUserHandledAction)
         {
+          // user mode should be active when system is on, no need to start again
           return false;
         }
         break;
@@ -353,7 +372,13 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
 
     // other behaviors
     default:
-      user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
+      const bool hasUserHandledAction =
+              user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
+      if (hasUserHandledAction)
+      {
+        // system is already on, no need to continue
+        return;
+      }
       break;
   }
 }
@@ -390,9 +415,15 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck, const bool is
     const bool isStartedInLockout = logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
     if (not isStartedInLockout)
     {
-      canContinue = user::button_start_click_default(consecutiveButtonCheck);
+      // user mode may return "True" to skip default action
+      canContinue = not user::button_start_click_default(consecutiveButtonCheck);
       if (not canContinue)
+      {
+        // user returned a command handle, so we should start
+        behavior::set_power_on();
+        platform::lampda_print("Wake up from start user::clicks %d", consecutiveButtonCheck);
         return;
+      }
     }
   }
 
@@ -431,6 +462,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck, const bool is
     if (consecutiveButtonCheck == 1)
     {
       behavior::set_power_on();
+      platform::lampda_print("Wake up from single press");
     }
   }
 }
@@ -463,9 +495,18 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
     const bool isStartedInLockout = logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
     if (not isStartedInLockout)
     {
-      canContinue = user::button_start_hold_default(consecutiveButtonCheck, isEndOfPress, holdDuration);
+      // user mode may return "True" to skip default action
+      canContinue = not user::button_start_hold_default(consecutiveButtonCheck, isEndOfPress, holdDuration);
       if (not canContinue)
+      {
+        if (not behavior::is_system_should_be_powered())
+        {
+          // user returned a command handle, so we should start
+          behavior::set_power_on();
+          platform::lampda_print("Wake up from start user::hold %d", consecutiveButtonCheck);
+        }
         return;
+      }
     }
   }
 
@@ -524,14 +565,21 @@ void loop()
       const __private::ButtonEvent& buttonEvent = event.value();
       if (not buttonEvent.isLongPress)
       {
-        button_clicked_callback(buttonEvent.clickCount, buttonEvent.isStartClick);
+        button_clicked_callback(buttonEvent.clickCount, not isSystemOn);
       }
       else
       {
-        button_hold_callback(buttonEvent.clickCount,
-                             buttonEvent.longPressDuration,
-                             buttonEvent.isEndOfLongPress,
-                             buttonEvent.isStartClick);
+        button_hold_callback(
+                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, not isSystemOn);
+      }
+
+      // update system on
+      if (not buttonEvent.isLongPress or buttonEvent.isEndOfLongPress)
+      {
+        isSystemOn = behavior::is_system_should_be_powered();
+        // deactivate custom user mode on turn off
+        if (not isSystemOn)
+          button_disable_usermode();
       }
     }
   }
@@ -541,23 +589,21 @@ void button_disable_usermode() { isButtonUsermodeEnabled = false; }
 
 bool is_button_usermode_enabled() { return isButtonUsermodeEnabled; }
 
-bool add_button_click_event(uint32_t clickCount, bool isStartClick)
+bool add_button_click_event(uint32_t clickCount)
 {
   __private::ButtonEvent event;
-  event.isStartClick = isStartClick;
   event.isLongPress = false;
   event.clickCount = clickCount;
   return __private::buttonEventQueue.enqueue(event);
 }
 
-bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress, bool isStartClick)
+bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress)
 {
   __private::ButtonEvent event;
   event.isLongPress = true;
   event.clickCount = clickCount;
   event.isEndOfLongPress = isEndOfPress;
   event.longPressDuration = pressDuration;
-  event.isStartClick = isStartClick;
   return __private::buttonEventQueue.enqueue(event);
 }
 

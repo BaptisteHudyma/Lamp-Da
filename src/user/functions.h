@@ -73,8 +73,9 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
 /** \brief Called to handle button click events for default user mode behaviors.
  *
  * \param[in] clicks The number of clicks made by the user
+ * \return True if an action was handled
  */
-void button_clicked_default(const uint8_t clicks);
+bool button_clicked_default(const uint8_t clicks);
 
 /** \brief Called to handle button click+hold events for user mode behaviors
  *
@@ -89,8 +90,9 @@ void button_clicked_default(const uint8_t clicks);
  * \param[in] isEndOfHoldEvent True if the user just released the button
  * \param[in] holdDuration The duration of the on-going held event
  * \remark When \p isEndOfHoldEvent is True, then \p holdDuration is zero
+ * \return True if an action was handled
  */
-void button_hold_default(const uint8_t nbClickAndHold, const bool isEndOfHoldEvent, const uint32_t holdDuration);
+bool button_hold_default(const uint8_t nbClickAndHold, const bool isEndOfHoldEvent, const uint32_t holdDuration);
 
 /** \brief Called to handle button click events if "usermode UI" is active
  *

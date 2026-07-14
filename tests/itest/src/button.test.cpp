@@ -104,6 +104,7 @@ TEST_F(ButtonFixture, turn_on_start_click_early_release)
   // initial state is turn on
   ::simulator::globals::state.isButtonPressed = false;
   bool isTestDone = false;
+  bool isStartClick = true;
 
   auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
     isTestDone = true;
@@ -130,14 +131,15 @@ TEST_F(ButtonFixture, turn_on_start_click_early_release)
       const auto& buttonEvent = event.value();
       if (not buttonEvent.isLongPress)
       {
-        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+        isStartClick = false;
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount,
-                               buttonEvent.longPressDuration,
-                               buttonEvent.isEndOfLongPress,
-                               buttonEvent.isStartClick);
+        clickHoldSerieCallback(
+                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+        if (buttonEvent.isEndOfLongPress)
+          isStartClick = false;
       }
     }
   }
@@ -150,6 +152,7 @@ TEST_F(ButtonFixture, turn_on_start_click)
   // initial state is turn on
   ::simulator::globals::state.isButtonPressed = true;
   bool isTestDone = false;
+  bool isStartClick = true;
 
   auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
     isTestDone = true;
@@ -183,14 +186,15 @@ TEST_F(ButtonFixture, turn_on_start_click)
       const auto& buttonEvent = event.value();
       if (not buttonEvent.isLongPress)
       {
-        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+        isStartClick = false;
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount,
-                               buttonEvent.longPressDuration,
-                               buttonEvent.isEndOfLongPress,
-                               buttonEvent.isStartClick);
+        clickHoldSerieCallback(
+                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+        if (buttonEvent.isEndOfLongPress)
+          isStartClick = false;
       }
     }
   }
@@ -205,6 +209,7 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
 
   // initial state is turn on
   ::simulator::globals::state.isButtonPressed = true;
+  bool isStartClick = true;
   std::atomic<bool> isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
@@ -242,14 +247,15 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
       const auto& buttonEvent = event.value();
       if (not buttonEvent.isLongPress)
       {
-        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+        isStartClick = false;
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount,
-                               buttonEvent.longPressDuration,
-                               buttonEvent.isEndOfLongPress,
-                               buttonEvent.isStartClick);
+        clickHoldSerieCallback(
+                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+        if (buttonEvent.isEndOfLongPress)
+          isStartClick = false;
       }
     }
   }
@@ -262,6 +268,7 @@ TEST_F(ButtonFixture, turn_on_start_long_click)
 {
   // initial state is turn on
   ::simulator::globals::state.isButtonPressed = true;
+  bool isStartClick = true;
   bool isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
@@ -299,14 +306,15 @@ TEST_F(ButtonFixture, turn_on_start_long_click)
       const auto& buttonEvent = event.value();
       if (not buttonEvent.isLongPress)
       {
-        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+        isStartClick = false;
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount,
-                               buttonEvent.longPressDuration,
-                               buttonEvent.isEndOfLongPress,
-                               buttonEvent.isStartClick);
+        clickHoldSerieCallback(
+                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+        if (buttonEvent.isEndOfLongPress)
+          isStartClick = false;
       }
     }
   }
@@ -321,6 +329,7 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
 
   // initial state is turn on
   ::simulator::globals::state.isButtonPressed = true;
+  bool isStartClick = true;
   bool isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
@@ -361,14 +370,15 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
       const auto& buttonEvent = event.value();
       if (not buttonEvent.isLongPress)
       {
-        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+        isStartClick = false;
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount,
-                               buttonEvent.longPressDuration,
-                               buttonEvent.isEndOfLongPress,
-                               buttonEvent.isStartClick);
+        clickHoldSerieCallback(
+                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+        if (buttonEvent.isEndOfLongPress)
+          isStartClick = false;
       }
     }
   }
@@ -387,6 +397,7 @@ TEST_F(ButtonFixture, debounce)
 
   // initial state is turn on
   ::simulator::globals::state.isButtonPressed = false;
+  bool isStartClick = true;
   std::atomic<bool> isTestDone = false;
 
   auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
@@ -421,14 +432,15 @@ TEST_F(ButtonFixture, debounce)
       const auto& buttonEvent = event.value();
       if (not buttonEvent.isLongPress)
       {
-        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+        isStartClick = false;
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount,
-                               buttonEvent.longPressDuration,
-                               buttonEvent.isEndOfLongPress,
-                               buttonEvent.isStartClick);
+        clickHoldSerieCallback(
+                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+        if (buttonEvent.isEndOfLongPress)
+          isStartClick = false;
       }
     }
   }
@@ -441,6 +453,7 @@ TEST_F(ButtonFixture, start_click_then_4_clicks)
 
   // initial state is turn on
   ::simulator::globals::state.isButtonPressed = true;
+  bool isStartClick = true;
   std::atomic<bool> isTestDone = false;
 
   bool isFirstClickRegistered = true;
@@ -489,14 +502,15 @@ TEST_F(ButtonFixture, start_click_then_4_clicks)
       const auto& buttonEvent = event.value();
       if (not buttonEvent.isLongPress)
       {
-        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+        isStartClick = false;
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount,
-                               buttonEvent.longPressDuration,
-                               buttonEvent.isEndOfLongPress,
-                               buttonEvent.isStartClick);
+        clickHoldSerieCallback(
+                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+        if (buttonEvent.isEndOfLongPress)
+          isStartClick = false;
       }
     }
   }
@@ -510,6 +524,7 @@ TEST_F(ButtonFixture, standard_4_clicks_)
 
   // initial state is turn on
   ::simulator::globals::state.isButtonPressed = true;
+  bool isStartClick = true;
   std::atomic<bool> isTestDone = false;
 
   bool isFirstClickRegistered = true;
@@ -563,14 +578,15 @@ TEST_F(ButtonFixture, standard_4_clicks_)
       const auto& buttonEvent = event.value();
       if (not buttonEvent.isLongPress)
       {
-        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+        isStartClick = false;
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount,
-                               buttonEvent.longPressDuration,
-                               buttonEvent.isEndOfLongPress,
-                               buttonEvent.isStartClick);
+        clickHoldSerieCallback(
+                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+        if (buttonEvent.isEndOfLongPress)
+          isStartClick = false;
       }
     }
   }
@@ -587,6 +603,7 @@ TEST_F(ButtonFixture, standard_6_double_clicks)
 
   // initial state is turn on
   ::simulator::globals::state.isButtonPressed = true;
+  bool isStartClick = true;
   std::atomic<bool> isTestDone = false;
 
   bool isFirstClickRegistered = true;
@@ -652,14 +669,15 @@ TEST_F(ButtonFixture, standard_6_double_clicks)
       const auto& buttonEvent = event.value();
       if (not buttonEvent.isLongPress)
       {
-        clickSerieCallback(buttonEvent.clickCount, buttonEvent.isStartClick);
+        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+        isStartClick = false;
       }
       else
       {
-        clickHoldSerieCallback(buttonEvent.clickCount,
-                               buttonEvent.longPressDuration,
-                               buttonEvent.isEndOfLongPress,
-                               buttonEvent.isStartClick);
+        clickHoldSerieCallback(
+                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+        if (buttonEvent.isEndOfLongPress)
+          isStartClick = false;
       }
     }
   }

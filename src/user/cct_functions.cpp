@@ -106,21 +106,23 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
   return false;
 }
 
-void button_clicked_default(const uint8_t clicks)
+bool button_clicked_default(const uint8_t clicks)
 {
   switch (clicks)
   {
     // put luminosity to maximum
     case 2:
       logic::brightness::update_brightness(logic::brightness::get_max_brightness());
-      break;
+      return true;
 
     default:
       break;
   }
+
+  return false;
 }
 
-void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)
+bool button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)
 {
   constexpr uint32_t COLOR_RAMP_DURATION_MS = 4000;
   switch (clicks)
@@ -139,7 +141,7 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       {
         lastColor = currentColor;
       }
-      break;
+      return true;
 
     case 4:
       if (!isEndOfHoldEvent)
@@ -157,8 +159,9 @@ void button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
       {
         lastColor = currentColor;
       }
-      break;
+      return true;
   }
+  return false;
 }
 
 bool button_clicked_usermode(const uint8_t) { return usermodeDefaultsToLockdown; }

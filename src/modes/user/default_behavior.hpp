@@ -18,9 +18,9 @@ namespace lampda::user {
 // These are defined in src/modes/user/{flavor}_behavior.hpp
 //
 
-void button_clicked_default(const uint8_t);
+bool button_clicked_default(const uint8_t);
 
-void button_hold_default(const uint8_t, const bool, const uint32_t);
+bool button_hold_default(const uint8_t, const bool, const uint32_t);
 
 //
 // These callbacks are the same for all lamp flavors*
