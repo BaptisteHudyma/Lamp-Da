@@ -294,6 +294,8 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
         // negative go low, positive go high
         static int rampSide = 1;
         static uint32_t lastBrightnessUpdateTime_ms = 0;
+        static uint32_t latestBrightnessSaturationDuration_ms =
+                0; ///< keep track of the latest brightness saturation press duration
 
         // prevent sunset updates when we are updating it ourself
         logic::sunset::lock_brightness_update(not isEndOfHoldEvent);
@@ -323,6 +325,8 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
           // first actions, set ramp side
           if (buttonHoldDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)
           {
+            latestBrightnessSaturationDuration_ms = 0;
+
             // 2 clics always go low
             if (consecutiveButtonCheck == 2)
               rampSide = -1;
@@ -334,12 +338,14 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
               rampSide = 1;
           }
           // press for too long, go down
-          // TODO do this from level max, no start of ramp
-          else if (buttonHoldDuration >= BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS)
+          else if (buttonHoldDuration >=
+                   BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS + latestBrightnessSaturationDuration_ms)
           {
-            // stayed pressed too long, turn off
-            if (buttonHoldDuration >= 2 * BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS)
+            // stayed pressed too long, turn off after a delay
+            if (buttonHoldDuration >= 2 * BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS + BRIGHTNESS_RAMP_DURATION_MS +
+                                              latestBrightnessSaturationDuration_ms)
             {
+              platform::lampda_print("System shutdown: button pressed too long for brightness control");
               behavior::set_power_off();
               break;
             }
@@ -362,7 +368,12 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
             // limit max brightness
             const auto _maxBrightness = logic::brightness::get_max_brightness();
             if (brightness + brightnessUpdateStepSize >= _maxBrightness)
+            {
               logic::brightness::update_brightness(_maxBrightness);
+              // set saturation timer
+              if (latestBrightnessSaturationDuration_ms == 0)
+                latestBrightnessSaturationDuration_ms = buttonHoldDuration;
+            }
             else
               logic::brightness::update_brightness(static_cast<brightness_t>(brightness + brightnessUpdateStepSize));
           }
