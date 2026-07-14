@@ -121,7 +121,7 @@ void main_setup()
   if (platform::registers::is_started_from_watchdog())
   {
     // try to start fresh: the system can get stuck with a broken filesystem
-    // TODO: find why !!!!
+    // TODO #353: it happens when the system power source is removed during a file system read/write.
     physical::fileSystem::clear_internal_fs();
   }
 
