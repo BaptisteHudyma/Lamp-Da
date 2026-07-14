@@ -64,7 +64,7 @@ void brightness_update(const brightness_t) {}
 void sunset_timer_update(const float progress) {}
 void write_parameters() {}
 void read_parameters() {}
-void button_clicked_default(const uint8_t) {}
+bool button_clicked_default(const uint8_t) { return false; }
 bool button_hold_default(const uint8_t, const bool, const uint32_t) { return false; }
 
 bool button_start_click_default(const uint8_t clicks) { return false; }
