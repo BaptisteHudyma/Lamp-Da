@@ -105,7 +105,33 @@ float read_CPU_temperature_degreesC()
   return procTemp;
 }
 
-void go_to_sleep(const int wakeUpPin, const bool wakeUpOnRelease) { systemOff(wakeUpPin, wakeUpOnRelease ? 1 : 0); }
+void go_to_sleep(const int wakeUpPin, const bool wakeUpOnRelease)
+{
+  const auto pin = g_ADigitalPinMap[wakeUpPin];
+  if (wakeUpOnRelease)
+  {
+    // wait for user to release the button
+    nrf_gpio_cfg_sense_input(pin, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_HIGH);
+  }
+  else
+  {
+    // wait for user to press the button again
+    nrf_gpio_cfg_sense_input(pin, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_SENSE_LOW);
+  }
+
+  uint8_t sd_en;
+  (void)sd_softdevice_is_enabled(&sd_en);
+
+  // Enter System OFF state
+  if (sd_en)
+  {
+    sd_power_system_off();
+  }
+  else
+  {
+    NRF_POWER->SYSTEMOFF = 1;
+  }
+}
 
 } // namespace registers
 } // namespace platform
