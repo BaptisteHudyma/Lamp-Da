@@ -6,6 +6,8 @@
 #include "src/system/logic/alerts.h"
 #include "src/system/utils/constants.h"
 
+#include "src/system/physical/battery.h"
+
 #include "src/system/platform/print.h"
 #include "src/system/platform/time.h"
 
@@ -58,7 +60,12 @@ void stop_advertising()
   Bluefruit.Advertising.stop();
 }
 
-void connect_callback(uint16_t conn_hdl) { platform::lampda_print("Bluetooth connected"); }
+void connect_callback(uint16_t conn_hdl)
+{
+  const auto batteryLevel = physical::battery::get_battery_minimum_cell_level();
+  write_battery_level(static_cast<uint8_t>(batteryLevel / 100));
+  platform::lampda_print("Bluetooth connected");
+}
 
 void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
 {

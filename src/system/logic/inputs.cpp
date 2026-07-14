@@ -26,6 +26,8 @@ namespace inputs {
 // constants
 static constexpr uint32_t BRIGHTNESS_RAMP_DURATION_MS = 2000; ///< duration of the brightness ramp
 static constexpr uint32_t BRIGHTNESS_LOOP_UPDATE_EVERY = 20;  ///< frequency update of the ramp
+static constexpr uint32_t BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS =
+        5000; ///< duration of the brightness ramp saturation before switching behavior
 
 namespace __private {
 utils::Queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
@@ -127,26 +129,30 @@ void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck, 
 
     // other behaviors
     default:
-      // 10+ clicks: force shutdown (or safety reset if DEBUG_MODE)
-      if (consecutiveButtonCheck >= 10)
       {
+        // 10+ clicks: force shutdown (or safety reset if DEBUG_MODE)
+        if (consecutiveButtonCheck >= 10)
+        {
 #ifdef DEBUG_MODE
-        // disable charger and wait 5s to be killed by watchdog
-        indicator::set_color(utils::ColorSpace::PINK);
-        logic::power::enable_charge(false);
-        platform::delay_ms(20000); // crash the system
+          // disable charger and wait 5s to be killed by watchdog
+          indicator::set_color(utils::ColorSpace::PINK);
+          logic::power::enable_charge(false);
+          platform::delay_ms(20000); // crash the system
 #endif
-        behavior::set_power_off();
-        return;
-      }
+          behavior::set_power_off();
+          return;
+        }
 
-      const bool canContinue = not user::button_clicked_default(consecutiveButtonCheck);
-      if (not canContinue)
-      {
-        // Nothing to do, system is already on
-        return;
+        const bool canContinue = not user::button_clicked_default(consecutiveButtonCheck);
+        if (not canContinue)
+        {
+          // Nothing to do, system is already on
+          return;
+        }
+
+        // other actions
+        break;
       }
-      break;
   }
 }
 
@@ -167,14 +173,14 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
 
   switch (consecutiveButtonCheck)
   {
-    // external battery mode
     case 2:
       {
+        // 2+hold (1s): external battery mode
         if (buttonHoldDuration > 1000 and not logic::power::is_in_otg_mode())
         {
           behavior::go_to_external_battery_mode();
         }
-        break;
+        return false;
       }
     case 3:
       {
@@ -288,6 +294,8 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
         // negative go low, positive go high
         static int rampSide = 1;
         static uint32_t lastBrightnessUpdateTime_ms = 0;
+        static uint32_t latestBrightnessSaturationDuration_ms =
+                0; ///< keep track of the latest brightness saturation press duration
 
         // prevent sunset updates when we are updating it ourself
         logic::sunset::lock_brightness_update(not isEndOfHoldEvent);
@@ -317,6 +325,8 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
           // first actions, set ramp side
           if (buttonHoldDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)
           {
+            latestBrightnessSaturationDuration_ms = 0;
+
             // 2 clics always go low
             if (consecutiveButtonCheck == 2)
               rampSide = -1;
@@ -328,20 +338,19 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
               rampSide = 1;
           }
           // press for too long, go down
-          // TODO do this from level max, no start of ramp
-          else if (buttonHoldDuration >= 5000)
+          else if (buttonHoldDuration >=
+                   BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS + latestBrightnessSaturationDuration_ms)
           {
-// this do not work, because system starts right back up, because button is still pulled low...
-#if 0
-          // stayed pressed too long, turn off
-          if (buttonHoldDuration >= 10000)
-          {
-            behavior::set_power_off();
-            break;
-          }
-          else
-#endif
-            rampSide = -1;
+            // stayed pressed too long, turn off after a delay
+            if (buttonHoldDuration >= 2 * BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS + BRIGHTNESS_RAMP_DURATION_MS +
+                                              latestBrightnessSaturationDuration_ms)
+            {
+              platform::lampda_print("System shutdown: button pressed too long for brightness control");
+              behavior::set_power_off();
+              break;
+            }
+            else
+              rampSide = -1;
           }
 
           // go down
@@ -359,7 +368,12 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
             // limit max brightness
             const auto _maxBrightness = logic::brightness::get_max_brightness();
             if (brightness + brightnessUpdateStepSize >= _maxBrightness)
+            {
               logic::brightness::update_brightness(_maxBrightness);
+              // set saturation timer
+              if (latestBrightnessSaturationDuration_ms == 0)
+                latestBrightnessSaturationDuration_ms = buttonHoldDuration;
+            }
             else
               logic::brightness::update_brightness(static_cast<brightness_t>(brightness + brightnessUpdateStepSize));
           }
