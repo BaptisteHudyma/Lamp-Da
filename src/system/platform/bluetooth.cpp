@@ -25,6 +25,9 @@ namespace __private {
 #define BLE_APPEARANCE_LIGHT_SOURCE_GENERIC          0x07C0 /**< Light fixture BLE appearance flag (official flags) */
 #define BLE_APPEARANCE_LIGHT_SOURCE_MULTICOLOR_ARRAY 0x07C6 /**< Light fixture BLE appearance flag (official flags) */
 
+/// indicates if the connection is secured and we can trust the commands
+bool isConnectionSecured = false;
+
 /// Indicates if the last advertising cancel command was automatic or requested
 bool advertisingStoppedByRequest = false;
 
@@ -37,6 +40,11 @@ BLEBas bleBatteryService;
 ::lampda::bluetooth::BLEElkService bleElkService;
 
 static bool isInitialized = false;
+
+/// Store the known paired device
+static ble_gap_addr_t identityAddr[1];
+/// Keep track of if we have a bounded peer
+static bool hasBoundedPeer = false;
 
 // convert a 4-bit nibble to a hexadecimal character
 char nibble_to_hex(uint8_t nibble)
@@ -60,19 +68,81 @@ void stop_advertising()
   Bluefruit.Advertising.stop();
 }
 
-void connect_callback(uint16_t conn_hdl)
+void connect_callback(uint16_t connHdl)
 {
+  BLEConnection* conn = Bluefruit.Connection(connHdl);
+  conn->requestPHY();            // request 2M PHY if available
+  conn->requestMtuExchange(247); // request larger MTU
+  conn->requestPairing();        // if not a paired device, will require a pairing event
+
   const auto batteryLevel = physical::battery::get_battery_minimum_cell_level();
   write_battery_level(static_cast<uint8_t>(batteryLevel / 100));
   platform::lampda_print("Bluetooth connected");
+
+  if (__private::hasBoundedPeer)
+  {
+    ble_gap_addr_t peerAddr = conn->getPeerAddr();
+
+    bool isSame = true;
+    for (size_t i = 0; i < BLE_GAP_ADDR_LEN; i++)
+    {
+      if (peerAddr.addr[i] != __private::identityAddr[0].addr[i])
+      {
+        isSame = false;
+        break;
+      }
+    }
+    if (not isSame)
+    {
+      // refuse
+      platform::lampda_print("[BLE] refused: not the same address: 0x%02X:0x%02X:0x%02X:0x%02X:0x%02X:0x%02X",
+                             peerAddr.addr[5],
+                             peerAddr.addr[4],
+                             peerAddr.addr[3],
+                             peerAddr.addr[2],
+                             peerAddr.addr[1],
+                             peerAddr.addr[0]);
+      Bluefruit.disconnect(connHdl);
+    }
+  }
 }
+
+void pair_completed_callback(uint16_t connHdl, uint8_t authStatus)
+{
+  if (authStatus == 0)
+  {
+    // Resolve the peer IDENTITY address
+    BLEConnection* conn = Bluefruit.Connection(connHdl);
+    ble_gap_addr_t peerAddr = conn->getPeerAddr();
+
+    identityAddr[0] = peerAddr;
+    hasBoundedPeer = true;
+    // TODO: save_identity(identityAddr);
+    platform::lampda_print("BLE pairing succeeded: new pair associated with 0x%02X:0x%02X:0x%02X:0x%02X:0x%02X:0x%02X",
+                           __private::identityAddr[0].addr[5],
+                           __private::identityAddr[0].addr[4],
+                           __private::identityAddr[0].addr[3],
+                           __private::identityAddr[0].addr[2],
+                           __private::identityAddr[0].addr[1],
+                           __private::identityAddr[0].addr[0]);
+  }
+  else
+  {
+    platform::lampda_print("BLE pairing failed : disconnecting");
+  }
+  // disconnect in the end because the applications cannot detect us if we are connected
+  Bluefruit.disconnect(connHdl);
+}
+
+void connection_secured_callback(uint16_t connHdl) { isConnectionSecured = true; }
 
 void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
 {
+  isConnectionSecured = false;
   // Dont stop advertising here, some BLE drivers can send one command by connections.
   // Instead, restart the advertising
-  start_advertising();
   platform::lampda_print("Bluetooth disconnected");
+  start_advertising(not hasBoundedPeer);
 }
 
 void adv_stop_callback(void)
@@ -80,7 +150,7 @@ void adv_stop_callback(void)
   // auto turned off, start again !
   if (not advertisingStoppedByRequest)
   {
-    start_advertising();
+    start_advertising(not hasBoundedPeer);
     platform::lampda_print("BLE Advertising timeout, advertising restarted.");
   }
   else
@@ -122,12 +192,21 @@ void startup_sequence()
   if (isInitialized)
     return;
 
+  isConnectionSecured = false;
+
+  // TODO: load_identity(identityAddr); if it exist
+
   // pairs devices
   static constexpr uint8_t peripheralCount = 1;
   static constexpr uint8_t centralCount = 0;
   Bluefruit.begin(peripheralCount, centralCount);
   Bluefruit.autoConnLed(false);
   Bluefruit.setTxPower(4); // Check bluefruit.h for supported values
+
+  Bluefruit.Security.setIOCaps(false, false, false);
+  Bluefruit.Security.setMITM(false); // ManInTheMiddle protection
+  Bluefruit.Security.setPairCompleteCallback(pair_completed_callback);
+  Bluefruit.Security.setSecuredCallback(connection_secured_callback);
 
   // add services
   set_device_informations();
@@ -150,26 +229,12 @@ void startup_sequence()
   Bluefruit.setName(ble_name);
   Bluefruit.setAppearance(BLE_APPEARANCE_LIGHT_SOURCE_MULTICOLOR_ARRAY);
 
-  // Configure and start the BLE Uart service
-  platform::lampda_print("Blutooth started under the name:%s", ble_name);
-
-  // Advertising packet
-  Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
-  Bluefruit.Advertising.addTxPower();
-
-  // Advertise services that we want to advertise only
-  Bluefruit.Advertising.addService(bleSystemInfo);
-  // Bluefruit.Advertising.addService(bleBatteryService);
-  Bluefruit.Advertising.addService(bleElkService);
-
   // Secondary Scan Response packet (optional)
   // Since there is no room for 'Name' in Advertising packet
   Bluefruit.ScanResponse.addName();
 
-  Bluefruit.Advertising.setStopCallback(adv_stop_callback);
-  Bluefruit.Advertising.restartOnDisconnect(true);
-  Bluefruit.Advertising.setInterval(32, 244);             // in unit of 0.625 ms
-  Bluefruit.Advertising.setFastTimeout(ADV_TIMEOUT_FAST); // advertisement timeout
+  // Configure and start the BLE Uart service
+  platform::lampda_print("Blutooth started under the name:%s", ble_name);
 
   Bluefruit.Periph.setConnectCallback(connect_callback);
   Bluefruit.Periph.setDisconnectCallback(disconnect_callback);
@@ -184,30 +249,89 @@ void startup_sequence()
  *
  */
 
-#ifdef USE_BLUETOOTH
-
 bool is_activated() { return __private::isInitialized; }
 
 bool is_advertising() { return Bluefruit.Advertising.isRunning(); }
 
 bool is_connected() { return Bluefruit.connected() != 0; }
 
+bool is_secured() { return is_connected() && __private::isConnectionSecured; }
+
 // void display_infos() { Bluefruit.printInfo(); }
 
-void start_advertising()
+void start_advertising(const bool isOpenToAll)
 {
   if (!__private::isInitialized)
   {
     // call once when the program starts
     __private::startup_sequence();
   }
-  // no need to start again
-  if (is_advertising())
-    return;
 
+  __private::stop_advertising();
+
+  // Advertising packet
+  Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
+  Bluefruit.Advertising.addTxPower();
+
+  // Advertise services that we want to advertise only
+  Bluefruit.Advertising.addService(__private::bleSystemInfo);
+  // Bluefruit.Advertising.addService(bleBatteryService);
+  Bluefruit.Advertising.addService(__private::bleElkService);
+
+  Bluefruit.Advertising.setStopCallback(__private::adv_stop_callback);
+  Bluefruit.Advertising.restartOnDisconnect(false);
+  Bluefruit.Advertising.setInterval(32, 244);             // in unit of 0.625 ms
+  Bluefruit.Advertising.setFastTimeout(ADV_TIMEOUT_FAST); // advertisement timeout
+
+  if (not isOpenToAll)
+  {
+    if (__private::hasBoundedPeer)
+    {
+      // set whitelist
+      const ble_gap_addr_t* temp = __private::identityAddr;
+      uint32_t err = sd_ble_gap_whitelist_set(&temp, 1);
+      if (err == NRF_SUCCESS)
+      {
+        Bluefruit.Advertising.setFilter(BLE_GAP_ADV_FP_ANY);
+        // force the use of the whitelist
+        // TODO: for some reason this makes the bluetooth advertisement to fail
+        // Bluefruit.Advertising.setFilter(BLE_GAP_ADV_FP_FILTER_CONNREQ);
+        platform::lampda_print(
+                "[BLE] start paired bluetooth advertisement with 0x%02X:0x%02X:0x%02X:0x%02X:0x%02X:0x%02X",
+                __private::identityAddr[0].addr[5],
+                __private::identityAddr[0].addr[4],
+                __private::identityAddr[0].addr[3],
+                __private::identityAddr[0].addr[2],
+                __private::identityAddr[0].addr[1],
+                __private::identityAddr[0].addr[0]);
+      }
+      else
+      {
+        platform::lampda_print("[BLE] failed to add paired bluetooth device to whitelist");
+        return;
+      }
+    }
+    else
+    {
+      platform::lampda_print("[BLE] Cannot start paired bluetooth advertisement without a pair");
+      return;
+    }
+  }
+  else
+  {
+    // anyone can connect
+    platform::lampda_print("[BLE] start public bluetooth advertisement");
+    Bluefruit.Advertising.setFilter(BLE_GAP_ADV_FP_ANY);
+  }
+
+  // no need to start again
   __private::advertisingStoppedByRequest = false;
 
-  Bluefruit.Advertising.start(ADV_TIMEOUT); // Stop advertising entirely after ADV_TIMEOUT seconds
+  const bool hasStarted = Bluefruit.Advertising.start(0); // Stop advertising entirely after ADV_TIMEOUT seconds
+  if (not hasStarted)
+  {
+    platform::lampda_print("[BLE] Could not start advertisement");
+  }
 
   // reraise the alert every minutes
   logic::alerts::manager.raise(logic::alerts::Type::BLUETOOTH_ADVERT);
@@ -235,25 +359,6 @@ void notify_battery_level(const uint8_t batteryLevel)
     return;
   __private::bleBatteryService.notify(batteryLevel);
 }
-
-// Bluetooth can also by disabled at the system level
-#else
-
-bool is_activated() { return false; }
-
-bool is_advertising() { return false; }
-
-bool is_connected() { return false; }
-
-void start_advertising() {}
-
-void stop_bluetooth_advertising() {}
-
-void write_battery_level(const uint8_t batteryLevel) {}
-
-void notify_battery_level(const uint8_t batteryLevel) {}
-
-#endif
 
 } // namespace bluetooth
 } // namespace platform

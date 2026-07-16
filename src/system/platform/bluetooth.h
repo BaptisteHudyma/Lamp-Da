@@ -8,9 +8,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "src/compile.h"
-// - contains #define USE_BLUETOOTH
-
 namespace lampda {
 namespace platform {
 /// Handle the platform specific bluetooth operations
@@ -22,9 +19,13 @@ bool is_activated();
 bool is_advertising();
 /// Return true if a bluetooth user is connected
 bool is_connected();
+/// Return true if the connected device is paired
+bool is_secured();
 
-// start the advertising sequence (with a timeout)
-void start_advertising();
+/// start the advertising sequence (with a timeout)
+/// \param[in] isOpenToAll If true, this device can be seen and connected to by every other BLE device. False will use a
+/// whitelist of devices, if available, or fail.
+void start_advertising(const bool isOpenToAll);
 
 // disable the bluetooth advertising, but not the bluetooth
 void stop_bluetooth_advertising();

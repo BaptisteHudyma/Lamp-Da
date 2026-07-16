@@ -15,7 +15,7 @@ bool is_advertising() { return false; }
 bool is_connected() { return false; }
 
 // start the advertising sequence (with a timeout)
-void start_advertising() {}
+void start_advertising(const bool isOpenToAll) {}
 
 // disable the bluetooth controler
 void stop_bluetooth_advertising() {}

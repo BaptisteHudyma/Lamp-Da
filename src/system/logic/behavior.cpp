@@ -213,7 +213,7 @@ bool read_parameters()
     {
       bluetoothAutoActivationLeftCount = min<uint32_t>(maxBluetoothAutoActivations, bluetoothAutoActivation - 1);
 
-      platform::bluetooth::start_advertising();
+      platform::bluetooth::start_advertising(false);
     }
     else
     {

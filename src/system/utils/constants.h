@@ -35,7 +35,7 @@ namespace lampda {
 /// \warning Will not compile if missmatch : update your dependency adafruit lampda_nrf52840.
 #define EXPECTED_FIRMWARE_VERSION_MAJOR 1
 /// expected minor firmware version, will not compile if missmatch.
-#define EXPECTED_FIRMWARE_VERSION_MINOR 3
+#define EXPECTED_FIRMWARE_VERSION_MINOR 4
 
 /// Base major software version, common to all systems.
 /// increment for every  release.

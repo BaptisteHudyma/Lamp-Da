@@ -196,9 +196,9 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
     case 4:
       {
         // 4+hold (2s): turn on, with bluetooth advertising
-        if (buttonHoldDuration > 2000)
+        if (buttonHoldDuration > 2000 && not platform::bluetooth::is_advertising())
         {
-          platform::bluetooth::start_advertising();
+          platform::bluetooth::start_advertising(true);
         }
         return false;
       }

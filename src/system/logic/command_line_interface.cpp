@@ -348,11 +348,13 @@ void handleCommand(const platform::Inputs::Command& command)
               "is activated: %d\n"
               "is advertising: %d\n"
               "is connected: %d\n"
+              "is secured: %d\n"
               "is msg received: %d\n"
               "auto activations left: %d",
               platform::bluetooth::is_activated(),
               platform::bluetooth::is_advertising(),
               platform::bluetooth::is_connected(),
+              platform::bluetooth::is_secured(),
               logic::inputs_bluetooth::is_bluetooth_used(),
               logic::behavior::internal::get_bluetooth_auto_activation_left());
       break;
