@@ -21,6 +21,12 @@ void add_time_minutes(const uint8_t time_minutes);
 /// signal to the timer that some time may be added
 void bump_timer();
 
+
+/// Reduce the active sunset timer to the minimum duration.
+/// Does nothing if the timer is disabled or already below the minimum duration.
+
+
+void set_to_minimum_duration();
 /// cancel the current active timer
 void cancel_timer();
 

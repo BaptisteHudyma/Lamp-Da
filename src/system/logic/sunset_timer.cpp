@@ -165,6 +165,24 @@ void bump_timer()
   }
 }
 
+void set_to_minimum_duration()
+
+{
+
+  const uint32_t currentTime_s = platform::time_s();
+  // Timer is disabled or has already expired
+
+  if (sunsetTimerEndTime_s == 0 or sunsetTimerEndTime_s <= currentTime_s)
+    return;
+  const uint32_t minimumEndTime_s = currentTime_s + brightnessRampDownTime_s;
+  // Never extend a timer that already has 3 minutes or less remaining
+  if (sunsetTimerEndTime_s <= minimumEndTime_s)
+    return;
+  sunsetTimerEndTime_s = minimumEndTime_s;
+  // Notify consumers that the timer progress changed
+  signal_sunset_update();
+}
+
 /// cancel the current active timer
 void cancel_timer()
 {
