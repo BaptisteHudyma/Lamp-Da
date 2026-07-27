@@ -31,7 +31,7 @@ struct FireMode : public BasicMode
   /// Palette used for fire colors
   static constexpr auto palette = colors::PaletteHeatColors;
 
-  // this is too heavy to run at full, speed, display every other pixels instead of refreshing amm
+  // this is too heavy to run at full, speed, display every other pixels instead of refreshing all
   static constexpr uint32_t everyNIndex = 2;
 
   struct StateTy
@@ -58,7 +58,7 @@ struct FireMode : public BasicMode
       ctx.state.isResetted = false;
 
       // load animation
-      for (uint32_t i = 0; i <= everyNIndex; ++i)
+      for (uint32_t i = 0; i < everyNIndex; ++i)
       {
         fire_display(ctx, i);
       }
