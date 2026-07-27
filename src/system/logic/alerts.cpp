@@ -1,5 +1,5 @@
 #include "alerts.h"
-
+#include "src/system/logic/sunset_timer.h"
 #include "src/system/platform/time.h"
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/registers.h"
@@ -348,6 +348,7 @@ struct Alert_BatteryLow : public AlertBase
   /// Execution will lower the brigthness output
   void execute() const override
   {
+      logic::sunset::set_to_minimum_duration();
     // limit brightness to quarter of the max value
     constexpr brightness_t clampedBrightness =
             static_cast<brightness_t>(0.25 * ::lampda::brightness::absoluteMaximumBrightness);
@@ -422,6 +423,7 @@ struct Alert_TempTooHigh : public AlertBase
   /// Execution will lower the max brightness of the output
   void execute() const override
   {
+     logic::sunset::set_to_minimum_duration();
     // limit brightness to half the max value
     constexpr brightness_t clampedBrightness =
             static_cast<brightness_t>(0.5 * ::lampda::brightness::absoluteMaximumBrightness);
