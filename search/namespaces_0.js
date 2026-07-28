@@ -47,6 +47,7 @@ var searchData=
   ['system_44',['system',['../namespacelampda_1_1physical_1_1fileSystem_1_1system.html',1,'lampda::physical::fileSystem']]],
   ['text_45',['text',['../namespacelampda_1_1modes_1_1draw_1_1text.html',1,'lampda::modes::draw']]],
   ['threads_46',['threads',['../namespacelampda_1_1platform_1_1threads.html',1,'lampda::platform']]],
-  ['user_47',['user',['../namespacelampda_1_1physical_1_1fileSystem_1_1user.html',1,'lampda::physical::fileSystem::user'],['../namespacelampda_1_1user.html',1,'lampda::user']]],
-  ['utils_48',['utils',['../namespacelampda_1_1utils.html',1,'lampda']]]
+  ['time_47',['time',['../namespacelampda_1_1time.html',1,'lampda']]],
+  ['user_48',['user',['../namespacelampda_1_1physical_1_1fileSystem_1_1user.html',1,'lampda::physical::fileSystem::user'],['../namespacelampda_1_1user.html',1,'lampda::user']]],
+  ['utils_49',['utils',['../namespacelampda_1_1utils.html',1,'lampda']]]
 ];

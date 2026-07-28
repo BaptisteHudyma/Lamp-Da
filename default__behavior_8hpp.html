@@ -169,6 +169,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::default
 <tr class="memitem:ae12fc38efea7ec13653af2fb38fd43cd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="default__behavior_8hpp.html#ae12fc38efea7ec13653af2fb38fd43cd">lampda::user::default_behaviors::__private_elk::handle_speed_command</a> (const uint8_t speed)</td></tr>
 <tr class="memdesc:ae12fc38efea7ec13653af2fb38fd43cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the speed command.  <br /></td></tr>
 <tr class="separator:ae12fc38efea7ec13653af2fb38fd43cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af33de4fff54643c3310848b3a3ae7b74"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="default__behavior_8hpp.html#af33de4fff54643c3310848b3a3ae7b74">lampda::user::default_behaviors::__private_elk::handle_set_time_command</a> (const uint8_t hour, const uint8_t minutes, const uint8_t seconds, const uint8_t weekday)</td></tr>
+<tr class="memdesc:af33de4fff54643c3310848b3a3ae7b74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the set time command.  <br /></td></tr>
+<tr class="separator:af33de4fff54643c3310848b3a3ae7b74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac416f277b4efc3dc3d269b647e82bc99"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="default__behavior_8hpp.html#ac416f277b4efc3dc3d269b647e82bc99">lampda::user::default_behaviors::__private_elk::handle_timing_command</a> (const bool shouldTurnOn, const uint8_t hour, const uint8_t minutes, const uint8_t seconds, const uint8_t weekday)</td></tr>
+<tr class="memdesc:ac416f277b4efc3dc3d269b647e82bc99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the timing command.  <br /></td></tr>
+<tr class="separator:ac416f277b4efc3dc3d269b647e82bc99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7bccaef1c3fdd1164695b541b5675c50"><td class="memItemLeft" align="right" valign="top"><a id="a7bccaef1c3fdd1164695b541b5675c50" name="a7bccaef1c3fdd1164695b541b5675c50"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::default_behaviors::handle_elk_command</b> (const utils::ELK::Package &amp;elkControlCommand)</td></tr>
 <tr class="separator:a7bccaef1c3fdd1164695b541b5675c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -176,6 +182,54 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::default
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Define the default behavior of a lamp. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="af33de4fff54643c3310848b3a3ae7b74" name="af33de4fff54643c3310848b3a3ae7b74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af33de4fff54643c3310848b3a3ae7b74">&#9670;&#160;</a></span>handle_set_time_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::user::default_behaviors::__private_elk::handle_set_time_command </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>hour</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>minutes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>seconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>weekday</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Handle the set time command. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">weekday</td><td>In the [0; 6] range </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ae12fc38efea7ec13653af2fb38fd43cd" name="ae12fc38efea7ec13653af2fb38fd43cd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae12fc38efea7ec13653af2fb38fd43cd">&#9670;&#160;</a></span>handle_speed_command()</h2>
 
@@ -196,6 +250,60 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::default
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">speed</td><td>0-255 speed </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac416f277b4efc3dc3d269b647e82bc99" name="ac416f277b4efc3dc3d269b647e82bc99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac416f277b4efc3dc3d269b647e82bc99">&#9670;&#160;</a></span>handle_timing_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::user::default_behaviors::__private_elk::handle_timing_command </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>shouldTurnOn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>hour</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>minutes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>seconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>weekday</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Handle the timing command. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">weekday</td><td>In the [0; 6] range </td></tr>
   </table>
   </dd>
 </dl>

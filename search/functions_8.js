@@ -8,10 +8,12 @@ var searchData=
   ['handle_5fon_5foff_5fcommand_5',['handle_on_off_command',['../default__behavior_8hpp.html#a66b9c654d421139d310774fdbfdf58ff',1,'lampda::user::default_behaviors::__private_elk']]],
   ['handle_5fpattern_5fselect_5fcommand_6',['handle_pattern_select_command',['../indexable__behavior_8hpp.html#aa3e10ebbd30cde5fd9d6ef4fd5272959',1,'lampda::user::__private_elk']]],
   ['handle_5fraised_5fstate_7',['handle_raised_state',['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a8795df5a0b70f2fb39ad8df454bbb19a',1,'lampda::logic::alerts::AlertBase']]],
-  ['handle_5fspeed_5fcommand_8',['handle_speed_command',['../default__behavior_8hpp.html#ae12fc38efea7ec13653af2fb38fd43cd',1,'lampda::user::default_behaviors::__private_elk']]],
-  ['handle_5fstartup_9',['handle_startup',['../namespacelampda_1_1logic_1_1power.html#aa7c15eaf67ab742f30b9f0da3951819e',1,'lampda::logic::power']]],
-  ['handleserialevents_10',['handleSerialEvents',['../namespacelampda_1_1logic_1_1cli.html#aaa39bb8398d46daa043c64a27b9b2ed5',1,'lampda::logic::cli']]],
-  ['hash_11',['hash',['../namespacelampda_1_1utils.html#a7b68e6e95f92e53533b21590af9cc533',1,'lampda::utils']]],
-  ['hasvalue_12',['hasValue',['../structlampda_1_1modes_1_1ContextTy_1_1KeyProxy.html#a8eb4ba1695cdcf3e64608b9b8384461a',1,'lampda::modes::ContextTy::KeyProxy']]],
-  ['hsv_13',['HSV',['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#af36f9b737eb062f5c25699a5db778b99',1,'lampda::utils::ColorSpace::HSV::HSV(const COLOR &amp;c)'],['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#acbeacbf87488186dabc67221e4ade5d5',1,'lampda::utils::ColorSpace::HSV::HSV(double h, double s, double v)']]]
+  ['handle_5fset_5ftime_5fcommand_8',['handle_set_time_command',['../default__behavior_8hpp.html#af33de4fff54643c3310848b3a3ae7b74',1,'lampda::user::default_behaviors::__private_elk']]],
+  ['handle_5fspeed_5fcommand_9',['handle_speed_command',['../default__behavior_8hpp.html#ae12fc38efea7ec13653af2fb38fd43cd',1,'lampda::user::default_behaviors::__private_elk']]],
+  ['handle_5fstartup_10',['handle_startup',['../namespacelampda_1_1logic_1_1power.html#aa7c15eaf67ab742f30b9f0da3951819e',1,'lampda::logic::power']]],
+  ['handle_5ftiming_5fcommand_11',['handle_timing_command',['../default__behavior_8hpp.html#ac416f277b4efc3dc3d269b647e82bc99',1,'lampda::user::default_behaviors::__private_elk']]],
+  ['handleserialevents_12',['handleSerialEvents',['../namespacelampda_1_1logic_1_1cli.html#aaa39bb8398d46daa043c64a27b9b2ed5',1,'lampda::logic::cli']]],
+  ['hash_13',['hash',['../namespacelampda_1_1utils.html#a7b68e6e95f92e53533b21590af9cc533',1,'lampda::utils']]],
+  ['hasvalue_14',['hasValue',['../structlampda_1_1modes_1_1ContextTy_1_1KeyProxy.html#a8eb4ba1695cdcf3e64608b9b8384461a',1,'lampda::modes::ContextTy::KeyProxy']]],
+  ['hsv_15',['HSV',['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#acbeacbf87488186dabc67221e4ade5d5',1,'lampda::utils::ColorSpace::HSV::HSV(double h, double s, double v)'],['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#af36f9b737eb062f5c25699a5db778b99',1,'lampda::utils::ColorSpace::HSV::HSV(const COLOR &amp;c)']]]
 ];
