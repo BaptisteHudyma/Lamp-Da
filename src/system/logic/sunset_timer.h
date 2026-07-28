@@ -18,6 +18,9 @@ void init();
 /// add some time to the sunset timer. Limited to 10 minutes
 void add_time_minutes(const uint8_t time_minutes);
 
+/// Set the sunset timer to a known clock deadline, replacing existing timers
+void set_deadline(const uint32_t timeshutdown_s);
+
 /// signal to the timer that some time may be added
 void bump_timer();
 

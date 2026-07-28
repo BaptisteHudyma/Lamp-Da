@@ -352,9 +352,6 @@ struct Alert_BatteryLow : public AlertBase
     constexpr brightness_t clampedBrightness =
             static_cast<brightness_t>(0.25 * ::lampda::brightness::absoluteMaximumBrightness);
 
-    // save some battery
-    platform::bluetooth::stop_bluetooth_advertising();
-
     logic::brightness::set_max_brightness(clampedBrightness);
     logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
     logic::brightness::update_saved_brightness();

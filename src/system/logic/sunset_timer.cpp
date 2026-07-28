@@ -148,6 +148,26 @@ void add_time_minutes(const uint8_t time_minutes)
   logic::brightness::set_max_user_brightness(logic::brightness::get_saved_brightness());
 }
 
+void set_deadline(const uint32_t timeshutdown_s)
+{
+  if (sunsetTimerEndTime_s == 0)
+  {
+    platform::lampda_print("sunset timer set");
+    sunsetTimerEndTime_s = timeshutdown_s;
+    logic::alerts::manager.raise(logic::alerts::Type::SUNSET_TIMER_ENABLED);
+
+    // resume
+    platform::threads::resume_thread(platform::threads::sunset_taskName);
+  }
+  else
+  {
+    platform::lampda_print("sunset timer updated");
+    // added some time, so signal update
+    sunsetTimerEndTime_s = timeshutdown_s;
+    signal_sunset_update();
+  }
+}
+
 /// signal to the timer that some time must be added. Limited to 10 minutes
 void bump_timer()
 {
