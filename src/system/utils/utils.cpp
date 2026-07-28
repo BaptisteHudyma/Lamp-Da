@@ -163,5 +163,31 @@ uint32_t hue_to_rgb_sinus(const uint16_t angle)
   return colorArray.color;
 }
 
+int get_index_of_first_set_bit(uint8_t bitstream)
+{
+  switch (bitstream - (bitstream & bitstream - 1))
+  {
+    case 0:
+      return -1;
+    case 1 << 0:
+      return 0;
+    case 1 << 1:
+      return 1;
+    case 1 << 2:
+      return 2;
+    case 1 << 3:
+      return 3;
+    case 1 << 4:
+      return 4;
+    case 1 << 5:
+      return 5;
+    case 1 << 6:
+      return 6;
+    case 1 << 7:
+      return 7;
+  }
+  return -1;
+}
+
 } // namespace utils
 } // namespace lampda

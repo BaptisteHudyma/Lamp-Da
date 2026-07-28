@@ -207,6 +207,9 @@ constexpr uint16_t voltageToAnalogRead(const float voltage)
   return lmpd_constrain<uint16_t>(voltage, 0, internalReferenceVoltage) * ADC_MAX_VALUE / internalReferenceVoltage;
 }
 
+/// Return the index of the first set bit of a number, or -1 if unavailable
+int get_index_of_first_set_bit(uint8_t bitstream);
+
 } // namespace utils
 } // namespace lampda
 
