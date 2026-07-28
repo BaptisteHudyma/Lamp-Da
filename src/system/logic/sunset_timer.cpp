@@ -150,6 +150,12 @@ void add_time_minutes(const uint8_t time_minutes)
 
 void set_deadline(const uint32_t timeshutdown_s)
 {
+  if (timeshutdown_s <= platform::time_s())
+  {
+    platform::lampda_print("shutdown time is less than current time: %d", timeshutdown_s);
+    return;
+  }
+
   if (sunsetTimerEndTime_s == 0)
   {
     platform::lampda_print("sunset timer set");

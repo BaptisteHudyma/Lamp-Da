@@ -403,32 +403,6 @@ void handle_timing_command(const bool shouldTurnOn,
 
 } // namespace __private_elk
 
-int get_index_of_first_set_bit(uint8_t bitstream)
-{
-  switch (bitstream - (bitstream & bitstream - 1))
-  {
-    case 0:
-      return -1;
-    case 1 << 0:
-      return 0;
-    case 1 << 1:
-      return 1;
-    case 1 << 2:
-      return 2;
-    case 1 << 3:
-      return 3;
-    case 1 << 4:
-      return 4;
-    case 1 << 5:
-      return 5;
-    case 1 << 6:
-      return 6;
-    case 1 << 7:
-      return 7;
-  }
-  return -1;
-}
-
 bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
 {
   switch (elkControlCommand.type)
@@ -483,7 +457,7 @@ bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
         // index bit of enable/disable
         constexpr uint8_t setClearBit = 1 << 7;
 
-        const int indexOfTheDay = get_index_of_first_set_bit(enabledDays);
+        const int indexOfTheDay = utils::get_index_of_first_set_bit(enabledDays);
 
         if (indexOfTheDay < 0 or indexOfTheDay > 6)
         {

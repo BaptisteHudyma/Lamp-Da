@@ -70,6 +70,7 @@ set(SRC_SYSTEM_PHYSICAL
     ${LMBD_ROOT_DIR}/src/system/physical/sound.cpp
     ${LMBD_ROOT_DIR}/src/system/physical/imu.cpp
     ${LMBD_ROOT_DIR}/src/system/physical/indicator.cpp
+    ${LMBD_ROOT_DIR}/src/system/physical/time_handling.cpp
 )
 
 set(SRC_SYSTEM_EXT
