@@ -12,6 +12,7 @@
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/statistics_handler.h"
+#include "src/system/logic/sunset_timer.h"
 
 #include "src/system/utils/utils.h"
 #include "src/system/utils/constants.h"
@@ -128,8 +129,13 @@ struct AlertBase
     return UINT32_MAX;
   }
 
+  /// function executed if this alert is raised, every loop turns
+  virtual void execute_loop() const {};
+
   /// function executed when this alert is raised
-  virtual void execute() const {};
+  virtual void on_raised() const {};
+  /// function executed when this alert is cleared
+  virtual void on_lowered() const {};
 
   /// return true if this alert type should be raised
   virtual bool should_be_raised() const { return false; }
@@ -346,7 +352,7 @@ struct Alert_BatteryLow : public AlertBase
   }
 
   /// Execution will lower the brigthness output
-  void execute() const override
+  void on_raised() const override
   {
     // limit brightness to quarter of the max value
     constexpr brightness_t clampedBrightness =
@@ -355,6 +361,10 @@ struct Alert_BatteryLow : public AlertBase
     logic::brightness::set_max_brightness(clampedBrightness);
     logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
     logic::brightness::update_saved_brightness();
+
+    // this alert may lead to a shutdown, start phasing out the sunset timer
+    // If the user decides to set the timer up again, it wont be lowered again by this alert
+    sunset::shortcut_to_phaseout();
   }
 
   bool show() const override
@@ -417,7 +427,7 @@ struct Alert_TempTooHigh : public AlertBase
   }
 
   /// Execution will lower the max brightness of the output
-  void execute() const override
+  void on_raised() const override
   {
     // limit brightness to half the max value
     constexpr brightness_t clampedBrightness =
@@ -426,6 +436,10 @@ struct Alert_TempTooHigh : public AlertBase
     logic::brightness::set_max_brightness(clampedBrightness);
     logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
     logic::brightness::update_saved_brightness();
+
+    // this alert may lead to a shutdown, start phasing out the sunset timer
+    // If the user decides to set the timer up again, it wont be lowered again by this alert
+    sunset::shortcut_to_phaseout();
   }
 
   bool show() const override { return physical::indicator::blink(300, 300, utils::ColorSpace::DARK_ORANGE); }
@@ -724,8 +738,10 @@ void update_alerts()
         if (alert->handle_raised_state(currTime))
         {
           // execute this alert action
-          alert->execute();
+          alert->on_raised();
         }
+        // execute loop
+        alert->execute_loop();
 
         if (alert->should_shutdown_system(currTime))
         {
@@ -742,9 +758,9 @@ void update_alerts()
         manager.raise(alert->get_type());
         platform::lampda_print("Raised alert %s", AlertsToText(alert->get_type()));
       }
-      else
+      else if (alert->handle_lowered_state(currTime))
       {
-        alert->handle_lowered_state(currTime);
+        alert->on_lowered();
       }
     }
   }

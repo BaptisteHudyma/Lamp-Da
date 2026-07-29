@@ -15,6 +15,7 @@
 #include "src/system/physical/battery.h"
 #include "src/system/physical/button.h"
 #include "src/system/physical/fileSystem.h"
+#include "src/system/physical/time_handling.h"
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
@@ -356,6 +357,24 @@ void handleCommand(const platform::Inputs::Command& command)
               logic::inputs_bluetooth::is_bluetooth_used(),
               logic::behavior::internal::get_bluetooth_auto_activation_left());
       break;
+
+    case utils::hash("time"):
+      {
+        const auto& time = time::get_real_time();
+        if (time.is_valid())
+        {
+          platform::lampda_print("Real time is %dh %dmin %ds, day index is %d",
+                                 time.hour,
+                                 time.minutes,
+                                 time.seconds,
+                                 time.dayOfTheWeek);
+        }
+        else
+        {
+          platform::lampda_print("Real time is not set");
+        }
+        break;
+      }
 
     default:
       platform::lampda_print("unknown command: \'%s\'", command.data());
