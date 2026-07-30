@@ -469,8 +469,7 @@ void handle_startup()
   )
   {
     const uint32_t timeSinceStateSwitch = platform::time_ms() - __private::powerMachine.get_state_raised_time();
-    const bool isVbusUnpowered =
-            timeSinceStateSwitch > 200 and not ::lampda::power::powerDelivery::is_power_available();
+    const bool isVbusUnpowered = timeSinceStateSwitch > 200 and not::lampda::power::powerDelivery::is_power_available();
 
     // no vbus, or
     if (timeSinceStateSwitch > startupFailTimeout_ms * 0.3 or isVbusUnpowered)
@@ -532,7 +531,7 @@ void handle_startup()
     if (timeSinceStateSwitch < startupFailTimeout_ms * 0.8)
       return;
 
-    if (not ::lampda::power::powerDelivery::is_power_available())
+    if (not::lampda::power::powerDelivery::is_power_available())
     {
       set_error_state_message("\n\t- Battery recovery mode failed");
       return;
@@ -544,7 +543,7 @@ void handle_startup()
 
 // TODO issue #132 remove when the mock components will be running
 #ifndef LMBD_SIMULATION
-  if (not ::lampda::power::balancer::init())
+  if (not::lampda::power::balancer::init())
   {
     if (_isInBatteryRecoveryMode)
     {
