@@ -117,14 +117,6 @@ void main_setup()
   // set random seed
   random16_set_seed(platform::registers::get_device_serial_number() & 0xffff);
 
-  //
-  if (platform::registers::is_started_from_watchdog())
-  {
-    // try to start fresh: the system can get stuck with a broken filesystem
-    // TODO #353: it happens when the system power source is removed during a file system read/write.
-    physical::fileSystem::clear_internal_fs();
-  }
-
   // check if we are in first boot mode (read parameters fails)
   const bool isFirstBoot = not logic::behavior::read_parameters();
 #ifdef LMBD_SIMULATION
