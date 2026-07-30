@@ -28,7 +28,7 @@ var searchData=
   ['get_5ffiltered_5freading_25',['get_filtered_reading',['../namespacelampda_1_1physical_1_1imu.html#aadd5179abc0aa03f5c513784bab404be',1,'lampda::physical::imu']]],
   ['get_5fgradient_26',['get_gradient',['../namespacelampda_1_1utils.html#a8615ad3e21cfef0767abcc3a1639b1f8',1,'lampda::utils']]],
   ['get_5fgroup_5fid_5fof_5fmode_27',['get_group_id_of_mode',['../structlampda_1_1modes_1_1ContextTy.html#af2e1b7913dd98ea0bcaad84b94968ec1',1,'lampda::modes::ContextTy']]],
-  ['get_5findex_5fof_5ffirst_5fset_5fbit_28',['get_index_of_first_set_bit',['../namespacelampda_1_1utils.html#a7f0e61aa418a85f876af6721a9656071',1,'lampda::utils']]],
+  ['get_5findex_5fof_5ffirst_5fset_5fbit_28',['get_index_of_first_set_bit',['../namespacelampda_1_1utils.html#ab37e068e322b8e2add89cc51cc06115a',1,'lampda::utils']]],
   ['get_5flast_5fstate_29',['get_last_state',['../classlampda_1_1utils_1_1StateMachine.html#a85360de14c7d53f63be1ffb26815017d',1,'lampda::utils::StateMachine']]],
   ['get_5flevel_5fpercent_30',['get_level_percent',['../namespacelampda_1_1physical_1_1battery.html#af95f36ddb4b191c4af8b69f1cc712a67',1,'lampda::physical::battery']]],
   ['get_5flevel_5fsafe_31',['get_level_safe',['../namespacelampda_1_1physical_1_1battery.html#a0a61b50e2a1b7e632ac0b7a71e4daeb9',1,'lampda::physical::battery']]],

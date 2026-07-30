@@ -38,7 +38,7 @@ var searchData=
   ['eventfreq_35',['eventFreq',['../structlampda_1_1modes_1_1automaton_1_1BubbleMode.html#a8f2dd45bd7c7a4d2ad58dcab5fafa542',1,'lampda::modes::automaton::BubbleMode']]],
   ['eventscale_36',['eventScale',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#ade73e019f0a3313f86273a8635748033',1,'lampda::modes::audio::SoundEventTy']]],
   ['eventtype_37',['EventType',['../namespacelampda_1_1physical_1_1imu.html#a014f8201ff74e63bb213fe2aeca900b8',1,'lampda::physical::imu']]],
-  ['execute_38',['execute',['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#ae86cc759ac02aaa5c656859233317b32',1,'lampda::logic::alerts::AlertBase::execute()'],['../structlampda_1_1logic_1_1alerts_1_1Alert__TempTooHigh.html#a28362d1a1cc1169ce8840f8d31612ab3',1,'lampda::logic::alerts::Alert_TempTooHigh::execute()'],['../structlampda_1_1logic_1_1alerts_1_1Alert__BatteryLow.html#a2dba41202f1697e9b423df1a7b468392',1,'lampda::logic::alerts::Alert_BatteryLow::execute()']]],
+  ['execute_5floop_38',['execute_loop',['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a2c18214f42810def6a093442f59f473a',1,'lampda::logic::alerts::AlertBase']]],
   ['exitcfgupdatet_39',['ExitCfgUpdatet',['../structbq76905_1_1BQ76905_1_1Regt_1_1ExitCfgUpdatet.html',1,'bq76905::BQ76905::Regt']]],
   ['exitdeepsleept_40',['ExitDeepSleept',['../structbq76905_1_1BQ76905_1_1Regt_1_1ExitDeepSleept.html',1,'bq76905::BQ76905::Regt']]],
   ['exponentialcurve_41',['ExponentialCurve',['../classlampda_1_1utils_1_1curves_1_1ExponentialCurve.html#a46c3fa4d2fb845b8c88f969ed84a7372',1,'lampda::utils::curves::ExponentialCurve::ExponentialCurve()'],['../classlampda_1_1utils_1_1curves_1_1ExponentialCurve.html',1,'lampda::utils::curves::ExponentialCurve&lt; T, U &gt;']]]

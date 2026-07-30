@@ -86,6 +86,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:adbc8111ff1ded6a91542c671e0ecfd8c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1sunset.html#adbc8111ff1ded6a91542c671e0ecfd8c">is_enabled</a> ()</td></tr>
+<tr class="memdesc:adbc8111ff1ded6a91542c671e0ecfd8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicate if the sunset is set.  <br /></td></tr>
+<tr class="separator:adbc8111ff1ded6a91542c671e0ecfd8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3544cfc23a26d917bf1a7999cb506b5"><td class="memItemLeft" align="right" valign="top"><a id="af3544cfc23a26d917bf1a7999cb506b5" name="af3544cfc23a26d917bf1a7999cb506b5"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_sunset_loop_timing_ms</b> ()</td></tr>
 <tr class="separator:af3544cfc23a26d917bf1a7999cb506b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -104,25 +107,25 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>sunset_process_loop</
 void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> ()</td></tr>
 <tr class="memdesc:ad4f9922015f784f71aff1f6244f756a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">call once on program start <br /></td></tr>
 <tr class="separator:ad4f9922015f784f71aff1f6244f756a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7aae979672c738eeb880963aa47fcb35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1sunset.html#a7aae979672c738eeb880963aa47fcb35">set_deadline</a> (const uint32_t timeshutdown_s)</td></tr>
+<tr class="memdesc:a7aae979672c738eeb880963aa47fcb35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the sunset timer to a known clock deadline, replacing existing timers. Start the timer, or upate it if needed.  <br /></td></tr>
+<tr class="separator:a7aae979672c738eeb880963aa47fcb35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4ec261bbc8fbdc7ed368a9e0ae5b98e"><td class="memItemLeft" align="right" valign="top"><a id="ab4ec261bbc8fbdc7ed368a9e0ae5b98e" name="ab4ec261bbc8fbdc7ed368a9e0ae5b98e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>add_time_minutes</b> (const uint8_t time_minutes)</td></tr>
-<tr class="memdesc:ab4ec261bbc8fbdc7ed368a9e0ae5b98e"><td class="mdescLeft">&#160;</td><td class="mdescRight">add some time to the sunset timer. Limited to 10 minutes <br /></td></tr>
+<tr class="memdesc:ab4ec261bbc8fbdc7ed368a9e0ae5b98e"><td class="mdescLeft">&#160;</td><td class="mdescRight">add some time to the sunset timer. Limited in the range [1; 10] minutes. If the timer is not started yet, will start it. <br /></td></tr>
 <tr class="separator:ab4ec261bbc8fbdc7ed368a9e0ae5b98e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7aae979672c738eeb880963aa47fcb35"><td class="memItemLeft" align="right" valign="top"><a id="a7aae979672c738eeb880963aa47fcb35" name="a7aae979672c738eeb880963aa47fcb35"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_deadline</b> (const uint32_t timeshutdown_s)</td></tr>
-<tr class="memdesc:a7aae979672c738eeb880963aa47fcb35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the sunset timer to a known clock deadline, replacing existing timers. <br /></td></tr>
-<tr class="separator:a7aae979672c738eeb880963aa47fcb35"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8fefd8a2ecb3d354f507dd60e7da1212"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1sunset.html#a8fefd8a2ecb3d354f507dd60e7da1212">bump_timer</a> ()</td></tr>
-<tr class="memdesc:a8fefd8a2ecb3d354f507dd60e7da1212"><td class="mdescLeft">&#160;</td><td class="mdescRight">signal to the timer that some time must be added. Limited to 10 minutes  <br /></td></tr>
+<tr class="memitem:ac12bc5d5dbb08e3ceea66995e33bda4e"><td class="memItemLeft" align="right" valign="top"><a id="ac12bc5d5dbb08e3ceea66995e33bda4e" name="ac12bc5d5dbb08e3ceea66995e33bda4e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>shortcut_to_phaseout</b> ()</td></tr>
+<tr class="memdesc:ac12bc5d5dbb08e3ceea66995e33bda4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">If a timer is enabled, shortcut it to the start of the shutdown animation. <br /></td></tr>
+<tr class="separator:ac12bc5d5dbb08e3ceea66995e33bda4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fefd8a2ecb3d354f507dd60e7da1212"><td class="memItemLeft" align="right" valign="top"><a id="a8fefd8a2ecb3d354f507dd60e7da1212" name="a8fefd8a2ecb3d354f507dd60e7da1212"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>bump_timer</b> ()</td></tr>
+<tr class="memdesc:a8fefd8a2ecb3d354f507dd60e7da1212"><td class="mdescLeft">&#160;</td><td class="mdescRight">signal to the timer that some time may be added. Only add time if the timer is in the fadeout phase <br /></td></tr>
 <tr class="separator:a8fefd8a2ecb3d354f507dd60e7da1212"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acdef388582c55693b4eacb07a7c8710b"><td class="memItemLeft" align="right" valign="top"><a id="acdef388582c55693b4eacb07a7c8710b" name="acdef388582c55693b4eacb07a7c8710b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>cancel_timer</b> ()</td></tr>
 <tr class="memdesc:acdef388582c55693b4eacb07a7c8710b"><td class="mdescLeft">&#160;</td><td class="mdescRight">cancel the current active timer <br /></td></tr>
 <tr class="separator:acdef388582c55693b4eacb07a7c8710b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbc8111ff1ded6a91542c671e0ecfd8c"><td class="memItemLeft" align="right" valign="top"><a id="adbc8111ff1ded6a91542c671e0ecfd8c" name="adbc8111ff1ded6a91542c671e0ecfd8c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_enabled</b> ()</td></tr>
-<tr class="memdesc:adbc8111ff1ded6a91542c671e0ecfd8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if timer is running. <br /></td></tr>
-<tr class="separator:adbc8111ff1ded6a91542c671e0ecfd8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a799caa09b595aa58a9922367f6c031aa"><td class="memItemLeft" align="right" valign="top"><a id="a799caa09b595aa58a9922367f6c031aa" name="a799caa09b595aa58a9922367f6c031aa"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lock_brightness_update</b> (bool shouldLock)</td></tr>
 <tr class="memdesc:a799caa09b595aa58a9922367f6c031aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lock the hability of the sunset timer to control the brightness. <br /></td></tr>
@@ -150,19 +153,24 @@ static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 <tr class="separator:a826d03f161b772afcb2db44095e2c977"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36f19ba94d48bd016bf357c42934d333"><td class="memItemLeft" align="right" valign="top"><a id="a36f19ba94d48bd016bf357c42934d333" name="a36f19ba94d48bd016bf357c42934d333"></a>
 static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>minimalSunsetUpdateCalls</b> = 50</td></tr>
+<tr class="memdesc:a36f19ba94d48bd016bf357c42934d333"><td class="mdescLeft">&#160;</td><td class="mdescRight">minimum calls to the update sunset function that will be made <br /></td></tr>
 <tr class="separator:a36f19ba94d48bd016bf357c42934d333"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc20359b65e46f8beb492c4e51491f44"><td class="memItemLeft" align="right" valign="top"><a id="abc20359b65e46f8beb492c4e51491f44" name="abc20359b65e46f8beb492c4e51491f44"></a>
+static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>minimalSunsetLoopDuration_ms</b> = 5</td></tr>
+<tr class="memdesc:abc20359b65e46f8beb492c4e51491f44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum time between sunset loop calls. <br /></td></tr>
+<tr class="separator:abc20359b65e46f8beb492c4e51491f44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Sunset timer handler. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a8fefd8a2ecb3d354f507dd60e7da1212" name="a8fefd8a2ecb3d354f507dd60e7da1212"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8fefd8a2ecb3d354f507dd60e7da1212">&#9670;&#160;</a></span>bump_timer()</h2>
+<a id="adbc8111ff1ded6a91542c671e0ecfd8c" name="adbc8111ff1ded6a91542c671e0ecfd8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbc8111ff1ded6a91542c671e0ecfd8c">&#9670;&#160;</a></span>is_enabled()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void lampda::logic::sunset::bump_timer </td>
+          <td class="memname">bool lampda::logic::sunset::is_enabled </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -170,8 +178,34 @@ static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>
       </table>
 </div><div class="memdoc">
 
-<p>signal to the timer that some time must be added. Limited to 10 minutes </p>
-<p>signal to the timer that some time may be added </p>
+<p>Indicate if the sunset is set. </p>
+<p>True if timer is running. </p>
+
+</div>
+</div>
+<a id="a7aae979672c738eeb880963aa47fcb35" name="a7aae979672c738eeb880963aa47fcb35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7aae979672c738eeb880963aa47fcb35">&#9670;&#160;</a></span>set_deadline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::logic::sunset::set_deadline </td>
+          <td>(</td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>timeshutdown_s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the sunset timer to a known clock deadline, replacing existing timers. Start the timer, or upate it if needed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">timeshutdown_s</td><td>The new time limit. It must be greater than the current time </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

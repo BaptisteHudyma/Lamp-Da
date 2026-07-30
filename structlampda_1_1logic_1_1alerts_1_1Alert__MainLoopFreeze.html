@@ -102,9 +102,17 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a158fbbecae2c46ce59fc8e6023f52fcd"><td class="memItemLeft" align="right" valign="top">virtual uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a158fbbecae2c46ce59fc8e6023f52fcd">alert_shutdown_timeout</a> () const</td></tr>
 <tr class="memdesc:a158fbbecae2c46ce59fc8e6023f52fcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the timeout after which an alert will make the system auto-shutdown.  <br /></td></tr>
 <tr class="separator:a158fbbecae2c46ce59fc8e6023f52fcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae86cc759ac02aaa5c656859233317b32"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#ae86cc759ac02aaa5c656859233317b32">execute</a> () const</td></tr>
-<tr class="memdesc:ae86cc759ac02aaa5c656859233317b32"><td class="mdescLeft">&#160;</td><td class="mdescRight">function executed when this alert is raised  <br /></td></tr>
-<tr class="separator:ae86cc759ac02aaa5c656859233317b32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c18214f42810def6a093442f59f473a"><td class="memItemLeft" align="right" valign="top"><a id="a2c18214f42810def6a093442f59f473a" name="a2c18214f42810def6a093442f59f473a"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>execute_loop</b> () const</td></tr>
+<tr class="memdesc:a2c18214f42810def6a093442f59f473a"><td class="mdescLeft">&#160;</td><td class="mdescRight">function executed if this alert is raised, every loop turns <br /></td></tr>
+<tr class="separator:a2c18214f42810def6a093442f59f473a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a578e4200d931a6145e82351d0e038a48"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a578e4200d931a6145e82351d0e038a48">on_raised</a> () const</td></tr>
+<tr class="memdesc:a578e4200d931a6145e82351d0e038a48"><td class="mdescLeft">&#160;</td><td class="mdescRight">function executed when this alert is raised  <br /></td></tr>
+<tr class="separator:a578e4200d931a6145e82351d0e038a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36adafce4883dc832bde6cbc6ab7120b"><td class="memItemLeft" align="right" valign="top"><a id="a36adafce4883dc832bde6cbc6ab7120b" name="a36adafce4883dc832bde6cbc6ab7120b"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>on_lowered</b> () const</td></tr>
+<tr class="memdesc:a36adafce4883dc832bde6cbc6ab7120b"><td class="mdescLeft">&#160;</td><td class="mdescRight">function executed when this alert is cleared <br /></td></tr>
+<tr class="separator:a36adafce4883dc832bde6cbc6ab7120b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbea6de5d00deb35f06e5bb0459ff934"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#abbea6de5d00deb35f06e5bb0459ff934">should_be_raised</a> () const</td></tr>
 <tr class="memdesc:abbea6de5d00deb35f06e5bb0459ff934"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if this alert type should be raised  <br /></td></tr>
 <tr class="separator:abbea6de5d00deb35f06e5bb0459ff934"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -186,35 +194,6 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
 <p>Return the timeout after which an alert will make the system auto-shutdown. </p>
 
 <p>Reimplemented in <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BatteryCritical.html#a0e8e23e35a142d13ac45ca272f406d78">lampda::logic::alerts::Alert_BatteryCritical</a>, and <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__TempCritical.html#a9c20106605c49602cc7657c8cf843734">lampda::logic::alerts::Alert_TempCritical</a>.</p>
-
-</div>
-</div>
-<a id="ae86cc759ac02aaa5c656859233317b32" name="ae86cc759ac02aaa5c656859233317b32"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae86cc759ac02aaa5c656859233317b32">&#9670;&#160;</a></span>execute()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void lampda::logic::alerts::AlertBase::execute </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>function executed when this alert is raised </p>
-
-<p>Reimplemented in <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BatteryLow.html#a2dba41202f1697e9b423df1a7b468392">lampda::logic::alerts::Alert_BatteryLow</a>, and <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__TempTooHigh.html#a28362d1a1cc1169ce8840f8d31612ab3">lampda::logic::alerts::Alert_TempTooHigh</a>.</p>
 
 </div>
 </div>
@@ -302,6 +281,35 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
 
 <p>Handler for the raised state of the alert. If the alert is not raised, raise the alert. </p>
 <dl class="section return"><dt>Returns</dt><dd>True if the alert was raised by this function call </dd></dl>
+
+</div>
+</div>
+<a id="a578e4200d931a6145e82351d0e038a48" name="a578e4200d931a6145e82351d0e038a48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a578e4200d931a6145e82351d0e038a48">&#9670;&#160;</a></span>on_raised()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void lampda::logic::alerts::AlertBase::on_raised </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>function executed when this alert is raised </p>
+
+<p>Reimplemented in <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BatteryLow.html#ad3d2434bbee95d20206e06a43b054ff1">lampda::logic::alerts::Alert_BatteryLow</a>, and <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__TempTooHigh.html#a4433f49a9326ba6c3e55b106bc404b67">lampda::logic::alerts::Alert_TempTooHigh</a>.</p>
 
 </div>
 </div>

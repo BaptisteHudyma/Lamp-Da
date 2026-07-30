@@ -102,9 +102,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7aef8ac6527a9ed165e553595f982af4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__TempTooHigh.html#a7aef8ac6527a9ed165e553595f982af4">should_be_cleared</a> () const override</td></tr>
 <tr class="memdesc:a7aef8ac6527a9ed165e553595f982af4"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if this alert type should be cleared  <br /></td></tr>
 <tr class="separator:a7aef8ac6527a9ed165e553595f982af4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28362d1a1cc1169ce8840f8d31612ab3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__TempTooHigh.html#a28362d1a1cc1169ce8840f8d31612ab3">execute</a> () const override</td></tr>
-<tr class="memdesc:a28362d1a1cc1169ce8840f8d31612ab3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execution will lower the max brightness of the output.  <br /></td></tr>
-<tr class="separator:a28362d1a1cc1169ce8840f8d31612ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4433f49a9326ba6c3e55b106bc404b67"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__TempTooHigh.html#a4433f49a9326ba6c3e55b106bc404b67">on_raised</a> () const override</td></tr>
+<tr class="memdesc:a4433f49a9326ba6c3e55b106bc404b67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execution will lower the max brightness of the output.  <br /></td></tr>
+<tr class="separator:a4433f49a9326ba6c3e55b106bc404b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a008f98717c8040f4a06708bb4de21f43"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__TempTooHigh.html#a008f98717c8040f4a06708bb4de21f43">show</a> () const override</td></tr>
 <tr class="memdesc:a008f98717c8040f4a06708bb4de21f43"><td class="mdescLeft">&#160;</td><td class="mdescRight">display this alert on the indicator  <br /></td></tr>
 <tr class="separator:a008f98717c8040f4a06708bb4de21f43"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -114,6 +114,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a158fbbecae2c46ce59fc8e6023f52fcd"><td class="memItemLeft" align="right" valign="top">virtual uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a158fbbecae2c46ce59fc8e6023f52fcd">alert_shutdown_timeout</a> () const</td></tr>
 <tr class="memdesc:a158fbbecae2c46ce59fc8e6023f52fcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the timeout after which an alert will make the system auto-shutdown.  <br /></td></tr>
 <tr class="separator:a158fbbecae2c46ce59fc8e6023f52fcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c18214f42810def6a093442f59f473a"><td class="memItemLeft" align="right" valign="top"><a id="a2c18214f42810def6a093442f59f473a" name="a2c18214f42810def6a093442f59f473a"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>execute_loop</b> () const</td></tr>
+<tr class="memdesc:a2c18214f42810def6a093442f59f473a"><td class="mdescLeft">&#160;</td><td class="mdescRight">function executed if this alert is raised, every loop turns <br /></td></tr>
+<tr class="separator:a2c18214f42810def6a093442f59f473a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36adafce4883dc832bde6cbc6ab7120b"><td class="memItemLeft" align="right" valign="top"><a id="a36adafce4883dc832bde6cbc6ab7120b" name="a36adafce4883dc832bde6cbc6ab7120b"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>on_lowered</b> () const</td></tr>
+<tr class="memdesc:a36adafce4883dc832bde6cbc6ab7120b"><td class="mdescLeft">&#160;</td><td class="mdescRight">function executed when this alert is cleared <br /></td></tr>
+<tr class="separator:a36adafce4883dc832bde6cbc6ab7120b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8bb28416b6a40056026199ca2507f95e"><td class="memItemLeft" align="right" valign="top"><a id="a8bb28416b6a40056026199ca2507f95e" name="a8bb28416b6a40056026199ca2507f95e"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>should_shutdown_system</b> (const uint32_t time) final</td></tr>
 <tr class="memdesc:a8bb28416b6a40056026199ca2507f95e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the system should shutdown from this alert. <br /></td></tr>
@@ -186,35 +194,6 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
 <p>Return the timeout after which an alert will make the system auto-shutdown. </p>
 
 <p>Reimplemented in <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BatteryCritical.html#a0e8e23e35a142d13ac45ca272f406d78">lampda::logic::alerts::Alert_BatteryCritical</a>, and <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__TempCritical.html#a9c20106605c49602cc7657c8cf843734">lampda::logic::alerts::Alert_TempCritical</a>.</p>
-
-</div>
-</div>
-<a id="a28362d1a1cc1169ce8840f8d31612ab3" name="a28362d1a1cc1169ce8840f8d31612ab3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a28362d1a1cc1169ce8840f8d31612ab3">&#9670;&#160;</a></span>execute()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void lampda::logic::alerts::Alert_TempTooHigh::execute </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Execution will lower the max brightness of the output. </p>
-
-<p>Reimplemented from <a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#ae86cc759ac02aaa5c656859233317b32">lampda::logic::alerts::AlertBase</a>.</p>
 
 </div>
 </div>
@@ -302,6 +281,35 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
 
 <p>Handler for the raised state of the alert. If the alert is not raised, raise the alert. </p>
 <dl class="section return"><dt>Returns</dt><dd>True if the alert was raised by this function call </dd></dl>
+
+</div>
+</div>
+<a id="a4433f49a9326ba6c3e55b106bc404b67" name="a4433f49a9326ba6c3e55b106bc404b67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4433f49a9326ba6c3e55b106bc404b67">&#9670;&#160;</a></span>on_raised()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::logic::alerts::Alert_TempTooHigh::on_raised </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Execution will lower the max brightness of the output. </p>
+
+<p>Reimplemented from <a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a578e4200d931a6145e82351d0e038a48">lampda::logic::alerts::AlertBase</a>.</p>
 
 </div>
 </div>

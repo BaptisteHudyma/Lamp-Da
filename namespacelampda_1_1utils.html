@@ -144,10 +144,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a3038ef7477b0c5fb2d7e2c5d2f35405b"><td class="memItemLeft" align="right" valign="top"><a id="a3038ef7477b0c5fb2d7e2c5d2f35405b" name="a3038ef7477b0c5fb2d7e2c5d2f35405b"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>hue_to_rgb_sinus</b> (const uint16_t angle)</td></tr>
 <tr class="separator:a3038ef7477b0c5fb2d7e2c5d2f35405b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f0e61aa418a85f876af6721a9656071"><td class="memItemLeft" align="right" valign="top"><a id="a7f0e61aa418a85f876af6721a9656071" name="a7f0e61aa418a85f876af6721a9656071"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>get_index_of_first_set_bit</b> (uint8_t bitstream)</td></tr>
-<tr class="memdesc:a7f0e61aa418a85f876af6721a9656071"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the index of the first set bit of a number, or -1 if unavailable. <br /></td></tr>
-<tr class="separator:a7f0e61aa418a85f876af6721a9656071"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab37e068e322b8e2add89cc51cc06115a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1utils.html#ab37e068e322b8e2add89cc51cc06115a">get_index_of_first_set_bit</a> (uint32_t bitstream)</td></tr>
+<tr class="memdesc:ab37e068e322b8e2add89cc51cc06115a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the index of the first set bit of a number, or -1.  <br /></td></tr>
+<tr class="separator:ab37e068e322b8e2add89cc51cc06115a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b68e6e95f92e53533b21590af9cc533"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a7b68e6e95f92e53533b21590af9cc533"><td class="memTemplItemLeft" align="right" valign="top">static constexpr uint32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1utils.html#a7b68e6e95f92e53533b21590af9cc533">hash</a> (const T s, const uint16_t maxSize=14, const uint16_t off=0)</td></tr>
 <tr class="memdesc:a7b68e6e95f92e53533b21590af9cc533"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hash input string into a 32-bit unsigned integer.  <br /></td></tr>
@@ -328,6 +327,27 @@ constexpr platform::gpio::DigitalPin::GPIO&#160;</td><td class="memItemRight" va
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="ab37e068e322b8e2add89cc51cc06115a" name="ab37e068e322b8e2add89cc51cc06115a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab37e068e322b8e2add89cc51cc06115a">&#9670;&#160;</a></span>get_index_of_first_set_bit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lampda::utils::get_index_of_first_set_bit </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>bitstream</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the index of the first set bit of a number, or -1. </p>
+<p>Source: the amazing Bit Twiddling Hacks website : <a href="https://graphics.stanford.edu/~seander/bithacks.html">https://graphics.stanford.edu/~seander/bithacks.html</a></p>
 
 </div>
 </div>
