@@ -44,16 +44,13 @@ inline bool isCommandSeparator(const char character) { return character == ' ' |
 
 struct ParsedCommand
 {
-  platform::Inputs::Command buffer{};
+  platform::Inputs::Command buffer {};
 
   uint8_t commandOffset = 0;
-  std::array<uint8_t, maxArgumentCount> argumentOffsets{};
+  std::array<uint8_t, maxArgumentCount> argumentOffsets {};
   uint8_t argumentCount = 0;
 
-  const char* name() const
-  {
-    return buffer.data() + commandOffset;
-  }
+  const char* name() const { return buffer.data() + commandOffset; }
 
   const char* argument(const size_t index) const
   {
@@ -64,11 +61,7 @@ struct ParsedCommand
   }
 };
 
-
-bool parse_uint8_argument(
-        const ParsedCommand& command,
-        const size_t index,
-        uint8_t& value)
+bool parse_uint8_argument(const ParsedCommand& command, const size_t index, uint8_t& value)
 {
   const char* text = command.argument(index);
 
@@ -87,10 +80,7 @@ bool parse_uint8_argument(
   return true;
 }
 
-bool parse_uint16_argument(
-        const ParsedCommand& command,
-        const size_t index,
-        uint16_t& value)
+bool parse_uint16_argument(const ParsedCommand& command, const size_t index, uint16_t& value)
 {
   const char* text = command.argument(index);
 
@@ -102,10 +92,7 @@ bool parse_uint16_argument(
 
   const unsigned long tmp_value = std::strtoul(text, &end, 0);
 
-  if (errno != 0 ||
-      end == text ||
-      *end != '\0'|| 
-      tmp_value > UINT16_MAX)
+  if (errno != 0 || end == text || *end != '\0' || tmp_value > UINT16_MAX)
   {
     return false;
   }
@@ -123,8 +110,7 @@ ParsedCommand parseCommand(const platform::Inputs::Command& input)
   size_t position = 0;
 
   // skip all first blank char define in isCommandSeparator
-  while (position < result.buffer.size() &&
-         isCommandSeparator(result.buffer[position]))
+  while (position < result.buffer.size() && isCommandSeparator(result.buffer[position]))
   {
     ++position;
   }
@@ -132,53 +118,46 @@ ParsedCommand parseCommand(const platform::Inputs::Command& input)
   result.commandOffset = static_cast<uint8_t>(position);
 
   // looking for the end of the command
-  while (position < result.buffer.size() &&
-         result.buffer[position] != '\0' &&
+  while (position < result.buffer.size() && result.buffer[position] != '\0' &&
          !isCommandSeparator(result.buffer[position]))
   {
     ++position;
   }
 
   // put a \0 at the end (useful for the hash command and some print)
-  if (position < result.buffer.size() &&
-      result.buffer[position] != '\0')
+  if (position < result.buffer.size() && result.buffer[position] != '\0')
   {
     result.buffer[position] = '\0';
     ++position;
   }
 
   // now, parse every argument
-  while (position < result.buffer.size() &&
-         result.argumentCount < maxArgumentCount)
+  while (position < result.buffer.size() && result.argumentCount < maxArgumentCount)
   {
     // while it's a blank char
-    while (position < result.buffer.size() &&
-           isCommandSeparator(result.buffer[position]))
+    while (position < result.buffer.size() && isCommandSeparator(result.buffer[position]))
     {
       ++position;
     }
 
     // terminated condition of the while (end of the string)
-    if (position >= result.buffer.size() ||
-        result.buffer[position] == '\0')
+    if (position >= result.buffer.size() || result.buffer[position] == '\0')
     {
       break;
     }
 
-    //save the offset
+    // save the offset
     result.argumentOffsets[result.argumentCount++] = static_cast<uint8_t>(position);
 
-    // looking for the end of the argument 
-    while (position < result.buffer.size() &&
-           result.buffer[position] != '\0' &&
+    // looking for the end of the argument
+    while (position < result.buffer.size() && result.buffer[position] != '\0' &&
            !isCommandSeparator(result.buffer[position]))
     {
       ++position;
     }
 
     // put a \0 at the end
-    if (position < result.buffer.size() &&
-        result.buffer[position] != '\0')
+    if (position < result.buffer.size() && result.buffer[position] != '\0')
     {
       result.buffer[position] = '\0';
       ++position;
@@ -187,8 +166,6 @@ ParsedCommand parseCommand(const platform::Inputs::Command& input)
 
   return result;
 }
-
-
 
 void handleCommand(const platform::Inputs::Command& commandLine)
 {
@@ -520,34 +497,27 @@ void handleCommand(const platform::Inputs::Command& commandLine)
               logic::behavior::internal::get_bluetooth_auto_activation_left());
       break;
     case utils::hash("echo"):
-      platform::lampda_print(
-              "command: %s, argument count: %u",
-              command.name(),
-              command.argumentCount);
+      platform::lampda_print("command: %s, argument count: %u", command.name(), command.argumentCount);
 
-      for (uint8_t index = 0;
-          index < command.argumentCount;
-          ++index)
+      for (uint8_t index = 0; index < command.argumentCount; ++index)
       {
-        platform::lampda_print(
-                "argument %u: '%s'",
-                index,
-                command.argument(index));
+        platform::lampda_print("argument %u: '%s'", index, command.argument(index));
       }
       break;
     case utils::hash("brightness"):
-    {
-      brightness_t brightness = 0;
-
-      if (parse_uint16_argument(command, 0, brightness) && brightness <= lampda::logic::brightness::get_max_brightness() )
       {
-        platform::lampda_print("brightness: %u", brightness);
-        lampda::logic::brightness::update_brightness(brightness, false);
-        break; 
+        brightness_t brightness = 0;
+
+        if (parse_uint16_argument(command, 0, brightness) &&
+            brightness <= lampda::logic::brightness::get_max_brightness())
+        {
+          platform::lampda_print("brightness: %u", brightness);
+          lampda::logic::brightness::update_brightness(brightness, false);
+          break;
+        }
+        platform::lampda_print("usage: brightness <0-1024>");
+        break;
       }
-      platform::lampda_print("usage: brightness <0-1024>");
-      break;
-    }      
     default:
       platform::lampda_print("unknown command: \'%s\'", command.name());
       platform::lampda_print("type h for available commands");
