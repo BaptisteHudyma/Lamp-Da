@@ -163,30 +163,16 @@ uint32_t hue_to_rgb_sinus(const uint16_t angle)
   return colorArray.color;
 }
 
-int get_index_of_first_set_bit(uint8_t bitstream)
+int get_index_of_first_set_bit(uint32_t bitstream)
 {
-  switch (bitstream - (bitstream & bitstream - 1))
-  {
-    case 0:
-      return -1;
-    case 1 << 0:
-      return 0;
-    case 1 << 1:
-      return 1;
-    case 1 << 2:
-      return 2;
-    case 1 << 3:
-      return 3;
-    case 1 << 4:
-      return 4;
-    case 1 << 5:
-      return 5;
-    case 1 << 6:
-      return 6;
-    case 1 << 7:
-      return 7;
-  }
-  return -1;
+  if (bitstream == 0)
+    return -1;
+  /// Source: the amazing  Bit Twiddling Hacks website : https://graphics.stanford.edu/~seander/bithacks.html
+  static constexpr int Mod37BitPosition[] = // map a bit value mod 37 to its position
+          {32, 0,  1,  26, 2,  23, 27, 0,  3, 16, 24, 30, 28, 11, 0,  13, 4,  7, 17,
+           0,  25, 22, 31, 15, 29, 10, 12, 6, 0,  21, 14, 9,  5,  20, 8,  19, 18};
+  const int r = Mod37BitPosition[(-bitstream & bitstream) % 37];
+  return r;
 }
 
 } // namespace utils

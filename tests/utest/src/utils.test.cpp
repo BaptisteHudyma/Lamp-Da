@@ -351,70 +351,37 @@ TEST(test_colors, rgb_to_hue)
 
 TEST(test_first_set_bit_index, valid_cases_single_bits)
 {
-  ASSERT_EQ(get_index_of_first_set_bit(0b00000001), 0);
-  ASSERT_EQ(get_index_of_first_set_bit(0b00000010), 1);
-  ASSERT_EQ(get_index_of_first_set_bit(0b00000100), 2);
-  ASSERT_EQ(get_index_of_first_set_bit(0b00001000), 3);
-  ASSERT_EQ(get_index_of_first_set_bit(0b00010000), 4);
-  ASSERT_EQ(get_index_of_first_set_bit(0b00100000), 5);
-  ASSERT_EQ(get_index_of_first_set_bit(0b01000000), 6);
-  ASSERT_EQ(get_index_of_first_set_bit(0b10000000), 7);
+  ASSERT_EQ(get_index_of_first_set_bit(0), -1);
+  for (uint i = 0; i < 32; i++)
+  {
+    uint32_t number = 1 << i;
+    ASSERT_EQ(get_index_of_first_set_bit(number), i);
+  }
 }
 
 TEST(test_first_set_bit_index, valid_cases_multiple_bits_index_0)
 {
-  ASSERT_EQ(get_index_of_first_set_bit(0b11111111), 0);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11111101), 0);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11111001), 0);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11110001), 0);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11100001), 0);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11000001), 0);
-  ASSERT_EQ(get_index_of_first_set_bit(0b10000001), 0);
-}
+  // Test each index
+  for (uint index = 0; index < 32; index++)
+  {
+    // Test every trailing ones combinaisons
+    for (uint i = index; i < 32; i++)
+    {
+      uint32_t nb = 0;
+      for (uint j = 31; j > i; j--)
+      {
+        nb |= 1 << j;
+      }
+      // check the end result is greater than our indexex number
+      if (i < 31)
+        ASSERT_GT(nb, 1 << index);
 
-TEST(test_first_set_bit_index, valid_cases_multiple_bits_index_1)
-{
-  ASSERT_EQ(get_index_of_first_set_bit(0b11111110), 1);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11111010), 1);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11110010), 1);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11100010), 1);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11000010), 1);
-  ASSERT_EQ(get_index_of_first_set_bit(0b10000010), 1);
-}
+      // set the correct bit
+      nb |= (1 << index);
 
-TEST(test_first_set_bit_index, valid_cases_multiple_bits_index_2)
-{
-  ASSERT_EQ(get_index_of_first_set_bit(0b11111100), 2);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11110100), 2);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11100100), 2);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11000100), 2);
-  ASSERT_EQ(get_index_of_first_set_bit(0b10000100), 2);
-}
-
-TEST(test_first_set_bit_index, valid_cases_multiple_bits_index_3)
-{
-  ASSERT_EQ(get_index_of_first_set_bit(0b11111000), 3);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11101000), 3);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11001000), 3);
-  ASSERT_EQ(get_index_of_first_set_bit(0b10001000), 3);
-}
-
-TEST(test_first_set_bit_index, valid_cases_multiple_bits_index_4)
-{
-  ASSERT_EQ(get_index_of_first_set_bit(0b11110000), 4);
-  ASSERT_EQ(get_index_of_first_set_bit(0b11010000), 4);
-  ASSERT_EQ(get_index_of_first_set_bit(0b10010000), 4);
-}
-
-TEST(test_first_set_bit_index, valid_cases_multiple_bits_index_5)
-{
-  ASSERT_EQ(get_index_of_first_set_bit(0b11100000), 5);
-  ASSERT_EQ(get_index_of_first_set_bit(0b10100000), 5);
-}
-
-TEST(test_first_set_bit_index, valid_cases_multiple_bits_index_6)
-{
-  ASSERT_EQ(get_index_of_first_set_bit(0b11000000), 6);
+      EXPECT_EQ(get_index_of_first_set_bit(nb), index);
+    }
+  }
 }
 
 TEST(test_first_set_bit_index, invalid_cases) { ASSERT_EQ(get_index_of_first_set_bit(0b0), -1); }
