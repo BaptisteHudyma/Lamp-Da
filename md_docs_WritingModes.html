@@ -226,6 +226,11 @@ $(function() {
 <div class="ttc" id="alegacy__modes_8hpp_html"><div class="ttname"><a href="legacy__modes_8hpp.html">legacy_modes.hpp</a></div><div class="ttdoc">Legacy implementation of the Indexable modes.</div></div>
 </div><!-- fragment --><p>Here, we declare a <em>mode group</em> named <code>IntroGroup</code> that contains only one mode, our new <code>modes::examples::IntroMode</code> and nothing else. We are then able to pass a list to the manager of all the groups we want to include in our configuration, here our <code>IntroGroup</code> that only includes <code>IntroMode</code>.</p>
 <h1><a class="anchor" id="autotoc_md33"></a>
+Custom mode commands</h1>
+<p>Some modes can enable custom commands, using the <code>hasButtonCustomUI</code> flag. Enabling this flag will make the mode able to execute the <code>custom_click</code> and <code>custom_hold</code>, wich will respectively handle clicks and hold events.</p>
+<p>Those functions can handle button clicks and hold, and return <code>true</code> when a command is handled by this mode to skip standard click behavior.</p>
+<p>The custom user mode handling is enabled by a start command (3H), and disabled by turning the lamp off, with a 5C command. The 5C command to turn of in custom user modes cannot be replaced by a custom user command.</p>
+<h1><a class="anchor" id="autotoc_md34"></a>
 Hidden groups</h1>
 <p>It can be needed to have extra groups not accessible by standard actions. The template option hiddenGroupCnt allows the programmer to add groups that wont be accessible by standard user inputs.</p>
 <p>Be aware that once entered, those groups can be circulated by standard user commands. Modes in thoses groups can also be saved as favorites and other standard actions. The only difference with the <em>standard</em> groups will be the way to go to those groups.</p>
