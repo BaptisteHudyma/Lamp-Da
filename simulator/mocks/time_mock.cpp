@@ -18,9 +18,14 @@ static sf::Clock s_clock;
 
 // HACK to start the system on time zero
 static bool isClockReset = false;
+static uint32_t clockOffset = 0;
 
 namespace time_mocks {
-void reset() { isClockReset = false; }
+void reset(uint32_t startClock)
+{
+  clockOffset = startClock;
+  isClockReset = false;
+}
 } // namespace time_mocks
 
 } // namespace simulator
@@ -36,7 +41,8 @@ uint32_t time_ms(void)
     simulator::s_clock.restart();
   }
 
-  return simulator::s_clock.getElapsedTime().asMilliseconds() * simulator::globals::state.slowTimeFactor;
+  return (simulator::clockOffset + simulator::s_clock.getElapsedTime().asMilliseconds()) *
+         simulator::globals::state.slowTimeFactor;
 }
 
 uint64_t time_us(void)
@@ -46,7 +52,8 @@ uint64_t time_us(void)
     simulator::isClockReset = true;
     simulator::s_clock.restart();
   }
-  return simulator::s_clock.getElapsedTime().asMicroseconds() * simulator::globals::state.slowTimeFactor;
+  return (simulator::clockOffset * 1000 + simulator::s_clock.getElapsedTime().asMicroseconds()) *
+         simulator::globals::state.slowTimeFactor;
 }
 
 void delay_ms(uint32_t dwMs) { sf::sleep(sf::milliseconds(dwMs / simulator::globals::state.slowTimeFactor)); }

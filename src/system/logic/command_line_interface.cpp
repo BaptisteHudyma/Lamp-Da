@@ -15,6 +15,7 @@
 #include "src/system/physical/battery.h"
 #include "src/system/physical/button.h"
 #include "src/system/physical/fileSystem.h"
+#include "src/system/physical/time_handling.h"
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
@@ -201,6 +202,7 @@ void handleCommand(const platform::Inputs::Command& commandLine)
                 "ble: debug bluetooth informations\n"
                 "echo <args>{0-8}: display parsed arguments\n"
                 "brightness <[0-1024]>: update the brightness \n"
+                "time: show current time"
                 "-----------------");
         break;
       }
@@ -518,6 +520,24 @@ void handleCommand(const platform::Inputs::Command& commandLine)
         platform::lampda_print("usage: brightness <0-1024>");
         break;
       }
+    case utils::hash("time"):
+      {
+        const auto& time = time::get_real_time();
+        if (time.is_valid())
+        {
+          platform::lampda_print("Real time is %dh %dmin %ds, day index is %d",
+                                 time.hour,
+                                 time.minutes,
+                                 time.seconds,
+                                 time.dayOfTheWeek);
+        }
+        else
+        {
+          platform::lampda_print("Real time is not set");
+        }
+        break;
+      }
+
     default:
       platform::lampda_print("unknown command: \'%s\'", command.name());
       platform::lampda_print("type h for available commands");

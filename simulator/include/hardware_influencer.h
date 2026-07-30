@@ -18,7 +18,7 @@ void update_callbacks();
 
 /// Encapsulate the mock time signals
 namespace time_mocks {
-void reset();
+void reset(uint32_t startClock = 0);
 }
 
 /// Encapsulate the mock board registers signals
