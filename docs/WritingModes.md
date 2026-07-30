@@ -223,6 +223,15 @@ our new `modes::examples::IntroMode` and nothing else. We are then able to pass
 a list to the manager of all the groups we want to include in our
 configuration, here our `IntroGroup` that only includes `IntroMode`.
 
+## Custom mode commands
+
+Some modes can enable custom commands, using the `hasButtonCustomUI` flag.
+Enabling this flag will make the mode able to execute the `custom_click` and `custom_hold`, wich will respectively handle clicks and hold events.
+
+Those functions can handle button clicks and hold, and return `true` when a command is handled by this mode to skip standard click behavior.
+
+The custom user mode handling is enabled by a start command (3H), and disabled by turning the lamp off, with a 5C command.
+The 5C command to turn of in custom user modes cannot be replaced by a custom user command.
 
 ## Hidden groups
 

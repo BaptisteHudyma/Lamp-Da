@@ -17,13 +17,18 @@ namespace sunset {
 uint32_t sunsetTimerEndTime_s = 0;
 bool isAllowedToControlBrightness = true;
 
+/// Indicate if the sunset is set
+bool is_enabled() { return sunsetTimerEndTime_s > 0; }
+
 static constexpr uint32_t brightnessRampDownTime_min = 3;
 static constexpr uint32_t brightnessRampDownTime_s = brightnessRampDownTime_min * 60;
 static constexpr uint32_t brightnessRampDownTime_ms = brightnessRampDownTime_s * 1000;
 static constexpr uint16_t brightnessDecreasePerLoop = 1;
 
-// minimum calls to the update sunset function that will be made
+/// minimum calls to the update sunset function that will be made
 static constexpr uint16_t minimalSunsetUpdateCalls = 50;
+/// Minimum time between sunset loop calls
+static constexpr uint16_t minimalSunsetLoopDuration_ms = 5;
 
 // sunset loop time to reduce brightness gradually
 uint32_t get_sunset_loop_timing_ms()
@@ -32,8 +37,8 @@ uint32_t get_sunset_loop_timing_ms()
   if (maxBrightnessStep <= 0)
     return 100;
   const uint32_t res = (brightnessRampDownTime_ms / maxBrightnessStep) + 1;
-  if (res <= 5)
-    return 5;
+  if (res <= minimalSunsetLoopDuration_ms)
+    return minimalSunsetLoopDuration_ms;
   // minimum turn off delay, to prevent too slow turn off at low luminosities
   return min<uint32_t>(res, brightnessRampDownTime_ms / minimalSunsetUpdateCalls);
 }
@@ -74,7 +79,7 @@ void sunset_process_loop()
   // this thread runs slowly
   platform::delay_ms(get_sunset_loop_timing_ms());
 
-  if (sunsetTimerEndTime_s == 0)
+  if (not is_enabled())
   {
     // sunset time not set, auto suspend
     platform::threads::suspend_this_thread();
@@ -119,17 +124,19 @@ void init()
   platform::threads::start_suspended_thread(sunset_process_loop, platform::threads::sunset_taskName, 0, 1024);
 }
 
-void add_time_minutes(const uint8_t time_minutes)
+void set_deadline(const uint32_t timeshutdown_s)
 {
-  // do not accept
-  if (time_minutes < 1)
-    return;
-
-  const uint32_t timeToAdd_s = min<uint8_t>(10, time_minutes) * 60;
-  if (sunsetTimerEndTime_s == 0)
+  if (timeshutdown_s <= platform::time_s())
   {
-    platform::lampda_print("sunset timer set");
-    sunsetTimerEndTime_s = platform::time_s() + timeToAdd_s;
+    platform::lampda_print("shutdown time is less than current time: %d", timeshutdown_s);
+    return;
+  }
+  const uint32_t timeLeftMinutes = round((timeshutdown_s - platform::time_s()) / 60);
+
+  if (not is_enabled())
+  {
+    platform::lampda_print("sunset timer set to %d minutes", timeLeftMinutes);
+    sunsetTimerEndTime_s = timeshutdown_s;
     logic::alerts::manager.raise(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 
     // resume
@@ -137,22 +144,48 @@ void add_time_minutes(const uint8_t time_minutes)
   }
   else
   {
-    platform::lampda_print("sunset timer add %d minutes", (timeToAdd_s / 60));
-    sunsetTimerEndTime_s += timeToAdd_s;
-
+    platform::lampda_print("sunset timer updated to %d minutes", timeLeftMinutes);
     // added some time, so signal update
+    sunsetTimerEndTime_s = timeshutdown_s;
     signal_sunset_update();
   }
 
-  // restore stored brightness as the user limit
+  // restore stored brightness to the user limit
   logic::brightness::set_max_user_brightness(logic::brightness::get_saved_brightness());
 }
 
-/// signal to the timer that some time must be added. Limited to 10 minutes
+void add_time_minutes(const uint8_t time_minutes)
+{
+  // do not accept less than a minute
+  if (time_minutes < 1)
+    return;
+
+  // limit 10 minutes per call
+  const uint32_t timeToAdd_s = min<uint8_t>(10, time_minutes) * 60;
+  const uint32_t newShutdownTime = platform::time_s() + timeToAdd_s;
+
+  //
+  set_deadline(newShutdownTime);
+}
+
+void shortcut_to_phaseout()
+{
+  // sunset is enabled
+  if (is_enabled())
+  {
+    const uint32_t minimumEndTime_s = platform::time_s() + brightnessRampDownTime_s;
+    // Never extend a timer that is already in the phaseout phase
+    if (sunsetTimerEndTime_s <= minimumEndTime_s)
+      return;
+
+    set_deadline(minimumEndTime_s);
+  }
+}
+
 void bump_timer()
 {
   const auto timeS = platform::time_s();
-  if (sunsetTimerEndTime_s == 0 or sunsetTimerEndTime_s < timeS)
+  if (not is_enabled())
     return;
 
   // if less than N minutes left, bump timer to N minutes
@@ -168,14 +201,13 @@ void bump_timer()
 /// cancel the current active timer
 void cancel_timer()
 {
-  const bool isSunsetActive = sunsetTimerEndTime_s != 0;
   // release timer
   sunsetTimerEndTime_s = 0;
   lock_brightness_update(false);
 
   logic::brightness::set_max_user_brightness(logic::brightness::get_max_brightness());
   // signal change
-  if (isSunsetActive)
+  if (is_enabled())
   {
     signal_sunset_update();
     platform::lampda_print("sunset timer cleared");
@@ -183,8 +215,6 @@ void cancel_timer()
 
   logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 }
-
-bool is_enabled() { return sunsetTimerEndTime_s > 0; }
 
 void lock_brightness_update(bool shouldLock) { isAllowedToControlBrightness = not shouldLock; }
 

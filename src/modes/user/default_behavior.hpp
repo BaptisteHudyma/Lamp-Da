@@ -11,6 +11,8 @@
 //  - src/modes/user/simple_behavior.hpp
 //
 
+#include "src/system/physical/time_handling.h"
+
 #include <cstdint>
 namespace lampda::user {
 
@@ -332,6 +334,73 @@ void handle_speed_command(const uint8_t speed)
   manager.set_active_custom_ramp(speed);
 }
 
+/**
+ * \brief Handle the set time command
+ * \param[in] weekday In the [0; 6] range
+ */
+void handle_set_time_command(const uint8_t hour, const uint8_t minutes, const uint8_t seconds, const uint8_t weekday)
+{
+  time::RealTime time;
+  time.dayOfTheWeek = weekday;
+  time.hour = hour;
+  time.minutes = minutes;
+  time.seconds = seconds;
+  const bool isValid = time::set_real_time(time);
+  platform::lampda_print("set time %d %dh %dm %ds (validity: %d)", weekday, hour, minutes, seconds, isValid);
+}
+
+/**
+ * \brief Handle the timing command
+ * \param[in] weekday In the [0; 6] range
+ */
+void handle_timing_command(const bool shouldTurnOn,
+                           const uint8_t hour,
+                           const uint8_t minutes,
+                           const uint8_t seconds,
+                           const uint8_t weekday)
+{
+  time::RealTime time;
+  time.dayOfTheWeek = weekday;
+  time.hour = hour;
+  time.minutes = minutes;
+  time.seconds = seconds;
+  const uint32_t internalLampActionTime = time::get_platform_time_from_target_time(time);
+
+  if (internalLampActionTime <= 0)
+  {
+    platform::lampda_print("Refusing timing command %d %dh %dm %ds. Likely cause: time is not synchronized.",
+                           time.dayOfTheWeek,
+                           hour,
+                           minutes,
+                           seconds);
+    return;
+  }
+
+  if (shouldTurnOn)
+  {
+    platform::lampda_print("NOT HANDLED: lamp will auto turn on on %d %dh %dm %ds %d",
+                           time.dayOfTheWeek,
+                           hour,
+                           minutes,
+                           seconds,
+                           internalLampActionTime);
+  }
+  else
+  {
+    // lamp will turn on if not already turned on
+    if (not logic::behavior::is_in_output_state())
+      logic::behavior::set_power_on();
+
+    platform::lampda_print("lamp will auto turn off on %d %dh %dm %ds %d",
+                           time.dayOfTheWeek,
+                           hour,
+                           minutes,
+                           seconds,
+                           internalLampActionTime);
+    logic::sunset::set_deadline(internalLampActionTime);
+  }
+}
+
 } // namespace __private_elk
 
 bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
@@ -355,9 +424,54 @@ bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
         __private_elk::handle_speed_command(speed);
         return true;
       }
+    case utils::ELK::Type::SET_TIME:
+      {
+        const uint8_t hour = elkControlCommand.data[0];
+        const uint8_t minutes = elkControlCommand.data[1];
+        const uint8_t seconds = elkControlCommand.data[2];
+        const uint8_t weekdayPlusOne = elkControlCommand.data[3];
+
+        if (weekdayPlusOne <= 0 or weekdayPlusOne > 7)
+        {
+          platform::lampda_print("Refused to set the time: invalid day of the week: %d", weekdayPlusOne);
+          break;
+        }
+
+        __private_elk::handle_set_time_command(hour, minutes, seconds, weekdayPlusOne - 1);
+        return true;
+      }
+    case utils::ELK::Type::TIMING:
+      {
+        // target hour, minute, seconds to turn on/off at
+        const uint8_t hour = elkControlCommand.data[0];
+        const uint8_t minutes = elkControlCommand.data[1];
+        const uint8_t seconds = elkControlCommand.data[2];
+
+        // auto turn on or off
+        const bool isAutoTurnOn = elkControlCommand.data[3] == 0;
+        // target days as a binary mask (unsuported)
+        const uint8_t enabledDays = elkControlCommand.data[4];
+
+        // mask the days to enable of the (enabledDays & daysMask)
+        constexpr uint8_t daysMask = 127;
+        // index bit of enable/disable
+        constexpr uint8_t setClearBit = 1 << 7;
+
+        const int indexOfTheDay = utils::get_index_of_first_set_bit(enabledDays);
+
+        if (indexOfTheDay < 0 or indexOfTheDay > 6)
+        {
+          platform::lampda_print("Refused to handle timing command: invalid day of the week");
+          break;
+        }
+
+        __private_elk::handle_timing_command(isAutoTurnOn, hour, minutes, seconds, indexOfTheDay);
+        return true;
+      }
     default:
       return false;
   }
+  return false;
 }
 
 } // namespace default_behaviors

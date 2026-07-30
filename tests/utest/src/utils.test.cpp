@@ -345,4 +345,45 @@ TEST(test_colors, rgb_to_hue)
   ASSERT_EQ(utils::hue_to_rgb_sinus(560), 0x003FBF);
 }
 
+/**
+ * TEST bit index
+ */
+
+TEST(test_first_set_bit_index, valid_cases_single_bits)
+{
+  ASSERT_EQ(get_index_of_first_set_bit(0), -1);
+  for (uint i = 0; i < 32; i++)
+  {
+    uint32_t number = 1 << i;
+    ASSERT_EQ(get_index_of_first_set_bit(number), i);
+  }
+}
+
+TEST(test_first_set_bit_index, valid_cases_multiple_bits_index_0)
+{
+  // Test each index
+  for (uint index = 0; index < 32; index++)
+  {
+    // Test every trailing ones combinaisons
+    for (uint i = index; i < 32; i++)
+    {
+      uint32_t nb = 0;
+      for (uint j = 31; j > i; j--)
+      {
+        nb |= 1 << j;
+      }
+      // check the end result is greater than our indexex number
+      if (i < 31)
+        ASSERT_GT(nb, 1 << index);
+
+      // set the correct bit
+      nb |= (1 << index);
+
+      EXPECT_EQ(get_index_of_first_set_bit(nb), index);
+    }
+  }
+}
+
+TEST(test_first_set_bit_index, invalid_cases) { ASSERT_EQ(get_index_of_first_set_bit(0b0), -1); }
+
 } // namespace lampda::utils
