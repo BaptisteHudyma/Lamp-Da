@@ -857,6 +857,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   /// Called on lamp output power on
   static void power_on_sequence(auto& ctx)
   {
+    // start with tick value
+    ctx.lamp.refresh_tick_value();
+
     foreach_group<true>(ctx, [](auto group) {
       group.power_on_sequence();
     });
