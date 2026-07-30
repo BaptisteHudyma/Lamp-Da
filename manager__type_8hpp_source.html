@@ -858,267 +858,270 @@ $(function() {
 <div class="line"><a id="l00856" name="l00856"></a><span class="lineno">  856</span> </div>
 <div class="line"><a id="l00858" name="l00858"></a><span class="lineno">  858</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a9f29be2c74dbd49d32347da761917642">power_on_sequence</a>(<span class="keyword">auto</span>&amp; ctx)</div>
 <div class="line"><a id="l00859" name="l00859"></a><span class="lineno">  859</span>  {</div>
-<div class="line"><a id="l00860" name="l00860"></a><span class="lineno">  860</span>    foreach_group&lt;true&gt;(ctx, [](<span class="keyword">auto</span> group) {</div>
-<div class="line"><a id="l00861" name="l00861"></a><span class="lineno">  861</span>      group.power_on_sequence();</div>
-<div class="line"><a id="l00862" name="l00862"></a><span class="lineno">  862</span>    });</div>
-<div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span> </div>
-<div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span>    <span class="comment">// activate last used favorite, in the favorite group</span></div>
-<div class="line"><a id="l00865" name="l00865"></a><span class="lineno">  865</span>    <span class="keywordflow">if</span> (ctx.state.isInFavoriteMockGroup &amp;&amp; jump_to_favorite(ctx, ctx.state.lastFavoriteStep, <span class="keyword">false</span>))</div>
-<div class="line"><a id="l00866" name="l00866"></a><span class="lineno">  866</span>    {</div>
-<div class="line"><a id="l00867" name="l00867"></a><span class="lineno">  867</span>      <span class="comment">// success jump to favorite</span></div>
-<div class="line"><a id="l00868" name="l00868"></a><span class="lineno">  868</span>    }</div>
-<div class="line"><a id="l00869" name="l00869"></a><span class="lineno">  869</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00870" name="l00870"></a><span class="lineno">  870</span>    {</div>
-<div class="line"><a id="l00871" name="l00871"></a><span class="lineno">  871</span>      <span class="comment">// activate current mode</span></div>
-<div class="line"><a id="l00872" name="l00872"></a><span class="lineno">  872</span>      uint8_t groupIdBefore = ctx.get_active_group(nbGroupsTotal);</div>
-<div class="line"><a id="l00873" name="l00873"></a><span class="lineno">  873</span>      ctx.set_active_group(groupIdBefore);</div>
-<div class="line"><a id="l00874" name="l00874"></a><span class="lineno">  874</span>    }</div>
-<div class="line"><a id="l00875" name="l00875"></a><span class="lineno">  875</span>  }</div>
-<div class="line"><a id="l00876" name="l00876"></a><span class="lineno">  876</span> </div>
-<div class="line"><a id="l00878" name="l00878"></a><span class="lineno">  878</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#ade4b7ab83f3d61049be76abc02c986a5">power_off_sequence</a>(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00879" name="l00879"></a><span class="lineno">  879</span>  {</div>
-<div class="line"><a id="l00880" name="l00880"></a><span class="lineno">  880</span>    foreach_group&lt;true&gt;(ctx, [](<span class="keyword">auto</span> group) {</div>
-<div class="line"><a id="l00881" name="l00881"></a><span class="lineno">  881</span>      group.power_off_sequence();</div>
-<div class="line"><a id="l00882" name="l00882"></a><span class="lineno">  882</span>    });</div>
-<div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span>  }</div>
-<div class="line"><a id="l00884" name="l00884"></a><span class="lineno">  884</span> </div>
-<div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#acb9086987851371577be7407d39032c7">write_parameters</a>(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00887" name="l00887"></a><span class="lineno">  887</span>  {</div>
-<div class="line"><a id="l00888" name="l00888"></a><span class="lineno">  888</span>    <span class="comment">// clear the stored parameters, before storing ours.</span></div>
-<div class="line"><a id="l00889" name="l00889"></a><span class="lineno">  889</span>    <a class="code hl_function" href="namespacelampda_1_1modes_1_1store.html#a92e0ab19cd264d1036edc24ada1eda44">store::clear_stored</a>();</div>
-<div class="line"><a id="l00890" name="l00890"></a><span class="lineno">  890</span> </div>
-<div class="line"><a id="l00891" name="l00891"></a><span class="lineno">  891</span>    <span class="comment">// this scope is the only one where parameters will be kept</span></div>
-<div class="line"><a id="l00892" name="l00892"></a><span class="lineno">  892</span>    ctx.template storageSaveOnly&lt;Store::lastActive&gt;(ctx.modeManager.activeIndex);</div>
+<div class="line"><a id="l00860" name="l00860"></a><span class="lineno">  860</span>    <span class="comment">// start with tick value</span></div>
+<div class="line"><a id="l00861" name="l00861"></a><span class="lineno">  861</span>    ctx.lamp.refresh_tick_value();</div>
+<div class="line"><a id="l00862" name="l00862"></a><span class="lineno">  862</span> </div>
+<div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span>    foreach_group&lt;true&gt;(ctx, [](<span class="keyword">auto</span> group) {</div>
+<div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span>      group.power_on_sequence();</div>
+<div class="line"><a id="l00865" name="l00865"></a><span class="lineno">  865</span>    });</div>
+<div class="line"><a id="l00866" name="l00866"></a><span class="lineno">  866</span> </div>
+<div class="line"><a id="l00867" name="l00867"></a><span class="lineno">  867</span>    <span class="comment">// activate last used favorite, in the favorite group</span></div>
+<div class="line"><a id="l00868" name="l00868"></a><span class="lineno">  868</span>    <span class="keywordflow">if</span> (ctx.state.isInFavoriteMockGroup &amp;&amp; jump_to_favorite(ctx, ctx.state.lastFavoriteStep, <span class="keyword">false</span>))</div>
+<div class="line"><a id="l00869" name="l00869"></a><span class="lineno">  869</span>    {</div>
+<div class="line"><a id="l00870" name="l00870"></a><span class="lineno">  870</span>      <span class="comment">// success jump to favorite</span></div>
+<div class="line"><a id="l00871" name="l00871"></a><span class="lineno">  871</span>    }</div>
+<div class="line"><a id="l00872" name="l00872"></a><span class="lineno">  872</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00873" name="l00873"></a><span class="lineno">  873</span>    {</div>
+<div class="line"><a id="l00874" name="l00874"></a><span class="lineno">  874</span>      <span class="comment">// activate current mode</span></div>
+<div class="line"><a id="l00875" name="l00875"></a><span class="lineno">  875</span>      uint8_t groupIdBefore = ctx.get_active_group(nbGroupsTotal);</div>
+<div class="line"><a id="l00876" name="l00876"></a><span class="lineno">  876</span>      ctx.set_active_group(groupIdBefore);</div>
+<div class="line"><a id="l00877" name="l00877"></a><span class="lineno">  877</span>    }</div>
+<div class="line"><a id="l00878" name="l00878"></a><span class="lineno">  878</span>  }</div>
+<div class="line"><a id="l00879" name="l00879"></a><span class="lineno">  879</span> </div>
+<div class="line"><a id="l00881" name="l00881"></a><span class="lineno">  881</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#ade4b7ab83f3d61049be76abc02c986a5">power_off_sequence</a>(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00882" name="l00882"></a><span class="lineno">  882</span>  {</div>
+<div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span>    foreach_group&lt;true&gt;(ctx, [](<span class="keyword">auto</span> group) {</div>
+<div class="line"><a id="l00884" name="l00884"></a><span class="lineno">  884</span>      group.power_off_sequence();</div>
+<div class="line"><a id="l00885" name="l00885"></a><span class="lineno">  885</span>    });</div>
+<div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span>  }</div>
+<div class="line"><a id="l00887" name="l00887"></a><span class="lineno">  887</span> </div>
+<div class="line"><a id="l00889" name="l00889"></a><span class="lineno">  889</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#acb9086987851371577be7407d39032c7">write_parameters</a>(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00890" name="l00890"></a><span class="lineno">  890</span>  {</div>
+<div class="line"><a id="l00891" name="l00891"></a><span class="lineno">  891</span>    <span class="comment">// clear the stored parameters, before storing ours.</span></div>
+<div class="line"><a id="l00892" name="l00892"></a><span class="lineno">  892</span>    <a class="code hl_function" href="namespacelampda_1_1modes_1_1store.html#a92e0ab19cd264d1036edc24ada1eda44">store::clear_stored</a>();</div>
 <div class="line"><a id="l00893" name="l00893"></a><span class="lineno">  893</span> </div>
-<div class="line"><a id="l00894" name="l00894"></a><span class="lineno">  894</span>    <span class="comment">// save the maxFavoriteCount possible favorites</span></div>
-<div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span>    ctx.template storageSaveOnly&lt;Store::usedFavoriteCount&gt;(ctx.modeManager.state.usedFavoriteCount);</div>
-<div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span>    ctx.template storageSaveOnly&lt;Store::favoriteModes&gt;(ctx.modeManager.state.favorites);</div>
-<div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span>    ctx.template storageSaveOnly&lt;Store::lastUsedFavorite&gt;(ctx.modeManager.state.lastFavoriteStep);</div>
-<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span>    ctx.template storageSaveOnly&lt;Store::isInFavoriteGroup&gt;(ctx.state.isInFavoriteMockGroup);</div>
-<div class="line"><a id="l00899" name="l00899"></a><span class="lineno">  899</span>    ctx.template storageSaveOnly&lt;Store::modeMemory&gt;(ctx.state.lastModeMemory);</div>
-<div class="line"><a id="l00900" name="l00900"></a><span class="lineno">  900</span> </div>
-<div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span>    foreach_group&lt;not hasCustomRamp&gt;(ctx, [&amp;ctx](<span class="keyword">auto</span> group) {</div>
-<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>      <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (group.hasCustomRamp)</div>
-<div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span>      {</div>
-<div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span>        <span class="keyword">using </span>StoreHere = <span class="keyword">typename</span> <span class="keyword">decltype</span>(group)::StoreEnum;</div>
-<div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span>        group.template storageSaveOnly&lt;StoreHere::rampMemory&gt;(group.state.customRampMemory);</div>
-<div class="line"><a id="l00906" name="l00906"></a><span class="lineno">  906</span>        group.template storageSaveOnly&lt;StoreHere::indexMemory&gt;(group.state.customIndexMemory);</div>
-<div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span>      }</div>
-<div class="line"><a id="l00908" name="l00908"></a><span class="lineno">  908</span> </div>
-<div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span>      group.write_parameters();</div>
-<div class="line"><a id="l00910" name="l00910"></a><span class="lineno">  910</span>    });</div>
-<div class="line"><a id="l00911" name="l00911"></a><span class="lineno">  911</span>  }</div>
-<div class="line"><a id="l00912" name="l00912"></a><span class="lineno">  912</span> </div>
-<div class="line"><a id="l00914" name="l00914"></a><span class="lineno">  914</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a4d4d42999a9bb52d95ecaf7294c8c523">read_parameters</a>(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00915" name="l00915"></a><span class="lineno">  915</span>  {</div>
-<div class="line"><a id="l00916" name="l00916"></a><span class="lineno">  916</span>    <span class="comment">// remove old filesystem data if we detect obsolete &quot;storeId&quot; serial</span></div>
-<div class="line"><a id="l00917" name="l00917"></a><span class="lineno">  917</span>    <span class="keyword">using </span>LocalStore = details::LocalStoreOf&lt;<span class="keyword">decltype</span>(ctx)&gt;;</div>
-<div class="line"><a id="l00918" name="l00918"></a><span class="lineno">  918</span>    LocalStore::template migrateStoreIfNeeded&lt;storeId&gt;();</div>
-<div class="line"><a id="l00919" name="l00919"></a><span class="lineno">  919</span> </div>
-<div class="line"><a id="l00920" name="l00920"></a><span class="lineno">  920</span>    <span class="comment">// load last active mode</span></div>
-<div class="line"><a id="l00921" name="l00921"></a><span class="lineno">  921</span>    ctx.template storageLoadOnly&lt;Store::lastActive&gt;(ctx.modeManager.activeIndex);</div>
+<div class="line"><a id="l00894" name="l00894"></a><span class="lineno">  894</span>    <span class="comment">// this scope is the only one where parameters will be kept</span></div>
+<div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span>    ctx.template storageSaveOnly&lt;Store::lastActive&gt;(ctx.modeManager.activeIndex);</div>
+<div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span> </div>
+<div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span>    <span class="comment">// save the maxFavoriteCount possible favorites</span></div>
+<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span>    ctx.template storageSaveOnly&lt;Store::usedFavoriteCount&gt;(ctx.modeManager.state.usedFavoriteCount);</div>
+<div class="line"><a id="l00899" name="l00899"></a><span class="lineno">  899</span>    ctx.template storageSaveOnly&lt;Store::favoriteModes&gt;(ctx.modeManager.state.favorites);</div>
+<div class="line"><a id="l00900" name="l00900"></a><span class="lineno">  900</span>    ctx.template storageSaveOnly&lt;Store::lastUsedFavorite&gt;(ctx.modeManager.state.lastFavoriteStep);</div>
+<div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span>    ctx.template storageSaveOnly&lt;Store::isInFavoriteGroup&gt;(ctx.state.isInFavoriteMockGroup);</div>
+<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>    ctx.template storageSaveOnly&lt;Store::modeMemory&gt;(ctx.state.lastModeMemory);</div>
+<div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span> </div>
+<div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span>    foreach_group&lt;not hasCustomRamp&gt;(ctx, [&amp;ctx](<span class="keyword">auto</span> group) {</div>
+<div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span>      <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (group.hasCustomRamp)</div>
+<div class="line"><a id="l00906" name="l00906"></a><span class="lineno">  906</span>      {</div>
+<div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span>        <span class="keyword">using </span>StoreHere = <span class="keyword">typename</span> <span class="keyword">decltype</span>(group)::StoreEnum;</div>
+<div class="line"><a id="l00908" name="l00908"></a><span class="lineno">  908</span>        group.template storageSaveOnly&lt;StoreHere::rampMemory&gt;(group.state.customRampMemory);</div>
+<div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span>        group.template storageSaveOnly&lt;StoreHere::indexMemory&gt;(group.state.customIndexMemory);</div>
+<div class="line"><a id="l00910" name="l00910"></a><span class="lineno">  910</span>      }</div>
+<div class="line"><a id="l00911" name="l00911"></a><span class="lineno">  911</span> </div>
+<div class="line"><a id="l00912" name="l00912"></a><span class="lineno">  912</span>      group.write_parameters();</div>
+<div class="line"><a id="l00913" name="l00913"></a><span class="lineno">  913</span>    });</div>
+<div class="line"><a id="l00914" name="l00914"></a><span class="lineno">  914</span>  }</div>
+<div class="line"><a id="l00915" name="l00915"></a><span class="lineno">  915</span> </div>
+<div class="line"><a id="l00917" name="l00917"></a><span class="lineno">  917</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a4d4d42999a9bb52d95ecaf7294c8c523">read_parameters</a>(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00918" name="l00918"></a><span class="lineno">  918</span>  {</div>
+<div class="line"><a id="l00919" name="l00919"></a><span class="lineno">  919</span>    <span class="comment">// remove old filesystem data if we detect obsolete &quot;storeId&quot; serial</span></div>
+<div class="line"><a id="l00920" name="l00920"></a><span class="lineno">  920</span>    <span class="keyword">using </span>LocalStore = details::LocalStoreOf&lt;<span class="keyword">decltype</span>(ctx)&gt;;</div>
+<div class="line"><a id="l00921" name="l00921"></a><span class="lineno">  921</span>    LocalStore::template migrateStoreIfNeeded&lt;storeId&gt;();</div>
 <div class="line"><a id="l00922" name="l00922"></a><span class="lineno">  922</span> </div>
-<div class="line"><a id="l00923" name="l00923"></a><span class="lineno">  923</span>    <span class="comment">// load the maxFavoriteCount possible favorites</span></div>
-<div class="line"><a id="l00924" name="l00924"></a><span class="lineno">  924</span>    ctx.template storageLoadOnly&lt;Store::usedFavoriteCount&gt;(ctx.modeManager.state.usedFavoriteCount);</div>
-<div class="line"><a id="l00925" name="l00925"></a><span class="lineno">  925</span>    ctx.template storageLoadOnly&lt;Store::favoriteModes&gt;(ctx.state.favorites);</div>
-<div class="line"><a id="l00926" name="l00926"></a><span class="lineno">  926</span>    ctx.template storageLoadOnly&lt;Store::lastUsedFavorite&gt;(ctx.modeManager.state.lastFavoriteStep);</div>
-<div class="line"><a id="l00927" name="l00927"></a><span class="lineno">  927</span>    ctx.template storageLoadOnly&lt;Store::isInFavoriteGroup&gt;(ctx.state.isInFavoriteMockGroup);</div>
-<div class="line"><a id="l00928" name="l00928"></a><span class="lineno">  928</span>    ctx.template storageLoadOnly&lt;Store::modeMemory&gt;(ctx.state.lastModeMemory);</div>
-<div class="line"><a id="l00929" name="l00929"></a><span class="lineno">  929</span> </div>
-<div class="line"><a id="l00930" name="l00930"></a><span class="lineno">  930</span>    <span class="comment">// for each group, migrate &amp; handle custom ramp memory</span></div>
-<div class="line"><a id="l00931" name="l00931"></a><span class="lineno">  931</span>    foreach_group&lt;not hasCustomRamp&gt;(ctx, [&amp;ctx](<span class="keyword">auto</span> group) {</div>
-<div class="line"><a id="l00932" name="l00932"></a><span class="lineno">  932</span>      <span class="keyword">using </span>LocalStore = details::LocalStoreOf&lt;<span class="keyword">decltype</span>(group)&gt;;</div>
-<div class="line"><a id="l00933" name="l00933"></a><span class="lineno">  933</span>      LocalStore::template migrateStoreIfNeeded&lt;storeId&gt;();</div>
-<div class="line"><a id="l00934" name="l00934"></a><span class="lineno">  934</span> </div>
-<div class="line"><a id="l00935" name="l00935"></a><span class="lineno">  935</span>      <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (group.hasCustomRamp)</div>
-<div class="line"><a id="l00936" name="l00936"></a><span class="lineno">  936</span>      {</div>
-<div class="line"><a id="l00937" name="l00937"></a><span class="lineno">  937</span>        <span class="keyword">using </span>StoreHere = <span class="keyword">typename</span> LocalStore::EnumTy;</div>
-<div class="line"><a id="l00938" name="l00938"></a><span class="lineno">  938</span>        group.template storageLoadOnly&lt;StoreHere::rampMemory&gt;(group.state.customRampMemory);</div>
-<div class="line"><a id="l00939" name="l00939"></a><span class="lineno">  939</span>        group.template storageLoadOnly&lt;StoreHere::indexMemory&gt;(group.state.customIndexMemory);</div>
-<div class="line"><a id="l00940" name="l00940"></a><span class="lineno">  940</span>      }</div>
-<div class="line"><a id="l00941" name="l00941"></a><span class="lineno">  941</span> </div>
-<div class="line"><a id="l00942" name="l00942"></a><span class="lineno">  942</span>      group.read_parameters();</div>
-<div class="line"><a id="l00943" name="l00943"></a><span class="lineno">  943</span>    });</div>
-<div class="line"><a id="l00944" name="l00944"></a><span class="lineno">  944</span>  }</div>
-<div class="line"><a id="l00945" name="l00945"></a><span class="lineno">  945</span> </div>
-<div class="line"><a id="l00947" name="l00947"></a><span class="lineno">  947</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a42710cdf95b63e4a0d644c0e976b715a">user_thread</a>(<span class="keyword">auto</span>&amp; ctx)</div>
-<div class="line"><a id="l00948" name="l00948"></a><span class="lineno">  948</span>  {</div>
-<div class="line"><a id="l00949" name="l00949"></a><span class="lineno">  949</span>    dispatch_group(ctx, [](<span class="keyword">auto</span> group) {</div>
-<div class="line"><a id="l00950" name="l00950"></a><span class="lineno">  950</span>      group.user_thread();</div>
-<div class="line"><a id="l00951" name="l00951"></a><span class="lineno">  951</span>    });</div>
-<div class="line"><a id="l00952" name="l00952"></a><span class="lineno">  952</span>  }</div>
-<div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span> </div>
-<div class="line"><a id="l00960" name="l00960"></a><span class="lineno">  960</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> custom_ramp_update(<span class="keyword">auto</span>&amp; ctx, uint8_t rampValue, uint32_t timeout = 0)</div>
-<div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span>  {</div>
-<div class="line"><a id="l00962" name="l00962"></a><span class="lineno">  962</span>    uint8_t groupId = ctx.get_active_group();</div>
-<div class="line"><a id="l00963" name="l00963"></a><span class="lineno">  963</span>    uint8_t modeId = ctx.get_active_mode();</div>
-<div class="line"><a id="l00964" name="l00964"></a><span class="lineno">  964</span> </div>
-<div class="line"><a id="l00965" name="l00965"></a><span class="lineno">  965</span>    <span class="keywordflow">if</span> (ctx.everyCustomRamp[groupId][modeId] &amp;&amp; ctx.state.rampHandler.animEffect)</div>
-<div class="line"><a id="l00966" name="l00966"></a><span class="lineno">  966</span>    {</div>
-<div class="line"><a id="l00967" name="l00967"></a><span class="lineno">  967</span>      <span class="keywordflow">switch</span> (ctx.state.rampHandler.animChoice)</div>
-<div class="line"><a id="l00968" name="l00968"></a><span class="lineno">  968</span>      {</div>
-<div class="line"><a id="l00969" name="l00969"></a><span class="lineno">  969</span>        <span class="keywordflow">case</span> 0:</div>
-<div class="line"><a id="l00970" name="l00970"></a><span class="lineno">  970</span>          overlay_animate_ramp(ctx, rampValue, <a class="code hl_variable" href="namespacelampda_1_1modes_1_1colors.html#a0951e7968bad6de261a8a3030c67c580">modes::colors::PaletteBlackBodyColors</a>, timeout);</div>
-<div class="line"><a id="l00971" name="l00971"></a><span class="lineno">  971</span>          <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00972" name="l00972"></a><span class="lineno">  972</span> </div>
-<div class="line"><a id="l00973" name="l00973"></a><span class="lineno">  973</span>        <span class="keywordflow">case</span> 1:</div>
-<div class="line"><a id="l00974" name="l00974"></a><span class="lineno">  974</span>          overlay_animate_ramp(ctx, rampValue, <a class="code hl_variable" href="namespacelampda_1_1modes_1_1colors.html#aefc6b3319eab96fb36308e57cd3abe89">modes::colors::PaletteRainbowColors</a>, timeout);</div>
-<div class="line"><a id="l00975" name="l00975"></a><span class="lineno">  975</span>          <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00976" name="l00976"></a><span class="lineno">  976</span>      }</div>
-<div class="line"><a id="l00977" name="l00977"></a><span class="lineno">  977</span>    }</div>
-<div class="line"><a id="l00978" name="l00978"></a><span class="lineno">  978</span> </div>
-<div class="line"><a id="l00979" name="l00979"></a><span class="lineno">  979</span>    dispatch_group(ctx, [&amp;](<span class="keyword">auto</span> group) {</div>
-<div class="line"><a id="l00980" name="l00980"></a><span class="lineno">  980</span>      group.custom_ramp_update(rampValue);</div>
-<div class="line"><a id="l00981" name="l00981"></a><span class="lineno">  981</span>    });</div>
-<div class="line"><a id="l00982" name="l00982"></a><span class="lineno">  982</span>  }</div>
-<div class="line"><a id="l00983" name="l00983"></a><span class="lineno">  983</span> </div>
-<div class="line"><a id="l00985" name="l00985"></a><span class="lineno">  985</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> custom_click(<span class="keyword">auto</span>&amp; ctx, uint8_t nbClick)</div>
-<div class="line"><a id="l00986" name="l00986"></a><span class="lineno">  986</span>  {</div>
-<div class="line"><a id="l00987" name="l00987"></a><span class="lineno">  987</span>    <span class="keywordtype">bool</span> retVal = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00988" name="l00988"></a><span class="lineno">  988</span>    dispatch_group(ctx, [&amp;](<span class="keyword">auto</span> group) {</div>
-<div class="line"><a id="l00989" name="l00989"></a><span class="lineno">  989</span>      retVal = group.custom_click(nbClick);</div>
-<div class="line"><a id="l00990" name="l00990"></a><span class="lineno">  990</span>    });</div>
-<div class="line"><a id="l00991" name="l00991"></a><span class="lineno">  991</span>    <span class="keywordflow">return</span> retVal;</div>
-<div class="line"><a id="l00992" name="l00992"></a><span class="lineno">  992</span>  }</div>
-<div class="line"><a id="l00993" name="l00993"></a><span class="lineno">  993</span> </div>
-<div class="line"><a id="l00995" name="l00995"></a><span class="lineno">  995</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> custom_hold(<span class="keyword">auto</span>&amp; ctx, uint8_t nbClickAndHold, <span class="keywordtype">bool</span> isEndOfHoldEvent, uint32_t holdDuration)</div>
-<div class="line"><a id="l00996" name="l00996"></a><span class="lineno">  996</span>  {</div>
-<div class="line"><a id="l00997" name="l00997"></a><span class="lineno">  997</span>    <span class="keywordtype">bool</span> retVal = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00998" name="l00998"></a><span class="lineno">  998</span>    dispatch_group(ctx, [&amp;](<span class="keyword">auto</span> group) {</div>
-<div class="line"><a id="l00999" name="l00999"></a><span class="lineno">  999</span>      retVal = group.custom_hold(nbClickAndHold, isEndOfHoldEvent, holdDuration);</div>
-<div class="line"><a id="l01000" name="l01000"></a><span class="lineno"> 1000</span>    });</div>
-<div class="line"><a id="l01001" name="l01001"></a><span class="lineno"> 1001</span>    <span class="keywordflow">return</span> retVal;</div>
-<div class="line"><a id="l01002" name="l01002"></a><span class="lineno"> 1002</span>  }</div>
-<div class="line"><a id="l01003" name="l01003"></a><span class="lineno"> 1003</span> </div>
-<div class="line"><a id="l01004" name="l01004"></a><span class="lineno"> 1004</span>  <span class="comment">//</span></div>
-<div class="line"><a id="l01005" name="l01005"></a><span class="lineno"> 1005</span>  <span class="comment">// Private action functions</span></div>
-<div class="line"><a id="l01006" name="l01006"></a><span class="lineno"> 1006</span>  <span class="comment">//</span></div>
-<div class="line"><a id="l01007" name="l01007"></a><span class="lineno"> 1007</span> </div>
-<div class="line"><a id="l01016" name="l01016"></a><span class="lineno"> 1016</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> display_favorite_number_ramp(<span class="keyword">auto</span>&amp; ctx,</div>
-<div class="line"><a id="l01017" name="l01017"></a><span class="lineno"> 1017</span>                                           <span class="keyword">const</span> uint8_t favoriteIndex,</div>
-<div class="line"><a id="l01018" name="l01018"></a><span class="lineno"> 1018</span>                                           <span class="keyword">const</span> uint8_t maxFavoriteIndex,</div>
-<div class="line"><a id="l01019" name="l01019"></a><span class="lineno"> 1019</span>                                           <span class="keyword">const</span> <span class="keywordtype">bool</span> display = <span class="keyword">false</span>,</div>
-<div class="line"><a id="l01020" name="l01020"></a><span class="lineno"> 1020</span>                                           <span class="keyword">const</span> uint32_t timeout = 0)</div>
-<div class="line"><a id="l01021" name="l01021"></a><span class="lineno"> 1021</span>  {</div>
-<div class="line"><a id="l01022" name="l01022"></a><span class="lineno"> 1022</span>    <span class="keyword">const</span> uint8_t maxPixelDisplay = std::min&lt;uint8_t&gt;(ctx.state.maxFavoriteCount, maxFavoriteIndex);</div>
-<div class="line"><a id="l01023" name="l01023"></a><span class="lineno"> 1023</span>    <span class="keywordflow">for</span> (uint8_t i = 0; i &lt; maxPixelDisplay; ++i)</div>
-<div class="line"><a id="l01024" name="l01024"></a><span class="lineno"> 1024</span>    {</div>
-<div class="line"><a id="l01025" name="l01025"></a><span class="lineno"> 1025</span>      <span class="keyword">const</span> <span class="keywordtype">bool</span> shouldDisplay = (display and i &lt;= favoriteIndex);</div>
-<div class="line"><a id="l01026" name="l01026"></a><span class="lineno"> 1026</span>      overlay_animate_dot(</div>
-<div class="line"><a id="l01027" name="l01027"></a><span class="lineno"> 1027</span>              ctx, i, i, shouldDisplay ? 255 : 0, colors::PaletteGradient&lt;colors::Black, colors::Cyan&gt;, timeout);</div>
-<div class="line"><a id="l01028" name="l01028"></a><span class="lineno"> 1028</span>    }</div>
-<div class="line"><a id="l01029" name="l01029"></a><span class="lineno"> 1029</span>  }</div>
-<div class="line"><a id="l01030" name="l01030"></a><span class="lineno"> 1030</span> </div>
-<div class="line"><a id="l01037" name="l01037"></a><span class="lineno"> 1037</span>  <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> displayFavoriteNumber = true&gt;</div>
-<div class="line"><a id="l01038" name="l01038"></a><span class="lineno"> 1038</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> animate_favorite_pick(<span class="keyword">auto</span>&amp; ctx, <span class="keywordtype">float</span> holdDuration, <span class="keywordtype">float</span> stepSize)</div>
-<div class="line"><a id="l01039" name="l01039"></a><span class="lineno"> 1039</span>  {</div>
-<div class="line"><a id="l01040" name="l01040"></a><span class="lineno"> 1040</span>    <span class="comment">// user as a number of favorite set</span></div>
-<div class="line"><a id="l01041" name="l01041"></a><span class="lineno"> 1041</span>    <span class="comment">// occasional +1 if not all favorite are set (allow a new favorite)</span></div>
-<div class="line"><a id="l01042" name="l01042"></a><span class="lineno"> 1042</span>    <span class="keyword">const</span> uint8_t numberOfFavoriteSet =</div>
-<div class="line"><a id="l01043" name="l01043"></a><span class="lineno"> 1043</span>            ctx.state.usedFavoriteCount + ((ctx.state.usedFavoriteCount &lt; ctx.state.maxFavoriteCount) ? 1 : 0);</div>
-<div class="line"><a id="l01044" name="l01044"></a><span class="lineno"> 1044</span> </div>
-<div class="line"><a id="l01045" name="l01045"></a><span class="lineno"> 1045</span>    <span class="comment">// up to maxFavoriteCount step state: &quot;which_one&quot; is [0, 1, 2, 3, ...] and &quot;do not set&quot; is the max index + 1</span></div>
-<div class="line"><a id="l01046" name="l01046"></a><span class="lineno"> 1046</span>    uint32_t stepCount = numberOfFavoriteSet + floor(holdDuration / stepSize);</div>
-<div class="line"><a id="l01047" name="l01047"></a><span class="lineno"> 1047</span>    stepCount = stepCount % (numberOfFavoriteSet + 1);</div>
-<div class="line"><a id="l01048" name="l01048"></a><span class="lineno"> 1048</span> </div>
-<div class="line"><a id="l01049" name="l01049"></a><span class="lineno"> 1049</span>    <span class="comment">// display ramp to show where user is standing</span></div>
-<div class="line"><a id="l01050" name="l01050"></a><span class="lineno"> 1050</span>    <span class="keywordflow">if</span> (stepCount &gt;= numberOfFavoriteSet)</div>
-<div class="line"><a id="l01051" name="l01051"></a><span class="lineno"> 1051</span>    {</div>
-<div class="line"><a id="l01052" name="l01052"></a><span class="lineno"> 1052</span>      <span class="comment">// cancel action</span></div>
-<div class="line"><a id="l01053" name="l01053"></a><span class="lineno"> 1053</span>      ctx.state.isFavoritePending = 0;</div>
-<div class="line"><a id="l01054" name="l01054"></a><span class="lineno"> 1054</span> </div>
-<div class="line"><a id="l01055" name="l01055"></a><span class="lineno"> 1055</span>      <span class="comment">// display ramp for the first time to allow the user to cancel the action</span></div>
-<div class="line"><a id="l01056" name="l01056"></a><span class="lineno"> 1056</span>      <span class="keywordflow">if</span> (holdDuration &lt;= 2 * stepSize)</div>
-<div class="line"><a id="l01057" name="l01057"></a><span class="lineno"> 1057</span>      {</div>
-<div class="line"><a id="l01058" name="l01058"></a><span class="lineno"> 1058</span>        overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient&lt;colors::White, colors::Cyan&gt;);</div>
-<div class="line"><a id="l01059" name="l01059"></a><span class="lineno"> 1059</span>      }</div>
-<div class="line"><a id="l01060" name="l01060"></a><span class="lineno"> 1060</span>    }</div>
-<div class="line"><a id="l01061" name="l01061"></a><span class="lineno"> 1061</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01062" name="l01062"></a><span class="lineno"> 1062</span>    {</div>
-<div class="line"><a id="l01063" name="l01063"></a><span class="lineno"> 1063</span>      <span class="comment">// green ramp : favorites</span></div>
-<div class="line"><a id="l01064" name="l01064"></a><span class="lineno"> 1064</span>      overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient&lt;colors::Green, colors::White&gt;);</div>
-<div class="line"><a id="l01065" name="l01065"></a><span class="lineno"> 1065</span> </div>
-<div class="line"><a id="l01066" name="l01066"></a><span class="lineno"> 1066</span>      <span class="comment">// extra display on the first pixels (count pixels to know fav no)</span></div>
-<div class="line"><a id="l01067" name="l01067"></a><span class="lineno"> 1067</span>      <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (displayFavoriteNumber)</div>
-<div class="line"><a id="l01068" name="l01068"></a><span class="lineno"> 1068</span>      {</div>
-<div class="line"><a id="l01069" name="l01069"></a><span class="lineno"> 1069</span>        <span class="comment">// display the set favorite ramp</span></div>
-<div class="line"><a id="l01070" name="l01070"></a><span class="lineno"> 1070</span>        display_favorite_number_ramp(ctx, stepCount, numberOfFavoriteSet, stepCount &lt; numberOfFavoriteSet);</div>
-<div class="line"><a id="l01071" name="l01071"></a><span class="lineno"> 1071</span>      }</div>
-<div class="line"><a id="l01072" name="l01072"></a><span class="lineno"> 1072</span> </div>
-<div class="line"><a id="l01073" name="l01073"></a><span class="lineno"> 1073</span>      <span class="comment">// set this, after a while upon no longer holding button, favorite is set</span></div>
-<div class="line"><a id="l01074" name="l01074"></a><span class="lineno"> 1074</span>      ctx.state.isFavoritePending = 10;</div>
-<div class="line"><a id="l01075" name="l01075"></a><span class="lineno"> 1075</span>      ctx.state.whichFavoritePending = stepCount;</div>
-<div class="line"><a id="l01076" name="l01076"></a><span class="lineno"> 1076</span>    }</div>
-<div class="line"><a id="l01077" name="l01077"></a><span class="lineno"> 1077</span>  }</div>
-<div class="line"><a id="l01078" name="l01078"></a><span class="lineno"> 1078</span> </div>
-<div class="line"><a id="l01085" name="l01085"></a><span class="lineno"> 1085</span>  <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> displayFavoriteNumber = true&gt;</div>
-<div class="line"><a id="l01086" name="l01086"></a><span class="lineno"> 1086</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> animate_favorite_delete(<span class="keyword">auto</span>&amp; ctx, <span class="keywordtype">float</span> holdDuration, <span class="keywordtype">float</span> stepSize)</div>
-<div class="line"><a id="l01087" name="l01087"></a><span class="lineno"> 1087</span>  {</div>
-<div class="line"><a id="l01088" name="l01088"></a><span class="lineno"> 1088</span>    <span class="comment">// no favorite deletion if no favorites</span></div>
-<div class="line"><a id="l01089" name="l01089"></a><span class="lineno"> 1089</span>    <span class="keywordflow">if</span> (ctx.state.usedFavoriteCount &lt;= 0)</div>
-<div class="line"><a id="l01090" name="l01090"></a><span class="lineno"> 1090</span>      <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l01091" name="l01091"></a><span class="lineno"> 1091</span> </div>
-<div class="line"><a id="l01092" name="l01092"></a><span class="lineno"> 1092</span>    ctx.state.isInDeleteFavorite = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01093" name="l01093"></a><span class="lineno"> 1093</span> </div>
-<div class="line"><a id="l01094" name="l01094"></a><span class="lineno"> 1094</span>    uint32_t stepCount = floor(holdDuration / stepSize);</div>
-<div class="line"><a id="l01095" name="l01095"></a><span class="lineno"> 1095</span>    stepCount = stepCount % 2;</div>
+<div class="line"><a id="l00923" name="l00923"></a><span class="lineno">  923</span>    <span class="comment">// load last active mode</span></div>
+<div class="line"><a id="l00924" name="l00924"></a><span class="lineno">  924</span>    ctx.template storageLoadOnly&lt;Store::lastActive&gt;(ctx.modeManager.activeIndex);</div>
+<div class="line"><a id="l00925" name="l00925"></a><span class="lineno">  925</span> </div>
+<div class="line"><a id="l00926" name="l00926"></a><span class="lineno">  926</span>    <span class="comment">// load the maxFavoriteCount possible favorites</span></div>
+<div class="line"><a id="l00927" name="l00927"></a><span class="lineno">  927</span>    ctx.template storageLoadOnly&lt;Store::usedFavoriteCount&gt;(ctx.modeManager.state.usedFavoriteCount);</div>
+<div class="line"><a id="l00928" name="l00928"></a><span class="lineno">  928</span>    ctx.template storageLoadOnly&lt;Store::favoriteModes&gt;(ctx.state.favorites);</div>
+<div class="line"><a id="l00929" name="l00929"></a><span class="lineno">  929</span>    ctx.template storageLoadOnly&lt;Store::lastUsedFavorite&gt;(ctx.modeManager.state.lastFavoriteStep);</div>
+<div class="line"><a id="l00930" name="l00930"></a><span class="lineno">  930</span>    ctx.template storageLoadOnly&lt;Store::isInFavoriteGroup&gt;(ctx.state.isInFavoriteMockGroup);</div>
+<div class="line"><a id="l00931" name="l00931"></a><span class="lineno">  931</span>    ctx.template storageLoadOnly&lt;Store::modeMemory&gt;(ctx.state.lastModeMemory);</div>
+<div class="line"><a id="l00932" name="l00932"></a><span class="lineno">  932</span> </div>
+<div class="line"><a id="l00933" name="l00933"></a><span class="lineno">  933</span>    <span class="comment">// for each group, migrate &amp; handle custom ramp memory</span></div>
+<div class="line"><a id="l00934" name="l00934"></a><span class="lineno">  934</span>    foreach_group&lt;not hasCustomRamp&gt;(ctx, [&amp;ctx](<span class="keyword">auto</span> group) {</div>
+<div class="line"><a id="l00935" name="l00935"></a><span class="lineno">  935</span>      <span class="keyword">using </span>LocalStore = details::LocalStoreOf&lt;<span class="keyword">decltype</span>(group)&gt;;</div>
+<div class="line"><a id="l00936" name="l00936"></a><span class="lineno">  936</span>      LocalStore::template migrateStoreIfNeeded&lt;storeId&gt;();</div>
+<div class="line"><a id="l00937" name="l00937"></a><span class="lineno">  937</span> </div>
+<div class="line"><a id="l00938" name="l00938"></a><span class="lineno">  938</span>      <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (group.hasCustomRamp)</div>
+<div class="line"><a id="l00939" name="l00939"></a><span class="lineno">  939</span>      {</div>
+<div class="line"><a id="l00940" name="l00940"></a><span class="lineno">  940</span>        <span class="keyword">using </span>StoreHere = <span class="keyword">typename</span> LocalStore::EnumTy;</div>
+<div class="line"><a id="l00941" name="l00941"></a><span class="lineno">  941</span>        group.template storageLoadOnly&lt;StoreHere::rampMemory&gt;(group.state.customRampMemory);</div>
+<div class="line"><a id="l00942" name="l00942"></a><span class="lineno">  942</span>        group.template storageLoadOnly&lt;StoreHere::indexMemory&gt;(group.state.customIndexMemory);</div>
+<div class="line"><a id="l00943" name="l00943"></a><span class="lineno">  943</span>      }</div>
+<div class="line"><a id="l00944" name="l00944"></a><span class="lineno">  944</span> </div>
+<div class="line"><a id="l00945" name="l00945"></a><span class="lineno">  945</span>      group.read_parameters();</div>
+<div class="line"><a id="l00946" name="l00946"></a><span class="lineno">  946</span>    });</div>
+<div class="line"><a id="l00947" name="l00947"></a><span class="lineno">  947</span>  }</div>
+<div class="line"><a id="l00948" name="l00948"></a><span class="lineno">  948</span> </div>
+<div class="line"><a id="l00950" name="l00950"></a><span class="lineno">  950</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespacelampda_1_1user.html#a42710cdf95b63e4a0d644c0e976b715a">user_thread</a>(<span class="keyword">auto</span>&amp; ctx)</div>
+<div class="line"><a id="l00951" name="l00951"></a><span class="lineno">  951</span>  {</div>
+<div class="line"><a id="l00952" name="l00952"></a><span class="lineno">  952</span>    dispatch_group(ctx, [](<span class="keyword">auto</span> group) {</div>
+<div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span>      group.user_thread();</div>
+<div class="line"><a id="l00954" name="l00954"></a><span class="lineno">  954</span>    });</div>
+<div class="line"><a id="l00955" name="l00955"></a><span class="lineno">  955</span>  }</div>
+<div class="line"><a id="l00956" name="l00956"></a><span class="lineno">  956</span> </div>
+<div class="line"><a id="l00963" name="l00963"></a><span class="lineno">  963</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> custom_ramp_update(<span class="keyword">auto</span>&amp; ctx, uint8_t rampValue, uint32_t timeout = 0)</div>
+<div class="line"><a id="l00964" name="l00964"></a><span class="lineno">  964</span>  {</div>
+<div class="line"><a id="l00965" name="l00965"></a><span class="lineno">  965</span>    uint8_t groupId = ctx.get_active_group();</div>
+<div class="line"><a id="l00966" name="l00966"></a><span class="lineno">  966</span>    uint8_t modeId = ctx.get_active_mode();</div>
+<div class="line"><a id="l00967" name="l00967"></a><span class="lineno">  967</span> </div>
+<div class="line"><a id="l00968" name="l00968"></a><span class="lineno">  968</span>    <span class="keywordflow">if</span> (ctx.everyCustomRamp[groupId][modeId] &amp;&amp; ctx.state.rampHandler.animEffect)</div>
+<div class="line"><a id="l00969" name="l00969"></a><span class="lineno">  969</span>    {</div>
+<div class="line"><a id="l00970" name="l00970"></a><span class="lineno">  970</span>      <span class="keywordflow">switch</span> (ctx.state.rampHandler.animChoice)</div>
+<div class="line"><a id="l00971" name="l00971"></a><span class="lineno">  971</span>      {</div>
+<div class="line"><a id="l00972" name="l00972"></a><span class="lineno">  972</span>        <span class="keywordflow">case</span> 0:</div>
+<div class="line"><a id="l00973" name="l00973"></a><span class="lineno">  973</span>          overlay_animate_ramp(ctx, rampValue, <a class="code hl_variable" href="namespacelampda_1_1modes_1_1colors.html#a0951e7968bad6de261a8a3030c67c580">modes::colors::PaletteBlackBodyColors</a>, timeout);</div>
+<div class="line"><a id="l00974" name="l00974"></a><span class="lineno">  974</span>          <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00975" name="l00975"></a><span class="lineno">  975</span> </div>
+<div class="line"><a id="l00976" name="l00976"></a><span class="lineno">  976</span>        <span class="keywordflow">case</span> 1:</div>
+<div class="line"><a id="l00977" name="l00977"></a><span class="lineno">  977</span>          overlay_animate_ramp(ctx, rampValue, <a class="code hl_variable" href="namespacelampda_1_1modes_1_1colors.html#aefc6b3319eab96fb36308e57cd3abe89">modes::colors::PaletteRainbowColors</a>, timeout);</div>
+<div class="line"><a id="l00978" name="l00978"></a><span class="lineno">  978</span>          <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00979" name="l00979"></a><span class="lineno">  979</span>      }</div>
+<div class="line"><a id="l00980" name="l00980"></a><span class="lineno">  980</span>    }</div>
+<div class="line"><a id="l00981" name="l00981"></a><span class="lineno">  981</span> </div>
+<div class="line"><a id="l00982" name="l00982"></a><span class="lineno">  982</span>    dispatch_group(ctx, [&amp;](<span class="keyword">auto</span> group) {</div>
+<div class="line"><a id="l00983" name="l00983"></a><span class="lineno">  983</span>      group.custom_ramp_update(rampValue);</div>
+<div class="line"><a id="l00984" name="l00984"></a><span class="lineno">  984</span>    });</div>
+<div class="line"><a id="l00985" name="l00985"></a><span class="lineno">  985</span>  }</div>
+<div class="line"><a id="l00986" name="l00986"></a><span class="lineno">  986</span> </div>
+<div class="line"><a id="l00988" name="l00988"></a><span class="lineno">  988</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> custom_click(<span class="keyword">auto</span>&amp; ctx, uint8_t nbClick)</div>
+<div class="line"><a id="l00989" name="l00989"></a><span class="lineno">  989</span>  {</div>
+<div class="line"><a id="l00990" name="l00990"></a><span class="lineno">  990</span>    <span class="keywordtype">bool</span> retVal = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00991" name="l00991"></a><span class="lineno">  991</span>    dispatch_group(ctx, [&amp;](<span class="keyword">auto</span> group) {</div>
+<div class="line"><a id="l00992" name="l00992"></a><span class="lineno">  992</span>      retVal = group.custom_click(nbClick);</div>
+<div class="line"><a id="l00993" name="l00993"></a><span class="lineno">  993</span>    });</div>
+<div class="line"><a id="l00994" name="l00994"></a><span class="lineno">  994</span>    <span class="keywordflow">return</span> retVal;</div>
+<div class="line"><a id="l00995" name="l00995"></a><span class="lineno">  995</span>  }</div>
+<div class="line"><a id="l00996" name="l00996"></a><span class="lineno">  996</span> </div>
+<div class="line"><a id="l00998" name="l00998"></a><span class="lineno">  998</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> custom_hold(<span class="keyword">auto</span>&amp; ctx, uint8_t nbClickAndHold, <span class="keywordtype">bool</span> isEndOfHoldEvent, uint32_t holdDuration)</div>
+<div class="line"><a id="l00999" name="l00999"></a><span class="lineno">  999</span>  {</div>
+<div class="line"><a id="l01000" name="l01000"></a><span class="lineno"> 1000</span>    <span class="keywordtype">bool</span> retVal = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01001" name="l01001"></a><span class="lineno"> 1001</span>    dispatch_group(ctx, [&amp;](<span class="keyword">auto</span> group) {</div>
+<div class="line"><a id="l01002" name="l01002"></a><span class="lineno"> 1002</span>      retVal = group.custom_hold(nbClickAndHold, isEndOfHoldEvent, holdDuration);</div>
+<div class="line"><a id="l01003" name="l01003"></a><span class="lineno"> 1003</span>    });</div>
+<div class="line"><a id="l01004" name="l01004"></a><span class="lineno"> 1004</span>    <span class="keywordflow">return</span> retVal;</div>
+<div class="line"><a id="l01005" name="l01005"></a><span class="lineno"> 1005</span>  }</div>
+<div class="line"><a id="l01006" name="l01006"></a><span class="lineno"> 1006</span> </div>
+<div class="line"><a id="l01007" name="l01007"></a><span class="lineno"> 1007</span>  <span class="comment">//</span></div>
+<div class="line"><a id="l01008" name="l01008"></a><span class="lineno"> 1008</span>  <span class="comment">// Private action functions</span></div>
+<div class="line"><a id="l01009" name="l01009"></a><span class="lineno"> 1009</span>  <span class="comment">//</span></div>
+<div class="line"><a id="l01010" name="l01010"></a><span class="lineno"> 1010</span> </div>
+<div class="line"><a id="l01019" name="l01019"></a><span class="lineno"> 1019</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> display_favorite_number_ramp(<span class="keyword">auto</span>&amp; ctx,</div>
+<div class="line"><a id="l01020" name="l01020"></a><span class="lineno"> 1020</span>                                           <span class="keyword">const</span> uint8_t favoriteIndex,</div>
+<div class="line"><a id="l01021" name="l01021"></a><span class="lineno"> 1021</span>                                           <span class="keyword">const</span> uint8_t maxFavoriteIndex,</div>
+<div class="line"><a id="l01022" name="l01022"></a><span class="lineno"> 1022</span>                                           <span class="keyword">const</span> <span class="keywordtype">bool</span> display = <span class="keyword">false</span>,</div>
+<div class="line"><a id="l01023" name="l01023"></a><span class="lineno"> 1023</span>                                           <span class="keyword">const</span> uint32_t timeout = 0)</div>
+<div class="line"><a id="l01024" name="l01024"></a><span class="lineno"> 1024</span>  {</div>
+<div class="line"><a id="l01025" name="l01025"></a><span class="lineno"> 1025</span>    <span class="keyword">const</span> uint8_t maxPixelDisplay = std::min&lt;uint8_t&gt;(ctx.state.maxFavoriteCount, maxFavoriteIndex);</div>
+<div class="line"><a id="l01026" name="l01026"></a><span class="lineno"> 1026</span>    <span class="keywordflow">for</span> (uint8_t i = 0; i &lt; maxPixelDisplay; ++i)</div>
+<div class="line"><a id="l01027" name="l01027"></a><span class="lineno"> 1027</span>    {</div>
+<div class="line"><a id="l01028" name="l01028"></a><span class="lineno"> 1028</span>      <span class="keyword">const</span> <span class="keywordtype">bool</span> shouldDisplay = (display and i &lt;= favoriteIndex);</div>
+<div class="line"><a id="l01029" name="l01029"></a><span class="lineno"> 1029</span>      overlay_animate_dot(</div>
+<div class="line"><a id="l01030" name="l01030"></a><span class="lineno"> 1030</span>              ctx, i, i, shouldDisplay ? 255 : 0, colors::PaletteGradient&lt;colors::Black, colors::Cyan&gt;, timeout);</div>
+<div class="line"><a id="l01031" name="l01031"></a><span class="lineno"> 1031</span>    }</div>
+<div class="line"><a id="l01032" name="l01032"></a><span class="lineno"> 1032</span>  }</div>
+<div class="line"><a id="l01033" name="l01033"></a><span class="lineno"> 1033</span> </div>
+<div class="line"><a id="l01040" name="l01040"></a><span class="lineno"> 1040</span>  <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> displayFavoriteNumber = true&gt;</div>
+<div class="line"><a id="l01041" name="l01041"></a><span class="lineno"> 1041</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> animate_favorite_pick(<span class="keyword">auto</span>&amp; ctx, <span class="keywordtype">float</span> holdDuration, <span class="keywordtype">float</span> stepSize)</div>
+<div class="line"><a id="l01042" name="l01042"></a><span class="lineno"> 1042</span>  {</div>
+<div class="line"><a id="l01043" name="l01043"></a><span class="lineno"> 1043</span>    <span class="comment">// user as a number of favorite set</span></div>
+<div class="line"><a id="l01044" name="l01044"></a><span class="lineno"> 1044</span>    <span class="comment">// occasional +1 if not all favorite are set (allow a new favorite)</span></div>
+<div class="line"><a id="l01045" name="l01045"></a><span class="lineno"> 1045</span>    <span class="keyword">const</span> uint8_t numberOfFavoriteSet =</div>
+<div class="line"><a id="l01046" name="l01046"></a><span class="lineno"> 1046</span>            ctx.state.usedFavoriteCount + ((ctx.state.usedFavoriteCount &lt; ctx.state.maxFavoriteCount) ? 1 : 0);</div>
+<div class="line"><a id="l01047" name="l01047"></a><span class="lineno"> 1047</span> </div>
+<div class="line"><a id="l01048" name="l01048"></a><span class="lineno"> 1048</span>    <span class="comment">// up to maxFavoriteCount step state: &quot;which_one&quot; is [0, 1, 2, 3, ...] and &quot;do not set&quot; is the max index + 1</span></div>
+<div class="line"><a id="l01049" name="l01049"></a><span class="lineno"> 1049</span>    uint32_t stepCount = numberOfFavoriteSet + floor(holdDuration / stepSize);</div>
+<div class="line"><a id="l01050" name="l01050"></a><span class="lineno"> 1050</span>    stepCount = stepCount % (numberOfFavoriteSet + 1);</div>
+<div class="line"><a id="l01051" name="l01051"></a><span class="lineno"> 1051</span> </div>
+<div class="line"><a id="l01052" name="l01052"></a><span class="lineno"> 1052</span>    <span class="comment">// display ramp to show where user is standing</span></div>
+<div class="line"><a id="l01053" name="l01053"></a><span class="lineno"> 1053</span>    <span class="keywordflow">if</span> (stepCount &gt;= numberOfFavoriteSet)</div>
+<div class="line"><a id="l01054" name="l01054"></a><span class="lineno"> 1054</span>    {</div>
+<div class="line"><a id="l01055" name="l01055"></a><span class="lineno"> 1055</span>      <span class="comment">// cancel action</span></div>
+<div class="line"><a id="l01056" name="l01056"></a><span class="lineno"> 1056</span>      ctx.state.isFavoritePending = 0;</div>
+<div class="line"><a id="l01057" name="l01057"></a><span class="lineno"> 1057</span> </div>
+<div class="line"><a id="l01058" name="l01058"></a><span class="lineno"> 1058</span>      <span class="comment">// display ramp for the first time to allow the user to cancel the action</span></div>
+<div class="line"><a id="l01059" name="l01059"></a><span class="lineno"> 1059</span>      <span class="keywordflow">if</span> (holdDuration &lt;= 2 * stepSize)</div>
+<div class="line"><a id="l01060" name="l01060"></a><span class="lineno"> 1060</span>      {</div>
+<div class="line"><a id="l01061" name="l01061"></a><span class="lineno"> 1061</span>        overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient&lt;colors::White, colors::Cyan&gt;);</div>
+<div class="line"><a id="l01062" name="l01062"></a><span class="lineno"> 1062</span>      }</div>
+<div class="line"><a id="l01063" name="l01063"></a><span class="lineno"> 1063</span>    }</div>
+<div class="line"><a id="l01064" name="l01064"></a><span class="lineno"> 1064</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01065" name="l01065"></a><span class="lineno"> 1065</span>    {</div>
+<div class="line"><a id="l01066" name="l01066"></a><span class="lineno"> 1066</span>      <span class="comment">// green ramp : favorites</span></div>
+<div class="line"><a id="l01067" name="l01067"></a><span class="lineno"> 1067</span>      overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient&lt;colors::Green, colors::White&gt;);</div>
+<div class="line"><a id="l01068" name="l01068"></a><span class="lineno"> 1068</span> </div>
+<div class="line"><a id="l01069" name="l01069"></a><span class="lineno"> 1069</span>      <span class="comment">// extra display on the first pixels (count pixels to know fav no)</span></div>
+<div class="line"><a id="l01070" name="l01070"></a><span class="lineno"> 1070</span>      <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (displayFavoriteNumber)</div>
+<div class="line"><a id="l01071" name="l01071"></a><span class="lineno"> 1071</span>      {</div>
+<div class="line"><a id="l01072" name="l01072"></a><span class="lineno"> 1072</span>        <span class="comment">// display the set favorite ramp</span></div>
+<div class="line"><a id="l01073" name="l01073"></a><span class="lineno"> 1073</span>        display_favorite_number_ramp(ctx, stepCount, numberOfFavoriteSet, stepCount &lt; numberOfFavoriteSet);</div>
+<div class="line"><a id="l01074" name="l01074"></a><span class="lineno"> 1074</span>      }</div>
+<div class="line"><a id="l01075" name="l01075"></a><span class="lineno"> 1075</span> </div>
+<div class="line"><a id="l01076" name="l01076"></a><span class="lineno"> 1076</span>      <span class="comment">// set this, after a while upon no longer holding button, favorite is set</span></div>
+<div class="line"><a id="l01077" name="l01077"></a><span class="lineno"> 1077</span>      ctx.state.isFavoritePending = 10;</div>
+<div class="line"><a id="l01078" name="l01078"></a><span class="lineno"> 1078</span>      ctx.state.whichFavoritePending = stepCount;</div>
+<div class="line"><a id="l01079" name="l01079"></a><span class="lineno"> 1079</span>    }</div>
+<div class="line"><a id="l01080" name="l01080"></a><span class="lineno"> 1080</span>  }</div>
+<div class="line"><a id="l01081" name="l01081"></a><span class="lineno"> 1081</span> </div>
+<div class="line"><a id="l01088" name="l01088"></a><span class="lineno"> 1088</span>  <span class="keyword">template</span>&lt;<span class="keywordtype">bool</span> displayFavoriteNumber = true&gt;</div>
+<div class="line"><a id="l01089" name="l01089"></a><span class="lineno"> 1089</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> animate_favorite_delete(<span class="keyword">auto</span>&amp; ctx, <span class="keywordtype">float</span> holdDuration, <span class="keywordtype">float</span> stepSize)</div>
+<div class="line"><a id="l01090" name="l01090"></a><span class="lineno"> 1090</span>  {</div>
+<div class="line"><a id="l01091" name="l01091"></a><span class="lineno"> 1091</span>    <span class="comment">// no favorite deletion if no favorites</span></div>
+<div class="line"><a id="l01092" name="l01092"></a><span class="lineno"> 1092</span>    <span class="keywordflow">if</span> (ctx.state.usedFavoriteCount &lt;= 0)</div>
+<div class="line"><a id="l01093" name="l01093"></a><span class="lineno"> 1093</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l01094" name="l01094"></a><span class="lineno"> 1094</span> </div>
+<div class="line"><a id="l01095" name="l01095"></a><span class="lineno"> 1095</span>    ctx.state.isInDeleteFavorite = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l01096" name="l01096"></a><span class="lineno"> 1096</span> </div>
-<div class="line"><a id="l01097" name="l01097"></a><span class="lineno"> 1097</span>    <span class="keywordflow">if</span> (stepCount == 0)</div>
-<div class="line"><a id="l01098" name="l01098"></a><span class="lineno"> 1098</span>    {</div>
-<div class="line"><a id="l01099" name="l01099"></a><span class="lineno"> 1099</span>      <span class="keywordflow">if</span> (overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient&lt;colors::Orange, colors::Red&gt;))</div>
-<div class="line"><a id="l01100" name="l01100"></a><span class="lineno"> 1100</span>      {</div>
-<div class="line"><a id="l01101" name="l01101"></a><span class="lineno"> 1101</span>        <span class="comment">// set this on ramp saturation. The favorite will be removed in 2 frames</span></div>
-<div class="line"><a id="l01102" name="l01102"></a><span class="lineno"> 1102</span>        ctx.state.isFavoriteDeletePending = 2;</div>
-<div class="line"><a id="l01103" name="l01103"></a><span class="lineno"> 1103</span>      }</div>
-<div class="line"><a id="l01104" name="l01104"></a><span class="lineno"> 1104</span>      <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01105" name="l01105"></a><span class="lineno"> 1105</span>      {</div>
-<div class="line"><a id="l01106" name="l01106"></a><span class="lineno"> 1106</span>        <span class="comment">// no deletion if release on ramp</span></div>
-<div class="line"><a id="l01107" name="l01107"></a><span class="lineno"> 1107</span>        ctx.state.isFavoriteDeletePending = 0;</div>
-<div class="line"><a id="l01108" name="l01108"></a><span class="lineno"> 1108</span>      }</div>
-<div class="line"><a id="l01109" name="l01109"></a><span class="lineno"> 1109</span> </div>
-<div class="line"><a id="l01110" name="l01110"></a><span class="lineno"> 1110</span>      <span class="comment">// extra display on the first pixels (count pixels to know fav no)</span></div>
-<div class="line"><a id="l01111" name="l01111"></a><span class="lineno"> 1111</span>      <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (displayFavoriteNumber)</div>
-<div class="line"><a id="l01112" name="l01112"></a><span class="lineno"> 1112</span>      {</div>
-<div class="line"><a id="l01113" name="l01113"></a><span class="lineno"> 1113</span>        <span class="comment">// display ramp</span></div>
-<div class="line"><a id="l01114" name="l01114"></a><span class="lineno"> 1114</span>        display_favorite_number_ramp(ctx, ctx.state.lastFavoriteStep, ctx.state.usedFavoriteCount, <span class="keyword">true</span>);</div>
-<div class="line"><a id="l01115" name="l01115"></a><span class="lineno"> 1115</span>      }</div>
-<div class="line"><a id="l01116" name="l01116"></a><span class="lineno"> 1116</span>    }</div>
-<div class="line"><a id="l01117" name="l01117"></a><span class="lineno"> 1117</span>    <span class="comment">// else: do nothing</span></div>
-<div class="line"><a id="l01118" name="l01118"></a><span class="lineno"> 1118</span>  }</div>
-<div class="line"><a id="l01119" name="l01119"></a><span class="lineno"> 1119</span> </div>
-<div class="line"><a id="l01120" name="l01120"></a><span class="lineno"> 1120</span>  <span class="comment">//</span></div>
-<div class="line"><a id="l01121" name="l01121"></a><span class="lineno"> 1121</span>  <span class="comment">// members with direct access</span></div>
-<div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span>  <span class="comment">//</span></div>
-<div class="line"><a id="l01123" name="l01123"></a><span class="lineno"> 1123</span> </div>
-<div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span>  ActiveIndexTy activeIndex;</div>
+<div class="line"><a id="l01097" name="l01097"></a><span class="lineno"> 1097</span>    uint32_t stepCount = floor(holdDuration / stepSize);</div>
+<div class="line"><a id="l01098" name="l01098"></a><span class="lineno"> 1098</span>    stepCount = stepCount % 2;</div>
+<div class="line"><a id="l01099" name="l01099"></a><span class="lineno"> 1099</span> </div>
+<div class="line"><a id="l01100" name="l01100"></a><span class="lineno"> 1100</span>    <span class="keywordflow">if</span> (stepCount == 0)</div>
+<div class="line"><a id="l01101" name="l01101"></a><span class="lineno"> 1101</span>    {</div>
+<div class="line"><a id="l01102" name="l01102"></a><span class="lineno"> 1102</span>      <span class="keywordflow">if</span> (overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient&lt;colors::Orange, colors::Red&gt;))</div>
+<div class="line"><a id="l01103" name="l01103"></a><span class="lineno"> 1103</span>      {</div>
+<div class="line"><a id="l01104" name="l01104"></a><span class="lineno"> 1104</span>        <span class="comment">// set this on ramp saturation. The favorite will be removed in 2 frames</span></div>
+<div class="line"><a id="l01105" name="l01105"></a><span class="lineno"> 1105</span>        ctx.state.isFavoriteDeletePending = 2;</div>
+<div class="line"><a id="l01106" name="l01106"></a><span class="lineno"> 1106</span>      }</div>
+<div class="line"><a id="l01107" name="l01107"></a><span class="lineno"> 1107</span>      <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01108" name="l01108"></a><span class="lineno"> 1108</span>      {</div>
+<div class="line"><a id="l01109" name="l01109"></a><span class="lineno"> 1109</span>        <span class="comment">// no deletion if release on ramp</span></div>
+<div class="line"><a id="l01110" name="l01110"></a><span class="lineno"> 1110</span>        ctx.state.isFavoriteDeletePending = 0;</div>
+<div class="line"><a id="l01111" name="l01111"></a><span class="lineno"> 1111</span>      }</div>
+<div class="line"><a id="l01112" name="l01112"></a><span class="lineno"> 1112</span> </div>
+<div class="line"><a id="l01113" name="l01113"></a><span class="lineno"> 1113</span>      <span class="comment">// extra display on the first pixels (count pixels to know fav no)</span></div>
+<div class="line"><a id="l01114" name="l01114"></a><span class="lineno"> 1114</span>      <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (displayFavoriteNumber)</div>
+<div class="line"><a id="l01115" name="l01115"></a><span class="lineno"> 1115</span>      {</div>
+<div class="line"><a id="l01116" name="l01116"></a><span class="lineno"> 1116</span>        <span class="comment">// display ramp</span></div>
+<div class="line"><a id="l01117" name="l01117"></a><span class="lineno"> 1117</span>        display_favorite_number_ramp(ctx, ctx.state.lastFavoriteStep, ctx.state.usedFavoriteCount, <span class="keyword">true</span>);</div>
+<div class="line"><a id="l01118" name="l01118"></a><span class="lineno"> 1118</span>      }</div>
+<div class="line"><a id="l01119" name="l01119"></a><span class="lineno"> 1119</span>    }</div>
+<div class="line"><a id="l01120" name="l01120"></a><span class="lineno"> 1120</span>    <span class="comment">// else: do nothing</span></div>
+<div class="line"><a id="l01121" name="l01121"></a><span class="lineno"> 1121</span>  }</div>
+<div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span> </div>
+<div class="line"><a id="l01123" name="l01123"></a><span class="lineno"> 1123</span>  <span class="comment">//</span></div>
+<div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span>  <span class="comment">// members with direct access</span></div>
+<div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span>  <span class="comment">//</span></div>
 <div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span> </div>
-<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span>  hardware::LampTy&amp; lamp;</div>
+<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span>  ActiveIndexTy activeIndex;</div>
 <div class="line"><a id="l01129" name="l01129"></a><span class="lineno"> 1129</span> </div>
-<div class="line"><a id="l01131" name="l01131"></a><span class="lineno"> 1131</span>  <span class="keyword">inline</span> <span class="keyword">static</span> draw::overlay::Manager&lt;&gt; overlay;</div>
+<div class="line"><a id="l01131" name="l01131"></a><span class="lineno"> 1131</span>  hardware::LampTy&amp; lamp;</div>
 <div class="line"><a id="l01132" name="l01132"></a><span class="lineno"> 1132</span> </div>
-<div class="line"><a id="l01133" name="l01133"></a><span class="lineno"> 1133</span>  <span class="comment">//</span></div>
-<div class="line"><a id="l01134" name="l01134"></a><span class="lineno"> 1134</span>  <span class="comment">// private members</span></div>
-<div class="line"><a id="l01135" name="l01135"></a><span class="lineno"> 1135</span>  <span class="comment">//</span></div>
-<div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span> </div>
-<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span>  NoState placeholder;</div>
-<div class="line"><a id="l01141" name="l01141"></a><span class="lineno"> 1141</span>  StateTy <a class="code hl_variable" href="namespacesimulator_1_1globals.html#aaa8c9192b5594c9382baf291b82bca95">state</a>;</div>
-<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span>};</div>
-<div class="line"><a id="l01143" name="l01143"></a><span class="lineno"> 1143</span> </div>
-<div class="line"><a id="l01148" name="l01148"></a><span class="lineno"><a class="line" href="namespacelampda_1_1modes.html#a6e6505e53bef96a328e82896560a826b"> 1148</a></span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ManagerConfig, <span class="keyword">typename</span>... Groups&gt; <span class="keyword">using </span><a class="code hl_typedef" href="namespacelampda_1_1modes.html#a6e6505e53bef96a328e82896560a826b">ManagerForConfig</a> =</div>
-<div class="line"><a id="l01149" name="l01149"></a><span class="lineno"> 1149</span>        ModeManagerTy&lt;ManagerConfig, std::tuple&lt;Groups...&gt;, 0&gt;;</div>
-<div class="line"><a id="l01150" name="l01150"></a><span class="lineno"> 1150</span> </div>
-<div class="line"><a id="l01159" name="l01159"></a><span class="lineno"><a class="line" href="namespacelampda_1_1modes.html#ab032f9c9a9c0c0215869eea98ae31948"> 1159</a></span><span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Groups&gt; <span class="keyword">using </span><a class="code hl_typedef" href="namespacelampda_1_1modes.html#ab032f9c9a9c0c0215869eea98ae31948">ManagerFor</a> = ModeManagerTy&lt;<a class="code hl_struct" href="structlampda_1_1modes_1_1DefaultManagerConfig.html">DefaultManagerConfig</a>, std::tuple&lt;Groups...&gt;, 0&gt;;</div>
-<div class="line"><a id="l01160" name="l01160"></a><span class="lineno"> 1160</span> </div>
-<div class="line"><a id="l01170" name="l01170"></a><span class="lineno"><a class="line" href="namespacelampda_1_1modes.html#a5b23c77d3d281b99db42b5e55df6dd62"> 1170</a></span><span class="keyword">template</span>&lt;uint8_t hiddenGroupCnt, <span class="keyword">typename</span>... Groups&gt; <span class="keyword">using </span><a class="code hl_typedef" href="namespacelampda_1_1modes.html#a5b23c77d3d281b99db42b5e55df6dd62">ManagerForHiddenGroups</a> =</div>
-<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span>        ModeManagerTy&lt;<a class="code hl_struct" href="structlampda_1_1modes_1_1DefaultManagerConfig.html">DefaultManagerConfig</a>, std::tuple&lt;Groups...&gt;, hiddenGroupCnt&gt;;</div>
-<div class="line"><a id="l01172" name="l01172"></a><span class="lineno"> 1172</span> </div>
-<div class="line"><a id="l01177" name="l01177"></a><span class="lineno"><a class="line" href="namespacelampda_1_1modes.html#a224b8832ea3d3dda8f01f766daafe89f"> 1177</a></span><span class="keyword">template</span>&lt;uint8_t hiddenGroupCnt, <span class="keyword">typename</span> ManagerConfig, <span class="keyword">typename</span>... Groups&gt; <span class="keyword">using </span><a class="code hl_typedef" href="namespacelampda_1_1modes.html#a224b8832ea3d3dda8f01f766daafe89f">ManagerFoHiddenConfig</a> =</div>
-<div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>        ModeManagerTy&lt;ManagerConfig, std::tuple&lt;Groups...&gt;, hiddenGroupCnt&gt;;</div>
-<div class="line"><a id="l01179" name="l01179"></a><span class="lineno"> 1179</span> </div>
-<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"> 1180</span>} <span class="comment">// namespace lampda::modes</span></div>
-<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span> </div>
-<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l01134" name="l01134"></a><span class="lineno"> 1134</span>  <span class="keyword">inline</span> <span class="keyword">static</span> draw::overlay::Manager&lt;&gt; overlay;</div>
+<div class="line"><a id="l01135" name="l01135"></a><span class="lineno"> 1135</span> </div>
+<div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span>  <span class="comment">//</span></div>
+<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span>  <span class="comment">// private members</span></div>
+<div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span>  <span class="comment">//</span></div>
+<div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span> </div>
+<div class="line"><a id="l01140" name="l01140"></a><span class="lineno"> 1140</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span>  NoState placeholder;</div>
+<div class="line"><a id="l01144" name="l01144"></a><span class="lineno"> 1144</span>  StateTy <a class="code hl_variable" href="namespacesimulator_1_1globals.html#aaa8c9192b5594c9382baf291b82bca95">state</a>;</div>
+<div class="line"><a id="l01145" name="l01145"></a><span class="lineno"> 1145</span>};</div>
+<div class="line"><a id="l01146" name="l01146"></a><span class="lineno"> 1146</span> </div>
+<div class="line"><a id="l01151" name="l01151"></a><span class="lineno"><a class="line" href="namespacelampda_1_1modes.html#a6e6505e53bef96a328e82896560a826b"> 1151</a></span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> ManagerConfig, <span class="keyword">typename</span>... Groups&gt; <span class="keyword">using </span><a class="code hl_typedef" href="namespacelampda_1_1modes.html#a6e6505e53bef96a328e82896560a826b">ManagerForConfig</a> =</div>
+<div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>        ModeManagerTy&lt;ManagerConfig, std::tuple&lt;Groups...&gt;, 0&gt;;</div>
+<div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span> </div>
+<div class="line"><a id="l01162" name="l01162"></a><span class="lineno"><a class="line" href="namespacelampda_1_1modes.html#ab032f9c9a9c0c0215869eea98ae31948"> 1162</a></span><span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Groups&gt; <span class="keyword">using </span><a class="code hl_typedef" href="namespacelampda_1_1modes.html#ab032f9c9a9c0c0215869eea98ae31948">ManagerFor</a> = ModeManagerTy&lt;<a class="code hl_struct" href="structlampda_1_1modes_1_1DefaultManagerConfig.html">DefaultManagerConfig</a>, std::tuple&lt;Groups...&gt;, 0&gt;;</div>
+<div class="line"><a id="l01163" name="l01163"></a><span class="lineno"> 1163</span> </div>
+<div class="line"><a id="l01173" name="l01173"></a><span class="lineno"><a class="line" href="namespacelampda_1_1modes.html#a5b23c77d3d281b99db42b5e55df6dd62"> 1173</a></span><span class="keyword">template</span>&lt;uint8_t hiddenGroupCnt, <span class="keyword">typename</span>... Groups&gt; <span class="keyword">using </span><a class="code hl_typedef" href="namespacelampda_1_1modes.html#a5b23c77d3d281b99db42b5e55df6dd62">ManagerForHiddenGroups</a> =</div>
+<div class="line"><a id="l01174" name="l01174"></a><span class="lineno"> 1174</span>        ModeManagerTy&lt;<a class="code hl_struct" href="structlampda_1_1modes_1_1DefaultManagerConfig.html">DefaultManagerConfig</a>, std::tuple&lt;Groups...&gt;, hiddenGroupCnt&gt;;</div>
+<div class="line"><a id="l01175" name="l01175"></a><span class="lineno"> 1175</span> </div>
+<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"><a class="line" href="namespacelampda_1_1modes.html#a224b8832ea3d3dda8f01f766daafe89f"> 1180</a></span><span class="keyword">template</span>&lt;uint8_t hiddenGroupCnt, <span class="keyword">typename</span> ManagerConfig, <span class="keyword">typename</span>... Groups&gt; <span class="keyword">using </span><a class="code hl_typedef" href="namespacelampda_1_1modes.html#a224b8832ea3d3dda8f01f766daafe89f">ManagerFoHiddenConfig</a> =</div>
+<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span>        ModeManagerTy&lt;ManagerConfig, std::tuple&lt;Groups...&gt;, hiddenGroupCnt&gt;;</div>
+<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span> </div>
+<div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span>} <span class="comment">// namespace lampda::modes</span></div>
+<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span> </div>
+<div class="line"><a id="l01185" name="l01185"></a><span class="lineno"> 1185</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aalerts_8h_html"><div class="ttname"><a href="alerts_8h.html">alerts.h</a></div><div class="ttdoc">Handle the main alerts behavior.</div></div>
 <div class="ttc" id="aassert_8h_html"><div class="ttname"><a href="assert_8h.html">assert.h</a></div><div class="ttdoc">Define assertions helpers.</div></div>
 <div class="ttc" id="aclasslampda_1_1logic_1_1alerts_1_1AlertManager__t_html_ada19e3ad7735e286c3157e8d5b8652c4"><div class="ttname"><a href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html#ada19e3ad7735e286c3157e8d5b8652c4">lampda::logic::alerts::AlertManager_t::raise</a></div><div class="ttdeci">void raise(const Type type)</div><div class="ttdoc">Raise an alert.</div><div class="ttdef"><b>Definition:</b> alerts.cpp:879</div></div>
@@ -1135,11 +1138,11 @@ $(function() {
 <div class="ttc" id="anamespacelampda_1_1modes_1_1hardware_html_a4a59d53a8125e83721ba8b38597a3819a3e9616f66ee9536fe327116244382f86"><div class="ttname"><a href="namespacelampda_1_1modes_1_1hardware.html#a4a59d53a8125e83721ba8b38597a3819a3e9616f66ee9536fe327116244382f86">lampda::modes::hardware::LampTypes::indexable</a></div><div class="ttdeci">@ indexable</div><div class="ttdoc">Equivalent to LMBD_LAMP_TYPE__INDEXABLE.</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_1_1store_html_a92e0ab19cd264d1036edc24ada1eda44"><div class="ttname"><a href="namespacelampda_1_1modes_1_1store.html#a92e0ab19cd264d1036edc24ada1eda44">lampda::modes::store::clear_stored</a></div><div class="ttdeci">static void clear_stored()</div><div class="ttdoc">Force clear the stored parameters.</div><div class="ttdef"><b>Definition:</b> keystore.hpp:74</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_html"><div class="ttname"><a href="namespacelampda_1_1modes.html">lampda::modes</a></div><div class="ttdoc">Contains basic interface types to implement custom user modes.</div><div class="ttdef"><b>Definition:</b> control_fixed_modes.hpp:12</div></div>
-<div class="ttc" id="anamespacelampda_1_1modes_html_a224b8832ea3d3dda8f01f766daafe89f"><div class="ttname"><a href="namespacelampda_1_1modes.html#a224b8832ea3d3dda8f01f766daafe89f">lampda::modes::ManagerFoHiddenConfig</a></div><div class="ttdeci">ModeManagerTy&lt; ManagerConfig, std::tuple&lt; Groups... &gt;, hiddenGroupCnt &gt; ManagerFoHiddenConfig</div><div class="ttdoc">Same as modes::ManagerFor but with custom defaults, and additional hidden groups.</div><div class="ttdef"><b>Definition:</b> manager_type.hpp:1178</div></div>
-<div class="ttc" id="anamespacelampda_1_1modes_html_a5b23c77d3d281b99db42b5e55df6dd62"><div class="ttname"><a href="namespacelampda_1_1modes.html#a5b23c77d3d281b99db42b5e55df6dd62">lampda::modes::ManagerForHiddenGroups</a></div><div class="ttdeci">ModeManagerTy&lt; DefaultManagerConfig, std::tuple&lt; Groups... &gt;, hiddenGroupCnt &gt; ManagerForHiddenGroups</div><div class="ttdoc">Group together several mode groups defined through modes::GroupFor. Will use the last hiddenGroupCnt ...</div><div class="ttdef"><b>Definition:</b> manager_type.hpp:1171</div></div>
-<div class="ttc" id="anamespacelampda_1_1modes_html_a6e6505e53bef96a328e82896560a826b"><div class="ttname"><a href="namespacelampda_1_1modes.html#a6e6505e53bef96a328e82896560a826b">lampda::modes::ManagerForConfig</a></div><div class="ttdeci">ModeManagerTy&lt; ManagerConfig, std::tuple&lt; Groups... &gt;, 0 &gt; ManagerForConfig</div><div class="ttdoc">Same as modes::ManagerFor but with custom defaults.</div><div class="ttdef"><b>Definition:</b> manager_type.hpp:1149</div></div>
+<div class="ttc" id="anamespacelampda_1_1modes_html_a224b8832ea3d3dda8f01f766daafe89f"><div class="ttname"><a href="namespacelampda_1_1modes.html#a224b8832ea3d3dda8f01f766daafe89f">lampda::modes::ManagerFoHiddenConfig</a></div><div class="ttdeci">ModeManagerTy&lt; ManagerConfig, std::tuple&lt; Groups... &gt;, hiddenGroupCnt &gt; ManagerFoHiddenConfig</div><div class="ttdoc">Same as modes::ManagerFor but with custom defaults, and additional hidden groups.</div><div class="ttdef"><b>Definition:</b> manager_type.hpp:1181</div></div>
+<div class="ttc" id="anamespacelampda_1_1modes_html_a5b23c77d3d281b99db42b5e55df6dd62"><div class="ttname"><a href="namespacelampda_1_1modes.html#a5b23c77d3d281b99db42b5e55df6dd62">lampda::modes::ManagerForHiddenGroups</a></div><div class="ttdeci">ModeManagerTy&lt; DefaultManagerConfig, std::tuple&lt; Groups... &gt;, hiddenGroupCnt &gt; ManagerForHiddenGroups</div><div class="ttdoc">Group together several mode groups defined through modes::GroupFor. Will use the last hiddenGroupCnt ...</div><div class="ttdef"><b>Definition:</b> manager_type.hpp:1174</div></div>
+<div class="ttc" id="anamespacelampda_1_1modes_html_a6e6505e53bef96a328e82896560a826b"><div class="ttname"><a href="namespacelampda_1_1modes.html#a6e6505e53bef96a328e82896560a826b">lampda::modes::ManagerForConfig</a></div><div class="ttdeci">ModeManagerTy&lt; ManagerConfig, std::tuple&lt; Groups... &gt;, 0 &gt; ManagerForConfig</div><div class="ttdoc">Same as modes::ManagerFor but with custom defaults.</div><div class="ttdef"><b>Definition:</b> manager_type.hpp:1152</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_html_a8e277f0206f22ab9eda52580929bdb17a30df249f3c4cbced2ae40d969fd9019a"><div class="ttname"><a href="namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17a30df249f3c4cbced2ae40d969fd9019a">lampda::modes::ConfigKeys::rampSaturates</a></div><div class="ttdeci">@ rampSaturates</div><div class="ttdoc">(bool) Mode saturates on custom ramp, or else wrap?</div></div>
-<div class="ttc" id="anamespacelampda_1_1modes_html_ab032f9c9a9c0c0215869eea98ae31948"><div class="ttname"><a href="namespacelampda_1_1modes.html#ab032f9c9a9c0c0215869eea98ae31948">lampda::modes::ManagerFor</a></div><div class="ttdeci">ModeManagerTy&lt; DefaultManagerConfig, std::tuple&lt; Groups... &gt;, 0 &gt; ManagerFor</div><div class="ttdoc">Group together several mode groups defined through modes::GroupFor.</div><div class="ttdef"><b>Definition:</b> manager_type.hpp:1159</div></div>
+<div class="ttc" id="anamespacelampda_1_1modes_html_ab032f9c9a9c0c0215869eea98ae31948"><div class="ttname"><a href="namespacelampda_1_1modes.html#ab032f9c9a9c0c0215869eea98ae31948">lampda::modes::ManagerFor</a></div><div class="ttdeci">ModeManagerTy&lt; DefaultManagerConfig, std::tuple&lt; Groups... &gt;, 0 &gt; ManagerFor</div><div class="ttdoc">Group together several mode groups defined through modes::GroupFor.</div><div class="ttdef"><b>Definition:</b> manager_type.hpp:1162</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_html_ab874c161b8d6abdb230f01b569c3238f"><div class="ttname"><a href="namespacelampda_1_1modes.html#ab874c161b8d6abdb230f01b569c3238f">lampda::modes::context_as</a></div><div class="ttdeci">static auto context_as(auto &amp;ctx)</div><div class="ttdoc">Bind provided context to another modes::BasicMode.</div><div class="ttdef"><b>Definition:</b> context_type.hpp:25</div></div>
 <div class="ttc" id="anamespacelampda_1_1user_html_a2bed2303bf048e21a21fa2e6a8ebb8fc"><div class="ttname"><a href="namespacelampda_1_1user.html#a2bed2303bf048e21a21fa2e6a8ebb8fc">lampda::user::brightness_update</a></div><div class="ttdeci">void brightness_update(const brightness_t brightness)</div><div class="ttdoc">Called when the system changes the LED strip brightness.</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:58</div></div>
 <div class="ttc" id="anamespacelampda_1_1user_html_a42710cdf95b63e4a0d644c0e976b715a"><div class="ttname"><a href="namespacelampda_1_1user.html#a42710cdf95b63e4a0d644c0e976b715a">lampda::user::user_thread</a></div><div class="ttdeci">void user_thread()</div><div class="ttdoc">Called at each tick of the secondary thread.</div><div class="ttdef"><b>Definition:</b> default_behavior.hpp:161</div></div>
