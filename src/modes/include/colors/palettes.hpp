@@ -501,15 +501,9 @@ template<uint32_t startColor, uint32_t endColor> static constexpr PaletteTy Pale
  * \return The desired color
  */
 template<bool PaletteLoops = true, typename UIntTy = uint8_t>
-static constexpr uint32_t from_palette(
-        const UIntTy index,
-        const PaletteTy& palette,
-        const uint8_t brightness = 255)
+static constexpr uint32_t from_palette(const UIntTy index, const PaletteTy& palette, const uint8_t brightness = 255)
 {
-  static_assert(
-          std::is_same_v<UIntTy, uint8_t> ||
-                  std::is_same_v<UIntTy, uint16_t>,
-          "u8 or u16 allowed only");
+  static_assert(std::is_same_v<UIntTy, uint8_t> || std::is_same_v<UIntTy, uint16_t>, "u8 or u16 allowed only");
 
   uint8_t paletteIndex;
   uint16_t nextBlendWeight;
@@ -537,67 +531,53 @@ static constexpr uint32_t from_palette(
   const uint32_t currentColor = palette[paletteIndex];
 
   // values of the color
-  uint8_t red =
-          static_cast<uint8_t>((currentColor >> 16) & 0xFFu);
+  uint8_t red = static_cast<uint8_t>((currentColor >> 16) & 0xFFu);
 
-  uint8_t green =
-          static_cast<uint8_t>((currentColor >> 8) & 0xFFu);
+  uint8_t green = static_cast<uint8_t>((currentColor >> 8) & 0xFFu);
 
-  uint8_t blue =
-          static_cast<uint8_t>(currentColor & 0xFFu);
+  uint8_t blue = static_cast<uint8_t>(currentColor & 0xFFu);
 
-  if (nextWeight != 0)
+  if (nextBlendWeight != 0)
   {
-    // second color to use 
+    // second color to use
     const uint32_t nextColor =
-            paletteIndex == 15
-            ? (PaletteLoops ? palette[0] : palette[15])
-            : palette[paletteIndex + 1];
+            paletteIndex == 15 ? (PaletteLoops ? palette[0] : palette[15]) : palette[paletteIndex + 1];
 
     // values of the color
-    const uint8_t nextRed =
-            static_cast<uint8_t>((nextColor >> 16) & 0xFFu);
+    const uint8_t nextRed = static_cast<uint8_t>((nextColor >> 16) & 0xFFu);
 
-    const uint8_t nextGreen =
-            static_cast<uint8_t>((nextColor >> 8) & 0xFFu);
+    const uint8_t nextGreen = static_cast<uint8_t>((nextColor >> 8) & 0xFFu);
 
-    const uint8_t nextBlue =
-            static_cast<uint8_t>(nextColor & 0xFFu);
+    const uint8_t nextBlue = static_cast<uint8_t>(nextColor & 0xFFu);
 
     if constexpr (std::is_same_v<UIntTy, uint8_t>)
     {
       // blend those two colors
       red = static_cast<uint8_t>(
-              (static_cast<uint16_t>(red) * currentBlendWeight +
-               static_cast<uint16_t>(nextRed) * nextBlendWeight) >>
+              (static_cast<uint16_t>(red) * currentBlendWeight + static_cast<uint16_t>(nextRed) * nextBlendWeight) >>
               4);
 
-      green = static_cast<uint8_t>(
-              (static_cast<uint16_t>(green) * currentBlendWeight +
-               static_cast<uint16_t>(nextGreen) * nextBlendWeight) >>
-              4);
+      green = static_cast<uint8_t>((static_cast<uint16_t>(green) * currentBlendWeight +
+                                    static_cast<uint16_t>(nextGreen) * nextBlendWeight) >>
+                                   4);
 
       blue = static_cast<uint8_t>(
-              (static_cast<uint16_t>(blue) * currentBlendWeight +
-               static_cast<uint16_t>(nextBlue) * nextBlendWeight) >>
+              (static_cast<uint16_t>(blue) * currentBlendWeight + static_cast<uint16_t>(nextBlue) * nextBlendWeight) >>
               4);
     }
     else
     {
       // blend those two colors
       red = static_cast<uint8_t>(
-              (static_cast<uint32_t>(red) * currentBlendWeight +
-               static_cast<uint32_t>(nextRed) * nextBlendWeight) >>
+              (static_cast<uint32_t>(red) * currentBlendWeight + static_cast<uint32_t>(nextRed) * nextBlendWeight) >>
               12);
 
-      green = static_cast<uint8_t>(
-              (static_cast<uint32_t>(green) * currentBlendWeight +
-               static_cast<uint32_t>(nextGreen) * nextBlendWeight) >>
-              12);
+      green = static_cast<uint8_t>((static_cast<uint32_t>(green) * currentBlendWeight +
+                                    static_cast<uint32_t>(nextGreen) * nextBlendWeight) >>
+                                   12);
 
       blue = static_cast<uint8_t>(
-              (static_cast<uint32_t>(blue) * currentBlendWeight +
-               static_cast<uint32_t>(nextBlue) * nextBlendWeight) >>
+              (static_cast<uint32_t>(blue) * currentBlendWeight + static_cast<uint32_t>(nextBlue) * nextBlendWeight) >>
               12);
     }
   }
@@ -622,23 +602,15 @@ static constexpr uint32_t from_palette(
     }
     else
     {
-      const uint16_t brightnessScale =
-              static_cast<uint16_t>(brightness) + 1u;
+      const uint16_t brightnessScale = static_cast<uint16_t>(brightness) + 1u;
 
-      const auto applyBrightness =
-              [brightnessScale](
-                      const uint8_t component) constexpr -> uint8_t
-      {
+      const auto applyBrightness = [brightnessScale](const uint8_t component) constexpr -> uint8_t {
         if (component == 0)
         {
           return 0;
         }
 
-        return static_cast<uint8_t>(
-                ((static_cast<uint16_t>(component) *
-                  brightnessScale) >>
-                 8) +
-                1u);
+        return static_cast<uint8_t>(((static_cast<uint16_t>(component) * brightnessScale) >> 8) + 1u);
       };
 
       red = applyBrightness(red);
@@ -647,10 +619,7 @@ static constexpr uint32_t from_palette(
     }
   }
 
-  return
-          (static_cast<uint32_t>(red) << 16) |
-          (static_cast<uint32_t>(green) << 8) |
-          static_cast<uint32_t>(blue);
+  return (static_cast<uint32_t>(red) << 16) | (static_cast<uint32_t>(green) << 8) | static_cast<uint32_t>(blue);
 }
 
 } // namespace lampda::modes::colors
