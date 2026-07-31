@@ -268,7 +268,7 @@ struct Alert_BatteryCritical : public AlertBase
 
 // TODO issue #132 remove when the mock components will be running
 #ifndef LMBD_SIMULATION
-    if (not::lampda::power::balancer::get_status().is_valid())
+    if (not ::lampda::power::balancer::get_status().is_valid())
       return false;
 #endif
 
@@ -322,7 +322,7 @@ struct Alert_BatteryLow : public AlertBase
 
 // TODO issue #132 remove when the mock components will be running
 #ifndef LMBD_SIMULATION
-    if (not::lampda::power::balancer::get_status().is_valid())
+    if (not ::lampda::power::balancer::get_status().is_valid())
       return false;
 #endif
 

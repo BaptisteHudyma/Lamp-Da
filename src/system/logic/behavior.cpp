@@ -662,7 +662,7 @@ void handle_output_light_state()
   static bool waitingForPowerGate_messageDisplayed = true;
 
   // wait for power gates (and display message when ready)
-  if (not::lampda::power::powergates::is_power_gate_enabled() or not logic::power::is_output_mode_ready())
+  if (not ::lampda::power::powergates::is_power_gate_enabled() or not logic::power::is_output_mode_ready())
   {
     if (waitingForPowerGate_messageDisplayed)
     {

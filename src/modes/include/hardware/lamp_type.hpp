@@ -31,9 +31,10 @@
 #include "src/system/ext/math8.h"
 
 #include "src/modes/include/compile.hpp"
-#include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/hardware/coordinates.hpp"
 
+#include "src/modes/include/colors/utils.hpp"
+#include "src/modes/include/colors/palettes.hpp"
 namespace lampda::modes {
 
 struct XYTy
@@ -816,7 +817,7 @@ public:
       for (uint16_t I = start; I < end; ++I)
       {
         const uint8_t blendValue = min<uint32_t>(shouldDisplay[I], UINT8_MAX);
-        setPixelColor(I, colors::blend(0, color, blendValue));
+        setPixelColor(I, colors::blend<uint8_t>(0, color, blendValue));
       }
     }
     else

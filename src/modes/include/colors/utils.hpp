@@ -76,37 +76,35 @@ static constexpr LMBD_INLINE uint32_t fromAngleHue(uint16_t angleDegrees)
   return fromRGB(r, g, b);
 }
 
-} // namespace lampda::modes::colors
-
-#include "src/modes/include/colors/palettes.hpp"
-
-namespace lampda::modes::colors {
-
 /**
  * \brief blend to two colors
  *
  * @param[in] leftColor    : the first color to use
  * @param[in] rightColor   : the second color to use
- * @param[in] blend        : the amount of the first color use in the blend
- * @param[in] b16 optional : use b16 for a more
+ * @param[in] blendIndex        : the amount of the first color use in the blend
  *
  * @return the new color computed
  */
-static uint32_t blend(uint32_t leftColor, uint32_t rightColor, uint16_t blend, bool b16 = false)
+template<typename UIntTy = uint8_t>
+static constexpr uint32_t blend(uint32_t leftColor, uint32_t rightColor, UIntTy blendIndex)
 {
-  if (blend == 0)
-    return leftColor;
-  uint16_t blendmax = b16 ? 0xFFFF : 0xFF;
-  if (blend >= blendmax)
-    return rightColor;
-  uint8_t shift = b16 ? 16 : 8;
+  static_assert(std::is_same_v<UIntTy, uint8_t> || std::is_same_v<UIntTy, uint16_t>, "u8 or u16 allowed only");
+  constexpr UIntTy blendmax = (std::is_same_v<UIntTy, uint16_t> ? UINT16_MAX : UINT8_MAX);
 
   ToRGB left_rgb(leftColor);
   ToRGB right_rgb(rightColor);
-
-  return fromRGB(((right_rgb.r * blend) + (left_rgb.r * (blendmax - blend))) >> shift,
-                 ((right_rgb.g * blend) + (left_rgb.g * (blendmax - blend))) >> shift,
-                 ((right_rgb.b * blend) + (left_rgb.b * (blendmax - blend))) >> shift);
+  // left + (right - left) * (blendIndex / maxBlend)
+  // Optimized to
+  // (left * (maxBlend - blendIndex) + right * blendIndex) / maxBlend
+  return fromRGB((static_cast<uint32_t>(left_rgb.r) * (blendmax - blendIndex) +
+                  static_cast<uint32_t>(right_rgb.r) * blendIndex) /
+                         blendmax,
+                 (static_cast<uint32_t>(left_rgb.g) * (blendmax - blendIndex) +
+                  static_cast<uint32_t>(right_rgb.g) * blendIndex) /
+                         blendmax,
+                 (static_cast<uint32_t>(left_rgb.b) * (blendmax - blendIndex) +
+                  static_cast<uint32_t>(right_rgb.b) * blendIndex) /
+                         blendmax);
 }
 
 /**
