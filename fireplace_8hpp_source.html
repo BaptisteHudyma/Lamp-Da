@@ -101,7 +101,7 @@ $(function() {
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structlampda_1_1modes_1_1default__modes_1_1FireMode.html#aa8f124763c055b5c13538932eb00f5e9">   32</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_variable" href="structlampda_1_1modes_1_1default__modes_1_1FireMode.html#aa8f124763c055b5c13538932eb00f5e9">palette</a> = <a class="code hl_variable" href="namespacelampda_1_1modes_1_1colors.html#a2a26dfee11ad9c585b3a84b487cb55ba">colors::PaletteHeatColors</a>;</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  <span class="comment">// this is too heavy to run at full, speed, display every other pixels instead of refreshing amm</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  <span class="comment">// this is too heavy to run at full, speed, display every other pixels instead of refreshing all</span></div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> uint32_t everyNIndex = 2;</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structlampda_1_1modes_1_1default__modes_1_1FireMode_1_1StateTy.html">   37</a></span>  <span class="keyword">struct </span><a class="code hl_struct" href="structlampda_1_1modes_1_1default__modes_1_1FireMode_1_1StateTy.html">StateTy</a></div>
@@ -127,7 +127,7 @@ $(function() {
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>      ctx.state.isResetted = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>      <span class="comment">// load animation</span></div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>      <span class="keywordflow">for</span> (uint32_t i = 0; i &lt;= everyNIndex; ++i)</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>      <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; everyNIndex; ++i)</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>      {</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        fire_display(ctx, i);</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>      }</div>
