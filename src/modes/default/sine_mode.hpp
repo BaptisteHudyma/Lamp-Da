@@ -50,8 +50,6 @@ struct SineMode : public modes::BasicMode
 
     for (size_t I = 0; I < ctx.lamp.ledCount; I++)
     {
-      platform::lampda_print("%d [%d]", I, ctx.lamp.ledCount);
-
       // For each of the LED's in the strip, set a brightness based on a wave as follows:
       // cubicwave8 is 8 bits, so value will be truncated
       const size_t value = (I * freq) + ctx.state.step;
