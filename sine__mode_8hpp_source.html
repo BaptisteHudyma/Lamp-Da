@@ -118,27 +118,31 @@ $(function() {
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    ctx.state.step += (<a class="code hl_variable" href="structlampda_1_1modes_1_1default__modes_1_1SineMode.html#a54e2db81dc2d6af340c9c018e4cae398">speed</a> * speedMultiplier) / 16; <span class="comment">// Speed of animation.</span></div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> colorIndexNormalised = colorIndex / 255.0f;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ctx.lamp.ledCount; i++)</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> I = 0; I &lt; ctx.lamp.ledCount; I++)</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    {</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>      <span class="comment">// For each of the LED&#39;s in the strip, set a brightness based on a wave as follows:</span></div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>      <span class="comment">// cubicwave8 is 8 bits, so value will be truncated</span></div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>      <span class="keyword">const</span> uint8_t pixBri = cubicwave8((i * freq) + ctx.state.step);</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>      <span class="comment">// get the pixel color from palette</span></div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>      <span class="keyword">const</span> <span class="keyword">auto</span> pixColor = <a class="code hl_function" href="namespacelampda_1_1modes_1_1colors.html#a2cbd44d3e6f962ecac615bdfdf1ed924">colors::from_palette</a>((uint8_t)(i * colorIndexNormalised), ctx.state.palette);</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>      <span class="comment">// blend the pixel color with the black color</span></div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>      ctx.lamp.setPixelColor(i, modes::colors::fade&lt;false&gt;(pixColor, pixBri));</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    }</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>  }</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>};</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>} <span class="comment">// namespace lampda::modes::default_modes</span></div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>      <a class="code hl_function" href="namespacelampda_1_1platform.html#a5f6bba8037b206187803f77e1717c367">platform::lampda_print</a>(<span class="stringliteral">&quot;%d [%d]&quot;</span>, I, ctx.lamp.ledCount);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>      <span class="comment">// For each of the LED&#39;s in the strip, set a brightness based on a wave as follows:</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>      <span class="comment">// cubicwave8 is 8 bits, so value will be truncated</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>      <span class="keyword">const</span> <span class="keywordtype">size_t</span> value = (I * freq) + ctx.state.step;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>      <span class="comment">// DO NOT REMOVE THE STATIC_CAST HERE ! IT BREAKS THE LOOP INDEX FOR SOME REASON</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>      <span class="keyword">const</span> uint8_t pixBri = cubicwave8(<span class="keyword">static_cast&lt;</span>uint8_t<span class="keyword">&gt;</span>(value));</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>      <span class="comment">// get the pixel color from palette</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>      <span class="keyword">const</span> <span class="keyword">auto</span> pixColor = colors::from_palette&lt;true, uint8_t&gt;(I * colorIndexNormalised, ctx.state.palette);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>      <span class="comment">// blend the pixel color with the black color</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>      ctx.lamp.setPixelColor(I, modes::colors::fade&lt;false&gt;(pixColor, pixBri));</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>} <span class="comment">// namespace lampda::modes::default_modes</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="acolors_2utils_8hpp_html"><div class="ttname"><a href="colors_2utils_8hpp.html">utils.hpp</a></div><div class="ttdoc">Manipulate color representations.</div></div>
-<div class="ttc" id="anamespacelampda_1_1modes_1_1colors_html_a2cbd44d3e6f962ecac615bdfdf1ed924"><div class="ttname"><a href="namespacelampda_1_1modes_1_1colors.html#a2cbd44d3e6f962ecac615bdfdf1ed924">lampda::modes::colors::from_palette</a></div><div class="ttdeci">static constexpr uint32_t from_palette(const UIntTy index, const PaletteTy &amp;palette, const uint8_t brightness=255)</div><div class="ttdoc">Return a color from a palette.</div><div class="ttdef"><b>Definition:</b> palettes.hpp:504</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_1_1colors_html_ab0b738b7bd4c80ccb2a8f444bba12dd4"><div class="ttname"><a href="namespacelampda_1_1modes_1_1colors.html#ab0b738b7bd4c80ccb2a8f444bba12dd4">lampda::modes::colors::PaletteTy</a></div><div class="ttdeci">std::array&lt; uint32_t, 16 &gt; PaletteTy</div><div class="ttdoc">Palette types.</div><div class="ttdef"><b>Definition:</b> palettes.hpp:18</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_1_1colors_html_aefc6b3319eab96fb36308e57cd3abe89"><div class="ttname"><a href="namespacelampda_1_1modes_1_1colors.html#aefc6b3319eab96fb36308e57cd3abe89">lampda::modes::colors::PaletteRainbowColors</a></div><div class="ttdeci">static constexpr PaletteTy PaletteRainbowColors</div><div class="ttdoc">HSV Rainbow.</div><div class="ttdef"><b>Definition:</b> palettes.hpp:360</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_1_1default__modes_html"><div class="ttname"><a href="namespacelampda_1_1modes_1_1default__modes.html">lampda::modes::default_modes</a></div><div class="ttdoc">Basic &quot;default&quot; modes included with the hardware.</div><div class="ttdef"><b>Definition:</b> aurora.hpp:12</div></div>
+<div class="ttc" id="anamespacelampda_1_1platform_html_a5f6bba8037b206187803f77e1717c367"><div class="ttname"><a href="namespacelampda_1_1platform.html#a5f6bba8037b206187803f77e1717c367">lampda::platform::lampda_print</a></div><div class="ttdeci">void lampda_print(const char *format,...)</div><div class="ttdef"><b>Definition:</b> print.cpp:43</div></div>
 <div class="ttc" id="apalettes_8hpp_html"><div class="ttname"><a href="palettes_8hpp.html">palettes.hpp</a></div><div class="ttdoc">Define some useful color palettes, and tools to use them.</div></div>
 <div class="ttc" id="astructlampda_1_1modes_1_1BasicMode_html"><div class="ttname"><a href="structlampda_1_1modes_1_1BasicMode.html">lampda::modes::BasicMode</a></div><div class="ttdoc">Parent object for all custom user modes.</div><div class="ttdef"><b>Definition:</b> mode_type.hpp:53</div></div>
 <div class="ttc" id="astructlampda_1_1modes_1_1default__modes_1_1SineMode_1_1StateTy_html"><div class="ttname"><a href="structlampda_1_1modes_1_1default__modes_1_1SineMode_1_1StateTy.html">lampda::modes::default_modes::SineMode::StateTy</a></div><div class="ttdef"><b>Definition:</b> sine_mode.hpp:24</div></div>
