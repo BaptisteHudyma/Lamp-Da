@@ -48,16 +48,20 @@ struct SineMode : public modes::BasicMode
     ctx.state.step += (speed * speedMultiplier) / 16; // Speed of animation.
     const float colorIndexNormalised = colorIndex / 255.0f;
 
-    for (size_t i = 0; i < ctx.lamp.ledCount; i++)
+    for (size_t I = 0; I < ctx.lamp.ledCount; I++)
     {
+      platform::lampda_print("%d [%d]", I, ctx.lamp.ledCount);
+
       // For each of the LED's in the strip, set a brightness based on a wave as follows:
       // cubicwave8 is 8 bits, so value will be truncated
-      const uint8_t pixBri = cubicwave8((i * freq) + ctx.state.step);
+      const size_t value = (I * freq) + ctx.state.step;
+      // DO NOT REMOVE THE STATIC_CAST HERE ! IT BREAKS THE LOOP INDEX FOR SOME REASON
+      const uint8_t pixBri = cubicwave8(static_cast<uint8_t>(value));
 
       // get the pixel color from palette
-      const auto pixColor = colors::from_palette((uint8_t)(i * colorIndexNormalised), ctx.state.palette);
+      const auto pixColor = colors::from_palette<true, uint8_t>(I * colorIndexNormalised, ctx.state.palette);
       // blend the pixel color with the black color
-      ctx.lamp.setPixelColor(i, modes::colors::fade<false>(pixColor, pixBri));
+      ctx.lamp.setPixelColor(I, modes::colors::fade<false>(pixColor, pixBri));
     }
   }
 };
