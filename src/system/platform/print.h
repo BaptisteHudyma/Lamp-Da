@@ -28,7 +28,7 @@ extern void init_prints();
 
 struct Inputs
 {
-  static constexpr size_t maxCommandSize = 15;
+  static constexpr size_t maxCommandSize = 63;
   typedef std::array<char, maxCommandSize> Command;
 
   static constexpr uint8_t maxCommands = 2;

@@ -22,9 +22,14 @@
 
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
+#include "src/system/logic/brightness_handle.h"
 #include "src/system/logic/inputs_bluetooth.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/statistics_handler.h"
+
+#include <cstdlib>
+#include <cerrno>
+#include <climits>
 
 namespace lampda {
 namespace logic {
@@ -32,12 +37,159 @@ namespace cli {
 
 constexpr uint8_t maxReadLinePerLoop = 5;
 constexpr uint8_t maxLineLenght = 200;
+constexpr uint8_t maxArgumentCount = 8;
 
 inline const char* boolToString(bool b) { return b ? "true" : "false"; }
 
-void handleCommand(const platform::Inputs::Command& command)
+inline bool isCommandSeparator(const char character) { return character == ' ' || character == '\t'; }
+
+struct ParsedCommand
 {
-  switch (utils::hash(command.data()))
+  platform::Inputs::Command buffer {};
+
+  uint8_t commandOffset = 0;
+  std::array<uint8_t, maxArgumentCount> argumentOffsets {};
+  uint8_t argumentCount = 0;
+
+  const char* name() const { return buffer.data() + commandOffset; }
+
+  const char* argument(const size_t index) const
+  {
+    if (index >= argumentCount)
+      return nullptr;
+
+    return buffer.data() + argumentOffsets[index];
+  }
+};
+
+/// Tools to parse text arguments
+namespace argument {
+
+/// Generic parse function for unsigned integers
+bool parse_uint(const ParsedCommand& command, const size_t index, unsigned long& value)
+{
+  const char* text = command.argument(index);
+
+  if (text == nullptr)
+    return false;
+
+  char* end = nullptr;
+  errno = 0;
+
+  const unsigned long tmp_value = std::strtoul(text, &end, 0);
+
+  if (errno != 0 || end == text || *end != '\0')
+  {
+    return false;
+  }
+  value = tmp_value;
+  return true;
+}
+
+/// Parse an argument as a 8 bit unsigned number
+bool parse_uint8(const ParsedCommand& command, const size_t index, uint8_t& value)
+{
+  unsigned long argument;
+  const bool isValid = parse_uint(command, index, argument);
+  if (!isValid)
+    return false;
+  if (argument > UINT8_MAX)
+    return false;
+
+  value = static_cast<uint8_t>(argument);
+  return true;
+}
+
+/// Parse an argument as a 16 bit unsigned number
+bool parse_uint16(const ParsedCommand& command, const size_t index, uint16_t& value)
+{
+  unsigned long argument;
+  const bool isValid = parse_uint(command, index, argument);
+  if (!isValid)
+    return false;
+  if (argument > UINT16_MAX)
+    return false;
+
+  value = argument;
+  return true;
+}
+
+} // namespace argument
+
+ParsedCommand parseCommand(const platform::Inputs::Command& input)
+{
+  ParsedCommand result;
+  // copy str
+  result.buffer = input;
+
+  size_t position = 0;
+
+  // skip all first blank char define in isCommandSeparator
+  while (position < result.buffer.size() && isCommandSeparator(result.buffer[position]))
+  {
+    ++position;
+  }
+
+  result.commandOffset = static_cast<uint8_t>(position);
+
+  // looking for the end of the command
+  while (position < result.buffer.size() && result.buffer[position] != '\0' &&
+         !isCommandSeparator(result.buffer[position]))
+  {
+    ++position;
+  }
+
+  // put a \0 at the end (useful for the hash command and some print)
+  if (position < result.buffer.size() && result.buffer[position] != '\0')
+  {
+    result.buffer[position] = '\0';
+    ++position;
+  }
+
+  // now, parse every argument
+  while (position < result.buffer.size() && result.argumentCount < maxArgumentCount)
+  {
+    // while it's a blank char
+    while (position < result.buffer.size() && isCommandSeparator(result.buffer[position]))
+    {
+      ++position;
+    }
+
+    // terminated condition of the while (end of the string)
+    if (position >= result.buffer.size() || result.buffer[position] == '\0')
+    {
+      break;
+    }
+
+    // save the offset
+    result.argumentOffsets[result.argumentCount++] = static_cast<uint8_t>(position);
+
+    // looking for the end of the argument
+    while (position < result.buffer.size() && result.buffer[position] != '\0' &&
+           !isCommandSeparator(result.buffer[position]))
+    {
+      ++position;
+    }
+
+    // put a \0 at the end
+    if (position < result.buffer.size() && result.buffer[position] != '\0')
+    {
+      result.buffer[position] = '\0';
+      ++position;
+    }
+  }
+
+  return result;
+}
+
+void handleCommand(const platform::Inputs::Command& commandLine)
+{
+  const ParsedCommand command = parseCommand(commandLine);
+
+  if (command.name()[0] == '\0')
+    return;
+
+  switch (utils::hash(command.name()))
   {
     case utils::hash("h"):
     case utils::hash("help"):
@@ -61,7 +213,10 @@ void handleCommand(const platform::Inputs::Command& command)
                 "buttonTogg: change the button pin number for the next boot\n"
                 "shutdown: force shutdown the lamp\n"
                 "tasks: display a debug of task usages\n"
-                "ble: debug bluetooth informations"
+                "ble: debug bluetooth informations\n"
+                "echo <args>{0-8}: display parsed arguments\n"
+                "brightness <[0-1024]>: update the brightness\n"
+                "time: show current time\n"
                 "-----------------");
         break;
       }
@@ -357,7 +512,26 @@ void handleCommand(const platform::Inputs::Command& command)
               logic::inputs_bluetooth::is_bluetooth_used(),
               logic::behavior::internal::get_bluetooth_auto_activation_left());
       break;
+    case utils::hash("echo"):
+      platform::lampda_print("command: %s, argument count: %u", command.name(), command.argumentCount);
 
+      for (uint8_t index = 0; index < command.argumentCount; ++index)
+      {
+        platform::lampda_print("argument %u: '%s'", index, command.argument(index));
+      }
+      break;
+    case utils::hash("brightness"):
+      {
+        brightness_t brightness = 0;
+        if (argument::parse_uint16(command, 0, brightness) && brightness <= logic::brightness::get_max_brightness())
+        {
+          platform::lampda_print("set brightness to %u/%u", brightness, logic::brightness::get_max_brightness());
+          logic::brightness::update_brightness(brightness, false);
+          break;
+        }
+        platform::lampda_print("usage: brightness <0-%u>", logic::brightness::get_max_brightness());
+        break;
+      }
     case utils::hash("time"):
       {
         const auto& time = time::get_real_time();
@@ -377,7 +551,7 @@ void handleCommand(const platform::Inputs::Command& command)
       }
 
     default:
-      platform::lampda_print("unknown command: \'%s\'", command.data());
+      platform::lampda_print("unknown command: \'%s\'", command.name());
       platform::lampda_print("type h for available commands");
       break;
   }
