@@ -62,26 +62,11 @@ struct ParsedCommand
   }
 };
 
-bool parse_uint8_argument(const ParsedCommand& command, const size_t index, uint8_t& value)
-{
-  const char* text = command.argument(index);
+/// Tools to parse text arguments
+namespace argument {
 
-  if (text == nullptr || *text == '\0')
-    return false;
-
-  char* end = nullptr;
-  errno = 0;
-
-  const unsigned long tmp_value = std::strtoul(text, &end, 0);
-
-  if (errno != 0 || end == text || *end != '\0' || tmp_value > UINT8_MAX)
-    return false;
-
-  value = static_cast<uint8_t>(tmp_value);
-  return true;
-}
-
-bool parse_uint16_argument(const ParsedCommand& command, const size_t index, uint16_t& value)
+/// Generic parse function for unsigned integers
+bool parse_uint(const ParsedCommand& command, const size_t index, unsigned long& value)
 {
   const char* text = command.argument(index);
 
@@ -93,14 +78,43 @@ bool parse_uint16_argument(const ParsedCommand& command, const size_t index, uin
 
   const unsigned long tmp_value = std::strtoul(text, &end, 0);
 
-  if (errno != 0 || end == text || *end != '\0' || tmp_value > UINT16_MAX)
+  if (errno != 0 || end == text || *end != '\0')
   {
     return false;
   }
-
   value = tmp_value;
   return true;
 }
+
+/// Parse an argument as a 8 bit unsigned number
+bool parse_uint8(const ParsedCommand& command, const size_t index, uint8_t& value)
+{
+  unsigned long argument;
+  const bool isValid = parse_uint(command, index, argument);
+  if (!isValid)
+    return false;
+  if (argument > UINT8_MAX)
+    return false;
+
+  value = static_cast<uint8_t>(argument);
+  return true;
+}
+
+/// Parse an argument as a 16 bit unsigned number
+bool parse_uint16(const ParsedCommand& command, const size_t index, uint16_t& value)
+{
+  unsigned long argument;
+  const bool isValid = parse_uint(command, index, argument);
+  if (!isValid)
+    return false;
+  if (argument > UINT16_MAX)
+    return false;
+
+  value = argument;
+  return true;
+}
+
+} // namespace argument
 
 ParsedCommand parseCommand(const platform::Inputs::Command& input)
 {
@@ -201,8 +215,8 @@ void handleCommand(const platform::Inputs::Command& commandLine)
                 "tasks: display a debug of task usages\n"
                 "ble: debug bluetooth informations\n"
                 "echo <args>{0-8}: display parsed arguments\n"
-                "brightness <[0-1024]>: update the brightness \n"
-                "time: show current time"
+                "brightness <[0-1024]>: update the brightness\n"
+                "time: show current time\n"
                 "-----------------");
         break;
       }
@@ -509,15 +523,13 @@ void handleCommand(const platform::Inputs::Command& commandLine)
     case utils::hash("brightness"):
       {
         brightness_t brightness = 0;
-
-        if (parse_uint16_argument(command, 0, brightness) &&
-            brightness <= lampda::logic::brightness::get_max_brightness())
+        if (argument::parse_uint16(command, 0, brightness) && brightness <= logic::brightness::get_max_brightness())
         {
-          platform::lampda_print("brightness: %u", brightness);
-          lampda::logic::brightness::update_brightness(brightness, false);
+          platform::lampda_print("set brightness to %u/%u", brightness, logic::brightness::get_max_brightness());
+          logic::brightness::update_brightness(brightness, false);
           break;
         }
-        platform::lampda_print("usage: brightness <0-1024>");
+        platform::lampda_print("usage: brightness <0-%u>", logic::brightness::get_max_brightness());
         break;
       }
     case utils::hash("time"):
