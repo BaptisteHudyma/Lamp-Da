@@ -501,109 +501,84 @@ template<uint32_t startColor, uint32_t endColor> static constexpr PaletteTy Pale
  * \return The desired color
  */
 template<bool PaletteLoops = true, typename UIntTy = uint8_t>
-static constexpr uint32_t from_palette(UIntTy index, const PaletteTy& palette, uint8_t brightness = 255)
+static constexpr uint32_t from_palette(const UIntTy index, const PaletteTy& palette, const uint8_t brightness = 255)
 {
-  // convert to [0; 15] (divide by 16)
-  uint8_t renormIndex = index >> 4;
-  // get least significant part for the blend factor (15 levels + 0)
-  float blendIndex = (index & 0x0F) / 16.0f;
+  static_assert(std::is_same_v<UIntTy, uint8_t> || std::is_same_v<UIntTy, uint16_t>, "u8 or u16 allowed only");
 
-  // support for uint16_t
-  if constexpr (sizeof(UIntTy) > 1)
+  uint8_t paletteIndex;
+  uint16_t nextBlendWeight;
+
+  if constexpr (std::is_same_v<UIntTy, uint8_t>)
   {
-    const float remapedIndex = (index / static_cast<float>(UINT16_MAX)) * 16.f;
-    renormIndex = std::min<uint8_t>(floorf(remapedIndex), 15);
-    blendIndex = remapedIndex - renormIndex;
-    static_assert(std::is_same_v<UIntTy, uint16_t>, "u8 or u16 allowed only");
+    paletteIndex = static_cast<uint8_t>(index >> 4);
+    // remap from 0-15 to 0-255
+    nextBlendWeight = (index & 0x0Fu) * 16;
   }
   else
   {
-    static_assert(std::is_same_v<UIntTy, uint8_t>, "u8 or u16 allowed only");
+    paletteIndex = static_cast<uint8_t>(index >> 12);
+    // remap from 0-4095 to 0-65535
+    nextBlendWeight = (index & 0x0FFFu) * 16;
   }
 
-  if (renormIndex >= 16)
-    return 0;
-
-  // limit blend index
-  if (blendIndex < 0.0f)
-    blendIndex = 0.0f;
-  if (blendIndex > 1.0f)
-    blendIndex = 1.0f;
-  blendIndex = 1.0f - blendIndex;
-
-  const uint32_t entry = palette[renormIndex];
-
-  // convert to rgb
-  uint8_t red1 = (entry & Red) >> 16;
-  uint8_t green1 = (entry & Lime) >> 8;
-  uint8_t blue1 = entry & Blue;
-
-  // need to blend the palette
-  if (blendIndex > 0)
+  if (paletteIndex >= 16)
   {
-    uint32_t nextColor = 0;
-    if (renormIndex == 15)
-    {
-      nextColor = PaletteLoops ? palette[0] : palette[15];
-    }
-    else
-    {
-      nextColor = palette[1 + renormIndex];
-    }
-
-    const float f1 = blendIndex;
-    const float f2 = 1.0 - blendIndex;
-
-    const uint8_t red2 = (nextColor >> 16) & 0x0000ff;
-    red1 = red1 * f1;
-    red1 += red2 * f2;
-
-    const uint8_t green2 = (nextColor >> 8) & 0x0000ff;
-    green1 = green1 * f1;
-    green1 += green2 * f2;
-
-    const uint8_t blue2 = nextColor & 0x0000ff;
-    blue1 = blue1 * f1;
-    blue1 += blue2 * f2;
+    return 0;
   }
 
+  // first color to use
+  const uint32_t currentColor = palette[paletteIndex];
+
+  // values of the color
+  const ToRGB currentColorRGB {currentColor};
+  uint8_t red = currentColorRGB.r;
+  uint8_t green = currentColorRGB.g;
+  uint8_t blue = currentColorRGB.b;
+
+  if (nextBlendWeight != 0)
+  {
+    // second color to use
+    const uint32_t nextColor =
+            paletteIndex == 15 ? (PaletteLoops ? palette[0] : currentColor) : palette[paletteIndex + 1];
+
+    const uint32_t blendedColor = blend<UIntTy>(currentColor, nextColor, nextBlendWeight);
+    const ToRGB blendedColorRGB {blendedColor};
+    red = blendedColorRGB.r;
+    green = blendedColorRGB.g;
+    blue = blendedColorRGB.b;
+  }
+
+  /*
+   * Brightness reduction
+   */
   if (brightness != 255)
   {
-    if (brightness != 0)
+    if (brightness == 0)
     {
-      const float adjustedBrightness = (brightness + 1) / 256.0; // adjust for rounding
-      // Now, since brightness is nonzero, we don't need the full scale8_video
-      // logic; we can just to scale8 and then add one (unless scale8 fixed) to
-      // all nonzero inputs.
-      if (red1)
-      {
-        red1 = red1 * adjustedBrightness;
-        ++red1;
-      }
-      if (green1)
-      {
-        green1 = green1 * adjustedBrightness;
-        ++green1;
-      }
-      if (blue1)
-      {
-        blue1 = blue1 * adjustedBrightness;
-        ++blue1;
-      }
+      red = 0;
+      green = 0;
+      blue = 0;
     }
     else
     {
-      red1 = 0;
-      green1 = 0;
-      blue1 = 0;
+      const uint16_t brightnessScale = static_cast<uint16_t>(brightness) + 1u;
+
+      const auto applyBrightness = [brightnessScale](const uint8_t component) constexpr -> uint8_t {
+        if (component == 0)
+        {
+          return 0;
+        }
+
+        return static_cast<uint8_t>(((static_cast<uint16_t>(component) * brightnessScale) >> 8));
+      };
+
+      red = applyBrightness(red);
+      green = applyBrightness(green);
+      blue = applyBrightness(blue);
     }
   }
 
-  // return color code
-  uint32_t outputColor = red1;
-  outputColor = (outputColor << 8) | green1;
-  outputColor = (outputColor << 8) | blue1;
-  return outputColor;
+  return fromRGB(red, green, blue);
 }
 
 } // namespace lampda::modes::colors
