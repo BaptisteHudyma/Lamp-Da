@@ -75,6 +75,8 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">lampda::logic::cli Namespace Reference</div></div>
@@ -84,14 +86,31 @@ $(function() {
 <p>Handle the serial command line interface.  
 <a href="namespacelampda_1_1logic_1_1cli.html#details">More...</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacelampda_1_1logic_1_1cli_1_1argument"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1cli_1_1argument.html">argument</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1logic_1_1cli_1_1argument"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tools to parse text arguments. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1cli_1_1ParsedCommand.html">ParsedCommand</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a10303291e05b4146b5e036559b4ddb89"><td class="memItemLeft" align="right" valign="top"><a id="a10303291e05b4146b5e036559b4ddb89" name="a10303291e05b4146b5e036559b4ddb89"></a>
 const char *&#160;</td><td class="memItemRight" valign="bottom"><b>boolToString</b> (bool b)</td></tr>
 <tr class="separator:a10303291e05b4146b5e036559b4ddb89"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad77ffff0075a2bd73ccee13b307b0e86"><td class="memItemLeft" align="right" valign="top"><a id="ad77ffff0075a2bd73ccee13b307b0e86" name="ad77ffff0075a2bd73ccee13b307b0e86"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>handleCommand</b> (const platform::Inputs::Command &amp;command)</td></tr>
-<tr class="separator:ad77ffff0075a2bd73ccee13b307b0e86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9230d6f257336b1bf566ceddf1d1026e"><td class="memItemLeft" align="right" valign="top"><a id="a9230d6f257336b1bf566ceddf1d1026e" name="a9230d6f257336b1bf566ceddf1d1026e"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isCommandSeparator</b> (const char character)</td></tr>
+<tr class="separator:a9230d6f257336b1bf566ceddf1d1026e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7c9298ce059eb68b0a5dbf0d61cb4c4"><td class="memItemLeft" align="right" valign="top"><a id="ae7c9298ce059eb68b0a5dbf0d61cb4c4" name="ae7c9298ce059eb68b0a5dbf0d61cb4c4"></a>
+<a class="el" href="structlampda_1_1logic_1_1cli_1_1ParsedCommand.html">ParsedCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><b>parseCommand</b> (const platform::Inputs::Command &amp;input)</td></tr>
+<tr class="separator:ae7c9298ce059eb68b0a5dbf0d61cb4c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19cda0109fbd78e435d2f926cd7d5fe7"><td class="memItemLeft" align="right" valign="top"><a id="a19cda0109fbd78e435d2f926cd7d5fe7" name="a19cda0109fbd78e435d2f926cd7d5fe7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>handleCommand</b> (const platform::Inputs::Command &amp;commandLine)</td></tr>
+<tr class="separator:a19cda0109fbd78e435d2f926cd7d5fe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb6dc722d1073625d75777ddeafae8ea"><td class="memItemLeft" align="right" valign="top"><a id="acb6dc722d1073625d75777ddeafae8ea" name="acb6dc722d1073625d75777ddeafae8ea"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setup</b> ()</td></tr>
 <tr class="memdesc:acb6dc722d1073625d75777ddeafae8ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call once on system start. <br /></td></tr>
@@ -109,6 +128,9 @@ constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxReadL
 <tr class="memitem:ac85cc69d9d1b20ace6219e7076d330a3"><td class="memItemLeft" align="right" valign="top"><a id="ac85cc69d9d1b20ace6219e7076d330a3" name="ac85cc69d9d1b20ace6219e7076d330a3"></a>
 constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxLineLenght</b> = 200</td></tr>
 <tr class="separator:ac85cc69d9d1b20ace6219e7076d330a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bb4cdd42cec5db7afe788792202234f"><td class="memItemLeft" align="right" valign="top"><a id="a4bb4cdd42cec5db7afe788792202234f" name="a4bb4cdd42cec5db7afe788792202234f"></a>
+constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxArgumentCount</b> = 8</td></tr>
+<tr class="separator:a4bb4cdd42cec5db7afe788792202234f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the serial command line interface. </p>
