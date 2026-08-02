@@ -239,8 +239,9 @@ void handle_clear_power_rails()
 }
 
 // keep track of current consumption
-static uint32_t timeSinceOTGNoCurrentUse;
-static uint32_t timeSinceOTGCurrentUse;
+static uint32_t timeSinceOTGNoCurrentUse = 0;
+static uint32_t timeSinceOTGCurrentUse = 0;
+static uint32_t voltageHighRaisedTime = UINT32_MAX;
 
 void handle_charging_mode()
 {
@@ -255,6 +256,8 @@ void handle_charging_mode()
     // disable balancing
     ::lampda::bsp::balancer::enable_balancing(false);
     timeSinceOTGNoCurrentUse = hal::time_ms();
+    voltageHighRaisedTime = UINT32_MAX;
+
     // start otg
     _hasAutoSwitchedToOTG = true;
     __private::powerMachine.set_state(PowerStates::OTG_MODE);
@@ -330,7 +333,6 @@ void handle_otg_mode()
   bool otgNoActivity = false;
   const bool isAutoOTGMode = _hasAutoSwitchedToOTG;
 
-  static uint32_t voltageHighRaisedTime = UINT32_MAX;
   // control vbus rail voltage
   const uint32_t vbusVoltage_mv = get_vbus_rail_voltage();
 
@@ -694,6 +696,7 @@ bool go_to_otg_mode()
       logic::alerts::manager.can_use_usb_port())
   {
     timeSinceOTGNoCurrentUse = hal::time_ms();
+    voltageHighRaisedTime = UINT32_MAX;
     ::lampda::bsp::powerDelivery::allow_otg(true);
     _hasAutoSwitchedToOTG = false;
     __private::switch_state(PowerStates::OTG_MODE);
