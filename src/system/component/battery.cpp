@@ -63,7 +63,7 @@ uint16_t get_raw_battery_voltage_mv()
   {
     // else: not ready yet ? error, return max voltage for now
     // after a set time, return an error, the system should not be used without batteries
-    if (platform::time_ms() > noBatteryAlertRaiseTiming_ms)
+    if (hal::time_ms() > noBatteryAlertRaiseTiming_ms)
     {
       logic::alerts::manager.raise(logic::alerts::Type::BATTERY_MISSING);
     }

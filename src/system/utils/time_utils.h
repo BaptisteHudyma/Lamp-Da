@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "src/system/platform/time.h"
+#include "src/system/hal/time.h"
 
 namespace lampda {
 
@@ -32,7 +32,7 @@ public:
     setPeriod(period);
   };
   void setPeriod(uint32_t period) { mPeriod = period; };
-  uint32_t getTime() const { return platform::time_ms(); };
+  uint32_t getTime() const { return hal::time_ms(); };
   uint32_t getPeriod() const { return mPeriod; };
   uint32_t getElapsed() const { return getTime() - mPrevTrigger; }
   uint32_t getRemaining() const { return mPeriod - getElapsed(); }

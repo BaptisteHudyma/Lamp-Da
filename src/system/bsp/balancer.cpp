@@ -2,9 +2,9 @@
 
 #include "src/system/logic/alerts.h"
 
-#include "src/system/platform/time.h"
-#include "src/system/platform/i2c.h"
-#include "src/system/platform/print.h"
+#include "src/system/hal/time.h"
+#include "src/system/hal/i2c.h"
+#include "src/system/hal/print.h"
 
 #include "src/system/utils/time_utils.h"
 
@@ -26,7 +26,7 @@ static_assert(HARDWARE_VERSION_MAJOR == 1 and batteryCount == 3,
 
 bool Status::is_valid() const
 {
-  if (lastMeasurmentUpdate == 0 or platform::time_ms() - lastMeasurmentUpdate >= 1000)
+  if (lastMeasurmentUpdate == 0 or hal::time_ms() - lastMeasurmentUpdate >= 1000)
   {
     return false;
   }
@@ -231,7 +231,7 @@ Status get_status() { return _status; }
 
 bool init()
 {
-  if (platform::i2c::i2c_check_existence(bq76905::i2cObjectIndex, bq76905::BQ76905::BQ76905addr) != 0)
+  if (hal::i2c::i2c_check_existence(bq76905::i2cObjectIndex, bq76905::BQ76905::BQ76905addr) != 0)
   {
     // error: device not detected
     // charger
@@ -251,7 +251,7 @@ bool init()
 
   // reset registers
   balancerRegisters.reset.send();
-  platform::delay_ms(5);
+  hal::delay_ms(5);
 
   // got to config mode
   balancerRegisters.setCfgUpdate.send();
@@ -330,7 +330,7 @@ void loop()
     }
 
     // update measurments
-    _status.lastMeasurmentUpdate = platform::time_ms();
+    _status.lastMeasurmentUpdate = hal::time_ms();
   }
 
   // if the balancing process is enabled, balance batteries
@@ -361,7 +361,7 @@ void go_to_sleep()
 
   // send 3 times, with delay between each
   balancerRegisters.deepSleep.send();
-  platform::delay_ms(10);
+  hal::delay_ms(10);
   balancerRegisters.deepSleep.send();
 }
 

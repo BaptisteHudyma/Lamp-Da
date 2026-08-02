@@ -170,7 +170,7 @@ protected:
     }
     if (not isDepoped)
     {
-      platform::lampda_print("Error: Could not depop particle");
+      hal::lampda_print("Error: Could not depop particle");
       return false;
     }
     return true;

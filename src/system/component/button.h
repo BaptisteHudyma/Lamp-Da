@@ -7,7 +7,7 @@
 
 #include <cstdint>
 #include <functional>
-#include "src/system/platform/gpio.h"
+#include "src/system/hal/gpio.h"
 
 namespace lampda {
 namespace component {
@@ -63,12 +63,12 @@ extern ButtonStateTy get_button_state();
 /**
  * \brief Return the pin used for the button
  */
-extern platform::gpio::DigitalPin::GPIO get_button_pin();
+extern hal::gpio::DigitalPin::GPIO get_button_pin();
 
 /**
  * \brief Only on system start, set the pin where the button is wired
  */
-extern void set_button_pin(const platform::gpio::DigitalPin::GPIO buttonPin);
+extern void set_button_pin(const hal::gpio::DigitalPin::GPIO buttonPin);
 
 /**
  * \brief get the button pin index in system. USE WITH CAUTION

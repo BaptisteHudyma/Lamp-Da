@@ -1,9 +1,9 @@
 #include "alerts.h"
 
-#include "src/system/platform/time.h"
-#include "src/system/platform/bluetooth.h"
-#include "src/system/platform/registers.h"
-#include "src/system/platform/print.h"
+#include "src/system/hal/time.h"
+#include "src/system/hal/bluetooth.h"
+#include "src/system/hal/registers.h"
+#include "src/system/hal/print.h"
 
 #include "src/system/bsp/balancer.h"
 #include "src/system/bsp/indicator.h"
@@ -38,7 +38,7 @@ uint32_t _startupChargerTime = 0;
 /// Return true if we are ready to display battery alerts
 bool is_battery_alert_ready()
 {
-  const bool isReady = _startupChargerTime == 0 or (platform::time_ms() - _startupChargerTime) > 5000;
+  const bool isReady = _startupChargerTime == 0 or (hal::time_ms() - _startupChargerTime) > 5000;
   if (isReady)
     _startupChargerTime = 0;
   return isReady;
@@ -104,7 +104,7 @@ uint16_t get_battery_level()
     const uint16_t newPercent = component::battery::get_battery_minimum_cell_level();
     if ((lastPercent / 100) != (newPercent / 100))
     {
-      platform::bluetooth::write_battery_level(static_cast<uint8_t>(newPercent / 100));
+      hal::bluetooth::write_battery_level(static_cast<uint8_t>(newPercent / 100));
     }
     lastPercent = newPercent;
   }
@@ -242,7 +242,7 @@ struct Alert_BatteryReadingIncoherent : public AlertBase
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    return raisedTime > 0 and (platform::time_ms() - raisedTime) > 2000;
+    return raisedTime > 0 and (hal::time_ms() - raisedTime) > 2000;
   }
 
   bool should_prevent_lamp_output() const override { return true; }
@@ -336,7 +336,7 @@ struct Alert_BatteryLow : public AlertBase
     const bool isBatteryLow = not chargerState.is_effectivly_charging() and batteryLevel < batteryLow;
     // battery low will be raise, notify bluetooth
     if (isBatteryLow)
-      platform::bluetooth::notify_battery_level(static_cast<uint8_t>(batteryLevel / 100));
+      hal::bluetooth::notify_battery_level(static_cast<uint8_t>(batteryLevel / 100));
     return isBatteryLow;
   }
 
@@ -417,13 +417,13 @@ struct Alert_TempTooHigh : public AlertBase
   bool should_be_raised() const override
   {
     // raised above a threshold
-    return platform::registers::read_CPU_temperature_degreesC() >= maxSystemTemp_c;
+    return hal::registers::read_CPU_temperature_degreesC() >= maxSystemTemp_c;
   }
 
   bool should_be_cleared() const override
   {
     // cleared below a threshold
-    return platform::registers::read_CPU_temperature_degreesC() <= maxSystemTemp_c * 0.75;
+    return hal::registers::read_CPU_temperature_degreesC() <= maxSystemTemp_c * 0.75;
   }
 
   /// Execution will lower the max brightness of the output
@@ -456,7 +456,7 @@ struct Alert_TempCritical : public AlertBase
   bool should_be_raised() const override
   {
     // raised above a threshold
-    return platform::registers::read_CPU_temperature_degreesC() >= criticalSystemTemp_c;
+    return hal::registers::read_CPU_temperature_degreesC() >= criticalSystemTemp_c;
   }
 
   /// Shutdown fast
@@ -496,7 +496,7 @@ struct Alert_BluetoothAdvertisement : public AlertBase
   bool should_be_cleared() const override
   {
     // cleared after two pulsations
-    return raisedTime > 0 and (platform::time_ms() - raisedTime) > (frequency_on_ms * 2 + frequency_off_ms);
+    return raisedTime > 0 and (hal::time_ms() - raisedTime) > (frequency_on_ms * 2 + frequency_off_ms);
   }
 };
 
@@ -548,7 +548,7 @@ struct Alert_FavoriteSet : public AlertBase
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    return raisedTime > 0 and (platform::time_ms() - raisedTime) > 1000;
+    return raisedTime > 0 and (hal::time_ms() - raisedTime) > 1000;
   }
 };
 
@@ -585,10 +585,10 @@ struct Alert_SystemShutdownFailed : public AlertBase
   /// Cleared after a delay
   bool should_be_cleared() const override
   {
-    if (raisedTime > 0 and (platform::time_ms() - raisedTime) > 2000)
+    if (raisedTime > 0 and (hal::time_ms() - raisedTime) > 2000)
     {
       // is this fails, the system is just too broken to be repaired
-      platform::registers::enter_serial_dfu();
+      hal::registers::enter_serial_dfu();
       return true;
     }
     return false;
@@ -672,7 +672,7 @@ struct Alert_SkippedCleanSleep : public AlertBase
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    return (raisedTime > 0 and (platform::time_ms() - raisedTime) > 3000);
+    return (raisedTime > 0 and (hal::time_ms() - raisedTime) > 3000);
   }
 };
 
@@ -687,7 +687,7 @@ struct Alert_UsbPortShort : public AlertBase
   Type get_type() const override { return Type::USB_PORT_SHORT; }
 
   /// auto cleared after a delay
-  bool should_be_cleared() const override { return (raisedTime > 0 and (platform::time_ms() - raisedTime) > 5000); }
+  bool should_be_cleared() const override { return (raisedTime > 0 and (hal::time_ms() - raisedTime) > 5000); }
 
   /// Prevent charge
   bool should_prevent_battery_charge() const override { return true; }
@@ -723,7 +723,7 @@ AlertBase* allAlerts[] = {
 
 void update_alerts()
 {
-  const uint32_t currTime = platform::time_ms();
+  const uint32_t currTime = hal::time_ms();
   for (auto alert: allAlerts)
   {
     if (manager.is_raised(alert->get_type()))
@@ -756,7 +756,7 @@ void update_alerts()
       if (alert->should_be_raised())
       {
         manager.raise(alert->get_type());
-        platform::lampda_print("Raised alert %s", AlertsToText(alert->get_type()));
+        hal::lampda_print("Raised alert %s", AlertsToText(alert->get_type()));
       }
       else if (alert->handle_lowered_state(currTime))
       {
@@ -766,7 +766,7 @@ void update_alerts()
   }
 }
 
-void signal_wake_up_from_charger() { _startupChargerTime = platform::time_ms(); }
+void signal_wake_up_from_charger() { _startupChargerTime = hal::time_ms(); }
 
 void handle_all(const bool shouldIgnoreAlerts)
 {
@@ -859,16 +859,16 @@ void show_all()
 {
   if (manager.is_clear())
   {
-    platform::lampda_print("No alerts raised");
+    hal::lampda_print("No alerts raised");
   }
   else
   {
-    platform::lampda_print("Raised alerts:");
+    hal::lampda_print("Raised alerts:");
     for (auto alert: allAlerts)
     {
       if (manager.is_raised(alert->get_type()))
       {
-        platform::lampda_print("- %s", AlertsToText(alert->get_type()));
+        hal::lampda_print("- %s", AlertsToText(alert->get_type()));
       }
     }
   }
@@ -885,7 +885,7 @@ void AlertManager_t::raise(const Type type)
     {
       if (type == alert->get_type())
       {
-        alert->update_raise_time(platform::time_ms());
+        alert->update_raise_time(hal::time_ms());
         break;
       }
     }
@@ -896,7 +896,7 @@ void AlertManager_t::raise(const Type type)
     statistics::signal_alert_raised(static_cast<uint32_t>(type));
   }
 
-  platform::lampda_print("ALERT raised: %s", AlertsToText(type));
+  hal::lampda_print("ALERT raised: %s", AlertsToText(type));
   _current |= static_cast<uint32_t>(type);
 }
 
@@ -904,7 +904,7 @@ void AlertManager_t::clear(const Type type)
 {
   if (not is_raised(type))
     return;
-  platform::lampda_print("ALERT cleared: %s", AlertsToText(type));
+  hal::lampda_print("ALERT cleared: %s", AlertsToText(type));
   _current ^= static_cast<uint32_t>(type);
 }
 
@@ -918,7 +918,7 @@ uint32_t AlertManager_t::get_time_since_raised(const Type type) const
       if (not is_raised(type) or not alert->_isRaisedHandled)
         return 0;
       // compute raised time
-      return platform::time_ms() - alert->raisedTime;
+      return hal::time_ms() - alert->raisedTime;
     }
   }
   return 0;

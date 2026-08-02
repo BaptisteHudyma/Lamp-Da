@@ -11,11 +11,11 @@
 #include "src/system/component/battery.h"
 #include "src/system/component/charger.h"
 
-#include "src/system/platform/print.h"
-#include "src/system/platform/gpio.h"
-#include "src/system/platform/i2c.h"
-#include "src/system/platform/threads.h"
-#include "src/system/platform/registers.h"
+#include "src/system/hal/print.h"
+#include "src/system/hal/gpio.h"
+#include "src/system/hal/i2c.h"
+#include "src/system/hal/threads.h"
+#include "src/system/hal/registers.h"
 
 #include <cstdint>
 #include <cassert>
@@ -144,14 +144,14 @@ namespace __private {
 // main state machine (start with timeout, go to error on timeout)
 utils::StateMachine<PowerStates> powerMachine(PowerStates::STARTUP, startupFailTimeout_ms, PowerStates::ERROR);
 
-const platform::gpio::DigitalPin dischargeVbus(platform::gpio::DigitalPin::GPIO::Output_DischargeVbus);
-const platform::gpio::DigitalPin vbusDirection(platform::gpio::DigitalPin::GPIO::Output_VbusDirection);
-const platform::gpio::DigitalPin fastRoleSwap(platform::gpio::DigitalPin::GPIO::Output_VbusFastRoleSwap);
+const hal::gpio::DigitalPin dischargeVbus(hal::gpio::DigitalPin::GPIO::Output_DischargeVbus);
+const hal::gpio::DigitalPin vbusDirection(hal::gpio::DigitalPin::GPIO::Output_VbusDirection);
+const hal::gpio::DigitalPin fastRoleSwap(hal::gpio::DigitalPin::GPIO::Output_VbusFastRoleSwap);
 
 // if high, signal an USB fault
-const platform::gpio::DigitalPin usbFault(platform::gpio::DigitalPin::GPIO::Signal_UsbProtectionFault);
+const hal::gpio::DigitalPin usbFault(hal::gpio::DigitalPin::GPIO::Signal_UsbProtectionFault);
 // if high, signal a vbus gate fault
-const platform::gpio::DigitalPin vbusFault(platform::gpio::DigitalPin::GPIO::Signal_VbusGateFault);
+const hal::gpio::DigitalPin vbusFault(hal::gpio::DigitalPin::GPIO::Signal_VbusGateFault);
 } // namespace __private
 
 uint32_t get_vbus_rail_voltage() { return ::lampda::bsp::powerDelivery::get_vbus_voltage(); }
@@ -216,7 +216,7 @@ void handle_clear_power_rails()
 
   // wait at least a little bit
   const auto powerRailVoltage_mv = get_power_rail_voltage();
-  if (platform::time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailMinDelay_ms and
+  if (hal::time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailMinDelay_ms and
       // power rail below min measurment voltage
       (powerRailVoltage_mv <= 3200))
   {
@@ -230,7 +230,7 @@ void handle_clear_power_rails()
     __private::dischargeVbus.set_high(true);
 
     // timeout after which we go to error ?
-    if (platform::time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailFailureDelay_ms)
+    if (hal::time_ms() - __private::powerMachine.get_state_raised_time() >= clearPowerRailFailureDelay_ms)
     {
       set_error_state_message("CLEAR_POWER_RAILS: discharge VBUS failed");
       __private::powerMachine.set_state(PowerStates::ERROR);
@@ -254,7 +254,7 @@ void handle_charging_mode()
   {
     // disable balancing
     ::lampda::bsp::balancer::enable_balancing(false);
-    timeSinceOTGNoCurrentUse = platform::time_ms();
+    timeSinceOTGNoCurrentUse = hal::time_ms();
     // start otg
     _hasAutoSwitchedToOTG = true;
     __private::powerMachine.set_state(PowerStates::OTG_MODE);
@@ -286,7 +286,7 @@ void handle_output_voltage_mode()
 
   bool isVoltageOk = false;
   // if we are in temporary output mode, use temporary limits
-  if (platform::time_ms() < _temporaryOutputTimeOut)
+  if (hal::time_ms() < _temporaryOutputTimeOut)
   {
     set_otg_parameters(_temporaryOutputVoltage_mV, _temporaryOutputCurrent_mA);
     isVoltageOk =
@@ -310,15 +310,15 @@ void handle_output_voltage_mode()
     ::lampda::bsp::powergates::enable_power_gate();
 
     if (not s_isOutputModeReady)
-      platform::lampda_print("voltage ready on output gate");
+      hal::lampda_print("voltage ready on output gate");
     s_isOutputModeReady = true;
   }
   else
   {
     if (s_isOutputModeReady)
-      platform::lampda_print("voltage is not in required range, disabling output. Actual %dmV. Required %dmV",
-                             powerRailVoltage_mv,
-                             _outputVoltage_mV);
+      hal::lampda_print("voltage is not in required range, disabling output. Actual %dmV. Required %dmV",
+                        powerRailVoltage_mv,
+                        _outputVoltage_mV);
     s_isOutputModeReady = false;
 
     ::lampda::bsp::powergates::disable_gates();
@@ -339,41 +339,41 @@ void handle_otg_mode()
   // no current since a timing
   if (state.inputCurrent_mA <= 10)
   {
-    timeSinceOTGCurrentUse = platform::time_ms();
+    timeSinceOTGCurrentUse = hal::time_ms();
 
     if (vbusVoltage_mv > 5500 and voltageHighRaisedTime == UINT32_MAX)
     {
-      platform::lampda_print("OTG mode: Voltage high registered: %dmv", vbusVoltage_mv);
-      voltageHighRaisedTime = platform::time_ms();
+      hal::lampda_print("OTG mode: Voltage high registered: %dmv", vbusVoltage_mv);
+      voltageHighRaisedTime = hal::time_ms();
     }
 
     // if no current use since a timing, stop otg
     const uint32_t otgNonuseTimeout = isAutoOTGMode ? otgNoUseTimeToDisconnect_ms : otgNoUseExtBatTimeToDisconnect_ms;
-    if (platform::time_ms() - timeSinceOTGNoCurrentUse > otgNonuseTimeout)
+    if (hal::time_ms() - timeSinceOTGNoCurrentUse > otgNonuseTimeout)
     {
       otgNoActivity = true;
-      platform::lampda_print("no OTG activity, shutdown");
+      hal::lampda_print("no OTG activity, shutdown");
     }
 
     // voltage negociated but not used
-    if (voltageHighRaisedTime != UINT32_MAX and platform::time_ms() - voltageHighRaisedTime > 1000)
+    if (voltageHighRaisedTime != UINT32_MAX and hal::time_ms() - voltageHighRaisedTime > 1000)
     {
       otgNoActivity = true;
-      platform::lampda_print("no OTG activity and voltage high, shutdown");
+      hal::lampda_print("no OTG activity and voltage high, shutdown");
     }
   }
   else
   {
     // enable auto mode when power has been used for a time
-    if ((not _hasAutoSwitchedToOTG) and platform::time_ms() - timeSinceOTGCurrentUse >= 1000)
+    if ((not _hasAutoSwitchedToOTG) and hal::time_ms() - timeSinceOTGCurrentUse >= 1000)
     {
       _hasAutoSwitchedToOTG = true;
     }
     if (vbusVoltage_mv > 5500)
     {
-      voltageHighRaisedTime = platform::time_ms();
+      voltageHighRaisedTime = hal::time_ms();
     }
-    timeSinceOTGNoCurrentUse = platform::time_ms();
+    timeSinceOTGNoCurrentUse = hal::time_ms();
   }
 
   // if we just switched manually, powerDelivery may not have followed yet
@@ -461,14 +461,14 @@ void handle_startup()
 
   // if this is false, it's a special case where battery voltage is too low to power the components
   // or the components are dead...
-  if (platform::i2c::i2c_check_existence(0, platform::i2c::chargeI2cAddress) != 0
+  if (hal::i2c::i2c_check_existence(0, hal::i2c::chargeI2cAddress) != 0
   // TODO issue #132 remove when the mock components will be running
 #ifndef LMBD_SIMULATION
-      || platform::i2c::i2c_check_existence(0, platform::i2c::batteryBalancerI2cAddress) != 0
+      || hal::i2c::i2c_check_existence(0, hal::i2c::batteryBalancerI2cAddress) != 0
 #endif
   )
   {
-    const uint32_t timeSinceStateSwitch = platform::time_ms() - __private::powerMachine.get_state_raised_time();
+    const uint32_t timeSinceStateSwitch = hal::time_ms() - __private::powerMachine.get_state_raised_time();
     const bool isVbusUnpowered = timeSinceStateSwitch > 200 and not ::lampda::bsp::powerDelivery::is_power_available();
 
     // no vbus, or
@@ -527,7 +527,7 @@ void handle_startup()
     const bool isCharging = state.areMeasuresOk && state.is_charging();
     if (not isCharging)
       return;
-    const uint32_t timeSinceStateSwitch = platform::time_ms() - __private::powerMachine.get_state_raised_time();
+    const uint32_t timeSinceStateSwitch = hal::time_ms() - __private::powerMachine.get_state_raised_time();
     if (timeSinceStateSwitch < startupFailTimeout_ms * 0.8)
       return;
 
@@ -537,7 +537,7 @@ void handle_startup()
       return;
     }
     // This delay is to let the time for the balancer to boot.
-    platform::delay_ms(250);
+    hal::delay_ms(250);
   }
   // Final point: We will never pass through here again !
 
@@ -595,8 +595,8 @@ void state_machine_behavior()
   // if state changed, display the new state
   if (powerMachine.state_just_changed())
   {
-    platform::lampda_print("POWER_S_MACH > switched to state %s",
-                           PowerStatesStr[static_cast<size_t>(powerMachine.get_state())]);
+    hal::lampda_print("POWER_S_MACH > switched to state %s",
+                      PowerStatesStr[static_cast<size_t>(powerMachine.get_state())]);
   }
 
   switch (powerMachine.get_state())
@@ -693,7 +693,7 @@ bool go_to_otg_mode()
   if (__private::can_switch_states() and component::battery::is_battery_usable_as_power_source() and
       logic::alerts::manager.can_use_usb_port())
   {
-    timeSinceOTGNoCurrentUse = platform::time_ms();
+    timeSinceOTGNoCurrentUse = hal::time_ms();
     ::lampda::bsp::powerDelivery::allow_otg(true);
     _hasAutoSwitchedToOTG = false;
     __private::switch_state(PowerStates::OTG_MODE);
@@ -767,7 +767,7 @@ void set_temporary_output(const uint16_t outputVoltage_mV, const uint16_t output
   }
 
   // set output timeout
-  _temporaryOutputTimeOut = platform::time_ms() + timeout;
+  _temporaryOutputTimeOut = hal::time_ms() + timeout;
   _temporaryOutputVoltage_mV = outputVoltage_mV;
   _temporaryOutputCurrent_mA = outputCurrent_mA;
 }
@@ -802,17 +802,17 @@ void init()
             // usb port alert detected
             logic::alerts::manager.raise(logic::alerts::Type::USB_PORT_SHORT);
           },
-          platform::gpio::DigitalPin::Interrupt::kFallingEdge);
+          hal::gpio::DigitalPin::Interrupt::kFallingEdge);
 
   /// TODO: issue #326 handle the VBUS gate fault cleanly
 #ifdef LMBD_SIMULATION
   __private::vbusFault.attach_callback(
           []() {
-            platform::lampda_print("-----------------");
-            platform::lampda_print("VBUS FAULT RAISED");
-            platform::lampda_print("-----------------");
+            hal::lampda_print("-----------------");
+            hal::lampda_print("VBUS FAULT RAISED");
+            hal::lampda_print("-----------------");
           },
-          platform::gpio::DigitalPin::Interrupt::kFallingEdge);
+          hal::gpio::DigitalPin::Interrupt::kFallingEdge);
 #endif
 
   // init power gates
@@ -846,7 +846,7 @@ void init()
 #endif
 
   // start main loop
-  platform::threads::start_thread(power_loop, platform::threads::power_taskName, 0, 1024);
+  hal::threads::start_thread(power_loop, hal::threads::power_taskName, 0, 1024);
 
   isSetup = true;
 }
@@ -855,7 +855,7 @@ void init()
 void power_loop()
 {
   // kick power watchdog
-  platform::registers::kick_watchdog(POWER_WATCHDOG_ID);
+  hal::registers::kick_watchdog(POWER_WATCHDOG_ID);
 
   // fist action, update power gate status
   ::lampda::bsp::powergates::loop();
@@ -877,15 +877,15 @@ void power_loop()
   {
     // remove flag when battery level is greater than zero
     const auto chargerState = ::lampda::component::charger::get_state();
-    if (platform::time_ms() > startupFailTimeout_ms * 5 and chargerState.areMeasuresOk and
+    if (hal::time_ms() > startupFailTimeout_ms * 5 and chargerState.areMeasuresOk and
         chargerState.batteryVoltage_mV > batteryMinVoltageSafe_mV)
     {
-      platform::lampda_print("Cleared battery recovery mode");
+      hal::lampda_print("Cleared battery recovery mode");
       _isInBatteryRecoveryMode = false;
     }
   }
 
-  platform::delay_ms(1);
+  hal::delay_ms(1);
 }
 
 } // namespace power

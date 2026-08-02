@@ -14,10 +14,10 @@
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 
-#include "src/system/platform/print.h"
-#include "src/system/platform/time.h"
-#include "src/system/platform/gpio.h"
-#include "src/system/platform/registers.h"
+#include "src/system/hal/print.h"
+#include "src/system/hal/time.h"
+#include "src/system/hal/gpio.h"
+#include "src/system/hal/registers.h"
 
 namespace lampda {
 namespace component {
@@ -81,12 +81,12 @@ bool should_charge()
       // do not charge if a battery voltage goes over the max voltage
       if (balancerStatus.batteryVoltages_mV[i] >= maxLiionVoltage_mV)
       {
-        batteryTooHighLatchTime = platform::time_ms();
+        batteryTooHighLatchTime = hal::time_ms();
         return false;
       }
     }
     // latch the status of battery too high for a time, to let the balancer work
-    if (batteryTooHighLatchTime > 0 and (platform::time_ms() - batteryTooHighLatchTime) < 20000)
+    if (batteryTooHighLatchTime > 0 and (hal::time_ms() - batteryTooHighLatchTime) < 20000)
     {
       return false;
     }
@@ -142,7 +142,7 @@ bool should_charge()
   // check battery full status
   if (isBatteryFullLatched_s or isEndOfCharge)
   {
-    const uint32_t time = platform::time_ms();
+    const uint32_t time = hal::time_ms();
 
     if (batteryFullDeglitchTime == 0)
     {
@@ -187,7 +187,7 @@ void control_OTG(const uint16_t mv, const uint16_t ma)
 
   const auto& measurments = bsp::charger::get_measurments();
   if (measurments.vbus_mV < mv - 1000 or measurments.vbus_mV > mv + 1000)
-    platform::lampda_print("Wait for voltage climb: current %dmV, target %dmV", measurments.vbus_mV, mv);
+    hal::lampda_print("Wait for voltage climb: current %dmV, target %dmV", measurments.vbus_mV, mv);
 }
 
 bool is_status_error()
@@ -212,7 +212,7 @@ void update_state_status()
         {
           charger.softwareErrorMessage =
                   "ERROR: charger in UNINITIALIZED/ERROR state : " + bsp::charger::get_software_error_message();
-          platform::lampda_print(charger.softwareErrorMessage.c_str());
+          hal::lampda_print(charger.softwareErrorMessage.c_str());
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
         break;
@@ -223,7 +223,7 @@ void update_state_status()
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_HARDWARE)
         {
           charger.hardwareErrorMessage = "ERROR: charger in ERROR_COMPONENT state";
-          platform::lampda_print(charger.hardwareErrorMessage.c_str());
+          hal::lampda_print(charger.hardwareErrorMessage.c_str());
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_HARDWARE;
         break;
@@ -233,7 +233,7 @@ void update_state_status()
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
           charger.softwareErrorMessage = "ERROR: charger in ERROR_HAS_FAULTS state";
-          platform::lampda_print(charger.softwareErrorMessage.c_str());
+          hal::lampda_print(charger.softwareErrorMessage.c_str());
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
 
@@ -276,7 +276,7 @@ void update_state_status()
           default:
             {
               charger.hardwareErrorMessage = "ERROR: charger state reached default state";
-              platform::lampda_print(charger.hardwareErrorMessage.c_str());
+              hal::lampda_print(charger.hardwareErrorMessage.c_str());
 
               charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
               break;
@@ -317,7 +317,7 @@ void update_state()
   update_state_status();
 
   // set update time
-  charger.lastUpdateTime_ms = platform::time_ms();
+  charger.lastUpdateTime_ms = hal::time_ms();
 }
 
 /**
@@ -364,7 +364,7 @@ bool setup()
   return true;
 }
 
-const platform::gpio::DigitalPin chargeOkPin(platform::gpio::DigitalPin::GPIO::Input_isChargeOk);
+const hal::gpio::DigitalPin chargeOkPin(hal::gpio::DigitalPin::GPIO::Input_isChargeOk);
 
 void loop()
 {
@@ -385,7 +385,7 @@ void loop()
     bsp::charger::enable_charge(false);
 
     // allow some start time to prevent wrong error display
-    if (platform::time_ms() >= 500)
+    if (hal::time_ms() >= 500)
     {
       logic::alerts::manager.raise(logic::alerts::Type::CHARGER_ERROR);
     }
@@ -433,7 +433,7 @@ bool is_vbus_powered() { return bsp::powerDelivery::is_power_available(); }
 
 bool can_use_vbus_power() { return bsp::powerDelivery::can_use_power(); }
 
-bool is_vbus_signal_detected() { return platform::registers::is_voltage_detected_on_vbus(); }
+bool is_vbus_signal_detected() { return hal::registers::is_voltage_detected_on_vbus(); }
 
 Charger_t get_state() { return charger; }
 

@@ -30,13 +30,13 @@
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/time_utils.h"
 
-#include "src/system/platform/bluetooth.h"
-#include "src/system/platform/time.h"
-#include "src/system/platform/gpio.h"
-#include "src/system/platform/i2c.h"
-#include "src/system/platform/registers.h"
-#include "src/system/platform/threads.h"
-#include "src/system/platform/print.h"
+#include "src/system/hal/bluetooth.h"
+#include "src/system/hal/time.h"
+#include "src/system/hal/gpio.h"
+#include "src/system/hal/i2c.h"
+#include "src/system/hal/registers.h"
+#include "src/system/hal/threads.h"
+#include "src/system/hal/print.h"
 
 #include "src/user/functions.h"
 
@@ -124,7 +124,7 @@ void set_power_on() { isTargetPoweredOn_s = true; }
 void set_power_off()
 {
   // prevent early shutdown when system is just booting, or lamp jst turns on
-  if (platform::time_ms() - preOutputLightCalled < SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY)
+  if (hal::time_ms() - preOutputLightCalled < SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY)
     return;
 
   isTargetPoweredOn_s = false;
@@ -203,7 +203,7 @@ bool read_parameters()
     uint32_t buttonPin = 0;
     if (component::fileSystem::system::get_value(buttonPinKey, buttonPin) and buttonPin > 0)
     {
-      component::button::set_button_pin(static_cast<platform::gpio::DigitalPin::GPIO>(buttonPin));
+      component::button::set_button_pin(static_cast<hal::gpio::DigitalPin::GPIO>(buttonPin));
     }
 
     // Auto activate bluetooth is needed
@@ -213,7 +213,7 @@ bool read_parameters()
     {
       bluetoothAutoActivationLeftCount = min<uint32_t>(maxBluetoothAutoActivations, bluetoothAutoActivation - 1);
 
-      platform::bluetooth::start_advertising();
+      hal::bluetooth::start_advertising();
     }
     else
     {
@@ -289,41 +289,41 @@ bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::
 void true_power_off()
 {
   // shutdown all threads
-  platform::threads::shutdown();
+  hal::threads::shutdown();
 
   // unmount filesystem
   component::fileSystem::shutdown();
 
   // stop i2c interfaces
-  for (uint8_t i = 0; i < platform::registers::get_wire_interface_count(); ++i)
+  for (uint8_t i = 0; i < hal::registers::get_wire_interface_count(); ++i)
   {
-    platform::i2c::i2c_turn_off(i);
+    hal::i2c::i2c_turn_off(i);
   }
-  platform::delay_ms(5);
+  hal::delay_ms(5);
 
   // disable peripherals
-  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(false);
+  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(false);
   // disable gates
 #ifdef IS_HARDWARE_1_0
   // disable pullup in sleep mode (in V>1.0, done electrically)
-  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Input_isChargeOk)
-          .set_pin_mode(platform::gpio::DigitalPin::Mode::kInput);
-  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Signal_BatteryBalancerAlert)
-          .set_pin_mode(platform::gpio::DigitalPin::Mode::kInput);
+  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Input_isChargeOk)
+          .set_pin_mode(hal::gpio::DigitalPin::Mode::kInput);
+  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Signal_BatteryBalancerAlert)
+          .set_pin_mode(hal::gpio::DigitalPin::Mode::kInput);
 #endif
-  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableVbusGate).set_high(false);
-  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableOutputGate).set_high(false);
+  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableVbusGate).set_high(false);
+  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableOutputGate).set_high(false);
 
   // deactivate indicators
   bsp::indicator::set_color(utils::ColorSpace::BLACK);
-  platform::gpio::DigitalPin::deactivate_gpios(); // physically disconnect gpios
-  platform::delay_ms(1);
+  hal::gpio::DigitalPin::deactivate_gpios(); // physically disconnect gpios
+  hal::delay_ms(1);
 
   // If buttpon is still pressed at this point, we will assume it is stuck pressed and signal a wakeup on release.
   const bool isButtonPressed = component::button::get_button_state().isPressed;
   // power down nrf52.
   // on wake up, it'll start back from the setup phase
-  platform::registers::go_to_sleep(component::button::get_button_pin_RAW(), isButtonPressed);
+  hal::registers::go_to_sleep(component::button::get_button_pin_RAW(), isButtonPressed);
 
   /*
    * Nothing after this, system is off !
@@ -378,8 +378,8 @@ void handle_error_state()
   logic::power::go_to_error();
 
   // kick power and user watchdog (prevent reset)
-  platform::registers::kick_watchdog(POWER_WATCHDOG_ID);
-  platform::registers::kick_watchdog(USER_WATCHDOG_ID);
+  hal::registers::kick_watchdog(POWER_WATCHDOG_ID);
+  hal::registers::kick_watchdog(USER_WATCHDOG_ID);
 
   // if error state, raise alert
   logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_IN_ERROR_STATE);
@@ -407,7 +407,7 @@ void handle_start_logic_state()
   if (not logic::power::is_started())
   {
     // wait until power is started
-    platform::delay_ms(1);
+    hal::delay_ms(1);
     return;
   }
 
@@ -436,13 +436,13 @@ void handle_pre_charger_operation_state()
     go_to_error_state("power system in error state in pre charger operation state");
     return;
   }
-  if (platform::time_ms() - mainMachine.get_state_raised_time() > PRE_CHARGE_STATE_TIMEOUT_ms)
+  if (hal::time_ms() - mainMachine.get_state_raised_time() > PRE_CHARGE_STATE_TIMEOUT_ms)
   {
     go_to_error_state("pre charger operation failed to toggle to charge");
     return;
   }
 
-  preChargeCalled = platform::time_ms();
+  preChargeCalled = hal::time_ms();
 
   if (not component::battery::can_battery_be_charged())
   {
@@ -474,7 +474,7 @@ void handle_charger_operation_state()
   {
     // forbid charging
     logic::power::enable_charge(false);
-    platform::threads::yield_this_thread();
+    hal::threads::yield_this_thread();
 
     // switch to output mode after the post charge operations
     mainMachine.set_state(BehaviorStates::PRE_OUTPUT_LIGHT);
@@ -486,17 +486,17 @@ void handle_charger_operation_state()
 
   // wait a bit after going to charger mode, maybe vbus is bouncing around
   const bool vbusDebounced =
-          ::lampda::component::charger::can_use_vbus_power() or (platform::time_ms() - preChargeCalled) > 5000;
+          ::lampda::component::charger::can_use_vbus_power() or (hal::time_ms() - preChargeCalled) > 5000;
   if (vbusDebounced)
   {
     static uint32_t otgDebounce_time = 0;
     if (::lampda::component::charger::get_state().isInOtg)
     {
-      otgDebounce_time = platform::time_ms();
+      otgDebounce_time = hal::time_ms();
     }
 
     // otg mode
-    if ((otgDebounce_time != 0) and (platform::time_ms() - otgDebounce_time) <= 500)
+    if ((otgDebounce_time != 0) and (hal::time_ms() - otgDebounce_time) <= 500)
     {
       // do nothing (for now !)
     }
@@ -505,7 +505,7 @@ void handle_charger_operation_state()
     {
       // forbbid charging
       logic::power::enable_charge(false);
-      platform::threads::yield_this_thread();
+      hal::threads::yield_this_thread();
 
       // go to sleep after closing the charger
       mainMachine.set_state(BehaviorStates::SHUTDOWN);
@@ -545,7 +545,7 @@ bool check_handle_exit_output_mode()
     logic::sunset::cancel_timer();
 
     // wait a bit then shutdown
-    if (platform::time_ms() - preOutputLightCalled > 3000)
+    if (hal::time_ms() - preOutputLightCalled > 3000)
     {
       // indicate we should power the systemm off
       set_power_off();
@@ -566,7 +566,7 @@ void handle_pre_output_light_state()
     go_to_error_state("power system in error state in pre output light state");
     return;
   }
-  if (platform::time_ms() - mainMachine.get_state_raised_time() > PRE_OUTPUT_STATE_TIMEOUT_ms)
+  if (hal::time_ms() - mainMachine.get_state_raised_time() > PRE_OUTPUT_STATE_TIMEOUT_ms)
   {
     go_to_error_state("pre output operation failed to toggle");
     return;
@@ -577,7 +577,7 @@ void handle_pre_output_light_state()
   {
     if (not isMessageDisplayed)
     {
-      platform::lampda_print("no output allowed");
+      hal::lampda_print("no output allowed");
       isMessageDisplayed = true;
     }
     // check if we may go to sleep
@@ -589,7 +589,7 @@ void handle_pre_output_light_state()
   {
     if (not isMessageDisplayed)
     {
-      platform::lampda_print("not output in lockout state");
+      hal::lampda_print("not output in lockout state");
       isMessageDisplayed = true;
     }
     // check if we may go to sleep
@@ -607,9 +607,9 @@ void handle_pre_output_light_state()
     for (uint8_t i = 0; i < 10; i++)
     {
       bsp::indicator::set_color(utils::ColorSpace::RED);
-      platform::delay_ms(100);
+      hal::delay_ms(100);
       bsp::indicator::set_color(utils::ColorSpace::BLACK);
-      platform::delay_ms(100);
+      hal::delay_ms(100);
     }
 
     if (is_charger_powered())
@@ -625,7 +625,7 @@ void handle_pre_output_light_state()
     }
     return;
   }
-  preOutputLightCalled = platform::time_ms();
+  preOutputLightCalled = hal::time_ms();
 
   logic::power::go_to_output_mode();
 
@@ -635,7 +635,7 @@ void handle_pre_output_light_state()
   // let the user power on the system
   user::power_on_sequence();
 
-  lastOutputLightValidTime = platform::time_ms();
+  lastOutputLightValidTime = hal::time_ms();
 
   // this function is executed ONCE
   statistics::signal_output_on();
@@ -666,11 +666,11 @@ void handle_output_light_state()
   {
     if (waitingForPowerGate_messageDisplayed)
     {
-      platform::lampda_print("Behavior>Output mode: waiting for power gate");
+      hal::lampda_print("Behavior>Output mode: waiting for power gate");
       waitingForPowerGate_messageDisplayed = false;
     }
 
-    if (platform::time_ms() - lastOutputLightValidTime > 1000)
+    if (hal::time_ms() - lastOutputLightValidTime > 1000)
     {
       go_to_error_state("power gate took too long to switch in output light state " +
                         std::to_string(::lampda::bsp::powergates::is_power_gate_enabled()) +
@@ -680,14 +680,14 @@ void handle_output_light_state()
   }
   waitingForPowerGate_messageDisplayed = true;
 
-  lastOutputLightValidTime = platform::time_ms();
+  lastOutputLightValidTime = hal::time_ms();
 
   // normal running loop
   if (not check_handle_exit_output_mode())
   {
     // resume secondary thread
     if (user::should_spawn_thread())
-      platform::threads::resume_thread(platform::threads::user_taskName);
+      hal::threads::resume_thread(hal::threads::user_taskName);
 
     // user loop call
     user::loop();
@@ -708,11 +708,11 @@ void handle_post_output_light_state()
   // let the user power off the system
   user::power_off_sequence();
   // write/stability delay
-  platform::delay_ms(10);
+  hal::delay_ms(10);
 
   // deactivate strip power
   component::outputPower::disable_power_gates(); // close external voltage path
-  platform::delay_ms(1);
+  hal::delay_ms(1);
   component::outputPower::write_voltage(0); // power down
 
   statistics::signal_output_off();
@@ -722,8 +722,8 @@ void handle_post_output_light_state()
 void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shouldSaveSystemParameters)
 {
   // detach all interrupts, to prevent interruption of shutdown
-  platform::gpio::DigitalPin::detach_all();
-  platform::threads::yield_this_thread();
+  hal::gpio::DigitalPin::detach_all();
+  hal::threads::yield_this_thread();
 
   // shutdown all external power
   if (not logic::power::go_to_shutdown())
@@ -732,13 +732,13 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
   }
 
   uint8_t maxChecks = 100;
-  while (platform::threads::is_all_suspended() != 1 and maxChecks > 0)
+  while (hal::threads::is_all_suspended() != 1 and maxChecks > 0)
   {
     maxChecks--;
     // block other threads
-    platform::threads::suspend_all_threads();
-    platform::threads::yield_this_thread();
-    platform::delay_ms(5);
+    hal::threads::suspend_all_threads();
+    hal::threads::yield_this_thread();
+    hal::delay_ms(5);
   }
   if (maxChecks == 0)
   {
@@ -748,12 +748,12 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
 
   // deactivate strip power
   component::outputPower::write_voltage(0); // power down
-  platform::delay_ms(10);
+  hal::delay_ms(10);
 
   // disable bluetooth, imu and microphone
   component::microphone::disable();
   component::imu::shutdown();
-  platform::bluetooth::stop_bluetooth_advertising();
+  hal::bluetooth::stop_bluetooth_advertising();
 
   statistics::signal_output_off();
 
@@ -776,8 +776,8 @@ void state_machine_behavior()
   // if state changed, display the new state
   if (mainMachine.state_just_changed())
   {
-    platform::lampda_print("BEHAVIOR_S_MACH > switched to state %s",
-                           BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]);
+    hal::lampda_print("BEHAVIOR_S_MACH > switched to state %s",
+                      BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]);
   }
 
   switch (mainMachine.get_state())
@@ -829,12 +829,12 @@ void loop()
   state_machine_behavior();
 
   // do not display alerts for the first 500 ms
-  const bool shouldIgnoreAlerts = (platform::time_ms() - wakeUpTime) < 500;
+  const bool shouldIgnoreAlerts = (hal::time_ms() - wakeUpTime) < 500;
   logic::alerts::handle_all(shouldIgnoreAlerts);
   // alert requested an emergency shutdown, do it
   if (logic::alerts::is_request_shutdown())
   {
-    platform::lampda_print("emergency shutdown from alert");
+    hal::lampda_print("emergency shutdown from alert");
     // just in case, turn off eventual states
     internal::handle_post_output_light_state();
     // shutdown normally

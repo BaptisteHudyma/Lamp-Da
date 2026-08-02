@@ -2,12 +2,12 @@
 #include <thread>
 #include <chrono>
 
-#include "src/system/physical/button.h"
+#include "src/system/component/button.h"
 
 #include "src/system/logic/inputs.h"
 
-#include "src/system/platform/gpio.h"
-#include "src/system/platform/threads.h"
+#include "src/system/hal/gpio.h"
+#include "src/system/hal/threads.h"
 
 // access simulation states
 #include "simulator/include/simulator_state.h"
@@ -34,7 +34,7 @@ protected:
   void TearDown() override
   {
     // shutdown all threads
-    platform::threads::shutdown();
+    hal::threads::shutdown();
 
     killThread = true;
     if (clickThread.joinable())
@@ -120,7 +120,7 @@ TEST_F(ButtonFixture, turn_on_start_click_early_release)
   ::simulator::mock_gpios::update_callbacks();
   component::button::init(true);
 
-  while (platform::time_ms() < testTimeout_ms && not isTestDone)
+  while (hal::time_ms() < testTimeout_ms && not isTestDone)
   {
     std::this_thread::sleep_for(1ms);
 
@@ -175,7 +175,7 @@ TEST_F(ButtonFixture, turn_on_start_click)
     ::simulator::mock_gpios::update_callbacks();
   });
 
-  while (platform::time_ms() < testTimeout_ms && not isTestDone)
+  while (hal::time_ms() < testTimeout_ms && not isTestDone)
   {
     std::this_thread::sleep_for(1ms);
 
@@ -236,7 +236,7 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
   // simulate a few clicks
   simulate_clicks(desiredClicks - 1, 200ms, 100ms, 200ms);
 
-  while (platform::time_ms() < testTimeout_ms && not isTestDone)
+  while (hal::time_ms() < testTimeout_ms && not isTestDone)
   {
     std::this_thread::sleep_for(1ms);
 
@@ -295,7 +295,7 @@ TEST_F(ButtonFixture, turn_on_start_long_click)
     ::simulator::mock_gpios::update_callbacks();
   });
 
-  while (platform::time_ms() < testTimeout_ms && not isTestDone)
+  while (hal::time_ms() < testTimeout_ms && not isTestDone)
   {
     std::this_thread::sleep_for(1ms);
 
@@ -359,7 +359,7 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
   // simulate a few clicks
   simulate_clicks(desiredClicks - 1, 200ms, 100ms, 200ms, 1000ms);
 
-  while (platform::time_ms() < testTimeout_ms && not isTestDone)
+  while (hal::time_ms() < testTimeout_ms && not isTestDone)
   {
     std::this_thread::sleep_for(1ms);
 
@@ -421,7 +421,7 @@ TEST_F(ButtonFixture, debounce)
   // simulate a clicks
   simulate_clicks(desiredClicks, 15ms, 15ms);
 
-  while (platform::time_ms() < testTimeout_ms && not isTestDone)
+  while (hal::time_ms() < testTimeout_ms && not isTestDone)
   {
     std::this_thread::sleep_for(1ms);
 
@@ -491,7 +491,7 @@ TEST_F(ButtonFixture, start_click_then_4_clicks)
   // simulate a few clicks
   simulate_clicks(desiredClicks, 200ms, 100ms, 500ms);
 
-  while (platform::time_ms() < testTimeout_ms && not isTestDone)
+  while (hal::time_ms() < testTimeout_ms && not isTestDone)
   {
     std::this_thread::sleep_for(1ms);
 
@@ -567,7 +567,7 @@ TEST_F(ButtonFixture, standard_4_clicks_)
   // simulate a few clicks
   simulate_clicks(desiredClicks, 200ms, 300ms, 500ms);
 
-  while (platform::time_ms() < testTimeout_ms && not isTestDone)
+  while (hal::time_ms() < testTimeout_ms && not isTestDone)
   {
     std::this_thread::sleep_for(1ms);
 
@@ -655,7 +655,7 @@ TEST_F(ButtonFixture, standard_6_double_clicks)
     isStartClickDone = true;
   });
 
-  while (platform::time_ms() < testTimeout_ms && not isTestDone)
+  while (hal::time_ms() < testTimeout_ms && not isTestDone)
   {
     if (isStartClickDone and is_click_simulation_done())
       simulate_clicks(desiredClicksPerMultiplePresses, 200ms, 100ms, 500ms, 0ms);

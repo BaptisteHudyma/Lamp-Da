@@ -1,11 +1,11 @@
 #include <cstdint>
 #include <gtest/gtest.h>
 
-#include "src/system/physical/time_handling.h"
+#include "src/system/component/time_handling.h"
 
 #include <array>
 
-namespace lampda::time {
+namespace lampda::component::time {
 
 TEST(test_time_handling, time_to_seconds)
 {
@@ -133,4 +133,4 @@ TEST(test_time_handling, time_to_seconds_known_values)
   ASSERT_EQ(time.as_seconds(), 522061);
 }
 
-} // namespace lampda::time
+} // namespace lampda::component::time

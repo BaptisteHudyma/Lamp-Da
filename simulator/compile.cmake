@@ -95,15 +95,15 @@ set(SRC_SYSTEM_LOGIC
     ${LMBD_ROOT_DIR}/src/system/logic/sunset_timer.cpp
 )
 
-set(SIMULATOR_MOCKS
-    ${LMBD_ROOT_DIR}/simulator/mocks/print_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/pdm_handle_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/registers_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/time_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/i2c_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/gpio_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/threads_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/bluetooth_mock.cpp
+set(SIMULATOR_HAL
+    ${LMBD_ROOT_DIR}/simulator/hal/bluetooth_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/gpio_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/i2c_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/pdm_handle_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/print_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/registers_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/threads_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/time_mock.cpp
 )
 
 set(SIMULATOR_STATE
@@ -129,7 +129,7 @@ function(create_simulator_target SIM_NAME)
         ${SRC_SYSTEM_EXT}
         ${SRC_SYSTEM_LOGIC}
         ${SRC_SYSTEM_GLOBAL}
-        ${SIMULATOR_MOCKS}
+        ${SIMULATOR_HAL}
         ${SIMULATOR_STATE}
         ${LMBD_ROOT_DIR}/src/user/${SIM_NAME}_functions.cpp
     )

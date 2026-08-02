@@ -7,9 +7,9 @@
 #include "src/system/utils/constants.h"
 #include "src/system/utils/vector_math.h"
 
-#include "src/system/platform/time.h"
-#include "src/system/platform/gpio.h"
-#include "src/system/platform/print.h"
+#include "src/system/hal/time.h"
+#include "src/system/hal/gpio.h"
+#include "src/system/hal/print.h"
 
 namespace lampda {
 namespace component {
@@ -19,9 +19,9 @@ namespace imu {
 bsp::imu::Wrapper imuInstance;
 
 /// interrupt 1 pin
-platform::gpio::DigitalPin interrupt1Pin(platform::gpio::DigitalPin::GPIO::Signal_ImuInterrupt1);
+hal::gpio::DigitalPin interrupt1Pin(hal::gpio::DigitalPin::GPIO::Signal_ImuInterrupt1);
 /// interrupt 2 pin
-platform::gpio::DigitalPin interrupt2Pin(platform::gpio::DigitalPin::GPIO::Signal_ImuInterrupt2);
+hal::gpio::DigitalPin interrupt2Pin(hal::gpio::DigitalPin::GPIO::Signal_ImuInterrupt2);
 /// indicates if the driver is initialized
 bool isInitialized = false;
 
@@ -42,7 +42,7 @@ void init()
   if (not imuInstance.init())
   {
     // TODO: something ?
-    platform::lampda_print("IMU failed to start");
+    hal::lampda_print("IMU failed to start");
     isInitialized = false;
   }
   else
@@ -167,28 +167,28 @@ bool link_event_to_interrupt1(const EventType eventType)
     case EventType::FreeFall:
       if (not imuInstance.enable_interrupt1(bsp::imu::Wrapper::InterruptType::FreeFall))
       {
-        platform::lampda_print("link_event_to_interrupt1: enable freefall interrupt failed");
+        hal::lampda_print("link_event_to_interrupt1: enable freefall interrupt failed");
         return false;
       }
       break;
     case EventType::BigMotion:
       if (not imuInstance.enable_interrupt1(bsp::imu::Wrapper::InterruptType::BigMotion))
       {
-        platform::lampda_print("link_event_to_interrupt1: enable big motion interrupt failed");
+        hal::lampda_print("link_event_to_interrupt1: enable big motion interrupt failed");
         return false;
       }
       break;
     case EventType::Step:
       if (not imuInstance.enable_interrupt1(bsp::imu::Wrapper::InterruptType::Step))
       {
-        platform::lampda_print("link_event_to_interrupt1: enable step interrupt failed");
+        hal::lampda_print("link_event_to_interrupt1: enable step interrupt failed");
         return false;
       }
       break;
     case EventType::Tilt:
       if (not imuInstance.enable_interrupt1(bsp::imu::Wrapper::InterruptType::AngleChange))
       {
-        platform::lampda_print("link_event_to_interrupt1: enable tilt interrupt failed");
+        hal::lampda_print("link_event_to_interrupt1: enable tilt interrupt failed");
         return false;
       }
       break;
@@ -198,9 +198,9 @@ bool link_event_to_interrupt1(const EventType eventType)
   }
 
   // prevent shutdown when no events
-  interrupt1Pin.set_pin_mode(platform::gpio::DigitalPin::Mode::kInput);
+  interrupt1Pin.set_pin_mode(hal::gpio::DigitalPin::Mode::kInput);
   interrupt1Pin.detach_callbacks();
-  interrupt1Pin.attach_callback(interrupt1_callback, platform::gpio::DigitalPin::Interrupt::kChange);
+  interrupt1Pin.attach_callback(interrupt1_callback, hal::gpio::DigitalPin::Interrupt::kChange);
   return true;
 }
 
@@ -217,25 +217,25 @@ bool link_event_to_interrupt2(const EventType eventType)
     case EventType::FreeFall:
       if (not imuInstance.enable_interrupt2(bsp::imu::Wrapper::InterruptType::FreeFall))
       {
-        platform::lampda_print("link_event_to_interrupt2: enable freefall interrupt failed");
+        hal::lampda_print("link_event_to_interrupt2: enable freefall interrupt failed");
         return false;
       }
       break;
     case EventType::BigMotion:
       {
-        platform::lampda_print("link_event_to_interrupt2: big motion interrupt not supported for pin2");
+        hal::lampda_print("link_event_to_interrupt2: big motion interrupt not supported for pin2");
         return false;
       }
     case EventType::Step:
 
       {
-        platform::lampda_print("link_event_to_interrupt2: step interrupt not supported for pin2");
+        hal::lampda_print("link_event_to_interrupt2: step interrupt not supported for pin2");
         return false;
       }
     case EventType::Tilt:
       if (not imuInstance.enable_interrupt2(bsp::imu::Wrapper::InterruptType::AngleChange))
       {
-        platform::lampda_print("link_event_to_interrupt2: enable tilt interrupt failed");
+        hal::lampda_print("link_event_to_interrupt2: enable tilt interrupt failed");
         return false;
       }
       break;
@@ -245,9 +245,9 @@ bool link_event_to_interrupt2(const EventType eventType)
   }
 
   // prevent shutdown when no events
-  interrupt2Pin.set_pin_mode(platform::gpio::DigitalPin::Mode::kInput);
+  interrupt2Pin.set_pin_mode(hal::gpio::DigitalPin::Mode::kInput);
   interrupt2Pin.detach_callbacks();
-  interrupt2Pin.attach_callback(interrupt2_callback, platform::gpio::DigitalPin::Interrupt::kChange);
+  interrupt2Pin.attach_callback(interrupt2_callback, hal::gpio::DigitalPin::Interrupt::kChange);
   return true;
 }
 

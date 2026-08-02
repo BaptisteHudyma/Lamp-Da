@@ -4,8 +4,8 @@
 #include <Adafruit_LittleFS.h>
 #include <InternalFileSystem.h>
 #else
-#include "simulator/mocks/Adafruit_LittleFS.h"
-#include "simulator/mocks/InternalFileSystem.h"
+#include "simulator/hal/Adafruit_LittleFS.h"
+#include "simulator/hal/InternalFileSystem.h"
 #endif
 
 #include <cassert>
@@ -14,8 +14,8 @@
 
 #include "src/system/utils/constants.h"
 
-#include "src/system/platform/print.h"
-#include "src/system/platform/time.h"
+#include "src/system/hal/print.h"
+#include "src/system/hal/time.h"
 
 namespace lampda {
 namespace component {
@@ -59,7 +59,7 @@ void setup()
 
   if (!InternalFS.begin())
   {
-    platform::lampda_print("Failed to start file system");
+    hal::lampda_print("Failed to start file system");
   }
   else
   {
@@ -186,11 +186,11 @@ bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramM
   else
   {
     // error. the file should have been opened
-    platform::lampda_print("file system error, reseting file format");
+    hal::lampda_print("file system error, reseting file format");
 
     // hardcore, format the entire file system
     InternalFS.format();
-    platform::delay_ms(10);
+    hal::delay_ms(10);
   }
 
   if (not paramFile.isOpen())
@@ -210,7 +210,7 @@ bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramM
   else
   {
     // error. the file should have been opened
-    platform::lampda_print("file creation failed, system parameters wont be stored");
+    hal::lampda_print("file creation failed, system parameters wont be stored");
     return false;
   }
 
@@ -231,14 +231,14 @@ bool get_value(const uint32_t key, uint32_t& value)
     value = res->second;
 
 #ifdef LMBD_SIMULATION
-    platform::lampda_print("fsi: get_value %08x -> %08x", key, value);
+    hal::lampda_print("fsi: get_value %08x -> %08x", key, value);
 #endif
 
     return true;
   }
 
 #ifdef LMBD_SIMULATION
-  platform::lampda_print("fsi: get_value %08x -> not found", key);
+  hal::lampda_print("fsi: get_value %08x -> not found", key);
 #endif
 
   return false;
@@ -249,7 +249,7 @@ void set_value(const uint32_t key, const uint32_t value)
   _systemParametersValueMap[key] = value;
 
 #ifdef LMBD_SIMULATION
-  platform::lampda_print("fsi: set_value %08x -> %08x", key, value);
+  hal::lampda_print("fsi: set_value %08x -> %08x", key, value);
 #endif
 }
 
@@ -268,7 +268,7 @@ uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
       first = c.erase(first);
 
 #ifdef LMBD_SIMULATION
-      platform::lampda_print("fsi: key dropped %08x (matches %08x)", key, bitMatch & bitSelect);
+      hal::lampda_print("fsi: key dropped %08x (matches %08x)", key, bitMatch & bitSelect);
 #endif
     }
     else
@@ -297,7 +297,7 @@ void write_to_file()
   if (not systemParameterWriteSuccess)
   {
     // TODO: handle error
-    platform::lampda_print("could not save system parameters");
+    hal::lampda_print("could not save system parameters");
   }
 }
 
@@ -331,14 +331,14 @@ bool get_value(const uint32_t key, uint32_t& value)
     value = res->second;
 
 #ifdef LMBD_SIMULATION
-    platform::lampda_print("fsu: get_value %08x -> %08x", key, value);
+    hal::lampda_print("fsu: get_value %08x -> %08x", key, value);
 #endif
 
     return true;
   }
 
 #ifdef LMBD_SIMULATION
-  platform::lampda_print("fsu: get_value %08x -> not found", key);
+  hal::lampda_print("fsu: get_value %08x -> not found", key);
 #endif
 
   return false;
@@ -349,7 +349,7 @@ void set_value(const uint32_t key, const uint32_t value)
   _userParametersValueMap[key] = value;
 
 #ifdef LMBD_SIMULATION
-  platform::lampda_print("fsu: set_value %08x -> %08x", key, value);
+  hal::lampda_print("fsu: set_value %08x -> %08x", key, value);
 #endif
 }
 
@@ -368,7 +368,7 @@ uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
       first = c.erase(first);
 
 #ifdef LMBD_SIMULATION
-      platform::lampda_print("fsu: key dropped %08x (matches %08x)", key, bitMatch & bitSelect);
+      hal::lampda_print("fsu: key dropped %08x (matches %08x)", key, bitMatch & bitSelect);
 #endif
     }
     else
@@ -399,7 +399,7 @@ void write_to_file()
   if (not userParameterWriteSuccess)
   {
     // TODO: handle error
-    platform::lampda_print("could not save user parameters");
+    hal::lampda_print("could not save user parameters");
   }
 }
 

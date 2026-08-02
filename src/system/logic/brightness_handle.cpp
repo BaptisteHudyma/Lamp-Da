@@ -2,7 +2,7 @@
 
 #include "src/user/functions.h"
 
-#include "src/system/platform/time.h"
+#include "src/system/hal/time.h"
 
 #include "src/system/bsp/indicator.h"
 
@@ -79,7 +79,7 @@ void update_brightness(const brightness_t newBrightness, const bool shouldCallUs
     }
   }
 
-  __internal.lastBrightnessUpdate = ::lampda::platform::time_ms();
+  __internal.lastBrightnessUpdate = ::lampda::hal::time_ms();
 }
 
 void force_brightness_user_callback()
@@ -125,7 +125,7 @@ void set_brightness_level(const uint8_t level)
   }
 
   // update the level timer
-  levelUpdateTime = platform::time_ms();
+  levelUpdateTime = hal::time_ms();
 }
 
 uint8_t get_brightness_level() { return _level; }
@@ -139,13 +139,13 @@ bool should_indicator_be_visible()
   if (not shouldDisplay)
   {
     static constexpr uint32_t forceDisplayTime_ms = 5000;
-    return (platform::time_ms() - levelUpdateTime) < forceDisplayTime_ms;
+    return (hal::time_ms() - levelUpdateTime) < forceDisplayTime_ms;
   }
   else
   {
     // if we will show the indicator, do the blip
     static constexpr uint32_t blipLenght_ms = 100;
-    const bool shouldBlip = levelUpdateTime != 0 and (platform::time_ms() - levelUpdateTime) < blipLenght_ms;
+    const bool shouldBlip = levelUpdateTime != 0 and (hal::time_ms() - levelUpdateTime) < blipLenght_ms;
     if (shouldBlip)
       return false;
   }

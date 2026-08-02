@@ -26,7 +26,7 @@ namespace logic {};
 /// Handle the physical modules drivers
 namespace physical {};
 /// Handle the platform specific interactions
-namespace platform {};
+namespace hal {};
 /// Utility function and classes
 namespace utils {};
 

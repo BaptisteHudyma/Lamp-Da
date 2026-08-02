@@ -5,8 +5,8 @@
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/time_utils.h"
 
-#include "src/system/platform/time.h"
-#include "src/system/platform/gpio.h"
+#include "src/system/hal/time.h"
+#include "src/system/hal/gpio.h"
 
 namespace lampda {
 namespace bsp {
@@ -21,17 +21,17 @@ static_assert(greenColorCorrection * 255 > 32, "green correction is too small to
 static_assert(blueColorCorrection * 255 > 32, "blue correction is too small to be visible");
 
 // Pins for the led on the button
-static const platform::gpio::DigitalPin ButtonRedPin(utils::RedIndicator);
-static const platform::gpio::DigitalPin ButtonGreenPin(utils::GreenIndicator);
-static const platform::gpio::DigitalPin ButtonBluePin(utils::BlueIndicator);
+static const hal::gpio::DigitalPin ButtonRedPin(utils::RedIndicator);
+static const hal::gpio::DigitalPin ButtonGreenPin(utils::GreenIndicator);
+static const hal::gpio::DigitalPin ButtonBluePin(utils::BlueIndicator);
 
 static inline float brightnessMultiplier = 1.0f;
 
 void init()
 {
-  ButtonRedPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
-  ButtonBluePin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
-  ButtonGreenPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
+  ButtonRedPin.set_pin_mode(hal::gpio::DigitalPin::Mode::kOutput);
+  ButtonBluePin.set_pin_mode(hal::gpio::DigitalPin::Mode::kOutput);
+  ButtonGreenPin.set_pin_mode(hal::gpio::DigitalPin::Mode::kOutput);
 
   set_color(utils::ColorSpace::BLACK);
 }
@@ -57,7 +57,7 @@ uint8_t get_brightness()
 
 bool breeze(const uint32_t periodOn, const uint32_t periodOff, const utils::ColorSpace::RGB& color)
 {
-  const uint32_t time = platform::time_ms();
+  const uint32_t time = hal::time_ms();
 
   // store the start time of the animation
   static uint32_t startTime = time;
@@ -126,23 +126,23 @@ bool blink(const uint32_t offFreq, const uint32_t onFreq, std::initializer_list<
   static size_t currentColorIndex = 0;
 
   // led is off, and last call was some delay before
-  if (not ledState and platform::time_ms() - lastCall > onFreq)
+  if (not ledState and hal::time_ms() - lastCall > onFreq)
   {
     // increase index, limit to colors size
     currentColorIndex = (currentColorIndex + 1) % colors.size();
 
     ledState = true;
     set_color(*(colors.begin() + currentColorIndex));
-    lastCall = platform::time_ms();
+    lastCall = hal::time_ms();
   }
 
   // led is on, and last call was long ago
-  if (ledState and platform::time_ms() - lastCall > offFreq)
+  if (ledState and hal::time_ms() - lastCall > offFreq)
   {
     ledState = false;
     // set black
     set_color(utils::ColorSpace::BLACK);
-    lastCall = platform::time_ms();
+    lastCall = hal::time_ms();
   }
 
   return not ledState;

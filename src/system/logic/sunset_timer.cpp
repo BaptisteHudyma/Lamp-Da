@@ -4,9 +4,9 @@
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
 
-#include "src/system/platform/print.h"
-#include "src/system/platform/threads.h"
-#include "src/system/platform/time.h"
+#include "src/system/hal/print.h"
+#include "src/system/hal/threads.h"
+#include "src/system/hal/time.h"
 
 #include "src/system/utils/utils.h"
 
@@ -46,13 +46,13 @@ uint32_t get_sunset_loop_timing_ms()
 /// Return the percent of advance of the sunset timer, from 0 to 1. 1 is end of process.
 float get_percent_of_advance()
 {
-  if (platform::time_s() >= sunsetTimerEndTime_s)
+  if (hal::time_s() >= sunsetTimerEndTime_s)
     return 1.0;
 
   const uint32_t finishline = get_sunset_loop_timing_ms();
 
   // signal the progress change
-  const float progress = lmpd_constrain<float>(((sunsetTimerEndTime_s * 1000.0 - finishline) - platform::time_ms()) /
+  const float progress = lmpd_constrain<float>(((sunsetTimerEndTime_s * 1000.0 - finishline) - hal::time_ms()) /
                                                        static_cast<float>(brightnessRampDownTime_ms),
                                                0.0f,
                                                1.0f);
@@ -63,7 +63,7 @@ float get_percent_of_advance()
 /// Returns the progress
 float signal_sunset_update()
 {
-  if (platform::time_s() >= sunsetTimerEndTime_s)
+  if (hal::time_s() >= sunsetTimerEndTime_s)
   {
     logic::behavior::sunset::progress_update(1.0f);
     return 1.0;
@@ -77,17 +77,17 @@ float signal_sunset_update()
 void sunset_process_loop()
 {
   // this thread runs slowly
-  platform::delay_ms(get_sunset_loop_timing_ms());
+  hal::delay_ms(get_sunset_loop_timing_ms());
 
   if (not is_enabled())
   {
     // sunset time not set, auto suspend
-    platform::threads::suspend_this_thread();
+    hal::threads::suspend_this_thread();
   }
   else
   {
     // less than N minutes, start to decrease brightness
-    if (platform::time_s() + brightnessRampDownTime_s >= sunsetTimerEndTime_s)
+    if (hal::time_s() + brightnessRampDownTime_s >= sunsetTimerEndTime_s)
     {
       // signal the progress change
       const float progress = signal_sunset_update();
@@ -95,7 +95,7 @@ void sunset_process_loop()
       {
         logic::brightness::set_max_user_brightness(0);
         logic::brightness::force_brightness_user_callback();
-        platform::lampda_print("Shutdown with sunset timer");
+        hal::lampda_print("Shutdown with sunset timer");
         logic::behavior::set_power_off();
         cancel_timer();
         return;
@@ -121,30 +121,30 @@ void sunset_process_loop()
 void init()
 {
   // start in suspended mode
-  platform::threads::start_suspended_thread(sunset_process_loop, platform::threads::sunset_taskName, 0, 1024);
+  hal::threads::start_suspended_thread(sunset_process_loop, hal::threads::sunset_taskName, 0, 1024);
 }
 
 void set_deadline(const uint32_t timeshutdown_s)
 {
-  if (timeshutdown_s <= platform::time_s())
+  if (timeshutdown_s <= hal::time_s())
   {
-    platform::lampda_print("shutdown time is less than current time: %d", timeshutdown_s);
+    hal::lampda_print("shutdown time is less than current time: %d", timeshutdown_s);
     return;
   }
-  const uint32_t timeLeftMinutes = round((timeshutdown_s - platform::time_s()) / 60);
+  const uint32_t timeLeftMinutes = round((timeshutdown_s - hal::time_s()) / 60);
 
   if (not is_enabled())
   {
-    platform::lampda_print("sunset timer set to %d minutes", timeLeftMinutes);
+    hal::lampda_print("sunset timer set to %d minutes", timeLeftMinutes);
     sunsetTimerEndTime_s = timeshutdown_s;
     logic::alerts::manager.raise(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 
     // resume
-    platform::threads::resume_thread(platform::threads::sunset_taskName);
+    hal::threads::resume_thread(hal::threads::sunset_taskName);
   }
   else
   {
-    platform::lampda_print("sunset timer updated to %d minutes", timeLeftMinutes);
+    hal::lampda_print("sunset timer updated to %d minutes", timeLeftMinutes);
     // added some time, so signal update
     sunsetTimerEndTime_s = timeshutdown_s;
     signal_sunset_update();
@@ -162,7 +162,7 @@ void add_time_minutes(const uint8_t time_minutes)
 
   // limit 10 minutes per call
   const uint32_t timeToAdd_s = min<uint8_t>(10, time_minutes) * 60;
-  const uint32_t newShutdownTime = platform::time_s() + timeToAdd_s;
+  const uint32_t newShutdownTime = hal::time_s() + timeToAdd_s;
 
   //
   set_deadline(newShutdownTime);
@@ -173,7 +173,7 @@ void shortcut_to_phaseout()
   // sunset is enabled
   if (is_enabled())
   {
-    const uint32_t minimumEndTime_s = platform::time_s() + brightnessRampDownTime_s;
+    const uint32_t minimumEndTime_s = hal::time_s() + brightnessRampDownTime_s;
     // Never extend a timer that is already in the phaseout phase
     if (sunsetTimerEndTime_s <= minimumEndTime_s)
       return;
@@ -184,7 +184,7 @@ void shortcut_to_phaseout()
 
 void bump_timer()
 {
-  const auto timeS = platform::time_s();
+  const auto timeS = hal::time_s();
   if (not is_enabled())
     return;
 
@@ -210,7 +210,7 @@ void cancel_timer()
   if (is_enabled())
   {
     signal_sunset_update();
-    platform::lampda_print("sunset timer cleared");
+    hal::lampda_print("sunset timer cleared");
   }
 
   logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);

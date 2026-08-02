@@ -5,7 +5,7 @@
 #ifndef COMPONENT_SOUND_H
 #define COMPONENT_SOUND_H
 
-#include "src/system/platform/pdm_handle.h"
+#include "src/system/hal/pdm_handle.h"
 
 #include <cstdint>
 #include "src/system/utils/fft.h"
@@ -39,7 +39,7 @@ struct SoundStruct
   bool isDataValid = false;
 
   /// Size fo the audio sample
-  static constexpr auto SAMPLE_SIZE = platform::microphone::PdmData::SAMPLE_SIZE;
+  static constexpr auto SAMPLE_SIZE = hal::microphone::PdmData::SAMPLE_SIZE;
 
   /// raw audio data
   std::array<int16_t, SAMPLE_SIZE> data;

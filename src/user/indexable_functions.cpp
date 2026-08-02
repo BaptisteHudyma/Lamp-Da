@@ -10,7 +10,7 @@
 
 #include "src/system/logic/behavior.h"
 
-#include "src/system/platform/gpio.h"
+#include "src/system/hal/gpio.h"
 
 #include "src/user/functions.h"
 
@@ -64,8 +64,8 @@ using ManagerTy = modes::ManagerForHiddenGroups<
 namespace _private {
 
 // The button pin (one button pin to GND, the other to this pin)
-constexpr platform::gpio::DigitalPin::GPIO ledStripPinId = platform::gpio::DigitalPin::GPIO::gpio6;
-static platform::gpio::DigitalPin LedStripPin(ledStripPinId);
+constexpr hal::gpio::DigitalPin::GPIO ledStripPinId = hal::gpio::DigitalPin::GPIO::gpio6;
+static hal::gpio::DigitalPin LedStripPin(ledStripPinId);
 
 component::LedStrip strip(LedStripPin.pin());
 modes::hardware::LampTy lamp {strip};

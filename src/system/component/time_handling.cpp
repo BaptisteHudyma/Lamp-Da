@@ -1,6 +1,6 @@
 #include "time_handling.h"
 
-#include "src/system/platform/time.h"
+#include "src/system/hal/time.h"
 #include <cstdint>
 
 namespace lampda {
@@ -77,12 +77,12 @@ bool set_real_time(const RealTime& realTime)
   if (not realTime.is_valid())
     return false;
 
-  internal::real_time_offset_s = platform::time_s() - realTime.as_seconds();
+  internal::real_time_offset_s = hal::time_s() - realTime.as_seconds();
   internal::is_time_offset_set = true;
   return true;
 }
 
-RealTime get_real_time() { return internal::get_real_time(platform::time_s(), internal::real_time_offset_s); }
+RealTime get_real_time() { return internal::get_real_time(hal::time_s(), internal::real_time_offset_s); }
 
 uint32_t get_platform_time_from_target_time(const RealTime& time)
 {

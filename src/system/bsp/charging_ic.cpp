@@ -2,11 +2,11 @@
 
 #include <cstdint>
 
-#include "src/system/platform/i2c.h"
-#include "src/system/platform/time.h"
-#include "src/system/platform/gpio.h"
-#include "src/system/platform/registers.h"
-#include "src/system/platform/print.h"
+#include "src/system/hal/i2c.h"
+#include "src/system/hal/time.h"
+#include "src/system/hal/gpio.h"
+#include "src/system/hal/registers.h"
+#include "src/system/hal/print.h"
 
 #include "src/system/component/battery.h"
 
@@ -93,14 +93,14 @@ void run_fault_detection()
       chargerIcRegisters.chargerStatus.Fault_Latchoff() or chargerIcRegisters.chargerStatus.Fault_OTG_OVP() or
       chargerIcRegisters.chargerStatus.Fault_OTG_UVP())
   {
-    platform::lampda_print("Charger ic faults: %d%d%d%d%d%d%d",
-                           chargerIcRegisters.chargerStatus.Fault_ACOV(),
-                           chargerIcRegisters.chargerStatus.Fault_BATOC(),
-                           chargerIcRegisters.chargerStatus.Fault_ACOC(),
-                           chargerIcRegisters.chargerStatus.SYSOVP_STAT(),
-                           chargerIcRegisters.chargerStatus.Fault_Latchoff(),
-                           chargerIcRegisters.chargerStatus.Fault_OTG_OVP(),
-                           chargerIcRegisters.chargerStatus.Fault_OTG_UVP());
+    hal::lampda_print("Charger ic faults: %d%d%d%d%d%d%d",
+                      chargerIcRegisters.chargerStatus.Fault_ACOV(),
+                      chargerIcRegisters.chargerStatus.Fault_BATOC(),
+                      chargerIcRegisters.chargerStatus.Fault_ACOC(),
+                      chargerIcRegisters.chargerStatus.SYSOVP_STAT(),
+                      chargerIcRegisters.chargerStatus.Fault_Latchoff(),
+                      chargerIcRegisters.chargerStatus.Fault_OTG_OVP(),
+                      chargerIcRegisters.chargerStatus.Fault_OTG_UVP());
     status_s = Status_t::ERROR_HAS_FAULTS;
   }
   // reset fault flag
@@ -184,10 +184,10 @@ void control_OTG()
       isOTGInitialized_s = true;
       isOTGReseted = false;
 
-      OTGStartTime_ms = platform::time_ms();
-      lastOTGUsedTime_ms = platform::time_ms();
+      OTGStartTime_ms = hal::time_ms();
+      lastOTGUsedTime_ms = hal::time_ms();
 
-      platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
+      hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
 
       chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
       // TODO test and debug LOW RANGE
@@ -220,11 +220,11 @@ void control_OTG()
       if (measurment.vbus_mA > 0)
       {
         // update the last used time
-        lastOTGUsedTime_ms = platform::time_ms();
+        lastOTGUsedTime_ms = hal::time_ms();
       }
 
       // update the in OTG status to avoid deconnection
-      platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
+      hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
       chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
       chargerIcRegisters.chargeOption3.set_EN_OTG(1);
       charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
@@ -240,8 +240,8 @@ void control_OTG()
 
       disable_OTG();
 
-      platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableOnTheGo).set_high(false);
-      platform::delay_ms(1);
+      hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableOnTheGo).set_high(false);
+      hal::delay_ms(1);
       // 5V 0A for OTG (default)
       set_OTG_targets(5000, 0);
 
@@ -389,7 +389,7 @@ void run_ADC()
     isAdcTriggered = false;
 
     // store everything in the measurment struct
-    measurments_s.time = platform::time_ms();
+    measurments_s.time = hal::time_ms();
     measurments_s.vbus_mV = chargerIcRegisters.aDCVBUSPSYS.get_VBUS();
     measurments_s.psys_mV = chargerIcRegisters.aDCVBUSPSYS.get_PSYS();
     measurments_s.batChargeCurrent_mA = chargerIcRegisters.aDCIBAT.get_ICHG();
@@ -485,7 +485,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
             const uint16_t maxDichargingCurrent_mA,
             const bool forceReset)
 {
-  if (platform::i2c::i2c_check_existence(bq25713::i2cObjectIndex, bq25713::BQ25713::BQ25713addr) != 0)
+  if (hal::i2c::i2c_check_existence(bq25713::i2cObjectIndex, bq25713::BQ25713::BQ25713addr) != 0)
   {
     // error: device not detected
     // charger
@@ -519,12 +519,12 @@ bool enable(const uint16_t minSystemVoltage_mV,
     }
 
     // wait until the flag is lowered
-    uint32_t timeout = platform::time_ms() + 500;
+    uint32_t timeout = hal::time_ms() + 500;
     do
     {
-      platform::delay_ms(5);
+      hal::delay_ms(5);
       chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
-    } while (platform::time_ms() < timeout and chargerIcRegisters.chargeOption3.RESET_REG() == 1);
+    } while (hal::time_ms() < timeout and chargerIcRegisters.chargeOption3.RESET_REG() == 1);
   }
 
   // everything went fine (for now)
@@ -674,7 +674,7 @@ void loop(const bool isChargeOk)
     else
     {
       // set max charge current
-      const float coreTemp = platform::registers::read_CPU_temperature_degreesC();
+      const float coreTemp = hal::registers::read_CPU_temperature_degreesC();
       // will be 0 when temp reaches 70 degrees, stopping the charge
       // below 40 degrees, no reduction of charge current is made
       const float reducer = lmpd_constrain<float>(lmpd_map<float>(coreTemp, 40.0, 70.0, 1.0, 0.0), 0.0, 1.0);
@@ -772,7 +772,7 @@ void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA)
   chargerIcRegisters.oTGCurrent.set(maxCurrent_mA);
 
   // if (realVal != prevVal)
-  //   platform::lampda_print("new OTG targets : %dmV %dmA", realVal, maxCurrent_mA);
+  //   hal::lampda_print("new OTG targets : %dmV %dmA", realVal, maxCurrent_mA);
 }
 
 bool is_in_OTG() { return isInOtg_s; }
@@ -786,7 +786,7 @@ ChargeStatus_t get_charge_status() { return chargeStatus_s; }
 bool Measurments::is_measurment_valid() const
 {
   // initialized and recent
-  return this->time > 0 and (platform::time_ms() - this->time) < 2000;
+  return this->time > 0 and (hal::time_ms() - this->time) < 2000;
 }
 
 Measurments get_measurments() { return measurments_s; };

@@ -25,7 +25,7 @@ techsupport@sparkfun.com.
 
 #include "LSM6DS3.h"
 
-#include "src/system/platform/i2c.h"
+#include "src/system/hal/i2c.h"
 
 #include "stdint.h"
 
@@ -64,7 +64,7 @@ status_t LSM6DS3Core::beginCore(void)
   // Check the ID register to determine if the operation was a success.
   uint8_t readCheck;
 
-  if (lampda::platform::i2c::i2c_check_existence(i2cDeviceIndex, I2CAddress) != 0)
+  if (lampda::hal::i2c::i2c_check_existence(i2cDeviceIndex, I2CAddress) != 0)
   {
     returnError = IMU_HW_ERROR;
   }
@@ -102,8 +102,8 @@ status_t LSM6DS3Core::readRegisterRegion(uint8_t* outputPointer, uint8_t offset,
   uint8_t c = 0;
   uint8_t tempFFCounter = 0;
 
-  if (lampda::platform::i2c::i2c_readData(
-              i2cDeviceIndex, I2CAddress, offset, length, outputPointer, usesStopBit ? 1 : 0) != 0)
+  if (lampda::hal::i2c::i2c_readData(i2cDeviceIndex, I2CAddress, offset, length, outputPointer, usesStopBit ? 1 : 0) !=
+      0)
   {
     returnError = IMU_HW_ERROR;
   }
@@ -127,7 +127,7 @@ status_t LSM6DS3Core::readRegister(uint8_t* outputPointer, uint8_t offset)
   uint8_t numBytes = 1;
   status_t returnError = IMU_SUCCESS;
 
-  if (lampda::platform::i2c::i2c_read8(i2cDeviceIndex, I2CAddress, offset, &result, usesStopBit ? 1 : 0) != 0)
+  if (lampda::hal::i2c::i2c_read8(i2cDeviceIndex, I2CAddress, offset, &result, usesStopBit ? 1 : 0) != 0)
   {
     returnError = IMU_HW_ERROR;
   }
@@ -169,7 +169,7 @@ status_t LSM6DS3Core::writeRegister(uint8_t offset, uint8_t dataToWrite)
   status_t returnError = IMU_SUCCESS;
 
   // Write the
-  if (lampda::platform::i2c::i2c_write8(i2cDeviceIndex, I2CAddress, offset, dataToWrite, usesStopBit ? 1 : 0) != 0)
+  if (lampda::hal::i2c::i2c_write8(i2cDeviceIndex, I2CAddress, offset, dataToWrite, usesStopBit ? 1 : 0) != 0)
   {
     returnError = IMU_HW_ERROR;
   }

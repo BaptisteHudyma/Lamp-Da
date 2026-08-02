@@ -4,8 +4,8 @@
 extern "C" {
 #endif
 
-#include "../../../../src/system/platform/time.h"
-#include "../../../../src/system/platform/threads.h"
+#include "../../../../src/system/hal/time.h"
+#include "../../../../src/system/hal/threads.h"
 
 #define WAKE_EVENT_SIGNAL  (1 << 2)
 #define RESUME_TASK_SIGNAL (1 << 3)

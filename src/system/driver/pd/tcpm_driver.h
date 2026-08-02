@@ -14,8 +14,8 @@
 extern "C" {
 #endif
 
-#include "../../../../src/system/platform/i2c.h"
-#include "../../../../src/system/platform/time.h"
+#include "../../../../src/system/hal/i2c.h"
+#include "../../../../src/system/hal/time.h"
 
 // USB-C Stuff
 #include "../../../../src/system/bsp/pd/tcpm/tcpm.h"

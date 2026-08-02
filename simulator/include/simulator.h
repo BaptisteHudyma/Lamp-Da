@@ -40,7 +40,7 @@ constexpr float fResidueW = 1 / (2 * fLedW - 2 * floor(fLedW) - 1);
 
 #include "simulator/include/hardware_influencer.h"
 // handle simulation of voltage and current in the system
-#include "simulator/mocks/electrical/electrical_mock.cpp"
+#include "simulator/hal/electrical/electrical_mock.cpp"
 
 #include <thread>
 

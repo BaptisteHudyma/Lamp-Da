@@ -18,7 +18,7 @@
 #include "src/system/component/strip.h"
 #endif
 
-#include "src/system/platform/time.h"
+#include "src/system/hal/time.h"
 
 #include "src/system/logic/brightness_handle.h"
 
@@ -213,7 +213,7 @@ public:
   void LMBD_INLINE refresh_tick_value()
   {
     uint32_t* writeable_now = const_cast<uint32_t*>(&now);
-    *writeable_now = platform::time_ms();
+    *writeable_now = hal::time_ms();
 
     uint32_t* writable_tick = const_cast<uint32_t*>(&tick);
     *writable_tick = now / frameDurationMs;

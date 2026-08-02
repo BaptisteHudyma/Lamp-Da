@@ -1,8 +1,8 @@
 #include "power_gates.h"
 
-#include "src/system/platform/gpio.h"
-#include "src/system/platform/time.h"
-#include "src/system/platform/print.h"
+#include "src/system/hal/gpio.h"
+#include "src/system/hal/time.h"
+#include "src/system/hal/print.h"
 
 #include <cassert>
 
@@ -25,8 +25,8 @@ static uint32_t _blipWakeUpTime_ms = 0;
 bool _isPowerGateReallyEnabled = false;
 
 namespace __private {
-const platform::gpio::DigitalPin enableVbusGate(platform::gpio::DigitalPin::GPIO::Output_EnableVbusGate);
-const platform::gpio::DigitalPin enablePowerGate(platform::gpio::DigitalPin::GPIO::Output_EnableOutputGate);
+const hal::gpio::DigitalPin enableVbusGate(hal::gpio::DigitalPin::GPIO::Output_EnableVbusGate);
+const hal::gpio::DigitalPin enablePowerGate(hal::gpio::DigitalPin::GPIO::Output_EnableOutputGate);
 } // namespace __private
 
 static bool _isVbusGateEnabled = false;
@@ -38,8 +38,8 @@ static bool _isPowerGateSwitching = false;
 static uint32_t _powerGateStartSwitchingTime = 0;
 
 ///
-bool is_power_gate_switched() { return platform::time_ms() - _powerGateStartSwitchingTime > gateSwitchDelay_ms; }
-bool is_vbus_gate_switched() { return platform::time_ms() - _vbusGateStartSwitchingTime > gateSwitchDelay_ms; }
+bool is_power_gate_switched() { return hal::time_ms() - _powerGateStartSwitchingTime > gateSwitchDelay_ms; }
+bool is_vbus_gate_switched() { return hal::time_ms() - _vbusGateStartSwitchingTime > gateSwitchDelay_ms; }
 
 bool is_power_gate_enabled() { return _isPowerGateReallyEnabled; }
 
@@ -56,19 +56,19 @@ void enable_gate(bool isVbusGate)
   __private::enableVbusGate.set_high(isVbusGateEnabled);
 
   // set real status
-  platform::delay_ms(1);
+  hal::delay_ms(1);
   _isPowerGateReallyEnabled = isPowerGateEnabled;
 
   if (isPowerGateEnabled)
-    platform::lampda_print("power gate enabled");
+    hal::lampda_print("power gate enabled");
   else
-    platform::lampda_print("vbus gate enabled");
+    hal::lampda_print("vbus gate enabled");
 }
 
 void disable_vbus_gate()
 {
   if (__private::enableVbusGate.is_high())
-    platform::lampda_print("vbus gate disabled");
+    hal::lampda_print("vbus gate disabled");
 
   __private::enableVbusGate.set_high(false);
   _isVbusGateEnabled = false;
@@ -81,7 +81,7 @@ void disable_power_gate()
   _blipWakeUpTime_ms = 0;
 
   if (__private::enablePowerGate.is_high())
-    platform::lampda_print("power gate disabled");
+    hal::lampda_print("power gate disabled");
 
   __private::enablePowerGate.set_high(false);
   _isPowerGateEnabled = false;
@@ -92,7 +92,7 @@ void switch_delayed_vbus_gate(bool enable)
 {
   if (enable != _isVbusGateEnabled)
   {
-    _vbusGateStartSwitchingTime = platform::time_ms();
+    _vbusGateStartSwitchingTime = hal::time_ms();
     _isVbusGateSwitching = true;
     _isVbusGateEnabled = enable;
   }
@@ -102,7 +102,7 @@ void switch_delayed_power_gate(bool enable)
 {
   if (enable != _isPowerGateEnabled)
   {
-    _powerGateStartSwitchingTime = platform::time_ms();
+    _powerGateStartSwitchingTime = hal::time_ms();
     _isPowerGateSwitching = true;
     _isPowerGateEnabled = enable;
   }
@@ -136,7 +136,7 @@ void loop()
   if (_isPowerGateReallyEnabled)
   {
     // prepare blip wake up
-    if (_blipWakeUpTime_ms != 0 && platform::time_ms() >= _blipWakeUpTime_ms)
+    if (_blipWakeUpTime_ms != 0 && hal::time_ms() >= _blipWakeUpTime_ms)
     {
       power::cancel_blip();
     }
@@ -165,7 +165,7 @@ void blip(const uint32_t timing)
     return;
   }
 
-  _blipWakeUpTime_ms = platform::time_ms() + timing;
+  _blipWakeUpTime_ms = hal::time_ms() + timing;
 
   // deactivate without checks, not that dangerous...
   __private::enablePowerGate.set_high(false);

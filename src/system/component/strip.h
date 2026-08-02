@@ -12,12 +12,12 @@
 #include <cstring>
 #include <array>
 
-#include "src/system/platform/strip_impl.h"
+#include "src/system/hal/strip_impl.h"
 
 #ifndef LMBD_SIMULATION
-#include "src/system/platform/strip_impl.hpp"
+#include "src/system/hal/strip_impl.hpp"
 #else
-#include "simulator/mocks/strip_impl.hpp"
+#include "simulator/hal/strip_impl.hpp"
 #endif
 
 #include "src/system/ext/scale8.h"
@@ -42,7 +42,7 @@ struct LampTy;
 
 namespace component {
 
-using StripImpl_t = platform::strip::LampdaStrip<LED_COUNT, 3>;
+using StripImpl_t = hal::strip::LampdaStrip<LED_COUNT, 3>;
 
 /// protected inheritence to avoid uncontroled hardware calls
 class LedStrip : private StripImpl_t
