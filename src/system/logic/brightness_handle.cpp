@@ -2,9 +2,9 @@
 
 #include "src/user/functions.h"
 
-#include "src/system/platform/time.h"
+#include "src/system/hal/time.h"
 
-#include "src/system/physical/indicator.h"
+#include "src/system/bsp/indicator.h"
 
 #include "src/system/logic/behavior.h"
 
@@ -79,7 +79,7 @@ void update_brightness(const brightness_t newBrightness, const bool shouldCallUs
     }
   }
 
-  __internal.lastBrightnessUpdate = ::lampda::platform::time_ms();
+  __internal.lastBrightnessUpdate = ::lampda::hal::time_ms();
 }
 
 void force_brightness_user_callback()
@@ -109,23 +109,23 @@ void set_brightness_level(const uint8_t level)
   {
     case 1:
       _level = 1;
-      physical::indicator::set_brightness(lowBrightness);
+      bsp::indicator::set_brightness(lowBrightness);
       break;
     case 2:
       // level 2 will also disable the indicator when in charge mode
       _level = 2;
-      physical::indicator::set_brightness(lowBrightness);
+      bsp::indicator::set_brightness(lowBrightness);
       break;
     // 0 and default are the same : level too high should loop back
     case 0:
     default:
       _level = 0;
-      physical::indicator::set_brightness(255);
+      bsp::indicator::set_brightness(255);
       break;
   }
 
   // update the level timer
-  levelUpdateTime = platform::time_ms();
+  levelUpdateTime = hal::time_ms();
 }
 
 uint8_t get_brightness_level() { return _level; }
@@ -139,13 +139,13 @@ bool should_indicator_be_visible()
   if (not shouldDisplay)
   {
     static constexpr uint32_t forceDisplayTime_ms = 5000;
-    return (platform::time_ms() - levelUpdateTime) < forceDisplayTime_ms;
+    return (hal::time_ms() - levelUpdateTime) < forceDisplayTime_ms;
   }
   else
   {
     // if we will show the indicator, do the blip
     static constexpr uint32_t blipLenght_ms = 100;
-    const bool shouldBlip = levelUpdateTime != 0 and (platform::time_ms() - levelUpdateTime) < blipLenght_ms;
+    const bool shouldBlip = levelUpdateTime != 0 and (hal::time_ms() - levelUpdateTime) < blipLenght_ms;
     if (shouldBlip)
       return false;
   }

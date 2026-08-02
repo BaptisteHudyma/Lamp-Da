@@ -5,7 +5,8 @@
 #ifndef MODES_INCLUDE_IMU_UTILS_HPP
 #define MODES_INCLUDE_IMU_UTILS_HPP
 
-#include "src/system/physical/imu.h"
+#include "src/system/component/imu.h"
+
 #include "src/system/utils/vector_math.h"
 
 #include "src/modes/include/particle_system/particle_system.hpp"
@@ -18,14 +19,14 @@ namespace lampda::modes::imu {
 template<int temp = 0> struct ImuEventTy
 {
   /// last reading of the IMU
-  physical::imu::Reading lastReading;
+  bsp::imu::Reading lastReading;
 
   /// Reset the IMU events.
   /// Should be called before any use
   void reset(auto& ctx)
   {
     // reset filter
-    physical::imu::get_filtered_reading(true);
+    component::imu::get_filtered_reading(true);
 
     // reset particles
     particuleSystem.reset();
@@ -36,7 +37,7 @@ template<int temp = 0> struct ImuEventTy
   void update(auto& ctx)
   {
     //
-    lastReading = physical::imu::get_filtered_reading(false);
+    lastReading = component::imu::get_filtered_reading(false);
   }
 
   /// ALL IMU ANIMATIONS SHARE THIS PARTICLE SYSTEM.

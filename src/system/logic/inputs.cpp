@@ -8,12 +8,13 @@
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/sunset_timer.h"
 
-#include "src/system/physical/button.h"
-#include "src/system/physical/indicator.h"
+#include "src/system/bsp/indicator.h"
 
-#include "src/system/platform/bluetooth.h"
-#include "src/system/platform/time.h"
-#include "src/system/platform/print.h"
+#include "src/system/component/button.h"
+
+#include "src/system/hal/bluetooth.h"
+#include "src/system/hal/time.h"
+#include "src/system/hal/print.h"
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/time_utils.h"
@@ -135,9 +136,9 @@ void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck, 
         {
 #ifdef DEBUG_MODE
           // disable charger and wait 5s to be killed by watchdog
-          indicator::set_color(utils::ColorSpace::PINK);
+          bsp::indicator::set_color(utils::ColorSpace::PINK);
           logic::power::enable_charge(false);
-          platform::delay_ms(20000); // crash the system
+          hal::delay_ms(20000); // crash the system
 #endif
           behavior::set_power_off();
           return;
@@ -189,7 +190,7 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
         {
           behavior::set_power_on();
           isButtonUsermodeEnabled = true;
-          platform::lampda_print("Wake up from start usermode command");
+          hal::lampda_print("Wake up from start usermode command");
         }
         return false;
       }
@@ -198,7 +199,7 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
         // 4+hold (2s): turn on, with bluetooth advertising
         if (buttonHoldDuration > 2000)
         {
-          platform::bluetooth::start_advertising();
+          hal::bluetooth::start_advertising();
         }
         return false;
       }
@@ -303,7 +304,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
         if (isEndOfHoldEvent)
         {
           // update logic
-          lastBrightnessUpdateTime_ms = platform::time_ms();
+          lastBrightnessUpdateTime_ms = hal::time_ms();
           logic::brightness::update_saved_brightness();
 
           // if user set the brightness up, alert of sunset update
@@ -334,7 +335,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
             else if (brightness >= logic::brightness::get_max_brightness())
               rampSide = -1;
             // if more than 1 second elapsed, fall back to raise ramp
-            else if (lastBrightnessUpdateTime_ms == 0 or platform::time_ms() - lastBrightnessUpdateTime_ms >= 1000)
+            else if (lastBrightnessUpdateTime_ms == 0 or hal::time_ms() - lastBrightnessUpdateTime_ms >= 1000)
               rampSide = 1;
           }
           // press for too long, go down
@@ -345,7 +346,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
             if (buttonHoldDuration >= 2 * BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS + BRIGHTNESS_RAMP_DURATION_MS +
                                               latestBrightnessSaturationDuration_ms)
             {
-              platform::lampda_print("System shutdown: button pressed too long for brightness control");
+              hal::lampda_print("System shutdown: button pressed too long for brightness control");
               behavior::set_power_off();
               break;
             }
@@ -435,7 +436,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck, const bool is
       {
         // user returned a command handle, so we should start
         behavior::set_power_on();
-        platform::lampda_print("Wake up from start user::clicks %d", consecutiveButtonCheck);
+        hal::lampda_print("Wake up from start user::clicks %d", consecutiveButtonCheck);
         return;
       }
     }
@@ -476,7 +477,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck, const bool is
     if (consecutiveButtonCheck == 1)
     {
       behavior::set_power_on();
-      platform::lampda_print("Wake up from single press");
+      hal::lampda_print("Wake up from single press");
     }
   }
 }
@@ -492,8 +493,8 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
     return;
 
   // rectify hold duration
-  const uint32_t holdDuration = (buttonHoldDuration > physical::button::HOLD_BUTTON_MIN_MS) ?
-                                        (buttonHoldDuration - physical::button::HOLD_BUTTON_MIN_MS) :
+  const uint32_t holdDuration = (buttonHoldDuration > component::button::HOLD_BUTTON_MIN_MS) ?
+                                        (buttonHoldDuration - component::button::HOLD_BUTTON_MIN_MS) :
                                         0;
 
   //
@@ -517,7 +518,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
         {
           // user returned a command handle, so we should start
           behavior::set_power_on();
-          platform::lampda_print("Wake up from start user::hold %d", consecutiveButtonCheck);
+          hal::lampda_print("Wake up from start user::hold %d", consecutiveButtonCheck);
         }
         return;
       }
@@ -560,8 +561,8 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
 
 void init(const bool wasPoweredByUserInterrupt)
 {
-  physical::button::init(wasPoweredByUserInterrupt);
-  physical::indicator::init();
+  component::button::init(wasPoweredByUserInterrupt);
+  bsp::indicator::init();
 }
 
 void loop()

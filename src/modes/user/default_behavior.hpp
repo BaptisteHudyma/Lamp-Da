@@ -11,7 +11,7 @@
 //  - src/modes/user/simple_behavior.hpp
 //
 
-#include "src/system/physical/time_handling.h"
+#include "src/system/component/time_handling.h"
 
 #include <cstdint>
 namespace lampda::user {
@@ -241,8 +241,8 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
                       holdDuration, 5000, modes::colors::PaletteGradient<modes::colors::Red, modes::colors::Red>))
           {
             // reset the file system and memory
-            platform::lampda_print("clearing the whole file format");
-            physical::fileSystem::clear_internal_fs();
+            hal::lampda_print("clearing the whole file format");
+            component::fileSystem::clear_internal_fs();
 
             // shutdown the lamp
             const bool shouldSaveUserParameters = false;
@@ -261,8 +261,8 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
                       holdDuration, 5000, modes::colors::PaletteGradient<modes::colors::Red, modes::colors::Red>))
           {
             // reset the file system and memory
-            platform::lampda_print("clearing the whole file format");
-            physical::fileSystem::clear_internal_fs();
+            hal::lampda_print("clearing the whole file format");
+            component::fileSystem::clear_internal_fs();
 
             // shutdown the lamp
             const bool shouldSaveUserParameters = false;
@@ -340,13 +340,13 @@ void handle_speed_command(const uint8_t speed)
  */
 void handle_set_time_command(const uint8_t hour, const uint8_t minutes, const uint8_t seconds, const uint8_t weekday)
 {
-  time::RealTime time;
+  component::time::RealTime time;
   time.dayOfTheWeek = weekday;
   time.hour = hour;
   time.minutes = minutes;
   time.seconds = seconds;
-  const bool isValid = time::set_real_time(time);
-  platform::lampda_print("set time %d %dh %dm %ds (validity: %d)", weekday, hour, minutes, seconds, isValid);
+  const bool isValid = component::time::set_real_time(time);
+  hal::lampda_print("set time %d %dh %dm %ds (validity: %d)", weekday, hour, minutes, seconds, isValid);
 }
 
 /**
@@ -359,31 +359,31 @@ void handle_timing_command(const bool shouldTurnOn,
                            const uint8_t seconds,
                            const uint8_t weekday)
 {
-  time::RealTime time;
+  component::time::RealTime time;
   time.dayOfTheWeek = weekday;
   time.hour = hour;
   time.minutes = minutes;
   time.seconds = seconds;
-  const uint32_t internalLampActionTime = time::get_platform_time_from_target_time(time);
+  const uint32_t internalLampActionTime = component::time::get_platform_time_from_target_time(time);
 
   if (internalLampActionTime <= 0)
   {
-    platform::lampda_print("Refusing timing command %d %dh %dm %ds. Likely cause: time is not synchronized.",
-                           time.dayOfTheWeek,
-                           hour,
-                           minutes,
-                           seconds);
+    hal::lampda_print("Refusing timing command %d %dh %dm %ds. Likely cause: time is not synchronized.",
+                      time.dayOfTheWeek,
+                      hour,
+                      minutes,
+                      seconds);
     return;
   }
 
   if (shouldTurnOn)
   {
-    platform::lampda_print("NOT HANDLED: lamp will auto turn on on %d %dh %dm %ds %d",
-                           time.dayOfTheWeek,
-                           hour,
-                           minutes,
-                           seconds,
-                           internalLampActionTime);
+    hal::lampda_print("NOT HANDLED: lamp will auto turn on on %d %dh %dm %ds %d",
+                      time.dayOfTheWeek,
+                      hour,
+                      minutes,
+                      seconds,
+                      internalLampActionTime);
   }
   else
   {
@@ -391,12 +391,12 @@ void handle_timing_command(const bool shouldTurnOn,
     if (not logic::behavior::is_in_output_state())
       logic::behavior::set_power_on();
 
-    platform::lampda_print("lamp will auto turn off on %d %dh %dm %ds %d",
-                           time.dayOfTheWeek,
-                           hour,
-                           minutes,
-                           seconds,
-                           internalLampActionTime);
+    hal::lampda_print("lamp will auto turn off on %d %dh %dm %ds %d",
+                      time.dayOfTheWeek,
+                      hour,
+                      minutes,
+                      seconds,
+                      internalLampActionTime);
     logic::sunset::set_deadline(internalLampActionTime);
   }
 }
@@ -433,7 +433,7 @@ bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
 
         if (weekdayPlusOne <= 0 or weekdayPlusOne > 7)
         {
-          platform::lampda_print("Refused to set the time: invalid day of the week: %d", weekdayPlusOne);
+          hal::lampda_print("Refused to set the time: invalid day of the week: %d", weekdayPlusOne);
           break;
         }
 
@@ -461,7 +461,7 @@ bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
 
         if (indexOfTheDay < 0 or indexOfTheDay > 6)
         {
-          platform::lampda_print("Refused to handle timing command: invalid day of the week");
+          hal::lampda_print("Refused to handle timing command: invalid day of the week");
           break;
         }
 

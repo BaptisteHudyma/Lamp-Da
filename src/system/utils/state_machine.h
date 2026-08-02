@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "src/system/platform/time.h"
+#include "src/system/hal/time.h"
 #include <cstdint>
 
 namespace lampda {
@@ -20,7 +20,7 @@ public:
   StateMachine(const State s) :
     current(s),
     lastState(s),
-    stateSetTime(platform::time_ms()),
+    stateSetTime(hal::time_ms()),
     timeout_ms(0),
     afterTimeoutState(s),
     changedWithTimeout(false)
@@ -35,7 +35,7 @@ public:
   StateMachine(const State s, const uint32_t timeout, const State stateOnTimeout) :
     current(s),
     lastState(s),
-    stateSetTime(platform::time_ms()),
+    stateSetTime(hal::time_ms()),
     timeout_ms(0),
     afterTimeoutState(s),
     changedWithTimeout(false)
@@ -49,7 +49,7 @@ public:
   void run()
   {
     // there is a timeout set for this state
-    if (isTimeoutSet and platform::time_ms() >= timeout_ms)
+    if (isTimeoutSet and hal::time_ms() >= timeout_ms)
     {
       // timeout reached
       set_state(afterTimeoutState);
@@ -76,7 +76,7 @@ public:
     // reset the timeout time
     isTimeoutSet = false;
     timeout_ms = 0;
-    stateSetTime = platform::time_ms();
+    stateSetTime = hal::time_ms();
 
     changedWithTimeout = false;
     didStateJustChanged = true;
@@ -118,7 +118,7 @@ public:
     if (isTimeoutSet)
     {
       // potential clock overflow, be careful
-      timeout_ms = platform::time_ms() + timeout;
+      timeout_ms = hal::time_ms() + timeout;
     }
   }
 

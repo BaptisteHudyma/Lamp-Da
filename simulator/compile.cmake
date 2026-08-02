@@ -43,34 +43,36 @@ set(SRC_SYSTEM_UTILS
     ${LMBD_ROOT_DIR}/src/system/utils/vector_math.cpp
     )
 
-set(SRC_SYSTEM_POWER
-    ${LMBD_ROOT_DIR}/src/system/power/power_gates.cpp
-    ${LMBD_ROOT_DIR}/src/system/power/balancer.cpp
-    ${LMBD_ROOT_DIR}/src/system/power/PDlib/power_delivery.cpp
-    ${LMBD_ROOT_DIR}/src/system/power/PDlib/drivers/tcpm_driver.cpp
-    ${LMBD_ROOT_DIR}/src/system/power/charging_ic.cpp
-    ${LMBD_ROOT_DIR}/src/system/power/charger.cpp
+set(SRC_SYSTEM_BSP
+    ${LMBD_ROOT_DIR}/src/system/bsp/pd/power_delivery.cpp
+    ${LMBD_ROOT_DIR}/src/system/bsp/pd/task.c
+    ${LMBD_ROOT_DIR}/src/system/bsp/pd/usb_pd_policy.c
+    ${LMBD_ROOT_DIR}/src/system/bsp/pd/usb_pd_protocol.c
+
+    ${LMBD_ROOT_DIR}/src/system/bsp/balancer.cpp
+    ${LMBD_ROOT_DIR}/src/system/bsp/charging_ic.cpp
+    ${LMBD_ROOT_DIR}/src/system/bsp/imu_wrapper.cpp
+    ${LMBD_ROOT_DIR}/src/system/bsp/indicator.cpp
+    ${LMBD_ROOT_DIR}/src/system/bsp/power_gates.cpp
 )
 
-set(SRC_SYSTEM_PDLIB_C
-    ${LMBD_ROOT_DIR}/src/system/power/PDlib/usb_pd_policy.c
-    ${LMBD_ROOT_DIR}/src/system/power/PDlib/task.c
-    ${LMBD_ROOT_DIR}/src/system/power/PDlib/usb_pd_protocol.c
-    ${LMBD_ROOT_DIR}/src/system/power/PDlib/drivers/usb_pd_driver.c
-    ${LMBD_ROOT_DIR}/src/system/power/PDlib/drivers/FUSB302.c
+set(SRC_SYSTEM_COMPONENT
+    ${LMBD_ROOT_DIR}/src/system/component/battery.cpp
+    ${LMBD_ROOT_DIR}/src/system/component/button.cpp
+    ${LMBD_ROOT_DIR}/src/system/component/charger.cpp
+    ${LMBD_ROOT_DIR}/src/system/component/fileSystem.cpp
+    ${LMBD_ROOT_DIR}/src/system/component/imu.cpp
+    ${LMBD_ROOT_DIR}/src/system/component/output_power.cpp
+    ${LMBD_ROOT_DIR}/src/system/component/sound.cpp
+    ${LMBD_ROOT_DIR}/src/system/component/time_handling.cpp
 )
 
-set(SRC_SYSTEM_PHYSICAL
-    ${LMBD_ROOT_DIR}/src/system/physical/fileSystem.cpp
-    ${LMBD_ROOT_DIR}/src/system/physical/LSM6DS3/LSM6DS3.cpp
-    ${LMBD_ROOT_DIR}/src/system/physical/LSM6DS3/imu_wrapper.cpp
-    ${LMBD_ROOT_DIR}/src/system/physical/button.cpp
-    ${LMBD_ROOT_DIR}/src/system/physical/battery.cpp
-    ${LMBD_ROOT_DIR}/src/system/physical/output_power.cpp
-    ${LMBD_ROOT_DIR}/src/system/physical/sound.cpp
-    ${LMBD_ROOT_DIR}/src/system/physical/imu.cpp
-    ${LMBD_ROOT_DIR}/src/system/physical/indicator.cpp
-    ${LMBD_ROOT_DIR}/src/system/physical/time_handling.cpp
+set(SRC_SYSTEM_DRIVER
+    ${LMBD_ROOT_DIR}/src/system/driver/pd/FUSB302.c
+    ${LMBD_ROOT_DIR}/src/system/driver/pd/tcpm_driver.cpp
+    ${LMBD_ROOT_DIR}/src/system/driver/pd/usb_pd_driver.c
+
+    ${LMBD_ROOT_DIR}/src/system/driver/LSM6DS3.cpp
 )
 
 set(SRC_SYSTEM_EXT
@@ -93,15 +95,15 @@ set(SRC_SYSTEM_LOGIC
     ${LMBD_ROOT_DIR}/src/system/logic/sunset_timer.cpp
 )
 
-set(SIMULATOR_MOCKS
-    ${LMBD_ROOT_DIR}/simulator/mocks/print_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/pdm_handle_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/registers_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/time_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/i2c_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/gpio_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/threads_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/mocks/bluetooth_mock.cpp
+set(SIMULATOR_HAL
+    ${LMBD_ROOT_DIR}/simulator/hal/bluetooth_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/gpio_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/i2c_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/pdm_handle_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/print_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/registers_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/threads_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/time_mock.cpp
 )
 
 set(SIMULATOR_STATE
@@ -121,13 +123,13 @@ function(create_simulator_target SIM_NAME)
     add_library(simulator_${SIM_NAME} OBJECT
         ${SRC_SYSTEM_DEPENDS}
         ${SRC_SYSTEM_UTILS}
-        ${SRC_SYSTEM_POWER}
-        ${SRC_SYSTEM_PHYSICAL}
-        ${SRC_SYSTEM_PDLIB_C}
+        ${SRC_SYSTEM_BSP}
+        ${SRC_SYSTEM_COMPONENT}
+        ${SRC_SYSTEM_DRIVER}
         ${SRC_SYSTEM_EXT}
         ${SRC_SYSTEM_LOGIC}
         ${SRC_SYSTEM_GLOBAL}
-        ${SIMULATOR_MOCKS}
+        ${SIMULATOR_HAL}
         ${SIMULATOR_STATE}
         ${LMBD_ROOT_DIR}/src/user/${SIM_NAME}_functions.cpp
     )

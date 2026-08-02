@@ -8,11 +8,11 @@
 #include "src/system/utils/utils.h"
 #include "src/system/utils/curves.h"
 
-#include "src/system/physical/fileSystem.h"
-#include "src/system/physical/output_power.h"
+#include "src/system/component/fileSystem.h"
+#include "src/system/component/output_power.h"
 
-#include "src/system/platform/gpio.h"
-#include "src/system/platform/time.h"
+#include "src/system/hal/gpio.h"
+#include "src/system/hal/time.h"
 
 #include "src/user/functions.h"
 
@@ -20,8 +20,8 @@ namespace lampda::user {
 
 constexpr uint8_t minBrightness = 13;
 
-static platform::gpio::DigitalPin WhiteColorPin(platform::gpio::DigitalPin::GPIO::gpio6);
-static platform::gpio::DigitalPin YellowColorPin(platform::gpio::DigitalPin::GPIO::gpio7);
+static hal::gpio::DigitalPin WhiteColorPin(hal::gpio::DigitalPin::GPIO::gpio6);
+static hal::gpio::DigitalPin YellowColorPin(hal::gpio::DigitalPin::GPIO::gpio7);
 
 constexpr uint32_t colorKey = utils::hash("color");
 uint8_t currentColor = 0;
@@ -42,8 +42,8 @@ void set_color(const uint8_t color)
 
 void power_on_sequence()
 {
-  YellowColorPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
-  WhiteColorPin.set_pin_mode(platform::gpio::DigitalPin::Mode::kOutput);
+  YellowColorPin.set_pin_mode(hal::gpio::DigitalPin::Mode::kOutput);
+  WhiteColorPin.set_pin_mode(hal::gpio::DigitalPin::Mode::kOutput);
 
   brightness_update(logic::brightness::get_saved_brightness());
 }
@@ -67,7 +67,7 @@ void brightness_update(const brightness_t brightness)
   if (constraintBrightness == _maxBrightness)
   {
     // blip
-    physical::outputPower::blip(50);
+    component::outputPower::blip(50);
   }
 
   // map to a new curve, favorising low levels
@@ -79,18 +79,18 @@ void brightness_update(const brightness_t brightness)
 
   currentBrightness = round(brightnessCurve.sample(constraintBrightness));
 
-  physical::outputPower::write_voltage(currentBrightness);
+  component::outputPower::write_voltage(currentBrightness);
   set_color(currentColor);
 }
 
 void sunset_timer_update(const float progress) {}
 
-void write_parameters() { physical::fileSystem::user::set_value(colorKey, currentColor); }
+void write_parameters() { component::fileSystem::user::set_value(colorKey, currentColor); }
 
 void read_parameters()
 {
   uint32_t mode = 0;
-  if (physical::fileSystem::user::get_value(colorKey, mode))
+  if (component::fileSystem::user::get_value(colorKey, mode))
   {
     currentColor = mode;
     lastColor = currentColor;

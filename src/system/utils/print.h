@@ -7,7 +7,7 @@
 
 #ifdef __cplusplus
 namespace lampda {
-namespace platform {
+namespace hal {
 
 #define EXTERNC extern "C"
 #else
@@ -26,7 +26,7 @@ EXTERNC void lampda_print_raw(const char* format, ...);
 #undef EXTERNC
 
 #ifdef __cplusplus
-} // namespace platform
+} // namespace hal
 } // namespace lampda
 #endif
 

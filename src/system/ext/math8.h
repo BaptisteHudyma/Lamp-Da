@@ -3,7 +3,7 @@
 #define __INC_LIB8TION_MATH_H
 
 #include "src/system/utils/constants.h"
-#include "src/system/platform/time.h"
+#include "src/system/hal/time.h"
 
 #include "scale8.h"
 
@@ -958,7 +958,7 @@ LIB8STATIC uint16_t beat88(accum88 beats_per_minute_88, uint32_t timebase = 0)
   // The ratio 65536:60000 is 279.620266667:256; we'll call it 280:256.
   // The conversion is accurate to about 0.05%, more or less,
   // e.g. if you ask for "120 BPM", you'll get about "119.93".
-  return (((platform::time_ms()) - timebase) * beats_per_minute_88 * 280) >> 16;
+  return (((hal::time_ms()) - timebase) * beats_per_minute_88 * 280) >> 16;
 }
 
 /// Generates a 16-bit "sawtooth" wave at a given BPM

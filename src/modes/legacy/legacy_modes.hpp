@@ -5,11 +5,10 @@
 #ifndef LEGACY_MODES_H
 #define LEGACY_MODES_H
 
-#include "src/system/power/charger.h"
+#include "src/system/component/charger.h"
+#include "src/system/component/fileSystem.h"
 
 #include "src/system/utils/utils.h"
-
-#include "src/system/physical/fileSystem.h"
 
 #include "src/modes/default/aurora.hpp"
 #include "src/modes/default/automaton.hpp"

@@ -14,7 +14,7 @@
 #include "src/modes/include/tools.hpp"
 #include "src/modes/include/default_config.hpp"
 
-#include "src/system/platform/print.h"
+#include "src/system/hal/print.h"
 
 namespace lampda::modes {
 

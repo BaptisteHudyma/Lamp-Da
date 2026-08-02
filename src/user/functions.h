@@ -15,11 +15,11 @@
 #include "src/system/utils/elk_decoder.h"
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
-#include "src/system/physical/strip.h"
+#include "src/system/component/strip.h"
 
 // (extern declarations)
 namespace lampda::user::_private {
-extern lampda::physical::LedStrip strip;
+extern lampda::component::LedStrip strip;
 }
 #endif
 

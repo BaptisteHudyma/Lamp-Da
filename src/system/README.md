@@ -1,40 +1,50 @@
 # File details
 - global.h: main entry point for the program
-- ext: external libraries
-- logic: handle high level system logic (Input actions, button presses, main state machine...)
-    - alert.h: Handle the diffferent alerts raised by the program
-    - behavior.h: controls the lamp behaviors: battery level, charger start and stops, ...
-    - brightness_handle.h: handle the brightness logic
-    - command_line_interface.h: handle serial communication. Location of the CLI capabilities
-    - inputs.h: what button actions does what
-    - sunset_timer.h: Logic of the sunset timer
-    - statistics_handler.h: Keep track of the system use statistics
-    - power_handler.h: High level handling of all power and battery related logic
-- physical: stuf related to the physical components: button, bluetooth, IMU, ...
-    - LSM6DS3: library to talk to the IMU. Adapted to this architecture
+- bsp: Board Support Package. Board specific implementations, under the application, above the HAL.
+    - pd: PowerDelivery layer
+    - balancer.h: handle the battery balancing, and some battery measurments
+    - charging_ic.h: layer of the battery charging component
+    - imu_wrappper.h: interaction layer of the imu
+    - indicator.h: visual indicator controler (led in the button)
+    - power_gate.h: the electrical gates to isolate output & vbus form each others
+- component: Medium level physical components layer: button, bluetooth, IMU, ...
     - battery.h: handle the battery readings, for battery level
     - button.h: control the button. Takes callbacks for actions on multiple button pushes. Used to display stuf on the button if needed
+    - charger.h: main high level logic to use the charger, as well as power switches
     - fileSystem.h: handle the reading and writting of variables to memory
     - imu.h: the imu related operations
-    - indicator.h: visual indicator controler (led in the button)
     - output_power.h: interface of the output voltage driver
     - sound.h: microphone main input point. Compute FFT and auto disable
     - strip.h: define the strip object (for now, only used in RGB lamp type)
-- platform: Hardware drivers, implement the platform specific code
+    - time_handling.h: Real time handling
+- driver: Low level hardware drivers
+    - pd: PowerDelivery drivers
+    - LSM6DS3: library to talk to the IMU. Adapted to this architecture
+- ext: external libraries
+    -  math8.h
+    -  noise.h
+    -  random8.h
+    -  scale8.h
+- hal: Hardware Abstraction Layer: implement the platform specific code
     - bluetooth.h: bluetooth interfaces
     - gpio.h: programmable pins interface
     - i2c.h; i2c interface
     - pdm_handle.h: microphone interface (through PDM)
     - print.h: display & debug interface (through serial connection)
     - register.h: NRF52840 specific register access
+    - strip_impl.h: Indexable led strip driver
     - threads.h: Tasks and threads interface
     - time.h: time & chrono interface
-- power: Handler for the power components (charger, usb negociation, ...)
-    - PDlib: folder that contains the library to talk to the PD negocation ic. Adapted to this architecture
-    - balancer.h: handle the battery balancing, and some battery measurments
-    - charger.h: main high level logic to use the charger, as well as power switches
-    - charger_ic.h: hardware abstraction layer of the battery charging component
-    - power_gate.h: the electrical gates to isolate output & vbus form each others
+- logic: handle high level system logic (Input actions, button presses, main state machine...)
+    - alert.h: Handle the diffferent alerts raised by the program
+    - behavior.h: controls the lamp behaviors: battery level, charger start and stops, ...
+    - brightness_handle.h: handle the brightness logic
+    - command_line_interface.h: handle serial communication. Location of the CLI capabilities
+    - inputs_bluetooth.h: handle the bluetooth commands
+    - inputs.h: what button actions does what
+    - power_handler.h: High level handling of all power and battery related logic
+    - statistics_handler.h: Keep track of the system use statistics
+    - sunset_timer.h: Logic of the sunset timer
 - utils: General functions and constants that everybody needs
     - colorspace.h: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !
     - constants.h: global constants used all around the program

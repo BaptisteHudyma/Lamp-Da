@@ -7,26 +7,26 @@
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/sunset_timer.h"
 
-#include "src/system/physical/battery.h"
-#include "src/system/physical/indicator.h"
-#include "src/system/physical/imu.h"
-#include "src/system/physical/fileSystem.h"
-#include "src/system/physical/output_power.h"
-#include "src/system/physical/sound.h"
+#include "src/system/bsp/indicator.h"
 
-#include "src/system/power/charger.h"
+#include "src/system/component/battery.h"
+#include "src/system/component/charger.h"
+#include "src/system/component/fileSystem.h"
+#include "src/system/component/imu.h"
+#include "src/system/component/output_power.h"
+#include "src/system/component/sound.h"
 
 #include "src/system/utils/utils.h"
 
 #include "src/user/functions.h"
 
-#include "src/system/platform/bluetooth.h"
-#include "src/system/platform/i2c.h"
-#include "src/system/platform/gpio.h"
-#include "src/system/platform/time.h"
-#include "src/system/platform/registers.h"
-#include "src/system/platform/threads.h"
-#include "src/system/platform/print.h"
+#include "src/system/hal/bluetooth.h"
+#include "src/system/hal/i2c.h"
+#include "src/system/hal/gpio.h"
+#include "src/system/hal/time.h"
+#include "src/system/hal/registers.h"
+#include "src/system/hal/threads.h"
+#include "src/system/hal/print.h"
 
 #include "src/system/ext/random8.h"
 #include <cstdint>
@@ -37,14 +37,14 @@ void secondary_thread()
 {
   if (not logic::behavior::is_user_code_running())
   {
-    platform::threads::suspend_this_thread();
+    hal::threads::suspend_this_thread();
     return;
   }
 
   user::user_thread();
 
   // prevent infinite loop
-  platform::delay_ms(1);
+  hal::delay_ms(1);
 }
 
 void check_loop_runtime(const uint32_t runTime)
@@ -60,7 +60,7 @@ void check_loop_runtime(const uint32_t runTime)
     if (runTime > 500)
     {
       // if loop time is too long, go back to flash mode
-      platform::registers::enter_serial_dfu();
+      hal::registers::enter_serial_dfu();
     }
   }
   else if (isOnSlowLoopCount > 0)
@@ -70,11 +70,11 @@ void check_loop_runtime(const uint32_t runTime)
 
   if (isOnSlowLoopCount >= maxAlerts)
   {
-    alarmRaisedTime = platform::time_ms();
+    alarmRaisedTime = hal::time_ms();
     logic::alerts::manager.raise(logic::alerts::Type::LONG_LOOP_UPDATE);
   }
   // lower the alert (after some time)
-  else if (isOnSlowLoopCount <= 1 and platform::time_ms() - alarmRaisedTime > 1000)
+  else if (isOnSlowLoopCount <= 1 and hal::time_ms() - alarmRaisedTime > 1000)
   {
     logic::alerts::manager.clear(logic::alerts::Type::LONG_LOOP_UPDATE);
   };
@@ -84,51 +84,51 @@ void main_setup()
 {
   // set watchdog (reset the soft when the program crashes)
   // Should be long enough to flash the microcontroler !!!
-  platform::registers::setup_watchdog(10); // second timeout
+  hal::registers::setup_watchdog(10); // second timeout
 
 #ifdef IS_HARDWARE_1_0
-  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Input_isChargeOk)
-          .set_pin_mode(platform::gpio::DigitalPin::Mode::kInputPullUp);
-  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Signal_BatteryBalancerAlert)
-          .set_pin_mode(platform::gpio::DigitalPin::Mode::kInputPullUp);
+  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Input_isChargeOk)
+          .set_pin_mode(hal::gpio::DigitalPin::Mode::kInputPullUp);
+  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Signal_BatteryBalancerAlert)
+          .set_pin_mode(hal::gpio::DigitalPin::Mode::kInputPullUp);
 #endif
 
   // setup button colors and callbacks very early to catch start clics
-  const bool wasPoweredByUserInterrupt = platform::registers::is_started_from_interrupt();
+  const bool wasPoweredByUserInterrupt = hal::registers::is_started_from_interrupt();
   logic::inputs::init(wasPoweredByUserInterrupt);
 
   // enable peripherals (enable i2c lines)
-  platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(true);
+  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(true);
 
   // reset the output driver
-  physical::outputPower::write_voltage(0);
+  component::outputPower::write_voltage(0);
 
   // necessary for all i2c communications
   // 400KHz clock, 100mS timeout
-  for (uint8_t i = 0; i < platform::registers::get_wire_interface_count(); ++i)
+  for (uint8_t i = 0; i < hal::registers::get_wire_interface_count(); ++i)
   {
-    platform::i2c::i2c_setup(i, 400000, 100);
+    hal::i2c::i2c_setup(i, 400000, 100);
   }
   // stability/turn on delay
-  platform::delay_ms(10);
+  hal::delay_ms(10);
 
   // first step !
-  platform::registers::setup_adc(ADC_RES_EXP);
+  hal::registers::setup_adc(ADC_RES_EXP);
   // set random seed
-  random16_set_seed(platform::registers::get_device_serial_number() & 0xffff);
+  random16_set_seed(hal::registers::get_device_serial_number() & 0xffff);
 
   //
-  if (platform::registers::is_started_from_watchdog())
+  if (hal::registers::is_started_from_watchdog())
   {
     // try to start fresh: the system can get stuck with a broken filesystem
     // TODO #353: it happens when the system power source is removed during a file system read/write.
-    physical::fileSystem::clear_internal_fs();
+    component::fileSystem::clear_internal_fs();
   }
 
   // check if we are in first boot mode (read parameters fails)
   const bool isFirstBoot = not logic::behavior::read_parameters();
 #ifdef LMBD_SIMULATION
-  platform::lampda_print("Is first time boot %d", isFirstBoot);
+  hal::lampda_print("Is first time boot %d", isFirstBoot);
 #endif
 
   // can start !
@@ -144,18 +144,18 @@ void main_setup()
   if (!isFirstBoot)
   {
     // started after reset, clear all code and go to bootloader mode
-    if (platform::registers::is_started_from_reset())
+    if (hal::registers::is_started_from_reset())
     {
-      platform::registers::enter_serial_dfu();
+      hal::registers::enter_serial_dfu();
     }
 
-    if (platform::registers::is_started_from_watchdog())
+    if (hal::registers::is_started_from_watchdog())
     {
       // power detected on the USB, reset the program
-      if (platform::registers::is_voltage_detected_on_vbus())
+      if (hal::registers::is_voltage_detected_on_vbus())
       {
         // system will reset & shutdown after that
-        platform::registers::enter_serial_dfu();
+        hal::registers::enter_serial_dfu();
       }
       else
       {
@@ -166,18 +166,18 @@ void main_setup()
   }
 
   // setup imu
-  physical::imu::init();
+  component::imu::init();
 
   if (shouldAlertUser)
   {
     for (int i = 0; i < 5; i++)
     {
-      physical::indicator::set_color(utils::ColorSpace::WHITE);
-      platform::delay_ms(300);
-      physical::indicator::set_color(utils::ColorSpace::BLACK);
-      platform::delay_ms(300);
+      bsp::indicator::set_color(utils::ColorSpace::WHITE);
+      hal::delay_ms(300);
+      bsp::indicator::set_color(utils::ColorSpace::BLACK);
+      hal::delay_ms(300);
     }
-    physical::indicator::set_color(utils::ColorSpace::BLACK);
+    bsp::indicator::set_color(utils::ColorSpace::BLACK);
   }
 
   // any wake up from something that is not an interrupt should be considered as vbus voltage
@@ -193,7 +193,7 @@ void main_setup()
   if (user::should_spawn_thread())
   {
     // give a high stack but low priority to user
-    platform::threads::start_thread(secondary_thread, platform::threads::user_taskName, 0, 1024);
+    hal::threads::start_thread(secondary_thread, hal::threads::user_taskName, 0, 1024);
   }
 }
 
@@ -201,9 +201,9 @@ void regulate_loop_runtime(const uint32_t addedDelay)
 {
   // add the required delay
   if (addedDelay > 0)
-    platform::delay_ms(addedDelay);
+    hal::delay_ms(addedDelay);
 
-  const uint32_t loopStartTime = platform::time_ms();
+  const uint32_t loopStartTime = hal::time_ms();
 
   // fix the initialization or long wait
   static uint32_t lastLoopEndTime;
@@ -214,14 +214,14 @@ void regulate_loop_runtime(const uint32_t addedDelay)
   const uint32_t loopDuration = loopStartTime - lastLoopEndTime;
   if (loopDuration < MAIN_LOOP_UPDATE_PERIOD_MS)
   {
-    platform::delay_ms(MAIN_LOOP_UPDATE_PERIOD_MS - loopDuration);
+    hal::delay_ms(MAIN_LOOP_UPDATE_PERIOD_MS - loopDuration);
   }
   // else: run time normal or too long
 
   // raise alerts if computations are too long
   check_loop_runtime(loopDuration);
   // update loop end time
-  lastLoopEndTime = platform::time_ms();
+  lastLoopEndTime = hal::time_ms();
 }
 
 /**
@@ -237,7 +237,7 @@ void main_loop(const uint32_t addedDelay)
    */
 
   // update watchdog (prevent crash)
-  platform::registers::kick_watchdog(USER_WATCHDOG_ID);
+  hal::registers::kick_watchdog(USER_WATCHDOG_ID);
 
   // handle inputs
   logic::inputs::loop();
@@ -249,7 +249,7 @@ void main_loop(const uint32_t addedDelay)
   logic::behavior::loop();
 
   // automatically deactivate sensors if they are not used for a time
-  physical::microphone::disable_after_non_use();
+  component::microphone::disable_after_non_use();
 }
 
 } // namespace lampda

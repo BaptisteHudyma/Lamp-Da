@@ -4,15 +4,15 @@
 
 #pragma once
 
-#include "src/system/platform/gpio.h"
+#include "src/system/hal/gpio.h"
 
 namespace lampda {
 namespace utils {
 
 // RGB indicator details
-constexpr platform::gpio::DigitalPin::GPIO RedIndicator = platform::gpio::DigitalPin::GPIO::gpio0;
-constexpr platform::gpio::DigitalPin::GPIO GreenIndicator = platform::gpio::DigitalPin::GPIO::gpio1;
-constexpr platform::gpio::DigitalPin::GPIO BlueIndicator = platform::gpio::DigitalPin::GPIO::gpio2;
+constexpr hal::gpio::DigitalPin::GPIO RedIndicator = hal::gpio::DigitalPin::GPIO::gpio0;
+constexpr hal::gpio::DigitalPin::GPIO GreenIndicator = hal::gpio::DigitalPin::GPIO::gpio1;
+constexpr hal::gpio::DigitalPin::GPIO BlueIndicator = hal::gpio::DigitalPin::GPIO::gpio2;
 
 } // namespace utils
 } // namespace lampda
