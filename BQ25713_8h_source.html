@@ -881,14 +881,14 @@ $(function() {
 <div class="line"><a id="l00811" name="l00811"></a><span class="lineno">  811</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> readDataReg(<span class="keyword">const</span> <span class="keywordtype">byte</span> regAddress, <span class="keywordtype">byte</span>* dataVal, <span class="keyword">const</span> uint8_t arrLen)</div>
 <div class="line"><a id="l00812" name="l00812"></a><span class="lineno">  812</span>  {</div>
 <div class="line"><a id="l00813" name="l00813"></a><span class="lineno">  813</span>    <span class="comment">// IMPLEMENT THIS FUNCTION</span></div>
-<div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>    return ::lampda::platform::i2c::i2c_readData(</div>
+<div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>    return ::lampda::hal::i2c::i2c_readData(</div>
 <div class="line"><a id="l00815" name="l00815"></a><span class="lineno">  815</span>                   i2cObjectIndex, BQ25713addr, regAddress, arrLen, dataVal, usesStopBit ? 1 : 0) == 0;</div>
 <div class="line"><a id="l00816" name="l00816"></a><span class="lineno">  816</span>  }</div>
 <div class="line"><a id="l00817" name="l00817"></a><span class="lineno">  817</span> </div>
 <div class="line"><a id="l00818" name="l00818"></a><span class="lineno">  818</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> writeData(<span class="keyword">const</span> <span class="keywordtype">byte</span> regAddress, uint8_t lenght, uint8_t* data)</div>
 <div class="line"><a id="l00819" name="l00819"></a><span class="lineno">  819</span>  {</div>
 <div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span>    <span class="comment">// IMPLEMENT THIS FUNCTION</span></div>
-<div class="line"><a id="l00821" name="l00821"></a><span class="lineno">  821</span>    return ::lampda::platform::i2c::i2c_writeData(</div>
+<div class="line"><a id="l00821" name="l00821"></a><span class="lineno">  821</span>    return ::lampda::hal::i2c::i2c_writeData(</div>
 <div class="line"><a id="l00822" name="l00822"></a><span class="lineno">  822</span>                   i2cObjectIndex, BQ25713addr, regAddress, lenght, data, usesStopBit ? 1 : 0) == 0;</div>
 <div class="line"><a id="l00823" name="l00823"></a><span class="lineno">  823</span>  }</div>
 <div class="line"><a id="l00824" name="l00824"></a><span class="lineno">  824</span> </div>

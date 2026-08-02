@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: src/system/platform/registers.h File Reference</title>
+<title>Lamp-Da: src/system/hal/registers.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_2c722f0ee462dd0686098a5ca0274085.html">platform</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_3bbc96a91658c6a996646fdd7a67b8bb.html">hal</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -91,58 +91,58 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
 <tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1platform"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html">lampda::platform</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1platform"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1hal"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html">lampda::hal</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1hal"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1platform_1_1registers"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1registers.html">lampda::platform::registers</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1platform_1_1registers"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the interaction layer with the system specific registers. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1hal_1_1registers"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1registers.html">lampda::hal::registers</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1hal_1_1registers"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the interaction layer with the system specific registers. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac18f364b519cf9ff23424bfa476f4bf0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1registers.html#ac18f364b519cf9ff23424bfa476f4bf0">lampda::platform::registers::setup_watchdog</a> (const uint32_t timeoutDelaySecond)</td></tr>
-<tr class="memdesc:ac18f364b519cf9ff23424bfa476f4bf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setup the software watchedog.  <br /></td></tr>
-<tr class="separator:ac18f364b519cf9ff23424bfa476f4bf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a50984a45dac826420f7c44adf471c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1registers.html#a8a50984a45dac826420f7c44adf471c4">lampda::platform::registers::kick_watchdog</a> (const uint8_t registerId)</td></tr>
-<tr class="memdesc:a8a50984a45dac826420f7c44adf471c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notify the software watchedog that we are alive.  <br /></td></tr>
-<tr class="separator:a8a50984a45dac826420f7c44adf471c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afdef8f7020c0b6c968939884f137ef0a"><td class="memItemLeft" align="right" valign="top"><a id="afdef8f7020c0b6c968939884f137ef0a" name="afdef8f7020c0b6c968939884f137ef0a"></a>
-uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::registers::get_device_serial_number</b> ()</td></tr>
-<tr class="memdesc:afdef8f7020c0b6c968939884f137ef0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">get serial number <br /></td></tr>
-<tr class="separator:afdef8f7020c0b6c968939884f137ef0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b6da756505be13f4b3e1e514d4ae763"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1registers.html#a7b6da756505be13f4b3e1e514d4ae763">lampda::platform::registers::setup_adc</a> (const uint8_t resolution)</td></tr>
-<tr class="memdesc:a7b6da756505be13f4b3e1e514d4ae763"><td class="mdescLeft">&#160;</td><td class="mdescRight">setup the ADC  <br /></td></tr>
-<tr class="separator:a7b6da756505be13f4b3e1e514d4ae763"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c5d3526d4baadbec178f7240dafbd57"><td class="memItemLeft" align="right" valign="top"><a id="a4c5d3526d4baadbec178f7240dafbd57" name="a4c5d3526d4baadbec178f7240dafbd57"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::registers::get_wire_interface_count</b> ()</td></tr>
-<tr class="memdesc:a4c5d3526d4baadbec178f7240dafbd57"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the number of wire com interfaces <br /></td></tr>
-<tr class="separator:a4c5d3526d4baadbec178f7240dafbd57"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a610059f4a145815ced4ffc5685e5b691"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1registers.html#a610059f4a145815ced4ffc5685e5b691">lampda::platform::registers::enter_serial_dfu</a> ()</td></tr>
-<tr class="memdesc:a610059f4a145815ced4ffc5685e5b691"><td class="mdescLeft">&#160;</td><td class="mdescRight">enter the dfu program mode  <br /></td></tr>
-<tr class="separator:a610059f4a145815ced4ffc5685e5b691"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1342677fae42e938c180d3795c18c2de"><td class="memItemLeft" align="right" valign="top"><a id="a1342677fae42e938c180d3795c18c2de" name="a1342677fae42e938c180d3795c18c2de"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::registers::is_voltage_detected_on_vbus</b> ()</td></tr>
-<tr class="memdesc:a1342677fae42e938c180d3795c18c2de"><td class="mdescLeft">&#160;</td><td class="mdescRight">voltage is detected on VBUS line <br /></td></tr>
-<tr class="separator:a1342677fae42e938c180d3795c18c2de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7982f73e33e5c22df09da28b272e4b1f"><td class="memItemLeft" align="right" valign="top"><a id="a7982f73e33e5c22df09da28b272e4b1f" name="a7982f73e33e5c22df09da28b272e4b1f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::registers::is_started_from_reset</b> ()</td></tr>
-<tr class="memdesc:a7982f73e33e5c22df09da28b272e4b1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">microcontroler restarted after a reset <br /></td></tr>
-<tr class="separator:a7982f73e33e5c22df09da28b272e4b1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac60d31745850e2ce30c283ddc8e0bf65"><td class="memItemLeft" align="right" valign="top"><a id="ac60d31745850e2ce30c283ddc8e0bf65" name="ac60d31745850e2ce30c283ddc8e0bf65"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::registers::is_started_from_watchdog</b> ()</td></tr>
-<tr class="memdesc:ac60d31745850e2ce30c283ddc8e0bf65"><td class="mdescLeft">&#160;</td><td class="mdescRight">reset after a watchdog timeout <br /></td></tr>
-<tr class="separator:ac60d31745850e2ce30c283ddc8e0bf65"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af52d2209a622bf3b0bd8206e3a1c8bb9"><td class="memItemLeft" align="right" valign="top"><a id="af52d2209a622bf3b0bd8206e3a1c8bb9" name="af52d2209a622bf3b0bd8206e3a1c8bb9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::registers::is_started_from_interrupt</b> ()</td></tr>
-<tr class="memdesc:af52d2209a622bf3b0bd8206e3a1c8bb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">started by user interrupt <br /></td></tr>
-<tr class="separator:af52d2209a622bf3b0bd8206e3a1c8bb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4082fca655f5587b7eb05dca610cbd8"><td class="memItemLeft" align="right" valign="top"><a id="ad4082fca655f5587b7eb05dca610cbd8" name="ad4082fca655f5587b7eb05dca610cbd8"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::registers::read_CPU_temperature_degreesC</b> ()</td></tr>
-<tr class="memdesc:ad4082fca655f5587b7eb05dca610cbd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">make a read of the CPU temp <br /></td></tr>
-<tr class="separator:ad4082fca655f5587b7eb05dca610cbd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71d01e46f4892010a518a3ba30bc2aad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1registers.html#a71d01e46f4892010a518a3ba30bc2aad">lampda::platform::registers::go_to_sleep</a> (const int wakeUpPin, const bool wakeUpOnRelease)</td></tr>
-<tr class="memdesc:a71d01e46f4892010a518a3ba30bc2aad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Put the system to sleep, with a wake up pin.  <br /></td></tr>
-<tr class="separator:a71d01e46f4892010a518a3ba30bc2aad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a8c635a8330abca18e5c7376af4ef0e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1registers.html#a1a8c635a8330abca18e5c7376af4ef0e">lampda::hal::registers::setup_watchdog</a> (const uint32_t timeoutDelaySecond)</td></tr>
+<tr class="memdesc:a1a8c635a8330abca18e5c7376af4ef0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setup the software watchedog.  <br /></td></tr>
+<tr class="separator:a1a8c635a8330abca18e5c7376af4ef0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada1c9bf0fa37de6b00fbe1c1b24ef2ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1registers.html#ada1c9bf0fa37de6b00fbe1c1b24ef2ff">lampda::hal::registers::kick_watchdog</a> (const uint8_t registerId)</td></tr>
+<tr class="memdesc:ada1c9bf0fa37de6b00fbe1c1b24ef2ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notify the software watchedog that we are alive.  <br /></td></tr>
+<tr class="separator:ada1c9bf0fa37de6b00fbe1c1b24ef2ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1cbdc47ef92834ed0243517e9934dad"><td class="memItemLeft" align="right" valign="top"><a id="ab1cbdc47ef92834ed0243517e9934dad" name="ab1cbdc47ef92834ed0243517e9934dad"></a>
+uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::registers::get_device_serial_number</b> ()</td></tr>
+<tr class="memdesc:ab1cbdc47ef92834ed0243517e9934dad"><td class="mdescLeft">&#160;</td><td class="mdescRight">get serial number <br /></td></tr>
+<tr class="separator:ab1cbdc47ef92834ed0243517e9934dad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60c1764f3a21d4b16347f744886f2f33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1registers.html#a60c1764f3a21d4b16347f744886f2f33">lampda::hal::registers::setup_adc</a> (const uint8_t resolution)</td></tr>
+<tr class="memdesc:a60c1764f3a21d4b16347f744886f2f33"><td class="mdescLeft">&#160;</td><td class="mdescRight">setup the ADC  <br /></td></tr>
+<tr class="separator:a60c1764f3a21d4b16347f744886f2f33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a80f4efa78eb4ca38008c7c448df73a"><td class="memItemLeft" align="right" valign="top"><a id="a0a80f4efa78eb4ca38008c7c448df73a" name="a0a80f4efa78eb4ca38008c7c448df73a"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::registers::get_wire_interface_count</b> ()</td></tr>
+<tr class="memdesc:a0a80f4efa78eb4ca38008c7c448df73a"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the number of wire com interfaces <br /></td></tr>
+<tr class="separator:a0a80f4efa78eb4ca38008c7c448df73a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad346d945b3782a499033d5c449406278"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1registers.html#ad346d945b3782a499033d5c449406278">lampda::hal::registers::enter_serial_dfu</a> ()</td></tr>
+<tr class="memdesc:ad346d945b3782a499033d5c449406278"><td class="mdescLeft">&#160;</td><td class="mdescRight">enter the dfu program mode  <br /></td></tr>
+<tr class="separator:ad346d945b3782a499033d5c449406278"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3647c1d972207d7989a6f08013b6e7c6"><td class="memItemLeft" align="right" valign="top"><a id="a3647c1d972207d7989a6f08013b6e7c6" name="a3647c1d972207d7989a6f08013b6e7c6"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::registers::is_voltage_detected_on_vbus</b> ()</td></tr>
+<tr class="memdesc:a3647c1d972207d7989a6f08013b6e7c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">voltage is detected on VBUS line <br /></td></tr>
+<tr class="separator:a3647c1d972207d7989a6f08013b6e7c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83409e7fecaf45f4dfce02e59ba40f80"><td class="memItemLeft" align="right" valign="top"><a id="a83409e7fecaf45f4dfce02e59ba40f80" name="a83409e7fecaf45f4dfce02e59ba40f80"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::registers::is_started_from_reset</b> ()</td></tr>
+<tr class="memdesc:a83409e7fecaf45f4dfce02e59ba40f80"><td class="mdescLeft">&#160;</td><td class="mdescRight">microcontroler restarted after a reset <br /></td></tr>
+<tr class="separator:a83409e7fecaf45f4dfce02e59ba40f80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1eed5d744b2b6ad18afc537c7bc5ab51"><td class="memItemLeft" align="right" valign="top"><a id="a1eed5d744b2b6ad18afc537c7bc5ab51" name="a1eed5d744b2b6ad18afc537c7bc5ab51"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::registers::is_started_from_watchdog</b> ()</td></tr>
+<tr class="memdesc:a1eed5d744b2b6ad18afc537c7bc5ab51"><td class="mdescLeft">&#160;</td><td class="mdescRight">reset after a watchdog timeout <br /></td></tr>
+<tr class="separator:a1eed5d744b2b6ad18afc537c7bc5ab51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9626f05c2fbb8c719a7d2ff57db9b863"><td class="memItemLeft" align="right" valign="top"><a id="a9626f05c2fbb8c719a7d2ff57db9b863" name="a9626f05c2fbb8c719a7d2ff57db9b863"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::registers::is_started_from_interrupt</b> ()</td></tr>
+<tr class="memdesc:a9626f05c2fbb8c719a7d2ff57db9b863"><td class="mdescLeft">&#160;</td><td class="mdescRight">started by user interrupt <br /></td></tr>
+<tr class="separator:a9626f05c2fbb8c719a7d2ff57db9b863"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dbb79730c58cd41ab242142ee4d98c5"><td class="memItemLeft" align="right" valign="top"><a id="a3dbb79730c58cd41ab242142ee4d98c5" name="a3dbb79730c58cd41ab242142ee4d98c5"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::registers::read_CPU_temperature_degreesC</b> ()</td></tr>
+<tr class="memdesc:a3dbb79730c58cd41ab242142ee4d98c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">make a read of the CPU temp <br /></td></tr>
+<tr class="separator:a3dbb79730c58cd41ab242142ee4d98c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af19d441c231078e1bb9151694e9611e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1registers.html#af19d441c231078e1bb9151694e9611e8">lampda::hal::registers::go_to_sleep</a> (const int wakeUpPin, const bool wakeUpOnRelease)</td></tr>
+<tr class="memdesc:af19d441c231078e1bb9151694e9611e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Put the system to sleep, with a wake up pin.  <br /></td></tr>
+<tr class="separator:af19d441c231078e1bb9151694e9611e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for the platform specific microcontroler registers. </p>

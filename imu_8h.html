@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: src/system/physical/imu.h File Reference</title>
+<title>Lamp-Da: src/system/component/imu.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_1430521e616d6238eabe66adf5eaf90a.html">physical</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_ba11b1831d7d5bf7bf4ddce9243e4814.html">component</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -92,73 +92,70 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
 <tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1physical"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical.html">lampda::physical</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1physical"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the physical modules drivers. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1physical_1_1imu"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1imu.html">lampda::physical::imu</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1physical_1_1imu"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains the handling of the gyroscope and accelerometer. IMU is auto activated when used. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1component_1_1imu"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1imu.html">lampda::component::imu</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1component_1_1imu"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains the handling of the gyroscope and accelerometer. IMU is auto activated when used. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a014f8201ff74e63bb213fe2aeca900b8"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1imu.html#a014f8201ff74e63bb213fe2aeca900b8">lampda::physical::imu::EventType</a> { <a class="el" href="namespacelampda_1_1physical_1_1imu.html#a014f8201ff74e63bb213fe2aeca900b8a8a14b37d83a08a971c91b7ce9e09ef5a">lampda::physical::imu::FreeFall</a>
-, <a class="el" href="namespacelampda_1_1physical_1_1imu.html#a014f8201ff74e63bb213fe2aeca900b8a3ab84073bcc7600125bee41b6658c39f">lampda::physical::imu::BigMotion</a>
-, <a class="el" href="namespacelampda_1_1physical_1_1imu.html#a014f8201ff74e63bb213fe2aeca900b8a48c7c41b72e1d678923ce3571aa65b2d">lampda::physical::imu::Step</a>
-, <a class="el" href="namespacelampda_1_1physical_1_1imu.html#a014f8201ff74e63bb213fe2aeca900b8a686319a93c35facda5c3da08875fb394">lampda::physical::imu::Tilt</a>
+<tr class="memitem:a1c2fadc86df44c67ae4a00f28a4dd704"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1imu.html#a1c2fadc86df44c67ae4a00f28a4dd704">lampda::component::imu::EventType</a> { <a class="el" href="namespacelampda_1_1component_1_1imu.html#a1c2fadc86df44c67ae4a00f28a4dd704a8a14b37d83a08a971c91b7ce9e09ef5a">lampda::component::imu::FreeFall</a>
+, <a class="el" href="namespacelampda_1_1component_1_1imu.html#a1c2fadc86df44c67ae4a00f28a4dd704a3ab84073bcc7600125bee41b6658c39f">lampda::component::imu::BigMotion</a>
+, <a class="el" href="namespacelampda_1_1component_1_1imu.html#a1c2fadc86df44c67ae4a00f28a4dd704a48c7c41b72e1d678923ce3571aa65b2d">lampda::component::imu::Step</a>
+, <a class="el" href="namespacelampda_1_1component_1_1imu.html#a1c2fadc86df44c67ae4a00f28a4dd704a686319a93c35facda5c3da08875fb394">lampda::component::imu::Tilt</a>
  }</td></tr>
-<tr class="memdesc:a014f8201ff74e63bb213fe2aeca900b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe an IMU detection event.  <a href="namespacelampda_1_1physical_1_1imu.html#a014f8201ff74e63bb213fe2aeca900b8">More...</a><br /></td></tr>
-<tr class="separator:a014f8201ff74e63bb213fe2aeca900b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:a1c2fadc86df44c67ae4a00f28a4dd704"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe an IMU detection event.  <a href="namespacelampda_1_1component_1_1imu.html#a1c2fadc86df44c67ae4a00f28a4dd704">More...</a><br /></td></tr>
+<tr class="separator:a1c2fadc86df44c67ae4a00f28a4dd704"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:afec788a459bab4d041360f4fc1a04ed9"><td class="memItemLeft" align="right" valign="top"><a id="afec788a459bab4d041360f4fc1a04ed9" name="afec788a459bab4d041360f4fc1a04ed9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::imu::init</b> ()</td></tr>
-<tr class="memdesc:afec788a459bab4d041360f4fc1a04ed9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once on program start, initialize the driver. <br /></td></tr>
-<tr class="separator:afec788a459bab4d041360f4fc1a04ed9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a996b29f561bbfe5a3e80d81ae842388a"><td class="memItemLeft" align="right" valign="top"><a id="a996b29f561bbfe5a3e80d81ae842388a" name="a996b29f561bbfe5a3e80d81ae842388a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::imu::shutdown</b> ()</td></tr>
-<tr class="memdesc:a996b29f561bbfe5a3e80d81ae842388a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once on program shutdown, to gracefully close the driver. <br /></td></tr>
-<tr class="separator:a996b29f561bbfe5a3e80d81ae842388a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9444b9bd6e27571ec9c5e67780ec37e"><td class="memItemLeft" align="right" valign="top"><a id="ac9444b9bd6e27571ec9c5e67780ec37e" name="ac9444b9bd6e27571ec9c5e67780ec37e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::imu::enable_event_detection</b> (const EventType eventType)</td></tr>
-<tr class="memdesc:ac9444b9bd6e27571ec9c5e67780ec37e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable a specific event. <br /></td></tr>
-<tr class="separator:ac9444b9bd6e27571ec9c5e67780ec37e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f9c6b70d9159a5407d74a05baf1f282"><td class="memItemLeft" align="right" valign="top"><a id="a4f9c6b70d9159a5407d74a05baf1f282" name="a4f9c6b70d9159a5407d74a05baf1f282"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::imu::disable_event_detection</b> (const EventType eventType)</td></tr>
-<tr class="memdesc:a4f9c6b70d9159a5407d74a05baf1f282"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable a specific event. <br /></td></tr>
-<tr class="separator:a4f9c6b70d9159a5407d74a05baf1f282"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6129285212d72a1443083fed776624f8"><td class="memItemLeft" align="right" valign="top"><a id="a6129285212d72a1443083fed776624f8" name="a6129285212d72a1443083fed776624f8"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::imu::is_event_detected</b> (const EventType eventType)</td></tr>
-<tr class="memdesc:a6129285212d72a1443083fed776624f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the event bit. <br /></td></tr>
-<tr class="separator:a6129285212d72a1443083fed776624f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a498b13d4b2058912e4d8d20b9458002a"><td class="memItemLeft" align="right" valign="top"><a id="a498b13d4b2058912e4d8d20b9458002a" name="a498b13d4b2058912e4d8d20b9458002a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::imu::link_event_to_interrupt1</b> (const EventType eventType)</td></tr>
-<tr class="memdesc:a498b13d4b2058912e4d8d20b9458002a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable the interrupt 1 with an event type, wired to the interrupt pin 1 of IMU. <br /></td></tr>
-<tr class="separator:a498b13d4b2058912e4d8d20b9458002a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85c3e0e75c3ca0340d81cea686885d45"><td class="memItemLeft" align="right" valign="top"><a id="a85c3e0e75c3ca0340d81cea686885d45" name="a85c3e0e75c3ca0340d81cea686885d45"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::imu::unlink_interrupt_1</b> ()</td></tr>
-<tr class="memdesc:a85c3e0e75c3ca0340d81cea686885d45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable the interrupts 1. <br /></td></tr>
-<tr class="separator:a85c3e0e75c3ca0340d81cea686885d45"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a835789edc6215d1c9bbd4b85c0ffc054"><td class="memItemLeft" align="right" valign="top"><a id="a835789edc6215d1c9bbd4b85c0ffc054" name="a835789edc6215d1c9bbd4b85c0ffc054"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::imu::link_event_to_interrupt2</b> (const EventType eventType)</td></tr>
-<tr class="memdesc:a835789edc6215d1c9bbd4b85c0ffc054"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable the interrupt 2 with an event type, wired to the interrupt pin 2 of IMU EVENT BigMotion &amp; Step NOT SUPPORTED ON INTERRUPT 2. <br /></td></tr>
-<tr class="separator:a835789edc6215d1c9bbd4b85c0ffc054"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b26c2d1e5b05aa0ff64ec1084ea580a"><td class="memItemLeft" align="right" valign="top"><a id="a2b26c2d1e5b05aa0ff64ec1084ea580a" name="a2b26c2d1e5b05aa0ff64ec1084ea580a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::imu::unlink_interrupt_2</b> ()</td></tr>
-<tr class="memdesc:a2b26c2d1e5b05aa0ff64ec1084ea580a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable the interrupts 2. <br /></td></tr>
-<tr class="separator:a2b26c2d1e5b05aa0ff64ec1084ea580a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a678034673b6d06a877fdc016be3a2af9"><td class="memItemLeft" align="right" valign="top"><a id="a678034673b6d06a877fdc016be3a2af9" name="a678034673b6d06a877fdc016be3a2af9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::imu::is_interrupt1_enabled</b> ()</td></tr>
-<tr class="memdesc:a678034673b6d06a877fdc016be3a2af9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read and reset the interrupt1 bit. <br /></td></tr>
-<tr class="separator:a678034673b6d06a877fdc016be3a2af9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8198fcd9a5ac48a825bb1c6ffed86591"><td class="memItemLeft" align="right" valign="top"><a id="a8198fcd9a5ac48a825bb1c6ffed86591" name="a8198fcd9a5ac48a825bb1c6ffed86591"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::imu::is_interrupt2_enabled</b> ()</td></tr>
-<tr class="memdesc:a8198fcd9a5ac48a825bb1c6ffed86591"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read and reset the interrupt2 bit. <br /></td></tr>
-<tr class="separator:a8198fcd9a5ac48a825bb1c6ffed86591"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aadd5179abc0aa03f5c513784bab404be"><td class="memItemLeft" align="right" valign="top"><a id="aadd5179abc0aa03f5c513784bab404be" name="aadd5179abc0aa03f5c513784bab404be"></a>
-Reading&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::imu::get_filtered_reading</b> (const bool resetFilter)</td></tr>
-<tr class="memdesc:aadd5179abc0aa03f5c513784bab404be"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the filtered IMU readings <br /></td></tr>
-<tr class="separator:aadd5179abc0aa03f5c513784bab404be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a827335edff686ee121d38df9db7a92dc"><td class="memItemLeft" align="right" valign="top"><a id="a827335edff686ee121d38df9db7a92dc" name="a827335edff686ee121d38df9db7a92dc"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::imu::init</b> ()</td></tr>
+<tr class="memdesc:a827335edff686ee121d38df9db7a92dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once on program start, initialize the driver. <br /></td></tr>
+<tr class="separator:a827335edff686ee121d38df9db7a92dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6028a3ffd68c61c148a0068ef516bd7d"><td class="memItemLeft" align="right" valign="top"><a id="a6028a3ffd68c61c148a0068ef516bd7d" name="a6028a3ffd68c61c148a0068ef516bd7d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::imu::shutdown</b> ()</td></tr>
+<tr class="memdesc:a6028a3ffd68c61c148a0068ef516bd7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once on program shutdown, to gracefully close the driver. <br /></td></tr>
+<tr class="separator:a6028a3ffd68c61c148a0068ef516bd7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3034edd38ca24f59848db891d94cda1f"><td class="memItemLeft" align="right" valign="top"><a id="a3034edd38ca24f59848db891d94cda1f" name="a3034edd38ca24f59848db891d94cda1f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::imu::enable_event_detection</b> (const EventType eventType)</td></tr>
+<tr class="memdesc:a3034edd38ca24f59848db891d94cda1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable a specific event. <br /></td></tr>
+<tr class="separator:a3034edd38ca24f59848db891d94cda1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f4a781ac5f1e38690289221622e7750"><td class="memItemLeft" align="right" valign="top"><a id="a9f4a781ac5f1e38690289221622e7750" name="a9f4a781ac5f1e38690289221622e7750"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::imu::disable_event_detection</b> (const EventType eventType)</td></tr>
+<tr class="memdesc:a9f4a781ac5f1e38690289221622e7750"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable a specific event. <br /></td></tr>
+<tr class="separator:a9f4a781ac5f1e38690289221622e7750"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abada1e7e291320e5d4e88f7f02d45bdb"><td class="memItemLeft" align="right" valign="top"><a id="abada1e7e291320e5d4e88f7f02d45bdb" name="abada1e7e291320e5d4e88f7f02d45bdb"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::imu::is_event_detected</b> (const EventType eventType)</td></tr>
+<tr class="memdesc:abada1e7e291320e5d4e88f7f02d45bdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the event bit. <br /></td></tr>
+<tr class="separator:abada1e7e291320e5d4e88f7f02d45bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a748e7653b758087e4fabd410c38f6290"><td class="memItemLeft" align="right" valign="top"><a id="a748e7653b758087e4fabd410c38f6290" name="a748e7653b758087e4fabd410c38f6290"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::imu::link_event_to_interrupt1</b> (const EventType eventType)</td></tr>
+<tr class="memdesc:a748e7653b758087e4fabd410c38f6290"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable the interrupt 1 with an event type, wired to the interrupt pin 1 of IMU. <br /></td></tr>
+<tr class="separator:a748e7653b758087e4fabd410c38f6290"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad94d9a3e5e940bc0961071bad580939f"><td class="memItemLeft" align="right" valign="top"><a id="ad94d9a3e5e940bc0961071bad580939f" name="ad94d9a3e5e940bc0961071bad580939f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::imu::unlink_interrupt_1</b> ()</td></tr>
+<tr class="memdesc:ad94d9a3e5e940bc0961071bad580939f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable the interrupts 1. <br /></td></tr>
+<tr class="separator:ad94d9a3e5e940bc0961071bad580939f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0f92368dcd9b7574ba815e92e66d736"><td class="memItemLeft" align="right" valign="top"><a id="af0f92368dcd9b7574ba815e92e66d736" name="af0f92368dcd9b7574ba815e92e66d736"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::imu::link_event_to_interrupt2</b> (const EventType eventType)</td></tr>
+<tr class="memdesc:af0f92368dcd9b7574ba815e92e66d736"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable the interrupt 2 with an event type, wired to the interrupt pin 2 of IMU EVENT BigMotion &amp; Step NOT SUPPORTED ON INTERRUPT 2. <br /></td></tr>
+<tr class="separator:af0f92368dcd9b7574ba815e92e66d736"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb49c2dcd44a889538e9256b6fe60961"><td class="memItemLeft" align="right" valign="top"><a id="acb49c2dcd44a889538e9256b6fe60961" name="acb49c2dcd44a889538e9256b6fe60961"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::imu::unlink_interrupt_2</b> ()</td></tr>
+<tr class="memdesc:acb49c2dcd44a889538e9256b6fe60961"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable the interrupts 2. <br /></td></tr>
+<tr class="separator:acb49c2dcd44a889538e9256b6fe60961"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace180c5a1fa2ea4a4f3c641f74272707"><td class="memItemLeft" align="right" valign="top"><a id="ace180c5a1fa2ea4a4f3c641f74272707" name="ace180c5a1fa2ea4a4f3c641f74272707"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::imu::is_interrupt1_enabled</b> ()</td></tr>
+<tr class="memdesc:ace180c5a1fa2ea4a4f3c641f74272707"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read and reset the interrupt1 bit. <br /></td></tr>
+<tr class="separator:ace180c5a1fa2ea4a4f3c641f74272707"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22beabe0ac7cd5e2c9e7bd426c9d455a"><td class="memItemLeft" align="right" valign="top"><a id="a22beabe0ac7cd5e2c9e7bd426c9d455a" name="a22beabe0ac7cd5e2c9e7bd426c9d455a"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::imu::is_interrupt2_enabled</b> ()</td></tr>
+<tr class="memdesc:a22beabe0ac7cd5e2c9e7bd426c9d455a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read and reset the interrupt2 bit. <br /></td></tr>
+<tr class="separator:a22beabe0ac7cd5e2c9e7bd426c9d455a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8345e31e7edcdfb2eac398fcaed68033"><td class="memItemLeft" align="right" valign="top"><a id="a8345e31e7edcdfb2eac398fcaed68033" name="a8345e31e7edcdfb2eac398fcaed68033"></a>
+bsp::imu::Reading&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::imu::get_filtered_reading</b> (const bool resetFilter)</td></tr>
+<tr class="memdesc:a8345e31e7edcdfb2eac398fcaed68033"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the filtered IMU readings <br /></td></tr>
+<tr class="separator:a8345e31e7edcdfb2eac398fcaed68033"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for the physical components of the InertialMotionUnit. </p>

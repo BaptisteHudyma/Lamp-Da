@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: src/system/platform/i2c.h Source File</title>
+<title>Lamp-Da: src/system/hal/i2c.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_2c722f0ee462dd0686098a5ca0274085.html">platform</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_3bbc96a91658c6a996646fdd7a67b8bb.html">hal</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -79,14 +79,14 @@ $(function() {
 <div class="contents">
 <a href="i2c_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// do not use pragma once here, has this can be mocked</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifndef PLATFORM_I2C</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define PLATFORM_I2C</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifndef HAL_I2C</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define HAL_I2C</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#ifdef __cplusplus</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacelampda.html">lampda</a> {</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>platform {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>hal {</div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>i2c {</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
@@ -125,7 +125,7 @@ $(function() {
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                               uint8_t* in,</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                               uint8_t flags);</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="i2c_8h.html#a769bce4e9c31138507f5d51b974c07d7">  111</a></span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="i2c_8h.html#a769bce4e9c31138507f5d51b974c07d7">i2c_xfer</a>(uint8_t i2cIndex,</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="i2c_8h.html#ad916d9bda040e00cae5b93c5082d603e">  111</a></span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="i2c_8h.html#ad916d9bda040e00cae5b93c5082d603e">i2c_xfer</a>(uint8_t i2cIndex,</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                      uint8_t deviceAddr,</div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                      <span class="keywordtype">int</span> out_size,</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                      <span class="keyword">const</span> uint8_t* out,</div>
@@ -141,22 +141,22 @@ $(function() {
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>  <span class="comment">// define simple low weight handler</span></div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="i2c_8h.html#a687a77cae29e2be693b540166336c22c">  135</a></span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="i2c_8h.html#a687a77cae29e2be693b540166336c22c">i2c_read8</a>(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t* val, <span class="keywordtype">int</span> stopBit)</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="i2c_8h.html#a1901113cb79ae97f4d742cd3aed215c4">  135</a></span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="i2c_8h.html#a1901113cb79ae97f4d742cd3aed215c4">i2c_read8</a>(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t* val, <span class="keywordtype">int</span> stopBit)</div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>  {</div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordflow">return</span> i2c_readData(i2cIndex, deviceAddr, registerAdd, 1, val, stopBit);</div>
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>  }</div>
 <div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="i2c_8h.html#a78f61dc14200da842fb3691f0254d6ce">  148</a></span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="i2c_8h.html#a78f61dc14200da842fb3691f0254d6ce">i2c_write8</a>(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t val, <span class="keywordtype">int</span> stopBit)</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="i2c_8h.html#a3116aab25cb7899f9a96a0da0e95dd36">  148</a></span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="i2c_8h.html#a3116aab25cb7899f9a96a0da0e95dd36">i2c_write8</a>(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t val, <span class="keywordtype">int</span> stopBit)</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>  {</div>
 <div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordflow">return</span> i2c_writeData(i2cIndex, deviceAddr, registerAdd, 1, &amp;val, stopBit);</div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>  }</div>
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="i2c_8h.html#a0d5184b00e52c90ba1def9b3a0de7e89">  161</a></span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="i2c_8h.html#a0d5184b00e52c90ba1def9b3a0de7e89">i2c_read16</a>(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint16_t* val, <span class="keywordtype">int</span> stopBit)</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="i2c_8h.html#a023993d73cb11ba02d12dcbd82afcbe3">  161</a></span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="i2c_8h.html#a023993d73cb11ba02d12dcbd82afcbe3">i2c_read16</a>(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint16_t* val, <span class="keywordtype">int</span> stopBit)</div>
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>  {</div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordflow">return</span> i2c_readData(i2cIndex, deviceAddr, registerAdd, 2, (uint8_t*)val, stopBit);</div>
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>  }</div>
 <div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="i2c_8h.html#a075f961f30a1ea893bd75e90ac56197a">  174</a></span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="i2c_8h.html#a075f961f30a1ea893bd75e90ac56197a">i2c_write16</a>(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint16_t val, <span class="keywordtype">int</span> stopBit)</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="i2c_8h.html#ae228308950da9b8c9a1561e0f09815b6">  174</a></span>  <span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="i2c_8h.html#ae228308950da9b8c9a1561e0f09815b6">i2c_write16</a>(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint16_t val, <span class="keywordtype">int</span> stopBit)</div>
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>  {</div>
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    uint8_t data[2];</div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    data[0] = val &amp; 0xFF;</div>
@@ -168,16 +168,16 @@ $(function() {
 <div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>}</div>
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>} <span class="comment">// namespace: i2c</span></div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>} <span class="comment">// namespace: platform</span></div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>} <span class="comment">// namespace: hal</span></div>
 <div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>} <span class="comment">// namespace: lampda</span></div>
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="ai2c_8h_html_a075f961f30a1ea893bd75e90ac56197a"><div class="ttname"><a href="i2c_8h.html#a075f961f30a1ea893bd75e90ac56197a">lampda::platform::i2c::i2c_write16</a></div><div class="ttdeci">int i2c_write16(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint16_t val, int stopBit)</div><div class="ttdoc">Write 16bits from the two wire interface.</div><div class="ttdef"><b>Definition:</b> i2c.h:174</div></div>
-<div class="ttc" id="ai2c_8h_html_a0d5184b00e52c90ba1def9b3a0de7e89"><div class="ttname"><a href="i2c_8h.html#a0d5184b00e52c90ba1def9b3a0de7e89">lampda::platform::i2c::i2c_read16</a></div><div class="ttdeci">int i2c_read16(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint16_t *val, int stopBit)</div><div class="ttdoc">Read 16bits from the two wire interface.</div><div class="ttdef"><b>Definition:</b> i2c.h:161</div></div>
-<div class="ttc" id="ai2c_8h_html_a687a77cae29e2be693b540166336c22c"><div class="ttname"><a href="i2c_8h.html#a687a77cae29e2be693b540166336c22c">lampda::platform::i2c::i2c_read8</a></div><div class="ttdeci">int i2c_read8(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t *val, int stopBit)</div><div class="ttdoc">Read 8bits from the two wire interface.</div><div class="ttdef"><b>Definition:</b> i2c.h:135</div></div>
-<div class="ttc" id="ai2c_8h_html_a769bce4e9c31138507f5d51b974c07d7"><div class="ttname"><a href="i2c_8h.html#a769bce4e9c31138507f5d51b974c07d7">lampda::platform::i2c::i2c_xfer</a></div><div class="ttdeci">int i2c_xfer(uint8_t i2cIndex, uint8_t deviceAddr, int out_size, const uint8_t *out, int in_size, uint8_t *in, uint8_t flags)</div><div class="ttdoc">Does a range read/write.</div><div class="ttdef"><b>Definition:</b> i2c.h:111</div></div>
-<div class="ttc" id="ai2c_8h_html_a78f61dc14200da842fb3691f0254d6ce"><div class="ttname"><a href="i2c_8h.html#a78f61dc14200da842fb3691f0254d6ce">lampda::platform::i2c::i2c_write8</a></div><div class="ttdeci">int i2c_write8(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t val, int stopBit)</div><div class="ttdoc">Write 8bits from the two wire interface.</div><div class="ttdef"><b>Definition:</b> i2c.h:148</div></div>
+<div class="ttc" id="ai2c_8h_html_a023993d73cb11ba02d12dcbd82afcbe3"><div class="ttname"><a href="i2c_8h.html#a023993d73cb11ba02d12dcbd82afcbe3">lampda::hal::i2c::i2c_read16</a></div><div class="ttdeci">int i2c_read16(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint16_t *val, int stopBit)</div><div class="ttdoc">Read 16bits from the two wire interface.</div><div class="ttdef"><b>Definition:</b> i2c.h:161</div></div>
+<div class="ttc" id="ai2c_8h_html_a1901113cb79ae97f4d742cd3aed215c4"><div class="ttname"><a href="i2c_8h.html#a1901113cb79ae97f4d742cd3aed215c4">lampda::hal::i2c::i2c_read8</a></div><div class="ttdeci">int i2c_read8(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t *val, int stopBit)</div><div class="ttdoc">Read 8bits from the two wire interface.</div><div class="ttdef"><b>Definition:</b> i2c.h:135</div></div>
+<div class="ttc" id="ai2c_8h_html_a3116aab25cb7899f9a96a0da0e95dd36"><div class="ttname"><a href="i2c_8h.html#a3116aab25cb7899f9a96a0da0e95dd36">lampda::hal::i2c::i2c_write8</a></div><div class="ttdeci">int i2c_write8(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t val, int stopBit)</div><div class="ttdoc">Write 8bits from the two wire interface.</div><div class="ttdef"><b>Definition:</b> i2c.h:148</div></div>
+<div class="ttc" id="ai2c_8h_html_ad916d9bda040e00cae5b93c5082d603e"><div class="ttname"><a href="i2c_8h.html#ad916d9bda040e00cae5b93c5082d603e">lampda::hal::i2c::i2c_xfer</a></div><div class="ttdeci">int i2c_xfer(uint8_t i2cIndex, uint8_t deviceAddr, int out_size, const uint8_t *out, int in_size, uint8_t *in, uint8_t flags)</div><div class="ttdoc">Does a range read/write.</div><div class="ttdef"><b>Definition:</b> i2c.h:111</div></div>
+<div class="ttc" id="ai2c_8h_html_ae228308950da9b8c9a1561e0f09815b6"><div class="ttname"><a href="i2c_8h.html#ae228308950da9b8c9a1561e0f09815b6">lampda::hal::i2c::i2c_write16</a></div><div class="ttdeci">int i2c_write16(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint16_t val, int stopBit)</div><div class="ttdoc">Write 16bits from the two wire interface.</div><div class="ttdef"><b>Definition:</b> i2c.h:174</div></div>
 <div class="ttc" id="anamespacelampda_html"><div class="ttname"><a href="namespacelampda.html">lampda</a></div><div class="ttdoc">Program scope.</div><div class="ttdef"><b>Definition:</b> control_fixed_modes.hpp:12</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

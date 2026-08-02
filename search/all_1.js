@@ -1,10 +1,10 @@
 var searchData=
 [
-  ['_5f_5fis_5fpower_5fgate_5fenabled_0',['__is_power_gate_enabled',['../namespacelampda_1_1power_1_1powergates.html#aa200bfed2c47900896557b7893e1ced2',1,'lampda::power::powergates']]],
+  ['_5f_5fis_5fpower_5fgate_5fenabled_0',['__is_power_gate_enabled',['../namespacelampda_1_1bsp_1_1powergates.html#adaab908b8864acf40b8414eee7ba25c4',1,'lampda::bsp::powergates']]],
   ['_5fautogaintargetvalue_1',['_autoGainTargetValue',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a410cd2bc4b746a1f4b08552784fd73fc',1,'lampda::modes::audio::SoundEventTy']]],
-  ['_5fbuffers_2',['_buffers',['../classlampda_1_1physical_1_1LedStrip.html#a02636deb8230090e9b4d4d7f9a96448c',1,'lampda::physical::LedStrip']]],
-  ['_5fcolorerrors_3',['_colorErrors',['../classlampda_1_1physical_1_1LedStrip.html#a64f2a00c2b1917c7a8e13dbd1ada76ed',1,'lampda::physical::LedStrip']]],
-  ['_5fcolors_4',['_colors',['../classlampda_1_1physical_1_1LedStrip.html#a6f2311cc8ed8b6987660ef57636230f7',1,'lampda::physical::LedStrip']]],
+  ['_5fbuffers_2',['_buffers',['../classlampda_1_1component_1_1LedStrip.html#aa4bfac74b2e6a34c98eef919b6083d64',1,'lampda::component::LedStrip']]],
+  ['_5fcolorerrors_3',['_colorErrors',['../classlampda_1_1component_1_1LedStrip.html#a1dbd4ccb3722993a512fb6ce4fbcf8e4',1,'lampda::component::LedStrip']]],
+  ['_5fcolors_4',['_colors',['../classlampda_1_1component_1_1LedStrip.html#a1704b98e15ef86c4ae78cea7eadd8375',1,'lampda::component::LedStrip']]],
   ['_5fdatalenght_5',['_dataLenght',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#aafd125fc02c2687412169bd207955d83',1,'lampda::modes::audio::SoundEventTy']]],
   ['_5ferrorstr_6',['_errorStr',['../namespacelampda_1_1logic_1_1power.html#aa363cd26885c62552538fcf9fe0b4f99',1,'lampda::logic::power']]],
   ['_5feventcutoff_7',['_eventCutoff',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#ac6b61f3d8a531b176c2fdca2d0fb8dc2',1,'lampda::modes::audio::SoundEventTy']]],

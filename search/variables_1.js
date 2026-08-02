@@ -2,7 +2,7 @@ var searchData=
 [
   ['a_0',['a',['../classlampda_1_1utils_1_1ColorSpace_1_1OKLAB.html#a0a8f9d2224fd87dee24dd98905cf865e',1,'lampda::utils::ColorSpace::OKLAB::a()'],['../classlampda_1_1utils_1_1ColorSpace_1_1LAB.html#a40432b73e58371863d840ad2d9644253',1,'lampda::utils::ColorSpace::LAB::a()']]],
   ['absolutemaximumbrightness_1',['absoluteMaximumBrightness',['../system_2utils_2constants_8h.html#a9faf7ba42a120f449494e8222aa0562c',1,'lampda::brightness']]],
-  ['accel_2',['accel',['../structlampda_1_1physical_1_1imu_1_1Reading.html#acc8cb28c3b3d421a7236d6d32934da97',1,'lampda::physical::imu::Reading']]],
+  ['accel_2',['accel',['../structlampda_1_1bsp_1_1imu_1_1Reading.html#af457e1b53c5bed75569df04a908667da',1,'lampda::bsp::imu::Reading']]],
   ['accmax_3',['accmax',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#a63c7de9e55699ac3a952a08cdf9daace',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
   ['adc_5fmax_5fvalue_4',['ADC_MAX_VALUE',['../namespacelampda.html#a6a21174cc8525627abc44db3fb5d558b',1,'lampda']]],
   ['adc_5fres_5fexp_5',['ADC_RES_EXP',['../namespacelampda.html#acd3191bdd8ab1bf053f6290acb340887',1,'lampda']]],
@@ -19,7 +19,7 @@ var searchData=
   ['ampl_16',['ampl',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#a89249301ac1f710551ee728036534f97',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
   ['angularspeedgain_17',['angularSpeedGain',['../namespacelampda_1_1modes.html#a044e21c899e6a7b1b11d64b113b475e8',1,'lampda::modes']]],
   ['animationtiming_18',['animationTiming',['../structlampda_1_1modes_1_1default__modes_1_1PingPongMode.html#a4e0b11588f30ca344e017b85bda51924',1,'lampda::modes::default_modes::PingPongMode::animationTiming()'],['../structlampda_1_1modes_1_1default__modes_1_1DoubleSideFillMode.html#a28154284e967b8dbca7add0bc150c5d8',1,'lampda::modes::default_modes::DoubleSideFillMode::animationTiming()'],['../structlampda_1_1modes_1_1default__modes_1_1ColorWipeMode.html#a346c89b896e172a60ec990302805c0f9',1,'lampda::modes::default_modes::ColorWipeMode::animationTiming()']]],
-  ['aremeasuresok_19',['areMeasuresOk',['../structlampda_1_1power_1_1charger_1_1Charger__t.html#ab20f4d9e4941e142463acccf50c0d849',1,'lampda::power::charger::Charger_t']]],
+  ['aremeasuresok_19',['areMeasuresOk',['../structlampda_1_1component_1_1charger_1_1Charger__t.html#a9d5b4ee9dc5c200fe5e0dd6a42113d14',1,'lampda::component::charger::Charger_t']]],
   ['avgdelta_20',['avgDelta',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#ac63cb09ff56d447b68979664a3b62969',1,'lampda::modes::audio::SoundEventTy']]],
   ['avglevel_21',['avgLevel',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#af10742969f2d753af7a1c0a8120ac5a3',1,'lampda::modes::audio::SoundEventTy']]],
   ['avgmax_22',['avgMax',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a395ac8e1b6aa3ce156e9307f5c901213',1,'lampda::modes::audio::SoundEventTy']]]

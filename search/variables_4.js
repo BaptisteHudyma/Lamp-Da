@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['data_0',['data',['../unionlampda_1_1physical_1_1fileSystem_1_1KeyValToByteArray.html#af10234701dc1209ef86e3e15313776a7',1,'lampda::physical::fileSystem::KeyValToByteArray::data()'],['../structlampda_1_1physical_1_1microphone_1_1SoundStruct.html#a2b2cfd8e0ea1a83a1e6eb9a2c0554b68',1,'lampda::physical::microphone::SoundStruct::data()'],['../structlampda_1_1platform_1_1microphone_1_1PdmData.html#ac057be1a0b98cc8f88cd0a5b8e206d39',1,'lampda::platform::microphone::PdmData::data()'],['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#ad83752ab2eba8409c065d97cfb230a6c',1,'lampda::modes::audio::SoundEventTy::data()']]],
+  ['data_0',['data',['../unionlampda_1_1component_1_1fileSystem_1_1KeyValToByteArray.html#a63bb3badd9a04eb144a933c9faf7b06c',1,'lampda::component::fileSystem::KeyValToByteArray::data()'],['../structlampda_1_1component_1_1microphone_1_1SoundStruct.html#a5ba3cee2fa389f0e12fcd806d5eb5d5a',1,'lampda::component::microphone::SoundStruct::data()'],['../structlampda_1_1hal_1_1microphone_1_1PdmData.html#a03891d4260b52d2084bf00626c0e70b8',1,'lampda::hal::microphone::PdmData::data()'],['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#ad83752ab2eba8409c065d97cfb230a6c',1,'lampda::modes::audio::SoundEventTy::data()']]],
   ['dataautogained_1',['dataAutoGained',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a49b8c1e2cbce679a2129d8a0eb20fdb6',1,'lampda::modes::audio::SoundEventTy']]],
-  ['dayoftheweek_2',['dayOfTheWeek',['../structlampda_1_1time_1_1RealTime.html#ada90332f5dfbd6196006f4ccd2c6b0eb',1,'lampda::time::RealTime']]],
+  ['dayoftheweek_2',['dayOfTheWeek',['../structlampda_1_1component_1_1time_1_1RealTime.html#a449d7c1164cb6a1829ce4040f2798dbf',1,'lampda::component::time::RealTime']]],
   ['debug_5faccessory_3',['debug_accessory',['../structtcpm__drv.html#a6364fc5199a8fa7151b7995427b4bdf4',1,'tcpm_drv']]],
   ['debug_5fdetach_4',['debug_detach',['../structtcpm__drv.html#ac4311e425ddfa12a496f4101b5c33430',1,'tcpm_drv']]],
   ['decay_5',['decay',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#abe3d29d28a307480beb829b0dfe42da2',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
@@ -13,7 +13,7 @@ var searchData=
   ['defaultfavorite_10',['defaultFavorite',['../structlampda_1_1modes_1_1DefaultManagerConfig.html#a889d9ae2a307ae184132119d402e45c3',1,'lampda::modes::DefaultManagerConfig']]],
   ['defaultrampsaturates_11',['defaultRampSaturates',['../structlampda_1_1modes_1_1DefaultManagerConfig.html#afb60af525ccddacc7fd5f682d3ab2f64',1,'lampda::modes::DefaultManagerConfig']]],
   ['delta_12',['delta',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#ac9057063562869f8842dcc403a59a98d',1,'lampda::modes::audio::SoundEventTy']]],
-  ['desiredoutput_13',['desiredoutput',['../namespacelampda_1_1physical_1_1microphone.html#ad868ee6e66750c6b85064e57abf3498f',1,'lampda::physical::microphone']]],
+  ['desiredoutput_13',['desiredoutput',['../namespacelampda_1_1component_1_1microphone.html#a0e7b7759bd326f028c2498c2ca956d87',1,'lampda::component::microphone']]],
   ['drp_5ftoggle_14',['drp_toggle',['../structtcpm__drv.html#ac65618e00dc3d5620f0c7b1de2e9dfba',1,'tcpm_drv']]],
   ['dstbufidx_15',['dstBufIdx',['../structlampda_1_1modes_1_1draw_1_1grid_1_1LineRuleConfig.html#aaabadd5a17093aeedf54fcc90e0edd6d',1,'lampda::modes::draw::grid::LineRuleConfig']]],
   ['dump_5fregisters_16',['dump_registers',['../structtcpm__drv.html#a4962a6eebb64125f21f695ef898ae0d6',1,'tcpm_drv']]]

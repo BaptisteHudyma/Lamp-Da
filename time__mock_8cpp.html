@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: simulator/mocks/time_mock.cpp File Reference</title>
+<title>Lamp-Da: simulator/hal/time_mock.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_f56d48452e298091a290bc1200c44e7b.html">simulator</a></li><li class="navelem"><a class="el" href="dir_5228eb18f0223b66a9bcb7e4a6bd8042.html">mocks</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_f56d48452e298091a290bc1200c44e7b.html">simulator</a></li><li class="navelem"><a class="el" href="dir_2d1343abecb0266104c9a8b86d1f1cef.html">hal</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -96,27 +96,27 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
 <tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1platform"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html">lampda::platform</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1platform"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1hal"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html">lampda::hal</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1hal"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a74feeb10c2c3e4f4a54c0d09f1cc45f9"><td class="memItemLeft" align="right" valign="top"><a id="a74feeb10c2c3e4f4a54c0d09f1cc45f9" name="a74feeb10c2c3e4f4a54c0d09f1cc45f9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::time_mocks::reset</b> (uint32_t startClock=0)</td></tr>
-<tr class="separator:a74feeb10c2c3e4f4a54c0d09f1cc45f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a1d3396e01e3920a0ebde03b8b5e437"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#a5a1d3396e01e3920a0ebde03b8b5e437">lampda::platform::time_ms</a> (void)</td></tr>
-<tr class="memdesc:a5a1d3396e01e3920a0ebde03b8b5e437"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of milliseconds since the Arduino board began running the current program. This number will overflow (go back to zero), after approximately 50 days.  <br /></td></tr>
-<tr class="separator:a5a1d3396e01e3920a0ebde03b8b5e437"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3c608c75c11131951b7175437cb1e13"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#ab3c608c75c11131951b7175437cb1e13">lampda::platform::time_us</a> (void)</td></tr>
-<tr class="memdesc:ab3c608c75c11131951b7175437cb1e13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of microseconds since the Arduino board began running the current program.  <br /></td></tr>
-<tr class="separator:ab3c608c75c11131951b7175437cb1e13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8675817a0cda15ecc74217468b71b7bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#a8675817a0cda15ecc74217468b71b7bf">lampda::platform::delay_ms</a> (uint32_t dwMs)</td></tr>
-<tr class="memdesc:a8675817a0cda15ecc74217468b71b7bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses the program for the amount of time (in miliseconds) specified as parameter. (There are 1000 milliseconds in a second.)  <br /></td></tr>
-<tr class="separator:a8675817a0cda15ecc74217468b71b7bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6efb3fe7fb56a8d60089b6a69acc27cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#a6efb3fe7fb56a8d60089b6a69acc27cf">lampda::platform::delay_us</a> (uint64_t dwUs)</td></tr>
-<tr class="memdesc:a6efb3fe7fb56a8d60089b6a69acc27cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses the program for the amount of time (in microseconds) specified as parameter.  <br /></td></tr>
-<tr class="separator:a6efb3fe7fb56a8d60089b6a69acc27cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93cb90f7d53d1d0f9e30953561c843dc"><td class="memItemLeft" align="right" valign="top"><a id="a93cb90f7d53d1d0f9e30953561c843dc" name="a93cb90f7d53d1d0f9e30953561c843dc"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::time_mocks::reset</b> (uint32_t startClock)</td></tr>
+<tr class="separator:a93cb90f7d53d1d0f9e30953561c843dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e330f95b9dbb0e0fef2af910b4295ad"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html#a3e330f95b9dbb0e0fef2af910b4295ad">lampda::hal::time_ms</a> (void)</td></tr>
+<tr class="memdesc:a3e330f95b9dbb0e0fef2af910b4295ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of milliseconds since the Arduino board began running the current program. This number will overflow (go back to zero), after approximately 50 days.  <br /></td></tr>
+<tr class="separator:a3e330f95b9dbb0e0fef2af910b4295ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9d58b4b2d7f46bff18a476916f12579"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html#af9d58b4b2d7f46bff18a476916f12579">lampda::hal::time_us</a> (void)</td></tr>
+<tr class="memdesc:af9d58b4b2d7f46bff18a476916f12579"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of microseconds since the Arduino board began running the current program.  <br /></td></tr>
+<tr class="separator:af9d58b4b2d7f46bff18a476916f12579"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9f2d9adbec28c358a943529f3597d01"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html#ac9f2d9adbec28c358a943529f3597d01">lampda::hal::delay_ms</a> (uint32_t dwMs)</td></tr>
+<tr class="memdesc:ac9f2d9adbec28c358a943529f3597d01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses the program for the amount of time (in miliseconds) specified as parameter. (There are 1000 milliseconds in a second.)  <br /></td></tr>
+<tr class="separator:ac9f2d9adbec28c358a943529f3597d01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cc9ba90031fe848b9f5624bcf7155d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html#a2cc9ba90031fe848b9f5624bcf7155d8">lampda::hal::delay_us</a> (uint64_t dwUs)</td></tr>
+<tr class="memdesc:a2cc9ba90031fe848b9f5624bcf7155d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses the program for the amount of time (in microseconds) specified as parameter.  <br /></td></tr>
+<tr class="separator:a2cc9ba90031fe848b9f5624bcf7155d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>

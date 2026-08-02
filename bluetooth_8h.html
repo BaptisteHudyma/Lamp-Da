@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: src/system/platform/bluetooth.h File Reference</title>
+<title>Lamp-Da: src/system/hal/bluetooth.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_2c722f0ee462dd0686098a5ca0274085.html">platform</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_3bbc96a91658c6a996646fdd7a67b8bb.html">hal</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -91,39 +91,39 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
 <tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1platform"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html">lampda::platform</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1platform"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1hal"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html">lampda::hal</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1hal"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1platform_1_1bluetooth"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1bluetooth.html">lampda::platform::bluetooth</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1platform_1_1bluetooth"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific bluetooth operations. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1hal_1_1bluetooth"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1bluetooth.html">lampda::hal::bluetooth</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1hal_1_1bluetooth"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific bluetooth operations. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ad45023c56bdc3bd9cb00592cb14711cd"><td class="memItemLeft" align="right" valign="top"><a id="ad45023c56bdc3bd9cb00592cb14711cd" name="ad45023c56bdc3bd9cb00592cb14711cd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::bluetooth::is_activated</b> ()</td></tr>
-<tr class="memdesc:ad45023c56bdc3bd9cb00592cb14711cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the bluetooth is activated. <br /></td></tr>
-<tr class="separator:ad45023c56bdc3bd9cb00592cb14711cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76a1cdb0d97c7895f2c782b57d7a9626"><td class="memItemLeft" align="right" valign="top"><a id="a76a1cdb0d97c7895f2c782b57d7a9626" name="a76a1cdb0d97c7895f2c782b57d7a9626"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::bluetooth::is_advertising</b> ()</td></tr>
-<tr class="memdesc:a76a1cdb0d97c7895f2c782b57d7a9626"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true is the bluetooth is visible by other devices. <br /></td></tr>
-<tr class="separator:a76a1cdb0d97c7895f2c782b57d7a9626"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af29b9ac39e874ce16e1468d26b13801f"><td class="memItemLeft" align="right" valign="top"><a id="af29b9ac39e874ce16e1468d26b13801f" name="af29b9ac39e874ce16e1468d26b13801f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::bluetooth::is_connected</b> ()</td></tr>
-<tr class="memdesc:af29b9ac39e874ce16e1468d26b13801f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if a bluetooth user is connected. <br /></td></tr>
-<tr class="separator:af29b9ac39e874ce16e1468d26b13801f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52e57422343cbd7d26556f5ebef7b075"><td class="memItemLeft" align="right" valign="top"><a id="a52e57422343cbd7d26556f5ebef7b075" name="a52e57422343cbd7d26556f5ebef7b075"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::bluetooth::start_advertising</b> ()</td></tr>
-<tr class="separator:a52e57422343cbd7d26556f5ebef7b075"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6225e31ae8b65eb080787b6876aba6ce"><td class="memItemLeft" align="right" valign="top"><a id="a6225e31ae8b65eb080787b6876aba6ce" name="a6225e31ae8b65eb080787b6876aba6ce"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::bluetooth::stop_bluetooth_advertising</b> ()</td></tr>
-<tr class="separator:a6225e31ae8b65eb080787b6876aba6ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a94a400fa07d18eea23b04badec31767b"><td class="memItemLeft" align="right" valign="top"><a id="a94a400fa07d18eea23b04badec31767b" name="a94a400fa07d18eea23b04badec31767b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::bluetooth::write_battery_level</b> (const uint8_t batteryLevel)</td></tr>
-<tr class="separator:a94a400fa07d18eea23b04badec31767b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a571cc71695c2154e697c4f1ec8cc784a"><td class="memItemLeft" align="right" valign="top"><a id="a571cc71695c2154e697c4f1ec8cc784a" name="a571cc71695c2154e697c4f1ec8cc784a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::bluetooth::notify_battery_level</b> (const uint8_t batteryLevel)</td></tr>
-<tr class="separator:a571cc71695c2154e697c4f1ec8cc784a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acec5eb41a240205558b5b9c43095e359"><td class="memItemLeft" align="right" valign="top"><a id="acec5eb41a240205558b5b9c43095e359" name="acec5eb41a240205558b5b9c43095e359"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::bluetooth::is_activated</b> ()</td></tr>
+<tr class="memdesc:acec5eb41a240205558b5b9c43095e359"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the bluetooth is activated. <br /></td></tr>
+<tr class="separator:acec5eb41a240205558b5b9c43095e359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52be78dc4fe322305bc08c85ed03a270"><td class="memItemLeft" align="right" valign="top"><a id="a52be78dc4fe322305bc08c85ed03a270" name="a52be78dc4fe322305bc08c85ed03a270"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::bluetooth::is_advertising</b> ()</td></tr>
+<tr class="memdesc:a52be78dc4fe322305bc08c85ed03a270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true is the bluetooth is visible by other devices. <br /></td></tr>
+<tr class="separator:a52be78dc4fe322305bc08c85ed03a270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a0afac8b5dd7143a5e6b52f0f55273f"><td class="memItemLeft" align="right" valign="top"><a id="a9a0afac8b5dd7143a5e6b52f0f55273f" name="a9a0afac8b5dd7143a5e6b52f0f55273f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::bluetooth::is_connected</b> ()</td></tr>
+<tr class="memdesc:a9a0afac8b5dd7143a5e6b52f0f55273f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if a bluetooth user is connected. <br /></td></tr>
+<tr class="separator:a9a0afac8b5dd7143a5e6b52f0f55273f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a631b6645704df1a7f8dee018be6b312c"><td class="memItemLeft" align="right" valign="top"><a id="a631b6645704df1a7f8dee018be6b312c" name="a631b6645704df1a7f8dee018be6b312c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::bluetooth::start_advertising</b> ()</td></tr>
+<tr class="separator:a631b6645704df1a7f8dee018be6b312c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a4e4ac1dc1244543e630a398cc6d624"><td class="memItemLeft" align="right" valign="top"><a id="a4a4e4ac1dc1244543e630a398cc6d624" name="a4a4e4ac1dc1244543e630a398cc6d624"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::bluetooth::stop_bluetooth_advertising</b> ()</td></tr>
+<tr class="separator:a4a4e4ac1dc1244543e630a398cc6d624"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38e8848e7d64749a5e7b0a2ac89d3998"><td class="memItemLeft" align="right" valign="top"><a id="a38e8848e7d64749a5e7b0a2ac89d3998" name="a38e8848e7d64749a5e7b0a2ac89d3998"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::bluetooth::write_battery_level</b> (const uint8_t batteryLevel)</td></tr>
+<tr class="separator:a38e8848e7d64749a5e7b0a2ac89d3998"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa776f2191caf91838bb52daea8cc216"><td class="memItemLeft" align="right" valign="top"><a id="aaa776f2191caf91838bb52daea8cc216" name="aaa776f2191caf91838bb52daea8cc216"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::bluetooth::notify_battery_level</b> (const uint8_t batteryLevel)</td></tr>
+<tr class="separator:aaa776f2191caf91838bb52daea8cc216"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for the platform specific bluetooth. </p>

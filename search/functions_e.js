@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['notify_5fthread_0',['notify_thread',['../namespacelampda_1_1platform_1_1threads.html#a5d82d5863190cf04804765fea6d25bc3',1,'lampda::platform::threads']]]
+  ['notify_5fthread_0',['notify_thread',['../namespacelampda_1_1hal_1_1threads.html#af3c439e4c309a3b1063cfea76e37c705',1,'lampda::hal::threads']]]
 ];

@@ -1,10 +1,10 @@
 var searchData=
 [
   ['tempbrightness_0',['tempBrightness',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a5dd1cc045f5ad50679ef1f79a031b6b0',1,'lampda::modes::hardware::LampTy']]],
-  ['time_5fmin_1',['time_min',['../namespacelampda_1_1platform.html#ab9c36b6957313ebb90129344d1d4f99d',1,'lampda::platform']]],
-  ['time_5fms_2',['time_ms',['../namespacelampda_1_1platform.html#a5a1d3396e01e3920a0ebde03b8b5e437',1,'lampda::platform']]],
-  ['time_5fs_3',['time_s',['../namespacelampda_1_1platform.html#aea6bb8f57246e694eb8222286d2e831d',1,'lampda::platform']]],
-  ['time_5fus_4',['time_us',['../namespacelampda_1_1platform.html#ab3c608c75c11131951b7175437cb1e13',1,'lampda::platform']]],
+  ['time_5fmin_1',['time_min',['../namespacelampda_1_1hal.html#a5916245827a801e3d069c5fcd32ae472',1,'lampda::hal']]],
+  ['time_5fms_2',['time_ms',['../namespacelampda_1_1hal.html#a3e330f95b9dbb0e0fef2af910b4295ad',1,'lampda::hal']]],
+  ['time_5fs_3',['time_s',['../namespacelampda_1_1hal.html#a91d4c7bfd20697db18b44c8bb65d4c9d',1,'lampda::hal']]],
+  ['time_5fus_4',['time_us',['../namespacelampda_1_1hal.html#af9d58b4b2d7f46bff18a476916f12579',1,'lampda::hal']]],
   ['to_5fbin_5findex_5',['to_bin_index',['../classlampda_1_1utils_1_1fft_1_1FftAnalyzer.html#ac35eab2b28537b2b3521c20f1b4f5adf',1,'lampda::utils::fft::FftAnalyzer']]],
   ['to_5fhelix_5fz_6',['to_helix_z',['../namespacelampda_1_1modes.html#a109f00368b37d628384a656f2181c838',1,'lampda::modes']]],
   ['to_5flamp_5findex_7',['to_lamp_index',['../structlampda_1_1modes_1_1Particle.html#a4123f5319b51158eadce4e9c2f78d01a',1,'lampda::modes::Particle']]],
@@ -18,5 +18,5 @@ var searchData=
   ['transform_15',['transform',['../structlampda_1_1utils_1_1RotationMatrix.html#a49170be7f7014dae5b87ca938ee8efe1',1,'lampda::utils::RotationMatrix::transform()'],['../structlampda_1_1utils_1_1TransformationMatrix.html#a86d56135cc80a136f2fa14ed8b1f2f23',1,'lampda::utils::TransformationMatrix::transform(const vec3d &amp;vec) const']]],
   ['transformationmatrix_16',['TransformationMatrix',['../structlampda_1_1utils_1_1TransformationMatrix.html#ac63a7662fd545fc1d6a3751529027e8c',1,'lampda::utils::TransformationMatrix::TransformationMatrix()=default'],['../structlampda_1_1utils_1_1TransformationMatrix.html#a9793a6f8a3b27169d34eeafb2e299fbf',1,'lampda::utils::TransformationMatrix::TransformationMatrix(const RotationMatrix &amp;rot, const vec3d &amp;trans)'],['../structlampda_1_1utils_1_1TransformationMatrix.html#a1e693f0725d76cd979dea6b9822de3b5',1,'lampda::utils::TransformationMatrix::TransformationMatrix(const vec3d &amp;euler, const vec3d &amp;trans)']]],
   ['true_5fpower_5foff_17',['true_power_off',['../namespacelampda_1_1logic_1_1behavior.html#a2e67b07647fdf216c82be098750b94cd',1,'lampda::logic::behavior']]],
-  ['try_5fclear_5ffaults_18',['try_clear_faults',['../namespacelampda_1_1power_1_1charger_1_1drivers.html#a9763ed87ec0573df4f2155ab8a312aa2',1,'lampda::power::charger::drivers']]]
+  ['try_5fclear_5ffaults_18',['try_clear_faults',['../namespacelampda_1_1bsp_1_1charger.html#a387a4de73b40d1ce2efa9ead03fa8253',1,'lampda::bsp::charger']]]
 ];

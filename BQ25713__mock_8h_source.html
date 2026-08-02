@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: simulator/mocks/electrical/BQ25713_mock.h Source File</title>
+<title>Lamp-Da: simulator/hal/electrical/BQ25713_mock.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_f56d48452e298091a290bc1200c44e7b.html">simulator</a></li><li class="navelem"><a class="el" href="dir_5228eb18f0223b66a9bcb7e4a6bd8042.html">mocks</a></li><li class="navelem"><a class="el" href="dir_3e72a2ca3cdb659c3b6f842d8be5ff15.html">electrical</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_f56d48452e298091a290bc1200c44e7b.html">simulator</a></li><li class="navelem"><a class="el" href="dir_2d1343abecb0266104c9a8b86d1f1cef.html">hal</a></li><li class="navelem"><a class="el" href="dir_8e7f3cf7ca52058f2def0e09f1dedda8.html">electrical</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -91,17 +91,17 @@ $(function() {
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="utils_8h.html">src/system/utils/utils.h</a>&quot;</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="platform_2print_8h.html">src/system/platform/print.h</a>&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="gpio_8h.html">src/system/platform/gpio.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="hal_2print_8h.html">src/system/hal/print.h</a>&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="gpio_8h.html">src/system/hal/gpio.h</a>&quot;</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;map&gt;</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacesimulator.html">simulator</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespacesimulator.html">   23</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacesimulator.html">simulator</a> {</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">// independant of enabl/disable</span></div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keywordtype">float</span> targetOTGVoltage = 0.0;</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">namespace </span>__private {</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><a class="code hl_class" href="classlampda_1_1platform_1_1gpio_1_1DigitalPin.html">::lampda::platform::gpio::DigitalPin</a> enableOTG(::lampda::platform::gpio::DigitalPin::GPIO::Output_EnableOnTheGo);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><a class="code hl_class" href="classlampda_1_1hal_1_1gpio_1_1DigitalPin.html">::lampda::hal::gpio::DigitalPin</a> enableOTG(::lampda::hal::gpio::DigitalPin::GPIO::Output_EnableOnTheGo);</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classsimulator_1_1BQ25713Mock.html">   31</a></span><span class="keyword">class </span><a class="code hl_class" href="classsimulator_1_1BQ25713Mock.html">BQ25713Mock</a> : <span class="keyword">public</span> <a class="code hl_class" href="classsimulator_1_1IntegratedCircuitMock__I.html">IntegratedCircuitMock_I</a></div>
@@ -282,14 +282,14 @@ $(function() {
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
 <div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aBQ25713_8h_html"><div class="ttname"><a href="BQ25713_8h.html">BQ25713.h</a></div></div>
-<div class="ttc" id="aclasslampda_1_1platform_1_1gpio_1_1DigitalPin_html"><div class="ttname"><a href="classlampda_1_1platform_1_1gpio_1_1DigitalPin.html">lampda::platform::gpio::DigitalPin</a></div><div class="ttdef"><b>Definition:</b> gpio.h:20</div></div>
+<div class="ttc" id="aclasslampda_1_1hal_1_1gpio_1_1DigitalPin_html"><div class="ttname"><a href="classlampda_1_1hal_1_1gpio_1_1DigitalPin.html">lampda::hal::gpio::DigitalPin</a></div><div class="ttdef"><b>Definition:</b> gpio.h:20</div></div>
 <div class="ttc" id="aclasssimulator_1_1BQ25713Mock_html"><div class="ttname"><a href="classsimulator_1_1BQ25713Mock.html">simulator::BQ25713Mock</a></div><div class="ttdef"><b>Definition:</b> BQ25713_mock.h:32</div></div>
 <div class="ttc" id="aclasssimulator_1_1IntegratedCircuitMock__I_html"><div class="ttname"><a href="classsimulator_1_1IntegratedCircuitMock__I.html">simulator::IntegratedCircuitMock_I</a></div><div class="ttdef"><b>Definition:</b> i_ic.h:20</div></div>
 <div class="ttc" id="agpio_8h_html"><div class="ttname"><a href="gpio_8h.html">gpio.h</a></div><div class="ttdoc">Interface for the platform specific GeneralPurposeInputOutputs.</div></div>
+<div class="ttc" id="ahal_2print_8h_html"><div class="ttname"><a href="hal_2print_8h.html">print.h</a></div><div class="ttdoc">Interface for the platform specific debug and prints.</div></div>
 <div class="ttc" id="ahardware__influencer_8h_html"><div class="ttname"><a href="hardware__influencer_8h.html">hardware_influencer.h</a></div><div class="ttdoc">Handle the physical simulation paremeters of a real lamp.</div></div>
 <div class="ttc" id="ai__ic_8h_html"><div class="ttname"><a href="i__ic_8h.html">i_ic.h</a></div><div class="ttdoc">Electrical simulation interface with the electrical simulator.</div></div>
-<div class="ttc" id="anamespacesimulator_html"><div class="ttname"><a href="namespacesimulator.html">simulator</a></div><div class="ttdoc">Simulator dedicated namespace.</div><div class="ttdef"><b>Definition:</b> default_simulation.h:8</div></div>
-<div class="ttc" id="aplatform_2print_8h_html"><div class="ttname"><a href="platform_2print_8h.html">print.h</a></div><div class="ttdoc">Interface for the platform specific debug and prints.</div></div>
+<div class="ttc" id="anamespacesimulator_html"><div class="ttname"><a href="namespacesimulator.html">simulator</a></div><div class="ttdoc">Simulator dedicated namespace.</div><div class="ttdef"><b>Definition:</b> BQ25713_mock.h:23</div></div>
 <div class="ttc" id="astructbq25713_1_1BQ25713_1_1IBaseReadRegister_html"><div class="ttname"><a href="structbq25713_1_1BQ25713_1_1IBaseReadRegister.html">bq25713::BQ25713::IBaseReadRegister</a></div><div class="ttdef"><b>Definition:</b> BQ25713.h:121</div></div>
 <div class="ttc" id="astructbq25713_1_1BQ25713_1_1IDoubleRegister_html"><div class="ttname"><a href="structbq25713_1_1BQ25713_1_1IDoubleRegister.html">bq25713::BQ25713::IDoubleRegister</a></div><div class="ttdef"><b>Definition:</b> BQ25713.h:195</div></div>
 <div class="ttc" id="astructbq25713_1_1BQ25713_1_1Regt_html"><div class="ttname"><a href="structbq25713_1_1BQ25713_1_1Regt.html">bq25713::BQ25713::Regt</a></div><div class="ttdef"><b>Definition:</b> BQ25713.h:242</div></div>

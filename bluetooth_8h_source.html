@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: src/system/platform/bluetooth.h Source File</title>
+<title>Lamp-Da: src/system/hal/bluetooth.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_2c722f0ee462dd0686098a5ca0274085.html">platform</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_3bbc96a91658c6a996646fdd7a67b8bb.html">hal</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -78,8 +78,8 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <a href="bluetooth_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#ifndef BLUETOOTH_HPP</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#define BLUETOOTH_HPP</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#ifndef HAL_BLUETOOTH_HPP</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#define HAL_BLUETOOTH_HPP</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
@@ -88,12 +88,12 @@ $(function() {
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">// - contains #define USE_BLUETOOTH</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacelampda.html">lampda</a> {</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span>platform {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span>hal {</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span>bluetooth {</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacelampda_1_1platform_1_1bluetooth.html#ad45023c56bdc3bd9cb00592cb14711cd">is_activated</a>();</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacelampda_1_1platform_1_1bluetooth.html#a76a1cdb0d97c7895f2c782b57d7a9626">is_advertising</a>();</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacelampda_1_1platform_1_1bluetooth.html#af29b9ac39e874ce16e1468d26b13801f">is_connected</a>();</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacelampda_1_1hal_1_1bluetooth.html#acec5eb41a240205558b5b9c43095e359">is_activated</a>();</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacelampda_1_1hal_1_1bluetooth.html#a52be78dc4fe322305bc08c85ed03a270">is_advertising</a>();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacelampda_1_1hal_1_1bluetooth.html#a9a0afac8b5dd7143a5e6b52f0f55273f">is_connected</a>();</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">// start the advertising sequence (with a timeout)</span></div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keywordtype">void</span> start_advertising();</div>
@@ -106,14 +106,14 @@ $(function() {
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keywordtype">void</span> notify_battery_level(<span class="keyword">const</span> uint8_t batteryLevel);</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>} <span class="comment">// namespace bluetooth</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>} <span class="comment">// namespace platform</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>} <span class="comment">// namespace hal</span></div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>} <span class="comment">// namespace lampda</span></div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="acompile_8h_html"><div class="ttname"><a href="compile_8h.html">compile.h</a></div><div class="ttdoc">Compile definitions and sanity checks.</div></div>
-<div class="ttc" id="anamespacelampda_1_1platform_1_1bluetooth_html_a76a1cdb0d97c7895f2c782b57d7a9626"><div class="ttname"><a href="namespacelampda_1_1platform_1_1bluetooth.html#a76a1cdb0d97c7895f2c782b57d7a9626">lampda::platform::bluetooth::is_advertising</a></div><div class="ttdeci">bool is_advertising()</div><div class="ttdoc">Return true is the bluetooth is visible by other devices.</div><div class="ttdef"><b>Definition:</b> bluetooth.cpp:191</div></div>
-<div class="ttc" id="anamespacelampda_1_1platform_1_1bluetooth_html_ad45023c56bdc3bd9cb00592cb14711cd"><div class="ttname"><a href="namespacelampda_1_1platform_1_1bluetooth.html#ad45023c56bdc3bd9cb00592cb14711cd">lampda::platform::bluetooth::is_activated</a></div><div class="ttdeci">bool is_activated()</div><div class="ttdoc">Return true if the bluetooth is activated.</div><div class="ttdef"><b>Definition:</b> bluetooth.cpp:189</div></div>
-<div class="ttc" id="anamespacelampda_1_1platform_1_1bluetooth_html_af29b9ac39e874ce16e1468d26b13801f"><div class="ttname"><a href="namespacelampda_1_1platform_1_1bluetooth.html#af29b9ac39e874ce16e1468d26b13801f">lampda::platform::bluetooth::is_connected</a></div><div class="ttdeci">bool is_connected()</div><div class="ttdoc">Return true if a bluetooth user is connected.</div><div class="ttdef"><b>Definition:</b> bluetooth.cpp:193</div></div>
+<div class="ttc" id="anamespacelampda_1_1hal_1_1bluetooth_html_a52be78dc4fe322305bc08c85ed03a270"><div class="ttname"><a href="namespacelampda_1_1hal_1_1bluetooth.html#a52be78dc4fe322305bc08c85ed03a270">lampda::hal::bluetooth::is_advertising</a></div><div class="ttdeci">bool is_advertising()</div><div class="ttdoc">Return true is the bluetooth is visible by other devices.</div><div class="ttdef"><b>Definition:</b> bluetooth.cpp:191</div></div>
+<div class="ttc" id="anamespacelampda_1_1hal_1_1bluetooth_html_a9a0afac8b5dd7143a5e6b52f0f55273f"><div class="ttname"><a href="namespacelampda_1_1hal_1_1bluetooth.html#a9a0afac8b5dd7143a5e6b52f0f55273f">lampda::hal::bluetooth::is_connected</a></div><div class="ttdeci">bool is_connected()</div><div class="ttdoc">Return true if a bluetooth user is connected.</div><div class="ttdef"><b>Definition:</b> bluetooth.cpp:193</div></div>
+<div class="ttc" id="anamespacelampda_1_1hal_1_1bluetooth_html_acec5eb41a240205558b5b9c43095e359"><div class="ttname"><a href="namespacelampda_1_1hal_1_1bluetooth.html#acec5eb41a240205558b5b9c43095e359">lampda::hal::bluetooth::is_activated</a></div><div class="ttdeci">bool is_activated()</div><div class="ttdoc">Return true if the bluetooth is activated.</div><div class="ttdef"><b>Definition:</b> bluetooth.cpp:189</div></div>
 <div class="ttc" id="anamespacelampda_html"><div class="ttname"><a href="namespacelampda.html">lampda</a></div><div class="ttdoc">Program scope.</div><div class="ttdef"><b>Definition:</b> control_fixed_modes.hpp:12</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

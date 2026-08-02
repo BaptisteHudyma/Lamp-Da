@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: src/system/power/PDlib/tcpm/tcpm.h Source File</title>
+<title>Lamp-Da: src/system/bsp/pd/tcpm/tcpm.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_a4e4f6473e9f5895192f8ab692a4c3f6.html">power</a></li><li class="navelem"><a class="el" href="dir_04cd49cf73832fc9ce1d1e418422026f.html">PDlib</a></li><li class="navelem"><a class="el" href="dir_9ec5a128530830ac206c128bfece99fc.html">tcpm</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_287ebc45729c8a11c980f38cc67e4677.html">bsp</a></li><li class="navelem"><a class="el" href="dir_ba6e5cd2116da391f115745306eaf406.html">pd</a></li><li class="navelem"><a class="el" href="dir_e76724e16f342658493d9b772544e897.html">tcpm</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -91,10 +91,10 @@ $(function() {
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;../drivers/tcpm_driver.h&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;../../../../../src/system/driver/pd/tcpm_driver.h&quot;</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;usb_pd_tcpm.h&quot;</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;../config.h&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;../../../../../src/system/bsp/pd/config.h&quot;</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#if defined(CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE) &amp;&amp; !defined(CONFIG_USB_PD_DUAL_ROLE)</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#error &quot;DRP auto toggle requires board to have DRP support&quot;</span></div>

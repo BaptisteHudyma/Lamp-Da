@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: simulator/mocks/threads_mock.cpp File Reference</title>
+<title>Lamp-Da: simulator/hal/threads_mock.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_f56d48452e298091a290bc1200c44e7b.html">simulator</a></li><li class="navelem"><a class="el" href="dir_5228eb18f0223b66a9bcb7e4a6bd8042.html">mocks</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_f56d48452e298091a290bc1200c44e7b.html">simulator</a></li><li class="navelem"><a class="el" href="dir_2d1343abecb0266104c9a8b86d1f1cef.html">hal</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -93,54 +93,54 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
 <tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1platform"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html">lampda::platform</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1platform"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1hal"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html">lampda::hal</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1hal"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1platform_1_1threads"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1threads.html">lampda::platform::threads</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1platform_1_1threads"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define tasks and threads specifics. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1hal_1_1threads"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html">lampda::hal::threads</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1hal_1_1threads"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define tasks and threads specifics. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a1b7b7892e8cfc180333d0c284fa45a0a"><td class="memItemLeft" align="right" valign="top"><a id="a1b7b7892e8cfc180333d0c284fa45a0a" name="a1b7b7892e8cfc180333d0c284fa45a0a"></a>
-const char *const&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::threads::get_name_from_hash</b> (const uint32_t hash)</td></tr>
-<tr class="separator:a1b7b7892e8cfc180333d0c284fa45a0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2c3a9fb1f590a7a89d0029c2ff0bfa4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1threads.html#af2c3a9fb1f590a7a89d0029c2ff0bfa4">lampda::platform::threads::start_thread</a> (taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize)</td></tr>
-<tr class="memdesc:af2c3a9fb1f590a7a89d0029c2ff0bfa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a separate thread, running until the system shuts off.  <br /></td></tr>
-<tr class="separator:af2c3a9fb1f590a7a89d0029c2ff0bfa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbad3b365045c874fc0b6c69d65d196f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1threads.html#adbad3b365045c874fc0b6c69d65d196f">lampda::platform::threads::start_suspended_thread</a> (taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize)</td></tr>
-<tr class="memdesc:adbad3b365045c874fc0b6c69d65d196f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a separate thread, running until the system shuts off. Start in suspended state.  <br /></td></tr>
-<tr class="separator:adbad3b365045c874fc0b6c69d65d196f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a183e10a8bd7106010da0b85ee5fecba8"><td class="memItemLeft" align="right" valign="top"><a id="a183e10a8bd7106010da0b85ee5fecba8" name="a183e10a8bd7106010da0b85ee5fecba8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::threads::yield_this_thread</b> ()</td></tr>
-<tr class="memdesc:a183e10a8bd7106010da0b85ee5fecba8"><td class="mdescLeft">&#160;</td><td class="mdescRight">make this thread pass the control to other threads <br /></td></tr>
-<tr class="separator:a183e10a8bd7106010da0b85ee5fecba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaae801dfa21ff37ac7d2842ad71cc435"><td class="memItemLeft" align="right" valign="top"><a id="aaae801dfa21ff37ac7d2842ad71cc435" name="aaae801dfa21ff37ac7d2842ad71cc435"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::threads::suspend_this_thread</b> ()</td></tr>
-<tr class="memdesc:aaae801dfa21ff37ac7d2842ad71cc435"><td class="mdescLeft">&#160;</td><td class="mdescRight">threads can only suspend itself <br /></td></tr>
-<tr class="separator:aaae801dfa21ff37ac7d2842ad71cc435"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7b69cf1014223968b1bb602da779fc4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1threads.html#ab7b69cf1014223968b1bb602da779fc4">lampda::platform::threads::suspend_all_threads</a> ()</td></tr>
-<tr class="memdesc:ab7b69cf1014223968b1bb602da779fc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Suspend all threads.  <br /></td></tr>
-<tr class="separator:ab7b69cf1014223968b1bb602da779fc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe36fb72a2b828635cea4d658be20cd9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1threads.html#abe36fb72a2b828635cea4d658be20cd9">lampda::platform::threads::is_all_suspended</a> ()</td></tr>
-<tr class="memdesc:abe36fb72a2b828635cea4d658be20cd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">check that all threads are suspended (mandatory for sleep mode)  <br /></td></tr>
-<tr class="separator:abe36fb72a2b828635cea4d658be20cd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b99a7ed560ad525a8006ead40295f43"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1threads.html#a9b99a7ed560ad525a8006ead40295f43">lampda::platform::threads::resume_thread</a> (const uint32_t taskName)</td></tr>
-<tr class="memdesc:a9b99a7ed560ad525a8006ead40295f43"><td class="mdescLeft">&#160;</td><td class="mdescRight">resume a target thread  <br /></td></tr>
-<tr class="separator:a9b99a7ed560ad525a8006ead40295f43"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d82d5863190cf04804765fea6d25bc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1threads.html#a5d82d5863190cf04804765fea6d25bc3">lampda::platform::threads::notify_thread</a> (const uint32_t taskName, int wakeUpEvent)</td></tr>
-<tr class="memdesc:a5d82d5863190cf04804765fea6d25bc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">notify a thread to resume  <br /></td></tr>
-<tr class="separator:a5d82d5863190cf04804765fea6d25bc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9338f089e84cd489a043e021bbf01ddd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform_1_1threads.html#a9338f089e84cd489a043e021bbf01ddd">lampda::platform::threads::wait_notification</a> (const int timeout_ms)</td></tr>
-<tr class="memdesc:a9338f089e84cd489a043e021bbf01ddd"><td class="mdescLeft">&#160;</td><td class="mdescRight">block this thread until a timeout or notification is received  <br /></td></tr>
-<tr class="separator:a9338f089e84cd489a043e021bbf01ddd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98df973062ca275ab29d28892e23724d"><td class="memItemLeft" align="right" valign="top"><a id="a98df973062ca275ab29d28892e23724d" name="a98df973062ca275ab29d28892e23724d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::threads::get_thread_debug</b> (char *textBuff)</td></tr>
-<tr class="separator:a98df973062ca275ab29d28892e23724d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38249d73119ca220019dabfc03fb733f"><td class="memItemLeft" align="right" valign="top"><a id="a38249d73119ca220019dabfc03fb733f" name="a38249d73119ca220019dabfc03fb733f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::threads::shutdown</b> ()</td></tr>
-<tr class="memdesc:a38249d73119ca220019dabfc03fb733f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shutdown the task driver cleanly. <br /></td></tr>
-<tr class="separator:a38249d73119ca220019dabfc03fb733f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87706da9ad2dce832c8eeec7df94ba0c"><td class="memItemLeft" align="right" valign="top"><a id="a87706da9ad2dce832c8eeec7df94ba0c" name="a87706da9ad2dce832c8eeec7df94ba0c"></a>
+const char *const&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::get_name_from_hash</b> (const uint32_t hash)</td></tr>
+<tr class="separator:a87706da9ad2dce832c8eeec7df94ba0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96133a25bd4be8e01151e5606df4177c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#a96133a25bd4be8e01151e5606df4177c">lampda::hal::threads::start_thread</a> (taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize)</td></tr>
+<tr class="memdesc:a96133a25bd4be8e01151e5606df4177c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a separate thread, running until the system shuts off.  <br /></td></tr>
+<tr class="separator:a96133a25bd4be8e01151e5606df4177c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08cf5f94ea28610dbc67e6b3a9c4f481"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#a08cf5f94ea28610dbc67e6b3a9c4f481">lampda::hal::threads::start_suspended_thread</a> (taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize)</td></tr>
+<tr class="memdesc:a08cf5f94ea28610dbc67e6b3a9c4f481"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a separate thread, running until the system shuts off. Start in suspended state.  <br /></td></tr>
+<tr class="separator:a08cf5f94ea28610dbc67e6b3a9c4f481"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08d1dde4b8f480f9a02e918cd61079a0"><td class="memItemLeft" align="right" valign="top"><a id="a08d1dde4b8f480f9a02e918cd61079a0" name="a08d1dde4b8f480f9a02e918cd61079a0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::yield_this_thread</b> ()</td></tr>
+<tr class="memdesc:a08d1dde4b8f480f9a02e918cd61079a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">make this thread pass the control to other threads <br /></td></tr>
+<tr class="separator:a08d1dde4b8f480f9a02e918cd61079a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa059b54325ba65084cd8798e93e6fb28"><td class="memItemLeft" align="right" valign="top"><a id="aa059b54325ba65084cd8798e93e6fb28" name="aa059b54325ba65084cd8798e93e6fb28"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::suspend_this_thread</b> ()</td></tr>
+<tr class="memdesc:aa059b54325ba65084cd8798e93e6fb28"><td class="mdescLeft">&#160;</td><td class="mdescRight">threads can only suspend itself <br /></td></tr>
+<tr class="separator:aa059b54325ba65084cd8798e93e6fb28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07a51f37f3479938dcd8335deee5288b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#a07a51f37f3479938dcd8335deee5288b">lampda::hal::threads::suspend_all_threads</a> ()</td></tr>
+<tr class="memdesc:a07a51f37f3479938dcd8335deee5288b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Suspend all threads.  <br /></td></tr>
+<tr class="separator:a07a51f37f3479938dcd8335deee5288b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f423cfa286d0e41fc5ee99c23a8db7e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#a9f423cfa286d0e41fc5ee99c23a8db7e">lampda::hal::threads::is_all_suspended</a> ()</td></tr>
+<tr class="memdesc:a9f423cfa286d0e41fc5ee99c23a8db7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">check that all threads are suspended (mandatory for sleep mode)  <br /></td></tr>
+<tr class="separator:a9f423cfa286d0e41fc5ee99c23a8db7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9623c91510e8c69efa413e6f5a6b5a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#ab9623c91510e8c69efa413e6f5a6b5a8">lampda::hal::threads::resume_thread</a> (const uint32_t taskName)</td></tr>
+<tr class="memdesc:ab9623c91510e8c69efa413e6f5a6b5a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">resume a target thread  <br /></td></tr>
+<tr class="separator:ab9623c91510e8c69efa413e6f5a6b5a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3c439e4c309a3b1063cfea76e37c705"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#af3c439e4c309a3b1063cfea76e37c705">lampda::hal::threads::notify_thread</a> (const uint32_t taskName, int wakeUpEvent)</td></tr>
+<tr class="memdesc:af3c439e4c309a3b1063cfea76e37c705"><td class="mdescLeft">&#160;</td><td class="mdescRight">notify a thread to resume  <br /></td></tr>
+<tr class="separator:af3c439e4c309a3b1063cfea76e37c705"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b42a6cc53564c99c86fb117e05ed4c4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#a0b42a6cc53564c99c86fb117e05ed4c4">lampda::hal::threads::wait_notification</a> (const int timeout_ms)</td></tr>
+<tr class="memdesc:a0b42a6cc53564c99c86fb117e05ed4c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">block this thread until a timeout or notification is received  <br /></td></tr>
+<tr class="separator:a0b42a6cc53564c99c86fb117e05ed4c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a321c9fbab7772b6985eb05e21d7afce3"><td class="memItemLeft" align="right" valign="top"><a id="a321c9fbab7772b6985eb05e21d7afce3" name="a321c9fbab7772b6985eb05e21d7afce3"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::get_thread_debug</b> (char *textBuff)</td></tr>
+<tr class="separator:a321c9fbab7772b6985eb05e21d7afce3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bf2f8adfdd57957593f8feb97a46e7c"><td class="memItemLeft" align="right" valign="top"><a id="a0bf2f8adfdd57957593f8feb97a46e7c" name="a0bf2f8adfdd57957593f8feb97a46e7c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::shutdown</b> ()</td></tr>
+<tr class="memdesc:a0bf2f8adfdd57957593f8feb97a46e7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shutdown the task driver cleanly. <br /></td></tr>
+<tr class="separator:a0bf2f8adfdd57957593f8feb97a46e7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>

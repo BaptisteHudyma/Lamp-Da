@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: src/system/physical/time_handling.h Source File</title>
+<title>Lamp-Da: src/system/component/time_handling.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_1430521e616d6238eabe66adf5eaf90a.html">physical</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_ba11b1831d7d5bf7bf4ddce9243e4814.html">component</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -78,50 +78,52 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifndef PHYSICAL_TIME_HANDLING</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define PHYSICAL_TIME_HANDLING</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifndef COMPONENT_TIME_HANDLING</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define COMPONENT_TIME_HANDLING</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacelampda.html">lampda</a> {</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>time {</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structlampda_1_1time_1_1RealTime.html">   16</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structlampda_1_1time_1_1RealTime.html">RealTime</a></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>{</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>  <span class="keywordtype">bool</span> is_valid()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">  </span>{</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="structlampda_1_1time_1_1RealTime.html#ada90332f5dfbd6196006f4ccd2c6b0eb">dayOfTheWeek</a> &gt;= 0 and dayOfTheWeek &lt; 7 and hour &gt;= 0 &amp;&amp; hour &lt; 24 &amp;&amp; minutes &gt;= 0 &amp;&amp; <a class="code hl_variable" href="structlampda_1_1time_1_1RealTime.html#a9f9fdf9b5379b5169984cec6e472d6f9">minutes</a> &lt; 60 &amp;&amp;</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>           <a class="code hl_variable" href="structlampda_1_1time_1_1RealTime.html#a63c4aebb6fc40b0bd0af832c15d6aad6">seconds</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="structlampda_1_1time_1_1RealTime.html#a63c4aebb6fc40b0bd0af832c15d6aad6">seconds</a> &lt; 60;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>  }</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>  int32_t as_seconds() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>  <span class="comment">// default values are always wrong</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structlampda_1_1time_1_1RealTime.html#ada90332f5dfbd6196006f4ccd2c6b0eb">   27</a></span>  uint8_t <a class="code hl_variable" href="structlampda_1_1time_1_1RealTime.html#ada90332f5dfbd6196006f4ccd2c6b0eb">dayOfTheWeek</a> = UINT8_MAX; </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structlampda_1_1time_1_1RealTime.html#ae5e56b4074e045494e5a1096bfcf96b9">   28</a></span>  uint8_t <a class="code hl_variable" href="structlampda_1_1time_1_1RealTime.html#ae5e56b4074e045494e5a1096bfcf96b9">hour</a> = UINT8_MAX;         </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structlampda_1_1time_1_1RealTime.html#a9f9fdf9b5379b5169984cec6e472d6f9">   29</a></span>  uint8_t <a class="code hl_variable" href="structlampda_1_1time_1_1RealTime.html#a9f9fdf9b5379b5169984cec6e472d6f9">minutes</a> = UINT8_MAX;      </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structlampda_1_1time_1_1RealTime.html#a63c4aebb6fc40b0bd0af832c15d6aad6">   30</a></span>  uint8_t <a class="code hl_variable" href="structlampda_1_1time_1_1RealTime.html#a63c4aebb6fc40b0bd0af832c15d6aad6">seconds</a> = UINT8_MAX;      </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacelampda_1_1time.html#a8c9364c1ac4dc44612cadaaeafa33cca">set_real_time</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structlampda_1_1time_1_1RealTime.html">RealTime</a>&amp; realTime);</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><a class="code hl_struct" href="structlampda_1_1time_1_1RealTime.html">RealTime</a> <a class="code hl_function" href="namespacelampda_1_1time.html#a0f94cc013dd092b08ae9f54b44d04add">get_real_time</a>();</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>uint32_t <a class="code hl_function" href="namespacelampda_1_1time.html#a677de1bf6387073b5e859f6ada8857b7">get_platform_time_from_target_time</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structlampda_1_1time_1_1RealTime.html">RealTime</a>&amp; time);</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>} <span class="comment">// namespace time</span></div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>} <span class="comment">// namespace lampda</span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="anamespacelampda_1_1time_html_a0f94cc013dd092b08ae9f54b44d04add"><div class="ttname"><a href="namespacelampda_1_1time.html#a0f94cc013dd092b08ae9f54b44d04add">lampda::time::get_real_time</a></div><div class="ttdeci">RealTime get_real_time()</div><div class="ttdoc">Return a real time value, only valid if it was set first.</div><div class="ttdef"><b>Definition:</b> time_handling.cpp:83</div></div>
-<div class="ttc" id="anamespacelampda_1_1time_html_a677de1bf6387073b5e859f6ada8857b7"><div class="ttname"><a href="namespacelampda_1_1time.html#a677de1bf6387073b5e859f6ada8857b7">lampda::time::get_platform_time_from_target_time</a></div><div class="ttdeci">uint32_t get_platform_time_from_target_time(const RealTime &amp;time)</div><div class="ttdoc">Given a real time, return the expected platform time in seconds at wich it will be reached.</div><div class="ttdef"><b>Definition:</b> time_handling.cpp:85</div></div>
-<div class="ttc" id="anamespacelampda_1_1time_html_a8c9364c1ac4dc44612cadaaeafa33cca"><div class="ttname"><a href="namespacelampda_1_1time.html#a8c9364c1ac4dc44612cadaaeafa33cca">lampda::time::set_real_time</a></div><div class="ttdeci">bool set_real_time(const RealTime &amp;realTime)</div><div class="ttdoc">Set the real time in the lamp, only valid until the next shutdown.</div><div class="ttdef"><b>Definition:</b> time_handling.cpp:73</div></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>component {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>time {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structlampda_1_1component_1_1time_1_1RealTime.html">   17</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structlampda_1_1component_1_1time_1_1RealTime.html">RealTime</a></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>  <span class="keywordtype">bool</span> is_valid()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="structlampda_1_1component_1_1time_1_1RealTime.html#a449d7c1164cb6a1829ce4040f2798dbf">dayOfTheWeek</a> &gt;= 0 and dayOfTheWeek &lt; 7 and hour &gt;= 0 &amp;&amp; hour &lt; 24 &amp;&amp; minutes &gt;= 0 &amp;&amp; <a class="code hl_variable" href="structlampda_1_1component_1_1time_1_1RealTime.html#a21c2d8aff59b6db7dab77aacd91f7304">minutes</a> &lt; 60 &amp;&amp;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>           <a class="code hl_variable" href="structlampda_1_1component_1_1time_1_1RealTime.html#abd46a50b5234e2961f3ee6a15dde01db">seconds</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="structlampda_1_1component_1_1time_1_1RealTime.html#abd46a50b5234e2961f3ee6a15dde01db">seconds</a> &lt; 60;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>  }</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  int32_t as_seconds() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  <span class="comment">// default values are always wrong</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structlampda_1_1component_1_1time_1_1RealTime.html#a449d7c1164cb6a1829ce4040f2798dbf">   28</a></span>  uint8_t <a class="code hl_variable" href="structlampda_1_1component_1_1time_1_1RealTime.html#a449d7c1164cb6a1829ce4040f2798dbf">dayOfTheWeek</a> = UINT8_MAX; </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structlampda_1_1component_1_1time_1_1RealTime.html#a5c22e168684cd43d87694f4f72e55ab3">   29</a></span>  uint8_t <a class="code hl_variable" href="structlampda_1_1component_1_1time_1_1RealTime.html#a5c22e168684cd43d87694f4f72e55ab3">hour</a> = UINT8_MAX;         </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structlampda_1_1component_1_1time_1_1RealTime.html#a21c2d8aff59b6db7dab77aacd91f7304">   30</a></span>  uint8_t <a class="code hl_variable" href="structlampda_1_1component_1_1time_1_1RealTime.html#a21c2d8aff59b6db7dab77aacd91f7304">minutes</a> = UINT8_MAX;      </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structlampda_1_1component_1_1time_1_1RealTime.html#abd46a50b5234e2961f3ee6a15dde01db">   31</a></span>  uint8_t <a class="code hl_variable" href="structlampda_1_1component_1_1time_1_1RealTime.html#abd46a50b5234e2961f3ee6a15dde01db">seconds</a> = UINT8_MAX;      </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespacelampda_1_1component_1_1time.html#abadccaa893776ba9f3011ff12da36a6d">set_real_time</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structlampda_1_1component_1_1time_1_1RealTime.html">RealTime</a>&amp; realTime);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><a class="code hl_struct" href="structlampda_1_1component_1_1time_1_1RealTime.html">RealTime</a> <a class="code hl_function" href="namespacelampda_1_1component_1_1time.html#a9ae576ef23a6f073f91631e15130ef4d">get_real_time</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>uint32_t <a class="code hl_function" href="namespacelampda_1_1component_1_1time.html#a5eedd683abf2091a5c50fca2b3fbfe1a">get_platform_time_from_target_time</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structlampda_1_1component_1_1time_1_1RealTime.html">RealTime</a>&amp; time);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>} <span class="comment">// namespace time</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>} <span class="comment">// namespace component</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>} <span class="comment">// namespace lampda</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="anamespacelampda_1_1component_1_1time_html_a5eedd683abf2091a5c50fca2b3fbfe1a"><div class="ttname"><a href="namespacelampda_1_1component_1_1time.html#a5eedd683abf2091a5c50fca2b3fbfe1a">lampda::component::time::get_platform_time_from_target_time</a></div><div class="ttdeci">uint32_t get_platform_time_from_target_time(const RealTime &amp;time)</div><div class="ttdoc">Given a real time, return the expected platform time in seconds at wich it will be reached.</div><div class="ttdef"><b>Definition:</b> time_handling.cpp:87</div></div>
+<div class="ttc" id="anamespacelampda_1_1component_1_1time_html_a9ae576ef23a6f073f91631e15130ef4d"><div class="ttname"><a href="namespacelampda_1_1component_1_1time.html#a9ae576ef23a6f073f91631e15130ef4d">lampda::component::time::get_real_time</a></div><div class="ttdeci">RealTime get_real_time()</div><div class="ttdoc">Return a real time value, only valid if it was set first.</div><div class="ttdef"><b>Definition:</b> time_handling.cpp:85</div></div>
+<div class="ttc" id="anamespacelampda_1_1component_1_1time_html_abadccaa893776ba9f3011ff12da36a6d"><div class="ttname"><a href="namespacelampda_1_1component_1_1time.html#abadccaa893776ba9f3011ff12da36a6d">lampda::component::time::set_real_time</a></div><div class="ttdeci">bool set_real_time(const RealTime &amp;realTime)</div><div class="ttdoc">Set the real time in the lamp, only valid until the next shutdown.</div><div class="ttdef"><b>Definition:</b> time_handling.cpp:75</div></div>
 <div class="ttc" id="anamespacelampda_html"><div class="ttname"><a href="namespacelampda.html">lampda</a></div><div class="ttdoc">Program scope.</div><div class="ttdef"><b>Definition:</b> control_fixed_modes.hpp:12</div></div>
-<div class="ttc" id="astructlampda_1_1time_1_1RealTime_html"><div class="ttname"><a href="structlampda_1_1time_1_1RealTime.html">lampda::time::RealTime</a></div><div class="ttdoc">Store a real time reference.</div><div class="ttdef"><b>Definition:</b> time_handling.h:17</div></div>
-<div class="ttc" id="astructlampda_1_1time_1_1RealTime_html_a63c4aebb6fc40b0bd0af832c15d6aad6"><div class="ttname"><a href="structlampda_1_1time_1_1RealTime.html#a63c4aebb6fc40b0bd0af832c15d6aad6">lampda::time::RealTime::seconds</a></div><div class="ttdeci">uint8_t seconds</div><div class="ttdoc">seconds, in the [0; 59]</div><div class="ttdef"><b>Definition:</b> time_handling.h:30</div></div>
-<div class="ttc" id="astructlampda_1_1time_1_1RealTime_html_a9f9fdf9b5379b5169984cec6e472d6f9"><div class="ttname"><a href="structlampda_1_1time_1_1RealTime.html#a9f9fdf9b5379b5169984cec6e472d6f9">lampda::time::RealTime::minutes</a></div><div class="ttdeci">uint8_t minutes</div><div class="ttdoc">minutes, in the [0; 59]</div><div class="ttdef"><b>Definition:</b> time_handling.h:29</div></div>
-<div class="ttc" id="astructlampda_1_1time_1_1RealTime_html_ada90332f5dfbd6196006f4ccd2c6b0eb"><div class="ttname"><a href="structlampda_1_1time_1_1RealTime.html#ada90332f5dfbd6196006f4ccd2c6b0eb">lampda::time::RealTime::dayOfTheWeek</a></div><div class="ttdeci">uint8_t dayOfTheWeek</div><div class="ttdoc">[0; 6] the index of the day of the week. Monday is 0, sunday is 6</div><div class="ttdef"><b>Definition:</b> time_handling.h:27</div></div>
-<div class="ttc" id="astructlampda_1_1time_1_1RealTime_html_ae5e56b4074e045494e5a1096bfcf96b9"><div class="ttname"><a href="structlampda_1_1time_1_1RealTime.html#ae5e56b4074e045494e5a1096bfcf96b9">lampda::time::RealTime::hour</a></div><div class="ttdeci">uint8_t hour</div><div class="ttdoc">hour of the day, in the [0; 23]</div><div class="ttdef"><b>Definition:</b> time_handling.h:28</div></div>
+<div class="ttc" id="astructlampda_1_1component_1_1time_1_1RealTime_html"><div class="ttname"><a href="structlampda_1_1component_1_1time_1_1RealTime.html">lampda::component::time::RealTime</a></div><div class="ttdoc">Store a real time reference.</div><div class="ttdef"><b>Definition:</b> time_handling.h:18</div></div>
+<div class="ttc" id="astructlampda_1_1component_1_1time_1_1RealTime_html_a21c2d8aff59b6db7dab77aacd91f7304"><div class="ttname"><a href="structlampda_1_1component_1_1time_1_1RealTime.html#a21c2d8aff59b6db7dab77aacd91f7304">lampda::component::time::RealTime::minutes</a></div><div class="ttdeci">uint8_t minutes</div><div class="ttdoc">minutes, in the [0; 59]</div><div class="ttdef"><b>Definition:</b> time_handling.h:30</div></div>
+<div class="ttc" id="astructlampda_1_1component_1_1time_1_1RealTime_html_a449d7c1164cb6a1829ce4040f2798dbf"><div class="ttname"><a href="structlampda_1_1component_1_1time_1_1RealTime.html#a449d7c1164cb6a1829ce4040f2798dbf">lampda::component::time::RealTime::dayOfTheWeek</a></div><div class="ttdeci">uint8_t dayOfTheWeek</div><div class="ttdoc">[0; 6] the index of the day of the week. Monday is 0, sunday is 6</div><div class="ttdef"><b>Definition:</b> time_handling.h:28</div></div>
+<div class="ttc" id="astructlampda_1_1component_1_1time_1_1RealTime_html_a5c22e168684cd43d87694f4f72e55ab3"><div class="ttname"><a href="structlampda_1_1component_1_1time_1_1RealTime.html#a5c22e168684cd43d87694f4f72e55ab3">lampda::component::time::RealTime::hour</a></div><div class="ttdeci">uint8_t hour</div><div class="ttdoc">hour of the day, in the [0; 23]</div><div class="ttdef"><b>Definition:</b> time_handling.h:29</div></div>
+<div class="ttc" id="astructlampda_1_1component_1_1time_1_1RealTime_html_abd46a50b5234e2961f3ee6a15dde01db"><div class="ttname"><a href="structlampda_1_1component_1_1time_1_1RealTime.html#abd46a50b5234e2961f3ee6a15dde01db">lampda::component::time::RealTime::seconds</a></div><div class="ttdeci">uint8_t seconds</div><div class="ttdoc">seconds, in the [0; 59]</div><div class="ttdef"><b>Definition:</b> time_handling.h:31</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

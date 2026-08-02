@@ -13,12 +13,12 @@ var searchData=
   ['slateblue_10',['SlateBlue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baa420f4a08898ba19fa07c366c8a164f6',1,'lampda::modes::colors']]],
   ['slategray_11',['SlateGray',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba5eba5d4483afab0f7b19df59d7c41e48',1,'lampda::modes::colors']]],
   ['slategrey_12',['SlateGrey',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bad8aba1e66bea4e5a1584b1eb7320f878',1,'lampda::modes::colors']]],
-  ['slow_5fcharge_13',['SLOW_CHARGE',['../namespacelampda_1_1power_1_1charger_1_1drivers.html#a7b7c0894a6f9b4e019e1d19b00295f23ac9eb6ca622a6b460b5c00fe89151a708',1,'lampda::power::charger::drivers']]],
-  ['slow_5fcharging_14',['SLOW_CHARGING',['../structlampda_1_1power_1_1charger_1_1Charger__t.html#ab7bfa63969053a062f0773695ad7f566a4df66799a23c0df6ce43a7eb0fe39268',1,'lampda::power::charger::Charger_t']]],
+  ['slow_5fcharge_13',['SLOW_CHARGE',['../namespacelampda_1_1bsp_1_1charger.html#a2d28371feea835576b29fe2d25557ec3ac9eb6ca622a6b460b5c00fe89151a708',1,'lampda::bsp::charger']]],
+  ['slow_5fcharging_14',['SLOW_CHARGING',['../structlampda_1_1component_1_1charger_1_1Charger__t.html#a4ca2cbf0cdf619357fa0c0ab91361160a4df66799a23c0df6ce43a7eb0fe39268',1,'lampda::component::charger::Charger_t']]],
   ['snow_15',['Snow',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba2f72c3c13456229f222ca04c2b1d7f7b',1,'lampda::modes::colors']]],
   ['sodiumvapor_16',['SodiumVapor',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5af25d86a6bdc60813789d33fc4432b9a9',1,'lampda::modes::colors']]],
   ['springgreen_17',['SpringGreen',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba586247285b794c0fe04757491fe19ea2',1,'lampda::modes::colors']]],
   ['standardfluorescent_18',['StandardFluorescent',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5ad4d5cdcfa2f8092c158ee419a73a5d8c',1,'lampda::modes::colors']]],
   ['steelblue_19',['SteelBlue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba0d248afde1592ca604a496c390ab350a',1,'lampda::modes::colors']]],
-  ['step_20',['Step',['../namespacelampda_1_1physical_1_1imu.html#a014f8201ff74e63bb213fe2aeca900b8a48c7c41b72e1d678923ce3571aa65b2d',1,'lampda::physical::imu::Step()'],['../classlampda_1_1physical_1_1imu_1_1Wrapper.html#ae05b36ff8ad1f0f772502e712827f8d7a48c7c41b72e1d678923ce3571aa65b2d',1,'lampda::physical::imu::Wrapper::Step()']]]
+  ['step_20',['Step',['../namespacelampda_1_1component_1_1imu.html#a1c2fadc86df44c67ae4a00f28a4dd704a48c7c41b72e1d678923ce3571aa65b2d',1,'lampda::component::imu::Step()'],['../classlampda_1_1bsp_1_1imu_1_1Wrapper.html#a3ff3e65e273f23c21b476727c2907ab3a48c7c41b72e1d678923ce3571aa65b2d',1,'lampda::bsp::imu::Wrapper::Step()']]]
 ];

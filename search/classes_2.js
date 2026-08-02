@@ -14,7 +14,7 @@ var searchData=
   ['chargeoption1t_11',['ChargeOption1t',['../structbq25713_1_1BQ25713_1_1Regt_1_1ChargeOption1t.html',1,'bq25713::BQ25713::Regt']]],
   ['chargeoption2t_12',['ChargeOption2t',['../structbq25713_1_1BQ25713_1_1Regt_1_1ChargeOption2t.html',1,'bq25713::BQ25713::Regt']]],
   ['chargeoption3t_13',['ChargeOption3t',['../structbq25713_1_1BQ25713_1_1Regt_1_1ChargeOption3t.html',1,'bq25713::BQ25713::Regt']]],
-  ['charger_5ft_14',['Charger_t',['../structlampda_1_1power_1_1charger_1_1Charger__t.html',1,'lampda::power::charger']]],
+  ['charger_5ft_14',['Charger_t',['../structlampda_1_1component_1_1charger_1_1Charger__t.html',1,'lampda::component::charger']]],
   ['chargerstatust_15',['ChargerStatust',['../structbq25713_1_1BQ25713_1_1Regt_1_1ChargerStatust.html',1,'bq25713::BQ25713::Regt']]],
   ['chfetdriverpwmcontrolt_16',['ChFetDriverPwmControlt',['../structbq76905_1_1BQ76905_1_1Regt_1_1ChFetDriverPwmControlt.html',1,'bq76905::BQ76905::Regt']]],
   ['color_17',['COLOR',['../unionlampda_1_1COLOR.html',1,'lampda']]],

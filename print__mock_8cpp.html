@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: simulator/mocks/print_mock.cpp File Reference</title>
+<title>Lamp-Da: simulator/hal/print_mock.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_f56d48452e298091a290bc1200c44e7b.html">simulator</a></li><li class="navelem"><a class="el" href="dir_5228eb18f0223b66a9bcb7e4a6bd8042.html">mocks</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_f56d48452e298091a290bc1200c44e7b.html">simulator</a></li><li class="navelem"><a class="el" href="dir_2d1343abecb0266104c9a8b86d1f1cef.html">hal</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -99,8 +99,8 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
 <tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1platform"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html">lampda::platform</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1platform"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1hal"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html">lampda::hal</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1hal"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
@@ -108,18 +108,18 @@ Functions</h2></td></tr>
 <tr class="memitem:a0e4b041044cd70803048ea59439f8db5"><td class="memItemLeft" align="right" valign="top"><a id="a0e4b041044cd70803048ea59439f8db5" name="a0e4b041044cd70803048ea59439f8db5"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::print_mock_loop</b> ()</td></tr>
 <tr class="separator:a0e4b041044cd70803048ea59439f8db5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22cf4c37e937c1b345f33fb7de8a5762"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#a22cf4c37e937c1b345f33fb7de8a5762">lampda::platform::init_prints</a> ()</td></tr>
-<tr class="memdesc:a22cf4c37e937c1b345f33fb7de8a5762"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print and debug function to serial port.  <br /></td></tr>
-<tr class="separator:a22cf4c37e937c1b345f33fb7de8a5762"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afac0cd0bf9072a0e6dd309da6b85ebcf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#afac0cd0bf9072a0e6dd309da6b85ebcf">lampda::platform::lampda_print_raw</a> (const char *format,...)</td></tr>
-<tr class="memdesc:afac0cd0bf9072a0e6dd309da6b85ebcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">raw print, no system additional logs  <br /></td></tr>
-<tr class="separator:afac0cd0bf9072a0e6dd309da6b85ebcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f6bba8037b206187803f77e1717c367"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html#a5f6bba8037b206187803f77e1717c367">lampda::platform::lampda_print</a> (const char *format,...)</td></tr>
-<tr class="separator:a5f6bba8037b206187803f77e1717c367"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57e46eb273939260f39534e225f1a5f2"><td class="memItemLeft" align="right" valign="top"><a id="a57e46eb273939260f39534e225f1a5f2" name="a57e46eb273939260f39534e225f1a5f2"></a>
-Inputs&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::read_inputs</b> ()</td></tr>
-<tr class="memdesc:a57e46eb273939260f39534e225f1a5f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">read external inputs (may take some time) <br /></td></tr>
-<tr class="separator:a57e46eb273939260f39534e225f1a5f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaebc2f196638b77e92a23981d6943dce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html#aaebc2f196638b77e92a23981d6943dce">lampda::hal::init_prints</a> ()</td></tr>
+<tr class="memdesc:aaebc2f196638b77e92a23981d6943dce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print and debug function to serial port.  <br /></td></tr>
+<tr class="separator:aaebc2f196638b77e92a23981d6943dce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaee3fb6bf5e26e9b7b65e2952b21d52b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html#aaee3fb6bf5e26e9b7b65e2952b21d52b">lampda::hal::lampda_print_raw</a> (const char *format,...)</td></tr>
+<tr class="memdesc:aaee3fb6bf5e26e9b7b65e2952b21d52b"><td class="mdescLeft">&#160;</td><td class="mdescRight">raw print, no system additional logs  <br /></td></tr>
+<tr class="separator:aaee3fb6bf5e26e9b7b65e2952b21d52b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c880b07149441223955af56cb771bb1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html#a1c880b07149441223955af56cb771bb1">lampda::hal::lampda_print</a> (const char *format,...)</td></tr>
+<tr class="separator:a1c880b07149441223955af56cb771bb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61014a15860c03d253c3f3c729d4b4ba"><td class="memItemLeft" align="right" valign="top"><a id="a61014a15860c03d253c3f3c729d4b4ba" name="a61014a15860c03d253c3f3c729d4b4ba"></a>
+Inputs&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::read_inputs</b> ()</td></tr>
+<tr class="memdesc:a61014a15860c03d253c3f3c729d4b4ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">read external inputs (may take some time) <br /></td></tr>
+<tr class="separator:a61014a15860c03d253c3f3c729d4b4ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>

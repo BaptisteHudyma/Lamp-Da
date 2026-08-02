@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['off_0',['OFF',['../namespacelampda_1_1power_1_1charger_1_1drivers.html#a7b7c0894a6f9b4e019e1d19b00295f23a88559a0cfd8250c9d65970cc145c92d4',1,'lampda::power::charger::drivers']]],
+  ['off_0',['OFF',['../namespacelampda_1_1bsp_1_1charger.html#a2d28371feea835576b29fe2d25557ec3a88559a0cfd8250c9d65970cc145c92d4',1,'lampda::bsp::charger']]],
   ['oldlace_1',['OldLace',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba8790f86f15d4b45bbfd67384a5b37209',1,'lampda::modes::colors']]],
   ['olive_2',['Olive',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bad9164f872b9ad1bc403c2a2a939eb33e',1,'lampda::modes::colors']]],
   ['olivedrab_3',['OliveDrab',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bae97bceeb7c79f1c5765fc6f31a268df6',1,'lampda::modes::colors']]],

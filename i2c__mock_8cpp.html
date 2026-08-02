@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: simulator/mocks/i2c_mock.cpp File Reference</title>
+<title>Lamp-Da: simulator/hal/i2c_mock.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_f56d48452e298091a290bc1200c44e7b.html">simulator</a></li><li class="navelem"><a class="el" href="dir_5228eb18f0223b66a9bcb7e4a6bd8042.html">mocks</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_f56d48452e298091a290bc1200c44e7b.html">simulator</a></li><li class="navelem"><a class="el" href="dir_2d1343abecb0266104c9a8b86d1f1cef.html">hal</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -96,8 +96,8 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
 <tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1platform"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1platform.html">lampda::platform</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1platform"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1hal"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html">lampda::hal</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1hal"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the platform specific interactions. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
@@ -105,31 +105,31 @@ Functions</h2></td></tr>
 <tr class="memitem:a0820e8d111684ed7dcea728266727e67"><td class="memItemLeft" align="right" valign="top"><a id="a0820e8d111684ed7dcea728266727e67" name="a0820e8d111684ed7dcea728266727e67"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::i2c_process_mock_loop</b> ()</td></tr>
 <tr class="separator:a0820e8d111684ed7dcea728266727e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c215d260f028391e5de5ce056759b22"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="i2c_8cpp.html#a2c215d260f028391e5de5ce056759b22">lampda::platform::i2c::i2c_setup</a> (uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)</td></tr>
-<tr class="memdesc:a2c215d260f028391e5de5ce056759b22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setup the i2c interface, needs to be called at program start.  <br /></td></tr>
-<tr class="separator:a2c215d260f028391e5de5ce056759b22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4678ffaba6691de323048ac2374ad31"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="i2c_8cpp.html#af4678ffaba6691de323048ac2374ad31">lampda::platform::i2c::i2c_turn_off</a> (uint8_t i2cIndex)</td></tr>
-<tr class="memdesc:af4678ffaba6691de323048ac2374ad31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Turn of the i2c interface, all i2c functions will return an error after that, until i2c_setup is called again.  <br /></td></tr>
-<tr class="separator:af4678ffaba6691de323048ac2374ad31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a149e4a6a573fe455f4b105bd1fe1cf56"><td class="memItemLeft" align="right" valign="top"><a id="a149e4a6a573fe455f4b105bd1fe1cf56" name="a149e4a6a573fe455f4b105bd1fe1cf56"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::i2c::i2c_check_existence</b> (uint8_t i2cIndex, uint8_t deviceAddr)</td></tr>
-<tr class="memdesc:a149e4a6a573fe455f4b105bd1fe1cf56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return 0 if the address exists on the I2C line. <br /></td></tr>
-<tr class="separator:a149e4a6a573fe455f4b105bd1fe1cf56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a170b36883b90702a117b923dbbace94e"><td class="memItemLeft" align="right" valign="top"><a id="a170b36883b90702a117b923dbbace94e" name="a170b36883b90702a117b923dbbace94e"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::i2c::lock_i2c</b> ()</td></tr>
-<tr class="separator:a170b36883b90702a117b923dbbace94e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a322c48e399366eb882f69007d713e951"><td class="memItemLeft" align="right" valign="top"><a id="a322c48e399366eb882f69007d713e951" name="a322c48e399366eb882f69007d713e951"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::platform::i2c::unlock_i2c</b> ()</td></tr>
-<tr class="separator:a322c48e399366eb882f69007d713e951"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeba331d12cb68a27d42fcd29b1035895"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="i2c_8cpp.html#aeba331d12cb68a27d42fcd29b1035895">lampda::platform::i2c::i2c_writeData</a> (uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, const uint8_t *buf, int stopBit)</td></tr>
-<tr class="memdesc:aeba331d12cb68a27d42fcd29b1035895"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write data to the two wire interface.  <br /></td></tr>
-<tr class="separator:aeba331d12cb68a27d42fcd29b1035895"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff4c91d7ceadffbfa628b02624b17666"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="i2c_8cpp.html#aff4c91d7ceadffbfa628b02624b17666">lampda::platform::i2c::i2c_readData</a> (uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t *buf, int stopBit)</td></tr>
-<tr class="memdesc:aff4c91d7ceadffbfa628b02624b17666"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read data from the two wire interface.  <br /></td></tr>
-<tr class="separator:aff4c91d7ceadffbfa628b02624b17666"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f5c0d41f3612de5b612c53b5c063132"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="i2c_8cpp.html#a0f5c0d41f3612de5b612c53b5c063132">lampda::platform::i2c::i2c_xfer_unlocked</a> (uint8_t i2cIndex, uint8_t deviceAddr, int out_size, const uint8_t *out, int in_size, uint8_t *in, uint8_t flags)</td></tr>
-<tr class="memdesc:a0f5c0d41f3612de5b612c53b5c063132"><td class="mdescLeft">&#160;</td><td class="mdescRight">Does a range read/write.  <br /></td></tr>
-<tr class="separator:a0f5c0d41f3612de5b612c53b5c063132"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2e5348674ff3ce365932b3b600a975f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="i2c_8cpp.html#aa2e5348674ff3ce365932b3b600a975f">lampda::hal::i2c::i2c_setup</a> (uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)</td></tr>
+<tr class="memdesc:aa2e5348674ff3ce365932b3b600a975f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setup the i2c interface, needs to be called at program start.  <br /></td></tr>
+<tr class="separator:aa2e5348674ff3ce365932b3b600a975f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a493c75cbe331c0308dcd8900a6970253"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="i2c_8cpp.html#a493c75cbe331c0308dcd8900a6970253">lampda::hal::i2c::i2c_turn_off</a> (uint8_t i2cIndex)</td></tr>
+<tr class="memdesc:a493c75cbe331c0308dcd8900a6970253"><td class="mdescLeft">&#160;</td><td class="mdescRight">Turn of the i2c interface, all i2c functions will return an error after that, until i2c_setup is called again.  <br /></td></tr>
+<tr class="separator:a493c75cbe331c0308dcd8900a6970253"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a444fc8a1e8cfbaa768f05d64780d3be5"><td class="memItemLeft" align="right" valign="top"><a id="a444fc8a1e8cfbaa768f05d64780d3be5" name="a444fc8a1e8cfbaa768f05d64780d3be5"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::i2c::i2c_check_existence</b> (uint8_t i2cIndex, uint8_t deviceAddr)</td></tr>
+<tr class="memdesc:a444fc8a1e8cfbaa768f05d64780d3be5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return 0 if the address exists on the I2C line. <br /></td></tr>
+<tr class="separator:a444fc8a1e8cfbaa768f05d64780d3be5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97b3f372da71fcae8498732d87edb953"><td class="memItemLeft" align="right" valign="top"><a id="a97b3f372da71fcae8498732d87edb953" name="a97b3f372da71fcae8498732d87edb953"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::i2c::lock_i2c</b> ()</td></tr>
+<tr class="separator:a97b3f372da71fcae8498732d87edb953"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9566ad43417496d9809232a69ce8bb97"><td class="memItemLeft" align="right" valign="top"><a id="a9566ad43417496d9809232a69ce8bb97" name="a9566ad43417496d9809232a69ce8bb97"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::i2c::unlock_i2c</b> ()</td></tr>
+<tr class="separator:a9566ad43417496d9809232a69ce8bb97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32a3240aa229ce81d43e8b78026faefc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="i2c_8cpp.html#a32a3240aa229ce81d43e8b78026faefc">lampda::hal::i2c::i2c_writeData</a> (uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, const uint8_t *buf, int stopBit)</td></tr>
+<tr class="memdesc:a32a3240aa229ce81d43e8b78026faefc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write data to the two wire interface.  <br /></td></tr>
+<tr class="separator:a32a3240aa229ce81d43e8b78026faefc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad98d249e5724160f797f215d7274d76c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="i2c_8cpp.html#ad98d249e5724160f797f215d7274d76c">lampda::hal::i2c::i2c_readData</a> (uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, uint8_t *buf, int stopBit)</td></tr>
+<tr class="memdesc:ad98d249e5724160f797f215d7274d76c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read data from the two wire interface.  <br /></td></tr>
+<tr class="separator:ad98d249e5724160f797f215d7274d76c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96e75f714c44abb00bb13e8bc5cd8609"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="i2c_8cpp.html#a96e75f714c44abb00bb13e8bc5cd8609">lampda::hal::i2c::i2c_xfer_unlocked</a> (uint8_t i2cIndex, uint8_t deviceAddr, int out_size, const uint8_t *out, int in_size, uint8_t *in, uint8_t flags)</td></tr>
+<tr class="memdesc:a96e75f714c44abb00bb13e8bc5cd8609"><td class="mdescLeft">&#160;</td><td class="mdescRight">Does a range read/write.  <br /></td></tr>
+<tr class="separator:a96e75f714c44abb00bb13e8bc5cd8609"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -141,18 +141,42 @@ static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>si
 <tr class="memitem:aca2be02f64b14ada1b1a8838f29bb065"><td class="memItemLeft" align="right" valign="top"><a id="aca2be02f64b14ada1b1a8838f29bb065" name="aca2be02f64b14ada1b1a8838f29bb065"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::isI2cAvailable</b> = false</td></tr>
 <tr class="separator:aca2be02f64b14ada1b1a8838f29bb065"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02ba0e97d9f178fa02e662a4af973795"><td class="memItemLeft" align="right" valign="top"><a id="a02ba0e97d9f178fa02e662a4af973795" name="a02ba0e97d9f178fa02e662a4af973795"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::mock_electrical::powerRailVoltage</b></td></tr>
+<tr class="separator:a02ba0e97d9f178fa02e662a4af973795"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ce49fae0ca9a1f08e23a631486bca96"><td class="memItemLeft" align="right" valign="top"><a id="a6ce49fae0ca9a1f08e23a631486bca96" name="a6ce49fae0ca9a1f08e23a631486bca96"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::mock_electrical::powerRailCurrent</b></td></tr>
+<tr class="separator:a6ce49fae0ca9a1f08e23a631486bca96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a686497df19e5f657e93a6210c6aca20d"><td class="memItemLeft" align="right" valign="top"><a id="a686497df19e5f657e93a6210c6aca20d" name="a686497df19e5f657e93a6210c6aca20d"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::mock_electrical::outputVoltage</b></td></tr>
+<tr class="separator:a686497df19e5f657e93a6210c6aca20d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a789725a4509ca508731c8ff17f31f26c"><td class="memItemLeft" align="right" valign="top"><a id="a789725a4509ca508731c8ff17f31f26c" name="a789725a4509ca508731c8ff17f31f26c"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::mock_electrical::outputCurrent</b></td></tr>
+<tr class="separator:a789725a4509ca508731c8ff17f31f26c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8b46f9682bd037ed41bced153c3f6c7"><td class="memItemLeft" align="right" valign="top"><a id="ae8b46f9682bd037ed41bced153c3f6c7" name="ae8b46f9682bd037ed41bced153c3f6c7"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::mock_electrical::vbusVoltage</b></td></tr>
+<tr class="separator:ae8b46f9682bd037ed41bced153c3f6c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade5c1438dc5d452e6c34d96ab341f0ce"><td class="memItemLeft" align="right" valign="top"><a id="ade5c1438dc5d452e6c34d96ab341f0ce" name="ade5c1438dc5d452e6c34d96ab341f0ce"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::mock_electrical::vbusCurrent</b></td></tr>
+<tr class="separator:ade5c1438dc5d452e6c34d96ab341f0ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab07945f04f030f0cdbaaf8e99c8641fa"><td class="memItemLeft" align="right" valign="top"><a id="ab07945f04f030f0cdbaaf8e99c8641fa" name="ab07945f04f030f0cdbaaf8e99c8641fa"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::mock_electrical::inputVbusVoltage</b></td></tr>
+<tr class="separator:ab07945f04f030f0cdbaaf8e99c8641fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7a1592e153f4abec77a103ed47f884a"><td class="memItemLeft" align="right" valign="top"><a id="ac7a1592e153f4abec77a103ed47f884a" name="ac7a1592e153f4abec77a103ed47f884a"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::mock_electrical::chargeOtgOutput</b></td></tr>
+<tr class="separator:ac7a1592e153f4abec77a103ed47f884a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Mock of the board i2c. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="aff4c91d7ceadffbfa628b02624b17666" name="aff4c91d7ceadffbfa628b02624b17666"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aff4c91d7ceadffbfa628b02624b17666">&#9670;&#160;</a></span>i2c_readData()</h2>
+<a id="ad98d249e5724160f797f215d7274d76c" name="ad98d249e5724160f797f215d7274d76c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad98d249e5724160f797f215d7274d76c">&#9670;&#160;</a></span>i2c_readData()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int lampda::platform::i2c::i2c_readData </td>
+          <td class="memname">int lampda::hal::i2c::i2c_readData </td>
           <td>(</td>
           <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>i2cIndex</em>, </td>
@@ -210,14 +234,14 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::isI2cAvail
 
 </div>
 </div>
-<a id="a2c215d260f028391e5de5ce056759b22" name="a2c215d260f028391e5de5ce056759b22"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2c215d260f028391e5de5ce056759b22">&#9670;&#160;</a></span>i2c_setup()</h2>
+<a id="aa2e5348674ff3ce365932b3b600a975f" name="aa2e5348674ff3ce365932b3b600a975f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2e5348674ff3ce365932b3b600a975f">&#9670;&#160;</a></span>i2c_setup()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void lampda::platform::i2c::i2c_setup </td>
+          <td class="memname">void lampda::hal::i2c::i2c_setup </td>
           <td>(</td>
           <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>i2cIndex</em>, </td>
@@ -254,14 +278,14 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::isI2cAvail
 
 </div>
 </div>
-<a id="af4678ffaba6691de323048ac2374ad31" name="af4678ffaba6691de323048ac2374ad31"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af4678ffaba6691de323048ac2374ad31">&#9670;&#160;</a></span>i2c_turn_off()</h2>
+<a id="a493c75cbe331c0308dcd8900a6970253" name="a493c75cbe331c0308dcd8900a6970253"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a493c75cbe331c0308dcd8900a6970253">&#9670;&#160;</a></span>i2c_turn_off()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void lampda::platform::i2c::i2c_turn_off </td>
+          <td class="memname">void lampda::hal::i2c::i2c_turn_off </td>
           <td>(</td>
           <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>i2cIndex</em></td><td>)</td>
@@ -280,14 +304,14 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::isI2cAvail
 
 </div>
 </div>
-<a id="aeba331d12cb68a27d42fcd29b1035895" name="aeba331d12cb68a27d42fcd29b1035895"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeba331d12cb68a27d42fcd29b1035895">&#9670;&#160;</a></span>i2c_writeData()</h2>
+<a id="a32a3240aa229ce81d43e8b78026faefc" name="a32a3240aa229ce81d43e8b78026faefc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32a3240aa229ce81d43e8b78026faefc">&#9670;&#160;</a></span>i2c_writeData()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int lampda::platform::i2c::i2c_writeData </td>
+          <td class="memname">int lampda::hal::i2c::i2c_writeData </td>
           <td>(</td>
           <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>i2cIndex</em>, </td>
@@ -345,14 +369,14 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>simulator::isI2cAvail
 
 </div>
 </div>
-<a id="a0f5c0d41f3612de5b612c53b5c063132" name="a0f5c0d41f3612de5b612c53b5c063132"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0f5c0d41f3612de5b612c53b5c063132">&#9670;&#160;</a></span>i2c_xfer_unlocked()</h2>
+<a id="a96e75f714c44abb00bb13e8bc5cd8609" name="a96e75f714c44abb00bb13e8bc5cd8609"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96e75f714c44abb00bb13e8bc5cd8609">&#9670;&#160;</a></span>i2c_xfer_unlocked()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int lampda::platform::i2c::i2c_xfer_unlocked </td>
+          <td class="memname">int lampda::hal::i2c::i2c_xfer_unlocked </td>
           <td>(</td>
           <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>i2cIndex</em>, </td>

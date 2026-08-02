@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: src/system/physical/output_power.h File Reference</title>
+<title>Lamp-Da: src/system/component/output_power.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_1430521e616d6238eabe66adf5eaf90a.html">physical</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_ba11b1831d7d5bf7bf4ddce9243e4814.html">component</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -91,37 +91,34 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
 <tr class="memdesc:namespacelampda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Program scope. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1physical"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical.html">lampda::physical</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1physical"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the physical modules drivers. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1physical_1_1outputPower"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1outputPower.html">lampda::physical::outputPower</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1physical_1_1outputPower"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the main board output power. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1component_1_1outputPower"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1outputPower.html">lampda::component::outputPower</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1component_1_1outputPower"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the main board output power. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a60869dc91bb9891fb8d2aa938ac5be07"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1outputPower.html#a60869dc91bb9891fb8d2aa938ac5be07">lampda::physical::outputPower::write_voltage</a> (const uint16_t voltage_mv)</td></tr>
-<tr class="memdesc:a60869dc91bb9891fb8d2aa938ac5be07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a voltage to the output (will only write it in output mode)  <br /></td></tr>
-<tr class="separator:a60869dc91bb9891fb8d2aa938ac5be07"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a416be025c5ef48bfda9566d0996ee02e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical_1_1outputPower.html#a416be025c5ef48bfda9566d0996ee02e">lampda::physical::outputPower::write_temporary_output_limits</a> (const uint16_t voltage_mv, const uint16_t current_ma, const uint32_t timeout_ms)</td></tr>
-<tr class="memdesc:a416be025c5ef48bfda9566d0996ee02e"><td class="mdescLeft">&#160;</td><td class="mdescRight">overwrite the output characteristics for a given duration. Gets back to the previous settings after the tiemout, or if write_voltage is called again  <br /></td></tr>
-<tr class="separator:a416be025c5ef48bfda9566d0996ee02e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c8f3e6e51e2858e9099e6585e2e81a2"><td class="memItemLeft" align="right" valign="top"><a id="a3c8f3e6e51e2858e9099e6585e2e81a2" name="a3c8f3e6e51e2858e9099e6585e2e81a2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::outputPower::blip</b> (const uint32_t timing)</td></tr>
-<tr class="memdesc:a3c8f3e6e51e2858e9099e6585e2e81a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">short interruption of output voltage <br /></td></tr>
-<tr class="separator:a3c8f3e6e51e2858e9099e6585e2e81a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a863c10ba25d9184ce8b95cc0a30c7b72"><td class="memItemLeft" align="right" valign="top"><a id="a863c10ba25d9184ce8b95cc0a30c7b72" name="a863c10ba25d9184ce8b95cc0a30c7b72"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::outputPower::cancel_blip</b> ()</td></tr>
-<tr class="memdesc:a863c10ba25d9184ce8b95cc0a30c7b72"><td class="mdescLeft">&#160;</td><td class="mdescRight">stop an ongoing blip <br /></td></tr>
-<tr class="separator:a863c10ba25d9184ce8b95cc0a30c7b72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af60870841ca62b3ee507f5a0951d5f76"><td class="memItemLeft" align="right" valign="top"><a id="af60870841ca62b3ee507f5a0951d5f76" name="af60870841ca62b3ee507f5a0951d5f76"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::outputPower::is_bliping</b> ()</td></tr>
-<tr class="memdesc:af60870841ca62b3ee507f5a0951d5f76"><td class="mdescLeft">&#160;</td><td class="mdescRight">indicates that the gate is in a blip <br /></td></tr>
-<tr class="separator:af60870841ca62b3ee507f5a0951d5f76"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45d2f8049a11eef02ac579a3129adf9c"><td class="memItemLeft" align="right" valign="top"><a id="a45d2f8049a11eef02ac579a3129adf9c" name="a45d2f8049a11eef02ac579a3129adf9c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::physical::outputPower::disable_power_gates</b> ()</td></tr>
-<tr class="memdesc:a45d2f8049a11eef02ac579a3129adf9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">close all external voltage path <br /></td></tr>
-<tr class="separator:a45d2f8049a11eef02ac579a3129adf9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a315f82010750dbd22794b07b7e41d1a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1outputPower.html#a315f82010750dbd22794b07b7e41d1a8">lampda::component::outputPower::write_voltage</a> (const uint16_t voltage_mv)</td></tr>
+<tr class="memdesc:a315f82010750dbd22794b07b7e41d1a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a voltage to the output (will only write it in output mode)  <br /></td></tr>
+<tr class="separator:a315f82010750dbd22794b07b7e41d1a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35e4cd6db54fe40fca592ef9ba6f305c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1outputPower.html#a35e4cd6db54fe40fca592ef9ba6f305c">lampda::component::outputPower::write_temporary_output_limits</a> (const uint16_t voltage_mv, const uint16_t current_ma, const uint32_t timeout_ms)</td></tr>
+<tr class="memdesc:a35e4cd6db54fe40fca592ef9ba6f305c"><td class="mdescLeft">&#160;</td><td class="mdescRight">overwrite the output characteristics for a given duration. Gets back to the previous settings after the tiemout, or if write_voltage is called again  <br /></td></tr>
+<tr class="separator:a35e4cd6db54fe40fca592ef9ba6f305c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc55eb9748f69288fdc2bdb87bd174e9"><td class="memItemLeft" align="right" valign="top"><a id="adc55eb9748f69288fdc2bdb87bd174e9" name="adc55eb9748f69288fdc2bdb87bd174e9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::outputPower::blip</b> (const uint32_t timing)</td></tr>
+<tr class="memdesc:adc55eb9748f69288fdc2bdb87bd174e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">short interruption of output voltage <br /></td></tr>
+<tr class="separator:adc55eb9748f69288fdc2bdb87bd174e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23ba6de5c79c2830c80ea78e80433654"><td class="memItemLeft" align="right" valign="top"><a id="a23ba6de5c79c2830c80ea78e80433654" name="a23ba6de5c79c2830c80ea78e80433654"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::outputPower::cancel_blip</b> ()</td></tr>
+<tr class="memdesc:a23ba6de5c79c2830c80ea78e80433654"><td class="mdescLeft">&#160;</td><td class="mdescRight">stop an ongoing blip <br /></td></tr>
+<tr class="separator:a23ba6de5c79c2830c80ea78e80433654"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88d9a33d41c7df6027fc0053b02e2d23"><td class="memItemLeft" align="right" valign="top"><a id="a88d9a33d41c7df6027fc0053b02e2d23" name="a88d9a33d41c7df6027fc0053b02e2d23"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::outputPower::is_bliping</b> ()</td></tr>
+<tr class="memdesc:a88d9a33d41c7df6027fc0053b02e2d23"><td class="mdescLeft">&#160;</td><td class="mdescRight">indicates that the gate is in a blip <br /></td></tr>
+<tr class="separator:a88d9a33d41c7df6027fc0053b02e2d23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4955efb57d05728e75a6ea7cb449c18"><td class="memItemLeft" align="right" valign="top"><a id="ad4955efb57d05728e75a6ea7cb449c18" name="ad4955efb57d05728e75a6ea7cb449c18"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::outputPower::disable_power_gates</b> ()</td></tr>
+<tr class="memdesc:ad4955efb57d05728e75a6ea7cb449c18"><td class="mdescLeft">&#160;</td><td class="mdescRight">close all external voltage path <br /></td></tr>
+<tr class="separator:ad4955efb57d05728e75a6ea7cb449c18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for the physical components of the main power output (eg: LED strip output). </p>

@@ -1461,20 +1461,20 @@ $(function() {
 <div class="line"><a id="l01395" name="l01395"></a><span class="lineno"> 1395</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> delay_us(uint64_t dwUs)</div>
 <div class="line"><a id="l01396" name="l01396"></a><span class="lineno"> 1396</span>  {</div>
 <div class="line"><a id="l01397" name="l01397"></a><span class="lineno"> 1397</span>    <span class="comment">// IMPLEMENT THIS FUNCTION</span></div>
-<div class="line"><a id="l01398" name="l01398"></a><span class="lineno"> 1398</span>    <a class="code hl_function" href="namespacelampda_1_1platform.html#a6efb3fe7fb56a8d60089b6a69acc27cf">lampda::platform::delay_us</a>(dwUs);</div>
+<div class="line"><a id="l01398" name="l01398"></a><span class="lineno"> 1398</span>    <a class="code hl_function" href="namespacelampda_1_1hal.html#a2cc9ba90031fe848b9f5624bcf7155d8">lampda::hal::delay_us</a>(dwUs);</div>
 <div class="line"><a id="l01399" name="l01399"></a><span class="lineno"> 1399</span>  }</div>
 <div class="line"><a id="l01400" name="l01400"></a><span class="lineno"> 1400</span> </div>
 <div class="line"><a id="l01401" name="l01401"></a><span class="lineno"> 1401</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> readDataReg(<span class="keyword">const</span> <span class="keywordtype">byte</span> regAddress, <span class="keywordtype">byte</span>* dataVal, <span class="keyword">const</span> uint8_t arrLen)</div>
 <div class="line"><a id="l01402" name="l01402"></a><span class="lineno"> 1402</span>  {</div>
 <div class="line"><a id="l01403" name="l01403"></a><span class="lineno"> 1403</span>    <span class="comment">// IMPLEMENT THIS FUNCTION</span></div>
-<div class="line"><a id="l01404" name="l01404"></a><span class="lineno"> 1404</span>    return ::lampda::platform::i2c::i2c_readData(</div>
+<div class="line"><a id="l01404" name="l01404"></a><span class="lineno"> 1404</span>    return ::lampda::hal::i2c::i2c_readData(</div>
 <div class="line"><a id="l01405" name="l01405"></a><span class="lineno"> 1405</span>                   i2cObjectIndex, BQ76905addr, regAddress, arrLen, dataVal, usesStopBit ? 1 : 0) == 0;</div>
 <div class="line"><a id="l01406" name="l01406"></a><span class="lineno"> 1406</span>  }</div>
 <div class="line"><a id="l01407" name="l01407"></a><span class="lineno"> 1407</span> </div>
 <div class="line"><a id="l01408" name="l01408"></a><span class="lineno"> 1408</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> writeData(<span class="keyword">const</span> <span class="keywordtype">byte</span> regAddress, uint8_t lenght, uint8_t* data)</div>
 <div class="line"><a id="l01409" name="l01409"></a><span class="lineno"> 1409</span>  {</div>
 <div class="line"><a id="l01410" name="l01410"></a><span class="lineno"> 1410</span>    <span class="comment">// IMPLEMENT THIS FUNCTION</span></div>
-<div class="line"><a id="l01411" name="l01411"></a><span class="lineno"> 1411</span>    return ::lampda::platform::i2c::i2c_writeData(</div>
+<div class="line"><a id="l01411" name="l01411"></a><span class="lineno"> 1411</span>    return ::lampda::hal::i2c::i2c_writeData(</div>
 <div class="line"><a id="l01412" name="l01412"></a><span class="lineno"> 1412</span>                   i2cObjectIndex, BQ76905addr, regAddress, lenght, data, usesStopBit ? 1 : 0) == 0;</div>
 <div class="line"><a id="l01413" name="l01413"></a><span class="lineno"> 1413</span>  }</div>
 <div class="line"><a id="l01414" name="l01414"></a><span class="lineno"> 1414</span> </div>
@@ -1492,7 +1492,7 @@ $(function() {
 <div class="line"><a id="l01426" name="l01426"></a><span class="lineno"> 1426</span> </div>
 <div class="line"><a id="l01427" name="l01427"></a><span class="lineno"> 1427</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassbq76905_1_1BQ76905_html"><div class="ttname"><a href="classbq76905_1_1BQ76905.html">bq76905::BQ76905</a></div><div class="ttdef"><b>Definition:</b> BQ76905.h:118</div></div>
-<div class="ttc" id="anamespacelampda_1_1platform_html_a6efb3fe7fb56a8d60089b6a69acc27cf"><div class="ttname"><a href="namespacelampda_1_1platform.html#a6efb3fe7fb56a8d60089b6a69acc27cf">lampda::platform::delay_us</a></div><div class="ttdeci">void delay_us(uint64_t dwUs)</div><div class="ttdoc">Pauses the program for the amount of time (in microseconds) specified as parameter.</div><div class="ttdef"><b>Definition:</b> time.cpp:24</div></div>
+<div class="ttc" id="anamespacelampda_1_1hal_html_a2cc9ba90031fe848b9f5624bcf7155d8"><div class="ttname"><a href="namespacelampda_1_1hal.html#a2cc9ba90031fe848b9f5624bcf7155d8">lampda::hal::delay_us</a></div><div class="ttdeci">void delay_us(uint64_t dwUs)</div><div class="ttdoc">Pauses the program for the amount of time (in microseconds) specified as parameter.</div><div class="ttdef"><b>Definition:</b> time.cpp:24</div></div>
 <div class="ttc" id="astructbq76905_1_1BQ76905_1_1IBaseReadRegister_html"><div class="ttname"><a href="structbq76905_1_1BQ76905_1_1IBaseReadRegister.html">bq76905::BQ76905::IBaseReadRegister</a></div><div class="ttdef"><b>Definition:</b> BQ76905.h:173</div></div>
 <div class="ttc" id="astructbq76905_1_1BQ76905_1_1ISubCommandManyRegisters_html"><div class="ttname"><a href="structbq76905_1_1BQ76905_1_1ISubCommandManyRegisters.html">bq76905::BQ76905::ISubCommandManyRegisters</a></div><div class="ttdef"><b>Definition:</b> BQ76905.h:317</div></div>
 <div class="ttc" id="astructbq76905_1_1BQ76905_1_1ISubcommandReadRegister_html"><div class="ttname"><a href="structbq76905_1_1BQ76905_1_1ISubcommandReadRegister.html">bq76905::BQ76905::ISubcommandReadRegister</a></div><div class="ttdef"><b>Definition:</b> BQ76905.h:217</div></div>

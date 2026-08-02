@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['off_0',['OFF',['../namespacelampda_1_1power_1_1charger_1_1drivers.html#a7b7c0894a6f9b4e019e1d19b00295f23a88559a0cfd8250c9d65970cc145c92d4',1,'lampda::power::charger::drivers']]],
+  ['off_0',['OFF',['../namespacelampda_1_1bsp_1_1charger.html#a2d28371feea835576b29fe2d25557ec3a88559a0cfd8250c9d65970cc145c92d4',1,'lampda::bsp::charger']]],
   ['oklab_1',['OKLAB',['../classlampda_1_1utils_1_1ColorSpace_1_1OKLAB.html',1,'lampda::utils::ColorSpace::OKLAB'],['../classlampda_1_1utils_1_1ColorSpace_1_1OKLAB.html#ab92ea97410e19f98dfe998066e06b629',1,'lampda::utils::ColorSpace::OKLAB::OKLAB(const double l, const double a, const double b)'],['../classlampda_1_1utils_1_1ColorSpace_1_1OKLAB.html#a5a1fb0b386dbf1c56c21b4d4b61f8085',1,'lampda::utils::ColorSpace::OKLAB::OKLAB(const COLOR &amp;c)']]],
   ['oklch_2',['OKLCH',['../classlampda_1_1utils_1_1ColorSpace_1_1OKLCH.html',1,'lampda::utils::ColorSpace::OKLCH'],['../classlampda_1_1utils_1_1ColorSpace_1_1OKLCH.html#a41bef645ff39bf154d5f8600479a6c90',1,'lampda::utils::ColorSpace::OKLCH::OKLCH(const COLOR &amp;c)'],['../classlampda_1_1utils_1_1ColorSpace_1_1OKLCH.html#ad6e9539b46f9eace65bb7ee7aee79301',1,'lampda::utils::ColorSpace::OKLCH::OKLCH(const double l, const double c, const double h)']]],
   ['oldlace_3',['OldLace',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba8790f86f15d4b45bbfd67384a5b37209',1,'lampda::modes::colors']]],
@@ -19,7 +19,7 @@ var searchData=
   ['otgcurrentt_16',['OTGCurrentt',['../structbq25713_1_1BQ25713_1_1Regt_1_1OTGCurrentt.html',1,'bq25713::BQ25713::Regt']]],
   ['otgnouseextbattimetodisconnect_5fms_17',['otgNoUseExtBatTimeToDisconnect_ms',['../namespacelampda_1_1logic_1_1power.html#aecc9d91157c4f23ef2fa397e66b2d8ff',1,'lampda::logic::power']]],
   ['otgnousetimetodisconnect_5fms_18',['otgNoUseTimeToDisconnect_ms',['../namespacelampda_1_1logic_1_1power.html#a2455e5290932b288dd3e1da54e4c92ee',1,'lampda::logic::power']]],
-  ['otgparameters_19',['OTGParameters',['../structlampda_1_1power_1_1powerDelivery_1_1OTGParameters.html',1,'lampda::power::powerDelivery']]],
+  ['otgparameters_19',['OTGParameters',['../structlampda_1_1bsp_1_1powerDelivery_1_1OTGParameters.html',1,'lampda::bsp::powerDelivery']]],
   ['otgturnofftimeminutes_20',['otgTurnOffTimeMinutes',['../namespacelampda_1_1logic_1_1power.html#ac509b078f707eae076e335a46f140c0e',1,'lampda::logic::power']]],
   ['otgvoltaget_21',['OTGVoltaget',['../structbq25713_1_1BQ25713_1_1Regt_1_1OTGVoltaget.html',1,'bq25713::BQ25713::Regt']]],
   ['output_5fon_5fminutes_22',['output_on_minutes',['../structlampda_1_1logic_1_1statistics_1_1Statistics__t.html#ae20e6f2932fcc17b13acb1573f945675',1,'lampda::logic::statistics::Statistics_t']]],

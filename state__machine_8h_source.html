@@ -80,7 +80,7 @@ $(function() {
 <a href="state__machine_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="time_8h.html">src/system/platform/time.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="time_8h.html">src/system/hal/time.h</a>&quot;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacelampda.html">lampda</a> {</div>
@@ -92,7 +92,7 @@ $(function() {
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classlampda_1_1utils_1_1StateMachine.html#a7a22da64567eb769157022877d97423c">   20</a></span>  <a class="code hl_function" href="classlampda_1_1utils_1_1StateMachine.html#a7a22da64567eb769157022877d97423c">StateMachine</a>(<span class="keyword">const</span> State s) :</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    current(s),</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    lastState(s),</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    stateSetTime(platform::time_ms()),</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    stateSetTime(hal::time_ms()),</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    timeout_ms(0),</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    afterTimeoutState(s),</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    changedWithTimeout(false)</div>
@@ -101,7 +101,7 @@ $(function() {
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classlampda_1_1utils_1_1StateMachine.html#a447e1c172668817f206f5edc3ea64c90">   35</a></span>  <a class="code hl_function" href="classlampda_1_1utils_1_1StateMachine.html#a447e1c172668817f206f5edc3ea64c90">StateMachine</a>(<span class="keyword">const</span> State s, <span class="keyword">const</span> uint32_t timeout, <span class="keyword">const</span> State stateOnTimeout) :</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    current(s),</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    lastState(s),</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    stateSetTime(platform::time_ms()),</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    stateSetTime(hal::time_ms()),</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    timeout_ms(0),</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    afterTimeoutState(s),</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    changedWithTimeout(false)</div>
@@ -112,7 +112,7 @@ $(function() {
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classlampda_1_1utils_1_1StateMachine.html#af2e7e23a0c40dd4d70410ba1fe405510">   49</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classlampda_1_1utils_1_1StateMachine.html#af2e7e23a0c40dd4d70410ba1fe405510">run</a>()</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  {</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="comment">// there is a timeout set for this state</span></div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">if</span> (isTimeoutSet and <a class="code hl_function" href="namespacelampda_1_1platform.html#a5a1d3396e01e3920a0ebde03b8b5e437">platform::time_ms</a>() &gt;= timeout_ms)</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">if</span> (isTimeoutSet and <a class="code hl_function" href="namespacelampda_1_1hal.html#a3e330f95b9dbb0e0fef2af910b4295ad">hal::time_ms</a>() &gt;= timeout_ms)</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    {</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>      <span class="comment">// timeout reached</span></div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>      <a class="code hl_function" href="classlampda_1_1utils_1_1StateMachine.html#a179668387d35a0e7ceffb42640b00fcc">set_state</a>(afterTimeoutState);</div>
@@ -133,7 +133,7 @@ $(function() {
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="comment">// reset the timeout time</span></div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    isTimeoutSet = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    timeout_ms = 0;</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    stateSetTime = <a class="code hl_function" href="namespacelampda_1_1platform.html#a5a1d3396e01e3920a0ebde03b8b5e437">platform::time_ms</a>();</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    stateSetTime = <a class="code hl_function" href="namespacelampda_1_1hal.html#a3e330f95b9dbb0e0fef2af910b4295ad">hal::time_ms</a>();</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    changedWithTimeout = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    didStateJustChanged = <span class="keyword">true</span>;</div>
@@ -165,7 +165,7 @@ $(function() {
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">if</span> (isTimeoutSet)</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    {</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>      <span class="comment">// potential clock overflow, be careful</span></div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>      timeout_ms = <a class="code hl_function" href="namespacelampda_1_1platform.html#a5a1d3396e01e3920a0ebde03b8b5e437">platform::time_ms</a>() + timeout;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>      timeout_ms = <a class="code hl_function" href="namespacelampda_1_1hal.html#a3e330f95b9dbb0e0fef2af910b4295ad">hal::time_ms</a>() + timeout;</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    }</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>  }</div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
@@ -224,7 +224,7 @@ $(function() {
 <div class="ttc" id="aclasslampda_1_1utils_1_1StateMachine_html_ad4b5069bde149a66c6a9e211cca0e2fd"><div class="ttname"><a href="classlampda_1_1utils_1_1StateMachine.html#ad4b5069bde149a66c6a9e211cca0e2fd">lampda::utils::StateMachine::get_state_raised_time</a></div><div class="ttdeci">uint32_t get_state_raised_time() const</div><div class="ttdoc">Return the time at which this state was raised.</div><div class="ttdef"><b>Definition:</b> state_machine.h:152</div></div>
 <div class="ttc" id="aclasslampda_1_1utils_1_1StateMachine_html_ae8f7b971541fa788929b514ff72cd5a3"><div class="ttname"><a href="classlampda_1_1utils_1_1StateMachine.html#ae8f7b971541fa788929b514ff72cd5a3">lampda::utils::StateMachine::state_just_changed</a></div><div class="ttdeci">bool state_just_changed()</div><div class="ttdoc">Return true if the current state just changed. Resetted on read.</div><div class="ttdef"><b>Definition:</b> state_machine.h:126</div></div>
 <div class="ttc" id="aclasslampda_1_1utils_1_1StateMachine_html_af2e7e23a0c40dd4d70410ba1fe405510"><div class="ttname"><a href="classlampda_1_1utils_1_1StateMachine.html#af2e7e23a0c40dd4d70410ba1fe405510">lampda::utils::StateMachine::run</a></div><div class="ttdeci">void run()</div><div class="ttdoc">timeout check, and such, call it often</div><div class="ttdef"><b>Definition:</b> state_machine.h:49</div></div>
-<div class="ttc" id="anamespacelampda_1_1platform_html_a5a1d3396e01e3920a0ebde03b8b5e437"><div class="ttname"><a href="namespacelampda_1_1platform.html#a5a1d3396e01e3920a0ebde03b8b5e437">lampda::platform::time_ms</a></div><div class="ttdeci">uint32_t time_ms(void)</div><div class="ttdoc">Returns the number of milliseconds since the Arduino board began running the current program....</div><div class="ttdef"><b>Definition:</b> time.cpp:18</div></div>
+<div class="ttc" id="anamespacelampda_1_1hal_html_a3e330f95b9dbb0e0fef2af910b4295ad"><div class="ttname"><a href="namespacelampda_1_1hal.html#a3e330f95b9dbb0e0fef2af910b4295ad">lampda::hal::time_ms</a></div><div class="ttdeci">uint32_t time_ms(void)</div><div class="ttdoc">Returns the number of milliseconds since the Arduino board began running the current program....</div><div class="ttdef"><b>Definition:</b> time.cpp:18</div></div>
 <div class="ttc" id="anamespacelampda_html"><div class="ttname"><a href="namespacelampda.html">lampda</a></div><div class="ttdoc">Program scope.</div><div class="ttdef"><b>Definition:</b> control_fixed_modes.hpp:12</div></div>
 <div class="ttc" id="atime_8h_html"><div class="ttname"><a href="time_8h.html">time.h</a></div><div class="ttdoc">Define all time related platform functions.</div></div>
 </div><!-- fragment --></div><!-- contents -->
