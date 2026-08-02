@@ -12,8 +12,9 @@
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/utils.h"
 
-#include "src/system/physical/button.h"
-#include "src/system/physical/indicator.h"
+#include "src/system/bsp/indicator.h"
+
+#include "src/system/component/button.h"
 
 #include "simulator/include/hardware_influencer.h"
 
@@ -41,7 +42,7 @@ void update_callbacks()
   // event on change
   if (isButtonPressed != wasButtonPressed)
   {
-    const ::lampda::platform::gpio::DigitalPin::GPIO buttonPin = ::lampda::physical::button::get_button_pin();
+    const ::lampda::platform::gpio::DigitalPin::GPIO buttonPin = ::lampda::component::button::get_button_pin();
     // change always called
     for (const auto& [pin, callback]: callbacksChange)
     {
@@ -106,7 +107,7 @@ public:
   bool is_high() const
   {
     // button pin
-    if (_pin == physical::button::get_button_pin())
+    if (_pin == component::button::get_button_pin())
     {
       return !simulator::mock_gpios::isButtonPressed;
     }
@@ -124,18 +125,18 @@ public:
     {
       case utils::RedIndicator:
         {
-          simulator::mock_indicator::idColor.red = (value & 255) / physical::indicator::redColorCorrection;
+          simulator::mock_indicator::idColor.red = (value & 255) / bsp::indicator::redColorCorrection;
           break;
         }
       case utils::GreenIndicator:
         {
           // correction value for the real luminosity
-          simulator::mock_indicator::idColor.green = (value & 255) / physical::indicator::greenColorCorrection;
+          simulator::mock_indicator::idColor.green = (value & 255) / bsp::indicator::greenColorCorrection;
           break;
         }
       case utils::BlueIndicator:
         {
-          simulator::mock_indicator::idColor.blue = (value & 255) / physical::indicator::blueColorCorrection;
+          simulator::mock_indicator::idColor.blue = (value & 255) / bsp::indicator::blueColorCorrection;
           break;
         }
     }

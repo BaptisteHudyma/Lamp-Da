@@ -11,7 +11,7 @@
 //  - src/modes/user/simple_behavior.hpp
 //
 
-#include "src/system/physical/time_handling.h"
+#include "src/system/component/time_handling.h"
 
 #include <cstdint>
 namespace lampda::user {
@@ -242,7 +242,7 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
           {
             // reset the file system and memory
             platform::lampda_print("clearing the whole file format");
-            physical::fileSystem::clear_internal_fs();
+            component::fileSystem::clear_internal_fs();
 
             // shutdown the lamp
             const bool shouldSaveUserParameters = false;
@@ -262,7 +262,7 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
           {
             // reset the file system and memory
             platform::lampda_print("clearing the whole file format");
-            physical::fileSystem::clear_internal_fs();
+            component::fileSystem::clear_internal_fs();
 
             // shutdown the lamp
             const bool shouldSaveUserParameters = false;
@@ -340,12 +340,12 @@ void handle_speed_command(const uint8_t speed)
  */
 void handle_set_time_command(const uint8_t hour, const uint8_t minutes, const uint8_t seconds, const uint8_t weekday)
 {
-  time::RealTime time;
+  component::time::RealTime time;
   time.dayOfTheWeek = weekday;
   time.hour = hour;
   time.minutes = minutes;
   time.seconds = seconds;
-  const bool isValid = time::set_real_time(time);
+  const bool isValid = component::time::set_real_time(time);
   platform::lampda_print("set time %d %dh %dm %ds (validity: %d)", weekday, hour, minutes, seconds, isValid);
 }
 
@@ -359,12 +359,12 @@ void handle_timing_command(const bool shouldTurnOn,
                            const uint8_t seconds,
                            const uint8_t weekday)
 {
-  time::RealTime time;
+  component::time::RealTime time;
   time.dayOfTheWeek = weekday;
   time.hour = hour;
   time.minutes = minutes;
   time.seconds = seconds;
-  const uint32_t internalLampActionTime = time::get_platform_time_from_target_time(time);
+  const uint32_t internalLampActionTime = component::time::get_platform_time_from_target_time(time);
 
   if (internalLampActionTime <= 0)
   {

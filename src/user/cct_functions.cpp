@@ -67,7 +67,7 @@ void brightness_update(const brightness_t brightness)
   if (constraintBrightness == _maxBrightness)
   {
     // blip
-    physical::outputPower::blip(50);
+    component::outputPower::blip(50);
   }
 
   // map to a new curve, favorising low levels
@@ -79,18 +79,18 @@ void brightness_update(const brightness_t brightness)
 
   currentBrightness = round(brightnessCurve.sample(constraintBrightness));
 
-  physical::outputPower::write_voltage(currentBrightness);
+  component::outputPower::write_voltage(currentBrightness);
   set_color(currentColor);
 }
 
 void sunset_timer_update(const float progress) {}
 
-void write_parameters() { physical::fileSystem::user::set_value(colorKey, currentColor); }
+void write_parameters() { component::fileSystem::user::set_value(colorKey, currentColor); }
 
 void read_parameters()
 {
   uint32_t mode = 0;
-  if (physical::fileSystem::user::get_value(colorKey, mode))
+  if (component::fileSystem::user::get_value(colorKey, mode))
   {
     currentColor = mode;
     lastColor = currentColor;

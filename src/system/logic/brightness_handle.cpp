@@ -4,7 +4,7 @@
 
 #include "src/system/platform/time.h"
 
-#include "src/system/physical/indicator.h"
+#include "src/system/bsp/indicator.h"
 
 #include "src/system/logic/behavior.h"
 
@@ -109,18 +109,18 @@ void set_brightness_level(const uint8_t level)
   {
     case 1:
       _level = 1;
-      physical::indicator::set_brightness(lowBrightness);
+      bsp::indicator::set_brightness(lowBrightness);
       break;
     case 2:
       // level 2 will also disable the indicator when in charge mode
       _level = 2;
-      physical::indicator::set_brightness(lowBrightness);
+      bsp::indicator::set_brightness(lowBrightness);
       break;
     // 0 and default are the same : level too high should loop back
     case 0:
     default:
       _level = 0;
-      physical::indicator::set_brightness(255);
+      bsp::indicator::set_brightness(255);
       break;
   }
 

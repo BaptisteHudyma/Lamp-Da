@@ -118,7 +118,7 @@ TEST_F(ButtonFixture, turn_on_start_click_early_release)
 
   // signal button on
   ::simulator::mock_gpios::update_callbacks();
-  physical::button::init(true);
+  component::button::init(true);
 
   while (platform::time_ms() < testTimeout_ms && not isTestDone)
   {
@@ -166,7 +166,7 @@ TEST_F(ButtonFixture, turn_on_start_click)
 
   // signal button on
   ::simulator::mock_gpios::update_callbacks();
-  physical::button::init(true);
+  component::button::init(true);
 
   // simulate clicks
   auto buttonThread = std::thread([]() {
@@ -224,7 +224,7 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
 
   // signal button on
   ::simulator::mock_gpios::update_callbacks();
-  physical::button::init(true);
+  component::button::init(true);
 
   // simulate click release
   auto buttonThread = std::thread([&]() {
@@ -286,7 +286,7 @@ TEST_F(ButtonFixture, turn_on_start_long_click)
 
   // signal button on
   ::simulator::mock_gpios::update_callbacks();
-  physical::button::init(true);
+  component::button::init(true);
 
   // simulate click release after a long time
   auto buttonThread = std::thread([]() {
@@ -347,7 +347,7 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
 
   // signal button on
   ::simulator::mock_gpios::update_callbacks();
-  physical::button::init(true);
+  component::button::init(true);
 
   // simulate click release after a long time
   auto buttonThread = std::thread([&]() {
@@ -416,7 +416,7 @@ TEST_F(ButtonFixture, debounce)
 
   // signal button on
   ::simulator::mock_gpios::update_callbacks();
-  physical::button::init(true);
+  component::button::init(true);
 
   // simulate a clicks
   simulate_clicks(desiredClicks, 15ms, 15ms);
@@ -479,7 +479,7 @@ TEST_F(ButtonFixture, start_click_then_4_clicks)
 
   // signal button on
   ::simulator::mock_gpios::update_callbacks();
-  physical::button::init(true);
+  component::button::init(true);
 
   // simulate click release
   auto buttonThread = std::thread([&]() {
@@ -555,7 +555,7 @@ TEST_F(ButtonFixture, standard_4_clicks_)
 
   // signal button on
   ::simulator::mock_gpios::update_callbacks();
-  physical::button::init(true);
+  component::button::init(true);
 
   // simulate click release
   auto buttonThread = std::thread([&]() {
@@ -634,7 +634,7 @@ TEST_F(ButtonFixture, standard_6_double_clicks)
 
   // signal button on
   ::simulator::mock_gpios::update_callbacks();
-  physical::button::init(true);
+  component::button::init(true);
 
   // simulate first double click
   bool isStartClickDone = false;

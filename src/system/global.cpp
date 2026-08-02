@@ -7,14 +7,14 @@
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/sunset_timer.h"
 
-#include "src/system/physical/battery.h"
-#include "src/system/physical/indicator.h"
-#include "src/system/physical/imu.h"
-#include "src/system/physical/fileSystem.h"
-#include "src/system/physical/output_power.h"
-#include "src/system/physical/sound.h"
+#include "src/system/bsp/indicator.h"
 
-#include "src/system/power/charger.h"
+#include "src/system/component/battery.h"
+#include "src/system/component/charger.h"
+#include "src/system/component/fileSystem.h"
+#include "src/system/component/imu.h"
+#include "src/system/component/output_power.h"
+#include "src/system/component/sound.h"
 
 #include "src/system/utils/utils.h"
 
@@ -101,7 +101,7 @@ void main_setup()
   platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(true);
 
   // reset the output driver
-  physical::outputPower::write_voltage(0);
+  component::outputPower::write_voltage(0);
 
   // necessary for all i2c communications
   // 400KHz clock, 100mS timeout
@@ -122,7 +122,7 @@ void main_setup()
   {
     // try to start fresh: the system can get stuck with a broken filesystem
     // TODO #353: it happens when the system power source is removed during a file system read/write.
-    physical::fileSystem::clear_internal_fs();
+    component::fileSystem::clear_internal_fs();
   }
 
   // check if we are in first boot mode (read parameters fails)
@@ -166,18 +166,18 @@ void main_setup()
   }
 
   // setup imu
-  physical::imu::init();
+  component::imu::init();
 
   if (shouldAlertUser)
   {
     for (int i = 0; i < 5; i++)
     {
-      physical::indicator::set_color(utils::ColorSpace::WHITE);
+      bsp::indicator::set_color(utils::ColorSpace::WHITE);
       platform::delay_ms(300);
-      physical::indicator::set_color(utils::ColorSpace::BLACK);
+      bsp::indicator::set_color(utils::ColorSpace::BLACK);
       platform::delay_ms(300);
     }
-    physical::indicator::set_color(utils::ColorSpace::BLACK);
+    bsp::indicator::set_color(utils::ColorSpace::BLACK);
   }
 
   // any wake up from something that is not an interrupt should be considered as vbus voltage
@@ -249,7 +249,7 @@ void main_loop(const uint32_t addedDelay)
   logic::behavior::loop();
 
   // automatically deactivate sensors if they are not used for a time
-  physical::microphone::disable_after_non_use();
+  component::microphone::disable_after_non_use();
 }
 
 } // namespace lampda

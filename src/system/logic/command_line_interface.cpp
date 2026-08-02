@@ -2,20 +2,20 @@
 
 #include "src/system/logic/behavior.h"
 
-#include "src/system/power/charger.h"
-#include "src/system/power/balancer.h"
-#include "src/system/power/PDlib/power_delivery.h"
+#include "src/system/bsp/balancer.h"
+#include "src/system/bsp/pd/power_delivery.h"
+
+#include "src/system/component/battery.h"
+#include "src/system/component/button.h"
+#include "src/system/component/charger.h"
+#include "src/system/component/fileSystem.h"
+#include "src/system/component/time_handling.h"
 
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/i2c.h"
 #include "src/system/platform/print.h"
 #include "src/system/platform/registers.h"
 #include "src/system/platform/threads.h"
-
-#include "src/system/physical/battery.h"
-#include "src/system/physical/button.h"
-#include "src/system/physical/fileSystem.h"
-#include "src/system/physical/time_handling.h"
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
@@ -271,7 +271,7 @@ void handleCommand(const platform::Inputs::Command& commandLine)
 
     case utils::hash("bat"):
       {
-        const auto& balancerStatus = ::lampda::power::balancer::get_status();
+        const auto& balancerStatus = ::lampda::bsp::balancer::get_status();
         const bool areBalancerValueValid = balancerStatus.is_valid();
 
         if (areBalancerValueValid)
@@ -289,7 +289,7 @@ void handleCommand(const platform::Inputs::Command& commandLine)
           platform::lampda_print("balancer measurments not valid");
         }
 
-        const auto& chargerStatus = ::lampda::power::charger::get_state();
+        const auto& chargerStatus = ::lampda::component::charger::get_state();
         const bool areChargerValueValid = chargerStatus.areMeasuresOk;
         if (areChargerValueValid)
         {
@@ -307,9 +307,9 @@ void handleCommand(const platform::Inputs::Command& commandLine)
                   "raw battery level:%.2f%%\n"
                   "battery level:%.2f%%\n"
                   "minimum cell level:%.2f%%",
-                  physical::battery::get_level_percent(physical::battery::get_raw_battery_voltage_mv()) / 100.0,
-                  physical::battery::get_battery_level() / 100.0,
-                  physical::battery::get_battery_minimum_cell_level() / 100.0);
+                  component::battery::get_level_percent(component::battery::get_raw_battery_voltage_mv()) / 100.0,
+                  component::battery::get_battery_level() / 100.0,
+                  component::battery::get_battery_minimum_cell_level() / 100.0);
         }
         else
         {
@@ -320,7 +320,7 @@ void handleCommand(const platform::Inputs::Command& commandLine)
 
     case utils::hash("cinfo"):
       {
-        const auto& chargerState = ::lampda::power::charger::get_state();
+        const auto& chargerState = ::lampda::component::charger::get_state();
         if (chargerState.areMeasuresOk)
         {
           platform::lampda_print(
@@ -340,11 +340,11 @@ void handleCommand(const platform::Inputs::Command& commandLine)
                   chargerState.inputCurrent_mA,
                   chargerState.batteryVoltage_mV,
                   chargerState.chargeCurrent_mA,
-                  boolToString(::lampda::power::charger::is_vbus_signal_detected()),
+                  boolToString(::lampda::component::charger::is_vbus_signal_detected()),
                   boolToString(chargerState.is_charging()),
                   boolToString(chargerState.is_effectivly_charging()),
                   ::lampda::logic::power::was_started_in_battery_recovery(),
-                  physical::battery::get_battery_level() / 100.0,
+                  component::battery::get_battery_level() / 100.0,
                   chargerState.get_status_str().c_str());
         }
         else
@@ -357,18 +357,18 @@ void handleCommand(const platform::Inputs::Command& commandLine)
                   "battery level:%.2f%%\n"
                   "-> charger status: %s",
                   boolToString(chargerState.isChargeOkSignalHigh),
-                  boolToString(::lampda::power::charger::is_vbus_signal_detected()),
+                  boolToString(::lampda::component::charger::is_vbus_signal_detected()),
                   ::lampda::logic::power::was_started_in_battery_recovery(),
-                  physical::battery::get_battery_level() / 100.0,
+                  component::battery::get_battery_level() / 100.0,
                   chargerState.get_status_str().c_str());
         }
 
         // in case there is a software error, display it
-        if (chargerState.status == ::lampda::power::charger::Charger_t::ChargerStatus_t::ERROR_HARDWARE)
+        if (chargerState.status == ::lampda::component::charger::Charger_t::ChargerStatus_t::ERROR_HARDWARE)
         {
           platform::lampda_print("\t hardware error detail: \"%s\"", chargerState.hardwareErrorMessage.c_str());
         }
-        if (chargerState.status == ::lampda::power::charger::Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
+        if (chargerState.status == ::lampda::component::charger::Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
           platform::lampda_print("\t software error detail: \"%s\"", chargerState.softwareErrorMessage.c_str());
         }
@@ -395,7 +395,7 @@ void handleCommand(const platform::Inputs::Command& commandLine)
 
     case utils::hash("ADC"):
       {
-        const auto& chargerState = ::lampda::power::charger::get_state();
+        const auto& chargerState = ::lampda::component::charger::get_state();
         if (chargerState.areMeasuresOk)
         {
           platform::lampda_print(
@@ -409,7 +409,7 @@ void handleCommand(const platform::Inputs::Command& commandLine)
                   chargerState.lastUpdateTime_ms,
                   chargerState.powerRail_mV,
                   chargerState.inputCurrent_mA,
-                  ::lampda::power::powerDelivery::get_vbus_voltage(),
+                  ::lampda::bsp::powerDelivery::get_vbus_voltage(),
                   chargerState.batteryVoltage_mV,
                   chargerState.batteryCurrent_mA,
                   platform::registers::read_CPU_temperature_degreesC());
@@ -422,7 +422,7 @@ void handleCommand(const platform::Inputs::Command& commandLine)
                   "VBUS voltage:%dmA\n"
                   "Temperature:%.2fC",
                   chargerState.lastUpdateTime_ms,
-                  ::lampda::power::powerDelivery::get_vbus_voltage(),
+                  ::lampda::bsp::powerDelivery::get_vbus_voltage(),
                   platform::registers::read_CPU_temperature_degreesC());
         }
         break;
@@ -430,8 +430,8 @@ void handleCommand(const platform::Inputs::Command& commandLine)
 
     case utils::hash("PD"):
       {
-        ::lampda::power::powerDelivery::show_pd_status();
-        const auto& pd = ::lampda::power::powerDelivery::get_available_pd();
+        ::lampda::bsp::powerDelivery::show_pd_status();
+        const auto& pd = ::lampda::bsp::powerDelivery::get_available_pd();
         if (pd.empty())
         {
           platform::lampda_print("No power delivery capabilities");
@@ -458,7 +458,7 @@ void handleCommand(const platform::Inputs::Command& commandLine)
 
     case utils::hash("format-fs"):
       platform::lampda_print("clearing the whole file format");
-      physical::fileSystem::clear_internal_fs();
+      component::fileSystem::clear_internal_fs();
       break;
 
     case utils::hash("DFU"):
@@ -467,22 +467,22 @@ void handleCommand(const platform::Inputs::Command& commandLine)
 
     case utils::hash("buttonTogg"):
       {
-        switch (physical::button::get_button_pin())
+        switch (component::button::get_button_pin())
         {
           case platform::gpio::DigitalPin::GPIO::gpio3:
-            physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio4);
+            component::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio4);
             platform::lampda_print("Set button pin to gpio4");
             break;
           case platform::gpio::DigitalPin::GPIO::gpio4:
 #ifdef LMBD_LAMP_TYPE__SIMPLE
-            physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio6);
+            component::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio6);
             platform::lampda_print("Set button pin to gpio6");
             break;
             // The simple lamp can also use pin 6
           case platform::gpio::DigitalPin::GPIO::gpio6: // pass throught
 #endif
           default:
-            physical::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio3);
+            component::button::set_button_pin(platform::gpio::DigitalPin::GPIO::gpio3);
             platform::lampda_print("Set button pin to gpio3");
             break;
         }
@@ -534,7 +534,7 @@ void handleCommand(const platform::Inputs::Command& commandLine)
       }
     case utils::hash("time"):
       {
-        const auto& time = time::get_real_time();
+        const auto& time = component::time::get_real_time();
         if (time.is_valid())
         {
           platform::lampda_print("Real time is %dh %dmin %ds, day index is %d",

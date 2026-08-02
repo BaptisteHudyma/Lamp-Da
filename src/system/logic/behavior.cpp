@@ -12,16 +12,16 @@
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/sunset_timer.h"
 
-#include "src/system/power/charger.h"
-#include "src/system/power/power_gates.h"
+#include "src/system/bsp/power_gates.h"
+#include "src/system/bsp/indicator.h"
 
-#include "src/system/physical/battery.h"
-#include "src/system/physical/button.h"
-#include "src/system/physical/indicator.h"
-#include "src/system/physical/fileSystem.h"
-#include "src/system/physical/imu.h"
-#include "src/system/physical/output_power.h"
-#include "src/system/physical/sound.h"
+#include "src/system/component/charger.h"
+#include "src/system/component/battery.h"
+#include "src/system/component/button.h"
+#include "src/system/component/fileSystem.h"
+#include "src/system/component/imu.h"
+#include "src/system/component/output_power.h"
+#include "src/system/component/sound.h"
 
 #include "src/system/utils/colorspace.h"
 #include "src/system/utils/constants.h"
@@ -156,13 +156,13 @@ bool can_system_allowed_to_be_powered()
 }
 
 // return true if vbus is high
-bool is_charger_powered() { return ::lampda::power::charger::is_vbus_powered(); }
+bool is_charger_powered() { return ::lampda::component::charger::is_vbus_powered(); }
 
 bool read_parameters()
 {
   bool isSuccess = false;
   // load system values in memory
-  if (not physical::fileSystem::system::load_from_file())
+  if (not component::fileSystem::system::load_from_file())
   {
     logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_SLEEP_SKIPPED);
   }
@@ -173,7 +173,7 @@ bool read_parameters()
     statistics::load_from_memory();
 
     uint32_t wasPutToSleepCleanly = 0;
-    const bool isCleanFlagFound = physical::fileSystem::system::get_value(cleanSleepKey, wasPutToSleepCleanly);
+    const bool isCleanFlagFound = component::fileSystem::system::get_value(cleanSleepKey, wasPutToSleepCleanly);
     if (not isCleanFlagFound or wasPutToSleepCleanly != 0xDEADBEEF)
     {
       // dirty sleep alert
@@ -181,34 +181,34 @@ bool read_parameters()
     }
 
     uint32_t brightness = 0;
-    if (physical::fileSystem::system::get_value(brightnessKey, brightness))
+    if (component::fileSystem::system::get_value(brightnessKey, brightness))
     {
       logic::brightness::update_brightness(brightness, true);
       logic::brightness::update_saved_brightness();
     }
 
     uint32_t indicatorLevel = 0;
-    if (physical::fileSystem::system::get_value(indicatorLevelKey, indicatorLevel))
+    if (component::fileSystem::system::get_value(indicatorLevelKey, indicatorLevel))
     {
       logic::indicator::set_brightness_level(indicatorLevel);
     }
 
     uint32_t isInLockoutMode = 0;
-    if (physical::fileSystem::system::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
+    if (component::fileSystem::system::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
     {
       // system in lockout, raise the alert
       logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
     }
 
     uint32_t buttonPin = 0;
-    if (physical::fileSystem::system::get_value(buttonPinKey, buttonPin) and buttonPin > 0)
+    if (component::fileSystem::system::get_value(buttonPinKey, buttonPin) and buttonPin > 0)
     {
-      physical::button::set_button_pin(static_cast<platform::gpio::DigitalPin::GPIO>(buttonPin));
+      component::button::set_button_pin(static_cast<platform::gpio::DigitalPin::GPIO>(buttonPin));
     }
 
     // Auto activate bluetooth is needed
     uint32_t bluetoothAutoActivation = 0;
-    if (physical::fileSystem::system::get_value(bluetoothAutoKey, bluetoothAutoActivation) and
+    if (component::fileSystem::system::get_value(bluetoothAutoKey, bluetoothAutoActivation) and
         bluetoothAutoActivation > 0)
     {
       bluetoothAutoActivationLeftCount = min<uint32_t>(maxBluetoothAutoActivations, bluetoothAutoActivation - 1);
@@ -221,7 +221,7 @@ bool read_parameters()
     }
   }
 
-  if (physical::fileSystem::user::load_from_file())
+  if (component::fileSystem::user::load_from_file())
   {
     user::read_parameters();
   }
@@ -233,50 +233,50 @@ bool read_parameters()
 void setup_clean_sleep_flag()
 {
   // clear clean sleep flag
-  physical::fileSystem::system::set_value(cleanSleepKey, 0);
+  component::fileSystem::system::set_value(cleanSleepKey, 0);
   // write parameters, if a crash happens, we will notice a dirty flag
-  physical::fileSystem::system::write_to_file();
+  component::fileSystem::system::write_to_file();
   // temp shutdown
-  physical::fileSystem::shutdown();
+  component::fileSystem::shutdown();
 }
 
 void write_parameters(const bool shouldSaveUserParameters = true, const bool shouldSaveSystemParameters = true)
 {
-  physical::fileSystem::clear();
+  component::fileSystem::clear();
 
   if (shouldSaveSystemParameters)
   {
     // write updated statistics
     statistics::write_to_memory();
 
-    physical::fileSystem::system::set_value(cleanSleepKey, 0xDEADBEEF);
+    component::fileSystem::system::set_value(cleanSleepKey, 0xDEADBEEF);
     // only save saved brightness, not current
-    physical::fileSystem::system::set_value(brightnessKey, logic::brightness::get_saved_brightness());
-    physical::fileSystem::system::set_value(indicatorLevelKey, logic::indicator::get_brightness_level());
+    component::fileSystem::system::set_value(brightnessKey, logic::brightness::get_saved_brightness());
+    component::fileSystem::system::set_value(indicatorLevelKey, logic::indicator::get_brightness_level());
     // lockout mode always kept, if not deactivated by system
-    physical::fileSystem::system::set_value(isLockoutModeKey,
-                                            logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT));
-    physical::fileSystem::system::set_value(buttonPinKey, static_cast<uint32_t>(physical::button::get_button_pin()));
+    component::fileSystem::system::set_value(isLockoutModeKey,
+                                             logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT));
+    component::fileSystem::system::set_value(buttonPinKey, static_cast<uint32_t>(component::button::get_button_pin()));
 
     // if the user used the bluetooth, it will be written here for auto activation
     const uint32_t nextWakeUpWithBluetooth = logic::inputs_bluetooth::is_bluetooth_used() ?
                                                      maxBluetoothAutoActivations :
                                                      bluetoothAutoActivationLeftCount;
-    physical::fileSystem::system::set_value(bluetoothAutoKey, nextWakeUpWithBluetooth);
+    component::fileSystem::system::set_value(bluetoothAutoKey, nextWakeUpWithBluetooth);
   }
   else
   {
-    physical::fileSystem::clear_system_parameters();
+    component::fileSystem::clear_system_parameters();
   }
 
   if (shouldSaveUserParameters)
     user::write_parameters();
 
   // write all
-  physical::fileSystem::user::write_to_file();
-  physical::fileSystem::system::write_to_file();
+  component::fileSystem::user::write_to_file();
+  component::fileSystem::system::write_to_file();
   // close filesystem
-  physical::fileSystem::shutdown();
+  component::fileSystem::shutdown();
 }
 
 // user code is running when state is output
@@ -292,7 +292,7 @@ void true_power_off()
   platform::threads::shutdown();
 
   // unmount filesystem
-  physical::fileSystem::shutdown();
+  component::fileSystem::shutdown();
 
   // stop i2c interfaces
   for (uint8_t i = 0; i < platform::registers::get_wire_interface_count(); ++i)
@@ -315,15 +315,15 @@ void true_power_off()
   platform::gpio::DigitalPin(platform::gpio::DigitalPin::GPIO::Output_EnableOutputGate).set_high(false);
 
   // deactivate indicators
-  physical::indicator::set_color(utils::ColorSpace::BLACK);
+  bsp::indicator::set_color(utils::ColorSpace::BLACK);
   platform::gpio::DigitalPin::deactivate_gpios(); // physically disconnect gpios
   platform::delay_ms(1);
 
   // If buttpon is still pressed at this point, we will assume it is stuck pressed and signal a wakeup on release.
-  const bool isButtonPressed = physical::button::get_button_state().isPressed;
+  const bool isButtonPressed = component::button::get_button_state().isPressed;
   // power down nrf52.
   // on wake up, it'll start back from the setup phase
-  platform::registers::go_to_sleep(physical::button::get_button_pin_RAW(), isButtonPressed);
+  platform::registers::go_to_sleep(component::button::get_button_pin_RAW(), isButtonPressed);
 
   /*
    * Nothing after this, system is off !
@@ -444,7 +444,7 @@ void handle_pre_charger_operation_state()
 
   preChargeCalled = platform::time_ms();
 
-  if (not physical::battery::can_battery_be_charged())
+  if (not component::battery::can_battery_be_charged())
   {
     // battery cannot be charged
     return;
@@ -486,11 +486,11 @@ void handle_charger_operation_state()
 
   // wait a bit after going to charger mode, maybe vbus is bouncing around
   const bool vbusDebounced =
-          ::lampda::power::charger::can_use_vbus_power() or (platform::time_ms() - preChargeCalled) > 5000;
+          ::lampda::component::charger::can_use_vbus_power() or (platform::time_ms() - preChargeCalled) > 5000;
   if (vbusDebounced)
   {
     static uint32_t otgDebounce_time = 0;
-    if (::lampda::power::charger::get_state().isInOtg)
+    if (::lampda::component::charger::get_state().isInOtg)
     {
       otgDebounce_time = platform::time_ms();
     }
@@ -540,7 +540,7 @@ bool check_handle_exit_output_mode()
     return true;
   }
 #ifndef LMBD_SIMULATION
-  else if (not physical::battery::is_battery_usable_as_power_source())
+  else if (not component::battery::is_battery_usable_as_power_source())
   {
     logic::sunset::cancel_timer();
 
@@ -573,7 +573,7 @@ void handle_pre_output_light_state()
   }
 
   // power usage is forbidden
-  if (not physical::battery::is_battery_usable_as_power_source())
+  if (not component::battery::is_battery_usable_as_power_source())
   {
     if (not isMessageDisplayed)
     {
@@ -601,14 +601,14 @@ void handle_pre_output_light_state()
   isMessageDisplayed = false;
 
   // critical battery level, do not wake up
-  if (physical::battery::get_battery_minimum_cell_level() <= batteryCritical + 1)
+  if (component::battery::get_battery_minimum_cell_level() <= batteryCritical + 1)
   {
     // alert user of low battery
     for (uint8_t i = 0; i < 10; i++)
     {
-      physical::indicator::set_color(utils::ColorSpace::RED);
+      bsp::indicator::set_color(utils::ColorSpace::RED);
       platform::delay_ms(100);
-      physical::indicator::set_color(utils::ColorSpace::BLACK);
+      bsp::indicator::set_color(utils::ColorSpace::BLACK);
       platform::delay_ms(100);
     }
 
@@ -662,7 +662,7 @@ void handle_output_light_state()
   static bool waitingForPowerGate_messageDisplayed = true;
 
   // wait for power gates (and display message when ready)
-  if (not ::lampda::power::powergates::is_power_gate_enabled() or not logic::power::is_output_mode_ready())
+  if (not ::lampda::bsp::powergates::is_power_gate_enabled() or not logic::power::is_output_mode_ready())
   {
     if (waitingForPowerGate_messageDisplayed)
     {
@@ -673,7 +673,7 @@ void handle_output_light_state()
     if (platform::time_ms() - lastOutputLightValidTime > 1000)
     {
       go_to_error_state("power gate took too long to switch in output light state " +
-                        std::to_string(::lampda::power::powergates::is_power_gate_enabled()) +
+                        std::to_string(::lampda::bsp::powergates::is_power_gate_enabled()) +
                         std::to_string(logic::power::is_output_mode_ready()));
     }
     return;
@@ -692,8 +692,8 @@ void handle_output_light_state()
     // user loop call
     user::loop();
 
-    const auto& chargerState = ::lampda::power::charger::get_state();
-    if (chargerState.status == ::lampda::power::charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)
+    const auto& chargerState = ::lampda::component::charger::get_state();
+    if (chargerState.status == ::lampda::component::charger::Charger_t::ChargerStatus_t::ERROR_BATTERY_MISSING)
     {
       logic::alerts::manager.raise(logic::alerts::Type::BATTERY_MISSING);
     }
@@ -711,9 +711,9 @@ void handle_post_output_light_state()
   platform::delay_ms(10);
 
   // deactivate strip power
-  physical::outputPower::disable_power_gates(); // close external voltage path
+  component::outputPower::disable_power_gates(); // close external voltage path
   platform::delay_ms(1);
-  physical::outputPower::write_voltage(0); // power down
+  component::outputPower::write_voltage(0); // power down
 
   statistics::signal_output_off();
   mainMachine.skip_timeout();
@@ -747,12 +747,12 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
   }
 
   // deactivate strip power
-  physical::outputPower::write_voltage(0); // power down
+  component::outputPower::write_voltage(0); // power down
   platform::delay_ms(10);
 
   // disable bluetooth, imu and microphone
-  physical::microphone::disable();
-  physical::imu::shutdown();
+  component::microphone::disable();
+  component::imu::shutdown();
   platform::bluetooth::stop_bluetooth_advertising();
 
   statistics::signal_output_off();
@@ -849,7 +849,7 @@ void loop()
     if (logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT) and
         logic::alerts::manager.get_time_since_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT) > 950)
     {
-      const auto& buttonState = physical::button::get_button_state();
+      const auto& buttonState = component::button::get_button_state();
       const bool isButtonPressed = buttonState.isPressed or buttonState.isLongPressed;
       // shutdown with button pressed starts right back up.
       if (not isButtonPressed)

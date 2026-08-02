@@ -11,11 +11,11 @@
 #include "src/compile.h"
 #include "src/user/constants.h"
 
-#include "src/system/physical/output_power.h"
-#include "src/system/physical/sound.h"
+#include "src/system/component/output_power.h"
+#include "src/system/component/sound.h"
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
-#include "src/system/physical/strip.h"
+#include "src/system/component/strip.h"
 #endif
 
 #include "src/system/platform/time.h"
@@ -143,7 +143,7 @@ private:
   static constexpr float _ledStripWidth_mm = lampda::ledStripWidth_mm;   ///< \private
   static constexpr float _ledStripLength_mm = lampda::ledStripLength_mm; ///< \private
   static constexpr float _ledByMeter = lampda::ledByMeter;               ///< \private
-  physical::LedStrip& strip;                                             ///< \private
+  component::LedStrip& strip;                                            ///< \private
 
   /// \private oversized buffer size to account for "overflowing" LEDs
   static constexpr uint16_t _safeBufSize = (_width + 1) * (_height + 1);
@@ -158,7 +158,7 @@ private:
 
 public:
   /// \private Constructor used to wrap strip if needed
-  LMBD_INLINE LampTy(physical::LedStrip& strip) : config {}, strip {strip}, now {0}, tick {0}, raw_frame_count {0} {}
+  LMBD_INLINE LampTy(component::LedStrip& strip) : config {}, strip {strip}, now {0}, tick {0}, raw_frame_count {0} {}
 #else
 private:
   // (placeholder values to avoid bad fails on misuse)
@@ -236,7 +236,7 @@ public:
   {
     // set output voltage for leds that will not change voltage
     if (stripInputMinVoltage_mV == stripInputMaxVoltage_mV)
-      physical::outputPower::write_voltage(stripInputMaxVoltage_mV);
+      component::outputPower::write_voltage(stripInputMaxVoltage_mV);
 
     begin();
     clear();
@@ -517,19 +517,19 @@ public:
     }
     else
     {
-      physical::outputPower::blip(duration);
+      component::outputPower::blip(duration);
     }
   }
 
   /**
    * \brief Cancel the ongoing blip, if any
    */
-  void LMBD_INLINE cancel_blip() const { return physical::outputPower::cancel_blip(); }
+  void LMBD_INLINE cancel_blip() const { return component::outputPower::cancel_blip(); }
 
   /**
    * \brief return true if the output is in a blip state
    */
-  bool LMBD_INLINE is_bliping() const { return physical::outputPower::is_bliping(); }
+  bool LMBD_INLINE is_bliping() const { return component::outputPower::is_bliping(); }
 
   /** \brief Set brightness of the lamp
    *
@@ -611,7 +611,7 @@ public:
       // display an output blip on max brightness reached
       if (isUserCall and trueNewBrightness >= trueMaxBrightness)
       {
-        physical::outputPower::blip(50); // blip
+        component::outputPower::blip(50); // blip
       }
 
       using curve_t = utils::curves::ExponentialCurve<brightness_t, uint16_t>;
@@ -620,7 +620,7 @@ public:
               curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, stripInputMaxVoltage_mV},
               1.0);
 
-      physical::outputPower::write_voltage(round(brightnessCurve.sample(trueNewBrightness)));
+      component::outputPower::write_voltage(round(brightnessCurve.sample(trueNewBrightness)));
     }
   }
 
@@ -1058,9 +1058,9 @@ public:
   /**
    * \brief Return the an object containing sound analysis data
    */
-  physical::microphone::SoundStruct& LMBD_INLINE get_sound_struct()
+  component::microphone::SoundStruct& LMBD_INLINE get_sound_struct()
   {
-    return physical::microphone::get_sound_characteristics();
+    return component::microphone::get_sound_characteristics();
   }
 
   /// Define a localy consistant saved brightness. Should be similar

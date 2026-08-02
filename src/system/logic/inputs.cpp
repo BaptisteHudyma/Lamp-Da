@@ -8,8 +8,9 @@
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/sunset_timer.h"
 
-#include "src/system/physical/button.h"
-#include "src/system/physical/indicator.h"
+#include "src/system/bsp/indicator.h"
+
+#include "src/system/component/button.h"
 
 #include "src/system/platform/bluetooth.h"
 #include "src/system/platform/time.h"
@@ -135,7 +136,7 @@ void system_enabled_button_click_callback(const uint8_t consecutiveButtonCheck, 
         {
 #ifdef DEBUG_MODE
           // disable charger and wait 5s to be killed by watchdog
-          indicator::set_color(utils::ColorSpace::PINK);
+          bsp::indicator::set_color(utils::ColorSpace::PINK);
           logic::power::enable_charge(false);
           platform::delay_ms(20000); // crash the system
 #endif
@@ -492,8 +493,8 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
     return;
 
   // rectify hold duration
-  const uint32_t holdDuration = (buttonHoldDuration > physical::button::HOLD_BUTTON_MIN_MS) ?
-                                        (buttonHoldDuration - physical::button::HOLD_BUTTON_MIN_MS) :
+  const uint32_t holdDuration = (buttonHoldDuration > component::button::HOLD_BUTTON_MIN_MS) ?
+                                        (buttonHoldDuration - component::button::HOLD_BUTTON_MIN_MS) :
                                         0;
 
   //
@@ -560,8 +561,8 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
 
 void init(const bool wasPoweredByUserInterrupt)
 {
-  physical::button::init(wasPoweredByUserInterrupt);
-  physical::indicator::init();
+  component::button::init(wasPoweredByUserInterrupt);
+  bsp::indicator::init();
 }
 
 void loop()

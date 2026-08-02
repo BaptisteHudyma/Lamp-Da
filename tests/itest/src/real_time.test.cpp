@@ -41,14 +41,14 @@ TEST_F(RealTimeFixture, set_from_zero)
 {
   ASSERT_EQ(platform::time_s(), 0);
 
-  time::RealTime _time;
+  component::time::RealTime _time;
   _time.dayOfTheWeek = 0;
   _time.hour = 0;
   _time.minutes = 0;
   _time.seconds = 0;
-  ASSERT_TRUE(time::set_real_time(_time));
+  ASSERT_TRUE(component::time::set_real_time(_time));
 
-  const auto& startTime = time::get_real_time();
+  const auto& startTime = component::time::get_real_time();
   ASSERT_EQ(platform::time_s(), get_platform_time_from_target_time(startTime));
   ASSERT_EQ(startTime.dayOfTheWeek, _time.dayOfTheWeek);
   ASSERT_EQ(startTime.hour, _time.hour);
@@ -60,7 +60,7 @@ TEST_F(RealTimeFixture, set_from_zero)
     std::this_thread::sleep_for(1s);
     ASSERT_EQ(platform::time_s(), i + 1);
 
-    const auto& _time = time::get_real_time();
+    const auto& _time = component::time::get_real_time();
     ASSERT_EQ(platform::time_s(), get_platform_time_from_target_time(_time));
     ASSERT_EQ(_time.dayOfTheWeek, 0);
     ASSERT_EQ(_time.hour, 0);
@@ -74,14 +74,14 @@ TEST_F(RealTimeFixture, set_from_zero_real_time)
 {
   ASSERT_EQ(platform::time_s(), 0);
 
-  time::RealTime _time;
+  component::time::RealTime _time;
   _time.dayOfTheWeek = 2;
   _time.hour = 2;
   _time.minutes = 2;
   _time.seconds = 2;
-  ASSERT_TRUE(time::set_real_time(_time));
+  ASSERT_TRUE(component::time::set_real_time(_time));
 
-  const auto& startTime = time::get_real_time();
+  const auto& startTime = component::time::get_real_time();
   ASSERT_EQ(platform::time_s(), get_platform_time_from_target_time(startTime));
   ASSERT_EQ(startTime.dayOfTheWeek, _time.dayOfTheWeek);
   ASSERT_EQ(startTime.hour, _time.hour);
@@ -93,7 +93,7 @@ TEST_F(RealTimeFixture, set_from_zero_real_time)
     std::this_thread::sleep_for(1s);
     ASSERT_EQ(platform::time_s(), i + 1);
 
-    const auto& _time = time::get_real_time();
+    const auto& _time = component::time::get_real_time();
     ASSERT_EQ(platform::time_s(), get_platform_time_from_target_time(_time));
     ASSERT_EQ(_time.dayOfTheWeek, 2);
     ASSERT_EQ(_time.hour, 2);
@@ -107,14 +107,14 @@ TEST_F(RealTimeFixture, set_from_zero_with_wrap)
 {
   ASSERT_EQ(platform::time_s(), 0);
 
-  time::RealTime _time;
+  component::time::RealTime _time;
   _time.dayOfTheWeek = 1;
   _time.hour = 23;
   _time.minutes = 59;
   _time.seconds = 58;
-  ASSERT_TRUE(time::set_real_time(_time));
+  ASSERT_TRUE(component::time::set_real_time(_time));
 
-  const auto& startTime = time::get_real_time();
+  const auto& startTime = component::time::get_real_time();
   ASSERT_EQ(platform::time_s(), get_platform_time_from_target_time(startTime));
   ASSERT_EQ(startTime.dayOfTheWeek, _time.dayOfTheWeek);
   ASSERT_EQ(startTime.hour, _time.hour);
@@ -125,7 +125,7 @@ TEST_F(RealTimeFixture, set_from_zero_with_wrap)
   std::this_thread::sleep_for(1s);
   ASSERT_EQ(platform::time_s(), 1);
 
-  _time = time::get_real_time();
+  _time = component::time::get_real_time();
   ASSERT_EQ(platform::time_s(), get_platform_time_from_target_time(_time));
   ASSERT_EQ(_time.dayOfTheWeek, 1);
   ASSERT_EQ(_time.hour, 23);
@@ -136,7 +136,7 @@ TEST_F(RealTimeFixture, set_from_zero_with_wrap)
   std::this_thread::sleep_for(1s);
   ASSERT_EQ(platform::time_s(), 2);
 
-  _time = time::get_real_time();
+  _time = component::time::get_real_time();
   ASSERT_EQ(platform::time_s(), get_platform_time_from_target_time(_time));
   ASSERT_EQ(_time.dayOfTheWeek, 2);
   ASSERT_EQ(_time.hour, 0);
@@ -169,14 +169,14 @@ TEST_F(RealTimeWithOffsetFixture, set_from_10seconds)
 {
   ASSERT_EQ(platform::time_s(), offset_time_s);
 
-  time::RealTime _time;
+  component::time::RealTime _time;
   _time.dayOfTheWeek = 0;
   _time.hour = 0;
   _time.minutes = 0;
   _time.seconds = 0;
-  ASSERT_TRUE(time::set_real_time(_time));
+  ASSERT_TRUE(component::time::set_real_time(_time));
 
-  const auto& startTime = time::get_real_time();
+  const auto& startTime = component::time::get_real_time();
   ASSERT_EQ(platform::time_s(), get_platform_time_from_target_time(startTime));
 
   ASSERT_EQ(startTime.dayOfTheWeek, _time.dayOfTheWeek);
@@ -189,7 +189,7 @@ TEST_F(RealTimeWithOffsetFixture, set_from_10seconds)
     std::this_thread::sleep_for(1s);
     ASSERT_EQ(platform::time_s(), offset_time_s + i + 1);
 
-    const auto& _time = time::get_real_time();
+    const auto& _time = component::time::get_real_time();
     ASSERT_EQ(platform::time_s(), get_platform_time_from_target_time(_time));
 
     ASSERT_EQ(_time.dayOfTheWeek, 0);
@@ -204,14 +204,14 @@ TEST_F(RealTimeWithOffsetFixture, set_from_10seconds_real_time)
 {
   ASSERT_EQ(platform::time_s(), offset_time_s);
 
-  time::RealTime _time;
+  component::time::RealTime _time;
   _time.dayOfTheWeek = 2;
   _time.hour = 2;
   _time.minutes = 2;
   _time.seconds = 2;
-  ASSERT_TRUE(time::set_real_time(_time));
+  ASSERT_TRUE(component::time::set_real_time(_time));
 
-  const auto& startTime = time::get_real_time();
+  const auto& startTime = component::time::get_real_time();
   ASSERT_EQ(platform::time_s(), get_platform_time_from_target_time(startTime));
   ASSERT_EQ(startTime.dayOfTheWeek, _time.dayOfTheWeek);
   ASSERT_EQ(startTime.hour, _time.hour);
@@ -223,7 +223,7 @@ TEST_F(RealTimeWithOffsetFixture, set_from_10seconds_real_time)
     std::this_thread::sleep_for(1s);
     ASSERT_EQ(platform::time_s(), offset_time_s + i + 1);
 
-    const auto& _time = time::get_real_time();
+    const auto& _time = component::time::get_real_time();
     ASSERT_EQ(platform::time_s(), get_platform_time_from_target_time(_time));
 
     ASSERT_EQ(_time.dayOfTheWeek, 2);
@@ -238,14 +238,14 @@ TEST_F(RealTimeWithOffsetFixture, set_from_10seconds_with_wrap)
 {
   ASSERT_EQ(platform::time_s(), offset_time_s);
 
-  time::RealTime _time;
+  component::time::RealTime _time;
   _time.dayOfTheWeek = 1;
   _time.hour = 23;
   _time.minutes = 59;
   _time.seconds = 58;
-  ASSERT_TRUE(time::set_real_time(_time));
+  ASSERT_TRUE(component::time::set_real_time(_time));
 
-  const auto& startTime = time::get_real_time();
+  const auto& startTime = component::time::get_real_time();
   ASSERT_EQ(platform::time_s(), get_platform_time_from_target_time(startTime));
   ASSERT_EQ(startTime.dayOfTheWeek, _time.dayOfTheWeek);
   ASSERT_EQ(startTime.hour, _time.hour);
@@ -256,7 +256,7 @@ TEST_F(RealTimeWithOffsetFixture, set_from_10seconds_with_wrap)
   std::this_thread::sleep_for(1s);
   ASSERT_EQ(platform::time_s(), offset_time_s + 1);
 
-  _time = time::get_real_time();
+  _time = component::time::get_real_time();
   ASSERT_EQ(platform::time_s(), get_platform_time_from_target_time(_time));
   ASSERT_EQ(_time.dayOfTheWeek, 1);
   ASSERT_EQ(_time.hour, 23);
@@ -267,7 +267,7 @@ TEST_F(RealTimeWithOffsetFixture, set_from_10seconds_with_wrap)
   std::this_thread::sleep_for(1s);
   ASSERT_EQ(platform::time_s(), offset_time_s + 2);
 
-  _time = time::get_real_time();
+  _time = component::time::get_real_time();
   ASSERT_EQ(platform::time_s(), get_platform_time_from_target_time(_time));
   ASSERT_EQ(_time.dayOfTheWeek, 2);
   ASSERT_EQ(_time.hour, 0);

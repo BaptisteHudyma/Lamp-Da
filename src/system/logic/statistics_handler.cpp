@@ -3,7 +3,7 @@
 #include "src/system/platform/time.h"
 #include "src/system/platform/print.h"
 
-#include "src/system/physical/fileSystem.h"
+#include "src/system/component/fileSystem.h"
 
 #include "src/system/utils/utils.h"
 #include <array>
@@ -72,18 +72,18 @@ uint32_t get_system_on_time() { return statistics.system_on_minutes + max<uint32
 
 void load_from_memory()
 {
-  physical::fileSystem::system::get_value(bootCountKey, statistics.boot_count);
+  component::fileSystem::system::get_value(bootCountKey, statistics.boot_count);
   statistics.boot_count += 1;
 
-  physical::fileSystem::system::get_value(buttonPressCountKey, statistics.button_press_count);
-  physical::fileSystem::system::get_value(systemOnTimeSKey, statistics.system_on_minutes);
-  physical::fileSystem::system::get_value(outputOnTimeSKey, statistics.output_on_minutes);
-  physical::fileSystem::system::get_value(chargeOnTimeSKey, statistics.battery_charge_minutes);
+  component::fileSystem::system::get_value(buttonPressCountKey, statistics.button_press_count);
+  component::fileSystem::system::get_value(systemOnTimeSKey, statistics.system_on_minutes);
+  component::fileSystem::system::get_value(outputOnTimeSKey, statistics.output_on_minutes);
+  component::fileSystem::system::get_value(chargeOnTimeSKey, statistics.battery_charge_minutes);
 
   for (uint8_t alertIndex = 0; alertIndex < alertArraySize; alertIndex++)
   {
     const uint32_t alertCntBefore = statistics.alertRaisedCnt[alertIndex];
-    physical::fileSystem::system::get_value(get_alert_storage_key(alertIndex), statistics.alertRaisedCnt[alertIndex]);
+    component::fileSystem::system::get_value(get_alert_storage_key(alertIndex), statistics.alertRaisedCnt[alertIndex]);
     if (alertCntBefore > statistics.alertRaisedCnt[alertIndex])
     {
       // fallback to prevent early alert crush
@@ -94,18 +94,18 @@ void load_from_memory()
 
 void write_to_memory()
 {
-  physical::fileSystem::system::set_value(bootCountKey, statistics.boot_count);
-  physical::fileSystem::system::set_value(buttonPressCountKey, statistics.button_press_count);
-  physical::fileSystem::system::set_value(outputOnTimeSKey, statistics.output_on_minutes);
-  physical::fileSystem::system::set_value(chargeOnTimeSKey, statistics.battery_charge_minutes);
+  component::fileSystem::system::set_value(bootCountKey, statistics.boot_count);
+  component::fileSystem::system::set_value(buttonPressCountKey, statistics.button_press_count);
+  component::fileSystem::system::set_value(outputOnTimeSKey, statistics.output_on_minutes);
+  component::fileSystem::system::set_value(chargeOnTimeSKey, statistics.battery_charge_minutes);
 
   // system time starts at zero
-  physical::fileSystem::system::set_value(systemOnTimeSKey, get_system_on_time());
+  component::fileSystem::system::set_value(systemOnTimeSKey, get_system_on_time());
 
   // store alerts
   for (uint8_t alertIndex = 0; alertIndex < alertArraySize; alertIndex++)
   {
-    physical::fileSystem::system::set_value(get_alert_storage_key(alertIndex), statistics.alertRaisedCnt[alertIndex]);
+    component::fileSystem::system::set_value(get_alert_storage_key(alertIndex), statistics.alertRaisedCnt[alertIndex]);
   }
 }
 
