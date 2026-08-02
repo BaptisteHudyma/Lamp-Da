@@ -139,6 +139,9 @@ public:
   /// Return the state before this one
   State get_last_state() const { return lastState; }
 
+  /// Return the state after the timeout. May be undefined
+  State after_timeout_state() const { return afterTimeoutState; }
+
   /// use this in a state with a timeout set to skip to the next state directly
   void skip_timeout()
   {
