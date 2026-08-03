@@ -124,8 +124,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>_lockPrintMutex</b> (
 <tr class="memitem:ab6b95a663ce9898a7e9753e9b4d7b18d"><td class="memItemLeft" align="right" valign="top"><a id="ab6b95a663ce9898a7e9753e9b4d7b18d" name="ab6b95a663ce9898a7e9753e9b4d7b18d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>_unlockPrintMutex</b> (void)</td></tr>
 <tr class="separator:ab6b95a663ce9898a7e9753e9b4d7b18d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaebc2f196638b77e92a23981d6943dce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html#aaebc2f196638b77e92a23981d6943dce">init_prints</a> ()</td></tr>
-<tr class="memdesc:aaebc2f196638b77e92a23981d6943dce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print and debug function to serial port.  <br /></td></tr>
+<tr class="memitem:aaebc2f196638b77e92a23981d6943dce"><td class="memItemLeft" align="right" valign="top"><a id="aaebc2f196638b77e92a23981d6943dce" name="aaebc2f196638b77e92a23981d6943dce"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>init_prints</b> ()</td></tr>
+<tr class="memdesc:aaebc2f196638b77e92a23981d6943dce"><td class="mdescLeft">&#160;</td><td class="mdescRight">call once at program start <br /></td></tr>
 <tr class="separator:aaebc2f196638b77e92a23981d6943dce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaee3fb6bf5e26e9b7b65e2952b21d52b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html#aaee3fb6bf5e26e9b7b65e2952b21d52b">lampda_print_raw</a> (const char *format,...)</td></tr>
 <tr class="memdesc:aaee3fb6bf5e26e9b7b65e2952b21d52b"><td class="mdescLeft">&#160;</td><td class="mdescRight">raw print, no system additional logs  <br /></td></tr>
@@ -169,12 +170,19 @@ StaticSemaphore_t&#160;</td><td class="memItemRight" valign="bottom"><b>_PrintMu
 <tr class="memitem:a2a9956fd55e076df99423926ac49f7d9"><td class="memItemLeft" align="right" valign="top"><a id="a2a9956fd55e076df99423926ac49f7d9" name="a2a9956fd55e076df99423926ac49f7d9"></a>
 SemaphoreHandle_t&#160;</td><td class="memItemRight" valign="bottom"><b>printMutex</b> = xSemaphoreCreateMutexStatic(&amp;_PrintMutex)</td></tr>
 <tr class="separator:a2a9956fd55e076df99423926ac49f7d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf194513b9dff65f0fc4bf679ad35636"><td class="memItemLeft" align="right" valign="top"><a id="acf194513b9dff65f0fc4bf679ad35636" name="acf194513b9dff65f0fc4bf679ad35636"></a>
+static std::array&lt; char, <a class="el" href="namespacelampda_1_1hal.html#a11d1a06561e098c1e44d2b55eb8a3980">max_tx_buffer_size</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>buffer</b></td></tr>
+<tr class="separator:acf194513b9dff65f0fc4bf679ad35636"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5221b0b4eb0dc32f31f66347ba17faaf"><td class="memItemLeft" align="right" valign="top"><a id="a5221b0b4eb0dc32f31f66347ba17faaf" name="a5221b0b4eb0dc32f31f66347ba17faaf"></a>
 constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxReadLinePerLoop</b> = 5</td></tr>
 <tr class="separator:a5221b0b4eb0dc32f31f66347ba17faaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c7ecbcf326aaba521da7dc27c899edf"><td class="memItemLeft" align="right" valign="top"><a id="a4c7ecbcf326aaba521da7dc27c899edf" name="a4c7ecbcf326aaba521da7dc27c899edf"></a>
 constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxLineLenght</b> = 200</td></tr>
 <tr class="separator:a4c7ecbcf326aaba521da7dc27c899edf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11d1a06561e098c1e44d2b55eb8a3980"><td class="memItemLeft" align="right" valign="top"><a id="a11d1a06561e098c1e44d2b55eb8a3980" name="a11d1a06561e098c1e44d2b55eb8a3980"></a>
+static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_tx_buffer_size</b> = 1024</td></tr>
+<tr class="memdesc:a11d1a06561e098c1e44d2b55eb8a3980"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print and debug function to serial port. <br /></td></tr>
+<tr class="separator:a11d1a06561e098c1e44d2b55eb8a3980"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the platform specific interactions. </p>
@@ -228,26 +236,6 @@ constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxLineL
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="aaebc2f196638b77e92a23981d6943dce" name="aaebc2f196638b77e92a23981d6943dce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaebc2f196638b77e92a23981d6943dce">&#9670;&#160;</a></span>init_prints()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void lampda::hal::init_prints </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Print and debug function to serial port. </p>
-<p>call once at program start </p>
 
 </div>
 </div>
