@@ -195,7 +195,9 @@ void handle_clear_power_rails()
     return;
   }
 
-  ::lampda::bsp::powerDelivery::suspend_pd_state_machine();
+  // dont suspend on OTG
+  if (__private::powerMachine.after_timeout_state() != PowerStates::OTG_MODE)
+    ::lampda::bsp::powerDelivery::suspend_pd_state_machine();
 
   // disable all gates
   ::lampda::bsp::powergates::disable_gates();
@@ -239,8 +241,11 @@ void handle_clear_power_rails()
 }
 
 // keep track of current consumption
-static uint32_t timeSinceOTGNoCurrentUse;
-static uint32_t timeSinceOTGCurrentUse;
+static uint32_t timeSinceOTGNoCurrentUse = 0; ///< time since no more current is used
+static uint32_t timeSinceOTGCurrentUse = 0;   ///< track the first current use time
+static uint32_t voltageHighRaisedTime =
+        UINT32_MAX;                   ///< store the time at which the OTH mode detect high voltage on VBUS
+static bool isInOtgModeForce = false; ///< Set to true when the PD machne was forced to source already
 
 void handle_charging_mode()
 {
@@ -249,17 +254,22 @@ void handle_charging_mode()
   // enable vbus path
   ::lampda::bsp::powergates::enable_vbus_gate();
 
-  // OTG requested, switch to OTG mode
+#if 0 // TODO #134
+// OTG requested, switch to OTG mode
   if (::lampda::bsp::powerDelivery::is_switching_to_otg() and component::battery::is_battery_usable_as_power_source())
   {
     // disable balancing
     ::lampda::bsp::balancer::enable_balancing(false);
     timeSinceOTGNoCurrentUse = hal::time_ms();
+    voltageHighRaisedTime = UINT32_MAX;
+    isInOtgModeForce = false;
+
     // start otg
     _hasAutoSwitchedToOTG = true;
     __private::powerMachine.set_state(PowerStates::OTG_MODE);
     return;
   }
+#endif
 
   if (::lampda::bsp::powergates::is_vbus_gate_enabled())
   {
@@ -330,7 +340,6 @@ void handle_otg_mode()
   bool otgNoActivity = false;
   const bool isAutoOTGMode = _hasAutoSwitchedToOTG;
 
-  static uint32_t voltageHighRaisedTime = UINT32_MAX;
   // control vbus rail voltage
   const uint32_t vbusVoltage_mv = get_vbus_rail_voltage();
 
@@ -407,14 +416,12 @@ void handle_otg_mode()
     ::lampda::component::charger::set_enable_charge(false);
   }
 
-  if (not isAutoOTGMode)
+  // force source mode
+  if (not isAutoOTGMode and not isInOtgModeForce)
   {
-    static bool isInOtgModeForce = false;
-    if (not isInOtgModeForce)
-    {
-      ::lampda::bsp::powerDelivery::force_set_to_source_mode(true);
-      isInOtgModeForce = true;
-    }
+    ::lampda::hal::lampda_print("Setting force source mode");
+    ::lampda::bsp::powerDelivery::force_set_to_source_mode(true);
+    isInOtgModeForce = true;
   }
 
   static const auto& defaultOTG = ::lampda::bsp::powerDelivery::OTGParameters::get_default();
@@ -694,6 +701,8 @@ bool go_to_otg_mode()
       logic::alerts::manager.can_use_usb_port())
   {
     timeSinceOTGNoCurrentUse = hal::time_ms();
+    voltageHighRaisedTime = UINT32_MAX;
+    isInOtgModeForce = false;
     ::lampda::bsp::powerDelivery::allow_otg(true);
     _hasAutoSwitchedToOTG = false;
     __private::switch_state(PowerStates::OTG_MODE);
