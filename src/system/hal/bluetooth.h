@@ -34,6 +34,7 @@ void notify_battery_level(const uint8_t batteryLevel);
 
 // send an uart comman over bluetooth
 bool send_uart(char const* buffer);
+/// Read the UART packets from the bluetooth queue
 hal::Inputs read_uart();
 
 /// Return tue if the bluetooth was used during lifetime

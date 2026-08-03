@@ -12,8 +12,9 @@
 
 #include "src/system/component/battery.h"
 
-#include "src/system/hal/print.h"
+#include "src/system/hal/threads.h"
 #include "src/system/hal/time.h"
+#include "src/system/hal/print.h"
 
 #include "src/system/hal/bluetooth/elk_service.h"
 
@@ -55,9 +56,8 @@ struct UartSendRequest
 };
 
 static QueueHandle_t uart_send_queue = nullptr;
-static TaskHandle_t uart_tx_task_handle = nullptr;
 
-static void uart_tx_task(void* pvParameters)
+void uart_tx_task()
 {
   UartSendRequest req;
   while (true)
@@ -182,7 +182,7 @@ void startup_sequence()
     return;
 
   uart_send_queue = xQueueCreate(UART_TX_QUEUE_SIZE, sizeof(UartSendRequest));
-  xTaskCreate(uart_tx_task, "UART_TX", 512, NULL, 3, &uart_tx_task_handle);
+  threads::start_thread(uart_tx_task, threads::ble_cli_taskName, 3, 512);
 
   // pairs devices
   static constexpr uint8_t peripheralCount = 1;

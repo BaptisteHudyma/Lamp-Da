@@ -22,6 +22,7 @@ const uint32_t power_taskName = utils::hash("power");
 const uint32_t user_taskName = utils::hash("user");
 const uint32_t taskScheduler_taskName = utils::hash("task_sched");
 const uint32_t sunset_taskName = utils::hash("sunset");
+const uint32_t ble_cli_taskName = utils::hash("ble_cli");
 
 const char* const get_name_from_hash(const uint32_t hash)
 {
@@ -41,6 +42,8 @@ const char* const get_name_from_hash(const uint32_t hash)
       return "task_sched";
     case sunset_taskName:
       return "sunset";
+    case ble_cli_taskName:
+      return "ble_cli";
     default:
       break;
   }

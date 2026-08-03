@@ -1,5 +1,5 @@
-#ifndef PLATFORM_PRINT_CPP
-#define PLATFORM_PRINT_CPP
+#ifndef HAL_PRINT_CPP
+#define HAL_PRINT_CPP
 
 #include "print.h"
 
