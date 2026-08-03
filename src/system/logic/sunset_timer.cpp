@@ -1,12 +1,13 @@
 #include "sunset_timer.h"
 
+#include "src/system/hal/print.h"
+#include "src/system/hal/time.h"
+
+#include "src/system/bsp/threads.h"
+
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
-
-#include "src/system/hal/print.h"
-#include "src/system/hal/threads.h"
-#include "src/system/hal/time.h"
 
 #include "src/system/utils/utils.h"
 
@@ -82,7 +83,7 @@ void sunset_process_loop()
   if (not is_enabled())
   {
     // sunset time not set, auto suspend
-    hal::threads::suspend_this_thread();
+    bsp::threads::suspend_this_thread();
   }
   else
   {
@@ -121,7 +122,7 @@ void sunset_process_loop()
 void init()
 {
   // start in suspended mode
-  hal::threads::start_suspended_thread(sunset_process_loop, hal::threads::sunset_taskName, 0, 1024);
+  bsp::threads::start_suspended_thread(sunset_process_loop, bsp::threads::sunset_taskName, 0, 1024);
 }
 
 void set_deadline(const uint32_t timeshutdown_s)
@@ -140,7 +141,7 @@ void set_deadline(const uint32_t timeshutdown_s)
     logic::alerts::manager.raise(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 
     // resume
-    hal::threads::resume_thread(hal::threads::sunset_taskName);
+    bsp::threads::resume_thread(bsp::threads::sunset_taskName);
   }
   else
   {

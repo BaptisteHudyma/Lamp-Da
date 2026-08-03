@@ -2,12 +2,13 @@
 #include <thread>
 #include <chrono>
 
+#include "src/system/hal/gpio.h"
+
+#include "src/system/bsp/threads.h"
+
 #include "src/system/component/button.h"
 
 #include "src/system/logic/inputs.h"
-
-#include "src/system/hal/gpio.h"
-#include "src/system/hal/threads.h"
 
 // access simulation states
 #include "simulator/include/simulator_state.h"
@@ -34,7 +35,7 @@ protected:
   void TearDown() override
   {
     // shutdown all threads
-    hal::threads::shutdown();
+    bsp::threads::shutdown();
 
     killThread = true;
     if (clickThread.joinable())

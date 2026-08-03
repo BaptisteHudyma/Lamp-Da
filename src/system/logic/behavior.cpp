@@ -5,6 +5,13 @@
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 
+#include "src/system/hal/bluetooth.h"
+#include "src/system/hal/time.h"
+#include "src/system/hal/gpio.h"
+#include "src/system/hal/i2c.h"
+#include "src/system/hal/registers.h"
+#include "src/system/hal/print.h"
+
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/inputs_bluetooth.h"
 #include "src/system/logic/inputs.h"
@@ -12,8 +19,9 @@
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/sunset_timer.h"
 
-#include "src/system/bsp/power_gates.h"
 #include "src/system/bsp/indicator.h"
+#include "src/system/bsp/power_gates.h"
+#include "src/system/bsp/threads.h"
 
 #include "src/system/component/charger.h"
 #include "src/system/component/battery.h"
@@ -29,14 +37,6 @@
 #include "src/system/utils/state_machine.h"
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/time_utils.h"
-
-#include "src/system/hal/bluetooth.h"
-#include "src/system/hal/time.h"
-#include "src/system/hal/gpio.h"
-#include "src/system/hal/i2c.h"
-#include "src/system/hal/registers.h"
-#include "src/system/hal/threads.h"
-#include "src/system/hal/print.h"
 
 #include "src/user/functions.h"
 
@@ -423,7 +423,7 @@ void handle_charger_operation_state()
   {
     // forbid charging
     logic::power::enable_charge(false);
-    hal::threads::yield_this_thread();
+    bsp::threads::yield_this_thread();
 
     // switch to output mode after the post charge operations
     mainMachine.set_state(BehaviorStates::PRE_OUTPUT_LIGHT);
@@ -454,7 +454,7 @@ void handle_charger_operation_state()
     {
       // forbbid charging
       logic::power::enable_charge(false);
-      hal::threads::yield_this_thread();
+      bsp::threads::yield_this_thread();
 
       // go to sleep after closing the charger
       mainMachine.set_state(BehaviorStates::SHUTDOWN);
@@ -636,7 +636,7 @@ void handle_output_light_state()
   {
     // resume secondary thread
     if (user::should_spawn_thread())
-      hal::threads::resume_thread(hal::threads::user_taskName);
+      bsp::threads::resume_thread(bsp::threads::user_taskName);
 
     // user loop call
     user::loop();
@@ -679,7 +679,7 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
 
   // detach all interrupts, to prevent interruption of shutdown
   hal::gpio::DigitalPin::detach_all();
-  hal::threads::yield_this_thread();
+  bsp::threads::yield_this_thread();
 
   // shutdown all external power
   if (not logic::power::go_to_shutdown())
@@ -688,12 +688,12 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
   }
 
   uint8_t maxChecks = 100;
-  while (hal::threads::is_all_suspended() == 0 and maxChecks > 0)
+  while (bsp::threads::is_all_suspended() == 0 and maxChecks > 0)
   {
     maxChecks--;
     // block other threads
-    hal::threads::suspend_all_threads();
-    hal::threads::yield_this_thread();
+    bsp::threads::suspend_all_threads();
+    bsp::threads::yield_this_thread();
     hal::delay_ms(5);
   }
   if (maxChecks == 0)
@@ -720,7 +720,7 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
    * Hardware shutdown phase
    */
   // shutdown all threads
-  hal::threads::shutdown();
+  bsp::threads::shutdown();
 
   // unmount filesystem
   component::fileSystem::shutdown();
