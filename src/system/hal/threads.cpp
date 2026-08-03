@@ -102,6 +102,7 @@ void HAL_notify_thread(TaskHandle_t handle, int wakeUpEvent)
   }
   else
   {
+    // strange stuff here: suspend then resume all ?
     vTaskSuspendAll();
     xTaskNotify(handle, wakeUpEvent, eSetBits);
     (void)xTaskResumeAll();

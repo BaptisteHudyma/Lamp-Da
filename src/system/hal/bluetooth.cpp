@@ -14,6 +14,7 @@
 
 #include "src/system/hal/time.h"
 #include "src/system/hal/print.h"
+#include "src/system/hal/queues.h"
 
 #include "src/system/bsp/threads.h"
 
@@ -57,7 +58,7 @@ struct UartSendRequest
   size_t len;
 };
 
-static QueueHandle_t uart_send_queue = nullptr;
+static hal::queues::QueueHandle_t uart_send_queue = nullptr;
 
 void uart_tx_task()
 {
@@ -66,7 +67,8 @@ void uart_tx_task()
 
   UartSendRequest req;
   // block until a queue msg in received
-  if (xQueueReceive(uart_send_queue, &req, portMAX_DELAY) == pdTRUE)
+  const auto res = hal::queues::HAL_queue_receive(uart_send_queue, &req, UINT32_MAX);
+  if (res == hal::queues::HAL_queue_status_t::HAL_QUEUE_OK)
   {
     if (not Bluefruit.connected() or not bleuart.notifyEnabled() or req.len <= 0)
     {
@@ -194,7 +196,7 @@ void startup_sequence()
   if (is_activated())
     return;
 
-  uart_send_queue = xQueueCreate(UART_TX_QUEUE_SIZE, sizeof(UartSendRequest));
+  uart_send_queue = hal::queues::HAL_create_queue(sizeof(UartSendRequest), UART_TX_QUEUE_SIZE);
   bsp::threads::start_thread(uart_tx_task, bsp::threads::ble_cli_taskName, 3, 512);
 
   // pairs devices
@@ -329,7 +331,8 @@ bool send_uart(char const* buffer)
     memcpy(req.data, buffer, len);
     req.len = len;
 
-    if (xQueueSend(__private::uart_send_queue, &req, 0) != pdPASS)
+    const auto res = hal::queues::HAL_queue_send(__private::uart_send_queue, &req, 0);
+    if (res != hal::queues::HAL_queue_status_t::HAL_QUEUE_OK)
       return false; // Queue full, message dropped
     return true;
   }
@@ -343,7 +346,8 @@ bool send_uart(char const* buffer)
     memcpy(req.data, buffer + offset, chunk_len);
     req.len = chunk_len;
 
-    if (xQueueSend(__private::uart_send_queue, &req, 0) != pdPASS)
+    const auto res = hal::queues::HAL_queue_send(__private::uart_send_queue, &req, 0);
+    if (res != hal::queues::HAL_queue_status_t::HAL_QUEUE_OK)
       return false; // Queue full, message dropped
     // increment offset
     offset += chunk_len;

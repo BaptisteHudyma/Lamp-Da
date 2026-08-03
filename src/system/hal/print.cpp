@@ -7,6 +7,7 @@
 
 #include "src/system/hal/bluetooth.h"
 #include "src/system/hal/time.h"
+#include "src/system/hal/queues.h"
 
 #include "src/system/bsp/threads.h"
 
@@ -45,7 +46,8 @@ void uart_tx_task()
   uint16_t max_mtu = 256;
   UartSendRequest req;
   // block until a queue msg in received
-  if (xQueueReceive(uart_send_queue, &req, portMAX_DELAY) == pdTRUE)
+  const auto res = hal::queues::HAL_queue_receive(uart_send_queue, &req, UINT32_MAX);
+  if (res == hal::queues::HAL_queue_status_t::HAL_QUEUE_OK)
   {
     if (req.len <= 0)
     {
@@ -86,7 +88,8 @@ bool send_uart(char const* buffer)
     memcpy(req.data, buffer, len);
     req.len = len;
 
-    if (xQueueSend(uart_send_queue, &req, 0) != pdPASS)
+    const auto res = hal::queues::HAL_queue_send(__private::uart_send_queue, &req, 0);
+    if (res != hal::queues::HAL_queue_status_t::HAL_QUEUE_OK)
       return false; // Queue full, message dropped
     return true;
   }
@@ -100,7 +103,8 @@ bool send_uart(char const* buffer)
     memcpy(req.data, buffer + offset, chunk_len);
     req.len = chunk_len;
 
-    if (xQueueSend(__private::uart_send_queue, &req, 0) != pdPASS)
+    const auto res = hal::queues::HAL_queue_send(__private::uart_send_queue, &req, 0);
+    if (res != hal::queues::HAL_queue_status_t::HAL_QUEUE_OK)
       return false; // Queue full, message dropped
     // increment offset
     offset += chunk_len;
@@ -151,7 +155,8 @@ bool is_ignore_char(char c) { return c < 32; }
 
 void init_prints()
 {
-  __private::uart_send_queue = xQueueCreate(__private::UART_TX_QUEUE_SIZE, sizeof(__private::UartSendRequest));
+  __private::uart_send_queue =
+          hal::queues::HAL_create_queue(sizeof(__private::UartSendRequest), __private::UART_TX_QUEUE_SIZE);
   bsp::threads::start_thread(__private::uart_tx_task, bsp::threads::print_taskName, 3, 512);
 
   Serial.begin(115200);
