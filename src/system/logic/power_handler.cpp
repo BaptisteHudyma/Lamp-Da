@@ -2,20 +2,20 @@
 
 #include "src/system/utils/state_machine.h"
 
-#include "src/system/logic/alerts.h"
+#include "src/system/hal/print.h"
+#include "src/system/hal/gpio.h"
+#include "src/system/hal/i2c.h"
+#include "src/system/hal/registers.h"
 
 #include "src/system/bsp/balancer.h"
 #include "src/system/bsp/power_gates.h"
 #include "src/system/bsp/pd/power_delivery.h"
+#include "src/system/bsp/threads.h"
 
 #include "src/system/component/battery.h"
 #include "src/system/component/charger.h"
 
-#include "src/system/hal/print.h"
-#include "src/system/hal/gpio.h"
-#include "src/system/hal/i2c.h"
-#include "src/system/hal/threads.h"
-#include "src/system/hal/registers.h"
+#include "src/system/logic/alerts.h"
 
 #include <cstdint>
 #include <cassert>
@@ -855,7 +855,7 @@ void init()
 #endif
 
   // start main loop
-  hal::threads::start_thread(power_loop, hal::threads::power_taskName, 0, 1024);
+  bsp::threads::start_thread(power_loop, bsp::threads::power_taskName, 0, 1024);
 
   isSetup = true;
 }

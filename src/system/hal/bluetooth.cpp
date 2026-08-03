@@ -12,9 +12,10 @@
 
 #include "src/system/component/battery.h"
 
-#include "src/system/hal/threads.h"
 #include "src/system/hal/time.h"
 #include "src/system/hal/print.h"
+
+#include "src/system/bsp/threads.h"
 
 #include "src/system/hal/bluetooth/elk_service.h"
 
@@ -194,7 +195,7 @@ void startup_sequence()
     return;
 
   uart_send_queue = xQueueCreate(UART_TX_QUEUE_SIZE, sizeof(UartSendRequest));
-  threads::start_thread(uart_tx_task, threads::ble_cli_taskName, 3, 512);
+  bsp::threads::start_thread(uart_tx_task, bsp::threads::ble_cli_taskName, 3, 512);
 
   // pairs devices
   static constexpr uint8_t peripheralCount = 1;

@@ -1,10 +1,11 @@
 /*! \file threads_mock.cpp
     \brief Mock of the board threads and tasks
 */
-
 #define HAL_THREADS_CPP
 
-#include <set>
+#include <functional>
+#include <map>
+#include <thread>
 
 #include "src/system/hal/threads.h"
 
@@ -13,144 +14,124 @@
 
 #include "src/system/utils/utils.h"
 
+#include "src/system/bsp/threads.h"
+
 #include "simulator/include/hardware_influencer.h"
-#include <vector>
-#include <thread>
 
 namespace simulator {
-std::vector<std::thread> threadPool;
 
-bool isSuspended = false;
+struct ThreadHandle
+{
+  std::thread fun;
+  bool isSuspended;
+};
+
+std::map<size_t, ThreadHandle> threadPool;
+
 } // namespace simulator
 
 namespace lampda {
 namespace hal {
 namespace threads {
 
-// extern defines
-const uint32_t pd_taskName = utils::hash("usbpd");
-const uint32_t pdInterruptHandle_taskName = utils::hash("intpd");
-const uint32_t button_taskName = utils::hash("button");
-const uint32_t power_taskName = utils::hash("power");
-const uint32_t user_taskName = utils::hash("user");
-const uint32_t taskScheduler_taskName = utils::hash("task_sched");
-const uint32_t sunset_taskName = utils::hash("sunset");
-const uint32_t ble_cli_taskName = utils::hash("ble_cli");
-const uint32_t print_taskName = utils::hash("print");
+std::hash<std::thread::id> threadHasher;
 
-const char* const get_name_from_hash(const uint32_t hash)
+int HAL_create_thread(TaskHandle_t* const handle,
+                      taskfunc_t task,
+                      char const* const name,
+                      const int priority,
+                      const int stackSize,
+                      const int startSuspended)
 {
-  switch (hash)
-  {
-    case pd_taskName:
-      return "usbpd";
-    case pdInterruptHandle_taskName:
-      return "intpd";
-    case button_taskName:
-      return "button";
-    case power_taskName:
-      return "power";
-    case user_taskName:
-      return "user";
-    case taskScheduler_taskName:
-      return "task_sched";
-    case sunset_taskName:
-      return "sunset";
-    case ble_cli_taskName:
-      return "ble_cli";
-    case print_taskName:
-      return "print";
-    default:
-      break;
-  }
-  return "unknown";
-}
-
-typedef void (*taskfunc_t)(void);
-
-std::set<uint32_t> handles;
-
-void start_thread(taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize)
-{
-  // handle already exists
-  if (handles.find(taskName) != handles.cend())
-    return;
-
   // ALWAYS CAPTURE taskFunction EXPLICITLY
-  simulator::threadPool.emplace_back(std::thread([taskFunction]() {
-    while (taskFunction and not simulator::mock_registers::shouldStopThreads)
+  simulator::ThreadHandle h;
+  h.fun = std::thread([task]() {
+    while (task and not simulator::mock_registers::shouldStopThreads)
     {
-      if (not simulator::isSuspended)
-        taskFunction();
+      // mock suspend: if flag is false, dont run the function
+      const auto& h = simulator::threadPool.find(threadHasher(std::this_thread::get_id()));
+      if (h != simulator::threadPool.cend() && not h->second.isSuspended)
+        task();
       hal::delay_ms(1);
     }
-  }));
+  });
+  h.isSuspended = startSuspended == 0;
 
-  handles.emplace(taskName);
+  const size_t id = threadHasher(h.fun.get_id());
+  simulator::threadPool[id] = std::move(h);
+
+  // set handle
+  *handle = (TaskHandle_t)id;
+  return 0;
 }
-void start_suspended_thread(taskfunc_t taskFunction, uint32_t taskName, const int priority, const int stackSize)
+
+// Actions on this thread
+
+void HAL_yield() { std::this_thread::yield(); }
+
+void HAL_suspend()
 {
-  // handle already exists
-  if (handles.find(taskName) != handles.cend())
-    return;
-
-  // ALWAYS CAPTURE taskFunction EXPLICITLY
-  simulator::threadPool.emplace_back(std::thread([taskFunction]() {
-    while (taskFunction and not simulator::mock_registers::shouldStopThreads)
-    {
-      if (not simulator::isSuspended)
-        taskFunction();
-      hal::delay_ms(1);
-    }
-  }));
-
-  handles.emplace(taskName);
+  auto h = simulator::threadPool.find(threadHasher(std::this_thread::get_id()));
+  if (h != simulator::threadPool.cend())
+    h->second.isSuspended = true;
 }
 
-void yield_this_thread() { std::this_thread::yield(); }
-
-void suspend_this_thread()
+int HAL_wait_notification(const int timeout_ms)
 {
-  // TODO issue #132
+  // TODO issue #132 support when implemented
+
+  // Unsupported yet
+  if (timeout_ms <= 0)
+    hal::delay_ms(UINT16_MAX);
+  else
+    hal::delay_ms(timeout_ms);
+
+  // systematical timeout
+  return SCHED_NOTIFY_TIMER;
 }
 
-void suspend_all_threads() { simulator::isSuspended = true; }
+// Actions on  target threads
 
-int is_all_suspended() { return simulator::isSuspended ? 1 : 0; }
+void HAL_notify_thread(TaskHandle_t handle, int wakeUpEvent) {};
 
-void resume_thread(const uint32_t taskName)
+void HAL_suspend_thread(TaskHandle_t handle)
 {
-  // handle already exists
-  auto handle = handles.find(taskName);
-  if (handle == handles.cend())
-  {
-    hal::lampda_print("ERROR: task handle %s (%d) do not exist", get_name_from_hash(taskName), taskName);
-    return;
-  }
+  auto h = simulator::threadPool.find((size_t)handle);
+  if (h != simulator::threadPool.cend())
+    h->second.isSuspended = true;
 }
 
-void notify_thread(const uint32_t, int wakeUpEvent) {};
-int wait_notification(const int timeout_ms) { return 0; }
+int HAL_is_suspended(TaskHandle_t handle)
+{
+  const auto& h = simulator::threadPool.find((size_t)handle);
+  if (h != simulator::threadPool.cend())
+    return h->second.isSuspended ? 0 : 1;
+  return 0;
+}
 
-void get_thread_debug(char* textBuff) {}
+void HAL_resume_thread(TaskHandle_t handle)
+{
+  auto h = simulator::threadPool.find((size_t)handle);
+  if (h != simulator::threadPool.cend())
+    h->second.isSuspended = false;
+}
+void HAL_get_debug_thread_text(char* textBuff) {}
 
-void shutdown()
+void HAL_shutdown()
 {
   hal::lampda_print("Initiating thread shutdown process...");
 
   simulator::mock_registers::shouldStopThreads = true;
-  for (auto& thread: simulator::threadPool)
+  for (auto& [id, thread]: simulator::threadPool)
   {
-    while (not thread.joinable())
+    while (not thread.fun.joinable())
     {
       hal::delay_ms(1);
     }
 
-    thread.join();
+    thread.fun.join();
   }
   simulator::threadPool.clear();
-  handles.clear();
-
   hal::lampda_print("thread shutdown complete");
 }
 

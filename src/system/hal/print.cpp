@@ -6,8 +6,9 @@
 #include <Arduino.h>
 
 #include "src/system/hal/bluetooth.h"
-#include "src/system/hal/threads.h"
 #include "src/system/hal/time.h"
+
+#include "src/system/bsp/threads.h"
 
 extern "C" {
 // hack to use prints in c files
@@ -151,7 +152,7 @@ bool is_ignore_char(char c) { return c < 32; }
 void init_prints()
 {
   __private::uart_send_queue = xQueueCreate(__private::UART_TX_QUEUE_SIZE, sizeof(__private::UartSendRequest));
-  threads::start_thread(__private::uart_tx_task, threads::print_taskName, 3, 512);
+  bsp::threads::start_thread(__private::uart_tx_task, bsp::threads::print_taskName, 3, 512);
 
   Serial.begin(115200);
 }

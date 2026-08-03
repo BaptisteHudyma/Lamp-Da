@@ -1,21 +1,19 @@
 #include "command_line_interface.h"
 
-#include "src/system/logic/behavior.h"
+#include "src/system/hal/bluetooth.h"
+#include "src/system/hal/i2c.h"
+#include "src/system/hal/print.h"
+#include "src/system/hal/registers.h"
 
 #include "src/system/bsp/balancer.h"
 #include "src/system/bsp/pd/power_delivery.h"
+#include "src/system/bsp/threads.h"
 
 #include "src/system/component/battery.h"
 #include "src/system/component/button.h"
 #include "src/system/component/charger.h"
 #include "src/system/component/fileSystem.h"
 #include "src/system/component/time_handling.h"
-
-#include "src/system/hal/bluetooth.h"
-#include "src/system/hal/i2c.h"
-#include "src/system/hal/print.h"
-#include "src/system/hal/registers.h"
-#include "src/system/hal/threads.h"
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
@@ -495,7 +493,7 @@ void handleCommand(const hal::Inputs::Command& commandLine)
 
     case utils::hash("tasks"):
       char buff[512];
-      hal::threads::get_thread_debug(buff);
+      bsp::threads::get_thread_debug(buff);
       hal::lampda_print("%s", buff);
       break;
 

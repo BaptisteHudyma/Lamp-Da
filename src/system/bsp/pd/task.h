@@ -80,7 +80,13 @@ uint32_t task_wait_event_mask(uint32_t event_mask, int timeout_us);
 /**
  * Wake a task.  This sends it the TASK_EVENT_WAKE event.
  */
-static inline void task_wake() { task_set_event(TASK_EVENT_WAKE); }
+static inline void task_wake()
+{
+  // TODO issue #132 remove when the mock components will be running
+#ifndef LMBD_SIMULATION
+  task_set_event(TASK_EVENT_WAKE);
+#endif
+}
 
 /**
  * Clear a bit events of the task.

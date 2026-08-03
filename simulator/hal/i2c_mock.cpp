@@ -14,10 +14,11 @@
 
 #include "src/system/hal/i2c.h"
 #include "src/system/hal/time.h"
-#include "src/system/hal/threads.h"
 
-#include "simulator/hal/electrical/i_ic.h"
-#include "simulator/hal/electrical/BQ25713_mock.h"
+#include "src/system/bsp/threads.h"
+
+#include "simulator/electrical/i_ic.h"
+#include "simulator/electrical/BQ25713_mock.h"
 
 namespace simulator {
 
@@ -64,7 +65,7 @@ void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
   if (i2cIndex != 0)
     return;
 
-  hal::threads::start_thread(simulator::i2c_process_mock_loop, utils::hash("i2c_mock"), 0, 255);
+  bsp::threads::start_thread(simulator::i2c_process_mock_loop, utils::hash("i2c_mock"), 0, 255);
 
   simulator::isI2cAvailable = true;
 }

@@ -3,16 +3,17 @@
 
 #include "button.h"
 
+#include "src/system/hal/print.h"
+#include "src/system/hal/time.h"
+
+#include "src/system/bsp/threads.h"
+
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
 #include "src/system/utils/input_output.h"
 
 #include "src/system/logic/inputs.h"
 #include "src/system/logic/statistics_handler.h"
-
-#include "src/system/hal/print.h"
-#include "src/system/hal/threads.h"
-#include "src/system/hal/time.h"
 
 namespace lampda {
 namespace component {
@@ -179,7 +180,7 @@ void init(const bool isSystemStartedFromButton)
     logic::statistics::signal_button_press();
   }
 
-  hal::threads::start_thread(button_thread, hal::threads::button_taskName, 2, 255);
+  bsp::threads::start_thread(button_thread, bsp::threads::button_taskName, 2, 255);
 }
 
 } // namespace button
