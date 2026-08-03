@@ -283,11 +283,20 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>s_isOutputMode
 <tr class="memdesc:a691c0c79481b096b6b50538cc61e1dcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the OUTPUT_MODE state is ready, ie if the mode is active, the power is as requested and the output gate is enabled. <br /></td></tr>
 <tr class="separator:a691c0c79481b096b6b50538cc61e1dcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acca4b06fe1362379f279587fa5bf0ea7"><td class="memItemLeft" align="right" valign="top"><a id="acca4b06fe1362379f279587fa5bf0ea7" name="acca4b06fe1362379f279587fa5bf0ea7"></a>
-static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>timeSinceOTGNoCurrentUse</b></td></tr>
+static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>timeSinceOTGNoCurrentUse</b> = 0</td></tr>
+<tr class="memdesc:acca4b06fe1362379f279587fa5bf0ea7"><td class="mdescLeft">&#160;</td><td class="mdescRight">time since no more current is used <br /></td></tr>
 <tr class="separator:acca4b06fe1362379f279587fa5bf0ea7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af31880e7d1b322e3533f490ce54e9b19"><td class="memItemLeft" align="right" valign="top"><a id="af31880e7d1b322e3533f490ce54e9b19" name="af31880e7d1b322e3533f490ce54e9b19"></a>
-static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>timeSinceOTGCurrentUse</b></td></tr>
+static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>timeSinceOTGCurrentUse</b> = 0</td></tr>
+<tr class="memdesc:af31880e7d1b322e3533f490ce54e9b19"><td class="mdescLeft">&#160;</td><td class="mdescRight">track the first current use time <br /></td></tr>
 <tr class="separator:af31880e7d1b322e3533f490ce54e9b19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ef2733f2176f39441b592fc5cc10ffa"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1power.html#a4ef2733f2176f39441b592fc5cc10ffa">voltageHighRaisedTime</a></td></tr>
+<tr class="memdesc:a4ef2733f2176f39441b592fc5cc10ffa"><td class="mdescLeft">&#160;</td><td class="mdescRight">store the time at which the OTH mode detect high voltage on VBUS  <br /></td></tr>
+<tr class="separator:a4ef2733f2176f39441b592fc5cc10ffa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa061108c395a7db301aad27f8c54c267"><td class="memItemLeft" align="right" valign="top"><a id="aa061108c395a7db301aad27f8c54c267" name="aa061108c395a7db301aad27f8c54c267"></a>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInOtgModeForce</b> = false</td></tr>
+<tr class="memdesc:aa061108c395a7db301aad27f8c54c267"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set to true when the PD machne was forced to source already. <br /></td></tr>
+<tr class="separator:aa061108c395a7db301aad27f8c54c267"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a3ab1dea8f9bb6b92c3a699f2e32ab6"><td class="memItemLeft" align="right" valign="top"><a id="a1a3ab1dea8f9bb6b92c3a699f2e32ab6" name="a1a3ab1dea8f9bb6b92c3a699f2e32ab6"></a>
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isSetup</b> = false</td></tr>
 <tr class="separator:a1a3ab1dea8f9bb6b92c3a699f2e32ab6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -634,6 +643,32 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isSetup</b> = 
 <div class="line">}</div>
 </div><!-- fragment -->
 <p>Name of the states as strings. </p>
+
+</div>
+</div>
+<a id="a4ef2733f2176f39441b592fc5cc10ffa" name="a4ef2733f2176f39441b592fc5cc10ffa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ef2733f2176f39441b592fc5cc10ffa">&#9670;&#160;</a></span>voltageHighRaisedTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t lampda::logic::power::voltageHighRaisedTime</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        UINT32_MAX</div>
+</div><!-- fragment -->
+<p>store the time at which the OTH mode detect high voltage on VBUS </p>
 
 </div>
 </div>

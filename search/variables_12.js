@@ -13,9 +13,11 @@ var searchData=
   ['tick_10',['tick',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a6d5524a331c508bd77085ca10348c910',1,'lampda::modes::hardware::LampTy']]],
   ['time_11',['time',['../structlampda_1_1bsp_1_1charger_1_1Measurments.html#a3f8528f887a5d1197792fc93afde9266',1,'lampda::bsp::charger::Measurments']]],
   ['timeout_5fms_12',['timeout_ms',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a8ac6c2371e06e4a53bbfa23d4584e07c',1,'lampda::modes::draw::overlay::__private::UIElement']]],
-  ['totalcons_5fwatt_13',['totalCons_Watt',['../namespacelampda.html#ad043cec810b8319390f8802a87197a15',1,'lampda']]],
-  ['translation_14',['translation',['../structlampda_1_1utils_1_1TransformationMatrix.html#ad24fbc8a3543bfcd5d7bf92bd68aae2a',1,'lampda::utils::TransformationMatrix']]],
-  ['transmit_15',['transmit',['../structtcpm__drv.html#a6b503778ad8dbbca6cc67e46d7363694',1,'tcpm_drv']]],
-  ['type_16',['type',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a5c4790ffca306a285685889472e9e257',1,'lampda::modes::draw::overlay::__private::UIElement']]],
-  ['typicalliionvoltage_5fmv_17',['typicalLiionVoltage_mV',['../namespacelampda.html#ade87cbd4b1366e64f87e966d75f7922c',1,'lampda']]]
+  ['timesinceotgcurrentuse_13',['timeSinceOTGCurrentUse',['../namespacelampda_1_1logic_1_1power.html#af31880e7d1b322e3533f490ce54e9b19',1,'lampda::logic::power']]],
+  ['timesinceotgnocurrentuse_14',['timeSinceOTGNoCurrentUse',['../namespacelampda_1_1logic_1_1power.html#acca4b06fe1362379f279587fa5bf0ea7',1,'lampda::logic::power']]],
+  ['totalcons_5fwatt_15',['totalCons_Watt',['../namespacelampda.html#ad043cec810b8319390f8802a87197a15',1,'lampda']]],
+  ['translation_16',['translation',['../structlampda_1_1utils_1_1TransformationMatrix.html#ad24fbc8a3543bfcd5d7bf92bd68aae2a',1,'lampda::utils::TransformationMatrix']]],
+  ['transmit_17',['transmit',['../structtcpm__drv.html#a6b503778ad8dbbca6cc67e46d7363694',1,'tcpm_drv']]],
+  ['type_18',['type',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a5c4790ffca306a285685889472e9e257',1,'lampda::modes::draw::overlay::__private::UIElement']]],
+  ['typicalliionvoltage_5fmv_19',['typicalLiionVoltage_mV',['../namespacelampda.html#ade87cbd4b1366e64f87e966d75f7922c',1,'lampda']]]
 ];

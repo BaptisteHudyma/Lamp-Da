@@ -7,10 +7,11 @@ var searchData=
   ['add_5ftime_5fminutes_4',['add_time_minutes',['../namespacelampda_1_1logic_1_1sunset.html#ab4ec261bbc8fbdc7ed368a9e0ae5b98e',1,'lampda::logic::sunset']]],
   ['add_5fui_5felement_5',['add_ui_element',['../classlampda_1_1modes_1_1draw_1_1overlay_1_1Manager.html#a3967851c253fd870e3a1b14af304f6b3',1,'lampda::modes::draw::overlay::Manager']]],
   ['after_5fenter_5fmode_6',['after_enter_mode',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#ae9f8045008717822f841be991068a1df',1,'lampda::modes::ModeManagerTy::StateTy']]],
-  ['alert_5fshutdown_5ftimeout_7',['alert_shutdown_timeout',['../structlampda_1_1logic_1_1alerts_1_1Alert__TempCritical.html#a9c20106605c49602cc7657c8cf843734',1,'lampda::logic::alerts::Alert_TempCritical::alert_shutdown_timeout()'],['../structlampda_1_1logic_1_1alerts_1_1Alert__BatteryCritical.html#a0e8e23e35a142d13ac45ca272f406d78',1,'lampda::logic::alerts::Alert_BatteryCritical::alert_shutdown_timeout()'],['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a158fbbecae2c46ce59fc8e6023f52fcd',1,'lampda::logic::alerts::AlertBase::alert_shutdown_timeout()']]],
-  ['alertstotext_8',['AlertsToText',['../namespacelampda_1_1logic_1_1alerts.html#ac684473bd8c18efff629535f280db895',1,'lampda::logic::alerts']]],
-  ['align_5finternal_5fto_5fsystem_5fbrightness_9',['align_internal_to_system_brightness',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a055e192ef1ba2830f59e193acd6aae96',1,'lampda::modes::hardware::LampTy']]],
-  ['allow_5fotg_10',['allow_otg',['../namespacelampda_1_1bsp_1_1powerDelivery.html#a04570769028b103c32d54cd725f5f232',1,'lampda::bsp::powerDelivery']]],
-  ['apply_5facceleration_11',['apply_acceleration',['../structlampda_1_1modes_1_1Particle.html#a3384b86e7122b8c1471f68d700ba504b',1,'lampda::modes::Particle']]],
-  ['are_5fgate_5fdisabled_12',['are_gate_disabled',['../namespacelampda_1_1bsp_1_1powergates.html#a5b16139ccce3436001b8c716d01f1f33',1,'lampda::bsp::powergates']]]
+  ['after_5ftimeout_5fstate_7',['after_timeout_state',['../classlampda_1_1utils_1_1StateMachine.html#a771cac28c63998ef582aea3e7005299d',1,'lampda::utils::StateMachine']]],
+  ['alert_5fshutdown_5ftimeout_8',['alert_shutdown_timeout',['../structlampda_1_1logic_1_1alerts_1_1Alert__TempCritical.html#a9c20106605c49602cc7657c8cf843734',1,'lampda::logic::alerts::Alert_TempCritical::alert_shutdown_timeout()'],['../structlampda_1_1logic_1_1alerts_1_1Alert__BatteryCritical.html#a0e8e23e35a142d13ac45ca272f406d78',1,'lampda::logic::alerts::Alert_BatteryCritical::alert_shutdown_timeout()'],['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a158fbbecae2c46ce59fc8e6023f52fcd',1,'lampda::logic::alerts::AlertBase::alert_shutdown_timeout()']]],
+  ['alertstotext_9',['AlertsToText',['../namespacelampda_1_1logic_1_1alerts.html#ac684473bd8c18efff629535f280db895',1,'lampda::logic::alerts']]],
+  ['align_5finternal_5fto_5fsystem_5fbrightness_10',['align_internal_to_system_brightness',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a055e192ef1ba2830f59e193acd6aae96',1,'lampda::modes::hardware::LampTy']]],
+  ['allow_5fotg_11',['allow_otg',['../namespacelampda_1_1bsp_1_1powerDelivery.html#a04570769028b103c32d54cd725f5f232',1,'lampda::bsp::powerDelivery']]],
+  ['apply_5facceleration_12',['apply_acceleration',['../structlampda_1_1modes_1_1Particle.html#a3384b86e7122b8c1471f68d700ba504b',1,'lampda::modes::Particle']]],
+  ['are_5fgate_5fdisabled_13',['are_gate_disabled',['../namespacelampda_1_1bsp_1_1powergates.html#a5b16139ccce3436001b8c716d01f1f33',1,'lampda::bsp::powergates']]]
 ];
