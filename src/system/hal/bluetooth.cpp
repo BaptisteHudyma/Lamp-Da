@@ -60,35 +60,31 @@ static QueueHandle_t uart_send_queue = nullptr;
 void uart_tx_task()
 {
   UartSendRequest req;
-  while (true)
+  // block until a queue msg in received
+  if (xQueueReceive(uart_send_queue, &req, portMAX_DELAY) == pdTRUE)
   {
-    if (xQueueReceive(uart_send_queue, &req, portMAX_DELAY) == pdTRUE)
+    if (not Bluefruit.connected() or not bleuart.notifyEnabled() or req.len <= 0)
     {
-      if (req.len == 0 || !Bluefruit.connected() || !bleuart.notifyEnabled())
-        continue;
-
-      size_t offset = 0;
-      while (offset < req.len)
-      {
-        if (!Bluefruit.connected())
-          break;
-
-        size_t chunkSize = (req.len - offset > 20) ? 20 : (req.len - offset);
-        size_t written = bleuart.write(req.data + offset, chunkSize);
-
-        if (written == 0)
-        {
-          vTaskDelay(pdMS_TO_TICKS(10));
-          continue;
-        }
-
-        offset += written;
-        vTaskDelay(pdMS_TO_TICKS(5));
-      }
+      return;
     }
-    else
+
+    size_t offset = 0;
+    while (offset < req.len)
     {
-      vTaskDelay(pdMS_TO_TICKS(10));
+      if (!Bluefruit.connected())
+        break;
+
+      size_t chunkSize = (req.len - offset > 20) ? 20 : (req.len - offset);
+      size_t written = bleuart.write(req.data + offset, chunkSize);
+
+      if (written == 0)
+      {
+        hal::delay_ms(10);
+        return;
+      }
+
+      offset += written;
+      hal::delay_ms(5);
     }
   }
 }
@@ -301,7 +297,7 @@ void notify_battery_level(const uint8_t batteryLevel)
 bool send_uart(char const* buffer)
 {
   // pass
-  if (!Bluefruit.connected() || !__private::bleuart.notifyEnabled())
+  if (not Bluefruit.connected() or not __private::bleuart.notifyEnabled())
     return true;
 
   size_t len = strlen(buffer);
@@ -324,7 +320,7 @@ bool send_uart(char const* buffer)
     req.len = len;
 
     if (xQueueSend(__private::uart_send_queue, &req, 0) != pdPASS)
-      return false;
+      return false; // Queue full, message dropped
     return true;
   }
 
@@ -358,7 +354,7 @@ bool send_uart(char const* buffer)
 
     if (xQueueSend(__private::uart_send_queue, &req, 0) != pdPASS)
       return false; // Queue full, message dropped
-
+    // increment offset
     offset += chunk_len;
   }
   return true;
