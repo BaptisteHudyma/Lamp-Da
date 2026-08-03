@@ -46,8 +46,9 @@ BLEUart bleuart;
 ::lampda::bluetooth::BLEElkService bleElkService;
 
 // UART TX Task structures
-static constexpr size_t UART_TX_BUFFER_SIZE = 512;
-static constexpr size_t UART_TX_QUEUE_SIZE = 4;
+static constexpr size_t DESIRED_MEMORY = 4096;    // power of two
+static constexpr size_t UART_TX_BUFFER_SIZE = 32; // number of small messages we could send
+static constexpr size_t UART_TX_QUEUE_SIZE = DESIRED_MEMORY / UART_TX_BUFFER_SIZE;
 
 struct UartSendRequest
 {
@@ -59,36 +60,35 @@ static QueueHandle_t uart_send_queue = nullptr;
 
 void uart_tx_task()
 {
+  // limit to max packet size
+  uint16_t max_mtu = Bluefruit.getMaxMtu(BLE_GAP_ROLE_PERIPH);
+
   UartSendRequest req;
-  while (true)
+  // block until a queue msg in received
+  if (xQueueReceive(uart_send_queue, &req, portMAX_DELAY) == pdTRUE)
   {
-    if (xQueueReceive(uart_send_queue, &req, portMAX_DELAY) == pdTRUE)
+    if (not Bluefruit.connected() or not bleuart.notifyEnabled() or req.len <= 0)
     {
-      if (req.len == 0 || !Bluefruit.connected() || !bleuart.notifyEnabled())
-        continue;
-
-      size_t offset = 0;
-      while (offset < req.len)
-      {
-        if (!Bluefruit.connected())
-          break;
-
-        size_t chunkSize = (req.len - offset > 20) ? 20 : (req.len - offset);
-        size_t written = bleuart.write(req.data + offset, chunkSize);
-
-        if (written == 0)
-        {
-          vTaskDelay(pdMS_TO_TICKS(10));
-          continue;
-        }
-
-        offset += written;
-        vTaskDelay(pdMS_TO_TICKS(5));
-      }
+      return;
     }
-    else
+
+    size_t offset = 0;
+    while (offset < req.len)
     {
-      vTaskDelay(pdMS_TO_TICKS(10));
+      if (!Bluefruit.connected())
+        break;
+
+      size_t chunkSize = (req.len - offset > max_mtu) ? max_mtu : (req.len - offset);
+      size_t written = bleuart.write(req.data + offset, chunkSize);
+
+      if (written == 0)
+      {
+        hal::delay_ms(10);
+        return;
+      }
+
+      offset += written;
+      hal::delay_ms(2);
     }
   }
 }
@@ -110,7 +110,7 @@ void byte_to_str(char* buff, uint8_t val)
 
 void stop_advertising()
 {
-  if (!isInitialized)
+  if (not is_activated())
     return;
 
   logic::alerts::manager.clear(logic::alerts::Type::BLUETOOTH_ADVERT);
@@ -119,6 +119,9 @@ void stop_advertising()
 
 void connect_callback(uint16_t conn_hdl)
 {
+  if (not is_activated())
+    return;
+
   _wasUsed = true;
 
   const auto batteryLevel = component::battery::get_battery_minimum_cell_level();
@@ -128,6 +131,9 @@ void connect_callback(uint16_t conn_hdl)
 
 void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
 {
+  if (not is_activated())
+    return;
+
   // Dont stop advertising here, some BLE drivers can send one command by connections.
   // Instead, restart the advertising
   start_advertising();
@@ -136,6 +142,9 @@ void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
 
 void adv_stop_callback(void)
 {
+  if (not is_activated())
+    return;
+
   // auto turned off, start again !
   if (not advertisingStoppedByRequest)
   {
@@ -152,6 +161,9 @@ void adv_stop_callback(void)
 
 void set_device_informations()
 {
+  if (not is_activated())
+    return;
+
   static const char firmwareRevision[] = {
           EXPECTED_FIRMWARE_VERSION_MAJOR + '0', '.', EXPECTED_FIRMWARE_VERSION_MINOR + '0', 0};
   static const char hardwareRevision[] = {HARDWARE_VERSION_MAJOR + '0', '.', HARDWARE_VERSION_MINOR + '0', 0};
@@ -178,7 +190,7 @@ void set_device_informations()
 
 void startup_sequence()
 {
-  if (isInitialized)
+  if (is_activated())
     return;
 
   uart_send_queue = xQueueCreate(UART_TX_QUEUE_SIZE, sizeof(UartSendRequest));
@@ -250,15 +262,15 @@ void startup_sequence()
 
 bool is_activated() { return __private::isInitialized; }
 
-bool is_advertising() { return Bluefruit.Advertising.isRunning(); }
+bool is_advertising() { return is_activated() and Bluefruit.Advertising.isRunning(); }
 
-bool is_connected() { return Bluefruit.connected() != 0; }
+bool is_connected() { return is_activated() and Bluefruit.connected() != 0; }
 
 // void display_infos() { Bluefruit.printInfo(); }
 
 void start_advertising()
 {
-  if (!__private::isInitialized)
+  if (not is_activated())
   {
     // call once when the program starts
     __private::startup_sequence();
@@ -277,7 +289,7 @@ void start_advertising()
 
 void stop_bluetooth_advertising()
 {
-  if (!__private::isInitialized)
+  if (not is_activated())
     return;
 
   __private::advertisingStoppedByRequest = true;
@@ -286,14 +298,14 @@ void stop_bluetooth_advertising()
 
 void write_battery_level(const uint8_t batteryLevel)
 {
-  if (!__private::isInitialized)
+  if (not is_activated())
     return;
   __private::bleBatteryService.write(batteryLevel);
 }
 
 void notify_battery_level(const uint8_t batteryLevel)
 {
-  if (!__private::isInitialized)
+  if (not is_activated())
     return;
   __private::bleBatteryService.notify(batteryLevel);
 }
@@ -301,16 +313,14 @@ void notify_battery_level(const uint8_t batteryLevel)
 bool send_uart(char const* buffer)
 {
   // pass
-  if (!Bluefruit.connected() || !__private::bleuart.notifyEnabled())
+  if (not is_activated() or not Bluefruit.connected() or not __private::bleuart.notifyEnabled())
     return true;
 
   size_t len = strlen(buffer);
-  if (!is_activated() || len == 0)
-    return false;
+  if (len == 0)
+    return true;
 
-  // Max payload per chunk (reserve 2 bytes for \r\n if it's the last chunk)
-  constexpr size_t MAX_CHUNK_LEN = __private::UART_TX_BUFFER_SIZE - 2;
-
+  constexpr size_t MAX_CHUNK_LEN = __private::UART_TX_BUFFER_SIZE;
   if (len <= MAX_CHUNK_LEN)
   {
     // Single chunk path
@@ -318,20 +328,13 @@ bool send_uart(char const* buffer)
     memcpy(req.data, buffer, len);
     req.len = len;
 
-    // Append CRLF
-    req.data[len++] = '\r';
-    req.data[len++] = '\n';
-    req.len = len;
-
     if (xQueueSend(__private::uart_send_queue, &req, 0) != pdPASS)
-      return false;
+      return false; // Queue full, message dropped
     return true;
   }
 
   // Large message: split into chunks
   size_t offset = 0;
-  bool isFirst = true;
-  bool isLast = false;
   while (offset < len)
   {
     size_t chunk_len = (len - offset > MAX_CHUNK_LEN) ? MAX_CHUNK_LEN : (len - offset);
@@ -339,26 +342,9 @@ bool send_uart(char const* buffer)
     memcpy(req.data, buffer + offset, chunk_len);
     req.len = chunk_len;
 
-    if (isFirst)
-    {
-      isFirst = false;
-    }
-    else if (offset + chunk_len < len)
-    {
-    }
-    else
-      isLast = true;
-
-    // Only append CRLF to the final chunk
-    if (isLast)
-    {
-      req.data[req.len++] = '\r';
-      req.data[req.len++] = '\n';
-    }
-
     if (xQueueSend(__private::uart_send_queue, &req, 0) != pdPASS)
       return false; // Queue full, message dropped
-
+    // increment offset
     offset += chunk_len;
   }
   return true;
@@ -367,7 +353,7 @@ bool send_uart(char const* buffer)
 Inputs read_uart()
 {
   Inputs ret;
-  if (not Bluefruit.connected())
+  if (not is_activated() or not Bluefruit.connected())
     return ret;
 
   if (__private::bleuart.available())
@@ -420,6 +406,8 @@ Inputs read_uart()
 }
 
 bool was_used() { return __private::_wasUsed; }
+
+void shutdown() { __private::isInitialized = false; }
 
 } // namespace bluetooth
 } // namespace hal
