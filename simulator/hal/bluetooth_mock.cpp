@@ -34,6 +34,8 @@ hal::Inputs read_uart()
 
 bool was_used() { return false; }
 
+void shutdown() {}
+
 } // namespace bluetooth
 } // namespace hal
 } // namespace lampda

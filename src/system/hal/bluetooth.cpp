@@ -46,8 +46,9 @@ BLEUart bleuart;
 ::lampda::bluetooth::BLEElkService bleElkService;
 
 // UART TX Task structures
-static constexpr size_t UART_TX_BUFFER_SIZE = 512;
-static constexpr size_t UART_TX_QUEUE_SIZE = 4;
+static constexpr size_t DESIRED_MEMORY = 4096;    // power of two
+static constexpr size_t UART_TX_BUFFER_SIZE = 32; // number of small messages we could send
+static constexpr size_t UART_TX_QUEUE_SIZE = DESIRED_MEMORY / UART_TX_BUFFER_SIZE;
 
 struct UartSendRequest
 {
@@ -59,6 +60,9 @@ static QueueHandle_t uart_send_queue = nullptr;
 
 void uart_tx_task()
 {
+  // limit to max packet size
+  uint16_t max_mtu = Bluefruit.getMaxMtu(BLE_GAP_ROLE_PERIPH);
+
   UartSendRequest req;
   // block until a queue msg in received
   if (xQueueReceive(uart_send_queue, &req, portMAX_DELAY) == pdTRUE)
@@ -74,7 +78,7 @@ void uart_tx_task()
       if (!Bluefruit.connected())
         break;
 
-      size_t chunkSize = (req.len - offset > 20) ? 20 : (req.len - offset);
+      size_t chunkSize = (req.len - offset > max_mtu) ? max_mtu : (req.len - offset);
       size_t written = bleuart.write(req.data + offset, chunkSize);
 
       if (written == 0)
@@ -84,7 +88,7 @@ void uart_tx_task()
       }
 
       offset += written;
-      hal::delay_ms(5);
+      hal::delay_ms(2);
     }
   }
 }
@@ -314,21 +318,14 @@ bool send_uart(char const* buffer)
 
   size_t len = strlen(buffer);
   if (len == 0)
-    return false;
+    return true;
 
-  // Max payload per chunk (reserve 2 bytes for \r\n if it's the last chunk)
-  constexpr size_t MAX_CHUNK_LEN = __private::UART_TX_BUFFER_SIZE - 2;
-
+  constexpr size_t MAX_CHUNK_LEN = __private::UART_TX_BUFFER_SIZE;
   if (len <= MAX_CHUNK_LEN)
   {
     // Single chunk path
     __private::UartSendRequest req;
     memcpy(req.data, buffer, len);
-    req.len = len;
-
-    // Append CRLF
-    req.data[len++] = '\r';
-    req.data[len++] = '\n';
     req.len = len;
 
     if (xQueueSend(__private::uart_send_queue, &req, 0) != pdPASS)
@@ -338,31 +335,12 @@ bool send_uart(char const* buffer)
 
   // Large message: split into chunks
   size_t offset = 0;
-  bool isFirst = true;
-  bool isLast = false;
   while (offset < len)
   {
     size_t chunk_len = (len - offset > MAX_CHUNK_LEN) ? MAX_CHUNK_LEN : (len - offset);
     __private::UartSendRequest req;
     memcpy(req.data, buffer + offset, chunk_len);
     req.len = chunk_len;
-
-    if (isFirst)
-    {
-      isFirst = false;
-    }
-    else if (offset + chunk_len < len)
-    {
-    }
-    else
-      isLast = true;
-
-    // Only append CRLF to the final chunk
-    if (isLast)
-    {
-      req.data[req.len++] = '\r';
-      req.data[req.len++] = '\n';
-    }
 
     if (xQueueSend(__private::uart_send_queue, &req, 0) != pdPASS)
       return false; // Queue full, message dropped
