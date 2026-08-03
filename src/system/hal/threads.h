@@ -35,6 +35,8 @@ extern "C" {
   extern const uint32_t taskScheduler_taskName;
   // name of the task schedule sunset
   extern const uint32_t sunset_taskName;
+  // BLE cli queue
+  extern const uint32_t ble_cli_taskName;
 
   /// model of a task function
   typedef void (*taskfunc_t)(void);

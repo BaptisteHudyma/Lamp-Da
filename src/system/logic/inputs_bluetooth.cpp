@@ -7,6 +7,7 @@
 #include "src/system/logic/sunset_timer.h"
 
 #include "src/system/hal/print.h"
+#include "src/system/hal/bluetooth.h"
 
 #include "src/system/utils/utils.h"
 #include <cstdint>
@@ -18,7 +19,7 @@ namespace inputs_bluetooth {
 /// keep track of the bluetooth uses
 inline static bool _wasBluetoothUsed = false;
 
-bool is_bluetooth_used() { return _wasBluetoothUsed; }
+bool is_bluetooth_used() { return _wasBluetoothUsed || hal::bluetooth::was_used(); }
 
 void handle_BLE_ELK_command(const utils::ELK::Package& elkControlCommand)
 {

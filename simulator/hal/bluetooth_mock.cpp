@@ -24,6 +24,16 @@ void write_battery_level(const uint8_t batteryLevel) {}
 
 void notify_battery_level(const uint8_t batteryLevel) {}
 
+bool send_uart(char const* buffer) { return true; }
+
+hal::Inputs read_uart()
+{
+  Inputs ret;
+  return ret;
+}
+
+bool was_used() { return false; }
+
 } // namespace bluetooth
 } // namespace hal
 } // namespace lampda
