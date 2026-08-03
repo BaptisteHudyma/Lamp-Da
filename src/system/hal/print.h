@@ -17,6 +17,8 @@ namespace lampda {
 namespace hal {
 /// Print and debug function to serial port
 
+static constexpr size_t max_tx_buffer_size = 1024;
+
 /**
  * \brief call once at program start
  */

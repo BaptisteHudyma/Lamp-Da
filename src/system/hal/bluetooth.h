@@ -11,6 +11,8 @@
 #include "src/compile.h"
 // - contains #define USE_BLUETOOTH
 
+#include "src/system/hal/print.h"
+
 namespace lampda {
 namespace hal {
 /// Handle the platform specific bluetooth operations
@@ -32,6 +34,10 @@ void stop_bluetooth_advertising();
 // update battery level
 void write_battery_level(const uint8_t batteryLevel);
 void notify_battery_level(const uint8_t batteryLevel);
+
+// send an uart comman over bluetooth
+bool send_uart(char const* buffer);
+hal::Inputs read_uart();
 
 } // namespace bluetooth
 } // namespace hal

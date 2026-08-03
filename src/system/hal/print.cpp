@@ -1,9 +1,11 @@
-#ifndef HAL_PRINT_CPP
-#define HAL_PRINT_CPP
+#ifndef PLATFORM_PRINT_CPP
+#define PLATFORM_PRINT_CPP
 
 #include "print.h"
 
 #include <Arduino.h>
+
+#include "src/system/hal/bluetooth.h"
 
 extern "C" {
 // hack to use prints in c files
@@ -16,6 +18,7 @@ namespace hal {
 // mutex to prevent lockups
 StaticSemaphore_t _PrintMutex;
 SemaphoreHandle_t printMutex = xSemaphoreCreateMutexStatic(&_PrintMutex);
+static std::array<char, max_tx_buffer_size> buffer;
 
 // only keep the chars inside a certain ascii range
 bool is_ignore_char(char c) { return c < 32; }
@@ -29,13 +32,20 @@ void lampda_print_raw(const char* format, ...)
 {
   _lockPrintMutex();
 
-  static char buffer[1024];
+  buffer.fill('\0');
+
   va_list argptr;
   va_start(argptr, format);
-  vsprintf(buffer, format, argptr);
+  vsprintf(buffer.data(), format, argptr);
   va_end(argptr);
 
-  Serial.print(buffer);
+  Serial.print(buffer.data());
+
+  if (not bluetooth::send_uart(buffer.data()))
+  {
+    Serial.println("Failed to send through BLE");
+    bluetooth::send_uart("Too much data for BLE transmition");
+  }
 
   _unlockPrintMutex();
 }
@@ -44,15 +54,22 @@ void lampda_print(const char* format, ...)
 {
   _lockPrintMutex();
 
-  static char buffer[1024];
+  buffer.fill('\0');
+
   va_list argptr;
   va_start(argptr, format);
-  vsprintf(buffer, format, argptr);
+  vsprintf(buffer.data(), format, argptr);
   va_end(argptr);
 
   Serial.print(millis());
   Serial.print("> ");
-  Serial.println(buffer);
+  Serial.println(buffer.data());
+
+  if (not bluetooth::send_uart(buffer.data()))
+  {
+    Serial.println("Failed to send through BLE");
+    bluetooth::send_uart("Too much data for BLE transmition");
+  }
 
   _unlockPrintMutex();
 }
