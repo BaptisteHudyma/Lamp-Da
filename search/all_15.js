@@ -54,14 +54,13 @@ var searchData=
   ['transformationmatrix_51',['TransformationMatrix',['../structlampda_1_1utils_1_1TransformationMatrix.html',1,'lampda::utils::TransformationMatrix'],['../structlampda_1_1utils_1_1TransformationMatrix.html#a1e693f0725d76cd979dea6b9822de3b5',1,'lampda::utils::TransformationMatrix::TransformationMatrix(const vec3d &amp;euler, const vec3d &amp;trans)'],['../structlampda_1_1utils_1_1TransformationMatrix.html#a9793a6f8a3b27169d34eeafb2e299fbf',1,'lampda::utils::TransformationMatrix::TransformationMatrix(const RotationMatrix &amp;rot, const vec3d &amp;trans)'],['../structlampda_1_1utils_1_1TransformationMatrix.html#ac63a7662fd545fc1d6a3751529027e8c',1,'lampda::utils::TransformationMatrix::TransformationMatrix()=default']]],
   ['translation_52',['translation',['../structlampda_1_1utils_1_1TransformationMatrix.html#ad24fbc8a3543bfcd5d7bf92bd68aae2a',1,'lampda::utils::TransformationMatrix']]],
   ['transmit_53',['transmit',['../structtcpm__drv.html#a6b503778ad8dbbca6cc67e46d7363694',1,'tcpm_drv']]],
-  ['true_5fpower_5foff_54',['true_power_off',['../namespacelampda_1_1logic_1_1behavior.html#a2e67b07647fdf216c82be098750b94cd',1,'lampda::logic::behavior']]],
-  ['try_5fclear_5ffaults_55',['try_clear_faults',['../namespacelampda_1_1bsp_1_1charger.html#a387a4de73b40d1ce2efa9ead03fa8253',1,'lampda::bsp::charger']]],
-  ['tsmeasurmentvoltaget_56',['TsMeasurmentVoltaget',['../structbq76905_1_1BQ76905_1_1Regt_1_1TsMeasurmentVoltaget.html',1,'bq76905::BQ76905::Regt']]],
-  ['tsoffsett_57',['TsOffsett',['../structbq76905_1_1BQ76905_1_1Regt_1_1TsOffsett.html',1,'bq76905::BQ76905::Regt']]],
-  ['tungsten100w_58',['Tungsten100W',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5ac60fcc12a7cfd7382a307892f506cdf0',1,'lampda::modes::colors']]],
-  ['tungsten40w_59',['Tungsten40W',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5af218d4d49684d28bda0392e5b7989ffa',1,'lampda::modes::colors']]],
-  ['turquoise_60',['Turquoise',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba8120857511bb55ff52a2b73884ca429e',1,'lampda::modes::colors']]],
-  ['type_61',['type',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a5c4790ffca306a285685889472e9e257',1,'lampda::modes::draw::overlay::__private::UIElement']]],
-  ['type_62',['Type',['../namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa',1,'lampda::logic::alerts::Type()'],['../namespacelampda_1_1utils_1_1ELK.html#af7d12aac75a6c8051398eaeed53676ec',1,'lampda::utils::ELK::Type()']]],
-  ['typicalliionvoltage_5fmv_63',['typicalLiionVoltage_mV',['../namespacelampda.html#ade87cbd4b1366e64f87e966d75f7922c',1,'lampda']]]
+  ['try_5fclear_5ffaults_54',['try_clear_faults',['../namespacelampda_1_1bsp_1_1charger.html#a387a4de73b40d1ce2efa9ead03fa8253',1,'lampda::bsp::charger']]],
+  ['tsmeasurmentvoltaget_55',['TsMeasurmentVoltaget',['../structbq76905_1_1BQ76905_1_1Regt_1_1TsMeasurmentVoltaget.html',1,'bq76905::BQ76905::Regt']]],
+  ['tsoffsett_56',['TsOffsett',['../structbq76905_1_1BQ76905_1_1Regt_1_1TsOffsett.html',1,'bq76905::BQ76905::Regt']]],
+  ['tungsten100w_57',['Tungsten100W',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5ac60fcc12a7cfd7382a307892f506cdf0',1,'lampda::modes::colors']]],
+  ['tungsten40w_58',['Tungsten40W',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5af218d4d49684d28bda0392e5b7989ffa',1,'lampda::modes::colors']]],
+  ['turquoise_59',['Turquoise',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba8120857511bb55ff52a2b73884ca429e',1,'lampda::modes::colors']]],
+  ['type_60',['type',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a5c4790ffca306a285685889472e9e257',1,'lampda::modes::draw::overlay::__private::UIElement']]],
+  ['type_61',['Type',['../namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa',1,'lampda::logic::alerts::Type()'],['../namespacelampda_1_1utils_1_1ELK.html#af7d12aac75a6c8051398eaeed53676ec',1,'lampda::utils::ELK::Type()']]],
+  ['typicalliionvoltage_5fmv_62',['typicalLiionVoltage_mV',['../namespacelampda.html#ade87cbd4b1366e64f87e966d75f7922c',1,'lampda']]]
 ];
