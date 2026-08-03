@@ -282,57 +282,6 @@ void write_parameters(const bool shouldSaveUserParameters = true, const bool sho
 // user code is running when state is output
 bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::OUTPUT_LIGHT; }
 
-/**
- * This turns off the system FOR REAL and enable the interrupt pin for power on
- * DO NOT USE THIS IF YOU ARE NOT SURE, great potential for system brick/lock
- */
-void true_power_off()
-{
-  // shutdown all threads
-  hal::threads::shutdown();
-
-  // unmount filesystem
-  component::fileSystem::shutdown();
-
-  // stop i2c interfaces
-  for (uint8_t i = 0; i < hal::registers::get_wire_interface_count(); ++i)
-  {
-    hal::i2c::i2c_turn_off(i);
-  }
-  hal::delay_ms(5);
-
-  // disable peripherals
-  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(false);
-  // disable gates
-#ifdef IS_HARDWARE_1_0
-  // disable pullup in sleep mode (in V>1.0, done electrically)
-  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Input_isChargeOk)
-          .set_pin_mode(hal::gpio::DigitalPin::Mode::kInput);
-  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Signal_BatteryBalancerAlert)
-          .set_pin_mode(hal::gpio::DigitalPin::Mode::kInput);
-#endif
-  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableVbusGate).set_high(false);
-  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableOutputGate).set_high(false);
-
-  // deactivate indicators
-  bsp::indicator::set_color(utils::ColorSpace::BLACK);
-  hal::gpio::DigitalPin::deactivate_gpios(); // physically disconnect gpios
-  hal::delay_ms(1);
-
-  // If buttpon is still pressed at this point, we will assume it is stuck pressed and signal a wakeup on release.
-  const bool isButtonPressed = component::button::get_button_state().isPressed;
-  // power down nrf52.
-  // on wake up, it'll start back from the setup phase
-  hal::registers::go_to_sleep(component::button::get_button_pin_RAW(), isButtonPressed);
-
-  /*
-   * Nothing after this, system is off !
-   */
-
-  // if we reach this, the system failed to go to sleep, register may be broken
-  logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_OFF_FAILED);
-}
-
 void set_error_state_message(const std::string& errorMsg)
 {
   if (errorStateRaisedStr.empty())
@@ -721,6 +670,13 @@ void handle_post_output_light_state()
 
 void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shouldSaveSystemParameters)
 {
+  /**
+   * Software shutdown phase
+   */
+
+  hal::bluetooth::stop_bluetooth_advertising();
+  hal::bluetooth::shutdown();
+
   // detach all interrupts, to prevent interruption of shutdown
   hal::gpio::DigitalPin::detach_all();
   hal::threads::yield_this_thread();
@@ -732,7 +688,7 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
   }
 
   uint8_t maxChecks = 100;
-  while (hal::threads::is_all_suspended() != 1 and maxChecks > 0)
+  while (hal::threads::is_all_suspended() == 0 and maxChecks > 0)
   {
     maxChecks--;
     // block other threads
@@ -753,7 +709,6 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
   // disable bluetooth, imu and microphone
   component::microphone::disable();
   component::imu::shutdown();
-  hal::bluetooth::stop_bluetooth_advertising();
 
   statistics::signal_output_off();
 
@@ -761,8 +716,53 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
   // (takes some time so call it when the lamp appear to be shutdown already)
   write_parameters(shouldSaveUserParameters, shouldSaveSystemParameters);
 
-  // power the system off
-  true_power_off();
+  /**
+   * Hardware shutdown phase
+   */
+  // shutdown all threads
+  hal::threads::shutdown();
+
+  // unmount filesystem
+  component::fileSystem::shutdown();
+
+  // stop i2c interfaces
+  for (uint8_t i = 0; i < hal::registers::get_wire_interface_count(); ++i)
+  {
+    hal::i2c::i2c_turn_off(i);
+  }
+  hal::delay_ms(5);
+
+  // disable peripherals
+  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(false);
+  // disable gates
+#ifdef IS_HARDWARE_1_0
+  // disable pullup in sleep mode (in V>1.0, done electrically)
+  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Input_isChargeOk)
+          .set_pin_mode(hal::gpio::DigitalPin::Mode::kInput);
+  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Signal_BatteryBalancerAlert)
+          .set_pin_mode(hal::gpio::DigitalPin::Mode::kInput);
+#endif
+  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableVbusGate).set_high(false);
+  hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableOutputGate).set_high(false);
+
+  // deactivate indicators
+  bsp::indicator::set_color(utils::ColorSpace::BLACK);
+  hal::gpio::DigitalPin::deactivate_gpios(); // physically disconnect gpios
+  hal::delay_ms(1);
+
+  // If buttpon is still pressed at this point, we will assume it is stuck pressed and signal a wakeup on release.
+  const bool isButtonPressed = component::button::get_button_state().isPressed;
+  // power down nrf52.
+  // on wake up, it'll start back from the setup phase
+  hal::registers::go_to_sleep(component::button::get_button_pin_RAW(), isButtonPressed);
+
+  /*
+   * Nothing after this, system is off !
+   */
+
+  // if we reach this, the system failed to go to sleep, registers may be broken
+  logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_OFF_FAILED);
+  go_to_error_state("system failed to sleep");
 }
 
 uint32_t get_bluetooth_auto_activation_left() { return bluetoothAutoActivationLeftCount; }

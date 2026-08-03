@@ -106,7 +106,7 @@ void byte_to_str(char* buff, uint8_t val)
 
 void stop_advertising()
 {
-  if (!isInitialized)
+  if (not is_activated())
     return;
 
   logic::alerts::manager.clear(logic::alerts::Type::BLUETOOTH_ADVERT);
@@ -115,6 +115,9 @@ void stop_advertising()
 
 void connect_callback(uint16_t conn_hdl)
 {
+  if (not is_activated())
+    return;
+
   _wasUsed = true;
 
   const auto batteryLevel = component::battery::get_battery_minimum_cell_level();
@@ -124,6 +127,9 @@ void connect_callback(uint16_t conn_hdl)
 
 void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
 {
+  if (not is_activated())
+    return;
+
   // Dont stop advertising here, some BLE drivers can send one command by connections.
   // Instead, restart the advertising
   start_advertising();
@@ -132,6 +138,9 @@ void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
 
 void adv_stop_callback(void)
 {
+  if (not is_activated())
+    return;
+
   // auto turned off, start again !
   if (not advertisingStoppedByRequest)
   {
@@ -148,6 +157,9 @@ void adv_stop_callback(void)
 
 void set_device_informations()
 {
+  if (not is_activated())
+    return;
+
   static const char firmwareRevision[] = {
           EXPECTED_FIRMWARE_VERSION_MAJOR + '0', '.', EXPECTED_FIRMWARE_VERSION_MINOR + '0', 0};
   static const char hardwareRevision[] = {HARDWARE_VERSION_MAJOR + '0', '.', HARDWARE_VERSION_MINOR + '0', 0};
@@ -174,7 +186,7 @@ void set_device_informations()
 
 void startup_sequence()
 {
-  if (isInitialized)
+  if (is_activated())
     return;
 
   uart_send_queue = xQueueCreate(UART_TX_QUEUE_SIZE, sizeof(UartSendRequest));
@@ -246,15 +258,15 @@ void startup_sequence()
 
 bool is_activated() { return __private::isInitialized; }
 
-bool is_advertising() { return Bluefruit.Advertising.isRunning(); }
+bool is_advertising() { return is_activated() and Bluefruit.Advertising.isRunning(); }
 
-bool is_connected() { return Bluefruit.connected() != 0; }
+bool is_connected() { return is_activated() and Bluefruit.connected() != 0; }
 
 // void display_infos() { Bluefruit.printInfo(); }
 
 void start_advertising()
 {
-  if (!__private::isInitialized)
+  if (not is_activated())
   {
     // call once when the program starts
     __private::startup_sequence();
@@ -273,7 +285,7 @@ void start_advertising()
 
 void stop_bluetooth_advertising()
 {
-  if (!__private::isInitialized)
+  if (not is_activated())
     return;
 
   __private::advertisingStoppedByRequest = true;
@@ -282,14 +294,14 @@ void stop_bluetooth_advertising()
 
 void write_battery_level(const uint8_t batteryLevel)
 {
-  if (!__private::isInitialized)
+  if (not is_activated())
     return;
   __private::bleBatteryService.write(batteryLevel);
 }
 
 void notify_battery_level(const uint8_t batteryLevel)
 {
-  if (!__private::isInitialized)
+  if (not is_activated())
     return;
   __private::bleBatteryService.notify(batteryLevel);
 }
@@ -297,11 +309,11 @@ void notify_battery_level(const uint8_t batteryLevel)
 bool send_uart(char const* buffer)
 {
   // pass
-  if (not Bluefruit.connected() or not __private::bleuart.notifyEnabled())
+  if (not is_activated() or not Bluefruit.connected() or not __private::bleuart.notifyEnabled())
     return true;
 
   size_t len = strlen(buffer);
-  if (!is_activated() || len == 0)
+  if (len == 0)
     return false;
 
   // Max payload per chunk (reserve 2 bytes for \r\n if it's the last chunk)
@@ -363,7 +375,7 @@ bool send_uart(char const* buffer)
 Inputs read_uart()
 {
   Inputs ret;
-  if (not Bluefruit.connected())
+  if (not is_activated() or not Bluefruit.connected())
     return ret;
 
   if (__private::bleuart.available())
@@ -416,6 +428,8 @@ Inputs read_uart()
 }
 
 bool was_used() { return __private::_wasUsed; }
+
+void shutdown() { __private::isInitialized = false; }
 
 } // namespace bluetooth
 } // namespace hal

@@ -40,6 +40,9 @@ hal::Inputs read_uart();
 /// Return tue if the bluetooth was used during lifetime
 bool was_used();
 
+// shutdown the bluetooth and services
+void shutdown();
+
 } // namespace bluetooth
 } // namespace hal
 } // namespace lampda

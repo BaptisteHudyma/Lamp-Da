@@ -2,6 +2,8 @@
 
 #include "src/system/hal/print.h"
 
+#include "src/system/hal/bluetooth.h"
+
 #include "src/system/logic/inputs_bluetooth.h"
 
 #include <tuple>
@@ -56,6 +58,9 @@ void BLEElkService::elk_commmand_handle(uint16_t conn_hdl, const uint8_t* data, 
 
 void BLEElkService::elk_write_cb(uint16_t conn_hdl, BLECharacteristic* chr, uint8_t* data, uint16_t len)
 {
+  if (not hal::bluetooth::is_activated())
+    return;
+
   BLEElkService const& svc = (BLEElkService&)chr->parentService();
   svc.elk_commmand_handle(conn_hdl, data, len);
 }
