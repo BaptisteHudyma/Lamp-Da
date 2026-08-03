@@ -31,6 +31,8 @@ namespace __private {
 
 /// Indicates if the last advertising cancel command was automatic or requested
 bool advertisingStoppedByRequest = false;
+/// Keep track of the use
+bool _wasUsed = false;
 
 /// System Info Service
 BLEDis bleSystemInfo;
@@ -44,7 +46,8 @@ BLEUart bleuart;
 
 // UART TX Task structures
 static constexpr size_t UART_TX_BUFFER_SIZE = 512;
-static constexpr size_t UART_TX_QUEUE_SIZE = 8;
+static constexpr size_t UART_TX_QUEUE_SIZE = 4;
+
 struct UartSendRequest
 {
   char data[UART_TX_BUFFER_SIZE];
@@ -116,6 +119,8 @@ void stop_advertising()
 
 void connect_callback(uint16_t conn_hdl)
 {
+  _wasUsed = true;
+
   const auto batteryLevel = component::battery::get_battery_minimum_cell_level();
   write_battery_level(static_cast<uint8_t>(batteryLevel / 100));
   hal::lampda_print("Bluetooth connected");
@@ -243,8 +248,6 @@ void startup_sequence()
  *
  */
 
-#ifdef USE_BLUETOOTH
-
 bool is_activated() { return __private::isInitialized; }
 
 bool is_advertising() { return Bluefruit.Advertising.isRunning(); }
@@ -302,23 +305,62 @@ bool send_uart(char const* buffer)
     return true;
 
   size_t len = strlen(buffer);
-  if (!is_activated() || len == 0 || len >= __private::UART_TX_BUFFER_SIZE - 2)
+  if (!is_activated() || len == 0)
     return false;
 
-  __private::UartSendRequest req;
-  memcpy(req.data, buffer, len);
+  // Max payload per chunk (reserve 2 bytes for \r\n if it's the last chunk)
+  constexpr size_t MAX_CHUNK_LEN = __private::UART_TX_BUFFER_SIZE - 2;
 
-  // Append CRLF if the buffer doesn't already end with a newline
-  if (len == 0 || buffer[len - 1] != '\n')
+  if (len <= MAX_CHUNK_LEN)
   {
+    // Single chunk path
+    __private::UartSendRequest req;
+    memcpy(req.data, buffer, len);
+    req.len = len;
+
+    // Append CRLF
     req.data[len++] = '\r';
     req.data[len++] = '\n';
-  }
-  req.len = len;
+    req.len = len;
 
-  // Non-blocking send to queue. If queue is full, discard or handle error.
-  if (xQueueSend(__private::uart_send_queue, &req, 0) != pdPASS) // 0 means don't block
-    return false;
+    if (xQueueSend(__private::uart_send_queue, &req, 0) != pdPASS)
+      return false;
+    return true;
+  }
+
+  // Large message: split into chunks
+  size_t offset = 0;
+  bool isFirst = true;
+  bool isLast = false;
+  while (offset < len)
+  {
+    size_t chunk_len = (len - offset > MAX_CHUNK_LEN) ? MAX_CHUNK_LEN : (len - offset);
+    __private::UartSendRequest req;
+    memcpy(req.data, buffer + offset, chunk_len);
+    req.len = chunk_len;
+
+    if (isFirst)
+    {
+      isFirst = false;
+    }
+    else if (offset + chunk_len < len)
+    {
+    }
+    else
+      isLast = true;
+
+    // Only append CRLF to the final chunk
+    if (isLast)
+    {
+      req.data[req.len++] = '\r';
+      req.data[req.len++] = '\n';
+    }
+
+    if (xQueueSend(__private::uart_send_queue, &req, 0) != pdPASS)
+      return false; // Queue full, message dropped
+
+    offset += chunk_len;
+  }
   return true;
 }
 
@@ -377,24 +419,7 @@ Inputs read_uart()
   return ret;
 }
 
-// Bluetooth can also by disabled at the system level
-#else
-
-bool is_activated() { return false; }
-
-bool is_advertising() { return false; }
-
-bool is_connected() { return false; }
-
-void start_advertising() {}
-
-void stop_bluetooth_advertising() {}
-
-void write_battery_level(const uint8_t batteryLevel) {}
-
-void notify_battery_level(const uint8_t batteryLevel) {}
-
-#endif
+bool was_used() { return __private::_wasUsed; }
 
 } // namespace bluetooth
 } // namespace hal

@@ -8,9 +8,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "src/compile.h"
-// - contains #define USE_BLUETOOTH
-
 #include "src/system/hal/print.h"
 
 namespace lampda {
@@ -38,6 +35,9 @@ void notify_battery_level(const uint8_t batteryLevel);
 // send an uart comman over bluetooth
 bool send_uart(char const* buffer);
 hal::Inputs read_uart();
+
+/// Return tue if the bluetooth was used during lifetime
+bool was_used();
 
 } // namespace bluetooth
 } // namespace hal
