@@ -27,7 +27,7 @@
 #include "src/modes/default/fireplace.hpp"
 #include "src/modes/legacy/legacy_modes.hpp"
 #include "src/modes/legacy/bluetooth_group.hpp"
-
+#include "src/modes/cli/text_mode.hpp"
 #include "src/modes/custom/nudz/nudz_scrollimage.hpp"
 
 namespace lampda::user {
@@ -46,16 +46,17 @@ using NudzModes = modes::GroupFor<modes::custom::nudz::NudzHeinekenMode,
 
 using ManagerTy = modes::ManagerForHiddenGroups<
 #ifdef NUDZ_MODES_ENABLED
-        1, // BluetoothModes is defined as an hidden group
+        2, // BluetoothModes and CLI are defined as an hidden group
 #else
-        2, // NudzModes and BluetoothModes are defined as an hidden groups
+        3, // NudzModes, BluetoothModes and CLI are defined as an hidden groups
 #endif
         modes::FixedModes,
         modes::legacy::CalmModes,
         modes::legacy::PartyModes,
         modes::legacy::SoundModes,
         custom::NudzModes,
-        modes::bluetooth::BluetoothModes>;
+        modes::bluetooth::BluetoothModes,
+        modes::cli::CliModes>;
 
 //
 // implementation details
@@ -119,6 +120,7 @@ bool should_spawn_thread() { return false; }
 void user_thread() {}
 
 void handle_elk_command(const utils::ELK::Package&) {}
+
 
 } // namespace lampda::user
 

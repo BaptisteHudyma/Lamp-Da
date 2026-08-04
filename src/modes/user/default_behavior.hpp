@@ -12,6 +12,7 @@
 //
 
 #include "src/system/component/time_handling.h"
+#include "src/modes/include/navigation_request.hpp"
 
 #include <cstdint>
 namespace lampda::user {
@@ -54,6 +55,19 @@ void power_off_sequence()
   // (no-op) internal symbol used during build
   ensure_build_canary();
 }
+
+void set_mode(const uint8_t& index)
+{
+  auto manager = get_context();
+  manager.set_active_mode(index);
+}
+
+void set_group(const uint8_t& index)
+{
+  auto manager = get_context();
+  manager.set_active_group(index);
+}
+
 
 void brightness_update(const brightness_t brightness)
 {
@@ -142,6 +156,9 @@ void loop()
 {
   auto manager = get_context();
   manager.loop();
+
+  // Execute navigation requested by the active mode.
+  modes::navigation::process(manager);
 
   // signal display update every loop
   manager.lamp.signal_display();

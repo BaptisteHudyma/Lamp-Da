@@ -138,6 +138,14 @@ void user_thread();
  */
 void handle_elk_command(const utils::ELK::Package& elkControlCommand);
 
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+
+bool display_cli_text(const char* text, const uint32_t& color, uint8_t nb_loop);
+
+#endif
+void set_mode(const uint8_t& index);
+void set_group(const uint8_t& index);
+
 } // namespace lampda::user
 
 #endif

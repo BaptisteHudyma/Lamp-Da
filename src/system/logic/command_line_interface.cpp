@@ -27,6 +27,8 @@
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/statistics_handler.h"
 
+#include "src/user/functions.h"
+
 #include <cstdlib>
 #include <cerrno>
 #include <climits>
@@ -60,6 +62,7 @@ struct ParsedCommand
 
     return buffer.data() + argumentOffsets[index];
   }
+
 };
 
 /// Tools to parse text arguments
@@ -113,6 +116,21 @@ bool parse_uint16(const ParsedCommand& command, const size_t index, uint16_t& va
   value = argument;
   return true;
 }
+
+/// Parse an argument as a 32 bit unsigned number
+bool parse_uint32(const ParsedCommand& command, const size_t index, uint32_t& value)
+{
+  unsigned long argument;
+  const bool isValid = parse_uint(command, index, argument);
+  if (!isValid)
+    return false;
+  if (argument > UINT32_MAX)
+    return false;
+
+  value = argument;
+  return true;
+}
+
 
 } // namespace argument
 
@@ -217,6 +235,7 @@ void handleCommand(const hal::Inputs::Command& commandLine)
                 "echo <args>{0-8}: display parsed arguments\n"
                 "brightness <[0-1024]>: update the brightness\n"
                 "time: show current time\n"
+                "print <text>: display scrolling text on LEDs\n"
                 "-----------------");
         break;
       }
@@ -549,7 +568,102 @@ void handleCommand(const hal::Inputs::Command& commandLine)
         }
         break;
       }
+    case utils::hash("set_mode"):
+      {
+        uint8_t index = 0;
+        argument::parse_uint8(command, 0, index);
+        hal::lampda_print("on tente d'aller au mode %u", index);
+        lampda::user::set_mode(index);
+        
+        break;
+      }
+    case utils::hash("set_group"):
+      {
+        uint8_t index = 0;
+        argument::parse_uint8(command, 0, index);
+        hal::lampda_print("on tente d'aller au groupe %u", index);
+        lampda::user::set_group(index);
+        break;
+      }
+#ifdef LMBD_LAMP_TYPE__INDEXABLE
+    case utils::hash("print"):
+    {
+      // orginal string but shift to the first argument (ie : first word)
+      if(command.argumentCount < 2)
+      {
+        hal::lampda_print("usage: print <hex color> <text>");
+        break;
+      }
+      const char* text_to_print = &commandLine[command.argumentOffsets[1]];
+      uint32_t color = 0xFFFFFF; // default color
+      bool color_found = argument::parse_uint32(command, 0, color);
 
+      if (text_to_print == nullptr || text_to_print[0] == '\0' || ! color_found)
+      {
+        hal::lampda_print("usage: print <hex color> <text>");
+        break;
+      }
+
+      if (!logic::behavior::is_in_output_state())
+      {
+        hal::lampda_print(
+            "the lamp must be turned on");
+        break;
+      }
+
+      if (!user::display_cli_text(text_to_print, color,1))
+      {
+        hal::lampda_print(
+            "unable to display text");
+        break;
+      }
+
+      hal::lampda_print(
+          "displaying: '%s'",
+          text_to_print);
+      break;
+    }
+    case utils::hash("print_loop"):
+    {
+      // orginal string but shift to the first argument (ie : first word)
+      if(command.argumentCount < 3)
+      {
+        hal::lampda_print("usage: print_loop <nb loop> <hex color> <text>");
+        break;
+      }
+      const char* text_to_print = &commandLine[command.argumentOffsets[2]];
+      uint32_t color = 0xFFFFFF; // default color
+      bool color_found = argument::parse_uint32(command, 1, color);
+      uint8_t nb_loop = 1; // default number of loop
+      bool loop_found = argument::parse_uint8(command, 0, nb_loop);
+
+
+      if (text_to_print == nullptr || text_to_print[0] == '\0' || ! color_found)
+      {
+        hal::lampda_print("usage: print_loop <nb loop> <hex color> <text>");
+        break;
+      }
+
+      if (!logic::behavior::is_in_output_state())
+      {
+        hal::lampda_print(
+            "the lamp must be turned on");
+        break;
+      }
+
+      if (!user::display_cli_text(text_to_print, color, nb_loop))
+      {
+        hal::lampda_print(
+            "unable to display text");
+        break;
+      }
+
+      hal::lampda_print(
+          "displaying: '%s'",
+          text_to_print);
+      break;
+    }
+#endif
     default:
       hal::lampda_print("unknown command: \'%s\'", command.name());
       hal::lampda_print("type h for available commands");

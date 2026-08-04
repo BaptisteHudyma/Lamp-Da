@@ -312,6 +312,51 @@ void handle_elk_command(const utils::ELK::Package& elkControlCommand)
   }
 }
 
+bool display_cli_text(const char* text, const uint32_t& color=0xffffff, uint8_t nb_loop = 1)
+{
+  if (text == nullptr || text[0] == '\0')
+    return false;
+
+  // get manager and execute a mode or group change
+  auto manager = get_context();
+  if (manager.get_hidden_groups_count() <= 0)
+  {
+    hal::lampda_print("Cannot use CLI control without an hidden CLI group");
+    return false;
+  }
+
+  const auto cliGroup = manager.template get_group_id_of_mode<modes::cli::TextMode>();
+  if (cliGroup < 0)
+  {
+    hal::lampda_print("Cannot find the CLI group and modes");
+    return false;
+  }
+
+  auto& state =
+      manager.template get_state_of_mode<
+          modes::cli::TextMode>();
+
+  if (manager.get_active_group() != cliGroup)
+  {
+    state.returnGroup = manager.get_active_group();
+    state.hasReturnGroup = true;
+  }
+  state.infinite_loop = nb_loop == 0;
+  state.nb_loop = nb_loop;
+  state.text = text;
+  state.color = color;
+  state.x = manager.lamp.maxWidth;
+  state.lastMovementMs = manager.lamp.now;
+
+  if (manager.get_active_group() != cliGroup)
+  {
+    manager.set_active_group(cliGroup);
+    manager.set_active_mode(0);
+  }
+
+  return true;
+}
+
 } // namespace lampda::user
 
 #endif
