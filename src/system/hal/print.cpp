@@ -5,6 +5,10 @@
 
 #include <Arduino.h>
 
+#include "src/system/hal/bluetooth.h"
+#include "src/system/hal/threads.h"
+#include "src/system/hal/time.h"
+
 extern "C" {
 // hack to use prints in c files
 #include "src/system/utils/print.h"
@@ -13,48 +17,165 @@ extern "C" {
 namespace lampda {
 namespace hal {
 
+namespace __private {
+
 // mutex to prevent lockups
 StaticSemaphore_t _PrintMutex;
 SemaphoreHandle_t printMutex = xSemaphoreCreateMutexStatic(&_PrintMutex);
 
-// only keep the chars inside a certain ascii range
-bool is_ignore_char(char c) { return c < 32; }
-
 void _lockPrintMutex(void) { xSemaphoreTake(printMutex, portMAX_DELAY); }
 void _unlockPrintMutex(void) { xSemaphoreGive(printMutex); }
 
-void init_prints() { Serial.begin(115200); }
+// UART TX Task structures
+static constexpr size_t DESIRED_MEMORY = 2048;    // power of two
+static constexpr size_t UART_TX_BUFFER_SIZE = 32; // number of small messages we could send
+static constexpr size_t UART_TX_QUEUE_SIZE = DESIRED_MEMORY / UART_TX_BUFFER_SIZE;
 
-void lampda_print_raw(const char* format, ...)
+struct UartSendRequest
 {
+  char data[UART_TX_BUFFER_SIZE];
+  size_t len;
+};
+
+static QueueHandle_t uart_send_queue = nullptr;
+
+void uart_tx_task()
+{
+  uint16_t max_mtu = 256;
+  UartSendRequest req;
+  // block until a queue msg in received
+  if (xQueueReceive(uart_send_queue, &req, portMAX_DELAY) == pdTRUE)
+  {
+    if (req.len <= 0)
+    {
+      return;
+    }
+
+    size_t offset = 0;
+    while (offset < req.len)
+    {
+      size_t chunkSize = (req.len - offset > max_mtu) ? max_mtu : (req.len - offset);
+      size_t written = Serial.write(req.data + offset, chunkSize);
+
+      if (written == 0)
+      {
+        hal::delay_ms(10);
+        return;
+      }
+
+      offset += written;
+      hal::delay_ms(1);
+    }
+  }
+}
+
+bool send_uart(char const* buffer)
+{
+  size_t len = strlen(buffer);
+  if (len == 0)
+    return true;
+
+  // Max payload per chunk
+  constexpr size_t MAX_CHUNK_LEN = UART_TX_BUFFER_SIZE;
+
+  if (len <= MAX_CHUNK_LEN)
+  {
+    // Single chunk path
+    UartSendRequest req;
+    memcpy(req.data, buffer, len);
+    req.len = len;
+
+    if (xQueueSend(uart_send_queue, &req, 0) != pdPASS)
+      return false; // Queue full, message dropped
+    return true;
+  }
+
+  // Large message: split into chunks
+  size_t offset = 0;
+  while (offset < len)
+  {
+    size_t chunk_len = (len - offset > MAX_CHUNK_LEN) ? MAX_CHUNK_LEN : (len - offset);
+    __private::UartSendRequest req;
+    memcpy(req.data, buffer + offset, chunk_len);
+    req.len = chunk_len;
+
+    if (xQueueSend(__private::uart_send_queue, &req, 0) != pdPASS)
+      return false; // Queue full, message dropped
+    // increment offset
+    offset += chunk_len;
+  }
+  return true;
+}
+
+static std::array<char, max_tx_buffer_size> _buffer;
+static void low_level_print(const char* format, va_list args)
+{
+  size_t len = strlen(format);
+  if (len == 0)
+    return;
+  if (len > 0.9 * max_tx_buffer_size)
+  {
+    const char errMsg[] = "Cannot display: msg too big\r\n";
+    __private::send_uart(errMsg);
+    bluetooth::send_uart(errMsg);
+    return;
+  }
+
   _lockPrintMutex();
 
-  static char buffer[1024];
-  va_list argptr;
-  va_start(argptr, format);
-  vsprintf(buffer, format, argptr);
-  va_end(argptr);
+  _buffer.fill('\0');
+  vsprintf(_buffer.data(), format, args);
 
-  Serial.print(buffer);
+  // send serial first
+  if (not __private::send_uart(_buffer.data()))
+  {
+    const char errMsg[] = "Too much data for Serial transmition\r\n";
+    bluetooth::send_uart(errMsg);
+  }
+
+  // then bluetooth
+  if (not bluetooth::send_uart(_buffer.data()))
+  {
+    const char errMsg[] = "Too much data for BLE transmition\r\n";
+    __private::send_uart(errMsg);
+  }
 
   _unlockPrintMutex();
 }
 
+} // namespace __private
+
+// only keep the chars inside a certain ascii range
+bool is_ignore_char(char c) { return c < 32; }
+
+void init_prints()
+{
+  __private::uart_send_queue = xQueueCreate(__private::UART_TX_QUEUE_SIZE, sizeof(__private::UartSendRequest));
+  threads::start_thread(__private::uart_tx_task, threads::print_taskName, 3, 512);
+
+  Serial.begin(115200);
+}
+
+void lampda_print_raw(const char* format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  __private::low_level_print(format, args);
+  va_end(args);
+}
+
 void lampda_print(const char* format, ...)
 {
-  _lockPrintMutex();
+  va_list args;
 
-  static char buffer[1024];
-  va_list argptr;
-  va_start(argptr, format);
-  vsprintf(buffer, format, argptr);
-  va_end(argptr);
-
-  Serial.print(millis());
-  Serial.print("> ");
-  Serial.println(buffer);
-
-  _unlockPrintMutex();
+  // header
+  lampda_print_raw("%d> ", millis());
+  // core
+  va_start(args, format);
+  __private::low_level_print(format, args);
+  va_end(args);
+  // end
+  lampda_print_raw("\r\n");
 }
 
 constexpr uint8_t maxReadLinePerLoop = 5;
@@ -62,7 +183,7 @@ constexpr uint8_t maxLineLenght = 200;
 
 Inputs read_inputs()
 {
-  _lockPrintMutex();
+  __private::_lockPrintMutex();
 
   Inputs ret;
 
@@ -113,7 +234,7 @@ Inputs read_inputs()
     } while (Serial.available() && ret.commandCount < Inputs::maxCommands);
   }
 
-  _unlockPrintMutex();
+  __private::_unlockPrintMutex();
   return ret;
 }
 

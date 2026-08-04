@@ -11,13 +11,6 @@
 #endif
 
 //
-// optional defines
-//
-
-// #define DEBUG_MODE
-#define USE_BLUETOOTH
-
-//
 // lamp type detection
 //
 
