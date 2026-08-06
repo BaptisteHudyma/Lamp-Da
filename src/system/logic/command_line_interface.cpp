@@ -235,7 +235,8 @@ void handleCommand(const hal::Inputs::Command& commandLine)
                 "echo <args>{0-8}: display parsed arguments\n"
                 "brightness <[0-1024]>: update the brightness\n"
                 "time: show current time\n"
-                "print <text>: display scrolling text on LEDs\n"
+                "print <hew color> <text>: display scrolling text on LEDs\n"
+                "print_loop <nb loop> <hew color> <text>: display scrolling text on LEDs\n"
                 "-----------------");
         break;
       }
@@ -571,18 +572,19 @@ void handleCommand(const hal::Inputs::Command& commandLine)
     case utils::hash("set_mode"):
       {
         uint8_t index = 0;
-        argument::parse_uint8(command, 0, index);
-        hal::lampda_print("on tente d'aller au mode %u", index);
-        lampda::user::set_mode(index);
-        
+        if(argument::parse_uint8(command, 0, index))
+        {
+          lampda::user::set_mode(index);  
+        }
         break;
       }
     case utils::hash("set_group"):
       {
         uint8_t index = 0;
-        argument::parse_uint8(command, 0, index);
-        hal::lampda_print("on tente d'aller au groupe %u", index);
-        lampda::user::set_group(index);
+        if(argument::parse_uint8(command, 0, index))
+        {
+          lampda::user::set_group(index);
+        }
         break;
       }
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
