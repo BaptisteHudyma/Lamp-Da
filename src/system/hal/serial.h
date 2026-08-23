@@ -6,6 +6,7 @@
 #define HAL_SERIAL_H
 
 #include <cstddef>
+#include <cstdint>
 
 namespace lampda {
 namespace hal {
@@ -33,6 +34,9 @@ extern char read();
  * \return the size of the written bytes
  */
 extern size_t write(const char* const buffer, size_t bufferSize);
+
+/// Return the usable MTU size
+uint16_t mtu_size();
 
 } // namespace serial
 } // namespace hal

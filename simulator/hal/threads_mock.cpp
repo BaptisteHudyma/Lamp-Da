@@ -6,6 +6,7 @@
 #include <functional>
 #include <map>
 #include <thread>
+#include <iostream>
 
 #include "src/system/hal/threads.h"
 
@@ -127,7 +128,7 @@ void HAL_get_debug_thread_text(char* textBuff) {}
 
 void HAL_shutdown()
 {
-  bsp::lampda_print("Initiating thread shutdown process...");
+  std::cerr << "Initiating thread shutdown process..." << std::endl;
 
   simulator::mock_registers::shouldStopThreads = true;
   for (auto& [id, thread]: simulator::threadPool)
@@ -140,7 +141,7 @@ void HAL_shutdown()
     thread.fun.join();
   }
   simulator::threadPool.clear();
-  bsp::lampda_print("thread shutdown complete");
+  std::cerr << "thread shutdown complete" << std::endl;
 }
 
 } // namespace threads

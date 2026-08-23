@@ -5,6 +5,8 @@
 #include "src/system/hal/queues.h"
 #include "src/system/hal/time.h"
 
+#include "simulator/include/hardware_influencer.h"
+
 #include <queue>
 #include <vector>
 #include <cstring>
@@ -53,6 +55,9 @@ HAL_queue_status_t HAL_queue_send(QueueHandle_t handle, const void* item, uint32
   const auto& timeoutTime = hal::time_ms() + timeoutMs;
   while (q->queue.size() >= q->uxLength)
   {
+    if (simulator::mock_registers::shouldStopThreads)
+      return HAL_QUEUE_ERR_TIMEOUT;
+
     if (timeoutMs != UINT32_MAX && hal::time_ms() >= timeoutTime)
     {
       return HAL_QUEUE_ERR_TIMEOUT;
@@ -81,6 +86,9 @@ HAL_queue_status_t HAL_queue_receive(QueueHandle_t handle, void* const outItem, 
   const auto& timeoutTime = hal::time_ms() + timeoutMs;
   while (q->queue.empty())
   {
+    if (simulator::mock_registers::shouldStopThreads)
+      return HAL_QUEUE_ERR_TIMEOUT;
+
     if (timeoutMs != UINT32_MAX && hal::time_ms() >= timeoutTime)
     {
       return HAL_QUEUE_ERR_TIMEOUT;

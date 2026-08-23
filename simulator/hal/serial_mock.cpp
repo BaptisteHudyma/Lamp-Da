@@ -213,6 +213,8 @@ size_t write(const char* const buffer, size_t bufferSize)
   return bufferSize;
 }
 
+uint16_t mtu_size() { return 256; }
+
 } // namespace serial
 } // namespace hal
 } // namespace lampda

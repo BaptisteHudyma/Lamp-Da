@@ -47,55 +47,6 @@ BLEUart bleuart;
 /// led controler service
 ::lampda::bluetooth::BLEElkService bleElkService;
 
-// UART TX Task structures
-static constexpr size_t DESIRED_MEMORY = 4096;    // power of two
-static constexpr size_t UART_TX_BUFFER_SIZE = 32; // number of small messages we could send
-static constexpr size_t UART_TX_QUEUE_SIZE = DESIRED_MEMORY / UART_TX_BUFFER_SIZE;
-
-struct UartSendRequest
-{
-  char data[UART_TX_BUFFER_SIZE];
-  size_t len;
-};
-
-static hal::queues::QueueHandle_t uart_send_queue = nullptr;
-
-void uart_tx_task()
-{
-  // limit to max packet size
-  uint16_t max_mtu = Bluefruit.getMaxMtu(BLE_GAP_ROLE_PERIPH);
-
-  UartSendRequest req;
-  // block until a queue msg in received
-  const auto res = hal::queues::HAL_queue_receive(uart_send_queue, &req, UINT32_MAX);
-  if (res == hal::queues::HAL_queue_status_t::HAL_QUEUE_OK)
-  {
-    if (not Bluefruit.connected() or not bleuart.notifyEnabled() or req.len <= 0)
-    {
-      return;
-    }
-
-    size_t offset = 0;
-    while (offset < req.len)
-    {
-      if (!Bluefruit.connected())
-        break;
-
-      size_t chunkSize = (req.len - offset > max_mtu) ? max_mtu : (req.len - offset);
-      size_t written = bleuart.write(req.data + offset, chunkSize);
-
-      if (written == 0)
-      {
-        hal::delay_ms(10);
-        return;
-      }
-
-      offset += written;
-      hal::delay_ms(2);
-    }
-  }
-}
-
 static bool isInitialized = false;
 
 // convert a 4-bit nibble to a hexadecimal character
@@ -195,9 +146,6 @@ void startup_sequence()
 {
   if (is_activated())
     return;
-
-  uart_send_queue = hal::queues::HAL_create_queue(sizeof(UartSendRequest), UART_TX_QUEUE_SIZE);
-  bsp::threads::start_thread(uart_tx_task, bsp::threads::ble_cli_taskName, 3, 512);
 
   // pairs devices
   static constexpr uint8_t peripheralCount = 1;
@@ -313,58 +261,24 @@ void notify_battery_level(const uint8_t batteryLevel)
   __private::bleBatteryService.notify(batteryLevel);
 }
 
-bool send_uart(char const* buffer)
-{
-  // pass
-  if (not is_activated() or not Bluefruit.connected() or not __private::bleuart.notifyEnabled())
-    return true;
-
-  size_t len = strlen(buffer);
-  if (len == 0)
-    return true;
-
-  constexpr size_t MAX_CHUNK_LEN = __private::UART_TX_BUFFER_SIZE;
-  if (len <= MAX_CHUNK_LEN)
-  {
-    // Single chunk path
-    __private::UartSendRequest req;
-    memcpy(req.data, buffer, len);
-    req.len = len;
-
-    const auto res = hal::queues::HAL_queue_send(__private::uart_send_queue, &req, 0);
-    if (res != hal::queues::HAL_queue_status_t::HAL_QUEUE_OK)
-      return false; // Queue full, message dropped
-    return true;
-  }
-
-  // Large message: split into chunks
-  size_t offset = 0;
-  while (offset < len)
-  {
-    size_t chunk_len = (len - offset > MAX_CHUNK_LEN) ? MAX_CHUNK_LEN : (len - offset);
-    __private::UartSendRequest req;
-    memcpy(req.data, buffer + offset, chunk_len);
-    req.len = chunk_len;
-
-    const auto res = hal::queues::HAL_queue_send(__private::uart_send_queue, &req, 0);
-    if (res != hal::queues::HAL_queue_status_t::HAL_QUEUE_OK)
-      return false; // Queue full, message dropped
-    // increment offset
-    offset += chunk_len;
-  }
-  return true;
-}
-
 bool was_used() { return __private::_wasUsed; }
 
 void shutdown() { __private::isInitialized = false; }
 
 namespace serial {
-bool is_activated() { return hal::bluetooth::is_activated() and Bluefruit.connected(); }
+bool is_activated()
+{
+  return hal::bluetooth::is_activated() and Bluefruit.connected() and __private::bleuart.notifyEnabled();
+}
 
 bool is_available() { return __private::bleuart.available(); }
 
 char read() { return (char)__private::bleuart.read(); }
+
+size_t write(const char* const buffer, size_t bufferSize) { return __private::bleuart.write(buffer, bufferSize); }
+
+uint16_t mtu_size() { return Bluefruit.getMaxMtu(BLE_GAP_ROLE_PERIPH); }
+
 } // namespace serial
 
 } // namespace bluetooth
