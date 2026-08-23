@@ -688,7 +688,7 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
   }
 
   uint8_t maxChecks = 100;
-  while (bsp::threads::is_all_suspended() == 0 and maxChecks > 0)
+  while (bsp::threads::is_all_suspended() != 0 and maxChecks > 0)
   {
     maxChecks--;
     // block other threads

@@ -92,13 +92,17 @@ int HAL_wait_notification(const int timeout_ms)
 
 // Actions on  target threads
 
-void HAL_notify_thread(TaskHandle_t handle, int wakeUpEvent) {};
+void HAL_notify_thread(TaskHandle_t handle, int wakeUpEvent) {
+  // TODO issue #132 support when implemented
+};
 
 void HAL_suspend_thread(TaskHandle_t handle)
 {
   auto h = simulator::threadPool.find((size_t)handle);
   if (h != simulator::threadPool.cend())
     h->second.isSuspended = true;
+  else
+    hal::lampda_print("HAL_suspend_thread> failed");
 }
 
 int HAL_is_suspended(TaskHandle_t handle)
@@ -106,6 +110,8 @@ int HAL_is_suspended(TaskHandle_t handle)
   const auto& h = simulator::threadPool.find((size_t)handle);
   if (h != simulator::threadPool.cend())
     return h->second.isSuspended ? 0 : 1;
+  else
+    hal::lampda_print("HAL_is_suspended> failed");
   return 0;
 }
 
@@ -114,6 +120,8 @@ void HAL_resume_thread(TaskHandle_t handle)
   auto h = simulator::threadPool.find((size_t)handle);
   if (h != simulator::threadPool.cend())
     h->second.isSuspended = false;
+  else
+    hal::lampda_print("HAL_resume_thread> failed");
 }
 void HAL_get_debug_thread_text(char* textBuff) {}
 

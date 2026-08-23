@@ -28,7 +28,7 @@ namespace threads {
 {
   SchedulerRTOS::taskfunc_t taskfunc = (SchedulerRTOS::taskfunc_t)arg;
 
-  vTaskSuspend(NULL);
+  HAL_suspend();
   while (true)
   {
     taskfunc();
@@ -102,24 +102,30 @@ void HAL_notify_thread(TaskHandle_t handle, int wakeUpEvent)
   }
   else
   {
-    // strange stuff here: suspend then resume all ?
-    vTaskSuspendAll();
     xTaskNotify(handle, wakeUpEvent, eSetBits);
-    (void)xTaskResumeAll();
   }
 }
 
 void HAL_suspend_thread(TaskHandle_t handle)
 {
-  xTaskNotifyGive(handle);
+  if (isInISR())
+  {
+    BaseType_t signal = pdFALSE;
+    vTaskNotifyGiveFromISR(handle, &signal);
+  }
+  else
+  {
+    xTaskNotifyGive(handle);
+  }
   vTaskSuspend(handle);
 }
 
 int HAL_is_suspended(TaskHandle_t handle)
 {
-  if (eTaskGetState(handle) != eTaskState::eSuspended)
-    return 1;
-  return 0;
+  const auto state = eTaskGetState(handle);
+  if (state == eTaskState::eSuspended)
+    return 0;
+  return 1;
 }
 
 void HAL_resume_thread(TaskHandle_t handle)

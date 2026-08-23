@@ -66,7 +66,15 @@ void low_level_start_thread(taskfunc_t taskFunction,
 {
   // handle already exists
   if (handles.find(taskName) != handles.cend())
+  {
+    hal::lampda_print("task %s (%d) creation failed: already exists", get_name_from_hash(taskName), taskName);
     return;
+  }
+  if (stackSize < 255)
+  {
+    hal::lampda_print("task %s (%d) creation failed: stack too small", get_name_from_hash(taskName), taskName);
+    return;
+  }
 
   TaskHandle_t handle;
   if (hal::threads::HAL_create_thread(&handle,
@@ -114,10 +122,10 @@ int is_all_suspended()
   {
     if (hal::threads::HAL_is_suspended(handle_it.second) != 0)
     {
-      return 0;
+      return 1;
     }
   }
-  return 1;
+  return 0;
 }
 
 void resume_thread(const uint32_t taskName)

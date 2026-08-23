@@ -1,3 +1,6 @@
+/*! \file bsp/threads.h
+ *  \brief Low level thread handling.
+ */
 #pragma once
 
 #define SCHED_NOTIFY_TIMER (1 << 0) // reserved event mask
@@ -73,7 +76,7 @@ extern "C" {
 
   /**
    * \brief check that all threads are suspended (mandatory for sleep mode)
-   * \return 1 for success, 0 for failure
+   * \return 0 for success, any other for failure
    */
   extern int is_all_suspended();
 
