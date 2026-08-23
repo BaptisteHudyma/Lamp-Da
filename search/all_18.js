@@ -1,7 +1,7 @@
 var searchData=
 [
   ['w_0',['w',['../structlampda_1_1utils_1_1vec4d.html#a32adbac2972d8fae28470ed4ca1dd405',1,'lampda::utils::vec4d']]],
-  ['wait_5fnotification_1',['wait_notification',['../namespacelampda_1_1hal_1_1threads.html#a0b42a6cc53564c99c86fb117e05ed4c4',1,'lampda::hal::threads']]],
+  ['wait_5fnotification_1',['wait_notification',['../namespacelampda_1_1bsp_1_1threads.html#a29876145a786ba3ce068594d0256beb5',1,'lampda::bsp::threads']]],
   ['warmfluorescent_2',['WarmFluorescent',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a2f3a80a9eb96acf15dd5d804fe767919',1,'lampda::modes::colors']]],
   ['was_5fstarted_5fin_5fbattery_5frecovery_3',['was_started_in_battery_recovery',['../namespacelampda_1_1logic_1_1power.html#a0ba1dc5c51a39955558feffe629cf321',1,'lampda::logic::power']]],
   ['was_5fused_4',['was_used',['../namespacelampda_1_1hal_1_1bluetooth.html#a6b71732610ad91c1e0a4509526fe006f',1,'lampda::hal::bluetooth']]],

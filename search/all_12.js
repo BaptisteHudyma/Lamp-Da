@@ -10,8 +10,11 @@ var searchData=
   ['queue_7',['Queue',['../structlampda_1_1utils_1_1Queue.html',1,'lampda::utils']]],
   ['queue_8',['queue',['../structqueue.html',1,'']]],
   ['queue_2eh_9',['queue.h',['../queue_8h.html',1,'']]],
-  ['quick_20setup_10',['Quick Setup',['../md_docs_QuickSetup.html',1,'']]],
-  ['quit_5fgroup_11',['quit_group',['../structlampda_1_1modes_1_1ContextTy.html#a35cc9891995ff3100105365e63ef0e2d',1,'lampda::modes::ContextTy']]],
-  ['quit_5fmode_12',['quit_mode',['../structlampda_1_1modes_1_1ContextTy.html#a99759562d12984ebf4438ebc17a090ee',1,'lampda::modes::ContextTy']]],
-  ['quserthread_13',['QUserThread',['../structlampda_1_1modes_1_1details_1_1anyOf_1_1QUserThread.html',1,'lampda::modes::details::anyOf&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;'],['../structlampda_1_1modes_1_1details_1_1asTableFor_1_1QUserThread.html',1,'lampda::modes::details::asTableFor&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;']]]
+  ['queues_2eh_10',['queues.h',['../queues_8h.html',1,'']]],
+  ['queues_5fmock_2ecpp_11',['queues_mock.cpp',['../queues__mock_8cpp.html',1,'']]],
+  ['queuewrapp_12',['QueueWrapp',['../structlampda_1_1hal_1_1queues_1_1QueueWrapp.html',1,'lampda::hal::queues']]],
+  ['quick_20setup_13',['Quick Setup',['../md_docs_QuickSetup.html',1,'']]],
+  ['quit_5fgroup_14',['quit_group',['../structlampda_1_1modes_1_1ContextTy.html#a35cc9891995ff3100105365e63ef0e2d',1,'lampda::modes::ContextTy']]],
+  ['quit_5fmode_15',['quit_mode',['../structlampda_1_1modes_1_1ContextTy.html#a99759562d12984ebf4438ebc17a090ee',1,'lampda::modes::ContextTy']]],
+  ['quserthread_16',['QUserThread',['../structlampda_1_1modes_1_1details_1_1anyOf_1_1QUserThread.html',1,'lampda::modes::details::anyOf&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;'],['../structlampda_1_1modes_1_1details_1_1asTableFor_1_1QUserThread.html',1,'lampda::modes::details::asTableFor&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;']]]
 ];

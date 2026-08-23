@@ -5,6 +5,6 @@ var searchData=
   ['ydirection_2',['ydirection',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzScrollImageMode_1_1StateTy.html#a3a755f26e21e3dd7a9d49042fe117058',1,'lampda::modes::custom::nudz::NudzScrollImageMode::StateTy::ydirection()'],['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzViolonsaoulsMode_1_1StateTy.html#aa2d107fabcd17c90a87a2e881400ffc4',1,'lampda::modes::custom::nudz::NudzViolonsaoulsMode::StateTy::ydirection()']]],
   ['yellow_3',['Yellow',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baacb0b23d02603b347b7686e5d8622fbd',1,'lampda::modes::colors']]],
   ['yellowgreen_4',['YellowGreen',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baf29f427ea37da9d7b4203f49db8fcdd4',1,'lampda::modes::colors']]],
-  ['yield_5fthis_5fthread_5',['yield_this_thread',['../namespacelampda_1_1hal_1_1threads.html#a08d1dde4b8f480f9a02e918cd61079a0',1,'lampda::hal::threads']]],
+  ['yield_5fthis_5fthread_5',['yield_this_thread',['../namespacelampda_1_1bsp_1_1threads.html#aec032ff44a371e93ec79ead719969e3e',1,'lampda::bsp::threads']]],
   ['yscale_6',['yScale',['../structlampda_1_1modes_1_1default__modes_1_1FireMode.html#ab6fc719221c3ab5bfb0757833eaad6b6',1,'lampda::modes::default_modes::FireMode']]]
 ];

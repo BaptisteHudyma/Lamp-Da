@@ -58,7 +58,7 @@ var searchData=
   ['restore_5fcolor_5fwith_5fbrightness_55',['restore_color_with_brightness',['../classlampda_1_1component_1_1LedStrip.html#ab918a3f61cb115cc96b21c2694b4e722',1,'lampda::component::LedStrip']]],
   ['restorebrightness_56',['restoreBrightness',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a221edd69101aa0f25ce0821924f46694',1,'lampda::modes::hardware::LampTy']]],
   ['resume_5fpd_5fstate_5fmachine_57',['resume_pd_state_machine',['../namespacelampda_1_1bsp_1_1powerDelivery.html#ae98231b0f187f8d0142e130f0b72e71a',1,'lampda::bsp::powerDelivery']]],
-  ['resume_5fthread_58',['resume_thread',['../namespacelampda_1_1hal_1_1threads.html#ab9623c91510e8c69efa413e6f5a6b5a8',1,'lampda::hal::threads']]],
+  ['resume_5fthread_58',['resume_thread',['../namespacelampda_1_1bsp_1_1threads.html#aa22c06ddf285c0ff2561c66b40461a3f',1,'lampda::bsp::threads']]],
   ['rgb_59',['RGB',['../classlampda_1_1utils_1_1ColorSpace_1_1RGB.html',1,'lampda::utils::ColorSpace::RGB'],['../classlampda_1_1utils_1_1ColorSpace_1_1RGB.html#afcad573381307ea557c554e3279a9c83',1,'lampda::utils::ColorSpace::RGB::RGB(const uint32_t color)'],['../classlampda_1_1utils_1_1ColorSpace_1_1RGB.html#abb619d823dacf6e6670ea00ea147fb50',1,'lampda::utils::ColorSpace::RGB::RGB(uint8_t red, uint8_t green, uint8_t blue)']]],
   ['rosybrown_60',['RosyBrown',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba75ee8574e2cbd55742197e02e604f3a5',1,'lampda::modes::colors']]],
   ['rotation_61',['rotation',['../structlampda_1_1utils_1_1TransformationMatrix.html#ad4cecadfee8a4d88270a6420de23087e',1,'lampda::utils::TransformationMatrix']]],

@@ -10,7 +10,7 @@ var searchData=
   ['restore_5fcolor_5fwith_5fbrightness_7',['restore_color_with_brightness',['../classlampda_1_1component_1_1LedStrip.html#ab918a3f61cb115cc96b21c2694b4e722',1,'lampda::component::LedStrip']]],
   ['restorebrightness_8',['restoreBrightness',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a221edd69101aa0f25ce0821924f46694',1,'lampda::modes::hardware::LampTy']]],
   ['resume_5fpd_5fstate_5fmachine_9',['resume_pd_state_machine',['../namespacelampda_1_1bsp_1_1powerDelivery.html#ae98231b0f187f8d0142e130f0b72e71a',1,'lampda::bsp::powerDelivery']]],
-  ['resume_5fthread_10',['resume_thread',['../namespacelampda_1_1hal_1_1threads.html#ab9623c91510e8c69efa413e6f5a6b5a8',1,'lampda::hal::threads']]],
+  ['resume_5fthread_10',['resume_thread',['../namespacelampda_1_1bsp_1_1threads.html#aa22c06ddf285c0ff2561c66b40461a3f',1,'lampda::bsp::threads']]],
   ['rgb_11',['RGB',['../classlampda_1_1utils_1_1ColorSpace_1_1RGB.html#afcad573381307ea557c554e3279a9c83',1,'lampda::utils::ColorSpace::RGB::RGB(const uint32_t color)'],['../classlampda_1_1utils_1_1ColorSpace_1_1RGB.html#abb619d823dacf6e6670ea00ea147fb50',1,'lampda::utils::ColorSpace::RGB::RGB(uint8_t red, uint8_t green, uint8_t blue)']]],
   ['row1_12',['row1',['../structlampda_1_1utils_1_1RotationMatrix.html#aa7be9aa661279176ab570560a57aace0',1,'lampda::utils::RotationMatrix']]],
   ['row2_13',['row2',['../structlampda_1_1utils_1_1RotationMatrix.html#ac3fb47342154c674cccca8c908ac0888',1,'lampda::utils::RotationMatrix']]],

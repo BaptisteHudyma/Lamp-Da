@@ -54,7 +54,7 @@ var searchData=
   ['storeid_51',['storeId',['../structlampda_1_1modes_1_1BasicMode.html#a8d76bc8d1882571ab35a8f81fdf0ab9b',1,'lampda::modes::BasicMode']]],
   ['strobomaxfreq_52',['stroboMaxFreq',['../structlampda_1_1modes_1_1brightness_1_1StroboscopeMode.html#a6647c98edb95c23443f3aa1b47345986',1,'lampda::modes::brightness::StroboscopeMode']]],
   ['strobominfreq_53',['stroboMinFreq',['../structlampda_1_1modes_1_1brightness_1_1StroboscopeMode.html#a20c108ef45ff36cdc4edfa6582ebb60c',1,'lampda::modes::brightness::StroboscopeMode']]],
-  ['sunset_5ftaskname_54',['sunset_taskName',['../namespacelampda_1_1hal_1_1threads.html#a4030a6b1ecf0f6fae62b386e59516264',1,'lampda::hal::threads']]],
+  ['sunset_5ftaskname_54',['sunset_taskName',['../namespacelampda_1_1bsp_1_1threads.html#a67ddca205895f628603a1a124bd68b4b',1,'lampda::bsp::threads']]],
   ['system_5fon_5fminutes_55',['system_on_minutes',['../structlampda_1_1logic_1_1statistics_1_1Statistics__t.html#a50d5c5ee8845fb79f51df93199c35058',1,'lampda::logic::statistics::Statistics_t']]],
   ['systemontimeskey_56',['systemOnTimeSKey',['../namespacelampda_1_1logic_1_1statistics.html#aa425b115b06870272e0d8f06fa6f0aed',1,'lampda::logic::statistics']]]
 ];

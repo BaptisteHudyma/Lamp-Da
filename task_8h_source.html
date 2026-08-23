@@ -115,11 +115,17 @@ $(function() {
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>uint32_t task_wait_event_mask(uint32_t event_mask, <span class="keywordtype">int</span> timeout_us);</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> task_wake() { task_set_event(TASK_EVENT_WAKE); }</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="keywordtype">void</span> task_clear_event_bitmap(uint32_t eventToClear);</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> task_wake()</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>{</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>  <span class="comment">// TODO issue #132 remove when the mock components will be running</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="preprocessor">#ifndef LMBD_SIMULATION</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>  task_set_event(TASK_EVENT_WAKE);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="keywordtype">void</span> task_clear_event_bitmap(uint32_t eventToClear);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="auniontimestamp__t_html"><div class="ttname"><a href="uniontimestamp__t.html">timestamp_t</a></div><div class="ttdoc">Convert a 64 bits to little endian encoding.</div><div class="ttdef"><b>Definition:</b> task.h:19</div></div>
 <div class="ttc" id="auniontimestamp__t_html_a1439028ac9bf28000a9e2902d682b548"><div class="ttname"><a href="uniontimestamp__t.html#a1439028ac9bf28000a9e2902d682b548">timestamp_t::lo</a></div><div class="ttdeci">uint32_t lo</div><div class="ttdoc">low side of the binary</div><div class="ttdef"><b>Definition:</b> task.h:23</div></div>
 <div class="ttc" id="auniontimestamp__t_html_a90bf31fccb4f104270636240606690b1"><div class="ttname"><a href="uniontimestamp__t.html#a90bf31fccb4f104270636240606690b1">timestamp_t::hi</a></div><div class="ttdeci">uint32_t hi</div><div class="ttdoc">low side of the binary</div><div class="ttdef"><b>Definition:</b> task.h:24</div></div>

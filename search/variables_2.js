@@ -30,7 +30,7 @@ var searchData=
   ['beer_5fcolor_27',['beer_color',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#aac5933c0bafa23a194d1c9bdf161857e',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
   ['beforefavoritegroupindex_28',['beforeFavoriteGroupIndex',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a9bf3a6be52839d0b0343ad432ed38665',1,'lampda::modes::ModeManagerTy::StateTy']]],
   ['beforefavoritemodeindex_29',['beforeFavoriteModeIndex',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a3fb5382f83083d8a5f6d6e6691c476b9',1,'lampda::modes::ModeManagerTy::StateTy']]],
-  ['ble_5fcli_5ftaskname_30',['ble_cli_taskName',['../namespacelampda_1_1hal_1_1threads.html#a63feb0bc258d452129b94563c3cd8df3',1,'lampda::hal::threads']]],
+  ['ble_5fcli_5ftaskname_30',['ble_cli_taskName',['../namespacelampda_1_1bsp_1_1threads.html#a0fa66d17aeb7b24ca4f456da8b8f6201',1,'lampda::bsp::threads']]],
   ['blip_5fmax_5ftime_31',['BLIP_MAX_TIME',['../namespacelampda_1_1bsp_1_1powergates.html#aa81d14468e08d5724357beedd92332eb',1,'lampda::bsp::powergates']]],
   ['bluecolorcorrection_32',['blueColorCorrection',['../namespacelampda_1_1bsp_1_1indicator.html#a9bae63d0e175897a5d373dcafa1cb60b',1,'lampda::bsp::indicator']]],
   ['bluetoothautoactivationleftcount_33',['bluetoothAutoActivationLeftCount',['../namespacelampda_1_1logic_1_1behavior.html#a701409eba8de28777b232badde6a120c',1,'lampda::logic::behavior']]],

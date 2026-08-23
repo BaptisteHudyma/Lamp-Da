@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['wait_5fnotification_0',['wait_notification',['../namespacelampda_1_1hal_1_1threads.html#a0b42a6cc53564c99c86fb117e05ed4c4',1,'lampda::hal::threads']]],
+  ['wait_5fnotification_0',['wait_notification',['../namespacelampda_1_1bsp_1_1threads.html#a29876145a786ba3ce068594d0256beb5',1,'lampda::bsp::threads']]],
   ['was_5fstarted_5fin_5fbattery_5frecovery_1',['was_started_in_battery_recovery',['../namespacelampda_1_1logic_1_1power.html#a0ba1dc5c51a39955558feffe629cf321',1,'lampda::logic::power']]],
   ['was_5fused_2',['was_used',['../namespacelampda_1_1hal_1_1bluetooth.html#a6b71732610ad91c1e0a4509526fe006f',1,'lampda::hal::bluetooth']]],
   ['when_5flast_5fupdate_5fbrightness_3',['when_last_update_brightness',['../namespacelampda_1_1logic_1_1brightness.html#a0ebc1a296fd81cb735a6002fcca3eb9d',1,'lampda::logic::brightness']]],

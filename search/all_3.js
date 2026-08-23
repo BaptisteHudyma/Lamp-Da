@@ -47,7 +47,7 @@ var searchData=
   ['black_44',['Black',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bad5555d785ceb02212e5eeea7a7571c37',1,'lampda::modes::colors']]],
   ['blacklightfluorescent_45',['BlackLightFluorescent',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a2eb849abb35ef3c53407bbfd7d98797f',1,'lampda::modes::colors']]],
   ['blanchedalmond_46',['BlanchedAlmond',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba273435f0bda08b8d847bd307eab8d993',1,'lampda::modes::colors']]],
-  ['ble_5fcli_5ftaskname_47',['ble_cli_taskName',['../namespacelampda_1_1hal_1_1threads.html#a63feb0bc258d452129b94563c3cd8df3',1,'lampda::hal::threads']]],
+  ['ble_5fcli_5ftaskname_47',['ble_cli_taskName',['../namespacelampda_1_1bsp_1_1threads.html#a0fa66d17aeb7b24ca4f456da8b8f6201',1,'lampda::bsp::threads']]],
   ['bleelkservice_48',['BLEElkService',['../classlampda_1_1bluetooth_1_1BLEElkService.html',1,'lampda::bluetooth']]],
   ['blend_49',['blend',['../namespacelampda_1_1modes_1_1colors.html#a5b5be9f9bfeb9eedfde03b345866b7f2',1,'lampda::modes::colors']]],
   ['blink_50',['blink',['../namespacelampda_1_1bsp_1_1indicator.html#a74580ae3193ef07934531ced9d33d73d',1,'lampda::bsp::indicator::blink(const uint32_t offFreq, const uint32_t onFreq, std::initializer_list&lt; utils::ColorSpace::RGB &gt; colors)'],['../namespacelampda_1_1bsp_1_1indicator.html#af5e0738dd4b1df74aa9199c1bab5df47',1,'lampda::bsp::indicator::blink(const uint32_t offFreq, const uint32_t onFreq, const utils::ColorSpace::RGB &amp;color)']]],

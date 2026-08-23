@@ -98,7 +98,7 @@ var searchData=
   ['configkeys_95',['ConfigKeys',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17',1,'lampda::modes']]],
   ['configty_96',['ConfigTy',['../structlampda_1_1modes_1_1automaton_1_1SierpinskiMode_1_1ConfigTy.html',1,'lampda::modes::automaton::SierpinskiMode']]],
   ['configuratevcellt_97',['ConfigurateVcellt',['../structbq76905_1_1BQ76905_1_1Regt_1_1ConfigurateVcellt.html',1,'bq76905::BQ76905::Regt']]],
-  ['constants_2eh_98',['constants.h',['../system_2utils_2constants_8h.html',1,'(Global Namespace)'],['../user_2constants_8h.html',1,'(Global Namespace)']]],
+  ['constants_2eh_98',['constants.h',['../user_2constants_8h.html',1,'(Global Namespace)'],['../system_2utils_2constants_8h.html',1,'(Global Namespace)']]],
   ['constraint_5finto_5flamp_5fbody_99',['constraint_into_lamp_body',['../structlampda_1_1modes_1_1Particle.html#a8bbbebf094ad7f79965c642569344b6d',1,'lampda::modes::Particle']]],
   ['context_5fas_100',['context_as',['../namespacelampda_1_1modes.html#ab874c161b8d6abdb230f01b569c3238f',1,'lampda::modes::context_as()'],['../structlampda_1_1modes_1_1ContextTy.html#ad54782eea310146594cae2b09eed2f5b',1,'lampda::modes::ContextTy::context_as()']]],
   ['context_5ftype_2ehpp_101',['context_type.hpp',['../context__type_8hpp.html',1,'']]],

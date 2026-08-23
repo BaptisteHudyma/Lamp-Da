@@ -14,7 +14,7 @@ var searchData=
   ['interrupt_5fhandle_11',['interrupt_handle',['../namespacelampda_1_1bsp_1_1powerDelivery.html#a4da30514c4cb5f9fff56276dec60cc08',1,'lampda::bsp::powerDelivery']]],
   ['is_5factivated_12',['is_activated',['../namespacelampda_1_1hal_1_1bluetooth.html#acec5eb41a240205558b5b9c43095e359',1,'lampda::hal::bluetooth']]],
   ['is_5fadvertising_13',['is_advertising',['../namespacelampda_1_1hal_1_1bluetooth.html#a52be78dc4fe322305bc08c85ed03a270',1,'lampda::hal::bluetooth']]],
-  ['is_5fall_5fsuspended_14',['is_all_suspended',['../namespacelampda_1_1hal_1_1threads.html#a9f423cfa286d0e41fc5ee99c23a8db7e',1,'lampda::hal::threads']]],
+  ['is_5fall_5fsuspended_14',['is_all_suspended',['../namespacelampda_1_1bsp_1_1threads.html#a3e3262b6319cabb9516eecb66103f40f',1,'lampda::bsp::threads']]],
   ['is_5fbattery_5falert_5fready_15',['is_battery_alert_ready',['../namespacelampda_1_1logic_1_1alerts.html#a6e27335cb15ba70b1e4060eeb1068106',1,'lampda::logic::alerts']]],
   ['is_5fbattery_5fusable_5fas_5fpower_5fsource_16',['is_battery_usable_as_power_source',['../namespacelampda_1_1component_1_1battery.html#ad625d959d980202b1a29437e07a1acd7',1,'lampda::component::battery']]],
   ['is_5fbeat_5fon_5ffreq_5frange_17',['is_beat_on_freq_range',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a25d37286acf534a8a2f06179ba7357fd',1,'lampda::modes::audio::SoundEventTy']]],
