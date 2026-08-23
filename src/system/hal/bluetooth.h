@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <string>
 
-#include "src/system/hal/print.h"
+#include "src/system/bsp/text_in.h"
 
 namespace lampda {
 namespace hal {
@@ -34,8 +34,9 @@ void notify_battery_level(const uint8_t batteryLevel);
 
 // send an uart comman over bluetooth
 bool send_uart(char const* buffer);
+
 /// Read the UART packets from the bluetooth queue
-hal::Inputs read_uart();
+bsp::text_in::Inputs read_uart();
 
 /// Return tue if the bluetooth was used during lifetime
 bool was_used();

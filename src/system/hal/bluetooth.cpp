@@ -13,9 +13,9 @@
 #include "src/system/component/battery.h"
 
 #include "src/system/hal/time.h"
-#include "src/system/hal/print.h"
 #include "src/system/hal/queues.h"
 
+#include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
 
 #include "src/system/hal/bluetooth/elk_service.h"
@@ -129,7 +129,7 @@ void connect_callback(uint16_t conn_hdl)
 
   const auto batteryLevel = component::battery::get_battery_minimum_cell_level();
   write_battery_level(static_cast<uint8_t>(batteryLevel / 100));
-  hal::lampda_print("Bluetooth connected");
+  bsp::lampda_print("Bluetooth connected");
 }
 
 void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
@@ -140,7 +140,7 @@ void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
   // Dont stop advertising here, some BLE drivers can send one command by connections.
   // Instead, restart the advertising
   start_advertising();
-  hal::lampda_print("Bluetooth disconnected");
+  bsp::lampda_print("Bluetooth disconnected");
 }
 
 void adv_stop_callback(void)
@@ -152,12 +152,12 @@ void adv_stop_callback(void)
   if (not advertisingStoppedByRequest)
   {
     start_advertising();
-    hal::lampda_print("BLE Advertising timeout, advertising restarted.");
+    bsp::lampda_print("BLE Advertising timeout, advertising restarted.");
   }
   else
   {
     __private::stop_advertising();
-    hal::lampda_print("BLE Advertising stop requested.");
+    bsp::lampda_print("BLE Advertising stop requested.");
   }
   advertisingStoppedByRequest = false;
 }
@@ -229,7 +229,7 @@ void startup_sequence()
   Bluefruit.setAppearance(BLE_APPEARANCE_LIGHT_SOURCE_MULTICOLOR_ARRAY);
 
   // Configure and start the BLE Uart service
-  hal::lampda_print("Blutooth started under the name:%s", ble_name);
+  bsp::lampda_print("Blutooth started under the name:%s", ble_name);
 
   // Advertising packet
   Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
@@ -355,9 +355,9 @@ bool send_uart(char const* buffer)
   return true;
 }
 
-Inputs read_uart()
+bsp::text_in::Inputs read_uart()
 {
-  Inputs ret;
+  bsp::text_in::Inputs ret;
   if (not is_activated() or not Bluefruit.connected())
     return ret;
 
@@ -377,26 +377,26 @@ Inputs read_uart()
         if (charRead != 0)
         {
           // add null termination if needed
-          if (charRead < Inputs::maxCommandSize)
+          if (charRead < bsp::text_in::Inputs::maxCommandSize)
           {
             if (ret.commandList[ret.commandCount][charRead] != '\0')
               ret.commandList[ret.commandCount][charRead] = '\0';
           }
           else
           {
-            ret.commandList[ret.commandCount][Inputs::maxCommandSize - 1] = '\0';
+            ret.commandList[ret.commandCount][bsp::text_in::Inputs::maxCommandSize - 1] = '\0';
           }
           ret.commandCount += 1;
         }
         else
         {
-          for (size_t i = 0; i < Inputs::maxCommandSize; i++)
+          for (size_t i = 0; i < bsp::text_in::Inputs::maxCommandSize; i++)
             ret.commandList[ret.commandCount][i] = '\0';
         }
 
         charRead = 0;
       }
-      else if (charRead < Inputs::maxCommandSize)
+      else if (charRead < bsp::text_in::Inputs::maxCommandSize)
       {
         // add it to the inputString:
         if (inChar >= 32)
@@ -405,7 +405,7 @@ Inputs read_uart()
           charRead += 1;
         }
       }
-    } while (__private::bleuart.available() && ret.commandCount < Inputs::maxCommands);
+    } while (__private::bleuart.available() && ret.commandCount < bsp::text_in::Inputs::maxCommands);
   }
   return ret;
 }

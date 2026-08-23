@@ -9,12 +9,12 @@
 
 #include "src/system/component/battery.h"
 
-#include "src/system/hal/print.h"
 #include "src/system/hal/time.h"
 #include "src/system/hal/gpio.h"
 
 #include "src/system/bsp/charging_ic.h"
 #include "src/system/bsp/power_gates.h"
+#include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
 
 // remove this to remove all PD algorithms
@@ -203,7 +203,7 @@ struct UsbPDData
   /// Debug to serial output
   void serial_show()
   {
-    hal::lampda_print("PD algo: %d %d%d%d: [PDO %.2fV %.2fA] %.2fV | %s",
+    bsp::lampda_print("PD algo: %d %d%d%d: [PDO %.2fV %.2fA] %.2fV | %s",
                       should_run_pd_state_machine,
                       isVbusPowered,
                       isPowerSourceDetected,
@@ -213,7 +213,7 @@ struct UsbPDData
                       vbusVoltage / 1000.0,
                       pdAlgoStatus.c_str());
     hasChanged = false;
-    hal::lampda_print(
+    bsp::lampda_print(
             "allowed usage: %d mA, %d mV", get_allowed_consuption().current_mA, get_allowed_consuption().voltage_mV);
   }
 };
@@ -266,8 +266,8 @@ void pd_run()
       isFastRoleSwap = true;
 
       // prepare fast role swap
-      hal::lampda_print("prepare fast role swap");
-     bsp::powergates::disable_gates();
+      bsp::lampda_print("prepare fast role swap");
+      bsp::powergates::disable_gates();
 
       // force otg on, and prep vbus gate, all in this loop iteration (skip all safety steps !!!)
       bsp::charger::set_OTG_targets(5000, 1000);

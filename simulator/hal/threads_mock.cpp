@@ -10,11 +10,11 @@
 #include "src/system/hal/threads.h"
 
 #include "src/system/hal/time.h"
-#include "src/system/hal/print.h"
+
+#include "src/system/bsp/text_out.h"
+#include "src/system/bsp/threads.h"
 
 #include "src/system/utils/utils.h"
-
-#include "src/system/bsp/threads.h"
 
 #include "simulator/include/hardware_influencer.h"
 
@@ -102,7 +102,7 @@ void HAL_suspend_thread(TaskHandle_t handle)
   if (h != simulator::threadPool.cend())
     h->second.isSuspended = true;
   else
-    hal::lampda_print("HAL_suspend_thread> failed");
+    bsp::lampda_print("HAL_suspend_thread> failed");
 }
 
 int HAL_is_suspended(TaskHandle_t handle)
@@ -111,7 +111,7 @@ int HAL_is_suspended(TaskHandle_t handle)
   if (h != simulator::threadPool.cend())
     return h->second.isSuspended ? 0 : 1;
   else
-    hal::lampda_print("HAL_is_suspended> failed");
+    bsp::lampda_print("HAL_is_suspended> failed");
   return 0;
 }
 
@@ -121,13 +121,13 @@ void HAL_resume_thread(TaskHandle_t handle)
   if (h != simulator::threadPool.cend())
     h->second.isSuspended = false;
   else
-    hal::lampda_print("HAL_resume_thread> failed");
+    bsp::lampda_print("HAL_resume_thread> failed");
 }
 void HAL_get_debug_thread_text(char* textBuff) {}
 
 void HAL_shutdown()
 {
-  hal::lampda_print("Initiating thread shutdown process...");
+  bsp::lampda_print("Initiating thread shutdown process...");
 
   simulator::mock_registers::shouldStopThreads = true;
   for (auto& [id, thread]: simulator::threadPool)
@@ -140,7 +140,7 @@ void HAL_shutdown()
     thread.fun.join();
   }
   simulator::threadPool.clear();
-  hal::lampda_print("thread shutdown complete");
+  bsp::lampda_print("thread shutdown complete");
 }
 
 } // namespace threads

@@ -3,9 +3,9 @@
 */
 
 #include "src/system/hal/gpio.h"
-#include "src/system/hal/print.h"
 #include "src/system/hal/time.h"
 
+#include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
 
 #include "src/system/utils/input_output.h"

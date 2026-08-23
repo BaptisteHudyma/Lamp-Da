@@ -7,6 +7,9 @@
     - imu_wrappper.h: interaction layer of the imu
     - indicator.h: visual indicator controler (led in the button)
     - power_gate.h: the electrical gates to isolate output & vbus form each others
+    - text_in.h: user text input and parsing
+    - text_out.h: user text output
+    - threads.h: Thread board support
 - component: Medium level physical components layer: button, bluetooth, IMU, ...
     - battery.h: handle the battery readings, for battery level
     - button.h: control the button. Takes callbacks for actions on multiple button pushes. Used to display stuf on the button if needed
@@ -30,7 +33,7 @@
     - gpio.h: programmable pins interface
     - i2c.h; i2c interface
     - pdm_handle.h: microphone interface (through PDM)
-    - print.h: display & debug interface (through serial connection)
+    - serial.h: Serial connection interface
     - register.h: NRF52840 specific register access
     - strip_impl.h: Indexable led strip driver
     - threads.h: Tasks and threads interface

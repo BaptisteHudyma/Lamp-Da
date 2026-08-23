@@ -1,10 +1,11 @@
 #include "balancer.h"
 
-#include "src/system/logic/alerts.h"
-
 #include "src/system/hal/time.h"
 #include "src/system/hal/i2c.h"
-#include "src/system/hal/print.h"
+
+#include "src/system/bsp/text_out.h"
+
+#include "src/system/logic/alerts.h"
 
 #include "src/system/utils/time_utils.h"
 

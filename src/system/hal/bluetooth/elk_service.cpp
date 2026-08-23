@@ -1,8 +1,8 @@
 #include "elk_service.h"
 
-#include "src/system/hal/print.h"
-
 #include "src/system/hal/bluetooth.h"
+
+#include "src/system/bsp/text_out.h"
 
 #include "src/system/logic/inputs_bluetooth.h"
 
@@ -47,12 +47,12 @@ void BLEElkService::elk_commmand_handle(uint16_t conn_hdl, const uint8_t* data, 
   }
   else
   {
-    hal::lampda_print("Unsupported or invalid ELK message: ");
+    bsp::lampda_print("Unsupported or invalid ELK message: ");
     for (uint16_t i = 0; i < len; i++)
     {
-      hal::lampda_print_raw("%x ", data[i] & 0xFF);
+      bsp::lampda_print_raw("%x ", data[i] & 0xFF);
     }
-    hal::lampda_print_raw("\n");
+    bsp::lampda_print_raw("\n");
   }
 }
 

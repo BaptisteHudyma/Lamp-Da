@@ -7,12 +7,12 @@
 #include "simulator_state.h"
 
 #include "src/system/hal/gpio.h"
-#include "src/system/hal/print.h"
+
+#include "src/system/bsp/indicator.h"
+#include "src/system/bsp/text_out.h"
 
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/utils.h"
-
-#include "src/system/bsp/indicator.h"
 
 #include "src/system/component/button.h"
 

@@ -6,7 +6,8 @@
 #include "src/system/hal/time.h"
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/registers.h"
-#include "src/system/hal/print.h"
+
+#include "src/system/bsp/text_out.h"
 
 #include "src/system/component/battery.h"
 
@@ -93,7 +94,7 @@ void run_fault_detection()
       chargerIcRegisters.chargerStatus.Fault_Latchoff() or chargerIcRegisters.chargerStatus.Fault_OTG_OVP() or
       chargerIcRegisters.chargerStatus.Fault_OTG_UVP())
   {
-    hal::lampda_print("Charger ic faults: %d%d%d%d%d%d%d",
+    bsp::lampda_print("Charger ic faults: %d%d%d%d%d%d%d",
                       chargerIcRegisters.chargerStatus.Fault_ACOV(),
                       chargerIcRegisters.chargerStatus.Fault_BATOC(),
                       chargerIcRegisters.chargerStatus.Fault_ACOC(),
@@ -772,7 +773,7 @@ void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA)
   chargerIcRegisters.oTGCurrent.set(maxCurrent_mA);
 
   // if (realVal != prevVal)
-  //   hal::lampda_print("new OTG targets : %dmV %dmA", realVal, maxCurrent_mA);
+  //   bsp::lampda_print("new OTG targets : %dmV %dmA", realVal, maxCurrent_mA);
 }
 
 bool is_in_OTG() { return isInOtg_s; }

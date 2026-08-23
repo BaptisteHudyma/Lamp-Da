@@ -20,10 +20,11 @@
 
 #include "src/system/hal/time.h"
 
+#include "src/system/bsp/text_out.h"
+
 #include "src/system/logic/brightness_handle.h"
 
 #include "src/system/utils/assert.h"
-#include "src/system/utils/print.h"
 #include "src/system/utils/curves.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
@@ -35,6 +36,7 @@
 
 #include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/colors/palettes.hpp"
+
 namespace lampda::modes {
 
 struct XYTy

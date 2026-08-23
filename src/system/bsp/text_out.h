@@ -1,13 +1,13 @@
-/*! \file print.h
-    \brief Convertion header to use the print and debug functions from C code.
+/*! \file text_out.h
+    \brief Convertion header to use the text out functions from C code.
 */
 
-#ifndef C_LOGGER_H
-#define C_LOGGER_H
+#ifndef BSP_TEXT_OUT_H
+#define BSP_TEXT_OUT_H
 
 #ifdef __cplusplus
 namespace lampda {
-namespace hal {
+namespace bsp {
 
 #define EXTERNC extern "C"
 #else
@@ -18,6 +18,8 @@ namespace hal {
  * This file should be used by .c files to access print functions
  */
 
+EXTERNC void lampda_print_init();
+
 EXTERNC void lampda_print(const char* format, ...);
 
 /// raw print, no system additional logs
@@ -26,7 +28,7 @@ EXTERNC void lampda_print_raw(const char* format, ...);
 #undef EXTERNC
 
 #ifdef __cplusplus
-} // namespace hal
+} // namespace bsp
 } // namespace lampda
 #endif
 

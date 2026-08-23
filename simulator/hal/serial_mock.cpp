@@ -2,33 +2,21 @@
     \brief Mock of the board print and debugs
 */
 
-#include "src/system/hal/print.h"
-
-#include <cstdio>
-#include <iostream>
-
-#include <string>
-#include <vector>
-#include <cstdarg>
-
-#include "src/system/hal/time.h"
-
+#include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
-
-#include "src/system/utils/utils.h"
 
 #include "simulator/include/hardware_influencer.h"
 
-#include <mutex>
+#include "src/system/utils/utils.h"
+
+#include <cstdio>
+#include <iostream>
+#include <vector>
 #include <thread>
 #include <atomic>
+#include <mutex>
 
-#define HAL_PRINT_CPP
-
-extern "C" {
-  // hack to use prints in c files
-#include "src/system/utils/print.h"
-}
+#define HAL_SERIAL_CPP
 
 namespace simulator {
 
@@ -178,85 +166,51 @@ void print_mock_loop()
   }
 }
 
+size_t strIndex = 0;
+
 } // namespace simulator
 
 namespace lampda {
 namespace hal {
+namespace serial {
 
-/**
- * \brief call once at program start
- */
-void init_prints()
+void init()
 {
   simulator::get_line_async.start();
-  bsp::threads::start_thread(simulator::print_mock_loop, utils::hash("print_mock"), 0, 255);
+  bsp::threads::start_thread(simulator::print_mock_loop, utils::hash("tin_l"), 0, 255);
 }
 
-/**
- * \brief Print a screen to the external world
- */
+int is_available() { return simulator::inputCommands.empty() ? 1 : 0; }
 
-void lampda_print_raw(const char* format, ...)
+char read()
 {
-  std::scoped_lock lock(simulator::mut);
-
-  static char buffer[1024];
-  va_list argptr;
-  va_start(argptr, format);
-  vsprintf(buffer, format, argptr);
-  va_end(argptr);
-
-  std::cout << buffer;
-}
-
-void lampda_print(const char* format, ...)
-{
-  std::scoped_lock lock(simulator::mut);
-
-  static char buffer[1024];
-  va_list argptr;
-  va_start(argptr, format);
-  vsprintf(buffer, format, argptr);
-  va_end(argptr);
-
-  std::cout << hal::time_ms() << "> " << buffer << std::endl;
-}
-
-/**
- * \brief read external inputs (may take some time)
- */
-Inputs read_inputs()
-{
-  Inputs res;
-  res.commandCount = 0;
-
-  for (const auto& command: simulator::inputCommands)
+  if (is_available() != 0)
   {
-    if (res.commandCount >= Inputs::maxCommands)
-    {
-      std::cerr << "Command count exceeded max commands, ignoring following commands" << std::endl;
-      break;
-    }
-    if (command.size() >= Inputs::maxCommandSize)
-    {
-      std::cerr << "Command exceeded max command lenght" << std::endl;
-      continue;
-    }
-
-    size_t cnt = 0;
-    for (const char& c: command)
-    {
-      res.commandList[res.commandCount][cnt] = c;
-      cnt += 1;
-    }
-    res.commandList[res.commandCount][cnt] = '\0';
-    res.commandCount += 1;
+    bsp::lampda_print("Cannot read an empty char");
+    return '\n';
   }
 
-  // clear
-  simulator::inputCommands.clear();
-  return res;
+  const auto& str = simulator::inputCommands[0];
+  if (simulator::strIndex < str.size())
+  {
+    return str[simulator::strIndex++];
+  }
+  else
+  {
+    simulator::strIndex = 0;
+    simulator::inputCommands.erase(simulator::inputCommands.begin());
+    return '\n';
+  }
 }
 
+size_t write(const char* const buffer, size_t bufferSize)
+{
+  std::scoped_lock lock(simulator::mut);
+
+  std::cout << std::string(buffer, bufferSize);
+  return bufferSize;
+}
+
+} // namespace serial
 } // namespace hal
 } // namespace lampda

@@ -2,11 +2,11 @@
 
 #include "src/system/hal/bluetooth.h"
 #include "src/system/hal/i2c.h"
-#include "src/system/hal/print.h"
 #include "src/system/hal/registers.h"
 
-#include "src/system/bsp/balancer.h"
 #include "src/system/bsp/pd/power_delivery.h"
+#include "src/system/bsp/balancer.h"
+#include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
 
 #include "src/system/component/battery.h"
@@ -43,7 +43,7 @@ inline bool isCommandSeparator(const char character) { return character == ' ' |
 
 struct ParsedCommand
 {
-  hal::Inputs::Command buffer {};
+  bsp::text_in::Inputs::Command buffer {};
 
   uint8_t commandOffset = 0;
   std::array<uint8_t, maxArgumentCount> argumentOffsets {};
@@ -114,7 +114,7 @@ bool parse_uint16(const ParsedCommand& command, const size_t index, uint16_t& va
 
 } // namespace argument
 
-ParsedCommand parseCommand(const hal::Inputs::Command& input)
+ParsedCommand parseCommand(const bsp::text_in::Inputs::Command& input)
 {
   ParsedCommand result;
   // copy str
@@ -180,7 +180,7 @@ ParsedCommand parseCommand(const hal::Inputs::Command& input)
   return result;
 }
 
-void handleCommand(const hal::Inputs::Command& commandLine)
+void handleCommand(const bsp::text_in::Inputs::Command& commandLine)
 {
   const ParsedCommand command = parseCommand(commandLine);
 
@@ -192,7 +192,7 @@ void handleCommand(const hal::Inputs::Command& commandLine)
     case utils::hash("h"):
     case utils::hash("help"):
       {
-        hal::lampda_print(
+        bsp::lampda_print(
                 "---Lamp-da CLI---\n"
                 "h: this page\n"
                 "v: hardware & software version\n"
@@ -221,7 +221,7 @@ void handleCommand(const hal::Inputs::Command& commandLine)
 
     case utils::hash("v"):
       {
-        hal::lampda_print(
+        bsp::lampda_print(
                 "hardware:%d.%d\n"
                 "firmware:%d.%d\n"
                 "base software:%d.%d\n"
@@ -240,13 +240,13 @@ void handleCommand(const hal::Inputs::Command& commandLine)
     case utils::hash("t"):
       {
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
-        hal::lampda_print("indexable");
+        bsp::lampda_print("indexable");
 #else
 #ifdef LMBD_LAMP_TYPE__SIMPLE
-        hal::lampda_print("simple");
+        bsp::lampda_print("simple");
 #else
 #ifdef LMBD_LAMP_TYPE__CCT
-        hal::lampda_print("cct");
+        bsp::lampda_print("cct");
 #else
 #error "Unspecified lamp type in CLI"
 #endif /* LMBD_LAMP_TYPE__CCT */
@@ -257,7 +257,7 @@ void handleCommand(const hal::Inputs::Command& commandLine)
 
     case utils::hash("id"):
       {
-        hal::lampda_print("Serial number: %lu", hal::registers::get_device_serial_number());
+        bsp::lampda_print("Serial number: %lu", hal::registers::get_device_serial_number());
         break;
       }
 
@@ -276,32 +276,32 @@ void handleCommand(const hal::Inputs::Command& commandLine)
         {
           // print individual battery voltages
           for (uint8_t i = 0; i < batteryCount; ++i)
-            hal::lampda_print("cell %d: %d mV, is balancing: %s",
+            bsp::lampda_print("cell %d: %d mV, is balancing: %s",
                               i,
                               balancerStatus.batteryVoltages_mV[i],
                               boolToString(balancerStatus.isBalancing[i]));
-          hal::lampda_print("total (from balancer) %dmv\n", balancerStatus.stackVoltage_mV);
+          bsp::lampda_print("total (from balancer) %dmv\n", balancerStatus.stackVoltage_mV);
         }
         else
         {
-          hal::lampda_print("balancer measurments not valid");
+          bsp::lampda_print("balancer measurments not valid");
         }
 
         const auto& chargerStatus = ::lampda::component::charger::get_state();
         const bool areChargerValueValid = chargerStatus.areMeasuresOk;
         if (areChargerValueValid)
         {
-          hal::lampda_print("total (from charger) %dmv", chargerStatus.batteryVoltage_mV);
+          bsp::lampda_print("total (from charger) %dmv", chargerStatus.batteryVoltage_mV);
         }
         else
         {
-          hal::lampda_print("charger measurments not valid");
+          bsp::lampda_print("charger measurments not valid");
         }
 
         if (areChargerValueValid or areBalancerValueValid)
         {
           // print individual battery voltages
-          hal::lampda_print(
+          bsp::lampda_print(
                   "raw battery level:%.2f%%\n"
                   "battery level:%.2f%%\n"
                   "minimum cell level:%.2f%%",
@@ -311,7 +311,7 @@ void handleCommand(const hal::Inputs::Command& commandLine)
         }
         else
         {
-          hal::lampda_print("Battery measurments not valid");
+          bsp::lampda_print("Battery measurments not valid");
         }
         break;
       }
@@ -321,7 +321,7 @@ void handleCommand(const hal::Inputs::Command& commandLine)
         const auto& chargerState = ::lampda::component::charger::get_state();
         if (chargerState.areMeasuresOk)
         {
-          hal::lampda_print(
+          bsp::lampda_print(
                   "is charge signal ok:%s\n"
                   "voltage on power rail:%dmV\n"
                   "input current:%dmA\n"
@@ -347,7 +347,7 @@ void handleCommand(const hal::Inputs::Command& commandLine)
         }
         else
         {
-          hal::lampda_print(
+          bsp::lampda_print(
                   "is charge signal ok:%s\n"
                   "Charger measurments are invalid !!\n"
                   "is usb serial connected:%s\n"
@@ -364,11 +364,11 @@ void handleCommand(const hal::Inputs::Command& commandLine)
         // in case there is a software error, display it
         if (chargerState.status == ::lampda::component::charger::Charger_t::ChargerStatus_t::ERROR_HARDWARE)
         {
-          hal::lampda_print("\t hardware error detail: \"%s\"", chargerState.hardwareErrorMessage.c_str());
+          bsp::lampda_print("\t hardware error detail: \"%s\"", chargerState.hardwareErrorMessage.c_str());
         }
         if (chargerState.status == ::lampda::component::charger::Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
-          hal::lampda_print("\t software error detail: \"%s\"", chargerState.softwareErrorMessage.c_str());
+          bsp::lampda_print("\t software error detail: \"%s\"", chargerState.softwareErrorMessage.c_str());
         }
         break;
       }
@@ -379,7 +379,7 @@ void handleCommand(const hal::Inputs::Command& commandLine)
 
     case utils::hash("i2c"):
       {
-        hal::lampda_print(
+        bsp::lampda_print(
                 "fusb detected : %d\n"
                 "imu detected: %d\n"
                 "balancer detected: %d\n"
@@ -396,7 +396,7 @@ void handleCommand(const hal::Inputs::Command& commandLine)
         const auto& chargerState = ::lampda::component::charger::get_state();
         if (chargerState.areMeasuresOk)
         {
-          hal::lampda_print(
+          bsp::lampda_print(
                   "Last update %dms\n"
                   "PowerRail voltage:%dmV\n"
                   "PowerRail current:%dmA\n"
@@ -414,7 +414,7 @@ void handleCommand(const hal::Inputs::Command& commandLine)
         }
         else
         {
-          hal::lampda_print(
+          bsp::lampda_print(
                   "Charger measurment are invalid !\n"
                   "Last update %dms\n"
                   "VBUS voltage:%dmA\n"
@@ -432,30 +432,30 @@ void handleCommand(const hal::Inputs::Command& commandLine)
         const auto& pd = ::lampda::bsp::powerDelivery::get_available_pd();
         if (pd.empty())
         {
-          hal::lampda_print("No power delivery capabilities");
+          bsp::lampda_print("No power delivery capabilities");
         }
         else
         {
-          hal::lampda_print("Power delivery profiles :");
+          bsp::lampda_print("Power delivery profiles :");
           for (const auto& pdo: pd)
-            hal::lampda_print("- %dmV, %dmA", pdo.voltage_mv, pdo.maxCurrent_mA);
+            bsp::lampda_print("- %dmV, %dmA", pdo.voltage_mv, pdo.maxCurrent_mA);
         }
         break;
       }
 
     case utils::hash("states"):
       {
-        hal::lampda_print("behavior machine state:%s. error msgs: %s",
+        bsp::lampda_print("behavior machine state:%s. error msgs: %s",
                           logic::behavior::get_state().c_str(),
                           logic::behavior::get_error_state_message().c_str());
-        hal::lampda_print("power state machine state: %s. error msgs: %s",
+        bsp::lampda_print("power state machine state: %s. error msgs: %s",
                           logic::power::get_state().c_str(),
                           logic::power::get_error_string().c_str());
         break;
       }
 
     case utils::hash("format-fs"):
-      hal::lampda_print("clearing the whole file format");
+      bsp::lampda_print("clearing the whole file format");
       component::fileSystem::clear_internal_fs();
       break;
 
@@ -469,19 +469,19 @@ void handleCommand(const hal::Inputs::Command& commandLine)
         {
           case hal::gpio::DigitalPin::GPIO::gpio3:
             component::button::set_button_pin(hal::gpio::DigitalPin::GPIO::gpio4);
-            hal::lampda_print("Set button pin to gpio4");
+            bsp::lampda_print("Set button pin to gpio4");
             break;
           case hal::gpio::DigitalPin::GPIO::gpio4:
 #ifdef LMBD_LAMP_TYPE__SIMPLE
             component::button::set_button_pin(hal::gpio::DigitalPin::GPIO::gpio6);
-            hal::lampda_print("Set button pin to gpio6");
+            bsp::lampda_print("Set button pin to gpio6");
             break;
             // The simple lamp can also use pin 6
           case hal::gpio::DigitalPin::GPIO::gpio6: // pass throught
 #endif
           default:
             component::button::set_button_pin(hal::gpio::DigitalPin::GPIO::gpio3);
-            hal::lampda_print("Set button pin to gpio3");
+            bsp::lampda_print("Set button pin to gpio3");
             break;
         }
         break;
@@ -494,11 +494,11 @@ void handleCommand(const hal::Inputs::Command& commandLine)
     case utils::hash("tasks"):
       char buff[512];
       bsp::threads::get_thread_debug(buff);
-      hal::lampda_print("%s", buff);
+      bsp::lampda_print("%s", buff);
       break;
 
     case utils::hash("ble"):
-      hal::lampda_print(
+      bsp::lampda_print(
               "is activated: %d\n"
               "is advertising: %d\n"
               "is connected: %d\n"
@@ -511,11 +511,11 @@ void handleCommand(const hal::Inputs::Command& commandLine)
               logic::behavior::internal::get_bluetooth_auto_activation_left());
       break;
     case utils::hash("echo"):
-      hal::lampda_print("command: %s, argument count: %u", command.name(), command.argumentCount);
+      bsp::lampda_print("command: %s, argument count: %u", command.name(), command.argumentCount);
 
       for (uint8_t index = 0; index < command.argumentCount; ++index)
       {
-        hal::lampda_print("argument %u: '%s'", index, command.argument(index));
+        bsp::lampda_print("argument %u: '%s'", index, command.argument(index));
       }
       break;
     case utils::hash("brightness"):
@@ -523,11 +523,11 @@ void handleCommand(const hal::Inputs::Command& commandLine)
         brightness_t brightness = 0;
         if (argument::parse_uint16(command, 0, brightness) && brightness <= logic::brightness::get_max_brightness())
         {
-          hal::lampda_print("set brightness to %u/%u", brightness, logic::brightness::get_max_brightness());
+          bsp::lampda_print("set brightness to %u/%u", brightness, logic::brightness::get_max_brightness());
           logic::brightness::update_brightness(brightness, false);
           break;
         }
-        hal::lampda_print("usage: brightness <0-%u>", logic::brightness::get_max_brightness());
+        bsp::lampda_print("usage: brightness <0-%u>", logic::brightness::get_max_brightness());
         break;
       }
     case utils::hash("time"):
@@ -535,7 +535,7 @@ void handleCommand(const hal::Inputs::Command& commandLine)
         const auto& time = component::time::get_real_time();
         if (time.is_valid())
         {
-          hal::lampda_print("Real time is %dh %dmin %ds, day index is %d",
+          bsp::lampda_print("Real time is %dh %dmin %ds, day index is %d",
                             time.hour,
                             time.minutes,
                             time.seconds,
@@ -543,33 +543,33 @@ void handleCommand(const hal::Inputs::Command& commandLine)
         }
         else
         {
-          hal::lampda_print("Real time is not set");
+          bsp::lampda_print("Real time is not set");
         }
         break;
       }
 
     default:
-      hal::lampda_print("unknown command: \'%s\'", command.name());
-      hal::lampda_print("type h for available commands");
+      bsp::lampda_print("unknown command: \'%s\'", command.name());
+      bsp::lampda_print("type h for available commands");
       break;
   }
 }
 
-void setup() { hal::init_prints(); }
+void setup() { bsp::lampda_print_init(); }
 
 void handleSerialEvents()
 {
-  const auto& inputs = hal::read_inputs();
-  for (size_t i = 0; i < min<uint8_t>(hal::Inputs::maxCommands, inputs.commandCount); i++)
+  const auto& inputs = bsp::text_in::read_inputs();
+  for (size_t i = 0; i < min<uint8_t>(bsp::text_in::Inputs::maxCommands, inputs.commandCount); i++)
   {
-    const hal::Inputs::Command& input = inputs.commandList[i];
+    const bsp::text_in::Inputs::Command& input = inputs.commandList[i];
     handleCommand(input);
   }
 
   const auto& inputsBLE = hal::bluetooth::read_uart();
-  for (size_t i = 0; i < min<uint8_t>(hal::Inputs::maxCommands, inputsBLE.commandCount); i++)
+  for (size_t i = 0; i < min<uint8_t>(bsp::text_in::Inputs::maxCommands, inputsBLE.commandCount); i++)
   {
-    const hal::Inputs::Command& input = inputsBLE.commandList[i];
+    const bsp::text_in::Inputs::Command& input = inputsBLE.commandList[i];
     handleCommand(input);
   }
 }

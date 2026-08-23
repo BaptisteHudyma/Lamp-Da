@@ -1,32 +1,27 @@
-#ifndef HAL_PRINT_CPP
-#define HAL_PRINT_CPP
-
-#include "print.h"
-
-#include <Arduino.h>
-
-#include "src/system/hal/bluetooth.h"
-#include "src/system/hal/time.h"
-#include "src/system/hal/queues.h"
-
-#include "src/system/bsp/threads.h"
 
 extern "C" {
 // hack to use prints in c files
-#include "src/system/utils/print.h"
+#include "src/system/bsp/text_out.h"
 }
 
+#include "src/system/hal/bluetooth.h"
+#include "src/system/hal/queues.h"
+#include "src/system/hal/serial.h"
+#include "src/system/hal/time.h"
+
+#include "src/system/bsp/threads.h"
+
+#include <array>
+#include <cstring>
+#include <cstddef>
+#include <cstdarg>
+
+static constexpr size_t max_tx_buffer_size = 1024;
+
 namespace lampda {
-namespace hal {
+namespace bsp {
 
 namespace __private {
-
-// mutex to prevent lockups
-StaticSemaphore_t _PrintMutex;
-SemaphoreHandle_t printMutex = xSemaphoreCreateMutexStatic(&_PrintMutex);
-
-void _lockPrintMutex(void) { xSemaphoreTake(printMutex, portMAX_DELAY); }
-void _unlockPrintMutex(void) { xSemaphoreGive(printMutex); }
 
 // UART TX Task structures
 static constexpr size_t DESIRED_MEMORY = 2048;    // power of two
@@ -39,7 +34,7 @@ struct UartSendRequest
   size_t len;
 };
 
-static QueueHandle_t uart_send_queue = nullptr;
+static hal::queues::QueueHandle_t uart_send_queue = nullptr;
 
 void uart_tx_task()
 {
@@ -58,7 +53,7 @@ void uart_tx_task()
     while (offset < req.len)
     {
       size_t chunkSize = (req.len - offset > max_mtu) ? max_mtu : (req.len - offset);
-      size_t written = Serial.write(req.data + offset, chunkSize);
+      size_t written = hal::serial::write(req.data + offset, chunkSize);
 
       if (written == 0)
       {
@@ -122,11 +117,9 @@ static void low_level_print(const char* format, va_list args)
   {
     const char errMsg[] = "Cannot display: msg too big\r\n";
     __private::send_uart(errMsg);
-    bluetooth::send_uart(errMsg);
+    hal::bluetooth::send_uart(errMsg);
     return;
   }
-
-  _lockPrintMutex();
 
   _buffer.fill('\0');
   vsprintf(_buffer.data(), format, args);
@@ -135,33 +128,28 @@ static void low_level_print(const char* format, va_list args)
   if (not __private::send_uart(_buffer.data()))
   {
     const char errMsg[] = "Too much data for Serial transmition\r\n";
-    bluetooth::send_uart(errMsg);
+    hal::bluetooth::send_uart(errMsg);
   }
 
   // then bluetooth
-  if (not bluetooth::send_uart(_buffer.data()))
+  if (not hal::bluetooth::send_uart(_buffer.data()))
   {
     const char errMsg[] = "Too much data for BLE transmition\r\n";
     __private::send_uart(errMsg);
   }
-
-  _unlockPrintMutex();
 }
-
 } // namespace __private
 
-// only keep the chars inside a certain ascii range
-bool is_ignore_char(char c) { return c < 32; }
-
-void init_prints()
+void lampda_print_init()
 {
   __private::uart_send_queue =
           hal::queues::HAL_create_queue(sizeof(__private::UartSendRequest), __private::UART_TX_QUEUE_SIZE);
   bsp::threads::start_thread(__private::uart_tx_task, bsp::threads::print_taskName, 3, 512);
 
-  Serial.begin(115200);
+  hal::serial::init();
 }
 
+/// C linkage to print functions
 void lampda_print_raw(const char* format, ...)
 {
   va_list args;
@@ -170,12 +158,13 @@ void lampda_print_raw(const char* format, ...)
   va_end(args);
 }
 
+/// C linkage to print functions
 void lampda_print(const char* format, ...)
 {
   va_list args;
 
   // header
-  lampda_print_raw("%d> ", millis());
+  lampda_print_raw("%d> ", hal::time_ms());
   // core
   va_start(args, format);
   __private::low_level_print(format, args);
@@ -184,67 +173,5 @@ void lampda_print(const char* format, ...)
   lampda_print_raw("\r\n");
 }
 
-constexpr uint8_t maxReadLinePerLoop = 5;
-constexpr uint8_t maxLineLenght = 200;
-
-Inputs read_inputs()
-{
-  __private::_lockPrintMutex();
-
-  Inputs ret;
-
-  if (Serial.available())
-  {
-    uint8_t charRead = 0;
-
-    // read available serial data
-    do
-    {
-      // get the new byte:
-      const char inChar = (char)Serial.read();
-      // if the incoming character is a newline, finish parsing
-      if (inChar == '\n')
-      {
-        // do not add empty strings and null terminated only strings
-        if (charRead != 0)
-        {
-          // add null termination if needed
-          if (charRead < Inputs::maxCommandSize)
-          {
-            if (ret.commandList[ret.commandCount][charRead] != '\0')
-              ret.commandList[ret.commandCount][charRead] = '\0';
-          }
-          else
-          {
-            ret.commandList[ret.commandCount][Inputs::maxCommandSize - 1] = '\0';
-          }
-          ret.commandCount += 1;
-        }
-        else
-        {
-          for (size_t i = 0; i < Inputs::maxCommandSize; i++)
-            ret.commandList[ret.commandCount][i] = '\0';
-        }
-
-        charRead = 0;
-      }
-      else if (charRead < Inputs::maxCommandSize)
-      {
-        // add it to the inputString:
-        if (not is_ignore_char(inChar))
-        {
-          ret.commandList[ret.commandCount][charRead] = inChar;
-          charRead += 1;
-        }
-      }
-    } while (Serial.available() && ret.commandCount < Inputs::maxCommands);
-  }
-
-  __private::_unlockPrintMutex();
-  return ret;
-}
-
-} // namespace hal
+} // namespace bsp
 } // namespace lampda
-
-#endif

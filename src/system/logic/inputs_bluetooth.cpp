@@ -2,12 +2,13 @@
 
 #include "src/user/functions.h"
 
+#include "src/system/hal/bluetooth.h"
+
+#include "src/system/bsp/text_out.h"
+
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
 #include "src/system/logic/sunset_timer.h"
-
-#include "src/system/hal/print.h"
-#include "src/system/hal/bluetooth.h"
 
 #include "src/system/utils/utils.h"
 #include <cstdint>

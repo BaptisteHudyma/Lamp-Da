@@ -241,7 +241,7 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
                       holdDuration, 5000, modes::colors::PaletteGradient<modes::colors::Red, modes::colors::Red>))
           {
             // reset the file system and memory
-            hal::lampda_print("clearing the whole file format");
+            bsp::lampda_print("clearing the whole file format");
             component::fileSystem::clear_internal_fs();
 
             // shutdown the lamp
@@ -261,7 +261,7 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
                       holdDuration, 5000, modes::colors::PaletteGradient<modes::colors::Red, modes::colors::Red>))
           {
             // reset the file system and memory
-            hal::lampda_print("clearing the whole file format");
+            bsp::lampda_print("clearing the whole file format");
             component::fileSystem::clear_internal_fs();
 
             // shutdown the lamp
@@ -346,7 +346,7 @@ void handle_set_time_command(const uint8_t hour, const uint8_t minutes, const ui
   time.minutes = minutes;
   time.seconds = seconds;
   const bool isValid = component::time::set_real_time(time);
-  hal::lampda_print("set time %d %dh %dm %ds (validity: %d)", weekday, hour, minutes, seconds, isValid);
+  bsp::lampda_print("set time %d %dh %dm %ds (validity: %d)", weekday, hour, minutes, seconds, isValid);
 }
 
 /**
@@ -368,7 +368,7 @@ void handle_timing_command(const bool shouldTurnOn,
 
   if (internalLampActionTime <= 0)
   {
-    hal::lampda_print("Refusing timing command %d %dh %dm %ds. Likely cause: time is not synchronized.",
+    bsp::lampda_print("Refusing timing command %d %dh %dm %ds. Likely cause: time is not synchronized.",
                       time.dayOfTheWeek,
                       hour,
                       minutes,
@@ -378,7 +378,7 @@ void handle_timing_command(const bool shouldTurnOn,
 
   if (shouldTurnOn)
   {
-    hal::lampda_print("NOT HANDLED: lamp will auto turn on on %d %dh %dm %ds %d",
+    bsp::lampda_print("NOT HANDLED: lamp will auto turn on on %d %dh %dm %ds %d",
                       time.dayOfTheWeek,
                       hour,
                       minutes,
@@ -391,7 +391,7 @@ void handle_timing_command(const bool shouldTurnOn,
     if (not logic::behavior::is_in_output_state())
       logic::behavior::set_power_on();
 
-    hal::lampda_print("lamp will auto turn off on %d %dh %dm %ds %d",
+    bsp::lampda_print("lamp will auto turn off on %d %dh %dm %ds %d",
                       time.dayOfTheWeek,
                       hour,
                       minutes,
@@ -433,7 +433,7 @@ bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
 
         if (weekdayPlusOne <= 0 or weekdayPlusOne > 7)
         {
-          hal::lampda_print("Refused to set the time: invalid day of the week: %d", weekdayPlusOne);
+          bsp::lampda_print("Refused to set the time: invalid day of the week: %d", weekdayPlusOne);
           break;
         }
 
@@ -461,7 +461,7 @@ bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
 
         if (indexOfTheDay < 0 or indexOfTheDay > 6)
         {
-          hal::lampda_print("Refused to handle timing command: invalid day of the week");
+          bsp::lampda_print("Refused to handle timing command: invalid day of the week");
           break;
         }
 

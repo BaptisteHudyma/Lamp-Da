@@ -5,7 +5,10 @@
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/time.h"
 #include "src/system/hal/registers.h"
-#include "src/system/hal/print.h"
+
+#include "src/system/bsp/indicator.h"
+#include "src/system/bsp/text_out.h"
+#include "src/system/bsp/threads.h"
 
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
@@ -13,9 +16,6 @@
 #include "src/system/logic/inputs.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/sunset_timer.h"
-
-#include "src/system/bsp/indicator.h"
-#include "src/system/bsp/threads.h"
 
 #include "src/system/component/battery.h"
 #include "src/system/component/charger.h"
@@ -128,7 +128,7 @@ void main_setup()
   // check if we are in first boot mode (read parameters fails)
   const bool isFirstBoot = not logic::behavior::read_parameters();
 #ifdef LMBD_SIMULATION
-  hal::lampda_print("Is first time boot %d", isFirstBoot);
+  bsp::lampda_print("Is first time boot %d", isFirstBoot);
 #endif
 
   // can start !

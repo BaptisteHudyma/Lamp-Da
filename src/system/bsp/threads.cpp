@@ -3,8 +3,9 @@
 
 #include "threads.h"
 
-#include "src/system/hal/print.h"
 #include "src/system/hal/threads.h"
+
+#include "src/system/bsp/text_out.h"
 
 #include "src/system/utils/utils.h"
 
@@ -67,12 +68,12 @@ void low_level_start_thread(taskfunc_t taskFunction,
   // handle already exists
   if (handles.find(taskName) != handles.cend())
   {
-    hal::lampda_print("task %s (%d) creation failed: already exists", get_name_from_hash(taskName), taskName);
+    bsp::lampda_print("task %s (%d) creation failed: already exists", get_name_from_hash(taskName), taskName);
     return;
   }
   if (stackSize < 255)
   {
-    hal::lampda_print("task %s (%d) creation failed: stack too small", get_name_from_hash(taskName), taskName);
+    bsp::lampda_print("task %s (%d) creation failed: stack too small", get_name_from_hash(taskName), taskName);
     return;
   }
 
@@ -88,7 +89,7 @@ void low_level_start_thread(taskfunc_t taskFunction,
   }
   else
   {
-    hal::lampda_print("task %s (%d) creation failed", get_name_from_hash(taskName), taskName);
+    bsp::lampda_print("task %s (%d) creation failed", get_name_from_hash(taskName), taskName);
   }
 }
 
@@ -134,7 +135,7 @@ void resume_thread(const uint32_t taskName)
   auto handle = __private::handles.find(taskName);
   if (handle == __private::handles.cend())
   {
-    hal::lampda_print("ERROR: resume task handle \'%s\' (%d) do not exist", get_name_from_hash(taskName), taskName);
+    bsp::lampda_print("ERROR: resume task handle \'%s\' (%d) do not exist", get_name_from_hash(taskName), taskName);
     return;
   }
 
@@ -146,7 +147,7 @@ void notify_thread(const uint32_t taskName, int wakeUpEvent)
   auto handle = __private::handles.find(taskName);
   if (handle == __private::handles.cend())
   {
-    hal::lampda_print("ERROR: notify task handle \'%s\' (%d) do not exist", get_name_from_hash(taskName), taskName);
+    bsp::lampda_print("ERROR: notify task handle \'%s\' (%d) do not exist", get_name_from_hash(taskName), taskName);
     return;
   }
   hal::threads::HAL_notify_thread(handle->second, wakeUpEvent);

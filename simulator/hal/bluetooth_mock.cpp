@@ -26,9 +26,9 @@ void notify_battery_level(const uint8_t batteryLevel) {}
 
 bool send_uart(char const* buffer) { return true; }
 
-hal::Inputs read_uart()
+bsp::text_in::Inputs read_uart()
 {
-  Inputs ret;
+  bsp::text_in::Inputs ret;
   return ret;
 }
 

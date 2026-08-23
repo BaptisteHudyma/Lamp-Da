@@ -1,0 +1,38 @@
+/*! \file serial.h
+    \brief Interface for the platform specific serial input output.
+*/
+
+#ifndef HAL_SERIAL_H
+#define HAL_SERIAL_H
+
+#include <cstddef>
+
+namespace lampda {
+namespace hal {
+/// Serial port HAL layer
+namespace serial {
+
+/**
+ * \brief call once at program start
+ */
+extern void init();
+
+/// Return 0 if a character is available to read
+extern int is_available();
+
+/// Read a character (blocking)
+extern char read();
+
+/**
+ * \brief Write a char buffer to the serial port
+ * \param[in] buffer Buffer containing the text to display
+ * \param[in] bufferSize Size of the buffer to display
+ * \return the size of the written bytes
+ */
+extern size_t write(const char* const buffer, size_t bufferSize);
+
+} // namespace serial
+} // namespace hal
+} // namespace lampda
+
+#endif

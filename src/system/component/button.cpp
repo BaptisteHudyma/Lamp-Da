@@ -3,9 +3,9 @@
 
 #include "button.h"
 
-#include "src/system/hal/print.h"
 #include "src/system/hal/time.h"
 
+#include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
 
 #include "src/system/utils/constants.h"
@@ -85,20 +85,20 @@ void handle_events()
       const bool isSuccess = logic::inputs::add_button_press_event(buttonState.nbClicksCounted, pressDuration, true);
       if (not isSuccess)
       {
-        hal::lampda_print("Button: Could not register end of hold event");
+        bsp::lampda_print("Button: Could not register end of hold event");
       }
       else
-        hal::lampda_print("Button: Registered %d clicks and %d ms press", buttonState.nbClicksCounted, pressDuration);
+        bsp::lampda_print("Button: Registered %d clicks and %d ms press", buttonState.nbClicksCounted, pressDuration);
     }
     else
     {
       const bool isSuccess = logic::inputs::add_button_click_event(buttonState.nbClicksCounted);
       if (not isSuccess)
       {
-        hal::lampda_print("Button: Could not register end of click event, droping less important events");
+        bsp::lampda_print("Button: Could not register end of click event, droping less important events");
       }
       else
-        hal::lampda_print("Button: Registered %d clicks", buttonState.nbClicksCounted);
+        bsp::lampda_print("Button: Registered %d clicks", buttonState.nbClicksCounted);
     }
 
     // reset
@@ -126,7 +126,7 @@ void handle_events()
     if (not isSuccess)
     {
       // ok: just a ramp event miss can happen without a problem
-      hal::lampda_print("Button: Could not register hold event");
+      bsp::lampda_print("Button: Could not register hold event");
     }
   }
 
@@ -134,7 +134,7 @@ void handle_events()
   if (isButtonPressDetected && not is_button_pressed() && pressDuration > RELEASE_BETWEEN_CLICKS)
   {
     button_state_interrupt();
-    hal::lampda_print("Button interrupt shortcut due to state lock detected");
+    bsp::lampda_print("Button interrupt shortcut due to state lock detected");
   }
 }
 
