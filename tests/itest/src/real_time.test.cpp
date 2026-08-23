@@ -4,10 +4,11 @@
 
 #include "src/system/component/time_handling.h"
 
+#include "src/system/hal/time.h"
+
 #include "src/system/logic/inputs.h"
 
-#include "src/system/hal/threads.h"
-#include "src/system/hal/time.h"
+#include "src/system/bsp/threads.h"
 
 // access simulation states
 #include "simulator/include/simulator_state.h"
@@ -30,7 +31,7 @@ protected:
   void TearDown() override
   {
     // shutdown all threads
-    hal::threads::shutdown();
+    bsp::threads::shutdown();
   }
 
 private:
@@ -157,7 +158,7 @@ protected:
   void TearDown() override
   {
     // shutdown all threads
-    hal::threads::shutdown();
+    bsp::threads::shutdown();
   }
 
 public:

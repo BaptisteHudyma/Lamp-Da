@@ -3,58 +3,13 @@
 
 #include "threads.h"
 
-#include "src/system/hal/print.h"
-
-#include "src/system/utils/utils.h"
+#include "src/system/bsp/threads.h"
 
 #include <Arduino.h>
-#include <map>
 
 namespace lampda {
 namespace hal {
 namespace threads {
-
-// extern defines
-const uint32_t pd_taskName = utils::hash("usbpd");
-const uint32_t pdInterruptHandle_taskName = utils::hash("intpd");
-const uint32_t button_taskName = utils::hash("button");
-const uint32_t power_taskName = utils::hash("power");
-const uint32_t user_taskName = utils::hash("user");
-const uint32_t taskScheduler_taskName = utils::hash("task_sched");
-const uint32_t sunset_taskName = utils::hash("sunset");
-const uint32_t ble_cli_taskName = utils::hash("ble_cli");
-const uint32_t print_taskName = utils::hash("print");
-
-const char* const get_name_from_hash(const uint32_t hash)
-{
-  switch (hash)
-  {
-    case pd_taskName:
-      return "usbpd";
-    case pdInterruptHandle_taskName:
-      return "intpd";
-    case button_taskName:
-      return "button";
-    case power_taskName:
-      return "power";
-    case user_taskName:
-      return "user";
-    case taskScheduler_taskName:
-      return "task_sched";
-    case sunset_taskName:
-      return "sunset";
-    case ble_cli_taskName:
-      return "ble_cli";
-    case print_taskName:
-      return "print";
-    default:
-      break;
-  }
-  return "unknown";
-}
-
-// store all handles
-std::map<uint32_t, TaskHandle_t> handles;
 
 // loop task
 [[noreturn]] static void _redirect_task(void* arg)
@@ -71,8 +26,9 @@ std::map<uint32_t, TaskHandle_t> handles;
 // loop task
 [[noreturn]] static void _redirect_suspend_task(void* arg)
 {
-  vTaskSuspend(NULL);
   SchedulerRTOS::taskfunc_t taskfunc = (SchedulerRTOS::taskfunc_t)arg;
+
+  HAL_suspend();
   while (true)
   {
     taskfunc();
@@ -80,12 +36,13 @@ std::map<uint32_t, TaskHandle_t> handles;
   }
 }
 
-void start_thread(taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize)
+int HAL_create_thread(TaskHandle_t* const handle,
+                      taskfunc_t task,
+                      char const* const name,
+                      const int priority,
+                      const int stackSize,
+                      const int startSuspended)
 {
-  // handle already exists
-  if (handles.find(taskName) != handles.cend())
-    return;
-
   uint32_t prio = TASK_PRIO_LOW;
   if (priority >= 2)
     prio = TASK_PRIO_HIGH;
@@ -94,120 +51,22 @@ void start_thread(taskfunc_t taskFunction, const uint32_t taskName, const int pr
   else
     prio = TASK_PRIO_LOW;
 
-  TaskHandle_t handle;
-  if (pdPASS == xTaskCreate(_redirect_task,
-                            get_name_from_hash(taskName),
-                            max<int>(configMINIMAL_STACK_SIZE, stackSize),
-                            (void*)taskFunction,
-                            prio,
-                            &handle))
+  auto& taskToUse = startSuspended == 0 ? _redirect_suspend_task : _redirect_task;
+
+  if (pdPASS == xTaskCreate(taskToUse, name, max<int>(configMINIMAL_STACK_SIZE, stackSize), (void*)task, prio, handle))
   {
-    handles[taskName] = handle;
-  }
-  else
-  {
-    hal::lampda_print("task creation failed");
-  }
-}
-
-void start_suspended_thread(taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize)
-{
-  // handle already exists
-  if (handles.find(taskName) != handles.cend())
-    return;
-
-  uint32_t prio = TASK_PRIO_LOW;
-  if (priority >= 2)
-    prio = TASK_PRIO_HIGH;
-  else if (priority >= 1)
-    prio = TASK_PRIO_NORMAL;
-  else
-    prio = TASK_PRIO_LOW;
-
-  TaskHandle_t handle;
-  if (pdPASS == xTaskCreate(_redirect_suspend_task,
-                            get_name_from_hash(taskName),
-                            max<int>(configMINIMAL_STACK_SIZE, stackSize),
-                            (void*)taskFunction,
-                            prio,
-                            &handle))
-  {
-    handles[taskName] = handle;
-  }
-  else
-  {
-    hal::lampda_print("task %s (%d) creation failed", get_name_from_hash(taskName), taskName);
-  }
-}
-
-void yield_this_thread() { yield(); }
-
-void suspend_this_thread() { vTaskSuspend(NULL); }
-
-void suspend_all_threads()
-{
-  for (auto handle: handles)
-  {
-    // notify to cancel timeouts
-    xTaskNotifyGive(handle.second);
-    vTaskSuspend(handle.second);
-  }
-}
-
-int is_all_suspended()
-{
-  for (const auto& handle_it: handles)
-  {
-    if (eTaskGetState(handle_it.second) != eTaskState::eSuspended)
-    {
-      return 0;
-    }
+    return 0;
   }
   return 1;
 }
 
-void resume_thread(const uint32_t taskName)
-{
-  // handle already exists
-  auto handle = handles.find(taskName);
-  if (handle == handles.cend())
-  {
-    hal::lampda_print("ERROR: task handle %s (%d) do not exist", get_name_from_hash(taskName), taskName);
-    return;
-  }
+// Actions on this thread
 
-  if (isInISR())
-  {
-    xTaskResumeFromISR(handle->second);
-  }
-  else
-  {
-    vTaskResume(handle->second);
-  }
-}
+void HAL_yield() { yield(); }
 
-void notify_thread(const uint32_t taskName, int wakeUpEvent)
-{
-  auto handle = handles.find(taskName);
-  if (handle == handles.cend())
-  {
-    hal::lampda_print("ERROR: task handle %s (%d) do not exist", get_name_from_hash(taskName), taskName);
-    return;
-  }
-  if (isInISR())
-  {
-    BaseType_t signal = pdFALSE;
-    xTaskNotifyFromISR(handle->second, wakeUpEvent, eSetBits, &signal);
-  }
-  else
-  {
-    vTaskSuspendAll();
-    xTaskNotify(handle->second, wakeUpEvent, eSetBits);
-    (void)xTaskResumeAll();
-  }
-}
+void HAL_suspend() { vTaskSuspend(NULL); }
 
-int wait_notification(const int timeout_ms)
+int HAL_wait_notification(const int timeout_ms)
 {
   uint32_t notifiedValue = 0;
   BaseType_t result;
@@ -232,9 +91,58 @@ int wait_notification(const int timeout_ms)
   return notifiedValue;
 }
 
-void get_thread_debug(char* textBuff) { vTaskList(textBuff); }
+// Actions on  target threads
 
-void shutdown()
+void HAL_notify_thread(TaskHandle_t handle, int wakeUpEvent)
+{
+  if (isInISR())
+  {
+    BaseType_t signal = pdFALSE;
+    xTaskNotifyFromISR(handle, wakeUpEvent, eSetBits, &signal);
+  }
+  else
+  {
+    xTaskNotify(handle, wakeUpEvent, eSetBits);
+  }
+}
+
+void HAL_suspend_thread(TaskHandle_t handle)
+{
+  if (isInISR())
+  {
+    BaseType_t signal = pdFALSE;
+    vTaskNotifyGiveFromISR(handle, &signal);
+  }
+  else
+  {
+    xTaskNotifyGive(handle);
+  }
+  vTaskSuspend(handle);
+}
+
+int HAL_is_suspended(TaskHandle_t handle)
+{
+  const auto state = eTaskGetState(handle);
+  if (state == eTaskState::eSuspended)
+    return 0;
+  return 1;
+}
+
+void HAL_resume_thread(TaskHandle_t handle)
+{
+  if (isInISR())
+  {
+    xTaskResumeFromISR(handle);
+  }
+  else
+  {
+    vTaskResume(handle);
+  }
+}
+
+void HAL_get_debug_thread_text(char* textBuff) { vTaskList(textBuff); }
+
+void HAL_shutdown()
 {
   // nothing to do
 }

@@ -12,10 +12,10 @@
 #include "src/system/hal/print.h"
 #include "src/system/hal/time.h"
 #include "src/system/hal/gpio.h"
-#include "src/system/hal/threads.h"
 
 #include "src/system/bsp/charging_ic.h"
 #include "src/system/bsp/power_gates.h"
+#include "src/system/bsp/threads.h"
 
 // remove this to remove all PD algorithms
 #define USE_PD_ALGO_LOOP
@@ -103,7 +103,7 @@ bool is_standard_port()
 void ic_interrupt()
 {
   // wake up interrupt thread (cannot run code in the interrupt callback)
-  hal::threads::notify_thread(hal::threads::pdInterruptHandle_taskName, 2);
+  bsp::threads::notify_thread(bsp::threads::pdInterruptHandle_taskName, 2);
 }
 
 bool is_vbus_powered()
@@ -230,7 +230,7 @@ void show_pd_status() { data.serial_show(); }
 void interrupt_handle()
 {
   // this thread only runs when signal is sent
-  hal::threads::wait_notification(0);
+  bsp::threads::wait_notification(0);
 
 #ifdef USE_PD_ALGO_LOOP
   // only waken up on thread update
@@ -344,11 +344,11 @@ void start_threads()
     return;
 
   // start task scheduler, in suspended state
-  hal::threads::start_thread(task_scheduler, hal::threads::taskScheduler_taskName, 2, 255);
+  bsp::threads::start_thread(task_scheduler, bsp::threads::taskScheduler_taskName, 2, 255);
   // start interrupt handle, in suspended state
-  hal::threads::start_thread(interrupt_handle, hal::threads::pdInterruptHandle_taskName, 2, 255);
+  bsp::threads::start_thread(interrupt_handle, bsp::threads::pdInterruptHandle_taskName, 2, 255);
   // start pd handle loop
-  hal::threads::start_thread(pd_run, hal::threads::pd_taskName, 1, 1024);
+  bsp::threads::start_thread(pd_run, bsp::threads::pd_taskName, 1, 1024);
 }
 
 void loop()

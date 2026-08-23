@@ -18,94 +18,57 @@ namespace threads {
 extern "C" {
 #endif
 
-#define SCHED_NOTIFY_TIMER (1 << 0) // reserved event mask
-
-  // store tasks names here
-  /// name of the USB power delivery task
-  extern const uint32_t pd_taskName;
-  /// name of the USB power delivery interrupt handle task
-  extern const uint32_t pdInterruptHandle_taskName;
-  // Name of the button handling task
-  extern const uint32_t button_taskName;
-  /// name of the main power task
-  extern const uint32_t power_taskName;
-  /// name of the optional user task
-  extern const uint32_t user_taskName;
-  /// name of the task scheduling task
-  extern const uint32_t taskScheduler_taskName;
-  /// name of the task schedule sunset
-  extern const uint32_t sunset_taskName;
-  /// BLE cli queue
-  extern const uint32_t ble_cli_taskName;
-  /// UART print task
-  extern const uint32_t print_taskName;
-
-  /// model of a task function
   typedef void (*taskfunc_t)(void);
+  typedef void* TaskHandle_t;
 
   /**
-   * \brief Start a separate thread, running until the system shuts off
-   * \param taskFunction the function to run
-   * \param[in] taskName The name associated
+   * \brief Create a thread from the given function and return the associated handle
+   * \brief[in] handle Handle that will be allocated by the thread
+   * \param[in] task Task function to execute. it will be called in a loop
+   * \param[in] name internal name of the thread
    * \param[in] priority from  to 2, this thread priority
-   * \param[in] stackSize The size of the stack to allocate. can be ignored and checked while running using the command
-   * line
+   * \param[in] stackSize The size of the stack to allocate.
+   * \param[in] startSuspended if == 0, start the thread in a suspended mode
+   * \return 0 for success, anything else is failure
    */
-  extern void start_thread(taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize);
-  /**
-   * \brief Start a separate thread, running until the system shuts off. Start in suspended state.
-   * \param taskFunction the function to run
-   * \param[in] taskName The name associated
-   * \param[in] priority from  to 2, this thread priority
-   * \param[in] stackSize The size of the stack to allocate. can be ignored and checked while running using the command
-   * line
-   */
-  extern void start_suspended_thread(taskfunc_t taskFunction,
-                                     const uint32_t taskName,
-                                     const int priority,
-                                     const int stackSize);
+  int HAL_create_thread(TaskHandle_t* const handle,
+                        taskfunc_t task,
+                        char const* const name,
+                        const int priority,
+                        const int stackSize,
+                        const int startSuspended);
 
-  /// make this thread pass the control to other threads
-  extern void yield_this_thread();
+  /// Yield this thread
+  void HAL_yield();
 
-  /// threads can only suspend itself
-  extern void suspend_this_thread();
-
-  /// Suspend all threads
-  /// \warning: Can deadlock the system if called from a subthread.
-  extern void suspend_all_threads();
+  /// Suspend this thread
+  void HAL_suspend();
 
   /**
-   * \brief check that all threads are suspended (mandatory for sleep mode)
-   * \return 1 for success, 0 for failure
-   */
-  extern int is_all_suspended();
-
-  /**
-   * \brief resume a target thread
-   * \param[in] taskName target task name
-   */
-  extern void resume_thread(const uint32_t taskName);
-
-  /**
-   * \brief notify a thread to resume
-   * \param[in] taskName target task name
-   * \param[in] wakeUpEvent type of the event to send
-   */
-  extern void notify_thread(const uint32_t taskName, int wakeUpEvent);
-
-  /**
-   * \brief block this thread until a timeout or notification is received
+   * \brief Put this thread in suspended mode, waiting for a notification. This function wil block execution until the
+   timeout is reached or a value is received.
    * \param[in] timeout_ms Timeout delay. Can be zero of less for no timeout
-   * \return the wake up flag
+   * \return the value that woke up this thread
    */
-  extern int wait_notification(const int timeout_ms);
+  int HAL_wait_notification(const int timeout_ms);
 
-  // compute and return a debug for threads
-  extern void get_thread_debug(char* textBuff);
+  /// Notify a thread with a value
+  void HAL_notify_thread(TaskHandle_t handle, int wakeUpEvent);
 
-  /// Shutdown the task driver cleanly
-  extern void shutdown();
+  /// Suspend the target thread
+  void HAL_suspend_thread(TaskHandle_t handle);
+
+  /// Return 0 if thread is suspended
+  int HAL_is_suspended(TaskHandle_t handle);
+
+  /// Resume a suspended thread
+  void HAL_resume_thread(TaskHandle_t handle);
+
+  /// Given a buffer, return a buffer debug text
+  void HAL_get_debug_thread_text(char* textBuff);
+
+  /// Shutdown the thread HAL
+  void HAL_shutdown();
 
 #ifdef __cplusplus
 }

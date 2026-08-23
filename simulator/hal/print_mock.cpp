@@ -12,7 +12,8 @@
 #include <cstdarg>
 
 #include "src/system/hal/time.h"
-#include "src/system/hal/threads.h"
+
+#include "src/system/bsp/threads.h"
 
 #include "src/system/utils/utils.h"
 
@@ -188,7 +189,7 @@ namespace hal {
 void init_prints()
 {
   simulator::get_line_async.start();
-  hal::threads::start_thread(simulator::print_mock_loop, utils::hash("print_mock"), 0, 255);
+  bsp::threads::start_thread(simulator::print_mock_loop, utils::hash("print_mock"), 0, 255);
 }
 
 /**

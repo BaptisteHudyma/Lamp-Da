@@ -5,7 +5,8 @@
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/print.h"
 #include "src/system/hal/time.h"
-#include "src/system/hal/threads.h"
+
+#include "src/system/bsp/threads.h"
 
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/utils.h"
@@ -71,7 +72,7 @@ void start_electrical_mock()
   mock_electrical::vbusVoltage = 0;
   mock_electrical::outputVoltage = 0;
 
-  lampda::hal::threads::start_thread(elec_mock_loop, lampda::utils::hash("elec_mock"), 0, 255);
+  lampda::bsp::threads::start_thread(elec_mock_loop, lampda::utils::hash("elec_mock"), 0, 255);
 }
 
 void stop_electrical_mock() {}

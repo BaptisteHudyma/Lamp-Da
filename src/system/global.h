@@ -21,12 +21,18 @@ extern void main_setup();
 
 // clang-format off
 
+/// Hardware Abstraction Layer, handle the platform specific interactions. Can be changed to support different platforms
+namespace hal {};
+/// Board Support Layer, handle the low level logic above the HAL
+namespace bsp {};
+/// Medium level logic, above BSP.
+namespace component {};
 /// Handle the main high level logics
 namespace logic {};
-/// Handle the physical modules drivers
-namespace physical {};
-/// Handle the platform specific interactions
-namespace hal {};
+
+/// Specific component driver logic
+namespace driver {};
+
 /// Utility function and classes
 namespace utils {};
 

@@ -1,5 +1,12 @@
 #include "src/compile.h"
 
+#include "src/system/hal/bluetooth.h"
+#include "src/system/hal/i2c.h"
+#include "src/system/hal/gpio.h"
+#include "src/system/hal/time.h"
+#include "src/system/hal/registers.h"
+#include "src/system/hal/print.h"
+
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/command_line_interface.h"
@@ -8,6 +15,7 @@
 #include "src/system/logic/sunset_timer.h"
 
 #include "src/system/bsp/indicator.h"
+#include "src/system/bsp/threads.h"
 
 #include "src/system/component/battery.h"
 #include "src/system/component/charger.h"
@@ -20,14 +28,6 @@
 
 #include "src/user/functions.h"
 
-#include "src/system/hal/bluetooth.h"
-#include "src/system/hal/i2c.h"
-#include "src/system/hal/gpio.h"
-#include "src/system/hal/time.h"
-#include "src/system/hal/registers.h"
-#include "src/system/hal/threads.h"
-#include "src/system/hal/print.h"
-
 #include "src/system/ext/random8.h"
 #include <cstdint>
 
@@ -37,7 +37,7 @@ void secondary_thread()
 {
   if (not logic::behavior::is_user_code_running())
   {
-    hal::threads::suspend_this_thread();
+    bsp::threads::suspend_this_thread();
     return;
   }
 
@@ -193,7 +193,7 @@ void main_setup()
   if (user::should_spawn_thread())
   {
     // give a high stack but low priority to user
-    hal::threads::start_thread(secondary_thread, hal::threads::user_taskName, 0, 1024);
+    bsp::threads::start_thread(secondary_thread, bsp::threads::user_taskName, 0, 1024);
   }
 }
 

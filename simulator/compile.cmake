@@ -54,6 +54,7 @@ set(SRC_SYSTEM_BSP
     ${LMBD_ROOT_DIR}/src/system/bsp/imu_wrapper.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/indicator.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/power_gates.cpp
+    ${LMBD_ROOT_DIR}/src/system/bsp/threads.cpp
 )
 
 set(SRC_SYSTEM_COMPONENT
@@ -101,6 +102,7 @@ set(SIMULATOR_HAL
     ${LMBD_ROOT_DIR}/simulator/hal/i2c_mock.cpp
     ${LMBD_ROOT_DIR}/simulator/hal/pdm_handle_mock.cpp
     ${LMBD_ROOT_DIR}/simulator/hal/print_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/queues_mock.cpp
     ${LMBD_ROOT_DIR}/simulator/hal/registers_mock.cpp
     ${LMBD_ROOT_DIR}/simulator/hal/threads_mock.cpp
     ${LMBD_ROOT_DIR}/simulator/hal/time_mock.cpp
