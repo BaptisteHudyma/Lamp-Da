@@ -180,11 +180,13 @@ void init()
   bsp::threads::start_thread(simulator::print_mock_loop, utils::hash("tin_l"), 0, 255);
 }
 
-int is_available() { return simulator::inputCommands.empty() ? 1 : 0; }
+bool is_activated() { return true; }
+
+bool is_available() { return simulator::inputCommands.empty() ? false : true; }
 
 char read()
 {
-  if (is_available() != 0)
+  if (not is_available())
   {
     bsp::lampda_print("Cannot read an empty char");
     return '\n';

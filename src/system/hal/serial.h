@@ -17,8 +17,11 @@ namespace serial {
  */
 extern void init();
 
-/// Return 0 if a character is available to read
-extern int is_available();
+/// Return true if the serial port is active
+extern bool is_activated();
+
+/// Return true if a char is available to read
+extern bool is_available();
 
 /// Read a character (blocking)
 extern char read();

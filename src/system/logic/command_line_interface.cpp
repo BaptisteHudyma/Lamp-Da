@@ -565,13 +565,6 @@ void handleSerialEvents()
     const bsp::text_in::Inputs::Command& input = inputs.commandList[i];
     handleCommand(input);
   }
-
-  const auto& inputsBLE = hal::bluetooth::read_uart();
-  for (size_t i = 0; i < min<uint8_t>(bsp::text_in::Inputs::maxCommands, inputsBLE.commandCount); i++)
-  {
-    const bsp::text_in::Inputs::Command& input = inputsBLE.commandList[i];
-    handleCommand(input);
-  }
 }
 
 } // namespace cli

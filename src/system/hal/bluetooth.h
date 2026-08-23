@@ -35,14 +35,22 @@ void notify_battery_level(const uint8_t batteryLevel);
 // send an uart comman over bluetooth
 bool send_uart(char const* buffer);
 
-/// Read the UART packets from the bluetooth queue
-bsp::text_in::Inputs read_uart();
-
 /// Return tue if the bluetooth was used during lifetime
 bool was_used();
 
 // shutdown the bluetooth and services
 void shutdown();
+
+namespace serial {
+/// Return true if the serial port is active
+bool is_activated();
+
+/// Return true if a char is available to read
+bool is_available();
+
+/// Read a character (blocking)
+char read();
+} // namespace serial
 
 } // namespace bluetooth
 } // namespace hal

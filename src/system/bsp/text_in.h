@@ -20,6 +20,8 @@ namespace text_in {
 
 struct Inputs
 {
+  void reset() { commandCount = 0; }
+
   static constexpr size_t maxCommandSize = 63;
   using Command = std::array<char, maxCommandSize>;
 

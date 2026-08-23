@@ -355,64 +355,17 @@ bool send_uart(char const* buffer)
   return true;
 }
 
-bsp::text_in::Inputs read_uart()
-{
-  bsp::text_in::Inputs ret;
-  if (not is_activated() or not Bluefruit.connected())
-    return ret;
-
-  if (__private::bleuart.available())
-  {
-    uint8_t charRead = 0;
-
-    // read available serial data
-    do
-    {
-      // get the new byte:
-      const char inChar = (char)__private::bleuart.read();
-      // if the incoming character is a newline, finish parsing
-      if (inChar == '\n')
-      {
-        // do not add empty strings and null terminated only strings
-        if (charRead != 0)
-        {
-          // add null termination if needed
-          if (charRead < bsp::text_in::Inputs::maxCommandSize)
-          {
-            if (ret.commandList[ret.commandCount][charRead] != '\0')
-              ret.commandList[ret.commandCount][charRead] = '\0';
-          }
-          else
-          {
-            ret.commandList[ret.commandCount][bsp::text_in::Inputs::maxCommandSize - 1] = '\0';
-          }
-          ret.commandCount += 1;
-        }
-        else
-        {
-          for (size_t i = 0; i < bsp::text_in::Inputs::maxCommandSize; i++)
-            ret.commandList[ret.commandCount][i] = '\0';
-        }
-
-        charRead = 0;
-      }
-      else if (charRead < bsp::text_in::Inputs::maxCommandSize)
-      {
-        // add it to the inputString:
-        if (inChar >= 32)
-        {
-          ret.commandList[ret.commandCount][charRead] = inChar;
-          charRead += 1;
-        }
-      }
-    } while (__private::bleuart.available() && ret.commandCount < bsp::text_in::Inputs::maxCommands);
-  }
-  return ret;
-}
-
 bool was_used() { return __private::_wasUsed; }
 
 void shutdown() { __private::isInitialized = false; }
+
+namespace serial {
+bool is_activated() { return hal::bluetooth::is_activated() and Bluefruit.connected(); }
+
+bool is_available() { return __private::bleuart.available(); }
+
+char read() { return (char)__private::bleuart.read(); }
+} // namespace serial
 
 } // namespace bluetooth
 } // namespace hal
