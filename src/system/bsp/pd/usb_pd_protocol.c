@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "../../../../src/system/utils/print.h"
+#include "../../../../src/system/bsp/text_out.h"
 
 #include "usb_pd.h"
 #include "task.h"

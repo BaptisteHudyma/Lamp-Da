@@ -24,17 +24,22 @@ void write_battery_level(const uint8_t batteryLevel) {}
 
 void notify_battery_level(const uint8_t batteryLevel) {}
 
-bool send_uart(char const* buffer) { return true; }
-
-hal::Inputs read_uart()
-{
-  Inputs ret;
-  return ret;
-}
-
 bool was_used() { return false; }
 
 void shutdown() {}
+
+namespace serial {
+bool is_activated() { return hal::bluetooth::is_activated(); }
+
+bool is_available() { return false; }
+
+char read() { return '\n'; }
+
+size_t write(const char* const buffer, size_t bufferSize) { return bufferSize; }
+
+uint16_t mtu_size() { return 20; }
+
+} // namespace serial
 
 } // namespace bluetooth
 } // namespace hal

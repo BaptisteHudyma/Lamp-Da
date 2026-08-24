@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <string>
 
-#include "src/system/hal/print.h"
+#include "src/system/bsp/text_in.h"
 
 namespace lampda {
 namespace hal {
@@ -32,16 +32,29 @@ void stop_bluetooth_advertising();
 void write_battery_level(const uint8_t batteryLevel);
 void notify_battery_level(const uint8_t batteryLevel);
 
-// send an uart comman over bluetooth
-bool send_uart(char const* buffer);
-/// Read the UART packets from the bluetooth queue
-hal::Inputs read_uart();
-
 /// Return tue if the bluetooth was used during lifetime
 bool was_used();
 
 // shutdown the bluetooth and services
 void shutdown();
+
+namespace serial {
+/// Return true if the serial port is active
+bool is_activated();
+
+/// Return true if a char is available to read
+bool is_available();
+
+/// Read a character (blocking)
+char read();
+
+/// Write a buffer to bluetooth serial
+size_t write(const char* const buffer, size_t bufferSize);
+
+/// Return the usable MTU size
+uint16_t mtu_size();
+
+} // namespace serial
 
 } // namespace bluetooth
 } // namespace hal

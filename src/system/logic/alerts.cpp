@@ -3,10 +3,10 @@
 #include "src/system/hal/time.h"
 #include "src/system/hal/bluetooth.h"
 #include "src/system/hal/registers.h"
-#include "src/system/hal/print.h"
 
 #include "src/system/bsp/balancer.h"
 #include "src/system/bsp/indicator.h"
+#include "src/system/bsp/text_out.h"
 
 #include "src/system/component/battery.h"
 #include "src/system/component/charger.h"
@@ -756,7 +756,7 @@ void update_alerts()
       if (alert->should_be_raised())
       {
         manager.raise(alert->get_type());
-        hal::lampda_print("Raised alert %s", AlertsToText(alert->get_type()));
+        bsp::lampda_print("Raised alert %s", AlertsToText(alert->get_type()));
       }
       else if (alert->handle_lowered_state(currTime))
       {
@@ -859,16 +859,16 @@ void show_all()
 {
   if (manager.is_clear())
   {
-    hal::lampda_print("No alerts raised");
+    bsp::lampda_print("No alerts raised");
   }
   else
   {
-    hal::lampda_print("Raised alerts:");
+    bsp::lampda_print("Raised alerts:");
     for (auto alert: allAlerts)
     {
       if (manager.is_raised(alert->get_type()))
       {
-        hal::lampda_print("- %s", AlertsToText(alert->get_type()));
+        bsp::lampda_print("- %s", AlertsToText(alert->get_type()));
       }
     }
   }
@@ -896,7 +896,7 @@ void AlertManager_t::raise(const Type type)
     statistics::signal_alert_raised(static_cast<uint32_t>(type));
   }
 
-  hal::lampda_print("ALERT raised: %s", AlertsToText(type));
+  bsp::lampda_print("ALERT raised: %s", AlertsToText(type));
   _current |= static_cast<uint32_t>(type);
 }
 
@@ -904,7 +904,7 @@ void AlertManager_t::clear(const Type type)
 {
   if (not is_raised(type))
     return;
-  hal::lampda_print("ALERT cleared: %s", AlertsToText(type));
+  bsp::lampda_print("ALERT cleared: %s", AlertsToText(type));
   _current ^= static_cast<uint32_t>(type);
 }
 

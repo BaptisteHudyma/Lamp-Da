@@ -2,19 +2,19 @@
 
 #include "src/user/functions.h"
 
+#include "src/system/hal/bluetooth.h"
+#include "src/system/hal/time.h"
+
+#include "src/system/bsp/indicator.h"
+#include "src/system/bsp/text_out.h"
+
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/sunset_timer.h"
 
-#include "src/system/bsp/indicator.h"
-
 #include "src/system/component/button.h"
-
-#include "src/system/hal/bluetooth.h"
-#include "src/system/hal/time.h"
-#include "src/system/hal/print.h"
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/time_utils.h"
@@ -190,7 +190,7 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
         {
           behavior::set_power_on();
           isButtonUsermodeEnabled = true;
-          hal::lampda_print("Wake up from start usermode command");
+          bsp::lampda_print("Wake up from start usermode command");
         }
         return false;
       }
@@ -346,7 +346,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
             if (buttonHoldDuration >= 2 * BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS + BRIGHTNESS_RAMP_DURATION_MS +
                                               latestBrightnessSaturationDuration_ms)
             {
-              hal::lampda_print("System shutdown: button pressed too long for brightness control");
+              bsp::lampda_print("System shutdown: button pressed too long for brightness control");
               behavior::set_power_off();
               break;
             }
@@ -436,7 +436,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck, const bool is
       {
         // user returned a command handle, so we should start
         behavior::set_power_on();
-        hal::lampda_print("Wake up from start user::clicks %d", consecutiveButtonCheck);
+        bsp::lampda_print("Wake up from start user::clicks %d", consecutiveButtonCheck);
         return;
       }
     }
@@ -477,7 +477,7 @@ void button_clicked_callback(const uint8_t consecutiveButtonCheck, const bool is
     if (consecutiveButtonCheck == 1)
     {
       behavior::set_power_on();
-      hal::lampda_print("Wake up from single press");
+      bsp::lampda_print("Wake up from single press");
     }
   }
 }
@@ -518,7 +518,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
         {
           // user returned a command handle, so we should start
           behavior::set_power_on();
-          hal::lampda_print("Wake up from start user::hold %d", consecutiveButtonCheck);
+          bsp::lampda_print("Wake up from start user::hold %d", consecutiveButtonCheck);
         }
         return;
       }

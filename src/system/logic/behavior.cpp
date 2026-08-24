@@ -10,7 +10,8 @@
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/i2c.h"
 #include "src/system/hal/registers.h"
-#include "src/system/hal/print.h"
+
+#include "src/system/bsp/text_out.h"
 
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/inputs_bluetooth.h"
@@ -526,7 +527,7 @@ void handle_pre_output_light_state()
   {
     if (not isMessageDisplayed)
     {
-      hal::lampda_print("no output allowed");
+      bsp::lampda_print("no output allowed");
       isMessageDisplayed = true;
     }
     // check if we may go to sleep
@@ -538,7 +539,7 @@ void handle_pre_output_light_state()
   {
     if (not isMessageDisplayed)
     {
-      hal::lampda_print("not output in lockout state");
+      bsp::lampda_print("not output in lockout state");
       isMessageDisplayed = true;
     }
     // check if we may go to sleep
@@ -615,7 +616,7 @@ void handle_output_light_state()
   {
     if (waitingForPowerGate_messageDisplayed)
     {
-      hal::lampda_print("Behavior>Output mode: waiting for power gate");
+      bsp::lampda_print("Behavior>Output mode: waiting for power gate");
       waitingForPowerGate_messageDisplayed = false;
     }
 
@@ -776,7 +777,7 @@ void state_machine_behavior()
   // if state changed, display the new state
   if (mainMachine.state_just_changed())
   {
-    hal::lampda_print("BEHAVIOR_S_MACH > switched to state %s",
+    bsp::lampda_print("BEHAVIOR_S_MACH > switched to state %s",
                       BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]);
   }
 
@@ -834,7 +835,7 @@ void loop()
   // alert requested an emergency shutdown, do it
   if (logic::alerts::is_request_shutdown())
   {
-    hal::lampda_print("emergency shutdown from alert");
+    bsp::lampda_print("emergency shutdown from alert");
     // just in case, turn off eventual states
     internal::handle_post_output_light_state();
     // shutdown normally

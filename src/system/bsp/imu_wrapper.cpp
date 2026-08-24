@@ -2,7 +2,8 @@
 
 #include "src/system/hal/i2c.h"
 #include "src/system/hal/time.h"
-#include "src/system/hal/print.h"
+
+#include "src/system/bsp/text_out.h"
 
 #include "src/system/driver/LSM6DS3.h"
 
@@ -260,7 +261,7 @@ bool Wrapper::enable_interrupt1(const InterruptType interr) const
         break;
       }
   }
-  hal::lampda_print("enable_interrupt1: case not handled");
+  bsp::lampda_print("enable_interrupt1: case not handled");
   return false;
 }
 
@@ -329,7 +330,7 @@ bool Wrapper::enable_interrupt2(const InterruptType interr) const
         break;
       }
   }
-  hal::lampda_print("enable_interrupt2: case not handled");
+  bsp::lampda_print("enable_interrupt2: case not handled");
   return false;
 }
 
@@ -413,7 +414,7 @@ bool Wrapper::is_event_detected(const InterruptType interr) const
         break;
       }
   }
-  hal::lampda_print("is_event_detected: case not handled");
+  bsp::lampda_print("is_event_detected: case not handled");
   return false;
 }
 

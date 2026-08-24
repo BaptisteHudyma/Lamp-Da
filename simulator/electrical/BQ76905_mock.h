@@ -10,8 +10,9 @@
 // hardwaree influencer simulator
 #include "simulator/include/hardware_influencer.h"
 
-#include "src/system/hal/print.h"
 #include "src/system/hal/gpio.h"
+
+#include "src/system/bsp/text_out.h"
 
 #include <map>
 #include <memory>

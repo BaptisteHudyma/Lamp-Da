@@ -7,9 +7,7 @@
 
 #include "usb_pd_driver.h"
 #include "../../../../src/system/bsp/pd/usb_pd.h"
-
-// not used here, but show that it works !
-#include "../../../../src/system/utils/print.h"
+#include "../../../../src/system/bsp/text_out.h"
 
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(t) (sizeof(t) / sizeof(t[0]))

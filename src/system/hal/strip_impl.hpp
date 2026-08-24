@@ -9,7 +9,7 @@
 
 #include "strip_impl.h"
 
-#include "src/system/hal/print.h"
+#include "src/system/bsp/text_out.h"
 
 #include <Arduino.h>
 #include <cassert>
@@ -336,7 +336,7 @@ template<size_t LedCount, uint8_t ChannelCount> void LampdaStrip<LedCount, Chann
   {
     /// THIS SHOULD NEVER HAPPEN.
     // If this case appears, it means that a register has gone very wrong.
-    hal::lampda_print("WRONG EXECUTION PATH FOR LAMPDA STRIP DISPLAY");
+    bsp::lampda_print("WRONG EXECUTION PATH FOR LAMPDA STRIP DISPLAY");
   }
   // END of NRF52 implementation
 

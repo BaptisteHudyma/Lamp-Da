@@ -1,7 +1,8 @@
 #include "statistics_handler.h"
 
 #include "src/system/hal/time.h"
-#include "src/system/hal/print.h"
+
+#include "src/system/bsp/text_out.h"
 
 #include "src/system/component/fileSystem.h"
 
@@ -191,7 +192,7 @@ void signal_alert_raised(uint32_t alertMask)
 
 void show(const bool shouldShowAlerts)
 {
-  hal::lampda_print(
+  bsp::lampda_print(
           "stats:\n"
           "boot cnt: %u\n"
           "button clicks: %u\n"
@@ -206,7 +207,7 @@ void show(const bool shouldShowAlerts)
 
   if (shouldShowAlerts)
   {
-    hal::lampda_print("alert raised cnt stats :");
+    bsp::lampda_print("alert raised cnt stats :");
     bool anyAlertToDisplay = false;
     // store alerts
     for (uint8_t alertIndex = 0; alertIndex < alertArraySize; alertIndex++)
@@ -214,11 +215,11 @@ void show(const bool shouldShowAlerts)
       if (statistics.alertRaisedCnt[alertIndex] > 0)
       {
         anyAlertToDisplay = true;
-        hal::lampda_print("- %u : %u", alertIndex, statistics.alertRaisedCnt[alertIndex]);
+        bsp::lampda_print("- %u : %u", alertIndex, statistics.alertRaisedCnt[alertIndex]);
       }
     }
     if (not anyAlertToDisplay)
-      hal::lampda_print("no alerts registered");
+      bsp::lampda_print("no alerts registered");
   }
 }
 

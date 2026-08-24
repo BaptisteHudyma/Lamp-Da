@@ -2,14 +2,14 @@
 
 #include "src/system/utils/state_machine.h"
 
-#include "src/system/hal/print.h"
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/i2c.h"
 #include "src/system/hal/registers.h"
 
+#include "src/system/bsp/pd/power_delivery.h"
 #include "src/system/bsp/balancer.h"
 #include "src/system/bsp/power_gates.h"
-#include "src/system/bsp/pd/power_delivery.h"
+#include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
 
 #include "src/system/component/battery.h"
@@ -320,13 +320,13 @@ void handle_output_voltage_mode()
     ::lampda::bsp::powergates::enable_power_gate();
 
     if (not s_isOutputModeReady)
-      hal::lampda_print("voltage ready on output gate");
+      bsp::lampda_print("voltage ready on output gate");
     s_isOutputModeReady = true;
   }
   else
   {
     if (s_isOutputModeReady)
-      hal::lampda_print("voltage is not in required range, disabling output. Actual %dmV. Required %dmV",
+      bsp::lampda_print("voltage is not in required range, disabling output. Actual %dmV. Required %dmV",
                         powerRailVoltage_mv,
                         _outputVoltage_mV);
     s_isOutputModeReady = false;
@@ -352,7 +352,7 @@ void handle_otg_mode()
 
     if (vbusVoltage_mv > 5500 and voltageHighRaisedTime == UINT32_MAX)
     {
-      hal::lampda_print("OTG mode: Voltage high registered: %dmv", vbusVoltage_mv);
+      bsp::lampda_print("OTG mode: Voltage high registered: %dmv", vbusVoltage_mv);
       voltageHighRaisedTime = hal::time_ms();
     }
 
@@ -361,14 +361,14 @@ void handle_otg_mode()
     if (hal::time_ms() - timeSinceOTGNoCurrentUse > otgNonuseTimeout)
     {
       otgNoActivity = true;
-      hal::lampda_print("no OTG activity, shutdown");
+      bsp::lampda_print("no OTG activity, shutdown");
     }
 
     // voltage negociated but not used
     if (voltageHighRaisedTime != UINT32_MAX and hal::time_ms() - voltageHighRaisedTime > 1000)
     {
       otgNoActivity = true;
-      hal::lampda_print("no OTG activity and voltage high, shutdown");
+      bsp::lampda_print("no OTG activity and voltage high, shutdown");
     }
   }
   else
@@ -419,7 +419,7 @@ void handle_otg_mode()
   // force source mode
   if (not isAutoOTGMode and not isInOtgModeForce)
   {
-    ::lampda::hal::lampda_print("Setting force source mode");
+    ::lampda::bsp::lampda_print("Setting force source mode");
     ::lampda::bsp::powerDelivery::force_set_to_source_mode(true);
     isInOtgModeForce = true;
   }
@@ -602,7 +602,7 @@ void state_machine_behavior()
   // if state changed, display the new state
   if (powerMachine.state_just_changed())
   {
-    hal::lampda_print("POWER_S_MACH > switched to state %s",
+    bsp::lampda_print("POWER_S_MACH > switched to state %s",
                       PowerStatesStr[static_cast<size_t>(powerMachine.get_state())]);
   }
 
@@ -817,9 +817,9 @@ void init()
 #ifdef LMBD_SIMULATION
   __private::vbusFault.attach_callback(
           []() {
-            hal::lampda_print("-----------------");
-            hal::lampda_print("VBUS FAULT RAISED");
-            hal::lampda_print("-----------------");
+            bsp::lampda_print("-----------------");
+            bsp::lampda_print("VBUS FAULT RAISED");
+            bsp::lampda_print("-----------------");
           },
           hal::gpio::DigitalPin::Interrupt::kFallingEdge);
 #endif
@@ -889,7 +889,7 @@ void power_loop()
     if (hal::time_ms() > startupFailTimeout_ms * 5 and chargerState.areMeasuresOk and
         chargerState.batteryVoltage_mV > batteryMinVoltageSafe_mV)
     {
-      hal::lampda_print("Cleared battery recovery mode");
+      bsp::lampda_print("Cleared battery recovery mode");
       _isInBatteryRecoveryMode = false;
     }
   }

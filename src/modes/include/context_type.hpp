@@ -9,12 +9,12 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "src/system/bsp/text_out.h"
+
 #include "src/modes/include/hardware/keystore.hpp"
 #include "src/modes/include/hardware/lamp_type.hpp"
 #include "src/modes/include/tools.hpp"
 #include "src/modes/include/default_config.hpp"
-
-#include "src/system/hal/print.h"
 
 namespace lampda::modes {
 

@@ -7,7 +7,8 @@
 #include "src/system/hal/time.h"
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/pdm_handle.h"
-#include "src/system/hal/print.h"
+
+#include "src/system/bsp/text_out.h"
 
 namespace lampda {
 namespace component {
@@ -78,7 +79,7 @@ void disable_after_non_use()
   {
     // disable microphone if last reading is old
     disable();
-    hal::lampda_print("mic stop: non use");
+    bsp::lampda_print("mic stop: non use");
   }
 }
 

@@ -2,9 +2,14 @@
 
 #include <cstdint>
 
+#include "src/system/hal/time.h"
+#include "src/system/hal/gpio.h"
+#include "src/system/hal/registers.h"
+
+#include "src/system/bsp/pd/power_delivery.h"
 #include "src/system/bsp/balancer.h"
 #include "src/system/bsp/charging_ic.h"
-#include "src/system/bsp/pd/power_delivery.h"
+#include "src/system/bsp/text_out.h"
 
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/statistics_handler.h"
@@ -13,11 +18,6 @@
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
-
-#include "src/system/hal/print.h"
-#include "src/system/hal/time.h"
-#include "src/system/hal/gpio.h"
-#include "src/system/hal/registers.h"
 
 namespace lampda {
 namespace component {
@@ -187,7 +187,7 @@ void control_OTG(const uint16_t mv, const uint16_t ma)
 
   const auto& measurments = bsp::charger::get_measurments();
   if (measurments.vbus_mV < mv - 1000 or measurments.vbus_mV > mv + 1000)
-    hal::lampda_print("Wait for voltage climb: current %dmV, target %dmV", measurments.vbus_mV, mv);
+    bsp::lampda_print("Wait for voltage climb: current %dmV, target %dmV", measurments.vbus_mV, mv);
 }
 
 bool is_status_error()
@@ -212,7 +212,7 @@ void update_state_status()
         {
           charger.softwareErrorMessage =
                   "ERROR: charger in UNINITIALIZED/ERROR state : " + bsp::charger::get_software_error_message();
-          hal::lampda_print(charger.softwareErrorMessage.c_str());
+          bsp::lampda_print(charger.softwareErrorMessage.c_str());
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
         break;
@@ -223,7 +223,7 @@ void update_state_status()
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_HARDWARE)
         {
           charger.hardwareErrorMessage = "ERROR: charger in ERROR_COMPONENT state";
-          hal::lampda_print(charger.hardwareErrorMessage.c_str());
+          bsp::lampda_print(charger.hardwareErrorMessage.c_str());
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_HARDWARE;
         break;
@@ -233,7 +233,7 @@ void update_state_status()
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
           charger.softwareErrorMessage = "ERROR: charger in ERROR_HAS_FAULTS state";
-          hal::lampda_print(charger.softwareErrorMessage.c_str());
+          bsp::lampda_print(charger.softwareErrorMessage.c_str());
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
 
@@ -276,7 +276,7 @@ void update_state_status()
           default:
             {
               charger.hardwareErrorMessage = "ERROR: charger state reached default state";
-              hal::lampda_print(charger.hardwareErrorMessage.c_str());
+              bsp::lampda_print(charger.hardwareErrorMessage.c_str());
 
               charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
               break;

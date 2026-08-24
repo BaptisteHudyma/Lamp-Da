@@ -2,7 +2,8 @@
 
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/time.h"
-#include "src/system/hal/print.h"
+
+#include "src/system/bsp/text_out.h"
 
 #include <cassert>
 
@@ -60,15 +61,15 @@ void enable_gate(bool isVbusGate)
   _isPowerGateReallyEnabled = isPowerGateEnabled;
 
   if (isPowerGateEnabled)
-    hal::lampda_print("power gate enabled");
+    bsp::lampda_print("power gate enabled");
   else
-    hal::lampda_print("vbus gate enabled");
+    bsp::lampda_print("vbus gate enabled");
 }
 
 void disable_vbus_gate()
 {
   if (__private::enableVbusGate.is_high())
-    hal::lampda_print("vbus gate disabled");
+    bsp::lampda_print("vbus gate disabled");
 
   __private::enableVbusGate.set_high(false);
   _isVbusGateEnabled = false;
@@ -81,7 +82,7 @@ void disable_power_gate()
   _blipWakeUpTime_ms = 0;
 
   if (__private::enablePowerGate.is_high())
-    hal::lampda_print("power gate disabled");
+    bsp::lampda_print("power gate disabled");
 
   __private::enablePowerGate.set_high(false);
   _isPowerGateEnabled = false;

@@ -1,8 +1,8 @@
 #include "sunset_timer.h"
 
-#include "src/system/hal/print.h"
 #include "src/system/hal/time.h"
 
+#include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
 
 #include "src/system/logic/alerts.h"
@@ -96,7 +96,7 @@ void sunset_process_loop()
       {
         logic::brightness::set_max_user_brightness(0);
         logic::brightness::force_brightness_user_callback();
-        hal::lampda_print("Shutdown with sunset timer");
+        bsp::lampda_print("Shutdown with sunset timer");
         logic::behavior::set_power_off();
         cancel_timer();
         return;
@@ -129,14 +129,14 @@ void set_deadline(const uint32_t timeshutdown_s)
 {
   if (timeshutdown_s <= hal::time_s())
   {
-    hal::lampda_print("shutdown time is less than current time: %d", timeshutdown_s);
+    bsp::lampda_print("shutdown time is less than current time: %d", timeshutdown_s);
     return;
   }
   const uint32_t timeLeftMinutes = round((timeshutdown_s - hal::time_s()) / 60);
 
   if (not is_enabled())
   {
-    hal::lampda_print("sunset timer set to %d minutes", timeLeftMinutes);
+    bsp::lampda_print("sunset timer set to %d minutes", timeLeftMinutes);
     sunsetTimerEndTime_s = timeshutdown_s;
     logic::alerts::manager.raise(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 
@@ -145,7 +145,7 @@ void set_deadline(const uint32_t timeshutdown_s)
   }
   else
   {
-    hal::lampda_print("sunset timer updated to %d minutes", timeLeftMinutes);
+    bsp::lampda_print("sunset timer updated to %d minutes", timeLeftMinutes);
     // added some time, so signal update
     sunsetTimerEndTime_s = timeshutdown_s;
     signal_sunset_update();
@@ -211,7 +211,7 @@ void cancel_timer()
   if (is_enabled())
   {
     signal_sunset_update();
-    hal::lampda_print("sunset timer cleared");
+    bsp::lampda_print("sunset timer cleared");
   }
 
   logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);

@@ -245,21 +245,21 @@ void handle_pattern_select_command(const uint8_t patternIndex, const uint32_t re
   auto manager = get_context();
   if (manager.get_hidden_groups_count() <= 0)
   {
-    hal::lampda_print("Cannot use bluetooth control without an hidden bluetooth group");
+    bsp::lampda_print("Cannot use bluetooth control without an hidden bluetooth group");
     return;
   }
 
   const auto bluetoothGroup = manager.template get_group_id_of_mode<modes::bluetooth::ColorControlMode>();
   if (bluetoothGroup < 0)
   {
-    hal::lampda_print("Cannot find the bluetooth group and modes");
+    bsp::lampda_print("Cannot find the bluetooth group and modes");
     return;
   }
 
   const auto availableModes = manager.get_modes_count();
   if (availableModes <= patternIndex)
   {
-    hal::lampda_print("Unimplemented pattern id %d", patternIndex);
+    bsp::lampda_print("Unimplemented pattern id %d", patternIndex);
     return;
   }
 
@@ -306,7 +306,7 @@ void handle_elk_command(const utils::ELK::Package& elkControlCommand)
     // unhandled
     default:
       {
-        hal::lampda_print("Unsupported ELK message type");
+        bsp::lampda_print("Unsupported ELK message type");
         break;
       }
   }
