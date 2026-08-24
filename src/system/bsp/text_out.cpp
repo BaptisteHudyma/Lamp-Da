@@ -101,10 +101,8 @@ static void uart_tx_task(const serial_backend_ops_t* op)
   const auto res = hal::queues::HAL_queue_receive(op->uart_send_queue, &req, UINT32_MAX);
   if (res == hal::queues::HAL_queue_status_t::HAL_QUEUE_OK)
   {
-    if (not op->is_activated() or req.len <= 0)
-    {
+    if (req.len <= 0 or not op->is_activated())
       return;
-    }
 
     size_t offset = 0;
     while (offset < req.len)

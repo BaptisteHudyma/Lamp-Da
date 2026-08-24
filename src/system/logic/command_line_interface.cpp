@@ -3,6 +3,7 @@
 #include "src/system/hal/bluetooth.h"
 #include "src/system/hal/i2c.h"
 #include "src/system/hal/registers.h"
+#include "src/system/hal/serial.h"
 #include "src/system/hal/time.h"
 
 #include "src/system/bsp/pd/power_delivery.h"
@@ -185,6 +186,35 @@ namespace user_commands {
 
 void help_hook();
 static void cmd_help(const ParsedCommand&) { help_hook(); }
+
+static void cmd_summary(const ParsedCommand&)
+{
+  bsp::lampda_print("--- System Summary ---");
+  // version
+  bsp::lampda_print("v%d.%d", USER_SOFTWARE_VERSION_MAJOR, USER_SOFTWARE_VERSION_MINOR);
+  bsp::lampda_print("Logic state: %s", logic::behavior::get_state().c_str());
+  // Battery
+  auto batt = component::battery::get_battery_level() / 100.0;
+  bsp::lampda_print("Battery: %.1f%%", batt);
+  // Power
+  auto charger = ::lampda::component::charger::get_state();
+  if (charger.areMeasuresOk)
+  {
+    bsp::lampda_print("Charger: %s | prail: %dmV @ %dmA",
+                      charger.is_charging() ? "Charging" : "Not Charging",
+                      charger.powerRail_mV,
+                      charger.inputCurrent_mA);
+  }
+  else
+    bsp::lampda_print("Charger: offline");
+  // Bluetooth
+  bsp::lampda_print("Bluetooth: %s", hal::bluetooth::is_connected() ? "Connected" : "Disconnected");
+  // Temperature
+  bsp::lampda_print("Temp: %.1f°C", hal::registers::read_CPU_temperature_degreesC());
+  // serial number
+  bsp::lampda_print("SN: %lu", hal::registers::get_device_serial_number());
+  bsp::lampda_print("--------------------");
+}
 
 static void cmd_version(const ParsedCommand&)
 {
@@ -494,53 +524,66 @@ static void cmd_time(const ParsedCommand&)
   }
 }
 
+static void cmd_serial(const ParsedCommand&)
+{
+  bsp::lampda_print("Local serial port: active %d, ", hal::serial::is_activated());
+  bsp::lampda_print("BLE serial port: active %d, ", hal::bluetooth::serial::is_activated());
+}
+
 struct Command
 {
   const char* const name;                ///< Name of the command to call
   const char* const usage;               ///< Command usage string (e.g., "[arg1] arg2")
+  uint8_t minArgs;                       ///< minimum argument count
+  uint8_t maxArgs;                       ///< maximum argument count
   const char* const description;         ///< Text description of the command
   void (*handler)(const ParsedCommand&); ///< handler of the command
   const uint32_t hash;                   ///< command name hash
 };
 constexpr Command make_command(const char* name, const char* desc, void (*handler)(const ParsedCommand&))
 {
-  return {name, nullptr, desc, handler, utils::hash(name)};
+  return {name, nullptr, 0, 0, desc, handler, utils::hash(name)};
 }
 constexpr Command make_command_args(const char* name,
                                     const char* usage,
+                                    const uint8_t minArgs,
+                                    const uint8_t maxArgs,
                                     const char* desc,
                                     void (*handler)(const ParsedCommand&))
 {
-  return {name, usage, desc, handler, utils::hash(name)};
+  return {name, usage, minArgs, maxArgs, desc, handler, utils::hash(name)};
 }
 
 /// Define the CLI commands here
 constexpr Command commands[] = {
         make_command("h", "this page", cmd_help),
+        make_command("sum", "system summary", cmd_summary),
         make_command("v", "hardware & software version", cmd_version),
         make_command("t", "return the lamp type", cmd_type),
         make_command("id", "return the board serial number", cmd_id),
         make_command("stats", "display the system use statistics", cmd_stats),
         make_command("bat", " battery info/levels", cmd_bat),
         make_command("cinfo", "charger infos", cmd_cinfo),
-        make_command("ADC", "values from the charger ADC", cmd_adc),
-        make_command("PD", "display the connected PD capabilities", cmd_powerdelivery),
+        make_command("adc", "values from the charger ADC", cmd_adc),
+        make_command("pd", "display the connected PD capabilities", cmd_powerdelivery),
         make_command("states", "state machine states", cmd_states),
         make_command("alerts", "show all raised alerts", cmd_alerts),
         make_command("i2c", "start an i2c present check", cmd_i2c),
-        make_command("format-fs", "format the whole file system (dangerous)", cmd_format),
-        make_command("DFU", "clear this program from memory, enter update mode", cmd_dfu),
+        make_command("format", "format the whole file system (dangerous)", cmd_format),
+        make_command("dfu", "clear this program from memory, enter update mode", cmd_dfu),
         make_command("buttonTogg", "change the button pin number for the next boot", cmd_buttontoggle),
         make_command("shutdown", "force shutdown the lamp", cmd_shutdown),
         make_command("tasks", "display a debug of task usages", cmd_tasks),
         make_command("ble", "debug bluetooth informations", cmd_ble),
-        make_command_args("echo", "[<arg>...]", "display parsed arguments", cmd_echo),
-        make_command_args("brightness", "[0-1024]", "update the brightness", cmd_brightness),
         make_command("time", "show current time", cmd_time),
+        make_command("serial", "show serial infos", cmd_serial),
+        make_command_args("echo", "[<arg>...]", 0, maxArgumentCount, "display parsed arguments", cmd_echo),
+        make_command_args("brgt", "[0-1024]", 1, 1, "Set the output brightness", cmd_brightness),
 };
 
 constexpr bool has_duplicate_hash(const Command* arr, size_t count)
 {
+#ifdef LMBD_CPP17
   for (size_t i = 0; i < count; ++i)
   {
     for (size_t j = i + 1; j < count; ++j)
@@ -551,9 +594,10 @@ constexpr bool has_duplicate_hash(const Command* arr, size_t count)
       }
     }
   }
+#endif
   return false;
 }
-// Check for command uniqueness
+/// Check for command uniqueness
 static_assert(!has_duplicate_hash(commands, sizeof(commands) / sizeof(commands[0])),
               "Duplicate command hash detected! Ensure all command names are unique.");
 
@@ -587,6 +631,19 @@ void handleCommand(const bsp::text_in::Inputs::Command& commandLine)
   {
     if (cmd.hash == cmdHash)
     {
+      // check arguments
+      if (command.argumentCount < cmd.minArgs or command.argumentCount > cmd.maxArgs)
+      {
+        if (cmd.minArgs == cmd.maxArgs)
+          bsp::lampda_print("Command \"%s\" usage must have %d arguments. Type h for usage.", cmd.name, cmd.minArgs);
+        else
+          bsp::lampda_print("Command \"%s\" usage must have between %d and %d arguments. Type h for usage.",
+                            cmd.name,
+                            cmd.minArgs,
+                            cmd.maxArgs);
+        return;
+      }
+
       cmd.handler(command);
       return;
     }

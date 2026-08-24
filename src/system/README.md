@@ -33,8 +33,9 @@
     - gpio.h: programmable pins interface
     - i2c.h; i2c interface
     - pdm_handle.h: microphone interface (through PDM)
-    - serial.h: Serial connection interface
+    - queues.h: Internal queue implementation
     - register.h: NRF52840 specific register access
+    - serial.h: Serial connection interface
     - strip_impl.h: Indexable led strip driver
     - threads.h: Tasks and threads interface
     - time.h: time & chrono interface
