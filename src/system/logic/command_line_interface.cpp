@@ -503,11 +503,11 @@ static void cmd_brightness(const ParsedCommand& command)
   brightness_t brightness = 0;
   if (argument::parse_uint16(command, 0, brightness) && brightness <= logic::brightness::get_max_brightness())
   {
-    bsp::lampda_print("set brightness to %u/%u", brightness, logic::brightness::get_max_brightness());
     logic::brightness::update_brightness(brightness, false);
+    bsp::lampda_print("brght:%u/%u", brightness, logic::brightness::get_max_brightness());
     return;
   }
-  bsp::lampda_print("usage: brightness <0-%u>", logic::brightness::get_max_brightness());
+  bsp::lampda_print("Invalid call: parameter should be in range <0-%u>", logic::brightness::get_max_brightness());
 }
 
 static void cmd_time(const ParsedCommand&)
@@ -529,6 +529,12 @@ static void cmd_serial(const ParsedCommand&)
   bsp::lampda_print("Local serial port: active %d, ", hal::serial::is_activated());
   bsp::lampda_print("BLE serial port: active %d, ", hal::bluetooth::serial::is_activated());
 }
+
+void cmd_set_hook(const ParsedCommand& command);
+static void cmd_set(const ParsedCommand& command) { cmd_set_hook(command); }
+
+void set_help_hook();
+static void cmd_set_help(const ParsedCommand&) { set_help_hook(); }
 
 struct Command
 {
@@ -578,6 +584,12 @@ constexpr Command commands[] = {
         make_command("time", "show current time", cmd_time),
         make_command("serial", "show serial infos", cmd_serial),
         make_command_args("echo", "[<arg>...]", 0, maxArgumentCount, "display parsed arguments", cmd_echo),
+        make_command_args("set", "<subcommand> [<arg>...]", 0, maxArgumentCount, "Set system values", cmd_set),
+};
+
+/// spcial commands to set system values
+constexpr Command set_commands[] = {
+        make_command_args("h", "", 0, maxArgumentCount, "This page", cmd_set_help),
         make_command_args("brgt", "[0-1024]", 1, 1, "Set the output brightness", cmd_brightness),
 };
 
@@ -600,34 +612,50 @@ constexpr bool has_duplicate_hash(const Command* arr, size_t count)
 /// Check for command uniqueness
 static_assert(!has_duplicate_hash(commands, sizeof(commands) / sizeof(commands[0])),
               "Duplicate command hash detected! Ensure all command names are unique.");
+/// Check for command uniqueness
+static_assert(!has_duplicate_hash(set_commands, sizeof(set_commands) / sizeof(set_commands[0])),
+              "Duplicate set command hash detected! Ensure all command names are unique.");
 
 /// hook that can read the other commands and print them out
-void help_hook()
+template<size_t N> void help_hook_base(const Command (&commandsToParse)[N], const char* command = nullptr)
 {
-  bsp::lampda_print("---Lamp-da CLI---");
-  for (const auto& cmd: commands)
+  if (command)
+    bsp::lampda_print("---Lamp-da CLI: %s---", command);
+  else
+    bsp::lampda_print("---Lamp-da CLI---");
+
+  for (const auto& cmd: commandsToParse)
   {
-    if (cmd.usage)
-      bsp::lampda_print("%s %s: %s", cmd.name, cmd.usage, cmd.description);
+    if (command)
+    {
+      if (cmd.usage)
+        bsp::lampda_print("%s %s %s: %s", command, cmd.name, cmd.usage, cmd.description);
+      else
+        bsp::lampda_print("%s %s: %s", command, cmd.name, cmd.description);
+    }
     else
-      bsp::lampda_print("%s: %s", cmd.name, cmd.description);
+    {
+      if (cmd.usage)
+        bsp::lampda_print("%s %s: %s", cmd.name, cmd.usage, cmd.description);
+      else
+        bsp::lampda_print("%s: %s", cmd.name, cmd.description);
+    }
     // let the thread rest, this command list can be big
     hal::delay_ms(5);
   }
   bsp::lampda_print("-----------------");
 }
 
-} // namespace user_commands
-
-void handleCommand(const bsp::text_in::Inputs::Command& commandLine)
+/// Parse a command and handle its effects
+template<size_t N> void handleCommand(const ParsedCommand& command,
+                                      const Command (&commandsToParse)[N],
+                                      const char* calledCommand = nullptr)
 {
-  const ParsedCommand command = parseCommand(commandLine);
-
   if (command.name()[0] == '\0')
     return;
 
   const auto cmdHash = utils::hash(command.name());
-  for (const auto& cmd: user_commands::commands)
+  for (const auto& cmd: commandsToParse)
   {
     if (cmd.hash == cmdHash)
     {
@@ -649,9 +677,42 @@ void handleCommand(const bsp::text_in::Inputs::Command& commandLine)
     }
   }
 
-  bsp::lampda_print("unknown command: \'%s\'", command.name());
-  bsp::lampda_print("type h for available commands");
+  if (calledCommand)
+  {
+    bsp::lampda_print("unknown command: \'%s %s\'", calledCommand, command.name());
+    bsp::lampda_print("type \'%s h\' for available commands", calledCommand);
+  }
+  else
+  {
+    bsp::lampda_print("unknown command: \'%s\'", command.name());
+    bsp::lampda_print("type \'h\' for available commands");
+  }
 }
+
+void help_hook() { help_hook_base(commands); }
+
+void set_help_hook() { help_hook_base(set_commands, "set"); }
+
+void cmd_set_hook(const ParsedCommand& command)
+{
+  if (command.argumentCount < 1)
+  {
+    set_help_hook();
+    return;
+  }
+
+  const char* subcommand = command.argument(0);
+  ParsedCommand subCommand;
+  subCommand.argumentCount = command.argumentCount - 1;
+  for (size_t i = 1; i < maxArgumentCount; i++)
+    subCommand.argumentOffsets[i - 1] = command.argumentOffsets[i];
+  subCommand.commandOffset = command.argumentOffsets[0];
+  subCommand.buffer = command.buffer;
+
+  handleCommand(subCommand, set_commands, "set");
+}
+
+} // namespace user_commands
 
 void setup() { bsp::lampda_print_init(); }
 
@@ -661,7 +722,12 @@ void handleSerialEvents()
   for (size_t i = 0; i < min<uint8_t>(bsp::text_in::Inputs::maxCommands, inputs.commandCount); i++)
   {
     const bsp::text_in::Inputs::Command& input = inputs.commandList[i];
-    handleCommand(input);
+
+    const ParsedCommand command = parseCommand(input);
+    if (command.name()[0] == '\0')
+      continue;
+
+    user_commands::handleCommand(command, user_commands::commands);
   }
 }
 
