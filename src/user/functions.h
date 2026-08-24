@@ -12,6 +12,8 @@
 #include <cstdint>
 
 #include "src/system/logic/brightness_handle.h"
+#include "src/system/logic/command_line_interface.h"
+
 #include "src/system/utils/elk_decoder.h"
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
@@ -137,6 +139,12 @@ void user_thread();
  * \param[in] elkControlCommand
  */
 void handle_elk_command(const utils::ELK::Package& elkControlCommand);
+
+/**
+ * \brief Handle a CLI command
+ * \param[in] setCommand
+ */
+void handle_cli_command(const logic::cli::CommandHandle& setCommand);
 
 } // namespace lampda::user
 
