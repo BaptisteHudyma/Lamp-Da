@@ -280,21 +280,22 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
 namespace __private {
 
 /// handle the brightness command
-void handle_brigthness_control(const uint8_t requiredBrigthness)
+void handle_brigthness_control(const brightness_t requiredBrigthness)
 {
   // ignore if not on
   if (not logic::behavior::is_in_output_state())
     return;
 
+  logic::sunset::lock_brightness_update(true);
   // update brightness
-  static constexpr float brightnessMultiplier = ::lampda::brightness::absoluteMaximumBrightness / 100.0f;
   const brightness_t desiredBrightness =
-          min<brightness_t>(::lampda::brightness::absoluteMaximumBrightness,
-                            static_cast<brightness_t>(requiredBrigthness * brightnessMultiplier));
+          min<brightness_t>(::lampda::brightness::absoluteMaximumBrightness, requiredBrigthness);
   // Update the system brightness for real, not the temporary. We want the changes to be saved
   logic::brightness::update_brightness(desiredBrightness);
   // update saved brightness
   logic::brightness::update_saved_brightness();
+  logic::sunset::lock_brightness_update(false);
+
   // and change the sunset timer if needed
   logic::sunset::bump_timer();
 }
@@ -401,6 +402,30 @@ void handle_timing_command(const bool shouldTurnOn,
   }
 }
 
+void handle_mode_control(const uint8_t groupIndex, const uint8_t modeIndex)
+{
+  // lamp will turn on if not already turned on
+  if (not logic::behavior::is_in_output_state())
+    logic::behavior::set_power_on();
+
+  auto manager = get_context();
+
+  if (groupIndex >= manager.get_groups_count())
+  {
+    bsp::lampda_print("Group id %d is greater than max group id %d", groupIndex, manager.get_groups_count());
+    return;
+  }
+  manager.set_active_group(groupIndex);
+
+  if (modeIndex >= manager.get_modes_count())
+  {
+    bsp::lampda_print("Mode id %d is greater than max mode id %d", modeIndex, manager.get_modes_count());
+    return;
+  }
+  manager.set_active_mode(modeIndex);
+  manager.blip(250);
+}
+
 } // namespace __private
 
 bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
@@ -409,7 +434,9 @@ bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
   {
     case utils::ELK::Type::BRIGHTNESS:
       {
-        __private::handle_brigthness_control(elkControlCommand.data[0]);
+        static constexpr float brightnessMultiplier = ::lampda::brightness::absoluteMaximumBrightness / 100.0f;
+        __private::handle_brigthness_control(
+                static_cast<brightness_t>(elkControlCommand.data[0] * brightnessMultiplier));
         return true;
       }
     case utils::ELK::Type::ONOFF:
@@ -481,6 +508,17 @@ bool handle_cli_command(const logic::cli::CommandHandle& command)
     case logic::cli::CommandHandle::Type::SetUserRamp:
       {
         __private::handle_ramp_command(command.data[0]);
+        return true;
+      }
+    case logic::cli::CommandHandle::Type::Brightness:
+      {
+        const brightness_t brightness = (command.data[1] << 8) | command.data[0];
+        __private::handle_brigthness_control(brightness);
+        return true;
+      }
+    case logic::cli::CommandHandle::Type::SetMode:
+      {
+        __private::handle_mode_control(command.data[0], command.data[1]);
         return true;
       }
 

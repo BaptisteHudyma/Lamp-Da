@@ -16,6 +16,8 @@ struct CommandHandle
   enum Type
   {
     SetUserRamp, ///< set the user ramp value
+    Brightness,  ///< set brightness
+    SetMode,     ///< set mode index
   };
   static constexpr uint8_t maxDataSize = 8;
 
