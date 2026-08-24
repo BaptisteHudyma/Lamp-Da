@@ -431,29 +431,18 @@ static void cmd_ble(const utils::cli::ParsedCommand&)
           logic::behavior::internal::get_bluetooth_auto_activation_left());
 }
 
-/// Echo commands, debug parameters
-static void cmd_echo(const utils::cli::ParsedCommand& command)
-{
-  bsp::lampda_print("command: %s, argument count: %u", command.name(), command.argumentCount);
-
-  for (uint8_t index = 0; index < command.argumentCount; ++index)
-  {
-    bsp::lampda_print("argument %u: '%s'", index, command.argument(index));
-  }
-}
-
 /// Change the system brightness
 static void cmd_brightness(const utils::cli::ParsedCommand& command)
 {
   brightness_t brightness = 0;
   if (utils::cli::argument::parse_uint16(command, 0, brightness) &&
-      brightness <= logic::brightness::get_max_brightness())
+      brightness <= ::lampda::brightness::absoluteMaximumBrightness)
   {
     logic::brightness::update_brightness(brightness, false);
-    bsp::lampda_print("%u/%u", brightness, logic::brightness::get_max_brightness());
     return;
   }
-  bsp::lampda_print("Invalid call: parameter should be in range <0-%u>", logic::brightness::get_max_brightness());
+  bsp::lampda_print("Invalid call: parameter should be in range <0-%u>",
+                    ::lampda::brightness::absoluteMaximumBrightness);
 }
 
 /// Display real time
@@ -478,13 +467,29 @@ static void cmd_serial(const utils::cli::ParsedCommand&)
   bsp::lampda_print("BLE serial port: active %d, ", hal::bluetooth::serial::is_activated());
 }
 
-void cmd_set_hook(const utils::cli::ParsedCommand& command);
+void cmd_set_hook(const utils::cli::ParsedCommand& command, const char* name);
 /// Handle the Set command, that takes another command as parameters
-static void cmd_set(const utils::cli::ParsedCommand& command) { cmd_set_hook(command); }
+static void cmd_set(const utils::cli::ParsedCommand& command) { cmd_set_hook(command, command.name()); }
+
+void cmd_sys_hook(const utils::cli::ParsedCommand& command, const char* name);
+/// Handle the Sys command, that takes another command as parameters
+static void cmd_sys(const utils::cli::ParsedCommand& command) { cmd_sys_hook(command, command.name()); }
+
+void cmd_act_hook(const utils::cli::ParsedCommand& command, const char* name);
+/// Handle the Act command, that takes another command as parameters
+static void cmd_act(const utils::cli::ParsedCommand& command) { cmd_act_hook(command, command.name()); }
 
 void set_help_hook();
 /// Handle the Set help command
 static void cmd_set_help(const utils::cli::ParsedCommand&) { set_help_hook(); }
+
+void sys_help_hook();
+/// Handle the Sys help command
+static void cmd_sys_help(const utils::cli::ParsedCommand&) { sys_help_hook(); }
+
+void act_help_hook();
+/// Handle the act help command
+static void cmd_act_help(const utils::cli::ParsedCommand&) { act_help_hook(); }
 
 } // namespace handles
 
@@ -495,40 +500,61 @@ constexpr Command _main_commands_s[] = {
         make_command("v", "hardware & software version", handles::cmd_version),
         make_command("t", "return the lamp type", handles::cmd_type),
         make_command("id", "return the board serial number", handles::cmd_id),
-        make_command("stats", "display the system use statistics", handles::cmd_stats),
-        make_command("bat", " battery info/levels", handles::cmd_bat),
-        make_command("cinfo", "charger infos", handles::cmd_cinfo),
-        make_command("adc", "values from the charger ADC", handles::cmd_adc),
-        make_command("pd", "display the connected PD capabilities", handles::cmd_powerdelivery),
-        make_command("states", "state machine states", handles::cmd_states),
-        make_command("alerts", "show all raised alerts", handles::cmd_alerts),
-        make_command("i2c", "start an i2c present check", handles::cmd_i2c),
-        make_command("format", "format the whole file system (dangerous)", handles::cmd_format),
-        make_command("dfu", "clear this program from memory, enter update mode", handles::cmd_dfu),
-        make_command("buttonTogg", "change the button pin number for the next boot", handles::cmd_buttontoggle),
-        make_command("shutdown", "force shutdown the lamp", handles::cmd_shutdown),
-        make_command("tasks", "display a debug of task usages", handles::cmd_tasks),
-        make_command("ble", "debug bluetooth informations", handles::cmd_ble),
-        make_command("time", "show current time", handles::cmd_time),
-        make_command("serial", "show serial infos", handles::cmd_serial),
-        make_command_args("echo",
-                          "[<arg>...]",
-                          0,
-                          utils::cli::ParsedCommand::maxArgumentCount,
-                          "display parsed arguments",
-                          handles::cmd_echo),
         make_command_args("set",
                           "<subcommand> [<arg>...]",
                           0,
                           utils::cli::ParsedCommand::maxArgumentCount,
-                          "Set system values",
+                          "Set system characteristics",
                           handles::cmd_set),
+        make_command_args("sys",
+                          "<subcommand> [<arg>...]",
+                          0,
+                          utils::cli::ParsedCommand::maxArgumentCount,
+                          "Read system informations",
+                          handles::cmd_sys),
+        make_command_args("act",
+                          "<subcommand> [<arg>...]",
+                          0,
+                          utils::cli::ParsedCommand::maxArgumentCount,
+                          "High level immediate actions (dangerous)",
+                          handles::cmd_act),
 };
 
-/// spcial commands to set system values
+/// special commands to interact with the low level system
+constexpr Command _sys_commands_s[] = {
+        make_command_args("h", "", 0, utils::cli::ParsedCommand::maxArgumentCount, "This page", handles::cmd_sys_help),
+        make_command("alerts", "show all raised alerts", handles::cmd_alerts),
+        make_command("stats", "display the system use statistics", handles::cmd_stats),
+        make_command("tasks", "display a debug of task usages", handles::cmd_tasks),
+        make_command("time", "show current time", handles::cmd_time),
+        make_command("ble", "debug bluetooth informations", handles::cmd_ble),
+        make_command("pd", "display the connected PD capabilities", handles::cmd_powerdelivery),
+        make_command("bat", " battery info/levels", handles::cmd_bat),
+        make_command("states", "state machine states", handles::cmd_states),
+        make_command("serial", "show serial infos", handles::cmd_serial),
+        make_command("cinfo", "charger infos", handles::cmd_cinfo),
+        make_command("adc", "values from the charger ADC", handles::cmd_adc),
+        make_command("i2c", "start an i2c presence check", handles::cmd_i2c),
+};
+
+/// special commands to interact with the low level system
+constexpr Command _act_commands_s[] = {
+        make_command_args("h", "", 0, utils::cli::ParsedCommand::maxArgumentCount, "This page", handles::cmd_act_help),
+        make_command("shutdown", "force shutdown the system", handles::cmd_shutdown),
+        make_command("buttonTogg", "change the button pin number for the next boot", handles::cmd_buttontoggle),
+        make_command("format", "format the whole file system (dangerous)", handles::cmd_format),
+        make_command("dfu", "clear this program from memory, enter update mode", handles::cmd_dfu),
+};
+
+/// special commands to set system values
 constexpr Command _set_commands_s[] = {
         make_command_args("h", "", 0, utils::cli::ParsedCommand::maxArgumentCount, "This page", handles::cmd_set_help),
-        make_command_args("brgt", "[0-1024]", 1, 1, "Set the output brightness", handles::cmd_brightness),
+        make_command_args("brgt",
+                          "[0-1024]",
+                          1,
+                          1,
+                          "Set the output brightness",
+                          handles::cmd_brightness), // should be ::lampda::brightness::absoluteMaximumBrightness
 };
 
 /// Check for command duplication
@@ -554,6 +580,12 @@ static_assert(!has_duplicate_hash(_main_commands_s, sizeof(_main_commands_s) / s
 /// Check for command uniqueness
 static_assert(!has_duplicate_hash(_set_commands_s, sizeof(_set_commands_s) / sizeof(_set_commands_s[0])),
               "Duplicate set command hash detected! Ensure all command names are unique.");
+/// Check for command uniqueness
+static_assert(!has_duplicate_hash(_sys_commands_s, sizeof(_sys_commands_s) / sizeof(_sys_commands_s[0])),
+              "Duplicate sys command hash detected! Ensure all command names are unique.");
+/// Check for command uniqueness
+static_assert(!has_duplicate_hash(_act_commands_s, sizeof(_act_commands_s) / sizeof(_act_commands_s[0])),
+              "Duplicate act command hash detected! Ensure all command names are unique.");
 
 /// hook that can read the other commands and print them out
 template<size_t N> void help_hook_base(const Command (&commandsToParse)[N], const char* command = nullptr)
@@ -590,7 +622,11 @@ void help_hook() { help_hook_base(_main_commands_s); }
 
 void set_help_hook() { help_hook_base(_set_commands_s, "set"); }
 
-void cmd_set_hook(const utils::cli::ParsedCommand& command)
+void sys_help_hook() { help_hook_base(_sys_commands_s, "sys"); }
+
+void act_help_hook() { help_hook_base(_act_commands_s, "act"); }
+
+void cmd_set_hook(const utils::cli::ParsedCommand& command, const char* name)
 {
   if (command.argumentCount < 1)
   {
@@ -598,7 +634,29 @@ void cmd_set_hook(const utils::cli::ParsedCommand& command)
     return;
   }
 
-  handleCommand(command.shift_to_first_parameter(), _set_commands_s, "set");
+  handleCommand(command.shift_to_first_parameter(), _set_commands_s, name);
+}
+
+void cmd_sys_hook(const utils::cli::ParsedCommand& command, const char* name)
+{
+  if (command.argumentCount < 1)
+  {
+    sys_help_hook();
+    return;
+  }
+
+  handleCommand(command.shift_to_first_parameter(), _sys_commands_s, name);
+}
+
+void cmd_act_hook(const utils::cli::ParsedCommand& command, const char* name)
+{
+  if (command.argumentCount < 1)
+  {
+    act_help_hook();
+    return;
+  }
+
+  handleCommand(command.shift_to_first_parameter(), _act_commands_s, name);
 }
 
 } // namespace handles
