@@ -756,7 +756,6 @@ void update_alerts()
       if (alert->should_be_raised())
       {
         manager.raise(alert->get_type());
-        bsp::lampda_print("Raised alert %s", AlertsToText(alert->get_type()));
       }
       else if (alert->handle_lowered_state(currTime))
       {

@@ -39,6 +39,7 @@ set(SRC_SYSTEM_DEPENDS
 # Create simulator as library
 set(SRC_SYSTEM_UTILS
     ${LMBD_ROOT_DIR}/src/system/utils/colorspace.cpp
+    ${LMBD_ROOT_DIR}/src/system/utils/cmd_parser.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/utils.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/vector_math.cpp
     )
