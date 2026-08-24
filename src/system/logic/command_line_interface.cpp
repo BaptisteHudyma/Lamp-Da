@@ -496,14 +496,22 @@ static void cmd_time(const ParsedCommand&)
 
 struct Command
 {
-  const char* const name;
-  const char* const description;
-  void (*handler)(const ParsedCommand&);
-  const uint32_t hash; ///< command hash
+  const char* const name;                ///< Name of the command to call
+  const char* const usage;               ///< Command usage string (e.g., "[arg1] arg2")
+  const char* const description;         ///< Text description of the command
+  void (*handler)(const ParsedCommand&); ///< handler of the command
+  const uint32_t hash;                   ///< command name hash
 };
 constexpr Command make_command(const char* name, const char* desc, void (*handler)(const ParsedCommand&))
 {
-  return {name, desc, handler, utils::hash(name)};
+  return {name, nullptr, desc, handler, utils::hash(name)};
+}
+constexpr Command make_command_args(const char* name,
+                                    const char* usage,
+                                    const char* desc,
+                                    void (*handler)(const ParsedCommand&))
+{
+  return {name, usage, desc, handler, utils::hash(name)};
 }
 
 /// Define the CLI commands here
@@ -526,10 +534,28 @@ constexpr Command commands[] = {
         make_command("shutdown", "force shutdown the lamp", cmd_shutdown),
         make_command("tasks", "display a debug of task usages", cmd_tasks),
         make_command("ble", "debug bluetooth informations", cmd_ble),
-        make_command("echo", "<args>{0-8} display parsed arguments", cmd_echo),
-        make_command("brightness", "<[0-1024]> update the brightness", cmd_brightness),
+        make_command_args("echo", "[<arg>...]", "display parsed arguments", cmd_echo),
+        make_command_args("brightness", "[0-1024]", "update the brightness", cmd_brightness),
         make_command("time", "show current time", cmd_time),
 };
+
+constexpr bool has_duplicate_hash(const Command* arr, size_t count)
+{
+  for (size_t i = 0; i < count; ++i)
+  {
+    for (size_t j = i + 1; j < count; ++j)
+    {
+      if (arr[i].hash == arr[j].hash)
+      {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+// Check for command uniqueness
+static_assert(!has_duplicate_hash(commands, sizeof(commands) / sizeof(commands[0])),
+              "Duplicate command hash detected! Ensure all command names are unique.");
 
 /// hook that can read the other commands and print them out
 void help_hook()
@@ -537,7 +563,10 @@ void help_hook()
   bsp::lampda_print("---Lamp-da CLI---");
   for (const auto& cmd: commands)
   {
-    bsp::lampda_print("%s: %s", cmd.name, cmd.description);
+    if (cmd.usage)
+      bsp::lampda_print("%s %s: %s", cmd.name, cmd.usage, cmd.description);
+    else
+      bsp::lampda_print("%s: %s", cmd.name, cmd.description);
     // let the thread rest, this command list can be big
     hal::delay_ms(5);
   }
