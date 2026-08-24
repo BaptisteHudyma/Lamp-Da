@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: lampda::hal::Inputs Struct Reference</title>
+<title>Lamp-Da: lampda::bsp::text_in::Inputs Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,52 +70,59 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacelampda.html">lampda</a></li><li class="navelem"><a class="el" href="namespacelampda_1_1hal.html">hal</a></li><li class="navelem"><a class="el" href="structlampda_1_1hal_1_1Inputs.html">Inputs</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacelampda.html">lampda</a></li><li class="navelem"><a class="el" href="namespacelampda_1_1bsp.html">bsp</a></li><li class="navelem"><a class="el" href="namespacelampda_1_1bsp_1_1text__in.html">text_in</a></li><li class="navelem"><a class="el" href="structlampda_1_1bsp_1_1text__in_1_1Inputs.html">Inputs</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
-<a href="structlampda_1_1hal_1_1Inputs-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">lampda::hal::Inputs Struct Reference</div></div>
+<a href="structlampda_1_1bsp_1_1text__in_1_1Inputs-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">lampda::bsp::text_in::Inputs Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
 <p>read external inputs (may take some time)  
- <a href="structlampda_1_1hal_1_1Inputs.html#details">More...</a></p>
+ <a href="structlampda_1_1bsp_1_1text__in_1_1Inputs.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="hal_2print_8h_source.html">print.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="text__in_8h_source.html">text_in.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a190bc4006b044b55946707ef5524b7d4"><td class="memItemLeft" align="right" valign="top"><a id="a190bc4006b044b55946707ef5524b7d4" name="a190bc4006b044b55946707ef5524b7d4"></a>
-typedef std::array&lt; char, maxCommandSize &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Command</b></td></tr>
-<tr class="separator:a190bc4006b044b55946707ef5524b7d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75264b67fe026e2d4ac80c19fcf4c8a9"><td class="memItemLeft" align="right" valign="top"><a id="a75264b67fe026e2d4ac80c19fcf4c8a9" name="a75264b67fe026e2d4ac80c19fcf4c8a9"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>Command</b> = std::array&lt; char, maxCommandSize &gt;</td></tr>
+<tr class="separator:a75264b67fe026e2d4ac80c19fcf4c8a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a02ce183892281b2815a33eb241bf5665"><td class="memItemLeft" align="right" valign="top"><a id="a02ce183892281b2815a33eb241bf5665" name="a02ce183892281b2815a33eb241bf5665"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
+<tr class="separator:a02ce183892281b2815a33eb241bf5665"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:adf2c11b24387cdf538b63a775ceaaa52"><td class="memItemLeft" align="right" valign="top"><a id="adf2c11b24387cdf538b63a775ceaaa52" name="adf2c11b24387cdf538b63a775ceaaa52"></a>
+<tr class="memitem:aca4fb0c44c037097445dcc52941be2bc"><td class="memItemLeft" align="right" valign="top"><a id="aca4fb0c44c037097445dcc52941be2bc" name="aca4fb0c44c037097445dcc52941be2bc"></a>
 std::array&lt; Command, maxCommands &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>commandList</b></td></tr>
-<tr class="separator:adf2c11b24387cdf538b63a775ceaaa52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6a1ce7ec508d45d7a47429244ab1a81"><td class="memItemLeft" align="right" valign="top"><a id="ad6a1ce7ec508d45d7a47429244ab1a81" name="ad6a1ce7ec508d45d7a47429244ab1a81"></a>
+<tr class="separator:aca4fb0c44c037097445dcc52941be2bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89c49de3e7e6708aaefe5a819598d9a1"><td class="memItemLeft" align="right" valign="top"><a id="a89c49de3e7e6708aaefe5a819598d9a1" name="a89c49de3e7e6708aaefe5a819598d9a1"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>commandCount</b> = 0</td></tr>
-<tr class="separator:ad6a1ce7ec508d45d7a47429244ab1a81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a89c49de3e7e6708aaefe5a819598d9a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:ae291e201f589c62554c1e58b53848d44"><td class="memItemLeft" align="right" valign="top"><a id="ae291e201f589c62554c1e58b53848d44" name="ae291e201f589c62554c1e58b53848d44"></a>
+<tr class="memitem:a2bfaab56e5cd5e2c3681c72788e0538a"><td class="memItemLeft" align="right" valign="top"><a id="a2bfaab56e5cd5e2c3681c72788e0538a" name="a2bfaab56e5cd5e2c3681c72788e0538a"></a>
 static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxCommandSize</b> = 63</td></tr>
-<tr class="separator:ae291e201f589c62554c1e58b53848d44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1ab995762e4509ba06a80ad0c6d5c94"><td class="memItemLeft" align="right" valign="top"><a id="ae1ab995762e4509ba06a80ad0c6d5c94" name="ae1ab995762e4509ba06a80ad0c6d5c94"></a>
+<tr class="separator:a2bfaab56e5cd5e2c3681c72788e0538a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ad8445accba0d478eaec2a12d1afbc9"><td class="memItemLeft" align="right" valign="top"><a id="a8ad8445accba0d478eaec2a12d1afbc9" name="a8ad8445accba0d478eaec2a12d1afbc9"></a>
 static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxCommands</b> = 2</td></tr>
-<tr class="separator:ae1ab995762e4509ba06a80ad0c6d5c94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a8ad8445accba0d478eaec2a12d1afbc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>read external inputs (may take some time) </p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>src/system/hal/<a class="el" href="hal_2print_8h_source.html">print.h</a></li>
+<li>src/system/bsp/<a class="el" href="text__in_8h_source.html">text_in.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

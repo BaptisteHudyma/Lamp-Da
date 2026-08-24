@@ -7,7 +7,7 @@ var searchData=
   ['iin_5fdpmt_4',['IIN_DPMt',['../structbq25713_1_1BQ25713_1_1Regt_1_1IIN__DPMt.html',1,'bq25713::BQ25713::Regt']]],
   ['iin_5fhostt_5',['IIN_HOSTt',['../structbq25713_1_1BQ25713_1_1Regt_1_1IIN__HOSTt.html',1,'bq25713::BQ25713::Regt']]],
   ['imueventty_6',['ImuEventTy',['../structlampda_1_1modes_1_1imu_1_1ImuEventTy.html',1,'lampda::modes::imu']]],
-  ['inputs_7',['Inputs',['../structlampda_1_1hal_1_1Inputs.html',1,'lampda::hal']]],
+  ['inputs_7',['Inputs',['../structlampda_1_1bsp_1_1text__in_1_1Inputs.html',1,'lampda::bsp::text_in']]],
   ['inputvoltaget_8',['InputVoltaget',['../structbq25713_1_1BQ25713_1_1Regt_1_1InputVoltaget.html',1,'bq25713::BQ25713::Regt']]],
   ['integratedcircuitmock_5fi_9',['IntegratedCircuitMock_I',['../classsimulator_1_1IntegratedCircuitMock__I.html',1,'simulator']]],
   ['internalfsty_10',['InternalFSTy',['../structInternalFSTy.html',1,'']]],

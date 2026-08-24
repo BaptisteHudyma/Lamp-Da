@@ -83,7 +83,7 @@ $(function() {
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="strip__impl_8h.html">strip_impl.h</a>&quot;</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="hal_2print_8h.html">src/system/hal/print.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="text__out_8h.html">src/system/bsp/text_out.h</a>&quot;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;Arduino.h&gt;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;cassert&gt;</span></div>
@@ -408,7 +408,7 @@ $(function() {
 <div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>  <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>  {</div>
 <div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    <span class="comment">// If this case appears, it means that a register has gone very wrong.</span></div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    <a class="code hl_function" href="namespacelampda_1_1hal.html#a1c880b07149441223955af56cb771bb1">hal::lampda_print</a>(<span class="stringliteral">&quot;WRONG EXECUTION PATH FOR LAMPDA STRIP DISPLAY&quot;</span>);</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    <a class="code hl_function" href="namespacelampda_1_1bsp.html#a8ec510f307e6a7c09d2b40ec3505a3e9">bsp::lampda_print</a>(<span class="stringliteral">&quot;WRONG EXECUTION PATH FOR LAMPDA STRIP DISPLAY&quot;</span>);</div>
 <div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>  }</div>
 <div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>  <span class="comment">// END of NRF52 implementation</span></div>
 <div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span> </div>
@@ -423,11 +423,11 @@ $(function() {
 <div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span> </div>
 <div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclasslampda_1_1hal_1_1strip_1_1LampdaStrip_html_a0e720a79caa70ae73d08f8e452b9c821"><div class="ttname"><a href="classlampda_1_1hal_1_1strip_1_1LampdaStrip.html#a0e720a79caa70ae73d08f8e452b9c821">lampda::hal::strip::LampdaStrip::show</a></div><div class="ttdeci">void show(void)</div><div class="ttdef"><b>Definition:</b> strip_impl.hpp:134</div></div>
-<div class="ttc" id="ahal_2print_8h_html"><div class="ttname"><a href="hal_2print_8h.html">print.h</a></div><div class="ttdoc">Interface for the platform specific debug and prints.</div></div>
-<div class="ttc" id="anamespacelampda_1_1hal_html_a1c880b07149441223955af56cb771bb1"><div class="ttname"><a href="namespacelampda_1_1hal.html#a1c880b07149441223955af56cb771bb1">lampda::hal::lampda_print</a></div><div class="ttdeci">void lampda_print(const char *format,...)</div><div class="ttdef"><b>Definition:</b> print.cpp:173</div></div>
+<div class="ttc" id="anamespacelampda_1_1bsp_html_a8ec510f307e6a7c09d2b40ec3505a3e9"><div class="ttname"><a href="namespacelampda_1_1bsp.html#a8ec510f307e6a7c09d2b40ec3505a3e9">lampda::bsp::lampda_print</a></div><div class="ttdeci">void lampda_print(const char *format,...)</div><div class="ttdoc">C linkage to print functions.</div><div class="ttdef"><b>Definition:</b> text_out.cpp:208</div></div>
 <div class="ttc" id="anamespacelampda_html"><div class="ttname"><a href="namespacelampda.html">lampda</a></div><div class="ttdoc">Program scope.</div><div class="ttdef"><b>Definition:</b> control_fixed_modes.hpp:12</div></div>
 <div class="ttc" id="astrip__impl_8h_html"><div class="ttname"><a href="strip__impl_8h.html">strip_impl.h</a></div><div class="ttdoc">Implement a led strip object.</div></div>
 <div class="ttc" id="astrip__impl_8h_html_a6ff31bc7214a3ae338a80ed6142d69ff"><div class="ttname"><a href="strip__impl_8h.html#a6ff31bc7214a3ae338a80ed6142d69ff">neoPixelType</a></div><div class="ttdeci">uint8_t neoPixelType</div><div class="ttdoc">3rd arg to Adafruit_NeoPixel constructor</div><div class="ttdef"><b>Definition:</b> strip_impl.h:17</div></div>
+<div class="ttc" id="atext__out_8h_html"><div class="ttname"><a href="text__out_8h.html">text_out.h</a></div><div class="ttdoc">Convertion header to use the text out functions from C code.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

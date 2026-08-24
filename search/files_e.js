@@ -11,7 +11,5 @@ var searchData=
   ['ping_5fpong_5fmode_2ehpp_8',['ping_pong_mode.hpp',['../ping__pong__mode_8hpp.html',1,'']]],
   ['power_5fdelivery_2eh_9',['power_delivery.h',['../power__delivery_8h.html',1,'']]],
   ['power_5fgates_2eh_10',['power_gates.h',['../power__gates_8h.html',1,'']]],
-  ['power_5fhandler_2eh_11',['power_handler.h',['../power__handler_8h.html',1,'']]],
-  ['print_2eh_12',['print.h',['../hal_2print_8h.html',1,'(Global Namespace)'],['../utils_2print_8h.html',1,'(Global Namespace)']]],
-  ['print_5fmock_2ecpp_13',['print_mock.cpp',['../print__mock_8cpp.html',1,'']]]
+  ['power_5fhandler_2eh_11',['power_handler.h',['../power__handler_8h.html',1,'']]]
 ];

@@ -75,7 +75,8 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">lampda::bsp Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -103,13 +104,78 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda_1_1bsp_1_1powergates"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1powergates.html">powergates</a></td></tr>
 <tr class="memdesc:namespacelampda_1_1bsp_1_1powergates"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the two main power gates : Output and USB. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1bsp_1_1text__in"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1text__in.html">text_in</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1bsp_1_1text__in"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the system user input. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacelampda_1_1bsp_1_1threads"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html">threads</a></td></tr>
 <tr class="memdesc:namespacelampda_1_1bsp_1_1threads"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define low level thread behavior and handling. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:acd052c498b51472f2e6eb530f5bf7988"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp.html#acd052c498b51472f2e6eb530f5bf7988">lampda_print_init</a> ()</td></tr>
+<tr class="separator:acd052c498b51472f2e6eb530f5bf7988"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85dd667490bf887109113d1485fc0caa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp.html#a85dd667490bf887109113d1485fc0caa">lampda_print_raw</a> (const char *format,...)</td></tr>
+<tr class="memdesc:a85dd667490bf887109113d1485fc0caa"><td class="mdescLeft">&#160;</td><td class="mdescRight">C linkage to print functions.  <br /></td></tr>
+<tr class="separator:a85dd667490bf887109113d1485fc0caa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ec510f307e6a7c09d2b40ec3505a3e9"><td class="memItemLeft" align="right" valign="top"><a id="a8ec510f307e6a7c09d2b40ec3505a3e9" name="a8ec510f307e6a7c09d2b40ec3505a3e9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda_print</b> (const char *format,...)</td></tr>
+<tr class="memdesc:a8ec510f307e6a7c09d2b40ec3505a3e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">C linkage to print functions. <br /></td></tr>
+<tr class="separator:a8ec510f307e6a7c09d2b40ec3505a3e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Board Support Layer, handle the low level logic above the HAL. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="acd052c498b51472f2e6eb530f5bf7988" name="acd052c498b51472f2e6eb530f5bf7988"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd052c498b51472f2e6eb530f5bf7988">&#9670;&#160;</a></span>lampda_print_init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">EXTERNC void lampda::bsp::lampda_print_init </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>This file should be used by .c files to access print functions </p>
+
+</div>
+</div>
+<a id="a85dd667490bf887109113d1485fc0caa" name="a85dd667490bf887109113d1485fc0caa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85dd667490bf887109113d1485fc0caa">&#9670;&#160;</a></span>lampda_print_raw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">EXTERNC void lampda::bsp::lampda_print_raw </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>C linkage to print functions. </p>
+<p>raw print, no system additional logs </p>
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6
