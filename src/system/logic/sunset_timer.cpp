@@ -160,13 +160,21 @@ void add_time_minutes(const uint8_t time_minutes)
   // do not accept less than a minute
   if (time_minutes < 1)
     return;
+  const auto timeS = hal::time_s();
 
   // limit 10 minutes per call
-  const uint32_t timeToAdd_s = min<uint8_t>(10, time_minutes) * 60;
-  const uint32_t newShutdownTime = hal::time_s() + timeToAdd_s;
+  const uint32_t timeToAdd_s = min<uint32_t>(10, time_minutes) * 60;
 
-  //
-  set_deadline(newShutdownTime);
+  if (is_enabled() && timeS < sunsetTimerEndTime_s)
+  {
+    const uint32_t newShutdownTime_s = sunsetTimerEndTime_s + timeToAdd_s;
+    set_deadline(newShutdownTime_s);
+  }
+  else
+  {
+    const uint32_t newShutdownTime_s = timeS + timeToAdd_s;
+    set_deadline(newShutdownTime_s);
+  }
 }
 
 void shortcut_to_phaseout()
@@ -185,17 +193,24 @@ void shortcut_to_phaseout()
 
 void bump_timer()
 {
-  const auto timeS = hal::time_s();
   if (not is_enabled())
     return;
 
+  const auto timeS = hal::time_s();
+  if (sunsetTimerEndTime_s < timeS)
+  {
+    add_time_minutes(brightnessRampDownTime_min);
+    return;
+  }
+
   // if less than N minutes left, bump timer to N minutes
-  if (sunsetTimerEndTime_s - timeS < brightnessRampDownTime_s)
+  const uint16_t timeLeft_min = round((sunsetTimerEndTime_s - timeS) / 60.0f);
+  if (timeLeft_min <= brightnessRampDownTime_min)
   {
     // add 1 minute + time left
-    const uint16_t timeLeft_min = round((sunsetTimerEndTime_s - timeS) / 60.0);
+    const uint16_t timeLeft = brightnessRampDownTime_min - timeLeft_min;
     // add some time to the sunset
-    add_time_minutes(1 + (brightnessRampDownTime_min - timeLeft_min));
+    add_time_minutes(1 + timeLeft);
   }
 }
 
