@@ -8,6 +8,10 @@
 #include "src/system/utils/time_utils.h"
 #include "src/system/utils/constants.h"
 
+#include "src/system/hal/serial.h"
+
+#include "src/system/bsp/text_out.h"
+
 // registers
 #include <Arduino.h>
 
@@ -77,7 +81,13 @@ void setup_adc(const uint8_t resolution)
 
 uint8_t get_wire_interface_count() { return WIRE_INTERFACES_COUNT; }
 
-void enter_serial_dfu() { enterUf2Dfu(); }
+void enter_serial_dfu()
+{
+  if (hal::serial::is_activated())
+    enterUf2Dfu();
+  else
+    bsp::lampda_print("DFU is blocked: the system is not plugged to a host device");
+}
 
 bool is_voltage_detected_on_vbus() { return (NRF_POWER->USBREGSTATUS & POWER_USBREGSTATUS_VBUSDETECT_Msk) != 0x00; }
 

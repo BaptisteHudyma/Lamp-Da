@@ -23,8 +23,6 @@ serial_backend_ops_t ble_ueart_ops = {.is_activated = hal::bluetooth::serial::is
                                       .is_ready = hal::bluetooth::serial::is_available};
 
 namespace __private {
-constexpr uint8_t maxReadLinePerLoop = 5;
-constexpr uint8_t maxLineLenght = 200;
 
 // only keep the chars inside a certain ascii range
 bool is_ignore_char(char c) { return c < 32; }

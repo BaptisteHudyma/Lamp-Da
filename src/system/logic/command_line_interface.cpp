@@ -18,6 +18,7 @@
 #include "src/system/component/time_handling.h"
 
 #include "src/system/utils/constants.h"
+#include "src/system/utils/cmd_parser.h"
 #include "src/system/utils/utils.h"
 
 #include "src/system/logic/alerts.h"
@@ -28,166 +29,88 @@
 #include "src/system/logic/statistics_handler.h"
 
 #include <cstdlib>
-#include <cerrno>
-#include <climits>
 
 namespace lampda {
 namespace logic {
 namespace cli {
 
-constexpr uint8_t maxReadLinePerLoop = 5;
-constexpr uint8_t maxLineLenght = 200;
-constexpr uint8_t maxArgumentCount = 8;
+struct Command
+{
+  const char* const name;                            ///< Name of the command to call
+  const char* const usage;                           ///< Command usage string (e.g., "[arg1] arg2")
+  uint8_t minArgs;                                   ///< minimum argument count
+  uint8_t maxArgs;                                   ///< maximum argument count
+  const char* const description;                     ///< Text description of the command
+  void (*handler)(const utils::cli::ParsedCommand&); ///< handler of the command
+  const uint32_t hash;                               ///< command name hash
+};
+constexpr Command make_command(const char* name, const char* desc, void (*handler)(const utils::cli::ParsedCommand&))
+{
+  return {name, nullptr, 0, 0, desc, handler, utils::hash(name)};
+}
+constexpr Command make_command_args(const char* name,
+                                    const char* usage,
+                                    const uint8_t minArgs,
+                                    const uint8_t maxArgs,
+                                    const char* desc,
+                                    void (*handler)(const utils::cli::ParsedCommand&))
+{
+  return {name, usage, minArgs, maxArgs, desc, handler, utils::hash(name)};
+}
 
 inline const char* boolToString(bool b) { return b ? "true" : "false"; }
 
-inline bool isCommandSeparator(const char character) { return character == ' ' || character == '\t'; }
-
-struct ParsedCommand
+/// Parse a command and handle its effects
+template<size_t N> void handleCommand(const utils::cli::ParsedCommand& command,
+                                      const Command (&commandsToParse)[N],
+                                      const char* calledCommand = nullptr)
 {
-  bsp::text_in::Inputs::Command buffer {};
+  if (command.name()[0] == '\0')
+    return;
 
-  uint8_t commandOffset = 0;
-  std::array<uint8_t, maxArgumentCount> argumentOffsets {};
-  uint8_t argumentCount = 0;
-
-  const char* name() const { return buffer.data() + commandOffset; }
-
-  const char* argument(const size_t index) const
+  const auto cmdHash = utils::hash(command.name());
+  for (const auto& cmd: commandsToParse)
   {
-    if (index >= argumentCount)
-      return nullptr;
-
-    return buffer.data() + argumentOffsets[index];
-  }
-};
-
-/// Tools to parse text arguments
-namespace argument {
-
-/// Generic parse function for unsigned integers
-bool parse_uint(const ParsedCommand& command, const size_t index, unsigned long& value)
-{
-  const char* text = command.argument(index);
-
-  if (text == nullptr)
-    return false;
-
-  char* end = nullptr;
-  errno = 0;
-
-  const unsigned long tmp_value = std::strtoul(text, &end, 0);
-
-  if (errno != 0 || end == text || *end != '\0')
-  {
-    return false;
-  }
-  value = tmp_value;
-  return true;
-}
-
-/// Parse an argument as a 8 bit unsigned number
-bool parse_uint8(const ParsedCommand& command, const size_t index, uint8_t& value)
-{
-  unsigned long argument;
-  const bool isValid = parse_uint(command, index, argument);
-  if (!isValid)
-    return false;
-  if (argument > UINT8_MAX)
-    return false;
-
-  value = static_cast<uint8_t>(argument);
-  return true;
-}
-
-/// Parse an argument as a 16 bit unsigned number
-bool parse_uint16(const ParsedCommand& command, const size_t index, uint16_t& value)
-{
-  unsigned long argument;
-  const bool isValid = parse_uint(command, index, argument);
-  if (!isValid)
-    return false;
-  if (argument > UINT16_MAX)
-    return false;
-
-  value = argument;
-  return true;
-}
-
-} // namespace argument
-
-ParsedCommand parseCommand(const bsp::text_in::Inputs::Command& input)
-{
-  ParsedCommand result;
-  // copy str
-  result.buffer = input;
-
-  size_t position = 0;
-
-  // skip all first blank char define in isCommandSeparator
-  while (position < result.buffer.size() && isCommandSeparator(result.buffer[position]))
-  {
-    ++position;
-  }
-
-  result.commandOffset = static_cast<uint8_t>(position);
-
-  // looking for the end of the command
-  while (position < result.buffer.size() && result.buffer[position] != '\0' &&
-         !isCommandSeparator(result.buffer[position]))
-  {
-    ++position;
-  }
-
-  // put a \0 at the end (useful for the hash command and some print)
-  if (position < result.buffer.size() && result.buffer[position] != '\0')
-  {
-    result.buffer[position] = '\0';
-    ++position;
-  }
-
-  // now, parse every argument
-  while (position < result.buffer.size() && result.argumentCount < maxArgumentCount)
-  {
-    // while it's a blank char
-    while (position < result.buffer.size() && isCommandSeparator(result.buffer[position]))
+    if (cmd.hash == cmdHash)
     {
-      ++position;
-    }
+      // check arguments
+      if (command.argumentCount < cmd.minArgs or command.argumentCount > cmd.maxArgs)
+      {
+        if (cmd.minArgs == cmd.maxArgs)
+          bsp::lampda_print("Command \"%s\" usage must have %d arguments. Type h for usage.", cmd.name, cmd.minArgs);
+        else
+          bsp::lampda_print("Command \"%s\" usage must have between %d and %d arguments. Type h for usage.",
+                            cmd.name,
+                            cmd.minArgs,
+                            cmd.maxArgs);
+        return;
+      }
 
-    // terminated condition of the while (end of the string)
-    if (position >= result.buffer.size() || result.buffer[position] == '\0')
-    {
-      break;
-    }
-
-    // save the offset
-    result.argumentOffsets[result.argumentCount++] = static_cast<uint8_t>(position);
-
-    // looking for the end of the argument
-    while (position < result.buffer.size() && result.buffer[position] != '\0' &&
-           !isCommandSeparator(result.buffer[position]))
-    {
-      ++position;
-    }
-
-    // put a \0 at the end
-    if (position < result.buffer.size() && result.buffer[position] != '\0')
-    {
-      result.buffer[position] = '\0';
-      ++position;
+      cmd.handler(command);
+      return;
     }
   }
 
-  return result;
+  if (calledCommand)
+  {
+    bsp::lampda_print("unknown command: \'%s %s\'", calledCommand, command.name());
+    bsp::lampda_print("type \'%s h\' for available commands", calledCommand);
+  }
+  else
+  {
+    bsp::lampda_print("unknown command: \'%s\'", command.name());
+    bsp::lampda_print("type \'h\' for available commands");
+  }
 }
 
-namespace user_commands {
+namespace handles {
 
 void help_hook();
-static void cmd_help(const ParsedCommand&) { help_hook(); }
+/// Provide an info/help page
+static void cmd_help(const utils::cli::ParsedCommand&) { help_hook(); }
 
-static void cmd_summary(const ParsedCommand&)
+/// Short system status summary
+static void cmd_summary(const utils::cli::ParsedCommand&)
 {
   bsp::lampda_print("--- System Summary ---");
   // version
@@ -216,7 +139,8 @@ static void cmd_summary(const ParsedCommand&)
   bsp::lampda_print("--------------------");
 }
 
-static void cmd_version(const ParsedCommand&)
+/// Check all system versions
+static void cmd_version(const utils::cli::ParsedCommand&)
 {
   bsp::lampda_print(
           "hardware:%d.%d\n"
@@ -233,7 +157,8 @@ static void cmd_version(const ParsedCommand&)
           USER_SOFTWARE_VERSION_MINOR);
 }
 
-static void cmd_type(const ParsedCommand&)
+/// Display the board type
+static void cmd_type(const utils::cli::ParsedCommand&)
 {
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
   bsp::lampda_print("indexable");
@@ -250,11 +175,17 @@ static void cmd_type(const ParsedCommand&)
 #endif /* LMBD_LAMP_TYPE__INDEXABLE */
 }
 
-static void cmd_id(const ParsedCommand&) { bsp::lampda_print("SN: %lu", hal::registers::get_device_serial_number()); }
+/// Display the board unique serial number
+static void cmd_id(const utils::cli::ParsedCommand&)
+{
+  bsp::lampda_print("SN: %lu", hal::registers::get_device_serial_number());
+}
 
-static void cmd_stats(const ParsedCommand&) { logic::statistics::show(); }
+/// Display system statistics
+static void cmd_stats(const utils::cli::ParsedCommand&) { logic::statistics::show(); }
 
-static void cmd_bat(const ParsedCommand&)
+/// Display battery infos
+static void cmd_bat(const utils::cli::ParsedCommand&)
 {
   const auto& balancerStatus = ::lampda::bsp::balancer::get_status();
   const bool areBalancerValueValid = balancerStatus.is_valid();
@@ -302,7 +233,8 @@ static void cmd_bat(const ParsedCommand&)
   }
 }
 
-static void cmd_cinfo(const ParsedCommand&)
+/// Display charger component informations
+static void cmd_cinfo(const utils::cli::ParsedCommand&)
 {
   const auto& chargerState = ::lampda::component::charger::get_state();
   if (chargerState.areMeasuresOk)
@@ -358,7 +290,8 @@ static void cmd_cinfo(const ParsedCommand&)
   }
 }
 
-static void cmd_adc(const ParsedCommand&)
+/// Display all ADC values
+static void cmd_adc(const utils::cli::ParsedCommand&)
 {
   const auto& chargerState = ::lampda::component::charger::get_state();
   if (chargerState.areMeasuresOk)
@@ -392,7 +325,8 @@ static void cmd_adc(const ParsedCommand&)
   }
 }
 
-static void cmd_powerdelivery(const ParsedCommand&)
+/// Display the current power delivery capacities
+static void cmd_powerdelivery(const utils::cli::ParsedCommand&)
 {
   ::lampda::bsp::powerDelivery::show_pd_status();
   const auto& pd = ::lampda::bsp::powerDelivery::get_available_pd();
@@ -408,7 +342,8 @@ static void cmd_powerdelivery(const ParsedCommand&)
   }
 }
 
-static void cmd_states(const ParsedCommand&)
+/// Display the system states machines
+static void cmd_states(const utils::cli::ParsedCommand&)
 {
   bsp::lampda_print("behavior machine state:%s. error msgs: %s",
                     logic::behavior::get_state().c_str(),
@@ -418,9 +353,11 @@ static void cmd_states(const ParsedCommand&)
                     logic::power::get_error_string().c_str());
 }
 
-static void cmd_alerts(const ParsedCommand&) { logic::alerts::show_all(); }
+/// Display all active alerts
+static void cmd_alerts(const utils::cli::ParsedCommand&) { logic::alerts::show_all(); }
 
-static void cmd_i2c(const ParsedCommand&)
+/// Read i2c activate address
+static void cmd_i2c(const utils::cli::ParsedCommand&)
 {
   bsp::lampda_print(
           "fusb detected : %d\n"
@@ -433,15 +370,18 @@ static void cmd_i2c(const ParsedCommand&)
           hal::i2c::i2c_check_existence(0, hal::i2c::chargeI2cAddress) == 0);
 }
 
-static void cmd_format(const ParsedCommand&)
+/// Format the file system
+static void cmd_format(const utils::cli::ParsedCommand&)
 {
   bsp::lampda_print("clearing the whole file format");
   component::fileSystem::clear_internal_fs();
 }
 
-static void cmd_dfu(const ParsedCommand&) { hal::registers::enter_serial_dfu(); }
+/// Enter Device Firmware Update mode
+static void cmd_dfu(const utils::cli::ParsedCommand&) { hal::registers::enter_serial_dfu(); }
 
-static void cmd_buttontoggle(const ParsedCommand&)
+/// Toggle the button gpio for the next boot
+static void cmd_buttontoggle(const utils::cli::ParsedCommand&)
 {
   switch (component::button::get_button_pin())
   {
@@ -464,16 +404,19 @@ static void cmd_buttontoggle(const ParsedCommand&)
   }
 }
 
-static void cmd_shutdown(const ParsedCommand&) { logic::behavior::internal::handle_shutdown_state(); }
+/// Shutdown the system
+static void cmd_shutdown(const utils::cli::ParsedCommand&) { logic::behavior::internal::handle_shutdown_state(); }
 
-static void cmd_tasks(const ParsedCommand&)
+/// Debug task usages and activity
+static void cmd_tasks(const utils::cli::ParsedCommand&)
 {
   char buff[512];
   bsp::threads::get_thread_debug(buff);
   bsp::lampda_print("%s", buff);
 }
 
-static void cmd_ble(const ParsedCommand&)
+/// Bluetooth infos
+static void cmd_ble(const utils::cli::ParsedCommand&)
 {
   bsp::lampda_print(
           "is activated: %d\n"
@@ -488,7 +431,8 @@ static void cmd_ble(const ParsedCommand&)
           logic::behavior::internal::get_bluetooth_auto_activation_left());
 }
 
-static void cmd_echo(const ParsedCommand& command)
+/// Echo commands, debug parameters
+static void cmd_echo(const utils::cli::ParsedCommand& command)
 {
   bsp::lampda_print("command: %s, argument count: %u", command.name(), command.argumentCount);
 
@@ -498,19 +442,22 @@ static void cmd_echo(const ParsedCommand& command)
   }
 }
 
-static void cmd_brightness(const ParsedCommand& command)
+/// Change the system brightness
+static void cmd_brightness(const utils::cli::ParsedCommand& command)
 {
   brightness_t brightness = 0;
-  if (argument::parse_uint16(command, 0, brightness) && brightness <= logic::brightness::get_max_brightness())
+  if (utils::cli::argument::parse_uint16(command, 0, brightness) &&
+      brightness <= logic::brightness::get_max_brightness())
   {
     logic::brightness::update_brightness(brightness, false);
-    bsp::lampda_print("brght:%u/%u", brightness, logic::brightness::get_max_brightness());
+    bsp::lampda_print("%u/%u", brightness, logic::brightness::get_max_brightness());
     return;
   }
   bsp::lampda_print("Invalid call: parameter should be in range <0-%u>", logic::brightness::get_max_brightness());
 }
 
-static void cmd_time(const ParsedCommand&)
+/// Display real time
+static void cmd_time(const utils::cli::ParsedCommand&)
 {
   const auto& time = component::time::get_real_time();
   if (time.is_valid())
@@ -524,75 +471,67 @@ static void cmd_time(const ParsedCommand&)
   }
 }
 
-static void cmd_serial(const ParsedCommand&)
+/// Display serial port infos
+static void cmd_serial(const utils::cli::ParsedCommand&)
 {
   bsp::lampda_print("Local serial port: active %d, ", hal::serial::is_activated());
   bsp::lampda_print("BLE serial port: active %d, ", hal::bluetooth::serial::is_activated());
 }
 
-void cmd_set_hook(const ParsedCommand& command);
-static void cmd_set(const ParsedCommand& command) { cmd_set_hook(command); }
+void cmd_set_hook(const utils::cli::ParsedCommand& command);
+/// Handle the Set command, that takes another command as parameters
+static void cmd_set(const utils::cli::ParsedCommand& command) { cmd_set_hook(command); }
 
 void set_help_hook();
-static void cmd_set_help(const ParsedCommand&) { set_help_hook(); }
+/// Handle the Set help command
+static void cmd_set_help(const utils::cli::ParsedCommand&) { set_help_hook(); }
 
-struct Command
-{
-  const char* const name;                ///< Name of the command to call
-  const char* const usage;               ///< Command usage string (e.g., "[arg1] arg2")
-  uint8_t minArgs;                       ///< minimum argument count
-  uint8_t maxArgs;                       ///< maximum argument count
-  const char* const description;         ///< Text description of the command
-  void (*handler)(const ParsedCommand&); ///< handler of the command
-  const uint32_t hash;                   ///< command name hash
-};
-constexpr Command make_command(const char* name, const char* desc, void (*handler)(const ParsedCommand&))
-{
-  return {name, nullptr, 0, 0, desc, handler, utils::hash(name)};
-}
-constexpr Command make_command_args(const char* name,
-                                    const char* usage,
-                                    const uint8_t minArgs,
-                                    const uint8_t maxArgs,
-                                    const char* desc,
-                                    void (*handler)(const ParsedCommand&))
-{
-  return {name, usage, minArgs, maxArgs, desc, handler, utils::hash(name)};
-}
+} // namespace handles
 
 /// Define the CLI commands here
-constexpr Command commands[] = {
-        make_command("h", "this page", cmd_help),
-        make_command("sum", "system summary", cmd_summary),
-        make_command("v", "hardware & software version", cmd_version),
-        make_command("t", "return the lamp type", cmd_type),
-        make_command("id", "return the board serial number", cmd_id),
-        make_command("stats", "display the system use statistics", cmd_stats),
-        make_command("bat", " battery info/levels", cmd_bat),
-        make_command("cinfo", "charger infos", cmd_cinfo),
-        make_command("adc", "values from the charger ADC", cmd_adc),
-        make_command("pd", "display the connected PD capabilities", cmd_powerdelivery),
-        make_command("states", "state machine states", cmd_states),
-        make_command("alerts", "show all raised alerts", cmd_alerts),
-        make_command("i2c", "start an i2c present check", cmd_i2c),
-        make_command("format", "format the whole file system (dangerous)", cmd_format),
-        make_command("dfu", "clear this program from memory, enter update mode", cmd_dfu),
-        make_command("buttonTogg", "change the button pin number for the next boot", cmd_buttontoggle),
-        make_command("shutdown", "force shutdown the lamp", cmd_shutdown),
-        make_command("tasks", "display a debug of task usages", cmd_tasks),
-        make_command("ble", "debug bluetooth informations", cmd_ble),
-        make_command("time", "show current time", cmd_time),
-        make_command("serial", "show serial infos", cmd_serial),
-        make_command_args("echo", "[<arg>...]", 0, maxArgumentCount, "display parsed arguments", cmd_echo),
-        make_command_args("set", "<subcommand> [<arg>...]", 0, maxArgumentCount, "Set system values", cmd_set),
+constexpr Command _main_commands_s[] = {
+        make_command("h", "this page", handles::cmd_help),
+        make_command("sum", "system summary", handles::cmd_summary),
+        make_command("v", "hardware & software version", handles::cmd_version),
+        make_command("t", "return the lamp type", handles::cmd_type),
+        make_command("id", "return the board serial number", handles::cmd_id),
+        make_command("stats", "display the system use statistics", handles::cmd_stats),
+        make_command("bat", " battery info/levels", handles::cmd_bat),
+        make_command("cinfo", "charger infos", handles::cmd_cinfo),
+        make_command("adc", "values from the charger ADC", handles::cmd_adc),
+        make_command("pd", "display the connected PD capabilities", handles::cmd_powerdelivery),
+        make_command("states", "state machine states", handles::cmd_states),
+        make_command("alerts", "show all raised alerts", handles::cmd_alerts),
+        make_command("i2c", "start an i2c present check", handles::cmd_i2c),
+        make_command("format", "format the whole file system (dangerous)", handles::cmd_format),
+        make_command("dfu", "clear this program from memory, enter update mode", handles::cmd_dfu),
+        make_command("buttonTogg", "change the button pin number for the next boot", handles::cmd_buttontoggle),
+        make_command("shutdown", "force shutdown the lamp", handles::cmd_shutdown),
+        make_command("tasks", "display a debug of task usages", handles::cmd_tasks),
+        make_command("ble", "debug bluetooth informations", handles::cmd_ble),
+        make_command("time", "show current time", handles::cmd_time),
+        make_command("serial", "show serial infos", handles::cmd_serial),
+        make_command_args("echo",
+                          "[<arg>...]",
+                          0,
+                          utils::cli::ParsedCommand::maxArgumentCount,
+                          "display parsed arguments",
+                          handles::cmd_echo),
+        make_command_args("set",
+                          "<subcommand> [<arg>...]",
+                          0,
+                          utils::cli::ParsedCommand::maxArgumentCount,
+                          "Set system values",
+                          handles::cmd_set),
 };
 
 /// spcial commands to set system values
-constexpr Command set_commands[] = {
-        make_command_args("h", "", 0, maxArgumentCount, "This page", cmd_set_help),
-        make_command_args("brgt", "[0-1024]", 1, 1, "Set the output brightness", cmd_brightness),
+constexpr Command _set_commands_s[] = {
+        make_command_args("h", "", 0, utils::cli::ParsedCommand::maxArgumentCount, "This page", handles::cmd_set_help),
+        make_command_args("brgt", "[0-1024]", 1, 1, "Set the output brightness", handles::cmd_brightness),
 };
 
+/// Check for command duplication
 constexpr bool has_duplicate_hash(const Command* arr, size_t count)
 {
 #ifdef LMBD_CPP17
@@ -610,10 +549,10 @@ constexpr bool has_duplicate_hash(const Command* arr, size_t count)
   return false;
 }
 /// Check for command uniqueness
-static_assert(!has_duplicate_hash(commands, sizeof(commands) / sizeof(commands[0])),
+static_assert(!has_duplicate_hash(_main_commands_s, sizeof(_main_commands_s) / sizeof(_main_commands_s[0])),
               "Duplicate command hash detected! Ensure all command names are unique.");
 /// Check for command uniqueness
-static_assert(!has_duplicate_hash(set_commands, sizeof(set_commands) / sizeof(set_commands[0])),
+static_assert(!has_duplicate_hash(_set_commands_s, sizeof(_set_commands_s) / sizeof(_set_commands_s[0])),
               "Duplicate set command hash detected! Ensure all command names are unique.");
 
 /// hook that can read the other commands and print them out
@@ -646,54 +585,12 @@ template<size_t N> void help_hook_base(const Command (&commandsToParse)[N], cons
   bsp::lampda_print("-----------------");
 }
 
-/// Parse a command and handle its effects
-template<size_t N> void handleCommand(const ParsedCommand& command,
-                                      const Command (&commandsToParse)[N],
-                                      const char* calledCommand = nullptr)
-{
-  if (command.name()[0] == '\0')
-    return;
+namespace handles {
+void help_hook() { help_hook_base(_main_commands_s); }
 
-  const auto cmdHash = utils::hash(command.name());
-  for (const auto& cmd: commandsToParse)
-  {
-    if (cmd.hash == cmdHash)
-    {
-      // check arguments
-      if (command.argumentCount < cmd.minArgs or command.argumentCount > cmd.maxArgs)
-      {
-        if (cmd.minArgs == cmd.maxArgs)
-          bsp::lampda_print("Command \"%s\" usage must have %d arguments. Type h for usage.", cmd.name, cmd.minArgs);
-        else
-          bsp::lampda_print("Command \"%s\" usage must have between %d and %d arguments. Type h for usage.",
-                            cmd.name,
-                            cmd.minArgs,
-                            cmd.maxArgs);
-        return;
-      }
+void set_help_hook() { help_hook_base(_set_commands_s, "set"); }
 
-      cmd.handler(command);
-      return;
-    }
-  }
-
-  if (calledCommand)
-  {
-    bsp::lampda_print("unknown command: \'%s %s\'", calledCommand, command.name());
-    bsp::lampda_print("type \'%s h\' for available commands", calledCommand);
-  }
-  else
-  {
-    bsp::lampda_print("unknown command: \'%s\'", command.name());
-    bsp::lampda_print("type \'h\' for available commands");
-  }
-}
-
-void help_hook() { help_hook_base(commands); }
-
-void set_help_hook() { help_hook_base(set_commands, "set"); }
-
-void cmd_set_hook(const ParsedCommand& command)
+void cmd_set_hook(const utils::cli::ParsedCommand& command)
 {
   if (command.argumentCount < 1)
   {
@@ -701,18 +598,10 @@ void cmd_set_hook(const ParsedCommand& command)
     return;
   }
 
-  const char* subcommand = command.argument(0);
-  ParsedCommand subCommand;
-  subCommand.argumentCount = command.argumentCount - 1;
-  for (size_t i = 1; i < maxArgumentCount; i++)
-    subCommand.argumentOffsets[i - 1] = command.argumentOffsets[i];
-  subCommand.commandOffset = command.argumentOffsets[0];
-  subCommand.buffer = command.buffer;
-
-  handleCommand(subCommand, set_commands, "set");
+  handleCommand(command.shift_to_first_parameter(), _set_commands_s, "set");
 }
 
-} // namespace user_commands
+} // namespace handles
 
 void setup() { bsp::lampda_print_init(); }
 
@@ -723,11 +612,10 @@ void handleSerialEvents()
   {
     const bsp::text_in::Inputs::Command& input = inputs.commandList[i];
 
-    const ParsedCommand command = parseCommand(input);
+    const auto& command = utils::cli::parseCommand(input);
     if (command.name()[0] == '\0')
       continue;
-
-    user_commands::handleCommand(command, user_commands::commands);
+    handleCommand(command, _main_commands_s);
   }
 }
 

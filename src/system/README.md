@@ -50,12 +50,13 @@
     - statistics_handler.h: Keep track of the system use statistics
     - sunset_timer.h: Logic of the sunset timer
 - utils: General functions and constants that everybody needs
+    - cmd_parser.h: Parse a command to extract its parameters
     - colorspace.h: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !
     - constants.h: global constants used all around the program
     - curves.h: define custom curve and curve sampling functions
     - fft.h: implementation of the fft and assocated filtering
     - input_output.h: define the gpio used for the button & indicator
-    - print.h: access to the print/debug interface with string composing
+    - queue.h: Define a non allocating queue
     - state_machine.h: generic state machine class, used for all main logic
     - time_utils.h: Useful time handling function
     - utils.h: useful functions to make colors
