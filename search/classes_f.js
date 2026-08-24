@@ -12,7 +12,7 @@ var searchData=
   ['palettepapimode_9',['PalettePapiMode',['../structlampda_1_1modes_1_1fixed_1_1PalettePapiMode.html',1,'lampda::modes::fixed']]],
   ['palettepartymode_10',['PalettePartyMode',['../structlampda_1_1modes_1_1fixed_1_1PalettePartyMode.html',1,'lampda::modes::fixed']]],
   ['paletterainbowmode_11',['PaletteRainbowMode',['../structlampda_1_1modes_1_1fixed_1_1PaletteRainbowMode.html',1,'lampda::modes::fixed']]],
-  ['parsedcommand_12',['ParsedCommand',['../structlampda_1_1logic_1_1cli_1_1ParsedCommand.html',1,'lampda::logic::cli']]],
+  ['parsedcommand_12',['ParsedCommand',['../structlampda_1_1utils_1_1cli_1_1ParsedCommand.html',1,'lampda::utils::cli']]],
   ['particle_13',['Particle',['../structlampda_1_1modes_1_1Particle.html',1,'lampda::modes']]],
   ['particlesystem_14',['ParticleSystem',['../classlampda_1_1modes_1_1ParticleSystem.html',1,'lampda::modes']]],
   ['passqt_15',['PassQt',['../structbq76905_1_1BQ76905_1_1Regt_1_1PassQt.html',1,'bq76905::BQ76905::Regt']]],

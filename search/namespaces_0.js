@@ -2,7 +2,7 @@ var searchData=
 [
   ['_5f_5fprivate_0',['__private',['../namespacelampda_1_1logic_1_1inputs_1_1____private.html',1,'lampda::logic::inputs::__private'],['../namespacelampda_1_1logic_1_1power_1_1____private.html',1,'lampda::logic::power::__private']]],
   ['alerts_1',['alerts',['../namespacelampda_1_1logic_1_1alerts.html',1,'lampda::logic']]],
-  ['argument_2',['argument',['../namespacelampda_1_1logic_1_1cli_1_1argument.html',1,'lampda::logic::cli']]],
+  ['argument_2',['argument',['../namespacelampda_1_1utils_1_1cli_1_1argument.html',1,'lampda::utils::cli']]],
   ['audio_3',['audio',['../namespacelampda_1_1modes_1_1audio.html',1,'lampda::modes']]],
   ['automaton_4',['automaton',['../namespacelampda_1_1modes_1_1automaton.html',1,'lampda::modes']]],
   ['balancer_5',['balancer',['../namespacelampda_1_1bsp_1_1balancer.html',1,'lampda::bsp']]],

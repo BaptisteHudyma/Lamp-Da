@@ -116,8 +116,9 @@ $(function() {
 <li><a class="el" href="gpio_8h.html" title="Interface for the platform specific GeneralPurposeInputOutputs.">gpio.h</a>: programmable pins interface</li>
 <li><a class="el" href="i2c_8h.html" title="Interface for the platform specific i2c protocols.">i2c.h</a>; i2c interface</li>
 <li><a class="el" href="pdm__handle_8h.html" title="Interface for the platform specific microphone.">pdm_handle.h</a>: microphone interface (through PDM)</li>
-<li><a class="el" href="serial_8h.html" title="Interface for the platform specific serial input output.">serial.h</a>: Serial connection interface</li>
+<li><a class="el" href="queues_8h.html" title="Interface for platform-specific queue operations (e.g., FreeRTOS xQueue).">queues.h</a>: Internal queue implementation</li>
 <li>register.h: NRF52840 specific register access</li>
+<li><a class="el" href="serial_8h.html" title="Interface for the platform specific serial input output.">serial.h</a>: Serial connection interface</li>
 <li><a class="el" href="strip__impl_8h.html" title="Implement a led strip object.">strip_impl.h</a>: Indexable led strip driver</li>
 <li>threads.h: Tasks and threads interface</li>
 <li><a class="el" href="time_8h.html" title="Define all time related platform functions.">time.h</a>: time &amp; chrono interface</li>
@@ -136,12 +137,13 @@ $(function() {
 </ul>
 </li>
 <li>utils: General functions and constants that everybody needs<ul>
+<li><a class="el" href="cmd__parser_8h.html" title="Command argument parser logic.">cmd_parser.h</a>: Parse a command to extract its parameters</li>
 <li><a class="el" href="colorspace_8h.html" title="Define commonly used color spaces.">colorspace.h</a>: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !</li>
 <li>constants.h: global constants used all around the program</li>
 <li><a class="el" href="curves_8h.html" title="Define curves types, that can be sampled.">curves.h</a>: define custom curve and curve sampling functions</li>
 <li><a class="el" href="fft_8h.html" title="Wrapper of the ArduinoFFT library.">fft.h</a>: implementation of the fft and assocated filtering</li>
 <li><a class="el" href="input__output_8h.html" title="Definition of the used pins of the RGB indicator.">input_output.h</a>: define the gpio used for the button &amp; indicator</li>
-<li>print.h: access to the print/debug interface with string composing</li>
+<li><a class="el" href="queue_8h.html" title="Define a queue object with constant memory footprint.">queue.h</a>: Define a non allocating queue</li>
 <li><a class="el" href="state__machine_8h.html" title="Define a generic state machine logic.">state_machine.h</a>: generic state machine class, used for all main logic</li>
 <li><a class="el" href="time__utils_8h.html" title="Define some tools and macros to handle timed events.">time_utils.h</a>: Useful time handling function</li>
 <li><a class="el" href="utils_8h.html" title="Define useful functions.">utils.h</a>: useful functions to make colors</li>

@@ -26,8 +26,11 @@ var searchData=
   ['handle_5fspeed_5fcommand_23',['handle_speed_command',['../default__behavior_8hpp.html#ae12fc38efea7ec13653af2fb38fd43cd',1,'lampda::user::default_behaviors::__private_elk']]],
   ['handle_5fstartup_24',['handle_startup',['../namespacelampda_1_1logic_1_1power.html#aa7c15eaf67ab742f30b9f0da3951819e',1,'lampda::logic::power']]],
   ['handle_5ftiming_5fcommand_25',['handle_timing_command',['../default__behavior_8hpp.html#ac416f277b4efc3dc3d269b647e82bc99',1,'lampda::user::default_behaviors::__private_elk']]],
-  ['handleserialevents_26',['handleSerialEvents',['../namespacelampda_1_1logic_1_1cli.html#aaa39bb8398d46daa043c64a27b9b2ed5',1,'lampda::logic::cli']]],
-  ['hash_27',['hash',['../namespacelampda_1_1utils.html#a7b68e6e95f92e53533b21590af9cc533',1,'lampda::utils']]],
-  ['hasvalue_28',['hasValue',['../structlampda_1_1modes_1_1ContextTy_1_1KeyProxy.html#a8eb4ba1695cdcf3e64608b9b8384461a',1,'lampda::modes::ContextTy::KeyProxy']]],
-  ['hsv_29',['HSV',['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#acbeacbf87488186dabc67221e4ade5d5',1,'lampda::utils::ColorSpace::HSV::HSV(double h, double s, double v)'],['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#af36f9b737eb062f5c25699a5db778b99',1,'lampda::utils::ColorSpace::HSV::HSV(const COLOR &amp;c)']]]
+  ['handlecommand_26',['handleCommand',['../namespacelampda_1_1logic_1_1cli.html#a049f01b850f9227cfc570b37454d4f65',1,'lampda::logic::cli']]],
+  ['handleserialevents_27',['handleSerialEvents',['../namespacelampda_1_1logic_1_1cli.html#aaa39bb8398d46daa043c64a27b9b2ed5',1,'lampda::logic::cli']]],
+  ['has_5fduplicate_5fhash_28',['has_duplicate_hash',['../namespacelampda_1_1logic_1_1cli.html#a6e4a44a30da91c8d48586998f6213f3c',1,'lampda::logic::cli']]],
+  ['hash_29',['hash',['../namespacelampda_1_1utils.html#a7b68e6e95f92e53533b21590af9cc533',1,'lampda::utils']]],
+  ['hasvalue_30',['hasValue',['../structlampda_1_1modes_1_1ContextTy_1_1KeyProxy.html#a8eb4ba1695cdcf3e64608b9b8384461a',1,'lampda::modes::ContextTy::KeyProxy']]],
+  ['help_5fhook_5fbase_31',['help_hook_base',['../namespacelampda_1_1logic_1_1cli.html#a6dbc0ec52258a8e9170b46962af56622',1,'lampda::logic::cli']]],
+  ['hsv_32',['HSV',['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#acbeacbf87488186dabc67221e4ade5d5',1,'lampda::utils::ColorSpace::HSV::HSV(double h, double s, double v)'],['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#af36f9b737eb062f5c25699a5db778b99',1,'lampda::utils::ColorSpace::HSV::HSV(const COLOR &amp;c)']]]
 ];

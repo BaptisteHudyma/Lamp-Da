@@ -13,5 +13,6 @@ var searchData=
   ['align_5finternal_5fto_5fsystem_5fbrightness_10',['align_internal_to_system_brightness',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a055e192ef1ba2830f59e193acd6aae96',1,'lampda::modes::hardware::LampTy']]],
   ['allow_5fotg_11',['allow_otg',['../namespacelampda_1_1bsp_1_1powerDelivery.html#a04570769028b103c32d54cd725f5f232',1,'lampda::bsp::powerDelivery']]],
   ['apply_5facceleration_12',['apply_acceleration',['../structlampda_1_1modes_1_1Particle.html#a3384b86e7122b8c1471f68d700ba504b',1,'lampda::modes::Particle']]],
-  ['are_5fgate_5fdisabled_13',['are_gate_disabled',['../namespacelampda_1_1bsp_1_1powergates.html#a5b16139ccce3436001b8c716d01f1f33',1,'lampda::bsp::powergates']]]
+  ['are_5fgate_5fdisabled_13',['are_gate_disabled',['../namespacelampda_1_1bsp_1_1powergates.html#a5b16139ccce3436001b8c716d01f1f33',1,'lampda::bsp::powergates']]],
+  ['argument_14',['argument',['../structlampda_1_1utils_1_1cli_1_1ParsedCommand.html#a6a44e9d1a9a01ed80256a24165bd24a9',1,'lampda::utils::cli::ParsedCommand']]]
 ];

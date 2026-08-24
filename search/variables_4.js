@@ -13,8 +13,9 @@ var searchData=
   ['defaultfavorite_10',['defaultFavorite',['../structlampda_1_1modes_1_1DefaultManagerConfig.html#a889d9ae2a307ae184132119d402e45c3',1,'lampda::modes::DefaultManagerConfig']]],
   ['defaultrampsaturates_11',['defaultRampSaturates',['../structlampda_1_1modes_1_1DefaultManagerConfig.html#afb60af525ccddacc7fd5f682d3ab2f64',1,'lampda::modes::DefaultManagerConfig']]],
   ['delta_12',['delta',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#ac9057063562869f8842dcc403a59a98d',1,'lampda::modes::audio::SoundEventTy']]],
-  ['desiredoutput_13',['desiredoutput',['../namespacelampda_1_1component_1_1microphone.html#a0e7b7759bd326f028c2498c2ca956d87',1,'lampda::component::microphone']]],
-  ['drp_5ftoggle_14',['drp_toggle',['../structtcpm__drv.html#ac65618e00dc3d5620f0c7b1de2e9dfba',1,'tcpm_drv']]],
-  ['dstbufidx_15',['dstBufIdx',['../structlampda_1_1modes_1_1draw_1_1grid_1_1LineRuleConfig.html#aaabadd5a17093aeedf54fcc90e0edd6d',1,'lampda::modes::draw::grid::LineRuleConfig']]],
-  ['dump_5fregisters_16',['dump_registers',['../structtcpm__drv.html#a4962a6eebb64125f21f695ef898ae0d6',1,'tcpm_drv']]]
+  ['description_13',['description',['../structlampda_1_1logic_1_1cli_1_1Command.html#a33aaf89f4185baadb9167ca28a4597b9',1,'lampda::logic::cli::Command']]],
+  ['desiredoutput_14',['desiredoutput',['../namespacelampda_1_1component_1_1microphone.html#a0e7b7759bd326f028c2498c2ca956d87',1,'lampda::component::microphone']]],
+  ['drp_5ftoggle_15',['drp_toggle',['../structtcpm__drv.html#ac65618e00dc3d5620f0c7b1de2e9dfba',1,'tcpm_drv']]],
+  ['dstbufidx_16',['dstBufIdx',['../structlampda_1_1modes_1_1draw_1_1grid_1_1LineRuleConfig.html#aaabadd5a17093aeedf54fcc90e0edd6d',1,'lampda::modes::draw::grid::LineRuleConfig']]],
+  ['dump_5fregisters_17',['dump_registers',['../structtcpm__drv.html#a4962a6eebb64125f21f695ef898ae0d6',1,'tcpm_drv']]]
 ];

@@ -75,7 +75,6 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
@@ -86,31 +85,35 @@ $(function() {
 <p>Handle the serial command line interface.  
 <a href="namespacelampda_1_1logic_1_1cli.html#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespacelampda_1_1logic_1_1cli_1_1argument"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1cli_1_1argument.html">argument</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1logic_1_1cli_1_1argument"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tools to parse text arguments. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1cli_1_1ParsedCommand.html">ParsedCommand</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:aecb29e7fa8f55a7d5cb158e896bb401f"><td class="memItemLeft" align="right" valign="top"><a id="aecb29e7fa8f55a7d5cb158e896bb401f" name="aecb29e7fa8f55a7d5cb158e896bb401f"></a>
+constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><b>make_command</b> (const char *name, const char *desc, void(*handler)(const <a class="el" href="structlampda_1_1utils_1_1cli_1_1ParsedCommand.html">utils::cli::ParsedCommand</a> &amp;))</td></tr>
+<tr class="separator:aecb29e7fa8f55a7d5cb158e896bb401f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17e9c9989e18ff26551767893250c268"><td class="memItemLeft" align="right" valign="top"><a id="a17e9c9989e18ff26551767893250c268" name="a17e9c9989e18ff26551767893250c268"></a>
+constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><b>make_command_args</b> (const char *name, const char *usage, const uint8_t minArgs, const uint8_t maxArgs, const char *desc, void(*handler)(const <a class="el" href="structlampda_1_1utils_1_1cli_1_1ParsedCommand.html">utils::cli::ParsedCommand</a> &amp;))</td></tr>
+<tr class="separator:a17e9c9989e18ff26551767893250c268"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10303291e05b4146b5e036559b4ddb89"><td class="memItemLeft" align="right" valign="top"><a id="a10303291e05b4146b5e036559b4ddb89" name="a10303291e05b4146b5e036559b4ddb89"></a>
 const char *&#160;</td><td class="memItemRight" valign="bottom"><b>boolToString</b> (bool b)</td></tr>
 <tr class="separator:a10303291e05b4146b5e036559b4ddb89"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9230d6f257336b1bf566ceddf1d1026e"><td class="memItemLeft" align="right" valign="top"><a id="a9230d6f257336b1bf566ceddf1d1026e" name="a9230d6f257336b1bf566ceddf1d1026e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isCommandSeparator</b> (const char character)</td></tr>
-<tr class="separator:a9230d6f257336b1bf566ceddf1d1026e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fc86f831d1944a6aabf37934fdbcf9e"><td class="memItemLeft" align="right" valign="top"><a id="a7fc86f831d1944a6aabf37934fdbcf9e" name="a7fc86f831d1944a6aabf37934fdbcf9e"></a>
-<a class="el" href="structlampda_1_1logic_1_1cli_1_1ParsedCommand.html">ParsedCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><b>parseCommand</b> (const bsp::text_in::Inputs::Command &amp;input)</td></tr>
-<tr class="separator:a7fc86f831d1944a6aabf37934fdbcf9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afbed989d54e132066bb4b92e5109c653"><td class="memItemLeft" align="right" valign="top"><a id="afbed989d54e132066bb4b92e5109c653" name="afbed989d54e132066bb4b92e5109c653"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>handleCommand</b> (const bsp::text_in::Inputs::Command &amp;commandLine)</td></tr>
-<tr class="separator:afbed989d54e132066bb4b92e5109c653"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a049f01b850f9227cfc570b37454d4f65"><td class="memTemplParams" colspan="2"><a id="a049f01b850f9227cfc570b37454d4f65" name="a049f01b850f9227cfc570b37454d4f65"></a>
+template&lt;size_t N&gt; </td></tr>
+<tr class="memitem:a049f01b850f9227cfc570b37454d4f65"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handleCommand</b> (const <a class="el" href="structlampda_1_1utils_1_1cli_1_1ParsedCommand.html">utils::cli::ParsedCommand</a> &amp;command, const <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>(&amp;commandsToParse)[N], const char *calledCommand=nullptr)</td></tr>
+<tr class="memdesc:a049f01b850f9227cfc570b37454d4f65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a command and handle its effects. <br /></td></tr>
+<tr class="separator:a049f01b850f9227cfc570b37454d4f65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e4a44a30da91c8d48586998f6213f3c"><td class="memItemLeft" align="right" valign="top"><a id="a6e4a44a30da91c8d48586998f6213f3c" name="a6e4a44a30da91c8d48586998f6213f3c"></a>
+constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_duplicate_hash</b> (const <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a> *arr, size_t count)</td></tr>
+<tr class="memdesc:a6e4a44a30da91c8d48586998f6213f3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check for command duplication. <br /></td></tr>
+<tr class="separator:a6e4a44a30da91c8d48586998f6213f3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dbc0ec52258a8e9170b46962af56622"><td class="memTemplParams" colspan="2">template&lt;size_t N&gt; </td></tr>
+<tr class="memitem:a6dbc0ec52258a8e9170b46962af56622"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1cli.html#a6dbc0ec52258a8e9170b46962af56622">help_hook_base</a> (const <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>(&amp;commandsToParse)[N], const char *command=nullptr)</td></tr>
+<tr class="memdesc:a6dbc0ec52258a8e9170b46962af56622"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check for command uniqueness.  <br /></td></tr>
+<tr class="separator:a6dbc0ec52258a8e9170b46962af56622"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb6dc722d1073625d75777ddeafae8ea"><td class="memItemLeft" align="right" valign="top"><a id="acb6dc722d1073625d75777ddeafae8ea" name="acb6dc722d1073625d75777ddeafae8ea"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setup</b> ()</td></tr>
 <tr class="memdesc:acb6dc722d1073625d75777ddeafae8ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call once on system start. <br /></td></tr>
@@ -122,19 +125,209 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>handleSerialEvents</b
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:ab3e3fb3726982030e19202e621a292e2"><td class="memItemLeft" align="right" valign="top"><a id="ab3e3fb3726982030e19202e621a292e2" name="ab3e3fb3726982030e19202e621a292e2"></a>
-constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxReadLinePerLoop</b> = 5</td></tr>
-<tr class="separator:ab3e3fb3726982030e19202e621a292e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac85cc69d9d1b20ace6219e7076d330a3"><td class="memItemLeft" align="right" valign="top"><a id="ac85cc69d9d1b20ace6219e7076d330a3" name="ac85cc69d9d1b20ace6219e7076d330a3"></a>
-constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxLineLenght</b> = 200</td></tr>
-<tr class="separator:ac85cc69d9d1b20ace6219e7076d330a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4bb4cdd42cec5db7afe788792202234f"><td class="memItemLeft" align="right" valign="top"><a id="a4bb4cdd42cec5db7afe788792202234f" name="a4bb4cdd42cec5db7afe788792202234f"></a>
-constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxArgumentCount</b> = 8</td></tr>
-<tr class="separator:a4bb4cdd42cec5db7afe788792202234f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc7d8cba36ffe1ac02cc03d63c969c37"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1cli.html#abc7d8cba36ffe1ac02cc03d63c969c37">_main_commands_s</a> []</td></tr>
+<tr class="memdesc:abc7d8cba36ffe1ac02cc03d63c969c37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the CLI commands here.  <br /></td></tr>
+<tr class="separator:abc7d8cba36ffe1ac02cc03d63c969c37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae713c10ebcc95de7a4cb60ad378b4206"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1cli.html#ae713c10ebcc95de7a4cb60ad378b4206">_sys_commands_s</a> []</td></tr>
+<tr class="memdesc:ae713c10ebcc95de7a4cb60ad378b4206"><td class="mdescLeft">&#160;</td><td class="mdescRight">special commands to interact with the low level system  <br /></td></tr>
+<tr class="separator:ae713c10ebcc95de7a4cb60ad378b4206"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab56dd95986a8052b91afda6a12d1c681"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1cli.html#ab56dd95986a8052b91afda6a12d1c681">_act_commands_s</a> []</td></tr>
+<tr class="memdesc:ab56dd95986a8052b91afda6a12d1c681"><td class="mdescLeft">&#160;</td><td class="mdescRight">special commands to interact with the low level system  <br /></td></tr>
+<tr class="separator:ab56dd95986a8052b91afda6a12d1c681"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4eff67cb5ee801beef6919a35d027300"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1cli.html#a4eff67cb5ee801beef6919a35d027300">_set_commands_s</a> []</td></tr>
+<tr class="memdesc:a4eff67cb5ee801beef6919a35d027300"><td class="mdescLeft">&#160;</td><td class="mdescRight">special commands to set system values  <br /></td></tr>
+<tr class="separator:a4eff67cb5ee801beef6919a35d027300"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the serial command line interface. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a6dbc0ec52258a8e9170b46962af56622" name="a6dbc0ec52258a8e9170b46962af56622"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dbc0ec52258a8e9170b46962af56622">&#9670;&#160;</a></span>help_hook_base()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t N&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::logic::cli::help_hook_base </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>(&amp;)&#160;</td>
+          <td class="paramname"><em>commandsToParse</em>[N], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>command</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check for command uniqueness. </p>
+<p>Check for command uniqueness Check for command uniqueness Check for command uniqueness hook that can read the other commands and print them out </p>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="ab56dd95986a8052b91afda6a12d1c681" name="ab56dd95986a8052b91afda6a12d1c681"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab56dd95986a8052b91afda6a12d1c681">&#9670;&#160;</a></span>_act_commands_s</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a> lampda::logic::cli::_act_commands_s[]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">        make_command_args(<span class="stringliteral">&quot;h&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, 0, utils::cli::ParsedCommand::maxArgumentCount, <span class="stringliteral">&quot;This page&quot;</span>, handles::cmd_act_help),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;shutdown&quot;</span>, <span class="stringliteral">&quot;force shutdown the system&quot;</span>, handles::cmd_shutdown),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;buttonTogg&quot;</span>, <span class="stringliteral">&quot;change the button pin number for the next boot&quot;</span>, handles::cmd_buttontoggle),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;format&quot;</span>, <span class="stringliteral">&quot;format the whole file system (dangerous)&quot;</span>, handles::cmd_format),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;dfu&quot;</span>, <span class="stringliteral">&quot;clear this program from memory, enter update mode&quot;</span>, handles::cmd_dfu),</div>
+<div class="line">}</div>
+</div><!-- fragment -->
+<p>special commands to interact with the low level system </p>
+
+</div>
+</div>
+<a id="abc7d8cba36ffe1ac02cc03d63c969c37" name="abc7d8cba36ffe1ac02cc03d63c969c37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc7d8cba36ffe1ac02cc03d63c969c37">&#9670;&#160;</a></span>_main_commands_s</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a> lampda::logic::cli::_main_commands_s[]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;h&quot;</span>, <span class="stringliteral">&quot;this page&quot;</span>, handles::cmd_help),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;sum&quot;</span>, <span class="stringliteral">&quot;system summary&quot;</span>, handles::cmd_summary),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;v&quot;</span>, <span class="stringliteral">&quot;hardware &amp; software version&quot;</span>, handles::cmd_version),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;t&quot;</span>, <span class="stringliteral">&quot;return the lamp type&quot;</span>, handles::cmd_type),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;id&quot;</span>, <span class="stringliteral">&quot;return the board serial number&quot;</span>, handles::cmd_id),</div>
+<div class="line">        make_command_args(<span class="stringliteral">&quot;set&quot;</span>,</div>
+<div class="line">                          <span class="stringliteral">&quot;&lt;subcommand&gt; [&lt;arg&gt;...]&quot;</span>,</div>
+<div class="line">                          0,</div>
+<div class="line">                          utils::cli::ParsedCommand::maxArgumentCount,</div>
+<div class="line">                          <span class="stringliteral">&quot;Set system characteristics&quot;</span>,</div>
+<div class="line">                          handles::cmd_set),</div>
+<div class="line">        make_command_args(<span class="stringliteral">&quot;sys&quot;</span>,</div>
+<div class="line">                          <span class="stringliteral">&quot;&lt;subcommand&gt; [&lt;arg&gt;...]&quot;</span>,</div>
+<div class="line">                          0,</div>
+<div class="line">                          utils::cli::ParsedCommand::maxArgumentCount,</div>
+<div class="line">                          <span class="stringliteral">&quot;Read system informations&quot;</span>,</div>
+<div class="line">                          handles::cmd_sys),</div>
+<div class="line">        make_command_args(<span class="stringliteral">&quot;act&quot;</span>,</div>
+<div class="line">                          <span class="stringliteral">&quot;&lt;subcommand&gt; [&lt;arg&gt;...]&quot;</span>,</div>
+<div class="line">                          0,</div>
+<div class="line">                          utils::cli::ParsedCommand::maxArgumentCount,</div>
+<div class="line">                          <span class="stringliteral">&quot;High level immediate actions (dangerous)&quot;</span>,</div>
+<div class="line">                          handles::cmd_act),</div>
+<div class="line">}</div>
+</div><!-- fragment -->
+<p>Define the CLI commands here. </p>
+
+</div>
+</div>
+<a id="a4eff67cb5ee801beef6919a35d027300" name="a4eff67cb5ee801beef6919a35d027300"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4eff67cb5ee801beef6919a35d027300">&#9670;&#160;</a></span>_set_commands_s</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a> lampda::logic::cli::_set_commands_s[]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">        make_command_args(<span class="stringliteral">&quot;h&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, 0, utils::cli::ParsedCommand::maxArgumentCount, <span class="stringliteral">&quot;This page&quot;</span>, handles::cmd_set_help),</div>
+<div class="line">        make_command_args(<span class="stringliteral">&quot;brgt&quot;</span>,</div>
+<div class="line">                          <span class="stringliteral">&quot;[0-1024]&quot;</span>,</div>
+<div class="line">                          1,</div>
+<div class="line">                          1,</div>
+<div class="line">                          <span class="stringliteral">&quot;Set the output brightness&quot;</span>,</div>
+<div class="line">                          handles::cmd_brightness), </div>
+<div class="line">}</div>
+</div><!-- fragment -->
+<p>special commands to set system values </p>
+
+</div>
+</div>
+<a id="ae713c10ebcc95de7a4cb60ad378b4206" name="ae713c10ebcc95de7a4cb60ad378b4206"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae713c10ebcc95de7a4cb60ad378b4206">&#9670;&#160;</a></span>_sys_commands_s</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a> lampda::logic::cli::_sys_commands_s[]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">        make_command_args(<span class="stringliteral">&quot;h&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, 0, utils::cli::ParsedCommand::maxArgumentCount, <span class="stringliteral">&quot;This page&quot;</span>, handles::cmd_sys_help),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;alerts&quot;</span>, <span class="stringliteral">&quot;show all raised alerts&quot;</span>, handles::cmd_alerts),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;stats&quot;</span>, <span class="stringliteral">&quot;display the system use statistics&quot;</span>, handles::cmd_stats),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;tasks&quot;</span>, <span class="stringliteral">&quot;display a debug of task usages&quot;</span>, handles::cmd_tasks),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;time&quot;</span>, <span class="stringliteral">&quot;show current time&quot;</span>, handles::cmd_time),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;ble&quot;</span>, <span class="stringliteral">&quot;debug bluetooth informations&quot;</span>, handles::cmd_ble),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;pd&quot;</span>, <span class="stringliteral">&quot;display the connected PD capabilities&quot;</span>, handles::cmd_powerdelivery),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;bat&quot;</span>, <span class="stringliteral">&quot; battery info/levels&quot;</span>, handles::cmd_bat),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;states&quot;</span>, <span class="stringliteral">&quot;state machine states&quot;</span>, handles::cmd_states),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;serial&quot;</span>, <span class="stringliteral">&quot;show serial infos&quot;</span>, handles::cmd_serial),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;cinfo&quot;</span>, <span class="stringliteral">&quot;charger infos&quot;</span>, handles::cmd_cinfo),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;adc&quot;</span>, <span class="stringliteral">&quot;values from the charger ADC&quot;</span>, handles::cmd_adc),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;i2c&quot;</span>, <span class="stringliteral">&quot;start an i2c presence check&quot;</span>, handles::cmd_i2c),</div>
+<div class="line">}</div>
+</div><!-- fragment -->
+<p>special commands to interact with the low level system </p>
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6
