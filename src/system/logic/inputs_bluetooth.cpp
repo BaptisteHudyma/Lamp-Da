@@ -2,6 +2,8 @@
 
 #include "src/user/functions.h"
 
+#include "src/system/utils/utils.h"
+
 #include "src/system/hal/bluetooth.h"
 
 #include "src/system/bsp/text_out.h"
@@ -9,11 +11,6 @@
 #include "src/system/common/elk_decoder.h"
 #include "src/system/common/user_commands.h"
 
-#include "src/system/logic/behavior.h"
-#include "src/system/logic/brightness_handle.h"
-#include "src/system/logic/sunset_timer.h"
-
-#include "src/system/utils/utils.h"
 #include <cstdint>
 
 namespace lampda {
