@@ -14,7 +14,7 @@ namespace lampda {
 namespace component {
 namespace microphone {
 
-utils::fft::FftAnalyzer<hal::microphone::PdmData::SAMPLE_SIZE, SoundStruct::numberOfFFtChanels, float> fftAnalyzer;
+common::fft::FftAnalyzer<hal::microphone::PdmData::SAMPLE_SIZE, SoundStruct::numberOfFFtChanels, float> fftAnalyzer;
 
 inline float square(const float v) { return v * v; }
 

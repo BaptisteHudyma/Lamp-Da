@@ -280,7 +280,7 @@ void handle_pattern_select_command(const uint8_t patternIndex, const uint32_t re
 
 } // namespace __private
 
-void handle_user_command(const logic::UserCommand& command)
+void handle_user_command(const common::UserCommand& command)
 {
   // Handle default common behavior
   if (default_behaviors::handle_user_command(command))
@@ -291,7 +291,7 @@ void handle_user_command(const logic::UserCommand& command)
 
   switch (command.get_type())
   {
-    case logic::UserCommand::Type::SetBleCustomColorMode:
+    case common::UserCommand::Type::SetBleCustomColorMode:
       {
         uint32_t color;
         if (command.parse_set_ble_custom_color_mode_command(color))
@@ -300,7 +300,7 @@ void handle_user_command(const logic::UserCommand& command)
           bsp::lampda_print("Failed to parse set_ble_custom_color command");
         return;
       }
-    case logic::UserCommand::Type::SetBleMode:
+    case common::UserCommand::Type::SetBleMode:
       {
         uint8_t index;
         if (command.parse_set_ble_mode_command(index))

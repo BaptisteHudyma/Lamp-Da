@@ -11,8 +11,9 @@
 
 #include <cstdint>
 
+#include "src/system/common/user_commands.h"
+
 #include "src/system/logic/brightness_handle.h"
-#include "src/system/logic/user_commands.h"
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #include "src/system/component/strip.h"
@@ -136,7 +137,7 @@ void user_thread();
  * \brief Handle user command
  * \param[in] setCommand The command to handle
  */
-void handle_user_command(const logic::UserCommand& setCommand);
+void handle_user_command(const common::UserCommand& setCommand);
 
 } // namespace lampda::user
 

@@ -6,7 +6,8 @@
 #define INPUTS_H
 
 #include <cstdint>
-#include "src/system/utils/queue.h"
+
+#include "src/system/common/queue.h"
 
 namespace lampda {
 namespace logic {
@@ -27,7 +28,7 @@ struct ButtonEvent
 static constexpr size_t maxButtonEventStore =
         15; ///< this event count should be high enough to not miss clicks and ramp events
 
-extern utils::Queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
+extern common::Queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
 
 } // namespace __private
 

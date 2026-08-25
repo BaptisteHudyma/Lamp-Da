@@ -429,11 +429,11 @@ void handle_mode_control(const uint8_t groupIndex, const uint8_t modeIndex)
 
 } // namespace __private
 
-bool handle_user_command(const logic::UserCommand& command)
+bool handle_user_command(const common::UserCommand& command)
 {
   switch (command.get_type())
   {
-    case logic::UserCommand::Type::SetUserRamp:
+    case common::UserCommand::Type::SetUserRamp:
       {
         uint8_t ramp;
         if (command.parse_ramp(ramp))
@@ -442,7 +442,7 @@ bool handle_user_command(const logic::UserCommand& command)
           bsp::lampda_print("Failed to parse set_user_ramp command");
         return true;
       }
-    case logic::UserCommand::Type::Brightness:
+    case common::UserCommand::Type::Brightness:
       {
         brightness_t brgt;
         if (command.parse_brightness(brgt))
@@ -451,7 +451,7 @@ bool handle_user_command(const logic::UserCommand& command)
           bsp::lampda_print("Failed to parse brightness command");
         return true;
       }
-    case logic::UserCommand::Type::SetMode:
+    case common::UserCommand::Type::SetMode:
       {
         uint8_t groupId;
         uint8_t modeId;
@@ -461,7 +461,7 @@ bool handle_user_command(const logic::UserCommand& command)
           bsp::lampda_print("Failed to parse set_mode command");
         return true;
       }
-    case logic::UserCommand::Type::OnOff:
+    case common::UserCommand::Type::OnOff:
       {
         bool shouldTurnOn;
         if (command.parse_turn_onoff(shouldTurnOn))
@@ -470,7 +470,7 @@ bool handle_user_command(const logic::UserCommand& command)
           bsp::lampda_print("Failed to parse onoff command");
         return true;
       }
-    case logic::UserCommand::Type::SetRealTime:
+    case common::UserCommand::Type::SetRealTime:
       {
         component::time::RealTime time;
         if (command.parse_set_real_time_command(time))
@@ -479,7 +479,7 @@ bool handle_user_command(const logic::UserCommand& command)
           bsp::lampda_print("Failed to parse set_real_time command");
         return true;
       }
-    case logic::UserCommand::Type::SetSunsetToTime:
+    case common::UserCommand::Type::SetSunsetToTime:
       {
         component::time::RealTime time;
         if (command.parse_set_sunset_to_time_command(time))

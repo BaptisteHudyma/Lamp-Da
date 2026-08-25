@@ -1,11 +1,11 @@
 #include <cstdint>
 #include <gtest/gtest.h>
 
-#include "src/system/utils/elk_decoder.h"
+#include "src/system/common/elk_decoder.h"
 
 #include <array>
 
-namespace lampda::utils::ELK {
+namespace lampda::common::elk {
 
 // Test some invalid message lenght
 TEST(test_elf_decoder, invalid_message_lenght)
@@ -400,4 +400,4 @@ TEST(test_elf_decoder, timing_messages_valid)
   EXPECT_EQ(package.data[4], 5);
 }
 
-} // namespace lampda::utils::ELK
+} // namespace lampda::common::elk

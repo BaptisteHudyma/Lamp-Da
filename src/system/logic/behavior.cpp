@@ -34,10 +34,11 @@
 
 #include "src/system/utils/colorspace.h"
 #include "src/system/utils/constants.h"
-#include "src/system/utils/utils.h"
-#include "src/system/utils/state_machine.h"
 #include "src/system/utils/input_output.h"
 #include "src/system/utils/time_utils.h"
+#include "src/system/utils/utils.h"
+
+#include "src/system/common/state_machine.h"
 
 #include "src/user/functions.h"
 
@@ -114,7 +115,7 @@ const char* BehaviorStatesStr[] = {
         "ERROR",
 };
 // main state machine
-utils::StateMachine<BehaviorStates> mainMachine(BehaviorStates::START_LOGIC);
+common::StateMachine<BehaviorStates> mainMachine(BehaviorStates::START_LOGIC);
 
 // system was powered from vbus power event
 bool did_woke_up_from_power() { return wokeUpFromVbus_s; }

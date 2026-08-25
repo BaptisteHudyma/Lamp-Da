@@ -2,15 +2,14 @@
     \brief Define a queue object with constant memory footprint
 */
 
-#ifndef UTILS_QUEUE
-#define UTILS_QUEUE
+#pragma once
 
 #include <array>
 #include <cstddef>
 #include <cstdint>
 
 namespace lampda {
-namespace utils {
+namespace common {
 
 template<typename T, size_t MaxElements = 10> struct Queue
 {
@@ -80,7 +79,5 @@ private:
   std::array<Element, MaxElements> _queueData;
 };
 
-} // namespace utils
+} // namespace common
 } // namespace lampda
-
-#endif

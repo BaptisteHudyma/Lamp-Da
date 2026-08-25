@@ -1,10 +1,9 @@
-
-#include "src/modes/include/colors/utils.hpp"
-#include "src/modes/include/colors/palettes.hpp"
-
 #include <cstdint>
 #include <limits>
 #include <gtest/gtest.h>
+
+#include "src/modes/include/colors/utils.hpp"
+#include "src/modes/include/colors/palettes.hpp"
 
 namespace lampda::modes::colors {
 

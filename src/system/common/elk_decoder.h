@@ -2,16 +2,15 @@
     \brief Decoder of the Bluetooth ELK messages
 */
 
-#ifndef UTILS_ELK_DECODER
-#define UTILS_ELK_DECODER
+#pragma once
 
 #include <array>
 #include <cstdint>
 
 namespace lampda {
-namespace utils {
+namespace common {
 /// decode ELK control messages
-namespace ELK {
+namespace elk {
 
 enum class Type : uint8_t
 {
@@ -193,7 +192,6 @@ inline bool decode_ELK_message(const uint8_t* msg, uint16_t len, Package& packag
   return false;
 }
 
-} // namespace ELK
-} // namespace utils
+} // namespace elk
+} // namespace common
 } // namespace lampda
-#endif

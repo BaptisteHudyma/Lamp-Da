@@ -25,9 +25,10 @@
 #include "src/system/logic/brightness_handle.h"
 
 #include "src/system/utils/assert.h"
-#include "src/system/utils/curves.h"
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
+
+#include "src/system/common/curves.h"
 
 #include "src/system/ext/math8.h"
 
@@ -594,7 +595,7 @@ public:
 #else
       static constexpr uint8_t minimumAllowedBrightness = ::lampda::minimumAllowedBrightness_8;
 #endif
-      using curve_t = utils::curves::LinearCurve<brightness_t, uint8_t>;
+      using curve_t = common::curves::LinearCurve<brightness_t, uint8_t>;
       static curve_t brightnessCurve({curve_t::point_t {0, minimumAllowedBrightness},
                                       curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255}});
 
@@ -616,7 +617,7 @@ public:
         component::outputPower::blip(50); // blip
       }
 
-      using curve_t = utils::curves::ExponentialCurve<brightness_t, uint16_t>;
+      using curve_t = common::curves::ExponentialCurve<brightness_t, uint16_t>;
       static curve_t brightnessCurve(
               curve_t::point_t {0, stripInputMinVoltage_mV},
               curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, stripInputMaxVoltage_mV},

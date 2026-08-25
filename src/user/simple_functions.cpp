@@ -80,7 +80,7 @@ void loop() {}
 bool should_spawn_thread() { return false; }
 void user_thread() {}
 
-void handle_user_command(const logic::UserCommand&) {};
+void handle_user_command(const common::UserCommand&) {};
 
 } // namespace lampda::user
 

@@ -10,6 +10,14 @@
     - text_in.h: user text input and parsing
     - text_out.h: user text output
     - threads.h: Thread board support
+- common: Common general use and interfaces
+    - cmd_parser.h: Parse a command to extract its parameters
+    - curves.h: define custom curve and curve sampling functions
+    - elk_decoder.h: Decode elk messages
+    - fft.h: implementation of the fft and assocated filtering
+    - queue.h: Define a non allocating queue
+    - state_machine.h: generic state machine class, used for all main logic
+    - time_utils.h: Useful time handling function
 - component: Medium level physical components layer: button, bluetooth, IMU, ...
     - battery.h: handle the battery readings, for battery level
     - button.h: control the button. Takes callbacks for actions on multiple button pushes. Used to display stuf on the button if needed
@@ -50,14 +58,8 @@
     - statistics_handler.h: Keep track of the system use statistics
     - sunset_timer.h: Logic of the sunset timer
 - utils: General functions and constants that everybody needs
-    - cmd_parser.h: Parse a command to extract its parameters
     - colorspace.h: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !
     - constants.h: global constants used all around the program
-    - curves.h: define custom curve and curve sampling functions
-    - fft.h: implementation of the fft and assocated filtering
     - input_output.h: define the gpio used for the button & indicator
-    - queue.h: Define a non allocating queue
-    - state_machine.h: generic state machine class, used for all main logic
-    - time_utils.h: Useful time handling function
     - utils.h: useful functions to make colors
     - vector_math.h: Handle 2D 3D and 4D vector math

@@ -2,9 +2,10 @@
 #include <cstdint>
 #include <gtest/gtest.h>
 #include <limits>
-#include "src/system/utils/queue.h"
 
-namespace lampda::utils {
+#include "src/system/common/queue.h"
+
+namespace lampda::common {
 
 TEST(test_queue, simple_value_queue)
 {
@@ -90,4 +91,4 @@ TEST(test_queue, complex_enqueue_dequeue)
   ASSERT_FALSE(queue.has_elements());
 }
 
-} // namespace lampda::utils
+} // namespace lampda::common

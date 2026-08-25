@@ -8,7 +8,7 @@
 #include <cstdint>
 
 namespace lampda {
-namespace utils {
+namespace common {
 
 /**
  * \brief Define a state machine
@@ -175,5 +175,5 @@ private:
   bool changedWithTimeout;
 };
 
-} // namespace utils
+} // namespace common
 } // namespace lampda

@@ -2,8 +2,7 @@
     \brief Define curves types, that can be sampled.
 */
 
-#ifndef UTILS_CURVES_H
-#define UTILS_CURVES_H
+#pragma once
 
 #include "src/system/utils/utils.h"
 
@@ -12,7 +11,7 @@
 #include <vector>
 
 namespace lampda {
-namespace utils {
+namespace common {
 /// Curves classes to sample values from predefined custom parameters.
 namespace curves {
 
@@ -175,7 +174,5 @@ private:
 };
 
 } // namespace curves
-} // namespace utils
+} // namespace common
 } // namespace lampda
-
-#endif

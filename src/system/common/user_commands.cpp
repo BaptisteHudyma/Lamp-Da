@@ -3,7 +3,7 @@
 #include "src/system/utils/colorspace.h"
 
 namespace lampda {
-namespace logic {
+namespace common {
 
 UserCommand::UserCommand() : _type(UserCommand::Type::Invalid), _dataCnt(0) {}
 
@@ -185,5 +185,5 @@ bool UserCommand::parse_set_ble_mode_command(uint8_t& index) const
   return true;
 }
 
-} // namespace logic
+} // namespace common
 } // namespace lampda

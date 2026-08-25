@@ -99,7 +99,7 @@ bool button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   return false;
 }
 
-void handle_user_command(const logic::UserCommand& command)
+void handle_user_command(const common::UserCommand& command)
 {
   // Handle default common behavior
   if (default_behaviors::handle_user_command(command))

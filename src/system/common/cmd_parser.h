@@ -1,8 +1,7 @@
 /*! \file cmd_parser.h
     \brief Command argument parser logic
 */
-#ifndef UTILS_CMD_PARSER_H
-#define UTILS_CMD_PARSER_H
+#pragma once
 
 #include <array>
 #include <cstddef>
@@ -11,7 +10,7 @@
 #include "src/system/bsp/text_in.h"
 
 namespace lampda {
-namespace utils {
+namespace common {
 namespace cli {
 
 struct ParsedCommand
@@ -51,7 +50,5 @@ bool parse_uint16(const ParsedCommand& command, const size_t index, uint16_t& va
 ParsedCommand parseCommand(const bsp::text_in::Inputs::Command& input);
 
 } // namespace cli
-} // namespace utils
+} // namespace common
 } // namespace lampda
-
-#endif

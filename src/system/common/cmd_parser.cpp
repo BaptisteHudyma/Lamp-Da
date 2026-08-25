@@ -5,7 +5,7 @@
 #include <cstdlib>
 
 namespace lampda {
-namespace utils {
+namespace common {
 namespace cli {
 
 inline bool isCommandSeparator(const char character) { return character == ' ' || character == '\t'; }
@@ -153,5 +153,5 @@ ParsedCommand parseCommand(const bsp::text_in::Inputs::Command& input)
 }
 
 } // namespace cli
-} // namespace utils
+} // namespace common
 } // namespace lampda

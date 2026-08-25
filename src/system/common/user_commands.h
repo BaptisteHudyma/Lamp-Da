@@ -13,7 +13,7 @@
 #include "src/system/component/time_handling.h"
 
 namespace lampda {
-namespace logic {
+namespace common {
 
 /// Define a command destined to the user layer.
 /// Command can only be created by the static make_* methods.
@@ -169,5 +169,5 @@ private:
   std::array<uint8_t, maxDataSize> _data; ///< actual stored data
 };
 
-} // namespace logic
+} // namespace common
 } // namespace lampda
