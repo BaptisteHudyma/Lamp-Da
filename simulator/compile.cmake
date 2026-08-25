@@ -97,6 +97,7 @@ set(SRC_SYSTEM_LOGIC
     ${LMBD_ROOT_DIR}/src/system/logic/power_handler.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/statistics_handler.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/sunset_timer.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/user_commands.cpp
 )
 
 set(SIMULATOR_HAL

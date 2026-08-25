@@ -22,7 +22,7 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Keyboard.hpp>
 
-/// if defined, will display colors with the same brigthness to debug the color bending
+/// if defined, will display colors with the same brightness to debug the color bending
 // #define LMBD_DEBUG_SIMU_REALCOLORS
 
 namespace simulator {

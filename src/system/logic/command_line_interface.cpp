@@ -28,6 +28,7 @@
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/statistics_handler.h"
 #include "src/system/logic/sunset_timer.h"
+#include "src/system/logic/user_commands.h"
 
 #include "src/user/functions.h"
 
@@ -441,13 +442,7 @@ static void cmd_brightness(const utils::cli::ParsedCommand& command)
   if (utils::cli::argument::parse_uint16(command, 0, brightness) &&
       brightness <= ::lampda::brightness::absoluteMaximumBrightness)
   {
-    CommandHandle handle;
-    handle.type = CommandHandle::Type::Brightness;
-    handle.dataCnt = 2;
-    // data is in bytes
-    handle.data[0] = (brightness) & 0xFF;
-    handle.data[1] = (brightness >> 8) & 0xFF;
-    lampda::user::handle_cli_command(handle);
+    lampda::user::handle_user_command(UserCommand::make_brightness_command(brightness));
     return;
   }
   bsp::lampda_print("Invalid call: parameter should be in range <0-%u>",
@@ -472,14 +467,7 @@ static void cmd_ramp(const utils::cli::ParsedCommand& command)
   uint8_t ramp = 0;
   if (utils::cli::argument::parse_uint8(command, 0, ramp))
   {
-    if (not logic::behavior::is_in_output_state())
-      return;
-
-    CommandHandle handle;
-    handle.type = CommandHandle::Type::SetUserRamp;
-    handle.dataCnt = 1;
-    handle.data[0] = ramp;
-    lampda::user::handle_cli_command(handle);
+    lampda::user::handle_user_command(UserCommand::make_set_ramp_command(ramp));
     return;
   }
   bsp::lampda_print("Invalid call: parameter should be range <0-255>");
@@ -492,13 +480,7 @@ static void cmd_set_mode(const utils::cli::ParsedCommand& command)
   if (utils::cli::argument::parse_uint8(command, 0, pageIndex) &&
       utils::cli::argument::parse_uint8(command, 1, modeIndex))
   {
-    CommandHandle handle;
-    handle.type = CommandHandle::Type::SetMode;
-    handle.dataCnt = 2;
-    // data is in bytes
-    handle.data[0] = pageIndex;
-    handle.data[1] = modeIndex;
-    lampda::user::handle_cli_command(handle);
+    lampda::user::handle_user_command(UserCommand::make_set_mode_command(pageIndex, modeIndex));
     return;
   }
   bsp::lampda_print("Invalid call");

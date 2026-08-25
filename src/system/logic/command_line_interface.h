@@ -11,21 +11,6 @@ namespace logic {
 /// Handle the serial command line interface
 namespace cli {
 
-struct CommandHandle
-{
-  enum Type
-  {
-    SetUserRamp, ///< set the user ramp value
-    Brightness,  ///< set brightness
-    SetMode,     ///< set mode index
-  };
-  static constexpr uint8_t maxDataSize = 8;
-
-  Type type;                             ///< request type
-  uint8_t dataCnt;                       ///< used data count
-  std::array<uint8_t, maxDataSize> data; ///< actual stored data
-};
-
 /// Call once on system start
 void setup();
 /// Handle the user command line inputs.

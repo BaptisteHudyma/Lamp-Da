@@ -146,7 +146,7 @@ inline bool is_cell_voltage_valid(const uint16_t cellVoltage_mv)
 /// Define the type of the brightness parameters
 using brightness_t = uint16_t;
 namespace brightness {
-/// Maximum brigthness value
+/// Maximum brightness value
 static constexpr brightness_t absoluteMaximumBrightness = 1024;
 // min brightness is always zero
 } // namespace brightness

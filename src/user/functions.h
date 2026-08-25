@@ -12,7 +12,7 @@
 #include <cstdint>
 
 #include "src/system/logic/brightness_handle.h"
-#include "src/system/logic/command_line_interface.h"
+#include "src/system/logic/user_commands.h"
 
 #include "src/system/utils/elk_decoder.h"
 
@@ -141,10 +141,10 @@ void user_thread();
 void handle_elk_command(const utils::ELK::Package& elkControlCommand);
 
 /**
- * \brief Handle a CLI command
- * \param[in] setCommand
+ * \brief Handle user command
+ * \param[in] setCommand The command to handle
  */
-void handle_cli_command(const logic::cli::CommandHandle& setCommand);
+void handle_user_command(const logic::UserCommand& setCommand);
 
 } // namespace lampda::user
 

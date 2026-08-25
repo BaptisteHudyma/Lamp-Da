@@ -156,13 +156,13 @@ public:
     {
       if constexpr (useTemporalDithering)
       {
-        const COLOR c = convert_color_with_brigthness(_colors[i], writeBrightness, i + capedShown, _colorErrors[i]);
+        const COLOR c = convert_color_with_brightness(_colors[i], writeBrightness, i + capedShown, _colorErrors[i]);
         // set strip color
         StripImpl_t::setPixelColor(i, c.color);
       }
       else
       {
-        const COLOR c = convert_color_with_brigthness(_colors[i], writeBrightness, i + capedShown, _colorErrors[0]);
+        const COLOR c = convert_color_with_brightness(_colors[i], writeBrightness, i + capedShown, _colorErrors[0]);
         // set strip color
         StripImpl_t::setPixelColor(i, c.color);
       }
@@ -263,7 +263,7 @@ public:
    * \param[in] index Index of the noise to use
    * \param[in, out] error Error components of the current colors
    */
-  static COLOR convert_color_with_brigthness(const COLOR& c,
+  static COLOR convert_color_with_brightness(const COLOR& c,
                                              const uint8_t brightness,
                                              const uint16_t index,
                                              COLOR& error)

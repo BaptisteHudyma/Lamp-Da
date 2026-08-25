@@ -312,16 +312,16 @@ void handle_elk_command(const utils::ELK::Package& elkControlCommand)
   }
 }
 
-void handle_cli_command(const logic::cli::CommandHandle& command)
+void handle_user_command(const logic::UserCommand& command)
 {
   // Handle default common behavior
-  if (default_behaviors::handle_cli_command(command))
+  if (default_behaviors::handle_user_command(command))
   {
     // some event is already handled
     return;
   }
 
-  bsp::lampda_print("Unsupported cli command message type");
+  bsp::lampda_print("Unsupported user command message type");
 }
 
 } // namespace lampda::user

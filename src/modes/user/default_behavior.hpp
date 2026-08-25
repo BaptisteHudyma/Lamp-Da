@@ -73,7 +73,7 @@ void brightness_update(const brightness_t brightness)
   }
   else
   {
-    // this call could be just a max brigthness update
+    // this call could be just a max brightness update
     manager.lamp.enforce_internal_brightness_limits();
   }
 }
@@ -280,7 +280,7 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
 namespace __private {
 
 /// handle the brightness command
-void handle_brigthness_control(const brightness_t requiredBrigthness)
+void handle_brightness_control(const brightness_t requiredbrightness)
 {
   // ignore if not on
   if (not logic::behavior::is_in_output_state())
@@ -289,7 +289,7 @@ void handle_brigthness_control(const brightness_t requiredBrigthness)
   logic::sunset::lock_brightness_update(true);
   // update brightness
   const brightness_t desiredBrightness =
-          min<brightness_t>(::lampda::brightness::absoluteMaximumBrightness, requiredBrigthness);
+          min<brightness_t>(::lampda::brightness::absoluteMaximumBrightness, requiredbrightness);
   // Update the system brightness for real, not the temporary. We want the changes to be saved
   logic::brightness::update_brightness(desiredBrightness);
   // update saved brightness
@@ -435,7 +435,7 @@ bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
     case utils::ELK::Type::BRIGHTNESS:
       {
         static constexpr float brightnessMultiplier = ::lampda::brightness::absoluteMaximumBrightness / 100.0f;
-        __private::handle_brigthness_control(
+        __private::handle_brightness_control(
                 static_cast<brightness_t>(elkControlCommand.data[0] * brightnessMultiplier));
         return true;
       }
@@ -501,24 +501,36 @@ bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
   return false;
 }
 
-bool handle_cli_command(const logic::cli::CommandHandle& command)
+bool handle_user_command(const logic::UserCommand& command)
 {
-  switch (command.type)
+  switch (command.get_type())
   {
-    case logic::cli::CommandHandle::Type::SetUserRamp:
+    case logic::UserCommand::Type::SetUserRamp:
       {
-        __private::handle_ramp_command(command.data[0]);
+        uint8_t ramp;
+        if (command.parse_ramp(ramp))
+          __private::handle_ramp_command(ramp);
+        else
+          bsp::lampda_print("Failed to parse set_user_ramp command");
         return true;
       }
-    case logic::cli::CommandHandle::Type::Brightness:
+    case logic::UserCommand::Type::Brightness:
       {
-        const brightness_t brightness = (command.data[1] << 8) | command.data[0];
-        __private::handle_brigthness_control(brightness);
+        brightness_t brgt;
+        if (command.parse_brightness(brgt))
+          __private::handle_brightness_control(brgt);
+        else
+          bsp::lampda_print("Failed to parse brigthness command");
         return true;
       }
-    case logic::cli::CommandHandle::Type::SetMode:
+    case logic::UserCommand::Type::SetMode:
       {
-        __private::handle_mode_control(command.data[0], command.data[1]);
+        uint8_t groupId;
+        uint8_t modeId;
+        if (command.parse_set_mode(groupId, modeId))
+          __private::handle_mode_control(groupId, modeId);
+        else
+          bsp::lampda_print("Failed to parse set_mode command");
         return true;
       }
 
