@@ -82,6 +82,8 @@ void user_thread() {}
 
 void handle_elk_command(const utils::ELK::Package&) {}
 
+void handle_cli_command(const logic::cli::CommandHandle&) {};
+
 } // namespace lampda::user
 
 #endif // LMBD_CPP17

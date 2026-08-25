@@ -277,24 +277,25 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
   return false;
 }
 
-namespace __private_elk {
+namespace __private {
 
 /// handle the brightness command
-void handle_brigthness_control(const uint8_t requiredBrigthness)
+void handle_brigthness_control(const brightness_t requiredBrigthness)
 {
   // ignore if not on
   if (not logic::behavior::is_in_output_state())
     return;
 
+  logic::sunset::lock_brightness_update(true);
   // update brightness
-  static constexpr float brightnessMultiplier = ::lampda::brightness::absoluteMaximumBrightness / 100.0f;
   const brightness_t desiredBrightness =
-          min<brightness_t>(::lampda::brightness::absoluteMaximumBrightness,
-                            static_cast<brightness_t>(requiredBrigthness * brightnessMultiplier));
+          min<brightness_t>(::lampda::brightness::absoluteMaximumBrightness, requiredBrigthness);
   // Update the system brightness for real, not the temporary. We want the changes to be saved
   logic::brightness::update_brightness(desiredBrightness);
   // update saved brightness
   logic::brightness::update_saved_brightness();
+  logic::sunset::lock_brightness_update(false);
+
   // and change the sunset timer if needed
   logic::sunset::bump_timer();
 }
@@ -317,10 +318,10 @@ void handle_on_off_command(const bool shouldBeOn)
 }
 
 /**
- * \brief Handle the speed command
- * \param[in] speed 0-255 speed
+ * \brief Handle the ramp command
+ * \param[in] ramp 0-255 speed
  */
-void handle_speed_command(const uint8_t speed)
+void handle_ramp_command(const uint8_t ramp)
 {
   // ignore if not on
   if (not logic::behavior::is_in_output_state())
@@ -329,9 +330,9 @@ void handle_speed_command(const uint8_t speed)
   auto manager = get_context();
 
   // update ramp value in modes
-  manager.custom_ramp_update(speed, 1000);
+  manager.custom_ramp_update(ramp, 1000);
   // override user choice
-  manager.set_active_custom_ramp(speed);
+  manager.set_active_custom_ramp(ramp);
 }
 
 /**
@@ -401,7 +402,31 @@ void handle_timing_command(const bool shouldTurnOn,
   }
 }
 
-} // namespace __private_elk
+void handle_mode_control(const uint8_t groupIndex, const uint8_t modeIndex)
+{
+  // lamp will turn on if not already turned on
+  if (not logic::behavior::is_in_output_state())
+    logic::behavior::set_power_on();
+
+  auto manager = get_context();
+
+  if (groupIndex >= manager.get_groups_count())
+  {
+    bsp::lampda_print("Group id %d is greater than max group id %d", groupIndex, manager.get_groups_count());
+    return;
+  }
+  manager.set_active_group(groupIndex);
+
+  if (modeIndex >= manager.get_modes_count())
+  {
+    bsp::lampda_print("Mode id %d is greater than max mode id %d", modeIndex, manager.get_modes_count());
+    return;
+  }
+  manager.set_active_mode(modeIndex);
+  manager.blip(250);
+}
+
+} // namespace __private
 
 bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
 {
@@ -409,19 +434,21 @@ bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
   {
     case utils::ELK::Type::BRIGHTNESS:
       {
-        __private_elk::handle_brigthness_control(elkControlCommand.data[0]);
+        static constexpr float brightnessMultiplier = ::lampda::brightness::absoluteMaximumBrightness / 100.0f;
+        __private::handle_brigthness_control(
+                static_cast<brightness_t>(elkControlCommand.data[0] * brightnessMultiplier));
         return true;
       }
     case utils::ELK::Type::ONOFF:
       {
         const bool shouldTurnOn = elkControlCommand.data[0] > 0;
-        __private_elk::handle_on_off_command(shouldTurnOn);
+        __private::handle_on_off_command(shouldTurnOn);
         return true;
       }
     case utils::ELK::Type::PATTERN_SPEED:
       {
         const uint8_t speed = (elkControlCommand.data[0] / 100.0) * UINT8_MAX;
-        __private_elk::handle_speed_command(speed);
+        __private::handle_ramp_command(speed);
         return true;
       }
     case utils::ELK::Type::SET_TIME:
@@ -437,7 +464,7 @@ bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
           break;
         }
 
-        __private_elk::handle_set_time_command(hour, minutes, seconds, weekdayPlusOne - 1);
+        __private::handle_set_time_command(hour, minutes, seconds, weekdayPlusOne - 1);
         return true;
       }
     case utils::ELK::Type::TIMING:
@@ -465,11 +492,38 @@ bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
           break;
         }
 
-        __private_elk::handle_timing_command(isAutoTurnOn, hour, minutes, seconds, indexOfTheDay);
+        __private::handle_timing_command(isAutoTurnOn, hour, minutes, seconds, indexOfTheDay);
         return true;
       }
     default:
       return false;
+  }
+  return false;
+}
+
+bool handle_cli_command(const logic::cli::CommandHandle& command)
+{
+  switch (command.type)
+  {
+    case logic::cli::CommandHandle::Type::SetUserRamp:
+      {
+        __private::handle_ramp_command(command.data[0]);
+        return true;
+      }
+    case logic::cli::CommandHandle::Type::Brightness:
+      {
+        const brightness_t brightness = (command.data[1] << 8) | command.data[0];
+        __private::handle_brigthness_control(brightness);
+        return true;
+      }
+    case logic::cli::CommandHandle::Type::SetMode:
+      {
+        __private::handle_mode_control(command.data[0], command.data[1]);
+        return true;
+      }
+
+    default:
+      break;
   }
   return false;
 }

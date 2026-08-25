@@ -27,6 +27,9 @@
 #include "src/system/logic/inputs_bluetooth.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/statistics_handler.h"
+#include "src/system/logic/sunset_timer.h"
+
+#include "src/user/functions.h"
 
 #include <cstdlib>
 
@@ -438,11 +441,67 @@ static void cmd_brightness(const utils::cli::ParsedCommand& command)
   if (utils::cli::argument::parse_uint16(command, 0, brightness) &&
       brightness <= ::lampda::brightness::absoluteMaximumBrightness)
   {
-    logic::brightness::update_brightness(brightness, false);
+    CommandHandle handle;
+    handle.type = CommandHandle::Type::Brightness;
+    handle.dataCnt = 2;
+    // data is in bytes
+    handle.data[0] = (brightness) & 0xFF;
+    handle.data[1] = (brightness >> 8) & 0xFF;
+    lampda::user::handle_cli_command(handle);
     return;
   }
   bsp::lampda_print("Invalid call: parameter should be in range <0-%u>",
                     ::lampda::brightness::absoluteMaximumBrightness);
+}
+
+/// Enable of update the sunset timer
+static void cmd_sunset(const utils::cli::ParsedCommand& command)
+{
+  uint16_t timeMinutes = 0;
+  if (utils::cli::argument::parse_uint16(command, 0, timeMinutes) && timeMinutes > 0)
+  {
+    logic::sunset::add_time_minutes(timeMinutes);
+    return;
+  }
+  bsp::lampda_print("Invalid call: parameter should be greater than zero");
+}
+
+/// Set the user ramp to a target value
+static void cmd_ramp(const utils::cli::ParsedCommand& command)
+{
+  uint8_t ramp = 0;
+  if (utils::cli::argument::parse_uint8(command, 0, ramp))
+  {
+    if (not logic::behavior::is_in_output_state())
+      return;
+
+    CommandHandle handle;
+    handle.type = CommandHandle::Type::SetUserRamp;
+    handle.dataCnt = 1;
+    handle.data[0] = ramp;
+    lampda::user::handle_cli_command(handle);
+    return;
+  }
+  bsp::lampda_print("Invalid call: parameter should be range <0-255>");
+}
+
+static void cmd_set_mode(const utils::cli::ParsedCommand& command)
+{
+  uint8_t pageIndex = 0;
+  uint8_t modeIndex = 0;
+  if (utils::cli::argument::parse_uint8(command, 0, pageIndex) &&
+      utils::cli::argument::parse_uint8(command, 1, modeIndex))
+  {
+    CommandHandle handle;
+    handle.type = CommandHandle::Type::SetMode;
+    handle.dataCnt = 2;
+    // data is in bytes
+    handle.data[0] = pageIndex;
+    handle.data[1] = modeIndex;
+    lampda::user::handle_cli_command(handle);
+    return;
+  }
+  bsp::lampda_print("Invalid call");
 }
 
 /// Display real time
@@ -555,6 +614,9 @@ constexpr Command _set_commands_s[] = {
                           1,
                           "Set the output brightness",
                           handles::cmd_brightness), // should be ::lampda::brightness::absoluteMaximumBrightness
+        make_command_args("sunset", "[time in minutes]", 1, 1, "Set or update the sunset timer.", handles::cmd_sunset),
+        make_command_args("ramp", "[0-255]", 1, 1, "Set the user ramp value", handles::cmd_ramp),
+        make_command_args("mode", "[group id] [mode id]", 2, 2, "Set current active mode", handles::cmd_set_mode),
 };
 
 /// Check for command duplication
