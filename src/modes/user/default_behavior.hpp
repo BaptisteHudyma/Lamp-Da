@@ -337,69 +337,70 @@ void handle_ramp_command(const uint8_t ramp)
 
 /**
  * \brief Handle the set time command
- * \param[in] weekday In the [0; 6] range
  */
-void handle_set_time_command(const uint8_t hour, const uint8_t minutes, const uint8_t seconds, const uint8_t weekday)
+void handle_set_time_command(const component::time::RealTime& time)
 {
-  component::time::RealTime time;
-  time.dayOfTheWeek = weekday;
-  time.hour = hour;
-  time.minutes = minutes;
-  time.seconds = seconds;
+  if (not time.is_valid())
+  {
+    bsp::lampda_print("Refusing set_time command %d %dh %dm %ds. Invalid values.",
+                      time.dayOfTheWeek,
+                      time.hour,
+                      time.minutes,
+                      time.seconds);
+    return;
+  }
   const bool isValid = component::time::set_real_time(time);
-  bsp::lampda_print("set time %d %dh %dm %ds (validity: %d)", weekday, hour, minutes, seconds, isValid);
+  bsp::lampda_print(
+          "set time %d %dh %dm %ds (validity: %d)", time.dayOfTheWeek, time.hour, time.minutes, time.seconds, isValid);
 }
 
 /**
  * \brief Handle the timing command
- * \param[in] weekday In the [0; 6] range
  */
-void handle_timing_command(const bool shouldTurnOn,
-                           const uint8_t hour,
-                           const uint8_t minutes,
-                           const uint8_t seconds,
-                           const uint8_t weekday)
+void handle_sunset_to_time_command(const component::time::RealTime& time)
 {
-  component::time::RealTime time;
-  time.dayOfTheWeek = weekday;
-  time.hour = hour;
-  time.minutes = minutes;
-  time.seconds = seconds;
-  const uint32_t internalLampActionTime = component::time::get_platform_time_from_target_time(time);
-
-  if (internalLampActionTime <= 0)
+  if (not time.is_valid())
   {
-    bsp::lampda_print("Refusing timing command %d %dh %dm %ds. Likely cause: time is not synchronized.",
+    bsp::lampda_print("Refusing sunset command %d %dh %dm %ds. Invalid values.",
                       time.dayOfTheWeek,
-                      hour,
-                      minutes,
-                      seconds);
+                      time.hour,
+                      time.minutes,
+                      time.seconds);
+    return;
+  }
+  const auto& realTime = component::time::get_real_time();
+  if (not realTime.is_valid())
+  {
+    bsp::lampda_print("Refusing sunset command %d %dh %dm %ds : Time is not synchronized yet.",
+                      time.dayOfTheWeek,
+                      time.hour,
+                      time.minutes,
+                      time.seconds);
     return;
   }
 
-  if (shouldTurnOn)
+  const uint32_t internalLampActionTime = component::time::get_platform_time_from_target_time(time);
+  if (internalLampActionTime <= 0)
   {
-    bsp::lampda_print("NOT HANDLED: lamp will auto turn on on %d %dh %dm %ds %d",
+    bsp::lampda_print("Refusing sunset command %d %dh %dm %ds: Target time is incoherent",
                       time.dayOfTheWeek,
-                      hour,
-                      minutes,
-                      seconds,
-                      internalLampActionTime);
+                      time.hour,
+                      time.minutes,
+                      time.seconds);
+    return;
   }
-  else
-  {
-    // lamp will turn on if not already turned on
-    if (not logic::behavior::is_in_output_state())
-      logic::behavior::set_power_on();
 
-    bsp::lampda_print("lamp will auto turn off on %d %dh %dm %ds %d",
-                      time.dayOfTheWeek,
-                      hour,
-                      minutes,
-                      seconds,
-                      internalLampActionTime);
-    logic::sunset::set_deadline(internalLampActionTime);
-  }
+  // lamp will turn on if not already turned on
+  if (not logic::behavior::is_in_output_state())
+    logic::behavior::set_power_on();
+
+  bsp::lampda_print("lamp will auto turn off on %d %dh %dm %ds %d",
+                    time.dayOfTheWeek,
+                    time.hour,
+                    time.minutes,
+                    time.seconds,
+                    internalLampActionTime);
+  logic::sunset::set_deadline(internalLampActionTime);
 }
 
 void handle_mode_control(const uint8_t groupIndex, const uint8_t modeIndex)
@@ -428,79 +429,6 @@ void handle_mode_control(const uint8_t groupIndex, const uint8_t modeIndex)
 
 } // namespace __private
 
-bool handle_elk_command(const utils::ELK::Package& elkControlCommand)
-{
-  switch (elkControlCommand.type)
-  {
-    case utils::ELK::Type::BRIGHTNESS:
-      {
-        static constexpr float brightnessMultiplier = ::lampda::brightness::absoluteMaximumBrightness / 100.0f;
-        __private::handle_brightness_control(
-                static_cast<brightness_t>(elkControlCommand.data[0] * brightnessMultiplier));
-        return true;
-      }
-    case utils::ELK::Type::ONOFF:
-      {
-        const bool shouldTurnOn = elkControlCommand.data[0] > 0;
-        __private::handle_on_off_command(shouldTurnOn);
-        return true;
-      }
-    case utils::ELK::Type::PATTERN_SPEED:
-      {
-        const uint8_t speed = (elkControlCommand.data[0] / 100.0) * UINT8_MAX;
-        __private::handle_ramp_command(speed);
-        return true;
-      }
-    case utils::ELK::Type::SET_TIME:
-      {
-        const uint8_t hour = elkControlCommand.data[0];
-        const uint8_t minutes = elkControlCommand.data[1];
-        const uint8_t seconds = elkControlCommand.data[2];
-        const uint8_t weekdayPlusOne = elkControlCommand.data[3];
-
-        if (weekdayPlusOne <= 0 or weekdayPlusOne > 7)
-        {
-          bsp::lampda_print("Refused to set the time: invalid day of the week: %d", weekdayPlusOne);
-          break;
-        }
-
-        __private::handle_set_time_command(hour, minutes, seconds, weekdayPlusOne - 1);
-        return true;
-      }
-    case utils::ELK::Type::TIMING:
-      {
-        // target hour, minute, seconds to turn on/off at
-        const uint8_t hour = elkControlCommand.data[0];
-        const uint8_t minutes = elkControlCommand.data[1];
-        const uint8_t seconds = elkControlCommand.data[2];
-
-        // auto turn on or off
-        const bool isAutoTurnOn = elkControlCommand.data[3] == 0;
-        // target days as a binary mask (unsuported)
-        const uint8_t enabledDays = elkControlCommand.data[4];
-
-        // mask the days to enable of the (enabledDays & daysMask)
-        constexpr uint8_t daysMask = 127;
-        // index bit of enable/disable
-        constexpr uint8_t setClearBit = 1 << 7;
-
-        const int indexOfTheDay = utils::get_index_of_first_set_bit(enabledDays);
-
-        if (indexOfTheDay < 0 or indexOfTheDay > 6)
-        {
-          bsp::lampda_print("Refused to handle timing command: invalid day of the week");
-          break;
-        }
-
-        __private::handle_timing_command(isAutoTurnOn, hour, minutes, seconds, indexOfTheDay);
-        return true;
-      }
-    default:
-      return false;
-  }
-  return false;
-}
-
 bool handle_user_command(const logic::UserCommand& command)
 {
   switch (command.get_type())
@@ -520,7 +448,7 @@ bool handle_user_command(const logic::UserCommand& command)
         if (command.parse_brightness(brgt))
           __private::handle_brightness_control(brgt);
         else
-          bsp::lampda_print("Failed to parse brigthness command");
+          bsp::lampda_print("Failed to parse brightness command");
         return true;
       }
     case logic::UserCommand::Type::SetMode:
@@ -531,6 +459,33 @@ bool handle_user_command(const logic::UserCommand& command)
           __private::handle_mode_control(groupId, modeId);
         else
           bsp::lampda_print("Failed to parse set_mode command");
+        return true;
+      }
+    case logic::UserCommand::Type::OnOff:
+      {
+        bool shouldTurnOn;
+        if (command.parse_turn_onoff(shouldTurnOn))
+          __private::handle_on_off_command(shouldTurnOn);
+        else
+          bsp::lampda_print("Failed to parse onoff command");
+        return true;
+      }
+    case logic::UserCommand::Type::SetRealTime:
+      {
+        component::time::RealTime time;
+        if (command.parse_set_real_time_command(time))
+          __private::handle_set_time_command(time);
+        else
+          bsp::lampda_print("Failed to parse set_real_time command");
+        return true;
+      }
+    case logic::UserCommand::Type::SetSunsetToTime:
+      {
+        component::time::RealTime time;
+        if (command.parse_set_sunset_to_time_command(time))
+          __private::handle_sunset_to_time_command(time);
+        else
+          bsp::lampda_print("Failed to parse set_sunset_time command");
         return true;
       }
 

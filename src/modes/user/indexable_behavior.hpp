@@ -228,7 +228,7 @@ bool button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   return false;
 }
 
-namespace __private_elk {
+namespace __private {
 
 /**
  * \brief Handle a pattern change command
@@ -278,39 +278,7 @@ void handle_pattern_select_command(const uint8_t patternIndex, const uint32_t re
   }
 }
 
-} // namespace __private_elk
-
-void handle_elk_command(const utils::ELK::Package& elkControlCommand)
-{
-  // Handle default common behavior
-  if (default_behaviors::handle_elk_command(elkControlCommand))
-  {
-    // some event is already handled
-    return;
-  }
-
-  switch (elkControlCommand.type)
-  {
-    case utils::ELK::Type::COLOR_SELECT:
-      {
-        const uint32_t color =
-                elkControlCommand.data[0] << 16 | elkControlCommand.data[1] << 8 | elkControlCommand.data[2];
-        __private_elk::handle_pattern_select_command(0, color);
-        break;
-      }
-    case utils::ELK::Type::PATTERN_SELECT:
-      {
-        __private_elk::handle_pattern_select_command(elkControlCommand.data[0] + 1);
-        break;
-      }
-    // unhandled
-    default:
-      {
-        bsp::lampda_print("Unsupported ELK message type");
-        break;
-      }
-  }
-}
+} // namespace __private
 
 void handle_user_command(const logic::UserCommand& command)
 {
@@ -319,6 +287,30 @@ void handle_user_command(const logic::UserCommand& command)
   {
     // some event is already handled
     return;
+  }
+
+  switch (command.get_type())
+  {
+    case logic::UserCommand::Type::SetBleCustomColorMode:
+      {
+        uint32_t color;
+        if (command.parse_set_ble_custom_color_mode_command(color))
+          __private::handle_pattern_select_command(0, color);
+        else
+          bsp::lampda_print("Failed to parse set_ble_custom_color command");
+        return;
+      }
+    case logic::UserCommand::Type::SetBleMode:
+      {
+        uint8_t index;
+        if (command.parse_set_ble_mode_command(index))
+          __private::handle_pattern_select_command(index);
+        else
+          bsp::lampda_print("Failed to parse set_ble_mode command");
+        return;
+      }
+    default:
+      break;
   }
 
   bsp::lampda_print("Unsupported user command message type");

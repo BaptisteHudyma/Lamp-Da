@@ -99,16 +99,6 @@ bool button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   return false;
 }
 
-void handle_elk_command(const utils::ELK::Package& elkControlCommand)
-{
-  // Handle default common behavior
-  if (default_behaviors::handle_elk_command(elkControlCommand))
-  {
-    // some event is already handled
-    return;
-  }
-}
-
 void handle_user_command(const logic::UserCommand& command)
 {
   // Handle default common behavior

@@ -14,8 +14,6 @@
 #include "src/system/logic/brightness_handle.h"
 #include "src/system/logic/user_commands.h"
 
-#include "src/system/utils/elk_decoder.h"
-
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #include "src/system/component/strip.h"
 
@@ -133,12 +131,6 @@ bool should_spawn_thread();
  * True when the system probed it to check if it needed a secondary thread
  */
 void user_thread();
-
-/**
- * \brief Handle a ELK BLE package
- * \param[in] elkControlCommand
- */
-void handle_elk_command(const utils::ELK::Package& elkControlCommand);
 
 /**
  * \brief Handle user command

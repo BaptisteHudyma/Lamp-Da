@@ -174,8 +174,6 @@ bool should_spawn_thread() { return false; }
 
 void user_thread() {}
 
-void handle_elk_command(const utils::ELK::Package&) {}
-
 void handle_user_command(const logic::UserCommand&) {};
 
 } // namespace lampda::user
