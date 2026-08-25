@@ -158,38 +158,70 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::default
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::default_behaviors::button_hold</b> (const uint8_t clicks, const bool isEndOfHoldEvent, const uint32_t holdDuration)</td></tr>
 <tr class="memdesc:a93738ec6c5952f143d486075ff170942"><td class="mdescLeft">&#160;</td><td class="mdescRight">must be called by the <a class="el" href="namespacelampda_1_1user.html#a287991443d66886cef109a3522c2621b" title="Called to handle button click+hold events for user mode behaviors.">lampda::user::button_hold_default</a> <br /></td></tr>
 <tr class="separator:a93738ec6c5952f143d486075ff170942"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac3cb07004d14e044997015caca52dabe"><td class="memItemLeft" align="right" valign="top"><a id="ac3cb07004d14e044997015caca52dabe" name="ac3cb07004d14e044997015caca52dabe"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::default_behaviors::__private_elk::handle_brigthness_control</b> (const uint8_t requiredBrigthness)</td></tr>
-<tr class="memdesc:ac3cb07004d14e044997015caca52dabe"><td class="mdescLeft">&#160;</td><td class="mdescRight">handle the brightness command <br /></td></tr>
-<tr class="separator:ac3cb07004d14e044997015caca52dabe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66b9c654d421139d310774fdbfdf58ff"><td class="memItemLeft" align="right" valign="top"><a id="a66b9c654d421139d310774fdbfdf58ff" name="a66b9c654d421139d310774fdbfdf58ff"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::default_behaviors::__private_elk::handle_on_off_command</b> (const bool shouldBeOn)</td></tr>
-<tr class="memdesc:a66b9c654d421139d310774fdbfdf58ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">handle the On or Off command <br /></td></tr>
-<tr class="separator:a66b9c654d421139d310774fdbfdf58ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae12fc38efea7ec13653af2fb38fd43cd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="default__behavior_8hpp.html#ae12fc38efea7ec13653af2fb38fd43cd">lampda::user::default_behaviors::__private_elk::handle_speed_command</a> (const uint8_t speed)</td></tr>
-<tr class="memdesc:ae12fc38efea7ec13653af2fb38fd43cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the speed command.  <br /></td></tr>
-<tr class="separator:ae12fc38efea7ec13653af2fb38fd43cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af33de4fff54643c3310848b3a3ae7b74"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="default__behavior_8hpp.html#af33de4fff54643c3310848b3a3ae7b74">lampda::user::default_behaviors::__private_elk::handle_set_time_command</a> (const uint8_t hour, const uint8_t minutes, const uint8_t seconds, const uint8_t weekday)</td></tr>
-<tr class="memdesc:af33de4fff54643c3310848b3a3ae7b74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the set time command.  <br /></td></tr>
-<tr class="separator:af33de4fff54643c3310848b3a3ae7b74"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac416f277b4efc3dc3d269b647e82bc99"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="default__behavior_8hpp.html#ac416f277b4efc3dc3d269b647e82bc99">lampda::user::default_behaviors::__private_elk::handle_timing_command</a> (const bool shouldTurnOn, const uint8_t hour, const uint8_t minutes, const uint8_t seconds, const uint8_t weekday)</td></tr>
-<tr class="memdesc:ac416f277b4efc3dc3d269b647e82bc99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the timing command.  <br /></td></tr>
-<tr class="separator:ac416f277b4efc3dc3d269b647e82bc99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02775a4053586044641c736eb9312e71"><td class="memItemLeft" align="right" valign="top"><a id="a02775a4053586044641c736eb9312e71" name="a02775a4053586044641c736eb9312e71"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::default_behaviors::__private::handle_brigthness_control</b> (const brightness_t requiredBrigthness)</td></tr>
+<tr class="memdesc:a02775a4053586044641c736eb9312e71"><td class="mdescLeft">&#160;</td><td class="mdescRight">handle the brightness command <br /></td></tr>
+<tr class="separator:a02775a4053586044641c736eb9312e71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a463fcef9009d6f238d261667a3496ea5"><td class="memItemLeft" align="right" valign="top"><a id="a463fcef9009d6f238d261667a3496ea5" name="a463fcef9009d6f238d261667a3496ea5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::default_behaviors::__private::handle_on_off_command</b> (const bool shouldBeOn)</td></tr>
+<tr class="memdesc:a463fcef9009d6f238d261667a3496ea5"><td class="mdescLeft">&#160;</td><td class="mdescRight">handle the On or Off command <br /></td></tr>
+<tr class="separator:a463fcef9009d6f238d261667a3496ea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9004d9cf4dd72ba872348033285917e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="default__behavior_8hpp.html#ac9004d9cf4dd72ba872348033285917e">lampda::user::default_behaviors::__private::handle_ramp_command</a> (const uint8_t ramp)</td></tr>
+<tr class="memdesc:ac9004d9cf4dd72ba872348033285917e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the ramp command.  <br /></td></tr>
+<tr class="separator:ac9004d9cf4dd72ba872348033285917e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04c4c3b161752b226c48b9bc7455e50d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="default__behavior_8hpp.html#a04c4c3b161752b226c48b9bc7455e50d">lampda::user::default_behaviors::__private::handle_set_time_command</a> (const uint8_t hour, const uint8_t minutes, const uint8_t seconds, const uint8_t weekday)</td></tr>
+<tr class="memdesc:a04c4c3b161752b226c48b9bc7455e50d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the set time command.  <br /></td></tr>
+<tr class="separator:a04c4c3b161752b226c48b9bc7455e50d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4f52d43d3c37f4852b122f6cf36a7b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="default__behavior_8hpp.html#ad4f52d43d3c37f4852b122f6cf36a7b4">lampda::user::default_behaviors::__private::handle_timing_command</a> (const bool shouldTurnOn, const uint8_t hour, const uint8_t minutes, const uint8_t seconds, const uint8_t weekday)</td></tr>
+<tr class="memdesc:ad4f52d43d3c37f4852b122f6cf36a7b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the timing command.  <br /></td></tr>
+<tr class="separator:ad4f52d43d3c37f4852b122f6cf36a7b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a868414082f88323c79f6f51b73cc8f20"><td class="memItemLeft" align="right" valign="top"><a id="a868414082f88323c79f6f51b73cc8f20" name="a868414082f88323c79f6f51b73cc8f20"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::default_behaviors::__private::handle_mode_control</b> (const uint8_t groupIndex, const uint8_t modeIndex)</td></tr>
+<tr class="separator:a868414082f88323c79f6f51b73cc8f20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7bccaef1c3fdd1164695b541b5675c50"><td class="memItemLeft" align="right" valign="top"><a id="a7bccaef1c3fdd1164695b541b5675c50" name="a7bccaef1c3fdd1164695b541b5675c50"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::default_behaviors::handle_elk_command</b> (const utils::ELK::Package &amp;elkControlCommand)</td></tr>
 <tr class="separator:a7bccaef1c3fdd1164695b541b5675c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a438974ba0ed30d835dd916b766b21cc8"><td class="memItemLeft" align="right" valign="top"><a id="a438974ba0ed30d835dd916b766b21cc8" name="a438974ba0ed30d835dd916b766b21cc8"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::default_behaviors::handle_cli_command</b> (const logic::cli::CommandHandle &amp;command)</td></tr>
+<tr class="separator:a438974ba0ed30d835dd916b766b21cc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Define the default behavior of a lamp. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="af33de4fff54643c3310848b3a3ae7b74" name="af33de4fff54643c3310848b3a3ae7b74"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af33de4fff54643c3310848b3a3ae7b74">&#9670;&#160;</a></span>handle_set_time_command()</h2>
+<a id="ac9004d9cf4dd72ba872348033285917e" name="ac9004d9cf4dd72ba872348033285917e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9004d9cf4dd72ba872348033285917e">&#9670;&#160;</a></span>handle_ramp_command()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void lampda::user::default_behaviors::__private_elk::handle_set_time_command </td>
+          <td class="memname">void lampda::user::default_behaviors::__private::handle_ramp_command </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>ramp</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Handle the ramp command. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">ramp</td><td>0-255 speed </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a04c4c3b161752b226c48b9bc7455e50d" name="a04c4c3b161752b226c48b9bc7455e50d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04c4c3b161752b226c48b9bc7455e50d">&#9670;&#160;</a></span>handle_set_time_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::user::default_behaviors::__private::handle_set_time_command </td>
           <td>(</td>
           <td class="paramtype">const uint8_t&#160;</td>
           <td class="paramname"><em>hour</em>, </td>
@@ -230,40 +262,14 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::user::default
 
 </div>
 </div>
-<a id="ae12fc38efea7ec13653af2fb38fd43cd" name="ae12fc38efea7ec13653af2fb38fd43cd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae12fc38efea7ec13653af2fb38fd43cd">&#9670;&#160;</a></span>handle_speed_command()</h2>
+<a id="ad4f52d43d3c37f4852b122f6cf36a7b4" name="ad4f52d43d3c37f4852b122f6cf36a7b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4f52d43d3c37f4852b122f6cf36a7b4">&#9670;&#160;</a></span>handle_timing_command()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void lampda::user::default_behaviors::__private_elk::handle_speed_command </td>
-          <td>(</td>
-          <td class="paramtype">const uint8_t&#160;</td>
-          <td class="paramname"><em>speed</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Handle the speed command. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">speed</td><td>0-255 speed </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ac416f277b4efc3dc3d269b647e82bc99" name="ac416f277b4efc3dc3d269b647e82bc99"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac416f277b4efc3dc3d269b647e82bc99">&#9670;&#160;</a></span>handle_timing_command()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void lampda::user::default_behaviors::__private_elk::handle_timing_command </td>
+          <td class="memname">void lampda::user::default_behaviors::__private::handle_timing_command </td>
           <td>(</td>
           <td class="paramtype">const bool&#160;</td>
           <td class="paramname"><em>shouldTurnOn</em>, </td>

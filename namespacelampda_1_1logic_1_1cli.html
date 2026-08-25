@@ -89,6 +89,8 @@ $(function() {
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1cli_1_1CommandHandle.html">CommandHandle</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -282,6 +284,9 @@ template&lt;size_t N&gt; </div>
 <div class="line">                          1,</div>
 <div class="line">                          <span class="stringliteral">&quot;Set the output brightness&quot;</span>,</div>
 <div class="line">                          handles::cmd_brightness), </div>
+<div class="line">        make_command_args(<span class="stringliteral">&quot;sunset&quot;</span>, <span class="stringliteral">&quot;[time in minutes]&quot;</span>, 1, 1, <span class="stringliteral">&quot;Set or update the sunset timer.&quot;</span>, handles::cmd_sunset),</div>
+<div class="line">        make_command_args(<span class="stringliteral">&quot;ramp&quot;</span>, <span class="stringliteral">&quot;[0-255]&quot;</span>, 1, 1, <span class="stringliteral">&quot;Set the user ramp value&quot;</span>, handles::cmd_ramp),</div>
+<div class="line">        make_command_args(<span class="stringliteral">&quot;mode&quot;</span>, <span class="stringliteral">&quot;[group id] [mode id]&quot;</span>, 2, 2, <span class="stringliteral">&quot;Set current active mode&quot;</span>, handles::cmd_set_mode),</div>
 <div class="line">}</div>
 </div><!-- fragment -->
 <p>special commands to set system values </p>

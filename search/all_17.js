@@ -11,11 +11,12 @@ var searchData=
   ['vec4d_8',['vec4d',['../structlampda_1_1utils_1_1vec4d.html',1,'lampda::utils::vec4d'],['../structlampda_1_1utils_1_1vec4d.html#a9038eb7bea01060c108a090b1b04b419',1,'lampda::utils::vec4d::vec4d()'],['../structlampda_1_1utils_1_1vec4d.html#a0d2e109bc9154f4092a5228a29f64a69',1,'lampda::utils::vec4d::vec4d(const float _x, const float _y, const float _z, const float _w)'],['../structlampda_1_1utils_1_1vec4d.html#a92e2b14c0e80fed2713f74633c0d6942',1,'lampda::utils::vec4d::vec4d(const vec3d &amp;res, const float _w)']]],
   ['vector_5fmath_2eh_9',['vector_math.h',['../vector__math_8h.html',1,'']]],
   ['violet_10',['Violet',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba21eb4f579c9a6f5a974ea3ae2d757245',1,'lampda::modes::colors']]],
-  ['voltage_5fmv_11',['voltage_mv',['../structlampda_1_1bsp_1_1powerDelivery_1_1PDOTypes.html#a06554ae78afaef834d2af4af1c0043ab',1,'lampda::bsp::powerDelivery::PDOTypes']]],
-  ['voltage_5fmv_12',['voltage_mV',['../structlampda_1_1bsp_1_1charger_1_1Battery.html#ae72145765ac654c6ebdacf87d9d110ea',1,'lampda::bsp::charger::Battery::voltage_mV()'],['../structlampda_1_1component_1_1charger_1_1BatteryStatus__t.html#af0ab5f1d5d91ba1d8b765b365202de2c',1,'lampda::component::charger::BatteryStatus_t::voltage_mV()']]],
-  ['voltagehighraisedtime_13',['voltageHighRaisedTime',['../namespacelampda_1_1logic_1_1power.html#a4ef2733f2176f39441b592fc5cc10ffa',1,'lampda::logic::power']]],
-  ['vssvoltaget_14',['VSSVoltaget',['../structbq76905_1_1BQ76905_1_1Regt_1_1VSSVoltaget.html',1,'bq76905::BQ76905::Regt']]],
-  ['vsys_5fmv_15',['vsys_mV',['../structlampda_1_1bsp_1_1charger_1_1Measurments.html#a213661eee414626053e6466639bababd',1,'lampda::bsp::charger::Measurments']]],
-  ['vu_5fmeter_2ehpp_16',['vu_meter.hpp',['../vu__meter_8hpp.html',1,'']]],
-  ['vumetermode_17',['VuMeterMode',['../structlampda_1_1modes_1_1default__modes_1_1VuMeterMode.html',1,'lampda::modes::default_modes']]]
+  ['voltage_5fmv_11',['voltage_mV',['../structlampda_1_1component_1_1charger_1_1BatteryStatus__t.html#af0ab5f1d5d91ba1d8b765b365202de2c',1,'lampda::component::charger::BatteryStatus_t']]],
+  ['voltage_5fmv_12',['voltage_mv',['../structlampda_1_1bsp_1_1powerDelivery_1_1PDOTypes.html#a06554ae78afaef834d2af4af1c0043ab',1,'lampda::bsp::powerDelivery::PDOTypes']]],
+  ['voltage_5fmv_13',['voltage_mV',['../structlampda_1_1bsp_1_1charger_1_1Battery.html#ae72145765ac654c6ebdacf87d9d110ea',1,'lampda::bsp::charger::Battery']]],
+  ['voltagehighraisedtime_14',['voltageHighRaisedTime',['../namespacelampda_1_1logic_1_1power.html#a4ef2733f2176f39441b592fc5cc10ffa',1,'lampda::logic::power']]],
+  ['vssvoltaget_15',['VSSVoltaget',['../structbq76905_1_1BQ76905_1_1Regt_1_1VSSVoltaget.html',1,'bq76905::BQ76905::Regt']]],
+  ['vsys_5fmv_16',['vsys_mV',['../structlampda_1_1bsp_1_1charger_1_1Measurments.html#a213661eee414626053e6466639bababd',1,'lampda::bsp::charger::Measurments']]],
+  ['vu_5fmeter_2ehpp_17',['vu_meter.hpp',['../vu__meter_8hpp.html',1,'']]],
+  ['vumetermode_18',['VuMeterMode',['../structlampda_1_1modes_1_1default__modes_1_1VuMeterMode.html',1,'lampda::modes::default_modes']]]
 ];
