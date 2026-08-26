@@ -29,14 +29,14 @@ extern "C" {
    * \param[in] priority from  to 2, this thread priority
    * \param[in] stackSize The size of the stack to allocate.
    * \param[in] startSuspended if == 0, start the thread in a suspended mode
-   * \return 0 for success, anything else is failure
+   * \return The task allocated stack in bytes, or 0 for failure
    */
-  int HAL_create_thread(TaskHandle_t* const handle,
-                        taskfunc_t task,
-                        char const* const name,
-                        const int priority,
-                        const int stackSize,
-                        const int startSuspended);
+  uint32_t HAL_create_thread(TaskHandle_t* const handle,
+                             taskfunc_t task,
+                             char const* const name,
+                             const int priority,
+                             const int stackSize,
+                             const int startSuspended);
 
   /// Yield this thread
   void HAL_yield();
@@ -63,6 +63,9 @@ extern "C" {
 
   /// Resume a suspended thread
   void HAL_resume_thread(TaskHandle_t handle);
+
+  /// Return a task stack high water mark in bytes
+  uint32_t HAL_get_task_high_water_mark_byte(TaskHandle_t handle);
 
   /// Given a buffer, return a buffer debug text
   void HAL_get_debug_thread_text(char* textBuff);

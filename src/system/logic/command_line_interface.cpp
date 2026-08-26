@@ -413,12 +413,7 @@ static void cmd_buttontoggle(const common::cli::ParsedCommand&)
 static void cmd_shutdown(const common::cli::ParsedCommand&) { logic::behavior::internal::handle_shutdown_state(); }
 
 /// Debug task usages and activity
-static void cmd_tasks(const common::cli::ParsedCommand&)
-{
-  char buff[512];
-  bsp::threads::get_thread_debug(buff);
-  bsp::lampda_print("%s", buff);
-}
+static void cmd_tasks(const common::cli::ParsedCommand&) { bsp::threads::display_thread_debug(); }
 
 /// Bluetooth infos
 static void cmd_ble(const common::cli::ParsedCommand&)

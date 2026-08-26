@@ -56,8 +56,14 @@ const char* const get_name_from_hash(const uint32_t hash)
 
 namespace __private {
 
+struct TaskHandleStorage
+{
+  TaskHandle_t taskHandle;
+  uint32_t taskSize;
+};
+
 // store all handles
-std::map<uint32_t, TaskHandle_t> handles;
+std::map<uint32_t, TaskHandleStorage> handles;
 
 void low_level_start_thread(taskfunc_t taskFunction,
                             const uint32_t taskName,
@@ -78,14 +84,16 @@ void low_level_start_thread(taskfunc_t taskFunction,
   }
 
   TaskHandle_t handle;
-  if (hal::threads::HAL_create_thread(&handle,
-                                      static_cast<hal::threads::taskfunc_t>(taskFunction),
-                                      get_name_from_hash(taskName),
-                                      priority,
-                                      stackSize,
-                                      startedSuspended) == 0)
+  const uint32_t createdTaskSize_bytes =
+          hal::threads::HAL_create_thread(&handle,
+                                          static_cast<hal::threads::taskfunc_t>(taskFunction),
+                                          get_name_from_hash(taskName),
+                                          priority,
+                                          stackSize,
+                                          startedSuspended);
+  if (createdTaskSize_bytes > 0)
   {
-    handles[taskName] = handle;
+    handles[taskName] = {handle, createdTaskSize_bytes};
   }
   else
   {
@@ -113,7 +121,7 @@ void suspend_all_threads()
 {
   for (auto handle: __private::handles)
   {
-    hal::threads::HAL_suspend_thread(handle.second);
+    hal::threads::HAL_suspend_thread(handle.second.taskHandle);
   }
 }
 
@@ -121,7 +129,7 @@ int is_all_suspended()
 {
   for (const auto& handle_it: __private::handles)
   {
-    if (hal::threads::HAL_is_suspended(handle_it.second) != 0)
+    if (hal::threads::HAL_is_suspended(handle_it.second.taskHandle) != 0)
     {
       return 1;
     }
@@ -139,7 +147,23 @@ void resume_thread(const uint32_t taskName)
     return;
   }
 
-  hal::threads::HAL_resume_thread(handle->second);
+  hal::threads::HAL_resume_thread(handle->second.taskHandle);
+}
+
+uint16_t get_usage_percent(const uint32_t taskName)
+{
+  // handle already exists
+  auto handle = __private::handles.find(taskName);
+  if (handle == __private::handles.cend())
+  {
+    bsp::lampda_print(
+            "ERROR: get usage percent handle \'%s\' (%d) do not exist", get_name_from_hash(taskName), taskName);
+    return 0;
+  }
+
+  const int32_t taskStackSize = handle->second.taskSize;
+  const int32_t taskHighWaterMark = hal::threads::HAL_get_task_high_water_mark_byte(handle->second.taskHandle);
+  return static_cast<int16_t>(((taskStackSize - taskHighWaterMark) * 100) / taskStackSize);
 }
 
 void notify_thread(const uint32_t taskName, int wakeUpEvent)
@@ -150,12 +174,25 @@ void notify_thread(const uint32_t taskName, int wakeUpEvent)
     bsp::lampda_print("ERROR: notify task handle \'%s\' (%d) do not exist", get_name_from_hash(taskName), taskName);
     return;
   }
-  hal::threads::HAL_notify_thread(handle->second, wakeUpEvent);
+  hal::threads::HAL_notify_thread(handle->second.taskHandle, wakeUpEvent);
 }
 
 int wait_notification(const int timeout_ms) { return hal::threads::HAL_wait_notification(timeout_ms); }
 
-void get_thread_debug(char* textBuff) { hal::threads::HAL_get_debug_thread_text(textBuff); }
+void display_thread_debug()
+{
+  char buff[512];
+  hal::threads::HAL_get_debug_thread_text(buff);
+  bsp::lampda_print("%s", buff);
+
+  bsp::lampda_print("---- Stack usage ----");
+  for (const auto& handle: __private::handles)
+  {
+    const uint16_t usagePer = get_usage_percent(handle.first);
+    bsp::lampda_print("%s: %d%%", get_name_from_hash(handle.first), usagePer);
+  }
+  bsp::lampda_print("----");
+}
 
 void shutdown()
 {

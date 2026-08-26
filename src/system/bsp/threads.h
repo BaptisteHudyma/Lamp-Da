@@ -87,6 +87,12 @@ extern "C" {
   extern void resume_thread(const uint32_t taskName);
 
   /**
+   * \brief Get the stack usage of this task, in percent
+   * \return usage, in [0; 100]
+   */
+  uint16_t get_usage_percent(const uint32_t taskName);
+
+  /**
    * \brief notify a thread to resume
    * \param[in] taskName target task name
    * \param[in] wakeUpEvent type of the event to send
@@ -100,8 +106,8 @@ extern "C" {
    */
   extern int wait_notification(const int timeout_ms);
 
-  // compute and return a debug for threads
-  extern void get_thread_debug(char* textBuff);
+  // Display a threads usage report
+  extern void display_thread_debug();
 
   /// Shutdown the task driver cleanly
   extern void shutdown();

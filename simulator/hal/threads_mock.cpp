@@ -37,12 +37,12 @@ namespace threads {
 
 std::hash<std::thread::id> threadHasher;
 
-int HAL_create_thread(TaskHandle_t* const handle,
-                      taskfunc_t task,
-                      char const* const name,
-                      const int priority,
-                      const int stackSize,
-                      const int startSuspended)
+uint32_t HAL_create_thread(TaskHandle_t* const handle,
+                           taskfunc_t task,
+                           char const* const name,
+                           const int priority,
+                           const int stackSize,
+                           const int startSuspended)
 {
   // ALWAYS CAPTURE taskFunction EXPLICITLY
   simulator::ThreadHandle h;
@@ -63,7 +63,7 @@ int HAL_create_thread(TaskHandle_t* const handle,
 
   // set handle
   *handle = (TaskHandle_t)id;
-  return 0;
+  return stackSize;
 }
 
 // Actions on this thread
@@ -124,6 +124,10 @@ void HAL_resume_thread(TaskHandle_t handle)
   else
     bsp::lampda_print("HAL_resume_thread> failed");
 }
+
+/// Return a task stack high water mark in bytes
+uint32_t HAL_get_task_high_water_mark_byte(TaskHandle_t handle) { return 200; }
+
 void HAL_get_debug_thread_text(char* textBuff) {}
 
 void HAL_shutdown()
