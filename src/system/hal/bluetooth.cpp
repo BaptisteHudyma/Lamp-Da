@@ -263,7 +263,11 @@ void notify_battery_level(const uint8_t batteryLevel)
 
 bool was_used() { return __private::_wasUsed; }
 
-void shutdown() { __private::isInitialized = false; }
+void shutdown()
+{
+  __private::isInitialized = false;
+  // NRF_RADIO->POWER = 0;
+}
 
 namespace serial {
 bool is_activated()

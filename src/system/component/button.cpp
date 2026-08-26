@@ -19,6 +19,8 @@ namespace lampda {
 namespace component {
 namespace button {
 
+bool canRunButtonTask = false;
+
 // The button pullup pin (one button pin to GND, the other to this pin)
 hal::gpio::DigitalPin::GPIO _buttonPin = hal::gpio::DigitalPin::GPIO::gpio3;
 hal::gpio::DigitalPin _buttonGpio(_buttonPin);
@@ -140,8 +142,10 @@ void handle_events()
 
 void button_thread()
 {
-  handle_events();
-
+  if (canRunButtonTask)
+  {
+    handle_events();
+  }
   hal::delay_ms(thread_throttle_time_ms);
 }
 
@@ -180,8 +184,11 @@ void init(const bool isSystemStartedFromButton)
     logic::statistics::signal_button_press();
   }
 
+  canRunButtonTask = true;
   bsp::threads::start_thread(button_thread, bsp::threads::button_taskName, 2, 255);
 }
+
+void shutdown() { canRunButtonTask = false; }
 
 } // namespace button
 } // namespace component

@@ -144,7 +144,8 @@ void HAL_get_debug_thread_text(char* textBuff) { vTaskList(textBuff); }
 
 void HAL_shutdown()
 {
-  // nothing to do
+  vTaskSuspendAll();
+  NVIC_DisableIRQ(SWI1_EGU1_IRQn);
 }
 
 } // namespace threads

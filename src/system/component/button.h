@@ -75,6 +75,9 @@ extern void set_button_pin(const hal::gpio::DigitalPin::GPIO buttonPin);
  */
 extern int get_button_pin_RAW();
 
+/// Deactivate button behavior
+extern void shutdown();
+
 } // namespace button
 } // namespace component
 } // namespace lampda
