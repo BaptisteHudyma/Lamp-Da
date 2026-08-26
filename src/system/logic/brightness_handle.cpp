@@ -15,7 +15,7 @@ namespace logic {
 namespace brightness {
 
 /**
- * \brief Store the brigthness characteristics
+ * \brief Store the brightness characteristics
  */
 struct BrightnessParameters
 {

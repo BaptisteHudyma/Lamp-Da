@@ -6,7 +6,8 @@
 #include "src/system/logic/brightness_handle.h"
 
 #include "src/system/utils/utils.h"
-#include "src/system/utils/curves.h"
+
+#include "src/system/common/curves.h"
 
 #include "src/system/component/fileSystem.h"
 #include "src/system/component/output_power.h"
@@ -71,7 +72,7 @@ void brightness_update(const brightness_t brightness)
   }
 
   // map to a new curve, favorising low levels
-  using curve_t = utils::curves::ExponentialCurve<brightness_t, brightness_t>;
+  using curve_t = common::curves::ExponentialCurve<brightness_t, brightness_t>;
   static curve_t brightnessCurve(
           curve_t::point_t {0, stripInputMinVoltage_mV},
           curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, stripInputMaxVoltage_mV},
@@ -174,9 +175,7 @@ bool should_spawn_thread() { return false; }
 
 void user_thread() {}
 
-void handle_elk_command(const utils::ELK::Package&) {}
-
-void handle_cli_command(const logic::cli::CommandHandle&) {};
+void handle_user_command(const common::UserCommand&) {};
 
 } // namespace lampda::user
 

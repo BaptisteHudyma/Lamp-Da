@@ -37,6 +37,12 @@ struct RealTime
 bool set_real_time(const RealTime& realTime);
 
 /**
+ * \brief Convert a platform time in seconds to a real time value.
+ * \return if the global time is unset, the function return an invalid time
+ */
+RealTime convert_to_real_time(const uint32_t time_s);
+
+/**
  * \brief Return a real time value, only valid if it was set first.
  */
 RealTime get_real_time();

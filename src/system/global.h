@@ -33,6 +33,9 @@ namespace logic {};
 /// Specific component driver logic
 namespace driver {};
 
+/// Shared interfaces & general utilities.
+namespace common {};
+
 /// Utility function and classes
 namespace utils {};
 

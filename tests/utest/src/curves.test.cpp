@@ -1,8 +1,9 @@
 #include "gtest/gtest.h"
 #include <gtest/gtest.h>
-#include "src/system/utils/curves.h"
 
-namespace lampda::utils {
+#include "src/system/common/curves.h"
+
+namespace lampda::common {
 
 static constexpr float Inf = std::numeric_limits<float>::infinity();
 
@@ -213,4 +214,4 @@ TEST(test_curves, N_points_linear_curve)
   ASSERT_EQ(curveFU.sample(-Inf), 0);
 }
 
-} // namespace lampda::utils
+} // namespace lampda::common

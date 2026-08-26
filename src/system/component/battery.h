@@ -7,8 +7,9 @@
 
 #include <cstdint>
 
-#include "src/system/utils/curves.h"
 #include "src/system/utils/utils.h"
+
+#include "src/system/common/curves.h"
 
 namespace lampda {
 namespace component {
@@ -40,7 +41,7 @@ extern bool can_battery_be_charged();
  */
 inline uint16_t liion_mv_to_battery_percent(const uint16_t liionLevel_mv, const uint8_t batteryCountSerie)
 {
-  using curve_t = utils::curves::LinearCurve<uint16_t, uint16_t>;
+  using curve_t = common::curves::LinearCurve<uint16_t, uint16_t>;
   static curve_t liionVoltagePercentToRealPercent({// low end of the curve, sharp drop
                                                    curve_t::point_t {3000, 0},
                                                    curve_t::point_t {3210, 500},

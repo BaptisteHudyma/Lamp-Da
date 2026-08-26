@@ -1,9 +1,10 @@
-#include "src/system/utils/cmd_parser.h"
-#include "src/system/bsp/text_in.h"
-
 #include <gtest/gtest.h>
 
-namespace lampda::utils::cli {
+#include "src/system/bsp/text_in.h"
+
+#include "src/system/common/cmd_parser.h"
+
+namespace lampda::common::cli {
 
 // ============ parseCommand tests ============
 
@@ -404,4 +405,4 @@ TEST(cmd_parser, parse_uint_binary_prefix)
   EXPECT_EQ(value, 10);
 }
 
-} // namespace lampda::utils::cli
+} // namespace lampda::common::cli

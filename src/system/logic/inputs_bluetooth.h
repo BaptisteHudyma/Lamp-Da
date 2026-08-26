@@ -5,7 +5,7 @@
 #ifndef LOGIC_INPUTS_BLUETOOTH_H
 #define LOGIC_INPUTS_BLUETOOTH_H
 
-#include "src/system/utils/elk_decoder.h"
+#include "src/system/common/elk_decoder.h"
 
 namespace lampda {
 namespace logic {
@@ -19,7 +19,7 @@ bool is_bluetooth_used();
  * \brief Handle an ELK bluetooth command
  * \param[in] elkControlCommand Control command, assumed to be received by bluetooth
  */
-void handle_BLE_ELK_command(const utils::ELK::Package& elkControlCommand);
+void handle_BLE_ELK_command(const common::elk::Package& elkControlCommand);
 
 } // namespace inputs_bluetooth
 } // namespace logic

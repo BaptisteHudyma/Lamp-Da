@@ -39,8 +39,8 @@ void BLEElkService::elk_commmand_handle(uint16_t conn_hdl, const uint8_t* data, 
 {
   std::ignore = conn_hdl;
 
-  utils::ELK::Package elkPackage;
-  if (utils::ELK::decode_ELK_message(data, len, elkPackage))
+  common::elk::Package elkPackage;
+  if (common::elk::decode_ELK_message(data, len, elkPackage))
   {
     // call the logic handle
     logic::inputs_bluetooth::handle_BLE_ELK_command(elkPackage);

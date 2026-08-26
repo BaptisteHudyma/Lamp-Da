@@ -1,11 +1,11 @@
 #include <cstdint>
 #include <gtest/gtest.h>
 
-#include "src/system/utils/elk_decoder.h"
+#include "src/system/common/elk_decoder.h"
 
 #include <array>
 
-namespace lampda::utils::ELK {
+namespace lampda::common::elk {
 
 // Test some invalid message lenght
 TEST(test_elf_decoder, invalid_message_lenght)
@@ -104,26 +104,26 @@ TEST(test_elf_decoder, invalid_message_END)
 // Test all valid brightness commands
 TEST(test_elf_decoder, brightness_messages_valid)
 {
-  for (uint8_t brigthness = 0; brigthness < 100; brigthness++)
+  for (uint8_t brightness = 0; brightness < 100; brightness++)
   {
     std::array<uint8_t, 9> messageBrightness = {0x7E, 0x00, 0x01, 0, 0x00, 0x00, 0x00, 0x00, 0xEF};
-    messageBrightness[3] = brigthness;
+    messageBrightness[3] = brightness;
 
     Package package;
     EXPECT_TRUE(decode_ELK_message(messageBrightness.data(), messageBrightness.size(), package));
     EXPECT_EQ(package.type, Type::BRIGHTNESS);
     EXPECT_EQ(package.dataSize, 1);
-    EXPECT_EQ(package.data[0], brigthness);
+    EXPECT_EQ(package.data[0], brightness);
   }
 }
 
 TEST(test_elf_decoder, brightness_messages_invalid)
 {
   // invalid values
-  for (uint8_t brigthness = 101; brigthness < UINT8_MAX; brigthness++)
+  for (uint8_t brightness = 101; brightness < UINT8_MAX; brightness++)
   {
     std::array<uint8_t, 9> messageBrightness = {0x7E, 0x00, 0x01, 0, 0x00, 0x00, 0x00, 0x00, 0xEF};
-    messageBrightness[3] = brigthness;
+    messageBrightness[3] = brightness;
 
     Package package;
     EXPECT_FALSE(decode_ELK_message(messageBrightness.data(), messageBrightness.size(), package));
@@ -400,4 +400,4 @@ TEST(test_elf_decoder, timing_messages_valid)
   EXPECT_EQ(package.data[4], 5);
 }
 
-} // namespace lampda::utils::ELK
+} // namespace lampda::common::elk

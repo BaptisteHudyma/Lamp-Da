@@ -5,10 +5,11 @@
 #ifndef COMPONENT_SOUND_H
 #define COMPONENT_SOUND_H
 
+#include <cstdint>
+
 #include "src/system/hal/pdm_handle.h"
 
-#include <cstdint>
-#include "src/system/utils/fft.h"
+#include "src/system/common/fft.h"
 
 namespace lampda {
 namespace component {
@@ -64,7 +65,7 @@ struct SoundStruct
   static constexpr uint8_t numberOfFFtChanels = 24;
 
   /// Return the FFT resolution of a single FFT bin in Hertz
-  static constexpr float get_fft_resolution_Hz() { return utils::fft::SAMPLE_RATE / static_cast<float>(SAMPLE_SIZE); }
+  static constexpr float get_fft_resolution_Hz() { return common::fft::SAMPLE_RATE / static_cast<float>(SAMPLE_SIZE); }
 
   // FFT results
 

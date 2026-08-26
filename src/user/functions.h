@@ -11,10 +11,9 @@
 
 #include <cstdint>
 
-#include "src/system/logic/brightness_handle.h"
-#include "src/system/logic/command_line_interface.h"
+#include "src/system/common/user_commands.h"
 
-#include "src/system/utils/elk_decoder.h"
+#include "src/system/logic/brightness_handle.h"
 
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 #include "src/system/component/strip.h"
@@ -135,16 +134,10 @@ bool should_spawn_thread();
 void user_thread();
 
 /**
- * \brief Handle a ELK BLE package
- * \param[in] elkControlCommand
+ * \brief Handle user command
+ * \param[in] setCommand The command to handle
  */
-void handle_elk_command(const utils::ELK::Package& elkControlCommand);
-
-/**
- * \brief Handle a CLI command
- * \param[in] setCommand
- */
-void handle_cli_command(const logic::cli::CommandHandle& setCommand);
+void handle_user_command(const common::UserCommand& setCommand);
 
 } // namespace lampda::user
 

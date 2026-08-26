@@ -10,7 +10,8 @@
 #include "src/system/hal/time.h"
 
 #include "src/system/utils/utils.h"
-#include "src/system/utils/fft.h"
+
+#include "src/system/common/fft.h"
 
 #include <SFML/Graphics/PrimitiveType.hpp>
 
@@ -103,7 +104,7 @@ bool start()
   if (!simulator::recorder)
     simulator::recorder = std::make_unique<simulator::LevelRecorder>();
 
-  return simulator::recorder->start(utils::fft::SAMPLE_RATE);
+  return simulator::recorder->start(common::fft::SAMPLE_RATE);
 }
 
 void stop()

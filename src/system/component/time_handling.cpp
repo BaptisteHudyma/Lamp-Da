@@ -82,6 +82,11 @@ bool set_real_time(const RealTime& realTime)
   return true;
 }
 
+RealTime convert_to_real_time(const uint32_t time_s)
+{
+  return internal::get_real_time(time_s, internal::real_time_offset_s);
+}
+
 RealTime get_real_time() { return internal::get_real_time(hal::time_s(), internal::real_time_offset_s); }
 
 uint32_t get_platform_time_from_target_time(const RealTime& time)

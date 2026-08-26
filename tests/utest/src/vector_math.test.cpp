@@ -1,5 +1,6 @@
 #include <cmath>
 #include <gtest/gtest.h>
+
 #include "src/system/utils/vector_math.h"
 
 namespace lampda::utils {

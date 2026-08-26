@@ -31,7 +31,7 @@ static constexpr uint32_t BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS =
         5000; ///< duration of the brightness ramp saturation before switching behavior
 
 namespace __private {
-utils::Queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
+common::Queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
 }
 
 /// holds the state of system on

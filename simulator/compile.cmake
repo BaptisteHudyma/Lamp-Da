@@ -37,9 +37,13 @@ set(SRC_SYSTEM_DEPENDS
     )
 
 # Create simulator as library
+set(SRC_SYSTEM_COMMON
+    ${LMBD_ROOT_DIR}/src/system/common/cmd_parser.cpp
+    ${LMBD_ROOT_DIR}/src/system/common/user_commands.cpp
+    )
+
 set(SRC_SYSTEM_UTILS
     ${LMBD_ROOT_DIR}/src/system/utils/colorspace.cpp
-    ${LMBD_ROOT_DIR}/src/system/utils/cmd_parser.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/utils.cpp
     ${LMBD_ROOT_DIR}/src/system/utils/vector_math.cpp
     )
@@ -128,6 +132,7 @@ function(create_simulator_target SIM_NAME)
     add_library(simulator_${SIM_NAME} OBJECT
         ${SRC_SYSTEM_DEPENDS}
         ${SRC_SYSTEM_UTILS}
+        ${SRC_SYSTEM_COMMON}
         ${SRC_SYSTEM_BSP}
         ${SRC_SYSTEM_COMPONENT}
         ${SRC_SYSTEM_DRIVER}

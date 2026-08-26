@@ -1,7 +1,5 @@
 #include "power_handler.h"
 
-#include "src/system/utils/state_machine.h"
-
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/i2c.h"
 #include "src/system/hal/registers.h"
@@ -14,6 +12,8 @@
 
 #include "src/system/component/battery.h"
 #include "src/system/component/charger.h"
+
+#include "src/system/common/state_machine.h"
 
 #include "src/system/logic/alerts.h"
 
@@ -142,7 +142,7 @@ bool is_output_mode_ready() { return s_isOutputModeReady; }
 namespace __private {
 
 // main state machine (start with timeout, go to error on timeout)
-utils::StateMachine<PowerStates> powerMachine(PowerStates::STARTUP, startupFailTimeout_ms, PowerStates::ERROR);
+common::StateMachine<PowerStates> powerMachine(PowerStates::STARTUP, startupFailTimeout_ms, PowerStates::ERROR);
 
 const hal::gpio::DigitalPin dischargeVbus(hal::gpio::DigitalPin::GPIO::Output_DischargeVbus);
 const hal::gpio::DigitalPin vbusDirection(hal::gpio::DigitalPin::GPIO::Output_VbusDirection);

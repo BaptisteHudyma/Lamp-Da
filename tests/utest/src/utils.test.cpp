@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <gtest/gtest.h>
 #include <limits>
+
 #include "src/system/utils/utils.h"
 
 namespace lampda::utils {

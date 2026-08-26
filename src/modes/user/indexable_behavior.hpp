@@ -228,7 +228,7 @@ bool button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   return false;
 }
 
-namespace __private_elk {
+namespace __private {
 
 /**
  * \brief Handle a pattern change command
@@ -278,50 +278,42 @@ void handle_pattern_select_command(const uint8_t patternIndex, const uint32_t re
   }
 }
 
-} // namespace __private_elk
+} // namespace __private
 
-void handle_elk_command(const utils::ELK::Package& elkControlCommand)
+void handle_user_command(const common::UserCommand& command)
 {
   // Handle default common behavior
-  if (default_behaviors::handle_elk_command(elkControlCommand))
+  if (default_behaviors::handle_user_command(command))
   {
     // some event is already handled
     return;
   }
 
-  switch (elkControlCommand.type)
+  switch (command.get_type())
   {
-    case utils::ELK::Type::COLOR_SELECT:
+    case common::UserCommand::Type::SetBleCustomColorMode:
       {
-        const uint32_t color =
-                elkControlCommand.data[0] << 16 | elkControlCommand.data[1] << 8 | elkControlCommand.data[2];
-        __private_elk::handle_pattern_select_command(0, color);
-        break;
+        uint32_t color;
+        if (command.parse_set_ble_custom_color_mode_command(color))
+          __private::handle_pattern_select_command(0, color);
+        else
+          bsp::lampda_print("Failed to parse set_ble_custom_color command");
+        return;
       }
-    case utils::ELK::Type::PATTERN_SELECT:
+    case common::UserCommand::Type::SetBleMode:
       {
-        __private_elk::handle_pattern_select_command(elkControlCommand.data[0] + 1);
-        break;
+        uint8_t index;
+        if (command.parse_set_ble_mode_command(index))
+          __private::handle_pattern_select_command(index);
+        else
+          bsp::lampda_print("Failed to parse set_ble_mode command");
+        return;
       }
-    // unhandled
     default:
-      {
-        bsp::lampda_print("Unsupported ELK message type");
-        break;
-      }
-  }
-}
-
-void handle_cli_command(const logic::cli::CommandHandle& command)
-{
-  // Handle default common behavior
-  if (default_behaviors::handle_cli_command(command))
-  {
-    // some event is already handled
-    return;
+      break;
   }
 
-  bsp::lampda_print("Unsupported cli command message type");
+  bsp::lampda_print("Unsupported user command message type");
 }
 
 } // namespace lampda::user

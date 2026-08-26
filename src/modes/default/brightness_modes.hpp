@@ -28,7 +28,7 @@ template<size_t N> struct Pulses : public BasicMode
   static constexpr uint32_t pulseSizeMs = 100;                     ///< lenght of a pulse, in milliseconds
   static constexpr uint32_t periodMs = 1000 + N * pulseSizeMs * 2; ///< period of the animation, in milliseconds
   static constexpr brightness_t minScaling = 50;                   ///< scaling of the brightness of a pulse
-  static constexpr float scaleFactor = 1.40;                       ///< scale of the brigthness
+  static constexpr float scaleFactor = 1.40;                       ///< scale of the brightness
 
   static constexpr void loop(auto& ctx)
   {
@@ -210,9 +210,9 @@ struct LightningMode : public BasicMode
     uint32_t lastBrightnessHandleCall;
     /// Is off and waiting to turn on
     bool isWaitingTurnOn;
-    /// last brigthness before going dark
+    /// last brightness before going dark
     brightness_t lastBrightness;
-    /// Brigthness ramp down index
+    /// brightness ramp down index
     uint32_t stepdown;
   };
 

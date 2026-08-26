@@ -2,9 +2,10 @@
 #define PDM_HANDLE_CPP
 
 #include "pdm_handle.h"
+
 #include "src/system/hal/time.h"
 
-#include "src/system/utils/fft.h"
+#include "src/system/common/fft.h"
 
 #include <PDM.h>
 
@@ -72,7 +73,7 @@ bool start()
   // buffer size shall be 2x the data size
   static_assert(PdmData::SAMPLE_SIZE >= 128 && (PdmData::SAMPLE_SIZE & (PdmData::SAMPLE_SIZE - 1)) == 0,
                 "PdmData::SAMPLE_SIZE must be a power of two");
-  static_assert(utils::fft::SAMPLE_RATE == 41667 || utils::fft::SAMPLE_RATE == 16000,
+  static_assert(common::fft::SAMPLE_RATE == 41667 || common::fft::SAMPLE_RATE == 16000,
                 "PDM application only allow values 41667 or 16000");
 
   PDM.setBufferSize(PdmData::SAMPLE_SIZE * 2);
@@ -81,7 +82,7 @@ bool start()
   // initialize PDM with:
   // - one channel (mono mode)
   // - a sample rate (allowed values are 16000 or 41667)
-  if (!PDM.begin(1, utils::fft::SAMPLE_RATE))
+  if (!PDM.begin(1, common::fft::SAMPLE_RATE))
   {
     return false;
   }

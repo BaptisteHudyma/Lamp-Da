@@ -351,7 +351,7 @@ struct Alert_BatteryLow : public AlertBase
     return chargerState.is_effectivly_charging();
   }
 
-  /// Execution will lower the brigthness output
+  /// Execution will lower the brightness output
   void on_raised() const override
   {
     // limit brightness to quarter of the max value
