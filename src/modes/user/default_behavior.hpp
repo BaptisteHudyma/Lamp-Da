@@ -394,12 +394,6 @@ void handle_sunset_to_time_command(const component::time::RealTime& time)
   if (not logic::behavior::is_in_output_state())
     logic::behavior::set_power_on();
 
-  bsp::lampda_print("lamp will auto turn off on %d %dh %dm %ds %d",
-                    time.dayOfTheWeek,
-                    time.hour,
-                    time.minutes,
-                    time.seconds,
-                    internalLampActionTime);
   logic::sunset::set_deadline(internalLampActionTime);
 }
 

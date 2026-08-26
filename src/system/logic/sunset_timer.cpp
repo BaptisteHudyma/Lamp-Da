@@ -5,6 +5,8 @@
 #include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
 
+#include "src/system/component/time_handling.h"
+
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
@@ -133,6 +135,16 @@ void set_deadline(const uint32_t timeshutdown_s)
     return;
   }
   const uint32_t timeLeftMinutes = round((timeshutdown_s - hal::time_s()) / 60);
+
+  const auto& shutdownTime = component::time::convert_to_real_time(timeshutdown_s);
+  if (shutdownTime.is_valid())
+  {
+    bsp::lampda_print("lamp will auto turn off on %d %dh %dm %ds",
+                      shutdownTime.dayOfTheWeek,
+                      shutdownTime.hour,
+                      shutdownTime.minutes,
+                      shutdownTime.seconds);
+  }
 
   if (not is_enabled())
   {

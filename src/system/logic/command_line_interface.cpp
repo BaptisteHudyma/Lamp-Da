@@ -456,10 +456,38 @@ static void cmd_sunset(const common::cli::ParsedCommand& command)
   uint16_t timeMinutes = 0;
   if (common::cli::argument::parse_uint16(command, 0, timeMinutes) && timeMinutes > 0)
   {
+    // lamp will turn on if not already turned on
+    if (not logic::behavior::is_in_output_state())
+      logic::behavior::set_power_on();
+
     logic::sunset::add_time_minutes(timeMinutes);
     return;
   }
   bsp::lampda_print("Invalid call: parameter should be greater than zero");
+}
+
+static void cmd_set_sunset_time(const common::cli::ParsedCommand& command)
+{
+  uint8_t hour;
+  uint8_t minute;
+  uint8_t seconds;
+  uint8_t dayofWeek;
+  if (common::cli::argument::parse_uint8(command, 0, hour) && common::cli::argument::parse_uint8(command, 1, minute) &&
+      common::cli::argument::parse_uint8(command, 2, seconds) &&
+      common::cli::argument::parse_uint8(command, 3, dayofWeek))
+  {
+    component::time::RealTime time;
+    time.hour = hour;
+    time.minutes = minute;
+    time.seconds = seconds;
+    time.dayOfTheWeek = dayofWeek;
+    if (time.is_valid())
+    {
+      lampda::user::handle_user_command(common::UserCommand::make_set_sunset_to_time_command(time));
+      return;
+    }
+  }
+  bsp::lampda_print("Invalid call: parameters should be range <0-23> <0-59> <0-59> <0-6>");
 }
 
 /// Set the user ramp to a target value
@@ -485,6 +513,41 @@ static void cmd_set_mode(const common::cli::ParsedCommand& command)
     return;
   }
   bsp::lampda_print("Invalid call");
+}
+
+static void cmd_onoff(const common::cli::ParsedCommand& command)
+{
+  uint8_t onOff;
+  if (common::cli::argument::parse_uint8(command, 0, onOff) && onOff <= 1)
+  {
+    lampda::user::handle_user_command(common::UserCommand::make_turn_onoff_command(onOff != 0));
+    return;
+  }
+  bsp::lampda_print("Invalid call: parameter should be range <0-1>");
+}
+
+static void cmd_set_real_time(const common::cli::ParsedCommand& command)
+{
+  uint8_t hour;
+  uint8_t minute;
+  uint8_t seconds;
+  uint8_t dayofWeek;
+  if (common::cli::argument::parse_uint8(command, 0, hour) && common::cli::argument::parse_uint8(command, 1, minute) &&
+      common::cli::argument::parse_uint8(command, 2, seconds) &&
+      common::cli::argument::parse_uint8(command, 3, dayofWeek))
+  {
+    component::time::RealTime time;
+    time.hour = hour;
+    time.minutes = minute;
+    time.seconds = seconds;
+    time.dayOfTheWeek = dayofWeek;
+    if (time.is_valid())
+    {
+      lampda::user::handle_user_command(common::UserCommand::make_set_real_time_command(time));
+      return;
+    }
+  }
+  bsp::lampda_print("Invalid call: parameters should be range <0-23> <0-59> <0-59> <0-6>");
 }
 
 /// Display real time
@@ -592,14 +655,33 @@ constexpr Command _act_commands_s[] = {
 constexpr Command _set_commands_s[] = {
         make_command_args("h", "", 0, common::cli::ParsedCommand::maxArgumentCount, "This page", handles::cmd_set_help),
         make_command_args("brgt",
-                          "[0-1024]",
+                          "[0-1024]", // should be ::lampda::brightness::absoluteMaximumBrightness
                           1,
                           1,
                           "Set the output brightness",
-                          handles::cmd_brightness), // should be ::lampda::brightness::absoluteMaximumBrightness
-        make_command_args("sunset", "[time in minutes]", 1, 1, "Set or update the sunset timer.", handles::cmd_sunset),
+                          handles::cmd_brightness),
         make_command_args("ramp", "[0-255]", 1, 1, "Set the user ramp value", handles::cmd_ramp),
         make_command_args("mode", "[group id] [mode id]", 2, 2, "Set current active mode", handles::cmd_set_mode),
+        make_command_args("on", "[0-1]", 1, 1, "Turn system on or off", handles::cmd_onoff),
+        make_command_args("time",
+                          "[0-23](hour) [0-59](minute) [0-59](second) [0-6](day)",
+                          4,
+                          4,
+                          "Set system real time",
+                          handles::cmd_set_real_time),
+        make_command_args("sunset_min",
+                          "[0-10](minutes)",
+                          1,
+                          1,
+                          "Set the sunset timer, or add time if already started.",
+                          handles::cmd_sunset),
+        make_command_args("sunset",
+                          "[0-23](hour) [0-59](minute) [0-59](second) [0-6](day)",
+                          4,
+                          4,
+                          "Set the sunset timer to a time, if time is synchronised",
+                          handles::cmd_set_sunset_time),
+
 };
 
 /// Check for command duplication
