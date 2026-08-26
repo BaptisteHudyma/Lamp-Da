@@ -8,8 +8,8 @@ var searchData=
   ['blanchedalmond_5',['BlanchedAlmond',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba273435f0bda08b8d847bd307eab8d993',1,'lampda::modes::colors']]],
   ['blue_6',['Blue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bac5f101142f27e9104650f02b8f0748d7',1,'lampda::modes::colors']]],
   ['blueviolet_7',['BlueViolet',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba5cd45ef1e6a8e198569f91d2b4e0fbcc',1,'lampda::modes::colors']]],
-  ['brightness_8',['Brightness',['../structlampda_1_1logic_1_1cli_1_1CommandHandle.html#a9398d72187567cd6f67ea69c74afa8eea52d37414552fd396ed1fdb6024ebf5e4',1,'lampda::logic::cli::CommandHandle']]],
-  ['brightness_9',['BRIGHTNESS',['../namespacelampda_1_1utils_1_1ELK.html#af7d12aac75a6c8051398eaeed53676eca3a8a0aeb55d2886191dee8a5e0d07cc9',1,'lampda::utils::ELK']]],
+  ['brightness_8',['Brightness',['../classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fab25323f99788ce64617f018b8a9f5f70',1,'lampda::common::UserCommand']]],
+  ['brightness_9',['BRIGHTNESS',['../namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a3a8a0aeb55d2886191dee8a5e0d07cc9',1,'lampda::common::elk']]],
   ['brown_10',['Brown',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba2c309bd421738c856c1c64ba85ea4082',1,'lampda::modes::colors']]],
   ['burlywood_11',['BurlyWood',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba59e5a4a0f644c018d3c3279dd9a6fe82',1,'lampda::modes::colors']]]
 ];

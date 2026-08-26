@@ -8,7 +8,7 @@ var searchData=
   ['ledstrip_5',['LedStrip',['../classlampda_1_1component_1_1LedStrip.html',1,'lampda::component']]],
   ['levelrecorder_6',['LevelRecorder',['../classsimulator_1_1LevelRecorder.html',1,'simulator']]],
   ['lightningmode_7',['LightningMode',['../structlampda_1_1modes_1_1brightness_1_1LightningMode.html',1,'lampda::modes::brightness']]],
-  ['linearcurve_8',['LinearCurve',['../classlampda_1_1utils_1_1curves_1_1LinearCurve.html',1,'lampda::utils::curves']]],
+  ['linearcurve_8',['LinearCurve',['../classlampda_1_1common_1_1curves_1_1LinearCurve.html',1,'lampda::common::curves']]],
   ['linerule_9',['LineRule',['../structlampda_1_1modes_1_1draw_1_1grid_1_1LineRule.html',1,'lampda::modes::draw::grid']]],
   ['linerule_3c_20configty_20_3e_10',['LineRule&lt; ConfigTy &gt;',['../structlampda_1_1modes_1_1draw_1_1grid_1_1LineRule.html',1,'lampda::modes::draw::grid']]],
   ['lineruleconfig_11',['LineRuleConfig',['../structlampda_1_1modes_1_1draw_1_1grid_1_1LineRuleConfig.html',1,'lampda::modes::draw::grid']]],

@@ -2,7 +2,7 @@ var searchData=
 [
   ['h_0',['h',['../classlampda_1_1utils_1_1ColorSpace_1_1LCH.html#a6db91c3bcd144e8ab1fe365a99142a67',1,'lampda::utils::ColorSpace::LCH::h()'],['../classlampda_1_1utils_1_1ColorSpace_1_1OKLCH.html#aa93b5f1961503b8c0dc3410a659a84c6',1,'lampda::utils::ColorSpace::OKLCH::h()'],['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#aff216a45468cd98872553535e849ac9a',1,'lampda::utils::ColorSpace::HSV::h()']]],
   ['handle_5ffault_1',['handle_fault',['../structtcpm__drv.html#acfa42c0eaaab428636e30bbf9e962b54',1,'tcpm_drv']]],
-  ['handler_2',['handler',['../structlampda_1_1logic_1_1cli_1_1Command.html#a22587134a7b371113d303253860ab8d0',1,'lampda::logic::cli::Command']]],
+  ['handler_2',['handler',['../structlampda_1_1logic_1_1cli_1_1Command.html#ae07bd476e3572cb620f079300285fb9b',1,'lampda::logic::cli::Command']]],
   ['hardwareerrormessage_3',['hardwareErrorMessage',['../structlampda_1_1component_1_1charger_1_1Charger__t.html#affe40176c6accab6d9d7cbbaa6bfea9e',1,'lampda::component::charger::Charger_t']]],
   ['hasbrightcallback_4',['hasBrightCallback',['../structlampda_1_1modes_1_1brightness_1_1LightningMode.html#a0db412449931f218a19a0d785c44105c',1,'lampda::modes::brightness::LightningMode::hasBrightCallback()'],['../structlampda_1_1modes_1_1BasicMode.html#ae2df3e9f204ee899bd972b6ca4b0a2e8',1,'lampda::modes::BasicMode::hasBrightCallback()']]],
   ['hasbuttoncustomui_5',['hasButtonCustomUI',['../structlampda_1_1modes_1_1BasicMode.html#aaca40947bf65c5f29aadf79d55cbeb6f',1,'lampda::modes::BasicMode']]],

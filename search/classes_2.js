@@ -27,8 +27,7 @@ var searchData=
   ['colorsequencemode_3c_20true_2c_200_2c_20colors_2e_2e_2e_20_3e_24',['ColorSequenceMode&lt; true, 0, Colors... &gt;',['../structlampda_1_1modes_1_1bluetooth_1_1ColorSequenceMode.html',1,'lampda::modes::bluetooth']]],
   ['colorwipemode_25',['ColorWipeMode',['../structlampda_1_1modes_1_1default__modes_1_1ColorWipeMode.html',1,'lampda::modes::default_modes']]],
   ['command_26',['Command',['../structlampda_1_1logic_1_1cli_1_1Command.html',1,'lampda::logic::cli']]],
-  ['commandhandle_27',['CommandHandle',['../structlampda_1_1logic_1_1cli_1_1CommandHandle.html',1,'lampda::logic::cli']]],
-  ['configty_28',['ConfigTy',['../structlampda_1_1modes_1_1automaton_1_1SierpinskiMode_1_1ConfigTy.html',1,'lampda::modes::automaton::SierpinskiMode']]],
-  ['configuratevcellt_29',['ConfigurateVcellt',['../structbq76905_1_1BQ76905_1_1Regt_1_1ConfigurateVcellt.html',1,'bq76905::BQ76905::Regt']]],
-  ['contextty_30',['ContextTy',['../structlampda_1_1modes_1_1ContextTy.html',1,'lampda::modes']]]
+  ['configty_27',['ConfigTy',['../structlampda_1_1modes_1_1automaton_1_1SierpinskiMode_1_1ConfigTy.html',1,'lampda::modes::automaton::SierpinskiMode']]],
+  ['configuratevcellt_28',['ConfigurateVcellt',['../structbq76905_1_1BQ76905_1_1Regt_1_1ConfigurateVcellt.html',1,'bq76905::BQ76905::Regt']]],
+  ['contextty_29',['ContextTy',['../structlampda_1_1modes_1_1ContextTy.html',1,'lampda::modes']]]
 ];

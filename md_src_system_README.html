@@ -87,6 +87,16 @@ $(function() {
 <li>threads.h: Thread board support</li>
 </ul>
 </li>
+<li>common: Common general use and interfaces<ul>
+<li><a class="el" href="cmd__parser_8h.html" title="Command argument parser logic.">cmd_parser.h</a>: Parse a command to extract its parameters</li>
+<li><a class="el" href="curves_8h.html" title="Define curves types, that can be sampled.">curves.h</a>: define custom curve and curve sampling functions</li>
+<li><a class="el" href="elk__decoder_8h.html" title="Decoder of the Bluetooth ELK messages.">elk_decoder.h</a>: Decode elk messages</li>
+<li><a class="el" href="fft_8h.html" title="Wrapper of the ArduinoFFT library.">fft.h</a>: implementation of the fft and assocated filtering</li>
+<li><a class="el" href="queue_8h.html" title="Define a queue object with constant memory footprint.">queue.h</a>: Define a non allocating queue</li>
+<li><a class="el" href="state__machine_8h.html" title="Define a generic state machine logic.">state_machine.h</a>: generic state machine class, used for all main logic</li>
+<li><a class="el" href="time__utils_8h.html" title="Define some tools and macros to handle timed events.">time_utils.h</a>: Useful time handling function</li>
+</ul>
+</li>
 <li>component: Medium level physical components layer: button, bluetooth, IMU, ...<ul>
 <li><a class="el" href="battery_8h.html" title="Interface for the physical components of the battery.">battery.h</a>: handle the battery readings, for battery level</li>
 <li><a class="el" href="button_8h.html" title="Interface for the physical components of the push button.">button.h</a>: control the button. Takes callbacks for actions on multiple button pushes. Used to display stuf on the button if needed</li>
@@ -137,15 +147,9 @@ $(function() {
 </ul>
 </li>
 <li>utils: General functions and constants that everybody needs<ul>
-<li><a class="el" href="cmd__parser_8h.html" title="Command argument parser logic.">cmd_parser.h</a>: Parse a command to extract its parameters</li>
 <li><a class="el" href="colorspace_8h.html" title="Define commonly used color spaces.">colorspace.h</a>: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !</li>
 <li>constants.h: global constants used all around the program</li>
-<li><a class="el" href="curves_8h.html" title="Define curves types, that can be sampled.">curves.h</a>: define custom curve and curve sampling functions</li>
-<li><a class="el" href="fft_8h.html" title="Wrapper of the ArduinoFFT library.">fft.h</a>: implementation of the fft and assocated filtering</li>
 <li><a class="el" href="input__output_8h.html" title="Definition of the used pins of the RGB indicator.">input_output.h</a>: define the gpio used for the button &amp; indicator</li>
-<li><a class="el" href="queue_8h.html" title="Define a queue object with constant memory footprint.">queue.h</a>: Define a non allocating queue</li>
-<li><a class="el" href="state__machine_8h.html" title="Define a generic state machine logic.">state_machine.h</a>: generic state machine class, used for all main logic</li>
-<li><a class="el" href="time__utils_8h.html" title="Define some tools and macros to handle timed events.">time_utils.h</a>: Useful time handling function</li>
 <li><a class="el" href="utils_8h.html" title="Define useful functions.">utils.h</a>: useful functions to make colors</li>
 <li><a class="el" href="vector__math_8h.html" title="Define vectors and rotation matrices, and the possibility to rotate vectors.">vector_math.h</a>: Handle 2D 3D and 4D vector math </li>
 </ul>

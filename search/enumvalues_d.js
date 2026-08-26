@@ -4,9 +4,10 @@ var searchData=
   ['oldlace_1',['OldLace',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba8790f86f15d4b45bbfd67384a5b37209',1,'lampda::modes::colors']]],
   ['olive_2',['Olive',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bad9164f872b9ad1bc403c2a2a939eb33e',1,'lampda::modes::colors']]],
   ['olivedrab_3',['OliveDrab',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bae97bceeb7c79f1c5765fc6f31a268df6',1,'lampda::modes::colors']]],
-  ['onoff_4',['ONOFF',['../namespacelampda_1_1utils_1_1ELK.html#af7d12aac75a6c8051398eaeed53676eca56bb4a0d6f80963b8625fb039071dd62',1,'lampda::utils::ELK']]],
-  ['orange_5',['Orange',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba356a4a34a3ad5a823f7bb6a813d9a681',1,'lampda::modes::colors']]],
-  ['orangered_6',['OrangeRed',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bac2e5610c3c8bc6ea6b707e89fe2c7640',1,'lampda::modes::colors']]],
-  ['orchid_7',['Orchid',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba1fc83f74e87bb2a14a63ed4ad7b58fe0',1,'lampda::modes::colors']]],
-  ['overcastsky_8',['OvercastSky',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5ae83a70a623090823f131d86c42cbec09',1,'lampda::modes::colors']]]
+  ['onoff_4',['OnOff',['../classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fab456f74540e23a21eb8dddc98de528b7',1,'lampda::common::UserCommand']]],
+  ['onoff_5',['ONOFF',['../namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a56bb4a0d6f80963b8625fb039071dd62',1,'lampda::common::elk']]],
+  ['orange_6',['Orange',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba356a4a34a3ad5a823f7bb6a813d9a681',1,'lampda::modes::colors']]],
+  ['orangered_7',['OrangeRed',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bac2e5610c3c8bc6ea6b707e89fe2c7640',1,'lampda::modes::colors']]],
+  ['orchid_8',['Orchid',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba1fc83f74e87bb2a14a63ed4ad7b58fe0',1,'lampda::modes::colors']]],
+  ['overcastsky_9',['OvercastSky',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5ae83a70a623090823f131d86c42cbec09',1,'lampda::modes::colors']]]
 ];

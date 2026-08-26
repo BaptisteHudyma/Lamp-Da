@@ -18,6 +18,6 @@ var searchData=
   ['totalcons_5fwatt_15',['totalCons_Watt',['../namespacelampda.html#ad043cec810b8319390f8802a87197a15',1,'lampda']]],
   ['translation_16',['translation',['../structlampda_1_1utils_1_1TransformationMatrix.html#ad24fbc8a3543bfcd5d7bf92bd68aae2a',1,'lampda::utils::TransformationMatrix']]],
   ['transmit_17',['transmit',['../structtcpm__drv.html#a6b503778ad8dbbca6cc67e46d7363694',1,'tcpm_drv']]],
-  ['type_18',['type',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a5c4790ffca306a285685889472e9e257',1,'lampda::modes::draw::overlay::__private::UIElement::type()'],['../structlampda_1_1logic_1_1cli_1_1CommandHandle.html#a108ebfb32a35e76db29200b78c313176',1,'lampda::logic::cli::CommandHandle::type()']]],
+  ['type_18',['type',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a5c4790ffca306a285685889472e9e257',1,'lampda::modes::draw::overlay::__private::UIElement']]],
   ['typicalliionvoltage_5fmv_19',['typicalLiionVoltage_mV',['../namespacelampda.html#ade87cbd4b1366e64f87e966d75f7922c',1,'lampda']]]
 ];

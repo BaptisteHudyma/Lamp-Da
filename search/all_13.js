@@ -66,6 +66,6 @@ var searchData=
   ['row2_63',['row2',['../structlampda_1_1utils_1_1RotationMatrix.html#ac3fb47342154c674cccca8c908ac0888',1,'lampda::utils::RotationMatrix']]],
   ['row3_64',['row3',['../structlampda_1_1utils_1_1RotationMatrix.html#af0423e14b84d16cd7a9685e764025037',1,'lampda::utils::RotationMatrix']]],
   ['royalblue_65',['RoyalBlue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba915cfcefbe25e1e5f519e3ac81c7cee3',1,'lampda::modes::colors']]],
-  ['run_66',['run',['../classlampda_1_1utils_1_1StateMachine.html#af2e7e23a0c40dd4d70410ba1fe405510',1,'lampda::utils::StateMachine']]],
-  ['run_5ffast_5ffourrier_5ftransform_67',['run_fast_fourrier_transform',['../classlampda_1_1utils_1_1fft_1_1FftAnalyzer.html#ad3bcca0a8f54254f16a1a557185bba8f',1,'lampda::utils::fft::FftAnalyzer']]]
+  ['run_66',['run',['../classlampda_1_1common_1_1StateMachine.html#aa961d1c9846f9947d510cf6a07ea98e4',1,'lampda::common::StateMachine']]],
+  ['run_5ffast_5ffourrier_5ftransform_67',['run_fast_fourrier_transform',['../classlampda_1_1common_1_1fft_1_1FftAnalyzer.html#a5c8ee5243c1bc31ba578db5a3c43c2a4',1,'lampda::common::fft::FftAnalyzer']]]
 ];

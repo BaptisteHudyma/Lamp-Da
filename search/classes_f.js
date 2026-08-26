@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['package_0',['Package',['../structlampda_1_1utils_1_1ELK_1_1Package.html',1,'lampda::utils::ELK']]],
+  ['package_0',['Package',['../structlampda_1_1common_1_1elk_1_1Package.html',1,'lampda::common::elk']]],
   ['paletteblackbodymode_1',['PaletteBlackBodyMode',['../structlampda_1_1modes_1_1fixed_1_1PaletteBlackBodyMode.html',1,'lampda::modes::fixed']]],
   ['palettefademode_2',['PaletteFadeMode',['../structlampda_1_1modes_1_1default__modes_1_1PaletteFadeMode.html',1,'lampda::modes::default_modes']]],
   ['paletteforestmode_3',['PaletteForestMode',['../structlampda_1_1modes_1_1fixed_1_1PaletteForestMode.html',1,'lampda::modes::fixed']]],
@@ -12,7 +12,7 @@ var searchData=
   ['palettepapimode_9',['PalettePapiMode',['../structlampda_1_1modes_1_1fixed_1_1PalettePapiMode.html',1,'lampda::modes::fixed']]],
   ['palettepartymode_10',['PalettePartyMode',['../structlampda_1_1modes_1_1fixed_1_1PalettePartyMode.html',1,'lampda::modes::fixed']]],
   ['paletterainbowmode_11',['PaletteRainbowMode',['../structlampda_1_1modes_1_1fixed_1_1PaletteRainbowMode.html',1,'lampda::modes::fixed']]],
-  ['parsedcommand_12',['ParsedCommand',['../structlampda_1_1utils_1_1cli_1_1ParsedCommand.html',1,'lampda::utils::cli']]],
+  ['parsedcommand_12',['ParsedCommand',['../structlampda_1_1common_1_1cli_1_1ParsedCommand.html',1,'lampda::common::cli']]],
   ['particle_13',['Particle',['../structlampda_1_1modes_1_1Particle.html',1,'lampda::modes']]],
   ['particlesystem_14',['ParticleSystem',['../classlampda_1_1modes_1_1ParticleSystem.html',1,'lampda::modes']]],
   ['passqt_15',['PassQt',['../structbq76905_1_1BQ76905_1_1Regt_1_1PassQt.html',1,'bq76905::BQ76905::Regt']]],
@@ -23,7 +23,7 @@ var searchData=
   ['pdotypes_20',['PDOTypes',['../structlampda_1_1bsp_1_1powerDelivery_1_1PDOTypes.html',1,'lampda::bsp::powerDelivery']]],
   ['perlinnoisemode_21',['PerlinNoiseMode',['../structlampda_1_1modes_1_1default__modes_1_1PerlinNoiseMode.html',1,'lampda::modes::default_modes']]],
   ['pingpongmode_22',['PingPongMode',['../structlampda_1_1modes_1_1default__modes_1_1PingPongMode.html',1,'lampda::modes::default_modes']]],
-  ['point_23',['Point',['../structlampda_1_1utils_1_1curves_1_1Point.html',1,'lampda::utils::curves']]],
+  ['point_23',['Point',['../structlampda_1_1common_1_1curves_1_1Point.html',1,'lampda::common::curves']]],
   ['powerlimits_24',['PowerLimits',['../structlampda_1_1bsp_1_1charger_1_1PowerLimits.html',1,'lampda::bsp::charger']]],
   ['prochotoption0t_25',['ProchotOption0t',['../structbq25713_1_1BQ25713_1_1Regt_1_1ProchotOption0t.html',1,'bq25713::BQ25713::Regt']]],
   ['prochotoption1t_26',['ProchotOption1t',['../structbq25713_1_1BQ25713_1_1Regt_1_1ProchotOption1t.html',1,'bq25713::BQ25713::Regt']]],

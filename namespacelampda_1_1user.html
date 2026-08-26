@@ -153,12 +153,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>read_parameters</b> (
 <tr class="memitem:a42710cdf95b63e4a0d644c0e976b715a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#a42710cdf95b63e4a0d644c0e976b715a">user_thread</a> ()</td></tr>
 <tr class="memdesc:a42710cdf95b63e4a0d644c0e976b715a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called at each tick of the secondary thread.  <br /></td></tr>
 <tr class="separator:a42710cdf95b63e4a0d644c0e976b715a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c166aecd0393c3af7ee267edb78c9f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#a7c166aecd0393c3af7ee267edb78c9f4">handle_elk_command</a> (const <a class="el" href="structlampda_1_1utils_1_1ELK_1_1Package.html">utils::ELK::Package</a> &amp;elkControlCommand)</td></tr>
-<tr class="memdesc:a7c166aecd0393c3af7ee267edb78c9f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle a ELK BLE package.  <br /></td></tr>
-<tr class="separator:a7c166aecd0393c3af7ee267edb78c9f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2bcb6692febca1446e85cf692202abb9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#a2bcb6692febca1446e85cf692202abb9">handle_cli_command</a> (const <a class="el" href="structlampda_1_1logic_1_1cli_1_1CommandHandle.html">logic::cli::CommandHandle</a> &amp;setCommand)</td></tr>
-<tr class="memdesc:a2bcb6692febca1446e85cf692202abb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle a CLI command.  <br /></td></tr>
-<tr class="separator:a2bcb6692febca1446e85cf692202abb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac67218c3107c337d14aeda5c994b0a3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#ac67218c3107c337d14aeda5c994b0a3c">handle_user_command</a> (const <a class="el" href="classlampda_1_1common_1_1UserCommand.html">common::UserCommand</a> &amp;setCommand)</td></tr>
+<tr class="memdesc:ac67218c3107c337d14aeda5c994b0a3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle user command.  <br /></td></tr>
+<tr class="separator:ac67218c3107c337d14aeda5c994b0a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f610126f49c21bdf457936bc45a9b09"><td class="memItemLeft" align="right" valign="top"><a id="a9f610126f49c21bdf457936bc45a9b09" name="a9f610126f49c21bdf457936bc45a9b09"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_color</b> (const uint8_t color)</td></tr>
 <tr class="separator:a9f610126f49c21bdf457936bc45a9b09"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -447,52 +444,26 @@ static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>currentBrig
 
 </div>
 </div>
-<a id="a2bcb6692febca1446e85cf692202abb9" name="a2bcb6692febca1446e85cf692202abb9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2bcb6692febca1446e85cf692202abb9">&#9670;&#160;</a></span>handle_cli_command()</h2>
+<a id="ac67218c3107c337d14aeda5c994b0a3c" name="ac67218c3107c337d14aeda5c994b0a3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac67218c3107c337d14aeda5c994b0a3c">&#9670;&#160;</a></span>handle_user_command()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void lampda::user::handle_cli_command </td>
+          <td class="memname">void lampda::user::handle_user_command </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="structlampda_1_1logic_1_1cli_1_1CommandHandle.html">logic::cli::CommandHandle</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classlampda_1_1common_1_1UserCommand.html">common::UserCommand</a> &amp;&#160;</td>
           <td class="paramname"><em>setCommand</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Handle a CLI command. </p>
+<p>Handle user command. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">setCommand</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a7c166aecd0393c3af7ee267edb78c9f4" name="a7c166aecd0393c3af7ee267edb78c9f4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7c166aecd0393c3af7ee267edb78c9f4">&#9670;&#160;</a></span>handle_elk_command()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void lampda::user::handle_elk_command </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structlampda_1_1utils_1_1ELK_1_1Package.html">utils::ELK::Package</a> &amp;&#160;</td>
-          <td class="paramname"><em>elkControlCommand</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Handle a ELK BLE package. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">elkControlCommand</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">setCommand</td><td>The command to handle </td></tr>
   </table>
   </dd>
 </dl>

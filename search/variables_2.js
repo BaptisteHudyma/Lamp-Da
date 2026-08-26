@@ -49,7 +49,7 @@ var searchData=
   ['bubbles_46',['bubbles',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#a8e3595e3d017cab2696d778be9d2eded',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
   ['bufferindextouse_47',['bufferIndexToUse',['../structlampda_1_1modes_1_1default__modes_1_1PerlinNoiseMode.html#a5bf9f16794d6e74bad985bdfbc5de901',1,'lampda::modes::default_modes::PerlinNoiseMode']]],
   ['button_5fpress_5fcount_48',['button_press_count',['../structlampda_1_1logic_1_1statistics_1_1Statistics__t.html#a599ff643cbdab6627a5abe5f45ef8c7b',1,'lampda::logic::statistics::Statistics_t']]],
-  ['buttoneventqueue_49',['buttonEventQueue',['../namespacelampda_1_1logic_1_1inputs_1_1____private.html#afeea599aa137eb7d1f00f4a76ca4bf72',1,'lampda::logic::inputs::__private']]],
+  ['buttoneventqueue_49',['buttonEventQueue',['../namespacelampda_1_1logic_1_1inputs_1_1____private.html#ae79ef89d573184d745b317255b219f7a',1,'lampda::logic::inputs::__private']]],
   ['buttonleftpos_50',['buttonLeftPos',['../structsimulator_1_1defaultSimulation.html#a9a61c2b4682d2a8fb79c90e3d8887c0c',1,'simulator::defaultSimulation']]],
   ['buttonmargin_51',['buttonMargin',['../structsimulator_1_1defaultSimulation.html#a56af73c60d269fc460089a60ff47369c',1,'simulator::defaultSimulation']]],
   ['buttonpresscountkey_52',['buttonPressCountKey',['../namespacelampda_1_1logic_1_1statistics.html#a0b7276a7d9ee344c7b7b8afc3dc7a2b9',1,'lampda::logic::statistics']]],

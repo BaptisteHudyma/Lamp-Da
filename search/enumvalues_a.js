@@ -3,7 +3,7 @@ var searchData=
   ['lavender_0',['Lavender',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba91e4037b286e28938ed770b613b268a1',1,'lampda::modes::colors']]],
   ['lavenderblush_1',['LavenderBlush',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba240f52055c196a400fb6080216aa16e4',1,'lampda::modes::colors']]],
   ['lawngreen_2',['LawnGreen',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba9303556e27248504772832f688c1075c',1,'lampda::modes::colors']]],
-  ['led_5forder_3',['LED_ORDER',['../namespacelampda_1_1utils_1_1ELK.html#af7d12aac75a6c8051398eaeed53676eca6619029c4e585db53bc5ec40165abebb',1,'lampda::utils::ELK']]],
+  ['led_5forder_3',['LED_ORDER',['../namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a6619029c4e585db53bc5ec40165abebb',1,'lampda::common::elk']]],
   ['lemonchiffon_4',['LemonChiffon',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba8956ba2c5f250f1c526db230c2070d48',1,'lampda::modes::colors']]],
   ['lightblue_5',['LightBlue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba5a9374e38a0c465a277b5b3beb1dec24',1,'lampda::modes::colors']]],
   ['lightcoral_6',['LightCoral',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba78c49dc5222f78781c9a0732ff159719',1,'lampda::modes::colors']]],

@@ -17,10 +17,10 @@ var searchData=
   ['enable_5fvbus_5fgate_14',['enable_vbus_gate',['../namespacelampda_1_1bsp_1_1powergates.html#a8f3232c7ab5c1a592df33af058bf02b8',1,'lampda::bsp::powergates']]],
   ['enable_5fvbus_5fgate_5fdirect_15',['enable_vbus_gate_DIRECT',['../namespacelampda_1_1bsp_1_1powergates.html#a2e9ef867fc97a54c280dbc1bff17ab54',1,'lampda::bsp::powergates']]],
   ['enforce_5finternal_5fbrightness_5flimits_16',['enforce_internal_brightness_limits',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a5ee901eec1ea481cb226366f1f165254',1,'lampda::modes::hardware::LampTy']]],
-  ['enqueue_17',['enqueue',['../structlampda_1_1utils_1_1Queue.html#acc410315688b5d6e1fdc70014aea0df3',1,'lampda::utils::Queue']]],
+  ['enqueue_17',['enqueue',['../structlampda_1_1common_1_1Queue.html#a2cf79d1afaf1549d2b240dc620db7fc2',1,'lampda::common::Queue']]],
   ['enter_5fgroup_18',['enter_group',['../structlampda_1_1modes_1_1ContextTy.html#a26928fa653e23d803a2b22ab2a1b8c09',1,'lampda::modes::ContextTy']]],
   ['enter_5fmode_19',['enter_mode',['../structlampda_1_1modes_1_1ContextTy.html#acff871b99b6ef452ac527e0b39d4aa9b',1,'lampda::modes::ContextTy']]],
   ['enter_5fserial_5fdfu_20',['enter_serial_dfu',['../namespacelampda_1_1hal_1_1registers.html#ad346d945b3782a499033d5c449406278',1,'lampda::hal::registers']]],
   ['execute_5floop_21',['execute_loop',['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a2c18214f42810def6a093442f59f473a',1,'lampda::logic::alerts::AlertBase']]],
-  ['exponentialcurve_22',['ExponentialCurve',['../classlampda_1_1utils_1_1curves_1_1ExponentialCurve.html#a46c3fa4d2fb845b8c88f969ed84a7372',1,'lampda::utils::curves::ExponentialCurve']]]
+  ['exponentialcurve_22',['ExponentialCurve',['../classlampda_1_1common_1_1curves_1_1ExponentialCurve.html#ac439a7668c924d70015a78340eb831a2',1,'lampda::common::curves::ExponentialCurve']]]
 ];

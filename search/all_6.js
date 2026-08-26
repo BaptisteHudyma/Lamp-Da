@@ -3,7 +3,7 @@ var searchData=
   ['ec_5fresponse_5fpd_5fchip_5finfo_0',['ec_response_pd_chip_info',['../structec__response__pd__chip__info.html',1,'']]],
   ['electrical_20manufacturing_1',['Electrical manufacturing',['../md_electrical_README.html',1,'']]],
   ['electrical_5fmock_2ecpp_2',['electrical_mock.cpp',['../electrical__mock_8cpp.html',1,'']]],
-  ['element_3',['Element',['../structlampda_1_1utils_1_1Queue_1_1Element.html',1,'lampda::utils::Queue']]],
+  ['element_3',['Element',['../structlampda_1_1common_1_1Queue_1_1Element.html',1,'lampda::common::Queue']]],
   ['elementtype_4',['ElementType',['../namespacelampda_1_1modes_1_1draw_1_1overlay.html#a3764bbf557f255131391e4f8713e81ee',1,'lampda::modes::draw::overlay']]],
   ['elk_5fcommmand_5fhandle_5',['elk_commmand_handle',['../classlampda_1_1bluetooth_1_1BLEElkService.html#a76bac96e44efaa3bcdc8225c6d4de3a9',1,'lampda::bluetooth::BLEElkService']]],
   ['elk_5fdecoder_2eh_6',['elk_decoder.h',['../elk__decoder_8h.html',1,'']]],
@@ -24,7 +24,7 @@ var searchData=
   ['enable_5fvbus_5fgate_21',['enable_vbus_gate',['../namespacelampda_1_1bsp_1_1powergates.html#a8f3232c7ab5c1a592df33af058bf02b8',1,'lampda::bsp::powergates']]],
   ['enable_5fvbus_5fgate_5fdirect_22',['enable_vbus_gate_DIRECT',['../namespacelampda_1_1bsp_1_1powergates.html#a2e9ef867fc97a54c280dbc1bff17ab54',1,'lampda::bsp::powergates']]],
   ['enforce_5finternal_5fbrightness_5flimits_23',['enforce_internal_brightness_limits',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a5ee901eec1ea481cb226366f1f165254',1,'lampda::modes::hardware::LampTy']]],
-  ['enqueue_24',['enqueue',['../structlampda_1_1utils_1_1Queue.html#acc410315688b5d6e1fdc70014aea0df3',1,'lampda::utils::Queue']]],
+  ['enqueue_24',['enqueue',['../structlampda_1_1common_1_1Queue.html#a2cf79d1afaf1549d2b240dc620db7fc2',1,'lampda::common::Queue']]],
   ['enter_5fgroup_25',['enter_group',['../structlampda_1_1modes_1_1ContextTy.html#a26928fa653e23d803a2b22ab2a1b8c09',1,'lampda::modes::ContextTy']]],
   ['enter_5flow_5fpower_5fmode_26',['enter_low_power_mode',['../structtcpm__drv.html#aa2e5e1d67bb4d5a517f3054615a3bca3',1,'tcpm_drv']]],
   ['enter_5fmode_27',['enter_mode',['../structlampda_1_1modes_1_1ContextTy.html#acff871b99b6ef452ac527e0b39d4aa9b',1,'lampda::modes::ContextTy']]],
@@ -41,5 +41,5 @@ var searchData=
   ['execute_5floop_38',['execute_loop',['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a2c18214f42810def6a093442f59f473a',1,'lampda::logic::alerts::AlertBase']]],
   ['exitcfgupdatet_39',['ExitCfgUpdatet',['../structbq76905_1_1BQ76905_1_1Regt_1_1ExitCfgUpdatet.html',1,'bq76905::BQ76905::Regt']]],
   ['exitdeepsleept_40',['ExitDeepSleept',['../structbq76905_1_1BQ76905_1_1Regt_1_1ExitDeepSleept.html',1,'bq76905::BQ76905::Regt']]],
-  ['exponentialcurve_41',['ExponentialCurve',['../classlampda_1_1utils_1_1curves_1_1ExponentialCurve.html#a46c3fa4d2fb845b8c88f969ed84a7372',1,'lampda::utils::curves::ExponentialCurve::ExponentialCurve()'],['../classlampda_1_1utils_1_1curves_1_1ExponentialCurve.html',1,'lampda::utils::curves::ExponentialCurve&lt; T, U &gt;']]]
+  ['exponentialcurve_41',['ExponentialCurve',['../classlampda_1_1common_1_1curves_1_1ExponentialCurve.html#ac439a7668c924d70015a78340eb831a2',1,'lampda::common::curves::ExponentialCurve::ExponentialCurve()'],['../classlampda_1_1common_1_1curves_1_1ExponentialCurve.html',1,'lampda::common::curves::ExponentialCurve&lt; T, U &gt;']]]
 ];

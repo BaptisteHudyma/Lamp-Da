@@ -39,8 +39,8 @@ var searchData=
   ['timesinceotgcurrentuse_36',['timeSinceOTGCurrentUse',['../namespacelampda_1_1logic_1_1power.html#af31880e7d1b322e3533f490ce54e9b19',1,'lampda::logic::power']]],
   ['timesinceotgnocurrentuse_37',['timeSinceOTGNoCurrentUse',['../namespacelampda_1_1logic_1_1power.html#acca4b06fe1362379f279587fa5bf0ea7',1,'lampda::logic::power']]],
   ['timestamp_5ft_38',['timestamp_t',['../uniontimestamp__t.html',1,'']]],
-  ['timing_39',['TIMING',['../namespacelampda_1_1utils_1_1ELK.html#af7d12aac75a6c8051398eaeed53676eca8f9e1889c89e42901ab7c0a033a3347c',1,'lampda::utils::ELK']]],
-  ['to_5fbin_5findex_40',['to_bin_index',['../classlampda_1_1utils_1_1fft_1_1FftAnalyzer.html#ac35eab2b28537b2b3521c20f1b4f5adf',1,'lampda::utils::fft::FftAnalyzer']]],
+  ['timing_39',['TIMING',['../namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a8f9e1889c89e42901ab7c0a033a3347c',1,'lampda::common::elk']]],
+  ['to_5fbin_5findex_40',['to_bin_index',['../classlampda_1_1common_1_1fft_1_1FftAnalyzer.html#a25d14d809450c7854692aaa40cebcdc6',1,'lampda::common::fft::FftAnalyzer']]],
   ['to_5fhelix_5fz_41',['to_helix_z',['../namespacelampda_1_1modes.html#a109f00368b37d628384a656f2181c838',1,'lampda::modes']]],
   ['to_5flamp_5findex_42',['to_lamp_index',['../structlampda_1_1modes_1_1Particle.html#a4123f5319b51158eadce4e9c2f78d01a',1,'lampda::modes::Particle']]],
   ['to_5flamp_5findex_5fno_5fbounds_43',['to_lamp_index_no_bounds',['../structlampda_1_1modes_1_1Particle.html#a46c1cffa2c3f004185e58a58f8c4319d',1,'lampda::modes::Particle']]],
@@ -53,8 +53,8 @@ var searchData=
   ['tools_2ehpp_50',['tools.hpp',['../tools_8hpp.html',1,'']]],
   ['torgb_51',['ToRGB',['../structlampda_1_1modes_1_1colors_1_1ToRGB.html',1,'lampda::modes::colors::ToRGB'],['../structlampda_1_1modes_1_1colors_1_1ToRGB.html#a582ad3b9c7ef13aa4d35bf2da93d61ae',1,'lampda::modes::colors::ToRGB::ToRGB()']]],
   ['totalcons_5fwatt_52',['totalCons_Watt',['../namespacelampda.html#ad043cec810b8319390f8802a87197a15',1,'lampda']]],
-  ['transform_53',['transform',['../structlampda_1_1utils_1_1TransformationMatrix.html#a86d56135cc80a136f2fa14ed8b1f2f23',1,'lampda::utils::TransformationMatrix::transform()'],['../structlampda_1_1utils_1_1RotationMatrix.html#a49170be7f7014dae5b87ca938ee8efe1',1,'lampda::utils::RotationMatrix::transform()']]],
-  ['transformationmatrix_54',['TransformationMatrix',['../structlampda_1_1utils_1_1TransformationMatrix.html',1,'lampda::utils::TransformationMatrix'],['../structlampda_1_1utils_1_1TransformationMatrix.html#a1e693f0725d76cd979dea6b9822de3b5',1,'lampda::utils::TransformationMatrix::TransformationMatrix(const vec3d &amp;euler, const vec3d &amp;trans)'],['../structlampda_1_1utils_1_1TransformationMatrix.html#a9793a6f8a3b27169d34eeafb2e299fbf',1,'lampda::utils::TransformationMatrix::TransformationMatrix(const RotationMatrix &amp;rot, const vec3d &amp;trans)'],['../structlampda_1_1utils_1_1TransformationMatrix.html#ac63a7662fd545fc1d6a3751529027e8c',1,'lampda::utils::TransformationMatrix::TransformationMatrix()=default']]],
+  ['transform_53',['transform',['../structlampda_1_1utils_1_1RotationMatrix.html#a49170be7f7014dae5b87ca938ee8efe1',1,'lampda::utils::RotationMatrix::transform()'],['../structlampda_1_1utils_1_1TransformationMatrix.html#a86d56135cc80a136f2fa14ed8b1f2f23',1,'lampda::utils::TransformationMatrix::transform()']]],
+  ['transformationmatrix_54',['TransformationMatrix',['../structlampda_1_1utils_1_1TransformationMatrix.html',1,'lampda::utils::TransformationMatrix'],['../structlampda_1_1utils_1_1TransformationMatrix.html#ac63a7662fd545fc1d6a3751529027e8c',1,'lampda::utils::TransformationMatrix::TransformationMatrix()=default'],['../structlampda_1_1utils_1_1TransformationMatrix.html#a9793a6f8a3b27169d34eeafb2e299fbf',1,'lampda::utils::TransformationMatrix::TransformationMatrix(const RotationMatrix &amp;rot, const vec3d &amp;trans)'],['../structlampda_1_1utils_1_1TransformationMatrix.html#a1e693f0725d76cd979dea6b9822de3b5',1,'lampda::utils::TransformationMatrix::TransformationMatrix(const vec3d &amp;euler, const vec3d &amp;trans)']]],
   ['translation_55',['translation',['../structlampda_1_1utils_1_1TransformationMatrix.html#ad24fbc8a3543bfcd5d7bf92bd68aae2a',1,'lampda::utils::TransformationMatrix']]],
   ['transmit_56',['transmit',['../structtcpm__drv.html#a6b503778ad8dbbca6cc67e46d7363694',1,'tcpm_drv']]],
   ['try_5fclear_5ffaults_57',['try_clear_faults',['../namespacelampda_1_1bsp_1_1charger.html#a387a4de73b40d1ce2efa9ead03fa8253',1,'lampda::bsp::charger']]],
@@ -63,8 +63,7 @@ var searchData=
   ['tungsten100w_60',['Tungsten100W',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5ac60fcc12a7cfd7382a307892f506cdf0',1,'lampda::modes::colors']]],
   ['tungsten40w_61',['Tungsten40W',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5af218d4d49684d28bda0392e5b7989ffa',1,'lampda::modes::colors']]],
   ['turquoise_62',['Turquoise',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba8120857511bb55ff52a2b73884ca429e',1,'lampda::modes::colors']]],
-  ['type_63',['type',['../structlampda_1_1logic_1_1cli_1_1CommandHandle.html#a108ebfb32a35e76db29200b78c313176',1,'lampda::logic::cli::CommandHandle']]],
-  ['type_64',['Type',['../structlampda_1_1logic_1_1cli_1_1CommandHandle.html#a9398d72187567cd6f67ea69c74afa8ee',1,'lampda::logic::cli::CommandHandle::Type()'],['../namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa',1,'lampda::logic::alerts::Type()'],['../namespacelampda_1_1utils_1_1ELK.html#af7d12aac75a6c8051398eaeed53676ec',1,'lampda::utils::ELK::Type()']]],
-  ['type_65',['type',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a5c4790ffca306a285685889472e9e257',1,'lampda::modes::draw::overlay::__private::UIElement']]],
-  ['typicalliionvoltage_5fmv_66',['typicalLiionVoltage_mV',['../namespacelampda.html#ade87cbd4b1366e64f87e966d75f7922c',1,'lampda']]]
+  ['type_63',['type',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a5c4790ffca306a285685889472e9e257',1,'lampda::modes::draw::overlay::__private::UIElement']]],
+  ['type_64',['Type',['../namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566',1,'lampda::common::elk::Type()'],['../namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa',1,'lampda::logic::alerts::Type()'],['../classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428f',1,'lampda::common::UserCommand::Type()']]],
+  ['typicalliionvoltage_5fmv_65',['typicalLiionVoltage_mV',['../namespacelampda.html#ade87cbd4b1366e64f87e966d75f7922c',1,'lampda']]]
 ];

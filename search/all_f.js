@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['name_0',['name',['../structlampda_1_1logic_1_1cli_1_1Command.html#a6f1d0a805adc608b48ff1944a223552e',1,'lampda::logic::cli::Command::name()'],['../structlampda_1_1utils_1_1cli_1_1ParsedCommand.html#a4352ec5a879b8d68c301170bb2b4b76e',1,'lampda::utils::cli::ParsedCommand::name()']]],
+  ['name_0',['name',['../structlampda_1_1logic_1_1cli_1_1Command.html#a6f1d0a805adc608b48ff1944a223552e',1,'lampda::logic::cli::Command::name()'],['../structlampda_1_1common_1_1cli_1_1ParsedCommand.html#a6f58a904ad79655383de67b3d720357f',1,'lampda::common::cli::ParsedCommand::name()']]],
   ['navajowhite_1',['NavajoWhite',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba85abb1802721c74e79d910751c35e26b',1,'lampda::modes::colors']]],
   ['navy_2',['Navy',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba7776aa79fa6f23b0bdd524ccbe5f5af6',1,'lampda::modes::colors']]],
   ['nbbubbles_3',['nbBubbles',['../structlampda_1_1modes_1_1automaton_1_1BubbleMode.html#acf3369372f2be3ef33f936519a9be954',1,'lampda::modes::automaton::BubbleMode']]],

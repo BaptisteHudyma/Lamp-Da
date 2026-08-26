@@ -6,7 +6,7 @@ var searchData=
   ['lampda_5fprint_5fraw_3',['lampda_print_raw',['../namespacelampda_1_1bsp.html#a85dd667490bf887109113d1485fc0caa',1,'lampda::bsp']]],
   ['lch_4',['LCH',['../classlampda_1_1utils_1_1ColorSpace_1_1LCH.html#a4e2f5d823918d7afb622facf0c303a0c',1,'lampda::utils::ColorSpace::LCH::LCH(const COLOR &amp;c)'],['../classlampda_1_1utils_1_1ColorSpace_1_1LCH.html#a580988bf50a60c3d70d1f086970266fb',1,'lampda::utils::ColorSpace::LCH::LCH(const double l, const double c, const double h)']]],
   ['liion_5fmv_5fto_5fbattery_5fpercent_5',['liion_mv_to_battery_percent',['../namespacelampda_1_1component_1_1battery.html#a5e6dd98d40fd8fae451fa7e84cb6f273',1,'lampda::component::battery']]],
-  ['linearcurve_6',['LinearCurve',['../classlampda_1_1utils_1_1curves_1_1LinearCurve.html#aae7c1fac3cc98342f4c349dc6c84205b',1,'lampda::utils::curves::LinearCurve']]],
+  ['linearcurve_6',['LinearCurve',['../classlampda_1_1common_1_1curves_1_1LinearCurve.html#ab705ddc2b8b5ac54e86e4f183809343f',1,'lampda::common::curves::LinearCurve']]],
   ['lineatindex_7',['lineAtIndex',['../structlampda_1_1modes_1_1draw_1_1grid_1_1LineRule.html#ad7f731be15661dafb2e9881a1b347f4d',1,'lampda::modes::draw::grid::LineRule']]],
   ['link_5fevent_5fto_5finterrupt1_8',['link_event_to_interrupt1',['../namespacelampda_1_1component_1_1imu.html#a748e7653b758087e4fabd410c38f6290',1,'lampda::component::imu']]],
   ['link_5fevent_5fto_5finterrupt2_9',['link_event_to_interrupt2',['../namespacelampda_1_1component_1_1imu.html#af0f92368dcd9b7574ba815e92e66d736',1,'lampda::component::imu']]],

@@ -97,6 +97,9 @@ Functions</h2></td></tr>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>set_real_time</b> (const <a class="el" href="structlampda_1_1component_1_1time_1_1RealTime.html">RealTime</a> &amp;realTime)</td></tr>
 <tr class="memdesc:abadccaa893776ba9f3011ff12da36a6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the real time in the lamp, only valid until the next shutdown. <br /></td></tr>
 <tr class="separator:abadccaa893776ba9f3011ff12da36a6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1d985f38e65a283c46c2995656424c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structlampda_1_1component_1_1time_1_1RealTime.html">RealTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1time.html#aa1d985f38e65a283c46c2995656424c7">convert_to_real_time</a> (const uint32_t time_s)</td></tr>
+<tr class="memdesc:aa1d985f38e65a283c46c2995656424c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a platform time in seconds to a real time value.  <br /></td></tr>
+<tr class="separator:aa1d985f38e65a283c46c2995656424c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ae576ef23a6f073f91631e15130ef4d"><td class="memItemLeft" align="right" valign="top"><a id="a9ae576ef23a6f073f91631e15130ef4d" name="a9ae576ef23a6f073f91631e15130ef4d"></a>
 <a class="el" href="structlampda_1_1component_1_1time_1_1RealTime.html">RealTime</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_real_time</b> ()</td></tr>
 <tr class="memdesc:a9ae576ef23a6f073f91631e15130ef4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a real time value, only valid if it was set first. <br /></td></tr>
@@ -132,6 +135,27 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the platform realtime functions. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="aa1d985f38e65a283c46c2995656424c7" name="aa1d985f38e65a283c46c2995656424c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1d985f38e65a283c46c2995656424c7">&#9670;&#160;</a></span>convert_to_real_time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structlampda_1_1component_1_1time_1_1RealTime.html">RealTime</a> lampda::component::time::convert_to_real_time </td>
+          <td>(</td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>time_s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert a platform time in seconds to a real time value. </p>
+<dl class="section return"><dt>Returns</dt><dd>if the global time is unset, the function return an invalid time </dd></dl>
+
+</div>
+</div>
 <a id="a5eedd683abf2091a5c50fca2b3fbfe1a" name="a5eedd683abf2091a5c50fca2b3fbfe1a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5eedd683abf2091a5c50fca2b3fbfe1a">&#9670;&#160;</a></span>get_platform_time_from_target_time()</h2>
 

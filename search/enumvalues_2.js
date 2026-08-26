@@ -10,7 +10,7 @@ var searchData=
   ['chocolate_7',['Chocolate',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bae4544842e6796ba2dd0bd96905d65a3a',1,'lampda::modes::colors']]],
   ['clearbluesky_8',['ClearBlueSky',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5a15daa854f37a575d484c7062e205dda9',1,'lampda::modes::colors']]],
   ['clearstriponmodechange_9',['clearStripOnModeChange',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17a898e4f49ee4e2805cdd45baf627a3b7c',1,'lampda::modes']]],
-  ['color_5fselect_10',['COLOR_SELECT',['../namespacelampda_1_1utils_1_1ELK.html#af7d12aac75a6c8051398eaeed53676eca48c23937c624c7f645bfb320d5a059c4',1,'lampda::utils::ELK']]],
+  ['color_5fselect_10',['COLOR_SELECT',['../namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a48c23937c624c7f645bfb320d5a059c4',1,'lampda::common::elk']]],
   ['coolwhitefluorescent_11',['CoolWhiteFluorescent',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5aa5b50ff013c7031afc5f96ee715f6d9c',1,'lampda::modes::colors']]],
   ['coral_12',['Coral',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baf5f0ad0ea91f914df7f07f8729a1417e',1,'lampda::modes::colors']]],
   ['cornflowerblue_13',['CornflowerBlue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bad3363e2e9ba7a6d941d3fd6ef8da5246',1,'lampda::modes::colors']]],

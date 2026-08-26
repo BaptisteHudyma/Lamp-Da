@@ -89,25 +89,23 @@ $(function() {
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1cli_1_1CommandHandle.html">CommandHandle</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aecb29e7fa8f55a7d5cb158e896bb401f"><td class="memItemLeft" align="right" valign="top"><a id="aecb29e7fa8f55a7d5cb158e896bb401f" name="aecb29e7fa8f55a7d5cb158e896bb401f"></a>
-constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><b>make_command</b> (const char *name, const char *desc, void(*handler)(const <a class="el" href="structlampda_1_1utils_1_1cli_1_1ParsedCommand.html">utils::cli::ParsedCommand</a> &amp;))</td></tr>
-<tr class="separator:aecb29e7fa8f55a7d5cb158e896bb401f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17e9c9989e18ff26551767893250c268"><td class="memItemLeft" align="right" valign="top"><a id="a17e9c9989e18ff26551767893250c268" name="a17e9c9989e18ff26551767893250c268"></a>
-constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><b>make_command_args</b> (const char *name, const char *usage, const uint8_t minArgs, const uint8_t maxArgs, const char *desc, void(*handler)(const <a class="el" href="structlampda_1_1utils_1_1cli_1_1ParsedCommand.html">utils::cli::ParsedCommand</a> &amp;))</td></tr>
-<tr class="separator:a17e9c9989e18ff26551767893250c268"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a562e1c8877db5aaf5c693605ca9d7bb2"><td class="memItemLeft" align="right" valign="top"><a id="a562e1c8877db5aaf5c693605ca9d7bb2" name="a562e1c8877db5aaf5c693605ca9d7bb2"></a>
+constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><b>make_command</b> (const char *name, const char *desc, void(*handler)(const <a class="el" href="structlampda_1_1common_1_1cli_1_1ParsedCommand.html">common::cli::ParsedCommand</a> &amp;))</td></tr>
+<tr class="separator:a562e1c8877db5aaf5c693605ca9d7bb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d1f0c4bf308e41d7e046f5b077bcf56"><td class="memItemLeft" align="right" valign="top"><a id="a6d1f0c4bf308e41d7e046f5b077bcf56" name="a6d1f0c4bf308e41d7e046f5b077bcf56"></a>
+constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><b>make_command_args</b> (const char *name, const char *usage, const uint8_t minArgs, const uint8_t maxArgs, const char *desc, void(*handler)(const <a class="el" href="structlampda_1_1common_1_1cli_1_1ParsedCommand.html">common::cli::ParsedCommand</a> &amp;))</td></tr>
+<tr class="separator:a6d1f0c4bf308e41d7e046f5b077bcf56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10303291e05b4146b5e036559b4ddb89"><td class="memItemLeft" align="right" valign="top"><a id="a10303291e05b4146b5e036559b4ddb89" name="a10303291e05b4146b5e036559b4ddb89"></a>
 const char *&#160;</td><td class="memItemRight" valign="bottom"><b>boolToString</b> (bool b)</td></tr>
 <tr class="separator:a10303291e05b4146b5e036559b4ddb89"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a049f01b850f9227cfc570b37454d4f65"><td class="memTemplParams" colspan="2"><a id="a049f01b850f9227cfc570b37454d4f65" name="a049f01b850f9227cfc570b37454d4f65"></a>
+<tr class="memitem:aa07bc051a6d5dbdb17ad001a22dcaa53"><td class="memTemplParams" colspan="2"><a id="aa07bc051a6d5dbdb17ad001a22dcaa53" name="aa07bc051a6d5dbdb17ad001a22dcaa53"></a>
 template&lt;size_t N&gt; </td></tr>
-<tr class="memitem:a049f01b850f9227cfc570b37454d4f65"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handleCommand</b> (const <a class="el" href="structlampda_1_1utils_1_1cli_1_1ParsedCommand.html">utils::cli::ParsedCommand</a> &amp;command, const <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>(&amp;commandsToParse)[N], const char *calledCommand=nullptr)</td></tr>
-<tr class="memdesc:a049f01b850f9227cfc570b37454d4f65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a command and handle its effects. <br /></td></tr>
-<tr class="separator:a049f01b850f9227cfc570b37454d4f65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa07bc051a6d5dbdb17ad001a22dcaa53"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handleCommand</b> (const <a class="el" href="structlampda_1_1common_1_1cli_1_1ParsedCommand.html">common::cli::ParsedCommand</a> &amp;command, const <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>(&amp;commandsToParse)[N], const char *calledCommand=nullptr)</td></tr>
+<tr class="memdesc:aa07bc051a6d5dbdb17ad001a22dcaa53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a command and handle its effects. <br /></td></tr>
+<tr class="separator:aa07bc051a6d5dbdb17ad001a22dcaa53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e4a44a30da91c8d48586998f6213f3c"><td class="memItemLeft" align="right" valign="top"><a id="a6e4a44a30da91c8d48586998f6213f3c" name="a6e4a44a30da91c8d48586998f6213f3c"></a>
 constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_duplicate_hash</b> (const <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a> *arr, size_t count)</td></tr>
 <tr class="memdesc:a6e4a44a30da91c8d48586998f6213f3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check for command duplication. <br /></td></tr>
@@ -136,8 +134,9 @@ Variables</h2></td></tr>
 <tr class="memitem:ab56dd95986a8052b91afda6a12d1c681"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1cli.html#ab56dd95986a8052b91afda6a12d1c681">_act_commands_s</a> []</td></tr>
 <tr class="memdesc:ab56dd95986a8052b91afda6a12d1c681"><td class="mdescLeft">&#160;</td><td class="mdescRight">special commands to interact with the low level system  <br /></td></tr>
 <tr class="separator:ab56dd95986a8052b91afda6a12d1c681"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4eff67cb5ee801beef6919a35d027300"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1cli.html#a4eff67cb5ee801beef6919a35d027300">_set_commands_s</a> []</td></tr>
-<tr class="memdesc:a4eff67cb5ee801beef6919a35d027300"><td class="mdescLeft">&#160;</td><td class="mdescRight">special commands to set system values  <br /></td></tr>
+<tr class="memitem:a4eff67cb5ee801beef6919a35d027300"><td class="memItemLeft" align="right" valign="top"><a id="a4eff67cb5ee801beef6919a35d027300" name="a4eff67cb5ee801beef6919a35d027300"></a>
+constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_set_commands_s</b> []</td></tr>
+<tr class="memdesc:a4eff67cb5ee801beef6919a35d027300"><td class="mdescLeft">&#160;</td><td class="mdescRight">special commands to set system values <br /></td></tr>
 <tr class="separator:a4eff67cb5ee801beef6919a35d027300"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -197,7 +196,7 @@ template&lt;size_t N&gt; </div>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">        make_command_args(<span class="stringliteral">&quot;h&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, 0, utils::cli::ParsedCommand::maxArgumentCount, <span class="stringliteral">&quot;This page&quot;</span>, handles::cmd_act_help),</div>
+<div class="line">        make_command_args(<span class="stringliteral">&quot;h&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, 0, common::cli::ParsedCommand::maxArgumentCount, <span class="stringliteral">&quot;This page&quot;</span>, handles::cmd_act_help),</div>
 <div class="line">        make_command(<span class="stringliteral">&quot;shutdown&quot;</span>, <span class="stringliteral">&quot;force shutdown the system&quot;</span>, handles::cmd_shutdown),</div>
 <div class="line">        make_command(<span class="stringliteral">&quot;buttonTogg&quot;</span>, <span class="stringliteral">&quot;change the button pin number for the next boot&quot;</span>, handles::cmd_buttontoggle),</div>
 <div class="line">        make_command(<span class="stringliteral">&quot;format&quot;</span>, <span class="stringliteral">&quot;format the whole file system (dangerous)&quot;</span>, handles::cmd_format),</div>
@@ -236,60 +235,24 @@ template&lt;size_t N&gt; </div>
 <div class="line">        make_command_args(<span class="stringliteral">&quot;set&quot;</span>,</div>
 <div class="line">                          <span class="stringliteral">&quot;&lt;subcommand&gt; [&lt;arg&gt;...]&quot;</span>,</div>
 <div class="line">                          0,</div>
-<div class="line">                          utils::cli::ParsedCommand::maxArgumentCount,</div>
+<div class="line">                          common::cli::ParsedCommand::maxArgumentCount,</div>
 <div class="line">                          <span class="stringliteral">&quot;Set system characteristics&quot;</span>,</div>
 <div class="line">                          handles::cmd_set),</div>
 <div class="line">        make_command_args(<span class="stringliteral">&quot;sys&quot;</span>,</div>
 <div class="line">                          <span class="stringliteral">&quot;&lt;subcommand&gt; [&lt;arg&gt;...]&quot;</span>,</div>
 <div class="line">                          0,</div>
-<div class="line">                          utils::cli::ParsedCommand::maxArgumentCount,</div>
+<div class="line">                          common::cli::ParsedCommand::maxArgumentCount,</div>
 <div class="line">                          <span class="stringliteral">&quot;Read system informations&quot;</span>,</div>
 <div class="line">                          handles::cmd_sys),</div>
 <div class="line">        make_command_args(<span class="stringliteral">&quot;act&quot;</span>,</div>
 <div class="line">                          <span class="stringliteral">&quot;&lt;subcommand&gt; [&lt;arg&gt;...]&quot;</span>,</div>
 <div class="line">                          0,</div>
-<div class="line">                          utils::cli::ParsedCommand::maxArgumentCount,</div>
+<div class="line">                          common::cli::ParsedCommand::maxArgumentCount,</div>
 <div class="line">                          <span class="stringliteral">&quot;High level immediate actions (dangerous)&quot;</span>,</div>
 <div class="line">                          handles::cmd_act),</div>
 <div class="line">}</div>
 </div><!-- fragment -->
 <p>Define the CLI commands here. </p>
-
-</div>
-</div>
-<a id="a4eff67cb5ee801beef6919a35d027300" name="a4eff67cb5ee801beef6919a35d027300"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4eff67cb5ee801beef6919a35d027300">&#9670;&#160;</a></span>_set_commands_s</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a> lampda::logic::cli::_set_commands_s[]</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">        make_command_args(<span class="stringliteral">&quot;h&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, 0, utils::cli::ParsedCommand::maxArgumentCount, <span class="stringliteral">&quot;This page&quot;</span>, handles::cmd_set_help),</div>
-<div class="line">        make_command_args(<span class="stringliteral">&quot;brgt&quot;</span>,</div>
-<div class="line">                          <span class="stringliteral">&quot;[0-1024]&quot;</span>,</div>
-<div class="line">                          1,</div>
-<div class="line">                          1,</div>
-<div class="line">                          <span class="stringliteral">&quot;Set the output brightness&quot;</span>,</div>
-<div class="line">                          handles::cmd_brightness), </div>
-<div class="line">        make_command_args(<span class="stringliteral">&quot;sunset&quot;</span>, <span class="stringliteral">&quot;[time in minutes]&quot;</span>, 1, 1, <span class="stringliteral">&quot;Set or update the sunset timer.&quot;</span>, handles::cmd_sunset),</div>
-<div class="line">        make_command_args(<span class="stringliteral">&quot;ramp&quot;</span>, <span class="stringliteral">&quot;[0-255]&quot;</span>, 1, 1, <span class="stringliteral">&quot;Set the user ramp value&quot;</span>, handles::cmd_ramp),</div>
-<div class="line">        make_command_args(<span class="stringliteral">&quot;mode&quot;</span>, <span class="stringliteral">&quot;[group id] [mode id]&quot;</span>, 2, 2, <span class="stringliteral">&quot;Set current active mode&quot;</span>, handles::cmd_set_mode),</div>
-<div class="line">}</div>
-</div><!-- fragment -->
-<p>special commands to set system values </p>
 
 </div>
 </div>
@@ -313,7 +276,7 @@ template&lt;size_t N&gt; </div>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">        make_command_args(<span class="stringliteral">&quot;h&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, 0, utils::cli::ParsedCommand::maxArgumentCount, <span class="stringliteral">&quot;This page&quot;</span>, handles::cmd_sys_help),</div>
+<div class="line">        make_command_args(<span class="stringliteral">&quot;h&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, 0, common::cli::ParsedCommand::maxArgumentCount, <span class="stringliteral">&quot;This page&quot;</span>, handles::cmd_sys_help),</div>
 <div class="line">        make_command(<span class="stringliteral">&quot;alerts&quot;</span>, <span class="stringliteral">&quot;show all raised alerts&quot;</span>, handles::cmd_alerts),</div>
 <div class="line">        make_command(<span class="stringliteral">&quot;stats&quot;</span>, <span class="stringliteral">&quot;display the system use statistics&quot;</span>, handles::cmd_stats),</div>
 <div class="line">        make_command(<span class="stringliteral">&quot;tasks&quot;</span>, <span class="stringliteral">&quot;display a debug of task usages&quot;</span>, handles::cmd_tasks),</div>

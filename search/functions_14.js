@@ -5,7 +5,7 @@ var searchData=
   ['time_5fms_2',['time_ms',['../namespacelampda_1_1hal.html#a3e330f95b9dbb0e0fef2af910b4295ad',1,'lampda::hal']]],
   ['time_5fs_3',['time_s',['../namespacelampda_1_1hal.html#a91d4c7bfd20697db18b44c8bb65d4c9d',1,'lampda::hal']]],
   ['time_5fus_4',['time_us',['../namespacelampda_1_1hal.html#af9d58b4b2d7f46bff18a476916f12579',1,'lampda::hal']]],
-  ['to_5fbin_5findex_5',['to_bin_index',['../classlampda_1_1utils_1_1fft_1_1FftAnalyzer.html#ac35eab2b28537b2b3521c20f1b4f5adf',1,'lampda::utils::fft::FftAnalyzer']]],
+  ['to_5fbin_5findex_5',['to_bin_index',['../classlampda_1_1common_1_1fft_1_1FftAnalyzer.html#a25d14d809450c7854692aaa40cebcdc6',1,'lampda::common::fft::FftAnalyzer']]],
   ['to_5fhelix_5fz_6',['to_helix_z',['../namespacelampda_1_1modes.html#a109f00368b37d628384a656f2181c838',1,'lampda::modes']]],
   ['to_5flamp_5findex_7',['to_lamp_index',['../structlampda_1_1modes_1_1Particle.html#a4123f5319b51158eadce4e9c2f78d01a',1,'lampda::modes::Particle']]],
   ['to_5flamp_5findex_5fno_5fbounds_8',['to_lamp_index_no_bounds',['../structlampda_1_1modes_1_1Particle.html#a46c1cffa2c3f004185e58a58f8c4319d',1,'lampda::modes::Particle']]],

@@ -2,7 +2,7 @@ var searchData=
 [
   ['s_0',['s',['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#acb76970ef92b1481789d61ef80601210',1,'lampda::utils::ColorSpace::HSV']]],
   ['s_5fisoutputmodeready_1',['s_isOutputModeReady',['../namespacelampda_1_1logic_1_1power.html#a691c0c79481b096b6b50538cc61e1dcf',1,'lampda::logic::power']]],
-  ['sample_5frate_2',['SAMPLE_RATE',['../fft_8h.html#a64627e42f80150c426c8bab6e994d6a8',1,'lampda::utils::fft']]],
+  ['sample_5frate_2',['SAMPLE_RATE',['../fft_8h.html#aeae566492a1375989d9d964e7898a53f',1,'lampda::common::fft']]],
   ['sample_5fsize_3',['SAMPLE_SIZE',['../structlampda_1_1component_1_1microphone_1_1SoundStruct.html#ada6ba07d71b9f5b364d3497a3ac180f9',1,'lampda::component::microphone::SoundStruct::SAMPLE_SIZE()'],['../structlampda_1_1hal_1_1microphone_1_1PdmData.html#aa54b4369cbca2ca1b1022af17499149c',1,'lampda::hal::microphone::PdmData::SAMPLE_SIZE()']]],
   ['sampleduration_5fus_4',['sampleDuration_us',['../structlampda_1_1hal_1_1microphone_1_1PdmData.html#a2f636213386bcecadeebbff2cc056282',1,'lampda::hal::microphone::PdmData']]],
   ['sampleread_5',['sampleRead',['../structlampda_1_1hal_1_1microphone_1_1PdmData.html#a1a0cd9331f31584868bb115a2da93a60',1,'lampda::hal::microphone::PdmData']]],
