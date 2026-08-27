@@ -70,10 +70,6 @@ extern "C" {
   /// threads can only suspend itself
   extern void suspend_this_thread();
 
-  /// Suspend all threads
-  /// \warning: Can deadlock the system if called from a subthread.
-  extern void suspend_all_threads();
-
   /**
    * \brief check that all threads are suspended (mandatory for sleep mode)
    * \return 0 for success, any other for failure

@@ -346,9 +346,9 @@ void start_threads()
   // start task scheduler, in suspended state
   bsp::threads::start_thread(task_scheduler, bsp::threads::taskScheduler_taskName, 2, 255);
   // start interrupt handle, in suspended state
-  bsp::threads::start_thread(interrupt_handle, bsp::threads::pdInterruptHandle_taskName, 2, 255);
+  bsp::threads::start_thread(interrupt_handle, bsp::threads::pdInterruptHandle_taskName, 2, 100);
   // start pd handle loop
-  bsp::threads::start_thread(pd_run, bsp::threads::pd_taskName, 1, 1024);
+  bsp::threads::start_thread(pd_run, bsp::threads::pd_taskName, 1, 255);
 }
 
 void loop()

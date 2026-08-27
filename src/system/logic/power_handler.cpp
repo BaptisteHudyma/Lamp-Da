@@ -855,7 +855,7 @@ void init()
 #endif
 
   // start main loop
-  bsp::threads::start_thread(power_loop, bsp::threads::power_taskName, 0, 1024);
+  bsp::threads::start_thread(power_loop, bsp::threads::power_taskName, 0, 512);
 
   isSetup = true;
 }

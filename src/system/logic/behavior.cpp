@@ -700,26 +700,22 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
   hal::delay_ms(20);
   component::fileSystem::shutdown();
 
-  // Phase 4: suspend all tasks
-  bsp::threads::suspend_all_threads();
-  hal::delay_ms(10);
-
-  // Phase 6: Stop I2C
+  // Phase 4: Stop I2C
   for (uint8_t i = 0; i < hal::registers::get_wire_interface_count(); ++i)
   {
     hal::i2c::i2c_turn_off(i);
   }
   hal::delay_ms(10);
 
-  // Phase 7: disable interrupts
+  // Phase 5: disable interrupts
   hal::gpio::DigitalPin::detach_all();
   hal::delay_ms(5);
 
-  // Phase 8: Shutdown threads & task stack
+  // Phase 6: Shutdown threads & task stack
   bsp::threads::shutdown();
   hal::delay_ms(10);
 
-  // Phase 9: GPIO deactivation
+  // Phase 7: GPIO deactivation
   // deactivate indicator
   bsp::indicator::set_color(utils::ColorSpace::BLACK);
   hal::delay_ms(1);
@@ -738,7 +734,7 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
   hal::gpio::DigitalPin::deactivate_gpios(); // physically disconnect gpios
   hal::delay_ms(10);
 
-  // Phase 10 : Sleep with wakeup config
+  // Phase 8 : Sleep with wakeup config
 
   // If button is still pressed at this point, we will assume it is stuck pressed and signal a wakeup on release.
   const bool isButtonPressed = component::button::get_button_state().isPressed;

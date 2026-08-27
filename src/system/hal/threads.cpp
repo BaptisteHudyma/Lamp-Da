@@ -11,12 +11,14 @@ namespace lampda {
 namespace hal {
 namespace threads {
 
+volatile bool canRun = true;
+
 // loop task
 [[noreturn]] static void _redirect_task(void* arg)
 {
   SchedulerRTOS::taskfunc_t taskfunc = (SchedulerRTOS::taskfunc_t)arg;
 
-  while (true)
+  while (canRun)
   {
     taskfunc();
     yield();
@@ -29,7 +31,7 @@ namespace threads {
   SchedulerRTOS::taskfunc_t taskfunc = (SchedulerRTOS::taskfunc_t)arg;
 
   HAL_suspend();
-  while (true)
+  while (canRun)
   {
     taskfunc();
     yield();
@@ -107,19 +109,7 @@ void HAL_notify_thread(TaskHandle_t handle, int wakeUpEvent)
   }
 }
 
-void HAL_suspend_thread(TaskHandle_t handle)
-{
-  if (isInISR())
-  {
-    BaseType_t signal = pdFALSE;
-    vTaskNotifyGiveFromISR(handle, &signal);
-  }
-  else
-  {
-    xTaskNotifyGive(handle);
-  }
-  vTaskSuspend(handle);
-}
+void HAL_suspend_thread(TaskHandle_t handle) { vTaskSuspend(handle); }
 
 int HAL_is_suspended(TaskHandle_t handle)
 {
@@ -151,6 +141,7 @@ void HAL_get_debug_thread_text(char* textBuff) { vTaskList(textBuff); }
 
 void HAL_shutdown()
 {
+  canRun = false;
   vTaskSuspendAll();
   NVIC_DisableIRQ(SWI1_EGU1_IRQn);
 }

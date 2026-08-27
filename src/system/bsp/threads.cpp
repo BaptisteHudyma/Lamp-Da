@@ -117,14 +117,6 @@ void yield_this_thread() { hal::threads::HAL_yield(); }
 
 void suspend_this_thread() { hal::threads::HAL_suspend(); }
 
-void suspend_all_threads()
-{
-  for (auto handle: __private::handles)
-  {
-    hal::threads::HAL_suspend_thread(handle.second.taskHandle);
-  }
-}
-
 int is_all_suspended()
 {
   for (const auto& handle_it: __private::handles)
