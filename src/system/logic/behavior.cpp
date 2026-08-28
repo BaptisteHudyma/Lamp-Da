@@ -736,6 +736,8 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
 
   // Phase 8 : Sleep with wakeup config
 
+  hal::registers::sync_memory_protection();
+
   // If button is still pressed at this point, we will assume it is stuck pressed and signal a wakeup on release.
   const bool isButtonPressed = component::button::get_button_state().isPressed;
   // power down nrf52.

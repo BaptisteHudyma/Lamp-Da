@@ -117,18 +117,6 @@ void yield_this_thread() { hal::threads::HAL_yield(); }
 
 void suspend_this_thread() { hal::threads::HAL_suspend(); }
 
-int is_all_suspended()
-{
-  for (const auto& handle_it: __private::handles)
-  {
-    if (hal::threads::HAL_is_suspended(handle_it.second.taskHandle) != 0)
-    {
-      return 1;
-    }
-  }
-  return 0;
-}
-
 void resume_thread(const uint32_t taskName)
 {
   // handle already exists

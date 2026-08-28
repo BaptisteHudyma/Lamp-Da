@@ -61,6 +61,8 @@ float read_CPU_temperature_degreesC() { return simulator::mock_registers::cpuTem
 
 void go_to_sleep(const int, const bool) { simulator::mock_registers::isDeepSleep = true; };
 
+void sync_memory_protection() {}
+
 } // namespace registers
 } // namespace hal
 } // namespace lampda

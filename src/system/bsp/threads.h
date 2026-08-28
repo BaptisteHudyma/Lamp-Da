@@ -71,12 +71,6 @@ extern "C" {
   extern void suspend_this_thread();
 
   /**
-   * \brief check that all threads are suspended (mandatory for sleep mode)
-   * \return 0 for success, any other for failure
-   */
-  extern int is_all_suspended();
-
-  /**
    * \brief resume a target thread
    * \param[in] taskName target task name
    */

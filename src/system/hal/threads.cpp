@@ -139,12 +139,7 @@ uint32_t HAL_get_task_high_water_mark_byte(TaskHandle_t handle)
 
 void HAL_get_debug_thread_text(char* textBuff) { vTaskList(textBuff); }
 
-void HAL_shutdown()
-{
-  canRun = false;
-  vTaskSuspendAll();
-  NVIC_DisableIRQ(SWI1_EGU1_IRQn);
-}
+void HAL_shutdown() { canRun = false; }
 
 } // namespace threads
 } // namespace hal
