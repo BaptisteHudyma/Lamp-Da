@@ -83,9 +83,9 @@ $(function() {
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;set&gt;</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;src/system/ext/random8.h&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;src/system/ext/random8.h&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="bitset_8h.html">src/system/common/bitset.h</a>&quot;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="lamp__type_8hpp.html">src/modes/include/hardware/lamp_type.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
@@ -102,199 +102,200 @@ $(function() {
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#ae30d1973a1c67cc70977feffb6959068">   34</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#ae30d1973a1c67cc70977feffb6959068">reset</a>()</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  {</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    occupiedSpacesSet.clear();</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; ParticleSystem::maxParticuleCount; ++i)</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>      isAllocated[i] = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    }</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  }</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#ab84dc076dfe71d77be2c67ff10660a00">   47</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#ab84dc076dfe71d77be2c67ff10660a00">set_max_particle_count</a>(<span class="keyword">const</span> uint16_t _particleCount)</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  {</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    particuleCount = std::min&lt;uint16_t&gt;(ParticleSystem::maxParticuleCount, _particleCount);</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#ae30d1973a1c67cc70977feffb6959068">reset</a>();</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  }</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#ad1354fc64f4ccd364c0f9bcbfb929a82">   57</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#ad1354fc64f4ccd364c0f9bcbfb929a82">init_particules</a>(<span class="keyword">const</span> std::function&lt;int16_t(<span class="keywordtype">size_t</span>)&gt;&amp; positionGeneratorFunction)</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  {</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    occupiedSpacesSet.clear();</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; particuleCount; ++i)</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    {</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>      isAllocated[i] = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>      <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a3691360ca656d4e01cdc7e42282cf997">spawn_particule</a>(i, positionGeneratorFunction);</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    }</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>  }</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#ac0b606e214f678bcdf9783e9f452e2cf">   72</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#ac0b606e214f678bcdf9783e9f452e2cf">init_deferred_particules</a>(uint8_t maxParticlesToPop,</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                                <span class="keyword">const</span> std::function&lt;int16_t(<span class="keywordtype">size_t</span>)&gt;&amp; positionGeneratorFunction)</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  {</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; particuleCount and maxParticlesToPop &gt; 0; ++i)</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    {</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>      <span class="keywordflow">if</span> (isAllocated[i])</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>      {</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="comment">// already allocated, do not reuse</span></div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>      }</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>      <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a3691360ca656d4e01cdc7e42282cf997">spawn_particule</a>(i, positionGeneratorFunction);</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>      maxParticlesToPop--;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    }</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>  }</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#a81a51ec20f7c7b4de2fbb9cf85c4d1ae">   93</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a81a51ec20f7c7b4de2fbb9cf85c4d1ae">iterate_no_collisions</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a>&amp; accelerationCartesian,</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                             <span class="keyword">const</span> <span class="keywordtype">float</span> deltaTime_s,</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                             <span class="keyword">const</span> <span class="keywordtype">bool</span> shouldContrain = <span class="keyword">true</span>)</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>  {</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; particuleCount; ++i)</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    {</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>      <span class="comment">// do not iterate non allocated particles</span></div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>      <span class="keywordflow">if</span> (not isAllocated[i])</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>      <a class="code hl_struct" href="structlampda_1_1modes_1_1Particle.html">Particle</a>&amp; p = particules[i];</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>      <span class="comment">// apply force and constrain</span></div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>      p.<a class="code hl_function" href="structlampda_1_1modes_1_1Particle.html#a3384b86e7122b8c1471f68d700ba504b">apply_acceleration</a>(accelerationCartesian, deltaTime_s, shouldContrain);</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    }</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>  }</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#afc872bfc33c23e6732d1b8465884e3af">  115</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#afc872bfc33c23e6732d1b8465884e3af">iterate_with_collisions</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a>&amp; accelerationCartesian,</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                               <span class="keyword">const</span> <span class="keywordtype">float</span> deltaTime_s,</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                               <span class="keyword">const</span> <span class="keywordtype">bool</span> shouldContrain = <span class="keyword">true</span>)</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>  {</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; particuleCount; ++i)</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    {</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>      <span class="comment">// do not iterate non allocated particles</span></div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>      <span class="keywordflow">if</span> (not isAllocated[i])</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>      <a class="code hl_struct" href="structlampda_1_1modes_1_1Particle.html">Particle</a>&amp; p = particules[i];</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>      <span class="keyword">const</span> int16_t ledIndex = p.<a class="code hl_variable" href="structlampda_1_1modes_1_1Particle.html#a42d1c33e32498fb310e07a9dd6a27042">_savedLampIndex</a>;</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>      <span class="comment">// simulate instead of updating directly</span></div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>      <span class="keyword">const</span> <a class="code hl_struct" href="structlampda_1_1modes_1_1Particle.html">Particle</a>&amp; newP = p.<a class="code hl_function" href="structlampda_1_1modes_1_1Particle.html#a589559ce3bc3b0d3a376220635eb2a66">simulate_after_acceleration</a>(accelerationCartesian, deltaTime_s, shouldContrain);</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>      <span class="comment">// update particle position in occupation set</span></div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>      <span class="keyword">const</span> int16_t newLedIndex = newP.<a class="code hl_variable" href="structlampda_1_1modes_1_1Particle.html#a42d1c33e32498fb310e07a9dd6a27042">_savedLampIndex</a>;</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>      <span class="keywordflow">if</span> (newLedIndex != ledIndex)</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>      {</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <span class="comment">// check collision : no collision</span></div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        <span class="keywordflow">if</span> (not <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a71e5bac1b3d6d2aae2764ef95b0c721e">is_position_taken</a>(newLedIndex))</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        {</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>          occupiedSpacesSet.erase(ledIndex);</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>          occupiedSpacesSet.insert(newLedIndex);</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        }</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="comment">// check collision : collision !!</span></div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        {</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>          <span class="comment">// refuse movement, rebound speed</span></div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>          p.<a class="code hl_variable" href="structlampda_1_1modes_1_1Particle.html#a6c4e2e7b92c33a5018cc325c10999a2a">thetaSpeed_radS</a> = -p.<a class="code hl_variable" href="structlampda_1_1modes_1_1Particle.html#a6c4e2e7b92c33a5018cc325c10999a2a">thetaSpeed_radS</a> * 0.75;</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>          p.<a class="code hl_variable" href="structlampda_1_1modes_1_1Particle.html#a88afddc26110ce78b45c33abe24a9383">zSpeed_mS</a> = -p.<a class="code hl_variable" href="structlampda_1_1modes_1_1Particle.html#a88afddc26110ce78b45c33abe24a9383">zSpeed_mS</a> * 0.75;</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>          <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        }</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>      }</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>      <span class="comment">// update particle</span></div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>      p = newP;</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    }</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>  }</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#abc4af1ddffa8cdc346e0274940bb2eb2">  162</a></span>  uint16_t <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#abc4af1ddffa8cdc346e0274940bb2eb2">depop_particules</a>(<span class="keyword">const</span> std::function&lt;<span class="keywordtype">bool</span>(<span class="keyword">const</span> <a class="code hl_struct" href="structlampda_1_1modes_1_1Particle.html">Particle</a>&amp;)&gt;&amp; shouldDepopFunction)</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>  {</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    uint16_t particleCount = 0;</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; particuleCount; ++i)</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    {</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>      <span class="comment">// do not depop non allocated particles</span></div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>      <span class="keywordflow">if</span> (not isAllocated[i])</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>      <span class="keyword">auto</span>&amp; parti = particules[i];</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>      <span class="keywordflow">if</span> (shouldDepopFunction(parti))</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>      {</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        isAllocated[i] = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        occupiedSpacesSet.erase(parti._savedLampIndex);</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>      }</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>      <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>      {</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        particleCount += 1;</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>      }</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    }</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordflow">return</span> particleCount;</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>  }</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#a67fb068c9392c475a541b0d7d0bdbeb3">  190</a></span>  uint16_t <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a67fb068c9392c475a541b0d7d0bdbeb3">show</a>(<span class="keyword">const</span> std::function&lt;uint32_t(int16_t, <span class="keyword">const</span> <a class="code hl_struct" href="structlampda_1_1modes_1_1Particle.html">Particle</a>&amp;)&gt; sample_color, <a class="code hl_struct" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html">LampTy</a>&amp; lamp)</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>  {</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    uint16_t particleCount = 0;</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; particuleCount; ++i)</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    {</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>      <span class="comment">// do not show non allocated particles</span></div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>      <span class="keywordflow">if</span> (not isAllocated[i])</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>      <span class="keyword">const</span> <span class="keyword">auto</span>&amp; particle = particules[i];</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>      <span class="keyword">const</span> <span class="keyword">auto</span>&amp; index = particle.<a class="code hl_variable" href="structlampda_1_1modes_1_1Particle.html#a42d1c33e32498fb310e07a9dd6a27042">_savedLampIndex</a>;</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>      <span class="keywordflow">if</span> (<a class="code hl_function" href="namespacelampda_1_1modes.html#a9552d2d16124a38347d566e99977b303">modes::is_led_index_valid</a>(index))</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        lamp.<a class="code hl_function" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a7bf149c14e698e5a2dec8ce967217839">setPixelColor</a>(index, sample_color(i, particle));</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>      <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        particleCount += 1;</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    }</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keywordflow">return</span> particleCount;</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>  }</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#a384058d94fc1f557b3169b5fe7f32d4a">  209</a></span>  uint16_t <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a384058d94fc1f557b3169b5fe7f32d4a">get_number_of_active</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span><span class="keyword">  </span>{</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    uint16_t particleCount = 0;</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; particuleCount; ++i)</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    {</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>      <span class="comment">// do not show non allocated particles</span></div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>      <span class="keywordflow">if</span> (not isAllocated[i])</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>      particleCount += 1;</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    }</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keywordflow">return</span> particleCount;</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>  }</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span> </div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span><span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#a71e5bac1b3d6d2aae2764ef95b0c721e">  224</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a71e5bac1b3d6d2aae2764ef95b0c721e">is_position_taken</a>(<span class="keyword">const</span> int16_t pos)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> occupiedSpacesSet.find(pos) != occupiedSpacesSet.cend(); }</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#a3691360ca656d4e01cdc7e42282cf997">  231</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a3691360ca656d4e01cdc7e42282cf997">spawn_particule</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span> index, <span class="keyword">const</span> std::function&lt;int16_t(<span class="keywordtype">size_t</span>)&gt;&amp; positionGeneratorFunction)</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>  {</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    int16_t pos = positionGeneratorFunction(index);</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="keywordtype">int</span> maxTries = 3;</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="keywordflow">while</span> (<a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a71e5bac1b3d6d2aae2764ef95b0c721e">ParticleSystem::is_position_taken</a>(pos) and maxTries &gt; 0)</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    {</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>      pos = positionGeneratorFunction(index);</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>      maxTries--;</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    }</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="comment">// generate start position from user function</span></div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; helixCoordinates = <a class="code hl_function" href="namespacelampda_1_1modes.html#acd3f7ec1d07f32efcb1086658d893d66">modes::strip_to_helix_unconstraint</a>(pos);</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    particules[index] = <a class="code hl_struct" href="structlampda_1_1modes_1_1Particle.html">Particle</a>(<a class="code hl_struct" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> {helixCoordinates.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad16e6423ebb39f51b5b0260bb977fba6">x</a>, helixCoordinates.y, helixCoordinates.z});</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    occupiedSpacesSet.insert(pos);</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    isAllocated[index] = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>  }</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> uint16_t maxParticuleCount = 512; </div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>  <a class="code hl_struct" href="structlampda_1_1modes_1_1Particle.html">Particle</a> particules[maxParticuleCount];            </div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>  <span class="keywordtype">bool</span> isAllocated[maxParticuleCount];               </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    isOccupiedSpaces.<a class="code hl_function" href="classlampda_1_1common_1_1BitSet.html#ac798a9583d1cdc0a84666f16c4f02aa8">reset</a>();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    isAllocated.<a class="code hl_function" href="classlampda_1_1common_1_1BitSet.html#ac798a9583d1cdc0a84666f16c4f02aa8">reset</a>();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#ab84dc076dfe71d77be2c67ff10660a00">   44</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#ab84dc076dfe71d77be2c67ff10660a00">set_max_particle_count</a>(<span class="keyword">const</span> uint16_t _particleCount)</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    particuleCount = std::min&lt;uint16_t&gt;(ParticleSystem::maxParticuleCount, _particleCount);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#ae30d1973a1c67cc70977feffb6959068">reset</a>();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#ad1354fc64f4ccd364c0f9bcbfb929a82">   54</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#ad1354fc64f4ccd364c0f9bcbfb929a82">init_particules</a>(<span class="keyword">const</span> std::function&lt;int16_t(<span class="keywordtype">size_t</span>)&gt;&amp; positionGeneratorFunction)</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    isOccupiedSpaces.<a class="code hl_function" href="classlampda_1_1common_1_1BitSet.html#ac798a9583d1cdc0a84666f16c4f02aa8">reset</a>();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    isAllocated.<a class="code hl_function" href="classlampda_1_1common_1_1BitSet.html#ac798a9583d1cdc0a84666f16c4f02aa8">reset</a>();</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; particuleCount; ++i)</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>      <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a3691360ca656d4e01cdc7e42282cf997">spawn_particule</a>(i, positionGeneratorFunction);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>  }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#a4475680e9cab8b3fa4f313e22fd690b7">   69</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a4475680e9cab8b3fa4f313e22fd690b7">init_deferred_particules</a>(uint8_t maxParticlesToPop,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                                <span class="keyword">const</span> std::function&lt;int16_t(<span class="keywordtype">size_t</span>)&gt;&amp; positionGeneratorFunction)</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; particuleCount and maxParticlesToPop &gt; 0; ++i)</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>      <span class="keywordflow">if</span> (isAllocated[i])</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>      {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="comment">// already allocated, do not reuse</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>      }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>      <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a3691360ca656d4e01cdc7e42282cf997">spawn_particule</a>(i, positionGeneratorFunction);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>      maxParticlesToPop--;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="comment">// still some uncreated particles</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">return</span> maxParticlesToPop &gt; 0;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  }</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#a81a51ec20f7c7b4de2fbb9cf85c4d1ae">   92</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a81a51ec20f7c7b4de2fbb9cf85c4d1ae">iterate_no_collisions</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a>&amp; accelerationCartesian,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                             <span class="keyword">const</span> <span class="keywordtype">float</span> deltaTime_s,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                             <span class="keyword">const</span> <span class="keywordtype">bool</span> shouldContrain = <span class="keyword">true</span>)</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>  {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; particuleCount; ++i)</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>      <span class="comment">// do not iterate non allocated particles</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>      <span class="keywordflow">if</span> (not isAllocated[i])</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>      <a class="code hl_struct" href="structlampda_1_1modes_1_1Particle.html">Particle</a>&amp; p = particules[i];</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>      <span class="comment">// apply force and constrain</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>      p.<a class="code hl_function" href="structlampda_1_1modes_1_1Particle.html#a3384b86e7122b8c1471f68d700ba504b">apply_acceleration</a>(accelerationCartesian, deltaTime_s, shouldContrain);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#afc872bfc33c23e6732d1b8465884e3af">  114</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#afc872bfc33c23e6732d1b8465884e3af">iterate_with_collisions</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a>&amp; accelerationCartesian,</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                               <span class="keyword">const</span> <span class="keywordtype">float</span> deltaTime_s,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                               <span class="keyword">const</span> <span class="keywordtype">bool</span> shouldContrain = <span class="keyword">true</span>)</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>  {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; particuleCount; ++i)</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>      <span class="comment">// do not iterate non allocated particles</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>      <span class="keywordflow">if</span> (not isAllocated[i])</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>      <a class="code hl_struct" href="structlampda_1_1modes_1_1Particle.html">Particle</a>&amp; p = particules[i];</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>      <span class="keyword">const</span> int16_t ledIndex = p.<a class="code hl_variable" href="structlampda_1_1modes_1_1Particle.html#a42d1c33e32498fb310e07a9dd6a27042">_savedLampIndex</a>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>      <span class="comment">// simulate instead of updating directly</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>      <span class="keyword">const</span> <a class="code hl_struct" href="structlampda_1_1modes_1_1Particle.html">Particle</a>&amp; newP = p.<a class="code hl_function" href="structlampda_1_1modes_1_1Particle.html#a589559ce3bc3b0d3a376220635eb2a66">simulate_after_acceleration</a>(accelerationCartesian, deltaTime_s, shouldContrain);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>      <span class="comment">// update particle position in occupation set</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>      <span class="keyword">const</span> int16_t newLedIndex = newP.<a class="code hl_variable" href="structlampda_1_1modes_1_1Particle.html#a42d1c33e32498fb310e07a9dd6a27042">_savedLampIndex</a>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>      <span class="keywordflow">if</span> (newLedIndex != ledIndex)</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>      {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="comment">// check collision : no collision</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <span class="keywordflow">if</span> (not <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a71e5bac1b3d6d2aae2764ef95b0c721e">is_position_taken</a>(newLedIndex))</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>          isOccupiedSpaces[ledIndex] = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>          isOccupiedSpaces[newLedIndex] = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="comment">// check collision : collision !!</span></div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        {</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>          <span class="comment">// refuse movement, rebound speed</span></div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>          p.<a class="code hl_variable" href="structlampda_1_1modes_1_1Particle.html#a6c4e2e7b92c33a5018cc325c10999a2a">thetaSpeed_radS</a> = -p.<a class="code hl_variable" href="structlampda_1_1modes_1_1Particle.html#a6c4e2e7b92c33a5018cc325c10999a2a">thetaSpeed_radS</a> * 0.75;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>          p.<a class="code hl_variable" href="structlampda_1_1modes_1_1Particle.html#a88afddc26110ce78b45c33abe24a9383">zSpeed_mS</a> = -p.<a class="code hl_variable" href="structlampda_1_1modes_1_1Particle.html#a88afddc26110ce78b45c33abe24a9383">zSpeed_mS</a> * 0.75;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>          <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        }</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>      }</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>      <span class="comment">// update particle</span></div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>      p = newP;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    }</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>  }</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#abc4af1ddffa8cdc346e0274940bb2eb2">  161</a></span>  uint16_t <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#abc4af1ddffa8cdc346e0274940bb2eb2">depop_particules</a>(<span class="keyword">const</span> std::function&lt;<span class="keywordtype">bool</span>(<span class="keyword">const</span> <a class="code hl_struct" href="structlampda_1_1modes_1_1Particle.html">Particle</a>&amp;)&gt;&amp; shouldDepopFunction)</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>  {</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    uint16_t particleCount = 0;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; particuleCount; ++i)</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    {</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>      <span class="comment">// do not depop non allocated particles</span></div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>      <span class="keywordflow">if</span> (not isAllocated[i])</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>      <span class="keyword">auto</span>&amp; parti = particules[i];</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>      <span class="keywordflow">if</span> (shouldDepopFunction(parti))</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>      {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        isAllocated[i] = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        isOccupiedSpaces[parti._savedLampIndex] = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>      }</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>      <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>      {</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        particleCount += 1;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>      }</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    }</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keywordflow">return</span> particleCount;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>  }</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#a67fb068c9392c475a541b0d7d0bdbeb3">  189</a></span>  uint16_t <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a67fb068c9392c475a541b0d7d0bdbeb3">show</a>(<span class="keyword">const</span> std::function&lt;uint32_t(int16_t, <span class="keyword">const</span> <a class="code hl_struct" href="structlampda_1_1modes_1_1Particle.html">Particle</a>&amp;)&gt; sample_color, <a class="code hl_struct" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html">LampTy</a>&amp; lamp)</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>  {</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    uint16_t particleCount = 0;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; particuleCount; ++i)</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    {</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>      <span class="comment">// do not show non allocated particles</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>      <span class="keywordflow">if</span> (not isAllocated[i])</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>      <span class="keyword">const</span> <span class="keyword">auto</span>&amp; particle = particules[i];</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>      <span class="keyword">const</span> <span class="keyword">auto</span>&amp; index = particle.<a class="code hl_variable" href="structlampda_1_1modes_1_1Particle.html#a42d1c33e32498fb310e07a9dd6a27042">_savedLampIndex</a>;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>      <span class="keywordflow">if</span> (<a class="code hl_function" href="namespacelampda_1_1modes.html#a9552d2d16124a38347d566e99977b303">modes::is_led_index_valid</a>(index))</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        lamp.<a class="code hl_function" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a7bf149c14e698e5a2dec8ce967217839">setPixelColor</a>(index, sample_color(i, particle));</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>      <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        particleCount += 1;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    }</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="keywordflow">return</span> particleCount;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>  }</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#a384058d94fc1f557b3169b5fe7f32d4a">  208</a></span>  uint16_t <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a384058d94fc1f557b3169b5fe7f32d4a">get_number_of_active</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span><span class="keyword">  </span>{</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    uint16_t particleCount = 0;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; particuleCount; ++i)</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    {</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>      <span class="comment">// do not show non allocated particles</span></div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>      <span class="keywordflow">if</span> (not isAllocated[i])</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>      particleCount += 1;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    }</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordflow">return</span> particleCount;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>  }</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#a71e5bac1b3d6d2aae2764ef95b0c721e">  223</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a71e5bac1b3d6d2aae2764ef95b0c721e">is_position_taken</a>(<span class="keyword">const</span> int16_t pos)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> isOccupiedSpaces[pos]; }</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno"><a class="line" href="classlampda_1_1modes_1_1ParticleSystem.html#a3691360ca656d4e01cdc7e42282cf997">  230</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a3691360ca656d4e01cdc7e42282cf997">spawn_particule</a>(<span class="keyword">const</span> <span class="keywordtype">size_t</span> index, <span class="keyword">const</span> std::function&lt;int16_t(<span class="keywordtype">size_t</span>)&gt;&amp; positionGeneratorFunction)</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>  {</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    int16_t pos = positionGeneratorFunction(index);</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="keywordtype">int</span> maxTries = 3;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="keywordflow">while</span> (<a class="code hl_function" href="classlampda_1_1modes_1_1ParticleSystem.html#a71e5bac1b3d6d2aae2764ef95b0c721e">ParticleSystem::is_position_taken</a>(pos) and maxTries &gt; 0)</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    {</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>      pos = positionGeneratorFunction(index);</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>      maxTries--;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    }</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="comment">// generate start position from user function</span></div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; helixCoordinates = <a class="code hl_function" href="namespacelampda_1_1modes.html#acd3f7ec1d07f32efcb1086658d893d66">modes::strip_to_helix_unconstraint</a>(pos);</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    particules[index] = <a class="code hl_struct" href="structlampda_1_1modes_1_1Particle.html">Particle</a>(<a class="code hl_struct" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> {helixCoordinates.<a class="code hl_variable" href="structlampda_1_1utils_1_1vec2d.html#ad16e6423ebb39f51b5b0260bb977fba6">x</a>, helixCoordinates.y, helixCoordinates.z});</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    isAllocated[index] = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    isOccupiedSpaces[pos] = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>  }</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span> </div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> uint16_t maxParticuleCount = 512; </div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>  <a class="code hl_struct" href="structlampda_1_1modes_1_1Particle.html">Particle</a> particules[maxParticuleCount];            </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>  <a class="code hl_class" href="classlampda_1_1common_1_1BitSet.html">common::BitSet&lt;maxParticuleCount&gt;</a> isAllocated;     </div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>  <a class="code hl_class" href="classlampda_1_1common_1_1BitSet.html">common::BitSet&lt;LED_COUNT&gt;</a> isOccupiedSpaces;        </div>
 <div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>  std::set&lt;int16_t&gt; occupiedSpacesSet; </div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>  uint16_t particuleCount;</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>};</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>  uint16_t particuleCount;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>};</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span> </div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>} <span class="comment">// namespace lampda::modes</span></div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>} <span class="comment">// namespace lampda::modes</span></div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="abitset_8h_html"><div class="ttname"><a href="bitset_8h.html">bitset.h</a></div><div class="ttdoc">Define a compact bitset class for compile-time sized bit arrays.</div></div>
+<div class="ttc" id="aclasslampda_1_1common_1_1BitSet_html"><div class="ttname"><a href="classlampda_1_1common_1_1BitSet.html">lampda::common::BitSet</a></div><div class="ttdoc">A compact, zero-allocation bitset for compile-time sized bit arrays.</div><div class="ttdef"><b>Definition:</b> bitset.h:23</div></div>
+<div class="ttc" id="aclasslampda_1_1common_1_1BitSet_html_ac798a9583d1cdc0a84666f16c4f02aa8"><div class="ttname"><a href="classlampda_1_1common_1_1BitSet.html#ac798a9583d1cdc0a84666f16c4f02aa8">lampda::common::BitSet::reset</a></div><div class="ttdeci">void reset() noexcept</div><div class="ttdoc">Set all bits to 0.</div><div class="ttdef"><b>Definition:</b> bitset.h:74</div></div>
 <div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html">lampda::modes::ParticleSystem</a></div><div class="ttdoc">Define a particle system ALL PARTICLE SYSTEM SHARE THE SAME PÄRTICLE SUBSET.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:27</div></div>
-<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_a3691360ca656d4e01cdc7e42282cf997"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#a3691360ca656d4e01cdc7e42282cf997">lampda::modes::ParticleSystem::spawn_particule</a></div><div class="ttdeci">void spawn_particule(const size_t index, const std::function&lt; int16_t(size_t)&gt; &amp;positionGeneratorFunction)</div><div class="ttdoc">Spawn a particle.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:231</div></div>
-<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_a384058d94fc1f557b3169b5fe7f32d4a"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#a384058d94fc1f557b3169b5fe7f32d4a">lampda::modes::ParticleSystem::get_number_of_active</a></div><div class="ttdeci">uint16_t get_number_of_active() const</div><div class="ttdoc">Return the number of active particles.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:209</div></div>
-<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_a67fb068c9392c475a541b0d7d0bdbeb3"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#a67fb068c9392c475a541b0d7d0bdbeb3">lampda::modes::ParticleSystem::show</a></div><div class="ttdeci">uint16_t show(const std::function&lt; uint32_t(int16_t, const Particle &amp;)&gt; sample_color, LampTy &amp;lamp)</div><div class="ttdoc">Display this particle system.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:190</div></div>
-<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_a71e5bac1b3d6d2aae2764ef95b0c721e"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#a71e5bac1b3d6d2aae2764ef95b0c721e">lampda::modes::ParticleSystem::is_position_taken</a></div><div class="ttdeci">bool is_position_taken(const int16_t pos) const</div><div class="ttdoc">Return True if the position is already occupied.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:224</div></div>
-<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_a81a51ec20f7c7b4de2fbb9cf85c4d1ae"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#a81a51ec20f7c7b4de2fbb9cf85c4d1ae">lampda::modes::ParticleSystem::iterate_no_collisions</a></div><div class="ttdeci">void iterate_no_collisions(const utils::vec3d &amp;accelerationCartesian, const float deltaTime_s, const bool shouldContrain=true)</div><div class="ttdoc">Advance the particle simulation, ignoring collisions.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:93</div></div>
-<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_ab84dc076dfe71d77be2c67ff10660a00"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#ab84dc076dfe71d77be2c67ff10660a00">lampda::modes::ParticleSystem::set_max_particle_count</a></div><div class="ttdeci">void set_max_particle_count(const uint16_t _particleCount)</div><div class="ttdoc">Call when you want to change the particle count of the simulation Can be called once when starting th...</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:47</div></div>
-<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_abc4af1ddffa8cdc346e0274940bb2eb2"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#abc4af1ddffa8cdc346e0274940bb2eb2">lampda::modes::ParticleSystem::depop_particules</a></div><div class="ttdeci">uint16_t depop_particules(const std::function&lt; bool(const Particle &amp;)&gt; &amp;shouldDepopFunction)</div><div class="ttdoc">Filter particles depending on condition.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:162</div></div>
-<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_ac0b606e214f678bcdf9783e9f452e2cf"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#ac0b606e214f678bcdf9783e9f452e2cf">lampda::modes::ParticleSystem::init_deferred_particules</a></div><div class="ttdeci">void init_deferred_particules(uint8_t maxParticlesToPop, const std::function&lt; int16_t(size_t)&gt; &amp;positionGeneratorFunction)</div><div class="ttdoc">Init the particles from a initialization function, in a timed defered way.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:72</div></div>
-<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_ad1354fc64f4ccd364c0f9bcbfb929a82"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#ad1354fc64f4ccd364c0f9bcbfb929a82">lampda::modes::ParticleSystem::init_particules</a></div><div class="ttdeci">void init_particules(const std::function&lt; int16_t(size_t)&gt; &amp;positionGeneratorFunction)</div><div class="ttdoc">Init the particles from a initialization function.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:57</div></div>
+<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_a3691360ca656d4e01cdc7e42282cf997"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#a3691360ca656d4e01cdc7e42282cf997">lampda::modes::ParticleSystem::spawn_particule</a></div><div class="ttdeci">void spawn_particule(const size_t index, const std::function&lt; int16_t(size_t)&gt; &amp;positionGeneratorFunction)</div><div class="ttdoc">Spawn a particle.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:230</div></div>
+<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_a384058d94fc1f557b3169b5fe7f32d4a"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#a384058d94fc1f557b3169b5fe7f32d4a">lampda::modes::ParticleSystem::get_number_of_active</a></div><div class="ttdeci">uint16_t get_number_of_active() const</div><div class="ttdoc">Return the number of active particles.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:208</div></div>
+<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_a4475680e9cab8b3fa4f313e22fd690b7"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#a4475680e9cab8b3fa4f313e22fd690b7">lampda::modes::ParticleSystem::init_deferred_particules</a></div><div class="ttdeci">bool init_deferred_particules(uint8_t maxParticlesToPop, const std::function&lt; int16_t(size_t)&gt; &amp;positionGeneratorFunction)</div><div class="ttdoc">Init the particles from a initialization function, in a timed defered way.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:69</div></div>
+<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_a67fb068c9392c475a541b0d7d0bdbeb3"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#a67fb068c9392c475a541b0d7d0bdbeb3">lampda::modes::ParticleSystem::show</a></div><div class="ttdeci">uint16_t show(const std::function&lt; uint32_t(int16_t, const Particle &amp;)&gt; sample_color, LampTy &amp;lamp)</div><div class="ttdoc">Display this particle system.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:189</div></div>
+<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_a71e5bac1b3d6d2aae2764ef95b0c721e"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#a71e5bac1b3d6d2aae2764ef95b0c721e">lampda::modes::ParticleSystem::is_position_taken</a></div><div class="ttdeci">bool is_position_taken(const int16_t pos) const</div><div class="ttdoc">Return True if the position is already occupied.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:223</div></div>
+<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_a81a51ec20f7c7b4de2fbb9cf85c4d1ae"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#a81a51ec20f7c7b4de2fbb9cf85c4d1ae">lampda::modes::ParticleSystem::iterate_no_collisions</a></div><div class="ttdeci">void iterate_no_collisions(const utils::vec3d &amp;accelerationCartesian, const float deltaTime_s, const bool shouldContrain=true)</div><div class="ttdoc">Advance the particle simulation, ignoring collisions.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:92</div></div>
+<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_ab84dc076dfe71d77be2c67ff10660a00"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#ab84dc076dfe71d77be2c67ff10660a00">lampda::modes::ParticleSystem::set_max_particle_count</a></div><div class="ttdeci">void set_max_particle_count(const uint16_t _particleCount)</div><div class="ttdoc">Call when you want to change the particle count of the simulation Can be called once when starting th...</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:44</div></div>
+<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_abc4af1ddffa8cdc346e0274940bb2eb2"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#abc4af1ddffa8cdc346e0274940bb2eb2">lampda::modes::ParticleSystem::depop_particules</a></div><div class="ttdeci">uint16_t depop_particules(const std::function&lt; bool(const Particle &amp;)&gt; &amp;shouldDepopFunction)</div><div class="ttdoc">Filter particles depending on condition.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:161</div></div>
+<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_ad1354fc64f4ccd364c0f9bcbfb929a82"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#ad1354fc64f4ccd364c0f9bcbfb929a82">lampda::modes::ParticleSystem::init_particules</a></div><div class="ttdeci">void init_particules(const std::function&lt; int16_t(size_t)&gt; &amp;positionGeneratorFunction)</div><div class="ttdoc">Init the particles from a initialization function.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:54</div></div>
 <div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_ae30d1973a1c67cc70977feffb6959068"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#ae30d1973a1c67cc70977feffb6959068">lampda::modes::ParticleSystem::reset</a></div><div class="ttdeci">void reset()</div><div class="ttdoc">reset system to zero count</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:34</div></div>
-<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_afc872bfc33c23e6732d1b8465884e3af"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#afc872bfc33c23e6732d1b8465884e3af">lampda::modes::ParticleSystem::iterate_with_collisions</a></div><div class="ttdeci">void iterate_with_collisions(const utils::vec3d &amp;accelerationCartesian, const float deltaTime_s, const bool shouldContrain=true)</div><div class="ttdoc">Advance the particle simulation, taking collisions in account.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:115</div></div>
+<div class="ttc" id="aclasslampda_1_1modes_1_1ParticleSystem_html_afc872bfc33c23e6732d1b8465884e3af"><div class="ttname"><a href="classlampda_1_1modes_1_1ParticleSystem.html#afc872bfc33c23e6732d1b8465884e3af">lampda::modes::ParticleSystem::iterate_with_collisions</a></div><div class="ttdeci">void iterate_with_collisions(const utils::vec3d &amp;accelerationCartesian, const float deltaTime_s, const bool shouldContrain=true)</div><div class="ttdoc">Advance the particle simulation, taking collisions in account.</div><div class="ttdef"><b>Definition:</b> particle_system.hpp:114</div></div>
 <div class="ttc" id="alamp__type_8hpp_html"><div class="ttname"><a href="lamp__type_8hpp.html">lamp_type.hpp</a></div><div class="ttdoc">Define the main led strip interaction object.</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_html"><div class="ttname"><a href="namespacelampda_1_1modes.html">lampda::modes</a></div><div class="ttdoc">Contains basic interface types to implement custom user modes.</div><div class="ttdef"><b>Definition:</b> control_fixed_modes.hpp:12</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_html_a004b9060d738add7848e7e12f6a534a0"><div class="ttname"><a href="namespacelampda_1_1modes.html#a004b9060d738add7848e7e12f6a534a0">lampda::modes::LampTy</a></div><div class="ttdeci">hardware::LampTy LampTy</div><div class="ttdoc">Define a particle in cylindrical space, and movement equations on the cylinder surface.</div><div class="ttdef"><b>Definition:</b> particle.hpp:22</div></div>

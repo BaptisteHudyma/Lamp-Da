@@ -114,24 +114,21 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>yield_this_thread</b>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>suspend_this_thread</b> ()</td></tr>
 <tr class="memdesc:a1363dd23e2bac25d2cc25784b451ab88"><td class="mdescLeft">&#160;</td><td class="mdescRight">threads can only suspend itself <br /></td></tr>
 <tr class="separator:a1363dd23e2bac25d2cc25784b451ab88"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04920d9c7dfb6d067a1e25810fb70df9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html#a04920d9c7dfb6d067a1e25810fb70df9">suspend_all_threads</a> ()</td></tr>
-<tr class="memdesc:a04920d9c7dfb6d067a1e25810fb70df9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Suspend all threads.  <br /></td></tr>
-<tr class="separator:a04920d9c7dfb6d067a1e25810fb70df9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e3262b6319cabb9516eecb66103f40f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html#a3e3262b6319cabb9516eecb66103f40f">is_all_suspended</a> ()</td></tr>
-<tr class="memdesc:a3e3262b6319cabb9516eecb66103f40f"><td class="mdescLeft">&#160;</td><td class="mdescRight">check that all threads are suspended (mandatory for sleep mode)  <br /></td></tr>
-<tr class="separator:a3e3262b6319cabb9516eecb66103f40f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa22c06ddf285c0ff2561c66b40461a3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html#aa22c06ddf285c0ff2561c66b40461a3f">resume_thread</a> (const uint32_t taskName)</td></tr>
 <tr class="memdesc:aa22c06ddf285c0ff2561c66b40461a3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">resume a target thread  <br /></td></tr>
 <tr class="separator:aa22c06ddf285c0ff2561c66b40461a3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2c1c1b0c76608421b6202873dbe76d2"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html#ac2c1c1b0c76608421b6202873dbe76d2">get_usage_percent</a> (const uint32_t taskName)</td></tr>
+<tr class="memdesc:ac2c1c1b0c76608421b6202873dbe76d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the stack usage of this task, in percent.  <br /></td></tr>
+<tr class="separator:ac2c1c1b0c76608421b6202873dbe76d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0edf8017c27420c069c5badb329fa835"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html#a0edf8017c27420c069c5badb329fa835">notify_thread</a> (const uint32_t taskName, int wakeUpEvent)</td></tr>
 <tr class="memdesc:a0edf8017c27420c069c5badb329fa835"><td class="mdescLeft">&#160;</td><td class="mdescRight">notify a thread to resume  <br /></td></tr>
 <tr class="separator:a0edf8017c27420c069c5badb329fa835"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29876145a786ba3ce068594d0256beb5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html#a29876145a786ba3ce068594d0256beb5">wait_notification</a> (const int timeout_ms)</td></tr>
 <tr class="memdesc:a29876145a786ba3ce068594d0256beb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">block this thread until a timeout or notification is received  <br /></td></tr>
 <tr class="separator:a29876145a786ba3ce068594d0256beb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79b2257bffc2ac7d78c47aff260fbcba"><td class="memItemLeft" align="right" valign="top"><a id="a79b2257bffc2ac7d78c47aff260fbcba" name="a79b2257bffc2ac7d78c47aff260fbcba"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>get_thread_debug</b> (char *textBuff)</td></tr>
-<tr class="separator:a79b2257bffc2ac7d78c47aff260fbcba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e1b7b7224a777090c0bcd4df43ac640"><td class="memItemLeft" align="right" valign="top"><a id="a4e1b7b7224a777090c0bcd4df43ac640" name="a4e1b7b7224a777090c0bcd4df43ac640"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>display_thread_debug</b> ()</td></tr>
+<tr class="separator:a4e1b7b7224a777090c0bcd4df43ac640"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3539180ee70e6de7fe67b7afc5f9d648"><td class="memItemLeft" align="right" valign="top"><a id="a3539180ee70e6de7fe67b7afc5f9d648" name="a3539180ee70e6de7fe67b7afc5f9d648"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>shutdown</b> ()</td></tr>
 <tr class="memdesc:a3539180ee70e6de7fe67b7afc5f9d648"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shutdown the task driver cleanly. <br /></td></tr>
@@ -178,23 +175,24 @@ const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>print_taskN
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Define low level thread behavior and handling. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a3e3262b6319cabb9516eecb66103f40f" name="a3e3262b6319cabb9516eecb66103f40f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3e3262b6319cabb9516eecb66103f40f">&#9670;&#160;</a></span>is_all_suspended()</h2>
+<a id="ac2c1c1b0c76608421b6202873dbe76d2" name="ac2c1c1b0c76608421b6202873dbe76d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2c1c1b0c76608421b6202873dbe76d2">&#9670;&#160;</a></span>get_usage_percent()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int lampda::bsp::threads::is_all_suspended </td>
+          <td class="memname">uint16_t lampda::bsp::threads::get_usage_percent </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>taskName</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>check that all threads are suspended (mandatory for sleep mode) </p>
-<dl class="section return"><dt>Returns</dt><dd>0 for success, any other for failure </dd></dl>
+<p>Get the stack usage of this task, in percent. </p>
+<dl class="section return"><dt>Returns</dt><dd>usage, in [0; 100] </dd></dl>
 
 </div>
 </div>
@@ -360,26 +358,6 @@ const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>print_taskN
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="a04920d9c7dfb6d067a1e25810fb70df9" name="a04920d9c7dfb6d067a1e25810fb70df9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a04920d9c7dfb6d067a1e25810fb70df9">&#9670;&#160;</a></span>suspend_all_threads()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void lampda::bsp::threads::suspend_all_threads </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Suspend all threads. </p>
-<dl class="section warning"><dt>Warning</dt><dd>: Can deadlock the system if called from a subthread. </dd></dl>
 
 </div>
 </div>

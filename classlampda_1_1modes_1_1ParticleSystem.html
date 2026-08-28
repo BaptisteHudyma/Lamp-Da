@@ -100,9 +100,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_max_particle_coun
 <tr class="memitem:ad1354fc64f4ccd364c0f9bcbfb929a82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#ad1354fc64f4ccd364c0f9bcbfb929a82">init_particules</a> (const std::function&lt; int16_t(size_t)&gt; &amp;positionGeneratorFunction)</td></tr>
 <tr class="memdesc:ad1354fc64f4ccd364c0f9bcbfb929a82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Init the particles from a initialization function.  <br /></td></tr>
 <tr class="separator:ad1354fc64f4ccd364c0f9bcbfb929a82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0b606e214f678bcdf9783e9f452e2cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#ac0b606e214f678bcdf9783e9f452e2cf">init_deferred_particules</a> (uint8_t maxParticlesToPop, const std::function&lt; int16_t(size_t)&gt; &amp;positionGeneratorFunction)</td></tr>
-<tr class="memdesc:ac0b606e214f678bcdf9783e9f452e2cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Init the particles from a initialization function, in a timed defered way.  <br /></td></tr>
-<tr class="separator:ac0b606e214f678bcdf9783e9f452e2cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4475680e9cab8b3fa4f313e22fd690b7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#a4475680e9cab8b3fa4f313e22fd690b7">init_deferred_particules</a> (uint8_t maxParticlesToPop, const std::function&lt; int16_t(size_t)&gt; &amp;positionGeneratorFunction)</td></tr>
+<tr class="memdesc:a4475680e9cab8b3fa4f313e22fd690b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Init the particles from a initialization function, in a timed defered way.  <br /></td></tr>
+<tr class="separator:a4475680e9cab8b3fa4f313e22fd690b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81a51ec20f7c7b4de2fbb9cf85c4d1ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#a81a51ec20f7c7b4de2fbb9cf85c4d1ae">iterate_no_collisions</a> (const <a class="el" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> &amp;accelerationCartesian, const float deltaTime_s, const bool shouldContrain=true)</td></tr>
 <tr class="memdesc:a81a51ec20f7c7b4de2fbb9cf85c4d1ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the particle simulation, ignoring collisions.  <br /></td></tr>
 <tr class="separator:a81a51ec20f7c7b4de2fbb9cf85c4d1ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -168,8 +168,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_position_taken</b>
 
 </div>
 </div>
-<a id="ac0b606e214f678bcdf9783e9f452e2cf" name="ac0b606e214f678bcdf9783e9f452e2cf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac0b606e214f678bcdf9783e9f452e2cf">&#9670;&#160;</a></span>init_deferred_particules()</h2>
+<a id="a4475680e9cab8b3fa4f313e22fd690b7" name="a4475680e9cab8b3fa4f313e22fd690b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4475680e9cab8b3fa4f313e22fd690b7">&#9670;&#160;</a></span>init_deferred_particules()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -178,7 +178,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_position_taken</b>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void lampda::modes::ParticleSystem::init_deferred_particules </td>
+          <td class="memname">bool lampda::modes::ParticleSystem::init_deferred_particules </td>
           <td>(</td>
           <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>maxParticlesToPop</em>, </td>

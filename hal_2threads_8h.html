@@ -110,9 +110,9 @@ typedef void *&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a2c6413d0c4c2af1d346f06625ecf63cf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#a2c6413d0c4c2af1d346f06625ecf63cf">lampda::hal::threads::HAL_create_thread</a> (TaskHandle_t *const handle, taskfunc_t task, char const  *const name, const int priority, const int stackSize, const int startSuspended)</td></tr>
-<tr class="memdesc:a2c6413d0c4c2af1d346f06625ecf63cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a thread from the given function and return the associated handle.  <br /></td></tr>
-<tr class="separator:a2c6413d0c4c2af1d346f06625ecf63cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f470e44ea8187bfdd477a57307e07a3"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#a4f470e44ea8187bfdd477a57307e07a3">lampda::hal::threads::HAL_create_thread</a> (TaskHandle_t *const handle, taskfunc_t task, char const  *const name, const int priority, const int stackSize, const int startSuspended)</td></tr>
+<tr class="memdesc:a4f470e44ea8187bfdd477a57307e07a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a thread from the given function and return the associated handle.  <br /></td></tr>
+<tr class="separator:a4f470e44ea8187bfdd477a57307e07a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87d32ed0344bfae3b5a3165c87918738"><td class="memItemLeft" align="right" valign="top"><a id="a87d32ed0344bfae3b5a3165c87918738" name="a87d32ed0344bfae3b5a3165c87918738"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::HAL_yield</b> ()</td></tr>
 <tr class="memdesc:a87d32ed0344bfae3b5a3165c87918738"><td class="mdescLeft">&#160;</td><td class="mdescRight">Yield this thread. <br /></td></tr>
@@ -140,6 +140,10 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::HAL_resume_thread</b> (TaskHandle_t handle)</td></tr>
 <tr class="memdesc:a889b03edc81b2b1acd15fe495fd933f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resume a suspended thread. <br /></td></tr>
 <tr class="separator:a889b03edc81b2b1acd15fe495fd933f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd7d2b35923ccbdf36021f8284cedf8a"><td class="memItemLeft" align="right" valign="top"><a id="abd7d2b35923ccbdf36021f8284cedf8a" name="abd7d2b35923ccbdf36021f8284cedf8a"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::HAL_get_task_high_water_mark_byte</b> (TaskHandle_t handle)</td></tr>
+<tr class="memdesc:abd7d2b35923ccbdf36021f8284cedf8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a task stack high water mark in bytes. <br /></td></tr>
+<tr class="separator:abd7d2b35923ccbdf36021f8284cedf8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81138cf19645c11f16387a0a0989828e"><td class="memItemLeft" align="right" valign="top"><a id="a81138cf19645c11f16387a0a0989828e" name="a81138cf19645c11f16387a0a0989828e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::HAL_get_debug_thread_text</b> (char *textBuff)</td></tr>
 <tr class="memdesc:a81138cf19645c11f16387a0a0989828e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a buffer, return a buffer debug text. <br /></td></tr>
