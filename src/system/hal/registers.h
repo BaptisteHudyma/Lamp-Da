@@ -59,6 +59,9 @@ extern float read_CPU_temperature_degreesC();
  */
 extern void go_to_sleep(const int wakeUpPin, const bool wakeUpOnRelease);
 
+/// SRAM RAM write protection
+extern void sync_memory_protection();
+
 } // namespace registers
 } // namespace hal
 } // namespace lampda

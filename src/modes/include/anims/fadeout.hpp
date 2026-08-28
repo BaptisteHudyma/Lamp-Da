@@ -26,7 +26,11 @@ template<uint8_t MaskBuffId, uint8_t minMaskValue = 0> struct GravityDissolve
     particuleSystem.reset();
     particuleSystem.set_max_particle_count(20);
 
-    latestProgress = -1;
+    latestProgress = -1.0;
+    latestProgressTime = 0;
+    particlesToDepopPerIteration = 0.0;
+    depopRate = 0.0;
+    particlesDropped = 0;
   }
 
   void loop(auto& ctx, uint32_t color)
@@ -49,7 +53,7 @@ template<uint8_t MaskBuffId, uint8_t minMaskValue = 0> struct GravityDissolve
       depopRate = fractional;
     }
 
-    // no updats if no particles
+    // no updates if no particles
     if (particuleSystem.get_number_of_active() > 0)
     {
       // depop particles out of bounds
@@ -72,6 +76,8 @@ template<uint8_t MaskBuffId, uint8_t minMaskValue = 0> struct GravityDissolve
   void update_depop_rate(auto& ctx, const float progress)
   {
     const float updateDuration = static_cast<float>((ctx.lamp.now - latestProgressTime) / 1000.0);
+    if (updateDuration <= 0.0f)
+      return;
     const float progressPerSecond = (progress - latestProgress) / updateDuration;
 
     bool isValidCall = latestProgress >= 0 and updateDuration > 0;
@@ -124,15 +130,20 @@ protected:
     // progress goes from 0 to 1
     // lamp turns off when 1 is reached
     auto& buffer = ctx.lamp.template getTempBuffer<MaskBuffId>();
+    const auto bufferSize = ctx.lamp.ledCount;
 
     // check lines by lines, keeping the first one with pixels left
     for (int16_t y = ctx.lamp.maxHeight; y >= 0; y--)
     {
       // search for the first line with pixels sets, from bottom to top
       uint8_t pixelSetCount = 0;
-      for (size_t x = 0; x <= ctx.lamp.maxWidth; x++)
+      for (uint16_t x = 0; x <= ctx.lamp.maxWidth; x++)
       {
-        const bool isPixelSet = buffer[modes::to_strip(x, y)] > minMaskValue;
+        const auto buffIndex = modes::to_strip(x, y);
+        if (buffIndex < 0 or buffIndex >= bufferSize)
+          continue;
+
+        const bool isPixelSet = buffer[buffIndex] > minMaskValue;
         // check that at leat one pixel is still set
         if (isPixelSet)
           pixelSetCount += 1;
@@ -143,9 +154,12 @@ protected:
       {
         // get a random led index in this
         uint8_t selectedLed = lmpd_map<uint8_t>(rand(), 0, RAND_MAX, 0, pixelSetCount);
-        for (size_t x = 0; x <= ctx.lamp.maxWidth; x++)
+        for (uint16_t x = 0; x <= ctx.lamp.maxWidth; x++)
         {
-          const auto& pixelId = modes::to_strip(x, y);
+          const auto pixelId = modes::to_strip(x, y);
+          if (pixelId < 0 or pixelId >= bufferSize)
+            continue;
+
           const bool isPixelSet = buffer[pixelId] > minMaskValue;
           if (isPixelSet)
           {
@@ -154,12 +168,13 @@ protected:
               // drop this pixel
               buffer[pixelId] = minMaskValue;
               particlesDropped += 1;
+              isDepoped = true;
+
               // spawn a new particle
-              particuleSystem.init_deferred_particules(1, [pixelId](size_t) {
+              const bool isCreated = particuleSystem.init_deferred_particules(1, [pixelId](size_t) {
                 return pixelId;
               });
-
-              isDepoped = true;
+              // Particle spawn can fail, it's only visual so ok
               break;
             }
             selectedLed -= 1;

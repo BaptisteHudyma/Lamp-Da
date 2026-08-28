@@ -672,71 +672,55 @@ void handle_post_output_light_state()
 
 void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shouldSaveSystemParameters)
 {
+  statistics::signal_output_off();
+
   /**
    * Software shutdown phase
    */
 
-  hal::bluetooth::stop_bluetooth_advertising();
-  hal::bluetooth::shutdown();
+  // Phase 1: bluetooth & com shutdown
+  component::button::shutdown();                ///< prevent more button commands
+  hal::bluetooth::stop_bluetooth_advertising(); ///< stop bluetooth
+  hal::bluetooth::shutdown();                   ///< deactivate bluetooth
+  hal::delay_ms(20);
 
-  // detach all interrupts, to prevent interruption of shutdown
-  hal::gpio::DigitalPin::detach_all();
-  bsp::threads::yield_this_thread();
+  // Phase 2: peripheral shutdown
+  component::microphone::disable();
+  component::imu::shutdown();
+  component::outputPower::write_voltage(0); // power down
+  hal::delay_ms(10);
 
-  // shutdown all external power
+  // Phase 3: power / filesystem
   if (not logic::power::go_to_shutdown())
   {
     // TODO: error ?
   }
-
-  uint8_t maxChecks = 100;
-  while (bsp::threads::is_all_suspended() != 0 and maxChecks > 0)
-  {
-    maxChecks--;
-    // block other threads
-    bsp::threads::suspend_all_threads();
-    bsp::threads::yield_this_thread();
-    hal::delay_ms(5);
-  }
-  if (maxChecks == 0)
-  {
-    // some task have refused to power off !!
-    // TODO : alert ?
-  }
-
-  // deactivate strip power
-  component::outputPower::write_voltage(0); // power down
-  hal::delay_ms(10);
-
-  // disable bluetooth, imu and microphone
-  component::microphone::disable();
-  component::imu::shutdown();
-
-  statistics::signal_output_off();
-
   // save the current config to a file
-  // (takes some time so call it when the lamp appear to be shutdown already)
   write_parameters(shouldSaveUserParameters, shouldSaveSystemParameters);
-
-  /**
-   * Hardware shutdown phase
-   */
-  // shutdown all threads
-  bsp::threads::shutdown();
-
-  // unmount filesystem
+  hal::delay_ms(20);
   component::fileSystem::shutdown();
 
-  // stop i2c interfaces
+  // Phase 4: Stop I2C
   for (uint8_t i = 0; i < hal::registers::get_wire_interface_count(); ++i)
   {
     hal::i2c::i2c_turn_off(i);
   }
+  hal::delay_ms(10);
+
+  // Phase 5: disable interrupts
+  hal::gpio::DigitalPin::detach_all();
   hal::delay_ms(5);
 
+  // Phase 6: Shutdown threads & task stack
+  bsp::threads::shutdown();
+  hal::delay_ms(10);
+
+  // Phase 7: GPIO deactivation
+  // deactivate indicator
+  bsp::indicator::set_color(utils::ColorSpace::BLACK);
+  hal::delay_ms(1);
   // disable peripherals
   hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableExternalPeripherals).set_high(false);
-  // disable gates
 #ifdef IS_HARDWARE_1_0
   // disable pullup in sleep mode (in V>1.0, done electrically)
   hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Input_isChargeOk)
@@ -744,15 +728,17 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
   hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Signal_BatteryBalancerAlert)
           .set_pin_mode(hal::gpio::DigitalPin::Mode::kInput);
 #endif
+  // disable gates
   hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableVbusGate).set_high(false);
   hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableOutputGate).set_high(false);
-
-  // deactivate indicators
-  bsp::indicator::set_color(utils::ColorSpace::BLACK);
   hal::gpio::DigitalPin::deactivate_gpios(); // physically disconnect gpios
-  hal::delay_ms(1);
+  hal::delay_ms(10);
 
-  // If buttpon is still pressed at this point, we will assume it is stuck pressed and signal a wakeup on release.
+  // Phase 8 : Sleep with wakeup config
+
+  hal::registers::sync_memory_protection();
+
+  // If button is still pressed at this point, we will assume it is stuck pressed and signal a wakeup on release.
   const bool isButtonPressed = component::button::get_button_state().isPressed;
   // power down nrf52.
   // on wake up, it'll start back from the setup phase

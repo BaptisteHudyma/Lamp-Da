@@ -7,9 +7,9 @@
 
 #include <cstdint>
 #include <functional>
-#include <set>
 
 #include "src/system/ext/random8.h"
+#include "src/system/common/bitset.h"
 
 #include "src/modes/include/hardware/lamp_type.hpp"
 
@@ -33,11 +33,8 @@ public:
    */
   void reset()
   {
-    occupiedSpacesSet.clear();
-    for (size_t i = 0; i < ParticleSystem::maxParticuleCount; ++i)
-    {
-      isAllocated[i] = false;
-    }
+    isOccupiedSpaces.reset();
+    isAllocated.reset();
   }
 
   /**
@@ -56,10 +53,10 @@ public:
    */
   void init_particules(const std::function<int16_t(size_t)>& positionGeneratorFunction)
   {
-    occupiedSpacesSet.clear();
+    isOccupiedSpaces.reset();
+    isAllocated.reset();
     for (size_t i = 0; i < particuleCount; ++i)
     {
-      isAllocated[i] = false;
       spawn_particule(i, positionGeneratorFunction);
     }
   }
@@ -69,7 +66,7 @@ public:
    * \param[in] maxParticlesToPop Maximum particles to spawn at this call
    * \param[in] positionGeneratorFunction Function that takes an index and return a led strip index
    */
-  void init_deferred_particules(uint8_t maxParticlesToPop,
+  bool init_deferred_particules(uint8_t maxParticlesToPop,
                                 const std::function<int16_t(size_t)>& positionGeneratorFunction)
   {
     for (size_t i = 0; i < particuleCount and maxParticlesToPop > 0; ++i)
@@ -82,6 +79,8 @@ public:
       spawn_particule(i, positionGeneratorFunction);
       maxParticlesToPop--;
     }
+    // still some uncreated particles
+    return maxParticlesToPop > 0;
   }
 
   /**
@@ -135,8 +134,8 @@ public:
         // check collision : no collision
         if (not is_position_taken(newLedIndex))
         {
-          occupiedSpacesSet.erase(ledIndex);
-          occupiedSpacesSet.insert(newLedIndex);
+          isOccupiedSpaces[ledIndex] = false;
+          isOccupiedSpaces[newLedIndex] = true;
         }
         // check collision : collision !!
         else
@@ -172,7 +171,7 @@ public:
       if (shouldDepopFunction(parti))
       {
         isAllocated[i] = false;
-        occupiedSpacesSet.erase(parti._savedLampIndex);
+        isOccupiedSpaces[parti._savedLampIndex] = false;
       }
       else
       {
@@ -221,7 +220,7 @@ public:
 
 protected:
   /// Return True if the position is already occupied
-  bool is_position_taken(const int16_t pos) const { return occupiedSpacesSet.find(pos) != occupiedSpacesSet.cend(); }
+  bool is_position_taken(const int16_t pos) const { return isOccupiedSpaces[pos]; }
 
   /**
    * \brief Spawn a particle
@@ -240,16 +239,15 @@ protected:
     // generate start position from user function
     const auto& helixCoordinates = modes::strip_to_helix_unconstraint(pos);
     particules[index] = Particle(utils::vec3d {helixCoordinates.x, helixCoordinates.y, helixCoordinates.z});
-    occupiedSpacesSet.insert(pos);
     isAllocated[index] = true;
+    isOccupiedSpaces[pos] = true;
   }
 
 private:
   static constexpr uint16_t maxParticuleCount = 512; ///< maximum particles allowed in a simulation
   Particle particules[maxParticuleCount];            ///< Array of all particles
-  bool isAllocated[maxParticuleCount];               ///< store the allocated particules flag
-
-  std::set<int16_t> occupiedSpacesSet; ///< store the occupied spaces
+  common::BitSet<maxParticuleCount> isAllocated;     ///< store the allocated particules flag
+  common::BitSet<LED_COUNT> isOccupiedSpaces;        ///< store the occupied spaces
 
   /// forced to be less than maxParticuleCount
   uint16_t particuleCount;

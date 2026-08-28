@@ -11,12 +11,14 @@ namespace lampda {
 namespace hal {
 namespace threads {
 
+volatile bool canRun = true;
+
 // loop task
 [[noreturn]] static void _redirect_task(void* arg)
 {
   SchedulerRTOS::taskfunc_t taskfunc = (SchedulerRTOS::taskfunc_t)arg;
 
-  while (true)
+  while (canRun)
   {
     taskfunc();
     yield();
@@ -29,19 +31,19 @@ namespace threads {
   SchedulerRTOS::taskfunc_t taskfunc = (SchedulerRTOS::taskfunc_t)arg;
 
   HAL_suspend();
-  while (true)
+  while (canRun)
   {
     taskfunc();
     yield();
   }
 }
 
-int HAL_create_thread(TaskHandle_t* const handle,
-                      taskfunc_t task,
-                      char const* const name,
-                      const int priority,
-                      const int stackSize,
-                      const int startSuspended)
+uint32_t HAL_create_thread(TaskHandle_t* const handle,
+                           taskfunc_t task,
+                           char const* const name,
+                           const int priority,
+                           const int stackSize,
+                           const int startSuspended)
 {
   uint32_t prio = TASK_PRIO_LOW;
   if (priority >= 2)
@@ -53,11 +55,12 @@ int HAL_create_thread(TaskHandle_t* const handle,
 
   auto& taskToUse = startSuspended == 0 ? _redirect_suspend_task : _redirect_task;
 
-  if (pdPASS == xTaskCreate(taskToUse, name, max<int>(configMINIMAL_STACK_SIZE, stackSize), (void*)task, prio, handle))
+  const uint16_t taskSize = max<int>(configMINIMAL_STACK_SIZE, stackSize);
+  if (pdPASS == xTaskCreate(taskToUse, name, taskSize, (void*)task, prio, handle))
   {
-    return 0;
+    return taskSize * sizeof(StackType_t);
   }
-  return 1;
+  return 0;
 }
 
 // Actions on this thread
@@ -106,19 +109,7 @@ void HAL_notify_thread(TaskHandle_t handle, int wakeUpEvent)
   }
 }
 
-void HAL_suspend_thread(TaskHandle_t handle)
-{
-  if (isInISR())
-  {
-    BaseType_t signal = pdFALSE;
-    vTaskNotifyGiveFromISR(handle, &signal);
-  }
-  else
-  {
-    xTaskNotifyGive(handle);
-  }
-  vTaskSuspend(handle);
-}
+void HAL_suspend_thread(TaskHandle_t handle) { vTaskSuspend(handle); }
 
 int HAL_is_suspended(TaskHandle_t handle)
 {
@@ -140,12 +131,15 @@ void HAL_resume_thread(TaskHandle_t handle)
   }
 }
 
+uint32_t HAL_get_task_high_water_mark_byte(TaskHandle_t handle)
+{
+  UBaseType_t hwm = uxTaskGetStackHighWaterMark(handle);
+  return hwm * sizeof(StackType_t);
+}
+
 void HAL_get_debug_thread_text(char* textBuff) { vTaskList(textBuff); }
 
-void HAL_shutdown()
-{
-  // nothing to do
-}
+void HAL_shutdown() { canRun = false; }
 
 } // namespace threads
 } // namespace hal

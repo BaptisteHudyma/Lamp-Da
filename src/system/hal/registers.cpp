@@ -143,6 +143,12 @@ void go_to_sleep(const int wakeUpPin, const bool wakeUpOnRelease)
   }
 }
 
+void sync_memory_protection()
+{
+  __DSB();
+  __ISB();
+}
+
 } // namespace registers
 } // namespace hal
 } // namespace lampda

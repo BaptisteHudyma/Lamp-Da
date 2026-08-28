@@ -17,7 +17,7 @@ namespace lampda {
 namespace logic {
 namespace sunset {
 
-uint32_t sunsetTimerEndTime_s = 0;
+volatile uint32_t sunsetTimerEndTime_s = 0;
 bool isAllowedToControlBrightness = true;
 
 /// Indicate if the sunset is set
@@ -84,38 +84,36 @@ void sunset_process_loop()
 
   if (not is_enabled())
   {
-    // sunset time not set, auto suspend
-    bsp::threads::suspend_this_thread();
+    return;
   }
-  else
+  // less than N minutes, start to decrease brightness
+  if (hal::time_s() + brightnessRampDownTime_s >= sunsetTimerEndTime_s)
   {
-    // less than N minutes, start to decrease brightness
-    if (hal::time_s() + brightnessRampDownTime_s >= sunsetTimerEndTime_s)
+    // signal the progress change
+    const float progress = signal_sunset_update();
+    if (progress >= 1.0)
     {
-      // signal the progress change
-      const float progress = signal_sunset_update();
-      if (progress >= 1.0)
-      {
-        logic::brightness::set_max_user_brightness(0);
-        logic::brightness::force_brightness_user_callback();
-        bsp::lampda_print("Shutdown with sunset timer");
-        logic::behavior::set_power_off();
-        cancel_timer();
-        return;
-      }
-      else
-      {
-        if (isAllowedToControlBrightness)
-        {
-          // new brightness to use
-          const brightness_t newBrightness =
-                  lmpd_constrain<float>(1.0 - progress, 0.0, 1.0) * logic::brightness::get_saved_brightness();
+      cancel_timer();
 
-          // slowly decrease brighntess
-          logic::brightness::set_max_user_brightness(newBrightness);
-          // force an update of the brightness, with user callback
-          logic::brightness::force_brightness_user_callback();
-        }
+      logic::brightness::set_max_user_brightness(0);
+      logic::brightness::force_brightness_user_callback();
+
+      bsp::lampda_print("Shutdown with sunset timer");
+      logic::behavior::set_power_off();
+      return;
+    }
+    else
+    {
+      if (isAllowedToControlBrightness)
+      {
+        // new brightness to use
+        const brightness_t newBrightness =
+                lmpd_constrain<float>(1.0 - progress, 0.0, 1.0) * logic::brightness::get_saved_brightness();
+
+        // slowly decrease brighntess
+        logic::brightness::set_max_user_brightness(newBrightness);
+        // force an update of the brightness, with user callback
+        logic::brightness::force_brightness_user_callback();
       }
     }
   }
@@ -124,7 +122,7 @@ void sunset_process_loop()
 void init()
 {
   // start in suspended mode
-  bsp::threads::start_suspended_thread(sunset_process_loop, bsp::threads::sunset_taskName, 0, 1024);
+  bsp::threads::start_suspended_thread(sunset_process_loop, bsp::threads::sunset_taskName, 0, 255);
 }
 
 void set_deadline(const uint32_t timeshutdown_s)
