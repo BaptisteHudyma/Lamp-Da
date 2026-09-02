@@ -639,9 +639,14 @@ constexpr Command _sys_commands_s[] = {
 
 /// special commands to interact with the low level system
 constexpr Command _act_commands_s[] = {
-        make_command_args("h", "", 0, common::cli::ParsedCommand::maxArgumentCount, "This page", handles::cmd_act_help),
+        make_command_args("h",
+                          "",
+                          0,
+                          common::cli::ParsedCommand::maxArgumentCount,
+                          "This page. Dangerous commands /!\\",
+                          handles::cmd_act_help),
         make_command("shutdown", "force shutdown the system", handles::cmd_shutdown),
-        make_command("buttonTogg", "change the button pin number for the next boot", handles::cmd_buttontoggle),
+        make_command("buttonTogg", "change the button gpio", handles::cmd_buttontoggle),
         make_command("format", "format the whole file system (dangerous)", handles::cmd_format),
         make_command("dfu", "clear this program from memory, enter update mode", handles::cmd_dfu),
 };
