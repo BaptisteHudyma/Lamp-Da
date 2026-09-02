@@ -194,15 +194,6 @@ bool system_start_button_hold_callback(const uint8_t consecutiveButtonCheck,
         }
         return false;
       }
-    case 4:
-      {
-        // 4+hold (2s): turn on, with bluetooth advertising
-        if (buttonHoldDuration > 2000)
-        {
-          hal::bluetooth::start_advertising();
-        }
-        return false;
-      }
     default:
       break;
   }
