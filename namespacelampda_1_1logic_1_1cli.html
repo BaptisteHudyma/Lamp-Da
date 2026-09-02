@@ -196,9 +196,14 @@ template&lt;size_t N&gt; </div>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">        make_command_args(<span class="stringliteral">&quot;h&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, 0, common::cli::ParsedCommand::maxArgumentCount, <span class="stringliteral">&quot;This page&quot;</span>, handles::cmd_act_help),</div>
+<div class="line">        make_command_args(<span class="stringliteral">&quot;h&quot;</span>,</div>
+<div class="line">                          <span class="stringliteral">&quot;&quot;</span>,</div>
+<div class="line">                          0,</div>
+<div class="line">                          common::cli::ParsedCommand::maxArgumentCount,</div>
+<div class="line">                          <span class="stringliteral">&quot;This page. Dangerous commands /!\\&quot;</span>,</div>
+<div class="line">                          handles::cmd_act_help),</div>
 <div class="line">        make_command(<span class="stringliteral">&quot;shutdown&quot;</span>, <span class="stringliteral">&quot;force shutdown the system&quot;</span>, handles::cmd_shutdown),</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;buttonTogg&quot;</span>, <span class="stringliteral">&quot;change the button pin number for the next boot&quot;</span>, handles::cmd_buttontoggle),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;buttonTogg&quot;</span>, <span class="stringliteral">&quot;change the button gpio&quot;</span>, handles::cmd_buttontoggle),</div>
 <div class="line">        make_command(<span class="stringliteral">&quot;format&quot;</span>, <span class="stringliteral">&quot;format the whole file system (dangerous)&quot;</span>, handles::cmd_format),</div>
 <div class="line">        make_command(<span class="stringliteral">&quot;dfu&quot;</span>, <span class="stringliteral">&quot;clear this program from memory, enter update mode&quot;</span>, handles::cmd_dfu),</div>
 <div class="line">}</div>

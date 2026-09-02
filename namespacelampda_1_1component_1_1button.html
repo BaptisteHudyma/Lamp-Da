@@ -101,10 +101,6 @@ hal::gpio::DigitalPin::GPIO&#160;</td><td class="memItemRight" valign="bottom"><
 int&#160;</td><td class="memItemRight" valign="bottom"><b>get_button_pin_RAW</b> ()</td></tr>
 <tr class="memdesc:a1583ed820050c7d90e2576999a02be32"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the button pin index in system. USE WITH CAUTION <br /></td></tr>
 <tr class="separator:a1583ed820050c7d90e2576999a02be32"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1bafc974fe36c5187a2e4cf2bfc7109e"><td class="memItemLeft" align="right" valign="top"><a id="a1bafc974fe36c5187a2e4cf2bfc7109e" name="a1bafc974fe36c5187a2e4cf2bfc7109e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_button_pin</b> (const hal::gpio::DigitalPin::GPIO buttonPin)</td></tr>
-<tr class="memdesc:a1bafc974fe36c5187a2e4cf2bfc7109e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only on system start, set the pin where the button is wired. <br /></td></tr>
-<tr class="separator:a1bafc974fe36c5187a2e4cf2bfc7109e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a550eb058a27b84a6919c363376f7b9b3"><td class="memItemLeft" align="right" valign="top"><a id="a550eb058a27b84a6919c363376f7b9b3" name="a550eb058a27b84a6919c363376f7b9b3"></a>
 <a class="el" href="structlampda_1_1component_1_1button_1_1ButtonStateTy.html">ButtonStateTy</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_button_state</b> ()</td></tr>
 <tr class="memdesc:a550eb058a27b84a6919c363376f7b9b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a copy of the raw internal button state. <br /></td></tr>
@@ -115,6 +111,14 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_button_pressed</b>
 <tr class="memitem:ad9c718f3e8154e89fa7954a014ceb968"><td class="memItemLeft" align="right" valign="top"><a id="ad9c718f3e8154e89fa7954a014ceb968" name="ad9c718f3e8154e89fa7954a014ceb968"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>button_state_interrupt</b> ()</td></tr>
 <tr class="separator:ad9c718f3e8154e89fa7954a014ceb968"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d0fc9b768ec3e1ee1d713bcc3b7f79d"><td class="memItemLeft" align="right" valign="top"><a id="a7d0fc9b768ec3e1ee1d713bcc3b7f79d" name="a7d0fc9b768ec3e1ee1d713bcc3b7f79d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>init_button_gpio</b> ()</td></tr>
+<tr class="memdesc:a7d0fc9b768ec3e1ee1d713bcc3b7f79d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Init the button gpio to the set _buttonPin. <br /></td></tr>
+<tr class="separator:a7d0fc9b768ec3e1ee1d713bcc3b7f79d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bafc974fe36c5187a2e4cf2bfc7109e"><td class="memItemLeft" align="right" valign="top"><a id="a1bafc974fe36c5187a2e4cf2bfc7109e" name="a1bafc974fe36c5187a2e4cf2bfc7109e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_button_pin</b> (const hal::gpio::DigitalPin::GPIO buttonPin)</td></tr>
+<tr class="memdesc:a1bafc974fe36c5187a2e4cf2bfc7109e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only on system start, set the pin where the button is wired. <br /></td></tr>
+<tr class="separator:a1bafc974fe36c5187a2e4cf2bfc7109e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5608596487b184f291ce833b83c78cbc"><td class="memItemLeft" align="right" valign="top"><a id="a5608596487b184f291ce833b83c78cbc" name="a5608596487b184f291ce833b83c78cbc"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>handle_events</b> ()</td></tr>
 <tr class="separator:a5608596487b184f291ce833b83c78cbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
