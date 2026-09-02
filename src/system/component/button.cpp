@@ -27,7 +27,6 @@ hal::gpio::DigitalPin _buttonGpio(_buttonPin);
 
 hal::gpio::DigitalPin::GPIO get_button_pin() { return _buttonPin; }
 int get_button_pin_RAW() { return _buttonGpio.pin(); }
-void set_button_pin(const hal::gpio::DigitalPin::GPIO buttonPin) { _buttonPin = buttonPin; }
 
 // button pressed states
 static ButtonStateTy buttonState = ButtonStateTy();
@@ -65,6 +64,25 @@ void button_state_interrupt()
 
   // update flag
   wasButtonPressedDetected = isbuttonStillpressed;
+}
+
+/// Init the button gpio to the set _buttonPin
+void init_button_gpio()
+{
+  _buttonGpio.detach_callbacks();
+  _buttonGpio.set(_buttonPin);
+  _buttonGpio.set_pin_mode(hal::gpio::DigitalPin::Mode::kInputPullUpSense);
+  _buttonGpio.attach_callback(button_state_interrupt, hal::gpio::DigitalPin::Interrupt::kChange);
+}
+
+void set_button_pin(const hal::gpio::DigitalPin::GPIO buttonPin)
+{
+  if (_buttonPin != buttonPin)
+  {
+    _buttonPin = buttonPin;
+    // reinit on the fly
+    init_button_gpio();
+  }
 }
 
 void handle_events()
@@ -166,9 +184,7 @@ void init(const bool isSystemStartedFromButton)
   buttonState.reset();
 
   // attach the button interrupt
-  _buttonGpio.set(_buttonPin);
-  _buttonGpio.set_pin_mode(hal::gpio::DigitalPin::Mode::kInputPullUpSense);
-  _buttonGpio.attach_callback(button_state_interrupt, hal::gpio::DigitalPin::Interrupt::kChange);
+  init_button_gpio();
 
   // prevent multiple clicks on start
   if (isSystemStartedFromButton and buttonState.nbClicksCounted == 0)

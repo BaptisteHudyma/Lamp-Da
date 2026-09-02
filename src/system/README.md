@@ -11,6 +11,7 @@
     - text_out.h: user text output
     - threads.h: Thread board support
 - common: Common general use and interfaces
+    - bitset.h: Array of bits/booleans, in static memory
     - cmd_parser.h: Parse a command to extract its parameters
     - curves.h: define custom curve and curve sampling functions
     - elk_decoder.h: Decode elk messages
