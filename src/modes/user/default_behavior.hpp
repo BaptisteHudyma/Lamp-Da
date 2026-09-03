@@ -12,6 +12,7 @@
 //
 
 #include "src/system/component/time_handling.h"
+#include "src/system/hal/bluetooth.h"
 
 #include <cstdint>
 namespace lampda::user {
@@ -104,6 +105,19 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
 {
   switch (clicks)
   {
+    case 1:
+      {
+        // 1+hold (2s): activate bluetooth advertising
+        // activate bluetooth !
+        auto manager = get_context();
+        if (not hal::bluetooth::is_activated() and
+            manager.overlay_animate_ramp(
+                    holdDuration, 2000, modes::colors::PaletteGradient<modes::colors::Blue, modes::colors::Blue>))
+        {
+          hal::bluetooth::start_advertising();
+        }
+        return true;
+      }
     case 5:
       {
         if (not isEndOfHoldEvent and holdDuration > 0)
