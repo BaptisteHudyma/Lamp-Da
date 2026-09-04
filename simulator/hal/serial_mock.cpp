@@ -177,7 +177,10 @@ namespace serial {
 void init()
 {
   simulator::get_line_async.start();
-  bsp::threads::start_thread(simulator::print_mock_loop, utils::hash("tin_l"), 0, 255);
+
+  static constexpr uint16_t threadBufferSize = 255;
+  static bsp::threads::TaskBuffer_t threadBuffer[threadBufferSize];
+  bsp::threads::start_thread(simulator::print_mock_loop, utils::hash("tin_l"), 0, threadBufferSize, threadBuffer);
 }
 
 bool is_activated()

@@ -72,7 +72,10 @@ void start_electrical_mock()
   mock_electrical::vbusVoltage = 0;
   mock_electrical::outputVoltage = 0;
 
-  lampda::bsp::threads::start_thread(elec_mock_loop, lampda::utils::hash("elec_mock"), 0, 255);
+  static constexpr uint16_t threadBufferSize = 255;
+  static lampda::bsp::threads::TaskBuffer_t threadBuffer[threadBufferSize];
+  lampda::bsp::threads::start_thread(
+          elec_mock_loop, lampda::utils::hash("elec_mock"), 0, threadBufferSize, threadBuffer);
 }
 
 void stop_electrical_mock() {}

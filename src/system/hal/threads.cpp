@@ -6,12 +6,17 @@
 #include "src/system/bsp/threads.h"
 
 #include <Arduino.h>
+#include <cstddef>
 
 namespace lampda {
 namespace hal {
 namespace threads {
 
 volatile bool canRun = true;
+
+/// store static references to a task
+static StaticTask_t staticTaskArray[MaxStaticTasks];
+inline static size_t currentStaticTaskIndex = 0;
 
 // loop task
 [[noreturn]] static void _redirect_task(void* arg)
@@ -38,13 +43,19 @@ volatile bool canRun = true;
   }
 }
 
-uint32_t HAL_create_thread(TaskHandle_t* const handle,
+uint32_t HAL_create_thread(TaskHandle_t* handle,
                            taskfunc_t task,
                            char const* const name,
                            const int priority,
                            const int stackSize,
+                           TaskBuffer_t* buffer,
                            const int startSuspended)
 {
+  if (currentStaticTaskIndex >= MaxStaticTasks)
+  {
+    return 0;
+  }
+
   uint32_t prio = TASK_PRIO_LOW;
   if (priority >= 2)
     prio = TASK_PRIO_HIGH;
@@ -55,10 +66,12 @@ uint32_t HAL_create_thread(TaskHandle_t* const handle,
 
   auto& taskToUse = startSuspended == 0 ? _redirect_suspend_task : _redirect_task;
 
-  const uint16_t taskSize = max<int>(configMINIMAL_STACK_SIZE, stackSize);
-  if (pdPASS == xTaskCreate(taskToUse, name, taskSize, (void*)task, prio, handle))
+  *handle = xTaskCreateStatic(
+          taskToUse, name, stackSize, (void*)task, prio, buffer, &(staticTaskArray[currentStaticTaskIndex]));
+  if (handle != nullptr)
   {
-    return taskSize * sizeof(StackType_t);
+    currentStaticTaskIndex++;
+    return stackSize * sizeof(StackType_t);
   }
   return 0;
 }

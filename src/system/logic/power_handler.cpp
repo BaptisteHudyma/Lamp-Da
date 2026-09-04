@@ -855,7 +855,10 @@ void init()
 #endif
 
   // start main loop
-  bsp::threads::start_thread(power_loop, bsp::threads::power_taskName, 0, 512);
+  static constexpr uint16_t powerLoopThreadBufferSize = 512;
+  static bsp::threads::TaskBuffer_t powerLoopThreadBuffer[powerLoopThreadBufferSize];
+  bsp::threads::start_thread(
+          power_loop, bsp::threads::power_taskName, 0, powerLoopThreadBufferSize, powerLoopThreadBuffer);
 
   isSetup = true;
 }

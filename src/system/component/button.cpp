@@ -197,7 +197,11 @@ void init(const bool isSystemStartedFromButton)
   }
 
   canRunButtonTask = true;
-  bsp::threads::start_thread(button_thread, bsp::threads::button_taskName, 2, 255);
+
+  static constexpr uint16_t buttonThreadBufferSize = 255;
+  static bsp::threads::TaskBuffer_t buttonThreadBuffer[buttonThreadBufferSize];
+  bsp::threads::start_thread(
+          button_thread, bsp::threads::button_taskName, 2, buttonThreadBufferSize, buttonThreadBuffer);
 }
 
 void shutdown() { canRunButtonTask = false; }

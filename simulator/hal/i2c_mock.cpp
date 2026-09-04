@@ -65,7 +65,10 @@ void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
   if (i2cIndex != 0)
     return;
 
-  bsp::threads::start_thread(simulator::i2c_process_mock_loop, utils::hash("i2c_mock"), 0, 255);
+  static constexpr uint16_t threadBufferSize = 255;
+  static bsp::threads::TaskBuffer_t threadBuffer[threadBufferSize];
+  bsp::threads::start_thread(
+          simulator::i2c_process_mock_loop, utils::hash("i2c_mock"), 0, threadBufferSize, threadBuffer);
 
   simulator::isI2cAvailable = true;
 }

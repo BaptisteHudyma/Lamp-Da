@@ -42,6 +42,7 @@ uint32_t HAL_create_thread(TaskHandle_t* const handle,
                            char const* const name,
                            const int priority,
                            const int stackSize,
+                           uint32_t* buffer,
                            const int startSuspended)
 {
   // ALWAYS CAPTURE taskFunction EXPLICITLY

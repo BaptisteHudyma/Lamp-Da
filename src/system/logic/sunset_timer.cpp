@@ -122,7 +122,9 @@ void sunset_process_loop()
 void init()
 {
   // start in suspended mode
-  bsp::threads::start_suspended_thread(sunset_process_loop, bsp::threads::sunset_taskName, 0, 255);
+  static constexpr uint16_t sunsetThreadBufferSize = 255;
+  static bsp::threads::TaskBuffer_t sunsetTaskBuffer[sunsetThreadBufferSize];
+  bsp::threads::start_suspended_thread(sunset_process_loop, bsp::threads::sunset_taskName, 0, 255, sunsetTaskBuffer);
 }
 
 void set_deadline(const uint32_t timeshutdown_s)
