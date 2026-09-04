@@ -77,7 +77,8 @@ $(function() {
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">threads.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -101,6 +102,9 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:adce89408105f6a605b3a86073086b9bf"><td class="memItemLeft" align="right" valign="top"><a id="adce89408105f6a605b3a86073086b9bf" name="adce89408105f6a605b3a86073086b9bf"></a>
+typedef uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::TaskBuffer_t</b></td></tr>
+<tr class="separator:adce89408105f6a605b3a86073086b9bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad47c4da9738a0fc08e1d2c5a7bcc454e"><td class="memItemLeft" align="right" valign="top"><a id="ad47c4da9738a0fc08e1d2c5a7bcc454e" name="ad47c4da9738a0fc08e1d2c5a7bcc454e"></a>
 typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::taskfunc_t</b>) (void)</td></tr>
 <tr class="separator:ad47c4da9738a0fc08e1d2c5a7bcc454e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -110,9 +114,9 @@ typedef void *&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a4f470e44ea8187bfdd477a57307e07a3"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#a4f470e44ea8187bfdd477a57307e07a3">lampda::hal::threads::HAL_create_thread</a> (TaskHandle_t *const handle, taskfunc_t task, char const  *const name, const int priority, const int stackSize, const int startSuspended)</td></tr>
-<tr class="memdesc:a4f470e44ea8187bfdd477a57307e07a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a thread from the given function and return the associated handle.  <br /></td></tr>
-<tr class="separator:a4f470e44ea8187bfdd477a57307e07a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e0e132a55963293f14f13ec988100b1"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#a8e0e132a55963293f14f13ec988100b1">lampda::hal::threads::HAL_create_thread</a> (TaskHandle_t *handle, taskfunc_t task, char const  *const name, const int priority, const int stackSize, TaskBuffer_t *buffer, const int startSuspended)</td></tr>
+<tr class="memdesc:a8e0e132a55963293f14f13ec988100b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a thread from the given function and return the associated handle.  <br /></td></tr>
+<tr class="separator:a8e0e132a55963293f14f13ec988100b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87d32ed0344bfae3b5a3165c87918738"><td class="memItemLeft" align="right" valign="top"><a id="a87d32ed0344bfae3b5a3165c87918738" name="a87d32ed0344bfae3b5a3165c87918738"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::HAL_yield</b> ()</td></tr>
 <tr class="memdesc:a87d32ed0344bfae3b5a3165c87918738"><td class="mdescLeft">&#160;</td><td class="mdescRight">Yield this thread. <br /></td></tr>
@@ -152,6 +156,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads:
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::HAL_shutdown</b> ()</td></tr>
 <tr class="memdesc:a1daffcc469870240d3c602df4127ba22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shutdown the thread HAL. <br /></td></tr>
 <tr class="separator:a1daffcc469870240d3c602df4127ba22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a2e278885204b16c1c56e854aa8abb183"><td class="memItemLeft" align="right" valign="top"><a id="a2e278885204b16c1c56e854aa8abb183" name="a2e278885204b16c1c56e854aa8abb183"></a>
+static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::threads::MaxStaticTasks</b> = 32</td></tr>
+<tr class="separator:a2e278885204b16c1c56e854aa8abb183"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for the platform specific tasks and threads. </p>

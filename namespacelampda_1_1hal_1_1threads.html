@@ -87,6 +87,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:adce89408105f6a605b3a86073086b9bf"><td class="memItemLeft" align="right" valign="top"><a id="adce89408105f6a605b3a86073086b9bf" name="adce89408105f6a605b3a86073086b9bf"></a>
+typedef uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>TaskBuffer_t</b></td></tr>
+<tr class="separator:adce89408105f6a605b3a86073086b9bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad47c4da9738a0fc08e1d2c5a7bcc454e"><td class="memItemLeft" align="right" valign="top"><a id="ad47c4da9738a0fc08e1d2c5a7bcc454e" name="ad47c4da9738a0fc08e1d2c5a7bcc454e"></a>
 typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><b>taskfunc_t</b>) (void)</td></tr>
 <tr class="separator:ad47c4da9738a0fc08e1d2c5a7bcc454e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -102,9 +105,9 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>_redirect_task
 <tr class="memitem:a30ec86614c8b9a043047f385c7b3ecc2"><td class="memItemLeft" align="right" valign="top"><a id="a30ec86614c8b9a043047f385c7b3ecc2" name="a30ec86614c8b9a043047f385c7b3ecc2"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>_redirect_suspend_task</b> (void *arg)</td></tr>
 <tr class="separator:a30ec86614c8b9a043047f385c7b3ecc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f470e44ea8187bfdd477a57307e07a3"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#a4f470e44ea8187bfdd477a57307e07a3">HAL_create_thread</a> (TaskHandle_t *const handle, taskfunc_t task, char const  *const name, const int priority, const int stackSize, const int startSuspended)</td></tr>
-<tr class="memdesc:a4f470e44ea8187bfdd477a57307e07a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a thread from the given function and return the associated handle.  <br /></td></tr>
-<tr class="separator:a4f470e44ea8187bfdd477a57307e07a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e0e132a55963293f14f13ec988100b1"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#a8e0e132a55963293f14f13ec988100b1">HAL_create_thread</a> (TaskHandle_t *handle, taskfunc_t task, char const  *const name, const int priority, const int stackSize, TaskBuffer_t *buffer, const int startSuspended)</td></tr>
+<tr class="memdesc:a8e0e132a55963293f14f13ec988100b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a thread from the given function and return the associated handle.  <br /></td></tr>
+<tr class="separator:a8e0e132a55963293f14f13ec988100b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87d32ed0344bfae3b5a3165c87918738"><td class="memItemLeft" align="right" valign="top"><a id="a87d32ed0344bfae3b5a3165c87918738" name="a87d32ed0344bfae3b5a3165c87918738"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>HAL_yield</b> ()</td></tr>
 <tr class="memdesc:a87d32ed0344bfae3b5a3165c87918738"><td class="mdescLeft">&#160;</td><td class="mdescRight">Yield this thread. <br /></td></tr>
@@ -150,6 +153,16 @@ Variables</h2></td></tr>
 <tr class="memitem:a96447d8c7f895d0a04c670f78ba7657b"><td class="memItemLeft" align="right" valign="top"><a id="a96447d8c7f895d0a04c670f78ba7657b" name="a96447d8c7f895d0a04c670f78ba7657b"></a>
 volatile bool&#160;</td><td class="memItemRight" valign="bottom"><b>canRun</b> = true</td></tr>
 <tr class="separator:a96447d8c7f895d0a04c670f78ba7657b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4dc1071e9761b70f5f55c2add35960b"><td class="memItemLeft" align="right" valign="top"><a id="ac4dc1071e9761b70f5f55c2add35960b" name="ac4dc1071e9761b70f5f55c2add35960b"></a>
+static StaticTask_t&#160;</td><td class="memItemRight" valign="bottom"><b>staticTaskArray</b> [MaxStaticTasks]</td></tr>
+<tr class="memdesc:ac4dc1071e9761b70f5f55c2add35960b"><td class="mdescLeft">&#160;</td><td class="mdescRight">store static references to a task <br /></td></tr>
+<tr class="separator:ac4dc1071e9761b70f5f55c2add35960b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73dda9886412420d1f24fe7feb91181a"><td class="memItemLeft" align="right" valign="top"><a id="a73dda9886412420d1f24fe7feb91181a" name="a73dda9886412420d1f24fe7feb91181a"></a>
+static size_t&#160;</td><td class="memItemRight" valign="bottom"><b>currentStaticTaskIndex</b> = 0</td></tr>
+<tr class="separator:a73dda9886412420d1f24fe7feb91181a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e278885204b16c1c56e854aa8abb183"><td class="memItemLeft" align="right" valign="top"><a id="a2e278885204b16c1c56e854aa8abb183" name="a2e278885204b16c1c56e854aa8abb183"></a>
+static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>MaxStaticTasks</b> = 32</td></tr>
+<tr class="separator:a2e278885204b16c1c56e854aa8abb183"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a474a2633d82988c45915f007d23eb7a0"><td class="memItemLeft" align="right" valign="top"><a id="a474a2633d82988c45915f007d23eb7a0" name="a474a2633d82988c45915f007d23eb7a0"></a>
 std::hash&lt; std::thread::id &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>threadHasher</b></td></tr>
 <tr class="separator:a474a2633d82988c45915f007d23eb7a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,8 +170,8 @@ std::hash&lt; std::thread::id &gt;&#160;</td><td class="memItemRight" valign="bo
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Define tasks and threads specifics. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a4f470e44ea8187bfdd477a57307e07a3" name="a4f470e44ea8187bfdd477a57307e07a3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4f470e44ea8187bfdd477a57307e07a3">&#9670;&#160;</a></span>HAL_create_thread()</h2>
+<a id="a8e0e132a55963293f14f13ec988100b1" name="a8e0e132a55963293f14f13ec988100b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e0e132a55963293f14f13ec988100b1">&#9670;&#160;</a></span>HAL_create_thread()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -166,7 +179,7 @@ std::hash&lt; std::thread::id &gt;&#160;</td><td class="memItemRight" valign="bo
         <tr>
           <td class="memname">uint32_t lampda::hal::threads::HAL_create_thread </td>
           <td>(</td>
-          <td class="paramtype">TaskHandle_t *const&#160;</td>
+          <td class="paramtype">TaskHandle_t *&#160;</td>
           <td class="paramname"><em>handle</em>, </td>
         </tr>
         <tr>
@@ -196,6 +209,12 @@ std::hash&lt; std::thread::id &gt;&#160;</td><td class="memItemRight" valign="bo
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">TaskBuffer_t *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>startSuspended</em>&#160;</td>
         </tr>
@@ -212,7 +231,7 @@ std::hash&lt; std::thread::id &gt;&#160;</td><td class="memItemRight" valign="bo
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">task</td><td>Task function to execute. it will be called in a loop </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>internal name of the thread </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">priority</td><td>from to 2, this thread priority </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">priority</td><td>from 0 to 2, this thread priority </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">stackSize</td><td>The size of the stack to allocate. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">startSuspended</td><td>if == 0, start the thread in a suspended mode </td></tr>
   </table>

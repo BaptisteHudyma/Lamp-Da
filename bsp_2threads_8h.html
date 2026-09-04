@@ -104,6 +104,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:aad361e9e7b8a36097ec1ec94a3c1e8f9"><td class="memItemLeft" align="right" valign="top"><a id="aad361e9e7b8a36097ec1ec94a3c1e8f9" name="aad361e9e7b8a36097ec1ec94a3c1e8f9"></a>
 typedef void *&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::threads::TaskHandle_t</b></td></tr>
 <tr class="separator:aad361e9e7b8a36097ec1ec94a3c1e8f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5355c9e3a8e193f48ac652fc31aaf7a"><td class="memItemLeft" align="right" valign="top"><a id="ad5355c9e3a8e193f48ac652fc31aaf7a" name="ad5355c9e3a8e193f48ac652fc31aaf7a"></a>
+typedef uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::threads::TaskBuffer_t</b></td></tr>
+<tr class="separator:ad5355c9e3a8e193f48ac652fc31aaf7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c412ef7d0b8b5b79bcfd5bd92d88d1b"><td class="memItemLeft" align="right" valign="top"><a id="a8c412ef7d0b8b5b79bcfd5bd92d88d1b" name="a8c412ef7d0b8b5b79bcfd5bd92d88d1b"></a>
 typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::threads::taskfunc_t</b>) (void)</td></tr>
 <tr class="memdesc:a8c412ef7d0b8b5b79bcfd5bd92d88d1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">model of a task function <br /></td></tr>
@@ -111,12 +114,12 @@ typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ab31ff0f80797860ae2b6f8bb964df0fe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html#ab31ff0f80797860ae2b6f8bb964df0fe">lampda::bsp::threads::start_thread</a> (taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize)</td></tr>
-<tr class="memdesc:ab31ff0f80797860ae2b6f8bb964df0fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a separate thread, running until the system shuts off.  <br /></td></tr>
-<tr class="separator:ab31ff0f80797860ae2b6f8bb964df0fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad308825286641f779a57db5f23b5e86c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html#ad308825286641f779a57db5f23b5e86c">lampda::bsp::threads::start_suspended_thread</a> (taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize)</td></tr>
-<tr class="memdesc:ad308825286641f779a57db5f23b5e86c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a separate thread, running until the system shuts off. Start in suspended state.  <br /></td></tr>
-<tr class="separator:ad308825286641f779a57db5f23b5e86c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4074e41c2db0b11e0106e29bff571394"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html#a4074e41c2db0b11e0106e29bff571394">lampda::bsp::threads::start_thread</a> (taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize, TaskBuffer_t *buffer)</td></tr>
+<tr class="memdesc:a4074e41c2db0b11e0106e29bff571394"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a separate thread, running until the system shuts off.  <br /></td></tr>
+<tr class="separator:a4074e41c2db0b11e0106e29bff571394"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6f6473ab7a9604399c586529c2952a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html#ad6f6473ab7a9604399c586529c2952a1">lampda::bsp::threads::start_suspended_thread</a> (taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize, TaskBuffer_t *buffer)</td></tr>
+<tr class="memdesc:ad6f6473ab7a9604399c586529c2952a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a separate thread, running until the system shuts off. Start in suspended state.  <br /></td></tr>
+<tr class="separator:ad6f6473ab7a9604399c586529c2952a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec032ff44a371e93ec79ead719969e3e"><td class="memItemLeft" align="right" valign="top"><a id="aec032ff44a371e93ec79ead719969e3e" name="aec032ff44a371e93ec79ead719969e3e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::threads::yield_this_thread</b> ()</td></tr>
 <tr class="memdesc:aec032ff44a371e93ec79ead719969e3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">make this thread pass the control to other threads <br /></td></tr>

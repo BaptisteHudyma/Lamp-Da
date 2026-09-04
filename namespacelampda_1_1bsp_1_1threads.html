@@ -90,6 +90,9 @@ Typedefs</h2></td></tr>
 <tr class="memitem:aad361e9e7b8a36097ec1ec94a3c1e8f9"><td class="memItemLeft" align="right" valign="top"><a id="aad361e9e7b8a36097ec1ec94a3c1e8f9" name="aad361e9e7b8a36097ec1ec94a3c1e8f9"></a>
 typedef void *&#160;</td><td class="memItemRight" valign="bottom"><b>TaskHandle_t</b></td></tr>
 <tr class="separator:aad361e9e7b8a36097ec1ec94a3c1e8f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5355c9e3a8e193f48ac652fc31aaf7a"><td class="memItemLeft" align="right" valign="top"><a id="ad5355c9e3a8e193f48ac652fc31aaf7a" name="ad5355c9e3a8e193f48ac652fc31aaf7a"></a>
+typedef uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>TaskBuffer_t</b></td></tr>
+<tr class="separator:ad5355c9e3a8e193f48ac652fc31aaf7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c412ef7d0b8b5b79bcfd5bd92d88d1b"><td class="memItemLeft" align="right" valign="top"><a id="a8c412ef7d0b8b5b79bcfd5bd92d88d1b" name="a8c412ef7d0b8b5b79bcfd5bd92d88d1b"></a>
 typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><b>taskfunc_t</b>) (void)</td></tr>
 <tr class="memdesc:a8c412ef7d0b8b5b79bcfd5bd92d88d1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">model of a task function <br /></td></tr>
@@ -100,12 +103,12 @@ Functions</h2></td></tr>
 <tr class="memitem:aeee4f9a29aed11078d7603e8da788011"><td class="memItemLeft" align="right" valign="top"><a id="aeee4f9a29aed11078d7603e8da788011" name="aeee4f9a29aed11078d7603e8da788011"></a>
 const char *const&#160;</td><td class="memItemRight" valign="bottom"><b>get_name_from_hash</b> (const uint32_t hash)</td></tr>
 <tr class="separator:aeee4f9a29aed11078d7603e8da788011"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab31ff0f80797860ae2b6f8bb964df0fe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html#ab31ff0f80797860ae2b6f8bb964df0fe">start_thread</a> (<a class="el" href="namespacelampda_1_1bsp_1_1threads.html#a8c412ef7d0b8b5b79bcfd5bd92d88d1b">taskfunc_t</a> taskFunction, const uint32_t taskName, const int priority, const int stackSize)</td></tr>
-<tr class="memdesc:ab31ff0f80797860ae2b6f8bb964df0fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a separate thread, running until the system shuts off.  <br /></td></tr>
-<tr class="separator:ab31ff0f80797860ae2b6f8bb964df0fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad308825286641f779a57db5f23b5e86c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html#ad308825286641f779a57db5f23b5e86c">start_suspended_thread</a> (<a class="el" href="namespacelampda_1_1bsp_1_1threads.html#a8c412ef7d0b8b5b79bcfd5bd92d88d1b">taskfunc_t</a> taskFunction, const uint32_t taskName, const int priority, const int stackSize)</td></tr>
-<tr class="memdesc:ad308825286641f779a57db5f23b5e86c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a separate thread, running until the system shuts off. Start in suspended state.  <br /></td></tr>
-<tr class="separator:ad308825286641f779a57db5f23b5e86c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4074e41c2db0b11e0106e29bff571394"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html#a4074e41c2db0b11e0106e29bff571394">start_thread</a> (<a class="el" href="namespacelampda_1_1bsp_1_1threads.html#a8c412ef7d0b8b5b79bcfd5bd92d88d1b">taskfunc_t</a> taskFunction, const uint32_t taskName, const int priority, const int stackSize, TaskBuffer_t *buffer)</td></tr>
+<tr class="memdesc:a4074e41c2db0b11e0106e29bff571394"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a separate thread, running until the system shuts off.  <br /></td></tr>
+<tr class="separator:a4074e41c2db0b11e0106e29bff571394"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6f6473ab7a9604399c586529c2952a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1threads.html#ad6f6473ab7a9604399c586529c2952a1">start_suspended_thread</a> (<a class="el" href="namespacelampda_1_1bsp_1_1threads.html#a8c412ef7d0b8b5b79bcfd5bd92d88d1b">taskfunc_t</a> taskFunction, const uint32_t taskName, const int priority, const int stackSize, TaskBuffer_t *buffer)</td></tr>
+<tr class="memdesc:ad6f6473ab7a9604399c586529c2952a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a separate thread, running until the system shuts off. Start in suspended state.  <br /></td></tr>
+<tr class="separator:ad6f6473ab7a9604399c586529c2952a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec032ff44a371e93ec79ead719969e3e"><td class="memItemLeft" align="right" valign="top"><a id="aec032ff44a371e93ec79ead719969e3e" name="aec032ff44a371e93ec79ead719969e3e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>yield_this_thread</b> ()</td></tr>
 <tr class="memdesc:aec032ff44a371e93ec79ead719969e3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">make this thread pass the control to other threads <br /></td></tr>
@@ -259,8 +262,8 @@ const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>print_taskN
 
 </div>
 </div>
-<a id="ad308825286641f779a57db5f23b5e86c" name="ad308825286641f779a57db5f23b5e86c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad308825286641f779a57db5f23b5e86c">&#9670;&#160;</a></span>start_suspended_thread()</h2>
+<a id="ad6f6473ab7a9604399c586529c2952a1" name="ad6f6473ab7a9604399c586529c2952a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6f6473ab7a9604399c586529c2952a1">&#9670;&#160;</a></span>start_suspended_thread()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -287,7 +290,13 @@ const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>print_taskN
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>stackSize</em>&#160;</td>
+          <td class="paramname"><em>stackSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">TaskBuffer_t *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -304,14 +313,15 @@ const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>print_taskN
     <tr><td class="paramdir">[in]</td><td class="paramname">taskName</td><td>The name associated </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">priority</td><td>from to 2, this thread priority </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">stackSize</td><td>The size of the stack to allocate. can be ignored and checked while running using the command line </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">buffer</td><td>Buffer for this task </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ab31ff0f80797860ae2b6f8bb964df0fe" name="ab31ff0f80797860ae2b6f8bb964df0fe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab31ff0f80797860ae2b6f8bb964df0fe">&#9670;&#160;</a></span>start_thread()</h2>
+<a id="a4074e41c2db0b11e0106e29bff571394" name="a4074e41c2db0b11e0106e29bff571394"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4074e41c2db0b11e0106e29bff571394">&#9670;&#160;</a></span>start_thread()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -338,7 +348,13 @@ const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>print_taskN
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>stackSize</em>&#160;</td>
+          <td class="paramname"><em>stackSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">TaskBuffer_t *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -355,6 +371,7 @@ const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>print_taskN
     <tr><td class="paramdir">[in]</td><td class="paramname">taskName</td><td>The name associated </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">priority</td><td>from to 2, this thread priority </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">stackSize</td><td>The size of the stack to allocate. can be ignored and checked while running using the command line </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">buffer</td><td>Buffer for this task </td></tr>
   </table>
   </dd>
 </dl>
