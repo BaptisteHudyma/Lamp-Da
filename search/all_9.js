@@ -1,7 +1,7 @@
 var searchData=
 [
   ['h_0',['h',['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#aff216a45468cd98872553535e849ac9a',1,'lampda::utils::ColorSpace::HSV::h()'],['../classlampda_1_1utils_1_1ColorSpace_1_1LCH.html#a6db91c3bcd144e8ab1fe365a99142a67',1,'lampda::utils::ColorSpace::LCH::h()'],['../classlampda_1_1utils_1_1ColorSpace_1_1OKLCH.html#aa93b5f1961503b8c0dc3410a659a84c6',1,'lampda::utils::ColorSpace::OKLCH::h()']]],
-  ['hal_5fcreate_5fqueue_1',['HAL_create_queue',['../namespacelampda_1_1hal_1_1queues.html#abffadd772ea63206d1bd5dbbadec6c9b',1,'lampda::hal::queues']]],
+  ['hal_5fcreate_5fqueue_1',['HAL_create_queue',['../namespacelampda_1_1hal_1_1queues.html#a168b1c7ea9e5546860b342aa22f7eae4',1,'lampda::hal::queues']]],
   ['hal_5fcreate_5fthread_2',['HAL_create_thread',['../namespacelampda_1_1hal_1_1threads.html#a4f470e44ea8187bfdd477a57307e07a3',1,'lampda::hal::threads']]],
   ['hal_5fdelete_5fqueue_3',['HAL_delete_queue',['../namespacelampda_1_1hal_1_1queues.html#ab05076fa8010554466eefd34a6f48809',1,'lampda::hal::queues']]],
   ['hal_5fget_5fdebug_5fthread_5ftext_4',['HAL_get_debug_thread_text',['../namespacelampda_1_1hal_1_1threads.html#a81138cf19645c11f16387a0a0989828e',1,'lampda::hal::threads']]],

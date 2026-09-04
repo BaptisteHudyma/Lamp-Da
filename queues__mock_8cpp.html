@@ -77,7 +77,8 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">queues_mock.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -107,9 +108,9 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:abffadd772ea63206d1bd5dbbadec6c9b"><td class="memItemLeft" align="right" valign="top">QueueHandle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1queues.html#abffadd772ea63206d1bd5dbbadec6c9b">lampda::hal::queues::HAL_create_queue</a> (size_t itemSize, uint32_t queueLength)</td></tr>
-<tr class="memdesc:abffadd772ea63206d1bd5dbbadec6c9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a queue with the specified item size and maximum length.  <br /></td></tr>
-<tr class="separator:abffadd772ea63206d1bd5dbbadec6c9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a168b1c7ea9e5546860b342aa22f7eae4"><td class="memItemLeft" align="right" valign="top">QueueHandle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1queues.html#a168b1c7ea9e5546860b342aa22f7eae4">lampda::hal::queues::HAL_create_queue</a> (size_t itemSize, uint32_t queueLength, uint32_t staticIndex, uint8_t *buffer)</td></tr>
+<tr class="memdesc:a168b1c7ea9e5546860b342aa22f7eae4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a queue with the specified item size and maximum length.  <br /></td></tr>
+<tr class="separator:a168b1c7ea9e5546860b342aa22f7eae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab05076fa8010554466eefd34a6f48809"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1queues.html#ab05076fa8010554466eefd34a6f48809">lampda::hal::queues::HAL_delete_queue</a> (QueueHandle_t handle)</td></tr>
 <tr class="memdesc:ab05076fa8010554466eefd34a6f48809"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete/free a queue and release its underlying resources.  <br /></td></tr>
 <tr class="separator:ab05076fa8010554466eefd34a6f48809"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -123,6 +124,15 @@ Functions</h2></td></tr>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::queues::HAL_queue_get_number_of_items</b> (QueueHandle_t handle)</td></tr>
 <tr class="memdesc:a3c32ec1221b5821a438f5dcc5c440847"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of items currently in a queue. <br /></td></tr>
 <tr class="separator:a3c32ec1221b5821a438f5dcc5c440847"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a0fb8716ba9c9c1afca024d73eccb9dff"><td class="memItemLeft" align="right" valign="top"><a id="a0fb8716ba9c9c1afca024d73eccb9dff" name="a0fb8716ba9c9c1afca024d73eccb9dff"></a>
+static QueueWrapp&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::queues::staticQueues</b> [MaxStaticQueues]</td></tr>
+<tr class="separator:a0fb8716ba9c9c1afca024d73eccb9dff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a44b67f8385fe1395236754b31f6a56"><td class="memItemLeft" align="right" valign="top"><a id="a2a44b67f8385fe1395236754b31f6a56" name="a2a44b67f8385fe1395236754b31f6a56"></a>
+std::set&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::queues::usedQueueIndex</b></td></tr>
+<tr class="separator:a2a44b67f8385fe1395236754b31f6a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Mock of the board queues. </p>

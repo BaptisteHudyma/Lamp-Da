@@ -78,7 +78,8 @@ $(function() {
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">lampda::hal::queues Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -114,9 +115,9 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:abffadd772ea63206d1bd5dbbadec6c9b"><td class="memItemLeft" align="right" valign="top">QueueHandle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1queues.html#abffadd772ea63206d1bd5dbbadec6c9b">HAL_create_queue</a> (size_t itemSize, uint32_t queueLength)</td></tr>
-<tr class="memdesc:abffadd772ea63206d1bd5dbbadec6c9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a queue with the specified item size and maximum length.  <br /></td></tr>
-<tr class="separator:abffadd772ea63206d1bd5dbbadec6c9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a168b1c7ea9e5546860b342aa22f7eae4"><td class="memItemLeft" align="right" valign="top">QueueHandle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1queues.html#a168b1c7ea9e5546860b342aa22f7eae4">HAL_create_queue</a> (size_t itemSize, uint32_t queueLength, uint32_t staticIndex, uint8_t *buffer)</td></tr>
+<tr class="memdesc:a168b1c7ea9e5546860b342aa22f7eae4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a queue with the specified item size and maximum length.  <br /></td></tr>
+<tr class="separator:a168b1c7ea9e5546860b342aa22f7eae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab05076fa8010554466eefd34a6f48809"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1queues.html#ab05076fa8010554466eefd34a6f48809">HAL_delete_queue</a> (QueueHandle_t handle)</td></tr>
 <tr class="memdesc:ab05076fa8010554466eefd34a6f48809"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete/free a queue and release its underlying resources.  <br /></td></tr>
 <tr class="separator:ab05076fa8010554466eefd34a6f48809"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -130,12 +131,28 @@ Functions</h2></td></tr>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>HAL_queue_get_number_of_items</b> (QueueHandle_t handle)</td></tr>
 <tr class="memdesc:a3c32ec1221b5821a438f5dcc5c440847"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of items currently in a queue. <br /></td></tr>
 <tr class="separator:a3c32ec1221b5821a438f5dcc5c440847"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ab7957526cbd1aa61fc9d435d2a3d09cd"><td class="memItemLeft" align="right" valign="top"><a id="ab7957526cbd1aa61fc9d435d2a3d09cd" name="ab7957526cbd1aa61fc9d435d2a3d09cd"></a>
+static StaticQueue_t&#160;</td><td class="memItemRight" valign="bottom"><b>g_objects</b> [<a class="el" href="namespacelampda_1_1hal_1_1queues.html#ac7a3bb678eac35b8b4b877d8acaa63fa">MaxStaticQueues</a>]</td></tr>
+<tr class="separator:ab7957526cbd1aa61fc9d435d2a3d09cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7a3bb678eac35b8b4b877d8acaa63fa"><td class="memItemLeft" align="right" valign="top"><a id="ac7a3bb678eac35b8b4b877d8acaa63fa" name="ac7a3bb678eac35b8b4b877d8acaa63fa"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>MaxStaticQueues</b> = 5</td></tr>
+<tr class="memdesc:ac7a3bb678eac35b8b4b877d8acaa63fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the max number of queue objets that can be defined. <br /></td></tr>
+<tr class="separator:ac7a3bb678eac35b8b4b877d8acaa63fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fb8716ba9c9c1afca024d73eccb9dff"><td class="memItemLeft" align="right" valign="top"><a id="a0fb8716ba9c9c1afca024d73eccb9dff" name="a0fb8716ba9c9c1afca024d73eccb9dff"></a>
+static <a class="el" href="structlampda_1_1hal_1_1queues_1_1QueueWrapp.html">QueueWrapp</a>&#160;</td><td class="memItemRight" valign="bottom"><b>staticQueues</b> [<a class="el" href="namespacelampda_1_1hal_1_1queues.html#ac7a3bb678eac35b8b4b877d8acaa63fa">MaxStaticQueues</a>]</td></tr>
+<tr class="separator:a0fb8716ba9c9c1afca024d73eccb9dff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a44b67f8385fe1395236754b31f6a56"><td class="memItemLeft" align="right" valign="top"><a id="a2a44b67f8385fe1395236754b31f6a56" name="a2a44b67f8385fe1395236754b31f6a56"></a>
+std::set&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>usedQueueIndex</b></td></tr>
+<tr class="separator:a2a44b67f8385fe1395236754b31f6a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implementation of inter thread queues. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="abffadd772ea63206d1bd5dbbadec6c9b" name="abffadd772ea63206d1bd5dbbadec6c9b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abffadd772ea63206d1bd5dbbadec6c9b">&#9670;&#160;</a></span>HAL_create_queue()</h2>
+<a id="a168b1c7ea9e5546860b342aa22f7eae4" name="a168b1c7ea9e5546860b342aa22f7eae4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a168b1c7ea9e5546860b342aa22f7eae4">&#9670;&#160;</a></span>HAL_create_queue()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -150,7 +167,19 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>HAL_queue_get_numbe
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>queueLength</em>&#160;</td>
+          <td class="paramname"><em>queueLength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>staticIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -165,6 +194,8 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>HAL_queue_get_numbe
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">itemSize</td><td>Size of each item in bytes (abstracts the data type) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">queueLength</td><td>Maximum number of items the queue can hold </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">staticIndex</td><td>Index of the static object to use. Limited to MaxStaticQueues. THEY CANNOT BE SHARED BETWEEN QUEUES </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">buffer</td><td>Preallocated static buffer to itemSize * queueLength </td></tr>
   </table>
   </dd>
 </dl>

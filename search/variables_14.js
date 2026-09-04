@@ -6,8 +6,8 @@ var searchData=
   ['vbus_5fma_3',['vbus_mA',['../structlampda_1_1bsp_1_1charger_1_1Measurments.html#a60d494a8245ed2a202c41a47c6f9b377',1,'lampda::bsp::charger::Measurments']]],
   ['vbus_5fmv_4',['vbus_mV',['../structlampda_1_1bsp_1_1charger_1_1Measurments.html#ac23302cf1e11c48aa51a2e13d67c885e',1,'lampda::bsp::charger::Measurments']]],
   ['vbusvoltage_5',['vbusVoltage',['../structlampda_1_1bsp_1_1powerDelivery_1_1UsbPDData.html#ab937b5abbcd4e1ba25b83055f61e6e64',1,'lampda::bsp::powerDelivery::UsbPDData']]],
-  ['voltage_5fmv_6',['voltage_mv',['../structlampda_1_1bsp_1_1powerDelivery_1_1PDOTypes.html#a06554ae78afaef834d2af4af1c0043ab',1,'lampda::bsp::powerDelivery::PDOTypes']]],
-  ['voltage_5fmv_7',['voltage_mV',['../structlampda_1_1bsp_1_1charger_1_1Battery.html#ae72145765ac654c6ebdacf87d9d110ea',1,'lampda::bsp::charger::Battery::voltage_mV()'],['../structlampda_1_1component_1_1charger_1_1BatteryStatus__t.html#af0ab5f1d5d91ba1d8b765b365202de2c',1,'lampda::component::charger::BatteryStatus_t::voltage_mV()']]],
+  ['voltage_5fmv_6',['voltage_mV',['../structlampda_1_1bsp_1_1charger_1_1Battery.html#ae72145765ac654c6ebdacf87d9d110ea',1,'lampda::bsp::charger::Battery::voltage_mV()'],['../structlampda_1_1component_1_1charger_1_1BatteryStatus__t.html#af0ab5f1d5d91ba1d8b765b365202de2c',1,'lampda::component::charger::BatteryStatus_t::voltage_mV()']]],
+  ['voltage_5fmv_7',['voltage_mv',['../structlampda_1_1bsp_1_1powerDelivery_1_1PDOTypes.html#a06554ae78afaef834d2af4af1c0043ab',1,'lampda::bsp::powerDelivery::PDOTypes']]],
   ['voltagehighraisedtime_8',['voltageHighRaisedTime',['../namespacelampda_1_1logic_1_1power.html#a4ef2733f2176f39441b592fc5cc10ffa',1,'lampda::logic::power']]],
   ['vsys_5fmv_9',['vsys_mV',['../structlampda_1_1bsp_1_1charger_1_1Measurments.html#a213661eee414626053e6466639bababd',1,'lampda::bsp::charger::Measurments']]]
 ];

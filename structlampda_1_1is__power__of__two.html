@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: lampda::hal::queues::QueueWrapp Struct Reference</title>
+<title>Lamp-Da: lampda::is_power_of_two&lt; N &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,34 +70,25 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacelampda.html">lampda</a></li><li class="navelem"><a class="el" href="namespacelampda_1_1hal.html">hal</a></li><li class="navelem"><a class="el" href="namespacelampda_1_1hal_1_1queues.html">queues</a></li><li class="navelem"><a class="el" href="structlampda_1_1hal_1_1queues_1_1QueueWrapp.html">QueueWrapp</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacelampda.html">lampda</a></li><li class="navelem"><a class="el" href="structlampda_1_1is__power__of__two.html">is_power_of_two</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="structlampda_1_1hal_1_1queues_1_1QueueWrapp-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">lampda::hal::queues::QueueWrapp Struct Reference</div></div>
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="structlampda_1_1is__power__of__two-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">lampda::is_power_of_two&lt; N &gt; Struct Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:a1de8eb0e2ee8fba8e439dc82d937fdf6"><td class="memItemLeft" align="right" valign="top"><a id="a1de8eb0e2ee8fba8e439dc82d937fdf6" name="a1de8eb0e2ee8fba8e439dc82d937fdf6"></a>
-std::queue&lt; std::vector&lt; uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>queue</b></td></tr>
-<tr class="separator:a1de8eb0e2ee8fba8e439dc82d937fdf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8947f1e9bb48916c7407a071424eb1f3"><td class="memItemLeft" align="right" valign="top"><a id="a8947f1e9bb48916c7407a071424eb1f3" name="a8947f1e9bb48916c7407a071424eb1f3"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>uxLength</b></td></tr>
-<tr class="separator:a8947f1e9bb48916c7407a071424eb1f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0d3e38c4f0a4d85e5e17cc133f8c138"><td class="memItemLeft" align="right" valign="top"><a id="ac0d3e38c4f0a4d85e5e17cc133f8c138" name="ac0d3e38c4f0a4d85e5e17cc133f8c138"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>uxItemSize</b></td></tr>
-<tr class="separator:ac0d3e38c4f0a4d85e5e17cc133f8c138"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14b68e5dcbbbca6377a01b1bf11156ab"><td class="memItemLeft" align="right" valign="top"><a id="a14b68e5dcbbbca6377a01b1bf11156ab" name="a14b68e5dcbbbca6377a01b1bf11156ab"></a>
-std::mutex&#160;</td><td class="memItemRight" valign="bottom"><b>mtx</b></td></tr>
-<tr class="separator:a14b68e5dcbbbca6377a01b1bf11156ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:af7391638fb3d6cacc456aee1529abf77"><td class="memItemLeft" align="right" valign="top"><a id="af7391638fb3d6cacc456aee1529abf77" name="af7391638fb3d6cacc456aee1529abf77"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>value</b> = N != 0 &amp;&amp; (N &amp; (N - 1)) == 0</td></tr>
+<tr class="separator:af7391638fb3d6cacc456aee1529abf77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>simulator/hal/<a class="el" href="queues__mock_8cpp.html">queues_mock.cpp</a></li>
+<li>src/system/utils/<a class="el" href="utils_8h_source.html">utils.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

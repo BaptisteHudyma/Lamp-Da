@@ -13,7 +13,8 @@ var searchData=
   ['internalfsty_10',['InternalFSTy',['../structInternalFSTy.html',1,'']]],
   ['intromode_11',['IntroMode',['../structlampda_1_1modes_1_1examples_1_1IntroMode.html',1,'lampda::modes::examples']]],
   ['inttemperaturevoltaget_12',['IntTemperatureVoltaget',['../structbq76905_1_1BQ76905_1_1Regt_1_1IntTemperatureVoltaget.html',1,'bq76905::BQ76905::Regt']]],
-  ['isubcommandmanyregisters_13',['ISubCommandManyRegisters',['../structbq76905_1_1BQ76905_1_1ISubCommandManyRegisters.html',1,'bq76905::BQ76905']]],
-  ['isubcommandreadregister_14',['ISubcommandReadRegister',['../structbq76905_1_1BQ76905_1_1ISubcommandReadRegister.html',1,'bq76905::BQ76905']]],
-  ['isubcommandregister_15',['ISubcommandRegister',['../structbq76905_1_1BQ76905_1_1ISubcommandRegister.html',1,'bq76905::BQ76905']]]
+  ['is_5fpower_5fof_5ftwo_13',['is_power_of_two',['../structlampda_1_1is__power__of__two.html',1,'lampda']]],
+  ['isubcommandmanyregisters_14',['ISubCommandManyRegisters',['../structbq76905_1_1BQ76905_1_1ISubCommandManyRegisters.html',1,'bq76905::BQ76905']]],
+  ['isubcommandreadregister_15',['ISubcommandReadRegister',['../structbq76905_1_1BQ76905_1_1ISubcommandReadRegister.html',1,'bq76905::BQ76905']]],
+  ['isubcommandregister_16',['ISubcommandRegister',['../structbq76905_1_1BQ76905_1_1ISubcommandRegister.html',1,'bq76905::BQ76905']]]
 ];
