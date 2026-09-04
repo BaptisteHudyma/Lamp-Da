@@ -688,6 +688,67 @@ TEST_F(ButtonFixture, standard_6_double_clicks)
   buttonThread.join();
 }
 
+// Long button click, without event check so the queue will get full
+TEST_F(ButtonFixture, long_click_fill_queue)
+{
+  // initial state is turn on
+  ::simulator::globals::state.isButtonPressed = true;
+  bool isStartClick = true;
+  bool isTestDone = false;
+
+  auto clickSerieCallback = [&](uint8_t clickCount, bool isFirstClick) {
+    isTestDone = true;
+    ADD_FAILURE() << "short click when a long click was expected";
+  };
+  auto clickHoldSerieCallback = [&](uint8_t clickCount, uint32_t clickDuration, bool isEndOfPress, bool isFirstClick) {
+    EXPECT_LT(clickDuration, 1000 * 1.5);
+    EXPECT_EQ(clickCount, 1);
+    EXPECT_TRUE(isFirstClick);
+
+    if (isEndOfPress)
+      isTestDone = true;
+  };
+
+  // signal button on
+  ::simulator::mock_gpios::update_callbacks();
+  component::button::init(true);
+
+  // simulate click release after a long time
+  auto buttonThread = std::thread([]() {
+    std::this_thread::sleep_for(1000ms);
+    ::simulator::globals::state.isButtonPressed = false;
+    ::simulator::mock_gpios::update_callbacks();
+  });
+
+  // no handling during a period: simulate thread block
+  std::this_thread::sleep_for(1000ms);
+
+  // Than handle all events !
+  while (hal::time_ms() < testTimeout_ms && not isTestDone)
+  {
+    // poll events from the event queue
+    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
+    if (event.has_value())
+    {
+      const auto& buttonEvent = event.value();
+      if (not buttonEvent.isLongPress)
+      {
+        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+        isStartClick = false;
+      }
+      else
+      {
+        clickHoldSerieCallback(
+                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+        if (buttonEvent.isEndOfLongPress)
+          isStartClick = false;
+      }
+    }
+  }
+  ASSERT_TRUE(isTestDone);
+  buttonThread.join();
+}
+
 // TODO:
 // long click start then click chain
 

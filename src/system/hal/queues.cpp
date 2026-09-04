@@ -17,7 +17,9 @@ QueueHandle_t HAL_create_queue(size_t itemSize, uint32_t queueLength)
 
 void HAL_delete_queue(QueueHandle_t handle)
 {
-  //
+  if (!handle)
+    return;
+  vQueueDelete(handle);
 }
 
 HAL_queue_status_t HAL_queue_send(QueueHandle_t handle, const void* item, uint32_t timeoutMs)
@@ -50,6 +52,13 @@ HAL_queue_status_t HAL_queue_receive(QueueHandle_t handle, void* const outItem, 
       return HAL_queue_status_t::HAL_QUEUE_ERR_EMPTY;
   }
   return HAL_queue_status_t::HAL_QUEUE_ERR_OTHER;
+}
+
+size_t HAL_queue_get_number_of_items(QueueHandle_t handle)
+{
+  if (!handle)
+    return 0;
+  return uxQueueMessagesWaiting(handle);
 }
 
 } // namespace queues

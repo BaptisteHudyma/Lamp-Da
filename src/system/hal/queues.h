@@ -66,6 +66,11 @@ extern "C" {
    */
   HAL_queue_status_t HAL_queue_receive(QueueHandle_t handle, void* const outItem, uint32_t timeoutMs);
 
+  /**
+   * \brief Return the number of items currently in a queue
+   */
+  size_t HAL_queue_get_number_of_items(QueueHandle_t handle);
+
 #ifdef __cplusplus
 }
 } // namespace queues

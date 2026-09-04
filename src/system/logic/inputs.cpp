@@ -605,6 +605,16 @@ bool add_button_click_event(uint32_t clickCount)
 
 bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress)
 {
+  // special case for log press events: if there is too much events, the end of hold event can get rejected.
+  // Do not fill the queue above a percentage with hold events
+  if (not isEndOfPress)
+  {
+    const size_t fillPercent =
+            (__private::buttonEventQueue.get_stored_item_count() * 100) / __private::maxButtonEventStore;
+    // Prevent any hold events if queue is getting full
+    if (fillPercent >= 80)
+      return false;
+  }
   __private::ButtonEvent event;
   event.isLongPress = true;
   event.clickCount = clickCount;

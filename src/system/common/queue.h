@@ -23,6 +23,8 @@ template<typename T, size_t MaxElements = 10> struct Queue
 
   bool has_elements() const { return currentStoredEvents > 0; }
 
+  size_t get_stored_item_count() const { return currentStoredEvents; }
+
   /**
    * \brief Add an element to the queue.
    * \return false if the element cannot be added
