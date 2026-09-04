@@ -4,12 +4,14 @@ extern "C" {
 #include "src/system/bsp/text_out.h"
 }
 
+#include "src/system/utils/utils.h"
+
+#include "src/system/bsp/threads.h"
+
 #include "src/system/hal/bluetooth.h"
 #include "src/system/hal/queues.h"
 #include "src/system/hal/serial.h"
 #include "src/system/hal/time.h"
-
-#include "src/system/bsp/threads.h"
 
 #include <array>
 #include <cstring>
@@ -26,14 +28,16 @@ namespace __private {
 struct serial_backend_ops_t
 {
   static constexpr size_t UART_TX_BUFFER_SIZE = 32; // number of small messages we can send
+  static_assert(is_power_of_two<UART_TX_BUFFER_SIZE>().value, "SerialBackend buffer size must be a power of two");
 
   // UART TX Task structures
-  size_t desiredMemorySize_bytes; // power of two
-  uint32_t taskName;              /// Name of the task to run process into
+  size_t messageQueueLenght;
+  uint32_t taskName; /// Name of the task to run process into
   uint16_t (*mtu_size)();
   bool (*is_activated)();
   size_t (*write)(const char* data, size_t len);
   hal::queues::QueueHandle_t uart_send_queue;
+  uint8_t* queueBuffer;
 
   struct UartSendRequest
   {
@@ -86,9 +90,13 @@ struct serial_backend_ops_t
 
   void start(void (*taskfunc)(void))
   {
+    static uint8_t staticCount = 0;
+
     uart_send_queue =
-            hal::queues::HAL_create_queue(sizeof(UartSendRequest), desiredMemorySize_bytes / UART_TX_BUFFER_SIZE);
+            hal::queues::HAL_create_queue(sizeof(UartSendRequest), messageQueueLenght, staticCount, queueBuffer);
     bsp::threads::start_thread(taskfunc, taskName, 3, 512);
+
+    staticCount++;
   }
 };
 
@@ -125,19 +133,25 @@ static void uart_tx_task(const serial_backend_ops_t* op)
     }
   }
 }
-
-static serial_backend_ops_t serial_uart_ops {.desiredMemorySize_bytes = 2048,
+static constexpr size_t serialQueueLenght = 32;
+static std::array<uint8_t, serialQueueLenght * sizeof(serial_backend_ops_t::UartSendRequest)> serialOpBuffer;
+static serial_backend_ops_t serial_uart_ops {.messageQueueLenght = serialQueueLenght,
                                              .taskName = bsp::threads::print_taskName,
                                              .mtu_size = hal::serial::mtu_size,
                                              .is_activated = hal::serial::is_activated,
                                              .write = hal::serial::write,
-                                             .uart_send_queue = nullptr};
-static serial_backend_ops_t ble_uart_ops {.desiredMemorySize_bytes = 4096,
+                                             .uart_send_queue = nullptr,
+                                             .queueBuffer = serialOpBuffer.data()};
+
+static constexpr size_t bleQueueLenght = 128;
+static std::array<uint8_t, bleQueueLenght * sizeof(serial_backend_ops_t::UartSendRequest)> bleOpBuffer;
+static serial_backend_ops_t ble_uart_ops {.messageQueueLenght = bleQueueLenght,
                                           .taskName = bsp::threads::ble_cli_taskName,
                                           .mtu_size = hal::bluetooth::serial::mtu_size,
                                           .is_activated = hal::bluetooth::serial::is_activated,
                                           .write = hal::bluetooth::serial::write,
-                                          .uart_send_queue = nullptr};
+                                          .uart_send_queue = nullptr,
+                                          .queueBuffer = bleOpBuffer.data()};
 
 static void serial_uart_task() { uart_tx_task(&serial_uart_ops); }
 static void ble_uart_task() { uart_tx_task(&ble_uart_ops); }

@@ -21,6 +21,9 @@ extern "C" {
 
   typedef void* QueueHandle_t;
 
+  /// Define the max number of queue objets that can be defined
+  static constexpr uint32_t MaxStaticQueues = 5;
+
   /**
    * \brief Queue operation status codes
    */
@@ -38,9 +41,12 @@ extern "C" {
    * \brief Create a queue with the specified item size and maximum length.
    * \param[in] itemSize Size of each item in bytes (abstracts the data type)
    * \param[in] queueLength Maximum number of items the queue can hold
+   * \param[in] staticIndex Index of the static object to use. Limited to MaxStaticQueues. THEY CANNOT BE SHARED BETWEEN
+   * QUEUES
+   * \param[in, out] buffer Preallocated static buffer to itemSize * queueLength
    * \return The allocated queue handle
    */
-  QueueHandle_t HAL_create_queue(size_t itemSize, uint32_t queueLength);
+  QueueHandle_t HAL_create_queue(size_t itemSize, uint32_t queueLength, uint32_t staticIndex, uint8_t* buffer);
 
   /**
    * \brief Delete/free a queue and release its underlying resources.

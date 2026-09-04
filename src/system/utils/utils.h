@@ -137,6 +137,11 @@ union COLOR
   };
 };
 
+template<unsigned int N> struct is_power_of_two
+{
+  static constexpr bool value = N != 0 && (N & (N - 1)) == 0;
+};
+
 namespace utils {
 
 /**

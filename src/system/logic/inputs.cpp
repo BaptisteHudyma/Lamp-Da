@@ -605,7 +605,7 @@ bool add_button_click_event(uint32_t clickCount)
 
 bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress)
 {
-  // special case for log press events: if there is too much events, the end of hold event can get rejected.
+  // special case for long press events: if there is too much events, the end of hold event can get rejected.
   // Do not fill the queue above a percentage with hold events
   if (not isEndOfPress)
   {

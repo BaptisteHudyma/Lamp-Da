@@ -8,9 +8,12 @@
 #include "simulator/include/hardware_influencer.h"
 
 #include <queue>
+#include <set>
 #include <vector>
 #include <cstring>
 #include <mutex>
+#include <iostream>
+#include <cstdlib>
 
 #define HAL_QUEUES_CPP
 
@@ -23,8 +26,6 @@ namespace queues {
 
 struct QueueWrapp
 {
-  QueueWrapp(size_t itemSize, uint32_t queueLength) : uxLength(queueLength), uxItemSize(itemSize) {}
-
   std::queue<std::vector<uint8_t>> queue;
 
   size_t uxLength; /*< The length of the queue defined as the number of items it will hold, not the number of bytes. */
@@ -33,10 +34,24 @@ struct QueueWrapp
   mutable std::mutex mtx;
 };
 
-QueueHandle_t HAL_create_queue(size_t itemSize, uint32_t queueLength)
+static QueueWrapp staticQueues[MaxStaticQueues];
+std::set<size_t> usedQueueIndex;
+
+QueueHandle_t HAL_create_queue(size_t itemSize, uint32_t queueLength, uint32_t staticIndex, uint8_t* buffer)
 {
+  // TODO: Mock should use the static memory layout
+  if (staticIndex >= MaxStaticQueues)
+    return nullptr;
+  if (usedQueueIndex.find(staticIndex) != usedQueueIndex.cend())
+  {
+    std::cerr << "Already used queue index " << staticIndex << ". Aborting program" << std::endl;
+    exit(-1);
+  }
+  usedQueueIndex.emplace(staticIndex);
+  staticQueues[staticIndex].uxLength = queueLength;
+  staticQueues[staticIndex].uxItemSize = itemSize;
   // create a new queue
-  return (QueueHandle_t)(new QueueWrapp(itemSize, queueLength));
+  return &staticQueues[staticIndex];
 }
 
 void HAL_delete_queue(QueueHandle_t handle)
