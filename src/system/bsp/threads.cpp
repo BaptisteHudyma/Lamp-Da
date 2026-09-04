@@ -62,6 +62,9 @@ struct TaskHandleStorage
   uint32_t taskSize;
 };
 
+static TaskHandle_t staticHandles[hal::threads::MaxStaticTasks];
+inline static uint32_t handleIndex = 0;
+
 // store all handles
 std::map<uint32_t, TaskHandleStorage> handles;
 
@@ -69,6 +72,7 @@ void low_level_start_thread(taskfunc_t taskFunction,
                             const uint32_t taskName,
                             const int priority,
                             const int stackSize,
+                            TaskBuffer_t* buffer,
                             const int startedSuspended)
 {
   // handle already exists
@@ -82,18 +86,24 @@ void low_level_start_thread(taskfunc_t taskFunction,
     bsp::lampda_print("task %s (%d) creation failed: stack too small", get_name_from_hash(taskName), taskName);
     return;
   }
+  if (handleIndex >= hal::threads::MaxStaticTasks)
+  {
+    bsp::lampda_print("task %s (%d) creation failed: no tasks available", get_name_from_hash(taskName), taskName);
+    return;
+  }
 
-  TaskHandle_t handle;
   const uint32_t createdTaskSize_bytes =
-          hal::threads::HAL_create_thread(&handle,
+          hal::threads::HAL_create_thread(&staticHandles[handleIndex],
                                           static_cast<hal::threads::taskfunc_t>(taskFunction),
                                           get_name_from_hash(taskName),
                                           priority,
                                           stackSize,
+                                          buffer,
                                           startedSuspended);
   if (createdTaskSize_bytes > 0)
   {
-    handles[taskName] = {handle, createdTaskSize_bytes};
+    handles[taskName] = {staticHandles[handleIndex], createdTaskSize_bytes};
+    handleIndex++;
   }
   else
   {
@@ -103,14 +113,16 @@ void low_level_start_thread(taskfunc_t taskFunction,
 
 } // namespace __private
 
-void start_thread(taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize)
+void start_thread(
+        taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize, TaskBuffer_t* buffer)
 {
-  __private::low_level_start_thread(taskFunction, taskName, priority, stackSize, 1);
+  __private::low_level_start_thread(taskFunction, taskName, priority, stackSize, buffer, 1);
 }
 
-void start_suspended_thread(taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize)
+void start_suspended_thread(
+        taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize, TaskBuffer_t* buffer)
 {
-  __private::low_level_start_thread(taskFunction, taskName, priority, stackSize, 0);
+  __private::low_level_start_thread(taskFunction, taskName, priority, stackSize, buffer, 0);
 }
 
 void yield_this_thread() { hal::threads::HAL_yield(); }

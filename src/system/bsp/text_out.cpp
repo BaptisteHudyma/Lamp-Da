@@ -38,6 +38,8 @@ struct serial_backend_ops_t
   size_t (*write)(const char* data, size_t len);
   hal::queues::QueueHandle_t uart_send_queue;
   uint8_t* queueBuffer;
+  bsp::threads::TaskBuffer_t* sendTaskBuffer;
+  static constexpr uint16_t sendQueueThreadBufferSize = 512;
 
   struct UartSendRequest
   {
@@ -94,7 +96,8 @@ struct serial_backend_ops_t
 
     uart_send_queue =
             hal::queues::HAL_create_queue(sizeof(UartSendRequest), messageQueueLenght, staticCount, queueBuffer);
-    bsp::threads::start_thread(taskfunc, taskName, 3, 512);
+
+    bsp::threads::start_thread(taskfunc, taskName, 3, sendQueueThreadBufferSize, sendTaskBuffer);
 
     staticCount++;
   }
@@ -135,23 +138,27 @@ static void uart_tx_task(const serial_backend_ops_t* op)
 }
 static constexpr size_t serialQueueLenght = 32;
 static std::array<uint8_t, serialQueueLenght * sizeof(serial_backend_ops_t::UartSendRequest)> serialOpBuffer;
+static std::array<bsp::threads::TaskBuffer_t, serial_backend_ops_t::sendQueueThreadBufferSize> serialTaskBuffer;
 static serial_backend_ops_t serial_uart_ops {.messageQueueLenght = serialQueueLenght,
                                              .taskName = bsp::threads::print_taskName,
                                              .mtu_size = hal::serial::mtu_size,
                                              .is_activated = hal::serial::is_activated,
                                              .write = hal::serial::write,
                                              .uart_send_queue = nullptr,
-                                             .queueBuffer = serialOpBuffer.data()};
+                                             .queueBuffer = serialOpBuffer.data(),
+                                             .sendTaskBuffer = serialTaskBuffer.data()};
 
 static constexpr size_t bleQueueLenght = 128;
 static std::array<uint8_t, bleQueueLenght * sizeof(serial_backend_ops_t::UartSendRequest)> bleOpBuffer;
+static std::array<bsp::threads::TaskBuffer_t, serial_backend_ops_t::sendQueueThreadBufferSize> bleTaskBuffer;
 static serial_backend_ops_t ble_uart_ops {.messageQueueLenght = bleQueueLenght,
                                           .taskName = bsp::threads::ble_cli_taskName,
                                           .mtu_size = hal::bluetooth::serial::mtu_size,
                                           .is_activated = hal::bluetooth::serial::is_activated,
                                           .write = hal::bluetooth::serial::write,
                                           .uart_send_queue = nullptr,
-                                          .queueBuffer = bleOpBuffer.data()};
+                                          .queueBuffer = bleOpBuffer.data(),
+                                          .sendTaskBuffer = bleTaskBuffer.data()};
 
 static void serial_uart_task() { uart_tx_task(&serial_uart_ops); }
 static void ble_uart_task() { uart_tx_task(&ble_uart_ops); }

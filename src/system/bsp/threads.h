@@ -18,6 +18,7 @@ extern "C" {
 #endif
 
   typedef void* TaskHandle_t;
+  typedef uint32_t TaskBuffer_t;
 
   // store tasks names here
   /// name of the USB power delivery task
@@ -49,8 +50,13 @@ extern "C" {
    * \param[in] priority from  to 2, this thread priority
    * \param[in] stackSize The size of the stack to allocate. can be ignored and checked while running using the command
    * line
+   * \param[in,out] buffer Buffer for this task
    */
-  extern void start_thread(taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize);
+  extern void start_thread(taskfunc_t taskFunction,
+                           const uint32_t taskName,
+                           const int priority,
+                           const int stackSize,
+                           TaskBuffer_t* buffer);
   /**
    * \brief Start a separate thread, running until the system shuts off. Start in suspended state.
    * \param taskFunction the function to run
@@ -58,11 +64,13 @@ extern "C" {
    * \param[in] priority from  to 2, this thread priority
    * \param[in] stackSize The size of the stack to allocate. can be ignored and checked while running using the command
    * line
+   * \param[in,out] buffer Buffer for this task
    */
   extern void start_suspended_thread(taskfunc_t taskFunction,
                                      const uint32_t taskName,
                                      const int priority,
-                                     const int stackSize);
+                                     const int stackSize,
+                                     TaskBuffer_t* buffer);
 
   /// make this thread pass the control to other threads
   extern void yield_this_thread();

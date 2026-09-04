@@ -193,7 +193,10 @@ void main_setup()
   if (user::should_spawn_thread())
   {
     // give a high stack but low priority to user
-    bsp::threads::start_thread(secondary_thread, bsp::threads::user_taskName, 0, 1024);
+    static constexpr uint16_t userThreadBufferSize = 1024;
+    static bsp::threads::TaskBuffer_t userThreadBuffer[userThreadBufferSize];
+    bsp::threads::start_thread(
+            secondary_thread, bsp::threads::user_taskName, 0, userThreadBufferSize, userThreadBuffer);
   }
 }
 

@@ -8,6 +8,7 @@
 
 #ifdef __cplusplus
 
+#include <cstddef>
 #include <cstdint>
 
 namespace lampda {
@@ -15,8 +16,12 @@ namespace hal {
 /// Define tasks and threads specifics.
 namespace threads {
 
+static constexpr size_t MaxStaticTasks = 32;
+
 extern "C" {
 #endif
+
+  typedef uint32_t TaskBuffer_t;
 
   typedef void (*taskfunc_t)(void);
   typedef void* TaskHandle_t;
@@ -26,16 +31,17 @@ extern "C" {
    * \brief[in] handle Handle that will be allocated by the thread
    * \param[in] task Task function to execute. it will be called in a loop
    * \param[in] name internal name of the thread
-   * \param[in] priority from  to 2, this thread priority
+   * \param[in] priority from 0 to 2, this thread priority
    * \param[in] stackSize The size of the stack to allocate.
    * \param[in] startSuspended if == 0, start the thread in a suspended mode
    * \return The task allocated stack in bytes, or 0 for failure
    */
-  uint32_t HAL_create_thread(TaskHandle_t* const handle,
+  uint32_t HAL_create_thread(TaskHandle_t* handle,
                              taskfunc_t task,
                              char const* const name,
                              const int priority,
                              const int stackSize,
+                             TaskBuffer_t* buffer,
                              const int startSuspended);
 
   /// Yield this thread
