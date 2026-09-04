@@ -9,10 +9,15 @@ namespace lampda {
 namespace hal {
 namespace queues {
 
-QueueHandle_t HAL_create_queue(size_t itemSize, uint32_t queueLength)
+// HAL side static queues
+static StaticQueue_t g_objects[MaxStaticQueues];
+
+QueueHandle_t HAL_create_queue(size_t itemSize, uint32_t queueLength, uint32_t staticIndex, uint8_t* buffer)
 {
-  //
-  return xQueueCreate(queueLength, itemSize);
+  if (staticIndex >= MaxStaticQueues)
+    return nullptr;
+
+  return xQueueCreateStatic(queueLength, itemSize, buffer, &(g_objects[staticIndex]));
 }
 
 void HAL_delete_queue(QueueHandle_t handle)

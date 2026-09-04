@@ -180,7 +180,11 @@ void init()
   bsp::threads::start_thread(simulator::print_mock_loop, utils::hash("tin_l"), 0, 255);
 }
 
-bool is_activated() { return true; }
+bool is_activated()
+{
+  // can run until the threads stop
+  return not simulator::mock_registers::shouldStopThreads;
+}
 
 bool is_available() { return simulator::inputCommands.empty() ? false : true; }
 
