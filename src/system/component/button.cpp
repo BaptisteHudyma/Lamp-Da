@@ -143,11 +143,7 @@ void handle_events()
     buttonState.wasTriggered = true;
 
     const bool isSuccess = logic::inputs::add_button_press_event(buttonState.nbClicksCounted, pressDuration, false);
-    if (not isSuccess)
-    {
-      // ok: just a ramp event miss can happen without a problem
-      bsp::lampda_print("Button: Could not register hold event");
-    }
+    // if (not isSuccess) : ok: just a ramp event miss can happen without a problem
   }
 
   // safety : an interrupt may have been missed, and the button is locked in a logic pressed state

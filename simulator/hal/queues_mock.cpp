@@ -109,6 +109,14 @@ HAL_queue_status_t HAL_queue_receive(QueueHandle_t handle, void* const outItem, 
   return HAL_queue_status_t::HAL_QUEUE_OK;
 }
 
+size_t HAL_queue_get_number_of_items(QueueHandle_t handle)
+{
+  if (!handle)
+    return 0;
+  auto* q = static_cast<QueueWrapp*>(handle);
+  return q->queue.size();
+}
+
 } // namespace queues
 } // namespace hal
 } // namespace lampda
