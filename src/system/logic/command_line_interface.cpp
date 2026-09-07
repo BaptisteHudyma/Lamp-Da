@@ -8,13 +8,13 @@
 
 #include "src/system/bsp/pd/power_delivery.h"
 #include "src/system/bsp/balancer.h"
+#include "src/system/bsp/filesystem.h"
 #include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
 
 #include "src/system/component/battery.h"
 #include "src/system/component/button.h"
 #include "src/system/component/charger.h"
-#include "src/system/component/fileSystem.h"
 #include "src/system/component/time_handling.h"
 
 #include "src/system/utils/constants.h"
@@ -379,7 +379,7 @@ static void cmd_i2c(const common::cli::ParsedCommand&)
 static void cmd_format(const common::cli::ParsedCommand&)
 {
   bsp::lampda_print("clearing the whole file format");
-  component::fileSystem::clear_internal_fs();
+  bsp::filesystem::clear_internal_fs();
 }
 
 /// Enter Device Firmware Update mode

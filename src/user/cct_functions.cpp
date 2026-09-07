@@ -2,18 +2,19 @@
 
 #include <cstdint>
 
-#include "src/system/logic/behavior.h"
-#include "src/system/logic/brightness_handle.h"
-
 #include "src/system/utils/utils.h"
 
 #include "src/system/common/curves.h"
 
-#include "src/system/component/fileSystem.h"
-#include "src/system/component/output_power.h"
-
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/time.h"
+
+#include "src/system/bsp/filesystem.h"
+
+#include "src/system/component/output_power.h"
+
+#include "src/system/logic/behavior.h"
+#include "src/system/logic/brightness_handle.h"
 
 #include "src/user/functions.h"
 
@@ -86,12 +87,12 @@ void brightness_update(const brightness_t brightness)
 
 void sunset_timer_update(const float progress) {}
 
-void write_parameters() { component::fileSystem::user::set_value(colorKey, currentColor); }
+void write_parameters() { bsp::filesystem::user::set_value(colorKey, currentColor); }
 
 void read_parameters()
 {
   uint32_t mode = 0;
-  if (component::fileSystem::user::get_value(colorKey, mode))
+  if (bsp::filesystem::user::get_value(colorKey, mode))
   {
     currentColor = mode;
     lastColor = currentColor;

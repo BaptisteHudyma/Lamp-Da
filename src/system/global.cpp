@@ -7,6 +7,7 @@
 #include "src/system/hal/registers.h"
 
 #include "src/system/bsp/indicator.h"
+#include "src/system/bsp/filesystem.h"
 #include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
 
@@ -19,7 +20,6 @@
 
 #include "src/system/component/battery.h"
 #include "src/system/component/charger.h"
-#include "src/system/component/fileSystem.h"
 #include "src/system/component/imu.h"
 #include "src/system/component/output_power.h"
 #include "src/system/component/sound.h"
@@ -122,7 +122,7 @@ void main_setup()
   {
     // try to start fresh: the system can get stuck with a broken filesystem
     // TODO #353: it happens when the system power source is removed during a file system read/write.
-    component::fileSystem::clear_internal_fs();
+    bsp::filesystem::clear_internal_fs();
   }
 
   // check if we are in first boot mode (read parameters fails)

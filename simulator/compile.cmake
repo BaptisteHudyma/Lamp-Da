@@ -58,6 +58,7 @@ set(SRC_SYSTEM_BSP
     ${LMBD_ROOT_DIR}/src/system/bsp/charging_ic.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/imu_wrapper.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/indicator.cpp
+    ${LMBD_ROOT_DIR}/src/system/bsp/filesystem.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/power_gates.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/text_in.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/text_out.cpp
@@ -68,7 +69,6 @@ set(SRC_SYSTEM_COMPONENT
     ${LMBD_ROOT_DIR}/src/system/component/battery.cpp
     ${LMBD_ROOT_DIR}/src/system/component/button.cpp
     ${LMBD_ROOT_DIR}/src/system/component/charger.cpp
-    ${LMBD_ROOT_DIR}/src/system/component/fileSystem.cpp
     ${LMBD_ROOT_DIR}/src/system/component/imu.cpp
     ${LMBD_ROOT_DIR}/src/system/component/output_power.cpp
     ${LMBD_ROOT_DIR}/src/system/component/sound.cpp
@@ -107,6 +107,7 @@ set(SIMULATOR_HAL
     ${LMBD_ROOT_DIR}/simulator/hal/bluetooth_mock.cpp
     ${LMBD_ROOT_DIR}/simulator/hal/gpio_mock.cpp
     ${LMBD_ROOT_DIR}/simulator/hal/i2c_mock.cpp
+    ${LMBD_ROOT_DIR}/simulator/hal/filesystem.cpp
     ${LMBD_ROOT_DIR}/simulator/hal/pdm_handle_mock.cpp
     ${LMBD_ROOT_DIR}/simulator/hal/serial_mock.cpp
     ${LMBD_ROOT_DIR}/simulator/hal/queues_mock.cpp
