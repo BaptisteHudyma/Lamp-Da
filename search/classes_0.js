@@ -32,6 +32,5 @@ var searchData=
   ['amode_5ffx_29',['amode_fx',['../structamode__fx.html',1,'']]],
   ['arduinofft_30',['ArduinoFFT',['../classArduinoFFT.html',1,'']]],
   ['arduinofft_3c_20float_20_3e_31',['ArduinoFFT&lt; float &gt;',['../classArduinoFFT.html',1,'']]],
-  ['asyncgetline_32',['AsyncGetline',['../classsimulator_1_1AsyncGetline.html',1,'simulator']]],
-  ['auroramode_33',['AuroraMode',['../structlampda_1_1modes_1_1default__modes_1_1AuroraMode.html',1,'lampda::modes::default_modes']]]
+  ['auroramode_32',['AuroraMode',['../structlampda_1_1modes_1_1default__modes_1_1AuroraMode.html',1,'lampda::modes::default_modes']]]
 ];

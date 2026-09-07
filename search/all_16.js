@@ -29,7 +29,5 @@ var searchData=
   ['usercommand_26',['UserCommand',['../classlampda_1_1common_1_1UserCommand.html',1,'lampda::common::UserCommand'],['../classlampda_1_1common_1_1UserCommand.html#a9d76681156ed4a61306f09b03479e00a',1,'lampda::common::UserCommand::UserCommand()']]],
   ['using_20a_20virtual_20machine_27',['Using a Virtual Machine',['../md_docs_VirtualMachine.html',1,'']]],
   ['utils_2eh_28',['utils.h',['../utils_8h.html',1,'']]],
-  ['utils_2ehpp_29',['utils.hpp',['../audio_2utils_8hpp.html',1,'(Global Namespace)'],['../colors_2utils_8hpp.html',1,'(Global Namespace)'],['../imu_2utils_8hpp.html',1,'(Global Namespace)']]],
-  ['uuid128_5fchr_5fwrite_30',['UUID128_CHR_WRITE',['../classlampda_1_1bluetooth_1_1BLEElkService.html#ac1bc550c095d0576c532ad9c8c5eedef',1,'lampda::bluetooth::BLEElkService']]],
-  ['uuid128_5fservice_31',['UUID128_SERVICE',['../classlampda_1_1bluetooth_1_1BLEElkService.html#accb2969af20c87f8c87210833eb84484',1,'lampda::bluetooth::BLEElkService']]]
+  ['utils_2ehpp_29',['utils.hpp',['../audio_2utils_8hpp.html',1,'(Global Namespace)'],['../colors_2utils_8hpp.html',1,'(Global Namespace)'],['../imu_2utils_8hpp.html',1,'(Global Namespace)']]]
 ];

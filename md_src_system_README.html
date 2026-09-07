@@ -70,7 +70,7 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title"><a class="el" href="structFile.html">File</a> details </div></div>
+  <div class="headertitle"><div class="title">File details </div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><ul>
@@ -81,6 +81,7 @@ $(function() {
 <li><a class="el" href="charging__ic_8h.html" title="Interface for the abstraction layer of the battery charger component.">charging_ic.h</a>: layer of the battery charging component</li>
 <li>imu_wrappper.h: interaction layer of the imu</li>
 <li><a class="el" href="indicator_8h.html" title="Interface for the physical components of the RGB user indicator.">indicator.h</a>: visual indicator controler (led in the button)</li>
+<li>filesystem.h: handle the reading and writting of variables to memory</li>
 <li>power_gate.h: the electrical gates to isolate output &amp; vbus form each others</li>
 <li><a class="el" href="text__in_8h.html" title="Handle user text inputs.">text_in.h</a>: user text input and parsing</li>
 <li><a class="el" href="text__out_8h.html" title="Convertion header to use the text out functions from C code.">text_out.h</a>: user text output</li>
@@ -102,7 +103,6 @@ $(function() {
 <li><a class="el" href="battery_8h.html" title="Interface for the physical components of the battery.">battery.h</a>: handle the battery readings, for battery level</li>
 <li><a class="el" href="button_8h.html" title="Interface for the physical components of the push button.">button.h</a>: control the button. Takes callbacks for actions on multiple button pushes. Used to display stuf on the button if needed</li>
 <li><a class="el" href="charger_8h.html" title="High level layer of the battery charging and balancer algorithms. The charger can be in charge or OTG...">charger.h</a>: main high level logic to use the charger, as well as power switches</li>
-<li><a class="el" href="fileSystem_8h.html" title="Interface for the physical components of the file system.">fileSystem.h</a>: handle the reading and writting of variables to memory</li>
 <li><a class="el" href="imu_8h.html" title="Interface for the physical components of the InertialMotionUnit.">imu.h</a>: the imu related operations</li>
 <li><a class="el" href="output__power_8h.html" title="Interface for the physical components of the main power output (eg: LED strip output).">output_power.h</a>: interface of the output voltage driver</li>
 <li><a class="el" href="sound_8h.html" title="Interface for the physical components of the microphone.">sound.h</a>: microphone main input point. Compute FFT and auto disable</li>
@@ -122,10 +122,11 @@ $(function() {
 <li>scale8.h</li>
 </ul>
 </li>
-<li>hal: Hardware Abstraction Layer: implement the platform specific code<ul>
+<li>hal: Hardware Abstraction Layer: implement the platform specific code. The implementation linked to those files is switched at compile time depending on the hardware target.<ul>
 <li><a class="el" href="bluetooth_8h.html" title="Interface for the platform specific bluetooth.">bluetooth.h</a>: bluetooth interfaces</li>
 <li><a class="el" href="gpio_8h.html" title="Interface for the platform specific GeneralPurposeInputOutputs.">gpio.h</a>: programmable pins interface</li>
 <li><a class="el" href="i2c_8h.html" title="Interface for the platform specific i2c protocols.">i2c.h</a>; i2c interface</li>
+<li>filesystem.h: handle the reading and writting of variables to memory</li>
 <li><a class="el" href="pdm__handle_8h.html" title="Interface for the platform specific microphone.">pdm_handle.h</a>: microphone interface (through PDM)</li>
 <li><a class="el" href="queues_8h.html" title="Interface for platform-specific queue operations (e.g., FreeRTOS xQueue).">queues.h</a>: Internal queue implementation</li>
 <li>register.h: NRF52840 specific register access</li>

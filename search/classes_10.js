@@ -9,6 +9,5 @@ var searchData=
   ['qstateok_6',['QStateOk',['../structlampda_1_1modes_1_1details_1_1allOf_1_1QStateOk.html',1,'lampda::modes::details::allOf']]],
   ['queue_7',['Queue',['../structlampda_1_1common_1_1Queue.html',1,'lampda::common']]],
   ['queue_8',['queue',['../structqueue.html',1,'']]],
-  ['queuewrapp_9',['QueueWrapp',['../structlampda_1_1hal_1_1queues_1_1QueueWrapp.html',1,'lampda::hal::queues']]],
-  ['quserthread_10',['QUserThread',['../structlampda_1_1modes_1_1details_1_1anyOf_1_1QUserThread.html',1,'lampda::modes::details::anyOf&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;'],['../structlampda_1_1modes_1_1details_1_1asTableFor_1_1QUserThread.html',1,'lampda::modes::details::asTableFor&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;']]]
+  ['quserthread_9',['QUserThread',['../structlampda_1_1modes_1_1details_1_1anyOf_1_1QUserThread.html',1,'lampda::modes::details::anyOf&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;'],['../structlampda_1_1modes_1_1details_1_1asTableFor_1_1QUserThread.html',1,'lampda::modes::details::asTableFor&lt; TupleTy, hasError &gt;::QUserThread&lt; Ty &gt;']]]
 ];

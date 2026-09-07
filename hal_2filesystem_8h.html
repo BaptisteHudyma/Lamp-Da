@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: simulator/hal/strip_impl.hpp File Reference</title>
+<title>Lamp-Da: src/system/hal/filesystem.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,21 +70,29 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_f56d48452e298091a290bc1200c44e7b.html">simulator</a></li><li class="navelem"><a class="el" href="dir_2d1343abecb0266104c9a8b86d1f1cef.html">hal</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_3bbc96a91658c6a996646fdd7a67b8bb.html">hal</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a>  </div>
-  <div class="headertitle"><div class="title">strip_impl.hpp File Reference</div></div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">filesystem.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Mock of the indexable strip library.  
+<p>Interface for the physical components of the file system.  
 <a href="#details">More...</a></p>
 
-<p><a href="simulator_2hal_2strip__impl_8hpp_source.html">Go to the source code of this file.</a></p>
+<p><a href="hal_2filesystem_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1hal_1_1filesystem_1_1HAL__File.html">lampda::hal::filesystem::HAL_File</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle class for a file.  <a href="structlampda_1_1hal_1_1filesystem_1_1HAL__File.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html">lampda</a></td></tr>
@@ -93,12 +101,23 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda_1_1hal"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal.html">lampda::hal</a></td></tr>
 <tr class="memdesc:namespacelampda_1_1hal"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hardware Abstraction Layer, handle the platform specific interactions. Can be changed to support different platforms. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacelampda_1_1hal_1_1strip"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1strip.html">lampda::hal::strip</a></td></tr>
-<tr class="memdesc:namespacelampda_1_1hal_1_1strip"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the interaction layer with an indexable strip. <br /></td></tr>
+<tr class="memitem:namespacelampda_1_1hal_1_1filesystem"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1filesystem.html">lampda::hal::filesystem</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1hal_1_1filesystem"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the interaction with the file system. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a5e62e3c10d441e0dae503dcb0837cc28"><td class="memItemLeft" align="right" valign="top"><a id="a5e62e3c10d441e0dae503dcb0837cc28" name="a5e62e3c10d441e0dae503dcb0837cc28"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::filesystem::shutdown</b> ()</td></tr>
+<tr class="memdesc:a5e62e3c10d441e0dae503dcb0837cc28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Global filesystem shutdown. <br /></td></tr>
+<tr class="separator:a5e62e3c10d441e0dae503dcb0837cc28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a675d5d3bacd1d4e841ebc3b04dc0f32f"><td class="memItemLeft" align="right" valign="top"><a id="a675d5d3bacd1d4e841ebc3b04dc0f32f" name="a675d5d3bacd1d4e841ebc3b04dc0f32f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::hal::filesystem::format_file_system</b> ()</td></tr>
+<tr class="memdesc:a675d5d3bacd1d4e841ebc3b04dc0f32f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Format/erase the whole file system. <br /></td></tr>
+<tr class="separator:a675d5d3bacd1d4e841ebc3b04dc0f32f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Mock of the indexable strip library. </p>
+<div class="textblock"><p>Interface for the physical components of the file system. </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

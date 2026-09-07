@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: lampda::component::fileSystem::keyValue Struct Reference</title>
+<title>Lamp-Da: lampda::hal::filesystem Namespace Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,37 +70,40 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacelampda.html">lampda</a></li><li class="navelem"><a class="el" href="namespacelampda_1_1component.html">component</a></li><li class="navelem"><a class="el" href="namespacelampda_1_1component_1_1fileSystem.html">fileSystem</a></li><li class="navelem"><a class="el" href="structlampda_1_1component_1_1fileSystem_1_1keyValue.html">keyValue</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacelampda.html">lampda</a></li><li class="navelem"><a class="el" href="namespacelampda_1_1hal.html">hal</a></li><li class="navelem"><a class="el" href="namespacelampda_1_1hal_1_1filesystem.html">filesystem</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="structlampda_1_1component_1_1fileSystem_1_1keyValue-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">lampda::component::fileSystem::keyValue Struct Reference</div></div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">lampda::hal::filesystem Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Store a key and a value.  
- <a href="structlampda_1_1component_1_1fileSystem_1_1keyValue.html#details">More...</a></p>
+<p>Handle the interaction with the file system.  
+<a href="namespacelampda_1_1hal_1_1filesystem.html#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:a8209b07370ff7789003661cf7feddc4f"><td class="memItemLeft" align="right" valign="top"><a id="a8209b07370ff7789003661cf7feddc4f" name="a8209b07370ff7789003661cf7feddc4f"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>key</b></td></tr>
-<tr class="memdesc:a8209b07370ff7789003661cf7feddc4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">key to match this value <br /></td></tr>
-<tr class="separator:a8209b07370ff7789003661cf7feddc4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af84b05487878d21919121ee3e6f4a0a4"><td class="memItemLeft" align="right" valign="top"><a id="af84b05487878d21919121ee3e6f4a0a4" name="af84b05487878d21919121ee3e6f4a0a4"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>value</b></td></tr>
-<tr class="memdesc:af84b05487878d21919121ee3e6f4a0a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">value associated with the key <br /></td></tr>
-<tr class="separator:af84b05487878d21919121ee3e6f4a0a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1hal_1_1filesystem_1_1HAL__File.html">HAL_File</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle class for a file.  <a href="structlampda_1_1hal_1_1filesystem_1_1HAL__File.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a5e62e3c10d441e0dae503dcb0837cc28"><td class="memItemLeft" align="right" valign="top"><a id="a5e62e3c10d441e0dae503dcb0837cc28" name="a5e62e3c10d441e0dae503dcb0837cc28"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>shutdown</b> ()</td></tr>
+<tr class="memdesc:a5e62e3c10d441e0dae503dcb0837cc28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Global filesystem shutdown. <br /></td></tr>
+<tr class="separator:a5e62e3c10d441e0dae503dcb0837cc28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a675d5d3bacd1d4e841ebc3b04dc0f32f"><td class="memItemLeft" align="right" valign="top"><a id="a675d5d3bacd1d4e841ebc3b04dc0f32f" name="a675d5d3bacd1d4e841ebc3b04dc0f32f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>format_file_system</b> ()</td></tr>
+<tr class="memdesc:a675d5d3bacd1d4e841ebc3b04dc0f32f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Format/erase the whole file system. <br /></td></tr>
+<tr class="separator:a675d5d3bacd1d4e841ebc3b04dc0f32f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Store a key and a value. </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>src/system/component/fileSystem.cpp</li>
-</ul>
-</div><!-- contents -->
+<div class="textblock"><p>Handle the interaction with the file system. </p>
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6

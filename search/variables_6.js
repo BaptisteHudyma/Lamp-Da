@@ -9,10 +9,12 @@ var searchData=
   ['fftbin_6',['fftBin',['../classlampda_1_1common_1_1fft_1_1FftAnalyzer.html#a2840a35813b9aa148f7ccffaec3fca18',1,'lampda::common::fft::FftAnalyzer']]],
   ['fftlog_7',['fftLog',['../classlampda_1_1common_1_1fft_1_1FftAnalyzer.html#abe611929b9445f7ed1227115c87cc970',1,'lampda::common::fft::FftAnalyzer']]],
   ['fftresolutionhz_8',['fftResolutionHz',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#ae97465062bccf0bf0d39abfa91911a36',1,'lampda::modes::audio::SoundEventTy']]],
-  ['firstholdtime_9',['firstHoldTime',['../structlampda_1_1component_1_1button_1_1ButtonStateTy.html#a5933f502836d0d4d36f0a5a41e462f69',1,'lampda::component::button::ButtonStateTy']]],
-  ['firstpixelhue_10',['firstPixelHue',['../structlampda_1_1modes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html#aaac10fc578f9642c667376672745a759',1,'lampda::modes::default_modes::RainbowSwirlMode::StateTy']]],
-  ['flavor_11',['flavor',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#acb37532c7a05baa05dbac7d0870c3958',1,'lampda::modes::hardware::LampTy']]],
-  ['foam_5fcolor_12',['foam_color',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#acec371496880489e0dbb99ac5ad66cae',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
-  ['fps_13',['fps',['../structsimulator_1_1defaultSimulation.html#a3b18598ee769fd2d3fd422d3545e38af',1,'simulator::defaultSimulation']]],
-  ['framedurationms_14',['frameDurationMs',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#ace043fe2419a18f25dc066526103c634',1,'lampda::modes::hardware::LampTy']]]
+  ['filename_5finternal_9',['FILENAME_INTERNAL',['../namespacelampda_1_1bsp_1_1filesystem.html#a98a67c709e4a838163554cd67f4828f3',1,'lampda::bsp::filesystem']]],
+  ['filename_5fuser_10',['FILENAME_USER',['../namespacelampda_1_1bsp_1_1filesystem.html#a3c0aec41497263045f0d701fd88e421f',1,'lampda::bsp::filesystem']]],
+  ['firstholdtime_11',['firstHoldTime',['../structlampda_1_1component_1_1button_1_1ButtonStateTy.html#a5933f502836d0d4d36f0a5a41e462f69',1,'lampda::component::button::ButtonStateTy']]],
+  ['firstpixelhue_12',['firstPixelHue',['../structlampda_1_1modes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html#aaac10fc578f9642c667376672745a759',1,'lampda::modes::default_modes::RainbowSwirlMode::StateTy']]],
+  ['flavor_13',['flavor',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#acb37532c7a05baa05dbac7d0870c3958',1,'lampda::modes::hardware::LampTy']]],
+  ['foam_5fcolor_14',['foam_color',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#acec371496880489e0dbb99ac5ad66cae',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
+  ['fps_15',['fps',['../structsimulator_1_1defaultSimulation.html#a3b18598ee769fd2d3fd422d3545e38af',1,'simulator::defaultSimulation']]],
+  ['framedurationms_16',['frameDurationMs',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#ace043fe2419a18f25dc066526103c634',1,'lampda::modes::hardware::LampTy']]]
 ];

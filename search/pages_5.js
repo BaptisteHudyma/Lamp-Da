@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['lamp_2dda_0',['Lamp-Da',['../index.html',1,'']]],
-  ['lamp_2dda_20simulator_1',['Lamp-Da simulator',['../md_simulator_README.html',1,'']]]
+  ['memory_20usage_0',['Memory usage',['../md_docs_MemoryUsage.html',1,'']]]
 ];

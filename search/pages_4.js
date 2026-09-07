@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['file_20details_0',['File details',['../md_src_system_README.html',1,'']]],
-  ['flash_20process_1',['Flash process',['../md_flashInfo_README.html',1,'']]],
-  ['flashapp_2',['FlashApp',['../md_flashInfo_windowsHmi_README.html',1,'']]]
+  ['lamp_2dda_0',['Lamp-Da',['../index.html',1,'']]],
+  ['lamp_2dda_20simulator_1',['Lamp-Da simulator',['../md_simulator_README.html',1,'']]]
 ];

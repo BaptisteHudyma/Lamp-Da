@@ -10,11 +10,10 @@ var searchData=
   ['inputs_7',['Inputs',['../structlampda_1_1bsp_1_1text__in_1_1Inputs.html',1,'lampda::bsp::text_in']]],
   ['inputvoltaget_8',['InputVoltaget',['../structbq25713_1_1BQ25713_1_1Regt_1_1InputVoltaget.html',1,'bq25713::BQ25713::Regt']]],
   ['integratedcircuitmock_5fi_9',['IntegratedCircuitMock_I',['../classsimulator_1_1IntegratedCircuitMock__I.html',1,'simulator']]],
-  ['internalfsty_10',['InternalFSTy',['../structInternalFSTy.html',1,'']]],
-  ['intromode_11',['IntroMode',['../structlampda_1_1modes_1_1examples_1_1IntroMode.html',1,'lampda::modes::examples']]],
-  ['inttemperaturevoltaget_12',['IntTemperatureVoltaget',['../structbq76905_1_1BQ76905_1_1Regt_1_1IntTemperatureVoltaget.html',1,'bq76905::BQ76905::Regt']]],
-  ['is_5fpower_5fof_5ftwo_13',['is_power_of_two',['../structlampda_1_1is__power__of__two.html',1,'lampda']]],
-  ['isubcommandmanyregisters_14',['ISubCommandManyRegisters',['../structbq76905_1_1BQ76905_1_1ISubCommandManyRegisters.html',1,'bq76905::BQ76905']]],
-  ['isubcommandreadregister_15',['ISubcommandReadRegister',['../structbq76905_1_1BQ76905_1_1ISubcommandReadRegister.html',1,'bq76905::BQ76905']]],
-  ['isubcommandregister_16',['ISubcommandRegister',['../structbq76905_1_1BQ76905_1_1ISubcommandRegister.html',1,'bq76905::BQ76905']]]
+  ['intromode_10',['IntroMode',['../structlampda_1_1modes_1_1examples_1_1IntroMode.html',1,'lampda::modes::examples']]],
+  ['inttemperaturevoltaget_11',['IntTemperatureVoltaget',['../structbq76905_1_1BQ76905_1_1Regt_1_1IntTemperatureVoltaget.html',1,'bq76905::BQ76905::Regt']]],
+  ['is_5fpower_5fof_5ftwo_12',['is_power_of_two',['../structlampda_1_1is__power__of__two.html',1,'lampda']]],
+  ['isubcommandmanyregisters_13',['ISubCommandManyRegisters',['../structbq76905_1_1BQ76905_1_1ISubCommandManyRegisters.html',1,'bq76905::BQ76905']]],
+  ['isubcommandreadregister_14',['ISubcommandReadRegister',['../structbq76905_1_1BQ76905_1_1ISubcommandReadRegister.html',1,'bq76905::BQ76905']]],
+  ['isubcommandregister_15',['ISubcommandRegister',['../structbq76905_1_1BQ76905_1_1ISubcommandRegister.html',1,'bq76905::BQ76905']]]
 ];

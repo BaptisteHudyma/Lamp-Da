@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['notes_0',['Notes',['../md_docs_Notes.html',1,'']]]
+  ['quick_20setup_0',['Quick Setup',['../md_docs_QuickSetup.html',1,'']]]
 ];
