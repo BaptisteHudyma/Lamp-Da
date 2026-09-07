@@ -18,9 +18,6 @@ namespace filesystem {
 /// Internal class to a file
 class FileInternalTy;
 
-/// Global filesystem init
-extern bool setup();
-
 /// Global filesystem shutdown
 extern void shutdown();
 

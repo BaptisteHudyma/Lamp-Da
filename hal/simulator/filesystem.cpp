@@ -23,8 +23,6 @@ public:
   const char* filemode;
 };
 
-extern bool setup() { return true; }
-
 extern void shutdown() {}
 
 void format_file_system() { std::cerr << "warning: InternalFS.format called\n" << std::endl; }

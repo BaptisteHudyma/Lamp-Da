@@ -6,7 +6,6 @@
 #include "src/system/bsp/text_out.h"
 
 #include <map>
-#include <vector>
 
 namespace lampda {
 namespace bsp {
@@ -62,48 +61,44 @@ void clear_internal_fs()
 
 namespace __internal {
 
-/// Internal setup
-bool setup() { return hal::filesystem::setup(); }
-
 bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& paramMap)
 {
-  if (not setup())
-  {
-    // failure case: TODO: something ?
-    return false;
-  }
-
   paramMap.clear();
   if (paramFile.open(fileName, hal::filesystem::HAL_File::OpenType::READ) and paramFile.is_open() and
       paramFile.is_available())
   {
     const auto fileSize = paramFile.size();
     if (fileSize <= 0)
-      return false;
-    if (not paramFile.seek(0))
-      return false;
-
-    std::vector<uint8_t> vecRead(fileSize);
-    // THE FILESYSTEM CAN GET CORRUPTED, AND THE LINE BELOW WILL RUN FOREVER
-    const int retVal = paramFile.read((uint8_t*)vecRead.data(), vecRead.size());
-
-    if (retVal < 0)
     {
-      // error case
+      paramFile.close();
+      return false;
+    }
+    if (not paramFile.seek(0))
+    {
+      paramFile.close();
       return false;
     }
 
-    KeyValToByteArray converter;
-    converter.kv.key = 0;
-    converter.kv.value = 0;
-
     bool hasDuplicates = false;
 
-    uint8_t cnt = 0; // when this reaches 8, a new word
-    // parser state machine
-    for (const char c: vecRead)
+    // parser loop, with infinite loop prevention
+    size_t loopTimeout = 1024;
+    while (loopTimeout > 0)
     {
-      if (cnt >= sizeOfData)
+      loopTimeout--;
+
+      KeyValToByteArray converter;
+      converter.kv.key = 0;
+      converter.kv.value = 0;
+
+      // THE FILESYSTEM CAN GET CORRUPTED, AND THE LINE BELOW WILL RUN FOREVER
+      const int readlen = paramFile.read((uint8_t*)converter.data, sizeof(converter.data));
+      if (readlen <= 0)
+      {
+        break;
+      }
+
+      if (readlen >= sizeOfData)
       {
         // only modify the first data of the list
         if (paramMap.find(converter.kv.key) == paramMap.end())
@@ -114,21 +109,9 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
         {
           hasDuplicates = true;
         }
-
-        // reset
-        converter.kv.key = 0;
-        converter.kv.value = 0;
-        cnt = 0;
       }
-
-      converter.data[cnt] = c;
-      cnt++;
-    }
-
-    // last word !
-    if (cnt >= sizeOfData)
-    {
-      paramMap[converter.kv.key] = converter.kv.value;
+      else
+        break;
     }
 
     // erase file content in case of duplicates
@@ -143,12 +126,6 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
 
 bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramMap, const bool shouldEraseFirst = false)
 {
-  if (not setup())
-  {
-    // failure case: TODO: something ?
-    return false;
-  }
-
   // check if it exists
   if (paramFile.open(filePath, hal::filesystem::HAL_File::OpenType::WRITE) and paramFile.is_open())
   {
@@ -164,7 +141,7 @@ bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramM
   else
   {
     // error. the file should have been opened
-    bsp::lampda_print("file system error, reseting file format");
+    bsp::lampda_print("file system error, resetting file format");
 
     // hardcore, format the entire file system
     hal::filesystem::format_file_system();

@@ -1,15 +1,12 @@
 #include "src/system/hal/filesystem.h"
 
-#include <Adafruit_LittleFS.h>
 #include <InternalFileSystem.h>
 
 namespace lampda {
 namespace hal {
 namespace filesystem {
 
-using namespace Adafruit_LittleFS_Namespace;
-
-class FileInternalTy : public File
+class FileInternalTy : public Adafruit_LittleFS_Namespace::File
 {
   /// Inheritate constructors
   using File::File;
@@ -18,7 +15,7 @@ class FileInternalTy : public File
 namespace __private {
 
 /// Keep track of init state
-static bool isInternalFsStarted = false;
+bool isInternalFsStarted = false;
 
 bool setup_shared_filesystem_instance()
 {
@@ -54,7 +51,7 @@ void shutdown() { __private::shutdown_shared_filesystem_instance(); }
 
 void format_file_system()
 {
-  __private::setup_shared_filesystem_instance();
+  setup();
   InternalFS.format();
 }
 
@@ -67,30 +64,28 @@ bool is_setup() { return __private::isInternalFsStarted; }
 
 HAL_File::HAL_File()
 {
-  // Shared instance, if not already started
-  __private::setup_shared_filesystem_instance();
-
   // build LittleFS system
   mInternalFile = std::unique_ptr<FileInternalTy>(new FileInternalTy(InternalFS));
+
+  // Do not start here, the filesystem may not exist yet
 }
 
-HAL_File::~HAL_File()
-{
-  if (is_open())
-    close();
-}
+HAL_File::~HAL_File() {}
 
 bool HAL_File::open(const char* fname, const HAL_File::OpenType& mode)
 {
+  // setup the filesystem !
+  setup();
+
   if (not is_setup() or not mInternalFile)
     return false;
 
   switch (mode)
   {
     case OpenType::READ:
-      return mInternalFile->open(fname, FILE_O_READ);
+      return mInternalFile->open(fname, Adafruit_LittleFS_Namespace::FILE_O_READ);
     case OpenType::WRITE:
-      return mInternalFile->open(fname, FILE_O_WRITE);
+      return mInternalFile->open(fname, Adafruit_LittleFS_Namespace::FILE_O_WRITE);
     default:
       return false;
   }
