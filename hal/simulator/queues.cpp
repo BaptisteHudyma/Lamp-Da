@@ -1,5 +1,5 @@
-/*! \file queues_mock.cpp
-    \brief Mock of the board queues
+/*! \file queues.cpp
+    \brief Queues for the simulator
 */
 
 #include "src/system/hal/queues.h"
@@ -14,8 +14,6 @@
 #include <mutex>
 #include <iostream>
 #include <cstdlib>
-
-#define HAL_QUEUES_CPP
 
 namespace simulator {
 }

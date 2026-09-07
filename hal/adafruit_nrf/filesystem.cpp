@@ -1,7 +1,4 @@
-#ifndef HAL_FILESYSTEM_CPP
-#define HAL_FILESYSTEM_CPP
-
-#include "filesystem.h"
+#include "src/system/hal/filesystem.h"
 
 #include <Adafruit_LittleFS.h>
 #include <InternalFileSystem.h>
@@ -156,10 +153,6 @@ void HAL_File::truncate(uint8_t sz)
   mInternalFile->truncate(sz);
 }
 
-// HAL_File::operator bool() const {}
-
 } // namespace filesystem
 } // namespace hal
 } // namespace lampda
-
-#endif

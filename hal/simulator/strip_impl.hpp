@@ -1,5 +1,5 @@
 /*! \file strip_impl.hpp
-    \brief Mock of the indexable strip library
+    \brief Indexable strip library for the simulator
 */
 
 #ifndef HAL_STRIPIMPL_HPP

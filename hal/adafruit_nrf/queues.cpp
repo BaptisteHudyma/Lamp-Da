@@ -1,7 +1,4 @@
-#ifndef HAL_QUEUES_CPP
-#define HAL_QUEUES_CPP
-
-#include "queues.h"
+#include "src/system/hal/queues.h"
 
 #include <Arduino.h>
 
@@ -69,5 +66,3 @@ size_t HAL_queue_get_number_of_items(QueueHandle_t handle)
 } // namespace queues
 } // namespace hal
 } // namespace lampda
-
-#endif

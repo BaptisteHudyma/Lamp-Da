@@ -1,9 +1,6 @@
-#ifndef HAL_I2C_CPP
-#define HAL_I2C_CPP
+#include "src/system/hal/i2c.h"
 
-#include "i2c.h"
-
-#include "time.h"
+#include "src/system/hal/time.h"
 
 #include <cassert>
 #include <stdint.h>
@@ -190,5 +187,3 @@ int i2c_xfer_unlocked(
 } // namespace i2c
 } // namespace hal
 } // namespace lampda
-
-#endif

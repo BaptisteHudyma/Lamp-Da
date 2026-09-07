@@ -1,5 +1,5 @@
-/*! \file bluetooth_mock.cpp
-    \brief Mock of the board bluetooth
+/*! \file bluetooth.cpp
+    \brief bluetooth for the simulator
 */
 
 #include "src/system/hal/bluetooth.h"

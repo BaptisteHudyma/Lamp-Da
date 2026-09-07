@@ -1,5 +1,5 @@
-/*! \file pdm_handle_mock.cpp
-    \brief Mock of the board PDM microphone interface
+/*! \file pdm_handle.cpp
+    \brief PDM microphone interface for the simulator
 */
 
 #include <cstdint>
@@ -16,8 +16,6 @@
 #include <SFML/Graphics/PrimitiveType.hpp>
 
 #include <SFML/Audio/SoundRecorder.hpp>
-
-#define PDM_HANDLE_CPP
 
 namespace simulator {
 

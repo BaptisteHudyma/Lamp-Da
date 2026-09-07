@@ -1,7 +1,4 @@
-#ifndef HAL_SERIAL_CPP
-#define HAL_SERIAL_CPP
-
-#include "serial.h"
+#include "src/system/hal/serial.h"
 
 #include <Arduino.h>
 #include "Adafruit_TinyUSB.h"
@@ -21,5 +18,3 @@ uint16_t mtu_size() { return Serial.availableForWrite(); }
 } // namespace serial
 } // namespace hal
 } // namespace lampda
-
-#endif

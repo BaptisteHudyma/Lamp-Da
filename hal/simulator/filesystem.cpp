@@ -1,4 +1,6 @@
-#define HAL_FILESYSTEM_CPP
+/*! \file filesystem.cpp
+    \brief filesystem for the simulator
+*/
 
 #include "src/system/hal/filesystem.h"
 

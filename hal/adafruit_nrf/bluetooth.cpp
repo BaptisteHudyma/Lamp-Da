@@ -1,16 +1,17 @@
-#include "bluetooth.h"
+#include "src/system/hal/bluetooth.h"
 
 #include <bluefruit.h>
 #include <FreeRTOS.h>
 #include <queue.h>
 #include <task.h>
 
+// Relative Path Here !!
+#include "bluetooth/elk_service.h"
+//
+
 #include <cstdint>
 
-#include "src/system/logic/alerts.h"
 #include "src/system/utils/constants.h"
-
-#include "src/system/component/battery.h"
 
 #include "src/system/hal/time.h"
 #include "src/system/hal/queues.h"
@@ -18,7 +19,9 @@
 #include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
 
-#include "src/system/hal/bluetooth/elk_service.h"
+#include "src/system/component/battery.h"
+
+#include "src/system/logic/alerts.h"
 
 namespace lampda {
 namespace hal {
