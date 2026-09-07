@@ -9,8 +9,13 @@ OBJECTS_DIR=$(BUILD_DIR)/objs
 ARDUINO_LOC=$(BUILD_DIR)/arduino-cli
 COMPILED_UF2=$(BUILD_DIR)/uf2
 GEN_DIR=$(SRC_DIR)src/generated
+HALTRG_DIR=$(GEN_DIR)/hal
 TOGENERATE_DIR=$(MEDIAS_DIR)/to_generate
 
+# Hardware Abstraction Layer directory
+HALIMPLEM_DIR=$(SRC_DIR)hal
+HAL_ADAFRUITNRF_DIR=$(HALIMPLEM_DIR)/adafruit_nrf
+HAL_SIMULATOR_DIR=$(HALIMPLEM_DIR)/simulator
 
 SHELL:=/bin/bash # required by python3 virtualenv
 PYTHON_EXE=/usr/bin/env python3
@@ -320,7 +325,7 @@ $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt: has-lamp-type check-arduino-deps 
 			--build-property "$(ARDUINO_EXTRA_FLAGS)" \
 			--show-properties > $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt)
 
-build-clean: has-lamp-type $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt
+build-clean: has-lamp-type $(BUILD_DIR)/properties-${LMBD_LAMP_TYPE}.txt link-hal-adafruit-nrf generate-images
 	@echo; echo " --- $@"
 	# build "clean" project to detect arduino-cli behavior...
 	@mkdir -p $(OBJECTS_DIR) $(CACHE_DIR)
@@ -388,6 +393,18 @@ generate-images:
 	@$(foreach var,$(IMAGES_TO_GENERATE), $(TOOLS_GENERATE_IMAGE) $(var) $(GEN_DIR)/$(basename $(notdir $(var))).hpp;)
 	@echo " ok --- $@"
 
+link-hal-simulator:
+	@echo
+	@mkdir -p $(HALTRG_DIR)
+	@cp -r $(HAL_SIMULATOR_DIR)/* $(HALTRG_DIR)
+	@echo " ok --- $@"
+
+link-hal-adafruit-nrf:
+	@echo
+	@mkdir -p $(HALTRG_DIR)
+	@cp -r $(HAL_ADAFRUITNRF_DIR)/* $(HALTRG_DIR)
+	@echo " ok --- $@"
+
 #
 # build process
 #  - first do a "dry build" to inform adruino about which source files changed
@@ -395,7 +412,7 @@ generate-images:
 #  - finally let arduino build the final artifact using our cached objects
 #
 
-build-dry: build-clean install-venv has-lamp-type generate-images
+build-dry: build-clean install-venv has-lamp-type link-hal-adafruit-nrf generate-images
 	# refresh cache before processing...
 	@mkdir -p $(ARTIFACTS) $(OBJECTS_DIR) $(CACHE_DIR)
 	@$(ARDUINO_CLI) compile -b $(FQBN) \
@@ -404,7 +421,7 @@ build-dry: build-clean install-venv has-lamp-type generate-images
 			--build-property "$(ARDUINO_EXTRA_FLAGS)" \
 		> /dev/null 2>&1 || true
 
-process: has-lamp-type build-dry process-clear generate-images $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
+process: has-lamp-type build-dry process-clear link-hal-adafruit-nrf generate-images $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@echo; echo " --- $@"
 	@test -e $(BUILD_DIR)/process-${LMBD_LAMP_TYPE}.sh
 	@find $(BUILD_DIR)/objs/sketch -iname '*.cpp.o' -exec rm '{}' \; \
@@ -569,7 +586,7 @@ clean-doc:
 
 clean: clean-artifacts clean-simulator clean-doc
 	@echo; echo " --- $@"
-	rm -rf $(OBJECTS_DIR) $(CACHE_DIR) $(BUILD_DIR)/*.txt $(GEN_DIR)
+	rm -rf $(OBJECTS_DIR) $(CACHE_DIR) $(BUILD_DIR)/*.txt $(GEN_DIR) $(HALTRG_DIR)
 	rm -rf $(BUILD_DIR)/.process-*-success $(BUILD_DIR)/.skip-*-clean
 
 #
@@ -578,7 +595,7 @@ clean: clean-artifacts clean-simulator clean-doc
 
 .PRECIOUS: $(BUILD_DIR)/simulator/%-simulator
 
-$(BUILD_DIR)/simulator/%-simulator: generate-images
+$(BUILD_DIR)/simulator/%-simulator: link-hal-simulator generate-images
 	@echo; echo " --- $@"
 	@mkdir -p $(BUILD_DIR) $(BUILD_DIR)/simulator
 	@cd $(SRC_DIR)/simulator && \
@@ -596,7 +613,7 @@ clean-simulator:
 		&& (echo 'Artifact is ready here:'; echo '$<'; echo) \
 		|| (echo 'No artifact found, build failed?'; rm -f '$<')
 
-simulator: generate-images indexable-simulator simple-simulator
+simulator: link-hal-simulator generate-images indexable-simulator simple-simulator
 	@echo " --- ok: $@"
 
 
@@ -606,7 +623,7 @@ clean-tests:
 		&& (cd $(BUILD_DIR)/tests && make clean) \
 		|| (rm -rf $(BUILD_DIR)/tests) || (rm -rf $(GEN_DIR))
 
-test: generate-images
+test: link-hal-simulator generate-images
 	@echo; echo " --- $@"
 	@mkdir -p $(BUILD_DIR)/tests
 	@cd $(SRC_DIR)/tests && \

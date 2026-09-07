@@ -1,13 +1,11 @@
-/*! \file register_mock.cpp
-    \brief Mock of the board internal registers
+/*! \file register.cpp
+    \brief Internal registers for the simulator
 */
 
 #include "src/system/hal/registers.h"
 
 #include "simulator/include/hardware_influencer.h"
 #include <cstdint>
-
-#define HAL_REGISTER_CPP
 
 namespace simulator {
 

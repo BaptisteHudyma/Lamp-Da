@@ -6,6 +6,7 @@
     - charging_ic.h: layer of the battery charging component
     - imu_wrappper.h: interaction layer of the imu
     - indicator.h: visual indicator controler (led in the button)
+    - filesystem.h: handle the reading and writting of variables to memory
     - power_gate.h: the electrical gates to isolate output & vbus form each others
     - text_in.h: user text input and parsing
     - text_out.h: user text output
@@ -23,7 +24,6 @@
     - battery.h: handle the battery readings, for battery level
     - button.h: control the button. Takes callbacks for actions on multiple button pushes. Used to display stuf on the button if needed
     - charger.h: main high level logic to use the charger, as well as power switches
-    - fileSystem.h: handle the reading and writting of variables to memory
     - imu.h: the imu related operations
     - output_power.h: interface of the output voltage driver
     - sound.h: microphone main input point. Compute FFT and auto disable
@@ -37,10 +37,11 @@
     -  noise.h
     -  random8.h
     -  scale8.h
-- hal: Hardware Abstraction Layer: implement the platform specific code
+- hal: Hardware Abstraction Layer: implement the platform specific code. The implementation linked to those files is switched at compile time depending on the hardware target.
     - bluetooth.h: bluetooth interfaces
     - gpio.h: programmable pins interface
     - i2c.h; i2c interface
+    - filesystem.h: handle the reading and writting of variables to memory
     - pdm_handle.h: microphone interface (through PDM)
     - queues.h: Internal queue implementation
     - register.h: NRF52840 specific register access

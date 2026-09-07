@@ -21,13 +21,13 @@
 #include "src/system/logic/sunset_timer.h"
 
 #include "src/system/bsp/indicator.h"
+#include "src/system/bsp/filesystem.h"
 #include "src/system/bsp/power_gates.h"
 #include "src/system/bsp/threads.h"
 
 #include "src/system/component/charger.h"
 #include "src/system/component/battery.h"
 #include "src/system/component/button.h"
-#include "src/system/component/fileSystem.h"
 #include "src/system/component/imu.h"
 #include "src/system/component/output_power.h"
 #include "src/system/component/sound.h"
@@ -164,7 +164,7 @@ bool read_parameters()
 {
   bool isSuccess = false;
   // load system values in memory
-  if (not component::fileSystem::system::load_from_file())
+  if (not bsp::filesystem::system::load_from_file())
   {
     logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_SLEEP_SKIPPED);
   }
@@ -175,7 +175,7 @@ bool read_parameters()
     statistics::load_from_memory();
 
     uint32_t wasPutToSleepCleanly = 0;
-    const bool isCleanFlagFound = component::fileSystem::system::get_value(cleanSleepKey, wasPutToSleepCleanly);
+    const bool isCleanFlagFound = bsp::filesystem::system::get_value(cleanSleepKey, wasPutToSleepCleanly);
     if (not isCleanFlagFound or wasPutToSleepCleanly != 0xDEADBEEF)
     {
       // dirty sleep alert
@@ -183,35 +183,34 @@ bool read_parameters()
     }
 
     uint32_t brightness = 0;
-    if (component::fileSystem::system::get_value(brightnessKey, brightness))
+    if (bsp::filesystem::system::get_value(brightnessKey, brightness))
     {
       logic::brightness::update_brightness(brightness, true);
       logic::brightness::update_saved_brightness();
     }
 
     uint32_t indicatorLevel = 0;
-    if (component::fileSystem::system::get_value(indicatorLevelKey, indicatorLevel))
+    if (bsp::filesystem::system::get_value(indicatorLevelKey, indicatorLevel))
     {
       logic::indicator::set_brightness_level(indicatorLevel);
     }
 
     uint32_t isInLockoutMode = 0;
-    if (component::fileSystem::system::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
+    if (bsp::filesystem::system::get_value(isLockoutModeKey, isInLockoutMode) and isInLockoutMode != 0)
     {
       // system in lockout, raise the alert
       logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
     }
 
     uint32_t buttonPin = 0;
-    if (component::fileSystem::system::get_value(buttonPinKey, buttonPin) and buttonPin > 0)
+    if (bsp::filesystem::system::get_value(buttonPinKey, buttonPin) and buttonPin > 0)
     {
       component::button::set_button_pin(static_cast<hal::gpio::DigitalPin::GPIO>(buttonPin));
     }
 
     // Auto activate bluetooth is needed
     uint32_t bluetoothAutoActivation = 0;
-    if (component::fileSystem::system::get_value(bluetoothAutoKey, bluetoothAutoActivation) and
-        bluetoothAutoActivation > 0)
+    if (bsp::filesystem::system::get_value(bluetoothAutoKey, bluetoothAutoActivation) and bluetoothAutoActivation > 0)
     {
       bluetoothAutoActivationLeftCount = min<uint32_t>(maxBluetoothAutoActivations, bluetoothAutoActivation - 1);
 
@@ -223,7 +222,7 @@ bool read_parameters()
     }
   }
 
-  if (component::fileSystem::user::load_from_file())
+  if (bsp::filesystem::user::load_from_file())
   {
     user::read_parameters();
   }
@@ -235,50 +234,50 @@ bool read_parameters()
 void setup_clean_sleep_flag()
 {
   // clear clean sleep flag
-  component::fileSystem::system::set_value(cleanSleepKey, 0);
+  bsp::filesystem::system::set_value(cleanSleepKey, 0);
   // write parameters, if a crash happens, we will notice a dirty flag
-  component::fileSystem::system::write_to_file();
+  bsp::filesystem::system::write_to_file();
   // temp shutdown
-  component::fileSystem::shutdown();
+  bsp::filesystem::shutdown();
 }
 
 void write_parameters(const bool shouldSaveUserParameters = true, const bool shouldSaveSystemParameters = true)
 {
-  component::fileSystem::clear();
+  bsp::filesystem::clear();
 
   if (shouldSaveSystemParameters)
   {
     // write updated statistics
     statistics::write_to_memory();
 
-    component::fileSystem::system::set_value(cleanSleepKey, 0xDEADBEEF);
+    bsp::filesystem::system::set_value(cleanSleepKey, 0xDEADBEEF);
     // only save saved brightness, not current
-    component::fileSystem::system::set_value(brightnessKey, logic::brightness::get_saved_brightness());
-    component::fileSystem::system::set_value(indicatorLevelKey, logic::indicator::get_brightness_level());
+    bsp::filesystem::system::set_value(brightnessKey, logic::brightness::get_saved_brightness());
+    bsp::filesystem::system::set_value(indicatorLevelKey, logic::indicator::get_brightness_level());
     // lockout mode always kept, if not deactivated by system
-    component::fileSystem::system::set_value(isLockoutModeKey,
-                                             logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT));
-    component::fileSystem::system::set_value(buttonPinKey, static_cast<uint32_t>(component::button::get_button_pin()));
+    bsp::filesystem::system::set_value(isLockoutModeKey,
+                                       logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT));
+    bsp::filesystem::system::set_value(buttonPinKey, static_cast<uint32_t>(component::button::get_button_pin()));
 
     // if the user used the bluetooth, it will be written here for auto activation
     const uint32_t nextWakeUpWithBluetooth = logic::inputs_bluetooth::is_bluetooth_used() ?
                                                      maxBluetoothAutoActivations :
                                                      bluetoothAutoActivationLeftCount;
-    component::fileSystem::system::set_value(bluetoothAutoKey, nextWakeUpWithBluetooth);
+    bsp::filesystem::system::set_value(bluetoothAutoKey, nextWakeUpWithBluetooth);
   }
   else
   {
-    component::fileSystem::clear_system_parameters();
+    bsp::filesystem::clear_system_parameters();
   }
 
   if (shouldSaveUserParameters)
     user::write_parameters();
 
   // write all
-  component::fileSystem::user::write_to_file();
-  component::fileSystem::system::write_to_file();
+  bsp::filesystem::user::write_to_file();
+  bsp::filesystem::system::write_to_file();
   // close filesystem
-  component::fileSystem::shutdown();
+  bsp::filesystem::shutdown();
 }
 
 // user code is running when state is output
@@ -698,7 +697,7 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
   // save the current config to a file
   write_parameters(shouldSaveUserParameters, shouldSaveSystemParameters);
   hal::delay_ms(20);
-  component::fileSystem::shutdown();
+  bsp::filesystem::shutdown();
 
   // Phase 4: Stop I2C
   for (uint8_t i = 0; i < hal::registers::get_wire_interface_count(); ++i)

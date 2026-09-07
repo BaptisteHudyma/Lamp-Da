@@ -1,10 +1,8 @@
-/*! \file time_mock.cpp
-    \brief Mock of the board time
+/*! \file time.cpp
+    \brief Time for the simulator
 */
 
 #include "src/system/hal/time.h"
-
-#define HAL_TIME_CPP
 
 #include <SFML/System/Time.hpp>
 

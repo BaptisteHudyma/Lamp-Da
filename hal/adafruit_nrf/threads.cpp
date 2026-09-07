@@ -1,7 +1,4 @@
-#ifndef HAL_THREADS_CPP
-#define HAL_THREADS_CPP
-
-#include "threads.h"
+#include "src/system/hal/threads.h"
 
 #include "src/system/bsp/threads.h"
 
@@ -157,5 +154,3 @@ void HAL_shutdown() { canRun = false; }
 } // namespace threads
 } // namespace hal
 } // namespace lampda
-
-#endif

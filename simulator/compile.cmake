@@ -58,6 +58,7 @@ set(SRC_SYSTEM_BSP
     ${LMBD_ROOT_DIR}/src/system/bsp/charging_ic.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/imu_wrapper.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/indicator.cpp
+    ${LMBD_ROOT_DIR}/src/system/bsp/filesystem.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/power_gates.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/text_in.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/text_out.cpp
@@ -68,7 +69,6 @@ set(SRC_SYSTEM_COMPONENT
     ${LMBD_ROOT_DIR}/src/system/component/battery.cpp
     ${LMBD_ROOT_DIR}/src/system/component/button.cpp
     ${LMBD_ROOT_DIR}/src/system/component/charger.cpp
-    ${LMBD_ROOT_DIR}/src/system/component/fileSystem.cpp
     ${LMBD_ROOT_DIR}/src/system/component/imu.cpp
     ${LMBD_ROOT_DIR}/src/system/component/output_power.cpp
     ${LMBD_ROOT_DIR}/src/system/component/sound.cpp
@@ -103,16 +103,18 @@ set(SRC_SYSTEM_LOGIC
     ${LMBD_ROOT_DIR}/src/system/logic/sunset_timer.cpp
 )
 
+# The compile chain should have copied the correct HAL here
 set(SIMULATOR_HAL
-    ${LMBD_ROOT_DIR}/simulator/hal/bluetooth_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/hal/gpio_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/hal/i2c_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/hal/pdm_handle_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/hal/serial_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/hal/queues_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/hal/registers_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/hal/threads_mock.cpp
-    ${LMBD_ROOT_DIR}/simulator/hal/time_mock.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/bluetooth.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/gpio.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/i2c.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/filesystem.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/pdm_handle.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/serial.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/queues.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/registers.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/threads.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/time.cpp
 )
 
 set(SIMULATOR_STATE

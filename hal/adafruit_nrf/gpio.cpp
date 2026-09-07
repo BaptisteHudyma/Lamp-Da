@@ -1,7 +1,4 @@
-#ifndef HAL_GPIO_CPP
-#define HAL_GPIO_CPP
-
-#include "gpio.h"
+#include "src/system/hal/gpio.h"
 
 #include <Arduino.h>
 #include <memory>
@@ -226,5 +223,3 @@ void DigitalPin::disconnect() const { disconnect_pin(mImpl->mDigitalPin); }
 } // namespace gpio
 } // namespace hal
 } // namespace lampda
-
-#endif

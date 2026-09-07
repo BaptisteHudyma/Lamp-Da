@@ -15,7 +15,7 @@ The board is made to fit into a 50mm tube.
 
 ## Physical build and architecture :
 
-The electrical circuit and build files can be found in the **electrical** folder.
+The electrical circuit and build files can be found in the **physical/electrical** folder.
 
 ![electrical circuit](Medias/circuit.jpg)
 

@@ -4,10 +4,9 @@
  * It assumes the device support EasyDMA (NRF52)
  */
 
-#ifndef HAL_STRIPIMPL_HPP
-#define HAL_STRIPIMPL_HPP
+#pragma once
 
-#include "strip_impl.h"
+#include "src/system/hal/strip_impl.h"
 
 #include "src/system/bsp/text_out.h"
 
@@ -348,5 +347,3 @@ template<size_t LedCount, uint8_t ChannelCount> void LampdaStrip<LedCount, Chann
 } // namespace strip
 } // namespace hal
 } // namespace lampda
-
-#endif

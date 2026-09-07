@@ -11,6 +11,15 @@
       "cwd": "${workspaceRoot}"
     },
     {
+      "name": "itest",
+      "type": "gdb",
+      "request": "launch",
+      "target": "${workspaceFolder}/_build/tests/itest/tests_itest",
+      "arguments": "",
+      "stopAtEntry": false,
+      "cwd": "${workspaceRoot}"
+    },
+    {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",

@@ -1,7 +1,4 @@
-#ifndef HAL_TIME_CPP
-#define HAL_TIME_CPP
-
-#include "time.h"
+#include "src/system/hal/time.h"
 
 // Use the Arduino defined functions
 #include "delay.h"
@@ -27,6 +24,4 @@ extern "C" {
 }
 } // namespace hal
 } // namespace lampda
-#endif
-
 #endif

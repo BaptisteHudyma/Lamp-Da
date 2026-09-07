@@ -1,14 +1,11 @@
-#ifndef HAL_REGISTER_CPP
-#define HAL_REGISTER_CPP
-
-#include "registers.h"
-#include "time.h"
+#include "src/system/hal/registers.h"
 
 // constants
 #include "src/system/utils/time_utils.h"
 #include "src/system/utils/constants.h"
 
 #include "src/system/hal/serial.h"
+#include "src/system/hal/time.h"
 
 #include "src/system/bsp/text_out.h"
 
@@ -152,5 +149,3 @@ void sync_memory_protection()
 } // namespace registers
 } // namespace hal
 } // namespace lampda
-
-#endif

@@ -1,33 +1,23 @@
-#include "fileSystem.h"
+#include "filesystem.h"
 
-#ifndef LMBD_SIMULATION
-#include <Adafruit_LittleFS.h>
-#include <InternalFileSystem.h>
-#else
-#include "simulator/hal/Adafruit_LittleFS.h"
-#include "simulator/hal/InternalFileSystem.h"
-#endif
-
-#include <cassert>
-#include <map>
-#include <vector>
-
-#include "src/system/utils/constants.h"
-
+#include "src/system/hal/filesystem.h"
 #include "src/system/hal/time.h"
 
 #include "src/system/bsp/text_out.h"
 
+#include <map>
+
 namespace lampda {
-namespace component {
-namespace fileSystem {
+namespace bsp {
+namespace filesystem {
 
-static constexpr auto FILENAME_USER = "/.lampda.par";
-// store lamp internal parameters, that should not be erased
-static constexpr auto FILENAME_INTERNAL = "/.internal.par";
+/// Store lamp general parameters
+static constexpr const char* const FILENAME_USER = "/.lampda.par";
+/// store lamp internal parameters, that should not be erased
+static constexpr const char* const FILENAME_INTERNAL = "/.internal.par";
 
-using namespace Adafruit_LittleFS_Namespace;
-File paramFile(InternalFS); // instance to avoid recreating objects
+/// instance to avoid recreating objects
+hal::filesystem::HAL_File paramFile;
 
 size_t lastUserParameterSize = 0;
 std::map<uint32_t, uint32_t> _userParametersValueMap;
@@ -52,85 +42,63 @@ union KeyValToByteArray
   keyValue kv;              ///< original object
 };
 
-static bool isSetup = false;
-void setup()
-{
-  if (isSetup)
-    return;
-
-  if (!InternalFS.begin())
-  {
-    bsp::lampda_print("Failed to start file system");
-  }
-  else
-  {
-    isSetup = true;
-  }
-}
-
-void shutdown()
-{
-  if (!isSetup)
-    return;
-
-  isSetup = false;
-  InternalFS.end();
-}
-
 void clear()
 {
   lastUserParameterSize = _userParametersValueMap.size();
   _userParametersValueMap.clear();
-  // never clear lamp prameters
+  // never clear system prameters
 }
 
-// Should never be used
 void clear_system_parameters() { _systemParametersValueMap.clear(); }
+
+void shutdown() { hal::filesystem::shutdown(); }
 
 void clear_internal_fs()
 {
-  setup();
-
-  // hardcore, format the entire file system
-  InternalFS.format();
+  hal::filesystem::format_file_system();
+  hal::delay_ms(10);
 }
 
 namespace __internal {
 
 bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& paramMap)
 {
-  setup();
-
   paramMap.clear();
-  if (paramFile.open(fileName, FILE_O_READ) and paramFile.isOpen() and paramFile.available())
+  if (paramFile.open(fileName, hal::filesystem::HAL_File::OpenType::READ) and paramFile.is_open() and
+      paramFile.is_available())
   {
     const auto fileSize = paramFile.size();
     if (fileSize <= 0)
-      return false;
-    if (not paramFile.seek(0))
-      return false;
-
-    std::vector<uint8_t> vecRead(fileSize);
-    // THE FILESYSTEM CAN GET CORRUPTED, AND THE LINE BELOW WILL RUN FOREVER
-    const int retVal = paramFile.read((uint8_t*)vecRead.data(), vecRead.size());
-
-    if (retVal < 0)
     {
-      // error case
+      paramFile.close();
+      return false;
+    }
+    if (not paramFile.seek(0))
+    {
+      paramFile.close();
       return false;
     }
 
-    KeyValToByteArray converter;
-    converter.kv.key = 0;
-    converter.kv.value = 0;
-
     bool hasDuplicates = false;
 
-    uint8_t cnt = 0; // when this reaches 8, a new word
-    // parser state machine
-    for (const char c: vecRead)
+    // parser loop, with infinite loop prevention
+    size_t loopTimeout = 1024;
+    while (loopTimeout > 0)
     {
-      if (cnt >= sizeOfData)
+      loopTimeout--;
+
+      KeyValToByteArray converter;
+      converter.kv.key = 0;
+      converter.kv.value = 0;
+
+      // THE FILESYSTEM CAN GET CORRUPTED, AND THE LINE BELOW WILL RUN FOREVER
+      const int readlen = paramFile.read((uint8_t*)converter.data, sizeof(converter.data));
+      if (readlen <= 0)
+      {
+        break;
+      }
+
+      if (readlen >= sizeOfData)
       {
         // only modify the first data of the list
         if (paramMap.find(converter.kv.key) == paramMap.end())
@@ -141,21 +109,9 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
         {
           hasDuplicates = true;
         }
-
-        // reset
-        converter.kv.key = 0;
-        converter.kv.value = 0;
-        cnt = 0;
       }
-
-      converter.data[cnt] = c;
-      cnt++;
-    }
-
-    // last word !
-    if (cnt >= sizeOfData)
-    {
-      paramMap[converter.kv.key] = converter.kv.value;
+      else
+        break;
     }
 
     // erase file content in case of duplicates
@@ -170,10 +126,8 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
 
 bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramMap, const bool shouldEraseFirst = false)
 {
-  setup();
-
   // check if it exists
-  if (paramFile.open(filePath, FILE_O_WRITE) and paramFile.isOpen())
+  if (paramFile.open(filePath, hal::filesystem::HAL_File::OpenType::WRITE) and paramFile.is_open())
   {
     if (not shouldEraseFirst)
       paramFile.seek(0); // return to the begining of the file
@@ -187,16 +141,15 @@ bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramM
   else
   {
     // error. the file should have been opened
-    bsp::lampda_print("file system error, reseting file format");
+    bsp::lampda_print("file system error, resetting file format");
 
     // hardcore, format the entire file system
-    InternalFS.format();
-    hal::delay_ms(10);
+    hal::filesystem::format_file_system();
   }
 
-  if (not paramFile.isOpen())
-    paramFile.open(filePath, FILE_O_WRITE);
-  if (paramFile.isOpen())
+  if (not paramFile.is_open())
+    paramFile.open(filePath, hal::filesystem::HAL_File::OpenType::WRITE);
+  if (paramFile.is_open())
   {
     for (const auto& keyval: paramMap)
     {
@@ -282,17 +235,6 @@ uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
 
 void write_to_file()
 {
-  if (!isSetup)
-  {
-    setup();
-  }
-
-  // failure case: TODO: something ?
-  if (!isSetup)
-  {
-    return;
-  }
-
   // write internal parameters
   const bool systemParameterWriteSuccess = __internal::write_file(FILENAME_INTERNAL, _systemParametersValueMap);
   if (not systemParameterWriteSuccess)
@@ -302,21 +244,7 @@ void write_to_file()
   }
 }
 
-bool load_from_file()
-{
-  if (!isSetup)
-  {
-    setup();
-  }
-
-  // failure case: TODO: something ?
-  if (!isSetup)
-  {
-    return false;
-  }
-
-  return __internal::read_file_content(FILENAME_INTERNAL, _systemParametersValueMap);
-}
+bool load_from_file() { return __internal::read_file_content(FILENAME_INTERNAL, _systemParametersValueMap); }
 
 } // namespace system
 
@@ -382,17 +310,6 @@ uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
 
 void write_to_file()
 {
-  if (!isSetup)
-  {
-    setup();
-  }
-
-  // failure case: TODO: something ?
-  if (!isSetup)
-  {
-    return;
-  }
-
   // user first
   const bool shouldEraseFile = lastUserParameterSize > _userParametersValueMap.size();
   const bool userParameterWriteSuccess =
@@ -404,24 +321,10 @@ void write_to_file()
   }
 }
 
-bool load_from_file()
-{
-  if (!isSetup)
-  {
-    setup();
-  }
-
-  // failure case: TODO: something ?
-  if (!isSetup)
-  {
-    return false;
-  }
-
-  return __internal::read_file_content(FILENAME_USER, _userParametersValueMap);
-}
+bool load_from_file() { return __internal::read_file_content(FILENAME_USER, _userParametersValueMap); }
 
 } // namespace user
 
-} // namespace fileSystem
-} // namespace component
+} // namespace filesystem
+} // namespace bsp
 } // namespace lampda

@@ -1,5 +1,5 @@
-/*! \file print_mock.cpp
-    \brief Mock of the board print and debugs
+/*! \file print.cpp
+    \brief Print and debugs  for the simulator
 */
 
 #include "src/system/bsp/text_out.h"
@@ -15,8 +15,6 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
-
-#define HAL_SERIAL_CPP
 
 namespace simulator {
 

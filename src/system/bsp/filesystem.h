@@ -1,17 +1,15 @@
-/*! \file fileSystem.h
-    \brief Interface for the physical components of the file system.
+/*! \file bsp/filesystem.h
+    \brief High level actions on the file system
 */
 
-#ifndef COMPONENT_FILESYSTEM_H
-#define COMPONENT_FILESYSTEM_H
+#pragma once
 
 #include <cstdint>
-#include <string>
 
 namespace lampda {
-namespace component {
-/// Handle the interaction with the file system.
-namespace fileSystem {
+namespace bsp {
+/// File system high level actions.
+namespace filesystem {
 
 /// call once on program stop.
 void shutdown();
@@ -111,8 +109,6 @@ bool load_from_file();
 
 } // namespace user
 
-} // namespace fileSystem
-} // namespace component
+} // namespace filesystem
+} // namespace bsp
 } // namespace lampda
-
-#endif

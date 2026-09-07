@@ -1,10 +1,8 @@
-/*! \file gpio_mock.cpp
-    \brief Mock of the board gpio
+/*! \file gpio.cpp
+    \brief gpio for the simulator
 */
 
 #include <map>
-
-#include "simulator_state.h"
 
 #include "src/system/hal/gpio.h"
 
@@ -16,9 +14,8 @@
 
 #include "src/system/component/button.h"
 
+#include "simulator/include/simulator_state.h"
 #include "simulator/include/hardware_influencer.h"
-
-#define HAL_GPIO_CPP
 
 typedef void (*voidFuncPtr)(void);
 

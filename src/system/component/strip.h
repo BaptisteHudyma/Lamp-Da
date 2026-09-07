@@ -14,11 +14,9 @@
 
 #include "src/system/hal/strip_impl.h"
 
-#ifndef LMBD_SIMULATION
-#include "src/system/hal/strip_impl.hpp"
-#else
-#include "simulator/hal/strip_impl.hpp"
-#endif
+// special case: include the implementation
+#include "src/generated/hal/strip_impl.hpp"
+//
 
 #include "src/system/ext/scale8.h"
 #include "src/system/ext/random8.h"

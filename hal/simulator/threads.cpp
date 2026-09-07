@@ -1,7 +1,6 @@
-/*! \file threads_mock.cpp
-    \brief Mock of the board threads and tasks
+/*! \file threads.cpp
+    \brief Thread and tasks for the simulator
 */
-#define HAL_THREADS_CPP
 
 #include <functional>
 #include <map>
@@ -95,7 +94,7 @@ int HAL_wait_notification(const int timeout_ms)
 // Actions on  target threads
 
 void HAL_notify_thread(TaskHandle_t handle, int wakeUpEvent) {
-  // TODO issue #132 support when implemented
+        // TODO issue #132 support when implemented
 };
 
 void HAL_suspend_thread(TaskHandle_t handle)

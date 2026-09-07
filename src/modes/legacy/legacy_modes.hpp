@@ -6,7 +6,8 @@
 #define LEGACY_MODES_H
 
 #include "src/system/component/charger.h"
-#include "src/system/component/fileSystem.h"
+
+#include "src/system/bsp/filesystem.h"
 
 #include "src/system/utils/utils.h"
 

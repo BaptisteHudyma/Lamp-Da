@@ -256,7 +256,7 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
           {
             // reset the file system and memory
             bsp::lampda_print("clearing the whole file format");
-            component::fileSystem::clear_internal_fs();
+            bsp::filesystem::clear_internal_fs();
 
             // shutdown the lamp
             const bool shouldSaveUserParameters = false;
@@ -276,7 +276,7 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
           {
             // reset the file system and memory
             bsp::lampda_print("clearing the whole file format");
-            component::fileSystem::clear_internal_fs();
+            bsp::filesystem::clear_internal_fs();
 
             // shutdown the lamp
             const bool shouldSaveUserParameters = false;

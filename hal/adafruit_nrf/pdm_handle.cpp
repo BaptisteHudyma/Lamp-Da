@@ -1,7 +1,4 @@
-#ifndef PDM_HANDLE_CPP
-#define PDM_HANDLE_CPP
-
-#include "pdm_handle.h"
+#include "src/system/hal/pdm_handle.h"
 
 #include "src/system/hal/time.h"
 
@@ -101,5 +98,3 @@ void stop() { PDM.end(); }
 } // namespace microphone
 } // namespace hal
 } // namespace lampda
-
-#endif

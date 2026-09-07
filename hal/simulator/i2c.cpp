@@ -1,18 +1,15 @@
-/*! \file i2c_mock.cpp
-    \brief Mock of the board i2c
+/*! \file i2c.cpp
+    \brief i2c for the simulator
 */
 
 #include "src/system/hal/i2c.h"
 #include <array>
-
-#define HAL_I2C_CPP
 
 #include <cstdint>
 #include <memory>
 #include <thread>
 #include <atomic>
 
-#include "src/system/hal/i2c.h"
 #include "src/system/hal/time.h"
 
 #include "src/system/bsp/threads.h"
