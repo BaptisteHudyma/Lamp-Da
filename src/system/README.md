@@ -37,7 +37,7 @@
     -  noise.h
     -  random8.h
     -  scale8.h
-- hal: Hardware Abstraction Layer: implement the platform specific code
+- hal: Hardware Abstraction Layer: implement the platform specific code. The implementation linked to those files is switched at compile time depending on the hardware target.
     - bluetooth.h: bluetooth interfaces
     - gpio.h: programmable pins interface
     - i2c.h; i2c interface
