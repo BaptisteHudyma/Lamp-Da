@@ -214,7 +214,8 @@ bool read_parameters()
     {
       bluetoothAutoActivationLeftCount = min<uint32_t>(maxBluetoothAutoActivations, bluetoothAutoActivation - 1);
 
-      hal::bluetooth::start_advertising();
+      // bounded device, advertize but only allow the bounded device, if it exist
+      hal::bluetooth::start_advertising(false);
     }
     else
     {

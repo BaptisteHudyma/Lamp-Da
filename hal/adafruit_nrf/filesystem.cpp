@@ -120,7 +120,7 @@ size_t HAL_File::size() const
   return mInternalFile->size();
 }
 
-size_t HAL_File::write(uint8_t* in, size_t sz)
+size_t HAL_File::write(const uint8_t* const in, size_t sz)
 {
   if (not is_setup() or not mInternalFile)
     return false;

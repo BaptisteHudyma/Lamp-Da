@@ -99,7 +99,7 @@ size_t HAL_File::size() const
   return 0;
 }
 
-size_t HAL_File::write(uint8_t* in, size_t sz)
+size_t HAL_File::write(const uint8_t* const in, size_t sz)
 {
   if (mInternalFile->file != nullptr)
   {

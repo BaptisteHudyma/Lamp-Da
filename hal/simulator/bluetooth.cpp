@@ -12,10 +12,14 @@ bool is_activated() { return false; }
 
 bool is_advertising() { return false; }
 
+bool is_open_to_all() { return false; }
+
 bool is_connected() { return false; }
 
+bool is_bounded(std::array<uint8_t, 8>& buffer) { return false; }
+
 // start the advertising sequence (with a timeout)
-void start_advertising() {}
+void start_advertising(bool allowUnknownConnections) {}
 
 // disable the bluetooth controler
 void stop_bluetooth_advertising() {}
