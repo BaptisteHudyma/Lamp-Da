@@ -160,12 +160,20 @@ void secured_connection_callback(uint16_t conn_hdl)
   if (not is_activated())
     return;
 
-  bsp::lampda_print("[Security] Secure connection activated");
+  BLEConnection* conn = Bluefruit.Connection(conn_hdl);
+  const ble_gap_addr_t& resolvedAddr = conn->getPeerAddr();
+
+  bsp::lampda_print("[Security] Secure connection activated=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
+                    resolvedAddr.addr_type,
+                    resolvedAddr.addr[5],
+                    resolvedAddr.addr[4],
+                    resolvedAddr.addr[3],
+                    resolvedAddr.addr[2],
+                    resolvedAddr.addr[1],
+                    resolvedAddr.addr[0]);
 
   // ── Refresh the stored address if it was an RPA at pairing time ───────
   // By now the SoftDevice has fully resolved the identity address.
-  BLEConnection* conn = Bluefruit.Connection(conn_hdl);
-  ble_gap_addr_t resolvedAddr = conn->getPeerAddr();
   if (hasBondedPeer and not pairingMode)
   {
     // Check that address are matching
@@ -189,6 +197,9 @@ void secured_connection_callback(uint16_t conn_hdl)
   }
   // Save the handle: it's allowed to treat messages
   authorizedConnHdl = conn_hdl;
+
+  // used !
+  _wasUsed = true;
 }
 
 void connect_callback(uint16_t conn_hdl)
@@ -196,27 +207,14 @@ void connect_callback(uint16_t conn_hdl)
   if (not is_activated())
     return;
 
+  bsp::lampda_print("[BLE] Connected (handle=%d)", connHdl);
+
   BLEConnection* conn = Bluefruit.Connection(conn_hdl);
-  ble_gap_addr_t peerAddr = conn->getPeerAddr();
+  conn->requestPHY(); // Request 2Mbps PHY
+  conn->requestMtuExchange(247);
 
-  bsp::lampda_print("[BLE] Connection from – type=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
-                    peerAddr.addr_type,
-                    peerAddr.addr[5],
-                    peerAddr.addr[4],
-                    peerAddr.addr[3],
-                    peerAddr.addr[2],
-                    peerAddr.addr[1],
-                    peerAddr.addr[0]);
-
-  // ── pairing mode — allow anyone, will bond to the first connected device ─────────
-  if (pairingMode or not hasBondedPeer)
-  {
-    bsp::lampda_print("[Security] Pairing mode — accepting connection for bonding.");
-  }
-  // conn->requestPHY(); // Request 2M PHY
+  // immediatly request pairing, or any msg will be rejected
   conn->requestPairing();
-
-  _wasUsed = true;
 
   const auto batteryLevel = component::battery::get_battery_minimum_cell_level();
   write_battery_level(static_cast<uint8_t>(batteryLevel / 100));
