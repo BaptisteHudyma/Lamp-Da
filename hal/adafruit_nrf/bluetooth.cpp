@@ -84,6 +84,9 @@ static bool hasBondedPeer = false;
 /// If true, the device is in pairing mode, and can accept all connections
 static volatile bool pairingMode = false;
 
+/// Keep track of the currently authorized handle.
+static uint16_t authorizedConnHdl = BLE_CONN_HANDLE_INVALID;
+
 bool try_load_bounded_pair(ble_gap_addr_t& addr)
 {
   // Try to load the bounded address file
@@ -122,6 +125,72 @@ void stop_advertising()
   Bluefruit.Advertising.stop();
 }
 
+void pair_complete_callback(uint16_t conn_hdl, uint8_t authStatus)
+{
+  if (not is_activated())
+    return;
+
+  if (authStatus != 0)
+  {
+    bsp::lampda_print("[Sec]: Pairing failed (0x%02X) - disconnecting", authStatus);
+    Bluefruit.disconnect(conn_hdl);
+    return;
+  }
+
+  bsp::lampda_print("[Sec]: Pairing & bounding success");
+
+  BLEConnection* conn = Bluefruit.Connection(conn_hdl);
+
+  identityAddr = conn->getPeerAddr();
+  hasBondedPeer = true;
+  pairingMode = false;
+
+  bsp::lampda_print("[Bond] Stored identity – type=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
+                    identityAddr.addr_type,
+                    identityAddr.addr[5],
+                    identityAddr.addr[4],
+                    identityAddr.addr[3],
+                    identityAddr.addr[2],
+                    identityAddr.addr[1],
+                    identityAddr.addr[0]);
+}
+
+void secured_connection_callback(uint16_t conn_hdl)
+{
+  if (not is_activated())
+    return;
+
+  bsp::lampda_print("[Security] Secure connection activated");
+
+  // ── Refresh the stored address if it was an RPA at pairing time ───────
+  // By now the SoftDevice has fully resolved the identity address.
+  BLEConnection* conn = Bluefruit.Connection(conn_hdl);
+  ble_gap_addr_t resolvedAddr = conn->getPeerAddr();
+  if (hasBondedPeer and not pairingMode)
+  {
+    // Check that address are matching
+    if (!addressMatches(resolvedAddr, identityAddr))
+    {
+      bsp::lampda_print("[Security] Unknown device — disconnecting immediately");
+      Bluefruit.disconnect(conn_hdl);
+      return;
+    }
+  }
+  else if (pairingMode)
+  {
+    bsp::lampda_print("[Security] First time pairing complete, peer authorized");
+  }
+
+  // Only update if we now have a non-RPA identity address
+  if (resolvedAddr.addr_type != BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_RESOLVABLE)
+  {
+    identityAddr = resolvedAddr;
+    bsp::lampda_print("[Security] Updating the non-RPA identity");
+  }
+  // Save the handle: it's allowed to treat messages
+  authorizedConnHdl = conn_hdl;
+}
+
 void connect_callback(uint16_t conn_hdl)
 {
   if (not is_activated())
@@ -143,39 +212,9 @@ void connect_callback(uint16_t conn_hdl)
   if (pairingMode or not hasBondedPeer)
   {
     bsp::lampda_print("[Security] Pairing mode — accepting connection for bonding.");
-
-    identityAddr = conn->getPeerAddr();
-    hasBondedPeer = true;
-    pairingMode = false;
-
-    bsp::lampda_print("[Bond] Stored identity – type=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
-                      identityAddr.addr_type,
-                      identityAddr.addr[5],
-                      identityAddr.addr[4],
-                      identityAddr.addr[3],
-                      identityAddr.addr[2],
-                      identityAddr.addr[1],
-                      identityAddr.addr[0]);
   }
-  // ── reject unknown devices when a bond already exists ─────────
-  else if (hasBondedPeer)
-  {
-    // NOTE on RPA: if the phone is using an RPA and the SoftDevice has
-    // not yet resolved it, addressMatches() will fail even for the legit
-    // bonded peer. The SoftDevice resolves via stored IRKs internally —
-    // if the peer is bonded, the SoftDevice will have ALREADY matched
-    // the RPA before surfacing this callback, so getPeerAddr() should
-    // return the identity address for a known peer.
-    // An unknown device will appear with a random address that does NOT
-    // match the stored identity → correctly rejected below.
-
-    if (!addressMatches(peerAddr, identityAddr))
-    {
-      bsp::lampda_print("[Security] Unknown device — disconnecting immediately.");
-      Bluefruit.disconnect(conn_hdl);
-      return;
-    }
-  }
+  // conn->requestPHY(); // Request 2M PHY
+  conn->requestPairing();
 
   _wasUsed = true;
 
@@ -188,6 +227,12 @@ void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
 {
   if (not is_activated())
     return;
+
+  // this connection is dead, disconnect it
+  if (authorizedConnHdl == conn_hdl)
+  {
+    authorizedConnHdl = BLE_CONN_HANDLE_INVALID;
+  }
 
   // Dont stop advertising here, some BLE drivers can send one command by connections.
   // Instead, restart the advertising with the same mode
@@ -300,6 +345,9 @@ void startup_sequence()
   Bluefruit.Advertising.setInterval(32, 244);             // in unit of 0.625 ms
   Bluefruit.Advertising.setFastTimeout(ADV_TIMEOUT_FAST); // advertisement timeout
 
+  Bluefruit.Security.setPairCompleteCallback(pair_complete_callback);
+  Bluefruit.Security.setSecuredCallback(secured_connection_callback);
+
   Bluefruit.Periph.setConnectCallback(connect_callback);
   Bluefruit.Periph.setDisconnectCallback(disconnect_callback);
 
@@ -341,6 +389,13 @@ bool is_bounded(std::array<uint8_t, 8>& buffer)
     return true;
   }
   return false;
+}
+
+bool is_connection_allowed(uint16_t connectionHandle)
+{
+  // refuse connections with the incorrect handle
+  return is_activated() and connectionHandle != BLE_CONN_HANDLE_INVALID and
+         connectionHandle == __private::authorizedConnHdl;
 }
 
 // void display_infos() { Bluefruit.printInfo(); }

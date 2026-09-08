@@ -37,7 +37,11 @@ err_t BLEElkService::begin(void)
 
 void BLEElkService::elk_commmand_handle(uint16_t conn_hdl, const uint8_t* data, uint16_t len) const
 {
-  std::ignore = conn_hdl;
+  if (not hal::bluetooth::is_connection_allowed(conn_hdl))
+  {
+    bsp::lampda_print("Unallowed connection, refusing message");
+    return;
+  }
 
   common::elk::Package elkPackage;
   if (common::elk::decode_ELK_message(data, len, elkPackage))

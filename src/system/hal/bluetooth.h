@@ -27,6 +27,9 @@ bool is_connected();
 /// Return true if the bluetooth connection is bounded to a pair
 bool is_bounded(std::array<uint8_t, 8>& buffer);
 
+/// If this returns false, do not accept any actions from bluetooth
+bool is_connection_allowed(uint16_t connectionHandle);
+
 /**
  * \brief start the advertising sequence (with a timeout)
  * \param[in] allowUnknownConnections If true, allow any device to be connected. If false, it will first check if a
