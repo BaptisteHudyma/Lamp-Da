@@ -48,6 +48,9 @@ void notify_battery_level(const uint8_t batteryLevel);
 /// Return tue if the bluetooth was used during lifetime
 bool was_used();
 
+/// Optional bypass to start the BLE device early, without advertizing
+void init();
+
 /// shutdown the bluetooth and services
 void shutdown();
 

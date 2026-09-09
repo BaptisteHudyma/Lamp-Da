@@ -1,5 +1,6 @@
 #include "filesystem.h"
 
+#include "src/system/hal/bluetooth.h"
 #include "src/system/hal/filesystem.h"
 #include "src/system/hal/time.h"
 
@@ -15,9 +16,6 @@ namespace filesystem {
 static constexpr const char* const FILENAME_USER = "/.lampda.par";
 /// store lamp internal parameters, that should not be erased
 static constexpr const char* const FILENAME_INTERNAL = "/.internal.par";
-
-/// instance to avoid recreating objects
-hal::filesystem::HAL_File paramFile;
 
 size_t lastUserParameterSize = 0;
 std::map<uint32_t, uint32_t> _userParametersValueMap;
@@ -53,17 +51,15 @@ void clear_system_parameters() { _systemParametersValueMap.clear(); }
 
 void shutdown() { hal::filesystem::shutdown(); }
 
-void clear_internal_fs()
-{
-  hal::filesystem::format_file_system();
-  hal::delay_ms(10);
-}
+void clear_internal_fs() { hal::filesystem::format_file_system(); }
 
 namespace __internal {
 
 bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& paramMap)
 {
   paramMap.clear();
+
+  hal::filesystem::HAL_File paramFile;
   if (paramFile.open(fileName, hal::filesystem::HAL_File::OpenType::READ) and paramFile.is_open() and
       paramFile.is_available())
   {
@@ -121,12 +117,14 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
     paramFile.close();
     return true;
   }
+  paramFile.close();
   return false;
 }
 
 bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramMap, const bool shouldEraseFirst = false)
 {
   // check if it exists
+  hal::filesystem::HAL_File paramFile;
   if (paramFile.open(filePath, hal::filesystem::HAL_File::OpenType::WRITE) and paramFile.is_open())
   {
     if (not shouldEraseFirst)
@@ -144,7 +142,7 @@ bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramM
     bsp::lampda_print("file system error, resetting file format");
 
     // hardcore, format the entire file system
-    hal::filesystem::format_file_system();
+    clear_internal_fs();
   }
 
   if (not paramFile.is_open())
@@ -168,6 +166,7 @@ bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramM
     return false;
   }
 
+  paramFile.close();
   return true;
 }
 

@@ -78,7 +78,7 @@ bool addressMatches(const ble_gap_addr_t& a, const ble_gap_addr_t& b)
 }
 
 /// Paired device address
-static ble_gap_addr_t identityAddr = {0};
+inline static ble_gap_addr_t identityAddr = {0};
 /// If true, the identityAddr is set, refuse all other connections
 static bool hasBondedPeer = false;
 /// If true, the device is in pairing mode, and can accept all connections
@@ -137,15 +137,26 @@ void pair_complete_callback(uint16_t conn_hdl, uint8_t authStatus)
     return;
   }
 
+  if (not Bluefruit.connected(conn_hdl))
+  {
+    bsp::lampda_print("[Sec] connection handle is already disconnected");
+    return;
+  }
+
   bsp::lampda_print("[Sec]: Pairing & bounding success");
 
   BLEConnection* conn = Bluefruit.Connection(conn_hdl);
+  if (conn == NULL)
+  {
+    bsp::lampda_print("[Pair] connection handle invalid");
+    return;
+  }
 
   identityAddr = conn->getPeerAddr();
   hasBondedPeer = true;
   pairingMode = false;
 
-  bsp::lampda_print("[Bond] Stored identity – type=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
+  bsp::lampda_print("[Bond] Stored identity type=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
                     identityAddr.addr_type,
                     identityAddr.addr[5],
                     identityAddr.addr[4],
@@ -160,7 +171,18 @@ void secured_connection_callback(uint16_t conn_hdl)
   if (not is_activated())
     return;
 
+  if (not Bluefruit.connected(conn_hdl))
+  {
+    bsp::lampda_print("[Security] connection handle is already disconnected");
+    return;
+  }
+
   BLEConnection* conn = Bluefruit.Connection(conn_hdl);
+  if (conn == NULL)
+  {
+    bsp::lampda_print("[Security] connection handle invalid");
+    return;
+  }
   const ble_gap_addr_t& resolvedAddr = conn->getPeerAddr();
 
   bsp::lampda_print("[Security] Secure connection activated=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
@@ -207,13 +229,19 @@ void connect_callback(uint16_t conn_hdl)
   if (not is_activated())
     return;
 
-  bsp::lampda_print("[BLE] Connected (handle=%d)", connHdl);
+  bsp::lampda_print("[BLE] Connected (handle=%d)", conn_hdl);
 
   BLEConnection* conn = Bluefruit.Connection(conn_hdl);
+  if (conn == NULL)
+  {
+    bsp::lampda_print("[Connect] connection handle invalid");
+    return;
+  }
+
   conn->requestPHY(); // Request 2Mbps PHY
   conn->requestMtuExchange(247);
 
-  // immediatly request pairing, or any msg will be rejected
+  // Immediatly request pairing, or any msg will be rejected !
   conn->requestPairing();
 
   const auto batteryLevel = component::battery::get_battery_minimum_cell_level();
@@ -350,8 +378,18 @@ void startup_sequence()
   Bluefruit.Periph.setDisconnectCallback(disconnect_callback);
 
   // Try to load the bounded peer if it exist
-  if (try_load_bounded_pair(identityAddr))
+  ble_gap_addr_t boundAdress;
+  if (try_load_bounded_pair(boundAdress))
   {
+    bsp::lampda_print("[Bond] Loaded address: %02X:%02X:%02X:%02X:%02X:%02X",
+                      boundAdress.addr[5],
+                      boundAdress.addr[4],
+                      boundAdress.addr[3],
+                      boundAdress.addr[2],
+                      boundAdress.addr[1],
+                      boundAdress.addr[0]);
+
+    __private::identityAddr = boundAdress;
     __private::hasBondedPeer = true;
   }
 
@@ -398,13 +436,18 @@ bool is_connection_allowed(uint16_t connectionHandle)
 
 // void display_infos() { Bluefruit.printInfo(); }
 
-void start_advertising(bool allowUnknownConnections)
+void init()
 {
   if (not is_activated())
   {
     // call once when the program starts
     __private::startup_sequence();
   }
+}
+
+void start_advertising(bool allowUnknownConnections)
+{
+  init();
 
   // startup sequence can load a bound adress, so set the pairing mode after
   if (allowUnknownConnections)
