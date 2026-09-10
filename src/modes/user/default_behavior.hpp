@@ -114,7 +114,8 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
         // ramp can activate bluetooth :
         // - if it is not enabled yet
         // - if it is enabled, but the bounded peer already exists (force open connection)
-        const bool shouldShowRamp = (not hal::bluetooth::is_activated()) or (not hal::bluetooth::is_open_to_all());
+        const bool shouldShowRamp = (not hal::bluetooth::is_activated()) or
+                                    not(hal::bluetooth::is_advertising() and hal::bluetooth::is_open_to_all());
         if (shouldShowRamp and
             manager.overlay_animate_ramp(
                     holdDuration, 2000, modes::colors::PaletteGradient<modes::colors::Blue, modes::colors::Blue>))

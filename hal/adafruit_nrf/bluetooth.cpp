@@ -119,11 +119,42 @@ void try_save_bounded_peer(const ble_gap_addr_t& addr)
 
 void stop_advertising()
 {
+  __private::pairingMode = false;
+  logic::alerts::manager.clear(logic::alerts::Type::BLUETOOTH_ADVERT);
+
   if (not is_activated())
     return;
 
-  logic::alerts::manager.clear(logic::alerts::Type::BLUETOOTH_ADVERT);
   Bluefruit.Advertising.stop();
+}
+
+void adv_stop_callback(void)
+{
+  // clear the alert
+  logic::alerts::manager.clear(logic::alerts::Type::BLUETOOTH_ADVERT);
+
+  // skip if bluetooth is off
+  if (not is_activated())
+    return;
+
+  // auto turned off, start again !
+  if (not advertisingStoppedByRequest)
+  {
+    // Dont restart if this was the pairing mode: it timedout and need restarting
+    if (not __private::pairingMode and __private::hasBondedPeer)
+      start_advertising(false);
+    else
+    {
+      __private::stop_advertising();
+      bsp::lampda_print("BLE Advertising stopped");
+    }
+  }
+  else
+  {
+    __private::stop_advertising();
+    bsp::lampda_print("BLE Advertising stop requested.");
+  }
+  advertisingStoppedByRequest = false;
 }
 
 void pair_complete_callback(uint16_t conn_hdl, uint8_t authStatus)
@@ -231,6 +262,9 @@ void secured_connection_callback(uint16_t conn_hdl)
 
   // used !
   _wasUsed = true;
+
+  // Stop advertising manually
+  adv_stop_callback();
 }
 
 void connect_callback(uint16_t conn_hdl)
@@ -278,29 +312,10 @@ void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
   }
 
   // Dont stop advertising here, some BLE drivers can send one command by connections.
-  // Instead, restart the advertising with the same mode
-  start_advertising(__private::pairingMode);
+  // Fake call the advertising callback
+  adv_stop_callback();
+
   bsp::lampda_print("Bluetooth disconnected (reason=0x%02X)", reason);
-}
-
-void adv_stop_callback(void)
-{
-  if (not is_activated())
-    return;
-
-  // auto turned off, start again !
-  if (not advertisingStoppedByRequest)
-  {
-    // restart with the same pairing mode
-    start_advertising(__private::pairingMode);
-    bsp::lampda_print("BLE Advertising timeout, advertising restarted.");
-  }
-  else
-  {
-    __private::stop_advertising();
-    bsp::lampda_print("BLE Advertising stop requested.");
-  }
-  advertisingStoppedByRequest = false;
 }
 
 void set_device_informations()
@@ -519,9 +534,6 @@ void start_advertising(bool allowUnknownConnections)
   __private::advertisingStoppedByRequest = false;
 
   Bluefruit.Advertising.start(ADV_TIMEOUT); // Stop advertising entirely after ADV_TIMEOUT seconds
-
-  // reraise the alert every minutes
-  logic::alerts::manager.raise(logic::alerts::Type::BLUETOOTH_ADVERT);
 }
 
 void stop_bluetooth_advertising()
