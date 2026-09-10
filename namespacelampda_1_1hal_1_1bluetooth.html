@@ -85,6 +85,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a5f2d14154ceaf44282be1c1225f4960a"><td class="memItemLeft" align="right" valign="top"><a id="a5f2d14154ceaf44282be1c1225f4960a" name="a5f2d14154ceaf44282be1c1225f4960a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>load_bound_file</b> ()</td></tr>
+<tr class="separator:a5f2d14154ceaf44282be1c1225f4960a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acec5eb41a240205558b5b9c43095e359"><td class="memItemLeft" align="right" valign="top"><a id="acec5eb41a240205558b5b9c43095e359" name="acec5eb41a240205558b5b9c43095e359"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_activated</b> ()</td></tr>
 <tr class="memdesc:acec5eb41a240205558b5b9c43095e359"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the bluetooth is activated. <br /></td></tr>
@@ -93,33 +96,91 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_activated</b> ()</
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_advertising</b> ()</td></tr>
 <tr class="memdesc:a52be78dc4fe322305bc08c85ed03a270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true is the bluetooth is visible by other devices. <br /></td></tr>
 <tr class="separator:a52be78dc4fe322305bc08c85ed03a270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a480896d3c5e554d4795e516ef13d694b"><td class="memItemLeft" align="right" valign="top"><a id="a480896d3c5e554d4795e516ef13d694b" name="a480896d3c5e554d4795e516ef13d694b"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_open_to_all</b> ()</td></tr>
+<tr class="memdesc:a480896d3c5e554d4795e516ef13d694b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the device is advertising, and all can connect. <br /></td></tr>
+<tr class="separator:a480896d3c5e554d4795e516ef13d694b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a0afac8b5dd7143a5e6b52f0f55273f"><td class="memItemLeft" align="right" valign="top"><a id="a9a0afac8b5dd7143a5e6b52f0f55273f" name="a9a0afac8b5dd7143a5e6b52f0f55273f"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_connected</b> ()</td></tr>
 <tr class="memdesc:a9a0afac8b5dd7143a5e6b52f0f55273f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if a bluetooth user is connected. <br /></td></tr>
 <tr class="separator:a9a0afac8b5dd7143a5e6b52f0f55273f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a631b6645704df1a7f8dee018be6b312c"><td class="memItemLeft" align="right" valign="top"><a id="a631b6645704df1a7f8dee018be6b312c" name="a631b6645704df1a7f8dee018be6b312c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>start_advertising</b> ()</td></tr>
-<tr class="separator:a631b6645704df1a7f8dee018be6b312c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa01dd19e8929ce675dd4c94ee6bd724e"><td class="memItemLeft" align="right" valign="top"><a id="aa01dd19e8929ce675dd4c94ee6bd724e" name="aa01dd19e8929ce675dd4c94ee6bd724e"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_bounded</b> ()</td></tr>
+<tr class="memdesc:aa01dd19e8929ce675dd4c94ee6bd724e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the bluetooth connection is bounded to a pair. <br /></td></tr>
+<tr class="separator:aa01dd19e8929ce675dd4c94ee6bd724e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5b78b5d0e007c949ca6e0434af8b849"><td class="memItemLeft" align="right" valign="top"><a id="aa5b78b5d0e007c949ca6e0434af8b849" name="aa5b78b5d0e007c949ca6e0434af8b849"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_bounded</b> (std::array&lt; uint8_t, 8 &gt; &amp;buffer)</td></tr>
+<tr class="separator:aa5b78b5d0e007c949ca6e0434af8b849"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa45f13d35612dcdf22c439a469cdb862"><td class="memItemLeft" align="right" valign="top"><a id="aa45f13d35612dcdf22c439a469cdb862" name="aa45f13d35612dcdf22c439a469cdb862"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>disconnect</b> ()</td></tr>
+<tr class="memdesc:aa45f13d35612dcdf22c439a469cdb862"><td class="mdescLeft">&#160;</td><td class="mdescRight">Force disconnection. <br /></td></tr>
+<tr class="separator:aa45f13d35612dcdf22c439a469cdb862"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76757cd4340cb9154e28d836f1a1bcb6"><td class="memItemLeft" align="right" valign="top"><a id="a76757cd4340cb9154e28d836f1a1bcb6" name="a76757cd4340cb9154e28d836f1a1bcb6"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_connection_allowed</b> (uint16_t connectionHandle)</td></tr>
+<tr class="memdesc:a76757cd4340cb9154e28d836f1a1bcb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">If this returns false, do not accept any actions from bluetooth. <br /></td></tr>
+<tr class="separator:a76757cd4340cb9154e28d836f1a1bcb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a011bea2006fb15e1d8cb319fc7cbe916"><td class="memItemLeft" align="right" valign="top"><a id="a011bea2006fb15e1d8cb319fc7cbe916" name="a011bea2006fb15e1d8cb319fc7cbe916"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clear_bounded_devices</b> ()</td></tr>
+<tr class="memdesc:a011bea2006fb15e1d8cb319fc7cbe916"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the bounded bluetooth devices. <br /></td></tr>
+<tr class="separator:a011bea2006fb15e1d8cb319fc7cbe916"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a1238dc518a365997dd5ab345c8ca70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1bluetooth.html#a5a1238dc518a365997dd5ab345c8ca70">start_advertising</a> (bool allowUnknownConnections)</td></tr>
+<tr class="memdesc:a5a1238dc518a365997dd5ab345c8ca70"><td class="mdescLeft">&#160;</td><td class="mdescRight">start the advertising sequence (with a timeout)  <br /></td></tr>
+<tr class="separator:a5a1238dc518a365997dd5ab345c8ca70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a4e4ac1dc1244543e630a398cc6d624"><td class="memItemLeft" align="right" valign="top"><a id="a4a4e4ac1dc1244543e630a398cc6d624" name="a4a4e4ac1dc1244543e630a398cc6d624"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>stop_bluetooth_advertising</b> ()</td></tr>
+<tr class="memdesc:a4a4e4ac1dc1244543e630a398cc6d624"><td class="mdescLeft">&#160;</td><td class="mdescRight">disable the bluetooth advertising, but not the bluetooth <br /></td></tr>
 <tr class="separator:a4a4e4ac1dc1244543e630a398cc6d624"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38e8848e7d64749a5e7b0a2ac89d3998"><td class="memItemLeft" align="right" valign="top"><a id="a38e8848e7d64749a5e7b0a2ac89d3998" name="a38e8848e7d64749a5e7b0a2ac89d3998"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>write_battery_level</b> (const uint8_t batteryLevel)</td></tr>
+<tr class="memdesc:a38e8848e7d64749a5e7b0a2ac89d3998"><td class="mdescLeft">&#160;</td><td class="mdescRight">update battery level <br /></td></tr>
 <tr class="separator:a38e8848e7d64749a5e7b0a2ac89d3998"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa776f2191caf91838bb52daea8cc216"><td class="memItemLeft" align="right" valign="top"><a id="aaa776f2191caf91838bb52daea8cc216" name="aaa776f2191caf91838bb52daea8cc216"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>notify_battery_level</b> (const uint8_t batteryLevel)</td></tr>
+<tr class="memdesc:aaa776f2191caf91838bb52daea8cc216"><td class="mdescLeft">&#160;</td><td class="mdescRight">notify the connected device of a battery level <br /></td></tr>
 <tr class="separator:aaa776f2191caf91838bb52daea8cc216"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b71732610ad91c1e0a4509526fe006f"><td class="memItemLeft" align="right" valign="top"><a id="a6b71732610ad91c1e0a4509526fe006f" name="a6b71732610ad91c1e0a4509526fe006f"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>was_used</b> ()</td></tr>
 <tr class="memdesc:a6b71732610ad91c1e0a4509526fe006f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return tue if the bluetooth was used during lifetime. <br /></td></tr>
 <tr class="separator:a6b71732610ad91c1e0a4509526fe006f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb8447fdc84173d1d2eb4194b07e211f"><td class="memItemLeft" align="right" valign="top"><a id="acb8447fdc84173d1d2eb4194b07e211f" name="acb8447fdc84173d1d2eb4194b07e211f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> ()</td></tr>
+<tr class="memdesc:acb8447fdc84173d1d2eb4194b07e211f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional bypass to start the BLE device early, without advertising. <br /></td></tr>
+<tr class="separator:acb8447fdc84173d1d2eb4194b07e211f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f3f1b568609b5b11fdf40ee4c083936"><td class="memItemLeft" align="right" valign="top"><a id="a1f3f1b568609b5b11fdf40ee4c083936" name="a1f3f1b568609b5b11fdf40ee4c083936"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>shutdown</b> ()</td></tr>
+<tr class="memdesc:a1f3f1b568609b5b11fdf40ee4c083936"><td class="mdescLeft">&#160;</td><td class="mdescRight">shutdown the bluetooth and services <br /></td></tr>
 <tr class="separator:a1f3f1b568609b5b11fdf40ee4c083936"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the platform specific bluetooth operations. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a5a1238dc518a365997dd5ab345c8ca70" name="a5a1238dc518a365997dd5ab345c8ca70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a1238dc518a365997dd5ab345c8ca70">&#9670;&#160;</a></span>start_advertising()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::hal::bluetooth::start_advertising </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>allowUnknownConnections</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>start the advertising sequence (with a timeout) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">allowUnknownConnections</td><td>If true, allow any device to be connected. If false, it will first check if a saved device exists, and if it's the case will only allow this device to connect. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6
