@@ -583,8 +583,8 @@ static void cmd_time(const common::cli::ParsedCommand&)
 /// Display serial port infos
 static void cmd_serial(const common::cli::ParsedCommand&)
 {
-  bsp::lampda_print("Local serial port: active %d, ", hal::serial::is_activated());
-  bsp::lampda_print("BLE serial port: active %d, ", hal::bluetooth::serial::is_activated());
+  bsp::lampda_print("Local serial port: active %d", hal::serial::is_activated());
+  bsp::lampda_print("BLE serial port: active %d", hal::bluetooth::serial::is_activated());
 }
 
 void cmd_set_hook(const common::cli::ParsedCommand& command, const char* name);
