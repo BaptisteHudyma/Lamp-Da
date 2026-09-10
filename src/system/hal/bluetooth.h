@@ -40,6 +40,9 @@ bool is_connection_allowed(uint16_t connectionHandle);
 /// Clear the bounded bluetooth devices
 void clear_bounded_devices();
 
+/// Set a new name for the bluetooth
+bool set_bluetooth_name(const char* const name, const size_t lenght);
+
 /**
  * \brief start the advertising sequence (with a timeout)
  * \param[in] allowUnknownConnections If true, allow any device to be connected. If false, it will first check if a

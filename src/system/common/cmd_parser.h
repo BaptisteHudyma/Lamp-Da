@@ -13,6 +13,8 @@ namespace lampda {
 namespace common {
 namespace cli {
 
+static constexpr size_t MaxStringArgumentLen = 32;
+
 struct ParsedCommand
 {
   static constexpr uint8_t maxArgumentCount = 8;
@@ -41,6 +43,9 @@ bool parse_uint8(const ParsedCommand& command, const size_t index, uint8_t& valu
 
 /// Parse an argument as a 16 bit unsigned number
 bool parse_uint16(const ParsedCommand& command, const size_t index, uint16_t& value);
+
+/// Pars an argument as a valid character char array
+bool parse_text(const ParsedCommand& command, const size_t index, std::array<char, MaxStringArgumentLen>& value);
 
 } // namespace argument
 
