@@ -1,7 +1,6 @@
 #include "src/system/hal/filesystem.h"
 
 #include <InternalFileSystem.h>
-#include <bluefruit.h>
 
 #include "src/system/bsp/text_out.h"
 
@@ -56,14 +55,6 @@ void format_file_system()
 {
   // DO not start before formatting
   InternalFS.format();
-
-  delay(100);
-
-  InternalFS.begin();
-
-  // Very important : clear the bluetooth bonds
-  Bluefruit.Periph.clearBonds();
-  Bluefruit.Periph.clearBonds();
 }
 
 /**

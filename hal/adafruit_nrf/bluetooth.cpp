@@ -1,6 +1,7 @@
 #include "src/system/hal/bluetooth.h"
 
 #include <bluefruit.h>
+#include <InternalFileSystem.h>
 #include <FreeRTOS.h>
 #include <queue.h>
 #include <task.h>
@@ -208,7 +209,11 @@ void secured_connection_callback(uint16_t conn_hdl)
   }
   else if (pairingMode)
   {
-    bsp::lampda_print("[Security] First time pairing complete, peer authorized");
+    // Check that address are matching
+    if (hasBondedPeer and !addressMatches(resolvedAddr, identityAddr))
+      bsp::lampda_print("[Security] First time pairing complete, peer authorized");
+    else
+      bsp::lampda_print("[Security] Recognized authorized peer, proceed");
   }
 
   // Only update if we now have a non-RPA identity address
@@ -373,6 +378,7 @@ void startup_sequence()
 
   Bluefruit.Security.setPairCompleteCallback(pair_complete_callback);
   Bluefruit.Security.setSecuredCallback(secured_connection_callback);
+  Bluefruit.Security.setMITM(true); // Man In The Middle protection
 
   Bluefruit.Periph.setConnectCallback(connect_callback);
   Bluefruit.Periph.setDisconnectCallback(disconnect_callback);
@@ -427,11 +433,31 @@ bool is_bounded(std::array<uint8_t, 8>& buffer)
   return false;
 }
 
+void disconnect()
+{
+  if (is_connected())
+    Bluefruit.disconnect(Bluefruit.connHandle());
+}
+
 bool is_connection_allowed(uint16_t connectionHandle)
 {
   // refuse connections with the incorrect handle
   return is_activated() and connectionHandle != BLE_CONN_HANDLE_INVALID and
          connectionHandle == __private::authorizedConnHdl;
+}
+
+void clear_bounded_devices()
+{
+  // In some case, the file system may need to be restarted
+  InternalFS.begin();
+
+  InternalFS.remove(__private::BLE_BOUND_PEER_FILE);
+  __private::identityAddr = {0};
+  __private::hasBondedPeer = false;
+  bsp::lampda_print("[Bond] Bond file cleared.");
+
+  // Internal adafruit clear
+  bond_clear_all();
 }
 
 // void display_infos() { Bluefruit.printInfo(); }
@@ -510,10 +536,21 @@ void shutdown()
 namespace serial {
 bool is_activated()
 {
-  return hal::bluetooth::is_activated() and Bluefruit.connected() and __private::bleuart.notifyEnabled();
+  const bool isUartActivated =
+          hal::bluetooth::is_activated() and Bluefruit.connected() and __private::bleuart.notifyEnabled();
+  if (not isUartActivated)
+    return false;
+
+  // prevent stray enqueud messages
+  if (not is_connection_allowed(__private::authorizedConnHdl))
+  {
+    __private::bleuart.flush();
+    return false;
+  }
+  return true;
 }
 
-bool is_available() { return __private::bleuart.available(); }
+bool is_available() { return __private::bleuart.available() and is_connection_allowed(__private::authorizedConnHdl); }
 
 char read() { return (char)__private::bleuart.read(); }
 

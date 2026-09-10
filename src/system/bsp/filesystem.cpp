@@ -51,7 +51,18 @@ void clear_system_parameters() { _systemParametersValueMap.clear(); }
 
 void shutdown() { hal::filesystem::shutdown(); }
 
-void clear_internal_fs() { hal::filesystem::format_file_system(); }
+void clear_internal_fs()
+{
+  // First disconnect any BLE device
+  if (hal::bluetooth::is_connected())
+    hal::bluetooth::disconnect();
+
+  hal::filesystem::format_file_system();
+
+  // It's very important to manually clear the bounded device list AFTER the format
+  hal::delay_ms(100);
+  hal::bluetooth::clear_bounded_devices();
+}
 
 namespace __internal {
 

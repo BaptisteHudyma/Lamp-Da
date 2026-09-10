@@ -18,6 +18,12 @@ bool is_connected() { return false; }
 
 bool is_bounded(std::array<uint8_t, 8>& buffer) { return false; }
 
+void disconnect() {}
+
+bool is_connection_allowed(uint16_t connectionHandle) { return true; }
+
+void clear_bounded_devices() {}
+
 // start the advertising sequence (with a timeout)
 void start_advertising(bool allowUnknownConnections) {}
 
