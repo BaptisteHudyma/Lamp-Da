@@ -421,14 +421,34 @@ static void cmd_ble(const common::cli::ParsedCommand&)
   bsp::lampda_print(
           "is activated: %d\n"
           "is advertising: %d\n"
+          "is open to all: %d\n"
           "is connected: %d\n"
           "is msg received: %d\n"
           "auto activations left: %d",
           hal::bluetooth::is_activated(),
           hal::bluetooth::is_advertising(),
+          hal::bluetooth::is_open_to_all(),
           hal::bluetooth::is_connected(),
           logic::inputs_bluetooth::is_bluetooth_used(),
           logic::behavior::internal::get_bluetooth_auto_activation_left());
+
+  std::array<uint8_t, 8> boundedDeviceName;
+  const bool isBounded = hal::bluetooth::is_bounded(boundedDeviceName);
+  if (isBounded)
+  {
+    bsp::lampda_print("BLE bounded to device: type=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
+                      boundedDeviceName[0],
+                      boundedDeviceName[1],
+                      boundedDeviceName[2],
+                      boundedDeviceName[3],
+                      boundedDeviceName[4],
+                      boundedDeviceName[5],
+                      boundedDeviceName[6]);
+  }
+  else
+  {
+    bsp::lampda_print("BLE not bounded to a device");
+  }
 }
 
 /// Change the system brightness
@@ -563,8 +583,8 @@ static void cmd_time(const common::cli::ParsedCommand&)
 /// Display serial port infos
 static void cmd_serial(const common::cli::ParsedCommand&)
 {
-  bsp::lampda_print("Local serial port: active %d, ", hal::serial::is_activated());
-  bsp::lampda_print("BLE serial port: active %d, ", hal::bluetooth::serial::is_activated());
+  bsp::lampda_print("Local serial port: active %d", hal::serial::is_activated());
+  bsp::lampda_print("BLE serial port: active %d", hal::bluetooth::serial::is_activated());
 }
 
 void cmd_set_hook(const common::cli::ParsedCommand& command, const char* name);

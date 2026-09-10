@@ -495,8 +495,8 @@ struct Alert_BluetoothAdvertisement : public AlertBase
 
   bool should_be_cleared() const override
   {
-    // cleared after two pulsations
-    return raisedTime > 0 and (hal::time_ms() - raisedTime) > (frequency_on_ms * 2 + frequency_off_ms);
+    // cleared after a delay anyway
+    return raisedTime > 0 and (hal::time_ms() - raisedTime) > 60000;
   }
 };
 

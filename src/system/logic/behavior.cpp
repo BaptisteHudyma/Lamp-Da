@@ -214,7 +214,8 @@ bool read_parameters()
     {
       bluetoothAutoActivationLeftCount = min<uint32_t>(maxBluetoothAutoActivations, bluetoothAutoActivation - 1);
 
-      hal::bluetooth::start_advertising();
+      // bounded device, advertize but only allow the bounded device, if it exist
+      hal::bluetooth::start_advertising(false);
     }
     else
     {
@@ -237,8 +238,6 @@ void setup_clean_sleep_flag()
   bsp::filesystem::system::set_value(cleanSleepKey, 0);
   // write parameters, if a crash happens, we will notice a dirty flag
   bsp::filesystem::system::write_to_file();
-  // temp shutdown
-  bsp::filesystem::shutdown();
 }
 
 void write_parameters(const bool shouldSaveUserParameters = true, const bool shouldSaveSystemParameters = true)
@@ -276,8 +275,6 @@ void write_parameters(const bool shouldSaveUserParameters = true, const bool sho
   // write all
   bsp::filesystem::user::write_to_file();
   bsp::filesystem::system::write_to_file();
-  // close filesystem
-  bsp::filesystem::shutdown();
 }
 
 // user code is running when state is output

@@ -2,6 +2,8 @@
 
 #include <InternalFileSystem.h>
 
+#include "src/system/bsp/text_out.h"
+
 namespace lampda {
 namespace hal {
 namespace filesystem {
@@ -43,15 +45,15 @@ void shutdown_shared_filesystem_instance()
   }
 }
 
-} // namespace __private
+bool is_setup() { return __private::isInternalFsStarted; }
 
-bool setup() { return __private::setup_shared_filesystem_instance(); }
+} // namespace __private
 
 void shutdown() { __private::shutdown_shared_filesystem_instance(); }
 
 void format_file_system()
 {
-  setup();
+  // DO not start before formatting
   InternalFS.format();
 }
 
@@ -59,8 +61,6 @@ void format_file_system()
  *
  *
  */
-
-bool is_setup() { return __private::isInternalFsStarted; }
 
 HAL_File::HAL_File()
 {
@@ -75,9 +75,9 @@ HAL_File::~HAL_File() {}
 bool HAL_File::open(const char* fname, const HAL_File::OpenType& mode)
 {
   // setup the filesystem !
-  setup();
+  __private::setup_shared_filesystem_instance();
 
-  if (not is_setup() or not mInternalFile)
+  if (not __private::is_setup() or not mInternalFile)
     return false;
 
   switch (mode)
@@ -94,56 +94,56 @@ bool HAL_File::open(const char* fname, const HAL_File::OpenType& mode)
 
 bool HAL_File::is_open() const
 {
-  if (not is_setup() or not mInternalFile)
+  if (not __private::is_setup() or not mInternalFile)
     return false;
   return mInternalFile->isOpen();
 }
 
 bool HAL_File::is_available() const
 {
-  if (not is_setup() or not mInternalFile)
+  if (not __private::is_setup() or not mInternalFile)
     return false;
   return mInternalFile->available();
 }
 
 void HAL_File::close()
 {
-  if (not is_setup() or not mInternalFile)
+  if (not __private::is_setup() or not mInternalFile)
     return;
   mInternalFile->close();
 }
 
 size_t HAL_File::size() const
 {
-  if (not is_setup() or not mInternalFile)
+  if (not __private::is_setup() or not mInternalFile)
     return 0;
   return mInternalFile->size();
 }
 
-size_t HAL_File::write(uint8_t* in, size_t sz)
+size_t HAL_File::write(const uint8_t* const in, size_t sz)
 {
-  if (not is_setup() or not mInternalFile)
+  if (not __private::is_setup() or not mInternalFile)
     return false;
   return mInternalFile->write(in, sz);
 }
 
 size_t HAL_File::read(uint8_t* out, size_t sz)
 {
-  if (not is_setup() or not mInternalFile)
+  if (not __private::is_setup() or not mInternalFile)
     return 0;
   return mInternalFile->read(out, sz);
 }
 
 bool HAL_File::seek(uint8_t sz)
 {
-  if (not is_setup() or not mInternalFile)
+  if (not __private::is_setup() or not mInternalFile)
     return false;
   return mInternalFile->seek(sz);
 }
 
 void HAL_File::truncate(uint8_t sz)
 {
-  if (not is_setup() or not mInternalFile)
+  if (not __private::is_setup() or not mInternalFile)
     return;
   mInternalFile->truncate(sz);
 }

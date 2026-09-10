@@ -46,7 +46,7 @@ struct HAL_File
 
   size_t size() const;
 
-  size_t write(uint8_t* in, size_t sz);
+  size_t write(const uint8_t* const in, size_t sz);
 
   size_t read(uint8_t* out, size_t sz);
 
