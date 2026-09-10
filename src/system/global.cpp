@@ -167,6 +167,8 @@ void main_setup()
 
   // setup imu
   component::imu::init();
+  // Load BLE bounds
+  hal::bluetooth::load_bound_file();
 
   if (shouldAlertUser)
   {

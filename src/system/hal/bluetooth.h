@@ -16,6 +16,9 @@ namespace hal {
 /// Handle the platform specific bluetooth operations
 namespace bluetooth {
 
+// Load bounded devices
+void load_bound_file();
+
 /// Return true if the bluetooth is activated
 bool is_activated();
 /// Return true is the bluetooth is visible by other devices
@@ -25,6 +28,7 @@ bool is_open_to_all();
 /// Return true if a bluetooth user is connected
 bool is_connected();
 /// Return true if the bluetooth connection is bounded to a pair
+bool is_bounded();
 bool is_bounded(std::array<uint8_t, 8>& buffer);
 
 /// Force disconnection

@@ -225,6 +225,10 @@ void secured_connection_callback(uint16_t conn_hdl)
   // Save the handle: it's allowed to treat messages
   authorizedConnHdl = conn_hdl;
 
+  // Send a battery level update
+  const auto batteryLevel = component::battery::get_battery_minimum_cell_level();
+  write_battery_level(static_cast<uint8_t>(batteryLevel / 100));
+
   // used !
   _wasUsed = true;
 }
@@ -243,15 +247,23 @@ void connect_callback(uint16_t conn_hdl)
     return;
   }
 
+  // skip the safety layer to reject devices fast !
+  if (hasBondedPeer and not pairingMode)
+  {
+    bond_keys_t ltkey;
+    if (not conn->loadBondKey(&ltkey))
+    {
+      Bluefruit.disconnect(conn_hdl);
+      bsp::lampda_print("[Connect] Fast disconnect unallowed user");
+      return;
+    }
+  }
+
   conn->requestPHY(); // Request 2Mbps PHY
   conn->requestMtuExchange(247);
 
   // Immediatly request pairing, or any msg will be rejected !
   conn->requestPairing();
-
-  const auto batteryLevel = component::battery::get_battery_minimum_cell_level();
-  write_battery_level(static_cast<uint8_t>(batteryLevel / 100));
-  bsp::lampda_print("Bluetooth connected");
 }
 
 void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
@@ -383,21 +395,8 @@ void startup_sequence()
   Bluefruit.Periph.setConnectCallback(connect_callback);
   Bluefruit.Periph.setDisconnectCallback(disconnect_callback);
 
-  // Try to load the bounded peer if it exist
-  ble_gap_addr_t boundAdress;
-  if (try_load_bounded_pair(boundAdress))
-  {
-    bsp::lampda_print("[Bond] Loaded address: %02X:%02X:%02X:%02X:%02X:%02X",
-                      boundAdress.addr[5],
-                      boundAdress.addr[4],
-                      boundAdress.addr[3],
-                      boundAdress.addr[2],
-                      boundAdress.addr[1],
-                      boundAdress.addr[0]);
-
-    __private::identityAddr = boundAdress;
-    __private::hasBondedPeer = true;
-  }
+  // If not done yet
+  load_bound_file();
 
   isInitialized = true;
 }
@@ -417,9 +416,11 @@ bool is_open_to_all() { return is_activated() and __private::pairingMode; }
 
 bool is_connected() { return is_activated() and Bluefruit.connected() != 0; }
 
+bool is_bounded() { return __private::hasBondedPeer; }
+
 bool is_bounded(std::array<uint8_t, 8>& buffer)
 {
-  if (is_activated() and __private::hasBondedPeer)
+  if (__private::hasBondedPeer)
   {
     buffer[0] = __private::identityAddr.addr_type;
     buffer[1] = __private::identityAddr.addr[5];
@@ -461,6 +462,30 @@ void clear_bounded_devices()
 }
 
 // void display_infos() { Bluefruit.printInfo(); }
+
+void load_bound_file()
+{
+  // Try to load the bounded peer if it exist
+  ble_gap_addr_t boundAdress;
+  if (__private::try_load_bounded_pair(boundAdress))
+  {
+    bsp::lampda_print("[Bond] Loaded address: %02X:%02X:%02X:%02X:%02X:%02X",
+                      boundAdress.addr[5],
+                      boundAdress.addr[4],
+                      boundAdress.addr[3],
+                      boundAdress.addr[2],
+                      boundAdress.addr[1],
+                      boundAdress.addr[0]);
+
+    __private::identityAddr = boundAdress;
+    __private::hasBondedPeer = true;
+  }
+  else
+  {
+    __private::identityAddr = {0};
+    __private::hasBondedPeer = false;
+  }
+}
 
 void init()
 {
