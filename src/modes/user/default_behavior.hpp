@@ -114,13 +114,38 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
         // ramp can activate bluetooth :
         // - if it is not enabled yet
         // - if it is enabled, but the bounded peer already exists (force open connection)
-        const bool shouldShowRamp = (not hal::bluetooth::is_activated()) or (not hal::bluetooth::is_open_to_all());
-        if (shouldShowRamp and
-            manager.overlay_animate_ramp(
-                    holdDuration, 2000, modes::colors::PaletteGradient<modes::colors::Blue, modes::colors::Blue>))
+
+        // Start pairing mode
+        const bool hasPairedDeviceAndNoPairing = hal::bluetooth::is_bounded() and
+                                                 not hal::bluetooth::is_advertising() and
+                                                 not hal::bluetooth::is_connected();
+        if (hasPairedDeviceAndNoPairing)
         {
-          // force connection acceptance even with bounded device
-          hal::bluetooth::start_advertising(true);
+          if (manager.overlay_animate_ramp(
+                      holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::Blue, modes::colors::Blue>))
+          {
+            // Start BLE but with paired device authorization only
+            hal::bluetooth::start_advertising(false);
+
+            bsp::lampda_print("Enable BLE for paired device");
+          }
+        }
+        // else: not bounded, or already started bounded connection
+        else
+        {
+          // Start pairing mode
+          const bool isNotCurrentlyPairing =
+                  not(hal::bluetooth::is_advertising() and hal::bluetooth::is_open_to_all()) and
+                  not hal::bluetooth::is_connected();
+          if (isNotCurrentlyPairing and
+              manager.overlay_animate_ramp(
+                      holdDuration, 3000, modes::colors::PaletteGradient<modes::colors::Blue, modes::colors::Blue>))
+          {
+            // Start pairing mode
+            hal::bluetooth::start_advertising(true);
+
+            bsp::lampda_print("Enable BLE pairing mode");
+          }
         }
         return true;
       }

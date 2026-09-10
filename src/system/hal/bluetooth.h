@@ -16,6 +16,9 @@ namespace hal {
 /// Handle the platform specific bluetooth operations
 namespace bluetooth {
 
+// Load bounded devices
+void load_bound_file();
+
 /// Return true if the bluetooth is activated
 bool is_activated();
 /// Return true is the bluetooth is visible by other devices
@@ -25,7 +28,17 @@ bool is_open_to_all();
 /// Return true if a bluetooth user is connected
 bool is_connected();
 /// Return true if the bluetooth connection is bounded to a pair
+bool is_bounded();
 bool is_bounded(std::array<uint8_t, 8>& buffer);
+
+/// Force disconnection
+void disconnect();
+
+/// If this returns false, do not accept any actions from bluetooth
+bool is_connection_allowed(uint16_t connectionHandle);
+
+/// Clear the bounded bluetooth devices
+void clear_bounded_devices();
 
 /**
  * \brief start the advertising sequence (with a timeout)
@@ -44,6 +57,9 @@ void notify_battery_level(const uint8_t batteryLevel);
 
 /// Return tue if the bluetooth was used during lifetime
 bool was_used();
+
+/// Optional bypass to start the BLE device early, without advertising
+void init();
 
 /// shutdown the bluetooth and services
 void shutdown();

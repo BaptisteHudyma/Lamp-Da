@@ -1,6 +1,7 @@
 #include "src/system/hal/bluetooth.h"
 
 #include <bluefruit.h>
+#include <InternalFileSystem.h>
 #include <FreeRTOS.h>
 #include <queue.h>
 #include <task.h>
@@ -78,11 +79,14 @@ bool addressMatches(const ble_gap_addr_t& a, const ble_gap_addr_t& b)
 }
 
 /// Paired device address
-static ble_gap_addr_t identityAddr = {0};
+inline static ble_gap_addr_t identityAddr = {0};
 /// If true, the identityAddr is set, refuse all other connections
 static bool hasBondedPeer = false;
 /// If true, the device is in pairing mode, and can accept all connections
 static volatile bool pairingMode = false;
+
+/// Keep track of the currently authorized handle.
+static uint16_t authorizedConnHdl = BLE_CONN_HANDLE_INVALID;
 
 bool try_load_bounded_pair(ble_gap_addr_t& addr)
 {
@@ -115,97 +119,35 @@ void try_save_bounded_peer(const ble_gap_addr_t& addr)
 
 void stop_advertising()
 {
-  if (not is_activated())
-    return;
-
+  __private::pairingMode = false;
   logic::alerts::manager.clear(logic::alerts::Type::BLUETOOTH_ADVERT);
+
+  if (not is_activated())
+    return;
+
   Bluefruit.Advertising.stop();
-}
-
-void connect_callback(uint16_t conn_hdl)
-{
-  if (not is_activated())
-    return;
-
-  BLEConnection* conn = Bluefruit.Connection(conn_hdl);
-  ble_gap_addr_t peerAddr = conn->getPeerAddr();
-
-  bsp::lampda_print("[BLE] Connection from – type=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
-                    peerAddr.addr_type,
-                    peerAddr.addr[5],
-                    peerAddr.addr[4],
-                    peerAddr.addr[3],
-                    peerAddr.addr[2],
-                    peerAddr.addr[1],
-                    peerAddr.addr[0]);
-
-  // ── pairing mode — allow anyone, will bond to the first connected device ─────────
-  if (pairingMode or not hasBondedPeer)
-  {
-    bsp::lampda_print("[Security] Pairing mode — accepting connection for bonding.");
-
-    identityAddr = conn->getPeerAddr();
-    hasBondedPeer = true;
-    pairingMode = false;
-
-    bsp::lampda_print("[Bond] Stored identity – type=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
-                      identityAddr.addr_type,
-                      identityAddr.addr[5],
-                      identityAddr.addr[4],
-                      identityAddr.addr[3],
-                      identityAddr.addr[2],
-                      identityAddr.addr[1],
-                      identityAddr.addr[0]);
-  }
-  // ── reject unknown devices when a bond already exists ─────────
-  else if (hasBondedPeer)
-  {
-    // NOTE on RPA: if the phone is using an RPA and the SoftDevice has
-    // not yet resolved it, addressMatches() will fail even for the legit
-    // bonded peer. The SoftDevice resolves via stored IRKs internally —
-    // if the peer is bonded, the SoftDevice will have ALREADY matched
-    // the RPA before surfacing this callback, so getPeerAddr() should
-    // return the identity address for a known peer.
-    // An unknown device will appear with a random address that does NOT
-    // match the stored identity → correctly rejected below.
-
-    if (!addressMatches(peerAddr, identityAddr))
-    {
-      bsp::lampda_print("[Security] Unknown device — disconnecting immediately.");
-      Bluefruit.disconnect(conn_hdl);
-      return;
-    }
-  }
-
-  _wasUsed = true;
-
-  const auto batteryLevel = component::battery::get_battery_minimum_cell_level();
-  write_battery_level(static_cast<uint8_t>(batteryLevel / 100));
-  bsp::lampda_print("Bluetooth connected");
-}
-
-void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
-{
-  if (not is_activated())
-    return;
-
-  // Dont stop advertising here, some BLE drivers can send one command by connections.
-  // Instead, restart the advertising with the same mode
-  start_advertising(__private::pairingMode);
-  bsp::lampda_print("Bluetooth disconnected (reason=0x%02X)", reason);
 }
 
 void adv_stop_callback(void)
 {
+  // clear the alert
+  logic::alerts::manager.clear(logic::alerts::Type::BLUETOOTH_ADVERT);
+
+  // skip if bluetooth is off
   if (not is_activated())
     return;
 
   // auto turned off, start again !
   if (not advertisingStoppedByRequest)
   {
-    // restart with the same pairing mode
-    start_advertising(__private::pairingMode);
-    bsp::lampda_print("BLE Advertising timeout, advertising restarted.");
+    // Dont restart if this was the pairing mode: it timedout and need restarting
+    if (not __private::pairingMode and __private::hasBondedPeer)
+      start_advertising(false);
+    else
+    {
+      __private::stop_advertising();
+      bsp::lampda_print("BLE Advertising stopped");
+    }
   }
   else
   {
@@ -213,6 +155,167 @@ void adv_stop_callback(void)
     bsp::lampda_print("BLE Advertising stop requested.");
   }
   advertisingStoppedByRequest = false;
+}
+
+void pair_complete_callback(uint16_t conn_hdl, uint8_t authStatus)
+{
+  if (not is_activated())
+    return;
+
+  if (authStatus != 0)
+  {
+    bsp::lampda_print("[Sec]: Pairing failed (0x%02X) - disconnecting", authStatus);
+    Bluefruit.disconnect(conn_hdl);
+    return;
+  }
+
+  if (not Bluefruit.connected(conn_hdl))
+  {
+    bsp::lampda_print("[Sec] connection handle is already disconnected");
+    return;
+  }
+
+  bsp::lampda_print("[Sec]: Pairing & bounding success");
+
+  BLEConnection* conn = Bluefruit.Connection(conn_hdl);
+  if (conn == NULL)
+  {
+    bsp::lampda_print("[Pair] connection handle invalid");
+    return;
+  }
+
+  identityAddr = conn->getPeerAddr();
+  hasBondedPeer = true;
+  pairingMode = false;
+
+  bsp::lampda_print("[Bond] Stored identity type=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
+                    identityAddr.addr_type,
+                    identityAddr.addr[5],
+                    identityAddr.addr[4],
+                    identityAddr.addr[3],
+                    identityAddr.addr[2],
+                    identityAddr.addr[1],
+                    identityAddr.addr[0]);
+}
+
+void secured_connection_callback(uint16_t conn_hdl)
+{
+  if (not is_activated())
+    return;
+
+  if (not Bluefruit.connected(conn_hdl))
+  {
+    bsp::lampda_print("[Security] connection handle is already disconnected");
+    return;
+  }
+
+  BLEConnection* conn = Bluefruit.Connection(conn_hdl);
+  if (conn == NULL)
+  {
+    bsp::lampda_print("[Security] connection handle invalid");
+    return;
+  }
+  const ble_gap_addr_t& resolvedAddr = conn->getPeerAddr();
+
+  bsp::lampda_print("[Security] Secure connection activated=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
+                    resolvedAddr.addr_type,
+                    resolvedAddr.addr[5],
+                    resolvedAddr.addr[4],
+                    resolvedAddr.addr[3],
+                    resolvedAddr.addr[2],
+                    resolvedAddr.addr[1],
+                    resolvedAddr.addr[0]);
+
+  // ── Refresh the stored address if it was an RPA at pairing time ───────
+  // By now the SoftDevice has fully resolved the identity address.
+  if (hasBondedPeer and not pairingMode)
+  {
+    // Check that address are matching
+    if (!addressMatches(resolvedAddr, identityAddr))
+    {
+      bsp::lampda_print("[Security] Unknown device — disconnecting immediately");
+      Bluefruit.disconnect(conn_hdl);
+      return;
+    }
+  }
+  else if (pairingMode)
+  {
+    // Check that address are matching
+    if (hasBondedPeer and !addressMatches(resolvedAddr, identityAddr))
+      bsp::lampda_print("[Security] First time pairing complete, peer authorized");
+    else
+      bsp::lampda_print("[Security] Recognized authorized peer, proceed");
+  }
+
+  // Only update if we now have a non-RPA identity address
+  if (resolvedAddr.addr_type != BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_RESOLVABLE)
+  {
+    identityAddr = resolvedAddr;
+    bsp::lampda_print("[Security] Updating the non-RPA identity");
+  }
+  // Save the handle: it's allowed to treat messages
+  authorizedConnHdl = conn_hdl;
+
+  // Send a battery level update
+  const auto batteryLevel = component::battery::get_battery_minimum_cell_level();
+  write_battery_level(static_cast<uint8_t>(batteryLevel / 100));
+
+  // used !
+  _wasUsed = true;
+
+  // Stop advertising manually
+  adv_stop_callback();
+}
+
+void connect_callback(uint16_t conn_hdl)
+{
+  if (not is_activated())
+    return;
+
+  bsp::lampda_print("[BLE] Connected (handle=%d)", conn_hdl);
+
+  BLEConnection* conn = Bluefruit.Connection(conn_hdl);
+  if (conn == NULL)
+  {
+    bsp::lampda_print("[Connect] connection handle invalid");
+    return;
+  }
+
+  // skip the safety layer to reject devices fast !
+  if (hasBondedPeer and not pairingMode)
+  {
+    bond_keys_t ltkey;
+    if (not conn->loadBondKey(&ltkey))
+    {
+      Bluefruit.disconnect(conn_hdl);
+      bsp::lampda_print("[Connect] Fast disconnect unallowed user");
+      return;
+    }
+  }
+
+  conn->requestPHY(); // Request 2Mbps PHY
+  conn->requestMtuExchange(247);
+
+  // Immediatly request pairing, or any msg will be rejected !
+  conn->requestPairing();
+}
+
+void disconnect_callback(uint16_t conn_hdl, uint8_t reason)
+{
+  if (not is_activated())
+    return;
+
+  // this connection is dead, disconnect it
+  if (authorizedConnHdl == conn_hdl)
+  {
+    authorizedConnHdl = BLE_CONN_HANDLE_INVALID;
+  }
+
+  // Dont stop advertising here, some BLE drivers can send one command by connections.
+  // Fake call the advertising callback
+  adv_stop_callback();
+
+  bsp::lampda_print("Bluetooth disconnected (reason=0x%02X)", reason);
 }
 
 void set_device_informations()
@@ -300,14 +403,15 @@ void startup_sequence()
   Bluefruit.Advertising.setInterval(32, 244);             // in unit of 0.625 ms
   Bluefruit.Advertising.setFastTimeout(ADV_TIMEOUT_FAST); // advertisement timeout
 
+  Bluefruit.Security.setPairCompleteCallback(pair_complete_callback);
+  Bluefruit.Security.setSecuredCallback(secured_connection_callback);
+  Bluefruit.Security.setMITM(true); // Man In The Middle protection
+
   Bluefruit.Periph.setConnectCallback(connect_callback);
   Bluefruit.Periph.setDisconnectCallback(disconnect_callback);
 
-  // Try to load the bounded peer if it exist
-  if (try_load_bounded_pair(identityAddr))
-  {
-    __private::hasBondedPeer = true;
-  }
+  // If not done yet
+  load_bound_file();
 
   isInitialized = true;
 }
@@ -327,9 +431,11 @@ bool is_open_to_all() { return is_activated() and __private::pairingMode; }
 
 bool is_connected() { return is_activated() and Bluefruit.connected() != 0; }
 
+bool is_bounded() { return __private::hasBondedPeer; }
+
 bool is_bounded(std::array<uint8_t, 8>& buffer)
 {
-  if (is_activated() and __private::hasBondedPeer)
+  if (__private::hasBondedPeer)
   {
     buffer[0] = __private::identityAddr.addr_type;
     buffer[1] = __private::identityAddr.addr[5];
@@ -343,15 +449,71 @@ bool is_bounded(std::array<uint8_t, 8>& buffer)
   return false;
 }
 
+void disconnect()
+{
+  if (is_connected())
+    Bluefruit.disconnect(Bluefruit.connHandle());
+}
+
+bool is_connection_allowed(uint16_t connectionHandle)
+{
+  // refuse connections with the incorrect handle
+  return is_activated() and connectionHandle != BLE_CONN_HANDLE_INVALID and
+         connectionHandle == __private::authorizedConnHdl;
+}
+
+void clear_bounded_devices()
+{
+  // In some case, the file system may need to be restarted
+  InternalFS.begin();
+
+  InternalFS.remove(__private::BLE_BOUND_PEER_FILE);
+  __private::identityAddr = {0};
+  __private::hasBondedPeer = false;
+  bsp::lampda_print("[Bond] Bond file cleared.");
+
+  // Internal adafruit clear
+  bond_clear_all();
+}
+
 // void display_infos() { Bluefruit.printInfo(); }
 
-void start_advertising(bool allowUnknownConnections)
+void load_bound_file()
+{
+  // Try to load the bounded peer if it exist
+  ble_gap_addr_t boundAdress;
+  if (__private::try_load_bounded_pair(boundAdress))
+  {
+    bsp::lampda_print("[Bond] Loaded address: %02X:%02X:%02X:%02X:%02X:%02X",
+                      boundAdress.addr[5],
+                      boundAdress.addr[4],
+                      boundAdress.addr[3],
+                      boundAdress.addr[2],
+                      boundAdress.addr[1],
+                      boundAdress.addr[0]);
+
+    __private::identityAddr = boundAdress;
+    __private::hasBondedPeer = true;
+  }
+  else
+  {
+    __private::identityAddr = {0};
+    __private::hasBondedPeer = false;
+  }
+}
+
+void init()
 {
   if (not is_activated())
   {
     // call once when the program starts
     __private::startup_sequence();
   }
+}
+
+void start_advertising(bool allowUnknownConnections)
+{
+  init();
 
   // startup sequence can load a bound adress, so set the pairing mode after
   if (allowUnknownConnections)
@@ -359,12 +521,18 @@ void start_advertising(bool allowUnknownConnections)
     // visual signal in case of a status update
     if (not __private::pairingMode)
     {
-      bsp::lampda_print("Advertising connection open to all");
+      // stop current advertizing
+      __private::adv_stop_callback();
       logic::alerts::manager.raise(logic::alerts::Type::BLUETOOTH_ADVERT);
     }
     // force pairing mode, will accept any connection
     __private::pairingMode = true;
+
+    __private::advertisingStoppedByRequest = false;
+    Bluefruit.Advertising.start(ADV_TIMEOUT); // Stop advertising entirely after ADV_TIMEOUT seconds
+    return;
   }
+
   // no need to start again
   if (is_advertising())
     return;
@@ -372,9 +540,6 @@ void start_advertising(bool allowUnknownConnections)
   __private::advertisingStoppedByRequest = false;
 
   Bluefruit.Advertising.start(ADV_TIMEOUT); // Stop advertising entirely after ADV_TIMEOUT seconds
-
-  // reraise the alert every minutes
-  logic::alerts::manager.raise(logic::alerts::Type::BLUETOOTH_ADVERT);
 }
 
 void stop_bluetooth_advertising()
@@ -414,10 +579,21 @@ void shutdown()
 namespace serial {
 bool is_activated()
 {
-  return hal::bluetooth::is_activated() and Bluefruit.connected() and __private::bleuart.notifyEnabled();
+  const bool isUartActivated =
+          hal::bluetooth::is_activated() and Bluefruit.connected() and __private::bleuart.notifyEnabled();
+  if (not isUartActivated)
+    return false;
+
+  // prevent stray enqueud messages
+  if (not is_connection_allowed(__private::authorizedConnHdl))
+  {
+    __private::bleuart.flush();
+    return false;
+  }
+  return true;
 }
 
-bool is_available() { return __private::bleuart.available(); }
+bool is_available() { return __private::bleuart.available() and is_connection_allowed(__private::authorizedConnHdl); }
 
 char read() { return (char)__private::bleuart.read(); }
 
