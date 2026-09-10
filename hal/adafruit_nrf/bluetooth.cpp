@@ -521,12 +521,18 @@ void start_advertising(bool allowUnknownConnections)
     // visual signal in case of a status update
     if (not __private::pairingMode)
     {
-      bsp::lampda_print("Advertising connection open to all");
+      // stop current advertizing
+      __private::adv_stop_callback();
       logic::alerts::manager.raise(logic::alerts::Type::BLUETOOTH_ADVERT);
     }
     // force pairing mode, will accept any connection
     __private::pairingMode = true;
+
+    __private::advertisingStoppedByRequest = false;
+    Bluefruit.Advertising.start(ADV_TIMEOUT); // Stop advertising entirely after ADV_TIMEOUT seconds
+    return;
   }
+
   // no need to start again
   if (is_advertising())
     return;
