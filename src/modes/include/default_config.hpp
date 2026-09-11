@@ -71,9 +71,6 @@ struct DefaultManagerConfig
 
   /// (misc) Override default initial active group or mode (by index)
   static constexpr uint8_t initialActiveIndex[4] = {0, 0, 0, 0};
-
-  /// (misc) Override default initial active favorite mode (by index)
-  static constexpr uint8_t defaultFavorite[4] = {0, 0, 0, 0};
 };
 
 /** \brief Keys to enable modes to change configuration at runtime.

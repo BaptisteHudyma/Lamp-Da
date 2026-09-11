@@ -44,11 +44,12 @@ union ActiveIndexTy
 
   // static constructors
   //
-  static auto from(const uint8_t* arr)
+  static constexpr auto from(const uint8_t* arr)
   {
     ActiveIndexTy index = {arr[0], arr[1], arr[2], arr[3]};
     return index;
   }
+  static constexpr auto from(const std::array<uint8_t, 4>& arr) { return ActiveIndexTy::from(arr.data()); }
 };
 
 /// \private Contains the logic to handle a fixed-timestep range
@@ -254,6 +255,29 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     /// Store the active index of every favorite
     std::array<ActiveIndexTy, maxFavoriteCount> favorites = {};
     uint8_t usedFavoriteCount = 0; ///< number of favorite set by user [0, maxFavoriteCount]
+
+    /// By default, the system will have X favorites
+    static constexpr uint8_t defaultFavoriteCount_indexable = 6;
+    /// The default favorites are defined below :
+    static constexpr std::array<ActiveIndexTy, maxFavoriteCount> defaultFavorites_indexable = {
+            /// Static color: red (from Papi palette)
+            ActiveIndexTy::from({0, 2, 80, 0}),
+            /// Static color: green (from Papi palette)
+            ActiveIndexTy::from({0, 2, 165, 0}),
+            /// Static color: blue (from Papi palette)
+            ActiveIndexTy::from({0, 2, 0, 0}),
+            /// Static color: warm white
+            ActiveIndexTy::from({0, 0, 0, 0}),
+            /// Static color: standard white
+            ActiveIndexTy::from({0, 0, 128, 0}),
+            /// Static color: cold white
+            ActiveIndexTy::from({0, 0, 255, 0}),
+    };
+
+    /// By default, the system will have X favorites
+    static constexpr uint8_t defaultFavoriteCount_simple = 0;
+    /// The default favorites are defined below :
+    static constexpr std::array<ActiveIndexTy, maxFavoriteCount> defaultFavorites_simple = {};
 
     static_assert(maxFavoriteCount < 16, "Maximum of 15 favorite as been exceeded");
 
@@ -930,9 +954,23 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     ctx.template storageLoadOnly<Store::lastActive>(ctx.modeManager.activeIndex,
                                                     ActiveIndexTy::from(Config::initialActiveIndex));
 
-    // load the maxFavoriteCount possible favorites
-    ctx.template storageLoadOnly<Store::usedFavoriteCount>(ctx.modeManager.state.usedFavoriteCount);
-    ctx.template storageLoadOnly<Store::favoriteModes>(ctx.state.favorites);
+    if constexpr (ctx.lamp.flavor == hardware::LampTypes::indexable)
+    {
+      // load the maxFavoriteCount possible favorites, or default favorites, for indexable
+      ctx.template storageLoadOnly<Store::usedFavoriteCount>(ctx.modeManager.state.usedFavoriteCount,
+                                                             ctx.modeManager.state.defaultFavoriteCount_indexable);
+      ctx.template storageLoadOnly<Store::favoriteModes>(ctx.state.favorites,
+                                                         ctx.modeManager.state.defaultFavorites_indexable);
+    }
+    else if constexpr (ctx.lamp.flavor == hardware::LampTypes::simple)
+    {
+      // load the maxFavoriteCount possible favorites, or default favorites, for simple
+      ctx.template storageLoadOnly<Store::usedFavoriteCount>(ctx.modeManager.state.usedFavoriteCount,
+                                                             ctx.modeManager.state.defaultFavoriteCount_simple);
+      ctx.template storageLoadOnly<Store::favoriteModes>(ctx.state.favorites,
+                                                         ctx.modeManager.state.defaultFavorites_simple);
+    }
+
     ctx.template storageLoadOnly<Store::lastUsedFavorite>(ctx.modeManager.state.lastFavoriteStep);
     ctx.template storageLoadOnly<Store::isInFavoriteGroup>(ctx.state.isInFavoriteMockGroup);
     ctx.template storageLoadOnly<Store::modeMemory>(ctx.state.lastModeMemory);
@@ -945,7 +983,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       if constexpr (group.hasCustomRamp)
       {
         using StoreHere = typename LocalStore::EnumTy;
-        // Set saved ramp values, or default values
+        // Get saved ramp values, or default values pulled from modes
         group.template storageLoadOnly<StoreHere::rampMemory>(group.state.customRampMemory,
                                                               group.template get_custom_ramp_default_value());
         group.template storageLoadOnly<StoreHere::indexMemory>(group.state.customIndexMemory);
