@@ -16,6 +16,8 @@ namespace hal {
 /// Handle the platform specific bluetooth operations
 namespace bluetooth {
 
+static constexpr size_t MaxBleNameLenght = 32;
+
 // Load bounded devices
 void load_bound_file();
 
@@ -41,7 +43,7 @@ bool is_connection_allowed(uint16_t connectionHandle);
 void clear_bounded_devices();
 
 /// Set a new name for the bluetooth
-bool set_bluetooth_name(const char* const name, const size_t lenght);
+bool set_bluetooth_name(const std::array<char, MaxBleNameLenght>& name);
 
 /**
  * \brief start the advertising sequence (with a timeout)

@@ -79,8 +79,7 @@ bool addressMatches(const ble_gap_addr_t& a, const ble_gap_addr_t& b)
   return (memcmp(a.addr, b.addr, BLE_GAP_ADDR_LEN) == 0);
 }
 
-static constexpr size_t maxBleNameLenght = 32;
-inline static char bleName[maxBleNameLenght] = "";
+inline static char bleName[MaxBleNameLenght] = "";
 
 /// Paired device address
 inline static ble_gap_addr_t identityAddr = {0};
@@ -147,7 +146,7 @@ void load_bluetooth_name()
         break;
       }
     }
-    for (; i < maxBleNameLenght - 1; i++)
+    for (; i < MaxBleNameLenght; i++)
     {
       bleName[i] = '\0';
     }
@@ -569,11 +568,8 @@ void load_bound_file()
 
 void init()
 {
-  if (not is_activated())
-  {
-    // call once when the program starts
-    __private::startup_sequence();
-  }
+  // call once when the program starts
+  __private::startup_sequence();
 }
 
 void start_advertising(bool allowUnknownConnections)
@@ -641,21 +637,16 @@ void shutdown()
   // NRF_RADIO->POWER = 0;
 }
 
-bool set_bluetooth_name(const char* const name, const size_t lenght)
+bool set_bluetooth_name(const std::array<char, MaxBleNameLenght>& name)
 {
   // Try to load the bounded address file
   hal::filesystem::HAL_File nameFile;
 
-  // Delete file content, we could have a smaller name
-  if (nameFile.open(__private::BLE_NAME_FILE, hal::filesystem::HAL_File::OpenType::WRITE) and nameFile.is_open())
-  {
-    nameFile.truncate(0);
-    nameFile.close();
-  }
   // Replace content
-  if (nameFile.open(__private::BLE_NAME_FILE, hal::filesystem::HAL_File::OpenType::WRITE) and nameFile.is_open())
+  if (nameFile.open(__private::BLE_NAME_FILE, hal::filesystem::HAL_File::OpenType::WRITE) and nameFile.is_open() and
+      nameFile.seek(0))
   {
-    nameFile.write((uint8_t*)name, lenght);
+    nameFile.write((uint8_t*)name.data(), name.size());
     nameFile.close();
     return true;
   }

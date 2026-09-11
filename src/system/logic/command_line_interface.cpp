@@ -622,8 +622,13 @@ static void cmd_set_ble_name(const common::cli::ParsedCommand& command)
       }
       realNameSize++;
     }
+    if (realNameSize >= common::cli::MaxStringArgumentLen - 1)
+    {
+      bsp::lampda_print("New ble name is too long, max is %d characters", common::cli::MaxStringArgumentLen);
+      return;
+    }
 
-    hal::bluetooth::set_bluetooth_name(name.data(), realNameSize);
+    hal::bluetooth::set_bluetooth_name(name);
     bsp::lampda_print("New ble name set to: %s, will be set after a reboot", name.data());
   }
   else
