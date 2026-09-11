@@ -126,6 +126,9 @@ struct BasicMode
    */
   static void custom_ramp_update(auto& ctx, uint8_t rampValue) { return; }
 
+  /// Return the custom ramp default value, in case no preset is used
+  static uint8_t get_custom_ramp_default_value(auto& ctx) { return 128; }
+
   /// Toggles "usermode" button UI custom_click() and custom_hold()
   static constexpr bool hasButtonCustomUI = false;
 

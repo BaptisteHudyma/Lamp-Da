@@ -68,6 +68,12 @@ struct FireMode : public BasicMode
     fire_display(ctx, ctx.lamp.tick);
   }
 
+  static uint8_t get_custom_ramp_default_value(auto& ctx)
+  {
+    // start at zero so no sound effects
+    return 0;
+  }
+
   static void fire_display(auto& ctx, const uint32_t tick)
   {
     // tick forward

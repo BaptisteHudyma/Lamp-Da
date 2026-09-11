@@ -106,6 +106,26 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
     }
   }
 
+  /// \private Forward each mode to callback and it's index (if eligible)
+  template<bool customRampOnly, typename CallBack> static void LMBD_INLINE iterate_mode(auto& ctx, CallBack&& cb)
+  {
+    if constexpr (customRampOnly)
+    {
+      details::unroll<nbModes>([&](auto Idx) LMBD_INLINE {
+        if constexpr (ModeAt<Idx>::hasCustomRamp)
+        {
+          cb(context_as<ModeAt<Idx>>(ctx), Idx);
+        }
+      });
+    }
+    else
+    {
+      details::unroll<nbModes>([&](auto Idx) LMBD_INLINE {
+        cb(context_as<ModeAt<Idx>>(ctx), Idx);
+      });
+    }
+  }
+
   //
   // store
   //
@@ -284,6 +304,15 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
       retVal = mode.custom_hold(nbClickAndHold, isEndOfHoldEvent, holdDuration);
     });
     return retVal;
+  }
+
+  static std::array<uint8_t, nbModes> get_custom_ramp_default_value(auto& ctx)
+  {
+    std::array<uint8_t, nbModes> defaultValues;
+    iterate_mode<true>(ctx, [&defaultValues](auto mode, const size_t index) {
+      defaultValues[index] = mode.get_custom_ramp_default_value();
+    });
+    return defaultValues;
   }
 
   /// Binds to local BasicMode::power_on_sequence()

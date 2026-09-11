@@ -473,6 +473,13 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     return LocalStore::template getValue<key, T>(local);
   }
 
+  /// (store) Load \p key into \p local if available (single-shot), or load the default value
+  template<StoreEnum key, typename T = uint32_t>
+  static void LMBD_INLINE storageLoadOnly(LMBD_USED T& local, const T defaultValue)
+  {
+    LocalStore::template getValue<key, T>(local, defaultValue);
+  }
+
   /// (store) Save \p local into \p key storage (single-shot)
   template<StoreEnum key, typename T = uint32_t> static void LMBD_INLINE storageSaveOnly(LMBD_USED T& local)
   {
@@ -741,6 +748,9 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
       return manager.template animate_favorite_delete<displayFavoriteNumber>(holdDuration, stepSize);
     }
   }
+
+  /// Return the default ramp values for all the modes under this group
+  auto LMBD_INLINE get_custom_ramp_default_value() { return LocalModeTy::get_custom_ramp_default_value(*this); }
 
   /// Binds to local BasicMode::power_on_sequence()
   void LMBD_INLINE power_on_sequence()

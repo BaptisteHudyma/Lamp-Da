@@ -186,6 +186,12 @@ struct SierpinskiMode : public BasicMode
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
   }
 
+  static uint8_t get_custom_ramp_default_value(auto& ctx)
+  {
+    // start fairly fast
+    return 32;
+  }
+
   static void loop(auto& ctx)
   {
     // setup a callback, use wolframRule's 1-d cellular automata

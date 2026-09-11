@@ -664,6 +664,12 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       if (timeout > 0)
         overlay.update_type_timeout(ctx, draw::overlay::ElementType::RAMP, 0, timeout);
     }
+    else if constexpr (ctx.lamp.flavor == hardware::LampTypes::simple)
+    {
+      // blip at the ramp end
+      if (progress >= 250)
+        ctx.blip(100);
+    }
     return (progress >= 250);
   }
 
@@ -920,8 +926,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     using LocalStore = details::LocalStoreOf<decltype(ctx)>;
     LocalStore::template migrateStoreIfNeeded<storeId>();
 
-    // load last active mode
-    ctx.template storageLoadOnly<Store::lastActive>(ctx.modeManager.activeIndex);
+    // load last active mode and active ramp, or default index
+    ctx.template storageLoadOnly<Store::lastActive>(ctx.modeManager.activeIndex,
+                                                    ActiveIndexTy::from(Config::initialActiveIndex));
 
     // load the maxFavoriteCount possible favorites
     ctx.template storageLoadOnly<Store::usedFavoriteCount>(ctx.modeManager.state.usedFavoriteCount);
@@ -938,7 +945,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       if constexpr (group.hasCustomRamp)
       {
         using StoreHere = typename LocalStore::EnumTy;
-        group.template storageLoadOnly<StoreHere::rampMemory>(group.state.customRampMemory);
+        // Set saved ramp values, or default values
+        group.template storageLoadOnly<StoreHere::rampMemory>(group.state.customRampMemory,
+                                                              group.template get_custom_ramp_default_value());
         group.template storageLoadOnly<StoreHere::indexMemory>(group.state.customIndexMemory);
       }
 

@@ -73,6 +73,12 @@ template<bool isStep = false, uint32_t rampUpdateLenght_ms = 55, bool shouldSatu
  */
 struct PaletteRainbowMode : public PaletteMode<false>
 {
+  static uint8_t get_custom_ramp_default_value(auto& ctx)
+  {
+    // start with pink
+    return 218;
+  }
+
   struct StateTy
   {
     /// Color palette to use
@@ -133,6 +139,12 @@ struct PaletteOceanMode : public PaletteMode<false>
  */
 struct PalettePapiMode : public PaletteMode<true>
 {
+  static uint8_t get_custom_ramp_default_value(auto& ctx)
+  {
+    // start with cyan
+    return 35;
+  }
+
   struct StateTy
   {
     /// Color palette to use

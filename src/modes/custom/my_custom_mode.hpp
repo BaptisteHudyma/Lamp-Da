@@ -15,6 +15,7 @@ struct MyCustomMode : public lampda::modes::BasicMode
 
   // only if hasCustomRamp
   static void custom_ramp_update(auto& ctx, uint8_t rampValue) {}
+  static uint8_t get_custom_ramp_default_value(auto& ctx) { return 0; }
 
   // only if hasButtonCustomUI
   static bool custom_click(auto& ctx, uint8_t nbClick) { return false; }

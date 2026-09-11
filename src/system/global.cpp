@@ -125,6 +125,9 @@ void main_setup()
     bsp::filesystem::clear_internal_fs();
   }
 
+  // setup command line interface & text out
+  logic::cli::setup();
+
   // check if we are in first boot mode (read parameters fails)
   const bool isFirstBoot = not logic::behavior::read_parameters();
 #ifdef LMBD_SIMULATION
@@ -132,9 +135,6 @@ void main_setup()
 #endif
 
   // can start !
-
-  // setup command line interface
-  logic::cli::setup();
 
   // setup power components
   logic::power::init();

@@ -223,11 +223,14 @@ bool read_parameters()
     }
   }
 
-  if (bsp::filesystem::user::load_from_file())
+  if (not bsp::filesystem::user::load_from_file())
   {
-    user::read_parameters();
+    // We can live without the user parameters, but log it
+    bsp::lampda_print("ERROR: Failed to read user parameters");
   }
-  // else: we can live without the user parameters
+
+  // Load the user anyway, there is a default parameter logic in here
+  user::read_parameters();
 
   return isSuccess;
 }

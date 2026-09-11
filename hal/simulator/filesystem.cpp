@@ -78,10 +78,6 @@ void HAL_File::close()
     mInternalFile->file = nullptr;
     mInternalFile->filemode = nullptr;
   }
-  else
-  {
-    fprintf(stderr, "error: closing a closed file!\n");
-  }
 }
 
 size_t HAL_File::size() const

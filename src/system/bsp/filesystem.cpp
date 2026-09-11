@@ -194,10 +194,6 @@ bool get_value(const uint32_t key, uint32_t& value)
   {
     value = res->second;
 
-#ifdef LMBD_SIMULATION
-    bsp::lampda_print("fsi: get_value %08x -> %08x", key, value);
-#endif
-
     return true;
   }
 
@@ -208,14 +204,7 @@ bool get_value(const uint32_t key, uint32_t& value)
   return false;
 }
 
-void set_value(const uint32_t key, const uint32_t value)
-{
-  _systemParametersValueMap[key] = value;
-
-#ifdef LMBD_SIMULATION
-  bsp::lampda_print("fsi: set_value %08x -> %08x", key, value);
-#endif
-}
+void set_value(const uint32_t key, const uint32_t value) { _systemParametersValueMap[key] = value; }
 
 uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
 {
@@ -269,10 +258,6 @@ bool get_value(const uint32_t key, uint32_t& value)
   {
     value = res->second;
 
-#ifdef LMBD_SIMULATION
-    bsp::lampda_print("fsu: get_value %08x -> %08x", key, value);
-#endif
-
     return true;
   }
 
@@ -283,14 +268,7 @@ bool get_value(const uint32_t key, uint32_t& value)
   return false;
 }
 
-void set_value(const uint32_t key, const uint32_t value)
-{
-  _userParametersValueMap[key] = value;
-
-#ifdef LMBD_SIMULATION
-  bsp::lampda_print("fsu: set_value %08x -> %08x", key, value);
-#endif
-}
+void set_value(const uint32_t key, const uint32_t value) { _userParametersValueMap[key] = value; }
 
 uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
 {
