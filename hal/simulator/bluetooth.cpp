@@ -57,6 +57,8 @@ bool was_used() { return false; }
 
 void shutdown() {}
 
+bool set_bluetooth_name(const std::array<char, MaxBleNameLenght>& name) { return true; }
+
 namespace serial {
 bool is_activated() { return hal::bluetooth::is_activated(); }
 

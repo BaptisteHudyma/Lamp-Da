@@ -10,6 +10,13 @@ namespace cli {
 
 inline bool isCommandSeparator(const char character) { return character == ' ' || character == '\t'; }
 
+// Allow only certain chars in string of text
+inline bool is_valid_char(const char c)
+{
+  // allow the whole char range
+  return c >= ' ' && c <= '~';
+}
+
 const char* ParsedCommand::name() const { return buffer.data() + commandOffset; }
 
 const char* ParsedCommand::argument(const size_t index) const
@@ -83,6 +90,36 @@ bool parse_uint16(const ParsedCommand& command, const size_t index, uint16_t& va
   value = argument;
   return true;
 }
+
+/// Parse an argument as a char array
+bool parse_text(const ParsedCommand& command, const size_t index, std::array<char, MaxStringArgumentLen>& value)
+{
+  const char* text = command.argument(index);
+
+  if (text == nullptr)
+    return false;
+
+  size_t length = 0;
+  while (text[length] != '\0' && length < MaxStringArgumentLen - 1)
+  {
+    if (!is_valid_char(text[length]))
+      return false;
+    ++length;
+  }
+
+  // Check if the string is too long
+  if (text[length] != '\0')
+    return false;
+
+  // Copy the text into the array
+  for (size_t i = 0; i <= length; ++i)
+  {
+    value[i] = text[i];
+  }
+
+  return true;
+}
+
 } // namespace argument
 
 ParsedCommand parseCommand(const bsp::text_in::Inputs::Command& input)

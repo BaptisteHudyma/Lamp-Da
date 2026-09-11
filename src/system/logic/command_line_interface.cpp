@@ -587,6 +587,56 @@ static void cmd_serial(const common::cli::ParsedCommand&)
   bsp::lampda_print("BLE serial port: active %d", hal::bluetooth::serial::is_activated());
 }
 
+static void cmd_set_ble_name(const common::cli::ParsedCommand& command)
+{
+  auto charValidator = [](const char c) {
+    // Allow numbers
+    if (c >= '0' && c <= '9')
+      return true;
+    // Allow lower case letters
+    if (c >= 'a' && c <= 'z')
+      return true;
+    // Allow upper case letters
+    if (c >= 'A' && c <= 'Z')
+      return true;
+    // special alowed chars
+    if (c == '-')
+      return true;
+
+    // invalid char
+    return false;
+  };
+
+  std::array<char, common::cli::MaxStringArgumentLen> name;
+  if (common::cli::argument::parse_text(command, 0, name))
+  {
+    uint8_t realNameSize = 0;
+    for (uint8_t i = 0; i < common::cli::MaxStringArgumentLen; i++)
+    {
+      if (name[i] == '\0')
+        break;
+      if (not charValidator(name[i]))
+      {
+        bsp::lampda_print("BLE name contains invalid characters. Allowed chars are: letters, numbers, and -");
+        return;
+      }
+      realNameSize++;
+    }
+    if (realNameSize >= common::cli::MaxStringArgumentLen - 1)
+    {
+      bsp::lampda_print("New ble name is too long, max is %d characters", common::cli::MaxStringArgumentLen);
+      return;
+    }
+
+    hal::bluetooth::set_bluetooth_name(name);
+    bsp::lampda_print("New ble name set to: %s, will be set after a reboot", name.data());
+  }
+  else
+  {
+    bsp::lampda_print("Could not parse the given name");
+  }
+}
+
 void cmd_set_hook(const common::cli::ParsedCommand& command, const char* name);
 /// Handle the Set command, that takes another command as parameters
 static void cmd_set(const common::cli::ParsedCommand& command) { cmd_set_hook(command, command.name()); }
@@ -701,7 +751,13 @@ constexpr Command _set_commands_s[] = {
                           4,
                           "Set the sunset timer to a time, if time is synchronised",
                           handles::cmd_set_sunset_time),
-
+        make_command_args("ble_name",
+                          "[New name]",
+                          1,
+                          1,
+                          "Set the new bluetooth advertised name. It should start with \'ELK-BLE-\" if you want to use "
+                          "a generic ELK compatible app",
+                          handles::cmd_set_ble_name),
 };
 
 /// Check for command duplication

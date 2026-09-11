@@ -38,6 +38,7 @@ namespace __private {
 #define BLE_APPEARANCE_LIGHT_SOURCE_MULTICOLOR_ARRAY 0x07C6 /**< Light fixture BLE appearance flag (official flags) */
 
 static constexpr const char* const BLE_BOUND_PEER_FILE = "/.ble_bound.par";
+static constexpr const char* const BLE_NAME_FILE = "/.ble_name.par";
 
 /// Indicates if the last advertising cancel command was automatic or requested
 bool advertisingStoppedByRequest = false;
@@ -78,6 +79,8 @@ bool addressMatches(const ble_gap_addr_t& a, const ble_gap_addr_t& b)
   return (memcmp(a.addr, b.addr, BLE_GAP_ADDR_LEN) == 0);
 }
 
+inline static char bleName[MaxBleNameLenght] = "";
+
 /// Paired device address
 inline static ble_gap_addr_t identityAddr = {0};
 /// If true, the identityAddr is set, refuse all other connections
@@ -104,13 +107,84 @@ bool try_load_bounded_pair(ble_gap_addr_t& addr)
   return false;
 }
 
+void load_bluetooth_name()
+{
+  auto charValidator = [](const char c) {
+    // Allow numbers
+    if (c >= '0' && c <= '9')
+      return true;
+    // Allow lower case letters
+    if (c >= 'a' && c <= 'z')
+      return true;
+    // Allow upper case letters
+    if (c >= 'A' && c <= 'Z')
+      return true;
+    // special alowed chars
+    if (c == '-')
+      return true;
+
+    // invalid char
+    return false;
+  };
+
+  // Try to load the bounded address file
+  hal::filesystem::HAL_File nameFile;
+  if (nameFile.open(BLE_NAME_FILE, hal::filesystem::HAL_File::OpenType::READ) and nameFile.is_open() and
+      nameFile.is_available() and nameFile.seek(0))
+  {
+    const auto nameLenght = nameFile.read((uint8_t*)bleName, nameFile.size());
+
+    bool isValid = true;
+    size_t i = 0;
+    for (; i <= nameLenght - 1; i++)
+    {
+      if (bleName[i] == '\0')
+        break;
+      if (not charValidator(bleName[i]))
+      {
+        isValid = false;
+        break;
+      }
+    }
+    for (; i < MaxBleNameLenght; i++)
+    {
+      bleName[i] = '\0';
+    }
+
+    nameFile.close();
+
+    // valid name, quit
+    if (isValid)
+      return;
+
+    bsp::lampda_print("Invalid stored BLE name (%s: %d), skipping to default", nameLenght, bleName);
+  }
+
+  // Default name !
+  const uint32_t MAC_ADDRESS_0 = NRF_FICR->DEVICEADDR[0];
+  const uint32_t MAC_ADDRESS_1 = NRF_FICR->DEVICEADDR[1];
+
+  /// ELK-BLE is necessary to be recognized as a led drivable bluetooth object
+  const char defaultBleName[25] =
+          "ELK-BLE-Lampda-XXXX-XXXX"; // Null-terminated string must be 1 longer than you set it, for the null
+  for (int i = 0; i < 25; i++)
+    bleName[i] = defaultBleName[i];
+
+  // Fill in the XXXX in ble_name
+  byte_to_str(&bleName[15], (MAC_ADDRESS_0 >> 24) & 0xFF);
+  byte_to_str(&bleName[17], (MAC_ADDRESS_0 >> 16) & 0xFF);
+  byte_to_str(&bleName[20], (MAC_ADDRESS_0 >> 8) & 0xFF);
+  byte_to_str(&bleName[22], (MAC_ADDRESS_0 >> 0) & 0xFF);
+}
+
 void try_save_bounded_peer(const ble_gap_addr_t& addr)
 {
   // Try to load the bounded address file
   hal::filesystem::HAL_File boundFile;
 
   // load content, without deletion
-  if (boundFile.open(BLE_BOUND_PEER_FILE, hal::filesystem::HAL_File::OpenType::WRITE) and boundFile.is_open())
+  if (boundFile.open(BLE_BOUND_PEER_FILE, hal::filesystem::HAL_File::OpenType::WRITE) and boundFile.is_open() and
+      boundFile.seek(0))
   {
     boundFile.write(reinterpret_cast<const uint8_t*>(&addr), sizeof(ble_gap_addr_t));
   }
@@ -365,24 +439,14 @@ void startup_sequence()
   bleuart.begin();
   bleElkService.begin();
 
-  const uint32_t MAC_ADDRESS_0 = NRF_FICR->DEVICEADDR[0];
-  const uint32_t MAC_ADDRESS_1 = NRF_FICR->DEVICEADDR[1];
-
-  /// ELK-BLE is necessary to be recognized as a led drivable bluetooth object
-  char ble_name[25] =
-          "ELK-BLE-Lampda-XXXX-XXXX"; // Null-terminated string must be 1 longer than you set it, for the null
-  // Fill in the XXXX in ble_name
-  byte_to_str(&ble_name[15], (MAC_ADDRESS_0 >> 24) & 0xFF);
-  byte_to_str(&ble_name[17], (MAC_ADDRESS_0 >> 16) & 0xFF);
-  byte_to_str(&ble_name[20], (MAC_ADDRESS_0 >> 8) & 0xFF);
-  byte_to_str(&ble_name[22], (MAC_ADDRESS_0 >> 0) & 0xFF);
+  __private::load_bluetooth_name();
 
   //  Set the name we just made, and appearance
-  Bluefruit.setName(ble_name);
+  Bluefruit.setName(bleName);
   Bluefruit.setAppearance(BLE_APPEARANCE_LIGHT_SOURCE_MULTICOLOR_ARRAY);
 
   // Configure and start the BLE Uart service
-  bsp::lampda_print("Blutooth started under the name:%s", ble_name);
+  bsp::lampda_print("Blutooth started under the name:%s", bleName);
 
   // Advertising packet
   Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
@@ -504,11 +568,8 @@ void load_bound_file()
 
 void init()
 {
-  if (not is_activated())
-  {
-    // call once when the program starts
-    __private::startup_sequence();
-  }
+  // call once when the program starts
+  __private::startup_sequence();
 }
 
 void start_advertising(bool allowUnknownConnections)
@@ -574,6 +635,24 @@ void shutdown()
 
   __private::isInitialized = false;
   // NRF_RADIO->POWER = 0;
+}
+
+bool set_bluetooth_name(const std::array<char, MaxBleNameLenght>& name)
+{
+  // Try to load the bounded address file
+  hal::filesystem::HAL_File nameFile;
+
+  // Replace content
+  if (nameFile.open(__private::BLE_NAME_FILE, hal::filesystem::HAL_File::OpenType::WRITE) and nameFile.is_open() and
+      nameFile.seek(0))
+  {
+    nameFile.write((uint8_t*)name.data(), name.size());
+    nameFile.close();
+    return true;
+  }
+
+  nameFile.close();
+  return false;
 }
 
 namespace serial {

@@ -383,6 +383,10 @@ TEST(cmd_parser, parse_uint_hex)
   uint8_t value = 0;
   EXPECT_TRUE(argument::parse_uint8(parsed, 0, value));
   EXPECT_EQ(value, 255);
+
+  std::array<char, MaxStringArgumentLen> str {};
+  EXPECT_TRUE(argument::parse_text(parsed, 0, str));
+  EXPECT_STREQ(str.data(), "0xFF");
 }
 
 TEST(cmd_parser, parse_uint_octal)
@@ -393,6 +397,10 @@ TEST(cmd_parser, parse_uint_octal)
   uint8_t value = 0;
   EXPECT_TRUE(argument::parse_uint8(parsed, 0, value));
   EXPECT_EQ(value, 8);
+
+  std::array<char, MaxStringArgumentLen> str {};
+  EXPECT_TRUE(argument::parse_text(parsed, 0, str));
+  EXPECT_STREQ(str.data(), "010");
 }
 
 TEST(cmd_parser, parse_uint_binary_prefix)
@@ -403,6 +411,140 @@ TEST(cmd_parser, parse_uint_binary_prefix)
   uint8_t value = 0;
   EXPECT_TRUE(argument::parse_uint8(parsed, 0, value));
   EXPECT_EQ(value, 10);
+
+  std::array<char, MaxStringArgumentLen> str {};
+  EXPECT_TRUE(argument::parse_text(parsed, 0, str));
+  EXPECT_STREQ(str.data(), "0b1010");
+}
+
+// ============ argument::parse_text tests ============
+
+TEST(cmd_parser, parse_text_valid)
+{
+  const bsp::text_in::Inputs::Command input = create_command("cmd hello");
+  auto parsed = parseCommand(input);
+
+  std::array<char, MaxStringArgumentLen> value {};
+  EXPECT_TRUE(argument::parse_text(parsed, 0, value));
+  EXPECT_STREQ(value.data(), "hello");
+}
+
+TEST(cmd_parser, parse_text_single_character)
+{
+  const bsp::text_in::Inputs::Command input = create_command("cmd a");
+  auto parsed = parseCommand(input);
+
+  std::array<char, MaxStringArgumentLen> value {};
+  EXPECT_TRUE(argument::parse_text(parsed, 0, value));
+  EXPECT_STREQ(value.data(), "a");
+}
+
+TEST(cmd_parser, parse_text_max_length)
+{
+  // MaxStringArgumentLen is 10, so max string is 9 chars + null terminator
+  const bsp::text_in::Inputs::Command input = create_command("cmd 1234567890AZERTYIOPQSDFGHJKLMWX");
+  auto parsed = parseCommand(input);
+
+  std::array<char, MaxStringArgumentLen> value {};
+  EXPECT_TRUE(argument::parse_text(parsed, 0, value));
+  EXPECT_STREQ(value.data(), "1234567890AZERTYIOPQSDFGHJKLMWX");
+}
+
+TEST(cmd_parser, parse_text_exceeds_max_length)
+{
+  // String longer than MaxStringArgumentLen should fail
+  const bsp::text_in::Inputs::Command input = create_command("cmd 1234567890AZERTYIOPQSDFGHJKLMWX1");
+  auto parsed = parseCommand(input);
+
+  std::array<char, MaxStringArgumentLen> value {};
+  EXPECT_FALSE(argument::parse_text(parsed, 0, value));
+}
+
+TEST(cmd_parser, parse_text_missing_argument)
+{
+  const bsp::text_in::Inputs::Command input = create_command("cmd");
+  auto parsed = parseCommand(input);
+
+  std::array<char, MaxStringArgumentLen> value {};
+
+  for (uint8_t i = 0; i < 255; i++)
+    EXPECT_FALSE(argument::parse_text(parsed, i, value));
+}
+
+TEST(cmd_parser, parse_text_out_of_range_index)
+{
+  const bsp::text_in::Inputs::Command input = create_command("cmd arg1");
+  auto parsed = parseCommand(input);
+
+  std::array<char, MaxStringArgumentLen> value {};
+  EXPECT_FALSE(argument::parse_text(parsed, 5, value));
+}
+
+TEST(cmd_parser, parse_text_with_spaces)
+{
+  // Spaces are valid characters (ASCII 32)
+  const bsp::text_in::Inputs::Command input = create_command("cmd hello");
+  auto parsed = parseCommand(input);
+
+  std::array<char, MaxStringArgumentLen> value {};
+  EXPECT_TRUE(argument::parse_text(parsed, 0, value));
+  EXPECT_STREQ(value.data(), "hello");
+}
+
+TEST(cmd_parser, parse_text_with_special_characters)
+{
+  // Test with printable special characters
+  const bsp::text_in::Inputs::Command input = create_command("cmd !@#$%");
+  auto parsed = parseCommand(input);
+
+  std::array<char, MaxStringArgumentLen> value {};
+  EXPECT_TRUE(argument::parse_text(parsed, 0, value));
+  EXPECT_STREQ(value.data(), "!@#$%");
+}
+
+TEST(cmd_parser, parse_text_with_numbers)
+{
+  const bsp::text_in::Inputs::Command input = create_command("cmd 12345");
+  auto parsed = parseCommand(input);
+
+  std::array<char, MaxStringArgumentLen> value {};
+  EXPECT_TRUE(argument::parse_text(parsed, 0, value));
+  EXPECT_STREQ(value.data(), "12345");
+}
+
+TEST(cmd_parser, parse_text_with_mixed_case)
+{
+  const bsp::text_in::Inputs::Command input = create_command("cmd HeLLo123");
+  auto parsed = parseCommand(input);
+
+  std::array<char, MaxStringArgumentLen> value {};
+  EXPECT_TRUE(argument::parse_text(parsed, 0, value));
+  EXPECT_STREQ(value.data(), "HeLLo123");
+}
+
+TEST(cmd_parser, parse_text_multiple_arguments)
+{
+  const bsp::text_in::Inputs::Command input = create_command("cmd first second");
+  auto parsed = parseCommand(input);
+
+  std::array<char, MaxStringArgumentLen> value1 {};
+  std::array<char, MaxStringArgumentLen> value2 {};
+
+  EXPECT_TRUE(argument::parse_text(parsed, 0, value1));
+  EXPECT_TRUE(argument::parse_text(parsed, 1, value2));
+  EXPECT_STREQ(value1.data(), "first");
+  EXPECT_STREQ(value2.data(), "second");
+}
+
+TEST(cmd_parser, parse_text_tilde_character)
+{
+  // Tilde (~) is the last valid printable character (ASCII 126)
+  const bsp::text_in::Inputs::Command input = create_command("cmd test~");
+  auto parsed = parseCommand(input);
+
+  std::array<char, MaxStringArgumentLen> value {};
+  EXPECT_TRUE(argument::parse_text(parsed, 0, value));
+  EXPECT_STREQ(value.data(), "test~");
 }
 
 } // namespace lampda::common::cli
