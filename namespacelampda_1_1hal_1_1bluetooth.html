@@ -75,7 +75,8 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">lampda::hal::bluetooth Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -123,6 +124,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_connection_allowed
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear_bounded_devices</b> ()</td></tr>
 <tr class="memdesc:a011bea2006fb15e1d8cb319fc7cbe916"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the bounded bluetooth devices. <br /></td></tr>
 <tr class="separator:a011bea2006fb15e1d8cb319fc7cbe916"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61c05bd08473bacafa6d898dffc2df40"><td class="memItemLeft" align="right" valign="top"><a id="a61c05bd08473bacafa6d898dffc2df40" name="a61c05bd08473bacafa6d898dffc2df40"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>set_bluetooth_name</b> (const std::array&lt; char, MaxBleNameLenght &gt; &amp;name)</td></tr>
+<tr class="memdesc:a61c05bd08473bacafa6d898dffc2df40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a new name for the bluetooth. <br /></td></tr>
+<tr class="separator:a61c05bd08473bacafa6d898dffc2df40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a1238dc518a365997dd5ab345c8ca70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1bluetooth.html#a5a1238dc518a365997dd5ab345c8ca70">start_advertising</a> (bool allowUnknownConnections)</td></tr>
 <tr class="memdesc:a5a1238dc518a365997dd5ab345c8ca70"><td class="mdescLeft">&#160;</td><td class="mdescRight">start the advertising sequence (with a timeout)  <br /></td></tr>
 <tr class="separator:a5a1238dc518a365997dd5ab345c8ca70"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -150,6 +155,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> ()</td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>shutdown</b> ()</td></tr>
 <tr class="memdesc:a1f3f1b568609b5b11fdf40ee4c083936"><td class="mdescLeft">&#160;</td><td class="mdescRight">shutdown the bluetooth and services <br /></td></tr>
 <tr class="separator:a1f3f1b568609b5b11fdf40ee4c083936"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a44fba757ed714f73bc3177ff51bfe644"><td class="memItemLeft" align="right" valign="top"><a id="a44fba757ed714f73bc3177ff51bfe644" name="a44fba757ed714f73bc3177ff51bfe644"></a>
+static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>MaxBleNameLenght</b> = 32</td></tr>
+<tr class="separator:a44fba757ed714f73bc3177ff51bfe644"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the platform specific bluetooth operations. </p>

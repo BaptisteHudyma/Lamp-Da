@@ -77,7 +77,8 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">cmd_parser.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -114,10 +115,19 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::common::cli::
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::common::cli::argument::parse_uint16</b> (const ParsedCommand &amp;command, const size_t index, uint16_t &amp;value)</td></tr>
 <tr class="memdesc:ab516cf1e1cd40bb1ca03e3eef388c8c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse an argument as a 16 bit unsigned number. <br /></td></tr>
 <tr class="separator:ab516cf1e1cd40bb1ca03e3eef388c8c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41797d1d67fdce75dfe3a91ae855c2a6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1common_1_1cli_1_1argument.html#a41797d1d67fdce75dfe3a91ae855c2a6">lampda::common::cli::argument::parse_text</a> (const ParsedCommand &amp;command, const size_t index, std::array&lt; char, MaxStringArgumentLen &gt; &amp;value)</td></tr>
+<tr class="memdesc:a41797d1d67fdce75dfe3a91ae855c2a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse an argument as a char array.  <br /></td></tr>
+<tr class="separator:a41797d1d67fdce75dfe3a91ae855c2a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8bb4e13194b8aa4fd5b97ea3a200ce26"><td class="memItemLeft" align="right" valign="top"><a id="a8bb4e13194b8aa4fd5b97ea3a200ce26" name="a8bb4e13194b8aa4fd5b97ea3a200ce26"></a>
 ParsedCommand&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::common::cli::parseCommand</b> (const bsp::text_in::Inputs::Command &amp;input)</td></tr>
 <tr class="memdesc:a8bb4e13194b8aa4fd5b97ea3a200ce26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a command to extract its name and arguments. <br /></td></tr>
 <tr class="separator:a8bb4e13194b8aa4fd5b97ea3a200ce26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a2ddcd881001008011198be13d51011b6"><td class="memItemLeft" align="right" valign="top"><a id="a2ddcd881001008011198be13d51011b6" name="a2ddcd881001008011198be13d51011b6"></a>
+static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::common::cli::MaxStringArgumentLen</b> = 32</td></tr>
+<tr class="separator:a2ddcd881001008011198be13d51011b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Command argument parser logic. </p>
