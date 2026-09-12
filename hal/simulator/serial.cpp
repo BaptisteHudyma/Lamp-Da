@@ -218,7 +218,7 @@ size_t write(const char* const buffer, size_t bufferSize)
   return bufferSize;
 }
 
-uint16_t mtu_size() { return 256; }
+uint16_t mtu_size() { return 2048; }
 
 } // namespace serial
 } // namespace hal

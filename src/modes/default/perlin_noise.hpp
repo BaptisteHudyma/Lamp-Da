@@ -61,6 +61,12 @@ struct PerlinNoiseMode : public BasicMode
     bool isResetted = false;
   };
 
+  static uint8_t get_custom_ramp_default_value(auto& ctx)
+  {
+    // start at rainbow palette
+    return 0;
+  }
+
   static void on_enter_mode(auto& ctx)
   {
     ctx.state.isResetted = true;

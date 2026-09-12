@@ -37,6 +37,12 @@ struct GravityMode : public BasicMode
     custom_ramp_update(ctx, ctx.get_active_custom_ramp());
   }
 
+  static uint8_t get_custom_ramp_default_value(auto& ctx)
+  {
+    // start with aurora palette
+    return 0;
+  }
+
   /// User ramp changes the color palette
   static void custom_ramp_update(auto& ctx, uint8_t rampValue)
   {
