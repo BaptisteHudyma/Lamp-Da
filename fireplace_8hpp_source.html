@@ -137,51 +137,57 @@ $(function() {
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    fire_display(ctx, ctx.lamp.tick);</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  }</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> fire_display(<span class="keyword">auto</span>&amp; ctx, <span class="keyword">const</span> uint32_t tick)</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  <span class="keyword">static</span> uint8_t get_custom_ramp_default_value(<span class="keyword">auto</span>&amp; ctx)</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  {</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="comment">// tick forward</span></div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">const</span> int16_t zSpeed = tick % INT16_MAX;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">const</span> int16_t ySpeed = zSpeed * ctx.lamp.frameDurationMs;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="comment">// start at zero so no sound effects</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>  }</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="comment">// measure custom ramp for fire sound sensitivity</span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">float</span> soundAverageDelta = 0.0;</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">const</span> uint8_t index = ctx.get_active_custom_ramp();</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">if</span> (index &gt; 16)</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    {</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>      ctx.state.soundEvent.update(ctx);</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>      soundAverageDelta = ctx.state.soundEvent.avgDelta * 100.0f;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    }</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="comment">// measure sound level for sound-sensitive fire</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordtype">float</span> shakeness = 1.0f + (index * soundAverageDelta) / 255.0f;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">float</span> intensity = 128 + 256 / (1 + shakeness) - 1;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="comment">// precompute &quot;fire intensity&quot; line per line</span></div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    intensity *= ctx.lamp.maxHeight;</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> firstIndex = tick % everyNIndex;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="comment">// for each line, generate noise &amp; set pixels</span></div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">for</span> (uint16_t j = firstIndex; j &lt;= ctx.lamp.maxHeight; j += everyNIndex)</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    {</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>      <span class="keyword">const</span> <span class="keywordtype">float</span> here = std::max&lt;float&gt;(intensity - j * 255.0f, 0.0f);</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>      <span class="keyword">const</span> uint8_t decay = std::min&lt;uint8_t&gt;(here / ctx.lamp.maxHeight, 255.0f);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  <span class="keyword">static</span> <span class="keywordtype">void</span> fire_display(<span class="keyword">auto</span>&amp; ctx, <span class="keyword">const</span> uint32_t tick)</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>  {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="comment">// tick forward</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">const</span> int16_t zSpeed = tick % INT16_MAX;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">const</span> int16_t ySpeed = zSpeed * ctx.lamp.frameDurationMs;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="comment">// measure custom ramp for fire sound sensitivity</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordtype">float</span> soundAverageDelta = 0.0;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">const</span> uint8_t index = ctx.get_active_custom_ramp();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (index &gt; 16)</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>      ctx.state.soundEvent.update(ctx);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>      soundAverageDelta = ctx.state.soundEvent.avgDelta * 100.0f;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="comment">// measure sound level for sound-sensitive fire</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">float</span> shakeness = 1.0f + (index * soundAverageDelta) / 255.0f;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">float</span> intensity = 128 + 256 / (1 + shakeness) - 1;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="comment">// precompute &quot;fire intensity&quot; line per line</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    intensity *= ctx.lamp.maxHeight;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> firstIndex = tick % everyNIndex;</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>      <span class="keywordflow">for</span> (uint16_t i = 0; i &lt;= ctx.lamp.maxWidth; ++i)</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>      {</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keyword">const</span> <span class="keyword">auto</span> flame = noise8::inoise(i * <a class="code hl_variable" href="structlampda_1_1modes_1_1default__modes_1_1FireMode.html#aae88709c40895b9175eadc982469f0ae">xScale</a>, j * <a class="code hl_variable" href="structlampda_1_1modes_1_1default__modes_1_1FireMode.html#ab6fc719221c3ab5bfb0757833eaad6b6">yScale</a> + ySpeed, zSpeed);</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keyword">const</span> <span class="keyword">auto</span> pixel = std::min&lt;uint8_t&gt;(223, qsub8(flame, decay));</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keyword">const</span> <span class="keyword">auto</span> color = modes::colors::from_palette&lt;false, uint8_t&gt;(pixel, <a class="code hl_variable" href="structlampda_1_1modes_1_1default__modes_1_1FireMode.html#aa8f124763c055b5c13538932eb00f5e9">palette</a>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="comment">// for each line, generate noise &amp; set pixels</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">for</span> (uint16_t j = firstIndex; j &lt;= ctx.lamp.maxHeight; j += everyNIndex)</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>      <span class="keyword">const</span> <span class="keywordtype">float</span> here = std::max&lt;float&gt;(intensity - j * 255.0f, 0.0f);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>      <span class="keyword">const</span> uint8_t decay = std::min&lt;uint8_t&gt;(here / ctx.lamp.maxHeight, 255.0f);</div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        ctx.lamp.setPixelColorXY(i, j, color);</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>      }</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    }</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>  }</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>};</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>      <span class="keywordflow">for</span> (uint16_t i = 0; i &lt;= ctx.lamp.maxWidth; ++i)</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>      {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keyword">const</span> <span class="keyword">auto</span> flame = noise8::inoise(i * <a class="code hl_variable" href="structlampda_1_1modes_1_1default__modes_1_1FireMode.html#aae88709c40895b9175eadc982469f0ae">xScale</a>, j * <a class="code hl_variable" href="structlampda_1_1modes_1_1default__modes_1_1FireMode.html#ab6fc719221c3ab5bfb0757833eaad6b6">yScale</a> + ySpeed, zSpeed);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keyword">const</span> <span class="keyword">auto</span> pixel = std::min&lt;uint8_t&gt;(223, qsub8(flame, decay));</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keyword">const</span> <span class="keyword">auto</span> color = modes::colors::from_palette&lt;false, uint8_t&gt;(pixel, <a class="code hl_variable" href="structlampda_1_1modes_1_1default__modes_1_1FireMode.html#aa8f124763c055b5c13538932eb00f5e9">palette</a>);</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>} <span class="comment">// namespace lampda::modes::default_modes</span></div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        ctx.lamp.setPixelColorXY(i, j, color);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>      }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    }</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>};</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>} <span class="comment">// namespace lampda::modes::default_modes</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aaudio_2utils_8hpp_html"><div class="ttname"><a href="audio_2utils_8hpp.html">utils.hpp</a></div><div class="ttdoc">Define the audio handle object.</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_1_1colors_html_a2a26dfee11ad9c585b3a84b487cb55ba"><div class="ttname"><a href="namespacelampda_1_1modes_1_1colors.html#a2a26dfee11ad9c585b3a84b487cb55ba">lampda::modes::colors::PaletteHeatColors</a></div><div class="ttdeci">static constexpr PaletteTy PaletteHeatColors</div><div class="ttdoc">Heat black body.</div><div class="ttdef"><b>Definition:</b> palettes.hpp:415</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_1_1default__modes_html"><div class="ttname"><a href="namespacelampda_1_1modes_1_1default__modes.html">lampda::modes::default_modes</a></div><div class="ttdoc">Basic &quot;default&quot; modes included with the hardware.</div><div class="ttdef"><b>Definition:</b> aurora.hpp:12</div></div>

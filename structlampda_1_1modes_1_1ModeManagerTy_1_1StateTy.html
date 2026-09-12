@@ -179,7 +179,63 @@ Static Public Attributes</h2></td></tr>
 static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxFavoriteCount</b> = 8</td></tr>
 <tr class="memdesc:ae2476a8f1b64a6013305e24873bbe1e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum allowed favorite count. <br /></td></tr>
 <tr class="separator:ae2476a8f1b64a6013305e24873bbe1e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c78b5da78026be8062c4302287c954e"><td class="memItemLeft" align="right" valign="top"><a id="a3c78b5da78026be8062c4302287c954e" name="a3c78b5da78026be8062c4302287c954e"></a>
+static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>defaultFavoriteCount_indexable</b> = 6</td></tr>
+<tr class="memdesc:a3c78b5da78026be8062c4302287c954e"><td class="mdescLeft">&#160;</td><td class="mdescRight">By default, the system will have X favorites. <br /></td></tr>
+<tr class="separator:a3c78b5da78026be8062c4302287c954e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19478eaea3f640671a75c3fea731cd36"><td class="memItemLeft" align="right" valign="top">static constexpr std::array&lt; ActiveIndexTy, <a class="el" href="structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#ae2476a8f1b64a6013305e24873bbe1e8">maxFavoriteCount</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a19478eaea3f640671a75c3fea731cd36">defaultFavorites_indexable</a></td></tr>
+<tr class="memdesc:a19478eaea3f640671a75c3fea731cd36"><td class="mdescLeft">&#160;</td><td class="mdescRight">The default favorites are defined below :  <br /></td></tr>
+<tr class="separator:a19478eaea3f640671a75c3fea731cd36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09dfebce142ecc9b4a2ee60de636eef1"><td class="memItemLeft" align="right" valign="top"><a id="a09dfebce142ecc9b4a2ee60de636eef1" name="a09dfebce142ecc9b4a2ee60de636eef1"></a>
+static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>defaultFavoriteCount_simple</b> = 0</td></tr>
+<tr class="memdesc:a09dfebce142ecc9b4a2ee60de636eef1"><td class="mdescLeft">&#160;</td><td class="mdescRight">By default, the system will have X favorites. <br /></td></tr>
+<tr class="separator:a09dfebce142ecc9b4a2ee60de636eef1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9706bae7d984a16202d429304040c7f9"><td class="memItemLeft" align="right" valign="top"><a id="a9706bae7d984a16202d429304040c7f9" name="a9706bae7d984a16202d429304040c7f9"></a>
+static constexpr std::array&lt; ActiveIndexTy, <a class="el" href="structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#ae2476a8f1b64a6013305e24873bbe1e8">maxFavoriteCount</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>defaultFavorites_simple</b> = {}</td></tr>
+<tr class="memdesc:a9706bae7d984a16202d429304040c7f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">The default favorites are defined below : <br /></td></tr>
+<tr class="separator:a9706bae7d984a16202d429304040c7f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a19478eaea3f640671a75c3fea731cd36" name="a19478eaea3f640671a75c3fea731cd36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19478eaea3f640671a75c3fea731cd36">&#9670;&#160;</a></span>defaultFavorites_indexable</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Config , typename AllGroups , uint8_t hiddenGroupsCount&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::array&lt;ActiveIndexTy, <a class="el" href="structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#ae2476a8f1b64a6013305e24873bbe1e8">maxFavoriteCount</a>&gt; lampda::modes::ModeManagerTy&lt; Config, AllGroups, hiddenGroupsCount &gt;::StateTy::defaultFavorites_indexable</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">            </div>
+<div class="line">            ActiveIndexTy::from({0, 2, 80, 0}),</div>
+<div class="line">            </div>
+<div class="line">            ActiveIndexTy::from({0, 2, 165, 0}),</div>
+<div class="line">            </div>
+<div class="line">            ActiveIndexTy::from({0, 2, 0, 0}),</div>
+<div class="line">            </div>
+<div class="line">            ActiveIndexTy::from({0, 0, 0, 0}),</div>
+<div class="line">            </div>
+<div class="line">            ActiveIndexTy::from({0, 0, 128, 0}),</div>
+<div class="line">            </div>
+<div class="line">            ActiveIndexTy::from({0, 0, 255, 0}),</div>
+<div class="line">    }</div>
+</div><!-- fragment -->
+<p>The default favorites are defined below : </p>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>src/modes/include/<a class="el" href="manager__type_8hpp_source.html">manager_type.hpp</a></li>
 </ul>

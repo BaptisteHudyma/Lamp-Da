@@ -236,6 +236,10 @@ template&lt;bool displayFavoriteNumber = true&gt; </td></tr>
 template&lt;bool displayFavoriteNumber = true&gt; </td></tr>
 <tr class="memitem:aca6690a851372f7e239db83a22eea07c"><td class="memTemplItemLeft" align="right" valign="top">auto LMBD_INLINE&#160;</td><td class="memTemplItemRight" valign="bottom"><b>animate_favorite_delete</b> (float holdDuration, float stepSize)</td></tr>
 <tr class="separator:aca6690a851372f7e239db83a22eea07c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af380011b222e4b7e2ac619f30700aa33"><td class="memItemLeft" align="right" valign="top"><a id="af380011b222e4b7e2ac619f30700aa33" name="af380011b222e4b7e2ac619f30700aa33"></a>
+auto LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>get_custom_ramp_default_value</b> ()</td></tr>
+<tr class="memdesc:af380011b222e4b7e2ac619f30700aa33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the default ramp values for all the modes under this group. <br /></td></tr>
+<tr class="separator:af380011b222e4b7e2ac619f30700aa33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20a5b1d30bf6c827e4d07e54d4902c5d"><td class="memItemLeft" align="right" valign="top"><a id="a20a5b1d30bf6c827e4d07e54d4902c5d" name="a20a5b1d30bf6c827e4d07e54d4902c5d"></a>
 void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>power_on_sequence</b> ()</td></tr>
 <tr class="memdesc:a20a5b1d30bf6c827e4d07e54d4902c5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds to local <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#af4b8f59cd7627d8d4c7eb2af5561cc71" title="Custom callback when the system powers on (optional)">BasicMode::power_on_sequence()</a> <br /></td></tr>
@@ -283,6 +287,11 @@ template&lt;StoreEnum key, typename T  = uint32_t&gt; </td></tr>
 <tr class="memitem:acb7793ece22f7fc867929816fb28f311"><td class="memTemplItemLeft" align="right" valign="top">static bool LMBD_INLINE&#160;</td><td class="memTemplItemRight" valign="bottom"><b>storageLoadOnly</b> (LMBD_USED T &amp;local)</td></tr>
 <tr class="memdesc:acb7793ece22f7fc867929816fb28f311"><td class="mdescLeft">&#160;</td><td class="mdescRight">(store) Load <code>key</code> into <code>local</code> if available (single-shot) <br /></td></tr>
 <tr class="separator:acb7793ece22f7fc867929816fb28f311"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07e48d4d1b9c318fe2b6ac0b69f6d5b8"><td class="memTemplParams" colspan="2"><a id="a07e48d4d1b9c318fe2b6ac0b69f6d5b8" name="a07e48d4d1b9c318fe2b6ac0b69f6d5b8"></a>
+template&lt;StoreEnum key, typename T  = uint32_t&gt; </td></tr>
+<tr class="memitem:a07e48d4d1b9c318fe2b6ac0b69f6d5b8"><td class="memTemplItemLeft" align="right" valign="top">static void LMBD_INLINE&#160;</td><td class="memTemplItemRight" valign="bottom"><b>storageLoadOnly</b> (LMBD_USED T &amp;local, const T defaultValue)</td></tr>
+<tr class="memdesc:a07e48d4d1b9c318fe2b6ac0b69f6d5b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">(store) Load <code>key</code> into <code>local</code> if available (single-shot), or load the default value <br /></td></tr>
+<tr class="separator:a07e48d4d1b9c318fe2b6ac0b69f6d5b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a515d89957ab104fcdba9ba20bd8753bc"><td class="memTemplParams" colspan="2"><a id="a515d89957ab104fcdba9ba20bd8753bc" name="a515d89957ab104fcdba9ba20bd8753bc"></a>
 template&lt;StoreEnum key, typename T  = uint32_t&gt; </td></tr>
 <tr class="memitem:a515d89957ab104fcdba9ba20bd8753bc"><td class="memTemplItemLeft" align="right" valign="top">static void LMBD_INLINE&#160;</td><td class="memTemplItemRight" valign="bottom"><b>storageSaveOnly</b> (LMBD_USED T &amp;local)</td></tr>

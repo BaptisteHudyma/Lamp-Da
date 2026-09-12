@@ -129,10 +129,6 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>initialActiveIndex</b> [4] = {0, 0, 0, 0}</td></tr>
 <tr class="memdesc:a974d26c90aaf6ab2b9822f7d9633e7c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">(misc) Override default initial active group or mode (by index) <br /></td></tr>
 <tr class="separator:a974d26c90aaf6ab2b9822f7d9633e7c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a889d9ae2a307ae184132119d402e45c3"><td class="memItemLeft" align="right" valign="top"><a id="a889d9ae2a307ae184132119d402e45c3" name="a889d9ae2a307ae184132119d402e45c3"></a>
-static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>defaultFavorite</b> [4] = {0, 0, 0, 0}</td></tr>
-<tr class="memdesc:a889d9ae2a307ae184132119d402e45c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">(misc) Override default initial active favorite mode (by index) <br /></td></tr>
-<tr class="separator:a889d9ae2a307ae184132119d402e45c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Default manager configuration, enables you to customize defaults. </p>
@@ -155,8 +151,8 @@ static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>d
 <div class="line">    <span class="comment">// ... other modes</span></div>
 <div class="line">    modeC&gt;</div>
 <div class="line">  &gt;;</div>
-<div class="ttc" id="anamespacelampda_1_1modes_html_a6e6505e53bef96a328e82896560a826b"><div class="ttname"><a href="namespacelampda_1_1modes.html#a6e6505e53bef96a328e82896560a826b">lampda::modes::ManagerForConfig</a></div><div class="ttdeci">ModeManagerTy&lt; ManagerConfig, std::tuple&lt; Groups... &gt;, 0 &gt; ManagerForConfig</div><div class="ttdoc">Same as modes::ManagerFor but with custom defaults.</div><div class="ttdef"><b>Definition:</b> manager_type.hpp:1152</div></div>
-<div class="ttc" id="anamespacelampda_1_1modes_html_aa8da2a265afb18b5429192c81127918f"><div class="ttname"><a href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f">lampda::modes::GroupFor</a></div><div class="ttdeci">GroupTy&lt; std::tuple&lt; Modes... &gt; &gt; GroupFor</div><div class="ttdoc">Group together many different modes::BasicMode.</div><div class="ttdef"><b>Definition:</b> group_type.hpp:335</div></div>
+<div class="ttc" id="anamespacelampda_1_1modes_html_a6e6505e53bef96a328e82896560a826b"><div class="ttname"><a href="namespacelampda_1_1modes.html#a6e6505e53bef96a328e82896560a826b">lampda::modes::ManagerForConfig</a></div><div class="ttdeci">ModeManagerTy&lt; ManagerConfig, std::tuple&lt; Groups... &gt;, 0 &gt; ManagerForConfig</div><div class="ttdoc">Same as modes::ManagerFor but with custom defaults.</div><div class="ttdef"><b>Definition:</b> manager_type.hpp:1199</div></div>
+<div class="ttc" id="anamespacelampda_1_1modes_html_aa8da2a265afb18b5429192c81127918f"><div class="ttname"><a href="namespacelampda_1_1modes.html#aa8da2a265afb18b5429192c81127918f">lampda::modes::GroupFor</a></div><div class="ttdeci">GroupTy&lt; std::tuple&lt; Modes... &gt; &gt; GroupFor</div><div class="ttdoc">Group together many different modes::BasicMode.</div><div class="ttdef"><b>Definition:</b> group_type.hpp:369</div></div>
 </div><!-- fragment --><p>See <a class="el" href="my__custom__config_8hpp_source.html">configuration template </a> below where you will need to uncomment the values you want to override:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#ifndef MY_CUSTOM_CONFIG_H</span></div>
 <div class="line"><span class="preprocessor">#define MY_CUSTOM_CONFIG_H</span></div>

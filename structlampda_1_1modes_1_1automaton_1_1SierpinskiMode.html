@@ -117,6 +117,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a37d4011246588d5bbbb6ae97a9f72821"><td class="memItemLeft" align="right" valign="top"><a id="a37d4011246588d5bbbb6ae97a9f72821" name="a37d4011246588d5bbbb6ae97a9f72821"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>on_enter_mode</b> (auto &amp;ctx)</td></tr>
 <tr class="separator:a37d4011246588d5bbbb6ae97a9f72821"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3de610c47d6ceee6ef8d56718892dc3a"><td class="memItemLeft" align="right" valign="top"><a id="a3de610c47d6ceee6ef8d56718892dc3a" name="a3de610c47d6ceee6ef8d56718892dc3a"></a>
+static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_custom_ramp_default_value</b> (auto &amp;ctx)</td></tr>
+<tr class="separator:a3de610c47d6ceee6ef8d56718892dc3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a776dec2ee796a0579fb9bba8bf846bda"><td class="memItemLeft" align="right" valign="top"><a id="a776dec2ee796a0579fb9bba8bf846bda" name="a776dec2ee796a0579fb9bba8bf846bda"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto &amp;ctx)</td></tr>
 <tr class="separator:a776dec2ee796a0579fb9bba8bf846bda"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -734,7 +737,7 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structlampda_1_1modes_1_1automaton_1_1SierpinskiMode.html#a90f863c5ba01f558757a4ed13925573c">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
-<div class="ttc" id="astructlampda_1_1modes_1_1automaton_1_1SierpinskiMode_html_a90f863c5ba01f558757a4ed13925573c"><div class="ttname"><a href="structlampda_1_1modes_1_1automaton_1_1SierpinskiMode.html#a90f863c5ba01f558757a4ed13925573c">lampda::modes::automaton::SierpinskiMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">Hint manager that we have a custom ramp.</div><div class="ttdef"><b>Definition:</b> automaton.hpp:201</div></div>
+<div class="ttc" id="astructlampda_1_1modes_1_1automaton_1_1SierpinskiMode_html_a90f863c5ba01f558757a4ed13925573c"><div class="ttname"><a href="structlampda_1_1modes_1_1automaton_1_1SierpinskiMode.html#a90f863c5ba01f558757a4ed13925573c">lampda::modes::automaton::SierpinskiMode::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">Hint manager that we have a custom ramp.</div><div class="ttdef"><b>Definition:</b> automaton.hpp:207</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
 <div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>

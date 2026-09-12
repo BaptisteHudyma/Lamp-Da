@@ -62,8 +62,7 @@ var searchData=
   ['tungsten100w_59',['Tungsten100W',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5ac60fcc12a7cfd7382a307892f506cdf0',1,'lampda::modes::colors']]],
   ['tungsten40w_60',['Tungsten40W',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5af218d4d49684d28bda0392e5b7989ffa',1,'lampda::modes::colors']]],
   ['turquoise_61',['Turquoise',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba8120857511bb55ff52a2b73884ca429e',1,'lampda::modes::colors']]],
-  ['type_62',['Type',['../classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428f',1,'lampda::common::UserCommand']]],
-  ['type_63',['type',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a5c4790ffca306a285685889472e9e257',1,'lampda::modes::draw::overlay::__private::UIElement']]],
-  ['type_64',['Type',['../namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566',1,'lampda::common::elk::Type()'],['../namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa',1,'lampda::logic::alerts::Type()']]],
-  ['typicalliionvoltage_5fmv_65',['typicalLiionVoltage_mV',['../namespacelampda.html#ade87cbd4b1366e64f87e966d75f7922c',1,'lampda']]]
+  ['type_62',['type',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a5c4790ffca306a285685889472e9e257',1,'lampda::modes::draw::overlay::__private::UIElement']]],
+  ['type_63',['Type',['../classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428f',1,'lampda::common::UserCommand::Type()'],['../namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566',1,'lampda::common::elk::Type()'],['../namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa',1,'lampda::logic::alerts::Type()']]],
+  ['typicalliionvoltage_5fmv_64',['typicalLiionVoltage_mV',['../namespacelampda.html#ade87cbd4b1366e64f87e966d75f7922c',1,'lampda']]]
 ];
