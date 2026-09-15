@@ -490,6 +490,35 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     overlay.clear();
     display_favorite_number_ramp(ctx, which_one, ctx.state.usedFavoriteCount, true, 1000);
 
+    // indicate favorite mode entry
+    ctx.blip(250);
+
+    // indicate that we are now in a favorite group
+    ctx.state.isInFavoriteMockGroup = true;
+
+    return true;
+  }
+
+  /**
+   * \brief Exit the favorite group, by going to the given group and mode id
+   */
+  static bool exit_favorite_group(auto& ctx, uint8_t nextGroupId, uint8_t nextModeId)
+  {
+    if (not ctx.state.isInFavoriteMockGroup)
+      return false;
+
+#ifdef LMBD_SIMULATION
+    fprintf(stderr, "Exit fake favorite group\n");
+#endif
+    // reset favorite indicator
+    ctx.state.isInFavoriteMockGroup = false;
+    // return to previous state
+    ctx.set_active_group(nextGroupId);
+    ctx.set_active_mode(nextModeId);
+
+    // blip to indicate favorite mode exit
+    ctx.blip(250);
+
     return true;
   }
 
@@ -541,16 +570,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       }
       else
       {
-        // no more favorite, restore last used
-
-        // reset favorite indicator
-        ctx.state.isInFavoriteMockGroup = false;
-        // return to previous state
-        ctx.set_active_group(ctx.state.beforeFavoriteGroupIndex);
-        ctx.set_active_mode(ctx.state.beforeFavoriteModeIndex);
-
-        // blip to indicate favorite mode exit
-        ctx.blip(250);
+        // no more favorite, restore last used mode
+        exit_favorite_group(ctx, ctx.state.beforeFavoriteGroupIndex, ctx.state.beforeFavoriteModeIndex);
       }
       return true;
     }

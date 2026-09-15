@@ -637,6 +637,15 @@ static void cmd_set_ble_name(const common::cli::ParsedCommand& command)
   }
 }
 
+static void cmd_set_go_to_favorite(const common::cli::ParsedCommand& command)
+{
+  uint8_t index;
+  if (common::cli::argument::parse_uint8(command, 0, index))
+  {
+    lampda::user::handle_user_command(common::UserCommand::make_go_to_favorite_command(index));
+  }
+}
+
 static void cmd_set_current_as_favorite(const common::cli::ParsedCommand& command)
 {
   uint8_t index;
@@ -768,6 +777,12 @@ constexpr Command _set_commands_s[] = {
                           "a generic ELK compatible app",
                           handles::cmd_set_ble_name),
         make_command_args("favorite",
+                          "[0-15](index)",
+                          1,
+                          1,
+                          "Go to the given favorite index, if possible",
+                          handles::cmd_set_go_to_favorite),
+        make_command_args("new_favorite",
                           "[0-15](index)",
                           1,
                           1,
