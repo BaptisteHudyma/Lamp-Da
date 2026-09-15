@@ -37,7 +37,7 @@ bool button_clicked_default(const uint8_t clicks)
           // sanity check, if it fails, quit favorites
           if (not manager.jump_to_favorite(manager.state.lastFavoriteStep, false))
           {
-            manager.exit_favorite_group(manager.state.beforeFavoriteGroupIndex, manager.state.beforeFavoriteModeIndex);
+            manager.exit_favorite_group(manager.state.beforeFavoriteActiveIndex);
           }
         }
         else
@@ -87,7 +87,7 @@ bool button_clicked_default(const uint8_t clicks)
         if (manager.state.isInFavoriteMockGroup)
         {
           // return to previous state
-          manager.exit_favorite_group(manager.state.beforeFavoriteGroupIndex, manager.state.beforeFavoriteModeIndex);
+          manager.exit_favorite_group(manager.state.beforeFavoriteActiveIndex);
         }
         else
         {

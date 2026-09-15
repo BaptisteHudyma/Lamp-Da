@@ -225,13 +225,16 @@ bool button_clicked(const uint8_t clicks)
     case 6: // 6 clicks:  jump to first mode of first category
       {
         // exit fav group if needed
-        if (not manager.exit_favorite_group(0, 0))
-        {
-          // return to first state
-          manager.set_active_group(0);
-          manager.set_active_mode(0);
-          manager.blip(250);
-        }
+        manager.exit_favorite_group(manager.state.beforeFavoriteActiveIndex);
+
+        // return to first state
+        manager.set_active_group(0);
+        manager.set_active_mode(0);
+        // ramps will be updated on their own
+
+        // Blip for state change
+        manager.blip(250);
+
         return true;
       }
   }

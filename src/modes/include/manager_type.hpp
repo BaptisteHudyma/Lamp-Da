@@ -282,15 +282,14 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     static_assert(maxFavoriteCount < 16, "Maximum of 15 favorite as been exceeded");
 
     // (variables for pending favorite state machine)
-    uint8_t isFavoritePending = 0;        ///< indicate that the addition of a favorite in in process
-    uint8_t whichFavoritePending = 0;     ///< indicates the favorite currently selected
-    bool isInDeleteFavorite = false;      ///< indicates that we are in a favorite deletion process
-    uint8_t isFavoriteDeletePending = 0;  ///< indicate that the deletion of a favorite in in process
-    uint8_t lastFavoriteStep = 0;         ///< last used favorite index
-    bool isInFavoriteMockGroup = false;   ///< Indicates that we are in the fake favorite page
-    uint8_t beforeFavoriteGroupIndex = 0; ///< store the group index we need to go to when quitting the favorite page
-    uint8_t beforeFavoriteModeIndex = 0;  ///< store the mode index we need to go to when quitting the favorite page
-    uint8_t isSunsetTimingPending = 0;    ///< Indicates that a sunset timer ramp is active
+    uint8_t isFavoritePending = 0;           ///< indicate that the addition of a favorite in in process
+    uint8_t whichFavoritePending = 0;        ///< indicates the favorite currently selected
+    bool isInDeleteFavorite = false;         ///< indicates that we are in a favorite deletion process
+    uint8_t isFavoriteDeletePending = 0;     ///< indicate that the deletion of a favorite in in process
+    uint8_t lastFavoriteStep = 0;            ///< last used favorite index
+    bool isInFavoriteMockGroup = false;      ///< Indicates that we are in the fake favorite page
+    ActiveIndexTy beforeFavoriteActiveIndex; ///< store the index we need to go to when quitting the favorite page
+    uint8_t isSunsetTimingPending = 0;       ///< Indicates that a sunset timer ramp is active
 
     bool isLastScrollAGroupChange = false; ///< last mode change in scroll changed group
     uint32_t lastScrollStopped = 0;        ///< keep track of the last scrool release time
@@ -475,8 +474,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     // store last active index before jump
     if (shouldSaveLastActiveIndex)
     {
-      ctx.state.beforeFavoriteGroupIndex = ctx.modeManager.activeIndex.groupIndex;
-      ctx.state.beforeFavoriteModeIndex = ctx.modeManager.activeIndex.modeIndex;
+      ctx.state.beforeFavoriteActiveIndex = ctx.modeManager.activeIndex;
     }
 
     if (which_one >= ctx.state.maxFavoriteCount)
@@ -502,7 +500,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   /**
    * \brief Exit the favorite group, by going to the given group and mode id
    */
-  static bool exit_favorite_group(auto& ctx, uint8_t nextGroupId, uint8_t nextModeId)
+  static bool exit_favorite_group(auto& ctx, ActiveIndexTy newActiveIndex)
   {
     if (not ctx.state.isInFavoriteMockGroup)
       return false;
@@ -513,8 +511,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     // reset favorite indicator
     ctx.state.isInFavoriteMockGroup = false;
     // return to previous state
-    ctx.set_active_group(nextGroupId);
-    ctx.set_active_mode(nextModeId);
+    jump_to_new_active_index(ctx, newActiveIndex);
 
     // blip to indicate favorite mode exit
     ctx.blip(250);
@@ -566,12 +563,12 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       // changed favorite index, jump
       if (ctx.state.usedFavoriteCount > 0)
       {
-        jump_to_new_active_index(ctx, ctx.state.favorites[which_one % ctx.state.usedFavoriteCount]);
+        jump_to_favorite(ctx, which_one, false);
       }
       else
       {
         // no more favorite, restore last used mode
-        exit_favorite_group(ctx, ctx.state.beforeFavoriteGroupIndex, ctx.state.beforeFavoriteModeIndex);
+        exit_favorite_group(ctx, ctx.state.beforeFavoriteActiveIndex);
       }
       return true;
     }
@@ -916,7 +913,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     });
 
     // activate last used favorite, in the favorite group
-    if (ctx.state.isInFavoriteMockGroup && jump_to_favorite(ctx, ctx.state.lastFavoriteStep, false))
+    if (ctx.state.isInFavoriteMockGroup and jump_to_favorite(ctx, ctx.state.lastFavoriteStep, false))
     {
       // success jump to favorite
     }
