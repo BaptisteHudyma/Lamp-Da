@@ -637,6 +637,15 @@ static void cmd_set_ble_name(const common::cli::ParsedCommand& command)
   }
 }
 
+static void cmd_set_current_as_favorite(const common::cli::ParsedCommand& command)
+{
+  uint8_t index;
+  if (common::cli::argument::parse_uint8(command, 0, index))
+  {
+    lampda::user::handle_user_command(common::UserCommand::make_set_favorite_command(index));
+  }
+}
+
 void cmd_set_hook(const common::cli::ParsedCommand& command, const char* name);
 /// Handle the Set command, that takes another command as parameters
 static void cmd_set(const common::cli::ParsedCommand& command) { cmd_set_hook(command, command.name()); }
@@ -758,6 +767,12 @@ constexpr Command _set_commands_s[] = {
                           "Set the new bluetooth advertised name. It should start with \'ELK-BLE-\" if you want to use "
                           "a generic ELK compatible app",
                           handles::cmd_set_ble_name),
+        make_command_args("favorite",
+                          "[0-15](index)",
+                          1,
+                          1,
+                          "Set the current mode to the given favorite index, if possible",
+                          handles::cmd_set_current_as_favorite),
 };
 
 /// Check for command duplication

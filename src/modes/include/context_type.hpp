@@ -722,6 +722,49 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     return false;
   }
 
+  void display_favorite_number_ramp(const uint8_t favoriteIndex,
+                                    const uint8_t maxFavoriteIndex,
+                                    const bool display = false,
+                                    const uint32_t timeout = 0)
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      modeManager.template display_favorite_number_ramp(*this, favoriteIndex, maxFavoriteIndex, display, timeout);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      manager.display_favorite_number_ramp(favoriteIndex, maxFavoriteIndex, display, timeout);
+    }
+  }
+
+  template<bool displayFavoriteNumber = true>
+  auto set_current_mode_as_favorite(uint8_t favoriteIndex, uint32_t displayTimeout_s = 0)
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      modeManager.template set_current_mode_as_favorite<displayFavoriteNumber>(*this, favoriteIndex, displayTimeout_s);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      manager.set_current_mode_as_favorite<displayFavoriteNumber>(favoriteIndex, displayTimeout_s);
+    }
+  }
+
+  auto get_number_of_allowed_favorites()
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      return modeManager.template get_number_of_allowed_favorites(*this);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      return manager.get_number_of_allowed_favorites(*this);
+    }
+  }
+
   template<bool displayFavoriteNumber = true> auto LMBD_INLINE animate_favorite_pick(float holdDuration, float stepSize)
   {
     if constexpr (LocalModeTy::isModeManager)

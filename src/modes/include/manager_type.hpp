@@ -1078,6 +1078,41 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     }
   }
 
+  static uint8_t get_number_of_allowed_favorites(auto& ctx)
+  {
+    // user as a number of favorite set
+    // occasional +1 if not all favorite are set (allow a new favorite)
+    return ctx.state.usedFavoriteCount + ((ctx.state.usedFavoriteCount < ctx.state.maxFavoriteCount) ? 1 : 0);
+  }
+
+  /**
+   * \brief Set the current mode as a favorite at the target index
+   *
+   */
+  template<bool displayFavoriteNumber = true>
+  static void set_current_mode_as_favorite(auto& ctx, uint8_t favoriteIndex, uint32_t displayTimeout_s = 0)
+  {
+    const uint8_t numberOfFavoriteSet = get_number_of_allowed_favorites(ctx);
+    if (favoriteIndex >= numberOfFavoriteSet)
+    {
+      bsp::lampda_print(
+              "Cannot set a favorite at index %d, max index must be less than %d", favoriteIndex, numberOfFavoriteSet);
+      return;
+    }
+
+    // extra display on the first pixels (count pixels to know fav no)
+    if constexpr (displayFavoriteNumber)
+    {
+      // display the set favorite ramp
+      display_favorite_number_ramp(
+              ctx, favoriteIndex, numberOfFavoriteSet, favoriteIndex < numberOfFavoriteSet, displayTimeout_s);
+    }
+
+    // set this, after a while upon no longer holding button, favorite is set
+    ctx.state.isFavoritePending = 10;
+    ctx.state.whichFavoritePending = favoriteIndex;
+  }
+
   /** \private
    * \brief Animate the favorite addition process. Called every frame while the action is ongoing
    * \param[in, out] ctx
@@ -1087,10 +1122,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   template<bool displayFavoriteNumber = true>
   static void animate_favorite_pick(auto& ctx, float holdDuration, float stepSize)
   {
-    // user as a number of favorite set
-    // occasional +1 if not all favorite are set (allow a new favorite)
-    const uint8_t numberOfFavoriteSet =
-            ctx.state.usedFavoriteCount + ((ctx.state.usedFavoriteCount < ctx.state.maxFavoriteCount) ? 1 : 0);
+    const uint8_t numberOfFavoriteSet = get_number_of_allowed_favorites(ctx);
 
     // up to maxFavoriteCount step state: "which_one" is [0, 1, 2, 3, ...] and "do not set" is the max index + 1
     uint32_t stepCount = numberOfFavoriteSet + floor(holdDuration / stepSize);
@@ -1113,16 +1145,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       // green ramp : favorites
       overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Green, colors::White>);
 
-      // extra display on the first pixels (count pixels to know fav no)
-      if constexpr (displayFavoriteNumber)
-      {
-        // display the set favorite ramp
-        display_favorite_number_ramp(ctx, stepCount, numberOfFavoriteSet, stepCount < numberOfFavoriteSet);
-      }
-
-      // set this, after a while upon no longer holding button, favorite is set
-      ctx.state.isFavoritePending = 10;
-      ctx.state.whichFavoritePending = stepCount;
+      // Set the favorite: this actually do not set it immediatly but waits until the function is not called anymores
+      set_current_mode_as_favorite<displayFavoriteNumber>(ctx, stepCount);
     }
   }
 
