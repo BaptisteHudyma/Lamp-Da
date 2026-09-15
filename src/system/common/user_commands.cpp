@@ -203,14 +203,6 @@ bool UserCommand::parse_set_ble_mode_command(uint8_t& index) const
   return true;
 }
 
-bool UserCommand::parse_go_to_favorite_command(uint8_t& index) const
-{
-  if (get_type() != Type::GoToFavoriteIndex or _dataCnt != 1)
-    return false;
-  index = _data[0];
-  return true;
-}
-
 bool UserCommand::parse_set_favorite_command(uint8_t& index) const
 {
   if (get_type() != Type::SetFavoriteIndex or _dataCnt != 1)
