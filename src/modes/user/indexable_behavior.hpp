@@ -278,7 +278,13 @@ void handle_go_to_favorite_command(const uint8_t favoriteIndex)
     return;
 
   auto manager = get_context();
-
+  if (favoriteIndex >= manager.state.usedFavoriteCount)
+  {
+    bsp::lampda_print("Cannot jump to favorite %d, max index should be less than %d",
+                      favoriteIndex,
+                      manager.state.usedFavoriteCount);
+    return;
+  }
   // jump and save last used mode
   manager.jump_to_favorite(favoriteIndex, true);
 }
