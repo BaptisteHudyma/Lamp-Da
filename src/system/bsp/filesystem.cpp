@@ -7,6 +7,7 @@
 #include "src/system/bsp/text_out.h"
 
 #include "src/system/logic/behavior.h"
+#include "src/system/logic/statistics_handler.h"
 
 #include <map>
 
@@ -59,6 +60,8 @@ void clear_internal_fs()
   // reset the cached parameters
   system::clear_cached();
   user::clear_cached();
+  // reload statistics
+  logic::statistics::load_from_memory(true);
 
   // reload the user parameters
   logic::behavior::read_parameters();

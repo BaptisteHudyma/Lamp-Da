@@ -304,6 +304,29 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     // special effects
     uint8_t skipNextFrameEffect = 0; ///< should the next .loop() mode be skipped?
 
+    /// Reset the stored variable states
+    void reset()
+    {
+      lastModeMemory = {};
+
+      favorites = {};
+      usedFavoriteCount = 0;
+
+      isFavoritePending = 0;
+      whichFavoritePending = 0;
+      isInDeleteFavorite = false;
+      isFavoriteDeletePending = 0;
+      lastFavoriteStep = 0;
+      isInFavoriteMockGroup = false;
+      beforeFavoriteActiveIndex = ActiveIndexTy();
+      isSunsetTimingPending = 0;
+
+      isLastScrollAGroupChange = false;
+      lastScrollStopped = 0;
+
+      skipNextFrameEffect = 0;
+    }
+
     // inside lamp.config
     //  - skipFirstLedsForEffect = 0; // should the loop skip some lower LEDs?
     //  - skipFirstLedsForAmount = 0; // how many pixels to shave from the top?
@@ -964,6 +987,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   /// Read the parameters from memory
   static void read_parameters(auto& ctx)
   {
+    // Reset the states before reading the parameters
+    ctx.state.reset();
+
     // remove old filesystem data if we detect obsolete "storeId" serial
     using LocalStore = details::LocalStoreOf<decltype(ctx)>;
     LocalStore::template migrateStoreIfNeeded<storeId>();

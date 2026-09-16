@@ -53,6 +53,16 @@ struct Statistics_t
 
   /// Keep track of the number of times a target alert was raised
   std::array<uint32_t, alertArraySize> alertRaisedCnt = {};
+
+  void reset()
+  {
+    boot_count = 0;
+    button_press_count = 0;
+    system_on_minutes = 0;
+    output_on_minutes = 0;
+    battery_charge_minutes = 0;
+    alertRaisedCnt = {};
+  }
 };
 
 /// Statistics holder
@@ -70,9 +80,15 @@ uint32_t get_alert_storage_key(uint8_t alertIndex) { return 0xFFFFFF00 | alertIn
 /// system on time is easy: system always starts with time zero
 uint32_t get_system_on_time() { return statistics.system_on_minutes + max<uint32_t>(1, hal::time_s() / 60); }
 
-void load_from_memory()
+void load_from_memory(const bool shouldResetExisting)
 {
-  bsp::filesystem::system::get_value(bootCountKey, statistics.boot_count);
+  // Reset !
+  if (shouldResetExisting)
+  {
+    statistics.reset();
+  }
+
+  not bsp::filesystem::system::get_value(bootCountKey, statistics.boot_count);
   statistics.boot_count += 1;
 
   bsp::filesystem::system::get_value(buttonPressCountKey, statistics.button_press_count);

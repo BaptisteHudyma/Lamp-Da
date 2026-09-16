@@ -25,7 +25,11 @@ public:
 
 extern void shutdown() {}
 
-void format_file_system() { std::cerr << "warning: InternalFS.format called\n" << std::endl; }
+void format_file_system()
+{
+  remove(".lampda.par");
+  remove(".internal.par");
+}
 
 bool delete_file(const char* fname)
 {
