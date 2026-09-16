@@ -1118,7 +1118,7 @@ static int fusb302_compare_mdac(int mdac)
   tcpc_write(TCPC_REG_MEASURE, (mdac & TCPC_REG_MEASURE_MDAC_MASK) | TCPC_REG_MEASURE_VBUS);
 
   /* Wait on measurement */
-  delay_us(350);
+  delay_us(500);
 
   /*
    * Read status register, if STATUS0_COMP=1 then vbus is higher than
@@ -1133,22 +1133,45 @@ static int fusb302_compare_mdac(int mdac)
 
 int fusb302_get_vbus_voltage(int* vbus)
 {
-  int mdac = 0, i;
-
-  /*
-   * Implement by comparing VBUS with MDAC reference voltage, and binary
-   * search the value of MDAC.
-   *
-   * MDAC register has 6 bits, so we can simply search 1 bit per
-   * iteration, from MSB to LSB.
-   */
-  for (i = 5; i >= 0; i--)
+  int reg;
+  
+  /* First, check if VBUS is present using the built-in comparator */
+  tcpc_read(TCPC_REG_STATUS0, &reg);
+  
+  if ((reg & TCPC_REG_STATUS0_VBUSOK) == 0)
   {
-    if (fusb302_compare_mdac(mdac | (1 << i)))
-      mdac |= (1 << i);
+    /* VBUS is below ~4V */
+    *vbus = 0;
+    return EC_SUCCESS;
+  }
+  
+  int low = 0, high = 63, mid1, mid2;
+  
+  /* Ternary search for tighter bounds */
+  while (high - low > 2)
+  {
+    mid1 = low + (high - low) / 3;
+    mid2 = high - (high - low) / 3;
+    
+    if (fusb302_compare_mdac(mid1))
+      low = mid1;
+    else
+      high = mid1 - 1;
+      
+    if (fusb302_compare_mdac(mid2))
+      low = mid2;
+    else
+      high = mid2 - 1;
   }
 
-  *vbus = (mdac + 1) * 420;
+  /* Linear interpolation between final two points */
+  int mdac_low = low;
+  int mdac_high = high;
+  int vbus_low = (mdac_low + 1) * 420;
+  int vbus_high = (mdac_high + 1) * 420;
+
+  /* Return interpolated value or nearest */
+  *vbus = (vbus_low + vbus_high) / 2;
 
   return EC_SUCCESS;
 }
