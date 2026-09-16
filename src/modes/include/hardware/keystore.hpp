@@ -72,13 +72,11 @@ template<int16_t N> static inline bool LMBD_INLINE getValue(const char (&key)[N]
 }
 
 /// Force clear the stored parameters
-static inline void clear_stored() { bsp::filesystem::clear(); }
+static inline void clear_stored() { bsp::filesystem::user::clear_cached(); }
 
 /**
  * \brief  Check for migration and erase all values if needed
- * IT WILL ERASE THE WHOLE MEMORY, EVENT STATISTICS
  */
-
 static inline void LMBD_INLINE migrateIfNeeded()
 {
   if (not bsp::filesystem::user::doKeyExists(storeUid))
@@ -95,13 +93,10 @@ static inline void LMBD_INLINE migrateIfNeeded()
 
   if (out != storeUid)
   {
-    bsp::filesystem::clear_internal_fs();
-    bsp::filesystem::clear();
+    bsp::filesystem::user::format();
+
     bsp::filesystem::user::set_value(storeUid, storeUid);
     bsp::filesystem::user::write_to_file();
-    bsp::filesystem::system::write_to_file();
-
-    bsp::filesystem::system::load_from_file();
     bsp::filesystem::user::load_from_file();
   }
 }

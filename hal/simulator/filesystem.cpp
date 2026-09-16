@@ -27,6 +27,14 @@ extern void shutdown() {}
 
 void format_file_system() { std::cerr << "warning: InternalFS.format called\n" << std::endl; }
 
+bool delete_file(const char* fname)
+{
+  char filename[256];
+  snprintf(filename, sizeof(filename), ".%s", fname);
+
+  return remove(filename) == 0;
+}
+
 HAL_File::HAL_File() { mInternalFile = std::make_unique<FileInternalTy>(); }
 
 HAL_File::~HAL_File()
