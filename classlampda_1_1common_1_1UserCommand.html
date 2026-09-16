@@ -104,6 +104,8 @@ Public Types</h2></td></tr>
 , <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fa548b8192e4af53bfece38bf5cbd9ba71">SetBleCustomColorMode</a>
 , <br />
 &#160;&#160;<a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fa4575d96fff96f4b3d4bf66f987fc50f5">SetBleMode</a>
+, <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428faff1f8b6c130cb37b955c1a580ca9d3c4">GoToFavoriteIndex</a>
+, <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fa7df8cd7e38bc290d1b7ee0052364aff5">SetFavoriteIndex</a>
 <br />
  }</td></tr>
 <tr class="memdesc:a681ddf33c64c6631b62fdf4912d9428f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Command type.  <a href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428f">More...</a><br /></td></tr>
@@ -138,6 +140,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a456b876bd19dd8ff7b3327c1b301141b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a456b876bd19dd8ff7b3327c1b301141b">parse_set_ble_mode_command</a> (uint8_t &amp;index) const</td></tr>
 <tr class="memdesc:a456b876bd19dd8ff7b3327c1b301141b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for a set current mode to BLE mode.  <br /></td></tr>
 <tr class="separator:a456b876bd19dd8ff7b3327c1b301141b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6141c9c4168c0cb7c91fe44c0efc649a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a6141c9c4168c0cb7c91fe44c0efc649a">parse_go_to_favorite_command</a> (uint8_t &amp;index) const</td></tr>
+<tr class="memdesc:a6141c9c4168c0cb7c91fe44c0efc649a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for a go to favorite.  <br /></td></tr>
+<tr class="separator:a6141c9c4168c0cb7c91fe44c0efc649a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a007f17fe9a0499c77257d9a9e1a24c5d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a007f17fe9a0499c77257d9a9e1a24c5d">parse_set_favorite_command</a> (uint8_t &amp;index) const</td></tr>
+<tr class="memdesc:a007f17fe9a0499c77257d9a9e1a24c5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for a set favorite.  <br /></td></tr>
+<tr class="separator:a007f17fe9a0499c77257d9a9e1a24c5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -165,6 +173,12 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:aa4d584f3b92dd3fecb5c7c2e48097c04"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#aa4d584f3b92dd3fecb5c7c2e48097c04">make_set_ble_mode_command</a> (const uint8_t index)</td></tr>
 <tr class="memdesc:aa4d584f3b92dd3fecb5c7c2e48097c04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this commant to set ble mode.  <br /></td></tr>
 <tr class="separator:aa4d584f3b92dd3fecb5c7c2e48097c04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac15718bfcfcb953bbf375d3356312232"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#ac15718bfcfcb953bbf375d3356312232">make_go_to_favorite_command</a> (const uint8_t index)</td></tr>
+<tr class="memdesc:ac15718bfcfcb953bbf375d3356312232"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this commant to go to the given favorite, if possible.  <br /></td></tr>
+<tr class="separator:ac15718bfcfcb953bbf375d3356312232"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b16d7f716a7fda36953c05fae5b58bc"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a6b16d7f716a7fda36953c05fae5b58bc">make_set_favorite_command</a> (const uint8_t index)</td></tr>
+<tr class="memdesc:a6b16d7f716a7fda36953c05fae5b58bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this commant to set favorite.  <br /></td></tr>
+<tr class="separator:a6b16d7f716a7fda36953c05fae5b58bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -222,6 +236,10 @@ Protected Member Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fa4575d96fff96f4b3d4bf66f987fc50f5" name="a681ddf33c64c6631b62fdf4912d9428fa4575d96fff96f4b3d4bf66f987fc50f5"></a>SetBleMode&#160;</td><td class="fielddoc"><p>switch to a target BLE mode </p>
 </td></tr>
+<tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428faff1f8b6c130cb37b955c1a580ca9d3c4" name="a681ddf33c64c6631b62fdf4912d9428faff1f8b6c130cb37b955c1a580ca9d3c4"></a>GoToFavoriteIndex&#160;</td><td class="fielddoc"><p>Go to the target favorite index. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fa7df8cd7e38bc290d1b7ee0052364aff5" name="a681ddf33c64c6631b62fdf4912d9428fa7df8cd7e38bc290d1b7ee0052364aff5"></a>SetFavoriteIndex&#160;</td><td class="fielddoc"><p>Set the current mode to the target favorite index. </p>
+</td></tr>
 </table>
 
 </div>
@@ -255,6 +273,41 @@ Protected Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">brightness</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The correct user command </dd></dl>
+
+</div>
+</div>
+<a id="ac15718bfcfcb953bbf375d3356312232" name="ac15718bfcfcb953bbf375d3356312232"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac15718bfcfcb953bbf375d3356312232">&#9670;&#160;</a></span>make_go_to_favorite_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a> lampda::common::UserCommand::make_go_to_favorite_command </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set this commant to go to the given favorite, if possible. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td></td></tr>
   </table>
   </dd>
 </dl>
@@ -340,6 +393,41 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Set this commant to set ble mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The correct user command </dd></dl>
+
+</div>
+</div>
+<a id="a6b16d7f716a7fda36953c05fae5b58bc" name="a6b16d7f716a7fda36953c05fae5b58bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b16d7f716a7fda36953c05fae5b58bc">&#9670;&#160;</a></span>make_set_favorite_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a> lampda::common::UserCommand::make_set_favorite_command </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set this commant to set favorite. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td></td></tr>
@@ -563,6 +651,33 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a6141c9c4168c0cb7c91fe44c0efc649a" name="a6141c9c4168c0cb7c91fe44c0efc649a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6141c9c4168c0cb7c91fe44c0efc649a">&#9670;&#160;</a></span>parse_go_to_favorite_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::common::UserCommand::parse_go_to_favorite_command </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t &amp;&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse the current command for a go to favorite. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">index</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the current message is valid, and parameter is set </dd></dl>
+
+</div>
+</div>
 <a id="a43421593e8e4158c708ac0faa4be4b0e" name="a43421593e8e4158c708ac0faa4be4b0e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a43421593e8e4158c708ac0faa4be4b0e">&#9670;&#160;</a></span>parse_ramp()</h2>
 
@@ -634,6 +749,33 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Parse the current command for a set current mode to BLE mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">index</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the current message is valid, and parameter is set </dd></dl>
+
+</div>
+</div>
+<a id="a007f17fe9a0499c77257d9a9e1a24c5d" name="a007f17fe9a0499c77257d9a9e1a24c5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a007f17fe9a0499c77257d9a9e1a24c5d">&#9670;&#160;</a></span>parse_set_favorite_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::common::UserCommand::parse_set_favorite_command </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t &amp;&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse the current command for a set favorite. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">index</td><td></td></tr>

@@ -110,13 +110,6 @@ Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::filesystem::shutdown</b> ()</td></tr>
 <tr class="memdesc:ac3dffa4a2d846177cbbbe7c735d0cb2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">call once on program stop. <br /></td></tr>
 <tr class="separator:ac3dffa4a2d846177cbbbe7c735d0cb2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8b9b9a2b7ac7d0a7ef41312d066bc7d"><td class="memItemLeft" align="right" valign="top"><a id="ad8b9b9a2b7ac7d0a7ef41312d066bc7d" name="ad8b9b9a2b7ac7d0a7ef41312d066bc7d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::filesystem::clear</b> ()</td></tr>
-<tr class="memdesc:ad8b9b9a2b7ac7d0a7ef41312d066bc7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">clear the stored values in the currently loaded file system. <br /></td></tr>
-<tr class="separator:ad8b9b9a2b7ac7d0a7ef41312d066bc7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c153a34379876a7ca3500dffd107115"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1filesystem.html#a2c153a34379876a7ca3500dffd107115">lampda::bsp::filesystem::clear_system_parameters</a> ()</td></tr>
-<tr class="memdesc:a2c153a34379876a7ca3500dffd107115"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the system parameters.  <br /></td></tr>
-<tr class="separator:a2c153a34379876a7ca3500dffd107115"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ab4b772a6c96d9635e993c44957ecfe"><td class="memItemLeft" align="right" valign="top"><a id="a6ab4b772a6c96d9635e993c44957ecfe" name="a6ab4b772a6c96d9635e993c44957ecfe"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::filesystem::clear_internal_fs</b> ()</td></tr>
 <tr class="memdesc:a6ab4b772a6c96d9635e993c44957ecfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">hard clean of the whole filesystem, you will loose all stored data. <br /></td></tr>
@@ -134,12 +127,20 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::filesyst
 <tr class="memitem:a56472534e1ca76397c2f13a9e184ba7d"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1filesystem_1_1system.html#a56472534e1ca76397c2f13a9e184ba7d">lampda::bsp::filesystem::system::dropMatchingKeys</a> (const uint32_t bitMatch, const uint32_t bitSelect=0xffffffff)</td></tr>
 <tr class="memdesc:a56472534e1ca76397c2f13a9e184ba7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop all keys using the given bit prefix.  <br /></td></tr>
 <tr class="separator:a56472534e1ca76397c2f13a9e184ba7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc1b45e374cc0a691413101e2553455d"><td class="memItemLeft" align="right" valign="top"><a id="adc1b45e374cc0a691413101e2553455d" name="adc1b45e374cc0a691413101e2553455d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::filesystem::system::clear_cached</b> ()</td></tr>
+<tr class="memdesc:adc1b45e374cc0a691413101e2553455d"><td class="mdescLeft">&#160;</td><td class="mdescRight">clear the stored values in the currently loaded file system. <br /></td></tr>
+<tr class="separator:adc1b45e374cc0a691413101e2553455d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a976c382974a91ed7d8da0c1545f02d3b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1filesystem_1_1system.html#a976c382974a91ed7d8da0c1545f02d3b">lampda::bsp::filesystem::system::write_to_file</a> ()</td></tr>
 <tr class="memdesc:a976c382974a91ed7d8da0c1545f02d3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the system parameters to a file.  <br /></td></tr>
 <tr class="separator:a976c382974a91ed7d8da0c1545f02d3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a583e32496b14d0b0da7c3b9a4e2707a0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1filesystem_1_1system.html#a583e32496b14d0b0da7c3b9a4e2707a0">lampda::bsp::filesystem::system::load_from_file</a> ()</td></tr>
 <tr class="memdesc:a583e32496b14d0b0da7c3b9a4e2707a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load system values from memory.  <br /></td></tr>
 <tr class="separator:a583e32496b14d0b0da7c3b9a4e2707a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad86b19f1372b77c9f9fc19db558ec50"><td class="memItemLeft" align="right" valign="top"><a id="aad86b19f1372b77c9f9fc19db558ec50" name="aad86b19f1372b77c9f9fc19db558ec50"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::filesystem::system::format</b> ()</td></tr>
+<tr class="memdesc:aad86b19f1372b77c9f9fc19db558ec50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the system file (Should not be used) <br /></td></tr>
+<tr class="separator:aad86b19f1372b77c9f9fc19db558ec50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a765170e5f3171abe150c18da08b432a6"><td class="memItemLeft" align="right" valign="top"><a id="a765170e5f3171abe150c18da08b432a6" name="a765170e5f3171abe150c18da08b432a6"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::filesystem::user::doKeyExists</b> (const uint32_t key)</td></tr>
 <tr class="memdesc:a765170e5f3171abe150c18da08b432a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the given key exists in the filesystem. <br /></td></tr>
@@ -153,12 +154,20 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::filesyst
 <tr class="memitem:a84b4140b7ecb020fcbf9b00885aa9f4b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1filesystem_1_1user.html#a84b4140b7ecb020fcbf9b00885aa9f4b">lampda::bsp::filesystem::user::dropMatchingKeys</a> (const uint32_t bitMatch, const uint32_t bitSelect=0xffffffff)</td></tr>
 <tr class="memdesc:a84b4140b7ecb020fcbf9b00885aa9f4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop all keys using the given bit prefix.  <br /></td></tr>
 <tr class="separator:a84b4140b7ecb020fcbf9b00885aa9f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff5d5f60c038dbe5f70c919b65d584c7"><td class="memItemLeft" align="right" valign="top"><a id="aff5d5f60c038dbe5f70c919b65d584c7" name="aff5d5f60c038dbe5f70c919b65d584c7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::filesystem::user::clear_cached</b> ()</td></tr>
+<tr class="memdesc:aff5d5f60c038dbe5f70c919b65d584c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">clear the stored values in the currently loaded file system. <br /></td></tr>
+<tr class="separator:aff5d5f60c038dbe5f70c919b65d584c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ddf23e4b84a256f36ceb9e62ab04cda"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1filesystem_1_1user.html#a9ddf23e4b84a256f36ceb9e62ab04cda">lampda::bsp::filesystem::user::write_to_file</a> ()</td></tr>
 <tr class="memdesc:a9ddf23e4b84a256f36ceb9e62ab04cda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the user parameters to a file.  <br /></td></tr>
 <tr class="separator:a9ddf23e4b84a256f36ceb9e62ab04cda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6d56708b1071503d9f736c11a7e8f91"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1filesystem_1_1user.html#ab6d56708b1071503d9f736c11a7e8f91">lampda::bsp::filesystem::user::load_from_file</a> ()</td></tr>
 <tr class="memdesc:ab6d56708b1071503d9f736c11a7e8f91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load user values from memory.  <br /></td></tr>
 <tr class="separator:ab6d56708b1071503d9f736c11a7e8f91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a500a2bfa48dd9dbd421ad0634b3718f9"><td class="memItemLeft" align="right" valign="top"><a id="a500a2bfa48dd9dbd421ad0634b3718f9" name="a500a2bfa48dd9dbd421ad0634b3718f9"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::filesystem::user::format</b> ()</td></tr>
+<tr class="memdesc:a500a2bfa48dd9dbd421ad0634b3718f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the user file. <br /></td></tr>
+<tr class="separator:a500a2bfa48dd9dbd421ad0634b3718f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>High level actions on the file system. </p>

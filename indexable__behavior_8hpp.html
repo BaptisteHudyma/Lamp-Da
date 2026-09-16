@@ -106,6 +106,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ad3bb0aa8b7a399eaaff51c0b6628eaea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="indexable__behavior_8hpp.html#ad3bb0aa8b7a399eaaff51c0b6628eaea">lampda::user::__private::handle_pattern_select_command</a> (const uint8_t patternIndex, const uint32_t requestedColor=0)</td></tr>
 <tr class="memdesc:ad3bb0aa8b7a399eaaff51c0b6628eaea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle a pattern change command.  <br /></td></tr>
 <tr class="separator:ad3bb0aa8b7a399eaaff51c0b6628eaea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6145aa30b1388bbe962aaae583a96c71"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="indexable__behavior_8hpp.html#a6145aa30b1388bbe962aaae583a96c71">lampda::user::__private::handle_go_to_favorite_command</a> (const uint8_t favoriteIndex)</td></tr>
+<tr class="memdesc:a6145aa30b1388bbe962aaae583a96c71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Go to the given favorite index if possible.  <br /></td></tr>
+<tr class="separator:a6145aa30b1388bbe962aaae583a96c71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a088369a6dc4b094bbdcbe14b6b287750"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="indexable__behavior_8hpp.html#a088369a6dc4b094bbdcbe14b6b287750">lampda::user::__private::handle_set_favorite_command</a> (const uint8_t favoriteIndex)</td></tr>
+<tr class="memdesc:a088369a6dc4b094bbdcbe14b6b287750"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the current mode to favorite.  <br /></td></tr>
+<tr class="separator:a088369a6dc4b094bbdcbe14b6b287750"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac67218c3107c337d14aeda5c994b0a3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html#ac67218c3107c337d14aeda5c994b0a3c">lampda::user::handle_user_command</a> (const common::UserCommand &amp;setCommand)</td></tr>
 <tr class="memdesc:ac67218c3107c337d14aeda5c994b0a3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle user command.  <br /></td></tr>
 <tr class="separator:ac67218c3107c337d14aeda5c994b0a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -113,6 +119,32 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Define the behavior of an indexable lamp. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="a6145aa30b1388bbe962aaae583a96c71" name="a6145aa30b1388bbe962aaae583a96c71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6145aa30b1388bbe962aaae583a96c71">&#9670;&#160;</a></span>handle_go_to_favorite_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::user::__private::handle_go_to_favorite_command </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>favoriteIndex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Go to the given favorite index if possible. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">favoriteIndex</td><td>Target index of the favorite to set </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ad3bb0aa8b7a399eaaff51c0b6628eaea" name="ad3bb0aa8b7a399eaaff51c0b6628eaea"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad3bb0aa8b7a399eaaff51c0b6628eaea">&#9670;&#160;</a></span>handle_pattern_select_command()</h2>
 
@@ -144,6 +176,32 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">patternIndex</td><td>Index of the pattern to use </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">requestedColor</td><td>Color to display, valid if patternIndex == 0 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a088369a6dc4b094bbdcbe14b6b287750" name="a088369a6dc4b094bbdcbe14b6b287750"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a088369a6dc4b094bbdcbe14b6b287750">&#9670;&#160;</a></span>handle_set_favorite_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::user::__private::handle_set_favorite_command </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>favoriteIndex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the current mode to favorite. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">favoriteIndex</td><td>Target index of the favorite to set </td></tr>
   </table>
   </dd>
 </dl>

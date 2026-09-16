@@ -118,7 +118,7 @@ var searchData=
   ['lmpd_5fmap_115',['lmpd_map',['../namespacelampda.html#aca476e73950d034cdf0e17635fcb6599',1,'lampda']]],
   ['lo_116',['lo',['../uniontimestamp__t.html#a1439028ac9bf28000a9e2902d682b548',1,'timestamp_t']]],
   ['load_5ffrom_5ffile_117',['load_from_file',['../namespacelampda_1_1bsp_1_1filesystem_1_1system.html#a583e32496b14d0b0da7c3b9a4e2707a0',1,'lampda::bsp::filesystem::system::load_from_file()'],['../namespacelampda_1_1bsp_1_1filesystem_1_1user.html#ab6d56708b1071503d9f736c11a7e8f91',1,'lampda::bsp::filesystem::user::load_from_file()']]],
-  ['load_5ffrom_5fmemory_118',['load_from_memory',['../namespacelampda_1_1logic_1_1statistics.html#ad8a80ef007b82d46cab3d06dd0a3c9ad',1,'lampda::logic::statistics']]],
+  ['load_5ffrom_5fmemory_118',['load_from_memory',['../namespacelampda_1_1logic_1_1statistics.html#a64aecb2cbe814fb39a4af82d49d441f1',1,'lampda::logic::statistics']]],
   ['load_5framps_119',['load_ramps',['../structlampda_1_1modes_1_1GroupTy_1_1StateTy.html#ae5d2180f1825604cdbab3d0a3aecc494',1,'lampda::modes::GroupTy::StateTy']]],
   ['loadfullonreset_120',['loadFullOnReset',['../structlampda_1_1modes_1_1draw_1_1grid_1_1LineRuleConfig.html#afea7549a0f7d75e9ca1204233abc92a7',1,'lampda::modes::draw::grid::LineRuleConfig']]],
   ['local_121',['local',['../structlampda_1_1modes_1_1ContextTy_1_1KeyProxy.html#a7c2a96d79b056c084b86b197924e7247',1,'lampda::modes::ContextTy::KeyProxy']]],

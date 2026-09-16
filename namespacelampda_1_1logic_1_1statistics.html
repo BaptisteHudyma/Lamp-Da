@@ -101,10 +101,9 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_alert_storage
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_system_on_time</b> ()</td></tr>
 <tr class="memdesc:a015a26e127d00046f025919c89787a48"><td class="mdescLeft">&#160;</td><td class="mdescRight">system on time is easy: system always starts with time zero <br /></td></tr>
 <tr class="separator:a015a26e127d00046f025919c89787a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8a80ef007b82d46cab3d06dd0a3c9ad"><td class="memItemLeft" align="right" valign="top"><a id="ad8a80ef007b82d46cab3d06dd0a3c9ad" name="ad8a80ef007b82d46cab3d06dd0a3c9ad"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>load_from_memory</b> ()</td></tr>
-<tr class="memdesc:ad8a80ef007b82d46cab3d06dd0a3c9ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the statistics from the slash memeory. <br /></td></tr>
-<tr class="separator:ad8a80ef007b82d46cab3d06dd0a3c9ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64aecb2cbe814fb39a4af82d49d441f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1statistics.html#a64aecb2cbe814fb39a4af82d49d441f1">load_from_memory</a> (const bool shouldResetExisting=false)</td></tr>
+<tr class="memdesc:a64aecb2cbe814fb39a4af82d49d441f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the statistics from the slash memeory.  <br /></td></tr>
+<tr class="separator:a64aecb2cbe814fb39a4af82d49d441f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12735c6e3906a32c41384e0c59ac001a"><td class="memItemLeft" align="right" valign="top"><a id="a12735c6e3906a32c41384e0c59ac001a" name="a12735c6e3906a32c41384e0c59ac001a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>write_to_memory</b> ()</td></tr>
 <tr class="memdesc:a12735c6e3906a32c41384e0c59ac001a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write statistics to the system flash memory. <br /></td></tr>
@@ -186,6 +185,32 @@ static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>batteryCha
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle update and tracking of user use statistics. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="a64aecb2cbe814fb39a4af82d49d441f1" name="a64aecb2cbe814fb39a4af82d49d441f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64aecb2cbe814fb39a4af82d49d441f1">&#9670;&#160;</a></span>load_from_memory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::logic::statistics::load_from_memory </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>shouldResetExisting</em> = <code>false</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Load the statistics from the slash memeory. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">shouldResetExisting</td><td>if true, will reset the current stats before loading them </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="aca02f1cbf58765a778ff6a9e090cf9a7" name="aca02f1cbf58765a778ff6a9e090cf9a7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aca02f1cbf58765a778ff6a9e090cf9a7">&#9670;&#160;</a></span>show()</h2>
 
