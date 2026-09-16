@@ -236,5 +236,27 @@ TEST_F(UserCommandTest, SunsetTimeEdgeCases)
   EXPECT_FALSE(cmd_invalid.parse_set_sunset_to_time_command(parsed_invalid));
 }
 
+TEST_F(UserCommandTest, GoToFavoriteIndexCommand)
+{
+  uint8_t favoriteGroup = 1;
+  auto cmd = UserCommand::make_go_to_favorite_command(favoriteGroup);
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::GoToFavoriteIndex);
+
+  uint8_t parsed_fav = 0;
+  EXPECT_TRUE(cmd.parse_go_to_favorite_command(parsed_fav));
+  EXPECT_EQ(parsed_fav, favoriteGroup);
+}
+
+TEST_F(UserCommandTest, SetFavoriteIndexCommand)
+{
+  uint8_t favoriteGroup = 1;
+  auto cmd = UserCommand::make_set_favorite_command(favoriteGroup);
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::SetFavoriteIndex);
+
+  uint8_t parsed_fav = 0;
+  EXPECT_TRUE(cmd.parse_set_favorite_command(parsed_fav));
+  EXPECT_EQ(parsed_fav, favoriteGroup);
+}
+
 } // namespace common
 } // namespace lampda

@@ -282,15 +282,14 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     static_assert(maxFavoriteCount < 16, "Maximum of 15 favorite as been exceeded");
 
     // (variables for pending favorite state machine)
-    uint8_t isFavoritePending = 0;        ///< indicate that the addition of a favorite in in process
-    uint8_t whichFavoritePending = 0;     ///< indicates the favorite currently selected
-    bool isInDeleteFavorite = false;      ///< indicates that we are in a favorite deletion process
-    uint8_t isFavoriteDeletePending = 0;  ///< indicate that the deletion of a favorite in in process
-    uint8_t lastFavoriteStep = 0;         ///< last used favorite index
-    bool isInFavoriteMockGroup = false;   ///< Indicates that we are in the fake favorite page
-    uint8_t beforeFavoriteGroupIndex = 0; ///< store the group index we need to go to when quitting the favorite page
-    uint8_t beforeFavoriteModeIndex = 0;  ///< store the mode index we need to go to when quitting the favorite page
-    uint8_t isSunsetTimingPending = 0;    ///< Indicates that a sunset timer ramp is active
+    uint8_t isFavoritePending = 0;           ///< indicate that the addition of a favorite in in process
+    uint8_t whichFavoritePending = 0;        ///< indicates the favorite currently selected
+    bool isInDeleteFavorite = false;         ///< indicates that we are in a favorite deletion process
+    uint8_t isFavoriteDeletePending = 0;     ///< indicate that the deletion of a favorite in in process
+    uint8_t lastFavoriteStep = 0;            ///< last used favorite index
+    bool isInFavoriteMockGroup = false;      ///< Indicates that we are in the fake favorite page
+    ActiveIndexTy beforeFavoriteActiveIndex; ///< store the index we need to go to when quitting the favorite page
+    uint8_t isSunsetTimingPending = 0;       ///< Indicates that a sunset timer ramp is active
 
     bool isLastScrollAGroupChange = false; ///< last mode change in scroll changed group
     uint32_t lastScrollStopped = 0;        ///< keep track of the last scrool release time
@@ -304,6 +303,29 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
     // special effects
     uint8_t skipNextFrameEffect = 0; ///< should the next .loop() mode be skipped?
+
+    /// Reset the stored variable states
+    void reset()
+    {
+      lastModeMemory = {};
+
+      favorites = {};
+      usedFavoriteCount = 0;
+
+      isFavoritePending = 0;
+      whichFavoritePending = 0;
+      isInDeleteFavorite = false;
+      isFavoriteDeletePending = 0;
+      lastFavoriteStep = 0;
+      isInFavoriteMockGroup = false;
+      beforeFavoriteActiveIndex = ActiveIndexTy();
+      isSunsetTimingPending = 0;
+
+      isLastScrollAGroupChange = false;
+      lastScrollStopped = 0;
+
+      skipNextFrameEffect = 0;
+    }
 
     // inside lamp.config
     //  - skipFirstLedsForEffect = 0; // should the loop skip some lower LEDs?
@@ -475,8 +497,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     // store last active index before jump
     if (shouldSaveLastActiveIndex)
     {
-      ctx.state.beforeFavoriteGroupIndex = ctx.modeManager.activeIndex.groupIndex;
-      ctx.state.beforeFavoriteModeIndex = ctx.modeManager.activeIndex.modeIndex;
+      ctx.state.beforeFavoriteActiveIndex = ctx.modeManager.activeIndex;
     }
 
     if (which_one >= ctx.state.maxFavoriteCount)
@@ -489,6 +510,34 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     // show which favorite is currently set
     overlay.clear();
     display_favorite_number_ramp(ctx, which_one, ctx.state.usedFavoriteCount, true, 1000);
+
+    // indicate favorite mode entry
+    ctx.blip(250);
+
+    // indicate that we are now in a favorite group
+    ctx.state.isInFavoriteMockGroup = true;
+
+    return true;
+  }
+
+  /**
+   * \brief Exit the favorite group, by going to the given group and mode id
+   */
+  static bool exit_favorite_group(auto& ctx, ActiveIndexTy newActiveIndex)
+  {
+    if (not ctx.state.isInFavoriteMockGroup)
+      return false;
+
+#ifdef LMBD_SIMULATION
+    fprintf(stderr, "Exit fake favorite group\n");
+#endif
+    // reset favorite indicator
+    ctx.state.isInFavoriteMockGroup = false;
+    // return to previous state
+    jump_to_new_active_index(ctx, newActiveIndex);
+
+    // blip to indicate favorite mode exit
+    ctx.blip(250);
 
     return true;
   }
@@ -537,20 +586,12 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       // changed favorite index, jump
       if (ctx.state.usedFavoriteCount > 0)
       {
-        jump_to_new_active_index(ctx, ctx.state.favorites[which_one % ctx.state.usedFavoriteCount]);
+        jump_to_favorite(ctx, which_one, false);
       }
       else
       {
-        // no more favorite, restore last used
-
-        // reset favorite indicator
-        ctx.state.isInFavoriteMockGroup = false;
-        // return to previous state
-        ctx.set_active_group(ctx.state.beforeFavoriteGroupIndex);
-        ctx.set_active_mode(ctx.state.beforeFavoriteModeIndex);
-
-        // blip to indicate favorite mode exit
-        ctx.blip(250);
+        // no more favorite, restore last used mode
+        exit_favorite_group(ctx, ctx.state.beforeFavoriteActiveIndex);
       }
       return true;
     }
@@ -895,7 +936,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     });
 
     // activate last used favorite, in the favorite group
-    if (ctx.state.isInFavoriteMockGroup && jump_to_favorite(ctx, ctx.state.lastFavoriteStep, false))
+    if (ctx.state.isInFavoriteMockGroup and jump_to_favorite(ctx, ctx.state.lastFavoriteStep, false))
     {
       // success jump to favorite
     }
@@ -946,6 +987,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   /// Read the parameters from memory
   static void read_parameters(auto& ctx)
   {
+    // Reset the states before reading the parameters
+    ctx.state.reset();
+
     // remove old filesystem data if we detect obsolete "storeId" serial
     using LocalStore = details::LocalStoreOf<decltype(ctx)>;
     LocalStore::template migrateStoreIfNeeded<storeId>();
@@ -1078,6 +1122,41 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     }
   }
 
+  static uint8_t get_number_of_allowed_favorites(auto& ctx)
+  {
+    // user as a number of favorite set
+    // occasional +1 if not all favorite are set (allow a new favorite)
+    return ctx.state.usedFavoriteCount + ((ctx.state.usedFavoriteCount < ctx.state.maxFavoriteCount) ? 1 : 0);
+  }
+
+  /**
+   * \brief Set the current mode as a favorite at the target index
+   *
+   */
+  template<bool displayFavoriteNumber = true>
+  static void set_current_mode_as_favorite(auto& ctx, uint8_t favoriteIndex, uint32_t displayTimeout_s = 0)
+  {
+    const uint8_t numberOfFavoriteSet = get_number_of_allowed_favorites(ctx);
+    if (favoriteIndex >= numberOfFavoriteSet)
+    {
+      bsp::lampda_print(
+              "Cannot set a favorite at index %d, max index must be less than %d", favoriteIndex, numberOfFavoriteSet);
+      return;
+    }
+
+    // extra display on the first pixels (count pixels to know fav no)
+    if constexpr (displayFavoriteNumber)
+    {
+      // display the set favorite ramp
+      display_favorite_number_ramp(
+              ctx, favoriteIndex, numberOfFavoriteSet, favoriteIndex < numberOfFavoriteSet, displayTimeout_s);
+    }
+
+    // set this, after a while upon no longer holding button, favorite is set
+    ctx.state.isFavoritePending = 10;
+    ctx.state.whichFavoritePending = favoriteIndex;
+  }
+
   /** \private
    * \brief Animate the favorite addition process. Called every frame while the action is ongoing
    * \param[in, out] ctx
@@ -1087,10 +1166,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   template<bool displayFavoriteNumber = true>
   static void animate_favorite_pick(auto& ctx, float holdDuration, float stepSize)
   {
-    // user as a number of favorite set
-    // occasional +1 if not all favorite are set (allow a new favorite)
-    const uint8_t numberOfFavoriteSet =
-            ctx.state.usedFavoriteCount + ((ctx.state.usedFavoriteCount < ctx.state.maxFavoriteCount) ? 1 : 0);
+    const uint8_t numberOfFavoriteSet = get_number_of_allowed_favorites(ctx);
 
     // up to maxFavoriteCount step state: "which_one" is [0, 1, 2, 3, ...] and "do not set" is the max index + 1
     uint32_t stepCount = numberOfFavoriteSet + floor(holdDuration / stepSize);
@@ -1113,16 +1189,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       // green ramp : favorites
       overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Green, colors::White>);
 
-      // extra display on the first pixels (count pixels to know fav no)
-      if constexpr (displayFavoriteNumber)
-      {
-        // display the set favorite ramp
-        display_favorite_number_ramp(ctx, stepCount, numberOfFavoriteSet, stepCount < numberOfFavoriteSet);
-      }
-
-      // set this, after a while upon no longer holding button, favorite is set
-      ctx.state.isFavoritePending = 10;
-      ctx.state.whichFavoritePending = stepCount;
+      // Set the favorite: this actually do not set it immediatly but waits until the function is not called anymores
+      set_current_mode_as_favorite<displayFavoriteNumber>(ctx, stepCount);
     }
   }
 

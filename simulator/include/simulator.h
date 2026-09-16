@@ -115,6 +115,8 @@ template<typename T> struct simulator
     // Main program setup
     ::lampda::main_setup();
 
+    bool lostFocus = false;
+
     // =================================================
 
     // reference to global state
@@ -138,155 +140,160 @@ template<typename T> struct simulator
           window.close();
           break;
         }
+        else if (event.type == sf::Event::LostFocus)
+          lostFocus = true;
+        else if (event.type == sf::Event::GainedFocus)
+          lostFocus = false;
 
-        if (event.type == sf::Event::KeyPressed)
+        if (not lostFocus)
         {
-          auto kpressed = event.key.code;
-          switch (kpressed)
+          if (event.type == sf::Event::KeyPressed)
           {
-            default:
-              state.lastKeyPressed = 0;
-              break;
-            case sf::Keyboard::Key::P: // p == pause
-              state.lastKeyPressed = 'p';
-              break;
-            case sf::Keyboard::Key::V: // v == verbose
-              state.lastKeyPressed = 'v';
-              break;
-            case sf::Keyboard::Key::T: // t == tick +pause
-              state.lastKeyPressed = 't';
-              break;
-            case sf::Keyboard::Key::H: // h == higher speed
-              state.lastKeyPressed = 'h';
-              break;
-            case sf::Keyboard::Key::G: // g == glower speeds
-              state.lastKeyPressed = 'g';
-              break;
-            case sf::Keyboard::Key::J: // j == shift matrix left
-              state.lastKeyPressed = 'j';
-              break;
-            case sf::Keyboard::Key::K: // k == shift matrix right
-              state.lastKeyPressed = 'k';
-              break;
-            case sf::Keyboard::Key::D:
-              state.lastKeyPressed = 'd';
-              break;
-            case sf::Keyboard::Key::U:
-              state.lastKeyPressed = 'u';
-              break;
-            case sf::Keyboard::Key::I:
-              state.lastKeyPressed = 'i';
-              break;
-            case sf::Keyboard::Key::R:
-              state.lastKeyPressed = 'r';
-              break;
-            case sf::Keyboard::Key::C:
-              state.lastKeyPressed = 'c';
-              break;
-            case sf::Keyboard::Key::Q:
-              state.lastKeyPressed = 'q';
-              break;
-          }
-
-          break;
-        }
-
-        if (event.type == sf::Event::KeyReleased)
-        {
-          // tick forward (once) and pause
-          if (state.lastKeyPressed == 't')
-          {
-            state.paused = false;
-            state.tickAndPause = 2;
-          }
-
-          // pause event
-          if (state.lastKeyPressed == 'p')
-          {
-            state.paused = !state.paused;
-          }
-
-          // verbose event
-          if (state.lastKeyPressed == 'v')
-          {
-            state.verbose = !state.verbose;
-          }
-
-          // slower simulation
-          if (state.lastKeyPressed == 'g')
-          {
-            if (state.slowTimeFactor > 1.50f)
+            auto kpressed = event.key.code;
+            switch (kpressed)
             {
-              state.slowTimeFactor *= 0.95f;
+              default:
+                state.lastKeyPressed = 0;
+                break;
+              case sf::Keyboard::Key::P: // p == pause
+                state.lastKeyPressed = 'p';
+                break;
+              case sf::Keyboard::Key::V: // v == verbose
+                state.lastKeyPressed = 'v';
+                break;
+              case sf::Keyboard::Key::T: // t == tick +pause
+                state.lastKeyPressed = 't';
+                break;
+              case sf::Keyboard::Key::H: // h == higher speed
+                state.lastKeyPressed = 'h';
+                break;
+              case sf::Keyboard::Key::G: // g == glower speeds
+                state.lastKeyPressed = 'g';
+                break;
+              case sf::Keyboard::Key::J: // j == shift matrix left
+                state.lastKeyPressed = 'j';
+                break;
+              case sf::Keyboard::Key::K: // k == shift matrix right
+                state.lastKeyPressed = 'k';
+                break;
+              case sf::Keyboard::Key::D:
+                state.lastKeyPressed = 'd';
+                break;
+              case sf::Keyboard::Key::U:
+                state.lastKeyPressed = 'u';
+                break;
+              case sf::Keyboard::Key::I:
+                state.lastKeyPressed = 'i';
+                break;
+              case sf::Keyboard::Key::R:
+                state.lastKeyPressed = 'r';
+                break;
+              case sf::Keyboard::Key::C:
+                state.lastKeyPressed = 'c';
+                break;
+              case sf::Keyboard::Key::Q:
+                state.lastKeyPressed = 'q';
+                break;
             }
-            else if (state.slowTimeFactor > 1.0f)
-            {
-              state.slowTimeFactor = ceil(state.slowTimeFactor * 20 - 1) / 20;
-            }
-            else
-            {
-              state.slowTimeFactor = std::max<float>(0.1f, state.slowTimeFactor - 0.05f);
-            }
-            fprintf(stderr, "slower %f\n", state.slowTimeFactor);
-          }
 
-          // faster simulation
-          if (state.lastKeyPressed == 'h')
+            break;
+          }
+          else if (event.type == sf::Event::KeyReleased)
           {
-            if (state.slowTimeFactor > 1.20f)
+            // tick forward (once) and pause
+            if (state.lastKeyPressed == 't')
             {
-              state.slowTimeFactor *= 1.05f;
+              state.paused = false;
+              state.tickAndPause = 2;
             }
-            else if (state.slowTimeFactor > 1.0f)
+
+            // pause event
+            if (state.lastKeyPressed == 'p')
             {
-              state.slowTimeFactor = ceil(state.slowTimeFactor * 20 + 1) / 20;
+              state.paused = !state.paused;
             }
-            else
+
+            // verbose event
+            if (state.lastKeyPressed == 'v')
             {
-              state.slowTimeFactor += 0.05f;
+              state.verbose = !state.verbose;
             }
-            fprintf(stderr, "faster %f\n", state.slowTimeFactor);
-          }
 
-          // shift forward XY display
-          if (state.lastKeyPressed == 'k')
+            // slower simulation
+            if (state.lastKeyPressed == 'g')
+            {
+              if (state.slowTimeFactor > 1.50f)
+              {
+                state.slowTimeFactor *= 0.95f;
+              }
+              else if (state.slowTimeFactor > 1.0f)
+              {
+                state.slowTimeFactor = ceil(state.slowTimeFactor * 20 - 1) / 20;
+              }
+              else
+              {
+                state.slowTimeFactor = std::max<float>(0.1f, state.slowTimeFactor - 0.05f);
+              }
+              fprintf(stderr, "slower %f\n", state.slowTimeFactor);
+            }
+
+            // faster simulation
+            if (state.lastKeyPressed == 'h')
+            {
+              if (state.slowTimeFactor > 1.20f)
+              {
+                state.slowTimeFactor *= 1.05f;
+              }
+              else if (state.slowTimeFactor > 1.0f)
+              {
+                state.slowTimeFactor = ceil(state.slowTimeFactor * 20 + 1) / 20;
+              }
+              else
+              {
+                state.slowTimeFactor += 0.05f;
+              }
+              fprintf(stderr, "faster %f\n", state.slowTimeFactor);
+            }
+
+            // shift forward XY display
+            if (state.lastKeyPressed == 'k')
+            {
+              fakeXorigin += 1;
+              if (fakeXorigin > ledW - 1)
+                fakeXorigin = 0;
+              fakeXend = std::max<int>(fakeXorigin - std::min<int>(4, ledW - 1 - fakeXorigin), 0);
+            }
+
+            // shift backward XY display
+            if (state.lastKeyPressed == 'j')
+            {
+              fakeXorigin -= 1;
+              if (fakeXorigin < 0)
+                fakeXorigin = ledW - 1;
+              fakeXend = std::max<int>(fakeXorigin - std::min<int>(4, ledW - 1 - fakeXorigin), 0);
+            }
+
+            // reset key pressed
+            state.lastKeyPressed = 0;
+            break;
+          }
+          else if (event.type == sf::Event::MouseButtonPressed)
           {
-            fakeXorigin += 1;
-            if (fakeXorigin > ledW - 1)
-              fakeXorigin = 0;
-            fakeXend = std::max<int>(fakeXorigin - std::min<int>(4, ledW - 1 - fakeXorigin), 0);
+            float dx = indCoordX - mousePos.x + simu.buttonSize;
+            float dy = indCoordY - mousePos.y + simu.buttonSize;
+            float norm = simu.buttonSize;
+
+            if (dx * dx + dy * dy < norm * norm)
+            {
+              mouseClick += 3;
+            }
+            break;
           }
-
-          // shift backward XY display
-          if (state.lastKeyPressed == 'j')
-          {
-            fakeXorigin -= 1;
-            if (fakeXorigin < 0)
-              fakeXorigin = ledW - 1;
-            fakeXend = std::max<int>(fakeXorigin - std::min<int>(4, ledW - 1 - fakeXorigin), 0);
-          }
-
-          // reset key pressed
-          state.lastKeyPressed = 0;
-          break;
-        }
-
-        if (event.type == sf::Event::MouseButtonPressed)
-        {
-          float dx = indCoordX - mousePos.x + simu.buttonSize;
-          float dy = indCoordY - mousePos.y + simu.buttonSize;
-          float norm = simu.buttonSize;
-
-          if (dx * dx + dy * dy < norm * norm)
-          {
-            mouseClick += 3;
-          }
-          break;
         }
       }
 
       // update simulator global state
-      state.isButtonPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
+      state.isButtonPressed = (not lostFocus) and sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
       if (mouseClick > 0)
       {
         mouseClick -= 1;

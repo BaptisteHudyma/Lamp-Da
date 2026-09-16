@@ -91,6 +91,24 @@ UserCommand UserCommand::make_set_ble_mode_command(const uint8_t index)
   return cmd;
 }
 
+UserCommand UserCommand::make_go_to_favorite_command(const uint8_t index)
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::GoToFavoriteIndex;
+  cmd._dataCnt = 1;
+  cmd._data[0] = index;
+  return cmd;
+}
+
+UserCommand UserCommand::make_set_favorite_command(const uint8_t index)
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::SetFavoriteIndex;
+  cmd._dataCnt = 1;
+  cmd._data[0] = index;
+  return cmd;
+}
+
 /**
  *
  *
@@ -180,6 +198,22 @@ bool UserCommand::parse_set_ble_custom_color_mode_command(uint32_t& color) const
 bool UserCommand::parse_set_ble_mode_command(uint8_t& index) const
 {
   if (get_type() != Type::SetBleMode or _dataCnt != 1)
+    return false;
+  index = _data[0];
+  return true;
+}
+
+bool UserCommand::parse_go_to_favorite_command(uint8_t& index) const
+{
+  if (get_type() != Type::GoToFavoriteIndex or _dataCnt != 1)
+    return false;
+  index = _data[0];
+  return true;
+}
+
+bool UserCommand::parse_set_favorite_command(uint8_t& index) const
+{
+  if (get_type() != Type::SetFavoriteIndex or _dataCnt != 1)
     return false;
   index = _data[0];
   return true;

@@ -14,12 +14,6 @@ namespace filesystem {
 /// call once on program stop.
 void shutdown();
 
-/// clear the stored values in the currently loaded file system.
-void clear();
-
-/// Clear the system parameters. \warning Should never be used except for a full reset
-void clear_system_parameters();
-
 /// hard clean of the whole filesystem, you will loose all stored data.
 void clear_internal_fs();
 
@@ -52,6 +46,9 @@ void set_value(const uint32_t key, const uint32_t value);
  */
 uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect = 0xffffffff);
 
+/// clear the stored values in the currently loaded file system.
+void clear_cached();
+
 /**
  * \brief Write the system parameters to a file
  * \warning A failure will erase the system memory
@@ -63,6 +60,9 @@ void write_to_file();
  * \return true if succesfull
  */
 bool load_from_file();
+
+/// Delete the system file (Should not be used)
+bool format();
 
 } // namespace system
 
@@ -95,6 +95,9 @@ void set_value(const uint32_t key, const uint32_t value);
  */
 uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect = 0xffffffff);
 
+/// clear the stored values in the currently loaded file system.
+void clear_cached();
+
 /**
  * \brief Write the user parameters to a file
  * \warning A failure will erase the system memory
@@ -106,6 +109,9 @@ void write_to_file();
  * \return true if the process suceeded
  */
 bool load_from_file();
+
+/// Delete the user file
+bool format();
 
 } // namespace user
 

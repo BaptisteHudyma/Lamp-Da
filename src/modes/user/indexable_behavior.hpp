@@ -35,7 +35,10 @@ bool button_clicked_default(const uint8_t clicks)
           // if in favorite, next favorite
           manager.state.lastFavoriteStep += 1;
           // sanity check, if it fails, quit favorites
-          manager.state.isInFavoriteMockGroup = manager.jump_to_favorite(manager.state.lastFavoriteStep, false);
+          if (not manager.jump_to_favorite(manager.state.lastFavoriteStep, false))
+          {
+            manager.exit_favorite_group(manager.state.beforeFavoriteActiveIndex);
+          }
         }
         else
         {
@@ -83,17 +86,8 @@ bool button_clicked_default(const uint8_t clicks)
       {
         if (manager.state.isInFavoriteMockGroup)
         {
-#ifdef LMBD_SIMULATION
-          fprintf(stderr, "Exit fake favorite group\n");
-#endif
-          // reset favorite indicator
-          manager.state.isInFavoriteMockGroup = false;
           // return to previous state
-          manager.set_active_group(manager.state.beforeFavoriteGroupIndex);
-          manager.set_active_mode(manager.state.beforeFavoriteModeIndex);
-
-          // blip to indicate favorite mode exit
-          manager.blip(250);
+          manager.exit_favorite_group(manager.state.beforeFavoriteActiveIndex);
         }
         else
         {
@@ -130,12 +124,7 @@ bool button_clicked_default(const uint8_t clicks)
         if (not manager.state.isInFavoriteMockGroup)
         {
           // jump and save last used mode
-          if (manager.jump_to_favorite(manager.state.lastFavoriteStep, true))
-          {
-            manager.state.isInFavoriteMockGroup = true;
-            // blip to indicate favorite mode enter
-            manager.blip(250);
-          }
+          manager.jump_to_favorite(manager.state.lastFavoriteStep, true);
         }
 #ifdef LMBD_SIMULATION
         {
@@ -278,6 +267,51 @@ void handle_pattern_select_command(const uint8_t patternIndex, const uint32_t re
   }
 }
 
+/**
+ * \brief Go to the given favorite index if possible
+ * \param[in] favoriteIndex Target index of the favorite to set
+ */
+void handle_go_to_favorite_command(const uint8_t favoriteIndex)
+{
+  // ignore if not on
+  if (not logic::behavior::is_in_output_state())
+    return;
+
+  auto manager = get_context();
+
+  // jump and save last used mode
+  manager.jump_to_favorite(favoriteIndex, true);
+}
+
+/**
+ * \brief Set the current mode to favorite
+ * \param[in] favoriteIndex Target index of the favorite to set
+ */
+void handle_set_favorite_command(const uint8_t favoriteIndex)
+{
+  // ignore if not on
+  if (not logic::behavior::is_in_output_state())
+    return;
+
+  auto manager = get_context();
+
+  // Cannot add a favorite mode to te favorite group: we are already here
+  if (manager.state.isInFavoriteMockGroup)
+    return;
+
+  const uint8_t allowedFavorites = manager.get_number_of_allowed_favorites();
+
+  // not enought favorite set
+  if (favoriteIndex >= allowedFavorites)
+  {
+    bsp::lampda_print("Max favorites is [0; %d[, cannot add index %d", allowedFavorites, favoriteIndex);
+    return;
+  }
+
+  // Set the favorite !
+  manager.set_current_mode_as_favorite(favoriteIndex, 1000);
+}
+
 } // namespace __private
 
 void handle_user_command(const common::UserCommand& command)
@@ -307,6 +341,24 @@ void handle_user_command(const common::UserCommand& command)
           __private::handle_pattern_select_command(index);
         else
           bsp::lampda_print("Failed to parse set_ble_mode command");
+        return;
+      }
+    case common::UserCommand::Type::GoToFavoriteIndex:
+      {
+        uint8_t index;
+        if (command.parse_go_to_favorite_command(index))
+          __private::handle_go_to_favorite_command(index);
+        else
+          bsp::lampda_print("Failed to parse go_to_favorite command");
+        return;
+      }
+    case common::UserCommand::Type::SetFavoriteIndex:
+      {
+        uint8_t index;
+        if (command.parse_set_favorite_command(index))
+          __private::handle_set_favorite_command(index);
+        else
+          bsp::lampda_print("Failed to parse set_favorite command");
         return;
       }
     default:

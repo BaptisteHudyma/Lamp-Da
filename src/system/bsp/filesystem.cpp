@@ -7,6 +7,7 @@
 #include "src/system/bsp/text_out.h"
 
 #include "src/system/logic/behavior.h"
+#include "src/system/logic/statistics_handler.h"
 
 #include <map>
 
@@ -42,15 +43,6 @@ union KeyValToByteArray
   keyValue kv;              ///< original object
 };
 
-void clear()
-{
-  lastUserParameterSize = _userParametersValueMap.size();
-  _userParametersValueMap.clear();
-  // never clear system prameters
-}
-
-void clear_system_parameters() { _systemParametersValueMap.clear(); }
-
 void shutdown() { hal::filesystem::shutdown(); }
 
 void clear_internal_fs()
@@ -65,7 +57,13 @@ void clear_internal_fs()
   hal::delay_ms(100);
   hal::bluetooth::clear_bounded_devices();
 
-  // tha reload the user parameters
+  // reset the cached parameters
+  system::clear_cached();
+  user::clear_cached();
+  // reload statistics
+  logic::statistics::load_from_memory(true);
+
+  // reload the user parameters
   logic::behavior::read_parameters();
 }
 
@@ -237,6 +235,8 @@ uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
   return old_size - c.size();
 }
 
+void clear_cached() { _systemParametersValueMap.clear(); }
+
 void write_to_file()
 {
   // write internal parameters
@@ -249,6 +249,19 @@ void write_to_file()
 }
 
 bool load_from_file() { return __internal::read_file_content(FILENAME_INTERNAL, _systemParametersValueMap); }
+
+bool format()
+{
+  // delete system infos
+  clear_cached();
+  // end delete the system file
+  const bool succeeded = hal::filesystem::delete_file(FILENAME_INTERNAL);
+
+  // reload the user parameters
+  logic::behavior::read_parameters();
+
+  return succeeded;
+}
 
 } // namespace system
 
@@ -301,6 +314,12 @@ uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
   return old_size - c.size();
 }
 
+void clear_cached()
+{
+  lastUserParameterSize = _userParametersValueMap.size();
+  _userParametersValueMap.clear();
+}
+
 void write_to_file()
 {
   // user first
@@ -315,6 +334,19 @@ void write_to_file()
 }
 
 bool load_from_file() { return __internal::read_file_content(FILENAME_USER, _userParametersValueMap); }
+
+bool format()
+{
+  // delete user parameters
+  clear_cached();
+  // delete the file
+  const bool succeeded = hal::filesystem::delete_file(FILENAME_USER);
+
+  // reload the user parameters
+  logic::behavior::read_parameters();
+
+  return succeeded;
+}
 
 } // namespace user
 

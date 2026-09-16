@@ -224,14 +224,17 @@ bool button_clicked(const uint8_t clicks)
   {
     case 6: // 6 clicks:  jump to first mode of first category
       {
-        if (manager.state.isInFavoriteMockGroup)
-        { // reset favorite indicator
-          manager.state.isInFavoriteMockGroup = false;
-        }
+        // exit fav group if needed
+        manager.exit_favorite_group(manager.state.beforeFavoriteActiveIndex);
+
         // return to first state
         manager.set_active_group(0);
         manager.set_active_mode(0);
+        // ramps will be updated on their own
+
+        // Blip for state change
         manager.blip(250);
+
         return true;
       }
   }
@@ -277,7 +280,7 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
         break;
       }
 
-    case 13: // 13 clicks + hold: reset the whole system and stored parameters
+    case 13: // 13 clicks + hold: reset the stored parameters
       {
         if (not isEndOfHoldEvent and holdDuration > 0)
         {
@@ -285,13 +288,10 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
           if (manager.overlay_animate_ramp(
                       holdDuration, 5000, modes::colors::PaletteGradient<modes::colors::Red, modes::colors::Red>))
           {
-            // reset the file system and memory
-            bsp::lampda_print("clearing the whole file format");
-            bsp::filesystem::clear_internal_fs();
+            bsp::lampda_print("clearing user parameters");
 
-            // shutdown the lamp
-            const bool shouldSaveUserParameters = false;
-            logic::behavior::internal::handle_shutdown_state(shouldSaveUserParameters);
+            // reset the file system and memory
+            bsp::filesystem::user::format();
           }
         }
         break;
@@ -310,9 +310,7 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
             bsp::filesystem::clear_internal_fs();
 
             // shutdown the lamp
-            const bool shouldSaveUserParameters = false;
-            const bool shouldSaveSystemParameters = false;
-            logic::behavior::internal::handle_shutdown_state(shouldSaveUserParameters, shouldSaveSystemParameters);
+            logic::behavior::internal::handle_shutdown_state();
           }
         }
         break;

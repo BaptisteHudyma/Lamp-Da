@@ -14,8 +14,9 @@ namespace statistics {
 
 /**
  * \brief Load the statistics from the slash memeory
+ * \param[in] shouldResetExisting if true, will reset the current stats before loading them
  */
-void load_from_memory();
+void load_from_memory(const bool shouldResetExisting = false);
 /**
  * \brief Write statistics to the system flash memory
  */

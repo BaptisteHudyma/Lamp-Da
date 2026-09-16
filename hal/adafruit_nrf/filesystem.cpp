@@ -57,6 +57,8 @@ void format_file_system()
   InternalFS.format();
 }
 
+bool delete_file(const char* fname) { return InternalFS.remove(fname); }
+
 /**
  *
  *

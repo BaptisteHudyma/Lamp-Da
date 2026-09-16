@@ -243,37 +243,29 @@ void setup_clean_sleep_flag()
   bsp::filesystem::system::write_to_file();
 }
 
-void write_parameters(const bool shouldSaveUserParameters = true, const bool shouldSaveSystemParameters = true)
+void write_parameters()
 {
-  bsp::filesystem::clear();
+  bsp::filesystem::user::clear_cached();
 
-  if (shouldSaveSystemParameters)
-  {
-    // write updated statistics
-    statistics::write_to_memory();
+  // write updated statistics
+  statistics::write_to_memory();
 
-    bsp::filesystem::system::set_value(cleanSleepKey, 0xDEADBEEF);
-    // only save saved brightness, not current
-    bsp::filesystem::system::set_value(brightnessKey, logic::brightness::get_saved_brightness());
-    bsp::filesystem::system::set_value(indicatorLevelKey, logic::indicator::get_brightness_level());
-    // lockout mode always kept, if not deactivated by system
-    bsp::filesystem::system::set_value(isLockoutModeKey,
-                                       logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT));
-    bsp::filesystem::system::set_value(buttonPinKey, static_cast<uint32_t>(component::button::get_button_pin()));
+  bsp::filesystem::system::set_value(cleanSleepKey, 0xDEADBEEF);
+  // only save saved brightness, not current
+  bsp::filesystem::system::set_value(brightnessKey, logic::brightness::get_saved_brightness());
+  bsp::filesystem::system::set_value(indicatorLevelKey, logic::indicator::get_brightness_level());
+  // lockout mode always kept, if not deactivated by system
+  bsp::filesystem::system::set_value(isLockoutModeKey,
+                                     logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT));
+  bsp::filesystem::system::set_value(buttonPinKey, static_cast<uint32_t>(component::button::get_button_pin()));
 
-    // if the user used the bluetooth, it will be written here for auto activation
-    const uint32_t nextWakeUpWithBluetooth = logic::inputs_bluetooth::is_bluetooth_used() ?
-                                                     maxBluetoothAutoActivations :
-                                                     bluetoothAutoActivationLeftCount;
-    bsp::filesystem::system::set_value(bluetoothAutoKey, nextWakeUpWithBluetooth);
-  }
-  else
-  {
-    bsp::filesystem::clear_system_parameters();
-  }
+  // if the user used the bluetooth, it will be written here for auto activation
+  const uint32_t nextWakeUpWithBluetooth =
+          logic::inputs_bluetooth::is_bluetooth_used() ? maxBluetoothAutoActivations : bluetoothAutoActivationLeftCount;
+  bsp::filesystem::system::set_value(bluetoothAutoKey, nextWakeUpWithBluetooth);
 
-  if (shouldSaveUserParameters)
-    user::write_parameters();
+  // write user parameters
+  user::write_parameters();
 
   // write all
   bsp::filesystem::user::write_to_file();
@@ -669,7 +661,7 @@ void handle_post_output_light_state()
   mainMachine.skip_timeout();
 }
 
-void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shouldSaveSystemParameters)
+void handle_shutdown_state()
 {
   statistics::signal_output_off();
 
@@ -695,7 +687,7 @@ void handle_shutdown_state(const bool shouldSaveUserParameters, const bool shoul
     // TODO: error ?
   }
   // save the current config to a file
-  write_parameters(shouldSaveUserParameters, shouldSaveSystemParameters);
+  write_parameters();
   hal::delay_ms(20);
   bsp::filesystem::shutdown();
 

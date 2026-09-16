@@ -24,6 +24,9 @@ extern void shutdown();
 /// Format/erase the whole file system.
 extern void format_file_system();
 
+/// Delete a given file
+extern bool delete_file(const char* fname);
+
 /// Handle class for a file
 struct HAL_File
 {

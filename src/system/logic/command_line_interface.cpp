@@ -375,6 +375,15 @@ static void cmd_i2c(const common::cli::ParsedCommand&)
           hal::i2c::i2c_check_existence(0, hal::i2c::chargeI2cAddress) == 0);
 }
 
+static void cmd_clear_user_parameters(const common::cli::ParsedCommand&)
+{
+  // Delete user parameters
+  if (bsp::filesystem::user::format())
+    bsp::lampda_print("Cleared all user parameters");
+  else
+    bsp::lampda_print("Error: failed to clear user parameters");
+}
+
 /// Format the file system
 static void cmd_format(const common::cli::ParsedCommand&)
 {
@@ -637,6 +646,24 @@ static void cmd_set_ble_name(const common::cli::ParsedCommand& command)
   }
 }
 
+static void cmd_set_go_to_favorite(const common::cli::ParsedCommand& command)
+{
+  uint8_t index;
+  if (common::cli::argument::parse_uint8(command, 0, index))
+  {
+    lampda::user::handle_user_command(common::UserCommand::make_go_to_favorite_command(index));
+  }
+}
+
+static void cmd_set_current_as_favorite(const common::cli::ParsedCommand& command)
+{
+  uint8_t index;
+  if (common::cli::argument::parse_uint8(command, 0, index))
+  {
+    lampda::user::handle_user_command(common::UserCommand::make_set_favorite_command(index));
+  }
+}
+
 void cmd_set_hook(const common::cli::ParsedCommand& command, const char* name);
 /// Handle the Set command, that takes another command as parameters
 static void cmd_set(const common::cli::ParsedCommand& command) { cmd_set_hook(command, command.name()); }
@@ -717,7 +744,8 @@ constexpr Command _act_commands_s[] = {
                           handles::cmd_act_help),
         make_command("shutdown", "force shutdown the system", handles::cmd_shutdown),
         make_command("buttonTogg", "change the button gpio", handles::cmd_buttontoggle),
-        make_command("format", "format the whole file system (dangerous)", handles::cmd_format),
+        make_command("clear_user", "Clear all of the user parameters", handles::cmd_clear_user_parameters),
+        make_command("format", "format the whole file system (not recommanded !!)", handles::cmd_format),
         make_command("dfu", "clear this program from memory, enter update mode", handles::cmd_dfu),
 };
 
@@ -758,6 +786,18 @@ constexpr Command _set_commands_s[] = {
                           "Set the new bluetooth advertised name. It should start with \'ELK-BLE-\" if you want to use "
                           "a generic ELK compatible app",
                           handles::cmd_set_ble_name),
+        make_command_args("favorite",
+                          "[0-15](index)",
+                          1,
+                          1,
+                          "Go to the given favorite index, if possible",
+                          handles::cmd_set_go_to_favorite),
+        make_command_args("new_favorite",
+                          "[0-15](index)",
+                          1,
+                          1,
+                          "Set the current mode to the given favorite index, if possible",
+                          handles::cmd_set_current_as_favorite),
 };
 
 /// Check for command duplication

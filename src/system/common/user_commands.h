@@ -32,6 +32,8 @@ public:
     SetSunsetToTime,       ///< set the sunset to a target real time
     SetBleCustomColorMode, ///< switch to BLE custom color mode
     SetBleMode,            ///< switch to a target BLE mode
+    GoToFavoriteIndex,     ///< Go to the target favorite index
+    SetFavoriteIndex,      ///< Set the current mode to the target favorite index
   };
   static constexpr uint8_t maxDataSize = 8;
 
@@ -97,6 +99,20 @@ public:
   static UserCommand make_set_ble_mode_command(const uint8_t index);
 
   /**
+   * \brief Set this commant to go to the given favorite, if possible
+   * \param[in] index
+   * \return The correct user command
+   */
+  static UserCommand make_go_to_favorite_command(const uint8_t index);
+
+  /**
+   * \brief Set this commant to set favorite
+   * \param[in] index
+   * \return The correct user command
+   */
+  static UserCommand make_set_favorite_command(const uint8_t index);
+
+  /**
    *
    * Parsing functions
    *
@@ -158,6 +174,20 @@ public:
    * \return True if the current message is valid, and parameter is set
    */
   bool parse_set_ble_mode_command(uint8_t& index) const;
+
+  /**
+   * \brief Parse the current command for a go to favorite
+   * \param[out] index
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_go_to_favorite_command(uint8_t& index) const;
+
+  /**
+   * \brief Parse the current command for a set favorite
+   * \param[out] index
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_set_favorite_command(uint8_t& index) const;
 
 protected:
   /// Protected constructor to prevent unallowed uses
