@@ -116,7 +116,7 @@ void supsend_usb_pd(int shouldSuspend) { pd_set_suspend(shouldSuspend); }
 void force_set_to_source(int force)
 {
   if (force == 0)
-    pd_set_dual_role(CONFIG_USB_PD_INITIAL_DRP_STATE);
+    pd_set_dual_role(PD_DRP_FORCE_SINK);
   else
   {
     // force to source

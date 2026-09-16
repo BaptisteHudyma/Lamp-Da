@@ -1134,30 +1134,30 @@ static int fusb302_compare_mdac(int mdac)
 int fusb302_get_vbus_voltage(int* vbus)
 {
   int reg;
-  
+
   /* First, check if VBUS is present using the built-in comparator */
   tcpc_read(TCPC_REG_STATUS0, &reg);
-  
+
   if ((reg & TCPC_REG_STATUS0_VBUSOK) == 0)
   {
     /* VBUS is below ~4V */
     *vbus = 0;
     return EC_SUCCESS;
   }
-  
+
   int low = 0, high = 63, mid1, mid2;
-  
+
   /* Ternary search for tighter bounds */
   while (high - low > 2)
   {
     mid1 = low + (high - low) / 3;
     mid2 = high - (high - low) / 3;
-    
+
     if (fusb302_compare_mdac(mid1))
       low = mid1;
     else
       high = mid1 - 1;
-      
+
     if (fusb302_compare_mdac(mid2))
       low = mid2;
     else

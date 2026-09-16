@@ -415,14 +415,13 @@ void handle_otg_mode()
     // reset pd machine
     ::lampda::bsp::powerDelivery::force_set_to_source_mode(false);
     ::lampda::bsp::powerDelivery::suspend_pd_state_machine();
-    ::lampda::bsp::powerDelivery::resume_pd_state_machine();
 
     // temporary suspend
     ::lampda::bsp::powerDelivery::allow_otg(false);
     set_otg_parameters(0, 0);
 
-    // no need for power gate, we are the one to push current
-    __private::powerMachine.set_state(PowerStates::CHARGING_MODE);
+    // safe switch (may not be needed)
+    go_to_charger_mode();
     return;
   }
   else
