@@ -305,7 +305,7 @@ static void cmd_adc(const common::cli::ParsedCommand&)
             "Last update %dms\n"
             "PowerRail voltage:%dmV\n"
             "PowerRail current:%dmA\n"
-            "VBUS voltage:%dmA\n"
+            "VBUS voltage:%dmV\n"
             "Bat voltage:%dmV\n"
             "Bat current:%dmA\n"
             "Temperature:%.2fC",
@@ -322,7 +322,7 @@ static void cmd_adc(const common::cli::ParsedCommand&)
     bsp::lampda_print(
             "Charger measurment are invalid !\n"
             "Last update %dms\n"
-            "VBUS voltage:%dmA\n"
+            "VBUS voltage:%dmV\n"
             "Temperature:%.2fC",
             chargerState.lastUpdateTime_ms,
             ::lampda::bsp::powerDelivery::get_vbus_voltage(),

@@ -154,7 +154,25 @@ const hal::gpio::DigitalPin usbFault(hal::gpio::DigitalPin::GPIO::Signal_UsbProt
 const hal::gpio::DigitalPin vbusFault(hal::gpio::DigitalPin::GPIO::Signal_VbusGateFault);
 } // namespace __private
 
-uint32_t get_vbus_rail_voltage() { return ::lampda::bsp::powerDelivery::get_vbus_voltage(); }
+uint32_t get_vbus_rail_voltage()
+{
+  const auto& state = ::lampda::component::charger::get_state();
+  const uint32_t vbusVoltage_mv = ::lampda::bsp::powerDelivery::get_vbus_voltage();
+
+  // Gate is not enabled, so the only reference is the vbus component
+  if (not ::lampda::bsp::powergates::is_vbus_gate_enabled() or not state.areMeasuresOk)
+    return vbusVoltage_mv;
+
+  // The FUSB302 tends to have error spikes in VBUS measurments, so this aleviates that, but the charger is not has
+  // precise
+  const uint32_t chargerVbusVoltage_mv = state.powerRail_mV;
+  const int error_mv = vbusVoltage_mv - chargerVbusVoltage_mv;
+  if (abs(error_mv) > 1000)
+  {
+    return chargerVbusVoltage_mv;
+  }
+  return vbusVoltage_mv;
+}
 
 uint32_t get_power_rail_voltage()
 {
@@ -345,6 +363,7 @@ void handle_otg_mode()
 
   // shutdown OTG if no current consumption for X seconds
   const auto& state = ::lampda::component::charger::get_state();
+
   // no current since a timing
   if (state.inputCurrent_mA <= 10)
   {
@@ -396,14 +415,13 @@ void handle_otg_mode()
     // reset pd machine
     ::lampda::bsp::powerDelivery::force_set_to_source_mode(false);
     ::lampda::bsp::powerDelivery::suspend_pd_state_machine();
-    ::lampda::bsp::powerDelivery::resume_pd_state_machine();
 
     // temporary suspend
     ::lampda::bsp::powerDelivery::allow_otg(false);
     set_otg_parameters(0, 0);
 
-    // no need for power gate, we are the one to push current
-    __private::powerMachine.set_state(PowerStates::CHARGING_MODE);
+    // safe switch (may not be needed)
+    go_to_charger_mode();
     return;
   }
   else
