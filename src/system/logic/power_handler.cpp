@@ -390,7 +390,8 @@ void handle_otg_mode()
       bsp::lampda_print("no OTG activity and voltage high, shutdown");
     }
   }
-  else
+  // Keep the battery mode on for at least a time after state switch
+  else if (hal::time_ms() - __private::powerMachine.get_state_raised_time() >= 1500)
   {
     // enable auto mode when power has been used for a time
     if ((not _hasAutoSwitchedToOTG) and hal::time_ms() - timeSinceOTGCurrentUse >= 1000)

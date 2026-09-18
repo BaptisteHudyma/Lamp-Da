@@ -1,6 +1,7 @@
 #include "src/system/hal/i2c.h"
 
 #include "src/system/hal/time.h"
+#include "src/system/hal/mutex.h"
 
 #include <cassert>
 #include <stdint.h>
@@ -8,8 +9,6 @@
 // platform specific code
 #include <Arduino.h>
 #include "Wire.h"
-#include "rtos.h"   // tied to FreeRTOS for serialization
-#include "semphr.h" // tied to FreeRTOS for serialization
 
 namespace lampda {
 namespace hal {
@@ -20,30 +19,7 @@ TwoWire* PROGMEM interfaces[] = {&Wire};
 bool PROGMEM isInit[] = {false};
 
 // mutex to prevent i2c lockups
-StaticSemaphore_t _I2CMutex;
-SemaphoreHandle_t i2cMutex = xSemaphoreCreateCountingStatic(1, 1, &_I2CMutex);
-BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
-bool _lockI2CMutex(void)
-{
-  if (isInISR())
-  {
-    return xSemaphoreTakeFromISR(i2cMutex, &xHigherPriorityTaskWoken);
-  }
-  else
-    return xSemaphoreTake(i2cMutex, portMAX_DELAY);
-}
-bool _unlockI2CMutex(void)
-{
-  if (isInISR())
-  {
-    const auto res = xSemaphoreGiveFromISR(i2cMutex, &xHigherPriorityTaskWoken);
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    return res;
-  }
-  else
-    return xSemaphoreGive(i2cMutex);
-}
+static hal::mutex::hal_mutex_t _I2CMutex;
 
 void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
 {
@@ -52,6 +28,12 @@ void i2c_setup(uint8_t i2cIndex, uint32_t baudrate, uint32_t timeout)
     assert(false);
     return;
   }
+
+  if (hal::mutex::hal_mutex_init(&_I2CMutex) != HAL_MUTEX_OK)
+  {
+    return;
+  }
+
   auto wire = interfaces[i2cIndex];
 
   // begin before all, then set parameters
@@ -76,12 +58,13 @@ void i2c_turn_off(uint8_t i2cIndex)
     return;
   }
 
-  _lockI2CMutex();
-  auto wire = interfaces[i2cIndex];
+  hal::mutex::hal_mutex_lock(&_I2CMutex);
 
+  auto wire = interfaces[i2cIndex];
   isInit[i2cIndex] = false;
   wire->end();
-  _unlockI2CMutex();
+
+  hal::mutex::hal_mutex_unlock(&_I2CMutex);
 }
 
 int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
@@ -90,19 +73,29 @@ int i2c_check_existence(uint8_t i2cIndex, uint8_t deviceAddr)
   {
     return 1;
   }
-  _lockI2CMutex();
+
+  hal::mutex::hal_mutex_lock(&_I2CMutex);
+
   auto wire = interfaces[i2cIndex];
 
   wire->beginTransmission(deviceAddr);
   const auto res = wire->endTransmission();
 
-  _unlockI2CMutex();
+  hal::mutex::hal_mutex_unlock(&_I2CMutex);
 
   return res;
 }
 
-int lock_i2c() { return _lockI2CMutex() ? 0 : 1; }
-int unlock_i2c() { return _unlockI2CMutex() ? 0 : 1; }
+int lock_i2c()
+{
+  hal::mutex::hal_mutex_lock(&_I2CMutex);
+  return 1;
+}
+int unlock_i2c()
+{
+  hal::mutex::hal_mutex_unlock(&_I2CMutex);
+  return 1;
+}
 
 int i2c_writeData(
         uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint8_t size, const uint8_t* buf, int stopBit)
@@ -112,7 +105,9 @@ int i2c_writeData(
     assert(false);
     return 1;
   }
-  _lockI2CMutex();
+
+  hal::mutex::hal_mutex_lock(&_I2CMutex);
+
   auto wire = interfaces[i2cIndex];
 
   wire->beginTransmission(deviceAddr);
@@ -120,7 +115,7 @@ int i2c_writeData(
   const uint8_t written = wire->write(buf, size);
   wire->endTransmission(stopBit != 0);
 
-  _unlockI2CMutex();
+  hal::mutex::hal_mutex_unlock(&_I2CMutex);
 
   return 0;
 }
@@ -132,7 +127,9 @@ int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint
     assert(false);
     return 1;
   }
-  _lockI2CMutex();
+
+  hal::mutex::hal_mutex_lock(&_I2CMutex);
+
   auto wire = interfaces[i2cIndex];
 
   wire->beginTransmission(deviceAddr);
@@ -145,7 +142,7 @@ int i2c_readData(uint8_t i2cIndex, uint8_t deviceAddr, uint8_t registerAdd, uint
     *buf++ = wire->read();
     count--;
   }
-  _unlockI2CMutex();
+  hal::mutex::hal_mutex_unlock(&_I2CMutex);
 
   // return 0 for success
   return (count == 0) ? 0 : 1;

@@ -3426,8 +3426,6 @@ void pd_run_state_machine()
       set_state(PD_STATE_SRC_STARTUP);
       break;
     case PD_STATE_SRC_STARTUP:
-      /* Reset cable attributes and flags */
-      reset_pd_cable();
       /* Wait for power source to enable */
       if (pd.last_state != pd.task_state)
       {
