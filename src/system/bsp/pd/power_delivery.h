@@ -38,9 +38,6 @@ uint16_t get_max_input_current();
 /// return true if this voltage source is from a standard non pd port
 bool is_standard_port();
 
-/// Return true is a power cable is connected.
-bool is_cable_detected();
-
 /// Return true if some power is available on VBUS
 bool is_power_available();
 

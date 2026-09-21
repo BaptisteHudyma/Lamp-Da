@@ -106,13 +106,14 @@ set(SRC_SYSTEM_LOGIC
 # The compile chain should have copied the correct HAL here
 set(SIMULATOR_HAL
     ${LMBD_ROOT_DIR}/src/generated/hal/bluetooth.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/filesystem.cpp
     ${LMBD_ROOT_DIR}/src/generated/hal/gpio.cpp
     ${LMBD_ROOT_DIR}/src/generated/hal/i2c.cpp
-    ${LMBD_ROOT_DIR}/src/generated/hal/filesystem.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/mutex.cpp
     ${LMBD_ROOT_DIR}/src/generated/hal/pdm_handle.cpp
-    ${LMBD_ROOT_DIR}/src/generated/hal/serial.cpp
     ${LMBD_ROOT_DIR}/src/generated/hal/queues.cpp
     ${LMBD_ROOT_DIR}/src/generated/hal/registers.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/serial.cpp
     ${LMBD_ROOT_DIR}/src/generated/hal/threads.cpp
     ${LMBD_ROOT_DIR}/src/generated/hal/time.cpp
 )

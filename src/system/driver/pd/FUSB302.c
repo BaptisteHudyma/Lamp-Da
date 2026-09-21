@@ -11,6 +11,10 @@
 #include "../../../../src/system/bsp/pd/usb_pd.h"
 #include "../../../../src/system/bsp/pd/task.h"
 
+#include "../../../../src/system/hal/mutex.h"
+
+static hal_mutex_t measure_lock;
+
 // for memcpy
 #include <string.h>
 
@@ -109,6 +113,8 @@ static int measure_cc_pin_source(int cc_measure)
   int reg;
   int cc_lvl;
 
+  hal_mutex_lock(&measure_lock);
+
   /* Read status register */
   tcpc_read(TCPC_REG_SWITCHES0, &reg);
   /* Save current value */
@@ -156,6 +162,7 @@ static int measure_cc_pin_source(int cc_measure)
   /* Restore SWITCHES0 register to its value prior */
   tcpc_write(TCPC_REG_SWITCHES0, switches0_reg);
 
+  hal_mutex_unlock(&measure_lock);
   return cc_lvl;
 }
 
@@ -189,6 +196,8 @@ static void detect_cc_pin_sink(enum tcpc_cc_voltage_status* cc1, enum tcpc_cc_vo
   int orig_meas_cc2;
   int bc_lvl_cc1;
   int bc_lvl_cc2;
+
+  hal_mutex_lock(&measure_lock);
 
   /*
    * Measure CC1 first.
@@ -259,6 +268,8 @@ static void detect_cc_pin_sink(enum tcpc_cc_voltage_status* cc1, enum tcpc_cc_vo
     reg &= ~TCPC_REG_SWITCHES0_MEAS_CC2;
 
   tcpc_write(TCPC_REG_SWITCHES0, reg);
+
+  hal_mutex_unlock(&measure_lock);
 }
 
 /* Parse header bytes for the size of packet */
@@ -361,14 +372,17 @@ static int fusb302_tcpm_select_rp_value(int rp)
   }
   state.mdac_vnc = vnc;
   state.mdac_rd = rd;
-  rv = tcpc_write(TCPC_REG_CONTROL0, reg);
-
-  return rv;
+  return tcpc_write(TCPC_REG_CONTROL0, reg);
 }
 
 static int fusb302_tcpm_init()
 {
   int reg;
+
+  if (hal_mutex_init(&measure_lock) != HAL_MUTEX_OK)
+  {
+    return 1;
+  }
 
   /* set default */
   state.cc_polarity = -1;
@@ -529,7 +543,6 @@ static int fusb302_tcpm_set_cc(int pull)
       /* Unsupported... */
       return EC_ERROR_UNIMPLEMENTED;
   }
-
   return 0;
 }
 
@@ -742,12 +755,10 @@ static int fusb302_rx_fifo_is_empty()
 {
   int reg, ret;
 
-  ret = (!tcpc_read(TCPC_REG_STATUS1, &reg)) && (reg & TCPC_REG_STATUS1_RX_EMPTY);
-
-  return ret;
+  return (!tcpc_read(TCPC_REG_STATUS1, &reg)) && (reg & TCPC_REG_STATUS1_RX_EMPTY);
 }
 
-static int fusb302_tcpm_get_message(uint32_t* payload, uint32_t* head)
+static int fusb302_tcpm_get_message_raw(uint32_t* payload, uint32_t* head)
 {
   /*
    * This is the buffer that will get the burst-read data
@@ -1112,6 +1123,8 @@ static int fusb302_compare_mdac(int mdac)
 {
   int orig_reg, status0;
 
+  hal_mutex_lock(&measure_lock);
+
   /* backup REG_MEASURE */
   tcpc_read(TCPC_REG_MEASURE, &orig_reg);
   /* set reg_measure bit 0~5 to mdac, and bit6 to 1(measure vbus) */
@@ -1127,6 +1140,8 @@ static int fusb302_compare_mdac(int mdac)
   tcpc_read(TCPC_REG_STATUS0, &status0);
   /* write back original value */
   tcpc_write(TCPC_REG_MEASURE, orig_reg);
+
+  hal_mutex_unlock(&measure_lock);
 
   return status0 & TCPC_REG_STATUS0_COMP;
 }
@@ -1167,7 +1182,7 @@ const struct tcpm_drv fusb302_tcpm_drv = {
         .set_vconn = &fusb302_tcpm_set_vconn,
         .set_msg_header = &fusb302_tcpm_set_msg_header,
         .set_rx_enable = &fusb302_tcpm_set_rx_enable,
-        .get_message = &fusb302_tcpm_get_message,
+        .get_message = &fusb302_tcpm_get_message_raw,
         .transmit = &fusb302_tcpm_transmit,
         .tcpc_alert = &fusb302_tcpc_alert,
 #ifdef CONFIG_USB_PD_TCPC_LOW_POWER
