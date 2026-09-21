@@ -21,16 +21,17 @@ struct ColorControlMode : public BasicMode
   static constexpr bool hasSunsetAnimation = true;
 
   static constexpr uint8_t dissolveBufferId = 0;
-  inline static anims::fadeout::GravityDissolve<dissolveBufferId> sunsetAnimation =
-          anims::fadeout::GravityDissolve<dissolveBufferId>();
 
   struct StateTy
   {
     // color to display
     uint32_t color = 0xFFFFFF;
+
+    anims::fadeout::GravityDissolve<dissolveBufferId> sunsetAnimation =
+            anims::fadeout::GravityDissolve<dissolveBufferId>();
   };
 
-  static void on_enter_mode(auto& ctx) { sunsetAnimation.reset(ctx); }
+  static void on_enter_mode(auto& ctx) { ctx.state.sunsetAnimation.reset(ctx); }
 
   static void loop(auto& ctx)
   {
@@ -38,11 +39,11 @@ struct ColorControlMode : public BasicMode
     ctx.lamp.fill(ctx.state.color, ctx.lamp.template getTempBuffer<dissolveBufferId>());
 
     // update animation
-    sunsetAnimation.loop(ctx, ctx.state.color);
+    ctx.state.sunsetAnimation.loop(ctx, ctx.state.color);
   }
 
   /// Sunset timer will drop pixels downward, and never display them again
-  static void sunset_update(auto& ctx, float progress) { sunsetAnimation.update_depop_rate(ctx, progress); }
+  static void sunset_update(auto& ctx, float progress) { ctx.state.sunsetAnimation.update_depop_rate(ctx, progress); }
 };
 
 namespace __private {
@@ -75,13 +76,14 @@ template<bool fastMode, uint8_t fadeRateUint, uint32_t... fadeColors> struct Col
   static constexpr bool hasSunsetAnimation = true;
 
   static constexpr uint8_t dissolveBufferId = 0;
-  inline static anims::fadeout::GravityDissolve<dissolveBufferId> sunsetAnimation =
-          anims::fadeout::GravityDissolve<dissolveBufferId>();
 
   struct StateTy
   {
     uint32_t colorStartTime_ms;
     uint8_t colorIndex;
+
+    anims::fadeout::GravityDissolve<dissolveBufferId> sunsetAnimation =
+            anims::fadeout::GravityDissolve<dissolveBufferId>();
   };
 
   static uint32_t next_color_index(auto& ctx)
@@ -99,7 +101,7 @@ template<bool fastMode, uint8_t fadeRateUint, uint32_t... fadeColors> struct Col
     ctx.state.colorStartTime_ms = ctx.lamp.now;
     ctx.state.colorIndex = 0;
 
-    sunsetAnimation.reset(ctx);
+    ctx.state.sunsetAnimation.reset(ctx);
   }
 
   static void loop(auto& ctx)
@@ -138,11 +140,11 @@ template<bool fastMode, uint8_t fadeRateUint, uint32_t... fadeColors> struct Col
     ctx.lamp.fill(color, ctx.lamp.template getTempBuffer<dissolveBufferId>());
 
     // update animation
-    sunsetAnimation.loop(ctx, color);
+    ctx.state.sunsetAnimation.loop(ctx, color);
   }
 
   /// Sunset timer will drop pixels downward, and never display them again
-  static void sunset_update(auto& ctx, float progress) { sunsetAnimation.update_depop_rate(ctx, progress); }
+  static void sunset_update(auto& ctx, float progress) { ctx.state.sunsetAnimation.update_depop_rate(ctx, progress); }
 };
 
 /// fixed modes

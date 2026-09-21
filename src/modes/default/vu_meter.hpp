@@ -48,7 +48,7 @@ struct VuMeterMode : public BasicMode
     /// fade rate
     uint8_t fade;
     /// sound event tracker
-    audio::SoundEventTy<> soundEvent;
+    audio::SoundEventTy<>& soundEvent = audio::get_shared_sound_event();
   };
 };
 
