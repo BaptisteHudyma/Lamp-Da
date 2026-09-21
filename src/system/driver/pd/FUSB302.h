@@ -37,6 +37,10 @@ extern "C" {
 /* Time to wait for TCPC to complete transmit */
 #define PD_T_TCPC_TX_TIMEOUT (100 * MSEC_US)
 
+#ifndef DIV_ROUND_NEAREST
+#define DIV_ROUND_NEAREST(x, y) (((x) + ((y) / 2)) / (y))
+#endif
+
 #define TCPC_REG_DEVICE_ID 0x01
 
 #define TCPC_REG_SWITCHES0           0x02
@@ -61,7 +65,7 @@ extern "C" {
 #define TCPC_REG_MEASURE             0x04
 #define TCPC_REG_MEASURE_VBUS        (1 << 6)
 #define TCPC_REG_MEASURE_MDAC_MASK   0x3f
-#define TCPC_REG_MEASURE_MDAC_MV(mv) (((mv) / 42) & TCPC_REG_MEASURE_MDAC_MASK)
+#define TCPC_REG_MEASURE_MDAC_MV(mv) (DIV_ROUND_NEAREST((mv), 42) & 0x3f)
 
 #define TCPC_REG_CONTROL0               0x06
 #define TCPC_REG_CONTROL0_TX_FLUSH      (1 << 6)
