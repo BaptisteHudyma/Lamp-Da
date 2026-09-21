@@ -112,26 +112,6 @@ SoundStruct& process_sound_data(const hal::microphone::PdmData& data)
     fftAnalyzer.set_data(0, i);
   const float dataAverage = dataMedian / static_cast<float>(data.sampleRead);
 
-  // keep the gain in bounds
-  autoGain = lmpd_constrain(autoGain, minAutoGain, maxAutoGain);
-
-  // run FFT detection
-  fftAnalyzer.run_fast_fourrier_transform();
-
-  // copy the FFT buffer
-  soundStruct.isFFTValid = true;
-  // copy the fft results
-  soundStruct.fft_log = fftAnalyzer.fftLog;
-  soundStruct.fft_raw = fftAnalyzer.fftBin;
-
-  const float decibelScaling = decibel_A_scaling(fftAnalyzer.maxFrequency);
-  // max sound level is actual sound level
-  soundStruct.sound_level_Db =
-          20.0f * log10f(decibelScaling * fftAnalyzer.maxMagnitude / static_cast<float>(INT16_MAX)) + 110.0f;
-  soundStruct.maxAmplitude = fftAnalyzer.maxMagnitude;
-  soundStruct.maxAmplitudeFrequency = fftAnalyzer.maxFrequency;
-  soundStruct.isDataValid = true;
-
   // if average is greater than sound baseline, update the gain
   const bool shouldUpdateGain = (dataAverage > hal::microphone::gainUpdateBaseline);
 
@@ -157,8 +137,26 @@ SoundStruct& process_sound_data(const hal::microphone::PdmData& data)
 
     soundStruct.rectifiedData[i] = autoGainedData * static_cast<float>(INT16_MAX);
   }
+  // keep the gain in bounds
+  autoGain = lmpd_constrain(autoGain, minAutoGain, maxAutoGain);
 
-  //
+  // run FFT detection
+  fftAnalyzer.run_fast_fourrier_transform();
+
+  // copy the FFT buffer
+  soundStruct.isFFTValid = true;
+  // copy the fft results
+  soundStruct.fft_log = fftAnalyzer.fftLog;
+  soundStruct.fft_raw = fftAnalyzer.fftBin;
+
+  const float decibelScaling = decibel_A_scaling(fftAnalyzer.maxFrequency);
+  // max sound level is actual sound level
+  soundStruct.sound_level_Db =
+          20.0f * log10f(decibelScaling * fftAnalyzer.maxMagnitude / static_cast<float>(INT16_MAX)) + 110.0f;
+  soundStruct.maxAmplitude = fftAnalyzer.maxMagnitude;
+  soundStruct.maxAmplitudeFrequency = fftAnalyzer.maxFrequency;
+  soundStruct.isDataValid = true;
+
   for (uint16_t i = 0; i < SoundStruct::numberOfFFtChanels; ++i)
   {
     soundStruct.fft_log_end_frequencies[i] = fftAnalyzer.get_log_bin_max_frequency(i);

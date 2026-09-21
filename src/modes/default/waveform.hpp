@@ -7,7 +7,9 @@
 #include "src/modes/include/colors/palettes.hpp"
 #include "src/modes/include/audio/utils.hpp"
 
-namespace modes::default_modes {
+#include "src/system/component/sound.h"
+
+namespace lampda::modes::default_modes {
 
 /// Display sound waveforms from microphone samples
 struct WaveformMode : public BasicMode
@@ -20,14 +22,17 @@ struct WaveformMode : public BasicMode
     const uint16_t cols = ctx.lamp.maxWidth - 1;
     const uint16_t rows = ctx.lamp.maxHeight - 1;
     auto& state = ctx.state;
-    ctx.soundEvent.update(ctx);
+    state.soundEvent.update(ctx);
 
-    static constexpr size_t dataRead = ctx.soundEvent._dataLenght;
-    const auto& soundData = ctx.soundEvent.dataAutoGained;
-    const float noiseLevelScale = lmpd_constrain<float>(
-            lmpd_map<float>(ctx.soundEvent.level, microphone::silenceLevelDb, microphone::highLevelDb, 0.0f, 1.0f),
-            0.0f,
-            1.0f);
+    static constexpr size_t dataRead = state.soundEvent._dataLenght;
+    const auto& soundData = state.soundEvent.dataAutoGained;
+    const float noiseLevelScale = lmpd_constrain<float>(lmpd_map<float>(state.soundEvent.level,
+                                                                        component::microphone::silenceLevelDb,
+                                                                        component::microphone::highLevelDb,
+                                                                        0.0f,
+                                                                        1.0f),
+                                                        0.0f,
+                                                        1.0f);
 
     ctx.lamp.clear();
     for (int x = 0; x <= cols; x++)
@@ -56,15 +61,17 @@ struct WaveformMode : public BasicMode
 
   static void on_enter_mode(auto& ctx)
   {
-    ctx.soundEvent.reset(ctx);
+    ctx.state.soundEvent.reset(ctx);
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
   }
 
   struct StateTy
   {
+    /// handle sound events
+    audio::SoundEventTy<> soundEvent;
   };
 };
 
-} // namespace modes::default_modes
+} // namespace lampda::modes::default_modes
 
 #endif // WAVEFORM_MODE_H
