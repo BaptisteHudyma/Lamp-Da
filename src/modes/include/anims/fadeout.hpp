@@ -249,23 +249,23 @@ template<uint8_t MaskBuffId, typename DropMode = DropModeOrphansOnly, uint8_t mi
    * \brief Update the drop rate
    * \param[in] progress Current progress
    */
-  void update_depop_rate(auto& ctx, const float expecptedProgress)
+  void update_depop_rate(auto& ctx, const float expectedProgress)
   {
     // Artifically lenghten the progress to let particles disappear
-    const float progress = expecptedProgress / gracePeriod;
+    const float progress = expectedProgress / gracePeriod;
 
     const float updateDuration = static_cast<float>((ctx.lamp.now - latestProgressTime) / 1000.0);
     if (updateDuration <= 0.0f)
       return;
-    const float progressPerSecond = (progress - latestProgress) / updateDuration;
 
+    const float progressPerSecond = (progress - latestProgress) / updateDuration;
     bool isValidCall = latestProgress >= 0 and updateDuration > 0;
 
     // cancel the particle spawn
     if (progress <= 0.0)
     {
       particlesToDepopPerIteration = 0.0;
-      latestProgress = -1;
+      latestProgress = 0.0;
       isValidCall = false;
     }
     // update progress
@@ -284,15 +284,50 @@ template<uint8_t MaskBuffId, typename DropMode = DropModeOrphansOnly, uint8_t mi
     }
 
     const uint16_t particleMax = ctx.lamp.ledCount;
+    const float frameFrequency = 1000.0 / ctx.lamp.frameDurationMs;
 
     const float particlesLeft = particleMax - particlesDropped;
     const float trueProgress = 1.0 - particlesLeft / static_cast<float>(particleMax);
-    const float trueProgressDiff = progress - trueProgress;
-    // try to correct the update ratio by the lag or advance
-    const float correctedParticlesLeft = particleMax * (1.0 + trueProgressDiff);
 
-    const float frameFrequency = 1000.0 / ctx.lamp.frameDurationMs; // iterations per second
-    particlesToDepopPerIteration = progressPerSecond * correctedParticlesLeft / frameFrequency;
+    // How many particles SHOULD have been dropped by now?
+    const float expectedParticlesDropped = particleMax * progress;
+    const float particleDeficit = expectedParticlesDropped - static_cast<float>(particlesDropped);
+
+    const float remainingProgressRatio = 1.0 - progress;
+
+    // SMOOTH CATCH-UP: Distribute deficit + normal depop over remaining progress window
+    // This ensures we catch up gradually, not all at once
+    if (remainingProgressRatio > 0.0f && particlesLeft > 0.0f)
+    {
+      // Normal depop rate (if we were on track)
+      float normalDepopRate = progressPerSecond * particlesLeft / frameFrequency;
+
+      // Spread the deficit evenly over the remaining progress window
+      // deficit / (remaining_progress / progress_rate) = deficit / time_to_finish
+      float deficitCatchupRate = 0.0f;
+      if (progressPerSecond > 0.0f)
+      {
+        const float timeToFinish = remainingProgressRatio / progressPerSecond;
+        deficitCatchupRate = particleDeficit / timeToFinish / frameFrequency;
+      }
+
+      // Combine: normal rate + deficit catch-up spread over remaining time
+      particlesToDepopPerIteration = normalDepopRate + deficitCatchupRate;
+    }
+    else if (particlesLeft > 0.0f && progress >= 1.0f)
+    {
+      // Progress reached 1.0 but particles remain; depop everything immediately
+      particlesToDepopPerIteration = particlesLeft;
+    }
+    else
+    {
+      particlesToDepopPerIteration = 0.0;
+    }
+
+    // Safeguard: cap depop rate to prevent overshoot
+    const float maxParticlesToDepop = particlesLeft;
+    if (particlesToDepopPerIteration > maxParticlesToDepop)
+      particlesToDepopPerIteration = maxParticlesToDepop;
   }
 
 protected:
