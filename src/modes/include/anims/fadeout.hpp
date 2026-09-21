@@ -373,7 +373,9 @@ private:
   float particlesToDepopPerIteration = 0.0; /// numbers of particles that will fall per loop call
   float depopRate = 0.0;                    /// accumulator rate
   size_t particlesDropped = 0;              /// keep track of the particles that already fell or are falling
-  modes::ParticleSystem particuleSystem = modes::ParticleSystem();
+
+  /// All animations share this particle system !
+  inline static auto particuleSystem = modes::get_shared_particle_system();
 };
 
 } // namespace fadeout
