@@ -73,8 +73,11 @@ template<uint8_t MaskBuffId, uint8_t minMaskValue = 0> struct GravityDissolve
    * \brief Update the drop rate
    * \param[in] progress Current progress
    */
-  void update_depop_rate(auto& ctx, const float progress)
+  void update_depop_rate(auto& ctx, const float expecptedProgress)
   {
+    // Artifically lenghten the progress to let particles disappear
+    const float progress = expecptedProgress / gracePeriod;
+
     const float updateDuration = static_cast<float>((ctx.lamp.now - latestProgressTime) / 1000.0);
     if (updateDuration <= 0.0f)
       return;
@@ -105,7 +108,6 @@ template<uint8_t MaskBuffId, uint8_t minMaskValue = 0> struct GravityDissolve
     }
 
     const uint16_t particleMax = ctx.lamp.ledCount;
-    const float FramesFrequency = static_cast<float>(ctx.lamp.frameDurationMs / 1000.0);
 
     const float particlesLeft = particleMax - particlesDropped;
     const float trueProgress = 1.0 - particlesLeft / static_cast<float>(particleMax);
@@ -113,8 +115,8 @@ template<uint8_t MaskBuffId, uint8_t minMaskValue = 0> struct GravityDissolve
     // try to correct the update ratio by the lag or advance
     const float correctedParticlesLeft = particleMax * (1.0 + trueProgressDiff);
 
-    // particles to depop per second is progress rate per second * particles left
-    particlesToDepopPerIteration = progressPerSecond * correctedParticlesLeft * FramesFrequency;
+    const float frameFrequency = 1000.0 / ctx.lamp.frameDurationMs; // iterations per second
+    particlesToDepopPerIteration = progressPerSecond * correctedParticlesLeft / frameFrequency;
   }
 
 protected:
@@ -192,6 +194,7 @@ protected:
   }
 
 private:
+  static constexpr float gracePeriod = 0.99; /// Added offset from the real timer to let all particle disappear
   //
   float latestProgress = -1.0;
   uint32_t latestProgressTime = 0;

@@ -28,6 +28,9 @@ static constexpr uint32_t brightnessRampDownTime_s = brightnessRampDownTime_min 
 static constexpr uint32_t brightnessRampDownTime_ms = brightnessRampDownTime_s * 1000;
 static constexpr uint16_t brightnessDecreasePerLoop = 1;
 
+/// This can be used to set a specific decrease time
+uint32_t trueBrightnessRampDownTime_ms = brightnessRampDownTime_ms;
+
 /// minimum calls to the update sunset function that will be made
 static constexpr uint16_t minimalSunsetUpdateCalls = 50;
 /// Minimum time between sunset loop calls
@@ -39,11 +42,11 @@ uint32_t get_sunset_loop_timing_ms()
   const auto& maxBrightnessStep = logic::brightness::get_saved_brightness() / brightnessDecreasePerLoop;
   if (maxBrightnessStep <= 0)
     return 100;
-  const uint32_t res = (brightnessRampDownTime_ms / maxBrightnessStep) + 1;
+  const uint32_t res = (trueBrightnessRampDownTime_ms / maxBrightnessStep) + 1;
   if (res <= minimalSunsetLoopDuration_ms)
     return minimalSunsetLoopDuration_ms;
   // minimum turn off delay, to prevent too slow turn off at low luminosities
-  return min<uint32_t>(res, brightnessRampDownTime_ms / minimalSunsetUpdateCalls);
+  return min<uint32_t>(res, trueBrightnessRampDownTime_ms / minimalSunsetUpdateCalls);
 }
 
 /// Return the percent of advance of the sunset timer, from 0 to 1. 1 is end of process.
@@ -56,7 +59,7 @@ float get_percent_of_advance()
 
   // signal the progress change
   const float progress = lmpd_constrain<float>(((sunsetTimerEndTime_s * 1000.0 - finishline) - hal::time_ms()) /
-                                                       static_cast<float>(brightnessRampDownTime_ms),
+                                                       static_cast<float>(trueBrightnessRampDownTime_ms),
                                                0.0f,
                                                1.0f);
   return 1.0 - progress;
@@ -134,7 +137,8 @@ void set_deadline(const uint32_t timeshutdown_s)
     bsp::lampda_print("shutdown time is less than current time: %d", timeshutdown_s);
     return;
   }
-  const uint32_t timeLeftMinutes = round((timeshutdown_s - hal::time_s()) / 60);
+  const uint32_t timeLeftSeconds = timeshutdown_s - hal::time_s();
+  const uint32_t timeLeftMinutes = round(timeLeftSeconds / 60);
 
   const auto& shutdownTime = component::time::convert_to_real_time(timeshutdown_s);
   if (shutdownTime.is_valid())
@@ -162,6 +166,12 @@ void set_deadline(const uint32_t timeshutdown_s)
     sunsetTimerEndTime_s = timeshutdown_s;
     signal_sunset_update();
   }
+
+  // update the true end time, in case the standard was bypassed
+  if (timeLeftSeconds < brightnessRampDownTime_s)
+    trueBrightnessRampDownTime_ms = timeLeftSeconds * 1000;
+  else
+    trueBrightnessRampDownTime_ms = brightnessRampDownTime_ms;
 
   // restore stored brightness to the user limit
   logic::brightness::set_max_user_brightness(logic::brightness::get_saved_brightness());
@@ -231,6 +241,7 @@ void cancel_timer()
 {
   // release timer
   sunsetTimerEndTime_s = 0;
+  trueBrightnessRampDownTime_ms = brightnessRampDownTime_ms;
   lock_brightness_update(false);
 
   logic::brightness::set_max_user_brightness(logic::brightness::get_max_brightness());
