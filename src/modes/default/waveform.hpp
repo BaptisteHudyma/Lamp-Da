@@ -6,7 +6,6 @@
 
 #include "src/modes/include/colors/palettes.hpp"
 #include "src/modes/include/audio/utils.hpp"
-#include "src/system/utils/colorspace.h"
 
 #include "src/system/component/sound.h"
 
@@ -52,8 +51,8 @@ struct WaveformMode : public BasicMode
         if (((y >= rows / 2) && (y <= mappedY)) || ((y < rows / 2) && (y >= mappedY)))
         {
           const float colorLevel = lmpd_map<float>(y, 0, rows, -1.f, 1.f);
-          const uint32_t ledColor = utils::get_gradient(
-                  utils::ColorSpace::GREEN.get_rgb().color, utils::ColorSpace::RED.get_rgb().color, abs(colorLevel));
+          const uint32_t ledColor =
+                  utils::get_gradient(colors::HTMLColorCode::Green, colors::HTMLColorCode::Red, abs(colorLevel));
           ctx.lamp.setPixelColorXY(x, rows - y, ledColor);
         }
       }
@@ -69,7 +68,7 @@ struct WaveformMode : public BasicMode
   struct StateTy
   {
     /// handle sound events
-    audio::SoundEventTy<> soundEvent;
+    audio::SoundEventTy<>& soundEvent = audio::get_shared_sound_event();
   };
 };
 
