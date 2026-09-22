@@ -42,7 +42,7 @@ namespace lampda {
 static constexpr uint8_t BASE_SOFTWARE_VERSION_MAJOR = 1;
 /// Base minor software version, common to all systems.
 /// increment for every  release.
-static constexpr uint8_t BASE_SOFTWARE_VERSION_MINOR = 8;
+static constexpr uint8_t BASE_SOFTWARE_VERSION_MINOR = 9;
 
 using byte = uint8_t;
 
