@@ -6,6 +6,7 @@
 
 #include "src/modes/include/colors/palettes.hpp"
 #include "src/modes/include/audio/utils.hpp"
+#include "src/system/utils/colorspace.h"
 
 #include "src/system/component/sound.h"
 
