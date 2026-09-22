@@ -322,9 +322,15 @@ $(function() {
 <div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>  }</div>
 <div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>};</div>
 <div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span> </div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>} <span class="comment">// namespace lampda::modes::audio</span></div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span> </div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span><span class="keyword">namespace </span>__private {</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span><span class="keyword">inline</span> <span class="keyword">static</span> SoundEventTy&lt;&gt; sharedSoundEvent = SoundEventTy();</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>}</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span> </div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span><span class="keyword">static</span> SoundEventTy&lt;&gt;&amp; get_shared_sound_event() { <span class="keywordflow">return</span> __private::sharedSoundEvent; }</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span> </div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>} <span class="comment">// namespace lampda::modes::audio</span></div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span> </div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="anamespacelampda_1_1component_1_1microphone_html_a101022e31a4acd2a2620b16c4875ac41"><div class="ttname"><a href="namespacelampda_1_1component_1_1microphone.html#a101022e31a4acd2a2620b16c4875ac41">lampda::component::microphone::gainedSignalTarget</a></div><div class="ttdeci">constexpr int16_t gainedSignalTarget</div><div class="ttdoc">Desired output of the auto gain (0-INT16_MAX)</div><div class="ttdef"><b>Definition:</b> sound.h:27</div></div>
 <div class="ttc" id="anamespacelampda_1_1modes_1_1audio_html"><div class="ttname"><a href="namespacelampda_1_1modes_1_1audio.html">lampda::modes::audio</a></div><div class="ttdoc">User modes audio utilities.</div><div class="ttdef"><b>Definition:</b> utils.hpp:17</div></div>
 <div class="ttc" id="astructlampda_1_1component_1_1microphone_1_1SoundStruct_html"><div class="ttname"><a href="structlampda_1_1component_1_1microphone_1_1SoundStruct.html">lampda::component::microphone::SoundStruct</a></div><div class="ttdoc">Handle the analysis of a sound sample. This structure handled the FastFourrier analysis of a sound sa...</div><div class="ttdef"><b>Definition:</b> sound.h:34</div></div>

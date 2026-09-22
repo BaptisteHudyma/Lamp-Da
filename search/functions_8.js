@@ -33,8 +33,9 @@ var searchData=
   ['handlecommand_30',['handleCommand',['../namespacelampda_1_1logic_1_1cli.html#aa07bc051a6d5dbdb17ad001a22dcaa53',1,'lampda::logic::cli']]],
   ['handleserialevents_31',['handleSerialEvents',['../namespacelampda_1_1logic_1_1cli.html#aaa39bb8398d46daa043c64a27b9b2ed5',1,'lampda::logic::cli']]],
   ['has_5fduplicate_5fhash_32',['has_duplicate_hash',['../namespacelampda_1_1logic_1_1cli.html#a6e4a44a30da91c8d48586998f6213f3c',1,'lampda::logic::cli']]],
-  ['hash_33',['hash',['../namespacelampda_1_1utils.html#a7b68e6e95f92e53533b21590af9cc533',1,'lampda::utils']]],
-  ['hasvalue_34',['hasValue',['../structlampda_1_1modes_1_1ContextTy_1_1KeyProxy.html#a8eb4ba1695cdcf3e64608b9b8384461a',1,'lampda::modes::ContextTy::KeyProxy']]],
-  ['help_5fhook_5fbase_35',['help_hook_base',['../namespacelampda_1_1logic_1_1cli.html#a6dbc0ec52258a8e9170b46962af56622',1,'lampda::logic::cli']]],
-  ['hsv_36',['HSV',['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#acbeacbf87488186dabc67221e4ade5d5',1,'lampda::utils::ColorSpace::HSV::HSV(double h, double s, double v)'],['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#af36f9b737eb062f5c25699a5db778b99',1,'lampda::utils::ColorSpace::HSV::HSV(const COLOR &amp;c)']]]
+  ['has_5fpixel_5fbelow_33',['has_pixel_below',['../structlampda_1_1modes_1_1anims_1_1fadeout_1_1DropModeOrphansOnly.html#a446b788cde875d0944ebfabaed51fa1c',1,'lampda::modes::anims::fadeout::DropModeOrphansOnly']]],
+  ['hash_34',['hash',['../namespacelampda_1_1utils.html#a7b68e6e95f92e53533b21590af9cc533',1,'lampda::utils']]],
+  ['hasvalue_35',['hasValue',['../structlampda_1_1modes_1_1ContextTy_1_1KeyProxy.html#a8eb4ba1695cdcf3e64608b9b8384461a',1,'lampda::modes::ContextTy::KeyProxy']]],
+  ['help_5fhook_5fbase_36',['help_hook_base',['../namespacelampda_1_1logic_1_1cli.html#a6dbc0ec52258a8e9170b46962af56622',1,'lampda::logic::cli']]],
+  ['hsv_37',['HSV',['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#acbeacbf87488186dabc67221e4ade5d5',1,'lampda::utils::ColorSpace::HSV::HSV(double h, double s, double v)'],['../classlampda_1_1utils_1_1ColorSpace_1_1HSV.html#af36f9b737eb062f5c25699a5db778b99',1,'lampda::utils::ColorSpace::HSV::HSV(const COLOR &amp;c)']]]
 ];

@@ -108,12 +108,13 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>on_enter_mode<
 <tr class="memitem:a3496dd1d732ed0101b520782df2ff712"><td class="memItemLeft" align="right" valign="top"><a id="a3496dd1d732ed0101b520782df2ff712" name="a3496dd1d732ed0101b520782df2ff712"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto &amp;ctx)</td></tr>
 <tr class="separator:a3496dd1d732ed0101b520782df2ff712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acddda7b1fb99fc8cbb51b969654b5553"><td class="memItemLeft" align="right" valign="top"><a id="acddda7b1fb99fc8cbb51b969654b5553" name="acddda7b1fb99fc8cbb51b969654b5553"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>sunset_update</b> (auto &amp;ctx, float progress)</td></tr>
+<tr class="memdesc:acddda7b1fb99fc8cbb51b969654b5553"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sunset timer will drop pixels downward, and never display them again. <br /></td></tr>
+<tr class="separator:acddda7b1fb99fc8cbb51b969654b5553"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63e1fe211242879a133538058c711b31"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a63e1fe211242879a133538058c711b31">on_exit_mode</a> (auto &amp;ctx)</td></tr>
 <tr class="memdesc:a63e1fe211242879a133538058c711b31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when mode goes outside of focus (optional)  <br /></td></tr>
 <tr class="separator:a63e1fe211242879a133538058c711b31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afaeae8fbc41264a3f75723f9a688da45"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1BasicMode.html#afaeae8fbc41264a3f75723f9a688da45">sunset_update</a> (auto &amp;ctx, float progress)</td></tr>
-<tr class="memdesc:afaeae8fbc41264a3f75723f9a688da45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when sunset mode is updated (optional)  <br /></td></tr>
-<tr class="separator:afaeae8fbc41264a3f75723f9a688da45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9622baec04f2dd7dc396e210551919b7"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a9622baec04f2dd7dc396e210551919b7">brightness_update</a> (auto &amp;ctx, <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> brightness)</td></tr>
 <tr class="memdesc:a9622baec04f2dd7dc396e210551919b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when brightness changes (optional)  <br /></td></tr>
 <tr class="separator:a9622baec04f2dd7dc396e210551919b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -158,13 +159,16 @@ static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>co
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasCustomRamp</b></td></tr>
 <tr class="memdesc:a7ddb56f31f50bf60554bafa0e563de2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">hint manager to save our custom ramp <br /></td></tr>
 <tr class="separator:a7ddb56f31f50bf60554bafa0e563de2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59c740b28b09b96b5ba16e67f0ac43fd"><td class="memItemLeft" align="right" valign="top"><a id="a59c740b28b09b96b5ba16e67f0ac43fd" name="a59c740b28b09b96b5ba16e67f0ac43fd"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b></td></tr>
+<tr class="memdesc:a59c740b28b09b96b5ba16e67f0ac43fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">sunset animation on the fixed modes <br /></td></tr>
+<tr class="separator:a59c740b28b09b96b5ba16e67f0ac43fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad53aa1adc580642dea9aedbaee71ed0a"><td class="memItemLeft" align="right" valign="top"><a id="ad53aa1adc580642dea9aedbaee71ed0a" name="ad53aa1adc580642dea9aedbaee71ed0a"></a>
+static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>dissolveBufferId</b></td></tr>
+<tr class="separator:ad53aa1adc580642dea9aedbaee71ed0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3ff09556dbf251003831caed6c07def"><td class="memItemLeft" align="right" valign="top"><a id="ad3ff09556dbf251003831caed6c07def" name="ad3ff09556dbf251003831caed6c07def"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>isGroupManager</b> = false</td></tr>
 <tr class="separator:ad3ff09556dbf251003831caed6c07def"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="memItemLeft" align="right" valign="top"><a id="ad879076f6462e4f274f5c4e12fc6c1f0" name="ad879076f6462e4f274f5c4e12fc6c1f0"></a>
-static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
-<tr class="memdesc:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the use of custom <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#afaeae8fbc41264a3f75723f9a688da45" title="Custom callback when sunset mode is updated (optional)">BasicMode::sunset_update()</a> callback. <br /></td></tr>
-<tr class="separator:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2df3e9f204ee899bd972b6ca4b0a2e8"><td class="memItemLeft" align="right" valign="top"><a id="ae2df3e9f204ee899bd972b6ca4b0a2e8" name="ae2df3e9f204ee899bd972b6ca4b0a2e8"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasBrightCallback</b> = false</td></tr>
 <tr class="memdesc:ae2df3e9f204ee899bd972b6ca4b0a2e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the use of custom <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a9622baec04f2dd7dc396e210551919b7" title="Custom callback when brightness changes (optional)">BasicMode::brightness_update()</a> callback. <br /></td></tr>
@@ -531,52 +535,6 @@ struct lampda::modes::bluetooth::JumpColorMode&lt; Colors &gt;</div><p>jump colo
 
 </div>
 </div>
-<a id="afaeae8fbc41264a3f75723f9a688da45" name="afaeae8fbc41264a3f75723f9a688da45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afaeae8fbc41264a3f75723f9a688da45">&#9670;&#160;</a></span>sunset_update()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static void lampda::modes::BasicMode::sunset_update </td>
-          <td>(</td>
-          <td class="paramtype">auto &amp;&#160;</td>
-          <td class="paramname"><em>ctx</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>progress</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">inherited</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Custom callback when sunset mode is updated (optional) </p>
-<p>Callback active only if <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#ad879076f6462e4f274f5c4e12fc6c1f0" title="Toggles the use of custom BasicMode::sunset_update() callback.">BasicMode::hasSunsetAnimation</a> is True</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">ctx</td><td>The current context </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">progress</td><td>Between 0 and 1, progress of the sunset. At 1, the system turns off </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="a537a90e25848e88d60d7192ca87cf01b" name="a537a90e25848e88d60d7192ca87cf01b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a537a90e25848e88d60d7192ca87cf01b">&#9670;&#160;</a></span>user_thread()</h2>
 
@@ -733,7 +691,7 @@ struct lampda::modes::bluetooth::JumpColorMode&lt; Colors &gt;</div><p>jump colo
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="structlampda_1_1modes_1_1bluetooth_1_1ColorSequenceMode.html#a7ddb56f31f50bf60554bafa0e563de2f">hasCustomRamp</a> = <span class="keyword">true</span>; <span class="comment">// required</span></div>
-<div class="ttc" id="astructlampda_1_1modes_1_1bluetooth_1_1ColorSequenceMode_html_a7ddb56f31f50bf60554bafa0e563de2f"><div class="ttname"><a href="structlampda_1_1modes_1_1bluetooth_1_1ColorSequenceMode.html#a7ddb56f31f50bf60554bafa0e563de2f">lampda::modes::bluetooth::ColorSequenceMode&lt; false, 0, Colors... &gt;::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">hint manager to save our custom ramp</div><div class="ttdef"><b>Definition:</b> control_fixed_modes.hpp:56</div></div>
+<div class="ttc" id="astructlampda_1_1modes_1_1bluetooth_1_1ColorSequenceMode_html_a7ddb56f31f50bf60554bafa0e563de2f"><div class="ttname"><a href="structlampda_1_1modes_1_1bluetooth_1_1ColorSequenceMode.html#a7ddb56f31f50bf60554bafa0e563de2f">lampda::modes::bluetooth::ColorSequenceMode&lt; false, 0, Colors... &gt;::hasCustomRamp</a></div><div class="ttdeci">static constexpr bool hasCustomRamp</div><div class="ttdoc">hint manager to save our custom ramp</div><div class="ttdef"><b>Definition:</b> control_fixed_modes.hpp:74</div></div>
 </div><!-- fragment --><p>This value is configurable through user interaction with the button. If you need a persistent value, private to your mode, you can use:</p>
 <div class="fragment"><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> loop(<span class="keyword">auto</span>&amp; ctx) {</div>
 <div class="line">  uint8_t indexValue = ctx.get_active_custom_index();</div>
