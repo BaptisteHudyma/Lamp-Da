@@ -762,7 +762,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     else
     {
       auto& manager = modeManager.get_context();
-      manager.set_current_mode_as_favorite<displayFavoriteNumber>(favoriteIndex, displayTimeout_s);
+      manager.template set_current_mode_as_favorite<displayFavoriteNumber>(favoriteIndex, displayTimeout_s);
     }
   }
 

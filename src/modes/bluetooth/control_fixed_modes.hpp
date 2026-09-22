@@ -7,6 +7,7 @@
 #include "src/system/ext/noise.h"
 
 #include "src/modes/include/colors/palettes.hpp"
+#include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/anims/fadeout.hpp"
 
 #include <cstdint>
@@ -24,9 +25,6 @@ struct ColorControlMode : public BasicMode
 
   struct StateTy
   {
-    // color to display
-    uint32_t color = 0xFFFFFF;
-
     anims::fadeout::GravityDissolve<dissolveBufferId> sunsetAnimation =
             anims::fadeout::GravityDissolve<dissolveBufferId>();
   };
@@ -35,11 +33,16 @@ struct ColorControlMode : public BasicMode
 
   static void loop(auto& ctx)
   {
-    //
-    ctx.lamp.fill(ctx.state.color, ctx.lamp.template getTempBuffer<dissolveBufferId>());
+    // Decompress the color
+    const uint8_t customRamp = ctx.get_active_custom_ramp();
+    const uint8_t customIndex = ctx.get_active_custom_index();
+    const uint16_t compressedColor = customRamp << 8 | customIndex;
+    const uint32_t color = colors::get_decompressed_32b_color(compressedColor);
+
+    ctx.lamp.fill(color, ctx.lamp.template getTempBuffer<dissolveBufferId>());
 
     // update animation
-    ctx.state.sunsetAnimation.loop(ctx, ctx.state.color);
+    ctx.state.sunsetAnimation.loop(ctx, color);
   }
 
   /// Sunset timer will drop pixels downward, and never display them again

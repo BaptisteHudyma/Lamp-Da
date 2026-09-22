@@ -536,7 +536,10 @@ static void cmd_set_mode(const common::cli::ParsedCommand& command)
     lampda::user::handle_user_command(common::UserCommand::make_set_mode_command(pageIndex, modeIndex));
     return;
   }
-  bsp::lampda_print("Invalid call");
+  else
+  {
+    bsp::lampda_print("Invalid call: parameters should be range <0-255> <0-255>");
+  }
 }
 
 static void cmd_onoff(const common::cli::ParsedCommand& command)
@@ -653,6 +656,10 @@ static void cmd_set_go_to_favorite(const common::cli::ParsedCommand& command)
   {
     lampda::user::handle_user_command(common::UserCommand::make_go_to_favorite_command(index));
   }
+  else
+  {
+    bsp::lampda_print("Invalid call: parameters should be range <0-255>");
+  }
 }
 
 static void cmd_set_current_as_favorite(const common::cli::ParsedCommand& command)
@@ -661,6 +668,26 @@ static void cmd_set_current_as_favorite(const common::cli::ParsedCommand& comman
   if (common::cli::argument::parse_uint8(command, 0, index))
   {
     lampda::user::handle_user_command(common::UserCommand::make_set_favorite_command(index));
+  }
+  else
+  {
+    bsp::lampda_print("Invalid call: parameters should be range <0-255>");
+  }
+}
+
+static void cmd_set_custom_color(const common::cli::ParsedCommand& command)
+{
+  uint8_t red;
+  uint8_t green;
+  uint8_t blue;
+  if (common::cli::argument::parse_uint8(command, 0, red) && common::cli::argument::parse_uint8(command, 1, green) &&
+      common::cli::argument::parse_uint8(command, 2, blue))
+  {
+    lampda::user::handle_user_command(common::UserCommand::make_set_ble_custom_color_mode_command(red, green, blue));
+  }
+  else
+  {
+    bsp::lampda_print("Invalid call: parameters should be range <0-255> <0-255> <0-255>");
   }
 }
 
@@ -798,6 +825,13 @@ constexpr Command _set_commands_s[] = {
                           1,
                           "Set the current mode to the given favorite index, if possible",
                           handles::cmd_set_current_as_favorite),
+        make_command_args("color",
+                          "[0-255](red) [0-255](green) [0-255](blue)",
+                          3,
+                          3,
+                          "Display a given color",
+                          handles::cmd_set_custom_color),
+
 };
 
 /// Check for command duplication

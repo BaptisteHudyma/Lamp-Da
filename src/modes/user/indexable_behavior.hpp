@@ -7,6 +7,8 @@
 
 #include <src/system/utils/assert.h>
 
+#include "src/modes/include/colors/utils.hpp"
+
 //
 // note: this code is included as-is by:
 //  - user/indexable_functions.h
@@ -252,6 +254,7 @@ void handle_pattern_select_command(const uint8_t patternIndex, const uint32_t re
     return;
   }
 
+  manager.exit_favorite_group(manager.state.beforeFavoriteActiveIndex);
   manager.set_active_group(bluetoothGroup);
   manager.set_active_mode(patternIndex);
 
@@ -263,7 +266,13 @@ void handle_pattern_select_command(const uint8_t patternIndex, const uint32_t re
   if (patternIndex == 0)
   {
     auto& modeState = manager.template get_state_of_mode<modes::bluetooth::ColorControlMode>();
-    modeState.color = requestedColor;
+
+    // Convert color to compressed color
+    const uint16_t compressedColor = modes::colors::get_compressed_16b_color(requestedColor);
+    const uint8_t ramp = (compressedColor >> 8) & 0xFF;
+    const uint8_t index = compressedColor & 0xFF;
+    manager.set_active_custom_ramp(ramp);
+    manager.set_active_custom_index(index);
   }
 }
 
