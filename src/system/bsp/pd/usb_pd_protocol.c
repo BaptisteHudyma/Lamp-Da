@@ -616,12 +616,14 @@ static inline void set_state(enum pd_states next_state)
     /* Invalidate message IDs. */
     invalidate_last_message_id();
 
+    /* Disable Auto Discharge Disconnect */
     if (not_auto_toggling)
-      /* Disable Auto Discharge Disconnect */
+    {
       tcpm_enable_auto_discharge_disconnect(0);
+    }
 
-      /* detect USB PD cc disconnect */
 #ifdef CONFIG_COMMON_RUNTIME
+    /* detect USB PD cc disconnect */
     hook_notify(HOOK_USB_PD_DISCONNECT);
     calls->pe_handle_detach();
 #endif
