@@ -328,6 +328,12 @@ private:
   }
 };
 
+namespace __private {
+inline static SoundEventTy<> sharedSoundEvent = SoundEventTy();
+}
+
+static SoundEventTy<>& get_shared_sound_event() { return __private::sharedSoundEvent; }
+
 } // namespace lampda::modes::audio
 
 #endif

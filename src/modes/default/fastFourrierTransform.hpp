@@ -58,7 +58,7 @@ struct FastFourrierTransformMode : public BasicMode
   struct StateTy
   {
     /// handle sound events
-    audio::SoundEventTy<> soundEvent;
+    audio::SoundEventTy<>& soundEvent = audio::get_shared_sound_event();
   };
 };
 

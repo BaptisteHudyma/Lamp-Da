@@ -84,7 +84,7 @@ void main_setup()
 {
   // set watchdog (reset the soft when the program crashes)
   // Should be long enough to flash the microcontroler !!!
-  hal::registers::setup_watchdog(10); // second timeout
+  hal::registers::setup_watchdog(15); // second timeout
 
 #ifdef IS_HARDWARE_1_0
   hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Input_isChargeOk)

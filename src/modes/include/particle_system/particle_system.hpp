@@ -253,6 +253,13 @@ private:
   uint16_t particuleCount;
 };
 
+namespace __private {
+inline static ParticleSystem sharedParticleSystem = ParticleSystem();
+}
+
+/// Access the main level shared particle system
+static ParticleSystem& get_shared_particle_system() { return __private::sharedParticleSystem; }
+
 } // namespace lampda::modes
 
 #endif

@@ -37,7 +37,7 @@ struct FireMode : public BasicMode
   struct StateTy
   {
     /// handle sound event
-    audio::SoundEventTy<> soundEvent;
+    audio::SoundEventTy<>& soundEvent = audio::get_shared_sound_event();
 
     // flag that we have just been reseted
     bool isResetted = false;
