@@ -133,16 +133,148 @@ template&lt;bool isFast = false&gt; </td></tr>
 <tr class="memitem:af62ea96081518e30eacbb81b898d585d"><td class="memTemplItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>lampda::modes::colors::add</b> (uint32_t c1, uint32_t c2)</td></tr>
 <tr class="memdesc:af62ea96081518e30eacbb81b898d585d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add two colors together. <br /></td></tr>
 <tr class="separator:af62ea96081518e30eacbb81b898d585d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61d6e54daba281f27ac598690c45166a"><td class="memItemLeft" align="right" valign="top"><a id="a61d6e54daba281f27ac598690c45166a" name="a61d6e54daba281f27ac598690c45166a"></a>
+static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::colors::get_compressed_16b_color</b> (uint32_t color)</td></tr>
+<tr class="separator:a61d6e54daba281f27ac598690c45166a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b0527ef3f47910dfd4e5de3423c1d85"><td class="memItemLeft" align="right" valign="top"><a id="a1b0527ef3f47910dfd4e5de3423c1d85" name="a1b0527ef3f47910dfd4e5de3423c1d85"></a>
+static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::colors::get_decompressed_32b_color</b> (uint16_t color)</td></tr>
+<tr class="separator:a1b0527ef3f47910dfd4e5de3423c1d85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a1612b57667489eaa826a11a55635e3ae"><td class="memItemLeft" align="right" valign="top">static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes_1_1colors.html#a1612b57667489eaa826a11a55635e3ae">lampda::modes::colors::colorRotation</a> [360]</td></tr>
 <tr class="memdesc:a1612b57667489eaa826a11a55635e3ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">precompiled table for Hue  <br /></td></tr>
 <tr class="separator:a1612b57667489eaa826a11a55635e3ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf996900ab9c805dfa33d531ae178319"><td class="memItemLeft" align="right" valign="top">static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="colors_2utils_8hpp.html#aaf996900ab9c805dfa33d531ae178319">lampda::modes::colors::__internal::hicolor_256_to_32</a> []</td></tr>
+<tr class="separator:aaf996900ab9c805dfa33d531ae178319"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91a29b3fcbfe86c98673be5373935b01"><td class="memItemLeft" align="right" valign="top">static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="colors_2utils_8hpp.html#a91a29b3fcbfe86c98673be5373935b01">lampda::modes::colors::__internal::hicolor_256_to_64</a> []</td></tr>
+<tr class="separator:a91a29b3fcbfe86c98673be5373935b01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27bed619dbaf032e4ae101182fa4dc4c"><td class="memItemLeft" align="right" valign="top">static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="colors_2utils_8hpp.html#a27bed619dbaf032e4ae101182fa4dc4c">lampda::modes::colors::__internal::hicolor_32_to_256</a> []</td></tr>
+<tr class="separator:a27bed619dbaf032e4ae101182fa4dc4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a326ab24e7be0a286daeb3dbcea0a9aee"><td class="memItemLeft" align="right" valign="top">static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="colors_2utils_8hpp.html#a326ab24e7be0a286daeb3dbcea0a9aee">lampda::modes::colors::__internal::hicolor_64_to_256</a> []</td></tr>
+<tr class="separator:a326ab24e7be0a286daeb3dbcea0a9aee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manipulate color representations. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Variable Documentation</h2>
+<a id="aaf996900ab9c805dfa33d531ae178319" name="aaf996900ab9c805dfa33d531ae178319"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf996900ab9c805dfa33d531ae178319">&#9670;&#160;</a></span>hicolor_256_to_32</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr uint8_t lampda::modes::colors::__internal::hicolor_256_to_32[]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">        0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,  2,  2,  2,  3,  3,</div>
+<div class="line">        3,  3,  3,  3,  3,  3,  4,  4,  4,  4,  4,  4,  4,  4,  5,  5,  5,  5,  5,  5,  5,  5,  6,  6,  6,  6,</div>
+<div class="line">        6,  6,  6,  6,  7,  7,  7,  7,  7,  7,  7,  7,  8,  8,  8,  8,  8,  8,  8,  8,  9,  9,  9,  9,  9,  9,</div>
+<div class="line">        9,  9,  10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12,</div>
+<div class="line">        13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 16, 16,</div>
+<div class="line">        16, 16, 16, 16, 16, 16, 17, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19,</div>
+<div class="line">        19, 19, 19, 19, 20, 20, 20, 20, 20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22,</div>
+<div class="line">        22, 22, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24, 24, 24, 24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 25,</div>
+<div class="line">        26, 26, 26, 26, 26, 26, 26, 26, 27, 27, 27, 27, 27, 27, 27, 27, 28, 28, 28, 28, 28, 28, 28, 28, 29, 29,</div>
+<div class="line">        29, 29, 29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 30, 30, 31, 31, 31, 31, 31, 31, 31, 31}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a91a29b3fcbfe86c98673be5373935b01" name="a91a29b3fcbfe86c98673be5373935b01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91a29b3fcbfe86c98673be5373935b01">&#9670;&#160;</a></span>hicolor_256_to_64</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr uint8_t lampda::modes::colors::__internal::hicolor_256_to_64[]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">        0,  0,  0,  0,  1,  1,  1,  1,  2,  2,  2,  2,  3,  3,  3,  3,  4,  4,  4,  4,  5,  5,  5,  5,  6,  6,</div>
+<div class="line">        6,  6,  7,  7,  7,  7,  8,  8,  8,  8,  9,  9,  9,  9,  10, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 12,</div>
+<div class="line">        13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18, 18, 19, 19,</div>
+<div class="line">        19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 23, 23, 23, 23, 24, 24, 24, 24, 25, 25, 25, 25,</div>
+<div class="line">        26, 26, 26, 26, 27, 27, 27, 27, 28, 28, 28, 28, 29, 29, 29, 29, 30, 30, 30, 30, 31, 31, 31, 31, 32, 32,</div>
+<div class="line">        32, 32, 33, 33, 33, 33, 34, 34, 34, 34, 35, 35, 35, 35, 36, 36, 36, 36, 37, 37, 37, 37, 38, 38, 38, 38,</div>
+<div class="line">        39, 39, 39, 39, 40, 40, 40, 40, 41, 41, 41, 41, 42, 42, 42, 42, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45,</div>
+<div class="line">        45, 45, 46, 46, 46, 46, 47, 47, 47, 47, 48, 48, 48, 48, 49, 49, 49, 49, 50, 50, 50, 50, 51, 51, 51, 51,</div>
+<div class="line">        52, 52, 52, 52, 53, 53, 53, 53, 54, 54, 54, 54, 55, 55, 55, 55, 56, 56, 56, 56, 57, 57, 57, 57, 58, 58,</div>
+<div class="line">        58, 58, 59, 59, 59, 59, 60, 60, 60, 60, 61, 61, 61, 61, 62, 62, 62, 62, 63, 63, 63, 63}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a27bed619dbaf032e4ae101182fa4dc4c" name="a27bed619dbaf032e4ae101182fa4dc4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27bed619dbaf032e4ae101182fa4dc4c">&#9670;&#160;</a></span>hicolor_32_to_256</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr uint8_t lampda::modes::colors::__internal::hicolor_32_to_256[]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {0,   8,   16,  24,  33,  41,  49,  57,  66,  74,  82,</div>
+<div class="line">                                                90,  99,  107, 115, 123, 132, 140, 148, 156, 165, 173,</div>
+<div class="line">                                                181, 189, 198, 206, 214, 222, 231, 239, 247, 255}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a326ab24e7be0a286daeb3dbcea0a9aee" name="a326ab24e7be0a286daeb3dbcea0a9aee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a326ab24e7be0a286daeb3dbcea0a9aee">&#9670;&#160;</a></span>hicolor_64_to_256</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr uint8_t lampda::modes::colors::__internal::hicolor_64_to_256[]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">        0,   4,   8,   12,  16,  20,  24,  28,  32,  36,  40,  44,  48,  52,  56,  60,  65,  69,  73,  77,  81,  85,</div>
+<div class="line">        89,  93,  97,  101, 105, 109, 113, 117, 121, 125, 130, 134, 138, 142, 146, 150, 154, 158, 162, 166, 170, 174,</div>
+<div class="line">        178, 182, 186, 190, 195, 199, 203, 207, 211, 215, 219, 223, 227, 231, 235, 239, 243, 247, 251, 255}</div>
+</div><!-- fragment -->
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6
