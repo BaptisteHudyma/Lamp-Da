@@ -1,10 +1,10 @@
 #include "alerts.h"
 
 #include "src/system/hal/time.h"
-#include "src/system/hal/bluetooth.h"
 #include "src/system/hal/registers.h"
 
 #include "src/system/bsp/balancer.h"
+#include "src/system/bsp/ble.h"
 #include "src/system/bsp/indicator.h"
 #include "src/system/bsp/text_out.h"
 
@@ -104,7 +104,7 @@ uint16_t get_battery_level()
     const uint16_t newPercent = component::battery::get_battery_minimum_cell_level();
     if ((lastPercent / 100) != (newPercent / 100))
     {
-      hal::bluetooth::write_battery_level(static_cast<uint8_t>(newPercent / 100));
+      bsp::ble::write_battery_level(static_cast<uint8_t>(newPercent / 100));
     }
     lastPercent = newPercent;
   }
@@ -336,7 +336,7 @@ struct Alert_BatteryLow : public AlertBase
     const bool isBatteryLow = not chargerState.is_effectivly_charging() and batteryLevel < batteryLow;
     // battery low will be raise, notify bluetooth
     if (isBatteryLow)
-      hal::bluetooth::notify_battery_level(static_cast<uint8_t>(batteryLevel / 100));
+      bsp::ble::notify_battery_level(static_cast<uint8_t>(batteryLevel / 100));
     return isBatteryLow;
   }
 

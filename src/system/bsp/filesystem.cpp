@@ -1,9 +1,9 @@
 #include "filesystem.h"
 
-#include "src/system/hal/bluetooth.h"
 #include "src/system/hal/filesystem.h"
 #include "src/system/hal/time.h"
 
+#include "src/system/bsp/ble.h"
 #include "src/system/bsp/text_out.h"
 
 #include "src/system/logic/behavior.h"
@@ -48,14 +48,14 @@ void shutdown() { hal::filesystem::shutdown(); }
 void clear_internal_fs()
 {
   // First disconnect any BLE device
-  if (hal::bluetooth::is_connected())
-    hal::bluetooth::disconnect();
+  if (bsp::ble::is_connected())
+    bsp::ble::disconnect();
 
   hal::filesystem::format_file_system();
 
   // It's very important to manually clear the bounded device list AFTER the format
   hal::delay_ms(100);
-  hal::bluetooth::clear_bounded_devices();
+  bsp::ble::clear_bounded_devices();
 
   // reset the cached parameters
   system::clear_cached();

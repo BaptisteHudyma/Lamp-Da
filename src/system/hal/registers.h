@@ -62,6 +62,9 @@ extern void go_to_sleep(const int wakeUpPin, const bool wakeUpOnRelease);
 /// SRAM RAM write protection
 extern void sync_memory_protection();
 
+/// Get the board max adress
+uint32_t get_mac_adress();
+
 } // namespace registers
 } // namespace hal
 } // namespace lampda

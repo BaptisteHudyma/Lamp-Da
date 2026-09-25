@@ -5,12 +5,12 @@
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 
-#include "src/system/hal/bluetooth.h"
 #include "src/system/hal/time.h"
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/i2c.h"
 #include "src/system/hal/registers.h"
 
+#include "src/system/bsp/ble.h"
 #include "src/system/bsp/text_out.h"
 
 #include "src/system/logic/alerts.h"
@@ -215,7 +215,7 @@ bool read_parameters()
       bluetoothAutoActivationLeftCount = min<uint32_t>(maxBluetoothAutoActivations, bluetoothAutoActivation - 1);
 
       // bounded device, advertize but only allow the bounded device, if it exist
-      hal::bluetooth::start_advertising(false);
+      bsp::ble::start_advertising(false);
     }
     else
     {
@@ -670,9 +670,9 @@ void handle_shutdown_state()
    */
 
   // Phase 1: bluetooth & com shutdown
-  component::button::shutdown();                ///< prevent more button commands
-  hal::bluetooth::stop_bluetooth_advertising(); ///< stop bluetooth
-  hal::bluetooth::shutdown();                   ///< deactivate bluetooth
+  component::button::shutdown();          ///< prevent more button commands
+  bsp::ble::stop_bluetooth_advertising(); ///< stop bluetooth
+  bsp::ble::shutdown();                   ///< deactivate bluetooth
   hal::delay_ms(20);
 
   // Phase 2: peripheral shutdown

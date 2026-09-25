@@ -1,20 +1,18 @@
-/*! \file bluetooth.h
-    \brief Interface for the platform specific bluetooth.
+/*! \file ble.h
+    \brief Usage interface for the bluetooth system.
 */
 
-#ifndef HAL_BLUETOOTH_HPP
-#define HAL_BLUETOOTH_HPP
+#ifndef BSP_BLE_H
+#define BSP_BLE_H
 
 #include <stdint.h>
 #include <string>
 #include <array>
 
-#include "src/system/bsp/text_in.h"
-
 namespace lampda {
-namespace hal {
-/// Handle the platform specific bluetooth operations
-namespace bluetooth {
+namespace bsp {
+/// Bluetooth high level handling
+namespace ble {
 
 static constexpr size_t MaxBleNameLenght = 32;
 
@@ -33,7 +31,6 @@ bool is_connected();
 bool is_bounded();
 bool is_bounded(std::array<uint8_t, 8>& buffer);
 
-/// Force disconnection
 void disconnect();
 
 /// If this returns false, do not accept any actions from bluetooth
@@ -87,8 +84,8 @@ uint16_t mtu_size();
 
 } // namespace serial
 
-} // namespace bluetooth
-} // namespace hal
+} // namespace ble
+} // namespace bsp
 } // namespace lampda
 
 #endif

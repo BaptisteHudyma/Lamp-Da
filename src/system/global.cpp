@@ -1,11 +1,11 @@
 #include "src/compile.h"
 
-#include "src/system/hal/bluetooth.h"
 #include "src/system/hal/i2c.h"
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/time.h"
 #include "src/system/hal/registers.h"
 
+#include "src/system/bsp/ble.h"
 #include "src/system/bsp/indicator.h"
 #include "src/system/bsp/filesystem.h"
 #include "src/system/bsp/text_out.h"
@@ -168,7 +168,7 @@ void main_setup()
   // setup imu
   component::imu::init();
   // Load BLE bounds
-  hal::bluetooth::load_bound_file();
+  bsp::ble::load_bound_file();
 
   if (shouldAlertUser)
   {
