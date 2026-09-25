@@ -1,6 +1,5 @@
 #include "command_line_interface.h"
 
-#include "src/system/hal/bluetooth.h"
 #include "src/system/hal/i2c.h"
 #include "src/system/hal/registers.h"
 #include "src/system/hal/serial.h"
@@ -8,6 +7,7 @@
 
 #include "src/system/bsp/pd/power_delivery.h"
 #include "src/system/bsp/balancer.h"
+#include "src/system/bsp/ble.h"
 #include "src/system/bsp/filesystem.h"
 #include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
@@ -136,7 +136,7 @@ static void cmd_summary(const common::cli::ParsedCommand&)
   else
     bsp::lampda_print("Charger: offline");
   // Bluetooth
-  bsp::lampda_print("Bluetooth: %s", hal::bluetooth::is_connected() ? "Connected" : "Disconnected");
+  bsp::lampda_print("Bluetooth: %s", bsp::ble::is_connected() ? "Connected" : "Disconnected");
   // Temperature
   bsp::lampda_print("Temp: %.1f°C", hal::registers::read_CPU_temperature_degreesC());
   // serial number
@@ -434,15 +434,15 @@ static void cmd_ble(const common::cli::ParsedCommand&)
           "is connected: %d\n"
           "is msg received: %d\n"
           "auto activations left: %d",
-          hal::bluetooth::is_activated(),
-          hal::bluetooth::is_advertising(),
-          hal::bluetooth::is_open_to_all(),
-          hal::bluetooth::is_connected(),
+          bsp::ble::is_activated(),
+          bsp::ble::is_advertising(),
+          bsp::ble::is_open_to_all(),
+          bsp::ble::is_connected(),
           logic::inputs_bluetooth::is_bluetooth_used(),
           logic::behavior::internal::get_bluetooth_auto_activation_left());
 
   std::array<uint8_t, 8> boundedDeviceName;
-  const bool isBounded = hal::bluetooth::is_bounded(boundedDeviceName);
+  const bool isBounded = bsp::ble::is_bounded(boundedDeviceName);
   if (isBounded)
   {
     bsp::lampda_print("BLE bounded to device: type=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
@@ -596,7 +596,7 @@ static void cmd_time(const common::cli::ParsedCommand&)
 static void cmd_serial(const common::cli::ParsedCommand&)
 {
   bsp::lampda_print("Local serial port: active %d", hal::serial::is_activated());
-  bsp::lampda_print("BLE serial port: active %d", hal::bluetooth::serial::is_activated());
+  bsp::lampda_print("BLE serial port: active %d", bsp::ble::serial::is_activated());
 }
 
 static void cmd_set_ble_name(const common::cli::ParsedCommand& command)
@@ -640,7 +640,7 @@ static void cmd_set_ble_name(const common::cli::ParsedCommand& command)
       return;
     }
 
-    hal::bluetooth::set_bluetooth_name(name);
+    bsp::ble::set_bluetooth_name(name);
     bsp::lampda_print("New ble name set to: %s, will be set after a reboot", name.data());
   }
   else
