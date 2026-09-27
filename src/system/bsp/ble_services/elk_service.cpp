@@ -13,11 +13,7 @@
 
 namespace lampda::bsp::ble::services {
 
-static void on_elk_cmd_received(hal::ble::hal_ble_conn_handle_t conn_handle,
-                                uint16_t char_handle,
-                                const uint8_t* data,
-                                size_t length,
-                                uint16_t offset)
+static void on_elk_cmd_received(hal::ble::hal_ble_conn_handle_t conn_handle, const uint8_t* data, uint16_t length)
 {
   if (not lampda::bsp::ble::is_connection_allowed(conn_handle))
   {
@@ -44,7 +40,7 @@ static void on_elk_cmd_received(hal::ble::hal_ble_conn_handle_t conn_handle,
 
 void init_elk_service()
 {
-  hal::ble::hal_ble_service_t elkService = {.uuid = {.type = hal::ble::hal_ble_uuid_type_t::HAL_BLE_UUID_TYPE_16BIT,
+  hal::ble::hal_ble_service_t elkService = {.uuid = {.type = hal::ble::hal_ble_uuid_type_t::TYPE_16BIT,
                                                      .value = {.uuid128 = {0xfb,
                                                                            0x34,
                                                                            0x9b,
@@ -63,28 +59,28 @@ void init_elk_service()
                                                                            0x00}}}};
   hal::ble::hal_ble_add_service(&elkService);
 
-  hal::ble::hal_ble_characteristic_t elkWriteCharac = {
-          .uuid = {.type = hal::ble::hal_ble_uuid_type_t::HAL_BLE_UUID_TYPE_16BIT,
-                   .value = {.uuid128 = {0xfb,
-                                         0x34,
-                                         0x9b,
-                                         0x5f,
-                                         0x80,
-                                         0x00,
-                                         0x00,
-                                         0x80,
-                                         0x00,
-                                         0x10,
-                                         0x00,
-                                         0x00,
-                                         0xf3,
-                                         0xff,
-                                         0x00,
-                                         0x00}}},
-          .properties = hal::ble::hal_ble_gatt_prop_t::HAL_BLE_GATT_PROP_WRITE,
-          .permissions = hal::ble::hal_ble_gatt_perm_t::HAL_BLE_GATT_PERM_WRITE_ENCRYPTED,
-          .max_length = 9,
-          .write_cb = on_elk_cmd_received};
+  hal::ble::hal_ble_characteristic_t elkWriteCharac = {.uuid = {.type = hal::ble::hal_ble_uuid_type_t::TYPE_16BIT,
+                                                                .value = {.uuid128 = {0xfb,
+                                                                                      0x34,
+                                                                                      0x9b,
+                                                                                      0x5f,
+                                                                                      0x80,
+                                                                                      0x00,
+                                                                                      0x00,
+                                                                                      0x80,
+                                                                                      0x00,
+                                                                                      0x10,
+                                                                                      0x00,
+                                                                                      0x00,
+                                                                                      0xf3,
+                                                                                      0xff,
+                                                                                      0x00,
+                                                                                      0x00}}},
+                                                       .properties = hal::ble::hal_ble_gatt_prop_t::WRITE,
+                                                       .rPermissions = hal::ble::hal_ble_gatt_perm_t::READ,
+                                                       .wPermissions = hal::ble::hal_ble_gatt_perm_t::WRITE,
+                                                       .max_length = 9,
+                                                       .write_cb = on_elk_cmd_received};
   hal::ble::hal_ble_add_characteristic(&elkWriteCharac);
 }
 

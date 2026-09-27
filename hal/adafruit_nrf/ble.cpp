@@ -14,26 +14,28 @@ static struct
   const hal_ble_event_callbacks_t* callbacks;
 
   /* GATT database */
-  struct
+  struct gatt_type_t
   {
     BLEService* service;
     BLECharacteristic* characteristic;
     hal_ble_read_callback_t read_cb;
     hal_ble_write_callback_t write_cb;
-  } gatt_map[HAL_BLE_MAX_CHARACTERISTICS];
+  };
+  std::array<gatt_type_t, HAL_BLE_MAX_CHARACTERISTICS> gatt_map;
   uint8_t gatt_count;
 
   /* Connection state */
-  struct
+  struct connection_t
   {
     hal_ble_conn_handle_t handle;
     bool connected;
     uint16_t mtu;
-  } connections[BLE_MAX_PERIPHERAL_CONNECTIONS];
+  };
+  std::array<connection_t, BLE_MAX_PERIPHERAL_CONNECTIONS> connections;
 
   /* Security */
   const hal_ble_sec_config_t* sec_config;
-} hal_ble_state = {.initialized = false, .callbacks = NULL, .gatt_count = 0, .sec_config = NULL};
+} hal_ble_state = {.initialized = false, .callbacks = nullptr, .gatt_count = 0, .sec_config = nullptr};
 
 /* ========== Forward Declarations ========== */
 
@@ -46,6 +48,9 @@ static void adafruit_characteristic_write_callback(uint16_t conn_handle,
 static void adafruit_on_pair_complete_callback(uint16_t conn_handle, uint8_t authStatus);
 static void adafruit_on_secured_connection_callback(uint16_t conn_handle);
 static void adafruit_on_advertising_stops();
+
+/// hash a char pointer to a handle value
+uint16_t get_characteristic_handle(BLECharacteristic* ble_chr) { return ((uintptr_t)ble_chr & 0xFFFF); }
 
 /* ========== Initialization & Lifecycle ========== */
 
@@ -108,9 +113,15 @@ int32_t hal_ble_deinit(void)
 
   /* Clear state */
   hal_ble_state.initialized = false;
-  hal_ble_state.callbacks = NULL;
+  hal_ble_state.callbacks = nullptr;
   hal_ble_state.gatt_count = 0;
-  memset(hal_ble_state.connections, 0, sizeof(hal_ble_state.connections));
+
+  for (auto& conn: hal_ble_state.connections)
+  {
+    conn.handle = 0;
+    conn.connected = false;
+    conn.mtu = 0;
+  }
 
   return HAL_BLE_SUCCESS;
 }
@@ -137,15 +148,18 @@ int32_t hal_ble_add_service(hal_ble_service_t* service)
   }
 
   /* Create BLE service based on UUID type */
-  BLEService* ble_service = NULL;
+  static size_t servicesCnt = 0;
+  static BLEService s_services[HAL_BLE_MAX_SERVICES];
 
-  if (service->uuid.type == HAL_BLE_UUID_TYPE_16BIT)
+  BLEService* ble_service = &s_services[servicesCnt];
+
+  if (service->uuid.type == hal_ble_uuid_type_t::TYPE_16BIT)
   {
-    ble_service = new BLEService(service->uuid.value.uuid16);
+    ble_service->setUuid(service->uuid.value.uuid16);
   }
-  else if (service->uuid.type == HAL_BLE_UUID_TYPE_128BIT)
+  else if (service->uuid.type == hal_ble_uuid_type_t::TYPE_128BIT)
   {
-    ble_service = new BLEService(service->uuid.value.uuid128);
+    ble_service->setUuid(service->uuid.value.uuid128);
   }
   else
   {
@@ -154,16 +168,12 @@ int32_t hal_ble_add_service(hal_ble_service_t* service)
 
   if (!ble_service->begin())
   {
-    delete ble_service;
     return HAL_BLE_ERROR_GENERIC;
   }
 
-  /* Store service handle (opaque to application) */
-  service->service_handle = (uint16_t)((uintptr_t)ble_service & 0xFFFF);
-
   /* Store for later characteristic addition */
   hal_ble_state.gatt_map[hal_ble_state.gatt_count].service = ble_service;
-
+  servicesCnt++;
   return HAL_BLE_SUCCESS;
 }
 
@@ -191,65 +201,84 @@ int32_t hal_ble_add_characteristic(hal_ble_characteristic_t* characteristic)
 
   /* Convert HAL properties to Bluefruit properties */
   uint8_t props = 0;
-  if (characteristic->properties & HAL_BLE_GATT_PROP_READ)
+  if (static_cast<uint8_t>(characteristic->properties) & static_cast<uint8_t>(hal_ble_gatt_prop_t::READ))
   {
     props |= CHR_PROPS_READ;
   }
-  if (characteristic->properties & HAL_BLE_GATT_PROP_WRITE)
+  if (static_cast<uint8_t>(characteristic->properties) & static_cast<uint8_t>(hal_ble_gatt_prop_t::WRITE))
   {
     props |= CHR_PROPS_WRITE;
   }
-  if (characteristic->properties & HAL_BLE_GATT_PROP_WRITE_NO_RSP)
+  if (static_cast<uint8_t>(characteristic->properties) & static_cast<uint8_t>(hal_ble_gatt_prop_t::WRITE_NO_RSP))
   {
     props |= CHR_PROPS_WRITE_WO_RESP;
   }
-  if (characteristic->properties & HAL_BLE_GATT_PROP_NOTIFY)
+  if (static_cast<uint8_t>(characteristic->properties) & static_cast<uint8_t>(hal_ble_gatt_prop_t::NOTIFY))
   {
     props |= CHR_PROPS_NOTIFY;
   }
-  if (characteristic->properties & HAL_BLE_GATT_PROP_INDICATE)
+  if (static_cast<uint8_t>(characteristic->properties) & static_cast<uint8_t>(hal_ble_gatt_prop_t::INDICATE))
   {
     props |= CHR_PROPS_INDICATE;
   }
 
   /* Convert HAL permissions to Bluefruit permissions */
-  uint8_t perms = 0;
-  if (characteristic->permissions & HAL_BLE_GATT_PERM_READ)
+  SecureMode_t readPermission = SECMODE_NO_ACCESS;
+  if (static_cast<uint8_t>(characteristic->rPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::READ))
   {
-    perms |= SECMODE_OPEN;
+    readPermission = SECMODE_OPEN;
   }
-  if (characteristic->permissions & HAL_BLE_GATT_PERM_READ_ENCRYPTED)
+  if (static_cast<uint8_t>(characteristic->rPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::READ_ENCRYPTED))
   {
-    perms |= SECMODE_NO_ACCESS;
+    readPermission = SECMODE_NO_ACCESS;
   }
-  if (characteristic->permissions & HAL_BLE_GATT_PERM_WRITE)
+  if (static_cast<uint8_t>(characteristic->rPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::WRITE))
   {
-    perms |= SECMODE_OPEN;
+    readPermission = SECMODE_OPEN;
   }
-  if (characteristic->permissions & HAL_BLE_GATT_PERM_WRITE_ENCRYPTED)
+  if (static_cast<uint8_t>(characteristic->rPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::WRITE_ENCRYPTED))
   {
-    perms |= SECMODE_NO_ACCESS;
+    readPermission = SECMODE_NO_ACCESS;
+  }
+  SecureMode_t writePermission = SECMODE_NO_ACCESS;
+  if (static_cast<uint8_t>(characteristic->wPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::READ))
+  {
+    writePermission = SECMODE_OPEN;
+  }
+  if (static_cast<uint8_t>(characteristic->wPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::READ_ENCRYPTED))
+  {
+    writePermission = SECMODE_NO_ACCESS;
+  }
+  if (static_cast<uint8_t>(characteristic->wPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::WRITE))
+  {
+    writePermission = SECMODE_OPEN;
+  }
+  if (static_cast<uint8_t>(characteristic->wPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::WRITE_ENCRYPTED))
+  {
+    writePermission = SECMODE_NO_ACCESS;
   }
 
   /* Create BLE characteristic */
-  BLECharacteristic* ble_chr = NULL;
+  static size_t charCnt = 0;
+  static BLECharacteristic s_chars[HAL_BLE_MAX_CHARACTERISTICS];
 
-  if (characteristic->uuid.type == HAL_BLE_UUID_TYPE_16BIT)
+  BLECharacteristic* ble_chr = &s_chars[charCnt];
+
+  ble_chr->setProperties(props);
+  ble_chr->setPermission(readPermission, writePermission);
+  ble_chr->setMaxLen(characteristic->max_length);
+
+  if (characteristic->uuid.type == hal_ble_uuid_type_t::TYPE_16BIT)
   {
-    ble_chr = new BLECharacteristic(characteristic->uuid.value.uuid16, props, perms, characteristic->max_length);
+    ble_chr->setUuid(characteristic->uuid.value.uuid16);
   }
-  else if (characteristic->uuid.type == HAL_BLE_UUID_TYPE_128BIT)
+  else if (characteristic->uuid.type == hal_ble_uuid_type_t::TYPE_128BIT)
   {
-    ble_chr = new BLECharacteristic(characteristic->uuid.value.uuid128, props, perms, characteristic->max_length);
+    ble_chr->setUuid(characteristic->uuid.value.uuid128);
   }
   else
   {
     return HAL_BLE_ERROR_INVALID_PARAM;
-  }
-
-  if (!ble_chr)
-  {
-    return HAL_BLE_ERROR_NO_MEMORY;
   }
 
   /* Set initial value if provided */
@@ -278,14 +307,15 @@ int32_t hal_ble_add_characteristic(hal_ble_characteristic_t* characteristic)
   }
 
   /* Store characteristic handle and mapping */
-  characteristic->handle = (uint16_t)((uintptr_t)ble_chr & 0xFFFF);
+  characteristic->handle = get_characteristic_handle(ble_chr);
   hal_ble_state.gatt_map[hal_ble_state.gatt_count].characteristic = ble_chr;
   hal_ble_state.gatt_count++;
 
+  charCnt++;
   return HAL_BLE_SUCCESS;
 }
 
-int32_t hal_ble_set_characteristic_value(hal_ble_char_handle_t char_handle, const uint8_t* data, size_t length)
+int32_t hal_ble_set_characteristic_value(hal_ble_char_handle_t char_handle, const uint8_t* data, uint16_t length)
 {
   if (!data || length == 0)
   {
@@ -300,7 +330,7 @@ int32_t hal_ble_set_characteristic_value(hal_ble_char_handle_t char_handle, cons
   /* Find characteristic by handle */
   for (uint8_t i = 0; i < hal_ble_state.gatt_count; i++)
   {
-    if ((uint16_t)((uintptr_t)hal_ble_state.gatt_map[i].characteristic & 0xFFFF) == char_handle)
+    if (get_characteristic_handle(hal_ble_state.gatt_map[i].characteristic) == char_handle)
     {
       BLECharacteristic* chr = hal_ble_state.gatt_map[i].characteristic;
       chr->write(data, length);
@@ -311,7 +341,7 @@ int32_t hal_ble_set_characteristic_value(hal_ble_char_handle_t char_handle, cons
   return HAL_BLE_ERROR_INVALID_PARAM;
 }
 
-int32_t hal_ble_get_characteristic_value(hal_ble_char_handle_t char_handle, uint8_t* data, size_t max_length)
+int32_t hal_ble_get_characteristic_value(hal_ble_char_handle_t char_handle, uint8_t* data, uint16_t max_length)
 {
   if (!data || max_length == 0)
   {
@@ -326,7 +356,7 @@ int32_t hal_ble_get_characteristic_value(hal_ble_char_handle_t char_handle, uint
   /* Find characteristic by handle */
   for (uint8_t i = 0; i < hal_ble_state.gatt_count; i++)
   {
-    if ((uint16_t)((uintptr_t)hal_ble_state.gatt_map[i].characteristic & 0xFFFF) == char_handle)
+    if (get_characteristic_handle(hal_ble_state.gatt_map[i].characteristic) == char_handle)
     {
       BLECharacteristic* chr = hal_ble_state.gatt_map[i].characteristic;
       uint16_t len = chr->read(data, max_length);
@@ -339,7 +369,7 @@ int32_t hal_ble_get_characteristic_value(hal_ble_char_handle_t char_handle, uint
 
 /* ========== Notifications & Indications ========== */
 
-int32_t hal_ble_notify(hal_ble_char_handle_t char_handle, const uint8_t* data, size_t length)
+int32_t hal_ble_notify(hal_ble_char_handle_t char_handle, const uint8_t* data, uint16_t length)
 {
   if (!data || length == 0)
   {
@@ -354,7 +384,7 @@ int32_t hal_ble_notify(hal_ble_char_handle_t char_handle, const uint8_t* data, s
   /* Find characteristic by handle */
   for (uint8_t i = 0; i < hal_ble_state.gatt_count; i++)
   {
-    if ((uint16_t)((uintptr_t)hal_ble_state.gatt_map[i].characteristic & 0xFFFF) == char_handle)
+    if (get_characteristic_handle(hal_ble_state.gatt_map[i].characteristic) == char_handle)
     {
       BLECharacteristic* chr = hal_ble_state.gatt_map[i].characteristic;
 
@@ -370,7 +400,7 @@ int32_t hal_ble_notify(hal_ble_char_handle_t char_handle, const uint8_t* data, s
 int32_t hal_ble_indicate(hal_ble_conn_handle_t conn_handle,
                          hal_ble_char_handle_t char_handle,
                          const uint8_t* data,
-                         size_t length)
+                         uint16_t length)
 {
   if (!data || length == 0)
   {
@@ -385,7 +415,7 @@ int32_t hal_ble_indicate(hal_ble_conn_handle_t conn_handle,
   /* Find characteristic by handle */
   for (uint8_t i = 0; i < hal_ble_state.gatt_count; i++)
   {
-    if ((uint16_t)((uintptr_t)hal_ble_state.gatt_map[i].characteristic & 0xFFFF) == char_handle)
+    if (get_characteristic_handle(hal_ble_state.gatt_map[i].characteristic) == char_handle)
     {
       BLECharacteristic* chr = hal_ble_state.gatt_map[i].characteristic;
 
@@ -423,8 +453,8 @@ int32_t hal_ble_start_advertising(const hal_ble_adv_params_t* adv_params)
     Bluefruit.Advertising.addTxPower();
 
   /* Set advertising interval (Bluefruit expects interval in units of 0.625ms) */
-  uint32_t interval_ms = adv_params->interval_min_ms;
-  uint32_t interval_units = (interval_ms * 8) / 5; /* Convert ms to 0.625ms units */
+  uint16_t interval_ms = adv_params->interval_min_ms;
+  uint16_t interval_units = (interval_ms * 8) / 5; /* Convert ms to 0.625ms units */
 
   Bluefruit.Advertising.setInterval(interval_units, interval_units);
   Bluefruit.Advertising.restartOnDisconnect(adv_params->restartOnDisconnect);
@@ -530,7 +560,7 @@ int32_t hal_ble_request_mtu_exchange(hal_ble_conn_handle_t conn_handle, uint16_t
 
   // request MTU exchange
   BLEConnection* conn = Bluefruit.Connection(conn_handle);
-  if (conn == NULL)
+  if (conn == nullptr)
   {
     return HAL_BLE_ERROR_GENERIC;
   }
@@ -589,7 +619,7 @@ int32_t hal_ble_start_pairing(hal_ble_conn_handle_t conn_handle)
 
   /* Bluefruit: initiate pairing */
   BLEConnection* conn = Bluefruit.Connection(conn_handle);
-  if (conn == NULL)
+  if (conn == nullptr)
   {
     return HAL_BLE_ERROR_GENERIC;
   }
@@ -615,12 +645,13 @@ int32_t hal_ble_clear_bonds(void)
 
 int32_t hal_ble_set_device_name(const char* name)
 {
-  if (!name || strlen(name) == 0)
+  const auto strLenght = strlen(name);
+  if (!name || strLenght == 0)
   {
     return HAL_BLE_ERROR_INVALID_PARAM;
   }
 
-  if (strlen(name) > HAL_BLE_MAX_DEVICE_NAME_LEN)
+  if (strLenght > HAL_BLE_MAX_DEVICE_NAME_LEN)
   {
     return HAL_BLE_ERROR_INVALID_PARAM;
   }
@@ -634,7 +665,7 @@ int32_t hal_ble_set_device_name(const char* name)
   return HAL_BLE_SUCCESS;
 }
 
-int32_t hal_ble_get_device_name(char* name, size_t max_length)
+int32_t hal_ble_get_device_name(char* name, uint16_t max_length)
 {
   if (!name || max_length == 0)
   {
@@ -647,7 +678,7 @@ int32_t hal_ble_get_device_name(char* name, size_t max_length)
   }
 
   char dev_name[64];
-  size_t len = Bluefruit.getName(dev_name, 32);
+  uint16_t len = Bluefruit.getName(dev_name, 32);
   if (len > max_length)
   {
     len = max_length;
@@ -657,26 +688,6 @@ int32_t hal_ble_get_device_name(char* name, size_t max_length)
   name[len] = '\0';
 
   return (int32_t)len;
-}
-
-int32_t hal_ble_get_address(uint8_t addr[6])
-{
-  if (!addr)
-  {
-    return HAL_BLE_ERROR_INVALID_PARAM;
-  }
-
-  if (!hal_ble_state.initialized)
-  {
-    return HAL_BLE_ERROR_NOT_INIT;
-  }
-
-  /* Bluefruit: get MAC address */
-  uint8_t mac[6];
-  Bluefruit.getAddr(mac);
-  memcpy(addr, mac, 6);
-
-  return HAL_BLE_SUCCESS;
 }
 
 int32_t hal_ble_set_tx_power(int8_t tx_power_dbm)
@@ -737,11 +748,17 @@ int8_t hal_ble_get_rssi(hal_ble_conn_handle_t conn_handle)
     return 0;
   }
 
+  BLEConnection* conn = Bluefruit.Connection(conn_handle);
+  if (conn == nullptr)
+  {
+    return 0;
+  }
+
   /* Bluefruit: get RSSI */
-  return Bluefruit.Connection(conn_handle)->getRssi();
+  return conn->getRssi();
 }
 
-gap_addr_t hal_ble_get_adress(hal_ble_conn_handle_t conn_handle)
+gap_addr_t hal_ble_get_address(hal_ble_conn_handle_t conn_handle)
 {
   gap_addr_t addr = {0};
   addr.type = HAL_BLE_GAP_ADDR_TYPE_INVALID;
@@ -761,7 +778,7 @@ gap_addr_t hal_ble_get_adress(hal_ble_conn_handle_t conn_handle)
   }
 
   BLEConnection* conn = Bluefruit.Connection(conn_handle);
-  if (conn == NULL)
+  if (conn == nullptr)
   {
     return addr;
   }
@@ -791,7 +808,7 @@ bool hal_ble_can_load_bound_key(hal_ble_conn_handle_t conn_handle)
   }
 
   BLEConnection* conn = Bluefruit.Connection(conn_handle);
-  if (conn == NULL)
+  if (conn == nullptr)
   {
     return false;
   }
@@ -806,13 +823,13 @@ bool hal_ble_has_feature(hal_ble_feature_t feature)
 {
   switch (feature)
   {
-    case HAL_BLE_FEATURE_BONDING:
+    case hal_ble_feature_t::HAL_BLE_FEATURE_BONDING:
       return true;
-    case HAL_BLE_FEATURE_LE_SECURE_CONNECTIONS:
+    case hal_ble_feature_t::HAL_BLE_FEATURE_LE_SECURE_CONNECTIONS:
       return true; /* NRF52840 supports LE Secure Connections */
-    case HAL_BLE_FEATURE_DLE:
+    case hal_ble_feature_t::HAL_BLE_FEATURE_DLE:
       return true; /* Data Length Extension available */
-    case HAL_BLE_FEATURE_MULTI_ROLE:
+    case hal_ble_feature_t::HAL_BLE_FEATURE_MULTI_ROLE:
       return true; /* NRF52840 supports simultaneous roles */
     default:
       return false;
@@ -828,19 +845,19 @@ static void adafruit_on_connect_callback(uint16_t conn_handle)
     return;
   }
 
-  /* Store connection handle */
-  for (uint8_t i = 0; i < BLE_MAX_PERIPHERAL_CONNECTIONS; i++)
+  // Store connection handle
+  for (auto& connection: hal_ble_state.connections)
   {
-    if (!hal_ble_state.connections[i].connected)
+    if (!connection.connected)
     {
-      hal_ble_state.connections[i].handle = conn_handle;
-      hal_ble_state.connections[i].connected = true;
-      hal_ble_state.connections[i].mtu = HAL_BLE_MIN_MTU;
+      connection.handle = conn_handle;
+      connection.connected = true;
+      connection.mtu = HAL_BLE_MIN_MTU;
       break;
     }
   }
 
-  hal_ble_state.callbacks->on_connect(conn_handle, true, 0);
+  hal_ble_state.callbacks->on_connect(conn_handle);
 }
 
 static void adafruit_on_disconnect_callback(uint16_t conn_handle, uint8_t reason)
@@ -851,16 +868,16 @@ static void adafruit_on_disconnect_callback(uint16_t conn_handle, uint8_t reason
   }
 
   /* Remove connection handle */
-  for (uint8_t i = 0; i < BLE_MAX_PERIPHERAL_CONNECTIONS; i++)
+  for (auto& connection: hal_ble_state.connections)
   {
-    if (hal_ble_state.connections[i].handle == conn_handle)
+    if (connection.handle == conn_handle)
     {
-      hal_ble_state.connections[i].connected = false;
+      connection.connected = false;
       break;
     }
   }
 
-  hal_ble_state.callbacks->on_disconnect(conn_handle, false, reason);
+  hal_ble_state.callbacks->on_disconnect(conn_handle, reason);
 }
 
 static void adafruit_characteristic_write_callback(uint16_t conn_handle,
@@ -878,8 +895,7 @@ static void adafruit_characteristic_write_callback(uint16_t conn_handle,
   {
     if (hal_ble_state.gatt_map[i].characteristic == chr && hal_ble_state.gatt_map[i].write_cb)
     {
-      hal_ble_char_handle_t char_handle = (uint16_t)((uintptr_t)chr & 0xFFFF);
-      hal_ble_state.gatt_map[i].write_cb(conn_handle, char_handle, data, len, 0);
+      hal_ble_state.gatt_map[i].write_cb(conn_handle, data, len);
       break;
     }
   }

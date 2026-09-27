@@ -87,10 +87,7 @@ void byte_to_str(char* buff, uint8_t val)
 // NOTE: addr_type is intentionally ignored here because after bonding and
 // RPA resolution, the SoftDevice provides the identity address regardless of
 // which address type the phone used during the connection attempt.
-bool addressMatches(const hal::ble::gap_addr_t& a, const hal::ble::gap_addr_t& b)
-{
-  return (memcmp(a.addr, b.addr, HAL_BLE_GAP_ADDR_LEN) == 0);
-}
+bool addressMatches(const hal::ble::gap_addr_t& a, const hal::ble::gap_addr_t& b) { return a.addr == b.addr; }
 
 bool load_bluetooth_name(char* bleName)
 {
@@ -180,7 +177,7 @@ void try_save_bounded_peer(const hal::ble::gap_addr_t& addr)
 
 namespace callbacks {
 
-static void on_connect(hal::ble::hal_ble_conn_handle_t conn_handle, bool connected, uint8_t reason)
+static void on_connect(hal::ble::hal_ble_conn_handle_t conn_handle)
 {
   if (not is_activated())
     return;
@@ -219,7 +216,7 @@ static void on_pairing_done(hal::ble::hal_ble_conn_handle_t conn_handle, bool co
     return;
   }
 
-  hal::ble::gap_addr_t resolvedAddr = hal::ble::hal_ble_get_adress(conn_handle);
+  hal::ble::gap_addr_t resolvedAddr = hal::ble::hal_ble_get_address(conn_handle);
   if (resolvedAddr.type == HAL_BLE_GAP_ADDR_TYPE_INVALID)
   {
     bsp::lampda_print("[Security] could not get connected device address, skip");
@@ -269,9 +266,9 @@ static void on_advertising_stops()
   __private::advertisingStoppedByRequest = false;
 }
 
-static void on_disconnect(hal::ble::hal_ble_conn_handle_t conn_handle, bool connected, uint8_t reason)
+static void on_disconnect(hal::ble::hal_ble_conn_handle_t conn_handle, uint8_t reason)
 {
-  if (not is_activated() or not connected)
+  if (not is_activated())
     return;
 
   // this connection is dead, disconnect it
@@ -292,7 +289,7 @@ static void on_secured(hal::ble::hal_ble_conn_handle_t conn_handle)
   if (not is_activated())
     return;
 
-  const hal::ble::gap_addr_t& resolvedAddr = hal::ble::hal_ble_get_adress(conn_handle);
+  const hal::ble::gap_addr_t resolvedAddr = hal::ble::hal_ble_get_address(conn_handle);
   if (resolvedAddr.type == HAL_BLE_GAP_ADDR_TYPE_INVALID)
   {
     bsp::lampda_print("[Security] could not get connected device address, skip");
@@ -348,6 +345,20 @@ static void on_secured(hal::ble::hal_ble_conn_handle_t conn_handle)
   // Stop advertising manually
   on_advertising_stops();
 }
+
+// General
+hal::ble::hal_ble_event_callbacks_t callbacks_struct = {
+        .on_connect = on_connect,
+        .on_disconnect = on_disconnect,
+        .on_advertising_stops = on_advertising_stops,
+};
+
+// Security:
+hal::ble::hal_ble_sec_config_t security_struct = {
+        .on_pairing_done = on_pairing_done,
+        .on_secured = on_secured,
+        .mitm_required = true,
+};
 
 } // namespace callbacks
 
@@ -429,7 +440,7 @@ bool set_bluetooth_name(const std::array<char, MaxBleNameLenght>& name)
   if (nameFile.open(__private::BLE_NAME_FILE, hal::filesystem::HAL_File::OpenType::WRITE) and nameFile.is_open() and
       nameFile.seek(0))
   {
-    nameFile.write((uint8_t*)name.data(), name.size());
+    nameFile.write((const uint8_t*)name.data(), name.size());
     nameFile.close();
     return true;
   }
@@ -440,6 +451,13 @@ bool set_bluetooth_name(const std::array<char, MaxBleNameLenght>& name)
 
 void start_advertising(bool allowUnknownConnections)
 {
+  if (not is_activated())
+  {
+    // if not init yet, init !
+    init();
+    return;
+  }
+
   // startup sequence can load a bound adress, so set the pairing mode after
   if (allowUnknownConnections)
   {
@@ -501,25 +519,13 @@ void init()
   if (is_activated())
     return;
 
-  hal::ble::hal_ble_event_callbacks_t callbacks = {
-          .on_connect = callbacks::on_connect,
-          .on_disconnect = callbacks::on_disconnect,
-          .on_advertising_stops = callbacks::on_advertising_stops,
-  };
-
   char bleName[MaxBleNameLenght];
   __private::load_bluetooth_name(bleName);
 
   // Init BLE stack
-  hal::ble::hal_ble_init(bleName, &callbacks);
+  hal::ble::hal_ble_init(bleName, &callbacks::callbacks_struct);
 
-  // Security:
-  hal::ble::hal_ble_sec_config_t security = {
-          .on_pairing_done = callbacks::on_pairing_done,
-          .on_secured = callbacks::on_secured,
-          .mitm_required = true,
-  };
-  hal::ble::hal_ble_set_security_config(&security);
+  hal::ble::hal_ble_set_security_config(&callbacks::security_struct);
 
   // define ELK services and characs
 

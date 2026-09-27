@@ -77,17 +77,6 @@ int32_t hal_ble_get_device_name(char* name, size_t max_length)
   return HAL_BLE_SUCCESS;
 }
 
-int32_t hal_ble_get_address(uint8_t addr[6])
-{
-  addr[0] = 0;
-  addr[1] = 0;
-  addr[2] = 0;
-  addr[3] = 0;
-  addr[4] = 0;
-  addr[5] = 0;
-  return HAL_BLE_SUCCESS;
-}
-
 int32_t hal_ble_set_tx_power(int8_t tx_power_dbm) { return HAL_BLE_SUCCESS; }
 
 int8_t hal_ble_get_tx_power(void) { return 4; }
@@ -98,7 +87,7 @@ bool hal_ble_is_connected(hal_ble_conn_handle_t conn_handle) { return false; }
 
 int8_t hal_ble_get_rssi(hal_ble_conn_handle_t conn_handle) { return 1; }
 
-gap_addr_t hal_ble_get_adress(hal_ble_conn_handle_t conn_handle)
+gap_addr_t hal_ble_get_address(hal_ble_conn_handle_t conn_handle)
 {
   gap_addr_t addr = {0};
   addr.type = HAL_BLE_GAP_ADDR_TYPE_INVALID;
