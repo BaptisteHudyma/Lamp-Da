@@ -61,10 +61,10 @@ public:
       assert(std::isfinite(p.y) && "invalid value in curve parameters");
     }
 
-    // Verify points are sorted by X coordinate
+    // Pre-verify points are sorted by X coordinate
     for (size_t i = 1; i < N; ++i)
     {
-      assert(pts[i - 1].x < pts[i].x && "Points must be sorted by X coordinate in ascending order");
+      assert(pts[i - 1].x <= pts[i].x && "Points must be sorted by X coordinate in ascending order");
     }
 
     // Remove consecutive duplicates (in place)
@@ -79,7 +79,13 @@ public:
     }
     _count = writeIdx;
 
-    assert(_count >= 2 && "Linear curve must have more than 1 points");
+    assert(_count >= 2 && "Linear curve must have more than 1 unique points");
+
+    // Prost-verify points are sorted by X coordinate (after compaction)
+    for (size_t i = 1; i < N; ++i)
+    {
+      assert(pts[i - 1].x < pts[i].x && "Points must be sorted by X coordinate in ascending order");
+    }
   }
 
   /// Sample a point Y from a given x

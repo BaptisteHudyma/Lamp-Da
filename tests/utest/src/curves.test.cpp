@@ -16,13 +16,13 @@ TEST(test_curves, invalid_linear_curve_create)
           {
             const Curve curve = curves::make_linear_curve(Curve::point_t {0.0f, 0.0f}, Curve::point_t {0.0f, 0.0f});
           },
-          ".*Points must be sorted by X coordinate in ascending order.*");
+          ".*Linear curve must have more than 1 unique points.*");
   ASSERT_DEATH(
           {
             const Curve curve = curves::make_linear_curve(
                     Curve::point_t {1000.0f, 0.0f}, Curve::point_t {1000.0f, 0.0f}, Curve::point_t {1000.0f, 0.0f});
           },
-          ".*Points must be sorted by X coordinate in ascending order.*");
+          ".*Linear curve must have more than 1 unique points.*");
 
   // add invalid points
   ASSERT_DEATH(
