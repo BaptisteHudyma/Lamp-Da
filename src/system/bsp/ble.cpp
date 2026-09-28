@@ -216,7 +216,7 @@ static void on_pairing_done(hal::ble::hal_ble_conn_handle_t conn_handle, bool co
     return;
   }
 
-  hal::ble::gap_addr_t resolvedAddr = hal::ble::hal_ble_get_address(conn_handle);
+  const hal::ble::gap_addr_t resolvedAddr = hal::ble::hal_ble_get_address(conn_handle);
   if (resolvedAddr.type == HAL_BLE_GAP_ADDR_TYPE_INVALID)
   {
     bsp::lampda_print("[Security] could not get connected device address, skip");

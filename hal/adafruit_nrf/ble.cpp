@@ -16,7 +16,6 @@ static struct
   /* GATT database */
   struct gatt_type_t
   {
-    BLEService* service;
     BLECharacteristic* characteristic;
     hal_ble_read_callback_t read_cb;
     hal_ble_write_callback_t write_cb;
@@ -171,8 +170,6 @@ int32_t hal_ble_add_service(hal_ble_service_t* service)
     return HAL_BLE_ERROR_GENERIC;
   }
 
-  /* Store for later characteristic addition */
-  hal_ble_state.gatt_map[hal_ble_state.gatt_count].service = ble_service;
   servicesCnt++;
   return HAL_BLE_SUCCESS;
 }
@@ -259,10 +256,8 @@ int32_t hal_ble_add_characteristic(hal_ble_characteristic_t* characteristic)
   }
 
   /* Create BLE characteristic */
-  static size_t charCnt = 0;
   static BLECharacteristic s_chars[HAL_BLE_MAX_CHARACTERISTICS];
-
-  BLECharacteristic* ble_chr = &s_chars[charCnt];
+  BLECharacteristic* ble_chr = &s_chars[hal_ble_state.gatt_count];
 
   ble_chr->setProperties(props);
   ble_chr->setPermission(readPermission, writePermission);
@@ -310,8 +305,6 @@ int32_t hal_ble_add_characteristic(hal_ble_characteristic_t* characteristic)
   characteristic->handle = get_characteristic_handle(ble_chr);
   hal_ble_state.gatt_map[hal_ble_state.gatt_count].characteristic = ble_chr;
   hal_ble_state.gatt_count++;
-
-  charCnt++;
   return HAL_BLE_SUCCESS;
 }
 
@@ -534,7 +527,8 @@ int32_t hal_ble_get_mtu(hal_ble_conn_handle_t conn_handle)
   {
     if (hal_ble_state.connections[i].handle == conn_handle && hal_ble_state.connections[i].connected)
     {
-      return (int32_t)hal_ble_state.connections[i].mtu;
+      // This is not the "true" current MTU, but the max supported by the BLE layer
+      return (int32_t)Bluefruit.getMaxMtu(BLE_GAP_ROLE_PERIPH);
     }
   }
 
