@@ -129,7 +129,10 @@ bool hal_ble_is_initialized(void) { return hal_ble_state.initialized; }
 
 /* ========== GATT Database Setup ========== */
 
-int32_t hal_ble_add_service(hal_ble_service_t* service)
+inline static BLEService s_services[HAL_BLE_MAX_SERVICES];
+inline static BLECharacteristic s_chars[HAL_BLE_MAX_CHARACTERISTICS];
+
+int32_t hal_ble_add_service(hal_ble_service_t* service, const bool addToAdvertised)
 {
   if (!service)
   {
@@ -141,34 +144,36 @@ int32_t hal_ble_add_service(hal_ble_service_t* service)
     return HAL_BLE_ERROR_NOT_INIT;
   }
 
-  if (hal_ble_state.gatt_count >= HAL_BLE_MAX_CHARACTERISTICS)
+  /* Create BLE service based on UUID type */
+  static size_t servicesCnt = 0;
+
+  if (servicesCnt >= HAL_BLE_MAX_SERVICES)
   {
     return HAL_BLE_ERROR_NO_MEMORY;
   }
 
-  /* Create BLE service based on UUID type */
-  static size_t servicesCnt = 0;
-  static BLEService s_services[HAL_BLE_MAX_SERVICES];
-
-  BLEService* ble_service = &s_services[servicesCnt];
+  BLEService& ble_service = s_services[servicesCnt];
 
   if (service->uuid.type == hal_ble_uuid_type_t::TYPE_16BIT)
   {
-    ble_service->setUuid(service->uuid.value.uuid16);
+    ble_service.setUuid(service->uuid.value.uuid16);
   }
   else if (service->uuid.type == hal_ble_uuid_type_t::TYPE_128BIT)
   {
-    ble_service->setUuid(service->uuid.value.uuid128);
+    ble_service.setUuid(service->uuid.value.uuid128);
   }
   else
   {
     return HAL_BLE_ERROR_INVALID_PARAM;
   }
 
-  if (!ble_service->begin())
+  if (ble_service.begin() != ERROR_NONE)
   {
     return HAL_BLE_ERROR_GENERIC;
   }
+
+  if (addToAdvertised)
+    Bluefruit.Advertising.addService(s_services[servicesCnt]);
 
   servicesCnt++;
   return HAL_BLE_SUCCESS;
@@ -186,11 +191,6 @@ int32_t hal_ble_add_characteristic(hal_ble_characteristic_t* characteristic)
     return HAL_BLE_ERROR_NOT_INIT;
   }
 
-  if (hal_ble_state.gatt_count == 0)
-  {
-    return HAL_BLE_ERROR_INVALID_PARAM; /* No service added yet */
-  }
-
   if (hal_ble_state.gatt_count >= HAL_BLE_MAX_CHARACTERISTICS)
   {
     return HAL_BLE_ERROR_NO_MEMORY;
@@ -198,69 +198,33 @@ int32_t hal_ble_add_characteristic(hal_ble_characteristic_t* characteristic)
 
   /* Convert HAL properties to Bluefruit properties */
   uint8_t props = 0;
-  if (static_cast<uint8_t>(characteristic->properties) & static_cast<uint8_t>(hal_ble_gatt_prop_t::READ))
+  if (characteristic->properties == hal_ble_gatt_prop_t::READ)
   {
-    props |= CHR_PROPS_READ;
+    props = CHR_PROPS_READ;
   }
-  if (static_cast<uint8_t>(characteristic->properties) & static_cast<uint8_t>(hal_ble_gatt_prop_t::WRITE))
+  if (characteristic->properties == hal_ble_gatt_prop_t::WRITE)
   {
-    props |= CHR_PROPS_WRITE;
+    props = CHR_PROPS_WRITE;
   }
-  if (static_cast<uint8_t>(characteristic->properties) & static_cast<uint8_t>(hal_ble_gatt_prop_t::WRITE_NO_RSP))
+  if (characteristic->properties == hal_ble_gatt_prop_t::WRITE_NO_RSP)
   {
-    props |= CHR_PROPS_WRITE_WO_RESP;
+    props = CHR_PROPS_WRITE_WO_RESP;
   }
-  if (static_cast<uint8_t>(characteristic->properties) & static_cast<uint8_t>(hal_ble_gatt_prop_t::NOTIFY))
+  if (characteristic->properties == hal_ble_gatt_prop_t::NOTIFY)
   {
-    props |= CHR_PROPS_NOTIFY;
+    props = CHR_PROPS_NOTIFY;
   }
-  if (static_cast<uint8_t>(characteristic->properties) & static_cast<uint8_t>(hal_ble_gatt_prop_t::INDICATE))
+  if (characteristic->properties == hal_ble_gatt_prop_t::INDICATE)
   {
-    props |= CHR_PROPS_INDICATE;
-  }
-
-  /* Convert HAL permissions to Bluefruit permissions */
-  SecureMode_t readPermission = SECMODE_NO_ACCESS;
-  if (static_cast<uint8_t>(characteristic->rPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::READ))
-  {
-    readPermission = SECMODE_OPEN;
-  }
-  if (static_cast<uint8_t>(characteristic->rPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::READ_ENCRYPTED))
-  {
-    readPermission = SECMODE_NO_ACCESS;
-  }
-  if (static_cast<uint8_t>(characteristic->rPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::WRITE))
-  {
-    readPermission = SECMODE_OPEN;
-  }
-  if (static_cast<uint8_t>(characteristic->rPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::WRITE_ENCRYPTED))
-  {
-    readPermission = SECMODE_NO_ACCESS;
-  }
-  SecureMode_t writePermission = SECMODE_NO_ACCESS;
-  if (static_cast<uint8_t>(characteristic->wPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::READ))
-  {
-    writePermission = SECMODE_OPEN;
-  }
-  if (static_cast<uint8_t>(characteristic->wPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::READ_ENCRYPTED))
-  {
-    writePermission = SECMODE_NO_ACCESS;
-  }
-  if (static_cast<uint8_t>(characteristic->wPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::WRITE))
-  {
-    writePermission = SECMODE_OPEN;
-  }
-  if (static_cast<uint8_t>(characteristic->wPermissions) & static_cast<uint8_t>(hal_ble_gatt_perm_t::WRITE_ENCRYPTED))
-  {
-    writePermission = SECMODE_NO_ACCESS;
+    props = CHR_PROPS_INDICATE;
   }
 
   /* Create BLE characteristic */
-  static BLECharacteristic s_chars[HAL_BLE_MAX_CHARACTERISTICS];
   BLECharacteristic* ble_chr = &s_chars[hal_ble_state.gatt_count];
 
-  ble_chr->setProperties(props);
-  ble_chr->setPermission(readPermission, writePermission);
+  if (props > 0)
+    ble_chr->setProperties(props);
+  ble_chr->setUserDescriptor(characteristic->descriptor);
   ble_chr->setMaxLen(characteristic->max_length);
 
   if (characteristic->uuid.type == hal_ble_uuid_type_t::TYPE_16BIT)
@@ -285,7 +249,7 @@ int32_t hal_ble_add_characteristic(hal_ble_characteristic_t* characteristic)
   /* Register write callback if provided */
   if (characteristic->write_cb)
   {
-    ble_chr->setWriteCallback(adafruit_characteristic_write_callback);
+    ble_chr->setWriteCallback(adafruit_characteristic_write_callback, true);
     hal_ble_state.gatt_map[hal_ble_state.gatt_count].write_cb = characteristic->write_cb;
   }
 

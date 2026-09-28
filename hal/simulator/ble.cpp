@@ -12,7 +12,7 @@ int32_t hal_ble_deinit(void) { return HAL_BLE_SUCCESS; }
 
 bool hal_ble_is_initialized(void) { return true; }
 
-int32_t hal_ble_add_service(hal_ble_service_t* service) { return HAL_BLE_SUCCESS; }
+int32_t hal_ble_add_service(hal_ble_service_t* service, const bool addToAdvertised) { return HAL_BLE_SUCCESS; }
 
 int32_t hal_ble_add_characteristic(hal_ble_characteristic_t* characteristic) { return HAL_BLE_SUCCESS; }
 

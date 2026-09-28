@@ -455,7 +455,6 @@ void start_advertising(bool allowUnknownConnections)
   {
     // if not init yet, init !
     init();
-    return;
   }
 
   // startup sequence can load a bound adress, so set the pairing mode after
