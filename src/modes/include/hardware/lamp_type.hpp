@@ -596,8 +596,9 @@ public:
       static constexpr uint8_t minimumAllowedBrightness = ::lampda::minimumAllowedBrightness_8;
 #endif
       using curve_t = common::curves::LinearCurve<brightness_t, uint8_t>;
-      static curve_t brightnessCurve({curve_t::point_t {0, minimumAllowedBrightness},
-                                      curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255}});
+      static curve_t brightnessCurve = ::lampda::common::curves::make_linear_curve(
+              curve_t::point_t {0, minimumAllowedBrightness},
+              curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255});
 
       /// @warning: this is actually heavy to run
       strip.setBrightness(brightnessCurve.sample(trueNewBrightness));

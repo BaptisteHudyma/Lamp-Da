@@ -10,44 +10,67 @@ static constexpr float Inf = std::numeric_limits<float>::infinity();
 TEST(test_curves, invalid_linear_curve_create)
 {
   using Curve = curves::LinearCurve<float, float>;
-  std::vector<Curve::point_t> points;
-  // zero point
-  ASSERT_DEATH({ const Curve curve(points); }, ".*Linear curve must have more than 1 points.*");
-
-  // one point
-  points = {Curve::point_t {0.0f, 0.0f}};
-  ASSERT_DEATH({ const Curve curve(points); }, ".*Linear curve must have more than 1 points.*");
 
   // two or more identical points
-  points = {Curve::point_t {0.0f, 0.0f}, Curve::point_t {0.0f, 0.0f}};
-  ASSERT_DEATH({ const Curve curve(points); }, ".*Linear curve must have more than 1 points.*");
-  points = {Curve::point_t {1000.0f, 0.0f}, Curve::point_t {1000.0f, 0.0f}, Curve::point_t {1000.0f, 0.0f}};
-  ASSERT_DEATH({ const Curve curve(points); }, ".*Linear curve must have more than 1 points.*");
+  ASSERT_DEATH(
+          {
+            const Curve curve = curves::make_linear_curve(Curve::point_t {0.0f, 0.0f}, Curve::point_t {0.0f, 0.0f});
+          },
+          ".*Points must be sorted by X coordinate in ascending order.*");
+  ASSERT_DEATH(
+          {
+            const Curve curve = curves::make_linear_curve(
+                    Curve::point_t {1000.0f, 0.0f}, Curve::point_t {1000.0f, 0.0f}, Curve::point_t {1000.0f, 0.0f});
+          },
+          ".*Points must be sorted by X coordinate in ascending order.*");
 
   // add invalid points
-  points = {Curve::point_t {NAN, 0.0f}, Curve::point_t {1.0f, 1.0f}};
-  ASSERT_DEATH({ const Curve curve(points); }, ".*invalid value in curve parameters.*");
-  points = {Curve::point_t {0.0f, NAN}, Curve::point_t {1.0f, 1.0f}};
-  ASSERT_DEATH({ const Curve curve(points); }, ".*invalid value in curve parameters.*");
-  points = {Curve::point_t {0.0f, 0.0f}, Curve::point_t {NAN, 1.0f}};
-  ASSERT_DEATH({ const Curve curve(points); }, ".*invalid value in curve parameters.*");
-  points = {Curve::point_t {0.0f, 0.0f}, Curve::point_t {1.0f, NAN}};
-  ASSERT_DEATH({ const Curve curve(points); }, ".*invalid value in curve parameters.*");
-  points = {Curve::point_t {Inf, 0.0f}, Curve::point_t {1.0f, 1.0f}};
-  ASSERT_DEATH({ const Curve curve(points); }, ".*invalid value in curve parameters.*");
-  points = {Curve::point_t {0.0f, Inf}, Curve::point_t {1.0f, 1.0f}};
-  ASSERT_DEATH({ const Curve curve(points); }, ".*invalid value in curve parameters.*");
-  points = {Curve::point_t {0.0f, 0.0f}, Curve::point_t {Inf, 1.0f}};
-  ASSERT_DEATH({ const Curve curve(points); }, ".*invalid value in curve parameters.*");
-  points = {Curve::point_t {0.0f, 0.0f}, Curve::point_t {1.0f, Inf}};
-  ASSERT_DEATH({ const Curve curve(points); }, ".*invalid value in curve parameters.*");
+  ASSERT_DEATH(
+          {
+            const Curve curve = curves::make_linear_curve(Curve::point_t {NAN, 0.0f}, Curve::point_t {1.0f, 1.0f});
+          },
+          ".*invalid value in curve parameters.*");
+  ASSERT_DEATH(
+          {
+            const Curve curve = curves::make_linear_curve(Curve::point_t {0.0f, NAN}, Curve::point_t {1.0f, 1.0f});
+          },
+          ".*invalid value in curve parameters.*");
+  ASSERT_DEATH(
+          {
+            const Curve curve = curves::make_linear_curve(Curve::point_t {0.0f, 0.0f}, Curve::point_t {NAN, 1.0f});
+          },
+          ".*invalid value in curve parameters.*");
+  ASSERT_DEATH(
+          {
+            const Curve curve = curves::make_linear_curve(Curve::point_t {0.0f, 0.0f}, Curve::point_t {1.0f, NAN});
+          },
+          ".*invalid value in curve parameters.*");
+  ASSERT_DEATH(
+          {
+            const Curve curve = curves::make_linear_curve(Curve::point_t {Inf, 0.0f}, Curve::point_t {1.0f, 1.0f});
+          },
+          ".*invalid value in curve parameters.*");
+  ASSERT_DEATH(
+          {
+            const Curve curve = curves::make_linear_curve(Curve::point_t {0.0f, Inf}, Curve::point_t {1.0f, 1.0f});
+          },
+          ".*invalid value in curve parameters.*");
+  ASSERT_DEATH(
+          {
+            const Curve curve = curves::make_linear_curve(Curve::point_t {0.0f, 0.0f}, Curve::point_t {Inf, 1.0f});
+          },
+          ".*invalid value in curve parameters.*");
+  ASSERT_DEATH(
+          {
+            const Curve curve = curves::make_linear_curve(Curve::point_t {0.0f, 0.0f}, Curve::point_t {1.0f, Inf});
+          },
+          ".*invalid value in curve parameters.*");
 }
 
 TEST(test_curves, two_points_linear_float_curve)
 {
   using Curve = curves::LinearCurve<float, float>;
-  std::vector<Curve::point_t> points {Curve::point_t {0.0f, 0.0f}, Curve::point_t {100.0f, 100.0f}};
-  Curve curve(points);
+  Curve curve = curves::make_linear_curve(Curve::point_t {0.0f, 0.0f}, Curve::point_t {100.0f, 100.0f});
 
   for (float i = 0.0f; i < 100.0f; i += 1.0f)
   {
@@ -78,8 +101,7 @@ TEST(test_curves, two_points_linear_float_curve)
    * inverted linear curve
    */
 
-  points = {Curve::point_t {0.0f, 100.0f}, Curve::point_t {100.0f, 0.0f}};
-  curve = Curve(points);
+  curve = curves::make_linear_curve(Curve::point_t {0.0f, 100.0f}, Curve::point_t {100.0f, 0.0f});
   for (float i = 0.0f; i < 100.0f; i += 1.0f)
   {
     const auto res = curve.sample(i);
@@ -109,8 +131,7 @@ TEST(test_curves, two_points_linear_float_curve)
    * negative inverted linear curve
    */
 
-  points = {Curve::point_t {0.0f, -100.0f}, Curve::point_t {100.0f, 0.0f}};
-  curve = Curve(points);
+  curve = curves::make_linear_curve(Curve::point_t {0.0f, -100.0f}, Curve::point_t {100.0f, 0.0f});
   for (float i = 0.0f; i < 100.0f; i += 1.0f)
   {
     const auto res = curve.sample(i);
@@ -140,8 +161,8 @@ TEST(test_curves, two_points_linear_float_curve)
    * negative inverted linear curve, 3 points
    */
 
-  points = {Curve::point_t {-100.0f, -100.0f}, Curve::point_t {0.0f, 0.0f}, Curve::point_t {100.0f, 100.0f}};
-  curve = Curve(points);
+  curve = curves::make_linear_curve(
+          Curve::point_t {-100.0f, -100.0f}, Curve::point_t {0.0f, 0.0f}, Curve::point_t {100.0f, 100.0f});
   for (float i = -100.0f; i < 100.0f; i += 1.0f)
   {
     const auto res = curve.sample(i);
@@ -171,8 +192,7 @@ TEST(test_curves, two_points_linear_float_curve)
    * low slope curve
    */
 
-  points = {Curve::point_t {0.0f, 0.0f}, Curve::point_t {100.0f, 1.0f}};
-  curve = Curve(points);
+  curve = curves::make_linear_curve(Curve::point_t {0.0f, 0.0f}, Curve::point_t {100.0f, 1.0f});
 
   ASSERT_EQ(curve.sample(0.0f), 0.0f);
   ASSERT_EQ(curve.sample(50.0f), 0.5f);
@@ -183,22 +203,20 @@ TEST(test_curves, N_points_linear_curve)
 {
   using CurveFloatFloat = curves::LinearCurve<float, float>;
   // unsorted linear curve
-  std::vector<CurveFloatFloat::point_t> pointsFF {CurveFloatFloat::point_t {300.0f, 300.0f},
-                                                  CurveFloatFloat::point_t {-100.0f, -100.0f},
-                                                  CurveFloatFloat::point_t {200.0f, 200.0f},
-                                                  CurveFloatFloat::point_t {100.0f, 100.0f}};
-  CurveFloatFloat curveFF(pointsFF);
+  CurveFloatFloat curveFF = curves::make_linear_curve(CurveFloatFloat::point_t {-100.0f, -100.0f},
+                                                      CurveFloatFloat::point_t {100.0f, 100.0f},
+                                                      CurveFloatFloat::point_t {200.0f, 200.0f},
+                                                      CurveFloatFloat::point_t {300.0f, 300.0f});
   ASSERT_EQ(curveFF.sample(0.0f), 0.0f);
   ASSERT_EQ(curveFF.sample(100.0f), 100.0f);
   ASSERT_EQ(curveFF.sample(-100.0f), -100.0f);
 
   using CurveFloatUint = curves::LinearCurve<float, uint8_t>;
   // unsorted linear curve
-  std::vector<CurveFloatUint::point_t> pointsFU {CurveFloatUint::point_t {300.0f, 255},
-                                                 CurveFloatUint::point_t {-100.0f, 0},
-                                                 CurveFloatUint::point_t {200.0f, 191},
-                                                 CurveFloatUint::point_t {100.0f, 127}};
-  CurveFloatUint curveFU(pointsFU);
+  CurveFloatUint curveFU = curves::make_linear_curve(CurveFloatUint::point_t {-100.0f, 0},
+                                                     CurveFloatUint::point_t {100.0f, 127},
+                                                     CurveFloatUint::point_t {200.0f, 191},
+                                                     CurveFloatUint::point_t {300.0f, 255});
   ASSERT_EQ(curveFU.sample(-100.0f), 0);
   ASSERT_EQ(curveFU.sample(-50.0f), 31);
   ASSERT_EQ(curveFU.sample(0.0f), 63);
@@ -212,6 +230,31 @@ TEST(test_curves, N_points_linear_curve)
   ASSERT_EQ(curveFU.sample(NAN), 0);
   ASSERT_EQ(curveFU.sample(Inf), 255);
   ASSERT_EQ(curveFU.sample(-Inf), 0);
+}
+
+TEST(test_curves, N_points_linear_curve_unsorted)
+{
+  using CurveFloatFloat = curves::LinearCurve<float, float>;
+  // unsorted linear curve
+  ASSERT_DEATH(
+          {
+            CurveFloatFloat curveFF = curves::make_linear_curve(CurveFloatFloat::point_t {300.0f, 300.0f},
+                                                                CurveFloatFloat::point_t {-100.0f, -100.0f},
+                                                                CurveFloatFloat::point_t {200.0f, 200.0f},
+                                                                CurveFloatFloat::point_t {100.0f, 100.0f});
+          },
+          ".*Points must be sorted by X coordinate in ascending order.*");
+
+  // unsorted linear curve
+  using CurveFloatUint = curves::LinearCurve<float, uint8_t>;
+  ASSERT_DEATH(
+          {
+            CurveFloatUint curveFU = curves::make_linear_curve(CurveFloatUint::point_t {300.0f, 255},
+                                                               CurveFloatUint::point_t {-100.0f, 0},
+                                                               CurveFloatUint::point_t {200.0f, 191},
+                                                               CurveFloatUint::point_t {100.0f, 127});
+          },
+          ".*Points must be sorted by X coordinate in ascending order.*");
 }
 
 } // namespace lampda::common
