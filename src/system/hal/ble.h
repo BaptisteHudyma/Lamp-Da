@@ -47,24 +47,6 @@ namespace ble {
 /** @brief BLE address length. */
 #define HAL_BLE_GAP_ADDR_LEN (6)
 
-/**@defgroup HAL_BLE_GAP_ADDR_TYPES GAP Address types
- * @{ */
-#define HAL_BLE_GAP_ADDR_TYPE_INVALID                       0x0F /**< Public (identity) address.*/
-#define HAL_BLE_GAP_ADDR_TYPE_PUBLIC                        0x00 /**< Public (identity) address.*/
-#define HAL_BLE_GAP_ADDR_TYPE_RANDOM_STATIC                 0x01 /**< Random static (identity) address. */
-#define HAL_BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_RESOLVABLE     0x02 /**< Random private resolvable address. */
-#define HAL_BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_NON_RESOLVABLE 0x03 /**< Random private non-resolvable address. */
-#define HAL_BLE_GAP_ADDR_TYPE_ANONYMOUS                      \
-  0x7F /**< An advertiser may advertise without its address. \
-        This type of advertising is called anonymous. */
-       /**@} */
-
-struct gap_addr_t
-{
-  uint8_t type;                                   ///< address type in HAL_BLE_GAP_ADDR_TYPE_*
-  std::array<uint8_t, HAL_BLE_GAP_ADDR_LEN> addr; ///< 48-bit address, LSB format
-};
-
 /* ========== UUID Handling ========== */
 
 /**
@@ -121,6 +103,39 @@ enum class hal_ble_gatt_prop_t : uint8_t
   NOTIFY = 0x08,       /**< Server sends notifications (no ack) */
   INDICATE = 0x10,     /**< Server sends indications (requires ack) */
   BROADCAST = 0x20,    /**< Can be broadcast (advertising data) */
+};
+
+/**
+ * @brief pairing result code
+ */
+enum class hal_ble_pairing_result : uint8_t
+{
+  SUCCESS = 0,
+  UNSPECIFIED,       ///< Unspecified reason.
+  TIMEOUT,           ///< Procedure timed out
+  AUTH_REQ,          ///< Authentication requirements not met
+  PAIRING_NOT_SUPP,  ///< Pairing not supported
+  REPEATED_ATTEMPTS, ///< Too little time elapsed since last attempt
+  INVALID_PARAMS,    ///< Invalid parameters
+};
+
+/**@defgroup HAL_BLE_GAP_ADDR_TYPES GAP Address types
+ * @{ */
+enum class hal_ble_adress_type : uint8_t
+{
+  INVALID,                       ///< Public (identity) address.
+  PUBLIC,                        ///< Public (identity) address.
+  RANDOM_STATIC,                 ///< Random static (identity) address
+  RANDOM_PRIVATE_RESOLVABLE,     ///< Random private resolvable address.
+  RANDOM_PRIVATE_NON_RESOLVABLE, ///< Random private non-resolvable address.
+  ANONYMOUS,                     ///< An advertiser may advertise without its address. This type of advertising is
+                                 ///< called anonymous.
+};
+
+struct gap_addr_t
+{
+  hal_ble_adress_type type = hal_ble_adress_type::INVALID; ///< address type
+  std::array<uint8_t, HAL_BLE_GAP_ADDR_LEN> addr = {0};    ///< 48-bit address, LSB format
 };
 
 /**
@@ -200,9 +215,10 @@ struct hal_ble_service_t
  * Fired when pairing finishes (success or failure).
  *
  * @param[in] conn_handle Connection that paired
- * @param[in] success true if pairing succeeded, false if rejected/failed
+ * @param[in] code pairing code
  */
-using hal_ble_pairing_complete_cb_t = void (*)(hal_ble_conn_handle_t conn_handle, bool success);
+using hal_ble_pairing_complete_cb_t = void (*)(hal_ble_conn_handle_t conn_handle,
+                                               hal::ble::hal_ble_pairing_result code);
 
 /**
  * @brief Connection secured Callback

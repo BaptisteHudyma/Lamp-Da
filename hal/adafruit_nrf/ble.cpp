@@ -736,10 +736,29 @@ int8_t hal_ble_get_rssi(hal_ble_conn_handle_t conn_handle)
   return conn->getRssi();
 }
 
+hal_ble_adress_type convert_address_type(uint8_t addressType)
+{
+  switch (addressType)
+  {
+    case BLE_GAP_ADDR_TYPE_PUBLIC:
+      return hal_ble_adress_type::PUBLIC;
+    case BLE_GAP_ADDR_TYPE_RANDOM_STATIC:
+      return hal_ble_adress_type::RANDOM_STATIC;
+    case BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_RESOLVABLE:
+      return hal_ble_adress_type::RANDOM_PRIVATE_RESOLVABLE;
+    case BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_NON_RESOLVABLE:
+      return hal_ble_adress_type::RANDOM_PRIVATE_NON_RESOLVABLE;
+    case BLE_GAP_ADDR_TYPE_ANONYMOUS:
+      return hal_ble_adress_type::ANONYMOUS;
+    //
+    default:
+      return hal_ble_adress_type::INVALID;
+  }
+}
+
 gap_addr_t hal_ble_get_address(hal_ble_conn_handle_t conn_handle)
 {
-  gap_addr_t addr = {0};
-  addr.type = HAL_BLE_GAP_ADDR_TYPE_INVALID;
+  gap_addr_t addr;
   if (!hal_ble_state.initialized)
   {
     return addr;
@@ -762,7 +781,7 @@ gap_addr_t hal_ble_get_address(hal_ble_conn_handle_t conn_handle)
   }
 
   const auto& resolvedAddr = conn->getPeerAddr();
-  addr.type = resolvedAddr.addr_type;
+  addr.type = convert_address_type(resolvedAddr.addr_type);
   for (uint8_t i = 0; i < BLE_GAP_ADDR_LEN; i++)
     addr.addr[i] = resolvedAddr.addr[i];
   return addr;
@@ -879,13 +898,34 @@ static void adafruit_characteristic_write_callback(uint16_t conn_handle,
   }
 }
 
+hal_ble_pairing_result convert_pairing_codes(uint8_t authStatus)
+{
+  switch (authStatus)
+  {
+    case BLE_GAP_SEC_STATUS_SUCCESS:
+      return hal_ble_pairing_result::SUCCESS;
+    case BLE_GAP_SEC_STATUS_TIMEOUT:
+      return hal_ble_pairing_result::TIMEOUT;
+    case BLE_GAP_SEC_STATUS_AUTH_REQ:
+      return hal_ble_pairing_result::AUTH_REQ;
+    case BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP:
+      return hal_ble_pairing_result::PAIRING_NOT_SUPP;
+    case BLE_GAP_SEC_STATUS_REPEATED_ATTEMPTS:
+      return hal_ble_pairing_result::REPEATED_ATTEMPTS;
+    // Default case:
+    case BLE_GAP_SEC_STATUS_UNSPECIFIED:
+    default:
+      return hal_ble_pairing_result::UNSPECIFIED;
+  }
+}
+
 static void adafruit_on_pair_complete_callback(uint16_t conn_handle, uint8_t authStatus)
 {
   if (!hal_ble_state.sec_config || !hal_ble_state.sec_config->on_pairing_done)
   {
     return;
   }
-  hal_ble_state.sec_config->on_pairing_done(conn_handle, authStatus != 0);
+  hal_ble_state.sec_config->on_pairing_done(conn_handle, convert_pairing_codes(authStatus));
 }
 
 static void adafruit_on_secured_connection_callback(uint16_t conn_handle)

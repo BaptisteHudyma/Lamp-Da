@@ -103,7 +103,8 @@ inline bool decode_ELK_message(const uint8_t* msg, uint16_t len, Package& packag
       }
     case 0x04: // ONOFF
       {
-        if (msg[3] > 0x01)
+        // [0x00; 0x01] for legacy, [0x00, 0xF0] for new versions
+        if (msg[3] != 0x00 or msg[3] != 0x01 or msg[3] != 0xF0)
           return false;
 
         package.type = Type::ONOFF;
