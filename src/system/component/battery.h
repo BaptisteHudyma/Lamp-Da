@@ -42,16 +42,17 @@ extern bool can_battery_be_charged();
 inline uint16_t liion_mv_to_battery_percent(const uint16_t liionLevel_mv, const uint8_t batteryCountSerie)
 {
   using curve_t = common::curves::LinearCurve<uint16_t, uint16_t>;
-  static curve_t liionVoltagePercentToRealPercent({// low end of the curve, sharp drop
-                                                   curve_t::point_t {3000, 0},
-                                                   curve_t::point_t {3210, 500},
-                                                   curve_t::point_t {3350, 1000},
-                                                   curve_t::point_t {3430, 1500},
-                                                   curve_t::point_t {3470, 2000},
-                                                   // linear approximation works well enough in range 20-90%
-                                                   curve_t::point_t {4080, 9000},
-                                                   curve_t::point_t {4110, 9500},
-                                                   curve_t::point_t {4180, 10000}});
+  static curve_t liionVoltagePercentToRealPercent =
+          ::lampda::common::curves::make_linear_curve( // low end of the curve, sharp drop
+                  curve_t::point_t {3000, 0},
+                  curve_t::point_t {3210, 500},
+                  curve_t::point_t {3350, 1000},
+                  curve_t::point_t {3430, 1500},
+                  curve_t::point_t {3470, 2000},
+                  // linear approximation works well enough in range 20-90%
+                  curve_t::point_t {4080, 9000},
+                  curve_t::point_t {4110, 9500},
+                  curve_t::point_t {4180, 10000});
 
   // sample the curve
   return liionVoltagePercentToRealPercent.sample(liionLevel_mv / batteryCountSerie);

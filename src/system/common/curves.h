@@ -6,9 +6,9 @@
 
 #include "src/system/utils/utils.h"
 
-#include <algorithm>
+#include <cassert>
 #include <cmath>
-#include <vector>
+#include <array>
 
 namespace lampda {
 namespace common {
@@ -30,52 +30,62 @@ template<typename T, typename U> struct Point
  * \brief Given a set of points, will fit multiple linear segments to it.
  * \param[in] T Type of X coordinates
  * \param[in] U type of Y coordinates
+ * \param[in] maxSize max size of the given array (deduced)
  */
-template<typename T, typename U> class LinearCurve
+template<typename T, typename U, size_t maxSize = 24> class LinearCurve
 {
 public:
   /// point in the linear curve
   using point_t = Point<T, U>;
 
   /// Build a curve from a set of points
-  LinearCurve(const std::vector<point_t>& points)
+  template<size_t N> LinearCurve(const std::array<point_t, N>& points) : _count(0)
   {
+    static_assert(N <= maxSize, "Array size must be less than MaxSize");
     // first fail fast
     assert(points.size() >= 2 && "Linear curve must have more than 1 points");
 
-    pts = points;
-
-    for (const auto& p: pts)
+    // Copy points
+    for (size_t i = 0; i < N; ++i)
     {
-      // check A
+      pts[i] = points[i];
+    }
+
+    // Validate all points
+    for (size_t i = 0; i < N; ++i)
+    {
+      const auto& p = pts[i];
       assert(not std::isnan(p.x) && "invalid value in curve parameters");
       assert(std::isfinite(p.x) && "invalid value in curve parameters");
       assert(not std::isnan(p.y) && "invalid value in curve parameters");
       assert(std::isfinite(p.y) && "invalid value in curve parameters");
     }
 
-    // sort the vector by the x coordinate
-    auto lbd = [](const point_t& a, const point_t& b) {
-      return a.x < b.x;
-    };
-    std::sort(pts.begin(), pts.end(), lbd);
-
-    // remove duplicates (after sorting)
-    std::vector<point_t> nPoints;
-    nPoints.reserve(pts.size());
-
-    point_t lastPt = pts[0];
-    nPoints.emplace_back(lastPt);
-    for (size_t i = 1; i < pts.size(); i++)
+    // Pre-verify points are sorted by X coordinate
+    for (size_t i = 1; i < N; ++i)
     {
-      const auto& p = pts[i];
-      if (lastPt.x != p.x and lastPt.y != p.y)
-        nPoints.emplace_back(p);
-      lastPt = p;
+      assert(pts[i - 1].x <= pts[i].x && "Points must be sorted by X coordinate in ascending order");
     }
-    // last check
-    pts = nPoints;
-    assert(pts.size() >= 2 && "Linear curve must have more than 1 points");
+
+    // Remove consecutive duplicates (in place)
+    size_t writeIdx = 1;
+    for (size_t readIdx = 1; readIdx < N; ++readIdx)
+    {
+      if (pts[readIdx - 1].x != pts[readIdx].x || pts[readIdx - 1].y != pts[readIdx].y)
+      {
+        pts[writeIdx] = pts[readIdx];
+        writeIdx++;
+      }
+    }
+    _count = writeIdx;
+
+    assert(_count >= 2 && "Linear curve must have more than 1 unique points");
+
+    // Prost-verify points are sorted by X coordinate (after compaction)
+    for (size_t i = 1; i < N; ++i)
+    {
+      assert(pts[i - 1].x < pts[i].x && "Points must be sorted by X coordinate in ascending order");
+    }
   }
 
   /// Sample a point Y from a given x
@@ -87,10 +97,10 @@ public:
       return lastPt.y;
     if (x <= lastPt.x)
       return lastPt.y;
-    if (x >= pts.back().x)
-      return pts.back().y;
+    if (x >= pts[_count - 1].x)
+      return pts[_count - 1].y;
 
-    for (size_t i = 1; i < pts.size(); ++i)
+    for (size_t i = 1; i < _count; ++i)
     {
       const point_t& pt = pts[i];
       // in this segment bound
@@ -108,8 +118,18 @@ public:
 
 private:
   /// linear end points of the linear segments
-  std::vector<point_t> pts;
+  std::array<point_t, maxSize> pts;
+  /// number of valid points in the array
+  size_t _count;
 };
+
+template<typename T, typename U, typename... Args>
+LinearCurve<T, U> make_linear_curve(const Point<T, U>& firstPoint, const Point<T, U>& secondPoint, Args&&... args)
+{
+  constexpr size_t N = 2 + sizeof...(Args);
+  std::array<Point<T, U>, N> pts = {{firstPoint, secondPoint, args...}};
+  return LinearCurve<T, U>(pts);
+}
 
 /**
  * \brief Given two points and an exponent, fit an exponential function
