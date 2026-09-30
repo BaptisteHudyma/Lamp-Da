@@ -1,8 +1,10 @@
 # File details
 - global.h: main entry point for the program
 - bsp: Board Support Package. Board specific implementations, under the application, above the HAL.
+    - ble_services: BLE custom services
     - pd: PowerDelivery layer
     - balancer.h: handle the battery balancing, and some battery measurments
+    - ble.h: BLE high level layer.
     - charging_ic.h: layer of the battery charging component
     - imu_wrappper.h: interaction layer of the imu
     - indicator.h: visual indicator controler (led in the button)
@@ -38,7 +40,7 @@
     -  random8.h
     -  scale8.h
 - hal: Hardware Abstraction Layer: implement the platform specific code. The implementation linked to those files is switched at compile time depending on the hardware target.
-    - bluetooth.h: bluetooth interfaces
+    - ble.h: bluetooth interfaces
     - gpio.h: programmable pins interface
     - i2c.h; i2c interface
     - filesystem.h: handle the reading and writting of variables to memory

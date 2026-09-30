@@ -146,6 +146,8 @@ void sync_memory_protection()
   __ISB();
 }
 
+uint32_t get_mac_adress() { return NRF_FICR->DEVICEADDR[0]; }
+
 } // namespace registers
 } // namespace hal
 } // namespace lampda

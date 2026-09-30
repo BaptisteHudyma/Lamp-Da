@@ -12,7 +12,8 @@
 //
 
 #include "src/system/component/time_handling.h"
-#include "src/system/hal/bluetooth.h"
+
+#include "src/system/bsp/ble.h"
 
 #include <cstdint>
 namespace lampda::user {
@@ -116,16 +117,15 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
         // - if it is enabled, but the bounded peer already exists (force open connection)
 
         // Start pairing mode
-        const bool hasPairedDeviceAndNoPairing = hal::bluetooth::is_bounded() and
-                                                 not hal::bluetooth::is_advertising() and
-                                                 not hal::bluetooth::is_connected();
+        const bool hasPairedDeviceAndNoPairing =
+                bsp::ble::is_bounded() and not bsp::ble::is_advertising() and not bsp::ble::is_connected();
         if (hasPairedDeviceAndNoPairing)
         {
           if (manager.overlay_animate_ramp(
                       holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::Blue, modes::colors::Blue>))
           {
             // Start BLE but with paired device authorization only
-            hal::bluetooth::start_advertising(false);
+            bsp::ble::start_advertising(false);
 
             bsp::lampda_print("Enable BLE for paired device");
           }
@@ -135,14 +135,13 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
         {
           // Start pairing mode
           const bool isNotCurrentlyPairing =
-                  not(hal::bluetooth::is_advertising() and hal::bluetooth::is_open_to_all()) and
-                  not hal::bluetooth::is_connected();
+                  not(bsp::ble::is_advertising() and bsp::ble::is_open_to_all()) and not bsp::ble::is_connected();
           if (isNotCurrentlyPairing and
               manager.overlay_animate_ramp(
                       holdDuration, 3000, modes::colors::PaletteGradient<modes::colors::Blue, modes::colors::Blue>))
           {
             // Start pairing mode
-            hal::bluetooth::start_advertising(true);
+            bsp::ble::start_advertising(true);
 
             bsp::lampda_print("Enable BLE pairing mode");
           }

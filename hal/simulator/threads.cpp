@@ -93,9 +93,10 @@ int HAL_wait_notification(const int timeout_ms)
 
 // Actions on  target threads
 
-void HAL_notify_thread(TaskHandle_t handle, int wakeUpEvent) {
+void HAL_notify_thread(TaskHandle_t handle, int wakeUpEvent)
+{
   // TODO issue #132 support when implemented
-};
+}
 
 void HAL_suspend_thread(TaskHandle_t handle)
 {

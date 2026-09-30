@@ -54,7 +54,10 @@ set(SRC_SYSTEM_BSP
     ${LMBD_ROOT_DIR}/src/system/bsp/pd/usb_pd_policy.c
     ${LMBD_ROOT_DIR}/src/system/bsp/pd/usb_pd_protocol.c
 
+    ${LMBD_ROOT_DIR}/src/system/bsp/ble_services/elk_service.cpp
+
     ${LMBD_ROOT_DIR}/src/system/bsp/balancer.cpp
+    ${LMBD_ROOT_DIR}/src/system/bsp/ble.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/charging_ic.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/imu_wrapper.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/indicator.cpp
@@ -105,7 +108,7 @@ set(SRC_SYSTEM_LOGIC
 
 # The compile chain should have copied the correct HAL here
 set(SIMULATOR_HAL
-    ${LMBD_ROOT_DIR}/src/generated/hal/bluetooth.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/ble.cpp
     ${LMBD_ROOT_DIR}/src/generated/hal/filesystem.cpp
     ${LMBD_ROOT_DIR}/src/generated/hal/gpio.cpp
     ${LMBD_ROOT_DIR}/src/generated/hal/i2c.cpp

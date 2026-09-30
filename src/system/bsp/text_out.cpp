@@ -6,12 +6,12 @@ extern "C" {
 
 #include "src/system/utils/utils.h"
 
-#include "src/system/bsp/threads.h"
-
-#include "src/system/hal/bluetooth.h"
 #include "src/system/hal/queues.h"
 #include "src/system/hal/serial.h"
 #include "src/system/hal/time.h"
+
+#include "src/system/bsp/ble.h"
+#include "src/system/bsp/threads.h"
 
 #include <array>
 #include <cstring>
@@ -153,9 +153,9 @@ static std::array<uint8_t, bleQueueLenght * sizeof(serial_backend_ops_t::UartSen
 static std::array<bsp::threads::TaskBuffer_t, serial_backend_ops_t::sendQueueThreadBufferSize> bleTaskBuffer;
 static serial_backend_ops_t ble_uart_ops {.messageQueueLenght = bleQueueLenght,
                                           .taskName = bsp::threads::ble_cli_taskName,
-                                          .mtu_size = hal::bluetooth::serial::mtu_size,
-                                          .is_activated = hal::bluetooth::serial::is_activated,
-                                          .write = hal::bluetooth::serial::write,
+                                          .mtu_size = bsp::ble::serial::mtu_size,
+                                          .is_activated = bsp::ble::serial::is_activated,
+                                          .write = bsp::ble::serial::write,
                                           .uart_send_queue = nullptr,
                                           .queueBuffer = bleOpBuffer.data(),
                                           .sendTaskBuffer = bleTaskBuffer.data()};

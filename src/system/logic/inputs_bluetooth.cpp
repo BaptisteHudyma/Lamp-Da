@@ -4,8 +4,7 @@
 
 #include "src/system/utils/utils.h"
 
-#include "src/system/hal/bluetooth.h"
-
+#include "src/system/bsp/ble.h"
 #include "src/system/bsp/text_out.h"
 
 #include "src/system/common/elk_decoder.h"
@@ -20,7 +19,7 @@ namespace inputs_bluetooth {
 /// keep track of the bluetooth uses
 inline static bool _wasBluetoothUsed = false;
 
-bool is_bluetooth_used() { return _wasBluetoothUsed || hal::bluetooth::was_used(); }
+bool is_bluetooth_used() { return _wasBluetoothUsed || bsp::ble::was_used(); }
 
 void handle_BLE_ELK_command(const common::elk::Package& elkControlCommand)
 {

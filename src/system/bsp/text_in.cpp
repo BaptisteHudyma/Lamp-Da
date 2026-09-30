@@ -1,7 +1,8 @@
 #include "text_in.h"
 
-#include "src/system/hal/bluetooth.h"
 #include "src/system/hal/serial.h"
+
+#include "src/system/bsp/ble.h"
 
 namespace lampda {
 namespace bsp {
@@ -18,9 +19,9 @@ typedef struct
 serial_backend_ops_t serial_uart_ops = {.is_activated = hal::serial::is_activated,
                                         .read_char = hal::serial::read,
                                         .is_ready = hal::serial::is_available};
-serial_backend_ops_t ble_ueart_ops = {.is_activated = hal::bluetooth::serial::is_activated,
-                                      .read_char = hal::bluetooth::serial::read,
-                                      .is_ready = hal::bluetooth::serial::is_available};
+serial_backend_ops_t ble_ueart_ops = {.is_activated = bsp::ble::serial::is_activated,
+                                      .read_char = bsp::ble::serial::read,
+                                      .is_ready = bsp::ble::serial::is_available};
 
 namespace __private {
 

@@ -2,7 +2,6 @@
 
 #include "src/user/functions.h"
 
-#include "src/system/hal/bluetooth.h"
 #include "src/system/hal/time.h"
 
 #include "src/system/bsp/indicator.h"
