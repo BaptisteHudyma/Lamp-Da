@@ -31,7 +31,7 @@ bool advertisingStoppedByRequest = false;
 /// Keep track of the use
 bool _wasUsed = false;
 /// Paired device address
-inline static hal::ble::gap_addr_t identityAddr = {0};
+inline static hal::ble::gap_addr_t identityAddr;
 /// If true, the identityAddr is set, refuse all other connections
 static bool hasBondedPeer = false;
 /// If true, the device is in pairing mode, and can accept all connections
@@ -204,20 +204,34 @@ static void on_connect(hal::ble::hal_ble_conn_handle_t conn_handle)
   hal::ble::hal_ble_start_pairing(conn_handle);
 }
 
-static void on_pairing_done(hal::ble::hal_ble_conn_handle_t conn_handle, bool connected)
+static void on_pairing_done(hal::ble::hal_ble_conn_handle_t conn_handle, hal::ble::hal_ble_pairing_result pairedStatus)
 {
   if (not is_activated())
     return;
 
-  if (connected)
+  if (pairedStatus != hal::ble::hal_ble_pairing_result::SUCCESS)
   {
-    bsp::lampda_print("[Sec]: Pairing failed - disconnecting");
+    switch (pairedStatus)
+    {
+      case hal::ble::hal_ble_pairing_result::TIMEOUT:
+        bsp::lampda_print("[Sec]: Pairing failed (Procedure timed out) - disconnecting");
+        break;
+      case hal::ble::hal_ble_pairing_result::AUTH_REQ:
+        bsp::lampda_print("[Sec]: Pairing failed (Authentication requirements not met) - disconnecting");
+        break;
+      case hal::ble::hal_ble_pairing_result::REPEATED_ATTEMPTS:
+        bsp::lampda_print("[Sec]: Pairing failed (Too little time elapsed since last attempt) - disconnecting");
+        break;
+      default:
+        bsp::lampda_print("[Sec]: Pairing failed (%d) - disconnecting", pairedStatus);
+        break;
+    }
     hal::ble::hal_ble_disconnect(conn_handle);
     return;
   }
 
   const hal::ble::gap_addr_t resolvedAddr = hal::ble::hal_ble_get_address(conn_handle);
-  if (resolvedAddr.type == HAL_BLE_GAP_ADDR_TYPE_INVALID)
+  if (resolvedAddr.type == hal::ble::hal_ble_adress_type::INVALID)
   {
     bsp::lampda_print("[Security] could not get connected device address, skip");
     return;
@@ -290,7 +304,7 @@ static void on_secured(hal::ble::hal_ble_conn_handle_t conn_handle)
     return;
 
   const hal::ble::gap_addr_t resolvedAddr = hal::ble::hal_ble_get_address(conn_handle);
-  if (resolvedAddr.type == HAL_BLE_GAP_ADDR_TYPE_INVALID)
+  if (resolvedAddr.type == hal::ble::hal_ble_adress_type::INVALID)
   {
     bsp::lampda_print("[Security] could not get connected device address, skip");
     return;
@@ -327,11 +341,12 @@ static void on_secured(hal::ble::hal_ble_conn_handle_t conn_handle)
   }
 
   // Only update if we now have a non-RPA identity address
-  if (resolvedAddr.type != HAL_BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_RESOLVABLE)
+  if (resolvedAddr.type != hal::ble::hal_ble_adress_type::RANDOM_PRIVATE_RESOLVABLE)
   {
     __private::identityAddr = resolvedAddr;
     bsp::lampda_print("[Security] Updating the non-RPA identity");
   }
+
   // Save the handle: it's allowed to treat messages
   __private::authorizedConnHdl = conn_handle;
 
@@ -357,7 +372,7 @@ hal::ble::hal_ble_event_callbacks_t callbacks_struct = {
 hal::ble::hal_ble_sec_config_t security_struct = {
         .on_pairing_done = on_pairing_done,
         .on_secured = on_secured,
-        .mitm_required = true,
+        .mitm_required = false,
 };
 
 } // namespace callbacks
@@ -381,7 +396,8 @@ void load_bound_file()
   }
   else
   {
-    __private::identityAddr = {0};
+    __private::identityAddr.addr = {0};
+    __private::identityAddr.type = hal::ble::hal_ble_adress_type::INVALID;
     __private::hasBondedPeer = false;
   }
 }
@@ -400,7 +416,7 @@ bool is_bounded(std::array<uint8_t, 8>& buffer)
 {
   if (__private::hasBondedPeer)
   {
-    buffer[0] = __private::identityAddr.type;
+    buffer[0] = (uint8_t)__private::identityAddr.type;
     buffer[1] = __private::identityAddr.addr[5];
     buffer[2] = __private::identityAddr.addr[4];
     buffer[3] = __private::identityAddr.addr[3];
@@ -424,7 +440,8 @@ bool is_connection_allowed(uint16_t connectionHandle)
 void clear_bounded_devices()
 {
   hal::filesystem::delete_file(__private::BLE_BOUND_PEER_FILE);
-  __private::identityAddr = {0};
+  __private::identityAddr.addr = {0};
+  __private::identityAddr.type = hal::ble::hal_ble_adress_type::INVALID;
   __private::hasBondedPeer = false;
   bsp::lampda_print("[Bond] Bond file cleared.");
 

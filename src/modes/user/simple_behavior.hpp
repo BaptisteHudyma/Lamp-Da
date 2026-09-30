@@ -107,7 +107,7 @@ void handle_user_command(const common::UserCommand& command)
     // some event is already handled
     return;
   }
-  bsp::lampda_print("Unsupported user command message type");
+  bsp::lampda_print("Unsupported user command message type %d", command.get_type());
 }
 
 } // namespace lampda::user
