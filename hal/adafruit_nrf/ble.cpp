@@ -242,7 +242,8 @@ int32_t hal_ble_add_characteristic(hal_ble_characteristic_t* characteristic)
   if (props > 0)
     ble_chr->setProperties(props);
   ble_chr->setPermission(read_perm, write_perm);
-  ble_chr->setUserDescriptor(characteristic->descriptor);
+  if (characteristic->descriptor)
+    ble_chr->setUserDescriptor(characteristic->descriptor);
   if (characteristic->max_length > 0)
     ble_chr->setMaxLen(characteristic->max_length);
 

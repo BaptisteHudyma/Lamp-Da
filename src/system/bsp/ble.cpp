@@ -549,11 +549,11 @@ void init()
           .manufacturer = "Lambda le fou",
   };
 
-  hal::ble::services::system_infos::init(infos, true);
+  hal::ble::services::system_infos::init(infos, false);
   hal::ble::services::battery::init(static_cast<uint8_t>(component::battery::get_battery_minimum_cell_level() / 100),
                                     false);
-  hal::ble::services::uart::init(true);
-  bsp::ble::services::init_elk_service();
+  hal::ble::services::uart::init(false);
+  bsp::ble::services::init_elk_service(true);
 }
 
 void shutdown()

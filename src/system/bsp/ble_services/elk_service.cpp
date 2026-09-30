@@ -38,7 +38,7 @@ static void on_elk_cmd_received(hal::ble::hal_ble_conn_handle_t conn_handle, con
   }
 }
 
-void init_elk_service()
+void init_elk_service(const bool addToAdvertised)
 {
   static hal::ble::hal_ble_service_t elkService = {.uuid = {.type = hal::ble::hal_ble_uuid_type_t::TYPE_128BIT,
                                                             .value = {.uuid128 = {0xfb,
@@ -76,13 +76,13 @@ void init_elk_service()
                                          0xff,
                                          0x00,
                                          0x00}}},
+          .max_length = 9,
           .properties = hal::ble::hal_ble_gatt_prop_t::WRITE,
           .wPermissions = hal::ble::hal_ble_gatt_perm_t::WRITE,
-          .max_length = 9,
           .write_cb = on_elk_cmd_received,
           .descriptor = "ELK BLE led control"};
 
-  if (hal::ble::hal_ble_add_service(&elkService, true) != HAL_BLE_SUCCESS)
+  if (hal::ble::hal_ble_add_service(&elkService, addToAdvertised) != HAL_BLE_SUCCESS)
   {
     bsp::lampda_print("Could not add ELK service");
     return;
