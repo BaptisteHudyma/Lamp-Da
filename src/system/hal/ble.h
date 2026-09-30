@@ -171,10 +171,12 @@ struct hal_ble_characteristic_t
 {
   hal_ble_char_handle_t handle;      /**< Output: Set by hal_ble_add_characteristic() */
   hal_ble_uuid_t uuid;               /**< Characteristic UUID */
-  hal_ble_gatt_prop_t properties;    /**< Read/Write/Notify/Indicate flags */
   uint16_t max_length;               /**< Max value size in bytes */
   uint8_t* initial_value;            /**< Optional initial value (NULL = empty) */
   uint16_t initial_length;           /**< Length of initial value */
+  hal_ble_gatt_prop_t properties;    /**< Read/Write/Notify/Indicate flags */
+  hal_ble_gatt_perm_t rPermissions;  /**< Read Access control (encrypted, etc.) */
+  hal_ble_gatt_perm_t wPermissions;  /**< Write Access control (encrypted, etc.) */
   hal_ble_read_callback_t read_cb;   /**< Optional callback on read */
   hal_ble_write_callback_t write_cb; /**< Optional callback on write */
   const char* descriptor;            /**< User descriptor */

@@ -77,12 +77,23 @@ void init_elk_service()
                                          0x00,
                                          0x00}}},
           .properties = hal::ble::hal_ble_gatt_prop_t::WRITE,
+          .wPermissions = hal::ble::hal_ble_gatt_perm_t::WRITE,
           .max_length = 9,
           .write_cb = on_elk_cmd_received,
           .descriptor = "ELK BLE led control"};
 
-  hal::ble::hal_ble_add_service(&elkService, true);
-  hal::ble::hal_ble_add_characteristic(&elkWriteCharac);
+  if (hal::ble::hal_ble_add_service(&elkService, true) != HAL_BLE_SUCCESS)
+  {
+    bsp::lampda_print("Could not add ELK service");
+    return;
+  }
+  if (hal::ble::hal_ble_add_characteristic(&elkWriteCharac) != HAL_BLE_SUCCESS)
+  {
+    bsp::lampda_print("Could not add ELK service charac");
+    return;
+  }
+
+  bsp::lampda_print("ELK service created !");
 }
 
 } // namespace lampda::bsp::ble::services
