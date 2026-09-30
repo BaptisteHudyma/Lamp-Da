@@ -89,8 +89,7 @@ int8_t hal_ble_get_rssi(hal_ble_conn_handle_t conn_handle) { return 1; }
 
 gap_addr_t hal_ble_get_address(hal_ble_conn_handle_t conn_handle)
 {
-  gap_addr_t addr = {0};
-  addr.type = HAL_BLE_GAP_ADDR_TYPE_INVALID;
+  gap_addr_t addr;
   return addr;
 }
 
