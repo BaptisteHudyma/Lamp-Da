@@ -208,13 +208,13 @@ int DigitalPin::pin() const { return mImpl->mDigitalPin; }
 
 void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode) const
 {
-  DigitalPin::s_gpiosWithInterrupts.emplace(mGpio);
+  DigitalPin::s_gpiosWithInterrupts.set(static_cast<uint16_t>(mGpio));
   mImpl->attach_callback(func, mode);
 }
 
 void DigitalPin::detach_callbacks() const
 {
-  DigitalPin::s_gpiosWithInterrupts.erase(mGpio);
+  DigitalPin::s_gpiosWithInterrupts.reset(static_cast<uint16_t>(mGpio));
   mImpl->detach_callbacks();
 }
 

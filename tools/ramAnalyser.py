@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-static_ram_check.py  —  compile-time RAM budget verifier
+static_ram_check.py  -  compile-time RAM budget verifier
 Reads GCC .su files + ELF map to verify static + stack RAM fits in budget.
 BASED ON GENERATED CODE, by Claude.
 
@@ -258,6 +258,12 @@ class DynamicMemoryAnalyzer:
         Identify root allocators, grouping by container TYPE and TEMPLATE SIGNATURE.
         Aggregate duplicates across compilation units.
         Filter out STL internals (sort, heap ops, etc.)
+        Detect all heap allocations: STL containers, malloc/free, new/delete.
+        
+        Ignore markers:
+        - C++ attribute: [[lampda_ignore_heap]]
+        - Comment: // LAMPDA_IGNORE_HEAP
+        - Comment: // LAMPDA_IGNORE_HEAP_START / LAMPDA_IGNORE_HEAP_END
         """
         
         # STL internals to completely filter out
@@ -280,6 +286,7 @@ class DynamicMemoryAnalyzer:
             'std::__new_allocate',
         }
         
+        # Low-level allocators (C-style, keep these for tracking)
         LOW_LEVEL_ALLOCATORS = {
             'operator new',
             'operator new[]',
@@ -291,19 +298,91 @@ class DynamicMemoryAnalyzer:
             'realloc',
         }
         
+        def load_ignore_markers(source_files: dict) -> set:
+            """
+            Load all functions/lines marked for heap analysis ignoring.
+            
+            Supported markers in C++ source:
+            1. Function attribute: [[lampda_ignore_heap]]
+            Example:
+                [[lampda_ignore_heap]]
+                void critical_function() { new MyClass(); }
+            
+            2. Line comment: // LAMPDA_IGNORE_HEAP
+            Example:
+                void func() {
+                    auto* obj = new MyClass();  // LAMPDA_IGNORE_HEAP
+                }
+            
+            3. Block comments: // LAMPDA_IGNORE_HEAP_START / LAMPDA_IGNORE_HEAP_END
+            Example:
+                // LAMPDA_IGNORE_HEAP_START
+                void func1() { new A(); }
+                void func2() { new B(); }
+                // LAMPDA_IGNORE_HEAP_END
+            
+            Returns: set of (file, line_number) tuples to ignore
+            """
+            ignored = set()
+            ignore_blocks = {}  # file -> list of (start_line, end_line)
+            
+            for file_path, content in source_files.items():
+                if not isinstance(content, str):
+                    continue
+                
+                lines = content.split('\n')
+                in_ignore_block = False
+                block_start = 0
+                
+                for line_num, line in enumerate(lines, 1):
+                    # Check for block start
+                    if 'LAMPDA_IGNORE_HEAP_START' in line:
+                        in_ignore_block = True
+                        block_start = line_num
+                        continue
+                    
+                    # Check for block end
+                    if 'LAMPDA_IGNORE_HEAP_END' in line:
+                        if in_ignore_block:
+                            if file_path not in ignore_blocks:
+                                ignore_blocks[file_path] = []
+                            ignore_blocks[file_path].append((block_start, line_num))
+                            in_ignore_block = False
+                        continue
+                    
+                    # Check for line-level ignore marker
+                    if 'LAMPDA_IGNORE_HEAP' in line and 'START' not in line and 'END' not in line:
+                        ignored.add((file_path, line_num))
+                    
+                    # Check for attribute marker (function decorator)
+                    if '[[lampda_ignore_heap]]' in line:
+                        # Mark this line and next few lines as ignored
+                        # (typically the function signature follows)
+                        ignored.add((file_path, line_num))
+                        ignored.add((file_path, line_num + 1))
+                        ignored.add((file_path, line_num + 2))
+            
+            # Convert block ranges to individual line entries
+            for file_path, blocks in ignore_blocks.items():
+                for start, end in blocks:
+                    for line_num in range(start, end + 1):
+                        ignored.add((file_path, line_num))
+            
+            return ignored
+        
+        def should_ignore_allocation(func_file: str, func_line: int, ignored_markers: set) -> bool:
+            """Check if an allocation should be ignored based on markers."""
+            return (func_file, func_line) in ignored_markers
+        
         def should_filter(func_name: str) -> bool:
             """Check if function should be filtered out."""
             # Filter STL internals
             for internal in STL_INTERNALS_FILTER:
                 if internal in func_name:
                     return True
-            # Filter low-level allocators
-            for allocator in LOW_LEVEL_ALLOCATORS:
-                if allocator in func_name:
-                    return True
             return False
         
-        def extract_container_signature(func_name: str) -> tuple[str, str]:
+        def extract_container_signature(func_name: str) -> tuple:
             """
             Extract container type and template signature.
             
@@ -312,7 +391,6 @@ class DynamicMemoryAnalyzer:
                 std::vector<int> → ('vector', 'std::vector<int>')
                 std::map<K,V> → ('map', 'std::map<K,V>')
             """
-            # Match STL container patterns
             patterns = {
                 'std::vector': 'vector',
                 'std::map': 'map',
@@ -328,12 +406,11 @@ class DynamicMemoryAnalyzer:
             
             for pattern, container_type in patterns.items():
                 if pattern in func_name:
-                    # Extract template args: everything between first '<' and matching '>'
                     start = func_name.find(pattern)
                     if start >= 0:
                         bracket_start = func_name.find('<', start)
                         if bracket_start > 0:
-                            # Simple extraction (may have nested brackets)
+                            # Extract matching bracket pair
                             bracket_count = 0
                             bracket_end = bracket_start
                             for i in range(bracket_start, len(func_name)):
@@ -352,55 +429,179 @@ class DynamicMemoryAnalyzer:
             
             return None, func_name
         
-        # Step 1: Collect all STL uses, keyed by container signature
-        container_uses = {}  # signature -> { 'files': set, 'sizes': [], 'type': str }
+        def extract_class_from_new(func_name: str) -> tuple:
+            """
+            Extract class type from 'new' expressions.
+            
+            Returns: (class_type, full_signature)
+            Examples:
+                MyClass::MyClass() → ('MyClass', 'MyClass')
+                namespace::MyClass::MyClass() → ('MyClass', 'namespace::MyClass')
+            """
+            parts = func_name.split('::')
+            
+            if len(parts) >= 2:
+                class_name = parts[-2]
+                full_name = '::'.join(parts[:-1])
+                return class_name, full_name
+            
+            return func_name, func_name
+        
+        def is_allocation_function(func_name: str) -> str:
+            """
+            Detect if function is an allocation operation.
+            
+            Returns: allocation type or None
+                'stl_container': STL container usage
+                'new': operator new or new[]
+                'malloc': malloc/calloc/realloc
+                'delete': operator delete or delete[]
+                'free': free()
+                None: not an allocation function
+            """
+            if 'operator new' in func_name or '::new(' in func_name:
+                return 'new' if 'new[' not in func_name else 'new[]'
+            
+            if 'malloc' in func_name or 'calloc' in func_name:
+                return 'malloc'
+            if 'realloc' in func_name:
+                return 'realloc'
+            
+            for pattern in ['std::vector', 'std::map', 'std::unordered_map', 'std::set', 
+                        'std::unordered_set', 'std::string', 'std::deque', 'std::list', 
+                        'std::queue', 'std::stack']:
+                if pattern in func_name:
+                    return 'stl_container'
+            
+            return None
+        
+        # Step 0: Load ignore markers from source files (if available)
+        ignored_allocations = set()
+        if hasattr(self, 'source_files'):
+            ignored_allocations = load_ignore_markers(self.source_files)
+        
+        # Step 1: Collect all heap allocations
+        allocations = {}  # signature -> { 'type': str, 'instances': [], 'total_stack': int }
+        ignored_count = 0
         
         for func in su_entries:
             if should_filter(func.name):
                 continue
             
-            # Check if this function uses STL
-            for symbol, types in self.allocation_type.items():
-                if self._symbol_matches_function(symbol, func.name) and 'STL' in types:
-                    container_type, signature = extract_container_signature(func.name)
+            # Check if this allocation should be ignored
+            if should_ignore_allocation(func.file, func.line, ignored_allocations):
+                ignored_count += 1
+                continue
+            
+            alloc_type = is_allocation_function(func.name)
+            
+            if alloc_type == 'stl_container':
+                container_type, signature = extract_container_signature(func.name)
+                if container_type:
+                    if signature not in allocations:
+                        allocations[signature] = {
+                            'allocation_type': 'stl_container',
+                            'type': container_type,
+                            'instances': [],
+                            'total_stack': 0,
+                        }
                     
-                    if container_type:
-                        if signature not in container_uses:
-                            container_uses[signature] = {
-                                'container_type': container_type,
-                                'functions': [],
-                                'total_stack': 0,
-                            }
-                        
-                        container_uses[signature]['functions'].append({
-                            'name': func.name,
-                            'file': func.file,
-                            'line': func.line,
-                            'size': func.size,
-                        })
-                        container_uses[signature]['total_stack'] += func.size
-                    
-                    break
+                    allocations[signature]['instances'].append({
+                        'name': func.name,
+                        'file': func.file,
+                        'line': func.line,
+                        'size': func.size,
+                    })
+                    allocations[signature]['total_stack'] += func.size
+            
+            elif alloc_type in ['new', 'new[]']:
+                class_type, signature = extract_class_from_new(func.name)
+                
+                if signature not in allocations:
+                    allocations[signature] = {
+                        'allocation_type': alloc_type,
+                        'type': class_type,
+                        'instances': [],
+                        'total_stack': 0,
+                    }
+                
+                allocations[signature]['instances'].append({
+                    'name': func.name,
+                    'file': func.file,
+                    'line': func.line,
+                    'size': func.size,
+                })
+                allocations[signature]['total_stack'] += func.size
+            
+            elif alloc_type in ['malloc', 'realloc']:
+                if func.name not in allocations:
+                    allocations[func.name] = {
+                        'allocation_type': alloc_type,
+                        'type': func.name,
+                        'instances': [],
+                        'total_stack': 0,
+                    }
+                
+                allocations[func.name]['instances'].append({
+                    'name': func.name,
+                    'file': func.file,
+                    'line': func.line,
+                    'size': func.size,
+                })
+                allocations[func.name]['total_stack'] += func.size
         
-        # Step 2: Build result grouped by container type and signature
+        # Step 2: Build result grouped by allocation type and signature
         result = {}
         
-        for signature, data in container_uses.items():
-            # Use signature as key for grouping
-            result[signature] = {
-                'root': {
-                    'type': data['container_type'],
-                    'signature': signature,
-                    'instances': data['functions'],
-                    'total_stack': data['total_stack'],
-                    'num_files': len(set(f['file'] for f in data['functions'])),
-                },
-                'types': ['STL'],
-                'callers': [],  # Could populate with reverse call graph if needed
-            }
+        for signature, data in allocations.items():
+            alloc_type = data['allocation_type']
+            
+            if alloc_type == 'stl_container':
+                result[signature] = {
+                    'root': {
+                        'allocation_type': 'stl_container',
+                        'type': data['type'],
+                        'signature': signature,
+                        'instances': data['instances'],
+                        'total_stack': data['total_stack'],
+                        'num_files': len(set(inst['file'] for inst in data['instances'])),
+                        'num_instances': len(data['instances']),
+                    },
+                    'types': ['STL'],
+                    'callers': [],
+                }
+            
+            elif alloc_type in ['new', 'new[]']:
+                result[signature] = {
+                    'root': {
+                        'allocation_type': alloc_type,
+                        'type': data['type'],
+                        'signature': signature,
+                        'instances': data['instances'],
+                        'total_stack': data['total_stack'],
+                        'num_files': len(set(inst['file'] for inst in data['instances'])),
+                        'num_instances': len(data['instances']),
+                    },
+                    'types': ['new_delete'],
+                    'callers': [],
+                }
+            
+            elif alloc_type in ['malloc', 'realloc']:
+                result[signature] = {
+                    'root': {
+                        'allocation_type': alloc_type,
+                        'type': data['type'],
+                        'instances': data['instances'],
+                        'total_stack': data['total_stack'],
+                        'num_files': len(set(inst['file'] for inst in data['instances'])),
+                        'num_instances': len(data['instances']),
+                    },
+                    'types': ['C_malloc'],
+                    'callers': [],
+                }
         
         return result
-        
+
 def display_grouped_report(roots: dict):
     """Display clean, grouped dynamic memory report with aggregated STL usage."""
     
@@ -425,7 +626,7 @@ def display_grouped_report(roots: dict):
         total_stack = root_info['total_stack']
         num_files = root_info['num_files']
         
-        print(f"\n{idx}. — std::{container_type}")
+        print(f"\n{idx}. - std::{container_type}")
         print("   " + "-"*76)
         print(f"   Template: {signature}")
         print(f"   Instances: {len(instances)} function(s) across {num_files} file(s)")
@@ -521,30 +722,30 @@ def report_and_assert(r: RamReport, is_verbose) -> bool:
     # We dont really care about this, as it only display internal SDK code
     if is_verbose:
         if r.dynamic_fns:
-            print("  ⚠  WARNINGS — dynamic stack usage detected (VLAs / alloca):")
+            print("  ⚠  WARNINGS - dynamic stack usage detected (VLAs / alloca):")
             for fn in r.dynamic_fns:
                 print(f"    ! {fn}")
             print()
 
     if r.max_call_stack > r.stack_budget:
-        print(f"  ✗ FAIL — stack {r.max_call_stack} B exceeds budget {r.stack_budget} B")
+        print(f"  ✗ FAIL - stack {r.max_call_stack} B exceeds budget {r.stack_budget} B")
         passed = False
     else:
-        print(f"  ✓ PASS — stack within budget "
+        print(f"  ✓ PASS - stack within budget "
               f"({r.max_call_stack}/{r.stack_budget} B, "
               f"{r.stack_budget - r.max_call_stack} B)")
 
     if total_used > r.total_ram:
-        print(f"  ✗ FAIL — estimated RAM {total_used} B exceeds device RAM {r.total_ram} B")
+        print(f"  ✗ FAIL - estimated RAM {total_used} B exceeds device RAM {r.total_ram} B")
         passed = False
     else:
-        print(f"  ✓ PASS — total RAM within limit ({total_used}/{r.total_ram} B)")
+        print(f"  ✓ PASS - total RAM within limit ({total_used}/{r.total_ram} B)")
     
     if not isClearOfDynamicMemory:
-        print("  ✓ FAIL Dynamic memory allocations detected. Check debug above for location")
+        print("  ✓ FAIL - Dynamic memory allocations detected. Check debug above for location")
         passed = False
     else:
-        print("  ✓ PASS No dynamic memory allocations detected")
+        print("  ✓ PASS - No dynamic memory allocations detected")
 
     print("")
     return passed
