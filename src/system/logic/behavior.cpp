@@ -73,7 +73,7 @@ static bool wokeUpFromVbus_s = false;
 // indicates that the output should be turned on/off
 static bool isTargetPoweredOn_s = false;
 // indicates the error that started the error state
-static std::string errorStateRaisedStr = "";
+static common::static_string<128> errorStateRaisedStr = "";
 // indicates the time at which the pre-charge state started
 static uint32_t preChargeCalled = 0;
 // indicates the  time at which the output state is enabled
@@ -275,21 +275,21 @@ void write_parameters()
 // user code is running when state is output
 bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::OUTPUT_LIGHT; }
 
-void set_error_state_message(const std::string& errorMsg)
+void set_error_state_message(const common::static_string<128>& errorMsg)
 {
   if (errorStateRaisedStr.empty())
   {
-    errorStateRaisedStr = "\n\t" + errorMsg;
+    errorStateRaisedStr = common::static_string<8>("\n\t") + errorMsg;
   }
 }
-std::string get_error_state_message()
+common::static_string<128> get_error_state_message()
 {
   if (errorStateRaisedStr.empty())
     return "x";
   return errorStateRaisedStr;
 }
 
-void go_to_error_state(const std::string& errorMsg)
+void go_to_error_state(const common::static_string<128>& errorMsg)
 {
   statistics::signal_output_off();
 
@@ -338,7 +338,7 @@ void handle_start_logic_state()
   // safety for failure of components at startup
   if (not can_system_allowed_to_be_powered())
   {
-    go_to_error_state("system not allow to power on in start logic state");
+    go_to_error_state("system not allowed to power on in start logic state");
     return;
   }
   if (logic::power::is_in_error_state())
@@ -614,9 +614,10 @@ void handle_output_light_state()
 
     if (hal::time_ms() - lastOutputLightValidTime > 1000)
     {
-      go_to_error_state("power gate took too long to switch in output light state " +
-                        std::to_string(::lampda::bsp::powergates::is_power_gate_enabled()) +
-                        std::to_string(logic::power::is_output_mode_ready()));
+      common::static_string<128> errStr("power gate took too long to switch in output light state ");
+      errStr.push_back(static_cast<char>(::lampda::bsp::powergates::is_power_gate_enabled()));
+      errStr.push_back(static_cast<char>(logic::power::is_output_mode_ready()));
+      go_to_error_state(errStr);
     }
     return;
   }
@@ -837,7 +838,10 @@ void loop()
   }
 }
 
-std::string get_state() { return std::string(BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]); }
+common::static_string<32> get_state()
+{
+  return common::static_string<32>(BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]);
+}
 
 } // namespace behavior
 } // namespace logic

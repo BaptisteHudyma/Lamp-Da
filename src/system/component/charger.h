@@ -9,7 +9,8 @@
 #define COMPONENT_CHARGER_H
 
 #include <cstdint>
-#include <string>
+
+#include "src/system/common/static_string.h"
 
 namespace lampda {
 namespace component {
@@ -90,12 +91,12 @@ struct Charger_t
   /// Return true if the charge is finished
   bool is_charge_finished() const;
   /// Return the status as a string
-  std::string get_status_str() const;
+  common::static_string<32> get_status_str() const;
 
   /// Contain a more detailed error of an hardware error
-  std::string hardwareErrorMessage = "";
+  common::static_string<128> hardwareErrorMessage = "";
   /// Contain a more detailed error of a software error
-  std::string softwareErrorMessage = "";
+  common::static_string<128> softwareErrorMessage = "";
 };
 
 /// Return true if voltage is detected on VBUS.

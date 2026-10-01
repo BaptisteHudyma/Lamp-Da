@@ -129,7 +129,7 @@ struct UsbPDData
   uint32_t maxInputVoltage;
 
   /// Debug status for the algorithm
-  std::string pdAlgoStatus;
+  common::static_string<32> pdAlgoStatus;
 
   /// when true, this struct has changed !
   bool hasChanged = false;
@@ -179,7 +179,7 @@ struct UsbPDData
       maxInputVoltage = newmaxInputVoltage;
     }
 
-    const auto& newStatus = std::string(get_state_cstr());
+    const auto& newStatus = common::static_string<32>(get_state_cstr());
     if (newStatus != pdAlgoStatus)
     {
       hasChanged = true;

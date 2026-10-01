@@ -4,7 +4,6 @@
  */
 
 #include <stddef.h>
-#include <string.h>
 
 #include "../../../../src/system/bsp/text_out.h"
 
@@ -15,6 +14,7 @@
 
 #include "../../../../src/system/driver/pd/usb_pd_driver.h"
 #include <assert.h>
+#include <string.h>
 
 /* Flags to clear on a disconnect */
 #define PD_FLAGS_RESET_ON_DISCONNECT_MASK                                                                       \

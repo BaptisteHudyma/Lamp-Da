@@ -6,7 +6,6 @@
 #define BSP_BLE_H
 
 #include <stdint.h>
-#include <string>
 #include <array>
 
 namespace lampda {

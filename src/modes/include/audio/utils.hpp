@@ -10,8 +10,6 @@
 #include "src/system/ext/math8.h"
 #include <cmath>
 #include <cstdint>
-#include <deque>
-#include <string>
 
 /// User modes audio utilities
 namespace lampda::modes::audio {

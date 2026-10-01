@@ -696,7 +696,7 @@ struct Alert_UsbPortShort : public AlertBase
 };
 
 /// Alerts must be sorted by importance, only the first activated one will be shown
-AlertBase* allAlerts[] = {
+inline static AlertBase* allAlerts[] = {
         new Alert_SystemShutdownFailed,
         new Alert_BatteryMissing, // if battery is missing, the system will also have the hardware alert
         new Alert_HardwareAlert,

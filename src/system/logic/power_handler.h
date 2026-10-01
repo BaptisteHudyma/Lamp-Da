@@ -6,7 +6,8 @@
 #define POWER_POWER_HANDLER_H
 
 #include <cstdint>
-#include <string>
+
+#include "src/system/common/static_string.h"
 
 namespace lampda {
 namespace logic {
@@ -100,12 +101,12 @@ bool enable_charge(const bool);
 /**
  * \brief Return the current state, as a string
  */
-std::string get_state();
+common::static_string<32> get_state();
 /**
  * \brief Return the current error message, as a string.
  * If not errors are present, will return "x".
  */
-std::string get_error_string();
+common::static_string<128> get_error_string();
 
 /**
  * \brief Return true when the current state is OUTPUT_VOLTAGE_MODE, and the desired voltage are set and gates are

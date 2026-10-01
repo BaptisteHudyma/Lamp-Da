@@ -452,6 +452,7 @@ struct TextDisplay
   static constexpr float fwidth = LampTy::maxWidthFloat; ///< \private
   static constexpr uint16_t width = LampTy::maxWidth;    ///< \private
   static constexpr uint16_t nbLines = LampTy::maxHeight;
+  static constexpr uint16_t maxCharacters = 64;
 
   /**
    * \brief Display a given text string to the led
@@ -465,7 +466,7 @@ struct TextDisplay
    * \return True when the text is fully displayed
    */
   static bool display(LampTy& lamp,
-                      const std::string& text,
+                      const common::static_string<maxCharacters>& text,
                       const std::function<uint32_t(char)>& colorCallback,
                       const int16_t startXIndex = 0,
                       const int16_t startYIndex = 0,

@@ -39,7 +39,7 @@ static Battery battery_s;
 // store the component status
 inline static Status_t status_s = Status_t::UNINITIALIZED;
 // store an error message for errors
-inline static std::string status_error = "";
+inline static common::static_string<64> status_error = "";
 // store the current charge status of the system
 inline static ChargeStatus_t chargeStatus_s = ChargeStatus_t::OFF;
 
@@ -50,14 +50,14 @@ inline static bool isChargeEnabled_s = false;
 // charger is in OTG state
 inline static bool isInOtg_s = false;
 
-std::string softwareError_detail = "";
-std::string get_software_error_message()
+common::static_string<64> softwareError_detail = "";
+common::static_string<64> get_software_error_message()
 {
   if (softwareError_detail.empty())
     return "x";
   return softwareError_detail;
 }
-void set_software_error_message(const std::string& msg)
+void set_software_error_message(const common::static_string<64>& msg)
 {
   if (softwareError_detail.empty())
     softwareError_detail = msg;
@@ -590,7 +590,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
   const auto maxBatteryVoltage_mV_read = chargerIcRegisters.maxChargeVoltage.set(maxBatteryVoltage_mV);
   const auto minSystemVoltage_mV_read = chargerIcRegisters.minSystemVoltage.set(minSystemVoltage_mV);
 
-  std::string startErrorMessage = "";
+  common::static_string<64> startErrorMessage = "";
   bool isSuccessful = true;
 
   // a write failed at some point
@@ -780,7 +780,7 @@ bool is_in_OTG() { return isInOtg_s; }
 
 Status_t get_status() { return status_s; }
 
-std::string get_status_detail() { return status_error; }
+common::static_string<64> get_status_detail() { return status_error; }
 
 ChargeStatus_t get_charge_status() { return chargeStatus_s; }
 
