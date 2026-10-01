@@ -41,6 +41,7 @@ class RamReport:
     worst_chain:    list[str] = field(default_factory=list)
     dynamic_fns:    list[str] = field(default_factory=list)  # warning: VLAs etc.
     stlRoots:  dict = field(default_factory=dict)
+    allocation_call_sites: list[str] = field(default_factory=list)
 
 # ─────────────────────────────────────────────
 # .su file parsing
@@ -601,6 +602,82 @@ class DynamicMemoryAnalyzer:
                 }
         
         return result
+    
+def find_allocation_call_sites(elf: Path) -> list[str]:
+    """Find direct calls to heap allocators and map them to source locations."""
+    import shutil
+
+    objdump = next(
+        (tool for tool in (
+            "arm-none-eabi-objdump",
+            "arm-linux-gnueabihf-objdump",
+            "objdump",
+        ) if shutil.which(tool)),
+        None,
+    )
+    addr2line = next(
+        (tool for tool in (
+            "arm-none-eabi-addr2line",
+            "addr2line",
+        ) if shutil.which(tool)),
+        None,
+    )
+
+    if not objdump:
+        return ["Could not locate objdump; call-site analysis was skipped."]
+    if not addr2line:
+        return ["Could not locate addr2line; source-line mapping was skipped."]
+
+    result = subprocess.run(
+        [objdump, "-d", "-C", str(elf)],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return [f"objdump failed: {result.stderr.strip()}"]
+
+    function_header = re.compile(r"^[0-9a-fA-F]+\s+<(.+)>:$")
+    call_instruction = re.compile(
+        r"^\s*([0-9a-fA-F]+):.*?\b(?:bl|blx|callq?)\b.*?<([^>]+)>"
+    )
+    allocator_names = ("operator new", "malloc", "calloc", "realloc")
+
+    sites = []
+    current_function = "<unknown>"
+
+    for line in result.stdout.splitlines():
+        header = function_header.match(line.strip())
+        if header:
+            current_function = header.group(1)
+
+        call = call_instruction.match(line)
+        if not call:
+            continue
+
+        address, target = call.groups()
+        if not any(name in target for name in allocator_names):
+            continue
+
+        mapped = subprocess.run(
+            [addr2line, "-e", str(elf), "-f", "-C", "-i", address],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+
+        location = "source location unavailable"
+        if mapped.returncode == 0 and mapped.stdout.strip():
+            splitPath = [part.strip() for part in mapped.stdout.splitlines() if part.strip()]
+            location = "".join(splitPath[-1])
+
+        # Ignore depends, adafruit lib & invalid locations
+        if not ("src/depends" in location) and not ("_build" in location) and not ("??:?" in location):
+            sites.append(
+                f"{current_function} at {location} "
+                f"(ELF address 0x{address})"
+            )
+
+    return sites
 
 def display_grouped_report(roots: dict):
     """Display clean, grouped dynamic memory report with aggregated STL usage."""
@@ -684,19 +761,31 @@ def analyse(elf: Path, sudir: Path, total_ram: int, stack_budget: int) -> RamRep
     analyzer = DynamicMemoryAnalyzer(elf)
     roots = analyzer.find_roots_and_dependents(entries)
     
+    allocation_call_sites = find_allocation_call_sites(elf)
+
     return RamReport(
-        static_data    = static,
-        max_call_stack = depth,
-        total_ram      = total_ram,
-        stack_budget   = stack_budget,
-        worst_chain    = chain,
-        dynamic_fns    = dynamic_fns,
-        stlRoots = roots
+        static_data=static,
+        max_call_stack=depth,
+        total_ram=total_ram,
+        stack_budget=stack_budget,
+        worst_chain=chain,
+        dynamic_fns=dynamic_fns,
+        stlRoots=roots,
+        allocation_call_sites=allocation_call_sites,
     )
 
 def report_and_assert(r: RamReport, is_verbose) -> bool:
 
-    isClearOfDynamicMemory = display_grouped_report(r.stlRoots)
+    # If we have heap calls without call sites, we should not be concerned
+    isClearOfDynamicMemory = True
+    if r.allocation_call_sites:
+        display_grouped_report(r.stlRoots)
+        print("\nHeap allocation call sites:")
+        for site in r.allocation_call_sites:
+            print(f"  - {site}")
+        print("")
+
+        isClearOfDynamicMemory= False
 
     total_used = r.static_data + r.max_call_stack
     if is_verbose:

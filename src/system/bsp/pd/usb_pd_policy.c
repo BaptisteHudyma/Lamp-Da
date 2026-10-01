@@ -4,6 +4,7 @@
  */
 
 #include "usb_pd.h"
+#include <string.h>
 
 #ifdef CONFIG_COMMON_RUNTIME
 #define CPRINTS(format, args...) cprints(CC_USBPD, format, ##args)
