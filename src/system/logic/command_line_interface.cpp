@@ -335,16 +335,25 @@ static void cmd_powerdelivery(const common::cli::ParsedCommand&)
 {
   ::lampda::bsp::powerDelivery::show_pd_status();
   const auto& pd = ::lampda::bsp::powerDelivery::get_available_pd();
-  if (pd.empty())
+
+  bool hasValidPDO = false;
+  for (const auto& pdo: pd)
   {
-    bsp::lampda_print("No power delivery capabilities");
-  }
-  else
-  {
-    bsp::lampda_print("Power delivery profiles :");
-    for (const auto& pdo: pd)
+    if (pdo.is_valid())
+    {
+      // First print
+      if (not hasValidPDO)
+        bsp::lampda_print("Power delivery profiles :");
+
       bsp::lampda_print("- %dmV, %dmA", pdo.voltage_mv, pdo.maxCurrent_mA);
+      hasValidPDO = true;
+    }
+    else
+      break;
   }
+
+  if (not hasValidPDO)
+    bsp::lampda_print("No power delivery capabilities");
 }
 
 /// Display the system states machines
