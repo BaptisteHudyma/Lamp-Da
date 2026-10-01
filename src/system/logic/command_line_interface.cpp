@@ -142,6 +142,13 @@ static void cmd_summary(const common::cli::ParsedCommand&)
   // serial number
   bsp::lampda_print("SN: %lu", hal::registers::get_device_serial_number());
   bsp::lampda_print("--------------------");
+
+  if (bsp::filesystem::has_overflowed())
+  {
+    bsp::lampda_print(
+            "\n/!\\ File system has overflowed. Some parameters may be lost. Augment the size of the filesystem "
+            "static_map to alleviate this\n");
+  }
 }
 
 /// Check all system versions
@@ -368,7 +375,18 @@ static void cmd_states(const common::cli::ParsedCommand&)
 }
 
 /// Display all active alerts
-static void cmd_alerts(const common::cli::ParsedCommand&) { logic::alerts::show_all(); }
+static void cmd_alerts(const common::cli::ParsedCommand&)
+{
+  logic::alerts::show_all();
+
+  // This raises no alerts but should be indicated
+  if (bsp::filesystem::has_overflowed())
+  {
+    bsp::lampda_print(
+            "\n/!\\ File system has overflowed. Some parameters may be lost. Augment the size of the filesystem "
+            "static_map to alleviate this\n");
+  }
+}
 
 /// Read i2c activate address
 static void cmd_i2c(const common::cli::ParsedCommand&)
