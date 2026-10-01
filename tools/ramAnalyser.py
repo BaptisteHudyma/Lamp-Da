@@ -405,8 +405,7 @@ def display_grouped_report(roots: dict):
     """Display clean, grouped dynamic memory report with aggregated STL usage."""
     
     if not roots:
-        print("\nNo dynamic memory allocations detected")
-        return
+        return True
     
     print("\n" + "="*80)
     print("DYNAMIC MEMORY ANALYSIS (STL CONTAINERS - GROUPED BY TYPE)")
@@ -443,18 +442,8 @@ def display_grouped_report(roots: dict):
             print(f"        {file}")
             for func in sorted(funcs, key=lambda f: f['line']):
                 print(f"            Line {func['line']}: {func['name']}")
-    
-    # Summary
-    print("\n" + "="*80)
-    print("SUMMARY")
-    print("="*80)
-    
-    total_all = sum(r['root']['total_stack'] for r in roots.values())
-    total_instances = sum(len(r['root']['instances']) for r in roots.values())
-    
-    print(f"   Unique STL container types: {len(roots)}")
-    print(f"   Total instances: {total_instances}")
-    print(f"   Combined stack usage: {total_all} bytes")
+    print("")
+    return False
 
 # ─────────────────────────────────────────────
 # Worst-case stack depth (greedy, no call graph)
@@ -506,8 +495,7 @@ def analyse(elf: Path, sudir: Path, total_ram: int, stack_budget: int) -> RamRep
 
 def report_and_assert(r: RamReport, is_verbose) -> bool:
 
-    if is_verbose:
-        display_grouped_report(r.stlRoots)
+    isClearOfDynamicMemory = display_grouped_report(r.stlRoots)
 
     total_used = r.static_data + r.max_call_stack
     if is_verbose:
@@ -551,6 +539,14 @@ def report_and_assert(r: RamReport, is_verbose) -> bool:
         passed = False
     else:
         print(f"  ✓ PASS — total RAM within limit ({total_used}/{r.total_ram} B)")
+    
+    if not isClearOfDynamicMemory:
+        print("  ✓ FAIL Dynamic memory allocations detected. Check debug above for location")
+        passed = False
+    else:
+        print("  ✓ PASS No dynamic memory allocations detected")
+
+    print("")
     return passed
 
 # ─────────────────────────────────────────────
