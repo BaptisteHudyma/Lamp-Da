@@ -1,6 +1,9 @@
 #include "src/system/hal/filesystem.h"
 
 #include <InternalFileSystem.h>
+#include <cstddef>
+
+#include "src/system/common/static_map.h"
 
 #include "src/system/bsp/text_out.h"
 
@@ -12,6 +15,9 @@ class FileInternalTy : public Adafruit_LittleFS_Namespace::File
 {
   /// Inheritate constructors
   using File::File;
+
+public:
+  size_t uniqueIndex;
 };
 
 namespace __private {
@@ -64,15 +70,45 @@ bool delete_file(const char* fname) { return InternalFS.remove(fname); }
  *
  */
 
+static constexpr size_t maxFiles = 8;
+static common::static_map<size_t, size_t, maxFiles> usedIndicesMap;
+static FileInternalTy static_files[] = {FileInternalTy(InternalFS),
+                                        FileInternalTy(InternalFS),
+                                        FileInternalTy(InternalFS),
+                                        FileInternalTy(InternalFS),
+                                        FileInternalTy(InternalFS),
+                                        FileInternalTy(InternalFS),
+                                        FileInternalTy(InternalFS),
+                                        FileInternalTy(InternalFS)};
+
+FileInternalTy* affect_next_free_file()
+{
+  for (size_t i = 0; i < maxFiles; i++)
+  {
+    if (not usedIndicesMap.contains(i))
+    {
+      usedIndicesMap.insert({i, i});
+      static_files[i].uniqueIndex = i;
+      return &static_files[i];
+    }
+  }
+  return nullptr;
+}
+
 HAL_File::HAL_File()
 {
-  // build LittleFS system
-  mInternalFile = std::unique_ptr<FileInternalTy>(new FileInternalTy(InternalFS));
+  FileInternalTy* fileRef = affect_next_free_file();
+  if (fileRef != nullptr)
+    mInternalFile = {std::shared_ptr<FileInternalTy> {}, fileRef};
 
   // Do not start here, the filesystem may not exist yet
 }
 
-HAL_File::~HAL_File() {}
+HAL_File::~HAL_File()
+{
+  if (mInternalFile)
+    usedIndicesMap.erase(mInternalFile->uniqueIndex);
+}
 
 bool HAL_File::open(const char* fname, const HAL_File::OpenType& mode)
 {
