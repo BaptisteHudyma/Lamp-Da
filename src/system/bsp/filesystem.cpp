@@ -1,6 +1,6 @@
 #include "filesystem.h"
 
-#include <src/system/common/static_map.h>
+#include <etl/map.h>
 
 #include "src/system/hal/filesystem.h"
 #include "src/system/hal/time.h"
@@ -23,8 +23,8 @@ static constexpr const char* const FILENAME_INTERNAL = "/.internal.par";
 size_t lastUserParameterSize = 0;
 
 // Map have a fixed max size here, they can be made greater if needed
-common::static_map<uint32_t, uint32_t, 128> _userParametersValueMap;
-common::static_map<uint32_t, uint32_t, 64> _systemParametersValueMap;
+etl::map<uint32_t, uint32_t, 128> _userParametersValueMap;
+etl::map<uint32_t, uint32_t, 64> _systemParametersValueMap;
 
 /**
  * \brief Store a key and a value

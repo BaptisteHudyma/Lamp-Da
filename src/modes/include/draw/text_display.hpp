@@ -466,7 +466,7 @@ struct TextDisplay
    * \return True when the text is fully displayed
    */
   static bool display(LampTy& lamp,
-                      const common::static_string<maxCharacters>& text,
+                      const etl::string<maxCharacters>& text,
                       const std::function<uint32_t(char)>& colorCallback,
                       const int16_t startXIndex = 0,
                       const int16_t startYIndex = 0,
