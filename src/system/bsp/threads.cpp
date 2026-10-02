@@ -3,7 +3,7 @@
 
 #include "threads.h"
 
-#include "src/system/common/static_map.h"
+#include <etl/map.h>
 
 #include "src/system/hal/threads.h"
 
@@ -66,7 +66,7 @@ static TaskHandle_t staticHandles[hal::threads::MaxStaticTasks];
 inline static uint32_t handleIndex = 0;
 
 // store all handles
-common::static_map<uint32_t, TaskHandleStorage, 32> handles;
+etl::map<uint32_t, TaskHandleStorage, 32> handles;
 
 void low_level_start_thread(taskfunc_t taskFunction,
                             const uint32_t taskName,

@@ -65,7 +65,7 @@ static uint32_t _temporaryOutputTimeOut = 0;
 static bool _isChargeEnabled = false;
 
 /// Store the state error description
-static common::static_string<128> _errorStr = "";
+static etl::string<128> _errorStr = "";
 
 /// True if the state changed to OTG_MODE on it's own (via USB-PD requests).
 static bool _hasAutoSwitchedToOTG = false;
@@ -77,7 +77,7 @@ static bool _isInBatteryRecoveryMode = false;
 static bool _wasStartedInBatteryRecoveryMode = false;
 
 /// Return the error string if set, or "x"
-common::static_string<128> get_error_string()
+etl::string<128> get_error_string()
 {
   if (_errorStr.empty())
     return "x";
@@ -85,7 +85,7 @@ common::static_string<128> get_error_string()
 }
 
 /// Set the error message, if not already set.
-void set_error_state_message(const common::static_string<128>& errorMsg)
+void set_error_state_message(const etl::string<128>& errorMsg)
 {
   if (_errorStr.empty())
   {
@@ -807,9 +807,9 @@ bool enable_charge(const bool enable)
   return true;
 }
 
-common::static_string<32> get_state()
+etl::string<32> get_state()
 {
-  return common::static_string<32>(PowerStatesStr[static_cast<size_t>(__private::powerMachine.get_state())]);
+  return etl::string<32>(PowerStatesStr[static_cast<size_t>(__private::powerMachine.get_state())]);
 }
 
 bool is_in_output_mode() { return __private::powerMachine.get_state() == PowerStates::OUTPUT_VOLTAGE_MODE; }
@@ -849,7 +849,7 @@ void init()
 // TODO issue #132 remove when the mock components will be running
 #ifndef LMBD_SIMULATION
   bool isSuccessful = true;
-  common::static_string<128> errorStr = "";
+  etl::string<128> errorStr = "";
 
   // at the very last, power delivery
   const bool pdSuccess = ::lampda::bsp::powerDelivery::setup();

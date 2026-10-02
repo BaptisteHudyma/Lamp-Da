@@ -7,9 +7,9 @@
 
 #include <cstdint>
 #include <functional>
+#include <etl/bitset.h>
 
 #include "src/system/ext/random8.h"
-#include "src/system/common/bitset.h"
 
 #include "src/modes/include/hardware/lamp_type.hpp"
 
@@ -246,8 +246,8 @@ protected:
 private:
   static constexpr uint16_t maxParticuleCount = 512; ///< maximum particles allowed in a simulation
   Particle particules[maxParticuleCount];            ///< Array of all particles
-  common::BitSet<maxParticuleCount> isAllocated;     ///< store the allocated particules flag
-  common::BitSet<LED_COUNT> isOccupiedSpaces;        ///< store the occupied spaces
+  etl::bitset<maxParticuleCount> isAllocated;        ///< store the allocated particules flag
+  etl::bitset<LED_COUNT> isOccupiedSpaces;           ///< store the occupied spaces
 
   /// forced to be less than maxParticuleCount
   uint16_t particuleCount;

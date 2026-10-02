@@ -10,7 +10,7 @@
 
 #include <cstdint>
 
-#include "src/system/common/static_string.h"
+#include <etl/string.h>
 
 namespace lampda {
 namespace component {
@@ -91,12 +91,12 @@ struct Charger_t
   /// Return true if the charge is finished
   bool is_charge_finished() const;
   /// Return the status as a string
-  common::static_string<32> get_status_str() const;
+  etl::string<32> get_status_str() const;
 
   /// Contain a more detailed error of an hardware error
-  common::static_string<128> hardwareErrorMessage = "";
+  etl::string<128> hardwareErrorMessage = "";
   /// Contain a more detailed error of a software error
-  common::static_string<128> softwareErrorMessage = "";
+  etl::string<128> softwareErrorMessage = "";
 };
 
 /// Return true if voltage is detected on VBUS.

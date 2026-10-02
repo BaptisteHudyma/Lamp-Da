@@ -3,7 +3,7 @@
 #include <InternalFileSystem.h>
 #include <cstddef>
 
-#include "src/system/common/static_map.h"
+#include <etl/map.h>
 
 #include "src/system/bsp/text_out.h"
 
@@ -71,7 +71,7 @@ bool delete_file(const char* fname) { return InternalFS.remove(fname); }
  */
 
 static constexpr size_t maxFiles = 8;
-static common::static_map<size_t, size_t, maxFiles> usedIndicesMap;
+static etl::map<size_t, size_t, maxFiles> usedIndicesMap;
 static FileInternalTy static_files[] = {FileInternalTy(InternalFS),
                                         FileInternalTy(InternalFS),
                                         FileInternalTy(InternalFS),

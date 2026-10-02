@@ -30,7 +30,7 @@ static constexpr uint32_t BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS =
         5000; ///< duration of the brightness ramp saturation before switching behavior
 
 namespace __private {
-common::Queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
+etl::queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
 }
 
 /// holds the state of system on
@@ -561,31 +561,34 @@ void loop()
 
   // Check a maximum of events per loop turn, events can be refilled by other threads
   size_t maxEventsChecks = __private::maxButtonEventStore;
-  while (maxEventsChecks != 0 && __private::buttonEventQueue.has_elements())
+  while (maxEventsChecks != 0 && not __private::buttonEventQueue.empty())
   {
     maxEventsChecks--;
-    const auto& event = __private::buttonEventQueue.dequeue();
-    if (event.has_value())
-    {
-      const __private::ButtonEvent& buttonEvent = event.value();
-      if (not buttonEvent.isLongPress)
-      {
-        button_clicked_callback(buttonEvent.clickCount, not isSystemOn);
-      }
-      else
-      {
-        button_hold_callback(
-                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, not isSystemOn);
-      }
 
-      // update system on
-      if (not buttonEvent.isLongPress or buttonEvent.isEndOfLongPress)
-      {
-        isSystemOn = behavior::is_system_should_be_powered();
-        // deactivate custom user mode on turn off
-        if (not isSystemOn)
-          button_disable_usermode();
-      }
+    // another redondant safety to avoid any risk of crash
+    if (__private::buttonEventQueue.empty())
+      break;
+
+    __private::ButtonEvent buttonEvent;
+    __private::buttonEventQueue.pop_into(buttonEvent);
+
+    if (not buttonEvent.isLongPress)
+    {
+      button_clicked_callback(buttonEvent.clickCount, not isSystemOn);
+    }
+    else
+    {
+      button_hold_callback(
+              buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, not isSystemOn);
+    }
+
+    // update system on
+    if (not buttonEvent.isLongPress or buttonEvent.isEndOfLongPress)
+    {
+      isSystemOn = behavior::is_system_should_be_powered();
+      // deactivate custom user mode on turn off
+      if (not isSystemOn)
+        button_disable_usermode();
     }
   }
 }
@@ -596,10 +599,14 @@ bool is_button_usermode_enabled() { return isButtonUsermodeEnabled; }
 
 bool add_button_click_event(uint32_t clickCount)
 {
+  if (__private::buttonEventQueue.full())
+    return false;
+
   __private::ButtonEvent event;
   event.isLongPress = false;
   event.clickCount = clickCount;
-  return __private::buttonEventQueue.enqueue(event);
+  __private::buttonEventQueue.push(event);
+  return true;
 }
 
 bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress)
@@ -608,8 +615,7 @@ bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool is
   // Do not fill the queue above a percentage with hold events
   if (not isEndOfPress)
   {
-    const size_t fillPercent =
-            (__private::buttonEventQueue.get_stored_item_count() * 100) / __private::maxButtonEventStore;
+    const size_t fillPercent = (__private::buttonEventQueue.size() * 100) / __private::maxButtonEventStore;
     // Prevent any hold events if queue is getting full
     if (fillPercent >= 80)
       return false;
@@ -619,7 +625,8 @@ bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool is
   event.clickCount = clickCount;
   event.isEndOfLongPress = isEndOfPress;
   event.longPressDuration = pressDuration;
-  return __private::buttonEventQueue.enqueue(event);
+  __private::buttonEventQueue.push(event);
+  return true;
 }
 
 } // namespace inputs
