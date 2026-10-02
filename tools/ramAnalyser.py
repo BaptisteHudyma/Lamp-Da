@@ -54,6 +54,29 @@ SU_RE = re.compile(
 )
 
 
+def get_obj_dump_executor():
+    objdump_tools = [
+            "llvm-objdump",
+            'arm-none-eabi-objdump',  # NRF/STM32 standard
+            'arm-linux-gnueabihf-objdump',  # Linux ARM
+            'armv7l-rpi-linux-gnueabihf-objdump',  # Raspberry Pi
+            #'objdump',  # Fallback (will likely fail, so do not even propose it)
+        ]
+    
+    objdump_cmd = None
+    for tool in objdump_tools:
+            try:
+                result = subprocess.run([tool, '--version'], 
+                                    capture_output=True, text=True, timeout=2)
+                if result.returncode == 0:
+                    objdump_cmd = tool
+                    break
+            except FileNotFoundError:
+                continue
+        
+    
+    return objdump_cmd, objdump_tools
+
 # Add filtering/categorization:
 STATIC_KINDS = {'static', 'bounded'}
 
@@ -112,59 +135,51 @@ def get_static_ram(elf: Path) -> int:
 import subprocess
 import re
 from pathlib import Path
-from collections import defaultdict, deque
+from collections import defaultdict
 
 class DynamicMemoryAnalyzer:
-    def __init__(self, elf_file: str):
+    def __init__(self, elf_file: str, is_verbose: bool):
         self.elf_file = elf_file
+        self.is_verbose = is_verbose
         self.all_symbols = {}
         self.direct_allocators = set()  # Functions that directly allocate
         self.call_graph = defaultdict(set)  # who calls whom
         self.allocation_type = {}  # func -> ['STL_VECTOR', 'MALLOC', ...]
+        self.objDumpResult = None
+
         self._build_call_graph()
         self._analyze()
-    
-    def _build_call_graph(self, isVerbose=False):
+
+    def _build_call_graph(self):
         """Extract actual call graph from binary using objdump."""
-        
-        # Try different objdump variants in order of preference
-        objdump_tools = [
-            'arm-none-eabi-objdump',  # NRF/STM32 standard
-            'arm-linux-gnueabihf-objdump',  # Linux ARM
-            'armv7l-rpi-linux-gnueabihf-objdump',  # Raspberry Pi
-            'objdump',  # Fallback (will likely fail)
-        ]
-        
-        objdump_cmd = None
-        for tool in objdump_tools:
+
+        if self.objDumpResult is None:
+            # Try different objdump variants in order of preference
+            objdump_cmd, objdump_tools = get_obj_dump_executor()
+            
+            if not objdump_cmd:
+                print(f"⚠️  No ARM objdump found. Tried: {', '.join(objdump_tools)}")
+                print(f"     Install: arm-none-eabi-binutils")
+                return
+            elif self.is_verbose:
+                print(f"Using objdump tool {objdump_cmd}")
+            
             try:
-                result = subprocess.run([tool, '--version'], 
-                                    capture_output=True, text=True, timeout=2)
-                if result.returncode == 0:
-                    objdump_cmd = tool
-                    if isVerbose:
-                        print(f"✓ Using {tool}")
-                    break
-            except FileNotFoundError:
-                continue
-        
-        if not objdump_cmd:
-            print(f"⚠️  No ARM objdump found. Tried: {', '.join(objdump_tools)}")
-            print(f"     Install: arm-none-eabi-binutils")
-            return
-        
-        try:
-            result = subprocess.run(
-                [objdump_cmd, '-d', self.elf_file],
-                capture_output=True, text=True, check=True, timeout=30
-            )
-        except subprocess.CalledProcessError as e:
-            print(f"⚠️  {objdump_cmd} failed: {e.stderr[:200]}")
-            return
-        except subprocess.TimeoutExpired:
-            print(f"⚠️  {objdump_cmd} timed out on large binary")
-            return
-        
+                result = subprocess.run(
+                    [objdump_cmd, "-d", "-C", self.elf_file],
+                    capture_output=True, text=True, check=True, timeout=30
+                )
+            except subprocess.CalledProcessError as e:
+                print(f"⚠️  {objdump_cmd} failed: {e.stderr[:200]}")
+                return
+            except subprocess.TimeoutExpired:
+                print(f"⚠️  {objdump_cmd} timed out on large binary")
+                return
+
+            self.objDumpResult = result
+        else:
+            result = self.objDumpResult
+
         # ARM call instructions: bl, blx, call (Thumb2)
         call_pattern = re.compile(r'(?:bl|blx|call)\s+[0-9a-f]+\s+<(.+?)>')
         current_func = None
@@ -181,7 +196,7 @@ class DynamicMemoryAnalyzer:
                 if call_match:
                     called_func = call_match.group(1)
                     self.call_graph[current_func].add(called_func)
-        if isVerbose:
+        if self.is_verbose:
             print(f"✓ Call graph built: {len(self.call_graph)} functions with calls")
 
     def _analyze(self):
@@ -602,82 +617,86 @@ class DynamicMemoryAnalyzer:
                 }
         
         return result
-    
-def find_allocation_call_sites(elf: Path) -> list[str]:
-    """Find direct calls to heap allocators and map them to source locations."""
-    import shutil
-
-    objdump = next(
-        (tool for tool in (
-            "arm-none-eabi-objdump",
-            "arm-linux-gnueabihf-objdump",
-            "objdump",
-        ) if shutil.which(tool)),
-        None,
-    )
-    addr2line = next(
-        (tool for tool in (
-            "arm-none-eabi-addr2line",
-            "addr2line",
-        ) if shutil.which(tool)),
-        None,
-    )
-
-    if not objdump:
-        return ["Could not locate objdump; call-site analysis was skipped."]
-    if not addr2line:
-        return ["Could not locate addr2line; source-line mapping was skipped."]
-
-    result = subprocess.run(
-        [objdump, "-d", "-C", str(elf)],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        return [f"objdump failed: {result.stderr.strip()}"]
-
-    function_header = re.compile(r"^[0-9a-fA-F]+\s+<(.+)>:$")
-    call_instruction = re.compile(
-        r"^\s*([0-9a-fA-F]+):.*?\b(?:bl|blx|callq?)\b.*?<([^>]+)>"
-    )
-    allocator_names = ("operator new", "malloc", "calloc", "realloc")
-
-    sites = []
-    current_function = "<unknown>"
-
-    for line in result.stdout.splitlines():
-        header = function_header.match(line.strip())
-        if header:
-            current_function = header.group(1)
-
-        call = call_instruction.match(line)
-        if not call:
-            continue
-
-        address, target = call.groups()
-        if not any(name in target for name in allocator_names):
-            continue
-
-        mapped = subprocess.run(
-            [addr2line, "-e", str(elf), "-f", "-C", "-i", address],
-            capture_output=True,
-            text=True,
-            timeout=5
+   
+    def find_allocation_call_sites(self) -> list[str]:
+        """Find direct calls to heap allocators and map them to source locations."""
+        
+        import shutil
+        addr2line = next(
+            (tool for tool in (
+                "arm-none-eabi-addr2line",
+                "addr2line",
+            ) if shutil.which(tool)),
+            None,
         )
 
-        location = "source location unavailable"
-        if mapped.returncode == 0 and mapped.stdout.strip():
-            splitPath = [part.strip() for part in mapped.stdout.splitlines() if part.strip()]
-            location = "".join(splitPath[-1])
+        if not addr2line:
+            return ["Could not locate addr2line; source-line mapping was skipped."]
 
-        # Ignore depends, adafruit lib & invalid locations
-        if not ("src/depends" in location) and not ("_build" in location) and not ("??:?" in location):
-            sites.append(
-                f"{current_function} at {location} "
-                f"(ELF address 0x{address})"
+
+        if self.objDumpResult is None:
+            objdump_cmd, objdump_tools = get_obj_dump_executor()
+
+            if not objdump_cmd:
+                return ["Could not locate objdump; call-site analysis was skipped."]
+            elif self.is_verbose:
+                print(f"Using objdump tool {objdump_cmd}")
+            
+            result = subprocess.run(
+                [objdump_cmd, "-d", "-C", self.elf_file],
+                capture_output=True,
+                text=True,
+            )
+            if result.returncode != 0:
+                return [f"objdump failed: {result.stderr.strip()} for command {objdump_cmd}"]
+            
+            self.objDumpResult = result
+        else:
+            result = self.objDumpResult
+
+        function_header = re.compile(r"^[0-9a-fA-F]+\s+<(.+)>:$")
+        call_instruction = re.compile(
+            r"^\s*([0-9a-fA-F]+):.*?\b(?:bl|blx|callq?)\b.*?<([^>]+)>"
+        )
+        allocator_names = ("operator new", "malloc", "calloc", "realloc")
+
+        sites = []
+        current_function = "<unknown>"
+
+        for line in result.stdout.splitlines():
+            header = function_header.match(line.strip())
+            if header:
+                current_function = header.group(1)
+
+            call = call_instruction.match(line)
+            if not call:
+                continue
+
+            address, target = call.groups()
+            if not any(name in target for name in allocator_names):
+                continue
+
+            mapped = subprocess.run(
+                [addr2line, "-e", self.elf_file, "-f", "-C", "-i", address],
+                capture_output=True,
+                text=True,
+                timeout=5
             )
 
-    return sites
+            location = "source location unavailable"
+            if mapped.returncode == 0 and mapped.stdout.strip():
+                splitPath = [part.strip() for part in mapped.stdout.splitlines() if part.strip()]
+                location = "".join(splitPath[-1])
+
+            # Ignore depends, adafruit lib & invalid locations
+            if not ("src/depends" in location) and not ("_build" in location) and not ("??:?" in location):
+                sites.append(
+                    f"{current_function} at {location} "
+                    f"(ELF address 0x{address})"
+                )
+
+        return sites
+
 
 def display_grouped_report(roots: dict):
     """Display clean, grouped dynamic memory report with aggregated STL usage."""
@@ -747,7 +766,7 @@ def worst_case_stack(entries: list[FunctionStack], top_n: int = 8) -> tuple[int,
 # Main analysis
 # ─────────────────────────────────────────────
 
-def analyse(elf: Path, sudir: Path, total_ram: int, stack_budget: int) -> RamReport:
+def analyse(elf: Path, sudir: Path, total_ram: int, stack_budget: int, is_verbose: bool) -> RamReport:
     if not elf.exists():
         raise FileNotFoundError(f"ELF not found: {elf}")
     if not sudir.is_dir():
@@ -758,10 +777,9 @@ def analyse(elf: Path, sudir: Path, total_ram: int, stack_budget: int) -> RamRep
     depth, chain = worst_case_stack(entries, 8)
     dynamic_fns  = [e.name for e in entries if is_dynamic(e.kind)]
 
-    analyzer = DynamicMemoryAnalyzer(elf)
+    analyzer = DynamicMemoryAnalyzer(elf, is_verbose)
     roots = analyzer.find_roots_and_dependents(entries)
-    
-    allocation_call_sites = find_allocation_call_sites(elf)
+    allocation_call_sites = analyzer.find_allocation_call_sites()
 
     return RamReport(
         static_data=static,
@@ -852,7 +870,7 @@ def main():
     ap.add_argument("-v",       required=False, type=bool,  default=False,   help="Verbose")
     args = ap.parse_args()
 
-    r = analyse(args.elf, args.sudir, args.ram, args.stack)
+    r = analyse(args.elf, args.sudir, args.ram, args.stack, args.v)
     ok = report_and_assert(r, args.v)
     sys.exit(0 if ok else 1)
 
