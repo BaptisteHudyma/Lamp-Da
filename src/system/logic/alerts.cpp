@@ -695,31 +695,53 @@ struct Alert_UsbPortShort : public AlertBase
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
-/// Alerts must be sorted by importance, only the first activated one will be shown
-AlertBase* allAlerts[] = {
-        new Alert_SystemShutdownFailed,
-        new Alert_BatteryMissing, // if battery is missing, the system will also have the hardware alert
-        new Alert_HardwareAlert,
-        new Alert_TempCritical,
-        new Alert_UsbPortShort,
-        //
-        new Alert_SkippedCleanSleep,
-        // battery and temp related
-        new Alert_BatteryCritical,
-        new Alert_TempTooHigh,
-        new Alert_BatteryReadingIncoherent,
-        new Alert_BatteryLow,
-        //
-        new Alert_OtgFailed,
-        new Alert_SystemInErrorState,
-        new Alert_SystemInLockout,
-        // user side low priority alerts
-        new Alert_LongLoopUpdate,
-        new Alert_BluetoothAdvertisement,
-        new Alert_FavoriteSet,
-        new Alert_SunsetTimerSet,
+// Init all alert objects
+inline static Alert_SystemShutdownFailed alertSystemShutdownFailed {};
+inline static Alert_BatteryMissing alertBatteryMissing {};
+inline static Alert_HardwareAlert alertHardwareAlert {};
+inline static Alert_TempCritical alertTempCritical {};
+inline static Alert_UsbPortShort alertUsbPortShort {};
+inline static Alert_SkippedCleanSleep alertSkippedCleanSleep {};
+inline static Alert_BatteryCritical alertBatteryCritical {};
+inline static Alert_TempTooHigh alertTempTooHigh {};
+inline static Alert_BatteryReadingIncoherent alertBatteryReadingIncoherent {};
+inline static Alert_BatteryLow alertBatteryLow {};
+inline static Alert_OtgFailed alertOtgFailed {};
+inline static Alert_SystemInErrorState alertSystemInErrorState {};
+inline static Alert_SystemInLockout alertSystemInLockout {};
+inline static Alert_LongLoopUpdate alertLongLoopUpdate {};
+inline static Alert_BluetoothAdvertisement alertBluetoothAdvertisement {};
+inline static Alert_FavoriteSet alertFavoriteSet {};
+inline static Alert_SunsetTimerSet alertSunsetTimerSet {};
+inline static Alert_ChargerError alertChargerError {};
 
-        new Alert_ChargerError};
+/// Alerts must be sorted by importance, only the first activated one will be shown
+inline static AlertBase* const allAlerts[] = {
+        &alertSystemShutdownFailed,
+        &alertBatteryMissing, // if battery is missing, the system will also have the hardware alert
+        &alertHardwareAlert,
+        &alertTempCritical,
+        &alertUsbPortShort,
+        //
+        &alertSkippedCleanSleep,
+        // battery and temp related
+        &alertBatteryCritical,
+        &alertTempTooHigh,
+        &alertBatteryReadingIncoherent,
+        &alertBatteryLow,
+        //
+        &alertOtgFailed,
+        &alertSystemInErrorState,
+        &alertSystemInLockout,
+
+        // user side low priority alerts
+        &alertLongLoopUpdate,
+        &alertBluetoothAdvertisement,
+        &alertFavoriteSet,
+        &alertSunsetTimerSet,
+
+        &alertChargerError,
+};
 
 void update_alerts()
 {

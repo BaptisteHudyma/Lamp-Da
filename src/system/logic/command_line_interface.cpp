@@ -142,6 +142,13 @@ static void cmd_summary(const common::cli::ParsedCommand&)
   // serial number
   bsp::lampda_print("SN: %lu", hal::registers::get_device_serial_number());
   bsp::lampda_print("--------------------");
+
+  if (bsp::filesystem::has_overflowed())
+  {
+    bsp::lampda_print(
+            "\n/!\\ File system has overflowed. Some parameters may be lost. Augment the size of the filesystem "
+            "static_map to alleviate this\n");
+  }
 }
 
 /// Check all system versions
@@ -335,16 +342,25 @@ static void cmd_powerdelivery(const common::cli::ParsedCommand&)
 {
   ::lampda::bsp::powerDelivery::show_pd_status();
   const auto& pd = ::lampda::bsp::powerDelivery::get_available_pd();
-  if (pd.empty())
+
+  bool hasValidPDO = false;
+  for (const auto& pdo: pd)
   {
-    bsp::lampda_print("No power delivery capabilities");
-  }
-  else
-  {
-    bsp::lampda_print("Power delivery profiles :");
-    for (const auto& pdo: pd)
+    if (pdo.is_valid())
+    {
+      // First print
+      if (not hasValidPDO)
+        bsp::lampda_print("Power delivery profiles :");
+
       bsp::lampda_print("- %dmV, %dmA", pdo.voltage_mv, pdo.maxCurrent_mA);
+      hasValidPDO = true;
+    }
+    else
+      break;
   }
+
+  if (not hasValidPDO)
+    bsp::lampda_print("No power delivery capabilities");
 }
 
 /// Display the system states machines
@@ -359,7 +375,18 @@ static void cmd_states(const common::cli::ParsedCommand&)
 }
 
 /// Display all active alerts
-static void cmd_alerts(const common::cli::ParsedCommand&) { logic::alerts::show_all(); }
+static void cmd_alerts(const common::cli::ParsedCommand&)
+{
+  logic::alerts::show_all();
+
+  // This raises no alerts but should be indicated
+  if (bsp::filesystem::has_overflowed())
+  {
+    bsp::lampda_print(
+            "\n/!\\ File system has overflowed. Some parameters may be lost. Augment the size of the filesystem "
+            "static_map to alleviate this\n");
+  }
+}
 
 /// Read i2c activate address
 static void cmd_i2c(const common::cli::ParsedCommand&)

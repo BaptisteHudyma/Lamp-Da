@@ -5,9 +5,10 @@
 #ifndef HAL_GPIO_H
 #define HAL_GPIO_H
 
-#include <set>
 #include <memory>
 #include <stdint.h>
+
+#include "src/system/common/bitset.h"
 
 namespace lampda {
 namespace hal {
@@ -94,11 +95,11 @@ public:
   static void detach_all()
   {
     // detach all set interrupts
-    for (DigitalPin::GPIO pin: DigitalPin::s_gpiosWithInterrupts)
+    for (uint16_t i = 0; i < DigitalPin::s_gpiosWithInterrupts.size(); i++)
     {
-      DigitalPin(pin).detach_callbacks();
+      DigitalPin(DigitalPin::GPIO(i)).detach_callbacks();
     }
-    DigitalPin::s_gpiosWithInterrupts.clear();
+    DigitalPin::s_gpiosWithInterrupts.reset();
   }
 
   // call this when the gpios needs to be deactivated
@@ -113,7 +114,8 @@ public:
   }
 
 private:
-  inline static std::set<GPIO> s_gpiosWithInterrupts;
+  static constexpr size_t maxGpioCnt = 32;
+  inline static common::BitSet<maxGpioCnt> s_gpiosWithInterrupts;
 
   GPIO mGpio;
   std::shared_ptr<DigitalPinImpl> mImpl;

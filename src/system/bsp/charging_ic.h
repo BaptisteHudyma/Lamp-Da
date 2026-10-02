@@ -6,7 +6,8 @@
 #define BSP_CHARGING_IC_H
 
 #include <cstdint>
-#include <string>
+
+#include "src/system/common/static_string.h"
 
 namespace lampda {
 namespace bsp {
@@ -99,11 +100,11 @@ void try_clear_faults();
 /// return the status of the component
 Status_t get_status();
 /// return a string with details on the error status
-std::string get_status_detail();
+common::static_string<64> get_status_detail();
 /// return the charge status object of the battery
 ChargeStatus_t get_charge_status();
 /// contains details on software error if any
-std::string get_software_error_message();
+common::static_string<64> get_software_error_message();
 
 /**
  * \brief Store the DAC values mesured by some system sensors, relative to the battery and power.

@@ -39,7 +39,7 @@ bool delete_file(const char* fname)
   return remove(filename) == 0;
 }
 
-HAL_File::HAL_File() { mInternalFile = std::make_unique<FileInternalTy>(); }
+HAL_File::HAL_File() { mInternalFile = std::shared_ptr<FileInternalTy>(); }
 
 HAL_File::~HAL_File()
 {

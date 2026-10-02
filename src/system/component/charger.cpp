@@ -210,8 +210,8 @@ void update_state_status()
       { // locked in a broken state
         if (previousStatus != Charger_t::ChargerStatus_t::ERROR_SOFTWARE)
         {
-          charger.softwareErrorMessage =
-                  "ERROR: charger in UNINITIALIZED/ERROR state : " + bsp::charger::get_software_error_message();
+          charger.softwareErrorMessage = common::static_string<128>("ERROR: charger in UNINITIALIZED/ERROR state : ") +
+                                         bsp::charger::get_software_error_message();
           bsp::lampda_print(charger.softwareErrorMessage.c_str());
         }
         charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
@@ -450,39 +450,39 @@ bool Charger_t::is_effectivly_charging() const
   return status == ChargerStatus_t::SLOW_CHARGING or status == ChargerStatus_t::CHARGING;
 }
 
-std::string Charger_t::get_status_str() const
+common::static_string<32> Charger_t::get_status_str() const
 {
   switch (status)
   {
     case ChargerStatus_t::UNINITIALIZED:
-      return std::string("UNINITIALIZED");
+      return common::static_string<32>("UNINITIALIZED");
       break;
     case ChargerStatus_t::INACTIVE:
-      return std::string("INACTIVE");
+      return common::static_string<32>("INACTIVE");
       break;
     case ChargerStatus_t::POWER_DETECTED:
-      return std::string("POWER_DETECTED");
+      return common::static_string<32>("POWER_DETECTED");
       break;
     case ChargerStatus_t::SLOW_CHARGING:
-      return std::string("SLOW_CHARGING");
+      return common::static_string<32>("SLOW_CHARGING");
       break;
     case ChargerStatus_t::CHARGING:
-      return std::string("CHARGING");
+      return common::static_string<32>("CHARGING");
       break;
     case ChargerStatus_t::CHARGE_FINISHED:
-      return std::string("CHARGE_FINISHED");
+      return common::static_string<32>("CHARGE_FINISHED");
       break;
     case ChargerStatus_t::ERROR_BATTERY_MISSING:
-      return std::string("ERROR_BATTERY_MISSING");
+      return common::static_string<32>("ERROR_BATTERY_MISSING");
       break;
     case ChargerStatus_t::ERROR_SOFTWARE:
-      return std::string("ERROR_SOFTWARE");
+      return common::static_string<32>("ERROR_SOFTWARE");
       break;
     case ChargerStatus_t::ERROR_HARDWARE:
-      return std::string("ERROR_HARDWARE");
+      return common::static_string<32>("ERROR_HARDWARE");
       break;
     default:
-      return std::string("unhandled state");
+      return common::static_string<32>("unhandled state");
       break;
   }
 }

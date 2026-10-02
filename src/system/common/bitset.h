@@ -30,6 +30,12 @@ public:
 private:
   std::array<storage_t, storageSize> _data;
 
+#ifdef LMBD_CPP17
+#define CST_CONSTREXPR constexpr
+#else
+#define CST_CONSTREXPR
+#endif
+
   /// Return the bit index within a storage word for bit position i
   static constexpr uint16_t word_index(uint16_t i) noexcept { return i / bitsPerStorage; }
 
@@ -37,7 +43,7 @@ private:
   static constexpr storage_t bit_mask(uint16_t i) noexcept { return static_cast<storage_t>(1) << (i % bitsPerStorage); }
 
   /// Generate a mask with the lower `N % bitsPerStorage` bits set
-  static constexpr storage_t last_word_mask() noexcept
+  static CST_CONSTREXPR storage_t last_word_mask() noexcept
   {
     const uint16_t lastWordBits = N % bitsPerStorage;
     if (lastWordBits == 0)
@@ -48,13 +54,14 @@ private:
 
 public:
   /// Default constructor: all bits set to zero
-  constexpr BitSet() : _data {} { reset(); }
+  CST_CONSTREXPR
+  BitSet() : _data {} { reset(); }
 
   /**
    * \brief Construct with a single storage value repeated for all words.
    * \param value The value to initialize all storage words with
    */
-  explicit constexpr BitSet(storage_t value) : _data {}
+  explicit CST_CONSTREXPR BitSet(storage_t value) : _data {}
   {
     for (uint16_t i = 0; i < storageSize - 1; ++i)
       _data[i] = value;
@@ -130,7 +137,7 @@ public:
    * \param pos Bit position (0 to N-1)
    * \return True if the bit is set, false otherwise
    */
-  constexpr bool test(uint16_t pos) const noexcept
+  CST_CONSTREXPR bool test(uint16_t pos) const noexcept
   {
     if (pos >= N)
       return false;
@@ -138,7 +145,7 @@ public:
   }
 
   /// Alias for test(pos)
-  constexpr bool operator[](uint16_t pos) const noexcept { return test(pos); }
+  CST_CONSTREXPR bool operator[](uint16_t pos) const noexcept { return test(pos); }
 
   /// Non-const operator[]: returns a reference-like proxy that allows set/reset
   struct reference
@@ -169,7 +176,7 @@ public:
       return *this;
     }
 
-    constexpr operator bool() const noexcept
+    CST_CONSTREXPR operator bool() const noexcept
     {
       if (pos >= parent->size())
         return false;
@@ -192,7 +199,7 @@ public:
    * \brief Count the number of bits set to 1.
    * \return The population count
    */
-  constexpr uint16_t count() const noexcept
+  CST_CONSTREXPR uint16_t count() const noexcept
   {
     uint16_t total = 0;
     for (const auto& word: _data)
@@ -208,7 +215,7 @@ public:
   }
 
   /// Return true if any bit is set
-  constexpr bool any() const noexcept
+  CST_CONSTREXPR bool any() const noexcept
   {
     for (const auto& word: _data)
       if (word != 0)
@@ -217,7 +224,7 @@ public:
   }
 
   /// Return true if all bits are set
-  constexpr bool all() const noexcept
+  CST_CONSTREXPR bool all() const noexcept
   {
     storage_t fullMask = static_cast<storage_t>(~storage_t {0});
     for (uint16_t i = 0; i < storageSize - 1; ++i)
@@ -227,7 +234,7 @@ public:
   }
 
   /// Return true if no bits are set
-  constexpr bool none() const noexcept
+  CST_CONSTREXPR bool none() const noexcept
   {
     for (const auto& word: _data)
       if (word != 0)
@@ -249,7 +256,7 @@ public:
    * \param other The other bitset (must be the same size)
    * \return A new bitset with bits set where both operands have them set
    */
-  constexpr BitSet<N> operator&(const BitSet<N>& other) const noexcept
+  CST_CONSTREXPR BitSet<N> operator&(const BitSet<N>& other) const noexcept
   {
     BitSet<N> result;
     for (uint16_t i = 0; i < storageSize; ++i)
@@ -262,7 +269,7 @@ public:
    * \param other The other bitset (must be the same size)
    * \return A new bitset with bits set where either operand has them set
    */
-  constexpr BitSet<N> operator|(const BitSet<N>& other) const noexcept
+  CST_CONSTREXPR BitSet<N> operator|(const BitSet<N>& other) const noexcept
   {
     BitSet<N> result;
     for (uint16_t i = 0; i < storageSize; ++i)
@@ -275,7 +282,7 @@ public:
    * \param other The other bitset (must be the same size)
    * \return A new bitset with bits set where this has them but other does not
    */
-  constexpr BitSet<N> operator-(const BitSet<N>& other) const noexcept
+  CST_CONSTREXPR BitSet<N> operator-(const BitSet<N>& other) const noexcept
   {
     BitSet<N> result;
     for (uint16_t i = 0; i < storageSize; ++i)
@@ -322,7 +329,7 @@ public:
   }
 
   /// Check equality with another bitset
-  constexpr bool operator==(const BitSet<N>& other) const noexcept
+  CST_CONSTREXPR bool operator==(const BitSet<N>& other) const noexcept
   {
     for (uint16_t i = 0; i < storageSize; ++i)
       if (_data[i] != other._data[i])

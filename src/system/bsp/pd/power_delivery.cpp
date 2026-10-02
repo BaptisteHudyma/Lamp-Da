@@ -129,7 +129,7 @@ struct UsbPDData
   uint32_t maxInputVoltage;
 
   /// Debug status for the algorithm
-  std::string pdAlgoStatus;
+  common::static_string<32> pdAlgoStatus;
 
   /// when true, this struct has changed !
   bool hasChanged = false;
@@ -179,7 +179,7 @@ struct UsbPDData
       maxInputVoltage = newmaxInputVoltage;
     }
 
-    const auto& newStatus = std::string(get_state_cstr());
+    const auto& newStatus = common::static_string<32>(get_state_cstr());
     if (newStatus != pdAlgoStatus)
     {
       hasChanged = true;
@@ -461,16 +461,20 @@ void allow_otg(const bool allow) { set_allow_power_sourcing(allow); }
 
 bool is_switching_to_otg() { return is_activating_otg() != 0; }
 
-std::vector<PDOTypes> get_available_pd()
+std::array<PDOTypes, 5> get_available_pd()
 {
-  std::vector<PDOTypes> pdos;
-  for (uint8_t i = 0; i < get_pd_source_cnt(); ++i)
+  std::array<PDOTypes, 5> pdos;
+  uint8_t i = 0;
+  for (; i < min<uint8_t>(5, get_pd_source_cnt()); ++i)
   {
     PDOTypes t;
     pd_extract_pdo_power(get_pd_source(i), &t.maxCurrent_mA, &t.voltage_mv);
-    pdos.emplace_back(t);
+    pdos[i] = t;
   }
-
+  for (; i < 5; i++)
+  {
+    pdos[i] = PDOTypes();
+  }
   return pdos;
 }
 

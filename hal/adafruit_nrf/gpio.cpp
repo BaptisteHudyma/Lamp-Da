@@ -110,115 +110,155 @@ public:
 
 DigitalPin::DigitalPin(GPIO pin) : mGpio(pin) { set(pin); }
 
+inline static DigitalPinImpl gpio_objects[] = {DigitalPinImpl(D0),
+                                               DigitalPinImpl(D1),
+                                               DigitalPinImpl(D2),
+                                               DigitalPinImpl(D3),
+                                               DigitalPinImpl(D4),
+                                               DigitalPinImpl(D5),
+                                               DigitalPinImpl(D6),
+                                               DigitalPinImpl(D7),
+                                               DigitalPinImpl(I_IS_CHARGE_OK),
+                                               DigitalPinImpl(I_INT_PD_SIGNAL),
+                                               DigitalPinImpl(I_INT_USB_PROT_FAULT),
+                                               DigitalPinImpl(I_INT_VBUS_GATE_FAULT),
+                                               DigitalPinImpl(I_INT_CHARGE_PROC_HOT),
+                                               DigitalPinImpl(I_INT_BLNC_ALERT),
+                                               DigitalPinImpl(I_INT_IMU_INT1),
+                                               DigitalPinImpl(I_INT_IMU_INT2),
+                                               DigitalPinImpl(O_EN_EXT_PWR),
+                                               DigitalPinImpl(O_EN_PDM_PWR),
+                                               DigitalPinImpl(O_VBUS_FRS),
+                                               DigitalPinImpl(O_VBUS_DIR),
+                                               DigitalPinImpl(O_ENABLE_OTG),
+                                               DigitalPinImpl(O_VBUS_DISCHARGE),
+                                               DigitalPinImpl(O_EN_VBUS_GATE),
+                                               DigitalPinImpl(O_EN_OUTPUT_PWR)};
+
+int gpio_to_index(DigitalPin::GPIO pin)
+{
+  switch (pin)
+  {
+    case DigitalPin::GPIO::gpio0:
+      return 0;
+    case DigitalPin::GPIO::gpio1:
+      return 1;
+    case DigitalPin::GPIO::gpio2:
+      return 2;
+    case DigitalPin::GPIO::gpio3:
+      return 3;
+    case DigitalPin::GPIO::gpio4:
+      return 4;
+    case DigitalPin::GPIO::gpio5:
+      return 5;
+    case DigitalPin::GPIO::gpio6:
+      return 6;
+    case DigitalPin::GPIO::gpio7:
+      return 7;
+    case DigitalPin::GPIO::Input_isChargeOk:
+      return 8;
+    case DigitalPin::GPIO::Signal_PowerDelivery:
+      return 9;
+    case DigitalPin::GPIO::Signal_UsbProtectionFault:
+      return 10;
+    case DigitalPin::GPIO::Signal_VbusGateFault:
+      return 11;
+    case DigitalPin::GPIO::Signal_ChargerProcHot:
+      return 12;
+    case DigitalPin::GPIO::Signal_BatteryBalancerAlert:
+      return 13;
+    case DigitalPin::GPIO::Signal_ImuInterrupt1:
+      return 14;
+    case DigitalPin::GPIO::Signal_ImuInterrupt2:
+      return 15;
+    case DigitalPin::GPIO::Output_EnableExternalPeripherals:
+      return 16;
+    case DigitalPin::GPIO::Output_EnableMicrophone:
+      return 17;
+    case DigitalPin::GPIO::Output_VbusFastRoleSwap:
+      return 18;
+    case DigitalPin::GPIO::Output_VbusDirection:
+      return 19;
+    case DigitalPin::GPIO::Output_EnableOnTheGo:
+      return 20;
+    case DigitalPin::GPIO::Output_DischargeVbus:
+      return 21;
+    case DigitalPin::GPIO::Output_EnableVbusGate:
+      return 22;
+    case DigitalPin::GPIO::Output_EnableOutputGate:
+      return 23;
+  }
+  return -1;
+}
+
 void DigitalPin::set(DigitalPin::GPIO pin)
 {
   mGpio = pin;
-  switch (pin)
-  {
-    case GPIO::gpio0:
-      mImpl = std::make_shared<DigitalPinImpl>(D0);
-      break;
-    case GPIO::gpio1:
-      mImpl = std::make_shared<DigitalPinImpl>(D1);
-      break;
-    case GPIO::gpio2:
-      mImpl = std::make_shared<DigitalPinImpl>(D2);
-      break;
-    case GPIO::gpio3:
-      mImpl = std::make_shared<DigitalPinImpl>(D3);
-      break;
-    case GPIO::gpio4:
-      mImpl = std::make_shared<DigitalPinImpl>(D4);
-      break;
-    case GPIO::gpio5:
-      mImpl = std::make_shared<DigitalPinImpl>(D5);
-      break;
-    case GPIO::gpio6:
-      mImpl = std::make_shared<DigitalPinImpl>(D6);
-      break;
-    case GPIO::gpio7:
-      mImpl = std::make_shared<DigitalPinImpl>(D7);
-      break;
 
-    case GPIO::Input_isChargeOk:
-      mImpl = std::make_shared<DigitalPinImpl>(I_IS_CHARGE_OK);
-      break;
-
-    case GPIO::Signal_PowerDelivery:
-      mImpl = std::make_shared<DigitalPinImpl>(I_INT_PD_SIGNAL);
-      break;
-    case GPIO::Signal_UsbProtectionFault:
-      mImpl = std::make_shared<DigitalPinImpl>(I_INT_USB_PROT_FAULT);
-      break;
-    case GPIO::Signal_VbusGateFault:
-      mImpl = std::make_shared<DigitalPinImpl>(I_INT_VBUS_GATE_FAULT);
-      break;
-    case GPIO::Signal_ChargerProcHot:
-      mImpl = std::make_shared<DigitalPinImpl>(I_INT_CHARGE_PROC_HOT);
-      break;
-    case GPIO::Signal_BatteryBalancerAlert:
-      mImpl = std::make_shared<DigitalPinImpl>(I_INT_BLNC_ALERT);
-      break;
-    case GPIO::Signal_ImuInterrupt1:
-      mImpl = std::make_shared<DigitalPinImpl>(I_INT_IMU_INT1);
-      break;
-    case GPIO::Signal_ImuInterrupt2:
-      mImpl = std::make_shared<DigitalPinImpl>(I_INT_IMU_INT2);
-      break;
-
-    case GPIO::Output_EnableExternalPeripherals:
-      mImpl = std::make_shared<DigitalPinImpl>(O_EN_EXT_PWR);
-      break;
-    case GPIO::Output_EnableMicrophone:
-      mImpl = std::make_shared<DigitalPinImpl>(O_EN_PDM_PWR);
-      break;
-    case GPIO::Output_VbusFastRoleSwap:
-      mImpl = std::make_shared<DigitalPinImpl>(O_VBUS_FRS);
-      break;
-    case GPIO::Output_VbusDirection:
-      mImpl = std::make_shared<DigitalPinImpl>(O_VBUS_DIR);
-      break;
-    case GPIO::Output_EnableOnTheGo:
-      mImpl = std::make_shared<DigitalPinImpl>(O_ENABLE_OTG);
-      break;
-
-    case GPIO::Output_DischargeVbus:
-      mImpl = std::make_shared<DigitalPinImpl>(O_VBUS_DISCHARGE);
-      break;
-    case GPIO::Output_EnableVbusGate:
-      mImpl = std::make_shared<DigitalPinImpl>(O_EN_VBUS_GATE);
-      break;
-    case GPIO::Output_EnableOutputGate:
-      mImpl = std::make_shared<DigitalPinImpl>(O_EN_OUTPUT_PWR);
-      break;
-  }
+  const int gpioIndex = gpio_to_index(pin);
+  if (gpioIndex >= 0)
+    mImpl = {std::shared_ptr<DigitalPinImpl> {}, &gpio_objects[gpioIndex]};
+  else
+    mImpl = nullptr;
 }
 
-void DigitalPin::set_pin_mode(Mode mode) const { mImpl->set_pin_mode(mode); }
+void DigitalPin::set_pin_mode(Mode mode) const
+{
+  if (mImpl)
+    mImpl->set_pin_mode(mode);
+}
 
-bool DigitalPin::is_high() const { return mImpl->is_high(); }
+bool DigitalPin::is_high() const { return mImpl and mImpl->is_high(); }
 
-void DigitalPin::set_high(bool isHigh) const { mImpl->set_high(isHigh); }
+void DigitalPin::set_high(bool isHigh) const
+{
+  if (mImpl)
+    mImpl->set_high(isHigh);
+}
 
-void DigitalPin::write(uint16_t value) const { mImpl->write(value); }
+void DigitalPin::write(uint16_t value) const
+{
+  if (mImpl)
+    mImpl->write(value);
+}
 
-uint16_t DigitalPin::read() const { return mImpl->read(); }
+uint16_t DigitalPin::read() const
+{
+  if (mImpl)
+    return mImpl->read();
+  return 0;
+}
 
-int DigitalPin::pin() const { return mImpl->mDigitalPin; }
+int DigitalPin::pin() const
+{
+  if (mImpl)
+    return mImpl->mDigitalPin;
+  return 0;
+}
 
 void DigitalPin::attach_callback(voidFuncPtr func, Interrupt mode) const
 {
-  DigitalPin::s_gpiosWithInterrupts.emplace(mGpio);
-  mImpl->attach_callback(func, mode);
+  if (mImpl)
+  {
+    DigitalPin::s_gpiosWithInterrupts.set(static_cast<uint16_t>(mGpio));
+    mImpl->attach_callback(func, mode);
+  }
 }
 
 void DigitalPin::detach_callbacks() const
 {
-  DigitalPin::s_gpiosWithInterrupts.erase(mGpio);
-  mImpl->detach_callbacks();
+  if (mImpl)
+  {
+    DigitalPin::s_gpiosWithInterrupts.reset(static_cast<uint16_t>(mGpio));
+    mImpl->detach_callbacks();
+  }
 }
 
-void DigitalPin::disconnect() const { disconnect_pin(mImpl->mDigitalPin); }
+void DigitalPin::disconnect() const
+{
+  if (mImpl)
+    disconnect_pin(mImpl->mDigitalPin);
+}
 
 } // namespace gpio
 } // namespace hal

@@ -1,5 +1,7 @@
 #include "filesystem.h"
 
+#include <src/system/common/static_map.h>
+
 #include "src/system/hal/filesystem.h"
 #include "src/system/hal/time.h"
 
@@ -8,8 +10,6 @@
 
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/statistics_handler.h"
-
-#include <map>
 
 namespace lampda {
 namespace bsp {
@@ -21,8 +21,10 @@ static constexpr const char* const FILENAME_USER = "/.lampda.par";
 static constexpr const char* const FILENAME_INTERNAL = "/.internal.par";
 
 size_t lastUserParameterSize = 0;
-std::map<uint32_t, uint32_t> _userParametersValueMap;
-std::map<uint32_t, uint32_t> _systemParametersValueMap;
+
+// Map have a fixed max size here, they can be made greater if needed
+common::static_map<uint32_t, uint32_t, 128> _userParametersValueMap;
+common::static_map<uint32_t, uint32_t, 64> _systemParametersValueMap;
 
 /**
  * \brief Store a key and a value
@@ -67,9 +69,29 @@ void clear_internal_fs()
   logic::behavior::read_parameters();
 }
 
+bool hasOverflowed = false;
+bool has_overflowed() { return hasOverflowed; }
+
 namespace __internal {
 
-bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& paramMap)
+template<typename MapType> void set_value(const uint32_t key, const uint32_t value, MapType& paramMap)
+{
+  if (paramMap.contains(key))
+  {
+    paramMap.at(key) = value;
+  }
+  else
+  {
+    const bool isSuccess = paramMap.insert({key, value}).second;
+    if (not isSuccess)
+    {
+      bsp::lampda_print("Could not add value to map, map memory is likely full (max %d)", paramMap.capacity());
+      hasOverflowed = true;
+    }
+  }
+}
+
+template<typename MapType> bool read_file_content(const char* fileName, MapType& paramMap)
 {
   paramMap.clear();
 
@@ -111,9 +133,9 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
       if (readlen >= sizeOfData)
       {
         // only modify the first data of the list
-        if (paramMap.find(converter.kv.key) == paramMap.end())
+        if (not paramMap.contains(converter.kv.key))
         {
-          paramMap[converter.kv.key] = converter.kv.value;
+          set_value(converter.kv.key, converter.kv.value, paramMap);
         }
         else
         {
@@ -135,7 +157,8 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
   return false;
 }
 
-bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramMap, const bool shouldEraseFirst = false)
+template<typename MapType>
+bool write_file(const char* filePath, const MapType& paramMap, const bool shouldEraseFirst = false)
 {
   // check if it exists
   hal::filesystem::HAL_File paramFile;
@@ -207,7 +230,10 @@ bool get_value(const uint32_t key, uint32_t& value)
   return false;
 }
 
-void set_value(const uint32_t key, const uint32_t value) { _systemParametersValueMap[key] = value; }
+void set_value(const uint32_t key, const uint32_t value)
+{
+  __internal::set_value(key, value, _systemParametersValueMap);
+}
 
 uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
 {
@@ -286,7 +312,7 @@ bool get_value(const uint32_t key, uint32_t& value)
   return false;
 }
 
-void set_value(const uint32_t key, const uint32_t value) { _userParametersValueMap[key] = value; }
+void set_value(const uint32_t key, const uint32_t value) { __internal::set_value(key, value, _userParametersValueMap); }
 
 uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
 {

@@ -58,12 +58,15 @@ void enable_gate(bool isVbusGate)
 
   // set real status
   hal::delay_ms(1);
-  _isPowerGateReallyEnabled = isPowerGateEnabled;
 
-  if (isPowerGateEnabled)
-    bsp::lampda_print("power gate enabled");
-  else
-    bsp::lampda_print("vbus gate enabled");
+  if (_isPowerGateReallyEnabled != isPowerGateEnabled)
+  {
+    if (isPowerGateEnabled)
+      bsp::lampda_print("power gate enabled");
+    else
+      bsp::lampda_print("vbus gate enabled");
+  }
+  _isPowerGateReallyEnabled = isPowerGateEnabled;
 }
 
 void disable_vbus_gate()

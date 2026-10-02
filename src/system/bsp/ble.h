@@ -5,8 +5,8 @@
 #ifndef BSP_BLE_H
 #define BSP_BLE_H
 
+#include <cstddef>
 #include <stdint.h>
-#include <string>
 #include <array>
 
 namespace lampda {

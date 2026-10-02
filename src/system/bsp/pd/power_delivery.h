@@ -6,7 +6,7 @@
 #define BSP_PD_POWER_DELIVERY_H
 
 #include <cstdint>
-#include <vector>
+#include <array>
 
 namespace lampda {
 namespace bsp {
@@ -62,16 +62,22 @@ bool is_switching_to_otg();
  */
 struct PDOTypes
 {
+  /// Indicate if this object contains valid data
+  bool is_valid() const
+  {
+    return voltage_mv >= 3500 && voltage_mv <= 22000 && maxCurrent_mA > 0 && maxCurrent_mA <= 5000;
+  }
+
   /// Voltage of this PDO
-  uint32_t voltage_mv;
+  uint32_t voltage_mv = 0;
   /// Maximum current of this PDO
-  uint32_t maxCurrent_mA;
+  uint32_t maxCurrent_mA = 0;
 };
 
 /**
  * \brief If the charger is PD compatible, return it's capabilities
  */
-std::vector<PDOTypes> get_available_pd();
+std::array<PDOTypes, 5> get_available_pd();
 
 /// Debug power delivery status
 void show_pd_status();
