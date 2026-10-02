@@ -18,6 +18,10 @@ extern "C" {
 #include <cstddef>
 #include <cstdarg>
 
+#ifdef LMBD_SIMULATION
+#include <stdio.h>
+#endif
+
 static constexpr size_t max_tx_buffer_size = 1024;
 
 namespace lampda {
