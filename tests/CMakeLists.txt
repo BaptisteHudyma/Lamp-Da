@@ -11,6 +11,7 @@ set(TEST_BUILD_FLAGS "-O3 -g -fsanitize=address -fno-omit-frame-pointer")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${TEST_BUILD_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TEST_BUILD_FLAGS} -fconcepts --template-backtrace-limit=1")
 
+add_subdirectory(${LMBD_ROOT_DIR}/libs/etl [EXCLUDE_FROM_ALL])
 
 # Compiler and Flags
 set(CMAKE_CXX_STANDARD 17)

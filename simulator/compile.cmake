@@ -156,6 +156,7 @@ function(create_simulator_target SIM_NAME)
         sfml-window
         sfml-audio
         sfml-system
+        etl::etl
     )
 
     target_link_libraries(${TARGET_NAME}
