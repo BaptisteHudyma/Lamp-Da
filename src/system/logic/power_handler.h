@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "src/system/common/static_string.h"
+#include <etl/string.h>
 
 namespace lampda {
 namespace logic {
@@ -101,12 +101,12 @@ bool enable_charge(const bool);
 /**
  * \brief Return the current state, as a string
  */
-common::static_string<32> get_state();
+etl::string<32> get_state();
 /**
  * \brief Return the current error message, as a string.
  * If not errors are present, will return "x".
  */
-common::static_string<128> get_error_string();
+etl::string<128> get_error_string();
 
 /**
  * \brief Return true when the current state is OUTPUT_VOLTAGE_MODE, and the desired voltage are set and gates are

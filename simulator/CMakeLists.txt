@@ -10,6 +10,9 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/compile.cmake)
 
 install_sfml()
 
+find_package(ETLCPP)
+
+
 # Compiler and Flags
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -26,6 +29,8 @@ set(SIM_BUILD_FLAGS "-O3 -g -fdump-rtl-expand -fstack-usage -fsanitize=address -
 set(SIM_LINK_FLAGS "-fsanitize=address")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SIM_BUILD_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SIM_BUILD_FLAGS} -fconcepts --template-backtrace-limit=1")
+
+add_subdirectory(${LMBD_ROOT_DIR}/libs/etl [EXCLUDE_FROM_ALL])
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include

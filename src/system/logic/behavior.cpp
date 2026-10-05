@@ -73,7 +73,7 @@ static bool wokeUpFromVbus_s = false;
 // indicates that the output should be turned on/off
 static bool isTargetPoweredOn_s = false;
 // indicates the error that started the error state
-static common::static_string<128> errorStateRaisedStr = "";
+static etl::string<128> errorStateRaisedStr = "";
 // indicates the time at which the pre-charge state started
 static uint32_t preChargeCalled = 0;
 // indicates the  time at which the output state is enabled
@@ -275,21 +275,21 @@ void write_parameters()
 // user code is running when state is output
 bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::OUTPUT_LIGHT; }
 
-void set_error_state_message(const common::static_string<128>& errorMsg)
+void set_error_state_message(const etl::string<128>& errorMsg)
 {
   if (errorStateRaisedStr.empty())
   {
-    errorStateRaisedStr = common::static_string<8>("\n\t") + errorMsg;
+    errorStateRaisedStr = etl::string<8>("\n\t").append(errorMsg);
   }
 }
-common::static_string<128> get_error_state_message()
+etl::string<128> get_error_state_message()
 {
   if (errorStateRaisedStr.empty())
     return "x";
   return errorStateRaisedStr;
 }
 
-void go_to_error_state(const common::static_string<128>& errorMsg)
+void go_to_error_state(const etl::string<128>& errorMsg)
 {
   statistics::signal_output_off();
 
@@ -614,7 +614,7 @@ void handle_output_light_state()
 
     if (hal::time_ms() - lastOutputLightValidTime > 1000)
     {
-      common::static_string<128> errStr("power gate took too long to switch in output light state ");
+      etl::string<128> errStr("power gate took too long to switch in output light state ");
       errStr.push_back(static_cast<char>(::lampda::bsp::powergates::is_power_gate_enabled()));
       errStr.push_back(static_cast<char>(logic::power::is_output_mode_ready()));
       go_to_error_state(errStr);
@@ -838,10 +838,7 @@ void loop()
   }
 }
 
-common::static_string<32> get_state()
-{
-  return common::static_string<32>(BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]);
-}
+etl::string<32> get_state() { return etl::string<32>(BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]); }
 
 } // namespace behavior
 } // namespace logic

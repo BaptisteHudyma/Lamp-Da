@@ -7,8 +7,7 @@
 
 #include <memory>
 #include <stdint.h>
-
-#include "src/system/common/bitset.h"
+#include <etl/bitset.h>
 
 namespace lampda {
 namespace hal {
@@ -115,7 +114,7 @@ public:
 
 private:
   static constexpr size_t maxGpioCnt = 32;
-  inline static common::BitSet<maxGpioCnt> s_gpiosWithInterrupts;
+  inline static etl::bitset<maxGpioCnt> s_gpiosWithInterrupts;
 
   GPIO mGpio;
   std::shared_ptr<DigitalPinImpl> mImpl;

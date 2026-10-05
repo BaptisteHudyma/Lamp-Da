@@ -18,6 +18,7 @@ target_link_libraries(
     PUBLIC
     gtest
     gmock
+    etl::etl
 )
 
 target_include_directories(

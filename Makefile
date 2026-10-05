@@ -37,10 +37,14 @@ PROJECT_INO=$(PROJECT_NAME).ino
 COMPILER_CMD=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.cpp.cmd|cut -f2 -d=)
 COMPILER_PATH=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.path|cut -f2 -d=)
 
+LIBRARY_PATH_FLAGS = -I$(SRC_DIR)/libs/etl/include
+LINKER_FLAGS = -letlcpp -DETL_TARGET_DEVICE_GENERIC -DETL_TARGET_OS_NONE
+
 CPP_INCLUDES=-I$(OBJECTS_DIR)/sketch -I$(GEN_DIR) -DLMBD_MISSING_DEFINE
 CPP_BASIC_FLAGS=-std=gnu++17 -fconcepts -DNDEBUG -DLMBD_CPP17 -D$(FULL_LAMP_TYPE) $(CPP_INCLUDES) ${LMBD_EXTRA_FLAGS}
 CPP_BUILD_FLAGS=$(CPP_BASIC_FLAGS) -fdiagnostics-color=always -Wno-unused-parameter -ftemplate-backtrace-limit=1 -fstack-usage -ffunction-sections -fdata-sections # -fsanitize=undefined,address -fstack-protector-all
-ARDUINO_EXTRA_FLAGS="compiler.cpp.extra_flags='$(CPP_INCLUDES) -fstack-usage -D$(FULL_LAMP_TYPE) ${LMBD_EXTRA_FLAGS}'"
+ARDUINO_EXTRA_FLAGS="compiler.cpp.extra_flags='$(LINKER_FLAGS) $(CPP_INCLUDES) -fstack-usage -D$(FULL_LAMP_TYPE) ${LMBD_EXTRA_FLAGS} ${LIBRARY_PATH_FLAGS}'"
+
 #
 # to enable warnings:
 # 	LMBD_CPP_EXTRA_FLAGS="-Wall -Wextra" make

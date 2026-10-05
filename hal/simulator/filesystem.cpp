@@ -39,7 +39,7 @@ bool delete_file(const char* fname)
   return remove(filename) == 0;
 }
 
-HAL_File::HAL_File() { mInternalFile = std::shared_ptr<FileInternalTy>(); }
+HAL_File::HAL_File() { mInternalFile = std::make_shared<FileInternalTy>(); }
 
 HAL_File::~HAL_File()
 {
@@ -49,6 +49,9 @@ HAL_File::~HAL_File()
 
 bool HAL_File::open(const char* fname, const HAL_File::OpenType& mode)
 {
+  if (not mInternalFile)
+    return false;
+
   if (mInternalFile->file != nullptr)
   {
     fprintf(stderr, "fopen: opening two files?\n");
@@ -78,13 +81,23 @@ bool HAL_File::open(const char* fname, const HAL_File::OpenType& mode)
   return mInternalFile->file != nullptr;
 }
 
-bool HAL_File::is_open() const { return mInternalFile->file != nullptr; }
+bool HAL_File::is_open() const
+{
+  if (not mInternalFile)
+    return false;
+  return mInternalFile->file != nullptr;
+}
 
-bool HAL_File::is_available() const { return mInternalFile->file != nullptr; }
+bool HAL_File::is_available() const
+{
+  if (not mInternalFile)
+    return false;
+  return mInternalFile->file != nullptr;
+}
 
 void HAL_File::close()
 {
-  if (mInternalFile->file != nullptr)
+  if (mInternalFile and mInternalFile->file != nullptr)
   {
     fclose(mInternalFile->file);
     mInternalFile->file = nullptr;
@@ -94,7 +107,7 @@ void HAL_File::close()
 
 size_t HAL_File::size() const
 {
-  if (mInternalFile->file != nullptr)
+  if (mInternalFile and mInternalFile->file != nullptr)
   {
     size_t pos = ftell(mInternalFile->file);
     fseek(mInternalFile->file, 0L, SEEK_END);
@@ -109,7 +122,7 @@ size_t HAL_File::size() const
 
 size_t HAL_File::write(const uint8_t* const in, size_t sz)
 {
-  if (mInternalFile->file != nullptr)
+  if (mInternalFile and mInternalFile->file != nullptr)
   {
     // uncomment this to log all filesystem write
 #if 0
@@ -130,7 +143,7 @@ size_t HAL_File::write(const uint8_t* const in, size_t sz)
 
 size_t HAL_File::read(uint8_t* out, size_t sz)
 {
-  if (mInternalFile->file != nullptr)
+  if (mInternalFile and mInternalFile->file != nullptr)
   {
     return fread(out, sizeof(uint8_t), sz, mInternalFile->file);
   }
@@ -141,7 +154,7 @@ size_t HAL_File::read(uint8_t* out, size_t sz)
 
 bool HAL_File::seek(uint8_t sz)
 {
-  if (mInternalFile->file != nullptr)
+  if (mInternalFile and mInternalFile->file != nullptr)
   {
     if (mInternalFile->filemode != nullptr)
     {
@@ -162,7 +175,7 @@ bool HAL_File::seek(uint8_t sz)
 
 void HAL_File::truncate(uint8_t sz)
 {
-  if (mInternalFile->file != nullptr)
+  if (mInternalFile and mInternalFile->file != nullptr)
   {
     fclose(mInternalFile->file);
     mInternalFile->file = nullptr;
