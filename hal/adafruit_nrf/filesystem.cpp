@@ -59,7 +59,9 @@ void shutdown() { __private::shutdown_shared_filesystem_instance(); }
 
 void format_file_system()
 {
-  // DO not start before formatting
+  // setup the filesystem if needed
+  __private::setup_shared_filesystem_instance();
+
   InternalFS.format();
 }
 
