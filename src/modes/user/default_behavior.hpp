@@ -439,6 +439,52 @@ void handle_sunset_to_time_command(const component::time::RealTime& time)
   logic::sunset::set_deadline(internalLampActionTime);
 }
 
+/**
+ * \brief Handle the timing command
+ */
+void handle_sunrise_to_time_command(const component::time::RealTime& time)
+{
+  if (not time.is_valid())
+  {
+    bsp::lampda_print("Refusing sunrise command %d %dh %dm %ds. Invalid values.",
+                      time.dayOfTheWeek,
+                      time.hour,
+                      time.minutes,
+                      time.seconds);
+    return;
+  }
+  const auto& realTime = component::time::get_real_time();
+  if (not realTime.is_valid())
+  {
+    bsp::lampda_print("Refusing sunrise command %d %dh %dm %ds : Time is not synchronized yet.",
+                      time.dayOfTheWeek,
+                      time.hour,
+                      time.minutes,
+                      time.seconds);
+    return;
+  }
+
+  const uint32_t internalLampActionTime = component::time::get_platform_time_from_target_time(time);
+  if (internalLampActionTime <= 0)
+  {
+    bsp::lampda_print("Refusing sunrise command %d %dh %dm %ds: Target time is incoherent",
+                      time.dayOfTheWeek,
+                      time.hour,
+                      time.minutes,
+                      time.seconds);
+    return;
+  }
+
+  // lamp will turn on if not already turned on
+  if (logic::behavior::is_in_output_state())
+  {
+    bsp::lampda_print("Refusing sunrise command: system is already on");
+    return;
+  }
+
+  logic::sunrise::set_deadline(internalLampActionTime);
+}
+
 void handle_mode_control(const uint8_t groupIndex, const uint8_t modeIndex)
 {
   // lamp will turn on if not already turned on
@@ -522,6 +568,15 @@ bool handle_user_command(const common::UserCommand& command)
           __private::handle_sunset_to_time_command(time);
         else
           bsp::lampda_print("Failed to parse set_sunset_time command");
+        return true;
+      }
+    case common::UserCommand::Type::SetSunriseToTime:
+      {
+        component::time::RealTime time;
+        if (command.parse_set_sunrise_to_time_command(time))
+          __private::handle_sunrise_to_time_command(time);
+        else
+          bsp::lampda_print("Failed to parse set_sunrise_time command");
         return true;
       }
 

@@ -13,6 +13,7 @@
 
 #include <src/system/logic/alerts.h>
 #include <src/system/logic/sunset_timer.h>
+#include <src/system/logic/sunrise_timer.h>
 
 #include <src/system/utils/assert.h>
 

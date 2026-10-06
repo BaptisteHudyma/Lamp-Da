@@ -53,16 +53,16 @@ uint32_t get_sunset_loop_timing_ms()
 float get_percent_of_advance()
 {
   if (hal::time_s() >= sunsetTimerEndTime_s)
-    return 1.0;
+    return 1.0f;
 
   const uint32_t finishline = get_sunset_loop_timing_ms();
 
   // signal the progress change
-  const float progress = lmpd_constrain<float>(((sunsetTimerEndTime_s * 1000.0 - finishline) - hal::time_ms()) /
+  const float progress = lmpd_constrain<float>(((sunsetTimerEndTime_s * 1000.0f - finishline) - hal::time_ms()) /
                                                        static_cast<float>(trueBrightnessRampDownTime_ms),
                                                0.0f,
                                                1.0f);
-  return 1.0 - progress;
+  return 1.0f - progress;
 }
 
 /// Send the timer update signal to consummers
@@ -72,7 +72,7 @@ float signal_sunset_update()
   if (hal::time_s() >= sunsetTimerEndTime_s)
   {
     logic::behavior::sunset::progress_update(1.0f);
-    return 1.0;
+    return 1.0f;
   }
 
   const float progress = get_percent_of_advance();
@@ -111,7 +111,7 @@ void sunset_process_loop()
       {
         // new brightness to use
         const brightness_t newBrightness =
-                lmpd_constrain<float>(1.0 - progress, 0.0, 1.0) * logic::brightness::get_saved_brightness();
+                lmpd_constrain<float>(1.0f - progress, 0.0f, 1.0f) * logic::brightness::get_saved_brightness();
 
         // slowly decrease brighntess
         logic::brightness::set_max_user_brightness(newBrightness);

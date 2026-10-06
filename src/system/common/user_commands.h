@@ -30,6 +30,7 @@ public:
     OnOff,                 ///< turn on or off
     SetRealTime,           ///< set the system real time
     SetSunsetToTime,       ///< set the sunset to a target real time
+    SetSunriseToTime,      ///< set the sunrise to a target real time
     SetBleCustomColorMode, ///< switch to BLE custom color mode
     SetBleMode,            ///< switch to a target BLE mode
     GoToFavoriteIndex,     ///< Go to the target favorite index
@@ -81,6 +82,13 @@ public:
    * \return The correct user command
    */
   static UserCommand make_set_sunset_to_time_command(const component::time::RealTime& time);
+
+  /**
+   * \brief Set this commant to set sunrise to real time
+   * \param[in] time
+   * \return The correct user command
+   */
+  static UserCommand make_set_sunrise_to_time_command(const component::time::RealTime& time);
 
   /**
    * \brief Set this commant to set ble custom color
@@ -160,6 +168,13 @@ public:
    * \return True if the current message is valid, and parameter is set
    */
   bool parse_set_sunset_to_time_command(component::time::RealTime& time) const;
+
+  /**
+   * \brief Parse the current command for a set sunrise to time value
+   * \param[out] time
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_set_sunrise_to_time_command(component::time::RealTime& time) const;
 
   /**
    * \brief Parse the current command for a set current mode to BLE custom color

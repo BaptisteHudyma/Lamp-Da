@@ -17,6 +17,7 @@
 #include "src/system/logic/inputs.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/sunset_timer.h"
+#include "src/system/logic/sunrise_timer.h"
 
 #include "src/system/component/battery.h"
 #include "src/system/component/charger.h"
@@ -190,6 +191,7 @@ void main_setup()
 
   // start sunset timer thread
   logic::sunset::init();
+  logic::sunrise::init();
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread())

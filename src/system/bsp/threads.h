@@ -35,6 +35,7 @@ extern "C" {
   extern const uint32_t taskScheduler_taskName;
   /// name of the task schedule sunset
   extern const uint32_t sunset_taskName;
+  extern const uint32_t sunrise_taskName;
   /// BLE cli queue
   extern const uint32_t ble_cli_taskName;
   /// UART print task

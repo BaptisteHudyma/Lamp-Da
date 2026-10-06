@@ -30,6 +30,7 @@
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/statistics_handler.h"
 #include "src/system/logic/sunset_timer.h"
+#include "src/system/logic/sunrise_timer.h"
 
 #include "src/user/functions.h"
 
@@ -541,6 +542,46 @@ static void cmd_set_sunset_time(const common::cli::ParsedCommand& command)
   bsp::lampda_print("Invalid call: parameters should be range <0-23> <0-59> <0-59> <0-6>");
 }
 
+/// Enable of update the sunrise timer
+static void cmd_sunrise(const common::cli::ParsedCommand& command)
+{
+  uint16_t timeMinutes = 0;
+  if (common::cli::argument::parse_uint16(command, 0, timeMinutes) && timeMinutes > 0)
+  {
+    // lamp will turn on if not already turned on
+    if (not logic::behavior::is_in_output_state())
+      logic::behavior::set_power_on();
+
+    logic::sunrise::add_time_minutes(timeMinutes);
+    return;
+  }
+  bsp::lampda_print("Invalid call: parameter should be greater than zero");
+}
+
+static void cmd_set_sunrise_time(const common::cli::ParsedCommand& command)
+{
+  uint8_t hour;
+  uint8_t minute;
+  uint8_t seconds;
+  uint8_t dayofWeek;
+  if (common::cli::argument::parse_uint8(command, 0, hour) && common::cli::argument::parse_uint8(command, 1, minute) &&
+      common::cli::argument::parse_uint8(command, 2, seconds) &&
+      common::cli::argument::parse_uint8(command, 3, dayofWeek))
+  {
+    component::time::RealTime time;
+    time.hour = hour;
+    time.minutes = minute;
+    time.seconds = seconds;
+    time.dayOfTheWeek = dayofWeek;
+    if (time.is_valid())
+    {
+      lampda::user::handle_user_command(common::UserCommand::make_set_sunrise_to_time_command(time));
+      return;
+    }
+  }
+  bsp::lampda_print("Invalid call: parameters should be range <0-23> <0-59> <0-59> <0-6>");
+}
+
 /// Set the user ramp to a target value
 static void cmd_ramp(const common::cli::ParsedCommand& command)
 {
@@ -833,6 +874,18 @@ constexpr Command _set_commands_s[] = {
                           4,
                           "Set the sunset timer to a time, if time is synchronised",
                           handles::cmd_set_sunset_time),
+        make_command_args("sunrise_min",
+                          "[0-10](minutes)",
+                          1,
+                          1,
+                          "Set the sunrise timer, or add time if already started.",
+                          handles::cmd_sunrise),
+        make_command_args("sunrise",
+                          "[0-23](hour) [0-59](minute) [0-59](second) [0-6](day)",
+                          4,
+                          4,
+                          "Set the sunrise timer to a time, if time is synchronised",
+                          handles::cmd_set_sunrise_time),
         make_command_args("ble_name",
                           "[New name]",
                           1,

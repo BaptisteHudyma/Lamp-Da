@@ -23,6 +23,7 @@ const uint32_t power_taskName = utils::hash("power");
 const uint32_t user_taskName = utils::hash("user");
 const uint32_t taskScheduler_taskName = utils::hash("task_sched");
 const uint32_t sunset_taskName = utils::hash("sunset");
+const uint32_t sunrise_taskName = utils::hash("sunrise");
 const uint32_t ble_cli_taskName = utils::hash("ble_cli");
 const uint32_t print_taskName = utils::hash("print");
 
