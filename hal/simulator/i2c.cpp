@@ -39,6 +39,8 @@ float vbusVoltage;
 float vbusCurrent;
 
 float inputVbusVoltage;
+float inputVbusCurrent;
+
 float chargeOtgOutput;
 } // namespace mock_electrical
 

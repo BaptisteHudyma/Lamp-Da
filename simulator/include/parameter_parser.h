@@ -55,6 +55,10 @@ inline void read_and_update_parameters()
       {
         mock_electrical::inputVbusVoltage = value;
       }
+      else if (key == vbusCurrentKey)
+      {
+        mock_electrical::inputVbusCurrent = value;
+      }
       else if (key == cpuTemperatureKey)
       {
         mock_registers::cpuTemperature = value;

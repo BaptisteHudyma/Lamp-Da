@@ -66,8 +66,8 @@ public:
     _registerMap[bq25713::IIN_DPM_ADDR] = std::make_unique<Register>();
 
     _registerMap[bq25713::ADC_VBUS_PSYS_ADC_ADDR] = std::make_unique<AdcVbusPsys_Register>();
-    _registerMap[bq25713::ADC_IBAT_ADDR] = std::make_unique<Register>();
-    _registerMap[bq25713::CMPIN_ADC_ADDR] = std::make_unique<Register>();
+    _registerMap[bq25713::ADC_IBAT_ADDR] = std::make_unique<AdcIbat_Register>();
+    _registerMap[bq25713::CMPIN_ADC_ADDR] = std::make_unique<CmpinAdc_Register>();
   }
 
   void run_electrical_update() override
@@ -179,6 +179,42 @@ private:
     {
       return encode_to_double_register(
               mock_battery::voltage * 1000.0, mock_electrical::powerRailVoltage * 1000.0, &IcRegisters.aDCVBUSPSYS);
+    }
+  };
+
+  struct AdcIbat_Register : public Register
+  {
+    uint16_t read() override
+    {
+      float batteryDischargeCurrent = 0;
+      float batteryChargeCurrent = 0;
+      if (mock_battery::current <= 0)
+      {
+        // discharge while battery current is negativ
+        batteryDischargeCurrent = mock_battery::current;
+        batteryChargeCurrent = 0;
+      }
+      else
+      {
+        // charge while power rail is low while battery current is positiv
+        batteryDischargeCurrent = 0;
+        batteryChargeCurrent = mock_battery::current;
+      }
+      return encode_to_double_register(
+              batteryDischargeCurrent * 1000.0, batteryChargeCurrent * 1000.0, &IcRegisters.aDCIBAT);
+    }
+  };
+
+  struct CmpinAdc_Register : public Register
+  {
+    uint16_t read() override
+    {
+      float powerRailCurrent = 0.0f;
+      if (mock_electrical::powerRailCurrent > 0)
+      {
+        powerRailCurrent = mock_electrical::powerRailCurrent;
+      }
+      return encode_to_double_register(0.0f, powerRailCurrent * 1000.0f, &IcRegisters.aDCIINCMPIN);
     }
   };
 

@@ -84,6 +84,7 @@ uint32_t get_color() { return idColor.color; }
 
 namespace mock_battery {
 float voltage;
+float current;
 } // namespace mock_battery
 
 // store output values
