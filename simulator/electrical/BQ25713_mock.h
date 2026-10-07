@@ -8,6 +8,7 @@
 #include "i_ic.h"
 
 // use depend of real component (to have the registers)
+#include "src/system/hal/i2c.h"
 #include "src/depends/BQ25713/BQ25713.h"
 
 // hardwaree influencer simulator
@@ -19,14 +20,12 @@
 
 #include "src/system/bsp/text_out.h"
 
-#include <map>
-
 namespace simulator {
 
-// independant of enabl/disable
+// independant of enable/disable
 float targetOTGVoltage = 0.0;
 namespace __private {
-::lampda::hal::gpio::DigitalPin enableOTG(::lampda::hal::gpio::DigitalPin::GPIO::Output_EnableOnTheGo);
+static const ::lampda::hal::gpio::DigitalPin enableOTG(::lampda::hal::gpio::DigitalPin::GPIO::Output_EnableOnTheGo);
 }
 
 class BQ25713Mock : public IntegratedCircuitMock_I
@@ -76,19 +75,17 @@ public:
 
     // check OTG enable
     const uint16_t chargeOption3 = _registerMap[bq25713::CHARGE_OPTION_3_ADDR]->read();
-    if (chargeOption3)
+
+    const uint8_t val0 = chargeOption3 & 0xff;
+    const uint8_t val1 = (chargeOption3 >> 8) & 0xff;
+    // EN_OTG
+    if ((val1 & (1 << 0x04)) != 0 && __private::enableOTG.is_high())
     {
-      const uint8_t val0 = chargeOption3 & 0xff;
-      const uint8_t val1 = (chargeOption3 >> 8) & 0xff;
-      // EN_OTG
-      if ((val1 & (1 << 0x04)) != 0 && __private::enableOTG.is_high())
-      {
-        mock_electrical::chargeOtgOutput = targetOTGVoltage;
-      }
-      else
-      {
-        mock_electrical::chargeOtgOutput = 0;
-      }
+      mock_electrical::chargeOtgOutput = targetOTGVoltage;
+    }
+    else
+    {
+      mock_electrical::chargeOtgOutput = 0;
     }
   }
 

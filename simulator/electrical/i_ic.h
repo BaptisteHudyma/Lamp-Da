@@ -83,6 +83,9 @@ protected:
 private:
 };
 
+static constexpr size_t numberOfMocks = 1;
+extern const std::array<std::unique_ptr<IntegratedCircuitMock_I>, numberOfMocks> icMocks;
+
 } // namespace simulator
 
 #endif
