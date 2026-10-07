@@ -19,6 +19,11 @@
 #include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
 
+// TODO issue #132 remove when the mock components will be running
+#ifdef LMBD_SIMULATION
+#include "simulator/include/hardware_influencer.h"
+#endif
+
 // remove this to remove all PD algorithms
 #define USE_PD_ALGO_LOOP
 
@@ -58,7 +63,15 @@ int get_vbus_voltage()
 {
   static int vbusVoltage = 0;
   // do not spam the system
-  EVERY_N_MILLIS(100) { vbusVoltage = tcpm_get_vbus_voltage(); }
+  EVERY_N_MILLIS(100)
+  {
+// TODO issue #132 remove when the mock components will be running
+#ifdef LMBD_SIMULATION
+    vbusVoltage = ::simulator::mock_electrical::inputVbusVoltage * 1000.0;
+#else
+    vbusVoltage = tcpm_get_vbus_voltage();
+#endif
+  }
   return vbusVoltage;
 }
 

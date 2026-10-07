@@ -279,7 +279,7 @@ void set_error_state_message(const etl::string<128>& errorMsg)
 {
   if (errorStateRaisedStr.empty())
   {
-    errorStateRaisedStr = etl::string<8>("\n\t").append(errorMsg);
+    errorStateRaisedStr = etl::string<128>("\n\t").append(errorMsg);
   }
 }
 etl::string<128> get_error_state_message()
