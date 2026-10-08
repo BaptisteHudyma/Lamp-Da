@@ -39,7 +39,11 @@ void elec_mock_loop()
     {
       mock_electrical::vbusVoltage =
               std::max<float>(mock_electrical::powerRailVoltage, mock_electrical::inputVbusVoltage);
+      mock_electrical::vbusCurrent =
+              std::max<float>(mock_electrical::powerRailCurrent, mock_electrical::inputVbusCurrent);
     }
+    else
+      mock_electrical::vbusCurrent = std::max<float>(0.0f, mock_electrical::inputVbusCurrent);
 
     // max of the two voltages
     mock_electrical::powerRailVoltage =
@@ -49,7 +53,9 @@ void elec_mock_loop()
   {
     // gate open, no flow
     mock_electrical::vbusVoltage = std::max<float>(0.0f, mock_electrical::inputVbusVoltage);
+    mock_electrical::vbusCurrent = 0.0f;
     mock_electrical::powerRailVoltage = mock_electrical::chargeOtgOutput;
+    mock_electrical::powerRailCurrent = 1.0f;
   }
 
   // Output power gate
@@ -57,6 +63,7 @@ void elec_mock_loop()
   {
     // power can go to output
     mock_electrical::outputVoltage = std::max<float>(0.0f, mock_electrical::powerRailVoltage);
+    mock_electrical::outputCurrent = std::max<float>(0.0f, mock_electrical::powerRailCurrent);
   }
   else
   {
@@ -69,8 +76,13 @@ void elec_mock_loop()
 void start_electrical_mock()
 {
   mock_electrical::powerRailVoltage = 0;
+  mock_electrical::powerRailCurrent = 0;
+
   mock_electrical::vbusVoltage = 0;
+  mock_electrical::vbusCurrent = 0;
+
   mock_electrical::outputVoltage = 0;
+  mock_electrical::outputCurrent = 0;
 
   static constexpr uint16_t threadBufferSize = 255;
   static lampda::bsp::threads::TaskBuffer_t threadBuffer[threadBufferSize];

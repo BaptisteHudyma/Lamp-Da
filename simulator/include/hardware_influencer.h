@@ -50,6 +50,7 @@ extern float vbusCurrent;
 
 // voltage applied to the USB input (controled by user)
 extern float inputVbusVoltage;
+extern float inputVbusCurrent;
 // keep the OTG command voltage
 extern float chargeOtgOutput;
 } // namespace mock_electrical
@@ -57,7 +58,8 @@ extern float chargeOtgOutput;
 /// Encapsulate the mock battery signals
 namespace mock_battery {
 extern float voltage;
-}
+extern float current;
+} // namespace mock_battery
 
 } // namespace simulator
 

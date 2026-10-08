@@ -19,7 +19,6 @@
 
 namespace simulator {
 
-static constexpr size_t numberOfMocks = 1;
 const std::array<std::unique_ptr<IntegratedCircuitMock_I>, numberOfMocks> icMocks = {
         // charger component
         std::make_unique<BQ25713Mock>(),
@@ -39,11 +38,14 @@ float vbusVoltage;
 float vbusCurrent;
 
 float inputVbusVoltage;
+float inputVbusCurrent;
+
 float chargeOtgOutput;
 } // namespace mock_electrical
 
 void i2c_process_mock_loop()
 {
+  // Update I2C component mocks
   for (const auto& icMock: simulator::icMocks)
   {
     icMock->run_electrical_update();
