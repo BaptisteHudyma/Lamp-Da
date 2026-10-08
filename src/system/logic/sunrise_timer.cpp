@@ -81,7 +81,8 @@ float signal_sunrise_update()
 void sunrise_process_loop()
 {
   // this thread runs slowly
-  hal::delay_ms(get_sunrise_loop_timing_ms());
+  const uint32_t sunriseLoopTiming = get_sunrise_loop_timing_ms();
+  hal::delay_ms(sunriseLoopTiming);
 
   if (not is_enabled())
   {
@@ -120,11 +121,19 @@ void sunrise_process_loop()
         const brightness_t newBrightness =
                 lmpd_constrain<float>(progress, 0.0f, 1.0f) * logic::brightness::get_saved_brightness();
 
-        // slowly decrease brighntess
+        // slowly increase brightness limit
         logic::brightness::set_max_user_brightness(newBrightness);
-        logic::brightness::update_brightness(newBrightness);
-        // force an update of the brightness, with user callback
-        logic::brightness::force_brightness_user_callback();
+
+        // if latest brightness update was above a certain loop delay, it means we can safely scale it up ourself
+        if (hal::time_ms() - logic::brightness::when_last_update_brightness() >= sunriseLoopTiming)
+          logic::brightness::update_brightness(newBrightness);
+        else
+        {
+          // slowly scale brighntess to prevent suddent jumps for brightness modes
+          // This should mecanically saturate the brightness
+          // This is a HACK to handle some brightness mode
+          logic::brightness::update_brightness(newBrightness * 0.90);
+        }
       }
     }
   }
@@ -208,6 +217,9 @@ void add_time_minutes(const uint8_t time_minutes)
 
 void cancel_timer()
 {
+  if (not is_enabled())
+    return;
+
   // release timer
   sunriseTimerEndTime_s = 0;
   trueBrightnessRampUpTime_ms = brightnessRampUpTime_ms;

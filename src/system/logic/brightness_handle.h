@@ -17,7 +17,7 @@ namespace brightness {
 brightness_t get_brightness();
 
 /// Return the saved brightness level.
-/// This shoudl be the prefered option in all computations.
+/// This should be the prefered option in all computations.
 brightness_t get_saved_brightness();
 
 /// Return the maximum allowed brightness

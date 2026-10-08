@@ -12,6 +12,7 @@
 #include "src/system/logic/brightness_handle.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/sunset_timer.h"
+#include "src/system/logic/sunrise_timer.h"
 
 #include "src/system/component/button.h"
 
@@ -290,6 +291,8 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
 
         // prevent sunset updates when we are updating it ourself
         logic::sunset::lock_brightness_update(not isEndOfHoldEvent);
+        /// user controled brightness, no more sunrise
+        logic::sunrise::cancel_timer();
 
         if (isEndOfHoldEvent)
         {

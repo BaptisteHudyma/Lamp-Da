@@ -19,6 +19,7 @@
 #include "src/system/logic/statistics_handler.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/sunset_timer.h"
+#include "src/system/logic/sunrise_timer.h"
 
 #include "src/system/bsp/indicator.h"
 #include "src/system/bsp/filesystem.h"
@@ -467,7 +468,9 @@ bool check_handle_exit_output_mode()
   // should go to sleep
   if (not is_system_should_be_powered())
   {
+    // cancel both
     logic::sunset::cancel_timer();
+    logic::sunrise::cancel_timer();
 
     if (is_charger_powered())
     {
