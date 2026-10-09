@@ -119,11 +119,12 @@ void sunrise_process_loop()
       if (isAllowedToControlBrightness)
       {
         // new brightness to use
-        const brightness_t newBrightness =
-                lmpd_constrain<float>(progress, 0.0f, 1.0f) * logic::brightness::get_saved_brightness();
+        const float constraintProgress = lmpd_constrain<float>(progress, 0.0f, 1.0f);
+        const brightness_t newMaxBrightness = constraintProgress * logic::brightness::get_max_brightness();
+        const brightness_t newBrightness = constraintProgress * logic::brightness::get_saved_brightness();
 
         // slowly increase brightness limit
-        logic::brightness::set_max_user_brightness(newBrightness);
+        logic::brightness::set_max_user_brightness(newMaxBrightness);
         // update brightness
         logic::brightness::update_brightness(newBrightness);
       }
@@ -146,6 +147,11 @@ void set_deadline(const uint32_t timeToFullyOn_s)
   if (timeToFullyOn_s <= hal::time_s())
   {
     bsp::lampda_print("shutdown time is less than current time: %d", timeToFullyOn_s);
+    return;
+  }
+  if (not is_enabled() and logic::behavior::is_in_output_state())
+  {
+    bsp::lampda_print("Sunrise mode can only be used with an off lamp");
     return;
   }
   const uint32_t timeLeftSeconds = timeToFullyOn_s - hal::time_s();

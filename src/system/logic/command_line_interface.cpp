@@ -548,10 +548,6 @@ static void cmd_sunrise(const common::cli::ParsedCommand& command)
   uint16_t timeMinutes = 0;
   if (common::cli::argument::parse_uint16(command, 0, timeMinutes) && timeMinutes > 0)
   {
-    // lamp will turn on if not already turned on
-    if (not logic::behavior::is_in_output_state())
-      logic::behavior::set_power_on();
-
     logic::sunrise::add_time_minutes(timeMinutes);
     return;
   }

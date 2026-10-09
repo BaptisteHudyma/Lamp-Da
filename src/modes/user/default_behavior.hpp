@@ -337,6 +337,7 @@ void handle_brightness_control(const brightness_t requiredbrightness)
     return;
 
   logic::sunset::lock_brightness_update(true);
+  logic::sunrise::lock_brightness_update(true);
   // update brightness
   const brightness_t desiredBrightness =
           min<brightness_t>(::lampda::brightness::absoluteMaximumBrightness, requiredbrightness);
@@ -345,6 +346,7 @@ void handle_brightness_control(const brightness_t requiredbrightness)
   // update saved brightness
   logic::brightness::update_saved_brightness();
   logic::sunset::lock_brightness_update(false);
+  logic::sunrise::lock_brightness_update(false);
 
   // and change the sunset timer if needed
   logic::sunset::bump_timer();
