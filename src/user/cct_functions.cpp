@@ -86,6 +86,7 @@ void brightness_update(const brightness_t brightness)
 }
 
 void sunset_timer_update(const float progress) {}
+void sunrise_timer_update(const float progress) {}
 
 void write_parameters() { bsp::filesystem::user::set_value(colorKey, currentColor); }
 

@@ -94,6 +94,18 @@ struct BasicMode
    */
   static void sunset_update(auto& ctx, float progress) { return; }
 
+  /// Toggles the use of custom BasicMode::sunrise_update() callback
+  static constexpr bool hasSunriseAnimation = false;
+
+  /** \brief Custom callback when sunrise mode is updated (optional)
+   *
+   * Callback active only if BasicMode::hasSunriseAnimation is True
+   *
+   * \param[in] ctx The current context
+   * \param[in] progress Between 0 and 1, progress of the sunrise. At 1, the system is fully on
+   */
+  static void sunrise_update(auto& ctx, float progress) { return; }
+
   /// Toggles the use of custom BasicMode::brightness_update() callback
   static constexpr bool hasBrightCallback = false;
 
@@ -274,6 +286,7 @@ struct BasicMode
 
   // polyfill (to be ignored in this context)
   static constexpr bool everySunsetCallback = false;    ///< \private
+  static constexpr bool everySunriseCallback = false;   ///< \private
   static constexpr bool everyBrightCallback = false;    ///< \private
   static constexpr bool everySystemCallbacks = false;   ///< \private
   static constexpr bool everyRequireUserThread = false; ///< \private

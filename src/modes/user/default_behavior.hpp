@@ -88,6 +88,14 @@ void sunset_timer_update(const float progress)
   manager.sunset_update(progress);
 }
 
+void sunrise_timer_update(const float progress)
+{
+  auto manager = get_context();
+
+  // callbacks
+  manager.sunrise_update(progress);
+}
+
 void write_parameters()
 {
   auto manager = get_context();

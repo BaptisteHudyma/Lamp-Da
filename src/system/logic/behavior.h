@@ -73,10 +73,11 @@ uint32_t get_bluetooth_auto_activation_left();
 
 } // namespace internal
 
-namespace sunset {
+namespace timers {
 /// signal to behavior the advance of the sunset timer
-void progress_update(const float progress);
-} // namespace sunset
+void sunset_progress_update(const float progress);
+void sunrise_progress_update(const float progress);
+} // namespace timers
 
 } // namespace behavior
 } // namespace logic

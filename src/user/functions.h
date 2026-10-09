@@ -47,6 +47,8 @@ void brightness_update(const lampda::brightness_t brightness);
 
 /// Called when the sunset timer progresses [0; 1]
 void sunset_timer_update(const float progress);
+/// Called when the sunrise timer progresses [0; 1]
+void sunrise_timer_update(const float progress);
 
 /// Called when system wants to write parameters to filesystem
 void write_parameters();

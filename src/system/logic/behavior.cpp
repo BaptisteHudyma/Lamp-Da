@@ -144,12 +144,13 @@ bool is_in_charge_state()
          mainMachine.get_state() == BehaviorStates::PRE_CHARGER_OPERATION;
 }
 
-namespace sunset {
+namespace timers {
 
 // signal update to user
-void progress_update(const float progress) { user::sunset_timer_update(progress); }
+void sunset_progress_update(const float progress) { user::sunset_timer_update(progress); }
+void sunrise_progress_update(const float progress) { user::sunrise_timer_update(progress); }
 
-} // namespace sunset
+} // namespace timers
 
 // allow system to be powered if no hardware alert and power is setup
 bool can_system_allowed_to_be_powered()

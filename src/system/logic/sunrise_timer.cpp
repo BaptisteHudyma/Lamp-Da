@@ -69,25 +69,26 @@ float signal_sunrise_update()
 {
   if (hal::time_s() >= sunriseTimerEndTime_s)
   {
-    // TODO: logic::behavior::sunset::progress_update(1.0f);
+    logic::behavior::timers::sunrise_progress_update(1.0f);
     return 1.0f;
   }
 
   const float progress = get_percent_of_advance();
-  // TODO: logic::behavior::sunset::progress_update(progress);
+  logic::behavior::timers::sunrise_progress_update(progress);
   return progress;
 }
 
 void sunrise_process_loop()
 {
-  // this thread runs slowly
-  const uint32_t sunriseLoopTiming = get_sunrise_loop_timing_ms();
-  hal::delay_ms(sunriseLoopTiming);
-
   if (not is_enabled())
   {
+    hal::delay_ms(100);
     return;
   }
+
+  // this thread runs slowly
+  hal::delay_ms(get_sunrise_loop_timing_ms());
+
   // less than N minutes, start to increase brightness
   if (hal::time_s() + brightnessRampUpTime_s >= sunriseTimerEndTime_s)
   {
@@ -123,17 +124,8 @@ void sunrise_process_loop()
 
         // slowly increase brightness limit
         logic::brightness::set_max_user_brightness(newBrightness);
-
-        // if latest brightness update was above a certain loop delay, it means we can safely scale it up ourself
-        if (hal::time_ms() - logic::brightness::when_last_update_brightness() >= sunriseLoopTiming)
-          logic::brightness::update_brightness(newBrightness);
-        else
-        {
-          // slowly scale brighntess to prevent suddent jumps for brightness modes
-          // This should mecanically saturate the brightness
-          // This is a HACK to handle some brightness mode
-          logic::brightness::update_brightness(newBrightness * 0.90);
-        }
+        // update brightness
+        logic::brightness::update_brightness(newBrightness);
       }
     }
   }
@@ -217,21 +209,13 @@ void add_time_minutes(const uint8_t time_minutes)
 
 void cancel_timer()
 {
-  if (not is_enabled())
-    return;
+  if (is_enabled())
+    logic::brightness::set_max_user_brightness(logic::brightness::get_max_brightness());
 
   // release timer
   sunriseTimerEndTime_s = 0;
   trueBrightnessRampUpTime_ms = brightnessRampUpTime_ms;
   lock_brightness_update(false);
-
-  logic::brightness::set_max_user_brightness(logic::brightness::get_max_brightness());
-  // signal change
-  if (is_enabled())
-  {
-    __private::signal_sunrise_update();
-    bsp::lampda_print("sunrise timer cleared");
-  }
 
   logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 }

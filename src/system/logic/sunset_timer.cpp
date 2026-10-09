@@ -71,24 +71,26 @@ float signal_sunset_update()
 {
   if (hal::time_s() >= sunsetTimerEndTime_s)
   {
-    logic::behavior::sunset::progress_update(1.0f);
+    logic::behavior::timers::sunset_progress_update(1.0f);
     return 1.0f;
   }
 
   const float progress = get_percent_of_advance();
-  logic::behavior::sunset::progress_update(progress);
+  logic::behavior::timers::sunset_progress_update(progress);
   return progress;
 }
 
 void sunset_process_loop()
 {
+  if (not is_enabled())
+  {
+    hal::delay_ms(100);
+    return;
+  }
+
   // this thread runs slowly
   hal::delay_ms(get_sunset_loop_timing_ms());
 
-  if (not is_enabled())
-  {
-    return;
-  }
   // less than N minutes, start to decrease brightness
   if (hal::time_s() + brightnessRampDownTime_s >= sunsetTimerEndTime_s)
   {
@@ -239,19 +241,14 @@ void bump_timer()
 /// cancel the current active timer
 void cancel_timer()
 {
+  if (is_enabled())
+    logic::brightness::set_max_user_brightness(logic::brightness::get_max_brightness());
+
   // release timer
   sunsetTimerEndTime_s = 0;
   trueBrightnessRampDownTime_ms = brightnessRampDownTime_ms;
+
   lock_brightness_update(false);
-
-  logic::brightness::set_max_user_brightness(logic::brightness::get_max_brightness());
-  // signal change
-  if (is_enabled())
-  {
-    signal_sunset_update();
-    bsp::lampda_print("sunset timer cleared");
-  }
-
   logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 }
 
