@@ -18,8 +18,7 @@
 #include "src/system/logic/inputs.h"
 #include "src/system/logic/statistics_handler.h"
 #include "src/system/logic/power_handler.h"
-#include "src/system/logic/sunset_timer.h"
-#include "src/system/logic/sunrise_timer.h"
+#include "src/system/logic/sun_timers.h"
 
 #include "src/system/bsp/indicator.h"
 #include "src/system/bsp/filesystem.h"
@@ -470,8 +469,7 @@ bool check_handle_exit_output_mode()
   if (not is_system_should_be_powered())
   {
     // cancel both
-    logic::sunset::cancel_timer();
-    logic::sunrise::cancel_timer();
+    logic::sun_timers_cancel_all();
 
     if (is_charger_powered())
     {
@@ -488,7 +486,7 @@ bool check_handle_exit_output_mode()
 #ifndef LMBD_SIMULATION
   else if (not component::battery::is_battery_usable_as_power_source())
   {
-    logic::sunset::cancel_timer();
+    logic::sunset_timer.cancel();
 
     // wait a bit then shutdown
     if (hal::time_ms() - preOutputLightCalled > 3000)

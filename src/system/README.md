@@ -58,7 +58,7 @@
     - inputs.h: what button actions does what
     - power_handler.h: High level handling of all power and battery related logic
     - statistics_handler.h: Keep track of the system use statistics
-    - sunset_timer.h: Logic of the sunset timer
+    - sun_timers.h: Logic of the sunset and sunrise timer. Sunset shutdown the system slowly, sunrise starts the system slowly
 - utils: General functions and constants that everybody needs
     - colorspace.h: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !
     - constants.h: global constants used all around the program

@@ -29,8 +29,7 @@
 #include "src/system/logic/inputs_bluetooth.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/statistics_handler.h"
-#include "src/system/logic/sunset_timer.h"
-#include "src/system/logic/sunrise_timer.h"
+#include "src/system/logic/sun_timers.h"
 
 #include "src/user/functions.h"
 
@@ -512,7 +511,7 @@ static void cmd_sunset(const common::cli::ParsedCommand& command)
     if (not logic::behavior::is_in_output_state())
       logic::behavior::set_power_on();
 
-    logic::sunset::add_time_minutes(timeMinutes);
+    logic::sunset_timer.add_time_minutes(timeMinutes);
     return;
   }
   bsp::lampda_print("Invalid call: parameter should be greater than zero");
@@ -548,7 +547,7 @@ static void cmd_sunrise(const common::cli::ParsedCommand& command)
   uint16_t timeMinutes = 0;
   if (common::cli::argument::parse_uint16(command, 0, timeMinutes) && timeMinutes > 0)
   {
-    logic::sunrise::add_time_minutes(timeMinutes);
+    logic::sunrise_timer.add_time_minutes(timeMinutes);
     return;
   }
   bsp::lampda_print("Invalid call: parameter should be greater than zero");

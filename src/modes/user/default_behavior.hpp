@@ -273,7 +273,7 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
       // 5 click+hold: Add 5 minutes to sunset timer
     case 5:
       {
-        if (not isEndOfHoldEvent and holdDuration > 0 and logic::sunset::is_enabled())
+        if (not isEndOfHoldEvent and holdDuration > 0 and logic::sunset_timer.is_enabled())
         {
           // sunset timer !
           auto manager = get_context();
@@ -336,8 +336,7 @@ void handle_brightness_control(const brightness_t requiredbrightness)
   if (not logic::behavior::is_in_output_state())
     return;
 
-  logic::sunset::lock_brightness_update(true);
-  logic::sunrise::lock_brightness_update(true);
+  logic::sun_timers_brightness_lock_all(true);
   // update brightness
   const brightness_t desiredBrightness =
           min<brightness_t>(::lampda::brightness::absoluteMaximumBrightness, requiredbrightness);
@@ -345,11 +344,10 @@ void handle_brightness_control(const brightness_t requiredbrightness)
   logic::brightness::update_brightness(desiredBrightness);
   // update saved brightness
   logic::brightness::update_saved_brightness();
-  logic::sunset::lock_brightness_update(false);
-  logic::sunrise::lock_brightness_update(false);
+  logic::sun_timers_brightness_lock_all(false);
 
   // and change the sunset timer if needed
-  logic::sunset::bump_timer();
+  logic::sunset_timer.bump_timer();
 }
 
 /// handle the On or Off command
@@ -446,7 +444,7 @@ void handle_sunset_to_time_command(const component::time::RealTime& time)
   if (not logic::behavior::is_in_output_state())
     logic::behavior::set_power_on();
 
-  logic::sunset::set_deadline(internalLampActionTime);
+  logic::sunset_timer.set_deadline(internalLampActionTime);
 }
 
 /**
@@ -485,14 +483,7 @@ void handle_sunrise_to_time_command(const component::time::RealTime& time)
     return;
   }
 
-  // lamp will turn on if not already turned on
-  if (logic::behavior::is_in_output_state())
-  {
-    bsp::lampda_print("Refusing sunrise command: system is already on");
-    return;
-  }
-
-  logic::sunrise::set_deadline(internalLampActionTime);
+  logic::sunrise_timer.set_deadline(internalLampActionTime);
 }
 
 void handle_mode_control(const uint8_t groupIndex, const uint8_t modeIndex)

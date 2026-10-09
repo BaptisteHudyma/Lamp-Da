@@ -67,7 +67,7 @@ def get_obj_dump_executor():
     for tool in objdump_tools:
             try:
                 result = subprocess.run([tool, '--version'], 
-                                    capture_output=True, text=True, timeout=2)
+                                    capture_output=True, text=True, timeout=60)
                 if result.returncode == 0:
                     objdump_cmd = tool
                     break

@@ -1,3 +1,4 @@
+#include "logic/sun_timers.h"
 #include "src/compile.h"
 
 #include "src/system/hal/i2c.h"
@@ -16,8 +17,7 @@
 #include "src/system/logic/command_line_interface.h"
 #include "src/system/logic/inputs.h"
 #include "src/system/logic/power_handler.h"
-#include "src/system/logic/sunset_timer.h"
-#include "src/system/logic/sunrise_timer.h"
+#include "src/system/logic/sun_timers.h"
 
 #include "src/system/component/battery.h"
 #include "src/system/component/charger.h"
@@ -189,9 +189,8 @@ void main_setup()
   // let the user start in unpowered mode
   user::power_off_sequence();
 
-  // start sunset timer thread
-  logic::sunset::init();
-  logic::sunrise::init();
+  // start sun timer threads
+  logic::sun_timers_init_all();
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread())
