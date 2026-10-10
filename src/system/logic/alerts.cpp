@@ -15,7 +15,7 @@
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/statistics_handler.h"
-#include "src/system/logic/sunset_timer.h"
+#include "src/system/logic/sun_timers.h"
 
 #include "src/system/utils/utils.h"
 #include "src/system/utils/constants.h"
@@ -364,7 +364,7 @@ struct Alert_BatteryLow : public AlertBase
 
     // this alert may lead to a shutdown, start phasing out the sunset timer
     // If the user decides to set the timer up again, it wont be lowered again by this alert
-    sunset::shortcut_to_phaseout();
+    logic::sunset_timer.shortcut_to_brightness_phase();
   }
 
   bool show() const override
@@ -439,7 +439,7 @@ struct Alert_TempTooHigh : public AlertBase
 
     // this alert may lead to a shutdown, start phasing out the sunset timer
     // If the user decides to set the timer up again, it wont be lowered again by this alert
-    sunset::shortcut_to_phaseout();
+    logic::sunset_timer.shortcut_to_brightness_phase();
   }
 
   bool show() const override { return bsp::indicator::blink(300, 300, utils::ColorSpace::DARK_ORANGE); }

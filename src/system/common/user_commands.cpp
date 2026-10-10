@@ -69,6 +69,18 @@ UserCommand UserCommand::make_set_sunset_to_time_command(const component::time::
   return cmd;
 }
 
+UserCommand UserCommand::make_set_sunrise_to_time_command(const component::time::RealTime& time)
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::SetSunriseToTime;
+  cmd._dataCnt = 4;
+  cmd._data[0] = time.hour;
+  cmd._data[1] = time.minutes;
+  cmd._data[2] = time.seconds;
+  cmd._data[3] = time.dayOfTheWeek;
+  return cmd;
+}
+
 UserCommand UserCommand::make_set_ble_custom_color_mode_command(const uint8_t red,
                                                                 const uint8_t green,
                                                                 const uint8_t blue)
@@ -173,6 +185,22 @@ bool UserCommand::parse_set_real_time_command(component::time::RealTime& time) c
 bool UserCommand::parse_set_sunset_to_time_command(component::time::RealTime& time) const
 {
   if (get_type() != Type::SetSunsetToTime or _dataCnt != 4)
+    return false;
+  component::time::RealTime tmpTime;
+  tmpTime.hour = _data[0];
+  tmpTime.minutes = _data[1];
+  tmpTime.seconds = _data[2];
+  tmpTime.dayOfTheWeek = _data[3];
+  if (not tmpTime.is_valid())
+    return false;
+
+  time = tmpTime;
+  return true;
+}
+
+bool UserCommand::parse_set_sunrise_to_time_command(component::time::RealTime& time) const
+{
+  if (get_type() != Type::SetSunriseToTime or _dataCnt != 4)
     return false;
   component::time::RealTime tmpTime;
   tmpTime.hour = _data[0];

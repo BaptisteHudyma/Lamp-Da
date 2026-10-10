@@ -88,6 +88,14 @@ void sunset_timer_update(const float progress)
   manager.sunset_update(progress);
 }
 
+void sunrise_timer_update(const float progress)
+{
+  auto manager = get_context();
+
+  // callbacks
+  manager.sunrise_update(progress);
+}
+
 void write_parameters()
 {
   auto manager = get_context();
@@ -265,7 +273,7 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
       // 5 click+hold: Add 5 minutes to sunset timer
     case 5:
       {
-        if (not isEndOfHoldEvent and holdDuration > 0 and logic::sunset::is_enabled())
+        if (not isEndOfHoldEvent and holdDuration > 0 and logic::sunset_timer.is_enabled())
         {
           // sunset timer !
           auto manager = get_context();
@@ -328,7 +336,7 @@ void handle_brightness_control(const brightness_t requiredbrightness)
   if (not logic::behavior::is_in_output_state())
     return;
 
-  logic::sunset::lock_brightness_update(true);
+  logic::sun_timers_brightness_lock_all(true);
   // update brightness
   const brightness_t desiredBrightness =
           min<brightness_t>(::lampda::brightness::absoluteMaximumBrightness, requiredbrightness);
@@ -336,10 +344,10 @@ void handle_brightness_control(const brightness_t requiredbrightness)
   logic::brightness::update_brightness(desiredBrightness);
   // update saved brightness
   logic::brightness::update_saved_brightness();
-  logic::sunset::lock_brightness_update(false);
+  logic::sun_timers_brightness_lock_all(false);
 
   // and change the sunset timer if needed
-  logic::sunset::bump_timer();
+  logic::sunset_timer.bump_timer();
 }
 
 /// handle the On or Off command
@@ -436,7 +444,46 @@ void handle_sunset_to_time_command(const component::time::RealTime& time)
   if (not logic::behavior::is_in_output_state())
     logic::behavior::set_power_on();
 
-  logic::sunset::set_deadline(internalLampActionTime);
+  logic::sunset_timer.set_deadline(internalLampActionTime);
+}
+
+/**
+ * \brief Handle the timing command
+ */
+void handle_sunrise_to_time_command(const component::time::RealTime& time)
+{
+  if (not time.is_valid())
+  {
+    bsp::lampda_print("Refusing sunrise command %d %dh %dm %ds. Invalid values.",
+                      time.dayOfTheWeek,
+                      time.hour,
+                      time.minutes,
+                      time.seconds);
+    return;
+  }
+  const auto& realTime = component::time::get_real_time();
+  if (not realTime.is_valid())
+  {
+    bsp::lampda_print("Refusing sunrise command %d %dh %dm %ds : Time is not synchronized yet.",
+                      time.dayOfTheWeek,
+                      time.hour,
+                      time.minutes,
+                      time.seconds);
+    return;
+  }
+
+  const uint32_t internalLampActionTime = component::time::get_platform_time_from_target_time(time);
+  if (internalLampActionTime <= 0)
+  {
+    bsp::lampda_print("Refusing sunrise command %d %dh %dm %ds: Target time is incoherent",
+                      time.dayOfTheWeek,
+                      time.hour,
+                      time.minutes,
+                      time.seconds);
+    return;
+  }
+
+  logic::sunrise_timer.set_deadline(internalLampActionTime);
 }
 
 void handle_mode_control(const uint8_t groupIndex, const uint8_t modeIndex)
@@ -522,6 +569,15 @@ bool handle_user_command(const common::UserCommand& command)
           __private::handle_sunset_to_time_command(time);
         else
           bsp::lampda_print("Failed to parse set_sunset_time command");
+        return true;
+      }
+    case common::UserCommand::Type::SetSunriseToTime:
+      {
+        component::time::RealTime time;
+        if (command.parse_set_sunrise_to_time_command(time))
+          __private::handle_sunrise_to_time_command(time);
+        else
+          bsp::lampda_print("Failed to parse set_sunrise_time command");
         return true;
       }
 

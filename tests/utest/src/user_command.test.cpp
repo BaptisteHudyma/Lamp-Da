@@ -88,6 +88,16 @@ TEST_F(UserCommandTest, SetSunsetToTimeCommand)
   EXPECT_TRUE(cmd.parse_set_sunset_to_time_command(parsed_time));
 }
 
+TEST_F(UserCommandTest, SetSunriseToTimeCommand)
+{
+  component::time::RealTime time {0, 20, 0, 0};
+  auto cmd = UserCommand::make_set_sunrise_to_time_command(time);
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::SetSunriseToTime);
+
+  component::time::RealTime parsed_time;
+  EXPECT_TRUE(cmd.parse_set_sunrise_to_time_command(parsed_time));
+}
+
 TEST_F(UserCommandTest, SetBleCustomColorModeCommand)
 {
   uint8_t r = 255, g = 128, b = 64;
@@ -234,6 +244,21 @@ TEST_F(UserCommandTest, SunsetTimeEdgeCases)
   auto cmd_invalid = UserCommand::make_set_sunset_to_time_command(invalid_sunset);
   component::time::RealTime parsed_invalid;
   EXPECT_FALSE(cmd_invalid.parse_set_sunset_to_time_command(parsed_invalid));
+}
+
+TEST_F(UserCommandTest, SunriseTimeEdgeCases)
+{
+  component::time::RealTime valid_sunrise {0, 18, 30, 0};
+  auto cmd = UserCommand::make_set_sunrise_to_time_command(valid_sunrise);
+  component::time::RealTime parsed;
+  EXPECT_TRUE(cmd.parse_set_sunrise_to_time_command(parsed));
+  EXPECT_EQ(parsed.hour, 18);
+  EXPECT_EQ(parsed.minutes, 30);
+
+  component::time::RealTime invalid_sunrise {25, 0, 0, 0};
+  auto cmd_invalid = UserCommand::make_set_sunrise_to_time_command(invalid_sunrise);
+  component::time::RealTime parsed_invalid;
+  EXPECT_FALSE(cmd_invalid.parse_set_sunrise_to_time_command(parsed_invalid));
 }
 
 TEST_F(UserCommandTest, GoToFavoriteIndexCommand)

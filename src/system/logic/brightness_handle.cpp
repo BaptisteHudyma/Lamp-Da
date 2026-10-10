@@ -63,7 +63,7 @@ void update_saved_brightness()
 
 brightness_t get_saved_brightness() { return __internal.savedBrightness; }
 
-void update_brightness(const brightness_t newBrightness, const bool shouldCallUserBrightnessCallback)
+void update_brightness(const brightness_t newBrightness, const bool shouldSkipUserCallbacks)
 {
   // set to the user max limit (limit can be changed by system)
   const brightness_t trueNewBrightness = min<brightness_t>(newBrightness, get_max_brightness());
@@ -73,7 +73,7 @@ void update_brightness(const brightness_t newBrightness, const bool shouldCallUs
     __internal.BRIGHTNESS = trueNewBrightness;
 
     // do not call user functions when reading parameters
-    if (!shouldCallUserBrightnessCallback)
+    if (not shouldSkipUserCallbacks)
     {
       user::brightness_update(trueNewBrightness);
     }

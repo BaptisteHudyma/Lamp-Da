@@ -11,7 +11,7 @@
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
 #include "src/system/logic/power_handler.h"
-#include "src/system/logic/sunset_timer.h"
+#include "src/system/logic/sun_timers.h"
 
 #include "src/system/component/button.h"
 
@@ -289,7 +289,9 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
                 0; ///< keep track of the latest brightness saturation press duration
 
         // prevent sunset updates when we are updating it ourself
-        logic::sunset::lock_brightness_update(not isEndOfHoldEvent);
+        logic::sunset_timer.lock_brightness_update(not isEndOfHoldEvent);
+        /// user controled brightness, no more sunrise
+        logic::sunrise_timer.cancel();
 
         if (isEndOfHoldEvent)
         {
@@ -299,7 +301,7 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
 
           // if user set the brightness up, alert of sunset update
           if (rampSide > 0)
-            logic::sunset::bump_timer();
+            logic::sunset_timer.bump_timer();
 
           // reverse ramp on release
           rampSide = -rampSide;

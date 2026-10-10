@@ -10,6 +10,9 @@ struct MyCustomMode : public lampda::modes::BasicMode
   // only if hasSunsetAnimation
   static void sunset_update(auto& ctx, float progress) {}
 
+  // only if hasSunriseAnimation
+  static void sunrise_update(auto& ctx, float progress) {}
+
   // only if hasBrightCallback
   static void brightness_update(auto& ctx, brightness_t brightness) {}
 

@@ -54,6 +54,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   // required to support group-level context
   using HasAnyMode = details::anyOf<AllModesTy, earlyFail>;
   static constexpr bool hasSunsetAnimation = HasAnyMode::hasSunsetAnimation;
+  static constexpr bool hasSunriseAnimation = HasAnyMode::hasSunriseAnimation;
   static constexpr bool hasBrightCallback = HasAnyMode::hasBrightCallback;
   static constexpr bool hasSystemCallbacks = HasAnyMode::hasSystemCallbacks;
   static constexpr bool requireUserThread = HasAnyMode::requireUserThread;
@@ -62,6 +63,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
 
   // useful for runtime tests of mode properties
   static constexpr auto everySunsetCallback = HasAnyMode::everySunsetCallback;
+  static constexpr auto everySunriseCallback = HasAnyMode::everySunriseCallback;
   static constexpr auto everyBrightCallback = HasAnyMode::everyBrightCallback;
   static constexpr auto everySystemCallbacks = HasAnyMode::everySystemCallbacks;
   static constexpr auto everyRequireUserThread = HasAnyMode::everyRequireUserThread;
@@ -267,6 +269,14 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   {
     dispatch_mode(ctx, [&](auto mode) {
       mode.sunset_update(progress);
+    });
+  }
+
+  /// Binds to local BasicMode::sunrise_update()
+  static void sunrise_update(auto& ctx, float progress)
+  {
+    dispatch_mode(ctx, [&](auto mode) {
+      mode.sunrise_update(progress);
     });
   }
 

@@ -103,7 +103,7 @@ set(SRC_SYSTEM_LOGIC
     ${LMBD_ROOT_DIR}/src/system/logic/inputs.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/power_handler.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/statistics_handler.cpp
-    ${LMBD_ROOT_DIR}/src/system/logic/sunset_timer.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/sun_timers.cpp
 )
 
 # The compile chain should have copied the correct HAL here

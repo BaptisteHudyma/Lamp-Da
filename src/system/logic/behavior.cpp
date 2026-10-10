@@ -18,7 +18,7 @@
 #include "src/system/logic/inputs.h"
 #include "src/system/logic/statistics_handler.h"
 #include "src/system/logic/power_handler.h"
-#include "src/system/logic/sunset_timer.h"
+#include "src/system/logic/sun_timers.h"
 
 #include "src/system/bsp/indicator.h"
 #include "src/system/bsp/filesystem.h"
@@ -143,12 +143,13 @@ bool is_in_charge_state()
          mainMachine.get_state() == BehaviorStates::PRE_CHARGER_OPERATION;
 }
 
-namespace sunset {
+namespace timers {
 
 // signal update to user
-void progress_update(const float progress) { user::sunset_timer_update(progress); }
+void sunset_progress_update(const float progress) { user::sunset_timer_update(progress); }
+void sunrise_progress_update(const float progress) { user::sunrise_timer_update(progress); }
 
-} // namespace sunset
+} // namespace timers
 
 // allow system to be powered if no hardware alert and power is setup
 bool can_system_allowed_to_be_powered()
@@ -467,7 +468,8 @@ bool check_handle_exit_output_mode()
   // should go to sleep
   if (not is_system_should_be_powered())
   {
-    logic::sunset::cancel_timer();
+    // cancel both
+    logic::sun_timers_cancel_all();
 
     if (is_charger_powered())
     {
@@ -484,7 +486,7 @@ bool check_handle_exit_output_mode()
 #ifndef LMBD_SIMULATION
   else if (not component::battery::is_battery_usable_as_power_source())
   {
-    logic::sunset::cancel_timer();
+    logic::sunset_timer.cancel();
 
     // wait a bit then shutdown
     if (hal::time_ms() - preOutputLightCalled > 3000)

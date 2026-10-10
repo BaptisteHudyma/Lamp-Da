@@ -17,7 +17,7 @@ namespace brightness {
 brightness_t get_brightness();
 
 /// Return the saved brightness level.
-/// This shoudl be the prefered option in all computations.
+/// This should be the prefered option in all computations.
 brightness_t get_saved_brightness();
 
 /// Return the maximum allowed brightness
@@ -39,9 +39,9 @@ void update_saved_brightness();
 /**
  * \brief update the internal brightness values
  * \param[in] newBrightness the new brightness value
- * \param[in] shouldCallUserBrightnessCallback True if this will call the user callback call
+ * \param[in] shouldSkipUserCallbacks True if this will skip the user callback call
  */
-void update_brightness(const brightness_t newBrightness, const bool shouldCallUserBrightnessCallback = false);
+void update_brightness(const brightness_t newBrightness, const bool shouldSkipUserCallbacks = false);
 
 /// force an update call to the user brightness callback
 void force_brightness_user_callback();

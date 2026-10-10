@@ -12,7 +12,7 @@
 #include <array>
 
 #include <src/system/logic/alerts.h>
-#include <src/system/logic/sunset_timer.h>
+#include <src/system/logic/sun_timers.h>
 
 #include <src/system/utils/assert.h>
 
@@ -160,6 +160,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   // required to support manager-level context
   using HasAnyGroup = details::anyOf<AllGroupsTy>;
   static constexpr bool hasSunsetAnimation = HasAnyGroup::hasSunsetAnimation;
+  static constexpr bool hasSunriseAnimation = HasAnyGroup::hasSunriseAnimation;
   static constexpr bool hasBrightCallback = HasAnyGroup::hasBrightCallback;
   static constexpr bool requireUserThread = HasAnyGroup::requireUserThread;
   static constexpr bool hasCustomRamp = HasAnyGroup::hasCustomRamp;
@@ -169,6 +170,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   // useful for runtime tests of mode properties
   using EveryModeBool = details::asTableFor<AllGroupsTy>;
   static constexpr auto everySunsetCallback = EveryModeBool::everySunsetCallback;
+  static constexpr auto everySunriseCallback = EveryModeBool::everySunriseCallback;
   static constexpr auto everyBrightCallback = EveryModeBool::everyBrightCallback;
   static constexpr auto everyRequireUserThread = EveryModeBool::everyRequireUserThread;
   static constexpr auto everyCustomRamp = EveryModeBool::everyCustomRamp;
@@ -867,7 +869,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       if (ctx.state.isSunsetTimingPending == 0)
       {
         // set and update sunset timer
-        logic::sunset::add_time_minutes(5);
+        logic::sunset_timer.add_time_minutes(5);
         // blip AFTER the update
         ctx.blip(50);
       }
@@ -910,6 +912,18 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   {
     dispatch_group(ctx, [&](auto group) {
       group.sunset_update(progress);
+    });
+  }
+
+  /**
+   * \brief Callback of the sunrise timer update
+   * \param[in, out] ctx Context
+   * \param[in] progress Between 0 and 1, progress of the sunrise timer. Lamp will be fully on at 1
+   */
+  static void sunrise_update(auto& ctx, float progress)
+  {
+    dispatch_group(ctx, [&](auto group) {
+      group.sunrise_update(progress);
     });
   }
 

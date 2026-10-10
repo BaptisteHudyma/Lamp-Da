@@ -99,7 +99,7 @@ void handle_BLE_ELK_command(const common::elk::Package& elkControlCommand)
 
         if (isAutoTurnOn)
         {
-          bsp::lampda_print("Auto turn on mode is not implemented yet");
+          lampda::user::handle_user_command(common::UserCommand::make_set_sunrise_to_time_command(time));
         }
         else
         {
