@@ -30,9 +30,13 @@ public:
   {
     if (_registerMap[registerAddress] != nullptr)
     {
-      uint16_t data = dataBuffer[0];
-      if (dataSize > 1)
-        data |= (dataBuffer[1] << 8);
+      // if (dataSize > 4) return 1;
+
+      uint32_t data = 0;
+      for (size_t i = 0; i < dataSize; i++)
+      {
+        data |= (dataBuffer[i] << (8 * i));
+      }
       return _registerMap[registerAddress]->write(data);
     }
 
@@ -45,11 +49,13 @@ public:
   {
     if (_registerMap[registerAddress] != nullptr)
     {
-      const uint16_t d = _registerMap[registerAddress]->read();
+      // if (dataSize > 4) return 1;
 
-      dataBuffer[0] = d & 0xff;
-      if (dataSize > 1)
-        dataBuffer[1] = (d >> 8) & 0xff;
+      const uint32_t d = _registerMap[registerAddress]->read();
+      for (size_t i = 0; i < dataSize; i++)
+      {
+        dataBuffer[i] = (d >> 8 * i) & 0xff;
+      }
       return 0;
     }
 
@@ -67,10 +73,10 @@ public:
   // register entry point
   struct Register
   {
-    uint16_t _data = 0;
+    uint32_t _data = 0;
 
-    virtual uint16_t read() { return _data; }
-    virtual int write(uint16_t data)
+    virtual uint32_t read() { return _data; }
+    virtual int write(uint32_t data)
     {
       _data = data;
       return 0;
@@ -83,7 +89,7 @@ protected:
 private:
 };
 
-static constexpr size_t numberOfMocks = 1;
+static constexpr size_t numberOfMocks = 2;
 extern const std::array<std::unique_ptr<IntegratedCircuitMock_I>, numberOfMocks> icMocks;
 
 } // namespace simulator

@@ -58,11 +58,19 @@ uint16_t get_raw_battery_voltage_mv()
   static constexpr uint16_t minBatteryVoltage_mV = minSingularBatteryVoltage_mV * batteryCount;
   static constexpr uint16_t maxBatteryVoltage_mV = maxSingularBatteryVoltage_mV * batteryCount;
 
-  // WILL UPDATE s_batteryVoltage_mV VALUE if they return true
-  if (not check_balancer_battery_voltage() and not check_charger_battery_voltage())
+  // WILL UPDATE s_batteryVoltage_mV VALUE if they return true, so order of the call matters.
+  // The last call will old the true stack value, so prefer balancer that is a dedicated more precise component.
+  const bool isChargerCheckValid = check_charger_battery_voltage();
+  const bool isBalancerCheckValid = check_balancer_battery_voltage();
+  if (not(isBalancerCheckValid and isChargerCheckValid))
   {
     // else: not ready yet ? error, return max voltage for now
     // after a set time, return an error, the system should not be used without batteries
+    // Probable causes:
+    // - No battery connected
+    // - A battery wire came loose
+    // - A battery is destroyed (end of life)
+    // - Balancer or charger component died
     if (hal::time_ms() > noBatteryAlertRaiseTiming_ms)
     {
       logic::alerts::manager.raise(logic::alerts::Type::BATTERY_MISSING);
