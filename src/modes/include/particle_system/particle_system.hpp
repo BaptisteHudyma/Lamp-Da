@@ -161,7 +161,7 @@ public:
    * the simulation.
    * \return The number of particles left in the simulation.
    */
-  template<typename ShouldDepopFunction> uint16_t depop_particules(ShouldDepopFunction shouldDepopFunction)
+  template<typename ShouldDepopFunction> uint16_t depop_particules(const ShouldDepopFunction& shouldDepopFunction)
   {
     static_assert(std::is_invocable_r_v<bool, ShouldDepopFunction, Particle const&>);
 
@@ -191,7 +191,7 @@ public:
    * \param[in] sample_color sampling function for the particle color
    * \param[in, out] lamp The lamp object to write to
    */
-  template<typename SampleColorFunction> uint16_t show(SampleColorFunction sample_color, LampTy& lamp) const
+  template<typename SampleColorFunction> uint16_t show(const SampleColorFunction& sample_color, LampTy& lamp) const
   {
     static_assert(std::is_invocable_r_v<uint32_t, SampleColorFunction, int16_t, Particle const&>);
 
@@ -244,7 +244,9 @@ protected:
    * \param[in] positionGeneratorFunction Spawn function
    */
   template<typename PositiongeneratorFunction>
-  void spawn_particule(const size_t index, PositiongeneratorFunction positionGeneratorFunction, const uint32_t color)
+  void spawn_particule(const size_t index,
+                       const PositiongeneratorFunction& positionGeneratorFunction,
+                       const uint32_t color)
   {
     static_assert(std::is_invocable_r_v<int16_t, PositiongeneratorFunction, size_t>);
 

@@ -84,6 +84,10 @@ public:
   /// Return true if no raised alerts block the use of power through USB port
   bool can_use_usb_port() const;
 
+  AlertManager_t() = default;
+  AlertManager_t(const AlertManager_t&) = delete;
+  AlertManager_t& operator=(AlertManager_t const&) = delete;
+
 private:
   /// Binary variable to store raised alerts
   uint32_t _current;

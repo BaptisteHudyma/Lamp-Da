@@ -27,6 +27,10 @@ struct Reading
 class Wrapper
 {
 public:
+  Wrapper() = default;
+  Wrapper(const Wrapper&) = delete;
+  Wrapper& operator=(Wrapper const&) = delete;
+
   /**
    * \brief Initialize the component.
    * \return True if the initialisation succeeded

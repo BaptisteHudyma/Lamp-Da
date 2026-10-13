@@ -27,6 +27,8 @@ public:
   /// Minimum time between sunset loop calls
   static constexpr uint16_t minimalSunLoopDuration_ms = 5;
 
+  virtual ~SunTimerBase() = default;
+
   bool is_enabled() const { return endTime_s > 0; }
 
   /// Cancel the current active timer

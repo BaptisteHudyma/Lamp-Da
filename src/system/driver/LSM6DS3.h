@@ -59,6 +59,9 @@ public:
   LSM6DS3Core(uint8_t, uint8_t);
   ~LSM6DS3Core() = default;
 
+  LSM6DS3Core(const LSM6DS3Core&) = delete;
+  LSM6DS3Core& operator=(LSM6DS3Core const&) = delete;
+
   status_t beginCore(void);
 
   // The following utilities read and write to the IMU
