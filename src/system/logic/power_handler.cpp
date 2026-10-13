@@ -487,12 +487,8 @@ void handle_startup()
 
   // if this is false, it's a special case where battery voltage is too low to power the components
   // or the components are dead...
-  if (hal::i2c::i2c_check_existence(0, hal::i2c::chargeI2cAddress) != 0
-  // TODO issue #132 remove when the mock components will be running
-#ifndef LMBD_SIMULATION
-      || hal::i2c::i2c_check_existence(0, hal::i2c::batteryBalancerI2cAddress) != 0
-#endif
-  )
+  if (hal::i2c::i2c_check_existence(0, hal::i2c::chargeI2cAddress) != 0 ||
+      hal::i2c::i2c_check_existence(0, hal::i2c::batteryBalancerI2cAddress) != 0)
   {
     const uint32_t timeSinceStateSwitch = hal::time_ms() - __private::powerMachine.get_state_raised_time();
     const bool isVbusUnpowered = timeSinceStateSwitch > 200 and not ::lampda::bsp::powerDelivery::is_power_available();
@@ -567,8 +563,6 @@ void handle_startup()
   }
   // Final point: We will never pass through here again !
 
-// TODO issue #132 remove when the mock components will be running
-#ifndef LMBD_SIMULATION
   if (not ::lampda::bsp::balancer::init())
   {
     if (_isInBatteryRecoveryMode)
@@ -584,7 +578,6 @@ void handle_startup()
     // failed initialisation, skip
     return;
   }
-#endif
 
   /*
    * All good !

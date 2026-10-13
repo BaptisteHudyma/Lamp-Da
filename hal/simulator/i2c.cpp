@@ -16,12 +16,15 @@
 
 #include "simulator/electrical/i_ic.h"
 #include "simulator/electrical/BQ25713_mock.h"
+#include "simulator/electrical/BQ76905_mock.h"
 
 namespace simulator {
 
 const std::array<std::unique_ptr<IntegratedCircuitMock_I>, numberOfMocks> icMocks = {
         // charger component
         std::make_unique<BQ25713Mock>(),
+        // balancer component
+        std::make_unique<BQ76905Mock>(),
         // other
 };
 bool isI2cAvailable = false;

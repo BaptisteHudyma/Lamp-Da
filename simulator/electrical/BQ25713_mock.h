@@ -130,7 +130,7 @@ private:
 
   struct ChargerStatus_Register : public Register
   {
-    uint16_t read() override
+    uint32_t read() override
     {
       uint8_t val0 = 0;
 
@@ -145,7 +145,7 @@ private:
 
   struct AdcOption_Register : public Register
   {
-    uint16_t read() override
+    uint32_t read() override
     {
       uint8_t val0 = 0;
 
@@ -158,7 +158,7 @@ private:
 
   struct OTG_Register : public Register
   {
-    int write(uint16_t data) override
+    int write(uint32_t data) override
     {
       const uint16_t decoded = decode_base_register_value(data, &IcRegisters.oTGVoltage);
 
@@ -172,7 +172,7 @@ private:
 
   struct AdcVbusPsys_Register : public Register
   {
-    uint16_t read() override
+    uint32_t read() override
     {
       return encode_to_double_register(
               mock_battery::voltage * 1000.0, mock_electrical::powerRailVoltage * 1000.0, &IcRegisters.aDCVBUSPSYS);
@@ -181,7 +181,7 @@ private:
 
   struct AdcIbat_Register : public Register
   {
-    uint16_t read() override
+    uint32_t read() override
     {
       float batteryDischargeCurrent = 0;
       float batteryChargeCurrent = 0;
@@ -204,7 +204,7 @@ private:
 
   struct CmpinAdc_Register : public Register
   {
-    uint16_t read() override
+    uint32_t read() override
     {
       float powerRailCurrent = 0.0f;
       if (mock_electrical::powerRailCurrent > 0)
@@ -218,7 +218,7 @@ private:
   // Battery and Vsys register
   struct VBAT_ADC_Register : public Register
   {
-    uint16_t read() override
+    uint32_t read() override
     {
       return encode_to_double_register(
               mock_battery::voltage * 1000.0, mock_battery::voltage * 1000.0, &IcRegisters.aDCVSYSVBAT);
@@ -227,12 +227,12 @@ private:
 
   struct ManufacturerId : public Register
   {
-    uint16_t read() override { return bq25713::MANUFACTURER_ID; }
+    uint32_t read() override { return bq25713::MANUFACTURER_ID; }
   };
 
   struct DeviceId : public Register
   {
-    uint16_t read() override { return bq25713::DEVICE_ID; }
+    uint32_t read() override { return bq25713::DEVICE_ID; }
   };
 };
 

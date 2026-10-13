@@ -266,11 +266,8 @@ struct Alert_BatteryCritical : public AlertBase
     if (not chargerState.areMeasuresOk)
       return false;
 
-// TODO issue #132 remove when the mock components will be running
-#ifndef LMBD_SIMULATION
     if (not ::lampda::bsp::balancer::get_status().is_valid())
       return false;
-#endif
 
     if (manager.is_raised(Type::BATTERY_MISSING) or manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
       return false;
@@ -320,11 +317,8 @@ struct Alert_BatteryLow : public AlertBase
     if (logic::power::is_in_error_state())
       return false;
 
-// TODO issue #132 remove when the mock components will be running
-#ifndef LMBD_SIMULATION
     if (not ::lampda::bsp::balancer::get_status().is_valid())
       return false;
-#endif
 
     const auto& chargerState = ::lampda::component::charger::get_state();
     if (not chargerState.areMeasuresOk)
