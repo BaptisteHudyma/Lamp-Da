@@ -35,8 +35,22 @@ etl::queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event
 
 /// holds the state of system on
 bool isSystemOn = false;
+/// Keep track of a long click event
+bool isInLongClick = false;
 /// hold the boolean that configures if button's usermode UI is enabled
 bool isButtonUsermodeEnabled = false;
+
+/// Update the on/off status when outside of a long button press
+void update_isSystemOn_status()
+{
+  if (not isInLongClick)
+  {
+    isSystemOn = behavior::is_system_should_be_powered();
+    // deactivate custom user mode on turn off
+    if (not isSystemOn)
+      button_disable_usermode();
+  }
+}
 
 namespace button_press_handles {
 
@@ -559,8 +573,6 @@ void init(const bool wasPoweredByUserInterrupt)
 
 void loop()
 {
-  // loop is not ran in shutdown mode
-
   // Check a maximum of events per loop turn, events can be refilled by other threads
   size_t maxEventsChecks = __private::maxButtonEventStore;
   while (maxEventsChecks != 0 && not __private::buttonEventQueue.empty())
@@ -576,22 +588,30 @@ void loop()
 
     if (not buttonEvent.isLongPress)
     {
+      isInLongClick = false;
       button_clicked_callback(buttonEvent.clickCount, not isSystemOn);
+
+      // update the status between clicks
+      update_isSystemOn_status();
     }
     else
     {
+      isInLongClick = not buttonEvent.isEndOfLongPress;
       button_hold_callback(
               buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, not isSystemOn);
-    }
 
-    // update system on
-    if (not buttonEvent.isLongPress or buttonEvent.isEndOfLongPress)
-    {
-      isSystemOn = behavior::is_system_should_be_powered();
-      // deactivate custom user mode on turn off
-      if (not isSystemOn)
-        button_disable_usermode();
+      // update the status between clicks
+      if (buttonEvent.isEndOfLongPress)
+        update_isSystemOn_status();
     }
+  }
+
+  /// Debounce at system start to avoid wrong detection of first click
+  if (hal::time_ms() > 500)
+  {
+    // Update the system on status when possible.
+    // It may have been updated by another actor in the system.
+    update_isSystemOn_status();
   }
 }
 
