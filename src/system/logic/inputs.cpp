@@ -599,12 +599,20 @@ void loop()
       isInLongClick = not buttonEvent.isEndOfLongPress;
       button_hold_callback(
               buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, not isSystemOn);
+
+      // update the status between clicks
+      if (buttonEvent.isEndOfLongPress)
+        update_isSystemOn_status();
     }
   }
 
-  // Update the system on status when possible.
-  // It may have been updated by another actor in the system.
-  update_isSystemOn_status();
+  /// Debounce at system start to avoid wrong detection of first click
+  if (hal::time_ms() > 500)
+  {
+    // Update the system on status when possible.
+    // It may have been updated by another actor in the system.
+    update_isSystemOn_status();
+  }
 }
 
 void button_disable_usermode() { isButtonUsermodeEnabled = false; }
