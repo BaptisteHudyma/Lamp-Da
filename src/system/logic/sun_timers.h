@@ -27,8 +27,6 @@ public:
   /// Minimum time between sunset loop calls
   static constexpr uint16_t minimalSunLoopDuration_ms = 5;
 
-  virtual void init() = 0;
-
   bool is_enabled() const { return endTime_s > 0; }
 
   /// Cancel the current active timer
@@ -52,9 +50,6 @@ public:
   void sun_process_loop();
 
 protected:
-  /// Return the identifier of the task to use
-  virtual uint32_t get_task_identifier() const = 0;
-
   /// Overloadable: A timer can refuse to start under some conditions
   virtual bool should_accept_start() const = 0;
 
@@ -93,9 +88,6 @@ private:
 class SunsetTimer : public SunTimerBase<3>
 {
 public:
-  // Call once on program start
-  void init() override;
-
   /**
    * \brief signal to the timer that some time may be added.
    * Only add time if the timer is in the fadeout phase
@@ -103,10 +95,6 @@ public:
   void bump_timer();
 
 protected:
-  static void loop_task();
-
-  uint32_t get_task_identifier() const override;
-
   bool should_accept_start() const override;
 
   void sun_timer_progress_update_callback(const float progress) const override;
@@ -119,15 +107,7 @@ protected:
 /// Timer to start the system and ramp up brightness until we reach back the latest user set brightness
 class SunriseTimer : public SunTimerBase<3>
 {
-public:
-  // Call once on program start
-  void init() override;
-
 protected:
-  static void loop_task();
-
-  uint32_t get_task_identifier() const override;
-
   bool should_accept_start() const override;
 
   void sun_timer_progress_update_callback(const float progress) const override;
@@ -141,12 +121,8 @@ protected:
 extern SunsetTimer sunset_timer;
 extern SunriseTimer sunrise_timer;
 
-/// init all timers
-inline void sun_timers_init_all()
-{
-  sunset_timer.init();
-  sunrise_timer.init();
-}
+/// init all timers: call once on program start
+void sun_timers_init_all();
 
 inline void sun_timers_cancel_all()
 {
