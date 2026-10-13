@@ -212,7 +212,9 @@ SunriseTimer sunrise_timer;
 bool SunsetTimer::should_accept_start() const
 {
   // cannot run when a sunrise is running
-  return not sunrise_timer.is_enabled();
+  if (sunrise_timer.is_enabled())
+    return false;
+  return true;
 }
 
 void SunsetTimer::bump_timer()
@@ -274,6 +276,8 @@ void SunsetTimer::timer_brightness_progress_update(const float progress)
 
 bool SunriseTimer::should_accept_start() const
 {
+  if (sunset_timer.is_enabled())
+    return false;
   // only accept updates if we are already enabled, or we can start (output is off)
   return is_enabled() or not logic::behavior::is_in_output_state();
 }
