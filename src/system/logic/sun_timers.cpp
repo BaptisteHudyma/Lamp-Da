@@ -219,6 +219,12 @@ void SunsetTimer::init()
 
 void SunsetTimer::loop_task() { sunset_timer.sun_process_loop(); }
 
+bool SunsetTimer::should_accept_start() const
+{
+  // cannot run when a sunrise is running
+  return not sunrise_timer.is_enabled();
+}
+
 uint32_t SunsetTimer::get_task_identifier() const { return bsp::threads::sunset_taskName; }
 
 void SunsetTimer::bump_timer()

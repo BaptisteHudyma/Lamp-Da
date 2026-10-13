@@ -56,10 +56,10 @@ protected:
   virtual uint32_t get_task_identifier() const = 0;
 
   /// Overloadable: A timer can refuse to start under some conditions
-  virtual bool should_accept_start() const { return true; };
+  virtual bool should_accept_start() const = 0;
 
   /// Wrapper to the custom user code to call for a sun timer update
-  /// \param[in] pogress between 0 and 1
+  /// \param[in] progress between 0 and 1
   virtual void sun_timer_progress_update_callback(const float progress) const = 0;
 
   /// Called when the timer it's target
@@ -106,6 +106,8 @@ protected:
   static void loop_task();
 
   uint32_t get_task_identifier() const override;
+
+  bool should_accept_start() const override;
 
   void sun_timer_progress_update_callback(const float progress) const override;
 
