@@ -35,7 +35,7 @@ public:
 
     _registerMap[bq76905::BATTERY_STATUS_ADDR] = std::make_unique<Register>();
 
-    _registerMap[bq76905::ALARM_STATUS_ADDR] = std::make_unique<Register>();
+    _registerMap[bq76905::ALARM_STATUS_ADDR] = std::make_unique<AlarmStatusRegister>();
     _registerMap[bq76905::ALARM_RAW_STATUS_ADDR] = std::make_unique<Register>();
     _registerMap[bq76905::ALARM_ENABLE_ADDR] = std::make_unique<Register>();
 
@@ -45,17 +45,17 @@ public:
     _registerMap[bq76905::DSG_FET_DRIVER_PWM_CONTROL_ADDR] = std::make_unique<Register>();
     _registerMap[bq76905::CHG_FET_DRIVER_PWM_CONTROL_ADDR] = std::make_unique<Register>();
 
-    _registerMap[bq76905::CELL_1_VOLTAGE_ADDR] = std::make_unique<Register>();
-    _registerMap[bq76905::CELL_2_VOLTAGE_ADDR] = std::make_unique<Register>();
-    _registerMap[bq76905::CELL_3_VOLTAGE_ADDR] = std::make_unique<Register>();
-    _registerMap[bq76905::CELL_4_VOLTAGE_ADDR] = std::make_unique<Register>();
-    _registerMap[bq76905::CELL_5_VOLTAGE_ADDR] = std::make_unique<Register>();
+    _registerMap[bq76905::CELL_1_VOLTAGE_ADDR] = std::make_unique<StandardCellVoltage_Register>();
+    _registerMap[bq76905::CELL_2_VOLTAGE_ADDR] = std::make_unique<StandardCellVoltage_Register>();
+    _registerMap[bq76905::CELL_3_VOLTAGE_ADDR] = std::make_unique<StandardCellVoltage_Register>();
+    _registerMap[bq76905::CELL_4_VOLTAGE_ADDR] = std::make_unique<InvalidCellVoltage_Register>();
+    _registerMap[bq76905::CELL_5_VOLTAGE_ADDR] = std::make_unique<InvalidCellVoltage_Register>();
 
     _registerMap[bq76905::REG_18_VOLTAGE_ADDR] = std::make_unique<Register>();
     _registerMap[bq76905::VSS_VOLTAGE_ADDR] = std::make_unique<Register>();
-    _registerMap[bq76905::STACK_VOLTAGE_ADDR] = std::make_unique<Register>();
+    _registerMap[bq76905::STACK_VOLTAGE_ADDR] = std::make_unique<StackVoltage_Register>();
 
-    _registerMap[bq76905::INT_TEMPERATURE_ADDR] = std::make_unique<Register>();
+    _registerMap[bq76905::INT_TEMPERATURE_ADDR] = std::make_unique<InternalTemp_Register>();
     _registerMap[bq76905::TS_MEASURMENT_ADDR] = std::make_unique<Register>();
 
     // subcommands
@@ -75,7 +75,58 @@ public:
   uint8_t get_i2c_address() const override { return bq76905::BQ76905::BQ76905addr; }
 
 protected:
-  // Battery and Vsys register
+  /// Bit list register
+  struct AlarmStatusRegister : public Register
+  {
+    uint32_t read() override
+    {
+      uint8_t val0 = 0;
+      val0 |= 1 << 0x07; // FULLSCAN
+      val0 |= 0 << 0x06; // ADSCAN
+      val0 |= 0 << 0x05; // WAKE
+      val0 |= 0 << 0x04; // SLEEP
+      val0 |= 0 << 0x03; // TIMER_ALARM
+      val0 |= 0 << 0x02; // INITCOMP
+      val0 |= 0 << 0x01; // CDTOGGLE
+      val0 |= 0 << 0x0;  // POR
+
+      uint8_t val1 = 0;
+      val1 |= 0 << 0x06; // SSB
+      val1 |= 0 << 0x05; // SAA
+      val1 |= 0 << 0x04; // SAB
+      val1 |= 0 << 0x03; // XCHG
+      val1 |= 0 << 0x02; // XDSG
+      val1 |= 0 << 0x01; // SHUTV
+      val1 |= 1 << 0x0;  // CB
+
+      uint32_t bitList = val0 | val1 << 8;
+      return bitList;
+    }
+  };
+
+  /// Temperature
+  struct InternalTemp_Register : public Register
+  {
+    uint32_t read() override { return mock_registers::cpuTemperature; }
+  };
+
+  /// Stack voltage
+  struct StackVoltage_Register : public Register
+  {
+    uint32_t read() override { return mock_battery::voltage * 1000.0; }
+  };
+
+  /// return the voltage on Cell 1
+  struct StandardCellVoltage_Register : public Register
+  {
+    uint32_t read() override { return mock_battery::voltage * 1000.0 / 3; }
+  };
+  struct InvalidCellVoltage_Register : public Register
+  {
+    uint32_t read() override { return 0; }
+  };
+
+  /// Subcommand register
   struct Subcommand_Register : public Register
   {
     int write(uint32_t data) override
@@ -89,6 +140,7 @@ protected:
     }
   };
 
+  /// Subcommand data read
   struct SubcommandData_Register : public Register
   {
     uint32_t read() override

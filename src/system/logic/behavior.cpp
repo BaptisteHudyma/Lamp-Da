@@ -483,7 +483,6 @@ bool check_handle_exit_output_mode()
     }
     return true;
   }
-#ifndef LMBD_SIMULATION
   else if (not component::battery::is_battery_usable_as_power_source())
   {
     logic::sunset_timer.cancel();
@@ -496,7 +495,6 @@ bool check_handle_exit_output_mode()
     }
     return true;
   }
-#endif
 
   return false;
 }
