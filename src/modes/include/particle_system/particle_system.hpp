@@ -69,9 +69,27 @@ public:
    * \param[in] positionGeneratorFunction Function that takes an index and return a led strip index
    */
   bool init_deferred_particules(uint8_t maxParticlesToPop,
-                                const std::function<int16_t(size_t)>& positionGeneratorFunction,
-                                const uint32_t color = colors::HTMLColorCode::White)
+                                const std::function<int16_t(size_t)>& positionGeneratorFunction)
   {
+    const auto colorGeneratorFunction = [](const size_t) -> uint32_t {
+      return colors::HTMLColorCode::White;
+    };
+    return init_deferred_particules(maxParticlesToPop, positionGeneratorFunction, colorGeneratorFunction);
+  }
+
+  /**
+   * \brief Init the particles from a initialization function, in a timed defered way.
+   * \param[in] maxParticlesToPop Maximum particles to spawn at this call
+   * \param[in] positionGeneratorFunction Function that takes an index and return a led strip index
+   * \param[in] colorGeneratorFunction Function that takes an index and return a color of the particle at this index
+   */
+  template<typename ColorGeneratorFunction>
+  bool init_deferred_particules(uint8_t maxParticlesToPop,
+                                const std::function<int16_t(size_t)>& positionGeneratorFunction,
+                                const ColorGeneratorFunction& colorGeneratorFunction)
+  {
+    static_assert(std::is_invocable_r_v<uint32_t, ColorGeneratorFunction, size_t>);
+
     for (size_t i = 0; i < particuleCount and maxParticlesToPop > 0; ++i)
     {
       if (isAllocated[i])
@@ -79,7 +97,7 @@ public:
         // already allocated, do not reuse
         continue;
       }
-      spawn_particule(i, positionGeneratorFunction, color);
+      spawn_particule(i, positionGeneratorFunction, colorGeneratorFunction(i));
       maxParticlesToPop--;
     }
     // still some uncreated particles
@@ -236,7 +254,12 @@ public:
 
 protected:
   /// Return True if the position is already occupied
-  bool is_position_taken(const int16_t pos) const { return isOccupiedSpaces[pos]; }
+  bool is_position_taken(const int16_t pos) const
+  {
+    if (pos < 0 or pos >= isOccupiedSpaces.size())
+      return false;
+    return isOccupiedSpaces[pos];
+  }
 
   /**
    * \brief Spawn a particle

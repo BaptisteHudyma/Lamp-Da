@@ -237,11 +237,7 @@ template<uint8_t MaskBuffId, typename DropMode = DropModeOrphansOnly, uint8_t mi
       particuleSystem.iterate_no_collisions(
               utils::vec3d(0.0, 0.0, -9.81 / 4.0), ctx.lamp.frameDurationMs / 1000.0, shouldKeepInLampBounds);
       particuleSystem.depop_particules(recycle_particules_if_too_far);
-      particuleSystem.show(
-              [&](int16_t n, const Particle& particle) {
-                return color;
-              },
-              ctx.lamp);
+      particuleSystem.show(ctx.lamp);
     }
   }
 
@@ -356,11 +352,17 @@ protected:
     particlesDropped += 1;
 
     // spawn a new particle
-    const bool isCreated = particuleSystem.init_deferred_particules(1, [pixelId](size_t) {
-      return pixelId;
-    });
+    const bool isCreated = particuleSystem.init_deferred_particules(
+            1,
+            [pixelId](size_t) {
+              return pixelId;
+            },
+            // spawn with the right color
+            [pixelId, &ctx](size_t) {
+              return ctx.lamp.template getPixelColor(pixelId);
+            });
     // Particle spawn can fail, it's only visual so ok
-
+    std::ignore = isCreated;
     return true;
   }
 
