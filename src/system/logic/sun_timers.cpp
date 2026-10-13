@@ -61,8 +61,8 @@ template<uint32_t T> void SunTimerBase<T>::set_deadline(const uint32_t timeshutd
     endTime_s = timeshutdown_s;
     logic::alerts::manager.raise(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 
-    // resume
-    bsp::threads::resume_thread(get_task_identifier());
+    // resume the sunset task if needed
+    bsp::threads::notify_thread(bsp::threads::suntimer_taskName, 1);
   }
   else
   {
@@ -162,6 +162,7 @@ template<uint32_t T> void SunTimerBase<T>::sun_process_loop()
 {
   if (not is_enabled())
   {
+    // should never happen, but ok
     hal::delay_ms(100);
     return;
   }
@@ -208,18 +209,13 @@ SunriseTimer sunrise_timer;
  *
  */
 
-void SunsetTimer::init()
+bool SunsetTimer::should_accept_start() const
 {
-  // start in suspended mode
-  static constexpr uint16_t sunsetThreadBufferSize = 255;
-  static bsp::threads::TaskBuffer_t sunsetTaskBuffer[sunsetThreadBufferSize];
-
-  bsp::threads::start_suspended_thread(&SunsetTimer::loop_task, get_task_identifier(), 0, 255, sunsetTaskBuffer);
+  // cannot run when a sunrise is running
+  if (sunrise_timer.is_enabled())
+    return false;
+  return true;
 }
-
-void SunsetTimer::loop_task() { sunset_timer.sun_process_loop(); }
-
-uint32_t SunsetTimer::get_task_identifier() const { return bsp::threads::sunset_taskName; }
 
 void SunsetTimer::bump_timer()
 {
@@ -278,21 +274,10 @@ void SunsetTimer::timer_brightness_progress_update(const float progress)
  *
  */
 
-void SunriseTimer::init()
-{
-  // start in suspended mode
-  static constexpr uint16_t sunriseThreadBufferSize = 255;
-  static bsp::threads::TaskBuffer_t sunriseTaskBuffer[sunriseThreadBufferSize];
-
-  bsp::threads::start_suspended_thread(&SunriseTimer::loop_task, get_task_identifier(), 0, 255, sunriseTaskBuffer);
-}
-
-void SunriseTimer::loop_task() { sunrise_timer.sun_process_loop(); }
-
-uint32_t SunriseTimer::get_task_identifier() const { return bsp::threads::sunrise_taskName; }
-
 bool SunriseTimer::should_accept_start() const
 {
+  if (sunset_timer.is_enabled())
+    return false;
   // only accept updates if we are already enabled, or we can start (output is off)
   return is_enabled() or not logic::behavior::is_in_output_state();
 }
@@ -331,6 +316,47 @@ void SunriseTimer::timer_brightness_progress_update(const float progress)
     // update brightness
     logic::brightness::update_brightness(newBrightness);
   }
+}
+
+/**
+ *
+ *
+ */
+
+/// Single task loop for both timers. Must be a static (free, non-capturing) function.
+/// The sunset and sunrise timers are mutually exclusive, so at most one is active.
+static void sun_timers_loop_task()
+{
+  if (sunset_timer.is_enabled())
+  {
+    sunset_timer.sun_process_loop();
+  }
+  else if (sunrise_timer.is_enabled())
+  {
+    sunrise_timer.sun_process_loop();
+  }
+  else
+  {
+    // stability delay if needed
+    hal::delay_ms(100);
+
+    // nothing to do, stay idle until called again
+    bsp::threads::wait_notification(0);
+  }
+}
+
+static bool isInit = false;
+void sun_timers_init_all()
+{
+  if (isInit)
+    return;
+
+  // start the single task in suspended mode
+  static constexpr uint16_t sunThreadBufferSize = 255;
+  static bsp::threads::TaskBuffer_t sunTaskBuffer[sunThreadBufferSize];
+
+  bsp::threads::start_thread(&sun_timers_loop_task, bsp::threads::suntimer_taskName, 0, 255, sunTaskBuffer);
+  isInit = true;
 }
 
 } // namespace logic
