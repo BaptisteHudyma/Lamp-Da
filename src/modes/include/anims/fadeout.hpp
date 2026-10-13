@@ -375,7 +375,7 @@ private:
   size_t particlesDropped = 0;              /// keep track of the particles that already fell or are falling
 
   /// All animations share this particle system !
-  inline static auto particuleSystem = modes::get_shared_particle_system();
+  inline static modes::ParticleSystem& particuleSystem = modes::get_shared_particle_system();
 };
 
 } // namespace fadeout
