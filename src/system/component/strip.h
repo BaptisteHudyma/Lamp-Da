@@ -72,6 +72,9 @@ public:
     }
   }
 
+  LedStrip(const LedStrip&) = delete;
+  LedStrip& operator=(LedStrip const&) = delete;
+
   void show()
   {
     if (hasSomeChanges)

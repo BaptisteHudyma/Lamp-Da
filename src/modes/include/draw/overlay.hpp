@@ -51,6 +51,9 @@ template<int UIElementSize = 16, uint8_t freezeSize = 5, uint8_t nbBlackLines = 
 public:
   Manager() : activeUiElements(0) {}
 
+  Manager(const Manager&) = delete;
+  Manager& operator=(Manager const&) = delete;
+
   /**
    * \brief Display and update the overlay
    */

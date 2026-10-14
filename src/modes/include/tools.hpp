@@ -11,6 +11,8 @@
 #include <optional>
 #include <tuple>
 
+#include <etl/bitset.h>
+
 #include "src/modes/include/compile.hpp"
 #include "src/modes/include/mode_type.hpp"
 
@@ -141,7 +143,7 @@ template<typename TupleTy, uint8_t TupleSz = std::tuple_size_v<TupleTy>> struct 
   template<template<class> class QueryStruct, bool hasError = false> static constexpr auto asTable()
   {
     // collect all values as table
-    std::array<bool, TupleSz> acc {};
+    etl::bitset<TupleSz> acc {};
     if constexpr (!hasError)
     {
       unroll<TupleSz>([&](auto Idx) {
@@ -171,7 +173,7 @@ template<typename TupleTy, uint8_t TupleSz = std::tuple_size_v<TupleTy>> struct 
   template<template<class> class QueryStruct, size_t MaxSz, bool hasError = false> static constexpr auto asTable2D()
   {
     // collect all values as table
-    std::array<std::array<bool, MaxSz>, TupleSz> acc {};
+    std::array<etl::bitset<MaxSz>, TupleSz> acc {};
     if constexpr (!hasError)
     {
       unroll<TupleSz>([&](auto Idx) {

@@ -21,11 +21,11 @@ namespace lampda::modes {
  */
 using LampTy = hardware::LampTy;
 
-static constexpr float cylinderRadius_m = LampTy::lampBodyRadius_mm / 1000.0; ///< radius of the cylinder, in meters
+static constexpr float cylinderRadius_m = LampTy::lampBodyRadius_mm / 1000.0f; ///< radius of the cylinder, in meters
 static constexpr float angularSpeedGain = 50000; ///< this gain compensate the angular acceleration for better display
 static constexpr float linearSpeedGain = 1.0;    ///< gain for the linear speeds
-static constexpr float reboundCoeff = 0.1;       ///< low rebound [0 - 1] on walls
-static constexpr float speedDampening = 0.92;    ///< low speed dampening [0-0.99] at every steps (viscosity)
+static constexpr float reboundCoeff = 0.1f;      ///< low rebound [0 - 1] on walls
+static constexpr float speedDampening = 0.92f;   ///< low speed dampening [0-0.99] at every steps (viscosity)
 
 static constexpr float maxAngularSpeed_radS = 4 * c_TWO_PI; ///< max angular speed in radians/s
 static constexpr float maxVerticalSpeed_mmS = 50;           ///< max vertical speed in mm/S
@@ -36,12 +36,13 @@ static constexpr float maxVerticalSpeed_mmS = 50;           ///< max vertical sp
 struct Particle
 {
   /// Default particle init
-  Particle() : thetaSpeed_radS(0.0), zSpeed_mS(0.0), theta_rad(0.0), z_mm(0.0) {}
+  Particle() = default;
+
+  /// Copy constructor for a particle
+  Particle(const Particle& other) = default;
 
   /// Construct a Particle from a 3D cartesian position.
   Particle(const utils::vec3d& positionCartesian) :
-    thetaSpeed_radS(0.0),
-    zSpeed_mS(0.0),
     theta_rad(atan2(positionCartesian.y, positionCartesian.x)),
     z_mm(positionCartesian.z)
   {
@@ -49,17 +50,10 @@ struct Particle
   }
 
   /// Construct a particle from an angle and height.
-  Particle(const float positionTheta_rad, const float positionZ_mm) :
-    thetaSpeed_radS(0.0),
-    zSpeed_mS(0.0),
-    theta_rad(positionTheta_rad),
-    z_mm(positionZ_mm)
+  Particle(const float positionTheta_rad, const float positionZ_mm) : theta_rad(positionTheta_rad), z_mm(positionZ_mm)
   {
     _savedLampIndex = to_lamp_index_no_bounds();
   }
-
-  /// Copy constructor for a particle
-  Particle(const Particle& other) = default;
 
   /**
    * \brief Compute the speed increment in the constraint lamp body
@@ -111,7 +105,7 @@ struct Particle
     const float angularPositionIncrement =
             lmpd_constrain<float>(thetaSpeed_radS * deltaTime_s, -angularUnit, angularUnit);
     const float verticalPositionIncrement =
-            lmpd_constrain<float>(zSpeed_mS * deltaTime_s, -verticalUnit, verticalUnit) * 1000.0;
+            lmpd_constrain<float>(zSpeed_mS * deltaTime_s, -verticalUnit, verticalUnit) * 1000.0f;
 
     // update particle position
     z_mm += verticalPositionIncrement;
@@ -171,13 +165,13 @@ struct Particle
       if (z_mm >= 0)
       {
         // go one unit lower
-        z_mm = LampTy::ledStripWidth_mm * 1.5;
+        z_mm = LampTy::ledStripWidth_mm * 1.5f;
         zSpeed_mS = -zSpeed_mS * reboundCoeff;
       }
       else
       {
         // go one unit above
-        z_mm = -LampTy::lampHeight_mm + LampTy::ledStripWidth_mm * 1.5;
+        z_mm = -LampTy::lampHeight_mm + LampTy::ledStripWidth_mm * 1.5f;
         zSpeed_mS = -zSpeed_mS * reboundCoeff;
       }
       // udpate index
@@ -192,19 +186,25 @@ struct Particle
     zSpeed_mS *= dampenFactor;
   }
 
+  void set_color(const uint32_t color) { compressedColor = colors::get_compressed_16b_color(color); }
+  uint32_t get_color() const { return colors::get_decompressed_32b_color(compressedColor); }
+
   /// Convert this particle coordinates to a constraint lamp index.
   uint16_t to_lamp_index() const { return to_led_index(theta_rad, z_mm); }
   /// Convert this particle coordinates to an unconstraint lamp index.
   int16_t to_lamp_index_no_bounds() const { return to_led_index_no_bounds(theta_rad, z_mm); }
 
-  float thetaSpeed_radS; ///< angular speed, in radian/seconds
-  float zSpeed_mS;       ///< linear speed, in meter/seconds
+  float thetaSpeed_radS = 0.0f; ///< angular speed, in radian/seconds
+  float zSpeed_mS = 0.0f;       ///< linear speed, in meter/seconds
 
-  float theta_rad; ///< position, in radians
-  float z_mm;      ///< height, in millimeters.
+  float theta_rad = 0.0f; ///< position, in radians
+  float z_mm = 0.0f;      ///< height, in millimeters.
 
   /// optimization
   int16_t _savedLampIndex;
+
+private:
+  uint16_t compressedColor = colors::get_compressed_16b_color(colors::HTMLColorCode::White); ///< stored particle color
 };
 
 } // namespace lampda::modes

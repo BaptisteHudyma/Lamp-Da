@@ -7,9 +7,12 @@
 
 /// @file utils.hpp
 
-#include "src/system/ext/math8.h"
 #include <cmath>
 #include <cstdint>
+
+#include "src/system/ext/math8.h"
+
+#include <etl/bitset.h>
 
 /// User modes audio utilities
 namespace lampda::modes::audio {
@@ -136,7 +139,7 @@ struct SoundEventTy
     dataAutoGained.fill(0);
     fft_log.fill(0);
     fft_raw.fill(0);
-    beatDetected.fill(false);
+    beatDetected.reset();
   }
 
   /// Call this once every tick inside the mode loop callback
@@ -264,7 +267,7 @@ struct SoundEventTy
   /// fast fourrier transform as a log scale (closer to human perception)
   FFTLogContainer fft_log;
   /// set to true when the corresponding frequency range registers a beat
-  std::array<bool, _fftChannels> beatDetected;
+  etl::bitset<_fftChannels> beatDetected;
   /// fast fourrier transform raw results
   std::array<float, _dataLenght / 2> fft_raw;
 
@@ -280,15 +283,15 @@ private:
   std::array<float, _fftChannels> fft_log_end_frequencies;
 
   /// track the beat events using the FFT
-  template<size_t T> static inline std::array<bool, T> track_beat_events(const FFTHistoryContainer& dataHistory,
-                                                                         const std::array<float, T>& data)
+  template<size_t T> static inline etl::bitset<T> track_beat_events(const FFTHistoryContainer& dataHistory,
+                                                                    const std::array<float, T>& data)
   {
-    std::array<bool, T> beats;
-    beats.fill(false);
+    etl::bitset<T> beats;
+    beats.reset();
 
     // beat detection starts after a bit
     const size_t dataHistoryCnt = dataHistory.size();
-    const float oneOverdataHistory = 1.0f / dataHistoryCnt;
+    const float oneOverdataHistory = 1.0f / static_cast<float>(dataHistoryCnt);
 
     std::array<float, T> averageFft;
     averageFft.fill(0.0f);

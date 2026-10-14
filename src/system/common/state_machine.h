@@ -43,6 +43,9 @@ public:
     set_state(s, timeout, stateOnTimeout);
   }
 
+  StateMachine(const StateMachine&) = delete;
+  StateMachine& operator=(StateMachine const&) = delete;
+
   /**
    * \brief timeout check, and such, call it often
    */

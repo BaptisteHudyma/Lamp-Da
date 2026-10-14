@@ -27,6 +27,7 @@ class ParticleSystem
 {
 public:
   ParticleSystem() : particuleCount(0) { reset(); }
+  ParticleSystem(const ParticleSystem&) = delete;
 
   /**
    * \brief  reset system to zero count
@@ -51,13 +52,14 @@ public:
    * \brief Init the particles from a initialization function
    * \param[in] positionGeneratorFunction Function that takes an index and return a ledstrip index
    */
-  void init_particules(const std::function<int16_t(size_t)>& positionGeneratorFunction)
+  void init_particules(const std::function<int16_t(size_t)>& positionGeneratorFunction,
+                       const uint32_t color = colors::HTMLColorCode::White)
   {
     isOccupiedSpaces.reset();
     isAllocated.reset();
     for (size_t i = 0; i < particuleCount; ++i)
     {
-      spawn_particule(i, positionGeneratorFunction);
+      spawn_particule(i, positionGeneratorFunction, color);
     }
   }
 
@@ -69,6 +71,25 @@ public:
   bool init_deferred_particules(uint8_t maxParticlesToPop,
                                 const std::function<int16_t(size_t)>& positionGeneratorFunction)
   {
+    const auto colorGeneratorFunction = [](const size_t) -> uint32_t {
+      return colors::HTMLColorCode::White;
+    };
+    return init_deferred_particules(maxParticlesToPop, positionGeneratorFunction, colorGeneratorFunction);
+  }
+
+  /**
+   * \brief Init the particles from a initialization function, in a timed defered way.
+   * \param[in] maxParticlesToPop Maximum particles to spawn at this call
+   * \param[in] positionGeneratorFunction Function that takes an index and return a led strip index
+   * \param[in] colorGeneratorFunction Function that takes an index and return a color of the particle at this index
+   */
+  template<typename ColorGeneratorFunction>
+  bool init_deferred_particules(uint8_t maxParticlesToPop,
+                                const std::function<int16_t(size_t)>& positionGeneratorFunction,
+                                const ColorGeneratorFunction& colorGeneratorFunction)
+  {
+    static_assert(std::is_invocable_r_v<uint32_t, ColorGeneratorFunction, size_t>);
+
     for (size_t i = 0; i < particuleCount and maxParticlesToPop > 0; ++i)
     {
       if (isAllocated[i])
@@ -76,7 +97,7 @@ public:
         // already allocated, do not reuse
         continue;
       }
-      spawn_particule(i, positionGeneratorFunction);
+      spawn_particule(i, positionGeneratorFunction, colorGeneratorFunction(i));
       maxParticlesToPop--;
     }
     // still some uncreated particles
@@ -134,15 +155,17 @@ public:
         // check collision : no collision
         if (not is_position_taken(newLedIndex))
         {
-          isOccupiedSpaces[ledIndex] = false;
-          isOccupiedSpaces[newLedIndex] = true;
+          if (ledIndex >= 0 && ledIndex < etl::bitset<LED_COUNT>::size())
+            isOccupiedSpaces[ledIndex] = false;
+          if (newLedIndex >= 0 && newLedIndex < etl::bitset<LED_COUNT>::size())
+            isOccupiedSpaces[newLedIndex] = true;
         }
         // check collision : collision !!
         else
         {
           // refuse movement, rebound speed
-          p.thetaSpeed_radS = -p.thetaSpeed_radS * 0.75;
-          p.zSpeed_mS = -p.zSpeed_mS * 0.75;
+          p.thetaSpeed_radS = -p.thetaSpeed_radS * 0.75f;
+          p.zSpeed_mS = -p.zSpeed_mS * 0.75f;
           continue;
         }
       }
@@ -158,8 +181,10 @@ public:
    * the simulation.
    * \return The number of particles left in the simulation.
    */
-  uint16_t depop_particules(const std::function<bool(const Particle&)>& shouldDepopFunction)
+  template<typename ShouldDepopFunction> uint16_t depop_particules(const ShouldDepopFunction& shouldDepopFunction)
   {
+    static_assert(std::is_invocable_r_v<bool, ShouldDepopFunction, Particle const&>);
+
     uint16_t particleCount = 0;
     for (size_t i = 0; i < particuleCount; ++i)
     {
@@ -167,11 +192,12 @@ public:
       if (not isAllocated[i])
         continue;
 
-      auto& parti = particules[i];
+      const auto& parti = particules[i];
       if (shouldDepopFunction(parti))
       {
         isAllocated[i] = false;
-        isOccupiedSpaces[parti._savedLampIndex] = false;
+        if (parti._savedLampIndex >= 0 && parti._savedLampIndex < etl::bitset<LED_COUNT>::size())
+          isOccupiedSpaces[parti._savedLampIndex] = false;
       }
       else
       {
@@ -186,10 +212,12 @@ public:
    * \param[in] sample_color sampling function for the particle color
    * \param[in, out] lamp The lamp object to write to
    */
-  uint16_t show(const std::function<uint32_t(int16_t, const Particle&)> sample_color, LampTy& lamp)
+  template<typename SampleColorFunction> uint16_t show(const SampleColorFunction& sample_color, LampTy& lamp) const
   {
+    static_assert(std::is_invocable_r_v<uint32_t, SampleColorFunction, int16_t, Particle const&>);
+
     uint16_t particleCount = 0;
-    for (size_t i = 0; i < particuleCount; ++i)
+    for (int16_t i = 0; i < particuleCount; ++i)
     {
       // do not show non allocated particles
       if (not isAllocated[i])
@@ -202,6 +230,15 @@ public:
         particleCount += 1;
     }
     return particleCount;
+  }
+
+  uint16_t show(LampTy& lamp) const
+  {
+    return show(
+            [](int16_t, const Particle& particle) {
+              return particle.get_color();
+            },
+            lamp);
   }
 
   /// Return the number of active particles
@@ -220,15 +257,25 @@ public:
 
 protected:
   /// Return True if the position is already occupied
-  bool is_position_taken(const int16_t pos) const { return isOccupiedSpaces[pos]; }
+  bool is_position_taken(const int16_t pos) const
+  {
+    if (pos < 0 or pos >= etl::bitset<LED_COUNT>::size())
+      return false;
+    return isOccupiedSpaces[pos];
+  }
 
   /**
    * \brief Spawn a particle
    * \param[in] index Index of this particle
    * \param[in] positionGeneratorFunction Spawn function
    */
-  void spawn_particule(const size_t index, const std::function<int16_t(size_t)>& positionGeneratorFunction)
+  template<typename PositiongeneratorFunction>
+  void spawn_particule(const size_t index,
+                       const PositiongeneratorFunction& positionGeneratorFunction,
+                       const uint32_t color)
   {
+    static_assert(std::is_invocable_r_v<int16_t, PositiongeneratorFunction, size_t>);
+
     int16_t pos = positionGeneratorFunction(index);
     int maxTries = 3;
     while (ParticleSystem::is_position_taken(pos) and maxTries > 0)
@@ -239,15 +286,18 @@ protected:
     // generate start position from user function
     const auto& helixCoordinates = modes::strip_to_helix_unconstraint(pos);
     particules[index] = Particle(utils::vec3d {helixCoordinates.x, helixCoordinates.y, helixCoordinates.z});
-    isAllocated[index] = true;
-    isOccupiedSpaces[pos] = true;
+    particules[index].set_color(color);
+    if (index < isAllocated.size())
+      isAllocated[index] = true;
+    if (pos >= 0 && pos < etl::bitset<LED_COUNT>::size())
+      isOccupiedSpaces[pos] = true;
   }
 
 private:
-  static constexpr uint16_t maxParticuleCount = 512; ///< maximum particles allowed in a simulation
-  Particle particules[maxParticuleCount];            ///< Array of all particles
-  etl::bitset<maxParticuleCount> isAllocated;        ///< store the allocated particules flag
-  etl::bitset<LED_COUNT> isOccupiedSpaces;           ///< store the occupied spaces
+  static constexpr uint16_t maxParticuleCount = 512;  ///< maximum particles allowed in a simulation
+  std::array<Particle, maxParticuleCount> particules; ///< Array of all particles
+  etl::bitset<maxParticuleCount> isAllocated;         ///< store the allocated particules flag
+  etl::bitset<LED_COUNT> isOccupiedSpaces;            ///< store the occupied spaces
 
   /// forced to be less than maxParticuleCount
   uint16_t particuleCount;
