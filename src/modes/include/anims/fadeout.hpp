@@ -25,10 +25,9 @@ struct DropModeLineByLine
    * \brief Find and depop one particle according to this mode
    * \return true if a particle was successfully depopped, false otherwise
    */
-  template<typename ContextType, uint8_t MaskBuffId, uint8_t minMaskValue>
-  static bool depop_one(ContextType& ctx, uint32_t& pixelId)
+  template<typename ContextType> static bool depop_one(ContextType& ctx, uint32_t& pixelId)
   {
-    auto& buffer = ctx.lamp.template getTempBuffer<MaskBuffId>();
+    auto& buffer = ctx.lamp.ledMask;
     const auto bufferSize = ctx.lamp.ledCount;
 
     // check lines by lines from bottom to top, keeping the first one with pixels left
@@ -41,7 +40,7 @@ struct DropModeLineByLine
         const auto buffIndex = modes::to_strip(x, y);
         if (buffIndex < 0 or buffIndex >= bufferSize)
           continue;
-        if (buffer[buffIndex] > minMaskValue)
+        if (buffer[buffIndex])
           pixelSetCount += 1;
       }
 
@@ -55,7 +54,7 @@ struct DropModeLineByLine
           const auto tempPixelId = modes::to_strip(x, y);
           if (tempPixelId < 0 or tempPixelId >= bufferSize)
             continue;
-          if (buffer[tempPixelId] > minMaskValue)
+          if (buffer[tempPixelId])
           {
             if (selectedLed == 0)
             {
@@ -81,10 +80,9 @@ struct DropModeOrphansOnly
   /**
    * \brief Check if a pixel at (x, y) has a pixel below it
    */
-  template<typename ContextType, uint8_t MaskBuffId, uint8_t minMaskValue>
-  static bool has_pixel_below(ContextType& ctx, uint16_t x, int16_t y)
+  template<typename ContextType> static bool has_pixel_below(ContextType& ctx, uint16_t x, int16_t y)
   {
-    auto& buffer = ctx.lamp.template getTempBuffer<MaskBuffId>();
+    auto& buffer = ctx.lamp.ledMask;
     const auto bufferSize = ctx.lamp.ledCount;
 
     if (y >= ctx.lamp.maxHeight or (y + 1) > ctx.lamp.maxHeight)
@@ -96,23 +94,22 @@ struct DropModeOrphansOnly
     const auto pixelId = modes::to_strip(x, y + 1);
     if (pixelId >= 0 and pixelId < bufferSize)
     {
-      if (buffer[pixelId] > minMaskValue)
+      if (buffer[pixelId])
         return true; // Found a pixel below
     }
     // check offsetted line, lamp is not wrapped straight !
     const auto pixelIdOffseted = modes::to_strip(x - 1, y + 1);
     if (pixelIdOffseted >= 0 and pixelIdOffseted < bufferSize)
     {
-      if (buffer[pixelIdOffseted] > minMaskValue)
+      if (buffer[pixelIdOffseted])
         return true; // Found a pixel below
     }
     return false;
   }
 
-  template<typename ContextType, uint8_t MaskBuffId, uint8_t minMaskValue>
-  static bool depop_one(ContextType& ctx, uint32_t& pixelId)
+  template<typename ContextType> static bool depop_one(ContextType& ctx, uint32_t& pixelId)
   {
-    auto& buffer = ctx.lamp.template getTempBuffer<MaskBuffId>();
+    auto& buffer = ctx.lamp.ledMask;
     const auto bufferSize = ctx.lamp.ledCount;
     uint8_t orphanCount = 0;
 
@@ -129,12 +126,12 @@ struct DropModeOrphansOnly
         const auto tempPixelId = modes::to_strip(x, y);
         if (tempPixelId < 0 or tempPixelId >= bufferSize)
           continue;
-        if (buffer[tempPixelId] > minMaskValue)
+        if (buffer[tempPixelId])
         {
           hasSetPixels = true;
 
           // Check if this pixel is an orphan (no pixel below it)
-          if (not has_pixel_below<ContextType, MaskBuffId, minMaskValue>(ctx, x, y))
+          if (not has_pixel_below<ContextType>(ctx, x, y))
           {
             orphanCount += 1;
             hasOrphanPixels = true;
@@ -167,10 +164,10 @@ struct DropModeOrphansOnly
         const auto tempPixelId = modes::to_strip(x, y);
         if (tempPixelId < 0 or tempPixelId >= bufferSize)
           continue;
-        if (buffer[tempPixelId] > minMaskValue)
+        if (buffer[tempPixelId])
         {
           // Check if this pixel is an orphan (no pixel below it)
-          if (not has_pixel_below<ContextType, MaskBuffId, minMaskValue>(ctx, x, y))
+          if (not has_pixel_below<ContextType>(ctx, x, y))
           {
             if (selectedLed == 0)
             {
@@ -188,16 +185,14 @@ struct DropModeOrphansOnly
 
 /**
  * \brief Make an animation disapear with gravity
- * \param MaskBuffId Index of the buffer that will contain the mask values for the dropped leds
  * \param DropMode The drop policy, defined above (eg: DropModeLineByLine, DropModeOrphansOnly...)
- * \param minMaskValue Value to give to a pixel that gets droped
  */
-template<uint8_t MaskBuffId, typename DropMode = DropModeOrphansOnly, uint8_t minMaskValue = 0> struct GravityDissolve
+template<typename DropMode = DropModeOrphansOnly> struct GravityDissolve
 {
   void reset(auto& ctx)
   {
     // set all values to max: no masking
-    ctx.lamp.template fillTempBuffer<MaskBuffId>(UINT8_MAX);
+    ctx.lamp.clear_led_mask();
     // reset particles
     particuleSystem.reset();
     particuleSystem.set_max_particle_count(20);
@@ -209,7 +204,7 @@ template<uint8_t MaskBuffId, typename DropMode = DropModeOrphansOnly, uint8_t mi
     particlesDropped = 0;
   }
 
-  void loop(auto& ctx, uint32_t color)
+  void loop(auto& ctx)
   {
     // find the particles to depop
     depopRate += particlesToDepopPerIteration;
@@ -237,7 +232,10 @@ template<uint8_t MaskBuffId, typename DropMode = DropModeOrphansOnly, uint8_t mi
       particuleSystem.iterate_no_collisions(
               utils::vec3d(0.0, 0.0, -9.81 / 4.0), ctx.lamp.frameDurationMs / 1000.0, shouldKeepInLampBounds);
       particuleSystem.depop_particules(recycle_particules_if_too_far);
-      particuleSystem.show(ctx.lamp);
+
+      // Force display because we masked the pixels before
+      static constexpr bool forceDisplay = true;
+      particuleSystem.show(ctx.lamp, forceDisplay);
     }
   }
 
@@ -335,24 +333,23 @@ protected:
 
   bool depop_one_particles(auto& ctx)
   {
-    auto& buffer = ctx.lamp.template getTempBuffer<MaskBuffId>();
     const auto bufferSize = ctx.lamp.ledCount;
 
     // Select a pixel to drop
     uint32_t pixelId;
-    if (not DropMode::template depop_one<decltype(ctx), MaskBuffId, minMaskValue>(ctx, pixelId) or pixelId < 0 or
-        pixelId >= bufferSize)
+    if (not DropMode::template depop_one<decltype(ctx)>(ctx, pixelId) or pixelId < 0 or pixelId >= bufferSize)
     {
       bsp::lampda_print("Error: Invalid pixel ID from drop mode");
       return false;
     }
 
-    // drop this pixel
-    buffer[pixelId] = minMaskValue;
+    // save current color
+    const uint32_t color = ctx.lamp.template getPixelColor(pixelId);
+    // THEN mask it
+    ctx.lamp.ledMask[pixelId] = 0;
     particlesDropped += 1;
 
     // spawn a new particle
-    const uint32_t color = ctx.lamp.template getPixelColor(pixelId);
     const bool isCreated = particuleSystem.init_deferred_particules(
             1,
             [pixelId](size_t) {
@@ -378,7 +375,7 @@ private:
   size_t particlesDropped = 0;               ///< keep track of the particles that already fell or are falling
 
   /// All animations share this particle system !
-  inline static modes::ParticleSystem& particuleSystem = modes::get_shared_particle_system();
+  inline static auto& particuleSystem = modes::get_shared_particle_system();
 };
 
 } // namespace fadeout

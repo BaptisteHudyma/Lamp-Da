@@ -322,6 +322,14 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
    */
   uint8_t LMBD_INLINE get_active_custom_ramp() const { return modeManager.activeIndex.rampIndex; }
 
+  /**
+   * \brief Update the suntimer drop animation
+   */
+  void update_suntimer_drop_animation(float progress)
+  {
+    modeManager.sunsetHandler.update_suntimer_drop_animation(*this, progress);
+  }
+
   /** \brief (setter) Set active custom ramp value (overrides user choice)
    *
    * \see BasicMode::custom_ramp_update()

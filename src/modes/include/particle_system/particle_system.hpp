@@ -155,9 +155,9 @@ public:
         // check collision : no collision
         if (not is_position_taken(newLedIndex))
         {
-          if (ledIndex >= 0 && ledIndex < etl::bitset<LED_COUNT>::size())
+          if (ledIndex >= 0 && ledIndex < isOccupiedSpaces.size())
             isOccupiedSpaces[ledIndex] = false;
-          if (newLedIndex >= 0 && newLedIndex < etl::bitset<LED_COUNT>::size())
+          if (newLedIndex >= 0 && newLedIndex < isOccupiedSpaces.size())
             isOccupiedSpaces[newLedIndex] = true;
         }
         // check collision : collision !!
@@ -196,7 +196,7 @@ public:
       if (shouldDepopFunction(parti))
       {
         isAllocated[i] = false;
-        if (parti._savedLampIndex >= 0 && parti._savedLampIndex < etl::bitset<LED_COUNT>::size())
+        if (parti._savedLampIndex >= 0 && parti._savedLampIndex < isOccupiedSpaces.size())
           isOccupiedSpaces[parti._savedLampIndex] = false;
       }
       else
@@ -212,7 +212,8 @@ public:
    * \param[in] sample_color sampling function for the particle color
    * \param[in, out] lamp The lamp object to write to
    */
-  template<typename SampleColorFunction> uint16_t show(const SampleColorFunction& sample_color, LampTy& lamp) const
+  template<typename SampleColorFunction>
+  uint16_t show(const SampleColorFunction& sample_color, LampTy& lamp, const bool forceDisplay = false) const
   {
     static_assert(std::is_invocable_r_v<uint32_t, SampleColorFunction, int16_t, Particle const&>);
 
@@ -225,20 +226,21 @@ public:
       const auto& particle = particules[i];
       const auto& index = particle._savedLampIndex;
       if (modes::is_led_index_valid(index))
-        lamp.setPixelColor(index, sample_color(i, particle));
+        lamp.setPixelColor(index, sample_color(i, particle), forceDisplay);
       else
         particleCount += 1;
     }
     return particleCount;
   }
 
-  uint16_t show(LampTy& lamp) const
+  uint16_t show(LampTy& lamp, const bool forceDisplay = false) const
   {
     return show(
             [](int16_t, const Particle& particle) {
               return particle.get_color();
             },
-            lamp);
+            lamp,
+            forceDisplay);
   }
 
   /// Return the number of active particles
@@ -259,7 +261,7 @@ protected:
   /// Return True if the position is already occupied
   bool is_position_taken(const int16_t pos) const
   {
-    if (pos < 0 or pos >= etl::bitset<LED_COUNT>::size())
+    if (pos < 0 or pos >= isOccupiedSpaces.size())
       return false;
     return isOccupiedSpaces[pos];
   }
@@ -289,7 +291,7 @@ protected:
     particules[index].set_color(color);
     if (index < isAllocated.size())
       isAllocated[index] = true;
-    if (pos >= 0 && pos < etl::bitset<LED_COUNT>::size())
+    if (pos >= 0 && pos < isOccupiedSpaces.size())
       isOccupiedSpaces[pos] = true;
   }
 
@@ -297,7 +299,7 @@ private:
   static constexpr uint16_t maxParticuleCount = 512;  ///< maximum particles allowed in a simulation
   std::array<Particle, maxParticuleCount> particules; ///< Array of all particles
   etl::bitset<maxParticuleCount> isAllocated;         ///< store the allocated particules flag
-  etl::bitset<LED_COUNT> isOccupiedSpaces;            ///< store the occupied spaces
+  etl::bitset<LampTy::ledCount> isOccupiedSpaces;     ///< store the occupied spaces
 
   /// forced to be less than maxParticuleCount
   uint16_t particuleCount;

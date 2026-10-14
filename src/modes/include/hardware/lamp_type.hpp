@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <cstring>
 
+#include <etl/bitset.h>
+
 #include "src/compile.h"
 #include "src/user/constants.h"
 
@@ -207,6 +209,9 @@ public:
   /// \private Constructor used to wrap strip if needed
   LMBD_INLINE LampTy() : config {}, fakeStrip {}, strip {fakeStrip}, now {0}, tick {0}, raw_frame_count {0} {}
 #endif
+
+  /// Internal led mask
+  etl::bitset<_ledCount> ledMask;
 
   //
   // private API
@@ -466,7 +471,7 @@ public:
     else if constexpr (std::is_same_v<T, uint8_t>)
     {
       uint32_t scaled = ledCount * scale;
-      return scaled / 256;
+      return static_cast<uint16_t>(scaled / 256);
     }
     else
     {
@@ -478,6 +483,9 @@ public:
   //
   // public API
   //
+
+  /// Reset the led mask
+  void clear_led_mask() { ledMask.set(); }
 
   /** \brief Clear lamp to a clean state
    *
@@ -740,9 +748,10 @@ public:
     }
     else
     {
-      uint8_t brightness = getBrightness();
+      uint8_t brightness = static_cast<uint8_t>(getBrightness() /
+                                                static_cast<float>(brightness::absoluteMaximumBrightness) * 255.0f);
       brightness = (brightness < fadeBy) ? 0 : brightness - fadeBy;
-      setBrightness(brightness);
+      setBrightness(static_cast<brightness_t>(brightness / 255.0f * brightness::absoluteMaximumBrightness));
     }
   }
 
@@ -763,7 +772,7 @@ public:
     uint8_t seep = blurBy >> 1;
 
     uint32_t carryover = 0;
-    for (unsigned i = 0; i < ledCount; i++)
+    for (uint16_t i = 0; i < ledCount; i++)
     {
       uint32_t cur = getPixelColor(i);
       uint32_t c = cur;
@@ -779,16 +788,16 @@ public:
     }
   }
 
-  //
-  // public API (indexable-only)
-  //
+  /**
+   * public API (indexable-only)
+   */
 
   /** \brief (indexable) Fill lamp with target color, from start to end
    *
    * - See toLedCount() to set \p start and \p end
    * - See modes::colors::fromRGB() to set \p color
    */
-  void LMBD_INLINE fill(uint32_t color, uint16_t start, uint16_t end)
+  void LMBD_INLINE fill(uint32_t color, uint16_t start, uint16_t end, bool forceSet = false)
   {
     if constexpr (flavor == LampTypes::indexable)
     {
@@ -797,31 +806,7 @@ public:
 
       for (uint16_t I = start; I < end; ++I)
       {
-        setPixelColor(I, color);
-      }
-    }
-    else
-    {
-      assert(false && "unsupported");
-    }
-  }
-
-  /** \brief (indexable) Fill lamp with target color, from start to end. Apply a mask to display leds
-   *
-   * - See toLedCount() to set \p start and \p end
-   * - See modes::colors::fromRGB() to set \p color
-   */
-  void LMBD_INLINE fill(uint32_t color, uint16_t start, uint16_t end, const BufferTy& shouldDisplay)
-  {
-    if constexpr (flavor == LampTypes::indexable)
-    {
-      assert(start <= ledCount && "invalid start parameter");
-      assert(end <= ledCount && "invalid end parameter");
-
-      for (uint16_t I = start; I < end; ++I)
-      {
-        const uint8_t blendValue = min<uint32_t>(shouldDisplay[I], UINT8_MAX);
-        setPixelColor(I, colors::blend<uint8_t>(0, color, blendValue));
+        setPixelColor(I, color, forceSet);
       }
     }
     else
@@ -836,18 +821,12 @@ public:
    */
   void LMBD_INLINE fill(uint32_t color) { fill(color, 0, ledCount); }
 
-  /** \brief (indexable) Fill lamp with target color, with a mask
-   *
-   * See modes::colors::fromRGB() to set \p color
-   */
-  void LMBD_INLINE fill(uint32_t color, const BufferTy& shouldDisplay) { fill(color, 0, ledCount, shouldDisplay); }
-
   /** \brief (indexable) Fill lamp with target palette, from start to end
    *
    * - See toLedCount() to set \p start and \p end
    * - See modes::colors::PaletteTy to set \p palette
    */
-  void LMBD_INLINE fill(const colors::PaletteTy& palette, uint16_t start, uint16_t end)
+  void LMBD_INLINE fill(const colors::PaletteTy& palette, uint16_t start, uint16_t end, bool forceSet = false)
   {
     if constexpr (flavor == LampTypes::indexable)
     {
@@ -858,7 +837,7 @@ public:
       {
         // map index to [0; 255]
         const auto color = colors::from_palette<false, uint8_t>(I / static_cast<float>(ledCount) * 255, palette);
-        setPixelColor(I, color);
+        setPixelColor(I, color, forceSet);
       }
     }
     else
@@ -876,7 +855,7 @@ public:
    *
    * See modes::fromRGB() to set \p color
    */
-  void LMBD_INLINE setPixelColor(uint16_t n, uint32_t color)
+  void LMBD_INLINE setPixelColor(uint16_t n, uint32_t color, const bool forceSet = false)
   {
     if constexpr (flavor == LampTypes::indexable)
     {
@@ -886,7 +865,9 @@ public:
       }
 
       assert(n < ledCount && "invalid LED index");
-      strip.setPixelColor(n, color);
+
+      // mask pixels or aplly correct color
+      strip.setPixelColor(n, (forceSet or ledMask[n]) ? color : 0);
     }
     else
     {
@@ -906,7 +887,7 @@ public:
       }
 
       assert(n < ledCount && "invalid LED index");
-      return strip.getPixelColor(n);
+      return ledMask[n] ? strip.getPixelColor(n) : 0;
     }
     else
     {
@@ -918,7 +899,10 @@ public:
    *
    * See modes::fromRGB() to set \p color
    */
-  void LMBD_INLINE setPixelColorXY(uint16_t X, uint16_t Y, uint32_t color) { setPixelColor(to_strip(X, Y), color); }
+  void LMBD_INLINE setPixelColorXY(uint16_t X, uint16_t Y, uint32_t color, bool forceSet = false)
+  {
+    setPixelColor(to_strip(X, Y), color, forceSet);
+  }
 
   /** \brief (indexable) Given X,Y coordinate, return a corresponding LED index
    *
@@ -997,7 +981,8 @@ public:
     const BufferTy& dstBuf = getTempBuffer<dstBufIdx>();
     const BufferTy& srcBuf = getTempBuffer<srcBufIdx>();
 
-    uint16_t start = 0, end = srcBuf.size();
+    uint16_t start = 0;
+    uint16_t end = srcBuf.size();
     if (config.skipFirstLedsForEffect)
     {
       start = config.skipFirstLedsForAmount;
@@ -1005,7 +990,8 @@ public:
 
     for (uint16_t I = start; I < end; ++I)
     {
-      COLOR src, dst;
+      COLOR src;
+      COLOR dst;
       src.color = srcBuf[I];
       dst.color = dstBuf[I];
       strip._colors[I].color = utils::get_gradient(src.color, dst.color, phase);
@@ -1019,7 +1005,8 @@ public:
     static_assert(sizeof(BufferTy) == sizeof(strip._colors));
     const BufferTy& buffer = getTempBuffer<bufIdx>();
 
-    uint16_t start = 0, end = buffer.size();
+    uint16_t start = 0;
+    uint16_t end = buffer.size();
     if (config.skipFirstLedsForEffect)
     {
       start = config.skipFirstLedsForAmount;
