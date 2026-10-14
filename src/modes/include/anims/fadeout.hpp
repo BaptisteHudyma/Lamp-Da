@@ -344,7 +344,7 @@ protected:
     }
 
     // save current color
-    const uint32_t color = ctx.lamp.template getPixelColor(pixelId);
+    const uint32_t color = ctx.lamp.getPixelColor(pixelId);
     // THEN mask it
     ctx.lamp.ledMask[pixelId] = 0;
     particlesDropped += 1;
@@ -374,8 +374,7 @@ private:
   float depopRate = 0.0f;                    ///< accumulator rate
   size_t particlesDropped = 0;               ///< keep track of the particles that already fell or are falling
 
-  /// All animations share this particle system !
-  inline static auto& particuleSystem = modes::get_shared_particle_system();
+  modes::ParticleSystem<20> particuleSystem;
 };
 
 } // namespace fadeout

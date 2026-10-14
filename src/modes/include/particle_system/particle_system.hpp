@@ -23,7 +23,7 @@ using LampTy = hardware::LampTy;
  * \brief Define a particle system
  * ALL PARTICLE SYSTEM SHARE THE SAME PÄRTICLE SUBSET
  */
-class ParticleSystem
+template<size_t MaxParticuleCount> class ParticleSystem
 {
 public:
   ParticleSystem() : particuleCount(0) { reset(); }
@@ -296,21 +296,14 @@ protected:
   }
 
 private:
-  static constexpr uint16_t maxParticuleCount = 512;  ///< maximum particles allowed in a simulation
-  std::array<Particle, maxParticuleCount> particules; ///< Array of all particles
-  etl::bitset<maxParticuleCount> isAllocated;         ///< store the allocated particules flag
-  etl::bitset<LampTy::ledCount> isOccupiedSpaces;     ///< store the occupied spaces
+  static constexpr uint16_t maxParticuleCount = MaxParticuleCount; ///< maximum particles allowed in a simulation
+  std::array<Particle, maxParticuleCount> particules;              ///< Array of all particles
+  etl::bitset<maxParticuleCount> isAllocated;                      ///< store the allocated particules flag
+  etl::bitset<LampTy::ledCount> isOccupiedSpaces;                  ///< store the occupied spaces
 
   /// forced to be less than maxParticuleCount
   uint16_t particuleCount;
 };
-
-namespace __private {
-inline static ParticleSystem sharedParticleSystem = ParticleSystem();
-}
-
-/// Access the main level shared particle system
-static ParticleSystem& get_shared_particle_system() { return __private::sharedParticleSystem; }
 
 } // namespace lampda::modes
 

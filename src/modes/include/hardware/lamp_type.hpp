@@ -892,6 +892,7 @@ public:
     else
     {
       assert(false && "unsupported");
+      return 0;
     }
   }
 
