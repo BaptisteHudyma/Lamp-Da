@@ -155,8 +155,10 @@ public:
         // check collision : no collision
         if (not is_position_taken(newLedIndex))
         {
-          isOccupiedSpaces[ledIndex] = false;
-          isOccupiedSpaces[newLedIndex] = true;
+          if (ledIndex >= 0 && ledIndex < etl::bitset<LED_COUNT>::size())
+            isOccupiedSpaces[ledIndex] = false;
+          if (newLedIndex >= 0 && newLedIndex < etl::bitset<LED_COUNT>::size())
+            isOccupiedSpaces[newLedIndex] = true;
         }
         // check collision : collision !!
         else
@@ -194,7 +196,8 @@ public:
       if (shouldDepopFunction(parti))
       {
         isAllocated[i] = false;
-        isOccupiedSpaces[parti._savedLampIndex] = false;
+        if (parti._savedLampIndex >= 0 && parti._savedLampIndex < etl::bitset<LED_COUNT>::size())
+          isOccupiedSpaces[parti._savedLampIndex] = false;
       }
       else
       {
@@ -256,7 +259,7 @@ protected:
   /// Return True if the position is already occupied
   bool is_position_taken(const int16_t pos) const
   {
-    if (pos < 0 or pos >= isOccupiedSpaces.size())
+    if (pos < 0 or pos >= etl::bitset<LED_COUNT>::size())
       return false;
     return isOccupiedSpaces[pos];
   }
@@ -284,8 +287,10 @@ protected:
     const auto& helixCoordinates = modes::strip_to_helix_unconstraint(pos);
     particules[index] = Particle(utils::vec3d {helixCoordinates.x, helixCoordinates.y, helixCoordinates.z});
     particules[index].set_color(color);
-    isAllocated[index] = true;
-    isOccupiedSpaces[pos] = true;
+    if (index < isAllocated.size())
+      isAllocated[index] = true;
+    if (pos >= 0 && pos < etl::bitset<LED_COUNT>::size())
+      isOccupiedSpaces[pos] = true;
   }
 
 private:
