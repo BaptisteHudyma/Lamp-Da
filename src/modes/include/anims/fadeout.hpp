@@ -280,16 +280,16 @@ template<uint8_t MaskBuffId, typename DropMode = DropModeOrphansOnly, uint8_t mi
     }
 
     const uint16_t particleMax = ctx.lamp.ledCount;
-    const float frameFrequency = 1000.0 / ctx.lamp.frameDurationMs;
+    const float frameFrequency = 1000.0f / ctx.lamp.frameDurationMs;
 
     const float particlesLeft = particleMax - particlesDropped;
-    const float trueProgress = 1.0 - particlesLeft / static_cast<float>(particleMax);
+    const float trueProgress = 1.0f - particlesLeft / static_cast<float>(particleMax);
 
     // How many particles SHOULD have been dropped by now?
     const float expectedParticlesDropped = particleMax * progress;
     const float particleDeficit = expectedParticlesDropped - static_cast<float>(particlesDropped);
 
-    const float remainingProgressRatio = 1.0 - progress;
+    const float remainingProgressRatio = 1.0f - progress;
 
     // SMOOTH CATCH-UP: Distribute deficit + normal depop over remaining progress window
     // This ensures we catch up gradually, not all at once
@@ -352,14 +352,15 @@ protected:
     particlesDropped += 1;
 
     // spawn a new particle
+    const uint32_t color = ctx.lamp.template getPixelColor(pixelId);
     const bool isCreated = particuleSystem.init_deferred_particules(
             1,
             [pixelId](size_t) {
               return pixelId;
             },
             // spawn with the right color
-            [pixelId, &ctx](size_t) {
-              return ctx.lamp.template getPixelColor(pixelId);
+            [color](size_t) {
+              return color;
             });
     // Particle spawn can fail, it's only visual so ok
     std::ignore = isCreated;
@@ -367,14 +368,14 @@ protected:
   }
 
 private:
-  static constexpr float gracePeriod = 0.99; /// Added offset from the real timer to let all particle disappear
+  static constexpr float gracePeriod = 0.99f; ///< Added offset from the real timer to let all particle disappear
   //
-  float latestProgress = -1.0;
+  float latestProgress = -1.0f;
   uint32_t latestProgressTime = 0;
 
-  float particlesToDepopPerIteration = 0.0; /// numbers of particles that will fall per loop call
-  float depopRate = 0.0;                    /// accumulator rate
-  size_t particlesDropped = 0;              /// keep track of the particles that already fell or are falling
+  float particlesToDepopPerIteration = 0.0f; ///< numbers of particles that will fall per loop call
+  float depopRate = 0.0f;                    ///< accumulator rate
+  size_t particlesDropped = 0;               ///< keep track of the particles that already fell or are falling
 
   /// All animations share this particle system !
   inline static modes::ParticleSystem& particuleSystem = modes::get_shared_particle_system();

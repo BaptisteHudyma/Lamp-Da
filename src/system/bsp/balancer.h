@@ -8,6 +8,8 @@
 #include <array>
 #include <cstdint>
 
+#include <etl/bitset.h>
+
 #include "src/system/utils/constants.h"
 
 namespace lampda {
@@ -24,7 +26,7 @@ struct Status
   /// Cells voltages, in order
   std::array<uint16_t, batteryCount> batteryVoltages_mV;
   /// True if the cell is currently balancing
-  std::array<bool, batteryCount> isBalancing;
+  etl::bitset<batteryCount> isBalancing;
   /// Voltage of the battery pack, in millivolts.
   uint16_t stackVoltage_mV;
   /// Temperature of the component, in degrees.

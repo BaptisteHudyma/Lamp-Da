@@ -5,6 +5,7 @@
 #ifndef MODES_HARDWARE_COORDINATES_HPP
 #define MODES_HARDWARE_COORDINATES_HPP
 
+#include <etl/bitset.h>
 #include <array>
 
 namespace lampda::modes::hardware::details {
@@ -25,7 +26,7 @@ static constexpr _OutTy computeResidues(float realExactWidth)
 }
 
 // For each Y coord, return True iff given row is 1 LED longer than the others
-template<size_t maxOverflowHeight, typename _OutTy = std::array<bool, maxOverflowHeight + 1>>
+template<size_t maxOverflowHeight, typename _OutTy = etl::bitset<maxOverflowHeight + 1>>
 static constexpr _OutTy computeDeltaResidues(float realExactWidth)
 {
   auto allResiduesY = computeResidues<maxOverflowHeight>(realExactWidth);
