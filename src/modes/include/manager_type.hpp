@@ -24,6 +24,8 @@
 #include "src/modes/include/hardware/keystore.hpp"
 #include "src/modes/include/hardware/lamp_type.hpp"
 
+#include "src/modes/include/anims/fadeout.hpp"
+
 namespace lampda::modes {
 
 /// \private Active state is designated by a 32-bit integer
@@ -819,6 +821,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     });
 
     ctx.state.after_enter_mode(ctx);
+
+    // start by reseting the sun timers animations
+    ctx.modeManager.sunsetHandler.reset_suntimer_animation(ctx);
   }
 
   /// Callback called on a mode deactivation
@@ -898,6 +903,12 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     dispatch_group(ctx, [](auto group) {
       group.loop();
     });
+
+    if (logic::sunset_timer.is_enabled())
+    {
+      /// update suntimers after the animation
+      ctx.modeManager.sunsetHandler.loop_suntimer_animation(ctx);
+    }
 
     // display the overlay after the group update
     overlay.display_update(ctx);
@@ -1261,6 +1272,24 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
   /// Menu overlay object
   inline static draw::overlay::Manager<> overlay;
+
+  /**
+   * Suntimer handling
+   */
+
+  struct SunTimerHandling
+  {
+    // define the shared sunset animation
+    anims::fadeout::GravityDissolve<> animation;
+    /// Update the sunset drop animation
+    void update_suntimer_drop_animation(auto& ctx, float progress) { animation.update_depop_rate(ctx, progress); }
+    /// Reset the sunset animations
+    void reset_suntimer_animation(auto& ctx) { animation.reset(ctx); }
+    /// loop suntimer animations
+    void loop_suntimer_animation(auto& ctx) { animation.loop(ctx); }
+  };
+
+  SunTimerHandling sunsetHandler;
 
   //
   // private members

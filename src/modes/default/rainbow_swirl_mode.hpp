@@ -43,6 +43,11 @@ struct RainbowSwirlMode : public BasicMode
     // update first led color
     ctx.state.firstPixelHue += ctx.state.increment;
   }
+
+  /// sunset animation on the fixed modes
+  static constexpr bool hasSunsetAnimation = true;
+  /// Sunset timer will drop pixels downward, and never display them again
+  static void sunset_update(auto& ctx, float progress) { ctx.update_suntimer_drop_animation(progress); }
 };
 
 } // namespace lampda::modes::default_modes

@@ -42,7 +42,7 @@ template<int temp = 0> struct ImuEventTy
 
   /// ALL IMU ANIMATIONS SHARE THIS PARTICLE SYSTEM.
   /// Spawn another if multiple systems should run in parralel
-  inline static modes::ParticleSystem& particuleSystem = modes::get_shared_particle_system();
+  inline static modes::ParticleSystem<512> particuleSystem;
 
 private:
 };
