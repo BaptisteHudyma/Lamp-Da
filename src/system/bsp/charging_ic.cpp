@@ -565,8 +565,15 @@ bool enable(const uint16_t minSystemVoltage_mV,
   success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
 
   chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
-  // set 6A inductor (TODO issue #131: change with system constants)
-  chargerIcRegisters.chargeOption3.set_IL_AVG(0b0);
+  // set from max physical characteristics
+  if (physical_constants::maxChargerCurrent_mA <= 6000)
+    chargerIcRegisters.chargeOption3.set_IL_AVG(0b00);
+  else if (physical_constants::maxChargerCurrent_mA <= 10000)
+    chargerIcRegisters.chargeOption3.set_IL_AVG(0b01);
+  else if (physical_constants::maxChargerCurrent_mA <= 15000)
+    chargerIcRegisters.chargeOption3.set_IL_AVG(0b10);
+  else
+    chargerIcRegisters.chargeOption3.set_IL_AVG(0b11);
   success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
   // disable charge

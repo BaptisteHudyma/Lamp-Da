@@ -24,9 +24,9 @@ namespace balancer {
 struct Status
 {
   /// Cells voltages, in order
-  std::array<uint16_t, batteryCount> batteryVoltages_mV;
+  std::array<uint16_t, physical_constants::batterySeriesCount> batteryVoltages_mV;
   /// True if the cell is currently balancing
-  etl::bitset<batteryCount> isBalancing;
+  etl::bitset<physical_constants::batterySeriesCount> isBalancing;
   /// Voltage of the battery pack, in millivolts.
   uint16_t stackVoltage_mV;
   /// Temperature of the component, in degrees.

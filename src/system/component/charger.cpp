@@ -76,10 +76,10 @@ bool should_charge()
       return false;
 
     static uint32_t batteryTooHighLatchTime = 0;
-    for (uint8_t i = 0; i < batteryCount; ++i)
+    for (uint8_t i = 0; i < physical_constants::batterySeriesCount; ++i)
     {
       // do not charge if a battery voltage goes over the max voltage
-      if (balancerStatus.batteryVoltages_mV[i] >= maxLiionVoltage_mV)
+      if (balancerStatus.batteryVoltages_mV[i] >= physical_constants::maxLiionVoltage_mV)
       {
         batteryTooHighLatchTime = hal::time_ms();
         return false;
@@ -333,10 +333,10 @@ bool setup()
     return true;
 
   // start with default parameters
-  const bool isChargerEnabled = bsp::charger::enable(batteryMinVoltageSafe_mV,
-                                                     batteryMaxVoltageSafe_mV,
-                                                     batteryMaxChargeCurrent_mA,
-                                                     batteryMaxDischargeCurrent_mA,
+  const bool isChargerEnabled = bsp::charger::enable(physical_constants::batteryMinVoltageSafe_mV,
+                                                     physical_constants::batteryMaxVoltageSafe_mV,
+                                                     physical_constants::batteryMaxChargeCurrent_mA,
+                                                     physical_constants::batteryMaxDischargeCurrent_mA,
                                                      false);
   if (not isChargerEnabled)
   {

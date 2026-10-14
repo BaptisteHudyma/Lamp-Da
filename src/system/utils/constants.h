@@ -50,8 +50,17 @@ static constexpr uint8_t ADC_RES_EXP = 12; ///< resolution of the ADC, in bits (
 static const uint32_t ADC_MAX_VALUE = static_cast<uint32_t>(pow(2, ADC_RES_EXP)); ///< corresponding ADC max value
 static constexpr float internalReferenceVoltage = 3.0f;                           ///< internal voltage reference
 
-/// number of batteries for this model
-static constexpr uint8_t batteryCount = 3;
+// watchdog ids
+static constexpr uint8_t USER_WATCHDOG_ID = 0;  ///< user thread watchdog
+static constexpr uint8_t POWER_WATCHDOG_ID = 2; ///< power thread watchdog
+
+/// Define the board and hardware physical constants
+namespace physical_constants {
+
+/// number of batteries in series for this model
+static constexpr uint8_t batterySeriesCount = 3;
+/// number of batteries in parallel for this model
+static constexpr uint8_t batteryParellelCount = 1;
 
 // define position of imu to the circuit center
 static constexpr float imuToCircuitRotationX_rad = 0.0f * c_degreesToRadians;
@@ -67,9 +76,9 @@ static constexpr float imuToCircuitPositionY_m = -5.769f / 1000.0f;
 static constexpr float imuToCircuitPositionZ_m = 0.0f / 1000.0f;
 
 // battery specific constants
-static constexpr float batteryChargeC_Rate = 0.33f;   ///< Maximum charge rate
-static constexpr float batteryDischargeC_Rate = 1.0f; ///< Typical discharge rate
-static constexpr uint32_t batteryCapacity_mAH = 4850; ///< Battery capacity, in mA*hours
+static constexpr float batteryChargeC_Rate = 0.33f;                          ///< Maximum charge rate
+static constexpr float batteryDischargeC_Rate = 1.0f;                        ///< Typical discharge rate
+static constexpr uint32_t batteryCapacity_mAH = batteryParellelCount * 4850; ///< Battery capacity, in mA*hours
 
 static constexpr uint16_t minLiionVoltage_mV = 2500;     ///< minimum Li-ion voltage
 static constexpr uint16_t typicalLiionVoltage_mV = 3630; ///< standard 50% charge Li-ion voltage
@@ -92,9 +101,11 @@ static constexpr float criticalSystemTemp_c = 80.0f; ///< absolute maximum micro
 static constexpr uint16_t batteryCritical = 300; ///< in % *100, critical battery level
 static constexpr uint16_t batteryLow = 500;      ///< in % *100, low battery level
 
-// watchdog ids
-static constexpr uint8_t USER_WATCHDOG_ID = 0;  ///< user thread watchdog
-static constexpr uint8_t POWER_WATCHDOG_ID = 2; ///< power thread watchdog
+static constexpr uint32_t maxVbusWireCurrent_mA = 3000;         ///< maximum current that the USB-C wires can carry
+static constexpr uint32_t maxBatteryConnectorCurrent_mA = 3000; ///< maximum current that the USB-C wires can carry
+static constexpr uint32_t maxChargerCurrent_mA = 6000;          ///< maximum current that the power circuit can handle
+static constexpr uint32_t maxVbusGateCurrent_mA = 5000;         ///< maximum current that the vbus gate can handle
+static constexpr uint32_t maxOutputGateCurrent_mA = 35000;      ///< maximum current that the output gate can handle
 
 /**
  *
@@ -102,19 +113,16 @@ static constexpr uint8_t POWER_WATCHDOG_ID = 2; ///< power thread watchdog
  *
  */
 
-/// EXPECTED delta time for each loop run
-static constexpr float loopDeltaTime = MAIN_LOOP_UPDATE_PERIOD_MS / 1000.0f;
-
 /// max voltage of a single li-ion cell
-static constexpr uint16_t batteryMaxVoltage_mV = maxLiionVoltage_mV * batteryCount;
+static constexpr uint16_t batteryMaxVoltage_mV = maxLiionVoltage_mV * batterySeriesCount;
 /// max voltage of a li-ion cell to maximise lifetime
-static constexpr uint16_t batteryMaxVoltageSafe_mV = maxSafeLiionVoltage_mV * batteryCount;
+static constexpr uint16_t batteryMaxVoltageSafe_mV = maxSafeLiionVoltage_mV * batterySeriesCount;
 /// typical pack voltage
-static constexpr uint16_t batteryTypicalVoltageSafe_mV = typicalLiionVoltage_mV * batteryCount;
+static constexpr uint16_t batteryTypicalVoltageSafe_mV = typicalLiionVoltage_mV * batterySeriesCount;
 /// min voltage of a single li-ion cell
-static constexpr uint16_t batteryMinVoltage_mV = minLiionVoltage_mV * batteryCount;
+static constexpr uint16_t batteryMinVoltage_mV = minLiionVoltage_mV * batterySeriesCount;
 /// min voltage of a li-ion cell to maximise lifetime
-static constexpr uint16_t batteryMinVoltageSafe_mV = minSafeLiionVoltage_mV * batteryCount;
+static constexpr uint16_t batteryMinVoltageSafe_mV = minSafeLiionVoltage_mV * batterySeriesCount;
 
 // physical parameters computations
 /// Total maximum power usage of the led strip
@@ -131,17 +139,10 @@ static constexpr uint32_t batteryMaxDischargeCurrent_mA =
 /// Battery standard power, in milliWatt*Hours
 static constexpr uint32_t batteryTypicalPower_mWH = batteryCapacity_mAH * batteryTypicalVoltageSafe_mV / 1000;
 
-/**
- * \brief check battery cell voltage against min/max limits
- * \param[in] cellVoltage_mv Voltage to check
- */
-inline bool is_cell_voltage_valid(const uint16_t cellVoltage_mv)
-{
-  return
-          // minimum limit is not a hard stop, battery can be deeply discharged
-          // cellVoltage_mv > minSingularBatteryVoltage_mV &&
-          cellVoltage_mv < maxSingularBatteryVoltage_mV;
-}
+// asserts
+static_assert(maxSystemTemp_c < criticalSystemTemp_c, "max system temp must be less than critical temp");
+
+} // namespace physical_constants
 
 /// Define the type of the brightness parameters
 using brightness_t = uint16_t;
@@ -151,8 +152,17 @@ static constexpr brightness_t absoluteMaximumBrightness = 1024;
 // min brightness is always zero
 } // namespace brightness
 
-// asserts
-static_assert(maxSystemTemp_c < criticalSystemTemp_c, "max system temp must be less than critical temp");
+/**
+ * \brief check battery cell voltage against min/max limits
+ * \param[in] cellVoltage_mv Voltage to check
+ */
+inline bool is_cell_voltage_valid(const uint16_t cellVoltage_mv)
+{
+  return
+          // minimum limit is not a hard stop, battery can be deeply discharged
+          // cellVoltage_mv > minSingularBatteryVoltage_mV &&
+          cellVoltage_mv < physical_constants::maxSingularBatteryVoltage_mV;
+}
 
 } // namespace lampda
 

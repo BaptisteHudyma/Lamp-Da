@@ -543,7 +543,7 @@ void handle_pre_output_light_state()
   isMessageDisplayed = false;
 
   // critical battery level, do not wake up
-  if (component::battery::get_battery_minimum_cell_level() <= batteryCritical + 1)
+  if (component::battery::get_battery_minimum_cell_level() <= physical_constants::batteryCritical + 1)
   {
     // alert user of low battery
     for (uint8_t i = 0; i < 10; i++)
