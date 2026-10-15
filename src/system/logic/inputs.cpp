@@ -39,6 +39,8 @@ bool isSystemOn = false;
 bool isInLongClick = false;
 /// hold the boolean that configures if button's usermode UI is enabled
 bool isButtonUsermodeEnabled = false;
+/// If true, we are waiting for a button event before starting the check logic
+bool isStartChainPending = false;
 
 /// Update the on/off status when outside of a long button press
 void update_isSystemOn_status()
@@ -567,6 +569,7 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
 
 void init(const bool wasPoweredByUserInterrupt)
 {
+  isStartChainPending = wasPoweredByUserInterrupt;
   component::button::init(wasPoweredByUserInterrupt);
   bsp::indicator::init();
 }
@@ -583,36 +586,39 @@ void loop()
     if (__private::buttonEventQueue.empty())
       break;
 
+    // First click checks if system is on, or if started from button interrupt where the first event could have been
+    // missed
+    const bool isFirstClick = isStartChainPending or not isSystemOn;
+
     __private::ButtonEvent buttonEvent;
     __private::buttonEventQueue.pop_into(buttonEvent);
 
     if (not buttonEvent.isLongPress)
     {
       isInLongClick = false;
-      button_clicked_callback(buttonEvent.clickCount, not isSystemOn);
+      button_clicked_callback(buttonEvent.clickCount, isFirstClick);
+      isStartChainPending = false;
 
-      // update the status between clicks
+      // update status between clicks, for some special case where it could change between two registered events
       update_isSystemOn_status();
     }
     else
     {
       isInLongClick = not buttonEvent.isEndOfLongPress;
       button_hold_callback(
-              buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, not isSystemOn);
-
-      // update the status between clicks
+              buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isFirstClick);
       if (buttonEvent.isEndOfLongPress)
+      {
+        isStartChainPending = false;
+        // update status between clicks, for some special case where it could change between two registered events
         update_isSystemOn_status();
+      }
     }
   }
 
-  /// Debounce at system start to avoid wrong detection of first click
-  if (hal::time_ms() > 500)
-  {
-    // Update the system on status when possible.
-    // It may have been updated by another actor in the system.
-    update_isSystemOn_status();
-  }
+  // Update the system on status when possible.
+  // It may have been updated by another actor in the system.
+  update_isSystemOn_status();
 }
 
 void button_disable_usermode() { isButtonUsermodeEnabled = false; }
