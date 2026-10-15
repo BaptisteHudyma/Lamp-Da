@@ -56,10 +56,10 @@ jobs:
         make test
     - name: utest
       run:
-        ./_build/tests/utest/tests_utest
+        make run-utest
     - name: itest
       run:
-        ./_build/tests/itest/tests_itest
+        make run-itest
 
   documentation:
     runs-on: ubuntu-latest

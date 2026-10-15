@@ -673,6 +673,14 @@ test: link-hal-simulator generate-images
 	@cd $(SRC_DIR)/tests && \
 		LMBD_ROOT_DIR=$(SRC_DIR) TEST_BUILD_DIR=$(BUILD_DIR)/tests make $(shell basename "tests")
 
+run-utest:
+	@cd $(SRC_DIR)/tests && \
+	LMBD_ROOT_DIR=$(SRC_DIR) TEST_BUILD_DIR=$(BUILD_DIR)/tests make $(shell basename "run-utest")
+	
+run-itest:
+	@cd $(SRC_DIR)/tests && \
+	LMBD_ROOT_DIR=$(SRC_DIR) TEST_BUILD_DIR=$(BUILD_DIR)/tests make $(shell basename "run-itest")
+
 #
 # remove
 #
