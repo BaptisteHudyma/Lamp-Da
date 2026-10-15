@@ -40,6 +40,7 @@ include_directories(
 # Create simulator targets dynamically
 create_simulator_target(indexable)
 create_simulator_target(simple)
+create_simulator_target(indexable-hd BASE indexable DEFINES LMBD_LAMP_TYPE__INDEXABLE_IS_HD)
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/simulation_parameters.txt

@@ -79,6 +79,8 @@ simple: build-simple
 
 indexable: build-indexable
 
+indexable-hd: build-indexable-hd
+
 simple2indexable: build-simple2indexable
 
 build-cct:
@@ -89,6 +91,9 @@ build-simple:
 
 build-indexable:
 	LMBD_LAMP_TYPE="indexable" make build
+
+build-indexable-hd:
+	LMBD_LAMP_TYPE="indexable" LMBD_EXTRA_FLAGS="-DLMBD_LAMP_TYPE__INDEXABLE_IS_HD" make build
 
 build-simple2indexable:
 	LMBD_LAMP_TYPE="indexable" LMBD_EXTRA_FLAGS="-DLMBD_SIMPLE_EMULATOR=1" make build
@@ -101,6 +106,9 @@ upload-simple:
 
 upload-indexable:
 	LMBD_LAMP_TYPE="indexable" make upload
+
+upload-indexable-hd:
+	LMBD_LAMP_TYPE="indexable" LMBD_EXTRA_FLAGS="-DLMBD_LAMP_TYPE__INDEXABLE_IS_HD"  make upload
 
 upload-simple2indexable:
 	LMBD_LAMP_TYPE="indexable" LMBD_EXTRA_FLAGS="-DLMBD_SIMPLE_EMULATOR=1" make upload
@@ -620,6 +628,9 @@ clean-simulator:
 		|| (echo 'No artifact found, build failed?'; rm -f '$<')
 
 simulator-indexable: link-hal-simulator generate-images indexable-simulator
+	@echo " --- ok: $@"
+
+simulator-indexable-hd: link-hal-simulator generate-images indexable-hd-simulator
 	@echo " --- ok: $@"
 
 simulator-simple: link-hal-simulator generate-images simple-simulator

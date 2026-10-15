@@ -101,11 +101,13 @@ jobs:
         python -m pip install -r requirements.txt &&
         make mr_proper arduino-cli-download safe-install && sudo apt install llvm clang -y
     - name: simple led strip build
-      run : make simple
+      run : make clean simple
     - name: cct led strip build
-      run : make cct
+      run : make clean cct
+    - name: indexable HD led strip build
+      run : make clean indexable-hd
     - name: indexable led strip build
-      run : make indexable
+      run : make clean indexable
  
   build-simulator:
     runs-on: ubuntu-latest
@@ -124,7 +126,9 @@ jobs:
          sudo apt install libsfml-dev -y &&
          sudo apt install libx11-dev libxrandr-dev libxcursor-dev libxi-dev libudev-dev libfreetype-dev libvorbis-dev libflac-dev libgl1-mesa-dev libopenal-dev libalut-dev -y &&
          python -m pip install -r requirements.txt
-    - name: build
-      run:
-        make simulator-indexable
-        make simulator-simple
+    - name: build indexable
+      run: make clean simulator-indexable
+    - name: build simple indexable-hd
+      run: make clean simulator-indexable-hd
+    - name: build simple simulator
+      run: make clean simulator-simple

@@ -88,6 +88,15 @@ cd LampColorControler
 make indexable
 ```
 
+If you are working on the `indexable-hd` variant of the lamp, you
+can use:
+
+```sh
+# build project assuming simple lamp type
+cd LampColorControler
+make indexable-hd
+```
+
 When changing lamp type or adding a new file to the sketch, use:
 
 ```sh
@@ -102,7 +111,7 @@ binaries, and to only rebuild what is necessary:
 ```sh
 # remove build artifacts & rebuild the project
 cd LampColorControler
-make clean-artifacts {simple,cct,indexable} # pick one
+make clean-artifacts {simple,cct,indexable,indexable-hd} # pick one
 ```
 
 ## Uploading to board
@@ -115,8 +124,8 @@ cd LampColorControler
 make upload-simple
 ```
 
-Note that `upload-{simple,cct,indexable}` checks that you have build the
-associated `{simple,cct,indexable}` recipe, and that you may get an error
+Note that `upload-{simple,cct,indexable,indexable-hd}` checks that you have build the
+associated `{simple,cct,indexable,indexable-hd}` recipe, and that you may get an error
 message if you are mixing up the different versions.
 
 You may need to configure the serial port of the board before uploading:
@@ -170,6 +179,13 @@ If you want simulate a view of an "indexable mode" animation and have the
 cd LampColorControler
 make simulator-indexable
 ./_build/simulator/indexable-simulator
+```
+
+The simulator also handles the simple and indexable-hd type :
+```sh
+make simulator-simple
+make simulator-indexable-hd
+
 ```
 
 This may build the SFML library if `SFML 3.0.1` is not available locally, and

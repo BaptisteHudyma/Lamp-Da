@@ -50,7 +50,7 @@ $(BUILD_DIR)/%-simulator: $(BUILD_DIR)/CMakeCache.txt
 %-simulator: check-dirs check-deps $(BUILD_DIR)/%-simulator
 	@echo " --- ok: $@$%"
 
-build: indexable-simulator simple-simulator
+build: indexable-simulator indexable-hd-simulator simple-simulator
 	@echo " --- ok: $@"
 
 verify-all: clean build

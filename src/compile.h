@@ -47,7 +47,11 @@
 // LMBD_LAMP_TYPE__CCT
 #ifdef LMBD_LAMP_TYPE__INDEXABLE
 
+#ifdef LMBD_LAMP_TYPE__INDEXABLE_IS_HD
+#warning Compiling INDEXABLE HD lamp type
+#else
 #warning Compiling INDEXABLE lamp type
+#endif
 
 #ifdef LMBD_LAMP_TYPE__SIMPLE
 #error "Cannot define SIMPLE if INDEXABLE is defined"
