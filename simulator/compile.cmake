@@ -125,17 +125,32 @@ set(SIMULATOR_STATE
     ${LMBD_ROOT_DIR}/simulator/src/simulator_state.cpp
 )
 
+
 # Simulator Targets
+#
+# create_simulator_target(<name> [BASE <lamp_type>] [DEFINES <def1> <def2> ...])
+#   <name>  : prefix of the target, produces the executable "<name>-simulator"
+#   BASE    : lamp type used for LMBD_LAMP_TYPE__<BASE> and src/user/<BASE>_functions.cpp
+#             (defaults to <name>)
+#   DEFINES : extra compile definitions for this variant
 function(create_simulator_target SIM_NAME)
-    string(TOUPPER "${SIM_NAME}" UPPER_SIM_NAME)
+    cmake_parse_arguments(SIM "" "BASE" "DEFINES" ${ARGN})
+
+    if(NOT SIM_BASE)
+        set(SIM_BASE ${SIM_NAME})
+    endif()
+    string(TOUPPER "${SIM_BASE}" UPPER_SIM_BASE)
 
     set(TARGET_NAME ${SIM_NAME}-simulator)
-    add_executable(${TARGET_NAME}
-        ${LMBD_ROOT_DIR}/simulator/src/${TARGET_NAME}.cpp
-    )
-    target_compile_definitions(${TARGET_NAME} PUBLIC LMBD_LAMP_TYPE__${UPPER_SIM_NAME})
+    set(LIB_NAME simulator_${SIM_NAME})
+    set(SIM_DEFINITIONS LMBD_LAMP_TYPE__${UPPER_SIM_BASE} ${SIM_DEFINES})
 
-    add_library(simulator_${SIM_NAME} OBJECT
+    add_executable(${TARGET_NAME}
+        ${LMBD_ROOT_DIR}/simulator/src/simulator.cpp
+    )
+    target_compile_definitions(${TARGET_NAME} PUBLIC ${SIM_DEFINITIONS})
+
+    add_library(${LIB_NAME} OBJECT
         ${SRC_SYSTEM_DEPENDS}
         ${SRC_SYSTEM_UTILS}
         ${SRC_SYSTEM_COMMON}
@@ -147,11 +162,11 @@ function(create_simulator_target SIM_NAME)
         ${SRC_SYSTEM_GLOBAL}
         ${SIMULATOR_HAL}
         ${SIMULATOR_STATE}
-        ${LMBD_ROOT_DIR}/src/user/${SIM_NAME}_functions.cpp
+        ${LMBD_ROOT_DIR}/src/user/${SIM_BASE}_functions.cpp
     )
-    target_compile_definitions(simulator_${SIM_NAME} PUBLIC LMBD_LAMP_TYPE__${UPPER_SIM_NAME})
+    target_compile_definitions(${LIB_NAME} PUBLIC ${SIM_DEFINITIONS})
 
-    target_link_libraries(simulator_${SIM_NAME}
+    target_link_libraries(${LIB_NAME}
         sfml-graphics
         sfml-window
         sfml-audio
@@ -160,8 +175,7 @@ function(create_simulator_target SIM_NAME)
     )
 
     target_link_libraries(${TARGET_NAME}
-        simulator_${SIM_NAME}
+        ${LIB_NAME}
         pthread
     )
-
 endfunction()

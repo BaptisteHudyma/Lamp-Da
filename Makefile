@@ -79,6 +79,8 @@ simple: build-simple
 
 indexable: build-indexable
 
+indexable-hd: build-indexable-hd
+
 simple2indexable: build-simple2indexable
 
 build-cct:
@@ -89,6 +91,9 @@ build-simple:
 
 build-indexable:
 	LMBD_LAMP_TYPE="indexable" make build
+
+build-indexable-hd:
+	LMBD_LAMP_TYPE="indexable" LMBD_EXTRA_FLAGS="-DLMBD_LAMP_TYPE__INDEXABLE_IS_HD" make build
 
 build-simple2indexable:
 	LMBD_LAMP_TYPE="indexable" LMBD_EXTRA_FLAGS="-DLMBD_SIMPLE_EMULATOR=1" make build
@@ -101,6 +106,9 @@ upload-simple:
 
 upload-indexable:
 	LMBD_LAMP_TYPE="indexable" make upload
+
+upload-indexable-hd:
+	LMBD_LAMP_TYPE="indexable" LMBD_EXTRA_FLAGS="-DLMBD_LAMP_TYPE__INDEXABLE_IS_HD"  make upload
 
 upload-simple2indexable:
 	LMBD_LAMP_TYPE="indexable" LMBD_EXTRA_FLAGS="-DLMBD_SIMPLE_EMULATOR=1" make upload
@@ -542,14 +550,24 @@ verify-all: format-verify
 	@echo; echo " --- $@"
 	# verify that tests be built
 	make clean test
-	# verify that simulator can be built
-	make clean simulator
+	
+	# verify that simulators can be built
+	make clean simulator-indexable
+	make clean simulator-indexable-hd
+	make clean simulator-simple
+
 	# verify that all lamp types build & validates
 	make clean 'verify-type(indexable)'
 	@touch $(BUILD_DIR)/.skip-simple-clean # (re-use indexable setup)
 	make 'verify-type(simple)'
 	@touch $(BUILD_DIR)/.skip-cct-clean # (re-use indexable setup)
 	make 'verify-type(cct)'
+	# verify indexable-hd (clean first: extra flags are baked into the process script)
+	@echo " --- verify-type(indexable-hd)"
+	@echo; echo Building with LMBD_LAMP_TYPE=indexable-hd to verify artifact...; echo
+	make clean
+	LMBD_LAMP_TYPE=indexable LMBD_EXTRA_FLAGS="-DLMBD_LAMP_TYPE__INDEXABLE_IS_HD" make build verify
+	
 	@echo; echo 'Everything went fine :)'
 
 
@@ -619,9 +637,29 @@ clean-simulator:
 		&& (echo 'Artifact is ready here:'; echo '$<'; echo) \
 		|| (echo 'No artifact found, build failed?'; rm -f '$<')
 
-simulator: link-hal-simulator generate-images indexable-simulator simple-simulator
+%-simulator-run: $(BUILD_DIR)/simulator/run-%-simulator
+	@echo " --- ok: $@"
+	@test -x '$(BUILD_DIR)/simulator/$*-simulator' \
+		&& (echo 'Artifact is ready here:'; echo '$(BUILD_DIR)/simulator/$*-simulator'; echo) \
+		|| (echo 'No artifact found, build failed?')
+
+simulator-indexable: link-hal-simulator generate-images indexable-simulator
 	@echo " --- ok: $@"
 
+simulator-indexable-hd: link-hal-simulator generate-images indexable-hd-simulator
+	@echo " --- ok: $@"
+
+simulator-simple: link-hal-simulator generate-images simple-simulator
+	@echo " --- ok: $@"
+
+run-simulator-indexable: link-hal-simulator generate-images indexable-simulator-run
+	@echo " --- ok: $@"
+
+run-simulator-indexable-hd: link-hal-simulator generate-images indexable-hd-simulator-run
+	@echo " --- ok: $@"
+
+run-simulator-simple: link-hal-simulator generate-images simple-simulator-run
+	@echo " --- ok: $@"
 
 clean-tests:
 	@echo; echo " --- $@"
@@ -634,6 +672,14 @@ test: link-hal-simulator generate-images
 	@mkdir -p $(BUILD_DIR)/tests
 	@cd $(SRC_DIR)/tests && \
 		LMBD_ROOT_DIR=$(SRC_DIR) TEST_BUILD_DIR=$(BUILD_DIR)/tests make $(shell basename "tests")
+
+run-utest:
+	@cd $(SRC_DIR)/tests && \
+	LMBD_ROOT_DIR=$(SRC_DIR) TEST_BUILD_DIR=$(BUILD_DIR)/tests make $(shell basename "run-utest")
+	
+run-itest:
+	@cd $(SRC_DIR)/tests && \
+	LMBD_ROOT_DIR=$(SRC_DIR) TEST_BUILD_DIR=$(BUILD_DIR)/tests make $(shell basename "run-itest")
 
 #
 # remove

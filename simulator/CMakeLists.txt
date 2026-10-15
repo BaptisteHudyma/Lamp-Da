@@ -23,6 +23,7 @@ add_compile_definitions(
     LMBD_SIMULATION
     LMBD_IN_SIMULATION
     LMBD_CPP17
+    LMBD_SIMULATOR_RESOURCES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/resources"
 )
 
 set(SIM_BUILD_FLAGS "-O3 -g -fdump-rtl-expand -fstack-usage -fsanitize=address -fno-omit-frame-pointer")
@@ -40,6 +41,7 @@ include_directories(
 # Create simulator targets dynamically
 create_simulator_target(indexable)
 create_simulator_target(simple)
+create_simulator_target(indexable-hd BASE indexable DEFINES LMBD_LAMP_TYPE__INDEXABLE_IS_HD)
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/simulation_parameters.txt
