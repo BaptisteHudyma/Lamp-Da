@@ -147,16 +147,16 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   }
 
   /// \private Set active favorite now
-  auto LMBD_INLINE set_favorite_now(uint8_t which_one = 0)
+  auto LMBD_INLINE set_favorite_at(uint8_t which_one, auto activeIndex)
   {
     if constexpr (LocalModeTy::isModeManager)
     {
-      return LocalModeTy::set_favorite_now(*this, which_one);
+      return LocalModeTy::set_favorite_at(*this, which_one, activeIndex);
     }
     else
     {
       auto manager = modeManager.get_context();
-      return manager.set_favorite_now(which_one);
+      return manager.set_favorite_at(which_one, activeIndex);
     }
   }
 
@@ -798,30 +798,33 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
   }
 
-  template<bool displayFavoriteNumber = true> auto LMBD_INLINE animate_favorite_pick(float holdDuration, float stepSize)
+  template<bool displayFavoriteNumber = true>
+  auto LMBD_INLINE animate_favorite_pick(float holdDuration, float stepSize, bool isEndOfHold)
   {
     if constexpr (LocalModeTy::isModeManager)
     {
-      return modeManager.template animate_favorite_pick<displayFavoriteNumber>(*this, holdDuration, stepSize);
+      return modeManager.template animate_favorite_pick<displayFavoriteNumber>(
+              *this, holdDuration, stepSize, isEndOfHold);
     }
     else
     {
       auto& manager = modeManager.get_context();
-      return manager.template animate_favorite_pick<displayFavoriteNumber>(holdDuration, stepSize);
+      return manager.template animate_favorite_pick<displayFavoriteNumber>(holdDuration, stepSize, isEndOfHold);
     }
   }
 
   template<bool displayFavoriteNumber = true>
-  auto LMBD_INLINE animate_favorite_delete(float holdDuration, float stepSize)
+  auto LMBD_INLINE animate_favorite_delete(float holdDuration, float stepSize, bool isEndOfHold)
   {
     if constexpr (LocalModeTy::isModeManager)
     {
-      return modeManager.template animate_favorite_delete<displayFavoriteNumber>(*this, holdDuration, stepSize);
+      return modeManager.template animate_favorite_delete<displayFavoriteNumber>(
+              *this, holdDuration, stepSize, isEndOfHold);
     }
     else
     {
       auto& manager = modeManager.get_context();
-      return manager.template animate_favorite_delete<displayFavoriteNumber>(holdDuration, stepSize);
+      return manager.template animate_favorite_delete<displayFavoriteNumber>(holdDuration, stepSize, isEndOfHold);
     }
   }
 
