@@ -619,9 +619,11 @@ clean-simulator:
 		&& (echo 'Artifact is ready here:'; echo '$<'; echo) \
 		|| (echo 'No artifact found, build failed?'; rm -f '$<')
 
-simulator: link-hal-simulator generate-images indexable-simulator simple-simulator
+simulator-indexable: link-hal-simulator generate-images indexable-simulator
 	@echo " --- ok: $@"
 
+simulator-simple: link-hal-simulator generate-images simple-simulator
+	@echo " --- ok: $@"
 
 clean-tests:
 	@echo; echo " --- $@"

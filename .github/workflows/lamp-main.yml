@@ -126,4 +126,5 @@ jobs:
          python -m pip install -r requirements.txt
     - name: build
       run:
-        make simulator
+        make simulator-indexable
+        make simulator-simple

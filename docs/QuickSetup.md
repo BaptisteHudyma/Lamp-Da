@@ -168,7 +168,7 @@ If you want simulate a view of an "indexable mode" animation and have the
 
 ```sh
 cd LampColorControler
-make simulator
+make simulator-indexable
 ./_build/simulator/indexable-simulator
 ```
 
