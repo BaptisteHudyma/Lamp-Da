@@ -23,6 +23,7 @@ add_compile_definitions(
     LMBD_SIMULATION
     LMBD_IN_SIMULATION
     LMBD_CPP17
+    LMBD_SIMULATOR_RESOURCES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/resources"
 )
 
 set(SIM_BUILD_FLAGS "-O3 -g -fdump-rtl-expand -fstack-usage -fsanitize=address -fno-omit-frame-pointer")

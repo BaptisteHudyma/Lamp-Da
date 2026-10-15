@@ -127,8 +127,8 @@ jobs:
          sudo apt install libx11-dev libxrandr-dev libxcursor-dev libxi-dev libudev-dev libfreetype-dev libvorbis-dev libflac-dev libgl1-mesa-dev libopenal-dev libalut-dev -y &&
          python -m pip install -r requirements.txt
     - name: build indexable
-      run: make clean simulator-indexable
-    - name: build simple indexable-hd
+      run: make clean simulator-indexable simulator
+    - name: build indexable-hd simulator
       run: make clean simulator-indexable-hd
     - name: build simple simulator
       run: make clean simulator-simple

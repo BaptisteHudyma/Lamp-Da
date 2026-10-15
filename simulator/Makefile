@@ -50,6 +50,15 @@ $(BUILD_DIR)/%-simulator: $(BUILD_DIR)/CMakeCache.txt
 %-simulator: check-dirs check-deps $(BUILD_DIR)/%-simulator
 	@echo " --- ok: $@$%"
 
+run-%-simulator: check-dirs check-deps $(BUILD_DIR)/%-simulator
+	@echo; echo " --- run: $*-simulator"
+	@test -x '$(BUILD_DIR)/$*-simulator' \
+		|| (echo; echo 'ERROR: $(BUILD_DIR)/$*-simulator was not built.' \
+			; echo 'Available simulators:' \
+			; ls $(BUILD_DIR)/*-simulator 2>/dev/null \
+			; false)
+	cd $(BUILD_DIR) && ./$*-simulator $(ARGS)
+
 build: indexable-simulator indexable-hd-simulator simple-simulator
 	@echo " --- ok: $@"
 

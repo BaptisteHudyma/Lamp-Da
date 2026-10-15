@@ -78,7 +78,7 @@ template<typename T> struct simulator
     sf::Font font;
     bool enableFont = false;
     bool enableText = false;
-    if (font.loadFromFile("simulator/resources/DejaVuSansMono.ttf"))
+    if (font.loadFromFile(LMBD_SIMULATOR_RESOURCES_DIR "/DejaVuSansMono.ttf"))
     {
       enableFont = true;
     }
