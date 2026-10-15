@@ -26,9 +26,12 @@ hal::gpio::DigitalPin interrupt2Pin(hal::gpio::DigitalPin::GPIO::Signal_ImuInter
 bool isInitialized = false;
 
 /// Transform imu coordinates to board coordinates
-const utils::TransformationMatrix imuToBoardTransformation(
-        utils::vec3d(imuToCircuitRotationX_rad, imuToCircuitRotationY_rad, imuToCircuitRotationZ_rad),
-        utils::vec3d(imuToCircuitPositionX_m, imuToCircuitPositionY_m, imuToCircuitPositionZ_m));
+const utils::TransformationMatrix imuToBoardTransformation(utils::vec3d(physical_constants::imuToCircuitRotationX_rad,
+                                                                        physical_constants::imuToCircuitRotationY_rad,
+                                                                        physical_constants::imuToCircuitRotationZ_rad),
+                                                           utils::vec3d(physical_constants::imuToCircuitPositionX_m,
+                                                                        physical_constants::imuToCircuitPositionY_m,
+                                                                        physical_constants::imuToCircuitPositionZ_m));
 
 /// Transform board coordinates to first pixel
 const utils::TransformationMatrix boardToFirstPixelTransformation(

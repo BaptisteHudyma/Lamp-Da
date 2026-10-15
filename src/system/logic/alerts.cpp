@@ -272,7 +272,8 @@ struct Alert_BatteryCritical : public AlertBase
     if (manager.is_raised(Type::BATTERY_MISSING) or manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
       return false;
 
-    return not chargerState.is_effectivly_charging() and __internal::get_battery_level() < batteryCritical;
+    return not chargerState.is_effectivly_charging() and
+           __internal::get_battery_level() < physical_constants::batteryCritical;
   }
 
   bool should_be_cleared() const override
@@ -327,7 +328,8 @@ struct Alert_BatteryLow : public AlertBase
       return false;
 
     const auto& batteryLevel = __internal::get_battery_level();
-    const bool isBatteryLow = not chargerState.is_effectivly_charging() and batteryLevel < batteryLow;
+    const bool isBatteryLow =
+            not chargerState.is_effectivly_charging() and batteryLevel < physical_constants::batteryLow;
     // battery low will be raise, notify bluetooth
     if (isBatteryLow)
       bsp::ble::notify_battery_level(static_cast<uint8_t>(batteryLevel / 100));
@@ -411,13 +413,13 @@ struct Alert_TempTooHigh : public AlertBase
   bool should_be_raised() const override
   {
     // raised above a threshold
-    return hal::registers::read_CPU_temperature_degreesC() >= maxSystemTemp_c;
+    return hal::registers::read_CPU_temperature_degreesC() >= physical_constants::maxSystemTemp_c;
   }
 
   bool should_be_cleared() const override
   {
     // cleared below a threshold
-    return hal::registers::read_CPU_temperature_degreesC() <= maxSystemTemp_c * 0.75;
+    return hal::registers::read_CPU_temperature_degreesC() <= physical_constants::maxSystemTemp_c * 0.75;
   }
 
   /// Execution will lower the max brightness of the output
@@ -450,7 +452,7 @@ struct Alert_TempCritical : public AlertBase
   bool should_be_raised() const override
   {
     // raised above a threshold
-    return hal::registers::read_CPU_temperature_degreesC() >= criticalSystemTemp_c;
+    return hal::registers::read_CPU_temperature_degreesC() >= physical_constants::criticalSystemTemp_c;
   }
 
   /// Shutdown fast

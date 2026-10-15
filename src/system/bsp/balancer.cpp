@@ -22,7 +22,7 @@ namespace balancer {
 constexpr uint16_t unbalancedMv = 3;
 
 //
-static_assert(HARDWARE_VERSION_MAJOR == 1 and batteryCount == 3,
+static_assert(HARDWARE_VERSION_MAJOR == 1 and physical_constants::batterySeriesCount == 3,
               "The 1.X hardware only supports 3 cells for balancing");
 
 bool Status::is_valid() const
@@ -47,8 +47,9 @@ bool isInitFirstFullScanDone = false;
 
 uint16_t get_battery_voltage_mv(const uint8_t index)
 {
-  static_assert(batteryCount >= 2 and batteryCount <= 5, "balancer can only handle 2 to 5 batteries");
-  if (index >= batteryCount)
+  static_assert(physical_constants::batterySeriesCount >= 2 and physical_constants::batterySeriesCount <= 5,
+                "balancer can only handle 2 to 5 batteries");
+  if (index >= physical_constants::batterySeriesCount)
     return 0;
 
   switch (index)
@@ -96,8 +97,9 @@ uint8_t compute_cell_balancing_max()
 // balancerRegisters.cbActiveCells.write();
 void set_balancing(uint8_t cellIndex, bool shouldBalance)
 {
-  static_assert(batteryCount >= 2 and batteryCount <= 5, "balancer can only handle 2 to 5 batteries");
-  if (cellIndex >= batteryCount)
+  static_assert(physical_constants::batterySeriesCount >= 2 and physical_constants::batterySeriesCount <= 5,
+                "balancer can only handle 2 to 5 batteries");
+  if (cellIndex >= physical_constants::batterySeriesCount)
     return;
 
   switch (cellIndex)
@@ -129,8 +131,9 @@ void set_balancing(uint8_t cellIndex, bool shouldBalance)
 // balancerRegisters.cbActiveCells.read_reg();
 bool is_balancing(uint8_t cellIndex)
 {
-  static_assert(batteryCount >= 2 and batteryCount <= 5, "balancer can only handle 2 to 5 batteries");
-  if (cellIndex >= batteryCount)
+  static_assert(physical_constants::batterySeriesCount >= 2 and physical_constants::batterySeriesCount <= 5,
+                "balancer can only handle 2 to 5 batteries");
+  if (cellIndex >= physical_constants::batterySeriesCount)
     return false;
 
   switch (cellIndex)
@@ -160,8 +163,8 @@ void balance_batteries()
     return;
 
   // min cell voltage
-  uint16_t batteryVoltageMin = maxSingularBatteryVoltage_mV;
-  for (uint8_t i = 0; i < batteryCount; i++)
+  uint16_t batteryVoltageMin = physical_constants::maxSingularBatteryVoltage_mV;
+  for (uint8_t i = 0; i < physical_constants::batterySeriesCount; i++)
   {
     // do not use invalid voltage as balancing reference
     if (is_cell_voltage_valid(status.batteryVoltages_mV[i]) and status.batteryVoltages_mV[i] < batteryVoltageMin)
@@ -175,7 +178,7 @@ void balance_batteries()
 
   // all cells too far above should be throttled down
   bool hasChanged = false;
-  for (uint8_t i = 0; i < batteryCount; i++)
+  for (uint8_t i = 0; i < physical_constants::batterySeriesCount; i++)
   {
     const bool isBalancing = is_balancing(i);
 
@@ -187,7 +190,7 @@ void balance_batteries()
       shouldBalance = false;
     }
     // battery is too high, and should be emptied a litte bit
-    else if (status.batteryVoltages_mV[i] >= maxLiionVoltage_mV)
+    else if (status.batteryVoltages_mV[i] >= physical_constants::maxLiionVoltage_mV)
     {
       shouldBalance = true;
     }
@@ -221,7 +224,7 @@ void balance_batteries()
 void disable_battery_balancing()
 {
   // turn off all balancing
-  for (uint8_t i = 0; i < batteryCount; i++)
+  for (uint8_t i = 0; i < physical_constants::batterySeriesCount; i++)
   {
     set_balancing(i, false);
   }
@@ -275,7 +278,7 @@ bool init()
 
   // set number of cells
   balancerRegisters.configurateVcell.read_reg();
-  balancerRegisters.configurateVcell.set_VCELL(batteryCount);
+  balancerRegisters.configurateVcell.set_VCELL(physical_constants::batterySeriesCount);
   balancerRegisters.configurateVcell.write();
 
   // exist config mode after startup
@@ -310,7 +313,7 @@ void loop()
 
     balancerRegisters.cbActiveCells.read_reg();
     // set battery voltages, and balancing status
-    for (uint8_t i = 0; i < batteryCount; ++i)
+    for (uint8_t i = 0; i < physical_constants::batterySeriesCount; ++i)
     {
       _status.batteryVoltages_mV[i] = get_battery_voltage_mv(i);
       _status.isBalancing[i] = is_balancing(i);

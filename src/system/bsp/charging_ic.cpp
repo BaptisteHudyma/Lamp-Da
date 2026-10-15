@@ -565,8 +565,15 @@ bool enable(const uint16_t minSystemVoltage_mV,
   success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
 
   chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
-  // set 6A inductor (TODO issue #131: change with system constants)
-  chargerIcRegisters.chargeOption3.set_IL_AVG(0b0);
+  // set from max physical characteristics
+  if (physical_constants::maxChargerCurrent_mA <= 6000)
+    chargerIcRegisters.chargeOption3.set_IL_AVG(0b00);
+  else if (physical_constants::maxChargerCurrent_mA <= 10000)
+    chargerIcRegisters.chargeOption3.set_IL_AVG(0b01);
+  else if (physical_constants::maxChargerCurrent_mA <= 15000)
+    chargerIcRegisters.chargeOption3.set_IL_AVG(0b10);
+  else
+    chargerIcRegisters.chargeOption3.set_IL_AVG(0b11);
   success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
   // disable charge
@@ -713,7 +720,15 @@ void shutdown()
 
 void set_input_current_limit(const uint16_t maxInputCurrent_mA, const bool shouldUseICO)
 {
-  powerLimits_s.current_mA = maxInputCurrent_mA;
+  // limit to hardware maximum
+  uint16_t maxInputCurrentAllowed_mA = maxInputCurrent_mA;
+  if (maxInputCurrentAllowed_mA > physical_constants::maxVbusWireCurrent_mA)
+    maxInputCurrentAllowed_mA = static_cast<uint16_t>(physical_constants::maxVbusWireCurrent_mA);
+  if (maxInputCurrentAllowed_mA > physical_constants::maxVbusGateCurrent_mA)
+    maxInputCurrentAllowed_mA = static_cast<uint16_t>(physical_constants::maxVbusGateCurrent_mA);
+
+  // limit by max input current
+  powerLimits_s.current_mA = maxInputCurrentAllowed_mA;
   powerLimits_s.shouldUseICO = shouldUseICO;
 }
 
@@ -770,7 +785,18 @@ void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA)
   const auto prevVal = chargerIcRegisters.oTGVoltage.get(isVoltageRangeLow);
 
   const auto realVal = chargerIcRegisters.oTGVoltage.set(voltage_mV, isVoltageRangeLow);
-  chargerIcRegisters.oTGCurrent.set(maxCurrent_mA);
+
+  uint16_t maxCurrentLimit_mA = maxCurrent_mA;
+  if (maxCurrentLimit_mA > physical_constants::maxVbusWireCurrent_mA)
+    maxCurrentLimit_mA = physical_constants::maxVbusWireCurrent_mA;
+  if (maxCurrentLimit_mA > physical_constants::maxVbusGateCurrent_mA)
+    maxCurrentLimit_mA = physical_constants::maxVbusGateCurrent_mA;
+  if (maxCurrentLimit_mA > physical_constants::maxOutputGateCurrent_mA)
+    maxCurrentLimit_mA = physical_constants::maxOutputGateCurrent_mA;
+
+  // check max battery current already checked as low level safety
+
+  chargerIcRegisters.oTGCurrent.set(maxCurrentLimit_mA);
 
   // if (realVal != prevVal)
   //   bsp::lampda_print("new OTG targets : %dmV %dmA", realVal, maxCurrent_mA);

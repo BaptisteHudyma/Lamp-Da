@@ -902,7 +902,7 @@ void power_loop()
     // remove flag when battery level is greater than zero
     const auto chargerState = ::lampda::component::charger::get_state();
     if (hal::time_ms() > startupFailTimeout_ms * 5 and chargerState.areMeasuresOk and
-        chargerState.batteryVoltage_mV > batteryMinVoltageSafe_mV)
+        chargerState.batteryVoltage_mV > physical_constants::batteryMinVoltageSafe_mV)
     {
       bsp::lampda_print("Cleared battery recovery mode");
       _isInBatteryRecoveryMode = false;

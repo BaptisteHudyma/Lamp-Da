@@ -205,7 +205,7 @@ static void cmd_bat(const common::cli::ParsedCommand&)
   if (areBalancerValueValid)
   {
     // print individual battery voltages
-    for (uint8_t i = 0; i < batteryCount; ++i)
+    for (uint8_t i = 0; i < physical_constants::batterySeriesCount; ++i)
       bsp::lampda_print("cell %d: %d mV, is balancing: %s",
                         i,
                         balancerStatus.batteryVoltages_mV[i],

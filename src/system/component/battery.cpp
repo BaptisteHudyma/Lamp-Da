@@ -55,8 +55,10 @@ bool check_charger_battery_voltage()
 uint16_t get_raw_battery_voltage_mv()
 {
   // absolute minimum/maximum battery pack voltage
-  static constexpr uint16_t minBatteryVoltage_mV = minSingularBatteryVoltage_mV * batteryCount;
-  static constexpr uint16_t maxBatteryVoltage_mV = maxSingularBatteryVoltage_mV * batteryCount;
+  static constexpr uint16_t minBatteryVoltage_mV =
+          physical_constants::minSingularBatteryVoltage_mV * physical_constants::batterySeriesCount;
+  static constexpr uint16_t maxBatteryVoltage_mV =
+          physical_constants::maxSingularBatteryVoltage_mV * physical_constants::batterySeriesCount;
 
   // WILL UPDATE s_batteryVoltage_mV VALUE if they return true, so order of the call matters.
   // The last call will old the true stack value, so prefer balancer that is a dedicated more precise component.
@@ -98,22 +100,22 @@ bool can_battery_be_charged() { return logic::alerts::manager.can_charge_battery
 
 uint16_t get_battery_minimum_cell_level()
 {
-  uint16_t minCellVoltage = maxSingularBatteryVoltage_mV;
+  uint16_t minCellVoltage = physical_constants::maxSingularBatteryVoltage_mV;
   const auto& balancerStatus = bsp::balancer::get_status();
   if (balancerStatus.is_valid())
   {
-    for (uint8_t i = 0; i < batteryCount; ++i)
+    for (uint8_t i = 0; i < physical_constants::batterySeriesCount; ++i)
     {
       const auto cellVoltage = balancerStatus.batteryVoltages_mV[i];
       // check voltage validity, than check if if in bounds
-      if (is_cell_voltage_valid(cellVoltage) and cellVoltage >= minSingularBatteryVoltage_mV and
+      if (is_cell_voltage_valid(cellVoltage) and cellVoltage >= physical_constants::minSingularBatteryVoltage_mV and
           cellVoltage < minCellVoltage)
         minCellVoltage = cellVoltage;
     }
   }
 
   // no min cell voltage, maybe balancer is disconnected
-  if (minCellVoltage == maxSingularBatteryVoltage_mV)
+  if (minCellVoltage == physical_constants::maxSingularBatteryVoltage_mV)
   {
     return get_battery_level();
   }
@@ -127,11 +129,11 @@ uint16_t get_battery_minimum_cell_level()
 
 uint16_t get_battery_maximum_cell_level()
 {
-  uint16_t maxCellVoltage = minSingularBatteryVoltage_mV;
+  uint16_t maxCellVoltage = physical_constants::minSingularBatteryVoltage_mV;
   const auto& balancerStatus = bsp::balancer::get_status();
   if (balancerStatus.is_valid())
   {
-    for (uint8_t i = 0; i < batteryCount; ++i)
+    for (uint8_t i = 0; i < physical_constants::batterySeriesCount; ++i)
     {
       const auto cellVoltage = balancerStatus.batteryVoltages_mV[i];
       // check voltage validity, than keep greatest voltage
@@ -141,7 +143,7 @@ uint16_t get_battery_maximum_cell_level()
   }
 
   // no min cell voltage, maybe balancer is disconected
-  if (maxCellVoltage == minSingularBatteryVoltage_mV)
+  if (maxCellVoltage == physical_constants::minSingularBatteryVoltage_mV)
   {
     return get_battery_level();
   }
