@@ -286,11 +286,25 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     static_assert(maxFavoriteCount < 16, "Maximum of 15 favorite as been exceeded");
 
     // (variables for pending favorite state machine)
-    uint8_t isFavoritePending = 0;           ///< indicate that the addition of a favorite in in process
-    uint8_t whichFavoritePending = 0;        ///< indicates the favorite currently selected
-    bool isInDeleteFavorite = false;         ///< indicates that we are in a favorite deletion process
-    uint8_t isFavoriteDeletePending = 0;     ///< indicate that the deletion of a favorite in in process
-    uint8_t lastFavoriteStep = 0;            ///< last used favorite index
+    bool isInDeleteFavorite = false; ///< indicates that we are in a favorite deletion process
+    uint8_t lastFavoriteStep = 0;    ///< last used favorite index
+
+    struct PendingFavorite
+    {
+      enum class FavoriteAction : uint8_t
+      {
+        None,
+        Add,
+        Delete
+      };
+
+      FavoriteAction action = FavoriteAction::None; ///< action on this favorite
+      uint8_t slot = 0;                             ///< index of the favorite to add/remove
+      ActiveIndexTy snapshot {};                    ///< current active index
+    };
+
+    PendingFavorite pendingFavorite; ///< store the pending favorite to add or delete
+
     bool isInFavoriteMockGroup = false;      ///< Indicates that we are in the fake favorite page
     ActiveIndexTy beforeFavoriteActiveIndex; ///< store the index we need to go to when quitting the favorite page
     uint8_t isSunsetTimingPending = 0;       ///< Indicates that a sunset timer ramp is active
@@ -316,10 +330,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       favorites = {};
       usedFavoriteCount = 0;
 
-      isFavoritePending = 0;
-      whichFavoritePending = 0;
+      pendingFavorite = {};
       isInDeleteFavorite = false;
-      isFavoriteDeletePending = 0;
+
       lastFavoriteStep = 0;
       isInFavoriteMockGroup = false;
       beforeFavoriteActiveIndex = ActiveIndexTy();
@@ -351,6 +364,19 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       {
         ctx.lamp.clear();
       }
+    }
+
+    static void LMBD_INLINE on_favorite_hold_end(auto& ctx, bool shouldExecuteAction)
+    {
+      auto& p = ctx.state.pendingFavorite;
+      if (shouldExecuteAction)
+      {
+        if (p.action == PendingFavorite::FavoriteAction::Add && p.slot <= ctx.state.usedFavoriteCount)
+          ctx.set_favorite_at(p.slot, p.snapshot); // store the press-time snapshot
+        else if (p.action == PendingFavorite::FavoriteAction::Delete)
+          ctx.delete_favorite_now();
+      }
+      p = {}; // single point of reset
     }
   };
 
@@ -550,9 +576,10 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
    * \brief Add a new favorite to the target index
    * \param[in, out] ctx Context
    * \param[in] which_one Index of the favorite to add
+   * \param[in] desiredFavorite Desired mode and values to add as a favorite
    * \return True if the process succeeded
    */
-  static bool set_favorite_now(auto& ctx, uint8_t which_one = 0)
+  static bool set_favorite_at(auto& ctx, uint8_t which_one, ActiveIndexTy desiredFavorite)
   {
     // new favorite added
     if (which_one != ctx.state.maxFavoriteCount && which_one == ctx.state.usedFavoriteCount)
@@ -563,7 +590,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
     if (which_one < ctx.state.maxFavoriteCount)
     {
-      ctx.state.favorites[which_one] = ctx.modeManager.activeIndex;
+      ctx.state.favorites[which_one] = desiredFavorite;
+
+      logic::alerts::manager.raise(logic::alerts::Type::FAVORITE_SET);
       return true;
     }
     return false;
@@ -841,32 +870,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   /// main action loop
   static void loop(auto& ctx)
   {
-    // handle pending favorite
-    if (ctx.state.isFavoritePending > 0)
-    {
-      ctx.state.isFavoritePending -= 1;
-
-      if (ctx.state.isFavoritePending == 0 && ctx.state.whichFavoritePending <= ctx.state.usedFavoriteCount)
-      {
-        if (ctx.set_favorite_now(ctx.state.whichFavoritePending))
-        {
-          logic::alerts::manager.raise(logic::alerts::Type::FAVORITE_SET);
-        }
-      }
-    }
-
-    // handle favorite delete
-    if (ctx.state.isFavoriteDeletePending > 0)
-    {
-      ctx.state.isFavoriteDeletePending -= 1;
-
-      // delete favorite
-      if (ctx.state.isFavoriteDeletePending == 0)
-      {
-        ctx.delete_favorite_now();
-      }
-    }
-
     // handle the sunset timer update
     if (ctx.state.isSunsetTimingPending > 0)
     {
@@ -1177,9 +1180,11 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
               ctx, favoriteIndex, numberOfFavoriteSet, favoriteIndex < numberOfFavoriteSet, displayTimeout_s);
     }
 
-    // set this, after a while upon no longer holding button, favorite is set
-    ctx.state.isFavoritePending = 10;
-    ctx.state.whichFavoritePending = favoriteIndex;
+    ctx.state.pendingFavorite.action = StateTy::PendingFavorite::FavoriteAction::Add;
+    ctx.state.pendingFavorite.slot = favoriteIndex;
+    ctx.state.pendingFavorite.snapshot = ctx.modeManager.activeIndex;
+
+    ctx.state.on_favorite_hold_end(ctx, true);
   }
 
   /** \private
@@ -1187,9 +1192,10 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
    * \param[in, out] ctx
    * \param[in] holdDuration User button hold duration
    * \param[in] stepSize Desired lenght of the animation, in milliseconds
+   * \param[in] isEndOfHold Indicate if the hold was just released
    */
   template<bool displayFavoriteNumber = true>
-  static void animate_favorite_pick(auto& ctx, float holdDuration, float stepSize)
+  static void animate_favorite_pick(auto& ctx, float holdDuration, float stepSize, bool isEndOfHold)
   {
     const uint8_t numberOfFavoriteSet = get_number_of_allowed_favorites(ctx);
 
@@ -1200,9 +1206,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     // display ramp to show where user is standing
     if (stepCount >= numberOfFavoriteSet)
     {
-      // cancel action
-      ctx.state.isFavoritePending = 0;
-
       // display ramp for the first time to allow the user to cancel the action
       if (holdDuration <= 2 * stepSize)
       {
@@ -1213,9 +1216,21 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     {
       // green ramp : favorites
       overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Green, colors::White>);
+      // display target favorite
+      if constexpr (displayFavoriteNumber)
+      {
+        display_favorite_number_ramp(ctx, stepCount, numberOfFavoriteSet, stepCount < numberOfFavoriteSet);
+      }
+    }
 
-      // Set the favorite: this actually do not set it immediatly but waits until the function is not called anymores
-      set_current_mode_as_favorite<displayFavoriteNumber>(ctx, stepCount);
+    // user lets go of the button: action on the favorite
+    if (isEndOfHold)
+    {
+      // favorite in correct range: add new favorite !
+      if (stepCount < numberOfFavoriteSet)
+        set_current_mode_as_favorite(ctx, stepCount);
+      else // cancel the new favorite: outside of range
+        ctx.state.on_favorite_hold_end(ctx, false);
     }
   }
 
@@ -1224,32 +1239,31 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
    * \param[in, out] ctx
    * \param[in] holdDuration User button hold duration
    * \param[in] stepSize Desired lenght of the animation, in milliseconds
+   * \param[in] isEndOfHold Indicates the end of the hold event
    */
   template<bool displayFavoriteNumber = true>
-  static void animate_favorite_delete(auto& ctx, float holdDuration, float stepSize)
+  static void animate_favorite_delete(auto& ctx, float holdDuration, float stepSize, bool isEndOfHold)
   {
     // no favorite deletion if no favorites
     if (ctx.state.usedFavoriteCount <= 0)
       return;
+    // end of hold,
+    if (isEndOfHold)
+    {
+      ctx.state.on_favorite_hold_end(ctx, false);
+      return;
+    }
 
     ctx.state.isInDeleteFavorite = true;
 
     uint32_t stepCount = floor(holdDuration / stepSize);
     stepCount = stepCount % 2;
 
+    // detect the state switch
+    const bool justSwitched = stepCount != ctx.state.pendingFavorite.slot;
     if (stepCount == 0)
     {
-      if (overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Orange, colors::Red>))
-      {
-        // set this on ramp saturation. The favorite will be removed in 2 frames
-        ctx.state.isFavoriteDeletePending = 2;
-      }
-      else
-      {
-        // no deletion if release on ramp
-        ctx.state.isFavoriteDeletePending = 0;
-      }
-
+      overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Orange, colors::Red>);
       // extra display on the first pixels (count pixels to know fav no)
       if constexpr (displayFavoriteNumber)
       {
@@ -1257,7 +1271,19 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
         display_favorite_number_ramp(ctx, ctx.state.lastFavoriteStep, ctx.state.usedFavoriteCount, true);
       }
     }
-    // else: do nothing
+    else
+    {
+      /// we just saturated the ramp
+      if (justSwitched)
+      {
+        // delete now on ramp saturation. This
+        ctx.state.pendingFavorite.action = StateTy::PendingFavorite::FavoriteAction::Delete;
+        ctx.state.on_favorite_hold_end(ctx, true);
+      }
+    }
+
+    // update state pending LAST: it could have been resetted by favorite handle
+    ctx.state.pendingFavorite.slot = stepCount;
   }
 
   //

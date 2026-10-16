@@ -178,22 +178,20 @@ bool button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   {
     case 4: // 4 click+hold: configure favorite
       {
-        if (not isEndOfHoldEvent)
+        // lock to prevent addition of favorite from favorite & if we are deleting favorites
+        // the second case can happen when the user delete all favorites
+        if (not manager.state.isInFavoriteMockGroup && not manager.state.isInDeleteFavorite)
         {
-          // lock to prevent addition of favorite from favorite & if we are deleting favorites
-          // the second case can happen when the user delete all favorites
-          if (not manager.state.isInFavoriteMockGroup && not manager.state.isInDeleteFavorite)
-          {
-            // no new favorite in favorite
-            manager.animate_favorite_pick(holdDuration, 1500);
-          }
-          else
-          {
-            // remove current favorite
-            manager.animate_favorite_delete(holdDuration, 2000);
-          }
+          // no new favorite in favorite
+          manager.animate_favorite_pick(holdDuration, 1500, isEndOfHoldEvent);
         }
         else
+        {
+          // remove current favorite
+          manager.animate_favorite_delete(holdDuration, 2000, isEndOfHoldEvent);
+        }
+
+        if (isEndOfHoldEvent)
         {
           manager.state.isInDeleteFavorite = false;
         }
