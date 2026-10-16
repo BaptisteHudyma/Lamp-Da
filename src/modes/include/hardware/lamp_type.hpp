@@ -570,7 +570,8 @@ public:
     assert((skipCallbacks || !skipUpdateBrightness) && "implicit callback skip!");
 
     // invalid call, fallback to enforcing
-    if (newBrightness > ::lampda::brightness::absoluteMaximumBrightness)
+    if (newBrightness < ::lampda::brightness::absoluteMinimumBrightness ||
+        newBrightness > ::lampda::brightness::absoluteMaximumBrightness)
     {
       enforce_internal_brightness_limits();
       return;
@@ -605,7 +606,7 @@ public:
 #endif
       using curve_t = common::curves::LinearCurve<brightness_t, uint8_t>;
       static curve_t brightnessCurve = ::lampda::common::curves::make_linear_curve(
-              curve_t::point_t {0, minimumAllowedBrightness},
+              curve_t::point_t {::lampda::brightness::absoluteMinimumBrightness, minimumAllowedBrightness},
               curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255});
 
       /// @warning: this is actually heavy to run
@@ -628,7 +629,7 @@ public:
 
       using curve_t = common::curves::ExponentialCurve<brightness_t, uint16_t>;
       static curve_t brightnessCurve(
-              curve_t::point_t {0, stripInputMinVoltage_mV},
+              curve_t::point_t {::lampda::brightness::absoluteMinimumBrightness, stripInputMinVoltage_mV},
               curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, stripInputMaxVoltage_mV},
               1.0);
 
@@ -743,15 +744,20 @@ public:
       for (uint16_t i = 0; i < ledCount; ++i)
       {
         const uint32_t c = getPixelColor(i);
-        setPixelColor(i, colors::fade(c, 255 - fadeBy));
+        setPixelColor(i, colors::fade(c, UINT8_MAX - fadeBy));
       }
     }
     else
     {
-      uint8_t brightness = static_cast<uint8_t>(getBrightness() /
-                                                static_cast<float>(brightness::absoluteMaximumBrightness) * 255.0f);
+      uint8_t brightness = lmpd_map<uint8_t>(getBrightness(),
+                                             brightness::absoluteMinimumBrightness,
+                                             brightness::absoluteMaximumBrightness,
+                                             0,
+                                             UINT8_MAX);
       brightness = (brightness < fadeBy) ? 0 : brightness - fadeBy;
-      setBrightness(static_cast<brightness_t>(brightness / 255.0f * brightness::absoluteMaximumBrightness));
+
+      setBrightness(lmpd_map<brightness_t>(
+              brightness, 0, UINT8_MAX, brightness::absoluteMinimumBrightness, brightness::absoluteMaximumBrightness));
     }
   }
 

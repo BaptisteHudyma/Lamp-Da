@@ -492,12 +492,14 @@ static void cmd_brightness(const common::cli::ParsedCommand& command)
 {
   brightness_t brightness = 0;
   if (common::cli::argument::parse_uint16(command, 0, brightness) &&
+      brightness >= ::lampda::brightness::absoluteMinimumBrightness &&
       brightness <= ::lampda::brightness::absoluteMaximumBrightness)
   {
     lampda::user::handle_user_command(common::UserCommand::make_brightness_command(brightness));
     return;
   }
-  bsp::lampda_print("Invalid call: parameter should be in range <0-%u>",
+  bsp::lampda_print("Invalid call: parameter should be in range <%u-%u>",
+                    ::lampda::brightness::absoluteMinimumBrightness,
                     ::lampda::brightness::absoluteMaximumBrightness);
 }
 
@@ -843,7 +845,8 @@ constexpr Command _act_commands_s[] = {
 constexpr Command _set_commands_s[] = {
         make_command_args("h", "", 0, common::cli::ParsedCommand::maxArgumentCount, "This page", handles::cmd_set_help),
         make_command_args("brgt",
-                          "[0-1024]", // should be ::lampda::brightness::absoluteMaximumBrightness
+                          "[0-1024]", // should be [::lampda::brightness::absoluteMinimumBrightness;
+                                      // ::lampda::brightness::absoluteMaximumBrightness]
                           1,
                           1,
                           "Set the output brightness",

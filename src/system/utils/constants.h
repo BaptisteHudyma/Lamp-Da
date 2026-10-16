@@ -149,6 +149,10 @@ using brightness_t = uint16_t;
 namespace brightness {
 /// Maximum brightness value
 static constexpr brightness_t absoluteMaximumBrightness = 1024;
+static constexpr brightness_t absoluteMinimumBrightness = 0;
+
+static_assert(absoluteMinimumBrightness < absoluteMaximumBrightness);
+
 // min brightness is always zero
 } // namespace brightness
 
