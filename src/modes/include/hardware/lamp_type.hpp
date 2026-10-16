@@ -642,7 +642,7 @@ public:
 
     if constexpr (flavor == LampTypes::indexable)
     {
-      static constexpr brightness_t minBrightnessBeforeMask = ::lampda::brightness::absoluteMaximumBrightness * 0.25f;
+      static constexpr brightness_t minBrightnessBeforeMask = ::lampda::brightness::absoluteMaximumBrightness * 0.20f;
 
 #ifndef LMBD_LAMP_TYPE__INDEXABLE
       static constexpr uint8_t minimumAllowedBrightness = 5;
@@ -1025,17 +1025,11 @@ public:
    */
   template<uint8_t bufIdx = 0> void setColorsFromBuffer()
   {
-    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
     const BufferTy& buffer = getTempBuffer<bufIdx>();
-    if (config.skipFirstLedsForEffect)
+
+    for (uint16_t I = config.skipFirstLedsForEffect ? config.skipFirstLedsForAmount : 0; I < ledCount; I++)
     {
-      uint16_t Idx = config.skipFirstLedsForAmount;
-      uint16_t Sz = sizeof(strip._colors) - Idx * sizeof(uint32_t);
-      memcpy(&strip._colors[Idx], &buffer[Idx], Sz);
-    }
-    else
-    {
-      memcpy(strip._colors, buffer.data(), sizeof(strip._colors));
+      setPixelColor(I, buffer[I]);
     }
   }
 
@@ -1045,7 +1039,6 @@ public:
    */
   template<uint8_t dstBufIdx = 0, uint8_t srcBufIdx = 1> void setColorsFromMixedBuffers(float phase)
   {
-    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
     const BufferTy& dstBuf = getTempBuffer<dstBufIdx>();
     const BufferTy& srcBuf = getTempBuffer<srcBufIdx>();
 
@@ -1062,7 +1055,9 @@ public:
       COLOR dst;
       src.color = srcBuf[I];
       dst.color = dstBuf[I];
-      strip._colors[I].color = utils::get_gradient(src.color, dst.color, phase);
+
+      // use accessor
+      setPixelColor(I, utils::get_gradient(src.color, dst.color, phase));
     }
   }
 
@@ -1070,7 +1065,6 @@ public:
    */
   template<uint8_t bufIdx = 0> void setColorsFromBufferReversed(bool skipLastLine)
   {
-    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
     const BufferTy& buffer = getTempBuffer<bufIdx>();
 
     uint16_t start = 0;
@@ -1087,7 +1081,7 @@ public:
 
     for (uint16_t I = 0, J = start; I < end - start; ++I, ++J)
     {
-      strip._colors[J].color = buffer[end - start - I - 1];
+      setPixelColor(J, buffer[end - start - I - 1]);
     }
   }
 
@@ -1097,20 +1091,12 @@ public:
    */
   template<uint8_t bufIdx = 0, bool forceFullRead = false> void getColorsToBuffer()
   {
-    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
-
     BufferTy& buffer = getTempBuffer<bufIdx>();
-    if (!forceFullRead && config.skipFirstLedsForEffect)
+    for (uint16_t I = (!forceFullRead && config.skipFirstLedsForEffect) ? config.skipFirstLedsForAmount : 0;
+         I < ledCount;
+         I++)
     {
-      uint16_t Idx = config.skipFirstLedsForAmount;
-      uint16_t Sz = sizeof(strip._colors) - Idx * sizeof(uint32_t);
-
-      buffer.fill(0);
-      memcpy(&buffer[Idx], &strip._colors[Idx], Sz);
-    }
-    else
-    {
-      memcpy(buffer.data(), strip._colors, sizeof(strip._colors));
+      buffer[I] = getPixelColor(I);
     }
   }
 
