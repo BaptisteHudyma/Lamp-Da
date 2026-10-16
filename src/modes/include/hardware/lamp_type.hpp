@@ -337,6 +337,22 @@ public:
     }
   }
 
+  /** \private Internal check to check if a led should be masked
+   *
+   */
+  bool is_led_masked_by_step_mask(size_t index)
+  {
+    if (currentMaskStep == 0)
+      return false;
+
+    // make hexagons
+    if (currentMaskStep == 1)
+      return index % ((maxMaskStep + 1) - currentMaskStep) == 0;
+
+    // mask all leds exept every other ones
+    return (index % currentMaskStep != 0);
+  }
+
   //
   // public constants
   //
@@ -542,6 +558,33 @@ public:
    */
   bool LMBD_INLINE is_bliping() const { return component::outputPower::is_bliping(); }
 
+  /**
+   * \brief Set the value of the half step mask, from 0 to maxMaskStep
+   */
+  void LMBD_INLINE set_steps_mask(uint8_t newValue)
+  {
+    // only available for indexable
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      uint8_t* writeable_currentMaskStep = const_cast<uint8_t*>(&currentMaskStep);
+      if (newValue <= maxMaskStep)
+        *writeable_currentMaskStep = newValue;
+    }
+  }
+
+  /**
+   * \brief Diasble the step mask
+   */
+  void LMBD_INLINE cancel_step_mask()
+  {
+    // only available for indexable
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      uint8_t* writeable_currentMaskStep = const_cast<uint8_t*>(&currentMaskStep);
+      *writeable_currentMaskStep = 0;
+    }
+  }
+
   /** \brief Set brightness of the lamp
    *
    * Several behaviors:
@@ -599,6 +642,8 @@ public:
 
     if constexpr (flavor == LampTypes::indexable)
     {
+      static constexpr brightness_t minBrightnessBeforeMask = ::lampda::brightness::absoluteMaximumBrightness * 0.25f;
+
 #ifndef LMBD_LAMP_TYPE__INDEXABLE
       static constexpr uint8_t minimumAllowedBrightness = 5;
 #else
@@ -606,11 +651,24 @@ public:
 #endif
       using curve_t = common::curves::LinearCurve<brightness_t, uint8_t>;
       static curve_t brightnessCurve = ::lampda::common::curves::make_linear_curve(
-              curve_t::point_t {::lampda::brightness::absoluteMinimumBrightness, minimumAllowedBrightness},
+              curve_t::point_t {minBrightnessBeforeMask, minimumAllowedBrightness},
               curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255});
 
-      /// @warning: this is actually heavy to run
-      strip.setBrightness(brightnessCurve.sample(trueNewBrightness));
+      // apply led masking below a threshold
+      if (trueNewBrightness <= minBrightnessBeforeMask)
+      {
+        const uint8_t index = lmpd_map<uint8_t>(trueNewBrightness, 0, minBrightnessBeforeMask, maxMaskStep, 1);
+        set_steps_mask(index);
+        strip.setBrightness(minimumAllowedBrightness);
+      }
+      else
+      {
+        // cancel the step masking
+        cancel_step_mask();
+
+        /// @warning: this is actually heavy to run
+        strip.setBrightness(brightnessCurve.sample(trueNewBrightness));
+      }
     }
 
     if constexpr (flavor == LampTypes::simple)
@@ -872,8 +930,11 @@ public:
 
       assert(n < ledCount && "invalid LED index");
 
-      // mask pixels or aplly correct color
-      strip.setPixelColor(n, (forceSet or ledMask[n]) ? color : 0);
+      // step masking is enabled for this led
+      const bool isLedMasked = is_led_masked_by_step_mask(n);
+
+      // mask pixels or apply correct color
+      strip.setPixelColor(n, (not isLedMasked and (forceSet or ledMask[n])) ? color : 0);
     }
     else
     {
@@ -1089,6 +1150,13 @@ public:
    * may cause stutters or visible slowdowns during loads.
    */
   volatile const uint32_t raw_frame_count;
+
+  /**
+   * \brief If true, only a proportion of the leds will be available to control
+   * If 1, all leds are available, goes up to maxMaskStep
+   */
+  volatile const uint8_t currentMaskStep = 0;
+  static constexpr uint8_t maxMaskStep = 7;
 };
 
 } // namespace lampda::modes::hardware

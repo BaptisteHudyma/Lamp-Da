@@ -395,6 +395,15 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
                                          const bool isEndOfHoldEvent,
                                          const uint32_t buttonHoldDuration)
 {
+  const bool hasUserHandledAction =
+          user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
+  // the user handled an action and requested a skip
+  if (hasUserHandledAction)
+  {
+    // system is already on, no need to continue
+    return;
+  }
+
   // basic "default" UI:
   //
   switch (consecutiveButtonCheck)
@@ -404,18 +413,12 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
     case 2:
       {
         __private::handle_brightness_change(consecutiveButtonCheck, buttonHoldDuration, isEndOfHoldEvent);
+        return;
       }
       // let event pass through to user for special case handling
 
     // other behaviors
     default:
-      const bool hasUserHandledAction =
-              user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
-      if (hasUserHandledAction)
-      {
-        // system is already on, no need to continue
-        return;
-      }
       break;
   }
 }
