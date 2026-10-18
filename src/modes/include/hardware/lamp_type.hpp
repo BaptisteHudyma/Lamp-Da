@@ -342,15 +342,10 @@ public:
    */
   bool is_led_masked_by_step_mask(size_t index)
   {
-    if (currentMaskStep == 0)
+    if (currentMaskStep == 0 or currentMaskStep > maxMaskStep)
       return false;
 
-    // make hexagons
-    if (currentMaskStep == 1)
-      return index % ((maxMaskStep + 1) - currentMaskStep) == 0;
-
-    // mask all leds exept every other ones
-    return (index % currentMaskStep != 0);
+    return index % stepMaskIncrement != 0;
   }
 
   //
@@ -568,7 +563,12 @@ public:
     {
       uint8_t* writeable_currentMaskStep = const_cast<uint8_t*>(&currentMaskStep);
       if (newValue <= maxMaskStep)
+      {
         *writeable_currentMaskStep = newValue;
+
+        const float a = 137.5f / 7.0f * newValue;
+        stepMaskIncrement = round(a / 360.0f * _fwidth);
+      }
     }
   }
 
@@ -582,6 +582,7 @@ public:
     {
       uint8_t* writeable_currentMaskStep = const_cast<uint8_t*>(&currentMaskStep);
       *writeable_currentMaskStep = 0;
+      stepMaskIncrement = 0;
     }
   }
 
@@ -642,7 +643,7 @@ public:
 
     if constexpr (flavor == LampTypes::indexable)
     {
-      static constexpr brightness_t minBrightnessBeforeMask = ::lampda::brightness::absoluteMaximumBrightness * 0.20f;
+      static constexpr brightness_t minBrightnessBeforeMask = ::lampda::brightness::absoluteMaximumBrightness * 0.25f;
 
 #ifndef LMBD_LAMP_TYPE__INDEXABLE
       static constexpr uint8_t minimumAllowedBrightness = 5;
@@ -1142,7 +1143,8 @@ public:
    * If 1, all leds are available, goes up to maxMaskStep
    */
   volatile const uint8_t currentMaskStep = 0;
-  static constexpr uint8_t maxMaskStep = 7;
+  uint8_t stepMaskIncrement; ///< increment set to ease the compoutation of the mask
+  static constexpr uint8_t maxMaskStep = 5;
 };
 
 } // namespace lampda::modes::hardware
