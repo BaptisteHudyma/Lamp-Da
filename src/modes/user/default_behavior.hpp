@@ -80,22 +80,6 @@ void brightness_update(const brightness_t brightness)
   }
 }
 
-void sunset_timer_update(const float progress)
-{
-  auto manager = get_context();
-
-  // callbacks
-  manager.sunset_update(progress);
-}
-
-void sunrise_timer_update(const float progress)
-{
-  auto manager = get_context();
-
-  // callbacks
-  manager.sunrise_update(progress);
-}
-
 void write_parameters()
 {
   auto manager = get_context();
@@ -578,6 +562,33 @@ bool handle_user_command(const common::UserCommand& command)
           __private::handle_sunrise_to_time_command(time);
         else
           bsp::lampda_print("Failed to parse set_sunrise_time command");
+        return true;
+      }
+
+    case common::UserCommand::Type::SignalSunsetProgress:
+      {
+        float progress;
+        if (command.parse_signal_sunset_progress_command(progress))
+          get_context().sunset_update(progress);
+        else
+          bsp::lampda_print("Failed to parse signal_sunset_progress command");
+        return true;
+      }
+    case common::UserCommand::Type::SignalSunriseProgress:
+      {
+        float progress;
+        if (command.parse_signal_sunrise_progress_command(progress))
+          get_context().sunrise_update(progress);
+        else
+          bsp::lampda_print("Failed to parse signal_sunrise_progress command");
+        return true;
+      }
+    case common::UserCommand::Type::SignalSuntimerCancel:
+      {
+        if (command.parse_signal_suntimer_cancel_command())
+          get_context().lamp.forceDisableLedMask = false;
+        else
+          bsp::lampda_print("Failed to parse signal_suntimer_cancel command");
         return true;
       }
 

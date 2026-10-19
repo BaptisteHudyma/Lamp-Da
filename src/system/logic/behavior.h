@@ -73,12 +73,6 @@ uint32_t get_bluetooth_auto_activation_left();
 
 } // namespace internal
 
-namespace timers {
-/// signal to behavior the advance of the sunset timer
-void sunset_progress_update(const float progress);
-void sunrise_progress_update(const float progress);
-} // namespace timers
-
 } // namespace behavior
 } // namespace logic
 } // namespace lampda

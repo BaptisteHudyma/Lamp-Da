@@ -35,6 +35,9 @@ public:
     SetBleMode,            ///< switch to a target BLE mode
     GoToFavoriteIndex,     ///< Go to the target favorite index
     SetFavoriteIndex,      ///< Set the current mode to the target favorite index
+    SignalSunsetProgress,  ///< Signal a sunset update event
+    SignalSunriseProgress, ///< Signal a sunrise update event
+    SignalSuntimerCancel,  ///< Signal that a suntimer was canceled
   };
   static constexpr uint8_t maxDataSize = 8;
 
@@ -121,6 +124,26 @@ public:
   static UserCommand make_set_favorite_command(const uint8_t index);
 
   /**
+   * \brief Set this commant to signal a sunset update
+   * \param[in] progress
+   * \return The correct user command
+   */
+  static UserCommand make_signal_sunset_progress_command(const float progress);
+
+  /**
+   * \brief Set this commant to signal a sunrise update
+   * \param[in] progress
+   * \return The correct user command
+   */
+  static UserCommand make_signal_sunrise_progress_command(const float progress);
+
+  /**
+   * \brief Set this commant to signal a suntimer cancel event
+   * \return The correct user command
+   */
+  static UserCommand make_signal_suntimer_cancel_command();
+
+  /**
    *
    * Parsing functions
    *
@@ -203,6 +226,26 @@ public:
    * \return True if the current message is valid, and parameter is set
    */
   bool parse_set_favorite_command(uint8_t& index) const;
+
+  /**
+   * \brief Parse the current command for a sunset update signal
+   * \param[out] progress
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_signal_sunset_progress_command(float& progress) const;
+
+  /**
+   * \brief Parse the current command for a sunrise update signal
+   * \param[out] progress
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_signal_sunrise_progress_command(float& progress) const;
+
+  /**
+   * \brief Parse the current command for a suntimer cancel signal
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_signal_suntimer_cancel_command() const;
 
 protected:
   /// Protected constructor to prevent unallowed uses

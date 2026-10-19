@@ -283,5 +283,35 @@ TEST_F(UserCommandTest, SetFavoriteIndexCommand)
   EXPECT_EQ(parsed_fav, favoriteGroup);
 }
 
+TEST_F(UserCommandTest, SignalSunsetProgressCommand)
+{
+  float value = 0.57889254f;
+  auto cmd = UserCommand::make_signal_sunset_progress_command(value);
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::SignalSunsetProgress);
+
+  float parsed = 0;
+  EXPECT_TRUE(cmd.parse_signal_sunset_progress_command(parsed));
+  EXPECT_EQ(parsed, value);
+}
+
+TEST_F(UserCommandTest, SignalSunriseProgressCommand)
+{
+  float value = 0.57889254f;
+  auto cmd = UserCommand::make_signal_sunrise_progress_command(value);
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::SignalSunriseProgress);
+
+  float parsed = 0;
+  EXPECT_TRUE(cmd.parse_signal_sunrise_progress_command(parsed));
+  EXPECT_EQ(parsed, value);
+}
+
+TEST_F(UserCommandTest, SignalSuntimerCancelCommand)
+{
+  auto cmd = UserCommand::make_signal_suntimer_cancel_command();
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::SignalSuntimerCancel);
+
+  EXPECT_TRUE(cmd.parse_signal_suntimer_cancel_command());
+}
+
 } // namespace common
 } // namespace lampda
