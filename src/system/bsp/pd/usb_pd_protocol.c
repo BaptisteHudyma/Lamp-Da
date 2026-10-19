@@ -2682,10 +2682,10 @@ typec_current_t usb_get_typec_current_limit(enum tcpc_cc_polarity polarity,
     charge = 0;
 #endif
 
-/** TODO: handle this RP state
-  if (cc_is_rp(cc_alt))
-    charge |= TYPEC_CURRENT_DTS_MASK;
-*/
+  /** TODO: handle this RP state
+    if (cc_is_rp(cc_alt))
+      charge |= TYPEC_CURRENT_DTS_MASK;
+  */
   return charge;
 }
 

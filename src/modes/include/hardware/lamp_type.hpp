@@ -1106,9 +1106,13 @@ public:
   template<uint8_t bufIdx = 0, bool forceFullRead = false> void getColorsToBuffer()
   {
     BufferTy& buffer = getTempBuffer<bufIdx>();
-    for (uint16_t I = (!forceFullRead && config.skipFirstLedsForEffect) ? config.skipFirstLedsForAmount : 0;
-         I < ledCount;
-         I++)
+
+    const uint16_t startI = (!forceFullRead && config.skipFirstLedsForEffect) ? config.skipFirstLedsForAmount : 0;
+
+    for (uint16_t I = 0; I < startI; I++)
+      buffer[I] = 0;
+
+    for (uint16_t I = startI; I < ledCount; I++)
     {
       buffer[I] = getPixelColor(I);
     }
