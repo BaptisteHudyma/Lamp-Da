@@ -932,12 +932,14 @@ public:
   /** \brief (indexable) Set the n-th LED color
    *
    * See modes::fromRGB() to set \p color
+   * \param[in] forceSet Force set the pixel color, ignoring all check and masks rules
    */
   void LMBD_INLINE setPixelColor(uint16_t n, uint32_t color, const bool forceSet = false)
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      if (config.skipFirstLedsForEffect && n < config.skipFirstLedsForAmount)
+      const bool willSkipLeds = config.skipFirstLedsForEffect and n < config.skipFirstLedsForAmount;
+      if ((not forceSet) and willSkipLeds)
       {
         return;
       }
@@ -948,7 +950,7 @@ public:
       const bool isLedMasked = is_led_masked_by_step_mask(n);
 
       // mask pixels or apply correct color
-      strip.setPixelColor(n, (not isLedMasked and (forceSet or ledMask[n])) ? color : 0);
+      strip.setPixelColor(n, (forceSet or (not isLedMasked and ledMask[n])) ? color : 0);
     }
     else
     {
