@@ -61,16 +61,14 @@ public:
   {
     assert(activeUiElements < UIElementSize);
 
-    // restore first led skip to be able to draw
-    ctx.skipFirstLedsForFrames(0);
-
     if (activeUiElements == 0)
       return;
 
     // clear overlay area first
     for (uint8_t i = 0; i < ctx.lamp.maxWidth * nbBlackLines; ++i)
     {
-      ctx.lamp.setPixelColor(i, 0);
+      // force set, ignoring all masks and rules
+      ctx.lamp.setPixelColor(i, 0, true);
     }
 
     // keep track of the last active element index
@@ -102,8 +100,16 @@ public:
       }
     }
 
-    // relock the display capabilities for the remaining time
-    ctx.skipFirstLedsForFrames(ctx.lamp.maxWidth * nbBlackLines, freezeSize);
+    if (activeUiElements == 0)
+    {
+      // reenable the animations
+      ctx.skipFirstLedsForFrames(0, 0);
+    }
+    else
+    {
+      // relock the display capabilities for the remaining time
+      ctx.skipFirstLedsForFrames(ctx.lamp.maxWidth * nbBlackLines, freezeSize);
+    }
   }
 
   /// Clear all UI elements
@@ -284,6 +290,12 @@ protected:
     return false;
   }
 
+  void draw_pixel_xy_wrapper(auto& ctx, uint16_t X, uint16_t Y, uint32_t color) const
+  {
+    // always call force set in overlay
+    ctx.lamp.setPixelColorXY(X, Y, color, true);
+  }
+
   void drawElement(const __private::UIElement& e, auto& ctx) const
   {
     switch (e.type)
@@ -317,7 +329,7 @@ protected:
     for (uint16_t i = 0; i < rampScale; ++i)
     {
       const auto color = modes::colors::from_palette<false>(lmpd_map<uint8_t>(i, 0, rampScale, 0, 255), palette);
-      ctx.lamp.setPixelColorXY(i, startCoordinateY, color);
+      draw_pixel_xy_wrapper(ctx, i, startCoordinateY, color);
     }
   }
 
@@ -329,7 +341,7 @@ protected:
                    const uint16_t coordinateY) const
   {
     const auto color = modes::colors::from_palette<false>(progress, palette);
-    ctx.lamp.setPixelColorXY(coordinateX, coordinateY, color);
+    draw_pixel_xy_wrapper(ctx, coordinateX, coordinateY, color);
   }
 
 private:
