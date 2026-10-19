@@ -347,7 +347,7 @@ public:
   bool is_led_masked_by_step_mask(size_t index)
   {
     // radius 25 mm, pitch = strip width 5 mm, spacing = 1000 / LED-per-metre
-    static constexpr helixmask::Geometry kStrip {lampBodyRadius_mm, ledStripWidth_mm, ledSize_mm};
+    static constexpr helixmask::Geometry kStrip {lampBodyRadius_mm, ledStripWidth_mm, ledSize_mm, ledCount};
     static constexpr helixmask::StepTable kTable =
             helixmask::make_step_table(kStrip, helixMaskParameters); // evaluated at compile time
 

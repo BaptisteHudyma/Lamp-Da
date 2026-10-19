@@ -213,6 +213,8 @@ bool button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
           isBrightnessLocked = false;
           lockFirstCall = 0;
           latestBrightness = newBrightness;
+          // release event shall always allow control
+          shouldPreventBrightnessUpdate = false;
         }
         // rising up: block next downward
         if (not isGoingDown)

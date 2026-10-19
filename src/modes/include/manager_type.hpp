@@ -985,6 +985,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     foreach_group<true>(ctx, [](auto group) {
       group.power_off_sequence();
     });
+
+    ctx.lamp.forceDisableLedMask = false;
   }
 
   /// Write the parameters to memory
