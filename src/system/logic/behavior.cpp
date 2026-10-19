@@ -563,7 +563,9 @@ void handle_pre_output_light_state()
 
   logic::power::go_to_output_mode();
 
-  // update brightness with saved brightness
+  // update brightness with saved brightness, only when the system was not enabled by sunrise
+  if (not logic::sunrise_timer.is_enabled())
+    logic::brightness::set_max_user_brightness(logic::brightness::get_max_brightness());
   logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
 
   // let the user power on the system
