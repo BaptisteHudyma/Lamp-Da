@@ -696,6 +696,12 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   {
     if constexpr (LocalModeTy::hasSunsetAnimation)
     {
+      if constexpr (isMode)
+      {
+        // custom animation disables the lamp mask
+        modeManager.get_context().lamp.forceDisableLedMask = true;
+      }
+
       LocalModeTy::sunset_update(*this, progress);
     }
   }
@@ -705,6 +711,12 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   {
     if constexpr (LocalModeTy::hasSunriseAnimation)
     {
+      if constexpr (isMode)
+      {
+        // custom animation disables the lamp mask
+        modeManager.get_context().lamp.forceDisableLedMask = true;
+      }
+
       LocalModeTy::sunrise_update(*this, progress);
     }
   }

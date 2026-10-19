@@ -40,6 +40,8 @@
 #include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/colors/palettes.hpp"
 
+#include "src/modes/include/draw/helix_mask.hpp"
+
 namespace lampda::modes {
 
 struct XYTy
@@ -337,15 +339,22 @@ public:
     }
   }
 
+  static constexpr helixmask::Params helixMaskParameters = {};
+
   /** \private Internal check to check if a led should be masked
    *
    */
   bool is_led_masked_by_step_mask(size_t index)
   {
-    if (currentMaskStep == 0 or currentMaskStep > maxMaskStep)
+    // radius 25 mm, pitch = strip width 5 mm, spacing = 1000 / LED-per-metre
+    static constexpr helixmask::Geometry kStrip {lampBodyRadius_mm, ledStripWidth_mm, ledSize_mm};
+    static constexpr helixmask::StepTable kTable =
+            helixmask::make_step_table(kStrip, helixMaskParameters); // evaluated at compile time
+
+    if (forceDisableLedMask or currentMaskStep == 0 or currentMaskStep > maxMaskStep)
       return false;
 
-    return index % stepMaskIncrement != 0;
+    return !helixmask::led_on(kTable, index, currentMaskStep);
   }
 
   //
@@ -565,9 +574,6 @@ public:
       if (newValue <= maxMaskStep)
       {
         *writeable_currentMaskStep = newValue;
-
-        const float a = 137.5f / 7.0f * newValue;
-        stepMaskIncrement = round(a / 360.0f * _fwidth);
       }
     }
   }
@@ -582,7 +588,6 @@ public:
     {
       uint8_t* writeable_currentMaskStep = const_cast<uint8_t*>(&currentMaskStep);
       *writeable_currentMaskStep = 0;
-      stepMaskIncrement = 0;
     }
   }
 
@@ -643,8 +648,6 @@ public:
 
     if constexpr (flavor == LampTypes::indexable)
     {
-      static constexpr brightness_t minBrightnessBeforeMask = ::lampda::brightness::absoluteMaximumBrightness * 0.25f;
-
 #ifndef LMBD_LAMP_TYPE__INDEXABLE
       static constexpr uint8_t minimumAllowedBrightness = 5;
 #else
@@ -652,17 +655,27 @@ public:
 #endif
       using curve_t = common::curves::LinearCurve<brightness_t, uint8_t>;
       static curve_t brightnessCurve = ::lampda::common::curves::make_linear_curve(
-              curve_t::point_t {minBrightnessBeforeMask, minimumAllowedBrightness},
+              curve_t::point_t {ledMasking_brightnessThreshold, minimumAllowedBrightness},
               curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255});
 
+      bool applyStandardBrightnessUpdate = true;
       // apply led masking below a threshold
-      if (trueNewBrightness <= minBrightnessBeforeMask)
+      if (trueNewBrightness < ledMasking_brightnessThreshold)
       {
-        const uint8_t index = lmpd_map<uint8_t>(trueNewBrightness, 0, minBrightnessBeforeMask, maxMaskStep, 1);
-        set_steps_mask(index);
-        strip.setBrightness(minimumAllowedBrightness);
+        applyStandardBrightnessUpdate = false;
+        const uint8_t index = lmpd_map<uint8_t>(trueNewBrightness, 0, ledMasking_brightnessThreshold, maxMaskStep, 0);
+        if (index <= 0)
+        {
+          applyStandardBrightnessUpdate = true;
+        }
+        else
+        {
+          set_steps_mask(index);
+          strip.setBrightness(minimumAllowedBrightness);
+        }
       }
-      else
+
+      if (applyStandardBrightnessUpdate)
       {
         // cancel the step masking
         cancel_step_mask();
@@ -1143,8 +1156,11 @@ public:
    * If 1, all leds are available, goes up to maxMaskStep
    */
   volatile const uint8_t currentMaskStep = 0;
-  uint8_t stepMaskIncrement; ///< increment set to ease the compoutation of the mask
-  static constexpr uint8_t maxMaskStep = 5;
+  volatile bool forceDisableLedMask = false; ///< set to true to lock led mask brightness control
+  static constexpr uint8_t maxMaskStep = helixMaskParameters.max_level;
+  static constexpr brightness_t ledMasking_brightnessThreshold =
+          ::lampda::brightness::absoluteMaximumBrightness *
+          0.25f; ///< below this, the system will enable the led masking
 };
 
 } // namespace lampda::modes::hardware
