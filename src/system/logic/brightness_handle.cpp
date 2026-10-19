@@ -66,7 +66,8 @@ brightness_t get_saved_brightness() { return __internal.savedBrightness; }
 void update_brightness(const brightness_t newBrightness, const bool shouldSkipUserCallbacks)
 {
   // set to the user max limit (limit can be changed by system)
-  const brightness_t trueNewBrightness = min<brightness_t>(newBrightness, get_max_brightness());
+  const brightness_t trueNewBrightness = lmpd_constrain<brightness_t>(
+          newBrightness, ::lampda::brightness::absoluteMinimumBrightness, get_max_brightness());
 
   if (__internal.BRIGHTNESS != trueNewBrightness)
   {

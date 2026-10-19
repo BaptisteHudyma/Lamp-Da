@@ -40,6 +40,8 @@
 #include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/colors/palettes.hpp"
 
+#include "src/modes/include/draw/helix_mask.hpp"
+
 namespace lampda::modes {
 
 struct XYTy
@@ -337,6 +339,24 @@ public:
     }
   }
 
+  static constexpr helixmask::Params helixMaskParameters = {};
+
+  /** \private Internal check to check if a led should be masked
+   *
+   */
+  bool is_led_masked_by_step_mask(size_t index)
+  {
+    // radius 25 mm, pitch = strip width 5 mm, spacing = 1000 / LED-per-metre
+    static constexpr helixmask::Geometry kStrip {lampBodyRadius_mm, ledStripWidth_mm, ledSize_mm, ledCount};
+    static constexpr helixmask::StepTable kTable =
+            helixmask::make_step_table(kStrip, helixMaskParameters); // evaluated at compile time
+
+    if (forceDisableLedMask or currentMaskStep == 0 or currentMaskStep > maxMaskStep)
+      return false;
+
+    return !helixmask::led_on(kTable, index, currentMaskStep);
+  }
+
   //
   // public constants
   //
@@ -542,6 +562,35 @@ public:
    */
   bool LMBD_INLINE is_bliping() const { return component::outputPower::is_bliping(); }
 
+  /**
+   * \brief Set the value of the half step mask, from 0 to maxMaskStep
+   */
+  void LMBD_INLINE set_steps_mask(uint8_t newValue)
+  {
+    // only available for indexable
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      uint8_t* writeable_currentMaskStep = const_cast<uint8_t*>(&currentMaskStep);
+      if (newValue <= maxMaskStep)
+      {
+        *writeable_currentMaskStep = newValue;
+      }
+    }
+  }
+
+  /**
+   * \brief Diasble the step mask
+   */
+  void LMBD_INLINE cancel_step_mask()
+  {
+    // only available for indexable
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      uint8_t* writeable_currentMaskStep = const_cast<uint8_t*>(&currentMaskStep);
+      *writeable_currentMaskStep = 0;
+    }
+  }
+
   /** \brief Set brightness of the lamp
    *
    * Several behaviors:
@@ -570,7 +619,8 @@ public:
     assert((skipCallbacks || !skipUpdateBrightness) && "implicit callback skip!");
 
     // invalid call, fallback to enforcing
-    if (newBrightness > ::lampda::brightness::absoluteMaximumBrightness)
+    if (newBrightness < ::lampda::brightness::absoluteMinimumBrightness ||
+        newBrightness > ::lampda::brightness::absoluteMaximumBrightness)
     {
       enforce_internal_brightness_limits();
       return;
@@ -605,11 +655,34 @@ public:
 #endif
       using curve_t = common::curves::LinearCurve<brightness_t, uint8_t>;
       static curve_t brightnessCurve = ::lampda::common::curves::make_linear_curve(
-              curve_t::point_t {0, minimumAllowedBrightness},
+              curve_t::point_t {ledMasking_brightnessThreshold, minimumAllowedBrightness},
               curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255});
 
-      /// @warning: this is actually heavy to run
-      strip.setBrightness(brightnessCurve.sample(trueNewBrightness));
+      bool applyStandardBrightnessUpdate = true;
+      // apply led masking below a threshold
+      if (trueNewBrightness < ledMasking_brightnessThreshold)
+      {
+        applyStandardBrightnessUpdate = false;
+        const uint8_t index = lmpd_map<uint8_t>(trueNewBrightness, 0, ledMasking_brightnessThreshold, maxMaskStep, 0);
+        if (index <= 0)
+        {
+          applyStandardBrightnessUpdate = true;
+        }
+        else
+        {
+          set_steps_mask(index);
+          strip.setBrightness(minimumAllowedBrightness);
+        }
+      }
+
+      if (applyStandardBrightnessUpdate)
+      {
+        // cancel the step masking
+        cancel_step_mask();
+
+        /// @warning: this is actually heavy to run
+        strip.setBrightness(brightnessCurve.sample(trueNewBrightness));
+      }
     }
 
     if constexpr (flavor == LampTypes::simple)
@@ -628,7 +701,7 @@ public:
 
       using curve_t = common::curves::ExponentialCurve<brightness_t, uint16_t>;
       static curve_t brightnessCurve(
-              curve_t::point_t {0, stripInputMinVoltage_mV},
+              curve_t::point_t {::lampda::brightness::absoluteMinimumBrightness, stripInputMinVoltage_mV},
               curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, stripInputMaxVoltage_mV},
               1.0);
 
@@ -743,15 +816,20 @@ public:
       for (uint16_t i = 0; i < ledCount; ++i)
       {
         const uint32_t c = getPixelColor(i);
-        setPixelColor(i, colors::fade(c, 255 - fadeBy));
+        setPixelColor(i, colors::fade(c, UINT8_MAX - fadeBy));
       }
     }
     else
     {
-      uint8_t brightness = static_cast<uint8_t>(getBrightness() /
-                                                static_cast<float>(brightness::absoluteMaximumBrightness) * 255.0f);
+      uint8_t brightness = lmpd_map<uint8_t>(getBrightness(),
+                                             brightness::absoluteMinimumBrightness,
+                                             brightness::absoluteMaximumBrightness,
+                                             0,
+                                             UINT8_MAX);
       brightness = (brightness < fadeBy) ? 0 : brightness - fadeBy;
-      setBrightness(static_cast<brightness_t>(brightness / 255.0f * brightness::absoluteMaximumBrightness));
+
+      setBrightness(lmpd_map<brightness_t>(
+              brightness, 0, UINT8_MAX, brightness::absoluteMinimumBrightness, brightness::absoluteMaximumBrightness));
     }
   }
 
@@ -866,8 +944,11 @@ public:
 
       assert(n < ledCount && "invalid LED index");
 
-      // mask pixels or aplly correct color
-      strip.setPixelColor(n, (forceSet or ledMask[n]) ? color : 0);
+      // step masking is enabled for this led
+      const bool isLedMasked = is_led_masked_by_step_mask(n);
+
+      // mask pixels or apply correct color
+      strip.setPixelColor(n, (not isLedMasked and (forceSet or ledMask[n])) ? color : 0);
     }
     else
     {
@@ -958,17 +1039,11 @@ public:
    */
   template<uint8_t bufIdx = 0> void setColorsFromBuffer()
   {
-    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
     const BufferTy& buffer = getTempBuffer<bufIdx>();
-    if (config.skipFirstLedsForEffect)
+
+    for (uint16_t I = config.skipFirstLedsForEffect ? config.skipFirstLedsForAmount : 0; I < ledCount; I++)
     {
-      uint16_t Idx = config.skipFirstLedsForAmount;
-      uint16_t Sz = sizeof(strip._colors) - Idx * sizeof(uint32_t);
-      memcpy(&strip._colors[Idx], &buffer[Idx], Sz);
-    }
-    else
-    {
-      memcpy(strip._colors, buffer.data(), sizeof(strip._colors));
+      setPixelColor(I, buffer[I]);
     }
   }
 
@@ -978,7 +1053,6 @@ public:
    */
   template<uint8_t dstBufIdx = 0, uint8_t srcBufIdx = 1> void setColorsFromMixedBuffers(float phase)
   {
-    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
     const BufferTy& dstBuf = getTempBuffer<dstBufIdx>();
     const BufferTy& srcBuf = getTempBuffer<srcBufIdx>();
 
@@ -995,7 +1069,9 @@ public:
       COLOR dst;
       src.color = srcBuf[I];
       dst.color = dstBuf[I];
-      strip._colors[I].color = utils::get_gradient(src.color, dst.color, phase);
+
+      // use accessor
+      setPixelColor(I, utils::get_gradient(src.color, dst.color, phase));
     }
   }
 
@@ -1003,7 +1079,6 @@ public:
    */
   template<uint8_t bufIdx = 0> void setColorsFromBufferReversed(bool skipLastLine)
   {
-    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
     const BufferTy& buffer = getTempBuffer<bufIdx>();
 
     uint16_t start = 0;
@@ -1020,7 +1095,7 @@ public:
 
     for (uint16_t I = 0, J = start; I < end - start; ++I, ++J)
     {
-      strip._colors[J].color = buffer[end - start - I - 1];
+      setPixelColor(J, buffer[end - start - I - 1]);
     }
   }
 
@@ -1030,20 +1105,16 @@ public:
    */
   template<uint8_t bufIdx = 0, bool forceFullRead = false> void getColorsToBuffer()
   {
-    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
-
     BufferTy& buffer = getTempBuffer<bufIdx>();
-    if (!forceFullRead && config.skipFirstLedsForEffect)
-    {
-      uint16_t Idx = config.skipFirstLedsForAmount;
-      uint16_t Sz = sizeof(strip._colors) - Idx * sizeof(uint32_t);
 
-      buffer.fill(0);
-      memcpy(&buffer[Idx], &strip._colors[Idx], Sz);
-    }
-    else
+    const uint16_t startI = (!forceFullRead && config.skipFirstLedsForEffect) ? config.skipFirstLedsForAmount : 0;
+
+    for (uint16_t I = 0; I < startI; I++)
+      buffer[I] = 0;
+
+    for (uint16_t I = startI; I < ledCount; I++)
     {
-      memcpy(buffer.data(), strip._colors, sizeof(strip._colors));
+      buffer[I] = getPixelColor(I);
     }
   }
 
@@ -1083,6 +1154,17 @@ public:
    * may cause stutters or visible slowdowns during loads.
    */
   volatile const uint32_t raw_frame_count;
+
+  /**
+   * \brief If true, only a proportion of the leds will be available to control
+   * If 1, all leds are available, goes up to maxMaskStep
+   */
+  volatile const uint8_t currentMaskStep = 0;
+  volatile bool forceDisableLedMask = false; ///< set to true to lock led mask brightness control
+  static constexpr uint8_t maxMaskStep = helixMaskParameters.max_level;
+  static constexpr brightness_t ledMasking_brightnessThreshold =
+          ::lampda::brightness::absoluteMaximumBrightness *
+          0.25f; ///< below this, the system will enable the led masking
 };
 
 } // namespace lampda::modes::hardware

@@ -25,6 +25,9 @@ template<uint32_t T> void SunTimerBase<T>::cancel()
   endTime_s = 0;
   trueBrightnessSunTime_ms = BrightnessSunTime_ms;
 
+  // signal to user
+  sun_timer_progress_update_callback(0.0f);
+
   lock_brightness_update(false);
   logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 }

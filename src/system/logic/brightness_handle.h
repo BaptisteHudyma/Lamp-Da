@@ -12,7 +12,8 @@ namespace logic {
 /// Handle the LED output brightness
 namespace brightness {
 
-/// Return the current brightness value (in range 0 - brightness::absoluteMaximumBrightness).
+/// Return the current brightness value
+// (in range ::lampda::brightness::absoluteMinimumBrightness - brightness::absoluteMaximumBrightness).
 /// It's value depends on a lot of factors and can be cantrolled by any actors.
 brightness_t get_brightness();
 

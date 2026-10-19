@@ -364,6 +364,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       {
         ctx.lamp.clear();
       }
+      // reset masking
+      ctx.lamp.forceDisableLedMask = false;
     }
 
     static void LMBD_INLINE on_favorite_hold_end(auto& ctx, bool shouldExecuteAction)
@@ -958,6 +960,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   {
     // start with tick value
     ctx.lamp.refresh_tick_value();
+    ctx.lamp.forceDisableLedMask = false;
 
     foreach_group<true>(ctx, [](auto group) {
       group.power_on_sequence();
@@ -982,6 +985,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     foreach_group<true>(ctx, [](auto group) {
       group.power_off_sequence();
     });
+
+    ctx.lamp.forceDisableLedMask = false;
   }
 
   /// Write the parameters to memory

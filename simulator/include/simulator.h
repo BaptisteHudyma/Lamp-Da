@@ -338,7 +338,8 @@ template<typename T> struct simulator
         // brightness on the indexale lamp
         using curve_t = ::lampda::common::curves::LinearCurve<::lampda::brightness_t, uint8_t>;
         static curve_t brightnessCurve = ::lampda::common::curves::make_linear_curve(
-                curve_t::point_t {0, ::lampda::minimumAllowedBrightness_8},
+                curve_t::point_t {::lampda::brightness::absoluteMinimumBrightness,
+                                  ::lampda::minimumAllowedBrightness_8},
                 curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255});
         state.brightness = brightnessCurve.sample(::lampda::logic::brightness::get_brightness());
 

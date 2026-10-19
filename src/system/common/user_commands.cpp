@@ -139,13 +139,14 @@ bool UserCommand::parse_brightness(brightness_t& brightness) const
 {
   if (get_type() != Type::Brightness or _dataCnt != 2)
     return false;
-  const brightness_t tmpCrigthness = static_cast<brightness_t>((_data[1] << 8) | _data[0]);
+  const brightness_t tmpBrigthness = static_cast<brightness_t>((_data[1] << 8) | _data[0]);
 
   // check validity
-  if (tmpCrigthness > ::lampda::brightness::absoluteMaximumBrightness)
+  if (tmpBrigthness < ::lampda::brightness::absoluteMinimumBrightness ||
+      tmpBrigthness > ::lampda::brightness::absoluteMaximumBrightness)
     return false;
 
-  brightness = tmpCrigthness;
+  brightness = tmpBrigthness;
   return true;
 }
 

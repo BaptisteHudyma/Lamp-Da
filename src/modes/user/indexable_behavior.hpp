@@ -174,8 +174,56 @@ bool button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   auto manager = get_context();
   auto& rampHandler = manager.state.rampHandler;
 
+  /// Keep track of the lock click event
+  static bool isBrightnessLocked =
+          logic::brightness::get_brightness() > ::lampda::brightness::absoluteMaximumBrightness * 0.25f;
+
   switch (clicks)
   {
+    // raise/lower brightness handle
+    case 1:
+    case 2:
+      {
+        const brightness_t newBrightness = logic::brightness::get_brightness();
+        static brightness_t latestBrightness = newBrightness;
+        static uint32_t lockFirstCall = 0;
+
+        const bool isGoingDown = newBrightness <= latestBrightness;
+        // prevent brigthness to drop below the dithering threshold
+        bool shouldPreventBrightnessUpdate =
+                isGoingDown and isBrightnessLocked and newBrightness <= manager.lamp.ledMasking_brightnessThreshold;
+
+        if (not shouldPreventBrightnessUpdate)
+        {
+          lockFirstCall = 0;
+        }
+        else
+        {
+          if (lockFirstCall == 0)
+            lockFirstCall = hal::time_ms();
+
+          // allow to go down after a set time
+          if (lockFirstCall > 0 and hal::time_ms() - lockFirstCall >= 2000)
+            shouldPreventBrightnessUpdate = false;
+        }
+
+        // end of hold: allow brigthness down
+        if (isEndOfHoldEvent)
+        {
+          isBrightnessLocked = false;
+          lockFirstCall = 0;
+          latestBrightness = newBrightness;
+          // release event shall always allow control
+          shouldPreventBrightnessUpdate = false;
+        }
+        // rising up: block next downward
+        if (not isGoingDown)
+        {
+          isBrightnessLocked = newBrightness > manager.lamp.ledMasking_brightnessThreshold;
+        }
+        return shouldPreventBrightnessUpdate;
+      }
+
     case 4: // 4 click+hold: configure favorite
       {
         // lock to prevent addition of favorite from favorite & if we are deleting favorites
