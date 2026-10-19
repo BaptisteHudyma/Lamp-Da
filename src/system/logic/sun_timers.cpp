@@ -13,6 +13,8 @@
 
 #include "src/system/utils/utils.h"
 
+#include "src/user/functions.h"
+
 namespace lampda {
 namespace logic {
 
@@ -26,7 +28,7 @@ template<uint32_t T> void SunTimerBase<T>::cancel()
   trueBrightnessSunTime_ms = BrightnessSunTime_ms;
 
   // signal to user
-  sun_timer_progress_update_callback(0.0f);
+  user::handle_user_command(common::UserCommand::make_signal_suntimer_cancel_command());
 
   lock_brightness_update(false);
   logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);
@@ -245,7 +247,7 @@ void SunsetTimer::bump_timer()
 
 void SunsetTimer::sun_timer_progress_update_callback(const float progress) const
 {
-  logic::behavior::timers::sunset_progress_update(progress);
+  user::handle_user_command(common::UserCommand::make_signal_sunset_progress_command(progress));
 }
 
 void SunsetTimer::end_of_timer_handle()
@@ -287,7 +289,7 @@ bool SunriseTimer::should_accept_start() const
 
 void SunriseTimer::sun_timer_progress_update_callback(const float progress) const
 {
-  logic::behavior::timers::sunrise_progress_update(progress);
+  user::handle_user_command(common::UserCommand::make_signal_sunrise_progress_command(progress));
 }
 
 void SunriseTimer::end_of_timer_handle()

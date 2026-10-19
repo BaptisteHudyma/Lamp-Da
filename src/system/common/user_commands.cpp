@@ -1,6 +1,7 @@
 #include "user_commands.h"
 
 #include "src/system/utils/colorspace.h"
+#include <cstring>
 
 namespace lampda {
 namespace common {
@@ -118,6 +119,46 @@ UserCommand UserCommand::make_set_favorite_command(const uint8_t index)
   cmd._type = UserCommand::Type::SetFavoriteIndex;
   cmd._dataCnt = 1;
   cmd._data[0] = index;
+  return cmd;
+}
+
+UserCommand UserCommand::make_signal_sunset_progress_command(const float progress)
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::SignalSunsetProgress;
+  cmd._dataCnt = 4;
+
+  uint32_t internal;
+  memcpy(&internal, &progress, sizeof(progress));
+
+  cmd._data[0] = (internal >> 0u) & 0xFFu;
+  cmd._data[1] = (internal >> 8u) & 0xFFu;
+  cmd._data[2] = (internal >> 16u) & 0xFFu;
+  cmd._data[3] = (internal >> 24u) & 0xFFu;
+  return cmd;
+}
+
+UserCommand UserCommand::make_signal_sunrise_progress_command(const float progress)
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::SignalSunriseProgress;
+  cmd._dataCnt = 4;
+
+  uint32_t internal;
+  memcpy(&internal, &progress, sizeof(progress));
+
+  cmd._data[0] = (internal >> 0u) & 0xFFu;
+  cmd._data[1] = (internal >> 8u) & 0xFFu;
+  cmd._data[2] = (internal >> 16u) & 0xFFu;
+  cmd._data[3] = (internal >> 24u) & 0xFFu;
+  return cmd;
+}
+
+UserCommand UserCommand::make_signal_suntimer_cancel_command()
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::SignalSuntimerCancel;
+  cmd._dataCnt = 0;
   return cmd;
 }
 
@@ -245,6 +286,43 @@ bool UserCommand::parse_set_favorite_command(uint8_t& index) const
   if (get_type() != Type::SetFavoriteIndex or _dataCnt != 1)
     return false;
   index = _data[0];
+  return true;
+}
+
+bool UserCommand::parse_signal_sunset_progress_command(float& progress) const
+{
+  if (get_type() != Type::SignalSunsetProgress or _dataCnt != 4)
+    return false;
+
+  uint32_t internal = 0;
+  internal |= _data[0];
+  internal |= _data[1] << 8u;
+  internal |= _data[2] << 16u;
+  internal |= _data[3] << 24u;
+
+  memcpy(&progress, &internal, sizeof(internal));
+  return true;
+}
+
+bool UserCommand::parse_signal_sunrise_progress_command(float& progress) const
+{
+  if (get_type() != Type::SignalSunriseProgress or _dataCnt != 4)
+    return false;
+
+  uint32_t internal = 0;
+  internal |= _data[0];
+  internal |= _data[1] << 8u;
+  internal |= _data[2] << 16u;
+  internal |= _data[3] << 24u;
+
+  memcpy(&progress, &internal, sizeof(internal));
+  return true;
+}
+
+bool UserCommand::parse_signal_suntimer_cancel_command() const
+{
+  if (get_type() != Type::SignalSuntimerCancel or _dataCnt != 0)
+    return false;
   return true;
 }
 
