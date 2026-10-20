@@ -587,7 +587,9 @@ bool handle_user_command(const common::UserCommand& command)
       {
         if (command.parse_signal_suntimer_cancel_command())
         {
-          get_context().suntimer_reset(true);
+          auto manager = get_context();
+          manager.sunset_timer_internal_reset();
+          manager.sunrise_timer_internal_reset(true);
         }
         else
           bsp::lampda_print("Failed to parse signal_suntimer_cancel command");

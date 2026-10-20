@@ -853,17 +853,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     });
 
     ctx.state.after_enter_mode(ctx);
-
-    // start by reseting the sun timers animations
-    if (logic::sunset_timer.is_enabled())
-    {
-      ctx.modeManager.sunsetHandler.reset_suntimer_animation(ctx);
-    }
-    // start by reseting the sun timers animations
-    if (logic::sunrise_timer.is_enabled())
-    {
-      ctx.modeManager.sunriseHandler.reset_suntimer_animation(ctx);
-    }
   }
 
   /// Callback called on a mode deactivation
@@ -955,9 +944,19 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   /**
    * \brief Signal that a sun timer as been canceled
    */
-  static void suntimer_reset(auto& ctx, const bool clearMasks)
+  static void sunset_timer_internal_reset(auto& ctx)
   {
     ctx.modeManager.sunsetHandler.reset_suntimer_animation(ctx);
+
+    ctx.lamp.forceDisableLedDitherMask = false;
+    ctx.lamp.mask_all_leds(false); // disable masking
+  }
+
+  /**
+   * \brief Signal that a sun timer as been canceled
+   */
+  static void sunrise_timer_internal_reset(auto& ctx, const bool clearMasks)
+  {
     ctx.modeManager.sunriseHandler.reset_suntimer_animation(ctx);
 
     if (clearMasks)
@@ -985,6 +984,10 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     // start with tick value
     ctx.lamp.refresh_tick_value();
 
+    // start by reseting the sun timers animations, clear masks if we did not wake up with a sunrise
+    ctx.sunset_timer_internal_reset();
+    ctx.sunrise_timer_internal_reset(true);
+
     foreach_group<true>(ctx, [](auto group) {
       group.power_on_sequence();
     });
@@ -1000,9 +1003,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       uint8_t groupIdBefore = ctx.get_active_group(nbGroupsTotal);
       ctx.set_active_group(groupIdBefore);
     }
-
-    // start by reseting the sun timers animations, clear masks if we did not wake up with a sunrise
-    ctx.suntimer_reset(not logic::sunrise_timer.is_enabled());
   }
 
   /// Called on the output power off

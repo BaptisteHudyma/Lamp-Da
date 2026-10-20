@@ -19,8 +19,9 @@ struct RainMode : public BasicMode
 {
   /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
-  /// sunset animation on the rain
+  /// sunset & sunrise animation on the rain
   static constexpr bool hasSunsetAnimation = true;
+  static constexpr bool hasSunriseAnimation = true;
   /// average drops per seconds for a light rain
   static constexpr float lightRainDropsPerSecond = 1;
   /// average drops per seconds for heavy rain
@@ -59,6 +60,14 @@ struct RainMode : public BasicMode
 
     // rain will turn off slowly
     ctx.state.rainDensity = ctx.state.rainDensityCommand * (1.0 - progress);
+  }
+
+  /// Sunrise timer will fade in the rain from 0 to saved limit
+  static void sunrise_update(auto& ctx, float progress)
+  {
+    // progress goes from 0 to 1
+    // rain will turn on slowly
+    ctx.state.rainDensity = ctx.state.rainDensityCommand * progress;
   }
 
   static void loop(auto& ctx)
