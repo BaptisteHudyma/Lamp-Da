@@ -208,6 +208,36 @@ public:
   }
 
   /**
+   * \brief Same as depop_particules, but the predicate also receives the particle slot index.
+   * \return The number of particles left in the simulation.
+   */
+  template<typename ShouldDepopFunction>
+  uint16_t depop_particules_indexed(const ShouldDepopFunction& shouldDepopFunction)
+  {
+    static_assert(std::is_invocable_r_v<bool, ShouldDepopFunction, size_t, Particle const&>);
+
+    uint16_t remaining = 0;
+    for (size_t i = 0; i < particuleCount; ++i)
+    {
+      if (not isAllocated[i])
+        continue;
+
+      const auto& parti = particules[i];
+      if (shouldDepopFunction(i, parti))
+      {
+        isAllocated[i] = false;
+        if (parti._savedLampIndex >= 0 && parti._savedLampIndex < isOccupiedSpaces.size())
+          isOccupiedSpaces[parti._savedLampIndex] = false;
+      }
+      else
+      {
+        remaining += 1;
+      }
+    }
+    return remaining;
+  }
+
+  /**
    * \brief Display this particle system
    * \param[in] sample_color sampling function for the particle color
    * \param[in, out] lamp The lamp object to write to
