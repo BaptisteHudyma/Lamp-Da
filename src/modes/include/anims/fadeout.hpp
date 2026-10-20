@@ -192,7 +192,7 @@ template<typename DropMode = DropModeOrphansOnly> struct GravityDissolve
   void reset(auto& ctx)
   {
     // set all values to max: no masking
-    ctx.lamp.clear_led_mask();
+    ctx.lamp.mask_all_leds(false);
     // reset particles
     particuleSystem.reset();
     particuleSystem.set_max_particle_count(20);
@@ -243,7 +243,7 @@ template<typename DropMode = DropModeOrphansOnly> struct GravityDissolve
    * \brief Update the drop rate
    * \param[in] progress Current progress
    */
-  void update_depop_rate(auto& ctx, const float expectedProgress)
+  void update_progress_rate(auto& ctx, const float expectedProgress)
   {
     // Artifically lenghten the progress to let particles disappear
     const float progress = expectedProgress / gracePeriod;

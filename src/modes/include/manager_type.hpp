@@ -365,7 +365,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
         ctx.lamp.clear();
       }
       // reset masking
-      ctx.lamp.forceDisableLedMask = false;
+      ctx.lamp.forceDisableLedDitherMask = false;
     }
 
     static void LMBD_INLINE on_favorite_hold_end(auto& ctx, bool shouldExecuteAction)
@@ -854,7 +854,10 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     ctx.state.after_enter_mode(ctx);
 
     // start by reseting the sun timers animations
-    ctx.modeManager.sunsetHandler.reset_suntimer_animation(ctx);
+    if (logic::sunset_timer.is_enabled())
+    {
+      ctx.modeManager.sunsetHandler.reset_suntimer_animation(ctx);
+    }
   }
 
   /// Callback called on a mode deactivation
@@ -960,7 +963,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   {
     // start with tick value
     ctx.lamp.refresh_tick_value();
-    ctx.lamp.forceDisableLedMask = false;
 
     foreach_group<true>(ctx, [](auto group) {
       group.power_on_sequence();
@@ -977,6 +979,13 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       uint8_t groupIdBefore = ctx.get_active_group(nbGroupsTotal);
       ctx.set_active_group(groupIdBefore);
     }
+
+    // start by reseting the sun timers animations
+    ctx.modeManager.sunsetHandler.reset_suntimer_animation(ctx);
+
+    // disable led masks
+    ctx.lamp.forceDisableLedDitherMask = false;
+    ctx.lamp.mask_all_leds(false);
   }
 
   /// Called on the output power off
@@ -986,7 +995,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       group.power_off_sequence();
     });
 
-    ctx.lamp.forceDisableLedMask = false;
+    ctx.lamp.forceDisableLedDitherMask = false;
+    ctx.lamp.mask_all_leds(false);
   }
 
   /// Write the parameters to memory
@@ -1308,19 +1318,20 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
    * Suntimer handling
    */
 
-  struct SunTimerHandling
+  template<typename Animation> struct SunTimerHandling
   {
-    // define the shared sunset animation
-    anims::fadeout::GravityDissolve<> animation;
+    // define the shared suntimer animation
+    Animation animation;
     /// Update the sunset drop animation
-    void update_suntimer_drop_animation(auto& ctx, float progress) { animation.update_depop_rate(ctx, progress); }
+    void update_suntimer_drop_animation(auto& ctx, float progress) { animation.update_progress_rate(ctx, progress); }
     /// Reset the sunset animations
     void reset_suntimer_animation(auto& ctx) { animation.reset(ctx); }
     /// loop suntimer animations
     void loop_suntimer_animation(auto& ctx) { animation.loop(ctx); }
   };
 
-  SunTimerHandling sunsetHandler;
+  // sunset drop animation handle
+  SunTimerHandling<anims::fadeout::GravityDissolve<>> sunsetHandler;
 
   //
   // private members

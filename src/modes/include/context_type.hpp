@@ -323,9 +323,9 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   uint8_t LMBD_INLINE get_active_custom_ramp() const { return modeManager.activeIndex.rampIndex; }
 
   /**
-   * \brief Update the suntimer drop animation
+   * \brief Update the sunset timer drop animation
    */
-  void update_suntimer_drop_animation(float progress)
+  void update_sunset_drop_animation(float progress)
   {
     modeManager.sunsetHandler.update_suntimer_drop_animation(*this, progress);
   }
@@ -698,14 +698,14 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     {
       if constexpr (isMode)
       {
-        modeManager.get_context().lamp.forceDisableLedMask = true;
+        modeManager.get_context().lamp.forceDisableLedDitherMask = true;
       }
 
       LocalModeTy::sunset_update(*this, progress);
     }
     else if constexpr (isMode)
     {
-      modeManager.get_context().lamp.forceDisableLedMask = false;
+      modeManager.get_context().lamp.forceDisableLedDitherMask = false;
     }
   }
 
@@ -716,14 +716,14 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     {
       if constexpr (isMode)
       {
-        modeManager.get_context().lamp.forceDisableLedMask = true;
+        modeManager.get_context().lamp.forceDisableLedDitherMask = true;
       }
 
       LocalModeTy::sunrise_update(*this, progress);
     }
     else if constexpr (isMode)
     {
-      modeManager.get_context().lamp.forceDisableLedMask = false;
+      modeManager.get_context().lamp.forceDisableLedDitherMask = false;
     }
   }
 

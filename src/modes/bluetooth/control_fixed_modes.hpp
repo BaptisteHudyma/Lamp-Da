@@ -32,7 +32,7 @@ struct ColorControlMode : public BasicMode
   }
 
   /// Sunset timer will drop pixels downward, and never display them again
-  static void sunset_update(auto& ctx, float progress) { ctx.update_suntimer_drop_animation(progress); }
+  static void sunset_update(auto& ctx, float progress) { ctx.update_sunset_drop_animation(progress); }
 };
 
 namespace __private {
@@ -123,7 +123,7 @@ template<bool fastMode, uint8_t fadeRateUint, uint32_t... fadeColors> struct Col
   }
 
   /// Sunset timer will drop pixels downward, and never display them again
-  static void sunset_update(auto& ctx, float progress) { ctx.update_suntimer_drop_animation(progress); }
+  static void sunset_update(auto& ctx, float progress) { ctx.update_sunset_drop_animation(progress); }
 };
 
 /// fixed modes

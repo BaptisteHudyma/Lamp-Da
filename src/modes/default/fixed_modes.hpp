@@ -49,7 +49,7 @@ template<bool isStep = false, uint32_t rampUpdateLenght_ms = 55, bool shouldSatu
   }
 
   /// Sunset timer will drop pixels downward, and never display them again
-  static void sunset_update(auto& ctx, float progress) { ctx.update_suntimer_drop_animation(progress); }
+  static void sunset_update(auto& ctx, float progress) { ctx.update_sunset_drop_animation(progress); }
 
   /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
