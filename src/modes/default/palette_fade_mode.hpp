@@ -44,10 +44,9 @@ struct PaletteFadeMode : public modes::BasicMode
   /// sunset & sunrise animation on the fixed modes
   static constexpr bool hasSunsetAnimation = true;
   static constexpr bool hasSunriseAnimation = true;
-  /// Sunset timer will drop pixels downward, and never display them again
-  static void sunset_update(auto& ctx, float progress) { ctx.update_sunset_drop_animation(progress); }
-  /// Sunrise timer will drop pixels downward, and fill the lamp
-  static void sunrise_update(auto& ctx, float progress) { ctx.update_sunrise_drop_animation(progress); }
+  // Use the two internal gravity modes, so no need to define the callbacks
+  static constexpr bool usesSunsetGravityDissolveMode = true;
+  static constexpr bool usesSunriseGravityAppearMode = true;
 };
 
 /**

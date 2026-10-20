@@ -20,6 +20,9 @@ struct ColorControlMode : public BasicMode
   /// sunset & sunrise animation on the fixed modes
   static constexpr bool hasSunsetAnimation = true;
   static constexpr bool hasSunriseAnimation = true;
+  // Use the two internal gravity modes, so no need to define the callbacks
+  static constexpr bool usesSunsetGravityDissolveMode = true;
+  static constexpr bool usesSunriseGravityAppearMode = true;
 
   static void loop(auto& ctx)
   {
@@ -31,11 +34,6 @@ struct ColorControlMode : public BasicMode
 
     ctx.lamp.fill(color);
   }
-
-  /// Sunset timer will drop pixels downward, and never display them again
-  static void sunset_update(auto& ctx, float progress) { ctx.update_sunset_drop_animation(progress); }
-  /// Sunrise timer will drop pixels downward, and fill the lamp
-  static void sunrise_update(auto& ctx, float progress) { ctx.update_sunrise_drop_animation(progress); }
 };
 
 namespace __private {
@@ -67,6 +65,9 @@ template<bool fastMode, uint8_t fadeRateUint, uint32_t... fadeColors> struct Col
   /// sunset & sunrise animation on the fixed modes
   static constexpr bool hasSunsetAnimation = true;
   static constexpr bool hasSunriseAnimation = true;
+  // Use the two internal gravity modes, so no need to define the callbacks
+  static constexpr bool usesSunsetGravityDissolveMode = true;
+  static constexpr bool usesSunriseGravityAppearMode = true;
 
   struct StateTy
   {
@@ -125,11 +126,6 @@ template<bool fastMode, uint8_t fadeRateUint, uint32_t... fadeColors> struct Col
 
     ctx.lamp.fill(color);
   }
-
-  /// Sunset timer will drop pixels downward, and never display them again
-  static void sunset_update(auto& ctx, float progress) { ctx.update_sunset_drop_animation(progress); }
-  /// Sunrise timer will drop pixels downward, and fill the lamp
-  static void sunrise_update(auto& ctx, float progress) { ctx.update_sunrise_drop_animation(progress); }
 };
 
 /// fixed modes

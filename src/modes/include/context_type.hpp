@@ -47,13 +47,15 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   static constexpr bool isGroupManager = false;
 
   // useful proxies (exposes mode properties)
-  static constexpr bool hasSunsetAnimation = LocalModeTy::hasSunsetAnimation;   ///< \private
-  static constexpr bool hasSunriseAnimation = LocalModeTy::hasSunriseAnimation; ///< \private
-  static constexpr bool hasBrightCallback = LocalModeTy::hasBrightCallback;     ///< \private
-  static constexpr bool hasSystemCallbacks = LocalModeTy::hasSystemCallbacks;   ///< \private
-  static constexpr bool requireUserThread = LocalModeTy::requireUserThread;     ///< \private
-  static constexpr bool hasCustomRamp = LocalModeTy::hasCustomRamp;             ///< \private
-  static constexpr bool hasButtonCustomUI = LocalModeTy::hasButtonCustomUI;     ///< \private
+  static constexpr bool hasSunsetAnimation = LocalModeTy::hasSunsetAnimation;                       ///< \private
+  static constexpr bool hasSunriseAnimation = LocalModeTy::hasSunriseAnimation;                     ///< \private
+  static constexpr bool usesSunsetGravityDissolveMode = LocalModeTy::usesSunsetGravityDissolveMode; ///< \private
+  static constexpr bool usesSunriseGravityAppearMode = LocalModeTy::usesSunriseGravityAppearMode;   ///< \private
+  static constexpr bool hasBrightCallback = LocalModeTy::hasBrightCallback;                         ///< \private
+  static constexpr bool hasSystemCallbacks = LocalModeTy::hasSystemCallbacks;                       ///< \private
+  static constexpr bool requireUserThread = LocalModeTy::requireUserThread;                         ///< \private
+  static constexpr bool hasCustomRamp = LocalModeTy::hasCustomRamp;                                 ///< \private
+  static constexpr bool hasButtonCustomUI = LocalModeTy::hasButtonCustomUI;                         ///< \private
 
   // more proxies (exposes tables of mode properties)
   static constexpr auto everySunsetCallback = LocalModeTy::everySunsetCallback;       ///< \private
@@ -707,6 +709,12 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
       if constexpr (isMode)
       {
         modeManager.get_context().lamp.forceDisableLedDitherMask = true;
+
+        if constexpr (LocalModeTy::usesSunsetGravityDissolveMode)
+        {
+          // special handle case if we specifically have a dissolve mode
+          modeManager.get_context().update_sunset_drop_animation(progress);
+        }
       }
 
       LocalModeTy::sunset_update(*this, progress);
@@ -725,6 +733,12 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
       if constexpr (isMode)
       {
         modeManager.get_context().lamp.forceDisableLedDitherMask = true;
+
+        if constexpr (LocalModeTy::usesSunriseGravityAppearMode)
+        {
+          // special handle case if we specifically have a gravity appear mode
+          modeManager.get_context().update_sunrise_drop_animation(progress);
+        }
       }
 
       LocalModeTy::sunrise_update(*this, progress);
