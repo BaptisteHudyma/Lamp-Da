@@ -25,6 +25,7 @@
 #include "src/modes/include/hardware/lamp_type.hpp"
 
 #include "src/modes/include/anims/fadeout.hpp"
+#include "src/modes/include/anims/fadein.hpp"
 
 namespace lampda::modes {
 
@@ -858,6 +859,11 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     {
       ctx.modeManager.sunsetHandler.reset_suntimer_animation(ctx);
     }
+    // start by reseting the sun timers animations
+    if (logic::sunrise_timer.is_enabled())
+    {
+      ctx.modeManager.sunriseHandler.reset_suntimer_animation(ctx);
+    }
   }
 
   /// Callback called on a mode deactivation
@@ -912,11 +918,11 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       group.loop();
     });
 
+    /// update suntimers after the animation
     if (logic::sunset_timer.is_enabled())
-    {
-      /// update suntimers after the animation
       ctx.modeManager.sunsetHandler.loop_suntimer_animation(ctx);
-    }
+    if (logic::sunrise_timer.is_enabled())
+      ctx.modeManager.sunriseHandler.loop_suntimer_animation(ctx);
 
     // display the overlay after the group update
     overlay.display_update(ctx);
@@ -944,6 +950,21 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     dispatch_group(ctx, [&](auto group) {
       group.sunrise_update(progress);
     });
+  }
+
+  /**
+   * \brief Signal that a sun timer as been canceled
+   */
+  static void suntimer_reset(auto& ctx, const bool clearMasks)
+  {
+    ctx.modeManager.sunsetHandler.reset_suntimer_animation(ctx);
+    ctx.modeManager.sunriseHandler.reset_suntimer_animation(ctx);
+
+    if (clearMasks)
+    {
+      ctx.lamp.forceDisableLedDitherMask = false;
+      ctx.lamp.mask_all_leds(false); // disable masking
+    }
   }
 
   /**
@@ -980,12 +1001,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       ctx.set_active_group(groupIdBefore);
     }
 
-    // start by reseting the sun timers animations
-    ctx.modeManager.sunsetHandler.reset_suntimer_animation(ctx);
-
-    // disable led masks
-    ctx.lamp.forceDisableLedDitherMask = false;
-    ctx.lamp.mask_all_leds(false);
+    // start by reseting the sun timers animations, clear masks if we did not wake up with a sunrise
+    ctx.suntimer_reset(not logic::sunrise_timer.is_enabled());
   }
 
   /// Called on the output power off
@@ -1332,6 +1349,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
   // sunset drop animation handle
   SunTimerHandling<anims::fadeout::GravityDissolve<>> sunsetHandler;
+  SunTimerHandling<anims::fadein::GravityFill> sunriseHandler;
 
   //
   // private members

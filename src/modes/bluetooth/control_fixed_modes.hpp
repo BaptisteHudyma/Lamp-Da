@@ -17,8 +17,9 @@ namespace bluetooth {
 
 struct ColorControlMode : public BasicMode
 {
-  /// sunset animation on the fixed modes
+  /// sunset & sunrise animation on the fixed modes
   static constexpr bool hasSunsetAnimation = true;
+  static constexpr bool hasSunriseAnimation = true;
 
   static void loop(auto& ctx)
   {
@@ -33,6 +34,8 @@ struct ColorControlMode : public BasicMode
 
   /// Sunset timer will drop pixels downward, and never display them again
   static void sunset_update(auto& ctx, float progress) { ctx.update_sunset_drop_animation(progress); }
+  /// Sunrise timer will drop pixels downward, and fill the lamp
+  static void sunrise_update(auto& ctx, float progress) { ctx.update_sunrise_drop_animation(progress); }
 };
 
 namespace __private {
@@ -61,8 +64,9 @@ template<bool fastMode, uint8_t fadeRateUint, uint32_t... fadeColors> struct Col
 
   /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
-  /// sunset animation on the fixed modes
+  /// sunset & sunrise animation on the fixed modes
   static constexpr bool hasSunsetAnimation = true;
+  static constexpr bool hasSunriseAnimation = true;
 
   struct StateTy
   {
@@ -124,6 +128,8 @@ template<bool fastMode, uint8_t fadeRateUint, uint32_t... fadeColors> struct Col
 
   /// Sunset timer will drop pixels downward, and never display them again
   static void sunset_update(auto& ctx, float progress) { ctx.update_sunset_drop_animation(progress); }
+  /// Sunrise timer will drop pixels downward, and fill the lamp
+  static void sunrise_update(auto& ctx, float progress) { ctx.update_sunrise_drop_animation(progress); }
 };
 
 /// fixed modes

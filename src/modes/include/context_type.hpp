@@ -330,6 +330,14 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     modeManager.sunsetHandler.update_suntimer_drop_animation(*this, progress);
   }
 
+  /**
+   * \brief Update the sunrise timer drop animation
+   */
+  void update_sunrise_drop_animation(float progress)
+  {
+    modeManager.sunriseHandler.update_suntimer_drop_animation(*this, progress);
+  }
+
   /** \brief (setter) Set active custom ramp value (overrides user choice)
    *
    * \see BasicMode::custom_ramp_update()
@@ -726,6 +734,11 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
       modeManager.get_context().lamp.forceDisableLedDitherMask = false;
     }
   }
+
+  /**
+   * \brief Signal a end of suntimer event
+   */
+  void LMBD_INLINE suntimer_reset(const bool shouldClearMasks) { LocalModeTy::suntimer_reset(*this, shouldClearMasks); }
 
   /// Binds to local BasicMode::brightness_update()
   void LMBD_INLINE brightness_update(LMBD_USED brightness_t brightness)

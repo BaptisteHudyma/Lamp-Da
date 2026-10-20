@@ -586,7 +586,9 @@ bool handle_user_command(const common::UserCommand& command)
     case common::UserCommand::Type::SignalSuntimerCancel:
       {
         if (command.parse_signal_suntimer_cancel_command())
-          get_context().lamp.forceDisableLedDitherMask = false;
+        {
+          get_context().suntimer_reset(true);
+        }
         else
           bsp::lampda_print("Failed to parse signal_suntimer_cancel command");
         return true;
