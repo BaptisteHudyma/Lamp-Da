@@ -67,8 +67,9 @@ public:
     // clear overlay area first
     for (uint8_t i = 0; i < ctx.lamp.maxWidth * nbBlackLines; ++i)
     {
-      // force set, ignoring all masks and rules
-      ctx.lamp.setPixelColor(i, 0, true);
+      // mask leds in this area
+      ctx.lamp.mask_led_at_index(i, true);
+      ctx.lamp.setPixelColor(i, 0);
     }
 
     // keep track of the last active element index
@@ -98,17 +99,6 @@ public:
         }
         ++lastActiveElementIndex;
       }
-    }
-
-    if (activeUiElements == 0)
-    {
-      // reenable the animations
-      ctx.skipFirstLedsForFrames(0, 0);
-    }
-    else
-    {
-      // relock the display capabilities for the remaining time
-      ctx.skipFirstLedsForFrames(ctx.lamp.maxWidth * nbBlackLines, freezeSize);
     }
   }
 
@@ -292,8 +282,10 @@ protected:
 
   void draw_pixel_xy_wrapper(auto& ctx, uint16_t X, uint16_t Y, uint32_t color) const
   {
-    // always call force set in overlay
-    ctx.lamp.setPixelColorXY(X, Y, color, true);
+    // always unmask overlay leds
+    ctx.lamp.mask_led_at_XY(X, Y, false);
+    // and set color below
+    ctx.lamp.setPixelColorXY(X, Y, color);
   }
 
   void drawElement(const __private::UIElement& e, auto& ctx) const

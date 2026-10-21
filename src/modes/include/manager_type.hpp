@@ -345,10 +345,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       skipNextFrameEffect = 0;
     }
 
-    // inside lamp.config
-    //  - skipFirstLedsForEffect = 0; // should the loop skip some lower LEDs?
-    //  - skipFirstLedsForAmount = 0; // how many pixels to shave from the top?
-
     /// configuration-related actions done before entering mode
     static void LMBD_INLINE before_enter_mode(auto& ctx)
     {
@@ -883,11 +879,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       }
     }
 
-    if (ctx.lamp.config.skipFirstLedsForEffect > 0)
-    {
-      ctx.lamp.config.skipFirstLedsForEffect -= 1;
-    }
-
     if (ctx.state.skipNextFrameEffect > 0)
     {
       ctx.state.skipNextFrameEffect -= 1;
@@ -907,11 +898,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       group.loop();
     });
 
-    /// update suntimers after the animation
-    if (logic::sunset_timer.is_enabled())
-      ctx.modeManager.sunsetHandler.loop_suntimer_animation(ctx);
-    if (logic::sunrise_timer.is_enabled())
-      ctx.modeManager.sunriseHandler.loop_suntimer_animation(ctx);
+    // apply low level brigthness mask, is enabled
+    ctx.lamp.apply_low_brightness_mask();
 
     // display the overlay after the group update
     overlay.display_update(ctx);
@@ -942,28 +930,45 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   }
 
   /**
-   * \brief Signal that a sun timer as been canceled
+   * \brief Run a sun timer loop
    */
-  static void sunset_timer_internal_reset(auto& ctx)
+  static void sunset_timer_animation_internal_loop(auto& ctx)
   {
-    ctx.modeManager.sunsetHandler.reset_suntimer_animation(ctx);
-
-    ctx.lamp.forceDisableLedDitherMask = false;
-    ctx.lamp.mask_all_leds(false); // disable masking
+    if (logic::sunset_timer.is_enabled())
+    {
+      ctx.modeManager.sunsetHandler.loop_suntimer_animation(ctx);
+      ctx.lamp.forceDisableLedDitherMask = true;
+    }
   }
 
   /**
    * \brief Signal that a sun timer as been canceled
    */
-  static void sunrise_timer_internal_reset(auto& ctx, const bool clearMasks)
+  static void sunset_timer_internal_reset(auto& ctx)
+  {
+    ctx.modeManager.sunsetHandler.reset_suntimer_animation(ctx);
+    ctx.lamp.forceDisableLedDitherMask = false;
+  }
+
+  /**
+   * \brief Run a sun timer loop
+   */
+  static void sunrise_timer_animation_internal_loop(auto& ctx)
+  {
+    if (logic::sunrise_timer.is_enabled())
+    {
+      ctx.modeManager.sunriseHandler.loop_suntimer_animation(ctx);
+      ctx.lamp.forceDisableLedDitherMask = true;
+    }
+  }
+
+  /**
+   * \brief Signal that a sun timer as been canceled
+   */
+  static void sunrise_timer_internal_reset(auto& ctx)
   {
     ctx.modeManager.sunriseHandler.reset_suntimer_animation(ctx);
-
-    if (clearMasks)
-    {
-      ctx.lamp.forceDisableLedDitherMask = false;
-      ctx.lamp.mask_all_leds(false); // disable masking
-    }
+    ctx.lamp.forceDisableLedDitherMask = false;
   }
 
   /**
@@ -986,7 +991,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
     // start by reseting the sun timers animations, clear masks if we did not wake up with a sunrise
     ctx.sunset_timer_internal_reset();
-    ctx.sunrise_timer_internal_reset(true);
+    ctx.sunrise_timer_internal_reset();
 
     foreach_group<true>(ctx, [](auto group) {
       group.power_on_sequence();
@@ -1013,7 +1018,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     });
 
     ctx.lamp.forceDisableLedDitherMask = false;
-    ctx.lamp.mask_all_leds(false);
   }
 
   /// Write the parameters to memory

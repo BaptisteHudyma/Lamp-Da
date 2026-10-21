@@ -261,7 +261,11 @@ public:
       const auto& particle = particules[i];
       const auto& index = particle._savedLampIndex;
       if (modes::is_led_index_valid(index))
-        lamp.setPixelColor(index, sample_color(i, particle), forceDisplay);
+      {
+        if (forceDisplay)
+          lamp.mask_led_at_index(index, false);
+        lamp.setPixelColor(index, sample_color(i, particle));
+      }
       else
         particleCount += 1;
     }

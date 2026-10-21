@@ -12,6 +12,8 @@
 #include <cstring>
 #include <array>
 
+#include <etl/bitset.h>
+
 #include "src/system/hal/strip_impl.h"
 
 // special case: include the implementation
@@ -116,6 +118,16 @@ public:
     const uint8_t capedShown = shownCount % refreshFramesCount;
     for (uint16_t i = 0; i < LED_COUNT; ++i)
     {
+      // ignore masked leds
+      if (nextWriteMask[i])
+      {
+        // write black
+        StripImpl_t::setPixelColor(i, 0);
+        _colorErrors[i] = 0;
+        // and skip
+        continue;
+      }
+
       if constexpr (useTemporalDithering)
       {
         const uint32_t c = convert_color_with_brightness(_colors[i], writeBrightness, i + capedShown, _colorErrors[i]);
@@ -129,6 +141,9 @@ public:
         StripImpl_t::setPixelColor(i, c);
       }
     }
+
+    // reset the mask after write
+    nextWriteMask.reset();
   }
 
   /// Show the current data, independant of changes
@@ -264,6 +279,17 @@ public:
   // signal the strip that it can display the update
   void signal_display() { hasSomeChanges = true; }
 
+  /**
+   * \brief Set a pixel to be masked at the next show
+   */
+  void mask_led_at_index(const size_t n, const bool shouldMask)
+  {
+    if (n >= LED_COUNT)
+      return;
+
+    nextWriteMask.set(n, shouldMask);
+  }
+
   /// buffers for computations
   std::array<BufferTy, stripNbBuffers> _buffers;
 
@@ -278,6 +304,9 @@ private:
 
   /// keep track of the show call count. Allowed to circle back to 0
   volatile uint8_t shownCount;
+
+  /// Mask some leds on output display, resetted after each write
+  etl::bitset<LED_COUNT> nextWriteMask;
 
   /// used for temporal dithering
   std::array<uint32_t, useTemporalDithering ? LED_COUNT : 1> _colorErrors;

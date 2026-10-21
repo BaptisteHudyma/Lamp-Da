@@ -127,8 +127,6 @@ struct LampTy
   /// Store a display config
   struct LampConfig
   {
-    uint16_t skipFirstLedsForEffect = 0; ///< Skip duration
-    uint16_t skipFirstLedsForAmount = 0; ///< Skip the first N leds
   };
 
   /// store a display configuration
@@ -202,6 +200,7 @@ private:
     uint8_t getBrightness();
     void setPixelColor(uint16_t, uint32_t);
     uint32_t getPixelColor(uint16_t);
+    void mask_led_at_index(const size_t n, const bool shouldMask);
 
   private:
     COLOR _colors[_ledCount]; // !! slighly smaller than buffers in _buffers !!
@@ -213,9 +212,6 @@ public:
   /// \private Constructor used to wrap strip if needed
   LMBD_INLINE LampTy() : config {}, fakeStrip {}, strip {fakeStrip}, now {0}, tick {0}, raw_frame_count {0} {}
 #endif
-
-  /// Internal led mask
-  etl::bitset<_ledCount> ledMask;
 
   //
   // private API
@@ -342,22 +338,6 @@ public:
   }
 
   static constexpr helixmask::Params helixMaskParameters = {};
-
-  /** \private Internal check to check if a led should be masked
-   *
-   */
-  bool is_led_masked_by_step_mask(size_t index)
-  {
-    // radius 25 mm, pitch = strip width 5 mm, spacing = 1000 / LED-per-metre
-    static constexpr helixmask::Geometry kStrip {lampBodyRadius_mm, ledStripWidth_mm, ledSize_mm, ledCount};
-    static constexpr helixmask::StepTable kTable =
-            helixmask::make_step_table(kStrip, helixMaskParameters); // evaluated at compile time
-
-    if (forceDisableLedDitherMask or currentMaskStep == 0 or currentMaskStep > maxMaskStep)
-      return false;
-
-    return not helixmask::led_on(kTable, index, currentMaskStep);
-  }
 
   //
   // public constants
@@ -505,15 +485,6 @@ public:
   //
   // public API
   //
-
-  /// Reset the led mask
-  void mask_all_leds(const bool maskAll)
-  {
-    if (maskAll)
-      ledMask.reset();
-    else
-      ledMask.set();
-  }
 
   /** \brief Clear lamp to a clean state
    *
@@ -876,12 +847,39 @@ public:
    * public API (indexable-only)
    */
 
+  /**
+   * \brief Apply the optional low level brightnes dithering
+   */
+  void LMBD_INLINE apply_low_brightness_mask()
+  {
+    // not enabled, skip
+    if (forceDisableLedDitherMask or currentMaskStep == 0 or currentMaskStep > maxMaskStep)
+      return;
+
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      static constexpr helixmask::Geometry kStrip {lampBodyRadius_mm, ledStripWidth_mm, ledSize_mm, ledCount};
+      static constexpr helixmask::StepTable kTable = helixmask::make_step_table(kStrip, helixMaskParameters);
+
+      for (uint16_t I = 0; I < ledCount; ++I)
+      {
+        // mask disabled leds
+        if (not helixmask::led_on(kTable, I, currentMaskStep))
+          mask_led_at_index(I, true);
+      }
+    }
+    else
+    {
+      assert(false && "unsupported");
+    }
+  }
+
   /** \brief (indexable) Fill lamp with target color, from start to end
    *
    * - See toLedCount() to set \p start and \p end
    * - See modes::colors::fromRGB() to set \p color
    */
-  void LMBD_INLINE fill(uint32_t color, uint16_t start, uint16_t end, bool forceSet = false)
+  void LMBD_INLINE fill(uint32_t color, uint16_t start, uint16_t end)
   {
     if constexpr (flavor == LampTypes::indexable)
     {
@@ -890,7 +888,7 @@ public:
 
       for (uint16_t I = start; I < end; ++I)
       {
-        setPixelColor(I, color, forceSet);
+        setPixelColor(I, color);
       }
     }
     else
@@ -910,7 +908,7 @@ public:
    * - See toLedCount() to set \p start and \p end
    * - See modes::colors::PaletteTy to set \p palette
    */
-  void LMBD_INLINE fill(const colors::PaletteTy& palette, uint16_t start, uint16_t end, bool forceSet = false)
+  void LMBD_INLINE fill(const colors::PaletteTy& palette, uint16_t start, uint16_t end)
   {
     if constexpr (flavor == LampTypes::indexable)
     {
@@ -921,7 +919,7 @@ public:
       {
         // map index to [0; 255]
         const auto color = colors::from_palette<false, uint8_t>(I / static_cast<float>(ledCount) * 255, palette);
-        setPixelColor(I, color, forceSet);
+        setPixelColor(I, color);
       }
     }
     else
@@ -935,28 +933,39 @@ public:
    */
   void LMBD_INLINE fill(const colors::PaletteTy& palette) { fill(palette, 0, ledCount); }
 
+  /**
+   * \brief Mark a led to be masked at the next show
+   * \param[in] n Index of the led to disable
+   * \param[in] shouldMask If true, the led wont be displayed
+   */
+  void LMBD_INLINE mask_led_at_index(const size_t n, const bool shouldMask)
+  {
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      strip.mask_led_at_index(n, shouldMask)
+    }
+    else
+    {
+      assert(false && "unsupported");
+    }
+  }
+  void LMBD_INLINE mask_led_at_XY(uint16_t X, uint16_t Y, const bool shouldMask)
+  {
+    mask_led_at_index(to_strip(X, Y), shouldMask);
+  }
+
   /** \brief (indexable) Set the n-th LED color
    *
    * See modes::fromRGB() to set \p color
    * \param[in] forceSet Force set the pixel color, ignoring all check and masks rules
    */
-  void LMBD_INLINE setPixelColor(uint16_t n, uint32_t color, const bool forceSet = false)
+  void LMBD_INLINE setPixelColor(uint16_t n, uint32_t color)
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      const bool willSkipLeds = config.skipFirstLedsForEffect and n < config.skipFirstLedsForAmount;
-      if ((not forceSet) and willSkipLeds)
-      {
-        return;
-      }
-
       assert(n < ledCount && "invalid LED index");
-
-      // step masking is enabled for this led
-      const bool isLedMasked = is_led_masked_by_step_mask(n) or (not ledMask[n]);
-
-      // mask pixels or apply correct color
-      strip.setPixelColor(n, (forceSet or (not isLedMasked)) ? color : 0);
+      // apply color
+      strip.setPixelColor(n, color);
     }
     else
     {
@@ -970,13 +979,8 @@ public:
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      if (config.skipFirstLedsForEffect && n < config.skipFirstLedsForAmount)
-      {
-        return 0;
-      }
-
       assert(n < ledCount && "invalid LED index");
-      return ledMask[n] ? strip.getPixelColor(n) : 0;
+      return strip.getPixelColor(n);
     }
     else
     {
@@ -989,10 +993,7 @@ public:
    *
    * See modes::fromRGB() to set \p color
    */
-  void LMBD_INLINE setPixelColorXY(uint16_t X, uint16_t Y, uint32_t color, bool forceSet = false)
-  {
-    setPixelColor(to_strip(X, Y), color, forceSet);
-  }
+  void LMBD_INLINE setPixelColorXY(uint16_t X, uint16_t Y, uint32_t color) { setPixelColor(to_strip(X, Y), color); }
 
   /** \brief (indexable) Given X,Y coordinate, return a corresponding LED index
    *
@@ -1049,7 +1050,7 @@ public:
   {
     const BufferTy& buffer = getTempBuffer<bufIdx>();
 
-    for (uint16_t I = config.skipFirstLedsForEffect ? config.skipFirstLedsForAmount : 0; I < ledCount; I++)
+    for (uint16_t I = 0; I < ledCount; I++)
     {
       setPixelColor(I, buffer[I]);
     }
@@ -1066,11 +1067,6 @@ public:
 
     uint16_t start = 0;
     uint16_t end = srcBuf.size();
-    if (config.skipFirstLedsForEffect)
-    {
-      start = config.skipFirstLedsForAmount;
-    }
-
     for (uint16_t I = start; I < end; ++I)
     {
       COLOR src;
@@ -1091,10 +1087,6 @@ public:
 
     uint16_t start = 0;
     uint16_t end = buffer.size();
-    if (config.skipFirstLedsForEffect)
-    {
-      start = config.skipFirstLedsForAmount;
-    }
 
     if (skipLastLine)
     {
@@ -1115,12 +1107,7 @@ public:
   {
     BufferTy& buffer = getTempBuffer<bufIdx>();
 
-    const uint16_t startI = (!forceFullRead && config.skipFirstLedsForEffect) ? config.skipFirstLedsForAmount : 0;
-
-    for (uint16_t I = 0; I < startI; I++)
-      buffer[I] = 0;
-
-    for (uint16_t I = startI; I < ledCount; I++)
+    for (uint16_t I = 0; I < ledCount; I++)
     {
       buffer[I] = getPixelColor(I);
     }
