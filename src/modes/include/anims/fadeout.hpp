@@ -10,7 +10,7 @@
 #include "src/modes/include/particle_system/particle_system.hpp"
 
 namespace lampda::modes::anims {
-/// Define fadout animation. They require a buffer ID, used to store the fadout mask
+/// Define fadout animation.
 namespace fadeout {
 
 /**
@@ -30,7 +30,6 @@ struct DropModeLineByLine
   template<typename ContextType>
   static bool depop_one(ContextType& ctx, const etl::bitset<LampTy::ledCount>& maskedLeds, uint32_t& pixelId)
   {
-    auto& buffer = ctx.lamp.ledMask;
     const auto bufferSize = ctx.lamp.ledCount;
 
     // check lines by lines from bottom to top, keeping the first one with pixels left

@@ -942,7 +942,7 @@ public:
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      strip.mask_led_at_index(n, shouldMask)
+      strip.mask_led_at_index(n, shouldMask);
     }
     else
     {

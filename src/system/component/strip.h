@@ -123,7 +123,11 @@ public:
       {
         // write black
         StripImpl_t::setPixelColor(i, 0);
-        _colorErrors[i] = 0;
+
+        if constexpr (useTemporalDithering)
+        {
+          _colorErrors[i] = 0;
+        }
         // and skip
         continue;
       }
