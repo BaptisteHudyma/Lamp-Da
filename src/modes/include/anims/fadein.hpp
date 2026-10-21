@@ -27,7 +27,8 @@ template<size_t MaxParticles = 20> struct GravityFadeIn
 {
   void reset(auto& ctx)
   {
-    ctx.lamp.mask_all_leds(true); // everything hidden
+    maskedLeds.set(); // everything hidden
+
     particuleSystem.reset();
     particuleSystem.set_max_particle_count(MaxParticles);
     reserved.reset();
@@ -48,6 +49,13 @@ template<size_t MaxParticles = 20> struct GravityFadeIn
 
     spawn_pending(ctx);
 
+    // mask all the leds that needs masking
+    for (uint16_t i = 0; i < maskedLeds.size(); i++)
+    {
+      if (maskedLeds[i])
+        ctx.lamp.mask_led_at_index(i, true);
+    }
+
     if (particuleSystem.get_number_of_active() > 0)
     {
       static constexpr bool shouldKeepInLampBounds = false;
@@ -60,8 +68,8 @@ template<size_t MaxParticles = 20> struct GravityFadeIn
       });
 
       // Force display because the pixels below are masked
-      static constexpr bool forceDisplay = true;
-      particuleSystem.show(ctx.lamp, forceDisplay);
+      static constexpr bool forceDisplayParticles = true;
+      particuleSystem.show(ctx.lamp, forceDisplayParticles);
 
       if (left == 0 and spawned >= ctx.lamp.ledCount)
         isComplete = true;
@@ -114,7 +122,8 @@ protected:
 
   void complete(auto& ctx)
   {
-    ctx.lamp.mask_all_leds(false);
+    maskedLeds.reset(); // everything visible
+
     particuleSystem.reset();
     reserved.reset();
     spawned = ctx.lamp.ledCount;
@@ -149,7 +158,7 @@ protected:
     const float theta = atan2(helix.y, helix.x);
     const int16_t spawnIndex = modes::to_led_index_no_bounds(theta, 0.0f);
     const float targetZ = helix.z;
-    const uint32_t color = 0xFFFFFF; // ctx.lamp.getPixelColor(targetId);
+    const uint32_t color = ctx.lamp.getPixelColor(targetId);
 
     const bool notAllCreated = particuleSystem.init_deferred_particules(
             1,
@@ -175,7 +184,7 @@ protected:
     const auto id = modes::to_strip(x, y);
     if (id < 0 or id >= ctx.lamp.ledCount)
       return false;
-    return not ctx.lamp.ledMask[id] and not reserved[id];
+    return maskedLeds[id] and not reserved[id];
   }
 
   /// Pick a random target in the lowest line that still has free pixels
@@ -216,7 +225,7 @@ protected:
       return false;
 
     const uint32_t target = targets[slot];
-    ctx.lamp.ledMask.set(target); // visible
+    maskedLeds.reset(target); // visible
     reserved.reset(target);
     return true;
   }
@@ -234,6 +243,7 @@ private:
   std::array<uint32_t, MaxParticles> targets {}; ///< target pixel of each particle slot
   std::array<float, MaxParticles> targetsZ {};   ///< target height of each particle slot
   etl::bitset<LampTy::ledCount> reserved;        ///< pixels already targeted by a falling particle
+  etl::bitset<LampTy::ledCount> maskedLeds;      /// keep track of the already masked leds
 
   modes::ParticleSystem<MaxParticles> particuleSystem;
 };
