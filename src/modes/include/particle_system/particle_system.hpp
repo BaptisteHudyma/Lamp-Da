@@ -6,7 +6,6 @@
 #define PARTICLE_SYSTEM_H
 
 #include <cstdint>
-#include <functional>
 #include <etl/bitset.h>
 
 #include "src/system/ext/random8.h"

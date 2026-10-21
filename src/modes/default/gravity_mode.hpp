@@ -8,7 +8,6 @@
 #include "src/modes/include/colors/palettes.hpp"
 #include <cstddef>
 #include <cstdint>
-#include <functional>
 
 namespace lampda::modes::default_modes {
 
