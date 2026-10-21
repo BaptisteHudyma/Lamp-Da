@@ -25,6 +25,7 @@
 #include "src/modes/include/hardware/lamp_type.hpp"
 
 #include "src/modes/include/anims/fadeout.hpp"
+#include "src/modes/include/anims/fadein.hpp"
 
 namespace lampda::modes {
 
@@ -365,7 +366,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
         ctx.lamp.clear();
       }
       // reset masking
-      ctx.lamp.forceDisableLedMask = false;
+      ctx.lamp.forceDisableLedDitherMask = false;
     }
 
     static void LMBD_INLINE on_favorite_hold_end(auto& ctx, bool shouldExecuteAction)
@@ -852,9 +853,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     });
 
     ctx.state.after_enter_mode(ctx);
-
-    // start by reseting the sun timers animations
-    ctx.modeManager.sunsetHandler.reset_suntimer_animation(ctx);
   }
 
   /// Callback called on a mode deactivation
@@ -909,11 +907,11 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       group.loop();
     });
 
+    /// update suntimers after the animation
     if (logic::sunset_timer.is_enabled())
-    {
-      /// update suntimers after the animation
       ctx.modeManager.sunsetHandler.loop_suntimer_animation(ctx);
-    }
+    if (logic::sunrise_timer.is_enabled())
+      ctx.modeManager.sunriseHandler.loop_suntimer_animation(ctx);
 
     // display the overlay after the group update
     overlay.display_update(ctx);
@@ -944,6 +942,31 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   }
 
   /**
+   * \brief Signal that a sun timer as been canceled
+   */
+  static void sunset_timer_internal_reset(auto& ctx)
+  {
+    ctx.modeManager.sunsetHandler.reset_suntimer_animation(ctx);
+
+    ctx.lamp.forceDisableLedDitherMask = false;
+    ctx.lamp.mask_all_leds(false); // disable masking
+  }
+
+  /**
+   * \brief Signal that a sun timer as been canceled
+   */
+  static void sunrise_timer_internal_reset(auto& ctx, const bool clearMasks)
+  {
+    ctx.modeManager.sunriseHandler.reset_suntimer_animation(ctx);
+
+    if (clearMasks)
+    {
+      ctx.lamp.forceDisableLedDitherMask = false;
+      ctx.lamp.mask_all_leds(false); // disable masking
+    }
+  }
+
+  /**
    * \brief Callback of the brightness update
    * \param[in, out] ctx Context
    * \param[in] brightness The new brightness
@@ -960,7 +983,10 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   {
     // start with tick value
     ctx.lamp.refresh_tick_value();
-    ctx.lamp.forceDisableLedMask = false;
+
+    // start by reseting the sun timers animations, clear masks if we did not wake up with a sunrise
+    ctx.sunset_timer_internal_reset();
+    ctx.sunrise_timer_internal_reset(true);
 
     foreach_group<true>(ctx, [](auto group) {
       group.power_on_sequence();
@@ -986,7 +1012,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       group.power_off_sequence();
     });
 
-    ctx.lamp.forceDisableLedMask = false;
+    ctx.lamp.forceDisableLedDitherMask = false;
+    ctx.lamp.mask_all_leds(false);
   }
 
   /// Write the parameters to memory
@@ -1308,19 +1335,21 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
    * Suntimer handling
    */
 
-  struct SunTimerHandling
+  template<typename Animation> struct SunTimerHandling
   {
-    // define the shared sunset animation
-    anims::fadeout::GravityDissolve<> animation;
+    // define the shared suntimer animation
+    Animation animation;
     /// Update the sunset drop animation
-    void update_suntimer_drop_animation(auto& ctx, float progress) { animation.update_depop_rate(ctx, progress); }
+    void update_suntimer_drop_animation(auto& ctx, float progress) { animation.update_progress_rate(ctx, progress); }
     /// Reset the sunset animations
     void reset_suntimer_animation(auto& ctx) { animation.reset(ctx); }
     /// loop suntimer animations
     void loop_suntimer_animation(auto& ctx) { animation.loop(ctx); }
   };
 
-  SunTimerHandling sunsetHandler;
+  // sunset drop animation handle
+  SunTimerHandling<anims::fadeout::GravityDissolve<>> sunsetHandler;
+  SunTimerHandling<anims::fadein::GravityFadeIn<>> sunriseHandler;
 
   //
   // private members

@@ -16,6 +16,8 @@
 #include "src/modes/include/tools.hpp"
 #include "src/modes/include/default_config.hpp"
 
+#include <src/system/logic/sun_timers.h>
+
 namespace lampda::modes {
 
 /// Bind provided context to another modes::BasicMode
@@ -47,13 +49,15 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   static constexpr bool isGroupManager = false;
 
   // useful proxies (exposes mode properties)
-  static constexpr bool hasSunsetAnimation = LocalModeTy::hasSunsetAnimation;   ///< \private
-  static constexpr bool hasSunriseAnimation = LocalModeTy::hasSunriseAnimation; ///< \private
-  static constexpr bool hasBrightCallback = LocalModeTy::hasBrightCallback;     ///< \private
-  static constexpr bool hasSystemCallbacks = LocalModeTy::hasSystemCallbacks;   ///< \private
-  static constexpr bool requireUserThread = LocalModeTy::requireUserThread;     ///< \private
-  static constexpr bool hasCustomRamp = LocalModeTy::hasCustomRamp;             ///< \private
-  static constexpr bool hasButtonCustomUI = LocalModeTy::hasButtonCustomUI;     ///< \private
+  static constexpr bool hasSunsetAnimation = LocalModeTy::hasSunsetAnimation;                       ///< \private
+  static constexpr bool hasSunriseAnimation = LocalModeTy::hasSunriseAnimation;                     ///< \private
+  static constexpr bool usesSunsetGravityDissolveMode = LocalModeTy::usesSunsetGravityDissolveMode; ///< \private
+  static constexpr bool usesSunriseGravityAppearMode = LocalModeTy::usesSunriseGravityAppearMode;   ///< \private
+  static constexpr bool hasBrightCallback = LocalModeTy::hasBrightCallback;                         ///< \private
+  static constexpr bool hasSystemCallbacks = LocalModeTy::hasSystemCallbacks;                       ///< \private
+  static constexpr bool requireUserThread = LocalModeTy::requireUserThread;                         ///< \private
+  static constexpr bool hasCustomRamp = LocalModeTy::hasCustomRamp;                                 ///< \private
+  static constexpr bool hasButtonCustomUI = LocalModeTy::hasButtonCustomUI;                         ///< \private
 
   // more proxies (exposes tables of mode properties)
   static constexpr auto everySunsetCallback = LocalModeTy::everySunsetCallback;       ///< \private
@@ -323,11 +327,19 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   uint8_t LMBD_INLINE get_active_custom_ramp() const { return modeManager.activeIndex.rampIndex; }
 
   /**
-   * \brief Update the suntimer drop animation
+   * \brief Update the sunset timer drop animation
    */
-  void update_suntimer_drop_animation(float progress)
+  void update_sunset_drop_animation(float progress)
   {
     modeManager.sunsetHandler.update_suntimer_drop_animation(*this, progress);
+  }
+
+  /**
+   * \brief Update the sunrise timer drop animation
+   */
+  void update_sunrise_drop_animation(float progress)
+  {
+    modeManager.sunriseHandler.update_suntimer_drop_animation(*this, progress);
   }
 
   /** \brief (setter) Set active custom ramp value (overrides user choice)
@@ -681,6 +693,31 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     {
       LocalStore::template migrateStoreIfNeeded<LocalModeTy::storeId>();
     }
+
+    // this mode special case
+    if constexpr (isMode)
+    {
+      auto manager = modeManager.get_context();
+
+      // this mode has sunset and internal sunset animation
+      // TODO: better handling of led mask should prevent this for animations
+      // if constexpr (LocalModeTy::hasSunsetAnimation && LocalModeTy::usesSunsetGravityDissolveMode)
+      // This should be resetted every time
+      manager.sunset_timer_internal_reset();
+
+      // this mode has sunset and internal sunset animation
+      if constexpr (LocalModeTy::hasSunriseAnimation && LocalModeTy::usesSunriseGravityAppearMode)
+      {
+        // do not clear the masks when sunset is active
+        manager.sunrise_timer_internal_reset(not logic::sunrise_timer.is_enabled());
+      }
+      else
+      {
+        // always clear masks
+        manager.sunrise_timer_internal_reset(true);
+      }
+    }
+
     LocalModeTy::on_enter_mode(*this);
   }
 
@@ -698,14 +735,20 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     {
       if constexpr (isMode)
       {
-        modeManager.get_context().lamp.forceDisableLedMask = true;
+        modeManager.get_context().lamp.forceDisableLedDitherMask = true;
+
+        if constexpr (LocalModeTy::usesSunsetGravityDissolveMode)
+        {
+          // special handle case if we specifically have a dissolve mode
+          modeManager.get_context().update_sunset_drop_animation(progress);
+        }
       }
 
       LocalModeTy::sunset_update(*this, progress);
     }
     else if constexpr (isMode)
     {
-      modeManager.get_context().lamp.forceDisableLedMask = false;
+      modeManager.get_context().lamp.forceDisableLedDitherMask = false;
     }
   }
 
@@ -716,15 +759,33 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     {
       if constexpr (isMode)
       {
-        modeManager.get_context().lamp.forceDisableLedMask = true;
+        modeManager.get_context().lamp.forceDisableLedDitherMask = true;
+
+        if constexpr (LocalModeTy::usesSunriseGravityAppearMode)
+        {
+          // special handle case if we specifically have a gravity appear mode
+          modeManager.get_context().update_sunrise_drop_animation(progress);
+        }
       }
 
       LocalModeTy::sunrise_update(*this, progress);
     }
     else if constexpr (isMode)
     {
-      modeManager.get_context().lamp.forceDisableLedMask = false;
+      modeManager.get_context().lamp.forceDisableLedDitherMask = false;
     }
+  }
+
+  /**
+   * \brief Signal a end of sunset timer event
+   */
+  void LMBD_INLINE sunset_timer_internal_reset() { LocalModeTy::sunset_timer_internal_reset(*this); }
+  /**
+   * \brief Signal a end of sunrise timer event
+   */
+  void LMBD_INLINE sunrise_timer_internal_reset(const bool shouldClearMasks)
+  {
+    LocalModeTy::sunrise_timer_internal_reset(*this, shouldClearMasks);
   }
 
   /// Binds to local BasicMode::brightness_update()

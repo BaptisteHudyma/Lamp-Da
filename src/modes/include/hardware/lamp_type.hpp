@@ -351,10 +351,10 @@ public:
     static constexpr helixmask::StepTable kTable =
             helixmask::make_step_table(kStrip, helixMaskParameters); // evaluated at compile time
 
-    if (forceDisableLedMask or currentMaskStep == 0 or currentMaskStep > maxMaskStep)
+    if (forceDisableLedDitherMask or currentMaskStep == 0 or currentMaskStep > maxMaskStep)
       return false;
 
-    return !helixmask::led_on(kTable, index, currentMaskStep);
+    return not helixmask::led_on(kTable, index, currentMaskStep);
   }
 
   //
@@ -505,7 +505,13 @@ public:
   //
 
   /// Reset the led mask
-  void clear_led_mask() { ledMask.set(); }
+  void mask_all_leds(const bool maskAll)
+  {
+    if (maskAll)
+      ledMask.reset();
+    else
+      ledMask.set();
+  }
 
   /** \brief Clear lamp to a clean state
    *
@@ -947,10 +953,10 @@ public:
       assert(n < ledCount && "invalid LED index");
 
       // step masking is enabled for this led
-      const bool isLedMasked = is_led_masked_by_step_mask(n);
+      const bool isLedMasked = is_led_masked_by_step_mask(n) or (not ledMask[n]);
 
       // mask pixels or apply correct color
-      strip.setPixelColor(n, (forceSet or (not isLedMasked and ledMask[n])) ? color : 0);
+      strip.setPixelColor(n, (forceSet or (not isLedMasked)) ? color : 0);
     }
     else
     {
@@ -1162,7 +1168,7 @@ public:
    * If 1, all leds are available, goes up to maxMaskStep
    */
   volatile const uint8_t currentMaskStep = 0;
-  volatile bool forceDisableLedMask = false; ///< set to true to lock led mask brightness control
+  volatile bool forceDisableLedDitherMask = false; ///< set to true to lock led mask brightness control
   static constexpr uint8_t maxMaskStep = helixMaskParameters.max_level;
   static constexpr brightness_t ledMasking_brightnessThreshold =
           ::lampda::brightness::absoluteMaximumBrightness *

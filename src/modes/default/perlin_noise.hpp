@@ -236,8 +236,10 @@ struct PerlinNoiseMode : public BasicMode
 
   /// sunset animation on the fixed modes
   static constexpr bool hasSunsetAnimation = true;
-  /// Sunset timer will drop pixels downward, and never display them again
-  static void sunset_update(auto& ctx, float progress) { ctx.update_suntimer_drop_animation(progress); }
+  static constexpr bool hasSunriseAnimation = true;
+  // Use the two internal gravity modes, so no need to define the callbacks
+  static constexpr bool usesSunsetGravityDissolveMode = true;
+  static constexpr bool usesSunriseGravityAppearMode = true;
 };
 
 } // namespace lampda::modes::default_modes

@@ -48,13 +48,14 @@ template<bool isStep = false, uint32_t rampUpdateLenght_ms = 55, bool shouldSatu
     ctx.lamp.fill(color);
   }
 
-  /// Sunset timer will drop pixels downward, and never display them again
-  static void sunset_update(auto& ctx, float progress) { ctx.update_suntimer_drop_animation(progress); }
-
   /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
-  /// sunset animation on the fixed modes
+  /// sunset & sunrise animation on the fixed modes
   static constexpr bool hasSunsetAnimation = true;
+  static constexpr bool hasSunriseAnimation = true;
+  // Use the two internal gravity modes, so no need to define the callbacks
+  static constexpr bool usesSunsetGravityDissolveMode = true;
+  static constexpr bool usesSunriseGravityAppearMode = true;
 };
 
 /**

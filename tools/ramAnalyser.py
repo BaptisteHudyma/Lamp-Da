@@ -849,7 +849,7 @@ def report_and_assert(r: RamReport, is_verbose) -> bool:
         print(f"  ✓ PASS - total RAM within limit ({total_used}/{r.total_ram} B)")
     
     if not isClearOfDynamicMemory:
-        print("  ✓ FAIL - Dynamic memory allocations detected. Check debug above for location")
+        print("  ✗ FAIL - Dynamic memory allocations detected. Check debug above for location")
         passed = False
     else:
         print("  ✓ PASS - No dynamic memory allocations detected")
