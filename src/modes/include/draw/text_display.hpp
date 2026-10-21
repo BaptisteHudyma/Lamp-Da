@@ -5,8 +5,6 @@
 #ifndef MODES_DRAW_TEXT_DISPLAY_HPP
 #define MODES_DRAW_TEXT_DISPLAY_HPP
 
-#include <functional>
-
 namespace lampda::modes::draw {
 /// Text display utility
 namespace text {
@@ -465,14 +463,16 @@ struct TextDisplay
    * \param[in] paddEnd If true, this function will consider that the text is displayed when the last letter disappears
    * \return True when the text is fully displayed
    */
-  static bool display(LampTy& lamp,
-                      const etl::string<maxCharacters>& text,
-                      const std::function<uint32_t(char)>& colorCallback,
-                      const int16_t startXIndex = 0,
-                      const int16_t startYIndex = 0,
-                      float scale = 0.2,
-                      const bool paddEnd = false)
+  template<typename ColorFunctionCallback> static bool display(LampTy& lamp,
+                                                               const etl::string<maxCharacters>& text,
+                                                               const ColorFunctionCallback& colorCallback,
+                                                               const int16_t startXIndex = 0,
+                                                               const int16_t startYIndex = 0,
+                                                               float scale = 0.2,
+                                                               const bool paddEnd = false)
   {
+    static_assert(std::is_invocable_r_v<uint32_t, ColorFunctionCallback, char>);
+
     const auto& [font, trueScale] = __private::font_from_scale(scale);
 
     bool lastLetterDisappeared = true;
