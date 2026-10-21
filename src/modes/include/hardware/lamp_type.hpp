@@ -193,7 +193,6 @@ private:
   struct LedStrip ///< \private
   {
     BufferTy _buffers[_nbBuffers];
-    COLOR _colors[_ledCount]; // !! slighly smaller than buffers in _buffers !!
 
     void begin();
     void show();
@@ -203,6 +202,9 @@ private:
     uint8_t getBrightness();
     void setPixelColor(uint16_t, uint32_t);
     uint32_t getPixelColor(uint16_t);
+
+  private:
+    COLOR _colors[_ledCount]; // !! slighly smaller than buffers in _buffers !!
   };
   LedStrip fakeStrip; ///< \private
   LedStrip& strip;    ///< \private
@@ -685,8 +687,6 @@ public:
       {
         // cancel the step masking
         cancel_step_mask();
-
-        /// @warning: this is actually heavy to run
         strip.setBrightness(brightnessCurve.sample(trueNewBrightness));
       }
     }

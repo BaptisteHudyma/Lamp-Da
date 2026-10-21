@@ -18,12 +18,8 @@
 #include "src/generated/hal/strip_impl.hpp"
 //
 
-#include "src/system/ext/scale8.h"
-#include "src/system/ext/random8.h"
-
+#include "src/system/utils/colorspace.h"
 #include "src/system/utils/constants.h"
-#include "src/system/utils/utils.h"
-#include "src/system/utils/vector_math.h"
 
 #include "src/user/constants.h"
 
@@ -59,16 +55,15 @@ public:
   {
     assert(_colorErrors.size() > 0);
 
-    COLOR c;
-    c.color = 0;
     for (uint16_t i = 0; i < LED_COUNT; ++i)
     {
       if constexpr (useTemporalDithering)
       {
-        _colorErrors[i] = c;
+        _colorErrors[i] = utils::ColorSpace::BLACK.get_rgb().color;
       }
 
-      _colors[i] = c;
+      // All to black
+      _colors[i] = utils::ColorSpace::BLACK.get_rgb().color;
     }
   }
 
@@ -85,43 +80,11 @@ public:
     hasSomeChanges = false;
   }
 
-  float estimateCurrentDraw() const
-  {
-    float estimatedCurrentDraw = 0.0;
-
-    const uint8_t b = getBrightness();
-    const float currentPerLed = lmpd_map<float>(b, 0, 255, 0.0f, ampPerLed);
-
-    for (uint16_t i = 0; i < LED_COUNT; ++i)
-    {
-      COLOR c;
-      c.color = getRawPixelColor(i);
-
-      const float res = max<float>(c.blue, max<float>(c.red, c.green));
-      if (res <= 0)
-      {
-        continue;
-      }
-
-      estimatedCurrentDraw += currentPerLed;
-    }
-    return max<float>(baseCurrentConsumption, estimatedCurrentDraw);
-  }
-
   /// Brightness is an internal counter
   void setBrightness(uint8_t b) { brightness = b; }
 
   /// Brightness is an internal flag
   uint8_t getBrightness() const { return brightness; }
-
-  // Accessor to set a color
-  void setPixelColor(uint16_t n, COLOR c)
-  {
-    if (n >= LED_COUNT)
-      return;
-
-    _colors[n] = c;
-  }
 
   /**
    * EXPLICIT CALLS TO THE LIBRARY
@@ -137,15 +100,13 @@ public:
     if (n >= LED_COUNT)
       return 0;
 
-    COLOR c;
-    c.color = StripImpl_t::getPixelColor(n);
-
+    utils::ColorSpace::RGB c(StripImpl_t::getPixelColor(n));
     // We use brightnessAtShowTime here, or the colors can break when brightness changed
-    c.blue = restore_color_with_brightness(c.blue, brightnessAtShowTime);
-    c.green = restore_color_with_brightness(c.green, brightnessAtShowTime);
-    c.red = restore_color_with_brightness(c.red, brightnessAtShowTime);
+    const uint8_t blue = restore_color_with_brightness(c.get_rgb().blue, brightnessAtShowTime);
+    const uint8_t green = restore_color_with_brightness(c.get_rgb().green, brightnessAtShowTime);
+    const uint8_t red = restore_color_with_brightness(c.get_rgb().red, brightnessAtShowTime);
 
-    return c.color;
+    return utils::ColorSpace::RGB(red, green, blue).get_rgb().color;
   }
 
   /// \private: write the buffered colors to the led driver
@@ -157,15 +118,15 @@ public:
     {
       if constexpr (useTemporalDithering)
       {
-        const COLOR c = convert_color_with_brightness(_colors[i], writeBrightness, i + capedShown, _colorErrors[i]);
+        const uint32_t c = convert_color_with_brightness(_colors[i], writeBrightness, i + capedShown, _colorErrors[i]);
         // set strip color
-        StripImpl_t::setPixelColor(i, c.color);
+        StripImpl_t::setPixelColor(i, c);
       }
       else
       {
-        const COLOR c = convert_color_with_brightness(_colors[i], writeBrightness, i + capedShown, _colorErrors[0]);
+        const uint32_t c = convert_color_with_brightness(_colors[i], writeBrightness, i + capedShown, _colorErrors[0]);
         // set strip color
-        StripImpl_t::setPixelColor(i, c.color);
+        StripImpl_t::setPixelColor(i, c);
       }
     }
   }
@@ -198,11 +159,11 @@ public:
   static uint8_t restore_color_with_brightness(uint8_t colorIn, const uint8_t brightness)
   {
     // only special case
-    const uint16_t colorShifted = (uint16_t)colorIn << 8;
+    const uint16_t colorShifted = static_cast<uint16_t>(colorIn) << 8u;
     if (colorShifted <= brightness or brightness == 0)
       return 0;
 
-    uint8_t fullColor = (colorShifted - brightness) / brightness;
+    uint8_t fullColor = static_cast<uint8_t>((colorShifted - brightness) / brightness);
     return fullColor;
   }
 
@@ -252,7 +213,7 @@ public:
       finalColorRaw += (finalError > BLUE_NOISE_LUT[index % BLUE_NOISE_LUT.size()] ? 1 : 0);
     }
 
-    const uint8_t finalColor = (finalColorRaw > 255) ? 255 : finalColorRaw;
+    const uint8_t finalColor = (finalColorRaw > 255) ? 255 : static_cast<uint8_t>(finalColorRaw);
     return {finalColor, finalError};
   }
 
@@ -264,171 +225,47 @@ public:
    * \param[in] index Index of the noise to use
    * \param[in, out] error Error components of the current colors
    */
-  static COLOR convert_color_with_brightness(const COLOR& c,
-                                             const uint8_t brightness,
-                                             const uint16_t index,
-                                             COLOR& error)
+  static uint32_t convert_color_with_brightness(const uint32_t color,
+                                                const uint8_t brightness,
+                                                const uint16_t index,
+                                                uint32_t& error)
   {
     // no temporal dithering: no error propagation
     if constexpr (not useTemporalDithering)
     {
-      error.red = 0;
-      error.green = 0;
-      error.blue = 0;
+      error = 0;
     }
+
+    utils::ColorSpace::RGB c(color);
+    utils::ColorSpace::RGB err(error);
+
     // convert colors and errors, with small offsets for the different chanels
-    const auto& [red, redError] = get_brightness_color_and_error(c.red, error.red, brightness, index);
-    const auto& [green, greenError] = get_brightness_color_and_error(c.green, error.green, brightness, index + 1);
-    const auto& [blue, blueError] = get_brightness_color_and_error(c.blue, error.blue, brightness, index + 2);
+    const auto& [red, redError] = get_brightness_color_and_error(c.get_rgb().red, err.get_rgb().red, brightness, index);
+    const auto& [green, greenError] =
+            get_brightness_color_and_error(c.get_rgb().green, err.get_rgb().green, brightness, index + 1);
+    const auto& [blue, blueError] =
+            get_brightness_color_and_error(c.get_rgb().blue, err.get_rgb().blue, brightness, index + 2);
 
     // store error components
-    error.red = redError;
-    error.green = greenError;
-    error.blue = blueError;
-
-    COLOR result;
-    result.red = red;
-    result.green = green;
-    result.blue = blue;
-    return result;
-  }
-
-  void setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b)
-  {
-    COLOR c;
-    c.red = r;
-    c.green = g;
-    c.blue = b;
-
-    setPixelColor(n, c);
-  }
-
-  void setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w)
-  {
-    COLOR c;
-    c.red = r;
-    c.green = g;
-    c.blue = b;
-    c.white = w;
-
-    setPixelColor(n, c);
+    error = utils::ColorSpace::RGB(redError, greenError, blueError).get_rgb().color;
+    return utils::ColorSpace::RGB(red, green, blue).get_rgb().color;
   }
 
   void setPixelColor(uint16_t n, uint32_t c)
   {
-    COLOR co;
-    co.color = c;
+    if (n >= LED_COUNT)
+      return;
 
-    setPixelColor(n, co);
+    _colors[n] = c;
   }
 
-  static uint16_t to_strip(uint16_t screenX, uint16_t screenY)
-  {
-    if (screenX > stripXCoordinates)
-      screenX = stripXCoordinates;
-    if (screenY > stripYCoordinates)
-      screenY = stripYCoordinates;
-
-    return lmpd_constrain<uint16_t>(screenX + screenY * stripXCoordinates, 0, LED_COUNT - 1);
-  }
-
-  void setPixelColorXY(uint16_t x, uint16_t y, COLOR c) { setPixelColor(LedStrip::to_strip(x, y), c); }
-
-  void setPixelColorXY(uint16_t x, uint16_t y, uint32_t c) { setPixelColor(LedStrip::to_strip(x, y), c); }
-
-  /*
-   * Put a value 0 to 255 in to get a color value.
-   * The colours are a transition r -> g -> b -> back to r
-   * Inspired by the Adafruit examples.
-   */
-  uint32_t color_wheel(uint8_t pos)
-  {
-    pos = 255 - pos;
-    if (pos < 85)
-    {
-      return ((uint32_t)(255 - pos * 3) << 16) | ((uint32_t)(0) << 8) | (pos * 3);
-    }
-    else if (pos < 170)
-    {
-      pos -= 85;
-      return ((uint32_t)(0) << 16) | ((uint32_t)(pos * 3) << 8) | (255 - pos * 3);
-    }
-    else
-    {
-      pos -= 170;
-      return ((uint32_t)(pos * 3) << 16) | ((uint32_t)(255 - pos * 3) << 8) | (0);
-    }
-  }
-
-  void blur(uint8_t blur_amount)
-  {
-    if (blur_amount == 0)
-      return; // optimization: 0 means "don't blur"
-    uint8_t keep = 255 - blur_amount;
-    uint8_t seep = blur_amount >> 1;
-    COLOR carryover;
-    carryover.color = 0;
-    for (unsigned i = 0; i < LED_COUNT; i++)
-    {
-      COLOR cur;
-      cur.color = getPixelColor(i);
-      COLOR c = cur;
-      COLOR part = utils::color_fade(c, seep);
-      cur = utils::color_add(utils::color_fade(c, keep), carryover, true);
-      if (i > 0)
-      {
-        c.color = getPixelColor(i - 1);
-        setPixelColor(i - 1, utils::color_add(c, part, true));
-      }
-      setPixelColor(i, cur);
-      carryover = part;
-    }
-  }
-
-  uint32_t getPixelColor(uint16_t n) const { return _colors[lmpd_constrain<uint16_t>(n, 0, LED_COUNT - 1)].color; }
-  uint32_t getPixelColorXY(int16_t x, int16_t y) const { return getPixelColor(LedStrip::to_strip(x, y)); }
-
-  // Adds the specified color with the existing pixel color perserving color
-  // balance.
-  void addPixelColor(uint16_t n, uint32_t color, bool fast = false)
-  {
-    COLOR c1;
-    c1.color = getPixelColor(n);
-    COLOR c2;
-    c2.color = color;
-
-    setPixelColor(n, utils::color_add(c1, c2, fast));
-  }
-
-  void addPixelColorXY(uint16_t x, uint16_t y, uint32_t color, bool fast = false)
-  {
-    addPixelColor(LedStrip::to_strip(x, y), color, fast);
-  }
+  uint32_t getPixelColor(uint16_t n) const { return _colors[lmpd_constrain<uint16_t>(n, 0, LED_COUNT - 1)]; }
 
   // signal the strip that it can display the update
   void signal_display() { hasSomeChanges = true; }
 
-  uint32_t* get_buffer_ptr(const uint8_t index) { return _buffers[index].data(); }
-
-  void buffer_current_colors(const uint8_t index)
-  {
-    static_assert(sizeof(BufferTy) == sizeof(_colors));
-    memcpy(_buffers[index].data(), _colors, sizeof(_colors));
-  }
-
-  void fill_buffer(const uint8_t index, const uint32_t value)
-  {
-    memset(_buffers[index].data(), value, sizeof(BufferTy));
-  }
-
-  /// store the display colors, with no brightness scaling
-  COLOR _colors[LED_COUNT];
-
-  /// used for temporal dithering
-  std::array<COLOR, useTemporalDithering ? LED_COUNT : 1> _colorErrors;
-
   /// buffers for computations
-  BufferTy _buffers[stripNbBuffers];
+  std::array<BufferTy, stripNbBuffers> _buffers;
 
 private:
   volatile bool hasSomeChanges;
@@ -441,6 +278,12 @@ private:
 
   /// keep track of the show call count. Allowed to circle back to 0
   volatile uint8_t shownCount;
+
+  /// used for temporal dithering
+  std::array<uint32_t, useTemporalDithering ? LED_COUNT : 1> _colorErrors;
+
+  /// store the display colors, with no brightness scaling
+  std::array<uint32_t, LED_COUNT> _colors;
 };
 
 } // namespace component
