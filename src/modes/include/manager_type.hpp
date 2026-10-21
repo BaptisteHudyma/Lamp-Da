@@ -1349,7 +1349,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
   // sunset drop animation handle
   SunTimerHandling<anims::fadeout::GravityDissolve<>> sunsetHandler;
-  SunTimerHandling<anims::fadein::GravityFill> sunriseHandler;
+  SunTimerHandling<anims::fadein::GravityFadeIn<>> sunriseHandler;
 
   //
   // private members

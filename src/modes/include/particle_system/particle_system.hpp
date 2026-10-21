@@ -52,9 +52,12 @@ public:
    * \brief Init the particles from a initialization function
    * \param[in] positionGeneratorFunction Function that takes an index and return a ledstrip index
    */
-  void init_particules(const std::function<int16_t(size_t)>& positionGeneratorFunction,
+  template<typename PositionGeneratorFunction>
+  void init_particules(const PositionGeneratorFunction& positionGeneratorFunction,
                        const uint32_t color = colors::HTMLColorCode::White)
   {
+    static_assert(std::is_invocable_r_v<int16_t, PositionGeneratorFunction, size_t>);
+
     isOccupiedSpaces.reset();
     isAllocated.reset();
     for (size_t i = 0; i < particuleCount; ++i)
@@ -68,9 +71,11 @@ public:
    * \param[in] maxParticlesToPop Maximum particles to spawn at this call
    * \param[in] positionGeneratorFunction Function that takes an index and return a led strip index
    */
-  bool init_deferred_particules(uint8_t maxParticlesToPop,
-                                const std::function<int16_t(size_t)>& positionGeneratorFunction)
+  template<typename PositionGeneratorFunction>
+  bool init_deferred_particules(uint8_t maxParticlesToPop, const PositionGeneratorFunction& positionGeneratorFunction)
   {
+    static_assert(std::is_invocable_r_v<int16_t, PositionGeneratorFunction, size_t>);
+
     const auto colorGeneratorFunction = [](const size_t) -> uint32_t {
       return colors::HTMLColorCode::White;
     };
@@ -83,11 +88,12 @@ public:
    * \param[in] positionGeneratorFunction Function that takes an index and return a led strip index
    * \param[in] colorGeneratorFunction Function that takes an index and return a color of the particle at this index
    */
-  template<typename ColorGeneratorFunction>
+  template<typename PositionGeneratorFunction, typename ColorGeneratorFunction>
   bool init_deferred_particules(uint8_t maxParticlesToPop,
-                                const std::function<int16_t(size_t)>& positionGeneratorFunction,
+                                const PositionGeneratorFunction& positionGeneratorFunction,
                                 const ColorGeneratorFunction& colorGeneratorFunction)
   {
+    static_assert(std::is_invocable_r_v<int16_t, PositionGeneratorFunction, size_t>);
     static_assert(std::is_invocable_r_v<uint32_t, ColorGeneratorFunction, size_t>);
 
     for (size_t i = 0; i < particuleCount and maxParticlesToPop > 0; ++i)
