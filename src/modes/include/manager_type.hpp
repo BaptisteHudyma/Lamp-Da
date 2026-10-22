@@ -1332,6 +1332,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   /// Lamp handler object
   hardware::LampTy& lamp;
 
+  /// canvas object
+  draw::canvas::Canvas<> sharedCanvas;
+
   /// Menu overlay object
   inline static draw::overlay::Manager<> overlay;
 

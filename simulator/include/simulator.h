@@ -375,140 +375,103 @@ template<typename T> struct simulator
       // draw slightly grey background to hightlight turned off LEDs
       window.clear(sf::Color(13, 12, 11));
 
-      for (int Ypos = 0; Ypos < ledH; ++Ypos)
+      // physical placement, same model as the sampler
+      constexpr float rowAspect = 1.0f; // turn pitch / LED spacing (about 0.85 for 5.2 mm / 6.15 mm)
+
+      for (size_t I = 0; I < _LampTy::ledCount; ++I)
       {
-        int realRowSize = ledW;
-        if (_LampTy::allDeltaResiduesY[Ypos])
-          realRowSize += 1;
+        const float turns = float(I) / fLedW;          // continuous height
+        float x = std::fmod(float(I), fLedW);          // position around the cylinder
+        x = std::fmod(x - fakeXorigin + fLedW, fLedW); // view rotation (keys j / k)
 
-        for (int fXpos = -fakeXorigin; fXpos < realRowSize - fakeXend; ++fXpos)
-        {
-          int Yoff = 0;
-          int Xoff = 0;
+        auto& shape = shapes[I];
+        shape.setSize({ledSz, ledSz});
+        shape.setPosition({ledSz + x * ledPadSz, turns * rowAspect * ledPadSz});
 
-          int Xpos = fXpos;
-          if (fXpos < 0)
-          {
-            Xpos = realRowSize + fXpos;
-            Yoff = 1;
-
-            if (_LampTy::allDeltaResiduesY[Ypos])
-              Xoff = 1;
-          }
-
-          size_t I = ::lampda::modes::to_strip(Xpos, Ypos);
-          auto& shape = shapes[I];
-
-          auto realPos = ::lampda::modes::strip_to_XY(I);
-          if (realPos.x != Xpos || realPos.y != Ypos)
-            continue;
-
-          shape.setSize({ledSz, ledSz});
-
-          int rXpos = fXpos + fakeXorigin + Xoff;
-          int rYpos = Ypos + Yoff;
-          int shiftR = _LampTy::extraShiftResiduesY[Ypos];
-          int shiftL = Ypos + shiftR + 1;
-
-          if (_LampTy::shiftResidue == 1 && _LampTy::shiftPerTurn < 0.1)
-            shiftR = 0;
-
-          float shapeX = ledSz + rXpos * ledPadSz;
-          shapeX += ledOffset * Xbase;
-          shapeX += ledOffset * (shiftL % _LampTy::shiftPeriod);
-          shapeX -= (ledOffset - simu.ledPaddingPx / 2) * (Yoff - shiftR);
-          shapeX -= Xoff * simu.ledPaddingPx;
-
-          // make the origin more obvious
-          if (fXpos >= 0)
-            shapeX += simu.ledPaddingPx;
-
-          float shapeY = rYpos * ledPadSz;
-          shape.setPosition({shapeX, shapeY});
-
-          const uint32_t color = state.colorBuffer[I];
-          float b = (color & 0xff);
-          float g = ((color >> 8) & 0xff);
-          float r = ((color >> 16) & 0xff);
+        const uint32_t color = state.colorBuffer[I];
+        float b = (color & 0xff);
+        float g = ((color >> 8) & 0xff);
+        float r = ((color >> 16) & 0xff);
 
 #ifndef LMBD_DEBUG_SIMU_REALCOLORS
-          if (state.brightness != 255)
-          {
-            // scale by brightness
-            r = (uint16_t(r) * state.brightness + state.brightness) >> 8;
-            g = (uint16_t(g) * state.brightness + state.brightness) >> 8;
-            b = (uint16_t(b) * state.brightness + state.brightness) >> 8;
-          }
+        if (state.brightness != 255)
+        {
+          // scale by brightness
+          r = (uint16_t(r) * state.brightness + state.brightness) >> 8;
+          g = (uint16_t(g) * state.brightness + state.brightness) >> 8;
+          b = (uint16_t(b) * state.brightness + state.brightness) >> 8;
+        }
 #endif
 
-          shape.setFillColor(sf::Color(r, g, b));
-          window.draw(shape);
+        shape.setFillColor(sf::Color(r, g, b));
+        window.draw(shape);
 
-          // display text information if mouse is pressed
-          if (enableText)
+        // display text information if mouse is pressed
+        if (enableText)
+        {
+          const auto resXY = ::lampda::modes::strip_to_XY(I);
+
+          int MouseYpos = mousePos.y;
+          int MouseXpos = mousePos.x;
+
+          auto shapeXY = shape.getPosition();
+          float dx = shapeXY.x + ledSz / 2 - MouseXpos;
+          float dy = shapeXY.y + ledSz / 2 - MouseYpos;
+
+          // all shapes too far from cursor, does not display info
+          if (abs(2 * dx) > ledPadSz || abs(2 * dy) > ledPadSz)
+            continue;
+
+          // display (X,Y) on bottom-right
+          float largestX = ledSz + (ledW + 1 + fakeXorigin - fakeXend) * ledPadSz + ledOffset * (Xextra + Xbase);
+          float largestY = (ledH)*ledPadSz + 8;
           {
-            int MouseYpos = mousePos.y;
-            int MouseXpos = mousePos.x;
+            auto str = "(" + std::to_string(resXY.x) + ", " + std::to_string(resXY.y) + ")";
 
-            auto shapeXY = shape.getPosition();
-            float dx = shapeXY.x + ledSz / 2 - MouseXpos;
-            float dy = shapeXY.y + ledSz / 2 - MouseYpos;
+            sf::Text text(str, font, 12);
+            sf::Vector2f where(largestX, largestY);
+            text.setPosition(where);
+            window.draw(text);
+          }
 
-            // all shapes too far from cursor, does not display info
-            if (abs(2 * dx) > ledPadSz || abs(2 * dy) > ledPadSz)
-              continue;
+          // display Ypos on the right
+          {
+            auto str = std::to_string(resXY.y);
+            if (_LampTy::allDeltaResiduesY[resXY.y])
+              str += " *";
 
-            // display (X,Y) on bottom-right
-            float largestX = ledSz + (ledW + 1 + fakeXorigin - fakeXend) * ledPadSz + ledOffset * (Xextra + Xbase);
-            float largestY = (ledH + Yoff) * ledPadSz + 8;
-            {
-              auto str = "(" + std::to_string(Xpos) + ", " + std::to_string(Ypos) + ")";
+            sf::Text text(str, font, 12);
+            sf::Vector2f where(largestX, shapeXY.y + ledSz / 4);
+            text.setPosition(where);
+            window.draw(text);
+          }
 
-              sf::Text text(str, font, 12);
-              sf::Vector2f where(largestX, largestY);
-              text.setPosition(where);
-              window.draw(text);
-            }
+          // display Xpos on the bottom
+          {
+            auto str = std::to_string(resXY.x);
+            if (resXY.x == ledW)
+              str += " *";
 
-            // display Ypos on the right
-            {
-              auto str = std::to_string(Ypos);
-              if (_LampTy::allDeltaResiduesY[Ypos])
-                str += " *";
+            sf::Text text(str, font, 12);
+            sf::Vector2f where(shapeXY.x, largestY);
+            text.setPosition(where);
+            window.draw(text);
+          }
 
-              sf::Text text(str, font, 12);
-              sf::Vector2f where(largestX, shapeXY.y + ledSz / 4);
-              text.setPosition(where);
-              window.draw(text);
-            }
+          // display misc info next to button
+          {
+            auto str = "(" + std::to_string(int(r)) + ", ";
+            str += std::to_string(int(g)) + ", ";
+            str += std::to_string(int(b)) + ")";
+            str += ", " + std::to_string(I);
 
-            // display Xpos on the bottom
-            {
-              auto str = std::to_string(Xpos);
-              if (Xpos == ledW)
-                str += " *";
+            sf::Text text(str, font, 12);
+            sf::Vector2f where(indCoordX + simu.buttonSize * 3, indCoordY - 24.f);
+            text.setPosition(where);
+            window.draw(text);
 
-              sf::Text text(str, font, 12);
-              sf::Vector2f where(shapeXY.x, largestY);
-              text.setPosition(where);
-              window.draw(text);
-            }
-
-            // display misc info next to button
-            {
-              auto str = "(" + std::to_string(int(r)) + ", ";
-              str += std::to_string(int(g)) + ", ";
-              str += std::to_string(int(b)) + ")";
-              str += ", " + std::to_string(I);
-
-              sf::Text text(str, font, 12);
-              sf::Vector2f where(indCoordX + simu.buttonSize * 3, indCoordY - 24.f);
-              text.setPosition(where);
-              window.draw(text);
-
-              // (avoid superposed text)
-              enableText = false;
-            }
+            // (avoid superposed text)
+            enableText = false;
           }
         }
       }

@@ -16,6 +16,8 @@
 #include "src/modes/include/tools.hpp"
 #include "src/modes/include/default_config.hpp"
 
+#include "src/modes/include/draw/canvas.hpp"
+
 namespace lampda::modes {
 
 /// Bind provided context to another modes::BasicMode
@@ -80,6 +82,7 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   ContextTy(ModeManagerTy& modeManager) :
     state {modeManager.template getStateOf<LocalModeTy>()},
     lamp {modeManager.lamp},
+    sharedCanvas {modeManager.sharedCanvas},
     modeManager {modeManager}
   {
   }
@@ -703,6 +706,9 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     {
       auto manager = modeManager.get_context();
 
+      // reset the canvas here
+      manager.sharedCanvas.clear();
+
       // this mode has sunset and internal sunset animation
       if constexpr (LocalModeTy::hasSunsetAnimation && LocalModeTy::usesSunsetGravityDissolveMode)
       {
@@ -952,6 +958,8 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
 
   hardware::LampTy& lamp; ///< Interact with the lamp hardware
   StateTy& state;         ///< Interact with the current active mode state
+
+  draw::canvas::Canvas<>& sharedCanvas; ///< Interact with the shared canvas
 
 private:
   ModeManagerTy& modeManager;
