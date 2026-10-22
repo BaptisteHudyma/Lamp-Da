@@ -18,8 +18,10 @@ struct FastFourrierTransformMode : public BasicMode
 
   static void loop(auto& ctx)
   {
-    const uint16_t cols = ctx.lamp.maxWidth - 1;
-    const uint16_t rows = ctx.lamp.maxHeight;
+    auto& canvas = ctx.sharedCanvas;
+
+    const uint16_t cols = canvas.width - 1;
+    const uint16_t rows = canvas.height;
     auto& state = ctx.state;
     state.soundEvent.update(ctx);
 
@@ -45,12 +47,14 @@ struct FastFourrierTransformMode : public BasicMode
         uint8_t colorIndex = lmpd_map<uint8_t>(y, 0, rows - 1, 0, 255);
 
         const auto& ledColor = colors::from_palette<false, uint8_t>(colorIndex, palette);
-        ctx.lamp.setPixelColorXY(x, rows - y, ledColor);
+        canvas.setPixel(x, rows - y, ledColor);
       }
       // set rest to black
       for (uint8_t y = mappedY; y <= rows; ++y)
-        ctx.lamp.setPixelColorXY(x, rows - y, 0);
+        canvas.setPixel(x, rows - y, 0);
     }
+
+    canvas.render(ctx.lamp);
   }
 
   static void on_enter_mode(auto& ctx) { ctx.state.soundEvent.reset(ctx); }
