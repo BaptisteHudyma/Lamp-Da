@@ -188,17 +188,43 @@ uint32_t get_power_rail_voltage()
   }
 }
 
-void set_otg_parameters(uint16_t voltage_mV, uint16_t current_mA)
+/**
+ * \brief Set the OnTheGo output power
+ * \param[in] voltage_mV Voltage to output
+ * \param[in] current_mA Current to output
+ * \param[in] isTargetingPort If true, the current is set for the USB-C port. If false, it is set for the output gate
+ */
+void set_otg_parameters(uint16_t voltage_mV, uint16_t current_mA, const bool isTargetingPort = false)
 {
-  static uint16_t lastOtgVoltage_mV = 0;
-  static uint16_t lastOtgCurrent_mA = 0;
-  if (lastOtgVoltage_mV != voltage_mV || lastOtgCurrent_mA != current_mA)
+  static uint16_t latestOtgVoltage_mV = 0;
+  static uint16_t latestOtgCurrent_mA = 0;
+
+  if (voltage_mV > 20000)
   {
-    lastOtgVoltage_mV = voltage_mV;
-    lastOtgCurrent_mA = current_mA;
+    voltage_mV = 20000;
+  }
+
+  if (isTargetingPort)
+  {
+    // limit value to the minimum of the USB port
+    if (current_mA > physical_constants::maxVbusWireCurrent_mA)
+      current_mA = physical_constants::maxVbusWireCurrent_mA;
+  }
+  else
+  {
+    // limit the value to the minimum of the output gate
+    if (current_mA > physical_constants::maxOutputGateCurrent_mA)
+      current_mA = physical_constants::maxOutputGateCurrent_mA;
+  }
+
+  // only write to charger is the instruction changed
+  if (latestOtgVoltage_mV != voltage_mV || latestOtgCurrent_mA != current_mA)
+  {
+    latestOtgVoltage_mV = voltage_mV;
+    latestOtgCurrent_mA = current_mA;
 
     // ramp up output voltage
-    ::lampda::component::charger::control_OTG(voltage_mV, current_mA);
+    ::lampda::component::charger::control_OTG(latestOtgVoltage_mV, latestOtgCurrent_mA);
   }
 }
 
@@ -454,7 +480,7 @@ void handle_otg_mode()
 
   // ramp up output voltage
   // then unlock the vbus gate
-  set_otg_parameters(requestedOtg.requestedVoltage_mV, requestedOtg.requestedCurrent_mA);
+  set_otg_parameters(requestedOtg.requestedVoltage_mV, requestedOtg.requestedCurrent_mA, true);
 
   // allow reverse current flow
   __private::vbusDirection.set_high(true);

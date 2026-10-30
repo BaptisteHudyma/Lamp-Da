@@ -787,12 +787,10 @@ void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA)
   const auto realVal = chargerIcRegisters.oTGVoltage.set(voltage_mV, isVoltageRangeLow);
 
   uint16_t maxCurrentLimit_mA = maxCurrent_mA;
-  if (maxCurrentLimit_mA > physical_constants::maxVbusWireCurrent_mA)
-    maxCurrentLimit_mA = physical_constants::maxVbusWireCurrent_mA;
+
+  // limit value to the minimum of the VBUS gate, common to vbus rail and output rail
   if (maxCurrentLimit_mA > physical_constants::maxVbusGateCurrent_mA)
     maxCurrentLimit_mA = physical_constants::maxVbusGateCurrent_mA;
-  if (maxCurrentLimit_mA > physical_constants::maxOutputGateCurrent_mA)
-    maxCurrentLimit_mA = physical_constants::maxOutputGateCurrent_mA;
 
   // check max battery current already checked as low level safety
 
