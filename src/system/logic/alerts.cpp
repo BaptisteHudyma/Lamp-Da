@@ -87,6 +87,8 @@ inline const char* AlertsToText(const Type type)
       return "BATTERY_MISSING";
     case Type::CHARGER_ERROR:
       return "CHARGER_ERROR";
+    case Type::OTG_OVER_LIMITS:
+      return "OTG_OVER_LIMITS";
     default:
       return "UNSUPPORTED TYPE";
   }
@@ -691,6 +693,25 @@ struct Alert_UsbPortShort : public AlertBase
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
+/**
+ * \brief This alert is raised when the output power goes out of the limits : overcurrent or overvoltage.
+ * Clear on total reboot
+ */
+struct Alert_OtgOverLimits : public AlertBase
+{
+  bool show() const override
+  {
+    return bsp::indicator::blink(300, 200, {utils::ColorSpace::BLUE, utils::ColorSpace::YELLOW});
+  }
+
+  Type get_type() const override { return Type::OTG_OVER_LIMITS; }
+
+  /// Block power output
+  bool should_prevent_lamp_output() const override { return true; }
+  /// Prevent USB use
+  bool should_prevent_usb_port_use() const override { return true; }
+};
+
 // Init all alert objects
 inline static Alert_SystemShutdownFailed alertSystemShutdownFailed {};
 inline static Alert_BatteryMissing alertBatteryMissing {};
@@ -698,6 +719,7 @@ inline static Alert_HardwareAlert alertHardwareAlert {};
 inline static Alert_TempCritical alertTempCritical {};
 inline static Alert_UsbPortShort alertUsbPortShort {};
 inline static Alert_SkippedCleanSleep alertSkippedCleanSleep {};
+inline static Alert_OtgOverLimits alert_OtgOverLimits {};
 inline static Alert_BatteryCritical alertBatteryCritical {};
 inline static Alert_TempTooHigh alertTempTooHigh {};
 inline static Alert_BatteryReadingIncoherent alertBatteryReadingIncoherent {};
@@ -726,6 +748,7 @@ inline static AlertBase* const allAlerts[] = {
         &alertBatteryReadingIncoherent,
         &alertBatteryLow,
         //
+        &alert_OtgOverLimits,
         &alertOtgFailed,
         &alertSystemInErrorState,
         &alertSystemInLockout,

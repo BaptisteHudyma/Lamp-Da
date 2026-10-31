@@ -50,6 +50,8 @@ enum class Type : uint32_t
   BATTERY_MISSING = 1 << 17, // no battery plugged in the system
 
   CHARGER_ERROR = 1 << 18, // the charger signaled an error
+
+  OTG_OVER_LIMITS = 1 << 19, ///< OTG has gone over the limits (current or voltage)
 };
 
 /**

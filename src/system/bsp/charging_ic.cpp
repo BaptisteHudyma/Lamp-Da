@@ -86,22 +86,50 @@ struct PowerLimits
 /// define the power limits for input power
 static PowerLimits powerLimits_s;
 
-// detect the faults on the status
-void run_fault_detection()
+enum class ChargerErrorCodeMask : uint32_t
 {
-  if (chargerIcRegisters.chargerStatus.Fault_ACOV() or chargerIcRegisters.chargerStatus.Fault_BATOC() or
-      chargerIcRegisters.chargerStatus.Fault_ACOC() or chargerIcRegisters.chargerStatus.SYSOVP_STAT() or
-      chargerIcRegisters.chargerStatus.Fault_Latchoff() or chargerIcRegisters.chargerStatus.Fault_OTG_OVP() or
-      chargerIcRegisters.chargerStatus.Fault_OTG_UVP())
+  InputOverVoltage = 0,
+  InputOverCurrent = 1,
+  BatteryOverCurrent = 2,
+  SystemOverVoltage = 3,
+  OtgOverVoltage = 4,
+  OtgOverCurrent = 5,
+};
+
+/**
+ * \brief Detect the faults on the charger status
+ * \return A binary mask of the faults
+ */
+uint32_t run_fault_detection()
+{
+  static uint32_t latestErrorCodes = 0;
+  uint32_t errorCodes = chargerIcRegisters.chargerStatus.Fault_ACOV()
+                                << static_cast<uint32_t>(ChargerErrorCodeMask::InputOverVoltage) |
+                        chargerIcRegisters.chargerStatus.Fault_ACOC()
+                                << static_cast<uint32_t>(ChargerErrorCodeMask::InputOverCurrent) |
+                        chargerIcRegisters.chargerStatus.Fault_BATOC()
+                                << static_cast<uint32_t>(ChargerErrorCodeMask::BatteryOverCurrent) |
+                        chargerIcRegisters.chargerStatus.SYSOVP_STAT()
+                                << static_cast<uint32_t>(ChargerErrorCodeMask::SystemOverVoltage) |
+                        chargerIcRegisters.chargerStatus.Fault_OTG_OVP()
+                                << static_cast<uint32_t>(ChargerErrorCodeMask::OtgOverVoltage) |
+                        chargerIcRegisters.chargerStatus.Fault_OTG_UVP()
+                                << static_cast<uint32_t>(ChargerErrorCodeMask::OtgOverCurrent);
+
+  if (errorCodes != 0)
   {
-    bsp::lampda_print("Charger ic faults: %d%d%d%d%d%d%d",
-                      chargerIcRegisters.chargerStatus.Fault_ACOV(),
-                      chargerIcRegisters.chargerStatus.Fault_BATOC(),
-                      chargerIcRegisters.chargerStatus.Fault_ACOC(),
-                      chargerIcRegisters.chargerStatus.SYSOVP_STAT(),
-                      chargerIcRegisters.chargerStatus.Fault_Latchoff(),
-                      chargerIcRegisters.chargerStatus.Fault_OTG_OVP(),
-                      chargerIcRegisters.chargerStatus.Fault_OTG_UVP());
+    if (latestErrorCodes != errorCodes)
+    {
+      latestErrorCodes = errorCodes;
+      bsp::lampda_print("Charger ic faults: %d%d%d%d%d%d%d",
+                        chargerIcRegisters.chargerStatus.Fault_ACOV(),
+                        chargerIcRegisters.chargerStatus.Fault_ACOC(),
+                        chargerIcRegisters.chargerStatus.Fault_BATOC(),
+                        chargerIcRegisters.chargerStatus.SYSOVP_STAT(),
+                        chargerIcRegisters.chargerStatus.Fault_OTG_OVP(),
+                        chargerIcRegisters.chargerStatus.Fault_OTG_UVP(),
+                        chargerIcRegisters.chargerStatus.Fault_Latchoff());
+    }
     status_s = Status_t::ERROR_HAS_FAULTS;
   }
   // reset fault flag
@@ -109,6 +137,7 @@ void run_fault_detection()
   {
     status_s = Status_t::NOMINAL;
   }
+  return errorCodes;
 }
 
 // update the local values of the status register
@@ -119,17 +148,24 @@ void run_status_update()
 
   chargerIc.readRegEx(chargerIcRegisters.chargerStatus);
 
+  uint32_t errorCode = 0;
   if (initialReg0read != chargerIcRegisters.chargerStatus.val0 or
       initialReg1read != chargerIcRegisters.chargerStatus.val1)
   {
     // check faults
-    run_fault_detection();
+    errorCode = run_fault_detection();
   }
 
   // handle OTG alerts
   if (isInOtg_s)
   {
-    if (chargerIcRegisters.chargerStatus.IN_OTG())
+    // OTG is in over current/voltage: raise the target alert
+    if (errorCode != 0 and (errorCode & (1 << static_cast<uint32_t>(ChargerErrorCodeMask::OtgOverCurrent)) ||
+                            errorCode & (1 << static_cast<uint32_t>(ChargerErrorCodeMask::OtgOverVoltage))))
+    {
+      logic::alerts::manager.raise(logic::alerts::Type::OTG_OVER_LIMITS);
+    }
+    else if (chargerIcRegisters.chargerStatus.IN_OTG())
     {
       logic::alerts::manager.clear(logic::alerts::Type::OTG_FAILED);
     }
@@ -787,12 +823,10 @@ void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA)
   const auto realVal = chargerIcRegisters.oTGVoltage.set(voltage_mV, isVoltageRangeLow);
 
   uint16_t maxCurrentLimit_mA = maxCurrent_mA;
-  if (maxCurrentLimit_mA > physical_constants::maxVbusWireCurrent_mA)
-    maxCurrentLimit_mA = physical_constants::maxVbusWireCurrent_mA;
+
+  // limit value to the minimum of the VBUS gate, common to vbus rail and output rail
   if (maxCurrentLimit_mA > physical_constants::maxVbusGateCurrent_mA)
     maxCurrentLimit_mA = physical_constants::maxVbusGateCurrent_mA;
-  if (maxCurrentLimit_mA > physical_constants::maxOutputGateCurrent_mA)
-    maxCurrentLimit_mA = physical_constants::maxOutputGateCurrent_mA;
 
   // check max battery current already checked as low level safety
 

@@ -26,7 +26,7 @@ void write_voltage(const uint16_t voltage_mv)
   }
 
   logic::power::set_output_voltage_mv(lmpd_constrain<uint16_t>(voltage_mv, 0, 20000));
-  logic::power::set_output_max_current_mA(3000);
+  logic::power::set_output_max_current_mA(5000); // Output can take up to 5000mA
 }
 
 void write_temporary_output_limits(const uint16_t voltage_mv, const uint16_t current_ma, const uint32_t timeout_ms)
