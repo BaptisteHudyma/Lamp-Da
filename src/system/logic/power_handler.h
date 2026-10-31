@@ -126,6 +126,10 @@ bool is_in_otg_mode();
 /// Indicates if the charger tried the battery recovery system
 bool was_started_in_battery_recovery();
 
+/// Read-only startup trace and current status. Does not initialize or enable charging.
+void show_recovery_diagnostics();
+void show_recovery_trace();
+
 } // namespace power
 } // namespace logic
 } // namespace lampda
