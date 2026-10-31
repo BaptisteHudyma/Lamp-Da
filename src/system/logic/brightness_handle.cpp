@@ -7,6 +7,7 @@
 #include "src/system/bsp/indicator.h"
 
 #include "src/system/logic/behavior.h"
+#include "src/system/logic/user_signals.h"
 
 #include "src/system/utils/utils.h"
 
@@ -77,6 +78,7 @@ void update_brightness(const brightness_t newBrightness, const bool shouldSkipUs
     if (not shouldSkipUserCallbacks)
     {
       user::brightness_update(trueNewBrightness);
+      user_signals::send_brightness(trueNewBrightness);
     }
   }
 
@@ -127,6 +129,8 @@ void set_brightness_level(const uint8_t level)
 
   // update the level timer
   levelUpdateTime = hal::time_ms();
+
+  user_signals::send_indicator(_level);
 }
 
 uint8_t get_brightness_level() { return _level; }

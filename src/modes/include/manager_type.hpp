@@ -13,6 +13,7 @@
 
 #include <src/system/logic/alerts.h>
 #include <src/system/logic/sun_timers.h>
+#include <src/system/logic/user_signals.h>
 
 #include <src/system/utils/assert.h>
 
@@ -849,6 +850,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     });
 
     ctx.state.after_enter_mode(ctx);
+
+    logic::user_signals::send_mode(ctx.get_active_group(), ctx.get_active_mode());
   }
 
   /// Callback called on a mode deactivation
@@ -1137,6 +1140,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     dispatch_group(ctx, [&](auto group) {
       group.custom_ramp_update(rampValue);
     });
+
+    logic::user_signals::send_ramp(rampValue);
   }
 
   /// Binds to local Group::custom_click()
