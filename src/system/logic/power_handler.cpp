@@ -14,6 +14,8 @@
 #include "src/system/component/charger.h"
 
 #include "src/system/common/state_machine.h"
+#include "src/system/common/recovery_trace.h"
+#include "src/system/common/recovery_timing.h"
 
 #include "src/system/logic/alerts.h"
 
@@ -44,7 +46,7 @@ static constexpr uint8_t otgTurnOffTimeMinutes = 5;
 /// Delay after which the OTG_MODE will auto disable if not used, in milliseconds.
 static constexpr uint32_t otgNoUseExtBatTimeToDisconnect_ms = 1000 * 60 * otgTurnOffTimeMinutes;
 /// Delay after which the STARTUP state will auto switch to error.
-static constexpr uint32_t startupFailTimeout_ms = 3000;
+static constexpr uint32_t startupFailTimeout_ms = common::RecoveryTiming::startup_timeout_ms;
 
 static_assert(clearPowerRailMinDelay_ms < clearPowerRailFailureDelay_ms,
               "clear power rail min activation is less than min unlock delay");
@@ -75,6 +77,15 @@ static bool _hasAutoSwitchedToOTG = false;
 static bool _isInBatteryRecoveryMode = false;
 // This flag is never cleared and allows use to check this case
 static bool _wasStartedInBatteryRecoveryMode = false;
+
+static common::RecoveryTrace recoveryTrace;
+
+static int startup_probe(uint8_t address, common::RecoveryStage stage)
+{
+  const int result = hal::i2c::i2c_check_existence(0, address);
+  recoveryTrace.probe(stage, result, hal::time_ms());
+  return result;
+}
 
 /// Return the error string if set, or "x"
 etl::string<128> get_error_string()
@@ -513,15 +524,16 @@ void handle_startup()
 
   // if this is false, it's a special case where battery voltage is too low to power the components
   // or the components are dead...
-  if (hal::i2c::i2c_check_existence(0, hal::i2c::chargeI2cAddress) != 0 ||
-      hal::i2c::i2c_check_existence(0, hal::i2c::batteryBalancerI2cAddress) != 0)
+  if (startup_probe(hal::i2c::chargeI2cAddress, common::RecoveryStage::ChargerProbe) != 0 ||
+      startup_probe(hal::i2c::batteryBalancerI2cAddress, common::RecoveryStage::BalancerProbe) != 0)
   {
     const uint32_t timeSinceStateSwitch = hal::time_ms() - __private::powerMachine.get_state_raised_time();
     const bool isVbusUnpowered = timeSinceStateSwitch > 200 and not ::lampda::bsp::powerDelivery::is_power_available();
 
     // no vbus, or
-    if (timeSinceStateSwitch > startupFailTimeout_ms * 0.3 or isVbusUnpowered)
+    if (common::RecoveryTiming::probe_timed_out(timeSinceStateSwitch, _isInBatteryRecoveryMode) or isVbusUnpowered)
     {
+      recoveryTrace.once(common::RecoveryStage::StartupRejected, isVbusUnpowered ? 1 : 2, hal::time_ms());
       logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
       if (isVbusUnpowered)
       {
@@ -541,6 +553,7 @@ void handle_startup()
       // Recover strategy :
       // unlock the power gate and check that charger and balancer are detected.
       ::lampda::bsp::powergates::enable_vbus_gate_DIRECT();
+      recoveryTrace.once(common::RecoveryStage::VbusGateRequested, 0, hal::time_ms());
     }
     _isInBatteryRecoveryMode = true;
     _wasStartedInBatteryRecoveryMode = true;
@@ -555,6 +568,7 @@ void handle_startup()
 
   // charging component, setup first
   const bool chargerSuccess = ::lampda::component::charger::setup();
+  recoveryTrace.once(common::RecoveryStage::ChargerSetup, chargerSuccess ? 0 : 1, hal::time_ms());
   if (!chargerSuccess)
   {
     set_error_state_message("\n\t- Init charger component failed");
@@ -568,6 +582,7 @@ void handle_startup()
   if (_isInBatteryRecoveryMode)
   {
     ::lampda::component::charger::set_enable_charge(true);
+    recoveryTrace.once(common::RecoveryStage::ChargeRequested, 0, hal::time_ms());
 
     // wait a bit
     const auto& state = ::lampda::component::charger::get_state();
@@ -576,7 +591,7 @@ void handle_startup()
     if (not isCharging)
       return;
     const uint32_t timeSinceStateSwitch = hal::time_ms() - __private::powerMachine.get_state_raised_time();
-    if (timeSinceStateSwitch < startupFailTimeout_ms * 0.8)
+    if (timeSinceStateSwitch < common::RecoveryTiming::recovery_ready_ms)
       return;
 
     if (not ::lampda::bsp::powerDelivery::is_power_available())
@@ -585,12 +600,13 @@ void handle_startup()
       return;
     }
     // This delay is to let the time for the balancer to boot.
-    hal::delay_ms(250);
+    hal::delay_ms(common::RecoveryTiming::balancer_settle_ms);
   }
   // Final point: We will never pass through here again !
 
   if (not ::lampda::bsp::balancer::init())
   {
+    recoveryTrace.once(common::RecoveryStage::BalancerSetupFailed, 1, hal::time_ms());
     if (_isInBatteryRecoveryMode)
     {
       set_error_state_message(
@@ -834,6 +850,57 @@ etl::string<32> get_state()
 bool is_in_output_mode() { return __private::powerMachine.get_state() == PowerStates::OUTPUT_VOLTAGE_MODE; }
 bool is_in_otg_mode() { return __private::powerMachine.get_state() == PowerStates::OTG_MODE; }
 bool was_started_in_battery_recovery() { return _wasStartedInBatteryRecoveryMode; }
+
+void show_recovery_diagnostics()
+{
+  // Pace this on-demand report so the 32-slot serial queue can drain between lines.
+  const auto report = [](const char* format, auto... values) {
+    bsp::lampda_print(format, values...);
+    hal::delay_ms(15);
+  };
+  report("--- recovery diagnostics (bounded recovery timing) ---");
+  report("state: %s | error: %s", get_state().c_str(), get_error_string().c_str());
+  report("recovery attempted: %d | startup timeout: %u ms",
+                    _wasStartedInBatteryRecoveryMode, startupFailTimeout_ms);
+  report("probe cutoffs: initial=%u ms recovery=%u ms | balancer settle=%u ms",
+                    common::RecoveryTiming::initial_probe_timeout_ms, common::RecoveryTiming::recovery_ready_ms,
+                    common::RecoveryTiming::balancer_settle_ms);
+  report("vbus detected: %d | PD power available: %d | vbus mV: %d",
+                    component::charger::is_vbus_signal_detected(), bsp::powerDelivery::is_power_available(),
+                    bsp::powerDelivery::get_vbus_voltage());
+  report("gate bookkeeping (not pin feedback): vbus=%d output=%d",
+                    bsp::powergates::is_vbus_gate_enabled(), bsp::powergates::is_power_gate_enabled());
+  // These are the same address-only probes used by sys i2c. No register payload is sent.
+  const int charger = hal::i2c::i2c_check_existence(0, hal::i2c::chargeI2cAddress);
+  const int balancer = hal::i2c::i2c_check_existence(0, hal::i2c::batteryBalancerI2cAddress);
+  report("live I2C: charger addr=0x%02X result=%d | balancer addr=0x%02X result=%d (0=ACK)",
+                    hal::i2c::chargeI2cAddress, charger, hal::i2c::batteryBalancerI2cAddress, balancer);
+  const auto& charge = component::charger::get_state();
+  report("charger cached status: %s | measures valid: %d | charging: %d | effective: %d",
+                    charge.get_status_str().c_str(), charge.areMeasuresOk, charge.is_charging(), charge.is_effectivly_charging());
+  report("balancer cached measures valid: %d (invalid means cell voltages unknown)",
+                    bsp::balancer::get_status().is_valid());
+  report("startup probe counts: charger=%u balancer=%u (short-circuit evaluation retained)",
+                    recoveryTrace.charger_probes(), recoveryTrace.balancer_probes());
+  show_recovery_trace();
+  report("--- end recovery diagnostics ---");
+}
+
+void show_recovery_trace()
+{
+  const uint32_t count = recoveryTrace.size();
+  for (uint32_t i = 0; i < count; ++i)
+  {
+    const auto& event = recoveryTrace.event(i);
+    const char* names[] = {"charger_probe", "balancer_probe", "vbus_gate_requested", "startup_rejected",
+                           "charger_setup", "charge_requested", "balancer_setup_failed"};
+    bsp::lampda_print("trace boot_ms=%u stage=%s result=%d", event.time_ms,
+                      names[static_cast<uint8_t>(event.stage)], event.result);
+    hal::delay_ms(15);
+  }
+  bsp::lampda_print("trace omitted: %u | startup_rejected: 1=no power, 2=probe timeout", recoveryTrace.omitted());
+  hal::delay_ms(15);
+}
 
 static bool isSetup = false;
 
