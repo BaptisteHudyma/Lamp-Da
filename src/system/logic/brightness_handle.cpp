@@ -58,6 +58,8 @@ void set_max_user_brightness(const brightness_t brg)
 
 void update_saved_brightness()
 {
+  user_signals::send_brightness(__internal.BRIGHTNESS);
+
   __internal.savedBrightness = __internal.BRIGHTNESS;
   __internal.MaxUserBrightnessLimit = __internal.MaxBrightnessLimit;
 }
@@ -78,7 +80,6 @@ void update_brightness(const brightness_t newBrightness, const bool shouldSkipUs
     if (not shouldSkipUserCallbacks)
     {
       user::brightness_update(trueNewBrightness);
-      user_signals::send_brightness(trueNewBrightness);
     }
   }
 

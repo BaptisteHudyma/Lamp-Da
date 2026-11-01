@@ -62,7 +62,17 @@ inline void send(const char* name, const uint32_t* values, const size_t valueCou
     bsp::lampda_print_raw("%s\r\n", buffer);
 }
 
-inline void send_brightness(const uint32_t brightness) { send("brgt", &brightness, 1); }
+inline void send_brightness(const uint32_t brightness)
+{
+  static int32_t latestBrightness = -1;
+
+  // avoid repetitions
+  if (latestBrightness != brightness)
+  {
+    latestBrightness = brightness;
+    send("brgt", &brightness, 1);
+  }
+}
 
 inline void send_mode(const uint8_t groupId, const uint8_t modeId)
 {
@@ -70,9 +80,29 @@ inline void send_mode(const uint8_t groupId, const uint8_t modeId)
   send("mode", values, 2);
 }
 
-inline void send_ramp(const uint32_t ramp) { send("ramp", &ramp, 1); }
+inline void send_ramp(const uint32_t ramp)
+{
+  static int32_t latestRamp = -1;
 
-inline void send_indicator(const uint32_t level) { send("ind", &level, 1); }
+  // avoid repetitions
+  if (latestRamp != ramp)
+  {
+    latestRamp = ramp;
+    send("ramp", &ramp, 1);
+  }
+}
+
+inline void send_indicator(const uint32_t level)
+{
+  static int32_t latestLevel = -1;
+
+  // avoid repetitions
+  if (latestLevel != level)
+  {
+    latestLevel = level;
+    send("ind", &level, 1);
+  }
+}
 
 } // namespace user_signals
 } // namespace logic
