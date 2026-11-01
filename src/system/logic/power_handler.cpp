@@ -858,7 +858,7 @@ void show_recovery_diagnostics()
     bsp::lampda_print(format, values...);
     hal::delay_ms(15);
   };
-  report("--- recovery diagnostics diag3 (bounded recovery timing) ---");
+  report("--- recovery diagnostics (bounded recovery timing) ---");
   report("state: %s | error: %s", get_state().c_str(), get_error_string().c_str());
   report("recovery attempted: %d | startup timeout: %u ms",
                     _wasStartedInBatteryRecoveryMode, startupFailTimeout_ms);

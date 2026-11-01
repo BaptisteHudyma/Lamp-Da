@@ -158,7 +158,7 @@ static void cmd_version(const common::cli::ParsedCommand&)
           "hardware:%d.%d\n"
           "firmware:%d.%d\n"
           "base software:%d.%d\n"
-          "user software:%d.%d_diag3",
+          "user software:%d.%d",
           HARDWARE_VERSION_MAJOR,
           HARDWARE_VERSION_MINOR,
           EXPECTED_FIRMWARE_VERSION_MAJOR,
