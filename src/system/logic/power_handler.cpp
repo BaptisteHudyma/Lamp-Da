@@ -860,28 +860,37 @@ void show_recovery_diagnostics()
   };
   report("--- recovery diagnostics (bounded recovery timing) ---");
   report("state: %s | error: %s", get_state().c_str(), get_error_string().c_str());
-  report("recovery attempted: %d | startup timeout: %u ms",
-                    _wasStartedInBatteryRecoveryMode, startupFailTimeout_ms);
+  report("recovery attempted: %d | startup timeout: %u ms", _wasStartedInBatteryRecoveryMode, startupFailTimeout_ms);
   report("probe cutoffs: initial=%u ms recovery=%u ms | balancer settle=%u ms",
-                    common::RecoveryTiming::initial_probe_timeout_ms, common::RecoveryTiming::recovery_ready_ms,
-                    common::RecoveryTiming::balancer_settle_ms);
+         common::RecoveryTiming::initial_probe_timeout_ms,
+         common::RecoveryTiming::recovery_ready_ms,
+         common::RecoveryTiming::balancer_settle_ms);
   report("vbus detected: %d | PD power available: %d | vbus mV: %d",
-                    component::charger::is_vbus_signal_detected(), bsp::powerDelivery::is_power_available(),
-                    bsp::powerDelivery::get_vbus_voltage());
+         component::charger::is_vbus_signal_detected(),
+         bsp::powerDelivery::is_power_available(),
+         bsp::powerDelivery::get_vbus_voltage());
   report("gate bookkeeping (not pin feedback): vbus=%d output=%d",
-                    bsp::powergates::is_vbus_gate_enabled(), bsp::powergates::is_power_gate_enabled());
+         bsp::powergates::is_vbus_gate_enabled(),
+         bsp::powergates::is_power_gate_enabled());
   // These are the same address-only probes used by sys i2c. No register payload is sent.
   const int charger = hal::i2c::i2c_check_existence(0, hal::i2c::chargeI2cAddress);
   const int balancer = hal::i2c::i2c_check_existence(0, hal::i2c::batteryBalancerI2cAddress);
   report("live I2C: charger addr=0x%02X result=%d | balancer addr=0x%02X result=%d (0=ACK)",
-                    hal::i2c::chargeI2cAddress, charger, hal::i2c::batteryBalancerI2cAddress, balancer);
+         hal::i2c::chargeI2cAddress,
+         charger,
+         hal::i2c::batteryBalancerI2cAddress,
+         balancer);
   const auto& charge = component::charger::get_state();
   report("charger cached status: %s | measures valid: %d | charging: %d | effective: %d",
-                    charge.get_status_str().c_str(), charge.areMeasuresOk, charge.is_charging(), charge.is_effectivly_charging());
+         charge.get_status_str().c_str(),
+         charge.areMeasuresOk,
+         charge.is_charging(),
+         charge.is_effectivly_charging());
   report("balancer cached measures valid: %d (invalid means cell voltages unknown)",
-                    bsp::balancer::get_status().is_valid());
+         bsp::balancer::get_status().is_valid());
   report("startup probe counts: charger=%u balancer=%u (short-circuit evaluation retained)",
-                    recoveryTrace.charger_probes(), recoveryTrace.balancer_probes());
+         recoveryTrace.charger_probes(),
+         recoveryTrace.balancer_probes());
   show_recovery_trace();
   report("--- end recovery diagnostics ---");
 }
@@ -892,10 +901,17 @@ void show_recovery_trace()
   for (uint32_t i = 0; i < count; ++i)
   {
     const auto& event = recoveryTrace.event(i);
-    const char* names[] = {"charger_probe", "balancer_probe", "vbus_gate_requested", "startup_rejected",
-                           "charger_setup", "charge_requested", "balancer_setup_failed"};
-    bsp::lampda_print("trace boot_ms=%u stage=%s result=%d", event.time_ms,
-                      names[static_cast<uint8_t>(event.stage)], event.result);
+    const char* names[] = {"charger_probe",
+                           "balancer_probe",
+                           "vbus_gate_requested",
+                           "startup_rejected",
+                           "charger_setup",
+                           "charge_requested",
+                           "balancer_setup_failed"};
+    bsp::lampda_print("trace boot_ms=%u stage=%s result=%d",
+                      event.time_ms,
+                      names[static_cast<uint8_t>(event.stage)],
+                      event.result);
     hal::delay_ms(15);
   }
   bsp::lampda_print("trace omitted: %u | startup_rejected: 1=no power, 2=probe timeout", recoveryTrace.omitted());
