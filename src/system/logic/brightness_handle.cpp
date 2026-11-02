@@ -7,6 +7,7 @@
 #include "src/system/bsp/indicator.h"
 
 #include "src/system/logic/behavior.h"
+#include "src/system/logic/user_signals.h"
 
 #include "src/system/utils/utils.h"
 
@@ -57,6 +58,8 @@ void set_max_user_brightness(const brightness_t brg)
 
 void update_saved_brightness()
 {
+  user_signals::send_brightness(__internal.BRIGHTNESS);
+
   __internal.savedBrightness = __internal.BRIGHTNESS;
   __internal.MaxUserBrightnessLimit = __internal.MaxBrightnessLimit;
 }
@@ -127,6 +130,8 @@ void set_brightness_level(const uint8_t level)
 
   // update the level timer
   levelUpdateTime = hal::time_ms();
+
+  user_signals::send_indicator(_level);
 }
 
 uint8_t get_brightness_level() { return _level; }

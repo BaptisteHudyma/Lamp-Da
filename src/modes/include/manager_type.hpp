@@ -13,6 +13,7 @@
 
 #include <src/system/logic/alerts.h>
 #include <src/system/logic/sun_timers.h>
+#include <src/system/logic/user_signals.h>
 
 #include <src/system/utils/assert.h>
 
@@ -494,12 +495,16 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     // not limited to accessible groups
     ctx.set_active_group(newActiveIndex.groupIndex, nbGroupsTotal);
     ctx.set_active_mode(newActiveIndex.modeIndex);
+
+    // compare before copying, or ramps loaded in enter_mode would always match the favorite
+    const bool isRampRestored = ctx.modeManager.activeIndex.rawIndex == newActiveIndex.rawIndex;
+
     // just copy the other values
     ctx.modeManager.activeIndex.customIndex = newActiveIndex.customIndex;
     ctx.modeManager.activeIndex.rampIndex = newActiveIndex.rampIndex;
 
     // if ramps loaded in enter_mode != ones saved as favorite, emulate update
-    if (ctx.modeManager.activeIndex.rawIndex != newActiveIndex.rawIndex)
+    if (not isRampRestored)
     {
       ctx.modeManager.activeIndex = newActiveIndex;
       custom_ramp_update(ctx, ctx.get_active_custom_ramp());
@@ -849,6 +854,13 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     });
 
     ctx.state.after_enter_mode(ctx);
+
+    const uint8_t groupId = ctx.get_active_group();
+    const uint8_t modeId = ctx.get_active_mode();
+    logic::user_signals::send_mode(groupId, modeId);
+    // entering a mode restores its saved ramp without calling custom_ramp_update
+    if (ctx.everyCustomRamp[groupId][modeId])
+      logic::user_signals::send_ramp(ctx.get_active_custom_ramp());
   }
 
   /// Callback called on a mode deactivation
@@ -1137,6 +1149,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     dispatch_group(ctx, [&](auto group) {
       group.custom_ramp_update(rampValue);
     });
+
+    if (ctx.everyCustomRamp[groupId][modeId])
+      logic::user_signals::send_ramp(rampValue);
   }
 
   /// Binds to local Group::custom_click()
