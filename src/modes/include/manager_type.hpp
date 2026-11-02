@@ -495,12 +495,16 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     // not limited to accessible groups
     ctx.set_active_group(newActiveIndex.groupIndex, nbGroupsTotal);
     ctx.set_active_mode(newActiveIndex.modeIndex);
+
+    // compare before copying, or ramps loaded in enter_mode would always match the favorite
+    const bool isRampRestored = ctx.modeManager.activeIndex.rawIndex == newActiveIndex.rawIndex;
+
     // just copy the other values
     ctx.modeManager.activeIndex.customIndex = newActiveIndex.customIndex;
     ctx.modeManager.activeIndex.rampIndex = newActiveIndex.rampIndex;
 
     // if ramps loaded in enter_mode != ones saved as favorite, emulate update
-    if (ctx.modeManager.activeIndex.rawIndex != newActiveIndex.rawIndex)
+    if (not isRampRestored)
     {
       ctx.modeManager.activeIndex = newActiveIndex;
       custom_ramp_update(ctx, ctx.get_active_custom_ramp());
