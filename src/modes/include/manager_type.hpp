@@ -492,9 +492,21 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   /// jump to an active index cleanly
   static void jump_to_new_active_index(auto& ctx, const ActiveIndexTy& newActiveIndex)
   {
-    // not limited to accessible groups
-    ctx.set_active_group(newActiveIndex.groupIndex, nbGroupsTotal);
-    ctx.set_active_mode(newActiveIndex.modeIndex);
+    // Favorite switches used to call set_active_group then set_active_mode.
+    // Each of those enters the mode once, so one favorite step fired two
+    // $mode user actions while only switching once (#569). Quit once, apply
+    // the full index, enter once.
+    auto manager = ctx.modeManager.get_context();
+    manager.cancel_blip();
+
+    // Persist last mode for the group we leave (set_active_group → quit_group).
+    ctx.quit_group();
+    ctx.modeManager.quit_mode(manager);
+
+    ctx.modeManager.activeIndex.groupIndex = newActiveIndex.groupIndex;
+    ctx.modeManager.activeIndex.modeIndex = newActiveIndex.modeIndex;
+
+    ctx.modeManager.enter_mode(manager);
 
     // compare before copying, or ramps loaded in enter_mode would always match the favorite
     const bool isRampRestored = ctx.modeManager.activeIndex.rawIndex == newActiveIndex.rawIndex;
@@ -860,7 +872,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     logic::user_signals::send_mode(groupId, modeId);
     // entering a mode restores its saved ramp without calling custom_ramp_update
     if (ctx.everyCustomRamp[groupId][modeId])
-      logic::user_signals::send_ramp(ctx.get_active_custom_ramp());
+      logic::user_signals::send_ramp(ctx.get_active_custom_ramp(), true);
   }
 
   /// Callback called on a mode deactivation

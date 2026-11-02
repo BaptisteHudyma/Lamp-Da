@@ -80,12 +80,12 @@ inline void send_mode(const uint8_t groupId, const uint8_t modeId)
   send("mode", values, 2);
 }
 
-inline void send_ramp(const uint32_t ramp)
+inline void send_ramp(const uint32_t ramp, const bool forceSend = false)
 {
   static int32_t latestRamp = -1;
 
   // avoid repetitions
-  if (latestRamp != ramp)
+  if (latestRamp != ramp or forceSend)
   {
     latestRamp = ramp;
     send("ramp", &ramp, 1);
