@@ -1150,7 +1150,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       group.custom_ramp_update(rampValue);
     });
 
-    logic::user_signals::send_ramp(rampValue);
+    if (ctx.everyCustomRamp[groupId][modeId])
+      logic::user_signals::send_ramp(rampValue);
   }
 
   /// Binds to local Group::custom_click()
