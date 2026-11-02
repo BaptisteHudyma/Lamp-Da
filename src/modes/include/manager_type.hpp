@@ -872,7 +872,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     logic::user_signals::send_mode(groupId, modeId);
     // entering a mode restores its saved ramp without calling custom_ramp_update
     if (ctx.everyCustomRamp[groupId][modeId])
-      logic::user_signals::send_ramp(ctx.get_active_custom_ramp());
+      logic::user_signals::send_ramp(ctx.get_active_custom_ramp(), true);
   }
 
   /// Callback called on a mode deactivation
