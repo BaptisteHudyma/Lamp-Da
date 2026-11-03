@@ -529,9 +529,10 @@ void handle_startup()
   {
     const uint32_t timeSinceStateSwitch = hal::time_ms() - __private::powerMachine.get_state_raised_time();
     const bool isVbusUnpowered = timeSinceStateSwitch > 200 and not ::lampda::bsp::powerDelivery::is_power_available();
+    const bool shouldUseRecoveryProbeWindow = _isInBatteryRecoveryMode or not isVbusUnpowered;
 
     // no vbus, or
-    if (common::RecoveryTiming::probe_timed_out(timeSinceStateSwitch, _isInBatteryRecoveryMode) or isVbusUnpowered)
+    if (common::RecoveryTiming::probe_timed_out(timeSinceStateSwitch, shouldUseRecoveryProbeWindow) or isVbusUnpowered)
     {
       recoveryTrace.once(common::RecoveryStage::StartupRejected, isVbusUnpowered ? 1 : 2, hal::time_ms());
       logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
@@ -898,16 +899,17 @@ void show_recovery_diagnostics()
 void show_recovery_trace()
 {
   const uint32_t count = recoveryTrace.size();
+  const char* names[] = {"charger_probe",
+                         "balancer_probe",
+                         "vbus_gate_requested",
+                         "startup_rejected",
+                         "charger_setup",
+                         "charge_requested",
+                         "balancer_setup_failed"};
+
   for (uint32_t i = 0; i < count; ++i)
   {
     const auto& event = recoveryTrace.event(i);
-    const char* names[] = {"charger_probe",
-                           "balancer_probe",
-                           "vbus_gate_requested",
-                           "startup_rejected",
-                           "charger_setup",
-                           "charge_requested",
-                           "balancer_setup_failed"};
     bsp::lampda_print("trace boot_ms=%u stage=%s result=%d",
                       event.time_ms,
                       names[static_cast<uint8_t>(event.stage)],
