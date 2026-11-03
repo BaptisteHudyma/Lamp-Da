@@ -1,6 +1,7 @@
 #include "battery.h"
 
 #include "src/system/logic/alerts.h"
+#include "src/system/logic/power_handler.h"
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/time_utils.h"
@@ -59,6 +60,10 @@ uint16_t get_raw_battery_voltage_mv()
           physical_constants::minSingularBatteryVoltage_mV * physical_constants::batterySeriesCount;
   static constexpr uint16_t maxBatteryVoltage_mV =
           physical_constants::maxSingularBatteryVoltage_mV * physical_constants::batterySeriesCount;
+
+  // special case: battery recovery can produce invalid values here
+  if (logic::power::is_in_in_battery_recovery())
+    return maxBatteryVoltage_mV;
 
   // WILL UPDATE s_batteryVoltage_mV VALUE if they return true, so order of the call matters.
   // The last call will old the true stack value, so prefer balancer that is a dedicated more precise component.

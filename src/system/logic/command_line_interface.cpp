@@ -374,6 +374,9 @@ static void cmd_states(const common::cli::ParsedCommand&)
                     logic::power::get_error_string().c_str());
 }
 
+static void cmd_recovery(const common::cli::ParsedCommand&) { logic::power::show_recovery_diagnostics(); }
+static void cmd_recovery_trace(const common::cli::ParsedCommand&) { logic::power::show_recovery_trace(); }
+
 /// Display all active alerts
 static void cmd_alerts(const common::cli::ParsedCommand&)
 {
@@ -820,6 +823,8 @@ constexpr Command _sys_commands_s[] = {
         make_command("pd", "display the connected PD capabilities", handles::cmd_powerdelivery),
         make_command("bat", " battery info/levels", handles::cmd_bat),
         make_command("states", "state machine states", handles::cmd_states),
+        make_command("recovery", "read-only startup and battery recovery diagnostics", handles::cmd_recovery),
+        make_command("rtrace", "read-only recovery trace only", handles::cmd_recovery_trace),
         make_command("serial", "show serial infos", handles::cmd_serial),
         make_command("cinfo", "charger infos", handles::cmd_cinfo),
         make_command("adc", "values from the charger ADC", handles::cmd_adc),
