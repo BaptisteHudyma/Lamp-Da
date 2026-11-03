@@ -549,6 +549,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     if (which_one >= ctx.state.maxFavoriteCount)
       return false;
 
+    // indicate that we are now in a favorite group
+    ctx.state.isInFavoriteMockGroup = true;
+
     const auto targetFavorite = ctx.state.favorites[which_one];
     // reset once with the right mode
     jump_to_new_active_index(ctx, targetFavorite);
@@ -559,9 +562,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
     // indicate favorite mode entry
     ctx.blip(250);
-
-    // indicate that we are now in a favorite group
-    ctx.state.isInFavoriteMockGroup = true;
 
     return true;
   }
@@ -844,15 +844,19 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   /// Callback called on a group deactivation
   static void quit_group(auto& ctx)
   {
-    //
-    uint8_t modeIdBefore = ctx.get_active_mode();
+    // only save while out of favorites
+    if (not ctx.state.isInFavoriteMockGroup)
+    {
+      //
+      uint8_t modeIdBefore = ctx.get_active_mode();
 
-    // changes to lastModeMemory made in this function will be persistent
-    auto keyModeMemory = ctx.template storageFor<Store::modeMemory>(ctx.state.lastModeMemory);
+      // changes to lastModeMemory made in this function will be persistent
+      auto keyModeMemory = ctx.template storageFor<Store::modeMemory>(ctx.state.lastModeMemory);
 
-    // save last mode used in group, before switching
-    uint8_t groupIdBefore = ctx.get_active_group(nbGroupsTotal);
-    ctx.state.lastModeMemory[groupIdBefore] = modeIdBefore;
+      // save last mode used in group, before switching
+      uint8_t groupIdBefore = ctx.get_active_group(nbGroupsTotal);
+      ctx.state.lastModeMemory[groupIdBefore] = modeIdBefore;
+    }
   }
 
   /// Callback called on a mode activation
