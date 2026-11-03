@@ -854,19 +854,14 @@ bool is_in_otg_mode() { return __private::powerMachine.get_state() == PowerState
 bool was_started_in_battery_recovery() { return _wasStartedInBatteryRecoveryMode; }
 bool is_in_in_battery_recovery() { return _isInBatteryRecoveryMode; }
 
+template<typename... Args> void report(const char* format, Args... values)
+{
+  bsp::lampda_print(format, values...);
+  hal::delay_ms(15);
+}
+
 void show_recovery_diagnostics()
 {
-  // Pace this on-demand report so the 32-slot serial queue can drain between lines.
-  const auto report = [](const char* format, ...) {
-    va_list args;
-    va_start(args, format);
-
-    bsp::lampda_print(format, args);
-
-    va_end(args);
-
-    hal::delay_ms(15);
-  };
   report("--- recovery diagnostics (bounded recovery timing) ---");
   report("state: %s | error: %s", get_state().c_str(), get_error_string().c_str());
   report("recovery attempted: %d | startup timeout: %u ms", _wasStartedInBatteryRecoveryMode, startupFailTimeout_ms);

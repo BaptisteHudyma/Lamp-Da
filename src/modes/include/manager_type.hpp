@@ -549,8 +549,16 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     if (which_one >= ctx.state.maxFavoriteCount)
       return false;
 
-    // indicate that we are now in a favorite group BEFORE the state switch
-    ctx.state.isInFavoriteMockGroup = true;
+    if (not ctx.state.isInFavoriteMockGroup)
+    {
+      // not already in group : save the latest mode & group parameters
+      ctx.quit_group();
+      auto manager = ctx.modeManager.get_context();
+      ctx.modeManager.quit_mode(manager);
+
+      // indicate that we are now in a favorite group BEFORE the state switch
+      ctx.state.isInFavoriteMockGroup = true;
+    }
 
     const auto targetFavorite = ctx.state.favorites[which_one];
     // reset once with the right mode

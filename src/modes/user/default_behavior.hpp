@@ -483,6 +483,8 @@ void handle_mode_control(const uint8_t groupIndex, const uint8_t modeIndex)
     bsp::lampda_print("Group id %d is greater than max group id %d", groupIndex, manager.get_groups_count());
     return;
   }
+  // exit favorite group first
+  manager.exit_favorite_group(manager.state.beforeFavoriteActiveIndex);
   manager.set_active_group(groupIndex);
 
   if (modeIndex >= manager.get_modes_count())
