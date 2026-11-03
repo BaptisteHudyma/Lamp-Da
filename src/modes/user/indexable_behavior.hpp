@@ -307,8 +307,16 @@ void handle_pattern_select_command(const uint8_t patternIndex, const uint32_t re
   }
 
   manager.exit_favorite_group(manager.state.beforeFavoriteActiveIndex);
-  manager.set_active_group(bluetoothGroup);
-  manager.set_active_mode(patternIndex);
+
+  // remove the mode change on the special case of mode 0 : custom color can be changed without changing the mode
+  const bool alreadyInCorrectMode = patternIndex == 0 and manager.get_active_group() == bluetoothGroup and
+                                    manager.get_active_mode() == patternIndex;
+
+  if (not alreadyInCorrectMode)
+  {
+    manager.set_active_group(bluetoothGroup);
+    manager.set_active_mode(patternIndex);
+  }
 
   // sanity check
   const int trueIndex = manager.template get_mode_id<modes::bluetooth::ColorControlMode>();
