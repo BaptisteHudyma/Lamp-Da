@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <cassert>
 #include <stdint.h>
+#include <cstdarg>
 
 namespace lampda {
 namespace logic {
@@ -856,8 +857,14 @@ bool is_in_in_battery_recovery() { return _isInBatteryRecoveryMode; }
 void show_recovery_diagnostics()
 {
   // Pace this on-demand report so the 32-slot serial queue can drain between lines.
-  const auto report = [](const char* format, auto... values) {
-    bsp::lampda_print(format, values...);
+  const auto report = [](const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    bsp::lampda_print(format, args);
+
+    va_end(args);
+
     hal::delay_ms(15);
   };
   report("--- recovery diagnostics (bounded recovery timing) ---");
