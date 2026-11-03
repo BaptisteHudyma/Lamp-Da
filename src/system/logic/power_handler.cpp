@@ -528,7 +528,7 @@ void handle_startup()
       startup_probe(hal::i2c::batteryBalancerI2cAddress, common::RecoveryStage::BalancerProbe) != 0)
   {
     const uint32_t timeSinceStateSwitch = hal::time_ms() - __private::powerMachine.get_state_raised_time();
-    const bool isVbusUnpowered = timeSinceStateSwitch > 200 and not ::lampda::bsp::powerDelivery::is_power_available();
+    const bool isVbusUnpowered = timeSinceStateSwitch > 200 and not component::charger::is_vbus_signal_detected();
     const bool shouldUseRecoveryProbeWindow = _isInBatteryRecoveryMode or not isVbusUnpowered;
 
     // no vbus, or
@@ -851,6 +851,7 @@ etl::string<32> get_state()
 bool is_in_output_mode() { return __private::powerMachine.get_state() == PowerStates::OUTPUT_VOLTAGE_MODE; }
 bool is_in_otg_mode() { return __private::powerMachine.get_state() == PowerStates::OTG_MODE; }
 bool was_started_in_battery_recovery() { return _wasStartedInBatteryRecoveryMode; }
+bool is_in_in_battery_recovery() { return _isInBatteryRecoveryMode; }
 
 void show_recovery_diagnostics()
 {
