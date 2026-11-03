@@ -241,10 +241,15 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   /// Callback for a mode exit point
   static void quit_mode(auto& ctx)
   {
-    // save ramps if they exist
-    uint8_t modeIdBefore = ctx.get_active_mode(nbModes);
-    // save ramps if they exist
-    ctx.state.save_ramps(ctx, modeIdBefore);
+    // Do not save presets in favorite group
+    if (not ctx.is_in_favorite_group())
+    {
+      // save ramps if they exist
+      uint8_t modeIdBefore = ctx.get_active_mode(nbModes);
+
+      // save ramps if they exist
+      ctx.state.save_ramps(ctx, modeIdBefore);
+    }
 
     // start new mode we switched to
     dispatch_mode(ctx, [](auto mode) {

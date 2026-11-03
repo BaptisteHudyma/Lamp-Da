@@ -865,6 +865,19 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
   }
 
+  bool is_in_favorite_group()
+  {
+    if constexpr (LocalModeTy::isGroupManager)
+    {
+      return modeManager.template is_in_favorite_group(*this);
+    }
+    else
+    {
+      auto manager = modeManager.get_context();
+      return manager.is_in_favorite_group();
+    }
+  }
+
   template<bool displayFavoriteNumber = true>
   auto LMBD_INLINE animate_favorite_pick(float holdDuration, float stepSize, bool isEndOfHold)
   {

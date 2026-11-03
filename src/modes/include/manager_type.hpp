@@ -549,7 +549,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     if (which_one >= ctx.state.maxFavoriteCount)
       return false;
 
-    // indicate that we are now in a favorite group
+    // indicate that we are now in a favorite group BEFORE the state switch
     ctx.state.isInFavoriteMockGroup = true;
 
     const auto targetFavorite = ctx.state.favorites[which_one];
@@ -577,10 +577,11 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 #ifdef LMBD_SIMULATION
     fprintf(stderr, "Exit fake favorite group\n");
 #endif
-    // reset favorite indicator
-    ctx.state.isInFavoriteMockGroup = false;
     // return to previous state
     jump_to_new_active_index(ctx, newActiveIndex);
+
+    // reset favorite indicator AFTER the state switch
+    ctx.state.isInFavoriteMockGroup = false;
 
     // blip to indicate favorite mode exit
     ctx.blip(250);
@@ -1223,6 +1224,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     // occasional +1 if not all favorite are set (allow a new favorite)
     return ctx.state.usedFavoriteCount + ((ctx.state.usedFavoriteCount < ctx.state.maxFavoriteCount) ? 1 : 0);
   }
+
+  /// Return true is we are in the favorite group mode
+  static bool is_in_favorite_group(auto& ctx) { return ctx.state.isInFavoriteMockGroup; }
 
   /**
    * \brief Set the current mode as a favorite at the target index
