@@ -489,8 +489,17 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     });
   }
 
-  /// jump to an active index cleanly
-  static void jump_to_new_active_index(auto& ctx, const ActiveIndexTy& newActiveIndex)
+  /**
+   * \brief Jump to an active index cleanly
+   * \param[in, out] ctx
+   * \param[in] newActiveIndex The active index and ramps we want to jump to
+   * \param[in] ignoreRampAndIndex If true, ignore the given ramp and use the saved one
+   * \param[in] quitFavoriteGroup should also quit the favorite group when entering the mode
+   */
+  static void jump_to_new_active_index(auto& ctx,
+                                       const ActiveIndexTy& newActiveIndex,
+                                       const bool ignoreRampAndIndex = false,
+                                       const bool quitFavoriteGroup = false)
   {
     // Favorite switches used to call set_active_group then set_active_mode.
     // Each of those enters the mode once, so one favorite step fired two
@@ -508,17 +517,26 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
     ctx.modeManager.enter_mode(manager);
 
-    // compare before copying, or ramps loaded in enter_mode would always match the favorite
-    const bool isRampRestored = ctx.modeManager.activeIndex.rawIndex == newActiveIndex.rawIndex;
+    // call AFTER the mode switch
+    if (quitFavoriteGroup)
+    {
+      ctx.state.isInFavoriteMockGroup = false;
+    }
 
-    // just copy the other values
-    ctx.modeManager.activeIndex.customIndex = newActiveIndex.customIndex;
-    ctx.modeManager.activeIndex.rampIndex = newActiveIndex.rampIndex;
+    // compare before copying, or ramps loaded in enter_mode would always match the favorite
+    const bool isRampRestored =
+            (not ignoreRampAndIndex) and ctx.modeManager.activeIndex.rawIndex == newActiveIndex.rawIndex;
+
+    if (not ignoreRampAndIndex)
+    {
+      // just copy the other values
+      ctx.modeManager.activeIndex.customIndex = newActiveIndex.customIndex;
+      ctx.modeManager.activeIndex.rampIndex = newActiveIndex.rampIndex;
+    }
 
     // if ramps loaded in enter_mode != ones saved as favorite, emulate update
     if (not isRampRestored)
     {
-      ctx.modeManager.activeIndex = newActiveIndex;
       custom_ramp_update(ctx, ctx.get_active_custom_ramp());
     }
   }
@@ -549,6 +567,17 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     if (which_one >= ctx.state.maxFavoriteCount)
       return false;
 
+    if (not ctx.state.isInFavoriteMockGroup)
+    {
+      // not already in favorite group : save the latest mode & group parameters
+      ctx.quit_group();
+      auto manager = ctx.modeManager.get_context();
+      ctx.modeManager.quit_mode(manager);
+
+      // indicate that we are now in a favorite group BEFORE the state switch
+      ctx.state.isInFavoriteMockGroup = true;
+    }
+
     const auto targetFavorite = ctx.state.favorites[which_one];
     // reset once with the right mode
     jump_to_new_active_index(ctx, targetFavorite);
@@ -559,9 +588,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
     // indicate favorite mode entry
     ctx.blip(250);
-
-    // indicate that we are now in a favorite group
-    ctx.state.isInFavoriteMockGroup = true;
 
     return true;
   }
@@ -577,10 +603,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 #ifdef LMBD_SIMULATION
     fprintf(stderr, "Exit fake favorite group\n");
 #endif
-    // reset favorite indicator
-    ctx.state.isInFavoriteMockGroup = false;
-    // return to previous state
-    jump_to_new_active_index(ctx, newActiveIndex);
+    // return to previous state, with the saved ramps of the target mode
+    jump_to_new_active_index(ctx, newActiveIndex, false, true);
 
     // blip to indicate favorite mode exit
     ctx.blip(250);
@@ -844,15 +868,19 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   /// Callback called on a group deactivation
   static void quit_group(auto& ctx)
   {
-    //
-    uint8_t modeIdBefore = ctx.get_active_mode();
+    // only save while out of favorites
+    if (not ctx.state.isInFavoriteMockGroup)
+    {
+      //
+      uint8_t modeIdBefore = ctx.get_active_mode();
 
-    // changes to lastModeMemory made in this function will be persistent
-    auto keyModeMemory = ctx.template storageFor<Store::modeMemory>(ctx.state.lastModeMemory);
+      // changes to lastModeMemory made in this function will be persistent
+      auto keyModeMemory = ctx.template storageFor<Store::modeMemory>(ctx.state.lastModeMemory);
 
-    // save last mode used in group, before switching
-    uint8_t groupIdBefore = ctx.get_active_group(nbGroupsTotal);
-    ctx.state.lastModeMemory[groupIdBefore] = modeIdBefore;
+      // save last mode used in group, before switching
+      uint8_t groupIdBefore = ctx.get_active_group(nbGroupsTotal);
+      ctx.state.lastModeMemory[groupIdBefore] = modeIdBefore;
+    }
   }
 
   /// Callback called on a mode activation
@@ -1219,6 +1247,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     // occasional +1 if not all favorite are set (allow a new favorite)
     return ctx.state.usedFavoriteCount + ((ctx.state.usedFavoriteCount < ctx.state.maxFavoriteCount) ? 1 : 0);
   }
+
+  /// Return true is we are in the favorite group mode
+  static bool is_in_favorite_group(auto& ctx) { return ctx.state.isInFavoriteMockGroup; }
 
   /**
    * \brief Set the current mode as a favorite at the target index

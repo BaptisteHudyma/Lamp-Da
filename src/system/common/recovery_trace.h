@@ -23,6 +23,9 @@ struct RecoveryEvent
   uint32_t time_ms = 0;
   RecoveryStage stage = RecoveryStage::ChargerProbe;
   int result = 0;
+
+  RecoveryEvent() = default;
+  RecoveryEvent(uint32_t t, RecoveryStage s, int r) : time_ms(t), stage(s), result(r) {}
 };
 
 // One startup writer, CLI readers. Published entries are immutable, with no wraparound.
@@ -38,7 +41,7 @@ public:
     auto& last = charger ? charger_result : balancer_result;
     attempts.fetch_add(1, std::memory_order_relaxed);
     if (last.exchange(static_cast<uint32_t>(result), std::memory_order_relaxed) != static_cast<uint32_t>(result))
-      append({time_ms, stage, result});
+      append(RecoveryEvent(time_ms, stage, result));
   }
 
   void once(RecoveryStage stage, int result, uint32_t time_ms)
@@ -47,7 +50,7 @@ public:
     if (seen & bit)
       return;
     seen |= bit;
-    append({time_ms, stage, result});
+    append(RecoveryEvent(time_ms, stage, result));
   }
 
   uint32_t size() const { return published.load(std::memory_order_acquire); }
