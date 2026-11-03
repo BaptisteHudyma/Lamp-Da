@@ -120,6 +120,21 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
   }
 
+  void LMBD_INLINE jump_to_new_active_index(const auto& newActiveIndex,
+                                            const bool ignoreRampAndIndex = false,
+                                            const bool quitFavoriteGroup = false)
+  {
+    if constexpr (LocalModeTy::isGroupManager)
+    {
+      LocalModeTy::jump_to_new_active_index(*this, newActiveIndex, ignoreRampAndIndex, quitFavoriteGroup);
+    }
+    else
+    {
+      auto manager = modeManager.get_context();
+      manager.jump_to_new_active_index(newActiveIndex, ignoreRampAndIndex, quitFavoriteGroup);
+    }
+  }
+
   /// \private Jump to favorite mode
   bool LMBD_INLINE jump_to_favorite(uint8_t which_one, bool shouldSaveLastActiveIndex)
   {
