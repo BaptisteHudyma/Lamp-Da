@@ -1,5 +1,7 @@
 #include "text_in.h"
 
+#include <cstring>
+
 #include "src/system/hal/serial.h"
 
 #include "src/system/bsp/ble.h"
@@ -28,56 +30,56 @@ namespace __private {
 // only keep the chars inside a certain ascii range
 bool is_ignore_char(char c) { return c < 32; }
 
-void generic_parse_serial(const serial_backend_ops_t* ops, Inputs& inputs)
+/// Persistent line assembler: one instance per backend, statically allocated.
+struct LineAssembler
+{
+  char buffer[Inputs::maxCommandSize];
+  size_t length = 0;
+  bool overflow = false; // line too long: drop everything until next '\n'
+
+  void reset()
+  {
+    length = 0;
+    overflow = false;
+  }
+};
+
+LineAssembler uart_line;
+LineAssembler ble_line;
+
+void generic_parse_serial(const serial_backend_ops_t* ops, LineAssembler& line, Inputs& inputs)
 {
   if (not ops->is_activated())
-    return;
-
-  if (ops->is_ready())
   {
-    uint8_t charRead = 0;
+    // connection lost: do not keep a stale partial command
+    line.reset();
+    return;
+  }
 
-    // read available serial data
-    do
+  while (inputs.commandCount < Inputs::maxCommands && ops->is_ready())
+  {
+    const char inChar = ops->read_char();
+
+    if (inChar == '\n')
     {
-      // get the new byte:
-      const char inChar = ops->read_char();
-      // if the incoming character is a newline, finish parsing
-      if (inChar == '\n')
+      // complete line received: publish it only if valid and non empty
+      if (not line.overflow && line.length > 0)
       {
-        // do not add empty strings and null terminated only strings
-        if (charRead != 0)
-        {
-          // add null termination if needed
-          if (charRead < Inputs::maxCommandSize)
-          {
-            if (inputs.commandList[inputs.commandCount][charRead] != '\0')
-              inputs.commandList[inputs.commandCount][charRead] = '\0';
-          }
-          else
-          {
-            inputs.commandList[inputs.commandCount][Inputs::maxCommandSize - 1] = '\0';
-          }
-          inputs.commandCount += 1;
-        }
-        else
-        {
-          for (size_t i = 0; i < Inputs::maxCommandSize; i++)
-            inputs.commandList[inputs.commandCount][i] = '\0';
-        }
-
-        charRead = 0;
+        char* dst = inputs.commandList[inputs.commandCount].data();
+        memcpy(dst, line.buffer, line.length);
+        dst[line.length] = '\0';
+        inputs.commandCount += 1;
       }
-      else if (charRead < Inputs::maxCommandSize)
-      {
-        // add it to the inputString:
-        if (not is_ignore_char(inChar))
-        {
-          inputs.commandList[inputs.commandCount][charRead] = inChar;
-          charRead += 1;
-        }
-      }
-    } while (ops->is_ready() && inputs.commandCount < Inputs::maxCommands);
+      line.reset();
+    }
+    else if (not is_ignore_char(inChar) && not line.overflow)
+    {
+      // keep room for the null terminator
+      if (line.length < Inputs::maxCommandSize - 1)
+        line.buffer[line.length++] = inChar;
+      else
+        line.overflow = true; // too long: reject the whole command
+    }
   }
 }
 
@@ -87,8 +89,8 @@ Inputs inputs;
 Inputs read_inputs()
 {
   inputs.reset();
-  __private::generic_parse_serial(&serial_uart_ops, inputs);
-  __private::generic_parse_serial(&ble_ueart_ops, inputs);
+  __private::generic_parse_serial(&serial_uart_ops, __private::uart_line, inputs);
+  __private::generic_parse_serial(&ble_ueart_ops, __private::ble_line, inputs);
   return inputs;
 }
 
