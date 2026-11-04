@@ -53,11 +53,6 @@ hal_ble_conn_handle_t hal_ble_get_connection_handle() { return 0; }
 
 int32_t hal_ble_get_mtu(hal_ble_conn_handle_t conn_handle) { return 25; }
 
-int32_t hal_ble_request_mtu_exchange(hal_ble_conn_handle_t conn_handle, uint16_t desired_mtu)
-{
-  return HAL_BLE_SUCCESS;
-}
-
 int32_t hal_ble_set_security_config(const hal_ble_sec_config_t* sec_config) { return HAL_BLE_SUCCESS; }
 
 int32_t hal_ble_start_pairing(hal_ble_conn_handle_t conn_handle) { return HAL_BLE_SUCCESS; }

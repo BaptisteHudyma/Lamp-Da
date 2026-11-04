@@ -493,17 +493,6 @@ hal_ble_conn_handle_t hal_ble_get_connection_handle();
  */
 int32_t hal_ble_get_mtu(hal_ble_conn_handle_t conn_handle);
 
-/**
- * @brief Request MTU Exchange with Central
- *
- * Initiates negotiation for larger packets (faster transfers).
- *
- * @param[in] conn_handle Connection handle
- * @param[in] desired_mtu Requested MTU (typically 200+)
- * @return HAL_BLE_SUCCESS or error code
- */
-int32_t hal_ble_request_mtu_exchange(hal_ble_conn_handle_t conn_handle, uint16_t desired_mtu);
-
 /* ========== Security & Pairing ========== */
 
 /**

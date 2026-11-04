@@ -519,46 +519,6 @@ int32_t hal_ble_get_mtu(hal_ble_conn_handle_t conn_handle)
   return HAL_BLE_ERROR_INVALID_PARAM;
 }
 
-int32_t hal_ble_request_mtu_exchange(hal_ble_conn_handle_t conn_handle, uint16_t desired_mtu)
-{
-  if (!hal_ble_state.initialized)
-  {
-    return HAL_BLE_ERROR_NOT_INIT;
-  }
-
-  if (conn_handle == HAL_BLE_INVALID_HANDLE)
-  {
-    return HAL_BLE_ERROR_INVALID_PARAM;
-  }
-
-  if (desired_mtu < HAL_BLE_MIN_MTU || desired_mtu > HAL_BLE_MAX_MTU)
-  {
-    return HAL_BLE_ERROR_INVALID_PARAM;
-  }
-
-  // request MTU exchange
-  BLEConnection* conn = Bluefruit.Connection(conn_handle);
-  if (conn == nullptr)
-  {
-    return HAL_BLE_ERROR_GENERIC;
-  }
-
-  if (!conn->requestMtuExchange(desired_mtu))
-    return HAL_BLE_ERROR_GENERIC;
-
-  // update stored MTU
-  /// TODO: this can fail if the host refuses
-  for (uint8_t i = 0; i < BLE_MAX_PERIPHERAL_CONNECTIONS; i++)
-  {
-    if (hal_ble_state.connections[i].handle == conn_handle)
-    {
-      hal_ble_state.connections[i].mtu = desired_mtu;
-      return HAL_BLE_SUCCESS;
-    }
-  }
-  return HAL_BLE_ERROR_GENERIC;
-}
-
 /* ========== Security & Pairing ========== */
 
 int32_t hal_ble_set_security_config(const hal_ble_sec_config_t* sec_config)
