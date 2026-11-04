@@ -38,6 +38,7 @@ bool setup_shared_filesystem_instance()
     else
     {
       logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
+      bsp::lampda_print("could not start filesystem");
       return false;
     }
   }
