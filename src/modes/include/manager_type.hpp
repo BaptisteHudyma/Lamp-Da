@@ -909,6 +909,10 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     dispatch_group(ctx, [](auto group) {
       group.quit_mode();
     });
+
+    // cancel any blip
+    auto manager = ctx.modeManager.get_context();
+    manager.cancel_blip();
   }
 
   //

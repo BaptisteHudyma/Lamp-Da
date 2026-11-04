@@ -373,8 +373,7 @@ void update_battery()
   }
   else if (isInputSourcePresent)
   {
-    // TODO: check this
-    // deglitch time of deconnection ?
+    // deglitch time of deconnection
   }
   else
   {

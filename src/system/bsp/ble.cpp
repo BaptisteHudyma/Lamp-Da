@@ -196,10 +196,6 @@ static void on_connect(hal::ble::hal_ble_conn_handle_t conn_handle)
     }
   }
 
-  // TODO
-  //  conn->requestPHY(); // Request 2Mbps PHY
-  //  conn->requestMtuExchange(247);
-
   // Immediatly request pairing, or any msg will be rejected !
   hal::ble::hal_ble_start_pairing(conn_handle);
 }

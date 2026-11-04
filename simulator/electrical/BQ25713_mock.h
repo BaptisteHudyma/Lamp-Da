@@ -71,8 +71,6 @@ public:
 
   void run_electrical_update() override
   {
-    // TODO
-
     // check OTG enable
     const uint16_t chargeOption3 = _registerMap[bq25713::CHARGE_OPTION_3_ADDR]->read();
 

@@ -747,11 +747,6 @@ extern "C" {
    */
   int pd_get_role();
 
-  //  TODO HACK below
-  int is_sourcing();
-  int send_control(int type);
-  // endofTODO
-
 #endif
 
   /* Control Message type */

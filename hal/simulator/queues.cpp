@@ -37,7 +37,6 @@ std::set<size_t> usedQueueIndex;
 
 QueueHandle_t HAL_create_queue(size_t itemSize, uint32_t queueLength, uint32_t staticIndex, uint8_t* buffer)
 {
-  // TODO: Mock should use the static memory layout
   if (staticIndex >= MaxStaticQueues)
     return nullptr;
   if (usedQueueIndex.find(staticIndex) != usedQueueIndex.cend())

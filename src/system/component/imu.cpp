@@ -11,6 +11,8 @@
 #include "src/system/bsp/imu_wrapper.h"
 #include "src/system/bsp/text_out.h"
 
+#include "src/system/logic/alerts.h"
+
 namespace lampda {
 namespace component {
 namespace imu {
@@ -44,9 +46,11 @@ void init()
 {
   if (not imuInstance.init())
   {
-    // TODO: something ?
+#ifndef LMBD_SIMULATION // TODO #132
+    logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
     bsp::lampda_print("IMU failed to start");
     isInitialized = false;
+#endif
   }
   else
   {
@@ -296,7 +300,7 @@ bsp::imu::Reading get_filtered_reading(const bool resetFilter)
 #endif
 
   // transform to lamp body space
-  // this new object is necessary or the computation returns garbage. TODO: WHY
+  // this new object is necessary or the computation returns garbage.
   bsp::imu::Reading lampSpaceVector;
   lampSpaceVector.accel = boardToFirstPixelTransformation.transform(imuToBoardTransformation.transform(filtered.accel));
   lampSpaceVector.gyro = boardToFirstPixelTransformation.transform(imuToBoardTransformation.transform(filtered.gyro));

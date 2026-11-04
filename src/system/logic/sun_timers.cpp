@@ -82,9 +82,6 @@ template<uint32_t T> void SunTimerBase<T>::set_deadline(const uint32_t timeshutd
     trueBrightnessSunTime_ms = timeLeftSeconds * 1000;
   else
     trueBrightnessSunTime_ms = BrightnessSunTime_ms;
-
-  // restore stored brightness to the user limit
-  /// TODO: logic::brightness::set_max_user_brightness(logic::brightness::get_saved_brightness());
 }
 
 template<uint32_t T> void SunTimerBase<T>::add_time_minutes(const uint8_t time_minutes)

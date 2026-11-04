@@ -115,8 +115,6 @@ static constexpr LampTypes _lampType = LampTypes::indexable;
 static constexpr LampTypes lampType = _lampType;
 
 /** \brief Main interface between the user and the hardware of the lamp
- *
- * TODO: write recipes for best practices when doing Simple/CCT/Indexable
  */
 struct LampTy
 {
