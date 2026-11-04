@@ -18,6 +18,7 @@
 #include "src/system/logic/inputs.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/sun_timers.h"
+#include "src/system/logic/user_signals.h"
 
 #include "src/system/component/battery.h"
 #include "src/system/component/charger.h"
@@ -250,6 +251,9 @@ void main_loop(const uint32_t addedDelay)
 
   // handle user serial events
   logic::cli::handleSerialEvents();
+
+  // refresh user signals
+  logic::user_signals::loop();
 
   // loop the behavior
   logic::behavior::loop();
