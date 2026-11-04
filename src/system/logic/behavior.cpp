@@ -677,10 +677,8 @@ void handle_shutdown_state()
   hal::delay_ms(10);
 
   // Phase 3: power / filesystem
-  if (not logic::power::go_to_shutdown())
-  {
-    // TODO: error ?
-  }
+  logic::power::go_to_shutdown();
+
   // save the current config to a file
   write_parameters();
   hal::delay_ms(20);

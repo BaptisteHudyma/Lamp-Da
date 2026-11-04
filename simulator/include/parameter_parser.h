@@ -71,7 +71,6 @@ inline void read_and_update_parameters()
       {
         mock_registers::addedAlgoDelay = value;
       }
-      // TODO: other parameters
     }
   }
   else

@@ -45,11 +45,7 @@ bool Wrapper::init() const
   return error == status_t::IMU_SUCCESS;
 }
 
-bool Wrapper::shutdown() const
-{
-  // TODO
-  return false;
-}
+bool Wrapper::shutdown() const { return false; }
 
 Reading Wrapper::get_reading() const
 {

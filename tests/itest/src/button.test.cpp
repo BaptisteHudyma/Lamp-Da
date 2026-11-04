@@ -751,7 +751,4 @@ TEST_F(ButtonFixture, long_click_fill_queue)
   buttonThread.join();
 }
 
-// TODO:
-// long click start then click chain
-
 } // namespace lampda

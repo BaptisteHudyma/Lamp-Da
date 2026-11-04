@@ -23,7 +23,6 @@ enum class Type : uint8_t
   MIC_ONOFF,       ///< turn on/off the microphone
   MIC_MODE,        ///< set the pattern changes type with the microphone
   MIC_SENSITIVITY, ///< set microphone sensitivity
-  LED_ORDER,       ///< set the new RGB led ordering
   SET_TIME,        ///< set the system time to a set time
   TIMING,          ///< set a desired on/off time
 };
@@ -146,26 +145,6 @@ inline bool decode_ELK_message(const uint8_t* msg, uint16_t len, Package& packag
         return true;
       }
 
-    case 0x81: // LED_ORDER
-      {
-        if (msg[3] <= 0 or msg[3] > 3)
-          return false;
-        if (msg[4] <= 0 or msg[4] > 3)
-          return false;
-        if (msg[5] <= 0 or msg[5] > 3)
-          return false;
-        // should contain only one 1, one 2 and one 3
-        if (msg[3] + msg[4] + msg[5] != 1 + 2 + 3)
-          return false;
-        /// TODO: finish this check
-
-        package.type = Type::LED_ORDER;
-        package.data[0] = msg[3];
-        package.data[1] = msg[4];
-        package.data[2] = msg[5];
-        package.dataSize = 3;
-        return true;
-      }
     case 0x82: // TIMING
       {
         package.type = Type::TIMING;

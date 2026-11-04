@@ -65,7 +65,6 @@ int32_t hal_ble_set_device_name(const char* name) { return HAL_BLE_SUCCESS; }
 
 int32_t hal_ble_get_device_name(char* name, size_t max_length)
 {
-  /// TODO
   char devName[] = "lampda_ble";
   strncpy(name, devName, 11);
   name[11] = '\0';
