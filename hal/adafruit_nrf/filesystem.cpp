@@ -7,6 +7,8 @@
 
 #include "src/system/bsp/text_out.h"
 
+#include "src/system/logic/alerts.h"
+
 namespace lampda {
 namespace hal {
 namespace filesystem {
@@ -35,7 +37,7 @@ bool setup_shared_filesystem_instance()
     }
     else
     {
-      // TODO: error
+      logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
       return false;
     }
   }

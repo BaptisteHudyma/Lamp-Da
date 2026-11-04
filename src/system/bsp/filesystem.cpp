@@ -8,6 +8,7 @@
 #include "src/system/bsp/ble.h"
 #include "src/system/bsp/text_out.h"
 
+#include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/statistics_handler.h"
 
@@ -269,7 +270,7 @@ void write_to_file()
   const bool systemParameterWriteSuccess = __internal::write_file(FILENAME_INTERNAL, _systemParametersValueMap);
   if (not systemParameterWriteSuccess)
   {
-    // TODO: handle error
+    logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
     bsp::lampda_print("could not save system parameters");
   }
 }
@@ -354,7 +355,7 @@ void write_to_file()
           __internal::write_file(FILENAME_USER, _userParametersValueMap, shouldEraseFile);
   if (not userParameterWriteSuccess)
   {
-    // TODO: handle error
+    logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
     bsp::lampda_print("could not save user parameters");
   }
 }

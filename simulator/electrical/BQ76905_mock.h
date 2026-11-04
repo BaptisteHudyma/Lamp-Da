@@ -67,10 +67,7 @@ public:
     _registerMap[bq76905::SUBCOMMAND_DATA_CHECKSUM_ADDR] = std::make_unique<Register>(); // check read/write validity
   }
 
-  void run_electrical_update() override
-  {
-    // TODO: update battery voltages
-  }
+  void run_electrical_update() override {}
 
   uint8_t get_i2c_address() const override { return bq76905::BQ76905::BQ76905addr; }
 
