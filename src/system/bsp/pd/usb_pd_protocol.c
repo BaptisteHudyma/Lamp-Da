@@ -931,8 +931,6 @@ static void pd_update_roles()
   tcpm_set_msg_header(pd.power_role, pd.data_role);
 }
 
-int is_sourcing() { return pd.task_state == PD_STATE_SRC_READY; }
-
 int send_control(int type)
 {
   int bit_len;

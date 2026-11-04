@@ -737,7 +737,6 @@ bool go_to_output_mode()
 
 bool go_to_charger_mode()
 {
-  // TODO: and other checks
   if (__private::can_switch_states())
   {
     ::lampda::bsp::powerDelivery::force_set_to_source_mode(false);
