@@ -25,6 +25,8 @@ struct BrightnessParameters
   brightness_t MaxBrightnessLimit = ::lampda::brightness::absoluteMaximumBrightness;
   /// Upper bound of the brightness, limited to MaxBrightnessLimit. This only locks user uses.
   brightness_t MaxUserBrightnessLimit = ::lampda::brightness::absoluteMaximumBrightness;
+  /// Scale of the user brightness, between 0 and 1. Lowered by the sun timers during their brightness phase
+  float userBrightnessScale = 1.0f;
 
   /// Hold the current level of brightness.
   /// This is the true reference value that is stored in memory at system shutdown
@@ -46,14 +48,14 @@ brightness_t get_max_user_brightness() { return __internal.MaxUserBrightnessLimi
 void set_max_brightness(const brightness_t brg)
 {
   __internal.MaxBrightnessLimit = min<brightness_t>(brg, ::lampda::brightness::absoluteMaximumBrightness);
-  // update saved user brightness
-  set_max_user_brightness(__internal.MaxUserBrightnessLimit);
+  // the user brightness is limited to the max system brightness
+  __internal.MaxUserBrightnessLimit = min<brightness_t>(__internal.MaxUserBrightnessLimit, get_max_brightness());
 }
 
-void set_max_user_brightness(const brightness_t brg)
+void set_user_brightness_scale(const float scale)
 {
-  // limited to the max system brightness
-  __internal.MaxUserBrightnessLimit = min<brightness_t>(brg, get_max_brightness());
+  __internal.userBrightnessScale = lmpd_constrain<float>(scale, 0.0f, 1.0f);
+  __internal.MaxUserBrightnessLimit = __internal.userBrightnessScale * get_max_brightness();
 }
 
 void update_saved_brightness()
@@ -61,10 +63,12 @@ void update_saved_brightness()
   user_signals::send_brightness(__internal.BRIGHTNESS);
 
   __internal.savedBrightness = __internal.BRIGHTNESS;
-  __internal.MaxUserBrightnessLimit = __internal.MaxBrightnessLimit;
+  set_user_brightness_scale(1.0f);
 }
 
 brightness_t get_saved_brightness() { return __internal.savedBrightness; }
+
+brightness_t get_scaled_saved_brightness() { return __internal.userBrightnessScale * __internal.savedBrightness; }
 
 void update_brightness(const brightness_t newBrightness, const bool shouldSkipUserCallbacks)
 {

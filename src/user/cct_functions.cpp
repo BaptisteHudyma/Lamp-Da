@@ -47,7 +47,7 @@ void power_on_sequence()
   YellowColorPin.set_pin_mode(hal::gpio::DigitalPin::Mode::kOutput);
   WhiteColorPin.set_pin_mode(hal::gpio::DigitalPin::Mode::kOutput);
 
-  brightness_update(logic::brightness::get_saved_brightness());
+  brightness_update(logic::brightness::get_scaled_saved_brightness());
 }
 
 void power_off_sequence()
@@ -64,9 +64,12 @@ void power_off_sequence()
 void brightness_update(const brightness_t brightness)
 {
   const auto _maxBrightness = logic::brightness::get_max_brightness();
-  const brightness_t constraintBrightness = std::min<brightness_t>(brightness, _maxBrightness);
+  // a value out of bounds is a forced update: the sun timers changed the brightness scale
+  const bool isForcedUpdate = brightness > ::lampda::brightness::absoluteMaximumBrightness;
+  const brightness_t constraintBrightness = std::min<brightness_t>(
+          isForcedUpdate ? logic::brightness::get_scaled_saved_brightness() : brightness, _maxBrightness);
 
-  if (constraintBrightness == _maxBrightness)
+  if (not isForcedUpdate and constraintBrightness == _maxBrightness)
   {
     // blip
     component::outputPower::blip(50);

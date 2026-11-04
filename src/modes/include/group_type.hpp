@@ -226,7 +226,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   static void enter_mode(auto& ctx)
   {
     // restore brightness before entering a mode
-    ctx.lamp.setBrightness(logic::brightness::get_saved_brightness(), false, false, true);
+    ctx.lamp.setBrightness(logic::brightness::get_scaled_saved_brightness(), false, false, true);
 
     // set ramps if they exist
     uint8_t modeIdAfter = ctx.get_active_mode(nbModes);

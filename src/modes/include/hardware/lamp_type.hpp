@@ -247,7 +247,7 @@ public:
     begin();
     clear();
     show_now();
-    setBrightness(logic::brightness::get_saved_brightness(), true, true);
+    setBrightness(logic::brightness::get_scaled_saved_brightness(), true, true);
     align_internal_to_system_brightness();
   }
 
@@ -687,18 +687,34 @@ public:
   /// Special call to update the internal brightness values to the system brightness
   void align_internal_to_system_brightness()
   {
-    saved_brightness = min<brightness_t>(logic::brightness::get_saved_brightness(), getMaxBrightness());
+    last_system_brightness = logic::brightness::get_scaled_saved_brightness();
+    saved_brightness = min<brightness_t>(static_cast<brightness_t>(last_system_brightness), getMaxBrightness());
     temporary_brightness = saved_brightness;
   }
 
-  /// Enforce the brightness limits, if getMaxBrightness changed. Will call \ref setBrightness
+  /** \brief Follow the system brightness and enforce its limits, if they changed. Will call \ref setBrightness
+   *
+   * A mode may have moved the saved brightness below the system one (see jumpBrightness). To keep this offset without
+   * a visible jump, a rise is added to the saved brightness, and a fall only limits it.
+   * A temporary brightness set by a mode is left to this mode, unless it is above the limit: writing to it would
+   * show as a flash until the next frame of the mode.
+   */
   void enforce_internal_brightness_limits()
   {
     const auto maxAllowedBrightness = getMaxBrightness();
-    const brightness_t new_saved_brightness =
-            min<brightness_t>(static_cast<brightness_t>(saved_brightness), maxAllowedBrightness);
+    const brightness_t system_brightness = logic::brightness::get_scaled_saved_brightness();
+
+    const brightness_t followed_saved_brightness =
+            system_brightness >= last_system_brightness ?
+                    saved_brightness + (system_brightness - last_system_brightness) :
+                    min<brightness_t>(static_cast<brightness_t>(saved_brightness), system_brightness);
+    last_system_brightness = system_brightness;
+
+    const brightness_t new_saved_brightness = min<brightness_t>(followed_saved_brightness, maxAllowedBrightness);
     const brightness_t new_temporary_brightness =
-            min<brightness_t>(static_cast<brightness_t>(temporary_brightness), maxAllowedBrightness);
+            temporary_brightness == saved_brightness ?
+                    new_saved_brightness :
+                    min<brightness_t>(static_cast<brightness_t>(temporary_brightness), maxAllowedBrightness);
 
     const bool isChanged = new_saved_brightness != saved_brightness or new_temporary_brightness != temporary_brightness;
     if (isChanged)
@@ -1123,6 +1139,8 @@ public:
   volatile brightness_t saved_brightness;
   /// Define a localy consistant temporary brightness
   volatile brightness_t temporary_brightness;
+  /// Value of the system brightness when the local saved brightness last followed it
+  volatile brightness_t last_system_brightness;
 
   /** \brief (physical) The "now" on milliseconds, updated just before loop.
    *
