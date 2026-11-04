@@ -466,6 +466,13 @@ bool set_bluetooth_name(const std::array<char, MaxBleNameLenght>& name)
   return false;
 }
 
+std::array<char, MaxBleNameLenght> get_ble_name()
+{
+  std::array<char, MaxBleNameLenght> bleName;
+  __private::load_bluetooth_name(bleName.data());
+  return bleName;
+}
+
 void start_advertising(bool allowUnknownConnections)
 {
   if (not is_activated())
