@@ -48,8 +48,8 @@ brightness_t get_max_user_brightness() { return __internal.MaxUserBrightnessLimi
 void set_max_brightness(const brightness_t brg)
 {
   __internal.MaxBrightnessLimit = min<brightness_t>(brg, ::lampda::brightness::absoluteMaximumBrightness);
-  // the user brightness is limited to the max system brightness
-  __internal.MaxUserBrightnessLimit = min<brightness_t>(__internal.MaxUserBrightnessLimit, get_max_brightness());
+  // keep the user brightness scaled from the new max system brightness
+  __internal.MaxUserBrightnessLimit = __internal.userBrightnessScale * get_max_brightness();
 }
 
 void set_user_brightness_scale(const float scale)

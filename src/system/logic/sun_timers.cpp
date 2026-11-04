@@ -281,6 +281,19 @@ bool SunriseTimer::should_accept_start() const
   return is_enabled() or not logic::behavior::is_in_output_state();
 }
 
+void SunriseTimer::cancel_at_current_brightness()
+{
+  if (is_enabled())
+  {
+    // the cancel will release the lock
+    lock_brightness_update(true);
+
+    logic::brightness::update_brightness(logic::brightness::get_scaled_saved_brightness());
+    logic::brightness::update_saved_brightness();
+  }
+  cancel();
+}
+
 void SunriseTimer::sun_timer_progress_update_callback(const float progress) const
 {
   user::handle_user_command(common::UserCommand::make_signal_sunrise_progress_command(progress));

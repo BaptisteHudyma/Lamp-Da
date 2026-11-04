@@ -54,7 +54,7 @@ void handle_brightness_change(uint8_t consecutiveButtonCheck, uint32_t buttonHol
   // prevent sunset updates when we are updating it ourself
   logic::sunset_timer.lock_brightness_update(not isEndOfHoldEvent);
   /// user controled brightness, no more sunrise
-  logic::sunrise_timer.cancel();
+  logic::sunrise_timer.cancel_at_current_brightness();
 
   if (isEndOfHoldEvent)
   {
