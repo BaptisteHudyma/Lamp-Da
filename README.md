@@ -58,6 +58,25 @@ base behavior:
 - The lamp starts and stops with one click.
 - The luminosity can be raised by clicking than holding, and diminished by double-clicking than holding.
 
+Some behaviors can be moved to other clicks with the command line (over USB serial, or Bluetooth UART):
+
+| Behavior | Name | Default clicks | Click action | Hold action |
+|----------|------|----------------|--------------|-------------|
+| Custom ramp | `ramp` | 3 | | configure the custom ramp of the mode |
+| Favorites | `favorite` | 4 | jump to the favorites | add or remove a favorite |
+| Sunset timer | `sunset` | 5 | | start or extend the sunset timer |
+| Quick navigation | `nav` | 6 | jump to the first mode | |
+| Scroll | `scroll` | 6 | | scroll across modes and groups |
+| Indicator brightness | `indicator` | 7 | next brightness | cycle the brightness |
+
+- `sys bind` shows the current links, `set bind nav 8` moves a behavior and `set bind_reset` restores the defaults.
+- The click and hold actions of a behavior always move together, to 4 up to 9 clicks (3 up to 9 for `ramp`, `scroll` and `sunset`, that have no click action).
+- A click only and a hold only behavior can share the same clicks, like `nav` and `scroll`. Otherwise, the behaviors already on these clicks swap with the moved one. A swap that would leave two behaviors on the same action is refused: move the other behavior first.
+- 1 and 2 clicks (on/off, next mode, brightness), 3 clicks (next group, or quit the favorites) and 10 clicks and above (shutdown, resets) cannot be changed.
+- Links are saved when the lamp shuts down, and clearing the user parameters restores the defaults.
+- Commands of the lamp when it is off keep priority whatever the links: 3 clicks + hold starts in button usermode (so `sunset` on 3 clicks only works when the lamp is on) and 4 clicks toggles the lockout. In button usermode, a 5 clicks hold still exits after 5 seconds.
+- CCT lamps can only move `indicator`, to 5 up to 9 clicks: 3 and 4 clicks + hold are their color ramps.
+
 The battery level is displayed as a color gradient from green (high) to red (low).
 
 ![battery levels](Medias/lamp_top.jpg)

@@ -10,6 +10,7 @@
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
+#include "src/system/logic/button_bindings.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/sun_timers.h"
 
@@ -219,15 +220,10 @@ bool usermode_button_click_callback(const uint8_t consecutiveButtonCheck)
  */
 bool always_button_click_callback(const uint8_t consecutiveButtonCheck)
 {
-  switch (consecutiveButtonCheck)
+  if (button_bindings::get_click_behavior(consecutiveButtonCheck) == button_bindings::Behavior::Indicator)
   {
-    case 7:
-      {
-        indicator::set_brightness_level(logic::indicator::get_brightness_level() + 1);
-        return false;
-      }
-    default:
-      break;
+    indicator::set_brightness_level(logic::indicator::get_brightness_level() + 1);
+    return false;
   }
   return true;
 }
@@ -370,17 +366,12 @@ bool always_button_hold_callback(const uint8_t consecutiveButtonCheck,
                                  const bool isEndOfHoldEvent,
                                  const uint32_t buttonHoldDuration)
 {
-  switch (consecutiveButtonCheck)
+  // clics and hold : toggle indicator
+  if (button_bindings::get_hold_behavior(consecutiveButtonCheck) == button_bindings::Behavior::Indicator)
   {
-    // 7 clics and hold : toggle indicator
-    case 7:
-      {
-        // every seconds, update the indicator
-        EVERY_N_MILLIS(1000) { indicator::set_brightness_level(logic::indicator::get_brightness_level() + 1); }
-        return false;
-      }
-    default:
-      break;
+    // every seconds, update the indicator
+    EVERY_N_MILLIS(1000) { indicator::set_brightness_level(logic::indicator::get_brightness_level() + 1); }
+    return false;
   }
 
   return true;

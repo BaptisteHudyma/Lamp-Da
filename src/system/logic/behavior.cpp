@@ -14,6 +14,7 @@
 #include "src/system/bsp/text_out.h"
 
 #include "src/system/logic/alerts.h"
+#include "src/system/logic/button_bindings.h"
 #include "src/system/logic/inputs_bluetooth.h"
 #include "src/system/logic/inputs.h"
 #include "src/system/logic/statistics_handler.h"
@@ -225,6 +226,9 @@ bool read_parameters()
   // Load the user anyway, there is a default parameter logic in here
   user::read_parameters();
 
+  // After the user parameters: they can erase the stored values on migration
+  button_bindings::load_from_memory();
+
   return isSuccess;
 }
 
@@ -259,6 +263,9 @@ void write_parameters()
 
   // write user parameters
   user::write_parameters();
+
+  // After the user parameters: they clear the cached values before writing theirs
+  button_bindings::write_to_memory();
 
   // write all
   bsp::filesystem::user::write_to_file();

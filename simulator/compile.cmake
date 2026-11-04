@@ -98,6 +98,7 @@ set(SRC_SYSTEM_LOGIC
     ${LMBD_ROOT_DIR}/src/system/logic/alerts.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/behavior.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/brightness_handle.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/button_bindings.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/command_line_interface.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/inputs_bluetooth.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/inputs.cpp
