@@ -405,6 +405,11 @@ static void cmd_i2c(const common::cli::ParsedCommand&)
           hal::i2c::i2c_check_existence(0, hal::i2c::chargeI2cAddress) == 0);
 }
 
+static void cmd_get_ble_name(const common::cli::ParsedCommand&)
+{
+  bsp::lampda_print("ble_name: %s", bsp::ble::get_ble_name().data());
+}
+
 static void cmd_clear_user_parameters(const common::cli::ParsedCommand&)
 {
   // Delete user parameters
@@ -829,6 +834,7 @@ constexpr Command _sys_commands_s[] = {
         make_command("cinfo", "charger infos", handles::cmd_cinfo),
         make_command("adc", "values from the charger ADC", handles::cmd_adc),
         make_command("i2c", "start an i2c presence check", handles::cmd_i2c),
+        make_command("ble_name", "return the current BLE device name", handles::cmd_get_ble_name),
 };
 
 /// special commands to interact with the low level system

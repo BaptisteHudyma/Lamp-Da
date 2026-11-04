@@ -41,6 +41,8 @@ void clear_bounded_devices();
 
 /// Set a new name for the bluetooth
 bool set_bluetooth_name(const std::array<char, MaxBleNameLenght>& name);
+/// Return the current bluetooth name
+std::array<char, MaxBleNameLenght> get_ble_name();
 
 /**
  * \brief start the advertising sequence (with a timeout)
