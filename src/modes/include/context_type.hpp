@@ -310,9 +310,8 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
 
     auto manager = modeManager.get_context();
 
-    // cancel any blip
-    // TODO: this should be in quit_mode
-    manager.cancel_blip();
+    // signal that we are quitting the mode
+    modeManager.quit_mode(manager);
 
     // if next mode is the same as current one, add a blip to help user differenciate
     if (modeManager.activeIndex.modeIndex == value)
@@ -324,8 +323,6 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
       manager.blip(100);
     }
 
-    // signal that we are quitting the mode
-    modeManager.quit_mode(manager);
     // switch mode
     modeManager.activeIndex.modeIndex = value;
     // signal that we entered a new mode
