@@ -99,21 +99,10 @@ struct Candle : public BasicMode
     const auto maxBrightness = lamp.getMaxBrightness();
     const float brightnessCorrection = maxBrightness / 255.0f;
 
-    // prevent flickering on brihhtness updates
-    const bool isUpdateRecent = lamp.now - logic::brightness::when_last_update_brightness() < 200;
-
-    // clang-format off
-
-    // limit max brightness
-    const brightness_t base =
-            isUpdateRecent ? lamp.getSavedBrightness() :
-                             // else :limit the brightness to a max threshold
-                    std::min<brightness_t>(lamp.getSavedBrightness(),
-                                           std::max<int>(0,
-                                                         maxBrightness - std::min<int>(maxBrightness,
-                                                                                       (CANDLE_AMPLITUDE + 15) *
-                                                                                               brightnessCorrection)));
-    // clang-format on
+    // limit max brightness, to keep some room for the candle waves
+    const brightness_t base = std::min<brightness_t>(
+            lamp.getSavedBrightness(),
+            maxBrightness - std::min<int>(maxBrightness, (CANDLE_AMPLITUDE + 15) * brightnessCorrection));
 
     // 3-oscillator synth for a relatively organic pattern
     const uint8_t add = ((triwave8(ctx.state.candle_wave1) * ctx.state.candle_wave1_depth) >> 8) +

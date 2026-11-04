@@ -54,7 +54,7 @@ void handle_brightness_change(uint8_t consecutiveButtonCheck, uint32_t buttonHol
   // prevent sunset updates when we are updating it ourself
   logic::sunset_timer.lock_brightness_update(not isEndOfHoldEvent);
   /// user controled brightness, no more sunrise
-  logic::sunrise_timer.cancel();
+  logic::sunrise_timer.cancel_at_current_brightness();
 
   if (isEndOfHoldEvent)
   {
@@ -74,9 +74,8 @@ void handle_brightness_change(uint8_t consecutiveButtonCheck, uint32_t buttonHol
   // update brightness every N milliseconds (or end of hold)
   EVERY_N_MILLIS(BRIGHTNESS_LOOP_UPDATE_EVERY)
   {
-    // use minimum of saved vs max user brightness
-    const brightness_t brightness = std::min<brightness_t>(logic::brightness::get_saved_brightness(),
-                                                           logic::brightness::get_max_user_brightness());
+    // start from the level currently followed by the modes
+    const brightness_t brightness = logic::brightness::get_scaled_saved_brightness();
 
     // first actions, set ramp side
     if (buttonHoldDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)

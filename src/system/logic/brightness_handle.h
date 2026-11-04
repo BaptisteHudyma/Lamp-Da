@@ -21,6 +21,10 @@ brightness_t get_brightness();
 /// This should be the prefered option in all computations.
 brightness_t get_saved_brightness();
 
+/// Return the saved brightness level, with the user brightness scale applied.
+/// This is the level that the user modes should follow. See \ref set_user_brightness_scale
+brightness_t get_scaled_saved_brightness();
+
 /// Return the maximum allowed brightness
 brightness_t get_max_brightness();
 
@@ -31,8 +35,14 @@ brightness_t get_max_user_brightness();
 /// \param[in] brg New brightness, limited to brightness::absoluteMaximumBrightness
 void set_max_brightness(const brightness_t brg);
 
-/// Set the maximum allowed brightness for the user modes
-void set_max_user_brightness(const brightness_t brg);
+/**
+ * \brief Scale the brightness available to the user modes, without changing the saved brightness.
+ * The maximum user brightness and the saved brightness scale together, so a mode animating around the saved
+ * brightness keeps its look at any scale.
+ * The scale is reset to 1 by \ref update_saved_brightness
+ * \param[in] scale between 0 and 1
+ */
+void set_user_brightness_scale(const float scale);
 
 /// Update the saved brightness value with the current brightness
 void update_saved_brightness();

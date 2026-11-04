@@ -109,6 +109,10 @@ protected:
 /// Timer to start the system and ramp up brightness until we reach back the latest user set brightness
 class SunriseTimer : public SunTimerBase<3>
 {
+public:
+  /// Cancel the timer, and keep the brightness reached by the sunrise as the new saved brightness
+  void cancel_at_current_brightness();
+
 protected:
   bool should_accept_start() const override;
 

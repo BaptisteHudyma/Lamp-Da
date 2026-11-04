@@ -21,7 +21,7 @@ namespace logic {
 template<uint32_t T> void SunTimerBase<T>::cancel()
 {
   if (is_enabled())
-    logic::brightness::set_max_user_brightness(logic::brightness::get_max_brightness());
+    logic::brightness::set_user_brightness_scale(1.0f);
 
   // release timer
   endTime_s = 0;
@@ -249,7 +249,7 @@ void SunsetTimer::sun_timer_progress_update_callback(const float progress) const
 
 void SunsetTimer::end_of_timer_handle()
 {
-  logic::brightness::set_max_user_brightness(0);
+  logic::brightness::set_user_brightness_scale(0.0f);
   logic::brightness::force_brightness_user_callback();
 
   bsp::lampda_print("Shutdown with sunset timer");
@@ -260,11 +260,8 @@ void SunsetTimer::timer_brightness_progress_update(const float progress)
 {
   if (isAllowedToControlBrightness)
   {
-    // new brightness to use
-    const brightness_t newBrightness = (1.0f - progress) * logic::brightness::get_saved_brightness();
-
     // slowly decrease brighntess
-    logic::brightness::set_max_user_brightness(newBrightness);
+    logic::brightness::set_user_brightness_scale(1.0f - progress);
     // force an update of the brightness, with user callback
     logic::brightness::force_brightness_user_callback();
   }
@@ -284,6 +281,19 @@ bool SunriseTimer::should_accept_start() const
   return is_enabled() or not logic::behavior::is_in_output_state();
 }
 
+void SunriseTimer::cancel_at_current_brightness()
+{
+  if (is_enabled())
+  {
+    // the cancel will release the lock
+    lock_brightness_update(true);
+
+    logic::brightness::update_brightness(logic::brightness::get_scaled_saved_brightness());
+    logic::brightness::update_saved_brightness();
+  }
+  cancel();
+}
+
 void SunriseTimer::sun_timer_progress_update_callback(const float progress) const
 {
   user::handle_user_command(common::UserCommand::make_signal_sunrise_progress_command(progress));
@@ -291,8 +301,7 @@ void SunriseTimer::sun_timer_progress_update_callback(const float progress) cons
 
 void SunriseTimer::end_of_timer_handle()
 {
-  logic::brightness::set_max_user_brightness(logic::brightness::get_saved_brightness());
-  // force an update of the brightness, with user callback
+  // the timer cancel released the brightness scale: force an update of the brightness, with user callback
   logic::brightness::force_brightness_user_callback();
 
   bsp::lampda_print("Sunrise timer finished !");
@@ -303,20 +312,17 @@ void SunriseTimer::timer_brightness_progress_update(const float progress)
   // timing is reaching the end phase, power on the system
   if (not logic::behavior::is_in_output_state())
   {
-    logic::brightness::set_max_user_brightness(0);
+    logic::brightness::set_user_brightness_scale(0.0f);
     logic::behavior::set_power_on();
   }
 
   if (isAllowedToControlBrightness)
   {
-    // new brightness to use
-    const brightness_t newMaxBrightness = progress * logic::brightness::get_max_brightness();
-    const brightness_t newBrightness = progress * logic::brightness::get_saved_brightness();
-
-    // slowly increase brightness limit
-    logic::brightness::set_max_user_brightness(newMaxBrightness);
-    // update brightness
-    logic::brightness::update_brightness(newBrightness);
+    // slowly increase brightness.
+    // Never write the brightness directly here: the active mode owns it, and would overwrite it on the next frame.
+    logic::brightness::set_user_brightness_scale(progress);
+    // force an update of the brightness, with user callback
+    logic::brightness::force_brightness_user_callback();
   }
 }
 
