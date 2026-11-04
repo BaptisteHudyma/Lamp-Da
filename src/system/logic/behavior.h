@@ -22,6 +22,11 @@ namespace behavior {
 extern bool read_parameters();
 
 /**
+ * \brief Write the parameters to the filesystem
+ */
+extern void write_parameters();
+
+/**
  * \return true if the user code is runing
  */
 extern bool is_user_code_running();

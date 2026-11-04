@@ -124,39 +124,40 @@ bool button_clicked_default(const uint8_t clicks)
 #endif
         return true;
       }
+  }
 
-    case 4: // 4 clicks: jump to favorite
-      {
-        if (not manager.state.isInFavoriteMockGroup)
-        {
-          // jump and save last used mode
-          manager.jump_to_favorite(manager.state.lastFavoriteStep, true);
-        }
+  // jump to favorite, on its configured clicks
+  if (logic::button_bindings::get_click_behavior(clicks) == logic::button_bindings::Behavior::Favorite)
+  {
+    if (not manager.state.isInFavoriteMockGroup)
+    {
+      // jump and save last used mode
+      manager.jump_to_favorite(manager.state.lastFavoriteStep, true);
+    }
 #ifdef LMBD_SIMULATION
-        {
-          int _groupId = manager.get_active_group();
-          int _modeId = manager.get_active_mode();
-          fprintf(stderr, "group %d *mode %d\n", _groupId, _modeId);
-          if (manager.everySunsetCallback[_groupId][_modeId])
-            fprintf(stderr, " - hasSunsetAnimation\n");
-          if (manager.everySunriseCallback[_groupId][_modeId])
-            fprintf(stderr, " - hasSunriseAnimation\n");
-          if (manager.everyBrightCallback[_groupId][_modeId])
-            fprintf(stderr, " - hasBrightCallback\n");
-          if (manager.everyCustomRamp[_groupId][_modeId])
-            fprintf(stderr, " - hasCustomRamp\n");
-          if (manager.state.rampHandler.animEffect)
-            fprintf(stderr, " - has anim effect\n");
-          if (manager.everyRequireUserThread[_groupId][_modeId])
-            fprintf(stderr, " - requireUserThread\n");
-          if (manager.everySystemCallbacks[_groupId][_modeId])
-            fprintf(stderr, " - hasSystemCallbacks\n");
-          if (manager.everyButtonCustomUI[_groupId][_modeId])
-            fprintf(stderr, " - hasButtonCustomUI\n");
-        }
+    {
+      int _groupId = manager.get_active_group();
+      int _modeId = manager.get_active_mode();
+      fprintf(stderr, "group %d *mode %d\n", _groupId, _modeId);
+      if (manager.everySunsetCallback[_groupId][_modeId])
+        fprintf(stderr, " - hasSunsetAnimation\n");
+      if (manager.everySunriseCallback[_groupId][_modeId])
+        fprintf(stderr, " - hasSunriseAnimation\n");
+      if (manager.everyBrightCallback[_groupId][_modeId])
+        fprintf(stderr, " - hasBrightCallback\n");
+      if (manager.everyCustomRamp[_groupId][_modeId])
+        fprintf(stderr, " - hasCustomRamp\n");
+      if (manager.state.rampHandler.animEffect)
+        fprintf(stderr, " - has anim effect\n");
+      if (manager.everyRequireUserThread[_groupId][_modeId])
+        fprintf(stderr, " - requireUserThread\n");
+      if (manager.everySystemCallbacks[_groupId][_modeId])
+        fprintf(stderr, " - hasSystemCallbacks\n");
+      if (manager.everyButtonCustomUI[_groupId][_modeId])
+        fprintf(stderr, " - hasButtonCustomUI\n");
+    }
 #endif
-        return true;
-      }
+    return true;
   }
 
   return false;
@@ -224,7 +225,13 @@ bool button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
         return shouldPreventBrightnessUpdate;
       }
 
-    case 4: // 4 click+hold: configure favorite
+    default:
+      break;
+  }
+
+  switch (logic::button_bindings::get_hold_behavior(clicks))
+  {
+    case logic::button_bindings::Behavior::Favorite: // click+hold: configure favorite
       {
         // lock to prevent addition of favorite from favorite & if we are deleting favorites
         // the second case can happen when the user delete all favorites
@@ -246,7 +253,7 @@ bool button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
         return true;
       }
 
-    case 6: // 6 click+hold: scroll across modes and group
+    case logic::button_bindings::Behavior::Scroll: // click+hold: scroll across modes and group
       {
         // no scroll in favorite
         if (not manager.state.isInFavoriteMockGroup)

@@ -15,6 +15,8 @@
 
 #include "src/system/bsp/ble.h"
 
+#include "src/system/logic/button_bindings.h"
+
 #include <cstdint>
 namespace lampda::user {
 
@@ -140,23 +142,21 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
         }
         return true;
       }
-    case 5:
-      {
-        if (not isEndOfHoldEvent and holdDuration > 0)
-        {
-          // sunset timer !
-          auto manager = get_context();
-          if (manager.overlay_animate_ramp(
-                      holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
-          {
-            // update the sunset timing
-            manager.state.isSunsetTimingPending = 2;
-          }
+  }
 
-          return true;
-        }
-        break;
-      }
+  // sunset timer, on its configured clicks
+  if (logic::button_bindings::get_hold_behavior(clicks) == logic::button_bindings::Behavior::Sunset and
+      not isEndOfHoldEvent and holdDuration > 0)
+  {
+    auto manager = get_context();
+    if (manager.overlay_animate_ramp(
+                holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
+    {
+      // update the sunset timing
+      manager.state.isSunsetTimingPending = 2;
+    }
+
+    return true;
   }
 
   return false;
@@ -211,23 +211,21 @@ bool button_clicked(const uint8_t clicks)
 {
   auto manager = get_context();
 
-  switch (clicks)
+  // quick navigation: jump to first mode of first category
+  if (logic::button_bindings::get_click_behavior(clicks) == logic::button_bindings::Behavior::QuickNavigation)
   {
-    case 6: // 6 clicks:  jump to first mode of first category
-      {
-        // exit fav group if needed
-        manager.exit_favorite_group(manager.state.beforeFavoriteActiveIndex);
+    // exit fav group if needed
+    manager.exit_favorite_group(manager.state.beforeFavoriteActiveIndex);
 
-        // return to first state
-        manager.set_active_group(0);
-        manager.set_active_mode(0);
-        // ramps will be updated on their own
+    // return to first state
+    manager.set_active_group(0);
+    manager.set_active_mode(0);
+    // ramps will be updated on their own
 
-        // Blip for state change
-        manager.blip(250);
+    // Blip for state change
+    manager.blip(250);
 
-        return true;
-      }
+    return true;
   }
 
   // nothing
@@ -240,37 +238,31 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
   auto manager = get_context();
   auto& rampHandler = manager.state.rampHandler;
 
+  // Add 5 minutes to sunset timer, on its configured clicks
+  if (logic::button_bindings::get_hold_behavior(clicks) == logic::button_bindings::Behavior::Sunset and
+      not isEndOfHoldEvent and holdDuration > 0 and logic::sunset_timer.is_enabled())
+  {
+    if (manager.overlay_animate_ramp(
+                holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
+    {
+      // update the sunset timing
+      manager.state.isSunsetTimingPending = 2;
+    }
+  }
+
+  // configure custom ramp, on its configured clicks. No ramps in favorite group
+  if (logic::button_bindings::get_hold_behavior(clicks) == logic::button_bindings::Behavior::CustomRamp and
+      not manager.state.isInFavoriteMockGroup)
+  {
+    rampHandler.update_ramp(manager.get_active_custom_ramp(), holdDuration, [&](uint8_t rampValue) {
+      manager.custom_ramp_update(rampValue);
+      manager.set_active_custom_ramp(rampValue);
+    });
+    return true;
+  }
+
   switch (clicks)
   {
-    case 3: // 3 click+hold: configure custom ramp
-            // no ramps in favorite group
-      if (not manager.state.isInFavoriteMockGroup)
-      {
-        rampHandler.update_ramp(manager.get_active_custom_ramp(), holdDuration, [&](uint8_t rampValue) {
-          manager.custom_ramp_update(rampValue);
-          manager.set_active_custom_ramp(rampValue);
-        });
-        return true;
-      }
-      break;
-
-      // 5 click+hold: Add 5 minutes to sunset timer
-    case 5:
-      {
-        if (not isEndOfHoldEvent and holdDuration > 0 and logic::sunset_timer.is_enabled())
-        {
-          // sunset timer !
-          auto manager = get_context();
-          if (manager.overlay_animate_ramp(
-                      holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
-          {
-            // update the sunset timing
-            manager.state.isSunsetTimingPending = 2;
-          }
-        }
-        break;
-      }
-
     case 13: // 13 clicks + hold: reset the stored parameters
       {
         if (not isEndOfHoldEvent and holdDuration > 0)

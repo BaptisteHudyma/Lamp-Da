@@ -26,6 +26,7 @@
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
+#include "src/system/logic/button_bindings.h"
 #include "src/system/logic/inputs_bluetooth.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/statistics_handler.h"
@@ -34,6 +35,7 @@
 #include "src/user/functions.h"
 
 #include <cstdlib>
+#include <cstring>
 
 namespace lampda {
 namespace logic {
@@ -65,6 +67,25 @@ constexpr Command make_command_args(const char* name,
 
 inline const char* boolToString(bool b) { return b ? "true" : "false"; }
 
+/// Display the usage and description of a command, with \p parent the name of its command group, if any
+static void print_command_description(const Command& cmd, const char* parent)
+{
+  if (parent)
+  {
+    if (cmd.usage)
+      bsp::lampda_print("%s %s %s: %s", parent, cmd.name, cmd.usage, cmd.description);
+    else
+      bsp::lampda_print("%s %s: %s", parent, cmd.name, cmd.description);
+  }
+  else
+  {
+    if (cmd.usage)
+      bsp::lampda_print("%s %s: %s", cmd.name, cmd.usage, cmd.description);
+    else
+      bsp::lampda_print("%s: %s", cmd.name, cmd.description);
+  }
+}
+
 /// Parse a command and handle its effects
 template<size_t N> void handleCommand(const common::cli::ParsedCommand& command,
                                       const Command (&commandsToParse)[N],
@@ -78,16 +99,20 @@ template<size_t N> void handleCommand(const common::cli::ParsedCommand& command,
   {
     if (cmd.hash == cmdHash)
     {
+      // "<command> h": display the command description, before the arguments check.
+      // Commands taking any argument count forward them, and handle "h" themselves (set h, sys h, act h).
+      const bool forwardsArguments = cmd.maxArgs == common::cli::ParsedCommand::maxArgumentCount;
+      if (not forwardsArguments and command.argumentCount == 1 and strcmp(command.argument(0), "h") == 0)
+      {
+        print_command_description(cmd, calledCommand);
+        return;
+      }
+
       // check arguments
       if (command.argumentCount < cmd.minArgs or command.argumentCount > cmd.maxArgs)
       {
-        if (cmd.minArgs == cmd.maxArgs)
-          bsp::lampda_print("Command \"%s\" usage must have %d arguments. Type h for usage.", cmd.name, cmd.minArgs);
-        else
-          bsp::lampda_print("Command \"%s\" usage must have between %d and %d arguments. Type h for usage.",
-                            cmd.name,
-                            cmd.minArgs,
-                            cmd.maxArgs);
+        bsp::lampda_print("Invalid call for the command. Check use below:");
+        print_command_description(cmd, calledCommand);
         return;
       }
 
@@ -764,6 +789,85 @@ static void cmd_set_custom_color(const common::cli::ParsedCommand& command)
   }
 }
 
+/// Display the links between click counts and behaviors
+static void cmd_bindings(const common::cli::ParsedCommand&)
+{
+  namespace bindings = logic::button_bindings;
+
+  for (size_t i = 0; i < bindings::behaviorCount; ++i)
+  {
+    const auto behavior = static_cast<bindings::Behavior>(i);
+    if (bindings::is_supported(behavior))
+      bsp::lampda_print("%s: %d clicks (can use %d to %d)",
+                        bindings::get_name(behavior),
+                        bindings::get_clicks(behavior),
+                        bindings::get_min_clicks(behavior),
+                        bindings::maxClicks);
+  }
+}
+
+/// Link a behavior to a click count
+static void cmd_set_binding(const common::cli::ParsedCommand& command)
+{
+  namespace bindings = logic::button_bindings;
+
+  std::array<char, common::cli::MaxStringArgumentLen> name;
+  uint8_t clicks = 0;
+  if (not common::cli::argument::parse_text(command, 0, name) or
+      not common::cli::argument::parse_uint8(command, 1, clicks))
+  {
+    bsp::lampda_print("Invalid call: parameters should be <behavior> <clicks>");
+    return;
+  }
+
+  const auto behavior = bindings::get_behavior_from_name(name.data());
+  if (behavior == bindings::Behavior::None)
+  {
+    bsp::lampda_print("Unknown behavior \"%s\": type \'sys bind\' for the behaviors", name.data());
+    return;
+  }
+
+  std::array<uint8_t, bindings::behaviorCount> previousClicks;
+  for (size_t i = 0; i < bindings::behaviorCount; ++i)
+    previousClicks[i] = bindings::get_clicks(static_cast<bindings::Behavior>(i));
+
+  switch (bindings::set_binding(behavior, clicks))
+  {
+    case bindings::SetResult::Success:
+      bsp::lampda_print("%s is now on %d clicks", name.data(), clicks);
+      // report the behaviors that swapped
+      for (size_t i = 0; i < bindings::behaviorCount; ++i)
+      {
+        const auto other = static_cast<bindings::Behavior>(i);
+        if (other != behavior and bindings::get_clicks(other) != previousClicks[i])
+          bsp::lampda_print("%s moved to %d clicks", bindings::get_name(other), bindings::get_clicks(other));
+      }
+      break;
+    case bindings::SetResult::UnsupportedBehavior:
+      bsp::lampda_print("This lamp type does not have the %s behavior", name.data());
+      break;
+    case bindings::SetResult::ReservedClicks:
+      bsp::lampda_print("%s cannot use %d clicks: should be %d to %d",
+                        name.data(),
+                        clicks,
+                        bindings::get_min_clicks(behavior),
+                        bindings::maxClicks);
+      break;
+    case bindings::SetResult::SwapNotPossible:
+      bsp::lampda_print("Cannot move %s to %d clicks: the behaviors there cannot swap with it. Move them first",
+                        name.data(),
+                        clicks);
+      break;
+  }
+}
+
+/// Restore the default links between click counts and behaviors
+static void cmd_reset_bindings(const common::cli::ParsedCommand&)
+{
+  logic::button_bindings::reset_to_defaults();
+  bsp::lampda_print("Restored the default button bindings");
+}
+
 void cmd_set_hook(const common::cli::ParsedCommand& command, const char* name);
 /// Handle the Set command, that takes another command as parameters
 static void cmd_set(const common::cli::ParsedCommand& command) { cmd_set_hook(command, command.name()); }
@@ -835,6 +939,7 @@ constexpr Command _sys_commands_s[] = {
         make_command("adc", "values from the charger ADC", handles::cmd_adc),
         make_command("i2c", "start an i2c presence check", handles::cmd_i2c),
         make_command("ble_name", "return the current BLE device name", handles::cmd_get_ble_name),
+        make_command("bind", "show which clicks trigger each configurable behavior", handles::cmd_bindings),
 };
 
 /// special commands to interact with the low level system
@@ -920,6 +1025,13 @@ constexpr Command _set_commands_s[] = {
                           3,
                           "Display a given color",
                           handles::cmd_set_custom_color),
+        make_command_args("bind",
+                          "[favorite|nav|scroll|sunset|ramp|indicator] [clicks]",
+                          2,
+                          2,
+                          "Move a behavior, with its click and hold actions. Swaps with the behaviors already there",
+                          handles::cmd_set_binding),
+        make_command("bind_reset", "Restore the default button bindings", handles::cmd_reset_bindings),
 
 };
 
@@ -966,19 +1078,19 @@ template<size_t N> void help_hook_base(const Command (&commandsToParse)[N], cons
     if (command)
     {
       if (cmd.usage)
-        bsp::lampda_print("%s %s %s: %s", command, cmd.name, cmd.usage, cmd.description);
+        bsp::lampda_print("%s %s %s", command, cmd.name, cmd.usage);
       else
-        bsp::lampda_print("%s %s: %s", command, cmd.name, cmd.description);
+        bsp::lampda_print("%s %s", command, cmd.name);
     }
     else
     {
       if (cmd.usage)
-        bsp::lampda_print("%s %s: %s", cmd.name, cmd.usage, cmd.description);
+        bsp::lampda_print("%s %s", cmd.name, cmd.usage);
       else
-        bsp::lampda_print("%s: %s", cmd.name, cmd.description);
+        bsp::lampda_print("%s", cmd.name);
     }
     // let the thread rest, this command list can be big
-    hal::delay_ms(5);
+    hal::delay_ms(20);
   }
   bsp::lampda_print("-----------------");
 }
