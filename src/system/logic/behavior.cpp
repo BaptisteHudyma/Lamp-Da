@@ -526,6 +526,8 @@ void handle_pre_output_light_state()
       bsp::lampda_print("not output in lockout state");
       isMessageDisplayed = true;
     }
+    // waiting for the user is not a failure to toggle: a button chain exiting lockout can last longer than the timeout
+    mainMachine.reset_state_raised_time();
     // check if we may go to sleep
     check_handle_exit_output_mode();
     return;
