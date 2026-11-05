@@ -71,15 +71,15 @@ TEST(lockout_test, slow_click_chain_exits_lockout_without_error)
   // the chain ends at 1.5 s, and is registered 250 ms later
   const uint32_t startTime = hal::time_ms();
   bool wasErrorReached = false;
-  while (hal::time_ms() - startTime < 3000 and not wasErrorReached and not simulator::mock_registers::isDeepSleep)
+  bool wasLockoutClearedEarly = false;
+  while (hal::time_ms() - startTime < 3000 and not wasErrorReached and not wasLockoutClearedEarly and
+         not simulator::mock_registers::isDeepSleep)
   {
     main_loop(0);
     wasErrorReached = logic::behavior::get_state() == "ERROR";
     // lockout must have been kept until the end of the chain
-    if (not isClickChainDone)
-    {
-      ASSERT_TRUE(logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT));
-    }
+    wasLockoutClearedEarly =
+            not isClickChainDone and not logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
   }
   clickThread.join();
 
@@ -92,6 +92,7 @@ TEST(lockout_test, slow_click_chain_exits_lockout_without_error)
   bsp::threads::shutdown();
   hal::filesystem::format_file_system();
 
+  EXPECT_FALSE(wasLockoutClearedEarly);
   EXPECT_FALSE(wasErrorReached) << errorMessage.c_str();
   EXPECT_FALSE(isStillLocked);
   EXPECT_FALSE(simulator::mock_registers::isDeepSleep);
