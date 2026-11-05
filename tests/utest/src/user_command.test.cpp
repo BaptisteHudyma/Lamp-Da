@@ -313,5 +313,20 @@ TEST_F(UserCommandTest, SignalSuntimerCancelCommand)
   EXPECT_TRUE(cmd.parse_signal_suntimer_cancel_command());
 }
 
+TEST_F(UserCommandTest, BlipOutputCommand)
+{
+  const uint32_t duration = 0x12345678;
+  auto cmd = UserCommand::make_blip_output_command(duration);
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::BlipOutput);
+
+  uint32_t parsed = 0;
+  EXPECT_TRUE(cmd.parse_blip_output_command(parsed));
+  EXPECT_EQ(parsed, duration);
+
+  // another command type is refused
+  EXPECT_FALSE(UserCommand::make_signal_suntimer_cancel_command().parse_blip_output_command(parsed));
+  EXPECT_EQ(parsed, duration);
+}
+
 } // namespace common
 } // namespace lampda

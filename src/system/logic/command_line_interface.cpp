@@ -24,6 +24,7 @@
 #include "src/system/common/user_commands.h"
 
 #include "src/system/logic/alerts.h"
+#include "src/system/logic/battery_blink.h"
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
 #include "src/system/logic/button_bindings.h"
@@ -241,6 +242,8 @@ static void cmd_bat(const common::cli::ParsedCommand&)
   {
     bsp::lampda_print("balancer measurments not valid");
   }
+
+  bsp::lampda_print("level blinks enabled: %s", boolToString(logic::battery_blink::is_enabled()));
 
   const auto& chargerStatus = ::lampda::component::charger::get_state();
   const bool areChargerValueValid = chargerStatus.areMeasuresOk;
@@ -651,6 +654,18 @@ static void cmd_onoff(const common::cli::ParsedCommand& command)
   bsp::lampda_print("Invalid call: parameter should be range <0-1>");
 }
 
+static void cmd_set_battery_blink(const common::cli::ParsedCommand& command)
+{
+  uint8_t isEnabled;
+  if (common::cli::argument::parse_uint8(command, 0, isEnabled) && isEnabled <= 1)
+  {
+    logic::battery_blink::set_enabled(isEnabled != 0);
+    bsp::lampda_print("Battery level blinks: %s", boolToString(isEnabled != 0));
+    return;
+  }
+  bsp::lampda_print("Invalid call: parameter should be range <0-1>");
+}
+
 static void cmd_set_real_time(const common::cli::ParsedCommand& command)
 {
   uint8_t hour;
@@ -970,6 +985,12 @@ constexpr Command _set_commands_s[] = {
         make_command_args("ramp", "[0-255]", 1, 1, "Set the user ramp value", handles::cmd_ramp),
         make_command_args("mode", "[group id] [mode id]", 2, 2, "Set current active mode", handles::cmd_set_mode),
         make_command_args("on", "[0-1]", 1, 1, "Turn system on or off", handles::cmd_onoff),
+        make_command_args("bat_blink",
+                          "[0-1]",
+                          1,
+                          1,
+                          "Enable or disable the output blinks at 75%%, 50%% and 25%% of battery",
+                          handles::cmd_set_battery_blink),
         make_command_args("time",
                           "[0-23](hour) [0-59](minute) [0-59](second) [0-6](day)",
                           4,

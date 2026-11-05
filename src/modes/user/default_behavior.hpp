@@ -590,6 +590,15 @@ bool handle_user_command(const common::UserCommand& command)
           bsp::lampda_print("Failed to parse signal_suntimer_cancel command");
         return true;
       }
+    case common::UserCommand::Type::BlipOutput:
+      {
+        uint32_t duration_ms;
+        if (command.parse_blip_output_command(duration_ms))
+          get_context().blip(duration_ms);
+        else
+          bsp::lampda_print("Failed to parse blip_output command");
+        return true;
+      }
 
     default:
       break;

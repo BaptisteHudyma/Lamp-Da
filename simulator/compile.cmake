@@ -96,6 +96,7 @@ set(SRC_SYSTEM_GLOBAL
 
 set(SRC_SYSTEM_LOGIC
     ${LMBD_ROOT_DIR}/src/system/logic/alerts.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/battery_blink.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/behavior.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/brightness_handle.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/button_bindings.cpp
