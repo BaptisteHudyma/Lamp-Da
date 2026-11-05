@@ -9,6 +9,7 @@
 #include "src/system/logic/brightness_handle.h"
 #include "src/system/utils/constants.h"
 
+#include "src/user/constants.h"
 #include "src/user/functions.h"
 
 namespace lampda {
@@ -17,6 +18,8 @@ namespace {
 
 static constexpr uint32_t blipDuration_ms = 50;
 static constexpr brightness_t testBrightness = 500;
+// below the led masking threshold of the lamp
+static constexpr brightness_t maskedBrightness = 100;
 // more calls than the frames skipped by the blip (one is skipped per call)
 static constexpr int loopCallsToEndBlip = 20;
 // over the brightness update rate limit
@@ -28,6 +31,25 @@ void run_until_blip_end()
 {
   for (int i = 0; i < loopCallsToEndBlip; ++i)
     user::loop();
+}
+
+/// Run one main loop frame and the display thread, as the system does
+void run_displayed_frame()
+{
+  user::loop();
+  user::user_thread();
+}
+
+/// Count of the leds that are not black in the displayed output
+uint16_t count_displayed_lit_leds()
+{
+  uint16_t lit = 0;
+  for (uint16_t i = 0; i < LED_COUNT; ++i)
+  {
+    if (user::_private::strip.getRawPixelColor(i) != 0)
+      ++lit;
+  }
+  return lit;
 }
 
 } // namespace
@@ -52,16 +74,14 @@ TEST_F(blip_restore_test, brightness_restored_after_blip_on_next_tick)
   std::this_thread::sleep_for(waitRateLimit);
 
   blip();
-  ASSERT_EQ(logic::brightness::get_brightness(), 0);
 
   run_until_blip_end();
   EXPECT_EQ(logic::brightness::get_brightness(), testBrightness);
 }
 
 /**
- * A blip started in the same millisecond as the refresh of the lamp time: the brightness update of the blip has the
- * same timestamp as the lamp time, and this time is frozen during the skipped frames.
- * The rate limit of the brightness then saw an update "just now", and the lamp stayed off.
+ * A blip started in the same millisecond as the refresh of the lamp time, and the lamp time is frozen during the
+ * skipped frames: the rate limit of the brightness must not leave the lamp off.
  */
 TEST_F(blip_restore_test, brightness_restored_after_blip_in_same_millisecond_as_lamp_time)
 {
@@ -83,10 +103,89 @@ TEST_F(blip_restore_test, brightness_restored_after_blip_in_same_millisecond_as_
     }
   }
   ASSERT_TRUE(isSameMillisecond) << "could not reproduce the timing";
-  ASSERT_EQ(logic::brightness::get_brightness(), 0);
 
   run_until_blip_end();
   EXPECT_EQ(logic::brightness::get_brightness(), testBrightness);
+}
+
+/// The leds must be off during the blip, and be back after it
+TEST_F(blip_restore_test, displayed_pixels_off_during_blip_and_restored)
+{
+  run_displayed_frame();
+  const uint16_t litBeforeBlip = count_displayed_lit_leds();
+  ASSERT_GT(litBeforeBlip, 0);
+  std::this_thread::sleep_for(waitRateLimit);
+
+  blip();
+  run_displayed_frame();
+  EXPECT_EQ(count_displayed_lit_leds(), 0);
+
+  run_until_blip_end();
+  run_displayed_frame();
+  EXPECT_EQ(count_displayed_lit_leds(), litBeforeBlip);
+}
+
+/// A blip just after a brightness update is rate limited in the brightness logic, it must still turn off the leds
+TEST_F(blip_restore_test, displayed_pixels_off_during_blip_after_recent_brightness_update)
+{
+  run_displayed_frame();
+  const uint16_t litBeforeBlip = count_displayed_lit_leds();
+  ASSERT_GT(litBeforeBlip, 0);
+
+  logic::brightness::update_brightness(testBrightness, true);
+  blip();
+  run_displayed_frame();
+  EXPECT_EQ(count_displayed_lit_leds(), 0);
+
+  run_until_blip_end();
+  run_displayed_frame();
+  EXPECT_EQ(count_displayed_lit_leds(), litBeforeBlip);
+}
+
+/// Powering on during a blip must not leave the strip black
+TEST_F(blip_restore_test, displayed_pixels_restored_after_power_on_during_blip)
+{
+  run_displayed_frame();
+  const uint16_t litBeforeBlip = count_displayed_lit_leds();
+  ASSERT_GT(litBeforeBlip, 0);
+  std::this_thread::sleep_for(waitRateLimit);
+
+  blip();
+  run_displayed_frame();
+  ASSERT_EQ(count_displayed_lit_leds(), 0);
+
+  user::power_off_sequence();
+  user::power_on_sequence();
+  run_until_blip_end();
+  run_displayed_frame();
+  EXPECT_EQ(count_displayed_lit_leds(), litBeforeBlip);
+}
+
+/// Below the masking threshold, a part of the leds is masked: the blip must not depend on this mask
+TEST_F(blip_restore_test, displayed_pixels_off_during_blip_with_led_masking)
+{
+  logic::brightness::update_brightness(maskedBrightness, true);
+  logic::brightness::update_saved_brightness();
+  user::power_on_sequence();
+  std::this_thread::sleep_for(waitRateLimit);
+
+  run_displayed_frame();
+  const uint16_t litBeforeBlip = count_displayed_lit_leds();
+  ASSERT_GT(litBeforeBlip, 0);
+  ASSERT_LT(litBeforeBlip, LED_COUNT) << "the led mask should be active";
+  std::this_thread::sleep_for(waitRateLimit);
+
+  blip();
+  run_displayed_frame();
+  EXPECT_EQ(count_displayed_lit_leds(), 0);
+
+  // the masked leds must stay off during the restoration, on every frame
+  for (int i = 0; i < loopCallsToEndBlip; ++i)
+  {
+    run_displayed_frame();
+    EXPECT_LE(count_displayed_lit_leds(), litBeforeBlip) << "at frame " << i;
+  }
+  EXPECT_EQ(count_displayed_lit_leds(), litBeforeBlip);
 }
 
 } // namespace lampda

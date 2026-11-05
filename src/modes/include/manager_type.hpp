@@ -959,6 +959,10 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
     // display the overlay after the group update
     overlay.display_update(ctx);
+
+    // a full frame is ready: the leds can come back, unless this frame started a new blip
+    if (ctx.state.skipNextFrameEffect == 0)
+      ctx.lamp.end_blackout();
   }
 
   /**
