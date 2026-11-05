@@ -88,6 +88,9 @@ public:
   /// Brightness is an internal flag
   uint8_t getBrightness() const { return brightness; }
 
+  /// While set, the next shows write black to all leds, whatever the brightness or masks. The colors are kept.
+  void setBlackout(const bool shouldBlackout) { isBlackout = shouldBlackout; }
+
   /**
    * EXPLICIT CALLS TO THE LIBRARY
    */
@@ -154,7 +157,7 @@ public:
   void show_now()
   {
     // copy the pattern to show to the display buffer
-    brightnessAtShowTime = brightness;
+    brightnessAtShowTime = isBlackout ? 0 : brightness;
     write_to_led_driver(brightnessAtShowTime);
     // show on hardware
     StripImpl_t::show();
@@ -302,6 +305,9 @@ private:
 
   /// Out strip brightness
   volatile uint8_t brightness;
+
+  /// Force the output to black, see setBlackout
+  volatile bool isBlackout = false;
 
   /// Store a reference to the brightness value from the last show() call
   volatile uint8_t brightnessAtShowTime;

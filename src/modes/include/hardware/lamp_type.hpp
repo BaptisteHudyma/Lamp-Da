@@ -196,6 +196,7 @@ private:
     void signal_display();
     void setBrightness(brightness_t);
     uint8_t getBrightness();
+    void setBlackout(bool);
     void setPixelColor(uint16_t, uint32_t);
     uint32_t getPixelColor(uint16_t);
     void mask_led_at_index(const size_t n, const bool shouldMask);
@@ -511,7 +512,7 @@ public:
   /** \brief blip the power gate for set time
    *
    * If LampTy::flavor is LampTypes::indexable then:
-   *  - clear LED strip with black pixels
+   *  - black out the LED strip, until end_blackout() or cancel_blip()
    * Else
    *  - disable output power for a duration
    */
@@ -521,7 +522,7 @@ public:
     {
       // disable strip temporarily
       // should be reactivated by the manager
-      tempBrightness(0);
+      strip.setBlackout(true);
     }
     else
     {
@@ -532,7 +533,22 @@ public:
   /**
    * \brief Cancel the ongoing blip, if any
    */
-  void LMBD_INLINE cancel_blip() const { return component::outputPower::cancel_blip(); }
+  void LMBD_INLINE cancel_blip() const
+  {
+    end_blackout();
+    component::outputPower::cancel_blip();
+  }
+
+  /**
+   * \brief Stop the strip blackout of a blip (indexable only, no-op otherwise)
+   */
+  void LMBD_INLINE end_blackout() const
+  {
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      strip.setBlackout(false);
+    }
+  }
 
   /**
    * \brief return true if the output is in a blip state
