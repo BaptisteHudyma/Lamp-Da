@@ -989,7 +989,7 @@ constexpr Command _set_commands_s[] = {
                           "[0-1]",
                           1,
                           1,
-                          "Enable or disable the output blinks at 75%%, 50%% and 25%% of battery",
+                          "Enable or disable the output blinks at 75%, 50% and 25% of battery",
                           handles::cmd_set_battery_blink),
         make_command_args("time",
                           "[0-23](hour) [0-59](minute) [0-59](second) [0-6](day)",

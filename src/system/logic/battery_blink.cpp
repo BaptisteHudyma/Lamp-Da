@@ -58,7 +58,7 @@ bool BlinkTracker::update(const uint32_t time_ms, const uint16_t level, const bo
     }
   }
 
-  if (_blinksLeft == 0 or not canBlink or time_ms - _lastBlinkTime_ms < blinkPeriod_ms)
+  if (_blinksLeft == 0 or not isLevelValid or not canBlink or time_ms - _lastBlinkTime_ms < blinkPeriod_ms)
     return false;
 
   _blinksLeft--;
