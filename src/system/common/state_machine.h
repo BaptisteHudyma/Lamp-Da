@@ -157,6 +157,9 @@ public:
   /// Return the time at which this state was raised
   uint32_t get_state_raised_time() const { return stateSetTime; }
 
+  /// Restart the time returned by \ref get_state_raised_time, without changing the state or its timeout
+  void reset_state_raised_time() { stateSetTime = hal::time_ms(); }
+
 private:
   /// The current state the algorithm is in
   State current;

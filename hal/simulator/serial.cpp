@@ -51,6 +51,10 @@ public:
           // See if there are any input characters available (asynchronously).
           while (std::cin.peek() == EOF)
           {
+            // nothing more will come on a closed input: do not spin after the threads are stopped
+            if (simulator::mock_registers::shouldStopThreads)
+              return;
+
             // Ensure that the other thread is always yielded to when necessary. Don't sleep here;
             // only yield, in order to ensure that processing will be as responsive as possible.
             std::this_thread::yield();
