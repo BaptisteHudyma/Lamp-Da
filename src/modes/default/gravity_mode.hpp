@@ -59,7 +59,8 @@ struct GravityMode : public BasicMode
     if (!state.selectedPalette)
       return;
 
-    const uint8_t paletteWrap = ctx.lamp.tick % UINT8_MAX;
+    // wrap on the same period as the color index below, or all the colors jump when this value wraps
+    const uint16_t paletteWrap = ctx.lamp.tick % particleCount;
 
     state.imuEvent.update(ctx);
 
