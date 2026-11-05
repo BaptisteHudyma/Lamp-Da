@@ -162,6 +162,18 @@ UserCommand UserCommand::make_signal_suntimer_cancel_command()
   return cmd;
 }
 
+UserCommand UserCommand::make_blip_output_command(const uint32_t duration_ms)
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::BlipOutput;
+  cmd._dataCnt = 4;
+  cmd._data[0] = (duration_ms >> 0u) & 0xFFu;
+  cmd._data[1] = (duration_ms >> 8u) & 0xFFu;
+  cmd._data[2] = (duration_ms >> 16u) & 0xFFu;
+  cmd._data[3] = (duration_ms >> 24u) & 0xFFu;
+  return cmd;
+}
+
 /**
  *
  *
@@ -323,6 +335,15 @@ bool UserCommand::parse_signal_suntimer_cancel_command() const
 {
   if (get_type() != Type::SignalSuntimerCancel or _dataCnt != 0)
     return false;
+  return true;
+}
+
+bool UserCommand::parse_blip_output_command(uint32_t& duration_ms) const
+{
+  if (get_type() != Type::BlipOutput or _dataCnt != 4)
+    return false;
+  duration_ms = static_cast<uint32_t>(_data[0]) | (static_cast<uint32_t>(_data[1]) << 8u) |
+                (static_cast<uint32_t>(_data[2]) << 16u) | (static_cast<uint32_t>(_data[3]) << 24u);
   return true;
 }
 

@@ -789,6 +789,19 @@ public:
       setBrightness(saved, true, false, false);
   }
 
+  /** \brief Same as restoreBrightness(), but ignores the brightness update rate limit
+   *
+   * For the callers that will not try again: a rate limited update would leave the system on the temporary brightness
+   */
+  void LMBD_INLINE restoreBrightnessNow()
+  {
+    if (getBrightness() != getSavedBrightness())
+    {
+      logic::brightness::update_brightness(getSavedBrightness(), true);
+      restoreBrightness();
+    }
+  }
+
   /** \brief Fade currently displayed content by \p fadeBy units
    *
    * If LampTy::flavor is LampTypes::indexable then:

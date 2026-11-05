@@ -14,6 +14,7 @@
 #include "src/system/bsp/text_out.h"
 
 #include "src/system/logic/alerts.h"
+#include "src/system/logic/battery_blink.h"
 #include "src/system/logic/button_bindings.h"
 #include "src/system/logic/inputs_bluetooth.h"
 #include "src/system/logic/inputs.h"
@@ -53,6 +54,7 @@ static constexpr uint32_t indicatorLevelKey = utils::hash("indLvl");
 static constexpr uint32_t isLockoutModeKey = utils::hash("lckMode");
 static constexpr uint32_t buttonPinKey = utils::hash("bttPin");
 static constexpr uint32_t bluetoothAutoKey = utils::hash("ble");
+static constexpr uint32_t batteryBlinkKey = utils::hash("batBlink");
 
 // time to block turn off since turn on
 static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 500;
@@ -196,6 +198,12 @@ bool read_parameters()
       logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
     }
 
+    uint32_t isBatteryBlinkEnabled = 0;
+    if (bsp::filesystem::system::get_value(batteryBlinkKey, isBatteryBlinkEnabled))
+    {
+      logic::battery_blink::set_enabled(isBatteryBlinkEnabled != 0);
+    }
+
     uint32_t buttonPin = 0;
     if (bsp::filesystem::system::get_value(buttonPinKey, buttonPin) and buttonPin > 0)
     {
@@ -255,6 +263,7 @@ void write_parameters()
   bsp::filesystem::system::set_value(isLockoutModeKey,
                                      logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT));
   bsp::filesystem::system::set_value(buttonPinKey, static_cast<uint32_t>(component::button::get_button_pin()));
+  bsp::filesystem::system::set_value(batteryBlinkKey, logic::battery_blink::is_enabled() ? 1 : 0);
 
   // if the user used the bluetooth, it will be written here for auto activation
   const uint32_t nextWakeUpWithBluetooth =
@@ -584,6 +593,7 @@ void handle_pre_output_light_state()
 
   // this function is executed ONCE
   statistics::signal_output_on();
+  logic::battery_blink::signal_output_on();
   mainMachine.set_state(BehaviorStates::OUTPUT_LIGHT);
 }
 
@@ -634,6 +644,9 @@ void handle_output_light_state()
     // resume secondary thread
     if (user::should_spawn_thread())
       bsp::threads::resume_thread(bsp::threads::user_taskName);
+
+    // before the user loop, that handles the blips
+    logic::battery_blink::loop();
 
     // user loop call
     user::loop();

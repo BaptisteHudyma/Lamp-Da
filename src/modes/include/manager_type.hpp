@@ -942,7 +942,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       // reached last skip frame, restore mode
       if (ctx.state.skipNextFrameEffect == 0)
       {
-        ctx.lamp.restoreBrightness();
+        ctx.lamp.restoreBrightnessNow();
       }
       return;
     }

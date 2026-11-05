@@ -177,7 +177,12 @@ bool should_spawn_thread() { return false; }
 
 void user_thread() {}
 
-void handle_user_command(const common::UserCommand&) {};
+void handle_user_command(const common::UserCommand& command)
+{
+  uint32_t duration_ms;
+  if (command.parse_blip_output_command(duration_ms))
+    component::outputPower::blip(duration_ms);
+}
 
 } // namespace lampda::user
 

@@ -38,6 +38,7 @@ public:
     SignalSunsetProgress,  ///< Signal a sunset update event
     SignalSunriseProgress, ///< Signal a sunrise update event
     SignalSuntimerCancel,  ///< Signal that a suntimer was canceled
+    BlipOutput,            ///< Turn off the output for a short time
   };
   static constexpr uint8_t maxDataSize = 8;
 
@@ -144,6 +145,13 @@ public:
   static UserCommand make_signal_suntimer_cancel_command();
 
   /**
+   * \brief Set this commant to blip the output
+   * \param[in] duration_ms
+   * \return The correct user command
+   */
+  static UserCommand make_blip_output_command(const uint32_t duration_ms);
+
+  /**
    *
    * Parsing functions
    *
@@ -246,6 +254,13 @@ public:
    * \return True if the current message is valid, and parameter is set
    */
   bool parse_signal_suntimer_cancel_command() const;
+
+  /**
+   * \brief Parse the current command for an output blip
+   * \param[out] duration_ms
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_blip_output_command(uint32_t& duration_ms) const;
 
 protected:
   /// Protected constructor to prevent unallowed uses
