@@ -19,7 +19,7 @@ struct GravityMode : public BasicMode
   /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
   /// set the maximum particle count
-  static constexpr uint16_t particleCount = 255;
+  static constexpr uint16_t particleCount = 350;
 
   static void on_enter_mode(auto& ctx)
   {
