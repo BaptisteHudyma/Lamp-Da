@@ -100,39 +100,109 @@ struct serial_backend_ops_t
   }
 };
 
-/// Task to send out the text to output
-static void uart_tx_task(const serial_backend_ops_t* op)
+/// Line state of an output, only used by the send task of this output
+struct tx_line_state_t
 {
-  const uint16_t max_mtu = op->mtu_size();
+  bool atLineStart = true;       ///< The last byte written to the output ends a line
+  bool needLineEnd = false;      ///< A line was cut: write a line end before the next text
+  bool dropUntilLineEnd = false; ///< A line was cut: drop the rest of it
+};
+
+/// Max time to wait for a busy output to accept more data, before the current line is dropped
+static constexpr uint32_t writeTimeoutMs = 100;
+/// Wait between two write tries on a busy output
+static constexpr uint32_t writeRetryDelayMs = 2;
+
+/**
+ * \brief Write all of a text to an output, waiting while the output is busy
+ * \return The number of bytes written, lower than len if the output was turned off or stayed busy for writeTimeoutMs
+ */
+static size_t write_all(const serial_backend_ops_t* op, const char* data, const size_t len)
+{
+  size_t offset = 0;
+  uint32_t waitedMs = 0;
+  while (offset < len)
+  {
+    if (not op->is_activated())
+      break;
+
+    // the free space of the output can be 0 when it is busy
+    const size_t maxChunk = op->mtu_size();
+    const size_t chunkSize = (len - offset > maxChunk) ? maxChunk : (len - offset);
+    const size_t written = (chunkSize > 0) ? op->write(data + offset, chunkSize) : 0;
+    if (written == 0)
+    {
+      if (waitedMs >= writeTimeoutMs)
+        break;
+      hal::delay_ms(writeRetryDelayMs);
+      waitedMs += writeRetryDelayMs;
+      continue;
+    }
+
+    offset += written;
+    waitedMs = 0;
+    hal::delay_ms(1);
+  }
+  return offset;
+}
+
+/**
+ * \brief Task to send out the text to output.
+ * When the output fails in the middle of a line, the rest of this line is dropped and the line is closed with a line
+ * end as soon as the output works again, so that the next line always starts at the beginning of a line.
+ */
+static void uart_tx_task(const serial_backend_ops_t* op, tx_line_state_t* line)
+{
   serial_backend_ops_t::UartSendRequest req;
   // block until a queue msg in received
   const auto res = hal::queues::HAL_queue_receive(op->uart_send_queue, &req, UINT32_MAX);
-  if (res == hal::queues::HAL_queue_status_t::HAL_QUEUE_OK)
+  if (res != hal::queues::HAL_queue_status_t::HAL_QUEUE_OK or req.len == 0)
+    return;
+
+  const char* data = req.data;
+  size_t len = req.len;
+
+  // drop the end of a line that was cut, up to its line end
+  if (line->dropUntilLineEnd)
   {
-    if (req.len <= 0 or not op->is_activated())
+    const char* const lineEndPos = static_cast<const char*>(memchr(data, '\n', len));
+    if (lineEndPos == nullptr)
       return;
-
-    size_t offset = 0;
-    while (offset < req.len)
-    {
-      if (not op->is_activated())
-        break;
-
-      size_t chunkSize = (req.len - offset > max_mtu) ? max_mtu : (req.len - offset);
-      const char* const buff = req.data + offset;
-      size_t written = op->write(buff, chunkSize);
-
-      if (written == 0)
-      {
-        hal::delay_ms(10);
-        return;
-      }
-
-      offset += written;
-      hal::delay_ms(1);
-    }
+    line->dropUntilLineEnd = false;
+    len -= (lineEndPos + 1 - data);
+    data = lineEndPos + 1;
+    if (len == 0)
+      return;
   }
+
+  // close the cut line before writing anything else
+  if (line->needLineEnd)
+  {
+    static constexpr char lineEnd[] = "\r\n";
+    if (write_all(op, lineEnd, sizeof(lineEnd) - 1) != sizeof(lineEnd) - 1)
+    {
+      // still failing: drop this text too
+      line->dropUntilLineEnd = (data[len - 1] != '\n');
+      return;
+    }
+    line->needLineEnd = false;
+    line->atLineStart = true;
+  }
+
+  const size_t written = write_all(op, data, len);
+  if (written == len)
+  {
+    line->atLineStart = (data[len - 1] == '\n');
+    return;
+  }
+
+  // output failed: the part already written cannot be taken back, so drop the rest of the line
+  const bool cutsALine = (written > 0) ? (data[written - 1] != '\n') : not line->atLineStart;
+  line->needLineEnd = cutsALine;
+  line->dropUntilLineEnd = (data[len - 1] != '\n');
+  line->atLineStart = not cutsALine;
 }
+
 static constexpr size_t serialQueueLenght = 32;
 static std::array<uint8_t, serialQueueLenght * sizeof(serial_backend_ops_t::UartSendRequest)> serialOpBuffer;
 static std::array<bsp::threads::TaskBuffer_t, serial_backend_ops_t::sendQueueThreadBufferSize> serialTaskBuffer;
@@ -146,6 +216,9 @@ static serial_backend_ops_t serial_uart_ops {.messageQueueLenght = serialQueueLe
                                              .sendTaskBuffer = serialTaskBuffer.data()};
 
 static constexpr size_t bleQueueLenght = 128;
+static_assert(serialQueueLenght * serial_backend_ops_t::UART_TX_BUFFER_SIZE >= max_tx_buffer_size and
+                      bleQueueLenght * serial_backend_ops_t::UART_TX_BUFFER_SIZE >= max_tx_buffer_size,
+              "Each output queue must be able to hold the longest line");
 static std::array<uint8_t, bleQueueLenght * sizeof(serial_backend_ops_t::UartSendRequest)> bleOpBuffer;
 static std::array<bsp::threads::TaskBuffer_t, serial_backend_ops_t::sendQueueThreadBufferSize> bleTaskBuffer;
 static serial_backend_ops_t ble_uart_ops {.messageQueueLenght = bleQueueLenght,
@@ -157,8 +230,10 @@ static serial_backend_ops_t ble_uart_ops {.messageQueueLenght = bleQueueLenght,
                                           .queueBuffer = bleOpBuffer.data(),
                                           .sendTaskBuffer = bleTaskBuffer.data()};
 
-static void serial_uart_task() { uart_tx_task(&serial_uart_ops); }
-static void ble_uart_task() { uart_tx_task(&ble_uart_ops); }
+static tx_line_state_t serialLineState;
+static tx_line_state_t bleLineState;
+static void serial_uart_task() { uart_tx_task(&serial_uart_ops, &serialLineState); }
+static void ble_uart_task() { uart_tx_task(&ble_uart_ops, &bleLineState); }
 
 /// Serialize all the prints: formatting into _buffer and queueing a full line are done under this lock
 static hal::mutex::hal_mutex_t _printLock;
