@@ -6,6 +6,7 @@ extern "C" {
 
 #include "src/system/utils/utils.h"
 
+#include "src/system/hal/mutex.h"
 #include "src/system/hal/queues.h"
 #include "src/system/hal/serial.h"
 #include "src/system/hal/time.h"
@@ -51,36 +52,29 @@ struct serial_backend_ops_t
     size_t len;
   };
 
-  /// Enqueue some text to display
+  /**
+   * \brief Enqueue some text to display, as one block.
+   * The text is split into chunks of UART_TX_BUFFER_SIZE. It is queued only if all the chunks fit in the queue, so a
+   * line is never sent in part. The caller must hold the print lock, so that no other text is queued in between.
+   * \return false if the queue is too full and the text was dropped
+   */
   bool send_uart(char const* buffer) const
   {
     if (not this->is_activated())
       return true;
-    size_t len = strlen(buffer);
+    const size_t len = strlen(buffer);
     if (len == 0)
       return true;
 
-    // Max payload per chunk
-    constexpr size_t MAX_CHUNK_LEN = UART_TX_BUFFER_SIZE;
+    const size_t chunkCount = (len + UART_TX_BUFFER_SIZE - 1) / UART_TX_BUFFER_SIZE;
+    const size_t usedSlots = hal::queues::HAL_queue_get_number_of_items(this->uart_send_queue);
+    if (usedSlots >= messageQueueLenght or chunkCount > messageQueueLenght - usedSlots)
+      return false; // Queue too full, message dropped
 
-    if (len <= MAX_CHUNK_LEN)
-    {
-      // Single chunk path
-      UartSendRequest req;
-      memcpy(req.data, buffer, len);
-      req.len = len;
-
-      const auto res = hal::queues::HAL_queue_send(this->uart_send_queue, &req, 0);
-      if (res != hal::queues::HAL_queue_status_t::HAL_QUEUE_OK)
-        return false; // Queue full, message dropped
-      return true;
-    }
-
-    // Large message: split into chunks
     size_t offset = 0;
     while (offset < len)
     {
-      size_t chunk_len = (len - offset > MAX_CHUNK_LEN) ? MAX_CHUNK_LEN : (len - offset);
+      const size_t chunk_len = (len - offset > UART_TX_BUFFER_SIZE) ? UART_TX_BUFFER_SIZE : (len - offset);
       UartSendRequest req;
       memcpy(req.data, buffer + offset, chunk_len);
       req.len = chunk_len;
@@ -88,7 +82,6 @@ struct serial_backend_ops_t
       const auto res = hal::queues::HAL_queue_send(this->uart_send_queue, &req, 0);
       if (res != hal::queues::HAL_queue_status_t::HAL_QUEUE_OK)
         return false; // Queue full, message dropped
-      // increment offset
       offset += chunk_len;
     }
     return true;
@@ -167,47 +160,77 @@ static serial_backend_ops_t ble_uart_ops {.messageQueueLenght = bleQueueLenght,
 static void serial_uart_task() { uart_tx_task(&serial_uart_ops); }
 static void ble_uart_task() { uart_tx_task(&ble_uart_ops); }
 
+/// Serialize all the prints: formatting into _buffer and queueing a full line are done under this lock
+static hal::mutex::hal_mutex_t _printLock;
+
 void init_all()
 {
+  hal::mutex::hal_mutex_init(&_printLock);
+
   serial_uart_ops.start(serial_uart_task);
   ble_uart_ops.start(ble_uart_task);
 }
 
-void send_uart(char const* buffer)
+/// Queue a full text on all outputs. The caller must hold _printLock
+static void send_all(char const* buffer)
 {
-  serial_uart_ops.send_uart(buffer);
-  ble_uart_ops.send_uart(buffer);
-}
-
-static std::array<char, max_tx_buffer_size> _buffer;
-static void low_level_print(const char* format, va_list args)
-{
-  size_t len = strlen(format);
-  if (len == 0)
-    return;
-  if (len > 0.9 * max_tx_buffer_size)
-  {
-    const char errMsg[] = "Cannot display: msg too big\r\n";
-    send_uart(errMsg);
-    return;
-  }
-
-  _buffer.fill('\0');
-  vsprintf(_buffer.data(), format, args);
-
   // send serial first
-  if (not serial_uart_ops.send_uart(_buffer.data()))
+  if (not serial_uart_ops.send_uart(buffer))
   {
     const char errMsg[] = "Too much data for Serial transmition\r\n";
     ble_uart_ops.send_uart(errMsg);
   }
 
   // then bluetooth
-  if (not ble_uart_ops.send_uart(_buffer.data()))
+  if (not ble_uart_ops.send_uart(buffer))
   {
     const char errMsg[] = "Too much data for BLE transmition\r\n";
     serial_uart_ops.send_uart(errMsg);
   }
+}
+
+static constexpr char lineEnd[] = "\r\n";
+static constexpr size_t lineEndLenght = sizeof(lineEnd) - 1;
+
+static std::array<char, max_tx_buffer_size> _buffer;
+
+/**
+ * \brief Format a text and queue it on all outputs, as one block.
+ * \param[in] isLogLine If true, add the "<time>> " header and the line end, to make a full log line
+ */
+static void low_level_print(const bool isLogLine, const char* format, va_list args)
+{
+  if (format == nullptr or format[0] == '\0')
+    return;
+
+  hal::mutex::hal_mutex_lock(&_printLock);
+
+  // keep room for the line end
+  const size_t maxTextLenght = _buffer.size() - (isLogLine ? lineEndLenght : 0);
+
+  int len = 0;
+  if (isLogLine)
+    len = snprintf(_buffer.data(), maxTextLenght, "%lu> ", static_cast<unsigned long>(hal::time_ms()));
+
+  if (len >= 0 and static_cast<size_t>(len) < maxTextLenght)
+  {
+    const int bodyLen = vsnprintf(_buffer.data() + len, maxTextLenght - len, format, args);
+    len = (bodyLen < 0) ? -1 : len + bodyLen;
+  }
+
+  // snprintf returns the wanted lenght, so truncation shows as len >= buffer size
+  if (len < 0 or static_cast<size_t>(len) >= maxTextLenght)
+  {
+    send_all("Cannot display: msg too big\r\n");
+  }
+  else
+  {
+    if (isLogLine)
+      memcpy(_buffer.data() + len, lineEnd, sizeof(lineEnd));
+    send_all(_buffer.data());
+  }
+
+  hal::mutex::hal_mutex_unlock(&_printLock);
 }
 } // namespace __private
 
@@ -223,7 +246,7 @@ void lampda_print_raw(const char* format, ...)
 {
   va_list args;
   va_start(args, format);
-  __private::low_level_print(format, args);
+  __private::low_level_print(false, format, args);
   va_end(args);
 }
 
@@ -231,15 +254,9 @@ void lampda_print_raw(const char* format, ...)
 void lampda_print(const char* format, ...)
 {
   va_list args;
-
-  // header
-  lampda_print_raw("%d> ", hal::time_ms());
-  // core
   va_start(args, format);
-  __private::low_level_print(format, args);
+  __private::low_level_print(true, format, args);
   va_end(args);
-  // end
-  lampda_print_raw("\r\n");
 }
 
 } // namespace bsp
