@@ -688,7 +688,7 @@ void handle_shutdown_state()
 
   // Phase 1: com shutdown
   component::button::shutdown();          ///< prevent more button commands
-  bsp::ble::stop_bluetooth_advertising(); ///< no new bluetooth connection
+  bsp::ble::stop_bluetooth_advertising(); ///< no new bluetooth connection, and no advertising restart on disconnect
   // The bluetooth link is closed after the flash writes (phase 3): with the SoftDevice, a flash operation done while a
   // disconnection is in progress can wait for the peer supervision timeout (several seconds), see #590
 

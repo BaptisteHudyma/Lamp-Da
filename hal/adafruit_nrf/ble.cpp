@@ -100,7 +100,8 @@ int32_t hal_ble_deinit(void)
     return HAL_BLE_ERROR_NOT_INIT;
   }
 
-  /* Stop advertising */
+  /* Stop advertising, and prevent the disconnections below from restarting it */
+  Bluefruit.Advertising.restartOnDisconnect(false);
   Bluefruit.Advertising.stop();
 
   /* Disconnect all connections: connHandle() is only the latest connected one */
@@ -454,9 +455,14 @@ int32_t hal_ble_stop_advertising(void)
   {
     return HAL_BLE_ERROR_NOT_INIT;
   }
+
+  /* A stop request also cancels the auto restart on disconnection: while connected, the advertising is not running,
+   * and Bluefruit would start it again as soon as the link drops (set back by hal_ble_start_advertising) */
+  Bluefruit.Advertising.restartOnDisconnect(false);
+
   if (!hal_ble_is_advertising())
   {
-    return HAL_BLE_SUCCESS; /* Already advertising */
+    return HAL_BLE_SUCCESS; /* Already stopped */
   }
 
   if (!Bluefruit.Advertising.stop())
