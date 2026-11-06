@@ -126,18 +126,17 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
             bsp::lampda_print("Enable BLE for paired device");
           }
         }
-        // else: not bounded, or already started bounded connection
+        // else: not bounded, or already started bounded connection, or a device is connected
         else
         {
-          // Start pairing mode
-          const bool isNotCurrentlyPairing =
-                  not(bsp::ble::is_advertising() and bsp::ble::is_open_to_all()) and not bsp::ble::is_connected();
+          // Start pairing mode. A connected device is disconnected, to force a new pairing
+          const bool isNotCurrentlyPairing = not(bsp::ble::is_advertising() and bsp::ble::is_open_to_all());
           if (isNotCurrentlyPairing and
               manager.overlay_animate_ramp(
                       holdDuration, 3000, modes::colors::PaletteGradient<modes::colors::Blue, modes::colors::Blue>))
           {
             // Start pairing mode
-            bsp::ble::start_advertising(true);
+            bsp::ble::force_pairing_mode();
 
             bsp::lampda_print("Enable BLE pairing mode");
           }

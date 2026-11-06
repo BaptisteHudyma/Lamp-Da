@@ -36,6 +36,8 @@ inline static hal::ble::gap_addr_t identityAddr;
 static bool hasBondedPeer = false;
 /// If true, the device is in pairing mode, and can accept all connections
 static volatile bool pairingMode = false;
+/// If true, a forced pairing was requested while connected: start the pairing mode once the link is closed
+static volatile bool isPairingPendingOnDisconnect = false;
 
 /// Keep track of the currently authorized handle.
 static uint16_t authorizedConnHdl = HAL_BLE_INVALID_HANDLE;
@@ -287,6 +289,15 @@ static void on_disconnect(hal::ble::hal_ble_conn_handle_t conn_handle, uint8_t r
     __private::authorizedConnHdl = HAL_BLE_INVALID_HANDLE;
   }
 
+  // forced pairing: the link was closed on request, the connection slot is free to advertise for a new device
+  if (__private::isPairingPendingOnDisconnect)
+  {
+    __private::isPairingPendingOnDisconnect = false;
+    bsp::lampda_print("Bluetooth disconnected for forced pairing (reason=0x%02X)", reason);
+    start_advertising(true);
+    return;
+  }
+
   // Dont stop advertising here, some BLE drivers can send one command by connections.
   // Fake call the advertising callback
   on_advertising_stops();
@@ -515,6 +526,23 @@ void start_advertising(bool allowUnknownConnections)
   hal::ble::hal_ble_start_advertising(&advertiseParams);
 }
 
+void force_pairing_mode()
+{
+  if (is_connected())
+  {
+    // already requested, wait for the disconnection
+    if (__private::isPairingPendingOnDisconnect)
+      return;
+
+    // only one connection is allowed: close the current link, the pairing mode starts in the disconnect callback
+    __private::isPairingPendingOnDisconnect = true;
+    disconnect();
+    return;
+  }
+
+  start_advertising(true);
+}
+
 void stop_bluetooth_advertising()
 {
   if (not is_activated())
@@ -591,6 +619,9 @@ void shutdown()
       __private::try_save_bounded_peer(__private::identityAddr);
     }
   }
+
+  // no pairing restart on the disconnections below
+  __private::isPairingPendingOnDisconnect = false;
 
   // closes all the links. Do not access the flash after this call
   hal::ble::hal_ble_deinit();
