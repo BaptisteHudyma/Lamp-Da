@@ -85,6 +85,21 @@ uint8_t get_brightness_level();
 /// indicates if the indicator should be visible or not
 bool should_indicator_be_visible();
 
+/**
+ * \brief Replace the battery level color of the indicator by a fixed color.
+ * The indicator animations (charge, output, ...) are kept, only their color changes.
+ * Alerts are not affected and always take precedence. This color is not saved.
+ */
+void set_color_override(const uint8_t red, const uint8_t green, const uint8_t blue);
+/// Restore the default (battery level) color of the indicator
+void clear_color_override();
+/**
+ * \brief Get the color that replaces the battery level color, if any.
+ * \param[out] color The override color, as a 0xRRGGBB value. Untouched if there is no override.
+ * \return true if an override color is set
+ */
+bool get_color_override(uint32_t& color);
+
 } // namespace indicator
 
 } // namespace logic

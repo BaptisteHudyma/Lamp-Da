@@ -79,6 +79,12 @@ Some behaviors can be moved to other clicks with the command line (over USB seri
 
 The battery level is displayed as a color gradient from green (high) to red (low).
 
+The indicator can also be controlled with the command line:
+- `set ind_lvl [0-2]` sets the indicator brightness, like the `indicator` behavior: 0 is full brightness, 1 is low brightness, 2 is low brightness and off when charging. This choice is saved when the lamp shuts down.
+- `set ind_color [red] [green] [blue]` replaces the battery level color by a fixed color (0-255 each), with the same animations. `set ind_color` without parameters restores the battery level color. This color is not saved.
+- `sys ind` shows the indicator brightness level and color.
+- Alerts always take precedence over these settings.
+
 When the lamp is on, the output blinks once when the battery goes under 75%, twice under 50% and three times under 25%. A level passed during the first 10 seconds of use is never displayed, even after this delay. Each level is displayed once until the lamp is turned off and on again. Use `set bat_blink 0` to disable the blinks, `set bat_blink 1` to enable them, and `sys bat_blink` to check the current choice. This choice is saved when the lamp shuts down.
 
 ![battery levels](Medias/lamp_top.jpg)

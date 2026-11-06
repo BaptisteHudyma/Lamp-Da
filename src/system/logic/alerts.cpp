@@ -832,10 +832,15 @@ void handle_all(const bool shouldIgnoreAlerts)
       return;
     }
 
-    // red to green
+    // red to green, unless the user chose a color
+    uint32_t overrideColor = 0;
+    const bool hasOverrideColor = logic::indicator::get_color_override(overrideColor);
     const auto& batteryLevel = __internal::get_battery_level();
-    const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(
-            utils::ColorSpace::RED.get_rgb().color, utils::ColorSpace::GREEN.get_rgb().color, batteryLevel / 10000.0f));
+    const auto buttonColor =
+            utils::ColorSpace::RGB(hasOverrideColor ? overrideColor :
+                                                      utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
+                                                                          utils::ColorSpace::GREEN.get_rgb().color,
+                                                                          batteryLevel / 10000.0f));
 
     // display battery level
     const auto& chargerStatus = ::lampda::component::charger::get_state();

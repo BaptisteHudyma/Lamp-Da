@@ -805,6 +805,57 @@ static void cmd_set_custom_color(const common::cli::ParsedCommand& command)
   }
 }
 
+/// Set the indicator brightness level (saved)
+static void cmd_set_indicator_level(const common::cli::ParsedCommand& command)
+{
+  uint8_t level;
+  if (common::cli::argument::parse_uint8(command, 0, level) && level <= 2)
+  {
+    logic::indicator::set_brightness_level(level);
+    bsp::lampda_print("Indicator level set to %d", level);
+    return;
+  }
+  bsp::lampda_print("Invalid call: parameter should be range <0-2>");
+}
+
+/// Set the indicator color, or restore the battery level color without parameters
+static void cmd_set_indicator_color(const common::cli::ParsedCommand& command)
+{
+  if (command.argumentCount == 0)
+  {
+    logic::indicator::clear_color_override();
+    bsp::lampda_print("Indicator color restored to battery level");
+    return;
+  }
+
+  uint8_t red;
+  uint8_t green;
+  uint8_t blue;
+  if (command.argumentCount == 3 && common::cli::argument::parse_uint8(command, 0, red) &&
+      common::cli::argument::parse_uint8(command, 1, green) && common::cli::argument::parse_uint8(command, 2, blue))
+  {
+    logic::indicator::set_color_override(red, green, blue);
+    bsp::lampda_print("Indicator color set to %d %d %d (alerts still take precedence)", red, green, blue);
+    return;
+  }
+  bsp::lampda_print("Invalid call: parameters should be none, or range <0-255> <0-255> <0-255>");
+}
+
+/// Display the indicator state
+static void cmd_indicator(const common::cli::ParsedCommand&)
+{
+  bsp::lampda_print("indicator level: %d", logic::indicator::get_brightness_level());
+
+  uint32_t color = 0;
+  if (logic::indicator::get_color_override(color))
+    bsp::lampda_print("indicator color: %d %d %d",
+                      static_cast<int>((color >> 16) & 0xFFu),
+                      static_cast<int>((color >> 8) & 0xFFu),
+                      static_cast<int>(color & 0xFFu));
+  else
+    bsp::lampda_print("indicator color: battery level");
+}
+
 /// Display the links between click counts and behaviors
 static void cmd_bindings(const common::cli::ParsedCommand&)
 {
@@ -1064,6 +1115,8 @@ constexpr Command _debug_commands_s[] = {
         make_command("adc", "values from the charger ADC", handles::cmd_adc),
         make_command("i2c", "start an i2c presence check", handles::cmd_i2c),
         make_command("stats", "display the system use statistics", handles::cmd_stats),
+        make_command("bind", "show which clicks trigger each configurable behavior", handles::cmd_bindings),
+        make_command("ind", "show the indicator level and color", handles::cmd_indicator),
 };
 
 /// special commands to interact with the low level system
@@ -1163,6 +1216,19 @@ constexpr Command _set_commands_s[] = {
                           "Move a behavior, with its click and hold actions. Swaps with the behaviors already there",
                           handles::cmd_set_binding),
         make_command("bind_reset", "Restore the default button bindings", handles::cmd_reset_bindings),
+        make_command_args("ind_lvl",
+                          "[0-2]",
+                          1,
+                          1,
+                          "Set the indicator brightness (saved). 0: full, 1: low, 2: low and off when charging",
+                          handles::cmd_set_indicator_level),
+        make_command_args("ind_color",
+                          "[0-255](red) [0-255](green) [0-255](blue)",
+                          0,
+                          3,
+                          "Set the indicator color, alerts still take precedence. No parameters restores the battery "
+                          "level color",
+                          handles::cmd_set_indicator_color),
 
 };
 
