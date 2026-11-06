@@ -15,6 +15,7 @@
 #include "src/system/component/battery.h"
 #include "src/system/component/button.h"
 #include "src/system/component/charger.h"
+#include "src/system/component/sound.h"
 #include "src/system/component/time_handling.h"
 
 #include "src/system/utils/constants.h"
@@ -856,6 +857,30 @@ static void cmd_indicator(const common::cli::ParsedCommand&)
     bsp::lampda_print("indicator color: battery level");
 }
 
+/// Set the microphone sensitivity (not saved)
+static void cmd_set_mic_sensitivity(const common::cli::ParsedCommand& command)
+{
+  uint8_t sensitivity;
+  if (common::cli::argument::parse_uint8(command, 0, sensitivity) &&
+      sensitivity <= component::microphone::maxSensitivity)
+  {
+    component::microphone::set_sensitivity(sensitivity);
+    bsp::lampda_print("Microphone sensitivity set to %d (gain x%.2f)",
+                      sensitivity,
+                      component::microphone::sensitivity_to_gain(sensitivity));
+    return;
+  }
+  bsp::lampda_print("Invalid call: parameter should be range <0-%d>", component::microphone::maxSensitivity);
+}
+
+/// Display the microphone state
+static void cmd_mic(const common::cli::ParsedCommand&)
+{
+  const uint8_t sensitivity = component::microphone::get_sensitivity();
+  bsp::lampda_print(
+          "mic sensitivity: %d (gain x%.2f)", sensitivity, component::microphone::sensitivity_to_gain(sensitivity));
+}
+
 /// Display the links between click counts and behaviors
 static void cmd_bindings(const common::cli::ParsedCommand&)
 {
@@ -1091,6 +1116,7 @@ constexpr Command _sys_commands_s[] = {
                      "one line status: $stat:g<group>:m<mode>:r<ramp>:<F if in favorites, else X> brgt:<brightness>",
                      handles::cmd_status),
         make_command("bat_blink", "show if the battery level blinks are enabled", handles::cmd_battery_blink),
+        make_command("mic", "show the microphone sensitivity", handles::cmd_mic),
 };
 
 /// commands to debug the low level system: tasks, power, recovery, electrical buses
@@ -1222,6 +1248,12 @@ constexpr Command _set_commands_s[] = {
                           "Set the indicator color, alerts still take precedence. No parameters restores the battery "
                           "level color",
                           handles::cmd_set_indicator_color),
+        make_command_args("mic_sens",
+                          "[0-100]",
+                          1,
+                          1,
+                          "Set the microphone sensitivity (not saved). 50: no gain, 0: gain x0.1, 100: gain x10",
+                          handles::cmd_set_mic_sensitivity),
 
 };
 
