@@ -1000,7 +1000,6 @@ static void cmd_sun_timers(const common::cli::ParsedCommand&)
 static void cmd_cancel_sun_timers(const common::cli::ParsedCommand&)
 {
   // the timers are exclusive: cancel only the running one, the timer task sees the cancel and skips its end behavior
-  // (cancel() on a stopped timer still signals a cancel to the user modes, that would reset a running sunrise)
   if (logic::sunset_timer.is_enabled())
   {
     logic::sunset_timer.cancel();
