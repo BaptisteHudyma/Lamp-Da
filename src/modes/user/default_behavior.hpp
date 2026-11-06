@@ -66,8 +66,9 @@ void brightness_update(const brightness_t brightness)
   // dont handle invalid commands
   if (brightness <= ::lampda::brightness::absoluteMaximumBrightness)
   {
-    // force update of the internal references
-    manager.lamp.align_internal_to_system_brightness();
+    // force update of the internal references to the new brightness
+    // (the system saved brightness is only updated after this callback)
+    manager.lamp.align_internal_to_system_brightness(brightness);
 
     // set brightness for underlying object (w/o re-entry in update_brightness)
     manager.lamp.setBrightness(brightness, true, true);
