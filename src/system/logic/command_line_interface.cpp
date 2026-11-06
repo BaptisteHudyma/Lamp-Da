@@ -998,12 +998,6 @@ static void cmd_battery_blink(const common::cli::ParsedCommand&)
   bsp::lampda_print("level blinks enabled: %s", boolToString(logic::battery_blink::is_enabled()));
 }
 
-/// Display the indicator brightness level
-static void cmd_indicator(const common::cli::ParsedCommand&)
-{
-  bsp::lampda_print("indicator level: %u", logic::indicator::get_brightness_level());
-}
-
 /// Display the favorite modes infos
 static void cmd_favorites(const common::cli::ParsedCommand&)
 {
@@ -1092,7 +1086,6 @@ constexpr Command _sys_commands_s[] = {
         make_command("ble_name", "return the current BLE device name", handles::cmd_get_ble_name),
         make_command("bindings", "show which clicks trigger each configurable behavior", handles::cmd_bindings),
         make_command("sun", "show the sunset and sunrise timers states", handles::cmd_sun_timers),
-        make_command("indicator", "show the indicator level (0-2)", handles::cmd_indicator),
         make_command("fav", "show the favorite mode count", handles::cmd_favorites),
         make_command("status",
                      "one line status: $stat:g<group>:m<mode>:r<ramp>:<F if in favorites, else X> brgt:<brightness>",
