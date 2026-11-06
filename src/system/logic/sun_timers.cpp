@@ -21,19 +21,24 @@ namespace logic {
 template<uint32_t T> bool SunTimerBase<T>::cancel()
 {
   // release timer: the exchange makes sure that only one caller sees it running
-  const bool wasEnabled = endTime_s > 0;
-  endTime_s = 0;
-  if (wasEnabled)
-    logic::brightness::set_user_brightness_scale(1.0f);
+  const bool wasEnabled = __atomic_exchange_n(&endTime_s, 0u, __ATOMIC_SEQ_CST) > 0;
 
+  // always release the brightness lock: a caller may have taken it just before the timer ended on its own
+  lock_brightness_update(false);
+
+  // a stopped timer must not touch the shared state: the other timer may be running
+  // (the alert is shared by both timers, and the user cancel signal resets both animations)
+  if (not wasEnabled)
+    return false;
+
+  logic::brightness::set_user_brightness_scale(1.0f);
   trueBrightnessSunTime_ms = BrightnessSunTime_ms;
 
   // signal to user
   user::handle_user_command(common::UserCommand::make_signal_suntimer_cancel_command());
 
-  lock_brightness_update(false);
   logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);
-  return wasEnabled;
+  return true;
 }
 
 template<uint32_t T> void SunTimerBase<T>::set_deadline(const uint32_t timeshutdown_s)
