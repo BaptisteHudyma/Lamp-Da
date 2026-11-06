@@ -686,11 +686,11 @@ void handle_shutdown_state()
    * Software shutdown phase
    */
 
-  // Phase 1: bluetooth & com shutdown
+  // Phase 1: com shutdown
   component::button::shutdown();          ///< prevent more button commands
-  bsp::ble::stop_bluetooth_advertising(); ///< stop bluetooth
-  bsp::ble::shutdown();                   ///< deactivate bluetooth
-  hal::delay_ms(20);
+  bsp::ble::stop_bluetooth_advertising(); ///< no new bluetooth connection
+  // The bluetooth link is closed after the flash writes (phase 3): with the SoftDevice, a flash operation done while a
+  // disconnection is in progress can wait for the peer supervision timeout (several seconds), see #590
 
   // Phase 2: peripheral shutdown
   component::microphone::disable();
@@ -703,6 +703,9 @@ void handle_shutdown_state()
 
   // save the current config to a file
   write_parameters();
+
+  // all flash writes are done: deactivate bluetooth (saves the bond if needed, then closes all links)
+  bsp::ble::shutdown();
   hal::delay_ms(20);
   bsp::filesystem::shutdown();
 

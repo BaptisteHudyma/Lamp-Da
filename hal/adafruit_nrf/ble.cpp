@@ -103,9 +103,12 @@ int32_t hal_ble_deinit(void)
   /* Stop advertising */
   Bluefruit.Advertising.stop();
 
-  /* Disconnect all connections */
-  if (Bluefruit.connected() != 0)
-    Bluefruit.disconnect(hal_ble_get_connection_handle());
+  /* Disconnect all connections: connHandle() is only the latest connected one */
+  for (uint16_t connHandle = 0; connHandle < BLE_MAX_CONNECTION; ++connHandle)
+  {
+    // no-op if this handle is not connected
+    Bluefruit.disconnect(connHandle);
+  }
 
   /* Deinitialize Bluefruit */
   /// TODO: Bluefruit.end();
