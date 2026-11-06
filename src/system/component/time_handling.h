@@ -49,6 +49,8 @@ RealTime get_real_time();
 
 /**
  * \brief Given a real time, return the expected platform time in seconds at wich it will be reached.
+ * This is the next occurrence of this day of the week and time, at most a week from now. If the given time is the
+ * current time, the current platform time is returned.
  * \warning The returned time in seconds is only valid if the real time was set before.
  * \warning The returned time could be greater than the maximum platform time.
  * \return if the global time is unset, the function return 0
