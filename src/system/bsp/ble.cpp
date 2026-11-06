@@ -141,7 +141,7 @@ bool load_bluetooth_name(char* bleName)
     if (isValid)
       return true;
 
-    bsp::lampda_print("Invalid stored BLE name (%s: %d), skipping to default", nameLenght, bleName);
+    bsp::lampda_print("Invalid stored BLE name (%s: %d), skipping to default", bleName, nameLenght);
   }
 
   // Default name !
