@@ -51,6 +51,12 @@ std::array<char, MaxBleNameLenght> get_ble_name();
  */
 void start_advertising(bool allowUnknownConnections);
 
+/**
+ * \brief Start the pairing mode (open to all devices), even if a device is connected.
+ * The connected device is disconnected first, then the pairing mode starts once the link is closed.
+ */
+void force_pairing_mode();
+
 /// disable the bluetooth advertising, but not the bluetooth
 void stop_bluetooth_advertising();
 
