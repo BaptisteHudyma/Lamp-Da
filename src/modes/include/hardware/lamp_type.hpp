@@ -703,7 +703,17 @@ public:
   /// Special call to update the internal brightness values to the system brightness
   void align_internal_to_system_brightness()
   {
-    last_system_brightness = logic::brightness::get_scaled_saved_brightness();
+    align_internal_to_system_brightness(logic::brightness::get_scaled_saved_brightness());
+  }
+
+  /** \brief Update the internal brightness values to a new system brightness
+   *
+   * Used by the system brightness callback: the system saves the brightness after this callback, so
+   * logic::brightness::get_scaled_saved_brightness() still holds the previous level at this point.
+   */
+  void align_internal_to_system_brightness(const brightness_t systemBrightness)
+  {
+    last_system_brightness = systemBrightness;
     saved_brightness = min<brightness_t>(static_cast<brightness_t>(last_system_brightness), getMaxBrightness());
     temporary_brightness = saved_brightness;
   }
