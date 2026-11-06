@@ -923,16 +923,22 @@ static void cmd_sun_timers(const common::cli::ParsedCommand&)
 /// Cancel the active sun timers
 static void cmd_cancel_sun_timers(const common::cli::ParsedCommand&)
 {
-  if (not logic::sunset_timer.is_enabled() and not logic::sunrise_timer.is_enabled())
+  // the timers are exclusive: cancel only the running one, the timer task sees the cancel and skips its end behavior
+  // (cancel() on a stopped timer still signals a cancel to the user modes, that would reset a running sunrise)
+  if (logic::sunset_timer.is_enabled())
   {
-    bsp::lampda_print("No sun timer is running");
+    logic::sunset_timer.cancel();
+    bsp::lampda_print("Sunset timer canceled");
     return;
   }
-
-  logic::sunset_timer.cancel();
-  // keep the brightness reached by the sunrise, as for a user brightness change
-  logic::sunrise_timer.cancel_at_current_brightness();
-  bsp::lampda_print("Sun timers canceled");
+  if (logic::sunrise_timer.is_enabled())
+  {
+    // keep the brightness reached by the sunrise, as for a user brightness change
+    logic::sunrise_timer.cancel_at_current_brightness();
+    bsp::lampda_print("Sunrise timer canceled");
+    return;
+  }
+  bsp::lampda_print("No sun timer is running");
 }
 
 /// Display if the battery level blinks are enabled
