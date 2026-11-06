@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <atomic>
 #include <cstdint>
 
 namespace lampda {
@@ -86,7 +85,7 @@ protected:
 
   /// End of the timer operation, in the lamp time counter. 0 when the timer is not running.
   /// Atomic: the timer task and the main loop (inputs, CLI) can both release it
-  std::atomic<uint32_t> endTime_s = 0;
+  volatile uint32_t endTime_s = 0;
   /// Is the handler allowed to control lamp brightness
   bool isAllowedToControlBrightness = true;
 

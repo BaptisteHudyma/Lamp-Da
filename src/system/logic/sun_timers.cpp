@@ -21,7 +21,8 @@ namespace logic {
 template<uint32_t T> bool SunTimerBase<T>::cancel()
 {
   // release timer: the exchange makes sure that only one caller sees it running
-  const bool wasEnabled = endTime_s.exchange(0) > 0;
+  const bool wasEnabled = endTime_s > 0;
+  endTime_s = 0;
   if (wasEnabled)
     logic::brightness::set_user_brightness_scale(1.0f);
 

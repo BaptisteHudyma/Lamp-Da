@@ -85,6 +85,10 @@ The indicator can also be controlled with the command line:
 - `sys ind` shows the indicator brightness level and color.
 - Alerts always take precedence over these settings.
 
+The microphone sensitivity of the sound reactive modes can be set with the command line, or with the sensitivity slider of ELK bluetooth apps:
+- `set mic_sens [0-100]` sets the sensitivity. 50 is the default (no gain), 0 divides the sound by 10, 100 multiplies it by 10. This choice is not saved.
+- `sys mic` shows the current sensitivity.
+
 When the lamp is on, the output blinks once when the battery goes under 75%, twice under 50% and three times under 25%. A level passed during the first 10 seconds of use is never displayed, even after this delay. Each level is displayed once until the lamp is turned off and on again. Use `set bat_blink 0` to disable the blinks, `set bat_blink 1` to enable them, and `sys bat_blink` to check the current choice. This choice is saved when the lamp shuts down.
 
 ![battery levels](Medias/lamp_top.jpg)

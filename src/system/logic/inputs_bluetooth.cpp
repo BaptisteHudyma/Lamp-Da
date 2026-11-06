@@ -7,6 +7,8 @@
 #include "src/system/bsp/ble.h"
 #include "src/system/bsp/text_out.h"
 
+#include "src/system/component/sound.h"
+
 #include "src/system/common/elk_decoder.h"
 #include "src/system/common/user_commands.h"
 
@@ -117,6 +119,12 @@ void handle_BLE_ELK_command(const common::elk::Package& elkControlCommand)
       {
         lampda::user::handle_user_command(
                 common::UserCommand::make_set_ble_mode_command(elkControlCommand.data[0] + 1));
+        return;
+      }
+    case common::elk::Type::MIC_SENSITIVITY:
+      {
+        // ELK sensitivity is [0; 100], same range as the microphone sensitivity
+        component::microphone::set_sensitivity(elkControlCommand.data[0]);
         return;
       }
 

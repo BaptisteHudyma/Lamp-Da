@@ -93,6 +93,36 @@ void disable();
  */
 void disable_after_non_use();
 
+/// Default microphone sensitivity: no gain applied to the samples
+constexpr uint8_t defaultSensitivity = 50;
+/// Maximum microphone sensitivity
+constexpr uint8_t maxSensitivity = 100;
+/// Gain applied to the samples at the minimum sensitivity (0)
+constexpr float minSensitivityGain = 0.1f;
+/// Gain applied to the samples at the maximum sensitivity (maxSensitivity)
+constexpr float maxSensitivityGain = 10.0f;
+
+/**
+ * \brief Set the microphone sensitivity, applied as a gain on the raw samples (FFT, sound level and auto gain input).
+ * The gain is logarithmic: 0 is minSensitivityGain, defaultSensitivity is no gain, maxSensitivity is
+ * maxSensitivityGain. Not saved: restored to defaultSensitivity on reboot.
+ * \param[in] sensitivity Sensitivity, from 0 to maxSensitivity. Higher values are constrained to maxSensitivity
+ */
+void set_sensitivity(const uint8_t sensitivity);
+
+/**
+ * \brief Get the microphone sensitivity
+ * \return The sensitivity, from 0 to maxSensitivity
+ */
+uint8_t get_sensitivity();
+
+/**
+ * \brief Get the gain applied to the raw samples for a sensitivity
+ * \param[in] sensitivity Sensitivity, from 0 to maxSensitivity. Higher values are constrained to maxSensitivity
+ * \return The gain, from minSensitivityGain to maxSensitivityGain
+ */
+float sensitivity_to_gain(const uint8_t sensitivity);
+
 /**
  * \brief Compute and process sound data
  * \return the last sound data
