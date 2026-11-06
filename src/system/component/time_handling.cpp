@@ -95,18 +95,17 @@ uint32_t get_platform_time_from_target_time(const RealTime& time)
   {
     return 0;
   }
-  // get the expected platform time to reach the given time, in seconds
-  const int32_t projectedPlatformTime_s = time.as_seconds() + internal::real_time_offset_s;
+  const int64_t now_s = hal::time_s();
+  // platform time of the target in the week of the time synchronization, in seconds
+  const int64_t projectedPlatformTime_s = static_cast<int64_t>(time.as_seconds()) + internal::real_time_offset_s;
 
-  /// TODO: handle the clock wrap around
+  // the target is the next occurrence of this day and time: move it to the current week, then to the next week if it
+  // is already in the past. The current time itself is kept as is.
+  int64_t timeUntilTarget_s = (projectedPlatformTime_s - now_s) % static_cast<int64_t>(secondsPerWeeks);
+  if (timeUntilTarget_s < 0)
+    timeUntilTarget_s += secondsPerWeeks;
 
-  // if time is negative, we will expect that the given time will be in the future, next week
-  if (projectedPlatformTime_s < 0)
-  {
-    // +1 to go positive, +1 to go to next week and not stay in the same week
-    return secondsPerWeeks + projectedPlatformTime_s * 2;
-  }
-  return projectedPlatformTime_s;
+  return static_cast<uint32_t>(now_s + timeUntilTarget_s);
 }
 
 } // namespace time

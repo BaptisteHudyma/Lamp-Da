@@ -276,4 +276,67 @@ TEST_F(RealTimeWithOffsetFixture, set_from_10seconds_with_wrap)
   ASSERT_EQ(_time.seconds, 0);
 }
 
+namespace {
+
+constexpr uint32_t secondsPerDay = 24 * 3600;
+constexpr uint32_t secondsPerWeek = 7 * secondsPerDay;
+
+component::time::RealTime make_time(uint8_t day, uint8_t hour, uint8_t minutes, uint8_t seconds)
+{
+  component::time::RealTime time;
+  time.dayOfTheWeek = day;
+  time.hour = hour;
+  time.minutes = minutes;
+  time.seconds = seconds;
+  return time;
+}
+
+/// Check that the target platform time is in the future (or now), at most a week away, and on the expected real time
+void expect_next_occurrence(const component::time::RealTime& target, const uint32_t expectedDelay_s)
+{
+  const uint32_t now_s = hal::time_s();
+  const uint32_t platformTime_s = get_platform_time_from_target_time(target);
+  ASSERT_GE(platformTime_s, now_s);
+  // the simulated clock runs: a second can pass since the time synchronization
+  ASSERT_NEAR(static_cast<double>(platformTime_s - now_s), static_cast<double>(expectedDelay_s), 2.0);
+
+  const auto& reached = component::time::convert_to_real_time(platformTime_s);
+  ASSERT_EQ(reached.dayOfTheWeek, target.dayOfTheWeek);
+  ASSERT_EQ(reached.hour, target.hour);
+  ASSERT_EQ(reached.minutes, target.minutes);
+  ASSERT_EQ(reached.seconds, target.seconds);
+}
+
+} // namespace
+
+// Targets later in the week, and earlier in the week (next week)
+TEST_F(RealTimeFixture, target_next_occurrence)
+{
+  // wednesday 12:00:00, just after the start
+  ASSERT_TRUE(component::time::set_real_time(make_time(2, 12, 0, 0)));
+
+  // later the same day
+  expect_next_occurrence(make_time(2, 13, 0, 0), 3600);
+  // later in the week
+  expect_next_occurrence(make_time(4, 12, 0, 0), 2 * secondsPerDay);
+  // earlier the same day: next week
+  expect_next_occurrence(make_time(2, 11, 0, 0), secondsPerWeek - 3600);
+  // earlier in the week: next week
+  expect_next_occurrence(make_time(0, 8, 0, 0), 5 * secondsPerDay - 4 * 3600);
+}
+
+// Same targets, with a lamp running for more than a week before the synchronization
+TEST_F(RealTimeFixture, target_next_occurrence_long_uptime)
+{
+  ::simulator::time_mocks::reset((secondsPerWeek + 3 * secondsPerDay + 17) * 1000);
+
+  // wednesday 12:00:00
+  ASSERT_TRUE(component::time::set_real_time(make_time(2, 12, 0, 0)));
+
+  expect_next_occurrence(make_time(2, 13, 0, 0), 3600);
+  expect_next_occurrence(make_time(4, 12, 0, 0), 2 * secondsPerDay);
+  expect_next_occurrence(make_time(2, 11, 0, 0), secondsPerWeek - 3600);
+  expect_next_occurrence(make_time(0, 8, 0, 0), 5 * secondsPerDay - 4 * 3600);
+}
+
 } // namespace lampda
