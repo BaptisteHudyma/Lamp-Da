@@ -163,6 +163,24 @@ bool should_indicator_be_visible()
   return true;
 }
 
+static inline bool _hasColorOverride = false;
+static inline uint32_t _colorOverride = 0;
+
+void set_color_override(const uint8_t red, const uint8_t green, const uint8_t blue)
+{
+  _colorOverride = (static_cast<uint32_t>(red) << 16) | (static_cast<uint32_t>(green) << 8) | blue;
+  _hasColorOverride = true;
+}
+
+void clear_color_override() { _hasColorOverride = false; }
+
+bool get_color_override(uint32_t& color)
+{
+  if (_hasColorOverride)
+    color = _colorOverride;
+  return _hasColorOverride;
+}
+
 } // namespace indicator
 } // namespace logic
 } // namespace lampda
