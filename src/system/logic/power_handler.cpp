@@ -875,7 +875,7 @@ void show_recovery_diagnostics()
   report("gate bookkeeping (not pin feedback): vbus=%d output=%d",
          bsp::powergates::is_vbus_gate_enabled(),
          bsp::powergates::is_power_gate_enabled());
-  // These are the same address-only probes used by sys i2c. No register payload is sent.
+  // These are the same address-only probes used by debug i2c. No register payload is sent.
   const int charger = hal::i2c::i2c_check_existence(0, hal::i2c::chargeI2cAddress);
   const int balancer = hal::i2c::i2c_check_existence(0, hal::i2c::batteryBalancerI2cAddress);
   report("live I2C: charger addr=0x%02X result=%d | balancer addr=0x%02X result=%d (0=ACK)",

@@ -15,6 +15,7 @@
 
 #include "src/system/bsp/ble.h"
 
+#include "src/system/logic/brightness_handle.h"
 #include "src/system/logic/button_bindings.h"
 
 #include <cstdint>
@@ -602,6 +603,44 @@ bool handle_user_command(const common::UserCommand& command)
         }
         else
           bsp::lampda_print("Failed to parse blip_output command");
+        return true;
+      }
+    case common::UserCommand::Type::PrintStatus:
+      {
+        if (command.parse_print_status_command())
+        {
+          if (not logic::behavior::is_in_output_state())
+          {
+            bsp::lampda_print_raw("$stat:OFF\r\n");
+          }
+          else
+          {
+            auto manager = get_context();
+            // single line, easy to parse by an external app: $stat:<group>:<mode>:<ramp>:<brightness>:<F|->
+            bsp::lampda_print_raw("$stat:g%u:m%u:r%u:%c brgt:%u\r\n",
+                                  manager.get_active_group(),
+                                  manager.get_active_mode(),
+                                  manager.get_active_custom_ramp(),
+                                  manager.state.isInFavoriteMockGroup ? 'F' : 'X',
+                                  logic::brightness::get_brightness());
+          }
+        }
+        else
+          bsp::lampda_print("Failed to parse print_status command");
+        return true;
+      }
+    case common::UserCommand::Type::PrintFavorites:
+      {
+        if (command.parse_print_favorites_command())
+        {
+          auto manager = get_context();
+          bsp::lampda_print("favorites set: %u (max %u), in favorite group: %s",
+                            manager.state.usedFavoriteCount,
+                            manager.state.maxFavoriteCount,
+                            manager.state.isInFavoriteMockGroup ? "true" : "false");
+        }
+        else
+          bsp::lampda_print("Failed to parse print_favorites command");
         return true;
       }
 

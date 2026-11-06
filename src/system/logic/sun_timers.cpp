@@ -18,13 +18,13 @@
 namespace lampda {
 namespace logic {
 
-template<uint32_t T> void SunTimerBase<T>::cancel()
+template<uint32_t T> bool SunTimerBase<T>::cancel()
 {
-  if (is_enabled())
+  // release timer: the exchange makes sure that only one caller sees it running
+  const bool wasEnabled = endTime_s.exchange(0) > 0;
+  if (wasEnabled)
     logic::brightness::set_user_brightness_scale(1.0f);
 
-  // release timer
-  endTime_s = 0;
   trueBrightnessSunTime_ms = BrightnessSunTime_ms;
 
   // signal to user
@@ -32,6 +32,7 @@ template<uint32_t T> void SunTimerBase<T>::cancel()
 
   lock_brightness_update(false);
   logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);
+  return wasEnabled;
 }
 
 template<uint32_t T> void SunTimerBase<T>::set_deadline(const uint32_t timeshutdown_s)
@@ -118,6 +119,14 @@ template<uint32_t T> uint32_t SunTimerBase<T>::get_loop_timing_ms() const
   return min<uint32_t>(res, trueBrightnessSunTime_ms / minimalSunUpdateCalls);
 }
 
+template<uint32_t T> uint32_t SunTimerBase<T>::get_remaining_time_s() const
+{
+  const uint32_t time_s = hal::time_s();
+  if (not is_enabled() or time_s >= endTime_s)
+    return 0;
+  return endTime_s - time_s;
+}
+
 template<uint32_t T> float SunTimerBase<T>::get_percent_of_advance() const
 {
   if (hal::time_s() >= endTime_s)
@@ -172,22 +181,30 @@ template<uint32_t T> void SunTimerBase<T>::sun_process_loop()
   // this thread runs slowly
   hal::delay_ms(get_loop_timing_ms());
 
+  // the timer can be canceled during the delay: a released timer would look finished (end time of 0)
+  const uint32_t endTime = endTime_s;
+  if (endTime == 0)
+    return;
+
   // less than N minutes, start to control brightness
-  if (hal::time_s() + BrightnessSunTime_s >= endTime_s)
+  if (hal::time_s() + BrightnessSunTime_s >= endTime)
   {
     // signal the progress change
     const float progress = signal_sun_update();
     if (progress >= 1.0)
     {
-      cancel();
+      // canceled by another caller since the check: do not run the end of timer behavior
+      if (not cancel())
+        return;
 
       end_of_timer_handle();
 
       // autostop: finished  !
       return;
     }
-    else
+    else if (is_enabled())
     {
+      // skipped if canceled during the progress update: the cancel already restored the brightness scale
       timer_brightness_progress_update(lmpd_constrain<float>(progress, 0.0f, 1.0f));
     }
   }

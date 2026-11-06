@@ -35,6 +35,7 @@
 
 #include "src/user/functions.h"
 
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
@@ -812,12 +813,29 @@ static void cmd_bindings(const common::cli::ParsedCommand&)
   for (size_t i = 0; i < bindings::behaviorCount; ++i)
   {
     const auto behavior = static_cast<bindings::Behavior>(i);
-    if (bindings::is_supported(behavior))
-      bsp::lampda_print("%s: %d clicks (can use %d to %d)",
-                        bindings::get_name(behavior),
-                        bindings::get_clicks(behavior),
-                        bindings::get_min_clicks(behavior),
-                        bindings::maxClicks);
+    if (not bindings::is_supported(behavior))
+      continue;
+
+    // display the actions really linked: <n>C for the click action, <n>H for the hold action
+    const uint8_t clicks = bindings::get_clicks(behavior);
+    const bool isOnClick = bindings::get_click_behavior(clicks) == behavior;
+    const bool isOnHold = bindings::get_hold_behavior(clicks) == behavior;
+
+    char actions[12] = "";
+    if (isOnClick and isOnHold)
+      snprintf(actions, sizeof(actions), "%dC, %dH", clicks, clicks);
+    else if (isOnClick)
+      snprintf(actions, sizeof(actions), "%dC", clicks);
+    else if (isOnHold)
+      snprintf(actions, sizeof(actions), "%dH", clicks);
+    else
+      snprintf(actions, sizeof(actions), "none");
+
+    bsp::lampda_print("%s: %s (can use %d to %d)",
+                      bindings::get_name(behavior),
+                      actions,
+                      bindings::get_min_clicks(behavior),
+                      bindings::maxClicks);
   }
 }
 
@@ -838,7 +856,7 @@ static void cmd_set_binding(const common::cli::ParsedCommand& command)
   const auto behavior = bindings::get_behavior_from_name(name.data());
   if (behavior == bindings::Behavior::None)
   {
-    bsp::lampda_print("Unknown behavior \"%s\": type \'sys bind\' for the behaviors", name.data());
+    bsp::lampda_print(R"(Unknown behavior "%s": type 'sys bind' for the behaviors)", name.data());
     return;
   }
 
@@ -883,6 +901,70 @@ static void cmd_reset_bindings(const common::cli::ParsedCommand&)
   bsp::lampda_print("Restored the default button bindings");
 }
 
+/// Display the state of a sun timer
+static void print_sun_timer_state(const char* name, const bool isEnabled, const uint32_t remainingTime_s)
+{
+  if (isEnabled)
+    bsp::lampda_print("%s: enabled, ends in %lum %lus",
+                      name,
+                      static_cast<unsigned long>(remainingTime_s / 60),
+                      static_cast<unsigned long>(remainingTime_s % 60));
+  else
+    bsp::lampda_print("%s: disabled", name);
+}
+
+/// Display the sunset and sunrise timers states
+static void cmd_sun_timers(const common::cli::ParsedCommand&)
+{
+  print_sun_timer_state("sunset", logic::sunset_timer.is_enabled(), logic::sunset_timer.get_remaining_time_s());
+  print_sun_timer_state("sunrise", logic::sunrise_timer.is_enabled(), logic::sunrise_timer.get_remaining_time_s());
+}
+
+/// Cancel the active sun timers
+static void cmd_cancel_sun_timers(const common::cli::ParsedCommand&)
+{
+  // the timers are exclusive: cancel only the running one, the timer task sees the cancel and skips its end behavior
+  // (cancel() on a stopped timer still signals a cancel to the user modes, that would reset a running sunrise)
+  if (logic::sunset_timer.is_enabled())
+  {
+    logic::sunset_timer.cancel();
+    bsp::lampda_print("Sunset timer canceled");
+    return;
+  }
+  if (logic::sunrise_timer.is_enabled())
+  {
+    // keep the brightness reached by the sunrise, as for a user brightness change
+    logic::sunrise_timer.cancel_at_current_brightness();
+    bsp::lampda_print("Sunrise timer canceled");
+    return;
+  }
+  bsp::lampda_print("No sun timer is running");
+}
+
+/// Display if the battery level blinks are enabled
+static void cmd_battery_blink(const common::cli::ParsedCommand&)
+{
+  bsp::lampda_print("level blinks enabled: %s", boolToString(logic::battery_blink::is_enabled()));
+}
+
+/// Display the indicator brightness level
+static void cmd_indicator(const common::cli::ParsedCommand&)
+{
+  bsp::lampda_print("indicator level: %u", logic::indicator::get_brightness_level());
+}
+
+/// Display the favorite modes infos
+static void cmd_favorites(const common::cli::ParsedCommand&)
+{
+  lampda::user::handle_user_command(common::UserCommand::make_print_favorites_command());
+}
+
+/// Display a single line status, for external apps
+static void cmd_status(const common::cli::ParsedCommand&)
+{
+  lampda::user::handle_user_command(common::UserCommand::make_print_status_command());
+}
+
 void cmd_set_hook(const common::cli::ParsedCommand& command, const char* name);
 /// Handle the Set command, that takes another command as parameters
 static void cmd_set(const common::cli::ParsedCommand& command) { cmd_set_hook(command, command.name()); }
@@ -895,6 +977,10 @@ void cmd_act_hook(const common::cli::ParsedCommand& command, const char* name);
 /// Handle the Act command, that takes another command as parameters
 static void cmd_act(const common::cli::ParsedCommand& command) { cmd_act_hook(command, command.name()); }
 
+void cmd_debug_hook(const common::cli::ParsedCommand& command, const char* name);
+/// Handle the Debug command, that takes another command as parameters
+static void cmd_debug(const common::cli::ParsedCommand& command) { cmd_debug_hook(command, command.name()); }
+
 void set_help_hook();
 /// Handle the Set help command
 static void cmd_set_help(const common::cli::ParsedCommand&) { set_help_hook(); }
@@ -906,6 +992,10 @@ static void cmd_sys_help(const common::cli::ParsedCommand&) { sys_help_hook(); }
 void act_help_hook();
 /// Handle the act help command
 static void cmd_act_help(const common::cli::ParsedCommand&) { act_help_hook(); }
+
+void debug_help_hook();
+/// Handle the debug help command
+static void cmd_debug_help(const common::cli::ParsedCommand&) { debug_help_hook(); }
 
 } // namespace handles
 
@@ -928,6 +1018,12 @@ constexpr Command _main_commands_s[] = {
                           common::cli::ParsedCommand::maxArgumentCount,
                           "Read system informations",
                           handles::cmd_sys),
+        make_command_args("debug",
+                          "<subcommand> [<arg>...]",
+                          0,
+                          common::cli::ParsedCommand::maxArgumentCount,
+                          "Low level debug informations",
+                          handles::cmd_debug),
         make_command_args("act",
                           "<subcommand> [<arg>...]",
                           0,
@@ -940,12 +1036,26 @@ constexpr Command _main_commands_s[] = {
 constexpr Command _sys_commands_s[] = {
         make_command_args("h", "", 0, common::cli::ParsedCommand::maxArgumentCount, "This page", handles::cmd_sys_help),
         make_command("alerts", "show all raised alerts", handles::cmd_alerts),
-        make_command("stats", "display the system use statistics", handles::cmd_stats),
-        make_command("tasks", "display a debug of task usages", handles::cmd_tasks),
         make_command("time", "show current time", handles::cmd_time),
+        make_command("bat", " battery info/levels", handles::cmd_bat),
+        make_command("ble_name", "return the current BLE device name", handles::cmd_get_ble_name),
+        make_command("bindings", "show which clicks trigger each configurable behavior", handles::cmd_bindings),
+        make_command("sun", "show the sunset and sunrise timers states", handles::cmd_sun_timers),
+        make_command("indicator", "show the indicator level (0-2)", handles::cmd_indicator),
+        make_command("fav", "show the favorite mode count", handles::cmd_favorites),
+        make_command("status",
+                     "one line status: $stat:g<group>:m<mode>:r<ramp>:<F if in favorites, else X> brgt:<brightness>",
+                     handles::cmd_status),
+        make_command("bat_blink", "show if the battery level blinks are enabled", handles::cmd_battery_blink),
+};
+
+/// commands to debug the low level system: tasks, power, recovery, electrical buses
+constexpr Command _debug_commands_s[] = {
+        make_command_args(
+                "h", "", 0, common::cli::ParsedCommand::maxArgumentCount, "This page", handles::cmd_debug_help),
+        make_command("tasks", "display a debug of task usages", handles::cmd_tasks),
         make_command("ble", "debug bluetooth informations", handles::cmd_ble),
         make_command("pd", "display the connected PD capabilities", handles::cmd_powerdelivery),
-        make_command("bat", " battery info/levels", handles::cmd_bat),
         make_command("states", "state machine states", handles::cmd_states),
         make_command("recovery", "read-only startup and battery recovery diagnostics", handles::cmd_recovery),
         make_command("rtrace", "read-only recovery trace only", handles::cmd_recovery_trace),
@@ -953,8 +1063,7 @@ constexpr Command _sys_commands_s[] = {
         make_command("cinfo", "charger infos", handles::cmd_cinfo),
         make_command("adc", "values from the charger ADC", handles::cmd_adc),
         make_command("i2c", "start an i2c presence check", handles::cmd_i2c),
-        make_command("ble_name", "return the current BLE device name", handles::cmd_get_ble_name),
-        make_command("bind", "show which clicks trigger each configurable behavior", handles::cmd_bindings),
+        make_command("stats", "display the system use statistics", handles::cmd_stats),
 };
 
 /// special commands to interact with the low level system
@@ -1021,6 +1130,7 @@ constexpr Command _set_commands_s[] = {
                           4,
                           "Set the sunrise timer to a time, if time is synchronised",
                           handles::cmd_set_sunrise_time),
+        make_command("sun_cancel", "Cancel the running sunset or sunrise timer", handles::cmd_cancel_sun_timers),
         make_command_args("ble_name",
                           "[New name]",
                           1,
@@ -1085,6 +1195,9 @@ static_assert(!has_duplicate_hash(_sys_commands_s, sizeof(_sys_commands_s) / siz
 /// Check for command uniqueness
 static_assert(!has_duplicate_hash(_act_commands_s, sizeof(_act_commands_s) / sizeof(_act_commands_s[0])),
               "Duplicate act command hash detected! Ensure all command names are unique.");
+/// Check for command uniqueness
+static_assert(!has_duplicate_hash(_debug_commands_s, sizeof(_debug_commands_s) / sizeof(_debug_commands_s[0])),
+              "Duplicate debug command hash detected! Ensure all command names are unique.");
 
 /// hook that can read the other commands and print them out
 template<size_t N> void help_hook_base(const Command (&commandsToParse)[N], const char* command = nullptr)
@@ -1125,6 +1238,8 @@ void sys_help_hook() { help_hook_base(_sys_commands_s, "sys"); }
 
 void act_help_hook() { help_hook_base(_act_commands_s, "act"); }
 
+void debug_help_hook() { help_hook_base(_debug_commands_s, "debug"); }
+
 void cmd_set_hook(const common::cli::ParsedCommand& command, const char* name)
 {
   if (command.argumentCount < 1)
@@ -1156,6 +1271,17 @@ void cmd_act_hook(const common::cli::ParsedCommand& command, const char* name)
   }
 
   handleCommand(command.shift_to_first_parameter(), _act_commands_s, name);
+}
+
+void cmd_debug_hook(const common::cli::ParsedCommand& command, const char* name)
+{
+  if (command.argumentCount < 1)
+  {
+    debug_help_hook();
+    return;
+  }
+
+  handleCommand(command.shift_to_first_parameter(), _debug_commands_s, name);
 }
 
 } // namespace handles

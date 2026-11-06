@@ -162,6 +162,22 @@ UserCommand UserCommand::make_signal_suntimer_cancel_command()
   return cmd;
 }
 
+UserCommand UserCommand::make_print_status_command()
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::PrintStatus;
+  cmd._dataCnt = 0;
+  return cmd;
+}
+
+UserCommand UserCommand::make_print_favorites_command()
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::PrintFavorites;
+  cmd._dataCnt = 0;
+  return cmd;
+}
+
 UserCommand UserCommand::make_blip_output_command(const uint32_t duration_ms)
 {
   UserCommand cmd;
@@ -346,6 +362,10 @@ bool UserCommand::parse_blip_output_command(uint32_t& duration_ms) const
                 (static_cast<uint32_t>(_data[2]) << 16u) | (static_cast<uint32_t>(_data[3]) << 24u);
   return true;
 }
+
+bool UserCommand::parse_print_status_command() const { return get_type() == Type::PrintStatus and _dataCnt == 0; }
+
+bool UserCommand::parse_print_favorites_command() const { return get_type() == Type::PrintFavorites and _dataCnt == 0; }
 
 } // namespace common
 } // namespace lampda

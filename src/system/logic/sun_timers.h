@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <cstdint>
 
 namespace lampda {
@@ -31,8 +32,15 @@ public:
 
   bool is_enabled() const { return endTime_s > 0; }
 
-  /// Cancel the current active timer
-  void cancel();
+  /// Return the time left before the end of the timer, in seconds. 0 if the timer is not enabled
+  uint32_t get_remaining_time_s() const;
+
+  /**
+   * \brief Cancel the current active timer
+   * \return true if the timer was running. Only one caller can release a running timer, so a timer canceled from
+   * another thread never runs its end of timer handle
+   */
+  bool cancel();
 
   /// Start the sun timer with a deadline, or prolonge the current sun timer
   void set_deadline(const uint32_t timeshutdown_s);
@@ -76,8 +84,9 @@ protected:
   /// \return  the progress between 0 and 1
   float signal_sun_update() const;
 
-  /// End of the timer operation, in the lamp time counter
-  uint32_t endTime_s = 0;
+  /// End of the timer operation, in the lamp time counter. 0 when the timer is not running.
+  /// Atomic: the timer task and the main loop (inputs, CLI) can both release it
+  std::atomic<uint32_t> endTime_s = 0;
   /// Is the handler allowed to control lamp brightness
   bool isAllowedToControlBrightness = true;
 
