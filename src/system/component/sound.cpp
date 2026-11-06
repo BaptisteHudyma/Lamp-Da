@@ -80,6 +80,12 @@ static constexpr float desiredoutputRMS = desiredoutput * desiredoutput;
 static constexpr float inverseInt16Max = 1.0f / static_cast<float>(INT16_MAX);
 static constexpr float inverseDesiredoutputRMS = 1.0f / desiredoutputRMS;
 
+/// Convert a gained sample to int16: an out of range float to integer conversion is undefined, so saturate first
+inline int16_t saturate_to_int16(const float value)
+{
+  return static_cast<int16_t>(lmpd_constrain(value, static_cast<float>(-INT16_MAX), static_cast<float>(INT16_MAX)));
+}
+
 bool enable()
 {
   lastMicFunctionCall = hal::time_ms();
@@ -158,8 +164,7 @@ SoundStruct& process_sound_data(const hal::microphone::PdmData& data)
     int16_t dataP = data.data[i];
     if (hasSensitivityGain)
     {
-      dataP = static_cast<int16_t>(
-              lmpd_constrain(dataP * sensitivityGain, static_cast<float>(-INT16_MAX), static_cast<float>(INT16_MAX)));
+      dataP = saturate_to_int16(dataP * sensitivityGain);
     }
     // data is always at zero median, so use absolute
     dataSum += (dataP < 0) ? -dataP : dataP;
@@ -185,7 +190,8 @@ SoundStruct& process_sound_data(const hal::microphone::PdmData& data)
       const float autoGainB = (autoGainedData * autoGainedData) * inverseDesiredoutputRMS;
       autoGain *= 1.0f + (distortionFactor * (1.0f - autoGainB));
 
-      soundStruct.rectifiedData[i] = autoGainedData * static_cast<float>(INT16_MAX);
+      // the gain can reach maxAutoGain: the gained sample can overflow
+      soundStruct.rectifiedData[i] = saturate_to_int16(autoGainedData * static_cast<float>(INT16_MAX));
     }
     // keep the gain in bounds
     autoGain = lmpd_constrain(autoGain, minAutoGain, maxAutoGain);
@@ -201,7 +207,7 @@ SoundStruct& process_sound_data(const hal::microphone::PdmData& data)
     // constant gain over the whole sample
     for (uint16_t i = 0; i < data.sampleRead; i++)
     {
-      soundStruct.rectifiedData[i] = soundStruct.data[i] * autoGain;
+      soundStruct.rectifiedData[i] = saturate_to_int16(soundStruct.data[i] * autoGain);
     }
   }
 
