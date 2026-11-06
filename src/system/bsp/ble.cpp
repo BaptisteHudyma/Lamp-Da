@@ -578,9 +578,21 @@ void init()
 
 void shutdown()
 {
+  // Write the bond file while the link (if any) is still in its normal state: with the SoftDevice, a flash operation
+  // done during a disconnection can wait for the peer supervision timeout (several seconds), see #590.
+  // Only write it if it changed (saves a flash erase/write on each shutdown).
   if (__private::hasBondedPeer)
-    __private::try_save_bounded_peer(__private::identityAddr);
+  {
+    hal::ble::gap_addr_t storedAddr;
+    const bool isStoredAddrValid = __private::try_load_bounded_pair(storedAddr);
+    if (not isStoredAddrValid or storedAddr.type != __private::identityAddr.type or
+        not __private::addressMatches(storedAddr, __private::identityAddr))
+    {
+      __private::try_save_bounded_peer(__private::identityAddr);
+    }
+  }
 
+  // closes all the links. Do not access the flash after this call
   hal::ble::hal_ble_deinit();
 }
 

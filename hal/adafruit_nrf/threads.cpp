@@ -15,6 +15,16 @@ volatile bool canRun = true;
 static StaticTask_t staticTaskArray[MaxStaticTasks];
 inline static size_t currentStaticTaskIndex = 0;
 
+/// A FreeRTOS task must never return (it would end in the port task exit error: interrupts masked, infinite loop).
+/// Stopped tasks are parked here, suspended, until the system goes to sleep.
+[[noreturn]] static void park_task()
+{
+  for (;;)
+  {
+    vTaskSuspend(NULL);
+  }
+}
+
 // loop task
 [[noreturn]] static void _redirect_task(void* arg)
 {
@@ -25,6 +35,7 @@ inline static size_t currentStaticTaskIndex = 0;
     taskfunc();
     yield();
   }
+  park_task();
 }
 
 // loop task
@@ -38,6 +49,7 @@ inline static size_t currentStaticTaskIndex = 0;
     taskfunc();
     yield();
   }
+  park_task();
 }
 
 uint32_t HAL_create_thread(TaskHandle_t* handle,
