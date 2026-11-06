@@ -35,6 +35,7 @@
 
 #include "src/user/functions.h"
 
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
@@ -812,12 +813,29 @@ static void cmd_bindings(const common::cli::ParsedCommand&)
   for (size_t i = 0; i < bindings::behaviorCount; ++i)
   {
     const auto behavior = static_cast<bindings::Behavior>(i);
-    if (bindings::is_supported(behavior))
-      bsp::lampda_print("%s: %d clicks (can use %d to %d)",
-                        bindings::get_name(behavior),
-                        bindings::get_clicks(behavior),
-                        bindings::get_min_clicks(behavior),
-                        bindings::maxClicks);
+    if (not bindings::is_supported(behavior))
+      continue;
+
+    // display the actions really linked: <n>C for the click action, <n>H for the hold action
+    const uint8_t clicks = bindings::get_clicks(behavior);
+    const bool isOnClick = bindings::get_click_behavior(clicks) == behavior;
+    const bool isOnHold = bindings::get_hold_behavior(clicks) == behavior;
+
+    char actions[12] = "";
+    if (isOnClick and isOnHold)
+      snprintf(actions, sizeof(actions), "%dC, %dH", clicks, clicks);
+    else if (isOnClick)
+      snprintf(actions, sizeof(actions), "%dC", clicks);
+    else if (isOnHold)
+      snprintf(actions, sizeof(actions), "%dH", clicks);
+    else
+      snprintf(actions, sizeof(actions), "none");
+
+    bsp::lampda_print("%s: %s (can use %d to %d)",
+                      bindings::get_name(behavior),
+                      actions,
+                      bindings::get_min_clicks(behavior),
+                      bindings::maxClicks);
   }
 }
 
@@ -838,7 +856,7 @@ static void cmd_set_binding(const common::cli::ParsedCommand& command)
   const auto behavior = bindings::get_behavior_from_name(name.data());
   if (behavior == bindings::Behavior::None)
   {
-    bsp::lampda_print("Unknown behavior \"%s\": type \'sys bind\' for the behaviors", name.data());
+    bsp::lampda_print(R"(Unknown behavior "%s": type 'sys bind' for the behaviors)", name.data());
     return;
   }
 
@@ -881,6 +899,64 @@ static void cmd_reset_bindings(const common::cli::ParsedCommand&)
 {
   logic::button_bindings::reset_to_defaults();
   bsp::lampda_print("Restored the default button bindings");
+}
+
+/// Display the state of a sun timer
+static void print_sun_timer_state(const char* name, const bool isEnabled, const uint32_t remainingTime_s)
+{
+  if (isEnabled)
+    bsp::lampda_print("%s: enabled, ends in %lum %lus",
+                      name,
+                      static_cast<unsigned long>(remainingTime_s / 60),
+                      static_cast<unsigned long>(remainingTime_s % 60));
+  else
+    bsp::lampda_print("%s: disabled", name);
+}
+
+/// Display the sunset and sunrise timers states
+static void cmd_sun_timers(const common::cli::ParsedCommand&)
+{
+  print_sun_timer_state("sunset", logic::sunset_timer.is_enabled(), logic::sunset_timer.get_remaining_time_s());
+  print_sun_timer_state("sunrise", logic::sunrise_timer.is_enabled(), logic::sunrise_timer.get_remaining_time_s());
+}
+
+/// Cancel the active sun timers
+static void cmd_cancel_sun_timers(const common::cli::ParsedCommand&)
+{
+  if (not logic::sunset_timer.is_enabled() and not logic::sunrise_timer.is_enabled())
+  {
+    bsp::lampda_print("No sun timer is running");
+    return;
+  }
+
+  logic::sunset_timer.cancel();
+  // keep the brightness reached by the sunrise, as for a user brightness change
+  logic::sunrise_timer.cancel_at_current_brightness();
+  bsp::lampda_print("Sun timers canceled");
+}
+
+/// Display if the battery level blinks are enabled
+static void cmd_battery_blink(const common::cli::ParsedCommand&)
+{
+  bsp::lampda_print("level blinks enabled: %s", boolToString(logic::battery_blink::is_enabled()));
+}
+
+/// Display the indicator brightness level
+static void cmd_indicator(const common::cli::ParsedCommand&)
+{
+  bsp::lampda_print("indicator level: %u", logic::indicator::get_brightness_level());
+}
+
+/// Display the favorite modes infos
+static void cmd_favorites(const common::cli::ParsedCommand&)
+{
+  lampda::user::handle_user_command(common::UserCommand::make_print_favorites_command());
+}
+
+/// Display a single line status, for external apps
+static void cmd_status(const common::cli::ParsedCommand&)
+{
+  lampda::user::handle_user_command(common::UserCommand::make_print_status_command());
 }
 
 void cmd_set_hook(const common::cli::ParsedCommand& command, const char* name);
@@ -955,6 +1031,13 @@ constexpr Command _sys_commands_s[] = {
         make_command("i2c", "start an i2c presence check", handles::cmd_i2c),
         make_command("ble_name", "return the current BLE device name", handles::cmd_get_ble_name),
         make_command("bind", "show which clicks trigger each configurable behavior", handles::cmd_bindings),
+        make_command("sun", "show the sunset and sunrise timers states", handles::cmd_sun_timers),
+        make_command("bat_blink", "show if the battery level blinks are enabled", handles::cmd_battery_blink),
+        make_command("indicator", "show the indicator level (0-2)", handles::cmd_indicator),
+        make_command("fav", "show the favorite mode count", handles::cmd_favorites),
+        make_command("status",
+                     "one line status: $stat:<group>:<mode>:<ramp>:<brightness>:<F if in favorites, else ->",
+                     handles::cmd_status),
 };
 
 /// special commands to interact with the low level system
@@ -1021,6 +1104,7 @@ constexpr Command _set_commands_s[] = {
                           4,
                           "Set the sunrise timer to a time, if time is synchronised",
                           handles::cmd_set_sunrise_time),
+        make_command("sun_cancel", "Cancel the running sunset or sunrise timer", handles::cmd_cancel_sun_timers),
         make_command_args("ble_name",
                           "[New name]",
                           1,

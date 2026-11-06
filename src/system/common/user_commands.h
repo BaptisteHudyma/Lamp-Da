@@ -39,6 +39,8 @@ public:
     SignalSunriseProgress, ///< Signal a sunrise update event
     SignalSuntimerCancel,  ///< Signal that a suntimer was canceled
     BlipOutput,            ///< Turn off the output for a short time
+    PrintStatus,           ///< Print the current mode, group, ramp, brightness and favorite state on one line
+    PrintFavorites,        ///< Print the favorite mode count
   };
   static constexpr uint8_t maxDataSize = 8;
 
@@ -152,6 +154,18 @@ public:
   static UserCommand make_blip_output_command(const uint32_t duration_ms);
 
   /**
+   * \brief Set this commant to print the user status line
+   * \return The correct user command
+   */
+  static UserCommand make_print_status_command();
+
+  /**
+   * \brief Set this commant to print the favorite modes infos
+   * \return The correct user command
+   */
+  static UserCommand make_print_favorites_command();
+
+  /**
    *
    * Parsing functions
    *
@@ -261,6 +275,18 @@ public:
    * \return True if the current message is valid, and parameter is set
    */
   bool parse_blip_output_command(uint32_t& duration_ms) const;
+
+  /**
+   * \brief Parse the current command for a status print
+   * \return True if the current message is valid
+   */
+  bool parse_print_status_command() const;
+
+  /**
+   * \brief Parse the current command for a favorites print
+   * \return True if the current message is valid
+   */
+  bool parse_print_favorites_command() const;
 
 protected:
   /// Protected constructor to prevent unallowed uses

@@ -31,6 +31,9 @@ public:
 
   bool is_enabled() const { return endTime_s > 0; }
 
+  /// Return the time left before the end of the timer, in seconds. 0 if the timer is not enabled
+  uint32_t get_remaining_time_s() const;
+
   /// Cancel the current active timer
   void cancel();
 

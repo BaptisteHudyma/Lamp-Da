@@ -118,6 +118,14 @@ template<uint32_t T> uint32_t SunTimerBase<T>::get_loop_timing_ms() const
   return min<uint32_t>(res, trueBrightnessSunTime_ms / minimalSunUpdateCalls);
 }
 
+template<uint32_t T> uint32_t SunTimerBase<T>::get_remaining_time_s() const
+{
+  const uint32_t time_s = hal::time_s();
+  if (not is_enabled() or time_s >= endTime_s)
+    return 0;
+  return endTime_s - time_s;
+}
+
 template<uint32_t T> float SunTimerBase<T>::get_percent_of_advance() const
 {
   if (hal::time_s() >= endTime_s)
