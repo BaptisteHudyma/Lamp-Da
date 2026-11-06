@@ -971,6 +971,10 @@ void cmd_act_hook(const common::cli::ParsedCommand& command, const char* name);
 /// Handle the Act command, that takes another command as parameters
 static void cmd_act(const common::cli::ParsedCommand& command) { cmd_act_hook(command, command.name()); }
 
+void cmd_debug_hook(const common::cli::ParsedCommand& command, const char* name);
+/// Handle the Debug command, that takes another command as parameters
+static void cmd_debug(const common::cli::ParsedCommand& command) { cmd_debug_hook(command, command.name()); }
+
 void set_help_hook();
 /// Handle the Set help command
 static void cmd_set_help(const common::cli::ParsedCommand&) { set_help_hook(); }
@@ -982,6 +986,10 @@ static void cmd_sys_help(const common::cli::ParsedCommand&) { sys_help_hook(); }
 void act_help_hook();
 /// Handle the act help command
 static void cmd_act_help(const common::cli::ParsedCommand&) { act_help_hook(); }
+
+void debug_help_hook();
+/// Handle the debug help command
+static void cmd_debug_help(const common::cli::ParsedCommand&) { debug_help_hook(); }
 
 } // namespace handles
 
@@ -1004,6 +1012,12 @@ constexpr Command _main_commands_s[] = {
                           common::cli::ParsedCommand::maxArgumentCount,
                           "Read system informations",
                           handles::cmd_sys),
+        make_command_args("debug",
+                          "<subcommand> [<arg>...]",
+                          0,
+                          common::cli::ParsedCommand::maxArgumentCount,
+                          "Low level debug informations",
+                          handles::cmd_debug),
         make_command_args("act",
                           "<subcommand> [<arg>...]",
                           0,
@@ -1016,12 +1030,26 @@ constexpr Command _main_commands_s[] = {
 constexpr Command _sys_commands_s[] = {
         make_command_args("h", "", 0, common::cli::ParsedCommand::maxArgumentCount, "This page", handles::cmd_sys_help),
         make_command("alerts", "show all raised alerts", handles::cmd_alerts),
-        make_command("stats", "display the system use statistics", handles::cmd_stats),
-        make_command("tasks", "display a debug of task usages", handles::cmd_tasks),
         make_command("time", "show current time", handles::cmd_time),
+        make_command("bat", " battery info/levels", handles::cmd_bat),
+        make_command("ble_name", "return the current BLE device name", handles::cmd_get_ble_name),
+        make_command("bindings", "show which clicks trigger each configurable behavior", handles::cmd_bindings),
+        make_command("sun", "show the sunset and sunrise timers states", handles::cmd_sun_timers),
+        make_command("indicator", "show the indicator level (0-2)", handles::cmd_indicator),
+        make_command("fav", "show the favorite mode count", handles::cmd_favorites),
+        make_command("status",
+                     "one line status: $stat:g<group>:m<mode>:r<ramp>:<F if in favorites, else X> brgt:<brightness>",
+                     handles::cmd_status),
+        make_command("bat_blink", "show if the battery level blinks are enabled", handles::cmd_battery_blink),
+};
+
+/// commands to debug the low level system: tasks, power, recovery, electrical buses
+constexpr Command _debug_commands_s[] = {
+        make_command_args(
+                "h", "", 0, common::cli::ParsedCommand::maxArgumentCount, "This page", handles::cmd_debug_help),
+        make_command("tasks", "display a debug of task usages", handles::cmd_tasks),
         make_command("ble", "debug bluetooth informations", handles::cmd_ble),
         make_command("pd", "display the connected PD capabilities", handles::cmd_powerdelivery),
-        make_command("bat", " battery info/levels", handles::cmd_bat),
         make_command("states", "state machine states", handles::cmd_states),
         make_command("recovery", "read-only startup and battery recovery diagnostics", handles::cmd_recovery),
         make_command("rtrace", "read-only recovery trace only", handles::cmd_recovery_trace),
@@ -1029,15 +1057,7 @@ constexpr Command _sys_commands_s[] = {
         make_command("cinfo", "charger infos", handles::cmd_cinfo),
         make_command("adc", "values from the charger ADC", handles::cmd_adc),
         make_command("i2c", "start an i2c presence check", handles::cmd_i2c),
-        make_command("ble_name", "return the current BLE device name", handles::cmd_get_ble_name),
-        make_command("bind", "show which clicks trigger each configurable behavior", handles::cmd_bindings),
-        make_command("sun", "show the sunset and sunrise timers states", handles::cmd_sun_timers),
-        make_command("bat_blink", "show if the battery level blinks are enabled", handles::cmd_battery_blink),
-        make_command("indicator", "show the indicator level (0-2)", handles::cmd_indicator),
-        make_command("fav", "show the favorite mode count", handles::cmd_favorites),
-        make_command("status",
-                     "one line status: $stat:<group>:<mode>:<ramp>:<brightness>:<F if in favorites, else ->",
-                     handles::cmd_status),
+        make_command("stats", "display the system use statistics", handles::cmd_stats),
 };
 
 /// special commands to interact with the low level system
@@ -1169,6 +1189,9 @@ static_assert(!has_duplicate_hash(_sys_commands_s, sizeof(_sys_commands_s) / siz
 /// Check for command uniqueness
 static_assert(!has_duplicate_hash(_act_commands_s, sizeof(_act_commands_s) / sizeof(_act_commands_s[0])),
               "Duplicate act command hash detected! Ensure all command names are unique.");
+/// Check for command uniqueness
+static_assert(!has_duplicate_hash(_debug_commands_s, sizeof(_debug_commands_s) / sizeof(_debug_commands_s[0])),
+              "Duplicate debug command hash detected! Ensure all command names are unique.");
 
 /// hook that can read the other commands and print them out
 template<size_t N> void help_hook_base(const Command (&commandsToParse)[N], const char* command = nullptr)
@@ -1209,6 +1232,8 @@ void sys_help_hook() { help_hook_base(_sys_commands_s, "sys"); }
 
 void act_help_hook() { help_hook_base(_act_commands_s, "act"); }
 
+void debug_help_hook() { help_hook_base(_debug_commands_s, "debug"); }
+
 void cmd_set_hook(const common::cli::ParsedCommand& command, const char* name)
 {
   if (command.argumentCount < 1)
@@ -1240,6 +1265,17 @@ void cmd_act_hook(const common::cli::ParsedCommand& command, const char* name)
   }
 
   handleCommand(command.shift_to_first_parameter(), _act_commands_s, name);
+}
+
+void cmd_debug_hook(const common::cli::ParsedCommand& command, const char* name)
+{
+  if (command.argumentCount < 1)
+  {
+    debug_help_hook();
+    return;
+  }
+
+  handleCommand(command.shift_to_first_parameter(), _debug_commands_s, name);
 }
 
 } // namespace handles

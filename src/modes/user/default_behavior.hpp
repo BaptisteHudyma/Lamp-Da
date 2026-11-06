@@ -621,7 +621,7 @@ bool handle_user_command(const common::UserCommand& command)
                                   manager.get_active_group(),
                                   manager.get_active_mode(),
                                   manager.get_active_custom_ramp(),
-                                  manager.state.isInFavoriteMockGroup ? 'F' : '-',
+                                  manager.state.isInFavoriteMockGroup ? 'F' : 'X',
                                   logic::brightness::get_brightness());
           }
         }
