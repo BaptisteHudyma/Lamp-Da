@@ -19,6 +19,7 @@
 
 #include "src/system/logic/alerts.h"
 
+#include <atomic>
 #include <cstdint>
 #include <cassert>
 #include <stdint.h>
@@ -32,8 +33,11 @@ namespace power {
 void power_loop();
 // \references
 
-/// Set to true if the shutdown process is finished cleanly.
-bool _isShutdownCompleted = false;
+/// Set to true by the power thread once the shutdown process is finished cleanly.
+static std::atomic<bool> _isShutdownCompleted {false};
+
+/// Maximum time the caller of go_to_shutdown waits for the power thread to complete the shutdown.
+static constexpr uint32_t shutdownCompletionTimeout_ms = 500;
 
 /// Minimum allowed power rail clear delay.
 static constexpr uint32_t clearPowerRailMinDelay_ms = 10;
@@ -693,7 +697,9 @@ void state_machine_behavior()
       break;
     // called when system will be powering down
     case PowerStates::SHUTDOWN:
-      handle_shutdown();
+      // shutdown the components only once, the power thread then idles (see power_loop)
+      if (not _isShutdownCompleted)
+        handle_shutdown();
       break;
     default:
       {
@@ -783,7 +789,26 @@ bool go_to_shutdown()
   // no need to check if we can switch case in this case
   __private::powerMachine.set_state(PowerStates::SHUTDOWN);
 
-  handle_shutdown();
+  // power thread never started: nothing can run concurrently, shutdown from here
+  if (not is_setup())
+  {
+    handle_shutdown();
+    return _isShutdownCompleted;
+  }
+
+  // the power thread owns the power components: let it run the shutdown, then wait for it
+  const uint32_t startTime = hal::time_ms();
+  while (not _isShutdownCompleted)
+  {
+    if (hal::time_ms() - startTime > shutdownCompletionTimeout_ms)
+    {
+      // power thread is stuck: shutdown from here, as a last resort
+      bsp::lampda_print("power thread did not complete the shutdown, forcing it");
+      handle_shutdown();
+      break;
+    }
+    hal::delay_ms(1);
+  }
 
   return _isShutdownCompleted;
 }
@@ -999,6 +1024,13 @@ void power_loop()
 
   // run power module state machine
   __private::state_machine_behavior();
+
+  // components are shut down (or sleeping): do not touch them anymore, just idle until the threads are stopped
+  if (_isShutdownCompleted)
+  {
+    hal::delay_ms(5);
+    return;
+  }
 
   // run the power delivery update loop
   ::lampda::bsp::powerDelivery::loop();
