@@ -70,7 +70,7 @@ Each layer has a matching namespace under `lampda::`. From high level to low lev
 
 `logic/behavior.cpp` drives the system through `START_LOGIC`, `PRE_CHARGER_OPERATION`/`CHARGER_OPERATIONS`, `PRE_OUTPUT_LIGHT`/`OUTPUT_LIGHT`/`POST_OUTPUT_LIGHT`, `SHUTDOWN` and `ERROR`. User code only runs in `OUTPUT_LIGHT`.
 
-The main loop runs at a fixed period (`MAIN_LOOP_UPDATE_PERIOD_MS`) under a watchdog, so code on it must not block. Slow loops raise an alert, and a loop over 500 ms reboots the board into DFU mode (`check_loop_runtime` in `global.cpp`).
+The main loop runs at a fixed period (`MAIN_LOOP_UPDATE_PERIOD_MS`) under a watchdog, so code on it must not block. Slow loops raise an alert (`check_loop_runtime` in `global.cpp`), and a stuck loop is reset by the watchdog.
 
 ### `src/user/`: lamp type integration
 
