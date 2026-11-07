@@ -53,7 +53,7 @@ template<uint32_t T> void SunTimerBase<T>::set_deadline(const uint32_t timeshutd
 {
   if (timeshutdown_s <= hal::time_s())
   {
-    bsp::lampda_print("timer end time is less than current time: %d", timeshutdown_s);
+    bsp::lampda_print("timer end time is less than current time: %lu", static_cast<unsigned long>(timeshutdown_s));
     return;
   }
   if (not should_accept_start())
