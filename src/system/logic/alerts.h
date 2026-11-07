@@ -92,7 +92,7 @@ public:
 
 private:
   /// Binary variable to store raised alerts
-  uint32_t _current;
+  uint32_t _current = 0;
 };
 
 /// external global reference to the AlertManager
