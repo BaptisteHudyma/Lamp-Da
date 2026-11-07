@@ -838,11 +838,11 @@ public:
    */
   void LMBD_INLINE fadeToBlackBy(uint8_t fadeBy)
   {
+    if (fadeBy == 0)
+      return; // optimization - no scaling to apply
+
     if constexpr (flavor == LampTypes::indexable)
     {
-      if (fadeBy == 0)
-        return; // optimization - no scaling to apply
-
       for (uint16_t i = 0; i < ledCount; ++i)
       {
         const uint32_t c = getPixelColor(i);
@@ -851,15 +851,14 @@ public:
     }
     else
     {
-      uint8_t brightness = lmpd_map<uint8_t>(getBrightness(),
-                                             brightness::absoluteMinimumBrightness,
-                                             brightness::absoluteMaximumBrightness,
-                                             0,
-                                             UINT8_MAX);
-      brightness = (brightness < fadeBy) ? 0 : brightness - fadeBy;
+      // scale fadeBy to the brightness range, and subtract it there (avoid a lossy round trip to 0-255)
+      constexpr uint32_t minBrightness = brightness::absoluteMinimumBrightness;
+      constexpr uint32_t brightnessRange = brightness::absoluteMaximumBrightness - minBrightness;
+      const uint32_t fadeAmount = (static_cast<uint32_t>(fadeBy) * brightnessRange) / UINT8_MAX;
 
-      setBrightness(lmpd_map<brightness_t>(
-              brightness, 0, UINT8_MAX, brightness::absoluteMinimumBrightness, brightness::absoluteMaximumBrightness));
+      const uint32_t current = getBrightness();
+      const uint32_t faded = (current <= minBrightness + fadeAmount) ? minBrightness : current - fadeAmount;
+      setBrightness(static_cast<brightness_t>(faded));
     }
   }
 
@@ -965,7 +964,7 @@ public:
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      assert(start < ledCount && "invalid start parameter");
+      assert(start <= ledCount && "invalid start parameter");
       assert(end <= ledCount && "invalid end parameter");
 
       for (uint16_t I = start; I < end; ++I)
