@@ -65,8 +65,12 @@ static uint16_t _outputCurrent_mA = 0;
 static uint16_t _temporaryOutputVoltage_mV = 0;
 /// temporary current limits
 static uint16_t _temporaryOutputCurrent_mA = 0;
-/// temporary output timeout time
-static uint32_t _temporaryOutputTimeOut = 0;
+/// temporary output start time
+/// Written before _temporaryOutputDuration_ms (release), read after it (acquire), as they are set and used on
+/// different threads
+static uint32_t _temporaryOutputStart_ms = 0;
+/// temporary output duration, 0 if no temporary output is active
+static std::atomic<uint32_t> _temporaryOutputDuration_ms {0};
 
 /// True if battery charging is allowed
 static bool _isChargeEnabled = false;
@@ -356,7 +360,9 @@ void handle_output_voltage_mode()
 
   bool isVoltageOk = false;
   // if we are in temporary output mode, use temporary limits
-  if (hal::time_ms() < _temporaryOutputTimeOut)
+  // elapsed time comparison is safe across a time_ms wrap
+  const uint32_t temporaryOutputDuration_ms = _temporaryOutputDuration_ms.load(std::memory_order_acquire);
+  if ((hal::time_ms() - _temporaryOutputStart_ms) < temporaryOutputDuration_ms)
   {
     set_otg_parameters(_temporaryOutputVoltage_mV, _temporaryOutputCurrent_mA);
     isVoltageOk =
@@ -366,7 +372,7 @@ void handle_output_voltage_mode()
   }
   else
   {
-    _temporaryOutputTimeOut = 0;
+    _temporaryOutputDuration_ms = 0;
     set_otg_parameters(_outputVoltage_mV, _outputCurrent_mA);
     isVoltageOk =
             (powerRailVoltage_mv >= static_cast<uint32_t>(stripInputMinVoltage_mV * voltageGateLowerMultiplier) and
@@ -834,13 +840,13 @@ void set_output_voltage_mv(const uint16_t outputVoltage_mV)
     }
   }
 
-  _temporaryOutputTimeOut = 0;
+  _temporaryOutputDuration_ms = 0;
   _outputVoltage_mV = outputVoltage_mV;
 }
 
 void set_output_max_current_mA(const uint16_t outputCurrent_mA)
 {
-  _temporaryOutputTimeOut = 0;
+  _temporaryOutputDuration_ms = 0;
   _outputCurrent_mA = outputCurrent_mA;
 }
 
@@ -856,7 +862,8 @@ void set_temporary_output(const uint16_t outputVoltage_mV, const uint16_t output
   }
 
   // set output timeout
-  _temporaryOutputTimeOut = hal::time_ms() + timeout;
+  _temporaryOutputStart_ms = hal::time_ms();
+  _temporaryOutputDuration_ms.store(timeout, std::memory_order_release);
   _temporaryOutputVoltage_mV = outputVoltage_mV;
   _temporaryOutputCurrent_mA = outputCurrent_mA;
 }

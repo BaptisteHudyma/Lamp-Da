@@ -5,6 +5,7 @@
 
 #include "src/system/bsp/text_out.h"
 
+#include <atomic>
 #include <cassert>
 
 namespace lampda {
@@ -19,8 +20,11 @@ static constexpr uint32_t gateSwitchDelay_ms = 50;
 
 /// max off delay of the gate blip
 static constexpr uint32_t BLIP_MAX_TIME = 10000;
-// wake up time for a blip output gate. DANGER
-static uint32_t _blipWakeUpTime_ms = 0;
+// start time of a blip of the output gate. DANGER
+// Written before _blipDuration_ms (release), read after it (acquire), as blip() and loop() run on different threads
+static uint32_t _blipStartTime_ms = 0;
+// duration of a blip of the output gate, 0 if no blip is active. DANGER
+static std::atomic<uint32_t> _blipDuration_ms {0};
 
 // indicates if the power gate is really on, not switching or other
 bool _isPowerGateReallyEnabled = false;
@@ -82,7 +86,7 @@ void disable_vbus_gate()
 void disable_power_gate()
 {
   // reset blip time
-  _blipWakeUpTime_ms = 0;
+  _blipDuration_ms = 0;
 
   if (__private::enablePowerGate.is_high())
     bsp::lampda_print("power gate disabled");
@@ -139,8 +143,9 @@ void loop()
   // This is dangerous for the hardware, dont touch if you dont know how
   if (_isPowerGateReallyEnabled)
   {
-    // prepare blip wake up
-    if (_blipWakeUpTime_ms != 0 && hal::time_ms() >= _blipWakeUpTime_ms)
+    // prepare blip wake up (elapsed time comparison is safe across a time_ms wrap)
+    const uint32_t blipDuration_ms = _blipDuration_ms.load(std::memory_order_acquire);
+    if (blipDuration_ms != 0 && (hal::time_ms() - _blipStartTime_ms) >= blipDuration_ms)
     {
       power::cancel_blip();
     }
@@ -148,7 +153,7 @@ void loop()
   else
   {
     // always reset if power gate is inactive
-    _blipWakeUpTime_ms = 0;
+    _blipDuration_ms = 0;
   }
 }
 
@@ -165,11 +170,12 @@ void blip(const uint32_t timing)
   // hard limit on blip
   if (timing <= 0 or timing > BLIP_MAX_TIME or not _isPowerGateReallyEnabled)
   {
-    _blipWakeUpTime_ms = 0;
+    _blipDuration_ms = 0;
     return;
   }
 
-  _blipWakeUpTime_ms = hal::time_ms() + timing;
+  _blipStartTime_ms = hal::time_ms();
+  _blipDuration_ms.store(timing, std::memory_order_release);
 
   // deactivate without checks, not that dangerous...
   __private::enablePowerGate.set_high(false);
@@ -185,10 +191,10 @@ void cancel_blip()
     __private::enablePowerGate.set_high(true);
   }
   // reset time
-  _blipWakeUpTime_ms = 0;
+  _blipDuration_ms = 0;
 }
 
-bool is_bliping() { return _blipWakeUpTime_ms > 0; }
+bool is_bliping() { return _blipDuration_ms > 0; }
 
 } // namespace power
 
