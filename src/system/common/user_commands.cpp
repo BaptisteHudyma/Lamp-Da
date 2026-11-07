@@ -6,6 +6,17 @@
 namespace lampda {
 namespace common {
 
+namespace {
+
+/// Read 4 little endian bytes as an uint32_t (bytes are widened before shifting, to avoid int overflow)
+uint32_t read_u32_le(const uint8_t* data)
+{
+  return static_cast<uint32_t>(data[0]) | (static_cast<uint32_t>(data[1]) << 8u) |
+         (static_cast<uint32_t>(data[2]) << 16u) | (static_cast<uint32_t>(data[3]) << 24u);
+}
+
+} // namespace
+
 UserCommand::UserCommand() : _type(UserCommand::Type::Invalid), _dataCnt(0) {}
 
 UserCommand UserCommand::make_set_ramp_command(const uint8_t ramp)
@@ -198,7 +209,7 @@ UserCommand UserCommand::make_blip_output_command(const uint32_t duration_ms)
 
 bool UserCommand::parse_ramp(uint8_t& ramp) const
 {
-  if (_dataCnt != 1)
+  if (get_type() != Type::SetUserRamp or _dataCnt != 1)
     return false;
   ramp = _data[0];
   return true;
@@ -322,11 +333,7 @@ bool UserCommand::parse_signal_sunset_progress_command(float& progress) const
   if (get_type() != Type::SignalSunsetProgress or _dataCnt != 4)
     return false;
 
-  uint32_t internal = 0;
-  internal |= _data[0];
-  internal |= _data[1] << 8u;
-  internal |= _data[2] << 16u;
-  internal |= _data[3] << 24u;
+  const uint32_t internal = read_u32_le(_data.data());
 
   memcpy(&progress, &internal, sizeof(internal));
   return true;
@@ -337,11 +344,7 @@ bool UserCommand::parse_signal_sunrise_progress_command(float& progress) const
   if (get_type() != Type::SignalSunriseProgress or _dataCnt != 4)
     return false;
 
-  uint32_t internal = 0;
-  internal |= _data[0];
-  internal |= _data[1] << 8u;
-  internal |= _data[2] << 16u;
-  internal |= _data[3] << 24u;
+  const uint32_t internal = read_u32_le(_data.data());
 
   memcpy(&progress, &internal, sizeof(internal));
   return true;
@@ -358,8 +361,7 @@ bool UserCommand::parse_blip_output_command(uint32_t& duration_ms) const
 {
   if (get_type() != Type::BlipOutput or _dataCnt != 4)
     return false;
-  duration_ms = static_cast<uint32_t>(_data[0]) | (static_cast<uint32_t>(_data[1]) << 8u) |
-                (static_cast<uint32_t>(_data[2]) << 16u) | (static_cast<uint32_t>(_data[3]) << 24u);
+  duration_ms = read_u32_le(_data.data());
   return true;
 }
 

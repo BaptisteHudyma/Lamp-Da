@@ -30,6 +30,17 @@ TEST_F(UserCommandTest, SetRampCommand)
   EXPECT_EQ(parsed_ramp, ramp);
 }
 
+TEST_F(UserCommandTest, SetRampRejectsOtherTypes)
+{
+  // other one-byte commands must not be read as a ramp value
+  uint8_t parsed_ramp = 0;
+  EXPECT_FALSE(UserCommand::make_set_ble_mode_command(3).parse_ramp(parsed_ramp));
+  EXPECT_FALSE(UserCommand::make_go_to_favorite_command(3).parse_ramp(parsed_ramp));
+  EXPECT_FALSE(UserCommand::make_set_favorite_command(3).parse_ramp(parsed_ramp));
+  EXPECT_FALSE(UserCommand::make_turn_onoff_command(true).parse_ramp(parsed_ramp));
+  EXPECT_EQ(parsed_ramp, 0);
+}
+
 TEST_F(UserCommandTest, BrightnessCommand)
 {
   brightness_t bright = 128;
