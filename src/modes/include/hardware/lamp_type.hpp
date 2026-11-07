@@ -1278,7 +1278,7 @@ static constexpr XYTy strip_to_XY(uint16_t n)
  */
 static constexpr HelixXYZTy strip_to_helix(int16_t n)
 {
-  if (n > hardware::LampTy::ledCount)
+  if (not is_led_index_valid(n))
     return HelixXYZTy {0.0, 0.0, 0.0};
 
   return strip_to_helix_unconstraint(n);
@@ -1331,13 +1331,15 @@ static constexpr bool is_lamp_coordinate_out_of_bounds(const float angle_rad, co
  */
 static constexpr uint16_t to_led_index(const float angle_rad, const float z_mm)
 {
-  constexpr uint16_t maxZCoordinate =
+  constexpr int32_t maxZCoordinate =
           floor(-to_helix_z(hardware::LampTy::ledCount) / hardware::LampTy::ledStripWidth_mm);
 
-  // snip Z per possible lines
-  uint16_t zIndex = floor(-z_mm / hardware::LampTy::ledStripWidth_mm);
-  if (zIndex < 0.0)
-    zIndex = 0.0;
+  // snip Z per possible lines.
+  // Keep it signed: a point above the lamp (z_mm > 0) gives a negative row, and a negative float converted to an
+  // unsigned is undefined (it lands on opposite ends on ARM and x86)
+  int32_t zIndex = floor(-z_mm / hardware::LampTy::ledStripWidth_mm);
+  if (zIndex < 0)
+    zIndex = 0;
   if (zIndex > maxZCoordinate)
     zIndex = maxZCoordinate;
 
