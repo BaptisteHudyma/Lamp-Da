@@ -57,13 +57,8 @@ void check_loop_runtime(const uint32_t runTime)
   static uint8_t isOnSlowLoopCount = 0;
   if (runTime > MAIN_LOOP_UPDATE_PERIOD_MS + 1)
   {
+    // a stuck loop is handled by the watchdog
     isOnSlowLoopCount = min<uint8_t>(isOnSlowLoopCount + 1, maxAlerts);
-
-    if (runTime > 500)
-    {
-      // if loop time is too long, go back to flash mode
-      hal::registers::enter_serial_dfu();
-    }
   }
   else if (isOnSlowLoopCount > 0)
   {
