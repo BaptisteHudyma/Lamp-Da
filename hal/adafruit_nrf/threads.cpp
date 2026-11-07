@@ -58,7 +58,7 @@ uint32_t HAL_create_thread(TaskHandle_t* handle,
                            const int priority,
                            const int stackSize,
                            TaskBuffer_t* buffer,
-                           const int startSuspended)
+                           const bool startSuspended)
 {
   if (currentStaticTaskIndex >= MaxStaticTasks)
   {
@@ -73,11 +73,11 @@ uint32_t HAL_create_thread(TaskHandle_t* handle,
   else
     prio = TASK_PRIO_LOW;
 
-  auto& taskToUse = startSuspended == 0 ? _redirect_suspend_task : _redirect_task;
+  auto& taskToUse = startSuspended ? _redirect_suspend_task : _redirect_task;
 
   *handle = xTaskCreateStatic(
           taskToUse, name, stackSize, (void*)task, prio, buffer, &(staticTaskArray[currentStaticTaskIndex]));
-  if (handle != nullptr)
+  if (*handle != nullptr)
   {
     currentStaticTaskIndex++;
     return stackSize * sizeof(StackType_t);
