@@ -2,6 +2,7 @@
 
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/i2c.h"
+#include "src/system/hal/mutex.h"
 #include "src/system/hal/registers.h"
 
 #include "src/system/bsp/pd/power_delivery.h"
@@ -56,21 +57,38 @@ static constexpr uint32_t startupFailTimeout_ms = common::RecoveryTiming::startu
 static_assert(clearPowerRailMinDelay_ms < clearPowerRailFailureDelay_ms,
               "clear power rail min activation is less than min unlock delay");
 
-/// true voltage output
+/// true voltage output. Only access it under _outputLimitsMutex
 static uint16_t _outputVoltage_mV = 0;
-/// true current output limit
+/// true current output limit. Only access it under _outputLimitsMutex
 static uint16_t _outputCurrent_mA = 0;
 
-/// temporary voltage
-static uint16_t _temporaryOutputVoltage_mV = 0;
-/// temporary current limits
-static uint16_t _temporaryOutputCurrent_mA = 0;
-/// temporary output start time
-/// Written before _temporaryOutputDuration_ms (release), read after it (acquire), as they are set and used on
-/// different threads
-static uint32_t _temporaryOutputStart_ms = 0;
-/// temporary output duration, 0 if no temporary output is active
-static std::atomic<uint32_t> _temporaryOutputDuration_ms {0};
+/// A temporary output request, replacing the output limits for a duration
+struct TemporaryOutput
+{
+  uint32_t start_ms = 0;    ///< start time of the request
+  uint32_t duration_ms = 0; ///< duration of the request, 0 if no temporary output is active
+  uint16_t voltage_mV = 0;  ///< temporary voltage
+  uint16_t current_mA = 0;  ///< temporary current limit
+};
+
+/// Requested by the main thread, applied and expired by the power thread.
+/// Only access it under _outputLimitsMutex, so that a request is always seen as a whole.
+static TemporaryOutput _temporaryOutput;
+
+/// Guards all the output limits (_outputVoltage_mV, _outputCurrent_mA, _temporaryOutput): set by the main thread,
+/// applied by the power thread. Not recursive.
+static hal::mutex::hal_mutex_t _outputLimitsMutex;
+/// Initialized at program start: the output limits are written before the power init
+[[maybe_unused]] static const bool _isOutputLimitsMutexInit = (hal::mutex::hal_mutex_init(&_outputLimitsMutex), true);
+
+/// Hold _outputLimitsMutex for the scope
+struct OutputLimitsLock
+{
+  OutputLimitsLock() { hal::mutex::hal_mutex_lock(&_outputLimitsMutex); }
+  ~OutputLimitsLock() { hal::mutex::hal_mutex_unlock(&_outputLimitsMutex); }
+  OutputLimitsLock(const OutputLimitsLock&) = delete;
+  OutputLimitsLock& operator=(const OutputLimitsLock&) = delete;
+};
 
 /// True if battery charging is allowed
 static bool _isChargeEnabled = false;
@@ -358,22 +376,34 @@ void handle_output_voltage_mode()
 
   const auto powerRailVoltage_mv = get_power_rail_voltage();
 
+  // snapshot the output limits, and expire the temporary output request, under the lock
+  TemporaryOutput temporaryOutput;
+  uint16_t outputVoltage_mV;
+  uint16_t outputCurrent_mA;
+  {
+    OutputLimitsLock lock;
+    // elapsed time comparison is safe across a time_ms wrap. Clear an expired request, so that it can never come back
+    if (_temporaryOutput.duration_ms != 0 and
+        (hal::time_ms() - _temporaryOutput.start_ms) >= _temporaryOutput.duration_ms)
+      _temporaryOutput.duration_ms = 0;
+    temporaryOutput = _temporaryOutput;
+    outputVoltage_mV = _outputVoltage_mV;
+    outputCurrent_mA = _outputCurrent_mA;
+  }
+
   bool isVoltageOk = false;
   // if we are in temporary output mode, use temporary limits
-  // elapsed time comparison is safe across a time_ms wrap
-  const uint32_t temporaryOutputDuration_ms = _temporaryOutputDuration_ms.load(std::memory_order_acquire);
-  if ((hal::time_ms() - _temporaryOutputStart_ms) < temporaryOutputDuration_ms)
+  if (temporaryOutput.duration_ms != 0)
   {
-    set_otg_parameters(_temporaryOutputVoltage_mV, _temporaryOutputCurrent_mA);
+    set_otg_parameters(temporaryOutput.voltage_mV, temporaryOutput.current_mA);
     isVoltageOk =
             (powerRailVoltage_mv >= static_cast<uint32_t>(stripInputMinVoltage_mV * voltageGateLowerMultiplier) and
              // do not check the upper bound, this is a special DANGEROUS case
-             powerRailVoltage_mv <= static_cast<uint32_t>(_temporaryOutputVoltage_mV * voltageGateHigherMultiplier));
+             powerRailVoltage_mv <= static_cast<uint32_t>(temporaryOutput.voltage_mV * voltageGateHigherMultiplier));
   }
   else
   {
-    _temporaryOutputDuration_ms = 0;
-    set_otg_parameters(_outputVoltage_mV, _outputCurrent_mA);
+    set_otg_parameters(outputVoltage_mV, outputCurrent_mA);
     isVoltageOk =
             (powerRailVoltage_mv >= static_cast<uint32_t>(stripInputMinVoltage_mV * voltageGateLowerMultiplier) and
              powerRailVoltage_mv <= static_cast<uint32_t>(stripInputMaxVoltage_mV * voltageGateHigherMultiplier));
@@ -394,7 +424,7 @@ void handle_output_voltage_mode()
     if (s_isOutputModeReady)
       bsp::lampda_print("voltage is not in required range, disabling output. Actual %lumV. Required %dmV",
                         static_cast<unsigned long>(powerRailVoltage_mv),
-                        _outputVoltage_mV);
+                        outputVoltage_mV);
     s_isOutputModeReady = false;
 
     ::lampda::bsp::powergates::disable_gates();
@@ -840,13 +870,15 @@ void set_output_voltage_mv(const uint16_t outputVoltage_mV)
     }
   }
 
-  _temporaryOutputDuration_ms = 0;
+  OutputLimitsLock lock;
+  _temporaryOutput.duration_ms = 0;
   _outputVoltage_mV = outputVoltage_mV;
 }
 
 void set_output_max_current_mA(const uint16_t outputCurrent_mA)
 {
-  _temporaryOutputDuration_ms = 0;
+  OutputLimitsLock lock;
+  _temporaryOutput.duration_ms = 0;
   _outputCurrent_mA = outputCurrent_mA;
 }
 
@@ -861,11 +893,12 @@ void set_temporary_output(const uint16_t outputVoltage_mV, const uint16_t output
     }
   }
 
-  // set output timeout
-  _temporaryOutputStart_ms = hal::time_ms();
-  _temporaryOutputDuration_ms.store(timeout, std::memory_order_release);
-  _temporaryOutputVoltage_mV = outputVoltage_mV;
-  _temporaryOutputCurrent_mA = outputCurrent_mA;
+  // replace the request as a whole
+  OutputLimitsLock lock;
+  _temporaryOutput.start_ms = hal::time_ms();
+  _temporaryOutput.duration_ms = timeout;
+  _temporaryOutput.voltage_mV = outputVoltage_mV;
+  _temporaryOutput.current_mA = outputCurrent_mA;
 }
 
 // charge mode
