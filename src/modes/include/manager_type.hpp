@@ -558,8 +558,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     which_one = (which_one % ctx.state.usedFavoriteCount);
     ctx.state.lastFavoriteStep = which_one;
 
-    // store last active index before jump
-    if (shouldSaveLastActiveIndex)
+    // store last active index before jump, only when entering the favorite group:
+    // inside it, the active index is a favorite and would overwrite the mode to return to
+    if (shouldSaveLastActiveIndex and not ctx.state.isInFavoriteMockGroup)
     {
       ctx.state.beforeFavoriteActiveIndex = ctx.modeManager.activeIndex;
     }
