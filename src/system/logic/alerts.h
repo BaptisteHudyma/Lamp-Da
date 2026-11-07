@@ -68,6 +68,17 @@ public:
   /// Clear an alert
   void clear(const Type type);
 
+  /**
+   * \brief Clear an alert, unless it was refreshed by a raise() since the clear decision was taken.
+   * \param[in] type The alert to clear
+   * \param[in] refreshCount The refresh counter of this alert, incremented by every raise() of a raised alert
+   * \param[in] refreshCountAtDecision Value of \p refreshCount read before deciding to clear the alert
+   * \return true if the alert was cleared
+   */
+  bool clear_unless_refreshed(const Type type,
+                              const std::atomic<uint32_t>& refreshCount,
+                              const uint32_t refreshCountAtDecision);
+
   /// Return true if the target alert is raised
   bool is_raised(const Type type) const { return (_current.load() & static_cast<uint32_t>(type)) != 0x00; }
 

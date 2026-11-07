@@ -181,8 +181,13 @@ struct AlertBase
   }
 
   /// Update the raised time of this alert.
-  /// An alert continuously firing as to be updated
-  void update_raise_time(const uint32_t time) { raisedTime = time; }
+  /// An alert continuously firing as to be updated. Can be called from any thread or interrupt.
+  void update_raise_time(const uint32_t time)
+  {
+    raisedTime = time;
+    // signal the refresh to a clear decision taken concurrently, see AlertManager_t::clear_unless_refreshed
+    refreshCount.fetch_add(1);
+  }
 
   /**
    * \brief Handler for the lowered state of the alert.
@@ -215,8 +220,11 @@ struct AlertBase
   bool _isRaisedHandled = false;
   /// Alert lower signal has been handled
   bool _isLoweredHandled = false;
-  /// Store the latest time at which this alert raise() was called
-  uint32_t raisedTime = 0;
+  /// Store the latest time at which this alert raise() was called.
+  /// Atomic: refreshed by raise() from other threads, while the main loop reads it for the timeout decisions
+  std::atomic<uint32_t> raisedTime {0};
+  /// Incremented on every raise() refresh of the raised alert. See AlertManager_t::clear_unless_refreshed
+  std::atomic<uint32_t> refreshCount {0};
   /// Store the latest time at which this alert lower() was called
   uint32_t loweredTime = 0;
 };
@@ -769,9 +777,11 @@ void update_alerts()
   {
     if (manager.is_raised(alert->get_type()))
     {
+      // read before the decision: a raise() refreshing the alert meanwhile cancels the clear
+      const uint32_t refreshCount = alert->refreshCount.load();
       if (alert->should_be_cleared())
       {
-        manager.clear(alert->get_type());
+        manager.clear_unless_refreshed(alert->get_type(), alert->refreshCount, refreshCount);
       }
       else
       {
@@ -934,7 +944,10 @@ void AlertManager_t::raise(const Type type)
         break;
       }
     }
-    return;
+    // A clear may have run concurrently: it either sees the refresh (and keeps the alert), or the alert is cleared
+    // now and this raise is a new one
+    if (is_raised(type))
+      return;
   }
 
   // atomic: only the caller that actually set the bit signals the raise
@@ -953,6 +966,26 @@ void AlertManager_t::clear(const Type type)
   if ((previous & static_cast<uint32_t>(type)) == 0)
     return;
   bsp::lampda_print("ALERT cleared: %s", AlertsToText(type));
+}
+
+bool AlertManager_t::clear_unless_refreshed(const Type type,
+                                            const std::atomic<uint32_t>& refreshCount,
+                                            const uint32_t refreshCountAtDecision)
+{
+  const uint32_t bit = static_cast<uint32_t>(type);
+  const uint32_t previous = _current.fetch_and(~bit);
+  if ((previous & bit) == 0)
+    return false;
+
+  // refreshed while the clear was decided: the alert is still active, silently restore it
+  if (refreshCount.load() != refreshCountAtDecision)
+  {
+    _current.fetch_or(bit);
+    return false;
+  }
+
+  bsp::lampda_print("ALERT cleared: %s", AlertsToText(type));
+  return true;
 }
 
 uint32_t AlertManager_t::get_time_since_raised(const Type type) const
