@@ -20,6 +20,15 @@ namespace logic {
 
 template<uint32_t T> bool SunTimerBase<T>::cancel()
 {
+  if (not release())
+    return false;
+
+  logic::brightness::set_user_brightness_scale(1.0f);
+  return true;
+}
+
+template<uint32_t T> bool SunTimerBase<T>::release()
+{
   // release timer: the exchange makes sure that only one caller sees it running
   const bool wasEnabled = __atomic_exchange_n(&endTime_s, 0u, __ATOMIC_SEQ_CST) > 0;
 
@@ -31,7 +40,6 @@ template<uint32_t T> bool SunTimerBase<T>::cancel()
   if (not wasEnabled)
     return false;
 
-  logic::brightness::set_user_brightness_scale(1.0f);
   trueBrightnessSunTime_ms = BrightnessSunTime_ms;
 
   // signal to user
@@ -199,8 +207,10 @@ template<uint32_t T> void SunTimerBase<T>::sun_process_loop()
     const float progress = signal_sun_update();
     if (progress >= 1.0)
     {
-      // canceled by another caller since the check: do not run the end of timer behavior
-      if (not cancel())
+      // canceled by another caller since the check: do not run the end of timer behavior.
+      // Do not restore the brightness scale here: the end of timer handle sets it, and the main loop could render a
+      // frame at the restored scale in between
+      if (not release())
         return;
 
       end_of_timer_handle();
@@ -324,7 +334,9 @@ void SunriseTimer::sun_timer_progress_update_callback(const float progress) cons
 
 void SunriseTimer::end_of_timer_handle()
 {
-  // the timer cancel released the brightness scale: force an update of the brightness, with user callback
+  // the timer release keeps the brightness scale: restore it, and force an update of the brightness, with user
+  // callback
+  logic::brightness::set_user_brightness_scale(1.0f);
   logic::brightness::force_brightness_user_callback();
 
   bsp::lampda_print("Sunrise timer finished !");

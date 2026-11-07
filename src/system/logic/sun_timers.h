@@ -66,7 +66,14 @@ protected:
   /// \param[in] progress between 0 and 1
   virtual void sun_timer_progress_update_callback(const float progress) const = 0;
 
-  /// Called when the timer it's target
+  /**
+   * \brief Release the timer, without restoring the brightness scale
+   * \return true if the timer was running. See \ref cancel
+   */
+  bool release();
+
+  /// Called when the timer reaches its target. The brightness scale is left as is by the release: the handle must set
+  /// it
   virtual void end_of_timer_handle() = 0;
 
   /// Called when the timer progresses through the brightness phase
