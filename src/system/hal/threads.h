@@ -33,7 +33,7 @@ extern "C" {
    * \param[in] name internal name of the thread
    * \param[in] priority from 0 to 2, this thread priority
    * \param[in] stackSize The size of the stack to allocate.
-   * \param[in] startSuspended if == 0, start the thread in a suspended mode
+   * \param[in] startSuspended if true, start the thread in a suspended mode
    * \return The task allocated stack in bytes, or 0 for failure
    */
   uint32_t HAL_create_thread(TaskHandle_t* handle,
@@ -42,7 +42,7 @@ extern "C" {
                              const int priority,
                              const int stackSize,
                              TaskBuffer_t* buffer,
-                             const int startSuspended);
+                             const bool startSuspended);
 
   /// Yield this thread
   void HAL_yield();

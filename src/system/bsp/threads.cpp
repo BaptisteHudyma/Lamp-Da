@@ -73,7 +73,7 @@ void low_level_start_thread(taskfunc_t taskFunction,
                             const int priority,
                             const int stackSize,
                             TaskBuffer_t* buffer,
-                            const int startedSuspended)
+                            const bool startSuspended)
 {
   // handle already exists
   if (handles.find(taskName) != handles.end())
@@ -105,7 +105,7 @@ void low_level_start_thread(taskfunc_t taskFunction,
                                           priority,
                                           stackSize,
                                           buffer,
-                                          startedSuspended);
+                                          startSuspended);
   if (createdTaskSize_bytes > 0)
   {
     const bool wasAdded = handles.insert({taskName, {staticHandles[handleIndex], createdTaskSize_bytes}}).second;
@@ -130,13 +130,13 @@ void low_level_start_thread(taskfunc_t taskFunction,
 void start_thread(
         taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize, TaskBuffer_t* buffer)
 {
-  __private::low_level_start_thread(taskFunction, taskName, priority, stackSize, buffer, 1);
+  __private::low_level_start_thread(taskFunction, taskName, priority, stackSize, buffer, false);
 }
 
 void start_suspended_thread(
         taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize, TaskBuffer_t* buffer)
 {
-  __private::low_level_start_thread(taskFunction, taskName, priority, stackSize, buffer, 0);
+  __private::low_level_start_thread(taskFunction, taskName, priority, stackSize, buffer, true);
 }
 
 void yield_this_thread() { hal::threads::HAL_yield(); }

@@ -55,7 +55,7 @@ uint32_t HAL_create_thread(TaskHandle_t* const handle,
                            const int priority,
                            const int stackSize,
                            uint32_t* buffer,
-                           const int startSuspended)
+                           const bool startSuspended)
 {
   // ALWAYS CAPTURE taskFunction EXPLICITLY
   simulator::ThreadHandle h;
@@ -69,7 +69,7 @@ uint32_t HAL_create_thread(TaskHandle_t* const handle,
       hal::delay_ms(1);
     }
   });
-  h.isSuspended = startSuspended == 0;
+  h.isSuspended = startSuspended;
 
   const size_t id = threadHasher(h.fun.get_id());
   simulator::threadPool[id] = std::move(h);
