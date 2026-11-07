@@ -77,19 +77,15 @@ void handle_BLE_ELK_command(const common::elk::Package& elkControlCommand)
 
         // auto turn on or off
         const bool isAutoTurnOn = elkControlCommand.data[3] == 0;
-        // target days as a binary mask (unsuported)
-        const uint8_t enabledDays = elkControlCommand.data[4];
+        // target days as a binary mask, bit 0 is monday. Bit 7 (enable/disable flag) is ignored
+        constexpr uint8_t daysMask = 0x7F;
+        const uint8_t enabledDays = elkControlCommand.data[4] & daysMask;
 
-        // mask the days to enable of the (enabledDays & daysMask)
-        constexpr uint8_t daysMask = 127;
-        // index bit of enable/disable
-        constexpr uint8_t setClearBit = 1 << 7;
-
-        const int indexOfTheDay = utils::get_index_of_first_set_bit(enabledDays);
-
-        if (indexOfTheDay < 0 or indexOfTheDay > 6)
+        // the timers are one shot: use the soonest of the enabled days
+        const int8_t indexOfTheDay = component::time::get_next_enabled_day(enabledDays, hour, minutes, seconds);
+        if (indexOfTheDay < 0)
         {
-          bsp::lampda_print("Refused to handle timing command: invalid day of the week");
+          bsp::lampda_print("Refused to handle timing command: no day of the week enabled");
           return;
         }
 
