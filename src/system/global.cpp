@@ -207,12 +207,18 @@ void regulate_loop_runtime(const uint32_t addedDelay)
 
   const uint32_t loopStartTime = hal::time_ms();
 
-  // fix the initialization or long wait
-  static uint32_t lastLoopEndTime;
-  if (loopStartTime - lastLoopEndTime > 1000)
+  // End of the previous iteration, taken after its regulation wait below, so that this intentional wait is not
+  // counted. The startup time before the first iteration is not an iteration either: start the measure here.
+  // Do not reset the measure on long iterations, they are the ones the slow loop alert must detect.
+  static bool isFirstIteration = true;
+  static uint32_t lastLoopEndTime = 0;
+  if (isFirstIteration)
+  {
+    isFirstIteration = false;
     lastLoopEndTime = loopStartTime;
+  }
 
-  // wait for a delay if we are faster than the set refresh rate
+  // duration of the previous iteration work (with the added delay). Wait if we are faster than the set refresh rate
   const uint32_t loopDuration = loopStartTime - lastLoopEndTime;
   if (loopDuration < MAIN_LOOP_UPDATE_PERIOD_MS)
   {
