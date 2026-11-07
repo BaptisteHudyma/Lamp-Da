@@ -389,7 +389,9 @@ static void cmd_powerdelivery(const common::cli::ParsedCommand&)
       if (not hasValidPDO)
         bsp::lampda_print("Power delivery profiles :");
 
-      bsp::lampda_print("- %dmV, %dmA", pdo.voltage_mv, pdo.maxCurrent_mA);
+      bsp::lampda_print("- %lumV, %lumA",
+                        static_cast<unsigned long>(pdo.voltage_mv),
+                        static_cast<unsigned long>(pdo.maxCurrent_mA));
       hasValidPDO = true;
     }
     else
@@ -505,13 +507,13 @@ static void cmd_ble(const common::cli::ParsedCommand&)
           "is open to all: %d\n"
           "is connected: %d\n"
           "is msg received: %d\n"
-          "auto activations left: %d",
+          "auto activations left: %lu",
           bsp::ble::is_activated(),
           bsp::ble::is_advertising(),
           bsp::ble::is_open_to_all(),
           bsp::ble::is_connected(),
           logic::inputs_bluetooth::is_bluetooth_used(),
-          logic::behavior::internal::get_bluetooth_auto_activation_left());
+          static_cast<unsigned long>(logic::behavior::internal::get_bluetooth_auto_activation_left()));
 
   std::array<uint8_t, 8> boundedDeviceName;
   const bool isBounded = bsp::ble::is_bounded(boundedDeviceName);

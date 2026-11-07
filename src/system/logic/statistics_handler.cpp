@@ -209,16 +209,16 @@ void show(const bool shouldShowAlerts)
 {
   bsp::lampda_print(
           "stats:\n"
-          "boot cnt: %u\n"
-          "button clicks: %u\n"
-          "time on %umin\n"
-          "output on %umin\n"
-          "charge on %umin",
-          statistics.boot_count,
-          statistics.button_press_count,
-          get_system_on_time(),
-          get_output_on_time(),
-          get_battery_charging_time());
+          "boot cnt: %lu\n"
+          "button clicks: %lu\n"
+          "time on %lumin\n"
+          "output on %lumin\n"
+          "charge on %lumin",
+          static_cast<unsigned long>(statistics.boot_count),
+          static_cast<unsigned long>(statistics.button_press_count),
+          static_cast<unsigned long>(get_system_on_time()),
+          static_cast<unsigned long>(get_output_on_time()),
+          static_cast<unsigned long>(get_battery_charging_time()));
 
   if (shouldShowAlerts)
   {
@@ -230,7 +230,7 @@ void show(const bool shouldShowAlerts)
       if (statistics.alertRaisedCnt[alertIndex] > 0)
       {
         anyAlertToDisplay = true;
-        bsp::lampda_print("- %u : %u", alertIndex, statistics.alertRaisedCnt[alertIndex]);
+        bsp::lampda_print("- %u : %lu", alertIndex, static_cast<unsigned long>(statistics.alertRaisedCnt[alertIndex]));
       }
     }
     if (not anyAlertToDisplay)

@@ -220,8 +220,9 @@ struct UsbPDData
                       vbusVoltage / 1000.0,
                       pdAlgoStatus.c_str());
     hasChanged = false;
-    bsp::lampda_print(
-            "allowed usage: %d mA, %d mV", get_allowed_consuption().current_mA, get_allowed_consuption().voltage_mV);
+    bsp::lampda_print("allowed usage: %lu mA, %lu mV",
+                      static_cast<unsigned long>(get_allowed_consuption().current_mA),
+                      static_cast<unsigned long>(get_allowed_consuption().voltage_mV));
   }
 };
 UsbPDData data;

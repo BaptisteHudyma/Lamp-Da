@@ -108,7 +108,9 @@ void handle_events()
         bsp::lampda_print("Button: Could not register end of hold event");
       }
       else
-        bsp::lampda_print("Button: Registered %d clicks and %d ms press", buttonState.nbClicksCounted, pressDuration);
+        bsp::lampda_print("Button: Registered %d clicks and %lu ms press",
+                          buttonState.nbClicksCounted,
+                          static_cast<unsigned long>(pressDuration));
     }
     else
     {

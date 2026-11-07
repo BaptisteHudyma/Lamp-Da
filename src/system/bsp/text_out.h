@@ -20,10 +20,10 @@ namespace bsp {
 
 EXTERNC void lampda_print_init();
 
-EXTERNC void lampda_print(const char* format, ...);
+EXTERNC void lampda_print(const char* format, ...) __attribute__((format(printf, 1, 2)));
 
 /// raw print, no system additional logs
-EXTERNC void lampda_print_raw(const char* format, ...);
+EXTERNC void lampda_print_raw(const char* format, ...) __attribute__((format(printf, 1, 2)));
 
 #undef EXTERNC
 
