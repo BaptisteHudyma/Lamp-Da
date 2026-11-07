@@ -1,5 +1,6 @@
 #include "src/system/bsp/ble.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <cstring>
 
@@ -116,11 +117,13 @@ bool load_bluetooth_name(char* bleName)
   if (nameFile.open(BLE_NAME_FILE, hal::filesystem::HAL_File::OpenType::READ) and nameFile.is_open() and
       nameFile.is_available() and nameFile.seek(0))
   {
-    const auto nameLenght = nameFile.read((uint8_t*)bleName, nameFile.size());
+    // always keep room for the null terminator
+    const size_t readSize = std::min(nameFile.size(), MaxBleNameLenght - 1);
+    const size_t nameLenght = nameFile.read((uint8_t*)bleName, readSize);
 
     bool isValid = true;
     size_t i = 0;
-    for (; i <= nameLenght - 1; i++)
+    for (; i < nameLenght; i++)
     {
       if (bleName[i] == '\0')
         break;
@@ -130,6 +133,11 @@ bool load_bluetooth_name(char* bleName)
         break;
       }
     }
+    // empty names are invalid
+    if (i == 0)
+      isValid = false;
+
+    // erase invalid characters & null terminate the string
     for (; i < MaxBleNameLenght; i++)
     {
       bleName[i] = '\0';
@@ -141,7 +149,7 @@ bool load_bluetooth_name(char* bleName)
     if (isValid)
       return true;
 
-    bsp::lampda_print("Invalid stored BLE name (%s: %d), skipping to default", bleName, nameLenght);
+    bsp::lampda_print("Invalid stored BLE name (%s: %d), skipping to default", bleName, static_cast<int>(nameLenght));
   }
 
   // Default name !
