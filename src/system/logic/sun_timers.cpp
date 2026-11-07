@@ -77,7 +77,7 @@ template<uint32_t T> void SunTimerBase<T>::set_deadline(const uint32_t timeshutd
 
   if (not is_enabled())
   {
-    bsp::lampda_print("sun timer set to %d minutes", timeLeftMinutes);
+    bsp::lampda_print("sun timer set to %lu minutes", static_cast<unsigned long>(timeLeftMinutes));
     endTime_s = timeshutdown_s;
     logic::alerts::manager.raise(logic::alerts::Type::SUNSET_TIMER_ENABLED);
 
@@ -86,7 +86,7 @@ template<uint32_t T> void SunTimerBase<T>::set_deadline(const uint32_t timeshutd
   }
   else
   {
-    bsp::lampda_print("sun timer updated to %d minutes", timeLeftMinutes);
+    bsp::lampda_print("sun timer updated to %lu minutes", static_cast<unsigned long>(timeLeftMinutes));
     // added some time, so signal update
     endTime_s = timeshutdown_s;
     signal_sun_update();
