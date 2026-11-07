@@ -976,7 +976,7 @@ bool AlertManager_t::can_use_output_power() const
 
   for (auto alert: allAlerts)
   {
-    if (alert->_isRaisedHandled && alert->should_prevent_lamp_output())
+    if (is_raised(alert->get_type()) && alert->should_prevent_lamp_output())
     {
       return false;
     }
@@ -991,7 +991,7 @@ bool AlertManager_t::can_charge_battery() const
 
   for (auto alert: allAlerts)
   {
-    if (alert->_isRaisedHandled && alert->should_prevent_battery_charge())
+    if (is_raised(alert->get_type()) && alert->should_prevent_battery_charge())
     {
       return false;
     }
@@ -1006,7 +1006,7 @@ bool AlertManager_t::can_use_usb_port() const
 
   for (auto alert: allAlerts)
   {
-    if (alert->_isRaisedHandled && alert->should_prevent_usb_port_use())
+    if (is_raised(alert->get_type()) && alert->should_prevent_usb_port_use())
     {
       return false;
     }

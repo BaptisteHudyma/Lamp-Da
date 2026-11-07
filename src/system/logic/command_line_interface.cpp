@@ -760,7 +760,8 @@ static void cmd_set_ble_name(const common::cli::ParsedCommand& command)
     }
     if (realNameSize >= common::cli::MaxStringArgumentLen - 1)
     {
-      bsp::lampda_print("New ble name is too long, max is %d characters", common::cli::MaxStringArgumentLen);
+      bsp::lampda_print("New ble name is too long, max is %d characters",
+                        static_cast<int>(common::cli::MaxStringArgumentLen - 2));
       return;
     }
 

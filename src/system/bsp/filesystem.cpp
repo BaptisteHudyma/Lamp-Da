@@ -48,7 +48,8 @@ union KeyValToByteArray
 
 void shutdown() { hal::filesystem::shutdown(); }
 
-void clear_internal_fs()
+/// Format the storage only: the cached parameters are kept as is
+static void format_storage()
 {
   // First disconnect any BLE device
   if (bsp::ble::is_connected())
@@ -59,6 +60,11 @@ void clear_internal_fs()
   // It's very important to manually clear the bounded device list AFTER the format
   hal::delay_ms(100);
   bsp::ble::clear_bounded_devices();
+}
+
+void clear_internal_fs()
+{
+  format_storage();
 
   // reset the cached parameters
   system::clear_cached();
@@ -179,8 +185,9 @@ bool write_file(const char* filePath, const MapType& paramMap, const bool should
     // error. the file should have been opened
     bsp::lampda_print("file system error, resetting file format");
 
-    // hardcore, format the entire file system
-    clear_internal_fs();
+    // hardcore, format the entire file system.
+    // Keep the cached parameters: they are the values to save, and resetting them would write defaults instead
+    format_storage();
   }
 
   if (not paramFile.is_open())
