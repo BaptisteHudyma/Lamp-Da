@@ -56,7 +56,9 @@ bool go_to_otg_mode();
 bool go_to_idle();
 /**
  * \brief Set the power handler to SHUTDOWN mode (last mode before shuting system down)
- * \return true if the mode switch is accepted
+ * The power thread shuts the power components down, then stops running their loops. This call blocks until the
+ * shutdown is completed (or a timeout, after which the shutdown is forced from the calling thread).
+ * \return true if the power components shutdown is completed
  */
 bool go_to_shutdown();
 /**
