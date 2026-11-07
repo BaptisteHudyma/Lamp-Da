@@ -936,21 +936,23 @@ void AlertManager_t::raise(const Type type)
     }
     return;
   }
-  else
-  {
-    statistics::signal_alert_raised(static_cast<uint32_t>(type));
-  }
 
+  // atomic: only the caller that actually set the bit signals the raise
+  const uint32_t previous = _current.fetch_or(static_cast<uint32_t>(type));
+  if ((previous & static_cast<uint32_t>(type)) != 0)
+    return;
+
+  statistics::signal_alert_raised(static_cast<uint32_t>(type));
   bsp::lampda_print("ALERT raised: %s", AlertsToText(type));
-  _current |= static_cast<uint32_t>(type);
 }
 
 void AlertManager_t::clear(const Type type)
 {
-  if (not is_raised(type))
+  // atomic, and an AND (not a XOR): a concurrent clear of the same bit cannot set it again
+  const uint32_t previous = _current.fetch_and(~static_cast<uint32_t>(type));
+  if ((previous & static_cast<uint32_t>(type)) == 0)
     return;
   bsp::lampda_print("ALERT cleared: %s", AlertsToText(type));
-  _current ^= static_cast<uint32_t>(type);
 }
 
 uint32_t AlertManager_t::get_time_since_raised(const Type type) const
