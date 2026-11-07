@@ -936,21 +936,23 @@ void AlertManager_t::raise(const Type type)
     }
     return;
   }
-  else
-  {
-    statistics::signal_alert_raised(static_cast<uint32_t>(type));
-  }
 
+  // atomic: only the caller that actually set the bit signals the raise
+  const uint32_t previous = _current.fetch_or(static_cast<uint32_t>(type));
+  if ((previous & static_cast<uint32_t>(type)) != 0)
+    return;
+
+  statistics::signal_alert_raised(static_cast<uint32_t>(type));
   bsp::lampda_print("ALERT raised: %s", AlertsToText(type));
-  _current |= static_cast<uint32_t>(type);
 }
 
 void AlertManager_t::clear(const Type type)
 {
-  if (not is_raised(type))
+  // atomic, and an AND (not a XOR): a concurrent clear of the same bit cannot set it again
+  const uint32_t previous = _current.fetch_and(~static_cast<uint32_t>(type));
+  if ((previous & static_cast<uint32_t>(type)) == 0)
     return;
   bsp::lampda_print("ALERT cleared: %s", AlertsToText(type));
-  _current ^= static_cast<uint32_t>(type);
 }
 
 uint32_t AlertManager_t::get_time_since_raised(const Type type) const
@@ -976,7 +978,7 @@ bool AlertManager_t::can_use_output_power() const
 
   for (auto alert: allAlerts)
   {
-    if (alert->_isRaisedHandled && alert->should_prevent_lamp_output())
+    if (is_raised(alert->get_type()) && alert->should_prevent_lamp_output())
     {
       return false;
     }
@@ -991,7 +993,7 @@ bool AlertManager_t::can_charge_battery() const
 
   for (auto alert: allAlerts)
   {
-    if (alert->_isRaisedHandled && alert->should_prevent_battery_charge())
+    if (is_raised(alert->get_type()) && alert->should_prevent_battery_charge())
     {
       return false;
     }
@@ -1006,7 +1008,7 @@ bool AlertManager_t::can_use_usb_port() const
 
   for (auto alert: allAlerts)
   {
-    if (alert->_isRaisedHandled && alert->should_prevent_usb_port_use())
+    if (is_raised(alert->get_type()) && alert->should_prevent_usb_port_use())
     {
       return false;
     }

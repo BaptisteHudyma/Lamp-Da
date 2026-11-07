@@ -142,6 +142,16 @@ void help_hook();
 /// Provide an info/help page
 static void cmd_help(const common::cli::ParsedCommand&) { help_hook(); }
 
+/// Print the 64 bits serial number as 16 hex digits.
+/// The newlib-nano printf on nRF52 has no 64 bits integer support, so print it as two 32 bits halves.
+static void print_serial_number()
+{
+  const uint64_t serialNumber = hal::registers::get_device_serial_number();
+  bsp::lampda_print("SN: %08lX%08lX",
+                    static_cast<unsigned long>(serialNumber >> 32u),
+                    static_cast<unsigned long>(serialNumber & 0xffffffffu));
+}
+
 /// Short system status summary
 static void cmd_summary(const common::cli::ParsedCommand&)
 {
@@ -168,7 +178,7 @@ static void cmd_summary(const common::cli::ParsedCommand&)
   // Temperature
   bsp::lampda_print("Temp: %.1f°C", hal::registers::read_CPU_temperature_degreesC());
   // serial number
-  bsp::lampda_print("SN: %lu", hal::registers::get_device_serial_number());
+  print_serial_number();
   bsp::lampda_print("--------------------");
 
   if (bsp::filesystem::has_overflowed())
@@ -216,10 +226,7 @@ static void cmd_type(const common::cli::ParsedCommand&)
 }
 
 /// Display the board unique serial number
-static void cmd_id(const common::cli::ParsedCommand&)
-{
-  bsp::lampda_print("SN: %lu", hal::registers::get_device_serial_number());
-}
+static void cmd_id(const common::cli::ParsedCommand&) { print_serial_number(); }
 
 /// Display system statistics
 static void cmd_stats(const common::cli::ParsedCommand&) { logic::statistics::show(); }
@@ -339,14 +346,14 @@ static void cmd_adc(const common::cli::ParsedCommand&)
   if (chargerState.areMeasuresOk)
   {
     bsp::lampda_print(
-            "Last update %dms\n"
+            "Last update %lums\n"
             "PowerRail voltage:%dmV\n"
             "PowerRail current:%dmA\n"
             "VBUS voltage:%dmV\n"
             "Bat voltage:%dmV\n"
             "Bat current:%dmA\n"
             "Temperature:%.2fC",
-            chargerState.lastUpdateTime_ms,
+            static_cast<unsigned long>(chargerState.lastUpdateTime_ms),
             chargerState.powerRail_mV,
             chargerState.inputCurrent_mA,
             ::lampda::bsp::powerDelivery::get_vbus_voltage(),
@@ -358,10 +365,10 @@ static void cmd_adc(const common::cli::ParsedCommand&)
   {
     bsp::lampda_print(
             "Charger measurment are invalid !\n"
-            "Last update %dms\n"
+            "Last update %lums\n"
             "VBUS voltage:%dmV\n"
             "Temperature:%.2fC",
-            chargerState.lastUpdateTime_ms,
+            static_cast<unsigned long>(chargerState.lastUpdateTime_ms),
             ::lampda::bsp::powerDelivery::get_vbus_voltage(),
             hal::registers::read_CPU_temperature_degreesC());
   }
@@ -382,7 +389,9 @@ static void cmd_powerdelivery(const common::cli::ParsedCommand&)
       if (not hasValidPDO)
         bsp::lampda_print("Power delivery profiles :");
 
-      bsp::lampda_print("- %dmV, %dmA", pdo.voltage_mv, pdo.maxCurrent_mA);
+      bsp::lampda_print("- %lumV, %lumA",
+                        static_cast<unsigned long>(pdo.voltage_mv),
+                        static_cast<unsigned long>(pdo.maxCurrent_mA));
       hasValidPDO = true;
     }
     else
@@ -498,13 +507,13 @@ static void cmd_ble(const common::cli::ParsedCommand&)
           "is open to all: %d\n"
           "is connected: %d\n"
           "is msg received: %d\n"
-          "auto activations left: %d",
+          "auto activations left: %lu",
           bsp::ble::is_activated(),
           bsp::ble::is_advertising(),
           bsp::ble::is_open_to_all(),
           bsp::ble::is_connected(),
           logic::inputs_bluetooth::is_bluetooth_used(),
-          logic::behavior::internal::get_bluetooth_auto_activation_left());
+          static_cast<unsigned long>(logic::behavior::internal::get_bluetooth_auto_activation_left()));
 
   std::array<uint8_t, 8> boundedDeviceName;
   const bool isBounded = bsp::ble::is_bounded(boundedDeviceName);
@@ -751,7 +760,8 @@ static void cmd_set_ble_name(const common::cli::ParsedCommand& command)
     }
     if (realNameSize >= common::cli::MaxStringArgumentLen - 1)
     {
-      bsp::lampda_print("New ble name is too long, max is %d characters", common::cli::MaxStringArgumentLen);
+      bsp::lampda_print("New ble name is too long, max is %d characters",
+                        static_cast<int>(common::cli::MaxStringArgumentLen - 2));
       return;
     }
 

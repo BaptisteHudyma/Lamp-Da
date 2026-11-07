@@ -229,7 +229,7 @@ static void on_pairing_done(hal::ble::hal_ble_conn_handle_t conn_handle, hal::bl
         bsp::lampda_print("[Sec]: Pairing failed (Too little time elapsed since last attempt) - disconnecting");
         break;
       default:
-        bsp::lampda_print("[Sec]: Pairing failed (%d) - disconnecting", pairedStatus);
+        bsp::lampda_print("[Sec]: Pairing failed (%d) - disconnecting", static_cast<int>(pairedStatus));
         break;
     }
     hal::ble::hal_ble_disconnect(conn_handle);
@@ -248,7 +248,7 @@ static void on_pairing_done(hal::ble::hal_ble_conn_handle_t conn_handle, hal::bl
   __private::pairingMode = false;
 
   bsp::lampda_print("[Bond] Stored identity type=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
-                    __private::identityAddr.type,
+                    static_cast<unsigned>(__private::identityAddr.type),
                     __private::identityAddr.addr[5],
                     __private::identityAddr.addr[4],
                     __private::identityAddr.addr[3],
@@ -326,7 +326,7 @@ static void on_secured(hal::ble::hal_ble_conn_handle_t conn_handle)
   }
 
   bsp::lampda_print("[Security] Secure connection activated=0x%02X %02X:%02X:%02X:%02X:%02X:%02X",
-                    resolvedAddr.type,
+                    static_cast<unsigned>(resolvedAddr.type),
                     resolvedAddr.addr[5],
                     resolvedAddr.addr[4],
                     resolvedAddr.addr[3],

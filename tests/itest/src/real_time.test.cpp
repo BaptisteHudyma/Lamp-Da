@@ -70,6 +70,42 @@ TEST_F(RealTimeFixture, set_from_zero)
   }
 }
 
+// Pick the soonest enabled day of a days mask
+TEST_F(RealTimeFixture, next_enabled_day)
+{
+  using component::time::get_next_enabled_day;
+
+  // wednesday 10h00
+  component::time::RealTime _time;
+  _time.dayOfTheWeek = 2;
+  _time.hour = 10;
+  _time.minutes = 0;
+  _time.seconds = 0;
+  ASSERT_TRUE(component::time::set_real_time(_time));
+
+  constexpr uint8_t monday = 1 << 0;
+  constexpr uint8_t wednesday = 1 << 2;
+  constexpr uint8_t friday = 1 << 4;
+  constexpr uint8_t sunday = 1 << 6;
+
+  // no day enabled
+  ASSERT_EQ(get_next_enabled_day(0, 9, 0, 0), -1);
+  // only the enable/disable bit
+  ASSERT_EQ(get_next_enabled_day(1 << 7, 9, 0, 0), -1);
+
+  // later today
+  ASSERT_EQ(get_next_enabled_day(monday | wednesday | friday, 11, 0, 0), 2);
+  // already passed today: next enabled day, not the lowest bit
+  ASSERT_EQ(get_next_enabled_day(monday | wednesday | friday, 9, 0, 0), 4);
+  // wraps to next week
+  ASSERT_EQ(get_next_enabled_day(monday | sunday, 9, 0, 0), 6);
+  ASSERT_EQ(get_next_enabled_day(monday, 9, 0, 0), 0);
+  // only today, already passed: today next week
+  ASSERT_EQ(get_next_enabled_day(wednesday, 9, 0, 0), 2);
+  // bit 7 is ignored
+  ASSERT_EQ(get_next_enabled_day((1 << 7) | friday, 9, 0, 0), 4);
+}
+
 // Mock time fromt he start, with a bigger offset
 TEST_F(RealTimeFixture, set_from_zero_real_time)
 {

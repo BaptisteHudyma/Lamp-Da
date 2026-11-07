@@ -838,11 +838,11 @@ public:
    */
   void LMBD_INLINE fadeToBlackBy(uint8_t fadeBy)
   {
+    if (fadeBy == 0)
+      return; // optimization - no scaling to apply
+
     if constexpr (flavor == LampTypes::indexable)
     {
-      if (fadeBy == 0)
-        return; // optimization - no scaling to apply
-
       for (uint16_t i = 0; i < ledCount; ++i)
       {
         const uint32_t c = getPixelColor(i);
@@ -851,15 +851,14 @@ public:
     }
     else
     {
-      uint8_t brightness = lmpd_map<uint8_t>(getBrightness(),
-                                             brightness::absoluteMinimumBrightness,
-                                             brightness::absoluteMaximumBrightness,
-                                             0,
-                                             UINT8_MAX);
-      brightness = (brightness < fadeBy) ? 0 : brightness - fadeBy;
+      // scale fadeBy to the brightness range, and subtract it there (avoid a lossy round trip to 0-255)
+      constexpr uint32_t minBrightness = brightness::absoluteMinimumBrightness;
+      constexpr uint32_t brightnessRange = brightness::absoluteMaximumBrightness - minBrightness;
+      const uint32_t fadeAmount = (static_cast<uint32_t>(fadeBy) * brightnessRange) / UINT8_MAX;
 
-      setBrightness(lmpd_map<brightness_t>(
-              brightness, 0, UINT8_MAX, brightness::absoluteMinimumBrightness, brightness::absoluteMaximumBrightness));
+      const uint32_t current = getBrightness();
+      const uint32_t faded = (current <= minBrightness + fadeAmount) ? minBrightness : current - fadeAmount;
+      setBrightness(static_cast<brightness_t>(faded));
     }
   }
 
@@ -965,7 +964,7 @@ public:
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      assert(start < ledCount && "invalid start parameter");
+      assert(start <= ledCount && "invalid start parameter");
       assert(end <= ledCount && "invalid end parameter");
 
       for (uint16_t I = start; I < end; ++I)
@@ -1279,7 +1278,7 @@ static constexpr XYTy strip_to_XY(uint16_t n)
  */
 static constexpr HelixXYZTy strip_to_helix(int16_t n)
 {
-  if (n > hardware::LampTy::ledCount)
+  if (not is_led_index_valid(n))
     return HelixXYZTy {0.0, 0.0, 0.0};
 
   return strip_to_helix_unconstraint(n);
@@ -1332,13 +1331,15 @@ static constexpr bool is_lamp_coordinate_out_of_bounds(const float angle_rad, co
  */
 static constexpr uint16_t to_led_index(const float angle_rad, const float z_mm)
 {
-  constexpr uint16_t maxZCoordinate =
+  constexpr int32_t maxZCoordinate =
           floor(-to_helix_z(hardware::LampTy::ledCount) / hardware::LampTy::ledStripWidth_mm);
 
-  // snip Z per possible lines
-  uint16_t zIndex = floor(-z_mm / hardware::LampTy::ledStripWidth_mm);
-  if (zIndex < 0.0)
-    zIndex = 0.0;
+  // snip Z per possible lines.
+  // Keep it signed: a point above the lamp (z_mm > 0) gives a negative row, and a negative float converted to an
+  // unsigned is undefined (it lands on opposite ends on ARM and x86)
+  int32_t zIndex = floor(-z_mm / hardware::LampTy::ledStripWidth_mm);
+  if (zIndex < 0)
+    zIndex = 0;
   if (zIndex > maxZCoordinate)
     zIndex = maxZCoordinate;
 

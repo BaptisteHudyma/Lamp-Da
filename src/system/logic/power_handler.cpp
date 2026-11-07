@@ -65,8 +65,12 @@ static uint16_t _outputCurrent_mA = 0;
 static uint16_t _temporaryOutputVoltage_mV = 0;
 /// temporary current limits
 static uint16_t _temporaryOutputCurrent_mA = 0;
-/// temporary output timeout time
-static uint32_t _temporaryOutputTimeOut = 0;
+/// temporary output start time
+/// Written before _temporaryOutputDuration_ms (release), read after it (acquire), as they are set and used on
+/// different threads
+static uint32_t _temporaryOutputStart_ms = 0;
+/// temporary output duration, 0 if no temporary output is active
+static std::atomic<uint32_t> _temporaryOutputDuration_ms {0};
 
 /// True if battery charging is allowed
 static bool _isChargeEnabled = false;
@@ -356,7 +360,9 @@ void handle_output_voltage_mode()
 
   bool isVoltageOk = false;
   // if we are in temporary output mode, use temporary limits
-  if (hal::time_ms() < _temporaryOutputTimeOut)
+  // elapsed time comparison is safe across a time_ms wrap
+  const uint32_t temporaryOutputDuration_ms = _temporaryOutputDuration_ms.load(std::memory_order_acquire);
+  if ((hal::time_ms() - _temporaryOutputStart_ms) < temporaryOutputDuration_ms)
   {
     set_otg_parameters(_temporaryOutputVoltage_mV, _temporaryOutputCurrent_mA);
     isVoltageOk =
@@ -366,7 +372,7 @@ void handle_output_voltage_mode()
   }
   else
   {
-    _temporaryOutputTimeOut = 0;
+    _temporaryOutputDuration_ms = 0;
     set_otg_parameters(_outputVoltage_mV, _outputCurrent_mA);
     isVoltageOk =
             (powerRailVoltage_mv >= static_cast<uint32_t>(stripInputMinVoltage_mV * voltageGateLowerMultiplier) and
@@ -386,8 +392,8 @@ void handle_output_voltage_mode()
   else
   {
     if (s_isOutputModeReady)
-      bsp::lampda_print("voltage is not in required range, disabling output. Actual %dmV. Required %dmV",
-                        powerRailVoltage_mv,
+      bsp::lampda_print("voltage is not in required range, disabling output. Actual %lumV. Required %dmV",
+                        static_cast<unsigned long>(powerRailVoltage_mv),
                         _outputVoltage_mV);
     s_isOutputModeReady = false;
 
@@ -413,7 +419,7 @@ void handle_otg_mode()
 
     if (vbusVoltage_mv > 5500 and voltageHighRaisedTime == UINT32_MAX)
     {
-      bsp::lampda_print("OTG mode: Voltage high registered: %dmv", vbusVoltage_mv);
+      bsp::lampda_print("OTG mode: Voltage high registered: %lumv", static_cast<unsigned long>(vbusVoltage_mv));
       voltageHighRaisedTime = hal::time_ms();
     }
 
@@ -834,13 +840,13 @@ void set_output_voltage_mv(const uint16_t outputVoltage_mV)
     }
   }
 
-  _temporaryOutputTimeOut = 0;
+  _temporaryOutputDuration_ms = 0;
   _outputVoltage_mV = outputVoltage_mV;
 }
 
 void set_output_max_current_mA(const uint16_t outputCurrent_mA)
 {
-  _temporaryOutputTimeOut = 0;
+  _temporaryOutputDuration_ms = 0;
   _outputCurrent_mA = outputCurrent_mA;
 }
 
@@ -856,7 +862,8 @@ void set_temporary_output(const uint16_t outputVoltage_mV, const uint16_t output
   }
 
   // set output timeout
-  _temporaryOutputTimeOut = hal::time_ms() + timeout;
+  _temporaryOutputStart_ms = hal::time_ms();
+  _temporaryOutputDuration_ms.store(timeout, std::memory_order_release);
   _temporaryOutputVoltage_mV = outputVoltage_mV;
   _temporaryOutputCurrent_mA = outputCurrent_mA;
 }
@@ -888,11 +895,13 @@ void show_recovery_diagnostics()
 {
   report("--- recovery diagnostics (bounded recovery timing) ---");
   report("state: %s | error: %s", get_state().c_str(), get_error_string().c_str());
-  report("recovery attempted: %d | startup timeout: %u ms", _wasStartedInBatteryRecoveryMode, startupFailTimeout_ms);
-  report("probe cutoffs: initial=%u ms recovery=%u ms | balancer settle=%u ms",
-         common::RecoveryTiming::initial_probe_timeout_ms,
-         common::RecoveryTiming::recovery_ready_ms,
-         common::RecoveryTiming::balancer_settle_ms);
+  report("recovery attempted: %d | startup timeout: %lu ms",
+         _wasStartedInBatteryRecoveryMode,
+         static_cast<unsigned long>(startupFailTimeout_ms));
+  report("probe cutoffs: initial=%lu ms recovery=%lu ms | balancer settle=%lu ms",
+         static_cast<unsigned long>(common::RecoveryTiming::initial_probe_timeout_ms),
+         static_cast<unsigned long>(common::RecoveryTiming::recovery_ready_ms),
+         static_cast<unsigned long>(common::RecoveryTiming::balancer_settle_ms));
   report("vbus detected: %d | PD power available: %d | vbus mV: %d",
          component::charger::is_vbus_signal_detected(),
          bsp::powerDelivery::is_power_available(),
@@ -916,9 +925,9 @@ void show_recovery_diagnostics()
          charge.is_effectivly_charging());
   report("balancer cached measures valid: %d (invalid means cell voltages unknown)",
          bsp::balancer::get_status().is_valid());
-  report("startup probe counts: charger=%u balancer=%u (short-circuit evaluation retained)",
-         recoveryTrace.charger_probes(),
-         recoveryTrace.balancer_probes());
+  report("startup probe counts: charger=%lu balancer=%lu (short-circuit evaluation retained)",
+         static_cast<unsigned long>(recoveryTrace.charger_probes()),
+         static_cast<unsigned long>(recoveryTrace.balancer_probes()));
   show_recovery_trace();
   report("--- end recovery diagnostics ---");
 }
@@ -937,13 +946,14 @@ void show_recovery_trace()
   for (uint32_t i = 0; i < count; ++i)
   {
     const auto& event = recoveryTrace.event(i);
-    bsp::lampda_print("trace boot_ms=%u stage=%s result=%d",
-                      event.time_ms,
+    bsp::lampda_print("trace boot_ms=%lu stage=%s result=%d",
+                      static_cast<unsigned long>(event.time_ms),
                       names[static_cast<uint8_t>(event.stage)],
                       event.result);
     hal::delay_ms(15);
   }
-  bsp::lampda_print("trace omitted: %u | startup_rejected: 1=no power, 2=probe timeout", recoveryTrace.omitted());
+  bsp::lampda_print("trace omitted: %lu | startup_rejected: 1=no power, 2=probe timeout",
+                    static_cast<unsigned long>(recoveryTrace.omitted()));
   hal::delay_ms(15);
 }
 

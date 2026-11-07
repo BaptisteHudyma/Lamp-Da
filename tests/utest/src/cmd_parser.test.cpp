@@ -389,18 +389,45 @@ TEST(cmd_parser, parse_uint_hex)
   EXPECT_STREQ(str.data(), "0xFF");
 }
 
-TEST(cmd_parser, parse_uint_octal)
+TEST(cmd_parser, parse_uint_leading_zero_is_decimal)
 {
   const bsp::text_in::Inputs::Command input = create_command("cmd 010");
   auto parsed = parseCommand(input);
 
   uint8_t value = 0;
   EXPECT_TRUE(argument::parse_uint8(parsed, 0, value));
-  EXPECT_EQ(value, 8);
+  EXPECT_EQ(value, 10);
 
   std::array<char, MaxStringArgumentLen> str {};
   EXPECT_TRUE(argument::parse_text(parsed, 0, str));
   EXPECT_STREQ(str.data(), "010");
+}
+
+TEST(cmd_parser, parse_uint_zero_padded)
+{
+  // zero padded values, natural for times, are decimal
+  const bsp::text_in::Inputs::Command input = create_command("cmd 08 09 00");
+  auto parsed = parseCommand(input);
+
+  uint8_t value = 0;
+  EXPECT_TRUE(argument::parse_uint8(parsed, 0, value));
+  EXPECT_EQ(value, 8);
+  EXPECT_TRUE(argument::parse_uint8(parsed, 1, value));
+  EXPECT_EQ(value, 9);
+  EXPECT_TRUE(argument::parse_uint8(parsed, 2, value));
+  EXPECT_EQ(value, 0);
+}
+
+TEST(cmd_parser, parse_uint_rejects_sign_and_empty_prefix)
+{
+  for (const char* text: {"cmd +5", "cmd 0x", "cmd 0b", "cmd 0b12", "cmd 0xG"})
+  {
+    const bsp::text_in::Inputs::Command input = create_command(text);
+    auto parsed = parseCommand(input);
+
+    uint16_t value = 0;
+    EXPECT_FALSE(argument::parse_uint16(parsed, 0, value)) << text;
+  }
 }
 
 TEST(cmd_parser, parse_uint_binary_prefix)
