@@ -1335,13 +1335,14 @@ static constexpr uint16_t to_led_index(const float angle_rad, const float z_mm)
           floor(-to_helix_z(hardware::LampTy::ledCount) / hardware::LampTy::ledStripWidth_mm);
 
   // snip Z per possible lines.
-  // Keep it signed: a point above the lamp (z_mm > 0) gives a negative row, and a negative float converted to an
-  // unsigned is undefined (it lands on opposite ends on ARM and x86)
-  int32_t zIndex = floor(-z_mm / hardware::LampTy::ledStripWidth_mm);
-  if (zIndex < 0)
-    zIndex = 0;
-  if (zIndex > maxZCoordinate)
-    zIndex = maxZCoordinate;
+  // Clamp in floating point before the conversion: an out of range float converted to an integer is undefined (a
+  // point above the lamp gives a negative row, a point far away overflows). The negated test also catches NaN.
+  float zRow = floor(-z_mm / hardware::LampTy::ledStripWidth_mm);
+  if (not(zRow >= 0.0f))
+    zRow = 0.0f;
+  if (zRow > maxZCoordinate)
+    zRow = maxZCoordinate;
+  const int32_t zIndex = static_cast<int32_t>(zRow);
 
   // indexing around the led turn
   const float angularPosition = wrap_angle(angle_rad) / c_TWO_PI * hardware::LampTy::maxWidthFloat;

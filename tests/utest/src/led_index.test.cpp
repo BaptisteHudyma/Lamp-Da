@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <limits>
+
 #include "src/modes/include/hardware/lamp_type.hpp"
 
 namespace lampda::modes {
@@ -22,6 +24,15 @@ TEST(led_index, point_below_lamp_maps_to_bottom_row)
   const uint16_t index = to_led_index(0.0f, -100000.0f);
   EXPECT_GE(index, LampTy::ledCount - LampTy::maxWidth - 1);
   EXPECT_LT(index, LampTy::ledCount);
+}
+
+TEST(led_index, extreme_heights_are_clamped)
+{
+  // far outside the int32 range: clamped before the integer conversion
+  EXPECT_EQ(to_led_index(0.0f, 1e30f), to_led_index(0.0f, 0.0f));
+  EXPECT_EQ(to_led_index(0.0f, -1e30f), to_led_index(0.0f, -100000.0f));
+  // NaN lands on the top row
+  EXPECT_EQ(to_led_index(0.0f, std::numeric_limits<float>::quiet_NaN()), to_led_index(0.0f, 0.0f));
 }
 
 TEST(led_index, strip_to_helix_rejects_invalid_index)
