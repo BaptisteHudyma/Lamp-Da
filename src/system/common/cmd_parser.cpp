@@ -1,6 +1,7 @@
 
 #include "cmd_parser.h"
 
+#include <cctype>
 #include <cerrno>
 #include <cstdlib>
 
@@ -50,12 +51,33 @@ bool parse_uint(const ParsedCommand& command, const size_t index, unsigned long&
   if (text == nullptr)
     return false;
 
+  // Base 10 by default (a leading zero is not octal, "08" is 8), or explicit 0x (hex) and 0b (binary) prefixes.
+  // The prefixes are handled here: the 0b support of strtoul depends on the C library
+  int base = 10;
+  const char* digits = text;
+  if (text[0] == '0' && (text[1] == 'x' || text[1] == 'X'))
+  {
+    base = 16;
+    digits = text + 2;
+  }
+  else if (text[0] == '0' && (text[1] == 'b' || text[1] == 'B'))
+  {
+    base = 2;
+    digits = text + 2;
+  }
+
+  // strtoul accepts leading spaces and a sign (wrapping negative values): only allow digits
+  const bool isFirstCharValid = (base == 16) ? std::isxdigit(static_cast<unsigned char>(digits[0])) :
+                                               std::isdigit(static_cast<unsigned char>(digits[0]));
+  if (not isFirstCharValid)
+    return false;
+
   char* end = nullptr;
   errno = 0;
 
-  const unsigned long tmp_value = std::strtoul(text, &end, 0);
+  const unsigned long tmp_value = std::strtoul(digits, &end, base);
 
-  if (errno != 0 || end == text || *end != '\0')
+  if (errno != 0 || end == digits || *end != '\0')
   {
     return false;
   }
