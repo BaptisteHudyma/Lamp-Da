@@ -36,4 +36,35 @@ TEST(state_machine_test, state_timeout)
   ASSERT_TRUE(machine.state_changed_with_timeout());
 }
 
+TEST(state_machine_test, state_timeout_across_time_wrap)
+{
+  enum class State
+  {
+    Startup,
+    Error
+  };
+
+  // start close to the time_ms wrap, so that the timeout end wraps around
+  ::simulator::time_mocks::reset(UINT32_MAX - 1500u);
+
+  StateMachine<State> machine(State::Startup, 3000, State::Error);
+  machine.run();
+  ASSERT_EQ(machine.get_state(), State::Startup);
+
+  for (const uint32_t time: {1000u, 1000u})
+  {
+    hal::delay_ms(time);
+    machine.run();
+    ASSERT_EQ(machine.get_state(), State::Startup);
+  }
+  // time wrapped, but the timeout is reached only now
+  hal::delay_ms(1200);
+  machine.run();
+
+  ASSERT_EQ(machine.get_state(), State::Error);
+  ASSERT_TRUE(machine.state_changed_with_timeout());
+
+  ::simulator::time_mocks::reset();
+}
+
 } // namespace lampda::common

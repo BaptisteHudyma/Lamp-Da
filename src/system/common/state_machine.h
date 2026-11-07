@@ -17,15 +17,7 @@ template<typename State> class StateMachine
 {
 public:
   /// Construct a state machine from the first given state
-  StateMachine(const State s) :
-    current(s),
-    lastState(s),
-    stateSetTime(hal::time_ms()),
-    timeout_ms(0),
-    afterTimeoutState(s),
-    changedWithTimeout(false)
-  {
-  }
+  StateMachine(const State s) : current(s), lastState(s), stateSetTime(hal::time_ms()), afterTimeoutState(s) {}
   /**
    * \brief Construct a state machine from the first given state, with a timeout to another
    * \param[in] s The initial state
@@ -36,9 +28,7 @@ public:
     current(s),
     lastState(s),
     stateSetTime(hal::time_ms()),
-    timeout_ms(0),
-    afterTimeoutState(s),
-    changedWithTimeout(false)
+    afterTimeoutState(s)
   {
     set_state(s, timeout, stateOnTimeout);
   }
@@ -51,8 +41,8 @@ public:
    */
   void run()
   {
-    // there is a timeout set for this state
-    if (isTimeoutSet and hal::time_ms() >= timeout_ms)
+    // there is a timeout set for this state (elapsed time comparison is safe across a time_ms wrap)
+    if (isTimeoutSet and (hal::time_ms() - timeoutStart_ms) >= timeoutDuration_ms)
     {
       // timeout reached
       set_state(afterTimeoutState);
@@ -78,7 +68,8 @@ public:
     current = s;
     // reset the timeout time
     isTimeoutSet = false;
-    timeout_ms = 0;
+    timeoutStart_ms = 0;
+    timeoutDuration_ms = 0;
     stateSetTime = hal::time_ms();
 
     changedWithTimeout = false;
@@ -120,8 +111,8 @@ public:
   {
     if (isTimeoutSet)
     {
-      // potential clock overflow, be careful
-      timeout_ms = hal::time_ms() + timeout;
+      timeoutStart_ms = hal::time_ms();
+      timeoutDuration_ms = timeout;
     }
   }
 
@@ -168,17 +159,19 @@ private:
 
   // The time this state was raised
   uint32_t stateSetTime;
-  // prevent some errors with clock value wrap
-  bool isTimeoutSet;
-  /// the time this state should timeout and go to /ref afterTimeoutState
-  uint32_t timeout_ms;
+  /// True if a timeout is active for this state
+  bool isTimeoutSet = false;
+  /// the time the timeout started, see \ref timeoutDuration_ms
+  uint32_t timeoutStart_ms = 0;
+  /// the delay after which this state times out and goes to \ref afterTimeoutState
+  uint32_t timeoutDuration_ms = 0;
   // The state to go after a timout
   State afterTimeoutState;
 
   /// indicates that the state just changed, reseted on read
-  bool didStateJustChanged;
+  bool didStateJustChanged = false;
   // indicates that this state was reched with a timeout
-  bool changedWithTimeout;
+  bool changedWithTimeout = false;
 };
 
 } // namespace common
