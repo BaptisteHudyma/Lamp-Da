@@ -1,0 +1,6 @@
+# only send the files used by tools/ci/Dockerfile to the docker build
+*
+!Makefile
+!requirements.txt
+!tools/arduino-cli
+!tools/ci/environment.mk
