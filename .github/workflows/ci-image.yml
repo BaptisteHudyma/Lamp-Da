@@ -34,7 +34,10 @@ jobs:
     - name: build
       env:
         IMAGE: ${{ steps.image.outputs.name }}
-      run: docker build -f tools/ci/Dockerfile -t "$IMAGE" .
+      # no provenance attestation: it is pushed as a separate manifest without
+      # the image labels, which can create the package unlinked from this
+      # repository, and then the push of the image itself is denied
+      run: docker build --provenance=false -f tools/ci/Dockerfile -t "$IMAGE" .
 
     - name: smoke test
       env:
