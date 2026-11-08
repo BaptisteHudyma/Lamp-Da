@@ -1070,6 +1070,12 @@ extern "C" {
    */
   int is_sink_negotiating();
 
+  /**
+   * Return 1 if the sink is in a hard reset: the source drops VBUS and restores it (up to ~2s). The state machine
+   * goes to disconnected by itself if VBUS does not come back.
+   */
+  int is_sink_hard_resetting();
+
   /// Debug counters of the PD negociation events, since boot
   struct pd_debug_counters
   {
@@ -1106,6 +1112,15 @@ extern "C" {
 
   /// Fill the contract details, for debug
   void pd_get_contract_info(struct pd_contract_info* info);
+
+  /**
+   * Allow (1) or forbid (0) the sink to reset the source when its capabilities were missed.
+   * A hard reset makes the source drop VBUS for up to ~2s: forbid it when the battery cannot power the board.
+   * Forbidden by default.
+   */
+  void pd_set_reset_allowed(int allowed);
+  /// Return 1 if the sink can reset the source
+  int pd_is_reset_allowed();
 
   /**
    * Return a human readable version of the pd state machine

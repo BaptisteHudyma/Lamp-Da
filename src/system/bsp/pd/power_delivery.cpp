@@ -53,6 +53,13 @@ void suspend_pd_state_machine()
     supsend_usb_pd(1);
   should_run_pd_state_machine = false;
 }
+void allow_source_resets(const bool allow)
+{
+  // only on change: this restarts the negociation timers
+  if (allow != (pd_is_reset_allowed() != 0))
+    pd_set_reset_allowed(allow ? 1 : 0);
+}
+
 void resume_pd_state_machine()
 {
   if (!should_run_pd_state_machine)
@@ -274,11 +281,14 @@ void show_pd_contract()
                     info.polarity + 1,
                     static_cast<unsigned long>(info.requested_mv),
                     static_cast<unsigned long>(info.requested_ma));
-  bsp::lampda_print("Partner PD capable: %d, VBUS never low: %d, hard reset count: %d, negotiating: %d",
-                    info.is_pd_capable,
-                    info.is_vbus_never_low,
-                    info.hard_reset_count,
-                    is_sink_negotiating());
+  bsp::lampda_print(
+          "Partner PD capable: %d, VBUS never low: %d, hard reset count: %d, negotiating: %d, resets "
+          "allowed: %d",
+          info.is_pd_capable,
+          info.is_vbus_never_low,
+          info.hard_reset_count,
+          is_sink_negotiating(),
+          pd_is_reset_allowed());
 
   // what the charger is allowed to use, and why
   const auto status = get_source_status();
@@ -509,6 +519,12 @@ void loop()
       powerSourceDetectedTime_s = time;
       isPowerSourceDetected_s = true;
     }
+    lastVbusValid = time;
+  }
+  // the source drops VBUS on a hard reset (up to ~2s), and the state machine has its own timeout if it never comes
+  // back: this is not an unplug. Without this, the system would see the charger unplugged and shut down.
+  else if (is_sink_hard_resetting())
+  {
     lastVbusValid = time;
   }
   // deglitch time

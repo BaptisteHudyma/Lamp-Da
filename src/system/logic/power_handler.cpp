@@ -1075,6 +1075,14 @@ void power_loop()
     return;
   }
 
+  // A source reset drops VBUS for up to ~2s: only allow it when the battery can power the board alone.
+  // During startup the battery status is not known yet, and in recovery the board runs from VBUS.
+  {
+    const auto state = __private::powerMachine.get_state();
+    ::lampda::bsp::powerDelivery::allow_source_resets(not _isInBatteryRecoveryMode and state != PowerStates::STARTUP and
+                                                      state != PowerStates::ERROR);
+  }
+
   // run the power delivery update loop
   ::lampda::bsp::powerDelivery::loop();
 

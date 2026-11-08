@@ -242,6 +242,20 @@ TEST_F(charging_pd_driver, reset_source_capabilities_forgets_the_pd_source)
   EXPECT_EQ(get_pd_source_cnt(), 0);
 }
 
+/// Recovery mode: a source reset would brown out the board, so the resets are forbidden until the system allows them
+TEST_F(charging_pd_driver, source_resets_forbidden_until_allowed)
+{
+  EXPECT_FALSE(pd_is_reset_allowed());
+
+  bsp::powerDelivery::allow_source_resets(true);
+  EXPECT_TRUE(pd_is_reset_allowed());
+  // a state machine that is not waiting for source caps is not affected
+  EXPECT_FALSE(is_sink_negotiating());
+
+  bsp::powerDelivery::allow_source_resets(false);
+  EXPECT_FALSE(pd_is_reset_allowed());
+}
+
 TEST_F(charging_pd_driver, stopped_state_machine_is_not_negotiating)
 {
   // never started in the tests
