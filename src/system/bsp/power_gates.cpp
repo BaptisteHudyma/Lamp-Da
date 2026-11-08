@@ -122,6 +122,7 @@ void disable_power_gate()
     PowerGateLock lock;
     // reset blip time
     _blipDuration_ms = 0;
+    _isPowerGateReallyEnabled = false;
 
     wasEnabled = __private::enablePowerGate.is_high();
     __private::enablePowerGate.set_high(false);

@@ -66,11 +66,19 @@ bool parse_uint(const ParsedCommand& command, const size_t index, unsigned long&
     digits = text + 2;
   }
 
-  // strtoul accepts leading spaces and a sign (wrapping negative values): only allow digits
-  const bool isFirstCharValid = (base == 16) ? std::isxdigit(static_cast<unsigned char>(digits[0])) :
-                                               std::isdigit(static_cast<unsigned char>(digits[0]));
-  if (not isFirstCharValid)
+  // strtoul accepts leading spaces, a sign (wrapping negative values), and a second base prefix ("0x0xFF" in base
+  // 16): only allow digits of the base, and at least one
+  if (digits[0] == '\0')
     return false;
+  for (const char* c = digits; *c != '\0'; ++c)
+  {
+    const unsigned char digit = static_cast<unsigned char>(*c);
+    const bool isDigitValid = (base == 16) ? std::isxdigit(digit) :
+                              (base == 2)  ? (digit == '0' or digit == '1') :
+                                             std::isdigit(digit);
+    if (not isDigitValid)
+      return false;
+  }
 
   char* end = nullptr;
   errno = 0;

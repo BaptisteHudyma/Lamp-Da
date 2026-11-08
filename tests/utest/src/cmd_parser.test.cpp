@@ -450,7 +450,8 @@ TEST(cmd_parser, parse_uint_uppercase_prefix)
   }
 
   // the empty and invalid uppercase prefixes are refused, as the lowercase ones
-  for (const char* text: {"cmd 0X", "cmd 0B", "cmd 0B12", "cmd 0XG"})
+  // a repeated prefix is not a number: strtoul would accept the second one in base 16
+  for (const char* text: {"cmd 0X", "cmd 0B", "cmd 0B12", "cmd 0XG", "cmd 0X0xFF", "cmd 0x0XFF", "cmd 0B0b1"})
   {
     const bsp::text_in::Inputs::Command input = create_command(text);
     auto parsed = parseCommand(input);

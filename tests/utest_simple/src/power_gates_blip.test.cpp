@@ -72,6 +72,53 @@ void enable_power_gate_and_wait()
   powergates::loop();
 }
 
+/**
+ * Run the power gates loop on its own thread, as the power thread does.
+ * Stopped and joined on destruction: a failed fatal assertion returns from the test, the thread must not outlive it.
+ */
+class PowerThread
+{
+public:
+  PowerThread() :
+    _thread([this]() {
+      while (not _shouldStop)
+      {
+        // counted before the call: a change means that the thread is entering loop()
+        _loopCount.fetch_add(1);
+        powergates::loop();
+      }
+    })
+  {
+  }
+
+  ~PowerThread() { stop(); }
+
+  PowerThread(const PowerThread&) = delete;
+  PowerThread& operator=(const PowerThread&) = delete;
+
+  void stop()
+  {
+    _shouldStop = true;
+    if (_thread.joinable())
+      _thread.join();
+  }
+
+  /// Wait until the thread enters a new loop() call
+  void wait_for_next_loop() const
+  {
+    const uint32_t loopCount = _loopCount.load();
+    while (_loopCount.load() == loopCount)
+    {
+    }
+  }
+
+private:
+  std::atomic<bool> _shouldStop {false};
+  std::atomic<uint32_t> _loopCount {0};
+  // last: started once the other members are initialized
+  std::thread _thread;
+};
+
 } // namespace
 
 /// Power gates started with a normal clock, and the output gate disabled
@@ -429,11 +476,8 @@ TEST_F(power_gates_blip_test, blip_after_power_gate_cycle)
  */
 TEST_F(power_gates_blip_test, blip_from_other_thread_while_loop_runs)
 {
-  std::atomic<bool> shouldStop {false};
-  std::thread powerThread([&shouldStop]() {
-    while (not shouldStop)
-      powergates::loop();
-  });
+  // stopped and joined when leaving the test, a failed assertion included
+  PowerThread powerThread;
 
   for (int i = 0; i < 300; ++i)
   {
@@ -462,8 +506,58 @@ TEST_F(power_gates_blip_test, blip_from_other_thread_while_loop_runs)
     EXPECT_TRUE(is_output_gate_pin_high()) << "iteration " << i;
   }
 
-  shouldStop = true;
-  powerThread.join();
+  powerThread.stop();
+}
+
+/**
+ * A replacement blip started while the power thread expires the previous one must last its full duration.
+ * The replacement is sent when the previous blip times out, as the power thread enters the loop() call that handles
+ * the timeout: the timeout handling must not erase the new blip.
+ */
+TEST_F(power_gates_blip_test, replacement_blip_during_timeout_handling)
+{
+  static constexpr uint32_t shortBlip_ms = 5;
+  static constexpr uint32_t replacementBlip_ms = 60;
+  // the scheduler can delay the checks: only check the blip until this margin before its end
+  static constexpr uint32_t checkMargin_ms = 15;
+
+  // stopped and joined when leaving the test, a failed assertion included
+  PowerThread powerThread;
+
+  for (int i = 0; i < 15; ++i)
+  {
+    const uint32_t blipStart_ms = hal::time_ms();
+    power::blip(shortBlip_ms);
+
+    // the previous blip times out now: send the replacement as the power thread handles it
+    while (elapsed_since(blipStart_ms) < shortBlip_ms)
+    {
+    }
+    powerThread.wait_for_next_loop();
+    const uint32_t replacementStart_ms = hal::time_ms();
+    power::blip(replacementBlip_ms);
+
+    // the replacement is active for its whole duration
+    while (elapsed_since(replacementStart_ms) < replacementBlip_ms - checkMargin_ms)
+    {
+      ASSERT_TRUE(power::is_bliping())
+              << "replacement cancelled after " << elapsed_since(replacementStart_ms) << "ms, iteration " << i;
+      ASSERT_FALSE(is_output_gate_pin_high())
+              << "output restored after " << elapsed_since(replacementStart_ms) << "ms, iteration " << i;
+      ASSERT_FALSE(is_vbus_gate_pin_high()) << "iteration " << i;
+    }
+
+    // then ends, and restores the output
+    while (power::is_bliping())
+    {
+      ASSERT_LT(elapsed_since(replacementStart_ms), replacementBlip_ms + 200) << "the blip never ended, iteration " << i;
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+    EXPECT_GE(elapsed_since(replacementStart_ms), replacementBlip_ms) << "iteration " << i;
+    EXPECT_TRUE(is_output_gate_pin_high()) << "iteration " << i;
+  }
+
+  powerThread.stop();
 }
 
 // ============ clock wrap ============

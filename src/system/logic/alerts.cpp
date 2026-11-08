@@ -183,7 +183,8 @@ struct AlertBase
   uint32_t time_since_raised() const
   {
     RaiseTimeLock lock;
-    if (raisedTime == 0)
+    // the validity is tracked apart: a raise at the clock value 0 is a valid raise time
+    if (not isRaisedTimeSet)
       return 0;
     // time read under the lock: always after the latest refresh
     return hal::time_ms() - raisedTime;
@@ -200,7 +201,11 @@ struct AlertBase
     {
       {
         RaiseTimeLock lock;
-        raisedTime = time;
+        // keep the latest of the two: a refresh since \p time was captured must not be overwritten by an older time
+        // (elapsed time comparison, safe across a time_ms wrap)
+        if (not isRaisedTimeSet or static_cast<int32_t>(time - raisedTime) > 0)
+          raisedTime = time;
+        isRaisedTimeSet = true;
       }
       loweredTime = 0;
       _isRaisedHandled = true;
@@ -213,12 +218,12 @@ struct AlertBase
   }
 
   /// Update the raised time of this alert.
-  /// An alert continuously firing as to be updated. Can be called from any thread or interrupt.
-  void update_raise_time()
+  /// An alert continuously firing as to be updated. Call it with _raiseTimeMutex held (see AlertManager_t::raise).
+  void update_raise_time_locked()
   {
-    RaiseTimeLock lock;
     // time read under the lock: never older than a raise time set before
     raisedTime = hal::time_ms();
+    isRaisedTimeSet = true;
     // signal the refresh to a clear decision taken concurrently, see AlertManager_t::clear_unless_refreshed
     refreshCount.fetch_add(1);
   }
@@ -235,6 +240,7 @@ struct AlertBase
       {
         RaiseTimeLock lock;
         raisedTime = 0;
+        isRaisedTimeSet = false;
       }
       loweredTime = time;
       _isLoweredHandled = true;
@@ -261,7 +267,10 @@ struct AlertBase
   /// Refreshed by raise() from other threads, while the main loop reads it for the timeout decisions:
   /// only access it under _raiseTimeMutex (see time_since_raised())
   uint32_t raisedTime = 0;
-  /// Incremented on every raise() refresh of the raised alert. See AlertManager_t::clear_unless_refreshed
+  /// True if raisedTime holds a raise time (that can be 0). Only access it under _raiseTimeMutex
+  bool isRaisedTimeSet = false;
+  /// Incremented on every raise() refresh of the raised alert, under _raiseTimeMutex.
+  /// See AlertManager_t::clear_unless_refreshed
   std::atomic<uint32_t> refreshCount {0};
   /// Store the latest time at which this alert lower() was called
   uint32_t loweredTime = 0;
@@ -973,19 +982,23 @@ void AlertManager_t::raise(const Type type)
 {
   if (is_raised(type))
   {
-    // update raise time
-    for (auto& alert: allAlerts)
-    {
-      if (type == alert->get_type())
-      {
-        alert->update_raise_time();
-        break;
-      }
-    }
-    // A clear may have run concurrently: it either sees the refresh (and keeps the alert), or the alert is cleared
-    // now and this raise is a new one
+    // The refresh and the clear decision of clear_unless_refreshed() hold the same lock: either the clear ran first
+    // (the alert is not raised anymore, this raise is a new one), or it runs after the refresh, sees it and keeps the
+    // alert. A refresh done here can not be cleared afterward.
+    RaiseTimeLock lock;
     if (is_raised(type))
+    {
+      // update raise time
+      for (auto& alert: allAlerts)
+      {
+        if (type == alert->get_type())
+        {
+          alert->update_raise_time_locked();
+          break;
+        }
+      }
       return;
+    }
   }
 
   // atomic: only the caller that actually set the bit signals the raise
@@ -1011,20 +1024,24 @@ bool AlertManager_t::clear_unless_refreshed(const Type type,
                                             const uint32_t refreshCountAtDecision)
 {
   const uint32_t bit = static_cast<uint32_t>(type);
-  uint32_t expected = _current.load();
-  while (true)
   {
-    // already cleared by someone else
-    if ((expected & bit) == 0)
-      return false;
-    // refreshed while the clear was decided: the alert is still active, keep it
-    if (refreshCount.load() != refreshCountAtDecision)
-      return false;
-    // the bit is never removed when the clear is cancelled, so other threads never see a transient clear.
-    // A refresh after the final check is caught by the raise() post-check, that raises the alert again
-    if (_current.compare_exchange_weak(expected, expected & ~bit))
-      break;
-    // _current changed (or spurious failure): expected is reloaded, check again
+    // same lock as the refresh in raise(): no refresh can complete between the refresh check and the clear
+    RaiseTimeLock lock;
+    uint32_t expected = _current.load();
+    while (true)
+    {
+      // already cleared by someone else
+      if ((expected & bit) == 0)
+        return false;
+      // refreshed while the clear was decided: the alert is still active, keep it
+      if (refreshCount.load() != refreshCountAtDecision)
+        return false;
+      // the bit is never removed when the clear is cancelled, so other threads never see a transient clear.
+      // The CAS is still needed: the other bits of _current change without this lock
+      if (_current.compare_exchange_weak(expected, expected & ~bit))
+        break;
+      // _current changed (or spurious failure): expected is reloaded, check again
+    }
   }
 
   bsp::lampda_print("ALERT cleared: %s", AlertsToText(type));
