@@ -277,8 +277,11 @@ void handle_clear_power_rails()
     return;
   }
 
-  // dont suspend on OTG
-  if (__private::powerMachine.after_timeout_state() != PowerStates::OTG_MODE)
+  // PD only stops for the output mode (go_to_output_mode also suspends it before switching).
+  // Never suspend it on the way to the charging mode: on boot, the state machine already negotiates in IDLE, and a
+  // suspend/resume cycle restarts it as disconnected while the source keeps the contract it was negotiating, with the
+  // sink unable to recover it (issue #633). Do not suspend it on OTG either.
+  if (__private::powerMachine.after_timeout_state() == PowerStates::OUTPUT_VOLTAGE_MODE)
     ::lampda::bsp::powerDelivery::suspend_pd_state_machine();
 
   // disable all gates

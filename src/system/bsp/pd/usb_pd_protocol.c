@@ -3819,6 +3819,13 @@ void pd_run_state_machine()
 #endif
         CPRINTS("TCPC suspended!");
         pd.req_suspend_state = 0;
+        /*
+         * Stop the reception, and the FUSB302 auto GoodCRC with it. tcpm_release is not implemented for the FUSB302:
+         * without this, the chip keeps acknowledging the source messages that nobody processes, and the source
+         * completes a negociation (Accept, PS_RDY, new voltage) with a sink that is not listening. Without GoodCRC,
+         * the source sees a non PD sink and stays at (or goes back to) vSafe5V (issue #633).
+         */
+        tcpm_set_rx_enable(0);
 #ifdef CONFIG_USB_PD_TCPC
         pd_rx_disable_monitoring();
         pd_hw_release();
@@ -4012,6 +4019,7 @@ void pd_run_state_machine()
 #ifdef CONFIG_COMMON_RUNTIME
       hook_notify(HOOK_USB_PD_CONNECT);
 #endif
+      debug_counters.attaches++;
       pd.polarity = get_snk_polarity(cc1, cc2);
       pd_set_polarity(pd.polarity);
       /* reset message ID  on connection */

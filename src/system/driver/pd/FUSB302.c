@@ -464,6 +464,16 @@ static int fusb302_tcpm_init()
 
 static int fusb302_tcpm_release() { return EC_ERROR_UNIMPLEMENTED; }
 
+/* last CC levels read, for debug */
+static int last_cc1 = TYPEC_CC_VOLT_OPEN;
+static int last_cc2 = TYPEC_CC_VOLT_OPEN;
+
+void fusb302_get_last_cc(int* cc1, int* cc2)
+{
+  *cc1 = last_cc1;
+  *cc2 = last_cc2;
+}
+
 static int fusb302_tcpm_get_cc(enum tcpc_cc_voltage_status* cc1, enum tcpc_cc_voltage_status* cc2)
 {
   if (state.pulling_up)
@@ -477,6 +487,8 @@ static int fusb302_tcpm_get_cc(enum tcpc_cc_voltage_status* cc1, enum tcpc_cc_vo
     detect_cc_pin_sink(cc1, cc2);
   }
 
+  last_cc1 = *cc1;
+  last_cc2 = *cc2;
   return 0;
 }
 

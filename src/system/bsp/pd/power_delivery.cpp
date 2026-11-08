@@ -270,6 +270,27 @@ struct UsbPDData
 };
 UsbPDData data;
 
+const char* cc_level_str(const int level)
+{
+  switch (level)
+  {
+    case TYPEC_CC_VOLT_OPEN:
+      return "open";
+    case TYPEC_CC_VOLT_RA:
+      return "Ra";
+    case TYPEC_CC_VOLT_RD:
+      return "Rd";
+    case TYPEC_CC_VOLT_RP_DEF:
+      return "Rp default";
+    case TYPEC_CC_VOLT_RP_1_5:
+      return "Rp 1.5A";
+    case TYPEC_CC_VOLT_RP_3_0:
+      return "Rp 3A";
+    default:
+      return "?";
+  }
+}
+
 void show_pd_contract()
 {
   struct pd_contract_info info;
@@ -305,10 +326,17 @@ void show_pd_contract()
                     policy::can_use_pd_full_power(status),
                     policy::is_standard_port(status));
 
+  // raw CC levels: the board permanent Rd halves the CC voltage, a default Rp source can read as open
+  int cc1 = 0;
+  int cc2 = 0;
+  fusb302_get_last_cc(&cc1, &cc2);
+  bsp::lampda_print("CC levels (last read): CC1 %s, CC2 %s", cc_level_str(cc1), cc_level_str(cc2));
+
   const auto& c = info.counters;
   bsp::lampda_print(
-          "Events: caps rx %lu, contracts %lu, soft reset tx %lu (fail %lu), hard reset tx %lu (fail %lu), "
+          "Events: attach %lu, caps rx %lu, contracts %lu, soft reset tx %lu (fail %lu), hard reset tx %lu (fail %lu), "
           "hard reset rx %lu",
+          static_cast<unsigned long>(c.attaches),
           static_cast<unsigned long>(c.src_caps_received),
           static_cast<unsigned long>(c.contracts),
           static_cast<unsigned long>(c.soft_resets_sent),

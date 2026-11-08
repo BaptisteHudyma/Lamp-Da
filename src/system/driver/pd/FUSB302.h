@@ -222,6 +222,9 @@ extern "C" {
 
   extern const struct tcpm_drv fusb302_tcpm_drv;
 
+  /// Last CC levels read on CC1 and CC2 (enum tcpc_cc_voltage_status), for debug
+  void fusb302_get_last_cc(int* cc1, int* cc2);
+
 #ifdef __cplusplus
 }
 #endif

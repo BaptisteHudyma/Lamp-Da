@@ -1079,6 +1079,8 @@ extern "C" {
   /// Debug counters of the PD negociation events, since boot
   struct pd_debug_counters
   {
+    /// source attached (CC debounced, VBUS present)
+    uint32_t attaches;
     /// source capabilities messages received (and answered with a request)
     uint32_t src_caps_received;
     /// contracts established as sink (PS_RDY received)
