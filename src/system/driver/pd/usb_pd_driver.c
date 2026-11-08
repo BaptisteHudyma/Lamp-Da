@@ -125,6 +125,8 @@ void force_set_to_source(int force)
   }
 }
 
+void reset_source_capabilities() { pdSources = 0; }
+
 void reset_cache()
 {
   pdSources = 0;

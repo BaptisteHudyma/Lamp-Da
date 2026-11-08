@@ -240,9 +240,14 @@ void pd_process_source_cap(int cnt, uint32_t* src_caps)
   pd_find_pdo_index(PD_MAX_VOLTAGE_MV, &pdo);
   pd_extract_pdo_power(pdo, &ma, &mv);
 
-  /* Set max. limit, but apply 500mA ceiling */
-  // charge_manager_set_ceil( CEIL_REQUESTOR_PD, PD_MIN_MA);
-  pd_set_input_current_limit(ma, mv);
+  /*
+   * Do NOT publish this as the input current limit: it is the best source offer, not a contract.
+   * Upstream applies a 500mA ceiling here through the charge manager, which we do not have. Publishing it lets the
+   * charger pull the offered current before the source accepted the request, and keeps it if the request fails
+   * (issue #633). The limit is set on PS_RDY, and cleared on disconnection and hard reset.
+   */
+  (void)ma;
+  (void)mv;
 #endif
 }
 

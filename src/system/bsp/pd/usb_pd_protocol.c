@@ -143,6 +143,9 @@ static int timeout = 10 * MSEC_US;
 static enum tcpc_cc_voltage_status cc1, cc2;
 static int res, incoming_packet = 0;
 static int hard_reset_count = 0;
+
+/* debug counters, see pd_get_contract_info */
+static struct pd_debug_counters debug_counters;
 #ifdef CONFIG_USB_PD_DUAL_ROLE
 static uint64_t next_role_swap = PD_T_DRP_SNK;
 static uint8_t saved_flgs = 0;
@@ -1523,6 +1526,7 @@ static void handle_data_request(uint16_t head, uint32_t* payload)
         pd_update_pdo_flags(payload[0]);
 
         pd_process_source_cap(cnt, payload);
+        debug_counters.src_caps_received++;
 
         /* Source will resend source cap on failure */
         pd_send_request_msg(1);
@@ -1782,6 +1786,7 @@ static void handle_ctrl_request(uint16_t head, uint32_t* payload)
 
         set_state(PD_STATE_SNK_READY);
         pd_set_input_current_limit(pd.curr_limit, pd.supply_voltage);
+        debug_counters.contracts++;
 #ifdef CONFIG_CHARGE_MANAGER
         /* Set ceiling based on what's negotiated */
         // TODO charge_manager_set_ceil( CEIL_REQUESTOR_PD, pd.curr_limit);
@@ -3108,6 +3113,7 @@ void pd_run_state_machine()
   if (evt & PD_EVENT_RX_HARD_RESET)
   {
     CPRINTF("HARD RST event, last state %s\n", pd.last_state);
+    debug_counters.hard_resets_received++;
     pd_execute_hard_reset();
   }
 
@@ -4003,16 +4009,18 @@ void pd_run_state_machine()
       /* Wait for source cap expired only if we are enabled */
       if ((pd.last_state != pd.task_state) && pd_comm_is_enabled())
       {
-#ifdef CONFIG_USB_PD_TCPM_TCPCI
         /*
          * If we come from hard reset recover state,
          * then we can process the source capabilities
          * form partner now, so enable PHY layer
          * receiving function.
+         *
+         * pd_execute_hard_reset() disables RX (and the FUSB302 auto GoodCRC with it). Without this, the
+         * source capabilities sent after a hard reset are never acknowledged, and the source gives up
+         * on PD (issue #633). Upstream only does this for TCPCI chips, but the FUSB302 needs it too.
          */
         if (pd.last_state == PD_STATE_SNK_HARD_RESET_RECOVER)
           tcpm_set_rx_enable(1);
-#endif /* CONFIG_USB_PD_TCPM_TCPCI */
 #ifdef CONFIG_USB_PD_RESET_MIN_BATT_SOC
         /*
          * If the battery has not met a configured safe
@@ -4066,6 +4074,15 @@ void pd_run_state_machine()
         {
           /* ErrorRecovery */
           set_state_timeout(get_time().val + PD_T_NO_RESPONSE, PD_STATE_SNK_DISCONNECTED);
+        }
+        else
+        {
+          /*
+           * Last hard reset done: the source sends its capabilities right after it, so keep waiting for them once
+           * more. The timeout stays in this state, it only marks the end of the negociation: after it, this source
+           * is considered as non PD (see is_sink_negotiating, issue #633).
+           */
+          set_state_timeout(get_time().val + PD_T_SINK_WAIT_CAP, PD_STATE_SNK_DISCOVERY);
         }
 #if defined(CONFIG_CHARGE_MANAGER)
         /*
@@ -4340,6 +4357,9 @@ void pd_run_state_machine()
         invalidate_last_message_id();
         pd.msg_id = 0;
         res = send_control(PD_CTRL_SOFT_RESET);
+        debug_counters.soft_resets_sent++;
+        if (res < 0)
+          debug_counters.soft_resets_failed++;
 
         /* if soft reset failed, try hard reset. */
         if (res < 0)
@@ -4406,9 +4426,11 @@ void pd_run_state_machine()
          * Pretend TX_HARD_RESET succeeded after
          * timeout.
          */
+        debug_counters.hard_resets_tx_failed++;
       }
 
       hard_reset_sent = 1;
+      debug_counters.hard_resets_sent++;
       /*
        * If we are source, delay before cutting power
        * to allow sink time to get hard reset.
@@ -5265,6 +5287,41 @@ DECLARE_HOST_COMMAND(EC_CMD_PD_CONTROL, pd_control, EC_VER_MASK(0));
 #endif /* CONFIG_CMD_PD_CONTROL */
 
 int is_sink_ready() { return pd.task_state == PD_STATE_SNK_READY; }
+
+void pd_get_contract_info(struct pd_contract_info* info)
+{
+  info->power_role = pd.power_role;
+  info->polarity = pd.polarity;
+  info->is_explicit_contract = (pd.flags & PD_FLAGS_EXPLICIT_CONTRACT) != 0;
+  info->is_pd_capable = (pd.flags & PD_FLAGS_PREVIOUS_PD_CONN) != 0;
+  info->is_vbus_never_low = (pd.flags & PD_FLAGS_VBUS_NEVER_LOW) != 0;
+  info->requested_mv = pd.supply_voltage;
+  info->requested_ma = pd.curr_limit;
+  info->hard_reset_count = hard_reset_count;
+  info->counters = debug_counters;
+}
+
+int is_sink_negotiating()
+{
+  switch (pd.task_state)
+  {
+    // waiting for the source capabilities: only a negotiation while the wait timer runs.
+    // Without timer, the state machine gave up on this source (non PD source)
+    case PD_STATE_SNK_DISCOVERY:
+      return pd.timeout != 0;
+    // CC detected, attach in progress
+    case PD_STATE_SNK_DISCONNECTED_DEBOUNCE:
+    case PD_STATE_SNK_HARD_RESET_RECOVER:
+    case PD_STATE_SNK_REQUESTED:
+    case PD_STATE_SNK_TRANSITION:
+    case PD_STATE_SOFT_RESET:
+    case PD_STATE_HARD_RESET_SEND:
+    case PD_STATE_HARD_RESET_EXECUTE:
+      return pd.power_role == PD_ROLE_SINK;
+    default:
+      return 0;
+  }
+}
 
 const char* get_state_cstr()
 {

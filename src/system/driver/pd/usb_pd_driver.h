@@ -98,6 +98,8 @@ extern "C" {
 
   // reset the cached values, call on power supply unplugged
   extern void reset_cache();
+  // forget the received source capabilities (when the state machine restarts)
+  extern void reset_source_capabilities();
 
   // The associated cable is pd capable
   int is_pd_conector();

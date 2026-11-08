@@ -1065,6 +1065,49 @@ extern "C" {
   int is_sink_ready();
 
   /**
+   * Return 1 if the sink is still negotiating with the source (waiting for capabilities, resetting, requesting).
+   * Return 0 when negotiated, disconnected, suspended, or when the source did not answer (non PD source)
+   */
+  int is_sink_negotiating();
+
+  /// Debug counters of the PD negociation events, since boot
+  struct pd_debug_counters
+  {
+    /// source capabilities messages received (and answered with a request)
+    uint32_t src_caps_received;
+    /// contracts established as sink (PS_RDY received)
+    uint32_t contracts;
+    /// soft resets sent, and the ones that were not acknowledged
+    uint32_t soft_resets_sent;
+    uint32_t soft_resets_failed;
+    /// hard resets sent, and the ones whose transmission never completed (assumed sent, as the spec says)
+    uint32_t hard_resets_sent;
+    uint32_t hard_resets_tx_failed;
+    /// hard resets received from the partner
+    uint32_t hard_resets_received;
+  };
+
+  /// Details on the current contract, for debug
+  struct pd_contract_info
+  {
+    uint8_t power_role;
+    uint8_t polarity;
+    int is_explicit_contract;
+    /// the partner sent at least one PD message
+    int is_pd_capable;
+    int is_vbus_never_low;
+    /// last request sent (contract when an explicit contract is in place)
+    uint32_t requested_mv;
+    uint32_t requested_ma;
+    /// hard resets sent since the attach
+    int hard_reset_count;
+    struct pd_debug_counters counters;
+  };
+
+  /// Fill the contract details, for debug
+  void pd_get_contract_info(struct pd_contract_info* info);
+
+  /**
    * Return a human readable version of the pd state machine
    *
    * @param port USB-C port number
