@@ -48,6 +48,7 @@ Use `LMBD_JOBS=<n>` for parallel firmware builds and `LMBD_CPP_EXTRA_FLAGS="-Wal
 - **Firmware builds go around arduino-cli.** A first "clean" build records how Arduino compiles the sketch. That log generates `_build/process-<type>.sh`, which recompiles sketch objects with our flags (`gnu++17 -fconcepts`), and arduino-cli then links them. See `docs/Notes.md`. Because the object list and flags are baked into that script, run `make clean` after adding a source file or changing `LMBD_EXTRA_FLAGS`.
 - **The HAL is selected by a symlink.** `make` points `src/generated/hal` at `hal/adafruit_nrf/` or `hal/simulator/` depending on the target (gitignored, replaced on each build). arduino-cli follows the link when it copies the sketch into `_build/objs/sketch/`. HAL interfaces are in `src/system/hal/*.h`, and every platform must implement them.
 - **Simulator and test sources are listed by hand** in `simulator/compile.cmake`. A new `.cpp` under `src/system/` must be added there as well, and a new HAL file must be added to `SIMULATOR_HAL`. Test files are globbed from `tests/{utest,itest}/src/*.test.cpp`.
+- **CI runs in a Docker image** (`tools/ci/Dockerfile`, published to ghcr.io by the manual "CI image" workflow). Its tag is a hash of the environment files, pinned versions live in `tools/ci/environment.mk`, and changing them requires re-running that workflow. See `docs/CIImage.md`.
 - **Images** in `Medias/to_generate/` are converted to headers in `src/generated/` by `tools/convert_image.py`.
 
 ## Architecture

@@ -1,0 +1,67 @@
+name: CI image
+
+# Builds and publishes the CI build environment (tools/ci/Dockerfile).
+# Run it manually when tools/ci/, requirements.txt or tools/arduino-cli change:
+# the main CI fails and asks for it when the matching image does not exist.
+# See docs/CIImage.md.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-and-push:
+    if: github.repository == 'BaptisteHudyma/Lamp-Da'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        persist-credentials: false
+        submodules: 'true'
+
+    - name: image name
+      id: image
+      run: echo "name=$(tools/ci/image-name.sh)" >> "$GITHUB_OUTPUT"
+
+    - name: build
+      env:
+        IMAGE: ${{ steps.image.outputs.name }}
+      run: docker build -f tools/ci/Dockerfile -t "$IMAGE" .
+
+    - name: smoke test
+      env:
+        IMAGE: ${{ steps.image.outputs.name }}
+      run: |
+        docker run --rm "$IMAGE" bash -c '
+          set -e
+          arduino-cli version
+          arduino-cli board listall | grep -q "adafruit:nrf52:lampDa_nrf52840"
+          adafruit-nrfutil version
+          clang-format --version
+          cmake --version'
+
+    # catches a board package that does not match the firmware (version check)
+    - name: firmware build test
+      env:
+        IMAGE: ${{ steps.image.outputs.name }}
+      run: |
+        docker run --rm -v "$PWD:/work/LampColorControler" -w /work/LampColorControler \
+          "$IMAGE" make indexable
+
+    - name: push
+      env:
+        IMAGE: ${{ steps.image.outputs.name }}
+        REGISTRY_USER: ${{ github.actor }}
+        REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        echo "$REGISTRY_TOKEN" | docker login ghcr.io -u "$REGISTRY_USER" --password-stdin
+        docker push "$IMAGE"
+        echo "Published $IMAGE" >> "$GITHUB_STEP_SUMMARY"
