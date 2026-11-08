@@ -242,6 +242,54 @@ TEST_F(charging_pd_driver, reset_source_capabilities_forgets_the_pd_source)
   EXPECT_EQ(get_pd_source_cnt(), 0);
 }
 
+/// Sources can send up to 7 PDOs (PPS chargers often do): only the first ones are kept, nothing is written past them
+TEST_F(charging_pd_driver, source_caps_with_seven_pdos_do_not_overflow)
+{
+  uint32_t sevenCaps[7];
+  for (uint32_t i = 0; i < 7; ++i)
+    sevenCaps[i] = PDO_FIXED(5000 + i * 1000, 3000, 0);
+
+  // with ASan, a write past the saved capabilities fails here
+  pd_process_source_cap_callback(7, sevenCaps);
+
+  EXPECT_TRUE(is_pd_conector());
+  EXPECT_EQ(get_pd_source_cnt(), 5);
+  for (uint8_t i = 0; i < 5; ++i)
+    EXPECT_EQ(get_pd_source(i), sevenCaps[i]);
+  // the contract limits are not touched
+  EXPECT_EQ(get_available_pd_current_mA(), 0u);
+  EXPECT_EQ(get_available_pd_voltage_mV(), 0u);
+}
+
+TEST_F(charging_pd_driver, get_pd_source_out_of_range_is_zero)
+{
+  pd_process_source_cap_callback(2, caps);
+  EXPECT_EQ(get_pd_source(0), caps[0]);
+  EXPECT_EQ(get_pd_source(1), caps[1]);
+  EXPECT_EQ(get_pd_source(2), 0u);
+  EXPECT_EQ(get_pd_source(5), 0u);
+}
+
+/// With the source caps stored, a PD contract gets the PD current, not the standard port fallback (issue #633)
+TEST_F(charging_pd_driver, pd_contract_uses_pd_current_not_standard_port)
+{
+  pd_process_source_cap_callback(2, caps);
+  pd_set_input_current_limit(1670, 9000);
+
+  policy::SourceStatus s;
+  s.isPowerSourceDetected = true;
+  s.timeSinceSourceDetected_ms = 10000;
+  s.timeSinceLastPdDetected_ms = 0;
+  s.isUsbPd = is_pd_conector() != 0;
+  s.isSinkReady = true;
+  s.negotiatedVoltage_mV = get_available_pd_voltage_mV();
+  s.negotiatedCurrent_mA = get_available_pd_current_mA();
+  s.vbusVoltage_mV = 8700;
+
+  EXPECT_FALSE(policy::is_standard_port(s));
+  EXPECT_EQ(policy::max_input_current_mA(s), static_cast<uint16_t>(1670 * policy::pdCurrentRatio));
+}
+
 /// Recovery mode: a source reset would brown out the board, so the resets are forbidden until the system allows them
 TEST_F(charging_pd_driver, source_resets_forbidden_until_allowed)
 {

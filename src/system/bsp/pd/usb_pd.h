@@ -44,6 +44,7 @@ extern "C" {
 #define PD_EVENT_DEVICE_ACCESSED    (1 << 7)
 #define PD_EVENT_POWER_STATE_CHANGE (1 << 8)
 #define PD_EVENT_RX_HARD_RESET      (1 << 11) /* Receive a Hard Reset. */
+#define PD_EVENT_RESET_ALLOWED      (1 << 12) /* The sink can now reset the source, see pd_set_reset_allowed */
 
 /* --- PD data message helpers --- */
 #define PDO_MAX_OBJECTS 7

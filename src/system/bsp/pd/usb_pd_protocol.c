@@ -1344,13 +1344,12 @@ void pd_set_reset_allowed(int allowed)
   /*
    * The resets were held while waiting for the source caps: start the timers now, so that a PD source that was
    * missed gets reset and negociates (the battery can now power the board while VBUS drops).
+   * This is called from the system thread: do NOT touch pd.flags or the state timeout here, the PD thread may be
+   * negotiating at the same time (a read-modify-write of the flags here erased the explicit contract flag). Let the PD
+   * thread start the timers, see PD_EVENT_RESET_ALLOWED. The state check is only to avoid useless wake ups.
    */
-  if (pd_reset_allowed && !was_allowed && pd.task_state == PD_STATE_SNK_DISCOVERY &&
-      (pd.flags & PD_FLAGS_SNK_WAITING_BATT) && pd_comm_is_enabled())
-  {
-    snk_discovery_start_timers();
-    task_wake();
-  }
+  if (pd_reset_allowed && !was_allowed && pd.task_state == PD_STATE_SNK_DISCOVERY)
+    task_set_event(PD_EVENT_RESET_ALLOWED);
 }
 
 int pd_is_reset_allowed() { return pd_reset_allowed; }
@@ -1611,6 +1610,13 @@ static void handle_data_request(uint16_t head, uint32_t* payload)
 
         /* Source will resend source cap on failure */
         pd_send_request_msg(1);
+
+        /*
+         * Store the capabilities for the system (is_pd_conector, PDO list). Called after the request, because the
+         * Request timing is sensitive, the system has until PS_RDY to use them.
+         * Without it, every PD source is seen as a standard port (800mA with ICO) even with a contract (issue #633).
+         */
+        pd_process_source_cap_callback(cnt, payload);
       }
       break;
 #endif /* CONFIG_USB_PD_DUAL_ROLE */
@@ -3092,6 +3098,11 @@ void pd_run_state_machine()
   if (evt & PD_EVENT_UPDATE_DUAL_ROLE)
     pd_update_dual_role_config();
 #endif
+
+  /* the resets were held while waiting for the source caps (see pd_set_reset_allowed): start the timers now */
+  if ((evt & PD_EVENT_RESET_ALLOWED) && pd_reset_allowed && pd.task_state == PD_STATE_SNK_DISCOVERY &&
+      (pd.flags & PD_FLAGS_SNK_WAITING_BATT) && pd_comm_is_enabled())
+    snk_discovery_start_timers();
 
 #ifdef CONFIG_USB_PD_TCPC
   /*
