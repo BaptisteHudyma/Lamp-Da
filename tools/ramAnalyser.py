@@ -20,6 +20,38 @@ from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Optional
 
+# Repository root (this script lives in tools/)
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
+# Directories of the repository that hold third-party code (submodules)
+THIRD_PARTY_DIRS = ("src/depends/", "libs/")
+
+# Copy of the sketch that arduino-cli compiles, inside the build directory
+SKETCH_COPY_DIR = "_build/objs/sketch/"
+
+def is_repository_code(location: str) -> bool:
+    """
+    Tell if an addr2line location ("<file>:<line> ...") is in this
+    repository's own code, as opposed to the board core, the toolchain or the
+    submodules. The core may be installed anywhere (~/.arduino15, the
+    _build directory, a CI image), so only the repository path is trusted.
+    """
+    match = re.match(r"^(.+?):(?:\d+|\?)", location)
+    if not match or not Path(match.group(1)).is_absolute():
+        return False  # unknown location ("??:?")
+
+    try:
+        relative = Path(match.group(1)).resolve().relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return False  # outside of the repository
+
+    if relative.startswith(SKETCH_COPY_DIR):
+        relative = relative[len(SKETCH_COPY_DIR):]
+    elif relative.startswith("_build/"):
+        return False  # local arduino-cli install (make safe-install)
+
+    return not relative.startswith(THIRD_PARTY_DIRS)
+
 # ─────────────────────────────────────────────
 # Data model
 # ─────────────────────────────────────────────
@@ -688,8 +720,8 @@ class DynamicMemoryAnalyzer:
                 splitPath = [part.strip() for part in mapped.stdout.splitlines() if part.strip()]
                 location = "".join(splitPath[-1])
 
-            # Ignore depends, adafruit lib & invalid locations
-            if not ("src/depends" in location) and not ("_build" in location) and not ("??:?" in location):
+            # Only flag this repository's code: not the core, toolchain or submodules
+            if is_repository_code(location):
                 sites.append(
                     f"{current_function} at {location} "
                     f"(ELF address 0x{address})"
