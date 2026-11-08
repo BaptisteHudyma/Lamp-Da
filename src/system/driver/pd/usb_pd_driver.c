@@ -56,8 +56,9 @@ const uint32_t pd_snk_pdo[] = {
 };
 const int pd_snk_pdo_cnt = ARRAY_SIZE(pd_snk_pdo);
 
+#define SAVED_SRC_CAPS_COUNT 5
 int pdSources = 0;
-uint32_t srcCapsSaved[5];
+uint32_t srcCapsSaved[SAVED_SRC_CAPS_COUNT];
 
 void pd_startup()
 {
@@ -71,9 +72,11 @@ void pd_turn_off() { supsend_usb_pd(1); }
 // Called by the pd algo when the source capabilities are received
 void pd_process_source_cap_callback(int cnt, uint32_t* src_caps)
 {
-  pdSources = (cnt > 5) ? 5 : cnt;
-  for (int i = 0; i < cnt; i++)
+  // a source can send up to 7 PDOs (PPS chargers often do): only keep the first ones, never write past the array
+  const int saved = (cnt > SAVED_SRC_CAPS_COUNT) ? SAVED_SRC_CAPS_COUNT : ((cnt < 0) ? 0 : cnt);
+  for (int i = 0; i < saved; i++)
     srcCapsSaved[i] = src_caps[i];
+  pdSources = saved;
 }
 
 void typec_set_input_current_limit(typec_current_t max_ma, uint32_t supply_voltage)
@@ -86,7 +89,7 @@ void typec_set_input_current_limit(typec_current_t max_ma, uint32_t supply_volta
 uint8_t get_pd_source_cnt() { return pdSources; }
 uint32_t get_pd_source(const uint8_t index)
 {
-  if (index > pdSources)
+  if (index >= pdSources)
     return 0;
   return srcCapsSaved[index];
 }
@@ -124,6 +127,8 @@ void force_set_to_source(int force)
     pd_set_dual_role(PD_DRP_FORCE_SOURCE);
   }
 }
+
+void reset_source_capabilities() { pdSources = 0; }
 
 void reset_cache()
 {

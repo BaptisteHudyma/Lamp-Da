@@ -24,6 +24,14 @@ void loop();
 /// call once at program end
 void shutdown();
 
+/**
+ * \brief Allow the sink to reset the source, when the source capabilities were missed.
+ * A hard reset makes the source drop VBUS for up to ~2s. Forbid it when the battery cannot power the board (recovery
+ * mode), or this browns it out: the source is then used as a standard 5V port.
+ * Forbidden until allowed. Allowing it later starts the reset of a source waiting for its capabilities.
+ */
+void allow_source_resets(const bool allow);
+
 /// Suspend the execution of the power delivery state machine
 void suspend_pd_state_machine();
 /// resume the execution of the power delivery state machine

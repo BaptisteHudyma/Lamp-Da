@@ -44,6 +44,7 @@ extern "C" {
 #define PD_EVENT_DEVICE_ACCESSED    (1 << 7)
 #define PD_EVENT_POWER_STATE_CHANGE (1 << 8)
 #define PD_EVENT_RX_HARD_RESET      (1 << 11) /* Receive a Hard Reset. */
+#define PD_EVENT_RESET_ALLOWED      (1 << 12) /* The sink can now reset the source, see pd_set_reset_allowed */
 
 /* --- PD data message helpers --- */
 #define PDO_MAX_OBJECTS 7
@@ -1063,6 +1064,66 @@ extern "C" {
    * @param port USB-C port number
    */
   int is_sink_ready();
+
+  /**
+   * Return 1 if the sink is still negotiating with the source (waiting for capabilities, resetting, requesting).
+   * Return 0 when negotiated, disconnected, suspended, or when the source did not answer (non PD source)
+   */
+  int is_sink_negotiating();
+
+  /**
+   * Return 1 if the sink is in a hard reset: the source drops VBUS and restores it (up to ~2s). The state machine
+   * goes to disconnected by itself if VBUS does not come back.
+   */
+  int is_sink_hard_resetting();
+
+  /// Debug counters of the PD negociation events, since boot
+  struct pd_debug_counters
+  {
+    /// source attached (CC debounced, VBUS present)
+    uint32_t attaches;
+    /// source capabilities messages received (and answered with a request)
+    uint32_t src_caps_received;
+    /// contracts established as sink (PS_RDY received)
+    uint32_t contracts;
+    /// soft resets sent, and the ones that were not acknowledged
+    uint32_t soft_resets_sent;
+    uint32_t soft_resets_failed;
+    /// hard resets sent, and the ones whose transmission never completed (assumed sent, as the spec says)
+    uint32_t hard_resets_sent;
+    uint32_t hard_resets_tx_failed;
+    /// hard resets received from the partner
+    uint32_t hard_resets_received;
+  };
+
+  /// Details on the current contract, for debug
+  struct pd_contract_info
+  {
+    uint8_t power_role;
+    uint8_t polarity;
+    int is_explicit_contract;
+    /// the partner sent at least one PD message
+    int is_pd_capable;
+    int is_vbus_never_low;
+    /// last request sent (contract when an explicit contract is in place)
+    uint32_t requested_mv;
+    uint32_t requested_ma;
+    /// hard resets sent since the attach
+    int hard_reset_count;
+    struct pd_debug_counters counters;
+  };
+
+  /// Fill the contract details, for debug
+  void pd_get_contract_info(struct pd_contract_info* info);
+
+  /**
+   * Allow (1) or forbid (0) the sink to reset the source when its capabilities were missed.
+   * A hard reset makes the source drop VBUS for up to ~2s: forbid it when the battery cannot power the board.
+   * Forbidden by default.
+   */
+  void pd_set_reset_allowed(int allowed);
+  /// Return 1 if the sink can reset the source
+  int pd_is_reset_allowed();
 
   /**
    * Return a human readable version of the pd state machine

@@ -143,6 +143,16 @@ static int timeout = 10 * MSEC_US;
 static enum tcpc_cc_voltage_status cc1, cc2;
 static int res, incoming_packet = 0;
 static int hard_reset_count = 0;
+
+/* debug counters, see pd_get_contract_info */
+static struct pd_debug_counters debug_counters;
+
+/*
+ * When 0, the sink never starts the reset timers (soft/hard reset when the source caps are missed).
+ * A hard reset makes the source drop VBUS: when the battery cannot power the board (recovery mode), this browns it
+ * out. Off until the system allows it, see pd_set_reset_allowed.
+ */
+static volatile int pd_reset_allowed = 0;
 #ifdef CONFIG_USB_PD_DUAL_ROLE
 static uint64_t next_role_swap = PD_T_DRP_SNK;
 static uint8_t saved_flgs = 0;
@@ -1271,6 +1281,79 @@ static void pd_set_data_role(enum pd_data_role role)
 #endif /* CONFIG_BC12_DETECT_DATA_ROLE_TRIGGER */
 }
 
+/*
+ * Start the timers of the source capabilities wait, on SNK_DISCOVERY entry.
+ * After the timeout, the sink resets the source to make it send its capabilities again.
+ */
+static void snk_discovery_start_timers()
+{
+  if (!pd_reset_allowed)
+    pd.flags |= PD_FLAGS_SNK_WAITING_BATT;
+  else
+    pd.flags &= ~PD_FLAGS_SNK_WAITING_BATT;
+
+  if (pd.flags & PD_FLAGS_SNK_WAITING_BATT)
+  {
+    /*
+     * A reset could brown out the board: do not start the reset timers. The source is used as a standard port (no
+     * timer: not negotiating), until the resets are allowed again.
+     */
+    CPRINTS("Battery low. "
+            "Hold reset timer");
+  }
+  /*
+   * If VBUS has never been low, and we timeout
+   * waiting for source cap, try a soft reset
+   * first, in case we were already in a stable
+   * contract before this boot.
+   */
+  else if (pd.flags & PD_FLAGS_VBUS_NEVER_LOW)
+  {
+    set_state_timeout(get_time().val + PD_T_SINK_WAIT_CAP, PD_STATE_SOFT_RESET);
+  }
+  /*
+   * If we haven't passed hard reset counter,
+   * start SinkWaitCapTimer, otherwise start
+   * NoResponseTimer.
+   */
+  else if (hard_reset_count < PD_HARD_RESET_COUNT)
+  {
+    set_state_timeout(get_time().val + PD_T_SINK_WAIT_CAP, PD_STATE_HARD_RESET_SEND);
+  }
+  else if (pd_capable())
+  {
+    /* ErrorRecovery */
+    set_state_timeout(get_time().val + PD_T_NO_RESPONSE, PD_STATE_SNK_DISCONNECTED);
+  }
+  else
+  {
+    /*
+     * Last hard reset done: the source sends its capabilities right after it, so keep waiting for them once
+     * more. The timeout stays in this state, it only marks the end of the negociation: after it, this source
+     * is considered as non PD (see is_sink_negotiating, issue #633).
+     */
+    set_state_timeout(get_time().val + PD_T_SINK_WAIT_CAP, PD_STATE_SNK_DISCOVERY);
+  }
+}
+
+void pd_set_reset_allowed(int allowed)
+{
+  const int was_allowed = pd_reset_allowed;
+  pd_reset_allowed = allowed != 0;
+
+  /*
+   * The resets were held while waiting for the source caps: start the timers now, so that a PD source that was
+   * missed gets reset and negociates (the battery can now power the board while VBUS drops).
+   * This is called from the system thread: do NOT touch pd.flags or the state timeout here, the PD thread may be
+   * negotiating at the same time (a read-modify-write of the flags here erased the explicit contract flag). Let the PD
+   * thread start the timers, see PD_EVENT_RESET_ALLOWED. The state check is only to avoid useless wake ups.
+   */
+  if (pd_reset_allowed && !was_allowed && pd.task_state == PD_STATE_SNK_DISCOVERY)
+    task_set_event(PD_EVENT_RESET_ALLOWED);
+}
+
+int pd_is_reset_allowed() { return pd_reset_allowed; }
+
 void pd_execute_hard_reset()
 {
   int hard_rst_tx = pd.last_state == PD_STATE_HARD_RESET_SEND;
@@ -1523,9 +1606,17 @@ static void handle_data_request(uint16_t head, uint32_t* payload)
         pd_update_pdo_flags(payload[0]);
 
         pd_process_source_cap(cnt, payload);
+        debug_counters.src_caps_received++;
 
         /* Source will resend source cap on failure */
         pd_send_request_msg(1);
+
+        /*
+         * Store the capabilities for the system (is_pd_conector, PDO list). Called after the request, because the
+         * Request timing is sensitive, the system has until PS_RDY to use them.
+         * Without it, every PD source is seen as a standard port (800mA with ICO) even with a contract (issue #633).
+         */
+        pd_process_source_cap_callback(cnt, payload);
       }
       break;
 #endif /* CONFIG_USB_PD_DUAL_ROLE */
@@ -1782,6 +1873,7 @@ static void handle_ctrl_request(uint16_t head, uint32_t* payload)
 
         set_state(PD_STATE_SNK_READY);
         pd_set_input_current_limit(pd.curr_limit, pd.supply_voltage);
+        debug_counters.contracts++;
 #ifdef CONFIG_CHARGE_MANAGER
         /* Set ceiling based on what's negotiated */
         // TODO charge_manager_set_ceil( CEIL_REQUESTOR_PD, pd.curr_limit);
@@ -3007,6 +3099,11 @@ void pd_run_state_machine()
     pd_update_dual_role_config();
 #endif
 
+  /* the resets were held while waiting for the source caps (see pd_set_reset_allowed): start the timers now */
+  if ((evt & PD_EVENT_RESET_ALLOWED) && pd_reset_allowed && pd.task_state == PD_STATE_SNK_DISCOVERY &&
+      (pd.flags & PD_FLAGS_SNK_WAITING_BATT) && pd_comm_is_enabled())
+    snk_discovery_start_timers();
+
 #ifdef CONFIG_USB_PD_TCPC
   /*
    * run port controller task to check CC and/or read incoming
@@ -3108,6 +3205,7 @@ void pd_run_state_machine()
   if (evt & PD_EVENT_RX_HARD_RESET)
   {
     CPRINTF("HARD RST event, last state %s\n", pd.last_state);
+    debug_counters.hard_resets_received++;
     pd_execute_hard_reset();
   }
 
@@ -3732,6 +3830,13 @@ void pd_run_state_machine()
 #endif
         CPRINTS("TCPC suspended!");
         pd.req_suspend_state = 0;
+        /*
+         * Stop the reception, and the FUSB302 auto GoodCRC with it. tcpm_release is not implemented for the FUSB302:
+         * without this, the chip keeps acknowledging the source messages that nobody processes, and the source
+         * completes a negociation (Accept, PS_RDY, new voltage) with a sink that is not listening. Without GoodCRC,
+         * the source sees a non PD sink and stays at (or goes back to) vSafe5V (issue #633).
+         */
+        tcpm_set_rx_enable(0);
 #ifdef CONFIG_USB_PD_TCPC
         pd_rx_disable_monitoring();
         pd_hw_release();
@@ -3925,6 +4030,7 @@ void pd_run_state_machine()
 #ifdef CONFIG_COMMON_RUNTIME
       hook_notify(HOOK_USB_PD_CONNECT);
 #endif
+      debug_counters.attaches++;
       pd.polarity = get_snk_polarity(cc1, cc2);
       pd_set_polarity(pd.polarity);
       /* reset message ID  on connection */
@@ -4003,70 +4109,19 @@ void pd_run_state_machine()
       /* Wait for source cap expired only if we are enabled */
       if ((pd.last_state != pd.task_state) && pd_comm_is_enabled())
       {
-#ifdef CONFIG_USB_PD_TCPM_TCPCI
         /*
          * If we come from hard reset recover state,
          * then we can process the source capabilities
          * form partner now, so enable PHY layer
          * receiving function.
+         *
+         * pd_execute_hard_reset() disables RX (and the FUSB302 auto GoodCRC with it). Without this, the
+         * source capabilities sent after a hard reset are never acknowledged, and the source gives up
+         * on PD (issue #633). Upstream only does this for TCPCI chips, but the FUSB302 needs it too.
          */
         if (pd.last_state == PD_STATE_SNK_HARD_RESET_RECOVER)
           tcpm_set_rx_enable(1);
-#endif /* CONFIG_USB_PD_TCPM_TCPCI */
-#ifdef CONFIG_USB_PD_RESET_MIN_BATT_SOC
-        /*
-         * If the battery has not met a configured safe
-         * level for hard resets, refrain from starting
-         * reset timers as a hard reset could brown out
-         * the board.  Note this may mean that
-         * high-power chargers will stay at 15W until a
-         * reset is sent, depending on boot timing.
-         */
-        int batt_soc = usb_get_battery_soc();
-
-        if (batt_soc < CONFIG_USB_PD_RESET_MIN_BATT_SOC || battery_get_disconnect_state() != BATTERY_NOT_DISCONNECTED)
-          pd.flags |= PD_FLAGS_SNK_WAITING_BATT;
-        else
-          pd.flags &= ~PD_FLAGS_SNK_WAITING_BATT;
-#endif
-
-        if (pd.flags & PD_FLAGS_SNK_WAITING_BATT)
-        {
-#ifdef CONFIG_CHARGE_MANAGER
-          /*
-           * Configure this port as dedicated for
-           * now, so it won't be de-selected by
-           * the charge manager leaving safe mode.
-           */
-          // TODO charge_manager_update_dualrole( CAP_DEDICATED);
-#endif
-          CPRINTS("Battery low. "
-                  "Hold reset timer");
-          /*
-           * If VBUS has never been low, and we timeout
-           * waiting for source cap, try a soft reset
-           * first, in case we were already in a stable
-           * contract before this boot.
-           */
-        }
-        else if (pd.flags & PD_FLAGS_VBUS_NEVER_LOW)
-        {
-          set_state_timeout(get_time().val + PD_T_SINK_WAIT_CAP, PD_STATE_SOFT_RESET);
-          /*
-           * If we haven't passed hard reset counter,
-           * start SinkWaitCapTimer, otherwise start
-           * NoResponseTimer.
-           */
-        }
-        else if (hard_reset_count < PD_HARD_RESET_COUNT)
-        {
-          set_state_timeout(get_time().val + PD_T_SINK_WAIT_CAP, PD_STATE_HARD_RESET_SEND);
-        }
-        else if (pd_capable())
-        {
-          /* ErrorRecovery */
-          set_state_timeout(get_time().val + PD_T_NO_RESPONSE, PD_STATE_SNK_DISCONNECTED);
-        }
+        snk_discovery_start_timers();
 #if defined(CONFIG_CHARGE_MANAGER)
         /*
          * If we didn't come from disconnected, must
@@ -4340,6 +4395,9 @@ void pd_run_state_machine()
         invalidate_last_message_id();
         pd.msg_id = 0;
         res = send_control(PD_CTRL_SOFT_RESET);
+        debug_counters.soft_resets_sent++;
+        if (res < 0)
+          debug_counters.soft_resets_failed++;
 
         /* if soft reset failed, try hard reset. */
         if (res < 0)
@@ -4406,9 +4464,11 @@ void pd_run_state_machine()
          * Pretend TX_HARD_RESET succeeded after
          * timeout.
          */
+        debug_counters.hard_resets_tx_failed++;
       }
 
       hard_reset_sent = 1;
+      debug_counters.hard_resets_sent++;
       /*
        * If we are source, delay before cutting power
        * to allow sink time to get hard reset.
@@ -5265,6 +5325,56 @@ DECLARE_HOST_COMMAND(EC_CMD_PD_CONTROL, pd_control, EC_VER_MASK(0));
 #endif /* CONFIG_CMD_PD_CONTROL */
 
 int is_sink_ready() { return pd.task_state == PD_STATE_SNK_READY; }
+
+void pd_get_contract_info(struct pd_contract_info* info)
+{
+  info->power_role = pd.power_role;
+  info->polarity = pd.polarity;
+  info->is_explicit_contract = (pd.flags & PD_FLAGS_EXPLICIT_CONTRACT) != 0;
+  info->is_pd_capable = (pd.flags & PD_FLAGS_PREVIOUS_PD_CONN) != 0;
+  info->is_vbus_never_low = (pd.flags & PD_FLAGS_VBUS_NEVER_LOW) != 0;
+  info->requested_mv = pd.supply_voltage;
+  info->requested_ma = pd.curr_limit;
+  info->hard_reset_count = hard_reset_count;
+  info->counters = debug_counters;
+}
+
+int is_sink_hard_resetting()
+{
+  if (pd.power_role != PD_ROLE_SINK)
+    return 0;
+  switch (pd.task_state)
+  {
+    case PD_STATE_HARD_RESET_SEND:
+    case PD_STATE_HARD_RESET_EXECUTE:
+    case PD_STATE_SNK_HARD_RESET_RECOVER:
+      return 1;
+    default:
+      return 0;
+  }
+}
+
+int is_sink_negotiating()
+{
+  switch (pd.task_state)
+  {
+    // waiting for the source capabilities: only a negotiation while the wait timer runs.
+    // Without timer, the state machine gave up on this source (non PD source)
+    case PD_STATE_SNK_DISCOVERY:
+      return pd.timeout != 0;
+    // CC detected, attach in progress
+    case PD_STATE_SNK_DISCONNECTED_DEBOUNCE:
+    case PD_STATE_SNK_HARD_RESET_RECOVER:
+    case PD_STATE_SNK_REQUESTED:
+    case PD_STATE_SNK_TRANSITION:
+    case PD_STATE_SOFT_RESET:
+    case PD_STATE_HARD_RESET_SEND:
+    case PD_STATE_HARD_RESET_EXECUTE:
+      return pd.power_role == PD_ROLE_SINK;
+    default:
+      return 0;
+  }
+}
 
 const char* get_state_cstr()
 {
