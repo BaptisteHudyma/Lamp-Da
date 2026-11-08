@@ -82,6 +82,12 @@ bool set_real_time(const RealTime& realTime)
   return true;
 }
 
+void clear_real_time()
+{
+  internal::is_time_offset_set = false;
+  internal::real_time_offset_s = 0;
+}
+
 RealTime convert_to_real_time(const uint32_t time_s)
 {
   return internal::get_real_time(time_s, internal::real_time_offset_s);
@@ -106,6 +112,31 @@ uint32_t get_platform_time_from_target_time(const RealTime& time)
     timeUntilTarget_s += secondsPerWeeks;
 
   return static_cast<uint32_t>(now_s + timeUntilTarget_s);
+}
+
+int8_t get_next_enabled_day(const uint8_t daysMask, const uint8_t hour, const uint8_t minutes, const uint8_t seconds)
+{
+  int8_t bestDay = -1;
+  uint32_t bestTime_s = 0;
+  for (uint8_t day = 0; day < 7; ++day)
+  {
+    if ((daysMask & (1u << day)) == 0)
+      continue;
+
+    RealTime time;
+    time.dayOfTheWeek = day;
+    time.hour = hour;
+    time.minutes = minutes;
+    time.seconds = seconds;
+    const uint32_t time_s = get_platform_time_from_target_time(time);
+    // without a real time, every day gives 0: keep the first enabled one
+    if (bestDay < 0 or time_s < bestTime_s)
+    {
+      bestDay = day;
+      bestTime_s = time_s;
+    }
+  }
+  return bestDay;
 }
 
 } // namespace time

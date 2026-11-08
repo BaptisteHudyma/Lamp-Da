@@ -36,10 +36,14 @@ include(${LMBD_ROOT_DIR}/simulator/compile.cmake)
 
 install_sfml()
 create_simulator_target(indexable)
+# for the tests of the behaviors that only exist on the simple lamp (such as the output blips)
+create_simulator_target(simple)
 
 
 # Unit tests
 add_subdirectory("utest")
+# Unit tests on the simple lamp
+add_subdirectory("utest_simple")
 
 # Integration test
 add_subdirectory("itest")

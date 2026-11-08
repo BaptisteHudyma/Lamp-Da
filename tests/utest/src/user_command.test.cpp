@@ -30,6 +30,17 @@ TEST_F(UserCommandTest, SetRampCommand)
   EXPECT_EQ(parsed_ramp, ramp);
 }
 
+TEST_F(UserCommandTest, SetRampRejectsOtherTypes)
+{
+  // other one-byte commands must not be read as a ramp value
+  uint8_t parsed_ramp = 0;
+  EXPECT_FALSE(UserCommand::make_set_ble_mode_command(3).parse_ramp(parsed_ramp));
+  EXPECT_FALSE(UserCommand::make_go_to_favorite_command(3).parse_ramp(parsed_ramp));
+  EXPECT_FALSE(UserCommand::make_set_favorite_command(3).parse_ramp(parsed_ramp));
+  EXPECT_FALSE(UserCommand::make_turn_onoff_command(true).parse_ramp(parsed_ramp));
+  EXPECT_EQ(parsed_ramp, 0);
+}
+
 TEST_F(UserCommandTest, BrightnessCommand)
 {
   brightness_t bright = 128;
@@ -326,6 +337,18 @@ TEST_F(UserCommandTest, BlipOutputCommand)
   // another command type is refused
   EXPECT_FALSE(UserCommand::make_signal_suntimer_cancel_command().parse_blip_output_command(parsed));
   EXPECT_EQ(parsed, duration);
+}
+
+TEST_F(UserCommandTest, BlipOutputCommandHighBit)
+{
+  // bit 31 set: the top byte must be widened before the shift, or it would overflow an int
+  const uint32_t duration = 0x92345678;
+  auto cmd = UserCommand::make_blip_output_command(duration);
+
+  uint32_t parsed = 0;
+  EXPECT_TRUE(cmd.parse_blip_output_command(parsed));
+  EXPECT_EQ(parsed, duration);
+  EXPECT_NE(parsed & 0x80000000u, 0u);
 }
 
 } // namespace common

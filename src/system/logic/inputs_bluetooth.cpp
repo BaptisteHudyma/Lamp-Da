@@ -9,6 +9,8 @@
 
 #include "src/system/component/sound.h"
 
+#include "src/system/logic/sun_timers.h"
+
 #include "src/system/common/elk_decoder.h"
 #include "src/system/common/user_commands.h"
 
@@ -77,19 +79,34 @@ void handle_BLE_ELK_command(const common::elk::Package& elkControlCommand)
 
         // auto turn on or off
         const bool isAutoTurnOn = elkControlCommand.data[3] == 0;
-        // target days as a binary mask (unsuported)
-        const uint8_t enabledDays = elkControlCommand.data[4];
-
-        // mask the days to enable of the (enabledDays & daysMask)
-        constexpr uint8_t daysMask = 127;
-        // index bit of enable/disable
-        constexpr uint8_t setClearBit = 1 << 7;
-
-        const int indexOfTheDay = utils::get_index_of_first_set_bit(enabledDays);
-
-        if (indexOfTheDay < 0 or indexOfTheDay > 6)
+        // bit 7 set: schedule the timer. Clear: the app disables the timer
+        constexpr uint8_t timerEnabledBit = 1 << 7;
+        if ((elkControlCommand.data[4] & timerEnabledBit) == 0)
         {
-          bsp::lampda_print("Refused to handle timing command: invalid day of the week");
+          // same cancel as the command line, the selected days are ignored
+          if (isAutoTurnOn)
+          {
+            // keep the brightness reached by the sunrise, as for a user brightness change
+            logic::sunrise_timer.cancel_at_current_brightness();
+            bsp::lampda_print("Timing command: sunrise timer disabled");
+          }
+          else
+          {
+            logic::sunset_timer.cancel();
+            bsp::lampda_print("Timing command: sunset timer disabled");
+          }
+          return;
+        }
+
+        // target days as a binary mask, bit 0 is monday
+        constexpr uint8_t daysMask = 0x7F;
+        const uint8_t enabledDays = elkControlCommand.data[4] & daysMask;
+
+        // the timers are one shot: use the soonest of the enabled days
+        const int8_t indexOfTheDay = component::time::get_next_enabled_day(enabledDays, hour, minutes, seconds);
+        if (indexOfTheDay < 0)
+        {
+          bsp::lampda_print("Refused to handle timing command: no day of the week enabled");
           return;
         }
 

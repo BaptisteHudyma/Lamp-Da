@@ -49,6 +49,7 @@ Use `LMBD_JOBS=<n>` for parallel firmware builds and `LMBD_CPP_EXTRA_FLAGS="-Wal
 - **The HAL is selected by a symlink.** `make` points `src/generated/hal` at `hal/adafruit_nrf/` or `hal/simulator/` depending on the target (gitignored, replaced on each build). arduino-cli follows the link when it copies the sketch into `_build/objs/sketch/`. HAL interfaces are in `src/system/hal/*.h`, and every platform must implement them.
 - **Simulator and test sources are listed by hand** in `simulator/compile.cmake`. A new `.cpp` under `src/system/` must be added there as well, and a new HAL file must be added to `SIMULATOR_HAL`. Test files are globbed from `tests/{utest,itest}/src/*.test.cpp`.
 - **CI runs in a Docker image** (`tools/ci/Dockerfile`, published to ghcr.io by the manual "CI image" workflow). Its tag is a hash of the environment files, pinned versions live in `tools/ci/environment.mk`, and changing them requires re-running that workflow. See `docs/CIImage.md`.
+- **Simulator and test sources are listed by hand** in `simulator/compile.cmake`. A new `.cpp` under `src/system/` must be added there as well, and a new HAL file must be added to `SIMULATOR_HAL`. Test files are globbed from `tests/{utest,utest_simple,itest}/src/*.test.cpp`.
 - **Images** in `Medias/to_generate/` are converted to headers in `src/generated/` by `tools/convert_image.py`.
 
 ## Architecture
@@ -70,7 +71,7 @@ Each layer has a matching namespace under `lampda::`. From high level to low lev
 
 `logic/behavior.cpp` drives the system through `START_LOGIC`, `PRE_CHARGER_OPERATION`/`CHARGER_OPERATIONS`, `PRE_OUTPUT_LIGHT`/`OUTPUT_LIGHT`/`POST_OUTPUT_LIGHT`, `SHUTDOWN` and `ERROR`. User code only runs in `OUTPUT_LIGHT`.
 
-The main loop runs at a fixed period (`MAIN_LOOP_UPDATE_PERIOD_MS`) under a watchdog, so code on it must not block. Slow loops raise an alert, and a loop over 500 ms reboots the board into DFU mode (`check_loop_runtime` in `global.cpp`).
+The main loop runs at a fixed period (`MAIN_LOOP_UPDATE_PERIOD_MS`) under a watchdog, so code on it must not block. Slow loops raise an alert (`check_loop_runtime` in `global.cpp`), and a stuck loop is reset by the watchdog.
 
 ### `src/user/`: lamp type integration
 
@@ -90,7 +91,7 @@ The full API is in `src/modes/include/mode_type.hpp`, and the tutorial is `docs/
 
 `simulator/` compiles the real `src/` code against `hal/simulator/` and mocks the electrical ICs (`simulator/electrical/`). `simulator/resources/simulation_parameters.txt` (battery voltage, VBUS, CPU temperature, added loop delay) is re-read on every tick, so edits to this tracked file apply at runtime and show up as local git changes.
 
-Tests link the `simulator_indexable` library, so they only exercise the indexable build. Integration tests drive the system through `simulator/include/simulator_state.h` and `hardware_influencer.h`, and they use real threads and timing.
+Tests link the `simulator_indexable` library, so they mostly exercise the indexable build. `tests/utest_simple` links `simulator_simple` for behaviors that only exist on the simple lamp (such as output blips, which assert on indexable), and `make run-utest` runs it too. Integration tests drive the system through `simulator/include/simulator_state.h` and `hardware_influencer.h`, and they use real threads and timing.
 
 There is no CCT simulator: `cct` is only checked by the firmware build.
 

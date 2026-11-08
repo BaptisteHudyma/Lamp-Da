@@ -37,6 +37,12 @@ struct RealTime
 bool set_real_time(const RealTime& realTime);
 
 /**
+ * \brief Forget the real time set by set_real_time(), as after a shutdown.
+ * The real time functions then behave as if it was never set.
+ */
+void clear_real_time();
+
+/**
  * \brief Convert a platform time in seconds to a real time value.
  * \return if the global time is unset, the function return an invalid time
  */
@@ -56,6 +62,15 @@ RealTime get_real_time();
  * \return if the global time is unset, the function return 0
  */
 uint32_t get_platform_time_from_target_time(const RealTime& time);
+
+/**
+ * \brief Among the days enabled in \p daysMask, return the one with the soonest next occurrence of the given time.
+ * \param[in] daysMask bit i enables the day of the week i (bit 0 is monday). Bits above 6 are ignored.
+ * \param[in] hour, minutes, seconds The target time of the day
+ * \return The day of the week [0; 6], or -1 if no day is enabled. If the real time is unset, return the first enabled
+ * day.
+ */
+int8_t get_next_enabled_day(const uint8_t daysMask, const uint8_t hour, const uint8_t minutes, const uint8_t seconds);
 
 } // namespace time
 } // namespace component

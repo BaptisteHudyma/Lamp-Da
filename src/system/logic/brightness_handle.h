@@ -68,17 +68,19 @@ namespace indicator {
 /**
  * \brief Set the brightness of the RGB indicator.
  * Indicator level can be
- * 0 : indicator and alerts displayed as 100% brightness
- * 1 : indicator off, alerts displayed as 25% brightness
- * 2 : indicator and alerts displayed as 25% brightness
+ * 0 : indicator and alerts displayed at full brightness
+ * 1 : indicator and alerts displayed at low brightness
+ * 2 : indicator and alerts displayed at low brightness, indicator off when charging
+ * After a level update, the normal indicator stays visible for 5 seconds, even while charging at level 2.
  */
 void set_brightness_level(const uint8_t level);
 /**
  * \brief Get the brightness of the RGB indicator.
  * Indicator level can be
- * 0 : indicator and alerts displayed as 100% brightness
- * 1 : indicator off, alerts displayed as 25% brightness
- * 2 : indicator and alerts displayed as 25% brightness
+ * 0 : indicator and alerts displayed at full brightness
+ * 1 : indicator and alerts displayed at low brightness
+ * 2 : indicator and alerts displayed at low brightness, indicator off when charging
+ * After a level update, the normal indicator stays visible for 5 seconds, even while charging at level 2.
  */
 uint8_t get_brightness_level();
 

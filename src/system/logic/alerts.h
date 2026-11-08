@@ -5,6 +5,7 @@
 #ifndef ALERTS_H
 #define ALERTS_H
 
+#include <atomic>
 #include <cstdint>
 
 namespace lampda {
@@ -67,11 +68,22 @@ public:
   /// Clear an alert
   void clear(const Type type);
 
+  /**
+   * \brief Clear an alert, unless it was refreshed by a raise() since the clear decision was taken.
+   * \param[in] type The alert to clear
+   * \param[in] refreshCount The refresh counter of this alert, incremented by every raise() of a raised alert
+   * \param[in] refreshCountAtDecision Value of \p refreshCount read before deciding to clear the alert
+   * \return true if the alert was cleared
+   */
+  bool clear_unless_refreshed(const Type type,
+                              const std::atomic<uint32_t>& refreshCount,
+                              const uint32_t refreshCountAtDecision);
+
   /// Return true if the target alert is raised
-  bool is_raised(const Type type) const { return (_current & static_cast<uint32_t>(type)) != 0x00; }
+  bool is_raised(const Type type) const { return (_current.load() & static_cast<uint32_t>(type)) != 0x00; }
 
   /// Return true if no alerts are raised
-  bool is_clear() const { return _current == 0x00; }
+  bool is_clear() const { return _current.load() == 0x00; }
 
   /// the time in milliseconds since this alert was raised, or zero if it's not. This raise time is updated by a raise()
   /// function call.
@@ -91,8 +103,9 @@ public:
   AlertManager_t& operator=(AlertManager_t const&) = delete;
 
 private:
-  /// Binary variable to store raised alerts
-  uint32_t _current;
+  /// Binary variable to store raised alerts.
+  /// Alerts are raised and cleared from several threads: only use atomic read-modify-write operations on it
+  std::atomic<uint32_t> _current {0};
 };
 
 /// external global reference to the AlertManager

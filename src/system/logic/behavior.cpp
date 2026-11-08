@@ -627,9 +627,10 @@ void handle_output_light_state()
 
     if (hal::time_ms() - lastOutputLightValidTime > 1000)
     {
-      etl::string<128> errStr("power gate took too long to switch in output light state ");
-      errStr.push_back(static_cast<char>(::lampda::bsp::powergates::is_power_gate_enabled()));
-      errStr.push_back(static_cast<char>(logic::power::is_output_mode_ready()));
+      etl::string<128> errStr("power gate took too long to switch in output light state: gate=");
+      errStr.push_back(::lampda::bsp::powergates::is_power_gate_enabled() ? '1' : '0');
+      errStr.append(" output_ready=");
+      errStr.push_back(logic::power::is_output_mode_ready() ? '1' : '0');
       go_to_error_state(errStr);
     }
     return;
