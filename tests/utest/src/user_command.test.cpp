@@ -339,5 +339,17 @@ TEST_F(UserCommandTest, BlipOutputCommand)
   EXPECT_EQ(parsed, duration);
 }
 
+TEST_F(UserCommandTest, BlipOutputCommandHighBit)
+{
+  // bit 31 set: the top byte must be widened before the shift, or it would overflow an int
+  const uint32_t duration = 0x92345678;
+  auto cmd = UserCommand::make_blip_output_command(duration);
+
+  uint32_t parsed = 0;
+  EXPECT_TRUE(cmd.parse_blip_output_command(parsed));
+  EXPECT_EQ(parsed, duration);
+  EXPECT_NE(parsed & 0x80000000u, 0u);
+}
+
 } // namespace common
 } // namespace lampda

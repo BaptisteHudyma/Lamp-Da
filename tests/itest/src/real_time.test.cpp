@@ -18,6 +18,39 @@ namespace lampda {
 
 using namespace std::chrono_literals;
 
+namespace {
+
+constexpr uint32_t secondsPerDay = 24 * 3600;
+constexpr uint32_t secondsPerWeek = 7 * secondsPerDay;
+
+component::time::RealTime make_time(uint8_t day, uint8_t hour, uint8_t minutes, uint8_t seconds)
+{
+  component::time::RealTime time;
+  time.dayOfTheWeek = day;
+  time.hour = hour;
+  time.minutes = minutes;
+  time.seconds = seconds;
+  return time;
+}
+
+/// Check that the target platform time is in the future (or now), at most a week away, and on the expected real time
+void expect_next_occurrence(const component::time::RealTime& target, const uint32_t expectedDelay_s)
+{
+  const uint32_t now_s = hal::time_s();
+  const uint32_t platformTime_s = get_platform_time_from_target_time(target);
+  ASSERT_GE(platformTime_s, now_s);
+  // the simulated clock runs: a second can pass since the time synchronization
+  ASSERT_NEAR(static_cast<double>(platformTime_s - now_s), static_cast<double>(expectedDelay_s), 2.0);
+
+  const auto& reached = component::time::convert_to_real_time(platformTime_s);
+  ASSERT_EQ(reached.dayOfTheWeek, target.dayOfTheWeek);
+  ASSERT_EQ(reached.hour, target.hour);
+  ASSERT_EQ(reached.minutes, target.minutes);
+  ASSERT_EQ(reached.seconds, target.seconds);
+}
+
+} // namespace
+
 class RealTimeFixture : public ::testing::Test
 {
 protected:
@@ -26,6 +59,8 @@ protected:
     //
     simulator::mock_registers::shouldStopThreads = false;
     ::simulator::time_mocks::reset();
+    // the real time offset survives a clock reset: clear it, so that every test starts without a real time
+    component::time::clear_real_time();
   }
 
   void TearDown() override
@@ -104,6 +139,55 @@ TEST_F(RealTimeFixture, next_enabled_day)
   ASSERT_EQ(get_next_enabled_day(wednesday, 9, 0, 0), 2);
   // bit 7 is ignored
   ASSERT_EQ(get_next_enabled_day((1 << 7) | friday, 9, 0, 0), 4);
+}
+
+// Without a real time, every day is as soon as the others: the first enabled day is picked
+TEST_F(RealTimeFixture, next_enabled_day_without_real_time)
+{
+  using component::time::get_next_enabled_day;
+
+  // no set_real_time() here: the fixture cleared it
+  ASSERT_FALSE(component::time::get_real_time().is_valid());
+
+  constexpr uint8_t monday = 1 << 0;
+  constexpr uint8_t wednesday = 1 << 2;
+  constexpr uint8_t friday = 1 << 4;
+  constexpr uint8_t sunday = 1 << 6;
+
+  ASSERT_EQ(get_next_enabled_day(0, 9, 0, 0), -1);
+  ASSERT_EQ(get_next_enabled_day(1 << 7, 9, 0, 0), -1);
+
+  ASSERT_EQ(get_next_enabled_day(monday | wednesday | friday, 9, 0, 0), 0);
+  ASSERT_EQ(get_next_enabled_day(wednesday | friday, 23, 59, 59), 2);
+  ASSERT_EQ(get_next_enabled_day(sunday, 0, 0, 0), 6);
+  ASSERT_EQ(get_next_enabled_day((1 << 7) | friday | sunday, 9, 0, 0), 4);
+}
+
+// A target exactly at the current time is reached now: today is the soonest day, not next week
+TEST_F(RealTimeFixture, next_enabled_day_at_current_time)
+{
+  using component::time::get_next_enabled_day;
+
+  constexpr uint8_t monday = 1 << 0;
+  constexpr uint8_t wednesday = 1 << 2;
+  constexpr uint8_t friday = 1 << 4;
+
+  // the fixture restarted the clock at zero: the checks below run long before the next second
+  const uint32_t startTime_s = hal::time_s();
+  ASSERT_EQ(startTime_s, 0u);
+
+  // wednesday 10h00
+  const auto now = make_time(2, 10, 0, 0);
+  ASSERT_TRUE(component::time::set_real_time(now));
+
+  ASSERT_EQ(component::time::get_platform_time_from_target_time(now), startTime_s);
+  ASSERT_EQ(get_next_enabled_day(monday | wednesday | friday, 10, 0, 0), 2);
+  ASSERT_EQ(get_next_enabled_day(wednesday, 10, 0, 0), 2);
+  // one second earlier is already passed: next enabled day
+  ASSERT_EQ(get_next_enabled_day(monday | wednesday | friday, 9, 59, 59), 4);
+
+  // the clock did not move during the checks, so the target really was the current time
+  ASSERT_EQ(hal::time_s(), startTime_s);
 }
 
 // Mock time fromt he start, with a bigger offset
@@ -189,6 +273,7 @@ protected:
     //
     simulator::mock_registers::shouldStopThreads = false;
     ::simulator::time_mocks::reset(offset_time_s * 1000);
+    component::time::clear_real_time();
   }
 
   void TearDown() override
@@ -312,38 +397,6 @@ TEST_F(RealTimeWithOffsetFixture, set_from_10seconds_with_wrap)
   ASSERT_EQ(_time.seconds, 0);
 }
 
-namespace {
-
-constexpr uint32_t secondsPerDay = 24 * 3600;
-constexpr uint32_t secondsPerWeek = 7 * secondsPerDay;
-
-component::time::RealTime make_time(uint8_t day, uint8_t hour, uint8_t minutes, uint8_t seconds)
-{
-  component::time::RealTime time;
-  time.dayOfTheWeek = day;
-  time.hour = hour;
-  time.minutes = minutes;
-  time.seconds = seconds;
-  return time;
-}
-
-/// Check that the target platform time is in the future (or now), at most a week away, and on the expected real time
-void expect_next_occurrence(const component::time::RealTime& target, const uint32_t expectedDelay_s)
-{
-  const uint32_t now_s = hal::time_s();
-  const uint32_t platformTime_s = get_platform_time_from_target_time(target);
-  ASSERT_GE(platformTime_s, now_s);
-  // the simulated clock runs: a second can pass since the time synchronization
-  ASSERT_NEAR(static_cast<double>(platformTime_s - now_s), static_cast<double>(expectedDelay_s), 2.0);
-
-  const auto& reached = component::time::convert_to_real_time(platformTime_s);
-  ASSERT_EQ(reached.dayOfTheWeek, target.dayOfTheWeek);
-  ASSERT_EQ(reached.hour, target.hour);
-  ASSERT_EQ(reached.minutes, target.minutes);
-  ASSERT_EQ(reached.seconds, target.seconds);
-}
-
-} // namespace
 
 // Targets later in the week, and earlier in the week (next week)
 TEST_F(RealTimeFixture, target_next_occurrence)

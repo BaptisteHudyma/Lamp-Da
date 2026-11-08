@@ -39,8 +39,12 @@ uint32_t time_ms(void)
     simulator::s_clock.restart();
   }
 
-  return (simulator::clockOffset + simulator::s_clock.getElapsedTime().asMilliseconds()) *
-         simulator::globals::state.slowTimeFactor;
+  // computed in double, then wrapped modulo 2^32 as the hardware clock: a float loses precision near the wrap, and
+  // converting a float out of the uint32 range is undefined
+  const double time_ms =
+          (static_cast<double>(simulator::clockOffset) + simulator::s_clock.getElapsedTime().asMilliseconds()) *
+          simulator::globals::state.slowTimeFactor;
+  return static_cast<uint32_t>(static_cast<uint64_t>(time_ms));
 }
 
 uint64_t time_us(void)
@@ -50,8 +54,11 @@ uint64_t time_us(void)
     simulator::isClockReset = true;
     simulator::s_clock.restart();
   }
-  return (simulator::clockOffset * 1000 + simulator::s_clock.getElapsedTime().asMicroseconds()) *
-         simulator::globals::state.slowTimeFactor;
+  // in double: the offset in microseconds does not fit in 32 bits
+  const double time_us = (static_cast<double>(simulator::clockOffset) * 1000.0 +
+                          simulator::s_clock.getElapsedTime().asMicroseconds()) *
+                         simulator::globals::state.slowTimeFactor;
+  return static_cast<uint64_t>(time_us);
 }
 
 void delay_ms(uint32_t dwMs) { sf::sleep(sf::milliseconds(dwMs / simulator::globals::state.slowTimeFactor)); }

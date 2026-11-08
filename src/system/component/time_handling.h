@@ -37,6 +37,12 @@ struct RealTime
 bool set_real_time(const RealTime& realTime);
 
 /**
+ * \brief Forget the real time set by set_real_time(), as after a shutdown.
+ * The real time functions then behave as if it was never set.
+ */
+void clear_real_time();
+
+/**
  * \brief Convert a platform time in seconds to a real time value.
  * \return if the global time is unset, the function return an invalid time
  */

@@ -430,6 +430,36 @@ TEST(cmd_parser, parse_uint_rejects_sign_and_empty_prefix)
   }
 }
 
+TEST(cmd_parser, parse_uint_uppercase_prefix)
+{
+  // the prefixes are case insensitive, as the hex digits
+  const struct
+  {
+    const char* text;
+    uint16_t expected;
+  } cases[] = {{"cmd 0XFF", 0xFF}, {"cmd 0Xff", 0xFF}, {"cmd 0X1A2B", 0x1A2B}, {"cmd 0B1010", 0b1010}, {"cmd 0B0", 0}};
+
+  for (const auto& testCase: cases)
+  {
+    const bsp::text_in::Inputs::Command input = create_command(testCase.text);
+    auto parsed = parseCommand(input);
+
+    uint16_t value = 0;
+    EXPECT_TRUE(argument::parse_uint16(parsed, 0, value)) << testCase.text;
+    EXPECT_EQ(value, testCase.expected) << testCase.text;
+  }
+
+  // the empty and invalid uppercase prefixes are refused, as the lowercase ones
+  for (const char* text: {"cmd 0X", "cmd 0B", "cmd 0B12", "cmd 0XG"})
+  {
+    const bsp::text_in::Inputs::Command input = create_command(text);
+    auto parsed = parseCommand(input);
+
+    uint16_t value = 0;
+    EXPECT_FALSE(argument::parse_uint16(parsed, 0, value)) << text;
+  }
+}
+
 TEST(cmd_parser, parse_uint_binary_prefix)
 {
   const bsp::text_in::Inputs::Command input = create_command("cmd 0b1010");

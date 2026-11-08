@@ -35,6 +35,7 @@ run-%: check-dirs
 
 clean:
 	rm -f $(BUILD_DIR)/utest/tests_utest
+	rm -f $(BUILD_DIR)/utest_simple/tests_utest_simple
 	rm -f $(BUILD_DIR)/itest/tests_itest
 	cd $(ROOT_DIR) && make clean
 

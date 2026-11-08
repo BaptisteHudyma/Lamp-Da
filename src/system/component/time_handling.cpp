@@ -82,6 +82,12 @@ bool set_real_time(const RealTime& realTime)
   return true;
 }
 
+void clear_real_time()
+{
+  internal::is_time_offset_set = false;
+  internal::real_time_offset_s = 0;
+}
+
 RealTime convert_to_real_time(const uint32_t time_s)
 {
   return internal::get_real_time(time_s, internal::real_time_offset_s);

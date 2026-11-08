@@ -21,9 +21,31 @@ TEST(led_index, point_above_lamp_maps_to_top_row)
 
 TEST(led_index, point_below_lamp_maps_to_bottom_row)
 {
-  const uint16_t index = to_led_index(0.0f, -100000.0f);
-  EXPECT_GE(index, LampTy::ledCount - LampTy::maxWidth - 1);
-  EXPECT_LT(index, LampTy::ledCount);
+  // the bottom row is the last full turn of the strip: turn 22 starts at 22 * 25.54 = 561.9
+  static_assert(LampTy::ledCount == 580, "expected indexes computed for the 580 leds indexable lamp");
+  const struct
+  {
+    float turnFraction; // angle, as a fraction of a turn
+    uint16_t expected;
+  } cases[] = {
+          {0.0f, 562},  // round(561.9)
+          {0.25f, 568}, // round(561.9 + 6.39)
+          {0.5f, 575},  // round(561.9 + 12.77)
+          // past the end of the strip on the last turn: one turn up, starting at 21 * 25.54 = 536.4
+          {0.75f, 556}, // round(536.4 + 19.16)
+          {0.9f, 559},  // round(536.4 + 22.99)
+  };
+
+  for (const float z_mm: {-200.0f, -100000.0f})
+  {
+    for (const auto& testCase: cases)
+    {
+      const uint16_t index = to_led_index(testCase.turnFraction * c_TWO_PI, z_mm);
+      EXPECT_EQ(index, testCase.expected) << "turn fraction=" << testCase.turnFraction << " z_mm=" << z_mm;
+      EXPECT_GE(index, LampTy::ledCount - 2 * LampTy::maxWidth);
+      EXPECT_LT(index, LampTy::ledCount);
+    }
+  }
 }
 
 TEST(led_index, extreme_heights_are_clamped)

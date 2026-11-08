@@ -1,6 +1,7 @@
 #include "alerts.h"
 
 #include "src/system/hal/time.h"
+#include "src/system/hal/mutex.h"
 #include "src/system/hal/registers.h"
 
 #include "src/system/bsp/balancer.h"
@@ -27,6 +28,23 @@ namespace alerts {
 
 /// Instanciation of the AlertManager
 AlertManager_t manager;
+
+/// Guards the raise times of all alerts (AlertBase::raisedTime): refreshed by raise() from any thread (power thread,
+/// BLE, ...), while the main loop takes its timeout decisions on them.
+/// The elapsed times are computed under the lock, so a refresh can never be seen as "in the future" of the decision.
+/// Not recursive.
+static hal::mutex::hal_mutex_t _raiseTimeMutex;
+/// Initialized at program start: alerts can be raised before the main setup
+[[maybe_unused]] static const bool _isRaiseTimeMutexInit = (hal::mutex::hal_mutex_init(&_raiseTimeMutex), true);
+
+/// Hold _raiseTimeMutex for the scope
+struct RaiseTimeLock
+{
+  RaiseTimeLock() { hal::mutex::hal_mutex_lock(&_raiseTimeMutex); }
+  ~RaiseTimeLock() { hal::mutex::hal_mutex_unlock(&_raiseTimeMutex); }
+  RaiseTimeLock(const RaiseTimeLock&) = delete;
+  RaiseTimeLock& operator=(const RaiseTimeLock&) = delete;
+};
 
 /// Set to true if an alert requested an emmergency shutdown
 bool _request_shutdown = false;
@@ -152,12 +170,23 @@ struct AlertBase
   virtual Type get_type() const = 0;
 
   /// Return true if the system should shutdown from this alert
-  virtual bool should_shutdown_system(const uint32_t time) final
+  virtual bool should_shutdown_system() final
   {
     const auto shutdownTimeout = alert_shutdown_timeout();
     if (shutdownTimeout == UINT32_MAX)
       return false;
-    return (time - raisedTime) > shutdownTimeout;
+    return time_since_raised() > shutdownTimeout;
+  }
+
+  /// Time elapsed since the latest raise (or refresh) of this alert, 0 if the raise time is not set.
+  /// Synchronized with the raise time refreshes. Can be called from any thread.
+  uint32_t time_since_raised() const
+  {
+    RaiseTimeLock lock;
+    if (raisedTime == 0)
+      return 0;
+    // time read under the lock: always after the latest refresh
+    return hal::time_ms() - raisedTime;
   }
 
   /**
@@ -169,7 +198,10 @@ struct AlertBase
   {
     if (not _isRaisedHandled)
     {
-      raisedTime = time;
+      {
+        RaiseTimeLock lock;
+        raisedTime = time;
+      }
       loweredTime = 0;
       _isRaisedHandled = true;
       _isLoweredHandled = false;
@@ -182,9 +214,11 @@ struct AlertBase
 
   /// Update the raised time of this alert.
   /// An alert continuously firing as to be updated. Can be called from any thread or interrupt.
-  void update_raise_time(const uint32_t time)
+  void update_raise_time()
   {
-    raisedTime = time;
+    RaiseTimeLock lock;
+    // time read under the lock: never older than a raise time set before
+    raisedTime = hal::time_ms();
     // signal the refresh to a clear decision taken concurrently, see AlertManager_t::clear_unless_refreshed
     refreshCount.fetch_add(1);
   }
@@ -198,7 +232,10 @@ struct AlertBase
   {
     if (not _isLoweredHandled)
     {
-      raisedTime = 0;
+      {
+        RaiseTimeLock lock;
+        raisedTime = 0;
+      }
       loweredTime = time;
       _isLoweredHandled = true;
       _isRaisedHandled = false;
@@ -220,9 +257,10 @@ struct AlertBase
   bool _isRaisedHandled = false;
   /// Alert lower signal has been handled
   bool _isLoweredHandled = false;
-  /// Store the latest time at which this alert raise() was called.
-  /// Atomic: refreshed by raise() from other threads, while the main loop reads it for the timeout decisions
-  std::atomic<uint32_t> raisedTime {0};
+  /// Store the latest time at which this alert raise() was called, 0 if not set.
+  /// Refreshed by raise() from other threads, while the main loop reads it for the timeout decisions:
+  /// only access it under _raiseTimeMutex (see time_since_raised())
+  uint32_t raisedTime = 0;
   /// Incremented on every raise() refresh of the raised alert. See AlertManager_t::clear_unless_refreshed
   std::atomic<uint32_t> refreshCount {0};
   /// Store the latest time at which this alert lower() was called
@@ -252,7 +290,7 @@ struct Alert_BatteryReadingIncoherent : public AlertBase
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    return raisedTime > 0 and (hal::time_ms() - raisedTime) > 2000;
+    return time_since_raised() > 2000;
   }
 
   bool should_prevent_lamp_output() const override { return true; }
@@ -502,7 +540,7 @@ struct Alert_BluetoothAdvertisement : public AlertBase
   bool should_be_cleared() const override
   {
     // cleared after a delay anyway
-    return raisedTime > 0 and (hal::time_ms() - raisedTime) > 60000;
+    return time_since_raised() > 60000;
   }
 };
 
@@ -554,7 +592,7 @@ struct Alert_FavoriteSet : public AlertBase
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    return raisedTime > 0 and (hal::time_ms() - raisedTime) > 1000;
+    return time_since_raised() > 1000;
   }
 };
 
@@ -591,7 +629,7 @@ struct Alert_SystemShutdownFailed : public AlertBase
   /// Cleared after a delay
   bool should_be_cleared() const override
   {
-    if (raisedTime > 0 and (hal::time_ms() - raisedTime) > 2000)
+    if (time_since_raised() > 2000)
     {
       // is this fails, the system is just too broken to be repaired
       hal::registers::enter_serial_dfu();
@@ -678,7 +716,7 @@ struct Alert_SkippedCleanSleep : public AlertBase
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    return (raisedTime > 0 and (hal::time_ms() - raisedTime) > 3000);
+    return time_since_raised() > 3000;
   }
 };
 
@@ -693,7 +731,7 @@ struct Alert_UsbPortShort : public AlertBase
   Type get_type() const override { return Type::USB_PORT_SHORT; }
 
   /// auto cleared after a delay
-  bool should_be_cleared() const override { return (raisedTime > 0 and (hal::time_ms() - raisedTime) > 5000); }
+  bool should_be_cleared() const override { return time_since_raised() > 5000; }
 
   /// Prevent charge
   bool should_prevent_battery_charge() const override { return true; }
@@ -794,7 +832,7 @@ void update_alerts()
         // execute loop
         alert->execute_loop();
 
-        if (alert->should_shutdown_system(currTime))
+        if (alert->should_shutdown_system())
         {
           // notify the system shutdown request
           _request_shutdown = true;
@@ -940,7 +978,7 @@ void AlertManager_t::raise(const Type type)
     {
       if (type == alert->get_type())
       {
-        alert->update_raise_time(hal::time_ms());
+        alert->update_raise_time();
         break;
       }
     }
@@ -973,15 +1011,20 @@ bool AlertManager_t::clear_unless_refreshed(const Type type,
                                             const uint32_t refreshCountAtDecision)
 {
   const uint32_t bit = static_cast<uint32_t>(type);
-  const uint32_t previous = _current.fetch_and(~bit);
-  if ((previous & bit) == 0)
-    return false;
-
-  // refreshed while the clear was decided: the alert is still active, silently restore it
-  if (refreshCount.load() != refreshCountAtDecision)
+  uint32_t expected = _current.load();
+  while (true)
   {
-    _current.fetch_or(bit);
-    return false;
+    // already cleared by someone else
+    if ((expected & bit) == 0)
+      return false;
+    // refreshed while the clear was decided: the alert is still active, keep it
+    if (refreshCount.load() != refreshCountAtDecision)
+      return false;
+    // the bit is never removed when the clear is cancelled, so other threads never see a transient clear.
+    // A refresh after the final check is caught by the raise() post-check, that raises the alert again
+    if (_current.compare_exchange_weak(expected, expected & ~bit))
+      break;
+    // _current changed (or spurious failure): expected is reloaded, check again
   }
 
   bsp::lampda_print("ALERT cleared: %s", AlertsToText(type));
@@ -998,7 +1041,7 @@ uint32_t AlertManager_t::get_time_since_raised(const Type type) const
       if (not is_raised(type) or not alert->_isRaisedHandled)
         return 0;
       // compute raised time
-      return hal::time_ms() - alert->raisedTime;
+      return alert->time_since_raised();
     }
   }
   return 0;
