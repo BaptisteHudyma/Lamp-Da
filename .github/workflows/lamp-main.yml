@@ -67,7 +67,7 @@ jobs:
 
   run-tests:
     runs-on: ubuntu-latest
-    needs: [ci-image, format]
+    needs: [ci-image] # runs in parallel with format, builds wait for both
     container:
       image: ${{ needs.ci-image.outputs.name }}
       options: --cap-add=SYS_PTRACE # LeakSanitizer needs ptrace

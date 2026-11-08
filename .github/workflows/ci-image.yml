@@ -31,13 +31,19 @@ jobs:
       id: image
       run: echo "name=$(tools/ci/image-name.sh)" >> "$GITHUB_OUTPUT"
 
+    # BuildKit builder: required to publish zstd layers (see the push step)
+    - name: setup builder
+      run: docker buildx create --name lampda --driver docker-container --use
+
     - name: build
       env:
         IMAGE: ${{ steps.image.outputs.name }}
       # no provenance attestation: it is pushed as a separate manifest without
       # the image labels, which can create the package unlinked from this
       # repository, and then the push of the image itself is denied
-      run: docker build --provenance=false -f tools/ci/Dockerfile -t "$IMAGE" .
+      run: |
+        docker buildx build --provenance=false --load \
+          -f tools/ci/Dockerfile -t "$IMAGE" .
 
     - name: smoke test
       env:
@@ -59,6 +65,10 @@ jobs:
         docker run --rm -v "$PWD:/work/LampColorControler" -w /work/LampColorControler \
           "$IMAGE" make indexable
 
+    # Layers are published with zstd compression: CI jobs unpack the image on
+    # every run, and zstd unpacks several times faster than the default gzip.
+    # Every build step is a cache hit from the "build" step, so the pushed
+    # image is the one tested above, only compressed differently.
     - name: push
       env:
         IMAGE: ${{ steps.image.outputs.name }}
@@ -66,5 +76,13 @@ jobs:
         REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         echo "$REGISTRY_TOKEN" | docker login ghcr.io -u "$REGISTRY_USER" --password-stdin
-        docker push "$IMAGE"
-        echo "Published $IMAGE" >> "$GITHUB_STEP_SUMMARY"
+        docker buildx build --provenance=false --progress=plain -f tools/ci/Dockerfile \
+          --output "type=registry,name=$IMAGE,oci-mediatypes=true,compression=zstd,force-compression=true" \
+          . 2>&1 | tee push.log
+        # plain progress prints "#<n> [x/y] RUN ..." then "#<n> CACHED" for a cache hit
+        rebuilt=$(awk '/^#[0-9]+ \[.*\] RUN /{run[$1]=1} /^#[0-9]+ CACHED$/{hit[$1]=1}
+          END{for (s in run) if (!(s in hit)) n++; print n+0}' push.log)
+        if [ "$rebuilt" -ne 0 ]; then
+          echo "::warning title=Image rebuilt during push::$rebuilt build step(s) were not cached: the published image was rebuilt after the tests"
+        fi
+        echo "Published $IMAGE (zstd layers)" >> "$GITHUB_STEP_SUMMARY"
