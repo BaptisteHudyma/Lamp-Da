@@ -68,6 +68,15 @@ cd LampColorControler
 make safe-install
 ```
 
+These targets install the versions pinned in `tools/ci/environment.mk`.
+
+You can also skip the local setup and build in the CI Docker image, which
+contains every dependency (see [CIImage.md](CIImage.md)):
+
+```sh
+make ci-image-shell
+```
+
 ## Building the project
 
 Once all dependencies are set up, you will be able to build the project
