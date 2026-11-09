@@ -2,6 +2,7 @@
 
 #include "src/user/functions.h"
 
+#include "src/system/hal/mutex.h"
 #include "src/system/hal/time.h"
 
 #include "src/system/bsp/indicator.h"
@@ -20,6 +21,7 @@
 #include "src/system/utils/time_utils.h"
 
 #include <cstdint>
+#include <etl/queue.h>
 namespace lampda {
 namespace logic {
 namespace inputs {
@@ -31,7 +33,59 @@ static constexpr uint32_t BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS =
         5000; ///< duration of the brightness ramp saturation before switching behavior
 
 namespace __private {
-etl::queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
+
+/// Button event asynchroneous queue: filled by the button thread, emptied by the main loop.
+/// etl::queue is not thread safe: only access it under _buttonEventQueueMutex
+static etl::queue<ButtonEvent, maxButtonEventStore> buttonEventQueue;
+
+/// Guards buttonEventQueue. Never held while running the button callbacks. Not recursive
+static hal::mutex::hal_mutex_t _buttonEventQueueMutex;
+/// Initialized at program start: events can be pushed as soon as the button thread starts
+[[maybe_unused]] static const bool _isButtonEventQueueMutexInit =
+        (hal::mutex::hal_mutex_init(&_buttonEventQueueMutex), true);
+
+/// Hold _buttonEventQueueMutex for the scope
+struct ButtonEventQueueLock
+{
+  ButtonEventQueueLock() { hal::mutex::hal_mutex_lock(&_buttonEventQueueMutex); }
+  ~ButtonEventQueueLock() { hal::mutex::hal_mutex_unlock(&_buttonEventQueueMutex); }
+  ButtonEventQueueLock(const ButtonEventQueueLock&) = delete;
+  ButtonEventQueueLock& operator=(const ButtonEventQueueLock&) = delete;
+};
+
+bool pop_button_event(ButtonEvent& event)
+{
+  ButtonEventQueueLock lock;
+  if (buttonEventQueue.empty())
+    return false;
+  buttonEventQueue.pop_into(event);
+  return true;
+}
+
+size_t get_button_event_count()
+{
+  ButtonEventQueueLock lock;
+  return buttonEventQueue.size();
+}
+
+void clear_button_events()
+{
+  ButtonEventQueueLock lock;
+  buttonEventQueue.clear();
+}
+
+/// Push a button event, if the queue fill stays below \p maxFillPercent. Thread safe
+bool push_button_event(const ButtonEvent& event, const size_t maxFillPercent)
+{
+  ButtonEventQueueLock lock;
+  // pushing in a full etl::queue is an assert
+  if (buttonEventQueue.full())
+    return false;
+  if ((buttonEventQueue.size() * 100) / maxButtonEventStore >= maxFillPercent)
+    return false;
+  buttonEventQueue.push(event);
+  return true;
+}
 
 /**
  * \brief Handle a brightness change control:
@@ -589,20 +643,18 @@ void loop()
 {
   // Check a maximum of events per loop turn, events can be refilled by other threads
   size_t maxEventsChecks = __private::maxButtonEventStore;
-  while (maxEventsChecks != 0 && not __private::buttonEventQueue.empty())
+  while (maxEventsChecks != 0)
   {
     maxEventsChecks--;
 
-    // another redondant safety to avoid any risk of crash
-    if (__private::buttonEventQueue.empty())
+    // popped under the queue lock, the callbacks run without it
+    __private::ButtonEvent buttonEvent;
+    if (not __private::pop_button_event(buttonEvent))
       break;
 
     // First click checks if system is on, or if started from button interrupt where the first event could have been
     // missed
     const bool isFirstClick = isStartChainPending or not isSystemOn;
-
-    __private::ButtonEvent buttonEvent;
-    __private::buttonEventQueue.pop_into(buttonEvent);
 
     if (not buttonEvent.isLongPress)
     {
@@ -638,34 +690,22 @@ bool is_button_usermode_enabled() { return isButtonUsermodeEnabled; }
 
 bool add_button_click_event(uint8_t clickCount)
 {
-  if (__private::buttonEventQueue.full())
-    return false;
-
   __private::ButtonEvent event;
   event.isLongPress = false;
   event.clickCount = clickCount;
-  __private::buttonEventQueue.push(event);
-  return true;
+  return __private::push_button_event(event, 100);
 }
 
 bool add_button_press_event(uint8_t clickCount, uint32_t pressDuration, bool isEndOfPress)
 {
-  // special case for long press events: if there is too much events, the end of hold event can get rejected.
-  // Do not fill the queue above a percentage with hold events
-  if (not isEndOfPress)
-  {
-    const size_t fillPercent = (__private::buttonEventQueue.size() * 100) / __private::maxButtonEventStore;
-    // Prevent any hold events if queue is getting full
-    if (fillPercent >= 80)
-      return false;
-  }
   __private::ButtonEvent event;
   event.isLongPress = true;
   event.clickCount = clickCount;
   event.isEndOfLongPress = isEndOfPress;
   event.longPressDuration = pressDuration;
-  __private::buttonEventQueue.push(event);
-  return true;
+  // special case for long press events: if there is too much events, the end of hold event can get rejected.
+  // Do not fill the queue above a percentage with hold events
+  return __private::push_button_event(event, isEndOfPress ? 100 : 80);
 }
 
 } // namespace inputs

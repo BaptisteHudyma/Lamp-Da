@@ -125,11 +125,9 @@ TEST_F(ButtonFixture, turn_on_start_click_early_release)
   {
     std::this_thread::sleep_for(1ms);
 
-    if (logic::inputs::__private::buttonEventQueue.empty())
-      continue;
-
     logic::inputs::__private::ButtonEvent buttonEvent;
-    logic::inputs::__private::buttonEventQueue.pop_into(buttonEvent);
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
 
     if (not buttonEvent.isLongPress)
     {
@@ -180,11 +178,9 @@ TEST_F(ButtonFixture, turn_on_start_click)
   {
     std::this_thread::sleep_for(1ms);
 
-    if (logic::inputs::__private::buttonEventQueue.empty())
-      continue;
-
     logic::inputs::__private::ButtonEvent buttonEvent;
-    logic::inputs::__private::buttonEventQueue.pop_into(buttonEvent);
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
 
     if (not buttonEvent.isLongPress)
     {
@@ -241,11 +237,9 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
   {
     std::this_thread::sleep_for(1ms);
 
-    if (logic::inputs::__private::buttonEventQueue.empty())
-      continue;
-
     logic::inputs::__private::ButtonEvent buttonEvent;
-    logic::inputs::__private::buttonEventQueue.pop_into(buttonEvent);
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
 
     if (not buttonEvent.isLongPress)
     {
@@ -300,11 +294,9 @@ TEST_F(ButtonFixture, turn_on_start_long_click)
   {
     std::this_thread::sleep_for(1ms);
 
-    if (logic::inputs::__private::buttonEventQueue.empty())
-      continue;
-
     logic::inputs::__private::ButtonEvent buttonEvent;
-    logic::inputs::__private::buttonEventQueue.pop_into(buttonEvent);
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
 
     if (not buttonEvent.isLongPress)
     {
@@ -364,11 +356,9 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
   {
     std::this_thread::sleep_for(1ms);
 
-    if (logic::inputs::__private::buttonEventQueue.empty())
-      continue;
-
     logic::inputs::__private::ButtonEvent buttonEvent;
-    logic::inputs::__private::buttonEventQueue.pop_into(buttonEvent);
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
 
     if (not buttonEvent.isLongPress)
     {
@@ -426,11 +416,9 @@ TEST_F(ButtonFixture, debounce)
   {
     std::this_thread::sleep_for(1ms);
 
-    if (logic::inputs::__private::buttonEventQueue.empty())
-      continue;
-
     logic::inputs::__private::ButtonEvent buttonEvent;
-    logic::inputs::__private::buttonEventQueue.pop_into(buttonEvent);
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
 
     if (not buttonEvent.isLongPress)
     {
@@ -496,11 +484,9 @@ TEST_F(ButtonFixture, start_click_then_4_clicks)
   {
     std::this_thread::sleep_for(1ms);
 
-    if (logic::inputs::__private::buttonEventQueue.empty())
-      continue;
-
     logic::inputs::__private::ButtonEvent buttonEvent;
-    logic::inputs::__private::buttonEventQueue.pop_into(buttonEvent);
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
 
     if (not buttonEvent.isLongPress)
     {
@@ -572,11 +558,9 @@ TEST_F(ButtonFixture, standard_4_clicks_)
   {
     std::this_thread::sleep_for(1ms);
 
-    if (logic::inputs::__private::buttonEventQueue.empty())
-      continue;
-
     logic::inputs::__private::ButtonEvent buttonEvent;
-    logic::inputs::__private::buttonEventQueue.pop_into(buttonEvent);
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
 
     if (not buttonEvent.isLongPress)
     {
@@ -663,11 +647,9 @@ TEST_F(ButtonFixture, standard_6_double_clicks)
 
     std::this_thread::sleep_for(1ms);
 
-    if (logic::inputs::__private::buttonEventQueue.empty())
-      continue;
-
     logic::inputs::__private::ButtonEvent buttonEvent;
-    logic::inputs::__private::buttonEventQueue.pop_into(buttonEvent);
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
 
     if (not buttonEvent.isLongPress)
     {
@@ -728,11 +710,9 @@ TEST_F(ButtonFixture, long_click_fill_queue)
   {
     // poll events from the event queue
     // another redondant safety to avoid any risk of crash
-    if (logic::inputs::__private::buttonEventQueue.empty())
-      continue;
-
     logic::inputs::__private::ButtonEvent buttonEvent;
-    logic::inputs::__private::buttonEventQueue.pop_into(buttonEvent);
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
 
     if (not buttonEvent.isLongPress)
     {
