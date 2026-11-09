@@ -236,6 +236,11 @@ int pd_check_data_swap(int data_role)
 
 int pd_is_power_swap_succesful()
 {
+  // Forced source is the external battery mode: the user asked us to power the partner.
+  // Accepting a swap would make us the sink, and the partner (a phone) would power the lamp instead (issue #357)
+  if (pd_get_power_role() == PD_ROLE_SOURCE && pd_get_dual_role() == PD_DRP_FORCE_SOURCE)
+    return 0;
+
   // accept power swap
   return canBecomePowerSource != 0;
 }

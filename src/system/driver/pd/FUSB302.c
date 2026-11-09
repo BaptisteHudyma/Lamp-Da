@@ -6,6 +6,7 @@
 */
 
 #include "FUSB302.h"
+#include "cc_thresholds.h"
 #include "../../../../src/system/bsp/pd/tcpm/usb_pd_tcpm.h"
 #include "../../../../src/system/bsp/pd/tcpm/tcpm.h"
 #include "../../../../src/system/bsp/pd/usb_pd.h"
@@ -107,6 +108,24 @@ static int convert_bc_lvl(int bc_lvl)
   return ret;
 }
 
+/*
+ * Source pull-ups to apply to a SWITCHES0 value.
+ * Unattached, both CC lines are pulled up to detect a sink on either of them. Once attached with PD communication
+ * enabled, only the active line keeps its pull-up (as the Linux FUSB302 driver does): with both enabled, the two CC
+ * lines are coupled through the pull-ups, and the board permanent Rd of the unused line loads the PD line (issue #357)
+ */
+static int fusb302_source_pull_ups(int reg)
+{
+  reg &= ~(TCPC_REG_SWITCHES0_CC1_PU_EN | TCPC_REG_SWITCHES0_CC2_PU_EN);
+  if (state.rx_enable && state.cc_polarity == 0)
+    reg |= TCPC_REG_SWITCHES0_CC1_PU_EN;
+  else if (state.rx_enable && state.cc_polarity == 1)
+    reg |= TCPC_REG_SWITCHES0_CC2_PU_EN;
+  else
+    reg |= TCPC_REG_SWITCHES0_CC1_PU_EN | TCPC_REG_SWITCHES0_CC2_PU_EN;
+  return reg;
+}
+
 static int measure_cc_pin_source(int cc_measure)
 {
   int switches0_reg;
@@ -119,8 +138,14 @@ static int measure_cc_pin_source(int cc_measure)
   tcpc_read(TCPC_REG_SWITCHES0, &reg);
   /* Save current value */
   switches0_reg = reg;
-  /* Clear pull-up register settings and measure bits */
+  /*
+   * Clear pull-up register settings and measure bits.
+   * Upstream only cleared the measure bits: with both pull-ups enabled, the CC lines are not measured independently
+   * (each reads the load of both lines), and the board permanent Rd on the other line drags the measure down
+   * (issue #357)
+   */
   reg &= ~(TCPC_REG_SWITCHES0_MEAS_CC1 | TCPC_REG_SWITCHES0_MEAS_CC2);
+  reg &= ~(TCPC_REG_SWITCHES0_CC1_PU_EN | TCPC_REG_SWITCHES0_CC2_PU_EN);
   /* Set desired pullup register bit */
   if (cc_measure == TCPC_REG_SWITCHES0_MEAS_CC1)
     reg |= TCPC_REG_SWITCHES0_CC1_PU_EN;
@@ -172,13 +197,24 @@ static void detect_cc_pin_source_manual(enum tcpc_cc_voltage_status* cc1_lvl, en
   int cc1_measure = TCPC_REG_SWITCHES0_MEAS_CC1;
   int cc2_measure = TCPC_REG_SWITCHES0_MEAS_CC2;
 
-  if (state.vconn_enabled)
+  /*
+   * The measure switches also select the PD receiver line: measuring the other CC line while PD communication is
+   * enabled points the receiver at the wrong line, and the incoming messages are lost (no GoodCRC, the partner ends
+   * in hard resets, issue #357). Only the active line is needed once attached (detach detection).
+   */
+  if (state.vconn_enabled || state.rx_enable)
   {
-    /* If VCONN enabled, measure cc_pin that matches polarity */
+    /* If VCONN or PD communication enabled, measure cc_pin that matches polarity */
     if (state.cc_polarity)
+    {
+      *cc1_lvl = TYPEC_CC_VOLT_OPEN;
       *cc2_lvl = measure_cc_pin_source(cc2_measure);
+    }
     else
+    {
       *cc1_lvl = measure_cc_pin_source(cc1_measure);
+      *cc2_lvl = TYPEC_CC_VOLT_OPEN;
+    }
   }
   else
   {
@@ -198,6 +234,29 @@ static void detect_cc_pin_sink(enum tcpc_cc_voltage_status* cc1, enum tcpc_cc_vo
   int bc_lvl_cc2;
 
   hal_mutex_lock(&measure_lock);
+
+  /*
+   * The measure switches also select the PD receiver line: switching them to the other CC line while PD communication
+   * is enabled makes the receiver miss the source messages (issue #357). With PD communication enabled, the measure
+   * switch is already on the active line (see fusb302_tcpm_set_rx_enable): read its level without touching anything.
+   */
+  if (state.rx_enable && (state.cc_polarity == 0 || state.cc_polarity == 1))
+  {
+    tcpc_read(TCPC_REG_STATUS0, &reg);
+    reg &= (TCPC_REG_STATUS0_BC_LVL0 | TCPC_REG_STATUS0_BC_LVL1);
+    if (state.cc_polarity)
+    {
+      *cc1 = TYPEC_CC_VOLT_OPEN;
+      *cc2 = convert_bc_lvl(reg);
+    }
+    else
+    {
+      *cc1 = convert_bc_lvl(reg);
+      *cc2 = TYPEC_CC_VOLT_OPEN;
+    }
+    hal_mutex_unlock(&measure_lock);
+    return;
+  }
 
   /*
    * Measure CC1 first.
@@ -345,6 +404,7 @@ static int fusb302_tcpm_select_rp_value(int rp)
   int reg;
   int rv;
   uint8_t vnc, rd;
+  uint32_t rp_ua;
 
   rv = tcpc_read(TCPC_REG_CONTROL0, &reg);
   if (rv)
@@ -356,20 +416,23 @@ static int fusb302_tcpm_select_rp_value(int rp)
   {
     case TYPEC_RP_1A5:
       reg |= TCPC_REG_CONTROL0_HOST_CUR_1A5;
-      vnc = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_1_5_VNC_MV);
-      rd = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_1_5_RD_THRESH_MV);
+      rp_ua = LMBD_FUSB302_RP_1A5_UA;
       break;
     case TYPEC_RP_3A0:
       reg |= TCPC_REG_CONTROL0_HOST_CUR_3A0;
-      vnc = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_3_0_VNC_MV);
-      rd = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_3_0_RD_THRESH_MV);
+      rp_ua = LMBD_FUSB302_RP_3A0_UA;
       break;
     case TYPEC_RP_USB:
     default:
       reg |= TCPC_REG_CONTROL0_HOST_CUR_USB;
-      vnc = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_DEF_VNC_MV);
-      rd = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_DEF_RD_THRESH_MV);
+      rp_ua = LMBD_FUSB302_RP_USB_UA;
   }
+  /*
+   * Do not use the standard PD_SRC_*_VNC_MV and PD_SRC_*_RD_THRESH_MV thresholds: the board permanent Rd on the CC
+   * lines would make them always read as Rd (see cc_thresholds.h, issue #357)
+   */
+  vnc = lmbd_cc_open_mdac(rp_ua);
+  rd = lmbd_cc_rd_mdac(rp_ua);
   state.mdac_vnc = vnc;
   state.mdac_rd = rd;
   return tcpc_write(TCPC_REG_CONTROL0, reg);
@@ -387,10 +450,11 @@ static int fusb302_tcpm_init()
   /* set default */
   state.cc_polarity = -1;
 
-  /* set the voltage threshold for no connect detection (vOpen) */
-  state.mdac_vnc = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_DEF_VNC_MV);
-  /* set the voltage threshold for Rd vs Ra detection */
-  state.mdac_rd = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_DEF_RD_THRESH_MV);
+  /* the software reset below selects the default USB Rp current source */
+  /* set the voltage threshold for no connect detection (vOpen), adapted to the board Rd */
+  state.mdac_vnc = lmbd_cc_open_mdac(LMBD_FUSB302_RP_USB_UA);
+  /* set the voltage threshold for Rd vs Ra detection, adapted to the board Rd */
+  state.mdac_rd = lmbd_cc_rd_mdac(LMBD_FUSB302_RP_USB_UA);
 
   /* all other variables assumed to default to 0 */
 
@@ -507,7 +571,7 @@ static int fusb302_tcpm_set_cc(int pull)
       reg &= ~(TCPC_REG_SWITCHES0_CC2_PU_EN | TCPC_REG_SWITCHES0_CC1_PU_EN | TCPC_REG_SWITCHES0_CC1_PD_EN |
                TCPC_REG_SWITCHES0_CC2_PD_EN | TCPC_REG_SWITCHES0_VCONN_CC1 | TCPC_REG_SWITCHES0_VCONN_CC2);
 
-      reg |= TCPC_REG_SWITCHES0_CC1_PU_EN | TCPC_REG_SWITCHES0_CC2_PU_EN;
+      reg = fusb302_source_pull_ups(reg);
 
       if (state.vconn_enabled)
         reg |= state.cc_polarity ? TCPC_REG_SWITCHES0_VCONN_CC1 : TCPC_REG_SWITCHES0_VCONN_CC2;
@@ -606,6 +670,13 @@ static int fusb302_tcpm_set_polarity(enum tcpc_cc_polarity polarity)
 
   /* Save the polarity for later */
   state.cc_polarity = polarity;
+
+  /* the active line changed: move the source pull-up with it */
+  if (state.pulling_up && state.rx_enable)
+  {
+    tcpc_read(TCPC_REG_SWITCHES0, &reg);
+    tcpc_write(TCPC_REG_SWITCHES0, fusb302_source_pull_ups(reg));
+  }
 
   return 0;
 }
@@ -724,6 +795,8 @@ static int fusb302_tcpm_set_rx_enable(int enable)
         /* "shouldn't get here" */
         return EC_ERROR_UNKNOWN;
     }
+    if (state.pulling_up)
+      reg = fusb302_source_pull_ups(reg);
     tcpc_write(TCPC_REG_SWITCHES0, reg);
 
     /* Disable BC_LVL interrupt when enabling PD comm */
@@ -735,6 +808,9 @@ static int fusb302_tcpm_set_rx_enable(int enable)
   }
   else
   {
+    /* back to both pull-ups: detect the sink on any line */
+    if (state.pulling_up)
+      reg = fusb302_source_pull_ups(reg);
     tcpc_write(TCPC_REG_SWITCHES0, reg);
 
     /* Enable BC_LVL interrupt when disabling PD comm */

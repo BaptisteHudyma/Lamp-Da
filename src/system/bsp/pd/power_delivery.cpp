@@ -530,8 +530,10 @@ void loop()
   // update battery level
   set_battery_level(static_cast<uint8_t>(component::battery::get_battery_level() / 100));
 
-  // ignore source activity if we are otg (prevent spurious reset)
-  if (is_switching_to_otg())
+  // ignore source activity if we are otg (prevent spurious reset).
+  // The PD state machine only flags the OTG activation when a sink is attached, but the charger can output on VBUS
+  // without one (manual battery mode, or right after a detachment): our own VBUS is not a power source
+  if (is_switching_to_otg() or bsp::charger::is_in_OTG())
   {
     return;
   }

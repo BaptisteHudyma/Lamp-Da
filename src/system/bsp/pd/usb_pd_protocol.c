@@ -140,6 +140,8 @@ static const uint8_t vdo_ver[] = {VDM_VER10, VDM_VER10, VDM_VER20};
 static int head;
 static uint32_t payload[7];
 static int timeout = 10 * MSEC_US;
+/* end of the source detachment debounce, 0 if the CC line is not seen open */
+static uint64_t src_detach_debounce = 0;
 static enum tcpc_cc_voltage_status cc1, cc2;
 static int res, incoming_packet = 0;
 static int hard_reset_count = 0;
@@ -3502,15 +3504,17 @@ void pd_run_state_machine()
         set_state(PD_STATE_SRC_DISCONNECTED);
         break;
       }
-#ifdef CONFIG_USB_PD_TCPM_TCPCI
       /*
        * After transmitting hard reset, TCPM writes
        * to RECEIVE_DETECT register to enable
        * PD message passing.
+       *
+       * pd_execute_hard_reset() disables RX (and the FUSB302 auto GoodCRC with it). Upstream only re-enables it for
+       * TCPCI chips, but the FUSB302 needs it too: without it, the sink GoodCRC are never heard, all the source
+       * capabilities fail and the source stays in SRC_DISCOVERY without a contract (issue #357, sink side is #633)
        */
       if (pd_comm_is_enabled())
         tcpm_set_rx_enable(1);
-#endif /* CONFIG_USB_PD_TCPM_TCPCI */
 
       set_state(PD_STATE_SRC_STARTUP);
       break;
@@ -4680,18 +4684,56 @@ void pd_run_state_machine()
 
   /* Check for disconnection if we're connected */
   if (!pd_is_connected())
+  {
+    src_detach_debounce = 0;
     return;
+  }
 #ifdef CONFIG_USB_PD_DUAL_ROLE
   if (pd_is_power_swapping())
+  {
+    src_detach_debounce = 0;
     return;
+  }
 #endif
+  if (pd.power_role != PD_ROLE_SOURCE)
+    src_detach_debounce = 0;
   if (pd.power_role == PD_ROLE_SOURCE)
   {
     /* Source: detect disconnect by monitoring CC */
     tcpm_get_cc(&cc1, &cc2);
     if (polarity_rm_dts(pd.polarity))
       cc1 = cc2;
-    if (cc1 == TYPEC_CC_VOLT_OPEN)
+
+    /*
+     * Debounce the detachment (tPDDebounce): a single measurement can read open while the partner transmits
+     * (BMC high level is close to the open threshold), and dropping the contract on it looks like a faulty source
+     */
+    int is_detached = 0;
+    if (cc1 != TYPEC_CC_VOLT_OPEN)
+    {
+      src_detach_debounce = 0;
+    }
+    else
+    {
+      now = get_time();
+      if (src_detach_debounce == 0)
+        src_detach_debounce = now.val + PD_T_PD_DEBOUNCE;
+
+      if (now.val >= src_detach_debounce)
+      {
+        src_detach_debounce = 0;
+        is_detached = 1;
+      }
+      else
+      {
+        /* measure again soon */
+        const int64_t left = (int64_t)(src_detach_debounce - now.val);
+        if (timeout < 0 || timeout > left)
+          timeout = (int)left;
+      }
+    }
+
+    if (is_detached)
     {
       set_state(PD_STATE_SRC_DISCONNECTED);
       /* Debouncing */
