@@ -399,12 +399,52 @@ static int fusb302_send_message(uint16_t header, const uint32_t* data, uint8_t* 
   return rv;
 }
 
+/* Source CC comparator thresholds (open vs Rd, Rd vs Ra), for an Rp current source */
+static void fusb302_set_source_thresholds(int rp)
+{
+#if LMBD_USBC_HAS_BOARD_CC_RD
+  /*
+   * Do not use the standard PD_SRC_*_VNC_MV and PD_SRC_*_RD_THRESH_MV thresholds: the board permanent Rd on the CC
+   * lines would make them always read as Rd (see cc_thresholds.h, issue #357)
+   */
+  uint32_t rp_ua;
+  switch (rp)
+  {
+    case TYPEC_RP_1A5:
+      rp_ua = LMBD_FUSB302_RP_1A5_UA;
+      break;
+    case TYPEC_RP_3A0:
+      rp_ua = LMBD_FUSB302_RP_3A0_UA;
+      break;
+    case TYPEC_RP_USB:
+    default:
+      rp_ua = LMBD_FUSB302_RP_USB_UA;
+  }
+  state.mdac_vnc = lmbd_cc_open_mdac(rp_ua);
+  state.mdac_rd = lmbd_cc_rd_mdac(rp_ua);
+#else
+  switch (rp)
+  {
+    case TYPEC_RP_1A5:
+      state.mdac_vnc = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_1_5_VNC_MV);
+      state.mdac_rd = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_1_5_RD_THRESH_MV);
+      break;
+    case TYPEC_RP_3A0:
+      state.mdac_vnc = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_3_0_VNC_MV);
+      state.mdac_rd = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_3_0_RD_THRESH_MV);
+      break;
+    case TYPEC_RP_USB:
+    default:
+      state.mdac_vnc = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_DEF_VNC_MV);
+      state.mdac_rd = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_DEF_RD_THRESH_MV);
+  }
+#endif
+}
+
 static int fusb302_tcpm_select_rp_value(int rp)
 {
   int reg;
   int rv;
-  uint8_t vnc, rd;
-  uint32_t rp_ua;
 
   rv = tcpc_read(TCPC_REG_CONTROL0, &reg);
   if (rv)
@@ -416,25 +456,15 @@ static int fusb302_tcpm_select_rp_value(int rp)
   {
     case TYPEC_RP_1A5:
       reg |= TCPC_REG_CONTROL0_HOST_CUR_1A5;
-      rp_ua = LMBD_FUSB302_RP_1A5_UA;
       break;
     case TYPEC_RP_3A0:
       reg |= TCPC_REG_CONTROL0_HOST_CUR_3A0;
-      rp_ua = LMBD_FUSB302_RP_3A0_UA;
       break;
     case TYPEC_RP_USB:
     default:
       reg |= TCPC_REG_CONTROL0_HOST_CUR_USB;
-      rp_ua = LMBD_FUSB302_RP_USB_UA;
   }
-  /*
-   * Do not use the standard PD_SRC_*_VNC_MV and PD_SRC_*_RD_THRESH_MV thresholds: the board permanent Rd on the CC
-   * lines would make them always read as Rd (see cc_thresholds.h, issue #357)
-   */
-  vnc = lmbd_cc_open_mdac(rp_ua);
-  rd = lmbd_cc_rd_mdac(rp_ua);
-  state.mdac_vnc = vnc;
-  state.mdac_rd = rd;
+  fusb302_set_source_thresholds(rp);
   return tcpc_write(TCPC_REG_CONTROL0, reg);
 }
 
@@ -450,11 +480,8 @@ static int fusb302_tcpm_init()
   /* set default */
   state.cc_polarity = -1;
 
-  /* the software reset below selects the default USB Rp current source */
-  /* set the voltage threshold for no connect detection (vOpen), adapted to the board Rd */
-  state.mdac_vnc = lmbd_cc_open_mdac(LMBD_FUSB302_RP_USB_UA);
-  /* set the voltage threshold for Rd vs Ra detection, adapted to the board Rd */
-  state.mdac_rd = lmbd_cc_rd_mdac(LMBD_FUSB302_RP_USB_UA);
+  /* the software reset below selects the default USB Rp current source: set the matching CC thresholds */
+  fusb302_set_source_thresholds(TYPEC_RP_USB);
 
   /* all other variables assumed to default to 0 */
 

@@ -22,6 +22,9 @@
 
 #include <stdint.h>
 
+/* board CC hardware gate (LMBD_USBC_HAS_BOARD_CC_RD), set in the user constants */
+#include "../../../user/constants.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
