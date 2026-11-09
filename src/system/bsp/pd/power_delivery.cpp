@@ -294,104 +294,6 @@ const char* cc_level_str(const int level)
   }
 }
 
-/// Name of a PD message type, for the debug timeline
-const char* pd_message_str(const uint16_t header)
-{
-  const uint8_t type = PD_HEADER_TYPE(header);
-  if (PD_HEADER_CNT(header) == 0)
-  {
-    switch (type)
-    {
-      case PD_CTRL_GOOD_CRC:
-        return "GoodCRC";
-      case PD_CTRL_GOTO_MIN:
-        return "GotoMin";
-      case PD_CTRL_ACCEPT:
-        return "Accept";
-      case PD_CTRL_REJECT:
-        return "Reject";
-      case PD_CTRL_PING:
-        return "Ping";
-      case PD_CTRL_PS_RDY:
-        return "PS_RDY";
-      case PD_CTRL_GET_SOURCE_CAP:
-        return "Get_Source_Cap";
-      case PD_CTRL_GET_SINK_CAP:
-        return "Get_Sink_Cap";
-      case PD_CTRL_DR_SWAP:
-        return "DR_Swap";
-      case PD_CTRL_PR_SWAP:
-        return "PR_Swap";
-      case PD_CTRL_VCONN_SWAP:
-        return "VCONN_Swap";
-      case PD_CTRL_WAIT:
-        return "Wait";
-      case PD_CTRL_SOFT_RESET:
-        return "Soft_Reset";
-      default:
-        return "ctrl?";
-    }
-  }
-  switch (type)
-  {
-    case PD_DATA_SOURCE_CAP:
-      return "Source_Cap";
-    case PD_DATA_REQUEST:
-      return "Request";
-    case PD_DATA_BIST:
-      return "BIST";
-    case PD_DATA_SINK_CAP:
-      return "Sink_Cap";
-    case PD_DATA_VENDOR_DEF:
-      return "VDM";
-    default:
-      return "data?";
-  }
-}
-
-/// Print the last PD events, oldest first (issue #357)
-void show_pd_trace()
-{
-  static constexpr int maxEvents = 32;
-  static struct pd_trace_entry events[maxEvents];
-  const int count = pd_get_trace(events, maxEvents);
-  const uint32_t now = count > 0 ? events[count - 1].time_ms : 0;
-  bsp::lampda_print("PD timeline (%d events, time relative to the last one):", count);
-  for (int i = 0; i < count; ++i)
-  {
-    const auto& e = events[i];
-    const long t = static_cast<long>(e.time_ms) - static_cast<long>(now);
-    switch (e.kind)
-    {
-      case PD_TRACE_STATE:
-        bsp::lampda_print("  %6ldms  state %s", t, pd_state_cstr(e.value));
-        break;
-      case PD_TRACE_RX:
-        bsp::lampda_print("  %6ldms  RX %s (id %d, %d objects)",
-                          t,
-                          pd_message_str(e.extra),
-                          PD_HEADER_ID(e.extra),
-                          PD_HEADER_CNT(e.extra));
-        break;
-      case PD_TRACE_TX:
-        bsp::lampda_print("  %6ldms  TX %s (id %d) %s",
-                          t,
-                          pd_message_str(e.extra),
-                          PD_HEADER_ID(e.extra),
-                          e.ok ? "acked" : "NOT ACKED");
-        break;
-      case PD_TRACE_HARD_RESET_RX:
-        bsp::lampda_print("  %6ldms  RX HARD RESET", t);
-        break;
-      case PD_TRACE_TX_HARD_RESET:
-        bsp::lampda_print("  %6ldms  TX HARD RESET %s", t, e.ok ? "sent" : "failed");
-        break;
-      default:
-        break;
-    }
-  }
-}
-
 void show_pd_contract()
 {
   struct pd_contract_info info;
@@ -451,23 +353,14 @@ void show_pd_contract()
                     static_cast<unsigned long>(c.src_caps_acked),
                     static_cast<unsigned long>(c.src_contracts));
 
-  // raw measures (issue #357): this can make the PD reception miss a message, only on user request
-  struct fusb302_cc_debug ccDebug;
-  fusb302_get_cc_debug(&ccDebug);
-  bsp::lampda_print("CC raw: %s, rx %s, active CC%d, Rp %luuA, thresholds open > %lumV > Rd > %lumV > Ra",
-                    ccDebug.pulling_up ? "pull-up (source)" : "pull-down (sink)",
-                    ccDebug.rx_enable ? "ON" : "off",
-                    ccDebug.polarity + 1,
-                    static_cast<unsigned long>(ccDebug.rp_ua),
-                    static_cast<unsigned long>(ccDebug.open_threshold_mv),
-                    static_cast<unsigned long>(ccDebug.rd_threshold_mv));
-  bsp::lampda_print("CC raw: CC1 ~%lumV, CC2 ~%lumV. TX: success %lu, collisions %lu, retry fails %lu",
-                    static_cast<unsigned long>(ccDebug.cc1_mv),
-                    static_cast<unsigned long>(ccDebug.cc2_mv),
-                    static_cast<unsigned long>(ccDebug.tx_success),
-                    static_cast<unsigned long>(ccDebug.tx_collisions),
-                    static_cast<unsigned long>(ccDebug.tx_retry_fails));
-
+  uint32_t txSuccess = 0;
+  uint32_t txCollisions = 0;
+  uint32_t txRetryFails = 0;
+  fusb302_get_tx_counters(&txSuccess, &txCollisions, &txRetryFails);
+  bsp::lampda_print("TX: success %lu, collisions %lu, retry fails %lu",
+                    static_cast<unsigned long>(txSuccess),
+                    static_cast<unsigned long>(txCollisions),
+                    static_cast<unsigned long>(txRetryFails));
   bsp::lampda_print("PD state machine: last ran %lums ago",
                     static_cast<unsigned long>(hal::time_ms() - pd_get_last_run_ms()));
   bsp::lampda_print("Interrupt: line %s, stuck line kicks %lu, alert reruns %lu",
@@ -480,7 +373,6 @@ void show_pd_status()
 {
   data.serial_show();
   show_pd_contract();
-  show_pd_trace();
 }
 
 /**

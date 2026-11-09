@@ -225,36 +225,9 @@ extern "C" {
   /// Last CC levels read on CC1 and CC2 (enum tcpc_cc_voltage_status), for debug
   void fusb302_get_last_cc(int* cc1, int* cc2);
 
-  /// Debug snapshot of the CC configuration and transmission errors (issue #357)
-  struct fusb302_cc_debug
-  {
-    /// 1 when pulling up (source), 0 when pulling down (sink)
-    int pulling_up;
-    /// 1 when PD reception is enabled
-    int rx_enable;
-    /// active CC line (0: CC1, 1: CC2, -1: unknown)
-    int polarity;
-    /// Rp current source configured in the chip, in microamps (0 if unknown)
-    uint32_t rp_ua;
-    /// source side thresholds in use: open vs Rd, and Rd vs Ra, in millivolts
-    uint32_t open_threshold_mv;
-    uint32_t rd_threshold_mv;
-    /// raw CC voltages, in millivolts (42mV resolution)
-    uint32_t cc1_mv;
-    uint32_t cc2_mv;
-    /// transmissions failed on a collision (line busy), or after all retries without GoodCRC
-    uint32_t tx_collisions;
-    uint32_t tx_retry_fails;
-    /// transmissions acknowledged by a GoodCRC
-    uint32_t tx_success;
-  };
-
-  /**
-   * Fill the debug snapshot, and measure the raw CC voltages.
-   * \warning: the measure switches also select the PD receiver line: messages can be lost during the ~3ms of
-   * measurement. Only call it on user request.
-   */
-  void fusb302_get_cc_debug(struct fusb302_cc_debug* debug);
+  /// Transmission results since boot, for debug: acknowledged by a GoodCRC, failed on a collision (line busy), or
+  /// failed after all retries without GoodCRC
+  void fusb302_get_tx_counters(uint32_t* success, uint32_t* collisions, uint32_t* retry_fails);
 
 #ifdef __cplusplus
 }

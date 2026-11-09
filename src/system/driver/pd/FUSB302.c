@@ -543,85 +543,11 @@ static uint32_t tx_collisions = 0;
 static uint32_t tx_retry_fails = 0;
 static uint32_t tx_success = 0;
 
-/* Measure the voltage of a CC line, with the terminations as they are (binary search on the MDAC) */
-static uint32_t measure_cc_pin_mv(int cc_measure)
+void fusb302_get_tx_counters(uint32_t* success, uint32_t* collisions, uint32_t* retry_fails)
 {
-  int switches0_reg;
-  int measure_reg;
-  int reg;
-  int mdac = 0;
-  int i;
-
-  hal_mutex_lock(&measure_lock);
-
-  tcpc_read(TCPC_REG_SWITCHES0, &switches0_reg);
-  tcpc_read(TCPC_REG_MEASURE, &measure_reg);
-
-  reg = switches0_reg & ~(TCPC_REG_SWITCHES0_MEAS_CC1 | TCPC_REG_SWITCHES0_MEAS_CC2);
-  /* same pull-up as measure_cc_pin_source when we are a source: only on the measured line */
-  if (state.pulling_up)
-  {
-    reg &= ~(TCPC_REG_SWITCHES0_CC1_PU_EN | TCPC_REG_SWITCHES0_CC2_PU_EN);
-    if (cc_measure == TCPC_REG_SWITCHES0_MEAS_CC1)
-      reg |= TCPC_REG_SWITCHES0_CC1_PU_EN;
-    else
-      reg |= TCPC_REG_SWITCHES0_CC2_PU_EN;
-  }
-  reg |= cc_measure;
-  tcpc_write(TCPC_REG_SWITCHES0, reg);
-
-  for (i = 5; i >= 0; i--)
-  {
-    const int candidate = mdac | (1 << i);
-    tcpc_write(TCPC_REG_MEASURE, candidate & TCPC_REG_MEASURE_MDAC_MASK);
-    delay_us(250);
-    tcpc_read(TCPC_REG_STATUS0, &reg);
-    if (reg & TCPC_REG_STATUS0_COMP)
-      mdac = candidate;
-  }
-
-  tcpc_write(TCPC_REG_MEASURE, measure_reg);
-  tcpc_write(TCPC_REG_SWITCHES0, switches0_reg);
-
-  hal_mutex_unlock(&measure_lock);
-
-  /* the voltage is above (mdac + 1) * 42mV, and under the next step */
-  return lmbd_fusb302_mdac_to_mv((uint8_t)mdac);
-}
-
-void fusb302_get_cc_debug(struct fusb302_cc_debug* debug)
-{
-  int reg = 0;
-
-  debug->pulling_up = state.pulling_up;
-  debug->rx_enable = state.rx_enable;
-  debug->polarity = state.cc_polarity;
-
-  tcpc_read(TCPC_REG_CONTROL0, &reg);
-  switch (reg & TCPC_REG_CONTROL0_HOST_CUR_MASK)
-  {
-    case TCPC_REG_CONTROL0_HOST_CUR_USB:
-      debug->rp_ua = LMBD_FUSB302_RP_USB_UA;
-      break;
-    case TCPC_REG_CONTROL0_HOST_CUR_1A5:
-      debug->rp_ua = LMBD_FUSB302_RP_1A5_UA;
-      break;
-    case TCPC_REG_CONTROL0_HOST_CUR_3A0:
-      debug->rp_ua = LMBD_FUSB302_RP_3A0_UA;
-      break;
-    default:
-      debug->rp_ua = 0;
-      break;
-  }
-  debug->open_threshold_mv = lmbd_fusb302_mdac_to_mv(state.mdac_vnc);
-  debug->rd_threshold_mv = lmbd_fusb302_mdac_to_mv(state.mdac_rd);
-
-  debug->cc1_mv = measure_cc_pin_mv(TCPC_REG_SWITCHES0_MEAS_CC1);
-  debug->cc2_mv = measure_cc_pin_mv(TCPC_REG_SWITCHES0_MEAS_CC2);
-
-  debug->tx_collisions = tx_collisions;
-  debug->tx_retry_fails = tx_retry_fails;
-  debug->tx_success = tx_success;
+  *success = tx_success;
+  *collisions = tx_collisions;
+  *retry_fails = tx_retry_fails;
 }
 
 static int fusb302_tcpm_get_cc(enum tcpc_cc_voltage_status* cc1, enum tcpc_cc_voltage_status* cc2)
