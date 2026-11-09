@@ -4,6 +4,7 @@
 
 #include "src/system/hal/time.h"
 #include "src/system/hal/gpio.h"
+#include "src/system/hal/mutex.h"
 #include "src/system/hal/registers.h"
 
 #include "src/system/bsp/pd/power_delivery.h"
@@ -43,7 +44,27 @@ struct BatteryStatus_t
 };
 static BatteryStatus_t batteryStatus;
 
+/// Working charger state: only accessed by the power thread, that runs the charger loop
 static Charger_t charger;
+
+/// Copy of the charger state given to the readers of all threads, see get_state().
+/// The power thread updates it from charger once its update is complete: only access it under _publishedChargerMutex
+static Charger_t publishedCharger;
+
+/// Guards publishedCharger: a reader never sees a partial update (status, measurements and error messages). Not
+/// recursive
+static hal::mutex::hal_mutex_t _publishedChargerMutex;
+/// Initialized at program start: the state can be read before the charger setup
+[[maybe_unused]] static const bool _isPublishedChargerMutexInit =
+        (hal::mutex::hal_mutex_init(&_publishedChargerMutex), true);
+
+/// Publish the working charger state to the readers
+static void publish_state()
+{
+  hal::mutex::hal_mutex_lock(&_publishedChargerMutex);
+  publishedCharger = charger;
+  hal::mutex::hal_mutex_unlock(&_publishedChargerMutex);
+}
 
 bool isOtgEnabled_s = false;
 
@@ -318,6 +339,9 @@ void update_state()
 
   // set update time
   charger.lastUpdateTime_ms = hal::time_ms();
+
+  // the update is complete: give it to the readers
+  publish_state();
 }
 
 /**
@@ -353,6 +377,7 @@ bool setup()
       charger.status = Charger_t::ChargerStatus_t::ERROR_SOFTWARE;
       charger.softwareErrorMessage = bsp::charger::get_software_error_message();
     }
+    publish_state();
 
     // abort init
     return false;
@@ -360,6 +385,7 @@ bool setup()
   // else: init is ok
 
   charger.status = Charger_t::ChargerStatus_t::INACTIVE;
+  publish_state();
   isSetup = true;
   return true;
 }
@@ -435,7 +461,13 @@ bool can_use_vbus_power() { return bsp::powerDelivery::can_use_power(); }
 
 bool is_vbus_signal_detected() { return hal::registers::is_voltage_detected_on_vbus(); }
 
-Charger_t get_state() { return charger; }
+Charger_t get_state()
+{
+  hal::mutex::hal_mutex_lock(&_publishedChargerMutex);
+  const Charger_t state = publishedCharger;
+  hal::mutex::hal_mutex_unlock(&_publishedChargerMutex);
+  return state;
+}
 
 bool Charger_t::is_charging() const
 {
