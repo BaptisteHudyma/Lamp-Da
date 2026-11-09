@@ -556,6 +556,24 @@ static int fusb302_tcpm_get_cc(enum tcpc_cc_voltage_status* cc1, enum tcpc_cc_vo
   return 0;
 }
 
+/*
+ * BC_LVL interrupt: only useful to a sink, without PD communication (CC level change).
+ * As a source, the CC measurements switch the pull-ups and comparators, which changes BC_LVL: each measurement raised
+ * an interrupt, the CC event woke the PD task, that measured again... an endless loop that starved the lower priority
+ * threads until the watchdog reset (issue #357). The source detection polls the CC lines on a timer instead.
+ */
+static void fusb302_update_bc_lvl_mask(void)
+{
+  int reg;
+  if (tcpc_read(TCPC_REG_MASK, &reg))
+    return;
+  if (state.rx_enable || state.pulling_up)
+    reg |= TCPC_REG_MASK_BC_LVL;
+  else
+    reg &= ~TCPC_REG_MASK_BC_LVL;
+  tcpc_write(TCPC_REG_MASK, reg);
+}
+
 static int fusb302_tcpm_set_cc(int pull)
 {
   int reg;
@@ -619,6 +637,7 @@ static int fusb302_tcpm_set_cc(int pull)
       /* Unsupported... */
       return EC_ERROR_UNIMPLEMENTED;
   }
+  fusb302_update_bc_lvl_mask();
   return 0;
 }
 
@@ -800,8 +819,7 @@ static int fusb302_tcpm_set_rx_enable(int enable)
     tcpc_write(TCPC_REG_SWITCHES0, reg);
 
     /* Disable BC_LVL interrupt when enabling PD comm */
-    if (!tcpc_read(TCPC_REG_MASK, &reg))
-      tcpc_write(TCPC_REG_MASK, reg | TCPC_REG_MASK_BC_LVL);
+    fusb302_update_bc_lvl_mask();
 
     /* flush rx fifo in case messages have been coming our way */
     fusb302_flush_rx_fifo();
@@ -813,9 +831,8 @@ static int fusb302_tcpm_set_rx_enable(int enable)
       reg = fusb302_source_pull_ups(reg);
     tcpc_write(TCPC_REG_SWITCHES0, reg);
 
-    /* Enable BC_LVL interrupt when disabling PD comm */
-    if (!tcpc_read(TCPC_REG_MASK, &reg))
-      tcpc_write(TCPC_REG_MASK, reg & ~TCPC_REG_MASK_BC_LVL);
+    /* Enable BC_LVL interrupt when disabling PD comm (sink only, see fusb302_update_bc_lvl_mask) */
+    fusb302_update_bc_lvl_mask();
   }
 
 #ifdef CONFIG_USB_PD_DECODE_SOP
@@ -1050,6 +1067,9 @@ void fusb302_tcpc_alert()
    * since CC level will constantly change.
    */
   if (state.rx_enable)
+    interrupt &= ~TCPC_REG_INTERRUPT_BC_LVL;
+  /* nor as a source: our own CC measurements change it (see fusb302_update_bc_lvl_mask) */
+  if (state.pulling_up)
     interrupt &= ~TCPC_REG_INTERRUPT_BC_LVL;
 
   if (interrupt & TCPC_REG_INTERRUPT_BC_LVL)

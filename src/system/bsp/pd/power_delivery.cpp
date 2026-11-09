@@ -484,21 +484,12 @@ void start_threads()
   if (!isSetup)
     return;
 
-  static constexpr uint16_t taskSchedulerThreadBufferSize = 255;
-  static bsp::threads::TaskBuffer_t taskSchedulerThreadBuffer[taskSchedulerThreadBufferSize];
-
   static constexpr uint16_t pdInterruptThreadBufferSize = 255;
   static bsp::threads::TaskBuffer_t pdInterruptThreadBuffer[pdInterruptThreadBufferSize];
 
   static constexpr uint16_t powerDeliveryThreadBufferSize = 1024;
   static bsp::threads::TaskBuffer_t powerDeliveryThreadBuffer[powerDeliveryThreadBufferSize];
 
-  // start task scheduler, in suspended state
-  bsp::threads::start_thread(task_scheduler,
-                             bsp::threads::taskScheduler_taskName,
-                             2,
-                             taskSchedulerThreadBufferSize,
-                             taskSchedulerThreadBuffer);
   // start interrupt handle, in suspended state
   bsp::threads::start_thread(interrupt_handle,
                              bsp::threads::pdInterruptHandle_taskName,

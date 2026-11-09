@@ -34,9 +34,6 @@ timestamp_t get_time(void);
  */
 uint32_t task_timeout_us_to_ms(uint64_t timeout_us);
 
-// call in a dedicated task
-void task_scheduler(void);
-
 /**
  * Set a task event.
  *
