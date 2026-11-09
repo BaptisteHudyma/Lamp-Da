@@ -48,6 +48,34 @@ inline bool is_unplugged(const uint32_t timeSinceVbusValid_ms, const bool isSink
   return timeSinceVbusValid_ms > (isSinkHardResetting ? hardResetUnplugDeglitch_ms : unplugDeglitch_ms);
 }
 
+/**
+ * Follows a VBUS loss, to decide when it is an unplug.
+ * A hard reset seen during the loss keeps the hard reset grace until VBUS is valid again: the state machine can leave
+ * the hard reset states before VBUS is back over our threshold, and that is not an unplug. The deadline is always
+ * counted from the original VBUS loss, so no PD state change can extend it (issue #642).
+ */
+class VbusLossTracker
+{
+public:
+  /// VBUS is valid: a new loss starts from this time
+  void on_vbus_valid(const uint32_t time_ms)
+  {
+    lastVbusValid_ms_ = time_ms;
+    wasHardResetSeen_ = false;
+  }
+
+  /// VBUS is not valid: return true if this loss is an unplug
+  bool is_unplugged(const uint32_t time_ms, const bool isSinkHardResetting)
+  {
+    wasHardResetSeen_ = wasHardResetSeen_ or isSinkHardResetting;
+    return policy::is_unplugged(time_ms - lastVbusValid_ms_, wasHardResetSeen_);
+  }
+
+private:
+  uint32_t lastVbusValid_ms_ = 0;
+  bool wasHardResetSeen_ = false;
+};
+
 /// Snapshot of the input source status
 struct SourceStatus
 {

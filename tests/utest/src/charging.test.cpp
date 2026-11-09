@@ -207,9 +207,63 @@ TEST(charging_policy, unplug_detected_even_if_stuck_in_hard_reset)
 {
   EXPECT_TRUE(policy::is_unplugged(policy::hardResetUnplugDeglitch_ms + 1, true));
   EXPECT_TRUE(policy::is_unplugged(60 * 1000, true));
+}
 
-  // the state machine leaves the hard reset with VBUS still lost: the normal deglitch applies at once
-  EXPECT_TRUE(policy::is_unplugged(policy::unplugDeglitch_ms + 1, false));
+/// A VBUS loss without hard reset uses the normal deglitch
+TEST(charging_vbus_loss, loss_without_hard_reset_uses_the_normal_deglitch)
+{
+  policy::VbusLossTracker tracker;
+  tracker.on_vbus_valid(10000);
+
+  EXPECT_FALSE(tracker.is_unplugged(10000 + policy::unplugDeglitch_ms, false));
+  EXPECT_TRUE(tracker.is_unplugged(10000 + policy::unplugDeglitch_ms + 1, false));
+}
+
+/// The state machine leaves the hard reset states before VBUS is back over our threshold: the hard reset grace stays
+TEST(charging_vbus_loss, hard_reset_grace_survives_a_pd_state_change)
+{
+  policy::VbusLossTracker tracker;
+  tracker.on_vbus_valid(10000);
+
+  // hard reset: the source drops VBUS
+  EXPECT_FALSE(tracker.is_unplugged(10100, true));
+  // the state machine left the hard reset (discovery), VBUS still under the threshold: not an unplug
+  EXPECT_FALSE(tracker.is_unplugged(10000 + policy::unplugDeglitch_ms + 1, false));
+  EXPECT_FALSE(tracker.is_unplugged(10000 + policy::hardResetUnplugDeglitch_ms, false));
+
+  // VBUS is back: the next loss starts without the hard reset grace
+  tracker.on_vbus_valid(12000);
+  EXPECT_TRUE(tracker.is_unplugged(12000 + policy::unplugDeglitch_ms + 1, false));
+}
+
+/// The grace deadline is counted from the original VBUS loss: no PD state change can extend it (issue #642)
+TEST(charging_vbus_loss, hard_reset_grace_bounded_by_the_vbus_loss_time)
+{
+  policy::VbusLossTracker tracker;
+  tracker.on_vbus_valid(10000);
+
+  // a hard reset seen late in the loss, then the state machine goes back and forth
+  EXPECT_FALSE(tracker.is_unplugged(10900, true));
+  EXPECT_FALSE(tracker.is_unplugged(11500, false));
+  EXPECT_FALSE(tracker.is_unplugged(12500, true));
+  EXPECT_FALSE(tracker.is_unplugged(10000 + policy::hardResetUnplugDeglitch_ms, true));
+
+  // the deadline does not move, whatever the state
+  EXPECT_TRUE(tracker.is_unplugged(10000 + policy::hardResetUnplugDeglitch_ms + 1, true));
+  EXPECT_TRUE(tracker.is_unplugged(10000 + policy::hardResetUnplugDeglitch_ms + 1, false));
+  // stuck in a hard reset state forever: still an unplug
+  EXPECT_TRUE(tracker.is_unplugged(10000 + 60 * 1000, true));
+}
+
+/// The time wraps after ~49 days: the loss duration is still right
+TEST(charging_vbus_loss, time_wrap_around)
+{
+  policy::VbusLossTracker tracker;
+  tracker.on_vbus_valid(UINT32_MAX - 500);
+
+  EXPECT_FALSE(tracker.is_unplugged(UINT32_MAX - 400, true));
+  EXPECT_FALSE(tracker.is_unplugged(policy::hardResetUnplugDeglitch_ms - 501, false));
+  EXPECT_TRUE(tracker.is_unplugged(policy::hardResetUnplugDeglitch_ms - 499, false));
 }
 
 //

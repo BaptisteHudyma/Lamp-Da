@@ -536,7 +536,7 @@ void loop()
     return;
   }
 
-  static uint32_t lastVbusValid = 0;
+  static policy::VbusLossTracker vbusLoss;
 
   // source detected
   const uint32_t time = hal::time_ms();
@@ -547,19 +547,24 @@ void loop()
       powerSourceDetectedTime_s = time;
       isPowerSourceDetected_s = true;
     }
-    lastVbusValid = time;
+    vbusLoss.on_vbus_valid(time);
   }
-  // deglitch time
-  else if (isPowerSourceDetected_s and
-           // plugged in power can flicker
-           time - powerSourceDetectedTime_s > 100 and
-           // vbus can become briefly invalid when using the ICO algorithm, and the source drops it on a hard reset (up
-           // to ~2s, this is not an unplug). The hard reset delay is bounded here, never trust the PD state alone: a
-           // stalled state machine would keep the source detected forever (issue #642)
-           policy::is_unplugged(time - lastVbusValid, is_sink_hard_resetting() != 0))
+  else
   {
-    isPowerSourceDetected_s = false;
-    reset_cache();
+    // vbus can become briefly invalid when using the ICO algorithm, and the source drops it on a hard reset (up to ~2s,
+    // this is not an unplug). Always updated (not short circuited), so that a hard reset during the loss is not missed.
+    // The hard reset grace is bounded, never trust the PD state alone: a stalled state machine would keep the source
+    // detected forever (issue #642)
+    const bool isUnplugged = vbusLoss.is_unplugged(time, is_sink_hard_resetting() != 0);
+
+    // deglitch time
+    if (isPowerSourceDetected_s and
+        // plugged in power can flicker
+        time - powerSourceDetectedTime_s > 100 and isUnplugged)
+    {
+      isPowerSourceDetected_s = false;
+      reset_cache();
+    }
   }
 
   // no deglitch, this needs to be reactive
