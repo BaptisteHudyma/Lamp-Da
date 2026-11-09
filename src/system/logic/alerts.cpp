@@ -160,6 +160,10 @@ struct AlertBase
   /// return true if this alert type should be raised
   virtual bool should_be_raised() const { return false; }
 
+  /// Maximum output brightness allowed while this alert is raised.
+  /// The system limit is the lowest of the raised alerts limits, see handle_all()
+  virtual brightness_t max_brightness() const { return ::lampda::brightness::absoluteMaximumBrightness; }
+
   /// return true if this alert type should be cleared
   virtual bool should_be_cleared() const { return false; }
 
@@ -404,14 +408,17 @@ struct Alert_BatteryLow : public AlertBase
     return chargerState.is_effectivly_charging();
   }
 
+  /// limit brightness to quarter of the max value
+  brightness_t max_brightness() const override
+  {
+    return static_cast<brightness_t>(0.25 * ::lampda::brightness::absoluteMaximumBrightness);
+  }
+
   /// Execution will lower the brightness output
   void on_raised() const override
   {
-    // limit brightness to quarter of the max value
-    constexpr brightness_t clampedBrightness =
-            static_cast<brightness_t>(0.25 * ::lampda::brightness::absoluteMaximumBrightness);
-
-    logic::brightness::set_max_brightness(clampedBrightness);
+    // apply the limit now, before the brightness update (it is kept by handle_all() while raised)
+    logic::brightness::set_max_brightness(min(max_brightness(), logic::brightness::get_max_brightness()));
     logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
     logic::brightness::update_saved_brightness();
 
@@ -479,14 +486,17 @@ struct Alert_TempTooHigh : public AlertBase
     return hal::registers::read_CPU_temperature_degreesC() <= physical_constants::maxSystemTemp_c * 0.75;
   }
 
+  /// limit brightness to half the max value
+  brightness_t max_brightness() const override
+  {
+    return static_cast<brightness_t>(0.5 * ::lampda::brightness::absoluteMaximumBrightness);
+  }
+
   /// Execution will lower the max brightness of the output
   void on_raised() const override
   {
-    // limit brightness to half the max value
-    constexpr brightness_t clampedBrightness =
-            static_cast<brightness_t>(0.5 * ::lampda::brightness::absoluteMaximumBrightness);
-
-    logic::brightness::set_max_brightness(clampedBrightness);
+    // apply the limit now, before the brightness update (it is kept by handle_all() while raised)
+    logic::brightness::set_max_brightness(min(max_brightness(), logic::brightness::get_max_brightness()));
     logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
     logic::brightness::update_saved_brightness();
 
@@ -865,6 +875,17 @@ void update_alerts()
 
 void signal_wake_up_from_charger() { _startupChargerTime = hal::time_ms(); }
 
+brightness_t get_alerts_max_brightness()
+{
+  brightness_t maxBrightness = ::lampda::brightness::absoluteMaximumBrightness;
+  for (auto alert: allAlerts)
+  {
+    if (manager.is_raised(alert->get_type()))
+      maxBrightness = min(maxBrightness, alert->max_brightness());
+  }
+  return maxBrightness;
+}
+
 void handle_all(const bool shouldIgnoreAlerts)
 {
   // update all alerts
@@ -872,12 +893,9 @@ void handle_all(const bool shouldIgnoreAlerts)
 
   const bool isNoAlertsRaised = manager.is_clear();
 
-  // no alerts: reset the max brightness
-  if (isNoAlertsRaised)
-  {
-    // This should be called on no alerts only, not ignore alerts
-    logic::brightness::set_max_brightness(::lampda::brightness::absoluteMaximumBrightness);
-  }
+  // the max brightness is the lowest limit of the raised alerts: a cleared alert releases its limit, even if other
+  // alerts are still raised (not affected by shouldIgnoreAlerts)
+  logic::brightness::set_max_brightness(get_alerts_max_brightness());
 
   //
   if (shouldIgnoreAlerts or isNoAlertsRaised)

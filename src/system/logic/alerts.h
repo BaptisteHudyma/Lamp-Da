@@ -8,6 +8,8 @@
 #include <atomic>
 #include <cstdint>
 
+#include "src/system/utils/constants.h"
+
 namespace lampda {
 namespace logic {
 /// Handle the system alerts, that are displayed on the RGB indicator
@@ -116,6 +118,9 @@ void signal_wake_up_from_charger();
 
 /// handle the behavior for all alerts. Must be called often
 void handle_all(const bool shouldIgnoreAlerts);
+
+/// Return the max output brightness allowed by the raised alerts (the lowest of their limits)
+brightness_t get_alerts_max_brightness();
 
 /// show all the raised alerts in Serial debug
 void show_all();
