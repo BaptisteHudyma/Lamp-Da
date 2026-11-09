@@ -479,6 +479,32 @@ void pd_set_src_caps(int cnt, uint32_t* src_caps)
 uint8_t pd_get_src_cap_cnt() { return pd_src_cap_cnt; }
 #endif /* CONFIG_USB_PD_DUAL_ROLE */
 
+/* debug timeline of the PD events (issue #357), written by the PD task only */
+#define PD_TRACE_SIZE 32
+static struct pd_trace_entry pd_trace[PD_TRACE_SIZE];
+static uint32_t pd_trace_count = 0;
+
+static void pd_trace_add(uint8_t kind, uint8_t value, uint16_t extra, uint8_t ok)
+{
+  struct pd_trace_entry* e = &pd_trace[pd_trace_count % PD_TRACE_SIZE];
+  e->time_ms = (uint32_t)(get_time().val / MSEC_US);
+  e->kind = kind;
+  e->value = value;
+  e->extra = extra;
+  e->ok = ok;
+  pd_trace_count++;
+}
+
+int pd_get_trace(struct pd_trace_entry* out, int max)
+{
+  const uint32_t count = pd_trace_count;
+  const uint32_t available = count < PD_TRACE_SIZE ? count : PD_TRACE_SIZE;
+  const uint32_t n = available < (uint32_t)max ? available : (uint32_t)max;
+  for (uint32_t i = 0; i < n; i++)
+    out[i] = pd_trace[(count - n + i) % PD_TRACE_SIZE];
+  return (int)n;
+}
+
 static inline void set_state(enum pd_states next_state)
 {
   enum pd_states last_state = pd.task_state;
@@ -492,6 +518,8 @@ static inline void set_state(enum pd_states next_state)
 
   if (last_state == next_state)
     return;
+
+  pd_trace_add(PD_TRACE_STATE, (uint8_t)next_state, 0, 1);
 
 #if defined(CONFIG_USBC_PPC) && defined(CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE)
   /* If we're entering DRP_AUTO_TOGGLE, there is no sink connected. */
@@ -904,10 +932,20 @@ static int pd_transmit(enum tcpm_transmit_type type, uint16_t header, const uint
   evt = task_wait_event_mask(PD_EVENT_TX, PD_T_TCPC_TX_TIMEOUT);
 
   if (evt & TASK_EVENT_TIMER)
+  {
+    if (type == TCPC_TX_HARD_RESET)
+      pd_trace_add(PD_TRACE_TX_HARD_RESET, 0, 0, 0);
+    else
+      pd_trace_add(PD_TRACE_TX, PD_HEADER_TYPE(header), header, 0);
     return -1;
+  }
 
   /* TODO: give different error condition for failed vs discarded */
   res = pd.tx_status == TCPC_TX_COMPLETE_SUCCESS ? 1 : -1;
+  if (type == TCPC_TX_HARD_RESET)
+    pd_trace_add(PD_TRACE_TX_HARD_RESET, 0, 0, res > 0);
+  else
+    pd_trace_add(PD_TRACE_TX, PD_HEADER_TYPE(header), header, res > 0);
 
 #ifdef CONFIG_USB_PD_REV30
   /* If the AMS transaction failed to start, reset CC to OK */
@@ -2186,6 +2224,8 @@ static void handle_request(uint16_t head, uint32_t* payload)
   int data_role = PD_HEADER_DROLE(head);
   int p;
 
+  pd_trace_add(PD_TRACE_RX, PD_HEADER_TYPE(head), head, 1);
+
   /* dump received packet content (only dump ping at debug level 3) */
   if ((debug_level == 2 && PD_HEADER_TYPE(head) != PD_CTRL_PING) || debug_level >= 3)
   {
@@ -3049,6 +3089,10 @@ static int consume_repeat_message(uint32_t msg_header)
  */
 static inline int is_try_src() { return pd.flags & PD_FLAGS_TRY_SRC; }
 
+/* last wake up of the state machine, for debug: a frozen state machine stops updating it */
+static volatile uint32_t pd_last_run_ms = 0;
+uint32_t pd_get_last_run_ms(void) { return pd_last_run_ms; }
+
 void pd_run_state_machine()
 {
 #ifdef CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE
@@ -3076,6 +3120,7 @@ void pd_run_state_machine()
 
   /* wait for next event/packet or timeout expiration */
   int evt = task_wait_event(timeout);
+  pd_last_run_ms = (uint32_t)(get_time().val / MSEC_US);
 
 #ifdef CONFIG_USB_PD_TCPC_LOW_POWER
   if (evt & (PD_EXIT_LOW_POWER_EVENT_MASK | TASK_EVENT_WAKE))
@@ -3208,6 +3253,7 @@ void pd_run_state_machine()
   {
     CPRINTF("HARD RST event, last state %s\n", pd.last_state);
     debug_counters.hard_resets_received++;
+    pd_trace_add(PD_TRACE_HARD_RESET_RX, 0, 0, 1);
     pd_execute_hard_reset();
   }
 
@@ -3472,6 +3518,7 @@ void pd_run_state_machine()
         pd.flags |= PD_FLAGS_CHECK_PR_ROLE | PD_FLAGS_CHECK_DR_ROLE;
         hard_reset_count = 0;
         timeout = 5 * MSEC_US;
+        debug_counters.src_attaches++;
 
         set_state(PD_STATE_SRC_STARTUP);
       }
@@ -3567,9 +3614,11 @@ void pd_run_state_machine()
       {
         /* Query capabilities of the other side */
         res = send_source_cap(AMS_START);
+        debug_counters.src_caps_sent++;
         /* packet was acked => PD capable device) */
         if (res >= 0)
         {
+          debug_counters.src_caps_acked++;
           set_state(PD_STATE_SRC_NEGOCIATE);
           timeout = 10 * MSEC_US;
           hard_reset_count = 0;
@@ -3614,6 +3663,7 @@ void pd_run_state_machine()
       if (res >= 0)
       {
         timeout = 10 * MSEC_US;
+        debug_counters.src_contracts++;
 
         /*
          * Give the sink some time to send any messages
@@ -5418,9 +5468,11 @@ int is_sink_negotiating()
   }
 }
 
-const char* get_state_cstr()
+const char* get_state_cstr() { return pd_state_cstr(pd.task_state); }
+
+const char* pd_state_cstr(int state)
 {
-  switch (pd.task_state)
+  switch (state)
   {
     case PD_STATE_DISABLED:
       return "PD_STATE_DISABLED";

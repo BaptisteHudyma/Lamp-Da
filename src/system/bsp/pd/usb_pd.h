@@ -1094,7 +1094,43 @@ extern "C" {
     uint32_t hard_resets_tx_failed;
     /// hard resets received from the partner
     uint32_t hard_resets_received;
+    /// sink attached while we are source (CC debounced)
+    uint32_t src_attaches;
+    /// source capabilities sent while we are source, and the ones acknowledged by a GoodCRC
+    uint32_t src_caps_sent;
+    uint32_t src_caps_acked;
+    /// contracts established as source (PS_RDY sent and acknowledged)
+    uint32_t src_contracts;
   };
+
+  /// Kind of an event in the PD debug timeline
+  enum pd_trace_kind
+  {
+    PD_TRACE_STATE = 0,         ///< state change, value is the new enum pd_states
+    PD_TRACE_RX = 1,            ///< message received, value is the type, extra is the header
+    PD_TRACE_TX = 2,            ///< message sent, value is the type, extra is the header, ok is the result
+    PD_TRACE_HARD_RESET_RX = 3, ///< hard reset received
+    PD_TRACE_TX_HARD_RESET = 4, ///< hard reset sent, ok is the result
+  };
+
+  /// One event of the PD debug timeline (issue #357)
+  struct pd_trace_entry
+  {
+    uint32_t time_ms;
+    uint8_t kind;  ///< enum pd_trace_kind
+    uint8_t value; ///< see enum pd_trace_kind
+    uint8_t ok;    ///< 1 if the transmission was acknowledged
+    uint16_t extra;
+  };
+
+  /// Copy the last PD events, oldest first. Return the number of events copied
+  int pd_get_trace(struct pd_trace_entry* out, int max);
+
+  /* time of the last wake up of the PD state machine, in ms (debug) */
+  uint32_t pd_get_last_run_ms(void);
+
+  /// Name of a PD state
+  const char* pd_state_cstr(int state);
 
   /// Details on the current contract, for debug
   struct pd_contract_info
