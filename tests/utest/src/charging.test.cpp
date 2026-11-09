@@ -187,6 +187,54 @@ TEST(charging_policy, hard_reset_during_contract_cuts_current)
   expect_no_current(s);
 }
 
+TEST(charging_policy, unplug_detected_after_the_deglitch)
+{
+  EXPECT_FALSE(policy::is_unplugged(0, false));
+  EXPECT_FALSE(policy::is_unplugged(policy::unplugDeglitch_ms, false));
+  EXPECT_TRUE(policy::is_unplugged(policy::unplugDeglitch_ms + 1, false));
+}
+
+/// A source hard reset drops VBUS for up to ~2s: this is not an unplug
+TEST(charging_policy, hard_reset_vbus_drop_is_not_an_unplug)
+{
+  static constexpr uint32_t sourceHardResetVbusOff_ms = 650 + 1000 + 275;
+  EXPECT_FALSE(policy::is_unplugged(sourceHardResetVbusOff_ms, true));
+  EXPECT_FALSE(policy::is_unplugged(policy::hardResetUnplugDeglitch_ms, true));
+}
+
+/// Issue #642: a PD state machine stuck in a hard reset state must not keep an unplugged source detected forever
+TEST(charging_policy, unplug_detected_even_if_stuck_in_hard_reset)
+{
+  EXPECT_TRUE(policy::is_unplugged(policy::hardResetUnplugDeglitch_ms + 1, true));
+  EXPECT_TRUE(policy::is_unplugged(60 * 1000, true));
+
+  // the state machine leaves the hard reset with VBUS still lost: the normal deglitch applies at once
+  EXPECT_TRUE(policy::is_unplugged(policy::unplugDeglitch_ms + 1, false));
+}
+
+//
+// PD task scheduler
+//
+
+TEST(charging_pd_task, no_timeout_is_an_infinite_wait) { EXPECT_EQ(task_timeout_us_to_ms(0), 0u); }
+
+/// Issue #642: a sub millisecond timeout was truncated to 0, an infinite wait: the PD state machine missed its state
+/// timeout (stuck in hard reset recovery after an unplug), until an unrelated interrupt woke it up
+TEST(charging_pd_task, sub_millisecond_timeout_is_not_an_infinite_wait)
+{
+  EXPECT_EQ(task_timeout_us_to_ms(1), 1u);
+  EXPECT_EQ(task_timeout_us_to_ms(400), 1u);
+  EXPECT_EQ(task_timeout_us_to_ms(999), 1u);
+}
+
+TEST(charging_pd_task, timeout_rounded_up_to_the_millisecond)
+{
+  EXPECT_EQ(task_timeout_us_to_ms(1000), 1u);
+  EXPECT_EQ(task_timeout_us_to_ms(1001), 2u);
+  EXPECT_EQ(task_timeout_us_to_ms(500 * 1000), 500u);
+  EXPECT_EQ(task_timeout_us_to_ms(1275 * 1000 + 1), 1276u);
+}
+
 //
 // PD driver
 //

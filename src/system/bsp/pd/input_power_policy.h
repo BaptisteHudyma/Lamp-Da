@@ -33,6 +33,21 @@ static constexpr uint32_t pdVoltageMargin_mV = 1000;
 /// Do not use the whole PD current, or the source will cut us off
 static constexpr float pdCurrentRatio = 0.90f;
 
+/// VBUS can be lost this long before the source is considered unplugged (flicker, ICO algorithm)
+static constexpr uint32_t unplugDeglitch_ms = 1000;
+/**
+ * During a hard reset, the source drops VBUS: tSafe0V (650ms) + tSrcRecover (1000ms) + tSrcTurnOn (275ms) ~= 1.9s.
+ * VBUS can be lost this long before the source is considered unplugged. This limit does not depend on the PD state
+ * machine: if it stalls in a hard reset state, an unplug must still be detected (issue #642).
+ */
+static constexpr uint32_t hardResetUnplugDeglitch_ms = 3000;
+
+/// VBUS was lost long enough to consider the source unplugged
+inline bool is_unplugged(const uint32_t timeSinceVbusValid_ms, const bool isSinkHardResetting)
+{
+  return timeSinceVbusValid_ms > (isSinkHardResetting ? hardResetUnplugDeglitch_ms : unplugDeglitch_ms);
+}
+
 /// Snapshot of the input source status
 struct SourceStatus
 {

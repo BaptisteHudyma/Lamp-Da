@@ -26,6 +26,14 @@ extern "C" {
     return t;
   }
 
+  uint32_t task_timeout_us_to_ms(uint64_t timeout_us)
+  {
+    if (timeout_us == 0)
+      return 0;
+    // round up: a truncated sub millisecond timeout would be 0, which waits forever (issue #642)
+    return (uint32_t)((timeout_us + 999) / 1000);
+  }
+
   void task_scheduler(void)
   {
     // wait for eternity or until an event
@@ -34,7 +42,7 @@ extern "C" {
     if (result & RESUME_TASK_SIGNAL)
     {
       // wait for the target event
-      result = wait_notification(tasks.timeout_us / 1000);
+      result = wait_notification((int)task_timeout_us_to_ms(tasks.timeout_us));
       // after this, the task is timeout or resolved
       if (result & SCHED_NOTIFY_TIMER) // timeout
         tasks.event |= TASK_EVENT_TIMER;

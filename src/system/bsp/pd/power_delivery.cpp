@@ -549,18 +549,14 @@ void loop()
     }
     lastVbusValid = time;
   }
-  // the source drops VBUS on a hard reset (up to ~2s), and the state machine has its own timeout if it never comes
-  // back: this is not an unplug. Without this, the system would see the charger unplugged and shut down.
-  else if (is_sink_hard_resetting())
-  {
-    lastVbusValid = time;
-  }
   // deglitch time
   else if (isPowerSourceDetected_s and
            // plugged in power can flicker
            time - powerSourceDetectedTime_s > 100 and
-           // vbus can become briefly invalid when using the ICO algorithm
-           time - lastVbusValid > 1000)
+           // vbus can become briefly invalid when using the ICO algorithm, and the source drops it on a hard reset (up
+           // to ~2s, this is not an unplug). The hard reset delay is bounded here, never trust the PD state alone: a
+           // stalled state machine would keep the source detected forever (issue #642)
+           policy::is_unplugged(time - lastVbusValid, is_sink_hard_resetting() != 0))
   {
     isPowerSourceDetected_s = false;
     reset_cache();
