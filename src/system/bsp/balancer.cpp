@@ -1,5 +1,6 @@
 #include "balancer.h"
 
+#include "src/system/hal/mutex.h"
 #include "src/system/hal/time.h"
 #include "src/system/hal/i2c.h"
 
@@ -34,7 +35,27 @@ bool Status::is_valid() const
   return true;
 }
 
+/// Working balancer status: only accessed by the power thread, that runs the balancer loop
 Status _status;
+
+/// Copy of the balancer status given to the readers of all threads, see get_status().
+/// The power thread updates it from _status once a measurement is complete: only access it under
+/// _publishedStatusMutex
+static Status _publishedStatus;
+
+/// Guards _publishedStatus: a reader never sees a partial measurement. Not recursive
+static hal::mutex::hal_mutex_t _publishedStatusMutex;
+/// Initialized at program start: the status can be read before the balancer init
+[[maybe_unused]] static const bool _isPublishedStatusMutexInit =
+        (hal::mutex::hal_mutex_init(&_publishedStatusMutex), true);
+
+/// Publish the working balancer status to the readers
+static void publish_status()
+{
+  hal::mutex::hal_mutex_lock(&_publishedStatusMutex);
+  _publishedStatus = _status;
+  hal::mutex::hal_mutex_unlock(&_publishedStatusMutex);
+}
 
 using balancer_t = bq76905::BQ76905;
 balancer_t balancer;
@@ -231,7 +252,13 @@ void disable_battery_balancing()
   balancerRegisters.cbActiveCells.write();
 }
 
-Status get_status() { return _status; }
+Status get_status()
+{
+  hal::mutex::hal_mutex_lock(&_publishedStatusMutex);
+  const Status status = _publishedStatus;
+  hal::mutex::hal_mutex_unlock(&_publishedStatusMutex);
+  return status;
+}
 
 bool init()
 {
@@ -335,6 +362,9 @@ void loop()
 
     // update measurments
     _status.lastMeasurmentUpdate = hal::time_ms();
+
+    // the measurement is complete: give it to the readers
+    publish_status();
   }
 
   // if the balancing process is enabled, balance batteries

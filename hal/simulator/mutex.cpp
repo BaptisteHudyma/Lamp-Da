@@ -53,7 +53,7 @@ void hal_mutex_unlock(hal_mutex_t* m)
 int hal_mutex_trylock(hal_mutex_t* m)
 {
   auto* q = native(m);
-  return 0;
+  return q->handle.try_lock() ? 0 : -1;
 }
 
 } // namespace mutex

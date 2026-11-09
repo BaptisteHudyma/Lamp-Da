@@ -411,6 +411,51 @@ TEST_F(power_gates_blip_test, disable_power_gate_during_blip)
   EXPECT_FALSE(is_vbus_gate_pin_high());
 }
 
+/**
+ * Issue #613: a blip requested after a safety disable of the output gate must be refused.
+ * Its timeout would otherwise force the output gate on again, against the power handler decision.
+ */
+TEST_F(power_gates_blip_test, blip_after_disable_gates_refused)
+{
+  powergates::disable_gates();
+  ASSERT_FALSE(is_output_gate_pin_high());
+  EXPECT_FALSE(powergates::is_power_gate_enabled());
+
+  // a brightness change still in the light output state requests a blip
+  const uint32_t blipStart_ms = hal::time_ms();
+  power::blip(50);
+  EXPECT_FALSE(power::is_bliping());
+  EXPECT_FALSE(is_output_gate_pin_high());
+
+  // past the end of the requested blip: the output gate stays off
+  wait_elapsed(blipStart_ms, 100);
+  run_loop_for(20);
+  EXPECT_FALSE(is_output_gate_pin_high());
+  EXPECT_FALSE(is_vbus_gate_pin_high());
+  EXPECT_FALSE(powergates::is_power_gate_enabled());
+
+  // nor by an explicit cancel
+  power::cancel_blip();
+  EXPECT_FALSE(is_output_gate_pin_high());
+}
+
+/// Same, with only the output gate disabled while the vbus gate is switching on (rails clearing, OTG, PD paths)
+TEST_F(power_gates_blip_test, blip_during_vbus_gate_switch_refused)
+{
+  powergates::enable_vbus_gate();
+  ASSERT_FALSE(is_output_gate_pin_high());
+  EXPECT_FALSE(powergates::is_power_gate_enabled());
+
+  const uint32_t blipStart_ms = hal::time_ms();
+  power::blip(50);
+  EXPECT_FALSE(power::is_bliping());
+
+  wait_elapsed(blipStart_ms, 100);
+  run_loop_for(20);
+  EXPECT_FALSE(is_output_gate_pin_high());
+  EXPECT_TRUE(is_vbus_gate_pin_high());
+}
+
 /// Switching to the vbus gate ends the blip: both gates must never be on together
 TEST_F(power_gates_blip_test, vbus_gate_during_blip)
 {

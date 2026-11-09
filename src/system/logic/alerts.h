@@ -8,6 +8,8 @@
 #include <atomic>
 #include <cstdint>
 
+#include "src/system/utils/constants.h"
+
 namespace lampda {
 namespace logic {
 /// Handle the system alerts, that are displayed on the RGB indicator
@@ -114,8 +116,20 @@ extern AlertManager_t manager;
 /// Signal slot that the system just powered up from charger
 void signal_wake_up_from_charger();
 
+/**
+ * \brief Signal a fault of the USB port protection. Safe to call from an interrupt: it only sets a flag.
+ * The USB_PORT_SHORT alert is raised (or refreshed) by the next process_interrupt_signals() call.
+ */
+void signal_usb_port_fault();
+
+/// Raise the alerts signaled from interrupts since the last call. Called by the alerts loop and the power thread
+void process_interrupt_signals();
+
 /// handle the behavior for all alerts. Must be called often
 void handle_all(const bool shouldIgnoreAlerts);
+
+/// Return the max output brightness allowed by the raised alerts (the lowest of their limits)
+brightness_t get_alerts_max_brightness();
 
 /// show all the raised alerts in Serial debug
 void show_all();

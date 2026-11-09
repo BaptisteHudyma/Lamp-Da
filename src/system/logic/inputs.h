@@ -5,8 +5,8 @@
 #ifndef INPUTS_H
 #define INPUTS_H
 
+#include <cstddef>
 #include <cstdint>
-#include <etl/queue.h>
 
 namespace lampda {
 namespace logic {
@@ -27,7 +27,14 @@ struct ButtonEvent
 static constexpr size_t maxButtonEventStore =
         15; ///< this event count should be high enough to not miss clicks and ramp events
 
-extern etl::queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
+/// Pop the oldest button event. Thread safe. Return false if there is no event
+bool pop_button_event(ButtonEvent& event);
+
+/// Return the number of stored button events. Thread safe
+size_t get_button_event_count();
+
+/// Drop all stored button events. Thread safe
+void clear_button_events();
 
 } // namespace __private
 

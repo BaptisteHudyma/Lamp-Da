@@ -268,12 +268,15 @@ void set_otg_parameters(uint16_t voltage_mV, uint16_t current_mA, const bool isT
 
 void handle_clear_power_rails()
 {
+  // the main loop can set a new target meanwhile: only skip to the target this pass was run for
+  const uint32_t stateGeneration = __private::powerMachine.get_state_generation();
+
   s_isOutputModeReady = false;
   if (_isInBatteryRecoveryMode)
   {
     // all is clear, skip to next step
     __private::dischargeVbus.set_high(false);
-    __private::powerMachine.skip_timeout();
+    __private::powerMachine.skip_timeout(stateGeneration);
     return;
   }
 
@@ -309,7 +312,7 @@ void handle_clear_power_rails()
   {
     __private::dischargeVbus.set_high(false);
     // all is clear, skip to next step
-    __private::powerMachine.skip_timeout();
+    __private::powerMachine.skip_timeout(stateGeneration);
     return;
   }
   else // discharge power rail
@@ -749,10 +752,14 @@ void state_machine_behavior()
   }
 }
 
-void switch_state(const PowerStates newState)
+/// Switch to \p newState through the rails clearing. Return false if the machine is in error.
+/// The error check and the switch are atomic: an error raised by the power thread is never overwritten
+bool switch_state(const PowerStates newState)
 {
-  powerMachine.set_state(
-          PowerStates::CLEAR_POWER_RAILS, static_cast<uint32_t>(clearPowerRailFailureDelay_ms * 1.5f), newState);
+  return powerMachine.set_state_unless(PowerStates::ERROR,
+                                       PowerStates::CLEAR_POWER_RAILS,
+                                       static_cast<uint32_t>(clearPowerRailFailureDelay_ms * 1.5f),
+                                       newState);
 }
 
 bool can_switch_states() { return powerMachine.get_state() != PowerStates::ERROR; }
@@ -774,8 +781,7 @@ bool go_to_output_mode()
     ::lampda::bsp::powerDelivery::allow_otg(false);
     set_otg_parameters(0, 0);
 
-    __private::switch_state(PowerStates::OUTPUT_VOLTAGE_MODE);
-    return true;
+    return __private::switch_state(PowerStates::OUTPUT_VOLTAGE_MODE);
   }
   return false;
 }
@@ -785,8 +791,7 @@ bool go_to_charger_mode()
   if (__private::can_switch_states())
   {
     ::lampda::bsp::powerDelivery::force_set_to_source_mode(false);
-    __private::switch_state(PowerStates::CHARGING_MODE);
-    return true;
+    return __private::switch_state(PowerStates::CHARGING_MODE);
   }
 
   return false;
@@ -805,8 +810,7 @@ bool go_to_otg_mode()
     isInOtgModeForce = false;
     ::lampda::bsp::powerDelivery::allow_otg(true);
     _hasAutoSwitchedToOTG = false;
-    __private::switch_state(PowerStates::OTG_MODE);
-    return true;
+    return __private::switch_state(PowerStates::OTG_MODE);
   }
 
   return false;
@@ -816,8 +820,7 @@ bool go_to_idle()
 {
   if (__private::can_switch_states())
   {
-    __private::switch_state(PowerStates::IDLE);
-    return true;
+    return __private::switch_state(PowerStates::IDLE);
   }
 
   return false;
@@ -1004,8 +1007,8 @@ void init()
   // detect shorts in the USB port
   __private::usbFault.attach_callback(
           []() {
-            // usb port alert detected
-            logic::alerts::manager.raise(logic::alerts::Type::USB_PORT_SHORT);
+            // usb port alert detected. Interrupt context: only signal it, the alert is raised by a thread
+            logic::alerts::signal_usb_port_fault();
           },
           hal::gpio::DigitalPin::Interrupt::kFallingEdge);
 
@@ -1064,6 +1067,9 @@ void power_loop()
 {
   // kick power watchdog
   hal::registers::kick_watchdog(POWER_WATCHDOG_ID);
+
+  // raise the alerts signaled by the interrupts (USB port fault), before the power decisions
+  logic::alerts::process_interrupt_signals();
 
   // fist action, update power gate status
   ::lampda::bsp::powergates::loop();
