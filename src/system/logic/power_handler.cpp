@@ -1007,8 +1007,8 @@ void init()
   // detect shorts in the USB port
   __private::usbFault.attach_callback(
           []() {
-            // usb port alert detected
-            logic::alerts::manager.raise(logic::alerts::Type::USB_PORT_SHORT);
+            // usb port alert detected. Interrupt context: only signal it, the alert is raised by a thread
+            logic::alerts::signal_usb_port_fault();
           },
           hal::gpio::DigitalPin::Interrupt::kFallingEdge);
 
@@ -1067,6 +1067,9 @@ void power_loop()
 {
   // kick power watchdog
   hal::registers::kick_watchdog(POWER_WATCHDOG_ID);
+
+  // raise the alerts signaled by the interrupts (USB port fault), before the power decisions
+  logic::alerts::process_interrupt_signals();
 
   // fist action, update power gate status
   ::lampda::bsp::powergates::loop();

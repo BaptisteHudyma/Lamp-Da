@@ -827,8 +827,27 @@ inline static AlertBase* const allAlerts[] = {
         &alertChargerError,
 };
 
+/// Set by signal_usb_port_fault(), from the USB fault interrupt. Consumed by process_interrupt_signals()
+static std::atomic<bool> _isUsbPortFaultSignaled {false};
+
+void signal_usb_port_fault()
+{
+  // interrupt context: no lock, no print, no statistics. The raise is deferred to process_interrupt_signals()
+  _isUsbPortFaultSignaled.store(true);
+}
+
+void process_interrupt_signals()
+{
+  // a fault signaled while the alert is raised refreshes it
+  if (_isUsbPortFaultSignaled.exchange(false))
+    manager.raise(Type::USB_PORT_SHORT);
+}
+
 void update_alerts()
 {
+  // before the alerts update: an interrupt alert is raised in this turn
+  process_interrupt_signals();
+
   const uint32_t currTime = hal::time_ms();
   for (auto alert: allAlerts)
   {
