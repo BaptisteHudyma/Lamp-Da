@@ -188,7 +188,7 @@ const hal::gpio::DigitalPin fastRoleSwap(hal::gpio::DigitalPin::GPIO::Output_Vbu
 
 // if high, signal an USB fault
 const hal::gpio::DigitalPin usbFault(hal::gpio::DigitalPin::GPIO::Signal_UsbProtectionFault);
-// if high, signal a vbus gate fault
+// active low: low signals a vbus gate fault (high when the gate is open or nominal, verified on hardware)
 const hal::gpio::DigitalPin vbusFault(hal::gpio::DigitalPin::GPIO::Signal_VbusGateFault);
 } // namespace __private
 

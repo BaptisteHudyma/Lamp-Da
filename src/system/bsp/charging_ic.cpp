@@ -36,6 +36,19 @@ static Measurments measurments_s;
 // store the battery measurments
 static Battery battery_s;
 
+/**
+ * \brief Read ChargeOption3 into the cached registers, without its command bits.
+ * RESET_VINDPM and RESET_REG are commands, that read as 1 while the IC executes them (a VINDPM measurement
+ * disables the converter). Keeping them in the cache would trigger them again on the next write of this register,
+ * and the frequent writes would then keep the converter disabled forever.
+ */
+static void read_charge_option3()
+{
+  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+  chargerIcRegisters.chargeOption3.set_RESET_VINDPM(0);
+  chargerIcRegisters.chargeOption3.set_RESET_REG(0);
+}
+
 // store the component status
 inline static Status_t status_s = Status_t::UNINITIALIZED;
 // store an error message for errors
@@ -226,7 +239,7 @@ void control_OTG()
 
       hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
 
-      chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+      read_charge_option3();
       // TODO test and debug LOW RANGE
       chargerIcRegisters.chargeOption3.set_OTG_RANGE_LOW(0);
       chargerIcRegisters.chargeOption3.set_EN_OTG(1);
@@ -262,7 +275,7 @@ void control_OTG()
 
       // update the in OTG status to avoid deconnection
       hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
-      chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+      read_charge_option3();
       chargerIcRegisters.chargeOption3.set_EN_OTG(1);
       charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
     }
@@ -307,7 +320,7 @@ void enable_input_current_optimization(const bool enable)
 {
   if (enable)
   {
-    chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+    read_charge_option3();
     // Do not reset ICO, if it is already enabled.
     if (chargerIcRegisters.chargeOption3.EN_ICO_MODE() != 0)
       return;
@@ -316,6 +329,8 @@ void enable_input_current_optimization(const bool enable)
     chargerIcRegisters.chargeOption3.set_EN_ICO_MODE(1);
     chargerIcRegisters.chargeOption3.set_RESET_VINDPM(1);
     charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
+    // one shot command: never write it again with the next updates of this register
+    chargerIcRegisters.chargeOption3.set_RESET_VINDPM(0);
   }
   else
   {
@@ -544,7 +559,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
   if (forceReset)
   {
     // write the reset flag
-    chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+    read_charge_option3();
     chargerIcRegisters.chargeOption3.set_RESET_REG(1);
     const bool resetSuccess = charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
     if (not resetSuccess)
@@ -561,6 +576,8 @@ bool enable(const uint16_t minSystemVoltage_mV,
       hal::delay_ms(5);
       chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
     } while (hal::time_ms() < timeout and chargerIcRegisters.chargeOption3.RESET_REG() == 1);
+    // do not keep the reset command in the cache
+    chargerIcRegisters.chargeOption3.set_RESET_REG(0);
   }
 
   // everything went fine (for now)
@@ -572,7 +589,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
 
   bool success = true;
 
-  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+  read_charge_option3();
   // disable high impedance mode
   chargerIcRegisters.chargeOption3.set_EN_HIZ(0);
   success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
@@ -599,7 +616,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
   chargerIcRegisters.chargeOption0.set_WDTMR_ADJ(1);
   success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
 
-  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+  read_charge_option3();
   // set from max physical characteristics
   if (physical_constants::maxChargerCurrent_mA <= 6000)
     chargerIcRegisters.chargeOption3.set_IL_AVG(0b00);
@@ -747,7 +764,7 @@ void shutdown()
   chargerIcRegisters.chargeOption0.set_EN_LWPWR(1);
   charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
 
-  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+  read_charge_option3();
   // disable high impedance mode
   chargerIcRegisters.chargeOption3.set_EN_HIZ(0);
   charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
@@ -801,7 +818,7 @@ void enable_OTG()
 
 void disable_OTG()
 {
-  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+  read_charge_option3();
   chargerIcRegisters.chargeOption3.set_EN_OTG(0);
   charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
@@ -814,7 +831,7 @@ void disable_OTG()
 void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA)
 {
   // OTG voltage register depends on another register...
-  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+  read_charge_option3();
   const bool isVoltageRangeLow = chargerIcRegisters.chargeOption3.OTG_RANGE_LOW() != 0x00;
 
   const auto prevVal = chargerIcRegisters.oTGVoltage.get(isVoltageRangeLow);
