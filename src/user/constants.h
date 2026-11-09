@@ -5,6 +5,26 @@
 #ifndef USER_CONSTANTS_H
 #define USER_CONSTANTS_H
 
+//
+// hardware gates, common to all lamp types (preprocessor only: also read by the C drivers)
+//
+
+/**
+ * 1 when the USB-C connector has a permanent 5.1k Rd on both CC lines (all current Lamp-Da boards).
+ * Set it to 0 for a connector without it: the source CC detection then uses the standard thresholds and Rp
+ * (see src/system/driver/pd/cc_thresholds.h, issue #357).
+ *
+ * Only change it here: the build flags (LMBD_EXTRA_FLAGS) do not reach the C files, the FUSB302 driver and the PD
+ * configuration would disagree on the Rp and the CC thresholds.
+ */
+#ifdef LMBD_USBC_HAS_BOARD_CC_RD
+#error "LMBD_USBC_HAS_BOARD_CC_RD must be set in src/user/constants.h, not in the build flags"
+#endif
+#define LMBD_USBC_HAS_BOARD_CC_RD 1
+
+// the rest of this file is C++ only
+#ifdef __cplusplus
+
 #include <cstdint>
 #include <cmath>
 
@@ -139,5 +159,7 @@ static constexpr float circuitToLedZeroRotationZ_degrees = 88.0f;
 //
 
 } // namespace lampda
+
+#endif // __cplusplus
 
 #endif

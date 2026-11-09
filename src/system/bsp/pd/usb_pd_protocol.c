@@ -140,6 +140,12 @@ static const uint8_t vdo_ver[] = {VDM_VER10, VDM_VER10, VDM_VER20};
 static int head;
 static uint32_t payload[7];
 static int timeout = 10 * MSEC_US;
+/* end of the source detachment debounce, 0 if the CC line is not seen open */
+static uint64_t src_detach_debounce = 0;
+#ifdef CONFIG_USB_PD_DUAL_ROLE
+/* power role swap to source: time after which PS_RDY is not sent if VBUS is still missing */
+static uint64_t swap_new_src_deadline = 0;
+#endif
 static enum tcpc_cc_voltage_status cc1, cc2;
 static int res, incoming_packet = 0;
 static int hard_reset_count = 0;
@@ -1832,6 +1838,7 @@ static void handle_ctrl_request(uint16_t head, uint32_t* payload)
         invalidate_last_message_id();
         pd_set_power_role(PD_ROLE_SINK);
         pd_update_roles();
+        debug_counters.pr_swaps_to_sink++;
         /*
          * Give the state machine time to read VBUS as high.
          * Note: This is empirically determined, not strictly
@@ -1998,6 +2005,7 @@ static void handle_ctrl_request(uint16_t head, uint32_t* payload)
 #ifdef CONFIG_USB_PD_DUAL_ROLE
       if (pd_is_power_swap_succesful())
       {
+        debug_counters.pr_swaps_accepted++;
         send_control(PD_CTRL_ACCEPT);
         /*
          * Clear flag for checking power role to avoid
@@ -2008,6 +2016,7 @@ static void handle_ctrl_request(uint16_t head, uint32_t* payload)
       }
       else
       {
+        debug_counters.pr_swaps_rejected++;
         send_control(PD_CTRL_REJECT);
       }
 #else
@@ -3047,6 +3056,10 @@ static int consume_repeat_message(uint32_t msg_header)
  */
 static inline int is_try_src() { return pd.flags & PD_FLAGS_TRY_SRC; }
 
+/* last wake up of the state machine, for debug: a frozen state machine stops updating it */
+static volatile uint32_t pd_last_run_ms = 0;
+uint32_t pd_get_last_run_ms(void) { return pd_last_run_ms; }
+
 void pd_run_state_machine()
 {
 #ifdef CONFIG_USB_PD_DUAL_ROLE_AUTO_TOGGLE
@@ -3074,6 +3087,7 @@ void pd_run_state_machine()
 
   /* wait for next event/packet or timeout expiration */
   int evt = task_wait_event(timeout);
+  pd_last_run_ms = (uint32_t)(get_time().val / MSEC_US);
 
 #ifdef CONFIG_USB_PD_TCPC_LOW_POWER
   if (evt & (PD_EXIT_LOW_POWER_EVENT_MASK | TASK_EVENT_WAKE))
@@ -3470,6 +3484,7 @@ void pd_run_state_machine()
         pd.flags |= PD_FLAGS_CHECK_PR_ROLE | PD_FLAGS_CHECK_DR_ROLE;
         hard_reset_count = 0;
         timeout = 5 * MSEC_US;
+        debug_counters.src_attaches++;
 
         set_state(PD_STATE_SRC_STARTUP);
       }
@@ -3502,15 +3517,17 @@ void pd_run_state_machine()
         set_state(PD_STATE_SRC_DISCONNECTED);
         break;
       }
-#ifdef CONFIG_USB_PD_TCPM_TCPCI
       /*
        * After transmitting hard reset, TCPM writes
        * to RECEIVE_DETECT register to enable
        * PD message passing.
+       *
+       * pd_execute_hard_reset() disables RX (and the FUSB302 auto GoodCRC with it). Upstream only re-enables it for
+       * TCPCI chips, but the FUSB302 needs it too: without it, the sink GoodCRC are never heard, all the source
+       * capabilities fail and the source stays in SRC_DISCOVERY without a contract (issue #357, sink side is #633)
        */
       if (pd_comm_is_enabled())
         tcpm_set_rx_enable(1);
-#endif /* CONFIG_USB_PD_TCPM_TCPCI */
 
       set_state(PD_STATE_SRC_STARTUP);
       break;
@@ -3563,9 +3580,11 @@ void pd_run_state_machine()
       {
         /* Query capabilities of the other side */
         res = send_source_cap(AMS_START);
+        debug_counters.src_caps_sent++;
         /* packet was acked => PD capable device) */
         if (res >= 0)
         {
+          debug_counters.src_caps_acked++;
           set_state(PD_STATE_SRC_NEGOCIATE);
           timeout = 10 * MSEC_US;
           hard_reset_count = 0;
@@ -3610,6 +3629,7 @@ void pd_run_state_machine()
       if (res >= 0)
       {
         timeout = 10 * MSEC_US;
+        debug_counters.src_contracts++;
 
         /*
          * Give the sink some time to send any messages
@@ -4296,11 +4316,32 @@ void pd_run_state_machine()
           set_state(PD_STATE_SNK_DISCONNECTED);
           break;
         }
-        /* Wait for power supply to turn on */
-        set_state_timeout(get_time().val + PD_POWER_SUPPLY_TURN_ON_DELAY, PD_STATE_SNK_SWAP_COMPLETE);
+        /*
+         * The power supply is turned on by the power thread, through the OTG mode: its delay is not known.
+         * Wait for VBUS before sending PS_RDY, but not longer than the old source waits for it.
+         */
+        swap_new_src_deadline = get_time().val + PD_T_SWAP_NEW_SRC_MAX;
+        set_state_timeout(get_time().val + PD_T_SWAP_SOURCE_START, PD_STATE_SNK_SWAP_COMPLETE);
       }
       break;
     case PD_STATE_SNK_SWAP_COMPLETE:
+      if (!pd_is_vbus_present())
+      {
+        if (get_time().val < swap_new_src_deadline)
+        {
+          /* VBUS is coming up */
+          timeout = 5 * MSEC_US;
+          break;
+        }
+        /* never claim a power we do not provide: the old source will see us as gone */
+        debug_counters.pr_swaps_vbus_timeout++;
+        tcpm_set_cc(TYPEC_CC_RD);
+        pd_power_supply_reset();
+        timeout = 10 * MSEC_US;
+        set_state(PD_STATE_SNK_DISCONNECTED);
+        break;
+      }
+
       /* Send PS_RDY and change to source role */
       res = send_control(PD_CTRL_PS_RDY);
       if (res < 0)
@@ -4319,6 +4360,7 @@ void pd_run_state_machine()
       pd.msg_id = 0;
       pd_set_power_role(PD_ROLE_SOURCE);
       pd_update_roles();
+      debug_counters.pr_swaps_to_source++;
       set_state(PD_STATE_SRC_DISCOVERY);
       timeout = 10 * MSEC_US;
       break;
@@ -4680,18 +4722,56 @@ void pd_run_state_machine()
 
   /* Check for disconnection if we're connected */
   if (!pd_is_connected())
+  {
+    src_detach_debounce = 0;
     return;
+  }
 #ifdef CONFIG_USB_PD_DUAL_ROLE
   if (pd_is_power_swapping())
+  {
+    src_detach_debounce = 0;
     return;
+  }
 #endif
+  if (pd.power_role != PD_ROLE_SOURCE)
+    src_detach_debounce = 0;
   if (pd.power_role == PD_ROLE_SOURCE)
   {
     /* Source: detect disconnect by monitoring CC */
     tcpm_get_cc(&cc1, &cc2);
     if (polarity_rm_dts(pd.polarity))
       cc1 = cc2;
-    if (cc1 == TYPEC_CC_VOLT_OPEN)
+
+    /*
+     * Debounce the detachment (tPDDebounce): a single measurement can read open while the partner transmits
+     * (BMC high level is close to the open threshold), and dropping the contract on it looks like a faulty source
+     */
+    int is_detached = 0;
+    if (cc1 != TYPEC_CC_VOLT_OPEN)
+    {
+      src_detach_debounce = 0;
+    }
+    else
+    {
+      now = get_time();
+      if (src_detach_debounce == 0)
+        src_detach_debounce = now.val + PD_T_PD_DEBOUNCE;
+
+      if (now.val >= src_detach_debounce)
+      {
+        src_detach_debounce = 0;
+        is_detached = 1;
+      }
+      else
+      {
+        /* measure again soon */
+        const int64_t left = (int64_t)(src_detach_debounce - now.val);
+        if (timeout < 0 || timeout > left)
+          timeout = (int)left;
+      }
+    }
+
+    if (is_detached)
     {
       set_state(PD_STATE_SRC_DISCONNECTED);
       /* Debouncing */
@@ -5348,6 +5428,29 @@ int is_sink_hard_resetting()
     case PD_STATE_HARD_RESET_SEND:
     case PD_STATE_HARD_RESET_EXECUTE:
     case PD_STATE_SNK_HARD_RESET_RECOVER:
+      return 1;
+    default:
+      return 0;
+  }
+}
+
+int is_power_role_swapping()
+{
+#ifdef CONFIG_USB_PD_DUAL_ROLE
+  return pd_is_power_swapping();
+#else
+  return 0;
+#endif
+}
+
+int is_source_hard_resetting()
+{
+  if (pd.power_role != PD_ROLE_SOURCE)
+    return 0;
+  switch (pd.task_state)
+  {
+    case PD_STATE_HARD_RESET_EXECUTE:
+    case PD_STATE_SRC_HARD_RESET_RECOVER:
       return 1;
     default:
       return 0;

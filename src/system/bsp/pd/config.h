@@ -103,8 +103,24 @@
  */
 #undef CONFIG_USB_PD_REV30
 
-/* Default pull-up value on the USB-C ports when they are used as source. */
+/* board CC hardware gate (LMBD_USBC_HAS_BOARD_CC_RD) */
+#include "../../driver/pd/cc_thresholds.h"
+
+/*
+ * Default pull-up value on the USB-C ports when they are used as source.
+ */
+#if LMBD_USBC_HAS_BOARD_CC_RD
+/*
+ * 3A on purpose, with a 5V 1.5A source PDO: the board permanent 5.1k Rd on the CC lines halves the CC voltage, so a
+ * sink reads it as a 1.5A Rp (1.5A Rp would read as USB default, 500mA).
+ * The stronger current source also hides the board Rd from a dual role partner in its source toggle phase: with a 1.5A
+ * Rp, it would see an Rd and wait forever for VBUS to drop (issue #357)
+ */
+#define CONFIG_USB_PD_PULLUP TYPEC_RP_3A0
+#else
+/* matches the 5V 1.5A source PDO */
 #define CONFIG_USB_PD_PULLUP TYPEC_RP_1A5
+#endif
 
 /* Initial DRP / toggle policy */
 #define CONFIG_USB_PD_INITIAL_DRP_STATE PD_DRP_TOGGLE_OFF

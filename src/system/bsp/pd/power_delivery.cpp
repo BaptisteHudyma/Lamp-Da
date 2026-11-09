@@ -262,10 +262,13 @@ struct UsbPDData
     // the negociated contract (0 when there is none): published on PS_RDY, cleared on disconnection and hard reset
     struct pd_contract_info info;
     pd_get_contract_info(&info);
-    bsp::lampda_print("PD contract: %s %lu mV, %lu mA",
+    // as a source, the contract is what the sink requested: the input values stay at 0
+    const bool isSource = info.power_role == PD_ROLE_SOURCE;
+    bsp::lampda_print("PD contract: %s %s %lu mV, %lu mA",
                       info.is_explicit_contract ? "EXP" : "X",
-                      static_cast<unsigned long>(get_available_pd_voltage_mV()),
-                      static_cast<unsigned long>(get_available_pd_current_mA()));
+                      isSource ? "(source, given)" : "(sink, received)",
+                      static_cast<unsigned long>(isSource ? info.requested_mv : get_available_pd_voltage_mV()),
+                      static_cast<unsigned long>(isSource ? info.requested_ma : get_available_pd_current_mA()));
   }
 };
 UsbPDData data;
@@ -344,6 +347,28 @@ void show_pd_contract()
           static_cast<unsigned long>(c.hard_resets_sent),
           static_cast<unsigned long>(c.hard_resets_tx_failed),
           static_cast<unsigned long>(c.hard_resets_received));
+  bsp::lampda_print("Source events: attach %lu, caps tx %lu (acked %lu), contracts %lu",
+                    static_cast<unsigned long>(c.src_attaches),
+                    static_cast<unsigned long>(c.src_caps_sent),
+                    static_cast<unsigned long>(c.src_caps_acked),
+                    static_cast<unsigned long>(c.src_contracts));
+  bsp::lampda_print("Power role swaps: accepted %lu, rejected %lu, to source %lu (VBUS timeout %lu), to sink %lu",
+                    static_cast<unsigned long>(c.pr_swaps_accepted),
+                    static_cast<unsigned long>(c.pr_swaps_rejected),
+                    static_cast<unsigned long>(c.pr_swaps_to_source),
+                    static_cast<unsigned long>(c.pr_swaps_vbus_timeout),
+                    static_cast<unsigned long>(c.pr_swaps_to_sink));
+
+  uint32_t txSuccess = 0;
+  uint32_t txCollisions = 0;
+  uint32_t txRetryFails = 0;
+  fusb302_get_tx_counters(&txSuccess, &txCollisions, &txRetryFails);
+  bsp::lampda_print("TX: success %lu, collisions %lu, retry fails %lu",
+                    static_cast<unsigned long>(txSuccess),
+                    static_cast<unsigned long>(txCollisions),
+                    static_cast<unsigned long>(txRetryFails));
+  bsp::lampda_print("PD state machine: last ran %lums ago",
+                    static_cast<unsigned long>(hal::time_ms() - pd_get_last_run_ms()));
   bsp::lampda_print("Interrupt: line %s, stuck line kicks %lu, alert reruns %lu",
                     is_ic_interrupt_pending() ? "LOW (pending)" : "high",
                     static_cast<unsigned long>(interruptStuckKicks_s),
@@ -484,21 +509,12 @@ void start_threads()
   if (!isSetup)
     return;
 
-  static constexpr uint16_t taskSchedulerThreadBufferSize = 255;
-  static bsp::threads::TaskBuffer_t taskSchedulerThreadBuffer[taskSchedulerThreadBufferSize];
-
   static constexpr uint16_t pdInterruptThreadBufferSize = 255;
   static bsp::threads::TaskBuffer_t pdInterruptThreadBuffer[pdInterruptThreadBufferSize];
 
   static constexpr uint16_t powerDeliveryThreadBufferSize = 1024;
   static bsp::threads::TaskBuffer_t powerDeliveryThreadBuffer[powerDeliveryThreadBufferSize];
 
-  // start task scheduler, in suspended state
-  bsp::threads::start_thread(task_scheduler,
-                             bsp::threads::taskScheduler_taskName,
-                             2,
-                             taskSchedulerThreadBufferSize,
-                             taskSchedulerThreadBuffer);
   // start interrupt handle, in suspended state
   bsp::threads::start_thread(interrupt_handle,
                              bsp::threads::pdInterruptHandle_taskName,
@@ -530,16 +546,21 @@ void loop()
   // update battery level
   set_battery_level(static_cast<uint8_t>(component::battery::get_battery_level() / 100));
 
-  // ignore source activity if we are otg (prevent spurious reset)
-  if (is_switching_to_otg())
+  static policy::VbusLossTracker vbusLoss;
+  const uint32_t time = hal::time_ms();
+
+  // ignore source activity if we are otg (prevent spurious reset).
+  // The PD state machine only flags the OTG activation when a sink is attached, but the charger can output on VBUS
+  // without one (manual battery mode, or right after a detachment): our own VBUS is not a power source.
+  // A VBUS loss is counted from the end of the OTG: after a power role swap back to sink, the partner needs some time
+  // to turn its VBUS on
+  if (is_switching_to_otg() or bsp::charger::is_in_OTG())
   {
+    vbusLoss.on_vbus_valid(time);
     return;
   }
 
-  static policy::VbusLossTracker vbusLoss;
-
   // source detected
-  const uint32_t time = hal::time_ms();
   if (is_vbus_powered())
   {
     if (not isPowerSourceDetected_s)
@@ -555,7 +576,9 @@ void loop()
     // this is not an unplug). Always updated (not short circuited), so that a hard reset during the loss is not missed.
     // The hard reset grace is bounded, never trust the PD state alone: a stalled state machine would keep the source
     // detected forever (issue #642)
-    const bool isUnplugged = vbusLoss.is_unplugged(time, is_sink_hard_resetting() != 0);
+    // A power role swap also drops VBUS, from the old source turn off to the new source turn on (up to ~1.4s)
+    const bool isUnplugged =
+            vbusLoss.is_unplugged(time, is_sink_hard_resetting() != 0 or ::is_power_role_swapping() != 0);
 
     // deglitch time
     if (isPowerSourceDetected_s and
@@ -593,6 +616,8 @@ OTGParameters get_otg_parameters()
 void allow_otg(const bool allow) { set_allow_power_sourcing(allow); }
 
 bool is_switching_to_otg() { return is_activating_otg() != 0; }
+
+bool is_source_hard_resetting() { return ::is_source_hard_resetting() != 0; }
 
 std::array<PDOTypes, 5> get_available_pd()
 {

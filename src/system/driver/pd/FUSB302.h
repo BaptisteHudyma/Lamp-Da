@@ -225,6 +225,10 @@ extern "C" {
   /// Last CC levels read on CC1 and CC2 (enum tcpc_cc_voltage_status), for debug
   void fusb302_get_last_cc(int* cc1, int* cc2);
 
+  /// Transmission results since boot, for debug: acknowledged by a GoodCRC, failed on a collision (line busy), or
+  /// failed after all retries without GoodCRC
+  void fusb302_get_tx_counters(uint32_t* success, uint32_t* collisions, uint32_t* retry_fails);
+
 #ifdef __cplusplus
 }
 #endif
