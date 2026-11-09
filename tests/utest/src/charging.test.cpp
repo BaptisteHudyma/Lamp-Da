@@ -187,6 +187,108 @@ TEST(charging_policy, hard_reset_during_contract_cuts_current)
   expect_no_current(s);
 }
 
+TEST(charging_policy, unplug_detected_after_the_deglitch)
+{
+  EXPECT_FALSE(policy::is_unplugged(0, false));
+  EXPECT_FALSE(policy::is_unplugged(policy::unplugDeglitch_ms, false));
+  EXPECT_TRUE(policy::is_unplugged(policy::unplugDeglitch_ms + 1, false));
+}
+
+/// A source hard reset drops VBUS for up to ~2s: this is not an unplug
+TEST(charging_policy, hard_reset_vbus_drop_is_not_an_unplug)
+{
+  static constexpr uint32_t sourceHardResetVbusOff_ms = 650 + 1000 + 275;
+  EXPECT_FALSE(policy::is_unplugged(sourceHardResetVbusOff_ms, true));
+  EXPECT_FALSE(policy::is_unplugged(policy::hardResetUnplugDeglitch_ms, true));
+}
+
+/// Issue #642: a PD state machine stuck in a hard reset state must not keep an unplugged source detected forever
+TEST(charging_policy, unplug_detected_even_if_stuck_in_hard_reset)
+{
+  EXPECT_TRUE(policy::is_unplugged(policy::hardResetUnplugDeglitch_ms + 1, true));
+  EXPECT_TRUE(policy::is_unplugged(60 * 1000, true));
+}
+
+/// A VBUS loss without hard reset uses the normal deglitch
+TEST(charging_vbus_loss, loss_without_hard_reset_uses_the_normal_deglitch)
+{
+  policy::VbusLossTracker tracker;
+  tracker.on_vbus_valid(10000);
+
+  EXPECT_FALSE(tracker.is_unplugged(10000 + policy::unplugDeglitch_ms, false));
+  EXPECT_TRUE(tracker.is_unplugged(10000 + policy::unplugDeglitch_ms + 1, false));
+}
+
+/// The state machine leaves the hard reset states before VBUS is back over our threshold: the hard reset grace stays
+TEST(charging_vbus_loss, hard_reset_grace_survives_a_pd_state_change)
+{
+  policy::VbusLossTracker tracker;
+  tracker.on_vbus_valid(10000);
+
+  // hard reset: the source drops VBUS
+  EXPECT_FALSE(tracker.is_unplugged(10100, true));
+  // the state machine left the hard reset (discovery), VBUS still under the threshold: not an unplug
+  EXPECT_FALSE(tracker.is_unplugged(10000 + policy::unplugDeglitch_ms + 1, false));
+  EXPECT_FALSE(tracker.is_unplugged(10000 + policy::hardResetUnplugDeglitch_ms, false));
+
+  // VBUS is back: the next loss starts without the hard reset grace
+  tracker.on_vbus_valid(12000);
+  EXPECT_TRUE(tracker.is_unplugged(12000 + policy::unplugDeglitch_ms + 1, false));
+}
+
+/// The grace deadline is counted from the original VBUS loss: no PD state change can extend it (issue #642)
+TEST(charging_vbus_loss, hard_reset_grace_bounded_by_the_vbus_loss_time)
+{
+  policy::VbusLossTracker tracker;
+  tracker.on_vbus_valid(10000);
+
+  // a hard reset seen late in the loss, then the state machine goes back and forth
+  EXPECT_FALSE(tracker.is_unplugged(10900, true));
+  EXPECT_FALSE(tracker.is_unplugged(11500, false));
+  EXPECT_FALSE(tracker.is_unplugged(12500, true));
+  EXPECT_FALSE(tracker.is_unplugged(10000 + policy::hardResetUnplugDeglitch_ms, true));
+
+  // the deadline does not move, whatever the state
+  EXPECT_TRUE(tracker.is_unplugged(10000 + policy::hardResetUnplugDeglitch_ms + 1, true));
+  EXPECT_TRUE(tracker.is_unplugged(10000 + policy::hardResetUnplugDeglitch_ms + 1, false));
+  // stuck in a hard reset state forever: still an unplug
+  EXPECT_TRUE(tracker.is_unplugged(10000 + 60 * 1000, true));
+}
+
+/// The time wraps after ~49 days: the loss duration is still right
+TEST(charging_vbus_loss, time_wrap_around)
+{
+  policy::VbusLossTracker tracker;
+  tracker.on_vbus_valid(UINT32_MAX - 500);
+
+  EXPECT_FALSE(tracker.is_unplugged(UINT32_MAX - 400, true));
+  EXPECT_FALSE(tracker.is_unplugged(policy::hardResetUnplugDeglitch_ms - 501, false));
+  EXPECT_TRUE(tracker.is_unplugged(policy::hardResetUnplugDeglitch_ms - 499, false));
+}
+
+//
+// PD task scheduler
+//
+
+TEST(charging_pd_task, no_timeout_is_an_infinite_wait) { EXPECT_EQ(task_timeout_us_to_ms(0), 0u); }
+
+/// Issue #642: a sub millisecond timeout was truncated to 0, an infinite wait: the PD state machine missed its state
+/// timeout (stuck in hard reset recovery after an unplug), until an unrelated interrupt woke it up
+TEST(charging_pd_task, sub_millisecond_timeout_is_not_an_infinite_wait)
+{
+  EXPECT_EQ(task_timeout_us_to_ms(1), 1u);
+  EXPECT_EQ(task_timeout_us_to_ms(400), 1u);
+  EXPECT_EQ(task_timeout_us_to_ms(999), 1u);
+}
+
+TEST(charging_pd_task, timeout_rounded_up_to_the_millisecond)
+{
+  EXPECT_EQ(task_timeout_us_to_ms(1000), 1u);
+  EXPECT_EQ(task_timeout_us_to_ms(1001), 2u);
+  EXPECT_EQ(task_timeout_us_to_ms(500 * 1000), 500u);
+  EXPECT_EQ(task_timeout_us_to_ms(1275 * 1000 + 1), 1276u);
+}
+
 //
 // PD driver
 //

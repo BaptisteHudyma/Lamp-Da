@@ -33,6 +33,49 @@ static constexpr uint32_t pdVoltageMargin_mV = 1000;
 /// Do not use the whole PD current, or the source will cut us off
 static constexpr float pdCurrentRatio = 0.90f;
 
+/// VBUS can be lost this long before the source is considered unplugged (flicker, ICO algorithm)
+static constexpr uint32_t unplugDeglitch_ms = 1000;
+/**
+ * During a hard reset, the source drops VBUS: tSafe0V (650ms) + tSrcRecover (1000ms) + tSrcTurnOn (275ms) ~= 1.9s.
+ * VBUS can be lost this long before the source is considered unplugged. This limit does not depend on the PD state
+ * machine: if it stalls in a hard reset state, an unplug must still be detected (issue #642).
+ */
+static constexpr uint32_t hardResetUnplugDeglitch_ms = 3000;
+
+/// VBUS was lost long enough to consider the source unplugged
+inline bool is_unplugged(const uint32_t timeSinceVbusValid_ms, const bool isSinkHardResetting)
+{
+  return timeSinceVbusValid_ms > (isSinkHardResetting ? hardResetUnplugDeglitch_ms : unplugDeglitch_ms);
+}
+
+/**
+ * Follows a VBUS loss, to decide when it is an unplug.
+ * A hard reset seen during the loss keeps the hard reset grace until VBUS is valid again: the state machine can leave
+ * the hard reset states before VBUS is back over our threshold, and that is not an unplug. The deadline is always
+ * counted from the original VBUS loss, so no PD state change can extend it (issue #642).
+ */
+class VbusLossTracker
+{
+public:
+  /// VBUS is valid: a new loss starts from this time
+  void on_vbus_valid(const uint32_t time_ms)
+  {
+    lastVbusValid_ms_ = time_ms;
+    wasHardResetSeen_ = false;
+  }
+
+  /// VBUS is not valid: return true if this loss is an unplug
+  bool is_unplugged(const uint32_t time_ms, const bool isSinkHardResetting)
+  {
+    wasHardResetSeen_ = wasHardResetSeen_ or isSinkHardResetting;
+    return policy::is_unplugged(time_ms - lastVbusValid_ms_, wasHardResetSeen_);
+  }
+
+private:
+  uint32_t lastVbusValid_ms_ = 0;
+  bool wasHardResetSeen_ = false;
+};
+
 /// Snapshot of the input source status
 struct SourceStatus
 {
