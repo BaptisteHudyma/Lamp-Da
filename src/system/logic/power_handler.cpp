@@ -51,6 +51,10 @@ static constexpr uint32_t otgNoUseTimeToDisconnect_ms = 1000;
 static constexpr uint8_t otgTurnOffTimeMinutes = 5;
 /// Delay after which the OTG_MODE will auto disable if not used, in milliseconds.
 static constexpr uint32_t otgNoUseExtBatTimeToDisconnect_ms = 1000 * 60 * otgTurnOffTimeMinutes;
+// after a PD hard reset as a source, time given to the sink to draw current again
+static constexpr uint32_t sourceHardResetGrace_ms = 2000;
+// after a PD hard reset as a source, maximum output voltage above the default one, to restore VBUS
+static constexpr uint32_t sourceHardResetMaxOvervoltage_mV = 500;
 /// Delay after which the STARTUP state will auto switch to error.
 static constexpr uint32_t startupFailTimeout_ms = common::RecoveryTiming::startup_timeout_ms;
 
@@ -439,6 +443,18 @@ void handle_output_voltage_mode()
 
 void handle_otg_mode()
 {
+  // PD hard reset as a source: VBUS must drop to 0V during the recovery time, then come back.
+  // Keeping it makes the PD sinks send hard resets again, until they give up on PD (issue #357).
+  // Only the port is cut: the OTG output stays on, to restore VBUS in time
+  static uint32_t lastSourceHardReset_ms = 0;
+  const bool isSourceHardResetting = ::lampda::bsp::powerDelivery::is_source_hard_resetting();
+  if (isSourceHardResetting)
+    lastSourceHardReset_ms = hal::time_ms();
+  const bool isAfterSourceHardReset = hal::time_ms() - lastSourceHardReset_ms < sourceHardResetGrace_ms;
+  // no current is expected while VBUS is cut, and the sink renegotiates after: this is not an inactivity
+  if (isSourceHardResetting or isAfterSourceHardReset)
+    timeSinceOTGNoCurrentUse = hal::time_ms();
+
   bool otgNoActivity = false;
   const bool isAutoOTGMode = _hasAutoSwitchedToOTG;
 
@@ -536,9 +552,27 @@ void handle_otg_mode()
   if (not requestedOtg.is_otg_requested())
     return;
 
+  if (isSourceHardResetting)
+  {
+    // cut the port, and go back to the default output meanwhile (the contract may have been at a higher voltage)
+    ::lampda::bsp::powergates::disable_gates();
+    set_otg_parameters(defaultOTG.requestedVoltage_mV, defaultOTG.requestedCurrent_mA, true);
+    return;
+  }
+
   // ramp up output voltage
   // then unlock the vbus gate
   set_otg_parameters(requestedOtg.requestedVoltage_mV, requestedOtg.requestedCurrent_mA, true);
+
+  // after a hard reset, the output may still be at the previous contract voltage: never give it to the sink
+  // (the charger output measure: with the gate open, the VBUS measure is the port side)
+  if (isAfterSourceHardReset and
+      (not state.areMeasuresOk or
+       state.powerRail_mV > requestedOtg.requestedVoltage_mV + sourceHardResetMaxOvervoltage_mV))
+  {
+    ::lampda::bsp::powergates::disable_gates();
+    return;
+  }
 
   // allow reverse current flow
   __private::vbusDirection.set_high(true);

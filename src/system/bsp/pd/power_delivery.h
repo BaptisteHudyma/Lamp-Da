@@ -66,6 +66,11 @@ void allow_otg(const bool);
 bool is_switching_to_otg();
 
 /**
+ * \brief return true when we are a source in a hard reset: VBUS must be cut until the end of the recovery time
+ */
+bool is_source_hard_resetting();
+
+/**
  * \brief Define a USB PD PDO type.
  */
 struct PDOTypes

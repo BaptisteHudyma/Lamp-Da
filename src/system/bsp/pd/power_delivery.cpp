@@ -714,6 +714,8 @@ void allow_otg(const bool allow) { set_allow_power_sourcing(allow); }
 
 bool is_switching_to_otg() { return is_activating_otg() != 0; }
 
+bool is_source_hard_resetting() { return ::is_source_hard_resetting() != 0; }
+
 std::array<PDOTypes, 5> get_available_pd()
 {
   std::array<PDOTypes, 5> pdos;

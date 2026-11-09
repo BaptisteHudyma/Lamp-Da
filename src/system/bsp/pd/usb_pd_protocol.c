@@ -5446,6 +5446,20 @@ int is_sink_hard_resetting()
   }
 }
 
+int is_source_hard_resetting()
+{
+  if (pd.power_role != PD_ROLE_SOURCE)
+    return 0;
+  switch (pd.task_state)
+  {
+    case PD_STATE_HARD_RESET_EXECUTE:
+    case PD_STATE_SRC_HARD_RESET_RECOVER:
+      return 1;
+    default:
+      return 0;
+  }
+}
+
 int is_sink_negotiating()
 {
   switch (pd.task_state)

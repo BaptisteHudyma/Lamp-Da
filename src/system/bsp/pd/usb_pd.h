@@ -1077,6 +1077,13 @@ extern "C" {
    */
   int is_sink_hard_resetting();
 
+  /**
+   * Return 1 if the source is in a hard reset: VBUS must drop to vSafe0V, until the recovery time is elapsed
+   * (PD_T_SRC_RECOVER), then come back to vSafe5V. The sinks wait for this VBUS drop, and send hard resets again
+   * when it does not happen (issue #357)
+   */
+  int is_source_hard_resetting();
+
   /// Debug counters of the PD negociation events, since boot
   struct pd_debug_counters
   {
