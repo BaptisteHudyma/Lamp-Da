@@ -103,6 +103,10 @@ static etl::string<128> _errorStr = "";
 /// True if the state changed to OTG_MODE on it's own (via USB-PD requests).
 static bool _hasAutoSwitchedToOTG = false;
 
+/// True if the OTG_MODE was started by a power role swap requested by the partner (a phone charging the lamp).
+/// The PD state machine owns the source role: the OTG stops when it stops sourcing (swap back, detachment).
+static bool _isOtgFromRoleSwap = false;
+
 /// in this mode, the battery is too low to power the components.
 /// They will be powered through the vbus gate.
 static bool _isInBatteryRecoveryMode = false;
@@ -343,25 +347,33 @@ void handle_charging_mode()
 {
   // resume PD state machine
   ::lampda::bsp::powerDelivery::resume_pd_state_machine();
-  // enable vbus path
-  ::lampda::bsp::powergates::enable_vbus_gate();
 
-#if 0 // TODO #134
-// OTG requested, switch to OTG mode
-  if (::lampda::bsp::powerDelivery::is_switching_to_otg() and component::battery::is_battery_usable_as_power_source())
+  // A partner charging the lamp (a phone) can ask for a power role swap, to be powered by the lamp instead.
+  // Never in battery recovery mode: the board runs from VBUS, and the old source turns it off during the swap
+  const bool canPowerPartner = not _isInBatteryRecoveryMode and
+                               component::battery::is_battery_usable_as_power_source() and
+                               logic::alerts::manager.can_use_usb_port();
+  ::lampda::bsp::powerDelivery::allow_otg(canPowerPartner);
+
+  // swap accepted: the old source turned its VBUS off, and waits for ours (issue #357)
+  if (canPowerPartner and ::lampda::bsp::powerDelivery::is_switching_to_otg())
   {
-    // disable balancing
+    bsp::lampda_print("power role swap: powering the partner");
+    ::lampda::component::charger::set_enable_charge(false);
     ::lampda::bsp::balancer::enable_balancing(false);
     timeSinceOTGNoCurrentUse = hal::time_ms();
     voltageHighRaisedTime = UINT32_MAX;
     isInOtgModeForce = false;
 
-    // start otg
+    // start otg, without the rails clearing: VBUS is already off, and the PS_RDY waits for it
     _hasAutoSwitchedToOTG = true;
+    _isOtgFromRoleSwap = true;
     __private::powerMachine.set_state(PowerStates::OTG_MODE);
     return;
   }
-#endif
+
+  // enable vbus path
+  ::lampda::bsp::powergates::enable_vbus_gate();
 
   if (::lampda::bsp::powergates::is_vbus_gate_enabled())
   {
@@ -369,9 +381,6 @@ void handle_charging_mode()
     // balance while we have power on vbus
     ::lampda::bsp::balancer::enable_balancing(true);
   }
-
-  // allow OTG in charge mode only
-  ::lampda::bsp::powerDelivery::allow_otg(true);
 
   // charge OR idle and do nothing (end of charge)
 }
@@ -453,7 +462,24 @@ void handle_otg_mode()
   const bool isAfterSourceHardReset = hal::time_ms() - lastSourceHardReset_ms < sourceHardResetGrace_ms;
   // no current is expected while VBUS is cut, and the sink renegotiates after: this is not an inactivity
   if (isSourceHardResetting or isAfterSourceHardReset)
+  {
     timeSinceOTGNoCurrentUse = hal::time_ms();
+    voltageHighRaisedTime = UINT32_MAX;
+  }
+
+  // After a power role swap, the PD state machine stops sourcing on a swap back or on a detachment (not on a hard
+  // reset: it restores VBUS after it). Cut VBUS now: on a swap back, the partner waits for it to be off.
+  // Do not suspend the PD state machine or change its role: the swap back is in progress
+  if (_isOtgFromRoleSwap and not isSourceHardResetting and not isAfterSourceHardReset and
+      not ::lampda::bsp::powerDelivery::is_switching_to_otg())
+  {
+    bsp::lampda_print("power role swap: partner released the power");
+    ::lampda::bsp::powergates::disable_gates();
+    set_otg_parameters(0, 0);
+    _isOtgFromRoleSwap = false;
+    go_to_charger_mode();
+    return;
+  }
 
   bool otgNoActivity = false;
   const bool isAutoOTGMode = _hasAutoSwitchedToOTG;
@@ -476,7 +502,9 @@ void handle_otg_mode()
     }
 
     // if no current use since a timing, stop otg
-    const uint32_t otgNonuseTimeout = isAutoOTGMode ? otgNoUseTimeToDisconnect_ms : otgNoUseExtBatTimeToDisconnect_ms;
+    // after a power role swap, the partner may not use the power right away: give it the external battery delay
+    const uint32_t otgNonuseTimeout = (isAutoOTGMode and not _isOtgFromRoleSwap) ? otgNoUseTimeToDisconnect_ms :
+                                                                                   otgNoUseExtBatTimeToDisconnect_ms;
     if (hal::time_ms() - timeSinceOTGNoCurrentUse > otgNonuseTimeout)
     {
       otgNoActivity = true;
@@ -520,6 +548,7 @@ void handle_otg_mode()
     // temporary suspend
     ::lampda::bsp::powerDelivery::allow_otg(false);
     set_otg_parameters(0, 0);
+    _isOtgFromRoleSwap = false;
 
     // safe switch (may not be needed)
     go_to_charger_mode();
@@ -844,6 +873,7 @@ bool go_to_otg_mode()
     isInOtgModeForce = false;
     ::lampda::bsp::powerDelivery::allow_otg(true);
     _hasAutoSwitchedToOTG = false;
+    _isOtgFromRoleSwap = false;
     return __private::switch_state(PowerStates::OTG_MODE);
   }
 

@@ -39,6 +39,7 @@ static constexpr uint32_t unplugDeglitch_ms = 1000;
  * During a hard reset, the source drops VBUS: tSafe0V (650ms) + tSrcRecover (1000ms) + tSrcTurnOn (275ms) ~= 1.9s.
  * VBUS can be lost this long before the source is considered unplugged. This limit does not depend on the PD state
  * machine: if it stalls in a hard reset state, an unplug must still be detected (issue #642).
+ * Also used for a power role swap: old source turn off (tPSSourceOff, 920ms) + new source turn on (~400ms).
  */
 static constexpr uint32_t hardResetUnplugDeglitch_ms = 3000;
 

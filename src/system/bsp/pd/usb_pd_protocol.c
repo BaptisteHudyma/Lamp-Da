@@ -142,6 +142,10 @@ static uint32_t payload[7];
 static int timeout = 10 * MSEC_US;
 /* end of the source detachment debounce, 0 if the CC line is not seen open */
 static uint64_t src_detach_debounce = 0;
+#ifdef CONFIG_USB_PD_DUAL_ROLE
+/* power role swap to source: time after which PS_RDY is not sent if VBUS is still missing */
+static uint64_t swap_new_src_deadline = 0;
+#endif
 static enum tcpc_cc_voltage_status cc1, cc2;
 static int res, incoming_packet = 0;
 static int hard_reset_count = 0;
@@ -1834,6 +1838,7 @@ static void handle_ctrl_request(uint16_t head, uint32_t* payload)
         invalidate_last_message_id();
         pd_set_power_role(PD_ROLE_SINK);
         pd_update_roles();
+        debug_counters.pr_swaps_to_sink++;
         /*
          * Give the state machine time to read VBUS as high.
          * Note: This is empirically determined, not strictly
@@ -2000,6 +2005,7 @@ static void handle_ctrl_request(uint16_t head, uint32_t* payload)
 #ifdef CONFIG_USB_PD_DUAL_ROLE
       if (pd_is_power_swap_succesful())
       {
+        debug_counters.pr_swaps_accepted++;
         send_control(PD_CTRL_ACCEPT);
         /*
          * Clear flag for checking power role to avoid
@@ -2010,6 +2016,7 @@ static void handle_ctrl_request(uint16_t head, uint32_t* payload)
       }
       else
       {
+        debug_counters.pr_swaps_rejected++;
         send_control(PD_CTRL_REJECT);
       }
 #else
@@ -4309,11 +4316,32 @@ void pd_run_state_machine()
           set_state(PD_STATE_SNK_DISCONNECTED);
           break;
         }
-        /* Wait for power supply to turn on */
-        set_state_timeout(get_time().val + PD_POWER_SUPPLY_TURN_ON_DELAY, PD_STATE_SNK_SWAP_COMPLETE);
+        /*
+         * The power supply is turned on by the power thread, through the OTG mode: its delay is not known.
+         * Wait for VBUS before sending PS_RDY, but not longer than the old source waits for it.
+         */
+        swap_new_src_deadline = get_time().val + PD_T_SWAP_NEW_SRC_MAX;
+        set_state_timeout(get_time().val + PD_T_SWAP_SOURCE_START, PD_STATE_SNK_SWAP_COMPLETE);
       }
       break;
     case PD_STATE_SNK_SWAP_COMPLETE:
+      if (!pd_is_vbus_present())
+      {
+        if (get_time().val < swap_new_src_deadline)
+        {
+          /* VBUS is coming up */
+          timeout = 5 * MSEC_US;
+          break;
+        }
+        /* never claim a power we do not provide: the old source will see us as gone */
+        debug_counters.pr_swaps_vbus_timeout++;
+        tcpm_set_cc(TYPEC_CC_RD);
+        pd_power_supply_reset();
+        timeout = 10 * MSEC_US;
+        set_state(PD_STATE_SNK_DISCONNECTED);
+        break;
+      }
+
       /* Send PS_RDY and change to source role */
       res = send_control(PD_CTRL_PS_RDY);
       if (res < 0)
@@ -4332,6 +4360,7 @@ void pd_run_state_machine()
       pd.msg_id = 0;
       pd_set_power_role(PD_ROLE_SOURCE);
       pd_update_roles();
+      debug_counters.pr_swaps_to_source++;
       set_state(PD_STATE_SRC_DISCOVERY);
       timeout = 10 * MSEC_US;
       break;
@@ -5403,6 +5432,15 @@ int is_sink_hard_resetting()
     default:
       return 0;
   }
+}
+
+int is_power_role_swapping()
+{
+#ifdef CONFIG_USB_PD_DUAL_ROLE
+  return pd_is_power_swapping();
+#else
+  return 0;
+#endif
 }
 
 int is_source_hard_resetting()

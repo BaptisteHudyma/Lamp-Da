@@ -23,7 +23,7 @@ extern "C" {
   timestamp_t get_time(void)
   {
     timestamp_t t;
-    t.val = time_ms() * 1000;
+    t.val = (uint64_t)time_ms() * 1000;
     t.val += time_us() % 1000;
     return t;
   }

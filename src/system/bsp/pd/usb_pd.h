@@ -173,6 +173,8 @@ extern "C" {
 #define PD_T_DISCOVER_IDENTITY     (45 * MSEC_US)   /* between 40ms and 50ms */
 #define PD_T_SYSJUMP               (1000 * MSEC_US) /* 1s */
 #define PD_T_PR_SWAP_WAIT          (100 * MSEC_US)  /* tPRSwapWait 100ms */
+/* power role swap to source: the old source waits our PS_RDY tPSSourceOn (390ms min) after its own PS_RDY */
+#define PD_T_SWAP_NEW_SRC_MAX (380 * MSEC_US)
 
 /* number of edges and time window to detect CC line is not idle */
 #define PD_RX_TRANSITION_COUNT  3
@@ -1084,6 +1086,11 @@ extern "C" {
    */
   int is_source_hard_resetting();
 
+  /**
+   * Return 1 during a power role swap: VBUS is off between the two sources, this is not an unplug
+   */
+  int is_power_role_swapping();
+
   /// Debug counters of the PD negociation events, since boot
   struct pd_debug_counters
   {
@@ -1108,6 +1115,14 @@ extern "C" {
     uint32_t src_caps_acked;
     /// contracts established as source (PS_RDY sent and acknowledged)
     uint32_t src_contracts;
+    /// power role swaps requested by the partner: accepted, rejected
+    uint32_t pr_swaps_accepted;
+    uint32_t pr_swaps_rejected;
+    /// power role swaps completed: we became the source, we became the sink
+    uint32_t pr_swaps_to_source;
+    uint32_t pr_swaps_to_sink;
+    /// swaps to source abandoned because our VBUS did not come up in time
+    uint32_t pr_swaps_vbus_timeout;
   };
 
   /* time of the last wake up of the PD state machine, in ms (debug) */

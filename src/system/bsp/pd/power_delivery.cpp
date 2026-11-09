@@ -352,6 +352,12 @@ void show_pd_contract()
                     static_cast<unsigned long>(c.src_caps_sent),
                     static_cast<unsigned long>(c.src_caps_acked),
                     static_cast<unsigned long>(c.src_contracts));
+  bsp::lampda_print("Power role swaps: accepted %lu, rejected %lu, to source %lu (VBUS timeout %lu), to sink %lu",
+                    static_cast<unsigned long>(c.pr_swaps_accepted),
+                    static_cast<unsigned long>(c.pr_swaps_rejected),
+                    static_cast<unsigned long>(c.pr_swaps_to_source),
+                    static_cast<unsigned long>(c.pr_swaps_vbus_timeout),
+                    static_cast<unsigned long>(c.pr_swaps_to_sink));
 
   uint32_t txSuccess = 0;
   uint32_t txCollisions = 0;
@@ -540,18 +546,21 @@ void loop()
   // update battery level
   set_battery_level(static_cast<uint8_t>(component::battery::get_battery_level() / 100));
 
+  static policy::VbusLossTracker vbusLoss;
+  const uint32_t time = hal::time_ms();
+
   // ignore source activity if we are otg (prevent spurious reset).
   // The PD state machine only flags the OTG activation when a sink is attached, but the charger can output on VBUS
-  // without one (manual battery mode, or right after a detachment): our own VBUS is not a power source
+  // without one (manual battery mode, or right after a detachment): our own VBUS is not a power source.
+  // A VBUS loss is counted from the end of the OTG: after a power role swap back to sink, the partner needs some time
+  // to turn its VBUS on
   if (is_switching_to_otg() or bsp::charger::is_in_OTG())
   {
+    vbusLoss.on_vbus_valid(time);
     return;
   }
 
-  static policy::VbusLossTracker vbusLoss;
-
   // source detected
-  const uint32_t time = hal::time_ms();
   if (is_vbus_powered())
   {
     if (not isPowerSourceDetected_s)
@@ -567,7 +576,9 @@ void loop()
     // this is not an unplug). Always updated (not short circuited), so that a hard reset during the loss is not missed.
     // The hard reset grace is bounded, never trust the PD state alone: a stalled state machine would keep the source
     // detected forever (issue #642)
-    const bool isUnplugged = vbusLoss.is_unplugged(time, is_sink_hard_resetting() != 0);
+    // A power role swap also drops VBUS, from the old source turn off to the new source turn on (up to ~1.4s)
+    const bool isUnplugged =
+            vbusLoss.is_unplugged(time, is_sink_hard_resetting() != 0 or ::is_power_role_swapping() != 0);
 
     // deglitch time
     if (isPowerSourceDetected_s and

@@ -19,7 +19,9 @@ struct SourcePowerParameters get_OTG_requested_parameters() { return otgParamete
 struct SinkUsableParameters allowedConsumption;
 struct SinkUsableParameters get_allowed_consuption() { return allowedConsumption; }
 
-int canBecomePowerSource = 1; // enabled by default
+// set by the power thread: the battery can power the partner. Disabled until the power system says so (startup,
+// battery recovery mode: the board runs from VBUS, becoming a source would brown it out)
+int canBecomePowerSource = 0;
 void set_allow_power_sourcing(const int allowPowerSourcing) { canBecomePowerSource = allowPowerSourcing != 0; }
 
 uint8_t batteryLevelPercent = 0;
@@ -236,13 +238,19 @@ int pd_check_data_swap(int data_role)
 
 int pd_is_power_swap_succesful()
 {
-  // Forced source is the external battery mode: the user asked us to power the partner.
-  // Accepting a swap would make us the sink, and the partner (a phone) would power the lamp instead (issue #357)
-  if (pd_get_power_role() == PD_ROLE_SOURCE && pd_get_dual_role() == PD_DRP_FORCE_SOURCE)
-    return 0;
+  if (pd_get_power_role() == PD_ROLE_SOURCE)
+  {
+    // Forced source is the external battery mode: the user asked us to power the partner.
+    // Accepting a swap would make us the sink, and the partner (a phone) would power the lamp instead (issue #357)
+    const int accept = pd_get_dual_role() != PD_DRP_FORCE_SOURCE;
+    lampda_print("power role swap to sink %s", accept ? "accepted" : "rejected (battery mode)");
+    return accept;
+  }
 
-  // accept power swap
-  return canBecomePowerSource != 0;
+  // the partner asks us to power it (phone user request, while the phone charges the lamp)
+  const int accept = canBecomePowerSource != 0;
+  lampda_print("power role swap to source %s", accept ? "accepted" : "rejected (battery cannot be used)");
+  return accept;
 }
 
 // Check that the board health is good
