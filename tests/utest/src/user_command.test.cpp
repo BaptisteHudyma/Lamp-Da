@@ -351,5 +351,30 @@ TEST_F(UserCommandTest, BlipOutputCommandHighBit)
   EXPECT_NE(parsed & 0x80000000u, 0u);
 }
 
+TEST_F(UserCommandTest, DisableSunTimerCommand)
+{
+  bool isSunrise = false;
+  auto cmd = UserCommand::make_disable_sun_timer_command(true);
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::DisableSunTimer);
+  EXPECT_TRUE(cmd.parse_disable_sun_timer_command(isSunrise));
+  EXPECT_TRUE(isSunrise);
+
+  EXPECT_TRUE(UserCommand::make_disable_sun_timer_command(false).parse_disable_sun_timer_command(isSunrise));
+  EXPECT_FALSE(isSunrise);
+
+  EXPECT_FALSE(UserCommand::make_signal_suntimer_cancel_command().parse_disable_sun_timer_command(isSunrise));
+}
+
+TEST_F(UserCommandTest, SetMicSensitivityCommand)
+{
+  uint8_t sensitivity = 0;
+  auto cmd = UserCommand::make_set_mic_sensitivity_command(42);
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::SetMicSensitivity);
+  EXPECT_TRUE(cmd.parse_set_mic_sensitivity_command(sensitivity));
+  EXPECT_EQ(sensitivity, 42);
+
+  EXPECT_FALSE(UserCommand::make_set_ramp_command(42).parse_set_mic_sensitivity_command(sensitivity));
+}
+
 } // namespace common
 } // namespace lampda

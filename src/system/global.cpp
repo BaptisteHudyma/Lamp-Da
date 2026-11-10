@@ -18,6 +18,7 @@
 #include "src/system/logic/inputs.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/sun_timers.h"
+#include "src/system/logic/user_command_queue.h"
 #include "src/system/logic/user_signals.h"
 
 #include "src/system/component/battery.h"
@@ -252,6 +253,9 @@ void main_loop(const uint32_t addedDelay)
 
   // handle user serial events
   logic::cli::handleSerialEvents();
+
+  // run the user commands posted by other threads (sun timers, bluetooth): user code only runs on the main loop
+  logic::user_command_queue::loop();
 
   // refresh user signals
   logic::user_signals::loop();

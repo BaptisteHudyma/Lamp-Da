@@ -173,6 +173,24 @@ UserCommand UserCommand::make_signal_suntimer_cancel_command()
   return cmd;
 }
 
+UserCommand UserCommand::make_disable_sun_timer_command(const bool isSunrise)
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::DisableSunTimer;
+  cmd._dataCnt = 1;
+  cmd._data[0] = isSunrise ? 1 : 0;
+  return cmd;
+}
+
+UserCommand UserCommand::make_set_mic_sensitivity_command(const uint8_t sensitivity)
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::SetMicSensitivity;
+  cmd._dataCnt = 1;
+  cmd._data[0] = sensitivity;
+  return cmd;
+}
+
 UserCommand UserCommand::make_print_status_command()
 {
   UserCommand cmd;
@@ -354,6 +372,22 @@ bool UserCommand::parse_signal_suntimer_cancel_command() const
 {
   if (get_type() != Type::SignalSuntimerCancel or _dataCnt != 0)
     return false;
+  return true;
+}
+
+bool UserCommand::parse_disable_sun_timer_command(bool& isSunrise) const
+{
+  if (get_type() != Type::DisableSunTimer or _dataCnt != 1)
+    return false;
+  isSunrise = _data[0] != 0;
+  return true;
+}
+
+bool UserCommand::parse_set_mic_sensitivity_command(uint8_t& sensitivity) const
+{
+  if (get_type() != Type::SetMicSensitivity or _dataCnt != 1)
+    return false;
+  sensitivity = _data[0];
   return true;
 }
 

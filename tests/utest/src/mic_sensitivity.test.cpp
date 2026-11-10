@@ -6,6 +6,7 @@
 #include "src/system/common/elk_decoder.h"
 #include "src/system/component/sound.h"
 #include "src/system/logic/inputs_bluetooth.h"
+#include "src/system/logic/user_command_queue.h"
 
 namespace lampda {
 
@@ -65,13 +66,30 @@ TEST_F(mic_sensitivity, set_is_constrained)
 TEST_F(mic_sensitivity, elk_command_sets_sensitivity)
 {
   logic::inputs_bluetooth::handle_BLE_ELK_command(make_sensitivity_package(0));
+  logic::user_command_queue::loop();
   EXPECT_EQ(component::microphone::get_sensitivity(), 0);
 
   logic::inputs_bluetooth::handle_BLE_ELK_command(make_sensitivity_package(75));
+  logic::user_command_queue::loop();
   EXPECT_EQ(component::microphone::get_sensitivity(), 75);
 
   logic::inputs_bluetooth::handle_BLE_ELK_command(make_sensitivity_package(100));
+  logic::user_command_queue::loop();
   EXPECT_EQ(component::microphone::get_sensitivity(), 100);
+}
+
+TEST_F(mic_sensitivity, elk_command_waits_for_the_main_loop)
+{
+  component::microphone::set_sensitivity(20);
+
+  // the bluetooth task only posts the commands: nothing changes before the main loop runs them
+  logic::inputs_bluetooth::handle_BLE_ELK_command(make_sensitivity_package(0));
+  logic::inputs_bluetooth::handle_BLE_ELK_command(make_sensitivity_package(75));
+  EXPECT_EQ(component::microphone::get_sensitivity(), 20);
+
+  // commands run in order
+  logic::user_command_queue::loop();
+  EXPECT_EQ(component::microphone::get_sensitivity(), 75);
 }
 
 } // namespace lampda

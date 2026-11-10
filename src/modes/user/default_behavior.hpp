@@ -15,6 +15,7 @@
 
 #include "src/system/bsp/ble.h"
 
+#include "src/system/component/sound.h"
 #include "src/system/logic/brightness_handle.h"
 #include "src/system/logic/button_bindings.h"
 
@@ -589,6 +590,36 @@ bool handle_user_command(const common::UserCommand& command)
         }
         else
           bsp::lampda_print("Failed to parse signal_suntimer_cancel command");
+        return true;
+      }
+    case common::UserCommand::Type::DisableSunTimer:
+      {
+        bool isSunrise;
+        if (command.parse_disable_sun_timer_command(isSunrise))
+        {
+          if (isSunrise)
+          {
+            // keep the brightness reached by the sunrise, as for a user brightness change
+            logic::sunrise_timer.cancel_at_current_brightness();
+            bsp::lampda_print("Sunrise timer disabled");
+          }
+          else
+          {
+            logic::sunset_timer.cancel();
+            bsp::lampda_print("Sunset timer disabled");
+          }
+        }
+        else
+          bsp::lampda_print("Failed to parse disable_sun_timer command");
+        return true;
+      }
+    case common::UserCommand::Type::SetMicSensitivity:
+      {
+        uint8_t sensitivity;
+        if (command.parse_set_mic_sensitivity_command(sensitivity))
+          component::microphone::set_sensitivity(sensitivity);
+        else
+          bsp::lampda_print("Failed to parse set_mic_sensitivity command");
         return true;
       }
     case common::UserCommand::Type::BlipOutput:
