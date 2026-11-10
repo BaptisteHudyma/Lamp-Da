@@ -106,6 +106,7 @@ set(SRC_SYSTEM_LOGIC
     ${LMBD_ROOT_DIR}/src/system/logic/power_handler.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/statistics_handler.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/sun_timers.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/user_command_queue.cpp
 )
 
 # The compile chain should have copied the correct HAL here

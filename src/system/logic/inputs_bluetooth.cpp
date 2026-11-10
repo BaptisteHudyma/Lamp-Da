@@ -1,15 +1,11 @@
 #include "inputs_bluetooth.h"
 
-#include "src/user/functions.h"
-
 #include "src/system/utils/utils.h"
 
 #include "src/system/bsp/ble.h"
 #include "src/system/bsp/text_out.h"
 
-#include "src/system/component/sound.h"
-
-#include "src/system/logic/sun_timers.h"
+#include "src/system/logic/user_command_queue.h"
 
 #include "src/system/common/elk_decoder.h"
 #include "src/system/common/user_commands.h"
@@ -34,20 +30,20 @@ void handle_BLE_ELK_command(const common::elk::Package& elkControlCommand)
     case common::elk::Type::BRIGHTNESS:
       {
         static constexpr float brightnessMultiplier = ::lampda::brightness::absoluteMaximumBrightness / 100.0f;
-        lampda::user::handle_user_command(common::UserCommand::make_brightness_command(
+        user_command_queue::post(common::UserCommand::make_brightness_command(
                 static_cast<brightness_t>(elkControlCommand.data[0] * brightnessMultiplier)));
         return;
       }
     case common::elk::Type::ONOFF:
       {
         const bool shouldTurnOn = elkControlCommand.data[0] > 0;
-        lampda::user::handle_user_command(common::UserCommand::make_turn_onoff_command(shouldTurnOn));
+        user_command_queue::post(common::UserCommand::make_turn_onoff_command(shouldTurnOn));
         return;
       }
     case common::elk::Type::PATTERN_SPEED:
       {
         const uint8_t speed = (elkControlCommand.data[0] / 100.0) * UINT8_MAX;
-        lampda::user::handle_user_command(common::UserCommand::make_set_ramp_command(speed));
+        user_command_queue::post(common::UserCommand::make_set_ramp_command(speed));
         return;
       }
     case common::elk::Type::SET_TIME:
@@ -67,7 +63,7 @@ void handle_BLE_ELK_command(const common::elk::Package& elkControlCommand)
         time.minutes = minutes;
         time.seconds = seconds;
         time.dayOfTheWeek = weekdayPlusOne - 1;
-        lampda::user::handle_user_command(common::UserCommand::make_set_real_time_command(time));
+        user_command_queue::post(common::UserCommand::make_set_real_time_command(time));
         return;
       }
     case common::elk::Type::TIMING:
@@ -84,17 +80,7 @@ void handle_BLE_ELK_command(const common::elk::Package& elkControlCommand)
         if ((elkControlCommand.data[4] & timerEnabledBit) == 0)
         {
           // same cancel as the command line, the selected days are ignored
-          if (isAutoTurnOn)
-          {
-            // keep the brightness reached by the sunrise, as for a user brightness change
-            logic::sunrise_timer.cancel_at_current_brightness();
-            bsp::lampda_print("Timing command: sunrise timer disabled");
-          }
-          else
-          {
-            logic::sunset_timer.cancel();
-            bsp::lampda_print("Timing command: sunset timer disabled");
-          }
+          user_command_queue::post(common::UserCommand::make_disable_sun_timer_command(isAutoTurnOn));
           return;
         }
 
@@ -118,30 +104,29 @@ void handle_BLE_ELK_command(const common::elk::Package& elkControlCommand)
 
         if (isAutoTurnOn)
         {
-          lampda::user::handle_user_command(common::UserCommand::make_set_sunrise_to_time_command(time));
+          user_command_queue::post(common::UserCommand::make_set_sunrise_to_time_command(time));
         }
         else
         {
-          lampda::user::handle_user_command(common::UserCommand::make_set_sunset_to_time_command(time));
+          user_command_queue::post(common::UserCommand::make_set_sunset_to_time_command(time));
         }
         return;
       }
     case common::elk::Type::COLOR_SELECT:
       {
-        lampda::user::handle_user_command(common::UserCommand::make_set_ble_custom_color_mode_command(
+        user_command_queue::post(common::UserCommand::make_set_ble_custom_color_mode_command(
                 elkControlCommand.data[0], elkControlCommand.data[1], elkControlCommand.data[2]));
         return;
       }
     case common::elk::Type::PATTERN_SELECT:
       {
-        lampda::user::handle_user_command(
-                common::UserCommand::make_set_ble_mode_command(elkControlCommand.data[0] + 1));
+        user_command_queue::post(common::UserCommand::make_set_ble_mode_command(elkControlCommand.data[0] + 1));
         return;
       }
     case common::elk::Type::MIC_SENSITIVITY:
       {
         // ELK sensitivity is [0; 100], same range as the microphone sensitivity
-        component::microphone::set_sensitivity(elkControlCommand.data[0]);
+        user_command_queue::post(common::UserCommand::make_set_mic_sensitivity_command(elkControlCommand.data[0]));
         return;
       }
 

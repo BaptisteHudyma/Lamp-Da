@@ -10,10 +10,9 @@
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
+#include "src/system/logic/user_command_queue.h"
 
 #include "src/system/utils/utils.h"
-
-#include "src/user/functions.h"
 
 namespace lampda {
 namespace logic {
@@ -43,7 +42,7 @@ template<uint32_t T> bool SunTimerBase<T>::release()
   trueBrightnessSunTime_ms = BrightnessSunTime_ms;
 
   // signal to user
-  user::handle_user_command(common::UserCommand::make_signal_suntimer_cancel_command());
+  user_command_queue::post(common::UserCommand::make_signal_suntimer_cancel_command());
 
   logic::alerts::manager.clear(logic::alerts::Type::SUNSET_TIMER_ENABLED);
   return true;
@@ -277,13 +276,13 @@ void SunsetTimer::bump_timer()
 
 void SunsetTimer::sun_timer_progress_update_callback(const float progress) const
 {
-  user::handle_user_command(common::UserCommand::make_signal_sunset_progress_command(progress));
+  user_command_queue::post(common::UserCommand::make_signal_sunset_progress_command(progress));
 }
 
 void SunsetTimer::end_of_timer_handle()
 {
   logic::brightness::set_user_brightness_scale(0.0f);
-  logic::brightness::force_brightness_user_callback();
+  logic::user_command_queue::request_brightness_user_callback();
 
   bsp::lampda_print("Shutdown with sunset timer");
   logic::behavior::set_power_off();
@@ -296,7 +295,7 @@ void SunsetTimer::timer_brightness_progress_update(const float progress)
     // slowly decrease brighntess
     logic::brightness::set_user_brightness_scale(1.0f - progress);
     // force an update of the brightness, with user callback
-    logic::brightness::force_brightness_user_callback();
+    logic::user_command_queue::request_brightness_user_callback();
   }
 }
 
@@ -329,7 +328,7 @@ void SunriseTimer::cancel_at_current_brightness()
 
 void SunriseTimer::sun_timer_progress_update_callback(const float progress) const
 {
-  user::handle_user_command(common::UserCommand::make_signal_sunrise_progress_command(progress));
+  user_command_queue::post(common::UserCommand::make_signal_sunrise_progress_command(progress));
 }
 
 void SunriseTimer::end_of_timer_handle()
@@ -337,7 +336,7 @@ void SunriseTimer::end_of_timer_handle()
   // the timer release keeps the brightness scale: restore it, and force an update of the brightness, with user
   // callback
   logic::brightness::set_user_brightness_scale(1.0f);
-  logic::brightness::force_brightness_user_callback();
+  logic::user_command_queue::request_brightness_user_callback();
 
   bsp::lampda_print("Sunrise timer finished !");
 }
@@ -357,7 +356,7 @@ void SunriseTimer::timer_brightness_progress_update(const float progress)
     // Never write the brightness directly here: the active mode owns it, and would overwrite it on the next frame.
     logic::brightness::set_user_brightness_scale(progress);
     // force an update of the brightness, with user callback
-    logic::brightness::force_brightness_user_callback();
+    logic::user_command_queue::request_brightness_user_callback();
   }
 }
 

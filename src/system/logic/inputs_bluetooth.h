@@ -16,7 +16,9 @@ namespace inputs_bluetooth {
 bool is_bluetooth_used();
 
 /**
- * \brief Handle an ELK bluetooth command
+ * \brief Handle an ELK bluetooth command.
+ * Thread safe (called from the bluetooth callback task): the command is converted to user commands, run by the main
+ * loop (see user_command_queue)
  * \param[in] elkControlCommand Control command, assumed to be received by bluetooth
  */
 void handle_BLE_ELK_command(const common::elk::Package& elkControlCommand);

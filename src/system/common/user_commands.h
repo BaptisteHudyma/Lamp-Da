@@ -41,6 +41,8 @@ public:
     BlipOutput,            ///< Turn off the output for a short time
     PrintStatus,           ///< Print the current mode, group, ramp, brightness and favorite state on one line
     PrintFavorites,        ///< Print the favorite mode count
+    DisableSunTimer,       ///< Disable the sunset or the sunrise timer
+    SetMicSensitivity,     ///< Set the microphone sensitivity
   };
   static constexpr uint8_t maxDataSize = 8;
 
@@ -145,6 +147,21 @@ public:
    * \return The correct user command
    */
   static UserCommand make_signal_suntimer_cancel_command();
+
+  /**
+   * \brief Set this command to disable a sun timer.
+   * A disabled sunrise keeps the brightness it reached, as for a user brightness change
+   * \param[in] isSunrise True to disable the sunrise timer, false for the sunset timer
+   * \return The correct user command
+   */
+  static UserCommand make_disable_sun_timer_command(const bool isSunrise);
+
+  /**
+   * \brief Set this command to set the microphone sensitivity
+   * \param[in] sensitivity Sensitivity, see component::microphone::set_sensitivity
+   * \return The correct user command
+   */
+  static UserCommand make_set_mic_sensitivity_command(const uint8_t sensitivity);
 
   /**
    * \brief Set this commant to blip the output
@@ -268,6 +285,20 @@ public:
    * \return True if the current message is valid, and parameter is set
    */
   bool parse_signal_suntimer_cancel_command() const;
+
+  /**
+   * \brief Parse the current command for a sun timer disable
+   * \param[out] isSunrise True if the sunrise timer must be disabled, false for the sunset timer
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_disable_sun_timer_command(bool& isSunrise) const;
+
+  /**
+   * \brief Parse the current command for a microphone sensitivity change
+   * \param[out] sensitivity The requested sensitivity
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_set_mic_sensitivity_command(uint8_t& sensitivity) const;
 
   /**
    * \brief Parse the current command for an output blip
