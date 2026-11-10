@@ -325,6 +325,13 @@ void lampda_print_raw(const char* format, ...)
   va_end(args);
 }
 
+int lampda_print_ble_pending()
+{
+  if (not __private::ble_uart_ops.is_activated())
+    return 0;
+  return static_cast<int>(hal::queues::HAL_queue_get_number_of_items(__private::ble_uart_ops.uart_send_queue));
+}
+
 /// C linkage to print functions
 void lampda_print(const char* format, ...)
 {

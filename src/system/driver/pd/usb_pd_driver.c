@@ -8,6 +8,7 @@
 #include "usb_pd_driver.h"
 #include "../../../../src/system/bsp/pd/usb_pd.h"
 #include "../../../../src/system/bsp/text_out.h"
+#include "../../../../src/system/bsp/pd/tcpm/tcpm.h"
 
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(t) (sizeof(t) / sizeof(t[0]))
@@ -40,8 +41,12 @@ const uint32_t pd_src_pdo[] = {
         // NEVER raise them without checking hardware capabilities
         PDO_FIXED(5000, 1500, PDO_FIXED_FLAGS),
         PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
-        PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
-        PDO_FIXED(20000, 3000, PDO_FIXED_FLAGS),
+        // No 15V nor 20V (issue #357): at 20V, the VBUS gate signals a fault and cuts VBUS as soon as a laptop starts
+        // to
+        // draw (~150mA, likely its inrush current), and the laptop detaches. 9V holds 2.8A without fault.
+        // Do not add them back before the VBUS gate behavior at those voltages is understood (and 15V is tested).
+        // PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
+        // PDO_FIXED(20000, 3000, PDO_FIXED_FLAGS),
         // PPS (not supported)
         // PDO_VAR(4750, 20000, 3000)
 };
@@ -282,6 +287,18 @@ void pd_transition_voltage(int idx)
           "sink requested a source %dmv %dmA", otgParameters.requestedVoltage_mV, otgParameters.requestedCurrent_mA);
 }
 
+int pd_is_source_voltage_ready()
+{
+  const int target_mV = otgParameters.requestedVoltage_mV;
+  if (target_mV == 0)
+    return 1;
+
+  // vSrcNew is +/-5%, and the FUSB302 measure has a 420mV resolution
+  const int vbus_mV = tcpm_get_vbus_voltage();
+  const int margin_mV = target_mV / 20 + 420;
+  return (vbus_mV >= target_mV - margin_mV && vbus_mV <= target_mV + margin_mV) ? 1 : 0;
+}
+
 void pd_check_dr_role(int dr_role, int flags)
 {
   /*
@@ -291,8 +308,29 @@ void pd_check_dr_role(int dr_role, int flags)
   */
 }
 
+// battery mode: the partner took the board Rd for a sink and powers us, ask for the source role (issue #357)
+int _isSourceRoleWanted = 0;
+void set_source_role_wanted(const int wanted)
+{
+  _isSourceRoleWanted = wanted != 0;
+  // the partner power is not used: do not let it raise VBUS before the swap
+  pd_set_max_voltage(_isSourceRoleWanted ? PD_MIN_VOLTAGE_MV : PD_MAX_VOLTAGE_MV);
+}
+
 void pd_check_pr_role(int pr_role, int flags)
 {
+  if (pr_role == PD_ROLE_SINK && _isSourceRoleWanted)
+  {
+    if (flags & PD_FLAGS_PARTNER_DR_POWER)
+    {
+      lampda_print("power role swap: requesting the source role");
+      pd_request_power_swap();
+    }
+    else
+      lampda_print("power role swap: the partner is not dual role, cannot become its source");
+    return;
+  }
+
   /*
    * If partner is dual-role power and dualrole toggling is on, consider
    * if a power swap is necessary.

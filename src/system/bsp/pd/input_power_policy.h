@@ -28,8 +28,23 @@ static constexpr uint32_t pdLostDelay_ms = 1000;
 static constexpr uint32_t maxPdNegociationWait_ms = 8000;
 /// Current pulled from a standard port (ICO finds the real maximum)
 static constexpr uint16_t standardPortCurrent_mA = 800;
-/// VBUS can be this much under the negociated voltage and still be considered established
-static constexpr uint32_t pdVoltageMargin_mV = 1000;
+/// PD source output tolerance (vSrcNew), in percents of the negociated voltage
+static constexpr uint32_t pdSourceTolerance_percent = 5;
+/// Cable and connectors voltage drop allowed on VBUS (USB-C, at 3A)
+static constexpr uint32_t pdCableDrop_mV = 500;
+/// VBUS measure resolution: the FUSB302 measure has 420mV steps, and rounds down
+static constexpr uint32_t vbusMeasureResolution_mV = 420;
+
+/**
+ * \brief Lowest VBUS measure for which the negociated voltage is considered established
+ * A fixed 1V margin blocked a 9V contract from another lamp: VBUS read 7.98V (issue #357)
+ */
+inline uint32_t pd_min_established_vbus_mV(const uint32_t negotiatedVoltage_mV)
+{
+  const uint32_t margin_mV =
+          negotiatedVoltage_mV * pdSourceTolerance_percent / 100 + pdCableDrop_mV + vbusMeasureResolution_mV;
+  return negotiatedVoltage_mV > margin_mV ? negotiatedVoltage_mV - margin_mV : 0;
+}
 /// Do not use the whole PD current, or the source will cut us off
 static constexpr float pdCurrentRatio = 0.90f;
 
@@ -104,7 +119,7 @@ inline bool can_use_pd_full_power(const SourceStatus& s)
 {
   return s.negotiatedVoltage_mV > 0 and s.isSinkReady and
          // the voltage/current rise should be over
-         s.vbusVoltage_mV + pdVoltageMargin_mV >= s.negotiatedVoltage_mV;
+         s.vbusVoltage_mV >= pd_min_established_vbus_mV(s.negotiatedVoltage_mV);
 }
 
 /// The source is a standard USB port (no PD), with a stabilize delay

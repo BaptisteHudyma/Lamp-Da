@@ -13,6 +13,7 @@
 #include "tcpm/tcpm.h"
 
 #include "../../../../src/system/driver/pd/usb_pd_driver.h"
+#include "../../../../src/system/driver/pd/FUSB302.h"
 #include <assert.h>
 #include <string.h>
 
@@ -145,6 +146,8 @@ static uint64_t src_detach_debounce = 0;
 #ifdef CONFIG_USB_PD_DUAL_ROLE
 /* power role swap to source: time after which PS_RDY is not sent if VBUS is still missing */
 static uint64_t swap_new_src_deadline = 0;
+/* power role swap to source: time after which the PS_RDY of the old source is not expected anymore */
+static uint64_t swap_old_src_deadline = 0;
 #endif
 static enum tcpc_cc_voltage_status cc1, cc2;
 static int res, incoming_packet = 0;
@@ -219,6 +222,8 @@ struct pd_protocol
   uint64_t timeout;
   /* Time for source recovery after hard reset */
   uint64_t src_recover;
+  /* Source: latest time to send PS_RDY after an Accept, even if VBUS is not at the new voltage yet */
+  uint64_t src_ps_rdy_deadline;
   /* Time for CC debounce end */
   uint64_t cc_debounce;
   /* The cc state */
@@ -1657,6 +1662,7 @@ static void handle_data_request(uint16_t head, uint32_t* payload)
         }
       }
       /* the message was incorrect or cannot be satisfied */
+      lampda_print("source: request rejected (RDO %08lx)", (unsigned long)payload[0]);
       send_control(PD_CTRL_REJECT);
       /* keep last contract in place (whether implicit or explicit) */
       set_state(PD_STATE_SRC_READY);
@@ -1701,6 +1707,14 @@ static void handle_data_request(uint16_t head, uint32_t* payload)
 }
 
 #ifdef CONFIG_USB_PD_DUAL_ROLE
+/* set from another thread: run the power role policy again (pd_check_pr_role) on the next SNK_READY pass */
+static volatile int pr_role_check_requested = 0;
+void pd_request_pr_role_check()
+{
+  pr_role_check_requested = 1;
+  task_wake();
+}
+
 void pd_request_power_swap()
 {
   if (pd.task_state == PD_STATE_SRC_READY)
@@ -1904,7 +1918,10 @@ static void handle_ctrl_request(uint16_t head, uint32_t* payload)
       else if (pd.task_state == PD_STATE_SRC_SWAP_INIT)
         set_state(PD_STATE_SRC_READY);
       else if (pd.task_state == PD_STATE_SNK_SWAP_INIT)
+      {
+        lampda_print("power role swap to source refused by the partner (%s)", type == PD_CTRL_WAIT ? "wait" : "reject");
         set_state(PD_STATE_SNK_READY);
+      }
       else if (pd.task_state == PD_STATE_SNK_REQUESTED)
       {
         /*
@@ -3612,7 +3629,10 @@ void pd_run_state_machine()
     case PD_STATE_SRC_ACCEPTED:
       /* Accept sent, wait for enabling the new voltage */
       if (pd.last_state != pd.task_state)
+      {
+        pd.src_ps_rdy_deadline = get_time().val + PD_T_SRC_PS_RDY_MAX;
         set_state_timeout(get_time().val + PD_T_SINK_TRANSITION, PD_STATE_SRC_POWERED);
+      }
       break;
     case PD_STATE_SRC_POWERED:
       /* Switch to the new requested voltage */
@@ -3624,7 +3644,20 @@ void pd_run_state_machine()
       }
       break;
     case PD_STATE_SRC_TRANSITION:
-      /* the voltage output is good, notify the source */
+      /*
+       * The output voltage is ramped (issue #357): wait for VBUS to reach the new voltage before PS_RDY, but not
+       * longer than the sink waits for it (tPSTransition)
+       */
+      if (!pd_is_source_voltage_ready())
+      {
+        if (get_time().val < pd.src_ps_rdy_deadline)
+        {
+          timeout = 10 * MSEC_US;
+          break;
+        }
+        lampda_print("PS_RDY sent before VBUS reached the contract voltage (%dmV)", tcpm_get_vbus_voltage());
+      }
+      /* the voltage output is good, notify the sink */
       res = send_control(PD_CTRL_PS_RDY);
       if (res >= 0)
       {
@@ -4225,6 +4258,11 @@ void pd_run_state_machine()
       }
 
       /* Check power role policy, which may trigger a swap */
+      if (pr_role_check_requested)
+      {
+        pr_role_check_requested = 0;
+        pd.flags |= PD_FLAGS_CHECK_PR_ROLE;
+      }
       if (pd.flags & PD_FLAGS_CHECK_PR_ROLE)
       {
         pd_check_pr_role(PD_ROLE_SINK, pd.flags);
@@ -4301,7 +4339,23 @@ void pd_run_state_machine()
     case PD_STATE_SNK_SWAP_SRC_DISABLE:
       /* Wait for PS_RDY */
       if (pd.last_state != pd.task_state)
-        set_state_timeout(get_time().val + PD_T_PS_SOURCE_OFF, PD_STATE_HARD_RESET_SEND);
+      {
+        swap_old_src_deadline = get_time().val + PD_T_PS_SOURCE_OFF;
+        timeout = 10 * MSEC_US;
+        break;
+      }
+      if (get_time().val < swap_old_src_deadline)
+      {
+        timeout = 10 * MSEC_US;
+        break;
+      }
+      tcpm_get_cc(&cc1, &cc2);
+      lampda_print("swap: no PS_RDY from the old source (VBUS %dmV, CC1 %d, CC2 %d, RX %lu), hard reset",
+                   tcpm_get_vbus_voltage(),
+                   cc1,
+                   cc2,
+                   (unsigned long)fusb302_get_rx_count());
+      set_state(PD_STATE_HARD_RESET_SEND);
       break;
     case PD_STATE_SNK_SWAP_STANDBY:
       if (pd.last_state != pd.task_state)
@@ -4773,6 +4827,8 @@ void pd_run_state_machine()
 
     if (is_detached)
     {
+      /* a sink drops its Rd when it loses VBUS: show if it did */
+      lampda_print("source: sink detached (CC open), VBUS %dmV", tcpm_get_vbus_voltage());
       set_state(PD_STATE_SRC_DISCONNECTED);
       /* Debouncing */
       timeout = 10 * MSEC_US;

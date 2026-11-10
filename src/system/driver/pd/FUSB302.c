@@ -13,6 +13,7 @@
 #include "../../../../src/system/bsp/pd/task.h"
 
 #include "../../../../src/system/hal/mutex.h"
+#include "../../../../src/system/bsp/text_out.h"
 
 static hal_mutex_t measure_lock;
 
@@ -569,6 +570,10 @@ void fusb302_get_last_cc(int* cc1, int* cc2)
 static uint32_t tx_collisions = 0;
 static uint32_t tx_retry_fails = 0;
 static uint32_t tx_success = 0;
+/* received messages (GoodCRC sent), for debug */
+static uint32_t rx_messages = 0;
+
+uint32_t fusb302_get_rx_count() { return rx_messages; }
 
 void fusb302_get_tx_counters(uint32_t* success, uint32_t* collisions, uint32_t* retry_fails)
 {
@@ -1132,7 +1137,12 @@ void fusb302_tcpc_alert()
     usb_charger_vbus_change(fusb302_tcpm_check_vbus_level(VBUS_PRESENT));
 #else
     if (!fusb302_tcpm_check_vbus_level(VBUS_PRESENT))
+    {
       pd_vbus_low();
+      /* VBUS lost while we power it: it explains a sink detachment (issue #357) */
+      if (state.pulling_up)
+        lampda_print("FUSB302: VBUS lost while sourcing");
+    }
 #endif
     task_wake();
     // TODO hook_notify(HOOK_AC_CHANGE);
@@ -1176,6 +1186,7 @@ void fusb302_tcpc_alert()
   {
     /* Packet received and GoodCRC sent */
     /* (this interrupt fires after the GoodCRC finishes) */
+    rx_messages++;
     if (state.rx_enable)
     {
       /* Pull all RX messages from TCPC into EC memory */

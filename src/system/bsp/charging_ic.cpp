@@ -146,9 +146,12 @@ uint32_t run_fault_detection()
     status_s = Status_t::ERROR_HAS_FAULTS;
   }
   // reset fault flag
-  else if (status_s == Status_t::ERROR_HAS_FAULTS)
+  else
   {
-    status_s = Status_t::NOMINAL;
+    // the faults are cleared: show them again if they come back
+    latestErrorCodes = 0;
+    if (status_s == Status_t::ERROR_HAS_FAULTS)
+      status_s = Status_t::NOMINAL;
   }
   return errorCodes;
 }
@@ -156,15 +159,21 @@ uint32_t run_fault_detection()
 // update the local values of the status register
 void run_status_update()
 {
-  const byte initialReg0read = chargerIcRegisters.chargerStatus.val0;
-  const byte initialReg1read = chargerIcRegisters.chargerStatus.val1;
+  // Last status processed by the fault detection. Tracked apart from the register cache: other functions read and
+  // write the status register (try_clear_faults, is_input_source_present), and would hide a change from the cache
+  static bool hasProcessedStatus = false;
+  static byte processedReg0 = 0;
+  static byte processedReg1 = 0;
 
   chargerIc.readRegEx(chargerIcRegisters.chargerStatus);
 
   uint32_t errorCode = 0;
-  if (initialReg0read != chargerIcRegisters.chargerStatus.val0 or
-      initialReg1read != chargerIcRegisters.chargerStatus.val1)
+  if (not hasProcessedStatus or processedReg0 != chargerIcRegisters.chargerStatus.val0 or
+      processedReg1 != chargerIcRegisters.chargerStatus.val1)
   {
+    hasProcessedStatus = true;
+    processedReg0 = chargerIcRegisters.chargerStatus.val0;
+    processedReg1 = chargerIcRegisters.chargerStatus.val1;
     // check faults
     errorCode = run_fault_detection();
   }
@@ -794,7 +803,8 @@ bool is_input_source_present()
 
 void try_clear_faults()
 {
-  // clear the fault we can clear, wait and see
+  // clear the fault we can clear, wait and see.
+  // run_status_update tracks the last processed status apart from this cache: it sees the fault clearing (or not)
   chargerIc.readRegEx(chargerIcRegisters.chargerStatus);
   if (chargerIcRegisters.chargerStatus.SYSOVP_STAT())
   {

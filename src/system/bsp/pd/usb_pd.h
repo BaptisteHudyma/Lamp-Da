@@ -136,6 +136,7 @@ extern "C" {
 #define PD_T_SEND_SOURCE_CAP        (100 * MSEC_US) /* between 100ms and 200ms */
 #define PD_T_SINK_WAIT_CAP          (600 * MSEC_US) /* between 310ms and 620ms */
 #define PD_T_SINK_TRANSITION        (35 * MSEC_US)  /* between 20ms and 35ms */
+#define PD_T_SRC_PS_RDY_MAX         (400 * MSEC_US) /* source: latest PS_RDY after Accept, < tPSTransition */
 #define PD_T_SOURCE_ACTIVITY        (45 * MSEC_US)  /* between 40ms and 50ms */
 #define PD_T_SENDER_RESPONSE        (30 * MSEC_US)  /* between 24ms and 30ms */
 #define PD_T_PS_TRANSITION          (500 * MSEC_US) /* between 450ms and 550ms */
@@ -1243,6 +1244,13 @@ extern "C" {
   int pd_set_power_supply_ready();
 
   /**
+   * Check that the source output reached the voltage selected by pd_transition_voltage, to send PS_RDY.
+   *
+   * @return 1 if VBUS is at the requested voltage, 0 else
+   */
+  int pd_is_source_voltage_ready();
+
+  /**
    * Ask the specified voltage from the PD source.
    *
    * It triggers a new negotiation sequence with the source.
@@ -1346,6 +1354,12 @@ extern "C" {
    * @param flags PD flags
    */
   void pd_check_pr_role(int pr_role, int flags);
+
+  /**
+   * Ask the PD task to run the power role policy (pd_check_pr_role) again, when it is a ready sink.
+   * Can be called from any thread.
+   */
+  void pd_request_pr_role_check();
 
   /**
    * Check current data role for potential data swap

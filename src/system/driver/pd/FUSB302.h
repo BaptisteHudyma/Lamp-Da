@@ -229,6 +229,9 @@ extern "C" {
   /// failed after all retries without GoodCRC
   void fusb302_get_tx_counters(uint32_t* success, uint32_t* collisions, uint32_t* retry_fails);
 
+  /// Messages received (GoodCRC sent) since boot, for debug
+  uint32_t fusb302_get_rx_count();
+
 #ifdef __cplusplus
 }
 #endif
