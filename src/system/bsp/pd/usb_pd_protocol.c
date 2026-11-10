@@ -1707,6 +1707,14 @@ static void handle_data_request(uint16_t head, uint32_t* payload)
 }
 
 #ifdef CONFIG_USB_PD_DUAL_ROLE
+/* set from another thread: run the power role policy again (pd_check_pr_role) on the next SNK_READY pass */
+static volatile int pr_role_check_requested = 0;
+void pd_request_pr_role_check()
+{
+  pr_role_check_requested = 1;
+  task_wake();
+}
+
 void pd_request_power_swap()
 {
   if (pd.task_state == PD_STATE_SRC_READY)
@@ -4250,6 +4258,11 @@ void pd_run_state_machine()
       }
 
       /* Check power role policy, which may trigger a swap */
+      if (pr_role_check_requested)
+      {
+        pr_role_check_requested = 0;
+        pd.flags |= PD_FLAGS_CHECK_PR_ROLE;
+      }
       if (pd.flags & PD_FLAGS_CHECK_PR_ROLE)
       {
         pd_check_pr_role(PD_ROLE_SINK, pd.flags);

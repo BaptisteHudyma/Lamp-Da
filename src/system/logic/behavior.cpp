@@ -48,8 +48,19 @@ namespace lampda {
 namespace logic {
 namespace behavior {
 
+/**
+ * Debug only: at shutdown, wait for the bluetooth log to send its queued lines (it is much slower than the system, the
+ * lines still queued are lost when the link closes). The shutdown can then take up to 30 seconds.
+ * Enabled by DEBUG_MODE, or alone with LMBD_EXTRA_FLAGS="-DLMBD_FLUSH_BLE_LOG_AT_SHUTDOWN".
+ */
+#if defined(DEBUG_MODE) and not defined(LMBD_FLUSH_BLE_LOG_AT_SHUTDOWN)
+#define LMBD_FLUSH_BLE_LOG_AT_SHUTDOWN
+#endif
+
+#ifdef LMBD_FLUSH_BLE_LOG_AT_SHUTDOWN
 /// At shutdown, maximum time given to the bluetooth log to send its queued lines
 static constexpr uint32_t shutdownBleLogFlushTimeout_ms = 30000;
+#endif
 
 static constexpr uint32_t cleanSleepKey = utils::hash("cleanSleep");
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
@@ -708,8 +719,8 @@ void handle_shutdown_state()
   // save the current config to a file
   write_parameters();
 
-  // the bluetooth log is much slower than the system: give it time to send the last lines (shutdown reason),
-  // they are lost when the link closes
+#ifdef LMBD_FLUSH_BLE_LOG_AT_SHUTDOWN
+  // debug: give the bluetooth log time to send the last lines (shutdown reason), they are lost when the link closes
   const uint32_t logFlushStart_ms = hal::time_ms();
   while (bsp::lampda_print_ble_pending() > 0 and hal::time_ms() - logFlushStart_ms < shutdownBleLogFlushTimeout_ms)
   {
@@ -717,6 +728,7 @@ void handle_shutdown_state()
     hal::registers::kick_watchdog(USER_WATCHDOG_ID);
     hal::delay_ms(50);
   }
+#endif
 
   // all flash writes are done: deactivate bluetooth (saves the bond if needed, then closes all links)
   bsp::ble::shutdown();

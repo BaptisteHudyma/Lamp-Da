@@ -633,6 +633,8 @@ void want_source_role_by_swap(const bool wanted) { set_source_role_wanted(wanted
 
 bool is_attached_as_sink() { return pd_get_power_role() == PD_ROLE_SINK and pd_is_connected() != 0; }
 
+void retry_source_role_swap() { pd_request_pr_role_check(); }
+
 bool is_source_contract_ready() { return pd_get_task_state() == PD_STATE_SRC_READY; }
 
 bool is_switching_to_otg() { return is_activating_otg() != 0; }

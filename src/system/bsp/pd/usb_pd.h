@@ -1356,6 +1356,12 @@ extern "C" {
   void pd_check_pr_role(int pr_role, int flags);
 
   /**
+   * Ask the PD task to run the power role policy (pd_check_pr_role) again, when it is a ready sink.
+   * Can be called from any thread.
+   */
+  void pd_request_pr_role_check();
+
+  /**
    * Check current data role for potential data swap
    *
    * @param port USB-C port number

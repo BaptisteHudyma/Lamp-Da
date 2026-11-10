@@ -69,6 +69,9 @@ void want_source_role_by_swap(const bool wanted);
 /// return true when the PD state machine is attached to a partner, as a sink
 bool is_attached_as_sink();
 
+/// As a ready sink wanting the source role (want_source_role_by_swap), ask for the power role swap again
+void retry_source_role_swap();
+
 /// return true when we are a source, with a contract in place (PS_RDY sent): the sink can use the power
 bool is_source_contract_ready();
 

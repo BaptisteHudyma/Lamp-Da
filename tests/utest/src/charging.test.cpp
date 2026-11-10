@@ -148,10 +148,27 @@ TEST(charging_policy, pd_contract_waits_for_vbus_to_rise)
   s.vbusVoltage_mV = 5000;
   expect_no_current(s);
 
-  s.vbusVoltage_mV = 20000 - policy::pdVoltageMargin_mV - 1;
+  s.vbusVoltage_mV = policy::pd_min_established_vbus_mV(20000) - 1;
   expect_no_current(s);
 
-  s.vbusVoltage_mV = 20000 - policy::pdVoltageMargin_mV;
+  s.vbusVoltage_mV = policy::pd_min_established_vbus_mV(20000);
+  EXPECT_TRUE(policy::can_use_power(s));
+}
+
+TEST(charging_policy, pd_contract_accepts_the_vbus_tolerances)
+{
+  // 9V from another lamp: the FUSB302 read 7.98V (420mV steps, rounded down), with no current yet (issue #357)
+  auto s = pd_contract(9000, 3000);
+  s.vbusVoltage_mV = 7980;
+  EXPECT_TRUE(policy::can_use_power(s));
+
+  // the source is still at 5V
+  s.vbusVoltage_mV = 5040;
+  expect_no_current(s);
+
+  // a 5V contract
+  s = pd_contract(5000, 3000);
+  s.vbusVoltage_mV = 4200;
   EXPECT_TRUE(policy::can_use_power(s));
 }
 
