@@ -133,6 +133,9 @@ static constexpr float maxStripConsumption_A = 1000.0f * totalCons_Watt / stripI
 /// Battery maximum charge current, in milliAmps
 static constexpr uint32_t batteryMaxChargeCurrent_mA =
         static_cast<uint32_t>(batteryChargeC_Rate * batteryCapacity_mAH); // mA
+/// End of charge current (C/20), in milliAmps: in constant voltage phase, the charge is done below this current.
+/// The charge current never reaches 0 while the balancer bleeds cells, so a 0 current cannot be used.
+static constexpr uint32_t batteryEndOfChargeCurrent_mA = batteryCapacity_mAH / 20; // mA
 /// Battery maximum discharge current, in milliAmps
 static constexpr uint32_t batteryMaxDischargeCurrent_mA =
         static_cast<uint32_t>(batteryDischargeC_Rate * batteryCapacity_mAH); // mA

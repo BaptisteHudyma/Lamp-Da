@@ -87,9 +87,10 @@ void byte_to_str(char* buff, uint8_t val)
 }
 
 // Compare two BLE addresses.
-// NOTE: addr_type is intentionally ignored here because after bonding and
-// RPA resolution, the SoftDevice provides the identity address regardless of
-// which address type the phone used during the connection attempt.
+// NOTE: addr_type is intentionally ignored here. The SoftDevice does not resolve RPAs (no device identities are set),
+// but Bluefruit's BLEConnection::getPeerAddr() returns the bonded identity address once the bond keys are loaded
+// (loadBondKey on reconnection, saveBondKey at the end of a pairing). Before that, it returns the raw connection
+// address, which is an RPA for most phones: only compare addresses once the keys are loaded.
 bool addressMatches(const hal::ble::gap_addr_t& a, const hal::ble::gap_addr_t& b) { return a.addr == b.addr; }
 
 bool load_bluetooth_name(char* bleName)

@@ -16,6 +16,7 @@
 #include "src/system/logic/statistics_handler.h"
 
 #include "src/system/component/battery.h"
+#include "src/system/component/charge_policy.h"
 
 #include "src/system/utils/constants.h"
 #include "src/system/utils/utils.h"
@@ -24,7 +25,8 @@ namespace lampda {
 namespace component {
 namespace charger {
 
-static bool isBatteryFullLatched_s = false;
+/// Charge stop rules state (battery full, over voltage)
+static policy::ChargeLimiter chargeLimiter_s;
 
 // used to stop the charge on user demand (debug behavior)
 static bool enableCharge_s = true;
@@ -89,6 +91,7 @@ bool should_charge()
   // turn on voltage for balancer
   const bool isVoltageEnoughForBalancer = measurments.battery_mV >= 3500;
 
+  policy::Inputs limiterInputs;
   if (isVoltageEnoughForBalancer)
   {
     // wait for balancer
@@ -96,23 +99,25 @@ bool should_charge()
     if (not balancerStatus.is_valid())
       return false;
 
-    static uint32_t batteryTooHighLatchTime = 0;
+    limiterInputs.isBalancerValid = true;
+    limiterInputs.pack_mV = balancerStatus.stackVoltage_mV;
     for (uint8_t i = 0; i < physical_constants::batterySeriesCount; ++i)
     {
-      // do not charge if a battery voltage goes over the max voltage
-      if (balancerStatus.batteryVoltages_mV[i] >= physical_constants::maxLiionVoltage_mV)
-      {
-        batteryTooHighLatchTime = hal::time_ms();
-        return false;
-      }
+      if (balancerStatus.batteryVoltages_mV[i] > limiterInputs.maxCell_mV)
+        limiterInputs.maxCell_mV = balancerStatus.batteryVoltages_mV[i];
     }
-    // latch the status of battery too high for a time, to let the balancer work
-    if (batteryTooHighLatchTime > 0 and (hal::time_ms() - batteryTooHighLatchTime) < 20000)
-    {
-      return false;
-    }
-    batteryTooHighLatchTime = 0;
   }
+
+  const auto& battery = bsp::charger::get_battery();
+  limiterInputs.level = limiterInputs.isBalancerValid ? component::battery::get_level_safe(limiterInputs.pack_mV) :
+                                                        component::battery::get_level_safe(battery.voltage_mV);
+  limiterInputs.chargeCurrent_mA = bsp::charger::get_charge_current();
+  limiterInputs.isCharging = charger.status == Charger_t::ChargerStatus_t::CHARGING;
+
+  // safety first: over voltage stops the charge, even without power source
+  const bool isChargeAllowed = chargeLimiter_s.update(hal::time_ms(), limiterInputs);
+  if (chargeLimiter_s.is_over_voltage_stopped())
+    return false;
 
   // our power source cannot give power
   if (not bsp::powerDelivery::can_use_power())
@@ -129,59 +134,20 @@ bool should_charge()
   // no power on VBUS, no charge
   if (not bsp::powerDelivery::is_power_available())
   {
-    isBatteryFullLatched_s = false;
+    chargeLimiter_s.clear_full();
     return false;
   }
-
-  // get the battery
-  const auto& battery = bsp::charger::get_battery();
 
   // battery not connected
   if (not battery.isPresent)
   {
-    isBatteryFullLatched_s = false;
+    chargeLimiter_s.clear_full();
     return false;
   }
 
-  // battery charge is latched on
-  if (isBatteryFullLatched_s)
-  {
-    // deactivate latch below a certain level
-    if (component::battery::get_level_safe(battery.voltage_mV) < 9500)
-    {
-      isBatteryFullLatched_s = false;
-    }
+  // battery full, or end of charge reached
+  if (not isChargeAllowed)
     return false;
-  }
-
-  // reached end of charge state
-  const bool isEndOfCharge =
-          bsp::charger::get_charge_current() <= 0 and charger.status == Charger_t::ChargerStatus_t::CHARGING;
-
-  static uint32_t batteryFullDeglitchTime = 0;
-
-  // check battery full status
-  if (isBatteryFullLatched_s or isEndOfCharge)
-  {
-    const uint32_t time = hal::time_ms();
-
-    if (batteryFullDeglitchTime == 0)
-    {
-      batteryFullDeglitchTime = time;
-    }
-    // the battery needs to stay == 100 for 5 seconds
-    else if (time - batteryFullDeglitchTime > 5 * 1000)
-    {
-      batteryFullDeglitchTime = 0;
-      // charge done, latch battery level
-      isBatteryFullLatched_s = true;
-      return false;
-    }
-  }
-  else
-  {
-    batteryFullDeglitchTime = 0;
-  }
 
   // all conditions passed
   return true;
@@ -199,7 +165,7 @@ void control_OTG(const uint16_t mv, const uint16_t ma)
   else
   {
     // reenable battery charging
-    isBatteryFullLatched_s = false;
+    chargeLimiter_s.clear_full();
 
     isOtgEnabled_s = true;
     bsp::charger::set_OTG_targets(mv, ma);
@@ -279,7 +245,7 @@ void update_state_status()
           case bsp::charger::ChargeStatus_t::PRECHARGE:
           case bsp::charger::ChargeStatus_t::FASTCHARGE:
             {
-              if (isBatteryFullLatched_s)
+              if (chargeLimiter_s.is_full())
                 charger.status = Charger_t::ChargerStatus_t::CHARGE_FINISHED;
               else
                 charger.status = Charger_t::ChargerStatus_t::CHARGING;
