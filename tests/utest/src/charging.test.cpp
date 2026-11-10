@@ -204,6 +204,27 @@ TEST(charging_policy, hard_reset_during_contract_cuts_current)
   expect_no_current(s);
 }
 
+/// Issue #646: in output mode, the OTG only powers the output gate, VBUS must still be followed to see an unplug
+TEST(charging_policy, vbus_followed_in_output_mode)
+{
+  // output mode: OTG on the output gate, the USB port is isolated
+  EXPECT_FALSE(policy::is_vbus_from_own_output(false, true, true));
+  // no OTG at all
+  EXPECT_FALSE(policy::is_vbus_from_own_output(false, false, false));
+  EXPECT_FALSE(policy::is_vbus_from_own_output(false, false, true));
+}
+
+/// Our own OTG voltage on the USB port is not a power source
+TEST(charging_policy, own_vbus_output_ignored)
+{
+  // battery mode: OTG on the USB port
+  EXPECT_TRUE(policy::is_vbus_from_own_output(false, true, false));
+  // power role swap in progress
+  EXPECT_TRUE(policy::is_vbus_from_own_output(true, false, false));
+  EXPECT_TRUE(policy::is_vbus_from_own_output(true, true, false));
+  EXPECT_TRUE(policy::is_vbus_from_own_output(true, true, true));
+}
+
 TEST(charging_policy, unplug_detected_after_the_deglitch)
 {
   EXPECT_FALSE(policy::is_unplugged(0, false));

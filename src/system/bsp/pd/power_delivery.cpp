@@ -567,8 +567,10 @@ void loop()
   // The PD state machine only flags the OTG activation when a sink is attached, but the charger can output on VBUS
   // without one (manual battery mode, or right after a detachment): our own VBUS is not a power source.
   // A VBUS loss is counted from the end of the OTG: after a power role swap back to sink, the partner needs some time
-  // to turn its VBUS on
-  if (is_switching_to_otg() or bsp::charger::is_in_OTG())
+  // to turn its VBUS on.
+  // In output mode, the OTG only powers the output gate: VBUS is still followed (issue #646)
+  if (policy::is_vbus_from_own_output(
+              is_switching_to_otg(), bsp::charger::is_in_OTG(), bsp::powergates::is_power_gate_enabled()))
   {
     vbusLoss.on_vbus_valid(time);
     return;
