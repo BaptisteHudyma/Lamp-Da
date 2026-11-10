@@ -58,6 +58,20 @@ static constexpr uint32_t unplugDeglitch_ms = 1000;
  */
 static constexpr uint32_t hardResetUnplugDeglitch_ms = 3000;
 
+/**
+ * \brief True when the VBUS measure can come from our own OTG output, and is not a power source
+ * The charger OTG also powers the output gate (output mode), and the two gates are never enabled together: the USB
+ * port is then isolated from our output, and VBUS can only come from an external source. It must be followed, or a
+ * cable unplugged in output mode is never seen (issue #646).
+ * While the gates are switching (both disabled), the port can still hold our own voltage: it is ignored too.
+ */
+inline bool is_vbus_from_own_output(const bool isSwitchingToOtg,
+                                    const bool isChargerInOtg,
+                                    const bool isOutputGateEnabled)
+{
+  return isSwitchingToOtg or (isChargerInOtg and not isOutputGateEnabled);
+}
+
 /// VBUS was lost long enough to consider the source unplugged
 inline bool is_unplugged(const uint32_t timeSinceVbusValid_ms, const bool isSinkHardResetting)
 {

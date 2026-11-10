@@ -943,7 +943,17 @@ void handle_all(const bool shouldIgnoreAlerts)
 
     // display battery level
     const auto& chargerStatus = ::lampda::component::charger::get_state();
-    if (!logic::power::is_in_output_mode() and chargerStatus.isInOtg)
+    // output mode: the lamp does not charge, a plugged cable is only signaled (breezing is reserved for a real charge)
+    if (logic::power::is_in_output_mode())
+    {
+      if (::lampda::component::charger::is_vbus_powered())
+        // slow blinking
+        bsp::indicator::blink(1000, 1000, buttonColor);
+      else
+        // normal output mode
+        bsp::indicator::set_color(buttonColor);
+    }
+    else if (chargerStatus.isInOtg)
     {
       bsp::indicator::breeze(500, 500, buttonColor);
     }
@@ -962,11 +972,9 @@ void handle_all(const bool shouldIgnoreAlerts)
         bsp::indicator::breeze(2000, 1000, buttonColor);
       }
     }
-    // output mode, or end of charge : standard display
-    else if (logic::power::is_in_output_mode() or chargerStatus.is_charge_finished())
+    // end of charge : standard display
+    else if (chargerStatus.is_charge_finished())
     {
-      // normal output mode
-      // chargerStatus.isInOtg should be true
       bsp::indicator::set_color(buttonColor);
     }
     else
