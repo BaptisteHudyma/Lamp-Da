@@ -840,7 +840,12 @@ void process_interrupt_signals()
 {
   // a fault signaled while the alert is raised refreshes it
   if (_isUsbPortFaultSignaled.exchange(false))
+  {
+    // shown: it stops the USB port use (issue #357)
+    if (not manager.is_raised(Type::USB_PORT_SHORT))
+      bsp::lampda_print("USB port protection fault signaled");
     manager.raise(Type::USB_PORT_SHORT);
+  }
 }
 
 void update_alerts()

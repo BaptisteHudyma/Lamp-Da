@@ -61,6 +61,18 @@ void force_set_to_source_mode(const bool force);
 void allow_otg(const bool);
 
 /**
+ * \brief As a sink, ask the partner for the source role (power role swap), and do not use its power meanwhile
+ * \param[in] wanted false to go back to the normal sink behavior
+ */
+void want_source_role_by_swap(const bool wanted);
+
+/// return true when the PD state machine is attached to a partner, as a sink
+bool is_attached_as_sink();
+
+/// return true when we are a source, with a contract in place (PS_RDY sent): the sink can use the power
+bool is_source_contract_ready();
+
+/**
  * \brief return true is the system is prepaping to switch to OTG mode
  */
 bool is_switching_to_otg();

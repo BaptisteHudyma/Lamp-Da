@@ -146,9 +146,12 @@ uint32_t run_fault_detection()
     status_s = Status_t::ERROR_HAS_FAULTS;
   }
   // reset fault flag
-  else if (status_s == Status_t::ERROR_HAS_FAULTS)
+  else
   {
-    status_s = Status_t::NOMINAL;
+    // the faults are cleared: show them again if they come back
+    latestErrorCodes = 0;
+    if (status_s == Status_t::ERROR_HAS_FAULTS)
+      status_s = Status_t::NOMINAL;
   }
   return errorCodes;
 }

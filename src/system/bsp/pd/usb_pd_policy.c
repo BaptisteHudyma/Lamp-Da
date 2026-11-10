@@ -405,7 +405,23 @@ unsigned pd_get_max_voltage(void) { return max_request_mv; }
 
 #endif /* CONFIG_USB_PD_DUAL_ROLE */
 
-int pd_svdm(int cnt, uint32_t* payload, uint32_t** rpayload) { return 0; }
+/*
+ * No structured VDM is supported (no identity, SVID or alternate mode): NAK the requests, as PD 2.0 asks of a
+ * responder. Ignoring them leaves the partner (a laptop as DFP sends Discover Identity) waiting and retrying until it
+ * gives up, which some partners end with an error recovery (issue #357).
+ */
+int pd_svdm(int cnt, uint32_t* payload, uint32_t** rpayload)
+{
+  static uint32_t nak[1];
+
+  /* only answer requests: never the responses, nor the Attention command (no response expected) */
+  if (cnt < 1 || PD_VDO_CMDT(payload[0]) != CMDT_INIT || PD_VDO_CMD(payload[0]) == CMD_ATTENTION)
+    return 0;
+
+  nak[0] = (payload[0] & ~VDO_CMDT_MASK) | VDO_CMDT(CMDT_RSP_NAK);
+  *rpayload = nak;
+  return 1;
+}
 
 #ifndef CONFIG_USB_PD_CUSTOM_VDM
 int pd_vdm(int cnt, uint32_t* payload, uint32_t** rpayload) { return 0; }

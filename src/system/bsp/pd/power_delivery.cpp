@@ -1,6 +1,8 @@
 #include "power_delivery.h"
 
 #include <etl/string.h>
+#include <cstdio>
+#include <cstring>
 
 #include "src/system/driver/pd/usb_pd_driver.h"
 #include "src/system/driver/pd/tcpm_driver.h"
@@ -184,6 +186,8 @@ struct UsbPDData
 
   /// Debug status for the algorithm
   etl::string<32> pdAlgoStatus;
+  /// last contract shown
+  char lastContract[64] = {0};
 
   /// when true, this struct has changed !
   bool hasChanged = false;
@@ -246,8 +250,8 @@ struct UsbPDData
     }
   }
 
-  /// Debug to serial output
-  void serial_show()
+  /// Debug to serial output. The contract is shown on change only, unless forced
+  void serial_show(const bool forceContract = false)
   {
     bsp::lampda_print("PD algo: %d %d%d%d: [PDO %.2fV %.2fA] %.2fV | %s",
                       should_run_pd_state_machine,
@@ -264,11 +268,20 @@ struct UsbPDData
     pd_get_contract_info(&info);
     // as a source, the contract is what the sink requested: the input values stay at 0
     const bool isSource = info.power_role == PD_ROLE_SOURCE;
-    bsp::lampda_print("PD contract: %s %s %lu mV, %lu mA",
-                      info.is_explicit_contract ? "EXP" : "X",
-                      isSource ? "(source, given)" : "(sink, received)",
-                      static_cast<unsigned long>(isSource ? info.requested_mv : get_available_pd_voltage_mV()),
-                      static_cast<unsigned long>(isSource ? info.requested_ma : get_available_pd_current_mA()));
+    // only on change: the bluetooth log is slow, and drops lines when it is flooded
+    char contract[64];
+    snprintf(contract,
+             sizeof(contract),
+             "PD contract: %s %s %lu mV, %lu mA",
+             info.is_explicit_contract ? "EXP" : "X",
+             isSource ? "(source, given)" : "(sink, received)",
+             static_cast<unsigned long>(isSource ? info.requested_mv : get_available_pd_voltage_mV()),
+             static_cast<unsigned long>(isSource ? info.requested_ma : get_available_pd_current_mA()));
+    if (forceContract or strcmp(contract, lastContract) != 0)
+    {
+      strcpy(lastContract, contract);
+      bsp::lampda_print("%s", contract);
+    }
   }
 };
 UsbPDData data;
@@ -363,10 +376,11 @@ void show_pd_contract()
   uint32_t txCollisions = 0;
   uint32_t txRetryFails = 0;
   fusb302_get_tx_counters(&txSuccess, &txCollisions, &txRetryFails);
-  bsp::lampda_print("TX: success %lu, collisions %lu, retry fails %lu",
+  bsp::lampda_print("TX: success %lu, collisions %lu, retry fails %lu. RX: %lu",
                     static_cast<unsigned long>(txSuccess),
                     static_cast<unsigned long>(txCollisions),
-                    static_cast<unsigned long>(txRetryFails));
+                    static_cast<unsigned long>(txRetryFails),
+                    static_cast<unsigned long>(fusb302_get_rx_count()));
   bsp::lampda_print("PD state machine: last ran %lums ago",
                     static_cast<unsigned long>(hal::time_ms() - pd_get_last_run_ms()));
   bsp::lampda_print("Interrupt: line %s, stuck line kicks %lu, alert reruns %lu",
@@ -377,7 +391,7 @@ void show_pd_contract()
 
 void show_pd_status()
 {
-  data.serial_show();
+  data.serial_show(true);
   show_pd_contract();
 }
 
@@ -614,6 +628,12 @@ OTGParameters get_otg_parameters()
 }
 
 void allow_otg(const bool allow) { set_allow_power_sourcing(allow); }
+
+void want_source_role_by_swap(const bool wanted) { set_source_role_wanted(wanted ? 1 : 0); }
+
+bool is_attached_as_sink() { return pd_get_power_role() == PD_ROLE_SINK and pd_is_connected() != 0; }
+
+bool is_source_contract_ready() { return pd_get_task_state() == PD_STATE_SRC_READY; }
 
 bool is_switching_to_otg() { return is_activating_otg() != 0; }
 

@@ -48,6 +48,9 @@ namespace lampda {
 namespace logic {
 namespace behavior {
 
+/// At shutdown, maximum time given to the bluetooth log to send its queued lines
+static constexpr uint32_t shutdownBleLogFlushTimeout_ms = 30000;
+
 static constexpr uint32_t cleanSleepKey = utils::hash("cleanSleep");
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
 static constexpr uint32_t indicatorLevelKey = utils::hash("indLvl");
@@ -704,6 +707,16 @@ void handle_shutdown_state()
 
   // save the current config to a file
   write_parameters();
+
+  // the bluetooth log is much slower than the system: give it time to send the last lines (shutdown reason),
+  // they are lost when the link closes
+  const uint32_t logFlushStart_ms = hal::time_ms();
+  while (bsp::lampda_print_ble_pending() > 0 and hal::time_ms() - logFlushStart_ms < shutdownBleLogFlushTimeout_ms)
+  {
+    hal::registers::kick_watchdog(POWER_WATCHDOG_ID);
+    hal::registers::kick_watchdog(USER_WATCHDOG_ID);
+    hal::delay_ms(50);
+  }
 
   // all flash writes are done: deactivate bluetooth (saves the bond if needed, then closes all links)
   bsp::ble::shutdown();

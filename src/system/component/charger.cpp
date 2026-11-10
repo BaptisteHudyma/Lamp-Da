@@ -205,10 +205,6 @@ void control_OTG(const uint16_t mv, const uint16_t ma)
     bsp::charger::set_OTG_targets(mv, ma);
     bsp::charger::enable_OTG();
   }
-
-  const auto& measurments = bsp::charger::get_measurments();
-  if (measurments.vbus_mV < mv - 1000 or measurments.vbus_mV > mv + 1000)
-    bsp::lampda_print("Wait for voltage climb: current %dmV, target %dmV", measurments.vbus_mV, mv);
 }
 
 bool is_status_error()
